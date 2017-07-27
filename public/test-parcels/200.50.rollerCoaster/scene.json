@@ -1,0 +1,24 @@
+{
+  "display": {
+    "title": "fervent_mcnulty",
+    "favicon": "favicon_asset"
+  },
+  "owner": "",
+  "contact": {
+    "name": "Agu",
+    "email": ""
+  },
+  "main": "scene.js",
+  "tags": [],
+  "scene": {
+    "parcels": ["200,50", "200,51", "200,52", "200,53", "200,54", "200,55", "200,56"],
+    "base": "200,50"
+  },
+  "policy": {
+    "contentRating": "E",
+    "fly": true,
+    "voiceEnabled": true,
+    "blacklist": [],
+    "teleportPosition": ""
+  }
+}

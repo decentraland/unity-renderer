@@ -1,0 +1,3 @@
+**/*.json
+packages/decentraland-ecs/api-docs-review/decentraland-ecs.api.ts
+packages/decentraland-ecs/types/dcl/decentraland-ecs.api.json

@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Decentraland Preview</title>
+    <meta http-equiv="content-type" content="text/html; charset=UTF-8" />
+
+    <style>
+      html,
+      body {
+        margin: 0;
+        padding: 0;
+        height: 100%;
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+
+      body {
+        background: #e3e3e3;
+        color: #333;
+        font-family: 'open sans', roboto, 'helvetica neue', sans-serif;
+        font-size: 0.8em;
+      }
+
+      .dcl-loading {
+        background: url(images/decentraland-loading.gif) center center no-repeat;
+      }
+    </style>
+  </head>
+
+  <body class="dcl-loading">
+    <script src="/@/artifacts/preview.js"></script>
+    <script>
+      const ws = new WebSocket(`${location.protocol === 'https:' ? 'wss' : 'ws'}://${document.location.host}`)
+
+      ws.addEventListener('message', msg => {
+        if (msg.data === 'update') {
+          handleServerMessage({
+            type: 'update'
+          })
+        } else {
+          if (msg.data.startsWith('{')) {
+            handleServerMessage(JSON.parse(msg.data))
+          }
+        }
+      })
+    </script>
+  </body>
+</html>

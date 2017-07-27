@@ -1,0 +1,24 @@
+{
+  "display": {
+    "title": "pay_to_use",
+    "favicon": "favicon_asset"
+  },
+  "owner": "",
+  "contact": {
+    "name": "Michal",
+    "email": ""
+  },
+  "main": "scene.js",
+  "tags": [],
+  "scene": {
+    "parcels": ["200,70"],
+    "base": "200,70"
+  },
+  "policy": {
+    "contentRating": "E",
+    "fly": true,
+    "voiceEnabled": true,
+    "blacklist": [],
+    "teleportPosition": ""
+  }
+}

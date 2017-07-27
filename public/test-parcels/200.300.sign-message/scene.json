@@ -1,0 +1,24 @@
+{
+  "display": {
+    "title": "sign_message",
+    "favicon": "favicon_asset"
+  },
+  "owner": "",
+  "contact": {
+    "name": "Michal",
+    "email": ""
+  },
+  "main": "scene.js",
+  "tags": [],
+  "scene": {
+    "parcels": ["200,300"],
+    "base": "200,300"
+  },
+  "policy": {
+    "contentRating": "E",
+    "fly": true,
+    "voiceEnabled": true,
+    "blacklist": [],
+    "teleportPosition": ""
+  }
+}

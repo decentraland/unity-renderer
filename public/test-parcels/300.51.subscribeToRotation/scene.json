@@ -1,0 +1,24 @@
+{
+  "display": {
+    "title": "character_test",
+    "favicon": "favicon_asset"
+  },
+  "owner": "",
+  "contact": {
+    "name": "Tibi",
+    "email": ""
+  },
+  "main": "scene.js",
+  "tags": [],
+  "scene": {
+    "parcels": ["300,51"],
+    "base": "300,51"
+  },
+  "policy": {
+    "contentRating": "E",
+    "fly": true,
+    "voiceEnabled": true,
+    "blacklist": [],
+    "teleportPosition": ""
+  }
+}

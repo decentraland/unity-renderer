@@ -1,0 +1,22 @@
+[
+  {
+    "name": "Delete dist folder",
+    "kind": "RM",
+    "path": "./static/dist"
+  },
+  {
+    "name": "Delete local tmp results",
+    "kind": "RM",
+    "path": "./test/tmp"
+  },
+  {
+    "name": "Delete local diff results",
+    "kind": "RM",
+    "path": "./test/diff"
+  },
+  {
+    "name": "Delete compiled systems",
+    "kind": "RM",
+    "path": "./static/systems"
+  }
+]

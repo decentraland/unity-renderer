@@ -1,0 +1,24 @@
+{
+  "display": {
+    "title": "text",
+    "favicon": "favicon_asset"
+  },
+  "owner": "",
+  "contact": {
+    "name": "Michal",
+    "email": ""
+  },
+  "main": "scene.xml",
+  "tags": [],
+  "scene": {
+    "parcels": ["-1,60"],
+    "base": "-1,60"
+  },
+  "policy": {
+    "contentRating": "E",
+    "fly": true,
+    "voiceEnabled": true,
+    "blacklist": [],
+    "teleportPosition": ""
+  }
+}

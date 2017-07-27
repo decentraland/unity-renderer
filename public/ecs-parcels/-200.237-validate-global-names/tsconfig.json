@@ -1,0 +1,10 @@
+{
+    "compilerOptions": {
+      "outFile": "./game.js"
+    },
+    "references": [
+      {"path": "x.js", "prepend": true}
+    ],
+    "include": ["*.ts"],
+    "extends": "../../../packages/decentraland-ecs/types/tsconfig.json"
+}

@@ -1,0 +1,31 @@
+{
+  "compilerOptions": {
+    "target": "es5",
+    "module": "commonjs",
+    "strict": true,
+    "declarationDir": "dist",
+    "outDir": "dist",
+    "strictNullChecks": true,
+    "inlineSourceMap": true,
+    "inlineSources": true,
+    "declaration": true,
+    "stripInternal": true,
+    "moduleResolution": "node",
+    "pretty": true,
+    "forceConsistentCasingInFileNames": true,
+    "allowSyntheticDefaultImports": true,
+    "experimentalDecorators": true,
+    "emitDecoratorMetadata": false,
+    "downlevelIteration": true,
+    "keyofStringsOnly": true,
+    "noUnusedLocals": true,
+    "baseUrl": ".",
+    "plugins": [
+      {
+        "name": "tslint-language-service"
+      }
+    ]
+  },
+  "include": ["./src"],
+  "exclude": ["../../node_modules", "../../src", "../../test", "../test", "dist", "etc", "temp", "types", "api-docs-review/decentraland-ecs.api.ts"]
+}

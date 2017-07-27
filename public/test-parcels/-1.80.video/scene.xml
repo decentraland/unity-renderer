@@ -1,0 +1,25 @@
+<scene>
+  <system src="scene.js">
+    <!-- local video -->
+    <text position="2.5 3.8 1" value="Local" size="0.3"></text>
+    <video id="video-local" position="2.5 2 1" width="4" height="2.5" src="video/big-buck-bunny.mp4" color="#fff" play="false" volume="50"></video>
+
+    <!-- simple volume ui -->
+    <entity id="volume-ui" position="2.5 3.5 1">
+      <plane id="volume-plus" position="1 0 0" material="src: images/plus.png; transparent: true" width="0.2" height="0.2"></plane>
+      <text position="-0.2 0 0" value="Volume: " size="0.2"></text>
+      <text id="volume-value" position="0.5 0 0" value="50" size="0.2"></text>
+      <plane id="volume-minus" position="-0.5 0 0" material="src: images/minus.png; transparent: true" width="0.2" height="0.2"></plane>
+    </entity>
+
+    <!-- simple playback ui -->
+    <entity id="playback-ui" position="2.5 0.3 1">
+      <plane id="play" material="src: images/play.png; transparent: true" width="0.6" height="0.6"></plane>
+      <plane id="pause" material="src: images/pause.png; transparent: true" width="0.6" height="0.6" visible="false"></plane>
+    </entity>
+
+    <!-- external video -->
+    <text position="7.5 3.8 1" value="External" size="0.3"></text>
+    <video id="video-external" position="7.5 2 1" width="4" height="2.5" src="http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ElephantsDream.mp4" color="#c7c7c7" play="false"></video>
+  </system>
+</scene>

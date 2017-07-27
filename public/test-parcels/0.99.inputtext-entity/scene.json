@@ -1,0 +1,21 @@
+{
+    "display": {
+        "title": "static-scene"
+    },
+    "owner": "",
+    "contact": {
+        "name": "dani",
+        "email": "dani@decentraland.org"
+    },
+    "scene": {
+      "parcels": ["0,99"],
+        "base": "0,99"
+    },
+    "policy": {
+        "fly": true,
+        "voiceEnabled": true,
+        "blacklist": [],
+        "teleportPosition": "0,0,0"
+    },
+    "main": "scene.xml"
+}

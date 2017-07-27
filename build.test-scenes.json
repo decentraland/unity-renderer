@@ -1,0 +1,14 @@
+[
+  {
+    "name": "Compile test scenes",
+    "kind": "Webpack",
+    "file": "./public/test-parcels/*/scene.tsx",
+    "target": "webworker"
+  },
+  {
+    "name": "Compile test scenes (gamekit)",
+    "kind": "Webpack",
+    "file": "./public/test-parcels/*/game.ts",
+    "target": "web"
+  }
+]

@@ -1,0 +1,8 @@
+comment:
+  layout: "header, diff, changes, suggestions, tree"
+  branches: null
+  behavior: default
+
+ignore:
+  - "packages/shared/comms/worldcomm_pb.*"
+  - "packages/communications/src/debug.ts"

@@ -1,0 +1,8 @@
+{
+  "compilerOptions": {
+    "outDir": "../../dist",
+    "baseUrl": "..",
+    "types": ["babylonjs", "babylonjs-materials", "babylonjs-loaders", "babylonjs-gltf2interface", "babylonjs-procedural-textures"]
+  },
+  "extends": "../../tsconfig.json"
+}

@@ -1,0 +1,24 @@
+{
+  "display": {
+    "title": "fervent_mcnulty",
+    "favicon": "favicon_asset"
+  },
+  "owner": "",
+  "contact": {
+    "name": "Dani",
+    "email": ""
+  },
+  "main": "wss://example-client-server-dcl.now.sh",
+  "tags": [],
+  "scene": {
+    "parcels": ["300,10"],
+    "base": "300,10"
+  },
+  "policy": {
+    "contentRating": "E",
+    "fly": true,
+    "voiceEnabled": true,
+    "blacklist": [],
+    "teleportPosition": ""
+  }
+}

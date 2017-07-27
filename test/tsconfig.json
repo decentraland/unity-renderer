@@ -1,0 +1,12 @@
+{
+  "compilerOptions": {
+    "target": "es2017",
+    "outDir": "out",
+    "declaration": false,
+    "strictNullChecks": false,
+    "lib": ["es2017", "dom"],
+    "baseUrl": "../packages"
+  },
+  "exclude": ["../packages/engine"],
+  "extends": "../tsconfig.json"
+}

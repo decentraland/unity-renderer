@@ -1,0 +1,20 @@
+{
+  "name": "build-ecs",
+  "version": "1.0.2",
+  "description": "",
+  "main": "index.js",
+  "bin": "index.js",
+  "scripts": {
+    "test": "tsc"
+  },
+  "keywords": [],
+  "author": "Decentraland",
+  "license": "Apache 2.0",
+  "dependencies": {
+    "typescript": "latest",
+    "uglify-js": "latest"
+  },
+  "files": [
+    "index.js"
+  ]
+}

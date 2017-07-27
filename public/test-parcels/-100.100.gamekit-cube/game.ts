@@ -1,0 +1,44 @@
+import { Transform, engine, Entity, BoxShape, OnClick, ISystem, log } from 'decentraland-ecs'
+
+export class RotatorSystem implements ISystem {
+  group = engine.getComponentGroup(Transform)
+
+  update(dt: number) {
+    for (let entity of this.group.entities) {
+      const transform = entity.get(Transform)
+      const euler = transform.rotation.eulerAngles
+      euler.y += 2 * dt * 13
+      euler.x += 2 * dt * 17
+      euler.z += 2 * dt * 11
+      transform.rotation.eulerAngles = euler
+      // TODO: ECS this doesnt work as expected
+    }
+  }
+}
+
+const cube = new Entity()
+
+cube.set(new Transform())
+cube.get(Transform).position.set(5, 1, 5)
+cube.set(new BoxShape())
+
+cube.set(
+  new OnClick(_ => {
+    if (cube.has(Transform)) {
+      // this will place the entity at the scene origin (out of bounds)
+      cube.remove(Transform)
+    } else {
+      cube.getOrCreate(Transform).rotation.set(0, 0, 0, 1)
+    }
+  })
+)
+
+engine.addEntity(cube)
+
+engine.addSystem(new RotatorSystem())
+
+declare var dcl: any
+
+dcl.onEvent(function(event: any) {
+  log('event', event)
+})

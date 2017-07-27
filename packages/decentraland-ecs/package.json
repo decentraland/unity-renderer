@@ -1,0 +1,32 @@
+{
+  "name": "decentraland-ecs",
+  "version": "1.0.0",
+  "description": "",
+  "main": "dist/src/index.js",
+  "typings": "dist/index.d.ts",
+  "bin": {
+    "build-ecs": "artifacts/build-ecs.js"
+  },
+  "scripts": {
+    "build": "tsc -p tsconfig.json",
+    "start": "npm run build && tsc -p tsconfig.json --watch"
+  },
+  "keywords": [],
+  "tsdoc": { "tsdocFlavor": "AEDoc" },
+  "author": "",
+  "license": "Apache 2.0",
+  "files": [
+    "dist",
+    "types",
+    "docs",
+    "docs-yaml",
+    "artifacts",
+    "api-extractor.json"
+  ],
+  "dependencies": {
+
+  },
+  "devDependencies": {
+
+  }
+}

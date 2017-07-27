@@ -1,0 +1,145 @@
+version: 2
+jobs:
+  build:
+    docker:
+      - image: circleci/node:10-browsers
+        environment:
+          # avoid automatic download of LFS files
+          GIT_LFS_SKIP_SMUDGE: 1
+
+    working_directory: /tmp/client
+    steps:
+      # install lfs
+      - run: mkdir -p ~/.ssh
+      - run: ssh-keyscan -H github.com >> ~/.ssh/known_hosts
+      - run: curl -s https://packagecloud.io/install/repositories/github/git-lfs/script.deb.sh | sudo bash
+      - run: sudo apt-get install git-lfs=2.4.0
+      - run: ssh git@github.com git-lfs-authenticate decentraland/client.git download
+      - run: git lfs install
+
+      # The `ledger-wallet-provider` lib has `node-hid` as a dependency, which won't build on certain
+      # Linux systems without installing libusb first
+      - type: shell
+        name: Install System Dependencies
+        command: sudo apt-get update && sudo apt install -y libusb-1.0-0 libusb-1.0-0-dev
+
+      # checkout the actual code
+      - checkout
+
+      # restore cached lfs
+      - restore_cache:
+          keys:
+            - gitlfs-{{ .Branch }}
+            - gitlfs
+      - shell:
+          name: Pull Git LFS files, retry until done
+          command: |
+            while true; do git reset --hard HEAD && git clean -fd && git lfs pull && break; done
+      - save_cache:
+          key: gitlfs-{{ .Branch }}
+          paths:
+            - .git/lfs
+
+      # restore node_modules
+      - restore_cache:
+          keys:
+            - v1-dependencies-{{ checksum "package-lock.json" }}
+            - v1-dependencies-
+
+      # install differences in node_modules
+      - run: npm ci
+      - save_cache:
+          paths:
+            - node_modules
+          key: v1-dependencies-{{ checksum "package-lock.json" }}
+
+      - run: make lint
+      - run: npm outdated --depth 0 || true
+
+      - run: make test-ci
+
+      - store_artifacts:
+          path: test/diff
+          when: on_fail
+
+      - store_artifacts:
+          path: coverage
+
+      - run:
+          name: send coverage to codecov
+          command: npx codecov
+
+      - run:
+          name: Set up NPM
+          command: echo "//registry.npmjs.org/:_authToken=${NPM_TOKEN}" > ~/.npmrc
+          when: on_success
+
+      - run:
+          name: publish decentraland-api
+          command: make publish
+          when: on_success
+
+      - store_artifacts:
+          path: packages/decentraland-ecs/api-docs-review/decentraland-ecs.api.ts
+          when: on_fail
+      - store_artifacts:
+          path: packages/decentraland-ecs/temp/decentraland-ecs.api.ts
+          when: on_fail
+
+      - save_cache:
+          paths:
+            - static
+          key: build-{{ .Revision }}
+  deploy:
+    docker:
+      - image: circleci/node:10-browsers
+    working_directory: /tmp/client
+    steps:
+      - restore_cache:
+          keys:
+            - build-{{ .Revision }}
+      - run: sudo apt-get -y -qq install awscli
+      - run:
+          name: Deploy to .zone if tests pass and branch is Master
+          command: aws s3 sync static s3://client.decentraland.zone/ --exclude "branch/*" --acl public-read
+#      - run:
+#          name: Deploy to .today if tests pass and branch is Master
+#          command: aws s3 sync static s3://client.decentraland.today/ --acl public-read
+      - run:
+          name: Deploy tag
+          command: |
+            [ ! -z "${CIRCLE_TAG}" ] && aws s3 sync static s3://client.decentraland.today/tags/$CIRCLE_TAG --exclude "tags/*" --acl public-read || true
+
+  pull-deploy:
+    docker:
+      - image: circleci/node:10-browsers
+    working_directory: /tmp/client
+    steps:
+      - restore_cache:
+          keys:
+            - build-{{ .Revision }}
+      - run: sudo apt-get -y -qq install awscli
+      - run:
+          name: Deploy to S3 under subfolder if tests pass and branch is not master
+          command: aws s3 sync static s3://client.decentraland.zone/branch/$CIRCLE_BRANCH --acl public-read
+
+workflows:
+  version: 2
+  build-deploy:
+    jobs:
+      - build:
+          filters:
+            tags:
+              only: /.*/
+      - pull-deploy:
+          requires:
+            - build
+          filters:
+            branches:
+              ignore: master
+      - deploy:
+          requires:
+            - build
+          filters:
+            branches:
+              only: master

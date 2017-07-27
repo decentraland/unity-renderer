@@ -1,0 +1,21 @@
+{
+    "display": {
+        "title": "static-scene"
+    },
+    "owner": "",
+    "contact": {
+        "name": "m3mnoch",
+        "email": "m3mnoch@decentraland.org"
+    },
+    "scene": {
+        "parcels": ["0,1008", "0,1009", "1,1008", "1,1009"],
+        "base": "0,1008"
+    },
+    "policy": {
+        "fly": true,
+        "voiceEnabled": true,
+        "blacklist": [],
+        "teleportPosition": "0,0,0"
+    },
+    "main": "game.js"
+}

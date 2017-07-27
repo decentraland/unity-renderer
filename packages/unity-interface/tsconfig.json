@@ -1,0 +1,8 @@
+{
+  "compilerOptions": {
+    "outDir": "../../dist",
+    "baseUrl": "..",
+    "experimentalDecorators": true
+  },
+  "extends": "../../tsconfig.json"
+}

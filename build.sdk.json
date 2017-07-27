@@ -1,0 +1,37 @@
+[{
+    "name": "Delete compiled ECS",
+    "kind": "RM",
+    "path": "./packages/decentraland-ecs/dist"
+  },
+
+  {
+    "name": "Compile static-scene system",
+    "kind": "Webpack",
+    "file": "./packages/static-scene/*.ts",
+    "target": "webworker"
+  },
+  {
+    "name": "Compile decentraland-loader",
+    "kind": "Webpack",
+    "file": "./packages/decentraland-loader/*.system.ts",
+    "target": "webworker"
+  },
+  {
+    "name": "Compile communications system",
+    "kind": "Webpack",
+    "file": "./packages/communications/*.ts",
+    "target": "webworker"
+  },
+  {
+    "name": "Compile Gamekit (BUNDLE)",
+    "kind": "Webpack",
+    "file": "./packages/decentraland-ecs/src/index.ts",
+    "target": "this"
+  },
+  {
+    "name": "Compile internal-scenes",
+    "kind": "Webpack",
+    "file": "./packages/ui/*.scene.ts",
+    "target": "web"
+  }
+]

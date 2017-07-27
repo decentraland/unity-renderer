@@ -1,0 +1,20 @@
+{
+  "contact": {
+    "name": "",
+    "email": "",
+    "im": "",
+    "url": ""
+  },
+  "display": {
+    "title": "",
+    "favicon": ""
+  },
+  "policy": {
+    "contentRating": "E"
+  },
+  "main": "game.js",
+  "scene": {
+    "base": "11,11",
+    "parcels": ["11,11", "12,11", "11,12", "12,12", "11,13", "12,13", "11,14", "12,14"]
+  }
+}

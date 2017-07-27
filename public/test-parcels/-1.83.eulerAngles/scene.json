@@ -1,0 +1,25 @@
+{
+    "display": {
+      "title": "fervent_mcnulty",
+      "favicon": "favicon_asset"
+    },
+    "owner": "",
+    "contact": {
+      "name": "Agustin",
+      "email": ""
+    },
+    "main": "game.js",
+    "tags": [],
+    "scene": {
+      "parcels": ["-1,83"],
+      "base": "-1,83"
+    },
+    "policy": {
+      "contentRating": "E",
+      "fly": true,
+      "voiceEnabled": true,
+      "blacklist": [],
+      "teleportPosition": ""
+    }
+}
+  

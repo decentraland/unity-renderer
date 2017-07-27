@@ -1,0 +1,23 @@
+{
+  "display": {
+    "title": "cocky_gates"
+  },
+  "owner": "",
+  "contact": {
+    "name": "",
+    "email": ""
+  },
+  "scene": {
+    "parcels": [
+      "201,90"
+    ],
+    "base": "201,90"
+  },
+  "policy": {
+    "fly": true,
+    "voiceEnabled": true,
+    "blacklist": [],
+    "teleportPosition": "0,0,0"
+  },
+  "main": "scene.js"
+}

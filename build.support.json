@@ -1,0 +1,14 @@
+[
+  {
+    "name": "Compile build scripts",
+    "kind": "TSC",
+    "config": "./scripts/tsconfig.json",
+    "target": "node"
+  },
+  {
+    "name": "Compile ECS builder",
+    "kind": "TSC",
+    "config": "./packages/build-ecs/tsconfig.json",
+    "target": "node"
+  }
+]

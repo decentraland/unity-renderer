@@ -1,0 +1,31 @@
+{
+  "compilerOptions": {
+    "target": "es5",
+    "module": "amd",
+    "moduleResolution": "classic",
+    "pretty": true,
+    "forceConsistentCasingInFileNames": true,
+    "allowSyntheticDefaultImports": true,
+    "experimentalDecorators": true,
+    "emitDecoratorMetadata": true,
+    "downlevelIteration": true,
+    "keyofStringsOnly": true,
+    "inlineSourceMap": true,
+    "inlineSources": true,
+    "noLib": true,
+    "allowJs": true,
+    "types": [
+      "env",
+      "dcl",
+      "@decentraland/ChatController",
+      "@decentraland/EthereumController",
+      "@decentraland/SocialController",
+      "@decentraland/EntityController",
+      "@decentraland/Identity",
+      "@decentraland/web3-provider"
+    ],
+    "typeRoots": [
+      "."
+    ]
+  }
+}

@@ -1,0 +1,28 @@
+<scene>
+  <box position="1.01 1 1" width="2" height="2"></box>
+
+  <box position="1.5 1.62 8" width="0.5" height="0.1" depth="0.01"></box>
+  <text position="1.35 1.6 8.01" value="Hello world!" color="black" font-size="70"></text>
+  <text position="2.5 1.5 6" value="Hello world!" color="green" outline-width="10" v-align="top"></text>
+  <text position="2.5 1.5 4" value="Hello world!" color="purple"></text>
+  <text position="2.5 1.5 2" value="Hello world!" color="rgb(10, 173, 34)" scale="2 2 2" outline-width="10" v-align="bottom"></text>
+  <text position="2.5 1.5 0" value="Hello world!" color="red" font-family="Times New Roman"></text>
+  <text position="2.5 4 2" value="Hello world!" color="#000"></text>
+  <text position="2.5 3.8 2" value="你好，世界!" color="#000" font-family="Helvetica"></text>
+  <text position="3 3.5 2" value="안녕하세요! 안녕하세요!" color="red" font-size="70" outline-width="3" h-align="center"></text>
+  <text position="2.5 3.2 2" value="こんにちは世界!" color="#000"></text>
+  <text
+    position="2.5 2.7 2"
+    value="Hello world!
+          new line with whitespace! aksnfvkjanvkjansjvnkan"
+    color="cyan"
+    h-align="right"
+    v-align="center"
+    font-size="30"
+    width="5"
+    height="5"
+    text-wrapping="true"
+  ></text>
+  <text position="2.5 2.2 2" value="Hello world! Hello world! Hello world! Hello world! Hello world! Hello world! Hello world!" text-wrapping="true" color="#7f08ce" scale="0.7 0.7 0.7"></text>
+  <text position="2.5 1.8 2" value="Hello world!" color="#000" scale="3 3 3" opacity="0.2" h-align="left"></text>
+</scene>

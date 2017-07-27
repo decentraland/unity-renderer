@@ -1,0 +1,8 @@
+{
+  "compilerOptions": {
+    "outFile": "./game.js",
+    "allowJs": true
+  },
+  "include": ["*.ts"],
+  "extends": "../../../packages/decentraland-ecs/types/tsconfig.json"
+}
