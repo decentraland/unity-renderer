@@ -24,9 +24,6 @@ jobs:
           # avoid automatic download of LFS files
           BUILD_NAME: ExampleProjectName
           TEST_PLATFORM: playmode
-          UNITY_LICENSE_CONTENT: ""
-          UNITY_USERNAME: ""
-          UNITY_PASSWORD: ""
 
     working_directory: /project
     steps:
