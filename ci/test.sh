@@ -7,6 +7,7 @@ xvfb-run --auto-servernum --server-args="-screen 0 640x480x24" \
     -projectPath "$(pwd)" \
     -runTests \
     -testPlatform "$TEST_PLATFORM" \
+    -username "$UNITY_USERNAME" -password "$UNITY_PASSWORD" \
     -testResults "$(pwd)/$TEST_PLATFORM-results.xml" \
     -logFile \
     -batchmode
