@@ -1,0 +1,45 @@
+version: 2
+jobs:
+  test:
+    docker:
+      - image: gableroux/unity3d:latest
+        environment:
+          # avoid automatic download of LFS files
+          BUILD_NAME: ExampleProjectName
+          TEST_PLATFORM: playmode
+          UNITY_LICENSE_CONTENT: ""
+          UNITY_USERNAME: ""
+          UNITY_PASSWORD: ""
+
+    working_directory: /project
+    steps:
+      - checkout
+      - run: /project/ci/before_script.sh
+      - run: /project/ci/test.sh
+      - store_artifacts:
+          path: $TEST_PLATFORM-results.xml
+          when: on_fail
+
+  build:
+    docker:
+      - image: gableroux/unity3d:latest
+        environment:
+          # avoid automatic download of LFS files
+          BUILD_NAME: ExampleProjectName
+          TEST_PLATFORM: playmode
+          UNITY_LICENSE_CONTENT: ""
+          UNITY_USERNAME: ""
+          UNITY_PASSWORD: ""
+
+    working_directory: /project
+    steps:
+      - checkout
+      - run: /project/ci/before_script.sh
+      - run: /project/ci/build.sh
+
+workflows:
+  version: 2
+  test-build:
+    jobs:
+      - test
+      - build
