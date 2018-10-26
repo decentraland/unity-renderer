@@ -5,7 +5,7 @@ Temp/
 Library/
 *.cache
 */obj/
-*/[Bb]uild/
+[Bb]uild/
 
 # ===================================== #
 # Visual Studio / MonoDevelop generated #
