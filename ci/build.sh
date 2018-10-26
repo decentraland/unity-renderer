@@ -12,7 +12,6 @@ xvfb-run --auto-servernum --server-args='-screen 0 640x480x24' \
   /opt/Unity/Editor/Unity \
     -projectPath $(pwd) \
     -quit \
-    -batchmode \
     -buildTarget "$BUILD_TARGET" \
     -customBuildTarget "$BUILD_TARGET" \
     -customBuildName "$BUILD_NAME" \
