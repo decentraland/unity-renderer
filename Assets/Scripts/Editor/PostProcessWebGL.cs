@@ -8,43 +8,43 @@ using System.IO;
 using System;
 using System.Text.RegularExpressions;
 using System.Linq;
- 
+
 public class PostProcessWebGL {
     //The name of the WebGLTemplate. Location in project should be Assets/WebGLTemplates/<YOUR TEMPLATE NAME>
     const string __TemplateToUse = "decentraland";
- 
+
     [PostProcessBuild]
     public static void ChangeWebGLTemplate(BuildTarget buildTarget, string pathToBuiltProject) {
-        if (buildTarget != BuildTarget.WebGL) return; 
- 
+        if (buildTarget != BuildTarget.WebGL) return;
+
         //create template path
         var templatePath = Paths.Combine(Application.dataPath, "WebGLTemplates", __TemplateToUse);
- 
+
         //Clear the TemplateData folder, built by Unity.
         FileUtilExtended.CreateOrCleanDirectory(Paths.Combine(pathToBuiltProject, "TemplateData"));
- 
+
         //Copy contents from WebGLTemplate. Ignore all .meta files
         FileUtilExtended.CopyDirectoryFiltered(templatePath, pathToBuiltProject, true, @".*/\.+|\.meta$", true);
- 
+
         //Replace contents of index.html
         FixIndexHtml(pathToBuiltProject);
     }
- 
+
     //Replaces %...% defines in index.html
     static void FixIndexHtml(string pathToBuiltProject) {
         //Fetch filenames to be referenced in index.html
         string
         webglBuildUrl,
         webglLoaderUrl;
-     
+
         if (File.Exists(Paths.Combine(pathToBuiltProject, "Build", "UnityLoader.js")))
             webglLoaderUrl = "Build/UnityLoader.js";
         else
             webglLoaderUrl = "Build/UnityLoader.min.js";
- 
+
         string buildName = pathToBuiltProject.Substring(pathToBuiltProject.LastIndexOf("/") + 1);
         webglBuildUrl = string.Format("Build/{0}.json", buildName);
- 
+
         //webglLoaderUrl = EditorUserBuildSettings.development? "Build/UnityLoader.js": "Build/UnityLoader.min.js";
         Dictionary<string, string> replaceKeywordsMap = new Dictionary<string, string> {
             {
@@ -68,26 +68,26 @@ public class PostProcessWebGL {
                 webglBuildUrl
             }
         };
- 
+
         string indexFilePath = Paths.Combine(pathToBuiltProject, "index.html");
         Func<string, KeyValuePair<string, string>, string> replaceFunction = (current, replace) => current.Replace(replace.Key, replace.Value);
         if (File.Exists(indexFilePath))
-            File.WriteAllText(indexFilePath, replaceKeywordsMap.Aggregate<KeyValuePair<string, string>, string>(File.ReadAllText(indexFilePath), replaceFunction)); 
+            File.WriteAllText(indexFilePath, replaceKeywordsMap.Aggregate<KeyValuePair<string, string>, string>(File.ReadAllText(indexFilePath), replaceFunction));
     }
- 
-    class FileUtilExtended {     
+
+    class FileUtilExtended {
         internal static void CreateOrCleanDirectory(string dir) {
             if (Directory.Exists(dir))
                 Directory.Delete(dir, true);
 
             Directory.CreateDirectory(dir);
         }
- 
+
         //Fix forward slashes on other platforms than windows
         internal static string FixForwardSlashes(string unityPath) {
             return ((Application.platform != RuntimePlatform.WindowsEditor) ? unityPath : unityPath.Replace("/", @"\"));
         }
- 
+
         //Copies the contents of one directory to another.
         public static void CopyDirectoryFiltered(string source, string target, bool overwrite, string regExExcludeFilter, bool recursive) {
             RegexMatcher excluder = new RegexMatcher() {
@@ -113,17 +113,17 @@ public class PostProcessWebGL {
                 Directory.CreateDirectory(targetDir);
                 overwrite = false;
             }
- 
+
             // Iterate all files, files that match filter are copied.
             foreach (string filepath in Directory.GetFiles(sourceDir)) {
                 if (filtercallback(filepath)) {
                     string fileName = Path.GetFileName(filepath);
                     string to = Path.Combine(targetDir, fileName);
-                  
+
                     File.Copy(FixForwardSlashes(filepath),FixForwardSlashes(to), overwrite);
                 }
             }
- 
+
             // Go into sub directories
             if (recursive) {
                 foreach (string subdirectorypath in Directory.GetDirectories(sourceDir)) {
@@ -134,22 +134,22 @@ public class PostProcessWebGL {
                 }
             }
         }
- 
+
         internal struct RegexMatcher {
             public Regex exclude;
 
             public bool CheckInclude(string s) {
                 return exclude == null || !exclude.IsMatch(s);
             }
-        } 
+        }
     }
- 
+
     class Paths {
         //Combine multiple paths using Path.Combine
         public static string Combine(params string[] components) {
             if (components.Length < 1)
                 throw new ArgumentException("At least one component must be provided!");
-            
+
             string str = components[0];
 
             for (int i = 1; i < components.Length; i++) {
@@ -158,7 +158,7 @@ public class PostProcessWebGL {
 
             return str;
         }
-    } 
+    }
 }
- 
+
 #endif
