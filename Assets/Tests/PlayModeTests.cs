@@ -10,24 +10,24 @@ using System.Collections;
  */
 
 public class PlayModeTests {
-    [Test]
-    public void PlayMode_EntityCreationTest() {
-        DecentralandEntity entityObject;
+  [Test]
+  public void PlayMode_EntityCreationTest() {
+    DecentralandEntity entityObject;
 
-        // We need to load the required objects as prefabs to test, as we can't skip a frame in a NUnit tests, so we can't get already-instantiated scene objects.
-        SceneController sceneController = Resources.Load<GameObject>("Prefabs/SceneController").GetComponent<SceneController>();
+    // We need to load the required objects as prefabs to test, as we can't skip a frame in a NUnit tests, so we can't get already-instantiated scene objects.
+    SceneController sceneController = Resources.Load<GameObject>("Prefabs/SceneController").GetComponent<SceneController>();
 
-        Assert.IsTrue(sceneController != null);
+    Assert.IsTrue(sceneController != null);
 
-        string entityJSON = "{\"entityIdParam\": \"1\"}";
+    string entityJSON = "{\"entityIdParam\": \"1\"}";
 
-        sceneController.entities.Clear();
-        sceneController.CreateEntity(entityJSON);
+    sceneController.entities.Clear();
+    sceneController.CreateEntity(entityJSON);
 
-        sceneController.entities.TryGetValue("1", out entityObject);
+    sceneController.entities.TryGetValue("1", out entityObject);
 
-        Assert.IsTrue(entityObject != null);
+    Assert.IsTrue(entityObject != null);
 
-        Assert.AreEqual(entityObject.entityIdParam, "1");
-    }
+    Assert.AreEqual(entityObject.entityIdParam, "1");
+  }
 }
