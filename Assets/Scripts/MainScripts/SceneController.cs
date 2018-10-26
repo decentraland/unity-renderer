@@ -20,8 +20,7 @@ public class SceneController : MonoBehaviour {
     public void CreateEntity(string RawJSONParams) {
         entityObject = JsonUtility.FromJson<DecentralandEntity>(RawJSONParams);
 
-        if (entities.ContainsKey(entityObject.entityIdParam))
-        {
+        if (entities.ContainsKey(entityObject.entityIdParam)) {
             Debug.Log("Couldn't create entity with ID: " + entityObject.entityIdParam  + "as it already exists.");
             return;
         }
@@ -35,8 +34,7 @@ public class SceneController : MonoBehaviour {
         /*jsonParams = JsonUtility.FromJson<JSONParams>(RawJSONParams);
         
         entities.TryGetValue(jsonParams.parentIdParam, out parentGameObject);
-        if (parentGameObject != null)
-        {
+        if (parentGameObject != null) {
             entities.TryGetValue(jsonParams.entityIdParam, out entityGameObject);
             if(entityGameObject != null)
                 entityGameObject.transform.SetParent(parentGameObject.transform);
@@ -47,8 +45,7 @@ public class SceneController : MonoBehaviour {
         auxiliaryEntityObject = JsonUtility.FromJson<DecentralandEntity>(RawJSONParams);
 
         entities.TryGetValue(auxiliaryEntityObject.entityIdParam, out entityObject);
-        if (entityObject != null)
-        {
+        if (entityObject != null) {
             auxiliaryVector.Set(auxiliaryEntityObject.entityComponents.position.x,
                                 auxiliaryEntityObject.entityComponents.position.y,
                                 auxiliaryEntityObject.entityComponents.position.z);
@@ -63,4 +60,3 @@ public class SceneController : MonoBehaviour {
         Debug.Log("-----------");*/
     }
 }
-
