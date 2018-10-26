@@ -4,7 +4,7 @@
 Temp/
 Library/
 *.cache
-*/obj/
+obj/
 [Bb]uild/
 
 # ===================================== #
