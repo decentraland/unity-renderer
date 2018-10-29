@@ -23,6 +23,8 @@ public class SceneController : MonoBehaviour {
     if (entities.ContainsKey(entityObject.entityIdParam)) {
       Debug.Log("Couldn't create entity with ID: " + entityObject.entityIdParam + "as it already exists.");
       return;
+    } else {
+      Debug.Log("created entity with ID: " + entityObject.entityIdParam);
     }
 
     entityObject.sceneObjectReference = Instantiate(baseEntityPrefab);
