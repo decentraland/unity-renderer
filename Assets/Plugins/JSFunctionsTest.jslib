@@ -1,11 +1,10 @@
 mergeInto(LibraryManager.library, {
   InitializeDecentraland: function () {
-
     window.dcl = {
       log: function (messagesLog) {
         console.log("log: " + messagesLog);
       },
-      onUpdate: function (callback) { // OK
+      onUpdate: function (callback) {
         var deltaTime = 60;
         setInterval(function () {
           callback(deltaTime);
@@ -36,10 +35,6 @@ mergeInto(LibraryManager.library, {
           "entityIdParam": entityId,
           "entityComponents": newComponents
         };
-
-        /* console.log("JS: json params");
-        console.log(JSONParams);
-        console.log("---------------------"); */
 
         SendMessage("SceneController", "UpdateEntity", JSON.stringify(JSONParams));
       },
