@@ -1,4 +1,4 @@
-﻿using UnityEngine;
+using UnityEngine;
 using NUnit.Framework;
 using System.Collections;
 
@@ -28,6 +28,6 @@ public class PlayModeTests {
 
     Assert.IsTrue(entityObject != null);
 
-    Assert.AreEqual(entityObject.entityIdParam, "1");
+    Assert.AreEqual(entityObject.id, "1");
   }
 }
