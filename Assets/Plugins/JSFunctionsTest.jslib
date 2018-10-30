@@ -1,3 +1,17 @@
+/* 
+* EXAMPLE JSON
+* {
+    "id":"1",
+    "parentId":"0",
+    "components":{
+      "position":{"x":5,"y":0,"z":5},
+      "shape":{"tag":"box"},
+      "rotation":{"x":0,"y":0,"z":0}
+    }
+  }
+* 
+*/
+
 mergeInto(LibraryManager.library, {
   InitializeDecentraland: function() {
     window.dcl = {
@@ -8,60 +22,62 @@ mergeInto(LibraryManager.library, {
         //console.log("onStart called on entity", arguments);
       },
       onUpdate: function(callback) {
-        var deltaTime = 60;
+        var previousTime = performance.now();
+
         setInterval(function() {
-          callback(deltaTime);
-        }, deltaTime);
+          var currentTime = performance.now();
+
+          callback(currentTime - previousTime);
+
+          previousTime = currentTime;
+        }, 30);
       },
       onEvent: function(callback) {
         //console.log("onEvent called on entity", arguments);
       },
       addEntity: function(entityId) {
-        var JSONParams = {
-          entityIdParam: entityId
+        var entityJSON = {
+          id: entityId
         };
 
         SendMessage(
           "SceneController",
           "CreateEntity",
-          JSON.stringify(JSONParams)
+          JSON.stringify(entityJSON)
         );
       },
       updateEntity: function(entityId, components) {
         // components: Record<string, Component>
         var newComponents = {};
         for (var key in components) {
-          if (key.startsWith("engine.")) {
+          if (key.startsWith("engine."))
             newComponents[key.replace("engine.", "")] = components[key];
-          } else {
-            newComponents[key] = components[key];
-          }
         }
 
-        var JSONParams = {
-          entityIdParam: entityId,
-          entityComponents: newComponents
+        var entityJSON = {
+          id: entityId,
+          components: newComponents
         };
 
         SendMessage(
           "SceneController",
           "UpdateEntity",
-          JSON.stringify(JSONParams)
+          JSON.stringify(entityJSON)
         );
       },
       removeEntity: function(entityId) {},
       componentAdded: function(entityId, componentName, component) {},
       componentRemoved: function(entityId, componentName) {},
       setParent: function(entityId, parentId) {
-        var JSONParams = {
-          entityIdParam: entityId,
-          parentIdParam: parentId
+        var entityJSON = {
+          id: entityId,
+          parentId: parentId
         };
 
         SendMessage(
           "SceneController",
           "SetEntityParent",
-          JSON.stringify(JSONParams)
+          JSON.stringify(entityJSON)
         );
       },
       subscribe: function(eventName) {
