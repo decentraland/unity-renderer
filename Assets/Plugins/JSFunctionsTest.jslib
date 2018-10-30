@@ -27,7 +27,7 @@ mergeInto(LibraryManager.library, {
         setInterval(function() {
           var currentTime = performance.now();
 
-          callback(currentTime - previousTime);
+          callback((currentTime - previousTime) / 1000);
 
           previousTime = currentTime;
         }, 30);
