@@ -11,6 +11,7 @@ obj/
 # Visual Studio / MonoDevelop generated #
 # ===================================== #
 ExportedObj/
+.vs/
 .vscode/
 *.svd
 *.userprefs
