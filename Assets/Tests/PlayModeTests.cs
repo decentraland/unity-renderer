@@ -19,7 +19,7 @@ public class PlayModeTests {
 
     Assert.IsTrue(sceneController != null);
 
-    string entityJSON = "{\"entityIdParam\": \"1\"}";
+    string entityJSON = "{\"id\": \"1\"}";
 
     sceneController.entities.Clear();
     sceneController.CreateEntity(entityJSON);
