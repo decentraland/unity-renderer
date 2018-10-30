@@ -87,5 +87,7 @@ mergeInto(LibraryManager.library, {
         console.log("entity unsubscribed from event: " + eventName);
       }
     };
+
+    window.initializeDecentraland();
   }
 });

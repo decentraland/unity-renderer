@@ -14,7 +14,7 @@ public class SceneController : MonoBehaviour
 
     [DllImport("__Internal")] static extern void InitializeDecentraland();
 
-    void Awake()
+    void Start()
     {
         InitializeDecentraland();
     }
