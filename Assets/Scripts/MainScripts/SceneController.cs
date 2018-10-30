@@ -27,7 +27,7 @@ public class SceneController : MonoBehaviour {
 
     entityObject.sceneObjectReference = Instantiate(baseEntityPrefab);
 
-    entities.Add(entityObject.entityIdParam, entityObject);
+    entities.Add(entityObject.id, entityObject);
   }
 
   public void SetEntityParent(string RawJSONParams) {
