@@ -14,8 +14,26 @@ public class SceneController : MonoBehaviour {
   [DllImport("__Internal")] static extern void InitializeDecentraland();
 
   void Start() {
+    ToggleCursorVisibility();
+
     InitializeDecentraland();
   }
+
+  void Update() {
+    // Mouse Visibility
+    if (Input.GetKeyDown(KeyCode.Escape))
+      ToggleCursorVisibility();
+  }
+
+  void ToggleCursorVisibility() {
+    if (Cursor.visible)
+      Cursor.lockState = CursorLockMode.Locked;
+    else
+      Cursor.lockState = CursorLockMode.Confined;
+
+    Cursor.visible = !Cursor.visible;
+  }
+
 
   public void CreateEntity(string RawJSONParams) {
     entityObject = JsonUtility.FromJson<DecentralandEntity>(RawJSONParams);

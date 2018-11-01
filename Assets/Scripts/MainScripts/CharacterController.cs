@@ -1,12 +1,12 @@
-using UnityEngine;
+﻿using UnityEngine;
 
 public class CharacterController : MonoBehaviour {
   public float aimingHorizontalSpeed = 400f;
   public float aimingVerticalSpeed = 400f;
   public float aimingVerticalMinimumAngle = -60f;
   public float aimingVerticalMaximumAngle = 30f;
-  public float movementSpeed = 1f;
-  public float jumpForce = 7f;
+  public float movementSpeed = 5f;
+  public float jumpForce = 150f;
 
   float currentHorizontalAxis;
   float currentVerticalAxis;
