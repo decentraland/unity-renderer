@@ -1,4 +1,4 @@
-using UnityEngine;
+﻿using UnityEngine;
 
 public class CharacterController : MonoBehaviour {
   public float aimingHorizontalSpeed = 400f;
@@ -24,9 +24,9 @@ public class CharacterController : MonoBehaviour {
   }
 
   void Update() {
-    #if !UNITY_EDITOR
+#if !UNITY_EDITOR
     if (Cursor.visible) return;
-    #endif
+#endif
 
     // Aiming
     currentVerticalAxis = Input.GetAxis("Mouse Y");
