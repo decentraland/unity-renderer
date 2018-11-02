@@ -15,6 +15,7 @@ public class CharacterController : MonoBehaviour {
   Transform camera;
   Rigidbody rigidbody;
   Collider collider;
+  Vector3 movementDirection;
 
   void Awake() {
     camera = GetComponentInChildren<Camera>().transform;
@@ -23,7 +24,9 @@ public class CharacterController : MonoBehaviour {
   }
 
   void Update() {
+    #if !UNITY_EDITOR
     if (Cursor.visible) return;
+    #endif
 
     // Aiming
     currentVerticalAxis = Input.GetAxis("Mouse Y");
@@ -39,15 +42,20 @@ public class CharacterController : MonoBehaviour {
     camera.localRotation = Quaternion.Euler(-aimingVerticalAngle, 0f, 0f);
 
     // Movement
+    movementDirection = Vector3.zero;
+
     if (Input.GetAxis("Vertical") > 0f)
-      transform.position += (transform.forward * movementSpeed * Time.deltaTime);
+      movementDirection += (transform.forward * movementSpeed * Time.deltaTime);
     else if (Input.GetAxis("Vertical") < 0f)
-      transform.position += (-transform.forward * movementSpeed * Time.deltaTime);
+      movementDirection += (-transform.forward * movementSpeed * Time.deltaTime);
 
     if (Input.GetAxis("Horizontal") > 0f)
-      transform.position += (transform.right * movementSpeed * Time.deltaTime);
+      movementDirection += (transform.right * movementSpeed * Time.deltaTime);
     else if (Input.GetAxis("Horizontal") < 0f)
-      transform.position += (-transform.right * movementSpeed * Time.deltaTime);
+      movementDirection += (-transform.right * movementSpeed * Time.deltaTime);
+
+    if (movementDirection != Vector3.zero && !Physics.Raycast(transform.position, movementDirection.normalized, collider.bounds.extents.x + 0.5f)) // Wall-Collision check
+      transform.position += movementDirection;
 
     // Jump
     if (Input.GetKeyDown(KeyCode.Space)) {
