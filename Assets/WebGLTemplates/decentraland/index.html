@@ -7,7 +7,7 @@
     <title>Decentraland</title>
     <script src="%UNITY_WEBGL_LOADER_URL%"></script>
     <script>
-        window.initializeDecentraland = function () {
+        window.startDecentraland = function () {
                 /*! Decentraland Gamekit 1.0.0 */;
             (function webpackUniversalModuleDefinition(root, factory) {
                 if (typeof exports === 'object' && typeof module === 'object')
@@ -342,6 +342,82 @@
     </script>
     <script>
         var gameInstance = UnityLoader.instantiate("gameContainer", "%UNITY_WEBGL_BUILD_URL%");
+
+        // TODO: move this into an external JS file where the WASM build is deployed and load it here.
+        window.dcl = {
+            log: function (messagesLog) {
+                console.log("log: " + messagesLog);
+            },
+            onStart: function (callback) {
+                //console.log("onStart called on entity", arguments);
+            },
+            onUpdate: function (callback) {
+                var previousTime = performance.now();
+
+                setInterval(function () {
+                    var currentTime = performance.now();
+
+                    callback((currentTime - previousTime) / 1000);
+
+                    previousTime = currentTime;
+                }, 30);
+            },
+            onEvent: function (callback) {
+                //console.log("onEvent called on entity", arguments);
+            },
+            addEntity: function (entityId) {
+                var entityJSON = {
+                    id: entityId
+                };
+
+                gameInstance.SendMessage(
+                    "SceneController",
+                    "CreateEntity",
+                    JSON.stringify(entityJSON)
+                );
+            },
+            updateEntity: function (entityId, components) {
+                // components: Record<string, Component>
+                var newComponents = {};
+                for (var key in components) {
+                    if (key.startsWith("engine."))
+                        newComponents[key.replace("engine.", "")] = components[key];
+                }
+
+                var entityJSON = {
+                    id: entityId,
+                    components: newComponents
+                };
+
+                gameInstance.SendMessage(
+                    "SceneController",
+                    "UpdateEntity",
+                    JSON.stringify(entityJSON)
+                );
+            },
+            removeEntity: function (entityId) { },
+            componentAdded: function (entityId, componentName, component) { },
+            componentRemoved: function (entityId, componentName) { },
+            setParent: function (entityId, parentId) {
+                var entityJSON = {
+                    id: entityId,
+                    parentId: parentId
+                };
+
+                gameInstance.SendMessage(
+                    "SceneController",
+                    "SetEntityParent",
+                    JSON.stringify(entityJSON)
+                );
+            },
+            subscribe: function (eventName) {
+                console.log("entity subscribed to event: " + eventName);
+            },
+            unsubscribe: function (eventName) {
+                console.log("entity unsubscribed from event: " + eventName);
+            }
+        };
+
     </script>
 </head>
 

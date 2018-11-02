@@ -1,4 +1,4 @@
-﻿using UnityEngine;
+using UnityEngine;
 
 public class CharacterController : MonoBehaviour {
   public float aimingHorizontalSpeed = 400f;
@@ -23,6 +23,8 @@ public class CharacterController : MonoBehaviour {
   }
 
   void Update() {
+    if (Cursor.visible) return;
+
     // Aiming
     currentVerticalAxis = Input.GetAxis("Mouse Y");
     currentHorizontalAxis = Input.GetAxis("Mouse X");

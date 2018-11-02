@@ -11,12 +11,13 @@ public class SceneController : MonoBehaviour {
   // GameObject parentGameObject;
   Vector3 auxiliaryVector;
 
-  [DllImport("__Internal")] static extern void InitializeDecentraland();
+  [DllImport("__Internal")] static extern void StartDecentraland();
 
   void Start() {
     ToggleCursorVisibility();
 
-    InitializeDecentraland();
+    // We trigger the Decentraland logic once SceneController has been instanced and is ready to act.
+    StartDecentraland();
   }
 
   void Update() {
