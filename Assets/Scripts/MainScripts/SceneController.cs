@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using System.Runtime.InteropServices;
+using UnityGLTF;
 using UnityEngine;
 
 public class SceneController : MonoBehaviour {
@@ -10,6 +11,7 @@ public class SceneController : MonoBehaviour {
   DecentralandEntity auxiliaryEntityObject;
   // GameObject parentGameObject;
   Vector3 auxiliaryVector;
+  GLTFComponent gltfComponent;
 
   [DllImport("__Internal")] static extern void StartDecentraland();
 
@@ -21,7 +23,6 @@ public class SceneController : MonoBehaviour {
   }
 
   void Update() {
-    // Mouse Visibility
     if (Input.GetKeyDown(KeyCode.Escape))
       ToggleCursorVisibility();
   }
@@ -35,7 +36,6 @@ public class SceneController : MonoBehaviour {
     Cursor.visible = !Cursor.visible;
   }
 
-
   public void CreateEntity(string RawJSONParams) {
     entityObject = JsonUtility.FromJson<DecentralandEntity>(RawJSONParams);
 
@@ -44,7 +44,7 @@ public class SceneController : MonoBehaviour {
       return;
     }
 
-    entityObject.sceneObjectReference = Instantiate(baseEntityPrefab);
+    entityObject.gameObjectReference = Instantiate(baseEntityPrefab);
 
     entities.Add(entityObject.id, entityObject);
   }
@@ -69,7 +69,19 @@ public class SceneController : MonoBehaviour {
                           auxiliaryEntityObject.components.position.y,
                           auxiliaryEntityObject.components.position.z);
 
-      entityObject.sceneObjectReference.transform.position = auxiliaryVector;
+      entityObject.gameObjectReference.transform.position = auxiliaryVector;
+
+      if (auxiliaryEntityObject.components.shape.src != "") {
+        gltfComponent = entityObject.gameObjectReference.GetComponent<GLTFComponent>();
+
+        if (gltfComponent.alreadyLoadedAsset) return;
+
+        gltfComponent.GLTFUri = auxiliaryEntityObject.components.shape.src;
+
+        StartCoroutine(gltfComponent.LoadAssetCoroutine());
+
+        entityObject.gameObjectReference.GetComponent<MeshRenderer>().enabled = false;
+      }
     }
   }
 }

@@ -1,8 +1,14 @@
 {
     "name": "MainScripts",
-    "references": [],
+    "references": [
+        "UnityGLTFAssembly"
+    ],
     "optionalUnityReferences": [],
     "includePlatforms": [],
     "excludePlatforms": [],
-    "allowUnsafeCode": false
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": []
 }

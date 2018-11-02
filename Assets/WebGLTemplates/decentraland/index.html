@@ -384,6 +384,9 @@
                         newComponents[key.replace("engine.", "")] = components[key];
                 }
 
+                // TEST BYPASS
+                newComponents["shape"]["src"] = "http://127.0.0.1:8080/GLTF/Lantern/glTF-Binary/Lantern.glb";
+
                 var entityJSON = {
                     id: entityId,
                     components: newComponents
