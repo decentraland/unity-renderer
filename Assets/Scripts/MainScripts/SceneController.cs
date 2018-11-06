@@ -8,8 +8,8 @@ public class SceneController : MonoBehaviour {
   public Dictionary<string, DecentralandEntity> entities = new Dictionary<string, DecentralandEntity>();
 
   DecentralandEntity entityObject;
+  DecentralandEntity parentEntity;
   DecentralandEntity auxiliaryEntityObject;
-  // GameObject parentGameObject;
   Vector3 auxiliaryVector;
   GLTFComponent gltfComponent;
 
@@ -36,28 +36,50 @@ public class SceneController : MonoBehaviour {
     Cursor.visible = !Cursor.visible;
   }
 
-  public void CreateEntity(string RawJSONParams) {
-    entityObject = JsonUtility.FromJson<DecentralandEntity>(RawJSONParams);
-
-    if (entities.ContainsKey(entityObject.id)) {
-      Debug.Log("Couldn't create entity with ID: " + entityObject.id + " as it already exists.");
+  public void CreateEntity(string entityID) {
+    if (entities.ContainsKey(entityID)) {
+      Debug.Log("Couldn't create entity with ID: " + entityID + " as it already exists.");
       return;
     }
 
+    entityObject = new DecentralandEntity();
+    entityObject.id = entityID;
     entityObject.gameObjectReference = Instantiate(baseEntityPrefab);
+    entityObject.gameObjectReference.name = entityID;
 
-    entities.Add(entityObject.id, entityObject);
+    entities.Add(entityID, entityObject);
+  }
+
+  public void RemoveEntity(string entityID)
+  {
+    if (!entities.ContainsKey(entityID)) {
+      Debug.Log("Couldn't remove entity with ID: " + entityID + " as it doesn't exist.");
+      return;
+    }
+
+    Destroy(entities[entityID].gameObjectReference);
+    entities.Remove(entityID);
   }
 
   public void SetEntityParent(string RawJSONParams) {
-    /*jsonParams = JsonUtility.FromJson<JSONParams>(RawJSONParams);
+    auxiliaryEntityObject = JsonUtility.FromJson<DecentralandEntity>(RawJSONParams);
 
-    entities.TryGetValue(jsonParams.parentIdParam, out parentGameObject);
-    if (parentGameObject != null) {
-        entities.TryGetValue(jsonParams.entityIdParam, out entityGameObject);
-        if(entityGameObject != null)
-            entityGameObject.transform.SetParent(parentGameObject.transform);
-    }*/
+    if (auxiliaryEntityObject.id == auxiliaryEntityObject.parentId) {
+      Debug.Log("Couldn't enparent entity " + auxiliaryEntityObject.id + " because the configured parent id is its own id.");
+      return;
+    }
+
+    entities.TryGetValue(auxiliaryEntityObject.parentId, out parentEntity);
+    if (parentEntity != null) {
+        entities.TryGetValue(auxiliaryEntityObject.id, out entityObject);
+
+        if(entityObject != null)
+          entityObject.gameObjectReference.transform.SetParent(parentEntity.gameObjectReference.transform);
+        else
+          Debug.Log("Couldn't enparent entity " + auxiliaryEntityObject.id + " because that entity is doesn't exist.");
+    } else {
+      Debug.Log("Couldn't enparent entity " + auxiliaryEntityObject.id + " because the parent (id " + auxiliaryEntityObject.parentId + ") doesn't exist");
+    }
   }
 
   public void UpdateEntity(string RawJSONParams) {
@@ -71,14 +93,14 @@ public class SceneController : MonoBehaviour {
 
       entityObject.gameObjectReference.transform.position = auxiliaryVector;
 
-      if (auxiliaryEntityObject.components.shape.src != "") {
+      if (!string.IsNullOrEmpty(auxiliaryEntityObject.components.shape.src)) {
         gltfComponent = entityObject.gameObjectReference.GetComponent<GLTFComponent>();
 
         if (gltfComponent.alreadyLoadedAsset) return;
 
         gltfComponent.GLTFUri = auxiliaryEntityObject.components.shape.src;
 
-        StartCoroutine(gltfComponent.LoadAssetCoroutine());
+        gltfComponent.LoadAsset();
 
         entityObject.gameObjectReference.GetComponent<MeshRenderer>().enabled = false;
       }
