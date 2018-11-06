@@ -7,43 +7,53 @@ public class DecentralandEntity {
   public EntityComponents components;
   public GameObject gameObjectReference;
 
+  Vector3 auxiliaryUnityVector3;
+
+  public void UpdateGameObjectComponents() {
+    if (gameObjectReference == null) return;
+
+    if (components.transform != null) {
+      // Apply position update
+      auxiliaryUnityVector3.Set(components.transform.position.x,
+                                components.transform.position.y,
+                                components.transform.position.z);
+
+      gameObjectReference.transform.position = auxiliaryUnityVector3;
+
+      // Apply rotation update
+      auxiliaryUnityVector3.Set(components.transform.rotation.x,
+                                components.transform.rotation.y,
+                                components.transform.rotation.z);
+
+      gameObjectReference.transform.rotation = Quaternion.Euler(auxiliaryUnityVector3);
+    }
+
+    // TODO: Update shape values?
+  }
+
   [System.Serializable]
-  public struct EntityComponents {
-    public EntityPosition position;
-    public EntityScale scale;
-    public EntityShape shape;
-    public EntityPhysics physics;
+  public class EntityComponents {
+    public EntityShape shape = null;
+    public EntityTransform transform = null;
 
     [System.Serializable]
-    public struct EntityPosition {
-      public float x;
-      public float y;
-      public float z;
-    }
-
-    [System.Serializable]
-    public struct EntityScale {
-      public float x;
-      public float y;
-      public float z;
-    }
-
-    [System.Serializable]
-    public struct EntityShape {
+    public class EntityShape {
       public string tag;
       public string src;
     }
 
     [System.Serializable]
-    public struct EntityPhysics {
-      public float accelerationX;
-      public float accelerationY;
-      public float accelerationZ;
-      public float mass;
-      public bool rigid;
-      public float velocityX;
-      public float velocityY;
-      public float velocityZ;
+    public class EntityTransform {
+      public EntityVector3 position;
+      public EntityVector3 rotation;
+      public EntityVector3 scale;
     }
+  }
+
+  [System.Serializable]
+  public struct EntityVector3 {
+    public float x;
+    public float y;
+    public float z;
   }
 }

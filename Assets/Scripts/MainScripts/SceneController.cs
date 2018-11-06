@@ -5,6 +5,8 @@ using UnityEngine;
 
 public class SceneController : MonoBehaviour {
   public GameObject baseEntityPrefab;
+  public GameObject entityRendererPrefab;
+
   public Dictionary<string, DecentralandEntity> entities = new Dictionary<string, DecentralandEntity>();
 
   DecentralandEntity entityObject;
@@ -12,28 +14,31 @@ public class SceneController : MonoBehaviour {
   DecentralandEntity auxiliaryEntityObject;
   Vector3 auxiliaryVector;
   GLTFComponent gltfComponent;
+  GameObject auxiliaryGameObject;
 
   [DllImport("__Internal")] static extern void StartDecentraland();
 
   void Start() {
-    ToggleCursorVisibility();
+    //ToggleFullScreen();
 
     // We trigger the Decentraland logic once SceneController has been instanced and is ready to act.
     StartDecentraland();
   }
 
-  void Update() {
+  /*void Update() {
     if (Input.GetKeyDown(KeyCode.Escape))
-      ToggleCursorVisibility();
-  }
+      ToggleFullScreen();
+  }*/
 
-  void ToggleCursorVisibility() {
-    if (Cursor.visible)
+  void ToggleFullScreen() {
+    if (Cursor.lockState != CursorLockMode.Locked)
       Cursor.lockState = CursorLockMode.Locked;
     else
-      Cursor.lockState = CursorLockMode.Confined;
+      Cursor.lockState = CursorLockMode.None;
 
     Cursor.visible = !Cursor.visible;
+
+    Screen.fullScreen = !Screen.fullScreen;
   }
 
   public void CreateEntity(string entityID) {
@@ -41,6 +46,8 @@ public class SceneController : MonoBehaviour {
       Debug.Log("Couldn't create entity with ID: " + entityID + " as it already exists.");
       return;
     }
+
+    //Debug.Log("Unity: spawned entity with ID " + entityID);
 
     entityObject = new DecentralandEntity();
     entityObject.id = entityID;
@@ -50,8 +57,7 @@ public class SceneController : MonoBehaviour {
     entities.Add(entityID, entityObject);
   }
 
-  public void RemoveEntity(string entityID)
-  {
+  public void RemoveEntity(string entityID) {
     if (!entities.ContainsKey(entityID)) {
       Debug.Log("Couldn't remove entity with ID: " + entityID + " as it doesn't exist.");
       return;
@@ -87,23 +93,32 @@ public class SceneController : MonoBehaviour {
 
     entities.TryGetValue(auxiliaryEntityObject.id, out entityObject);
     if (entityObject != null) {
-      auxiliaryVector.Set(auxiliaryEntityObject.components.position.x,
-                          auxiliaryEntityObject.components.position.y,
-                          auxiliaryEntityObject.components.position.z);
+      entityObject.components.transform = auxiliaryEntityObject.components.transform;
 
-      entityObject.gameObjectReference.transform.position = auxiliaryVector;
+      if (auxiliaryEntityObject.components.shape != null)
+      {
+        if (entityObject.components.shape == null) {
+          auxiliaryGameObject = Instantiate(entityRendererPrefab, entityObject.gameObjectReference.transform);
 
-      if (!string.IsNullOrEmpty(auxiliaryEntityObject.components.shape.src)) {
-        gltfComponent = entityObject.gameObjectReference.GetComponent<GLTFComponent>();
+          // Trigger GLTF loading
+          if (!string.IsNullOrEmpty(auxiliaryEntityObject.components.shape.src))
+          {
+            gltfComponent = auxiliaryGameObject.GetComponent<GLTFComponent>();
 
-        if (gltfComponent.alreadyLoadedAsset) return;
+            if (gltfComponent.alreadyLoadedAsset) return;
 
-        gltfComponent.GLTFUri = auxiliaryEntityObject.components.shape.src;
+            gltfComponent.GLTFUri = auxiliaryEntityObject.components.shape.src;
 
-        gltfComponent.LoadAsset();
+            gltfComponent.LoadAsset();
 
-        entityObject.gameObjectReference.GetComponent<MeshRenderer>().enabled = false;
+            auxiliaryGameObject.GetComponent<MeshRenderer>().enabled = false;
+          }
+        }
+
+        entityObject.components.shape = auxiliaryEntityObject.components.shape;
       }
+
+      entityObject.UpdateGameObjectComponents();
     }
   }
 }
