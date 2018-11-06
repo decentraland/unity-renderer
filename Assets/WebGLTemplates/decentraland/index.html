@@ -343,13 +343,12 @@
     <script>
         var gameInstance = UnityLoader.instantiate("gameContainer", "%UNITY_WEBGL_BUILD_URL%");
 
-        // TODO: move this into an external JS file where the WASM build is deployed and load it here.
         window.dcl = {
             log: function (messagesLog) {
                 console.log("log: " + messagesLog);
             },
             onStart: function (callback) {
-                //console.log("onStart called on entity", arguments);
+
             },
             onUpdate: function (callback) {
                 var previousTime = performance.now();
@@ -357,25 +356,26 @@
                 setInterval(function () {
                     var currentTime = performance.now();
 
+                    // We pass the Delta Time to the callback function.
                     callback((currentTime - previousTime) / 1000);
 
                     previousTime = currentTime;
                 }, 30);
             },
             onEvent: function (callback) {
-                //console.log("onEvent called on entity", arguments);
-            },
-            addEntity: function (entityId) {
-                var entityJSON = {
-                    id: entityId
-                };
 
+            },
+
+            // IDEAS: when creating an entity we may receive the initial components along with the entity ID.
+            addEntity: function (entityId) {
                 gameInstance.SendMessage(
                     "SceneController",
                     "CreateEntity",
-                    JSON.stringify(entityJSON)
+                    entityId
                 );
             },
+
+            // IDEAS: UpdateEntityJSON that has only the changes to apply to the entity?
             updateEntity: function (entityId, components) {
                 // components: Record<string, Component>
                 var newComponents = {};
@@ -384,8 +384,8 @@
                         newComponents[key.replace("engine.", "")] = components[key];
                 }
 
-                // TEST BYPASS
-                newComponents["shape"]["src"] = "http://127.0.0.1:8080/GLTF/Lantern/glTF-Binary/Lantern.glb";
+                // TEST BYPASS - GLTF LOADING
+                //newComponents["shape"]["src"] = "http://127.0.0.1:8080/GLTF/Lantern/glTF-Binary/Lantern.glb";
 
                 var entityJSON = {
                     id: entityId,
@@ -398,7 +398,13 @@
                     JSON.stringify(entityJSON)
                 );
             },
-            removeEntity: function (entityId) { },
+            removeEntity: function (entityId) {
+                gameInstance.SendMessage(
+                    "SceneController",
+                    "RemoveEntity",
+                    entityId
+                );
+            },
             componentAdded: function (entityId, componentName, component) { },
             componentRemoved: function (entityId, componentName) { },
             setParent: function (entityId, parentId) {

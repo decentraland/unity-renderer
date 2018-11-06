@@ -91,12 +91,11 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   GLTFUri: 
-  LoadOnStart: 0
   Multithreaded: 0
   UseStream: 0
   MaximumLod: 300
   Timeout: 8
   Collider: 0
   alreadyLoadedAsset: 0
-  loadOnStart: 1
+  loadOnStart: 0
   shaderOverride: {fileID: 0}
