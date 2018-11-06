@@ -3,13 +3,20 @@
 * {
     "id":"1",
     "parentId":"0",
-    "components":{
-      "position":{"x":5,"y":0,"z":5},
+    "components":{      
       "shape":{
-        "tag":"box",
-        "src":"http://127.0.0.1:8080/GLTF/Lantern/glTF-Binary/Lantern.glb"
+        "billboard": "0",
+        "tag": "box",
+        "visible": "true",
+        "withCollisions": "false",
+        "src":"http://127.0.0.1:8080/GLTF/Lantern/glTF-Binary/Lantern.glb" // Not implemented if not a GLTF-SHAPE
       },
-      "rotation":{"x":0,"y":0,"z":0}
+      "transform":{
+        "position":{"x":5,"y":1,"z":5},
+        "rotation":{"x":0,"y":0,"z":0},
+        "scale":{"x":1,"y":1,"z":1},
+        "tag": "transform"
+      }
     }
   }
 * 
