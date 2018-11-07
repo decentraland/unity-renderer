@@ -1,115 +1,124 @@
 <!DOCTYPE html>
 <html lang="en-us">
-
-<head>
-    <meta charset="utf-8">
-    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+  <head>
+    <meta charset="utf-8" />
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     <title>Decentraland</title>
+    <style>
+      #gameContainer {
+        width: 100%;
+        height: 100%;
+        margin: auto;
+      }
+
+      canvas {
+        width: 100%;
+        height: 100%;
+        margin: auto;
+      }
+    </style>
     <script src="%UNITY_WEBGL_LOADER_URL%"></script>
     <script>
-        window.startDecentraland = function () {
-            var gamejs = document.createElement("script");
-            gamejs.type = "text/javascript";
-            gamejs.src = "game.js";
-            document.head.appendChild(gamejs);
-        }
+      window.startDecentraland = function() {
+        var gamejs = document.createElement("script");
+        gamejs.type = "text/javascript";
+        gamejs.src = "game.js";
+        document.head.appendChild(gamejs);
+      };
     </script>
     <script>
-        var gameInstance = UnityLoader.instantiate("gameContainer", "%UNITY_WEBGL_BUILD_URL%");
+      var gameInstance = UnityLoader.instantiate(
+        "gameContainer",
+        "%UNITY_WEBGL_BUILD_URL%"
+      );
 
-        window.dcl = {
-            log: function (messagesLog) {
-                console.log("log: " + messagesLog);
-            },
-            onStart: function (callback) {
+      window.dcl = {
+        log: function(messagesLog) {
+          console.log("log: " + messagesLog);
+        },
+        onStart: function(callback) {},
+        onUpdate: function(callback) {
+          var previousTime = performance.now();
 
-            },
-            onUpdate: function (callback) {
-                var previousTime = performance.now();
+          setInterval(function() {
+            var currentTime = performance.now();
 
-                setInterval(function () {
-                    var currentTime = performance.now();
+            // We pass the Delta Time to the callback function.
+            callback((currentTime - previousTime) / 1000);
 
-                    // We pass the Delta Time to the callback function.
-                    callback((currentTime - previousTime) / 1000);
+            previousTime = currentTime;
+          }, 30);
+        },
+        onEvent: function(callback) {},
 
-                    previousTime = currentTime;
-                }, 30);
-            },
-            onEvent: function (callback) {
+        // IDEAS: when creating an entity we may receive the initial components along with the entity ID.
+        addEntity: function(entityId) {
+          gameInstance.SendMessage("SceneController", "CreateEntity", entityId);
+        },
 
-            },
+        // IDEAS: UpdateEntityJSON that has only the changes to apply to the entity?
+        updateEntity: function(entityId, components) {
+          // components: Record<string, Component>
+          var newComponents = {};
+          for (var key in components) {
+            if (key.startsWith("engine."))
+              newComponents[key.replace("engine.", "")] = components[key];
+          }
 
-            // IDEAS: when creating an entity we may receive the initial components along with the entity ID.
-            addEntity: function (entityId) {
-                gameInstance.SendMessage(
-                    "SceneController",
-                    "CreateEntity",
-                    entityId
-                );
-            },
+          // TEST BYPASS - GLTF LOADING
+          //newComponents["shape"]["src"] = "http://127.0.0.1:8080/GLTF/Lantern/glTF-Binary/Lantern.glb";
 
-            // IDEAS: UpdateEntityJSON that has only the changes to apply to the entity?
-            updateEntity: function (entityId, components) {
-                // components: Record<string, Component>
-                var newComponents = {};
-                for (var key in components) {
-                    if (key.startsWith("engine."))
-                        newComponents[key.replace("engine.", "")] = components[key];
-                }
+          var entityJSON = {
+            id: entityId,
+            components: newComponents
+          };
 
-                // TEST BYPASS - GLTF LOADING
-                //newComponents["shape"]["src"] = "http://127.0.0.1:8080/GLTF/Lantern/glTF-Binary/Lantern.glb";
+          gameInstance.SendMessage(
+            "SceneController",
+            "UpdateEntity",
+            JSON.stringify(entityJSON)
+          );
+        },
+        removeEntity: function(entityId) {
+          gameInstance.SendMessage("SceneController", "RemoveEntity", entityId);
+        },
+        componentAdded: function(entityId, componentName, component) {
+          console.log(
+            "Component added: entity: " +
+              entityId +
+              ", component name: " +
+              componentName +
+              ", component: " +
+              component
+          );
+        },
+        componentRemoved: function(entityId, componentName) {},
+        setParent: function(entityId, parentId) {
+          var entityJSON = {
+            id: entityId,
+            parentId: parentId
+          };
 
-                var entityJSON = {
-                    id: entityId,
-                    components: newComponents
-                };
-
-                gameInstance.SendMessage(
-                    "SceneController",
-                    "UpdateEntity",
-                    JSON.stringify(entityJSON)
-                );
-            },
-            removeEntity: function (entityId) {
-                gameInstance.SendMessage(
-                    "SceneController",
-                    "RemoveEntity",
-                    entityId
-                );
-            },
-            componentAdded: function (entityId, componentName, component) {
-                console.log("Component added: entity: " + entityId +
-                    ", component name: " + componentName +
-                    ", component: " + component);
-            },
-            componentRemoved: function (entityId, componentName) { },
-            setParent: function (entityId, parentId) {
-                var entityJSON = {
-                    id: entityId,
-                    parentId: parentId
-                };
-
-                gameInstance.SendMessage(
-                    "SceneController",
-                    "SetEntityParent",
-                    JSON.stringify(entityJSON)
-                );
-            },
-            subscribe: function (eventName) {
-                console.log("entity subscribed to event: " + eventName);
-            },
-            unsubscribe: function (eventName) {
-                console.log("entity unsubscribed from event: " + eventName);
-            }
-        };
-
+          gameInstance.SendMessage(
+            "SceneController",
+            "SetEntityParent",
+            JSON.stringify(entityJSON)
+          );
+        },
+        subscribe: function(eventName) {
+          console.log("entity subscribed to event: " + eventName);
+        },
+        unsubscribe: function(eventName) {
+          console.log("entity unsubscribed from event: " + eventName);
+        }
+      };
     </script>
-</head>
+  </head>
 
-<body>
-    <div id="gameContainer" style="width: 960px; height: 600px; margin: auto"></div>
-</body>
-
+  <body>
+    <div
+      id="gameContainer"
+      style="width: 100%; height: 100%; margin: auto"
+    ></div>
+  </body>
 </html>
