@@ -19,26 +19,30 @@ public class SceneController : MonoBehaviour {
   [DllImport("__Internal")] static extern void StartDecentraland();
 
   void Start() {
-    //ToggleFullScreen();
-
     // We trigger the Decentraland logic once SceneController has been instanced and is ready to act.
     StartDecentraland();
   }
 
-  /*void Update() {
-    if (Input.GetKeyDown(KeyCode.Escape))
-      ToggleFullScreen();
-  }*/
+  void Update() {
+    if (Cursor.lockState != CursorLockMode.Locked) {
+      if (Input.GetMouseButtonDown(0))
+        LockCursor();
+    } else {
+      if (Input.GetKeyDown(KeyCode.Escape))
+        UnlockCursor();
+    }
+  }
 
-  void ToggleFullScreen() {
-    if (Cursor.lockState != CursorLockMode.Locked)
-      Cursor.lockState = CursorLockMode.Locked;
-    else
-      Cursor.lockState = CursorLockMode.None;
+  void LockCursor() {
+    Cursor.visible = false;
 
-    Cursor.visible = !Cursor.visible;
+    Cursor.lockState = CursorLockMode.Locked;
+  }
 
-    Screen.fullScreen = !Screen.fullScreen;
+  void UnlockCursor() {
+    Cursor.visible = true;
+
+    Cursor.lockState = CursorLockMode.None;
   }
 
   public void CreateEntity(string entityID) {
@@ -77,12 +81,12 @@ public class SceneController : MonoBehaviour {
 
     entities.TryGetValue(auxiliaryEntityObject.parentId, out parentEntity);
     if (parentEntity != null) {
-        entities.TryGetValue(auxiliaryEntityObject.id, out entityObject);
+      entities.TryGetValue(auxiliaryEntityObject.id, out entityObject);
 
-        if(entityObject != null)
-          entityObject.gameObjectReference.transform.SetParent(parentEntity.gameObjectReference.transform);
-        else
-          Debug.Log("Couldn't enparent entity " + auxiliaryEntityObject.id + " because that entity is doesn't exist.");
+      if (entityObject != null)
+        entityObject.gameObjectReference.transform.SetParent(parentEntity.gameObjectReference.transform);
+      else
+        Debug.Log("Couldn't enparent entity " + auxiliaryEntityObject.id + " because that entity is doesn't exist.");
     } else {
       Debug.Log("Couldn't enparent entity " + auxiliaryEntityObject.id + " because the parent (id " + auxiliaryEntityObject.parentId + ") doesn't exist");
     }
@@ -95,14 +99,12 @@ public class SceneController : MonoBehaviour {
     if (entityObject != null) {
       entityObject.components.transform = auxiliaryEntityObject.components.transform;
 
-      if (auxiliaryEntityObject.components.shape != null)
-      {
+      if (auxiliaryEntityObject.components.shape != null) {
         if (entityObject.components.shape == null) {
           auxiliaryGameObject = Instantiate(entityRendererPrefab, entityObject.gameObjectReference.transform);
 
           // Trigger GLTF loading
-          if (!string.IsNullOrEmpty(auxiliaryEntityObject.components.shape.src))
-          {
+          if (!string.IsNullOrEmpty(auxiliaryEntityObject.components.shape.src)) {
             gltfComponent = auxiliaryGameObject.GetComponent<GLTFComponent>();
 
             if (gltfComponent.alreadyLoadedAsset) return;
