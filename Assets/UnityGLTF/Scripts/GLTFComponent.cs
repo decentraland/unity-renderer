@@ -22,12 +22,13 @@ namespace UnityGLTF {
 
     [HideInInspector] public bool alreadyLoadedAsset = false;
 
-    [SerializeField]
-    bool loadOnStart = true;
+    [SerializeField] bool loadOnStart = true;
+    [SerializeField] Shader shaderOverride = null;
 
-    [SerializeField]
-    Shader shaderOverride = null;
     Coroutine loadingRoutine = null;
+
+    public delegate void GLTFComponentAction(float loadingTime);
+    public event GLTFComponentAction OnModelFinishedLoading;
 
     void Start() {
       if (loadOnStart)
@@ -101,13 +102,21 @@ namespace UnityGLTF {
         }
       } finally {
         if (loader != null) {
-          sceneImporter.Dispose();
-          sceneImporter = null;
+            if (sceneImporter == null)
+                Debug.Log("sceneImporter is null, could be due to an invalid URI.", this);
+
+            sceneImporter.Dispose();
+            sceneImporter = null;
+
           loader = null;
         }
+
         loadingFinishTime = Time.time;
 
-        Debug.Log("GLTF (" + GLTFUri + ") loading took: " + (loadingFinishTime - loadingStartTime) + " seconds.");
+        if (OnModelFinishedLoading != null)
+          OnModelFinishedLoading(loadingFinishTime - loadingStartTime);
+
+        //Debug.Log("GLTF (" + GLTFUri + ") loading took: " + (loadingFinishTime - loadingStartTime) + " seconds.");
       }
 
       loadingRoutine = null;
