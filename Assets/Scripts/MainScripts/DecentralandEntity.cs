@@ -44,16 +44,9 @@ public class DecentralandEntity {
 
     [System.Serializable]
     public class EntityTransform {
-      public EntityVector3 position;
-      public EntityVector3 rotation;
-      public EntityVector3 scale;
+      public Vector3 position;
+      public Vector3 rotation;
+      public Vector3 scale;
     }
-  }
-
-  [System.Serializable]
-  public struct EntityVector3 {
-    public float x;
-    public float y;
-    public float z;
   }
 }
