@@ -97,23 +97,25 @@ public class SceneController : MonoBehaviour {
 
     entities.TryGetValue(auxiliaryEntityObject.id, out entityObject);
     if (entityObject != null) {
+      // Update entity transform data
       entityObject.components.transform = auxiliaryEntityObject.components.transform;
 
+      // Update entity shape data
       if (auxiliaryEntityObject.components.shape != null) {
-        if (entityObject.components.shape == null) {
+        if (entityObject.components.shape == null) { // First time shape instantiation
           auxiliaryGameObject = Instantiate(entityRendererPrefab, entityObject.gameObjectReference.transform);
 
           // Trigger GLTF loading
           if (!string.IsNullOrEmpty(auxiliaryEntityObject.components.shape.src)) {
             gltfComponent = auxiliaryGameObject.GetComponent<GLTFComponent>();
 
-            if (gltfComponent.alreadyLoadedAsset) return;
+            if (!gltfComponent.alreadyLoadedAsset) {
+              gltfComponent.GLTFUri = auxiliaryEntityObject.components.shape.src;
 
-            gltfComponent.GLTFUri = auxiliaryEntityObject.components.shape.src;
+              gltfComponent.LoadAsset();
 
-            gltfComponent.LoadAsset();
-
-            auxiliaryGameObject.GetComponent<MeshRenderer>().enabled = false;
+              auxiliaryGameObject.GetComponent<MeshRenderer>().enabled = false;
+            }
           }
         }
 
