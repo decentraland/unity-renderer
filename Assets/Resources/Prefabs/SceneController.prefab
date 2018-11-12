@@ -47,3 +47,5 @@ MonoBehaviour:
     type: 3}
   entityRendererPrefab: {fileID: 1436282925400224, guid: a8476c3326205c74f913798dc3b52ecf,
     type: 3}
+  landParcelPrefab: {fileID: 1416098065772263513, guid: 2537bfff05d5f0e4493e9c6029d7b94d,
+    type: 3}

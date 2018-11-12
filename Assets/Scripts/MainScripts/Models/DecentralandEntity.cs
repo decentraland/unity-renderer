@@ -2,10 +2,10 @@ using UnityEngine;
 
 [System.Serializable]
 public class DecentralandEntity {
+  public GameObject gameObjectReference;
   public string id;
   public string parentId;
   public EntityComponents components;
-  public GameObject gameObjectReference;
 
   Vector3 auxiliaryUnityVector3;
 

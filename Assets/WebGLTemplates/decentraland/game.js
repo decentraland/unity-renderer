@@ -63,6 +63,6 @@ define("game", ["require", "exports"], function (require, exports) {
         engine.addEntity(cube);
         return cube;
     }
-    spawn(5, 1, 5);
+    spawn(-970, 1, 1007);
     engine.addSystem(new RotatorSystem());
 });
