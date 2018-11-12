@@ -19,14 +19,14 @@ public class PlayModeTests {
     
     Assert.IsTrue(sceneController != null);
 
-    sceneController.entities.Clear();
+    sceneController.decentralandEntities.Clear();
 
     // Create first entity
     entityObject = null;
     string entityId = "1";
     
     sceneController.CreateEntity(entityId);
-    sceneController.entities.TryGetValue(entityId, out entityObject);
+    sceneController.decentralandEntities.TryGetValue(entityId, out entityObject);
 
     Assert.IsTrue(entityObject != null);
 
@@ -37,7 +37,7 @@ public class PlayModeTests {
     entityId = "2";
 
     sceneController.CreateEntity(entityId);
-    sceneController.entities.TryGetValue(entityId, out entityObject);
+    sceneController.decentralandEntities.TryGetValue(entityId, out entityObject);
 
     Assert.IsTrue(entityObject != null);
 
@@ -52,17 +52,17 @@ public class PlayModeTests {
     if (sceneController == null)
       sceneController = Resources.Load<GameObject>("Prefabs/SceneController").GetComponent<SceneController>();
 
-    sceneController.entities.Clear();
+    sceneController.decentralandEntities.Clear();
     sceneController.CreateEntity(entityId);
 
-    sceneController.entities.TryGetValue(entityId, out entityObject);
+    sceneController.decentralandEntities.TryGetValue(entityId, out entityObject);
 
     // We commented out checking the gameobject is being destroyed as it would force us to use DestroyImmediate() instead of Destroy() (which takes some time before destroying the object) to have a valid test.
     //entityGameObject = entityObject.gameObjectReference;
 
     sceneController.RemoveEntity(entityId);
 
-    Assert.IsTrue(!sceneController.entities.ContainsKey(entityId));
+    Assert.IsTrue(!sceneController.decentralandEntities.ContainsKey(entityId));
 
     //Assert.IsTrue(entityGameObject == null);
   }
@@ -75,15 +75,15 @@ public class PlayModeTests {
     string entityId = "2";
     string parentEntityId = "3";
 
-    sceneController.entities.Clear();
+    sceneController.decentralandEntities.Clear();
 
     // Create entity
     sceneController.CreateEntity(entityId);
-    sceneController.entities.TryGetValue(entityId, out entityObject);
+    sceneController.decentralandEntities.TryGetValue(entityId, out entityObject);
 
     // Create parent entity
     sceneController.CreateEntity(parentEntityId);
-    sceneController.entities.TryGetValue(parentEntityId, out parentEntityObject);
+    sceneController.decentralandEntities.TryGetValue(parentEntityId, out parentEntityObject);
 
     string rawJSON = "{\"id\": \"" + entityId + "\"," +
                       "\"parentId\": \"" + parentEntityId + "\"}";
