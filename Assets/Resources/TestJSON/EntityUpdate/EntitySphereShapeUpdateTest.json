@@ -1,0 +1,30 @@
+{
+  "id": "2",
+  "parentId": "0",
+  "components": {
+    "shape": {
+      "billboard": "0",
+      "tag": "sphere",
+      "visible": "true",
+      "withCollisions": "false"
+    },
+    "transform": {
+      "position": {
+        "x": 0,
+        "y": 1,
+        "z": 0
+      },
+      "rotation": {
+        "x": 0,
+        "y": 0,
+        "z": 0
+      },
+      "scale": {
+        "x": 1,
+        "y": 1,
+        "z": 1
+      },
+      "tag": "transform"
+    }
+  }
+}

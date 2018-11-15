@@ -56,13 +56,19 @@ define("game", ["require", "exports"], function (require, exports) {
         return RotatorSystem;
     }(System));
     exports.RotatorSystem = RotatorSystem;
-    function spawn(x, y, z) {
-        var cube = new Entity();
-        cube.set(new Transform({ position: new Vector3(x, y, z) }));
-        cube.set(new BoxShape());
-        engine.addEntity(cube);
-        return cube;
+    function spawn(x, y, z, shape) {
+        var entity = new Entity();
+        entity.set(new Transform({ position: new Vector3(x, y, z) }));
+        entity.set(shape);
+        engine.addEntity(entity);
+        return entity;
     }
-    spawn(-970, 1, 1007);
+    spawn(2, 1, 3, new SphereShape());
+    spawn(4, 1, 3, new PlaneShape());
+    spawn(6, 1, 3, new BoxShape());
+    spawn(8, 1, 2, new ConeShape());
+    spawn(4, 1, 6, new CylinderShape());
+    spawn(-3, 1, 6, new GLTFShape("http://127.0.0.1:8080/GLTF/Lantern/glTF-Binary/Lantern.glb"));
+    spawn(-9, 1, 6, new OBJShape("http://127.0.0.1:8080/OBJ/teapot.obj"));
     engine.addSystem(new RotatorSystem());
 });
