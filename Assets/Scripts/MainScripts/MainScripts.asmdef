@@ -1,7 +1,8 @@
 {
     "name": "MainScripts",
     "references": [
-        "UnityGLTFAssembly"
+        "UnityGLTFAssembly",
+        "PluginScripts"
     ],
     "optionalUnityReferences": [],
     "includePlatforms": [],

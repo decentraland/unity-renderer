@@ -43,9 +43,16 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 684a81b0389327548a0bf5ed9d645d2c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  startDecentralandAutomatically: 1
   baseEntityPrefab: {fileID: 1436282925400224, guid: 5f63705de59fbbe4688a47bb760556e9,
-    type: 3}
-  entityRendererPrefab: {fileID: 1436282925400224, guid: a8476c3326205c74f913798dc3b52ecf,
     type: 3}
   landParcelPrefab: {fileID: 1416098065772263513, guid: 2537bfff05d5f0e4493e9c6029d7b94d,
     type: 3}
+  rendererPrefabs:
+  - {fileID: 1436282925400224, guid: 6d1ec2c485de46e48ad7a11080dee7a2, type: 3}
+  - {fileID: 1436282925400224, guid: 162bff923891edd4da05f01f6a23c7ca, type: 3}
+  - {fileID: 1436282925400224, guid: 11e9d1a61fa950f4194dfff1066cc30a, type: 3}
+  - {fileID: 1436282925400224, guid: 4015ff977bff2764d81752f42b2a45a6, type: 3}
+  - {fileID: 1436282925400224, guid: 7f1d3bb9dd45c8b4b8e67527108a2938, type: 3}
+  - {fileID: 1436282925400224, guid: a8476c3326205c74f913798dc3b52ecf, type: 3}
+  - {fileID: 1436282925400224, guid: 843046ead2fdb6b4bbeabbbc62c4e0d8, type: 3}

@@ -1,30 +1,30 @@
 {
   "scenes": [
     {
-      "x": -102,
-      "y": 100,
-      "id": "-102,100",
+      "x": -4,
+      "y": -2,
+      "id": "-4,0",
       "base": {
-        "x": -102,
-        "y": 100
+        "x": -4,
+        "y": 0
       },
       "parcels": [
         {
-          "x": -102,
-          "y": 100
+          "x": -4,
+          "y": 0
         },
         {
-          "x": -103,
-          "y": 100
+          "x": -5,
+          "y": 0
         },
         {
-          "x": -103,
-          "y": 101
+          "x": -5,
+          "y": 1
         }
       ],
       "data": {
         "owner": "0x0f5d2fb29fb7d3cfee444a200298f468908cc942",
-        "parcel_id": "-102,100",
+        "parcel_id": "-4,0",
         "contents": {
           "game.js": "Qm39j2mCramRURmogUMqtrXNHtZ3z8taShBRLinPZGWmjFzKnL2A1JTortYo77aUYETPmRoHJdn2qhYqWk3acKoqnW",
           "game.ts": "Qm318JHUVnzsZKA8fUeuSvcz6VepGg3oJVryiUwRb3QnDJq4HL5HFRKZKocUtDB96HUwWZReRXPeR9KiLc9q1h2f5Y",
@@ -45,8 +45,8 @@
           "main": "game.js",
           "tags": [],
           "scene": {
-            "parcels": ["-102,100", "-103,100", "-103,101"],
-            "base": "-102,100"
+            "parcels": ["-4,0", "-5,0", "-5,1"],
+            "base": "-4,0"
           },
           "communications": {
             "type": "webrtc",
@@ -66,22 +66,22 @@
       "didLoad": true
     },
     {
-      "x": -100,
-      "y": 100,
-      "id": "-100,100",
+      "x": -2,
+      "y": -2,
+      "id": "-2,0",
       "base": {
-        "x": -100,
-        "y": 100
+        "x": -2,
+        "y": 0
       },
       "parcels": [
         {
-          "x": -100,
-          "y": 100
+          "x": -2,
+          "y": 0
         }
       ],
       "data": {
         "owner": "0x0f5d2fb29fb7d3cfee444a200298f468908cc942",
-        "parcel_id": "-100,100",
+        "parcel_id": "-2,0",
         "contents": {
           "game.js": "Qm5S3QXrcnq8ScRCw1cwWe3SAWr5c5Mh5eEFgRnayVxp26HwS2mBqEpHMmSP45czoDn6UQ4zT3sETy7ABFU4Q4yiiF",
           "game.ts": "Qm4XSDU2cnWFDFrK74SjmCuysW8SUScozPvbwomXL2AKaNbYC8P33UMqr8EXAxzhdT4bFCXJ1K8z74hMp5RxbcLznV",
@@ -102,8 +102,8 @@
           "main": "game.js",
           "tags": [],
           "scene": {
-            "parcels": ["-100,100"],
-            "base": "-100,100"
+            "parcels": ["-2,0"],
+            "base": "-2,0"
           },
           "communications": {
             "type": "webrtc",
@@ -123,22 +123,14 @@
       "didLoad": true
     },
     {
-      "x": -100,
-      "y": 101,
-      "id": "-100,101",
-      "base": {
-        "x": -100,
-        "y": 101
-      },
-      "parcels": [
-        {
-          "x": -100,
-          "y": 101
-        }
-      ],
+      "x": -2,
+      "y": 1,
+      "id": "-2,1",
+      "base": { "x": -2, "y": 1 },
+      "parcels": [{ "x": -2, "y": 1 }],
       "data": {
         "owner": "0x0f5d2fb29fb7d3cfee444a200298f468908cc942",
-        "parcel_id": "-100,101",
+        "parcel_id": "-2,1",
         "contents": {
           "game.js": "Qm48ZepPVVTRFNZXU6Cuu11xSNLc4AWWDf4cXb7zucRMm2VMAWmm8JdXLWfTwJP2T1K1NAWkJJjX185TYbzdqEXUiQ",
           "game.ts": "QmjhK1mT7Q5QRHVtTbMScVdwTSDBXxUuYeyhdHbTYwKMrDLqg8JM9S7vTFUmaaP5FqTVaEruyrHiBrJDcZ9T87gfx",
@@ -159,8 +151,8 @@
           "main": "game.js",
           "tags": [],
           "scene": {
-            "parcels": ["-100,101"],
-            "base": "-100,101"
+            "parcels": ["-2,1"],
+            "base": "-2,1"
           },
           "communications": {
             "type": "webrtc",
@@ -180,22 +172,14 @@
       "didLoad": true
     },
     {
-      "x": -100,
-      "y": 102,
-      "id": "-100,102",
-      "base": {
-        "x": -100,
-        "y": 102
-      },
-      "parcels": [
-        {
-          "x": -100,
-          "y": 102
-        }
-      ],
+      "x": -2,
+      "y": 2,
+      "id": "-2,2",
+      "base": { "x": -2, "y": 2 },
+      "parcels": [{ "x": -2, "y": 2 }],
       "data": {
         "owner": "0x0f5d2fb29fb7d3cfee444a200298f468908cc942",
-        "parcel_id": "-100,102",
+        "parcel_id": "-2,2",
         "contents": {
           "game.js": "QmgnZBWtSZW76ViogXckDG4qVbUei7tSnCZBp8FdybYFs8GvqjC5vBNg3Bk4KwksprrD9HMVyHqX96kc5ZCwkU45d",
           "game.ts": "Qm4QJQqWvFf3QVMFNdcTWS84CKLCiL2mFbPfp1GJq7NkwKdgY59f5MsLwyhw3xntgQvWbourEuxhJ42qBuAnsWYQmB",
@@ -209,16 +193,10 @@
             "favicon": "favicon_asset"
           },
           "owner": "",
-          "contact": {
-            "name": "king of the bongo",
-            "email": ""
-          },
+          "contact": { "name": "king of the bongo", "email": "" },
           "main": "game.js",
           "tags": [],
-          "scene": {
-            "parcels": ["-100,102"],
-            "base": "-100,102"
-          },
+          "scene": { "parcels": ["-2,2"], "base": "-2,2" },
           "communications": {
             "type": "webrtc",
             "signalling": "https://signalling-01.decentraland.org"
@@ -237,22 +215,14 @@
       "didLoad": true
     },
     {
-      "x": -100,
-      "y": 103,
-      "id": "-100,103",
-      "base": {
-        "x": -100,
-        "y": 103
-      },
-      "parcels": [
-        {
-          "x": -100,
-          "y": 103
-        }
-      ],
+      "x": -2,
+      "y": 3,
+      "id": "-2,3",
+      "base": { "x": -2, "y": 3 },
+      "parcels": [{ "x": -2, "y": 3 }],
       "data": {
         "owner": "0x0f5d2fb29fb7d3cfee444a200298f468908cc942",
-        "parcel_id": "-100,103",
+        "parcel_id": "-2,3",
         "contents": {
           "game.js": "Qm2Mxae9qDm3zxxaj9TiRGYK29mPGKM5ffrBgvfAsarCs9VXLTRRERDibn165TtS7emP3zJ16Co9rYLTYQEety6fyb",
           "game.ts": "Qm5xR3gEV9qppTqUwro1p9oWffMFopyZ1ejnN8rnvQ3gArLh8QMZtezNp82wtE4K4rzvGYpHS4Z3DoonnR19YmzB2z",
@@ -273,8 +243,8 @@
           "main": "game.js",
           "tags": [],
           "scene": {
-            "parcels": ["-100,103"],
-            "base": "-100,103"
+            "parcels": ["-2,3"],
+            "base": "-2,3"
           },
           "communications": {
             "type": "webrtc",
@@ -294,22 +264,14 @@
       "didLoad": true
     },
     {
-      "x": -100,
-      "y": 104,
-      "id": "-100,104",
-      "base": {
-        "x": -100,
-        "y": 104
-      },
-      "parcels": [
-        {
-          "x": -100,
-          "y": 104
-        }
-      ],
+      "x": -2,
+      "y": 4,
+      "id": "-2,4",
+      "base": { "x": -2, "y": 4 },
+      "parcels": [{ "x": -2, "y": 4 }],
       "data": {
         "owner": "0x0f5d2fb29fb7d3cfee444a200298f468908cc942",
-        "parcel_id": "-100,104",
+        "parcel_id": "-2,4",
         "contents": {
           "game.js": "QmwS5L1VbRn7agFYf5W8wx75SrKL4ayF3bYKxMrGq9M4sipT2isc8souk3WBLy2SvBgSU7RyktSLVF7eSVzeR1atC",
           "game.ts": "Qm3KU6Ne5UXCDR4kfuchoRXBJNh85WHn25eX7STRGpfRz56iFza6sPioGc7C9HHEPBDWNJGgPh4nf3zt7XHsXAWAez",
@@ -323,16 +285,10 @@
             "favicon": "favicon_asset"
           },
           "owner": "",
-          "contact": {
-            "name": "king of the bongo",
-            "email": ""
-          },
+          "contact": { "name": "king of the bongo", "email": "" },
           "main": "game.js",
           "tags": [],
-          "scene": {
-            "parcels": ["-100,104"],
-            "base": "-100,104"
-          },
+          "scene": { "parcels": ["-2,4"], "base": "-2,4" },
           "communications": {
             "type": "webrtc",
             "signalling": "https://signalling-01.decentraland.org"
@@ -351,22 +307,19 @@
       "didLoad": true
     },
     {
-      "x": -100,
-      "y": 105,
-      "id": "-100,105",
-      "base": {
-        "x": -100,
-        "y": 105
-      },
+      "x": -2,
+      "y": 5,
+      "id": "-2,5",
+      "base": { "x": -2, "y": 5 },
       "parcels": [
         {
-          "x": -100,
-          "y": 105
+          "x": -2,
+          "y": 5
         }
       ],
       "data": {
         "owner": "0x0f5d2fb29fb7d3cfee444a200298f468908cc942",
-        "parcel_id": "-100,105",
+        "parcel_id": "-2,5",
         "contents": {
           "atlas.png": "Qm3HiKF3yPmxg6kGtBZmNeDxL5GhHwaAqr3eeg49k2EWmh1geRWjVTFjLBCptun2q4uKdohqy2BwMpk6KNBQRTQNcT",
           "game.js": "Qm5M4pYTXht64o156etmchHkxgkQevoFyE6NbLGQzoPS25RfCbsUykXU419k2m81Axkn96yS4Qipqz72cUuhjJKvva",
@@ -388,8 +341,8 @@
           "main": "game.js",
           "tags": [],
           "scene": {
-            "parcels": ["-100,105"],
-            "base": "-100,105"
+            "parcels": ["-2,5"],
+            "base": "-2,5"
           },
           "communications": {
             "type": "webrtc",
@@ -409,22 +362,22 @@
       "didLoad": true
     },
     {
-      "x": -100,
-      "y": 106,
-      "id": "-100,106",
+      "x": -2,
+      "y": 6,
+      "id": "-2,6",
       "base": {
-        "x": -100,
-        "y": 106
+        "x": -2,
+        "y": 6
       },
       "parcels": [
         {
-          "x": -100,
-          "y": 106
+          "x": -2,
+          "y": 6
         }
       ],
       "data": {
         "owner": "0x0f5d2fb29fb7d3cfee444a200298f468908cc942",
-        "parcel_id": "-100,106",
+        "parcel_id": "-2,6",
         "contents": {
           "game.js": "Qm4c5CSSu37s55Hd21jRCrBSn1x6bdPT3UGQyshtR9WAwGftGgrsTAK6uEd4H6RV2DdZtRyojQzjKQMyonMCrPLxop",
           "game.ts": "Qm3qB6u32Tzqd1K7Rfu4ZATzgjTtrxPu6FBENiHUNZUrj66wochUYFpoXAqXUXeufnPZTn12RZsT2nbDANXWFevqJg",
@@ -445,8 +398,8 @@
           "main": "game.js",
           "tags": [],
           "scene": {
-            "parcels": ["-100,106"],
-            "base": "-100,106"
+            "parcels": ["-2,6"],
+            "base": "-2,6"
           },
           "communications": {
             "type": "webrtc",
@@ -466,22 +419,22 @@
       "didLoad": true
     },
     {
-      "x": -100,
-      "y": 107,
-      "id": "-100,107",
+      "x": -2,
+      "y": 7,
+      "id": "-2,7",
       "base": {
-        "x": -100,
-        "y": 107
+        "x": -2,
+        "y": 7
       },
       "parcels": [
         {
-          "x": -100,
-          "y": 107
+          "x": -2,
+          "y": 7
         }
       ],
       "data": {
         "owner": "0x0f5d2fb29fb7d3cfee444a200298f468908cc942",
-        "parcel_id": "-100,107",
+        "parcel_id": "-2,7",
         "contents": {
           "game.js": "Qm2FcLJwy5fGZjw7bss2HQiXAB1TGZpoQDhGDFfwBfgwtq9E98VgwZzYgubfvdqoppp61T1ydkZXZvDbV3j2eXuMa4",
           "game.ts": "Qm4urxWNwqg115gcE3QCLZUNMMTNeSpfpVcXhW73dr1cjwySUMuwbduLL7QH94KA84iG3cy7SBBwMHSgmZ8URzj97h",
@@ -502,8 +455,8 @@
           "main": "game.js",
           "tags": [],
           "scene": {
-            "parcels": ["-100,107"],
-            "base": "-100,107"
+            "parcels": ["-2,7"],
+            "base": "-2,7"
           },
           "communications": {
             "type": "webrtc",
@@ -523,22 +476,22 @@
       "didLoad": true
     },
     {
-      "x": -100,
-      "y": 108,
-      "id": "-100,108",
+      "x": -2,
+      "y": 8,
+      "id": "-2,8",
       "base": {
-        "x": -100,
-        "y": 108
+        "x": -2,
+        "y": 8
       },
       "parcels": [
         {
-          "x": -100,
-          "y": 108
+          "x": -2,
+          "y": 8
         }
       ],
       "data": {
         "owner": "0x0f5d2fb29fb7d3cfee444a200298f468908cc942",
-        "parcel_id": "-100,108",
+        "parcel_id": "-2,8",
         "contents": {
           "game.js": "Qm4x4T311KqBj67T8wgSKiC5QndfdySRaTLgcSHDKE5Ccqpu7xmB6KYcuWJAUvQYaWcgHc8UTqbJ9g8BhWDmemzR1",
           "game.ts": "Qm2PJ6somc5ijqzjcVe7vxERKpkPHyYEUUFysGrkzCXL6BjabDGVb2fzxgC5nS5hDApSHGBYg7HYG4W4wnhLmxmfDY",
@@ -559,8 +512,8 @@
           "main": "game.js",
           "tags": [],
           "scene": {
-            "parcels": ["-100,108"],
-            "base": "-100,108"
+            "parcels": ["-2,8"],
+            "base": "-2,8"
           },
           "communications": {
             "type": "webrtc",
@@ -580,22 +533,22 @@
       "didLoad": true
     },
     {
-      "x": -100,
-      "y": 109,
-      "id": "-100,109",
+      "x": -2,
+      "y": 9,
+      "id": "-2,9",
       "base": {
-        "x": -100,
-        "y": 109
+        "x": -2,
+        "y": 9
       },
       "parcels": [
         {
-          "x": -100,
-          "y": 109
+          "x": -2,
+          "y": 9
         }
       ],
       "data": {
         "owner": "0x0f5d2fb29fb7d3cfee444a200298f468908cc942",
-        "parcel_id": "-100,109",
+        "parcel_id": "-2,9",
         "contents": {
           "bubble.png": "Qm2XNpLngcqqH4Wgy6jDqL3SrthNdUGiAftrdctMZkvvJLT7s1JT4ffGp4oWWRDiGf8vAb5FxSXMjidT6HmbinoY91",
           "game.js": "Qm3YBdwfioGe1Zbd69VnqnDTm497crH6b5fpe7J4gTS69KR53gUdSxnNar5C89F9qN8PnefJZDyujFvHgcF4jACY1X",
@@ -617,8 +570,8 @@
           "main": "game.js",
           "tags": [],
           "scene": {
-            "parcels": ["-100,109"],
-            "base": "-100,109"
+            "parcels": ["-2,9"],
+            "base": "-2,9"
           },
           "communications": {
             "type": "webrtc",

@@ -19,46 +19,48 @@ namespace UnityGLTF {
     public int MaximumLod = 300;
     public int Timeout = 8;
     public GLTFSceneImporter.ColliderType Collider = GLTFSceneImporter.ColliderType.None;
+    public Renderer loadingPlaceholderRenderer;
 
     [HideInInspector] public bool alreadyLoadedAsset = false;
+    [HideInInspector] public Action<float> finishedLoadingModelCallback;
 
     [SerializeField] bool loadOnStart = true;
     [SerializeField] Shader shaderOverride = null;
 
     Coroutine loadingRoutine = null;
 
-    public delegate void GLTFComponentAction(float loadingTime);
-    public event GLTFComponentAction OnModelFinishedLoading;
-
     void Start() {
       if (loadOnStart)
         LoadAsset();
     }
 
-    public void LoadAsset(bool loadEvenIfAlreadyLoaded = false, string gltfURI = "") {
+    public void LoadAsset(bool loadEvenIfAlreadyLoaded = false, string incomingURI = "") {
+      if (incomingURI != "")
+        GLTFUri = incomingURI;
 
-      if (alreadyLoadedAsset && !loadEvenIfAlreadyLoaded) return;
+      if (GLTFUri != "" && (!alreadyLoadedAsset || loadEvenIfAlreadyLoaded)) {
+        if (loadingRoutine != null)
+          StopCoroutine(loadingRoutine);
 
-      if (gltfURI != "")
-        GLTFUri = gltfURI;
+        loadingRoutine = StartCoroutine(LoadAssetCoroutine());
+      } else {
+        finishedLoadingModelCallback = null;
 
-      if (GLTFUri == "") {
-        Debug.Log("Couldn't load GLTF since the URI is empty");
-
-        return;
+        Debug.Log("Couldn't load GLTF." + ((GLTFUri == "") ? "URI is empty" : ""));
       }
+    }
 
-      if (loadingRoutine != null)
-        StopCoroutine(loadingRoutine);
+    public void LoadAsset(Action<float> callbackAction) {
+      if (callbackAction != null)
+        finishedLoadingModelCallback = callbackAction;
 
-      loadingRoutine = StartCoroutine(LoadAssetCoroutine());
+      LoadAsset();
     }
 
     public IEnumerator LoadAssetCoroutine() {
       GLTFSceneImporter sceneImporter = null;
       ILoader loader = null;
       float loadingStartTime = Time.time;
-      float loadingFinishTime;
 
       try {
         if (UseStream) {
@@ -102,19 +104,23 @@ namespace UnityGLTF {
         }
       } finally {
         if (loader != null) {
-            if (sceneImporter == null)
-                Debug.Log("sceneImporter is null, could be due to an invalid URI.", this);
+          if (sceneImporter == null)
+            Debug.Log("sceneImporter is null, could be due to an invalid URI.", this);
 
-            sceneImporter.Dispose();
-            sceneImporter = null;
+          sceneImporter.Dispose();
+          sceneImporter = null;
 
           loader = null;
         }
 
-        loadingFinishTime = Time.time;
+        if (loadingPlaceholderRenderer != null) {
+          loadingPlaceholderRenderer.enabled = false;
+        }
 
-        if (OnModelFinishedLoading != null)
-          OnModelFinishedLoading(loadingFinishTime - loadingStartTime);
+        if (finishedLoadingModelCallback != null) {
+          finishedLoadingModelCallback(Time.time - loadingStartTime);
+          finishedLoadingModelCallback = null;
+        }
 
         //Debug.Log("GLTF (" + GLTFUri + ") loading took: " + (loadingFinishTime - loadingStartTime) + " seconds.");
       }

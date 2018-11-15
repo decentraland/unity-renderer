@@ -11,9 +11,8 @@ GameObject:
   - component: {fileID: 4779093863492746}
   - component: {fileID: 33703679810489778}
   - component: {fileID: 23605021851673546}
-  - component: {fileID: 4573690811518475255}
   m_Layer: 0
-  m_Name: EntityRenderer
+  m_Name: CylinderRenderer
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -40,7 +39,7 @@ MeshFilter:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1436282925400224}
-  m_Mesh: {fileID: 10202, guid: 0000000000000000e000000000000000, type: 0}
+  m_Mesh: {fileID: 10206, guid: 0000000000000000e000000000000000, type: 0}
 --- !u!23 &23605021851673546
 MeshRenderer:
   m_ObjectHideFlags: 0
@@ -78,24 +77,3 @@ MeshRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
---- !u!114 &4573690811518475255
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1436282925400224}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 9087a95f22bcee64ebc45f6deec08714, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  GLTFUri: 
-  Multithreaded: 0
-  UseStream: 0
-  MaximumLod: 300
-  Timeout: 8
-  Collider: 0
-  alreadyLoadedAsset: 0
-  loadOnStart: 0
-  shaderOverride: {fileID: 0}
