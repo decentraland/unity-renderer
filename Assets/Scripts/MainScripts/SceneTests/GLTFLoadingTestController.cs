@@ -7,8 +7,10 @@ using UnityEngine;
 public class GLTFLoadingTestController : MonoBehaviour {
   public string dataTrackingURL = "https://tracking.decentraland.org/track";
 
+  GLTFComponent[] gltfRenderers;
+
   void Awake() {
-    GLTFComponent[] gltfRenderers = GetComponentsInChildren<GLTFComponent>(true);
+    gltfRenderers = GetComponentsInChildren<GLTFComponent>(true);
 
     for (int i = 0; i < gltfRenderers.Length; i++) {
       gltfRenderers[i].finishedLoadingModelCallback = SendLoadingTimeDataToEndpoint;
