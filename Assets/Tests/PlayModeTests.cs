@@ -1,5 +1,6 @@
 using UnityEngine;
 using NUnit.Framework;
+using DCL.Models;
 
 /*
  * Play Mode Testing Highlights:
@@ -11,23 +12,25 @@ using NUnit.Framework;
 // TODO: Find a way instantiate and destroy the SceneController in every test.
 
 public class PlayModeTests {
-  SceneController sceneController;
-
   [Test]
   public void PlayMode_EntityCreationTest() {
     // We need to load the required objects as prefabs to test, as we can't skip a frame in a NUnit tests, so we can't get already-instantiated scene objects.
-    if (sceneController == null) {
-      sceneController = Resources.Load<GameObject>("Prefabs/SceneController").GetComponent<SceneController>();
-    }
+    var sceneController = Resources.Load<GameObject>("Prefabs/SceneController").GetComponent<SceneController>();
 
-    Assert.IsTrue(sceneController != null);
+    Assert.AreNotEqual(sceneController, null);
+
+    sceneController.UnloadAllScenes();
+
+    var sceneData = new LoaderScene();
+    var scene = sceneController.CreateTestScene(sceneData);
+
+    Assert.AreNotEqual(scene, null);
 
     // Create first entity
-    DecentralandEntity entityObject = null;
     string entityId = "1";
 
-    sceneController.CreateEntity(entityId);
-    sceneController.decentralandEntities.TryGetValue(entityId, out entityObject);
+    scene.CreateEntity(entityId);
+    var entityObject = scene.entities[entityId];
 
     Assert.IsTrue(entityObject != null);
 
@@ -37,79 +40,102 @@ public class PlayModeTests {
     entityObject = null;
     entityId = "2";
 
-    sceneController.CreateEntity(entityId);
-    sceneController.decentralandEntities.TryGetValue(entityId, out entityObject);
+    scene.CreateEntity(entityId);
+    scene.entities.TryGetValue(entityId, out entityObject);
 
     Assert.IsTrue(entityObject != null);
 
     Assert.AreEqual(entityObject.id, entityId);
 
-    sceneController.decentralandEntities.Clear();
+    scene.entities.Clear();
   }
 
   [Test]
   public void PlayMode_EntityRemovalTest() {
-    DecentralandEntity entityObject = null;
     string entityId = "2";
+    // We need to load the required objects as prefabs to test, as we can't skip a frame in a NUnit tests, so we can't get already-instantiated scene objects.
+    var sceneController = Resources.Load<GameObject>("Prefabs/SceneController").GetComponent<SceneController>();
 
-    if (sceneController == null) {
-      sceneController = Resources.Load<GameObject>("Prefabs/SceneController").GetComponent<SceneController>();
-    }
+    Assert.AreNotEqual(sceneController, null);
 
-    sceneController.CreateEntity(entityId);
+    sceneController.UnloadAllScenes();
 
-    sceneController.decentralandEntities.TryGetValue(entityId, out entityObject);
+    var sceneData = new LoaderScene();
+    var scene = sceneController.CreateTestScene(sceneData);
+
+    Assert.AreNotEqual(scene, null);
+
+
+    scene.CreateEntity(entityId);
+
+    var entityObject = scene.entities[entityId];
 
     // We commented out checking the gameobject is being destroyed as it would force us to use DestroyImmediate() instead of Destroy() (which takes some time before destroying the object) to have a valid test.
     //entityGameObject = entityObject.gameObjectReference;
 
-    sceneController.RemoveEntity(entityId);
+    scene.RemoveEntity(entityId);
 
-    Assert.IsTrue(!sceneController.decentralandEntities.ContainsKey(entityId));
+    Assert.IsTrue(!scene.entities.ContainsKey(entityId));
   }
 
-  [Test]
+  [Test(Description = "Set entity parent one time")]
   public void PlayMode_EntityParentingTest() {
-    DecentralandEntity parentEntityObject = null;
-    DecentralandEntity entityObject = null;
+    var sceneController = Resources.Load<GameObject>("Prefabs/SceneController").GetComponent<SceneController>();
+
+    Assert.AreNotEqual(sceneController, null);
+
+    sceneController.UnloadAllScenes();
+
+    var sceneData = new LoaderScene();
+    var scene = sceneController.CreateTestScene(sceneData);
+
+    Assert.AreNotEqual(scene, null);
+
+    ///
 
     string entityId = "2";
     string parentEntityId = "3";
 
-    if (sceneController == null) {
-      sceneController = Resources.Load<GameObject>("Prefabs/SceneController").GetComponent<SceneController>();
-    }
 
     // Create entity
-    sceneController.CreateEntity(entityId);
-    sceneController.decentralandEntities.TryGetValue(entityId, out entityObject);
+    scene.CreateEntity(entityId);
+    var entityObject = scene.entities[entityId];
 
     // Create parent entity
-    sceneController.CreateEntity(parentEntityId);
-    sceneController.decentralandEntities.TryGetValue(parentEntityId, out parentEntityObject);
+    scene.CreateEntity(parentEntityId);
+
+    var parentEntityObject = scene.entities[parentEntityId];
 
     string rawJSON = "{\"id\": \"" + entityId + "\"," +
                       "\"parentId\": \"" + parentEntityId + "\"}";
 
-    sceneController.SetEntityParent(rawJSON);
+    scene.SetEntityParent(rawJSON);
 
     Assert.IsNotNull(parentEntityObject.gameObjectReference.transform.Find(entityId));
 
-    sceneController.decentralandEntities.Clear();
+    scene.entities.Clear();
   }
 
-  [Test]
+  [Test(Description = "Update transformation test")]
   public void PlayMode_EntityTransformUpdate() {
-    DecentralandEntity entityObject = null;
+    var sceneController = Resources.Load<GameObject>("Prefabs/SceneController").GetComponent<SceneController>();
+
+    Assert.AreNotEqual(sceneController, null);
+
+    sceneController.UnloadAllScenes();
+
+    var sceneData = new LoaderScene();
+    var scene = sceneController.CreateTestScene(sceneData);
+
+    Assert.AreNotEqual(scene, null);
+
+    ///
+
     string entityId = "1";
+    scene.CreateEntity(entityId);
 
-    if (sceneController == null) {
-      sceneController = Resources.Load<GameObject>("Prefabs/SceneController").GetComponent<SceneController>();
-    }
+    var entityObject = scene.entities[entityId];
 
-    sceneController.CreateEntity(entityId);
-
-    sceneController.decentralandEntities.TryGetValue(entityId, out entityObject);
     Assert.IsTrue(entityObject != null);
 
     Vector3 originalTransformPosition = entityObject.gameObjectReference.transform.position;
@@ -120,21 +146,21 @@ public class PlayModeTests {
 
     Assert.IsTrue(!string.IsNullOrEmpty(rawJSON));
 
-    sceneController.UpdateEntity(rawJSON);
+    scene.UpdateEntity(rawJSON);
 
-    Assert.IsTrue(entityObject.gameObjectReference.transform.position != originalTransformPosition &&
-        entityObject.gameObjectReference.transform.position == new Vector3(5f, 1f, 5f));
+    Assert.AreNotEqual(entityObject.gameObjectReference.transform.position, originalTransformPosition);
+    Assert.AreEqual(entityObject.gameObjectReference.transform.position, new Vector3(5f, 1f, 5f));
 
-    Assert.IsTrue(entityObject.gameObjectReference.transform.rotation != originalTransformRotation &&
-        entityObject.gameObjectReference.transform.rotation == Quaternion.Euler(10f, 50f, -90f));
+    Assert.AreNotEqual(entityObject.gameObjectReference.transform.rotation, originalTransformRotation);
+    Assert.AreEqual(entityObject.gameObjectReference.transform.rotation.ToString(), Quaternion.Euler(10f, 50f, -90f).ToString());
 
-    Assert.IsTrue(entityObject.gameObjectReference.transform.localScale != originalTransformScale &&
-        entityObject.gameObjectReference.transform.localScale == new Vector3(0.7f, 0.7f, 0.7f));
+    Assert.AreNotEqual(entityObject.gameObjectReference.transform.localScale, originalTransformScale);
+    Assert.AreEqual(entityObject.gameObjectReference.transform.localScale, new Vector3(0.7f, 0.7f, 0.7f));
 
-    sceneController.decentralandEntities.Clear();
+    scene.entities.Clear();
   }
 
   // TODO: Tests to be implemented
-  // * SceneController.UpdateEntity() updates the entity correctly. Could be several tests for different kinds of update (components update, etc.)
+  // * scene.UpdateEntity() updates the entity correctly. Could be several tests for different kinds of update (components update, etc.)
 
 }
