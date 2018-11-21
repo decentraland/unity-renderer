@@ -5,7 +5,8 @@ using UnityEngine;
 using UnityEngine.TestTools;
 
 namespace Tests {
-  public class NewTestScript {
+  public class EditModeTests
+  {
     // A Test behaves as an ordinary method
     [Test(Description = "This is a test with a description.")]
     public void NewTestScriptSimplePasses() {
