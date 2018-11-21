@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using System.Linq;
+using UnityEngine;
 using System.Collections.Generic;
 using DCL.Helpers;
 using DCL.Models;
@@ -54,10 +55,10 @@ namespace DCL.Controllers {
     }
 
     internal void Dispose() {
+      RemoveAllEntities();
       Object.Destroy(rootGameObject);
     }
 
-    // TODO: Move entities creation, update, etc. functionlaties to the DecentralandScene
     public void CreateEntity(string entityID) {
       if (!entities.ContainsKey(entityID)) {
 
@@ -77,10 +78,17 @@ namespace DCL.Controllers {
 
     public void RemoveEntity(string entityID) {
       if (entities.ContainsKey(entityID)) {
-        GameObject.Destroy(entities[entityID].gameObjectReference);
+        Object.Destroy(entities[entityID].gameObjectReference);
         entities.Remove(entityID);
       } else {
         Debug.Log("Couldn't remove entity with ID: " + entityID + " as it doesn't exist.");
+      }
+    }
+
+    public void RemoveAllEntities() {
+      var list = entities.ToArray();
+      for (int i = 0; i < list.Length; i++) {
+        RemoveEntity(list[i].Key);
       }
     }
 
