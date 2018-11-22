@@ -48,7 +48,7 @@ namespace DCL.Helpers {
         case "obj-model":
           if (!string.IsNullOrEmpty(parsedEntity.components.shape.src)) {
             rendererGameObject = new GameObject("OBJRenderer");
-            
+
             var objShapeComponent = rendererGameObject.AddComponent<DynamicOBJLoaderController>();
             objShapeComponent.LoadAsset(parsedEntity.components.shape.src);
 

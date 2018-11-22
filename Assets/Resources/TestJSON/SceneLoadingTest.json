@@ -1,67 +1,45 @@
-[
-  {
-    "x": -4,
-    "y": -2,
-    "id": "-4,0",
-    "base": {
-      "x": -4,
-      "y": 0
-    },
-    "parcels": [
-      {
+{
+  "parcelsToLoad": [
+    {
+      "id": "-4,0",
+      "basePosition": {
         "x": -4,
         "y": 0
       },
-      {
-        "x": -5,
-        "y": 0
-      },
-      {
-        "x": -5,
-        "y": 1
-      }
-    ],
-    "data": {
-      "owner": "0x0f5d2fb29fb7d3cfee444a200298f468908cc942",
-      "parcel_id": "-4,0",
-      "contents": {
-        "game.js": "Qm39j2mCramRURmogUMqtrXNHtZ3z8taShBRLinPZGWmjFzKnL2A1JTortYo77aUYETPmRoHJdn2qhYqWk3acKoqnW",
-        "game.ts": "Qm318JHUVnzsZKA8fUeuSvcz6VepGg3oJVryiUwRb3QnDJq4HL5HFRKZKocUtDB96HUwWZReRXPeR9KiLc9q1h2f5Y",
-        "scene.json": "Qm4DSDqaibeuwWkXNX6BsafcMU2BhUU64V2MoUxtrqDMpzXFwEUQ1FPLdHNysYCnPhVVpQ6XgTvxCfz4KikaPwkmq1",
-        "tsconfig.json": "Qm2ko8HNC9m8yHfqsuH76wsZYhhJajEYRVFYkypCsJQKeM18MyN5E3PfE2pLqARqnxD3UNApvg1XYnYFxw8Rkdouhm"
-      },
-      "baseUrl": "http://localhost:8080/local-ipfs/contents/",
-      "scene": {
-        "display": {
-          "title": "interactive-text",
-          "favicon": "favicon_asset"
+      "parcels": [
+        {
+          "x": -4,
+          "y": 0
         },
-        "owner": "",
-        "contact": {
-          "name": "king of the bongo",
-          "email": ""
+        {
+          "x": -5,
+          "y": 0
         },
-        "main": "game.js",
-        "tags": [],
-        "scene": {
-          "parcels": ["-4,0", "-5,0", "-5,1"],
-          "base": "-4,0"
-        },
-        "communications": {
-          "type": "webrtc",
-          "signalling": "https://signalling-01.decentraland.org"
-        },
-        "policy": {
-          "contentRating": "E",
-          "fly": true,
-          "voiceEnabled": true,
-          "blacklist": [],
-          "teleportPosition": ""
+        {
+          "x": -5,
+          "y": 1
         }
-      }
-    },
-    "_isValid": true,
-    "isRequestingData": {},
-    "didLoad": true
-  }
-]
+      ],
+      "baseUrl": "http://localhost:8080/local-ipfs/contents/",
+      "owner": "0x0f5d2fb29fb7d3cfee444a200298f468908cc942",
+      "contents": [
+        {
+          "file": "game.js",
+          "hash": "Qm39j2mCramRURmogUMqtrXNHtZ3z8taShBRLinPZGWmjFzKnL2A1JTortYo77aUYETPmRoHJdn2qhYqWk3acKoqnW"
+        },
+        {
+          "file": "game.ts",
+          "hash": "Qm318JHUVnzsZKA8fUeuSvcz6VepGg3oJVryiUwRb3QnDJq4HL5HFRKZKocUtDB96HUwWZReRXPeR9KiLc9q1h2f5Y"
+        },
+        {
+          "file": "scene.json",
+          "hash": "Qm4DSDqaibeuwWkXNX6BsafcMU2BhUU64V2MoUxtrqDMpzXFwEUQ1FPLdHNysYCnPhVVpQ6XgTvxCfz4KikaPwkmq1"
+        },
+        {
+          "file": "tsconfig.json",
+          "hash": "Qm2ko8HNC9m8yHfqsuH76wsZYhhJajEYRVFYkypCsJQKeM18MyN5E3PfE2pLqARqnxD3UNApvg1XYnYFxw8Rkdouhm"
+        }
+      ]
+    }
+  ]
+}

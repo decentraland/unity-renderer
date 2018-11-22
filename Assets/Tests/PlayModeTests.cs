@@ -18,7 +18,7 @@ namespace Tests {
 
       Assert.AreNotEqual(sceneController, null);
 
-      var sceneData = new LoaderScene();
+      var sceneData = new LoadParcelScenesMessage.UnityParcelScene();
       var scene = sceneController.CreateTestScene(sceneData);
 
       Assert.AreNotEqual(scene, null);
@@ -51,7 +51,7 @@ namespace Tests {
 
       Assert.AreNotEqual(sceneController, null);
 
-      var sceneData = new LoaderScene();
+      var sceneData = new LoadParcelScenesMessage.UnityParcelScene();
       var scene = sceneController.CreateTestScene(sceneData);
 
       Assert.AreNotEqual(scene, null);
@@ -78,7 +78,7 @@ namespace Tests {
 
       Assert.AreNotEqual(sceneController, null);
 
-      var sceneData = new LoaderScene();
+      var sceneData = new LoadParcelScenesMessage.UnityParcelScene();
       var scene = sceneController.CreateTestScene(sceneData);
 
       Assert.AreNotEqual(scene, null);
@@ -114,9 +114,9 @@ namespace Tests {
     [Test(Description = "Update entity adding a box shape component")]
     public void PlayMode_EntityBoxShapeUpdate() {
       var sceneController = GetOrInitializeSceneController();
-
-      var sceneData = new LoaderScene();
+      var sceneData = new LoadParcelScenesMessage.UnityParcelScene();
       var scene = sceneController.CreateTestScene(sceneData);
+
       string entityId = "1";
       scene.CreateEntity(entityId);
       scene.UpdateEntity((Resources.Load("TestJSON/EntityUpdate/EntityBoxShapeUpdateTest") as TextAsset).text);
@@ -128,9 +128,9 @@ namespace Tests {
     [Test(Description = "Update entity adding a sphere shape component")]
     public void PlayMode_EntitySphereShapeUpdate() {
       var sceneController = GetOrInitializeSceneController();
-
-      var sceneData = new LoaderScene();
+      var sceneData = new LoadParcelScenesMessage.UnityParcelScene();
       var scene = sceneController.CreateTestScene(sceneData);
+
       string entityId = "2";
       scene.CreateEntity(entityId);
       scene.UpdateEntity((Resources.Load("TestJSON/EntityUpdate/EntitySphereShapeUpdateTest") as TextAsset).text);
@@ -142,9 +142,9 @@ namespace Tests {
     [Test(Description = "Update entity adding a plane shape component")]
     public void PlayMode_EntityPlaneShapeUpdate() {
       var sceneController = GetOrInitializeSceneController();
-
-      var sceneData = new LoaderScene();
+      var sceneData = new LoadParcelScenesMessage.UnityParcelScene();
       var scene = sceneController.CreateTestScene(sceneData);
+
       string entityId = "3";
       scene.CreateEntity(entityId);
       scene.UpdateEntity((Resources.Load("TestJSON/EntityUpdate/EntityPlaneShapeUpdateTest") as TextAsset).text);
@@ -156,9 +156,9 @@ namespace Tests {
     [Test(Description = "Update entity adding a cylinder shape component")]
     public void PlayMode_EntityCylinderShapeUpdate() {
       var sceneController = GetOrInitializeSceneController();
-
-      var sceneData = new LoaderScene();
+      var sceneData = new LoadParcelScenesMessage.UnityParcelScene();
       var scene = sceneController.CreateTestScene(sceneData);
+
       string entityId = "5";
       scene.CreateEntity(entityId);
       scene.UpdateEntity((Resources.Load("TestJSON/EntityUpdate/EntityCylinderShapeUpdateTest") as TextAsset).text);
@@ -171,7 +171,7 @@ namespace Tests {
     public void PlayMode_SceneLoading() {
       var sceneController = GetOrInitializeSceneController();
 
-      sceneController.LoadDecentralandScenes((Resources.Load("TestJSON/SceneLoadingTest") as TextAsset).text);
+      sceneController.LoadParcelScenes((Resources.Load("TestJSON/SceneLoadingTest") as TextAsset).text);
 
       string loadedSceneID = "-4,0";
 
@@ -188,7 +188,7 @@ namespace Tests {
 
       Assert.AreNotEqual(sceneController, null);
 
-      var sceneData = new LoaderScene();
+      var sceneData = new LoadParcelScenesMessage.UnityParcelScene();
       var scene = sceneController.CreateTestScene(sceneData);
 
       Assert.AreNotEqual(scene, null);
@@ -200,7 +200,7 @@ namespace Tests {
       scene.RemoveEntity(entityId);
 
       yield return new WaitForSeconds(0.01f);
-      
+
       Assert.IsTrue(!scene.entities.ContainsKey(entityId));
 
       Assert.IsTrue(gameObjectReference == null, "Entity gameobject reference is not getting destroyed.");
@@ -210,7 +210,7 @@ namespace Tests {
     public IEnumerator PlayMode_SceneUnloading() {
       var sceneController = GetOrInitializeSceneController();
 
-      sceneController.LoadDecentralandScenes((Resources.Load("TestJSON/SceneLoadingTest") as TextAsset).text);
+      sceneController.LoadParcelScenes((Resources.Load("TestJSON/SceneLoadingTest") as TextAsset).text);
 
       string loadedSceneID = "-4,0";
 
@@ -246,10 +246,10 @@ namespace Tests {
     }
 
     // TODO: Tests to be implemented
-    /* 
-   * PlayMode_EntityConeShapeUpdate
-   * PlayMode_EntityGLTFShapeUpdate
-   * PlayMode_EntityOBJShapeUpdate
-   */
+    /*
+     * PlayMode_EntityConeShapeUpdate
+     * PlayMode_EntityGLTFShapeUpdate
+     * PlayMode_EntityOBJShapeUpdate
+     */
   }
 }

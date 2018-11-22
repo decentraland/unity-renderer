@@ -74,14 +74,15 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: d1d0821bf5c3e3f47ba67e483803236d, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
+  m_Name:
+  m_EditorClassIdentifier:
   aimingHorizontalSpeed: 400
   aimingVerticalSpeed: 400
   aimingVerticalMinimumAngle: -60
   aimingVerticalMaximumAngle: 30
   movementSpeed: 5
   jumpForce: 150
+  sunInclination: -0.31
 --- !u!1 &6922703132826922273
 GameObject:
   m_ObjectHideFlags: 0
@@ -137,7 +138,7 @@ Camera:
     width: 1
     height: 1
   near clip plane: 0.3
-  far clip plane: 1000
+  far clip plane: 100
   field of view: 60
   orthographic: 0
   orthographic size: 5

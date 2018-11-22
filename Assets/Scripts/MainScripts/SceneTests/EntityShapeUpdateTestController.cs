@@ -6,7 +6,7 @@ public class EntityShapeUpdateTestController : MonoBehaviour {
     var scenesToLoad = (Resources.Load("TestJSON/SceneLoadingTest") as TextAsset).text;
 
     sceneController.UnloadAllScenes();
-    sceneController.LoadDecentralandScenes(scenesToLoad);
+    sceneController.LoadParcelScenes(scenesToLoad);
 
     var scene = sceneController.loadedScenes["-4,0"];
 

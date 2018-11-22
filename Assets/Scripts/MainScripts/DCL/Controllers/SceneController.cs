@@ -14,7 +14,7 @@ using System.Collections;
 public class SceneController : MonoBehaviour {
   public bool startDecentralandAutomatically = true;
 
-  public Dictionary<string, DecentralandScene> loadedScenes = new Dictionary<string, DecentralandScene>();
+  public Dictionary<string, ParcelScene> loadedScenes = new Dictionary<string, ParcelScene>();
 
   void Start() {
     // We trigger the Decentraland logic once SceneController has been instanced and is ready to act.
@@ -43,15 +43,14 @@ public class SceneController : MonoBehaviour {
     Cursor.lockState = CursorLockMode.None;
   }
 
-  DecentralandScene GetDecentralandSceneOfParcel(int x, int y) {
-    var key = new Vector2(x, y);
+  ParcelScene GetDecentralandSceneOfParcel(Vector2 parcel) {
     foreach (var estate in loadedScenes) {
-      if (estate.Value.sceneData.basePosition.Equals(key)) {
+      if (estate.Value.sceneData.basePosition.Equals(parcel)) {
         return estate.Value;
       }
 
-      foreach (var parcel in estate.Value.sceneData.parcels) {
-        if (parcel.Equals(key)) {
+      foreach (var iteratedParcel in estate.Value.sceneData.parcels) {
+        if (iteratedParcel.Equals(parcel)) {
           return estate.Value;
         }
       }
@@ -59,18 +58,19 @@ public class SceneController : MonoBehaviour {
     return null;
   }
 
-  public void LoadDecentralandScenes(string decentralandSceneJSON) {
-    var scenesToLoad = JsonConvert.DeserializeObject<LoaderScene[]>(decentralandSceneJSON);
+  public void LoadParcelScenes(string decentralandSceneJSON) {
+    var message = JsonUtility.FromJson<LoadParcelScenesMessage>(decentralandSceneJSON);
+    var scenesToLoad = message.parcelsToLoad;
     var completeListOfParcelsThatShouldBeLoaded = new List<string>();
 
     // LOAD MISSING SCENES
-    for (int i = 0; i < scenesToLoad.Length; i++) {
+    for (int i = 0; i < scenesToLoad.Count; i++) {
       var sceneToLoad = scenesToLoad[i];
 
       completeListOfParcelsThatShouldBeLoaded.Add(sceneToLoad.id);
 
-      if (GetDecentralandSceneOfParcel(sceneToLoad.x, sceneToLoad.y) == null) {
-        var newScene = new DecentralandScene(sceneToLoad);
+      if (GetDecentralandSceneOfParcel(sceneToLoad.basePosition) == null) {
+        var newScene = new ParcelScene(sceneToLoad);
 
         if (!loadedScenes.ContainsKey(sceneToLoad.id)) {
           loadedScenes.Add(sceneToLoad.id, newScene);
@@ -105,9 +105,9 @@ public class SceneController : MonoBehaviour {
     }
   }
 
-  public DecentralandScene CreateTestScene(LoaderScene data) {
+  public ParcelScene CreateTestScene(LoadParcelScenesMessage.UnityParcelScene data) {
     if (data.basePosition == null) {
-      data.basePosition = new Vector2(data.x, data.y);
+      data.basePosition = new Vector2(0, 0);
     }
 
     if (data.parcels == null) {
@@ -115,10 +115,10 @@ public class SceneController : MonoBehaviour {
     }
 
     if (string.IsNullOrEmpty(data.id)) {
-      data.id = $"{data.x},${data.y}";
+      data.id = $"{data.basePosition.x},${data.basePosition.y}";
     }
 
-    var newScene = new DecentralandScene(data);
+    var newScene = new ParcelScene(data);
 
     if (!loadedScenes.ContainsKey(data.id)) {
       loadedScenes.Add(data.id, newScene);
