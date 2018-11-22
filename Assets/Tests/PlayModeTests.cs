@@ -16,8 +16,6 @@ namespace Tests {
     public void PlayMode_EntityCreationTest() {
       var sceneController = GetOrInitializeSceneController();
 
-      sceneController.UnloadAllScenes();
-
       Assert.AreNotEqual(sceneController, null);
 
       var sceneData = new LoaderScene();
@@ -51,8 +49,6 @@ namespace Tests {
     public void PlayMode_EntityParentingTest() {
       var sceneController = GetOrInitializeSceneController();
 
-      sceneController.UnloadAllScenes();
-
       Assert.AreNotEqual(sceneController, null);
 
       var sceneData = new LoaderScene();
@@ -79,8 +75,6 @@ namespace Tests {
     [Test(Description = "Update entity transform")]
     public void PlayMode_EntityTransformUpdate() {
       var sceneController = GetOrInitializeSceneController();
-
-      sceneController.UnloadAllScenes();
 
       Assert.AreNotEqual(sceneController, null);
 
@@ -121,23 +115,19 @@ namespace Tests {
     public void PlayMode_EntityBoxShapeUpdate() {
       var sceneController = GetOrInitializeSceneController();
 
-      sceneController.UnloadAllScenes();
-
       var sceneData = new LoaderScene();
       var scene = sceneController.CreateTestScene(sceneData);
       string entityId = "1";
       scene.CreateEntity(entityId);
       scene.UpdateEntity((Resources.Load("TestJSON/EntityUpdate/EntityBoxShapeUpdateTest") as TextAsset).text);
 
-      Assert.IsTrue(scene.entities[entityId].gameObjectReference.GetComponentInChildren<MeshFilter>().mesh.name ==
-                    "Cube Instance");
+      var meshName = scene.entities[entityId].gameObjectReference.GetComponentInChildren<MeshFilter>().mesh.name;
+      Assert.AreEqual(meshName, "DCL Box Instance");
     }
 
     [Test(Description = "Update entity adding a sphere shape component")]
     public void PlayMode_EntitySphereShapeUpdate() {
       var sceneController = GetOrInitializeSceneController();
-
-      sceneController.UnloadAllScenes();
 
       var sceneData = new LoaderScene();
       var scene = sceneController.CreateTestScene(sceneData);
@@ -145,15 +135,13 @@ namespace Tests {
       scene.CreateEntity(entityId);
       scene.UpdateEntity((Resources.Load("TestJSON/EntityUpdate/EntitySphereShapeUpdateTest") as TextAsset).text);
 
-      Assert.IsTrue(scene.entities[entityId].gameObjectReference.GetComponentInChildren<MeshFilter>().mesh.name ==
-                    "Sphere Instance");
+      var meshName = scene.entities[entityId].gameObjectReference.GetComponentInChildren<MeshFilter>().mesh.name;
+      Assert.AreEqual(meshName, "DCL Sphere Instance");
     }
 
     [Test(Description = "Update entity adding a plane shape component")]
     public void PlayMode_EntityPlaneShapeUpdate() {
       var sceneController = GetOrInitializeSceneController();
-
-      sceneController.UnloadAllScenes();
 
       var sceneData = new LoaderScene();
       var scene = sceneController.CreateTestScene(sceneData);
@@ -161,15 +149,13 @@ namespace Tests {
       scene.CreateEntity(entityId);
       scene.UpdateEntity((Resources.Load("TestJSON/EntityUpdate/EntityPlaneShapeUpdateTest") as TextAsset).text);
 
-      Assert.IsTrue(scene.entities[entityId].gameObjectReference.GetComponentInChildren<MeshFilter>().mesh.name ==
-                    "Plane Instance");
+      var meshName = scene.entities[entityId].gameObjectReference.GetComponentInChildren<MeshFilter>().mesh.name;
+      Assert.AreEqual(meshName, "DCL Plane Instance");
     }
 
     [Test(Description = "Update entity adding a cylinder shape component")]
     public void PlayMode_EntityCylinderShapeUpdate() {
       var sceneController = GetOrInitializeSceneController();
-
-      sceneController.UnloadAllScenes();
 
       var sceneData = new LoaderScene();
       var scene = sceneController.CreateTestScene(sceneData);
@@ -177,15 +163,13 @@ namespace Tests {
       scene.CreateEntity(entityId);
       scene.UpdateEntity((Resources.Load("TestJSON/EntityUpdate/EntityCylinderShapeUpdateTest") as TextAsset).text);
 
-      Assert.IsTrue(scene.entities[entityId].gameObjectReference.GetComponentInChildren<MeshFilter>().mesh.name ==
-                    "Cylinder Instance");
+      var meshName = scene.entities[entityId].gameObjectReference.GetComponentInChildren<MeshFilter>().mesh.name;
+      Assert.AreEqual(meshName, "DCL Cylinder Instance");
     }
 
     [Test(Description = "Load a decentraland scene")]
     public void PlayMode_SceneLoading() {
       var sceneController = GetOrInitializeSceneController();
-
-      sceneController.UnloadAllScenes();
 
       sceneController.LoadDecentralandScenes((Resources.Load("TestJSON/SceneLoadingTest") as TextAsset).text);
 
@@ -199,8 +183,6 @@ namespace Tests {
     [UnityTest]
     public IEnumerator PlayMode_EntityRemovalTest() {
       var sceneController = GetOrInitializeSceneController();
-
-      sceneController.UnloadAllScenes();
 
       string entityId = "2";
 
@@ -227,8 +209,6 @@ namespace Tests {
     [UnityTest]
     public IEnumerator PlayMode_SceneUnloading() {
       var sceneController = GetOrInitializeSceneController();
-
-      sceneController.UnloadAllScenes();
 
       sceneController.LoadDecentralandScenes((Resources.Load("TestJSON/SceneLoadingTest") as TextAsset).text);
 
@@ -259,6 +239,8 @@ namespace Tests {
       if (sceneController == null) {
         sceneController = Resources.Load<GameObject>("Prefabs/SceneController").GetComponent<SceneController>();
       }
+
+      sceneController.UnloadAllScenes();
 
       return sceneController;
     }
