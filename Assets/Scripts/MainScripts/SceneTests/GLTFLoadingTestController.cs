@@ -13,7 +13,7 @@ public class GLTFLoadingTestController : MonoBehaviour {
     gltfRenderers = GetComponentsInChildren<GLTFComponent>(true);
 
     for (int i = 0; i < gltfRenderers.Length; i++) {
-      gltfRenderers[i].finishedLoadingModelCallback = SendLoadingTimeDataToEndpoint;
+      gltfRenderers[i].finishedLoadingAssetCallback = SendLoadingTimeDataToEndpoint;
 
       gltfRenderers[i].gameObject.SetActive(true);
     }

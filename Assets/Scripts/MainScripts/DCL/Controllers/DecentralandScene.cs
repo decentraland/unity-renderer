@@ -4,7 +4,6 @@ using System.Collections.Generic;
 using DCL.Helpers;
 using DCL.Models;
 using DCL.Configuration;
-using UnityGLTF;
 
 namespace DCL.Controllers {
   public class DecentralandScene {
@@ -138,7 +137,7 @@ namespace DCL.Controllers {
           if (parsedEntity.components.shape != null) {
             // TODO: Detect changes in shape.
             if (decentralandEntity.components.shape == null) { // First time shape instantiation
-              var shapeComponent = IntializeDecentralandEntityRenderer(decentralandEntity, parsedEntity);
+              var shapeComponent = ShapeComponentHelpers.IntializeDecentralandEntityRenderer(decentralandEntity, parsedEntity);
             }
 
             decentralandEntity.components.shape = parsedEntity.components.shape;
@@ -149,59 +148,6 @@ namespace DCL.Controllers {
       } else {
         Debug.Log("Couldn't update entity " + parsedEntity.id + " because that entity doesn't exist.");
       }
-    }
-
-    GameObject IntializeDecentralandEntityRenderer(DecentralandEntity currentEntity, DecentralandEntity loadedEntity) {
-      GameObject createdGameObject = null;
-
-      switch (loadedEntity.components.shape.tag) {
-        case "box":
-          createdGameObject = GameObject.CreatePrimitive(PrimitiveType.Cube);
-          break;
-        case "sphere":
-          createdGameObject = GameObject.CreatePrimitive(PrimitiveType.Sphere);
-          break;
-        case "plane":
-          createdGameObject = GameObject.CreatePrimitive(PrimitiveType.Plane);
-          createdGameObject.transform.localScale = new Vector3(0.1f, 0.1f, 0.1f);
-          createdGameObject.transform.rotation = Quaternion.Euler(-90f, 0f, 0f);
-          break;
-        case "cone":
-          createdGameObject = GameObject.CreatePrimitive(PrimitiveType.Cylinder);
-          break;
-        case "cylinder":
-          createdGameObject = GameObject.CreatePrimitive(PrimitiveType.Cylinder);
-          break;
-        case "gltf-model":
-          if (!string.IsNullOrEmpty(loadedEntity.components.shape.src)) {
-            createdGameObject = new GameObject();
-            GLTFComponent gltfShape = createdGameObject.AddComponent<GLTFComponent>();
-
-            if (!gltfShape.alreadyLoadedAsset) {
-              gltfShape.GLTFUri = loadedEntity.components.shape.src;
-              gltfShape.LoadAsset();
-            }
-          }
-          break;
-        case "obj-model":
-          if (!string.IsNullOrEmpty(loadedEntity.components.shape.src)) {
-            createdGameObject = new GameObject();
-
-            DynamicOBJLoaderController objShape = createdGameObject.AddComponent<DynamicOBJLoaderController>();
-
-            if (!objShape.alreadyLoaded) {
-              objShape.OBJUrl = loadedEntity.components.shape.src;
-              objShape.loadOnStart = true;
-            }
-          }
-          break;
-      }
-
-      if (createdGameObject != null) {
-        createdGameObject.transform.SetParent(currentEntity.gameObjectReference.transform);
-      }
-
-      return createdGameObject;
     }
   }
 }

@@ -6,27 +6,41 @@ using UnityEngine.Networking;
 public class DynamicOBJLoaderController : MonoBehaviour {
   public bool loadOnStart = true;
   public string OBJUrl = "";
-  public Renderer loadingPlaceholderRenderer;
+  public GameObject loadingPlaceholder;
 
-  [HideInInspector] public bool alreadyLoaded = false;
-  [HideInInspector] public Action<float> finishedLoadingModelCallback;
+  [HideInInspector] public bool alreadyLoadedAsset = false;
+  [HideInInspector] public Action<float> finishedLoadingAssetCallback;
 
-  MeshFilter meshFilter;
+  Coroutine loadingRoutine = null;
 
   void Awake() {
-    meshFilter = GetComponent<MeshFilter>();
-
-    if (loadOnStart) {
-      StartCoroutine(LoadRemoteOBJ());
+    if (loadOnStart && !string.IsNullOrEmpty(OBJUrl)) {
+      LoadAsset();
     }
   }
 
-  public IEnumerator LoadRemoteOBJ(Action<float> callbackAction = null) {
-    if (OBJUrl != "") {
+  public void LoadAsset(string url = "", bool loadEvenIfAlreadyLoaded = false) {
+    if (!alreadyLoadedAsset || loadEvenIfAlreadyLoaded) {
+      if (!string.IsNullOrEmpty(url)) {
+        OBJUrl = url;
+      }
+
+      if (loadingRoutine != null) {
+        StopCoroutine(loadingRoutine);
+      }
+
+      loadingRoutine = StartCoroutine(LoadAssetCoroutine());
+    } else {
+      finishedLoadingAssetCallback = null;
+    }
+  }
+
+  IEnumerator LoadAssetCoroutine(Action<float> callbackAction = null) {
+    if (!string.IsNullOrEmpty(OBJUrl)) {
       float loadingStartTime = Time.time;
 
       if (callbackAction != null) {
-        finishedLoadingModelCallback = callbackAction;
+        finishedLoadingAssetCallback = callbackAction;
       }
 
       UnityWebRequest webRequest = UnityWebRequest.Get(OBJUrl);
@@ -36,26 +50,27 @@ public class DynamicOBJLoaderController : MonoBehaviour {
       if (webRequest.isNetworkError || webRequest.isHttpError) {
         Debug.Log("Couldn't get OBJ, error: " + webRequest.error);
       } else {
-        alreadyLoaded = true;
+        alreadyLoadedAsset = true;
 
         GameObject loadedOBJGameObject = OBJLoader.LoadOBJFile(webRequest.downloadHandler.text, true);
         loadedOBJGameObject.name = "LoadedOBJ";
         loadedOBJGameObject.transform.SetParent(transform);
         loadedOBJGameObject.transform.localPosition = Vector3.zero;
 
-        if (finishedLoadingModelCallback != null)
-          finishedLoadingModelCallback(Time.time - loadingStartTime);
+        if (finishedLoadingAssetCallback != null) {
+          finishedLoadingAssetCallback(Time.time - loadingStartTime);
+        }
       }
     } else {
-      Debug.Log("couldn't load OBJ as url is empty");
+      Debug.Log("couldn't load OBJ because url is empty");
     }
 
-    if (loadingPlaceholderRenderer != null) {
-      loadingPlaceholderRenderer.enabled = false;
+    if (loadingPlaceholder != null) {
+      loadingPlaceholder.SetActive(false);
     }
 
-    finishedLoadingModelCallback = null;
+    finishedLoadingAssetCallback = null;
 
-    yield return true;
+    loadingRoutine = null;
   }
 }
