@@ -6,25 +6,19 @@ using DCL.Models;
 using DCL.Configuration;
 
 namespace DCL.Controllers {
-  public class DecentralandScene {
+  public class ParcelScene {
     public GameObject rootGameObject;
 
     public Dictionary<string, DecentralandEntity> entities = new Dictionary<string, DecentralandEntity>();
 
-    public LoaderScene sceneData { get; }
+    public LoadParcelScenesMessage.UnityParcelScene sceneData { get; }
 
-
-
-    public DecentralandScene(LoaderScene data) {
+    public ParcelScene(LoadParcelScenesMessage.UnityParcelScene data) {
       this.sceneData = data;
 
       rootGameObject = new GameObject();
       rootGameObject.name = $"scene:{data.id}";
       rootGameObject.transform.position = LandHelpers.GridToWorldPosition(data.basePosition.x, data.basePosition.y);
-
-      var shader = Shader.Find("Mobile/Diffuse");
-      var material = new Material(shader);
-      material.renderQueue = 3001;
 
       if (Environment.DEBUG) {
         for (int j = 0; j < data.parcels.Length; j++) {
@@ -33,18 +27,23 @@ namespace DCL.Controllers {
           Object.Destroy(plane.GetComponent<MeshCollider>());
 
           var renderer = plane.GetComponent<MeshRenderer>();
-          renderer.material = material;
+          // renderer.material = material;
+          if (renderer.material != null) {
+            renderer.material.renderQueue = 3001;
+          }
 
           plane.name = $"parcel:{data.parcels[j].x},{data.parcels[j].y}";
           plane.transform.SetParent(rootGameObject.transform);
 
-          plane.transform.position = LandHelpers.GridToWorldPosition(
+          var position = LandHelpers.GridToWorldPosition(
             // SET TO A POSITION RELATIVE TO basePosition
             data.parcels[j].x - data.basePosition.x,
             data.parcels[j].y - data.basePosition.y
           );
 
-          plane.transform.position.Set(plane.transform.position.x, 0.1f, plane.transform.position.z);
+          position.y += 0.01f;
+
+          plane.transform.position = position;
         }
       }
     }

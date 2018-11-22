@@ -29,11 +29,21 @@ namespace DCL.Interface {
 #endif
 
     public static void SendMessage(string type, object message) {
-      MessageFromEngine("ReportPosition", UnityEngine.JsonUtility.ToJson(message));
+      MessageFromEngine(type, UnityEngine.JsonUtility.ToJson(message));
     }
 
-    public static void ReportPosition(Vector3 position) {
-      SendMessage("ReportPosition", position);
+    private static ReportPositionPayload positionPayload = new ReportPositionPayload();
+
+    public static void ReportPosition(Vector3 position, Quaternion rotation) {
+      positionPayload.position = position;
+      positionPayload.rotation = rotation;
+
+      SendMessage("ReportPosition", positionPayload);
+    }
+
+    private class ReportPositionPayload {
+      public Vector3 position;
+      public Quaternion rotation;
     }
   }
 }

@@ -2,12 +2,13 @@
 using UnityEngine;
 
 public class CharacterController : MonoBehaviour {
-  public float aimingHorizontalSpeed = 100f;
-  public float aimingVerticalSpeed = 100f;
+  public float aimingHorizontalSpeed = 20f;
+  public float aimingVerticalSpeed = 20f;
   public float aimingVerticalMinimumAngle = -60f;
   public float aimingVerticalMaximumAngle = 30f;
   public float movementSpeed = 5f;
   public float jumpForce = 150f;
+  public float sunInclination = -0.31f;
 
   float aimingHorizontalAngle;
   float aimingVerticalAngle;
@@ -16,19 +17,44 @@ public class CharacterController : MonoBehaviour {
   new Rigidbody rigidbody;
   new Collider collider;
 
-  Vector3 originalPosition;
+  Vector3 originalPosition = Vector3.zero;
   Vector3 movementDirection;
+
   bool flyingMode = false;
 
   GameObject ground;
+  GameObject sun;
+  Light sunLight;
 
   void Awake() {
     ground = GameObject.Find("Ground");
+    sun = GameObject.Find("Sun");
+    sunLight = sun.GetComponent<Light>();
 
-    originalPosition = transform.position;
+    if (originalPosition.Equals(Vector3.zero)) {
+      originalPosition = transform.position;
+    } else {
+      transform.position = originalPosition;
+    }
+
     camera = GetComponentInChildren<Camera>().transform;
     rigidbody = GetComponent<Rigidbody>();
     collider = GetComponent<Collider>();
+  }
+
+  Vector3 SunPosition() {
+    var theta = Mathf.PI * sunInclination;
+    var phi = Mathf.PI * -0.4f;
+
+    return new Vector3(
+      500 * Mathf.Cos(phi),
+      400 * Mathf.Sin(phi) * Mathf.Sin(theta),
+      500 * Mathf.Sin(phi) * Mathf.Cos(theta)
+    );
+  }
+
+  void SetPosition(string positionVector) {
+    originalPosition = transform.position = JsonUtility.FromJson<Vector3>(positionVector);
   }
 
   void Update() {
@@ -77,6 +103,8 @@ public class CharacterController : MonoBehaviour {
       didMove = true;
     }
 
+    movementDirection = movementDirection.normalized;
+
     if (movementDirection != Vector3.zero &&
        (flyingMode || !Physics.Raycast(transform.position, movementDirection.normalized, collider.bounds.extents.x + 0.5f))) { // Wall-Collision check
       transform.position += movementDirection;
@@ -90,13 +118,21 @@ public class CharacterController : MonoBehaviour {
     }
 
     if (didMove) {
-      DCL.Interface.WebInterface.ReportPosition(transform.position);
+      DCL.Interface.WebInterface.ReportPosition(transform.position, transform.rotation);
+
+      var originalY = ground.transform.position.y;
 
       ground.transform.position = new Vector3(
         Mathf.Floor(transform.position.x / ParcelSettings.PARCEL_SIZE) * ParcelSettings.PARCEL_SIZE,
-        0f,
+        originalY,
         Mathf.Floor(transform.position.z / ParcelSettings.PARCEL_SIZE) * ParcelSettings.PARCEL_SIZE
       );
+
+      sun.transform.position = SunPosition();
+
+      var sunfade = 1.0f - Mathf.Min(Mathf.Max(1.0f - Mathf.Exp(sun.transform.position.y / 10f), 0.0f), 0.9f);
+
+      sunLight.intensity = sunfade;
     }
   }
 }
