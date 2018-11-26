@@ -173,7 +173,7 @@ namespace Tests {
 
       sceneController.LoadParcelScenes((Resources.Load("TestJSON/SceneLoadingTest") as TextAsset).text);
 
-      string loadedSceneID = "-4,0";
+      string loadedSceneID = "0,0";
 
       Assert.IsTrue(sceneController.loadedScenes.ContainsKey(loadedSceneID));
 
@@ -212,10 +212,10 @@ namespace Tests {
 
       sceneController.LoadParcelScenes((Resources.Load("TestJSON/SceneLoadingTest") as TextAsset).text);
 
-      string loadedSceneID = "-4,0";
+      string loadedSceneID = "0,0";
 
       Assert.IsTrue(sceneController.loadedScenes.ContainsKey(loadedSceneID));
-
+      
       // Add 1 entity to the loaded scene
       sceneController.loadedScenes[loadedSceneID].CreateEntity("6");
 

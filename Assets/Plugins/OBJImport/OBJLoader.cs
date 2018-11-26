@@ -359,11 +359,11 @@ public class OBJLoader {
       for (int i = 0; i < meshMaterialNames.Count; i++) {
 
         if (materialCache == null) {
-          processedMaterials[i] = new Material(Shader.Find("Standard (Specular setup)"));
+          processedMaterials[i] = new Material(Shader.Find("Lightweight Render Pipeline/Simple Lit"));
         } else {
           Material mfn = Array.Find(materialCache, x => x.name == meshMaterialNames[i]); ;
           if (mfn == null) {
-            processedMaterials[i] = new Material(Shader.Find("Standard (Specular setup)"));
+            processedMaterials[i] = new Material(Shader.Find("Lightweight Render Pipeline/Simple Lit"));
           } else {
             processedMaterials[i] = mfn;
           }

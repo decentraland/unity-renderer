@@ -51,7 +51,7 @@ Shader "GLTF/PbrSpecularGlossiness"
 
 	SubShader
 	{
-		Tags { "RenderType"="Opaque" "PerformanceChecks"="False" }
+		Tags { "RenderType"="Opaque" "RenderPipeline"="LightweightPipeline" "PerformanceChecks"="False" }
 		LOD 300
 	
 

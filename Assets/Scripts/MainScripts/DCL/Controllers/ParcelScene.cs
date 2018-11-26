@@ -132,8 +132,9 @@ namespace DCL.Controllers {
             decentralandEntity.components.transform = parsedEntity.components?.transform;
           }
 
-          // Update entity shape data
-          if (parsedEntity.components.shape != null) {
+          // Update entity shape data. We check a shape property instead of shape itself for null as the JSONUtility removes the null of every component once one has been parsed.
+          // TODO: Find a way to avoid the shape being initialized when a different component is parsed from the JSON.
+          if (!string.IsNullOrEmpty(parsedEntity.components.shape.tag)) {
             // TODO: Detect changes in shape.
             if (decentralandEntity.components.shape == null) { // First time shape instantiation
               var shapeComponent = ShapeComponentHelpers.IntializeDecentralandEntityRenderer(decentralandEntity, parsedEntity);
