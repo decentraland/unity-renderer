@@ -8,7 +8,7 @@ public class EntityShapeUpdateTestController : MonoBehaviour {
     sceneController.UnloadAllScenes();
     sceneController.LoadParcelScenes(scenesToLoad);
 
-    var scene = sceneController.loadedScenes["-4,0"];
+    var scene = sceneController.loadedScenes["0,0"];
 
     scene.CreateEntity("1");
     scene.UpdateEntity((Resources.Load("TestJSON/EntityUpdate/EntityBoxShapeUpdateTest") as TextAsset).text);

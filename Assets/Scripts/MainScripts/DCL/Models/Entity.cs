@@ -4,15 +4,14 @@ using UnityEngine;
 namespace DCL.Models {
   [Serializable]
   public class DecentralandEntity {
-    // TODO: interfaces does not have logic or game objects
+    // TODO: interfaces do not have logic or game objects
     public GameObject gameObjectReference;
     public string id;
     public string parentId;
-    public EntityComponents components;
+    public EntityComponents components = null;
 
-    private Vector3 auxVector;
+    Vector3 auxVector;
 
-    // TODO: interfaces does not have logic or game objects
     public void UpdateGameObjectComponents() {
       if (gameObjectReference != null) {
 
@@ -45,8 +44,8 @@ namespace DCL.Models {
 
     [Serializable]
     public class EntityComponents {
-      public EntityShape shape;
-      public EntityTransform transform;
+      public EntityShape shape = null;
+      public EntityTransform transform = null;
     }
 
     [Serializable]

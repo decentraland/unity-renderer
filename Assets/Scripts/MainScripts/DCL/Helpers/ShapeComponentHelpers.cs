@@ -59,6 +59,7 @@ namespace DCL.Helpers {
 
       if (rendererGameObject != null) {
         rendererGameObject.transform.SetParent(currentEntity.gameObjectReference.transform);
+        rendererGameObject.name = "Renderer";
       }
 
       return rendererGameObject;
