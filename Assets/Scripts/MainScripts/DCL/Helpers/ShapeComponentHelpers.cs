@@ -5,64 +5,87 @@ using UnityGLTF;
 
 namespace DCL.Helpers {
   public class ShapeComponentHelpers {
-    public static GameObject IntializeDecentralandEntityRenderer(DecentralandEntity currentEntity, DecentralandEntity parsedEntity) {
-      GameObject rendererGameObject = null;
 
-      switch (parsedEntity.components.shape.tag) {
-        case "box":
-          rendererGameObject = new GameObject();
-          rendererGameObject.AddComponent<MeshFilter>().mesh = PrimitiveMeshBuilder.BuildCube(1f);
-          rendererGameObject.AddComponent<MeshRenderer>().material = Resources.Load<Material>("Materials/Default");
-          break;
-        case "sphere":
-          rendererGameObject = new GameObject();
-          rendererGameObject.AddComponent<MeshFilter>().mesh = PrimitiveMeshBuilder.BuildSphere(1f);
-          rendererGameObject.AddComponent<MeshRenderer>().material = Resources.Load<Material>("Materials/Default");
-          break;
-        case "plane":
-          rendererGameObject = new GameObject();
-          rendererGameObject.AddComponent<MeshFilter>().mesh = PrimitiveMeshBuilder.BuildPlane(1f);
-          rendererGameObject.AddComponent<MeshRenderer>().material = Resources.Load<Material>("Materials/Default");
-          break;
-        case "cone":
-          rendererGameObject = new GameObject();
-          rendererGameObject.AddComponent<MeshFilter>().mesh = PrimitiveMeshBuilder.BuildCone(50, 0f, 1f, 2f, 0f, true, false);
-          rendererGameObject.AddComponent<MeshRenderer>().material = Resources.Load<Material>("Materials/Default");
-          break;
-        case "cylinder":
-          rendererGameObject = new GameObject();
-          rendererGameObject.AddComponent<MeshFilter>().mesh = PrimitiveMeshBuilder.BuildCylinder(50, 1f, 1f, 2f, 0f, true, false);
-          rendererGameObject.AddComponent<MeshRenderer>().material = Resources.Load<Material>("Materials/Default");
-          break;
-        case "gltf-model":
-          if (!string.IsNullOrEmpty(parsedEntity.components.shape.src)) {
-            rendererGameObject = new GameObject("GLTFRenderer");
+    public static void IntializeDecentralandEntityRenderer(DecentralandEntity currentEntity, DecentralandEntity.EntityShape newShape) {
+      if (!newShape.Equals(currentEntity.components.shape)) {
+        var material = Resources.Load<Material>("Materials/Default");
 
-            var gltfShapeComponent = rendererGameObject.AddComponent<GLTFComponent>();
-            gltfShapeComponent.Multithreaded = false;
-            gltfShapeComponent.LoadAsset(parsedEntity.components.shape.src);
+        MeshFilter meshFilter = null;
+        MeshRenderer meshRenderer = null;
 
-            gltfShapeComponent.loadingPlaceholder = AttachPlaceholderRendererGameObject(rendererGameObject.transform);
-          }
-          break;
-        case "obj-model":
-          if (!string.IsNullOrEmpty(parsedEntity.components.shape.src)) {
-            rendererGameObject = new GameObject("OBJRenderer");
+        switch (newShape.tag) {
+          case "box":
+          case "sphere":
+          case "plane":
+          case "cone":
+          case "cylinder":
+            meshFilter = currentEntity.gameObject.GetComponent<MeshFilter>();
+            if (!meshFilter) {
+              meshFilter = currentEntity.gameObject.AddComponent<MeshFilter>();
+            }
 
-            var objShapeComponent = rendererGameObject.AddComponent<DynamicOBJLoaderController>();
-            objShapeComponent.LoadAsset(parsedEntity.components.shape.src);
+            meshRenderer = currentEntity.gameObject.GetComponent<MeshRenderer>();
+            if (!meshRenderer) {
+              meshRenderer = currentEntity.gameObject.AddComponent<MeshRenderer>();
+            }
+            break;
+          default:
+            // stub
+            break;
+        }
 
-            objShapeComponent.loadingPlaceholder = AttachPlaceholderRendererGameObject(rendererGameObject.transform);
-          }
-          break;
+        if (meshFilter.mesh) {
+          Object.Destroy(meshFilter.mesh);
+        }
+
+        switch (newShape.tag) {
+          case "box":
+            meshFilter.mesh = PrimitiveMeshBuilder.BuildCube(1f);
+            meshRenderer.material = material;
+            break;
+          case "sphere":
+            meshFilter.mesh = PrimitiveMeshBuilder.BuildSphere(1f);
+            meshRenderer.material = material;
+            break;
+          case "plane":
+            meshFilter.mesh = PrimitiveMeshBuilder.BuildPlane(1f);
+            meshRenderer.material = material;
+            break;
+          case "cone":
+            meshFilter.mesh = PrimitiveMeshBuilder.BuildCone(50, 0f, 1f, 2f, 0f, true, false);
+            meshRenderer.material = material;
+            break;
+          case "cylinder":
+            meshFilter.mesh = PrimitiveMeshBuilder.BuildCylinder(50, 1f, 1f, 2f, 0f, true, false);
+            meshRenderer.material = material;
+            break;
+          case "gltf-model":
+            if (!string.IsNullOrEmpty(newShape.src)) {
+              if (meshFilter) {
+                Object.Destroy(meshFilter);
+              }
+              if (meshRenderer) {
+                Object.Destroy(meshRenderer);
+              }
+              var gltfShapeComponent = currentEntity.gameObject.AddComponent<GLTFComponent>();
+              gltfShapeComponent.Multithreaded = false;
+              gltfShapeComponent.LoadAsset(newShape.src);
+
+              gltfShapeComponent.loadingPlaceholder = AttachPlaceholderRendererGameObject(currentEntity.gameObject.transform);
+            }
+            break;
+          case "obj-model":
+            if (!string.IsNullOrEmpty(newShape.src)) {
+              var objShapeComponent = currentEntity.gameObject.AddComponent<DynamicOBJLoaderController>();
+              objShapeComponent.LoadAsset(newShape.src);
+
+              objShapeComponent.loadingPlaceholder = AttachPlaceholderRendererGameObject(currentEntity.gameObject.transform);
+            }
+            break;
+        }
+
+        currentEntity.components.shape = newShape;
       }
-
-      if (rendererGameObject != null) {
-        rendererGameObject.transform.SetParent(currentEntity.gameObjectReference.transform);
-        rendererGameObject.name = "Renderer";
-      }
-
-      return rendererGameObject;
     }
 
     static GameObject AttachPlaceholderRendererGameObject(Transform targetTransform) {

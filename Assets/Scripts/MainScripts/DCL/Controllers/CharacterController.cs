@@ -2,13 +2,13 @@
 using UnityEngine;
 
 public class CharacterController : MonoBehaviour {
-  public float aimingHorizontalSpeed = 20f;
-  public float aimingVerticalSpeed = 20f;
-  public float aimingVerticalMinimumAngle = -60f;
-  public float aimingVerticalMaximumAngle = 30f;
-  public float movementSpeed = 5f;
-  public float jumpForce = 150f;
-  public float sunInclination = -0.31f;
+  float aimingHorizontalSpeed = 100f;
+  float aimingVerticalSpeed = 100f;
+  float aimingVerticalMinimumAngle = -60f;
+  float aimingVerticalMaximumAngle = 30f;
+  float movementSpeed = 5f;
+  float jumpForce = 150f;
+  float sunInclination = -0.31f;
 
   float aimingHorizontalAngle;
   float aimingVerticalAngle;
@@ -55,6 +55,26 @@ public class CharacterController : MonoBehaviour {
 
   void SetPosition(string positionVector) {
     originalPosition = transform.position = JsonUtility.FromJson<Vector3>(positionVector);
+
+    UpdateEnvironment();
+  }
+
+  void UpdateEnvironment() {
+    DCL.Interface.WebInterface.ReportPosition(transform.position, transform.rotation);
+
+    var originalY = ground.transform.position.y;
+
+    ground.transform.position = new Vector3(
+      Mathf.Floor(transform.position.x / ParcelSettings.PARCEL_SIZE) * ParcelSettings.PARCEL_SIZE,
+      originalY,
+      Mathf.Floor(transform.position.z / ParcelSettings.PARCEL_SIZE) * ParcelSettings.PARCEL_SIZE
+    );
+
+    sun.transform.position = SunPosition();
+
+    var sunfade = 1.0f - Mathf.Min(Mathf.Max(1.0f - Mathf.Exp(sun.transform.position.y / 10f), 0.0f), 0.9f);
+
+    sunLight.intensity = sunfade;
   }
 
   void Update() {
@@ -103,8 +123,6 @@ public class CharacterController : MonoBehaviour {
       didMove = true;
     }
 
-    movementDirection = movementDirection.normalized;
-
     if (movementDirection != Vector3.zero &&
        (flyingMode || !Physics.Raycast(transform.position, movementDirection.normalized, collider.bounds.extents.x + 0.5f))) { // Wall-Collision check
       transform.position += movementDirection;
@@ -118,21 +136,7 @@ public class CharacterController : MonoBehaviour {
     }
 
     if (didMove) {
-      DCL.Interface.WebInterface.ReportPosition(transform.position, transform.rotation);
-
-      var originalY = ground.transform.position.y;
-
-      ground.transform.position = new Vector3(
-        Mathf.Floor(transform.position.x / ParcelSettings.PARCEL_SIZE) * ParcelSettings.PARCEL_SIZE,
-        originalY,
-        Mathf.Floor(transform.position.z / ParcelSettings.PARCEL_SIZE) * ParcelSettings.PARCEL_SIZE
-      );
-
-      sun.transform.position = SunPosition();
-
-      var sunfade = 1.0f - Mathf.Min(Mathf.Max(1.0f - Mathf.Exp(sun.transform.position.y / 10f), 0.0f), 0.9f);
-
-      sunLight.intensity = sunfade;
+      UpdateEnvironment();
     }
   }
 }

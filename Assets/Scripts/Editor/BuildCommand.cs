@@ -35,15 +35,6 @@ static class BuildCommand {
     string buildTargetName = GetArgument("customBuildTarget");
     Console.WriteLine(":: Received customBuildTarget " + buildTargetName);
 
-    if (buildTargetName.ToLower() == "android") {
-#if !UNITY_5_6_OR_NEWER
-      // https://issuetracker.unity3d.com/issues/buildoptions-dot-acceptexternalmodificationstoplayer-causes-unityexception-unknown-project-type-0
-      // Fixed in Unity 5.6.0
-      // side effect to fix android build system:
-      EditorUserBuildSettings.androidBuildSystem = AndroidBuildSystem.Internal;
-#endif
-    }
-
     return ToEnum<BuildTarget>(buildTargetName, BuildTarget.NoTarget);
   }
 
@@ -108,11 +99,7 @@ static class BuildCommand {
 
   static void PerformBuild() {
     Console.WriteLine(":: Performing build");
-    // PlayerSettings.keystorePass = getEnv ("KEYSTORE_PASS", true);
-    // PlayerSettings.keyaliasPass = getEnv ("KEY_ALIAS_PASS", true);
-    // EditorSetup.AndroidSdkRoot = getEnv ("ANDROID_SDK_HOME");
-    // EditorSetup.JdkRoot = getEnv ("JAVA_HOME");
-    // EditorSetup.AndroidNdkRoot = getEnv ("ANDROID_NDK_HOME");
+
     var buildTarget = GetBuildTarget();
     var buildPath = GetBuildPath();
     var buildName = GetBuildName();

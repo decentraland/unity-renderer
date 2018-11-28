@@ -56,6 +56,7 @@ Material:
     - _Metallic: 0
     - _OcclusionStrength: 1
     - _ReceiveShadows: 1
+    - _SampleGI: 0
     - _SmoothnessTextureChannel: 0
     - _SpecularHighlights: 1
     - _SrcBlend: 1

@@ -1,15 +1,12 @@
+using System;
+using System.Collections;
 using System.Collections.Generic;
-
-using System.Runtime.InteropServices;
+using System.Linq;
 using UnityGLTF;
 using UnityEngine;
 using DCL.Interface;
-using Newtonsoft.Json;
 using DCL.Models;
-using System.Linq;
 using DCL.Controllers;
-using System;
-using System.Collections;
 
 public class SceneController : MonoBehaviour {
   public bool startDecentralandAutomatically = true;
@@ -43,7 +40,7 @@ public class SceneController : MonoBehaviour {
     Cursor.lockState = CursorLockMode.None;
   }
 
-  ParcelScene GetDecentralandSceneOfParcel(Vector2 parcel) {
+  ParcelScene GetDecentralandSceneOfParcel(Vector2Int parcel) {
     foreach (var estate in loadedScenes) {
       if (estate.Value.sceneData.basePosition.Equals(parcel)) {
         return estate.Value;
@@ -58,9 +55,13 @@ public class SceneController : MonoBehaviour {
     return null;
   }
 
+
+  private LoadParcelScenesMessage loadParcelScenesMessage = new LoadParcelScenesMessage();
+
   public void LoadParcelScenes(string decentralandSceneJSON) {
-    var message = JsonUtility.FromJson<LoadParcelScenesMessage>(decentralandSceneJSON);
-    var scenesToLoad = message.parcelsToLoad;
+    JsonUtility.FromJsonOverwrite(decentralandSceneJSON, this.loadParcelScenesMessage);
+
+    var scenesToLoad = loadParcelScenesMessage.parcelsToLoad;
     var completeListOfParcelsThatShouldBeLoaded = new List<string>();
 
     // LOAD MISSING SCENES
@@ -70,7 +71,10 @@ public class SceneController : MonoBehaviour {
       completeListOfParcelsThatShouldBeLoaded.Add(sceneToLoad.id);
 
       if (GetDecentralandSceneOfParcel(sceneToLoad.basePosition) == null) {
-        var newScene = new ParcelScene(sceneToLoad);
+        var newGameObject = new GameObject();
+
+        var newScene = newGameObject.AddComponent<ParcelScene>();
+        newScene.SetData(sceneToLoad);
 
         if (!loadedScenes.ContainsKey(sceneToLoad.id)) {
           loadedScenes.Add(sceneToLoad.id, newScene);
@@ -93,7 +97,9 @@ public class SceneController : MonoBehaviour {
 
   public void UnloadScene(string sceneKey) {
     if (loadedScenes.ContainsKey(sceneKey)) {
-      loadedScenes[sceneKey].Dispose();
+      if (loadedScenes[sceneKey] != null) {
+        loadedScenes[sceneKey].Dispose();
+      }
       loadedScenes.Remove(sceneKey);
     }
   }
@@ -107,18 +113,20 @@ public class SceneController : MonoBehaviour {
 
   public ParcelScene CreateTestScene(LoadParcelScenesMessage.UnityParcelScene data) {
     if (data.basePosition == null) {
-      data.basePosition = new Vector2(0, 0);
+      data.basePosition = new Vector2Int(0, 0);
     }
 
     if (data.parcels == null) {
-      data.parcels = new Vector2[] { data.basePosition };
+      data.parcels = new Vector2Int[] { data.basePosition };
     }
 
     if (string.IsNullOrEmpty(data.id)) {
-      data.id = $"{data.basePosition.x},${data.basePosition.y}";
+      data.id = $"(test):{data.basePosition.x},{data.basePosition.y}";
     }
 
-    var newScene = new ParcelScene(data);
+    var go = new GameObject();
+    var newScene = go.AddComponent<ParcelScene>();
+    newScene.SetData(data);
 
     if (!loadedScenes.ContainsKey(data.id)) {
       loadedScenes.Add(data.id, newScene);
