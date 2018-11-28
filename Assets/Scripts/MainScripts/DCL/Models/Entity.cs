@@ -5,42 +5,10 @@ namespace DCL.Models {
   [Serializable]
   public class DecentralandEntity {
     // TODO: interfaces do not have logic or game objects
-    public GameObject gameObjectReference;
-    public string id;
+    public GameObject gameObject;
+    public string entityId;
     public string parentId;
     public EntityComponents components = null;
-
-    Vector3 auxVector;
-
-    public void UpdateGameObjectComponents() {
-      if (gameObjectReference != null) {
-
-        if (components.transform != null) {
-          // Apply position update
-          auxVector.Set(components.transform.position.x,
-                                    components.transform.position.y,
-                                    components.transform.position.z);
-
-          gameObjectReference.transform.position = auxVector;
-
-          // Apply rotation update
-          auxVector.Set(components.transform.rotation.x,
-                                    components.transform.rotation.y,
-                                    components.transform.rotation.z);
-
-          gameObjectReference.transform.rotation = Quaternion.Euler(auxVector);
-
-          // Apply scale update
-          auxVector.Set(components.transform.scale.x,
-                                    components.transform.scale.y,
-                                    components.transform.scale.z);
-
-          gameObjectReference.transform.localScale = auxVector;
-        }
-
-        // TODO: Update the rest of the components.
-      }
-    }
 
     [Serializable]
     public class EntityComponents {
@@ -52,13 +20,37 @@ namespace DCL.Models {
     public class EntityShape {
       public string tag;
       public string src;
+
+      public bool Equals(EntityShape b) {
+        if (b == this) return true;
+        if (b == null) return false;
+        return this.tag == b.tag && this.src == b.src;
+      }
     }
 
     [Serializable]
     public class EntityTransform {
       public Vector3 position;
-      public Vector3 rotation;
+      public Quaternion rotation;
       public Vector3 scale;
+
+      public void ApplyTo(GameObject gameObject) {
+        if (gameObject != null) {
+          var t = gameObject.transform;
+
+          if (t.localPosition != position) {
+            t.localPosition = position;
+          }
+
+          if (t.localRotation != rotation) {
+            t.localRotation = rotation;
+          }
+
+          if (t.localScale != scale) {
+            t.localScale = scale;
+          }
+        }
+      }
     }
   }
 }

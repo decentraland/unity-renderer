@@ -9,12 +9,9 @@ using UnityEditor;
 * https://github.com/fairwood/DecentralandUnityPlugin
 */
 
-namespace DCL.Helpers
-{
-  public class PrimitiveMeshBuilder
-  {
-    public static Mesh BuildSphere(float radius)
-    {
+namespace DCL.Helpers {
+  public class PrimitiveMeshBuilder {
+    public static Mesh BuildSphere(float radius) {
       Mesh mesh = new Mesh();
       mesh.name = "DCL Sphere";
 
@@ -26,35 +23,32 @@ namespace DCL.Helpers
 
       #region Vertices
 
-      Vector3[] vertices = new Vector3[(nbLong + 1)*nbLat + 2];
+      Vector3[] vertices = new Vector3[(nbLong + 1) * nbLat + 2];
       float _pi = Mathf.PI;
-      float _2pi = _pi*2f;
+      float _2pi = _pi * 2f;
 
-      vertices[0] = Vector3.up*radius;
-      for (int lat = 0; lat < nbLat; lat++)
-      {
-        float a1 = _pi*(float) (lat + 1)/(nbLat + 1);
+      vertices[0] = Vector3.up * radius;
+      for (int lat = 0; lat < nbLat; lat++) {
+        float a1 = _pi * (float)(lat + 1) / (nbLat + 1);
         float sin1 = Mathf.Sin(a1);
         float cos1 = Mathf.Cos(a1);
 
-        for (int lon = 0; lon <= nbLong; lon++)
-        {
-          float a2 = _2pi*(float) (lon == nbLong ? 0 : lon)/nbLong;
+        for (int lon = 0; lon <= nbLong; lon++) {
+          float a2 = _2pi * (float)(lon == nbLong ? 0 : lon) / nbLong;
           float sin2 = Mathf.Sin(a2);
           float cos2 = Mathf.Cos(a2);
 
-          vertices[lon + lat*(nbLong + 1) + 1] = new Vector3(sin1*cos2, cos1, sin1*sin2)*radius;
+          vertices[lon + lat * (nbLong + 1) + 1] = new Vector3(sin1 * cos2, cos1, sin1 * sin2) * radius;
         }
       }
-      vertices[vertices.Length - 1] = Vector3.up*-radius;
+      vertices[vertices.Length - 1] = Vector3.up * -radius;
 
       #endregion
 
       #region Normales
 
       Vector3[] normales = new Vector3[vertices.Length];
-      for (int n = 0; n < vertices.Length; n++)
-      {
+      for (int n = 0; n < vertices.Length; n++) {
         normales[n] = vertices[n].normalized;
       }
 
@@ -65,11 +59,9 @@ namespace DCL.Helpers
       Vector2[] uvs = new Vector2[vertices.Length];
       uvs[0] = Vector2.up;
       uvs[uvs.Length - 1] = Vector2.zero;
-      for (int lat = 0; lat < nbLat; lat++)
-      {
-        for (int lon = 0; lon <= nbLong; lon++)
-        {
-          uvs[lon + lat*(nbLong + 1) + 1] = new Vector2(1f - (float) lon/nbLong, (float) (lat + 1)/(nbLat + 1));
+      for (int lat = 0; lat < nbLat; lat++) {
+        for (int lon = 0; lon <= nbLong; lon++) {
+          uvs[lon + lat * (nbLong + 1) + 1] = new Vector2(1f - (float)lon / nbLong, (float)(lat + 1) / (nbLat + 1));
         }
       }
       //uvs[lon + lat * (nbLong + 1) + 1] = new Vector2( (float)lon / nbLong, 1f - (float)(lat+1) / (nbLat+1) );
@@ -79,25 +71,22 @@ namespace DCL.Helpers
       #region Triangles
 
       int nbFaces = vertices.Length;
-      int nbTriangles = nbFaces*2;
-      int nbIndexes = nbTriangles*3;
+      int nbTriangles = nbFaces * 2;
+      int nbIndexes = nbTriangles * 3;
       int[] triangles = new int[nbIndexes];
 
       //Top Cap
       int i = 0;
-      for (int lon = 0; lon < nbLong; lon++)
-      {
+      for (int lon = 0; lon < nbLong; lon++) {
         triangles[i++] = lon + 2;
         triangles[i++] = lon + 1;
         triangles[i++] = 0;
       }
 
       //Middle
-      for (int lat = 0; lat < nbLat - 1; lat++)
-      {
-        for (int lon = 0; lon < nbLong; lon++)
-        {
-          int current = lon + lat*(nbLong + 1) + 1;
+      for (int lat = 0; lat < nbLat - 1; lat++) {
+        for (int lon = 0; lon < nbLong; lon++) {
+          int current = lon + lat * (nbLong + 1) + 1;
           int next = current + nbLong + 1;
 
           triangles[i++] = current;
@@ -111,8 +100,7 @@ namespace DCL.Helpers
       }
 
       //Bottom Cap
-      for (int lon = 0; lon < nbLong; lon++)
-      {
+      for (int lon = 0; lon < nbLong; lon++) {
         triangles[i++] = vertices.Length - 1;
         triangles[i++] = vertices.Length - (lon + 2) - 1;
         triangles[i++] = vertices.Length - (lon + 1) - 1;
@@ -129,8 +117,7 @@ namespace DCL.Helpers
       return mesh;
     }
 
-    public static Mesh BuildPlane(float _size)
-    {
+    public static Mesh BuildPlane(float _size) {
       Mesh mesh = new Mesh();
       mesh.name = "DCL Plane";
       Vector3[] vertices = new Vector3[8];
@@ -138,19 +125,19 @@ namespace DCL.Helpers
       Vector2[] uvs = new Vector2[8];
       Color[] colors = new Color[8];
 
-      int[] tris = new int[4*3];
+      int[] tris = new int[4 * 3];
 
       int vIndex = 0;
-      Vector3 start = new Vector3(-_size/2, _size/2, 0);
+      Vector3 start = new Vector3(-_size / 2, _size / 2, 0);
       vertices[vIndex++] = start;
-      vertices[vIndex++] = start + Vector3.right*_size;
-      vertices[vIndex++] = start + Vector3.right*_size + Vector3.down*_size;
-      vertices[vIndex++] = start + Vector3.down*_size;
+      vertices[vIndex++] = start + Vector3.right * _size;
+      vertices[vIndex++] = start + Vector3.right * _size + Vector3.down * _size;
+      vertices[vIndex++] = start + Vector3.down * _size;
 
       vertices[vIndex++] = start;
-      vertices[vIndex++] = start + Vector3.right*_size;
-      vertices[vIndex++] = start + Vector3.right*_size + Vector3.down*_size;
-      vertices[vIndex++] = start + Vector3.down*_size;
+      vertices[vIndex++] = start + Vector3.right * _size;
+      vertices[vIndex++] = start + Vector3.right * _size + Vector3.down * _size;
+      vertices[vIndex++] = start + Vector3.down * _size;
 
       vIndex = 0;
       uvs[vIndex++] = new Vector2(0f, 1f);
@@ -210,55 +197,54 @@ namespace DCL.Helpers
 
     }
 
-    public static Mesh BuildCube(float _size)
-    {
+    public static Mesh BuildCube(float _size) {
       Mesh mesh = new Mesh();
       mesh.name = "DCL Box";
       Vector3[] vertices = new Vector3[24]; //top bottom left right front back
       Vector3[] normals = new Vector3[24];
       Vector2[] uvs = new Vector2[24];
       Vector2[] uvs2 = new Vector2[24];
-      int[] tris = new int[12*3];
+      int[] tris = new int[12 * 3];
 
       int vIndex = 0;
       //top and bottom
-      Vector3 start = new Vector3(-_size/2, _size/2, _size/2);
+      Vector3 start = new Vector3(-_size / 2, _size / 2, _size / 2);
       vertices[vIndex++] = start;
-      vertices[vIndex++] = start + Vector3.right*_size;
-      vertices[vIndex++] = start + Vector3.right*_size + Vector3.back*_size;
-      vertices[vIndex++] = start + Vector3.back*_size;
+      vertices[vIndex++] = start + Vector3.right * _size;
+      vertices[vIndex++] = start + Vector3.right * _size + Vector3.back * _size;
+      vertices[vIndex++] = start + Vector3.back * _size;
 
-      start = new Vector3(-_size/2, -_size/2, _size/2);
+      start = new Vector3(-_size / 2, -_size / 2, _size / 2);
       vertices[vIndex++] = start;
-      vertices[vIndex++] = start + Vector3.right*_size;
-      vertices[vIndex++] = start + Vector3.right*_size + Vector3.back*_size;
-      vertices[vIndex++] = start + Vector3.back*_size;
+      vertices[vIndex++] = start + Vector3.right * _size;
+      vertices[vIndex++] = start + Vector3.right * _size + Vector3.back * _size;
+      vertices[vIndex++] = start + Vector3.back * _size;
 
       //left and right
-      start = new Vector3(-_size/2, _size/2, _size/2);
+      start = new Vector3(-_size / 2, _size / 2, _size / 2);
       vertices[vIndex++] = start;
-      vertices[vIndex++] = start + Vector3.back*_size;
-      vertices[vIndex++] = start + Vector3.back*_size + Vector3.down*_size;
-      vertices[vIndex++] = start + Vector3.down*_size;
+      vertices[vIndex++] = start + Vector3.back * _size;
+      vertices[vIndex++] = start + Vector3.back * _size + Vector3.down * _size;
+      vertices[vIndex++] = start + Vector3.down * _size;
 
-      start = new Vector3(_size/2, _size/2, _size/2);
+      start = new Vector3(_size / 2, _size / 2, _size / 2);
       vertices[vIndex++] = start;
-      vertices[vIndex++] = start + Vector3.back*_size;
-      vertices[vIndex++] = start + Vector3.back*_size + Vector3.down*_size;
-      vertices[vIndex++] = start + Vector3.down*_size;
+      vertices[vIndex++] = start + Vector3.back * _size;
+      vertices[vIndex++] = start + Vector3.back * _size + Vector3.down * _size;
+      vertices[vIndex++] = start + Vector3.down * _size;
 
       //front and back
-      start = new Vector3(-_size/2, _size/2, _size/2);
+      start = new Vector3(-_size / 2, _size / 2, _size / 2);
       vertices[vIndex++] = start;
-      vertices[vIndex++] = start + Vector3.right*_size;
-      vertices[vIndex++] = start + Vector3.right*_size + Vector3.down*_size;
-      vertices[vIndex++] = start + Vector3.down*_size;
+      vertices[vIndex++] = start + Vector3.right * _size;
+      vertices[vIndex++] = start + Vector3.right * _size + Vector3.down * _size;
+      vertices[vIndex++] = start + Vector3.down * _size;
 
-      start = new Vector3(-_size/2, _size/2, -_size/2);
+      start = new Vector3(-_size / 2, _size / 2, -_size / 2);
       vertices[vIndex++] = start;
-      vertices[vIndex++] = start + Vector3.right*_size;
-      vertices[vIndex++] = start + Vector3.right*_size + Vector3.down*_size;
-      vertices[vIndex++] = start + Vector3.down*_size;
+      vertices[vIndex++] = start + Vector3.right * _size;
+      vertices[vIndex++] = start + Vector3.right * _size + Vector3.down * _size;
+      vertices[vIndex++] = start + Vector3.down * _size;
 
       //uv
       vIndex = 0;
@@ -422,12 +408,10 @@ namespace DCL.Helpers
     }
 
     public static Mesh BuildConeOrCylinder(int numVertices, float radiusTop, float radiusBottom, float length,
-      float openingAngle, bool outside, bool inside, bool isCylinder, Vector3 offsetPos = default(Vector3))
-    {
-      if (openingAngle > 0 && openingAngle < 180)
-      {
+      float openingAngle, bool outside, bool inside, bool isCylinder, Vector3 offsetPos = default(Vector3)) {
+      if (openingAngle > 0 && openingAngle < 180) {
         radiusTop = 0;
-        radiusBottom = length*Mathf.Tan(openingAngle*Mathf.Deg2Rad/2);
+        radiusBottom = length * Mathf.Tan(openingAngle * Mathf.Deg2Rad / 2);
       }
       string meshName = isCylinder
         ? "DCL Cylinder"
@@ -435,8 +419,7 @@ namespace DCL.Helpers
           (outside ? "o" : "") + (inside ? "i" : "");
       //string meshPrefabPath = "Assets/Decentraland/Internal/" + meshName + ".asset";
       Mesh mesh = null; //(Mesh)AssetDatabase.LoadAssetAtPath(meshPrefabPath, typeof(Mesh));
-      if (mesh == null)
-      {
+      if (mesh == null) {
 
         int numVertices2 = numVertices + 1;
 
@@ -445,71 +428,62 @@ namespace DCL.Helpers
         // can't access Camera.current
         //newCone.transform.position = Camera.current.transform.position + Camera.current.transform.forward * 5.0f;
         int multiplier = (outside ? 1 : 0) + (inside ? 1 : 0);
-        int offset = (outside && inside ? 2*numVertices2 : 0);
+        int offset = (outside && inside ? 2 * numVertices2 : 0);
 
         bool bTopCap = isCylinder ? true : false;
         bool bBottomCap = true;
 
         Vector3[] vertices =
           new Vector3[
-            2*multiplier*numVertices2 + (bTopCap ? (numVertices + 1) : 0) + (bBottomCap ? (numVertices + 1) : 0)];
-          // 0..n-1: top, n..2n-1: bottom
+            2 * multiplier * numVertices2 + (bTopCap ? (numVertices + 1) : 0) + (bBottomCap ? (numVertices + 1) : 0)];
+        // 0..n-1: top, n..2n-1: bottom
         Vector3[] normals =
           new Vector3[
-            2*multiplier*numVertices2 + (bTopCap ? (numVertices + 1) : 0) + (bBottomCap ? (numVertices + 1) : 0)];
+            2 * multiplier * numVertices2 + (bTopCap ? (numVertices + 1) : 0) + (bBottomCap ? (numVertices + 1) : 0)];
         Vector2[] uvs =
           new Vector2[
-            2*multiplier*numVertices2 + (bTopCap ? (numVertices + 1) : 0) + (bBottomCap ? (numVertices + 1) : 0)];
+            2 * multiplier * numVertices2 + (bTopCap ? (numVertices + 1) : 0) + (bBottomCap ? (numVertices + 1) : 0)];
         int[] tris;
-        float slope = Mathf.Atan((radiusBottom - radiusTop)/length); // (rad difference)/height
+        float slope = Mathf.Atan((radiusBottom - radiusTop) / length); // (rad difference)/height
         float slopeSin = Mathf.Sin(slope);
         float slopeCos = Mathf.Cos(slope);
         int i;
 
-        for (i = 0; i < numVertices; i++)
-        {
-          float angle = 2*Mathf.PI*i/numVertices;
+        for (i = 0; i < numVertices; i++) {
+          float angle = 2 * Mathf.PI * i / numVertices;
           float angleSin = Mathf.Sin(angle);
           float angleCos = Mathf.Cos(angle);
-          float angleHalf = 2*Mathf.PI*(i + 0.5f)/numVertices; // for degenerated normals at cone tips
+          float angleHalf = 2 * Mathf.PI * (i + 0.5f) / numVertices; // for degenerated normals at cone tips
           float angleHalfSin = Mathf.Sin(angleHalf);
           float angleHalfCos = Mathf.Cos(angleHalf);
 
-          vertices[i] = new Vector3(radiusTop*angleCos, length, radiusTop*angleSin) + offsetPos;
-          vertices[i + numVertices2] = new Vector3(radiusBottom*angleCos, 0, radiusBottom*angleSin) + offsetPos;
+          vertices[i] = new Vector3(radiusTop * angleCos, length, radiusTop * angleSin) + offsetPos;
+          vertices[i + numVertices2] = new Vector3(radiusBottom * angleCos, 0, radiusBottom * angleSin) + offsetPos;
 
-          if (radiusTop == 0)
-          {
-            normals[i] = new Vector3(angleHalfCos*slopeCos, -slopeSin, angleHalfSin*slopeCos);
-          }
-          else
-          {
-            normals[i] = new Vector3(angleCos*slopeCos, -slopeSin, angleSin*slopeCos);
+          if (radiusTop == 0) {
+            normals[i] = new Vector3(angleHalfCos * slopeCos, -slopeSin, angleHalfSin * slopeCos);
+          } else {
+            normals[i] = new Vector3(angleCos * slopeCos, -slopeSin, angleSin * slopeCos);
           }
 
-          if (radiusBottom == 0)
-          {
-            normals[i + numVertices2] = new Vector3(angleHalfCos*slopeCos, -slopeSin, angleHalfSin*slopeCos);
-          }
-          else
-          {
-            normals[i + numVertices2] = new Vector3(angleCos*slopeCos, -slopeSin, angleSin*slopeCos);
+          if (radiusBottom == 0) {
+            normals[i + numVertices2] = new Vector3(angleHalfCos * slopeCos, -slopeSin, angleHalfSin * slopeCos);
+          } else {
+            normals[i + numVertices2] = new Vector3(angleCos * slopeCos, -slopeSin, angleSin * slopeCos);
           }
 
-          uvs[i] = new Vector2(1.0f - 1.0f*i/numVertices, 1);
-          uvs[i + numVertices2] = new Vector2(1.0f - 1.0f*i/numVertices, 0);
+          uvs[i] = new Vector2(1.0f - 1.0f * i / numVertices, 1);
+          uvs[i + numVertices2] = new Vector2(1.0f - 1.0f * i / numVertices, 0);
 
-          if (outside && inside)
-          {
+          if (outside && inside) {
             // vertices and uvs are identical on inside and outside, so just copy
-            vertices[i + 2*numVertices2] = vertices[i];
-            vertices[i + 3*numVertices2] = vertices[i + numVertices2];
-            uvs[i + 2*numVertices2] = uvs[i];
-            uvs[i + 3*numVertices2] = uvs[i + numVertices2];
+            vertices[i + 2 * numVertices2] = vertices[i];
+            vertices[i + 3 * numVertices2] = vertices[i + numVertices2];
+            uvs[i + 2 * numVertices2] = uvs[i];
+            uvs[i + 3 * numVertices2] = uvs[i + numVertices2];
           }
 
-          if (inside)
-          {
+          if (inside) {
             // invert normals
             normals[i + offset] = -normals[i];
             normals[i + numVertices2 + offset] = -normals[i + numVertices2];
@@ -518,26 +492,24 @@ namespace DCL.Helpers
 
         vertices[numVertices] = vertices[0];
         vertices[numVertices + numVertices2] = vertices[0 + numVertices2];
-        uvs[numVertices] = new Vector2(1.0f - 1.0f*numVertices/numVertices, 1);
-        uvs[numVertices + numVertices2] = new Vector2(1.0f - 1.0f*numVertices/numVertices, 0);
+        uvs[numVertices] = new Vector2(1.0f - 1.0f * numVertices / numVertices, 1);
+        uvs[numVertices + numVertices2] = new Vector2(1.0f - 1.0f * numVertices / numVertices, 0);
         normals[numVertices] = normals[0];
         normals[numVertices + numVertices2] = normals[0 + numVertices2];
 
 
-        int coverTopIndexStart = 2*multiplier*numVertices2;
-        int coverTopIndexEnd = 2*multiplier*numVertices2 + numVertices;
+        int coverTopIndexStart = 2 * multiplier * numVertices2;
+        int coverTopIndexEnd = 2 * multiplier * numVertices2 + numVertices;
 
-        if (bTopCap)
-        {
-          for (i = 0; i < numVertices; i++)
-          {
-            float angle = 2*Mathf.PI*i/numVertices;
+        if (bTopCap) {
+          for (i = 0; i < numVertices; i++) {
+            float angle = 2 * Mathf.PI * i / numVertices;
             float angleSin = Mathf.Sin(angle);
             float angleCos = Mathf.Cos(angle);
 
-            vertices[coverTopIndexStart + i] = new Vector3(radiusTop*angleCos, length, radiusTop*angleSin) + offsetPos;
+            vertices[coverTopIndexStart + i] = new Vector3(radiusTop * angleCos, length, radiusTop * angleSin) + offsetPos;
             normals[coverTopIndexStart + i] = new Vector3(0, 1, 0);
-            uvs[coverTopIndexStart + i] = new Vector2(angleCos/2 + 0.5f, angleSin/2 + 0.5f);
+            uvs[coverTopIndexStart + i] = new Vector2(angleCos / 2 + 0.5f, angleSin / 2 + 0.5f);
           }
 
           vertices[coverTopIndexStart + numVertices] = new Vector3(0, length, 0) + offsetPos;
@@ -546,20 +518,18 @@ namespace DCL.Helpers
         }
 
 
-        int coverBottomIndexStart = coverTopIndexStart + (bTopCap ? 1 : 0)*(numVertices + 1);
+        int coverBottomIndexStart = coverTopIndexStart + (bTopCap ? 1 : 0) * (numVertices + 1);
         int coverBottomIndexEnd = coverBottomIndexStart + numVertices;
-        if (bBottomCap)
-        {
-          for (i = 0; i < numVertices; i++)
-          {
-            float angle = 2*Mathf.PI*i/numVertices;
+        if (bBottomCap) {
+          for (i = 0; i < numVertices; i++) {
+            float angle = 2 * Mathf.PI * i / numVertices;
             float angleSin = Mathf.Sin(angle);
             float angleCos = Mathf.Cos(angle);
 
-            vertices[coverBottomIndexStart + i] = new Vector3(radiusBottom*angleCos, 0f, radiusBottom*angleSin) +
+            vertices[coverBottomIndexStart + i] = new Vector3(radiusBottom * angleCos, 0f, radiusBottom * angleSin) +
                                                   offsetPos;
             normals[coverBottomIndexStart + i] = new Vector3(0, -1, 0);
-            uvs[coverBottomIndexStart + i] = new Vector2(angleCos/2 + 0.5f, angleSin/2 + 0.5f);
+            uvs[coverBottomIndexStart + i] = new Vector2(angleCos / 2 + 0.5f, angleSin / 2 + 0.5f);
 
           }
 
@@ -575,16 +545,13 @@ namespace DCL.Helpers
         // create triangles
         // here we need to take care of point order, depending on inside and outside
         int cnt = 0;
-        if (radiusTop == 0)
-        {
+        if (radiusTop == 0) {
           // top cone
           tris =
-            new int[numVertices2*3*multiplier + ((bTopCap ? 1 : 0)*numVertices*3) + ((bBottomCap ? 1 : 0)*numVertices*3)
+            new int[numVertices2 * 3 * multiplier + ((bTopCap ? 1 : 0) * numVertices * 3) + ((bBottomCap ? 1 : 0) * numVertices * 3)
               ];
-          if (outside)
-          {
-            for (i = 0; i < numVertices; i++)
-            {
+          if (outside) {
+            for (i = 0; i < numVertices; i++) {
               tris[cnt++] = i + numVertices2;
               tris[cnt++] = i;
               tris[cnt++] = i + 1 + numVertices2;
@@ -595,10 +562,8 @@ namespace DCL.Helpers
             }
           }
 
-          if (inside)
-          {
-            for (i = offset; i < numVertices + offset; i++)
-            {
+          if (inside) {
+            for (i = offset; i < numVertices + offset; i++) {
               tris[cnt++] = i;
               tris[cnt++] = i + numVertices2;
               tris[cnt++] = i + 1 + numVertices2;
@@ -608,17 +573,13 @@ namespace DCL.Helpers
               //								tris[cnt++]=i+1+numVertices;
             }
           }
-        }
-        else if (radiusBottom == 0)
-        {
+        } else if (radiusBottom == 0) {
           // bottom cone
           tris =
-            new int[numVertices2*3*multiplier + ((bTopCap ? 1 : 0)*numVertices*3) + ((bBottomCap ? 1 : 0)*numVertices*3)
+            new int[numVertices2 * 3 * multiplier + ((bTopCap ? 1 : 0) * numVertices * 3) + ((bBottomCap ? 1 : 0) * numVertices * 3)
               ];
-          if (outside)
-          {
-            for (i = 0; i < numVertices; i++)
-            {
+          if (outside) {
+            for (i = 0; i < numVertices; i++) {
               tris[cnt++] = i;
               tris[cnt++] = i + 1;
               //							if(i==numVertices-1)
@@ -628,10 +589,8 @@ namespace DCL.Helpers
               tris[cnt++] = i + numVertices2;
             }
           }
-          if (inside)
-          {
-            for (i = offset; i < numVertices + offset; i++)
-            {
+          if (inside) {
+            for (i = offset; i < numVertices + offset; i++) {
               //							if(i==numVertices-1+offset)
               //								tris[cnt++]=offset;
               //							else
@@ -641,17 +600,13 @@ namespace DCL.Helpers
               tris[cnt++] = i + numVertices2;
             }
           }
-        }
-        else
-        {
+        } else {
           // truncated cone
           tris =
-            new int[numVertices2*6*multiplier + ((bTopCap ? 1 : 0)*numVertices*3) + ((bBottomCap ? 1 : 0)*numVertices*3)
+            new int[numVertices2 * 6 * multiplier + ((bTopCap ? 1 : 0) * numVertices * 3) + ((bBottomCap ? 1 : 0) * numVertices * 3)
               ];
-          if (outside)
-          {
-            for (i = 0; i < numVertices; i++)
-            {
+          if (outside) {
+            for (i = 0; i < numVertices; i++) {
               int ip1 = i + 1;
               //							if(ip1==numVertices)
               //								ip1=0;
@@ -666,10 +621,8 @@ namespace DCL.Helpers
             }
           }
 
-          if (inside)
-          {
-            for (i = offset; i < numVertices + offset; i++)
-            {
+          if (inside) {
+            for (i = offset; i < numVertices + offset; i++) {
               int ip1 = i + 1;
               //							if(ip1==numVertices+offset)
               //								ip1=offset;
@@ -685,14 +638,11 @@ namespace DCL.Helpers
           }
         }
 
-        if (bTopCap)
-        {
-          for (i = 0; i < numVertices; ++i)
-          {
+        if (bTopCap) {
+          for (i = 0; i < numVertices; ++i) {
             int next = coverTopIndexStart + i + 1;
 
-            if (next == coverTopIndexEnd)
-            {
+            if (next == coverTopIndexEnd) {
               next = coverTopIndexStart;
             }
 
@@ -702,13 +652,10 @@ namespace DCL.Helpers
           }
         }
 
-        if (bBottomCap)
-        {
-          for (i = 0; i < numVertices; ++i)
-          {
+        if (bBottomCap) {
+          for (i = 0; i < numVertices; ++i) {
             int next = coverBottomIndexStart + i + 1;
-            if (next == coverBottomIndexEnd)
-            {
+            if (next == coverBottomIndexEnd) {
               next = coverBottomIndexStart;
             }
 
@@ -727,17 +674,15 @@ namespace DCL.Helpers
     }
 
     public static Mesh BuildCone(int numVertices, float radiusTop, float radiusBottom, float length,
-      float openingAngle, bool outside, bool inside)
-    {
+      float openingAngle, bool outside, bool inside) {
       return BuildConeOrCylinder(numVertices, radiusTop, radiusBottom, length, openingAngle, outside, inside, false,
-        new Vector3(0f, -length/2, 0f));
+        new Vector3(0f, -length / 2, 0f));
     }
 
     public static Mesh BuildCylinder(int numVertices, float radiusTop, float radiusBottom, float length,
-      float openingAngle, bool outside, bool inside)
-    {
+      float openingAngle, bool outside, bool inside) {
       return BuildConeOrCylinder(numVertices, radiusTop, radiusBottom, length, openingAngle, outside, inside, true,
-        new Vector3(0f, -length/2, 0f));
+        new Vector3(0f, -length / 2, 0f));
     }
   }
 }

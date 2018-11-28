@@ -6,19 +6,17 @@ using DCL.Models;
 using DCL.Configuration;
 
 namespace DCL.Controllers {
-  public class ParcelScene {
-    public GameObject rootGameObject;
-
+  public class ParcelScene : MonoBehaviour {
     public Dictionary<string, DecentralandEntity> entities = new Dictionary<string, DecentralandEntity>();
 
-    public LoadParcelScenesMessage.UnityParcelScene sceneData { get; }
+    public LoadParcelScenesMessage.UnityParcelScene sceneData { get; private set; }
 
-    public ParcelScene(LoadParcelScenesMessage.UnityParcelScene data) {
+    public void SetData(LoadParcelScenesMessage.UnityParcelScene data) {
       this.sceneData = data;
 
-      rootGameObject = new GameObject();
-      rootGameObject.name = $"scene:{data.id}";
-      rootGameObject.transform.position = LandHelpers.GridToWorldPosition(data.basePosition.x, data.basePosition.y);
+      this.name = gameObject.name = $"scene:{data.id}";
+
+      gameObject.transform.position = LandHelpers.GridToWorldPosition(data.basePosition.x, data.basePosition.y);
 
       if (Environment.DEBUG) {
         for (int j = 0; j < data.parcels.Length; j++) {
@@ -33,15 +31,12 @@ namespace DCL.Controllers {
           }
 
           plane.name = $"parcel:{data.parcels[j].x},{data.parcels[j].y}";
-          plane.transform.SetParent(rootGameObject.transform);
+          plane.transform.SetParent(gameObject.transform);
 
-          var position = LandHelpers.GridToWorldPosition(
-            // SET TO A POSITION RELATIVE TO basePosition
-            data.parcels[j].x - data.basePosition.x,
-            data.parcels[j].y - data.basePosition.y
-          );
+          var position = LandHelpers.GridToWorldPosition(data.parcels[j].x, data.parcels[j].y);
+          // SET TO A POSITION RELATIVE TO basePosition
 
-          position.y += 0.01f;
+          position.Set(position.x + ParcelSettings.PARCEL_SIZE / 2, ParcelSettings.DEBUG_FLOOR_HEIGHT, position.z + ParcelSettings.PARCEL_SIZE / 2);
 
           plane.transform.position = position;
         }
@@ -49,24 +44,21 @@ namespace DCL.Controllers {
     }
 
     public override string ToString() {
-      return "gameObjectReference: " + rootGameObject + "\n" + sceneData.ToString();
+      return "gameObjectReference: " + this.ToString() + "\n" + sceneData.ToString();
     }
 
     internal void Dispose() {
       RemoveAllEntities();
-      Object.Destroy(rootGameObject);
+      Object.Destroy(this);
     }
 
     public void CreateEntity(string entityID) {
       if (!entities.ContainsKey(entityID)) {
-
         var newEntity = new DecentralandEntity();
         newEntity.components = new DecentralandEntity.EntityComponents();
-        newEntity.id = entityID;
-        newEntity.gameObjectReference = new GameObject();
-        newEntity.gameObjectReference.name = entityID;
-
-        newEntity.gameObjectReference.transform.SetParent(rootGameObject.transform);
+        newEntity.entityId = entityID;
+        newEntity.gameObject = new GameObject();
+        newEntity.gameObject.transform.SetParent(gameObject.transform);
 
         entities.Add(entityID, newEntity);
       } else {
@@ -76,7 +68,7 @@ namespace DCL.Controllers {
 
     public void RemoveEntity(string entityID) {
       if (entities.ContainsKey(entityID)) {
-        Object.Destroy(entities[entityID].gameObjectReference);
+        Object.Destroy(entities[entityID].gameObject);
         entities.Remove(entityID);
       } else {
         Debug.Log("Couldn't remove entity with ID: " + entityID + " as it doesn't exist.");
@@ -90,42 +82,40 @@ namespace DCL.Controllers {
       }
     }
 
+    private SetEntityParentMessage tmpParentMessage = new SetEntityParentMessage();
+
     public void SetEntityParent(string RawJSONParams) {
-      // TODO: Root entity
-      DecentralandEntity auxiliaryDecentralandEntity = JsonUtility.FromJson<DecentralandEntity>(RawJSONParams);
+      JsonUtility.FromJsonOverwrite(RawJSONParams, tmpParentMessage);
 
-      if (auxiliaryDecentralandEntity.id != auxiliaryDecentralandEntity.parentId) {
-        DecentralandEntity parentDecentralandEntity;
+      if (tmpParentMessage.entityId != tmpParentMessage.parentId) {
+        GameObject rootGameObject = null;
 
-        entities.TryGetValue(auxiliaryDecentralandEntity.parentId, out parentDecentralandEntity);
+        if (tmpParentMessage.parentId == "0") {
+          rootGameObject = gameObject;
+        } else {
+          DecentralandEntity decentralandEntity = GetEntityForUpdate(tmpParentMessage.parentId);
+          if (decentralandEntity != null) {
+            rootGameObject = decentralandEntity.gameObject;
+          }
+        }
 
-        if (parentDecentralandEntity != null) {
-          DecentralandEntity decentralandEntity;
-
-          entities.TryGetValue(auxiliaryDecentralandEntity.id, out decentralandEntity);
+        if (rootGameObject != null) {
+          DecentralandEntity decentralandEntity = GetEntityForUpdate(tmpParentMessage.entityId);
 
           if (decentralandEntity != null) {
-            decentralandEntity.gameObjectReference.transform.SetParent(parentDecentralandEntity.gameObjectReference.transform);
-          } else {
-            Debug.Log("Couldn't enparent entity " + auxiliaryDecentralandEntity.id + " because that entity doesn't exist.");
+            decentralandEntity.gameObject.transform.SetParent(rootGameObject.transform);
           }
-        } else {
-          Debug.Log("Couldn't enparent entity " + auxiliaryDecentralandEntity.id + " because the parent (id " + auxiliaryDecentralandEntity.parentId + ") doesn't exist");
         }
-      } else {
-        Debug.Log("Couldn't enparent entity " + auxiliaryDecentralandEntity.id + " because the configured parent id is its own id.");
       }
     }
 
+    [System.Obsolete]
     public void UpdateEntity(string RawJSONParams) {
-      DecentralandEntity decentralandEntity;
-
       DecentralandEntity parsedEntity = JsonUtility.FromJson<DecentralandEntity>(RawJSONParams);
 
-      entities.TryGetValue(parsedEntity.id, out decentralandEntity);
+      DecentralandEntity decentralandEntity = GetEntityForUpdate(parsedEntity.entityId);
 
       if (decentralandEntity != null) {
-
         if (parsedEntity.components != null) {
           // Update entity transform data
           if (parsedEntity.components.transform != null) {
@@ -136,18 +126,142 @@ namespace DCL.Controllers {
           // TODO: Find a way to avoid the shape being initialized when a different component is parsed from the JSON.
           if (!string.IsNullOrEmpty(parsedEntity.components.shape.tag)) {
             // TODO: Detect changes in shape.
-            if (decentralandEntity.components.shape == null) { // First time shape instantiation
-              var shapeComponent = ShapeComponentHelpers.IntializeDecentralandEntityRenderer(decentralandEntity, parsedEntity);
+            if (decentralandEntity.components.shape == null) {
+              // First time shape instantiation
+              ShapeComponentHelpers.IntializeDecentralandEntityRenderer(decentralandEntity, parsedEntity.components.shape);
             }
 
             decentralandEntity.components.shape = parsedEntity.components.shape;
           }
         }
 
-        decentralandEntity.UpdateGameObjectComponents();
+        decentralandEntity.components?.transform?.ApplyTo(decentralandEntity.gameObject);
       } else {
-        Debug.Log("Couldn't update entity " + parsedEntity.id + " because that entity doesn't exist.");
+        Debug.Log("Couldn't update entity " + parsedEntity.entityId + " because that entity doesn't exist.");
       }
     }
+
+    /**
+      * This method is called when we need to attach a disposable component to the entity
+      */
+    public void AttachEntityComponent(string json) {
+      AttachEntityComponentMessage parsedJson = JsonUtility.FromJson<AttachEntityComponentMessage>(json);
+
+      DecentralandEntity decentralandEntity = GetEntityForUpdate(parsedJson.entityId);
+      if (decentralandEntity == null) return;
+    }
+
+    public void UpdateEntityComponent(string json) {
+      UpdateEntityComponentMessage parsedJson = JsonUtility.FromJson<UpdateEntityComponentMessage>(json);
+
+      DecentralandEntity decentralandEntity = GetEntityForUpdate(parsedJson.entityId);
+      if (decentralandEntity == null) return;
+
+      if (parsedJson.name == "transform") {
+        DecentralandEntity.EntityTransform parsedTransform = JsonUtility.FromJson<DecentralandEntity.EntityTransform>(parsedJson.json);
+        parsedTransform.ApplyTo(decentralandEntity.gameObject);
+      } else if (parsedJson.name == "shape") {
+        DecentralandEntity.EntityShape newShape = JsonUtility.FromJson<DecentralandEntity.EntityShape>(parsedJson.json);
+        ShapeComponentHelpers.IntializeDecentralandEntityRenderer(decentralandEntity, newShape);
+      }
+    }
+
+    public void ComponentAdded(string json) {
+      ComponentAddedMessage parsedJson = JsonUtility.FromJson<ComponentAddedMessage>(json);
+
+      DecentralandEntity decentralandEntity = GetEntityForUpdate(parsedJson.entityId);
+      if (decentralandEntity == null) return;
+
+    }
+
+    public void ComponentCreated(string json) {
+      ComponentCreatedMessage parsedJson = JsonUtility.FromJson<ComponentCreatedMessage>(json);
+    }
+
+    public void ComponentDisposed(string componentId) {
+      // componentId
+    }
+
+    public void ComponentRemoved(string json) {
+      ComponentRemovedMessage parsedJson = JsonUtility.FromJson<ComponentRemovedMessage>(json);
+
+      DecentralandEntity decentralandEntity = GetEntityForUpdate(parsedJson.entityId);
+      if (decentralandEntity == null) return;
+
+      if (parsedJson.name == "transform") {
+        decentralandEntity.gameObject.transform.localPosition = Vector3.zero;
+        decentralandEntity.gameObject.transform.localScale = Vector3.one;
+        decentralandEntity.gameObject.transform.localRotation = Quaternion.identity;
+      }
+    }
+
+    public void ComponentUpdated(string json) {
+      ComponentUpdatedMessage parsedJson = JsonUtility.FromJson<ComponentUpdatedMessage>(json);
+    }
+
+    private DecentralandEntity GetEntityForUpdate(string entityId) {
+      if (string.IsNullOrEmpty(entityId)) {
+        Debug.LogError("Null or empty entityId");
+        return null;
+      }
+
+      DecentralandEntity decentralandEntity;
+
+      if (!entities.TryGetValue(entityId, out decentralandEntity) || decentralandEntity == null || decentralandEntity.gameObject == null) {
+        return null;
+      }
+
+      return decentralandEntity;
+    }
+  }
+
+  [System.Serializable]
+  public class AttachEntityComponentMessage {
+    public string entityId;
+    /** name of the compoenent */
+    public string name;
+    public string componentId;
+  }
+
+  [System.Serializable]
+  public class UpdateEntityComponentMessage {
+    public string entityId;
+    /** name of the compoenent */
+    public string name;
+    public string json;
+  }
+
+  [System.Serializable]
+  public class SetEntityParentMessage {
+    public string entityId;
+    public string parentId;
+  }
+
+  [System.Serializable]
+  public class ComponentRemovedMessage {
+    public string entityId;
+    /** name of the compoenent */
+    public string name;
+  }
+
+  [System.Serializable]
+  public class ComponentAddedMessage {
+    public string entityId;
+    /** name of the compoenent */
+    public string name;
+    public string json;
+  }
+
+  [System.Serializable]
+  public class ComponentUpdatedMessage {
+    public string componentId;
+    public string json;
+  }
+
+  [System.Serializable]
+  public class ComponentCreatedMessage {
+    public string componentId;
+    /** name of the compoenent */
+    public string name;
   }
 }

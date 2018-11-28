@@ -8,6 +8,7 @@ obj/
 [Bb]uild/
 TestResults/
 Assets/InitTestScene*.unity
+Assets/InitTestScene*.unity.meta
 
 # ===================================== #
 # Visual Studio / MonoDevelop generated #
