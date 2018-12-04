@@ -24,12 +24,6 @@ namespace DCL.Controllers {
 
           Object.Destroy(plane.GetComponent<MeshCollider>());
 
-          var renderer = plane.GetComponent<MeshRenderer>();
-          // renderer.material = material;
-          if (renderer.material != null) {
-            renderer.material.renderQueue = 3001;
-          }
-
           plane.name = $"parcel:{data.parcels[j].x},{data.parcels[j].y}";
           plane.transform.SetParent(gameObject.transform);
 
@@ -109,38 +103,6 @@ namespace DCL.Controllers {
       }
     }
 
-    [System.Obsolete]
-    public void UpdateEntity(string RawJSONParams) {
-      DecentralandEntity parsedEntity = JsonUtility.FromJson<DecentralandEntity>(RawJSONParams);
-
-      DecentralandEntity decentralandEntity = GetEntityForUpdate(parsedEntity.entityId);
-
-      if (decentralandEntity != null) {
-        if (parsedEntity.components != null) {
-          // Update entity transform data
-          if (parsedEntity.components.transform != null) {
-            decentralandEntity.components.transform = parsedEntity.components?.transform;
-          }
-
-          // Update entity shape data. We check a shape property instead of shape itself for null as the JSONUtility removes the null of every component once one has been parsed.
-          // TODO: Find a way to avoid the shape being initialized when a different component is parsed from the JSON.
-          if (!string.IsNullOrEmpty(parsedEntity.components.shape.tag)) {
-            // TODO: Detect changes in shape.
-            if (decentralandEntity.components.shape == null) {
-              // First time shape instantiation
-              ShapeComponentHelpers.IntializeDecentralandEntityRenderer(decentralandEntity, parsedEntity.components.shape);
-            }
-
-            decentralandEntity.components.shape = parsedEntity.components.shape;
-          }
-        }
-
-        decentralandEntity.components?.transform?.ApplyTo(decentralandEntity.gameObject);
-      } else {
-        Debug.Log("Couldn't update entity " + parsedEntity.entityId + " because that entity doesn't exist.");
-      }
-    }
-
     /**
       * This method is called when we need to attach a disposable component to the entity
       */
@@ -163,6 +125,9 @@ namespace DCL.Controllers {
       } else if (parsedJson.name == "shape") {
         DecentralandEntity.EntityShape newShape = JsonUtility.FromJson<DecentralandEntity.EntityShape>(parsedJson.json);
         ShapeComponentHelpers.IntializeDecentralandEntityRenderer(decentralandEntity, newShape);
+      } else if (parsedJson.name == "material") {
+        DecentralandEntity.Material newMaterial = JsonUtility.FromJson<DecentralandEntity.Material>(parsedJson.json);
+        MaterialComponentHelpers.UpdateEntityMaterial(decentralandEntity, newMaterial);
       }
     }
 

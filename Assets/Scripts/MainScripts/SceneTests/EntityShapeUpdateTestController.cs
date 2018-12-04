@@ -1,7 +1,10 @@
-﻿using UnityEngine;
+﻿using DCL.Controllers;
+using DCL.Helpers;
+using Newtonsoft.Json;
+using UnityEngine;
 
 public class EntityShapeUpdateTestController : MonoBehaviour {
-  void Awake() {
+  void Start() {
     var sceneController = FindObjectOfType<SceneController>();
     var scenesToLoad = (Resources.Load("TestJSON/SceneLoadingTest") as TextAsset).text;
 
@@ -10,25 +13,12 @@ public class EntityShapeUpdateTestController : MonoBehaviour {
 
     var scene = sceneController.loadedScenes["0,0"];
 
-    scene.CreateEntity("1");
-    scene.UpdateEntity((Resources.Load("TestJSON/EntityUpdate/EntityBoxShapeUpdateTest") as TextAsset).text);
-
-    scene.CreateEntity("2");
-    scene.UpdateEntity((Resources.Load("TestJSON/EntityUpdate/EntitySphereShapeUpdateTest") as TextAsset).text);
-
-    scene.CreateEntity("3");
-    scene.UpdateEntity((Resources.Load("TestJSON/EntityUpdate/EntityPlaneShapeUpdateTest") as TextAsset).text);
-
-    scene.CreateEntity("4");
-    scene.UpdateEntity((Resources.Load("TestJSON/EntityUpdate/EntityConeShapeUpdateTest") as TextAsset).text);
-
-    scene.CreateEntity("5");
-    scene.UpdateEntity((Resources.Load("TestJSON/EntityUpdate/EntityCylinderShapeUpdateTest") as TextAsset).text);
-
-    scene.CreateEntity("6");
-    scene.UpdateEntity((Resources.Load("TestJSON/EntityUpdate/EntityGLTFShapeUpdateTest") as TextAsset).text);
-
-    scene.CreateEntity("7");
-    scene.UpdateEntity((Resources.Load("TestJSON/EntityUpdate/EntityOBJShapeUpdateTest") as TextAsset).text);
+    ShapeComponentHelpers.InstantiateEntityWithShape(scene, "1", "box", new Vector3(-3, 1, 0));
+    ShapeComponentHelpers.InstantiateEntityWithShape(scene, "2", "sphere", new Vector3(0, 1, 0));
+    ShapeComponentHelpers.InstantiateEntityWithShape(scene, "3", "plane", new Vector3(2, 1, 0));
+    ShapeComponentHelpers.InstantiateEntityWithShape(scene, "4", "cone", new Vector3(4, 1, 0));
+    ShapeComponentHelpers.InstantiateEntityWithShape(scene, "5", "cylinder", new Vector3(6, 1, 0));
+    ShapeComponentHelpers.InstantiateEntityWithShape(scene, "6", "gltf-model", new Vector3(0, 1, 6), "https://github.com/KhronosGroup/glTF-Sample-Models/blob/master/2.0/Avocado/glTF/Avocado.gltf");
+    ShapeComponentHelpers.InstantiateEntityWithShape(scene, "7", "obj-model", new Vector3(10, 1, 0), "http://127.0.0.1:9991/OBJ/teapot.obj");
   }
 }

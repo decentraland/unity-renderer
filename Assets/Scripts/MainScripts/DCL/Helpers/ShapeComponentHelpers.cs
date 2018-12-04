@@ -1,5 +1,6 @@
-﻿
+﻿using DCL.Controllers;
 using DCL.Models;
+using Newtonsoft.Json;
 using UnityEngine;
 using UnityGLTF;
 
@@ -8,10 +9,9 @@ namespace DCL.Helpers {
 
     public static void IntializeDecentralandEntityRenderer(DecentralandEntity currentEntity, DecentralandEntity.EntityShape newShape) {
       if (!newShape.Equals(currentEntity.components.shape)) {
-        var material = Resources.Load<Material>("Materials/Default");
-
         MeshFilter meshFilter = null;
         MeshRenderer meshRenderer = null;
+        var material = Resources.Load<Material>("Materials/Default");
 
         switch (newShape.tag) {
           case "box":
@@ -34,7 +34,7 @@ namespace DCL.Helpers {
             break;
         }
 
-        if (meshFilter.mesh) {
+        if (meshFilter && meshFilter.mesh) {
           Object.Destroy(meshFilter.mesh);
         }
 
@@ -64,9 +64,11 @@ namespace DCL.Helpers {
               if (meshFilter) {
                 Object.Destroy(meshFilter);
               }
+
               if (meshRenderer) {
                 Object.Destroy(meshRenderer);
               }
+
               var gltfShapeComponent = currentEntity.gameObject.AddComponent<GLTFComponent>();
               gltfShapeComponent.Multithreaded = false;
               gltfShapeComponent.LoadAsset(newShape.src);
@@ -76,6 +78,14 @@ namespace DCL.Helpers {
             break;
           case "obj-model":
             if (!string.IsNullOrEmpty(newShape.src)) {
+              if (meshFilter) {
+                Object.Destroy(meshFilter);
+              }
+
+              if (meshRenderer) {
+                Object.Destroy(meshRenderer);
+              }
+
               var objShapeComponent = currentEntity.gameObject.AddComponent<DynamicOBJLoaderController>();
               objShapeComponent.LoadAsset(newShape.src);
 
@@ -95,6 +105,28 @@ namespace DCL.Helpers {
       placeholderRenderer.transform.localPosition = Vector3.zero;
       placeholderRenderer.name = "PlaceholderRenderer";
       return placeholderRenderer.gameObject;
+    }
+
+    public static void InstantiateEntityWithShape(ParcelScene scene, string entityId, string shapeType, Vector3 position, string remoteSrc = "") {
+      scene.CreateEntity(entityId);
+
+      scene.UpdateEntityComponent(JsonConvert.SerializeObject(new {
+        entityId = entityId,
+        name = "shape",
+        json = JsonConvert.SerializeObject(new {
+          tag = shapeType,
+          src = remoteSrc
+        })
+      }));
+
+      scene.UpdateEntityComponent(JsonConvert.SerializeObject(new {
+        entityId = entityId,
+        name = "transform",
+        json = JsonConvert.SerializeObject(new {
+          position = position,
+          scale = new Vector3(1, 1, 1)
+        })
+      }));
     }
   }
 }

@@ -17,7 +17,7 @@ public class IntegrationTestController : MonoBehaviour {
             new Vector2Int(3, 3),
             new Vector2Int(3, 4)
           },
-          baseUrl = "http://localhost:8080/local-ipfs/contents/",
+          baseUrl = "http://localhost:9991/local-ipfs/contents/",
           owner = "0x0f5d2fb29fb7d3cfee444a200298f468908cc942",
           contents= new[] {
             new {

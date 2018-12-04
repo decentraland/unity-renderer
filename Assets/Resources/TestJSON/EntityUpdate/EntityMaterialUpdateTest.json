@@ -1,0 +1,37 @@
+{
+  "id": "2",
+  "parentId": "0",
+  "components": {
+    "shape": {
+      "billboard": "0",
+      "tag": "plane",
+      "visible": "true",
+      "withCollisions": "false"
+    },
+    "material": {
+      "tag": "material",
+      "metallic": 0,
+      "roughness": 1,
+      "albedoTexture": "http://127.0.0.1:9991/images/img.png",
+      "hasAlpha": true
+    },
+    "transform": {
+      "position": {
+        "x": 3,
+        "y": 1,
+        "z": 0
+      },
+      "rotation": {
+        "x": 0,
+        "y": 0,
+        "z": 0
+      },
+      "scale": {
+        "x": 1,
+        "y": 1,
+        "z": 1
+      },
+      "tag": "transform"
+    }
+  }
+}

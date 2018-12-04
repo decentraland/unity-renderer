@@ -25,7 +25,7 @@ namespace Tests {
       var sceneController = Object.FindObjectOfType<SceneController>();
 
       if (sceneController == null) {
-        sceneController = Resources.Load<GameObject>("Prefabs/SceneController").GetComponent<SceneController>();
+        sceneController = new GameObject().AddComponent<SceneController>();
       }
 
       sceneController.UnloadAllScenes();
@@ -33,6 +33,4 @@ namespace Tests {
       return sceneController;
     }
   }
-
-
 }

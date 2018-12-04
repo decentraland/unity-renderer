@@ -7,7 +7,7 @@
       "tag": "obj-model",
       "visible": "true",
       "withCollisions": "false",
-      "src": "http://127.0.0.1:8080/OBJ/teapot.obj"
+      "src": "http://127.0.0.1:9991/OBJ/teapot.obj"
     },
     "transform": {
       "position": {
