@@ -9,11 +9,15 @@ using DCL.Models;
 using DCL.Controllers;
 
 public class SceneController : MonoBehaviour {
+  public static SceneController Instance;
+
   public bool startDecentralandAutomatically = true;
 
   public Dictionary<string, ParcelScene> loadedScenes = new Dictionary<string, ParcelScene>();
 
-  void Start() {
+  void Awake() {
+    Instance = this;
+
     // We trigger the Decentraland logic once SceneController has been instanced and is ready to act.
     if (startDecentralandAutomatically) {
       WebInterface.StartDecentraland();
