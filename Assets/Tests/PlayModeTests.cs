@@ -126,6 +126,7 @@ namespace Tests {
         string rawJSON = JsonConvert.SerializeObject(new {
           entityId = entityId,
           name = "transform",
+          classId = CLASS_ID.TRANSFORM,
           json = JsonConvert.SerializeObject(new {
             position = position,
             rotation = new {
@@ -162,9 +163,10 @@ namespace Tests {
         Quaternion rotationQuaternion = Quaternion.Euler(101, 51, -91);
         Vector3 scale = new Vector3(1.7f, 3.7f, -0.7f);
 
-        string rawJSON = JsonConvert.SerializeObject(new {
+        string rawJSON = JsonConvert.SerializeObject(new UpdateEntityComponentMessage {
           entityId = entityId,
           name = "transform",
+          classId = (int)CLASS_ID.TRANSFORM,
           json = JsonConvert.SerializeObject(new {
             position = position,
             rotation = new {
@@ -200,7 +202,7 @@ namespace Tests {
         Quaternion rotationQuaternion = Quaternion.Euler(0, 0, 0);
         Vector3 scale = new Vector3(1, 1, 1);
 
-        string rawJSON = JsonConvert.SerializeObject(new {
+        string rawJSON = JsonUtility.ToJson(new ComponentRemovedMessage {
           entityId = entityId,
           name = "transform"
         });
@@ -208,6 +210,8 @@ namespace Tests {
         Assert.IsTrue(!string.IsNullOrEmpty(rawJSON));
 
         scene.ComponentRemoved(rawJSON);
+
+        yield return new WaitForSeconds(0.01f);
 
         Assert.AreNotEqual(originalTransformPosition, entityObject.gameObject.transform.position);
         Assert.AreEqual(position, entityObject.gameObject.transform.position);
@@ -230,7 +234,7 @@ namespace Tests {
       var scene = sceneController.CreateTestScene(sceneData);
 
       string entityId = "1";
-      ShapeComponentHelpers.InstantiateEntityWithShape(scene, entityId, "box", Vector3.zero);
+      TestHelpers.InstantiateEntityWithShape(scene, entityId, DCL.Models.CLASS_ID.BOX_SHAPE, Vector3.zero);
 
       var meshName = scene.entities[entityId].gameObject.GetComponentInChildren<MeshFilter>().mesh.name;
       Assert.AreEqual("DCL Box Instance", meshName);
@@ -246,7 +250,7 @@ namespace Tests {
       var scene = sceneController.CreateTestScene(sceneData);
 
       string entityId = "2";
-      ShapeComponentHelpers.InstantiateEntityWithShape(scene, entityId, "sphere", Vector3.zero);
+      TestHelpers.InstantiateEntityWithShape(scene, entityId, DCL.Models.CLASS_ID.SPHERE_SHAPE, Vector3.zero);
 
       var meshName = scene.entities[entityId].gameObject.GetComponentInChildren<MeshFilter>().mesh.name;
       Assert.AreEqual("DCL Sphere Instance", meshName);
@@ -262,7 +266,7 @@ namespace Tests {
       var scene = sceneController.CreateTestScene(sceneData);
 
       string entityId = "3";
-      ShapeComponentHelpers.InstantiateEntityWithShape(scene, entityId, "plane", Vector3.zero);
+      TestHelpers.InstantiateEntityWithShape(scene, entityId, DCL.Models.CLASS_ID.PLANE_SHAPE, Vector3.zero);
 
       var meshName = scene.entities[entityId].gameObject.GetComponentInChildren<MeshFilter>().mesh.name;
       Assert.AreEqual("DCL Plane Instance", meshName);
@@ -278,7 +282,7 @@ namespace Tests {
       var scene = sceneController.CreateTestScene(sceneData);
 
       string entityId = "5";
-      ShapeComponentHelpers.InstantiateEntityWithShape(scene, entityId, "cylinder", Vector3.zero);
+      TestHelpers.InstantiateEntityWithShape(scene, entityId, DCL.Models.CLASS_ID.CYLINDER_SHAPE, Vector3.zero);
 
       var meshName = scene.entities[entityId].gameObject.GetComponentInChildren<MeshFilter>().mesh.name;
       Assert.AreEqual("DCL Cylinder Instance", meshName);
@@ -294,7 +298,7 @@ namespace Tests {
       var scene = sceneController.CreateTestScene(sceneData);
 
       string entityId = "4";
-      ShapeComponentHelpers.InstantiateEntityWithShape(scene, entityId, "cone", Vector3.zero);
+      TestHelpers.InstantiateEntityWithShape(scene, entityId, DCL.Models.CLASS_ID.CONE_SHAPE, Vector3.zero);
 
       var meshName = scene.entities[entityId].gameObject.GetComponentInChildren<MeshFilter>().mesh.name;
 
@@ -302,7 +306,7 @@ namespace Tests {
     }
 
     [UnityTest]
-    public IEnumerator PlayMode_EntityMaterialUpdate() {
+    public IEnumerator PlayMode_EntityPBRMaterialUpdate() {
       var sceneController = InitializeSceneController();
 
       yield return new WaitForSeconds(0.01f);
@@ -310,29 +314,76 @@ namespace Tests {
       var sceneData = new LoadParcelScenesMessage.UnityParcelScene();
       var scene = sceneController.CreateTestScene(sceneData);
 
-      GameObject webServerGameObject = new GameObject();
-      webServerGameObject.AddComponent<WebServerComponent>();
+      yield return new WaitForSeconds(0.01f);
+
+      string entityId = "1";
+
+      string texture = "http://127.0.0.1:9991/Images/atlas.png";
+
+      TestHelpers.InstantiateEntityWithMaterial(scene, entityId, Vector3.zero, new DCL.Components.PBRMaterialModel {
+        albedoTexture = texture,
+        metallic = 0,
+        roughness = 1,
+        hasAlpha = true
+      });
+
+      var materialComponent = scene.disposableComponents["a-material"] as DCL.Components.PBRMaterial;
+
+      Assert.IsTrue(materialComponent is DCL.Components.PBRMaterial, "material is PBRMaterial");
+
+      yield return materialComponent.routine;
+
+      {
+        var meshRenderer = scene.entities[entityId].gameObject.GetComponent<MeshRenderer>();
+        Assert.IsNotNull(meshRenderer, "MeshRenderer must exist");
+        var assignedMaterial = meshRenderer.sharedMaterial;
+        Assert.IsNotNull(meshRenderer, "MeshRenderer.sharedMaterial must be the same as assignedMaterial");
+        Assert.AreEqual(assignedMaterial, materialComponent.material, "Assigned material");
+        Assert.AreEqual(texture, materialComponent.data.albedoTexture, "Texture data must be correct");
+        var loadedTexture = meshRenderer.sharedMaterial.mainTexture;
+        Assert.IsNotNull(loadedTexture, "Texture must be loaded");
+      }
+
+      // TODO: test remove material component
+    }
+
+    [UnityTest]
+    public IEnumerator PlayMode_EntityBasicMaterialUpdate() {
+      var sceneController = InitializeSceneController();
+
+      yield return new WaitForSeconds(0.01f);
+
+      var sceneData = new LoadParcelScenesMessage.UnityParcelScene();
+      var scene = sceneController.CreateTestScene(sceneData);
 
       yield return new WaitForSeconds(0.01f);
 
       string entityId = "1";
-      MaterialComponentHelpers.InstantiateEntityWithMaterial(scene, entityId, Vector3.zero, JsonConvert.SerializeObject(new {
-        entityId = entityId,
-        name = "material",
-        json = JsonConvert.SerializeObject(new {
-          tag = "material",
-          albedoTexture = "http://127.0.0.1:9991/Images/atlas.png",
-          metallic = 0,
-          roughness = 1,
-          hasAlpha = true
-        })
-      }));
 
-      yield return new WaitForSeconds(1f);
+      string texture = "http://127.0.0.1:9991/Images/atlas.png";
 
-      var loadedTexture = scene.entities[entityId].gameObject.GetComponentInChildren<MeshRenderer>().material.mainTexture;
+      TestHelpers.InstantiateEntityWithMaterial(scene, entityId, Vector3.zero, new DCL.Components.BasicMaterialModel {
+        texture = texture
+      });
 
-      Assert.IsNotNull(loadedTexture);
+      var materialComponent = scene.disposableComponents["a-material"] as DCL.Components.BasicMaterial;
+
+      Assert.IsTrue(materialComponent is DCL.Components.BasicMaterial, "material is PBRMaterial");
+
+      yield return materialComponent.routine;
+
+      {
+        var meshRenderer = scene.entities[entityId].gameObject.GetComponent<MeshRenderer>();
+        Assert.IsNotNull(meshRenderer, "MeshRenderer must exist");
+        var assignedMaterial = meshRenderer.sharedMaterial;
+        Assert.IsNotNull(meshRenderer, "MeshRenderer.sharedMaterial must be the same as assignedMaterial");
+        Assert.AreEqual(assignedMaterial, materialComponent.material, "Assigned material");
+        Assert.AreEqual(texture, materialComponent.data.texture, "Texture data must be correct");
+        var loadedTexture = meshRenderer.sharedMaterial.mainTexture;
+        Assert.IsNotNull(loadedTexture, "Texture must be loaded");
+      }
+
+      // TODO: test remove material component
     }
 
     [UnityTest]
@@ -400,11 +451,11 @@ namespace Tests {
 
       yield return new WaitForSeconds(0.01f); // We wait to let unity destroy gameobjects.
 
-      Assert.IsTrue(!sceneController.loadedScenes.ContainsKey(loadedSceneID));
+      Assert.IsTrue(sceneController.loadedScenes.ContainsKey(loadedSceneID) == false);
 
       Assert.IsTrue(sceneRootGameObject == null, "Scene root gameobject reference is not getting destroyed.");
 
-      Assert.IsTrue(sceneEntities.Count == 0);
+      Assert.AreEqual(sceneEntities.Count, 0, "Every entity should be removed");
     }
 
     [UnityTest]
@@ -484,15 +535,24 @@ namespace Tests {
     }
 
     SceneController InitializeSceneController() {
-      var sceneController = new GameObject().AddComponent<SceneController>();
+      var sceneController = Object.FindObjectOfType<SceneController>();
+
+      if (sceneController == null) {
+        var GO = new GameObject();
+        sceneController = GO.AddComponent<SceneController>();
+        GO.AddComponent<WebServerComponent>();
+      }
+
+      sceneController.UnloadAllScenes();
 
       return sceneController;
     }
 
-    [SetUp]
-    public void ResetScene() {
-      SceneManager.LoadScene(SceneManager.GetActiveScene().name);
-    }
+    // [SetUp]
+    // public void ResetScene() {
+    //   Debug.Log("Reloading scene");
+    //   SceneManager.LoadScene(SceneManager.GetActiveScene().name);
+    // }
 
     // TODO: Tests to be implemented
     /*

@@ -4,8 +4,8 @@ using UnityEngine;
 public class CharacterController : MonoBehaviour {
   float aimingHorizontalSpeed = 100f;
   float aimingVerticalSpeed = 100f;
-  float aimingVerticalMinimumAngle = -60f;
-  float aimingVerticalMaximumAngle = 30f;
+  float aimingVerticalMinimumAngle = -89f;
+  float aimingVerticalMaximumAngle = 89f;
   float movementSpeed = 5f;
   float jumpForce = 150f;
   float sunInclination = -0.31f;
@@ -104,22 +104,25 @@ public class CharacterController : MonoBehaviour {
     transform.rotation = Quaternion.Euler(0f, aimingHorizontalAngle, 0f);
     camera.localRotation = Quaternion.Euler(-aimingVerticalAngle, 0f, 0f);
 
+    var isPressingShift = Input.GetKey(KeyCode.LeftShift) || Input.GetKeyDown(KeyCode.RightShift);
+    var speed = isPressingShift ? movementSpeed * 4f : movementSpeed;
+
     // Movement
     movementDirection = Vector3.zero;
 
     if (Input.GetAxis("Vertical") > 0f) {
-      movementDirection += (transform.forward * movementSpeed * Time.deltaTime);
+      movementDirection += (transform.forward * speed * Time.deltaTime);
       didMove = true;
     } else if (Input.GetAxis("Vertical") < 0f) {
-      movementDirection += (-transform.forward * movementSpeed * Time.deltaTime);
+      movementDirection += (-transform.forward * speed * Time.deltaTime);
       didMove = true;
     }
 
     if (Input.GetAxis("Horizontal") > 0f) {
-      movementDirection += (transform.right * movementSpeed * Time.deltaTime);
+      movementDirection += (transform.right * speed * Time.deltaTime);
       didMove = true;
     } else if (Input.GetAxis("Horizontal") < 0f) {
-      movementDirection += (-transform.right * movementSpeed * Time.deltaTime);
+      movementDirection += (-transform.right * speed * Time.deltaTime);
       didMove = true;
     }
 
