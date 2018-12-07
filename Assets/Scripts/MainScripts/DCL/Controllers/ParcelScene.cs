@@ -4,10 +4,12 @@ using System.Collections.Generic;
 using DCL.Helpers;
 using DCL.Models;
 using DCL.Configuration;
+using DCL.Components;
 
 namespace DCL.Controllers {
   public class ParcelScene : MonoBehaviour {
     public Dictionary<string, DecentralandEntity> entities = new Dictionary<string, DecentralandEntity>();
+    public Dictionary<string, IDisposableComponent> disposableComponents = new Dictionary<string, IDisposableComponent>();
 
     public LoadParcelScenesMessage.UnityParcelScene sceneData { get; private set; }
 
@@ -37,19 +39,20 @@ namespace DCL.Controllers {
       }
     }
 
-    public override string ToString() {
-      return "gameObjectReference: " + this.ToString() + "\n" + sceneData.ToString();
+    void OnDestroy() {
+      foreach (var entity in entities) {
+        Destroy(entity.Value.gameObject);
+      }
+      entities.Clear();
     }
 
-    internal void Dispose() {
-      RemoveAllEntities();
-      Object.Destroy(this);
+    public override string ToString() {
+      return "gameObjectReference: " + this.ToString() + "\n" + sceneData.ToString();
     }
 
     public void CreateEntity(string entityID) {
       if (!entities.ContainsKey(entityID)) {
         var newEntity = new DecentralandEntity();
-        newEntity.components = new DecentralandEntity.EntityComponents();
         newEntity.entityId = entityID;
         newEntity.gameObject = new GameObject();
         newEntity.gameObject.transform.SetParent(gameObject.transform);
@@ -107,61 +110,148 @@ namespace DCL.Controllers {
       * This method is called when we need to attach a disposable component to the entity
       */
     public void AttachEntityComponent(string json) {
-      AttachEntityComponentMessage parsedJson = JsonUtility.FromJson<AttachEntityComponentMessage>(json);
+      var parsedJson = JsonUtility.FromJson<AttachEntityComponentMessage>(json);
 
       DecentralandEntity decentralandEntity = GetEntityForUpdate(parsedJson.entityId);
-      if (decentralandEntity == null) return;
-    }
 
-    public void UpdateEntityComponent(string json) {
-      UpdateEntityComponentMessage parsedJson = JsonUtility.FromJson<UpdateEntityComponentMessage>(json);
-
-      DecentralandEntity decentralandEntity = GetEntityForUpdate(parsedJson.entityId);
       if (decentralandEntity == null) return;
 
-      if (parsedJson.name == "transform") {
-        DecentralandEntity.EntityTransform parsedTransform = JsonUtility.FromJson<DecentralandEntity.EntityTransform>(parsedJson.json);
-        parsedTransform.ApplyTo(decentralandEntity.gameObject);
-      } else if (parsedJson.name == "shape") {
-        DecentralandEntity.EntityShape newShape = JsonUtility.FromJson<DecentralandEntity.EntityShape>(parsedJson.json);
-        ShapeComponentHelpers.IntializeDecentralandEntityRenderer(decentralandEntity, newShape);
-      } else if (parsedJson.name == "material") {
-        DecentralandEntity.Material newMaterial = JsonUtility.FromJson<DecentralandEntity.Material>(parsedJson.json);
-        MaterialComponentHelpers.UpdateEntityMaterial(decentralandEntity, newMaterial);
+      IDisposableComponent disposableComponent;
+
+      if (disposableComponents.TryGetValue(parsedJson.id, out disposableComponent) && disposableComponent != null) {
+        disposableComponent.AttachTo(decentralandEntity);
       }
     }
 
-    public void ComponentAdded(string json) {
-      ComponentAddedMessage parsedJson = JsonUtility.FromJson<ComponentAddedMessage>(json);
+    public void UpdateEntityComponent(string json) {
+      var parsedJson = JsonUtility.FromJson<UpdateEntityComponentMessage>(json);
 
       DecentralandEntity decentralandEntity = GetEntityForUpdate(parsedJson.entityId);
       if (decentralandEntity == null) return;
 
+      switch ((CLASS_ID)parsedJson.classId) {
+        case CLASS_ID.TRANSFORM: {
+            var component = LandHelpers.GetOrCreateComponent<DCL.Components.TransformComponent>(decentralandEntity.gameObject);
+            component.UpdateFromJSON(parsedJson.json);
+            break;
+          }
+        case CLASS_ID.BOX_SHAPE: {
+            var component = LandHelpers.GetOrCreateComponent<DCL.Components.BoxShape>(decentralandEntity.gameObject);
+            component.UpdateFromJSON(parsedJson.json);
+            break;
+          }
+        case CLASS_ID.SPHERE_SHAPE: {
+            var component = LandHelpers.GetOrCreateComponent<DCL.Components.SphereShape>(decentralandEntity.gameObject);
+            component.UpdateFromJSON(parsedJson.json);
+            break;
+          }
+        case CLASS_ID.CONE_SHAPE: {
+            var component = LandHelpers.GetOrCreateComponent<DCL.Components.ConeShape>(decentralandEntity.gameObject);
+            component.UpdateFromJSON(parsedJson.json);
+            break;
+          }
+        case CLASS_ID.CYLINDER_SHAPE: {
+            var component = LandHelpers.GetOrCreateComponent<DCL.Components.CylinderShape>(decentralandEntity.gameObject);
+            component.UpdateFromJSON(parsedJson.json);
+            break;
+          }
+        case CLASS_ID.PLANE_SHAPE: {
+            var component = LandHelpers.GetOrCreateComponent<DCL.Components.PlaneShape>(decentralandEntity.gameObject);
+            component.UpdateFromJSON(parsedJson.json);
+            break;
+          }
+        case CLASS_ID.GLTF_SHAPE: {
+            var component = LandHelpers.GetOrCreateComponent<DCL.Components.GLTFShape>(decentralandEntity.gameObject);
+            component.UpdateFromJSON(parsedJson.json);
+            break;
+          }
+        case CLASS_ID.OBJ_SHAPE: {
+            var component = LandHelpers.GetOrCreateComponent<DCL.Components.OBJShape>(decentralandEntity.gameObject);
+            component.UpdateFromJSON(parsedJson.json);
+            break;
+          }
+        default:
+#if UNITY_EDITOR
+          throw new UnityException($"Unknown classId {json}");
+#else
+          break;
+#endif
+      }
     }
 
     public void ComponentCreated(string json) {
-      ComponentCreatedMessage parsedJson = JsonUtility.FromJson<ComponentCreatedMessage>(json);
+      var parsedJson = JsonUtility.FromJson<ComponentCreatedMessage>(json);
+
+      IDisposableComponent disposableComponent;
+      if (disposableComponents.TryGetValue(parsedJson.id, out disposableComponent)) {
+        // disposableComponent.Dispose();
+        disposableComponents.Remove(parsedJson.id);
+      }
+
+      switch ((CLASS_ID)parsedJson.classId) {
+        case CLASS_ID.BASIC_MATERIAL: {
+            disposableComponents.Add(parsedJson.id, new DCL.Components.BasicMaterial(this));
+            break;
+          }
+        case CLASS_ID.PBR_MATERIAL: {
+            disposableComponents.Add(parsedJson.id, new DCL.Components.PBRMaterial(this));
+            break;
+          }
+        default:
+#if UNITY_EDITOR
+          throw new UnityException($"Unknown classId {json}");
+#else
+          break;
+#endif
+      }
     }
 
-    public void ComponentDisposed(string componentId) {
-      // componentId
+    public void ComponentDisposed(string json) {
+      var parsedJson = JsonUtility.FromJson<ComponentDisposedMessage>(json);
+
+      IDisposableComponent disposableComponent;
+
+      if (disposableComponents.TryGetValue(parsedJson.id, out disposableComponent)) {
+        if (disposableComponent != null) {
+#if UNITY_EDITOR
+          DestroyImmediate((MonoBehaviour)disposableComponent);
+#else
+          Destroy((MonoBehaviour)disposableComponent);
+#endif
+        }
+        disposableComponents.Remove(parsedJson.id);
+      }
     }
 
     public void ComponentRemoved(string json) {
-      ComponentRemovedMessage parsedJson = JsonUtility.FromJson<ComponentRemovedMessage>(json);
+      var parsedJson = JsonUtility.FromJson<ComponentRemovedMessage>(json);
 
       DecentralandEntity decentralandEntity = GetEntityForUpdate(parsedJson.entityId);
       if (decentralandEntity == null) return;
 
-      if (parsedJson.name == "transform") {
-        decentralandEntity.gameObject.transform.localPosition = Vector3.zero;
-        decentralandEntity.gameObject.transform.localScale = Vector3.one;
-        decentralandEntity.gameObject.transform.localRotation = Quaternion.identity;
+      var components = decentralandEntity.gameObject.GetComponents<DCL.Components.UpdateableComponent>();
+
+      // TODO: Handle detach of disposableCompoonents
+
+      for (int i = 0; i < components.Length; i++) {
+        if (components[i] && components[i].componentName == parsedJson.name) {
+#if UNITY_EDITOR
+          DestroyImmediate(components[i]);
+#else
+          Destroy(components[i]);
+#endif
+        }
       }
     }
 
     public void ComponentUpdated(string json) {
-      ComponentUpdatedMessage parsedJson = JsonUtility.FromJson<ComponentUpdatedMessage>(json);
+      var parsedJson = JsonUtility.FromJson<ComponentUpdatedMessage>(json);
+
+      IDisposableComponent disposableComponent;
+
+      if (disposableComponents.TryGetValue(parsedJson.id, out disposableComponent) && disposableComponent != null) {
+        disposableComponent.UpdateFromJSON(parsedJson.json);
+      }
     }
 
     private DecentralandEntity GetEntityForUpdate(string entityId) {
@@ -172,61 +262,16 @@ namespace DCL.Controllers {
 
       DecentralandEntity decentralandEntity;
 
-      if (!entities.TryGetValue(entityId, out decentralandEntity) || decentralandEntity == null || decentralandEntity.gameObject == null) {
+      if (!entities.TryGetValue(entityId, out decentralandEntity)) {
+        return null;
+      }
+
+      if (decentralandEntity == null || decentralandEntity.gameObject == null) {
+        entities.Remove(entityId);
         return null;
       }
 
       return decentralandEntity;
     }
-  }
-
-  [System.Serializable]
-  public class AttachEntityComponentMessage {
-    public string entityId;
-    /** name of the compoenent */
-    public string name;
-    public string componentId;
-  }
-
-  [System.Serializable]
-  public class UpdateEntityComponentMessage {
-    public string entityId;
-    /** name of the compoenent */
-    public string name;
-    public string json;
-  }
-
-  [System.Serializable]
-  public class SetEntityParentMessage {
-    public string entityId;
-    public string parentId;
-  }
-
-  [System.Serializable]
-  public class ComponentRemovedMessage {
-    public string entityId;
-    /** name of the compoenent */
-    public string name;
-  }
-
-  [System.Serializable]
-  public class ComponentAddedMessage {
-    public string entityId;
-    /** name of the compoenent */
-    public string name;
-    public string json;
-  }
-
-  [System.Serializable]
-  public class ComponentUpdatedMessage {
-    public string componentId;
-    public string json;
-  }
-
-  [System.Serializable]
-  public class ComponentCreatedMessage {
-    public string componentId;
-    /** name of the compoenent */
-    public string name;
   }
 }

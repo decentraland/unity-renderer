@@ -9,15 +9,11 @@ using DCL.Models;
 using DCL.Controllers;
 
 public class SceneController : MonoBehaviour {
-  public static SceneController Instance;
-
   public bool startDecentralandAutomatically = true;
 
   public Dictionary<string, ParcelScene> loadedScenes = new Dictionary<string, ParcelScene>();
 
   void Awake() {
-    Instance = this;
-
     // We trigger the Decentraland logic once SceneController has been instanced and is ready to act.
     if (startDecentralandAutomatically) {
       WebInterface.StartDecentraland();
@@ -58,7 +54,6 @@ public class SceneController : MonoBehaviour {
     }
     return null;
   }
-
 
   private LoadParcelScenesMessage loadParcelScenesMessage = new LoadParcelScenesMessage();
 
@@ -101,10 +96,17 @@ public class SceneController : MonoBehaviour {
 
   public void UnloadScene(string sceneKey) {
     if (loadedScenes.ContainsKey(sceneKey)) {
-      if (loadedScenes[sceneKey] != null) {
-        loadedScenes[sceneKey].Dispose();
-      }
+      var scene = loadedScenes[sceneKey];
+
       loadedScenes.Remove(sceneKey);
+
+      if (scene) {
+#if UNITY_EDITOR
+        DestroyImmediate(scene);
+#else
+        Destroy(scene);
+#endif
+      }
     }
   }
 
@@ -112,6 +114,46 @@ public class SceneController : MonoBehaviour {
     var list = loadedScenes.ToArray();
     for (int i = 0; i < list.Length; i++) {
       UnloadScene(list[i].Key);
+    }
+  }
+
+  public void SendSceneMessage(string payload) {
+    var chunks = payload.Split('\n');
+
+    for (int i = 0; i < chunks.Length; i++) {
+      try {
+        if (chunks[i].Length > 0) {
+          var separatorPosition = chunks[i].IndexOf('\t');
+          var sceneId = chunks[i].Substring(0, separatorPosition);
+          var message = chunks[i].Substring(separatorPosition + 1);
+          ProcessMessage(sceneId, message);
+        }
+      } catch (Exception e) {
+        Debug.LogException(e);
+      }
+    }
+  }
+
+  public void ProcessMessage(string sceneId, string message) {
+    ParcelScene scene;
+
+    if (loadedScenes.TryGetValue(sceneId, out scene)) {
+      var separatorPosition = message.IndexOf('\t');
+      var method = message.Substring(0, separatorPosition);
+      var payload = message.Substring(separatorPosition + 1);
+      switch (method) {
+        case "CreateEntity": scene.CreateEntity(payload); break;
+        case "RemoveEntity": scene.RemoveEntity(payload); break;
+        case "SetEntityParent": scene.SetEntityParent(payload); break;
+        case "UpdateEntityComponent": scene.UpdateEntityComponent(payload); break;
+        case "AttachEntityComponent": scene.AttachEntityComponent(payload); break;
+        case "ComponentCreated": scene.ComponentCreated(payload); break;
+        case "ComponentDisposed": scene.ComponentDisposed(payload); break;
+        case "ComponentRemoved": scene.ComponentRemoved(payload); break;
+        case "ComponentUpdated": scene.ComponentUpdated(payload); break;
+        default:
+          throw new Exception($"Unkwnown method {method}");
+      }
     }
   }
 
