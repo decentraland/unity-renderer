@@ -32,11 +32,16 @@ namespace DCL.Components {
       if (newSerialization != oldSerialization) {
         JsonUtility.FromJsonOverwrite(newSerialization, data);
         oldSerialization = newSerialization;
+
+        if (routine != null) {
+          StopCoroutine(routine);
+          routine = null;
+        }
+
         var enumerator = ApplyChanges();
         if (enumerator != null) {
-          if (routine != null) {
-            StopCoroutine(routine);
-          }
+          // we don't want to start coroutines if we have early finalization in IEnumerators
+          // ergo, we return null without yielding any result
           routine = StartCoroutine(enumerator);
         }
       }

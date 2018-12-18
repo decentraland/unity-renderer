@@ -20,6 +20,7 @@ namespace DCL.Components {
       meshRenderer = gameObject.GetComponent<MeshRenderer>();
       if (!meshRenderer) {
         meshRenderer = gameObject.AddComponent<MeshRenderer>();
+        meshRenderer.sharedMaterial = Resources.Load<Material>("Materials/Default");
       }
     }
 

@@ -184,7 +184,6 @@ namespace DCL.Controllers {
 
       IDisposableComponent disposableComponent;
       if (disposableComponents.TryGetValue(parsedJson.id, out disposableComponent)) {
-        // disposableComponent.Dispose();
         disposableComponents.Remove(parsedJson.id);
       }
 
@@ -201,6 +200,7 @@ namespace DCL.Controllers {
 #if UNITY_EDITOR
           throw new UnityException($"Unknown classId {json}");
 #else
+          // Ignore errors outside of the editor
           break;
 #endif
       }
@@ -213,12 +213,9 @@ namespace DCL.Controllers {
 
       if (disposableComponents.TryGetValue(parsedJson.id, out disposableComponent)) {
         if (disposableComponent != null) {
-#if UNITY_EDITOR
-          DestroyImmediate((MonoBehaviour)disposableComponent);
-#else
-          Destroy((MonoBehaviour)disposableComponent);
-#endif
+          disposableComponent.Dispose();
         }
+
         disposableComponents.Remove(parsedJson.id);
       }
     }
@@ -230,8 +227,6 @@ namespace DCL.Controllers {
       if (decentralandEntity == null) return;
 
       var components = decentralandEntity.gameObject.GetComponents<DCL.Components.UpdateableComponent>();
-
-      // TODO: Handle detach of disposableCompoonents
 
       for (int i = 0; i < components.Length; i++) {
         if (components[i] && components[i].componentName == parsedJson.name) {

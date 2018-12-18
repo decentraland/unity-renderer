@@ -7,7 +7,7 @@ using UnityEngine;
 namespace DCL.Components {
   [Serializable]
   public class CylinderShapeModel {
-    public float radiusTop = 0f;        // Cone/Cylinder
+    public float radiusTop = 1f;        // Cone/Cylinder
     public float radiusBottom = 1f;     // Cone/Cylinder
     public float segmentsHeight = 1f;   // Cone/Cylinder
     public float segmentsRadial = 36f;  // Cone/Cylinder

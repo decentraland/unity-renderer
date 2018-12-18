@@ -9,15 +9,23 @@ namespace DCL.Components {
   public interface IDisposableComponent : IComponent {
     void AttachTo(DecentralandEntity entity);
     void DetachFrom(DecentralandEntity entity);
+    void DetachFromEveryEntity();
+    void Dispose();
   }
 
   public abstract class BaseDisposable<T> : UnityEngine.Object, IDisposableComponent where T : new() {
     public T data = new T();
     public Coroutine routine = null;
-    private string oldSerialization = null;
-    protected DCL.Controllers.ParcelScene scene { get; }
-
     public abstract string componentName { get; }
+
+    public delegate void DisposableComponentEventDelegate(DecentralandEntity entity);
+    public event DisposableComponentEventDelegate OnAttach;
+    public event DisposableComponentEventDelegate OnDetach;
+
+    private string oldSerialization = null;
+
+    protected DCL.Controllers.ParcelScene scene { get; }
+    protected HashSet<DecentralandEntity> attachedEntities = new HashSet<DecentralandEntity>();
 
     public void UpdateFromJSON(string json) {
       ApplyChangesIfModified(json);
@@ -34,19 +42,60 @@ namespace DCL.Components {
         oldSerialization = newSerialization;
 
         // We use the scene start coroutine because we need to divide the computing resources fairly
+        if (routine != null) {
+          scene.StopCoroutine(routine);
+          routine = null;
+        }
+
         var enumerator = ApplyChanges();
         if (enumerator != null) {
-          if (routine != null) {
-            scene.StopCoroutine(routine);
-          }
+          // we don't want to start coroutines if we have early finalization in IEnumerators
+          // ergo, we return null without yielding any result
           routine = scene.StartCoroutine(enumerator);
         }
       }
     }
 
-    public abstract IEnumerator ApplyChanges();
+    public void AttachTo(DecentralandEntity entity) {
+      if (!attachedEntities.Contains(entity)) {
+        if (OnAttach != null) {
+          OnAttach(entity);
+        }
 
-    public abstract void AttachTo(DecentralandEntity entity);
-    public abstract void DetachFrom(DecentralandEntity entity);
+        attachedEntities.Add(entity);
+      }
+    }
+
+    public void DetachFrom(DecentralandEntity entity) {
+      if (attachedEntities.Contains(entity)) {
+        if (OnDetach != null) {
+          OnDetach(entity);
+        }
+
+        attachedEntities.Remove(entity);
+      }
+    }
+
+    public void DetachFromEveryEntity() {
+      DecentralandEntity[] attachedEntitiesArray = new DecentralandEntity[attachedEntities.Count];
+
+      attachedEntities.CopyTo(attachedEntitiesArray);
+
+      for (int i = 0; i < attachedEntitiesArray.Length; i++) {
+        DetachFrom(attachedEntitiesArray[i]);
+      }
+    }
+
+    public void Dispose() {
+      DetachFromEveryEntity();
+
+#if UNITY_EDITOR
+      DestroyImmediate(this);
+#else
+      Destroy(this);
+#endif
+    }
+
+    public abstract IEnumerator ApplyChanges();
   }
 }

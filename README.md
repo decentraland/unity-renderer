@@ -28,3 +28,7 @@ We are using [UnityGLTF](https://github.com/KhronosGroup/UnityGLTF) as a Dynamic
 - Have a 'finished loading asset callback' providing the time it took to load the GLTF asset (initially used for measuring loading times)
 
 2. SpecGlossMap.cs and MetalRoughMap.cs were adapted to use "Lightweight Render Pipeline/Simple Lit" and "Lightweight Render Pipeline/Lit" shaders respectively (the original PbrMetallicRoughness and PbrSpecularGlossiness don't work with the Lightweight Render Pipeline)
+
+### Known Issues
+
+- Regarding Basic Materials: If the **alphaTest** value is set on a basic material and the **Assets/Resources/Materials/BasicShapeMaterial** is viewed in the Inspector (be it by selecting the material in the Project tab or by expanding its details from a renderer in the Inspector), its "Alpha Clip" toggle gets untoggled (and the material file modified). We suspect a Unity bug.
