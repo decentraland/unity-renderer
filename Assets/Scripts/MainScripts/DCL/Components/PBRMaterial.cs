@@ -40,24 +40,41 @@ namespace DCL.Components {
     public override string componentName => "material";
     public Material material { get; set; }
 
+    const string MATERIAL_RESOURCES_PATH = "Materials/";
+    const string BASIC_MATERIAL_NAME = "BasicShapeMaterial";
+    const string PBR_MATERIAL_NAME = "ShapeMaterial";
+
     private void LoadMaterial(string name) {
       if (material == null || material.name != name) {
-        material = Resources.Load<Material>(name);
+        if (material != null) {
+          // Unity documentation states that material destruction is the dev's responsibility
+          // Destroying the sharedMaterial destroys all the instances of the material assigned to
+          // any meshRenderer
+          // TODO: validate that comment ^^^
+          Destroy(material);
+        }
+
+        material = Instantiate(Resources.Load<Material>(MATERIAL_RESOURCES_PATH + name));
+        material.name = name; // Unity instantiates the material as 'ShapeMaterial(Clone)' for example.
+
         material.enableInstancing = true;
       }
     }
 
     public PBRMaterial(ParcelScene scene) : base(scene) {
-      LoadMaterial("Materials/ShapeMaterial");
+      LoadMaterial("ShapeMaterial");
+
+      OnAttach += OnMaterialAttached;
+      OnDetach += OnMaterialDetached;
     }
 
     public override IEnumerator ApplyChanges() {
       Color auxColor = new Color();
 
       if (data.disableLighting) {
-        LoadMaterial("Materials/BasicShapeMaterial");
+        LoadMaterial(BASIC_MATERIAL_NAME);
       } else {
-        LoadMaterial("Materials/ShapeMaterial");
+        LoadMaterial(PBR_MATERIAL_NAME);
         // FETCH AND LOAD EMISSIVE TEXTURE
         if (!string.IsNullOrEmpty(data.emissiveTexture)) {
           yield return LandHelpers.FetchTexture(scene, data.emissiveTexture, (fetchedEmissiveTexture) => {
@@ -84,7 +101,7 @@ namespace DCL.Components {
       // FETCH AND LOAD TEXTURES
       if (!string.IsNullOrEmpty(data.albedoTexture)) {
         yield return LandHelpers.FetchTexture(scene, data.albedoTexture, (fetchedAlbedoTexture) => {
-          material.mainTexture = fetchedAlbedoTexture;
+          material.SetTexture("_MainTex", fetchedAlbedoTexture);
         });
       }
 
@@ -132,12 +149,12 @@ namespace DCL.Components {
       }
     }
 
-    public override void AttachTo(DecentralandEntity entity) {
+    void OnMaterialAttached(DecentralandEntity entity) {
       var meshRenderer = LandHelpers.GetOrCreateComponent<MeshRenderer>(entity.gameObject);
       meshRenderer.sharedMaterial = material;
     }
 
-    public override void DetachFrom(DecentralandEntity entity) {
+    void OnMaterialDetached(DecentralandEntity entity) {
       var meshRenderer = entity.gameObject.GetComponent<MeshRenderer>();
       if (meshRenderer && meshRenderer.sharedMaterial == material) {
         meshRenderer.sharedMaterial = null;

@@ -20,6 +20,7 @@ namespace DCL.Components {
         Destroy(meshFilter);
 #endif
       }
+
       if (meshRenderer) {
 #if UNITY_EDITOR
         DestroyImmediate(meshRenderer);
@@ -36,18 +37,6 @@ namespace DCL.Components {
         gltfShapeComponent.loadingPlaceholder = AttachPlaceholderRendererGameObject(gameObject.transform);
       }
       return null;
-    }
-
-    void OnDestroy() {
-      var gltfShapeComponent = gameObject.GetComponent<GLTFComponent>();
-
-      if (gltfShapeComponent) {
-#if UNITY_EDITOR
-        DestroyImmediate(gltfShapeComponent);
-#else
-        Destroy(gltfShapeComponent);
-#endif
-      }
     }
 
     public static GameObject AttachPlaceholderRendererGameObject(UnityEngine.Transform targetTransform) {

@@ -19,6 +19,7 @@ namespace DCL.Components {
         Destroy(meshFilter);
 #endif
       }
+
       if (meshRenderer) {
 #if UNITY_EDITOR
         DestroyImmediate(meshRenderer);
@@ -35,18 +36,6 @@ namespace DCL.Components {
       }
 
       return null;
-    }
-
-    void OnDestroy() {
-      var objShapeComponent = gameObject.GetComponent<DynamicOBJLoaderController>();
-
-      if (objShapeComponent) {
-#if UNITY_EDITOR
-        DestroyImmediate(objShapeComponent);
-#else
-        Destroy(objShapeComponent);
-#endif
-      }
     }
   }
 }

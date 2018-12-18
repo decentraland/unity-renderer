@@ -23,9 +23,13 @@ namespace DCL.Components {
 
   public class BasicMaterial : BaseDisposable<BasicMaterialModel> {
     public override string componentName => "material";
-    public Material material = Resources.Load<Material>("Materials/BasicShapeMaterial");
+    public Material material;
 
     public BasicMaterial(ParcelScene scene) : base(scene) {
+      material = Instantiate(Resources.Load<Material>("Materials/BasicShapeMaterial"));
+
+      OnAttach += OnMaterialAttached;
+      OnDetach += OnMaterialDetached;
     }
 
     public override IEnumerator ApplyChanges() {
@@ -47,7 +51,7 @@ namespace DCL.Components {
           }
 
           // SAMPLING/FILTER MODE CONFIGURATION
-          switch (data.wrap) {
+          switch (data.samplingMode) {
             case 2:
               material.mainTexture.filterMode = FilterMode.Bilinear;
               break;
@@ -65,12 +69,12 @@ namespace DCL.Components {
       }
     }
 
-    public override void AttachTo(DecentralandEntity entity) {
+    void OnMaterialAttached(DecentralandEntity entity) {
       var meshRenderer = LandHelpers.GetOrCreateComponent<MeshRenderer>(entity.gameObject);
       meshRenderer.sharedMaterial = material;
     }
 
-    public override void DetachFrom(DecentralandEntity entity) {
+    void OnMaterialDetached(DecentralandEntity entity) {
       var meshRenderer = entity.gameObject.GetComponent<MeshRenderer>();
       if (meshRenderer && meshRenderer.sharedMaterial == material) {
         meshRenderer.sharedMaterial = null;

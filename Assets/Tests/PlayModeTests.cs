@@ -317,17 +317,17 @@ namespace Tests {
       yield return new WaitForSeconds(0.01f);
 
       string entityId = "1";
-
-      string texture = "http://127.0.0.1:9991/Images/atlas.png";
+      string materialID = "a-material";
+      string textureURL = "http://127.0.0.1:9991/Images/atlas.png";
 
       TestHelpers.InstantiateEntityWithMaterial(scene, entityId, Vector3.zero, new DCL.Components.PBRMaterialModel {
-        albedoTexture = texture,
+        albedoTexture = textureURL,
         metallic = 0,
         roughness = 1,
         hasAlpha = true
-      });
+      }, materialID);
 
-      var materialComponent = scene.disposableComponents["a-material"] as DCL.Components.PBRMaterial;
+      var materialComponent = scene.disposableComponents[materialID] as DCL.Components.PBRMaterial;
 
       Assert.IsTrue(materialComponent is DCL.Components.PBRMaterial, "material is PBRMaterial");
 
@@ -339,12 +339,312 @@ namespace Tests {
         var assignedMaterial = meshRenderer.sharedMaterial;
         Assert.IsNotNull(meshRenderer, "MeshRenderer.sharedMaterial must be the same as assignedMaterial");
         Assert.AreEqual(assignedMaterial, materialComponent.material, "Assigned material");
-        Assert.AreEqual(texture, materialComponent.data.albedoTexture, "Texture data must be correct");
+        Assert.AreEqual(textureURL, materialComponent.data.albedoTexture, "Texture data must be correct");
         var loadedTexture = meshRenderer.sharedMaterial.mainTexture;
         Assert.IsNotNull(loadedTexture, "Texture must be loaded");
       }
+    }
 
-      // TODO: test remove material component
+    [UnityTest]
+    public IEnumerator PlayMode_EntityPBRMaterialPropertiesUpdate() {
+      var sceneController = InitializeSceneController();
+
+      yield return new WaitForSeconds(0.01f);
+
+      var sceneData = new LoadParcelScenesMessage.UnityParcelScene();
+      var scene = sceneController.CreateTestScene(sceneData);
+
+      yield return new WaitForSeconds(0.01f);
+
+      string entityId = "1";
+      string materialID = "a-material";
+
+      // Instantiate entity with default PBR Material
+      TestHelpers.InstantiateEntityWithMaterial(scene, entityId, Vector3.zero, new DCL.Components.PBRMaterialModel(), materialID);
+
+      var materialComponent = scene.disposableComponents[materialID] as DCL.Components.PBRMaterial;
+
+      yield return materialComponent.routine;
+
+      Assert.IsTrue(materialComponent is DCL.Components.PBRMaterial, "material is PBRMaterial");
+
+      // Check if material initialized correctly
+      {
+        var meshRenderer = scene.entities[entityId].gameObject.GetComponent<MeshRenderer>();
+
+        Assert.IsNotNull(meshRenderer, "MeshRenderer must exist");
+
+        var assignedMaterial = meshRenderer.sharedMaterial;
+        Assert.IsNotNull(meshRenderer, "MeshRenderer.sharedMaterial must be the same as assignedMaterial");
+
+        Assert.AreEqual(assignedMaterial, materialComponent.material, "Assigned material");
+      }
+
+      // Check default properties
+      {
+        // Texture
+        Assert.IsNull(materialComponent.material.GetTexture("_EmissionMap"));
+        Assert.IsNull(materialComponent.material.GetTexture("_MainTex"));
+        Assert.IsNull(materialComponent.material.GetTexture("_BumpMap"));
+
+        // Colors
+        Assert.AreEqual("FFFFFF", ColorUtility.ToHtmlStringRGB(materialComponent.material.GetColor("_Color")));
+        Assert.AreEqual("000000", ColorUtility.ToHtmlStringRGB(materialComponent.material.GetColor("_EmissionColor")));
+        Assert.AreEqual("FFFFFF", ColorUtility.ToHtmlStringRGB(materialComponent.material.GetColor("_SpecColor")));
+
+        // Other properties
+        Assert.AreEqual("0.5", materialComponent.material.GetFloat("_Metallic").ToString());
+        Assert.AreEqual("0.5", materialComponent.material.GetFloat("_Glossiness").ToString());
+        Assert.AreEqual("1", materialComponent.material.GetFloat("_GlossyReflections").ToString());
+        Assert.AreEqual("1", materialComponent.material.GetFloat("_SpecularHighlights").ToString());
+        Assert.AreEqual("1", materialComponent.material.GetFloat("_AlphaClip").ToString());
+        Assert.AreEqual(2000, materialComponent.material.renderQueue);
+      }
+
+      // Update material
+      string textureURL = "http://127.0.0.1:9991/Images/atlas.png";
+
+      scene.ComponentUpdated(JsonUtility.ToJson(new DCL.Models.ComponentUpdatedMessage {
+        id = materialID,
+        json = JsonUtility.ToJson(new DCL.Components.PBRMaterialModel {
+          albedoTexture = textureURL,
+          emissiveTexture = textureURL,
+          bumpTexture = textureURL,
+          albedoColor = "#99deff",
+          emissiveColor = "#42f4aa",
+          reflectivityColor = "#601121",
+          metallic = 0.37f,
+          roughness = 0.9f,
+          microSurface = 0.4f,
+          specularIntensity = 2f,
+          alpha = 0.5f,
+          transparencyMode = 2,
+          hasAlpha = true
+        })
+      }));
+
+      yield return materialComponent.routine;
+
+      // Check updated properties
+      {
+        // Texture
+        Assert.IsNotNull(materialComponent.material.GetTexture("_EmissionMap"));
+        Assert.IsNotNull(materialComponent.material.GetTexture("_MainTex"));
+        Assert.IsNotNull(materialComponent.material.GetTexture("_BumpMap"));
+
+        // Colors
+        Assert.AreEqual("99DEFF", ColorUtility.ToHtmlStringRGB(materialComponent.material.GetColor("_Color")));
+        Assert.AreEqual("42F4AA", ColorUtility.ToHtmlStringRGB(materialComponent.material.GetColor("_EmissionColor")));
+        Assert.AreEqual("601121", ColorUtility.ToHtmlStringRGB(materialComponent.material.GetColor("_SpecColor")));
+
+        // Other properties
+        Assert.AreEqual("0.37", materialComponent.material.GetFloat("_Metallic").ToString());
+        Assert.AreEqual("0.1", materialComponent.material.GetFloat("_Glossiness").ToString());
+        Assert.AreEqual("0.4", materialComponent.material.GetFloat("_GlossyReflections").ToString());
+        Assert.AreEqual("2", materialComponent.material.GetFloat("_SpecularHighlights").ToString());
+        Assert.AreEqual("0.5", materialComponent.material.GetFloat("_AlphaClip").ToString());
+        Assert.AreEqual(3000, materialComponent.material.renderQueue);
+        Assert.AreEqual((int)UnityEngine.Rendering.BlendMode.SrcAlpha, materialComponent.material.GetInt("_SrcBlend"));
+        Assert.AreEqual((int)UnityEngine.Rendering.BlendMode.OneMinusSrcAlpha, materialComponent.material.GetInt("_DstBlend"));
+        Assert.AreEqual(0, materialComponent.material.GetInt("_ZWrite"));
+      }
+    }
+
+    [UnityTest]
+    public IEnumerator PlayMode_EntityMaterialIsSharedCorrectly() {
+      var sceneController = InitializeSceneController();
+
+      yield return new WaitForSeconds(0.01f);
+
+      var sceneData = new LoadParcelScenesMessage.UnityParcelScene();
+      var scene = sceneController.CreateTestScene(sceneData);
+
+      yield return new WaitForSeconds(0.01f);
+
+      // Create first entity with material
+      string firstEntityID = "1";
+      string firstMaterialID = "a-material";
+
+      TestHelpers.InstantiateEntityWithMaterial(scene, firstEntityID, Vector3.zero, new DCL.Components.PBRMaterialModel {
+        metallic = 0.3f,
+      }, firstMaterialID);
+
+      // Create second entity with material
+      string secondEntityID = "2";
+      string secondMaterialID = "b-material";
+
+      TestHelpers.InstantiateEntityWithMaterial(scene, secondEntityID, Vector3.zero, new DCL.Components.PBRMaterialModel {
+        metallic = 0.66f,
+      }, secondMaterialID);
+
+      // Create third entity and assign 1st material
+      string thirdEntityID = "3";
+
+      TestHelpers.InstantiateEntityWithShape(scene, thirdEntityID, DCL.Models.CLASS_ID.BOX_SHAPE, Vector3.zero);
+      scene.AttachEntityComponent(JsonUtility.ToJson(new DCL.Models.AttachEntityComponentMessage {
+        entityId = thirdEntityID,
+        id = firstMaterialID,
+        name = "material"
+      }));
+
+      // Check renderers material references
+      var firstRenderer = scene.entities[firstEntityID].gameObject.GetComponent<MeshRenderer>();
+      var secondRenderer = scene.entities[secondEntityID].gameObject.GetComponent<MeshRenderer>();
+      var thirdRenderer = scene.entities[thirdEntityID].gameObject.GetComponent<MeshRenderer>();
+      Assert.AreNotSame(firstRenderer.sharedMaterial, secondRenderer.sharedMaterial, "1st and 2nd entities should have different materials");
+      Assert.AreSame(firstRenderer.sharedMaterial, thirdRenderer.sharedMaterial, "1st and 3rd entities should have the same material");
+    }
+
+    [UnityTest]
+    public IEnumerator PlayMode_EntityMaterialUpdateAffectsCorrectEntities() {
+      var sceneController = InitializeSceneController();
+
+      yield return new WaitForSeconds(0.01f);
+
+      var sceneData = new LoadParcelScenesMessage.UnityParcelScene();
+      var scene = sceneController.CreateTestScene(sceneData);
+
+      yield return new WaitForSeconds(0.01f);
+
+      // Create first entity with material
+      string firstEntityID = "1";
+      string firstMaterialID = "a-material";
+
+      TestHelpers.InstantiateEntityWithMaterial(scene, firstEntityID, Vector3.zero, new DCL.Components.PBRMaterialModel {
+        metallic = 0.3f,
+      }, firstMaterialID);
+
+      // Create second entity with material
+      string secondEntityID = "2";
+      string secondMaterialID = "b-material";
+
+      TestHelpers.InstantiateEntityWithMaterial(scene, secondEntityID, Vector3.zero, new DCL.Components.PBRMaterialModel {
+        metallic = 0.66f,
+      }, secondMaterialID);
+
+      // Create third entity and assign 1st material
+      string thirdEntityID = "3";
+
+      TestHelpers.InstantiateEntityWithShape(scene, thirdEntityID, DCL.Models.CLASS_ID.BOX_SHAPE, Vector3.zero);
+      scene.AttachEntityComponent(JsonUtility.ToJson(new DCL.Models.AttachEntityComponentMessage {
+        entityId = thirdEntityID,
+        id = firstMaterialID,
+        name = "material"
+      }));
+
+      // Check renderers material references
+      var firstRenderer = scene.entities[firstEntityID].gameObject.GetComponent<MeshRenderer>();
+      var secondRenderer = scene.entities[secondEntityID].gameObject.GetComponent<MeshRenderer>();
+      var thirdRenderer = scene.entities[thirdEntityID].gameObject.GetComponent<MeshRenderer>();
+      Assert.AreNotSame(firstRenderer.sharedMaterial, secondRenderer.sharedMaterial, "1st and 2nd entities should have different materials");
+      Assert.AreSame(firstRenderer.sharedMaterial, thirdRenderer.sharedMaterial, "1st and 3rd entities should have the same material");
+
+      // Check material properties before updating them
+      Assert.AreEqual("0.3", firstRenderer.sharedMaterial.GetFloat("_Metallic").ToString());
+      Assert.AreEqual("0.66", secondRenderer.sharedMaterial.GetFloat("_Metallic").ToString());
+
+      // Update material properties
+      scene.ComponentUpdated(JsonUtility.ToJson(new DCL.Models.ComponentUpdatedMessage {
+        id = firstMaterialID,
+        json = JsonUtility.ToJson(new DCL.Components.PBRMaterialModel {
+          metallic = 0.95f
+        })
+      }));
+
+      yield return (scene.disposableComponents[firstMaterialID] as DCL.Components.PBRMaterial).routine;
+
+      // Check material properties after updating them
+      Assert.AreEqual("0.95", firstRenderer.sharedMaterial.GetFloat("_Metallic").ToString());
+      Assert.AreEqual("0.66", secondRenderer.sharedMaterial.GetFloat("_Metallic").ToString());
+    }
+
+    [UnityTest]
+    public IEnumerator PlayMode_EntityMaterialDetach() {
+      var sceneController = InitializeSceneController();
+
+      yield return new WaitForSeconds(0.01f);
+
+      var sceneData = new LoadParcelScenesMessage.UnityParcelScene();
+      var scene = sceneController.CreateTestScene(sceneData);
+
+      yield return new WaitForSeconds(0.01f);
+
+      string entityId = "1";
+      string materialID = "a-material";
+
+      TestHelpers.InstantiateEntityWithMaterial(scene, entityId, Vector3.zero, new DCL.Components.BasicMaterialModel(), materialID);
+
+      var meshRenderer = scene.entities[entityId].gameObject.GetComponent<MeshRenderer>();
+      var materialComponent = scene.disposableComponents[materialID] as DCL.Components.BasicMaterial;
+
+      yield return materialComponent.routine;
+
+      Assert.IsTrue(materialComponent is DCL.Components.BasicMaterial, "material is BasicMaterial");
+
+      // Check if material initialized correctly
+      {
+        Assert.IsNotNull(meshRenderer, "MeshRenderer must exist");
+
+        Assert.AreEqual(meshRenderer.sharedMaterial, materialComponent.material, "Assigned material");
+      }
+
+      // Remove material
+      materialComponent.DetachFrom(scene.entities[entityId]);
+
+      // Check if material was removed correctly
+      Assert.IsNull(meshRenderer.sharedMaterial, "Assigned material should be null as it has been removed");
+    }
+
+    [UnityTest]
+    public IEnumerator PlayMode_MaterialDisposedGetsDetached() {
+      var sceneController = InitializeSceneController();
+
+      yield return new WaitForSeconds(0.01f);
+
+      var sceneData = new LoadParcelScenesMessage.UnityParcelScene();
+      var scene = sceneController.CreateTestScene(sceneData);
+
+      yield return new WaitForSeconds(0.01f);
+
+      string firstEntityId = "1";
+      string secondEntityId = "2";
+      string materialID = "a-material";
+
+      // Instantiate entity with material
+      TestHelpers.InstantiateEntityWithMaterial(scene, firstEntityId, Vector3.zero, new DCL.Components.BasicMaterialModel(), materialID);
+
+      // Attach material to second entity
+      scene.AttachEntityComponent(JsonUtility.ToJson(new DCL.Models.AttachEntityComponentMessage {
+        entityId = secondEntityId,
+        id = materialID,
+        name = "material"
+      }));
+
+      var firstMeshRenderer = scene.entities[firstEntityId].gameObject.GetComponent<MeshRenderer>();
+      var secondMeshRenderer = scene.entities[firstEntityId].gameObject.GetComponent<MeshRenderer>();
+      var materialComponent = scene.disposableComponents[materialID] as DCL.Components.BasicMaterial;
+
+      yield return materialComponent.routine;
+
+      Assert.IsTrue(materialComponent is DCL.Components.BasicMaterial, "material is BasicMaterial");
+
+      // Check if material attached correctly
+      {
+        Assert.IsNotNull(firstMeshRenderer, "MeshRenderer must exist");
+        Assert.AreEqual(firstMeshRenderer.sharedMaterial, materialComponent.material, "Assigned material");
+
+        Assert.IsNotNull(secondMeshRenderer, "MeshRenderer must exist");
+        Assert.AreEqual(secondMeshRenderer.sharedMaterial, materialComponent.material, "Assigned material");
+      }
+
+      // Dispose material
+      scene.ComponentDisposed(JsonUtility.ToJson(new DCL.Models.AttachEntityComponentMessage {
+        id = materialID
+      }));
+
+      // Check if material detached correctly
+      Assert.IsNull(firstMeshRenderer.sharedMaterial, "MeshRenderer must exist");
+      Assert.IsNull(secondMeshRenderer.sharedMaterial, "MeshRenderer must exist");
     }
 
     [UnityTest]
@@ -359,31 +659,56 @@ namespace Tests {
       yield return new WaitForSeconds(0.01f);
 
       string entityId = "1";
+      string materialID = "a-material";
 
-      string texture = "http://127.0.0.1:9991/Images/atlas.png";
+      // Instantiate entity with default PBR Material
+      TestHelpers.InstantiateEntityWithMaterial(scene, entityId, Vector3.zero, new DCL.Components.BasicMaterialModel(), materialID);
 
-      TestHelpers.InstantiateEntityWithMaterial(scene, entityId, Vector3.zero, new DCL.Components.BasicMaterialModel {
-        texture = texture
-      });
-
-      var materialComponent = scene.disposableComponents["a-material"] as DCL.Components.BasicMaterial;
-
-      Assert.IsTrue(materialComponent is DCL.Components.BasicMaterial, "material is PBRMaterial");
+      var meshRenderer = scene.entities[entityId].gameObject.GetComponent<MeshRenderer>();
+      var materialComponent = scene.disposableComponents[materialID] as DCL.Components.BasicMaterial;
 
       yield return materialComponent.routine;
 
+      Assert.IsTrue(materialComponent is DCL.Components.BasicMaterial, "material is BasicMaterial");
+
+      // Check if material initialized correctly
       {
-        var meshRenderer = scene.entities[entityId].gameObject.GetComponent<MeshRenderer>();
         Assert.IsNotNull(meshRenderer, "MeshRenderer must exist");
+
         var assignedMaterial = meshRenderer.sharedMaterial;
         Assert.IsNotNull(meshRenderer, "MeshRenderer.sharedMaterial must be the same as assignedMaterial");
+
         Assert.AreEqual(assignedMaterial, materialComponent.material, "Assigned material");
-        Assert.AreEqual(texture, materialComponent.data.texture, "Texture data must be correct");
-        var loadedTexture = meshRenderer.sharedMaterial.mainTexture;
-        Assert.IsNotNull(loadedTexture, "Texture must be loaded");
       }
 
-      // TODO: test remove material component
+      // Check default properties
+      {
+        Assert.IsNull(materialComponent.material.GetTexture("_MainTex"));
+        Assert.AreEqual("1", materialComponent.material.GetFloat("_AlphaClip").ToString());
+      }
+
+      // Update material
+      string textureURL = "http://127.0.0.1:9991/Images/atlas.png";
+
+      scene.ComponentUpdated(JsonUtility.ToJson(new DCL.Models.ComponentUpdatedMessage {
+        id = materialID,
+        json = JsonUtility.ToJson(new DCL.Components.BasicMaterialModel {
+          texture = textureURL,
+          samplingMode = 2,
+          wrap = 3,
+          alphaTest = 0.5f
+        })
+      }));
+
+      yield return materialComponent.routine;
+
+      // Check updated properties
+      {
+        Assert.IsNotNull(materialComponent.material.GetTexture("_MainTex"));
+        Assert.AreEqual("0.5", materialComponent.material.GetFloat("_AlphaClip").ToString());
+        Assert.AreEqual(TextureWrapMode.Mirror, materialComponent.material.mainTexture.wrapMode);
+        Assert.AreEqual(FilterMode.Bilinear, materialComponent.material.mainTexture.filterMode);
+      }
     }
 
     [UnityTest]
@@ -547,12 +872,6 @@ namespace Tests {
 
       return sceneController;
     }
-
-    // [SetUp]
-    // public void ResetScene() {
-    //   Debug.Log("Reloading scene");
-    //   SceneManager.LoadScene(SceneManager.GetActiveScene().name);
-    // }
 
     // TODO: Tests to be implemented
     /*

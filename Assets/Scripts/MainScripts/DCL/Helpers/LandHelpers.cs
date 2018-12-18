@@ -18,7 +18,6 @@ namespace DCL.Helpers {
       );
     }
 
-
     /**
      * Transforms a world position into a grid position
      */
@@ -41,17 +40,21 @@ namespace DCL.Helpers {
     // todo: move this
     public static IEnumerator FetchTexture(Controllers.ParcelScene scene, string textureURL, Action<Texture> callback) {
       if (!string.IsNullOrEmpty(textureURL)) {
-        using (var webRequest = UnityWebRequestTexture.GetTexture(textureURL)) {
-          yield return webRequest.SendWebRequest();
+        UnityWebRequest webRequest = UnityWebRequestTexture.GetTexture(textureURL);
 
-          if (webRequest.isNetworkError || webRequest.isHttpError) {
-            Debug.Log("Fetching texture failed: " + webRequest.error);
-          } else {
-            callback(DownloadHandlerTexture.GetContent(webRequest));
-          }
+        yield return webRequest.SendWebRequest();
+
+        if (webRequest.isNetworkError || webRequest.isHttpError) {
+          Debug.Log("Fetching texture failed: " + webRequest.error);
+        } else {
+          callback(DownloadHandlerTexture.GetContent(webRequest));
         }
+
+        // TODO: investigate why can't we dispose webRequest here
       } else {
         Debug.Log("Can't fetch texture as the url is empty");
+
+        yield return null;
       }
     }
   }

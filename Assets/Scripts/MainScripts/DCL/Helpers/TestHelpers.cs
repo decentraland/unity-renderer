@@ -39,45 +39,45 @@ namespace DCL.Helpers {
       }));
     }
 
-    public static void InstantiateEntityWithMaterial(ParcelScene scene, string entityId, Vector3 position, BasicMaterialModel basicMaterial) {
+    public static void InstantiateEntityWithMaterial(ParcelScene scene, string entityId, Vector3 position, BasicMaterialModel basicMaterial, string materialComponentID = "a-material") {
       InstantiateEntityWithShape(scene, entityId, DCL.Models.CLASS_ID.BOX_SHAPE, position);
 
       scene.ComponentCreated(JsonUtility.ToJson(new DCL.Models.ComponentCreatedMessage {
         classId = (int)DCL.Models.CLASS_ID.BASIC_MATERIAL,
-        id = "a-material",
+        id = materialComponentID,
         name = "material"
       }));
 
       scene.ComponentUpdated(JsonUtility.ToJson(new DCL.Models.ComponentUpdatedMessage {
-        id = "a-material",
+        id = materialComponentID,
         json = JsonUtility.ToJson(basicMaterial)
       }));
 
       scene.AttachEntityComponent(JsonUtility.ToJson(new DCL.Models.AttachEntityComponentMessage {
         entityId = entityId,
-        id = "a-material",
+        id = materialComponentID,
         name = "material"
       }));
     }
 
-    public static void InstantiateEntityWithMaterial(ParcelScene scene, string entityId, Vector3 position, PBRMaterialModel pbrMaterial) {
+    public static void InstantiateEntityWithMaterial(ParcelScene scene, string entityId, Vector3 position, PBRMaterialModel pbrMaterial, string materialComponentID = "a-material") {
       InstantiateEntityWithShape(scene, entityId, DCL.Models.CLASS_ID.BOX_SHAPE, position);
 
       scene.ComponentCreated(JsonUtility.ToJson(new DCL.Models.ComponentCreatedMessage {
         classId = (int)DCL.Models.CLASS_ID.PBR_MATERIAL,
-        id = "a-material",
-        name = "material"
-      }));
-
-      scene.AttachEntityComponent(JsonUtility.ToJson(new DCL.Models.AttachEntityComponentMessage {
-        entityId = entityId,
-        id = "a-material",
+        id = materialComponentID,
         name = "material"
       }));
 
       scene.ComponentUpdated(JsonUtility.ToJson(new DCL.Models.ComponentUpdatedMessage {
-        id = "a-material",
+        id = materialComponentID,
         json = JsonUtility.ToJson(pbrMaterial)
+      }));
+
+      scene.AttachEntityComponent(JsonUtility.ToJson(new DCL.Models.AttachEntityComponentMessage {
+        entityId = entityId,
+        id = materialComponentID,
+        name = "material"
       }));
     }
   }
