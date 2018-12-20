@@ -306,6 +306,67 @@ namespace Tests {
     }
 
     [UnityTest]
+    public IEnumerator PlayMode_EntityOBJShapeUpdate() {
+      var sceneController = InitializeSceneController();
+
+      yield return new WaitForSeconds(0.01f);
+
+      var sceneData = new LoadParcelScenesMessage.UnityParcelScene();
+      var scene = sceneController.CreateTestScene(sceneData);
+
+      yield return new WaitForSeconds(0.01f);
+
+      string entityId = "1";
+      scene.CreateEntity(entityId);
+
+      Material placeholderLoadingMaterial = Resources.Load<Material>("Materials/AssetLoading");
+      Assert.IsNull(scene.entities[entityId].gameObject.GetComponentInChildren<MeshRenderer>(), "Since the shape hasn't been updated yet, the child renderer shouldn't exist");
+
+      scene.UpdateEntityComponent(JsonUtility.ToJson(new DCL.Models.UpdateEntityComponentMessage {
+        entityId = entityId,
+        name = "shape",
+        classId = (int)DCL.Models.CLASS_ID.OBJ_SHAPE,
+        json = JsonConvert.SerializeObject(new {
+          src = "http://127.0.0.1:9991/OBJ/teapot.obj"
+        })
+      }));
+
+      yield return new WaitForSeconds(1f);
+
+      Assert.AreNotSame(placeholderLoadingMaterial, scene.entities[entityId].gameObject.GetComponentInChildren<MeshRenderer>().sharedMaterial, "Since the shape has already been updated, the child renderer found shouldn't have the 'AssetLoading' placeholder material");
+    }
+
+    [UnityTest]
+    public IEnumerator PlayMode_EntityGLTFShapeUpdate() {
+      var sceneController = InitializeSceneController();
+
+      yield return new WaitForSeconds(0.01f);
+
+      var sceneData = new LoadParcelScenesMessage.UnityParcelScene();
+      var scene = sceneController.CreateTestScene(sceneData);
+
+      yield return new WaitForSeconds(0.01f);
+
+      string entityId = "1";
+      scene.CreateEntity(entityId);
+
+      Assert.IsNull(scene.entities[entityId].gameObject.GetComponentInChildren<UnityGLTF.InstantiatedGLTFObject>(), "Since the shape hasn't been updated yet, the 'GLTFScene' child object shouldn't exist");
+
+      scene.UpdateEntityComponent(JsonUtility.ToJson(new DCL.Models.UpdateEntityComponentMessage {
+        entityId = entityId,
+        name = "shape",
+        classId = (int)DCL.Models.CLASS_ID.GLTF_SHAPE,
+        json = JsonConvert.SerializeObject(new {
+          src = "http://127.0.0.1:9991/GLB/Lantern/Lantern.glb"
+        })
+      }));
+
+      yield return new WaitForSeconds(4f);
+
+      Assert.IsNotNull(scene.entities[entityId].gameObject.GetComponentInChildren<UnityGLTF.InstantiatedGLTFObject>(), "'GLTFScene' child object with 'InstantiatedGLTF' component should exist if the GLTF was loaded correctly");
+    }
+
+    [UnityTest]
     public IEnumerator PlayMode_EntityPBRMaterialUpdate() {
       var sceneController = InitializeSceneController();
 
@@ -872,11 +933,5 @@ namespace Tests {
 
       return sceneController;
     }
-
-    // TODO: Tests to be implemented
-    /*
-     * PlayMode_EntityGLTFShapeUpdate
-     * PlayMode_EntityOBJShapeUpdate
-     */
   }
 }

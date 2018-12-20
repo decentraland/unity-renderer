@@ -1,6 +1,6 @@
 {
   "dependencies": {
-    "com.unity.collab-proxy": "1.2.11",
+    "com.unity.collab-proxy": "1.2.15",
     "com.unity.package-manager-ui": "2.0.3",
     "com.unity.render-pipelines.lightweight": "4.2.0-preview",
     "com.unity.modules.animation": "1.0.0",

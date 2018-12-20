@@ -1,7 +1,8 @@
 {
     "name": "PlayModeTests",
     "references": [
-        "MainScripts"
+        "MainScripts",
+        "UnityGLTFAssembly"
     ],
     "optionalUnityReferences": [
         "TestAssemblies"
