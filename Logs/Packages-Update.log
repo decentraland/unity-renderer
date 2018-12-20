@@ -8,3 +8,11 @@ The following packages were added:
   com.unity.collab-proxy@1.2.11
 The following packages were updated:
   com.unity.package-manager-ui from version 1.9.11 to 2.0.2
+
+=== Tue Dec 18 15:20:54 2018
+
+Packages were changed.
+Update Mode: updateDependencies
+
+The following packages were updated:
+  com.unity.collab-proxy from version 1.2.11 to 1.2.15

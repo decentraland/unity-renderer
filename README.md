@@ -31,4 +31,6 @@ We are using [UnityGLTF](https://github.com/KhronosGroup/UnityGLTF) as a Dynamic
 
 ### Known Issues
 
+- GLTF Dynamic Loading: Currently, only **GLB** format is supported with Khrono's [UnityGLTF](https://github.com/KhronosGroup/UnityGLTF) loader, GLTF dynamic loading doesn't work even in their example unity project. Soon Unity will support GLTFs natively (Unity declared that for its future 2019.1 release). When that feature gets implemented we'll remove khrono's loader from the project.
+
 - Regarding Basic Materials: If the **alphaTest** value is set on a basic material and the **Assets/Resources/Materials/BasicShapeMaterial** is viewed in the Inspector (be it by selecting the material in the Project tab or by expanding its details from a renderer in the Inspector), its "Alpha Clip" toggle gets untoggled (and the material file modified). We suspect a Unity bug.

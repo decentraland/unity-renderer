@@ -6,7 +6,7 @@ public class WebServerComponent : MonoBehaviour {
   void Awake() {
     if (_server == null) {
       var appPath = Application.dataPath;
-      var wwwPath = appPath + "/RemotelyFetchedTestAssets";
+      var wwwPath = appPath + "/TestWebserverRoot";
       _server = new SimpleHTTPServer(wwwPath, 9991);
       Debug.Log("Starting web server... (" + wwwPath + ")");
     }
