@@ -40,17 +40,15 @@ namespace DCL.Helpers {
     // todo: move this
     public static IEnumerator FetchTexture(Controllers.ParcelScene scene, string textureURL, Action<Texture> callback) {
       if (!string.IsNullOrEmpty(textureURL)) {
-        UnityWebRequest webRequest = UnityWebRequestTexture.GetTexture(textureURL);
+        using (var webRequest = UnityWebRequestTexture.GetTexture(textureURL)) {
+          yield return webRequest.SendWebRequest();
 
-        yield return webRequest.SendWebRequest();
-
-        if (webRequest.isNetworkError || webRequest.isHttpError) {
-          Debug.Log("Fetching texture failed: " + webRequest.error);
-        } else {
-          callback(DownloadHandlerTexture.GetContent(webRequest));
+          if (webRequest.isNetworkError || webRequest.isHttpError) {
+            Debug.Log("Fetching texture failed: " + webRequest.error);
+          } else {
+            callback(DownloadHandlerTexture.GetContent(webRequest));
+          }
         }
-
-        // TODO: investigate why can't we dispose webRequest here
       } else {
         Debug.Log("Can't fetch texture as the url is empty");
 
