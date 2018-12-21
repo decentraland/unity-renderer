@@ -212,4 +212,9 @@ new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase) {
     _serverThread.Start();
 #endif
   }
+
+  public void Restart(string path, int port) {
+    Stop();
+    Initialize(path, port);
+  }
 }

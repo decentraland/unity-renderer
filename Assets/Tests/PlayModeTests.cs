@@ -307,7 +307,7 @@ namespace Tests {
 
     [UnityTest]
     public IEnumerator PlayMode_EntityOBJShapeUpdate() {
-      var sceneController = InitializeSceneController();
+      var sceneController = InitializeSceneController(true);
 
       yield return new WaitForSeconds(0.01f);
 
@@ -331,14 +331,14 @@ namespace Tests {
         })
       }));
 
-      yield return new WaitForSeconds(1f);
+      yield return new WaitForSeconds(4f);
 
       Assert.AreNotSame(placeholderLoadingMaterial, scene.entities[entityId].gameObject.GetComponentInChildren<MeshRenderer>().sharedMaterial, "Since the shape has already been updated, the child renderer found shouldn't have the 'AssetLoading' placeholder material");
     }
 
     [UnityTest]
     public IEnumerator PlayMode_EntityGLTFShapeUpdate() {
-      var sceneController = InitializeSceneController();
+      var sceneController = InitializeSceneController(true);
 
       yield return new WaitForSeconds(0.01f);
 
@@ -368,7 +368,7 @@ namespace Tests {
 
     [UnityTest]
     public IEnumerator PlayMode_EntityPBRMaterialUpdate() {
-      var sceneController = InitializeSceneController();
+      var sceneController = InitializeSceneController(true);
 
       yield return new WaitForSeconds(0.01f);
 
@@ -408,7 +408,7 @@ namespace Tests {
 
     [UnityTest]
     public IEnumerator PlayMode_EntityPBRMaterialPropertiesUpdate() {
-      var sceneController = InitializeSceneController();
+      var sceneController = InitializeSceneController(true);
 
       yield return new WaitForSeconds(0.01f);
 
@@ -710,7 +710,7 @@ namespace Tests {
 
     [UnityTest]
     public IEnumerator PlayMode_EntityBasicMaterialUpdate() {
-      var sceneController = InitializeSceneController();
+      var sceneController = InitializeSceneController(true);
 
       yield return new WaitForSeconds(0.01f);
 
@@ -920,13 +920,21 @@ namespace Tests {
       Assert.IsTrue(theScene.transform.GetChild(2).localPosition == new Vector3(-10.0f + 5f, DCL.Configuration.ParcelSettings.DEBUG_FLOOR_HEIGHT, 10.0f + 5f));
     }
 
-    SceneController InitializeSceneController() {
+    SceneController InitializeSceneController(bool usesWebServer = false) {
       var sceneController = Object.FindObjectOfType<SceneController>();
 
       if (sceneController == null) {
         var GO = new GameObject();
         sceneController = GO.AddComponent<SceneController>();
-        GO.AddComponent<WebServerComponent>();
+      }
+
+      if (usesWebServer) {
+        var webServer = sceneController.GetComponent<WebServerComponent>();
+        if (webServer != null) {
+          webServer.Restart(); // We restart the server to avoid issues with consecutive tests using it
+        } else {
+          sceneController.gameObject.AddComponent<WebServerComponent>();
+        }
       }
 
       sceneController.UnloadAllScenes();
