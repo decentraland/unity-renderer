@@ -444,9 +444,7 @@ namespace Tests {
       // Check default properties
       {
         // Texture
-        Assert.IsNull(materialComponent.material.GetTexture("_EmissionMap"));
         Assert.IsNull(materialComponent.material.GetTexture("_MainTex"));
-        Assert.IsNull(materialComponent.material.GetTexture("_BumpMap"));
 
         // Colors
         Assert.AreEqual("FFFFFF", ColorUtility.ToHtmlStringRGB(materialComponent.material.GetColor("_Color")));
@@ -469,8 +467,6 @@ namespace Tests {
         id = materialID,
         json = JsonUtility.ToJson(new DCL.Components.PBRMaterialModel {
           albedoTexture = textureURL,
-          emissiveTexture = textureURL,
-          bumpTexture = textureURL,
           albedoColor = "#99deff",
           emissiveColor = "#42f4aa",
           reflectivityColor = "#601121",
@@ -489,9 +485,7 @@ namespace Tests {
       // Check updated properties
       {
         // Texture
-        Assert.IsNotNull(materialComponent.material.GetTexture("_EmissionMap"));
         Assert.IsNotNull(materialComponent.material.GetTexture("_MainTex"));
-        Assert.IsNotNull(materialComponent.material.GetTexture("_BumpMap"));
 
         // Colors
         Assert.AreEqual("99DEFF", ColorUtility.ToHtmlStringRGB(materialComponent.material.GetColor("_Color")));
