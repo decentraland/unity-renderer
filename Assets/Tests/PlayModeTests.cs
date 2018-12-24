@@ -331,7 +331,7 @@ namespace Tests {
         })
       }));
 
-      yield return new WaitForSeconds(4f);
+      yield return new WaitForSeconds(8f);
 
       Assert.AreNotSame(placeholderLoadingMaterial, scene.entities[entityId].gameObject.GetComponentInChildren<MeshRenderer>().sharedMaterial, "Since the shape has already been updated, the child renderer found shouldn't have the 'AssetLoading' placeholder material");
     }
@@ -361,7 +361,7 @@ namespace Tests {
         })
       }));
 
-      yield return new WaitForSeconds(4f);
+      yield return new WaitForSeconds(8f);
 
       Assert.IsNotNull(scene.entities[entityId].gameObject.GetComponentInChildren<UnityGLTF.InstantiatedGLTFObject>(), "'GLTFScene' child object with 'InstantiatedGLTF' component should exist if the GLTF was loaded correctly");
     }
