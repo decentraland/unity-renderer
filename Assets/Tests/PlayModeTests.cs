@@ -320,6 +320,9 @@ namespace Tests {
       scene.CreateEntity(entityId);
 
       Material placeholderLoadingMaterial = Resources.Load<Material>("Materials/AssetLoading");
+
+      yield return new WaitForSeconds(0.01f);
+
       Assert.IsNull(scene.entities[entityId].gameObject.GetComponentInChildren<MeshRenderer>(), "Since the shape hasn't been updated yet, the child renderer shouldn't exist");
 
       scene.UpdateEntityComponent(JsonUtility.ToJson(new DCL.Models.UpdateEntityComponentMessage {
@@ -333,7 +336,9 @@ namespace Tests {
 
       yield return new WaitForSeconds(8f);
 
-      Assert.AreNotSame(placeholderLoadingMaterial, scene.entities[entityId].gameObject.GetComponentInChildren<MeshRenderer>().sharedMaterial, "Since the shape has already been updated, the child renderer found shouldn't have the 'AssetLoading' placeholder material");
+      var childRenderer = scene.entities[entityId].gameObject.GetComponentInChildren<MeshRenderer>();
+      Assert.IsNotNull(childRenderer, "Since the shape has already been updated, the child renderer should exist");
+      Assert.AreNotSame(placeholderLoadingMaterial, childRenderer.sharedMaterial, "Since the shape has already been updated, the child renderer found shouldn't have the 'AssetLoading' placeholder material");
     }
 
     [UnityTest]
