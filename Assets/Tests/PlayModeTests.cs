@@ -309,7 +309,7 @@ namespace Tests {
     public IEnumerator PlayMode_EntityOBJShapeUpdate() {
       var sceneController = InitializeSceneController(true);
 
-      yield return new WaitForSeconds(0.01f);
+      yield return new WaitForSeconds(1f);
 
       var sceneData = new LoadParcelScenesMessage.UnityParcelScene();
       var scene = sceneController.CreateTestScene(sceneData);
