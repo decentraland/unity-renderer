@@ -2,6 +2,8 @@
 using UnityEngine;
 
 public class CharacterController : MonoBehaviour {
+  public LayerMask collidingLayers;
+
   float aimingHorizontalSpeed = 100f;
   float aimingVerticalSpeed = 100f;
   float aimingVerticalMinimumAngle = -89f;
@@ -127,13 +129,13 @@ public class CharacterController : MonoBehaviour {
     }
 
     if (movementDirection != Vector3.zero &&
-       (flyingMode || !Physics.Raycast(transform.position, movementDirection.normalized, collider.bounds.extents.x + 0.5f))) { // Wall-Collision check
+       (flyingMode || !Physics.Raycast(transform.position, movementDirection.normalized, collider.bounds.extents.x + 0.5f, collidingLayers))) { // Wall-Collision check
       transform.position += movementDirection;
       didMove = true;
     }
 
     // Jump
-    if (!flyingMode && Input.GetKeyDown(KeyCode.Space) && Physics.Raycast(transform.position, Vector3.down, collider.bounds.extents.y + 0.1f)) {
+    if (!flyingMode && Input.GetKeyDown(KeyCode.Space) && Physics.Raycast(transform.position, Vector3.down, collider.bounds.extents.y + 0.1f, collidingLayers)) {
       rigidbody.AddForce(Vector3.up * jumpForce, ForceMode.Acceleration);
       didMove = true;
     }

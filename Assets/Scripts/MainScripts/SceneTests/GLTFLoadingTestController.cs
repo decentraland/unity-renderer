@@ -8,20 +8,23 @@ public class GLTFLoadingTestController : MonoBehaviour {
   public string dataTrackingURL = "https://tracking.decentraland.org/track";
 
   GLTFComponent[] gltfRenderers;
+  float loadingStartingTime;
 
   void Awake() {
     gltfRenderers = GetComponentsInChildren<GLTFComponent>(true);
 
+    loadingStartingTime = Time.time;
+
     for (int i = 0; i < gltfRenderers.Length; i++) {
-      gltfRenderers[i].finishedLoadingAssetCallback = SendLoadingTimeDataToEndpoint;
+      gltfRenderers[i].OnFinishedLoadingAsset += SendLoadingTimeDataToEndpoint;
 
       gltfRenderers[i].gameObject.SetActive(true);
     }
   }
 
-  void SendLoadingTimeDataToEndpoint(float loadingTime) {
+  void SendLoadingTimeDataToEndpoint() {
     GLTFLoadingTestTrackingData data = new GLTFLoadingTestTrackingData();
-    data.events[0].TestResultInMilliseconds = loadingTime.ToString();
+    data.events[0].TestResultInMilliseconds = (Time.time - loadingStartingTime).ToString();
 
     string parsedJSON = JsonUtility.ToJson(data);
 

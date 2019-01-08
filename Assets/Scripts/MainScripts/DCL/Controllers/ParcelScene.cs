@@ -56,6 +56,7 @@ namespace DCL.Controllers {
         newEntity.entityId = entityID;
         newEntity.gameObject = new GameObject();
         newEntity.gameObject.transform.SetParent(gameObject.transform);
+        newEntity.gameObject.name = "ENTITY_" + entityID;
 
         entities.Add(entityID, newEntity);
       } else {
@@ -132,42 +133,64 @@ namespace DCL.Controllers {
       switch ((CLASS_ID)parsedJson.classId) {
         case CLASS_ID.TRANSFORM: {
             var component = LandHelpers.GetOrCreateComponent<DCL.Components.TransformComponent>(decentralandEntity.gameObject);
+            component.scene = this;
+            component.entity = decentralandEntity;
             component.UpdateFromJSON(parsedJson.json);
             break;
           }
         case CLASS_ID.BOX_SHAPE: {
             var component = LandHelpers.GetOrCreateComponent<DCL.Components.BoxShape>(decentralandEntity.gameObject);
+            component.scene = this;
+            component.entity = decentralandEntity;
             component.UpdateFromJSON(parsedJson.json);
             break;
           }
         case CLASS_ID.SPHERE_SHAPE: {
             var component = LandHelpers.GetOrCreateComponent<DCL.Components.SphereShape>(decentralandEntity.gameObject);
+            component.scene = this;
+            component.entity = decentralandEntity;
             component.UpdateFromJSON(parsedJson.json);
             break;
           }
         case CLASS_ID.CONE_SHAPE: {
             var component = LandHelpers.GetOrCreateComponent<DCL.Components.ConeShape>(decentralandEntity.gameObject);
+            component.scene = this;
+            component.entity = decentralandEntity;
             component.UpdateFromJSON(parsedJson.json);
             break;
           }
         case CLASS_ID.CYLINDER_SHAPE: {
             var component = LandHelpers.GetOrCreateComponent<DCL.Components.CylinderShape>(decentralandEntity.gameObject);
+            component.scene = this;
+            component.entity = decentralandEntity;
             component.UpdateFromJSON(parsedJson.json);
             break;
           }
         case CLASS_ID.PLANE_SHAPE: {
             var component = LandHelpers.GetOrCreateComponent<DCL.Components.PlaneShape>(decentralandEntity.gameObject);
+            component.scene = this;
+            component.entity = decentralandEntity;
             component.UpdateFromJSON(parsedJson.json);
             break;
           }
         case CLASS_ID.GLTF_SHAPE: {
             var component = LandHelpers.GetOrCreateComponent<DCL.Components.GLTFShape>(decentralandEntity.gameObject);
+            component.scene = this;
+            component.entity = decentralandEntity;
             component.UpdateFromJSON(parsedJson.json);
             break;
           }
         case CLASS_ID.OBJ_SHAPE: {
             var component = LandHelpers.GetOrCreateComponent<DCL.Components.OBJShape>(decentralandEntity.gameObject);
+            component.scene = this;
+            component.entity = decentralandEntity;
             component.UpdateFromJSON(parsedJson.json);
+            break;
+          }
+        case CLASS_ID.ONCLICK: {
+            var component = LandHelpers.GetOrCreateComponent<DCL.Components.OnClick>(decentralandEntity.gameObject);
+            component.scene = this;
+            component.entity = decentralandEntity;
             break;
           }
         default:

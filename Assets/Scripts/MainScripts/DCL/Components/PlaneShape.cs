@@ -13,8 +13,23 @@ namespace DCL.Components {
   }
 
   public class PlaneShape : BaseShape<PlaneShapeModel> {
+    protected override void Awake() {
+      base.Awake();
+
+      if (meshFilter == null) {
+        meshFilter = meshGameObject.AddComponent<MeshFilter>();
+      }
+
+      if (meshRenderer == null) {
+        meshRenderer = meshGameObject.AddComponent<MeshRenderer>();
+      }
+
+      meshRenderer.sharedMaterial = Resources.Load<Material>("Materials/Default");
+    }
+
     public override IEnumerator ApplyChanges() {
       meshFilter.mesh = PrimitiveMeshBuilder.BuildPlane(1f);
+
       return null;
     }
   }

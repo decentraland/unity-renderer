@@ -1,5 +1,6 @@
 using UnityEngine;
 using DCL.Configuration;
+using DCL.Components;
 using System.Collections;
 using System;
 using UnityEngine.Networking;
@@ -54,6 +55,17 @@ namespace DCL.Helpers {
 
         yield return null;
       }
+    }
+
+    // todo: move this
+    public static bool IsShapeComponent(UpdateableComponent targetComponent) {
+      return targetComponent is BoxShape ||
+              targetComponent is PlaneShape ||
+              targetComponent is SphereShape ||
+              targetComponent is ConeShape ||
+              targetComponent is CylinderShape ||
+              targetComponent is GLTFShape ||
+              targetComponent is OBJShape;
     }
   }
 }

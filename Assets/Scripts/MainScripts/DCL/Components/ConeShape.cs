@@ -17,8 +17,23 @@ namespace DCL.Components {
   }
 
   public class ConeShape : BaseShape<ConeShapeModel> {
+    protected override void Awake() {
+      base.Awake();
+
+      if (meshFilter == null) {
+        meshFilter = meshGameObject.AddComponent<MeshFilter>();
+      }
+
+      if (meshRenderer == null) {
+        meshRenderer = meshGameObject.AddComponent<MeshRenderer>();
+      }
+
+      meshRenderer.sharedMaterial = Resources.Load<Material>("Materials/Default");
+    }
+
     public override IEnumerator ApplyChanges() {
       meshFilter.mesh = PrimitiveMeshBuilder.BuildCone(50, data.radiusTop, data.radiusBottom, 2f, 0f, true, false);
+
       return null;
     }
   }

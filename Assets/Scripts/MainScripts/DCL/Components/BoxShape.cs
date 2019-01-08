@@ -11,8 +11,23 @@ namespace DCL.Components {
   }
 
   public class BoxShape : BaseShape<BoxShapeModel> {
+    protected override void Awake() {
+      base.Awake();
+
+      if (meshFilter == null) {
+        meshFilter = meshGameObject.AddComponent<MeshFilter>();
+      }
+
+      if (meshRenderer == null) {
+        meshRenderer = meshGameObject.AddComponent<MeshRenderer>();
+      }
+
+      meshRenderer.sharedMaterial = Resources.Load<Material>("Materials/Default");
+    }
+
     public override IEnumerator ApplyChanges() {
       meshFilter.mesh = PrimitiveMeshBuilder.BuildCube(1f);
+
       return null;
     }
   }

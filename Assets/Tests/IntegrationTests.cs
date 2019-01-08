@@ -9,7 +9,7 @@ using Newtonsoft.Json;
 namespace Tests {
   public class IntegrationTests {
     [UnityTest]
-    public IEnumerator PlayMode_TestSceneIntegration1() {
+    public IEnumerator IntegrationTest_SceneIntegration1() {
       var GO = new GameObject();
       var sceneController = GO.AddComponent<SceneController>();
       var testScene = GO.AddComponent<IntegrationTestController>();

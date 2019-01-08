@@ -11,7 +11,11 @@ namespace DCL.Components {
   }
 
   public class OBJShape : BaseShape<OBJShapeModel> {
-    public override IEnumerator ApplyChanges() {
+    DynamicOBJLoaderController objLoaderComponent;
+
+    protected void Awake() {
+      base.Awake();
+
       if (meshFilter) {
 #if UNITY_EDITOR
         DestroyImmediate(meshFilter);
@@ -28,14 +32,39 @@ namespace DCL.Components {
 #endif
       }
 
-      if (!string.IsNullOrEmpty(data.src)) {
-        var objShapeComponent = LandHelpers.GetOrCreateComponent<DynamicOBJLoaderController>(gameObject);
-        objShapeComponent.LoadAsset(data.src);
+      objLoaderComponent = LandHelpers.GetOrCreateComponent<DynamicOBJLoaderController>(meshGameObject);
+      objLoaderComponent.OnFinishedLoadingAsset += CallOnComponentUpdated;
+    }
 
-        objShapeComponent.loadingPlaceholder = GLTFShape.AttachPlaceholderRendererGameObject(gameObject.transform);
+    public override IEnumerator ApplyChanges() {
+      if (!string.IsNullOrEmpty(data.src)) {
+        objLoaderComponent.LoadAsset(data.src, true);
+
+        if (objLoaderComponent.loadingPlaceholder == null) {
+          objLoaderComponent.loadingPlaceholder = AttachPlaceholderRendererGameObject(gameObject.transform);
+        } else {
+          objLoaderComponent.loadingPlaceholder.SetActive(true);
+        }
       }
 
       return null;
+    }
+
+    public override IEnumerator UpdateComponent() {
+      yield return ApplyChanges();
+    }
+
+    void CallOnComponentUpdated() {
+      if (entity.OnComponentUpdated != null)
+        entity.OnComponentUpdated.Invoke(this);
+    }
+
+    protected override void OnDestroy() {
+      objLoaderComponent.OnFinishedLoadingAsset -= CallOnComponentUpdated;
+
+      base.OnDestroy();
+
+      Destroy(objLoaderComponent);
     }
   }
 }

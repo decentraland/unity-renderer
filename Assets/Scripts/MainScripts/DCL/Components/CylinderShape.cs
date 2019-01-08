@@ -17,8 +17,23 @@ namespace DCL.Components {
   }
 
   public class CylinderShape : BaseShape<CylinderShapeModel> {
+    protected override void Awake() {
+      base.Awake();
+
+      if (meshFilter == null) {
+        meshFilter = meshGameObject.AddComponent<MeshFilter>();
+      }
+
+      if (meshRenderer == null) {
+        meshRenderer = meshGameObject.AddComponent<MeshRenderer>();
+      }
+
+      meshRenderer.sharedMaterial = Resources.Load<Material>("Materials/Default");
+    }
+
     public override IEnumerator ApplyChanges() {
       meshFilter.mesh = PrimitiveMeshBuilder.BuildCylinder(50, data.radiusTop, data.radiusBottom, 2f, 0f, true, false);
+
       return null;
     }
   }
