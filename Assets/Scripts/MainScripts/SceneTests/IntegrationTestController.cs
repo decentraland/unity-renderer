@@ -89,7 +89,7 @@ public class IntegrationTestController : MonoBehaviour {
     // because basePosition is at 3,3
     Assert.AreEqual(cube.gameObject.transform.position, new Vector3(36, 0, 35));
 
-    var mesh = cube.gameObject.GetComponent<MeshFilter>().mesh;
+    var mesh = cube.gameObject.GetComponentInChildren<MeshFilter>().mesh;
 
     Assert.AreEqual(mesh.name, "DCL Box Instance");
 
@@ -102,7 +102,7 @@ public class IntegrationTestController : MonoBehaviour {
         json = "{}"
       }));
 
-      var newMesh = cube.gameObject.GetComponent<MeshFilter>().mesh;
+      var newMesh = cube.gameObject.GetComponentInChildren<MeshFilter>().mesh;
 
       Assert.AreEqual(newMesh.name, "DCL Box Instance");
       Assert.IsTrue(mesh == newMesh, "A new instance of the box was created");
@@ -117,7 +117,7 @@ public class IntegrationTestController : MonoBehaviour {
         json = "{}"
       }));
 
-      var newMesh = cube.gameObject.GetComponent<MeshFilter>().mesh;
+      var newMesh = cube.gameObject.GetComponentInChildren<MeshFilter>().mesh;
 
       Assert.AreEqual(newMesh.name, "DCL Box Instance");
       Assert.IsTrue(mesh == newMesh, "A new instance of the box was created");
@@ -132,7 +132,7 @@ public class IntegrationTestController : MonoBehaviour {
         json = "{\"withCollisions\":false,\"billboard\":0,\"visible\":true,\"tag\":\"sphere\"}"
       }));
 
-      var newMesh = cube.gameObject.GetComponent<MeshFilter>().mesh;
+      var newMesh = cube.gameObject.GetComponentInChildren<MeshFilter>().mesh;
 
       Assert.AreEqual(newMesh.name, "DCL Sphere Instance");
       Assert.IsTrue(mesh != newMesh, "The mesh instance remains the same, a new instance should have been created.");

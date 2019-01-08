@@ -1,0 +1,29 @@
+fileFormatVersion: 2
+guid: 64683d9a0e9794053aea61f1857e2cb3
+ScriptedImporter:
+  fileIDToRecycleName:
+    100000: main asset/Scene
+    100002: main asset/Scene/node_damagedHelmet_-6514
+    100004: main asset/Scene/node_damagedHelmet_-6514/Primitive
+    400000: main asset/Scene/Transform
+    400002: main asset/Scene/node_damagedHelmet_-6514/Transform
+    400004: main asset/Scene/node_damagedHelmet_-6514/Primitive/Transform
+    2300000: main asset/Scene/node_damagedHelmet_-6514/Primitive/MeshRenderer
+    3300000: main asset/Scene/node_damagedHelmet_-6514/Primitive/MeshFilter
+    4300000: mesh Primitive
+    11400000: main asset/Scene/MonoBehaviour-UnityGLTF.InstantiatedGLTFObject
+    100100000: main asset
+  externalObjects: {}
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+  script: {fileID: 11500000, guid: 804e1ce4c496647cfa3f1a1134187c71, type: 3}
+  _removeEmptyRootObjects: 1
+  _scaleFactor: 1
+  _maximumLod: 300
+  _readWriteEnabled: 1
+  _generateColliders: 0
+  _swapUvs: 0
+  _importNormals: 0
+  _importMaterials: 1
+  _useJpgTextures: 0

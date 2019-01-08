@@ -4,6 +4,7 @@ using DCL.Helpers;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.TestTools;
+using UnityGLTF;
 using Newtonsoft.Json;
 using NUnit.Framework;
 using DCL.Models;
@@ -18,7 +19,7 @@ namespace Tests {
   public class PlayModeTests {
 
     [UnityTest]
-    public IEnumerator PlayMode_EntityCreationTest() {
+    public IEnumerator EntityCreation() {
       var sceneController = InitializeSceneController();
 
       yield return new WaitForSeconds(0.01f);
@@ -53,7 +54,7 @@ namespace Tests {
     }
 
     [UnityTest]
-    public IEnumerator PlayMode_EntityParentingTest() {
+    public IEnumerator EntityParenting() {
       var sceneController = InitializeSceneController();
 
       yield return new WaitForSeconds(0.01f);
@@ -94,7 +95,7 @@ namespace Tests {
     }
 
     [UnityTest]
-    public IEnumerator PlayMode_EntityTransformUpdate() {
+    public IEnumerator TransformUpdate() {
       var sceneController = InitializeSceneController();
 
       yield return new WaitForSeconds(0.01f);
@@ -225,7 +226,7 @@ namespace Tests {
     }
 
     [UnityTest]
-    public IEnumerator PlayMode_EntityBoxShapeUpdate() {
+    public IEnumerator BoxShapeUpdate() {
       var sceneController = InitializeSceneController();
 
       yield return new WaitForSeconds(0.01f);
@@ -241,7 +242,7 @@ namespace Tests {
     }
 
     [UnityTest]
-    public IEnumerator PlayMode_EntitySphereShapeUpdate() {
+    public IEnumerator SphereShapeUpdate() {
       var sceneController = InitializeSceneController();
 
       yield return new WaitForSeconds(0.01f);
@@ -257,7 +258,7 @@ namespace Tests {
     }
 
     [UnityTest]
-    public IEnumerator PlayMode_EntityPlaneShapeUpdate() {
+    public IEnumerator PlaneShapeUpdate() {
       var sceneController = InitializeSceneController();
 
       yield return new WaitForSeconds(0.01f);
@@ -273,7 +274,7 @@ namespace Tests {
     }
 
     [UnityTest]
-    public IEnumerator PlayMode_EntityCylinderShapeUpdate() {
+    public IEnumerator CylinderShapeUpdate() {
       var sceneController = InitializeSceneController();
 
       yield return new WaitForSeconds(0.01f);
@@ -289,7 +290,7 @@ namespace Tests {
     }
 
     [UnityTest]
-    public IEnumerator PlayMode_EntityConeShapeUpdate() {
+    public IEnumerator ConeShapeUpdate() {
       var sceneController = InitializeSceneController();
 
       yield return new WaitForSeconds(0.01f);
@@ -307,7 +308,7 @@ namespace Tests {
 
     // TODO: Find a way to test the OBJ shape update, even though this test passes locally, the webserver fails to find the .obj when running in unity cloud build...
     /* [UnityTest]
-    public IEnumerator PlayMode_EntityOBJShapeUpdate() {
+    public IEnumerator OBJShapeUpdate() {
       var sceneController = InitializeSceneController(true);
 
       yield return new WaitForSeconds(0.01f);
@@ -343,7 +344,7 @@ namespace Tests {
     } */
 
     [UnityTest]
-    public IEnumerator PlayMode_EntityGLTFShapeUpdate() {
+    public IEnumerator GLTFShapeUpdate() {
       var sceneController = InitializeSceneController(true);
 
       yield return new WaitForSeconds(0.01f);
@@ -373,7 +374,379 @@ namespace Tests {
     }
 
     [UnityTest]
-    public IEnumerator PlayMode_EntityPBRMaterialUpdate() {
+    public IEnumerator ShapeMeshObjectIsReused() {
+      var sceneController = InitializeSceneController(true);
+
+      yield return new WaitForSeconds(0.01f);
+
+      var sceneData = new LoadParcelScenesMessage.UnityParcelScene();
+      var scene = sceneController.CreateTestScene(sceneData);
+
+      yield return new WaitForSeconds(0.01f);
+
+      string entityId = "1";
+      scene.CreateEntity(entityId);
+
+      // Set its shape as a BOX
+      scene.UpdateEntityComponent(JsonUtility.ToJson(new DCL.Models.UpdateEntityComponentMessage {
+        entityId = entityId,
+        name = "shape",
+        classId = (int)DCL.Models.CLASS_ID.BOX_SHAPE
+      }));
+
+      yield return new WaitForSeconds(0.01f);
+
+      var meshGameObject = scene.entities[entityId].gameObject.transform.Find("Mesh");
+
+      Assert.IsNotNull(meshGameObject);
+
+      // Update its shape to a GLTF
+      scene.UpdateEntityComponent(JsonUtility.ToJson(new DCL.Models.UpdateEntityComponentMessage {
+        entityId = entityId,
+        name = "shape",
+        classId = (int)DCL.Models.CLASS_ID.GLTF_SHAPE,
+        json = JsonConvert.SerializeObject(new {
+          src = "http://127.0.0.1:9991/GLB/Lantern/Lantern.glb"
+        })
+      }));
+
+      yield return new WaitForSeconds(8f);
+
+      Assert.AreSame(meshGameObject, scene.entities[entityId].gameObject.transform.Find("Mesh"));
+    }
+
+    [UnityTest]
+    public IEnumerator PreExistentShapeUpdate() {
+      var sceneController = InitializeSceneController(true);
+
+      yield return new WaitForSeconds(0.01f);
+
+      var sceneData = new LoadParcelScenesMessage.UnityParcelScene();
+      var scene = sceneController.CreateTestScene(sceneData);
+
+      yield return new WaitForSeconds(0.01f);
+
+      string entityId = "1";
+      scene.CreateEntity(entityId);
+
+      // Set its shape as a BOX
+      scene.UpdateEntityComponent(JsonUtility.ToJson(new DCL.Models.UpdateEntityComponentMessage {
+        entityId = entityId,
+        name = "shape",
+        classId = (int)DCL.Models.CLASS_ID.BOX_SHAPE
+      }));
+
+      yield return new WaitForSeconds(0.01f);
+
+      var meshGameObject = scene.entities[entityId].gameObject.transform.Find("Mesh");
+      var meshName = meshGameObject.GetComponent<MeshFilter>().mesh.name;
+      Assert.AreEqual("DCL Box Instance", meshName);
+
+      // Update its shape to a cylinder
+      scene.UpdateEntityComponent(JsonUtility.ToJson(new DCL.Models.UpdateEntityComponentMessage {
+        entityId = entityId,
+        name = "shape",
+        classId = (int)DCL.Models.CLASS_ID.CYLINDER_SHAPE
+      }));
+
+      yield return new WaitForSeconds(0.01f);
+
+      Assert.IsNotNull(meshGameObject);
+
+      meshName = meshGameObject.GetComponent<MeshFilter>().mesh.name;
+      Assert.AreEqual("DCL Cylinder Instance", meshName);
+      Assert.IsNotNull(meshGameObject.GetComponent<MeshFilter>(), "After updating the entity shape to a basic shape, the mesh filter shouldn't be removed from the object");
+
+      // Update its shape to a GLTF
+      scene.UpdateEntityComponent(JsonUtility.ToJson(new DCL.Models.UpdateEntityComponentMessage {
+        entityId = entityId,
+        name = "shape",
+        classId = (int)DCL.Models.CLASS_ID.GLTF_SHAPE,
+        json = JsonConvert.SerializeObject(new {
+          src = "http://127.0.0.1:9991/GLB/Lantern/Lantern.glb"
+        })
+      }));
+
+      yield return new WaitForSeconds(8f);
+
+      Assert.IsNotNull(meshGameObject);
+
+      Assert.IsNull(meshGameObject.GetComponent<MeshFilter>(), "After updating the entity shape to a GLTF shape, the mesh filter should be removed from the object");
+      Assert.IsNotNull(scene.entities[entityId].gameObject.GetComponentInChildren<UnityGLTF.InstantiatedGLTFObject>(), "'GLTFScene' child object with 'InstantiatedGLTF' component should exist if the GLTF was loaded correctly");
+
+      // Update its shape to a sphere
+      scene.UpdateEntityComponent(JsonUtility.ToJson(new DCL.Models.UpdateEntityComponentMessage {
+        entityId = entityId,
+        name = "shape",
+        classId = (int)DCL.Models.CLASS_ID.SPHERE_SHAPE
+      }));
+
+      yield return new WaitForSeconds(1f);
+
+      Assert.IsNotNull(meshGameObject);
+
+      meshName = meshGameObject.GetComponent<MeshFilter>().mesh.name;
+      Assert.AreEqual("DCL Sphere Instance", meshName);
+      Assert.IsNull(scene.entities[entityId].gameObject.GetComponentInChildren<UnityGLTF.InstantiatedGLTFObject>(), "'GLTFScene' child object with 'InstantiatedGLTF' component shouldn't exist after the shape is updated to a non-GLTF shape");
+    }
+
+    [UnityTest]
+    public IEnumerator PreExistentGLTFShapeUpdate() {
+      var sceneController = InitializeSceneController(true);
+
+      yield return new WaitForSeconds(0.01f);
+
+      var sceneData = new LoadParcelScenesMessage.UnityParcelScene();
+      var scene = sceneController.CreateTestScene(sceneData);
+
+      yield return new WaitForSeconds(0.01f);
+
+      string entityId = "1";
+      scene.CreateEntity(entityId);
+
+      scene.UpdateEntityComponent(JsonUtility.ToJson(new DCL.Models.UpdateEntityComponentMessage {
+        entityId = entityId,
+        name = "shape",
+        classId = (int)DCL.Models.CLASS_ID.GLTF_SHAPE,
+        json = JsonConvert.SerializeObject(new {
+          src = "http://127.0.0.1:9991/GLB/Lantern/Lantern.glb"
+        })
+      }));
+
+      yield return new WaitForSeconds(8f);
+
+      Assert.IsNotNull(scene.entities[entityId].gameObject.GetComponentInChildren<GLTFComponent>().loadedAssetRootGameObject.transform.Find("Lantern"));
+
+      scene.UpdateEntityComponent(JsonUtility.ToJson(new DCL.Models.UpdateEntityComponentMessage {
+        entityId = entityId,
+        name = "shape",
+        classId = (int)DCL.Models.CLASS_ID.GLTF_SHAPE,
+        json = JsonConvert.SerializeObject(new {
+          src = "http://127.0.0.1:9991/GLB/DamagedHelmet/DamagedHelmet.glb"
+        })
+      }));
+
+      yield return new WaitForSeconds(8f);
+
+      Assert.IsNotNull(scene.entities[entityId].gameObject.GetComponentInChildren<GLTFComponent>().loadedAssetRootGameObject.transform.Find("node_damagedHelmet_-6514"));
+    }
+
+    [UnityTest]
+    public IEnumerator PreExistentGLTFShapeImmediateUpdate() {
+      var sceneController = InitializeSceneController(true);
+
+      yield return new WaitForSeconds(0.01f);
+
+      var sceneData = new LoadParcelScenesMessage.UnityParcelScene();
+      var scene = sceneController.CreateTestScene(sceneData);
+
+      yield return new WaitForSeconds(0.01f);
+
+      string entityId = "1";
+      scene.CreateEntity(entityId);
+
+      scene.UpdateEntityComponent(JsonUtility.ToJson(new DCL.Models.UpdateEntityComponentMessage {
+        entityId = entityId,
+        name = "shape",
+        classId = (int)DCL.Models.CLASS_ID.GLTF_SHAPE,
+        json = JsonConvert.SerializeObject(new {
+          src = "http://127.0.0.1:9991/GLB/Lantern/Lantern.glb"
+        })
+      }));
+
+      scene.UpdateEntityComponent(JsonUtility.ToJson(new DCL.Models.UpdateEntityComponentMessage {
+        entityId = entityId,
+        name = "shape",
+        classId = (int)DCL.Models.CLASS_ID.GLTF_SHAPE,
+        json = JsonConvert.SerializeObject(new {
+          src = "http://127.0.0.1:9991/GLB/DamagedHelmet/DamagedHelmet.glb"
+        })
+      }));
+
+      yield return new WaitForSeconds(8f);
+
+      Assert.AreEqual(1, scene.entities[entityId].gameObject.GetComponentsInChildren<InstantiatedGLTFObject>().Length, "Only 1 'InstantiatedGLTFObject' should remain once the GLTF shape has been updated");
+    }
+
+    [UnityTest]
+    public IEnumerator OnClickComponentInitializesWithBasicShape() {
+      var sceneController = InitializeSceneController();
+
+      yield return new WaitForSeconds(0.01f);
+
+      var sceneData = new LoadParcelScenesMessage.UnityParcelScene();
+      var scene = sceneController.CreateTestScene(sceneData);
+
+      string entityId = "1";
+      TestHelpers.InstantiateEntityWithShape(scene, entityId, DCL.Models.CLASS_ID.BOX_SHAPE, Vector3.zero);
+
+      yield return new WaitForSeconds(0.01f);
+
+      scene.UpdateEntityComponent(JsonUtility.ToJson(new DCL.Models.UpdateEntityComponentMessage {
+        entityId = entityId,
+        name = "onclick",
+        classId = (int)DCL.Models.CLASS_ID.ONCLICK,
+        json = JsonConvert.SerializeObject(new { })
+      }));
+
+      yield return new WaitForSeconds(0.01f);
+
+      Assert.IsNotNull(scene.entities[entityId].gameObject.GetComponent<Rigidbody>(), "the root object should have a rigidbody attached to detect its children collisions for the OnClick functionality");
+
+      var meshFilter = scene.entities[entityId].gameObject.GetComponentInChildren<MeshFilter>();
+      var onClickCollider = meshFilter.transform.Find("OnClickCollider");
+
+      Assert.IsNotNull(onClickCollider, "OnClickCollider should exist under any rendeder");
+
+      Assert.AreSame(meshFilter.sharedMesh, onClickCollider.GetComponent<MeshCollider>().sharedMesh, "OnClickCollider should have the same mesh info as the mesh renderer");
+    }
+
+    [UnityTest]
+    public IEnumerator OnClickComponentInitializesWithGLTFShape() {
+      var sceneController = InitializeSceneController(true);
+
+      yield return new WaitForSeconds(0.01f);
+
+      var sceneData = new LoadParcelScenesMessage.UnityParcelScene();
+      var scene = sceneController.CreateTestScene(sceneData);
+
+      yield return new WaitForSeconds(0.01f);
+
+      string entityId = "1";
+      scene.CreateEntity(entityId);
+
+      Assert.IsNull(scene.entities[entityId].gameObject.GetComponentInChildren<UnityGLTF.InstantiatedGLTFObject>(), "Since the shape hasn't been updated yet, the 'GLTFScene' child object shouldn't exist");
+
+      scene.UpdateEntityComponent(JsonUtility.ToJson(new DCL.Models.UpdateEntityComponentMessage {
+        entityId = entityId,
+        name = "shape",
+        classId = (int)DCL.Models.CLASS_ID.GLTF_SHAPE,
+        json = JsonConvert.SerializeObject(new {
+          src = "http://127.0.0.1:9991/GLB/Lantern/Lantern.glb"
+        })
+      }));
+
+      yield return new WaitForSeconds(8f);
+
+      Assert.IsNotNull(scene.entities[entityId].gameObject.GetComponentInChildren<UnityGLTF.InstantiatedGLTFObject>(), "'GLTFScene' child object with 'InstantiatedGLTF' component should exist if the GLTF was loaded correctly");
+
+      scene.UpdateEntityComponent(JsonUtility.ToJson(new DCL.Models.UpdateEntityComponentMessage {
+        entityId = entityId,
+        name = "onclick",
+        classId = (int)DCL.Models.CLASS_ID.ONCLICK,
+        json = JsonConvert.SerializeObject(new { })
+      }));
+
+      yield return new WaitForSeconds(0.01f);
+
+      Assert.IsNotNull(scene.entities[entityId].gameObject.GetComponent<Rigidbody>(), "the root object should have a rigidbody attached to detect its children collisions for the OnClick functionality");
+
+      foreach (var meshFilter in scene.entities[entityId].gameObject.GetComponentsInChildren<MeshFilter>()) {
+        var onClickCollider = meshFilter.transform.Find("OnClickCollider");
+
+        Assert.IsNotNull(onClickCollider, "OnClickCollider should exist under any rendeder");
+
+        Assert.AreSame(meshFilter.sharedMesh, onClickCollider.GetComponent<MeshCollider>().sharedMesh, "OnClickCollider should have the same mesh info as the mesh renderer");
+      }
+    }
+
+    [UnityTest]
+    public IEnumerator OnClickComponentInitializesWithGLTFShapeAsynchronously() {
+      var sceneController = InitializeSceneController(true);
+
+      yield return new WaitForSeconds(0.01f);
+
+      var sceneData = new LoadParcelScenesMessage.UnityParcelScene();
+      var scene = sceneController.CreateTestScene(sceneData);
+
+      yield return new WaitForSeconds(0.01f);
+
+      string entityId = "1";
+      scene.CreateEntity(entityId);
+
+      Assert.IsNull(scene.entities[entityId].gameObject.GetComponentInChildren<UnityGLTF.InstantiatedGLTFObject>(), "Since the shape hasn't been updated yet, the 'GLTFScene' child object shouldn't exist");
+
+      scene.UpdateEntityComponent(JsonUtility.ToJson(new DCL.Models.UpdateEntityComponentMessage {
+        entityId = entityId,
+        name = "shape",
+        classId = (int)DCL.Models.CLASS_ID.GLTF_SHAPE,
+        json = JsonConvert.SerializeObject(new {
+          src = "http://127.0.0.1:9991/GLB/Lantern/Lantern.glb"
+        })
+      }));
+
+      scene.UpdateEntityComponent(JsonUtility.ToJson(new DCL.Models.UpdateEntityComponentMessage {
+        entityId = entityId,
+        name = "onclick",
+        classId = (int)DCL.Models.CLASS_ID.ONCLICK,
+        json = JsonConvert.SerializeObject(new { })
+      }));
+
+      yield return new WaitForSeconds(8f);
+
+      Assert.IsNotNull(scene.entities[entityId].gameObject.GetComponentInChildren<UnityGLTF.InstantiatedGLTFObject>(), "'GLTFScene' child object with 'InstantiatedGLTF' component should exist if the GLTF was loaded correctly");
+
+      yield return new WaitForSeconds(0.01f);
+
+      Assert.IsNotNull(scene.entities[entityId].gameObject.GetComponent<Rigidbody>(), "the root object should have a rigidbody attached to detect its children collisions for the OnClick functionality");
+
+      foreach (var meshFilter in scene.entities[entityId].gameObject.GetComponentsInChildren<MeshFilter>()) {
+        var onClickCollider = meshFilter.transform.Find("OnClickCollider");
+
+        Assert.IsNotNull(onClickCollider, "OnClickCollider should exist under any rendeder");
+
+        Assert.AreSame(meshFilter.sharedMesh, onClickCollider.GetComponent<MeshCollider>().sharedMesh, "OnClickCollider should have the same mesh info as the mesh renderer");
+      }
+    }
+
+    [UnityTest]
+    public IEnumerator OnClickComponentInitializesAfterBasicShapeIsAdded() {
+      var sceneController = InitializeSceneController();
+
+      yield return new WaitForSeconds(0.01f);
+
+      var sceneData = new LoadParcelScenesMessage.UnityParcelScene();
+      var scene = sceneController.CreateTestScene(sceneData);
+
+      string entityId = "1";
+      scene.CreateEntity(entityId);
+
+      scene.UpdateEntityComponent(JsonUtility.ToJson(new DCL.Models.UpdateEntityComponentMessage {
+        entityId = entityId,
+        name = "onclick",
+        classId = (int)DCL.Models.CLASS_ID.ONCLICK,
+        json = JsonConvert.SerializeObject(new { })
+      }));
+
+      yield return new WaitForSeconds(0.01f);
+
+      Assert.IsNull(scene.entities[entityId].gameObject.GetComponent<Rigidbody>(), "the root object shouldn't have a rigidbody attached until a shape is added");
+
+      Assert.IsNull(scene.entities[entityId].gameObject.transform.Find("OnClickCollider"), "the OnClickCollider object shouldn't exist until a shape is added");
+
+      scene.UpdateEntityComponent(JsonUtility.ToJson(new DCL.Models.UpdateEntityComponentMessage {
+        entityId = entityId,
+        name = "shape",
+        classId = (int)DCL.Models.CLASS_ID.BOX_SHAPE,
+        json = JsonConvert.SerializeObject(new {
+          src = ""
+        })
+      }));
+
+      yield return new WaitForSeconds(0.01f);
+
+      Assert.IsNotNull(scene.entities[entityId].gameObject.GetComponent<Rigidbody>(), "the root object should have a rigidbody attached to detect its children collisions for the OnClick functionality");
+
+      var meshFilter = scene.entities[entityId].gameObject.GetComponentInChildren<MeshFilter>();
+      var onClickCollider = meshFilter.transform.Find("OnClickCollider");
+
+      Assert.IsNotNull(onClickCollider, "OnClickCollider should exist under any rendeder");
+
+      Assert.AreSame(meshFilter.sharedMesh, onClickCollider.GetComponent<MeshCollider>().sharedMesh, "OnClickCollider should have the same mesh info as the mesh renderer");
+    }
+
+    [UnityTest]
+    public IEnumerator PBRMaterialUpdate() {
       var sceneController = InitializeSceneController(true);
 
       yield return new WaitForSeconds(0.01f);
@@ -401,7 +774,7 @@ namespace Tests {
       yield return materialComponent.routine;
 
       {
-        var meshRenderer = scene.entities[entityId].gameObject.GetComponent<MeshRenderer>();
+        var meshRenderer = scene.entities[entityId].gameObject.GetComponentInChildren<MeshRenderer>();
         Assert.IsNotNull(meshRenderer, "MeshRenderer must exist");
         var assignedMaterial = meshRenderer.sharedMaterial;
         Assert.IsNotNull(meshRenderer, "MeshRenderer.sharedMaterial must be the same as assignedMaterial");
@@ -413,7 +786,7 @@ namespace Tests {
     }
 
     [UnityTest]
-    public IEnumerator PlayMode_EntityPBRMaterialPropertiesUpdate() {
+    public IEnumerator PBRMaterialPropertiesUpdate() {
       var sceneController = InitializeSceneController(true);
 
       yield return new WaitForSeconds(0.01f);
@@ -437,7 +810,7 @@ namespace Tests {
 
       // Check if material initialized correctly
       {
-        var meshRenderer = scene.entities[entityId].gameObject.GetComponent<MeshRenderer>();
+        var meshRenderer = scene.entities[entityId].gameObject.GetComponentInChildren<MeshRenderer>();
 
         Assert.IsNotNull(meshRenderer, "MeshRenderer must exist");
 
@@ -512,7 +885,7 @@ namespace Tests {
     }
 
     [UnityTest]
-    public IEnumerator PlayMode_EntityMaterialIsSharedCorrectly() {
+    public IEnumerator MaterialIsSharedCorrectly() {
       var sceneController = InitializeSceneController();
 
       yield return new WaitForSeconds(0.01f);
@@ -549,15 +922,15 @@ namespace Tests {
       }));
 
       // Check renderers material references
-      var firstRenderer = scene.entities[firstEntityID].gameObject.GetComponent<MeshRenderer>();
-      var secondRenderer = scene.entities[secondEntityID].gameObject.GetComponent<MeshRenderer>();
-      var thirdRenderer = scene.entities[thirdEntityID].gameObject.GetComponent<MeshRenderer>();
+      var firstRenderer = scene.entities[firstEntityID].gameObject.GetComponentInChildren<MeshRenderer>();
+      var secondRenderer = scene.entities[secondEntityID].gameObject.GetComponentInChildren<MeshRenderer>();
+      var thirdRenderer = scene.entities[thirdEntityID].gameObject.GetComponentInChildren<MeshRenderer>();
       Assert.AreNotSame(firstRenderer.sharedMaterial, secondRenderer.sharedMaterial, "1st and 2nd entities should have different materials");
       Assert.AreSame(firstRenderer.sharedMaterial, thirdRenderer.sharedMaterial, "1st and 3rd entities should have the same material");
     }
 
     [UnityTest]
-    public IEnumerator PlayMode_EntityMaterialUpdateAffectsCorrectEntities() {
+    public IEnumerator MaterialUpdateAffectsCorrectEntities() {
       var sceneController = InitializeSceneController();
 
       yield return new WaitForSeconds(0.01f);
@@ -594,9 +967,9 @@ namespace Tests {
       }));
 
       // Check renderers material references
-      var firstRenderer = scene.entities[firstEntityID].gameObject.GetComponent<MeshRenderer>();
-      var secondRenderer = scene.entities[secondEntityID].gameObject.GetComponent<MeshRenderer>();
-      var thirdRenderer = scene.entities[thirdEntityID].gameObject.GetComponent<MeshRenderer>();
+      var firstRenderer = scene.entities[firstEntityID].gameObject.GetComponentInChildren<MeshRenderer>();
+      var secondRenderer = scene.entities[secondEntityID].gameObject.GetComponentInChildren<MeshRenderer>();
+      var thirdRenderer = scene.entities[thirdEntityID].gameObject.GetComponentInChildren<MeshRenderer>();
       Assert.AreNotSame(firstRenderer.sharedMaterial, secondRenderer.sharedMaterial, "1st and 2nd entities should have different materials");
       Assert.AreSame(firstRenderer.sharedMaterial, thirdRenderer.sharedMaterial, "1st and 3rd entities should have the same material");
 
@@ -620,7 +993,7 @@ namespace Tests {
     }
 
     [UnityTest]
-    public IEnumerator PlayMode_EntityMaterialDetach() {
+    public IEnumerator MaterialDetach() {
       var sceneController = InitializeSceneController();
 
       yield return new WaitForSeconds(0.01f);
@@ -635,7 +1008,7 @@ namespace Tests {
 
       TestHelpers.InstantiateEntityWithMaterial(scene, entityId, Vector3.zero, new DCL.Components.BasicMaterialModel(), materialID);
 
-      var meshRenderer = scene.entities[entityId].gameObject.GetComponent<MeshRenderer>();
+      var meshRenderer = scene.entities[entityId].gameObject.GetComponentInChildren<MeshRenderer>();
       var materialComponent = scene.disposableComponents[materialID] as DCL.Components.BasicMaterial;
 
       yield return materialComponent.routine;
@@ -657,7 +1030,7 @@ namespace Tests {
     }
 
     [UnityTest]
-    public IEnumerator PlayMode_MaterialDisposedGetsDetached() {
+    public IEnumerator MaterialDisposedGetsDetached() {
       var sceneController = InitializeSceneController();
 
       yield return new WaitForSeconds(0.01f);
@@ -674,15 +1047,16 @@ namespace Tests {
       // Instantiate entity with material
       TestHelpers.InstantiateEntityWithMaterial(scene, firstEntityId, Vector3.zero, new DCL.Components.BasicMaterialModel(), materialID);
 
-      // Attach material to second entity
+      // Create 2nd entity and attach same material to it
+      TestHelpers.InstantiateEntityWithShape(scene, secondEntityId, DCL.Models.CLASS_ID.BOX_SHAPE, Vector3.zero);
       scene.AttachEntityComponent(JsonUtility.ToJson(new DCL.Models.AttachEntityComponentMessage {
         entityId = secondEntityId,
         id = materialID,
         name = "material"
       }));
 
-      var firstMeshRenderer = scene.entities[firstEntityId].gameObject.GetComponent<MeshRenderer>();
-      var secondMeshRenderer = scene.entities[firstEntityId].gameObject.GetComponent<MeshRenderer>();
+      var firstMeshRenderer = scene.entities[firstEntityId].gameObject.GetComponentInChildren<MeshRenderer>();
+      var secondMeshRenderer = scene.entities[secondEntityId].gameObject.GetComponentInChildren<MeshRenderer>();
       var materialComponent = scene.disposableComponents[materialID] as DCL.Components.BasicMaterial;
 
       yield return materialComponent.routine;
@@ -709,7 +1083,7 @@ namespace Tests {
     }
 
     [UnityTest]
-    public IEnumerator PlayMode_EntityBasicMaterialUpdate() {
+    public IEnumerator EntityBasicMaterialUpdate() {
       var sceneController = InitializeSceneController(true);
 
       yield return new WaitForSeconds(0.01f);
@@ -725,7 +1099,7 @@ namespace Tests {
       // Instantiate entity with default PBR Material
       TestHelpers.InstantiateEntityWithMaterial(scene, entityId, Vector3.zero, new DCL.Components.BasicMaterialModel(), materialID);
 
-      var meshRenderer = scene.entities[entityId].gameObject.GetComponent<MeshRenderer>();
+      var meshRenderer = scene.entities[entityId].gameObject.GetComponentInChildren<MeshRenderer>();
       var materialComponent = scene.disposableComponents[materialID] as DCL.Components.BasicMaterial;
 
       yield return materialComponent.routine;
@@ -773,7 +1147,7 @@ namespace Tests {
     }
 
     [UnityTest]
-    public IEnumerator PlayMode_SceneLoading() {
+    public IEnumerator SceneLoading() {
       var sceneController = InitializeSceneController();
 
       yield return new WaitForSeconds(0.01f);
@@ -788,7 +1162,7 @@ namespace Tests {
     }
 
     [UnityTest]
-    public IEnumerator PlayMode_EntityRemovalTest() {
+    public IEnumerator EntityRemoval() {
       var sceneController = InitializeSceneController();
 
       yield return new WaitForSeconds(0.01f);
@@ -816,7 +1190,7 @@ namespace Tests {
     }
 
     [UnityTest]
-    public IEnumerator PlayMode_SceneUnloading() {
+    public IEnumerator SceneUnloading() {
       var sceneController = InitializeSceneController();
 
       yield return new WaitForSeconds(0.01f);
@@ -845,7 +1219,7 @@ namespace Tests {
     }
 
     [UnityTest]
-    public IEnumerator PlayMode_SeveralParcelsFromJSON() {
+    public IEnumerator SeveralParcelsFromJSON() {
       var sceneController = InitializeSceneController();
 
       yield return new WaitForSeconds(0.01f);
@@ -873,7 +1247,7 @@ namespace Tests {
     }
 
     [UnityTest]
-    public IEnumerator PlayMode_PositionParcels() {
+    public IEnumerator PositionParcels() {
       var sceneController = InitializeSceneController();
 
       yield return new WaitForSeconds(0.01f);
@@ -897,7 +1271,7 @@ namespace Tests {
     }
 
     [UnityTest]
-    public IEnumerator PlayMode_PositionParcels2() {
+    public IEnumerator PositionParcels2() {
       var sceneController = InitializeSceneController();
 
       yield return new WaitForSeconds(0.01f);

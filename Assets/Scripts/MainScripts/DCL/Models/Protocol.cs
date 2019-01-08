@@ -11,10 +11,23 @@ namespace DCL.Models {
     CONE_SHAPE = 19,
     CYLINDER_SHAPE = 20,
     TEXT_SHAPE = 21,
+
+    NFT_SHAPE = 22,
+    UI_WORLD_SPACE_SHAPE = 23,
+    UI_SCREEN_SPACE_SHAPE = 24,
+    UI_CONTAINER_RECT = 25,
+    UI_CONTAINER_STACK = 26,
+    UI_TEXT_SHAPE = 27,
+    UI_INPUT_TEXT_SHAPE = 28,
+    UI_IMAGE_SHAPE = 29,
+    UI_SLIDER_SHAPE = 30,
+
     GLTF_SHAPE = 54,
     OBJ_SHAPE = 55,
     BASIC_MATERIAL = 64,
-    PBR_MATERIAL = 65
+    PBR_MATERIAL = 65,
+
+    ONCLICK = 80
   }
 
   [System.Serializable]

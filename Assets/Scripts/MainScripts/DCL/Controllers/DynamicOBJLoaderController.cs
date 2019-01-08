@@ -8,8 +8,11 @@ public class DynamicOBJLoaderController : MonoBehaviour {
   public string OBJUrl = "";
   public GameObject loadingPlaceholder;
 
+  public delegate void OBJLoaderEventDelegate();
+  public event OBJLoaderEventDelegate OnFinishedLoadingAsset;
+
   [HideInInspector] public bool alreadyLoadedAsset = false;
-  [HideInInspector] public Action<float> finishedLoadingAssetCallback;
+  [HideInInspector] public GameObject loadedOBJGameObject;
 
   Coroutine loadingRoutine = null;
 
@@ -30,18 +33,12 @@ public class DynamicOBJLoaderController : MonoBehaviour {
       }
 
       loadingRoutine = StartCoroutine(LoadAssetCoroutine());
-    } else {
-      finishedLoadingAssetCallback = null;
     }
   }
 
-  IEnumerator LoadAssetCoroutine(Action<float> callbackAction = null) {
+  IEnumerator LoadAssetCoroutine() {
     if (!string.IsNullOrEmpty(OBJUrl)) {
-      float loadingStartTime = Time.time;
-
-      if (callbackAction != null) {
-        finishedLoadingAssetCallback = callbackAction;
-      }
+      Destroy(loadedOBJGameObject);
 
       UnityWebRequest webRequest = UnityWebRequest.Get(OBJUrl);
 
@@ -50,16 +47,16 @@ public class DynamicOBJLoaderController : MonoBehaviour {
       if (webRequest.isNetworkError || webRequest.isHttpError) {
         Debug.Log("Couldn't get OBJ, error: " + webRequest.error);
       } else {
-        alreadyLoadedAsset = true;
-
-        GameObject loadedOBJGameObject = OBJLoader.LoadOBJFile(webRequest.downloadHandler.text, true);
+        loadedOBJGameObject = OBJLoader.LoadOBJFile(webRequest.downloadHandler.text, true);
         loadedOBJGameObject.name = "LoadedOBJ";
         loadedOBJGameObject.transform.SetParent(transform);
         loadedOBJGameObject.transform.localPosition = Vector3.zero;
 
-        if (finishedLoadingAssetCallback != null) {
-          finishedLoadingAssetCallback(Time.time - loadingStartTime);
+        if (OnFinishedLoadingAsset != null) {
+          OnFinishedLoadingAsset();
         }
+
+        alreadyLoadedAsset = true;
       }
     } else {
       Debug.Log("couldn't load OBJ because url is empty");
@@ -69,8 +66,12 @@ public class DynamicOBJLoaderController : MonoBehaviour {
       loadingPlaceholder.SetActive(false);
     }
 
-    finishedLoadingAssetCallback = null;
-
     loadingRoutine = null;
+  }
+
+  void OnDestroy() {
+    Destroy(loadingPlaceholder);
+
+    Destroy(loadedOBJGameObject);
   }
 }

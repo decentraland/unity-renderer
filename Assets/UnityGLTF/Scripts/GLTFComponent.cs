@@ -21,19 +21,16 @@ namespace UnityGLTF {
     public GLTFSceneImporter.ColliderType Collider = GLTFSceneImporter.ColliderType.None;
     public GameObject loadingPlaceholder;
 
+    public System.Action OnFinishedLoadingAsset;
+
     [HideInInspector] public bool alreadyLoadedAsset = false;
-    [HideInInspector] public Action<float> finishedLoadingAssetCallback;
+    [HideInInspector] public GameObject loadedAssetRootGameObject;
 
     [SerializeField] bool loadOnStart = true;
     [SerializeField] Shader shaderOverride = null;
 
     Coroutine loadingRoutine = null;
-
-    void Awake() {
-      if (loadOnStart && !string.IsNullOrEmpty(GLTFUri)) {
-        LoadAsset();
-      }
-    }
+    GLTFSceneImporter gLTFSceneImporter;
 
     public void LoadAsset(string incomingURI = "", bool loadEvenIfAlreadyLoaded = false) {
       if (!alreadyLoadedAsset || loadEvenIfAlreadyLoaded) {
@@ -46,8 +43,6 @@ namespace UnityGLTF {
         }
 
         loadingRoutine = StartCoroutine(LoadAssetCoroutine());
-      } else {
-        finishedLoadingAssetCallback = null;
       }
     }
 
@@ -55,7 +50,8 @@ namespace UnityGLTF {
       if (!string.IsNullOrEmpty(GLTFUri)) {
         GLTFSceneImporter sceneImporter = null;
         ILoader loader = null;
-        float loadingStartTime = Time.time;
+
+        Destroy(loadedAssetRootGameObject);
 
         try {
           if (UseStream) {
@@ -79,14 +75,16 @@ namespace UnityGLTF {
               );
           }
 
+          if (sceneImporter.CreatedObject != null) {
+            Destroy(sceneImporter.CreatedObject);
+          }
+
           sceneImporter.SceneParent = gameObject.transform;
           sceneImporter.Collider = Collider;
           sceneImporter.MaximumLod = MaximumLod;
           sceneImporter.Timeout = Timeout;
           sceneImporter.isMultithreaded = Multithreaded;
           sceneImporter.CustomShaderName = shaderOverride ? shaderOverride.name : null;
-
-          alreadyLoadedAsset = true;
 
           yield return sceneImporter.LoadScene(-1);
 
@@ -103,17 +101,19 @@ namespace UnityGLTF {
               Debug.Log("sceneImporter is null, could be due to an invalid URI.", this);
             }
 
+            loadedAssetRootGameObject = sceneImporter.CreatedObject;
+
             sceneImporter.Dispose();
             sceneImporter = null;
 
             loader = null;
           }
 
-          if (finishedLoadingAssetCallback != null) {
-            finishedLoadingAssetCallback(Time.time - loadingStartTime);
+          if (OnFinishedLoadingAsset != null) {
+            OnFinishedLoadingAsset();
           }
 
-          //Debug.Log("GLTF (" + GLTFUri + ") loading took: " + (loadingFinishTime - loadingStartTime) + " seconds.");
+          alreadyLoadedAsset = true;
         }
       } else {
         Debug.Log("couldn't load GLTF because url is empty");
@@ -123,9 +123,13 @@ namespace UnityGLTF {
         loadingPlaceholder.SetActive(false);
       }
 
-      finishedLoadingAssetCallback = null;
-
       loadingRoutine = null;
+    }
+
+    void OnDestroy() {
+      Destroy(loadingPlaceholder);
+
+      Destroy(loadedAssetRootGameObject);
     }
   }
 }

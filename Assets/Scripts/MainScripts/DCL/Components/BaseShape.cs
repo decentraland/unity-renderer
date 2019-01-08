@@ -6,31 +6,68 @@ using UnityEngine;
 
 namespace DCL.Components {
   public abstract class BaseShape<T> : BaseComponent<T> where T : new() {
-    public MeshFilter meshFilter;
-    public MeshRenderer meshRenderer;
-
     public override string componentName => "shape";
 
-    void Awake() {
-      meshFilter = gameObject.GetComponent<MeshFilter>();
-      if (!meshFilter) {
-        meshFilter = gameObject.AddComponent<MeshFilter>();
+    [HideInInspector] public GameObject meshGameObject;
+
+    protected MeshFilter meshFilter;
+    protected MeshRenderer meshRenderer;
+
+    const string MESH_GAMEOBJECT_NAME = "Mesh";
+
+    protected virtual void Awake() {
+      // clear out previous shape if it exists
+      // it would be better to check for a pre-existent shape component with GetComponent<>() but we can't while using the "Template" pattern on these classes
+      var updateableComponents = GetComponents<UpdateableComponent>();
+      for (int i = 0; i < updateableComponents.Length; i++) {
+        if (updateableComponents[i] == this) continue;
+
+        if (LandHelpers.IsShapeComponent(updateableComponents[i])) {
+          meshGameObject = transform.Find(MESH_GAMEOBJECT_NAME).gameObject; // it would be better to get the meshGameObject reference from the previous shape, but we can't while using the "Template" pattern on these classes
+
+          Destroy(updateableComponents[i]);
+
+          break; // There won't be more than 1 shape component at a time so we escape the loop after destroying it.
+        }
       }
 
-      meshRenderer = gameObject.GetComponent<MeshRenderer>();
-      if (!meshRenderer) {
-        meshRenderer = gameObject.AddComponent<MeshRenderer>();
-        meshRenderer.sharedMaterial = Resources.Load<Material>("Materials/Default");
+      if (meshGameObject == null) {
+        meshGameObject = new GameObject();
+        meshGameObject.name = MESH_GAMEOBJECT_NAME;
+        meshGameObject.transform.SetParent(transform);
+        meshGameObject.transform.localPosition = Vector3.zero;
+      }
+
+      meshFilter = meshGameObject.GetComponent<MeshFilter>();
+      meshRenderer = meshGameObject.GetComponent<MeshRenderer>();
+    }
+
+    protected virtual void OnDestroy() {
+      /*
+       * Destruction is not immediate, so we check if a NEW non-gltf-non-obj-shape has already been added to the gameobject,
+       * in that case we avoid destroying the meshGameObject (gltf/obj don't use the meshGameObject), as it will be reused.
+       */
+      var updateableComponents = GetComponents<UpdateableComponent>();
+      for (int i = 0; i < updateableComponents.Length; i++) {
+        if (updateableComponents[i] == this) continue;
+
+        if (LandHelpers.IsShapeComponent(updateableComponents[i])) return;
+      }
+
+      if (meshGameObject != null) {
+        Destroy(meshGameObject);
       }
     }
 
-    void OnDestroy() {
-      if (meshFilter) {
-        Destroy(meshFilter);
-      }
-      if (meshRenderer) {
-        Destroy(meshRenderer);
-      }
+    public GameObject AttachPlaceholderRendererGameObject(UnityEngine.Transform targetTransform) {
+      var placeholderRenderer = GameObject.CreatePrimitive(PrimitiveType.Cube).GetComponent<MeshRenderer>();
+
+      placeholderRenderer.material = Resources.Load<Material>("Materials/AssetLoading");
+      placeholderRenderer.transform.SetParent(targetTransform);
+      placeholderRenderer.transform.localPosition = Vector3.zero;
+      placeholderRenderer.name = "PlaceholderRenderer";
+
+      return placeholderRenderer.gameObject;
     }
   }
 }
