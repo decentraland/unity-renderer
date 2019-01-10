@@ -1,5 +1,12 @@
 # unity-client
 
+### Live server communication build process
+
+1. run "npm install" in the [CLIENT](https://github.com/decentraland/client) cloned repo root directory
+2. run "make watch" in the CLIENT cloned repo root directory and wait for the make script to complete
+3. Build unity wasm with its name as "unity" into CLIENT cloned repo **root/static/** directory
+4. Run the build by accessing **http://localhost:8080/tetra.html?DEBUG&position=-101%2C99** in any webbrowser
+
 ### Unity Assembly Definition Files
 
 To be able to use the Test libraries for unit testing, we are using several [Assembly Definition Files](https://docs.unity3d.com/Manual/ScriptCompilationAssemblyDefinitionFiles.html):
