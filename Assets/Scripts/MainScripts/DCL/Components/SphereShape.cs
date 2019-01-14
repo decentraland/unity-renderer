@@ -1,16 +1,21 @@
-﻿using System;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using DCL.Helpers;
 using UnityEngine;
 
 namespace DCL.Components {
-  [Serializable]
-  public class SphereShapeModel {
-    public string tag;
-  }
+  
+  public class SphereShape : BaseShape {
 
-  public class SphereShape : BaseShape<SphereShapeModel> {
+    [System.Serializable]
+    public class Model
+    {
+      public string tag;
+    }
+
+    Model model = new Model();
+
     protected override void Awake() {
       base.Awake();
 
@@ -25,7 +30,7 @@ namespace DCL.Components {
       meshRenderer.sharedMaterial = Resources.Load<Material>("Materials/Default");
     }
 
-    public override IEnumerator ApplyChanges() {
+    public override IEnumerator ApplyChanges(string newJson) {
       meshFilter.mesh = PrimitiveMeshBuilder.BuildSphere(1f);
 
       return null;

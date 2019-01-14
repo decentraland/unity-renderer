@@ -1,19 +1,23 @@
-﻿using System;
-using System.Collections;
-using System.Collections.Generic;
 using DCL.Helpers;
+using System.Collections;
 using UnityEngine;
 
-namespace DCL.Components {
-  [Serializable]
-  public class OBJShapeModel {
-    public string src;
-  }
+namespace DCL.Components
+{
 
-  public class OBJShape : BaseShape<OBJShapeModel> {
+
+  public class OBJShape : BaseShape {
+
+    [System.Serializable]
+    public class Model
+    {
+      public string src;
+    }
+
+    Model model = new Model();
     DynamicOBJLoaderController objLoaderComponent;
 
-    protected void Awake() {
+    protected new void Awake() {
       base.Awake();
 
       if (meshFilter) {
@@ -36,9 +40,10 @@ namespace DCL.Components {
       objLoaderComponent.OnFinishedLoadingAsset += CallOnComponentUpdated;
     }
 
-    public override IEnumerator ApplyChanges() {
-      if (!string.IsNullOrEmpty(data.src)) {
-        objLoaderComponent.LoadAsset(data.src, true);
+    public override IEnumerator ApplyChanges(string newJson) {
+      JsonUtility.FromJsonOverwrite(newJson, model);
+      if (!string.IsNullOrEmpty(model.src)) {
+        objLoaderComponent.LoadAsset(model.src, true);
 
         if (objLoaderComponent.loadingPlaceholder == null) {
           objLoaderComponent.loadingPlaceholder = AttachPlaceholderRendererGameObject(gameObject.transform);
@@ -50,8 +55,8 @@ namespace DCL.Components {
       return null;
     }
 
-    public override IEnumerator UpdateComponent() {
-      yield return ApplyChanges();
+    public override IEnumerator UpdateComponent(string newJson) {
+      yield return ApplyChanges(newJson);
     }
 
     void CallOnComponentUpdated() {

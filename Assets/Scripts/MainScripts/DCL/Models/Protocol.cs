@@ -1,9 +1,12 @@
-﻿using System.Collections;
+using System.Collections;
 using System.Collections.Generic;
 
-namespace DCL.Models {
-  public enum CLASS_ID {
+namespace DCL.Models
+{
+  public enum CLASS_ID
+  {
     TRANSFORM = 1,
+    ANIMATOR = 2,
     UUID_CALLBACK = 8,
     BOX_SHAPE = 16,
     SPHERE_SHAPE = 17,
@@ -30,8 +33,15 @@ namespace DCL.Models {
     ONCLICK = 80
   }
 
+  public class CallMethodComponentMessage
+  {
+    public string methodName;
+    public object[] args;
+  }
+
   [System.Serializable]
-  public class AttachEntityComponentMessage {
+  public class AttachEntityComponentMessage
+  {
     /// id of the affected entity
     public string entityId;
     /// name of the compoenent
@@ -41,7 +51,8 @@ namespace DCL.Models {
   }
 
   [System.Serializable]
-  public class UpdateEntityComponentMessage {
+  public class UpdateEntityComponentMessage
+  {
     /// id of the affected entity
     public string entityId;
     /// name of the compoenent
@@ -53,7 +64,8 @@ namespace DCL.Models {
   }
 
   [System.Serializable]
-  public class SetEntityParentMessage {
+  public class SetEntityParentMessage
+  {
     /// id of the affected entity
     public string entityId;
     /// id of the parent entity
@@ -61,7 +73,8 @@ namespace DCL.Models {
   }
 
   [System.Serializable]
-  public class ComponentRemovedMessage {
+  public class ComponentRemovedMessage
+  {
     /// id of the affected entity
     public string entityId;
     /// name of the compoenent
@@ -69,20 +82,23 @@ namespace DCL.Models {
   }
 
   [System.Serializable]
-  public class ComponentUpdatedMessage {
+  public class ComponentUpdatedMessage
+  {
     /// ID of the disposable component
     public string id;
     public string json;
   }
 
   [System.Serializable]
-  public class ComponentDisposedMessage {
+  public class ComponentDisposedMessage
+  {
     /// ID of the disposable component to dispose
     public string id;
   }
 
   [System.Serializable]
-  public class ComponentCreatedMessage {
+  public class ComponentCreatedMessage
+  {
     /// ID of the disposable component
     public string id;
     /// name of the compoenent

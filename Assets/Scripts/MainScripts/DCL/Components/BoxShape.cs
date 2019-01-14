@@ -1,16 +1,19 @@
-﻿using System;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using DCL.Helpers;
 using UnityEngine;
 
 namespace DCL.Components {
-  [Serializable]
-  public class BoxShapeModel {
-    public string tag;
-  }
 
-  public class BoxShape : BaseShape<BoxShapeModel> {
+  public class BoxShape : BaseShape {
+
+    [System.Serializable]
+    public class Model
+    {
+      public string tag;
+    }
+
     protected override void Awake() {
       base.Awake();
 
@@ -25,7 +28,7 @@ namespace DCL.Components {
       meshRenderer.sharedMaterial = Resources.Load<Material>("Materials/Default");
     }
 
-    public override IEnumerator ApplyChanges() {
+    public override IEnumerator ApplyChanges(string newJson) {
       meshFilter.mesh = PrimitiveMeshBuilder.BuildCube(1f);
 
       return null;

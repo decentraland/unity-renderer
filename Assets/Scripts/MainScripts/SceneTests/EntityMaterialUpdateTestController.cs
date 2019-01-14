@@ -1,4 +1,4 @@
-﻿using DCL.Helpers;
+using DCL.Helpers;
 using Newtonsoft.Json;
 using UnityEngine;
 using System.Collections.Generic;
@@ -13,13 +13,13 @@ public class EntityMaterialUpdateTestController : MonoBehaviour {
 
     var scene = sceneController.loadedScenes["0,0"];
 
-    TestHelpers.InstantiateEntityWithMaterial(scene, "1", new Vector3(0, 1, 0), new DCL.Components.BasicMaterialModel {
+    TestHelpers.InstantiateEntityWithMaterial(scene, "1", new Vector3(0, 1, 0), new DCL.Components.BasicMaterial.Model {
       texture = "http://127.0.0.1:9991/Images/atlas.png",
       samplingMode = 0,
       wrap = 0
     }, "testBasicMaterial");
 
-    TestHelpers.InstantiateEntityWithMaterial(scene, "2", new Vector3(3, 1, 0), new DCL.Components.PBRMaterialModel {
+    TestHelpers.InstantiateEntityWithMaterial(scene, "2", new Vector3(3, 1, 0), new DCL.Components.PBRMaterial.Model {
       albedoTexture = "http://127.0.0.1:9991/Images/avatar.png",
       metallic = 0,
       roughness = 1,
@@ -27,7 +27,7 @@ public class EntityMaterialUpdateTestController : MonoBehaviour {
     }, "testMaterial1");
 
     string materialID = "testMaterial2";
-    TestHelpers.InstantiateEntityWithMaterial(scene, "3", new Vector3(5, 1, 0), new DCL.Components.PBRMaterialModel {
+    TestHelpers.InstantiateEntityWithMaterial(scene, "3", new Vector3(5, 1, 0), new DCL.Components.PBRMaterial.Model {
       albedoTexture = "http://127.0.0.1:9991/Images/avatar.png",
       metallic = 1,
       roughness = 1,
@@ -46,7 +46,7 @@ public class EntityMaterialUpdateTestController : MonoBehaviour {
     // Update material attached to 2 entities, adding albedoColor
     scene.ComponentUpdated(JsonUtility.ToJson(new DCL.Models.ComponentUpdatedMessage {
       id = materialID,
-      json = JsonUtility.ToJson(new DCL.Components.PBRMaterialModel {
+      json = JsonUtility.ToJson(new DCL.Components.PBRMaterial.Model {
         albedoTexture = "http://127.0.0.1:9991/Images/avatar.png",
         metallic = 1,
         roughness = 1,

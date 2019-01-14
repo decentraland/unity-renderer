@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using DCL.Helpers;
@@ -6,15 +6,20 @@ using UnityEngine;
 using UnityGLTF;
 
 namespace DCL.Components {
-  [Serializable]
-  public class GLTFShapeModel {
-    public string src;
-  }
 
-  public class GLTFShape : BaseShape<GLTFShapeModel> {
+  public class GLTFShape : BaseShape {
+
+    [System.Serializable]
+    public class Model
+    {
+      public string src;
+    }
+
+    Model model = new Model();
     GLTFComponent gltfLoaderComponent;
+    public bool alreadyLoaded { get; private set; }
 
-    protected void Awake() {
+    protected new void Awake() {
       base.Awake();
 
       if (meshFilter) {
@@ -34,18 +39,23 @@ namespace DCL.Components {
       }
     }
 
-    public override IEnumerator ApplyChanges() {
-      if (!string.IsNullOrEmpty(data.src)) {
+    public override IEnumerator ApplyChanges(string newJson) {
+
+      LandHelpers.SafeFromJsonOverwrite(newJson, model);
+
+      if (!string.IsNullOrEmpty(model.src)) {
 
         // GLTF Loader can't be reused "out of the box", so we re-instantiate it when needed
         if (gltfLoaderComponent != null) {
           Destroy(gltfLoaderComponent);
         }
+
+        alreadyLoaded = false;
         gltfLoaderComponent = meshGameObject.AddComponent<GLTFComponent>();
         gltfLoaderComponent.OnFinishedLoadingAsset += CallOnComponentUpdatedEvent;
 
         gltfLoaderComponent.Multithreaded = false;
-        gltfLoaderComponent.LoadAsset(data.src, true);
+        gltfLoaderComponent.LoadAsset(model.src, true);
 
         if (gltfLoaderComponent.loadingPlaceholder == null) {
           gltfLoaderComponent.loadingPlaceholder = AttachPlaceholderRendererGameObject(gameObject.transform);
@@ -57,11 +67,12 @@ namespace DCL.Components {
       return null;
     }
 
-    public override IEnumerator UpdateComponent() {
-      yield return ApplyChanges();
+    public override IEnumerator UpdateComponent(string newJson) {
+      yield return ApplyChanges(newJson);
     }
 
     void CallOnComponentUpdatedEvent() {
+      alreadyLoaded = true;
       if (entity.OnComponentUpdated != null)
         entity.OnComponentUpdated.Invoke(this);
     }

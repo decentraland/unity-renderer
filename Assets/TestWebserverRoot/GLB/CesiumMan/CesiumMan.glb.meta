@@ -1,0 +1,72 @@
+fileFormatVersion: 2
+guid: f72b1ba78d824d54b9e92c5bcd0885f2
+ScriptedImporter:
+  fileIDToRecycleName:
+    100000: main asset/GLTFScene
+    100002: main asset/GLTFScene/GLTFNode0
+    100004: main asset/GLTFScene/GLTFNode0/GLTFNode1
+    100006: main asset/GLTFScene/GLTFNode0/GLTFNode1/Primitive
+    100008: main asset/GLTFScene/GLTFNode0/GLTFNode21
+    100010: main asset/GLTFScene/GLTFNode0/GLTFNode21/GLTFNode2
+    100012: main asset/GLTFScene/GLTFNode0/GLTFNode21/GLTFNode2/GLTFNode3
+    100014: main asset/GLTFScene/GLTFNode0/GLTFNode21/GLTFNode2/GLTFNode3/GLTFNode4
+    100016: main asset/GLTFScene/GLTFNode0/GLTFNode21/GLTFNode2/GLTFNode3/GLTFNode4/GLTFNode5
+    100018: main asset/GLTFScene/GLTFNode0/GLTFNode21/GLTFNode2/GLTFNode3/GLTFNode4/GLTFNode5/GLTFNode6
+    100020: main asset/GLTFScene/GLTFNode0/GLTFNode21/GLTFNode2/GLTFNode7
+    100022: main asset/GLTFScene/GLTFNode0/GLTFNode21/GLTFNode2/GLTFNode7/GLTFNode8
+    100024: main asset/GLTFScene/GLTFNode0/GLTFNode21/GLTFNode2/GLTFNode7/GLTFNode8/GLTFNode9
+    100026: main asset/GLTFScene/GLTFNode0/GLTFNode21/GLTFNode2/GLTFNode7/GLTFNode8/GLTFNode9/GLTFNode10
+    100028: main asset/GLTFScene/GLTFNode0/GLTFNode21/GLTFNode2/GLTFNode11
+    100030: main asset/GLTFScene/GLTFNode0/GLTFNode21/GLTFNode2/GLTFNode11/GLTFNode12
+    100032: main asset/GLTFScene/GLTFNode0/GLTFNode21/GLTFNode2/GLTFNode11/GLTFNode12/GLTFNode13
+    100034: main asset/GLTFScene/GLTFNode0/GLTFNode21/GLTFNode2/GLTFNode11/GLTFNode12/GLTFNode13/GLTFNode14
+    100036: main asset/GLTFScene/GLTFNode0/GLTFNode21/GLTFNode2/GLTFNode11/GLTFNode12/GLTFNode13/GLTFNode14/GLTFNode15
+    100038: main asset/GLTFScene/GLTFNode0/GLTFNode21/GLTFNode2/GLTFNode11/GLTFNode12/GLTFNode16
+    100040: main asset/GLTFScene/GLTFNode0/GLTFNode21/GLTFNode2/GLTFNode11/GLTFNode12/GLTFNode16/GLTFNode17
+    100042: main asset/GLTFScene/GLTFNode0/GLTFNode21/GLTFNode2/GLTFNode11/GLTFNode12/GLTFNode16/GLTFNode17/GLTFNode18
+    100044: main asset/GLTFScene/GLTFNode0/GLTFNode21/GLTFNode2/GLTFNode11/GLTFNode12/GLTFNode19
+    100046: main asset/GLTFScene/GLTFNode0/GLTFNode21/GLTFNode2/GLTFNode11/GLTFNode12/GLTFNode19/GLTFNode20
+    400000: main asset/GLTFScene/Transform
+    400002: main asset/GLTFScene/GLTFNode0/Transform
+    400004: main asset/GLTFScene/GLTFNode0/GLTFNode1/Transform
+    400006: main asset/GLTFScene/GLTFNode0/GLTFNode1/Primitive/Transform
+    400008: main asset/GLTFScene/GLTFNode0/GLTFNode21/Transform
+    400010: main asset/GLTFScene/GLTFNode0/GLTFNode21/GLTFNode2/Transform
+    400012: main asset/GLTFScene/GLTFNode0/GLTFNode21/GLTFNode2/GLTFNode3/Transform
+    400014: main asset/GLTFScene/GLTFNode0/GLTFNode21/GLTFNode2/GLTFNode3/GLTFNode4/Transform
+    400016: main asset/GLTFScene/GLTFNode0/GLTFNode21/GLTFNode2/GLTFNode3/GLTFNode4/GLTFNode5/Transform
+    400018: main asset/GLTFScene/GLTFNode0/GLTFNode21/GLTFNode2/GLTFNode3/GLTFNode4/GLTFNode5/GLTFNode6/Transform
+    400020: main asset/GLTFScene/GLTFNode0/GLTFNode21/GLTFNode2/GLTFNode7/Transform
+    400022: main asset/GLTFScene/GLTFNode0/GLTFNode21/GLTFNode2/GLTFNode7/GLTFNode8/Transform
+    400024: main asset/GLTFScene/GLTFNode0/GLTFNode21/GLTFNode2/GLTFNode7/GLTFNode8/GLTFNode9/Transform
+    400026: main asset/GLTFScene/GLTFNode0/GLTFNode21/GLTFNode2/GLTFNode7/GLTFNode8/GLTFNode9/GLTFNode10/Transform
+    400028: main asset/GLTFScene/GLTFNode0/GLTFNode21/GLTFNode2/GLTFNode11/Transform
+    400030: main asset/GLTFScene/GLTFNode0/GLTFNode21/GLTFNode2/GLTFNode11/GLTFNode12/Transform
+    400032: main asset/GLTFScene/GLTFNode0/GLTFNode21/GLTFNode2/GLTFNode11/GLTFNode12/GLTFNode13/Transform
+    400034: main asset/GLTFScene/GLTFNode0/GLTFNode21/GLTFNode2/GLTFNode11/GLTFNode12/GLTFNode13/GLTFNode14/Transform
+    400036: main asset/GLTFScene/GLTFNode0/GLTFNode21/GLTFNode2/GLTFNode11/GLTFNode12/GLTFNode13/GLTFNode14/GLTFNode15/Transform
+    400038: main asset/GLTFScene/GLTFNode0/GLTFNode21/GLTFNode2/GLTFNode11/GLTFNode12/GLTFNode16/Transform
+    400040: main asset/GLTFScene/GLTFNode0/GLTFNode21/GLTFNode2/GLTFNode11/GLTFNode12/GLTFNode16/GLTFNode17/Transform
+    400042: main asset/GLTFScene/GLTFNode0/GLTFNode21/GLTFNode2/GLTFNode11/GLTFNode12/GLTFNode16/GLTFNode17/GLTFNode18/Transform
+    400044: main asset/GLTFScene/GLTFNode0/GLTFNode21/GLTFNode2/GLTFNode11/GLTFNode12/GLTFNode19/Transform
+    400046: main asset/GLTFScene/GLTFNode0/GLTFNode21/GLTFNode2/GLTFNode11/GLTFNode12/GLTFNode19/GLTFNode20/Transform
+    3300000: main asset/GLTFScene/GLTFNode0/GLTFNode1/Primitive/MeshFilter
+    4300000: mesh Primitive
+    11100000: main asset/GLTFScene/Animation
+    11400000: main asset/GLTFScene/MonoBehaviour-UnityGLTF.InstantiatedGLTFObject
+    13700000: main asset/GLTFScene/GLTFNode0/GLTFNode1/Primitive/SkinnedMeshRenderer
+    100100000: main asset
+  externalObjects: {}
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+  script: {fileID: 11500000, guid: 804e1ce4c496647cfa3f1a1134187c71, type: 3}
+  _removeEmptyRootObjects: 1
+  _scaleFactor: 1
+  _maximumLod: 300
+  _readWriteEnabled: 1
+  _generateColliders: 0
+  _swapUvs: 0
+  _importNormals: 0
+  _importMaterials: 1
+  _useJpgTextures: 0

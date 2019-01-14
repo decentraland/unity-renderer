@@ -39,7 +39,7 @@ namespace DCL.Helpers {
       }));
     }
 
-    public static void InstantiateEntityWithMaterial(ParcelScene scene, string entityId, Vector3 position, BasicMaterialModel basicMaterial, string materialComponentID = "a-material") {
+    public static void InstantiateEntityWithMaterial(ParcelScene scene, string entityId, Vector3 position, BasicMaterial.Model basicMaterial, string materialComponentID = "a-material") {
       InstantiateEntityWithShape(scene, entityId, DCL.Models.CLASS_ID.BOX_SHAPE, position);
 
       scene.ComponentCreated(JsonUtility.ToJson(new DCL.Models.ComponentCreatedMessage {
@@ -60,7 +60,7 @@ namespace DCL.Helpers {
       }));
     }
 
-    public static void InstantiateEntityWithMaterial(ParcelScene scene, string entityId, Vector3 position, PBRMaterialModel pbrMaterial, string materialComponentID = "a-material") {
+    public static void InstantiateEntityWithMaterial(ParcelScene scene, string entityId, Vector3 position, PBRMaterial.Model pbrMaterial, string materialComponentID = "a-material") {
       InstantiateEntityWithShape(scene, entityId, DCL.Models.CLASS_ID.BOX_SHAPE, position);
 
       scene.ComponentCreated(JsonUtility.ToJson(new DCL.Models.ComponentCreatedMessage {

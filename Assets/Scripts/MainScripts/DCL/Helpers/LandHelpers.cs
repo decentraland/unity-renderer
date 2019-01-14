@@ -59,13 +59,22 @@ namespace DCL.Helpers {
 
     // todo: move this
     public static bool IsShapeComponent(UpdateableComponent targetComponent) {
-      return targetComponent is BoxShape ||
-              targetComponent is PlaneShape ||
-              targetComponent is SphereShape ||
-              targetComponent is ConeShape ||
-              targetComponent is CylinderShape ||
-              targetComponent is GLTFShape ||
-              targetComponent is OBJShape;
+      return targetComponent is BaseShape;
+    }
+
+    public static bool SafeFromJsonOverwrite(string json, object objectToOverwrite)
+    {
+      try
+      {
+        JsonUtility.FromJsonOverwrite(json, objectToOverwrite);
+      }
+      catch (System.ArgumentException e)
+      {
+        Debug.LogError("ArgumentException Fail!... Json = " + json);
+        return false;
+      }
+
+      return true;
     }
   }
 }
