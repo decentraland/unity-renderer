@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using DCL.Helpers;
@@ -6,15 +6,9 @@ using DCL.Models;
 using UnityEngine;
 
 namespace DCL.Components {
-  public interface IDisposableComponent : IComponent {
-    void AttachTo(DecentralandEntity entity);
-    void DetachFrom(DecentralandEntity entity);
-    void DetachFromEveryEntity();
-    void Dispose();
-  }
 
-  public abstract class BaseDisposable<T> : UnityEngine.Object, IDisposableComponent where T : new() {
-    public T data = new T();
+  public abstract class BaseDisposable : IComponent {
+
     public Coroutine routine = null;
     public abstract string componentName { get; }
 
@@ -38,7 +32,7 @@ namespace DCL.Components {
 
     private void ApplyChangesIfModified(string newSerialization) {
       if (newSerialization != oldSerialization) {
-        JsonUtility.FromJsonOverwrite(newSerialization, data);
+        //JsonUtility.FromJsonOverwrite(newSerialization, data);
         oldSerialization = newSerialization;
 
         // We use the scene start coroutine because we need to divide the computing resources fairly
@@ -47,7 +41,7 @@ namespace DCL.Components {
           routine = null;
         }
 
-        var enumerator = ApplyChanges();
+        var enumerator = ApplyChanges(newSerialization);
         if (enumerator != null) {
           // we don't want to start coroutines if we have early finalization in IEnumerators
           // ergo, we return null without yielding any result
@@ -89,13 +83,8 @@ namespace DCL.Components {
     public void Dispose() {
       DetachFromEveryEntity();
 
-#if UNITY_EDITOR
-      DestroyImmediate(this);
-#else
-      Destroy(this);
-#endif
     }
 
-    public abstract IEnumerator ApplyChanges();
+    public abstract IEnumerator ApplyChanges(string newJson);
   }
 }

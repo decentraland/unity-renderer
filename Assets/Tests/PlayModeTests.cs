@@ -8,15 +8,17 @@ using UnityGLTF;
 using Newtonsoft.Json;
 using NUnit.Framework;
 using DCL.Models;
+using DCL.Components;
 /*
- * Play Mode Testing Highlights:
- * - All Monobehaviour methods are invoked
- * - Tests run in a standalone window
- * - Tests may run slower, depending on the build target
- */
+* Play Mode Testing Highlights:
+* - All Monobehaviour methods are invoked
+* - Tests run in a standalone window
+* - Tests may run slower, depending on the build target
+*/
 
 namespace Tests {
   public class PlayModeTests {
+
 
     [UnityTest]
     public IEnumerator EntityCreation() {
@@ -224,6 +226,74 @@ namespace Tests {
         Assert.AreEqual(scale, entityObject.gameObject.transform.localScale);
       }
     }
+
+    [UnityTest]
+    public IEnumerator CreateAnimationComponent()
+    {
+      var sceneController = InitializeSceneController(true);
+
+      yield return new WaitForEndOfFrame();
+
+      var sceneData = new LoadParcelScenesMessage.UnityParcelScene();
+      var scene = sceneController.CreateTestScene(sceneData);
+
+      yield return new WaitForEndOfFrame();
+
+      string entityId = "1";
+      scene.CreateEntity(entityId);
+
+      Assert.IsNull(scene.entities[entityId].gameObject.GetComponentInChildren<UnityGLTF.InstantiatedGLTFObject>(), "Since the shape hasn't been updated yet, the 'GLTFScene' child object shouldn't exist");
+
+      scene.UpdateEntityComponent(JsonUtility.ToJson(new DCL.Models.UpdateEntityComponentMessage
+      {
+        entityId = entityId,
+        name = "shape",
+        classId = (int)DCL.Models.CLASS_ID.GLTF_SHAPE,
+        json = JsonConvert.SerializeObject(new
+        {
+          src = "http://127.0.0.1:9991/GLB/CesiumMan/CesiumMan.glb"
+        })
+      }));
+
+      string animJson = JsonConvert.SerializeObject(new DCLAnimator.Model
+      {
+        states = new DCLAnimator.Model.DCLAnimationState[]
+          {
+            new DCLAnimator.Model.DCLAnimationState
+            {
+              name = "clip01",
+              clip = "animation:0",
+              playing = true,
+              weight = 1,
+              speed = 1
+            }
+          }
+      });
+
+      scene.UpdateEntityComponent(JsonUtility.ToJson(new DCL.Models.UpdateEntityComponentMessage
+      {
+        entityId = entityId,
+        name = "animation",
+        classId = (int)DCL.Models.CLASS_ID.ANIMATOR,
+        json = animJson
+      }));
+
+
+      DCL.Components.GLTFShape gltfShape = scene.entities[entityId].gameObject.GetComponentInChildren<GLTFShape>();
+
+      yield return new WaitUntil(() => gltfShape.alreadyLoaded == true);
+
+      Assert.IsNotNull(scene.entities[entityId].gameObject.GetComponentInChildren<Animator>(), "'GLTFScene' child object with 'Animator' component should exist if the GLTF was loaded correctly.");
+      Assert.IsNotNull(scene.entities[entityId].gameObject.GetComponentInChildren<DCLAnimator>(), "'GLTFScene' child object with 'DCLAnimator' component should exist if the GLTF was loaded correctly.");
+
+      yield return new WaitForSeconds(0.5f);
+      DCLAnimator dclAnimator = scene.entities[entityId].gameObject.GetComponentInChildren<DCLAnimator>();
+
+      Assert.IsNotNull( dclAnimator.GetStateByString("clip01"), "dclAnimator.GetStateByString fail!");
+      Assert.IsNotNull(dclAnimator.model.states[0].clipReference, "dclAnimator clipReference is null!");
+    }
+
+
 
     [UnityTest]
     public IEnumerator BoxShapeUpdate() {
@@ -549,7 +619,7 @@ namespace Tests {
         entityId = entityId,
         name = "shape",
         classId = (int)DCL.Models.CLASS_ID.GLTF_SHAPE,
-        json = JsonConvert.SerializeObject(new {
+        json = JsonConvert.SerializeObject(new GLTFShape.Model {
           src = "http://127.0.0.1:9991/GLB/Lantern/Lantern.glb"
         })
       }));
@@ -558,7 +628,8 @@ namespace Tests {
         entityId = entityId,
         name = "shape",
         classId = (int)DCL.Models.CLASS_ID.GLTF_SHAPE,
-        json = JsonConvert.SerializeObject(new {
+        json = JsonConvert.SerializeObject(new GLTFShape.Model
+        {
           src = "http://127.0.0.1:9991/GLB/DamagedHelmet/DamagedHelmet.glb"
         })
       }));
@@ -760,7 +831,7 @@ namespace Tests {
       string materialID = "a-material";
       string textureURL = "http://127.0.0.1:9991/Images/atlas.png";
 
-      TestHelpers.InstantiateEntityWithMaterial(scene, entityId, Vector3.zero, new DCL.Components.PBRMaterialModel {
+      TestHelpers.InstantiateEntityWithMaterial(scene, entityId, Vector3.zero, new DCL.Components.PBRMaterial.Model {
         albedoTexture = textureURL,
         metallic = 0,
         roughness = 1,
@@ -779,7 +850,7 @@ namespace Tests {
         var assignedMaterial = meshRenderer.sharedMaterial;
         Assert.IsNotNull(meshRenderer, "MeshRenderer.sharedMaterial must be the same as assignedMaterial");
         Assert.AreEqual(assignedMaterial, materialComponent.material, "Assigned material");
-        Assert.AreEqual(textureURL, materialComponent.data.albedoTexture, "Texture data must be correct");
+        Assert.AreEqual(textureURL, materialComponent.model.albedoTexture, "Texture data must be correct");
         var loadedTexture = meshRenderer.sharedMaterial.mainTexture;
         Assert.IsNotNull(loadedTexture, "Texture must be loaded");
       }
@@ -800,7 +871,7 @@ namespace Tests {
       string materialID = "a-material";
 
       // Instantiate entity with default PBR Material
-      TestHelpers.InstantiateEntityWithMaterial(scene, entityId, Vector3.zero, new DCL.Components.PBRMaterialModel(), materialID);
+      TestHelpers.InstantiateEntityWithMaterial(scene, entityId, Vector3.zero, new DCL.Components.PBRMaterial.Model(), materialID);
 
       var materialComponent = scene.disposableComponents[materialID] as DCL.Components.PBRMaterial;
 
@@ -844,7 +915,7 @@ namespace Tests {
 
       scene.ComponentUpdated(JsonUtility.ToJson(new DCL.Models.ComponentUpdatedMessage {
         id = materialID,
-        json = JsonUtility.ToJson(new DCL.Components.PBRMaterialModel {
+        json = JsonUtility.ToJson(new DCL.Components.PBRMaterial.Model {
           albedoTexture = textureURL,
           albedoColor = "#99deff",
           emissiveColor = "#42f4aa",
@@ -899,7 +970,7 @@ namespace Tests {
       string firstEntityID = "1";
       string firstMaterialID = "a-material";
 
-      TestHelpers.InstantiateEntityWithMaterial(scene, firstEntityID, Vector3.zero, new DCL.Components.PBRMaterialModel {
+      TestHelpers.InstantiateEntityWithMaterial(scene, firstEntityID, Vector3.zero, new DCL.Components.PBRMaterial.Model {
         metallic = 0.3f,
       }, firstMaterialID);
 
@@ -907,7 +978,7 @@ namespace Tests {
       string secondEntityID = "2";
       string secondMaterialID = "b-material";
 
-      TestHelpers.InstantiateEntityWithMaterial(scene, secondEntityID, Vector3.zero, new DCL.Components.PBRMaterialModel {
+      TestHelpers.InstantiateEntityWithMaterial(scene, secondEntityID, Vector3.zero, new DCL.Components.PBRMaterial.Model {
         metallic = 0.66f,
       }, secondMaterialID);
 
@@ -944,7 +1015,7 @@ namespace Tests {
       string firstEntityID = "1";
       string firstMaterialID = "a-material";
 
-      TestHelpers.InstantiateEntityWithMaterial(scene, firstEntityID, Vector3.zero, new DCL.Components.PBRMaterialModel {
+      TestHelpers.InstantiateEntityWithMaterial(scene, firstEntityID, Vector3.zero, new DCL.Components.PBRMaterial.Model {
         metallic = 0.3f,
       }, firstMaterialID);
 
@@ -952,7 +1023,7 @@ namespace Tests {
       string secondEntityID = "2";
       string secondMaterialID = "b-material";
 
-      TestHelpers.InstantiateEntityWithMaterial(scene, secondEntityID, Vector3.zero, new DCL.Components.PBRMaterialModel {
+      TestHelpers.InstantiateEntityWithMaterial(scene, secondEntityID, Vector3.zero, new DCL.Components.PBRMaterial.Model {
         metallic = 0.66f,
       }, secondMaterialID);
 
@@ -980,7 +1051,7 @@ namespace Tests {
       // Update material properties
       scene.ComponentUpdated(JsonUtility.ToJson(new DCL.Models.ComponentUpdatedMessage {
         id = firstMaterialID,
-        json = JsonUtility.ToJson(new DCL.Components.PBRMaterialModel {
+        json = JsonUtility.ToJson(new DCL.Components.PBRMaterial.Model {
           metallic = 0.95f
         })
       }));
@@ -1006,7 +1077,7 @@ namespace Tests {
       string entityId = "1";
       string materialID = "a-material";
 
-      TestHelpers.InstantiateEntityWithMaterial(scene, entityId, Vector3.zero, new DCL.Components.BasicMaterialModel(), materialID);
+      TestHelpers.InstantiateEntityWithMaterial(scene, entityId, Vector3.zero, new DCL.Components.BasicMaterial.Model(), materialID);
 
       var meshRenderer = scene.entities[entityId].gameObject.GetComponentInChildren<MeshRenderer>();
       var materialComponent = scene.disposableComponents[materialID] as DCL.Components.BasicMaterial;
@@ -1045,7 +1116,7 @@ namespace Tests {
       string materialID = "a-material";
 
       // Instantiate entity with material
-      TestHelpers.InstantiateEntityWithMaterial(scene, firstEntityId, Vector3.zero, new DCL.Components.BasicMaterialModel(), materialID);
+      TestHelpers.InstantiateEntityWithMaterial(scene, firstEntityId, Vector3.zero, new DCL.Components.BasicMaterial.Model(), materialID);
 
       // Create 2nd entity and attach same material to it
       TestHelpers.InstantiateEntityWithShape(scene, secondEntityId, DCL.Models.CLASS_ID.BOX_SHAPE, Vector3.zero);
@@ -1097,7 +1168,7 @@ namespace Tests {
       string materialID = "a-material";
 
       // Instantiate entity with default PBR Material
-      TestHelpers.InstantiateEntityWithMaterial(scene, entityId, Vector3.zero, new DCL.Components.BasicMaterialModel(), materialID);
+      TestHelpers.InstantiateEntityWithMaterial(scene, entityId, Vector3.zero, new DCL.Components.BasicMaterial.Model(), materialID);
 
       var meshRenderer = scene.entities[entityId].gameObject.GetComponentInChildren<MeshRenderer>();
       var materialComponent = scene.disposableComponents[materialID] as DCL.Components.BasicMaterial;
@@ -1127,7 +1198,7 @@ namespace Tests {
 
       scene.ComponentUpdated(JsonUtility.ToJson(new DCL.Models.ComponentUpdatedMessage {
         id = materialID,
-        json = JsonUtility.ToJson(new DCL.Components.BasicMaterialModel {
+        json = JsonUtility.ToJson(new DCL.Components.BasicMaterial.Model {
           texture = textureURL,
           samplingMode = 2,
           wrap = 3,

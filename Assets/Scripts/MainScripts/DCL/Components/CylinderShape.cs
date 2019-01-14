@@ -1,22 +1,26 @@
-﻿using System;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using DCL.Helpers;
 using UnityEngine;
 
 namespace DCL.Components {
-  [Serializable]
-  public class CylinderShapeModel {
-    public float radiusTop = 1f;        // Cone/Cylinder
-    public float radiusBottom = 1f;     // Cone/Cylinder
-    public float segmentsHeight = 1f;   // Cone/Cylinder
-    public float segmentsRadial = 36f;  // Cone/Cylinder
-    public bool openEnded = false;      // Cone/Cylinder
-    public float? radius;               // Cone/Cylinder
-    public float arc = 360f;            // Cone/Cylinder
-  }
+  public class CylinderShape : BaseShape {
 
-  public class CylinderShape : BaseShape<CylinderShapeModel> {
+    [System.Serializable]
+    public class Model
+    {
+      public float radiusTop = 1f;        // Cone/Cylinder
+      public float radiusBottom = 1f;     // Cone/Cylinder
+      public float segmentsHeight = 1f;   // Cone/Cylinder
+      public float segmentsRadial = 36f;  // Cone/Cylinder
+      public bool openEnded = false;      // Cone/Cylinder
+      public float? radius;               // Cone/Cylinder
+      public float arc = 360f;            // Cone/Cylinder
+    }
+
+    Model model = new Model();
+
     protected override void Awake() {
       base.Awake();
 
@@ -31,10 +35,11 @@ namespace DCL.Components {
       meshRenderer.sharedMaterial = Resources.Load<Material>("Materials/Default");
     }
 
-    public override IEnumerator ApplyChanges() {
-      meshFilter.mesh = PrimitiveMeshBuilder.BuildCylinder(50, data.radiusTop, data.radiusBottom, 2f, 0f, true, false);
+    public override IEnumerator ApplyChanges(string newJson) {
+        JsonUtility.FromJsonOverwrite(newJson, model);
+        meshFilter.mesh = PrimitiveMeshBuilder.BuildCylinder(50, model.radiusTop, model.radiusBottom, 2f, 0f, true, false);
 
-      return null;
+        return null;
     }
   }
 }

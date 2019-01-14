@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using DCL.Controllers;
@@ -7,37 +7,40 @@ using DCL.Models;
 using UnityEngine;
 
 namespace DCL.Components {
-  [Serializable]
-  public class PBRMaterialModel {
-    [Range(0f, 1f)]
-    public float alpha = 1f;
+  public class PBRMaterial : BaseDisposable {
 
-    public string albedoColor = "#fff";
-    public string albedoTexture;
-    public string ambientColor = "#fff";
-    public float metallic = 0.5f;
-    public float roughness = 0.5f;
-    public float microSurface = 1f; // Glossiness
-    public float specularIntensity = 1f;
-    public bool hasAlpha = false;
-    public string alphaTexture;
-    public string emissiveTexture;
-    public string emissiveColor = "#000";
-    public float emissiveIntensity = 1f;
-    public string reflectionColor = "#fff"; // Specular color
-    public string reflectivityColor = "#fff";
-    public float directIntensity = 1f;
-    public float environmentIntensity = 1f;
-    public string bumpTexture;
-    public string refractionTexture;
-    public bool disableLighting = false;
+    [System.Serializable]
+    public class Model
+    {
+      [Range(0f, 1f)]
+      public float alpha = 1f;
 
-    [Range(0, 3)]
-    public int transparencyMode; // 0: OPAQUE; 1: ALPHATEST; 2: ALPHBLEND; 3: ALPHATESTANDBLEND
-  }
+      public string albedoColor = "#fff";
+      public string albedoTexture;
+      public string ambientColor = "#fff";
+      public float metallic = 0.5f;
+      public float roughness = 0.5f;
+      public float microSurface = 1f; // Glossiness
+      public float specularIntensity = 1f;
+      public bool hasAlpha = false;
+      public string alphaTexture;
+      public string emissiveTexture;
+      public string emissiveColor = "#000";
+      public float emissiveIntensity = 1f;
+      public string reflectionColor = "#fff"; // Specular color
+      public string reflectivityColor = "#fff";
+      public float directIntensity = 1f;
+      public float environmentIntensity = 1f;
+      public string bumpTexture;
+      public string refractionTexture;
+      public bool disableLighting = false;
 
-  public class PBRMaterial : BaseDisposable<PBRMaterialModel> {
+      [Range(0, 3)]
+      public int transparencyMode; // 0: OPAQUE; 1: ALPHATEST; 2: ALPHBLEND; 3: ALPHATESTANDBLEND
+    }
+
     public override string componentName => "material";
+    public Model model = new Model();
     public Material material { get; set; }
 
     const string MATERIAL_RESOURCES_PATH = "Materials/";
@@ -51,10 +54,10 @@ namespace DCL.Components {
           // Destroying the sharedMaterial destroys all the instances of the material assigned to
           // any meshRenderer
           // TODO: validate that comment ^^^
-          Destroy(material);
+          UnityEngine.Object.Destroy(material);
         }
 
-        material = Instantiate(Resources.Load<Material>(MATERIAL_RESOURCES_PATH + name));
+        material = UnityEngine.Object.Instantiate(Resources.Load<Material>(MATERIAL_RESOURCES_PATH + name));
         material.name = name; // Unity instantiates the material as 'ShapeMaterial(Clone)' for example.
 
         material.enableInstancing = true;
@@ -62,65 +65,67 @@ namespace DCL.Components {
     }
 
     public PBRMaterial(ParcelScene scene) : base(scene) {
+      model = new Model();
       LoadMaterial("ShapeMaterial");
 
       OnAttach += OnMaterialAttached;
       OnDetach += OnMaterialDetached;
     }
 
-    public override IEnumerator ApplyChanges() {
+    public override IEnumerator ApplyChanges(string newJson) {
       Color auxColor = new Color();
+      JsonUtility.FromJsonOverwrite(newJson, model);
 
-      if (data.disableLighting) {
+      if (model.disableLighting) {
         LoadMaterial(BASIC_MATERIAL_NAME);
       } else {
         LoadMaterial(PBR_MATERIAL_NAME);
         // FETCH AND LOAD EMISSIVE TEXTURE
-        if (!string.IsNullOrEmpty(data.emissiveTexture)) {
-          yield return LandHelpers.FetchTexture(scene, data.emissiveTexture, (fetchedEmissiveTexture) => {
+        if (!string.IsNullOrEmpty(model.emissiveTexture)) {
+          yield return LandHelpers.FetchTexture(scene, model.emissiveTexture, (fetchedEmissiveTexture) => {
             material.SetTexture("_EmissionMap", fetchedEmissiveTexture);
           });
         }
 
         // METALLIC/SPECULAR CONFIGURATIONS
-        ColorUtility.TryParseHtmlString(data.emissiveColor, out auxColor);
-        material.SetColor("_EmissionColor", auxColor * data.emissiveIntensity);
+        ColorUtility.TryParseHtmlString(model.emissiveColor, out auxColor);
+        material.SetColor("_EmissionColor", auxColor * model.emissiveIntensity);
 
-        ColorUtility.TryParseHtmlString(data.reflectivityColor, out auxColor);
+        ColorUtility.TryParseHtmlString(model.reflectivityColor, out auxColor);
         material.SetColor("_SpecColor", auxColor);
 
-        material.SetFloat("_Metallic", data.metallic);
-        material.SetFloat("_Glossiness", 1 - data.roughness);
-        material.SetFloat("_GlossyReflections", data.microSurface);
-        material.SetFloat("_SpecularHighlights", data.specularIntensity * data.directIntensity);
+        material.SetFloat("_Metallic", model.metallic);
+        material.SetFloat("_Glossiness", 1 - model.roughness);
+        material.SetFloat("_GlossyReflections", model.microSurface);
+        material.SetFloat("_SpecularHighlights", model.specularIntensity * model.directIntensity);
       }
 
-      ColorUtility.TryParseHtmlString(data.albedoColor, out auxColor);
+      ColorUtility.TryParseHtmlString(model.albedoColor, out auxColor);
       material.SetColor("_Color", auxColor);
 
       // FETCH AND LOAD TEXTURES
-      if (!string.IsNullOrEmpty(data.albedoTexture)) {
-        yield return LandHelpers.FetchTexture(scene, data.albedoTexture, (fetchedAlbedoTexture) => {
+      if (!string.IsNullOrEmpty(model.albedoTexture)) {
+        yield return LandHelpers.FetchTexture(scene, model.albedoTexture, (fetchedAlbedoTexture) => {
           material.SetTexture("_MainTex", fetchedAlbedoTexture);
         });
       }
 
-      if (!string.IsNullOrEmpty(data.bumpTexture)) {
-        yield return LandHelpers.FetchTexture(scene, data.bumpTexture, (fetchedBumpTexture) => {
+      if (!string.IsNullOrEmpty(model.bumpTexture)) {
+        yield return LandHelpers.FetchTexture(scene, model.bumpTexture, (fetchedBumpTexture) => {
           material.SetTexture("_BumpMap", fetchedBumpTexture);
         });
       }
 
       // ALPHA CONFIGURATION
-      material.SetFloat("_AlphaClip", data.alpha);
+      material.SetFloat("_AlphaClip", model.alpha);
 
-      if (data.hasAlpha || !string.IsNullOrEmpty(data.alphaTexture)) {
+      if (model.hasAlpha || !string.IsNullOrEmpty(model.alphaTexture)) {
         // Reset shader keywords
         material.DisableKeyword("_ALPHATEST_ON"); // Cut Out Transparency
         material.DisableKeyword("_ALPHABLEND_ON"); // Fade Transparency
         material.DisableKeyword("_ALPHAPREMULTIPLY_ON"); // Transparent
 
-        switch (data.transparencyMode) {
+        switch (model.transparencyMode) {
           case 2: // ALPHABLEND
             material.EnableKeyword("_ALPHABLEND_ON");
 

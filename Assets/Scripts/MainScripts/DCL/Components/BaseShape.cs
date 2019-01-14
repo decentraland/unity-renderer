@@ -1,11 +1,11 @@
-﻿using System;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using DCL.Helpers;
 using UnityEngine;
 
 namespace DCL.Components {
-  public abstract class BaseShape<T> : BaseComponent<T> where T : new() {
+  public abstract class BaseShape : BaseComponent {
     public override string componentName => "shape";
 
     [HideInInspector] public GameObject meshGameObject;

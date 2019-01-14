@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using DCL.Controllers;
@@ -7,38 +7,43 @@ using DCL.Models;
 using UnityEngine;
 
 namespace DCL.Components {
-  [Serializable]
-  public class BasicMaterialModel {
-    public string texture;
+  public class BasicMaterial : BaseDisposable {
 
-    [Range(1, 3)]
-    public int samplingMode;  // 1: NEAREST; 2: BILINEAR; 3: TRILINEAR
+    [System.Serializable]
+    public class Model
+    {
+      public string texture;
 
-    [Range(1, 3)]
-    public int wrap;          // 1: CLAMP; 2: WRAP; 3: MIRROR
+      [Range(1, 3)]
+      public int samplingMode;  // 1: NEAREST; 2: BILINEAR; 3: TRILINEAR
 
-    [Range(0f, 1f)]
-    public float alphaTest = 1f; // value that defines if a pixel is visible or invisible (no transparency gradients)
-  }
+      [Range(1, 3)]
+      public int wrap;          // 1: CLAMP; 2: WRAP; 3: MIRROR
 
-  public class BasicMaterial : BaseDisposable<BasicMaterialModel> {
+      [Range(0f, 1f)]
+      public float alphaTest = 1f; // value that defines if a pixel is visible or invisible (no transparency gradients)
+    }
+
+    Model model = new Model();
     public override string componentName => "material";
     public Material material;
 
     public BasicMaterial(ParcelScene scene) : base(scene) {
-      material = Instantiate(Resources.Load<Material>("Materials/BasicShapeMaterial"));
+      material = UnityEngine.Object.Instantiate(Resources.Load<Material>("Materials/BasicShapeMaterial"));
 
       OnAttach += OnMaterialAttached;
       OnDetach += OnMaterialDetached;
     }
+    
+    public override IEnumerator ApplyChanges(string newJson) {
+      JsonUtility.FromJsonOverwrite(newJson, model);
 
-    public override IEnumerator ApplyChanges() {
-      if (!string.IsNullOrEmpty(data.texture)) {
-        yield return LandHelpers.FetchTexture(scene, data.texture, (fetchedTexture) => {
+      if (!string.IsNullOrEmpty(model.texture)) {
+        yield return LandHelpers.FetchTexture(scene, model.texture, (fetchedTexture) => {
           material.mainTexture = fetchedTexture;
 
           // WRAP MODE CONFIGURATION
-          switch (data.wrap) {
+          switch (model.wrap) {
             case 2:
               material.mainTexture.wrapMode = TextureWrapMode.Repeat;
               break;
@@ -51,7 +56,7 @@ namespace DCL.Components {
           }
 
           // SAMPLING/FILTER MODE CONFIGURATION
-          switch (data.samplingMode) {
+          switch (model.samplingMode) {
             case 2:
               material.mainTexture.filterMode = FilterMode.Bilinear;
               break;
@@ -64,7 +69,7 @@ namespace DCL.Components {
           }
 
           // ALPHA CONFIGURATION
-          material.SetFloat("_AlphaClip", data.alphaTest);
+          material.SetFloat("_AlphaClip", model.alphaTest);
         });
       }
     }

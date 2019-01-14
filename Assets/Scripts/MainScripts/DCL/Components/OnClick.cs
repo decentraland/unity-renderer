@@ -6,18 +6,23 @@ using UnityGLTF;
 using DCL.Helpers;
 
 namespace DCL.Components {
-  [Serializable]
-  public class OnClickModel {
-    public string uuid;
-  }
 
-  public class OnClick : BaseComponent<OnClickModel> {
+  public class OnClick : BaseComponent {
+
+    [System.Serializable]
+    public class Model
+    {
+        public string uuid;
+    }
+
+    Model model = new Model();
     public override string componentName => "onClick";
-
+	
     Rigidbody rigidBody;
     GameObject[] OnClickColliderGameObjects;
 
-    public override IEnumerator ApplyChanges() {
+    public override IEnumerator ApplyChanges(string newJson) {
+      JsonUtility.FromJsonOverwrite(newJson, model);
       return null;
     }
 
@@ -77,13 +82,13 @@ namespace DCL.Components {
         mouseButtonPressed = 1;
       }
 
-      DCL.Interface.WebInterface.ReportOnClickEvent(scene.sceneData.id, data.uuid, mouseButtonPressed);
+      DCL.Interface.WebInterface.ReportOnClickEvent(scene.sceneData.id, model.uuid, mouseButtonPressed);
     }
 
     void OnDestroy() {
       entity.OnComponentUpdated -= OnComponentUpdated;
-
-      Destroy(rigidBody);
+	
+	  Destroy(rigidBody);
 
       DestroyOnClickColliders();
     }

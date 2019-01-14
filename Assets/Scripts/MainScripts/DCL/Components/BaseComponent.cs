@@ -1,4 +1,4 @@
-﻿using UnityEngine;
+using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
 using DCL.Models;
@@ -16,8 +16,7 @@ namespace DCL.Components {
     public abstract void UpdateFromJSON(string json);
   }
 
-  public abstract class BaseComponent<T> : UpdateableComponent where T : new() {
-    public T data = new T();
+  public abstract class BaseComponent : UpdateableComponent {
     public ParcelScene scene;
     public DecentralandEntity entity;
 
@@ -34,7 +33,6 @@ namespace DCL.Components {
 
     private void ApplyChangesIfModified(string newSerialization) {
       if (newSerialization != oldSerialization) {
-        JsonUtility.FromJsonOverwrite(newSerialization, data);
         oldSerialization = newSerialization;
 
         if (routine != null) {
@@ -42,7 +40,7 @@ namespace DCL.Components {
           routine = null;
         }
 
-        var enumerator = UpdateComponent();
+        var enumerator = UpdateComponent(newSerialization);
         if (enumerator != null) {
           // we don't want to start coroutines if we have early finalization in IEnumerators
           // ergo, we return null without yielding any result
@@ -51,13 +49,13 @@ namespace DCL.Components {
       }
     }
 
-    public virtual IEnumerator UpdateComponent() {
-      yield return ApplyChanges();
+    public virtual IEnumerator UpdateComponent(string newJson) {
+      yield return ApplyChanges(newJson);
 
       if (entity.OnComponentUpdated != null)
         entity.OnComponentUpdated.Invoke(this);
     }
 
-    public abstract IEnumerator ApplyChanges();
+    public abstract IEnumerator ApplyChanges(string newJson);
   }
 }
