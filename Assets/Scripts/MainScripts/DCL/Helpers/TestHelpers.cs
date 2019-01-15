@@ -80,5 +80,33 @@ namespace DCL.Helpers {
         name = "material"
       }));
     }
+
+    public static SceneController InitializeSceneController(bool usesWebServer = false)
+    {
+      var sceneController = Object.FindObjectOfType<SceneController>();
+
+      if (sceneController == null)
+      {
+        var GO = new GameObject();
+        sceneController = GO.AddComponent<SceneController>();
+      }
+
+      if (usesWebServer)
+      {
+        var webServer = sceneController.GetComponent<WebServerComponent>();
+        if (webServer != null)
+        {
+          webServer.Restart(); // We restart the server to avoid issues with consecutive tests using it
+        }
+        else
+        {
+          sceneController.gameObject.AddComponent<WebServerComponent>();
+        }
+      }
+
+      sceneController.UnloadAllScenes();
+
+      return sceneController;
+    }
   }
 }

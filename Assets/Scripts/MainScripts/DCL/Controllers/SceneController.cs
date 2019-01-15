@@ -13,7 +13,8 @@ public class SceneController : MonoBehaviour {
 
   public Dictionary<string, ParcelScene> loadedScenes = new Dictionary<string, ParcelScene>();
 
-  void Awake() {
+  void Awake()  {
+
     // We trigger the Decentraland logic once SceneController has been instanced and is ready to act.
     if (startDecentralandAutomatically) {
       WebInterface.StartDecentraland();
@@ -70,7 +71,7 @@ public class SceneController : MonoBehaviour {
       completeListOfParcelsThatShouldBeLoaded.Add(sceneToLoad.id);
 
       if (GetDecentralandSceneOfParcel(sceneToLoad.basePosition) == null) {
-        var newGameObject = new GameObject();
+        var newGameObject = new GameObject("New Scene");
 
         var newScene = newGameObject.AddComponent<ParcelScene>();
         newScene.SetData(sceneToLoad);
@@ -117,13 +118,17 @@ public class SceneController : MonoBehaviour {
     }
   }
 
-  public void SendSceneMessage(string payload) {
+  public void SendSceneMessage(string payload) {    
     var chunks = payload.Split('\n');
 
     for (int i = 0; i < chunks.Length; i++) {
       try {
         if (chunks[i].Length > 0) {
           var separatorPosition = chunks[i].IndexOf('\t');
+
+          if (separatorPosition == -1)
+            continue;
+
           var sceneId = chunks[i].Substring(0, separatorPosition);
           var message = chunks[i].Substring(separatorPosition + 1);
           ProcessMessage(sceneId, message);
