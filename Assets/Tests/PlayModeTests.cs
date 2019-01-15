@@ -22,7 +22,7 @@ namespace Tests {
 
     [UnityTest]
     public IEnumerator EntityCreation() {
-      var sceneController = InitializeSceneController();
+      var sceneController = TestHelpers.InitializeSceneController();
 
       yield return new WaitForSeconds(0.01f);
 
@@ -57,7 +57,7 @@ namespace Tests {
 
     [UnityTest]
     public IEnumerator EntityParenting() {
-      var sceneController = InitializeSceneController();
+      var sceneController = TestHelpers.InitializeSceneController();
 
       yield return new WaitForSeconds(0.01f);
 
@@ -98,7 +98,7 @@ namespace Tests {
 
     [UnityTest]
     public IEnumerator TransformUpdate() {
-      var sceneController = InitializeSceneController();
+      var sceneController = TestHelpers.InitializeSceneController();
 
       yield return new WaitForSeconds(0.01f);
 
@@ -230,7 +230,7 @@ namespace Tests {
     [UnityTest]
     public IEnumerator CreateAnimationComponent()
     {
-      var sceneController = InitializeSceneController(true);
+      var sceneController = TestHelpers.InitializeSceneController(true);
 
       yield return new WaitForEndOfFrame();
 
@@ -297,7 +297,7 @@ namespace Tests {
 
     [UnityTest]
     public IEnumerator BoxShapeUpdate() {
-      var sceneController = InitializeSceneController();
+      var sceneController = TestHelpers.InitializeSceneController();
 
       yield return new WaitForSeconds(0.01f);
 
@@ -313,7 +313,7 @@ namespace Tests {
 
     [UnityTest]
     public IEnumerator SphereShapeUpdate() {
-      var sceneController = InitializeSceneController();
+      var sceneController = TestHelpers.InitializeSceneController();
 
       yield return new WaitForSeconds(0.01f);
 
@@ -329,7 +329,7 @@ namespace Tests {
 
     [UnityTest]
     public IEnumerator PlaneShapeUpdate() {
-      var sceneController = InitializeSceneController();
+      var sceneController = TestHelpers.InitializeSceneController();
 
       yield return new WaitForSeconds(0.01f);
 
@@ -345,7 +345,7 @@ namespace Tests {
 
     [UnityTest]
     public IEnumerator CylinderShapeUpdate() {
-      var sceneController = InitializeSceneController();
+      var sceneController = TestHelpers.InitializeSceneController();
 
       yield return new WaitForSeconds(0.01f);
 
@@ -361,7 +361,7 @@ namespace Tests {
 
     [UnityTest]
     public IEnumerator ConeShapeUpdate() {
-      var sceneController = InitializeSceneController();
+      var sceneController = TestHelpers.InitializeSceneController();
 
       yield return new WaitForSeconds(0.01f);
 
@@ -379,7 +379,7 @@ namespace Tests {
     // TODO: Find a way to test the OBJ shape update, even though this test passes locally, the webserver fails to find the .obj when running in unity cloud build...
     /* [UnityTest]
     public IEnumerator OBJShapeUpdate() {
-      var sceneController = InitializeSceneController(true);
+      var sceneController = TestHelpers.InitializeSceneController(true);
 
       yield return new WaitForSeconds(0.01f);
 
@@ -415,7 +415,7 @@ namespace Tests {
 
     [UnityTest]
     public IEnumerator GLTFShapeUpdate() {
-      var sceneController = InitializeSceneController(true);
+      var sceneController = TestHelpers.InitializeSceneController(true);
 
       yield return new WaitForSeconds(0.01f);
 
@@ -445,7 +445,7 @@ namespace Tests {
 
     [UnityTest]
     public IEnumerator ShapeMeshObjectIsReused() {
-      var sceneController = InitializeSceneController(true);
+      var sceneController = TestHelpers.InitializeSceneController(true);
 
       yield return new WaitForSeconds(0.01f);
 
@@ -487,7 +487,7 @@ namespace Tests {
 
     [UnityTest]
     public IEnumerator PreExistentShapeUpdate() {
-      var sceneController = InitializeSceneController(true);
+      var sceneController = TestHelpers.InitializeSceneController(true);
 
       yield return new WaitForSeconds(0.01f);
 
@@ -562,7 +562,7 @@ namespace Tests {
 
     [UnityTest]
     public IEnumerator PreExistentGLTFShapeUpdate() {
-      var sceneController = InitializeSceneController(true);
+      var sceneController = TestHelpers.InitializeSceneController(true);
 
       yield return new WaitForSeconds(0.01f);
 
@@ -603,7 +603,7 @@ namespace Tests {
 
     [UnityTest]
     public IEnumerator PreExistentGLTFShapeImmediateUpdate() {
-      var sceneController = InitializeSceneController(true);
+      var sceneController = TestHelpers.InitializeSceneController(true);
 
       yield return new WaitForSeconds(0.01f);
 
@@ -641,7 +641,7 @@ namespace Tests {
 
     [UnityTest]
     public IEnumerator OnClickComponentInitializesWithBasicShape() {
-      var sceneController = InitializeSceneController();
+      var sceneController = TestHelpers.InitializeSceneController();
 
       yield return new WaitForSeconds(0.01f);
 
@@ -674,7 +674,7 @@ namespace Tests {
 
     [UnityTest]
     public IEnumerator OnClickComponentInitializesWithGLTFShape() {
-      var sceneController = InitializeSceneController(true);
+      var sceneController = TestHelpers.InitializeSceneController(true);
 
       yield return new WaitForSeconds(0.01f);
 
@@ -723,7 +723,7 @@ namespace Tests {
 
     [UnityTest]
     public IEnumerator OnClickComponentInitializesWithGLTFShapeAsynchronously() {
-      var sceneController = InitializeSceneController(true);
+      var sceneController = TestHelpers.InitializeSceneController(true);
 
       yield return new WaitForSeconds(0.01f);
 
@@ -772,7 +772,7 @@ namespace Tests {
 
     [UnityTest]
     public IEnumerator OnClickComponentInitializesAfterBasicShapeIsAdded() {
-      var sceneController = InitializeSceneController();
+      var sceneController = TestHelpers.InitializeSceneController();
 
       yield return new WaitForSeconds(0.01f);
 
@@ -818,7 +818,7 @@ namespace Tests {
 
     [UnityTest]
     public IEnumerator PBRMaterialUpdate() {
-      var sceneController = InitializeSceneController(true);
+      var sceneController = TestHelpers.InitializeSceneController(true);
 
       yield return new WaitForSeconds(0.01f);
 
@@ -858,7 +858,7 @@ namespace Tests {
 
     [UnityTest]
     public IEnumerator PBRMaterialPropertiesUpdate() {
-      var sceneController = InitializeSceneController(true);
+      var sceneController = TestHelpers.InitializeSceneController(true);
 
       yield return new WaitForSeconds(0.01f);
 
@@ -957,7 +957,7 @@ namespace Tests {
 
     [UnityTest]
     public IEnumerator MaterialIsSharedCorrectly() {
-      var sceneController = InitializeSceneController();
+      var sceneController = TestHelpers.InitializeSceneController();
 
       yield return new WaitForSeconds(0.01f);
 
@@ -1002,7 +1002,7 @@ namespace Tests {
 
     [UnityTest]
     public IEnumerator MaterialUpdateAffectsCorrectEntities() {
-      var sceneController = InitializeSceneController();
+      var sceneController = TestHelpers.InitializeSceneController();
 
       yield return new WaitForSeconds(0.01f);
 
@@ -1065,7 +1065,7 @@ namespace Tests {
 
     [UnityTest]
     public IEnumerator MaterialDetach() {
-      var sceneController = InitializeSceneController();
+      var sceneController = TestHelpers.InitializeSceneController();
 
       yield return new WaitForSeconds(0.01f);
 
@@ -1102,7 +1102,7 @@ namespace Tests {
 
     [UnityTest]
     public IEnumerator MaterialDisposedGetsDetached() {
-      var sceneController = InitializeSceneController();
+      var sceneController = TestHelpers.InitializeSceneController();
 
       yield return new WaitForSeconds(0.01f);
 
@@ -1155,7 +1155,7 @@ namespace Tests {
 
     [UnityTest]
     public IEnumerator EntityBasicMaterialUpdate() {
-      var sceneController = InitializeSceneController(true);
+      var sceneController = TestHelpers.InitializeSceneController(true);
 
       yield return new WaitForSeconds(0.01f);
 
@@ -1219,7 +1219,7 @@ namespace Tests {
 
     [UnityTest]
     public IEnumerator SceneLoading() {
-      var sceneController = InitializeSceneController();
+      var sceneController = TestHelpers.InitializeSceneController();
 
       yield return new WaitForSeconds(0.01f);
 
@@ -1234,7 +1234,7 @@ namespace Tests {
 
     [UnityTest]
     public IEnumerator EntityRemoval() {
-      var sceneController = InitializeSceneController();
+      var sceneController = TestHelpers.InitializeSceneController();
 
       yield return new WaitForSeconds(0.01f);
 
@@ -1262,7 +1262,7 @@ namespace Tests {
 
     [UnityTest]
     public IEnumerator SceneUnloading() {
-      var sceneController = InitializeSceneController();
+      var sceneController = TestHelpers.InitializeSceneController();
 
       yield return new WaitForSeconds(0.01f);
 
@@ -1291,7 +1291,7 @@ namespace Tests {
 
     [UnityTest]
     public IEnumerator SeveralParcelsFromJSON() {
-      var sceneController = InitializeSceneController();
+      var sceneController = TestHelpers.InitializeSceneController();
 
       yield return new WaitForSeconds(0.01f);
 
@@ -1319,7 +1319,7 @@ namespace Tests {
 
     [UnityTest]
     public IEnumerator PositionParcels() {
-      var sceneController = InitializeSceneController();
+      var sceneController = TestHelpers.InitializeSceneController();
 
       yield return new WaitForSeconds(0.01f);
 
@@ -1343,7 +1343,7 @@ namespace Tests {
 
     [UnityTest]
     public IEnumerator PositionParcels2() {
-      var sceneController = InitializeSceneController();
+      var sceneController = TestHelpers.InitializeSceneController();
 
       yield return new WaitForSeconds(0.01f);
 
@@ -1365,26 +1365,6 @@ namespace Tests {
       Assert.IsTrue(theScene.transform.GetChild(2).localPosition == new Vector3(-10.0f + 5f, DCL.Configuration.ParcelSettings.DEBUG_FLOOR_HEIGHT, 10.0f + 5f));
     }
 
-    SceneController InitializeSceneController(bool usesWebServer = false) {
-      var sceneController = Object.FindObjectOfType<SceneController>();
-
-      if (sceneController == null) {
-        var GO = new GameObject();
-        sceneController = GO.AddComponent<SceneController>();
-      }
-
-      if (usesWebServer) {
-        var webServer = sceneController.GetComponent<WebServerComponent>();
-        if (webServer != null) {
-          webServer.Restart(); // We restart the server to avoid issues with consecutive tests using it
-        } else {
-          sceneController.gameObject.AddComponent<WebServerComponent>();
-        }
-      }
-
-      sceneController.UnloadAllScenes();
-
-      return sceneController;
-    }
+    
   }
 }

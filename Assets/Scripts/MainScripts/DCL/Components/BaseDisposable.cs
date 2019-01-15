@@ -82,7 +82,7 @@ namespace DCL.Components {
 
     public void Dispose() {
       DetachFromEveryEntity();
-
+      Resources.UnloadUnusedAssets(); //NOTE(Brian): This will ensure assets are freed correctly.
     }
 
     public abstract IEnumerator ApplyChanges(string newJson);

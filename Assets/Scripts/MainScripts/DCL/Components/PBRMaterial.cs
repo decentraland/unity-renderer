@@ -55,9 +55,11 @@ namespace DCL.Components {
           // any meshRenderer
           // TODO: validate that comment ^^^
           UnityEngine.Object.Destroy(material);
+          Resources.UnloadUnusedAssets();
         }
 
-        material = UnityEngine.Object.Instantiate(Resources.Load<Material>(MATERIAL_RESOURCES_PATH + name));
+        //NOTE(Brian): For materials "Instantiate" is not needed.
+        material = new Material(Resources.Load<Material>(MATERIAL_RESOURCES_PATH + name));
         material.name = name; // Unity instantiates the material as 'ShapeMaterial(Clone)' for example.
 
         material.enableInstancing = true;

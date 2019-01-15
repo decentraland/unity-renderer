@@ -2,7 +2,8 @@
     "name": "MainScripts",
     "references": [
         "UnityGLTFAssembly",
-        "PluginScripts"
+        "PluginScripts",
+        "WebSocketSharp"
     ],
     "optionalUnityReferences": [],
     "includePlatforms": [],
