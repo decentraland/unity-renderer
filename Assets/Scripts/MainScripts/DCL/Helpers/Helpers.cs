@@ -31,7 +31,6 @@ namespace DCL.Helpers
               Mathf.Floor(vector.z / ParcelSettings.PARCEL_SIZE)
             );
         }
-
         public static T GetOrCreateComponent<T>(GameObject gameObject) where T : UnityEngine.Component
         {
             T component = gameObject.GetComponent<T>();
