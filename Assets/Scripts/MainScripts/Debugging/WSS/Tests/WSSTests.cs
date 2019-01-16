@@ -31,7 +31,7 @@ namespace Tests
 
       Assert.IsTrue(wssController.isServerReady);
 
-      using (WebSocketSharp.WebSocket ws = new WebSocket("ws://localhost/dcl"))
+      using (WebSocketSharp.WebSocket ws = new WebSocket("ws://localhost:5000/dcl"))
       {
         try
         {
