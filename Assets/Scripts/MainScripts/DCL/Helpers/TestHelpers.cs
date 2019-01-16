@@ -4,111 +4,128 @@ using DCL.Controllers;
 using Newtonsoft.Json;
 using DCL.Components;
 
-namespace DCL.Helpers {
-  public static class TestHelpers {
-    public static string CreateSceneMessage(string sceneId, string method, string payload) {
-      return $"{sceneId}\t{method}\t{payload}\n";
-    }
-
-    public static void InstantiateEntityWithShape(ParcelScene scene, string entityId, DCL.Models.CLASS_ID classId, Vector3 position, string remoteSrc = "", bool hasCollision = false) {
-      scene.CreateEntity(entityId);
-
-      scene.UpdateEntityComponent(JsonUtility.ToJson(new DCL.Models.UpdateEntityComponentMessage {
-        entityId = entityId,
-        name = "shape",
-        classId = (int)classId,
-        json = JsonConvert.SerializeObject(new {
-          tag = "test tag",
-          src = remoteSrc,
-          withCollisions = hasCollision
-        })
-      }));
-
-      scene.UpdateEntityComponent(JsonUtility.ToJson(new DCL.Models.UpdateEntityComponentMessage {
-        entityId = entityId,
-        name = "transform",
-        classId = (int)DCL.Models.CLASS_ID.TRANSFORM,
-        json = JsonConvert.SerializeObject(new {
-          position = position,
-          scale = new Vector3(1, 1, 1),
-          rotation = new {
-            x = 0,
-            y = 0,
-            z = 0,
-            w = 1
-          }
-        })
-      }));
-    }
-
-    public static void InstantiateEntityWithMaterial(ParcelScene scene, string entityId, Vector3 position, BasicMaterial.Model basicMaterial, string materialComponentID = "a-material") {
-      InstantiateEntityWithShape(scene, entityId, DCL.Models.CLASS_ID.BOX_SHAPE, position);
-
-      scene.ComponentCreated(JsonUtility.ToJson(new DCL.Models.ComponentCreatedMessage {
-        classId = (int)DCL.Models.CLASS_ID.BASIC_MATERIAL,
-        id = materialComponentID,
-        name = "material"
-      }));
-
-      scene.ComponentUpdated(JsonUtility.ToJson(new DCL.Models.ComponentUpdatedMessage {
-        id = materialComponentID,
-        json = JsonUtility.ToJson(basicMaterial)
-      }));
-
-      scene.AttachEntityComponent(JsonUtility.ToJson(new DCL.Models.AttachEntityComponentMessage {
-        entityId = entityId,
-        id = materialComponentID,
-        name = "material"
-      }));
-    }
-
-    public static void InstantiateEntityWithMaterial(ParcelScene scene, string entityId, Vector3 position, PBRMaterial.Model pbrMaterial, string materialComponentID = "a-material") {
-      InstantiateEntityWithShape(scene, entityId, DCL.Models.CLASS_ID.BOX_SHAPE, position);
-
-      scene.ComponentCreated(JsonUtility.ToJson(new DCL.Models.ComponentCreatedMessage {
-        classId = (int)DCL.Models.CLASS_ID.PBR_MATERIAL,
-        id = materialComponentID,
-        name = "material"
-      }));
-
-      scene.ComponentUpdated(JsonUtility.ToJson(new DCL.Models.ComponentUpdatedMessage {
-        id = materialComponentID,
-        json = JsonUtility.ToJson(pbrMaterial)
-      }));
-
-      scene.AttachEntityComponent(JsonUtility.ToJson(new DCL.Models.AttachEntityComponentMessage {
-        entityId = entityId,
-        id = materialComponentID,
-        name = "material"
-      }));
-    }
-
-    public static SceneController InitializeSceneController(bool usesWebServer = false)
+namespace DCL.Helpers
+{
+    public static class TestHelpers
     {
-      var sceneController = Object.FindObjectOfType<SceneController>();
-
-      if (sceneController == null)
-      {
-        var GO = new GameObject();
-        sceneController = GO.AddComponent<SceneController>();
-      }
-
-      if (usesWebServer)
-      {
-        var webServer = sceneController.GetComponent<WebServerComponent>();
-        if (webServer != null)
+        public static string CreateSceneMessage(string sceneId, string method, string payload)
         {
-          webServer.Restart(); // We restart the server to avoid issues with consecutive tests using it
+            return $"{sceneId}\t{method}\t{payload}\n";
         }
-        else
+
+        public static void InstantiateEntityWithShape(ParcelScene scene, string entityId, DCL.Models.CLASS_ID classId, Vector3 position, string remoteSrc = "", bool hasCollision = false)
         {
-          sceneController.gameObject.AddComponent<WebServerComponent>();
+            scene.CreateEntity(entityId);
+
+            scene.UpdateEntityComponent(JsonUtility.ToJson(new DCL.Models.UpdateEntityComponentMessage
+            {
+                entityId = entityId,
+                name = "shape",
+                classId = (int)classId,
+                json = JsonConvert.SerializeObject(new
+                {
+                    tag = "test tag",
+                    src = remoteSrc,
+                    withCollisions = hasCollision
+                })
+            }));
+
+            scene.UpdateEntityComponent(JsonUtility.ToJson(new DCL.Models.UpdateEntityComponentMessage
+            {
+                entityId = entityId,
+                name = "transform",
+                classId = (int)DCL.Models.CLASS_ID.TRANSFORM,
+                json = JsonConvert.SerializeObject(new
+                {
+                    position = position,
+                    scale = new Vector3(1, 1, 1),
+                    rotation = new
+                    {
+                        x = 0,
+                        y = 0,
+                        z = 0,
+                        w = 1
+                    }
+                })
+            }));
         }
-      }
 
-      sceneController.UnloadAllScenes();
+        public static void InstantiateEntityWithMaterial(ParcelScene scene, string entityId, Vector3 position, BasicMaterial.Model basicMaterial, string materialComponentID = "a-material")
+        {
+            InstantiateEntityWithShape(scene, entityId, DCL.Models.CLASS_ID.BOX_SHAPE, position);
 
-      return sceneController;
+            scene.ComponentCreated(JsonUtility.ToJson(new DCL.Models.ComponentCreatedMessage
+            {
+                classId = (int)DCL.Models.CLASS_ID.BASIC_MATERIAL,
+                id = materialComponentID,
+                name = "material"
+            }));
+
+            scene.ComponentUpdated(JsonUtility.ToJson(new DCL.Models.ComponentUpdatedMessage
+            {
+                id = materialComponentID,
+                json = JsonUtility.ToJson(basicMaterial)
+            }));
+
+            scene.AttachEntityComponent(JsonUtility.ToJson(new DCL.Models.AttachEntityComponentMessage
+            {
+                entityId = entityId,
+                id = materialComponentID,
+                name = "material"
+            }));
+        }
+
+        public static void InstantiateEntityWithMaterial(ParcelScene scene, string entityId, Vector3 position, PBRMaterial.Model pbrMaterial, string materialComponentID = "a-material")
+        {
+            InstantiateEntityWithShape(scene, entityId, DCL.Models.CLASS_ID.BOX_SHAPE, position);
+
+            scene.ComponentCreated(JsonUtility.ToJson(new DCL.Models.ComponentCreatedMessage
+            {
+                classId = (int)DCL.Models.CLASS_ID.PBR_MATERIAL,
+                id = materialComponentID,
+                name = "material"
+            }));
+
+            scene.ComponentUpdated(JsonUtility.ToJson(new DCL.Models.ComponentUpdatedMessage
+            {
+                id = materialComponentID,
+                json = JsonUtility.ToJson(pbrMaterial)
+            }));
+
+            scene.AttachEntityComponent(JsonUtility.ToJson(new DCL.Models.AttachEntityComponentMessage
+            {
+                entityId = entityId,
+                id = materialComponentID,
+                name = "material"
+            }));
+        }
+
+        public static SceneController InitializeSceneController(bool usesWebServer = false)
+        {
+            var sceneController = Object.FindObjectOfType<SceneController>();
+
+            if (sceneController == null)
+            {
+                var GO = new GameObject();
+                sceneController = GO.AddComponent<SceneController>();
+            }
+
+            if (usesWebServer)
+            {
+                var webServer = sceneController.GetComponent<WebServerComponent>();
+                if (webServer != null)
+                {
+                    webServer.Restart(); // We restart the server to avoid issues with consecutive tests using it
+                }
+                else
+                {
+                    sceneController.gameObject.AddComponent<WebServerComponent>();
+                }
+            }
+
+            sceneController.UnloadAllScenes();
+
+            return sceneController;
+        }
     }
-  }
 }
