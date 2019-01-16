@@ -76,7 +76,7 @@ namespace DCL
     {
 #if UNITY_EDITOR
       WSSController.debugMode = debugModeEnabled;
-      ws = new WebSocketServer("ws://localhost");
+      ws = new WebSocketServer("ws://localhost:5000");
       ws.AddWebSocketService<DCLWebSocketService>("/dcl");
 
       ws.Start();
