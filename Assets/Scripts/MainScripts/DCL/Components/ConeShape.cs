@@ -4,44 +4,51 @@ using System.Collections.Generic;
 using DCL.Helpers;
 using UnityEngine;
 
-namespace DCL.Components {
-
-  public class ConeShape : BaseShape {
-
-    [System.Serializable]
-    public class Model
+namespace DCL.Components
+{
+    public class ConeShape : BaseShape
     {
-      public float radiusTop = 0f;        // Cone/Cylinder
-      public float radiusBottom = 1f;     // Cone/Cylinder
-      public float segmentsHeight = 1f;   // Cone/Cylinder
-      public float segmentsRadial = 36f;  // Cone/Cylinder
-      public bool openEnded = false;      // Cone/Cylinder
-      public float? radius;               // Cone/Cylinder
-      public float arc = 360f;            // Cone/Cylinder
+        [System.Serializable]
+        public class Model
+        {
+            public float radiusTop = 0f;        // Cone/Cylinder
+            public float radiusBottom = 1f;     // Cone/Cylinder
+            public float segmentsHeight = 1f;   // Cone/Cylinder
+            public float segmentsRadial = 36f;  // Cone/Cylinder
+            public bool openEnded = false;      // Cone/Cylinder
+            public float? radius;               // Cone/Cylinder
+            public float arc = 360f;            // Cone/Cylinder
+            public bool withCollisions;
+        }
+
+        Model model = new Model();
+
+        protected override void Awake()
+        {
+            base.Awake();
+
+            if (meshFilter == null)
+            {
+                meshFilter = meshGameObject.AddComponent<MeshFilter>();
+            }
+
+            if (meshRenderer == null)
+            {
+                meshRenderer = meshGameObject.AddComponent<MeshRenderer>();
+            }
+
+            meshRenderer.sharedMaterial = Resources.Load<Material>("Materials/Default");
+        }
+
+        public override IEnumerator ApplyChanges(string newJson)
+        {
+            model = Helpers.Utils.SafeFromJson<Model>(newJson); // We don't use FromJsonOverwrite() to default the model properties on a partial json.
+
+            meshFilter.mesh = PrimitiveMeshBuilder.BuildCone(50, model.radiusTop, model.radiusBottom, 2f, 0f, true, false);
+
+            ConfigureCollision(model.withCollisions);
+
+            return null;
+        }
     }
-
-    Model model = new Model();
-
-    protected override void Awake() {
-      base.Awake();
-
-      if (meshFilter == null) {
-        meshFilter = meshGameObject.AddComponent<MeshFilter>();
-      }
-
-      if (meshRenderer == null) {
-        meshRenderer = meshGameObject.AddComponent<MeshRenderer>();
-      }
-
-      meshRenderer.sharedMaterial = Resources.Load<Material>("Materials/Default");
-    }
-
-    public override IEnumerator ApplyChanges(string newJson) {
-
-      JsonUtility.FromJsonOverwrite(newJson, model);
-      meshFilter.mesh = PrimitiveMeshBuilder.BuildCone(50, model.radiusTop, model.radiusBottom, 2f, 0f, true, false);
-
-      return null;
-    }
-  }
 }
