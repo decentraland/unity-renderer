@@ -10,7 +10,7 @@ namespace DCL.Helpers {
       return $"{sceneId}\t{method}\t{payload}\n";
     }
 
-    public static void InstantiateEntityWithShape(ParcelScene scene, string entityId, DCL.Models.CLASS_ID classId, Vector3 position, string remoteSrc = "") {
+    public static void InstantiateEntityWithShape(ParcelScene scene, string entityId, DCL.Models.CLASS_ID classId, Vector3 position, string remoteSrc = "", bool hasCollision = false) {
       scene.CreateEntity(entityId);
 
       scene.UpdateEntityComponent(JsonUtility.ToJson(new DCL.Models.UpdateEntityComponentMessage {
@@ -18,7 +18,9 @@ namespace DCL.Helpers {
         name = "shape",
         classId = (int)classId,
         json = JsonConvert.SerializeObject(new {
-          src = remoteSrc
+          tag = "test tag",
+          src = remoteSrc,
+          withCollisions = hasCollision
         })
       }));
 
