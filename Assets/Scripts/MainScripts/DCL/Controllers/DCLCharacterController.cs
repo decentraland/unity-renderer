@@ -4,8 +4,8 @@ using UnityEngine;
 public class DCLCharacterController : MonoBehaviour
 {
     [Header("Aiming")]
-    public float aimingHorizontalSpeed = 100f;
-    public float aimingVerticalSpeed = 100f;
+    public float aimingHorizontalSpeed = 300f;
+    public float aimingVerticalSpeed = 300f;
     public float aimingVerticalMinimumAngle = -89f;
     public float aimingVerticalMaximumAngle = 89f;
 
@@ -15,8 +15,7 @@ public class DCLCharacterController : MonoBehaviour
     public float jumpForce = 20f;
 
     [Header("Collisions")]
-    public Transform raycastsParent;
-    public LayerMask collidingLayers;
+    public LayerMask groundLayers;
 
     new Transform camera;
     new Rigidbody rigidbody;
@@ -47,9 +46,17 @@ public class DCLCharacterController : MonoBehaviour
         camera = GetComponentInChildren<Camera>().transform;
     }
 
-    void SetPosition(string positionVector)
+    public void SetPosition(string positionVector)
     {
-        transform.position = JsonUtility.FromJson<Vector3>(positionVector);
+        var newPosition = JsonUtility.FromJson<Vector3>(positionVector);
+
+        // failsafe in case something teleports the player below ground collisions
+        if (newPosition.y < 1f)
+        {
+            newPosition.y = 3f;
+        }
+
+        transform.position = newPosition;
 
         ReportMovement();
     }
@@ -68,15 +75,12 @@ public class DCLCharacterController : MonoBehaviour
 
             velocity.y = 0;
         }
-        else
+        else if (previouslyGrounded && !isJumping)
         {
-            velocity.y += gravity;
-
-            if (previouslyGrounded && !isJumping)
-            {
-                lastUngroundedTime = Time.time;
-            }
+            lastUngroundedTime = Time.time;
         }
+
+        velocity.y += gravity;
 
         if (!Cursor.visible)
         {
@@ -122,10 +126,11 @@ public class DCLCharacterController : MonoBehaviour
             }
         }
 
-        if (velocity != Vector3.zero)
-        {
-            characterController.Move(velocity * Time.deltaTime);
+        Vector3 previousPosition = transform.position;
+        characterController.Move(velocity * Time.deltaTime);
 
+        if (previousPosition != transform.position)
+        {
             ReportMovement();
         }
     }
@@ -146,8 +151,8 @@ public class DCLCharacterController : MonoBehaviour
         aimingInput.x = Input.GetAxis("Mouse X");
         aimingInput.y = Input.GetAxis("Mouse Y");
 
-        aimingHorizontalAngle += Mathf.Clamp(aimingInput.x, -1, 1) * aimingHorizontalSpeed;
-        aimingVerticalAngle += Mathf.Clamp(aimingInput.y, -1, 1) * aimingVerticalSpeed;
+        aimingHorizontalAngle += Mathf.Clamp(aimingInput.x, -1, 1) * aimingHorizontalSpeed * Time.deltaTime;
+        aimingVerticalAngle += Mathf.Clamp(aimingInput.y, -1, 1) * aimingVerticalSpeed * Time.deltaTime;
 
         // Limit vertical aiming angle
         aimingVerticalAngle = Mathf.Clamp(aimingVerticalAngle, aimingVerticalMinimumAngle, aimingVerticalMaximumAngle);
@@ -163,7 +168,7 @@ public class DCLCharacterController : MonoBehaviour
 
     bool IsGrounded()
     {
-        return characterController.isGrounded || Physics.Raycast(transform.position, Vector3.down, collider.bounds.extents.y + 0.1f, collidingLayers);
+        return characterController.isGrounded || Physics.Raycast(transform.position, Vector3.down, collider.bounds.extents.y + 0.1f, groundLayers);
     }
 
     void ReportMovement()
