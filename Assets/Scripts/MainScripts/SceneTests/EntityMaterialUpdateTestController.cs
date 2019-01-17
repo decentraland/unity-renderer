@@ -1,7 +1,5 @@
 using DCL.Helpers;
-using Newtonsoft.Json;
 using UnityEngine;
-using System.Collections.Generic;
 
 public class EntityMaterialUpdateTestController : MonoBehaviour
 {
@@ -42,7 +40,7 @@ public class EntityMaterialUpdateTestController : MonoBehaviour
         // Re-assign last PBR material to new entity
         TestHelpers.InstantiateEntityWithShape(scene, "4", DCL.Models.CLASS_ID.BOX_SHAPE, new Vector3(5, 1, 2));
 
-        scene.AttachEntityComponent(JsonUtility.ToJson(new DCL.Models.AttachEntityComponentMessage
+        scene.SharedComponentAttach(JsonUtility.ToJson(new DCL.Models.SharedComponentAttachMessage
         {
             entityId = "4",
             id = materialID,
@@ -50,7 +48,7 @@ public class EntityMaterialUpdateTestController : MonoBehaviour
         }));
 
         // Update material attached to 2 entities, adding albedoColor
-        scene.ComponentUpdated(JsonUtility.ToJson(new DCL.Models.ComponentUpdatedMessage
+        scene.SharedComponentUpdate(JsonUtility.ToJson(new DCL.Models.SharedComponentUpdateMessage
         {
             id = materialID,
             json = JsonUtility.ToJson(new DCL.Components.PBRMaterial.Model

@@ -1,4 +1,4 @@
-﻿using DCL.Helpers;
+using DCL.Helpers;
 using DCL.Models;
 using Newtonsoft.Json;
 using UnityEngine;
@@ -52,7 +52,7 @@ public class IntegrationTestController : MonoBehaviour
         );
 
         // 1st message
-        scene.UpdateEntityComponent(JsonConvert.SerializeObject(new UpdateEntityComponentMessage
+        scene.EntityComponentCreate(JsonConvert.SerializeObject(new EntityComponentCreateMessage
         {
             entityId = entityId,
             name = "shape",
@@ -60,7 +60,7 @@ public class IntegrationTestController : MonoBehaviour
             json = "{}"
         }));
 
-        scene.UpdateEntityComponent(JsonConvert.SerializeObject(new UpdateEntityComponentMessage
+        scene.EntityComponentCreate(JsonConvert.SerializeObject(new EntityComponentCreateMessage
         {
             entityId = entityId,
             name = "transform",
@@ -69,7 +69,7 @@ public class IntegrationTestController : MonoBehaviour
         }));
 
         // 2nd message
-        scene.UpdateEntityComponent(JsonConvert.SerializeObject(new UpdateEntityComponentMessage
+        scene.EntityComponentCreate(JsonConvert.SerializeObject(new EntityComponentCreateMessage
         {
             entityId = entityId,
             name = "shape",
@@ -77,7 +77,7 @@ public class IntegrationTestController : MonoBehaviour
             json = "{}"
         }));
 
-        scene.UpdateEntityComponent(JsonConvert.SerializeObject(new UpdateEntityComponentMessage
+        scene.EntityComponentCreate(JsonConvert.SerializeObject(new EntityComponentCreateMessage
         {
             entityId = entityId,
             name = "transform",
@@ -104,7 +104,7 @@ public class IntegrationTestController : MonoBehaviour
 
         {
             // 3nd message, the box should remain the same, including references
-            scene.UpdateEntityComponent(JsonConvert.SerializeObject(new UpdateEntityComponentMessage
+            scene.EntityComponentCreate(JsonConvert.SerializeObject(new EntityComponentCreateMessage
             {
                 entityId = entityId,
                 name = "shape",
@@ -120,7 +120,7 @@ public class IntegrationTestController : MonoBehaviour
 
         {
             // 3nd message, the box should remain the same, including references
-            scene.UpdateEntityComponent(JsonConvert.SerializeObject(new UpdateEntityComponentMessage
+            scene.EntityComponentCreate(JsonConvert.SerializeObject(new EntityComponentCreateMessage
             {
                 entityId = entityId,
                 name = "shape",
@@ -136,7 +136,7 @@ public class IntegrationTestController : MonoBehaviour
 
         {
             // 4nd message, the box should be disposed and the new mesh should be a sphere
-            scene.UpdateEntityComponent(JsonConvert.SerializeObject(new UpdateEntityComponentMessage
+            scene.EntityComponentCreate(JsonConvert.SerializeObject(new EntityComponentCreateMessage
             {
                 entityId = entityId,
                 name = "shape",

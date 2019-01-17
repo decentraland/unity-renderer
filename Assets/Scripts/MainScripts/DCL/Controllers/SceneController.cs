@@ -1,12 +1,10 @@
-using System;
-using System.Collections;
-using System.Collections.Generic;
-using System.Linq;
-using UnityGLTF;
-using UnityEngine;
+using DCL.Controllers;
 using DCL.Interface;
 using DCL.Models;
-using DCL.Controllers;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using UnityEngine;
 
 public class SceneController : MonoBehaviour
 {
@@ -159,7 +157,9 @@ public class SceneController : MonoBehaviour
                     var separatorPosition = chunks[i].IndexOf('\t');
 
                     if (separatorPosition == -1)
+                    {
                         continue;
+                    }
 
                     var sceneId = chunks[i].Substring(0, separatorPosition);
                     var message = chunks[i].Substring(separatorPosition + 1);
@@ -185,14 +185,17 @@ public class SceneController : MonoBehaviour
             switch (method)
             {
                 case "CreateEntity": scene.CreateEntity(payload); break;
-                case "RemoveEntity": scene.RemoveEntity(payload); break;
                 case "SetEntityParent": scene.SetEntityParent(payload); break;
-                case "UpdateEntityComponent": scene.UpdateEntityComponent(payload); break;
-                case "AttachEntityComponent": scene.AttachEntityComponent(payload); break;
-                case "ComponentCreated": scene.ComponentCreated(payload); break;
-                case "ComponentDisposed": scene.ComponentDisposed(payload); break;
-                case "ComponentRemoved": scene.ComponentRemoved(payload); break;
-                case "ComponentUpdated": scene.ComponentUpdated(payload); break;
+
+                //NOTE(Brian): EntityComponent messages
+                case "UpdateEntityComponent": scene.EntityComponentCreate(payload); break;
+                case "ComponentRemoved": scene.EntityComponentRemove(payload); break;
+
+                //NOTE(Brian): SharedComponent messages
+                case "AttachEntityComponent": scene.SharedComponentAttach(payload); break;
+                case "ComponentCreated": scene.SharedComponentCreate(payload); break;
+                case "ComponentDisposed": scene.SharedComponentDispose(payload); break;
+                case "ComponentUpdated": scene.SharedComponentUpdate(payload); break;
                 default:
                     throw new Exception($"Unkwnown method {method}");
             }
