@@ -219,17 +219,17 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d1d0821bf5c3e3f47ba67e483803236d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  aimingHorizontalSpeed: 20
-  aimingVerticalSpeed: 20
+  aimingHorizontalSpeed: 300
+  aimingVerticalSpeed: 300
   aimingVerticalMinimumAngle: -89
   aimingVerticalMaximumAngle: 89
   gravity: -1
   movementSpeed: 10
   jumpForce: 20
-  raycastsParent: {fileID: 0}
-  collidingLayers:
+  groundLayers:
     serializedVersion: 2
     m_Bits: 1
+  isGrounded: 0
 --- !u!143 &113901082
 CharacterController:
   m_ObjectHideFlags: 0
