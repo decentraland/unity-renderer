@@ -115,7 +115,7 @@ namespace Tests
 
             Assert.IsNull(scene.entities[entityId].gameObject.GetComponentInChildren<UnityGLTF.InstantiatedGLTFObject>(), "Since the shape hasn't been updated yet, the 'GLTFScene' child object shouldn't exist");
 
-            scene.UpdateEntityComponent(JsonUtility.ToJson(new DCL.Models.UpdateEntityComponentMessage
+            scene.EntityComponentCreate(JsonUtility.ToJson(new DCL.Models.EntityComponentCreateMessage
             {
                 entityId = entityId,
                 name = "shape",
@@ -141,7 +141,7 @@ namespace Tests
                 }
             });
 
-            scene.UpdateEntityComponent(JsonUtility.ToJson(new DCL.Models.UpdateEntityComponentMessage
+            scene.EntityComponentCreate(JsonUtility.ToJson(new DCL.Models.EntityComponentCreateMessage
             {
                 entityId = entityId,
                 name = "animation",
@@ -216,7 +216,7 @@ namespace Tests
 
                 Assert.IsTrue(!string.IsNullOrEmpty(rawJSON));
 
-                scene.UpdateEntityComponent(rawJSON);
+                scene.EntityComponentCreate(rawJSON);
 
                 Assert.AreNotEqual(originalTransformPosition, entityObject.gameObject.transform.position);
                 Assert.AreEqual(position, entityObject.gameObject.transform.position);
@@ -238,7 +238,7 @@ namespace Tests
                 Quaternion rotationQuaternion = Quaternion.Euler(101, 51, -91);
                 Vector3 scale = new Vector3(1.7f, 3.7f, -0.7f);
 
-                string rawJSON = JsonConvert.SerializeObject(new UpdateEntityComponentMessage
+                string rawJSON = JsonConvert.SerializeObject(new EntityComponentCreateMessage
                 {
                     entityId = entityId,
                     name = "transform",
@@ -259,7 +259,7 @@ namespace Tests
 
                 Assert.IsTrue(!string.IsNullOrEmpty(rawJSON));
 
-                scene.UpdateEntityComponent(rawJSON);
+                scene.EntityComponentCreate(rawJSON);
 
                 Assert.AreNotEqual(originalTransformPosition, entityObject.gameObject.transform.position);
                 Assert.AreEqual(position, entityObject.gameObject.transform.position);
@@ -280,7 +280,7 @@ namespace Tests
                 Quaternion rotationQuaternion = Quaternion.Euler(0, 0, 0);
                 Vector3 scale = new Vector3(1, 1, 1);
 
-                string rawJSON = JsonUtility.ToJson(new ComponentRemovedMessage
+                string rawJSON = JsonUtility.ToJson(new EntityComponentRemoveMessage
                 {
                     entityId = entityId,
                     name = "transform"
@@ -288,7 +288,7 @@ namespace Tests
 
                 Assert.IsTrue(!string.IsNullOrEmpty(rawJSON));
 
-                scene.ComponentRemoved(rawJSON);
+                scene.EntityComponentRemove(rawJSON);
 
                 yield return new WaitForSeconds(0.01f);
 
@@ -410,7 +410,7 @@ namespace Tests
 
           Assert.IsNull(scene.entities[entityId].gameObject.GetComponentInChildren<MeshRenderer>(), "Since the shape hasn't been updated yet, the child renderer shouldn't exist");
 
-          scene.UpdateEntityComponent(JsonUtility.ToJson(new DCL.Models.UpdateEntityComponentMessage {
+          scene.EntityComponentCreate(JsonUtility.ToJson(new DCL.Models.EntityComponentCreateMessage {
             entityId = entityId,
             name = "shape",
             classId = (int)DCL.Models.CLASS_ID.OBJ_SHAPE,
@@ -443,7 +443,7 @@ namespace Tests
 
             Assert.IsNull(scene.entities[entityId].gameObject.GetComponentInChildren<UnityGLTF.InstantiatedGLTFObject>(), "Since the shape hasn't been updated yet, the 'GLTFScene' child object shouldn't exist");
 
-            scene.UpdateEntityComponent(JsonUtility.ToJson(new DCL.Models.UpdateEntityComponentMessage
+            scene.EntityComponentCreate(JsonUtility.ToJson(new DCL.Models.EntityComponentCreateMessage
             {
                 entityId = entityId,
                 name = "shape",
@@ -475,7 +475,7 @@ namespace Tests
             scene.CreateEntity(entityId);
 
             // Set its shape as a BOX
-            scene.UpdateEntityComponent(JsonUtility.ToJson(new DCL.Models.UpdateEntityComponentMessage
+            scene.EntityComponentCreate(JsonUtility.ToJson(new DCL.Models.EntityComponentCreateMessage
             {
                 entityId = entityId,
                 name = "shape",
@@ -489,7 +489,7 @@ namespace Tests
             Assert.IsNotNull(meshGameObject);
 
             // Update its shape to a GLTF
-            scene.UpdateEntityComponent(JsonUtility.ToJson(new DCL.Models.UpdateEntityComponentMessage
+            scene.EntityComponentCreate(JsonUtility.ToJson(new DCL.Models.EntityComponentCreateMessage
             {
                 entityId = entityId,
                 name = "shape",
@@ -521,7 +521,7 @@ namespace Tests
             scene.CreateEntity(entityId);
 
             // Set its shape as a BOX
-            scene.UpdateEntityComponent(JsonUtility.ToJson(new DCL.Models.UpdateEntityComponentMessage
+            scene.EntityComponentCreate(JsonUtility.ToJson(new DCL.Models.EntityComponentCreateMessage
             {
                 entityId = entityId,
                 name = "shape",
@@ -535,7 +535,7 @@ namespace Tests
             Assert.AreEqual("DCL Box Instance", meshName);
 
             // Update its shape to a cylinder
-            scene.UpdateEntityComponent(JsonUtility.ToJson(new DCL.Models.UpdateEntityComponentMessage
+            scene.EntityComponentCreate(JsonUtility.ToJson(new DCL.Models.EntityComponentCreateMessage
             {
                 entityId = entityId,
                 name = "shape",
@@ -551,7 +551,7 @@ namespace Tests
             Assert.IsNotNull(meshGameObject.GetComponent<MeshFilter>(), "After updating the entity shape to a basic shape, the mesh filter shouldn't be removed from the object");
 
             // Update its shape to a GLTF
-            scene.UpdateEntityComponent(JsonUtility.ToJson(new DCL.Models.UpdateEntityComponentMessage
+            scene.EntityComponentCreate(JsonUtility.ToJson(new DCL.Models.EntityComponentCreateMessage
             {
                 entityId = entityId,
                 name = "shape",
@@ -570,7 +570,7 @@ namespace Tests
             Assert.IsNotNull(scene.entities[entityId].gameObject.GetComponentInChildren<UnityGLTF.InstantiatedGLTFObject>(), "'GLTFScene' child object with 'InstantiatedGLTF' component should exist if the GLTF was loaded correctly");
 
             // Update its shape to a sphere
-            scene.UpdateEntityComponent(JsonUtility.ToJson(new DCL.Models.UpdateEntityComponentMessage
+            scene.EntityComponentCreate(JsonUtility.ToJson(new DCL.Models.EntityComponentCreateMessage
             {
                 entityId = entityId,
                 name = "shape",
@@ -601,7 +601,7 @@ namespace Tests
             string entityId = "1";
             scene.CreateEntity(entityId);
 
-            scene.UpdateEntityComponent(JsonUtility.ToJson(new DCL.Models.UpdateEntityComponentMessage
+            scene.EntityComponentCreate(JsonUtility.ToJson(new DCL.Models.EntityComponentCreateMessage
             {
                 entityId = entityId,
                 name = "shape",
@@ -616,7 +616,7 @@ namespace Tests
 
             Assert.IsNotNull(scene.entities[entityId].gameObject.GetComponentInChildren<GLTFComponent>().loadedAssetRootGameObject.transform.Find("Lantern"));
 
-            scene.UpdateEntityComponent(JsonUtility.ToJson(new DCL.Models.UpdateEntityComponentMessage
+            scene.EntityComponentCreate(JsonUtility.ToJson(new DCL.Models.EntityComponentCreateMessage
             {
                 entityId = entityId,
                 name = "shape",
@@ -647,7 +647,7 @@ namespace Tests
             string entityId = "1";
             scene.CreateEntity(entityId);
 
-            scene.UpdateEntityComponent(JsonUtility.ToJson(new DCL.Models.UpdateEntityComponentMessage
+            scene.EntityComponentCreate(JsonUtility.ToJson(new DCL.Models.EntityComponentCreateMessage
             {
                 entityId = entityId,
                 name = "shape",
@@ -658,7 +658,7 @@ namespace Tests
                 })
             }));
 
-            scene.UpdateEntityComponent(JsonUtility.ToJson(new DCL.Models.UpdateEntityComponentMessage
+            scene.EntityComponentCreate(JsonUtility.ToJson(new DCL.Models.EntityComponentCreateMessage
             {
                 entityId = entityId,
                 name = "shape",
@@ -687,7 +687,7 @@ namespace Tests
             string entityId = "1";
             scene.CreateEntity(entityId);
 
-            scene.UpdateEntityComponent(JsonUtility.ToJson(new DCL.Models.UpdateEntityComponentMessage
+            scene.EntityComponentCreate(JsonUtility.ToJson(new DCL.Models.EntityComponentCreateMessage
             {
                 entityId = entityId,
                 name = "transform",
@@ -707,7 +707,7 @@ namespace Tests
             }));
 
             // Update shape without collision
-            scene.UpdateEntityComponent(JsonUtility.ToJson(new DCL.Models.UpdateEntityComponentMessage
+            scene.EntityComponentCreate(JsonUtility.ToJson(new DCL.Models.EntityComponentCreateMessage
             {
                 entityId = entityId,
                 name = "shape",
@@ -725,7 +725,7 @@ namespace Tests
             Assert.IsNull(scene.entities[entityId].gameObject.GetComponentInChildren<MeshCollider>());
 
             // Update shape with collision
-            scene.UpdateEntityComponent(JsonUtility.ToJson(new DCL.Models.UpdateEntityComponentMessage
+            scene.EntityComponentCreate(JsonUtility.ToJson(new DCL.Models.EntityComponentCreateMessage
             {
                 entityId = entityId,
                 name = "shape",
@@ -743,7 +743,7 @@ namespace Tests
             Assert.IsNotNull(scene.entities[entityId].gameObject.GetComponentInChildren<MeshCollider>());
 
             // Update shape without collision
-            scene.UpdateEntityComponent(JsonUtility.ToJson(new DCL.Models.UpdateEntityComponentMessage
+            scene.EntityComponentCreate(JsonUtility.ToJson(new DCL.Models.EntityComponentCreateMessage
             {
                 entityId = entityId,
                 name = "shape",
@@ -761,7 +761,7 @@ namespace Tests
             Assert.IsFalse(scene.entities[entityId].gameObject.GetComponentInChildren<MeshCollider>().enabled);
 
             // Update shape with collision
-            scene.UpdateEntityComponent(JsonUtility.ToJson(new DCL.Models.UpdateEntityComponentMessage
+            scene.EntityComponentCreate(JsonUtility.ToJson(new DCL.Models.EntityComponentCreateMessage
             {
                 entityId = entityId,
                 name = "shape",
@@ -794,7 +794,7 @@ namespace Tests
             string entityId = "1";
             scene.CreateEntity(entityId);
 
-            scene.UpdateEntityComponent(JsonUtility.ToJson(new DCL.Models.UpdateEntityComponentMessage
+            scene.EntityComponentCreate(JsonUtility.ToJson(new DCL.Models.EntityComponentCreateMessage
             {
                 entityId = entityId,
                 name = "shape",
@@ -827,7 +827,7 @@ namespace Tests
 
             yield return new WaitForSeconds(0.01f);
 
-            scene.UpdateEntityComponent(JsonUtility.ToJson(new DCL.Models.UpdateEntityComponentMessage
+            scene.EntityComponentCreate(JsonUtility.ToJson(new DCL.Models.EntityComponentCreateMessage
             {
                 entityId = entityId,
                 name = "onclick",
@@ -864,7 +864,7 @@ namespace Tests
 
             Assert.IsNull(scene.entities[entityId].gameObject.GetComponentInChildren<UnityGLTF.InstantiatedGLTFObject>(), "Since the shape hasn't been updated yet, the 'GLTFScene' child object shouldn't exist");
 
-            scene.UpdateEntityComponent(JsonUtility.ToJson(new DCL.Models.UpdateEntityComponentMessage
+            scene.EntityComponentCreate(JsonUtility.ToJson(new DCL.Models.EntityComponentCreateMessage
             {
                 entityId = entityId,
                 name = "shape",
@@ -879,7 +879,7 @@ namespace Tests
 
             Assert.IsNotNull(scene.entities[entityId].gameObject.GetComponentInChildren<UnityGLTF.InstantiatedGLTFObject>(), "'GLTFScene' child object with 'InstantiatedGLTF' component should exist if the GLTF was loaded correctly");
 
-            scene.UpdateEntityComponent(JsonUtility.ToJson(new DCL.Models.UpdateEntityComponentMessage
+            scene.EntityComponentCreate(JsonUtility.ToJson(new DCL.Models.EntityComponentCreateMessage
             {
                 entityId = entityId,
                 name = "onclick",
@@ -918,7 +918,7 @@ namespace Tests
 
             Assert.IsNull(scene.entities[entityId].gameObject.GetComponentInChildren<UnityGLTF.InstantiatedGLTFObject>(), "Since the shape hasn't been updated yet, the 'GLTFScene' child object shouldn't exist");
 
-            scene.UpdateEntityComponent(JsonUtility.ToJson(new DCL.Models.UpdateEntityComponentMessage
+            scene.EntityComponentCreate(JsonUtility.ToJson(new DCL.Models.EntityComponentCreateMessage
             {
                 entityId = entityId,
                 name = "shape",
@@ -929,7 +929,7 @@ namespace Tests
                 })
             }));
 
-            scene.UpdateEntityComponent(JsonUtility.ToJson(new DCL.Models.UpdateEntityComponentMessage
+            scene.EntityComponentCreate(JsonUtility.ToJson(new DCL.Models.EntityComponentCreateMessage
             {
                 entityId = entityId,
                 name = "onclick",
@@ -968,7 +968,7 @@ namespace Tests
             string entityId = "1";
             scene.CreateEntity(entityId);
 
-            scene.UpdateEntityComponent(JsonUtility.ToJson(new DCL.Models.UpdateEntityComponentMessage
+            scene.EntityComponentCreate(JsonUtility.ToJson(new DCL.Models.EntityComponentCreateMessage
             {
                 entityId = entityId,
                 name = "onclick",
@@ -982,7 +982,7 @@ namespace Tests
 
             Assert.IsNull(scene.entities[entityId].gameObject.transform.Find("OnClickCollider"), "the OnClickCollider object shouldn't exist until a shape is added");
 
-            scene.UpdateEntityComponent(JsonUtility.ToJson(new DCL.Models.UpdateEntityComponentMessage
+            scene.EntityComponentCreate(JsonUtility.ToJson(new DCL.Models.EntityComponentCreateMessage
             {
                 entityId = entityId,
                 name = "shape",
@@ -1105,7 +1105,7 @@ namespace Tests
             // Update material
             string textureURL = "http://127.0.0.1:9991/Images/atlas.png";
 
-            scene.ComponentUpdated(JsonUtility.ToJson(new DCL.Models.ComponentUpdatedMessage
+            scene.SharedComponentUpdate(JsonUtility.ToJson(new DCL.Models.SharedComponentUpdateMessage
             {
                 id = materialID,
                 json = JsonUtility.ToJson(new DCL.Components.PBRMaterial.Model
@@ -1183,7 +1183,7 @@ namespace Tests
             string thirdEntityID = "3";
 
             TestHelpers.InstantiateEntityWithShape(scene, thirdEntityID, DCL.Models.CLASS_ID.BOX_SHAPE, Vector3.zero);
-            scene.AttachEntityComponent(JsonUtility.ToJson(new DCL.Models.AttachEntityComponentMessage
+            scene.SharedComponentAttach(JsonUtility.ToJson(new DCL.Models.SharedComponentAttachMessage
             {
                 entityId = thirdEntityID,
                 id = firstMaterialID,
@@ -1232,7 +1232,7 @@ namespace Tests
             string thirdEntityID = "3";
 
             TestHelpers.InstantiateEntityWithShape(scene, thirdEntityID, DCL.Models.CLASS_ID.BOX_SHAPE, Vector3.zero);
-            scene.AttachEntityComponent(JsonUtility.ToJson(new DCL.Models.AttachEntityComponentMessage
+            scene.SharedComponentAttach(JsonUtility.ToJson(new DCL.Models.SharedComponentAttachMessage
             {
                 entityId = thirdEntityID,
                 id = firstMaterialID,
@@ -1251,7 +1251,7 @@ namespace Tests
             Assert.AreEqual("0.66", secondRenderer.sharedMaterial.GetFloat("_Metallic").ToString());
 
             // Update material properties
-            scene.ComponentUpdated(JsonUtility.ToJson(new DCL.Models.ComponentUpdatedMessage
+            scene.SharedComponentUpdate(JsonUtility.ToJson(new DCL.Models.SharedComponentUpdateMessage
             {
                 id = firstMaterialID,
                 json = JsonUtility.ToJson(new DCL.Components.PBRMaterial.Model
@@ -1326,7 +1326,7 @@ namespace Tests
 
             // Create 2nd entity and attach same material to it
             TestHelpers.InstantiateEntityWithShape(scene, secondEntityId, DCL.Models.CLASS_ID.BOX_SHAPE, Vector3.zero);
-            scene.AttachEntityComponent(JsonUtility.ToJson(new DCL.Models.AttachEntityComponentMessage
+            scene.SharedComponentAttach(JsonUtility.ToJson(new DCL.Models.SharedComponentAttachMessage
             {
                 entityId = secondEntityId,
                 id = materialID,
@@ -1351,7 +1351,7 @@ namespace Tests
             }
 
             // Dispose material
-            scene.ComponentDisposed(JsonUtility.ToJson(new DCL.Models.AttachEntityComponentMessage
+            scene.SharedComponentDispose(JsonUtility.ToJson(new DCL.Models.SharedComponentDisposeMessage
             {
                 id = materialID
             }));
@@ -1405,7 +1405,7 @@ namespace Tests
             // Update material
             string textureURL = "http://127.0.0.1:9991/Images/atlas.png";
 
-            scene.ComponentUpdated(JsonUtility.ToJson(new DCL.Models.ComponentUpdatedMessage
+            scene.SharedComponentUpdate(JsonUtility.ToJson(new DCL.Models.SharedComponentUpdateMessage
             {
                 id = materialID,
                 json = JsonUtility.ToJson(new DCL.Components.BasicMaterial.Model

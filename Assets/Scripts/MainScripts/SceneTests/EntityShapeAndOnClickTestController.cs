@@ -74,7 +74,7 @@ public class EntityShapeAndOnClickTestController : MonoBehaviour
 
         Debug.Log("animJson = " + animJson);
 
-        scene.UpdateEntityComponent(JsonUtility.ToJson(new DCL.Models.UpdateEntityComponentMessage
+        scene.EntityComponentCreate(JsonUtility.ToJson(new DCL.Models.EntityComponentCreateMessage
         {
             entityId = "8",
             name = "animation",
@@ -87,7 +87,7 @@ public class EntityShapeAndOnClickTestController : MonoBehaviour
 
     void AddOnClickComponent(ParcelScene scene, string entityID)
     {
-        scene.UpdateEntityComponent(JsonUtility.ToJson(new DCL.Models.UpdateEntityComponentMessage
+        scene.EntityComponentCreate(JsonUtility.ToJson(new DCL.Models.EntityComponentCreateMessage
         {
             entityId = entityID,
             name = "onclick",

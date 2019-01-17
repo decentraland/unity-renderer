@@ -1,10 +1,9 @@
+using DCL.Components;
+using DCL.Configuration;
+using DCL.Models;
+using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
-using System.Collections.Generic;
-using DCL.Helpers;
-using DCL.Models;
-using DCL.Configuration;
-using DCL.Components;
 
 namespace DCL.Controllers
 {
@@ -136,13 +135,16 @@ namespace DCL.Controllers
         /**
           * This method is called when we need to attach a disposable component to the entity
           */
-        public void AttachEntityComponent(string json)
+        public void SharedComponentAttach(string json)
         {
-            var parsedJson = JsonUtility.FromJson<AttachEntityComponentMessage>(json);
+            var parsedJson = JsonUtility.FromJson<SharedComponentAttachMessage>(json);
 
             DecentralandEntity decentralandEntity = GetEntityForUpdate(parsedJson.entityId);
 
-            if (decentralandEntity == null) return;
+            if (decentralandEntity == null)
+            {
+                return;
+            }
 
             BaseDisposable disposableComponent;
 
@@ -152,12 +154,15 @@ namespace DCL.Controllers
             }
         }
 
-        public void UpdateEntityComponent(string json)
+        public void EntityComponentCreate(string json)
         {
-            var parsedJson = JsonUtility.FromJson<UpdateEntityComponentMessage>(json);
+            var parsedJson = JsonUtility.FromJson<EntityComponentCreateMessage>(json);
 
             DecentralandEntity decentralandEntity = GetEntityForUpdate(parsedJson.entityId);
-            if (decentralandEntity == null) return;
+            if (decentralandEntity == null)
+            {
+                return;
+            }
 
             switch ((CLASS_ID)parsedJson.classId)
             {
@@ -249,9 +254,9 @@ namespace DCL.Controllers
             }
         }
 
-        public void ComponentCreated(string json)
+        public void SharedComponentCreate(string json)
         {
-            var parsedJson = JsonUtility.FromJson<ComponentCreatedMessage>(json);
+            var parsedJson = JsonUtility.FromJson<SharedComponentCreateMessage>(json);
 
             BaseDisposable disposableComponent;
             if (disposableComponents.TryGetValue(parsedJson.id, out disposableComponent))
@@ -281,9 +286,9 @@ namespace DCL.Controllers
             }
         }
 
-        public void ComponentDisposed(string json)
+        public void SharedComponentDispose(string json)
         {
-            var parsedJson = JsonUtility.FromJson<ComponentDisposedMessage>(json);
+            var parsedJson = JsonUtility.FromJson<SharedComponentDisposeMessage>(json);
 
             BaseDisposable disposableComponent;
 
@@ -298,12 +303,15 @@ namespace DCL.Controllers
             }
         }
 
-        public void ComponentRemoved(string json)
+        public void EntityComponentRemove(string json)
         {
-            var parsedJson = JsonUtility.FromJson<ComponentRemovedMessage>(json);
+            var parsedJson = JsonUtility.FromJson<EntityComponentRemoveMessage>(json);
 
             DecentralandEntity decentralandEntity = GetEntityForUpdate(parsedJson.entityId);
-            if (decentralandEntity == null) return;
+            if (decentralandEntity == null)
+            {
+                return;
+            }
 
             var components = decentralandEntity.gameObject.GetComponents<DCL.Components.UpdateableComponent>();
 
@@ -320,9 +328,9 @@ namespace DCL.Controllers
             }
         }
 
-        public void ComponentUpdated(string json)
+        public void SharedComponentUpdate(string json)
         {
-            var parsedJson = JsonUtility.FromJson<ComponentUpdatedMessage>(json);
+            var parsedJson = JsonUtility.FromJson<SharedComponentUpdateMessage>(json);
 
             BaseDisposable disposableComponent;
 

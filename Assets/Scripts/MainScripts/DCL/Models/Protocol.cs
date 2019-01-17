@@ -1,6 +1,3 @@
-using System.Collections;
-using System.Collections.Generic;
-
 namespace DCL.Models
 {
     public enum CLASS_ID
@@ -40,7 +37,7 @@ namespace DCL.Models
     }
 
     [System.Serializable]
-    public class AttachEntityComponentMessage
+    public class SharedComponentAttachMessage
     {
         /// id of the affected entity
         public string entityId;
@@ -51,7 +48,7 @@ namespace DCL.Models
     }
 
     [System.Serializable]
-    public class UpdateEntityComponentMessage
+    public class EntityComponentCreateMessage
     {
         /// id of the affected entity
         public string entityId;
@@ -73,7 +70,7 @@ namespace DCL.Models
     }
 
     [System.Serializable]
-    public class ComponentRemovedMessage
+    public class EntityComponentRemoveMessage
     {
         /// id of the affected entity
         public string entityId;
@@ -82,7 +79,7 @@ namespace DCL.Models
     }
 
     [System.Serializable]
-    public class ComponentUpdatedMessage
+    public class SharedComponentUpdateMessage
     {
         /// ID of the disposable component
         public string id;
@@ -90,14 +87,14 @@ namespace DCL.Models
     }
 
     [System.Serializable]
-    public class ComponentDisposedMessage
+    public class SharedComponentDisposeMessage
     {
         /// ID of the disposable component to dispose
         public string id;
     }
 
     [System.Serializable]
-    public class ComponentCreatedMessage
+    public class SharedComponentCreateMessage
     {
         /// ID of the disposable component
         public string id;

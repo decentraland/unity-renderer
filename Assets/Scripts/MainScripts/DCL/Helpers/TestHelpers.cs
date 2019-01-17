@@ -17,7 +17,7 @@ namespace DCL.Helpers
         {
             scene.CreateEntity(entityId);
 
-            scene.UpdateEntityComponent(JsonUtility.ToJson(new DCL.Models.UpdateEntityComponentMessage
+            scene.EntityComponentCreate(JsonUtility.ToJson(new DCL.Models.EntityComponentCreateMessage
             {
                 entityId = entityId,
                 name = "shape",
@@ -30,7 +30,7 @@ namespace DCL.Helpers
                 })
             }));
 
-            scene.UpdateEntityComponent(JsonUtility.ToJson(new DCL.Models.UpdateEntityComponentMessage
+            scene.EntityComponentCreate(JsonUtility.ToJson(new DCL.Models.EntityComponentCreateMessage
             {
                 entityId = entityId,
                 name = "transform",
@@ -54,20 +54,20 @@ namespace DCL.Helpers
         {
             InstantiateEntityWithShape(scene, entityId, DCL.Models.CLASS_ID.BOX_SHAPE, position);
 
-            scene.ComponentCreated(JsonUtility.ToJson(new DCL.Models.ComponentCreatedMessage
+            scene.SharedComponentCreate(JsonUtility.ToJson(new DCL.Models.SharedComponentCreateMessage
             {
                 classId = (int)DCL.Models.CLASS_ID.BASIC_MATERIAL,
                 id = materialComponentID,
                 name = "material"
             }));
 
-            scene.ComponentUpdated(JsonUtility.ToJson(new DCL.Models.ComponentUpdatedMessage
+            scene.SharedComponentUpdate(JsonUtility.ToJson(new DCL.Models.SharedComponentUpdateMessage
             {
                 id = materialComponentID,
                 json = JsonUtility.ToJson(basicMaterial)
             }));
 
-            scene.AttachEntityComponent(JsonUtility.ToJson(new DCL.Models.AttachEntityComponentMessage
+            scene.SharedComponentAttach(JsonUtility.ToJson(new DCL.Models.SharedComponentAttachMessage
             {
                 entityId = entityId,
                 id = materialComponentID,
@@ -79,20 +79,20 @@ namespace DCL.Helpers
         {
             InstantiateEntityWithShape(scene, entityId, DCL.Models.CLASS_ID.BOX_SHAPE, position);
 
-            scene.ComponentCreated(JsonUtility.ToJson(new DCL.Models.ComponentCreatedMessage
+            scene.SharedComponentCreate(JsonUtility.ToJson(new DCL.Models.SharedComponentCreateMessage
             {
                 classId = (int)DCL.Models.CLASS_ID.PBR_MATERIAL,
                 id = materialComponentID,
                 name = "material"
             }));
 
-            scene.ComponentUpdated(JsonUtility.ToJson(new DCL.Models.ComponentUpdatedMessage
+            scene.SharedComponentUpdate(JsonUtility.ToJson(new DCL.Models.SharedComponentUpdateMessage
             {
                 id = materialComponentID,
                 json = JsonUtility.ToJson(pbrMaterial)
             }));
 
-            scene.AttachEntityComponent(JsonUtility.ToJson(new DCL.Models.AttachEntityComponentMessage
+            scene.SharedComponentAttach(JsonUtility.ToJson(new DCL.Models.SharedComponentAttachMessage
             {
                 entityId = entityId,
                 id = materialComponentID,
