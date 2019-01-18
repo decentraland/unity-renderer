@@ -19,7 +19,6 @@ namespace DCL.Components
         public abstract void UpdateFromJSON(string json);
     }
 
-
     public abstract class BaseComponent : UpdateableComponent
     {
         public ParcelScene scene;

@@ -22,8 +22,7 @@ public class IntegrationTestController : MonoBehaviour
             new Vector2Int(3, 3),
             new Vector2Int(3, 4)
           },
-          baseUrl = "http://localhost:9991/local-ipfs/contents/",
-          owner = "0x0f5d2fb29fb7d3cfee444a200298f468908cc942"
+          baseUrl = "http://localhost:9991/local-ipfs/contents/"
         }
       }
         };
@@ -36,7 +35,11 @@ public class IntegrationTestController : MonoBehaviour
         var scene = sceneController.loadedScenes["the-loaded-scene"];
 
         sceneController.SendSceneMessage(
-          TestHelpers.CreateSceneMessage("the-loaded-scene", "CreateEntity", entityId)
+          TestHelpers.CreateSceneMessage("the-loaded-scene", "CreateEntity",
+          JsonConvert.SerializeObject(new CreateEntityMessage
+          {
+              id = entityId
+          }))
         );
 
         sceneController.SendSceneMessage(
@@ -51,14 +54,10 @@ public class IntegrationTestController : MonoBehaviour
           )
         );
 
+        Assert.IsTrue(scene.entities[entityId].meshGameObject == null, "meshGameObject must be null");
+
         // 1st message
-        scene.EntityComponentCreate(JsonConvert.SerializeObject(new EntityComponentCreateMessage
-        {
-            entityId = entityId,
-            name = "shape",
-            classId = (int)CLASS_ID.BOX_SHAPE,
-            json = "{}"
-        }));
+        TestHelpers.CreateAndSetShape(scene, entityId, CLASS_ID.BOX_SHAPE, "{}");
 
         scene.EntityComponentCreate(JsonConvert.SerializeObject(new EntityComponentCreateMessage
         {
@@ -69,13 +68,7 @@ public class IntegrationTestController : MonoBehaviour
         }));
 
         // 2nd message
-        scene.EntityComponentCreate(JsonConvert.SerializeObject(new EntityComponentCreateMessage
-        {
-            entityId = entityId,
-            name = "shape",
-            classId = (int)CLASS_ID.BOX_SHAPE,
-            json = "{}"
-        }));
+        TestHelpers.CreateAndSetShape(scene, entityId, CLASS_ID.BOX_SHAPE, "{}");
 
         scene.EntityComponentCreate(JsonConvert.SerializeObject(new EntityComponentCreateMessage
         {
@@ -98,56 +91,38 @@ public class IntegrationTestController : MonoBehaviour
         // because basePosition is at 3,3
         Assert.AreEqual(cube.gameObject.transform.position, new Vector3(36, 0, 35));
 
-        var mesh = cube.gameObject.GetComponentInChildren<MeshFilter>().mesh;
+        var mesh = cube.meshGameObject.GetComponentInChildren<MeshFilter>().mesh;
 
         Assert.AreEqual(mesh.name, "DCL Box Instance");
 
         {
             // 3nd message, the box should remain the same, including references
-            scene.EntityComponentCreate(JsonConvert.SerializeObject(new EntityComponentCreateMessage
-            {
-                entityId = entityId,
-                name = "shape",
-                classId = (int)CLASS_ID.BOX_SHAPE,
-                json = "{}"
-            }));
+            TestHelpers.CreateAndSetShape(scene, entityId, CLASS_ID.BOX_SHAPE, "{}");
 
-            var newMesh = cube.gameObject.GetComponentInChildren<MeshFilter>().mesh;
+            var newMesh = cube.meshGameObject.GetComponentInChildren<MeshFilter>().mesh;
 
             Assert.AreEqual(newMesh.name, "DCL Box Instance");
-            Assert.IsTrue(mesh == newMesh, "A new instance of the box was created");
+            Assert.AreEqual(mesh.name, newMesh.name, "A new instance of the box was created");
         }
 
         {
             // 3nd message, the box should remain the same, including references
-            scene.EntityComponentCreate(JsonConvert.SerializeObject(new EntityComponentCreateMessage
-            {
-                entityId = entityId,
-                name = "shape",
-                classId = (int)CLASS_ID.BOX_SHAPE,
-                json = "{}"
-            }));
+            TestHelpers.CreateAndSetShape(scene, entityId, CLASS_ID.BOX_SHAPE, "{}");
 
-            var newMesh = cube.gameObject.GetComponentInChildren<MeshFilter>().mesh;
+            var newMesh = cube.meshGameObject.GetComponentInChildren<MeshFilter>().mesh;
 
             Assert.AreEqual(newMesh.name, "DCL Box Instance");
-            Assert.IsTrue(mesh == newMesh, "A new instance of the box was created");
+            Assert.AreEqual(mesh.name, newMesh.name, "A new instance of the box was created");
         }
 
         {
             // 4nd message, the box should be disposed and the new mesh should be a sphere
-            scene.EntityComponentCreate(JsonConvert.SerializeObject(new EntityComponentCreateMessage
-            {
-                entityId = entityId,
-                name = "shape",
-                classId = (int)CLASS_ID.SPHERE_SHAPE,
-                json = "{\"withCollisions\":false,\"billboard\":0,\"visible\":true,\"tag\":\"sphere\"}"
-            }));
+            TestHelpers.CreateAndSetShape(scene, entityId, CLASS_ID.SPHERE_SHAPE, "{\"withCollisions\":false,\"billboard\":0,\"visible\":true,\"tag\":\"sphere\"}");
 
-            var newMesh = cube.gameObject.GetComponentInChildren<MeshFilter>().mesh;
+            var newMesh = cube.meshGameObject.GetComponentInChildren<MeshFilter>().mesh;
 
             Assert.AreEqual(newMesh.name, "DCL Sphere Instance");
-            Assert.IsTrue(mesh != newMesh, "The mesh instance remains the same, a new instance should have been created.");
+            Assert.AreNotEqual(mesh.name, newMesh.name, "The mesh instance remains the same, a new instance should have been created.");
         }
 
         // TODO: test ComponentRemoved

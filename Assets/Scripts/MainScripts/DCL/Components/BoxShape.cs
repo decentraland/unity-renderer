@@ -1,51 +1,31 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using DCL.Controllers;
 using DCL.Helpers;
+using DCL.Models;
 using UnityEngine;
 
 namespace DCL.Components
 {
-    public class BoxShape : BaseShape
+
+    [System.Serializable]
+    public class BoxModel
     {
-        [System.Serializable]
-        public class Model
+        public bool withCollisions;
+    }
+
+    public class BoxShape : BaseParametrizedShape<BoxModel>
+    {
+        public BoxShape(ParcelScene scene) : base(scene) { }
+
+        public static Mesh cubeMesh = PrimitiveMeshBuilder.BuildCube(1f);
+
+        public override Mesh GenerateGeometry()
         {
-            public string tag;
-            public bool withCollisions;
+            return cubeMesh;
         }
 
-        Model model = new Model();
-
-        protected override void Awake()
-        {
-            base.Awake();
-
-            if (meshFilter == null)
-            {
-                meshFilter = meshGameObject.AddComponent<MeshFilter>();
-            }
-
-            if (meshRenderer == null)
-            {
-                meshRenderer = meshGameObject.AddComponent<MeshRenderer>();
-            }
-
-            meshRenderer.sharedMaterial = Resources.Load<Material>("Materials/Default");
-        }
-
-        public override IEnumerator ApplyChanges(string newJson)
-        {
-            model = Helpers.Utils.SafeFromJson<Model>(newJson); // We don't use FromJsonOverwrite() to default the model properties on a partial json.
-
-            if (model == null)
-                Debug.Log("box shape Model is null");
-
-            meshFilter.mesh = PrimitiveMeshBuilder.BuildCube(1f);
-
-            ConfigureCollision(model.withCollisions);
-
-            return null;
-        }
+        public override bool HasCollisions() => this.model.withCollisions;
     }
 }

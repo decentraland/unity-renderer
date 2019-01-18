@@ -1,87 +1,61 @@
+using DCL.Controllers;
 using DCL.Helpers;
 using System.Collections;
 using UnityEngine;
 
 namespace DCL.Components
 {
-    public class OBJShape : BaseShape
+    public class OBJLoader : LoadableMonoBehavior
     {
-        [System.Serializable]
-        public class Model
-        {
-            public string src;
-        }
-
-        Model model = new Model();
         DynamicOBJLoaderController objLoaderComponent;
 
-        protected new void Awake()
+        void Awake()
         {
-            base.Awake();
-
-            if (meshFilter)
-            {
-#if UNITY_EDITOR
-                DestroyImmediate(meshFilter);
-#else
-        Destroy(meshFilter);
-#endif
-            }
-
-            if (meshRenderer)
-            {
-#if UNITY_EDITOR
-                DestroyImmediate(meshRenderer);
-#else
-        Destroy(meshRenderer);
-#endif
-            }
-
-            objLoaderComponent = Helpers.Utils.GetOrCreateComponent<DynamicOBJLoaderController>(meshGameObject);
-            objLoaderComponent.OnFinishedLoadingAsset += OnFinishedLoadingAsset;
+            objLoaderComponent = Helpers.Utils.GetOrCreateComponent<DynamicOBJLoaderController>(gameObject);
+            objLoaderComponent.OnFinishedLoadingAsset += CallOnComponentUpdated;
         }
 
-        public override IEnumerator ApplyChanges(string newJson)
+        public override void Load(string src)
         {
-            model = Helpers.Utils.SafeFromJson<Model>(newJson); // We don't use FromJsonOverwrite() to default the model properties on a partial json.
-
-            if (!string.IsNullOrEmpty(model.src))
+            if (!string.IsNullOrEmpty(src))
             {
-                objLoaderComponent.LoadAsset(model.src, true);
+                objLoaderComponent.LoadAsset(src, true);
 
                 if (objLoaderComponent.loadingPlaceholder == null)
                 {
-                    objLoaderComponent.loadingPlaceholder = AttachPlaceholderRendererGameObject(gameObject.transform);
+                    objLoaderComponent.loadingPlaceholder = Helpers.Utils.AttachPlaceholderRendererGameObject(gameObject.transform);
                 }
                 else
                 {
                     objLoaderComponent.loadingPlaceholder.SetActive(true);
                 }
             }
-
-            return null;
         }
 
-        public override IEnumerator UpdateComponent(string newJson)
+        void CallOnComponentUpdated()
         {
-            yield return ApplyChanges(newJson);
-        }
-
-        void OnFinishedLoadingAsset()
-        {
-            ConfigureCollision(true, true);
-
             if (entity.OnComponentUpdated != null)
                 entity.OnComponentUpdated.Invoke(this);
+
+            if (entity.OnShapeUpdated != null)
+                entity.OnShapeUpdated.Invoke();
+
+            BaseShape.ConfigureCollision(entity, true, true);
         }
 
-        protected override void OnDestroy()
+        void OnDestroy()
         {
-            objLoaderComponent.OnFinishedLoadingAsset -= OnFinishedLoadingAsset;
-
-            base.OnDestroy();
+            objLoaderComponent.OnFinishedLoadingAsset -= CallOnComponentUpdated;
 
             Destroy(objLoaderComponent);
+        }
+    }
+
+
+    public class OBJShape : BaseLoadableShape<OBJLoader>
+    {
+        public OBJShape(ParcelScene scene) : base(scene)
+        {
         }
     }
 }

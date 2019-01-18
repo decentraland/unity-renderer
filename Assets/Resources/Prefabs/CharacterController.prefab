@@ -229,7 +229,6 @@ MonoBehaviour:
   groundLayers:
     serializedVersion: 2
     m_Bits: 1
-  isGrounded: 0
 --- !u!143 &113901082
 CharacterController:
   m_ObjectHideFlags: 0

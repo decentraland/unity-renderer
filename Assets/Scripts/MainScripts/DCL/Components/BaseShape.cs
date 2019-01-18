@@ -1,91 +1,62 @@
-using System;
+﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using DCL.Controllers;
 using DCL.Helpers;
+using DCL.Models;
 using UnityEngine;
 
 namespace DCL.Components
 {
-    public abstract class BaseShape : BaseComponent
+
+
+    public abstract class BaseShape : BaseDisposable
     {
         public override string componentName => "shape";
-
-        [HideInInspector] public GameObject meshGameObject;
-
-        protected MeshFilter meshFilter;
-        protected MeshRenderer meshRenderer;
-
         const string MESH_GAMEOBJECT_NAME = "Mesh";
 
-        protected virtual void Awake()
+        public BaseShape(ParcelScene scene) : base(scene)
         {
-            // clear out previous shape if it exists
-            // it would be better to check for a pre-existent shape component with GetComponent<>() but we can't while using the "Template" pattern on these classes
-            var updateableComponents = GetComponents<UpdateableComponent>();
-            for (int i = 0; i < updateableComponents.Length; i++)
-            {
-                if (updateableComponents[i] == this) continue;
-
-                if (Utils.IsShapeComponent(updateableComponents[i]))
-                {
-                    meshGameObject = transform.Find(MESH_GAMEOBJECT_NAME).gameObject; // it would be better to get the meshGameObject reference from the previous shape, but we can't while using the "Template" pattern on these classes
-
-                    Destroy(updateableComponents[i]);
-
-                    break; // There won't be more than 1 shape component at a time so we escape the loop after destroying it.
-                }
-            }
-
-            if (meshGameObject == null)
-            {
-                meshGameObject = new GameObject();
-                meshGameObject.name = MESH_GAMEOBJECT_NAME;
-                meshGameObject.transform.SetParent(transform);
-                meshGameObject.transform.localPosition = Vector3.zero;
-            }
-
-            meshFilter = meshGameObject.GetComponent<MeshFilter>();
-            meshRenderer = meshGameObject.GetComponent<MeshRenderer>();
         }
 
-        protected virtual void OnDestroy()
+        void EnsureMeshGameObject(DecentralandEntity entity)
         {
-            /*
-             * Destruction is not immediate, so we check if a NEW non-gltf-non-obj-shape has already been added to the gameobject,
-             * in that case we avoid destroying the meshGameObject (gltf/obj don't use the meshGameObject), as it will be reused.
-             */
-            var updateableComponents = GetComponents<UpdateableComponent>();
-            for (int i = 0; i < updateableComponents.Length; i++)
+            if (entity.meshGameObject == null)
             {
-                if (updateableComponents[i] == this) continue;
-
-                if (Utils.IsShapeComponent(updateableComponents[i])) return;
+                entity.meshGameObject = new GameObject();
+                entity.meshGameObject.name = MESH_GAMEOBJECT_NAME;
+                entity.meshGameObject.transform.SetParent(entity.gameObject.transform);
+                entity.meshGameObject.transform.localPosition = Vector3.zero;
             }
 
-            if (meshGameObject != null)
+            if (entity.currentShape != null)
             {
-                Destroy(meshGameObject);
+                entity.currentShape.DetachFrom(entity);
             }
+
+            entity.currentShape = this;
         }
 
-        public GameObject AttachPlaceholderRendererGameObject(UnityEngine.Transform targetTransform)
+        public override void AttachTo(DecentralandEntity entity)
         {
-            var placeholderRenderer = GameObject.CreatePrimitive(PrimitiveType.Cube).GetComponent<MeshRenderer>();
-
-            placeholderRenderer.material = Resources.Load<Material>("Materials/AssetLoading");
-            placeholderRenderer.transform.SetParent(targetTransform);
-            placeholderRenderer.transform.localPosition = Vector3.zero;
-            placeholderRenderer.name = "PlaceholderRenderer";
-
-            return placeholderRenderer.gameObject;
+            // We do this instead of OnAttach += because it is required to run before every OnAfter listener
+            EnsureMeshGameObject(entity);
+            base.AttachTo(entity);
         }
 
-        protected void ConfigureCollision(bool hasCollision, bool filterByColliderName = false)
+        public override void DetachFrom(DecentralandEntity entity)
         {
-            if (meshGameObject == null) return;
+            base.DetachFrom(entity);
+            // We do this instead of OnDetach += because it is required to run after every OnDetach listener
+            entity.currentShape = null;
+        }
+
+        public static void ConfigureCollision(DecentralandEntity entity, bool hasCollision, bool filterByColliderName = false)
+        {
+            if (entity.meshGameObject == null) return;
 
             MeshCollider collider;
-            MeshFilter[] meshFilters = meshGameObject.GetComponentsInChildren<MeshFilter>();
+            MeshFilter[] meshFilters = entity.meshGameObject.GetComponentsInChildren<MeshFilter>();
 
             for (int i = 0; i < meshFilters.Length; i++)
             {
@@ -121,4 +92,6 @@ namespace DCL.Components
             }
         }
     }
+
 }
+

@@ -3,6 +3,7 @@ using DCL.Configuration;
 using DCL.Controllers;
 using Newtonsoft.Json;
 using DCL.Components;
+using DCL.Models;
 
 namespace DCL.Helpers
 {
@@ -13,22 +14,37 @@ namespace DCL.Helpers
             return $"{sceneId}\t{method}\t{payload}\n";
         }
 
-        public static void InstantiateEntityWithShape(ParcelScene scene, string entityId, DCL.Models.CLASS_ID classId, Vector3 position, string remoteSrc = "", bool hasCollision = false)
+        public static void CreateSceneEntity(ParcelScene scene, string id)
         {
-            scene.CreateEntity(entityId);
-
-            scene.EntityComponentCreate(JsonUtility.ToJson(new DCL.Models.EntityComponentCreateMessage
+            scene.CreateEntity(JsonUtility.ToJson(new DCL.Models.CreateEntityMessage
             {
-                entityId = entityId,
-                name = "shape",
-                classId = (int)classId,
-                json = JsonConvert.SerializeObject(new
-                {
-                    tag = "test tag",
-                    src = remoteSrc,
-                    withCollisions = hasCollision
-                })
+                id = id
             }));
+        }
+
+        public static void RemoveSceneEntity(ParcelScene scene, string id)
+        {
+            scene.RemoveEntity(JsonUtility.ToJson(new DCL.Models.RemoveEntityMessage
+            {
+                id = id
+            }));
+        }
+
+        public static void InstantiateEntityWithShape(ParcelScene scene, string entityId, DCL.Models.CLASS_ID classId, Vector3 position, string remoteSrc = "")
+        {
+            CreateSceneEntity(scene, entityId);
+
+            if (string.IsNullOrEmpty(remoteSrc))
+            {
+                CreateAndSetShape(scene, entityId, classId, "{}");
+            }
+            else
+            {
+                CreateAndSetShape(scene, entityId, classId, JsonConvert.SerializeObject(new
+                {
+                    src = remoteSrc
+                }));
+            }
 
             scene.EntityComponentCreate(JsonUtility.ToJson(new DCL.Models.EntityComponentCreateMessage
             {
@@ -99,6 +115,50 @@ namespace DCL.Helpers
                 name = "material"
             }));
         }
+
+
+        public static string CreateAndSetShape(ParcelScene scene, string entityId, CLASS_ID classId, string model)
+        {
+            string componentId = "shape-" + (int)classId + "-" + entityId;
+
+            scene.SharedComponentCreate(JsonUtility.ToJson(new DCL.Models.SharedComponentCreateMessage
+            {
+                classId = (int)classId,
+                id = componentId,
+                name = "shape"
+            }));
+
+            scene.SharedComponentUpdate(JsonUtility.ToJson(new DCL.Models.SharedComponentUpdateMessage
+            {
+                id = componentId,
+                json = model
+            }));
+
+            scene.SharedComponentAttach(JsonUtility.ToJson(new DCL.Models.SharedComponentAttachMessage
+            {
+                entityId = entityId,
+                id = componentId,
+                name = "shape"
+            }));
+
+            return componentId;
+        }
+
+        public static void AddOnClickComponent(ParcelScene scene, string entityID, string uuid)
+        {
+            scene.EntityComponentCreate(JsonUtility.ToJson(new DCL.Models.EntityComponentCreateMessage
+            {
+                entityId = entityID,
+                name = "onClick",
+                classId = (int)CLASS_ID.UUID_CALLBACK,
+                json = JsonUtility.ToJson(new DCL.Models.UUIDCallbackMessage
+                {
+                    type = "onClick",
+                    uuid = uuid
+                })
+            }));
+        }
+
 
         public static SceneController InitializeSceneController(bool usesWebServer = false)
         {

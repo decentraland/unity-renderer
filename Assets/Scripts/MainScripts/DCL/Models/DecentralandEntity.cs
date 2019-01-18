@@ -1,4 +1,6 @@
 using System;
+using System.Collections.Generic;
+using DCL.Components;
 using UnityEngine;
 
 namespace DCL.Models
@@ -9,7 +11,10 @@ namespace DCL.Models
         public GameObject gameObject;
         public string entityId;
 
-        public delegate void EntityComponentEventDelegate(DCL.Components.UpdateableComponent componentUpdated);
-        public EntityComponentEventDelegate OnComponentUpdated;
+        public System.Action<MonoBehaviour> OnComponentUpdated;
+        public System.Action OnShapeUpdated;
+
+        public GameObject meshGameObject;
+        public BaseShape currentShape;
     }
 }

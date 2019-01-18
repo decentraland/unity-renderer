@@ -21,7 +21,6 @@ namespace DCL.Models
             public Vector2Int basePosition;
             public Vector2Int[] parcels;
 
-            public string owner;
             public List<ContentMapping> contents;
             public string baseUrl;
 

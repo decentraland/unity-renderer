@@ -37,7 +37,7 @@ namespace Tests
             // Create first entity
             string entityId = "1";
 
-            scene.CreateEntity(entityId);
+            TestHelpers.CreateSceneEntity(scene, entityId);
             var entityObject = scene.entities[entityId];
 
             Assert.IsTrue(entityObject != null);
@@ -48,7 +48,7 @@ namespace Tests
             entityObject = null;
             entityId = "2";
 
-            scene.CreateEntity(entityId);
+            TestHelpers.CreateSceneEntity(scene, entityId);
             scene.entities.TryGetValue(entityId, out entityObject);
 
             Assert.IsTrue(entityObject != null);
@@ -73,8 +73,8 @@ namespace Tests
             string entityId = "2";
             string parentEntityId = "3";
 
-            scene.CreateEntity(entityId);
-            scene.CreateEntity(parentEntityId);
+            TestHelpers.CreateSceneEntity(scene, entityId);
+            TestHelpers.CreateSceneEntity(scene, parentEntityId);
 
             Assert.IsTrue(
               scene.entities[entityId].gameObject.transform.parent == scene.gameObject.transform,
@@ -111,19 +111,16 @@ namespace Tests
             yield return new WaitForEndOfFrame();
 
             string entityId = "1";
-            scene.CreateEntity(entityId);
+            scene.CreateEntity(JsonUtility.ToJson(new DCL.Models.CreateEntityMessage
+            {
+                id = entityId
+            }));
 
             Assert.IsNull(scene.entities[entityId].gameObject.GetComponentInChildren<UnityGLTF.InstantiatedGLTFObject>(), "Since the shape hasn't been updated yet, the 'GLTFScene' child object shouldn't exist");
 
-            scene.EntityComponentCreate(JsonUtility.ToJson(new DCL.Models.EntityComponentCreateMessage
+            TestHelpers.CreateAndSetShape(scene, entityId, DCL.Models.CLASS_ID.GLTF_SHAPE, JsonConvert.SerializeObject(new
             {
-                entityId = entityId,
-                name = "shape",
-                classId = (int)DCL.Models.CLASS_ID.GLTF_SHAPE,
-                json = JsonConvert.SerializeObject(new
-                {
-                    src = "http://127.0.0.1:9991/GLB/CesiumMan/CesiumMan.glb"
-                })
+                src = "http://127.0.0.1:9991/GLB/CesiumMan/CesiumMan.glb"
             }));
 
             string animJson = JsonConvert.SerializeObject(new DCLAnimator.Model
@@ -150,7 +147,7 @@ namespace Tests
             }));
 
 
-            DCL.Components.GLTFShape gltfShape = scene.entities[entityId].gameObject.GetComponentInChildren<GLTFShape>();
+            GLTFLoader gltfShape = scene.entities[entityId].gameObject.GetComponentInChildren<GLTFLoader>();
 
             yield return new WaitUntil(() => gltfShape.alreadyLoaded == true);
 
@@ -179,7 +176,7 @@ namespace Tests
             Assert.AreNotEqual(null, scene);
 
             string entityId = "1";
-            scene.CreateEntity(entityId);
+            TestHelpers.CreateSceneEntity(scene, entityId);
 
             var entityObject = scene.entities[entityId];
 
@@ -392,7 +389,7 @@ namespace Tests
         // TODO: Find a way to test the OBJ shape update, even though this test passes locally, the webserver fails to find the .obj when running in unity cloud build...
         /* [UnityTest]
         public IEnumerator OBJShapeUpdate() {
-          var sceneController = TestHelpers.InitializeSceneController(true);
+          var sceneController = InitializeSceneController(true);
 
           yield return new WaitForSeconds(0.01f);
 
@@ -402,7 +399,7 @@ namespace Tests
           yield return new WaitForSeconds(0.01f);
 
           string entityId = "1";
-          scene.CreateEntity(entityId);
+          TestHelpers.CreateSceneEntity(scene, entityId);
 
           Material placeholderLoadingMaterial = Resources.Load<Material>("Materials/AssetLoading");
 
@@ -426,6 +423,7 @@ namespace Tests
           Assert.AreNotSame(placeholderLoadingMaterial, childRenderer.sharedMaterial, "Since the shape has already been updated, the child renderer found shouldn't have the 'AssetLoading' placeholder material");
         } */
 
+
         [UnityTest]
         public IEnumerator GLTFShapeUpdate()
         {
@@ -439,19 +437,13 @@ namespace Tests
             yield return new WaitForSeconds(0.01f);
 
             string entityId = "1";
-            scene.CreateEntity(entityId);
+            TestHelpers.CreateSceneEntity(scene, entityId);
 
             Assert.IsNull(scene.entities[entityId].gameObject.GetComponentInChildren<UnityGLTF.InstantiatedGLTFObject>(), "Since the shape hasn't been updated yet, the 'GLTFScene' child object shouldn't exist");
 
-            scene.EntityComponentCreate(JsonUtility.ToJson(new DCL.Models.EntityComponentCreateMessage
+            TestHelpers.CreateAndSetShape(scene, entityId, DCL.Models.CLASS_ID.GLTF_SHAPE, JsonConvert.SerializeObject(new
             {
-                entityId = entityId,
-                name = "shape",
-                classId = (int)DCL.Models.CLASS_ID.GLTF_SHAPE,
-                json = JsonConvert.SerializeObject(new
-                {
-                    src = "http://127.0.0.1:9991/GLB/Lantern/Lantern.glb"
-                })
+                src = "http://127.0.0.1:9991/GLB/Lantern/Lantern.glb"
             }));
 
             yield return new WaitForSeconds(8f);
@@ -472,38 +464,27 @@ namespace Tests
             yield return new WaitForSeconds(0.01f);
 
             string entityId = "1";
-            scene.CreateEntity(entityId);
+            TestHelpers.CreateSceneEntity(scene, entityId);
 
             // Set its shape as a BOX
-            scene.EntityComponentCreate(JsonUtility.ToJson(new DCL.Models.EntityComponentCreateMessage
-            {
-                entityId = entityId,
-                name = "shape",
-                classId = (int)DCL.Models.CLASS_ID.BOX_SHAPE
-            }));
+            TestHelpers.CreateAndSetShape(scene, entityId, DCL.Models.CLASS_ID.BOX_SHAPE, "{}");
 
             yield return new WaitForSeconds(0.01f);
 
-            var meshGameObject = scene.entities[entityId].gameObject.transform.Find("Mesh");
+            var originalMeshGO = scene.entities[entityId].meshGameObject;
 
-            Assert.IsNotNull(meshGameObject);
+            Assert.IsTrue(originalMeshGO != null, "originalMeshGO is not null");
 
-            // Update its shape to a GLTF
-            scene.EntityComponentCreate(JsonUtility.ToJson(new DCL.Models.EntityComponentCreateMessage
-            {
-                entityId = entityId,
-                name = "shape",
-                classId = (int)DCL.Models.CLASS_ID.GLTF_SHAPE,
-                json = JsonConvert.SerializeObject(new
-                {
-                    src = "http://127.0.0.1:9991/GLB/Lantern/Lantern.glb"
-                })
-            }));
+            // Update its shape to a SPHERE
+            TestHelpers.CreateAndSetShape(scene, entityId, DCL.Models.CLASS_ID.SPHERE_SHAPE, "{}");
 
-            yield return new WaitForSeconds(8f);
+            var newMeshGO = scene.entities[entityId].meshGameObject;
 
-            Assert.AreSame(meshGameObject, scene.entities[entityId].gameObject.transform.Find("Mesh"));
+            Assert.IsTrue(originalMeshGO != null, "originalMeshGO is not null");
+            Assert.IsTrue(newMeshGO, "newMeshGO is not null");
+            Assert.AreSame(newMeshGO, originalMeshGO, "meshGameObject must be reused across different shapes");
         }
+
 
         [UnityTest]
         public IEnumerator PreExistentShapeUpdate()
@@ -518,71 +499,56 @@ namespace Tests
             yield return new WaitForSeconds(0.01f);
 
             string entityId = "1";
-            scene.CreateEntity(entityId);
+            TestHelpers.CreateSceneEntity(scene, entityId);
+            var entity = scene.entities[entityId];
 
+            Assert.IsTrue(entity.meshGameObject == null, "meshGameObject should be null");
             // Set its shape as a BOX
-            scene.EntityComponentCreate(JsonUtility.ToJson(new DCL.Models.EntityComponentCreateMessage
-            {
-                entityId = entityId,
-                name = "shape",
-                classId = (int)DCL.Models.CLASS_ID.BOX_SHAPE
-            }));
-
+            TestHelpers.CreateAndSetShape(scene, entityId, CLASS_ID.BOX_SHAPE, "{}");
             yield return new WaitForSeconds(0.01f);
 
-            var meshGameObject = scene.entities[entityId].gameObject.transform.Find("Mesh");
-            var meshName = meshGameObject.GetComponent<MeshFilter>().mesh.name;
+            var meshName = entity.meshGameObject.GetComponent<MeshFilter>().mesh.name;
             Assert.AreEqual("DCL Box Instance", meshName);
 
             // Update its shape to a cylinder
-            scene.EntityComponentCreate(JsonUtility.ToJson(new DCL.Models.EntityComponentCreateMessage
-            {
-                entityId = entityId,
-                name = "shape",
-                classId = (int)DCL.Models.CLASS_ID.CYLINDER_SHAPE
-            }));
-
+            TestHelpers.CreateAndSetShape(scene, entityId, CLASS_ID.CYLINDER_SHAPE, "{}");
             yield return new WaitForSeconds(0.01f);
 
-            Assert.IsNotNull(meshGameObject);
+            Assert.IsTrue(entity.meshGameObject != null, "meshGameObject should not be null");
 
-            meshName = meshGameObject.GetComponent<MeshFilter>().mesh.name;
+
+            meshName = entity.meshGameObject.GetComponent<MeshFilter>().mesh.name;
             Assert.AreEqual("DCL Cylinder Instance", meshName);
-            Assert.IsNotNull(meshGameObject.GetComponent<MeshFilter>(), "After updating the entity shape to a basic shape, the mesh filter shouldn't be removed from the object");
+            Assert.IsNotNull(entity.meshGameObject.GetComponent<MeshFilter>(), "After updating the entity shape to a basic shape, the mesh filter shouldn't be removed from the object");
+
+            Assert.IsTrue(entity.currentShape != null, "current shape must exist 1");
+            Assert.IsTrue(entity.currentShape is CylinderShape, "current shape is BoxShape");
 
             // Update its shape to a GLTF
-            scene.EntityComponentCreate(JsonUtility.ToJson(new DCL.Models.EntityComponentCreateMessage
+            TestHelpers.CreateAndSetShape(scene, entityId, DCL.Models.CLASS_ID.GLTF_SHAPE, JsonConvert.SerializeObject(new
             {
-                entityId = entityId,
-                name = "shape",
-                classId = (int)DCL.Models.CLASS_ID.GLTF_SHAPE,
-                json = JsonConvert.SerializeObject(new
-                {
-                    src = "http://127.0.0.1:9991/GLB/Lantern/Lantern.glb"
-                })
+                src = "http://127.0.0.1:9991/GLB/Lantern/Lantern.glb"
             }));
 
             yield return new WaitForSeconds(8f);
 
-            Assert.IsNotNull(meshGameObject);
+            Assert.IsTrue(entity.currentShape != null, "current shape must exist 2");
+            Assert.IsTrue(entity.currentShape is GLTFShape, "current shape is GLTFShape");
 
-            Assert.IsNull(meshGameObject.GetComponent<MeshFilter>(), "After updating the entity shape to a GLTF shape, the mesh filter should be removed from the object");
+            Assert.IsNotNull(entity.meshGameObject);
+
+            Assert.IsNull(entity.meshGameObject.GetComponent<MeshFilter>(), "After updating the entity shape to a GLTF shape, the mesh filter should be removed from the object");
             Assert.IsNotNull(scene.entities[entityId].gameObject.GetComponentInChildren<UnityGLTF.InstantiatedGLTFObject>(), "'GLTFScene' child object with 'InstantiatedGLTF' component should exist if the GLTF was loaded correctly");
 
             // Update its shape to a sphere
-            scene.EntityComponentCreate(JsonUtility.ToJson(new DCL.Models.EntityComponentCreateMessage
-            {
-                entityId = entityId,
-                name = "shape",
-                classId = (int)DCL.Models.CLASS_ID.SPHERE_SHAPE
-            }));
-
+            TestHelpers.CreateAndSetShape(scene, entityId, CLASS_ID.CYLINDER_SHAPE, "{}");
             yield return new WaitForSeconds(1f);
 
-            Assert.IsNotNull(meshGameObject);
+            Assert.IsNotNull(entity.meshGameObject);
 
-            meshName = meshGameObject.GetComponent<MeshFilter>().mesh.name;
-            Assert.AreEqual("DCL Sphere Instance", meshName);
+            meshName = entity.meshGameObject.GetComponent<MeshFilter>().mesh.name;
+
+            Assert.AreEqual("DCL Cylinder Instance", meshName);
             Assert.IsNull(scene.entities[entityId].gameObject.GetComponentInChildren<UnityGLTF.InstantiatedGLTFObject>(), "'GLTFScene' child object with 'InstantiatedGLTF' component shouldn't exist after the shape is updated to a non-GLTF shape");
         }
 
@@ -599,32 +565,20 @@ namespace Tests
             yield return new WaitForSeconds(0.01f);
 
             string entityId = "1";
-            scene.CreateEntity(entityId);
+            TestHelpers.CreateSceneEntity(scene, entityId);
 
-            scene.EntityComponentCreate(JsonUtility.ToJson(new DCL.Models.EntityComponentCreateMessage
+            TestHelpers.CreateAndSetShape(scene, entityId, DCL.Models.CLASS_ID.GLTF_SHAPE, JsonConvert.SerializeObject(new
             {
-                entityId = entityId,
-                name = "shape",
-                classId = (int)DCL.Models.CLASS_ID.GLTF_SHAPE,
-                json = JsonConvert.SerializeObject(new
-                {
-                    src = "http://127.0.0.1:9991/GLB/Lantern/Lantern.glb"
-                })
+                src = "http://127.0.0.1:9991/GLB/Lantern/Lantern.glb"
             }));
 
             yield return new WaitForSeconds(8f);
 
             Assert.IsNotNull(scene.entities[entityId].gameObject.GetComponentInChildren<GLTFComponent>().loadedAssetRootGameObject.transform.Find("Lantern"));
 
-            scene.EntityComponentCreate(JsonUtility.ToJson(new DCL.Models.EntityComponentCreateMessage
+            TestHelpers.CreateAndSetShape(scene, entityId, DCL.Models.CLASS_ID.GLTF_SHAPE, JsonConvert.SerializeObject(new
             {
-                entityId = entityId,
-                name = "shape",
-                classId = (int)DCL.Models.CLASS_ID.GLTF_SHAPE,
-                json = JsonConvert.SerializeObject(new
-                {
-                    src = "http://127.0.0.1:9991/GLB/DamagedHelmet/DamagedHelmet.glb"
-                })
+                src = "http://127.0.0.1:9991/GLB/DamagedHelmet/DamagedHelmet.glb"
             }));
 
             yield return new WaitForSeconds(8f);
@@ -645,28 +599,16 @@ namespace Tests
             yield return new WaitForSeconds(0.01f);
 
             string entityId = "1";
-            scene.CreateEntity(entityId);
+            TestHelpers.CreateSceneEntity(scene, entityId);
 
-            scene.EntityComponentCreate(JsonUtility.ToJson(new DCL.Models.EntityComponentCreateMessage
+            TestHelpers.CreateAndSetShape(scene, entityId, DCL.Models.CLASS_ID.GLTF_SHAPE, JsonConvert.SerializeObject(new
             {
-                entityId = entityId,
-                name = "shape",
-                classId = (int)DCL.Models.CLASS_ID.GLTF_SHAPE,
-                json = JsonConvert.SerializeObject(new
-                {
-                    src = "http://127.0.0.1:9991/GLB/Lantern/Lantern.glb"
-                })
+                src = "http://127.0.0.1:9991/GLB/Lantern/Lantern.glb"
             }));
 
-            scene.EntityComponentCreate(JsonUtility.ToJson(new DCL.Models.EntityComponentCreateMessage
+            TestHelpers.CreateAndSetShape(scene, entityId, DCL.Models.CLASS_ID.GLTF_SHAPE, JsonConvert.SerializeObject(new
             {
-                entityId = entityId,
-                name = "shape",
-                classId = (int)DCL.Models.CLASS_ID.GLTF_SHAPE,
-                json = JsonConvert.SerializeObject(new
-                {
-                    src = "http://127.0.0.1:9991/GLB/DamagedHelmet/DamagedHelmet.glb"
-                })
+                src = "http://127.0.0.1:9991/GLB/DamagedHelmet/DamagedHelmet.glb"
             }));
 
             yield return new WaitForSeconds(8f);
@@ -685,7 +627,7 @@ namespace Tests
             var scene = sceneController.CreateTestScene(sceneData);
 
             string entityId = "1";
-            scene.CreateEntity(entityId);
+            TestHelpers.CreateSceneEntity(scene, entityId);
 
             scene.EntityComponentCreate(JsonUtility.ToJson(new DCL.Models.EntityComponentCreateMessage
             {
@@ -707,17 +649,9 @@ namespace Tests
             }));
 
             // Update shape without collision
-            scene.EntityComponentCreate(JsonUtility.ToJson(new DCL.Models.EntityComponentCreateMessage
+            TestHelpers.CreateAndSetShape(scene, entityId, DCL.Models.CLASS_ID.BOX_SHAPE, JsonConvert.SerializeObject(new
             {
-                entityId = entityId,
-                name = "shape",
-                classId = (int)DCL.Models.CLASS_ID.BOX_SHAPE,
-                json = JsonConvert.SerializeObject(new
-                {
-                    tag = "test tag",
-                    src = "",
-                    withCollisions = false
-                })
+                withCollisions = false
             }));
 
             yield return new WaitForSeconds(0.01f);
@@ -725,17 +659,9 @@ namespace Tests
             Assert.IsNull(scene.entities[entityId].gameObject.GetComponentInChildren<MeshCollider>());
 
             // Update shape with collision
-            scene.EntityComponentCreate(JsonUtility.ToJson(new DCL.Models.EntityComponentCreateMessage
+            TestHelpers.CreateAndSetShape(scene, entityId, DCL.Models.CLASS_ID.BOX_SHAPE, JsonConvert.SerializeObject(new
             {
-                entityId = entityId,
-                name = "shape",
-                classId = (int)DCL.Models.CLASS_ID.BOX_SHAPE,
-                json = JsonConvert.SerializeObject(new
-                {
-                    tag = "test tag",
-                    src = "",
-                    withCollisions = true
-                })
+                withCollisions = true
             }));
 
             yield return new WaitForSeconds(0.01f);
@@ -743,17 +669,9 @@ namespace Tests
             Assert.IsNotNull(scene.entities[entityId].gameObject.GetComponentInChildren<MeshCollider>());
 
             // Update shape without collision
-            scene.EntityComponentCreate(JsonUtility.ToJson(new DCL.Models.EntityComponentCreateMessage
+            TestHelpers.CreateAndSetShape(scene, entityId, DCL.Models.CLASS_ID.BOX_SHAPE, JsonConvert.SerializeObject(new
             {
-                entityId = entityId,
-                name = "shape",
-                classId = (int)DCL.Models.CLASS_ID.BOX_SHAPE,
-                json = JsonConvert.SerializeObject(new
-                {
-                    tag = "test tag",
-                    src = "",
-                    withCollisions = false
-                })
+                withCollisions = false
             }));
 
             yield return new WaitForSeconds(0.01f);
@@ -761,17 +679,9 @@ namespace Tests
             Assert.IsFalse(scene.entities[entityId].gameObject.GetComponentInChildren<MeshCollider>().enabled);
 
             // Update shape with collision
-            scene.EntityComponentCreate(JsonUtility.ToJson(new DCL.Models.EntityComponentCreateMessage
+            TestHelpers.CreateAndSetShape(scene, entityId, DCL.Models.CLASS_ID.BOX_SHAPE, JsonConvert.SerializeObject(new
             {
-                entityId = entityId,
-                name = "shape",
-                classId = (int)DCL.Models.CLASS_ID.BOX_SHAPE,
-                json = JsonConvert.SerializeObject(new
-                {
-                    tag = "test tag",
-                    src = "",
-                    withCollisions = true
-                })
+                withCollisions = true
             }));
 
             yield return new WaitForSeconds(0.01f);
@@ -792,17 +702,11 @@ namespace Tests
             yield return new WaitForSeconds(0.01f);
 
             string entityId = "1";
-            scene.CreateEntity(entityId);
+            TestHelpers.CreateSceneEntity(scene, entityId);
 
-            scene.EntityComponentCreate(JsonUtility.ToJson(new DCL.Models.EntityComponentCreateMessage
+            TestHelpers.CreateAndSetShape(scene, entityId, DCL.Models.CLASS_ID.GLTF_SHAPE, JsonConvert.SerializeObject(new
             {
-                entityId = entityId,
-                name = "shape",
-                classId = (int)DCL.Models.CLASS_ID.GLTF_SHAPE,
-                json = JsonConvert.SerializeObject(new
-                {
-                    src = "http://127.0.0.1:9991/GLB/Roads/Roads.glb" // this glb has the "..._collider" object inside with the pre-defined collision geometry.
-                })
+                src = "http://127.0.0.1:9991/GLB/Roads/Roads.glb" // this glb has the "..._collider" object inside with the pre-defined collision geometry.
             }));
 
             yield return new WaitForSeconds(8f);
@@ -827,13 +731,8 @@ namespace Tests
 
             yield return new WaitForSeconds(0.01f);
 
-            scene.EntityComponentCreate(JsonUtility.ToJson(new DCL.Models.EntityComponentCreateMessage
-            {
-                entityId = entityId,
-                name = "onclick",
-                classId = (int)DCL.Models.CLASS_ID.ONCLICK,
-                json = JsonConvert.SerializeObject(new { })
-            }));
+            string clickUuid = "click-1";
+            TestHelpers.AddOnClickComponent(scene, entityId, clickUuid);
 
             yield return new WaitForSeconds(0.01f);
 
@@ -860,32 +759,22 @@ namespace Tests
             yield return new WaitForSeconds(0.01f);
 
             string entityId = "1";
-            scene.CreateEntity(entityId);
+
+            TestHelpers.CreateSceneEntity(scene, entityId);
 
             Assert.IsNull(scene.entities[entityId].gameObject.GetComponentInChildren<UnityGLTF.InstantiatedGLTFObject>(), "Since the shape hasn't been updated yet, the 'GLTFScene' child object shouldn't exist");
 
-            scene.EntityComponentCreate(JsonUtility.ToJson(new DCL.Models.EntityComponentCreateMessage
+            TestHelpers.CreateAndSetShape(scene, entityId, DCL.Models.CLASS_ID.GLTF_SHAPE, JsonConvert.SerializeObject(new
             {
-                entityId = entityId,
-                name = "shape",
-                classId = (int)DCL.Models.CLASS_ID.GLTF_SHAPE,
-                json = JsonConvert.SerializeObject(new
-                {
-                    src = "http://127.0.0.1:9991/GLB/Lantern/Lantern.glb"
-                })
+                src = "http://127.0.0.1:9991/GLB/Lantern/Lantern.glb"
             }));
 
             yield return new WaitForSeconds(8f);
 
             Assert.IsNotNull(scene.entities[entityId].gameObject.GetComponentInChildren<UnityGLTF.InstantiatedGLTFObject>(), "'GLTFScene' child object with 'InstantiatedGLTF' component should exist if the GLTF was loaded correctly");
 
-            scene.EntityComponentCreate(JsonUtility.ToJson(new DCL.Models.EntityComponentCreateMessage
-            {
-                entityId = entityId,
-                name = "onclick",
-                classId = (int)DCL.Models.CLASS_ID.ONCLICK,
-                json = JsonConvert.SerializeObject(new { })
-            }));
+            string clickUuid = "click-1";
+            TestHelpers.AddOnClickComponent(scene, entityId, clickUuid);
 
             yield return new WaitForSeconds(0.01f);
 
@@ -914,28 +803,17 @@ namespace Tests
             yield return new WaitForSeconds(0.01f);
 
             string entityId = "1";
-            scene.CreateEntity(entityId);
+            TestHelpers.CreateSceneEntity(scene, entityId);
 
             Assert.IsNull(scene.entities[entityId].gameObject.GetComponentInChildren<UnityGLTF.InstantiatedGLTFObject>(), "Since the shape hasn't been updated yet, the 'GLTFScene' child object shouldn't exist");
 
-            scene.EntityComponentCreate(JsonUtility.ToJson(new DCL.Models.EntityComponentCreateMessage
+            TestHelpers.CreateAndSetShape(scene, entityId, DCL.Models.CLASS_ID.GLTF_SHAPE, JsonConvert.SerializeObject(new
             {
-                entityId = entityId,
-                name = "shape",
-                classId = (int)DCL.Models.CLASS_ID.GLTF_SHAPE,
-                json = JsonConvert.SerializeObject(new
-                {
-                    src = "http://127.0.0.1:9991/GLB/Lantern/Lantern.glb"
-                })
+                src = "http://127.0.0.1:9991/GLB/Lantern/Lantern.glb"
             }));
 
-            scene.EntityComponentCreate(JsonUtility.ToJson(new DCL.Models.EntityComponentCreateMessage
-            {
-                entityId = entityId,
-                name = "onclick",
-                classId = (int)DCL.Models.CLASS_ID.ONCLICK,
-                json = JsonConvert.SerializeObject(new { })
-            }));
+            string clickUuid = "click-1";
+            TestHelpers.AddOnClickComponent(scene, entityId, clickUuid);
 
             yield return new WaitForSeconds(8f);
 
@@ -966,15 +844,10 @@ namespace Tests
             var scene = sceneController.CreateTestScene(sceneData);
 
             string entityId = "1";
-            scene.CreateEntity(entityId);
+            TestHelpers.CreateSceneEntity(scene, entityId);
 
-            scene.EntityComponentCreate(JsonUtility.ToJson(new DCL.Models.EntityComponentCreateMessage
-            {
-                entityId = entityId,
-                name = "onclick",
-                classId = (int)DCL.Models.CLASS_ID.ONCLICK,
-                json = JsonConvert.SerializeObject(new { })
-            }));
+            string clickUuid = "click-1";
+            TestHelpers.AddOnClickComponent(scene, entityId, clickUuid);
 
             yield return new WaitForSeconds(0.01f);
 
@@ -982,16 +855,9 @@ namespace Tests
 
             Assert.IsNull(scene.entities[entityId].gameObject.transform.Find("OnClickCollider"), "the OnClickCollider object shouldn't exist until a shape is added");
 
-            scene.EntityComponentCreate(JsonUtility.ToJson(new DCL.Models.EntityComponentCreateMessage
-            {
-                entityId = entityId,
-                name = "shape",
-                classId = (int)DCL.Models.CLASS_ID.BOX_SHAPE,
-                json = JsonConvert.SerializeObject(new
-                {
-                    src = ""
-                })
-            }));
+            TestHelpers.CreateAndSetShape(scene, entityId, DCL.Models.CLASS_ID.BOX_SHAPE,
+              JsonConvert.SerializeObject(new BoxModel { })
+            );
 
             yield return new WaitForSeconds(0.01f);
 
@@ -1460,11 +1326,11 @@ namespace Tests
 
             Assert.AreNotEqual(null, scene);
 
-            scene.CreateEntity(entityId);
+            TestHelpers.CreateSceneEntity(scene, entityId);
 
             var gameObjectReference = scene.entities[entityId].gameObject;
 
-            scene.RemoveEntity(entityId);
+            TestHelpers.RemoveSceneEntity(scene, entityId);
 
             yield return new WaitForSeconds(0.01f);
 
@@ -1487,7 +1353,7 @@ namespace Tests
             Assert.IsTrue(sceneController.loadedScenes.ContainsKey(loadedSceneID));
 
             // Add 1 entity to the loaded scene
-            sceneController.loadedScenes[loadedSceneID].CreateEntity("6");
+            TestHelpers.CreateSceneEntity(sceneController.loadedScenes[loadedSceneID], "6");
 
             var sceneRootGameObject = sceneController.loadedScenes[loadedSceneID];
             var sceneEntities = sceneController.loadedScenes[loadedSceneID].entities;

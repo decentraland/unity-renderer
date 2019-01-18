@@ -14,7 +14,6 @@ public class SceneController : MonoBehaviour
 
     void Awake()
     {
-
         // We trigger the Decentraland logic once SceneController has been instanced and is ready to act.
         if (startDecentralandAutomatically)
         {
@@ -85,7 +84,7 @@ public class SceneController : MonoBehaviour
 
             completeListOfParcelsThatShouldBeLoaded.Add(sceneToLoad.id);
 
-            if (GetDecentralandSceneOfParcel(sceneToLoad.basePosition) == null)
+            if (!loadedScenes.ContainsKey(sceneToLoad.id))
             {
                 var newGameObject = new GameObject("New Scene");
 
@@ -129,7 +128,7 @@ public class SceneController : MonoBehaviour
 #if UNITY_EDITOR
                 DestroyImmediate(scene);
 #else
-        Destroy(scene);
+                Destroy(scene);
 #endif
             }
         }
@@ -150,25 +149,15 @@ public class SceneController : MonoBehaviour
 
         for (int i = 0; i < chunks.Length; i++)
         {
-            try
+            if (chunks[i].Length > 0)
             {
-                if (chunks[i].Length > 0)
-                {
-                    var separatorPosition = chunks[i].IndexOf('\t');
+                var separatorPosition = chunks[i].IndexOf('\t');
 
-                    if (separatorPosition == -1)
-                    {
-                        continue;
-                    }
+                if (separatorPosition == -1) continue;
 
-                    var sceneId = chunks[i].Substring(0, separatorPosition);
-                    var message = chunks[i].Substring(separatorPosition + 1);
-                    ProcessMessage(sceneId, message);
-                }
-            }
-            catch (Exception e)
-            {
-                Debug.LogException(e);
+                var sceneId = chunks[i].Substring(0, separatorPosition);
+                var message = chunks[i].Substring(separatorPosition + 1);
+                ProcessMessage(sceneId, message);
             }
         }
     }
@@ -197,9 +186,19 @@ public class SceneController : MonoBehaviour
                 case "ComponentDisposed": scene.SharedComponentDispose(payload); break;
                 case "ComponentUpdated": scene.SharedComponentUpdate(payload); break;
                 default:
-                    throw new Exception($"Unkwnown method {method}");
+#if UNITY_EDITOR || DEVELOPMENT_BUILD
+                    throw new UnityException($"Unknown method {method}");
+#else
+          return;
+#endif
             }
         }
+#if UNITY_EDITOR || DEVELOPMENT_BUILD
+        else
+        {
+            throw new UnityException($"Scene not found {sceneId}");
+        }
+#endif
     }
 
     public ParcelScene CreateTestScene(LoadParcelScenesMessage.UnityParcelScene data)
