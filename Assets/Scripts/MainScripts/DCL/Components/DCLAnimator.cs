@@ -93,7 +93,7 @@ namespace DCL.Components
 
         private void Start()
         {
-            entity.OnComponentUpdated += OnComponentUpdated;
+            entity.OnShapeUpdated += OnComponentUpdated;
 
             if (GetComponentInChildren<Animation>() != null)
             {
@@ -103,7 +103,7 @@ namespace DCL.Components
 
         private void OnDestroy()
         {
-            entity.OnComponentUpdated -= OnComponentUpdated;
+            entity.OnShapeUpdated -= OnComponentUpdated;
 
             if (playableGraph.IsValid())
                 playableGraph.Destroy();
@@ -128,9 +128,9 @@ namespace DCL.Components
             Initialize();
         }
 
-        private void OnComponentUpdated(UpdateableComponent componentUpdated)
+        private void OnComponentUpdated()
         {
-            if (componentUpdated is BaseShape && GetComponentInChildren<Animation>() != null)
+            if (entity.meshGameObject && entity.meshGameObject.GetComponentInChildren<Animation>() != null)
             {
                 Initialize();
             }

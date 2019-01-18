@@ -67,10 +67,6 @@ namespace DCL.Helpers
             }
         }
 
-        public static bool IsShapeComponent(UpdateableComponent targetComponent)
-        {
-            return targetComponent is BaseShape;
-        }
 
         public static bool SafeFromJsonOverwrite(string json, object objectToOverwrite)
         {
@@ -80,7 +76,7 @@ namespace DCL.Helpers
             }
             catch (System.ArgumentException e)
             {
-                Debug.LogError("ArgumentException Fail!... Json = " + json);
+                Debug.LogError("ArgumentException Fail!... Json = " + json + " " + e.ToString());
                 return false;
             }
 
@@ -99,7 +95,7 @@ namespace DCL.Helpers
                 }
                 catch (System.ArgumentException e)
                 {
-                    Debug.LogError("ArgumentException Fail!... Json = " + json);
+                    Debug.LogError("ArgumentException Fail!... Json = " + json + " " + e.ToString());
 
                     returningValue = new T();
                 }
@@ -110,6 +106,19 @@ namespace DCL.Helpers
             }
 
             return returningValue;
+        }
+
+
+        public static GameObject AttachPlaceholderRendererGameObject(UnityEngine.Transform targetTransform)
+        {
+            var placeholderRenderer = GameObject.CreatePrimitive(PrimitiveType.Cube).GetComponent<MeshRenderer>();
+
+            placeholderRenderer.material = Resources.Load<Material>("Materials/AssetLoading");
+            placeholderRenderer.transform.SetParent(targetTransform);
+            placeholderRenderer.transform.localPosition = Vector3.zero;
+            placeholderRenderer.name = "PlaceholderRenderer";
+
+            return placeholderRenderer.gameObject;
         }
     }
 }

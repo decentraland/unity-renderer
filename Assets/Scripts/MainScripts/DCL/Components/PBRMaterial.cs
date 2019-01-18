@@ -59,6 +59,7 @@ namespace DCL.Components
                     // any meshRenderer
                     // TODO: validate that comment ^^^
                     UnityEngine.Object.Destroy(material);
+
                     Resources.UnloadUnusedAssets();
                 }
 

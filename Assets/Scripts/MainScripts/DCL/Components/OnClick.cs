@@ -4,44 +4,97 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityGLTF;
 using DCL.Helpers;
+using DCL.Models;
+using DCL.Controllers;
 
 namespace DCL.Components
 {
 
-    public class OnClick : BaseComponent
+    public abstract class UUIDComponent : MonoBehaviour
     {
+        public string type;
+        public string uuid;
+        public abstract void Setup(ParcelScene scene, DecentralandEntity entity, string uuid, string type);
 
-        [System.Serializable]
-        public class Model
+        public static void SetForEntity(ParcelScene scene, DecentralandEntity entity, string uuid, string type)
         {
-            public string uuid;
+            switch (type)
+            {
+                case "onClick":
+                    SetUpComponent<OnClickComponent>(scene, entity, uuid, type);
+                    return;
+            }
+#if UNITY_EDITOR || DEVELOPMENT_BUILD
+            throw new UnityException($"Cannot create UUIDComponent of type '{type}'.");
+#endif
+
         }
 
-        Model model = new Model();
-        public override string componentName => "onClick";
+        public static void RemoveFromEntity(DecentralandEntity entity, string type)
+        {
+            switch (type)
+            {
+                case "onClick":
+                    RemoveComponent<OnClickComponent>(entity);
+                    break;
+            }
+#if UNITY_EDITOR || DEVELOPMENT_BUILD
+            throw new UnityException($"Cannot remove UUIDComponent of type '{type}'.");
+#endif
+        }
+
+        private static void RemoveComponent<T>(DecentralandEntity entity) where T : UUIDComponent
+        {
+            var currentComponent = entity.gameObject.GetComponent<T>();
+            if (currentComponent != null)
+            {
+#if UNITY_EDITOR
+                UnityEngine.Object.DestroyImmediate(currentComponent);
+#else
+        UnityEngine.Object.Destroy(currentComponent);
+#endif
+            }
+        }
+
+        private static void SetUpComponent<T>(ParcelScene scene, DecentralandEntity entity, string uuid, string type) where T : UUIDComponent
+        {
+            var currentComponent = DCL.Helpers.Utils.GetOrCreateComponent<T>(entity.gameObject);
+
+            currentComponent.Setup(scene, entity, uuid, type);
+        }
+    }
+
+    public class OnClickComponent : UUIDComponent
+    {
 
         Rigidbody rigidBody;
         GameObject[] OnClickColliderGameObjects;
+        DecentralandEntity entity;
+        ParcelScene scene;
 
-        public override IEnumerator ApplyChanges(string newJson)
+        public override void Setup(ParcelScene scene, DecentralandEntity entity, string uuid, string type)
         {
-            JsonUtility.FromJsonOverwrite(newJson, model);
-            return null;
-        }
+            this.entity = entity;
+            this.scene = scene;
+            this.uuid = uuid;
+            this.type = type;
 
-        void Start()
-        {
-            if (GetComponentInChildren<MeshFilter>() != null)
+            if (entity.meshGameObject && entity.meshGameObject.GetComponentInChildren<MeshFilter>() != null)
             {
                 Initialize();
             }
 
-            entity.OnComponentUpdated -= OnComponentUpdated;
-            entity.OnComponentUpdated += OnComponentUpdated;
+            entity.OnShapeUpdated -= OnComponentUpdated;
+            entity.OnShapeUpdated += OnComponentUpdated;
         }
 
         public void Initialize()
         {
+            if (!entity.meshGameObject || entity.meshGameObject.GetComponentInChildren<MeshFilter>() == null)
+            {
+                return;
+            }
+
             // we add a rigidbody to be able to detect the children colliders for the OnClick functionality
             if (gameObject.GetComponent<Rigidbody>() == null)
             {
@@ -69,16 +122,14 @@ namespace DCL.Components
 
                 // Reset objects position, rotation and scale once it's been parented
                 OnClickColliderGameObjects[i].transform.SetParent(meshFilters[i].transform);
-                OnClickColliderGameObjects[i].transform.localScale = new Vector3(1, 1, 1);
+                OnClickColliderGameObjects[i].transform.localScale = Vector3.one;
                 OnClickColliderGameObjects[i].transform.localRotation = Quaternion.identity;
                 OnClickColliderGameObjects[i].transform.localPosition = Vector3.zero;
             }
         }
 
-        void OnComponentUpdated(DCL.Components.UpdateableComponent updatedComponent)
+        void OnComponentUpdated()
         {
-            if (!Helpers.Utils.IsShapeComponent(updatedComponent)) return;
-
             Initialize();
         }
 
@@ -93,12 +144,12 @@ namespace DCL.Components
                 mouseButtonPressed = 1;
             }
 
-            DCL.Interface.WebInterface.ReportOnClickEvent(scene.sceneData.id, model.uuid, mouseButtonPressed);
+            DCL.Interface.WebInterface.ReportOnClickEvent(scene.sceneData.id, uuid, mouseButtonPressed);
         }
 
         void OnDestroy()
         {
-            entity.OnComponentUpdated -= OnComponentUpdated;
+            entity.OnShapeUpdated -= OnComponentUpdated;
 
             Destroy(rigidBody);
 

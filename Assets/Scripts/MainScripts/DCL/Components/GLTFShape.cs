@@ -1,105 +1,72 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using DCL.Controllers;
 using DCL.Helpers;
+using DCL.Models;
 using UnityEngine;
 using UnityGLTF;
 
 namespace DCL.Components
 {
-    public class GLTFShape : BaseShape
+    public class GLTFLoader : LoadableMonoBehavior
     {
-        [System.Serializable]
-        public class Model
-        {
-            public string src;
-        }
-
-        public bool alreadyLoaded { get; private set; }
-
-        Model model = new Model();
         GLTFComponent gltfLoaderComponent;
 
-        protected new void Awake()
+        public override void Load(string src)
         {
-            base.Awake();
-
-            if (meshFilter)
+            // GLTF Loader can't be reused "out of the box", so we re-instantiate it when needed
+            if (gltfLoaderComponent != null)
             {
-#if UNITY_EDITOR
-                DestroyImmediate(meshFilter);
-#else
-        Destroy(meshFilter);
-#endif
+                Destroy(gltfLoaderComponent);
             }
 
-            if (meshRenderer)
+            alreadyLoaded = false;
+            gltfLoaderComponent = gameObject.AddComponent<GLTFComponent>();
+            gltfLoaderComponent.OnFinishedLoadingAsset += CallOnComponentUpdatedEvent;
+
+            gltfLoaderComponent.Multithreaded = false;
+            gltfLoaderComponent.LoadAsset(src, true);
+
+            if (gltfLoaderComponent.loadingPlaceholder == null)
             {
-#if UNITY_EDITOR
-                DestroyImmediate(meshRenderer);
-#else
-        Destroy(meshRenderer);
-#endif
+                gltfLoaderComponent.loadingPlaceholder = Helpers.Utils.AttachPlaceholderRendererGameObject(gameObject.transform);
+            }
+            else
+            {
+                gltfLoaderComponent.loadingPlaceholder.SetActive(true);
             }
         }
 
-        public override IEnumerator ApplyChanges(string newJson)
+        void CallOnComponentUpdatedEvent()
         {
-            model = Helpers.Utils.SafeFromJson<Model>(newJson); // We don't use FromJsonOverwrite() to default the model properties on a partial json.
-
-            if (!string.IsNullOrEmpty(model.src))
-            {
-                // GLTF Loader can't be reused "out of the box", so we re-instantiate it when needed
-                if (gltfLoaderComponent != null)
-                {
-                    Destroy(gltfLoaderComponent);
-                }
-
-                alreadyLoaded = false;
-                gltfLoaderComponent = meshGameObject.AddComponent<GLTFComponent>();
-                gltfLoaderComponent.OnFinishedLoadingAsset += OnFinishedLoadingAsset;
-
-                gltfLoaderComponent.Multithreaded = false;
-                gltfLoaderComponent.LoadAsset(model.src, true);
-
-                if (gltfLoaderComponent.loadingPlaceholder == null)
-                {
-                    gltfLoaderComponent.loadingPlaceholder = AttachPlaceholderRendererGameObject(gameObject.transform);
-                }
-                else
-                {
-                    gltfLoaderComponent.loadingPlaceholder.SetActive(true);
-                }
-            }
-
-            return null;
-        }
-
-        public override IEnumerator UpdateComponent(string newJson)
-        {
-            yield return ApplyChanges(newJson);
-        }
-
-        void OnFinishedLoadingAsset()
-        {
-            ConfigureCollision(true, true);
-
             alreadyLoaded = true;
 
             if (entity.OnComponentUpdated != null)
                 entity.OnComponentUpdated.Invoke(this);
+
+            if (entity.OnShapeUpdated != null)
+                entity.OnShapeUpdated.Invoke();
+
+            BaseShape.ConfigureCollision(entity, true, true);
         }
 
-        protected override void OnDestroy()
+        void OnDestroy()
         {
             if (gltfLoaderComponent != null)
             {
-                gltfLoaderComponent.OnFinishedLoadingAsset -= OnFinishedLoadingAsset;
+                gltfLoaderComponent.OnFinishedLoadingAsset -= CallOnComponentUpdatedEvent;
             }
 
-            base.OnDestroy();
-
             Destroy(gltfLoaderComponent);
+        }
+    }
+
+
+    public class GLTFShape : BaseLoadableShape<GLTFLoader>
+    {
+        public GLTFShape(ParcelScene scene) : base(scene)
+        {
         }
     }
 }

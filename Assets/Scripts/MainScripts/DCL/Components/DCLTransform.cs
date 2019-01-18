@@ -22,7 +22,6 @@ namespace DCL.Components
 
         public override IEnumerator ApplyChanges(string newJson)
         {
-
             JsonUtility.FromJsonOverwrite(newJson, model);
             // this component is applied to the gameObjects transform
             if (gameObject != null)

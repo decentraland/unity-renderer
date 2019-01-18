@@ -58,7 +58,7 @@ namespace DCL.Components
             }
         }
 
-        public void AttachTo(DecentralandEntity entity)
+        public virtual void AttachTo(DecentralandEntity entity)
         {
             if (!attachedEntities.Contains(entity))
             {
@@ -71,7 +71,7 @@ namespace DCL.Components
             }
         }
 
-        public void DetachFrom(DecentralandEntity entity)
+        public virtual void DetachFrom(DecentralandEntity entity)
         {
             if (attachedEntities.Contains(entity))
             {
