@@ -20,9 +20,9 @@
     "path": "./static/systems"
   },
   {
-    "name": "Compile static-scene system",
+    "name": "Compile scene system",
     "kind": "Webpack",
-    "file": "./packages/static-scene/*.ts",
+    "file": "./packages/scene-system/*.ts",
     "target": "webworker"
   },
   {

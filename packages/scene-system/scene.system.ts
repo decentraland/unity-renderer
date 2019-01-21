@@ -185,7 +185,6 @@ export default class GamekitScene extends Script {
             // We dont create the entity 0 in the engine.
             return
           }
-          // TODO: ECS change string to JSON(string) in the unity side
           that.events.push({
             type: 'CreateEntity',
             payload: JSON.stringify({ id: entityId } as CreateEntityPayload)
@@ -340,6 +339,13 @@ export default class GamekitScene extends Script {
         },
         error(message, data) {
           that.onError(Object.assign(new Error(message), { data }))
+        }
+      }
+
+      {
+        const monkeyPatchDcl: any = dcl
+        monkeyPatchDcl.updateEntity = function() {
+          throw new Error('The scene is using an outdated version of decentraland-ecs, please upgrade to >5.0.0')
         }
       }
 

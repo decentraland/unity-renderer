@@ -5,9 +5,9 @@
   },
 
   {
-    "name": "Compile static-scene system",
+    "name": "Compile scene-system system",
     "kind": "Webpack",
-    "file": "./packages/static-scene/*.ts",
+    "file": "./packages/scene-system/*.ts",
     "target": "webworker"
   },
   {

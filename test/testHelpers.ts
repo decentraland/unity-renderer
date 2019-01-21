@@ -26,7 +26,7 @@ import { ILandToLoadableParcelScene, ILand, MappingsResponse, IScene } from 'sha
 import { SceneWorker } from 'shared/world/SceneWorker'
 import { MemoryTransport } from 'decentraland-rpc'
 
-import GamekitScene from '../packages/static-scene/ecs-native.system'
+import GamekitScene from '../packages/scene-system/scene.system'
 
 DebugTelemetry.startTelemetry(process.env)
 

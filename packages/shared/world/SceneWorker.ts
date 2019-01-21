@@ -19,7 +19,7 @@ export type ParcelSceneAPI = {
   on(event: string, cb: (event: any) => void): void
 }
 
-const gamekitWorkerRaw = require('raw-loader!../../../static/systems/ecs-native.system.js')
+const gamekitWorkerRaw = require('raw-loader!../../../static/systems/scene.system.js')
 const gamekitWorkerBLOB = new Blob([gamekitWorkerRaw])
 const gamekitWorkerUrl = URL.createObjectURL(gamekitWorkerBLOB)
 
