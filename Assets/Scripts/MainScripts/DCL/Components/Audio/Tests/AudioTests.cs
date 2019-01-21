@@ -55,7 +55,7 @@ namespace Tests
             {
                 url = url,//"http://127.0.0.1:9991/Audio/Train.wav",
                 loop = loop,
-                loading = loading,
+                shouldTryToLoad = loading,
                 volume = volume
             };
             
