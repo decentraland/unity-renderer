@@ -856,6 +856,23 @@ describe('ECS', () => {
       }
     })
   })
+
+  describe('resolve urls', () => {
+    testScene(-1, 73, ({ parcelScenePromise }) => {
+      it('should have a transform component', async () => {
+        const parcelScene = await parcelScenePromise
+        const texture = await parcelScene.context.getTexture('img #7 @ $1.png')
+        expect(texture.isReady()).to.eq(true)
+      })
+
+      saveScreenshot(`material-billboard.png`, {
+        from: [-10, 1.6, 730],
+        lookAt: [-5, 1.6, 735]
+      })
+
+      wait(100)
+    })
+  })
 })
 
 function anglesAreEqual(e1: Vector3, e2: Vector3) {

@@ -431,7 +431,7 @@ export class SharedSceneContext implements BABYLON.IDisposable {
     if (!url) {
       throw new Error('Invalid URL')
     }
-    return BABYLON.Tools.CleanUrl(url.replace(/^(\/+)/, '').toLowerCase())
+    return decodeURIComponent(BABYLON.Tools.CleanUrl(url.replace(/^(\/+)/, '').toLowerCase()))
   }
 
   private textureGotRemoved = (texture: BABYLON.Texture) => {

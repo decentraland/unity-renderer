@@ -741,10 +741,10 @@
     "parcel_id": "-1,73",
     "root_cid": "Qm2px6sWcUntjPCQuXPr7kwhJWFdBSx6MGXJ9dnKVPUTpRBRkCL9iR76J1fg8oy7pAU6dS5KX8ymW2zkJC3gjHnqEt",
     "contents": {
-      "img.png": "Qm2wAzivw61WLgthi68MXdBapHv9Pzid5HYEAPHigGij6azhiMZSnA3n5Z6KJK4rkRWrKBkXLvor4PNkFXinYie5ji",
-      "scene.js": "Qm4S12WBCm91dFxVHsWdGAdtceNwfEAA7Bm5G3MMaBZfab5kzQDaguFzfhSnC8PyLWfpRdGJALN3oqvAjKfpoemZwd",
-      "scene.json": "Qm4DD2U2euwyAFZVqEAYHBivjHL3dio34XgP5Erj9r8iV4dyvQe6WHkKKzEFQdyYn8jQ2os8WzgZFqMJbjkXgYzTwN",
-      "scene.tsx": "Qmvf77K3sAtNpUSm73abXcb4hoGdihtudWvV5pgoLQvcCbLJqJc7jUT7wD56iu9ovhhwAJpHqTyXxu7Fv9dorpB9t"
+      "game.js": "Qm2pKvRpk8K5EY7Dypjn2BGU7dRMDwWPpc4Ep53Ft3U3ngvVBLYwoNyYLZ86aEMsuPUJ1BTV6BAERpXxLiQUereBm6",
+      "game.ts": "Qm5xf1dcxAfJfkRZwoR7GvNyYiJZVAbdYYGaJV3EBRuJo8QLQN6MJs4mn8kWFUXCeSc4B4V7BcM97kWqXDN6rh69Nx",
+      "img #7 @ $1.png": "Qm3PAWmzDGd9HUySiuPTJmM37BYnu8ABX6Zu2mqh8c3CEQM7s9v65VQNDuqr8prJXtc2q7gg5yr2EXhWVahW2XyKR6",
+      "scene.json": "Qm4DD2U2euwyAFZVqEAYHBivjHL3dio34XgP5Erj9r8iV4dyvQe6WHkKKzEFQdyYn8jQ2os8WzgZFqMJbjkXgYzTwN"
     }
   },
   {

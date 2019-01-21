@@ -8,7 +8,7 @@
     "name": "Michal",
     "email": ""
   },
-  "main": "scene.js",
+  "main": "game.js",
   "tags": [],
   "scene": {
     "parcels": ["-1,73"],
