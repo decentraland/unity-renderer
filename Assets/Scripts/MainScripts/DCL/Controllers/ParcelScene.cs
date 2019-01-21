@@ -302,7 +302,9 @@ namespace DCL.Controllers
 #endif
             }
 
-            disposableComponents.Add(sharedComponentCreatedMessage.id, newComponent);
+            if ( newComponent != null )
+                disposableComponents.Add(sharedComponentCreatedMessage.id, newComponent);
+
             return newComponent;
         }
 

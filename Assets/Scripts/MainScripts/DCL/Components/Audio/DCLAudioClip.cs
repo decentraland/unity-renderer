@@ -16,11 +16,9 @@ namespace DCL.Components
         public class Model
         {
             public string url;
-            public bool distanceModel;
-            public bool loop;
-            public bool loading;
-            public string loadingCompleteEventId;
-            public double volume;
+            public bool loop = false;
+            public bool shouldTryToLoad = true;
+            public double volume = 1.0f;
         }
 
         Model model;
@@ -93,11 +91,11 @@ namespace DCL.Components
         {
             model = Utils.SafeFromJson<Model>(newJson);
 
-            if (model.loading && audioClip == null)
+            if (model.shouldTryToLoad && audioClip == null)
             {
                 yield return TryToLoad();
             }
-            else if (!model.loading && audioClip != null)
+            else if (!model.shouldTryToLoad && audioClip != null)
             {
                 Unload();
             }
