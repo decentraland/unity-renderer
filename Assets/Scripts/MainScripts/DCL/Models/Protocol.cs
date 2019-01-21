@@ -33,8 +33,12 @@ namespace DCL.Models
         BASIC_MATERIAL = 64,
         PBR_MATERIAL = 65,
 
+        ONCLICK = 80,
+
         HIGHLIGHT_ENTITY = 66,
-        SOUND = 67
+
+        AUDIO_CLIP = 200,
+        AUDIO_SOURCE = 201,
     }
 
     public class CallMethodComponentMessage

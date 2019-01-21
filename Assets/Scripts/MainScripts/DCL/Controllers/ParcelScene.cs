@@ -172,12 +172,14 @@ namespace DCL.Controllers
 
         UUIDCallbackMessage uuidMessage = new UUIDCallbackMessage();
         EntityComponentCreateMessage createEntityComponentMessage = new EntityComponentCreateMessage();
-        public void EntityComponentCreate(string json)
+
+        public BaseComponent EntityComponentCreate(string json)
         {
             createEntityComponentMessage.FromJSON(json);
 
             DecentralandEntity decentralandEntity = GetEntityForUpdate(createEntityComponentMessage.entityId);
-            if (decentralandEntity == null) return;
+            if (decentralandEntity == null)
+                return null;
 
             switch ((CLASS_ID)createEntityComponentMessage.classId)
             {
@@ -187,21 +189,30 @@ namespace DCL.Controllers
                         component.scene = this;
                         component.entity = decentralandEntity;
                         component.UpdateFromJSON(createEntityComponentMessage.json);
-                        break;
+                        return component;
                     }
                 case CLASS_ID.UUID_CALLBACK:
                     {
+                        //NOTE(Brian): This isn't a component? We are breaking the rules here.
                         uuidMessage.FromJSON(createEntityComponentMessage.json);
                         UUIDComponent.SetForEntity(this, decentralandEntity, uuidMessage.uuid, uuidMessage.type);
-                        break;
+                        return null;
                     }
                 case CLASS_ID.ANIMATOR:
                     {
-                        var component = Helpers.Utils.GetOrCreateComponent<DCL.Components.DCLAnimator>(decentralandEntity.gameObject);
+                        var component = Utils.GetOrCreateComponent<DCLAnimator>(decentralandEntity.gameObject);
                         component.scene = this;
                         component.entity = decentralandEntity;
                         component.UpdateFromJSON(createEntityComponentMessage.json);
-                        break;
+                        return component;
+                    }
+                case CLASS_ID.AUDIO_SOURCE:
+                    {
+                        var component = Utils.GetOrCreateComponent<DCLAudioSource>(decentralandEntity.gameObject);
+                        component.scene = this;
+                        component.entity = decentralandEntity;
+                        component.UpdateFromJSON(createEntityComponentMessage.json);
+                        return component;
                     }
                 default:
 #if UNITY_EDITOR
@@ -213,7 +224,8 @@ namespace DCL.Controllers
         }
 
         SharedComponentCreateMessage sharedComponentCreatedMessage = new SharedComponentCreateMessage();
-        public void SharedComponentCreate(string json)
+
+        public BaseDisposable SharedComponentCreate(string json)
         {
             sharedComponentCreatedMessage.FromJSON(json);
 
@@ -227,51 +239,58 @@ namespace DCL.Controllers
                 disposableComponents.Remove(sharedComponentCreatedMessage.id);
             }
 
+            BaseDisposable newComponent = null;
+
             switch ((CLASS_ID)sharedComponentCreatedMessage.classId)
             {
                 case CLASS_ID.BOX_SHAPE:
                     {
-                        disposableComponents.Add(sharedComponentCreatedMessage.id, new DCL.Components.BoxShape(this));
+                        newComponent = new DCL.Components.BoxShape(this);
                         break;
                     }
                 case CLASS_ID.SPHERE_SHAPE:
                     {
-                        disposableComponents.Add(sharedComponentCreatedMessage.id, new DCL.Components.SphereShape(this));
+                        newComponent = new DCL.Components.SphereShape(this);
                         break;
                     }
                 case CLASS_ID.CONE_SHAPE:
                     {
-                        disposableComponents.Add(sharedComponentCreatedMessage.id, new DCL.Components.ConeShape(this));
+                        newComponent = new DCL.Components.ConeShape(this);
                         break;
                     }
                 case CLASS_ID.CYLINDER_SHAPE:
                     {
-                        disposableComponents.Add(sharedComponentCreatedMessage.id, new DCL.Components.CylinderShape(this));
+                        newComponent = new DCL.Components.CylinderShape(this);
                         break;
                     }
                 case CLASS_ID.PLANE_SHAPE:
                     {
-                        disposableComponents.Add(sharedComponentCreatedMessage.id, new DCL.Components.PlaneShape(this));
+                        newComponent = new DCL.Components.PlaneShape(this);
                         break;
                     }
                 case CLASS_ID.GLTF_SHAPE:
                     {
-                        disposableComponents.Add(sharedComponentCreatedMessage.id, new DCL.Components.GLTFShape(this));
+                        newComponent = new DCL.Components.GLTFShape(this);
                         break;
                     }
                 case CLASS_ID.OBJ_SHAPE:
                     {
-                        disposableComponents.Add(sharedComponentCreatedMessage.id, new DCL.Components.OBJShape(this));
+                        newComponent = new DCL.Components.OBJShape(this);
                         break;
                     }
                 case CLASS_ID.BASIC_MATERIAL:
                     {
-                        disposableComponents.Add(sharedComponentCreatedMessage.id, new DCL.Components.BasicMaterial(this));
+                        newComponent = new DCL.Components.BasicMaterial(this);
                         break;
                     }
                 case CLASS_ID.PBR_MATERIAL:
                     {
-                        disposableComponents.Add(sharedComponentCreatedMessage.id, new DCL.Components.PBRMaterial(this));
+                        newComponent = new DCL.Components.PBRMaterial(this);
+                        break;
+                    }
+                case CLASS_ID.AUDIO_CLIP:
+                    {
+                        newComponent = new DCL.Components.DCLAudioClip(this);
                         break;
                     }
                 default:
@@ -282,6 +301,9 @@ namespace DCL.Controllers
                     break;
 #endif
             }
+
+            disposableComponents.Add(sharedComponentCreatedMessage.id, newComponent);
+            return newComponent;
         }
 
         SharedComponentDisposeMessage sharedComponentDisposedMessage = new SharedComponentDisposeMessage();
@@ -346,7 +368,8 @@ namespace DCL.Controllers
         }
 
         SharedComponentUpdateMessage sharedComponentUpdatedMessage = new SharedComponentUpdateMessage();
-        public void SharedComponentUpdate(string json)
+
+        public BaseDisposable SharedComponentUpdate(string json)
         {
             sharedComponentUpdatedMessage.FromJSON(json);
 
@@ -355,6 +378,7 @@ namespace DCL.Controllers
             if (disposableComponents.TryGetValue(sharedComponentUpdatedMessage.id, out disposableComponent) && disposableComponent != null)
             {
                 disposableComponent.UpdateFromJSON(sharedComponentUpdatedMessage.json);
+                return disposableComponent;
             }
 #if UNITY_EDITOR || DEVELOPMENT_BUILD
             else
@@ -362,6 +386,17 @@ namespace DCL.Controllers
                 throw new UnityException($"Unknown disposableComponent {sharedComponentUpdatedMessage.id}");
             }
 #endif
+        }
+
+
+        public BaseDisposable GetSharedComponent(string componentId)
+        {
+            BaseDisposable result;
+
+            if (!disposableComponents.TryGetValue(componentId, out result))
+                return null;
+
+            return result;
         }
 
         private DecentralandEntity GetEntityForUpdate(string entityId)
@@ -379,6 +414,8 @@ namespace DCL.Controllers
                 return null;
             }
 
+            //NOTE(Brian): This is for removing stray null references? This should never happen.
+            //             Maybe move to a different 'clean-up' method to make this method have a single responsibility?.
             if (decentralandEntity == null || decentralandEntity.gameObject == null)
             {
                 entities.Remove(entityId);
