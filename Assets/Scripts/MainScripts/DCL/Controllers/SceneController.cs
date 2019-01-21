@@ -171,6 +171,7 @@ public class SceneController : MonoBehaviour
             var separatorPosition = message.IndexOf('\t');
             var method = message.Substring(0, separatorPosition);
             var payload = message.Substring(separatorPosition + 1);
+
             switch (method)
             {
                 case "CreateEntity": scene.CreateEntity(payload); break;

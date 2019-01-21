@@ -1,8 +1,8 @@
-using UnityEngine;
-using DCL.Configuration;
 using DCL.Components;
-using System.Collections;
+using DCL.Configuration;
 using System;
+using System.Collections;
+using UnityEngine;
 using UnityEngine.Networking;
 
 namespace DCL.Helpers
@@ -31,6 +31,8 @@ namespace DCL.Helpers
               Mathf.Floor(vector.z / ParcelSettings.PARCEL_SIZE)
             );
         }
+
+
         public static T GetOrCreateComponent<T>(GameObject gameObject) where T : UnityEngine.Component
         {
             T component = gameObject.GetComponent<T>();
@@ -41,32 +43,99 @@ namespace DCL.Helpers
             return component;
         }
 
-        public static IEnumerator FetchTexture(Controllers.ParcelScene scene, string textureURL, Action<Texture> callback)
+        public static bool WebRequestSucceded(UnityWebRequest request)
         {
-            if (!string.IsNullOrEmpty(textureURL))
+            return request != null && !request.isNetworkError && !request.isHttpError;
+        }
+
+        static IEnumerator FetchAsset(string url, UnityWebRequest request, System.Action<UnityWebRequest> OnSuccess=null, System.Action<string> OnFail = null)
+        {
+            if (!string.IsNullOrEmpty(url))
             {
-                using (var webRequest = UnityWebRequestTexture.GetTexture(textureURL))
+                using (var webRequest = request)
                 {
                     yield return webRequest.SendWebRequest();
 
-                    if (webRequest.isNetworkError || webRequest.isHttpError)
+                    if (!WebRequestSucceded(request))
                     {
-                        Debug.Log("Fetching texture failed: " + webRequest.error);
+                        Debug.LogError(string.Format("Fetching asset failed ({0}): {1} ", request.url, webRequest.error));
+
+                        if (OnFail != null)
+                        {
+                            OnFail.Invoke(webRequest.error);
+                        }
                     }
                     else
                     {
-                        callback(DownloadHandlerTexture.GetContent(webRequest));
+                        if (OnSuccess != null)
+                        {
+                            OnSuccess.Invoke(webRequest);
+                        }
                     }
                 }
             }
             else
             {
-                Debug.Log("Can't fetch texture as the url is empty");
-
-                yield return null;
+                Debug.LogError( string.Format("Can't fetch asset as the url is empty!") );
             }
         }
+        
+        public static IEnumerator FetchAudioClip(string url, AudioType audioType, Action<AudioClip> OnSuccess, Action<string> OnFail)
+        {
+            //NOTE(Brian): This closure is called when the download is a success.
+            Action<UnityWebRequest> OnSuccessInternal =
+                (request) =>
+                {
+                    if (OnSuccess != null)
+                    {
+                        AudioClip ac = DownloadHandlerAudioClip.GetContent(request);
+                        OnSuccess.Invoke(ac);
+                    }
+                };
 
+            Action<string> OnFailInternal =
+            (error) =>
+            {
+                if (OnFail != null)
+                {
+                    OnFail.Invoke(error);
+                }
+            };
+
+            yield return FetchAsset(url, UnityWebRequestMultimedia.GetAudioClip(url, audioType), OnSuccessInternal, OnFailInternal);
+        }
+
+        public static IEnumerator FetchTexture(string textureURL, Action<Texture> OnSuccess)
+        {
+            //NOTE(Brian): This closure is called when the download is a success.
+            System.Action<UnityWebRequest> OnSuccessInternal =
+                (request) =>
+                {
+                    if (OnSuccess != null)
+                    {
+                        OnSuccess.Invoke(DownloadHandlerTexture.GetContent(request));
+                    }
+                };
+
+            yield return FetchAsset(textureURL, UnityWebRequestTexture.GetTexture(textureURL), OnSuccessInternal);
+        }
+
+        public static AudioType GetAudioTypeFromUrlName(string url)
+        {
+            string ext = url.Substring(url.Length - 3).ToLower();
+
+            switch (ext)
+            {
+                case "mp3":
+                    return AudioType.MPEG;
+                case "wav":
+                    return AudioType.WAV;
+                case "ogg":
+                    return AudioType.OGGVORBIS;
+                default:
+                    return AudioType.UNKNOWN;
+            }
+        }
 
         public static bool SafeFromJsonOverwrite(string json, object objectToOverwrite)
         {

@@ -94,7 +94,7 @@ namespace DCL.Components
                 // FETCH AND LOAD EMISSIVE TEXTURE
                 if (!string.IsNullOrEmpty(model.emissiveTexture))
                 {
-                    yield return Helpers.Utils.FetchTexture(scene, model.emissiveTexture, (fetchedEmissiveTexture) =>
+                    yield return Utils.FetchTexture(model.emissiveTexture, (fetchedEmissiveTexture) =>
                     {
                         material.SetTexture("_EmissionMap", fetchedEmissiveTexture);
                     });
@@ -119,7 +119,7 @@ namespace DCL.Components
             // FETCH AND LOAD TEXTURES
             if (!string.IsNullOrEmpty(model.albedoTexture))
             {
-                yield return Helpers.Utils.FetchTexture(scene, model.albedoTexture, (fetchedAlbedoTexture) =>
+                yield return Utils.FetchTexture(model.albedoTexture, (fetchedAlbedoTexture) =>
                 {
                     material.SetTexture("_MainTex", fetchedAlbedoTexture);
                 });
@@ -127,7 +127,7 @@ namespace DCL.Components
 
             if (!string.IsNullOrEmpty(model.bumpTexture))
             {
-                yield return Helpers.Utils.FetchTexture(scene, model.bumpTexture, (fetchedBumpTexture) =>
+                yield return Utils.FetchTexture(model.bumpTexture, (fetchedBumpTexture) =>
                 {
                     material.SetTexture("_BumpMap", fetchedBumpTexture);
                 });
@@ -175,7 +175,7 @@ namespace DCL.Components
 
         void OnMaterialAttached(DecentralandEntity entity)
         {
-            var meshRenderer = Helpers.Utils.GetOrCreateComponent<MeshRenderer>(entity.gameObject);
+            var meshRenderer = Utils.GetOrCreateComponent<MeshRenderer>(entity.gameObject);
             meshRenderer.sharedMaterial = material;
         }
 

@@ -44,7 +44,10 @@ namespace DCL.Components
 
             if (!string.IsNullOrEmpty(model.texture))
             {
-                yield return Helpers.Utils.FetchTexture(scene, model.texture, (fetchedTexture) =>
+                //NOTE(Brian): If we call ApplyChanges 2 times in a row and download is progressing
+                //             we will have 2 requests at the same time.
+                //             I address this in DCLAudioClip. Must fix later.
+                yield return Utils.FetchTexture(model.texture, (fetchedTexture) =>
                 {
                     material.mainTexture = fetchedTexture;
 
