@@ -59,7 +59,6 @@ namespace DCL.Models
             name = default(string);
             id = default(string);
 
-            // TODO: Check if not using the simple 'FromJson' will keep previous values when overwriting using a partial json
             JsonUtility.FromJsonOverwrite(rawJson, this);
         }
     }
@@ -83,7 +82,6 @@ namespace DCL.Models
             json = default(string);
             classId = default(int);
 
-            // TODO: Check if not using the simple 'FromJson' will keep previous values when overwriting using a partial json
             JsonUtility.FromJsonOverwrite(rawJson, this);
         }
     }
@@ -101,7 +99,6 @@ namespace DCL.Models
             entityId = default(string);
             parentId = default(string);
 
-            // TODO: Check if not using the simple 'FromJson' will keep previous values when overwriting using a partial json
             JsonUtility.FromJsonOverwrite(rawJson, this);
         }
     }
@@ -116,7 +113,6 @@ namespace DCL.Models
         {
             id = default(string);
 
-            // TODO: Check if not using the simple 'FromJson' will keep previous values when overwriting using a partial json
             JsonUtility.FromJsonOverwrite(rawJson, this);
         }
     }
@@ -131,7 +127,6 @@ namespace DCL.Models
         {
             id = default(string);
 
-            // TODO: Check if not using the simple 'FromJson' will keep previous values when overwriting using a partial json
             JsonUtility.FromJsonOverwrite(rawJson, this);
         }
     }
@@ -149,7 +144,6 @@ namespace DCL.Models
             entityId = default(string);
             name = default(string);
 
-            // TODO: Check if not using the simple 'FromJson' will keep previous values when overwriting using a partial json
             JsonUtility.FromJsonOverwrite(rawJson, this);
         }
     }
@@ -166,7 +160,6 @@ namespace DCL.Models
             id = default(string);
             json = default(string);
 
-            // TODO: Check if not using the simple 'FromJson' will keep previous values when overwriting using a partial json
             JsonUtility.FromJsonOverwrite(rawJson, this);
         }
     }
@@ -181,7 +174,6 @@ namespace DCL.Models
         {
             id = default(string);
 
-            // TODO: Check if not using the simple 'FromJson' will keep previous values when overwriting using a partial json
             JsonUtility.FromJsonOverwrite(rawJson, this);
         }
     }
@@ -202,7 +194,6 @@ namespace DCL.Models
             name = default(string);
             classId = default(int);
 
-            // TODO: Check if not using the simple 'FromJson' will keep previous values when overwriting using a partial json
             JsonUtility.FromJsonOverwrite(rawJson, this);
         }
     }
@@ -220,7 +211,6 @@ namespace DCL.Models
             uuid = default(string);
             type = default(string);
 
-            // TODO: Check if not using the simple 'FromJson' will keep previous values when overwriting using a partial json
             JsonUtility.FromJsonOverwrite(rawJson, this);
         }
     }
