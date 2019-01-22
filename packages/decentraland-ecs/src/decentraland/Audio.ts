@@ -72,4 +72,14 @@ export class AudioSource extends ObservableComponent {
     }
     this.audioClipId = getComponentId(audioClip as any)
   }
+
+  /**
+   * Disables the looping and plays the current source once.
+   * If the sound was playing, it stops and starts over.
+   */
+  playOnce() {
+    this.playing = true
+    this.dirty = true
+    this.data.nonce = Math.random()
+  }
 }

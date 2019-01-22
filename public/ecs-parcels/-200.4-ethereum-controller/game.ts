@@ -406,13 +406,30 @@ const abi = [
   }
 ]
 
-executeTask(async () => {
-  const provider = await getProvider()
-  const requestManager = new EthConnect.RequestManager(provider)
-  const factory = new EthConnect.ContractFactory(requestManager, abi)
-  const contract = (await factory.at('0x2a8fd99c19271f4f04b1b7b9c4f7cf264b626edb')) as any
-  const res = await contract.setBalance('0xaFA48Fad27C7cAB28dC6E970E4BFda7F7c8D60Fb', 100, {
-    from: await getUserPublicKey()
+const cube = new Entity()
+
+cube.set(
+  new Transform({
+    position: new Vector3(5, 1, 5)
   })
-  log(res)
-})
+)
+const text = new TextShape('Click to create transaction')
+text.billboard = true
+text.isPickable = true
+cube.set(text)
+cube.set(
+  new OnClick(() => {
+    executeTask(async () => {
+      const provider = await getProvider()
+      const requestManager = new EthConnect.RequestManager(provider)
+      const factory = new EthConnect.ContractFactory(requestManager, abi)
+      const contract = (await factory.at('0x2a8fd99c19271f4f04b1b7b9c4f7cf264b626edb')) as any
+      const res = await contract.setBalance('0xaFA48Fad27C7cAB28dC6E970E4BFda7F7c8D60Fb', 100, {
+        from: await getUserPublicKey()
+      })
+      log(res)
+    })
+  })
+)
+
+engine.addEntity(cube)

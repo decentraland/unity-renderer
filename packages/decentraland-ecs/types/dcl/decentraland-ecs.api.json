@@ -299,9 +299,9 @@
         },
         "clip": {
           "kind": "property",
-          "signature": "clip: string;",
+          "signature": "readonly clip: string;",
           "isOptional": false,
-          "isReadOnly": false,
+          "isReadOnly": true,
           "isStatic": false,
           "type": "string",
           "deprecatedMessage": [],
@@ -318,9 +318,9 @@
           "isOverride": false,
           "isEventProperty": false
         },
-        "loop": {
+        "looping": {
           "kind": "property",
-          "signature": "loop: boolean;",
+          "signature": "looping: boolean;",
           "isOptional": false,
           "isReadOnly": false,
           "isStatic": false,
@@ -481,6 +481,83 @@
           "isVirtual": false,
           "isOverride": false,
           "isEventProperty": false
+        }
+      }
+    },
+    "Animator": {
+      "kind": "class",
+      "extends": "Shape",
+      "implements": "",
+      "typeParameters": [],
+      "deprecatedMessage": [],
+      "summary": [],
+      "remarks": [],
+      "isBeta": false,
+      "isSealed": false,
+      "members": {
+        "addClip": {
+          "kind": "method",
+          "signature": "addClip(clip: AnimationClip): void;",
+          "accessModifier": "",
+          "isOptional": false,
+          "isStatic": false,
+          "returnValue": {
+            "type": "void",
+            "description": []
+          },
+          "parameters": {
+            "clip": {
+              "name": "clip",
+              "description": [],
+              "isOptional": false,
+              "isSpread": false,
+              "type": "AnimationClip"
+            }
+          },
+          "deprecatedMessage": [],
+          "summary": [
+            {
+              "kind": "text",
+              "text": "Adds an AnimationClip to the animation lists."
+            }
+          ],
+          "remarks": [],
+          "isBeta": false,
+          "isSealed": false,
+          "isVirtual": false,
+          "isOverride": false
+        },
+        "getClip": {
+          "kind": "method",
+          "signature": "getClip(clipName: string): AnimationClip;",
+          "accessModifier": "",
+          "isOptional": false,
+          "isStatic": false,
+          "returnValue": {
+            "type": "AnimationClip",
+            "description": []
+          },
+          "parameters": {
+            "clipName": {
+              "name": "clipName",
+              "description": [],
+              "isOptional": false,
+              "isSpread": false,
+              "type": "string"
+            }
+          },
+          "deprecatedMessage": [],
+          "summary": [
+            {
+              "kind": "text",
+              "text": "Gets the animation clip instance for the specified clip name. If the clip doesn't exist a new one will be created."
+            }
+          ],
+          "remarks": [],
+          "isBeta": false,
+          "isSealed": false,
+          "isVirtual": false,
+          "isOverride": false
         }
       }
     },
@@ -709,6 +786,310 @@
             {
               "kind": "text",
               "text": "Defines the start point of the arc"
+            }
+          ],
+          "remarks": [],
+          "isBeta": false,
+          "isSealed": false,
+          "isVirtual": false,
+          "isOverride": false,
+          "isEventProperty": false
+        }
+      }
+    },
+    "AudioClip": {
+      "kind": "class",
+      "extends": "ObservableComponent",
+      "implements": "",
+      "typeParameters": [],
+      "deprecatedMessage": [],
+      "summary": [],
+      "remarks": [],
+      "isBeta": false,
+      "isSealed": false,
+      "members": {
+        "__constructor": {
+          "kind": "constructor",
+          "signature": "constructor(url: string);",
+          "parameters": {
+            "url": {
+              "name": "url",
+              "description": [],
+              "isOptional": false,
+              "isSpread": false,
+              "type": "string"
+            }
+          },
+          "deprecatedMessage": [],
+          "summary": [
+            {
+              "kind": "text",
+              "text": "Constructs a new instance of the "
+            },
+            {
+              "kind": "api-link",
+              "elements": [
+                {
+                  "kind": "text",
+                  "text": "AudioClip"
+                }
+              ],
+              "target": {
+                "scopeName": "",
+                "packageName": "decentraland-ecs",
+                "exportName": "AudioClip",
+                "memberName": ""
+              }
+            },
+            {
+              "kind": "text",
+              "text": " class"
+            }
+          ],
+          "remarks": []
+        },
+        "loop": {
+          "kind": "property",
+          "signature": "loop: boolean;",
+          "isOptional": false,
+          "isReadOnly": false,
+          "isStatic": false,
+          "type": "boolean",
+          "deprecatedMessage": [],
+          "summary": [
+            {
+              "kind": "text",
+              "text": "Is this clip looping by default?"
+            }
+          ],
+          "remarks": [],
+          "isBeta": false,
+          "isSealed": false,
+          "isVirtual": false,
+          "isOverride": false,
+          "isEventProperty": false
+        },
+        "url": {
+          "kind": "property",
+          "signature": "readonly url: string;",
+          "isOptional": false,
+          "isReadOnly": true,
+          "isStatic": false,
+          "type": "string",
+          "deprecatedMessage": [],
+          "summary": [],
+          "remarks": [],
+          "isBeta": false,
+          "isSealed": false,
+          "isVirtual": false,
+          "isOverride": false,
+          "isEventProperty": false
+        },
+        "volume": {
+          "kind": "property",
+          "signature": "volume: number;",
+          "isOptional": false,
+          "isReadOnly": false,
+          "isStatic": false,
+          "type": "number",
+          "deprecatedMessage": [],
+          "summary": [
+            {
+              "kind": "text",
+              "text": "Clip's master volume. This volume affects all the AudioSources. Valid ranges from 0 to 1"
+            }
+          ],
+          "remarks": [],
+          "isBeta": false,
+          "isSealed": false,
+          "isVirtual": false,
+          "isOverride": false,
+          "isEventProperty": false
+        }
+      }
+    },
+    "AudioSource": {
+      "kind": "class",
+      "extends": "ObservableComponent",
+      "implements": "",
+      "typeParameters": [],
+      "deprecatedMessage": [],
+      "summary": [],
+      "remarks": [],
+      "isBeta": false,
+      "isSealed": false,
+      "members": {
+        "__constructor": {
+          "kind": "constructor",
+          "signature": "constructor(audioClip: AudioClip);",
+          "parameters": {
+            "audioClip": {
+              "name": "audioClip",
+              "description": [],
+              "isOptional": false,
+              "isSpread": false,
+              "type": "AudioClip"
+            }
+          },
+          "deprecatedMessage": [],
+          "summary": [
+            {
+              "kind": "text",
+              "text": "Constructs a new instance of the "
+            },
+            {
+              "kind": "api-link",
+              "elements": [
+                {
+                  "kind": "text",
+                  "text": "AudioSource"
+                }
+              ],
+              "target": {
+                "scopeName": "",
+                "packageName": "decentraland-ecs",
+                "exportName": "AudioSource",
+                "memberName": ""
+              }
+            },
+            {
+              "kind": "text",
+              "text": " class"
+            }
+          ],
+          "remarks": []
+        },
+        "audioClip": {
+          "kind": "property",
+          "signature": "readonly audioClip: AudioClip;",
+          "isOptional": false,
+          "isReadOnly": true,
+          "isStatic": false,
+          "type": "AudioClip",
+          "deprecatedMessage": [],
+          "summary": [],
+          "remarks": [],
+          "isBeta": false,
+          "isSealed": false,
+          "isVirtual": false,
+          "isOverride": false,
+          "isEventProperty": false
+        },
+        "audioClipId": {
+          "kind": "property",
+          "signature": "readonly audioClipId: string;",
+          "isOptional": false,
+          "isReadOnly": true,
+          "isStatic": false,
+          "type": "string",
+          "deprecatedMessage": [],
+          "summary": [],
+          "remarks": [],
+          "isBeta": false,
+          "isSealed": false,
+          "isVirtual": false,
+          "isOverride": false,
+          "isEventProperty": false
+        },
+        "loop": {
+          "kind": "property",
+          "signature": "loop: boolean;",
+          "isOptional": false,
+          "isReadOnly": false,
+          "isStatic": false,
+          "type": "boolean",
+          "deprecatedMessage": [],
+          "summary": [
+            {
+              "kind": "text",
+              "text": "Is this clip looping by default?"
+            }
+          ],
+          "remarks": [],
+          "isBeta": false,
+          "isSealed": false,
+          "isVirtual": false,
+          "isOverride": false,
+          "isEventProperty": false
+        },
+        "pitch": {
+          "kind": "property",
+          "signature": "pitch: number;",
+          "isOptional": false,
+          "isReadOnly": false,
+          "isStatic": false,
+          "type": "number",
+          "deprecatedMessage": [],
+          "summary": [
+            {
+              "kind": "text",
+              "text": "Pitch, default: 1.0, range from 0.0 to MaxFloat"
+            }
+          ],
+          "remarks": [],
+          "isBeta": false,
+          "isSealed": false,
+          "isVirtual": false,
+          "isOverride": false,
+          "isEventProperty": false
+        },
+        "playing": {
+          "kind": "property",
+          "signature": "playing: boolean;",
+          "isOptional": false,
+          "isReadOnly": false,
+          "isStatic": false,
+          "type": "boolean",
+          "deprecatedMessage": [],
+          "summary": [
+            {
+              "kind": "text",
+              "text": "Is this AudioSource playing?"
+            }
+          ],
+          "remarks": [],
+          "isBeta": false,
+          "isSealed": false,
+          "isVirtual": false,
+          "isOverride": false,
+          "isEventProperty": false
+        },
+        "playOnce": {
+          "kind": "method",
+          "signature": "playOnce(): void;",
+          "accessModifier": "",
+          "isOptional": false,
+          "isStatic": false,
+          "returnValue": {
+            "type": "void",
+            "description": []
+          },
+          "parameters": {},
+          "deprecatedMessage": [],
+          "summary": [
+            {
+              "kind": "text",
+              "text": "Disables the looping and plays the current source once. If the sound was playing, it stops and starts over."
+            }
+          ],
+          "remarks": [],
+          "isBeta": false,
+          "isSealed": false,
+          "isVirtual": false,
+          "isOverride": false
+        },
+        "volume": {
+          "kind": "property",
+          "signature": "volume: number;",
+          "isOptional": false,
+          "isReadOnly": false,
+          "isStatic": false,
+          "type": "number",
+          "deprecatedMessage": [],
+          "summary": [
+            {
+              "kind": "text",
+              "text": "Clip's master volume. This volume affects all the AudioSources. Valid ranges from 0 to 1"
             }
           ],
           "remarks": [],
@@ -8120,70 +8501,6 @@
             }
           ],
           "remarks": []
-        },
-        "addClip": {
-          "kind": "method",
-          "signature": "addClip(clip: AnimationClip): void;",
-          "accessModifier": "",
-          "isOptional": false,
-          "isStatic": false,
-          "returnValue": {
-            "type": "void",
-            "description": []
-          },
-          "parameters": {
-            "clip": {
-              "name": "clip",
-              "description": [],
-              "isOptional": false,
-              "isSpread": false,
-              "type": "AnimationClip"
-            }
-          },
-          "deprecatedMessage": [],
-          "summary": [
-            {
-              "kind": "text",
-              "text": "Adds an AnimationClip to the animation lists."
-            }
-          ],
-          "remarks": [],
-          "isBeta": false,
-          "isSealed": false,
-          "isVirtual": false,
-          "isOverride": false
-        },
-        "getClip": {
-          "kind": "method",
-          "signature": "getClip(clipName: string): AnimationClip;",
-          "accessModifier": "",
-          "isOptional": false,
-          "isStatic": false,
-          "returnValue": {
-            "type": "AnimationClip",
-            "description": []
-          },
-          "parameters": {
-            "clipName": {
-              "name": "clipName",
-              "description": [],
-              "isOptional": false,
-              "isSpread": false,
-              "type": "string"
-            }
-          },
-          "deprecatedMessage": [],
-          "summary": [
-            {
-              "kind": "text",
-              "text": "Gets the animation clip instance for the specified clip name. If the clip doesn't exist a new one will be created."
-            }
-          ],
-          "remarks": [],
-          "isBeta": false,
-          "isSealed": false,
-          "isVirtual": false,
-          "isOverride": false
         },
         "src": {
           "kind": "property",

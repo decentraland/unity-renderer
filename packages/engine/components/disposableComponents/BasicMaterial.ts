@@ -109,6 +109,7 @@ export class BasicMaterial extends DisposableComponent {
 
   dispose() {
     this.material.dispose(false, false)
+    super.dispose()
   }
 
   async updateData(data: any): Promise<void> {

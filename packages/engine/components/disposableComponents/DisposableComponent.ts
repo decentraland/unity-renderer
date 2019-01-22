@@ -8,7 +8,8 @@ export abstract class DisposableComponent {
   contributions = {
     textureCount: 0,
     materialCount: 0,
-    geometriesCount: 0
+    geometriesCount: 0,
+    audioClips: 0
   }
 
   entities: Set<BaseEntity> = new Set()

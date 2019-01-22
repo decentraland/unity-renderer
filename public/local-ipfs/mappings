@@ -2007,11 +2007,15 @@
     "parcel_id": "-200,2",
     "root_cid": "Qm4V9DdKdmLXT5FEMD6fpmbh1yvi8nvHZiCsWp9LqFVnzF1nb7Jba2fE3rZsFGFAZT6qFVmDzm7FPES1DNMCEf1P86",
     "contents": {
+      "button.ogg": "Qm4Ak9G8VbHVMtQrMM7cVbDx1tKikCZ54dwdQBBnCTv5uj3ooY9wYoZuTMg4iRaR9ChzoqrjB2k2uDTqPaApHNwT1u",
+      "carnivalrides.ogg": "Qm4xiFjrJHF7P4RpgeqsEnktTZFe8EEvw5E9YbDH1PjCLWBiE5bZhhC74YhPinQvEVbrHL9bYZS48urfYpPS7snKbF",
       "game.js": "QmGoQjWi7ioartZnrH2n4ECByHQVcuKwRLiGXLXWYezcgCyAGKBLWAAbZYLHor2KohyGBwkerZwMjEMcoDs4GHQQz",
       "game.ts": "Qm2tGycqVTSfLZq5sVMwe2mTHpKCaxeKBrnAE8ugtXCshQGX5cZ7T98wshSanBroThWvE9JaoPadh88jchGZyNSc1t",
+      "gameover.ogg": "Qm5hZXT28u418YraxmFodvKZg95ECJ46rWaDwLNsyik7iaKthc4xoZhXJsBJBAVqed9t8KDoiUyuHyKcxo72rEeFxQ",
       "scene.json": "Qm5qS2iP7TctUjLLrBkWf6CdJCMG7hG4wYaG2WZm7QxT3S6kbrjgPDn9iT1MMR7dCH3FF2t9ZG6aEZAmkS7Gb32UNi",
       "sneaky_menu.mp3": "Qm59ZFfuEbNT8ggWZD9VLU3rVUUVYaexZs8ywh4cZ5BvsDokuvb8qYGqDVwZ9EoEJi94JiAUqD2S8Bg1DnYJX74TcP",
-      "tsconfig.json": "Qm33RupRGBL4QkLa24MMhvsShj5QybyYFwnFmMT2g356mP1LTtTZyQ5ptQxCpgsZw9DsuzRFgKo9kyRY3BNHnppRJZ"
+      "tsconfig.json": "Qm33RupRGBL4QkLa24MMhvsShj5QybyYFwnFmMT2g356mP1LTtTZyQ5ptQxCpgsZw9DsuzRFgKo9kyRY3BNHnppRJZ",
+      "win.ogg": "Qm5i42iDFXBm4dpbwZjQjDwXggwC2VGApbVqJTAgTmYuNwj3TnGH8NLyHfBt5tnWZMx1inKtR5CU7m1otT8wYmkRat"
     }
   },
   {

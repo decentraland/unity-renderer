@@ -1,30 +1,49 @@
-// 1 import { playSound, pauseSound } from '@decentraland/SoundController'
+{
+  const clip = new AudioClip('carnivalrides.ogg')
+  const cube = new Entity()
+  const source = new AudioSource(clip)
 
-executeTask(async () => {
-  try {
-    // 1 await playSound('sneaky_menu.mp3', {
-    // 1   loop: true,
-    // 1   volume: 100
-    // 1 })
-  } catch {
-    log('failed to play sound')
-  }
-})
-
-const cube = new Entity()
-
-cube.set(
-  new Transform({
-    position: new Vector3(5, 1, 5)
-  })
-)
-cube.getOrCreate(BoxShape)
-cube.set(
-  new OnClick(() => {
-    executeTask(async () => {
-      // 1 await pauseSound()
+  cube.set(
+    new Transform({
+      position: new Vector3(5, 1, 5)
     })
-  })
-)
+  )
+  cube.getOrCreate(BoxShape)
+  cube.set(
+    new OnClick(() => {
+      cube.get(Transform).position.set(Math.random() * 8 + 1, Math.random() * 8 + 1, Math.random() * 8 + 1)
+    })
+  )
+  source.playing = true
+  source.loop = true
+  cube.set(source)
 
-engine.addEntity(cube)
+  engine.addEntity(cube)
+}
+
+{
+  const clip = new AudioClip('button.ogg')
+
+  const cube = new Entity()
+  const source = new AudioSource(clip)
+  source.loop = false
+
+  cube.set(
+    new Transform({
+      position: new Vector3(5, 1, 2),
+      scale: new Vector3(0.2, 0.2, 0.2)
+    })
+  )
+
+  cube.getOrCreate(BoxShape)
+
+  cube.set(
+    new OnClick(() => {
+      source.playOnce()
+    })
+  )
+
+  cube.set(source)
+
+  engine.addEntity(cube)
+}
