@@ -1,3 +1,8 @@
+const material = new Material()
+
+material.roughness = 0.5
+material.metallic = 0.5
+
 const group = engine.getComponentGroup(Transform)
 
 export class RotatorSystem {
@@ -33,8 +38,11 @@ const cube = new Entity()
 cube.getOrCreate(Transform)
 cube.getOrCreate(BoxShape)
 cube.getOrCreate(Counter)
+cube.add(material)
 
 engine.addEntity(cube)
 
 engine.addSystem(new RotatorSystem())
 engine.addSystem(new TraslatorSystem())
+
+log('-200,0 loaded')

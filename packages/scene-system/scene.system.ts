@@ -27,6 +27,9 @@ const UPDATE_INTERVAL = 1000 / FPS
 const dataUrlRE = /^data:[^/]+\/[^;]+;base64,/
 const blobRE = /^blob:http/
 
+const WEB3_PROVIDER = 'web3-provider'
+const PROVIDER_METHOD = 'getProvider'
+
 function resolveMapping(mapping: string | undefined, mappingName: string, baseUrl: string) {
   let url = mappingName
 
@@ -67,6 +70,7 @@ export default class GamekitScene extends Script {
   manualUpdate: boolean = false
 
   didStart = false
+  provider: any = null
 
   onError(error: Error) {
     if (this.devToolsAdapter) {
@@ -302,24 +306,28 @@ export default class GamekitScene extends Script {
             type: 'ComponentUpdated',
             payload: JSON.stringify({
               id,
-              json // TODO: ECS, fix this in unity
+              json
             } as ComponentUpdatedPayload)
           })
         },
 
         loadModule: async _moduleName => {
           const moduleToLoad = _moduleName.replace(/^@decentraland\//, '')
-
-          const proxy = (await this.loadAPIs([moduleToLoad]))[moduleToLoad]
-
           let methods: string[] = []
 
-          try {
-            methods = await proxy._getExposedMethods()
-          } catch (e) {
-            throw Object.assign(new Error(`Error getting the methods of ${moduleToLoad}: ` + e.message), {
-              original: e
-            })
+          if (moduleToLoad === WEB3_PROVIDER) {
+            methods.push(PROVIDER_METHOD)
+            this.provider = await this.getEthereumProvider()
+          } else {
+            const proxy = (await this.loadAPIs([moduleToLoad]))[moduleToLoad]
+
+            try {
+              methods = await proxy._getExposedMethods()
+            } catch (e) {
+              throw Object.assign(new Error(`Error getting the methods of ${moduleToLoad}: ` + e.message), {
+                original: e
+              })
+            }
           }
 
           return {
@@ -328,6 +336,10 @@ export default class GamekitScene extends Script {
           }
         },
         callRpc: async (rpcHandle: string, methodName: string, args: any[]) => {
+          if (rpcHandle === WEB3_PROVIDER && methodName === PROVIDER_METHOD) {
+            return this.provider
+          }
+
           const module = this.loadedAPIs[rpcHandle]
           if (!module) {
             throw new Error(`RPCHandle: ${rpcHandle} is not loaded`)

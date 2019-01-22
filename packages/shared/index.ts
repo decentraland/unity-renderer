@@ -1,3 +1,4 @@
+import './apis'
 import { ensureLocalStorageStructure } from './comms/profile'
 import { initializeUrlPositionObserver } from './world/positionThings'
 import { ETHEREUM_NETWORK, MOBILE_DEBUG, networkConfigurations, PREVIEW } from '../config'

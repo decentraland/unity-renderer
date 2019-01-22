@@ -3,6 +3,7 @@ import { Billboard } from './ephemeralComponents/Billboard'
 import { HighlightBox } from './ephemeralComponents/HighlightBox'
 import { Sound } from './ephemeralComponents/Sound'
 import { TextShape } from './ephemeralComponents/TextShape'
+import { Animator } from './ephemeralComponents/Animator'
 
 import './disposableComponents/BasicMaterial'
 import './disposableComponents/BoxShape'
@@ -15,7 +16,6 @@ import './disposableComponents/OBJShape'
 import './disposableComponents/PBRMaterial'
 import './disposableComponents/PlaneShape'
 import './disposableComponents/SphereShape'
-import './disposableComponents/UUIDComponent'
 
 import './disposableComponents/ui/UIControl'
 import './disposableComponents/ui/UIContainerRect'
@@ -36,7 +36,8 @@ export const componentRegistry = {
   [CLASS_ID.BILLBOARD]: Billboard,
   [CLASS_ID.HIGHLIGHT_ENTITY]: HighlightBox,
   [CLASS_ID.SOUND]: Sound,
-  [CLASS_ID.TEXT_SHAPE]: TextShape
+  [CLASS_ID.TEXT_SHAPE]: TextShape,
+  [CLASS_ID.ANIMATION]: Animator
 }
 
 export type IComponentName = keyof typeof componentRegistry

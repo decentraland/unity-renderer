@@ -7,6 +7,7 @@ import { scene, engineMicroQueue } from '../renderer'
 import { DisposableComponent } from 'engine/components/disposableComponents/DisposableComponent'
 import { UpdateEntityComponentPayload } from 'shared/types'
 import { IEventNames, IEvents } from 'shared/events'
+import { CLASS_ID } from 'decentraland-ecs/src'
 
 // tslint:disable-next-line:whitespace
 type SharedSceneContext = import('./SharedSceneContext').SharedSceneContext
@@ -32,6 +33,7 @@ export class BaseEntity extends BABYLON.TransformNode {
     return findParentEntity(this)
   }
 
+  assetContainer: BABYLON.AssetContainer
   isDCLEntity = true
 
   actionManager: BABYLON.ActionManager
@@ -239,6 +241,8 @@ export class BaseEntity extends BABYLON.TransformNode {
       current.removeFrom(this)
     }
 
+    this.removeUUIDEvent(name as any)
+
     if (name in this.attrs) {
       delete this.attrs[name]
     }
@@ -390,6 +394,11 @@ export class BaseEntity extends BABYLON.TransformNode {
   updateComponent(payload: UpdateEntityComponentPayload) {
     const name = payload.name
     this.attrs[name] = payload
+
+    if (payload.classId === CLASS_ID.UUID_CALLBACK) {
+      const uuidPayload: { type: IEventNames; uuid: string } = JSON.parse(payload.json)
+      this.addUUIDEvent(uuidPayload.type, uuidPayload.uuid)
+    }
 
     if (name in this.components) {
       this.components[name].setValue(JSON.parse(payload.json))

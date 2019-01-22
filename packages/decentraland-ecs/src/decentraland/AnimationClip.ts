@@ -1,14 +1,14 @@
 import { ObservableComponent } from '../ecs/Component'
+import { uuid } from '../ecs/helpers'
 
 export type AnimationParams = {
-  clip?: string
-  loop?: boolean
+  looping?: boolean
   speed?: number
   weight?: number
 }
 
-const defaultParams: Required<Pick<AnimationParams, 'loop' | 'speed' | 'weight'>> = {
-  loop: true,
+const defaultParams: Required<Pick<AnimationParams, 'looping' | 'speed' | 'weight'>> = {
+  looping: true,
   speed: 1.0,
   weight: 1.0
 }
@@ -23,14 +23,14 @@ export class AnimationClip extends ObservableComponent {
   /**
    * Name of the animation in the model
    */
-  @ObservableComponent.field
-  public clip!: string
+  @ObservableComponent.readonly
+  public readonly clip: string
 
   /**
    * Does the animation loop?, default: true
    */
   @ObservableComponent.field
-  public loop: boolean = defaultParams.loop
+  public looping: boolean = defaultParams.looping
 
   /**
    * Weight of the animation, values from 0 to 1, used to blend several animations. default: 1
@@ -50,17 +50,21 @@ export class AnimationClip extends ObservableComponent {
   @ObservableComponent.field
   public speed: number = defaultParams.speed
 
+  // @internal
+  @ObservableComponent.readonly
+  readonly name: string = uuid()
+
   constructor(clip: string, params: AnimationParams = defaultParams) {
     super()
-    this.setParams({ clip, ...params })
+    this.clip = clip
+    this.setParams({ ...params })
   }
 
   /**
    * Sets the clip parameters
    */
   setParams(params: AnimationParams) {
-    this.clip = params.clip || this.clip
-    this.loop = params.loop !== undefined ? params.loop : this.loop
+    this.looping = params.looping !== undefined ? params.looping : this.looping
     this.speed = params.speed || this.speed
   }
 
@@ -78,5 +82,3 @@ export class AnimationClip extends ObservableComponent {
     this.playing = false
   }
 }
-
-export default AnimationClip

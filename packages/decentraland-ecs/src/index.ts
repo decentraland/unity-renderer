@@ -42,5 +42,6 @@ export * from './decentraland/Camera'
 export * from './decentraland/math'
 export * from './decentraland/AnimationClip'
 export * from './decentraland/Input'
+export * from './decentraland/Audio'
 
 export { engine }

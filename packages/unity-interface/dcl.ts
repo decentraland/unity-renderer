@@ -1,6 +1,8 @@
 type GameInstance = { SendMessage(object: string, method: string, ...args: (number | string)[]) }
 
 import { initShared } from '../shared'
+import { DevTools } from '../shared/apis/DevTools'
+import { ILogger, createLogger } from '../shared/logger'
 import { positionObserver, lastPlayerPosition } from '../shared/world/positionThings'
 import { Vector3, Quaternion } from 'babylonjs'
 import { enableParcelSceneLoading, getParcelById } from '../shared/world/parcelSceneManager'
@@ -14,6 +16,8 @@ import {
 } from '../shared/types'
 import { SceneWorker, ParcelSceneAPI } from '../shared/world/SceneWorker'
 import { IEventNames, IEvents } from '../shared/events'
+import { EventDispatcher } from 'decentraland-rpc/lib/common/core/EventDispatcher'
+import { ParcelIdentity } from '../shared/apis/ParcelIdentity'
 
 let gameInstance: GameInstance = null
 
@@ -38,20 +42,29 @@ const browserInterface = {
   SceneEvent(data: { sceneId: string; eventType: string; payload: any }) {
     const scene = getParcelById(data.sceneId)
     if (scene) {
-      // send message to scene.parcelScene as UnityParcelScene
+      const parcelScene = scene.parcelScene as UnityParcelScene
+      parcelScene.emit(data.eventType as IEventNames, data.payload)
     }
   }
 }
+
+let lastParcelScenesSent = ''
 
 const unityInterface = {
   debug: false,
   /** Sends the camera position to the engine */
   SetPosition(x: number, y: number, z: number) {
-    gameInstance.SendMessage('CharacterController', 'SetPosition', JSON.stringify({ x, y, z }))
+    let theY = y <= 0 ? 2 : y
+
+    gameInstance.SendMessage('CharacterController', 'SetPosition', JSON.stringify({ x, y: theY, z }))
   },
   /** Tells the engine which scenes to load */
   LoadParcelScenes(parcelsToLoad: LoadableParcelScene[]) {
-    gameInstance.SendMessage('SceneController', 'LoadParcelScenes', JSON.stringify({ parcelsToLoad }))
+    const parcelScenes = JSON.stringify({ parcelsToLoad })
+    if (parcelScenes !== lastParcelScenesSent) {
+      lastParcelScenesSent = parcelScenes
+      gameInstance.SendMessage('SceneController', 'LoadParcelScenes', parcelScenes)
+    }
   },
   sendSceneMessage(parcelSceneId: string, method: string, payload: string) {
     if (unityInterface.debug) {
@@ -67,24 +80,46 @@ window['unityInterface'] = unityInterface
 ////////////////////////////////////////////////////////////////////////////////
 
 class UnityParcelScene implements ParcelSceneAPI {
+  eventDispatcher = new EventDispatcher()
+  worker: SceneWorker
+  unitySceneId: string
+  logger: ILogger
+
   constructor(public data: EnvironmentData<LoadableParcelScene>) {
-    // stub
+    this.unitySceneId = data.data.id
+    this.logger = createLogger(this.unitySceneId + ': ')
   }
 
-  sendBatch(ctions: EntityAction[]): void {
-    throw new Error('Method not implemented.')
+  sendBatch(actions: EntityAction[]): void {
+    for (let i = 0; i < actions.length; i++) {
+      const action = actions[i]
+      unityInterface.sendSceneMessage(this.unitySceneId, action.type, action.payload)
+    }
   }
 
-  registerWorker(event: SceneWorker): void {
-    throw new Error('Method not implemented.')
+  registerWorker(worker: SceneWorker): void {
+    this.worker = worker
+
+    this.worker.system
+      .then(system => {
+        system.getAPIInstance(DevTools).logger = this.logger
+
+        const parcelIdentity = system.getAPIInstance(ParcelIdentity)
+        parcelIdentity.land = this.data.data.land
+      })
+      .catch(e => this.logger.error('Error initializing system', e))
   }
 
   dispose(): void {
-    throw new Error('Method not implemented.')
+    // TODO: do we need to release some resource after releasing a scene worker?
   }
 
   on<T extends IEventNames>(event: T, cb: (event: IEvents[T]) => void): void {
-    throw new Error('Method not implemented.')
+    this.eventDispatcher.on(event, cb)
+  }
+
+  emit<T extends IEventNames>(event: T, data: IEvents[T]): void {
+    this.eventDispatcher.emit(event, data)
   }
 }
 
@@ -99,7 +134,13 @@ export async function initializeEngine(_gameInstance: GameInstance) {
   await enableParcelSceneLoading(net, {
     parcelSceneClass: UnityParcelScene,
     onLoadParcelScenes: scenes => {
-      unityInterface.LoadParcelScenes(scenes.map($ => ILandToLoadableParcelScene($).data))
+      unityInterface.LoadParcelScenes(
+        scenes.map($ => {
+          const x = Object.assign({}, ILandToLoadableParcelScene($).data)
+          delete x.land
+          return x
+        })
+      )
     }
   })
 

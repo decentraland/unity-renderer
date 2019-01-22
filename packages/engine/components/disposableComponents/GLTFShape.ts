@@ -7,6 +7,7 @@ import { scene } from 'engine/renderer'
 import { probe } from 'engine/renderer/ambientLights'
 import { DEBUG } from 'config'
 import { log } from 'util'
+import { Animator } from '../ephemeralComponents/Animator'
 
 export class GLTFShape extends DisposableComponent {
   src: string | null = null
@@ -79,15 +80,22 @@ export class GLTFShape extends DisposableComponent {
               entity.setObject3D(BasicShape.nameInEntity, $)
             })
 
+            entity.assetContainer = assetContainer
             assetContainer.addAllToScene()
 
             entity.sendUpdatePositions()
             entity.sendUpdateMetrics()
 
             for (let ag of assetContainer.animationGroups) {
+              ag.stop()
               for (let animatable of ag.animatables) {
                 animatable.weight = 0
               }
+            }
+
+            const animator: Animator = entity.getBehaviorByName('animator') as Animator
+            if (animator) {
+              animator.transformValue(animator.value)
             }
           } else {
             cleanupAssetContainer(assetContainer)
@@ -99,6 +107,13 @@ export class GLTFShape extends DisposableComponent {
         (_scene, message, exception) => {
           this.context.logger.error('Error loading GLTF', message || exception)
           this.onDetach(entity)
+          entity.assetContainer = null
+
+          const animator: Animator = entity.getBehaviorByName('animator') as Animator
+          if (animator) {
+            animator.transformValue(animator.value)
+          }
+
           this.loadingDone = true
         }
       ) as any
@@ -115,6 +130,8 @@ export class GLTFShape extends DisposableComponent {
     if (mesh) {
       entity.removeObject3D(BasicShape.nameInEntity)
     }
+
+    entity.assetContainer = null
 
     const assetContainer = this.assetContainerEntity.get(entity.uuid)
 

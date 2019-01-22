@@ -59,9 +59,9 @@ export async function enableParcelSceneLoading(network: ETHEREUM_NETWORK, option
   positionObserver.add(obj => {
     worldToGrid(obj.position, position)
     ret.server.notify('User.setPosition', { position })
-    for (let parcelScene of loadedParcelSceneWorkers) {
-      if (parcelScene && 'sendUserViewMatrix' in parcelScene) {
-        parcelScene.sendUserViewMatrix(obj)
+    for (let parcelSceneWorker of loadedParcelSceneWorkers) {
+      if (parcelSceneWorker && 'sendUserViewMatrix' in parcelSceneWorker) {
+        parcelSceneWorker.sendUserViewMatrix(obj)
       }
     }
   })

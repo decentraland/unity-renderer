@@ -68,7 +68,7 @@ define("game", ["require", "exports"], function (require, exports) {
     spawn(6, 1, 3, new BoxShape());
     spawn(8, 1, 2, new ConeShape());
     spawn(4, 1, 6, new CylinderShape());
-    spawn(-3, 1, 6, new GLTFShape("http://127.0.0.1:9991/GLTF/Lantern/glTF-Binary/Lantern.glb"));
+    spawn(-3, 1, 6, new GLTFShape("http://127.0.0.1:9991/GLB/Lantern/Lantern.glb"));
     spawn(-9, 1, 6, new OBJShape("http://127.0.0.1:9991/OBJ/teapot.obj"));
     engine.addSystem(new RotatorSystem());
 });

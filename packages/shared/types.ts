@@ -257,6 +257,11 @@ export type TransitionComponent = {
 
 export type SkeletalAnimationValue = {
   /**
+   * Name of the clip (ID)
+   */
+  name: string
+
+  /**
    * Name or index of the animation in the model
    */
   clip: string | number
@@ -282,7 +287,9 @@ export type SkeletalAnimationValue = {
   playing?: boolean
 }
 
-export type SkeletalAnimationComponent = SkeletalAnimationValue[]
+export type SkeletalAnimationComponent = {
+  states: SkeletalAnimationValue[]
+}
 
 export function ILandToLoadableParcelScene(land: ILand): EnvironmentData<LoadableParcelScene> {
   const mappings: ContentMapping[] = []

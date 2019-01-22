@@ -1,6 +1,7 @@
-import { Component, ObservableComponent, DisposableComponent, getComponentId } from '../ecs/Component'
+import { Component, ObservableComponent, DisposableComponent } from '../ecs/Component'
 import { Vector3, Quaternion, Matrix, MathTmp, Color3 } from './math'
-import AnimationClip from './AnimationClip'
+import { AnimationClip } from './AnimationClip'
+import { uuid } from '../ecs/helpers'
 
 /**
  * @public
@@ -37,9 +38,10 @@ export enum CLASS_ID {
   UI_INPUT_TEXT_SHAPE = 28,
   UI_IMAGE_SHAPE = 29,
   UI_SLIDER_SHAPE = 30,
-  // TODO: ECS add to unity
   CIRCLE_SHAPE = 31,
   BILLBOARD = 32,
+
+  ANIMATION = 33,
 
   GLTF_SHAPE = 54,
   OBJ_SHAPE = 55,
@@ -47,7 +49,10 @@ export enum CLASS_ID {
   PRB_MATERIAL = 65,
 
   HIGHLIGHT_ENTITY = 66,
-  SOUND = 67
+  SOUND = 67,
+
+  AUDIO_CLIP = 200,
+  AUDIO_SOURCE = 201
 }
 
 /**
@@ -308,19 +313,25 @@ export class GLTFShape extends Shape {
   @Shape.readonly
   readonly src!: string
 
-  @ObservableComponent.readonly
-  private skeletalAnimation: AnimationClip[] = []
-
   constructor(src: string) {
     super()
     this.src = src
   }
+}
+
+/**
+ * @public
+ */
+@Component('engine.animator', CLASS_ID.ANIMATION)
+export class Animator extends Shape {
+  @ObservableComponent.readonly
+  private states: AnimationClip[] = []
 
   /**
    * Adds an AnimationClip to the animation lists.
    */
   addClip(clip: AnimationClip) {
-    this.skeletalAnimation.push(clip)
+    this.states.push(clip)
     clip.onChange(() => {
       this.dirty = true
     })
@@ -331,8 +342,8 @@ export class GLTFShape extends Shape {
    * If the clip doesn't exist a new one will be created.
    */
   getClip(clipName: string): AnimationClip {
-    for (let i = 0; i < this.skeletalAnimation.length; i++) {
-      const clip = this.skeletalAnimation[i]
+    for (let i = 0; i < this.states.length; i++) {
+      const clip = this.states[i]
       if (clip.clip === clipName) {
         return clip
       }
@@ -661,9 +672,7 @@ export class BasicMaterial extends ObservableComponent {
 export class OnUUIDEvent extends ObservableComponent {
   readonly type: string | undefined
 
-  get uuid(): string {
-    return getComponentId(this as any)
-  }
+  readonly uuid: string = uuid()
 
   @ObservableComponent.field
   callback!: (event: any) => void
@@ -687,7 +696,7 @@ export class OnUUIDEvent extends ObservableComponent {
 /**
  * @public
  */
-@DisposableComponent('engine.onClick', CLASS_ID.UUID_CALLBACK)
+@Component('engine.onClick', CLASS_ID.UUID_CALLBACK)
 export class OnClick extends OnUUIDEvent {
   @ObservableComponent.readonly
   readonly type: string = 'onClick'
@@ -696,7 +705,7 @@ export class OnClick extends OnUUIDEvent {
 /**
  * @public
  */
-@DisposableComponent('engine.onChange', CLASS_ID.UUID_CALLBACK)
+@Component('engine.onChange', CLASS_ID.UUID_CALLBACK)
 export class OnChanged extends OnUUIDEvent {
   @ObservableComponent.readonly
   readonly type: string = 'onChange'
@@ -705,7 +714,7 @@ export class OnChanged extends OnUUIDEvent {
 /**
  * @public
  */
-@DisposableComponent('engine.onFocus', CLASS_ID.UUID_CALLBACK)
+@Component('engine.onFocus', CLASS_ID.UUID_CALLBACK)
 export class OnFocus extends OnUUIDEvent {
   @ObservableComponent.readonly
   readonly type: string = 'onFocus'
@@ -714,7 +723,7 @@ export class OnFocus extends OnUUIDEvent {
 /**
  * @public
  */
-@DisposableComponent('engine.onBlur', CLASS_ID.UUID_CALLBACK)
+@Component('engine.onBlur', CLASS_ID.UUID_CALLBACK)
 export class OnBlur extends OnUUIDEvent {
   @ObservableComponent.readonly
   readonly type: string = 'onBlur'

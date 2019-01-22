@@ -30,6 +30,7 @@ export abstract class UIShape extends ObservableComponent {
     return this.data.parentComponent
   }
 }
+
 /**
  * @public
  */
