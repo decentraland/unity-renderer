@@ -218,7 +218,7 @@ namespace DCL.Controllers
 #if UNITY_EDITOR
                     throw new UnityException($"Unknown classId {json}");
 #else
-                break;
+                    return null;
 #endif
             }
         }
@@ -387,6 +387,8 @@ namespace DCL.Controllers
             {
                 throw new UnityException($"Unknown disposableComponent {sharedComponentUpdatedMessage.id}");
             }
+#else
+            return null;
 #endif
         }
 

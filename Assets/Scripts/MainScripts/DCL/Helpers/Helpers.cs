@@ -122,6 +122,12 @@ namespace DCL.Helpers
 
         public static AudioType GetAudioTypeFromUrlName(string url)
         {
+            if (string.IsNullOrEmpty(url))
+            {
+                Debug.LogError("GetAudioTypeFromUrlName >>> Null url!");
+                return AudioType.UNKNOWN;
+            }
+
             string ext = url.Substring(url.Length - 3).ToLower();
 
             switch (ext)
