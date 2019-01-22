@@ -91,13 +91,16 @@ namespace DCL.Components
         {
             model = Utils.SafeFromJson<Model>(newJson);
 
-            if (model.shouldTryToLoad && audioClip == null)
+            if (!string.IsNullOrEmpty(model.url))
             {
-                yield return TryToLoad();
-            }
-            else if (!model.shouldTryToLoad && audioClip != null)
-            {
-                Unload();
+                if (model.shouldTryToLoad && audioClip == null)
+                {
+                    yield return TryToLoad();
+                }
+                else if (!model.shouldTryToLoad && audioClip != null)
+                {
+                    Unload();
+                }
             }
 
             yield return null;
