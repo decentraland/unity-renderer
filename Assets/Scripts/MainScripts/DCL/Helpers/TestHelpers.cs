@@ -159,7 +159,6 @@ namespace DCL.Helpers
             }));
         }
 
-
         public static SceneController InitializeSceneController(bool usesWebServer = false)
         {
             var sceneController = Object.FindObjectOfType<SceneController>();

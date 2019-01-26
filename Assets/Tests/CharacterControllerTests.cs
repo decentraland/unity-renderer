@@ -1,4 +1,4 @@
-﻿using System.Collections;
+using System.Collections;
 using UnityEngine;
 using UnityEngine.TestTools;
 using Newtonsoft.Json;
@@ -9,7 +9,7 @@ using DCL.Components;
 
 namespace Tests
 {
-    public class CharacterControllerTests : MonoBehaviour
+    public class CharacterControllerTests
     {
         // TODO: Find a way to run this test on Unity Cloud Build, even though it passes locally, it fails on timeout in Unity Cloud Build
         [UnityTest]

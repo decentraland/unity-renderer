@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using DCL.Models;
 using DCL.Controllers;
+using System;
 
 namespace DCL.Components
 {
@@ -21,8 +22,8 @@ namespace DCL.Components
 
     public abstract class BaseComponent : UpdateableComponent
     {
-        public ParcelScene scene;
-        public DecentralandEntity entity;
+        [NonSerialized] public ParcelScene scene;
+        [NonSerialized] public DecentralandEntity entity;
 
         private string oldSerialization = null;
         private Coroutine routine = null;
@@ -63,7 +64,7 @@ namespace DCL.Components
         {
             yield return ApplyChanges(newJson);
 
-            if (entity.OnComponentUpdated != null)
+            if (entity != null && entity.OnComponentUpdated != null)
                 entity.OnComponentUpdated.Invoke(this);
         }
 
