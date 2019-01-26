@@ -9,75 +9,19 @@ using DCL.Controllers;
 
 namespace DCL.Components
 {
-
-    public abstract class UUIDComponent : MonoBehaviour
-    {
-        public string type;
-        public string uuid;
-        public abstract void Setup(ParcelScene scene, DecentralandEntity entity, string uuid, string type);
-
-        public static void SetForEntity(ParcelScene scene, DecentralandEntity entity, string uuid, string type)
-        {
-            switch (type)
-            {
-                case "onClick":
-                    SetUpComponent<OnClickComponent>(scene, entity, uuid, type);
-                    return;
-            }
-#if UNITY_EDITOR || DEVELOPMENT_BUILD
-            throw new UnityException($"Cannot create UUIDComponent of type '{type}'.");
-#endif
-
-        }
-
-        public static void RemoveFromEntity(DecentralandEntity entity, string type)
-        {
-            switch (type)
-            {
-                case "onClick":
-                    RemoveComponent<OnClickComponent>(entity);
-                    break;
-            }
-#if UNITY_EDITOR || DEVELOPMENT_BUILD
-            throw new UnityException($"Cannot remove UUIDComponent of type '{type}'.");
-#endif
-        }
-
-        private static void RemoveComponent<T>(DecentralandEntity entity) where T : UUIDComponent
-        {
-            var currentComponent = entity.gameObject.GetComponent<T>();
-            if (currentComponent != null)
-            {
-#if UNITY_EDITOR
-                UnityEngine.Object.DestroyImmediate(currentComponent);
-#else
-        UnityEngine.Object.Destroy(currentComponent);
-#endif
-            }
-        }
-
-        private static void SetUpComponent<T>(ParcelScene scene, DecentralandEntity entity, string uuid, string type) where T : UUIDComponent
-        {
-            var currentComponent = DCL.Helpers.Utils.GetOrCreateComponent<T>(entity.gameObject);
-
-            currentComponent.Setup(scene, entity, uuid, type);
-        }
-    }
-
     public class OnClickComponent : UUIDComponent
     {
-
         Rigidbody rigidBody;
         GameObject[] OnClickColliderGameObjects;
-        DecentralandEntity entity;
-        ParcelScene scene;
+
+        public override string componentName => "OnClickComponent";
 
         public override void Setup(ParcelScene scene, DecentralandEntity entity, string uuid, string type)
         {
             this.entity = entity;
             this.scene = scene;
-            this.uuid = uuid;
-            this.type = type;
+            this.model.uuid = uuid;
+            this.model.type = type;
 
             if (entity.meshGameObject && entity.meshGameObject.GetComponentInChildren<MeshFilter>() != null)
             {
@@ -144,7 +88,7 @@ namespace DCL.Components
                 mouseButtonPressed = 1;
             }
 
-            DCL.Interface.WebInterface.ReportOnClickEvent(scene.sceneData.id, uuid, mouseButtonPressed);
+            DCL.Interface.WebInterface.ReportOnClickEvent(scene.sceneData.id, model.uuid, mouseButtonPressed);
         }
 
         void OnDestroy()
@@ -165,5 +109,7 @@ namespace DCL.Components
                 Destroy(OnClickColliderGameObjects[i]);
             }
         }
+
+
     }
 }

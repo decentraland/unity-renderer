@@ -1,12 +1,11 @@
 {
-    "name": "MainScripts",
+    "name": "Tests",
     "references": [
-        "UnityGLTFAssembly",
-        "PluginScripts",
-        "WebSocketSharp",
-        "Unity.TextMeshPro"
+        "MainScripts"
     ],
-    "optionalUnityReferences": [],
+    "optionalUnityReferences": [
+        "TestAssemblies"
+    ],
     "includePlatforms": [],
     "excludePlatforms": [],
     "allowUnsafeCode": false,

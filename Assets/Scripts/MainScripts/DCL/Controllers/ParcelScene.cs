@@ -14,6 +14,7 @@ namespace DCL.Controllers
         public Dictionary<string, BaseDisposable> disposableComponents = new Dictionary<string, BaseDisposable>();
 
         public LoadParcelScenesMessage.UnityParcelScene sceneData { get; private set; }
+        public SceneController ownerController;
 
         public void SetData(LoadParcelScenesMessage.UnityParcelScene data)
         {
@@ -173,6 +174,15 @@ namespace DCL.Controllers
         UUIDCallbackMessage uuidMessage = new UUIDCallbackMessage();
         EntityComponentCreateMessage createEntityComponentMessage = new EntityComponentCreateMessage();
 
+        public T CreateAndInitComponent<T>(DecentralandEntity entity, EntityComponentCreateMessage message) where T : BaseComponent
+        {
+            var component = Utils.GetOrCreateComponent<T>(entity.gameObject);
+            component.scene = this;
+            component.entity = entity;
+            component.UpdateFromJSON(createEntityComponentMessage.json);
+            return component;
+        }
+
         public BaseComponent EntityComponentCreate(string json)
         {
             createEntityComponentMessage.FromJSON(json);
@@ -184,36 +194,26 @@ namespace DCL.Controllers
             switch ((CLASS_ID)createEntityComponentMessage.classId)
             {
                 case CLASS_ID.TRANSFORM:
-                    {
-                        var component = Helpers.Utils.GetOrCreateComponent<DCL.Components.DCLTransform>(decentralandEntity.gameObject);
-                        component.scene = this;
-                        component.entity = decentralandEntity;
-                        component.UpdateFromJSON(createEntityComponentMessage.json);
-                        return component;
-                    }
-                case CLASS_ID.UUID_CALLBACK:
-                    {
-                        //NOTE(Brian): This isn't a component? We are breaking the rules here.
-                        uuidMessage.FromJSON(createEntityComponentMessage.json);
-                        UUIDComponent.SetForEntity(this, decentralandEntity, uuidMessage.uuid, uuidMessage.type);
-                        return null;
-                    }
+                    return CreateAndInitComponent<DCLTransform>(decentralandEntity, createEntityComponentMessage);
+
                 case CLASS_ID.ANIMATOR:
-                    {
-                        var component = Utils.GetOrCreateComponent<DCLAnimator>(decentralandEntity.gameObject);
-                        component.scene = this;
-                        component.entity = decentralandEntity;
-                        component.UpdateFromJSON(createEntityComponentMessage.json);
-                        return component;
-                    }
+                    return CreateAndInitComponent<DCLAnimator>(decentralandEntity, createEntityComponentMessage);
+
                 case CLASS_ID.AUDIO_SOURCE:
-                    {
-                        var component = Utils.GetOrCreateComponent<DCLAudioSource>(decentralandEntity.gameObject);
-                        component.scene = this;
-                        component.entity = decentralandEntity;
-                        component.UpdateFromJSON(createEntityComponentMessage.json);
-                        return component;
-                    }
+                    return CreateAndInitComponent<DCLAudioSource>(decentralandEntity, createEntityComponentMessage);
+
+                case CLASS_ID.TEXT_SHAPE:
+                    return CreateAndInitComponent<TextShape>(decentralandEntity, createEntityComponentMessage);
+
+                case CLASS_ID.UUID_CALLBACK:
+                    return CreateAndInitComponent<UUIDComponent>(decentralandEntity, createEntityComponentMessage);
+
+                //{
+                //    //NOTE(Brian): This isn't a component? We are breaking the rules here.
+                //    uuidMessage.FromJSON(createEntityComponentMessage.json);
+                //    UUIDComponent.SetForEntity(this, decentralandEntity, uuidMessage.uuid, uuidMessage.type);
+                //    return null;
+                //}
                 default:
 #if UNITY_EDITOR
                     throw new UnityException($"Unknown classId {json}");
@@ -245,52 +245,52 @@ namespace DCL.Controllers
             {
                 case CLASS_ID.BOX_SHAPE:
                     {
-                        newComponent = new DCL.Components.BoxShape(this);
+                        newComponent = new BoxShape(this);
                         break;
                     }
                 case CLASS_ID.SPHERE_SHAPE:
                     {
-                        newComponent = new DCL.Components.SphereShape(this);
+                        newComponent = new SphereShape(this);
                         break;
                     }
                 case CLASS_ID.CONE_SHAPE:
                     {
-                        newComponent = new DCL.Components.ConeShape(this);
+                        newComponent = new ConeShape(this);
                         break;
                     }
                 case CLASS_ID.CYLINDER_SHAPE:
                     {
-                        newComponent = new DCL.Components.CylinderShape(this);
+                        newComponent = new CylinderShape(this);
                         break;
                     }
                 case CLASS_ID.PLANE_SHAPE:
                     {
-                        newComponent = new DCL.Components.PlaneShape(this);
+                        newComponent = new PlaneShape(this);
                         break;
                     }
                 case CLASS_ID.GLTF_SHAPE:
                     {
-                        newComponent = new DCL.Components.GLTFShape(this);
+                        newComponent = new GLTFShape(this);
                         break;
                     }
                 case CLASS_ID.OBJ_SHAPE:
                     {
-                        newComponent = new DCL.Components.OBJShape(this);
+                        newComponent = new OBJShape(this);
                         break;
                     }
                 case CLASS_ID.BASIC_MATERIAL:
                     {
-                        newComponent = new DCL.Components.BasicMaterial(this);
+                        newComponent = new BasicMaterial(this);
                         break;
                     }
                 case CLASS_ID.PBR_MATERIAL:
                     {
-                        newComponent = new DCL.Components.PBRMaterial(this);
+                        newComponent = new PBRMaterial(this);
                         break;
                     }
                 case CLASS_ID.AUDIO_CLIP:
                     {
-                        newComponent = new DCL.Components.DCLAudioClip(this);
+                        newComponent = new DCLAudioClip(this);
                         break;
                     }
                 default:
@@ -345,7 +345,7 @@ namespace DCL.Controllers
 #if UNITY_EDITOR
                 UnityEngine.Object.DestroyImmediate(component);
 #else
-        UnityEngine.Object.Destroy(component);
+                UnityEngine.Object.Destroy(component);
 #endif
             }
         }

@@ -5,10 +5,8 @@ using UnityEngine;
 
 namespace DCL.Components
 {
-
     public class DCLTransform : BaseComponent
     {
-
         [System.Serializable]
         public class Model
         {
@@ -24,9 +22,9 @@ namespace DCL.Components
         {
             JsonUtility.FromJsonOverwrite(newJson, model);
             // this component is applied to the gameObjects transform
-            if (gameObject != null)
+            if (entity != null && entity.gameObject != null)
             {
-                var t = gameObject.transform;
+                var t = entity.gameObject.transform;
 
                 if (t.localPosition != model.position)
                 {
@@ -48,11 +46,11 @@ namespace DCL.Components
 
         void OnDisable()
         {
-            if (gameObject != null)
+            if (entity != null && entity.gameObject != null)
             {
-                gameObject.transform.localPosition = Vector3.zero;
-                gameObject.transform.localScale = Vector3.one;
-                gameObject.transform.localRotation = Quaternion.identity;
+                entity.gameObject.transform.localPosition = Vector3.zero;
+                entity.gameObject.transform.localScale = Vector3.one;
+                entity.gameObject.transform.localRotation = Quaternion.identity;
             }
         }
     }
