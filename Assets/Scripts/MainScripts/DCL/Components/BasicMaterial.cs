@@ -10,7 +10,6 @@ namespace DCL.Components
 {
     public class BasicMaterial : BaseDisposable
     {
-
         [System.Serializable]
         public class Model
         {
@@ -87,13 +86,20 @@ namespace DCL.Components
 
         void OnMaterialAttached(DecentralandEntity entity)
         {
-            var meshRenderer = Helpers.Utils.GetOrCreateComponent<MeshRenderer>(entity.gameObject);
+            if (entity.meshGameObject == null)
+            {
+                entity.meshGameObject = new GameObject("Mesh");
+            }
+
+            var meshRenderer = Helpers.Utils.GetOrCreateComponent<MeshRenderer>(entity.meshGameObject);
             meshRenderer.sharedMaterial = material;
         }
 
         void OnMaterialDetached(DecentralandEntity entity)
         {
-            var meshRenderer = entity.gameObject.GetComponent<MeshRenderer>();
+            if (entity.meshGameObject == null) return;
+
+            var meshRenderer = entity.meshGameObject.GetComponent<MeshRenderer>();
             if (meshRenderer && meshRenderer.sharedMaterial == material)
             {
                 meshRenderer.sharedMaterial = null;

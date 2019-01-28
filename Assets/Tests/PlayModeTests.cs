@@ -409,7 +409,7 @@ namespace Tests
 
             yield return new WaitForSeconds(0.01f);
 
-            Assert.IsNull(scene.entities[entityId].gameObject.GetComponentInChildren<MeshRenderer>(), "Since the shape hasn't been updated yet, the child renderer shouldn't exist");
+            Assert.IsNull(scene.entities[entityId].meshGameObject, "Since the shape hasn't been updated yet, the child mesh shouldn't exist");
 
             TestHelpers.CreateAndSetShape(scene, entityId, DCL.Models.CLASS_ID.OBJ_SHAPE, JsonConvert.SerializeObject(new
             {
@@ -418,7 +418,9 @@ namespace Tests
 
             yield return new WaitForSeconds(8f);
 
-            var childRenderer = scene.entities[entityId].gameObject.GetComponentInChildren<MeshRenderer>();
+            Assert.IsNotNull(scene.entities[entityId].meshGameObject, "Every entity with a shape should have the mandatory 'Mesh' object as a child");
+
+            var childRenderer = scene.entities[entityId].meshGameObject.GetComponentInChildren<MeshRenderer>();
             Assert.IsNotNull(childRenderer, "Since the shape has already been updated, the child renderer should exist");
             Assert.AreNotSame(placeholderLoadingMaterial, childRenderer.sharedMaterial, "Since the shape has already been updated, the child renderer found shouldn't have the 'AssetLoading' placeholder material");
         }
@@ -901,12 +903,16 @@ namespace Tests
             yield return materialComponent.routine;
 
             {
-                var meshRenderer = scene.entities[entityId].gameObject.GetComponentInChildren<MeshRenderer>();
+                Assert.IsNotNull(scene.entities[entityId].meshGameObject, "Every entity with a shape should have the mandatory 'Mesh' object as a child");
+
+                var meshRenderer = scene.entities[entityId].meshGameObject.GetComponent<MeshRenderer>();
                 Assert.IsNotNull(meshRenderer, "MeshRenderer must exist");
+
                 var assignedMaterial = meshRenderer.sharedMaterial;
                 Assert.IsNotNull(meshRenderer, "MeshRenderer.sharedMaterial must be the same as assignedMaterial");
                 Assert.AreEqual(assignedMaterial, materialComponent.material, "Assigned material");
                 Assert.AreEqual(textureURL, materialComponent.model.albedoTexture, "Texture data must be correct");
+
                 var loadedTexture = meshRenderer.sharedMaterial.mainTexture;
                 Assert.IsNotNull(loadedTexture, "Texture must be loaded");
             }
@@ -938,7 +944,9 @@ namespace Tests
 
             // Check if material initialized correctly
             {
-                var meshRenderer = scene.entities[entityId].gameObject.GetComponentInChildren<MeshRenderer>();
+                Assert.IsNotNull(scene.entities[entityId].meshGameObject, "Every entity with a shape should have the mandatory 'Mesh' object as a child");
+
+                var meshRenderer = scene.entities[entityId].meshGameObject.GetComponent<MeshRenderer>();
 
                 Assert.IsNotNull(meshRenderer, "MeshRenderer must exist");
 
@@ -1035,6 +1043,8 @@ namespace Tests
                 metallic = 0.3f,
             }, firstMaterialID);
 
+            Assert.IsNotNull(scene.entities[firstEntityID].meshGameObject, "Every entity with a shape should have the mandatory 'Mesh' object as a child");
+
             // Create second entity with material
             string secondEntityID = "2";
             string secondMaterialID = "b-material";
@@ -1043,6 +1053,8 @@ namespace Tests
             {
                 metallic = 0.66f,
             }, secondMaterialID);
+
+            Assert.IsNotNull(scene.entities[secondEntityID].meshGameObject, "Every entity with a shape should have the mandatory 'Mesh' object as a child");
 
             // Create third entity and assign 1st material
             string thirdEntityID = "3";
@@ -1055,10 +1067,12 @@ namespace Tests
                 name = "material"
             }));
 
+            Assert.IsNotNull(scene.entities[thirdEntityID].meshGameObject, "Every entity with a shape should have the mandatory 'Mesh' object as a child");
+
             // Check renderers material references
-            var firstRenderer = scene.entities[firstEntityID].gameObject.GetComponentInChildren<MeshRenderer>();
-            var secondRenderer = scene.entities[secondEntityID].gameObject.GetComponentInChildren<MeshRenderer>();
-            var thirdRenderer = scene.entities[thirdEntityID].gameObject.GetComponentInChildren<MeshRenderer>();
+            var firstRenderer = scene.entities[firstEntityID].meshGameObject.GetComponent<MeshRenderer>();
+            var secondRenderer = scene.entities[secondEntityID].meshGameObject.GetComponent<MeshRenderer>();
+            var thirdRenderer = scene.entities[thirdEntityID].meshGameObject.GetComponent<MeshRenderer>();
             Assert.AreNotSame(firstRenderer.sharedMaterial, secondRenderer.sharedMaterial, "1st and 2nd entities should have different materials");
             Assert.AreSame(firstRenderer.sharedMaterial, thirdRenderer.sharedMaterial, "1st and 3rd entities should have the same material");
         }
@@ -1084,6 +1098,8 @@ namespace Tests
                 metallic = 0.3f,
             }, firstMaterialID);
 
+            Assert.IsNotNull(scene.entities[firstEntityID].meshGameObject, "Every entity with a shape should have the mandatory 'Mesh' object as a child");
+
             // Create second entity with material
             string secondEntityID = "2";
             string secondMaterialID = "b-material";
@@ -1092,6 +1108,8 @@ namespace Tests
             {
                 metallic = 0.66f,
             }, secondMaterialID);
+
+            Assert.IsNotNull(scene.entities[secondEntityID].meshGameObject, "Every entity with a shape should have the mandatory 'Mesh' object as a child");
 
             // Create third entity and assign 1st material
             string thirdEntityID = "3";
@@ -1104,10 +1122,12 @@ namespace Tests
                 name = "material"
             }));
 
+            Assert.IsNotNull(scene.entities[thirdEntityID].meshGameObject, "Every entity with a shape should have the mandatory 'Mesh' object as a child");
+
             // Check renderers material references
-            var firstRenderer = scene.entities[firstEntityID].gameObject.GetComponentInChildren<MeshRenderer>();
-            var secondRenderer = scene.entities[secondEntityID].gameObject.GetComponentInChildren<MeshRenderer>();
-            var thirdRenderer = scene.entities[thirdEntityID].gameObject.GetComponentInChildren<MeshRenderer>();
+            var firstRenderer = scene.entities[firstEntityID].meshGameObject.GetComponent<MeshRenderer>();
+            var secondRenderer = scene.entities[secondEntityID].meshGameObject.GetComponent<MeshRenderer>();
+            var thirdRenderer = scene.entities[thirdEntityID].meshGameObject.GetComponent<MeshRenderer>();
             Assert.AreNotSame(firstRenderer.sharedMaterial, secondRenderer.sharedMaterial, "1st and 2nd entities should have different materials");
             Assert.AreSame(firstRenderer.sharedMaterial, thirdRenderer.sharedMaterial, "1st and 3rd entities should have the same material");
 
@@ -1149,7 +1169,9 @@ namespace Tests
 
             TestHelpers.InstantiateEntityWithMaterial(scene, entityId, Vector3.zero, new DCL.Components.BasicMaterial.Model(), materialID);
 
-            var meshRenderer = scene.entities[entityId].gameObject.GetComponentInChildren<MeshRenderer>();
+            Assert.IsNotNull(scene.entities[entityId].meshGameObject, "Every entity with a shape should have the mandatory 'Mesh' object as a child");
+
+            var meshRenderer = scene.entities[entityId].meshGameObject.GetComponent<MeshRenderer>();
             var materialComponent = scene.disposableComponents[materialID] as DCL.Components.BasicMaterial;
 
             yield return materialComponent.routine;
@@ -1189,6 +1211,8 @@ namespace Tests
             // Instantiate entity with material
             TestHelpers.InstantiateEntityWithMaterial(scene, firstEntityId, Vector3.zero, new DCL.Components.BasicMaterial.Model(), materialID);
 
+            Assert.IsNotNull(scene.entities[firstEntityId].meshGameObject, "Every entity with a shape should have the mandatory 'Mesh' object as a child");
+
             // Create 2nd entity and attach same material to it
             TestHelpers.InstantiateEntityWithShape(scene, secondEntityId, DCL.Models.CLASS_ID.BOX_SHAPE, Vector3.zero);
             scene.SharedComponentAttach(JsonUtility.ToJson(new DCL.Models.SharedComponentAttachMessage
@@ -1198,8 +1222,10 @@ namespace Tests
                 name = "material"
             }));
 
-            var firstMeshRenderer = scene.entities[firstEntityId].gameObject.GetComponentInChildren<MeshRenderer>();
-            var secondMeshRenderer = scene.entities[secondEntityId].gameObject.GetComponentInChildren<MeshRenderer>();
+            Assert.IsNotNull(scene.entities[secondEntityId].meshGameObject, "Every entity with a shape should have the mandatory 'Mesh' object as a child");
+
+            var firstMeshRenderer = scene.entities[firstEntityId].meshGameObject.GetComponent<MeshRenderer>();
+            var secondMeshRenderer = scene.entities[secondEntityId].meshGameObject.GetComponent<MeshRenderer>();
             var materialComponent = scene.disposableComponents[materialID] as DCL.Components.BasicMaterial;
 
             yield return materialComponent.routine;
@@ -1244,7 +1270,10 @@ namespace Tests
             // Instantiate entity with default PBR Material
             TestHelpers.InstantiateEntityWithMaterial(scene, entityId, Vector3.zero, new DCL.Components.BasicMaterial.Model(), materialID);
 
-            var meshRenderer = scene.entities[entityId].gameObject.GetComponentInChildren<MeshRenderer>();
+            var meshObject = scene.entities[entityId].gameObject.transform.Find("Mesh");
+            Assert.IsNotNull(meshObject, "Every entity with a shape should have the mandatory 'Mesh' object as a child");
+
+            var meshRenderer = meshObject.GetComponent<MeshRenderer>();
             var materialComponent = scene.disposableComponents[materialID] as DCL.Components.BasicMaterial;
 
             yield return materialComponent.routine;
