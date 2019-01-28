@@ -186,6 +186,7 @@ public class SceneController : MonoBehaviour
                 case "ComponentCreated": scene.SharedComponentCreate(payload); break;
                 case "ComponentDisposed": scene.SharedComponentDispose(payload); break;
                 case "ComponentUpdated": scene.SharedComponentUpdate(payload); break;
+                case "RemoveEntity": scene.RemoveEntity(payload); break;
                 default:
 #if UNITY_EDITOR || DEVELOPMENT_BUILD
                     throw new UnityException($"Unknown method {method}");
