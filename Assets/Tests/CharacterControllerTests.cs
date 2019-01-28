@@ -16,7 +16,7 @@ namespace Tests
         [Explicit("This test fails in cloud build")]
         public IEnumerator CharacterTeleportReposition()
         {
-            var characterController = (Resources.Load("Prefabs/CharacterController") as GameObject).GetComponent<DCLCharacterController>();
+            var characterController = (GameObject.Instantiate(Resources.Load("Prefabs/CharacterController") as GameObject)).GetComponent<DCLCharacterController>();
             characterController.gravity = 0f;
 
             Assert.AreEqual(new Vector3(0f, 0f, 0f), characterController.transform.position);
