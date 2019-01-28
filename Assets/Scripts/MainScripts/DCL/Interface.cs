@@ -47,11 +47,18 @@ namespace DCL.Interface
     [DllImport("__Internal")] public static extern void StartDecentraland();
     [DllImport("__Internal")] public static extern void MessageFromEngine(string type, string message);
 #else
+        public static System.Action<string, string> OnMessageFromEngine;
+
         public static void StartDecentraland() =>
           Debug.Log("StartDecentraland called");
 
-        public static void MessageFromEngine(string type, string message) =>
-          Debug.Log("MessageFromEngine called with: " + type + ", " + message);
+        public static void MessageFromEngine(string type, string message)
+        {
+            if (OnMessageFromEngine != null)
+                OnMessageFromEngine.Invoke(type, message);
+            else
+                Debug.Log("MessageFromEngine called with: " + type + ", " + message);
+        }
 #endif
 
         public static void SendMessage(string type, object message)
