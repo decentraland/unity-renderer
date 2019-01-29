@@ -39,6 +39,8 @@ const CAMERA_BACKWARD = Quaternion.RotationYawPitchRoll(0, 0, 0)
 
 let cacheCheckIntervalInstance = null
 let webGlParcelScene: WebGLParcelScene | null = null
+let parcelsX = 1
+let parcelsY = 1
 
 async function loadScene(scene: IScene & { baseUrl: string }) {
   if (!scene) return
@@ -163,12 +165,13 @@ export namespace editor {
   }
 
   export function configureEditorEnvironment(enabled: boolean) {
+    const target = new Vector3((parcelsX * 10) / 2, 0, (parcelsY * 10) / 2)
     setEditorEnvironment(!!enabled)
     if (enabled) {
-      arcCamera.target.copyFrom(vrCamera.position)
+      arcCamera.target = target
       scene.activeCamera = arcCamera
     } else {
-      vrCamera.position.copyFrom(arcCamera.position)
+      vrCamera.position = target
       scene.activeCamera = vrCamera
 
       if (webGlParcelScene) {
@@ -261,11 +264,13 @@ export namespace editor {
     arcCamera.attachControl(await getDCLCanvas(), true)
   }
 
-  export async function initEngine() {
+  export async function initEngine(px: number = 1, py: number = 1) {
+    parcelsX = px
+    parcelsY = py
+
     await initBabylonClient()
     await initializeCamera()
     configureEditorEnvironment(true)
-    setPlayMode(false)
     engine.setHardwareScalingLevel(0.5)
   }
 
