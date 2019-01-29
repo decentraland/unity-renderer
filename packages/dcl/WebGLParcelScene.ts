@@ -2,7 +2,7 @@ import { LoadableParcelScene, EnvironmentData } from 'shared/types'
 import { SceneWorker } from 'shared/world/SceneWorker'
 import { SharedSceneContext } from 'engine/entities/SharedSceneContext'
 import { IParcelSceneLimits, getParcelSceneLimits } from 'atomicHelpers/landHelpers'
-import { parcelLimits, DEBUG } from 'config'
+import { parcelLimits, DEBUG, EDITOR } from 'config'
 import { checkParcelSceneBoundaries } from './entities/utils/checkParcelSceneLimits'
 import { BaseEntity } from 'engine/entities/BaseEntity'
 import { encodeParcelSceneBoundaries, gridToWorld } from 'atomicHelpers/parcelScenePositions'
@@ -70,7 +70,9 @@ export class WebGLParcelScene extends WebGLScene<LoadableParcelScene> {
 
     this.validationInterval = setInterval(() => {
       this.checkBoundaries()
-      this.checkLimits()
+      if (!EDITOR) {
+        this.checkLimits()
+      }
     }, 5000)
 
     if (DEBUG) {
@@ -152,7 +154,7 @@ export class WebGLParcelScene extends WebGLScene<LoadableParcelScene> {
     })
     // add the highlight to the entities outside fences
     newSet.forEach($ => {
-      if (DEBUG) {
+      if (DEBUG || EDITOR) {
         highlightEntity($)
       } else {
         $.setEnabled(false)

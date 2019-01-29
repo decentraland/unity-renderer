@@ -321,8 +321,10 @@ const internalState = {
 dcl.subscribe('MESSAGE_RECEIVED')
 dcl.subscribe('MESSAGE_SENT')
 dcl.onEvent(event => {
-  if (event.type === 'MESSAGE_RECEIVED' || event.type === 'MESSAGE_SENT') {
-    addMessage(event.data.messageEntry)
+  const eventType: string = event.type
+  const eventData: any = event.data
+  if (eventType === 'MESSAGE_RECEIVED' || eventType === 'MESSAGE_SENT') {
+    addMessage(eventData.messageEntry)
   }
 })
 

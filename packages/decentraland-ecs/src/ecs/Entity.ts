@@ -36,11 +36,15 @@ export class Entity {
    */
   set<T extends object>(component: T) {
     const componentName = getComponentName(component)
+
     if (this.components[componentName]) {
-      this.components[componentName] = component
-    } else {
-      this.add(component)
+      if (this.components[componentName] === component) {
+        return
+      }
+      this.remove(this.components[componentName])
     }
+
+    this.add(component)
   }
 
   /**
@@ -48,6 +52,9 @@ export class Entity {
    * @param component - component class or name
    */
   has(component: ComponentConstructor<any>): boolean {
+    if (typeof component !== 'function') {
+      throw new Error('Entity#has(component): component is not a class')
+    }
     const componentName = getComponentName(component)
     return !!this.components[componentName]
   }
@@ -59,7 +66,13 @@ export class Entity {
   get<T = any>(component: string): T
   get<T>(component: ComponentConstructor<T>): T
   get<T>(component: ComponentConstructor<T> | string): T {
-    const componentName = typeof component === 'string' ? component : getComponentName(component)
+    const typeOfComponent = typeof component
+
+    if (typeOfComponent !== 'string' && typeOfComponent !== 'function') {
+      throw new Error('Entity#get(component): component is not a class or name')
+    }
+
+    const componentName = typeOfComponent === 'string' ? (component as string) : getComponentName(component as any)
 
     if (!this.components[componentName]) {
       throw new Error(`Can not get component "${componentName}" from entity "${this.identifier}"`)
@@ -75,7 +88,14 @@ export class Entity {
   getOrNull<T = any>(component: string): T | null
   getOrNull<T>(component: ComponentConstructor<T>): T | null
   getOrNull<T>(component: ComponentConstructor<T> | string): T | null {
-    const componentName = typeof component === 'string' ? component : getComponentName(component)
+    const typeOfComponent = typeof component
+
+    if (typeOfComponent !== 'string' && typeOfComponent !== 'function') {
+      throw new Error('Entity#getOrNull(component): component is not a class or name')
+    }
+
+    const componentName = typeOfComponent === 'string' ? (component as string) : getComponentName(component as any)
+
     return this.components[componentName] || null
   }
 
@@ -84,7 +104,12 @@ export class Entity {
    * @param component - component class
    */
   getOrCreate<T>(component: ComponentConstructor<T> & { new (): T }): T {
+    if (typeof component !== 'function') {
+      throw new Error('Entity#getOrCreate(component): component is not a class')
+    }
+
     const componentName = getComponentName(component)
+
     let ret = this.components[componentName] || null
     if (!ret) {
       ret = new component()
@@ -98,6 +123,10 @@ export class Entity {
    * @param component - component instance.
    */
   add<T extends object>(component: T) {
+    if (typeof component !== 'object') {
+      throw new Error('Entity#add(component): component is not an instance of a class')
+    }
+
     const componentName = getComponentName(component)
     const classId = getComponentClassId(component)
 

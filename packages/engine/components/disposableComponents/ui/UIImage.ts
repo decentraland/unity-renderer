@@ -87,6 +87,7 @@ class Class extends UIControl<UIImageShape, BABYLON.GUI.Image> {
   dispatchOnClick = () => {
     this.entities.forEach($ =>
       $.dispatchUUIDEvent('onClick', {
+        entityId: $.uuid,
         pointerId: -1
       })
     )

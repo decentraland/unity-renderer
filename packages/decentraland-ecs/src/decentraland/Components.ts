@@ -52,7 +52,8 @@ export enum CLASS_ID {
   SOUND = 67,
 
   AUDIO_CLIP = 200,
-  AUDIO_SOURCE = 201
+  AUDIO_SOURCE = 201,
+  GIZMOS = 203
 }
 
 /**

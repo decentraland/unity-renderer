@@ -21,10 +21,10 @@ import {
 } from 'shared/types'
 
 import { ILogger, defaultLogger } from 'shared/logger'
-import { IEvents, IEventNames } from 'shared/events'
 import { EventDispatcher } from 'decentraland-rpc/lib/common/core/EventDispatcher'
 import { IParcelSceneLimits } from 'atomicHelpers/landHelpers'
 import { measureObject3D } from 'dcl/entities/utils/checkParcelSceneLimits'
+import { IEventNames, IEvents } from 'decentraland-ecs/src/decentraland/Types'
 
 function validateHierarchy(entity: BaseEntity) {
   let parent = entity
@@ -394,7 +394,9 @@ export class SharedSceneContext implements BABYLON.IDisposable {
 
   public registerMappings(mappings: Array<ContentMapping>) {
     for (const { file, hash } of mappings) {
-      this.mappings.set(file.toLowerCase(), hash)
+      if (file && hash) {
+        this.mappings.set(file.toLowerCase(), hash)
+      }
     }
   }
 

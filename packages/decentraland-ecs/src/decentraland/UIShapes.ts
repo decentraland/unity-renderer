@@ -2,7 +2,7 @@ import { ObservableComponent, DisposableComponent, getComponentId } from '../ecs
 import { CLASS_ID } from './Components'
 
 /**
- * @public
+ * @beta
  */
 export abstract class UIShape extends ObservableComponent {
   /**
@@ -32,7 +32,7 @@ export abstract class UIShape extends ObservableComponent {
 }
 
 /**
- * @public
+ * @beta
  */
 @DisposableComponent('engine.shape', CLASS_ID.UI_WORLD_SPACE_SHAPE)
 export class UIWorldSpaceShape extends UIShape {
@@ -54,7 +54,7 @@ export class UIWorldSpaceShape extends UIShape {
 }
 
 /**
- * @public
+ * @beta
  */
 @DisposableComponent('engine.shape', CLASS_ID.UI_SCREEN_SPACE_SHAPE)
 export class UIScreenSpaceShape extends UIShape {
@@ -70,7 +70,7 @@ export class UIScreenSpaceShape extends UIShape {
 }
 
 /**
- * @public
+ * @beta
  */
 @DisposableComponent('engine.shape', CLASS_ID.UI_CONTAINER_RECT)
 export class UIContainerRectShape extends UIShape {
@@ -121,7 +121,7 @@ export class UIContainerRectShape extends UIShape {
 }
 
 /**
- * @public
+ * @beta
  */
 @DisposableComponent('engine.shape', CLASS_ID.UI_CONTAINER_STACK)
 export class UIContainerStackShape extends UIShape {
@@ -169,7 +169,7 @@ export class UIContainerStackShape extends UIShape {
 }
 
 /**
- * @public
+ * @beta
  */
 @DisposableComponent('engine.shape', CLASS_ID.UI_TEXT_SHAPE)
 export class UITextShape extends UIShape {
@@ -268,7 +268,7 @@ export class UITextShape extends UIShape {
 }
 
 /**
- * @public
+ * @beta
  */
 @DisposableComponent('engine.shape', CLASS_ID.UI_INPUT_TEXT_SHAPE)
 export class UIInputTextShape extends UIShape {
@@ -370,7 +370,7 @@ export class UIInputTextShape extends UIShape {
 }
 
 /**
- * @public
+ * @beta
  */
 @DisposableComponent('engine.shape', CLASS_ID.UI_IMAGE_SHAPE)
 export class UIImageShape extends UIShape {
@@ -433,7 +433,7 @@ export class UIImageShape extends UIShape {
 }
 
 /**
- * @public
+ * @beta
  */
 @DisposableComponent('engine.shape', CLASS_ID.UI_SLIDER_SHAPE)
 export class UISliderShape extends UIShape {

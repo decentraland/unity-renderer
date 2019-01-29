@@ -3,8 +3,7 @@ import { Billboard } from './ephemeralComponents/Billboard'
 import { HighlightBox } from './ephemeralComponents/HighlightBox'
 import { Sound } from './ephemeralComponents/Sound'
 import { TextShape } from './ephemeralComponents/TextShape'
-import { Animator } from './ephemeralComponents/Animator'
-import { AudioSource } from './ephemeralComponents/AudioSource'
+import { Gizmos } from './ephemeralComponents/Gizmos'
 
 import './disposableComponents/BasicMaterial'
 import './disposableComponents/BoxShape'
@@ -29,18 +28,23 @@ import './disposableComponents/ui/UISlider'
 import './disposableComponents/ui/UIText'
 
 import { CLASS_ID } from 'decentraland-ecs/src'
+import { DEBUG, PREVIEW, EDITOR } from 'config'
+import { BaseComponent } from './BaseComponent'
+import { ConstructorOf } from 'engine/entities/BaseEntity'
 
 // We re-export it to avoid circular references from BaseEntity
 export { BaseComponent } from './BaseComponent'
 
-export const componentRegistry = {
+export const componentRegistry: Record<number, ConstructorOf<BaseComponent<any>>> = {
   [CLASS_ID.TRANSFORM]: Transform,
   [CLASS_ID.BILLBOARD]: Billboard,
   [CLASS_ID.HIGHLIGHT_ENTITY]: HighlightBox,
   [CLASS_ID.SOUND]: Sound,
-  [CLASS_ID.TEXT_SHAPE]: TextShape,
-  [CLASS_ID.ANIMATION]: Animator,
-  [CLASS_ID.AUDIO_SOURCE]: AudioSource
+  [CLASS_ID.TEXT_SHAPE]: TextShape
+}
+
+if (DEBUG || PREVIEW || EDITOR) {
+  componentRegistry[CLASS_ID.GIZMOS] = Gizmos
 }
 
 export type IComponentName = keyof typeof componentRegistry

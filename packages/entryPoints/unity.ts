@@ -53,7 +53,7 @@ if (qs.ws) {
 
   gameInstance = {
     SendMessage(_obj, type, payload) {
-      if (ws.readyState == ws.OPEN) {
+      if (ws.readyState === ws.OPEN) {
         const msg = JSON.stringify({ type, payload })
         ws.send(msg)
       }

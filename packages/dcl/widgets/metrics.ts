@@ -1,4 +1,4 @@
-import { DEBUG, PREVIEW } from 'config'
+import { DEBUG, PREVIEW, EDITOR } from 'config'
 
 export interface Metrics {
   triangles: number
@@ -14,15 +14,17 @@ export interface ParcelMetrics {
 }
 
 export function drawMetrics(metrics: Metrics): ParcelMetrics {
-  const parcelMetrics = createParcelMetrics(metrics)
-  parcelMetrics.dom.style.visibility = 'hidden'
+  if (!EDITOR) {
+    const parcelMetrics = createParcelMetrics(metrics)
+    parcelMetrics.dom.style.visibility = 'hidden'
 
-  if (DEBUG || PREVIEW) {
-    parcelMetrics.dom.style.visibility = 'visible'
+    if (DEBUG || PREVIEW) {
+      parcelMetrics.dom.style.visibility = 'visible'
+    }
+
+    document.body.appendChild(parcelMetrics.dom)
+    return parcelMetrics
   }
-
-  document.body.appendChild(parcelMetrics.dom)
-  return parcelMetrics
 }
 
 function createParcelMetrics(metrics: Metrics): ParcelMetrics {

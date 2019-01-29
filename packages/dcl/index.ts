@@ -6,7 +6,7 @@ import './api'
 
 // Our imports
 import { error } from 'engine/logger'
-import { DEBUG, PREVIEW, NETWORK_HZ } from 'config'
+import { DEBUG, PREVIEW, NETWORK_HZ, EDITOR } from 'config'
 
 import { positionObserver, lastPlayerPosition } from 'shared/world/positionThings'
 
@@ -38,7 +38,7 @@ const parcelMetrics = drawMetrics(getMetrics())
 // Draws FPS / ms
 const stats = createStats()
 
-const crossHair = createCrossHair(scene)
+const crossHair = !EDITOR ? createCrossHair(scene) : null
 
 const _render = instrumentTelemetry('render', function() {
   try {
@@ -102,7 +102,9 @@ const notifyPositionObservers = (() => {
 /// --- SIDE EFFECTS ---
 
 {
-  crossHair.parent = vrHelper.deviceOrientationCamera
+  if (crossHair) {
+    crossHair.parent = vrHelper.deviceOrientationCamera
+  }
   stats.showPanel(1)
   stats.begin()
 
@@ -148,7 +150,9 @@ function getMetrics(): Metrics {
 
 function updateMetrics(): void {
   const metrics = getMetrics()
-  parcelMetrics.update(metrics)
+  if (!EDITOR) {
+    parcelMetrics.update(metrics)
+  }
 }
 
 /// --- EXPORTS ---
@@ -165,7 +169,9 @@ export function stop() {
 }
 
 export function addStats() {
-  document.body.appendChild(stats.dom)
+  if (!EDITOR) {
+    document.body.appendChild(stats.dom)
+  }
 }
 
 export async function initBabylonClient() {
@@ -174,7 +180,7 @@ export async function initBabylonClient() {
 
   if (isMobile()) {
     enableVirtualJoystick(engine.getRenderingCanvas())
-  } else {
+  } else if (!EDITOR) {
     await initChatSystem()
     await initHudSystem()
     initKeyboard()
@@ -182,12 +188,11 @@ export async function initBabylonClient() {
     enableMouseLock(engine.getRenderingCanvas())
   }
   addStats()
-
   start()
 }
 
 function initDebugCommands() {
-  if (DEBUG || PREVIEW || document.location.hostname === 'localhost') {
+  if (DEBUG || PREVIEW || EDITOR || document.location.hostname === 'localhost') {
     {
       // toggle colliders
 

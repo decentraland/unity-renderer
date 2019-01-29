@@ -5,9 +5,9 @@ import { createSchemaValidator } from '../../helpers/schemaValidator'
 import { parseVerticalAlignment, parseHorizontalAlignment } from 'engine/entities/utils/parseAttrs'
 import { UISliderShape } from 'decentraland-ecs/src/decentraland/UIShapes'
 import { SharedSceneContext } from 'engine/entities/SharedSceneContext'
-import { IEvents } from 'shared/events'
 import { UIControl } from './UIControl'
 import { PointerLock } from 'engine/renderer/input'
+import { IEvents } from 'decentraland-ecs/src/decentraland/Types'
 
 const schemaValidator = createSchemaValidator({
   minimum: { type: 'number', default: 0 },

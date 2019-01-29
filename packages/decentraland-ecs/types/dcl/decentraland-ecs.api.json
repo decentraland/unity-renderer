@@ -7347,75 +7347,6 @@
         }
       }
     },
-    "EngineEvent": {
-      "kind": "class",
-      "extends": "",
-      "implements": "",
-      "typeParameters": [],
-      "deprecatedMessage": [],
-      "summary": [],
-      "remarks": [],
-      "isBeta": false,
-      "isSealed": false,
-      "members": {
-        "__constructor": {
-          "kind": "constructor",
-          "signature": "constructor(data: any);",
-          "parameters": {
-            "data": {
-              "name": "data",
-              "description": [],
-              "isOptional": false,
-              "isSpread": false,
-              "type": "any"
-            }
-          },
-          "deprecatedMessage": [],
-          "summary": [
-            {
-              "kind": "text",
-              "text": "Constructs a new instance of the "
-            },
-            {
-              "kind": "api-link",
-              "elements": [
-                {
-                  "kind": "text",
-                  "text": "EngineEvent"
-                }
-              ],
-              "target": {
-                "scopeName": "",
-                "packageName": "decentraland-ecs",
-                "exportName": "EngineEvent",
-                "memberName": ""
-              }
-            },
-            {
-              "kind": "text",
-              "text": " class"
-            }
-          ],
-          "remarks": []
-        },
-        "data": {
-          "kind": "property",
-          "signature": "data: any;",
-          "isOptional": false,
-          "isReadOnly": false,
-          "isStatic": false,
-          "type": "any",
-          "deprecatedMessage": [],
-          "summary": [],
-          "remarks": [],
-          "isBeta": false,
-          "isSealed": false,
-          "isVirtual": false,
-          "isOverride": false,
-          "isEventProperty": false
-        }
-      }
-    },
     "Entity": {
       "kind": "class",
       "extends": "",
@@ -8450,6 +8381,108 @@
       "summary": [],
       "remarks": [],
       "isBeta": false
+    },
+    "Gizmos": {
+      "kind": "class",
+      "extends": "ObservableComponent",
+      "implements": "",
+      "typeParameters": [],
+      "deprecatedMessage": [],
+      "summary": [
+        {
+          "kind": "text",
+          "text": "Enables gizmos in the entity. Gizmos only work in EDITOR, PREVIEW or DEBUG modes."
+        }
+      ],
+      "remarks": [],
+      "isBeta": true,
+      "isSealed": false,
+      "members": {
+        "position": {
+          "kind": "property",
+          "signature": "position: boolean;",
+          "isOptional": false,
+          "isReadOnly": false,
+          "isStatic": false,
+          "type": "boolean",
+          "deprecatedMessage": [],
+          "summary": [
+            {
+              "kind": "text",
+              "text": "Enable position gizmo"
+            }
+          ],
+          "remarks": [],
+          "isBeta": true,
+          "isSealed": false,
+          "isVirtual": false,
+          "isOverride": false,
+          "isEventProperty": false
+        },
+        "rotation": {
+          "kind": "property",
+          "signature": "rotation: boolean;",
+          "isOptional": false,
+          "isReadOnly": false,
+          "isStatic": false,
+          "type": "boolean",
+          "deprecatedMessage": [],
+          "summary": [
+            {
+              "kind": "text",
+              "text": "Enable rotation gizmo"
+            }
+          ],
+          "remarks": [],
+          "isBeta": true,
+          "isSealed": false,
+          "isVirtual": false,
+          "isOverride": false,
+          "isEventProperty": false
+        },
+        "scale": {
+          "kind": "property",
+          "signature": "scale: boolean;",
+          "isOptional": false,
+          "isReadOnly": false,
+          "isStatic": false,
+          "type": "boolean",
+          "deprecatedMessage": [],
+          "summary": [
+            {
+              "kind": "text",
+              "text": "Enable scale gizmo"
+            }
+          ],
+          "remarks": [],
+          "isBeta": true,
+          "isSealed": false,
+          "isVirtual": false,
+          "isOverride": false,
+          "isEventProperty": false
+        },
+        "updateEntity": {
+          "kind": "property",
+          "signature": "updateEntity: boolean;",
+          "isOptional": false,
+          "isReadOnly": false,
+          "isStatic": false,
+          "type": "boolean",
+          "deprecatedMessage": [],
+          "summary": [
+            {
+              "kind": "text",
+              "text": "Update entity while dragging. Also let the entity in it's final place after releasing the gizmo."
+            }
+          ],
+          "remarks": [],
+          "isBeta": true,
+          "isSealed": false,
+          "isVirtual": false,
+          "isOverride": false,
+          "isEventProperty": false
+        }
+      }
     },
     "GLTFShape": {
       "kind": "class",
@@ -15339,6 +15372,40 @@
           "summary": [],
           "remarks": [],
           "isBeta": false,
+          "isSealed": false,
+          "isVirtual": false,
+          "isOverride": false,
+          "isEventProperty": false
+        }
+      }
+    },
+    "OnDragEnded": {
+      "kind": "class",
+      "extends": "OnUUIDEvent",
+      "implements": "",
+      "typeParameters": [],
+      "deprecatedMessage": [],
+      "summary": [
+        {
+          "kind": "text",
+          "text": "This event is triggered after the user finalizes dragging a gizmo."
+        }
+      ],
+      "remarks": [],
+      "isBeta": true,
+      "isSealed": false,
+      "members": {
+        "type": {
+          "kind": "property",
+          "signature": "readonly type: string;",
+          "isOptional": false,
+          "isReadOnly": true,
+          "isStatic": false,
+          "type": "string",
+          "deprecatedMessage": [],
+          "summary": [],
+          "remarks": [],
+          "isBeta": true,
           "isSealed": false,
           "isVirtual": false,
           "isOverride": false,
@@ -26020,6 +26087,97 @@
           "isVirtual": false,
           "isOverride": false
         },
+        "applyMatrix4": {
+          "kind": "method",
+          "signature": "applyMatrix4(matrix: Matrix): void;",
+          "accessModifier": "",
+          "isOptional": false,
+          "isStatic": false,
+          "returnValue": {
+            "type": "void",
+            "description": []
+          },
+          "parameters": {
+            "matrix": {
+              "name": "matrix",
+              "description": [
+                {
+                  "kind": "text",
+                  "text": "The transformation matrix"
+                }
+              ],
+              "isOptional": false,
+              "isSpread": false,
+              "type": "Matrix"
+            }
+          },
+          "deprecatedMessage": [],
+          "summary": [
+            {
+              "kind": "text",
+              "text": "Multiplies this vector (with an implicit 1 in the 4th dimension) and m, and divides by perspective"
+            }
+          ],
+          "remarks": [],
+          "isBeta": false,
+          "isSealed": false,
+          "isVirtual": false,
+          "isOverride": false
+        },
+        "applyMatrix4ToRef": {
+          "kind": "method",
+          "signature": "applyMatrix4ToRef(matrix: Matrix, result: Vector3): Vector3;",
+          "accessModifier": "",
+          "isOptional": false,
+          "isStatic": false,
+          "returnValue": {
+            "type": "Vector3",
+            "description": [
+              {
+                "kind": "text",
+                "text": "the current Vector3"
+              }
+            ]
+          },
+          "parameters": {
+            "matrix": {
+              "name": "matrix",
+              "description": [
+                {
+                  "kind": "text",
+                  "text": "The transformation matrix"
+                }
+              ],
+              "isOptional": false,
+              "isSpread": false,
+              "type": "Matrix"
+            },
+            "result": {
+              "name": "result",
+              "description": [
+                {
+                  "kind": "text",
+                  "text": "defines the Vector3 object where to store the result"
+                }
+              ],
+              "isOptional": false,
+              "isSpread": false,
+              "type": "Vector3"
+            }
+          },
+          "deprecatedMessage": [],
+          "summary": [
+            {
+              "kind": "text",
+              "text": "Multiplies this vector (with an implicit 1 in the 4th dimension) and m, and divides by perspective and set the given vector \"result\" with this result"
+            }
+          ],
+          "remarks": [],
+          "isBeta": false,
+          "isSealed": false,
+          "isVirtual": false,
+          "isOverride": false
+        },
         "asArray": {
           "kind": "method",
           "signature": "asArray(): number[];",
@@ -28892,7 +29050,7 @@
             "description": [
               {
                 "kind": "text",
-                "text": "the current updated Vector3"
+                "text": "the current Vector3"
               }
             ]
           },
@@ -28925,13 +29083,18 @@
         },
         "rotateToRef": {
           "kind": "method",
-          "signature": "rotateToRef(q: Quaternion, target: Vector3): void;",
+          "signature": "rotateToRef(q: Quaternion, result: Vector3): Vector3;",
           "accessModifier": "",
           "isOptional": false,
           "isStatic": false,
           "returnValue": {
-            "type": "void",
-            "description": []
+            "type": "Vector3",
+            "description": [
+              {
+                "kind": "text",
+                "text": "the current Vector3"
+              }
+            ]
           },
           "parameters": {
             "q": {
@@ -28946,8 +29109,8 @@
               "isSpread": false,
               "type": "Quaternion"
             },
-            "target": {
-              "name": "target",
+            "result": {
+              "name": "result",
               "description": [
                 {
                   "kind": "text",

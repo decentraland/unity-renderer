@@ -16,11 +16,11 @@
 //     this.eventSubscriber = new EventSubscriber(this.entityController!)
 
 //     this.eventSubscriber.on('video-local_click', async (evt: any) => {
-//       await this.handleLocalVidPlayback(evt.data.elementId)
+//       await this.handleLocalVidPlayback(evt.data.entityId)
 //     })
 
 //     this.eventSubscriber.on('video-external_click', async (evt: any) => {
-//       await this.handleExtVidPlayback(evt.data.elementId)
+//       await this.handleExtVidPlayback(evt.data.entityId)
 //     })
 
 //     // Volume UI

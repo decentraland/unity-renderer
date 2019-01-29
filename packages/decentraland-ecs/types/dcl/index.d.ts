@@ -1137,14 +1137,6 @@ declare class Engine {
   private componentRemovedHandler
 }
 
-/**
- * @public
- */
-declare class EngineEvent {
-  data: any
-  constructor(data: any)
-}
-
 declare type EnginePointerEvent = {
   /** Origin of the ray */
   from: {
@@ -1309,6 +1301,30 @@ declare class Frustum {
 declare class GLTFShape extends Shape {
   readonly src: string
   constructor(src: string)
+}
+
+/**
+ * Enables gizmos in the entity. Gizmos only work in EDITOR, PREVIEW or DEBUG modes.
+ * @beta
+ */
+declare class Gizmos extends ObservableComponent {
+  /**
+   * Enable position gizmo
+   */
+  position: boolean
+  /**
+   * Enable rotation gizmo
+   */
+  rotation: boolean
+  /**
+   * Enable scale gizmo
+   */
+  scale: boolean
+  /**
+   * Update entity while dragging. Also let the entity in it's final place after
+   * releasing the gizmo.
+   */
+  updateEntity: boolean
 }
 
 /**
@@ -2350,6 +2366,14 @@ declare class OnClick extends OnUUIDEvent {
 }
 
 /**
+ * This event is triggered after the user finalizes dragging a gizmo.
+ * @beta
+ */
+declare class OnDragEnded extends OnUUIDEvent {
+  readonly type: string
+}
+
+/**
  * @public
  */
 declare class OnFocus extends OnUUIDEvent {
@@ -3064,6 +3088,13 @@ declare class Quaternion {
 }
 
 declare const RAD2DEG: number
+
+declare type ReadOnlyQuaternion = {
+  readonly x: number
+  readonly y: number
+  readonly z: number
+  readonly w: number
+}
 
 declare type ReadOnlyVector2 = {
   readonly x: number
@@ -4371,6 +4402,31 @@ declare class Vector3 {
    */
   subtractFromFloatsToRef(x: number, y: number, z: number, result: Vector3): Vector3
   /**
+   * Multiplies this vector (with an implicit 1 in the 4th dimension) and m, and divides by perspective
+   * @param matrix - The transformation matrix
+   */
+  applyMatrix4(matrix: Matrix): void
+  /**
+   * Multiplies this vector (with an implicit 1 in the 4th dimension) and m, and divides by perspective and set the given vector "result" with this result
+   * @param matrix - The transformation matrix
+   * @param result - defines the Vector3 object where to store the result
+   * @returns the current Vector3
+   */
+  applyMatrix4ToRef(matrix: Matrix, result: Vector3): Vector3
+  /**
+   * Rotates the current Vector3 based on the given quaternion
+   * @param q - defines the Quaternion
+   * @returns the current Vector3
+   */
+  rotate(q: Quaternion): Vector3
+  /**
+   * Rotates current Vector3 based on the given quaternion, but applies the rotation to target Vector3.
+   * @param q - defines the Quaternion
+   * @param result - defines the target Vector3
+   * @returns the current Vector3
+   */
+  rotateToRef(q: Quaternion, result: Vector3): Vector3
+  /**
    * Gets a new Vector3 set with the current Vector3 negated coordinates
    * @returns a new Vector3
    */
@@ -4573,18 +4629,6 @@ declare class Vector3 {
    * @returns the current updated Vector3
    */
   setAll(v: number): Vector3
-  /**
-   * Rotates current Vector3 based on the given quaternion, but applies the rotation to target Vector3.
-   * @param q - defines the Quaternion
-   * @param target - defines the target Vector3
-   */
-  rotateToRef(q: Quaternion, target: Vector3): void
-  /**
-   * Rotates the current Vector3 based on the given quaternion
-   * @param q - defines the Quaternion
-   * @returns the current updated Vector3
-   */
-  rotate(q: Quaternion): Vector3
 }
 
 /**

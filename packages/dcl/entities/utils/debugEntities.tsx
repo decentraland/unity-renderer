@@ -6,7 +6,7 @@ import { PBRMaterial } from 'engine/components/disposableComponents/PBRMaterial'
 import { setEntityText } from 'engine/components/ephemeralComponents/TextShape'
 import { scene } from 'engine/renderer'
 import { decodeParcelSceneBoundaries, gridToParcel } from 'atomicHelpers/parcelScenePositions'
-import { parcelLimits } from 'config'
+import { parcelLimits, EDITOR } from 'config'
 import { Color3 } from 'decentraland-ecs/src'
 
 const debugContext = new SharedSceneContext('.', uuid())
@@ -25,8 +25,8 @@ zMaterial.updateData({ albedoColor: '#0000FF' }).catch($ => debugContext.logger.
 const checkerboardMaterial = new BABYLON.GridMaterial('checkerboard', scene)
 
 checkerboardMaterial.gridRatio = 1
-checkerboardMaterial.mainColor = BABYLON.Color3.Gray()
-checkerboardMaterial.lineColor = BABYLON.Color3.White()
+checkerboardMaterial.mainColor = EDITOR ? BABYLON.Color3.FromHexString('#242129') : BABYLON.Color3.Gray()
+checkerboardMaterial.lineColor = EDITOR ? BABYLON.Color3.FromHexString('#45404c') : BABYLON.Color3.White()
 checkerboardMaterial.zOffset = 1
 checkerboardMaterial.fogEnabled = false
 
@@ -123,7 +123,7 @@ export function createParcelOutline(positions: string) {
   ground.isPickable = false
 
   const lines = BABYLON.MeshBuilder.CreateLineSystem('lines', { lines: points }, scene)
-  lines.color = BABYLON.Color3.Red()
+  lines.color = EDITOR ? BABYLON.Color3.FromHexString('#ff004f') : BABYLON.Color3.Red()
   lines.isPickable = false
 
   return { ground, result: lines }

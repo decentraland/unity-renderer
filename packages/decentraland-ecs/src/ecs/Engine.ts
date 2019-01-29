@@ -10,7 +10,7 @@ import {
   getComponentClassId
 } from './Component'
 import { ISystem } from './System'
-import { EventManager, EventConstructor } from './EventManager'
+import { EventManager } from './EventManager'
 import { ComponentGroup } from './ComponentGroup'
 
 declare var console: any
@@ -42,16 +42,6 @@ export function error(error: string | Error, data?: any) {
   } else {
     // tslint:disable-next-line:no-console
     console.error('ERROR:', error, data)
-  }
-}
-
-/**
- * @public
- */
-@EventConstructor('engineEvent')
-export class EngineEvent {
-  constructor(public data: any) {
-    // stub
   }
 }
 

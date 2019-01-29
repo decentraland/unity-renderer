@@ -8,11 +8,22 @@ import 'babylonjs-loaders'
 import 'babylonjs-procedural-textures'
 
 import { future } from 'fp-future'
-import { isRunningTest, playerConfigurations, interactionLimits, isStandaloneHeadset, DEBUG, PREVIEW } from 'config'
+import {
+  isRunningTest,
+  playerConfigurations,
+  interactionLimits,
+  isStandaloneHeadset,
+  DEBUG,
+  PREVIEW,
+  EDITOR
+} from 'config'
 
 export const canvas = document.createElement('canvas')
 canvas.setAttribute('id', 'main-canvas')
 canvas.style.cssText = 'position:relative;z-index:1000;'
+canvas.oncontextmenu = function(e) {
+  e.preventDefault()
+}
 
 export const engine = new Babylon.Engine(canvas, !isRunningTest, {
   audioEngine: true,
@@ -99,8 +110,8 @@ export const effectLayers: BABYLON.EffectLayer[] = []
 
   scene.actionManager = new BABYLON.ActionManager(scene)
 
-  engine.enableOfflineSupport = !DEBUG && !PREVIEW
-  engine.disableManifestCheck = engine.enableOfflineSupport
+  engine.enableOfflineSupport = (!DEBUG && !PREVIEW) || EDITOR
+  engine.disableManifestCheck = true
 
   if (!isStandaloneHeadset || isRunningTest) {
     scene.onReadyObservable.add(() => {

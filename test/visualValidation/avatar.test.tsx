@@ -69,6 +69,7 @@ enableVisualTests('Avatar visual validation', function(root) {
   it('open profile ui for avatar1', async () => {
     avatar1.setAttributes(playerProfile)
     avatar1.dispatchUUIDEvent('onClick', {
+      entityId: avatar1.uuid,
       pointerId: 1
     })
   })

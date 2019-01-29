@@ -1,5 +1,5 @@
 import { ISystem } from '../ecs/System'
-import { Engine, EngineEvent } from '../ecs/Engine'
+import { Engine } from '../ecs/Engine'
 import { Entity, ComponentAdded, ComponentRemoved, ParentChanged } from '../ecs/Entity'
 import { UUIDEvent } from './Events'
 import {
@@ -39,17 +39,14 @@ export class DecentralandSynchronizationSystem implements ISystem {
       engine.update(dt)
       this.presentEntities()
     })
+
     this.dcl.onEvent(event => {
       switch (event.type) {
         case 'uuidEvent':
           const e = new UUIDEvent()
-          e.uuid = event.data.uuid
-          e.payload = event.data.payload
+          e.uuid = (event.data as any).uuid
+          e.payload = (event.data as any).payload
           engine.eventManager.fireEvent(e)
-          break
-
-        default:
-          engine.eventManager.fireEvent(new EngineEvent(event))
           break
       }
     })

@@ -3,7 +3,7 @@ import { SceneWorker, ParcelSceneAPI } from 'shared/world/SceneWorker'
 import { SharedSceneContext } from 'engine/entities/SharedSceneContext'
 import { defaultLogger, ILogger } from 'shared/logger'
 import { DevTools } from 'shared/apis/DevTools'
-import { IEventNames, IEvents } from 'shared/events'
+import { IEvents, IEventNames } from 'decentraland-ecs/src/decentraland/Types'
 
 /**
  * The WebGLScene has the responsibility of communicating the SceneWorker with the SharedSceneContext
@@ -55,6 +55,7 @@ export class WebGLScene<T> implements ParcelSceneAPI {
   }
 
   on<T extends IEventNames>(eventName: T, fn: (event: IEvents[T]) => void): void {
+    // TODO: agus revisa esto
     if (!this.disposed) {
       this.context.on(eventName, fn)
     }

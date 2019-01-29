@@ -16,6 +16,8 @@ export const envHelper = new EnvironmentHelper(
   scene
 )
 
+let editorEnvHelper: BABYLON.EnvironmentHelper = null
+
 const skybox = BABYLON.MeshBuilder.CreateSphere(
   'skybox',
   { diameter: 2 * visualConfigurations.farDistance - 5, sideOrientation: BABYLON.Mesh.BACKSIDE },
@@ -49,8 +51,8 @@ let sunInclination = -0.31
   }
 
   hemiLight.diffuse = BABYLON.Color3.White()
-  hemiLight.groundColor = ambientConfigurations.groundColor
-  hemiLight.specular = ambientConfigurations.sunColor
+  hemiLight.groundColor = ambientConfigurations.groundColor.clone()
+  hemiLight.specular = ambientConfigurations.sunColor.clone()
 
   if (DEBUG) {
     // tslint:disable-next-line:semicolon
@@ -59,6 +61,33 @@ let sunInclination = -0.31
 }
 
 /// --- EXPORTS ---
+
+export function setEditorEnvironment(enabled: boolean) {
+  if (enabled) {
+    if (!editorEnvHelper) {
+      const editorColor = BABYLON.Color3.FromHexString('#0e0c12')
+      editorEnvHelper = scene.createDefaultEnvironment({
+        environmentTexture: null,
+        groundColor: editorColor,
+        skyboxColor: editorColor
+      })
+      editorEnvHelper.ground.position.y = 0
+      editorEnvHelper.rootMesh.position.y = -0.1
+    }
+    scene.fogEnabled = false
+    skybox.visibility = 0
+    envHelper.ground.visibility = 0
+  } else {
+    if (editorEnvHelper) {
+      editorEnvHelper.dispose()
+      editorEnvHelper = null
+    }
+    scene.fogEnabled = true
+    skybox.visibility = 1
+  }
+
+  reposition()
+}
 
 export function setSunInclination(inclination: number) {
   sunInclination = inclination
@@ -89,3 +118,5 @@ export function reposition() {
   hemiLight.groundColor.copyFrom(ambientConfigurations.groundColor).scale(sunfade)
   hemiLight.specular.copyFrom(ambientConfigurations.sunColor).scale(sunfade)
 }
+
+reposition()

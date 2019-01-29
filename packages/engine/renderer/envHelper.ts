@@ -262,7 +262,7 @@ export class EnvironmentHelper {
   /**
    * Gets the ground material created by the helper.
    */
-  public get groundMaterial(): BABYLON.Nullable<BABYLON.PBRBaseSimpleMaterial> {
+  public get groundMaterial(): BABYLON.Nullable<BABYLON.PBRMetallicRoughnessMaterial> {
     return this._groundMaterial
   }
 
@@ -471,6 +471,7 @@ export class EnvironmentHelper {
     this._groundMaterial.roughness = 1
     this._groundMaterial.metallic = 0.4
     this._groundMaterial.zOffset = 2
+    this._groundMaterial.baseColor = this._options.groundColor
 
     if (this._ground) {
       this._ground.material = this._groundMaterial

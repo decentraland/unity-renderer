@@ -26,7 +26,7 @@
 
 //   async sceneDidMount() {
 //     this.subscribeTo('click', async e => {
-//       if (e.elementId === 'button-sign') {
+//       if (e.entityId === 'button-sign') {
 //         await this.signMessage()
 //       }
 //     })

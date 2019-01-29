@@ -72,6 +72,7 @@ export class TextShape extends BaseComponent<ECSTextShape> {
 
     this.textBlock.onPointerUpObservable.add($ => {
       this.entity.dispatchUUIDEvent('onClick', {
+        entityId: this.entity.uuid,
         pointerId: $.buttonIndex
       })
     })

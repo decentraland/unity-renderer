@@ -6,6 +6,7 @@ import { ILogger, createLogger } from '../shared/logger'
 import { positionObserver, lastPlayerPosition } from '../shared/world/positionThings'
 import { Vector3, Quaternion } from 'babylonjs'
 import { enableParcelSceneLoading, getParcelById } from '../shared/world/parcelSceneManager'
+import { IEventNames, IEvents } from '../decentraland-ecs/src/decentraland/Types'
 import {
   LoadableParcelScene,
   Vector3Component,
@@ -15,7 +16,7 @@ import {
   ILandToLoadableParcelScene
 } from '../shared/types'
 import { SceneWorker, ParcelSceneAPI } from '../shared/world/SceneWorker'
-import { IEventNames, IEvents } from '../shared/events'
+
 import { EventDispatcher } from 'decentraland-rpc/lib/common/core/EventDispatcher'
 import { ParcelIdentity } from '../shared/apis/ParcelIdentity'
 

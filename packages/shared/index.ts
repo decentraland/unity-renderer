@@ -1,7 +1,7 @@
 import './apis'
 import { ensureLocalStorageStructure } from './comms/profile'
 import { initializeUrlPositionObserver } from './world/positionThings'
-import { ETHEREUM_NETWORK, MOBILE_DEBUG, networkConfigurations, PREVIEW } from '../config'
+import { ETHEREUM_NETWORK, MOBILE_DEBUG, networkConfigurations, PREVIEW, EDITOR } from '../config'
 import { getERC721 } from './ethereum/ERC721'
 import { getUserAccount, getNetwork } from './ethereum/EthereumService'
 import { connect } from './comms'
@@ -9,7 +9,7 @@ import { info, error } from '../engine/logger'
 import { requestManager, awaitWeb3Approval } from './ethereum/provider'
 
 async function grantAccess(address: string | null, net: ETHEREUM_NETWORK) {
-  if (MOBILE_DEBUG || PREVIEW) {
+  if (MOBILE_DEBUG || PREVIEW || EDITOR) {
     return true
   }
 

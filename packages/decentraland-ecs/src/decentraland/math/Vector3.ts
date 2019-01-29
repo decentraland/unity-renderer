@@ -761,6 +761,67 @@ export class Vector3 {
   }
 
   /**
+   * Multiplies this vector (with an implicit 1 in the 4th dimension) and m, and divides by perspective
+   * @param matrix - The transformation matrix
+   */
+  public applyMatrix4(matrix: Matrix) {
+    this.applyMatrix4ToRef(matrix, this)
+  }
+
+  /**
+   * Multiplies this vector (with an implicit 1 in the 4th dimension) and m, and divides by perspective and set the given vector "result" with this result
+   * @param matrix - The transformation matrix
+   * @param result - defines the Vector3 object where to store the result
+   * @returns the current Vector3
+   */
+  public applyMatrix4ToRef(matrix: Matrix, result: Vector3) {
+    const { x, y, z } = this
+    const { m } = matrix
+    const w = 1 / (m[3] * x + m[7] * y + m[11] * z + m[15])
+
+    result.x = (m[0] * x + m[4] * y + m[8] * z + m[12]) * w
+    result.y = (m[1] * x + m[5] * y + m[9] * z + m[13]) * w
+    result.z = (m[2] * x + m[6] * y + m[10] * z + m[14]) * w
+
+    return result
+  }
+
+  /**
+   * Rotates the current Vector3 based on the given quaternion
+   * @param q - defines the Quaternion
+   * @returns the current Vector3
+   */
+  public rotate(q: Quaternion) {
+    return this.rotateToRef(q, this)
+  }
+
+  /**
+   * Rotates current Vector3 based on the given quaternion, but applies the rotation to target Vector3.
+   * @param q - defines the Quaternion
+   * @param result - defines the target Vector3
+   * @returns the current Vector3
+   */
+  public rotateToRef(q: Quaternion, result: Vector3) {
+    const { x, y, z } = this
+    const { x: qx, y: qy, z: qz, w: qw } = q
+
+    // calculate quat * vector
+
+    const ix = qw * x + qy * z - qz * y
+    const iy = qw * y + qz * x - qx * z
+    const iz = qw * z + qx * y - qy * x
+    const iw = -qx * x - qy * y - qz * z
+
+    // calculate result * inverse quat
+
+    result.x = ix * qw + iw * -qx + iy * -qz - iz * -qy
+    result.y = iy * qw + iw * -qy + iz * -qx - ix * -qz
+    result.z = iz * qw + iw * -qz + ix * -qy - iy * -qx
+
+    return result
+  }
+
+  /**
    * Gets a new Vector3 set with the current Vector3 negated coordinates
    * @returns a new Vector3
    */
@@ -1101,38 +1162,6 @@ export class Vector3 {
    */
   public setAll(v: number): Vector3 {
     this.x = this.y = this.z = v
-    return this
-  }
-
-  /**
-   * Rotates current Vector3 based on the given quaternion, but applies the rotation to target Vector3.
-   * @param q - defines the Quaternion
-   * @param target - defines the target Vector3
-   */
-  public rotateToRef(q: Quaternion, target: Vector3): void {
-    let x = this.x
-    let y = this.y
-    let z = this.z
-
-    // calculate quaternion * vector
-    let ix = q.w * x + q.y * z - q.z * y
-    let iy = q.w * y + q.z * x - q.x * z
-    let iz = q.w * z + q.x * y - q.y * x
-    let iw = -q.x * x - q.y * y - q.z * z
-
-    // calculate result * inverse quaternion and applies them to target vec3
-    target.x = ix * q.w + iw * -q.x + iy * -q.z - iz * -q.y
-    target.y = iy * q.w + iw * -q.y + iz * -q.x - ix * -q.z
-    target.z = iz * q.w + iw * -q.z + ix * -q.y - iy * -q.x
-  }
-
-  /**
-   * Rotates the current Vector3 based on the given quaternion
-   * @param q - defines the Quaternion
-   * @returns the current updated Vector3
-   */
-  public rotate(q: Quaternion): Vector3 {
-    this.rotateToRef(q, this)
     return this
   }
 }

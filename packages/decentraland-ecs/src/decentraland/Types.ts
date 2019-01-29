@@ -1,3 +1,5 @@
+import { ReadOnlyVector3, ReadOnlyQuaternion } from './math'
+
 export type Component = any
 
 export type ModuleDescriptor = {
@@ -6,13 +8,6 @@ export type ModuleDescriptor = {
 }
 
 export type MethodDescriptor = { name: string }
-
-export type EngineEvent = {
-  /** eventName */
-  type: string
-
-  data: Record<string, any>
-}
 
 export type DecentralandInterface = {
   /** are we running in debug mode? */
@@ -84,4 +79,155 @@ export type DecentralandInterface = {
 
   /** called when calling a module method */
   callRpc(rpcHandle: string, methodName: string, args: ArrayLike<any>): PromiseLike<any>
+}
+
+export type PointerEvent = {
+  /** Origin of the ray */
+  from: ReadOnlyVector3
+  /** Direction vector of the ray (normalized) */
+  direction: ReadOnlyVector3
+  /** Length of the ray */
+  length: number
+  /** ID of the pointer that triggered the event */
+  pointerId: number
+}
+
+export interface IEvents {
+  /**
+   * `positionChanged` is triggered when the position of the camera changes
+   * This event is throttled to 10 times per second.
+   */
+  positionChanged: {
+    /** Position relative to the base parcel of the scene */
+    position: ReadOnlyVector3
+
+    /** Camera position, this is a absolute world position */
+    cameraPosition: ReadOnlyVector3
+
+    /** Eye height, in meters. */
+    playerHeight: number
+  }
+
+  /**
+   * `rotationChanged` is triggered when the rotation of the camera changes.
+   * This event is throttled to 10 times per second.
+   */
+  rotationChanged: {
+    /** {X,Y,Z} Degree vector. Same as entities */
+    rotation: ReadOnlyVector3
+    /** Rotation quaternion, useful in some scenarios. */
+    quaternion: ReadOnlyQuaternion
+  }
+
+  /**
+   * `click` is triggered when a user points and the ray (from mouse or controller) hits the entity.
+   * Notice: Only entities with ID will be listening for click events.
+   */
+  click: {
+    /** ID of the entitiy of the event */
+    entityId: string
+
+    /** ID of the pointer that triggered the event */
+    pointerId: number
+  }
+
+  /**
+   * `pointerUp` is triggered when the user releases an input pointer.
+   * It could be a VR controller, a touch screen or the mouse.
+   */
+  pointerUp: PointerEvent
+
+  /**
+   * `pointerDown` is triggered when the user press an input pointer.
+   * It could be a VR controller, a touch screen or the mouse.
+   */
+  pointerDown: PointerEvent
+
+  /**
+   * `chatMessage` is triggered when the user sends a message through chat entity.
+   */
+  chatMessage: {
+    id: string
+    sender: string
+    message: string
+    isCommand: boolean
+  }
+
+  /**
+   * `onChange` is triggered when an entity changes its own internal state.
+   * Dispatched by the `ui-*` entities when their value is changed. It triggers a callback.
+   * Notice: Only entities with ID will be listening for click events.
+   */
+  onChange: {
+    value?: any
+    /** ID of the pointer that triggered the event */
+    pointerId?: number
+  }
+
+  /**
+   * `onFocus` is triggered when an entity focus is active.
+   * Dispatched by the `ui-input` and `ui-password` entities when the value is changed.
+   * It triggers a callback.
+   *
+   * Notice: Only entities with ID will be listening for click events.
+   */
+  onFocus: {
+    /** ID of the entitiy of the event */
+    entityId: string
+    /** ID of the pointer that triggered the event */
+    pointerId: number
+  }
+
+  /**
+   * `onBlur` is triggered when an entity loses its focus.
+   * Dispatched by the `ui-input` and `ui-password` entities when the value is changed.
+   *  It triggers a callback.
+   *
+   * Notice: Only entities with ID will be listening for click events.
+   */
+  onBlur: {
+    /** ID of the entitiy of the event */
+    entityId: string
+    /** ID of the pointer that triggered the event */
+    pointerId: number
+  }
+
+  onClick: {
+    entityId: string
+    pointerId: number
+  }
+
+  uuidEvent: {
+    uuid: string
+    payload: any
+  }
+
+  limitsExceeded: {
+    given: Record<string, number>
+    limit: Record<string, number>
+  }
+
+  /** For gizmos */
+  dragEnded: {
+    transform: {
+      position: ReadOnlyVector3
+      rotation: ReadOnlyQuaternion
+      scale: ReadOnlyVector3
+    }
+    entityId: string
+  }
+
+  // @internal
+  externalAction: {
+    type: string
+    [key: string]: any
+  }
+}
+
+export type IEventNames = keyof IEvents
+
+export type EngineEvent<T extends IEventNames = IEventNames, V = IEvents[T]> = {
+  /** eventName */
+  type: T
+  data: V
 }

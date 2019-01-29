@@ -5,9 +5,9 @@ import { createSchemaValidator } from '../../helpers/schemaValidator'
 import { parseVerticalAlignment, parseHorizontalAlignment } from 'engine/entities/utils/parseAttrs'
 import { UIInputTextShape } from 'decentraland-ecs/src/decentraland/UIShapes'
 import { SharedSceneContext } from 'engine/entities/SharedSceneContext'
-import { IEvents } from 'shared/events'
 import { UIControl } from './UIControl'
 import { PointerLock } from 'engine/renderer/input'
+import { IEvents } from 'decentraland-ecs/src/decentraland/Types'
 
 const schemaValidator = createSchemaValidator({
   color: { type: 'string', default: '#fff' },
@@ -55,11 +55,11 @@ class Class extends UIControl<UIInputTextShape, BABYLON.GUI.InputText> {
     })
     this.control.onFocusObservable.add(_ => {
       this.checkPointerLock()
-      this.dispatchOnFocus({ elementId: this.uuid, pointerId: -1 })
+      this.dispatchOnFocus({ entityId: this.uuid, pointerId: -1 })
     })
     this.control.onBlurObservable.add(_ => {
       this.checkPointerLock()
-      this.dispatchOnBlur({ elementId: this.uuid, pointerId: -1 })
+      this.dispatchOnBlur({ entityId: this.uuid, pointerId: -1 })
     })
   }
 

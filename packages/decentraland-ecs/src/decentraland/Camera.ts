@@ -1,5 +1,5 @@
 import { Vector3, Quaternion } from './math'
-import { DecentralandInterface } from './Types'
+import { DecentralandInterface, IEvents } from './Types'
 
 declare let dcl: DecentralandInterface | void
 
@@ -32,10 +32,13 @@ export class Camera {
       dcl.subscribe('rotationChanged')
 
       dcl.onEvent(event => {
-        if (event.type === 'positionChanged') {
-          this.positionChanged(event.data as any)
-        } else if (event.type === 'rotationChanged') {
-          this.rotationChanged(event.data as any)
+        switch (event.type) {
+          case 'positionChanged':
+            this.positionChanged(event.data as any)
+            break
+          case 'rotationChanged':
+            this.rotationChanged(event.data as any)
+            break
         }
       })
     }
@@ -70,12 +73,12 @@ export class Camera {
   }
 
   // @internal
-  private positionChanged(e: { position: { x: number; y: number; z: number } }) {
+  private positionChanged(e: IEvents['positionChanged']) {
     this.lastEventPosition = e.position
   }
 
   // @internal
-  private rotationChanged(e: { quaternion: { x: number; y: number; z: number; w: number } }) {
+  private rotationChanged(e: IEvents['rotationChanged']) {
     this.lastEventRotation = e.quaternion
   }
 }

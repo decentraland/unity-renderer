@@ -12,7 +12,9 @@
     "start": "npm run build && tsc -p tsconfig.json --watch"
   },
   "keywords": [],
-  "tsdoc": { "tsdocFlavor": "AEDoc" },
+  "tsdoc": {
+    "tsdocFlavor": "AEDoc"
+  },
   "author": "",
   "license": "Apache 2.0",
   "files": [
@@ -23,10 +25,6 @@
     "artifacts",
     "api-extractor.json"
   ],
-  "dependencies": {
-
-  },
-  "devDependencies": {
-
-  }
+  "dependencies": {},
+  "devDependencies": {}
 }

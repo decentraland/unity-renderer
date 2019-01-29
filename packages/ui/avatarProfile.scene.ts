@@ -184,9 +184,12 @@ const toggleBlock = async () => {
 dcl.subscribe('SHOW_PROFILE')
 dcl.subscribe('HIDE_PROFILE')
 dcl.onEvent(event => {
-  switch (event.type) {
+  const eventType: string = event.type
+  const eventData: any = event.data
+
+  switch (eventType) {
     case 'SHOW_PROFILE':
-      show(event.data)
+      show(eventData)
       break
 
     case 'HIDE_PROFILE':

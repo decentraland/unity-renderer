@@ -3,6 +3,13 @@ import { Vector3 } from './Vector3'
 import { MathTmp } from './preallocatedVariables'
 import { DEG2RAD, RAD2DEG, Epsilon } from './types'
 
+export type ReadOnlyQuaternion = {
+  readonly x: number
+  readonly y: number
+  readonly z: number
+  readonly w: number
+}
+
 /**
  * Class used to store quaternion data
  * {@link https://en.wikipedia.org/wiki/Quaternion }

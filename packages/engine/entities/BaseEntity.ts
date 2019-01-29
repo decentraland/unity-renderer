@@ -6,8 +6,9 @@ import { componentRegistry, BaseComponent } from '../components'
 import { scene, engineMicroQueue } from '../renderer'
 import { DisposableComponent } from 'engine/components/disposableComponents/DisposableComponent'
 import { UpdateEntityComponentPayload } from 'shared/types'
-import { IEventNames, IEvents } from 'shared/events'
+
 import { CLASS_ID } from 'decentraland-ecs/src'
+import { IEventNames, IEvents } from 'decentraland-ecs/src/decentraland/Types'
 
 // tslint:disable-next-line:whitespace
 type SharedSceneContext = import('./SharedSceneContext').SharedSceneContext
@@ -330,7 +331,6 @@ export class BaseEntity extends BABYLON.TransformNode {
 
     if (this.onChangeObject3DObservable) {
       this.onChangeObject3DObservable.clear()
-      delete this.onChangeObject3DObservable
     }
 
     scene.removeTransformNode(this)
@@ -418,6 +418,7 @@ export class BaseEntity extends BABYLON.TransformNode {
     this.actionManager.registerAction(
       new BABYLON.ExecuteCodeAction(BABYLON.ActionManager.OnPickDownTrigger, evt => {
         this.dispatchUUIDEvent('onClick', {
+          entityId: this.uuid,
           pointerId: evt.sourceEvent.pointerId || 0
         })
       })
