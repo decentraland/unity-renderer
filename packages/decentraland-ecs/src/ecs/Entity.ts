@@ -34,7 +34,11 @@ export class Entity {
    * Adds or replaces a component in the entity.
    * @param component - component instance.
    */
-  set<T extends object>(component: T) {
+  set<T extends object>(component: T): void {
+    if (typeof component === 'function') {
+      throw new Error('You passed a function or class as a component, an instance of component is expected')
+    }
+
     const componentName = getComponentName(component)
 
     if (this.components[componentName]) {
@@ -124,7 +128,7 @@ export class Entity {
    */
   add<T extends object>(component: T) {
     if (typeof component !== 'object') {
-      throw new Error('Entity#add(component): component is not an instance of a class')
+      throw new Error('Entity#add(component): You passed a function or class as a component, an instance of component is expected')
     }
 
     const componentName = getComponentName(component)
