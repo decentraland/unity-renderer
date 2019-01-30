@@ -32,9 +32,11 @@ To avoid extremely slow building times due to the Lightweight Render Pipeline sh
 
 ### GLTF Dynamic Loading
 
-We are using [UnityGLTF](https://github.com/KhronosGroup/UnityGLTF) as a Dynamic GLTF loader for unity to handle GLTF models.
+We are using [UnityGLTF](https://github.com/KhronosGroup/UnityGLTF) as a Dynamic GLTF/GLB loader for unity to handle GLTF models.
 
 #### Local changes made to UnityGLTF plugin
+
+##### NOTE: UnityGLTF plugin update is discouraged until Unity WebGL supports multi-threading
 
 1. GLTFComponent.cs has been adapted to:
 
@@ -43,9 +45,9 @@ We are using [UnityGLTF](https://github.com/KhronosGroup/UnityGLTF) as a Dynamic
 
 2. SpecGlossMap.cs and MetalRoughMap.cs were adapted to use "Lightweight Render Pipeline/Simple Lit" and "Lightweight Render Pipeline/Lit" shaders respectively (the original PbrMetallicRoughness and PbrSpecularGlossiness don't work with the Lightweight Render Pipeline)
 
-### Known Issues
+3. Several files were modified to replce Tasks (multi-threading) with Coroutines as Unity WebGL build doesn't support multi-threading.
 
--   GLTF Dynamic Loading: Currently, only **GLB** format is supported with Khrono's [UnityGLTF](https://github.com/KhronosGroup/UnityGLTF) loader, GLTF dynamic loading doesn't work even in their example unity project. Soon Unity will support GLTFs natively (Unity declared that for its future 2019.1 release). When that feature gets implemented we'll remove khrono's loader from the project.
+### Known Issues
 
 -   Regarding Basic Materials: If the **alphaTest** value is set on a basic material and the **Assets/Resources/Materials/BasicShapeMaterial** is viewed in the Inspector (be it by selecting the material in the Project tab or by expanding its details from a renderer in the Inspector), its "Alpha Clip" toggle gets untoggled (and the material file modified). We suspect a Unity bug.
 

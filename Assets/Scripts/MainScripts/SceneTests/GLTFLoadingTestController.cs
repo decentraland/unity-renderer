@@ -2,6 +2,7 @@ using System;
 using UnityEngine.Networking;
 using UnityGLTF;
 using System.Collections;
+using DCL.Helpers;
 using UnityEngine;
 
 public class GLTFLoadingTestController : MonoBehaviour
@@ -11,9 +12,28 @@ public class GLTFLoadingTestController : MonoBehaviour
     GLTFComponent[] gltfRenderers;
     float loadingStartingTime;
 
-    void Awake()
+    void Start()
     {
-        gltfRenderers = GetComponentsInChildren<GLTFComponent>(true);
+        // ---------
+        var sceneController = FindObjectOfType<SceneController>();
+        var scenesToLoad = (Resources.Load("TestJSON/SceneLoadingTest") as TextAsset).text;
+
+        sceneController.UnloadAllScenes();
+        sceneController.LoadParcelScenes(scenesToLoad);
+
+        var scene = sceneController.loadedScenes["0,0"];
+
+        // FULL GLB
+        TestHelpers.InstantiateEntityWithShape(scene, "1", DCL.Models.CLASS_ID.GLTF_SHAPE, new Vector3(-2.5f, 1, 0), "http://127.0.0.1:9991/GLB/Trunk/Trunk.glb");
+
+        // GLB + Separated Textures
+        TestHelpers.InstantiateEntityWithShape(scene, "2", DCL.Models.CLASS_ID.GLTF_SHAPE, new Vector3(0f, 1, 0), "http://127.0.0.1:9991/GLB/TrunkSeparatedTextures/Trunk.glb");
+
+        // GLTF
+        TestHelpers.InstantiateEntityWithShape(scene, "3", DCL.Models.CLASS_ID.GLTF_SHAPE, new Vector3(2.5f, 1, 0), "http://127.0.0.1:9991/GLTF/Trunk/Trunk.gltf");
+        // ---------
+
+        /* gltfRenderers = GetComponentsInChildren<GLTFComponent>(true);
 
         loadingStartingTime = Time.time;
 
@@ -22,7 +42,7 @@ public class GLTFLoadingTestController : MonoBehaviour
             gltfRenderers[i].OnFinishedLoadingAsset += SendLoadingTimeDataToEndpoint;
 
             gltfRenderers[i].gameObject.SetActive(true);
-        }
+        } */
     }
 
     void SendLoadingTimeDataToEndpoint()

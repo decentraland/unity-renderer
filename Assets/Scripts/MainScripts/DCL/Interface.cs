@@ -15,6 +15,8 @@ namespace DCL.Interface
      */
     public static class WebInterface
     {
+        public static System.Action<string, string> OnMessageFromEngine;
+
         private class ReportPositionPayload
         {
             public Vector3 position;
@@ -47,8 +49,6 @@ namespace DCL.Interface
     [DllImport("__Internal")] public static extern void StartDecentraland();
     [DllImport("__Internal")] public static extern void MessageFromEngine(string type, string message);
 #else
-        public static System.Action<string, string> OnMessageFromEngine;
-
         public static void StartDecentraland() =>
           Debug.Log("StartDecentraland called");
 
