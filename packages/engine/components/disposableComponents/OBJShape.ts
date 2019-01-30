@@ -67,9 +67,6 @@ export class OBJShape extends DisposableComponent {
             node.scaling.set(1, 1, -1)
 
             entity.setObject3D(BasicShape.nameInEntity, node)
-
-            entity.sendUpdatePositions()
-            entity.sendUpdateMetrics()
           } else {
             cleanupAssetContainer(assetContainer)
           }
@@ -111,7 +108,8 @@ export class OBJShape extends DisposableComponent {
       }
       if (this.src === null) {
         this.src = data.src
-
+      }
+      if (this.src) {
         if ('visible' in data) {
           if (data.visible === false) {
             this.entities.forEach($ => this.onDetach($))

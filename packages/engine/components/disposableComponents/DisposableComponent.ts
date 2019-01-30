@@ -59,7 +59,7 @@ export type BasicShapeFields = {
 }
 
 export abstract class BasicShape<T> extends DisposableComponent {
-  static readonly nameInEntity = 'basic-shape'
+  static readonly nameInEntity = 'shape'
 
   data: T & Partial<BasicShapeFields> = {
     visible: true,

@@ -1,8 +1,8 @@
 import { LoadableParcelScene, EnvironmentData } from 'shared/types'
 import { SceneWorker } from 'shared/world/SceneWorker'
 import { SharedSceneContext } from 'engine/entities/SharedSceneContext'
-import { IParcelSceneLimits, getParcelSceneLimits } from 'atomicHelpers/landHelpers'
-import { parcelLimits, DEBUG, EDITOR } from 'config'
+import { getParcelSceneLimits } from 'atomicHelpers/landHelpers'
+import { DEBUG, EDITOR } from 'config'
 import { checkParcelSceneBoundaries } from './entities/utils/checkParcelSceneLimits'
 import { BaseEntity } from 'engine/entities/BaseEntity'
 import { encodeParcelSceneBoundaries, gridToWorld } from 'atomicHelpers/parcelScenePositions'
@@ -12,20 +12,9 @@ import { createLogger } from 'shared/logger'
 import { DevTools } from 'shared/apis/DevTools'
 import { ParcelIdentity } from 'shared/apis/ParcelIdentity'
 import { WebGLScene } from './WebGLScene'
+import { IEvents } from 'decentraland-ecs/src/decentraland/Types'
 
 export class WebGLParcelScene extends WebGLScene<LoadableParcelScene> {
-  /**
-   * Cached limits calculed based on the parcels of the parcelScene
-   */
-  public cachedLimits: IParcelSceneLimits = {
-    triangles: parcelLimits.triangles,
-    entities: parcelLimits.entities,
-    bodies: parcelLimits.bodies,
-    materials: parcelLimits.materials,
-    textures: parcelLimits.textures,
-    geometries: parcelLimits.geometries
-  }
-
   public encodedPositions: string
 
   private setOfEntitiesOutsideBoundaries = new Set<BaseEntity>()
@@ -57,7 +46,7 @@ export class WebGLParcelScene extends WebGLScene<LoadableParcelScene> {
     this.context.logger = this.logger = createLogger(data.data.basePosition.x + ',' + data.data.basePosition.y + ': ')
 
     this.encodedPositions = encodeParcelSceneBoundaries(data.data.basePosition, data.data.parcels)
-    this.cachedLimits = getParcelSceneLimits(data.data.parcels.length)
+    Object.assign(this.context.metricsLimits, getParcelSceneLimits(data.data.parcels.length))
 
     // Set a debug name in the root entity
     this.context.rootEntity.name = this.context.rootEntity.id = `parcelScene:${this.data.data.basePosition.x},${
@@ -70,14 +59,22 @@ export class WebGLParcelScene extends WebGLScene<LoadableParcelScene> {
 
     this.validationInterval = setInterval(() => {
       this.checkBoundaries()
-      if (!EDITOR) {
-        this.checkLimits()
-      }
     }, 5000)
 
+    this.context.on('metricsUpdate', data => {
+      if (!EDITOR) {
+        this.checkLimits(data)
+      }
+    })
+
     if (DEBUG) {
+      this.context.onEntityMatrixChangedObservable.add(_entity => {
+        this.checkBoundaries()
+      })
       this.initDebugEntities()
     }
+
+    this.context.updateMetrics()
   }
 
   registerWorker(worker: SceneWorker): void {
@@ -105,29 +102,21 @@ export class WebGLParcelScene extends WebGLScene<LoadableParcelScene> {
    * This method checks if we are passing the limits of the parcel.
    * It triggers an event in the context if we are exceeding the limit.
    */
-  checkLimits() {
-    const metrics = this.context.metrics
-
+  checkLimits(data: IEvents['metricsUpdate']) {
     if (
-      this.cachedLimits.entities < metrics.entities ||
-      this.cachedLimits.bodies < metrics.bodies ||
-      this.cachedLimits.triangles < metrics.triangles ||
-      this.cachedLimits.materials < metrics.materials ||
-      this.cachedLimits.textures < metrics.textures ||
-      this.cachedLimits.geometries < metrics.geometries
+      data.limit.entities < data.given.entities ||
+      data.limit.bodies < data.given.bodies ||
+      data.limit.triangles < data.given.triangles ||
+      data.limit.materials < data.given.materials ||
+      data.limit.textures < data.given.textures ||
+      data.limit.geometries < data.given.geometries
     ) {
       this.context.logger.error(
         `Unloading scene at ${this.data.data.basePosition.x},${this.data.data.basePosition.y} due to exceeded limits`,
-        {
-          limit: { ...this.cachedLimits },
-          actual: { ...metrics }
-        }
+        data
       )
 
-      this.context.emit('limitsExceeded', {
-        given: metrics,
-        limit: this.cachedLimits
-      })
+      this.context.emit('limitsExceeded', data)
 
       if (this.worker) {
         this.worker.dispose()
@@ -154,12 +143,14 @@ export class WebGLParcelScene extends WebGLScene<LoadableParcelScene> {
     })
     // add the highlight to the entities outside fences
     newSet.forEach($ => {
-      if (DEBUG || EDITOR) {
-        highlightEntity($)
-      } else {
-        $.setEnabled(false)
+      if (!this.setOfEntitiesOutsideBoundaries.has($)) {
+        if (DEBUG || EDITOR) {
+          highlightEntity($)
+        } else {
+          $.setEnabled(false)
+        }
+        this.setOfEntitiesOutsideBoundaries.add($)
       }
-      this.setOfEntitiesOutsideBoundaries.add($)
     })
   }
 

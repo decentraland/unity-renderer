@@ -11,7 +11,6 @@ import { DEBUG, PREVIEW, NETWORK_HZ, EDITOR } from 'config'
 import { positionObserver, lastPlayerPosition } from 'shared/world/positionThings'
 
 import { createStats } from './widgets/stats'
-import { createCrossHair } from './widgets/fpsCrossHair'
 import { Metrics, drawMetrics } from './widgets/metrics'
 
 import { scene, engine, vrHelper, initLocalPlayer, initDCL } from 'engine/renderer'
@@ -37,8 +36,6 @@ let isEngineRunning = false
 const parcelMetrics = drawMetrics(getMetrics())
 // Draws FPS / ms
 const stats = createStats()
-
-const crossHair = !EDITOR ? createCrossHair(scene) : null
 
 const _render = instrumentTelemetry('render', function() {
   try {
@@ -102,9 +99,6 @@ const notifyPositionObservers = (() => {
 /// --- SIDE EFFECTS ---
 
 {
-  if (crossHair) {
-    crossHair.parent = vrHelper.deviceOrientationCamera
-  }
   stats.showPanel(1)
   stats.begin()
 
@@ -183,10 +177,12 @@ export async function initBabylonClient() {
   } else if (!EDITOR) {
     await initChatSystem()
     await initHudSystem()
-    initKeyboard()
-    initDebugCommands()
-    enableMouseLock(engine.getRenderingCanvas())
   }
+  enableMouseLock(engine.getRenderingCanvas())
+
+  initKeyboard()
+  initDebugCommands()
+
   addStats()
   start()
 }

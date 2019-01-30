@@ -20,16 +20,20 @@ function filterMeshes($: BABYLON.TransformNode) {
   return $ instanceof BABYLON.AbstractMesh
 }
 
-export class HighlightBox extends BaseComponent<boolean> {
+export class HighlightBox extends BaseComponent<{ highlight: boolean }> {
   transformValue(x) {
-    return validators.boolean(x, false)
+    return {
+      nonce: Math.random(),
+      highlight: validators.boolean(x, true)
+    }
   }
 
   shouldSceneUpdate() {
     return true
   }
 
-  update(oldValue, newValue: boolean) {
+  update() {
+    const newValue = !this.value || this.value.highlight
     const mesh: BABYLON.Mesh = this.entity.getObject3D(BasicShape.nameInEntity) as any
     if (mesh) {
       const didChange = mesh.renderOverlay !== !!newValue
@@ -71,7 +75,7 @@ export function highlightEntity(entity: BaseEntity) {
   entity.context.UpdateEntityComponent({
     classId: CLASS_ID.HIGHLIGHT_ENTITY,
     entityId: entity.id,
-    json: '{}',
+    json: '{"highlight": true}',
     name: 'highlight'
   })
 }

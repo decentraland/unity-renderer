@@ -64,6 +64,19 @@ export class SharedSceneContext implements BABYLON.IDisposable {
     geometries: 0
   }
 
+  /**
+   * Limits calculed based on the parcels of the parcelScene. Zero if no limits should be applied to the scene
+   */
+  public metricsLimits: IParcelSceneLimits = {
+    triangles: 0,
+    entities: 0,
+    bodies: 0,
+    materials: 0,
+    textures: 0,
+    geometries: 0
+  }
+
+  public onEntityMatrixChangedObservable = new BABYLON.Observable<BaseEntity>()
   public mappings: Map<string, string | Blob | File> = new Map()
   public textures: Map<string, BABYLON.Texture> = new Map()
 
@@ -122,6 +135,11 @@ export class SharedSceneContext implements BABYLON.IDisposable {
     }
 
     this.metrics = { entities, triangles, bodies, textures, materials, geometries }
+
+    this.emit('metricsUpdate', {
+      given: this.metrics,
+      limit: this.metricsLimits
+    })
   }
 
   on<T extends IEventNames>(event: T, cb: (data: IEvents[T]) => void) {
@@ -342,7 +360,7 @@ export class SharedSceneContext implements BABYLON.IDisposable {
     if (this.useMappings) {
       const mapping = this.mappings.get(sanitizedUrl)
       if (!mapping || typeof mapping !== 'string') {
-        throw new Error(`The mapping for ${this.internalBaseUrl}${sanitizedUrl} is not present.`)
+        throw new Error(`File not found: ${sanitizedUrl}`)
       } else {
         return resolveUrl(this.baseUrl, mapping)
       }
@@ -359,7 +377,7 @@ export class SharedSceneContext implements BABYLON.IDisposable {
 
     if (this.useMappings) {
       if (!this.mappings.has(sanitizedUrl)) {
-        throw new Error(`The mapping for ${this.internalBaseUrl}${sanitizedUrl} is not present.`)
+        throw new Error(`File not found: ${sanitizedUrl}`)
       } else {
         return this.loadMapping(this.mappings.get(sanitizedUrl))
       }

@@ -35,49 +35,49 @@ describe('parcelScenePositions unit tests', () => {
   describe('isOnLimits (validates that limits are inclusive and no outside of grid)', () => {
     describe.skip('vertical limits', () => {
       it('(20) -> true', () => {
-        const bbox = { maximumWorld: { x: 1, y: 20, z: 1 }, minimumWorld: { x: 0, y: 0, z: 0 } }
+        const bbox = { maximum: { x: 1, y: 20, z: 1 }, minimum: { x: 0, y: 0, z: 0 } }
         const result = isOnLimits(bbox, '0,0')
         expect(result).to.eq(true)
       })
       it('(20.1) -> false', () => {
-        const bbox = { maximumWorld: { x: 1, y: 20.1, z: 1 }, minimumWorld: { x: 0, y: 0, z: 0 } }
+        const bbox = { maximum: { x: 1, y: 20.1, z: 1 }, minimum: { x: 0, y: 0, z: 0 } }
         const result = isOnLimits(bbox, '0,0')
         expect(result).to.eq(false)
       })
       it('(-20) -> true', () => {
-        const bbox = { maximumWorld: { x: 1, y: 0, z: 1 }, minimumWorld: { x: 0, y: -20, z: 0 } }
+        const bbox = { maximum: { x: 1, y: 0, z: 1 }, minimum: { x: 0, y: -20, z: 0 } }
         const result = isOnLimits(bbox, '0,0')
         expect(result).to.eq(true)
       })
       it('(-20.1) -> false', () => {
-        const bbox = { maximumWorld: { x: 1, y: 0, z: 1 }, minimumWorld: { x: 0, y: -20.1, z: 0 } }
+        const bbox = { maximum: { x: 1, y: 0, z: 1 }, minimum: { x: 0, y: -20.1, z: 0 } }
         const result = isOnLimits(bbox, '0,0')
         expect(result).to.eq(false)
       })
     })
     describe('horizontal limits', () => {
       it('(10, 10) -> true', () => {
-        const bbox = { maximumWorld: { x: 10, y: 0, z: 10 }, minimumWorld: { x: 0, y: 0, z: 0 } }
+        const bbox = { maximum: { x: 10, y: 0, z: 10 }, minimum: { x: 0, y: 0, z: 0 } }
         const result = isOnLimits(bbox, '0,0')
         expect(result).to.eq(true)
       })
       it('(0, 0) -> true', () => {
-        const bbox = { maximumWorld: { x: 0, y: 0, z: 0 }, minimumWorld: { x: 0, y: 0, z: 0 } }
+        const bbox = { maximum: { x: 0, y: 0, z: 0 }, minimum: { x: 0, y: 0, z: 0 } }
         const result = isOnLimits(bbox, '0,0')
         expect(result).to.eq(true)
       })
       it('a(10, 10) -> true', () => {
-        const bbox = { maximumWorld: { x: 10, y: 0, z: 10 }, minimumWorld: { x: 10, y: 0, z: 10 } }
+        const bbox = { maximum: { x: 10, y: 0, z: 10 }, minimum: { x: 10, y: 0, z: 10 } }
         const result = isOnLimits(bbox, '1,1')
         expect(result).to.eq(true)
       })
       it('(10.1, 10.1) -> false', () => {
-        const bbox = { maximumWorld: { x: 10.1, y: 0, z: 10.1 }, minimumWorld: { x: 0, y: 0, z: 0 } }
+        const bbox = { maximum: { x: 10.1, y: 0, z: 10.1 }, minimum: { x: 0, y: 0, z: 0 } }
         const result = isOnLimits(bbox, '0,0')
         expect(result).to.eq(false)
       })
       it('(-0.1, -0.1) -> false', () => {
-        const bbox = { maximumWorld: { x: 1, y: 0, z: 1 }, minimumWorld: { x: -0.1, y: 0, z: -0.1 } }
+        const bbox = { maximum: { x: 1, y: 0, z: 1 }, minimum: { x: -0.1, y: 0, z: -0.1 } }
         const result = isOnLimits(bbox, '0,0')
         expect(result).to.eq(false)
       })

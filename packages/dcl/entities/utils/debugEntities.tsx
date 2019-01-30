@@ -6,8 +6,10 @@ import { PBRMaterial } from 'engine/components/disposableComponents/PBRMaterial'
 import { setEntityText } from 'engine/components/ephemeralComponents/TextShape'
 import { scene } from 'engine/renderer'
 import { decodeParcelSceneBoundaries, gridToParcel } from 'atomicHelpers/parcelScenePositions'
-import { parcelLimits, EDITOR } from 'config'
+import { parcelLimits } from 'config'
 import { Color3 } from 'decentraland-ecs/src'
+import { checkerboardMaterial } from 'engine/renderer/ambientLights'
+import { ignoreBoundaryChecksOnObject } from './checkParcelSceneLimits'
 
 const debugContext = new SharedSceneContext('.', uuid())
 
@@ -22,14 +24,6 @@ yMaterial.updateData({ albedoColor: '#00FF00' }).catch($ => debugContext.logger.
 const zMaterial = new PBRMaterial(debugContext, uuid())
 zMaterial.updateData({ albedoColor: '#0000FF' }).catch($ => debugContext.logger.error('PBRMaterial#updateData', $))
 
-const checkerboardMaterial = new BABYLON.GridMaterial('checkerboard', scene)
-
-checkerboardMaterial.gridRatio = 1
-checkerboardMaterial.mainColor = EDITOR ? BABYLON.Color3.FromHexString('#242129') : BABYLON.Color3.Gray()
-checkerboardMaterial.lineColor = EDITOR ? BABYLON.Color3.FromHexString('#45404c') : BABYLON.Color3.White()
-checkerboardMaterial.zOffset = 1
-checkerboardMaterial.fogEnabled = false
-
 export function createAxisEntity() {
   const ret = new BaseEntity(uuid(), debugContext)
 
@@ -41,6 +35,7 @@ export function createAxisEntity() {
   box.attachTo(xAxis)
   xMaterial.attachTo(xAxis)
   setEntityText(xAxis, { value: 'X', color: new Color3(1, 0, 0), billboard: true })
+  ignoreBoundaryChecksOnObject(xAxis)
 
   const yAxis = new BaseEntity(uuid(), debugContext)
   yAxis.setParentEntity(ret)
@@ -50,6 +45,7 @@ export function createAxisEntity() {
   box.attachTo(yAxis)
   yMaterial.attachTo(yAxis)
   setEntityText(yAxis, { value: 'Y', color: new Color3(0, 1, 0), billboard: true })
+  ignoreBoundaryChecksOnObject(yAxis)
 
   const zAxis = new BaseEntity(uuid(), debugContext)
   zAxis.setParentEntity(ret)
@@ -59,6 +55,7 @@ export function createAxisEntity() {
   box.attachTo(zAxis)
   zMaterial.attachTo(zAxis)
   setEntityText(zAxis, { value: 'Z', color: new Color3(0, 0, 1), billboard: true })
+  ignoreBoundaryChecksOnObject(zAxis)
 
   return ret
 }
@@ -123,7 +120,7 @@ export function createParcelOutline(positions: string) {
   ground.isPickable = false
 
   const lines = BABYLON.MeshBuilder.CreateLineSystem('lines', { lines: points }, scene)
-  lines.color = EDITOR ? BABYLON.Color3.FromHexString('#ff004f') : BABYLON.Color3.Red()
+  lines.color = BABYLON.Color3.FromHexString('#ff004f')
   lines.isPickable = false
 
   return { ground, result: lines }

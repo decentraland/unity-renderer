@@ -1,7 +1,6 @@
 import * as BABYLON from 'babylonjs'
 import { isOnLimits } from 'atomicHelpers/parcelScenePositions'
 import { IParcelSceneLimits } from 'atomicHelpers/landHelpers'
-import { instrumentTelemetry } from 'atomicHelpers/DebugTelemetry'
 import { BaseEntity } from 'engine/entities/BaseEntity'
 import { parcelLimits } from 'config'
 import { BasicShape } from 'engine/components/disposableComponents/DisposableComponent'
@@ -50,56 +49,70 @@ export function measureObject3D(obj: BABYLON.AbstractMesh | BABYLON.Mesh | BABYL
   return { entities, triangles, bodies, textures, materials, geometries }
 }
 
+function totalBoundingInfo(meshes: BABYLON.AbstractMesh[]) {
+  let boundingInfo = meshes[0].getBoundingInfo()
+  let min = boundingInfo.boundingBox.minimumWorld.add(meshes[0].position)
+  let max = boundingInfo.boundingBox.maximumWorld.add(meshes[0].position)
+  for (let i = 1; i < meshes.length; i++) {
+    boundingInfo = meshes[i].getBoundingInfo()
+    min = BABYLON.Vector3.Minimize(min, boundingInfo.boundingBox.minimumWorld.add(meshes[i].position))
+    max = BABYLON.Vector3.Maximize(max, boundingInfo.boundingBox.maximumWorld.add(meshes[i].position))
+  }
+  return new BABYLON.BoundingInfo(min, max)
+}
+
 /**
  * Returns the objects that are outside the parcelScene limits.
  * Receives the encoded parcelScene parcels and the entity to traverse
  */
-export const checkParcelSceneBoundaries = instrumentTelemetry(
-  'checkParcelSceneBoundaries',
-  (encodedParcels: string, objectsOutside: Set<BaseEntity>, entity: BaseEntity) => {
-    const numberOfParcels = encodedParcels.split(';').length
-    const verificationText = ';' + encodedParcels + ';'
+export function checkParcelSceneBoundaries(
+  encodedParcels: string,
+  objectsOutside: Set<BaseEntity>,
+  entity: BaseEntity
+) {
+  const numberOfParcels = encodedParcels.replace(/;+/g, ';').split(';').length
+  const verificationText = ';' + encodedParcels + ';'
 
-    const maxHeight = Math.log2(numberOfParcels + 1) * parcelLimits.height
-    const minHeight = -maxHeight
+  const maxHeight = Math.log2(numberOfParcels) * parcelLimits.height
+  const minHeight = -maxHeight
 
-    entity.traverseControl(node => {
-      if (node[ignoreBoundaryCheck]) {
-        return 'BREAK'
-      }
+  entity.traverseControl(node => {
+    if (node[ignoreBoundaryCheck]) {
+      return 'BREAK'
+    }
 
-      const mesh = node.getObject3D(BasicShape.nameInEntity)
+    const mesh = node.getObject3D(BasicShape.nameInEntity)
 
-      if (!mesh) {
-        return 'CONTINUE'
-      }
-
-      if (mesh[ignoreBoundaryCheck]) {
-        return 'BREAK'
-      }
-
-      mesh.computeWorldMatrix(true)
-      const nodeMesh: BABYLON.AbstractMesh = mesh as any
-
-      if (!('getBoundingInfo' in nodeMesh)) {
-        return 'CONTINUE'
-      }
-
-      const bbox = nodeMesh.getBoundingInfo()
-
-      if (bbox.boundingBox.maximumWorld.y > maxHeight || bbox.boundingBox.minimumWorld.y < minHeight) {
-        objectsOutside.add(node)
-        return 'BREAK'
-      }
-
-      if (!isOnLimits(bbox.boundingBox, verificationText)) {
-        objectsOutside.add(node)
-        return 'BREAK'
-      }
-
+    if (!mesh) {
       return 'CONTINUE'
-    })
+    }
 
-    return objectsOutside
-  }
-)
+    if (mesh[ignoreBoundaryCheck]) {
+      return 'BREAK'
+    }
+
+    const meshes = mesh.getChildMeshes(false)
+
+    if (meshes.length === 0) {
+      return 'CONTINUE'
+    }
+
+    mesh.computeWorldMatrix(true)
+
+    const bbox = totalBoundingInfo(meshes)
+
+    if (bbox.maximum.y > maxHeight || bbox.minimum.y < minHeight) {
+      objectsOutside.add(node)
+      return 'BREAK'
+    }
+
+    if (!isOnLimits(bbox, verificationText)) {
+      objectsOutside.add(node)
+      return 'BREAK'
+    }
+
+    return 'CONTINUE'
+  })
+
+  return objectsOutside
+}

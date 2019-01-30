@@ -4,7 +4,7 @@ import { error } from '../logger'
 
 import { componentRegistry, BaseComponent } from '../components'
 import { scene, engineMicroQueue } from '../renderer'
-import { DisposableComponent } from 'engine/components/disposableComponents/DisposableComponent'
+import { DisposableComponent, BasicShape } from 'engine/components/disposableComponents/DisposableComponent'
 import { UpdateEntityComponentPayload } from 'shared/types'
 
 import { CLASS_ID } from 'decentraland-ecs/src'
@@ -45,6 +45,7 @@ export class BaseEntity extends BABYLON.TransformNode {
   onChangeObject3DObservable = new BABYLON.Observable<{ type: string; object: BABYLON.TransformNode }>()
 
   sendPositionsPending = false
+  sendMetricsPending = false
   loadingDone = true
   previousWorldMatrix = BABYLON.Matrix.Zero()
 
@@ -138,20 +139,6 @@ export class BaseEntity extends BABYLON.TransformNode {
     }
   }
 
-  sendUpdatePositions = () => {
-    this.sendPositionsPending = false
-    if (!this._isDisposed) {
-      this.previousWorldMatrix.copyFrom(this._worldMatrix)
-      // TODO: Inform the context that the position may be changed
-    }
-  }
-
-  sendUpdateMetrics() {
-    if (!this._isDisposed) {
-      this.context.updateMetrics()
-    }
-  }
-
   getObject3D(type: string) {
     return this.object3DMap[type]
   }
@@ -197,7 +184,7 @@ export class BaseEntity extends BABYLON.TransformNode {
       object: obj
     })
 
-    if (type === 'mesh') {
+    if (type === BasicShape.nameInEntity) {
       this.getActionManager()
       this.sendUpdatePositions()
       this.sendUpdateMetrics()
@@ -228,8 +215,10 @@ export class BaseEntity extends BABYLON.TransformNode {
       object: null
     })
 
-    this.sendUpdatePositions()
-    this.sendUpdateMetrics()
+    if (type === BasicShape.nameInEntity) {
+      this.sendUpdatePositions()
+      this.sendUpdateMetrics()
+    }
   }
 
   /**
@@ -425,6 +414,26 @@ export class BaseEntity extends BABYLON.TransformNode {
     )
 
     return this.actionManager
+  }
+
+  sendUpdatePositions = () => {
+    this.sendPositionsPending = false
+    if (!this._isDisposed) {
+      this.previousWorldMatrix.copyFrom(this._worldMatrix)
+      this.context.onEntityMatrixChangedObservable.notifyObservers(this)
+    }
+  }
+
+  sendUpdateMetrics() {
+    if (!this.sendMetricsPending) {
+      this.sendMetricsPending = true
+      if (!this._isDisposed) {
+        engineMicroQueue.queueMicroTask(() => {
+          this.sendMetricsPending = false
+          this.context && this.context.updateMetrics()
+        })
+      }
+    }
   }
 }
 

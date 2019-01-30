@@ -16,20 +16,12 @@ import { Vector3, Quaternion } from 'babylonjs'
 import { SharedSceneContext } from '../engine/entities/SharedSceneContext'
 import { setEditorEnvironment } from '../engine/renderer/ambientLights'
 import * as Gizmos from '../engine/components/ephemeralComponents/Gizmos'
+import { keyState, Keys } from '../engine/renderer/input'
 
 let didStartPosition = false
 
-let cachedMetrics = {
-  bodies: 0,
-  entities: 0,
-  geometries: 0,
-  materials: 0,
-  textures: 0,
-  triangles: 0
-}
 const evtEmitter = new EventEmitter()
 
-const CACHE_CHECK_INTERVAL = 1200
 const CAMERA_SPEED = 0.01
 
 const CAMERA_LEFT = Quaternion.RotationYawPitchRoll(Math.PI / 2, 0, 0)
@@ -78,28 +70,20 @@ async function initializePreview(userScene: EnvironmentData<LoadableParcelScene>
   })
   webGlParcelScene = new WebGLParcelScene(userScene)
   let parcelScene = new SceneWorker(webGlParcelScene)
-  ;(webGlParcelScene.context as SharedSceneContext).on('uuidEvent' as any, event => {
+
+  const context = webGlParcelScene.context as SharedSceneContext
+
+  context.on('uuidEvent', event => {
+    // TODO: Dani, is this ok?
     evtEmitter.emit('transform', event.payload)
   })
 
-  cacheCheckIntervalInstance = setInterval(() => {
-    const metrics = { ...webGlParcelScene.context.metrics }
-
-    if (
-      metrics.bodies !== cachedMetrics.bodies ||
-      metrics.entities !== cachedMetrics.entities ||
-      metrics.geometries !== cachedMetrics.geometries ||
-      metrics.materials !== cachedMetrics.materials ||
-      metrics.textures !== cachedMetrics.textures ||
-      metrics.triangles !== cachedMetrics.triangles
-    ) {
-      cachedMetrics = metrics
-      evtEmitter.emit('metrics', {
-        metrics,
-        limits: { ...webGlParcelScene.cachedLimits }
-      })
-    }
-  }, CACHE_CHECK_INTERVAL)
+  context.on('metricsUpdate', e => {
+    evtEmitter.emit('metrics', {
+      metrics: e.given,
+      limits: e.limit
+    })
+  })
 
   // we need closeParcelScenes to enable interactions in preview mode
   loadedParcelSceneWorkers.add(parcelScene)
@@ -164,15 +148,34 @@ export namespace editor {
     return domReadyFuture.isPending ? domReadyFuture : Promise.resolve(canvas)
   }
 
-  export function configureEditorEnvironment(enabled: boolean) {
+  function configureEditorEnvironment(enabled: boolean) {
     const target = new Vector3((parcelsX * 10) / 2, 0, (parcelsY * 10) / 2)
-    setEditorEnvironment(!!enabled)
+
+    setEditorEnvironment(enabled)
+
     if (enabled) {
+      getDCLCanvas()
+        .then(canvas => {
+          vrCamera.detachControl(canvas)
+          arcCamera.attachControl(canvas, true)
+        })
+        .catch(() => void 0)
+
       arcCamera.target = target
+
       scene.activeCamera = arcCamera
+      scene.cameraToUseForPointers = scene.activeCamera
     } else {
+      getDCLCanvas()
+        .then(canvas => {
+          vrCamera.attachControl(canvas)
+          arcCamera.detachControl(canvas)
+        })
+        .catch(() => void 0)
+
       vrCamera.position = target
       scene.activeCamera = vrCamera
+      scene.cameraToUseForPointers = scene.activeCamera
 
       if (webGlParcelScene) {
         vrCamera.position.x = webGlParcelScene.worker.position.x + 5
@@ -234,25 +237,25 @@ export namespace editor {
     arcCamera.keysLeft = []
     arcCamera.keysRight = []
 
-    scene.actionManager.registerAction(
-      new BABYLON.ExecuteCodeAction(BABYLON.ActionManager.OnKeyDownTrigger, evt => {
-        if (evt.sourceEvent.keyCode === 37) {
+    arcCamera.onAfterCheckInputsObservable.add(() => {
+      if (arcCamera === scene.activeCamera) {
+        if (keyState[Keys.KEY_LEFT]) {
           arcCamera.target.addInPlace(moveCamera(arcCamera, CAMERA_LEFT, CAMERA_SPEED * engine.getDeltaTime()))
         }
 
-        if (evt.sourceEvent.keyCode === 38) {
-          arcCamera.target.addInPlace(moveCamera(arcCamera, CAMERA_FORWARD, CAMERA_SPEED * engine.getDeltaTime()))
-        }
-
-        if (evt.sourceEvent.keyCode === 39) {
+        if (keyState[Keys.KEY_RIGHT]) {
           arcCamera.target.addInPlace(moveCamera(arcCamera, CAMERA_RIGHT, CAMERA_SPEED * engine.getDeltaTime()))
         }
 
-        if (evt.sourceEvent.keyCode === 40) {
+        if (keyState[Keys.KEY_UP]) {
+          arcCamera.target.addInPlace(moveCamera(arcCamera, CAMERA_FORWARD, CAMERA_SPEED * engine.getDeltaTime()))
+        }
+
+        if (keyState[Keys.KEY_DOWN]) {
           arcCamera.target.addInPlace(moveCamera(arcCamera, CAMERA_BACKWARD, CAMERA_SPEED * engine.getDeltaTime()))
         }
-      })
-    )
+      }
+    })
 
     arcCamera.upperBetaLimit = Math.PI / 2
     arcCamera.allowUpsideDown = false
@@ -260,8 +263,6 @@ export namespace editor {
     arcCamera.pinchPrecision = 150
     arcCamera.wheelPrecision = 150
     arcCamera.lowerRadiusLimit = 10
-
-    arcCamera.attachControl(await getDCLCanvas(), true)
   }
 
   export async function initEngine(px: number = 1, py: number = 1) {
@@ -283,12 +284,7 @@ export namespace editor {
   }
 
   export async function setPlayMode(on: boolean) {
-    setEditorEnvironment(!on)
-    if (on) {
-      scene.activeCamera = vrCamera
-    } else {
-      scene.activeCamera = arcCamera
-    }
+    configureEditorEnvironment(!on)
   }
 
   export async function resize() {

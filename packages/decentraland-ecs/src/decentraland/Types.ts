@@ -202,6 +202,11 @@ export interface IEvents {
     payload: any
   }
 
+  metricsUpdate: {
+    given: Record<string, number>
+    limit: Record<string, number>
+  }
+
   limitsExceeded: {
     given: Record<string, number>
     limit: Record<string, number>

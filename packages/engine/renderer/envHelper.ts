@@ -314,7 +314,7 @@ export class EnvironmentHelper {
     return {
       createGround: true,
       groundSize: 15,
-      groundColor: ambientConfigurations.groundColor.toLinearSpace().scale(3),
+      groundColor: BABYLON.Color3.White(),
       groundOpacity: 1,
       enableGroundShadow: true,
       groundShadowLevel: 0.5,

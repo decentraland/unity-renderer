@@ -133,7 +133,7 @@
 
 //     assert(systemEntity.entityController.renderEntity, 'it has a render entity')
 
-//     systemEntity.addEventListener('limitsExceeded', (evt: EntityEvent) => {
+//     systemEntity.addEventListener('metricsUpdate', (evt: EntityEvent) => {
 //       didTriggerLimits.resolve(evt.detail)
 //     })
 
@@ -145,7 +145,7 @@
 //     await didRender2
 //   })
 
-//   it('should trigger limitsExceeded', async () => {
+//   it('should trigger metricsUpdate', async () => {
 //     await didTriggerLimits
 //   })
 

@@ -71,7 +71,7 @@ export const effectLayers: BABYLON.EffectLayer[] = []
     })
   }
 
-  scene.clearColor = BABYLON.Color3.Black().toColor4(1)
+  scene.clearColor = BABYLON.Color3.FromInts(31, 29, 35).toColor4(1)
   scene.collisionsEnabled = true
 
   scene.autoClear = false // Color buffer

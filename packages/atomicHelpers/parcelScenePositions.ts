@@ -4,9 +4,9 @@ import { Vector2Component, Vector3Component, isEqual } from './landHelpers'
 let auxVec3: Vector3Component = { x: 0, y: 0, z: 0 }
 let auxVec2: Vector2Component = { x: 0, y: 0 }
 
-export interface BoundingBox {
-  maximumWorld: Vector3Component
-  minimumWorld: Vector3Component
+export interface BoundingInfo {
+  maximum: Vector3Component
+  minimum: Vector3Component
 }
 
 /**
@@ -33,33 +33,33 @@ export function isOnLimit(value: number): boolean {
   return Number.isInteger(value / parcelLimits.parcelSize)
 }
 
-export function isOnLimits({ maximumWorld, minimumWorld }: BoundingBox, verificationText: string): boolean {
+export function isOnLimits({ maximum, minimum }: BoundingInfo, verificationText: string): boolean {
   // Computes the world-axis-aligned bounding box of an object (including its children),
   // accounting for both the object's, and children's, world transforms
 
-  auxVec3.x = minimumWorld.x
-  auxVec3.z = minimumWorld.z
+  auxVec3.x = minimum.x
+  auxVec3.z = minimum.z
   worldToGrid(auxVec3, auxVec2)
   if (!verificationText.includes(`${auxVec2.x},${auxVec2.y}`)) {
     return false
   }
 
-  auxVec3.x = isOnLimit(maximumWorld.x) ? minimumWorld.x : maximumWorld.x
-  auxVec3.z = isOnLimit(maximumWorld.z) ? minimumWorld.z : maximumWorld.z
+  auxVec3.x = isOnLimit(maximum.x) ? minimum.x : maximum.x
+  auxVec3.z = isOnLimit(maximum.z) ? minimum.z : maximum.z
   worldToGrid(auxVec3, auxVec2)
   if (!verificationText.includes(`${auxVec2.x},${auxVec2.y}`)) {
     return false
   }
 
-  auxVec3.x = minimumWorld.x
-  auxVec3.z = isOnLimit(maximumWorld.z) ? minimumWorld.z : maximumWorld.z
+  auxVec3.x = minimum.x
+  auxVec3.z = isOnLimit(maximum.z) ? minimum.z : maximum.z
   worldToGrid(auxVec3, auxVec2)
   if (!verificationText.includes(`${auxVec2.x},${auxVec2.y}`)) {
     return false
   }
 
-  auxVec3.x = isOnLimit(maximumWorld.x) ? minimumWorld.x : maximumWorld.x
-  auxVec3.z = minimumWorld.z
+  auxVec3.x = isOnLimit(maximum.x) ? minimum.x : maximum.x
+  auxVec3.z = minimum.z
   worldToGrid(auxVec3, auxVec2)
   if (!verificationText.includes(`${auxVec2.x},${auxVec2.y}`)) {
     return false

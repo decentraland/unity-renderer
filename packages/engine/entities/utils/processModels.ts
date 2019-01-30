@@ -4,13 +4,20 @@ import { markAsCollider } from './colliders'
 function disposeDelegate($: { dispose: Function }) {
   $.dispose()
 }
+function disposeNodeDelegate($: BABYLON.TransformNode) {
+  $.setEnabled(false)
+  $.parent = null
+  $.dispose(false)
+}
 
 export function cleanupAssetContainer($: BABYLON.AssetContainer) {
   if ($) {
     $.removeAllFromScene()
-    $.transformNodes && $.transformNodes.forEach(disposeDelegate)
-    $.meshes && $.meshes.forEach(disposeDelegate)
+    $.transformNodes && $.transformNodes.forEach(disposeNodeDelegate)
+    $.rootNodes && $.rootNodes.forEach(disposeNodeDelegate)
+    $.meshes && $.meshes.forEach(disposeNodeDelegate)
     $.textures && $.textures.forEach(disposeDelegate)
+    $.multiMaterials && $.multiMaterials.forEach(disposeDelegate)
     $.sounds && $.sounds.forEach(disposeDelegate)
     $.skeletons && $.skeletons.forEach(disposeDelegate)
     $.materials && $.materials.forEach(disposeDelegate)

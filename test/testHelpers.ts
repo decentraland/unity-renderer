@@ -27,6 +27,7 @@ import { SceneWorker } from 'shared/world/SceneWorker'
 import { MemoryTransport } from 'decentraland-rpc'
 
 import GamekitScene from '../packages/scene-system/scene.system'
+import { gridToWorld } from 'atomicHelpers/parcelScenePositions'
 
 DebugTelemetry.startTelemetry(process.env)
 
@@ -293,6 +294,9 @@ export function loadTestParcel(
     const _glParcelScene = future<WebGLParcelScene>()
     let context: SharedSceneContext = null
     it(`loads the test scene at ${x},${y}`, async function() {
+      const origY = scene.activeCamera.position.y
+      gridToWorld(x, y, scene.activeCamera.position)
+      scene.activeCamera.position.y = origY
       this.timeout(10000)
       const land = await loadMock('http://localhost:8080/local-ipfs/mappings', { x, y })
       let webGLParcelScene: WebGLParcelScene

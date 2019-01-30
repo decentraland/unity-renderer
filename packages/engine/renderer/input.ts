@@ -26,6 +26,12 @@ enum Keys {
   KEY_F = 70,
   KEY_S = 83,
   KEY_D = 68,
+
+  KEY_LEFT = 37,
+  KEY_UP = 38,
+  KEY_RIGHT = 39,
+  KEY_DOWN = 40,
+
   KEY_SHIFT = -1,
   KEY_CTRL = -2,
   KEY_SPACE = 32,
@@ -205,7 +211,9 @@ export function enableMouseLock(canvas: HTMLCanvasElement) {
     document['mozPointerLockElement'] === canvas ||
     document['webkitPointerLockElement'] === canvas
 
-  canvas.requestPointerLock = canvas.requestPointerLock || canvas['mozRequestPointerLock']
+  if (!canvas.requestPointerLock) {
+    canvas.requestPointerLock = canvas.requestPointerLock || canvas['mozRequestPointerLock']
+  }
 
   window.addEventListener('pointerdown', evt => {
     if (hasPointerLock() && !vrHelper.isInVRMode) {
@@ -243,6 +251,11 @@ export function enableMouseLock(canvas: HTMLCanvasElement) {
   })
 
   canvas.addEventListener('click', () => {
+    const inEditorCamera = scene.activeCamera instanceof BABYLON.ArcRotateCamera
+    if (inEditorCamera) {
+      return
+    }
+
     const preventPointerLock = PointerLock.preventLocking
 
     if (!preventPointerLock && !hasPointerLock()) {
@@ -255,6 +268,11 @@ export function enableMouseLock(canvas: HTMLCanvasElement) {
   })
 
   scene.onPrePointerObservable.add(evt => {
+    const inEditorCamera = scene.activeCamera instanceof BABYLON.ArcRotateCamera
+    if (inEditorCamera) {
+      return
+    }
+
     if (evt.type === BABYLON.PointerEventTypes.POINTERDOWN || evt.type === BABYLON.PointerEventTypes.POINTERUP) {
       // regular mouse events doesn't have the `ray` property
       evt.skipOnPointerObservable = !evt.ray

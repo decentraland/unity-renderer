@@ -75,16 +75,14 @@ export class GLTFShape extends DisposableComponent {
 
             this.assetContainerEntity.set(entity.uuid, assetContainer)
 
+            entity.assetContainer = assetContainer
+
+            assetContainer.addAllToScene()
+
             // This is weird. Verify what does this do.
             assetContainer.transformNodes.filter($ => $.name === '__root__').forEach($ => {
               entity.setObject3D(BasicShape.nameInEntity, $)
             })
-
-            entity.assetContainer = assetContainer
-            assetContainer.addAllToScene()
-
-            entity.sendUpdatePositions()
-            entity.sendUpdateMetrics()
 
             for (let ag of assetContainer.animationGroups) {
               ag.stop()
@@ -148,6 +146,8 @@ export class GLTFShape extends DisposableComponent {
       }
       if (this.src === null) {
         this.src = data.src
+      }
+      if (this.src) {
         if ('visible' in data) {
           if (data.visible === false) {
             this.entities.forEach($ => this.onDetach($))
@@ -163,7 +163,9 @@ export class GLTFShape extends DisposableComponent {
 
   dispose() {
     super.dispose()
-    this.assetContainerEntity.forEach($ => cleanupAssetContainer($))
+    this.assetContainerEntity.forEach($ => {
+      cleanupAssetContainer($)
+    })
   }
 }
 
