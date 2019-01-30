@@ -26,6 +26,7 @@ namespace UnityGLTF.Loader
                 throw new ArgumentNullException("gltfFilePath");
             }
             
+            // return LoadStorageFile(gltfFilePath);
             yield return LoadStorageFile(gltfFilePath).AsCoroutine();
         }
 
@@ -33,7 +34,6 @@ namespace UnityGLTF.Loader
         {
             throw new NotImplementedException();
         }
-
 
         public async Task LoadStorageFile(string path)
         {

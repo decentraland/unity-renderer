@@ -11,6 +11,7 @@ using System.Collections;
 using UnityGLTF.Loader;
 using GLTF.Schema;
 using GLTF;
+// using System.Threading.Tasks;
 
 namespace UnityGLTF
 {
@@ -309,16 +310,16 @@ namespace UnityGLTF
             }
 
 #if UNITY_2017_3_OR_NEWER
-			// Set main asset
-			ctx.AddObjectToAsset("main asset", gltfScene);
+            // Set main asset
+            ctx.AddObjectToAsset("main asset", gltfScene);
 
-			// Add meshes
-			foreach (var mesh in meshes)
-			{
-				ctx.AddObjectToAsset("mesh " + mesh.name, mesh);
-			}
+            // Add meshes
+            foreach (var mesh in meshes)
+            {
+                ctx.AddObjectToAsset("mesh " + mesh.name, mesh);
+            }
 
-			ctx.SetMainObject(gltfScene);
+            ctx.SetMainObject(gltfScene);
 #else
             // Set main asset
             ctx.SetMainAsset("main asset", gltfScene);
@@ -338,8 +339,8 @@ namespace UnityGLTF
             {
                 GLTFRoot gLTFRoot;
                 GLTFParser.ParseJson(stream, out gLTFRoot);
-                var loader = new GLTFSceneImporter(gLTFRoot, fileLoader, stream);
-
+                var loader = new GLTFSceneImporter(gLTFRoot, fileLoader, null, stream);
+                loader.BudgetPerFrameInMilliseconds = float.MaxValue;
                 loader.MaximumLod = _maximumLod;
                 loader.isMultithreaded = true;
 
