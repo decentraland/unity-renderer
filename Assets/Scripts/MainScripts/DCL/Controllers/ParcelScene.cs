@@ -187,40 +187,34 @@ namespace DCL.Controllers
         {
             createEntityComponentMessage.FromJSON(json);
 
-            DecentralandEntity decentralandEntity = GetEntityForUpdate(createEntityComponentMessage.entityId);
-            if (decentralandEntity == null)
+            DecentralandEntity entity = GetEntityForUpdate(createEntityComponentMessage.entityId);
+            if (entity == null)
                 return null;
 
-            switch ((CLASS_ID)createEntityComponentMessage.classId)
+            DCLComponentFactory factory = ownerController.componentFactory;
+            CLASS_ID_COMPONENT classId = (CLASS_ID_COMPONENT)createEntityComponentMessage.classId;
+            BaseComponent newComponent = null;
+
+            if (!entity.components.ContainsKey(classId))
             {
-                case CLASS_ID.TRANSFORM:
-                    return CreateAndInitComponent<DCLTransform>(decentralandEntity, createEntityComponentMessage);
+                newComponent = factory.CreateItemFromId<BaseComponent>(classId);
 
-                case CLASS_ID.ANIMATOR:
-                    return CreateAndInitComponent<DCLAnimator>(decentralandEntity, createEntityComponentMessage);
-
-                case CLASS_ID.AUDIO_SOURCE:
-                    return CreateAndInitComponent<DCLAudioSource>(decentralandEntity, createEntityComponentMessage);
-
-                case CLASS_ID.TEXT_SHAPE:
-                    return CreateAndInitComponent<TextShape>(decentralandEntity, createEntityComponentMessage);
-
-                case CLASS_ID.UUID_CALLBACK:
-                    return CreateAndInitComponent<UUIDComponent>(decentralandEntity, createEntityComponentMessage);
-
-                //{
-                //    //NOTE(Brian): This isn't a component? We are breaking the rules here.
-                //    uuidMessage.FromJSON(createEntityComponentMessage.json);
-                //    UUIDComponent.SetForEntity(this, decentralandEntity, uuidMessage.uuid, uuidMessage.type);
-                //    return null;
-                //}
-                default:
-#if UNITY_EDITOR
-                    throw new UnityException($"Unknown classId {json}");
-#else
-                    return null;
-#endif
+                if (newComponent != null)
+                {
+                    newComponent.scene = this;
+                    newComponent.entity = entity;
+                    entity.components.Add(classId, newComponent);
+                    newComponent.gameObject.transform.parent = entity.gameObject.transform;
+                    newComponent.UpdateFromJSON(createEntityComponentMessage.json);
+                }
             }
+            else
+            {
+                newComponent = entity.components[classId];
+                newComponent.UpdateFromJSON(createEntityComponentMessage.json);
+            }
+
+            return newComponent;
         }
 
         SharedComponentCreateMessage sharedComponentCreatedMessage = new SharedComponentCreateMessage();
@@ -337,9 +331,10 @@ namespace DCL.Controllers
             RemoveEntityComponent(decentralandEntity, entityComponentRemovedMessage.name);
         }
 
-        private void RemoveComponentType<T>(DecentralandEntity entity) where T : MonoBehaviour
+        private void RemoveComponentType<T>(DecentralandEntity entity, CLASS_ID_COMPONENT classId) where T : MonoBehaviour
         {
-            var component = entity.gameObject.GetComponent<T>();
+            var component = entity.components[classId].GetComponent<T>();
+
             if (component != null)
             {
 #if UNITY_EDITOR
@@ -361,10 +356,10 @@ namespace DCL.Controllers
                     }
                     return;
                 case "onClick":
-                    RemoveComponentType<OnClickComponent>(entity);
+                    RemoveComponentType<OnClickComponent>(entity, CLASS_ID_COMPONENT.UUID_CALLBACK);
                     return;
                 case "transform":
-                    RemoveComponentType<DCLTransform>(entity);
+                    RemoveComponentType<DCLTransform>(entity, CLASS_ID_COMPONENT.TRANSFORM);
                     return;
             }
         }

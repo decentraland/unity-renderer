@@ -66,16 +66,8 @@ namespace DCL.Components
 
         public Model model;
 
-        public bool reinit;
-        bool didInit = false;
-
-        public TextMeshPro text;
+        public TextMeshProUGUI text;
         public Canvas canvas;
-
-        private void Awake()
-        {
-            didInit = false;
-        }
 
         public override IEnumerator ApplyChanges(string newJson)
         {
@@ -86,21 +78,6 @@ namespace DCL.Components
 
         void ApplyModelChanges(Model model)
         {
-            if (!didInit)
-            {
-                GameObject canvasGo = new GameObject("Canvas");
-                GameObject textContainerGo = new GameObject("TextContainer");
-
-                canvasGo.transform.parent = transform;
-                textContainerGo.transform.parent = canvasGo.transform;
-
-                canvas = Utils.GetOrCreateComponent<Canvas>(canvasGo);
-                canvas.renderMode = RenderMode.WorldSpace;
-
-                text = Utils.GetOrCreateComponent<TextMeshPro>(textContainerGo);
-                didInit = true;
-            }
-
             RectTransform canvasRectTransform = canvas.GetComponent<RectTransform>();
             canvasRectTransform.sizeDelta = new Vector2(model.width, model.height);
 
@@ -126,7 +103,6 @@ namespace DCL.Components
                     (int)model.paddingBottom
                 );
 
-            text.sortingOrder = (int)model.zIndex;
             text.alignment = GetAlignment(model.hAlign, model.vAlign);
             text.lineSpacing = model.lineSpacing;
             text.maxVisibleLines = model.lineCount;

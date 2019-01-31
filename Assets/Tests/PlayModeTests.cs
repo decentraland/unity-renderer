@@ -144,7 +144,7 @@ namespace Tests
             {
                 entityId = entityId,
                 name = "animation",
-                classId = (int)DCL.Models.CLASS_ID.ANIMATOR,
+                classId = (int)DCL.Models.CLASS_ID_COMPONENT.ANIMATOR,
                 json = animJson
             }));
 
@@ -198,7 +198,7 @@ namespace Tests
                 {
                     entityId = entityId,
                     name = "transform",
-                    classId = CLASS_ID.TRANSFORM,
+                    classId = CLASS_ID_COMPONENT.TRANSFORM,
                     json = JsonConvert.SerializeObject(new
                     {
                         position = position,
@@ -241,7 +241,7 @@ namespace Tests
                 {
                     entityId = entityId,
                     name = "transform",
-                    classId = (int)CLASS_ID.TRANSFORM,
+                    classId = (int)CLASS_ID_COMPONENT.TRANSFORM,
                     json = JsonConvert.SerializeObject(new
                     {
                         position = position,
@@ -634,7 +634,7 @@ namespace Tests
             {
                 entityId = entityId,
                 name = "transform",
-                classId = (int)DCL.Models.CLASS_ID.TRANSFORM,
+                classId = (int)DCL.Models.CLASS_ID_COMPONENT.TRANSFORM,
                 json = JsonConvert.SerializeObject(new
                 {
                     position = Vector3.zero,

@@ -1,3 +1,4 @@
+using DCL;
 using DCL.Controllers;
 using DCL.Interface;
 using DCL.Models;
@@ -5,10 +6,14 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
+using UnityEngine.Serialization;
 
 public class SceneController : MonoBehaviour
 {
     public bool startDecentralandAutomatically = true;
+
+    [FormerlySerializedAs("factoryManifest")]
+    public DCLComponentFactory componentFactory;
 
     public Dictionary<string, ParcelScene> loadedScenes = new Dictionary<string, ParcelScene>();
 
@@ -90,6 +95,7 @@ public class SceneController : MonoBehaviour
 
                 var newScene = newGameObject.AddComponent<ParcelScene>();
                 newScene.SetData(sceneToLoad);
+                newScene.ownerController = this;
 
                 if (!loadedScenes.ContainsKey(sceneToLoad.id))
                 {
@@ -223,6 +229,7 @@ public class SceneController : MonoBehaviour
         var go = new GameObject();
         var newScene = go.AddComponent<ParcelScene>();
         newScene.SetData(data);
+        newScene.ownerController = this;
 
         if (!loadedScenes.ContainsKey(data.id))
         {

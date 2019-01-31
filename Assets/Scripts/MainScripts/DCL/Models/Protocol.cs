@@ -2,17 +2,22 @@ using UnityEngine;
 
 namespace DCL.Models
 {
-    public enum CLASS_ID
+    public enum CLASS_ID_COMPONENT
     {
         TRANSFORM = 1,
         UUID_CALLBACK = 8,
+        ANIMATOR = 33,
+        TEXT_SHAPE = 21,
+        AUDIO_SOURCE = 201,
+    }
 
+    public enum CLASS_ID
+    {
         BOX_SHAPE = 16,
         SPHERE_SHAPE = 17,
         PLANE_SHAPE = 18,
         CONE_SHAPE = 19,
         CYLINDER_SHAPE = 20,
-        TEXT_SHAPE = 21,
         NFT_SHAPE = 22,
 
         UI_WORLD_SPACE_SHAPE = 23,
@@ -26,7 +31,6 @@ namespace DCL.Models
 
         CIRCLE_SHAPE = 31,
         BILLBOARD = 32,
-        ANIMATOR = 33,
 
         GLTF_SHAPE = 54,
         OBJ_SHAPE = 55,
@@ -36,7 +40,6 @@ namespace DCL.Models
         HIGHLIGHT_ENTITY = 66,
 
         AUDIO_CLIP = 200,
-        AUDIO_SOURCE = 201,
     }
 
     public class CallMethodComponentMessage
