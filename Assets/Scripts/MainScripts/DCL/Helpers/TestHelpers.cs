@@ -50,7 +50,7 @@ namespace DCL.Helpers
             {
                 entityId = entityId,
                 name = "transform",
-                classId = (int)DCL.Models.CLASS_ID.TRANSFORM,
+                classId = (int)DCL.Models.CLASS_ID_COMPONENT.TRANSFORM,
                 json = JsonConvert.SerializeObject(new
                 {
                     position = position,
@@ -150,7 +150,7 @@ namespace DCL.Helpers
             {
                 entityId = entityID,
                 name = "onClick",
-                classId = (int)CLASS_ID.UUID_CALLBACK,
+                classId = (int)CLASS_ID_COMPONENT.UUID_CALLBACK,
                 json = JsonUtility.ToJson(new DCL.Models.UUIDCallbackMessage
                 {
                     type = "onClick",
@@ -165,8 +165,9 @@ namespace DCL.Helpers
 
             if (sceneController == null)
             {
-                var GO = new GameObject();
-                sceneController = GO.AddComponent<SceneController>();
+                GameObject GO = GameObject.Instantiate(Resources.Load("Prefabs/SceneController") as GameObject);
+                
+                sceneController = GO.GetComponent<SceneController>();
             }
 
             if (usesWebServer)

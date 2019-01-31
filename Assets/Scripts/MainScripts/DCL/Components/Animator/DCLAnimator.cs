@@ -95,7 +95,7 @@ namespace DCL.Components
         {
             entity.OnShapeUpdated += OnComponentUpdated;
 
-            if (GetComponentInChildren<Animation>() != null)
+            if (entity.meshGameObject.GetComponentInChildren<Animation>() != null)
             {
                 Initialize();
             }
@@ -148,7 +148,7 @@ namespace DCL.Components
 
             clipNameToClip.Clear();
 
-            Animation animComponent = GetComponentInChildren<Animation>();
+            Animation animComponent = entity.meshGameObject.GetComponentInChildren<Animation>();
 
             //NOTE(Brian): fetch all the AnimationClips in Animation component.
             if (animComponent != null)

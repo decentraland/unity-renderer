@@ -91,7 +91,7 @@ public class EntityShapeAndOnClickTestController : MonoBehaviour
         {
             entityId = "8",
             name = "animation",
-            classId = (int)DCL.Models.CLASS_ID.ANIMATOR,
+            classId = (int)DCL.Models.CLASS_ID_COMPONENT.ANIMATOR,
             json = animJson
         }));
 

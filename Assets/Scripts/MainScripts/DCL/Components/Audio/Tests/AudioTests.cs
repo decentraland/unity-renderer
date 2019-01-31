@@ -29,7 +29,7 @@ namespace Tests
             {
                 entityId = entityId,
                 name = "audioSourceTest",
-                classId = (int)DCL.Models.CLASS_ID.AUDIO_SOURCE,
+                classId = (int)DCL.Models.CLASS_ID_COMPONENT.AUDIO_SOURCE,
                 json = JsonUtility.ToJson(audioSourceModel)
             }));
             
@@ -106,7 +106,7 @@ namespace Tests
                 playing: true);
 
             DCLAudioSource dclAudioSource = scene.entities[entityId].gameObject.GetComponentInChildren<DCLAudioSource>();
-            AudioSource unityAudioSource = scene.entities[entityId].gameObject.GetComponentInChildren<AudioSource>();
+            AudioSource unityAudioSource = dclAudioSource.GetComponentInChildren<AudioSource>();
 
             Assert.NotNull(scene.entities.ContainsKey(entityId), "Entity was not created correctly!");
             Assert.NotNull(dclAudioSource, "DCLAudioSource Creation Failure!");

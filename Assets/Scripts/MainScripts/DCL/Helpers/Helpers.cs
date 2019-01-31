@@ -2,11 +2,16 @@ using DCL.Components;
 using DCL.Configuration;
 using System;
 using System.Collections;
+using System.Collections.Generic;
+using System.IO;
+using System.Linq.Expressions;
 using UnityEngine;
 using UnityEngine.Networking;
 
 namespace DCL.Helpers
 {
+  
+
     public static class Utils
     {
         /**
@@ -194,6 +199,40 @@ namespace DCL.Helpers
             placeholderRenderer.name = "PlaceholderRenderer";
 
             return placeholderRenderer.gameObject;
+        }
+
+        // todo; check if your TEnum is enum && typeCode == TypeCode.Int
+        public struct FastEnumIntEqualityComparer<TEnum> : IEqualityComparer<TEnum>
+            where TEnum : struct
+        {
+            static class BoxAvoidance
+            {
+                static readonly Func<TEnum, int> _wrapper;
+
+                public static int ToInt(TEnum enu)
+                {
+                    return _wrapper(enu);
+                }
+
+                static BoxAvoidance()
+                {
+                    var p = Expression.Parameter(typeof(TEnum), null);
+                    var c = Expression.ConvertChecked(p, typeof(int));
+
+                    _wrapper = Expression.Lambda<Func<TEnum, int>>(c, p).Compile();
+                }
+            }
+
+            public bool Equals(TEnum firstEnum, TEnum secondEnum)
+            {
+                return BoxAvoidance.ToInt(firstEnum) ==
+                    BoxAvoidance.ToInt(secondEnum);
+            }
+
+            public int GetHashCode(TEnum firstEnum)
+            {
+                return BoxAvoidance.ToInt(firstEnum);
+            }
         }
     }
 }

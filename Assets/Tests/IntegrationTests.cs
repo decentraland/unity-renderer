@@ -5,6 +5,7 @@ using NUnit.Framework;
 using DCL.Models;
 using UnityEngine.TestTools;
 using Newtonsoft.Json;
+using DCL.Helpers;
 
 namespace Tests
 {
@@ -14,7 +15,7 @@ namespace Tests
         public IEnumerator IntegrationTest_SceneIntegration1()
         {
             var GO = new GameObject();
-            var sceneController = GO.AddComponent<SceneController>();
+            var sceneController = TestHelpers.InitializeSceneController(usesWebServer:false);
             var testScene = GO.AddComponent<IntegrationTestController>();
 
             yield return new WaitForSeconds(0.01f); // We wait to let unity creates

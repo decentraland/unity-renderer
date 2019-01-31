@@ -1,3 +1,4 @@
+using DCL.Helpers;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -20,8 +21,8 @@ namespace DCL.Components
 
         public override IEnumerator ApplyChanges(string newJson)
         {
-            JsonUtility.FromJsonOverwrite(newJson, model);
-            // this component is applied to the gameObjects transform
+            Utils.SafeFromJsonOverwrite(newJson, model);
+
             if (entity != null && entity.gameObject != null)
             {
                 var t = entity.gameObject.transform;

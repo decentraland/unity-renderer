@@ -64,14 +64,14 @@ namespace Tests
             {
                 entityId = entityId,
                 name = "textShapeTest",
-                classId = (int)DCL.Models.CLASS_ID.TEXT_SHAPE,
+                classId = (int)DCL.Models.CLASS_ID_COMPONENT.TEXT_SHAPE,
                 json = JsonUtility.ToJson(textShapeModel)
             })) as TextShape;
 
             yield return new WaitForSeconds(0.01f);
 
             Canvas canvas = textShape.GetComponentInChildren<Canvas>();
-            TextMeshPro tmpro = textShape.GetComponentInChildren<TextMeshPro>();
+            TextMeshProUGUI tmpro = textShape.GetComponentInChildren<TextMeshProUGUI>();
 
             Assert.NotNull(textShape, "Component creation fail!");
             Assert.NotNull(canvas, "Canvas doesn't exists for TextShape!");
@@ -91,7 +91,7 @@ namespace Tests
             {
                 entityId = entityId,
                 name = "textShapeTest",
-                classId = (int)DCL.Models.CLASS_ID.TEXT_SHAPE,
+                classId = (int)DCL.Models.CLASS_ID_COMPONENT.TEXT_SHAPE,
                 json = JsonUtility.ToJson(textShapeModel)
             }));
 
@@ -102,7 +102,7 @@ namespace Tests
             yield return null;
         }
 
-        void TMProConsistencyAsserts(TextMeshPro tmpro, TextShape.Model model)
+        void TMProConsistencyAsserts(TextMeshProUGUI tmpro, TextShape.Model model)
         {
             Assert.AreEqual(model.paddingLeft, tmpro.margin[0], 0.01, string.Format("Left margin must be {0}", model.paddingLeft) );
             Assert.AreEqual(model.paddingTop, tmpro.margin[1], 0.01, string.Format("Top margin must be {0}", model.paddingTop));
