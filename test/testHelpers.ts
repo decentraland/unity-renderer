@@ -370,12 +370,13 @@ async function loadMock(url: string, coords: { x: number; y: number }): Promise<
       const [x, y] = parcel.parcel_id.split(/,/).map($ => parseInt($, 10))
 
       if (x === coords.x && y === coords.y) {
-        const sceneJsonUrl = parcel.contents['scene.json']
-        if (!sceneJsonUrl) {
+        const sceneJsonMapping = parcel.contents.find($ => $.file === 'scene.json')
+
+        if (!sceneJsonMapping) {
           throw new Error('scene.json not found in mock ' + parcel.parcel_id)
         }
 
-        const sceneUrl = resolveUrl(baseUrl, sceneJsonUrl)
+        const sceneUrl = resolveUrl(baseUrl, sceneJsonMapping.hash)
 
         const sceneFetch = await fetch(sceneUrl)
 

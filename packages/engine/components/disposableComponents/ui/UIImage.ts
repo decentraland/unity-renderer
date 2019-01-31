@@ -38,7 +38,7 @@ class Class extends UIControl<UIImageShape, BABYLON.GUI.Image> {
 
     this.control.onPointerUpObservable.add($ => {
       this.checkPointerLock()
-      this.dispatchOnClick()
+      this.dispatchOnClick($.buttonIndex)
     })
   }
 
@@ -84,11 +84,11 @@ class Class extends UIControl<UIImageShape, BABYLON.GUI.Image> {
     this.setParent(this.data.parentComponent)
   }
 
-  dispatchOnClick = () => {
+  dispatchOnClick = (pointerId: number) => {
     this.entities.forEach($ =>
       $.dispatchUUIDEvent('onClick', {
         entityId: $.uuid,
-        pointerId: -1
+        pointerId
       })
     )
   }

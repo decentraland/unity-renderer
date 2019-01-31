@@ -1,4 +1,4 @@
-import { ILand, MappingsResponse, IScene } from 'shared/types'
+import { ILand, MappingsResponse, IScene, normalizeContentMappings } from 'shared/types'
 import { jsonFetch } from 'atomicHelpers/jsonFetch'
 import { error } from 'engine/logger'
 import { options } from './config'
@@ -42,6 +42,8 @@ async function requestRange(x: number, y: number) {
     }
 
     content.forEach($ => {
+      // TODO: Remove this after 5.1.0
+      $.contents = normalizeContentMappings($.contents)
       localMap.set($.parcel_id, $)
     })
   }
@@ -52,12 +54,12 @@ async function loadParcelData(x: number, y: number): Promise<ILand | null> {
 
   if (!mappingsResponse) return null
 
-  const sceneJsonMapping = mappingsResponse.contents['scene.json']
+  const sceneJsonMapping = mappingsResponse.contents.find($ => $.file === 'scene.json')
 
   if (!sceneJsonMapping) return null
 
   const baseUrl = options!.contentServer + '/contents/'
-  const scene = (await jsonFetch(baseUrl + sceneJsonMapping)) as IScene
+  const scene = (await jsonFetch(baseUrl + sceneJsonMapping.hash)) as IScene
 
   const data: ILand = {
     baseUrl,

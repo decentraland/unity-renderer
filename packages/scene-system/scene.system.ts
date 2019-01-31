@@ -142,8 +142,8 @@ export default class GamekitScene extends Script {
 
     if (bootstrapData && bootstrapData.main) {
       const mappingName = bootstrapData.main
-      const mapping = bootstrapData.mappings[mappingName]
-      const url = resolveMapping(mapping, mappingName, bootstrapData.baseUrl)
+      const mapping = bootstrapData.mappings.find($ => $.file === mappingName)
+      const url = resolveMapping(mapping && mapping.hash, mappingName, bootstrapData.baseUrl)
       const html = await fetch(url)
 
       if (html.ok) {

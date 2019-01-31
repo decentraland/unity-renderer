@@ -56,7 +56,7 @@ function hash(str: string) {
 function generateIPFSMock(folder: string) {
   // THIS IS NOT THE WAY CIDS ARE CALCULATED, I JUST CAME UP WITH IT
 
-  const mappings: Record<string, string> = {}
+  const mappings: Array<{ file: string; hash: string }> = []
   console.log(folder + '/**/*')
 
   const files = new Set<string>(glob.sync(folder + '/**/*', { absolute: true }))
@@ -69,8 +69,10 @@ function generateIPFSMock(folder: string) {
     }
 
     const key = file.replace(folder + '/', '')
-    const cid = (mappings[key] = hash(file.replace(process.cwd(), '')))
+    const cid = hash(file.replace(process.cwd(), ''))
     const targetFile = ipfsMockContent + '/' + cid
+
+    mappings.push({ file: key.toLowerCase(), hash: cid })
 
     try {
       fs.ensureSymlinkSync(file, targetFile, 'file')

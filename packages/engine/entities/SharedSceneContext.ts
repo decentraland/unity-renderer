@@ -77,7 +77,7 @@ export class SharedSceneContext implements BABYLON.IDisposable {
   }
 
   public onEntityMatrixChangedObservable = new BABYLON.Observable<BaseEntity>()
-  public mappings: Map<string, string | Blob | File> = new Map()
+  public registeredMappings: Map<string, string | Blob | File> = new Map()
   public textures: Map<string, BABYLON.Texture> = new Map()
 
   public rootEntity = new BaseEntity('0', this)
@@ -358,7 +358,7 @@ export class SharedSceneContext implements BABYLON.IDisposable {
     }
     const sanitizedUrl = this.sanitizeURL(url)
     if (this.useMappings) {
-      const mapping = this.mappings.get(sanitizedUrl)
+      const mapping = this.registeredMappings.get(sanitizedUrl)
       if (!mapping || typeof mapping !== 'string') {
         throw new Error(`File not found: ${sanitizedUrl}`)
       } else {
@@ -376,10 +376,10 @@ export class SharedSceneContext implements BABYLON.IDisposable {
     const sanitizedUrl = this.sanitizeURL(url)
 
     if (this.useMappings) {
-      if (!this.mappings.has(sanitizedUrl)) {
+      if (!this.registeredMappings.has(sanitizedUrl)) {
         throw new Error(`File not found: ${sanitizedUrl}`)
       } else {
-        return this.loadMapping(this.mappings.get(sanitizedUrl))
+        return this.loadMapping(this.registeredMappings.get(sanitizedUrl))
       }
     } else {
       return this.loadRelative(sanitizedUrl)
@@ -413,7 +413,7 @@ export class SharedSceneContext implements BABYLON.IDisposable {
   public registerMappings(mappings: Array<ContentMapping>) {
     for (const { file, hash } of mappings) {
       if (file && hash) {
-        this.mappings.set(file.toLowerCase(), hash)
+        this.registeredMappings.set(file.toLowerCase(), hash)
       }
     }
   }

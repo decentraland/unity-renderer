@@ -8,7 +8,15 @@ import { initBabylonClient } from '../dcl'
 import * as _envHelper from '../engine/renderer/envHelper'
 import { canvas, engine } from '../engine/renderer/init'
 import { loadedParcelSceneWorkers } from '../shared/world/parcelSceneManager'
-import { LoadableParcelScene, ILandToLoadableParcelScene, ILand, IScene, EnvironmentData } from '../shared/types'
+import {
+  LoadableParcelScene,
+  ILandToLoadableParcelScene,
+  ILand,
+  IScene,
+  EnvironmentData,
+  ContentMapping,
+  normalizeContentMappings
+} from '../shared/types'
 import { SceneWorker } from '../shared/world/SceneWorker'
 import { WebGLParcelScene } from '../dcl/WebGLParcelScene'
 import { EventEmitter } from 'events'
@@ -45,7 +53,7 @@ async function loadScene(scene: IScene & { baseUrl: string }) {
 
   const publisher = '0x0'
 
-  const mappings = scene._mappings || {}
+  const contents = normalizeContentMappings(scene._mappings || [])
 
   if (!scene.baseUrl) throw new Error('baseUrl missing in scene')
 
@@ -53,7 +61,7 @@ async function loadScene(scene: IScene & { baseUrl: string }) {
     baseUrl: scene.baseUrl,
     scene,
     mappingsResponse: {
-      contents: mappings,
+      contents,
       parcel_id: id,
       publisher,
       root_cid: 'Qmtest'
@@ -198,19 +206,21 @@ export namespace editor {
   /**
    * Call this function when the content mappings has changed
    */
-  function setMappings(mappings: Record<string, string>) {
+  function setMappings(mappings: Record<string, string> | Array<ContentMapping>) {
     const context = webGlParcelScene.context as SharedSceneContext
     const seenMappings = new Set()
 
-    for (let key in mappings) {
-      const file = key.toLowerCase()
+    const sanitizedMappings = normalizeContentMappings(mappings)
+
+    for (let { file, hash } of sanitizedMappings) {
       seenMappings.add(file)
-      context.registerMappings([{ file, hash: mappings[key] }])
+      context.registerMappings([{ file, hash: hash }])
     }
 
-    context.mappings.forEach((_, file) => {
+    context.registeredMappings.forEach((_, file) => {
+      // TODO: check no textures or models or sounds are using the mappings we are removing
       if (!seenMappings.has(file)) {
-        context.mappings.delete(file)
+        context.registeredMappings.delete(file)
       }
     })
   }

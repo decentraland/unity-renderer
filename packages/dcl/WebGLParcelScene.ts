@@ -127,7 +127,7 @@ export class WebGLParcelScene extends WebGLScene<LoadableParcelScene> {
   /**
    * Looks for entities outisde of the fences of the scene.
    * - **DEBUG**: it highlights the entities
-   * - **DEBUG**: it disables the entities
+   * - **NOT DEBUG**: it disables the entities
    * In both cases, when the entity re-enters the legal fences, it reapears.
    */
   checkBoundaries() {

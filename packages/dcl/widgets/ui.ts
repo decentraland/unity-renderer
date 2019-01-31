@@ -20,7 +20,7 @@ export class WebGLUIScene extends WebGLScene<any> {
         main,
         data: {},
         id,
-        mappings: {}
+        mappings: []
       },
       context
     )

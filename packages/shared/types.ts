@@ -4,7 +4,7 @@ export type MappingsResponse = {
   parcel_id: string
   publisher: string
   root_cid: string
-  contents: Record<string, string>
+  contents: Array<ContentMapping>
 }
 
 export type ContentMapping = { file: string; hash: string }
@@ -156,7 +156,7 @@ export type EnvironmentData<T> = {
   id: string
   main: string
   baseUrl: string
-  mappings: Record<string, string>
+  mappings: Array<ContentMapping>
   data: T
 }
 
@@ -291,18 +291,32 @@ export type SkeletalAnimationComponent = {
   states: SkeletalAnimationValue[]
 }
 
-export function ILandToLoadableParcelScene(land: ILand): EnvironmentData<LoadableParcelScene> {
-  const mappings: ContentMapping[] = []
+export function normalizeContentMappings(
+  mappings: Record<string, string> | Array<ContentMapping>
+): Array<ContentMapping> {
+  const ret: Array<ContentMapping> = []
 
-  for (let file in land.mappingsResponse.contents) {
-    mappings.push({ file, hash: land.mappingsResponse.contents[file] })
+  if (typeof mappings.length === 'number' || mappings instanceof Array) {
+    ret.push(...(mappings as any))
+  } else {
+    for (let key in mappings) {
+      const file = key.toLowerCase()
+
+      ret.push({ file, hash: mappings[key] })
+    }
   }
+
+  return ret
+}
+
+export function ILandToLoadableParcelScene(land: ILand): EnvironmentData<LoadableParcelScene> {
+  const mappings: ContentMapping[] = normalizeContentMappings(land.mappingsResponse.contents)
 
   const ret: EnvironmentData<LoadableParcelScene> = {
     id: land.mappingsResponse.root_cid,
     baseUrl: land.baseUrl,
     main: land.scene.main,
-    mappings: land.mappingsResponse.contents,
+    mappings,
     data: {
       id: land.mappingsResponse.parcel_id,
       basePosition: parseParcelPosition(land.scene.scene.base),
