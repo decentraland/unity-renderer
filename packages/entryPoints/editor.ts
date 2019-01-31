@@ -70,12 +70,22 @@ async function initializePreview(userScene: EnvironmentData<LoadableParcelScene>
   })
   webGlParcelScene = new WebGLParcelScene(userScene)
   let parcelScene = new SceneWorker(webGlParcelScene)
-
   const context = webGlParcelScene.context as SharedSceneContext
 
-  context.on('uuidEvent', event => {
-    // TODO: Dani, is this ok?
-    evtEmitter.emit('transform', event.payload)
+  context.on('uuidEvent' as any, event => {
+    const { type } = event.payload
+
+    if (type === 'gizmoSelected') {
+      evtEmitter.emit('gizmoSelected', {
+        gizmoType: event.payload.gizmoType,
+        entityId: event.payload.entityId
+      })
+    } else if (type === 'gizmoDragEnded') {
+      evtEmitter.emit('transform', {
+        entityId: event.payload.entityId,
+        transform: event.payload.transform
+      })
+    }
   })
 
   context.on('metricsUpdate', e => {
@@ -275,7 +285,7 @@ export namespace editor {
     engine.setHardwareScalingLevel(0.5)
   }
 
-  export function selectGizmo(type: 'translate' | 'rotate' | 'scale' | null) {
+  export function selectGizmo(type: Gizmos.Gizmo | null) {
     Gizmos.selectGizmo(type)
   }
 
@@ -297,6 +307,14 @@ export namespace editor {
 
   export function off(evt: string, listener: (...args: any[]) => void) {
     evtEmitter.removeListener(evt, listener)
+  }
+
+  export function setCameraZoom(zoom: number) {
+    arcCamera.radius = zoom
+  }
+
+  export function setCameraRotation(alpha: number) {
+    arcCamera.alpha = alpha
   }
 
   export const envHelper = _envHelper

@@ -1207,6 +1207,7 @@ declare class Entity {
    * Removes a component instance from the entity.
    * @param component - component instance to remove
    */
+  remove(component: string): void
   remove<T extends object>(component: T): void
   /**
    * Returns true if the entity is already added to the engine.
@@ -2366,17 +2367,17 @@ declare class OnClick extends OnUUIDEvent {
 }
 
 /**
- * This event is triggered after the user finalizes dragging a gizmo.
- * @beta
+ * @public
  */
-declare class OnDragEnded extends OnUUIDEvent {
+declare class OnFocus extends OnUUIDEvent {
   readonly type: string
 }
 
 /**
- * @public
+ * This event is triggered after the user finalizes dragging a gizmo.
+ * @beta
  */
-declare class OnFocus extends OnUUIDEvent {
+declare class OnGizmoEvent extends OnUUIDEvent {
   readonly type: string
 }
 

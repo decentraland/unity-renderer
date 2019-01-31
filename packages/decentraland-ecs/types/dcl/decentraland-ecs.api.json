@@ -7720,7 +7720,7 @@
         },
         "remove": {
           "kind": "method",
-          "signature": "remove<T extends object>(component: T): void;",
+          "signature": "remove(component: string): void;",
           "accessModifier": "",
           "isOptional": false,
           "isStatic": false,
@@ -7739,7 +7739,7 @@
               ],
               "isOptional": false,
               "isSpread": false,
-              "type": "T"
+              "type": "string"
             }
           },
           "deprecatedMessage": [],
@@ -15379,7 +15379,36 @@
         }
       }
     },
-    "OnDragEnded": {
+    "OnFocus": {
+      "kind": "class",
+      "extends": "OnUUIDEvent",
+      "implements": "",
+      "typeParameters": [],
+      "deprecatedMessage": [],
+      "summary": [],
+      "remarks": [],
+      "isBeta": false,
+      "isSealed": false,
+      "members": {
+        "type": {
+          "kind": "property",
+          "signature": "readonly type: string;",
+          "isOptional": false,
+          "isReadOnly": true,
+          "isStatic": false,
+          "type": "string",
+          "deprecatedMessage": [],
+          "summary": [],
+          "remarks": [],
+          "isBeta": false,
+          "isSealed": false,
+          "isVirtual": false,
+          "isOverride": false,
+          "isEventProperty": false
+        }
+      }
+    },
+    "OnGizmoEvent": {
       "kind": "class",
       "extends": "OnUUIDEvent",
       "implements": "",
@@ -15406,35 +15435,6 @@
           "summary": [],
           "remarks": [],
           "isBeta": true,
-          "isSealed": false,
-          "isVirtual": false,
-          "isOverride": false,
-          "isEventProperty": false
-        }
-      }
-    },
-    "OnFocus": {
-      "kind": "class",
-      "extends": "OnUUIDEvent",
-      "implements": "",
-      "typeParameters": [],
-      "deprecatedMessage": [],
-      "summary": [],
-      "remarks": [],
-      "isBeta": false,
-      "isSealed": false,
-      "members": {
-        "type": {
-          "kind": "property",
-          "signature": "readonly type: string;",
-          "isOptional": false,
-          "isReadOnly": true,
-          "isStatic": false,
-          "type": "string",
-          "deprecatedMessage": [],
-          "summary": [],
-          "remarks": [],
-          "isBeta": false,
           "isSealed": false,
           "isVirtual": false,
           "isOverride": false,

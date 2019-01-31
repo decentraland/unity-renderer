@@ -2,6 +2,12 @@ import { BaseComponent } from '../BaseComponent'
 import { scene } from 'engine/renderer'
 import { BaseEntity } from 'engine/entities/BaseEntity'
 
+export enum Gizmo {
+  MOVE = 'MOVE',
+  ROTATE = 'ROTATE',
+  SCALE = 'SCALE'
+}
+
 export const gizmoManager = new BABYLON.GizmoManager(scene)
 gizmoManager.positionGizmoEnabled = true
 gizmoManager.rotationGizmoEnabled = true
@@ -10,12 +16,12 @@ gizmoManager.scaleGizmoEnabled = true
 gizmoManager.usePointerToAttachGizmos = false
 
 let activeEntity: BaseEntity = null
-let selectedGizmo: 'translate' | 'rotate' | 'scale' = 'translate'
+let selectedGizmo: Gizmo = Gizmo.MOVE
 
 function switchGizmo() {
   // TODO enable gizmo switching
   // 1 return selectedGizmo === 'translate' ? 'rotate' : 'translate'
-  return 'translate' as 'translate'
+  return Gizmo.MOVE
 }
 
 {
@@ -33,7 +39,8 @@ function switchGizmo() {
     BABYLON.Vector3.TransformCoordinatesToRef(delta, tmpMatrix, deltaPosition)
     delta.set(0, 0, 0)
 
-    activeEntity.dispatchUUIDEvent('dragEnded', {
+    activeEntity.dispatchUUIDEvent('gizmoEvent', {
+      type: 'gizmoDragEnded',
       transform: {
         position: final.addInPlace(deltaPosition),
         rotation: activeEntity.rotationQuaternion,
@@ -67,7 +74,8 @@ function switchGizmo() {
 
     gizmoMesh.rotationQuaternion.copyFrom(initialRotation)
 
-    activeEntity.dispatchUUIDEvent('dragEnded', {
+    activeEntity.dispatchUUIDEvent('gizmoEvent', {
+      type: 'gizmoDragEnded',
       transform: {
         position: activeEntity.position,
         rotation: finalRotation,
@@ -78,20 +86,20 @@ function switchGizmo() {
   })
 }
 
-export function selectGizmo(type: 'translate' | 'rotate' | 'scale' | null) {
+export function selectGizmo(type: Gizmo | null) {
   const gizmoMesh = (activeEntity.getObject3D('gizmoMesh') as BABYLON.AbstractMesh) || null
 
   selectedGizmo = type
 
-  if (type === 'translate') {
+  if (type === Gizmo.MOVE) {
     gizmoManager.gizmos.positionGizmo.attachedMesh = gizmoMesh
     gizmoManager.gizmos.rotationGizmo.attachedMesh = null
     gizmoManager.gizmos.scaleGizmo.attachedMesh = null
-  } else if (type === 'rotate') {
+  } else if (type === Gizmo.ROTATE) {
     gizmoManager.gizmos.positionGizmo.attachedMesh = null
     gizmoManager.gizmos.rotationGizmo.attachedMesh = gizmoMesh
     gizmoManager.gizmos.scaleGizmo.attachedMesh = null
-  } else if (type === 'scale') {
+  } else if (type === Gizmo.SCALE) {
     gizmoManager.gizmos.positionGizmo.attachedMesh = null
     gizmoManager.gizmos.rotationGizmo.attachedMesh = null
     gizmoManager.gizmos.scaleGizmo.attachedMesh = gizmoMesh
@@ -125,6 +133,12 @@ export class Gizmos extends BaseComponent<any> {
         activeEntity = entity
         selectGizmo(selectedGizmo)
       }
+
+      activeEntity.dispatchUUIDEvent('gizmoEvent', {
+        type: 'gizmoSelected',
+        gizmoType: selectedGizmo,
+        entityId: entity.uuid
+      })
     })
   }
 

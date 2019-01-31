@@ -213,20 +213,29 @@ export interface IEvents {
   }
 
   /** For gizmos */
-  dragEnded: {
-    transform: {
-      position: ReadOnlyVector3
-      rotation: ReadOnlyQuaternion
-      scale: ReadOnlyVector3
-    }
-    entityId: string
-  }
+  gizmoEvent: GizmoDragEndEvent | GizmoSelectedEvent
 
   // @internal
   externalAction: {
     type: string
     [key: string]: any
   }
+}
+
+export type GizmoDragEndEvent = {
+  type: 'gizmoDragEnded'
+  transform: {
+    position: ReadOnlyVector3
+    rotation: ReadOnlyQuaternion
+    scale: ReadOnlyVector3
+  }
+  entityId: string
+}
+
+export type GizmoSelectedEvent = {
+  type: 'gizmoSelected'
+  gizmoType: 'MOVE' | 'ROTATE' | 'SCALE'
+  entityId: string
 }
 
 export type IEventNames = keyof IEvents

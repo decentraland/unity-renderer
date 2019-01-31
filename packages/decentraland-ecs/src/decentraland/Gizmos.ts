@@ -5,10 +5,10 @@ import { CLASS_ID, OnUUIDEvent } from './Components'
  * This event is triggered after the user finalizes dragging a gizmo.
  * @beta
  */
-@Component('engine.dragEnded', CLASS_ID.UUID_CALLBACK)
-export class OnDragEnded extends OnUUIDEvent {
+@Component('engine.gizmoEvent', CLASS_ID.UUID_CALLBACK)
+export class OnGizmoEvent extends OnUUIDEvent {
   @ObservableComponent.readonly
-  readonly type: string = 'dragEnded'
+  readonly type: string = 'gizmoEvent'
 }
 
 /**
