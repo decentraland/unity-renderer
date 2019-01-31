@@ -56,6 +56,7 @@ export class UIContainerStack extends UIControl<UIContainerStackShape, BABYLON.G
     this.control.color = this.data.color
     this.control.background = this.data.background
     this.control.isVisible = this.data.visible
+    this.control.isVertical = this.data.vertical
 
     this.setParent(this.data.parentComponent)
   }

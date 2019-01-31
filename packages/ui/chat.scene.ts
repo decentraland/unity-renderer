@@ -52,8 +52,7 @@ function createMinimizeButton(parent: UIShape, click: (ev: IInteractionEvent) =>
   component.sourceTop = '10px'
   component.sourceLeft = '130px'
   component.hAlign = 'right'
-  component.vAlign = 'top'
-  component.top = '15px'
+  component.top = '0px'
   component.left = '-10px'
   component.isPointerBlocker = true
 
@@ -145,6 +144,7 @@ function createHelpCloseButton(parent: UIShape, click: (data: IInteractionEvent)
   component.hAlign = 'right'
   component.left = '-10px'
   component.top = '-5px'
+  component.isPointerBlocker = true
 
   const entity = new Entity()
   entity.set(component)
@@ -219,6 +219,7 @@ function createMessage(parent: UIShape, props: { sender: string; message: string
   component.hAlign = 'left'
   component.vAlign = 'bottom'
   component.height = '30px'
+  component.width = '400px'
   component.top = '-50px'
 
   renderSender(component, { color, sender })
@@ -274,6 +275,7 @@ function createChatHeader(parent: UIShape) {
   headerTextComponent.vTextAlign = 'top'
   headerTextComponent.top = '15px'
   headerTextComponent.left = '15px'
+  headerTextComponent.width = '100px'
   headerTextComponent.height = '40px'
 
   return { container, headerTextComponent }
@@ -283,7 +285,7 @@ function createCommandHelper(parent: UIShape, props: { name: string; description
   const container = new UIContainerStackShape(parent)
   container.height = '55px'
 
-  const cmdNameComponent = new UITextShape(parent)
+  const cmdNameComponent = new UITextShape(container)
   cmdNameComponent.color = COMMAND_COLOR
   cmdNameComponent.value = `/${props.name}`
   cmdNameComponent.fontSize = 14
@@ -292,7 +294,7 @@ function createCommandHelper(parent: UIShape, props: { name: string; description
   cmdNameComponent.height = '25px'
   cmdNameComponent.hTextAlign = 'left'
 
-  const cmdDescriptionComponent = new UITextShape(parent)
+  const cmdDescriptionComponent = new UITextShape(container)
   cmdDescriptionComponent.color = '#7d8499'
   cmdDescriptionComponent.value = props.description
   cmdDescriptionComponent.fontSize = 13
@@ -356,7 +358,7 @@ function toggleChat() {
 function onSliderChanged(data: any) {
   const value = Math.round(data.value)
   sliderOpenedChat.component.value = value
-  messageContainer!.top = `${-value}px`
+  messageContainer!.top = `${value}px`
 }
 
 function onHelpSliderChanged(data: any) {
@@ -442,9 +444,9 @@ container.visible = false
 const messageContainer = new UIContainerStackShape(container)
 messageContainer.vAlign = 'bottom'
 messageContainer.hAlign = 'left'
-messageContainer.top = '-45px'
+messageContainer.top = '-105px'
 messageContainer.left = '15px'
-messageContainer.height = '0px'
+messageContainer.height = '200px'
 
 const footerContainer = new UIContainerRectShape(container)
 footerContainer.adaptHeight = true
@@ -539,6 +541,7 @@ helpSliderComponent.thumbWidth = '15px'
 helpSliderComponent.barOffset = '8px'
 helpSliderComponent.color = '#333333'
 helpSliderComponent.background = '#262626'
+helpSliderComponent.isPointerBlocker = true
 
 const sliderEntity = new Entity()
 sliderEntity.set(helpSliderComponent)

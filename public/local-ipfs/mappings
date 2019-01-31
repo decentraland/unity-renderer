@@ -1414,7 +1414,6 @@
     "parcel_id": "0,99",
     "root_cid": "Qm3oNzGkyY673CFFusY883dfL5DcQ9PPfFhQkeEup5cv6NC6NRuyN3C4hUbiZJ4RVhcipJVA7d76mEb6tRWdy2RsiT",
     "contents": {
-      "scene.js": "Qm2oryrBMgX5qhaPggxE2QkmWe55MoWJXFvoCWDbdpBNSd3J82HGMq1DkNtsi7osF3W1Yj9GZuSp3rDXcFDojhnuMa",
       "scene.json": "Qm3wMvbdfr76CHoxCiiTmyDsQ2Dk8ujvnt5td85tmy2hu6aamPq39Tqmux7YXjpXofSUs4nBYeZVV65yxPBzb5og5S",
       "scene.xml": "Qm4MftLRuiPgZavizbkKvezCj4DK3mXUKSP1n9WrjmTCL3cBRupDATaiHcAQ9EfSyofCTVdv4THQWsgW2GBhT5fRtp"
     }
@@ -1660,6 +1659,7 @@
       "models/subtitle.obj": "Qm4n5f43z3stKWJaW1URPGrz6LLVSSqWrpUkEncLC6a3sDjvg65ebo7VToncA5gq7tji9UNqZcooGWimM71rpYox8g",
       "models/title.mtl": "Qm2F6TRog1iUDiWUFahkmyFFnPDqpnAwWFZhbsQXDrGbEm7jRHig6NcW1EWcvqTozbipN5oPWQutsUrztuDV4Vdk4K",
       "models/title.obj": "Qm5UbCVRygnWGANKtpLFc1vfDmhV2vit8ejcihyCtkyY43g7Yu5Y3F4iUYSqXEGChyBpZKiCKHL6P8gsumfooZijJn",
+      "scene.js": "QmszGToAfw5ydq3zyq3pJ5vughP42x5phN49SSD4evZEpgfRwkMw6kHsAqtNy7WRumRCRbrn954kGKz9BANzUv8QL",
       "scene.json": "Qm62HYb2PKMsKLdjjJQzwKhh4RWxMqscVGLbpbANtL5Q6TQi1B9HjSHZWoegSimnfnypKE2V7t4FQmqaZMrpjViQfY",
       "sounds/button.ogg": "Qm598GFgLS8nuq3tRHb5X3q6X8nU4WBEm2Bfk1QMkDcNb8Aheto3RuQH9qAkeHyQAQMkSgjySfiAWvCi1BmHDYwWs8",
       "sounds/carnivalrides.ogg": "QmptVHbumccCcz9DT3jTcPwLjYVFhz2VswndnnKbFjHF4TJMv2dk5yBtj5wZxhs1zso5XQpw31o4VwGXmzYY4xwXS",
@@ -1715,6 +1715,7 @@
       "models/subtitle.obj": "Qm4n5f43z3stKWJaW1URPGrz6LLVSSqWrpUkEncLC6a3sDjvg65ebo7VToncA5gq7tji9UNqZcooGWimM71rpYox8g",
       "models/title.mtl": "Qm2F6TRog1iUDiWUFahkmyFFnPDqpnAwWFZhbsQXDrGbEm7jRHig6NcW1EWcvqTozbipN5oPWQutsUrztuDV4Vdk4K",
       "models/title.obj": "Qm5UbCVRygnWGANKtpLFc1vfDmhV2vit8ejcihyCtkyY43g7Yu5Y3F4iUYSqXEGChyBpZKiCKHL6P8gsumfooZijJn",
+      "scene.js": "QmszGToAfw5ydq3zyq3pJ5vughP42x5phN49SSD4evZEpgfRwkMw6kHsAqtNy7WRumRCRbrn954kGKz9BANzUv8QL",
       "scene.json": "Qm62HYb2PKMsKLdjjJQzwKhh4RWxMqscVGLbpbANtL5Q6TQi1B9HjSHZWoegSimnfnypKE2V7t4FQmqaZMrpjViQfY",
       "sounds/button.ogg": "Qm598GFgLS8nuq3tRHb5X3q6X8nU4WBEm2Bfk1QMkDcNb8Aheto3RuQH9qAkeHyQAQMkSgjySfiAWvCi1BmHDYwWs8",
       "sounds/carnivalrides.ogg": "QmptVHbumccCcz9DT3jTcPwLjYVFhz2VswndnnKbFjHF4TJMv2dk5yBtj5wZxhs1zso5XQpw31o4VwGXmzYY4xwXS",
