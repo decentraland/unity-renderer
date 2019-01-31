@@ -138,6 +138,11 @@ export class WebGLParcelScene extends WebGLScene<LoadableParcelScene> {
       if (!newSet.has($) && this.context.entities.has($.id)) {
         removeEntityHighlight($)
         $.setEnabled(true)
+
+        this.context.emit('entityBackInScene', {
+          entityId: $.uuid
+        })
+
         this.setOfEntitiesOutsideBoundaries.delete($)
       }
     })
@@ -149,6 +154,9 @@ export class WebGLParcelScene extends WebGLScene<LoadableParcelScene> {
         } else {
           $.setEnabled(false)
         }
+        this.context.emit('entityOutOfScene', {
+          entityId: $.uuid
+        })
         this.setOfEntitiesOutsideBoundaries.add($)
       }
     })

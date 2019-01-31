@@ -197,6 +197,20 @@ export interface IEvents {
     pointerId: number
   }
 
+  /**
+   * This event gets triggered when an entity leaves the scene fences.
+   */
+  entityOutOfScene: {
+    entityId: string
+  }
+
+  /**
+   * This event gets triggered when an entity enters the scene fences.
+   */
+  entityBackInScene: {
+    entityId: string
+  }
+
   uuidEvent: {
     uuid: string
     payload: any
