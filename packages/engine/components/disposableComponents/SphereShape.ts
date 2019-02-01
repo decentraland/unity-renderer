@@ -11,6 +11,7 @@ const base = BABYLON.MeshBuilder.CreateSphere(
   },
   scene
 )
+base.setEnabled(false)
 
 export class SphereShape extends BasicShape<{}> {
   generateModel() {

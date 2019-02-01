@@ -140,3 +140,19 @@ export function setCamera(thirdPerson: boolean) {
 export function isThirdPersonCamera() {
   return scene.activeCamera === arcCamera
 }
+
+export function setCameraPosition(position: BABYLON.Vector3) {
+  if (scene.activeCamera === arcCamera) {
+    arcCamera.target.copyFrom(position)
+  } else {
+    scene.activeCamera.position.copyFrom(position)
+  }
+}
+
+export function cameraPositionToRef(ref: BABYLON.Vector3) {
+  if (scene.activeCamera === arcCamera) {
+    ref.copyFrom(arcCamera.target)
+  } else {
+    ref.copyFrom(scene.activeCamera.position)
+  }
+}

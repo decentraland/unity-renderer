@@ -21,9 +21,16 @@ import { SceneWorker } from '../shared/world/SceneWorker'
 import { WebGLParcelScene } from '../dcl/WebGLParcelScene'
 import { EventEmitter } from 'events'
 import { SharedSceneContext } from '../engine/entities/SharedSceneContext'
-import { vrCamera, arcCamera, DEFAULT_CAMERA_ZOOM } from '../engine/renderer/camera'
+import {
+  vrCamera,
+  arcCamera,
+  DEFAULT_CAMERA_ZOOM,
+  setCameraPosition as _setCameraPosition,
+  cameraPositionToRef
+} from '../engine/renderer/camera'
 import { setEditorEnvironment } from '../engine/renderer/ambientLights'
 import * as Gizmos from '../engine/components/ephemeralComponents/Gizmos'
+import { Vector3 } from 'babylonjs'
 
 let didStartPosition = false
 
@@ -221,6 +228,14 @@ export namespace editor {
   }
 
   export const envHelper = _envHelper
+
+  export const setCameraPosition = _setCameraPosition
+
+  export function getCameraPosition() {
+    const ret = new Vector3()
+    cameraPositionToRef(ret)
+    return ret
+  }
 }
 
 global['editor'] = editor
