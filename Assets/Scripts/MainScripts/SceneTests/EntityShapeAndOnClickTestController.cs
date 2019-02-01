@@ -15,7 +15,6 @@ public class EntityShapeAndOnClickTestController : MonoBehaviour
         var sceneController = FindObjectOfType<SceneController>();
         var scenesToLoad = (Resources.Load("TestJSON/SceneLoadingTest") as TextAsset).text;
 
-
         sceneController.UnloadAllScenes();
         sceneController.LoadParcelScenes(scenesToLoad);
 

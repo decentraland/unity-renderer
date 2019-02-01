@@ -1,7 +1,7 @@
 using DCL.Components;
 using DCL.Configuration;
-using DCL.Models;
 using DCL.Helpers;
+using DCL.Models;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
@@ -15,6 +15,21 @@ namespace DCL.Controllers
 
         public LoadParcelScenesMessage.UnityParcelScene sceneData { get; private set; }
         public SceneController ownerController;
+
+        public event System.Action<DecentralandEntity> OnEntityAdded;
+        public event System.Action<DecentralandEntity> OnEntityRemoved;
+
+        public SceneMetricsController metricsController;
+
+        public void Awake()
+        {
+            metricsController = new SceneMetricsController(this);
+        }
+
+        private void Update()
+        {
+            metricsController.SendEvent();
+        }
 
         public void SetData(LoadParcelScenesMessage.UnityParcelScene data)
         {
@@ -51,6 +66,7 @@ namespace DCL.Controllers
             {
                 Destroy(entity.Value.gameObject);
             }
+
             entities.Clear();
         }
 
@@ -64,6 +80,7 @@ namespace DCL.Controllers
         public void CreateEntity(string json)
         {
             tmpCreateEntityMessage.FromJSON(json);
+
             if (!entities.ContainsKey(tmpCreateEntityMessage.id))
             {
                 var newEntity = new DecentralandEntity();
@@ -71,8 +88,12 @@ namespace DCL.Controllers
                 newEntity.gameObject = new GameObject();
                 newEntity.gameObject.transform.SetParent(gameObject.transform);
                 newEntity.gameObject.name = "ENTITY_" + tmpCreateEntityMessage.id;
+                newEntity.scene = this;
 
                 entities.Add(tmpCreateEntityMessage.id, newEntity);
+
+                if (OnEntityAdded != null)
+                    OnEntityAdded.Invoke(newEntity);
             }
 #if UNITY_EDITOR || DEVELOPMENT_BUILD
             else
@@ -90,6 +111,9 @@ namespace DCL.Controllers
 
             if (entities.ContainsKey(tmpRemoveEntityMessage.id))
             {
+                if (OnEntityRemoved != null)
+                    OnEntityRemoved.Invoke(entities[tmpRemoveEntityMessage.id]);
+
                 Object.Destroy(entities[tmpRemoveEntityMessage.id].gameObject);
                 entities.Remove(tmpRemoveEntityMessage.id);
             }
@@ -188,8 +212,11 @@ namespace DCL.Controllers
             createEntityComponentMessage.FromJSON(json);
 
             DecentralandEntity entity = GetEntityForUpdate(createEntityComponentMessage.entityId);
+
             if (entity == null)
+            {
                 return null;
+            }
 
             DCLComponentFactory factory = ownerController.componentFactory;
             CLASS_ID_COMPONENT classId = (CLASS_ID_COMPONENT)createEntityComponentMessage.classId;
@@ -296,8 +323,10 @@ namespace DCL.Controllers
 #endif
             }
 
-            if ( newComponent != null )
+            if (newComponent != null)
+            {
                 disposableComponents.Add(sharedComponentCreatedMessage.id, newComponent);
+            }
 
             return newComponent;
         }
@@ -326,7 +355,10 @@ namespace DCL.Controllers
             entityComponentRemovedMessage.FromJSON(json);
 
             DecentralandEntity decentralandEntity = GetEntityForUpdate(entityComponentRemovedMessage.entityId);
-            if (decentralandEntity == null) return;
+            if (decentralandEntity == null)
+            {
+                return;
+            }
 
             RemoveEntityComponent(decentralandEntity, entityComponentRemovedMessage.name);
         }
@@ -337,11 +369,7 @@ namespace DCL.Controllers
 
             if (component != null)
             {
-#if UNITY_EDITOR
-                UnityEngine.Object.DestroyImmediate(component);
-#else
-                UnityEngine.Object.Destroy(component);
-#endif
+                Utils.SafeDestroy(component);
             }
         }
 
@@ -393,7 +421,9 @@ namespace DCL.Controllers
             BaseDisposable result;
 
             if (!disposableComponents.TryGetValue(componentId, out result))
+            {
                 return null;
+            }
 
             return result;
         }

@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using DCL.Controllers;
@@ -10,12 +10,15 @@ namespace DCL.Components
 {
     public abstract class LoadableMonoBehavior : MonoBehaviour
     {
-        public abstract void Load(string src);
+        public System.Action<GameObject> OnLoadFinished;
         public bool alreadyLoaded = false;
         public DecentralandEntity entity;
+
+        public abstract void Load(string src);
     }
 
-    public class BaseLoadableShape<LoadableShape> : BaseShape where LoadableShape : LoadableMonoBehavior
+    public class BaseLoadableShape<LoadableShape> : BaseShape
+        where LoadableShape : LoadableMonoBehavior
     {
         [System.Serializable]
         public class Model
@@ -33,11 +36,19 @@ namespace DCL.Components
             OnAttach += AttachShape;
         }
 
+        private IEnumerator AttachShapeCoroutine(DecentralandEntity entity)
+        {
+            AttachShape(entity);
+
+
+            yield return null;
+        }
+
         private void AttachShape(DecentralandEntity entity)
         {
             if (!string.IsNullOrEmpty(currentSrc))
             {
-                var loadableShape = Helpers.Utils.GetOrCreateComponent<LoadableShape>(entity.meshGameObject);
+                LoadableShape loadableShape = Helpers.Utils.GetOrCreateComponent<LoadableShape>(entity.meshGameObject);
                 loadableShape.entity = entity;
                 loadableShape.Load(currentSrc);
             }
@@ -47,14 +58,13 @@ namespace DCL.Components
         {
             if (entity.meshGameObject)
             {
-                var loadableShape = entity.meshGameObject.GetComponent<LoadableShape>();
-                loadableShape.enabled = false;
+                LoadableShape loadableShape = entity.meshGameObject.GetComponent<LoadableShape>();
 
-#if UNITY_EDITOR
-                UnityEngine.Object.DestroyImmediate(loadableShape);
-#else
-        UnityEngine.Object.Destroy(loadableShape);
-#endif
+                if (loadableShape != null)
+                {
+                    loadableShape.enabled = false;
+                    Utils.SafeDestroy(loadableShape);
+                }
             }
         }
 
@@ -70,11 +80,9 @@ namespace DCL.Components
 
                 foreach (var entity in this.attachedEntities)
                 {
-                    AttachShape(entity);
+                    yield return AttachShapeCoroutine(entity);
                 }
             }
-
-            return null;
         }
     }
 }

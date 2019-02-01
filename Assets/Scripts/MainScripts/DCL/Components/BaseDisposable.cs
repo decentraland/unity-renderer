@@ -10,7 +10,6 @@ namespace DCL.Components
 
     public abstract class BaseDisposable : IComponent
     {
-
         public Coroutine routine = null;
         public abstract string componentName { get; }
 
@@ -64,11 +63,17 @@ namespace DCL.Components
             {
                 if (OnAttach != null)
                 {
-                    OnAttach(entity);
+                    OnAttach.Invoke(entity);
                 }
 
                 attachedEntities.Add(entity);
+                entity.scene.OnEntityRemoved += Scene_OnEntityRemoved;
             }
+        }
+
+        private void Scene_OnEntityRemoved(DecentralandEntity entity)
+        {
+            DetachFrom(entity);
         }
 
         public virtual void DetachFrom(DecentralandEntity entity)
@@ -77,9 +82,10 @@ namespace DCL.Components
             {
                 if (OnDetach != null)
                 {
-                    OnDetach(entity);
+                    OnDetach.Invoke(entity);
                 }
 
+                entity.scene.OnEntityRemoved -= Scene_OnEntityRemoved;
                 attachedEntities.Remove(entity);
             }
         }

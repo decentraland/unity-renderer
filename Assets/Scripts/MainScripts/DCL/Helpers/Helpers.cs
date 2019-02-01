@@ -201,6 +201,22 @@ namespace DCL.Helpers
             return placeholderRenderer.gameObject;
         }
 
+        public static void SafeDestroy(UnityEngine.Object obj)
+        {
+#if UNITY_EDITOR
+            if (Application.isPlaying)
+            {
+                UnityEngine.Object.Destroy(obj);
+            }
+            else
+            {
+                UnityEngine.Object.DestroyImmediate(obj);
+            }
+#else
+            Destroy(obj);
+#endif
+        }
+
         // todo; check if your TEnum is enum && typeCode == TypeCode.Int
         public struct FastEnumIntEqualityComparer<TEnum> : IEqualityComparer<TEnum>
             where TEnum : struct

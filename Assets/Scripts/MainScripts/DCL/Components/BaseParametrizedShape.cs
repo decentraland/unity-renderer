@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using DCL.Controllers;
@@ -37,7 +37,7 @@ namespace DCL.Components
             meshFilter.sharedMesh = currentMesh;
 
             if (entity.OnShapeUpdated != null)
-                entity.OnShapeUpdated.Invoke();
+                entity.OnShapeUpdated.Invoke(entity);
 
             ConfigureCollision(entity, HasCollisions());
         }
@@ -48,11 +48,7 @@ namespace DCL.Components
             if (meshFilter)
             {
                 meshFilter.sharedMesh = null;
-#if UNITY_EDITOR
-                UnityEngine.Object.DestroyImmediate(meshFilter);
-#else
-                UnityEngine.Object.Destroy(meshFilter);
-#endif
+                Utils.SafeDestroy(meshFilter);
             }
         }
 

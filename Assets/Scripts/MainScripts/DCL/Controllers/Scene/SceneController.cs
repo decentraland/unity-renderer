@@ -1,5 +1,6 @@
 using DCL;
 using DCL.Controllers;
+using DCL.Helpers;
 using DCL.Interface;
 using DCL.Models;
 using System;
@@ -10,6 +11,9 @@ using UnityEngine.Serialization;
 
 public class SceneController : MonoBehaviour
 {
+    public static SceneController i { get; private set; }
+
+    public bool isPreviewMode = false;
     public bool startDecentralandAutomatically = true;
 
     [FormerlySerializedAs("factoryManifest")]
@@ -19,6 +23,14 @@ public class SceneController : MonoBehaviour
 
     void Awake()
     {
+        if (i != null)
+        {
+            Destroy(this);
+            return;
+        }
+
+        i = this;
+
         // We trigger the Decentraland logic once SceneController has been instanced and is ready to act.
         if (startDecentralandAutomatically)
         {
@@ -131,11 +143,7 @@ public class SceneController : MonoBehaviour
 
             if (scene)
             {
-#if UNITY_EDITOR
-                DestroyImmediate(scene);
-#else
-                Destroy(scene);
-#endif
+                Utils.SafeDestroy(scene.gameObject);
             }
         }
     }

@@ -30,7 +30,7 @@ namespace DCL.Components
 
             if (gltfLoaderComponent.loadingPlaceholder == null)
             {
-                gltfLoaderComponent.loadingPlaceholder = Helpers.Utils.AttachPlaceholderRendererGameObject(gameObject.transform);
+                gltfLoaderComponent.loadingPlaceholder = Utils.AttachPlaceholderRendererGameObject(gameObject.transform);
             }
             else
             {
@@ -46,7 +46,7 @@ namespace DCL.Components
                 entity.OnComponentUpdated.Invoke(this);
 
             if (entity.OnShapeUpdated != null)
-                entity.OnShapeUpdated.Invoke();
+                entity.OnShapeUpdated.Invoke(entity);
 
             BaseShape.ConfigureCollision(entity, true, true);
         }

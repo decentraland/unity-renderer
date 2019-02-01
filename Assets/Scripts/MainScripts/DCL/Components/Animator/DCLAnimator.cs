@@ -5,6 +5,7 @@ using UnityEngine;
 using UnityEngine.Playables;
 using UnityEngine.Animations;
 using DCL.Helpers;
+using DCL.Models;
 
 namespace DCL.Components
 {
@@ -128,7 +129,7 @@ namespace DCL.Components
             Initialize();
         }
 
-        private void OnComponentUpdated()
+        private void OnComponentUpdated(DecentralandEntity e)
         {
             if (entity.meshGameObject && entity.meshGameObject.GetComponentInChildren<Animation>() != null)
             {

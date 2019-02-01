@@ -17,28 +17,39 @@ namespace DCL.Interface
     {
         public static System.Action<string, string> OnMessageFromEngine;
 
+        [System.Serializable]
         private class ReportPositionPayload
         {
             public Vector3 position;
             public Quaternion rotation;
         }
 
-        private class SceneEvent
+        [System.Serializable]
+        private class SceneEvent<T>
         {
             public string sceneId;
             public string eventType; // uuidEvent
-            public object payload;
+            public T payload;
         }
 
+        [System.Serializable]
         public class OnClickEventPayload
         {
             public int pointerId;
         }
 
+        [System.Serializable]
         private class OnClickEvent
         {
             public string uuid;
             public OnClickEventPayload payload = new OnClickEventPayload();
+        }
+
+        [System.Serializable]
+        private class OnMetricsUpdate
+        {
+            public SceneMetricsController.Model current = new SceneMetricsController.Model();
+            public SceneMetricsController.Model limit = new SceneMetricsController.Model();
         }
 
 #if UNITY_WEBGL && !UNITY_EDITOR
@@ -61,17 +72,18 @@ namespace DCL.Interface
         }
 #endif
 
-        public static void SendMessage(string type, object message)
+        public static void SendMessage<T>(string type, T message)
         {
-            MessageFromEngine(type, UnityEngine.JsonUtility.ToJson(message));
+            MessageFromEngine(type, JsonUtility.ToJson(message));
         }
 
         private static ReportPositionPayload positionPayload = new ReportPositionPayload();
-        private static SceneEvent sceneEvent = new SceneEvent();
         private static OnClickEvent onClickEvent = new OnClickEvent();
+        private static OnMetricsUpdate onMetricsUpdate = new OnMetricsUpdate();
 
-        public static void SendSceneEvent(string sceneId, string eventType, object payload)
+        public static void SendSceneEvent<T>(string sceneId, string eventType, T payload)
         {
+            SceneEvent<T> sceneEvent = new SceneEvent<T>();
             sceneEvent.sceneId = sceneId;
             sceneEvent.eventType = eventType;
             sceneEvent.payload = payload;
@@ -93,6 +105,14 @@ namespace DCL.Interface
             onClickEvent.payload.pointerId = pointerId;
 
             SendSceneEvent(sceneId, "uuidEvent", onClickEvent);
+        }
+
+        public static void ReportOnMetricsUpdate(string sceneId, SceneMetricsController.Model current, SceneMetricsController.Model limit)
+        {
+            onMetricsUpdate.current = current;
+            onMetricsUpdate.limit = limit;
+
+            SendSceneEvent(sceneId, "metricsUpdate", onMetricsUpdate);
         }
     }
 }
