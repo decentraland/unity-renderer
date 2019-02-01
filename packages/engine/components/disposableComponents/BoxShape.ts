@@ -1,11 +1,17 @@
 import { BasicShape, DisposableComponent } from './DisposableComponent'
 import { CLASS_ID } from 'decentraland-ecs/src'
 
+const base = BABYLON.MeshBuilder.CreateBox('box', {
+  updatable: false
+})
+
 export class BoxShape extends BasicShape<{}> {
   generateModel() {
-    return BABYLON.MeshBuilder.CreateBox('box', {
-      updatable: false
-    })
+    const ret = new BABYLON.Mesh('instance')
+
+    base.geometry.applyToMesh(ret)
+
+    return ret
   }
 }
 

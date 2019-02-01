@@ -2,9 +2,23 @@ import { BasicShape, DisposableComponent } from './DisposableComponent'
 import { CLASS_ID } from 'decentraland-ecs/src'
 import { scene } from 'engine/renderer'
 
+const base = BABYLON.MeshBuilder.CreateSphere(
+  'sphere',
+  {
+    diameter: 1,
+    updatable: false,
+    segments: 8
+  },
+  scene
+)
+
 export class SphereShape extends BasicShape<{}> {
   generateModel() {
-    return BABYLON.MeshBuilder.CreateSphere('sphere', { diameter: 1 }, scene)
+    const ret = new BABYLON.Mesh('instance')
+
+    base.geometry.applyToMesh(ret)
+
+    return ret
   }
 }
 

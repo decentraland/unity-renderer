@@ -2425,10 +2425,6 @@
         "hash": "Qm3PAWmzDGd9HUySiuPTJmM37BYnu8ABX6Zu2mqh8c3CEQM7s9v65VQNDuqr8prJXtc2q7gg5yr2EXhWVahW2XyKR6"
       },
       {
-        "file": "scene.js",
-        "hash": "Qm4S12WBCm91dFxVHsWdGAdtceNwfEAA7Bm5G3MMaBZfab5kzQDaguFzfhSnC8PyLWfpRdGJALN3oqvAjKfpoemZwd"
-      },
-      {
         "file": "scene.json",
         "hash": "Qm4DD2U2euwyAFZVqEAYHBivjHL3dio34XgP5Erj9r8iV4dyvQe6WHkKKzEFQdyYn8jQ2os8WzgZFqMJbjkXgYzTwN"
       }
@@ -3945,10 +3941,6 @@
     "parcel_id": "0,99",
     "root_cid": "Qm3oNzGkyY673CFFusY883dfL5DcQ9PPfFhQkeEup5cv6NC6NRuyN3C4hUbiZJ4RVhcipJVA7d76mEb6tRWdy2RsiT",
     "contents": [
-      {
-        "file": "scene.js",
-        "hash": "Qm2oryrBMgX5qhaPggxE2QkmWe55MoWJXFvoCWDbdpBNSd3J82HGMq1DkNtsi7osF3W1Yj9GZuSp3rDXcFDojhnuMa"
-      },
       {
         "file": "scene.json",
         "hash": "Qm3wMvbdfr76CHoxCiiTmyDsQ2Dk8ujvnt5td85tmy2hu6aamPq39Tqmux7YXjpXofSUs4nBYeZVV65yxPBzb5og5S"

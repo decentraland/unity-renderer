@@ -71,7 +71,7 @@ export abstract class BasicShape<T> extends DisposableComponent {
     this.contributions.geometriesCount += 1
   }
 
-  abstract generateModel(): BABYLON.Mesh
+  abstract generateModel(): BABYLON.AbstractMesh
 
   async updateData(data: any) {
     this.data = data || {}
