@@ -8,9 +8,11 @@ import { domReadyFuture, bodyReadyFuture } from '../engine/renderer/init'
 import { initShared } from '../shared'
 import { enableParcelSceneLoading } from '../shared/world/parcelSceneManager'
 import { WebGLParcelScene } from '../dcl/WebGLParcelScene'
+import { enableMiniMap } from '../dcl/widgets/minimap'
 
 export async function loadClient(net: ETHEREUM_NETWORK) {
   await initBabylonClient()
+  document.body.appendChild(enableMiniMap())
 
   await enableParcelSceneLoading(net, {
     parcelSceneClass: WebGLParcelScene
