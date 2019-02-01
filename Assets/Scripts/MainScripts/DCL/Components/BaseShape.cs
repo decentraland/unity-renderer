@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using DCL.Controllers;
@@ -8,8 +8,6 @@ using UnityEngine;
 
 namespace DCL.Components
 {
-
-
     public abstract class BaseShape : BaseDisposable
     {
         public override string componentName => "shape";

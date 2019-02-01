@@ -38,7 +38,7 @@ namespace DCL.Components
                 entity.OnComponentUpdated.Invoke(this);
 
             if (entity.OnShapeUpdated != null)
-                entity.OnShapeUpdated.Invoke();
+                entity.OnShapeUpdated.Invoke(entity);
 
             BaseShape.ConfigureCollision(entity, true, true);
         }

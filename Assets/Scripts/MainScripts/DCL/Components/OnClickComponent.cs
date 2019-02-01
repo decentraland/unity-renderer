@@ -72,7 +72,7 @@ namespace DCL.Components
             }
         }
 
-        void OnComponentUpdated()
+        void OnComponentUpdated(DecentralandEntity e)
         {
             Initialize();
         }
