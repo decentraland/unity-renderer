@@ -15,7 +15,8 @@ export class Transform extends BaseComponent<any> {
     return {
       position: validators.vector3(value.position, defaultValue.position),
       rotation: validators.quaternion(value.rotation, defaultValue.rotation),
-      scale: validators.vector3(value.scale, defaultValue.scale)
+      scale: validators.vector3(value.scale, defaultValue.scale),
+      nonce: value.nonce
     }
   }
 

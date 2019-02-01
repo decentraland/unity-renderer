@@ -6,7 +6,7 @@ import { initLocalPlayer, domReadyFuture, onWindowResize } from '../engine/rende
 
 import { initBabylonClient } from '../dcl'
 import * as _envHelper from '../engine/renderer/envHelper'
-import { canvas, engine } from '../engine/renderer/init'
+import { canvas } from '../engine/renderer/init'
 import { loadedParcelSceneWorkers } from '../shared/world/parcelSceneManager'
 import {
   LoadableParcelScene,
@@ -186,7 +186,6 @@ export namespace editor {
 
     await initBabylonClient()
     configureEditorEnvironment(true)
-    engine.setHardwareScalingLevel(0.5)
   }
 
   export function selectGizmo(type: Gizmos.Gizmo) {
