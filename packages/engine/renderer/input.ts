@@ -6,6 +6,7 @@ import { vrHelper, scene } from './init'
 import Joystick from './controls/joystick'
 import PlaneCanvasControl from './controls/planeCanvasControl'
 import { isMobile } from 'shared/comms/mobile'
+import { isThirdPersonCamera } from './camera'
 
 /**
  * This is a map of keys (see enum Keys): boolean
@@ -251,8 +252,7 @@ export function enableMouseLock(canvas: HTMLCanvasElement) {
   })
 
   canvas.addEventListener('click', () => {
-    const inEditorCamera = scene.activeCamera instanceof BABYLON.ArcRotateCamera
-    if (inEditorCamera) {
+    if (isThirdPersonCamera()) {
       return
     }
 
@@ -268,8 +268,7 @@ export function enableMouseLock(canvas: HTMLCanvasElement) {
   })
 
   scene.onPrePointerObservable.add(evt => {
-    const inEditorCamera = scene.activeCamera instanceof BABYLON.ArcRotateCamera
-    if (inEditorCamera) {
+    if (isThirdPersonCamera()) {
       return
     }
 

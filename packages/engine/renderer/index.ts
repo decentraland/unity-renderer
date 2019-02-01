@@ -10,7 +10,7 @@ import { isMobile } from 'shared/comms/mobile'
 import { error } from '../logger'
 import './customShaders'
 import { scene, domReadyFuture, canvas, engine, audioEngine, vrHelper } from './init'
-import { camera } from './camera'
+import { vrCamera } from './camera'
 import './ambientLights'
 import { resizeRotationCanvas } from './input'
 
@@ -94,7 +94,7 @@ export function initDCL() {
 
 /// --- EXPORTS ---
 
-export { camera, domReadyFuture, scene, engine, audioEngine, vrHelper, engineMicroQueue }
+export { vrCamera as camera, domReadyFuture, scene, engine, audioEngine, vrHelper, engineMicroQueue }
 
 export const VRButton: HTMLElement = (vrHelper as any)._btnVR
 
@@ -120,16 +120,16 @@ export function setSize(w: number, h: number) {
 }
 
 export function initLocalPlayer(initialPosition?: Vector3Component, initialRotation?: Vector2Component) {
-  camera.position.x = initialPosition.x || 0
-  camera.position.z = initialPosition.z || 0
+  vrCamera.position.x = initialPosition.x || 0
+  vrCamera.position.z = initialPosition.z || 0
 
   if (vrHelper.vrDeviceOrientationCamera) {
-    vrHelper.vrDeviceOrientationCamera.position.copyFrom(camera.position)
+    vrHelper.vrDeviceOrientationCamera.position.copyFrom(vrCamera.position)
   }
 
   if (initialRotation) {
-    camera.cameraRotation.x = initialRotation.x
-    camera.cameraRotation.y = initialRotation.y
+    vrCamera.cameraRotation.x = initialRotation.x
+    vrCamera.cameraRotation.y = initialRotation.y
   }
 }
 

@@ -1,4 +1,4 @@
-import { Entity, engine, OnClick, executeTask, IInteractionEvent } from 'decentraland-ecs/src'
+import { Entity, engine, OnClick, executeTask } from 'decentraland-ecs/src'
 import {
   UIImageShape,
   UIContainerRectShape,
@@ -6,7 +6,7 @@ import {
   UIScreenSpaceShape,
   UIShape
 } from 'decentraland-ecs/src/decentraland/UIShapes'
-import { DecentralandInterface } from 'decentraland-ecs/src/decentraland/Types'
+import { DecentralandInterface, IEvents } from 'decentraland-ecs/src/decentraland/Types'
 
 declare var dcl: DecentralandInterface
 declare var require: any
@@ -47,7 +47,7 @@ function createAvatar(parent: UIShape) {
   return { component }
 }
 
-function createWinkButton(parent: UIShape, click: (event: IInteractionEvent) => void) {
+function createWinkButton(parent: UIShape, click: (event: IEvents['onClick']) => void) {
   const component = new UIImageShape(parent)
   component.id = 'wink'
   component.width = '48px'
@@ -66,7 +66,7 @@ function createWinkButton(parent: UIShape, click: (event: IInteractionEvent) => 
   return { component, entity }
 }
 
-function createFriendButton(parent: UIShape, click: (event: IInteractionEvent) => void) {
+function createFriendButton(parent: UIShape, click: (event: IEvents['onClick']) => void) {
   const component = new UIImageShape(parent)
   component.id = 'friend'
   component.width = '48px'
@@ -86,7 +86,7 @@ function createFriendButton(parent: UIShape, click: (event: IInteractionEvent) =
   return { component, entity }
 }
 
-function createMuteButton(parent: UIShape, click: (event: IInteractionEvent) => void) {
+function createMuteButton(parent: UIShape, click: (event: IEvents['onClick']) => void) {
   const component = new UIImageShape(parent)
   component.id = 'mute'
   component.width = '52px'
@@ -105,7 +105,7 @@ function createMuteButton(parent: UIShape, click: (event: IInteractionEvent) => 
   return { component, entity }
 }
 
-function createBlockButton(parent: UIShape, click: (event: IInteractionEvent) => void) {
+function createBlockButton(parent: UIShape, click: (event: IEvents['onClick']) => void) {
   const component = new UIImageShape(parent)
   component.id = 'block'
   component.width = '52px'
@@ -125,7 +125,7 @@ function createBlockButton(parent: UIShape, click: (event: IInteractionEvent) =>
   return { component, entity }
 }
 
-function createCloseButton(parent: UIShape, click: (event: IInteractionEvent) => void) {
+function createCloseButton(parent: UIShape, click: (event: IEvents['onClick']) => void) {
   const component = new UIImageShape(parent)
   component.id = 'close'
   component.width = '48px'

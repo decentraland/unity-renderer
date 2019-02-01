@@ -8553,35 +8553,6 @@
         }
       }
     },
-    "IInteractionEvent": {
-      "kind": "interface",
-      "extends": "",
-      "implements": "",
-      "typeParameters": [],
-      "deprecatedMessage": [],
-      "summary": [],
-      "remarks": [],
-      "isBeta": false,
-      "isSealed": false,
-      "members": {
-        "pointerId": {
-          "kind": "property",
-          "signature": "pointerId: number;",
-          "isOptional": false,
-          "isReadOnly": false,
-          "isStatic": false,
-          "type": "number",
-          "deprecatedMessage": [],
-          "summary": [],
-          "remarks": [],
-          "isBeta": false,
-          "isSealed": false,
-          "isVirtual": false,
-          "isOverride": false,
-          "isEventProperty": false
-        }
-      }
-    },
     "Input": {
       "kind": "class",
       "extends": "",
@@ -15446,7 +15417,9 @@
       "kind": "class",
       "extends": "ObservableComponent",
       "implements": "",
-      "typeParameters": [],
+      "typeParameters": [
+        "T extends keyof IEvents"
+      ],
       "deprecatedMessage": [],
       "summary": [],
       "remarks": [],
@@ -15455,14 +15428,14 @@
       "members": {
         "__constructor": {
           "kind": "constructor",
-          "signature": "constructor(callback: (event: IInteractionEvent) => void);",
+          "signature": "constructor(callback: (event: IEvents[T]) => void);",
           "parameters": {
             "callback": {
               "name": "callback",
               "description": [],
               "isOptional": false,
               "isSpread": false,
-              "type": "(event: IInteractionEvent) => void"
+              "type": "(event: IEvents[T]) => void"
             }
           },
           "deprecatedMessage": [],
@@ -22976,7 +22949,7 @@
           "isOptional": false,
           "isReadOnly": false,
           "isStatic": false,
-          "type": "{\n        [uuid: string]: OnUUIDEvent;\n    }",
+          "type": "{\n        [uuid: string]: OnUUIDEvent<any>;\n    }",
           "deprecatedMessage": [],
           "summary": [],
           "remarks": [],

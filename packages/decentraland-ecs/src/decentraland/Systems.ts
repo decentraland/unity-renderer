@@ -11,7 +11,7 @@ declare var dcl: DecentralandInterface | void
  * @public
  */
 export class UUIDEventSystem implements ISystem {
-  handlerMap: { [uuid: string]: OnUUIDEvent } = {}
+  handlerMap: { [uuid: string]: OnUUIDEvent<any> } = {}
 
   activate(engine: Engine) {
     engine.eventManager.addListener(UUIDEvent, this, this.handleEvent)

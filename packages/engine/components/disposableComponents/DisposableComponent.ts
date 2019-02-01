@@ -94,6 +94,7 @@ export abstract class BasicShape<T> extends DisposableComponent {
       const model = this.generateModel()
 
       model.actionManager = entity.getActionManager()
+      model.isPickable = true
 
       entity.setObject3D(BasicShape.nameInEntity, model)
 

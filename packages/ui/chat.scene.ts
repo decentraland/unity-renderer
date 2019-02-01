@@ -1,5 +1,5 @@
-import { DecentralandInterface } from 'decentraland-ecs/src/decentraland/Types'
-import { Entity, engine, OnChanged, OnClick, executeTask, IInteractionEvent } from 'decentraland-ecs/src'
+import { DecentralandInterface, IEvents } from 'decentraland-ecs/src/decentraland/Types'
+import { Entity, engine, OnChanged, OnClick, executeTask } from 'decentraland-ecs/src'
 import {
   UIImageShape,
   UIInputTextShape,
@@ -41,7 +41,7 @@ function uuid() {
 
 // UI creators -------------------
 
-function createMinimizeButton(parent: UIShape, click: (ev: IInteractionEvent) => void) {
+function createMinimizeButton(parent: UIShape, click: (ev: IEvents['onClick']) => void) {
   const component = new UIImageShape(parent)
   component.id = 'minimize-icon'
   component.width = '20px'
@@ -64,7 +64,7 @@ function createMinimizeButton(parent: UIShape, click: (ev: IInteractionEvent) =>
   return { entity, component }
 }
 
-function createSendButton(parent: UIShape, click: (ev: IInteractionEvent) => void) {
+function createSendButton(parent: UIShape, click: (ev: IEvents['onClick']) => void) {
   const component = new UIImageShape(parent)
   component.id = 'send-icon'
   component.width = '23px'
@@ -86,7 +86,7 @@ function createSendButton(parent: UIShape, click: (ev: IInteractionEvent) => voi
   return { entity, component }
 }
 
-function createHelpButton(parent: UIShape, click: (ev: IInteractionEvent) => void) {
+function createHelpButton(parent: UIShape, click: (ev: IEvents['onClick']) => void) {
   const component = new UIImageShape(parent)
   component.id = 'help-icon'
   component.width = '23px'
@@ -108,7 +108,7 @@ function createHelpButton(parent: UIShape, click: (ev: IInteractionEvent) => voi
   return { entity, component }
 }
 
-function createCloseButton(parent: UIShape, click: (ev: IInteractionEvent) => void) {
+function createCloseButton(parent: UIShape, click: (ev: IEvents['onClick']) => void) {
   const component = new UIImageShape(parent)
   component.id = 'close-icon'
   component.width = '20px'
@@ -131,7 +131,7 @@ function createCloseButton(parent: UIShape, click: (ev: IInteractionEvent) => vo
   return { entity, component }
 }
 
-function createHelpCloseButton(parent: UIShape, click: (data: IInteractionEvent) => void) {
+function createHelpCloseButton(parent: UIShape, click: (data: IEvents['onClick']) => void) {
   const component = new UIImageShape(parent)
   component.id = 'help-close-icon'
   component.width = '25px'
@@ -154,7 +154,7 @@ function createHelpCloseButton(parent: UIShape, click: (data: IInteractionEvent)
   return { entity, component }
 }
 
-function createTextInput(parent: UIShape, changed: (ev: IInteractionEvent) => void) {
+function createTextInput(parent: UIShape, changed: (ev: IEvents['onChange']) => void) {
   const component = new UIInputTextShape(parent)
   component.id = 'input'
   component.autoStretchWidth = false
@@ -228,7 +228,7 @@ function createMessage(parent: UIShape, props: { sender: string; message: string
   return { component }
 }
 
-function createMessagesScrollbar(parent: UIShape, changed: (ev: IInteractionEvent) => void) {
+function createMessagesScrollbar(parent: UIShape, changed: (ev: IEvents['onChange']) => void) {
   const component = new UISliderShape(parent)
   component.id = 'slider'
   component.height = '170px'

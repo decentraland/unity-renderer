@@ -1304,6 +1304,22 @@ declare class GLTFShape extends Shape {
   constructor(src: string)
 }
 
+declare type GizmoDragEndEvent = {
+  type: 'gizmoDragEnded'
+  transform: {
+    position: ReadOnlyVector3
+    rotation: ReadOnlyQuaternion
+    scale: ReadOnlyVector3
+  }
+  entityId: string
+}
+
+declare type GizmoSelectedEvent = {
+  type: 'gizmoSelected'
+  gizmoType: 'MOVE' | 'ROTATE' | 'SCALE'
+  entityId: string
+}
+
 /**
  * Enables gizmos in the entity. Gizmos only work in EDITOR, PREVIEW or DEBUG modes.
  * @beta
@@ -1335,11 +1351,124 @@ declare interface IEventConstructor<T> {
   new (...args: any[]): T
 }
 
-/**
- * @public
- */
-declare interface IInteractionEvent {
-  pointerId: number
+declare interface IEvents {
+  /**
+   * `positionChanged` is triggered when the position of the camera changes
+   * This event is throttled to 10 times per second.
+   */
+  positionChanged: {
+    /** Position relative to the base parcel of the scene */
+    position: ReadOnlyVector3
+    /** Camera position, this is a absolute world position */
+    cameraPosition: ReadOnlyVector3
+    /** Eye height, in meters. */
+    playerHeight: number
+  }
+  /**
+   * `rotationChanged` is triggered when the rotation of the camera changes.
+   * This event is throttled to 10 times per second.
+   */
+  rotationChanged: {
+    /** {X,Y,Z} Degree vector. Same as entities */
+    rotation: ReadOnlyVector3
+    /** Rotation quaternion, useful in some scenarios. */
+    quaternion: ReadOnlyQuaternion
+  }
+  /**
+   * `click` is triggered when a user points and the ray (from mouse or controller) hits the entity.
+   * Notice: Only entities with ID will be listening for click events.
+   */
+  click: {
+    /** ID of the entitiy of the event */
+    entityId: string
+    /** ID of the pointer that triggered the event */
+    pointerId: number
+  }
+  /**
+   * `pointerUp` is triggered when the user releases an input pointer.
+   * It could be a VR controller, a touch screen or the mouse.
+   */
+  pointerUp: PointerEvent_2
+  /**
+   * `pointerDown` is triggered when the user press an input pointer.
+   * It could be a VR controller, a touch screen or the mouse.
+   */
+  pointerDown: PointerEvent_2
+  /**
+   * `chatMessage` is triggered when the user sends a message through chat entity.
+   */
+  chatMessage: {
+    id: string
+    sender: string
+    message: string
+    isCommand: boolean
+  }
+  /**
+   * `onChange` is triggered when an entity changes its own internal state.
+   * Dispatched by the `ui-*` entities when their value is changed. It triggers a callback.
+   * Notice: Only entities with ID will be listening for click events.
+   */
+  onChange: {
+    value?: any
+    /** ID of the pointer that triggered the event */
+    pointerId?: number
+  }
+  /**
+   * `onFocus` is triggered when an entity focus is active.
+   * Dispatched by the `ui-input` and `ui-password` entities when the value is changed.
+   * It triggers a callback.
+   *
+   * Notice: Only entities with ID will be listening for click events.
+   */
+  onFocus: {
+    /** ID of the entitiy of the event */
+    entityId: string
+    /** ID of the pointer that triggered the event */
+    pointerId: number
+  }
+  /**
+   * `onBlur` is triggered when an entity loses its focus.
+   * Dispatched by the `ui-input` and `ui-password` entities when the value is changed.
+   *  It triggers a callback.
+   *
+   * Notice: Only entities with ID will be listening for click events.
+   */
+  onBlur: {
+    /** ID of the entitiy of the event */
+    entityId: string
+    /** ID of the pointer that triggered the event */
+    pointerId: number
+  }
+  onClick: {
+    entityId: string
+    pointerId: number
+  }
+  /**
+   * This event gets triggered when an entity leaves the scene fences.
+   */
+  entityOutOfScene: {
+    entityId: string
+  }
+  /**
+   * This event gets triggered when an entity enters the scene fences.
+   */
+  entityBackInScene: {
+    entityId: string
+  }
+  uuidEvent: {
+    uuid: string
+    payload: any
+  }
+  metricsUpdate: {
+    given: Record<string, number>
+    limit: Record<string, number>
+  }
+  limitsExceeded: {
+    given: Record<string, number>
+    limit: Record<string, number>
+  }
+  /** For gizmos */
+  gizmoEvent: GizmoDragEndEvent | GizmoSelectedEvent
 }
 
 /**
@@ -2348,28 +2477,28 @@ declare type ObservableComponentSubscription = (key: string, newVal: any, oldVal
 /**
  * @public
  */
-declare class OnBlur extends OnUUIDEvent {
+declare class OnBlur extends OnUUIDEvent<'onBlur'> {
   readonly type: string
 }
 
 /**
  * @public
  */
-declare class OnChanged extends OnUUIDEvent {
+declare class OnChanged extends OnUUIDEvent<'onChange'> {
   readonly type: string
 }
 
 /**
  * @public
  */
-declare class OnClick extends OnUUIDEvent {
+declare class OnClick extends OnUUIDEvent<'onClick'> {
   readonly type: string
 }
 
 /**
  * @public
  */
-declare class OnFocus extends OnUUIDEvent {
+declare class OnFocus extends OnUUIDEvent<'onFocus'> {
   readonly type: string
 }
 
@@ -2377,18 +2506,18 @@ declare class OnFocus extends OnUUIDEvent {
  * This event is triggered after the user finalizes dragging a gizmo.
  * @beta
  */
-declare class OnGizmoEvent extends OnUUIDEvent {
+declare class OnGizmoEvent extends OnUUIDEvent<'gizmoEvent'> {
   readonly type: string
 }
 
 /**
  * @public
  */
-declare class OnUUIDEvent extends ObservableComponent {
+declare class OnUUIDEvent<T extends keyof IEvents> extends ObservableComponent {
   readonly type: string | undefined
   readonly uuid: string
   callback: (event: any) => void
-  constructor(callback: (event: IInteractionEvent) => void)
+  constructor(callback: (event: IEvents[T]) => void)
   toJSON(): {
     uuid: string
     type: string | undefined
@@ -2693,6 +2822,17 @@ declare type PointerEvent = {
   length: number
   /** ID of the pointer that triggered the event */
   pointerId: Pointer
+}
+
+declare type PointerEvent_2 = {
+  /** Origin of the ray */
+  from: ReadOnlyVector3
+  /** Direction vector of the ray (normalized) */
+  direction: ReadOnlyVector3
+  /** Length of the ray */
+  length: number
+  /** ID of the pointer that triggered the event */
+  pointerId: number
 }
 
 /**
@@ -3537,7 +3677,7 @@ declare class UUIDEvent<T = any> {
  */
 declare class UUIDEventSystem implements ISystem {
   handlerMap: {
-    [uuid: string]: OnUUIDEvent
+    [uuid: string]: OnUUIDEvent<any>
   }
   activate(engine: Engine): void
   deactivate(): void

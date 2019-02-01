@@ -139,39 +139,6 @@
   },
   {
     "publisher": "0x0f5d2fb29fb7d3cfee444a200298f468908cc942",
-    "parcel_id": "-2,-27",
-    "root_cid": "Qm2grbLDGst7kTpLmDWyXRrLeQfXuph6ZuJxsDzaWHka6ftxcfNXfaBj8UdTnM8Yz11XQVxguQV9CaiWAeNzbpg1vJ",
-    "contents": {
-      "game.js": "Qm3W7uCBywafjgqyduGSRoUH78vpgE4ukpCmqDoZoR4KvwT7DNBRWKGJybYWS9PboX5WXKMYZV3TtS6XFo9tToUp1G",
-      "game.ts": "Qm2YL7fSPYS5TM7Az9EDVPKGP9W3SvMNBx6x6N4TmRmsihM5T1xJWCKrAwhcK3dkqHGw7f9ud1CXFZsHKQzdjeCiPZ",
-      "scene.json": "Qm25Yzc7QRtLjpdTfKUa4Cd8cV66bptqD9fPMnrTFmhoMXKmDqRwEa1RhVZtz8Y2uZq9FfnRLQ12rarYkB2Gs4iLoM",
-      "tsconfig.json": "Qm2eQbrFKio8vs6E5PeVvgKcznHTHfc8xKyj63zz61MCXvJ6DZGNBR7EQfBbRNdbdc4Ezr91FYPaZWCWxZqaEAs2uy"
-    }
-  },
-  {
-    "publisher": "0x0f5d2fb29fb7d3cfee444a200298f468908cc942",
-    "parcel_id": "-1,-28",
-    "root_cid": "Qm2grbLDGst7kTpLmDWyXRrLeQfXuph6ZuJxsDzaWHka6ftxcfNXfaBj8UdTnM8Yz11XQVxguQV9CaiWAeNzbpg1vJ",
-    "contents": {
-      "game.js": "Qm3W7uCBywafjgqyduGSRoUH78vpgE4ukpCmqDoZoR4KvwT7DNBRWKGJybYWS9PboX5WXKMYZV3TtS6XFo9tToUp1G",
-      "game.ts": "Qm2YL7fSPYS5TM7Az9EDVPKGP9W3SvMNBx6x6N4TmRmsihM5T1xJWCKrAwhcK3dkqHGw7f9ud1CXFZsHKQzdjeCiPZ",
-      "scene.json": "Qm25Yzc7QRtLjpdTfKUa4Cd8cV66bptqD9fPMnrTFmhoMXKmDqRwEa1RhVZtz8Y2uZq9FfnRLQ12rarYkB2Gs4iLoM",
-      "tsconfig.json": "Qm2eQbrFKio8vs6E5PeVvgKcznHTHfc8xKyj63zz61MCXvJ6DZGNBR7EQfBbRNdbdc4Ezr91FYPaZWCWxZqaEAs2uy"
-    }
-  },
-  {
-    "publisher": "0x0f5d2fb29fb7d3cfee444a200298f468908cc942",
-    "parcel_id": "-2,-28",
-    "root_cid": "Qm2grbLDGst7kTpLmDWyXRrLeQfXuph6ZuJxsDzaWHka6ftxcfNXfaBj8UdTnM8Yz11XQVxguQV9CaiWAeNzbpg1vJ",
-    "contents": {
-      "game.js": "Qm3W7uCBywafjgqyduGSRoUH78vpgE4ukpCmqDoZoR4KvwT7DNBRWKGJybYWS9PboX5WXKMYZV3TtS6XFo9tToUp1G",
-      "game.ts": "Qm2YL7fSPYS5TM7Az9EDVPKGP9W3SvMNBx6x6N4TmRmsihM5T1xJWCKrAwhcK3dkqHGw7f9ud1CXFZsHKQzdjeCiPZ",
-      "scene.json": "Qm25Yzc7QRtLjpdTfKUa4Cd8cV66bptqD9fPMnrTFmhoMXKmDqRwEa1RhVZtz8Y2uZq9FfnRLQ12rarYkB2Gs4iLoM",
-      "tsconfig.json": "Qm2eQbrFKio8vs6E5PeVvgKcznHTHfc8xKyj63zz61MCXvJ6DZGNBR7EQfBbRNdbdc4Ezr91FYPaZWCWxZqaEAs2uy"
-    }
-  },
-  {
-    "publisher": "0x0f5d2fb29fb7d3cfee444a200298f468908cc942",
     "parcel_id": "-1,-30",
     "root_cid": "Qm5CZ2xoy9pn87X9RYuDqLJXUufUvNQqRd7uBSbLHTynpSxyiZohTdWyTFaK7ieoErz5wbdFwSSd76952K5EMm7kKW",
     "contents": [
@@ -2458,6 +2425,10 @@
         "hash": "Qm3PAWmzDGd9HUySiuPTJmM37BYnu8ABX6Zu2mqh8c3CEQM7s9v65VQNDuqr8prJXtc2q7gg5yr2EXhWVahW2XyKR6"
       },
       {
+        "file": "scene.js",
+        "hash": "Qm4S12WBCm91dFxVHsWdGAdtceNwfEAA7Bm5G3MMaBZfab5kzQDaguFzfhSnC8PyLWfpRdGJALN3oqvAjKfpoemZwd"
+      },
+      {
         "file": "scene.json",
         "hash": "Qm4DD2U2euwyAFZVqEAYHBivjHL3dio34XgP5Erj9r8iV4dyvQe6WHkKKzEFQdyYn8jQ2os8WzgZFqMJbjkXgYzTwN"
       }
@@ -2979,6 +2950,29 @@
       {
         "file": "tsconfig.json",
         "hash": "Qm2ko8HNC9m8yHfqsuH76wsZYhhJajEYRVFYkypCsJQKeM18MyN5E3PfE2pLqARqnxD3UNApvg1XYnYFxw8Rkdouhm"
+      }
+    ]
+  },
+  {
+    "publisher": "0x0f5d2fb29fb7d3cfee444a200298f468908cc942",
+    "parcel_id": "-102,102",
+    "root_cid": "Qm27n9W8iHC84Jd491N78rhbFvS2YQtmax4RfvEA7c9K8x8vuEbkNPAR2PpdoXvg6wwAw51V4oXxfMVsbHahFCv8S1",
+    "contents": [
+      {
+        "file": "game.js",
+        "hash": "Qm43TB7FfporLaexY2g6oKfyEHgo4YVTmNrMvrpGDA6UXUMETRk2UUDe6JBaoLdih1wnk3nzV5fr4SSPDiZTSKVSkY"
+      },
+      {
+        "file": "game.ts",
+        "hash": "Qm2yqpAkLh8oJ2VnRQtFkwM9vrJUuCBNvdj6kNb5Ztavfobnwkspwj4NUontum8dFfDFncEX5DPMJuL4ynnnnWn6Ln"
+      },
+      {
+        "file": "scene.json",
+        "hash": "Qm5tuqwWNzEuZFNRP8sBjVtSqjh95LXBViBEbXXzfrEbKh1Ych9Km7dUgEzXng3MzhgG42sUtni424AfLTiB6QGYoN"
+      },
+      {
+        "file": "tsconfig.json",
+        "hash": "Qm2FHucnUuQKu4FBawgfx43DXJ7bu96mwW8tYyYP1UHwybVLFfRLxKw2WFHDcwX8BRbYymAn9fob8YZczHzSkZxoaY"
       }
     ]
   },
@@ -3951,6 +3945,10 @@
     "parcel_id": "0,99",
     "root_cid": "Qm3oNzGkyY673CFFusY883dfL5DcQ9PPfFhQkeEup5cv6NC6NRuyN3C4hUbiZJ4RVhcipJVA7d76mEb6tRWdy2RsiT",
     "contents": [
+      {
+        "file": "scene.js",
+        "hash": "Qm2oryrBMgX5qhaPggxE2QkmWe55MoWJXFvoCWDbdpBNSd3J82HGMq1DkNtsi7osF3W1Yj9GZuSp3rDXcFDojhnuMa"
+      },
       {
         "file": "scene.json",
         "hash": "Qm3wMvbdfr76CHoxCiiTmyDsQ2Dk8ujvnt5td85tmy2hu6aamPq39Tqmux7YXjpXofSUs4nBYeZVV65yxPBzb5og5S"

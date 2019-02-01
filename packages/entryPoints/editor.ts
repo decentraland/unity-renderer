@@ -2,7 +2,7 @@ global['isEditor'] = window['isEditor'] = true
 
 import 'engine'
 
-import { initLocalPlayer, domReadyFuture, onWindowResize, scene } from '../engine/renderer'
+import { initLocalPlayer, domReadyFuture, onWindowResize } from '../engine/renderer'
 
 import { initBabylonClient } from '../dcl'
 import * as _envHelper from '../engine/renderer/envHelper'
@@ -20,22 +20,14 @@ import {
 import { SceneWorker } from '../shared/world/SceneWorker'
 import { WebGLParcelScene } from '../dcl/WebGLParcelScene'
 import { EventEmitter } from 'events'
-import { Vector3, Quaternion } from 'babylonjs'
 import { SharedSceneContext } from '../engine/entities/SharedSceneContext'
+import { vrCamera, arcCamera, DEFAULT_CAMERA_ZOOM } from '../engine/renderer/camera'
 import { setEditorEnvironment } from '../engine/renderer/ambientLights'
 import * as Gizmos from '../engine/components/ephemeralComponents/Gizmos'
-import { keyState, Keys } from '../engine/renderer/input'
 
 let didStartPosition = false
 
 const evtEmitter = new EventEmitter()
-
-const CAMERA_SPEED = 0.01
-
-const CAMERA_LEFT = Quaternion.RotationYawPitchRoll(Math.PI / 2, 0, 0)
-const CAMERA_RIGHT = Quaternion.RotationYawPitchRoll(-Math.PI / 2, 0, 0)
-const CAMERA_FORWARD = Quaternion.RotationYawPitchRoll(Math.PI, 0, 0)
-const CAMERA_BACKWARD = Quaternion.RotationYawPitchRoll(0, 0, 0)
 
 let cacheCheckIntervalInstance = null
 let webGlParcelScene: WebGLParcelScene | null = null
@@ -118,42 +110,8 @@ async function initializePreview(userScene: EnvironmentData<LoadableParcelScene>
   }
 }
 
-function applyQuaternion(v: BABYLON.Vector3, q: BABYLON.Quaternion) {
-  let x = v.x
-  let y = v.y
-  let z = v.z
-  let qx = q.x
-  let qy = q.y
-  let qz = q.z
-  let qw = q.w
-
-  // calculate quat * vector
-
-  let ix = qw * x + qy * z - qz * y
-  let iy = qw * y + qz * x - qx * z
-  let iz = qw * z + qx * y - qy * x
-  let iw = -qx * x - qy * y - qz * z
-
-  // calculate result * inverse quat
-
-  v.x = ix * qw + iw * -qx + iy * -qz - iz * -qy
-  v.y = iy * qw + iw * -qy + iz * -qx - ix * -qz
-  v.z = iz * qw + iw * -qz + ix * -qy - iy * -qx
-
-  return v
-}
-
-function moveCamera(camera: any, directionRotation: Quaternion, speed: number) {
-  const direction = camera.position.subtract(camera.target).normalize()
-  direction.y = 0
-  applyQuaternion(direction, directionRotation)
-  return direction.scaleInPlace(speed)
-}
-
 export namespace editor {
   export const babylon = BABYLON
-  export let vrCamera: BABYLON.Camera | null = null
-  export let arcCamera: BABYLON.ArcRotateCamera | null = null
 
   export async function handleMessage(message) {
     if (message.type === 'update') {
@@ -167,34 +125,16 @@ export namespace editor {
   }
 
   function configureEditorEnvironment(enabled: boolean) {
-    const target = new Vector3((parcelsX * 10) / 2, 0, (parcelsY * 10) / 2)
+    const target = new BABYLON.Vector3((parcelsX * 10) / 2, 0, (parcelsY * 10) / 2)
 
     setEditorEnvironment(enabled)
 
     if (enabled) {
-      getDCLCanvas()
-        .then(canvas => {
-          vrCamera.detachControl(canvas)
-          arcCamera.attachControl(canvas, true)
-        })
-        .catch(() => void 0)
-
-      arcCamera.target = target
-
-      scene.activeCamera = arcCamera
-      scene.cameraToUseForPointers = scene.activeCamera
+      arcCamera.target.copyFrom(target)
+      arcCamera.alpha = -Math.PI / 4
+      arcCamera.beta = Math.PI / 3
+      arcCamera.radius = DEFAULT_CAMERA_ZOOM
     } else {
-      getDCLCanvas()
-        .then(canvas => {
-          vrCamera.attachControl(canvas)
-          arcCamera.detachControl(canvas)
-        })
-        .catch(() => void 0)
-
-      vrCamera.position = target
-      scene.activeCamera = vrCamera
-      scene.cameraToUseForPointers = scene.activeCamera
-
       if (webGlParcelScene) {
         vrCamera.position.x = webGlParcelScene.worker.position.x + 5
         vrCamera.position.y = 1.6
@@ -240,67 +180,17 @@ export namespace editor {
     }
   }
 
-  async function initializeCamera() {
-    vrCamera = scene.activeCamera
-    arcCamera = new BABYLON.ArcRotateCamera(
-      'arc-camera',
-      -Math.PI / 4,
-      Math.PI / 3,
-      20,
-      new Vector3(5, 0, 5),
-      scene,
-      true
-    )
-
-    arcCamera.keysDown = []
-    arcCamera.keysUp = []
-    arcCamera.keysLeft = []
-    arcCamera.keysRight = []
-
-    arcCamera.onAfterCheckInputsObservable.add(() => {
-      if (arcCamera === scene.activeCamera) {
-        if (keyState[Keys.KEY_LEFT]) {
-          arcCamera.target.addInPlace(moveCamera(arcCamera, CAMERA_LEFT, CAMERA_SPEED * engine.getDeltaTime()))
-        }
-
-        if (keyState[Keys.KEY_RIGHT]) {
-          arcCamera.target.addInPlace(moveCamera(arcCamera, CAMERA_RIGHT, CAMERA_SPEED * engine.getDeltaTime()))
-        }
-
-        if (keyState[Keys.KEY_UP]) {
-          arcCamera.target.addInPlace(moveCamera(arcCamera, CAMERA_FORWARD, CAMERA_SPEED * engine.getDeltaTime()))
-        }
-
-        if (keyState[Keys.KEY_DOWN]) {
-          arcCamera.target.addInPlace(moveCamera(arcCamera, CAMERA_BACKWARD, CAMERA_SPEED * engine.getDeltaTime()))
-        }
-      }
-    })
-
-    arcCamera.upperBetaLimit = Math.PI / 2
-    arcCamera.allowUpsideDown = false
-    arcCamera.panningDistanceLimit = 20
-    arcCamera.pinchPrecision = 150
-    arcCamera.wheelPrecision = 150
-    arcCamera.lowerRadiusLimit = 10
-  }
-
   export async function initEngine(px: number = 1, py: number = 1) {
     parcelsX = px
     parcelsY = py
 
     await initBabylonClient()
-    await initializeCamera()
     configureEditorEnvironment(true)
     engine.setHardwareScalingLevel(0.5)
   }
 
-  export function selectGizmo(type: Gizmos.Gizmo | null) {
+  export function selectGizmo(type: Gizmos.Gizmo) {
     Gizmos.selectGizmo(type)
-  }
-
-  export function disableGizmo() {
-    Gizmos.gizmoManager.attachToMesh(null)
   }
 
   export async function setPlayMode(on: boolean) {
@@ -319,8 +209,12 @@ export namespace editor {
     evtEmitter.removeListener(evt, listener)
   }
 
-  export function setCameraZoom(zoom: number) {
-    arcCamera.radius = zoom
+  export function setCameraZoomDelta(delta: number) {
+    arcCamera.radius += delta
+  }
+
+  export function resetCameraZoom() {
+    arcCamera.radius = DEFAULT_CAMERA_ZOOM
   }
 
   export function setCameraRotation(alpha: number) {

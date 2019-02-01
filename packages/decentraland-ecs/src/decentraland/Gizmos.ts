@@ -6,7 +6,7 @@ import { CLASS_ID, OnUUIDEvent } from './Components'
  * @beta
  */
 @Component('engine.gizmoEvent', CLASS_ID.UUID_CALLBACK)
-export class OnGizmoEvent extends OnUUIDEvent {
+export class OnGizmoEvent extends OnUUIDEvent<'gizmoEvent'> {
   @ObservableComponent.readonly
   readonly type: string = 'gizmoEvent'
 }

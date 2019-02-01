@@ -1,9 +1,10 @@
 import * as BABYLON from 'babylonjs'
 import { parcelLimits, DEBUG, visualConfigurations } from 'config'
-import { scene, vrHelper } from './init'
+import { scene } from './init'
 import { EnvironmentHelper, skyMaterial2 } from './envHelper'
 import { ambientConfigurations } from './ambientConfigurations'
 import { createCrossHair } from './controls/fpsCrossHair'
+import { setCamera, vrCamera } from './camera'
 
 export const hemiLight = new BABYLON.HemisphericLight('default light', ambientConfigurations.sunPosition, scene)
 
@@ -29,15 +30,13 @@ const skybox = BABYLON.MeshBuilder.CreateSphere(
 
 export const checkerboardMaterial = new BABYLON.GridMaterial('checkerboard', scene)
 
-{
-  crossHair.parent = vrHelper.deviceOrientationCamera
-}
-
 let sunInclination = -0.31
 
 /// --- SIDE EFFECT ---
 
 {
+  crossHair.parent = vrCamera
+
   checkerboardMaterial.gridRatio = 1
   checkerboardMaterial.mainColor = BABYLON.Color3.Gray()
   checkerboardMaterial.lineColor = BABYLON.Color3.White()
@@ -72,12 +71,14 @@ let sunInclination = -0.31
   if (DEBUG) {
     // tslint:disable-next-line:semicolon
     ;(window as any)['setSunInclination'] = setSunInclination
+    ;(window as any)['setEditorEnvironment'] = setEditorEnvironment
   }
 }
 
 /// --- EXPORTS ---
 
 export function setEditorEnvironment(enabled: boolean) {
+  setCamera(enabled)
   if (enabled) {
     if (!editorEnvHelper) {
       const editorColor = BABYLON.Color3.FromHexString('#0e0c12')

@@ -20,7 +20,7 @@ import { reposition } from 'engine/renderer/ambientLights'
 import { DebugTelemetry, instrumentTelemetry } from 'atomicHelpers/DebugTelemetry'
 
 import { quaternionToRotationBABYLON } from 'atomicHelpers/math'
-import { camera } from 'engine/renderer/camera'
+import { vrCamera } from 'engine/renderer/camera'
 
 import { isMobile } from 'shared/comms/mobile'
 
@@ -41,8 +41,8 @@ const _render = instrumentTelemetry('render', function() {
   try {
     TWEEN.update()
 
-    if (camera.position.y < -64) {
-      camera.position.y = 10
+    if (vrCamera.position.y < -64) {
+      vrCamera.position.y = 10
       return
     }
 

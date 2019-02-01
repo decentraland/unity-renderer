@@ -2,13 +2,7 @@ import { Component, ObservableComponent, DisposableComponent } from '../ecs/Comp
 import { Vector3, Quaternion, Matrix, MathTmp, Color3 } from './math'
 import { AnimationClip } from './AnimationClip'
 import { uuid } from '../ecs/helpers'
-
-/**
- * @public
- */
-export interface IInteractionEvent {
-  pointerId: number
-}
+import { IEvents } from './Types'
 
 export type TranformConstructorArgs = {
   position?: Vector3
@@ -670,7 +664,7 @@ export class BasicMaterial extends ObservableComponent {
 /**
  * @public
  */
-export class OnUUIDEvent extends ObservableComponent {
+export class OnUUIDEvent<T extends keyof IEvents> extends ObservableComponent {
   readonly type: string | undefined
 
   readonly uuid: string = uuid()
@@ -678,7 +672,7 @@ export class OnUUIDEvent extends ObservableComponent {
   @ObservableComponent.field
   callback!: (event: any) => void
 
-  constructor(callback: (event: IInteractionEvent) => void) {
+  constructor(callback: (event: IEvents[T]) => void) {
     super()
 
     if (!callback || !('apply' in callback) || !('call' in callback)) {
@@ -698,7 +692,7 @@ export class OnUUIDEvent extends ObservableComponent {
  * @public
  */
 @Component('engine.onClick', CLASS_ID.UUID_CALLBACK)
-export class OnClick extends OnUUIDEvent {
+export class OnClick extends OnUUIDEvent<'onClick'> {
   @ObservableComponent.readonly
   readonly type: string = 'onClick'
 }
@@ -707,7 +701,7 @@ export class OnClick extends OnUUIDEvent {
  * @public
  */
 @Component('engine.onChange', CLASS_ID.UUID_CALLBACK)
-export class OnChanged extends OnUUIDEvent {
+export class OnChanged extends OnUUIDEvent<'onChange'> {
   @ObservableComponent.readonly
   readonly type: string = 'onChange'
 }
@@ -716,7 +710,7 @@ export class OnChanged extends OnUUIDEvent {
  * @public
  */
 @Component('engine.onFocus', CLASS_ID.UUID_CALLBACK)
-export class OnFocus extends OnUUIDEvent {
+export class OnFocus extends OnUUIDEvent<'onFocus'> {
   @ObservableComponent.readonly
   readonly type: string = 'onFocus'
 }
@@ -725,7 +719,7 @@ export class OnFocus extends OnUUIDEvent {
  * @public
  */
 @Component('engine.onBlur', CLASS_ID.UUID_CALLBACK)
-export class OnBlur extends OnUUIDEvent {
+export class OnBlur extends OnUUIDEvent<'onBlur'> {
   @ObservableComponent.readonly
   readonly type: string = 'onBlur'
 }

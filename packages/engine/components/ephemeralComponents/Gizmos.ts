@@ -5,44 +5,79 @@ import { BaseEntity } from 'engine/entities/BaseEntity'
 export enum Gizmo {
   MOVE = 'MOVE',
   ROTATE = 'ROTATE',
-  SCALE = 'SCALE'
+  SCALE = 'SCALE',
+  NONE = 'NONE'
+}
+
+type GizmoConfiguration = {
+  position: boolean
+  rotation: boolean
+  scale: boolean
+  updateEntity: boolean
 }
 
 export const gizmoManager = new BABYLON.GizmoManager(scene)
 gizmoManager.positionGizmoEnabled = true
 gizmoManager.rotationGizmoEnabled = true
+gizmoManager.boundingBoxGizmoEnabled = false
 gizmoManager.scaleGizmoEnabled = true
 
 gizmoManager.usePointerToAttachGizmos = false
 
+const defaultValue: GizmoConfiguration = {
+  position: true,
+  rotation: true,
+  scale: true,
+  updateEntity: true
+}
+
 let activeEntity: BaseEntity = null
 let selectedGizmo: Gizmo = Gizmo.MOVE
+let currentConfiguration = defaultValue
 
 function switchGizmo() {
-  // TODO enable gizmo switching
-  // 1 return selectedGizmo === 'translate' ? 'rotate' : 'translate'
-  return Gizmo.MOVE
+  let nextGizmo = selectedGizmo
+
+  switch (nextGizmo) {
+    case Gizmo.NONE:
+    case Gizmo.MOVE:
+      if (currentConfiguration.rotation) {
+        nextGizmo = Gizmo.ROTATE
+        break
+      }
+    // tslint:disable-next-line:no-switch-case-fall-through
+    case Gizmo.ROTATE:
+      if (currentConfiguration.scale) {
+        nextGizmo = Gizmo.SCALE
+        break
+      }
+    // tslint:disable-next-line:no-switch-case-fall-through
+    case Gizmo.SCALE:
+      if (currentConfiguration.position) {
+        nextGizmo = Gizmo.MOVE
+        break
+      }
+    // tslint:disable-next-line:no-switch-case-fall-through
+    default:
+      if (currentConfiguration.rotation) {
+        nextGizmo = Gizmo.ROTATE
+      } else {
+        nextGizmo = Gizmo.NONE
+      }
+      break
+  }
+
+  return nextGizmo
 }
 
 {
-  let tmpMatrix = new BABYLON.Matrix()
-
-  let initialRotation: BABYLON.Quaternion
-
   gizmoManager.gizmos.positionGizmo.onDragEndObservable.add(() => {
-    let final = activeEntity.position.clone()
-    let deltaPosition = new BABYLON.Vector3()
-    activeEntity.computeWorldMatrix().invertToRef(tmpMatrix)
-    tmpMatrix.setTranslationFromFloats(0, 0, 0)
-
-    const delta = activeEntity.getObject3D('gizmoMesh').position
-    BABYLON.Vector3.TransformCoordinatesToRef(delta, tmpMatrix, deltaPosition)
-    delta.set(0, 0, 0)
+    if (!activeEntity) return
 
     activeEntity.dispatchUUIDEvent('gizmoEvent', {
       type: 'gizmoDragEnded',
       transform: {
-        position: final.addInPlace(deltaPosition),
+        position: activeEntity.position,
         rotation: activeEntity.rotationQuaternion,
         scale: activeEntity.scaling
       },
@@ -50,35 +85,28 @@ function switchGizmo() {
     })
   })
 
-  gizmoManager.gizmos.rotationGizmo.onDragStartObservable.add(() => {
-    const gizmoMesh = (activeEntity.getObject3D('gizmoMesh') as BABYLON.AbstractMesh) || null
-
-    if (!gizmoMesh) return
-    if (!gizmoMesh.rotationQuaternion) {
-      gizmoMesh.rotationQuaternion = BABYLON.Quaternion.RotationYawPitchRoll(
-        gizmoMesh.rotation.y,
-        gizmoMesh.rotation.x,
-        gizmoMesh.rotation.z
-      )
-    }
-
-    initialRotation = gizmoMesh.rotationQuaternion
-  })
-
-  gizmoManager.gizmos.rotationGizmo.onDragEndObservable.add(() => {
-    const gizmoMesh = (activeEntity.getObject3D('gizmoMesh') as BABYLON.AbstractMesh) || null
-
-    if (!gizmoMesh) return
-
-    const finalRotation = gizmoMesh.rotationQuaternion.clone()
-
-    gizmoMesh.rotationQuaternion.copyFrom(initialRotation)
+  gizmoManager.gizmos.scaleGizmo.onDragEndObservable.add(() => {
+    if (!activeEntity) return
 
     activeEntity.dispatchUUIDEvent('gizmoEvent', {
       type: 'gizmoDragEnded',
       transform: {
         position: activeEntity.position,
-        rotation: finalRotation,
+        rotation: activeEntity.rotationQuaternion,
+        scale: activeEntity.scaling
+      },
+      entityId: activeEntity.uuid
+    })
+  })
+
+  gizmoManager.gizmos.rotationGizmo.onDragEndObservable.add(() => {
+    if (!activeEntity) return
+
+    activeEntity.dispatchUUIDEvent('gizmoEvent', {
+      type: 'gizmoDragEnded',
+      transform: {
+        position: activeEntity.position,
+        rotation: activeEntity.rotationQuaternion,
         scale: activeEntity.scaling
       },
       entityId: activeEntity.uuid
@@ -86,63 +114,88 @@ function switchGizmo() {
   })
 }
 
-export function selectGizmo(type: Gizmo | null) {
-  const gizmoMesh = (activeEntity.getObject3D('gizmoMesh') as BABYLON.AbstractMesh) || null
-
+export function selectGizmo(type: Gizmo) {
   selectedGizmo = type
 
-  if (type === Gizmo.MOVE) {
-    gizmoManager.gizmos.positionGizmo.attachedMesh = gizmoMesh
+  if (type === Gizmo.MOVE && currentConfiguration.position) {
+    gizmoManager.gizmos.positionGizmo.attachedMesh = activeEntity
     gizmoManager.gizmos.rotationGizmo.attachedMesh = null
     gizmoManager.gizmos.scaleGizmo.attachedMesh = null
-  } else if (type === Gizmo.ROTATE) {
+  } else if (type === Gizmo.ROTATE && currentConfiguration.rotation) {
     gizmoManager.gizmos.positionGizmo.attachedMesh = null
-    gizmoManager.gizmos.rotationGizmo.attachedMesh = gizmoMesh
+    gizmoManager.gizmos.rotationGizmo.attachedMesh = activeEntity
     gizmoManager.gizmos.scaleGizmo.attachedMesh = null
-  } else if (type === Gizmo.SCALE) {
+  } else if (type === Gizmo.SCALE && currentConfiguration.scale) {
     gizmoManager.gizmos.positionGizmo.attachedMesh = null
     gizmoManager.gizmos.rotationGizmo.attachedMesh = null
-    gizmoManager.gizmos.scaleGizmo.attachedMesh = gizmoMesh
+    gizmoManager.gizmos.scaleGizmo.attachedMesh = activeEntity
   } else {
     gizmoManager.gizmos.positionGizmo.attachedMesh = null
     gizmoManager.gizmos.rotationGizmo.attachedMesh = null
     gizmoManager.gizmos.scaleGizmo.attachedMesh = null
+    selectedGizmo = Gizmo.NONE
+    return false
   }
+  return true
 }
 
-export class Gizmos extends BaseComponent<any> {
-  transformValue(data: any) {
+export class Gizmos extends BaseComponent<GizmoConfiguration> {
+  transformValue(data: GizmoConfiguration) {
     return {
-      visible: !!data.visible,
-      currentGizmo: data.currentGizmo
+      ...defaultValue,
+      ...data
     }
   }
 
+  activate = () => {
+    this.configureGizmos()
+
+    if (this.entity === activeEntity) {
+      selectGizmo(switchGizmo())
+    } else {
+      activeEntity = this.entity
+      if (!selectGizmo(selectedGizmo)) {
+        selectGizmo(switchGizmo())
+      }
+    }
+
+    if (selectedGizmo !== Gizmo.NONE) {
+      activeEntity.dispatchUUIDEvent('gizmoEvent', {
+        type: 'gizmoSelected',
+        gizmoType: selectedGizmo,
+        entityId: this.entity.uuid
+      })
+    }
+  }
+
+  configureGizmos() {
+    currentConfiguration = this.value
+    const isWorldCoordinates = true
+    gizmoManager.gizmos.positionGizmo.updateGizmoPositionToMatchAttachedMesh = !isWorldCoordinates
+    gizmoManager.gizmos.positionGizmo.updateGizmoRotationToMatchAttachedMesh = !isWorldCoordinates
+    gizmoManager.gizmos.scaleGizmo.updateGizmoPositionToMatchAttachedMesh = !isWorldCoordinates
+    gizmoManager.gizmos.scaleGizmo.updateGizmoRotationToMatchAttachedMesh = !isWorldCoordinates
+    gizmoManager.gizmos.rotationGizmo.updateGizmoRotationToMatchAttachedMesh = !isWorldCoordinates
+    gizmoManager.gizmos.rotationGizmo.updateGizmoPositionToMatchAttachedMesh = !isWorldCoordinates
+  }
+
   update() {
+    if (this.entity === activeEntity) {
+      this.configureGizmos()
+    }
     // stub
   }
 
   attach(entity: BaseEntity) {
-    const gizmoMesh = BABYLON.MeshBuilder.CreateBox('gizmoMesh', {})
-    gizmoMesh.visibility = 0
-    entity.setObject3D('gizmoMesh', gizmoMesh)
-    entity.addListener('onClick', () => {
-      if (entity === activeEntity) {
-        selectGizmo(switchGizmo())
-      } else {
-        activeEntity = entity
-        selectGizmo(selectedGizmo)
-      }
-
-      activeEntity.dispatchUUIDEvent('gizmoEvent', {
-        type: 'gizmoSelected',
-        gizmoType: selectedGizmo,
-        entityId: entity.uuid
-      })
-    })
+    entity.addListener('onClick', this.activate)
   }
 
   detach() {
-    this.entity.removeObject3D('gizmoMesh')
+    // TODO: entity.removeListener('onClick', this.activate)
+    if (activeEntity === this.entity) {
+      gizmoManager.gizmos.positionGizmo.attachedMesh = null
+      gizmoManager.gizmos.rotationGizmo.attachedMesh = null
+      gizmoManager.gizmos.scaleGizmo.attachedMesh = null
+    }
   }
 }

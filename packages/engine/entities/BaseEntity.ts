@@ -29,7 +29,7 @@ function matrixWorldDidUpdate(entity: BaseEntity): void {
   }
 }
 
-export class BaseEntity extends BABYLON.TransformNode {
+export class BaseEntity extends BABYLON.AbstractMesh {
   get parentEntity(): BaseEntity {
     return findParentEntity(this)
   }
