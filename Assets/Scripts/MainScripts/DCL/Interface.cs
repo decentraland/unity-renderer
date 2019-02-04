@@ -15,6 +15,7 @@ namespace DCL.Interface
      */
     public static class WebInterface
     {
+        public static bool VERBOSE = false;
         public static System.Action<string, string> OnMessageFromEngine;
 
         [System.Serializable]
@@ -67,7 +68,7 @@ namespace DCL.Interface
         {
             if (OnMessageFromEngine != null)
                 OnMessageFromEngine.Invoke(type, message);
-            else
+            else if ( VERBOSE )
                 Debug.Log("MessageFromEngine called with: " + type + ", " + message);
         }
 #endif

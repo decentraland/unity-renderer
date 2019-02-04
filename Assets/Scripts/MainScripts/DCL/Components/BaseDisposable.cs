@@ -13,9 +13,8 @@ namespace DCL.Components
         public Coroutine routine = null;
         public abstract string componentName { get; }
 
-        public delegate void DisposableComponentEventDelegate(DecentralandEntity entity);
-        public event DisposableComponentEventDelegate OnAttach;
-        public event DisposableComponentEventDelegate OnDetach;
+        public event System.Action<DecentralandEntity> OnAttach;
+        public event System.Action<DecentralandEntity> OnDetach;
 
         private string oldSerialization = null;
 
@@ -35,40 +34,37 @@ namespace DCL.Components
 
         private void ApplyChangesIfModified(string newSerialization)
         {
-            if (newSerialization != oldSerialization)
+            if (newSerialization == oldSerialization)
+                return;
+
+            oldSerialization = newSerialization;
+
+            // We use the scene start coroutine because we need to divide the computing resources fairly
+            if (routine != null)
             {
-                //JsonUtility.FromJsonOverwrite(newSerialization, data);
-                oldSerialization = newSerialization;
+                scene.StopCoroutine(routine);
+                routine = null;
+            }
 
-                // We use the scene start coroutine because we need to divide the computing resources fairly
-                if (routine != null)
-                {
-                    scene.StopCoroutine(routine);
-                    routine = null;
-                }
-
-                var enumerator = ApplyChanges(newSerialization);
-                if (enumerator != null)
-                {
-                    // we don't want to start coroutines if we have early finalization in IEnumerators
-                    // ergo, we return null without yielding any result
-                    routine = scene.StartCoroutine(enumerator);
-                }
+            var enumerator = ApplyChanges(newSerialization);
+            if (enumerator != null)
+            {
+                // we don't want to start coroutines if we have early finalization in IEnumerators
+                // ergo, we return null without yielding any result
+                routine = scene.StartCoroutine(enumerator);
             }
         }
 
         public virtual void AttachTo(DecentralandEntity entity)
         {
-            if (!attachedEntities.Contains(entity))
-            {
-                if (OnAttach != null)
-                {
-                    OnAttach.Invoke(entity);
-                }
+            if (attachedEntities.Contains(entity))
+                return;
 
-                attachedEntities.Add(entity);
-                entity.scene.OnEntityRemoved += Scene_OnEntityRemoved;
-            }
+            if (OnAttach != null)
+                OnAttach.Invoke(entity);
+
+            attachedEntities.Add(entity);
+            entity.scene.OnEntityRemoved += Scene_OnEntityRemoved;
         }
 
         private void Scene_OnEntityRemoved(DecentralandEntity entity)
@@ -78,16 +74,14 @@ namespace DCL.Components
 
         public virtual void DetachFrom(DecentralandEntity entity)
         {
-            if (attachedEntities.Contains(entity))
-            {
-                if (OnDetach != null)
-                {
-                    OnDetach.Invoke(entity);
-                }
+            if (!attachedEntities.Contains(entity))
+                return;
 
-                entity.scene.OnEntityRemoved -= Scene_OnEntityRemoved;
-                attachedEntities.Remove(entity);
-            }
+            if (OnDetach != null)
+                OnDetach.Invoke(entity);
+
+            entity.scene.OnEntityRemoved -= Scene_OnEntityRemoved;
+            attachedEntities.Remove(entity);
         }
 
         public void DetachFromEveryEntity()

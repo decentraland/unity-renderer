@@ -120,6 +120,8 @@ namespace DCL
 
         void RemoveGameObject(GameObject go)
         {
+            if (go == null)
+                return;
             //NOTE(Brian): If this proves to be too slow we can spread it with a Coroutine spooler.
             Renderer[] renderers = go.GetComponentsInChildren<Renderer>();
 
@@ -161,6 +163,9 @@ namespace DCL
 
         void AddGameObject(GameObject go)
         {
+            if (go == null)
+                return;
+
             //NOTE(Brian): If this proves to be too slow we can spread it with a Coroutine spooler.
             Renderer[] renderers = go.GetComponentsInChildren<Renderer>();
 

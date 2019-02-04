@@ -169,7 +169,6 @@ namespace UnityGLTF
                     {
                         OnFinishedLoadingAsset();
                     }
-                    Debug.Log("finished loading model");
                     alreadyLoadedAsset = true;
                 }
             }

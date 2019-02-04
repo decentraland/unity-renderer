@@ -41,10 +41,12 @@ namespace DCL.Helpers
         public static T GetOrCreateComponent<T>(GameObject gameObject) where T : UnityEngine.Component
         {
             T component = gameObject.GetComponent<T>();
+
             if (!component)
             {
                 return gameObject.AddComponent<T>();
             }
+
             return component;
         }
 
@@ -213,7 +215,7 @@ namespace DCL.Helpers
                 UnityEngine.Object.DestroyImmediate(obj);
             }
 #else
-            Destroy(obj);
+            UnityEngine.Object.Destroy(obj);
 #endif
         }
 

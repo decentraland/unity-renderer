@@ -19,7 +19,6 @@ namespace Tests
             var testScene = GO.AddComponent<IntegrationTestController>();
 
             yield return new WaitForSeconds(0.01f); // We wait to let unity creates
-
             testScene.Verify();
 
             Object.DestroyImmediate(GO);

@@ -40,7 +40,7 @@ namespace DCL.Components
             if (entity.OnShapeUpdated != null)
                 entity.OnShapeUpdated.Invoke(entity);
 
-            BaseShape.ConfigureCollision(entity, true, true);
+            BaseShape.ConfigureColliders(entity, true, true);
         }
 
         void OnDestroy()
