@@ -1,4 +1,4 @@
-import { IEventNames, IEvents } from 'decentraland-ecs/src/decentraland/Types'
+import { IEventNames, IEvents } from '../decentraland-ecs/src/decentraland/Types'
 
 export type RPCEvent<K extends IEventNames, D = any> = {
   event: K

@@ -29,6 +29,7 @@ import {
   cameraPositionToRef
 } from '../engine/renderer/camera'
 import { setEditorEnvironment } from '../engine/renderer/ambientLights'
+import { sleep } from '../atomicHelpers/sleep'
 import * as Gizmos from '../engine/components/ephemeralComponents/Gizmos'
 import { Vector3 } from 'babylonjs'
 
@@ -36,7 +37,6 @@ let didStartPosition = false
 
 const evtEmitter = new EventEmitter()
 
-let cacheCheckIntervalInstance = null
 let webGlParcelScene: WebGLParcelScene | null = null
 let parcelsX = 1
 let parcelsY = 1
@@ -115,6 +115,16 @@ async function initializePreview(userScene: EnvironmentData<LoadableParcelScene>
     })
     didStartPosition = true
   }
+
+  const system = await parcelScene.system
+
+  const engineAPI = parcelScene.engineAPI
+
+  while (!system.isEnabled || !engineAPI.didStart) {
+    await sleep(10)
+  }
+
+  evtEmitter.emit('ready', {})
 }
 
 export namespace editor {
@@ -122,7 +132,6 @@ export namespace editor {
 
   export async function handleMessage(message) {
     if (message.type === 'update') {
-      clearInterval(cacheCheckIntervalInstance)
       await loadScene(message.payload.scene)
     }
   }

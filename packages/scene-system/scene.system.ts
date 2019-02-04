@@ -367,6 +367,11 @@ export default class GamekitScene extends Script {
         if (!this.manualUpdate) {
           this.startLoop()
         }
+
+        this.onStartFunctions.push(() => {
+          const engine: IEngineAPI = this.engine as any
+          engine.startSignal().catch((e: Error) => this.onError(e))
+        })
       } catch (e) {
         that.onError(e)
       }

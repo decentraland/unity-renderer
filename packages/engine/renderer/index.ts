@@ -70,7 +70,8 @@ export function initDCL() {
       engineMicroQueue.queueTask(() => {
         if (canvas.parentElement) {
           onWindowResize()
-          if (isMobile) {
+
+          if (isMobile()) {
             bodyScrollLock.disableBodyScroll(canvas)
             resizeRotationCanvas(canvas)
           }

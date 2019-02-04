@@ -25,12 +25,18 @@ export interface IEngineAPI {
    */
   sendBatch(actions: EntityAction[]): Promise<void>
 
+  /**
+   * Start signal, sent after everything was initialized
+   */
+  startSignal(): Promise<void>
+
   /** Event handler for subscription events */
   onSubscribedEvent(fn: any): void
 }
 
 @registerAPI('EngineAPI')
 export class EngineAPI extends ExposableAPI implements IEngineAPI {
+  didStart: boolean = false
   parcelSceneAPI!: ParcelSceneAPI
 
   // this dictionary contains the list of subscriptions.
@@ -66,6 +72,11 @@ export class EngineAPI extends ExposableAPI implements IEngineAPI {
   @exposeMethod
   async sendBatch(actions: EntityAction[]): Promise<void> {
     this.parcelSceneAPI.sendBatch(actions)
+  }
+
+  @exposeMethod
+  async startSignal(): Promise<void> {
+    this.didStart = true
   }
 
   // TODO: add getAttributes so we can load scenes
