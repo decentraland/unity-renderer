@@ -66,6 +66,17 @@ namespace DCL.Helpers
             }));
         }
 
+        public static void DetachSharedComponent(ParcelScene scene, string fromEntityId, string sharedComponentId)
+        {
+            DecentralandEntity entity = null;
+
+            if (!scene.entities.TryGetValue(fromEntityId, out entity))
+                return;
+
+            scene.GetSharedComponent(sharedComponentId).DetachFrom(entity);
+
+        }
+
         public static void InstantiateEntityWithMaterial(ParcelScene scene, string entityId, Vector3 position, BasicMaterial.Model basicMaterial, string materialComponentID = "a-material")
         {
             InstantiateEntityWithShape(scene, entityId, DCL.Models.CLASS_ID.BOX_SHAPE, position);
@@ -90,6 +101,8 @@ namespace DCL.Helpers
                 name = "material"
             }));
         }
+
+
 
         public static void InstantiateEntityWithMaterial(ParcelScene scene, string entityId, Vector3 position, PBRMaterial.Model pbrMaterial, string materialComponentID = "a-material")
         {

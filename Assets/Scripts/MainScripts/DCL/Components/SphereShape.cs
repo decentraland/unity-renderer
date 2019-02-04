@@ -8,9 +8,8 @@ using UnityEngine;
 namespace DCL.Components
 {
     [System.Serializable]
-    public class SphereModel
+    public class SphereModel : BaseParamShapeModel
     {
-        public bool withCollisions;
     }
 
     public class SphereShape : BaseParametrizedShape<SphereModel>
@@ -21,7 +20,5 @@ namespace DCL.Components
         {
             return PrimitiveMeshBuilder.BuildSphere(1f);
         }
-
-        public override bool HasCollisions() => this.model.withCollisions;
     }
 }

@@ -19,5 +19,18 @@ namespace DCL.Models
 
         public GameObject meshGameObject;
         public BaseShape currentShape;
+
+        const string MESH_GAMEOBJECT_NAME = "Mesh";
+
+        public void EnsureMeshGameObject()
+        {
+            if (meshGameObject == null)
+            {
+                meshGameObject = new GameObject();
+                meshGameObject.name = MESH_GAMEOBJECT_NAME;
+                meshGameObject.transform.SetParent(gameObject.transform);
+                meshGameObject.transform.localPosition = Vector3.zero;
+            }
+        }
     }
 }

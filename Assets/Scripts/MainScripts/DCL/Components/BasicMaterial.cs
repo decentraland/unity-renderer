@@ -86,10 +86,7 @@ namespace DCL.Components
 
         void OnMaterialAttached(DecentralandEntity entity)
         {
-            if (entity.meshGameObject == null)
-            {
-                entity.meshGameObject = new GameObject("Mesh");
-            }
+            entity.EnsureMeshGameObject();
 
             var meshRenderer = Helpers.Utils.GetOrCreateComponent<MeshRenderer>(entity.meshGameObject);
             meshRenderer.sharedMaterial = material;

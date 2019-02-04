@@ -8,12 +8,17 @@ using UnityEngine;
 
 namespace DCL.Components
 {
-    public abstract class BaseParametrizedShape<T> : BaseShape where T : new()
+    [System.Serializable]
+    public class BaseParamShapeModel
+    {
+        public bool withCollisions;
+    }
+
+    public abstract class BaseParametrizedShape<T> : BaseShape where T : BaseParamShapeModel, new()
     {
         public T model = new T();
 
         public abstract Mesh GenerateGeometry();
-        public abstract bool HasCollisions();
 
         private Mesh currentMesh = null;
 
@@ -25,35 +30,35 @@ namespace DCL.Components
 
         void OnShapeAttached(DecentralandEntity entity)
         {
-            var meshFilter = Helpers.Utils.GetOrCreateComponent<MeshFilter>(entity.meshGameObject);
-            var meshRenderer = entity.meshGameObject.GetComponent<MeshRenderer>();
+            if (entity == null)
+                return;
 
-            if (meshRenderer == null)
-            {
-                meshRenderer = entity.meshGameObject.AddComponent<MeshRenderer>();
-                meshRenderer.sharedMaterial = Resources.Load<Material>("Materials/Default");
-            }
+            entity.EnsureMeshGameObject();
 
+            MeshFilter meshFilter = entity.meshGameObject.AddComponent<MeshFilter>();
+            MeshRenderer meshRenderer = entity.meshGameObject.AddComponent<MeshRenderer>();
+
+            meshRenderer.sharedMaterial = Resources.Load<Material>("Materials/Default");
             meshFilter.sharedMesh = currentMesh;
 
             if (entity.OnShapeUpdated != null)
                 entity.OnShapeUpdated.Invoke(entity);
 
-            ConfigureCollision(entity, HasCollisions());
+            ConfigureColliders(entity, model.withCollisions);
         }
 
         void OnShapeDetached(DecentralandEntity entity)
         {
-            var meshFilter = entity.meshGameObject.GetComponent<MeshFilter>();
-            if (meshFilter)
-            {
-                meshFilter.sharedMesh = null;
-                Utils.SafeDestroy(meshFilter);
-            }
+            if (entity == null || entity.meshGameObject == null)
+                return;
+
+            Utils.SafeDestroy(entity.meshGameObject);
+            entity.meshGameObject = null;
         }
 
         public override IEnumerator ApplyChanges(string newJson)
         {
+            bool hadCollisions = model.withCollisions;
             JsonUtility.FromJsonOverwrite(newJson, model);
 
             var newMesh = GenerateGeometry();
@@ -63,10 +68,22 @@ namespace DCL.Components
                 currentMesh = newMesh;
                 foreach (var entity in this.attachedEntities)
                 {
+                    OnShapeDetached(entity);
                     OnShapeAttached(entity);
                 }
             }
+            else
+            {
+                bool collisionsDirty = hadCollisions != model.withCollisions;
 
+                if (collisionsDirty)
+                {
+                    foreach (var entity in this.attachedEntities)
+                    {
+                        ConfigureColliders(entity, model.withCollisions);
+                    }
+                }
+            }
             return null;
         }
     }

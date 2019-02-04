@@ -14,17 +14,20 @@ public class IntegrationTestController : MonoBehaviour
 
         var scenesToLoad = new
         {
-            parcelsToLoad = new[] {
-        new LoadParcelScenesMessage.UnityParcelScene() {
-          id = "the-loaded-scene",
-          basePosition = new Vector2Int(3, 3),
-          parcels = new [] {
-            new Vector2Int(3, 3),
-            new Vector2Int(3, 4)
-          },
-          baseUrl = "http://localhost:9991/local-ipfs/contents/"
-        }
-      }
+            parcelsToLoad = new[]
+            {
+                new LoadParcelScenesMessage.UnityParcelScene()
+                {
+                    id = "the-loaded-scene",
+                    basePosition = new Vector2Int(3, 3),
+                    parcels = new []
+                    {
+                        new Vector2Int(3, 3),
+                        new Vector2Int(3, 4)
+                    },
+                    baseUrl = "http://localhost:9991/local-ipfs/contents/"
+                }
+            }
         };
 
         Assert.IsTrue(sceneController != null, "Cannot find SceneController");
@@ -34,24 +37,30 @@ public class IntegrationTestController : MonoBehaviour
 
         var scene = sceneController.loadedScenes["the-loaded-scene"];
 
+        //NOTE(Brian): This is making my eyes bleed.
         sceneController.SendSceneMessage(
-          TestHelpers.CreateSceneMessage("the-loaded-scene", "CreateEntity",
-          JsonConvert.SerializeObject(new CreateEntityMessage
-          {
-              id = entityId
-          }))
-        );
+          TestHelpers.CreateSceneMessage(
+                "the-loaded-scene",
+                "CreateEntity",
+                JsonConvert.SerializeObject(
+                    new CreateEntityMessage
+                    {
+                        id = entityId
+                    }))
+                );
 
+        //NOTE(Brian): This is making my eyes bleed.
         sceneController.SendSceneMessage(
           TestHelpers.CreateSceneMessage(
             "the-loaded-scene",
             "SetEntityParent",
-            JsonConvert.SerializeObject(new
-            {
-                entityId = entityId,
-                parentId = "0"
-            })
-          )
+            JsonConvert.SerializeObject(
+                new
+                {
+                    entityId = entityId,
+                    parentId = "0"
+                })
+             )
         );
 
         Assert.IsTrue(scene.entities[entityId].meshGameObject == null, "meshGameObject must be null");
@@ -90,6 +99,8 @@ public class IntegrationTestController : MonoBehaviour
 
         // because basePosition is at 3,3
         Assert.AreEqual(cube.gameObject.transform.position, new Vector3(36, 0, 35));
+        Assert.IsNotNull(cube.meshGameObject);
+        Assert.IsNotNull(cube.meshGameObject.GetComponentInChildren<MeshFilter>());
 
         var mesh = cube.meshGameObject.GetComponentInChildren<MeshFilter>().mesh;
 

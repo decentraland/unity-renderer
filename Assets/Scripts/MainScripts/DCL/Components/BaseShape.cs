@@ -11,45 +11,35 @@ namespace DCL.Components
     public abstract class BaseShape : BaseDisposable
     {
         public override string componentName => "shape";
-        const string MESH_GAMEOBJECT_NAME = "Mesh";
 
         public BaseShape(ParcelScene scene) : base(scene)
         {
         }
 
-        void EnsureMeshGameObject(DecentralandEntity entity)
-        {
-            if (entity.meshGameObject == null)
-            {
-                entity.meshGameObject = new GameObject();
-                entity.meshGameObject.name = MESH_GAMEOBJECT_NAME;
-                entity.meshGameObject.transform.SetParent(entity.gameObject.transform);
-                entity.meshGameObject.transform.localPosition = Vector3.zero;
-            }
-
-            if (entity.currentShape != null)
-            {
-                entity.currentShape.DetachFrom(entity);
-            }
-
-            entity.currentShape = this;
-        }
-
         public override void AttachTo(DecentralandEntity entity)
         {
-            // We do this instead of OnAttach += because it is required to run before every OnAfter listener
-            EnsureMeshGameObject(entity);
+            if (attachedEntities.Contains(entity))
+                return;
+
+            if (entity.currentShape != null)
+                entity.currentShape.DetachFrom(entity);
+
+            entity.currentShape = this;
+
             base.AttachTo(entity);
         }
 
         public override void DetachFrom(DecentralandEntity entity)
         {
+            if (!attachedEntities.Contains(entity))
+                return;
+
             base.DetachFrom(entity);
             // We do this instead of OnDetach += because it is required to run after every OnDetach listener
             entity.currentShape = null;
         }
 
-        public static void ConfigureCollision(DecentralandEntity entity, bool hasCollision, bool filterByColliderName = false)
+        public static void ConfigureColliders(DecentralandEntity entity, bool hasCollision, bool filterByColliderName = false)
         {
             if (entity.meshGameObject == null) return;
 

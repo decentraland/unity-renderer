@@ -140,33 +140,34 @@ namespace DCL.Controllers
         {
             tmpParentMessage.FromJSON(json);
 
-            if (tmpParentMessage.entityId != tmpParentMessage.parentId)
+            if (tmpParentMessage.entityId == tmpParentMessage.parentId)
+                return;
+
+            GameObject rootGameObject = null;
+
+            if (tmpParentMessage.parentId == "0")
             {
-                GameObject rootGameObject = null;
-
-                if (tmpParentMessage.parentId == "0")
+                rootGameObject = gameObject;
+            }
+            else
+            {
+                DecentralandEntity decentralandEntity = GetEntityForUpdate(tmpParentMessage.parentId);
+                if (decentralandEntity != null)
                 {
-                    rootGameObject = gameObject;
-                }
-                else
-                {
-                    DecentralandEntity decentralandEntity = GetEntityForUpdate(tmpParentMessage.parentId);
-                    if (decentralandEntity != null)
-                    {
-                        rootGameObject = decentralandEntity.gameObject;
-                    }
-                }
-
-                if (rootGameObject != null)
-                {
-                    DecentralandEntity decentralandEntity = GetEntityForUpdate(tmpParentMessage.entityId);
-
-                    if (decentralandEntity != null)
-                    {
-                        decentralandEntity.gameObject.transform.SetParent(rootGameObject.transform);
-                    }
+                    rootGameObject = decentralandEntity.gameObject;
                 }
             }
+
+            if (rootGameObject != null)
+            {
+                DecentralandEntity decentralandEntity = GetEntityForUpdate(tmpParentMessage.entityId);
+
+                if (decentralandEntity != null)
+                {
+                    decentralandEntity.gameObject.transform.SetParent(rootGameObject.transform);
+                }
+            }
+            
         }
 
         SharedComponentAttachMessage attachSharedComponentMessage = new SharedComponentAttachMessage();
@@ -181,15 +182,12 @@ namespace DCL.Controllers
             DecentralandEntity decentralandEntity = GetEntityForUpdate(attachSharedComponentMessage.entityId);
 
             if (decentralandEntity == null)
-            {
                 return;
-            }
 
             BaseDisposable disposableComponent;
 
-            RemoveEntityComponent(decentralandEntity, attachSharedComponentMessage.name);
-
-            if (disposableComponents.TryGetValue(attachSharedComponentMessage.id, out disposableComponent) && disposableComponent != null)
+            if (disposableComponents.TryGetValue(attachSharedComponentMessage.id, out disposableComponent)
+                && disposableComponent != null)
             {
                 disposableComponent.AttachTo(decentralandEntity);
             }
@@ -251,13 +249,10 @@ namespace DCL.Controllers
             sharedComponentCreatedMessage.FromJSON(json);
 
             BaseDisposable disposableComponent;
+
             if (disposableComponents.TryGetValue(sharedComponentCreatedMessage.id, out disposableComponent))
             {
-                if (disposableComponent != null)
-                {
-                    disposableComponent.Dispose();
-                }
-                disposableComponents.Remove(sharedComponentCreatedMessage.id);
+                return disposableComponent;
             }
 
             BaseDisposable newComponent = null;

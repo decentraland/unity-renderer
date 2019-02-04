@@ -8,11 +8,9 @@ using UnityEngine;
 
 namespace DCL.Components
 {
-
     [System.Serializable]
-    public class BoxModel
+    public class BoxModel : BaseParamShapeModel
     {
-        public bool withCollisions;
     }
 
     public class BoxShape : BaseParametrizedShape<BoxModel>
@@ -25,7 +23,5 @@ namespace DCL.Components
         {
             return cubeMesh;
         }
-
-        public override bool HasCollisions() => this.model.withCollisions;
     }
 }

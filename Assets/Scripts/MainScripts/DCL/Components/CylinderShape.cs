@@ -8,7 +8,7 @@ using UnityEngine;
 namespace DCL.Components
 {
     [System.Serializable]
-    public class CylinderModel
+    public class CylinderModel : BaseParamShapeModel
     {
         public float radiusTop = 1f;        // Cone/Cylinder
         public float radiusBottom = 1f;     // Cone/Cylinder
@@ -17,7 +17,6 @@ namespace DCL.Components
         public bool openEnded = false;      // Cone/Cylinder
         public float? radius;               // Cone/Cylinder
         public float arc = 360f;            // Cone/Cylinder
-        public bool withCollisions;
     }
 
     public class CylinderShape : BaseParametrizedShape<CylinderModel>
@@ -28,7 +27,5 @@ namespace DCL.Components
         {
             return PrimitiveMeshBuilder.BuildCylinder(50, model.radiusTop, model.radiusBottom, 2f, 0f, true, false);
         }
-
-        public override bool HasCollisions() => this.model.withCollisions;
     }
 }

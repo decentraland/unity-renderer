@@ -483,7 +483,7 @@ namespace Tests
 
             Assert.IsTrue(originalMeshGO != null, "originalMeshGO is not null");
             Assert.IsTrue(newMeshGO, "newMeshGO is not null");
-            Assert.AreSame(newMeshGO, originalMeshGO, "meshGameObject must be reused across different shapes");
+            Assert.AreNotSame(newMeshGO, originalMeshGO, "meshGameObject must NOT be reused across different shapes, because Destroy() delays a frame and the Detach/Attach behaviour wouldn't work. We shouldn't use DestroyImmediate in runtime.");
         }
 
 
@@ -513,7 +513,7 @@ namespace Tests
 
             // Update its shape to a cylinder
             TestHelpers.CreateAndSetShape(scene, entityId, CLASS_ID.CYLINDER_SHAPE, "{}");
-            yield return new WaitForSeconds(0.01f);
+            yield return new WaitForSeconds(8.01f);
 
             Assert.IsTrue(entity.meshGameObject != null, "meshGameObject should not be null");
 

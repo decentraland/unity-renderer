@@ -48,6 +48,7 @@ namespace DCL.Components
         {
             if (!string.IsNullOrEmpty(currentSrc))
             {
+                entity.EnsureMeshGameObject();
                 LoadableShape loadableShape = Helpers.Utils.GetOrCreateComponent<LoadableShape>(entity.meshGameObject);
                 loadableShape.entity = entity;
                 loadableShape.Load(currentSrc);
@@ -56,15 +57,14 @@ namespace DCL.Components
 
         private void DetachShape(DecentralandEntity entity)
         {
-            if (entity.meshGameObject)
-            {
-                LoadableShape loadableShape = entity.meshGameObject.GetComponent<LoadableShape>();
+            if (entity.meshGameObject == null)
+                return;
 
-                if (loadableShape != null)
-                {
-                    loadableShape.enabled = false;
-                    Utils.SafeDestroy(loadableShape);
-                }
+            LoadableShape loadableShape = entity.meshGameObject.GetComponent<LoadableShape>();
+
+            if (loadableShape != null)
+            {
+                Utils.SafeDestroy(loadableShape);
             }
         }
 
