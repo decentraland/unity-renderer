@@ -38,7 +38,7 @@ namespace Tests
             TestHelpers.InstantiateEntityWithShape(scene, "7", DCL.Models.CLASS_ID.OBJ_SHAPE, new Vector3(10, 1, 0), "http://127.0.0.1:9991/OBJ/teapot.obj");
             TestHelpers.InstantiateEntityWithShape(scene, "8", DCL.Models.CLASS_ID.GLTF_SHAPE, new Vector3(0, 1, 12), "http://127.0.0.1:9991/GLB/CesiumMan/CesiumMan.glb");
 
-            yield return new WaitForSeconds(8.0f);
+            yield return new WaitForSeconds(8f);
 
             AssertMetricsModel(scene,
                 triangles:11189,
@@ -50,7 +50,7 @@ namespace Tests
                 
             TestHelpers.RemoveSceneEntity(scene, "8");
 
-            yield return new WaitForSeconds(8.0f);
+            yield return new WaitForSeconds(.1f);
 
             AssertMetricsModel(scene,
                 triangles: 6517,

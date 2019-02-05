@@ -176,10 +176,15 @@ namespace DCL.Helpers
         {
             var sceneController = Object.FindObjectOfType<SceneController>();
 
+            if (sceneController != null && sceneController.componentFactory == null)
+            {
+                Object.Destroy(sceneController);
+                sceneController = null;
+            }
+
             if (sceneController == null)
             {
                 GameObject GO = GameObject.Instantiate(Resources.Load("Prefabs/SceneController") as GameObject);
-                
                 sceneController = GO.GetComponent<SceneController>();
             }
 

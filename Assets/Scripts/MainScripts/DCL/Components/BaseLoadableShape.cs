@@ -54,7 +54,7 @@ namespace DCL.Components
                     entity.EnsureMeshGameObject();
                     LoadableShape loadableShape = Helpers.Utils.GetOrCreateComponent<LoadableShape>(entity.meshGameObject);
                     loadableShape.entity = entity;
-                    loadableShape.Load(currentSrc);
+                    loadableShape.Load(finalUrl);
                 }
             }
         }
