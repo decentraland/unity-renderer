@@ -8,6 +8,7 @@ namespace DCL
 {
     public class DCLWebSocketService : WebSocketBehavior
     {
+        static bool VERBOSE = false;
 
         private void SendMessageToWeb(string type, string message)
         {
@@ -49,6 +50,7 @@ namespace DCL
                     finalMessage = JsonUtility.FromJson<Message>(e.Data);
                 }
 
+
                 WSSController.queuedMessages.Enqueue(finalMessage);
                 WSSController.queuedMessagesDirty = true;
             }
@@ -76,6 +78,7 @@ namespace DCL
 
     public class WSSController : MonoBehaviour
     {
+        static bool VERBOSE = false;
         WebSocketServer ws;
         public SceneController sceneController;
         public DCLCharacterController characterController;
@@ -98,8 +101,6 @@ namespace DCL
             ws.AddWebSocketService<DCLWebSocketService>("/dcl");
 
             ws.Start();
-
-
 #endif
         }
 
@@ -121,6 +122,8 @@ namespace DCL
                     while (queuedMessages.Count > 0)
                     {
                         DCLWebSocketService.Message msg = queuedMessages.Dequeue();
+
+                        if ( VERBOSE ) Debug.Log("<b><color=#0000FF>WSSController</color></b> >>> Got it! passing message of type " + msg.type);
 
                         switch (msg.type)
                         {

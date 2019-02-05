@@ -48,10 +48,14 @@ namespace DCL.Components
         {
             if (!string.IsNullOrEmpty(currentSrc))
             {
-                entity.EnsureMeshGameObject();
-                LoadableShape loadableShape = Helpers.Utils.GetOrCreateComponent<LoadableShape>(entity.meshGameObject);
-                loadableShape.entity = entity;
-                loadableShape.Load(currentSrc);
+                string finalUrl;
+                if (scene.sceneData.TryGetContentsUrl(currentSrc, out finalUrl))
+                {
+                    entity.EnsureMeshGameObject();
+                    LoadableShape loadableShape = Helpers.Utils.GetOrCreateComponent<LoadableShape>(entity.meshGameObject);
+                    loadableShape.entity = entity;
+                    loadableShape.Load(currentSrc);
+                }
             }
         }
 

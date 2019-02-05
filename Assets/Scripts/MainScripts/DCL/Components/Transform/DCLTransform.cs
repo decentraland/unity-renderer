@@ -19,10 +19,8 @@ namespace DCL.Components
         public override string componentName => "transform";
         public Model model = new Model();
 
-        public override IEnumerator ApplyChanges(string newJson)
+        void UpdateTransform()
         {
-            Utils.SafeFromJsonOverwrite(newJson, model);
-
             if (entity != null && entity.gameObject != null)
             {
                 var t = entity.gameObject.transform;
@@ -42,6 +40,14 @@ namespace DCL.Components
                     t.localScale = model.scale;
                 }
             }
+        }
+
+
+        public override IEnumerator ApplyChanges(string newJson)
+        {
+            Utils.SafeFromJson(newJson, model);
+            // this component is applied to the gameObjects transform
+            UpdateTransform();   
             return null;
         }
 
