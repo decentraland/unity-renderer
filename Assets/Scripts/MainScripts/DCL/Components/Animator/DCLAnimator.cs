@@ -139,6 +139,9 @@ namespace DCL.Components
 
         private void Initialize()
         {
+            if (entity == null || entity.meshGameObject == null)
+                return;
+
             if (previousState != null && !CheckIfDirty(model.states, previousState))
             {
                 return;

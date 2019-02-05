@@ -49,26 +49,12 @@ namespace UnityGLTF
                 GLTFUri = incomingURI;
             }
 
-            // try
-            // {
             if (loadingRoutine != null)
             {
                 StopCoroutine(loadingRoutine);
             }
 
             loadingRoutine = StartCoroutine(LoadAssetCoroutine());
-            // }
-            /* catch (HttpRequestException)
-            {
-                if (numRetries++ >= RetryCount)
-                    throw;
-
-                Debug.LogWarning("Load failed, retrying " + GLTFUri);
-
-                yield return new WaitForSeconds(RetryTimeout * 1000);
-
-                LoadAsset(incomingURI, loadEvenIfAlreadyLoaded);
-            } */
         }
 
         public IEnumerator LoadAssetCoroutine()
@@ -157,18 +143,22 @@ namespace UnityGLTF
                         {
                             Debug.Log("sceneImporter is null, could be due to an invalid URI.", this);
                         }
+                        else
+                        {
+                            loadedAssetRootGameObject = sceneImporter.CreatedObject;
 
-                        loadedAssetRootGameObject = sceneImporter.CreatedObject;
+                            sceneImporter?.Dispose();
+                            sceneImporter = null;
+                        }
 
-                        sceneImporter?.Dispose();
-                        sceneImporter = null;
                         loader = null;
                     }
 
                     if (OnFinishedLoadingAsset != null)
                     {
-                        OnFinishedLoadingAsset();
+                        OnFinishedLoadingAsset.Invoke();
                     }
+
                     alreadyLoadedAsset = true;
                 }
             }
@@ -188,7 +178,6 @@ namespace UnityGLTF
         void OnDestroy()
         {
             Destroy(loadingPlaceholder);
-
             Destroy(loadedAssetRootGameObject);
         }
     }

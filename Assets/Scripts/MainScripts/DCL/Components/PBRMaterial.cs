@@ -94,10 +94,15 @@ namespace DCL.Components
                 // FETCH AND LOAD EMISSIVE TEXTURE
                 if (!string.IsNullOrEmpty(model.emissiveTexture))
                 {
-                    yield return Utils.FetchTexture(model.emissiveTexture, (fetchedEmissiveTexture) =>
+                    string texUrl;
+
+                    if (scene.sceneData.TryGetContentsUrl(model.emissiveTexture, out texUrl))
                     {
-                        material.SetTexture("_EmissionMap", fetchedEmissiveTexture);
-                    });
+                        yield return Utils.FetchTexture(texUrl, (fetchedEmissiveTexture) =>
+                        {
+                            material.SetTexture("_EmissionMap", fetchedEmissiveTexture);
+                        });
+                    }
                 }
 
                 // METALLIC/SPECULAR CONFIGURATIONS
@@ -119,18 +124,28 @@ namespace DCL.Components
             // FETCH AND LOAD TEXTURES
             if (!string.IsNullOrEmpty(model.albedoTexture))
             {
-                yield return Utils.FetchTexture(model.albedoTexture, (fetchedAlbedoTexture) =>
+                string albedoTextureUrl;
+
+                if (scene.sceneData.TryGetContentsUrl(model.albedoTexture, out albedoTextureUrl))
                 {
-                    material.SetTexture("_MainTex", fetchedAlbedoTexture);
-                });
+                    yield return Utils.FetchTexture(albedoTextureUrl, (fetchedAlbedoTexture) =>
+                    {
+                        material.SetTexture("_MainTex", fetchedAlbedoTexture);
+                    });
+                }
             }
 
             if (!string.IsNullOrEmpty(model.bumpTexture))
             {
-                yield return Utils.FetchTexture(model.bumpTexture, (fetchedBumpTexture) =>
+                string bumpTextureUrl;
+
+                if (scene.sceneData.TryGetContentsUrl(model.bumpTexture, out bumpTextureUrl))
                 {
-                    material.SetTexture("_BumpMap", fetchedBumpTexture);
-                });
+                    yield return Utils.FetchTexture(bumpTextureUrl, (fetchedBumpTexture) =>
+                    {
+                        material.SetTexture("_BumpMap", fetchedBumpTexture);
+                    });
+                }
             }
 
             // ALPHA CONFIGURATION

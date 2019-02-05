@@ -71,8 +71,11 @@ namespace DCL.Components
                 && loadingState != LoadState.LOADING_COMPLETED)
             {
                 loadingState = LoadState.LOADING_IN_PROGRESS;
-                yield return Utils.FetchAudioClip(model.url, Utils.GetAudioTypeFromUrlName(model.url), OnComplete, OnFail);
-                
+
+                if (scene.sceneData.HasContentsUrl(model.url))
+                {
+                    yield return Utils.FetchAudioClip(scene.sceneData.GetContentsUrl(model.url), Utils.GetAudioTypeFromUrlName(model.url), OnComplete, OnFail);
+                }
             }
         }
 

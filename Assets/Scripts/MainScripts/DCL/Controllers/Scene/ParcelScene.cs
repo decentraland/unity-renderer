@@ -34,6 +34,7 @@ namespace DCL.Controllers
         public void SetData(LoadParcelScenesMessage.UnityParcelScene data)
         {
             this.sceneData = data;
+            this.sceneData.BakeHashes();
 
             this.name = gameObject.name = $"scene:{data.id}";
 
@@ -87,6 +88,7 @@ namespace DCL.Controllers
                 newEntity.entityId = tmpCreateEntityMessage.id;
                 newEntity.gameObject = new GameObject();
                 newEntity.gameObject.transform.SetParent(gameObject.transform);
+                newEntity.gameObject.transform.localScale = Vector3.one;
                 newEntity.gameObject.name = "ENTITY_" + tmpCreateEntityMessage.id;
                 newEntity.scene = this;
 
@@ -161,10 +163,10 @@ namespace DCL.Controllers
             if (rootGameObject != null)
             {
                 DecentralandEntity decentralandEntity = GetEntityForUpdate(tmpParentMessage.entityId);
-
                 if (decentralandEntity != null)
                 {
                     decentralandEntity.gameObject.transform.SetParent(rootGameObject.transform);
+                    decentralandEntity.gameObject.transform.localScale = Vector3.one;
                 }
             }
             
