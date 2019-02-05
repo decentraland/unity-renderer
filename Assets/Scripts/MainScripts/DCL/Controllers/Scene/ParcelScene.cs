@@ -5,6 +5,7 @@ using DCL.Models;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
+using UnityEngine.Assertions;
 
 namespace DCL.Controllers
 {
@@ -221,6 +222,8 @@ namespace DCL.Controllers
             DCLComponentFactory factory = ownerController.componentFactory;
             CLASS_ID_COMPONENT classId = (CLASS_ID_COMPONENT)createEntityComponentMessage.classId;
             BaseComponent newComponent = null;
+
+            Assert.IsNotNull(factory, "Factory is null?");
 
             if (!entity.components.ContainsKey(classId))
             {

@@ -45,7 +45,7 @@ namespace DCL.Components
 
         public override IEnumerator ApplyChanges(string newJson)
         {
-            Utils.SafeFromJson(newJson, model);
+            model = Utils.SafeFromJson<Model>(newJson);
             // this component is applied to the gameObjects transform
             UpdateTransform();   
             return null;

@@ -54,10 +54,9 @@ namespace DCL.Models
 
             public bool HasContentsUrl(string url)
             {
-#if UNITY_EDITOR
                 if (HasTestSchema(url))
                     return true;
-#endif
+
                 return fileToHash.ContainsKey(url);
             }
 
@@ -76,15 +75,11 @@ namespace DCL.Models
                 url = url.ToLower();
                 result = url;
 
-#if UNITY_EDITOR
                 if (HasTestSchema(url))
                     return true;
-#endif
 
                 if (fileToHash == null)
-                {
                     return false;
-                }
 
                 if (!fileToHash.ContainsKey(url))
                 {
