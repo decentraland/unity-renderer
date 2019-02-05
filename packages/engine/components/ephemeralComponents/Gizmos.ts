@@ -1,19 +1,15 @@
 import { BaseComponent } from '../BaseComponent'
 import { scene } from 'engine/renderer'
 import { BaseEntity } from 'engine/entities/BaseEntity'
-
-export enum Gizmo {
-  MOVE = 'MOVE',
-  ROTATE = 'ROTATE',
-  SCALE = 'SCALE',
-  NONE = 'NONE'
-}
+import { Gizmo } from 'decentraland-ecs/src/decentraland/Gizmos'
 
 type GizmoConfiguration = {
   position: boolean
   rotation: boolean
   scale: boolean
-  updateEntity: boolean
+  cycle: boolean
+  localReference: boolean
+  selectedGizmo: Gizmo
 }
 
 export const gizmoManager = new BABYLON.GizmoManager(scene)
@@ -21,14 +17,15 @@ gizmoManager.positionGizmoEnabled = true
 gizmoManager.rotationGizmoEnabled = true
 gizmoManager.boundingBoxGizmoEnabled = false
 gizmoManager.scaleGizmoEnabled = true
-
 gizmoManager.usePointerToAttachGizmos = false
 
 const defaultValue: GizmoConfiguration = {
   position: true,
   rotation: true,
   scale: true,
-  updateEntity: true
+  cycle: true,
+  localReference: false,
+  selectedGizmo: Gizmo.MOVE
 }
 
 let activeEntity: BaseEntity = null
@@ -151,7 +148,15 @@ export class Gizmos extends BaseComponent<GizmoConfiguration> {
     this.configureGizmos()
 
     if (this.entity === activeEntity) {
-      selectGizmo(switchGizmo())
+      if (currentConfiguration.cycle) {
+        selectGizmo(switchGizmo())
+      } else {
+        if (currentConfiguration.selectedGizmo && !selectGizmo(currentConfiguration.selectedGizmo)) {
+          selectGizmo(switchGizmo())
+        } else if (!selectGizmo(selectedGizmo)) {
+          selectGizmo(switchGizmo())
+        }
+      }
     } else {
       activeEntity = this.entity
       if (!selectGizmo(selectedGizmo)) {
@@ -170,7 +175,7 @@ export class Gizmos extends BaseComponent<GizmoConfiguration> {
 
   configureGizmos() {
     currentConfiguration = this.value
-    const isWorldCoordinates = true
+    const isWorldCoordinates = !currentConfiguration.localReference
     gizmoManager.gizmos.positionGizmo.updateGizmoPositionToMatchAttachedMesh = !isWorldCoordinates
     gizmoManager.gizmos.positionGizmo.updateGizmoRotationToMatchAttachedMesh = !isWorldCoordinates
     gizmoManager.gizmos.scaleGizmo.updateGizmoPositionToMatchAttachedMesh = !isWorldCoordinates

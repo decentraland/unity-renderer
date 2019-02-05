@@ -31,6 +31,7 @@ import {
 import { setEditorEnvironment } from '../engine/renderer/ambientLights'
 import { sleep } from '../atomicHelpers/sleep'
 import * as Gizmos from '../engine/components/ephemeralComponents/Gizmos'
+import { Gizmo } from '../decentraland-ecs/src/decentraland/Gizmos'
 import { Vector3 } from 'babylonjs'
 
 let didStartPosition = false
@@ -146,11 +147,15 @@ export namespace editor {
     setEditorEnvironment(enabled)
 
     if (enabled) {
+      if (document.pointerLockElement) {
+        document.exitPointerLock()
+      }
       arcCamera.target.copyFrom(target)
       arcCamera.alpha = -Math.PI / 4
       arcCamera.beta = Math.PI / 3
       arcCamera.radius = DEFAULT_CAMERA_ZOOM
     } else {
+      canvas.requestPointerLock()
       if (webGlParcelScene) {
         vrCamera.position.x = webGlParcelScene.worker.position.x + 5
         vrCamera.position.y = 1.6
@@ -204,7 +209,7 @@ export namespace editor {
     configureEditorEnvironment(true)
   }
 
-  export function selectGizmo(type: Gizmos.Gizmo) {
+  export function selectGizmo(type: Gizmo) {
     Gizmos.selectGizmo(type)
   }
 
@@ -232,8 +237,11 @@ export namespace editor {
     arcCamera.radius = DEFAULT_CAMERA_ZOOM
   }
 
-  export function setCameraRotation(alpha: number) {
+  export function setCameraRotation(alpha: number, beta?: number) {
     arcCamera.alpha = alpha
+    if (beta !== undefined) {
+      arcCamera.beta = beta
+    }
   }
 
   export const envHelper = _envHelper

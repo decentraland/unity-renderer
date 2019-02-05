@@ -12,6 +12,17 @@ export class OnGizmoEvent extends OnUUIDEvent<'gizmoEvent'> {
 }
 
 /**
+ * Gizmo identifiers
+ * @beta
+ */
+export enum Gizmo {
+  MOVE = 'MOVE',
+  ROTATE = 'ROTATE',
+  SCALE = 'SCALE',
+  NONE = 'NONE'
+}
+
+/**
  * Enables gizmos in the entity. Gizmos only work in EDITOR, PREVIEW or DEBUG modes.
  * @beta
  */
@@ -36,9 +47,20 @@ export class Gizmos extends ObservableComponent {
   scale: boolean = true
 
   /**
-   * Update entity while dragging. Also let the entity in it's final place after
-   * releasing the gizmo.
+   * Cycle through gizmos using click.
    */
   @ObservableComponent.field
-  updateEntity: boolean = true
+  cycle: boolean = true
+
+  /**
+   * If cycle is false, this will be the selected gizmo
+   */
+  @ObservableComponent.field
+  selectedGizmo?: Gizmo
+
+  /**
+   * Align the gizmos to match the local reference system
+   */
+  @ObservableComponent.field
+  localReference: boolean = false
 }

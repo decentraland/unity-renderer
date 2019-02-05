@@ -113,6 +113,8 @@ export const effectLayers: BABYLON.EffectLayer[] = []
   engine.enableOfflineSupport = (!DEBUG && !PREVIEW) || EDITOR
   engine.disableManifestCheck = true
 
+  scene.getBoundingBoxRenderer().showBackLines = false
+
   if (!isStandaloneHeadset || isRunningTest) {
     scene.onReadyObservable.add(() => {
       const gl = new BABYLON.GlowLayer('glow', scene)

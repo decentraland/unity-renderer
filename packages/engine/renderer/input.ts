@@ -1,12 +1,11 @@
 import * as BABYLON from 'babylonjs'
 
-import { camera } from '.'
 import { playerConfigurations, DEBUG } from 'config'
 import { vrHelper, scene } from './init'
 import Joystick from './controls/joystick'
 import PlaneCanvasControl from './controls/planeCanvasControl'
 import { isMobile } from 'shared/comms/mobile'
-import { isThirdPersonCamera } from './camera'
+import { isThirdPersonCamera, vrCamera } from './camera'
 
 /**
  * This is a map of keys (see enum Keys): boolean
@@ -36,6 +35,7 @@ enum Keys {
   KEY_SHIFT = -1,
   KEY_CTRL = -2,
   KEY_SPACE = 32,
+
   KEY_E = 69,
   KEY_Q = 81
 }
@@ -50,18 +50,10 @@ export function blockPointerLock() {
 }
 
 export function initKeyboard() {
-  camera.keysUp = [Keys.KEY_W as number] // Z
-  camera.keysDown = [Keys.KEY_S as number] // S
-  camera.keysLeft = [Keys.KEY_A as number] // Q
-  camera.keysRight = [Keys.KEY_D as number] // D
-
-  if (vrHelper.currentVRCamera) {
-    const camera = vrHelper.currentVRCamera as BABYLON.DeviceOrientationCamera
-    camera.keysUp = [Keys.KEY_W as number] // Z
-    camera.keysDown = [Keys.KEY_S as number] // S
-    camera.keysLeft = [Keys.KEY_A as number] // Q
-    camera.keysRight = [Keys.KEY_D as number] // D
-  }
+  vrCamera.keysUp = [Keys.KEY_W as number] // W
+  vrCamera.keysDown = [Keys.KEY_S as number] // S
+  vrCamera.keysLeft = [Keys.KEY_A as number] // A
+  vrCamera.keysRight = [Keys.KEY_D as number] // D
 
   document.body.addEventListener('keydown', e => {
     if (document.activeElement && document.activeElement.nodeName === 'INPUT') {
@@ -71,12 +63,12 @@ export function initKeyboard() {
 
     keyState[Keys.KEY_SHIFT] = e.shiftKey
 
-    if (e.shiftKey && camera.applyGravity) {
-      camera.speed = playerConfigurations.runningSpeed
+    if (e.shiftKey && vrCamera.applyGravity) {
+      vrCamera.speed = playerConfigurations.runningSpeed
     }
 
     if (e.key === 'f') {
-      camera.applyGravity = !camera.applyGravity
+      vrCamera.applyGravity = !vrCamera.applyGravity
     }
 
     keyState[Keys.KEY_CTRL] = e.ctrlKey
@@ -85,7 +77,7 @@ export function initKeyboard() {
 
   document.body.addEventListener('keyup', e => {
     if (!e.shiftKey) {
-      camera.speed = playerConfigurations.speed
+      vrCamera.speed = playerConfigurations.speed
     }
 
     keyState[Keys.KEY_SHIFT] = e.shiftKey
@@ -96,9 +88,9 @@ export function initKeyboard() {
 
 export function enableVirtualJoystick(sceneCanvas: HTMLCanvasElement) {
   // Change camera inputs to one rotation only
-  camera.inputs.remove(camera.inputs.attached.deviceOrientation)
-  camera.inputs.remove(camera.inputs.attached.mouse)
-  camera.inputs.remove(camera.inputs.attached.keyboard)
+  vrCamera.inputs.remove(vrCamera.inputs.attached.deviceOrientation)
+  vrCamera.inputs.remove(vrCamera.inputs.attached.mouse)
+  vrCamera.inputs.remove(vrCamera.inputs.attached.keyboard)
 
   sceneCanvas.setAttribute('touch-action', 'none')
 
@@ -118,12 +110,12 @@ function enableMovementJoystick() {
   const canvas = joystick.getCanvas()
 
   joystick.onMove(e => {
-    const cameraTransform = BABYLON.Matrix.RotationYawPitchRoll(camera.rotation.y, camera.rotation.x, 0)
+    const cameraTransform = BABYLON.Matrix.RotationYawPitchRoll(vrCamera.rotation.y, vrCamera.rotation.x, 0)
     const deltaTransform = BABYLON.Vector3.TransformCoordinates(
       new BABYLON.Vector3((e.deltaX * joystickSensibility) / 10, 0, ((e.deltaY * joystickSensibility) / 10) * -1),
       cameraTransform
     )
-    camera.cameraDirection = camera.cameraDirection.add(deltaTransform)
+    vrCamera.cameraDirection = vrCamera.cameraDirection.add(deltaTransform)
   })
 
   container.appendChild(canvas)
@@ -146,7 +138,7 @@ function enableRotationCanvas(sceneCanvas: HTMLCanvasElement) {
   // Rotate on plane canvas move
   planeCanvas.onMove(e => {
     const deltaTransform = new BABYLON.Vector3(e.deltaY * rotationSensibility, e.deltaX * rotationSensibility, 0)
-    camera.cameraRotation = camera.cameraRotation.addVector3(deltaTransform)
+    vrCamera.cameraRotation = vrCamera.cameraRotation.addVector3(deltaTransform)
   })
 
   // Enable interactions
@@ -283,9 +275,11 @@ export function enableMouseLock(canvas: HTMLCanvasElement) {
     PointerLock.isLocked = isPointerLocked
 
     if (!isPointerLocked) {
-      camera.detachControl(canvas)
+      vrCamera.detachControl(canvas)
     } else {
-      camera.attachControl(canvas)
+      if (scene.activeCamera === vrCamera) {
+        vrCamera.attachControl(canvas)
+      }
     }
   })
 }
