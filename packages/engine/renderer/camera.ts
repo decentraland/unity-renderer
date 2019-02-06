@@ -74,6 +74,8 @@ const arcCamera = new BABYLON.ArcRotateCamera(
   arcCamera.pinchPrecision = 150
   arcCamera.wheelPrecision = 150
   arcCamera.lowerRadiusLimit = 5
+
+  setCamera(false)
 }
 
 /// --- EXPORTS ---
@@ -112,27 +114,38 @@ function moveCamera(camera: any, directionRotation: BABYLON.Quaternion, speed: n
 
 export { vrCamera, arcCamera }
 
+function setUpEvents(attach: boolean) {
+  const canvas = engine.getRenderingCanvas()
+  const eventPrefix = BABYLON.Tools.GetPointerPrefix()
+
+  canvas.removeEventListener(eventPrefix + 'move', (scene as any)._onPointerMove)
+  canvas.removeEventListener(eventPrefix + 'down', (scene as any)._onPointerDown)
+  window.removeEventListener(eventPrefix + 'up', (scene as any)._onPointerUp)
+
+  if (attach) {
+    canvas.addEventListener(eventPrefix + 'move', (scene as any)._onPointerMove)
+    canvas.addEventListener(eventPrefix + 'down', (scene as any)._onPointerDown)
+    window.addEventListener(eventPrefix + 'up', (scene as any)._onPointerUp)
+  }
+}
+
 export function setCamera(thirdPerson: boolean) {
   if (thirdPerson && scene.activeCamera === arcCamera) return
   if (!thirdPerson && scene.activeCamera === vrCamera) return
 
-  const canvas = engine.getRenderingCanvas()
-
   if (thirdPerson) {
-    vrCamera.detachControl(canvas)
-    arcCamera.attachControl(canvas, true)
+    setUpEvents(true)
 
     arcCamera.target.copyFrom(scene.activeCamera.position)
 
-    scene.activeCamera = arcCamera
+    scene.switchActiveCamera(arcCamera)
     scene.cameraToUseForPointers = scene.activeCamera
   } else {
-    vrCamera.attachControl(canvas)
-    arcCamera.detachControl(canvas)
+    setUpEvents(false)
 
     vrCamera.position.copyFrom(scene.activeCamera.position)
 
-    scene.activeCamera = vrCamera
+    scene.switchActiveCamera(vrCamera)
     scene.cameraToUseForPointers = scene.activeCamera
   }
 }
@@ -155,4 +168,28 @@ export function cameraPositionToRef(ref: BABYLON.Vector3) {
   } else {
     ref.copyFrom(scene.activeCamera.position)
   }
+}
+
+export function rayToGround(screenX: number, screenY: number) {
+  const mouseVec = new BABYLON.Vector3(screenX, screenY, 0)
+  return unprojectToPlane(mouseVec)
+}
+
+function unprojectToPlane(vec: BABYLON.Vector3) {
+  const viewport = scene.activeCamera.viewport.toGlobal(engine.getRenderWidth(), engine.getRenderHeight())
+
+  let onPlane = BABYLON.Vector3.Unproject(
+    vec,
+    viewport.width,
+    viewport.height,
+    BABYLON.Matrix.Identity(),
+    scene.activeCamera.getViewMatrix(),
+    scene.activeCamera.getProjectionMatrix()
+  )
+
+  let dir = onPlane.subtract(scene.activeCamera.position).normalize()
+  let distance = -scene.activeCamera.position.y / dir.y
+  dir.scaleInPlace(distance)
+  onPlane = scene.activeCamera.position.add(dir)
+  return onPlane
 }

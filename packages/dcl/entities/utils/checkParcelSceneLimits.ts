@@ -66,22 +66,19 @@ function totalBoundingInfo(meshes: BABYLON.AbstractMesh[]) {
  * Receives the encoded parcelScene parcels and the entity to traverse
  */
 export function checkParcelSceneBoundaries(
-  encodedParcels: string,
+  encodedParcels: Set<string>,
   objectsOutside: Set<BaseEntity>,
   entity: BaseEntity
 ) {
-  const numberOfParcels = encodedParcels.replace(/;+/g, ';').split(';').length
-  const verificationText = ';' + encodedParcels + ';'
-
-  const maxHeight = Math.log2(numberOfParcels) * parcelLimits.height
+  const maxHeight = Math.log2(encodedParcels.size + 1) * parcelLimits.height
   const minHeight = -maxHeight
 
-  entity.traverseControl(node => {
-    if (node[ignoreBoundaryCheck]) {
+  entity.traverseControl(entity => {
+    if (entity[ignoreBoundaryCheck]) {
       return 'BREAK'
     }
 
-    const mesh = node.getObject3D(BasicShape.nameInEntity)
+    const mesh = entity.getObject3D(BasicShape.nameInEntity)
 
     if (!mesh) {
       return 'CONTINUE'
@@ -97,17 +94,15 @@ export function checkParcelSceneBoundaries(
       return 'CONTINUE'
     }
 
-    mesh.computeWorldMatrix(true)
-
     const bbox = totalBoundingInfo(meshes)
 
     if (bbox.maximum.y > maxHeight || bbox.minimum.y < minHeight) {
-      objectsOutside.add(node)
+      objectsOutside.add(entity)
       return 'BREAK'
     }
 
-    if (!isOnLimits(bbox, verificationText)) {
-      objectsOutside.add(node)
+    if (!isOnLimits(bbox, encodedParcels)) {
+      objectsOutside.add(entity)
       return 'BREAK'
     }
 

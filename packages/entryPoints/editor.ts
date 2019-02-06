@@ -6,7 +6,7 @@ import { initLocalPlayer, domReadyFuture, onWindowResize } from '../engine/rende
 
 import { initBabylonClient } from '../dcl'
 import * as _envHelper from '../engine/renderer/envHelper'
-import { canvas } from '../engine/renderer/init'
+import { canvas, scene } from '../engine/renderer/init'
 import { loadedParcelSceneWorkers } from '../shared/world/parcelSceneManager'
 import {
   LoadableParcelScene,
@@ -26,13 +26,15 @@ import {
   arcCamera,
   DEFAULT_CAMERA_ZOOM,
   setCameraPosition as _setCameraPosition,
-  cameraPositionToRef
+  cameraPositionToRef,
+  rayToGround
 } from '../engine/renderer/camera'
 import { setEditorEnvironment } from '../engine/renderer/ambientLights'
 import { sleep } from '../atomicHelpers/sleep'
 import * as Gizmos from '../engine/components/ephemeralComponents/Gizmos'
 import { Gizmo } from '../decentraland-ecs/src/decentraland/Gizmos'
 import { Vector3 } from 'babylonjs'
+import future, { IFuture } from 'fp-future'
 
 let didStartPosition = false
 
@@ -237,11 +239,25 @@ export namespace editor {
     arcCamera.radius = DEFAULT_CAMERA_ZOOM
   }
 
+  export function getMouseWorldPosition(localX: number, localY: number) {
+    return rayToGround(localX, localY)
+  }
+
   export function setCameraRotation(alpha: number, beta?: number) {
     arcCamera.alpha = alpha
     if (beta !== undefined) {
       arcCamera.beta = beta
     }
+  }
+
+  export function takeScreenshot(): IFuture<string> {
+    const ret = future()
+
+    scene.onAfterRenderObservable.addOnce(() => {
+      ret.resolve(canvas.toDataURL())
+    })
+
+    return ret
   }
 
   export const envHelper = _envHelper

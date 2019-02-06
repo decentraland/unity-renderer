@@ -33,35 +33,35 @@ export function isOnLimit(value: number): boolean {
   return Number.isInteger(value / parcelLimits.parcelSize)
 }
 
-export function isOnLimits({ maximum, minimum }: BoundingInfo, verificationText: string): boolean {
+export function isOnLimits({ maximum, minimum }: BoundingInfo, parcels: Set<string>): boolean {
   // Computes the world-axis-aligned bounding box of an object (including its children),
   // accounting for both the object's, and children's, world transforms
 
   auxVec3.x = minimum.x
   auxVec3.z = minimum.z
   worldToGrid(auxVec3, auxVec2)
-  if (!verificationText.includes(`${auxVec2.x},${auxVec2.y}`)) {
+  if (!parcels.has(`${auxVec2.x},${auxVec2.y}`)) {
     return false
   }
 
   auxVec3.x = isOnLimit(maximum.x) ? minimum.x : maximum.x
   auxVec3.z = isOnLimit(maximum.z) ? minimum.z : maximum.z
   worldToGrid(auxVec3, auxVec2)
-  if (!verificationText.includes(`${auxVec2.x},${auxVec2.y}`)) {
+  if (!parcels.has(`${auxVec2.x},${auxVec2.y}`)) {
     return false
   }
 
   auxVec3.x = minimum.x
   auxVec3.z = isOnLimit(maximum.z) ? minimum.z : maximum.z
   worldToGrid(auxVec3, auxVec2)
-  if (!verificationText.includes(`${auxVec2.x},${auxVec2.y}`)) {
+  if (!parcels.has(`${auxVec2.x},${auxVec2.y}`)) {
     return false
   }
 
   auxVec3.x = isOnLimit(maximum.x) ? minimum.x : maximum.x
   auxVec3.z = minimum.z
   worldToGrid(auxVec3, auxVec2)
-  if (!verificationText.includes(`${auxVec2.x},${auxVec2.y}`)) {
+  if (!parcels.has(`${auxVec2.x},${auxVec2.y}`)) {
     return false
   }
 
@@ -84,12 +84,18 @@ export function decodeParcelSceneBoundaries(boundaries: string) {
   return { base, parcels }
 }
 
+/**
+ * Converts a position into a string { x: -1, y: 5 } => "-1,5"
+ */
+export function encodeParcelPosition(base: Vector2Component) {
+  return `${base.x | 0},${base.y | 0}`
+}
 export function encodeParcelSceneBoundaries(base: Vector2Component, parcels: Vector2Component[]) {
-  let str = `${base.x | 0},${base.y | 0}`
+  let str = encodeParcelPosition(base)
 
   for (let index = 0; index < parcels.length; index++) {
     const parcel = parcels[index]
-    str = str + `;${parcel.x | 0},${parcel.y | 0}`
+    str = str + `;${encodeParcelPosition(parcel)}`
   }
 
   return str

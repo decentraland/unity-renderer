@@ -32,14 +32,12 @@ async function grantAccess(address: string | null, net: ETHEREUM_NETWORK) {
 
 function getNetworkFromDomain(): ETHEREUM_NETWORK {
   const domain = window.location.host
-  switch (domain) {
-    case 'client.decentraland.org':
-    case 'client.decentraland.today':
-      return ETHEREUM_NETWORK.MAINNET
-    case 'client.decentraland.zone':
-      return ETHEREUM_NETWORK.ROPSTEN
-    default:
-      return null
+  if (domain.endsWith('.decentraland.org') || domain.endsWith('.decentraland.today')) {
+    return ETHEREUM_NETWORK.MAINNET
+  } else if (domain.endsWith('.decentraland.zone')) {
+    return ETHEREUM_NETWORK.ROPSTEN
+  } else {
+    return null
   }
 }
 

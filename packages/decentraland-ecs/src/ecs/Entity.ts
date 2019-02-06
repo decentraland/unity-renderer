@@ -1,7 +1,7 @@
 import { getComponentName, ComponentConstructor, getComponentClassId, ComponentLike } from './Component'
 import { log, Engine } from './Engine'
 import { EventManager, EventConstructor } from './EventManager'
-import { uuid } from './helpers'
+import { newId } from './helpers'
 
 // tslint:disable:no-use-before-declare
 
@@ -13,7 +13,7 @@ export class Entity {
   public eventManager: EventManager | null = null
   public alive: boolean = false
 
-  public readonly uuid: string = uuid()
+  public readonly uuid: string = newId('E')
   public readonly components: Record<string, any> = {}
 
   // @internal
@@ -39,6 +39,10 @@ export class Entity {
       throw new Error('You passed a function or class as a component, an instance of component is expected')
     }
 
+    if (typeof component !== 'object') {
+      throw new Error(`You passed a ${typeof component}, an instance of component is expected`)
+    }
+
     const componentName = getComponentName(component)
 
     if (this.components[componentName]) {
@@ -53,14 +57,37 @@ export class Entity {
 
   /**
    * Returns a boolean indicating if a component is present in the entity.
-   * @param component - component class or name
+   * @param component - component class, instance or name
    */
-  has(component: ComponentConstructor<any>): boolean {
-    if (typeof component !== 'function') {
-      throw new Error('Entity#has(component): component is not a class')
+  has<T = any>(component: string): boolean
+  has<T>(component: ComponentConstructor<T>): boolean
+  has<T extends object>(component: T): boolean
+  has<T>(component: ComponentConstructor<T> | string): boolean {
+    const typeOfComponent = typeof component
+
+    if (typeOfComponent !== 'string' && typeOfComponent !== 'object' && typeOfComponent !== 'function') {
+      throw new Error('Entity#has(component): component is not a class, name or instance')
     }
-    const componentName = getComponentName(component)
-    return !!this.components[componentName]
+
+    if (component == null) return false
+
+    const componentName = typeOfComponent === 'string' ? (component as string) : getComponentName(component as any)
+
+    const storedComponent = this.components[componentName]
+
+    if (!storedComponent) {
+      return false
+    }
+
+    if (typeOfComponent === 'object') {
+      return storedComponent === component
+    }
+
+    if (typeOfComponent === 'function') {
+      return storedComponent instanceof (component as ComponentConstructor<T>)
+    }
+
+    return true
   }
 
   /**
@@ -78,11 +105,21 @@ export class Entity {
 
     const componentName = typeOfComponent === 'string' ? (component as string) : getComponentName(component as any)
 
-    if (!this.components[componentName]) {
+    const storedComponent = this.components[componentName]
+
+    if (!storedComponent) {
       throw new Error(`Can not get component "${componentName}" from entity "${this.identifier}"`)
     }
 
-    return this.components[componentName]
+    if (typeOfComponent === 'function') {
+      if (storedComponent instanceof (component as ComponentConstructor<T>)) {
+        return storedComponent
+      } else {
+        throw new Error(`Can not get component "${componentName}" from entity "${this.identifier}" (by instance)`)
+      }
+    }
+
+    return storedComponent
   }
 
   /**
@@ -100,7 +137,21 @@ export class Entity {
 
     const componentName = typeOfComponent === 'string' ? (component as string) : getComponentName(component as any)
 
-    return this.components[componentName] || null
+    const storedComponent = this.components[componentName]
+
+    if (!storedComponent) {
+      return null
+    }
+
+    if (typeOfComponent === 'function') {
+      if (storedComponent instanceof (component as ComponentConstructor<T>)) {
+        return storedComponent
+      } else {
+        return null
+      }
+    }
+
+    return storedComponent
   }
 
   /**
@@ -112,13 +163,15 @@ export class Entity {
       throw new Error('Entity#getOrCreate(component): component is not a class')
     }
 
-    const componentName = getComponentName(component)
+    let ret = this.getOrNull(component)
 
-    let ret = this.components[componentName] || null
     if (!ret) {
       ret = new component()
-      this.set(ret)
+      // Safe-guard to only add registered components to entities
+      getComponentName(ret)
+      this.set(ret as any)
     }
+
     return ret
   }
 

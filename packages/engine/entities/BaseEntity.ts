@@ -69,7 +69,6 @@ export class BaseEntity extends BABYLON.AbstractMesh {
   addUUIDEvent(type: IEventNames, uuid: string): void {
     this.uuidEvents.set(type, uuid)
   }
-
   attachDisposableComponent(name: string, component: DisposableComponent) {
     const current = this.disposableComponents.get(name)
     if (current && current !== component) {
@@ -378,6 +377,16 @@ export class BaseEntity extends BABYLON.AbstractMesh {
       this.events.set(event, listenerList)
     }
     listenerList.push(fn)
+  }
+
+  removeListener<T extends IEventNames>(event: T, fn: (data: IEvents[T]) => void) {
+    let listenerList = this.events.get(event)
+    if (listenerList) {
+      const ix = listenerList.indexOf(fn)
+      if (ix !== -1) {
+        listenerList.splice(ix, 1)
+      }
+    }
   }
 
   updateComponent(payload: UpdateEntityComponentPayload) {

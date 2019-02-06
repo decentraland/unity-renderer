@@ -5,7 +5,7 @@ import { getParcelSceneLimits } from 'atomicHelpers/landHelpers'
 import { DEBUG, EDITOR } from 'config'
 import { checkParcelSceneBoundaries } from './entities/utils/checkParcelSceneLimits'
 import { BaseEntity } from 'engine/entities/BaseEntity'
-import { encodeParcelSceneBoundaries, gridToWorld } from 'atomicHelpers/parcelScenePositions'
+import { encodeParcelSceneBoundaries, gridToWorld, encodeParcelPosition } from 'atomicHelpers/parcelScenePositions'
 import { removeEntityHighlight, highlightEntity } from 'engine/components/ephemeralComponents/HighlightBox'
 import { createAxisEntity, createParcelOutline } from './entities/utils/debugEntities'
 import { createLogger } from 'shared/logger'
@@ -13,12 +13,15 @@ import { DevTools } from 'shared/apis/DevTools'
 import { ParcelIdentity } from 'shared/apis/ParcelIdentity'
 import { WebGLScene } from './WebGLScene'
 import { IEvents } from 'decentraland-ecs/src/decentraland/Types'
+import { scene } from 'engine/renderer'
 
 export class WebGLParcelScene extends WebGLScene<LoadableParcelScene> {
   public encodedPositions: string
 
   private setOfEntitiesOutsideBoundaries = new Set<BaseEntity>()
-  private validationInterval = null
+  private parcelSet = new Set<string>()
+
+  private shouldValidateBoundaries = false
 
   constructor(public data: EnvironmentData<LoadableParcelScene>) {
     super(
@@ -46,6 +49,10 @@ export class WebGLParcelScene extends WebGLScene<LoadableParcelScene> {
     this.context.logger = this.logger = createLogger(data.data.basePosition.x + ',' + data.data.basePosition.y + ': ')
 
     this.encodedPositions = encodeParcelSceneBoundaries(data.data.basePosition, data.data.parcels)
+
+    this.parcelSet.add(encodeParcelPosition(data.data.basePosition))
+    data.data.parcels.forEach($ => this.parcelSet.add(encodeParcelPosition($)))
+
     Object.assign(this.context.metricsLimits, getParcelSceneLimits(data.data.parcels.length))
 
     // Set a debug name in the root entity
@@ -57,10 +64,6 @@ export class WebGLParcelScene extends WebGLScene<LoadableParcelScene> {
     gridToWorld(this.data.data.basePosition.x, this.data.data.basePosition.y, this.context.rootEntity.position)
     this.context.rootEntity.freezeWorldMatrix()
 
-    this.validationInterval = setInterval(() => {
-      this.checkBoundaries()
-    }, 5000)
-
     this.context.on('metricsUpdate', data => {
       if (!EDITOR) {
         this.checkLimits(data)
@@ -69,12 +72,21 @@ export class WebGLParcelScene extends WebGLScene<LoadableParcelScene> {
 
     if (DEBUG) {
       this.context.onEntityMatrixChangedObservable.add(_entity => {
-        this.checkBoundaries()
+        this.shouldValidateBoundaries = true
       })
       this.initDebugEntities()
     }
 
     this.context.updateMetrics()
+
+    scene.onAfterRenderObservable.add(this.afterRender)
+  }
+
+  afterRender = () => {
+    if (this.shouldValidateBoundaries) {
+      this.shouldValidateBoundaries = false
+      this.checkBoundaries()
+    }
   }
 
   registerWorker(worker: SceneWorker): void {
@@ -94,8 +106,7 @@ export class WebGLParcelScene extends WebGLScene<LoadableParcelScene> {
 
   dispose(): void {
     super.dispose()
-
-    clearInterval(this.validationInterval)
+    scene.onAfterRenderObservable.removeCallback(this.afterRender)
   }
 
   /**
@@ -132,7 +143,7 @@ export class WebGLParcelScene extends WebGLScene<LoadableParcelScene> {
    */
   checkBoundaries() {
     const newSet = new Set<BaseEntity>()
-    this.context.entities.forEach(entity => checkParcelSceneBoundaries(this.encodedPositions, newSet, entity))
+    this.context.entities.forEach(entity => checkParcelSceneBoundaries(this.parcelSet, newSet, entity))
     // remove the highlight from the entities that were outside but they are no longer outside
     this.setOfEntitiesOutsideBoundaries.forEach($ => {
       if (!newSet.has($) && this.context.entities.has($.id)) {

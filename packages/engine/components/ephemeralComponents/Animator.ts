@@ -2,13 +2,14 @@ import { SkeletalAnimationComponent, SkeletalAnimationValue } from '../../../sha
 import { BaseComponent } from '../BaseComponent'
 import { validators } from '../helpers/schemaValidator'
 import { scene } from '../../renderer'
+import { disposeAnimationGroups } from 'engine/entities/utils/processModels'
 
 function validateClip(clipDef: SkeletalAnimationValue): SkeletalAnimationValue {
   if ((clipDef as any) != null && typeof (clipDef as any) === 'object') {
-    clipDef.weight = validators.float(clipDef.weight, 1)
+    clipDef.weight = Math.max(Math.min(1, validators.float(clipDef.weight, 1)), 0)
     clipDef.loop = validators.boolean(clipDef.loop, true)
     clipDef.playing = validators.boolean(clipDef.playing, true)
-    clipDef.speed = validators.float(clipDef.speed, 1)
+    clipDef.speed = Math.max(0, validators.float(clipDef.speed, 1))
 
     if (!clipDef.playing) {
       clipDef.weight = 0
@@ -66,8 +67,7 @@ export class Animator extends BaseComponent<SkeletalAnimationComponent> {
 
     this.currentAnimations.forEach((value, key) => {
       if (!usedClipsByName.has(key)) {
-        value.stop()
-        value.dispose()
+        disposeAnimationGroups(value)
         this.currentAnimations.delete(key)
       }
     })
@@ -77,6 +77,6 @@ export class Animator extends BaseComponent<SkeletalAnimationComponent> {
 
   detach() {
     super.detach()
-    this.currentAnimations.forEach($ => $.dispose())
+    this.currentAnimations.forEach(disposeAnimationGroups)
   }
 }

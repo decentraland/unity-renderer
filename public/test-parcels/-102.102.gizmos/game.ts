@@ -20,7 +20,7 @@ function createCube(i: number) {
   gizmo.position = !!(i & 1)
   gizmo.scale = !!(i & 2)
   gizmo.rotation = !!(i & 4)
-  gizmo.cycle = !!(i % 8)
+  gizmo.cycle = !!(i & 8)
 
   cube.set(gizmo)
   cube.set(

@@ -91,14 +91,15 @@ export abstract class BasicShape<T> extends DisposableComponent {
     if (this.data.visible === false) {
       entity.removeObject3D(BasicShape.nameInEntity)
     } else {
-      const model = this.generateModel()
+      const mesh = this.generateModel()
 
-      model.actionManager = entity.getActionManager()
-      model.isPickable = true
+      mesh.cullingStrategy = BABYLON.AbstractMesh.CULLINGSTRATEGY_BOUNDINGSPHERE_ONLY
+      mesh.actionManager = entity.getActionManager()
+      mesh.isPickable = true
 
-      entity.setObject3D(BasicShape.nameInEntity, model)
+      entity.setObject3D(BasicShape.nameInEntity, mesh)
 
-      model.setEnabled(!!this.data.visible)
+      mesh.setEnabled(!!this.data.visible)
 
       this.setCollisions(entity)
     }

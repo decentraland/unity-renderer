@@ -1,8 +1,8 @@
 import { BaseComponent } from '../BaseComponent'
-import { BaseEntity } from 'engine/entities/BaseEntity'
+import { BaseEntity } from '../../entities/BaseEntity'
 import { AudioClip } from '../disposableComponents/AudioClip'
 import future from 'fp-future'
-import { scene } from 'engine/renderer'
+import { scene } from '../../renderer/init'
 
 const defaultValue = {
   loop: true,
@@ -89,7 +89,7 @@ export class AudioSource extends BaseComponent<typeof defaultValue> {
               {
                 spatialSound: true,
                 distanceModel: 'exponential',
-                rolloffFactor: 0.5
+                rolloffFactor: 1.5
               }
             )
           })
@@ -107,6 +107,7 @@ export class AudioSource extends BaseComponent<typeof defaultValue> {
 
   detach() {
     super.detach()
+    this.disposeSound()
     this.entity.unregisterAfterWorldMatrixUpdate(this.updatePosition)
   }
 

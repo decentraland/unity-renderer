@@ -1,13 +1,41 @@
 import * as BABYLON from 'babylonjs'
 import { markAsCollider } from './colliders'
+import { scene } from 'engine/renderer'
 
 function disposeDelegate($: { dispose: Function }) {
   $.dispose()
 }
+
 function disposeNodeDelegate($: BABYLON.TransformNode) {
   $.setEnabled(false)
   $.parent = null
   $.dispose(false)
+}
+
+function disposeSkeleton($: BABYLON.Skeleton) {
+  $.dispose()
+  $.bones.forEach($ => {
+    $.parent = null
+    $.dispose()
+  })
+}
+
+function disposeAnimatable($: BABYLON.Animatable) {
+  if (!$) return
+  $.disposeOnEnd = true
+  $.loopAnimation = false
+  $.stop()
+  $._animate(0)
+}
+
+export function disposeAnimationGroups($: BABYLON.AnimationGroup) {
+  $.animatables.forEach(disposeAnimatable)
+
+  $.targetedAnimations.forEach($ => {
+    disposeAnimatable(scene.getAnimatableByTarget($.target))
+  })
+
+  $.dispose()
 }
 
 export function cleanupAssetContainer($: BABYLON.AssetContainer) {
@@ -17,9 +45,10 @@ export function cleanupAssetContainer($: BABYLON.AssetContainer) {
     $.rootNodes && $.rootNodes.forEach(disposeNodeDelegate)
     $.meshes && $.meshes.forEach(disposeNodeDelegate)
     $.textures && $.textures.forEach(disposeDelegate)
+    $.animationGroups && $.animationGroups.forEach(disposeAnimationGroups)
     $.multiMaterials && $.multiMaterials.forEach(disposeDelegate)
     $.sounds && $.sounds.forEach(disposeDelegate)
-    $.skeletons && $.skeletons.forEach(disposeDelegate)
+    $.skeletons && $.skeletons.forEach(disposeSkeleton)
     $.materials && $.materials.forEach(disposeDelegate)
     $.lights && $.lights.forEach(disposeDelegate)
   }

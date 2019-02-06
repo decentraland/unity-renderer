@@ -27,6 +27,7 @@ export class OBJShape extends DisposableComponent {
           }
 
           assetContainer.meshes.forEach(mesh => {
+            mesh.cullingStrategy = BABYLON.AbstractMesh.CULLINGSTRATEGY_BOUNDINGSPHERE_ONLY
             if (!assetContainer.materials.includes(mesh.material)) {
               assetContainer.materials.push(mesh.material)
             }
@@ -63,6 +64,10 @@ export class OBJShape extends DisposableComponent {
             assetContainer.meshes.forEach($ => {
               $.parent = node
             })
+
+            this.contributions.materialCount = assetContainer.materials.length
+            this.contributions.geometriesCount = assetContainer.geometries.length
+            this.contributions.textureCount = assetContainer.textures.length
 
             node.scaling.set(1, 1, -1)
 
@@ -114,18 +119,13 @@ export class OBJShape extends DisposableComponent {
           if (data.visible === false) {
             this.entities.forEach($ => this.onDetach($))
           } else {
-            this.entities.forEach($ => this.attachTo($))
+            this.entities.forEach($ => this.onAttach($))
           }
         } else {
-          this.entities.forEach($ => this.attachTo($))
+          this.entities.forEach($ => this.onAttach($))
         }
       }
     }
-  }
-
-  dispose() {
-    super.dispose()
-    this.assetContainerEntity.forEach($ => cleanupAssetContainer($))
   }
 }
 

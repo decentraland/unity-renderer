@@ -8382,6 +8382,52 @@
       "remarks": [],
       "isBeta": false
     },
+    "Gizmo": {
+      "kind": "enum",
+      "values": {
+        "MOVE": {
+          "kind": "enum value",
+          "value": "\"MOVE\"",
+          "deprecatedMessage": [],
+          "summary": [],
+          "remarks": [],
+          "isBeta": true
+        },
+        "NONE": {
+          "kind": "enum value",
+          "value": "\"NONE\"",
+          "deprecatedMessage": [],
+          "summary": [],
+          "remarks": [],
+          "isBeta": true
+        },
+        "ROTATE": {
+          "kind": "enum value",
+          "value": "\"ROTATE\"",
+          "deprecatedMessage": [],
+          "summary": [],
+          "remarks": [],
+          "isBeta": true
+        },
+        "SCALE": {
+          "kind": "enum value",
+          "value": "\"SCALE\"",
+          "deprecatedMessage": [],
+          "summary": [],
+          "remarks": [],
+          "isBeta": true
+        }
+      },
+      "deprecatedMessage": [],
+      "summary": [
+        {
+          "kind": "text",
+          "text": "Gizmo identifiers"
+        }
+      ],
+      "remarks": [],
+      "isBeta": true
+    },
     "Gizmos": {
       "kind": "class",
       "extends": "ObservableComponent",
@@ -8398,6 +8444,48 @@
       "isBeta": true,
       "isSealed": false,
       "members": {
+        "cycle": {
+          "kind": "property",
+          "signature": "cycle: boolean;",
+          "isOptional": false,
+          "isReadOnly": false,
+          "isStatic": false,
+          "type": "boolean",
+          "deprecatedMessage": [],
+          "summary": [
+            {
+              "kind": "text",
+              "text": "Cycle through gizmos using click."
+            }
+          ],
+          "remarks": [],
+          "isBeta": true,
+          "isSealed": false,
+          "isVirtual": false,
+          "isOverride": false,
+          "isEventProperty": false
+        },
+        "localReference": {
+          "kind": "property",
+          "signature": "localReference: boolean;",
+          "isOptional": false,
+          "isReadOnly": false,
+          "isStatic": false,
+          "type": "boolean",
+          "deprecatedMessage": [],
+          "summary": [
+            {
+              "kind": "text",
+              "text": "Align the gizmos to match the local reference system"
+            }
+          ],
+          "remarks": [],
+          "isBeta": true,
+          "isSealed": false,
+          "isVirtual": false,
+          "isOverride": false,
+          "isEventProperty": false
+        },
         "position": {
           "kind": "property",
           "signature": "position: boolean;",
@@ -8461,18 +8549,18 @@
           "isOverride": false,
           "isEventProperty": false
         },
-        "updateEntity": {
+        "selectedGizmo": {
           "kind": "property",
-          "signature": "updateEntity: boolean;",
-          "isOptional": false,
+          "signature": "selectedGizmo?: Gizmo;",
+          "isOptional": true,
           "isReadOnly": false,
           "isStatic": false,
-          "type": "boolean",
+          "type": "Gizmo",
           "deprecatedMessage": [],
           "summary": [
             {
               "kind": "text",
-              "text": "Update entity while dragging. Also let the entity in it's final place after releasing the gizmo."
+              "text": "If cycle is false, this will be the selected gizmo"
             }
           ],
           "remarks": [],

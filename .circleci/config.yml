@@ -101,14 +101,18 @@ jobs:
       - run: sudo apt-get -y -qq install awscli
       - run:
           name: Deploy to .zone if tests pass and branch is Master
-          command: aws s3 sync static s3://client.decentraland.zone/ --exclude "branch/*" --acl public-read
-#      - run:
-#          name: Deploy to .today if tests pass and branch is Master
-#          command: aws s3 sync static s3://client.decentraland.today/ --acl public-read
+          command: aws s3 sync static s3://explorer.decentraland.zone/ --exclude "branch/*" --acl public-read
+      #      - run:
+      #          name: Deploy to .today if tests pass and branch is Master
+      #          command: aws s3 sync static s3://explorer.decentraland.today/ --acl public-read
       - run:
-          name: Deploy tag
+          name: Deploy tag to .today/tags/$CIRCLE_TAG
           command: |
-            [ ! -z "${CIRCLE_TAG}" ] && aws s3 sync static s3://client.decentraland.today/tags/$CIRCLE_TAG --exclude "tags/*" --acl public-read || true
+            [ ! -z "${CIRCLE_TAG}" ] && aws s3 sync static s3://explorer.decentraland.today/tags/$CIRCLE_TAG --exclude "tags/*" --acl public-read || true
+      - run:
+          name: Deploy tag to .today
+          command: |
+            [ ! -z "${CIRCLE_TAG}" ] && aws s3 sync static s3://explorer.decentraland.today/ --exclude "tags/*" --acl public-read || true
 
   pull-deploy:
     docker:
@@ -121,7 +125,7 @@ jobs:
       - run: sudo apt-get -y -qq install awscli
       - run:
           name: Deploy to S3 under subfolder if tests pass and branch is not master
-          command: aws s3 sync static s3://client.decentraland.zone/branch/$CIRCLE_BRANCH --acl public-read
+          command: aws s3 sync static s3://explorer.decentraland.zone/branch/$CIRCLE_BRANCH --acl public-read
 
 workflows:
   version: 2

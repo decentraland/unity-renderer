@@ -17,7 +17,6 @@ shark.set(
 )
 
 const shark2 = new Entity()
-const shape2 = new GLTFShape('shark_anim.gltf')
 const clip2 = new AnimationClip('shark_skeleton_bite', { weight: 0.7, speed: 5 })
 const clip3 = new AnimationClip('shark_skeleton_swim', { weight: 0.7, speed: 0.5 })
 const animator2 = shark2.getOrCreate(Animator)
@@ -26,7 +25,7 @@ animator2.addClip(clip3)
 clip2.play()
 clip3.play()
 
-shark2.set(shape2)
+shark2.set(shape)
 shark2.set(
   new Transform({
     position: new Vector3(6, 1, 6)

@@ -14,7 +14,6 @@ import { start, stop } from 'dcl'
 
 import { resolveUrl } from 'atomicHelpers/parseUrl'
 import { sleep, untilNextFrame } from 'atomicHelpers/sleep'
-import { DebugTelemetry } from 'atomicHelpers/DebugTelemetry'
 import { expect } from 'chai'
 import { bodyReadyFuture } from 'engine/renderer/init'
 import { BaseEntity } from 'engine/entities/BaseEntity'
@@ -28,8 +27,6 @@ import { MemoryTransport } from 'decentraland-rpc'
 
 import GamekitScene from '../packages/scene-system/scene.system'
 import { gridToWorld } from 'atomicHelpers/parcelScenePositions'
-
-DebugTelemetry.startTelemetry(process.env)
 
 const baseUrl = 'http://localhost:8080/local-ipfs/contents/'
 

@@ -13,9 +13,12 @@ export class GLTFShape extends DisposableComponent {
   src: string | null = null
   loadingDone = false
   assetContainerEntity = new Map<string, BABYLON.AssetContainer>()
+  entityIsLoading = new Set<string>()
 
   onAttach(entity: BaseEntity): void {
-    if (this.src) {
+    if (this.src && !this.entityIsLoading.has(entity.uuid)) {
+      this.entityIsLoading.add(entity.uuid)
+
       const url = resolveUrl(this.context.internalBaseUrl, this.src)
       const baseUrl = url.substr(0, url.lastIndexOf('/') + 1)
 
@@ -26,6 +29,8 @@ export class GLTFShape extends DisposableComponent {
         file,
         scene,
         assetContainer => {
+          this.entityIsLoading.delete(entity.uuid)
+
           if (this.assetContainerEntity.has(entity.uuid)) {
             this.onDetach(entity)
           }
@@ -68,9 +73,10 @@ export class GLTFShape extends DisposableComponent {
             processColliders(assetContainer, entity.getActionManager())
 
             // Fin the main mesh and add it as the BasicShape.nameInEntity component.
-            assetContainer.meshes.filter($ => $.name === '__root__').forEach($ => {
-              entity.setObject3D(BasicShape.nameInEntity, $)
-              $.rotation.set(0, Math.PI, 0)
+            assetContainer.meshes.filter($ => $.name === '__root__').forEach(mesh => {
+              entity.setObject3D(BasicShape.nameInEntity, mesh)
+              mesh.cullingStrategy = BABYLON.AbstractMesh.CULLINGSTRATEGY_BOUNDINGSPHERE_ONLY
+              mesh.rotation.set(0, Math.PI, 0)
             })
 
             this.assetContainerEntity.set(entity.uuid, assetContainer)
@@ -78,6 +84,10 @@ export class GLTFShape extends DisposableComponent {
             entity.assetContainer = assetContainer
 
             assetContainer.addAllToScene()
+
+            this.contributions.materialCount = assetContainer.materials.length
+            this.contributions.geometriesCount = assetContainer.geometries.length
+            this.contributions.textureCount = assetContainer.textures.length
 
             // This is weird. Verify what does this do.
             assetContainer.transformNodes.filter($ => $.name === '__root__').forEach($ => {
@@ -103,6 +113,8 @@ export class GLTFShape extends DisposableComponent {
         },
         null,
         (_scene, message, exception) => {
+          this.entityIsLoading.delete(entity.uuid)
+
           this.context.logger.error('Error loading GLTF', message || exception)
           this.onDetach(entity)
           entity.assetContainer = null
@@ -117,12 +129,12 @@ export class GLTFShape extends DisposableComponent {
       ) as any
 
       loader.animationStartMode = 0
-    } else {
-      debugger
     }
   }
 
   onDetach(entity: BaseEntity): void {
+    this.entityIsLoading.delete(entity.uuid)
+
     const mesh = entity.getObject3D(BasicShape.nameInEntity)
 
     if (mesh) {
@@ -152,20 +164,13 @@ export class GLTFShape extends DisposableComponent {
           if (data.visible === false) {
             this.entities.forEach($ => this.onDetach($))
           } else {
-            this.entities.forEach($ => this.attachTo($))
+            this.entities.forEach($ => this.onAttach($))
           }
         } else {
-          this.entities.forEach($ => this.attachTo($))
+          this.entities.forEach($ => this.onAttach($))
         }
       }
     }
-  }
-
-  dispose() {
-    super.dispose()
-    this.assetContainerEntity.forEach($ => {
-      cleanupAssetContainer($)
-    })
   }
 }
 

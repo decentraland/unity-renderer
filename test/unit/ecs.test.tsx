@@ -21,6 +21,12 @@ import { future } from 'fp-future'
 import { loadTestParcel, testScene, saveScreenshot, wait } from '../testHelpers'
 import { sleep } from 'atomicHelpers/sleep'
 import { BaseEntity } from 'engine/entities/BaseEntity'
+import { AudioClip } from 'engine/components/disposableComponents/AudioClip'
+import { AudioSource } from 'engine/components/ephemeralComponents/AudioSource'
+import { GLTFShape } from 'engine/components/disposableComponents/GLTFShape'
+import { Animator } from 'engine/components/ephemeralComponents/Animator'
+
+declare var describe: any, it: any
 
 describe('ECS', () => {
   describe('unit', () => {
@@ -266,6 +272,13 @@ describe('ECS', () => {
           this.asd = 3
         }
       }
+      @Component(componentName)
+      class TheCompoNotTheCompo {
+        asd = 1
+        constructor() {
+          this.asd = 3
+        }
+      }
       it('should have symbol in the class as long as the instance', () => {
         const inst = new TheCompo()
 
@@ -276,7 +289,19 @@ describe('ECS', () => {
 
       it('should add the component to an entity using the indicated component name', () => {
         const entity = new Entity()
-        entity.add(new TheCompo())
+
+        const compo = new TheCompo()
+
+        expect(entity.has(compo)).to.eq(false)
+        expect(entity.has(TheCompo)).to.eq(false)
+        expect(entity.has(TheCompoNotTheCompo)).to.eq(false)
+        expect(entity.has(componentName)).to.eq(false)
+        entity.add(compo)
+        expect(entity.has(compo)).to.eq(true, 'has(compo)')
+        expect(entity.has(TheCompo)).to.eq(true, 'has(TheCompo)')
+        expect(entity.has(TheCompoNotTheCompo)).to.eq(false, 'has(TheCompoNotTheCompo)')
+        expect(entity.has(componentName)).to.eq(true, 'has(componentName)')
+
         expect(entity.get(TheCompo)).to.be.instanceOf(TheCompo)
         expect(entity.components[componentName]).to.be.instanceOf(TheCompo)
         expect(entity.components[componentName]).to.eq(entity.get(TheCompo))
@@ -729,6 +754,95 @@ describe('ECS', () => {
       const worker = await futureWorker
       const scriptingHost = await worker.system
       scriptingHost.unmounted
+    })
+  })
+  describe('sound', () => {
+    let audioClips: AudioClip[] = []
+    let audioSources: AudioSource[] = []
+
+    loadTestParcel('test unload', -200, 2, function(_root, futureScene, futureWorker) {
+      it('must have two audio clips', async () => {
+        const scene = await futureScene
+        scene.context.disposableComponents.forEach($ => {
+          if ($ instanceof AudioClip) {
+            audioClips.push($)
+          }
+        })
+
+        expect(audioClips.length).to.eq(2)
+      })
+
+      it('must have two audio sources', async () => {
+        const scene = await futureScene
+        scene.context.entities.forEach($ => {
+          for (let i in $.components) {
+            console.log(i, $.components[i])
+            if ($.components[i] instanceof AudioSource) {
+              audioSources.push($.components[i] as any)
+            }
+          }
+        })
+
+        expect(audioSources.length).to.eq(2)
+      })
+    })
+
+    describe('after finalizing', () => {
+      it('must have stopped AudioClips', () => {
+        for (let clip of audioClips) {
+          expect(clip.entities.size).eq(0)
+        }
+      })
+
+      it('must have stopped AudioSources', async () => {
+        for (let source of audioSources) {
+          expect(source.sound.isPending).eq(true)
+        }
+      })
+    })
+  })
+
+  describe('gltf animations', () => {
+    let gltf: GLTFShape[] = []
+    let animators: Animator[] = []
+
+    loadTestParcel('test animatios', -100, 111, function(_root, futureScene, futureWorker) {
+      it('must have one gltf', async () => {
+        const scene = await futureScene
+        scene.context.disposableComponents.forEach($ => {
+          if ($ instanceof GLTFShape) {
+            gltf.push($)
+          }
+        })
+
+        expect(gltf.length).to.eq(1)
+      })
+
+      it('must have two animators', async () => {
+        const scene = await futureScene
+        scene.context.entities.forEach($ => {
+          for (let i in $.components) {
+            if ($.components[i] instanceof Animator) {
+              animators.push($.components[i] as Animator)
+            }
+          }
+        })
+
+        expect(animators.length).to.eq(2)
+      })
+
+      it('wait some seconds', async () => {
+        await sleep(1000)
+      })
+    })
+
+    describe('after', () => {
+      it('must have no entities in the shapes', () => {
+        for (let shape of gltf) {
+          expect(shape.assetContainerEntity.size).to.eq(0, 'asset container')
+          expect(shape.entities.size).to.eq(0, 'entities')
+        }
+      })
     })
   })
 

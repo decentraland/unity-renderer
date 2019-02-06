@@ -1,4 +1,4 @@
-import { uuid } from './helpers'
+import { newId } from './helpers'
 import { EventConstructor } from './EventManager'
 
 const componentSymbol = '__name__symbol_'
@@ -157,7 +157,7 @@ export function DisposableComponent(componentName: string, classId: number) {
 
       const args = Array.prototype.slice.call(arguments)
       const ret = new extendedClass(...args)
-      const id = uuid()
+      const id = newId('C')
 
       Object.defineProperty(ret, componentSymbol, {
         enumerable: false,

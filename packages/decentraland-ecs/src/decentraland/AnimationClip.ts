@@ -1,5 +1,5 @@
 import { ObservableComponent } from '../ecs/Component'
-import { uuid } from '../ecs/helpers'
+import { newId } from '../ecs/helpers'
 
 export type AnimationParams = {
   looping?: boolean
@@ -52,7 +52,7 @@ export class AnimationClip extends ObservableComponent {
 
   // @internal
   @ObservableComponent.readonly
-  readonly name: string = uuid()
+  readonly name: string = newId('AnimClip')
 
   constructor(clip: string, params: AnimationParams = defaultParams) {
     super()

@@ -32,6 +32,18 @@ let activeEntity: BaseEntity = null
 let selectedGizmo: Gizmo = Gizmo.MOVE
 let currentConfiguration = defaultValue
 
+function isSelectedGizmoValid() {
+  switch (selectedGizmo) {
+    case Gizmo.MOVE:
+      return !!currentConfiguration.position
+    case Gizmo.ROTATE:
+      return !!currentConfiguration.rotation
+    case Gizmo.SCALE:
+      return !!currentConfiguration.scale
+  }
+  return false
+}
+
 function switchGizmo() {
   let nextGizmo = selectedGizmo
 
@@ -137,6 +149,8 @@ export function selectGizmo(type: Gizmo) {
 }
 
 export class Gizmos extends BaseComponent<GizmoConfiguration> {
+  active = true
+
   transformValue(data: GizmoConfiguration) {
     return {
       ...defaultValue,
@@ -151,15 +165,18 @@ export class Gizmos extends BaseComponent<GizmoConfiguration> {
       if (currentConfiguration.cycle) {
         selectGizmo(switchGizmo())
       } else {
-        if (currentConfiguration.selectedGizmo && !selectGizmo(currentConfiguration.selectedGizmo)) {
-          selectGizmo(switchGizmo())
-        } else if (!selectGizmo(selectedGizmo)) {
+        if (isSelectedGizmoValid()) {
+          selectGizmo(selectedGizmo)
+        } else {
           selectGizmo(switchGizmo())
         }
       }
     } else {
       activeEntity = this.entity
-      if (!selectGizmo(selectedGizmo)) {
+
+      if (isSelectedGizmoValid()) {
+        selectGizmo(selectedGizmo)
+      } else {
         selectGizmo(switchGizmo())
       }
     }
@@ -188,7 +205,6 @@ export class Gizmos extends BaseComponent<GizmoConfiguration> {
     if (this.entity === activeEntity) {
       this.configureGizmos()
     }
-    // stub
   }
 
   attach(entity: BaseEntity) {
@@ -196,11 +212,14 @@ export class Gizmos extends BaseComponent<GizmoConfiguration> {
   }
 
   detach() {
-    // TODO: entity.removeListener('onClick', this.activate)
+    this.active = false
+    this.entity.removeListener('onClick', this.activate)
     if (activeEntity === this.entity) {
       gizmoManager.gizmos.positionGizmo.attachedMesh = null
       gizmoManager.gizmos.rotationGizmo.attachedMesh = null
       gizmoManager.gizmos.scaleGizmo.attachedMesh = null
     }
+    activeEntity = null
+    this.entity = null
   }
 }

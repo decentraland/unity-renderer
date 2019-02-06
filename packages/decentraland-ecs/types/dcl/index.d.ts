@@ -1304,6 +1304,17 @@ declare class GLTFShape extends Shape {
   constructor(src: string)
 }
 
+/**
+ * Gizmo identifiers
+ * @beta
+ */
+declare enum Gizmo {
+  MOVE = 'MOVE',
+  ROTATE = 'ROTATE',
+  SCALE = 'SCALE',
+  NONE = 'NONE'
+}
+
 declare type GizmoDragEndEvent = {
   type: 'gizmoDragEnded'
   transform: {
@@ -1338,10 +1349,17 @@ declare class Gizmos extends ObservableComponent {
    */
   scale: boolean
   /**
-   * Update entity while dragging. Also let the entity in it's final place after
-   * releasing the gizmo.
+   * Cycle through gizmos using click.
    */
-  updateEntity: boolean
+  cycle: boolean
+  /**
+   * If cycle is false, this will be the selected gizmo
+   */
+  selectedGizmo?: Gizmo
+  /**
+   * Align the gizmos to match the local reference system
+   */
+  localReference: boolean
 }
 
 /**

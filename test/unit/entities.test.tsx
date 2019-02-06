@@ -138,6 +138,6 @@ describe('entity tree tests', function() {
 
     expect(child.isDisposed()).to.equal(true)
     expect(entity.isDisposed()).to.equal(true)
-    expect(removedCalled).to.equal(true)
+    expect(removedCalled).to.equal(true, 'component.detach should have been called')
   })
 })

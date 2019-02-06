@@ -1,7 +1,7 @@
 import { Component, ObservableComponent, DisposableComponent } from '../ecs/Component'
 import { Vector3, Quaternion, Matrix, MathTmp, Color3 } from './math'
 import { AnimationClip } from './AnimationClip'
-import { uuid } from '../ecs/helpers'
+import { newId } from '../ecs/helpers'
 import { IEvents } from './Types'
 
 export type TranformConstructorArgs = {
@@ -43,6 +43,8 @@ export enum CLASS_ID {
   PRB_MATERIAL = 65,
 
   HIGHLIGHT_ENTITY = 66,
+
+  /** @deprecated */
   SOUND = 67,
 
   AUDIO_CLIP = 200,
@@ -667,7 +669,7 @@ export class BasicMaterial extends ObservableComponent {
 export class OnUUIDEvent<T extends keyof IEvents> extends ObservableComponent {
   readonly type: string | undefined
 
-  readonly uuid: string = uuid()
+  readonly uuid: string = newId('UUID')
 
   @ObservableComponent.field
   callback!: (event: any) => void

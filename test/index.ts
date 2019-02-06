@@ -17,7 +17,6 @@ import './atomicHelpers/vectorHelpers.test'
 /* UNIT */
 import './unit/entities.test'
 import './unit/passing.test'
-import './unit/telemetry.test'
 import './unit/positions.test'
 import './unit/ethereum.test'
 import './unit/schemaValidator.test'
