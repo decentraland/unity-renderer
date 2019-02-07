@@ -154,6 +154,8 @@ namespace UnityGLTF
             get { return _lastLoadedScene; }
         }
 
+        public Transform enparentTarget;
+
         /// <summary>
         /// Loads a glTF Scene into the LastLoadedScene field
         /// </summary>
@@ -797,11 +799,11 @@ namespace UnityGLTF
             GLTFHelpers.BuildAnimationSamplers(ref samplersByType);
         }
 
-        protected AnimationClip ConstructClip(Transform root, GameObject[] nodes, int animationId)
+        protected AnimationClip ConstructClip(Transform root, GameObject[] nodes, int animationId, out GLTFAnimation animation, out AnimationCacheData animationCache)
         {
-            GLTFAnimation animation = _gltfRoot.Animations[animationId];
+            animation = _gltfRoot.Animations[animationId];
 
-            AnimationCacheData animationCache = _assetCache.AnimationCache[animationId];
+            animationCache = _assetCache.AnimationCache[animationId];
             if (animationCache == null)
             {
                 animationCache = new AnimationCacheData(animation.Samplers.Count);
@@ -825,6 +827,12 @@ namespace UnityGLTF
             // needed because Animator component is unavailable at runtime
             clip.legacy = true;
 
+
+            return clip;
+        }
+
+        IEnumerator ProcessCurves(Transform root, GameObject[] nodes, AnimationClip clip, GLTFAnimation animation, AnimationCacheData animationCache)
+        {
             foreach (AnimationChannel channel in animation.Channels)
             {
                 AnimationSamplerCacheData samplerCache = animationCache.Samplers[channel.Sampler.Id];
@@ -848,9 +856,9 @@ namespace UnityGLTF
                             curveY.AddKey(time, position.y);
                             curveZ.AddKey(time, position.z);
                         }
-                        SetCurveMode(curveX, samplerCache.Interpolation);
-                        SetCurveMode(curveY, samplerCache.Interpolation);
-                        SetCurveMode(curveZ, samplerCache.Interpolation);
+                        yield return SetCurveMode(curveX, samplerCache.Interpolation);
+                        yield return SetCurveMode(curveY, samplerCache.Interpolation);
+                        yield return SetCurveMode(curveZ, samplerCache.Interpolation);
                         clip.SetCurve(relativePath, typeof(Transform), "localPosition.x", curveX);
                         clip.SetCurve(relativePath, typeof(Transform), "localPosition.y", curveY);
                         clip.SetCurve(relativePath, typeof(Transform), "localPosition.z", curveZ);
@@ -868,10 +876,10 @@ namespace UnityGLTF
                             curveZ.AddKey(time, rot.z);
                             curveW.AddKey(time, rot.w);
                         }
-                        SetCurveMode(curveX, samplerCache.Interpolation);
-                        SetCurveMode(curveY, samplerCache.Interpolation);
-                        SetCurveMode(curveZ, samplerCache.Interpolation);
-                        SetCurveMode(curveW, samplerCache.Interpolation);
+                        yield return SetCurveMode(curveX, samplerCache.Interpolation);
+                        yield return SetCurveMode(curveY, samplerCache.Interpolation);
+                        yield return SetCurveMode(curveZ, samplerCache.Interpolation);
+                        yield return SetCurveMode(curveW, samplerCache.Interpolation);
                         clip.SetCurve(relativePath, typeof(Transform), "localRotation.x", curveX);
                         clip.SetCurve(relativePath, typeof(Transform), "localRotation.y", curveY);
                         clip.SetCurve(relativePath, typeof(Transform), "localRotation.z", curveZ);
@@ -888,9 +896,9 @@ namespace UnityGLTF
                             curveZ.AddKey(time, scale.z);
                         }
 
-                        SetCurveMode(curveX, samplerCache.Interpolation);
-                        SetCurveMode(curveY, samplerCache.Interpolation);
-                        SetCurveMode(curveZ, samplerCache.Interpolation);
+                        yield return SetCurveMode(curveX, samplerCache.Interpolation);
+                        yield return SetCurveMode(curveY, samplerCache.Interpolation);
+                        yield return SetCurveMode(curveZ, samplerCache.Interpolation);
                         clip.SetCurve(relativePath, typeof(Transform), "localScale.x", curveX);
                         clip.SetCurve(relativePath, typeof(Transform), "localScale.y", curveY);
                         clip.SetCurve(relativePath, typeof(Transform), "localScale.z", curveZ);
@@ -916,11 +924,13 @@ namespace UnityGLTF
             } // foreach channel
 
             clip.EnsureQuaternionContinuity();
-            return clip;
+
+            yield return null;
         }
 
-        public static void SetCurveMode(AnimationCurve curve, InterpolationType mode)
+        public static IEnumerator SetCurveMode(AnimationCurve curve, InterpolationType mode)
         {
+            float startTime = Time.realtimeSinceStartup;
             for (int i = 0; i < curve.keys.Length; ++i)
             {
                 float intangent = 0;
@@ -988,6 +998,13 @@ namespace UnityGLTF
                 key.inTangent = intangent;
                 key.outTangent = outtangent;
                 curve.MoveKey(i, key);
+
+                if (Time.realtimeSinceStartup - startTime > 0.016f)
+                {
+                    startTime = Time.realtimeSinceStartup;
+                    yield return null;
+                }
+
             }
         }
         #endregion
@@ -996,6 +1013,10 @@ namespace UnityGLTF
         {
             var sceneObj = new GameObject(string.IsNullOrEmpty(scene.Name) ? ("GLTFScene") : scene.Name);
             sceneObj.SetActive(showSceneObj);
+            sceneObj.transform.parent = SceneParent;
+            sceneObj.transform.localPosition = Vector3.zero;
+            sceneObj.transform.localRotation = Quaternion.identity;
+            sceneObj.transform.localScale = Vector3.one;
 
             Transform[] nodeTransforms = new Transform[scene.Nodes.Count];
             for (int i = 0; i < scene.Nodes.Count; ++i)
@@ -1013,7 +1034,12 @@ namespace UnityGLTF
                 Animation animation = sceneObj.AddComponent<Animation>();
                 for (int i = 0; i < _gltfRoot.Animations.Count; ++i)
                 {
-                    AnimationClip clip = ConstructClip(sceneObj.transform, _assetCache.NodeCache, i);
+                    GLTFAnimation gltfAnimation = null;
+                    AnimationCacheData animationCache = null;
+
+                    AnimationClip clip = ConstructClip(sceneObj.transform, _assetCache.NodeCache, i, out gltfAnimation, out animationCache);
+
+                    yield return ProcessCurves(sceneObj.transform, _assetCache.NodeCache, clip, gltfAnimation, animationCache);
 
                     clip.wrapMode = WrapMode.Loop;
 

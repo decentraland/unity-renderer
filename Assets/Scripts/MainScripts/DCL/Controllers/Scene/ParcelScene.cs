@@ -79,31 +79,30 @@ namespace DCL.Controllers
 
         private CreateEntityMessage tmpCreateEntityMessage = new CreateEntityMessage();
 
-        public void CreateEntity(string json)
+        public DecentralandEntity CreateEntity(string json)
         {
             tmpCreateEntityMessage.FromJSON(json);
 
-            if (!entities.ContainsKey(tmpCreateEntityMessage.id))
+            if (entities.ContainsKey(tmpCreateEntityMessage.id))
             {
-                var newEntity = new DecentralandEntity();
-                newEntity.entityId = tmpCreateEntityMessage.id;
-                newEntity.gameObject = new GameObject();
-                newEntity.gameObject.transform.SetParent(gameObject.transform);
-                newEntity.gameObject.transform.localScale = Vector3.one;
-                newEntity.gameObject.name = "ENTITY_" + tmpCreateEntityMessage.id;
-                newEntity.scene = this;
-
-                entities.Add(tmpCreateEntityMessage.id, newEntity);
-
-                if (OnEntityAdded != null)
-                    OnEntityAdded.Invoke(newEntity);
+                return entities[tmpCreateEntityMessage.id];
             }
-#if UNITY_EDITOR || DEVELOPMENT_BUILD
-            else
-            {
-                throw new UnityException($"Couldn't create entity with ID: {tmpCreateEntityMessage.id} as it already exists.");
-            }
-#endif
+            
+            var newEntity = new DecentralandEntity();
+            newEntity.entityId = tmpCreateEntityMessage.id;
+            newEntity.gameObject = new GameObject();
+            newEntity.gameObject.transform.SetParent(gameObject.transform);
+            newEntity.gameObject.transform.localScale = Vector3.one;
+            newEntity.gameObject.transform.localPosition = Vector3.zero;
+            newEntity.gameObject.name = "ENTITY_" + tmpCreateEntityMessage.id;
+            newEntity.scene = this;
+
+            entities.Add(tmpCreateEntityMessage.id, newEntity);
+
+            if (OnEntityAdded != null)
+                OnEntityAdded.Invoke(newEntity);
+
+            return newEntity;
         }
 
         private RemoveEntityMessage tmpRemoveEntityMessage = new RemoveEntityMessage();
@@ -167,7 +166,6 @@ namespace DCL.Controllers
                 if (decentralandEntity != null)
                 {
                     decentralandEntity.gameObject.transform.SetParent(rootGameObject.transform);
-                    decentralandEntity.gameObject.transform.localScale = Vector3.one;
                 }
             }
             
@@ -234,7 +232,12 @@ namespace DCL.Controllers
                     newComponent.scene = this;
                     newComponent.entity = entity;
                     entity.components.Add(classId, newComponent);
-                    newComponent.gameObject.transform.parent = entity.gameObject.transform;
+
+                    newComponent.transform.SetParent( entity.gameObject.transform );
+                    newComponent.transform.localPosition = Vector3.zero;
+                    newComponent.transform.localRotation = Quaternion.identity;
+                    newComponent.transform.localScale = Vector3.one;
+
                     newComponent.UpdateFromJSON(createEntityComponentMessage.json);
                 }
             }
@@ -325,6 +328,7 @@ namespace DCL.Controllers
 
             if (newComponent != null)
             {
+                newComponent.id = sharedComponentCreatedMessage.id;
                 disposableComponents.Add(sharedComponentCreatedMessage.id, newComponent);
             }
 

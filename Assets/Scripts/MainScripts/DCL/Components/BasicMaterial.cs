@@ -1,9 +1,7 @@
-using System;
-using System.Collections;
-using System.Collections.Generic;
 using DCL.Controllers;
 using DCL.Helpers;
 using DCL.Models;
+using System.Collections;
 using UnityEngine;
 
 namespace DCL.Components
@@ -28,6 +26,8 @@ namespace DCL.Components
         Model model = new Model();
         public override string componentName => "material";
         public Material material;
+        bool isLoadingTexture = false;
+
 
         public BasicMaterial(ParcelScene scene) : base(scene)
         {
@@ -35,20 +35,20 @@ namespace DCL.Components
 
             OnAttach += OnMaterialAttached;
             OnDetach += OnMaterialDetached;
+
+            isLoadingTexture = false;
         }
+
 
         public override IEnumerator ApplyChanges(string newJson)
         {
-            JsonUtility.FromJsonOverwrite(newJson, model);
+            model = JsonUtility.FromJson<Model>(newJson);
 
-            if (!string.IsNullOrEmpty(model.texture))
+            if (!string.IsNullOrEmpty(model.texture) && !isLoadingTexture)
             {
-                //TODO(Brian): If we call ApplyChanges 2 times in a row and download is progressing
-                //             we will have 2 requests at the same time.
-                //             I address this in DCLAudioClip. Must fix later.
-
                 if (scene.sceneData.HasContentsUrl(model.texture))
                 {
+                    isLoadingTexture = true;
                     yield return Utils.FetchTexture(scene.sceneData.GetContentsUrl(model.texture), InitTexture);
                 }
             }
@@ -56,6 +56,7 @@ namespace DCL.Components
 
         void InitTexture(Texture texture)
         {
+            isLoadingTexture = false;
             material.mainTexture = texture;
 
             // WRAP MODE CONFIGURATION
@@ -92,17 +93,48 @@ namespace DCL.Components
 
         void OnMaterialAttached(DecentralandEntity entity)
         {
-            entity.EnsureMeshGameObject();
+            entity.OnShapeUpdated -= OnShapeUpdated;
+            entity.OnShapeUpdated += OnShapeUpdated;
 
-            var meshRenderer = Helpers.Utils.GetOrCreateComponent<MeshRenderer>(entity.meshGameObject);
+            if (entity.meshGameObject != null)
+            {
+                var meshRenderer = entity.meshGameObject.GetComponent<MeshRenderer>();
+
+                if (meshRenderer != null)
+                {
+                    InitMaterial(entity.meshGameObject);
+                }
+            }
+        }
+
+        void InitMaterial(GameObject meshGameObject)
+        {
+            if (meshGameObject == null)
+                return;
+
+            var meshRenderer = meshGameObject.GetComponent<MeshRenderer>();
             meshRenderer.sharedMaterial = material;
+        }
+
+        private void OnShapeUpdated(DecentralandEntity entity)
+        {
+            if (entity != null)
+            {
+                InitMaterial(entity.meshGameObject);
+            }
         }
 
         void OnMaterialDetached(DecentralandEntity entity)
         {
-            if (entity.meshGameObject == null) return;
+            if (entity.meshGameObject == null)
+            {
+                return;
+            }
+
+            entity.OnShapeUpdated -= OnShapeUpdated;
 
             var meshRenderer = entity.meshGameObject.GetComponent<MeshRenderer>();
+
             if (meshRenderer && meshRenderer.sharedMaterial == material)
             {
                 meshRenderer.sharedMaterial = null;

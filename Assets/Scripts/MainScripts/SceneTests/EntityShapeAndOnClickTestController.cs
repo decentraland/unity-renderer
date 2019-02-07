@@ -95,6 +95,18 @@ public class EntityShapeAndOnClickTestController : MonoBehaviour
         }));
 
 
+        //TestHelpers.CreateSceneEntity(scene, "9");
+        //scene.EntityComponentCreate(JsonUtility.ToJson(new DCL.Models.EntityComponentCreateMessage
+        //{
+        //    entityId = "9",
+        //    name = "text",
+        //    classId = (int)DCL.Models.CLASS_ID_COMPONENT.TEXT_SHAPE,
+        //    json = animJson
+        //}));
+
+        var model = new TextShape.Model() { value = "Hello World!", width = 0.5f, height = 0.5f, hAlign = 0.5f, vAlign = 0.5f }; 
+        TestHelpers.InstantiateEntityWithTextShape(scene, new Vector3(5, 5, 5), model);
+
         yield return null;
     }
 }

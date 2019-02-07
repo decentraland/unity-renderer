@@ -7,20 +7,22 @@ using UnityEngine;
 
 namespace DCL.Components
 {
-    [System.Serializable]
-    public class CylinderModel : BaseParamShapeModel
+    public class CylinderShape : BaseParametrizedShape<CylinderShape.Model>
     {
-        public float radiusTop = 1f;        // Cone/Cylinder
-        public float radiusBottom = 1f;     // Cone/Cylinder
-        public float segmentsHeight = 1f;   // Cone/Cylinder
-        public float segmentsRadial = 36f;  // Cone/Cylinder
-        public bool openEnded = false;      // Cone/Cylinder
-        public float? radius;               // Cone/Cylinder
-        public float arc = 360f;            // Cone/Cylinder
-    }
+        [System.Serializable]
+        new public class Model : BaseShape.Model
+        {
+            public float radiusTop = 1f;        // Cone/Cylinder
+            public float radiusBottom = 1f;     // Cone/Cylinder
+            public float segmentsHeight = 1f;   // Cone/Cylinder
+            public float segmentsRadial = 36f;  // Cone/Cylinder
+            public bool openEnded = false;      // Cone/Cylinder
+            public float? radius;               // Cone/Cylinder
+            public float arc = 360f;            // Cone/Cylinder
+        }
 
-    public class CylinderShape : BaseParametrizedShape<CylinderModel>
-    {
+        public override string componentName => "Cylinder Shape";
+
         public CylinderShape(ParcelScene scene) : base(scene) { }
 
         public override Mesh GenerateGeometry()

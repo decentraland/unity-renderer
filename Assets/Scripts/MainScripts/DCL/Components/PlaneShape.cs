@@ -7,16 +7,18 @@ using UnityEngine;
 
 namespace DCL.Components
 {
-    [System.Serializable]
-    public class PlaneModel : BaseParamShapeModel
+    public class PlaneShape : BaseParametrizedShape<PlaneShape.Model>
     {
-        public List<float>[] uvs;
-        public float width = 1f;   // Plane
-        public float height = 1f;  // Plane
-    }
+        [System.Serializable]
+        new public class Model : BaseShape.Model
+        {
+            public List<float>[] uvs;
+            public float width = 1f;   // Plane
+            public float height = 1f;  // Plane
+        }
 
-    public class PlaneShape : BaseParametrizedShape<PlaneModel>
-    {
+        public override string componentName => "Plane Shape";
+
         public PlaneShape(ParcelScene scene) : base(scene) { }
 
         public override Mesh GenerateGeometry()

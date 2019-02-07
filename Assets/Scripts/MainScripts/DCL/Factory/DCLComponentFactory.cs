@@ -36,13 +36,28 @@ namespace DCL
             }
         }
 
+        public CLASS_ID_COMPONENT GetIdForType<T>() where T : Component
+        {
+            for (int i = 0; i < factoryList.Length; i++)
+            {
+                Item item = factoryList[i];
+
+                if (item != null && item.prefab != null && item.prefab.GetComponent<T>() != null)
+                {
+                    return item.classId;
+                }
+            }
+
+            return CLASS_ID_COMPONENT.NONE;
+        }
+
         public ItemType CreateItemFromId<ItemType>(CLASS_ID_COMPONENT id)
         {
             EnsueFactoryDictionary();
 
             if (!factoryDict.ContainsKey(id))
             {
-                Debug.LogError("Class " + id + " can't be instantiated because the field doesn't exists!");
+                Debug.LogWarning("Class " + id + " can't be instantiated because the field doesn't exists!");
                 return default(ItemType);
             }
 

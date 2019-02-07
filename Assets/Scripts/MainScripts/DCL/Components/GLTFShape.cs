@@ -24,6 +24,7 @@ namespace DCL.Components
             alreadyLoaded = false;
             gltfLoaderComponent = gameObject.AddComponent<GLTFComponent>();
             gltfLoaderComponent.OnFinishedLoadingAsset += CallOnComponentUpdatedEvent;
+            gltfLoaderComponent.OnFailedLoadingAsset += CallOnFailure;
 
             gltfLoaderComponent.Multithreaded = false;
             gltfLoaderComponent.LoadAsset(src, true);
@@ -36,6 +37,11 @@ namespace DCL.Components
             {
                 gltfLoaderComponent.loadingPlaceholder.SetActive(true);
             }
+        }
+
+        void CallOnFailure()
+        {
+            gameObject.name += " - Failed loading";
         }
 
         void CallOnComponentUpdatedEvent()
@@ -56,6 +62,7 @@ namespace DCL.Components
             if (gltfLoaderComponent != null)
             {
                 gltfLoaderComponent.OnFinishedLoadingAsset -= CallOnComponentUpdatedEvent;
+                gltfLoaderComponent.OnFailedLoadingAsset -= CallOnFailure;
             }
 
             Destroy(gltfLoaderComponent);
@@ -65,6 +72,8 @@ namespace DCL.Components
 
     public class GLTFShape : BaseLoadableShape<GLTFLoader>
     {
+        public override string componentName => "GLTF Shape";
+
         public GLTFShape(ParcelScene scene) : base(scene)
         {
         }

@@ -1,3 +1,4 @@
+using DCL.Components;
 using DCL.Helpers;
 using DCL.Models;
 using Newtonsoft.Json;
@@ -86,6 +87,8 @@ public class IntegrationTestController : MonoBehaviour
             classId = (int)CLASS_ID_COMPONENT.TRANSFORM,
             json = "{\"tag\":\"transform\",\"position\":{\"x\":6,\"y\":0,\"z\":5},\"rotation\":{\"x\":0,\"y\":0.39134957508996265,\"z\":0,\"w\":0.9202420931897769},\"scale\":{\"x\":1,\"y\":1,\"z\":1}}"
         }));
+
+        TestHelpers.InstantiateEntityWithTextShape(scene, new Vector3(10, 10, 10), new TextShape.Model() { value = "Hello World!!!" });
     }
 
     public void Verify()
@@ -135,6 +138,7 @@ public class IntegrationTestController : MonoBehaviour
             Assert.AreEqual(newMesh.name, "DCL Sphere Instance");
             Assert.AreNotEqual(mesh.name, newMesh.name, "The mesh instance remains the same, a new instance should have been created.");
         }
+
 
         // TODO: test ComponentRemoved
     }

@@ -54,6 +54,8 @@ namespace DCL.Components
 
     public class OBJShape : BaseLoadableShape<OBJLoader>
     {
+        public override string componentName => "OBJ Shape";
+
         public OBJShape(ParcelScene scene) : base(scene)
         {
         }
