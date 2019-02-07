@@ -22,14 +22,16 @@ namespace DCL.Models
 
         const string MESH_GAMEOBJECT_NAME = "Mesh";
 
-        public void EnsureMeshGameObject()
+        public void EnsureMeshGameObject(string gameObjectName=null)
         {
             if (meshGameObject == null)
             {
                 meshGameObject = new GameObject();
-                meshGameObject.name = MESH_GAMEOBJECT_NAME;
+                meshGameObject.name = gameObjectName == null ? MESH_GAMEOBJECT_NAME : gameObjectName;
                 meshGameObject.transform.SetParent(gameObject.transform);
                 meshGameObject.transform.localPosition = Vector3.zero;
+                meshGameObject.transform.localScale = Vector3.one;
+                meshGameObject.transform.localRotation = Quaternion.identity;
             }
         }
     }

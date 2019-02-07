@@ -28,8 +28,8 @@ namespace DCL.Components
             [Header("Text box properties")]
             public float hAlign;
             public float vAlign;
-            public float width = 10;
-            public float height = 10;
+            public float width = 1f;
+            public float height = .2f;
             public bool resizeToFit;
             public float paddingTop;
             public float paddingRight;
@@ -65,9 +65,8 @@ namespace DCL.Components
         }
 
         public Model model;
-
-        public TextMeshProUGUI text;
-        public Canvas canvas;
+        public TextMeshPro text;
+        public RectTransform rectTransform;
 
         public override IEnumerator ApplyChanges(string newJson)
         {
@@ -78,19 +77,17 @@ namespace DCL.Components
 
         void ApplyModelChanges(Model model)
         {
-            RectTransform canvasRectTransform = canvas.GetComponent<RectTransform>();
-            canvasRectTransform.sizeDelta = new Vector2(model.width, model.height);
+            rectTransform.sizeDelta = new Vector2(model.width, model.height);
 
-            RectTransform textRectTransform = text.GetComponent<RectTransform>();
-            textRectTransform.anchorMin = Vector2.zero;
-            textRectTransform.anchorMax = Vector2.one;
-            textRectTransform.offsetMin = Vector2.zero;
-            textRectTransform.offsetMax = Vector2.zero;
+            rectTransform.anchorMin = Vector2.zero;
+            rectTransform.anchorMax = Vector2.one;
+            rectTransform.offsetMin = Vector2.zero;
+            rectTransform.offsetMax = Vector2.zero;
 
             text.text = model.value;
 
             text.color = new Color(model.color.r, model.color.g, model.color.b, model.opacity);
-            text.fontSize = (int)model.fontSize;
+            text.fontSize = (int)model.fontSize / 20.0f;
             text.richText = true;
             text.overflowMode = TextOverflowModes.Overflow;
             text.enableAutoSizing = model.resizeToFit;
@@ -105,10 +102,8 @@ namespace DCL.Components
 
             text.alignment = GetAlignment(model.hAlign, model.vAlign);
             text.lineSpacing = model.lineSpacing;
-            text.maxVisibleLines = model.lineCount;
+            text.maxVisibleLines = Mathf.Max( model.lineCount, 1 );
             text.enableWordWrapping = model.textWrapping;
-
-            text.Rebuild(CanvasUpdate.PreRender);
 
             if (model.shadowOffsetX == 0 && model.shadowOffsetY == 0)
             {

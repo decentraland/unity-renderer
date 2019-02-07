@@ -1,5 +1,5 @@
-using System.Collections.Generic;
 using DCL.Interface;
+using System.Collections.Generic;
 using UnityEngine;
 using WebSocketSharp;
 using WebSocketSharp.Server;
@@ -41,15 +41,7 @@ namespace DCL
             {
                 Message finalMessage;
 
-                if (WSSController.debugMode)
-                {
-                    finalMessage = new Message() { type = "LoadParcelScenes", payload = e.Data };
-                }
-                else
-                {
-                    finalMessage = JsonUtility.FromJson<Message>(e.Data);
-                }
-
+                finalMessage = JsonUtility.FromJson<Message>(e.Data);
 
                 WSSController.queuedMessages.Enqueue(finalMessage);
                 WSSController.queuedMessagesDirty = true;
@@ -82,9 +74,6 @@ namespace DCL
         WebSocketServer ws;
         public SceneController sceneController;
         public DCLCharacterController characterController;
-        public bool debugModeEnabled;
-
-        public static bool debugMode;
 
         [System.NonSerialized]
         public static Queue<DCLWebSocketService.Message> queuedMessages = new Queue<DCLWebSocketService.Message>();
@@ -93,14 +82,21 @@ namespace DCL
 
         public bool isServerReady { get { return ws.IsListening; } }
 
+        public bool openBrowserWhenStart;
+        public Vector2 startInCoords = new Vector2(-99, 109);
+
         private void OnEnable()
         {
 #if UNITY_EDITOR
-            WSSController.debugMode = debugModeEnabled;
             ws = new WebSocketServer("ws://localhost:5000");
             ws.AddWebSocketService<DCLWebSocketService>("/dcl");
 
             ws.Start();
+
+            if (openBrowserWhenStart)
+            {
+                Application.OpenURL("http://localhost:8080/tetra.html?DEBUG&position=" + startInCoords.x + "%2C" + startInCoords.y + "&ws=ws%3A%2F%2Flocalhost%3A5000%2Fdcl");
+            }
 #endif
         }
 
@@ -123,7 +119,10 @@ namespace DCL
                     {
                         DCLWebSocketService.Message msg = queuedMessages.Dequeue();
 
-                        if ( VERBOSE ) Debug.Log("<b><color=#0000FF>WSSController</color></b> >>> Got it! passing message of type " + msg.type);
+                        if (VERBOSE)
+                        {
+                            Debug.Log("<b><color=#0000FF>WSSController</color></b> >>> Got it! passing message of type " + msg.type);
+                        }
 
                         switch (msg.type)
                         {

@@ -70,11 +70,9 @@ namespace Tests
 
             yield return new WaitForSeconds(0.01f);
 
-            Canvas canvas = textShape.GetComponentInChildren<Canvas>();
-            TextMeshProUGUI tmpro = textShape.GetComponentInChildren<TextMeshProUGUI>();
+            TextMeshPro tmpro = textShape.GetComponentInChildren<TextMeshPro>();
 
             Assert.NotNull(textShape, "Component creation fail!");
-            Assert.NotNull(canvas, "Canvas doesn't exists for TextShape!");
             Assert.NotNull(tmpro, "TextMeshPro doesn't exists for TextShape!");
             Assert.NotNull(textShape.text, "Unity Text component doesn't exists for TextShape!");
 
@@ -102,7 +100,7 @@ namespace Tests
             yield return null;
         }
 
-        void TMProConsistencyAsserts(TextMeshProUGUI tmpro, TextShape.Model model)
+        void TMProConsistencyAsserts(TextMeshPro tmpro, TextShape.Model model)
         {
             Assert.AreEqual(model.paddingLeft, tmpro.margin[0], 0.01, string.Format("Left margin must be {0}", model.paddingLeft) );
             Assert.AreEqual(model.paddingTop, tmpro.margin[1], 0.01, string.Format("Top margin must be {0}", model.paddingTop));

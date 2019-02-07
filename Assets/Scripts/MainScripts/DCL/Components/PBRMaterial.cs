@@ -48,27 +48,9 @@ namespace DCL.Components
         const string BASIC_MATERIAL_NAME = "BasicShapeMaterial";
         const string PBR_MATERIAL_NAME = "ShapeMaterial";
 
-        private void LoadMaterial(string name)
-        {
-            if (material == null || material.name != name)
-            {
-                if (material != null)
-                {
-                    // Unity documentation states that material destruction is the dev's responsibility
-                    // Destroying the sharedMaterial destroys all the instances of the material assigned to
-                    // any meshRenderer
-                    // TODO: validate that comment ^^^
-                    UnityEngine.Object.Destroy(material);
-
-                    Resources.UnloadUnusedAssets();
-                }
-
-                material = new Material(Resources.Load<Material>(MATERIAL_RESOURCES_PATH + name));
-                material.name = name; // Unity instantiates the material as 'ShapeMaterial(Clone)' for example.
-
-                material.enableInstancing = true;
-            }
-        }
+        bool loadingAlbedoTexture = false;
+        bool loadingBumpTexture = false;
+        bool loadingEmissiveTexture = false;
 
         public PBRMaterial(ParcelScene scene) : base(scene)
         {
@@ -77,12 +59,16 @@ namespace DCL.Components
 
             OnAttach += OnMaterialAttached;
             OnDetach += OnMaterialDetached;
+
+            loadingAlbedoTexture = false;
+            loadingBumpTexture = false;
+            loadingEmissiveTexture = false;
         }
 
         public override IEnumerator ApplyChanges(string newJson)
         {
+            model = JsonUtility.FromJson<Model>(newJson);
             Color auxColor = new Color();
-            JsonUtility.FromJsonOverwrite(newJson, model);
 
             if (model.disableLighting)
             {
@@ -92,15 +78,17 @@ namespace DCL.Components
             {
                 LoadMaterial(PBR_MATERIAL_NAME);
                 // FETCH AND LOAD EMISSIVE TEXTURE
-                if (!string.IsNullOrEmpty(model.emissiveTexture))
+                if (!string.IsNullOrEmpty(model.emissiveTexture) && !loadingEmissiveTexture)
                 {
                     string texUrl;
 
                     if (scene.sceneData.TryGetContentsUrl(model.emissiveTexture, out texUrl))
                     {
+                        loadingEmissiveTexture = true;
                         yield return Utils.FetchTexture(texUrl, (fetchedEmissiveTexture) =>
                         {
                             material.SetTexture("_EmissionMap", fetchedEmissiveTexture);
+                            loadingEmissiveTexture = false;
                         });
                     }
                 }
@@ -122,27 +110,31 @@ namespace DCL.Components
             material.SetColor("_Color", auxColor);
 
             // FETCH AND LOAD TEXTURES
-            if (!string.IsNullOrEmpty(model.albedoTexture))
+            if (!string.IsNullOrEmpty(model.albedoTexture) && !loadingAlbedoTexture)
             {
                 string albedoTextureUrl;
 
                 if (scene.sceneData.TryGetContentsUrl(model.albedoTexture, out albedoTextureUrl))
                 {
+                    loadingAlbedoTexture = true;
                     yield return Utils.FetchTexture(albedoTextureUrl, (fetchedAlbedoTexture) =>
                     {
+                        loadingAlbedoTexture = false;
                         material.SetTexture("_MainTex", fetchedAlbedoTexture);
                     });
                 }
             }
 
-            if (!string.IsNullOrEmpty(model.bumpTexture))
+            if (!string.IsNullOrEmpty(model.bumpTexture) && !loadingBumpTexture)
             {
                 string bumpTextureUrl;
 
                 if (scene.sceneData.TryGetContentsUrl(model.bumpTexture, out bumpTextureUrl))
                 {
+                    loadingBumpTexture = true;
                     yield return Utils.FetchTexture(bumpTextureUrl, (fetchedBumpTexture) =>
                     {
+                        loadingBumpTexture = false;
                         material.SetTexture("_BumpMap", fetchedBumpTexture);
                     });
                 }
@@ -188,22 +180,70 @@ namespace DCL.Components
             }
         }
 
+        private void LoadMaterial(string name)
+        {
+            if (material == null || material.name != name)
+            {
+                if (material != null)
+                {
+                    UnityEngine.Object.Destroy(material);
+                    Resources.UnloadUnusedAssets();
+                }
+
+                material = new Material(Resources.Load<Material>(MATERIAL_RESOURCES_PATH + name));
+                material.name = name;
+
+                material.enableInstancing = true;
+            }
+        }
+
         void OnMaterialAttached(DecentralandEntity entity)
         {
-            if (entity.meshGameObject == null)
+            entity.OnShapeUpdated -= OnShapeUpdated;
+            entity.OnShapeUpdated += OnShapeUpdated;
+
+            if (entity.meshGameObject != null)
             {
-                entity.meshGameObject = new GameObject("Mesh");
+                var meshRenderer = entity.meshGameObject.GetComponent<MeshRenderer>();
+
+                if (meshRenderer != null)
+                {
+                    InitMaterial(entity.meshGameObject);
+                }
             }
 
-            var meshRenderer = Helpers.Utils.GetOrCreateComponent<MeshRenderer>(entity.meshGameObject);
+        }
+
+        void InitMaterial(GameObject meshGameObject)
+        {
+            if (meshGameObject == null)
+                return;
+
+            var meshRenderer = meshGameObject.GetComponent<MeshRenderer>();
             meshRenderer.sharedMaterial = material;
         }
 
+
+        private void OnShapeUpdated(DecentralandEntity entity)
+        {
+            if (entity != null)
+            {
+                InitMaterial(entity.meshGameObject);
+            }
+        }
+
+
         void OnMaterialDetached(DecentralandEntity entity)
         {
-            if (entity.meshGameObject == null) return;
+            if (entity.meshGameObject == null)
+            {
+                return;
+            }
+
+            entity.OnShapeUpdated -= OnShapeUpdated;
 
             var meshRenderer = entity.meshGameObject.GetComponent<MeshRenderer>();
+
             if (meshRenderer && meshRenderer.sharedMaterial == material)
             {
                 meshRenderer.sharedMaterial = null;

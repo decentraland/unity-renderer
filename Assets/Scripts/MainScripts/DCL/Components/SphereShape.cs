@@ -7,13 +7,15 @@ using UnityEngine;
 
 namespace DCL.Components
 {
-    [System.Serializable]
-    public class SphereModel : BaseParamShapeModel
+    public class SphereShape : BaseParametrizedShape<SphereShape.Model>
     {
-    }
+        [System.Serializable]
+        new public class Model : BaseShape.Model
+        {
+        }
 
-    public class SphereShape : BaseParametrizedShape<SphereModel>
-    {
+        public override string componentName => "Sphere Shape";
+
         public SphereShape(ParcelScene scene) : base(scene) { }
 
         public override Mesh GenerateGeometry()

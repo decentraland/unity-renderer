@@ -582,7 +582,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   sceneController: {fileID: 322303338}
   characterController: {fileID: 1989862556}
-  debugModeEnabled: 0
+  openBrowserWhenStart: 1
+  startInCoords: {x: -99, y: 109}
 --- !u!4 &1444882337
 Transform:
   m_ObjectHideFlags: 0

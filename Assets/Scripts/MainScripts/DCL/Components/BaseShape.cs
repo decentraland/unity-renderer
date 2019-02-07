@@ -10,6 +10,12 @@ namespace DCL.Components
 {
     public abstract class BaseShape : BaseDisposable
     {
+        [System.Serializable]
+        public class Model
+        {
+            public bool withCollisions;
+        }
+
         public override string componentName => "shape";
 
         public BaseShape(ParcelScene scene) : base(scene)

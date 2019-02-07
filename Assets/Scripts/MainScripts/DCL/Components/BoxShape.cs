@@ -8,13 +8,15 @@ using UnityEngine;
 
 namespace DCL.Components
 {
-    [System.Serializable]
-    public class BoxModel : BaseParamShapeModel
+    public class BoxShape : BaseParametrizedShape<BoxShape.Model>
     {
-    }
+        [System.Serializable]
+        new public class Model : BaseShape.Model
+        {
+        }
 
-    public class BoxShape : BaseParametrizedShape<BoxModel>
-    {
+        public override string componentName => "Box Shape";
+
         public BoxShape(ParcelScene scene) : base(scene) { }
 
         public static Mesh cubeMesh = PrimitiveMeshBuilder.BuildCube(1f);

@@ -12,9 +12,11 @@ namespace DCL.Components
     {
         public Coroutine routine = null;
         public abstract string componentName { get; }
+        public string id;
 
         public event System.Action<DecentralandEntity> OnAttach;
         public event System.Action<DecentralandEntity> OnDetach;
+
 
         private string oldSerialization = null;
 

@@ -27,6 +27,8 @@ namespace UnityGLTF
 
         public GameObject loadingPlaceholder;
         public System.Action OnFinishedLoadingAsset;
+        public System.Action OnFailedLoadingAsset;
+
         [HideInInspector] public bool alreadyLoadedAsset = false;
         [HideInInspector] public GameObject loadedAssetRootGameObject;
 
@@ -54,7 +56,14 @@ namespace UnityGLTF
                 StopCoroutine(loadingRoutine);
             }
 
-            loadingRoutine = StartCoroutine(LoadAssetCoroutine());
+            loadingRoutine = DCL.CoroutineHelpers.StartThrowingCoroutine(this, LoadAssetCoroutine(), OnFail);
+        }
+
+        private void OnFail(Exception obj)
+        {
+            Debug.LogError("Loading GLTF failure!");
+            if (OnFailedLoadingAsset != null)
+                OnFailedLoadingAsset.Invoke();
         }
 
         public IEnumerator LoadAssetCoroutine()
@@ -122,6 +131,7 @@ namespace UnityGLTF
                     {
                         await sceneImporter.LoadSceneAsync();
                     } */
+                    
 
                     yield return sceneImporter.LoadScene(-1);
 

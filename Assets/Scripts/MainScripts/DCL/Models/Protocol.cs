@@ -4,6 +4,7 @@ namespace DCL.Models
 {
     public enum CLASS_ID_COMPONENT
     {
+        NONE = 0,
         TRANSFORM = 1,
         UUID_CALLBACK = 8,
         ANIMATOR = 33,

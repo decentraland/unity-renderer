@@ -10,7 +10,6 @@ namespace DCL.Components
 {
     public abstract class LoadableMonoBehavior : MonoBehaviour
     {
-        public System.Action<GameObject> OnLoadFinished;
         public bool alreadyLoaded = false;
         public DecentralandEntity entity;
 
@@ -51,7 +50,7 @@ namespace DCL.Components
                 string finalUrl;
                 if (scene.sceneData.TryGetContentsUrl(currentSrc, out finalUrl))
                 {
-                    entity.EnsureMeshGameObject();
+                    entity.EnsureMeshGameObject(componentName + " mesh");
                     LoadableShape loadableShape = Helpers.Utils.GetOrCreateComponent<LoadableShape>(entity.meshGameObject);
                     loadableShape.entity = entity;
                     loadableShape.Load(finalUrl);

@@ -1,6 +1,8 @@
 {
     "name": "UnityGLTFAssembly",
-    "references": [],
+    "references": [
+        "CoroutineHelpers"
+    ],
     "optionalUnityReferences": [],
     "includePlatforms": [],
     "excludePlatforms": [],

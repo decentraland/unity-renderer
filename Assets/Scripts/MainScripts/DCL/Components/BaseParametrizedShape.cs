@@ -8,13 +8,7 @@ using UnityEngine;
 
 namespace DCL.Components
 {
-    [System.Serializable]
-    public class BaseParamShapeModel
-    {
-        public bool withCollisions;
-    }
-
-    public abstract class BaseParametrizedShape<T> : BaseShape where T : BaseParamShapeModel, new()
+    public abstract class BaseParametrizedShape<T> : BaseShape where T : BaseShape.Model, new()
     {
         public T model = new T();
 
@@ -33,7 +27,7 @@ namespace DCL.Components
             if (entity == null)
                 return;
 
-            entity.EnsureMeshGameObject();
+            entity.EnsureMeshGameObject(componentName + " mesh");
 
             MeshFilter meshFilter = entity.meshGameObject.AddComponent<MeshFilter>();
             MeshRenderer meshRenderer = entity.meshGameObject.AddComponent<MeshRenderer>();

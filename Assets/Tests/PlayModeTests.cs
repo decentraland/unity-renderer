@@ -857,7 +857,7 @@ namespace Tests
             Assert.IsNull(scene.entities[entityId].gameObject.transform.Find("OnClickCollider"), "the OnClickCollider object shouldn't exist until a shape is added");
 
             TestHelpers.CreateAndSetShape(scene, entityId, DCL.Models.CLASS_ID.BOX_SHAPE,
-              JsonConvert.SerializeObject(new BoxModel { })
+              JsonConvert.SerializeObject(new BoxShape.Model { })
             );
 
             yield return new WaitForSeconds(0.01f);
@@ -888,13 +888,15 @@ namespace Tests
             string materialID = "a-material";
             string textureURL = "http://127.0.0.1:9991/Images/atlas.png";
 
-            TestHelpers.InstantiateEntityWithMaterial(scene, entityId, Vector3.zero, new DCL.Components.PBRMaterial.Model
-            {
-                albedoTexture = textureURL,
-                metallic = 0,
-                roughness = 1,
-                hasAlpha = true
-            }, materialID);
+            TestHelpers.InstantiateEntityWithMaterial(scene, entityId, Vector3.zero,
+                new PBRMaterial.Model
+                {
+                    albedoTexture = textureURL,
+                    metallic = 0,
+                    roughness = 1,
+                    hasAlpha = true
+                },
+                materialID);
 
             var materialComponent = scene.disposableComponents[materialID] as DCL.Components.PBRMaterial;
 
@@ -1252,6 +1254,86 @@ namespace Tests
             Assert.IsNull(secondMeshRenderer.sharedMaterial, "MeshRenderer must exist");
         }
 
+
+        [UnityTest]
+        public IEnumerator BasicMaterialAttachBeforeShape()
+        {
+            var sceneController = TestHelpers.InitializeSceneController(true);
+
+            yield return new WaitForSeconds(0.01f);
+
+            var sceneData = new LoadParcelScenesMessage.UnityParcelScene();
+            var scene = sceneController.CreateTestScene(sceneData);
+
+            yield return new WaitForSeconds(0.01f);
+
+            DecentralandEntity entity = TestHelpers.CreateSceneEntity(scene);
+
+            BasicMaterial mat = TestHelpers.SharedComponentCreate<BasicMaterial, BasicMaterial.Model>(scene, CLASS_ID.BASIC_MATERIAL,
+                new BasicMaterial.Model
+                {
+                    texture = "http://127.0.0.1:9991/Images/atlas.png",
+                    samplingMode = 2,
+                    wrap = 3,
+                    alphaTest = 0.5f
+                });
+
+            yield return new WaitForSeconds(1.0f);
+
+            TestHelpers.SharedComponentAttach(mat, entity);
+
+            SphereShape shape = TestHelpers.SharedComponentCreate<SphereShape, SphereShape.Model>(scene, CLASS_ID.SPHERE_SHAPE,
+                new SphereShape.Model { });
+
+            TestHelpers.SharedComponentAttach(shape, entity);
+
+            Assert.NotNull(entity.meshGameObject);
+            Assert.NotNull(entity.meshGameObject.GetComponent<MeshRenderer>());
+            Assert.AreEqual(entity.meshGameObject.GetComponent<MeshRenderer>().sharedMaterial, mat.material);
+        }
+
+
+        [UnityTest]
+        public IEnumerator PBRMaterialAttachBeforeShape()
+        {
+            var sceneController = TestHelpers.InitializeSceneController(true);
+
+            yield return new WaitForSeconds(0.01f);
+
+            var sceneData = new LoadParcelScenesMessage.UnityParcelScene();
+            var scene = sceneController.CreateTestScene(sceneData);
+
+            yield return new WaitForSeconds(0.01f);
+
+            DecentralandEntity entity = TestHelpers.CreateSceneEntity(scene);
+
+            string textureURL = "http://127.0.0.1:9991/Images/atlas.png";
+
+            PBRMaterial mat = TestHelpers.SharedComponentCreate<PBRMaterial, PBRMaterial.Model>(scene, CLASS_ID.PBR_MATERIAL,
+                new PBRMaterial.Model
+                {
+                    albedoTexture = textureURL,
+                    metallic = 0,
+                    roughness = 1,
+                    hasAlpha = true
+                }
+            );
+
+            yield return new WaitForSeconds(1.0f);
+
+            TestHelpers.SharedComponentAttach(mat, entity);
+
+            SphereShape shape = TestHelpers.SharedComponentCreate<SphereShape, SphereShape.Model>(scene, CLASS_ID.SPHERE_SHAPE,
+                new SphereShape.Model { });
+
+            TestHelpers.SharedComponentAttach(shape, entity);
+
+            Assert.NotNull(entity.meshGameObject);
+            Assert.NotNull(entity.meshGameObject.GetComponent<MeshRenderer>());
+            Assert.AreEqual(entity.meshGameObject.GetComponent<MeshRenderer>().sharedMaterial, mat.material);
+        }
+
+
         [UnityTest]
         public IEnumerator EntityBasicMaterialUpdate()
         {
@@ -1270,7 +1352,7 @@ namespace Tests
             // Instantiate entity with default PBR Material
             TestHelpers.InstantiateEntityWithMaterial(scene, entityId, Vector3.zero, new DCL.Components.BasicMaterial.Model(), materialID);
 
-            var meshObject = scene.entities[entityId].gameObject.transform.Find("Mesh");
+            var meshObject = scene.entities[entityId].meshGameObject;
             Assert.IsNotNull(meshObject, "Every entity with a shape should have the mandatory 'Mesh' object as a child");
 
             var meshRenderer = meshObject.GetComponent<MeshRenderer>();
