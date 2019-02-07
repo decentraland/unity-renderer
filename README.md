@@ -42,10 +42,15 @@ We are using [UnityGLTF](https://github.com/KhronosGroup/UnityGLTF) as a Dynamic
 
 -   Be able to avoid loading on start by default (for remotely-fetched models that need to take some time to download)
 -   Have a 'finished loading asset callback' providing the time it took to load the GLTF asset (initially used for measuring loading times)
+-   StartCoroutine has been replaced by StartThrowingCoroutine so we catch the invalid GLTF assets gracefully.
 
 2. SpecGlossMap.cs and MetalRoughMap.cs were adapted to use "Lightweight Render Pipeline/Simple Lit" and "Lightweight Render Pipeline/Lit" shaders respectively (the original PbrMetallicRoughness and PbrSpecularGlossiness don't work with the Lightweight Render Pipeline)
 
 3. Several files were modified to replce Tasks (multi-threading) with Coroutines as Unity WebGL build doesn't support multi-threading.
+
+4. Animation curve processing methods were adapted to be spread through many frames.
+
+5. GameObject reparenting is made as soon the root GLTF loading object is created, so a big mesh can be seen in place before the loading finished.
 
 ### Known Issues
 
