@@ -108,7 +108,7 @@
     "ephemeralkey": "^2.0.1",
     "eth-connect": "^4.0.0",
     "ethereum-blockies": "^0.1.1",
-    "fp-future": "^1.0.0",
+    "fp-future": "^1.0.1",
     "google-protobuf": "^3.6.1",
     "hammerjs": "^2.0.8",
     "keccakjs": "^0.2.1",

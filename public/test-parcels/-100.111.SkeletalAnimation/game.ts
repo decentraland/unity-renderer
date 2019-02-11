@@ -1,4 +1,14 @@
-import { Entity, GLTFShape, Transform, engine, Vector3, OnClick, AnimationClip, Animator } from 'decentraland-ecs'
+import {
+  Entity,
+  GLTFShape,
+  Transform,
+  engine,
+  Vector3,
+  OnPointerDown,
+  AnimationClip,
+  Animator,
+  log
+} from 'decentraland-ecs/src'
 
 // First way to
 const shark = new Entity()
@@ -33,7 +43,7 @@ shark2.set(
 )
 
 shark.set(
-  new OnClick(() => {
+  new OnPointerDown(() => {
     // just to test getting a clip
     const clip = animator.getClip('shark_skeleton_swim')
     if (clip) {
@@ -44,3 +54,9 @@ shark.set(
 
 engine.addEntity(shark)
 engine.addEntity(shark2)
+
+declare var dcl: any
+
+dcl.onEvent(function(event: any) {
+  log('event', event)
+})

@@ -4,7 +4,6 @@ import bodyScrollLock = require('body-scroll-lock')
 BABYLON.DebugLayer.InspectorURL = require('url-loader!babylonjs-inspector')
 
 import { TaskQueue } from 'atomicHelpers/taskQueue'
-import { Vector3Component, Vector2Component } from 'atomicHelpers/landHelpers'
 import { isMobile } from 'shared/comms/mobile'
 
 import { error } from '../logger'
@@ -13,6 +12,7 @@ import { scene, domReadyFuture, canvas, engine, audioEngine, vrHelper } from './
 import { vrCamera } from './camera'
 import './ambientLights'
 import { resizeRotationCanvas } from './input'
+import { ReadOnlyVector3, ReadOnlyVector2 } from 'decentraland-ecs/src'
 
 const engineMicroQueue = new TaskQueue()
 
@@ -120,7 +120,7 @@ export function setSize(w: number, h: number) {
   onWindowResize()
 }
 
-export function initLocalPlayer(initialPosition?: Vector3Component, initialRotation?: Vector2Component) {
+export function initLocalPlayer(initialPosition?: ReadOnlyVector3, initialRotation?: ReadOnlyVector2) {
   vrCamera.position.x = initialPosition.x || 0
   vrCamera.position.z = initialPosition.z || 0
 

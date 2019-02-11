@@ -33,7 +33,6 @@ export class WebGLUIScene extends WebGLScene<any> {
 
 export async function initHudSystem(): Promise<WebGLUIScene> {
   const context = new SharedSceneContext('/', 'ui-context-hud', false)
-  context.isInternal = true
   const scene = new WebGLUIScene('hud', hudWorkerUrl, context)
   const system = await scene.worker.system
 
@@ -46,7 +45,6 @@ export async function initHudSystem(): Promise<WebGLUIScene> {
 
 export async function initChatSystem(): Promise<WebGLUIScene> {
   const context = new SharedSceneContext('/', 'ui-context-chat', false)
-  context.isInternal = true
   const scene = new WebGLUIScene('chat', chatWorkerUrl, context)
   const system = await scene.worker.system
 

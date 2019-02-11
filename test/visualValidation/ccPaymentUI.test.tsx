@@ -20,7 +20,6 @@ enableVisualTests(`Collectible's payment UI validation`, function(root) {
 
   it('creates a UI for marketplace approval', () => {
     context = new SharedSceneContext('http://localhost:8080/', 'payment-entity-test', false)
-    context.isInternal = true
 
     const notAllowed = '0'
     ui = new PaymentEntity('http://localhost:8080/', context)

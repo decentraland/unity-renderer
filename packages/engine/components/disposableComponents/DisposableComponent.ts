@@ -94,7 +94,6 @@ export abstract class BasicShape<T> extends DisposableComponent {
       const mesh = this.generateModel()
 
       mesh.cullingStrategy = BABYLON.AbstractMesh.CULLINGSTRATEGY_BOUNDINGSPHERE_ONLY
-      mesh.actionManager = entity.getActionManager()
       mesh.isPickable = true
 
       entity.setObject3D(BasicShape.nameInEntity, mesh)

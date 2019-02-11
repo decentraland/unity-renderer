@@ -1,5 +1,5 @@
 import * as BABYLON from 'babylonjs'
-import { Vector2Component, Vector3Component, QuaternionComponent } from 'shared/types'
+import { ReadOnlyVector2, ReadOnlyVector3, ReadOnlyQuaternion } from 'decentraland-ecs/src'
 
 export type ISchema<Keys> = { [key: string]: { type: keyof Keys; default?: any } }
 export type Validator<T = any> = (x: any, defaultValue: T) => T
@@ -70,7 +70,7 @@ export const validators = {
     return String(x)
   },
 
-  vector2(value: any, def: Vector2Component): Vector2Component {
+  vector2(value: any, def: ReadOnlyVector2): ReadOnlyVector2 {
     if (value === null || value === undefined) return def
 
     if (Number.isFinite(value)) {
@@ -87,7 +87,7 @@ export const validators = {
     }
   },
 
-  vector3(value: any, def: Vector3Component): Vector3Component {
+  vector3(value: any, def: ReadOnlyVector3): ReadOnlyVector3 {
     if (value === null || value === undefined) return def
 
     if (Number.isFinite(value)) {
@@ -104,7 +104,7 @@ export const validators = {
     }
   },
 
-  quaternion(value: any, def: QuaternionComponent): QuaternionComponent {
+  quaternion(value: any, def: ReadOnlyQuaternion): ReadOnlyQuaternion {
     if (value === null || value === undefined) return def
 
     if (Number.isFinite(value)) {

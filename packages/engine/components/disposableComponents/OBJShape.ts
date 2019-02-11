@@ -52,7 +52,7 @@ export class OBJShape extends DisposableComponent {
           if (!entity.isDisposed()) {
             this.assetContainerEntity.set(entity.uuid, assetContainer)
 
-            processColliders(assetContainer, entity.getActionManager())
+            processColliders(assetContainer)
 
             const node = new BABYLON.AbstractMesh('obj')
 

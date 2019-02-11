@@ -166,30 +166,6 @@ export interface ILand {
   mappingsResponse: MappingsResponse
 }
 
-/**
- * This data type defines a two component vector.
- */
-export type Vector2Component = {
-  x: number
-  y: number
-}
-
-/**
- * This data type defines a three component vector. It is used for scaling, positioning and rotations
- */
-export type Vector3Component = {
-  x: number
-  y: number
-  z: number
-}
-
-export type QuaternionComponent = {
-  x: number
-  y: number
-  z: number
-  w: number
-}
-
 export type SoundComponent = {
   /** Distance fading model, default: 'linear' */
   distanceModel?: 'linear' | 'inverse' | 'exponential'

@@ -9,7 +9,7 @@ type GizmoConfiguration = {
   scale: boolean
   cycle: boolean
   localReference: boolean
-  selectedGizmo: Gizmo
+  selectedGizmo?: Gizmo
 }
 
 export const gizmoManager = new BABYLON.GizmoManager(scene)
@@ -24,8 +24,7 @@ const defaultValue: GizmoConfiguration = {
   rotation: true,
   scale: true,
   cycle: true,
-  localReference: false,
-  selectedGizmo: Gizmo.MOVE
+  localReference: false
 }
 
 let activeEntity: BaseEntity = null
@@ -82,7 +81,6 @@ function switchGizmo() {
 {
   gizmoManager.gizmos.positionGizmo.onDragEndObservable.add(() => {
     if (!activeEntity) return
-
     activeEntity.dispatchUUIDEvent('gizmoEvent', {
       type: 'gizmoDragEnded',
       transform: {
@@ -161,20 +159,14 @@ export class Gizmos extends BaseComponent<GizmoConfiguration> {
   activate = () => {
     this.configureGizmos()
 
-    if (this.entity === activeEntity) {
-      if (currentConfiguration.cycle) {
-        selectGizmo(switchGizmo())
-      } else {
-        if (isSelectedGizmoValid()) {
-          selectGizmo(selectedGizmo)
-        } else {
-          selectGizmo(switchGizmo())
-        }
-      }
+    if (currentConfiguration.cycle && this.entity === activeEntity) {
+      selectGizmo(switchGizmo())
     } else {
       activeEntity = this.entity
 
-      if (isSelectedGizmoValid()) {
+      if (currentConfiguration.selectedGizmo) {
+        selectGizmo(currentConfiguration.selectedGizmo)
+      } else if (isSelectedGizmoValid()) {
         selectGizmo(selectedGizmo)
       } else {
         selectGizmo(switchGizmo())
@@ -196,7 +188,6 @@ export class Gizmos extends BaseComponent<GizmoConfiguration> {
     gizmoManager.gizmos.positionGizmo.updateGizmoPositionToMatchAttachedMesh = !isWorldCoordinates
     gizmoManager.gizmos.positionGizmo.updateGizmoRotationToMatchAttachedMesh = !isWorldCoordinates
     gizmoManager.gizmos.scaleGizmo.updateGizmoPositionToMatchAttachedMesh = !isWorldCoordinates
-    gizmoManager.gizmos.scaleGizmo.updateGizmoRotationToMatchAttachedMesh = !isWorldCoordinates
     gizmoManager.gizmos.rotationGizmo.updateGizmoRotationToMatchAttachedMesh = !isWorldCoordinates
     gizmoManager.gizmos.rotationGizmo.updateGizmoPositionToMatchAttachedMesh = !isWorldCoordinates
   }
@@ -208,6 +199,7 @@ export class Gizmos extends BaseComponent<GizmoConfiguration> {
   }
 
   attach(entity: BaseEntity) {
+    super.attach(entity)
     entity.addListener('onClick', this.activate)
   }
 

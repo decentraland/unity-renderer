@@ -1,5 +1,4 @@
 import { future } from 'fp-future'
-import { Vector3 } from 'babylonjs'
 import { ScriptingHost } from 'decentraland-rpc/lib/host'
 import { error } from '../../engine/logger'
 import { ScriptingTransport } from 'decentraland-rpc/lib/common/json-rpc/types'
@@ -7,6 +6,7 @@ import { WebWorkerTransport } from 'decentraland-rpc'
 import { playerConfigurations } from '../../config'
 import { EntityAction, EnvironmentData } from 'shared/types'
 import { EnvironmentAPI } from 'shared/apis/EnvironmentAPI'
+import { Vector3, Quaternion, ReadOnlyVector3, ReadOnlyQuaternion } from 'decentraland-ecs/src/decentraland/math'
 
 // tslint:disable-next-line:whitespace
 type EngineAPI = import('../apis/EngineAPI').EngineAPI
@@ -40,8 +40,8 @@ export class SceneWorker {
   public enabled = true
 
   public readonly position: Vector3 = new Vector3()
-  private readonly lastSentPosition = new BABYLON.Vector3(0, 0, 0)
-  private readonly lastSentRotation = new BABYLON.Quaternion(0, 0, 0, 1)
+  private readonly lastSentPosition = new Vector3(0, 0, 0)
+  private readonly lastSentRotation = new Quaternion(0, 0, 0, 1)
 
   constructor(public parcelScene: ParcelSceneAPI, transport?: ScriptingTransport) {
     parcelScene.registerWorker(this)
@@ -65,7 +65,7 @@ export class SceneWorker {
   }
 
   sendUserViewMatrix(
-    obj: Readonly<{ position: BABYLON.Vector3; rotation: BABYLON.Vector3; quaternion: BABYLON.Quaternion }>
+    obj: Readonly<{ position: ReadOnlyVector3; rotation: ReadOnlyVector3; quaternion: ReadOnlyQuaternion }>
   ) {
     if (this.engineAPI && 'positionChanged' in this.engineAPI.subscribedEvents) {
       if (!this.lastSentPosition.equals(obj.position)) {
@@ -90,39 +90,6 @@ export class SceneWorker {
         })
         this.lastSentRotation.copyFrom(obj.quaternion)
       }
-    }
-  }
-
-  sendPointerEvent(evt: BABYLON.PointerInfoPre) {
-    if (!this.engineAPI) return
-    if (!evt.ray) return
-
-    if (evt.type === BABYLON.PointerEventTypes.POINTERDOWN && 'pointerDown' in this.engineAPI.subscribedEvents) {
-      this.engineAPI.sendSubscriptionEvent('pointerDown', {
-        from: {
-          x: evt.ray.origin.x - this.position.x,
-          y: evt.ray.origin.y - this.position.y,
-          z: evt.ray.origin.z - this.position.z
-        },
-        direction: evt.ray.direction,
-        length: evt.ray.length,
-        pointerId: (evt.event as any).pointerId
-      })
-      return
-    }
-
-    if (evt.type === BABYLON.PointerEventTypes.POINTERUP && 'pointerUp' in this.engineAPI.subscribedEvents) {
-      this.engineAPI.sendSubscriptionEvent('pointerUp', {
-        from: {
-          x: evt.ray.origin.x - this.position.x,
-          y: evt.ray.origin.y - this.position.y,
-          z: evt.ray.origin.z - this.position.z
-        },
-        direction: evt.ray.direction,
-        length: evt.ray.length,
-        pointerId: (evt.event as any).pointerId
-      })
-      return
     }
   }
 

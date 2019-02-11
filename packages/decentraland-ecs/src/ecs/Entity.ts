@@ -49,7 +49,7 @@ export class Entity {
       if (this.components[componentName] === component) {
         return
       }
-      this.remove(this.components[componentName])
+      this.remove(this.components[componentName], false)
     }
 
     this.add(component)
@@ -203,23 +203,50 @@ export class Entity {
   /**
    * Removes a component instance from the entity.
    * @param component - component instance to remove
+   * @param triggerRemovedEvent - should this action trigger an event?
    */
-  remove(component: string): void
-  remove<T extends object>(component: T): void
-  remove(component: object | string): void {
-    const componentName = typeof component === 'string' ? component : getComponentName(component)
-    let componentRemoved = null
+  remove(component: string, triggerRemovedEvent?: boolean): void
+  remove<T extends object>(component: T, triggerRemovedEvent?: boolean): void
+  remove(component: ComponentConstructor<any>, triggerRemovedEvent?: boolean): void
+  remove(component: object | string | Function, triggerRemovedEvent = true): void {
+    const typeOfComponent = typeof component
 
-    if (this.components[componentName]) {
-      componentRemoved = this.components[componentName]
-      delete this.components[componentName]
-    } else {
+    if (typeOfComponent !== 'string' && typeOfComponent !== 'function' && typeOfComponent !== 'object') {
+      throw new Error('Entity#remove(component): component is not a class, class or name')
+    }
+
+    const componentName = typeOfComponent === 'string' ? (component as string) : getComponentName(component as any)
+
+    const storedComponent = this.components[componentName]
+
+    if (!storedComponent) {
       log(`Entity Warning: Trying to remove inexisting component "${componentName}" from entity "${this.identifier}"`)
+      return
     }
 
-    if (this.eventManager && componentRemoved) {
-      this.eventManager.fireEvent(new ComponentRemoved(this, componentName, componentRemoved))
+    if (typeOfComponent === 'function') {
+      if (storedComponent instanceof (component as ComponentConstructor<any>)) {
+        delete this.components[componentName]
+
+        if (triggerRemovedEvent && this.eventManager && storedComponent) {
+          this.eventManager.fireEvent(new ComponentRemoved(this, componentName, storedComponent))
+        }
+        return
+      } else {
+        log(
+          `Entity Warning: Trying to remove wrong (by constructor) component "${componentName}" from entity "${
+            this.identifier
+          }"`
+        )
+        return
+      }
     }
+
+    delete this.components[componentName]
+    if (triggerRemovedEvent && this.eventManager && storedComponent) {
+      this.eventManager.fireEvent(new ComponentRemoved(this, componentName, storedComponent))
+    }
+    return
   }
 
   /**

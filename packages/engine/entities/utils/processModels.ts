@@ -54,7 +54,7 @@ export function cleanupAssetContainer($: BABYLON.AssetContainer) {
   }
 }
 
-export function processColliders($: BABYLON.AssetContainer, actionManager: BABYLON.ActionManager) {
+export function processColliders($: BABYLON.AssetContainer) {
   for (let i = 0; i < $.meshes.length; i++) {
     let mesh = $.meshes[i]
 
@@ -65,7 +65,6 @@ export function processColliders($: BABYLON.AssetContainer, actionManager: BABYL
       markAsCollider(mesh)
     } else {
       mesh.isPickable = true
-      mesh.actionManager = actionManager
     }
   }
 }

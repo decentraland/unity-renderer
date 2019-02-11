@@ -49,18 +49,6 @@ export function measureObject3D(obj: BABYLON.AbstractMesh | BABYLON.Mesh | BABYL
   return { entities, triangles, bodies, textures, materials, geometries }
 }
 
-function totalBoundingInfo(meshes: BABYLON.AbstractMesh[]) {
-  let boundingInfo = meshes[0].getBoundingInfo()
-  let min = boundingInfo.boundingBox.minimumWorld.add(meshes[0].position)
-  let max = boundingInfo.boundingBox.maximumWorld.add(meshes[0].position)
-  for (let i = 1; i < meshes.length; i++) {
-    boundingInfo = meshes[i].getBoundingInfo()
-    min = BABYLON.Vector3.Minimize(min, boundingInfo.boundingBox.minimumWorld.add(meshes[i].position))
-    max = BABYLON.Vector3.Maximize(max, boundingInfo.boundingBox.maximumWorld.add(meshes[i].position))
-  }
-  return new BABYLON.BoundingInfo(min, max)
-}
-
 /**
  * Returns the objects that are outside the parcelScene limits.
  * Receives the encoded parcelScene parcels and the entity to traverse
@@ -88,13 +76,7 @@ export function checkParcelSceneBoundaries(
       return 'BREAK'
     }
 
-    const meshes = mesh.getChildMeshes(false)
-
-    if (meshes.length === 0) {
-      return 'CONTINUE'
-    }
-
-    const bbox = totalBoundingInfo(meshes)
+    const bbox = entity.getMeshesBoundingBox()
 
     if (bbox.maximum.y > maxHeight || bbox.minimum.y < minHeight) {
       objectsOutside.add(entity)

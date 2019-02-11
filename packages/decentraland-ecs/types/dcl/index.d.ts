@@ -1137,25 +1137,6 @@ declare class Engine {
   private componentRemovedHandler
 }
 
-declare type EnginePointerEvent = {
-  /** Origin of the ray */
-  from: {
-    x: number
-    y: number
-    z: number
-  }
-  /** Direction vector of the ray (normalized) */
-  direction: {
-    x: number
-    y: number
-    z: number
-  }
-  /** Length of the ray */
-  length: number
-  /** ID of the pointer that triggered the event */
-  pointerId: number
-}
-
 /**
  * @public
  */
@@ -1174,9 +1155,11 @@ declare class Entity {
   set<T extends object>(component: T): void
   /**
    * Returns a boolean indicating if a component is present in the entity.
-   * @param component - component class or name
+   * @param component - component class, instance or name
    */
-  has(component: ComponentConstructor<any>): boolean
+  has<T = any>(component: string): boolean
+  has<T>(component: ComponentConstructor<T>): boolean
+  has<T extends object>(component: T): boolean
   /**
    * Gets a component, if it doesn't exist, it throws an Error.
    * @param component - component class or name
@@ -1206,9 +1189,11 @@ declare class Entity {
   /**
    * Removes a component instance from the entity.
    * @param component - component instance to remove
+   * @param triggerRemovedEvent - should this action trigger an event?
    */
-  remove(component: string): void
-  remove<T extends object>(component: T): void
+  remove(component: string, triggerRemovedEvent?: boolean): void
+  remove<T extends object>(component: T, triggerRemovedEvent?: boolean): void
+  remove(component: ComponentConstructor<any>, triggerRemovedEvent?: boolean): void
   /**
    * Returns true if the entity is already added to the engine.
    * Returns false if no engine was defined.
@@ -1393,25 +1378,15 @@ declare interface IEvents {
     quaternion: ReadOnlyQuaternion
   }
   /**
-   * `click` is triggered when a user points and the ray (from mouse or controller) hits the entity.
-   * Notice: Only entities with ID will be listening for click events.
-   */
-  click: {
-    /** ID of the entitiy of the event */
-    entityId: string
-    /** ID of the pointer that triggered the event */
-    pointerId: number
-  }
-  /**
    * `pointerUp` is triggered when the user releases an input pointer.
    * It could be a VR controller, a touch screen or the mouse.
    */
-  pointerUp: PointerEvent_2
+  pointerUp: PointerEvent
   /**
    * `pointerDown` is triggered when the user press an input pointer.
    * It could be a VR controller, a touch screen or the mouse.
    */
-  pointerDown: PointerEvent_2
+  pointerDown: PointerEvent
   /**
    * `chatMessage` is triggered when the user sends a message through chat entity.
    */
@@ -1457,9 +1432,9 @@ declare interface IEvents {
     /** ID of the pointer that triggered the event */
     pointerId: number
   }
+  /** The onClick event is only used for UI elements */
   onClick: {
     entityId: string
-    pointerId: number
   }
   /**
    * This event gets triggered when an entity leaves the scene fences.
@@ -1525,7 +1500,8 @@ declare class Input {
   readonly state: Readonly<InputState>
   private subscriptions
   private internalState
-  constructor()
+  private constructor()
+  static ensureInstance(): any
   /**
    * Subscribes to an input event and triggers the provided callback.
    *
@@ -1533,13 +1509,13 @@ declare class Input {
    * @param eventName - The name of the event (see InputEventKind).
    * @param fn - A callback function to be called when the event is triggered.
    */
-  subscribe(eventName: InputEventKind, fn: (e: PointerEvent) => void): () => void
+  subscribe(eventName: InputEventKind, fn: (e: LocalPointerEvent) => void): () => void
   /**
    * Removes an existing input event subscription.
    * @param eventName - The name of the event (see InputEventKind).
    * @param fn - The callback function used when subscribing to the event.
    */
-  unsubscribe(eventName: InputEventKind, fn: (e: PointerEvent) => void): void
+  unsubscribe(eventName: InputEventKind, fn: (e: LocalPointerEvent) => void): void
   private getPointerById
   private handlePointerUp
   private handlePointerDown
@@ -1553,6 +1529,17 @@ declare type InputState = Record<
     BUTTON_A_DOWN: boolean
   }
 >
+
+declare type LocalPointerEvent = PointerEvent & {
+  origin: Vector3
+  direction: Vector3
+  pointer: Pointer
+  hit?: PointerEvent['hit'] & {
+    hitPoint: Vector3
+    normal: Vector3
+    worldNormal: Vector3
+  }
+}
 
 /**
  * @public
@@ -2531,6 +2518,16 @@ declare class OnGizmoEvent extends OnUUIDEvent<'gizmoEvent'> {
 /**
  * @public
  */
+declare class OnPointerDown extends PointerEventComponent {}
+
+/**
+ * @public
+ */
+declare class OnPointerUp extends PointerEventComponent {}
+
+/**
+ * @public
+ */
 declare class OnUUIDEvent<T extends keyof IEvents> extends ObservableComponent {
   readonly type: string | undefined
   readonly uuid: string
@@ -2832,25 +2829,35 @@ declare enum Pointer {
 }
 
 declare type PointerEvent = {
-  /** Origin of the ray */
-  from: Vector3
-  /** Direction vector of the ray (normalized) */
-  direction: Vector3
-  /** Length of the ray */
-  length: number
-  /** ID of the pointer that triggered the event */
-  pointerId: Pointer
-}
-
-declare type PointerEvent_2 = {
-  /** Origin of the ray */
-  from: ReadOnlyVector3
+  /** Origin of the ray, relative to the scene */
+  origin: ReadOnlyVector3
   /** Direction vector of the ray (normalized) */
   direction: ReadOnlyVector3
-  /** Length of the ray */
-  length: number
   /** ID of the pointer that triggered the event */
   pointerId: number
+  /** Does this pointer event hit any object? */
+  hit?: {
+    /** Length of the ray */
+    length: number
+    /** If the ray hits a mesh the intersection point will be this */
+    hitPoint: ReadOnlyVector3
+    /** If the mesh has a name, it will be assigned to meshName */
+    meshName: string
+    /** Normal of the hit */
+    normal: ReadOnlyVector3
+    /** Normal of the hit, in world space */
+    worldNormal: ReadOnlyVector3
+    /** Hit entity ID if any */
+    entityId: string
+  }
+}
+
+/**
+ * @public
+ */
+declare class PointerEventComponent {
+  readonly callback: (event: LocalPointerEvent) => void
+  constructor(callback: (event: LocalPointerEvent) => void)
 }
 
 /**
@@ -2903,14 +2910,14 @@ declare class Quaternion {
    * @param right - defines the right operand
    * @returns the dot product
    */
-  static Dot(left: Quaternion, right: Quaternion): number
+  static Dot(left: ReadOnlyQuaternion, right: ReadOnlyQuaternion): number
   /**
    * Checks if the two quaternions are close to each other
    * @param quat0 - defines the first quaternion to check
    * @param quat1 - defines the second quaternion to check
    * @returns true if the two quaternions are close to each other
    */
-  static AreClose(quat0: Quaternion, quat1: Quaternion): boolean
+  static AreClose(quat0: ReadOnlyQuaternion, quat1: ReadOnlyQuaternion): boolean
   /**
    * Creates an empty quaternion
    * @returns a new quaternion set to (0.0, 0.0, 0.0)
@@ -2927,7 +2934,7 @@ declare class Quaternion {
    * @param quaternion - defines the quaternion to check
    * @returns true if the quaternion is identity
    */
-  static IsIdentity(quaternion: Quaternion): boolean
+  static IsIdentity(quaternion: ReadOnlyQuaternion): boolean
   /**
    * Creates a quaternion from a rotation around an axis
    * @param axis - defines the axis to use
@@ -3009,7 +3016,7 @@ declare class Quaternion {
    * @param amount - defines the gradient to use
    * @returns the new interpolated quaternion
    */
-  static Slerp(left: Quaternion, right: Quaternion, amount: number): Quaternion
+  static Slerp(left: ReadOnlyQuaternion, right: ReadOnlyQuaternion, amount: number): Quaternion
   /**
    * Interpolates between two quaternions and stores it into a target quaternion
    * @param left - defines first quaternion
@@ -3017,7 +3024,7 @@ declare class Quaternion {
    * @param amount - defines the gradient to use
    * @param result - defines the target quaternion
    */
-  static SlerpToRef(left: Quaternion, right: Quaternion, amount: number, result: Quaternion): void
+  static SlerpToRef(left: ReadOnlyQuaternion, right: ReadOnlyQuaternion, amount: number, result: Quaternion): void
   /**
    * Interpolate between two quaternions using Hermite interpolation
    * @param value1 - defines first quaternion
@@ -3028,10 +3035,10 @@ declare class Quaternion {
    * @returns the new interpolated quaternion
    */
   static Hermite(
-    value1: Quaternion,
-    tangent1: Quaternion,
-    value2: Quaternion,
-    tangent2: Quaternion,
+    value1: ReadOnlyQuaternion,
+    tangent1: ReadOnlyQuaternion,
+    value2: ReadOnlyQuaternion,
+    tangent2: ReadOnlyQuaternion,
     amount: number
   ): Quaternion
   /**
@@ -3044,7 +3051,7 @@ declare class Quaternion {
    * @param quat1 - defines the first quaternion
    * @param quat2 - defines the second quaternion
    */
-  static Angle(quat1: Quaternion, quat2: Quaternion): number
+  static Angle(quat1: ReadOnlyQuaternion, quat2: ReadOnlyQuaternion): number
   /**
    * Returns a rotation that rotates z degrees around the z axis, x degrees around the x axis, and y degrees around the y axis.
    * @param x - the rotation on the x axis in euler degrees
@@ -3064,7 +3071,7 @@ declare class Quaternion {
    * @param to - defines the second quaternion
    * @param maxDegreesDelta - the interval step
    */
-  static RotateTowards(from: Quaternion, to: Quaternion, maxDegreesDelta: number): Quaternion
+  static RotateTowards(from: ReadOnlyQuaternion, to: Quaternion, maxDegreesDelta: number): Quaternion
   /**
    * Creates a rotation which rotates from fromDirection to toDirection.
    * @param from - defines the first Vector
@@ -3124,7 +3131,7 @@ declare class Quaternion {
    * @param otherQuaternion - defines the second operand
    * @returns true if the current quaternion and the given one coordinates are strictly equals
    */
-  equals(otherQuaternion: Quaternion): boolean
+  equals(otherQuaternion: ReadOnlyQuaternion): boolean
   /**
    * Clone the current quaternion
    * @returns a new quaternion copied from the current one
@@ -3135,7 +3142,7 @@ declare class Quaternion {
    * @param other - defines the other quaternion
    * @returns the updated current quaternion
    */
-  copyFrom(other: Quaternion): Quaternion
+  copyFrom(other: ReadOnlyQuaternion): Quaternion
   /**
    * Updates the current quaternion with the given float coordinates
    * @param x - defines the x coordinate
@@ -3196,20 +3203,20 @@ declare class Quaternion {
    * @param q1 - defines the second operand
    * @returns a new quaternion set as the multiplication result of the current one with the given one "q1"
    */
-  multiply(q1: Quaternion): Quaternion
+  multiply(q1: ReadOnlyQuaternion): Quaternion
   /**
    * Sets the given "result" as the the multiplication result of the current one with the given one "q1"
    * @param q1 - defines the second operand
    * @param result - defines the target quaternion
    * @returns the current quaternion
    */
-  multiplyToRef(q1: Quaternion, result: Quaternion): Quaternion
+  multiplyToRef(q1: ReadOnlyQuaternion, result: Quaternion): Quaternion
   /**
    * Updates the current quaternion with the multiplication of itself with the given one "q1"
    * @param q1 - defines the second operand
    * @returns the currentupdated quaternion
    */
-  multiplyInPlace(q1: Quaternion): Quaternion
+  multiplyInPlace(q1: ReadOnlyQuaternion): Quaternion
   /**
    * Conjugates (1-q) the current quaternion and stores the result in the given quaternion
    * @param ref - defines the target quaternion

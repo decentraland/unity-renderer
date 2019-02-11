@@ -1,4 +1,4 @@
-import { engine, Entity, BoxShape, Vector3, Transform, OnClick, log } from 'decentraland-ecs'
+import { engine, Entity, BoxShape, Vector3, Transform, OnPointerDown, log } from 'decentraland-ecs'
 
 log('start')
 
@@ -9,7 +9,7 @@ cube.getOrCreate(BoxShape)
 
 engine.addEntity(cube)
 
-const onClickComponent = new OnClick(event => {
+const onClickComponent = new OnPointerDown(event => {
   const t = cube.get(Transform)
   t.rotate(Vector3.Up(), 30)
   log(JSON.stringify(event))

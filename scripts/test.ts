@@ -164,6 +164,8 @@ function checkDiff(imageAPath: string, imageBPath: string, threshold: number, di
         res.end()
       })
       .catch(e => {
+        console.log(`    generating img: ${shouldGenerateNewImages} `)
+        console.log(`             error: ${e} `)
         if (shouldGenerateNewImages) {
           // If the diff fails, it means images are different enough to be
           // commited as a test result to the repo.

@@ -106,7 +106,7 @@ export class Quaternion {
    * @param right - defines the right operand
    * @returns the dot product
    */
-  public static Dot(left: Quaternion, right: Quaternion): number {
+  public static Dot(left: ReadOnlyQuaternion, right: ReadOnlyQuaternion): number {
     return left.x * right.x + left.y * right.y + left.z * right.z + left.w * right.w
   }
 
@@ -116,7 +116,7 @@ export class Quaternion {
    * @param quat1 - defines the second quaternion to check
    * @returns true if the two quaternions are close to each other
    */
-  public static AreClose(quat0: Quaternion, quat1: Quaternion): boolean {
+  public static AreClose(quat0: ReadOnlyQuaternion, quat1: ReadOnlyQuaternion): boolean {
     let dot = Quaternion.Dot(quat0, quat1)
 
     return dot >= 0
@@ -144,7 +144,7 @@ export class Quaternion {
    * @param quaternion - defines the quaternion to check
    * @returns true if the quaternion is identity
    */
-  public static IsIdentity(quaternion: Quaternion): boolean {
+  public static IsIdentity(quaternion: ReadOnlyQuaternion): boolean {
     return quaternion && quaternion.x === 0 && quaternion.y === 0 && quaternion.z === 0 && quaternion.w === 1
   }
 
@@ -298,7 +298,7 @@ export class Quaternion {
    * @param amount - defines the gradient to use
    * @returns the new interpolated quaternion
    */
-  public static Slerp(left: Quaternion, right: Quaternion, amount: number): Quaternion {
+  public static Slerp(left: ReadOnlyQuaternion, right: ReadOnlyQuaternion, amount: number): Quaternion {
     let result = Quaternion.Identity
 
     Quaternion.SlerpToRef(left, right, amount, result)
@@ -313,7 +313,12 @@ export class Quaternion {
    * @param amount - defines the gradient to use
    * @param result - defines the target quaternion
    */
-  public static SlerpToRef(left: Quaternion, right: Quaternion, amount: number, result: Quaternion): void {
+  public static SlerpToRef(
+    left: ReadOnlyQuaternion,
+    right: ReadOnlyQuaternion,
+    amount: number,
+    result: Quaternion
+  ): void {
     let num2
     let num3
     let num4 = left.x * right.x + left.y * right.y + left.z * right.z + left.w * right.w
@@ -350,10 +355,10 @@ export class Quaternion {
    * @returns the new interpolated quaternion
    */
   public static Hermite(
-    value1: Quaternion,
-    tangent1: Quaternion,
-    value2: Quaternion,
-    tangent2: Quaternion,
+    value1: ReadOnlyQuaternion,
+    tangent1: ReadOnlyQuaternion,
+    value2: ReadOnlyQuaternion,
+    tangent2: ReadOnlyQuaternion,
     amount: number
   ): Quaternion {
     let squared = amount * amount
@@ -383,7 +388,7 @@ export class Quaternion {
    * @param quat1 - defines the first quaternion
    * @param quat2 - defines the second quaternion
    */
-  public static Angle(quat1: Quaternion, quat2: Quaternion): number {
+  public static Angle(quat1: ReadOnlyQuaternion, quat2: ReadOnlyQuaternion): number {
     const dot = Quaternion.Dot(quat1, quat2)
     return Math.acos(Math.min(Math.abs(dot), 1)) * 2 * RAD2DEG
   }
@@ -465,7 +470,7 @@ export class Quaternion {
    * @param to - defines the second quaternion
    * @param maxDegreesDelta - the interval step
    */
-  public static RotateTowards(from: Quaternion, to: Quaternion, maxDegreesDelta: number): Quaternion {
+  public static RotateTowards(from: ReadOnlyQuaternion, to: Quaternion, maxDegreesDelta: number): Quaternion {
     const num: number = Quaternion.Angle(from, to)
     if (num === 0) {
       return to
@@ -611,7 +616,7 @@ export class Quaternion {
    * @param otherQuaternion - defines the second operand
    * @returns true if the current quaternion and the given one coordinates are strictly equals
    */
-  public equals(otherQuaternion: Quaternion): boolean {
+  public equals(otherQuaternion: ReadOnlyQuaternion): boolean {
     return (
       otherQuaternion &&
       this.x === otherQuaternion.x &&
@@ -634,7 +639,7 @@ export class Quaternion {
    * @param other - defines the other quaternion
    * @returns the updated current quaternion
    */
-  public copyFrom(other: Quaternion): Quaternion {
+  public copyFrom(other: ReadOnlyQuaternion): Quaternion {
     this.x = other.x
     this.y = other.y
     this.z = other.z
@@ -767,7 +772,7 @@ export class Quaternion {
    * @param q1 - defines the second operand
    * @returns a new quaternion set as the multiplication result of the current one with the given one "q1"
    */
-  public multiply(q1: Quaternion): Quaternion {
+  public multiply(q1: ReadOnlyQuaternion): Quaternion {
     let result = new Quaternion(0, 0, 0, 1.0)
     this.multiplyToRef(q1, result)
     return result
@@ -779,7 +784,7 @@ export class Quaternion {
    * @param result - defines the target quaternion
    * @returns the current quaternion
    */
-  public multiplyToRef(q1: Quaternion, result: Quaternion): Quaternion {
+  public multiplyToRef(q1: ReadOnlyQuaternion, result: Quaternion): Quaternion {
     let x = this.x * q1.w + this.y * q1.z - this.z * q1.y + this.w * q1.x
     let y = -this.x * q1.z + this.y * q1.w + this.z * q1.x + this.w * q1.y
     let z = this.x * q1.y - this.y * q1.x + this.z * q1.w + this.w * q1.z
@@ -793,7 +798,7 @@ export class Quaternion {
    * @param q1 - defines the second operand
    * @returns the currentupdated quaternion
    */
-  public multiplyInPlace(q1: Quaternion): Quaternion {
+  public multiplyInPlace(q1: ReadOnlyQuaternion): Quaternion {
     this.multiplyToRef(q1, this)
     return this
   }

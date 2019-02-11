@@ -34,7 +34,8 @@ export class HighlightBox extends BaseComponent<{ highlight: boolean }> {
 
   update() {
     const newValue = !this.value || this.value.highlight
-    const mesh: BABYLON.Mesh = this.entity.getObject3D(BasicShape.nameInEntity) as any
+    const mesh: BABYLON.AbstractMesh = this.entity.getObject3D(BasicShape.nameInEntity) as any
+
     if (mesh) {
       const didChange = mesh.renderOverlay !== !!newValue
       mesh.renderOverlay = !!newValue
@@ -54,10 +55,10 @@ export class HighlightBox extends BaseComponent<{ highlight: boolean }> {
   }
 
   detach() {
-    const mesh: BABYLON.Mesh = this.entity.getObject3D(BasicShape.nameInEntity) as any
+    const mesh: BABYLON.AbstractMesh = this.entity.getObject3D(BasicShape.nameInEntity) as any
     if (mesh) {
       mesh.renderOverlay = false
-      mesh.renderOverlay = false
+      mesh.showBoundingBox = false
       mesh.overlayColor = new BABYLON.Color3()
 
       const children = mesh.getChildTransformNodes(false, filterMeshes) as BABYLON.AbstractMesh[]

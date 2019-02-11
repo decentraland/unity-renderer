@@ -9,8 +9,9 @@ import {
   Component,
   Vector3,
   Pointer,
-  OnClick,
-  Billboard
+  OnPointerDown,
+  Billboard,
+  log
 } from 'decentraland-ecs/src'
 
 declare var dcl: any
@@ -61,9 +62,9 @@ const spawner = {
       z: (Math.random() - Math.random()) / 2
     }
 
-    if (!ent.getOrNull(OnClick)) {
+    if (!ent.getOrNull(OnPointerDown)) {
       ent.set(
-        new OnClick(() => {
+        new OnPointerDown(() => {
           engine.removeEntity(ent)
         })
       )
@@ -101,7 +102,7 @@ const spawner = {
 }
 
 class BubbleSystem implements ISystem {
-  group = engine.getComponentGroup(Transform, Velocity, OnClick)
+  group = engine.getComponentGroup(Transform, Velocity, OnPointerDown)
 
   isOutOfBounds(transform: Transform) {
     if (
@@ -137,11 +138,17 @@ class BubbleSystem implements ISystem {
 }
 
 input.subscribe('BUTTON_A_UP', e => {
-  console['log']('pointerUp works', e)
+  log('pointerUp works', e)
 })
 
 input.subscribe('BUTTON_A_DOWN', e => {
-  console['log']('pointerDown works', e)
+  log('pointerDown works', e)
 })
 
 engine.addSystem(new BubbleSystem())
+
+dcl.onEvent(function(event: any) {
+  log('event', event)
+})
+
+log('init')

@@ -6,7 +6,6 @@ import { parseVerticalAlignment, parseHorizontalAlignment } from 'engine/entitie
 import { UIInputTextShape } from 'decentraland-ecs/src/decentraland/UIShapes'
 import { SharedSceneContext } from 'engine/entities/SharedSceneContext'
 import { UIControl } from './UIControl'
-import { PointerLock } from 'engine/renderer/input'
 import { IEvents } from 'decentraland-ecs/src/decentraland/Types'
 
 const schemaValidator = createSchemaValidator({
@@ -50,15 +49,12 @@ class Class extends UIControl<UIInputTextShape, BABYLON.GUI.InputText> {
     super(ctx, uuid)
 
     this.control.onTextChangedObservable.add($ => {
-      this.checkPointerLock()
       this.dispatchOnChanged({ pointerId: -1, value: $.text })
     })
     this.control.onFocusObservable.add(_ => {
-      this.checkPointerLock()
       this.dispatchOnFocus({ entityId: this.uuid, pointerId: -1 })
     })
     this.control.onBlurObservable.add(_ => {
-      this.checkPointerLock()
       this.dispatchOnBlur({ entityId: this.uuid, pointerId: -1 })
     })
   }
@@ -124,13 +120,6 @@ class Class extends UIControl<UIInputTextShape, BABYLON.GUI.InputText> {
     this.control.isPointerBlocker = this.data.isPointerBlocker
 
     this.setParent(this.data.parentComponent)
-  }
-
-  checkPointerLock = () => {
-    if (this.data.isPointerBlocker) {
-      PointerLock.isLocked = false
-      PointerLock.preventLocking = true
-    }
   }
 
   dispatchOnChanged = (data: IEvents['onChange']) => {

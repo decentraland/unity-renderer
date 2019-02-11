@@ -1,4 +1,4 @@
-import { Transform, engine, Entity, BoxShape, OnClick, ISystem, log } from 'decentraland-ecs'
+import { Transform, engine, Entity, BoxShape, ISystem, log, OnPointerDown } from 'decentraland-ecs/src'
 
 export class RotatorSystem implements ISystem {
   group = engine.getComponentGroup(Transform)
@@ -23,7 +23,8 @@ cube.get(Transform).position.set(5, 1, 5)
 cube.set(new BoxShape())
 
 cube.set(
-  new OnClick(_ => {
+  new OnPointerDown(evt => {
+    log('cubeClick', evt)
     if (cube.has(Transform)) {
       // this will place the entity at the scene origin (out of bounds)
       cube.remove(Transform)

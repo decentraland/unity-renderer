@@ -6,7 +6,6 @@ import { parseVerticalAlignment, parseHorizontalAlignment } from 'engine/entitie
 import { UISliderShape } from 'decentraland-ecs/src/decentraland/UIShapes'
 import { SharedSceneContext } from 'engine/entities/SharedSceneContext'
 import { UIControl } from './UIControl'
-import { PointerLock } from 'engine/renderer/input'
 import { IEvents } from 'decentraland-ecs/src/decentraland/Types'
 
 const schemaValidator = createSchemaValidator({
@@ -45,7 +44,6 @@ class Class extends UIControl<UISliderShape, BABYLON.GUI.Slider> {
     super(ctx, uuid)
 
     this.control.onValueChangedObservable.add($ => {
-      this.checkPointerLock()
       this.dispatchOnChanged({ pointerId: -1, value: $ })
     })
   }
@@ -108,13 +106,6 @@ class Class extends UIControl<UISliderShape, BABYLON.GUI.Slider> {
 
   dispatchOnChanged = (data: IEvents['onChange']) => {
     this.entities.forEach($ => $.dispatchUUIDEvent('onChange', data))
-  }
-
-  checkPointerLock = () => {
-    if (this.data.isPointerBlocker) {
-      PointerLock.isLocked = false
-      PointerLock.preventLocking = true
-    }
   }
 }
 

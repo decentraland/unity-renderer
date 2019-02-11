@@ -62,5 +62,6 @@ import * as engine from 'engine'
 import * as renderer from 'engine/renderer'
 global['engine'] = engine
 global['renderer'] = renderer
+declare var mocha: any
 
 mocha.run()

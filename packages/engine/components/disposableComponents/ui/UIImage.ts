@@ -6,7 +6,6 @@ import { parseVerticalAlignment, parseHorizontalAlignment } from 'engine/entitie
 import { UIImageShape } from 'decentraland-ecs/src/decentraland/UIShapes'
 import { SharedSceneContext } from 'engine/entities/SharedSceneContext'
 import { UIControl } from './UIControl'
-import { PointerLock } from 'engine/renderer/input'
 
 const schemaValidator = createSchemaValidator({
   id: { type: 'string', default: null },
@@ -37,7 +36,6 @@ class Class extends UIControl<UIImageShape, BABYLON.GUI.Image> {
     super(ctx, uuid)
 
     this.control.onPointerUpObservable.add($ => {
-      this.checkPointerLock()
       this.dispatchOnClick($.buttonIndex)
     })
   }
@@ -87,17 +85,9 @@ class Class extends UIControl<UIImageShape, BABYLON.GUI.Image> {
   dispatchOnClick = (pointerId: number) => {
     this.entities.forEach($ =>
       $.dispatchUUIDEvent('onClick', {
-        entityId: $.uuid,
-        pointerId
+        entityId: $.uuid
       })
     )
-  }
-
-  checkPointerLock = () => {
-    if (this.data.isPointerBlocker) {
-      PointerLock.isLocked = false
-      PointerLock.preventLocking = true
-    }
   }
 }
 

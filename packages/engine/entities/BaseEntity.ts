@@ -37,7 +37,6 @@ export class BaseEntity extends BABYLON.AbstractMesh {
   assetContainer: BABYLON.AssetContainer
   isDCLEntity = true
 
-  actionManager: BABYLON.ActionManager
   attrs: Props = {}
 
   components: { [key: string]: BaseComponent<any> } = {}
@@ -45,7 +44,6 @@ export class BaseEntity extends BABYLON.AbstractMesh {
   onChangeObject3DObservable = new BABYLON.Observable<{ type: string; object: BABYLON.TransformNode }>()
 
   sendPositionsPending = false
-  sendMetricsPending = false
   loadingDone = true
   previousWorldMatrix = BABYLON.Matrix.Zero()
 
@@ -184,10 +182,21 @@ export class BaseEntity extends BABYLON.AbstractMesh {
     })
 
     if (type === BasicShape.nameInEntity) {
-      this.getActionManager()
       this.sendUpdatePositions()
       this.sendUpdateMetrics()
     }
+  }
+
+  /**
+   * This method is called after processing an input. It first searches
+   * for a collision mesh, then it traverses up the tree until it finds an entity
+   * (this entity) and then it calls this method.
+   */
+  handleClick(pointerEvent: 'pointerUp' | 'pointerDown', pointerId: number, pickingResult: BABYLON.PickingInfo): any {
+    if (pointerEvent === 'pointerDown') {
+      this.dispatchUUIDEvent('onClick', { entityId: this.uuid })
+    }
+    this.context.sendPointerEvent(pointerEvent, pointerId, this.uuid, pickingResult)
   }
 
   /**
@@ -304,11 +313,6 @@ export class BaseEntity extends BABYLON.AbstractMesh {
     // Remove the components, behaviors and other stuff
     super.dispose(true, false)
 
-    if (this.actionManager) {
-      this.actionManager.dispose()
-      delete this.actionManager
-    }
-
     if (this.context) {
       this.context.entities.delete(this.uuid)
       delete this.context
@@ -396,33 +400,13 @@ export class BaseEntity extends BABYLON.AbstractMesh {
     if (payload.classId === CLASS_ID.UUID_CALLBACK) {
       const uuidPayload: { type: IEventNames; uuid: string } = JSON.parse(payload.json)
       this.addUUIDEvent(uuidPayload.type, uuidPayload.uuid)
-    }
-
-    if (name in this.components) {
+    } else if (name in this.components) {
       this.components[name].setValue(JSON.parse(payload.json))
     } else if (payload.classId in componentRegistry) {
       const behavior: BaseComponent<any> = new componentRegistry[payload.classId](this, JSON.parse(payload.json))
       this.components[name] = behavior
-      this.addBehavior(behavior)
+      this.addBehavior(behavior, true)
     }
-  }
-
-  getActionManager() {
-    if (this.actionManager) {
-      return this.actionManager
-    }
-
-    this.actionManager = new BABYLON.ActionManager(this.getScene())
-    this.actionManager.registerAction(
-      new BABYLON.ExecuteCodeAction(BABYLON.ActionManager.OnPickDownTrigger, evt => {
-        this.dispatchUUIDEvent('onClick', {
-          entityId: this.uuid,
-          pointerId: evt.sourceEvent.pointerId || 0
-        })
-      })
-    )
-
-    return this.actionManager
   }
 
   sendUpdatePositions = () => {
@@ -434,15 +418,20 @@ export class BaseEntity extends BABYLON.AbstractMesh {
   }
 
   sendUpdateMetrics() {
-    if (!this.sendMetricsPending) {
-      this.sendMetricsPending = true
-      if (!this._isDisposed) {
-        engineMicroQueue.queueMicroTask(() => {
-          this.sendMetricsPending = false
-          this.context && this.context.updateMetrics()
-        })
-      }
+    this.context && this.context.updateMetrics()
+  }
+
+  getMeshesBoundingBox() {
+    let children = this.getChildMeshes(false)
+    let boundingInfo = children[0].getBoundingInfo()
+    let min = boundingInfo.boundingBox.minimumWorld
+    let max = boundingInfo.boundingBox.maximumWorld
+    for (let i = 1; i < children.length; i++) {
+      boundingInfo = children[i].getBoundingInfo()
+      min = BABYLON.Vector3.Minimize(min, boundingInfo.boundingBox.minimumWorld)
+      max = BABYLON.Vector3.Maximize(max, boundingInfo.boundingBox.maximumWorld)
     }
+    return new BABYLON.BoundingInfo(min, max)
   }
 }
 

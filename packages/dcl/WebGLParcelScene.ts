@@ -17,10 +17,9 @@ import { scene } from 'engine/renderer'
 
 export class WebGLParcelScene extends WebGLScene<LoadableParcelScene> {
   public encodedPositions: string
+  public setOfEntitiesOutsideBoundaries = new Set<BaseEntity>()
 
-  private setOfEntitiesOutsideBoundaries = new Set<BaseEntity>()
   private parcelSet = new Set<string>()
-
   private shouldValidateBoundaries = false
 
   constructor(public data: EnvironmentData<LoadableParcelScene>) {
@@ -143,6 +142,7 @@ export class WebGLParcelScene extends WebGLScene<LoadableParcelScene> {
    */
   checkBoundaries() {
     const newSet = new Set<BaseEntity>()
+
     this.context.entities.forEach(entity => checkParcelSceneBoundaries(this.parcelSet, newSet, entity))
     // remove the highlight from the entities that were outside but they are no longer outside
     this.setOfEntitiesOutsideBoundaries.forEach($ => {

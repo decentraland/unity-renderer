@@ -114,37 +114,16 @@ function moveCamera(camera: any, directionRotation: BABYLON.Quaternion, speed: n
 
 export { vrCamera, arcCamera }
 
-function setUpEvents(attach: boolean) {
-  const canvas = engine.getRenderingCanvas()
-  const eventPrefix = BABYLON.Tools.GetPointerPrefix()
-
-  canvas.removeEventListener(eventPrefix + 'move', (scene as any)._onPointerMove)
-  canvas.removeEventListener(eventPrefix + 'down', (scene as any)._onPointerDown)
-  window.removeEventListener(eventPrefix + 'up', (scene as any)._onPointerUp)
-
-  if (attach) {
-    canvas.addEventListener(eventPrefix + 'move', (scene as any)._onPointerMove)
-    canvas.addEventListener(eventPrefix + 'down', (scene as any)._onPointerDown)
-    window.addEventListener(eventPrefix + 'up', (scene as any)._onPointerUp)
-  }
-}
-
 export function setCamera(thirdPerson: boolean) {
   if (thirdPerson && scene.activeCamera === arcCamera) return
   if (!thirdPerson && scene.activeCamera === vrCamera) return
 
   if (thirdPerson) {
-    setUpEvents(true)
-
     arcCamera.target.copyFrom(scene.activeCamera.position)
-
     scene.switchActiveCamera(arcCamera)
     scene.cameraToUseForPointers = scene.activeCamera
   } else {
-    setUpEvents(false)
-
     vrCamera.position.copyFrom(scene.activeCamera.position)
-
     scene.switchActiveCamera(vrCamera)
     scene.cameraToUseForPointers = scene.activeCamera
   }

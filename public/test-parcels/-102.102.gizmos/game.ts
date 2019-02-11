@@ -1,4 +1,4 @@
-import { Entity, engine, BoxShape, Gizmos, Transform, OnClick, log, OnGizmoEvent } from 'decentraland-ecs/src'
+import { Entity, engine, BoxShape, Gizmos, Transform, OnPointerDown, log, OnGizmoEvent } from 'decentraland-ecs/src'
 
 const shape = new BoxShape()
 shape.visible = true
@@ -37,7 +37,7 @@ function createCube(i: number) {
 }
 
 for (let i = 0; i < 16; i++) {
-  createCube(i).set(new OnClick(e => log(`click on ${i}`, e)))
+  createCube(i).set(new OnPointerDown(e => log(`click on ${i}`, e)))
 }
 
 log('initialized the cubes')

@@ -1,11 +1,12 @@
 import * as BABYLON from 'babylonjs'
 
 import { playerConfigurations, DEBUG } from 'config'
-import { vrHelper, scene } from './init'
+import { scene } from './init'
 import Joystick from './controls/joystick'
 import PlaneCanvasControl from './controls/planeCanvasControl'
-import { isMobile } from 'shared/comms/mobile'
 import { isThirdPersonCamera, vrCamera } from './camera'
+import { loadedParcelSceneWorkers } from 'shared/world/parcelSceneManager'
+import { WebGLScene } from 'dcl/WebGLScene'
 
 /**
  * This is a map of keys (see enum Keys): boolean
@@ -14,11 +15,6 @@ const keyState: {
   [keyCode: number]: boolean
   [keyName: string]: boolean
 } = {}
-
-const PointerLock = {
-  isLocked: false,
-  preventLocking: false
-}
 
 enum Keys {
   KEY_W = 87,
@@ -42,12 +38,7 @@ enum Keys {
 
 /// --- EXPORTS ---
 
-export { keyState, PointerLock, Keys }
-
-export function blockPointerLock() {
-  PointerLock.isLocked = false
-  PointerLock.preventLocking = true
-}
+export { keyState, Keys }
 
 export function initKeyboard() {
   vrCamera.keysUp = [Keys.KEY_W as number] // W
@@ -148,7 +139,7 @@ function enableRotationCanvas(sceneCanvas: HTMLCanvasElement) {
 
     const { x, y } = e.center
     console['log'](`clicking ${x}, ${y}`)
-    interactWithScene(e, x, y)
+    interactWithScene('pointerDown', x, y, 1)
   })
 
   container.appendChild(canvas)
@@ -158,35 +149,39 @@ function enableRotationCanvas(sceneCanvas: HTMLCanvasElement) {
   resizeRotationCanvas(sceneCanvas)
 }
 
-function interactWithScene(e, x, y) {
-  const pickingResult = scene.pick(x, y)
-  if (!pickingResult || !pickingResult.pickedMesh) {
-    return
+function findParentEntity<T extends BABYLON.Node & { isDCLEntity?: boolean }>(
+  node: T
+): {
+  handleClick(pointerEvent: 'pointerUp' | 'pointerDown', pointerId: number, pickingResult: BABYLON.PickingInfo): void
+} | null {
+  // Find the next entity parent to dispatch the event
+  let parent: BABYLON.Node = node.parent
+
+  while (parent && !('isDCLEntity' in parent)) {
+    parent = parent.parent
+
+    // If the element has no parent, stop execution
+    if (!parent) return null
   }
 
-  if (isMobile()) {
-    const actionManager = pickingResult.pickedMesh.actionManager
-    if (!actionManager) {
-      return
-    }
+  return (parent as any) || null
+}
 
-    const action = new BABYLON.ActionEvent(pickingResult.pickedMesh, x, y, pickingResult.pickedMesh, e)
-    actionManager.processTrigger(BABYLON.ActionManager.OnPickDownTrigger, action)
+export function interactWithScene(pointerEvent: 'pointerUp' | 'pointerDown', x: number, y: number, pointerId: number) {
+  const pickingResult = scene.pick(x, y)
+
+  const mesh = pickingResult.pickedMesh
+
+  const entity = mesh && findParentEntity(mesh)
+
+  if (entity) {
+    entity.handleClick(pointerEvent, pointerId, pickingResult)
   } else {
-    const eventData: PointerEventInit = {
-      clientX: x,
-      clientY: y,
-      screenX: x,
-      screenY: y,
-      detail: e.detail,
-      button: e.button,
-      buttons: e.buttons,
-      pointerId: e.pointerId,
-      pointerType: e.pointerType
+    for (let scene of loadedParcelSceneWorkers) {
+      if (scene.parcelScene instanceof WebGLScene) {
+        scene.parcelScene.context.sendPointerEvent(pointerEvent, pointerId, null, pickingResult)
+      }
     }
-
-    scene.cameraToUseForPointers = scene.activeCamera
-    scene.simulatePointerDown(pickingResult, eventData)
   }
 }
 
@@ -208,77 +203,29 @@ export function enableMouseLock(canvas: HTMLCanvasElement) {
     canvas.requestPointerLock = canvas.requestPointerLock || canvas['mozRequestPointerLock']
   }
 
-  window.addEventListener('pointerdown', evt => {
-    if (hasPointerLock() && !vrHelper.isInVRMode) {
-      evt.preventDefault()
-      evt.stopPropagation()
-      canvas.focus()
-      interactWithScene(evt, canvas.width / 2, canvas.height / 2)
-    }
-  })
+  scene.onPointerObservable.add(e => {
+    if (e.type === BABYLON.PointerEventTypes.POINTERDOWN) {
+      const evt = e.event as PointerEvent
 
-  window.addEventListener('pointerup', evt => {
-    if (hasPointerLock() && !vrHelper.isInVRMode) {
-      evt.preventDefault()
-      evt.stopPropagation()
-      canvas.focus()
-
-      const pickingResult = scene.pick(canvas.width / 2, canvas.height / 2)
-
-      if (pickingResult && pickingResult.pickedMesh) {
-        const eventData: PointerEventInit = {
-          clientX: canvas.width / 2,
-          clientY: canvas.height / 2,
-          screenX: canvas.width / 2,
-          screenY: canvas.height / 2,
-          detail: evt.detail,
-          button: evt.button,
-          buttons: evt.buttons,
-          pointerId: (evt as any).pointerId,
-          pointerType: (evt as any).pointerType
+      if (isThirdPersonCamera()) {
+        canvas.focus()
+        interactWithScene('pointerDown', evt.offsetX, evt.offsetY, evt.pointerId)
+      } else {
+        if (hasPointerLock()) {
+          canvas.focus()
+          interactWithScene('pointerDown', canvas.width / 2, canvas.height / 2, evt.pointerId)
+        } else {
+          canvas.requestPointerLock()
+          canvas.focus()
         }
-        scene.cameraToUseForPointers = scene.activeCamera
-        scene.simulatePointerUp(pickingResult, eventData)
       }
-    }
-  })
+    } else if (e.type === BABYLON.PointerEventTypes.POINTERUP) {
+      const evt = e.event as PointerEvent
 
-  canvas.addEventListener('click', () => {
-    if (isThirdPersonCamera()) {
-      return
-    }
-
-    const preventPointerLock = PointerLock.preventLocking
-
-    if (!preventPointerLock && !hasPointerLock()) {
-      canvas.requestPointerLock()
-      canvas.focus()
-    }
-
-    // Disable locking prevention again (as it was set initially)
-    PointerLock.preventLocking = false
-  })
-
-  scene.onPrePointerObservable.add(evt => {
-    if (isThirdPersonCamera()) {
-      return
-    }
-
-    if (evt.type === BABYLON.PointerEventTypes.POINTERDOWN || evt.type === BABYLON.PointerEventTypes.POINTERUP) {
-      // regular mouse events doesn't have the `ray` property
-      evt.skipOnPointerObservable = !evt.ray
-    }
-  })
-
-  document.addEventListener('pointerlockchange', function() {
-    const isPointerLocked = hasPointerLock()
-    PointerLock.isLocked = isPointerLocked
-
-    if (!isPointerLocked) {
-      vrCamera.detachControl(canvas)
-    } else {
-      if (scene.activeCamera === vrCamera) {
-        vrCamera.attachControl(canvas)
+      if (isThirdPersonCamera()) {
+        interactWithScene('pointerUp', evt.offsetX, evt.offsetY, evt.pointerId)
+      } else if (hasPointerLock()) {
+        interactWithScene('pointerUp', canvas.width / 2, canvas.height / 2, evt.pointerId)
       }
     }
   })

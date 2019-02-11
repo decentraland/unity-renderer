@@ -10,7 +10,7 @@
   )
   cube.getOrCreate(BoxShape)
   cube.set(
-    new OnClick(() => {
+    new OnPointerDown(() => {
       cube.get(Transform).position.set(Math.random() * 8 + 1, Math.random() * 8 + 1, Math.random() * 8 + 1)
     })
   )
@@ -38,7 +38,7 @@
   cube.getOrCreate(BoxShape)
 
   cube.set(
-    new OnClick(() => {
+    new OnPointerDown(() => {
       source.playOnce()
     })
   )

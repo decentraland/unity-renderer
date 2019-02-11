@@ -70,7 +70,7 @@ export class GLTFShape extends DisposableComponent {
 
           // TODO(menduz): what happens if the load ends when the entity got removed?
           if (!entity.isDisposed()) {
-            processColliders(assetContainer, entity.getActionManager())
+            processColliders(assetContainer)
 
             // Fin the main mesh and add it as the BasicShape.nameInEntity component.
             assetContainer.meshes.filter($ => $.name === '__root__').forEach(mesh => {

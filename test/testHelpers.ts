@@ -31,6 +31,8 @@ import { gridToWorld } from 'atomicHelpers/parcelScenePositions'
 const baseUrl = 'http://localhost:8080/local-ipfs/contents/'
 
 declare var gc: any
+declare var it: any
+declare var describe: any
 
 let count = 0
 
@@ -123,7 +125,10 @@ export function saveScreenshot(
           resolvable.reject(e)
         })
     }, 'image/png')
-    await resolvable
+
+    const res = await resolvable
+
+    console.log('diff result', res, resolvable)
   })
 }
 
@@ -414,6 +419,7 @@ export function testScene(
       sceneHost: GamekitScene
       parcelScenePromise: Promise<WebGLParcelScene>
       root: BABYLON.TransformNode
+      logs: any[]
     }
   ) => void,
   manualUpdate = false
@@ -423,6 +429,7 @@ export function testScene(
 
     const parcelScenePromise = future<WebGLParcelScene>()
     const sceneHost = new GamekitScene(transport.client)
+    const logs = []
 
     sceneHost.manualUpdate = manualUpdate
 
@@ -442,8 +449,14 @@ export function testScene(
     it('waits for the system to be loaded and ready', async function() {
       const parcelScene = await parcelScenePromise
 
-      const worker = new SceneWorker(parcelScene, transport.server)
+      const originalLog = parcelScene.context.logger.log
+      parcelScene.context.logger.log = function(...args: any[]) {
+        logs.push(args)
+        return originalLog.apply(this, args)
+      }
 
+      const worker = new SceneWorker(parcelScene, transport.server)
+      loadedParcelSceneWorkers.add(worker)
       // keep this to avoid regressions
       await worker.system
 
@@ -462,7 +475,8 @@ export function testScene(
         },
         sceneHost,
         parcelScenePromise,
-        root
+        root,
+        logs
       })
     } catch (e) {
       if (e) {
@@ -475,9 +489,11 @@ export function testScene(
     it('cleans up the parcelScene', async () => {
       const parcelScene = await parcelScenePromise
       const rootEntity = parcelScene.context.rootEntity
+      const worker = await parcelScene.worker
       parcelScene.dispose()
       expect(rootEntity.isDisposed()).to.eq(true)
       expect(scene.getTransformNodesByID(rootEntity.id).length).to.eq(0, 'ParcelScene is still in the scene')
+      loadedParcelSceneWorkers.delete(worker)
     })
   })
 }

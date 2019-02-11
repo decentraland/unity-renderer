@@ -82,14 +82,27 @@ export type DecentralandInterface = {
 }
 
 export type PointerEvent = {
-  /** Origin of the ray */
-  from: ReadOnlyVector3
+  /** Origin of the ray, relative to the scene */
+  origin: ReadOnlyVector3
   /** Direction vector of the ray (normalized) */
   direction: ReadOnlyVector3
-  /** Length of the ray */
-  length: number
   /** ID of the pointer that triggered the event */
   pointerId: number
+  /** Does this pointer event hit any object? */
+  hit?: {
+    /** Length of the ray */
+    length: number
+    /** If the ray hits a mesh the intersection point will be this */
+    hitPoint: ReadOnlyVector3
+    /** If the mesh has a name, it will be assigned to meshName */
+    meshName: string
+    /** Normal of the hit */
+    normal: ReadOnlyVector3
+    /** Normal of the hit, in world space */
+    worldNormal: ReadOnlyVector3
+    /** Hit entity ID if any */
+    entityId: string
+  }
 }
 
 export interface IEvents {
@@ -117,18 +130,6 @@ export interface IEvents {
     rotation: ReadOnlyVector3
     /** Rotation quaternion, useful in some scenarios. */
     quaternion: ReadOnlyQuaternion
-  }
-
-  /**
-   * `click` is triggered when a user points and the ray (from mouse or controller) hits the entity.
-   * Notice: Only entities with ID will be listening for click events.
-   */
-  click: {
-    /** ID of the entitiy of the event */
-    entityId: string
-
-    /** ID of the pointer that triggered the event */
-    pointerId: number
   }
 
   /**
@@ -192,9 +193,9 @@ export interface IEvents {
     pointerId: number
   }
 
+  /** The onClick event is only used for UI elements */
   onClick: {
     entityId: string
-    pointerId: number
   }
 
   /**

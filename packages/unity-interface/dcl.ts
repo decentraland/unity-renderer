@@ -4,27 +4,20 @@ import { initShared } from '../shared'
 import { DevTools } from '../shared/apis/DevTools'
 import { ILogger, createLogger } from '../shared/logger'
 import { positionObserver, lastPlayerPosition } from '../shared/world/positionThings'
-import { Vector3, Quaternion } from 'babylonjs'
 import { enableParcelSceneLoading, getParcelById } from '../shared/world/parcelSceneManager'
 import { IEventNames, IEvents } from '../decentraland-ecs/src/decentraland/Types'
-import {
-  LoadableParcelScene,
-  Vector3Component,
-  QuaternionComponent,
-  EntityAction,
-  EnvironmentData,
-  ILandToLoadableParcelScene
-} from '../shared/types'
+import { LoadableParcelScene, EntityAction, EnvironmentData, ILandToLoadableParcelScene } from '../shared/types'
 import { SceneWorker, ParcelSceneAPI } from '../shared/world/SceneWorker'
 
 import { EventDispatcher } from 'decentraland-rpc/lib/common/core/EventDispatcher'
 import { ParcelIdentity } from '../shared/apis/ParcelIdentity'
+import { Vector3, Quaternion, ReadOnlyVector3, ReadOnlyQuaternion } from '../decentraland-ecs/src/decentraland/math'
 
 let gameInstance: GameInstance = null
 
 const positionEvent = {
   position: Vector3.Zero(),
-  quaternion: Quaternion.Identity(),
+  quaternion: Quaternion.Identity,
   rotation: Vector3.Zero()
 }
 
@@ -32,10 +25,10 @@ const positionEvent = {
 
 const browserInterface = {
   /** Triggered when the camera moves */
-  ReportPosition(data: { position: Vector3Component; rotation: QuaternionComponent }) {
+  ReportPosition(data: { position: ReadOnlyVector3; rotation: ReadOnlyQuaternion }) {
     positionEvent.position.set(data.position.x, data.position.y, data.position.z)
     positionEvent.quaternion.set(data.rotation.x, data.rotation.y, data.rotation.z, data.rotation.w)
-    positionEvent.quaternion.toEulerAnglesToRef(positionEvent.rotation)
+    positionEvent.rotation.copyFrom(positionEvent.quaternion.eulerAngles)
 
     positionObserver.notifyObservers(positionEvent)
   },

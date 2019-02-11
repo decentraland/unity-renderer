@@ -8,19 +8,18 @@ import { profileObservable, ProfileEvent } from 'shared/comms/profile'
 import { SharedSceneContext } from 'engine/entities/SharedSceneContext'
 import { uuid } from 'atomicHelpers/math'
 import { setEntityText } from 'engine/components/ephemeralComponents/TextShape'
-import { Vector3Component, QuaternionComponent } from 'shared/types'
-import { Color3 } from 'decentraland-ecs/src'
+import { Color3, ReadOnlyVector3, ReadOnlyQuaternion } from 'decentraland-ecs/src'
 
 export type AvatarAttributes = {
   displayName: string
   publicKey: string
   avatarType?: string
-  leftHandPosition: Vector3Component
-  rightHandPosition: Vector3Component
+  leftHandPosition: ReadOnlyVector3
+  rightHandPosition: ReadOnlyVector3
 
-  headRotation: Vector3Component
-  leftHandRotation: QuaternionComponent
-  rightHandRotation: QuaternionComponent
+  headRotation: ReadOnlyVector3
+  leftHandRotation: ReadOnlyQuaternion
+  rightHandRotation: ReadOnlyQuaternion
 
   muted: boolean
 

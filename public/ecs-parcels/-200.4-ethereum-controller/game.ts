@@ -418,7 +418,7 @@ text.billboard = true
 text.isPickable = true
 cube.set(text)
 cube.set(
-  new OnClick(() => {
+  new OnPointerDown(() => {
     executeTask(async () => {
       const provider = await getProvider()
       const requestManager = new EthConnect.RequestManager(provider)

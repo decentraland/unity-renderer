@@ -1,5 +1,9 @@
-import { DecentralandInterface } from './Types'
+// tslint:disable:ter-indent
+// tslint:disable:ter-indent
+
+import { DecentralandInterface, PointerEvent } from './Types'
 import { Vector3 } from './math'
+import { Component, DisposableComponent } from '../ecs/Component'
 
 declare let dcl: DecentralandInterface | void
 
@@ -20,27 +24,41 @@ export type InputState = Record<
   }
 >
 
-export type EnginePointerEvent = {
-  /** Origin of the ray */
-  from: { x: number; y: number; z: number }
-  /** Direction vector of the ray (normalized) */
-  direction: { x: number; y: number; z: number }
-  /** Length of the ray */
-  length: number
-  /** ID of the pointer that triggered the event */
-  pointerId: number
+export type LocalPointerEvent = PointerEvent & {
+  origin: Vector3
+  direction: Vector3
+  pointer: Pointer
+  hit?: PointerEvent['hit'] & {
+    hitPoint: Vector3
+    normal: Vector3
+    worldNormal: Vector3
+  }
 }
 
-export type PointerEvent = {
-  /** Origin of the ray */
-  from: Vector3
-  /** Direction vector of the ray (normalized) */
-  direction: Vector3
-  /** Length of the ray */
-  length: number
-  /** ID of the pointer that triggered the event */
-  pointerId: Pointer
+/**
+ * @public
+ */
+export class PointerEventComponent {
+  constructor(public readonly callback: (event: LocalPointerEvent) => void) {
+    if (!callback || !('apply' in callback) || !('call' in callback)) {
+      throw new Error('Callback is not a function')
+    }
+    // tslint:disable-next-line:no-use-before-declare
+    Input.ensureInstance()
+  }
 }
+
+/**
+ * @public
+ */
+@Component('pointerDown')
+export class OnPointerDown extends PointerEventComponent {}
+
+/**
+ * @public
+ */
+@Component('pointerUp')
+export class OnPointerUp extends PointerEventComponent {}
 
 /**
  * @public
@@ -49,9 +67,7 @@ export class Input {
   private static _instance: Input
 
   static get instance(): Input {
-    if (!Input._instance) {
-      Input._instance = new Input()
-    }
+    Input.ensureInstance()
     return Input._instance
   }
 
@@ -59,7 +75,7 @@ export class Input {
     return this.internalState
   }
 
-  private subscriptions: Record<InputEventKind, Array<(e: PointerEvent) => void>> = {
+  private subscriptions: Record<InputEventKind, Array<(e: LocalPointerEvent) => void>> = {
     BUTTON_A_DOWN: [],
     BUTTON_A_UP: []
   }
@@ -73,18 +89,24 @@ export class Input {
     }
   }
 
-  constructor() {
+  private constructor() {
     if (typeof dcl !== 'undefined') {
       dcl.subscribe('pointerUp')
       dcl.subscribe('pointerDown')
 
       dcl.onEvent(event => {
         if (event.type === 'pointerUp') {
-          this.handlePointerUp(event.data as EnginePointerEvent)
+          this.handlePointerUp(event.data as PointerEvent)
         } else if (event.type === 'pointerDown') {
-          this.handlePointerDown(event.data as EnginePointerEvent)
+          this.handlePointerDown(event.data as PointerEvent)
         }
       })
+    }
+  }
+
+  static ensureInstance(): any {
+    if (!Input._instance) {
+      Input._instance = new Input()
     }
   }
 
@@ -95,7 +117,7 @@ export class Input {
    * @param eventName - The name of the event (see InputEventKind).
    * @param fn - A callback function to be called when the event is triggered.
    */
-  public subscribe(eventName: InputEventKind, fn: (e: PointerEvent) => void) {
+  public subscribe(eventName: InputEventKind, fn: (e: LocalPointerEvent) => void) {
     this.subscriptions[eventName].push(fn)
     return () => this.unsubscribe(eventName, fn)
   }
@@ -105,7 +127,7 @@ export class Input {
    * @param eventName - The name of the event (see InputEventKind).
    * @param fn - The callback function used when subscribing to the event.
    */
-  public unsubscribe(eventName: InputEventKind, fn: (e: PointerEvent) => void) {
+  public unsubscribe(eventName: InputEventKind, fn: (e: LocalPointerEvent) => void) {
     const index = this.subscriptions[eventName].indexOf(fn)
     if (index > -1) {
       this.subscriptions[eventName].splice(index, 1)
@@ -117,13 +139,21 @@ export class Input {
     return Pointer.SECONDARY
   }
 
-  private handlePointerUp(data: EnginePointerEvent) {
+  private handlePointerUp(data: PointerEvent) {
     const pointer = this.getPointerById(data.pointerId)
-    const newData = {
-      length: data.length,
-      from: new Vector3(data.from.x, data.from.y, data.from.z),
-      direction: new Vector3(data.direction.x, data.direction.y, data.direction.z),
-      pointerId: pointer
+    const newData: LocalPointerEvent = {
+      ...data,
+      pointer,
+      direction: new Vector3().copyFrom(data.direction),
+      origin: new Vector3().copyFrom(data.origin),
+      hit: data.hit
+        ? {
+            ...data.hit,
+            hitPoint: new Vector3().copyFrom(data.hit.hitPoint),
+            normal: new Vector3().copyFrom(data.hit.normal),
+            worldNormal: new Vector3().copyFrom(data.hit.worldNormal)
+          }
+        : undefined
     }
 
     this.internalState[Pointer.PRIMARY].BUTTON_A_DOWN = false
@@ -131,21 +161,45 @@ export class Input {
     for (let i = 0; i < this.subscriptions['BUTTON_A_UP'].length; i++) {
       this.subscriptions['BUTTON_A_UP'][i](newData)
     }
+
+    if (newData.hit && newData.hit.entityId && DisposableComponent.engine) {
+      const entity = DisposableComponent.engine.entities[newData.hit.entityId]
+      const handler = entity && entity.getOrNull(OnPointerUp)
+      if (handler) {
+        handler.callback(newData)
+      }
+    }
   }
 
-  private handlePointerDown(data: EnginePointerEvent) {
+  private handlePointerDown(data: PointerEvent) {
     const pointer = this.getPointerById(data.pointerId)
-    const newData = {
-      length: data.length,
-      from: new Vector3(data.from.x, data.from.y, data.from.z),
-      direction: new Vector3(data.direction.x, data.direction.y, data.direction.z),
-      pointerId: pointer
+    const newData: LocalPointerEvent = {
+      ...data,
+      pointer,
+      direction: new Vector3().copyFrom(data.direction),
+      origin: new Vector3().copyFrom(data.origin),
+      hit: data.hit
+        ? {
+            ...data.hit,
+            hitPoint: new Vector3().copyFrom(data.hit.hitPoint),
+            normal: new Vector3().copyFrom(data.hit.normal),
+            worldNormal: new Vector3().copyFrom(data.hit.worldNormal)
+          }
+        : undefined
     }
 
     this.internalState[Pointer.PRIMARY].BUTTON_A_DOWN = true
 
     for (let i = 0; i < this.subscriptions['BUTTON_A_DOWN'].length; i++) {
       this.subscriptions['BUTTON_A_DOWN'][i](newData)
+    }
+
+    if (newData.hit && newData.hit.entityId && DisposableComponent.engine) {
+      const entity = DisposableComponent.engine.entities[newData.hit.entityId]
+      const handler = entity && entity.getOrNull(OnPointerDown)
+      if (handler) {
+        handler.callback(newData)
+      }
     }
   }
 }

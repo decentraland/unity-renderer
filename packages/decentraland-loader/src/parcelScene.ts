@@ -1,7 +1,12 @@
 import { parseParcelPosition, isValidParcelSceneShape } from 'atomicHelpers/parcelScenePositions'
 import { error } from 'engine/logger'
 import { getLand } from './landLoader'
-import { Vector2Component, ILand } from 'shared/types'
+import { ILand } from 'shared/types'
+
+interface Vector2Component {
+  x: number
+  y: number
+}
 
 export class ParcelScene {
   id: string = ''

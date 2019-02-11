@@ -24,6 +24,7 @@ import { chatObservable, ChatEvent } from './chat'
 import { positionObserver } from 'shared/world/positionThings'
 import { PositionMessage } from './worldcomm_pb'
 import { log, error as logError } from 'engine/logger'
+import { ReadOnlyVector3, ReadOnlyQuaternion } from 'decentraland-ecs/src'
 
 const loaderWorkerRaw = require('raw-loader!../../../static/systems/comms.system.js')
 const loaderWorkerBLOB = new Blob([loaderWorkerRaw])
@@ -231,9 +232,9 @@ class CommunicationServer extends TransportBasedServer {
 
   onPositionUpdate(
     obj: Readonly<{
-      position: BABYLON.Vector3
-      rotation: BABYLON.Vector3
-      quaternion: BABYLON.Quaternion
+      position: ReadOnlyVector3
+      rotation: ReadOnlyVector3
+      quaternion: ReadOnlyQuaternion
     }>
   ) {
     this.notify('onPositionUpdate', {

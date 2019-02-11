@@ -20,7 +20,7 @@ cube.set(
 )
 cube.getOrCreate(BoxShape)
 cube.set(
-  new OnClick(() => {
+  new OnPointerDown(() => {
     executeTask(async () => {
       // 1 await pauseSound()
     })

@@ -7,10 +7,6 @@ export class Billboard extends BaseComponent<number> {
     return Math.max(Math.min(7, validators.int(x, 0)), 0)
   }
 
-  attach(entity: BaseEntity) {
-    super.attach(entity)
-  }
-
   update() {
     this.entity.billboardMode = this.value
   }

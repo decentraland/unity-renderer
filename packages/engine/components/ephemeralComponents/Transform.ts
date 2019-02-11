@@ -1,8 +1,7 @@
 import { BaseComponent } from '../BaseComponent'
 import { validators } from '../helpers/schemaValidator'
 import { BaseEntity } from 'engine/entities/BaseEntity'
-import { Vector3Component } from 'atomicHelpers/vectorHelpers'
-import { CLASS_ID } from 'decentraland-ecs/src'
+import { CLASS_ID, ReadOnlyVector3, ReadOnlyQuaternion } from 'decentraland-ecs/src'
 
 const defaultValue = {
   position: { x: 0, y: 0, z: 0 },
@@ -56,7 +55,7 @@ export class Transform extends BaseComponent<any> {
 
 export function setEntityTransform(
   entity: BaseEntity,
-  transform: { position?: Vector3Component; scale?: Vector3Component; rotation?: Vector3Component & { w: number } }
+  transform: { position?: ReadOnlyVector3; scale?: ReadOnlyVector3; rotation?: ReadOnlyQuaternion }
 ) {
   entity.context.UpdateEntityComponent({
     classId: CLASS_ID.TRANSFORM,

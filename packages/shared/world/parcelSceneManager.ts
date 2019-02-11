@@ -4,6 +4,7 @@ import { positionObserver } from './positionThings'
 import { worldToGrid } from '../../atomicHelpers/parcelScenePositions'
 import { SceneWorker, ParcelSceneAPI } from './SceneWorker'
 import { LoadableParcelScene, EnvironmentData, ILand, ILandToLoadableParcelScene } from '../types'
+import { Vector2 } from 'decentraland-ecs/src/decentraland/math'
 
 export type EnableParcelSceneLoadingOptions = {
   parcelSceneClass: {
@@ -29,7 +30,7 @@ export function getParcelById(id: string) {
 
 export async function enableParcelSceneLoading(network: ETHEREUM_NETWORK, options: EnableParcelSceneLoadingOptions) {
   const ret = await initParcelSceneWorker(network)
-  const position = BABYLON.Vector2.Zero()
+  const position = Vector2.Zero()
 
   function setParcelScenes(parcelScenes: ILand[]) {
     const completeListOfParcelsThatShouldBeLoaded = parcelScenes.map($ => $.mappingsResponse.root_cid)

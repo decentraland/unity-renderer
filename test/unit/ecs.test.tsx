@@ -17,6 +17,7 @@ import {
   Quaternion,
   Vector3
 } from 'decentraland-ecs/src'
+
 import { future } from 'fp-future'
 import { loadTestParcel, testScene, saveScreenshot, wait } from '../testHelpers'
 import { sleep } from 'atomicHelpers/sleep'
@@ -25,200 +26,17 @@ import { AudioClip } from 'engine/components/disposableComponents/AudioClip'
 import { AudioSource } from 'engine/components/ephemeralComponents/AudioSource'
 import { GLTFShape } from 'engine/components/disposableComponents/GLTFShape'
 import { Animator } from 'engine/components/ephemeralComponents/Animator'
+import { vrCamera } from 'engine/renderer/camera'
+import { interactWithScene } from 'engine/renderer/input'
+import { scene } from 'engine/renderer'
+import { BasicShape } from 'engine/components/disposableComponents/DisposableComponent'
+import { PBRMaterial } from 'engine/components/disposableComponents/PBRMaterial'
+import { WebGLParcelScene } from 'dcl/WebGLParcelScene'
+import { BoxShape } from 'engine/components/disposableComponents/BoxShape'
 
 declare var describe: any, it: any
 
 describe('ECS', () => {
-  describe('unit', () => {
-    {
-      let entityFuture = future<BaseEntity>()
-      testScene(-100, 234, ({ parcelScenePromise }) => {
-        it('should have a transform component', async () => {
-          const parcelScene = await parcelScenePromise
-
-          const entity = parcelScene.context.entities.get('__test_id__') // should be the first child
-          expect(!!entity).to.eq(true, 'entity should exist')
-          expect(entity.position.x).to.eq(5)
-          expect(entity.position.z).to.eq(5)
-          entityFuture.resolve(entity)
-        })
-
-        saveScreenshot(`gamekit-gltf.png`, {
-          from: [-1000, 1.6, 2340],
-          lookAt: [-995, 1, 2345]
-        })
-
-        wait(100)
-      })
-
-      describe('sanity from previous test', () => {
-        it('entity from previoust test must have been disposed', async () => {
-          const entity = await entityFuture
-          expect(entity.isDisposed()).to.eq(true)
-        })
-      })
-    }
-
-    testScene(
-      -100,
-      103,
-      ({ parcelScenePromise, sceneHost, ensureNoErrors }) => {
-        it('dcl.onUpdate must work', async () => {
-          sceneHost.update(0)
-
-          while (sceneHost.devToolsAdapter.exceptions.length < 1) {
-            await sleep(100)
-          }
-
-          expect(sceneHost.devToolsAdapter.exceptions.length).eq(1)
-
-          expect(sceneHost.devToolsAdapter.exceptions[0].toString()).to.include('onUpdate works')
-        })
-
-        it('should have a transform component', async () => {
-          const parcelScene = await parcelScenePromise
-
-          const entity = parcelScene.context.entities.get('__test_id__') // should be the first child
-          expect(!!entity).to.eq(true, 'entity should exist')
-
-          expect(parcelScene.context.disposableComponents.size).to.eq(
-            1,
-            'should have one registered disposable component'
-          )
-
-          sceneHost.update(1) // dispose should happen on this update
-        })
-
-        it('components should have been disposed', async () => {
-          const parcelScene = await parcelScenePromise
-
-          expect(parcelScene.context.disposableComponents.size).to.eq(
-            0,
-            'should have zero registered disposable component'
-          )
-        })
-      },
-      true
-    )
-
-    testScene(-100, 105, ({ parcelScenePromise, sceneHost, ensureNoErrors }) => {
-      it('should have a transform component', async () => {
-        sceneHost.update(0)
-        const parcelScene = await parcelScenePromise
-
-        while (parcelScene.context.disposableComponents.size < 2) {
-          await sleep(100)
-        }
-
-        expect(parcelScene.context.disposableComponents.size).eq(2)
-        expect(parcelScene.context.entities.size).eq(2)
-
-        const material = parcelScene.context.disposableComponents.values().next().value
-
-        expect(material).to.exist
-
-        var entities: BaseEntity[] = Array.from(parcelScene.context.entities.values())
-
-        expect(entities[0].uuid).to.eq('0', 'root entity')
-
-        const entity = entities[1]
-
-        expect(entity).to.exist
-
-        expect(material.entities.has(entity)).eq(true)
-
-        ensureNoErrors()
-      })
-    })
-
-    testScene(
-      -200,
-      236,
-      ({ parcelScenePromise, sceneHost, ensureNoErrors }) => {
-        it('should have a transform component', async () => {
-          // TODO: ECS
-          // sceneHost.update(0)
-          // expect(L.logs[0]).to.eq('start')
-          // let graph = L.ret.getCachedGraph()
-          // sceneHost.update(0)
-          // graph = L.ret.getCachedGraph()
-          // const box = graph.children.find(node => node.tag === 'box')
-          // expect(!!box).to.eq(true, 'Box must exist')
-          // expect(typeof box.attrs.onClick).to.eq('string', 'onClick must be a string')
-          // expect((box.attrs.onClick as string).startsWith('#')).to.eq(false, 'onclick must not start with #')
-          // const nonce = Math.random()
-          // L.ret.fireEvent({
-          //   type: 'uuidEvent',
-          //   data: {
-          //     uuid: box.attrs.onClick,
-          //     payload: { nonce }
-          //   }
-          // })
-          // expect(L.logs[1]).to.eq(JSON.stringify({ nonce }))
-          // expect(L.logs.length).to.eq(2, 'We must have two logs only')
-          // L.ensureNoErrors()
-        })
-      },
-      true
-    )
-
-    testScene(
-      -100,
-      108,
-      ({ parcelScenePromise, sceneHost, ensureNoErrors }) => {
-        it('should have a transform component', async () => {
-          // TODO: ECS
-          // sceneHost.update(0)
-          // const camera = L.ret.dcl['camera']
-          // L.ret.fireEvent({
-          //   type: 'rotationChanged',
-          //   data: {
-          //     quaternion: { x: 1, y: 1, z: 1 }
-          //   }
-          // })
-          // sceneHost.update(1)
-          // expect(camera.rotation.x).to.eq(1)
-          // expect(camera.rotation.y).to.eq(1)
-          // expect(camera.rotation.z).to.eq(1)
-        })
-      },
-      true
-    )
-
-    testScene(
-      -100,
-      109,
-      ({ parcelScenePromise, sceneHost, ensureNoErrors }) => {
-        it('should have a transform component', async () => {
-          // TODO: ECS
-          // sceneHost.update(0)
-          // const input = L.ret.dcl['input']
-          // const clickFuture = future()
-          // input.subscribe('BUTTON_A_DOWN', e => {
-          //   clickFuture.resolve(e)
-          // })
-          // L.ret.fireEvent({
-          //   type: 'pointerDown',
-          //   data: {
-          //     from: {},
-          //     direction: {},
-          //     pointerId: 1,
-          //     length: 0
-          //   }
-          // })
-          // sceneHost.update(1)
-          // const data = await clickFuture
-          // expect(data.from.toString()).to.eq('{ x: 0, y: 0, z: 0 }')
-          // expect(data.direction.toString()).to.eq('{ x: 0, y: 0, z: 0 }')
-          // expect(data.length).to.eq(0)
-          // expect(data.pointerId).to.eq('PRIMARY')
-          // expect(input.state[Pointer.PRIMARY].BUTTON_A_DOWN).to.eq(true)
-        })
-      },
-      true
-    )
-  })
-
   describe('unit', () => {
     describe('@Component (disposable)', () => {
       const componentName = 'asd'
@@ -508,6 +326,115 @@ describe('ECS', () => {
         engine.removeComponentGroup(group)
       })
     })
+
+    describe('Events', () => {
+      it('should call event only once when event is added before adding entity', async () => {
+        const uuidEventFuture = future()
+        const uuidEventFutureComponent = future()
+
+        let counter = 0
+
+        const entity = new Entity()
+
+        const clicker = new OnClick(event => {
+          counter += 1
+          uuidEventFutureComponent.resolve(event)
+        })
+
+        entity.set(clicker)
+
+        engine.addEntity(entity)
+
+        engine.eventManager.addListener(UUIDEvent, uuidEventFuture, event => {
+          uuidEventFuture.resolve(event.uuid)
+        })
+
+        const event = new UUIDEvent()
+
+        event.uuid = clicker.uuid
+        // event.type = 'OnClick'
+        event.payload = { data: { from: {}, direction: {}, pointerId: 1, length: 0 } }
+
+        engine.eventManager.fireEvent(event)
+
+        expect(await uuidEventFuture).to.eq(clicker.uuid, 'event should be fired')
+        await uuidEventFutureComponent
+
+        await sleep(100)
+
+        expect(counter).to.eq(1, 'only one event should have been called')
+      })
+
+      it('should call event only once when event is added after adding entity', async () => {
+        const uuidEventFuture = future()
+        const uuidEventFutureComponent = future()
+
+        let counter = 0
+
+        const entity = new Entity()
+
+        const clicker = new OnClick(event => {
+          counter += 1
+          uuidEventFutureComponent.resolve(event)
+        })
+
+        engine.addEntity(entity)
+
+        entity.set(clicker)
+
+        engine.eventManager.addListener(UUIDEvent, uuidEventFuture, event => {
+          uuidEventFuture.resolve(event.uuid)
+        })
+
+        const event = new UUIDEvent()
+
+        event.uuid = clicker.uuid
+        // event.type = 'OnClick'
+        event.payload = { data: { from: {}, direction: {}, pointerId: 1, length: 0 } }
+
+        engine.eventManager.fireEvent(event)
+
+        expect(await uuidEventFuture).to.eq(clicker.uuid, 'event should be fired')
+        await uuidEventFutureComponent
+
+        await sleep(100)
+
+        expect(counter).to.eq(1, 'only one event should have been called')
+      })
+
+      it('should not be called after the component is removed', async () => {
+        const uuidEventFuture = future()
+        const uuidEventFutureComponent = future()
+
+        const entity = new Entity()
+
+        const clicker = new OnClick(event => {
+          uuidEventFutureComponent.reject(new Error())
+        })
+
+        entity.set(clicker)
+
+        engine.addEntity(entity)
+
+        entity.remove(clicker)
+
+        engine.eventManager.addListener(UUIDEvent, uuidEventFuture, event => {
+          uuidEventFuture.resolve(event.uuid)
+        })
+
+        const event = new UUIDEvent()
+
+        event.uuid = clicker.uuid
+
+        engine.eventManager.fireEvent(event)
+
+        expect(await uuidEventFuture).to.eq(clicker.uuid, 'event should be fired')
+
+        setTimeout(() => uuidEventFutureComponent.resolve(0), 100)
+
+        await uuidEventFutureComponent
+      })
+    })
   })
 
   describe('integration', () => {
@@ -756,202 +683,514 @@ describe('ECS', () => {
       scriptingHost.unmounted
     })
   })
-  describe('sound', () => {
-    let audioClips: AudioClip[] = []
-    let audioSources: AudioSource[] = []
 
-    loadTestParcel('test unload', -200, 2, function(_root, futureScene, futureWorker) {
-      it('must have two audio clips', async () => {
-        const scene = await futureScene
-        scene.context.disposableComponents.forEach($ => {
-          if ($ instanceof AudioClip) {
-            audioClips.push($)
-          }
+  describe('unit', () => {
+    {
+      let entityFuture = future<BaseEntity>()
+      testScene(-100, 234, ({ parcelScenePromise }) => {
+        it('should have a transform component', async () => {
+          const parcelScene = await parcelScenePromise
+
+          const entity = parcelScene.context.entities.get('__test_id__') // should be the first child
+          expect(!!entity).to.eq(true, 'entity should exist')
+          expect(entity.position.x).to.eq(5)
+          expect(entity.position.z).to.eq(5)
+          entityFuture.resolve(entity)
         })
 
-        expect(audioClips.length).to.eq(2)
+        saveScreenshot(`gamekit-gltf.png`, {
+          from: [-1000, 1.6, 2340],
+          lookAt: [-995, 1, 2345]
+        })
+
+        wait(100)
       })
 
-      it('must have two audio sources', async () => {
-        const scene = await futureScene
-        scene.context.entities.forEach($ => {
-          for (let i in $.components) {
-            console.log(i, $.components[i])
-            if ($.components[i] instanceof AudioSource) {
-              audioSources.push($.components[i] as any)
-            }
+      describe('sanity from previous test', () => {
+        it('entity from previoust test must have been disposed', async () => {
+          const entity = await entityFuture
+          expect(entity.isDisposed()).to.eq(true)
+        })
+      })
+    }
+
+    testScene(
+      -100,
+      103,
+      ({ parcelScenePromise, sceneHost, ensureNoErrors }) => {
+        it('dcl.onUpdate must work', async () => {
+          sceneHost.update(0)
+
+          while (sceneHost.devToolsAdapter.exceptions.length < 1) {
+            await sleep(100)
           }
+
+          expect(sceneHost.devToolsAdapter.exceptions.length).eq(1)
+
+          expect(sceneHost.devToolsAdapter.exceptions[0].toString()).to.include('onUpdate works')
         })
 
-        expect(audioSources.length).to.eq(2)
+        it('should have a transform component', async () => {
+          const parcelScene = await parcelScenePromise
+
+          const entity = parcelScene.context.entities.get('__test_id__') // should be the first child
+          expect(!!entity).to.eq(true, 'entity should exist')
+
+          expect(parcelScene.context.disposableComponents.size).to.eq(
+            1,
+            'should have one registered disposable component'
+          )
+
+          sceneHost.update(1) // dispose should happen on this update
+        })
+
+        it('components should have been disposed', async () => {
+          const parcelScene = await parcelScenePromise
+
+          expect(parcelScene.context.disposableComponents.size).to.eq(
+            0,
+            'should have zero registered disposable component'
+          )
+        })
+      },
+      true
+    )
+
+    testScene(-100, 105, ({ parcelScenePromise, sceneHost, ensureNoErrors }) => {
+      it('should have a transform component', async () => {
+        sceneHost.update(0)
+        const parcelScene = await parcelScenePromise
+
+        while (parcelScene.context.disposableComponents.size < 2) {
+          await sleep(100)
+        }
+
+        expect(parcelScene.context.disposableComponents.size).eq(2)
+        expect(parcelScene.context.entities.size).eq(2)
+
+        const material = parcelScene.context.disposableComponents.values().next().value
+
+        expect(material).to.exist
+
+        var entities: BaseEntity[] = Array.from(parcelScene.context.entities.values())
+
+        expect(entities[0].uuid).to.eq('0', 'root entity')
+
+        const entity = entities[1]
+
+        expect(entity).to.exist
+
+        expect(material.entities.has(entity)).eq(true)
+
+        ensureNoErrors()
       })
     })
 
-    describe('after finalizing', () => {
-      it('must have stopped AudioClips', () => {
-        for (let clip of audioClips) {
-          expect(clip.entities.size).eq(0)
-        }
+    testScene(
+      -100,
+      100,
+      ({ logs }) => {
+        it('locate camera', async () => {
+          vrCamera.position.set(-995, 1, 1000)
+          vrCamera.rotationQuaternion.copyFrom(BABYLON.Quaternion.Identity())
+          expect(logs.length).to.eq(0)
+        })
+        it('clicks in the middle of the screen', async () => {
+          const canvas = scene.getEngine().getRenderingCanvas()
+
+          interactWithScene('pointerDown', canvas.width / 2, canvas.height / 2, 1)
+          await sleep(100)
+          expect(logs.filter($ => $[1] === 'event').length).to.eq(1, 'event must have been triggered once')
+          interactWithScene('pointerUp', canvas.width / 2, canvas.height / 2, 1)
+          await sleep(100)
+
+          expect(logs.length).to.gt(0)
+          expect(logs.filter($ => $[1] === 'cubeClick').length).to.eq(1, 'cubeClick must have been triggered')
+          expect(logs.filter($ => $[1] === 'event').length).to.eq(2, 'event must have been triggered twice')
+          logs.length = 0
+        })
+        it('clicks in the sky must trigger pointer events', async () => {
+          interactWithScene('pointerDown', 1, 1, 1)
+          await sleep(100)
+          expect(logs.filter($ => $[1] === 'event').length).to.eq(1, 'event must have been triggered once')
+          interactWithScene('pointerUp', 1, 1, 1)
+          await sleep(100)
+          expect(logs.filter($ => $[1] === 'event').length).to.eq(2, 'event must have been triggered twice')
+          logs.length = 0
+        })
+      },
+      true
+    )
+
+    testScene(-100, 104, ({ parcelScenePromise, sceneHost, logs }) => {
+      it('locate camera', async () => {
+        vrCamera.position.set(-995, 1, 1040)
+        vrCamera.rotationQuaternion.copyFrom(BABYLON.Quaternion.Identity())
       })
 
-      it('must have stopped AudioSources', async () => {
-        for (let source of audioSources) {
-          expect(source.sound.isPending).eq(true)
-        }
-      })
-    })
-  })
+      it('changing a material must work', async () => {
+        const parcelScene = await parcelScenePromise
+        let entity: BaseEntity
 
-  describe('gltf animations', () => {
-    let gltf: GLTFShape[] = []
-    let animators: Animator[] = []
-
-    loadTestParcel('test animatios', -100, 111, function(_root, futureScene, futureWorker) {
-      it('must have one gltf', async () => {
-        const scene = await futureScene
-        scene.context.disposableComponents.forEach($ => {
-          if ($ instanceof GLTFShape) {
-            gltf.push($)
+        parcelScene.context.entities.forEach($ => {
+          if ($.position.x == 5 && $.position.z == 5) {
+            entity = $
           }
         })
+        expect(!!entity).to.eq(true)
+        const mesh = entity.getObject3D(BasicShape.nameInEntity) as BABYLON.AbstractMesh
+        expect(!!mesh).to.eq(true)
 
-        expect(gltf.length).to.eq(1)
-      })
+        const M1 = parcelScene.context.disposableComponents.get('C3') as PBRMaterial
+        const M2 = parcelScene.context.disposableComponents.get('C4') as PBRMaterial
 
-      it('must have two animators', async () => {
-        const scene = await futureScene
-        scene.context.entities.forEach($ => {
-          for (let i in $.components) {
-            if ($.components[i] instanceof Animator) {
-              animators.push($.components[i] as Animator)
-            }
-          }
-        })
+        console.log(parcelScene.context)
 
-        expect(animators.length).to.eq(2)
-      })
+        expect(M1).to.be.instanceOf(PBRMaterial, 'M1 is PBR')
+        expect(M2).to.be.instanceOf(PBRMaterial, 'M2 is PBR')
 
-      it('wait some seconds', async () => {
+        expect(mesh.material === M1.material).to.eq(true, 'M1 must be set')
+
+        sceneHost.fireEvent({ type: 'TEST_TRIGGER' })
+
         await sleep(1000)
+        const newLogs = logs.map($ => $[1])
+
+        expect(newLogs).to.include(`setting ${entity.uuid} <- C4`)
+
+        const newMesh = entity.getObject3D(BasicShape.nameInEntity) as BABYLON.AbstractMesh
+        expect(!!newMesh).to.eq(true)
+        expect(newMesh == mesh).to.eq(true, 'mesh == oldmesh')
+
+        expect(newMesh.material === M2.material).to.eq(true, 'M2 must be set')
       })
     })
 
-    describe('after', () => {
-      it('must have no entities in the shapes', () => {
-        for (let shape of gltf) {
-          expect(shape.assetContainerEntity.size).to.eq(0, 'asset container')
-          expect(shape.entities.size).to.eq(0, 'entities')
-        }
+    testScene(-101, 100, ({ parcelScenePromise, sceneHost, logs }) => {
+      let scene: WebGLParcelScene
+      it('locate camera', async () => {
+        scene = await parcelScenePromise
+        vrCamera.position.set(-995, 1, 1000)
+        vrCamera.rotationQuaternion.copyFrom(BABYLON.Quaternion.Identity())
+      })
+
+      function doTest() {
+        let entity: BaseEntity
+        let shape: BasicShape<any>
+        let materialComponent: PBRMaterial
+
+        it('must start without entities and disposable components', async () => {
+          scene.context.entities.forEach(($, id) => {
+            expect(id.startsWith('E')).to.eq(false, `entity ${id} exists`)
+          })
+          expect(scene.context.disposableComponents.size).to.eq(0)
+        })
+
+        it('must create a entity', async () => {
+          sceneHost.fireEvent({ type: 'TEST_TRIGGER' })
+          await sleep(100)
+
+          scene.context.entities.forEach(($, id) => {
+            if (entity) {
+              expect(id.startsWith('E')).to.eq(false, `entity ${id} exists`)
+            } else {
+              if (id.startsWith('E')) {
+                entity = $
+              }
+            }
+          })
+
+          expect(!!entity).to.eq(true)
+        })
+
+        it('must create a shape', async () => {
+          expect(scene.setOfEntitiesOutsideBoundaries.size).eq(
+            0,
+            'scene must start without entitites out of the fences'
+          )
+
+          expect(scene.context.metrics.geometries).eq(0, 'counters must start at 0')
+
+          expect(!!entity.getObject3D(BasicShape.nameInEntity)).to.eq(false)
+
+          sceneHost.fireEvent({ type: 'TEST_TRIGGER' })
+          await sleep(100)
+
+          expect(scene.context.disposableComponents.size).to.eq(1)
+
+          const [[, value]] = scene.context.disposableComponents
+
+          expect(!!entity.getObject3D(BasicShape.nameInEntity)).to.eq(true)
+
+          expect(value instanceof BoxShape).to.eq(true)
+          shape = value as BoxShape
+          expect(value.entities.has(entity)).to.eq(true, 'box shape must have the entity')
+
+          expect(scene.setOfEntitiesOutsideBoundaries.size).eq(1, 'The cube starts outside of the parcel')
+          const [entityOutside] = scene.setOfEntitiesOutsideBoundaries
+          expect(entityOutside).eq(entity, 'The entity outside the parcel must be our entity')
+
+          expect(scene.context.metrics.geometries).eq(1, 'geometry counters must have been updated to 1')
+          // TODO: test outsideFences events
+        })
+
+        it('must set the transform', async () => {
+          expect('transform' in entity.components).to.eq(false)
+
+          sceneHost.fireEvent({ type: 'TEST_TRIGGER' })
+          await sleep(100)
+
+          expect('transform' in entity.components).to.eq(true)
+
+          expect(scene.setOfEntitiesOutsideBoundaries.size).eq(
+            0,
+            'The cube must have been moved to the center of the parcel'
+          )
+
+          // TODO: test outsideFences events
+        })
+
+        it('must set the material', async () => {
+          expect(scene.context.metrics.materials).eq(0, 'material counters must start with 0')
+
+          const mesh = entity.getObject3D(BasicShape.nameInEntity) as BABYLON.AbstractMesh
+          expect(!!mesh).to.eq(true, 'mesh must exist')
+          const originalMaterial = mesh.material
+          expect(scene.context.disposableComponents.size).to.eq(1)
+
+          sceneHost.fireEvent({ type: 'TEST_TRIGGER' })
+          await sleep(100)
+
+          expect(scene.context.disposableComponents.size).to.eq(2)
+
+          const [, [, newMaterialComponent]] = scene.context.disposableComponents
+          materialComponent = newMaterialComponent as PBRMaterial
+
+          expect(mesh.material != originalMaterial).eq(
+            true,
+            'the new material must be different than the older material'
+          )
+
+          expect(mesh.material == materialComponent.material).eq(true, 'the shape must have the new material')
+          expect(scene.context.metrics.materials).eq(1, 'material counters must have been updated to 1')
+        })
+
+        it('must set the material color', async () => {
+          expect(materialComponent.material.albedoColor.toHexString()).eq('#7F7F7F')
+
+          sceneHost.fireEvent({ type: 'TEST_TRIGGER' })
+          await sleep(100)
+
+          expect(materialComponent.material.albedoColor.toHexString()).eq('#00FF00')
+        })
+
+        it('must remove the material', async () => {
+          const initialMetrics = { ...scene.context.metrics }
+
+          sceneHost.fireEvent({ type: 'TEST_TRIGGER' })
+          await sleep(100)
+
+          const mesh = entity.getObject3D(BasicShape.nameInEntity) as BABYLON.AbstractMesh
+
+          expect(mesh.material != materialComponent.material).eq(true, 'the material shape must have been removed')
+          expect(materialComponent.entities.has(entity)).eq(
+            false,
+            'the entity must have been removed from the material'
+          )
+          expect(scene.context.disposableComponents.size).to.eq(1, 'the material must have been removed from the scene')
+          expect(scene.context.metrics.materials).eq(
+            initialMetrics.materials - 1,
+            'material counters must have been updated'
+          )
+        })
+
+        it('must remove the shape', async () => {
+          expect(scene.context.metrics.geometries).eq(1, 'geometry counters must be 1')
+
+          sceneHost.fireEvent({ type: 'TEST_TRIGGER' })
+          await sleep(100)
+
+          const mesh = entity.getObject3D(BasicShape.nameInEntity) as BABYLON.AbstractMesh
+
+          expect(!!mesh).eq(false, 'the shape must have been removed from the entity')
+
+          expect(shape.entities.has(entity)).eq(false, 'the entity must have been removed from the shape')
+
+          expect(scene.context.disposableComponents.size).to.eq(0, 'the shape must have been removed from the scene')
+
+          expect(scene.context.metrics.geometries).eq(0, 'geometry counters must have been updated to 0')
+        })
+
+        it('must remove the transform', async () => {
+          expect('transform' in entity.components).to.eq(true)
+
+          expect(entity.position.x).eq(5)
+          expect(entity.position.y).eq(5)
+          expect(entity.position.z).eq(5)
+          expect(entity.scaling.x).eq(1.1)
+          expect(entity.scaling.y).eq(1.1)
+          expect(entity.scaling.z).eq(1.1)
+
+          sceneHost.fireEvent({ type: 'TEST_TRIGGER' })
+          await sleep(100)
+
+          expect('transform' in entity.components).to.eq(false)
+
+          expect(entity.position.x).eq(0, 'position must have been restored to 0')
+          expect(entity.position.y).eq(0, 'position must have been restored to 0')
+          expect(entity.position.z).eq(0, 'position must have been restored to 0')
+          expect(entity.scaling.x).eq(1, 'scale must have been restored to 1')
+          expect(entity.scaling.y).eq(1, 'scale must have been restored to 1')
+          expect(entity.scaling.z).eq(1, 'scale must have been restored to 1')
+        })
+
+        it('must remove the entity', async () => {
+          const initialEntityCounter = scene.context.entities.size
+
+          sceneHost.fireEvent({ type: 'TEST_TRIGGER' })
+          await sleep(100)
+
+          expect(scene.context.entities.size).to.eq(initialEntityCounter - 1)
+        })
+      }
+
+      doTest()
+      doTest()
+    })
+
+    testScene(-100, 104, ({ parcelScenePromise, sceneHost, logs }) => {
+      it('locate camera', async () => {
+        vrCamera.position.set(-995, 1, 1040)
+        vrCamera.rotationQuaternion.copyFrom(BABYLON.Quaternion.Identity())
+      })
+
+      it('changing a material must work', async () => {
+        const parcelScene = await parcelScenePromise
+        let entity: BaseEntity
+
+        parcelScene.context.entities.forEach($ => {
+          if ($.position.x == 5 && $.position.z == 5) {
+            entity = $
+          }
+        })
+
+        expect(!!entity).to.eq(true)
+        const mesh = entity.getObject3D(BasicShape.nameInEntity) as BABYLON.AbstractMesh
+        expect(!!mesh).to.eq(true)
+
+        const M1 = parcelScene.context.disposableComponents.get('C3') as PBRMaterial
+        const M2 = parcelScene.context.disposableComponents.get('C4') as PBRMaterial
+
+        console.log(parcelScene.context)
+
+        expect(M1).to.be.instanceOf(PBRMaterial, 'M1 is PBR')
+        expect(M2).to.be.instanceOf(PBRMaterial, 'M2 is PBR')
+
+        expect(mesh.material === M1.material).to.eq(true, 'M1 must be set')
+
+        sceneHost.fireEvent({ type: 'TEST_TRIGGER' })
+
+        await sleep(1000)
+        const newLogs = logs.map($ => $[1])
+
+        expect(newLogs).to.include(`setting ${entity.uuid} <- C4`)
+
+        const newMesh = entity.getObject3D(BasicShape.nameInEntity) as BABYLON.AbstractMesh
+        expect(!!newMesh).to.eq(true)
+        expect(newMesh == mesh).to.eq(true, 'mesh == oldmesh')
+
+        expect(newMesh.material === M2.material).to.eq(true, 'M2 must be set')
       })
     })
-  })
 
-  describe('ecs events', () => {
-    it('should call event only once when event is added before adding entity', async () => {
-      const uuidEventFuture = future()
-      const uuidEventFutureComponent = future()
+    describe('sound', () => {
+      let audioClips: AudioClip[] = []
+      let audioSources: AudioSource[] = []
 
-      let counter = 0
+      loadTestParcel('test unload', -200, 2, function(_root, futureScene, futureWorker) {
+        it('must have two audio clips', async () => {
+          const scene = await futureScene
+          scene.context.disposableComponents.forEach($ => {
+            if ($ instanceof AudioClip) {
+              audioClips.push($)
+            }
+          })
 
-      const entity = new Entity()
+          expect(audioClips.length).to.eq(2)
+        })
 
-      const clicker = new OnClick(event => {
-        counter += 1
-        uuidEventFutureComponent.resolve(event)
+        it('must have two audio sources', async () => {
+          const scene = await futureScene
+          scene.context.entities.forEach($ => {
+            for (let i in $.components) {
+              console.log(i, $.components[i])
+              if ($.components[i] instanceof AudioSource) {
+                audioSources.push($.components[i] as any)
+              }
+            }
+          })
+
+          expect(audioSources.length).to.eq(2)
+        })
       })
 
-      entity.set(clicker)
+      describe('after finalizing', () => {
+        it('must have stopped AudioClips', () => {
+          for (let clip of audioClips) {
+            expect(clip.entities.size).eq(0)
+          }
+        })
 
-      engine.addEntity(entity)
-
-      engine.eventManager.addListener(UUIDEvent, uuidEventFuture, event => {
-        uuidEventFuture.resolve(event.uuid)
+        it('must have stopped AudioSources', async () => {
+          for (let source of audioSources) {
+            expect(source.sound.isPending).eq(true)
+          }
+        })
       })
-
-      const event = new UUIDEvent()
-
-      event.uuid = clicker.uuid
-      // event.type = 'OnClick'
-      event.payload = { data: { from: {}, direction: {}, pointerId: 1, length: 0 } }
-
-      engine.eventManager.fireEvent(event)
-
-      expect(await uuidEventFuture).to.eq(clicker.uuid, 'event should be fired')
-      await uuidEventFutureComponent
-
-      await sleep(100)
-
-      expect(counter).to.eq(1, 'only one event should have been called')
     })
 
-    it('should call event only once when event is added after adding entity', async () => {
-      const uuidEventFuture = future()
-      const uuidEventFutureComponent = future()
+    describe('gltf animations', () => {
+      let gltf: GLTFShape[] = []
+      let animators: Animator[] = []
 
-      let counter = 0
+      loadTestParcel('test animatios', -100, 111, function(_root, futureScene, futureWorker) {
+        it('must have one gltf', async () => {
+          const scene = await futureScene
+          scene.context.disposableComponents.forEach($ => {
+            if ($ instanceof GLTFShape) {
+              gltf.push($)
+            }
+          })
 
-      const entity = new Entity()
+          expect(gltf.length).to.eq(1)
+        })
 
-      const clicker = new OnClick(event => {
-        counter += 1
-        uuidEventFutureComponent.resolve(event)
+        it('must have two animators', async () => {
+          const scene = await futureScene
+          scene.context.entities.forEach($ => {
+            for (let i in $.components) {
+              if ($.components[i] instanceof Animator) {
+                animators.push($.components[i] as Animator)
+              }
+            }
+          })
+
+          expect(animators.length).to.eq(2)
+        })
+
+        it('wait some seconds', async () => {
+          await sleep(1000)
+        })
       })
 
-      engine.addEntity(entity)
-
-      entity.set(clicker)
-
-      engine.eventManager.addListener(UUIDEvent, uuidEventFuture, event => {
-        uuidEventFuture.resolve(event.uuid)
+      describe('after', () => {
+        it('must have no entities in the shapes', () => {
+          for (let shape of gltf) {
+            expect(shape.assetContainerEntity.size).to.eq(0, 'asset container')
+            expect(shape.entities.size).to.eq(0, 'entities')
+          }
+        })
       })
-
-      const event = new UUIDEvent()
-
-      event.uuid = clicker.uuid
-      // event.type = 'OnClick'
-      event.payload = { data: { from: {}, direction: {}, pointerId: 1, length: 0 } }
-
-      engine.eventManager.fireEvent(event)
-
-      expect(await uuidEventFuture).to.eq(clicker.uuid, 'event should be fired')
-      await uuidEventFutureComponent
-
-      await sleep(100)
-
-      expect(counter).to.eq(1, 'only one event should have been called')
-    })
-
-    it('should not be called after the component is removed', async () => {
-      const uuidEventFuture = future()
-      const uuidEventFutureComponent = future()
-
-      const entity = new Entity()
-
-      const clicker = new OnClick(event => {
-        uuidEventFutureComponent.reject(new Error())
-      })
-
-      entity.set(clicker)
-
-      engine.addEntity(entity)
-
-      entity.remove(clicker)
-
-      engine.eventManager.addListener(UUIDEvent, uuidEventFuture, event => {
-        uuidEventFuture.resolve(event.uuid)
-      })
-
-      const event = new UUIDEvent()
-
-      event.uuid = clicker.uuid
-
-      engine.eventManager.fireEvent(event)
-
-      expect(await uuidEventFuture).to.eq(clicker.uuid, 'event should be fired')
-
-      setTimeout(() => uuidEventFutureComponent.resolve(0), 100)
-
-      await uuidEventFutureComponent
     })
   })
 

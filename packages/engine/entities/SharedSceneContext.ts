@@ -24,7 +24,7 @@ import { ILogger, defaultLogger } from 'shared/logger'
 import { EventDispatcher } from 'decentraland-rpc/lib/common/core/EventDispatcher'
 import { IParcelSceneLimits } from 'atomicHelpers/landHelpers'
 import { measureObject3D } from 'dcl/entities/utils/checkParcelSceneLimits'
-import { IEventNames, IEvents } from 'decentraland-ecs/src/decentraland/Types'
+import { IEventNames, IEvents, PointerEvent } from 'decentraland-ecs/src/decentraland/Types'
 
 function validateHierarchy(entity: BaseEntity) {
   let parent = entity
@@ -86,60 +86,65 @@ export class SharedSceneContext implements BABYLON.IDisposable {
 
   public readonly internalBaseUrl: string
 
-  // TODO(menduz): replace this by a properties/configuration bag
-  hideAxis?: boolean
-  isInternal?: boolean
-
   private textureSet: Set<BABYLON.Texture> = new Set()
   private _disposed = false
   private eventSubscriber = new EventDispatcher()
+  private shouldUpdateMetrics = true
 
   constructor(public baseUrl: string, public readonly domain: string, public useMappings: boolean = true) {
     this.internalBaseUrl = domain ? `dcl://${domain}/` : baseUrl
     registerLoadingContext(this)
+    scene.onAfterRenderObservable.add(this.afterRenderScene)
+  }
+
+  afterRenderScene = () => {
+    if (this.shouldUpdateMetrics === true) {
+      this.shouldUpdateMetrics = false
+      let entities = 0
+      let triangles = 0
+      let bodies = 0
+      let textures = 0
+      let materials = 0
+      let geometries = 0
+
+      this.disposableComponents.forEach($ => {
+        textures += $.contributions.textureCount
+        materials += $.contributions.materialCount
+        geometries += $.contributions.geometriesCount
+      })
+
+      // TODO:(agus) textures += this.textures.size
+
+      entities++
+
+      const childrenMeshes = this.rootEntity.getChildTransformNodes(false, node => {
+        if ('isDCLEntity' in node) {
+          entities++
+        }
+        return node instanceof BABYLON.AbstractMesh
+      })
+
+      for (let i = 0; i < childrenMeshes.length; i++) {
+        const r = measureObject3D(childrenMeshes[i])
+        entities += r.entities
+        triangles += r.triangles
+        bodies += r.bodies
+      }
+
+      this.metrics = { entities, triangles, bodies, textures, materials, geometries }
+
+      this.emit('metricsUpdate', {
+        given: this.metrics,
+        limit: this.metricsLimits
+      })
+    }
   }
 
   /**
    * Counts and aggregates the number of triangles materials and entities
    */
   updateMetrics() {
-    let entities = 0
-    let triangles = 0
-    let bodies = 0
-    let textures = 0
-    let materials = 0
-    let geometries = 0
-
-    this.disposableComponents.forEach($ => {
-      textures += $.contributions.textureCount
-      materials += $.contributions.materialCount
-      geometries += $.contributions.geometriesCount
-    })
-
-    textures += this.textures.size
-
-    entities++
-
-    const childrenMeshes = this.rootEntity.getChildTransformNodes(false, node => {
-      if ('isDCLEntity' in node) {
-        entities++
-      }
-      return node instanceof BABYLON.AbstractMesh
-    })
-
-    for (let i = 0; i < childrenMeshes.length; i++) {
-      const r = measureObject3D(childrenMeshes[i])
-      entities += r.entities
-      triangles += r.triangles
-      bodies += r.bodies
-    }
-
-    this.metrics = { entities, triangles, bodies, textures, materials, geometries }
-
-    this.emit('metricsUpdate', {
-      given: this.metrics,
-      limit: this.metricsLimits
-    })
+    this.shouldUpdateMetrics = true
   }
 
   on<T extends IEventNames>(event: T, cb: (data: IEvents[T]) => void) {
@@ -158,6 +163,8 @@ export class SharedSceneContext implements BABYLON.IDisposable {
     if (!entity) return this.logger.error(`UpdateEntityComponent: Entity ${payload.entityId} doesn't exist`)
     /// 2) E.UpdateComponent(Name, ClassID, JSON)
     entity.updateComponent(payload)
+
+    this.shouldUpdateMetrics = true
   }
 
   /// #ECS.AttachEntityComponent: Attach the disposable component C to the entity E
@@ -172,6 +179,8 @@ export class SharedSceneContext implements BABYLON.IDisposable {
     if (!component) return this.logger.error(`AttachEntityComponent: Component ${payload.id} doesn't exist`)
     /// 4) E.attachDisposableComponent(slotName, C)
     entity.attachDisposableComponent(payload.name, component)
+
+    this.shouldUpdateMetrics = true
   }
 
   /// #ECS.ComponentCreated: Creates a disposable component C by `classID` and stores it by ID
@@ -190,6 +199,8 @@ export class SharedSceneContext implements BABYLON.IDisposable {
     const C = new (K as any)(this, payload.id)
     /// 3) Register C in the map of disposable components
     this.disposableComponents.set(payload.id, C)
+
+    this.shouldUpdateMetrics = true
   }
 
   /// #ECS.ComponentDisposed: Disposes a disposable component C and releases all of it allocated resources
@@ -202,6 +213,8 @@ export class SharedSceneContext implements BABYLON.IDisposable {
     component.dispose()
     /// 3) Remove component C from map of disposable components
     this.disposableComponents.delete(payload.id)
+
+    this.shouldUpdateMetrics = true
   }
 
   /// #ECS.ComponentRemoved: Removes a component by Name from an entity E
@@ -212,6 +225,8 @@ export class SharedSceneContext implements BABYLON.IDisposable {
     if (!entity) return this.logger.error(`ComponentRemoved: Entity ${payload.entityId} doesn't exist`)
     /// 2) remove the component Name from E
     entity.removeComponentByName(payload.name)
+
+    this.shouldUpdateMetrics = true
   }
 
   /// #ECS.ComponentUpdated: Updates a disposable component C using a JSON payload
@@ -222,6 +237,8 @@ export class SharedSceneContext implements BABYLON.IDisposable {
     if (!component) return this.logger.error(`ComponentUpdated: Component ${payload.id} doesn't exist`)
     /// 2) C.Update(JSON)
     component.updateData(JSON.parse(payload.json)).catch($ => this.logger.error('ComponentUpdated', $))
+
+    this.shouldUpdateMetrics = true
   }
 
   /// #ECS.CreateEntity
@@ -236,6 +253,8 @@ export class SharedSceneContext implements BABYLON.IDisposable {
     E.setParentEntity(this.rootEntity)
     /// 4) Add entity E to the entity map
     this.entities.set(payload.id, E)
+
+    this.shouldUpdateMetrics = true
   }
 
   /// #ECS.RemoveEntity
@@ -255,6 +274,8 @@ export class SharedSceneContext implements BABYLON.IDisposable {
     entity.dispose()
     /// 5) Remove E from the entity list
     this.entities.delete(payload.id)
+
+    this.shouldUpdateMetrics = true
   }
 
   /// #ECS.SetEntityParent: Set the entity E as child of entity P
@@ -292,6 +313,46 @@ export class SharedSceneContext implements BABYLON.IDisposable {
       uuid,
       payload
     })
+  }
+
+  sendPointerEvent(
+    pointerEventType: 'pointerDown' | 'pointerUp',
+    pointerId: number,
+    entityId: string,
+    pickingResult: BABYLON.PickingInfo
+  ) {
+    if (!pickingResult.ray) return
+
+    const event: PointerEvent = {
+      pointerId,
+      origin: {
+        x: pickingResult.ray.origin.x - this.rootEntity.position.x,
+        y: pickingResult.ray.origin.y - this.rootEntity.position.y,
+        z: pickingResult.ray.origin.z - this.rootEntity.position.z
+      },
+      direction: pickingResult.ray.direction
+    }
+
+    if (pickingResult.hit && entityId) {
+      event.hit = {
+        length: pickingResult.distance,
+        hitPoint: {
+          x: pickingResult.pickedPoint.x - this.rootEntity.position.x,
+          y: pickingResult.pickedPoint.y - this.rootEntity.position.y,
+          z: pickingResult.pickedPoint.z - this.rootEntity.position.z
+        },
+        normal: pickingResult.getNormal(),
+        worldNormal: pickingResult.getNormal(true),
+        meshName: pickingResult.pickedMesh.name,
+        entityId
+      }
+    }
+
+    if (pointerEventType === 'pointerDown') {
+      this.emit('pointerDown', event)
+    } else if (pointerEventType === 'pointerUp') {
+      this.emit('pointerUp', event)
+    }
   }
 
   public registerTexture(texture: BABYLON.Texture): any {
@@ -387,6 +448,8 @@ export class SharedSceneContext implements BABYLON.IDisposable {
   }
 
   public dispose() {
+    scene.onAfterRenderObservable.removeCallback(this.afterRenderScene)
+
     if (this.rootEntity) {
       this.rootEntity.disposeTree(this.entities)
 

@@ -157,6 +157,7 @@ export namespace editor {
       arcCamera.beta = Math.PI / 3
       arcCamera.radius = DEFAULT_CAMERA_ZOOM
     } else {
+      canvas.focus()
       canvas.requestPointerLock()
       if (webGlParcelScene) {
         vrCamera.position.x = webGlParcelScene.worker.position.x + 5

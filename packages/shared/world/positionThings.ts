@@ -1,17 +1,18 @@
 import { worldToGrid, gridToWorld, parseParcelPosition } from 'atomicHelpers/parcelScenePositions'
-import * as BABYLON from 'babylonjs'
 import * as qs from 'query-string'
 import { ILand } from 'shared/types'
+import { Vector3, ReadOnlyVector3, ReadOnlyQuaternion, Vector2 } from 'decentraland-ecs/src/decentraland/math'
+import { Observable } from 'babylonjs'
 
-export const positionObserver = new BABYLON.Observable<
+export const positionObserver = new Observable<
   Readonly<{
-    position: BABYLON.Vector3
-    rotation: BABYLON.Vector3
-    quaternion: BABYLON.Quaternion
+    position: ReadOnlyVector3
+    rotation: ReadOnlyVector3
+    quaternion: ReadOnlyQuaternion
   }>
 >()
 
-export const lastPlayerPosition = new BABYLON.Vector3()
+export const lastPlayerPosition = new Vector3()
 
 positionObserver.add(event => {
   lastPlayerPosition.copyFrom(event.position)
@@ -21,9 +22,9 @@ export function initializeUrlPositionObserver() {
   let lastTime: number = performance.now()
 
   let previousPosition = null
-  const gridPosition = BABYLON.Vector2.Zero()
+  const gridPosition = Vector2.Zero()
 
-  function updateUrlPosition(cameraVector: BABYLON.Vector3) {
+  function updateUrlPosition(cameraVector: ReadOnlyVector3) {
     // Update position in URI every second
     if (performance.now() - lastTime > 1000) {
       worldToGrid(cameraVector, gridPosition)
