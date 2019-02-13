@@ -8,7 +8,7 @@ import { profileObservable, ProfileEvent } from 'shared/comms/profile'
 import { SharedSceneContext } from 'engine/entities/SharedSceneContext'
 import { uuid } from 'atomicHelpers/math'
 import { setEntityText } from 'engine/components/ephemeralComponents/TextShape'
-import { Color3, ReadOnlyVector3, ReadOnlyQuaternion } from 'decentraland-ecs/src'
+import { Color3, ReadOnlyVector3, ReadOnlyQuaternion, Observer } from 'decentraland-ecs/src'
 
 export type AvatarAttributes = {
   displayName: string
@@ -60,7 +60,7 @@ export class AvatarEntity extends BaseEntity {
   gainNode: GainNode | null
   displayName: BaseEntity
   attrs: AvatarAttributes = { ...defaultAttributes }
-  profileObserver: BABYLON.Observer<any>
+  profileObserver: Observer<any>
   private lastAvatar: string = ''
 
   private _stream: MediaStream

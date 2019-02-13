@@ -7,7 +7,7 @@ import { initLocalPlayer, domReadyFuture, onWindowResize } from '../engine/rende
 import { initBabylonClient } from '../dcl'
 import * as _envHelper from '../engine/renderer/envHelper'
 import { canvas, scene } from '../engine/renderer/init'
-import { loadedParcelSceneWorkers } from '../shared/world/parcelSceneManager'
+import { loadedParcelSceneWorkers, enablePositionReporting } from '../shared/world/parcelSceneManager'
 import {
   LoadableParcelScene,
   ILandToLoadableParcelScene,
@@ -108,6 +108,8 @@ async function initializePreview(userScene: EnvironmentData<LoadableParcelScene>
   // we need closeParcelScenes to enable interactions in preview mode
   loadedParcelSceneWorkers.add(parcelScene)
 
+  enablePositionReporting()
+
   if (!didStartPosition) {
     // TODO (eordano): Find a fancier way to do this
     // As the "+5,+5" is a hack to make the scene appear in front of the user
@@ -141,6 +143,10 @@ export namespace editor {
 
   export function getDCLCanvas() {
     return domReadyFuture.isPending ? domReadyFuture : Promise.resolve(canvas)
+  }
+
+  export function getScenes() {
+    return loadedParcelSceneWorkers
   }
 
   function configureEditorEnvironment(enabled: boolean) {

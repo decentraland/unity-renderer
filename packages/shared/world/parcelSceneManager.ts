@@ -60,12 +60,9 @@ export async function enableParcelSceneLoading(network: ETHEREUM_NETWORK, option
   positionObserver.add(obj => {
     worldToGrid(obj.position, position)
     ret.server.notify('User.setPosition', { position })
-    for (let parcelSceneWorker of loadedParcelSceneWorkers) {
-      if (parcelSceneWorker && 'sendUserViewMatrix' in parcelSceneWorker) {
-        parcelSceneWorker.sendUserViewMatrix(obj)
-      }
-    }
   })
+
+  enablePositionReporting()
 
   ret.server.on('ParcelScenes.notify', (data: { parcelScenes: ILand[] }) => {
     setParcelScenes(data.parcelScenes)
@@ -75,4 +72,22 @@ export async function enableParcelSceneLoading(network: ETHEREUM_NETWORK, option
   })
 
   return ret
+}
+
+let isPositionReportingEnabled = false
+
+export function enablePositionReporting() {
+  if (isPositionReportingEnabled) return
+
+  isPositionReportingEnabled = true
+  const position = Vector2.Zero()
+
+  positionObserver.add(obj => {
+    worldToGrid(obj.position, position)
+    for (let parcelSceneWorker of loadedParcelSceneWorkers) {
+      if (parcelSceneWorker && 'sendUserViewMatrix' in parcelSceneWorker) {
+        parcelSceneWorker.sendUserViewMatrix(obj)
+      }
+    }
+  })
 }

@@ -678,7 +678,6 @@ export class OnUUIDEvent<T extends keyof IEvents> extends ObservableComponent {
     super()
 
     if (!callback || !('apply' in callback) || !('call' in callback)) {
-      debugger
       throw new Error('Callback is not a function')
     }
 

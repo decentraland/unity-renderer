@@ -46,3 +46,7 @@ engine.addSystem(new RotatorSystem())
 engine.addSystem(new TraslatorSystem())
 
 log('-200,0 loaded')
+
+executeTask(async () => {
+  throw new Error('this is an error triggered from executeTask')
+})

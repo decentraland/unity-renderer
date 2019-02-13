@@ -19,7 +19,7 @@ import {
 } from 'decentraland-ecs/src'
 
 import { future } from 'fp-future'
-import { loadTestParcel, testScene, saveScreenshot, wait } from '../testHelpers'
+import { loadTestParcel, testScene, saveScreenshot, wait, waitForMesh } from '../testHelpers'
 import { sleep } from 'atomicHelpers/sleep'
 import { BaseEntity } from 'engine/entities/BaseEntity'
 import { AudioClip } from 'engine/components/disposableComponents/AudioClip'
@@ -676,26 +676,24 @@ describe('ECS', () => {
     })
   })
 
-  loadTestParcel('must fail', -200, 238, function(_root, _futureScene, futureWorker) {
-    it('must fail and that must appear in the logs', async () => {
-      const worker = await futureWorker
-      const scriptingHost = await worker.system
-      scriptingHost.unmounted
-    })
-  })
-
   describe('unit', () => {
     {
       let entityFuture = future<BaseEntity>()
-      testScene(-100, 234, ({ parcelScenePromise }) => {
-        it('should have a transform component', async () => {
-          const parcelScene = await parcelScenePromise
 
-          const entity = parcelScene.context.entities.get('__test_id__') // should be the first child
+      testScene(-100, 234, ({ parcelScenePromise }) => {
+        it('should have a transform component', async function() {
+          this.timeout(50000)
+          const parcelScene = await parcelScenePromise
+          const [, [, entity]] = parcelScene.context.entities // should be the first child
+
           expect(!!entity).to.eq(true, 'entity should exist')
           expect(entity.position.x).to.eq(5)
           expect(entity.position.z).to.eq(5)
+          expect(parcelScene.context.disposableComponents.size).to.eq(1, 'there must be one disposable component')
+          const [[, shape]] = parcelScene.context.disposableComponents
+          expect(shape.entities.has(entity)).to.eq(true, 'the shape must have the entity')
           entityFuture.resolve(entity)
+          await waitForMesh(entity)
         })
 
         saveScreenshot(`gamekit-gltf.png`, {
@@ -844,8 +842,6 @@ describe('ECS', () => {
         const M1 = parcelScene.context.disposableComponents.get('C3') as PBRMaterial
         const M2 = parcelScene.context.disposableComponents.get('C4') as PBRMaterial
 
-        console.log(parcelScene.context)
-
         expect(M1).to.be.instanceOf(PBRMaterial, 'M1 is PBR')
         expect(M2).to.be.instanceOf(PBRMaterial, 'M2 is PBR')
 
@@ -884,6 +880,7 @@ describe('ECS', () => {
             expect(id.startsWith('E')).to.eq(false, `entity ${id} exists`)
           })
           expect(scene.context.disposableComponents.size).to.eq(0)
+          expect(scene.context.metrics.entities).to.eq(0, 'there must be 0 entities')
         })
 
         it('must create a entity', async () => {
@@ -899,6 +896,11 @@ describe('ECS', () => {
               }
             }
           })
+
+          expect(scene.context.metrics.entities).to.eq(1, 'there must be 1 entity')
+          expect(scene.context.metrics.triangles).to.eq(0, 'triangles must be 0')
+          expect(scene.context.metrics.geometries).to.eq(0, 'geometries must be 0')
+          expect(scene.context.metrics.bodies).to.eq(0, 'bodies must be 0')
 
           expect(!!entity).to.eq(true)
         })
@@ -929,7 +931,6 @@ describe('ECS', () => {
           expect(scene.setOfEntitiesOutsideBoundaries.size).eq(1, 'The cube starts outside of the parcel')
           const [entityOutside] = scene.setOfEntitiesOutsideBoundaries
           expect(entityOutside).eq(entity, 'The entity outside the parcel must be our entity')
-
           expect(scene.context.metrics.geometries).eq(1, 'geometry counters must have been updated to 1')
           // TODO: test outsideFences events
         })
@@ -1081,8 +1082,6 @@ describe('ECS', () => {
         const M1 = parcelScene.context.disposableComponents.get('C3') as PBRMaterial
         const M2 = parcelScene.context.disposableComponents.get('C4') as PBRMaterial
 
-        console.log(parcelScene.context)
-
         expect(M1).to.be.instanceOf(PBRMaterial, 'M1 is PBR')
         expect(M2).to.be.instanceOf(PBRMaterial, 'M2 is PBR')
 
@@ -1123,7 +1122,6 @@ describe('ECS', () => {
           const scene = await futureScene
           scene.context.entities.forEach($ => {
             for (let i in $.components) {
-              console.log(i, $.components[i])
               if ($.components[i] instanceof AudioSource) {
                 audioSources.push($.components[i] as any)
               }
@@ -1230,6 +1228,5 @@ describe('ECS', () => {
 
 function anglesAreEqual(e1: Vector3, e2: Vector3) {
   const angle = Quaternion.Angle(Quaternion.Euler(e1.x, e1.y, e1.z), Quaternion.Euler(e2.x, e2.y, e2.z))
-  console['log']('angle between', e1, e2, 'is', angle)
   return Math.abs(angle) < 1e-3
 }

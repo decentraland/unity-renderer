@@ -3,7 +3,8 @@ import { BaseEntity } from '../../entities/BaseEntity'
 import { validators } from '../helpers/schemaValidator'
 import { scene } from '../../renderer'
 import { probe } from '../../renderer/ambientLights'
-import { CLASS_ID } from 'decentraland-ecs/src'
+import { CLASS_ID, Observer } from 'decentraland-ecs/src'
+import { deleteUnusedTextures } from 'engine/entities/loader'
 
 const defaults = {
   alpha: 1,
@@ -31,12 +32,12 @@ const defaults = {
 
 export class PBRMaterial extends DisposableComponent {
   material: BABYLON.PBRMaterial
-  meshObserver: BABYLON.Observer<{ type: string; object: BABYLON.TransformNode }>
+  meshObserver: Observer<{ type: string; object: BABYLON.TransformNode }>
 
   constructor(ctx, uuid) {
     super(ctx, uuid)
-    this.contributions.materialCount += 1
     this.material = new BABYLON.PBRMaterial('#' + this.uuid, scene)
+    this.contributions.materials.add(this.material)
     this.loadingDone = false
   }
 
@@ -73,6 +74,7 @@ export class PBRMaterial extends DisposableComponent {
   dispose() {
     this.material.dispose(false, false)
     super.dispose()
+    deleteUnusedTextures()
   }
 
   async updateData(data: any): Promise<void> {
@@ -194,7 +196,20 @@ export class PBRMaterial extends DisposableComponent {
         }
       }
     }
+
+    this.contributions.textures.clear()
+
+    m.bumpTexture && this.contributions.textures.add(m.bumpTexture)
+    m.albedoTexture && this.contributions.textures.add(m.albedoTexture)
+    m.albedoTexture && this.contributions.textures.add(m.albedoTexture)
+    m.ambientTexture && this.contributions.textures.add(m.ambientTexture)
+    m.opacityTexture && this.contributions.textures.add(m.opacityTexture)
+    m.emissiveTexture && this.contributions.textures.add(m.emissiveTexture)
+    m.refractionTexture && this.contributions.textures.add(m.refractionTexture)
+
     this.loadingDone = true
+
+    deleteUnusedTextures()
   }
 }
 

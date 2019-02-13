@@ -2,7 +2,7 @@ import { worldToGrid, gridToWorld, parseParcelPosition } from 'atomicHelpers/par
 import * as qs from 'query-string'
 import { ILand } from 'shared/types'
 import { Vector3, ReadOnlyVector3, ReadOnlyQuaternion, Vector2 } from 'decentraland-ecs/src/decentraland/math'
-import { Observable } from 'babylonjs'
+import { Observable } from 'decentraland-ecs/src/ecs/Observable'
 
 export const positionObserver = new Observable<
   Readonly<{

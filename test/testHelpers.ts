@@ -27,6 +27,7 @@ import { MemoryTransport } from 'decentraland-rpc'
 
 import GamekitScene from '../packages/scene-system/scene.system'
 import { gridToWorld } from 'atomicHelpers/parcelScenePositions'
+import { BasicShape } from 'engine/components/disposableComponents/DisposableComponent'
 
 const baseUrl = 'http://localhost:8080/local-ipfs/contents/'
 
@@ -126,9 +127,7 @@ export function saveScreenshot(
         })
     }, 'image/png')
 
-    const res = await resolvable
-
-    console.log('diff result', res, resolvable)
+    await resolvable
   })
 }
 
@@ -275,6 +274,16 @@ export async function waitToBeLoaded(entity: BaseEntity) {
     }
 
     break
+  }
+}
+
+export async function waitForMesh(entity: BaseEntity) {
+  while (true) {
+    const children = entity.getObject3D(BasicShape.nameInEntity)
+
+    if (children) return
+
+    await sleep(100)
   }
 }
 
@@ -434,6 +443,8 @@ export function testScene(
     sceneHost.manualUpdate = manualUpdate
 
     it('loads the mock and starts the system', async function() {
+      this.timeout(5000)
+
       const land = await loadMock('http://localhost:8080/local-ipfs/mappings', { x, y })
 
       try {
@@ -447,6 +458,7 @@ export function testScene(
     })
 
     it('waits for the system to be loaded and ready', async function() {
+      this.timeout(5000)
       const parcelScene = await parcelScenePromise
 
       const originalLog = parcelScene.context.logger.log
@@ -461,7 +473,7 @@ export function testScene(
       await worker.system
 
       while (!sceneHost.didStart) {
-        await sleep(100)
+        await sleep(10)
       }
     })
 

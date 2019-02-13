@@ -1,7 +1,7 @@
 import { getComponentName, ComponentConstructor, getComponentClassId, ComponentLike } from './Component'
-import { log, Engine } from './Engine'
+import { Engine } from './Engine'
 import { EventManager, EventConstructor } from './EventManager'
-import { newId } from './helpers'
+import { newId, log, error } from './helpers'
 
 // tslint:disable:no-use-before-declare
 
@@ -254,27 +254,38 @@ export class Entity {
    * Returns false if no engine was defined.
    */
   isAddedToEngine(): boolean {
-    if (!this.engine || !(this.uuid in this.engine.entities)) {
-      return false
+    if (this.engine && this.uuid in this.engine.entities) {
+      return true
     }
 
-    return true
+    return false
   }
 
   /**
    * Sets the parent entity
    */
-  setParent(entity: Entity) {
-    let parent = !entity && this.engine ? this.engine.rootEntity : entity
+  setParent(newParent: Entity) {
+    let parent = !newParent && this.engine ? this.engine.rootEntity : newParent
     let currentParent = this.getParent()
 
-    if (entity === this) {
+    if (newParent === this) {
       throw new Error(
         `Failed to set parent for entity "${this.identifier}": An entity can't set itself as a its own parent`
       )
     }
 
-    const circularAncestor = this.getCircularAncestor(entity)
+    if (newParent === currentParent) {
+      return
+    }
+
+    if (newParent.uuid !== '0' && !newParent.isAddedToEngine()) {
+      error(
+        `entity.setParent(parent): parent(${newParent.uuid}) must be added to the engine before setting any child`,
+        newParent
+      )
+    }
+
+    const circularAncestor = this.getCircularAncestor(newParent)
 
     if (circularAncestor) {
       throw new Error(

@@ -32,3 +32,5 @@ function makeGLTF(src: string, position: Vector3, scale: Vector3) {
   engine.addEntity(ent)
   return ent
 }
+
+engine.addEntity(new Entity())

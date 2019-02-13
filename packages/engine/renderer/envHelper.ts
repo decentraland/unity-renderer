@@ -2,6 +2,7 @@ import * as BABYLON from 'babylonjs'
 
 import { visualConfigurations, parcelLimits } from 'config'
 import { ambientConfigurations } from './ambientConfigurations'
+import { Observable } from 'decentraland-ecs/src'
 
 BABYLON.Effect.ShadersStore['dclskyVertexShader'] = `
   // Attributes
@@ -270,7 +271,7 @@ export class EnvironmentHelper {
    * This observable will be notified with any error during the creation of the environment,
    * mainly texture creation errors.
    */
-  public onErrorObservable: BABYLON.Observable<{ message?: string; exception?: any }>
+  public onErrorObservable: Observable<{ message?: string; exception?: any }>
 
   private _rootMesh: BABYLON.Mesh
 
@@ -301,7 +302,7 @@ export class EnvironmentHelper {
       ...options
     }
     this._scene = scene
-    this.onErrorObservable = new BABYLON.Observable()
+    this.onErrorObservable = new Observable()
 
     this._setupBackground()
     this._setupImageProcessing()

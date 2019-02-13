@@ -1,5 +1,7 @@
-import { Engine } from './Engine'
-import { Entity } from './Entity'
+// tslint:disable:whitespace
+
+type Engine = import('./Engine').Engine
+type Entity = import('./Entity').Entity
 
 /**
  * @public

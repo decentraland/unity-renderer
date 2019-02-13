@@ -1,9 +1,8 @@
 import * as BABYLON from 'babylonjs'
-import { loadTexture } from './loader'
+import { loadTexture, registerContextInResourceManager } from './loader'
 import { scene } from '../renderer'
-import { registerLoadingContext, removeLoadingContext } from 'engine/renderer/monkeyLoader'
+import { registerLoadingContext } from 'engine/renderer/monkeyLoader'
 import { resolveUrl } from 'atomicHelpers/parseUrl'
-import { future } from 'fp-future'
 import { DisposableComponent } from 'engine/components/disposableComponents/DisposableComponent'
 import { BaseEntity } from './BaseEntity'
 
@@ -25,13 +24,13 @@ import { EventDispatcher } from 'decentraland-rpc/lib/common/core/EventDispatche
 import { IParcelSceneLimits } from 'atomicHelpers/landHelpers'
 import { measureObject3D } from 'dcl/entities/utils/checkParcelSceneLimits'
 import { IEventNames, IEvents, PointerEvent } from 'decentraland-ecs/src/decentraland/Types'
+import { Observable } from 'decentraland-ecs/src'
 
 function validateHierarchy(entity: BaseEntity) {
   let parent = entity
 
   if (!entity.parentEntity) {
     entity.context.logger.error('the entity has no parent')
-    debugger
     return
   }
 
@@ -40,13 +39,11 @@ function validateHierarchy(entity: BaseEntity) {
 
     if (parent.isDisposed()) {
       entity.context.logger.error('parenting to a disposed entity')
-      debugger
     }
   } while (parent.parentEntity)
 
   if (parent.uuid !== '0') {
     entity.context.logger.error('the entity has a root different to 0')
-    debugger
     return
   }
 }
@@ -76,17 +73,16 @@ export class SharedSceneContext implements BABYLON.IDisposable {
     geometries: 0
   }
 
-  public onEntityMatrixChangedObservable = new BABYLON.Observable<BaseEntity>()
+  public onEntityMatrixChangedObservable = new Observable<BaseEntity>()
   public registeredMappings: Map<string, string | Blob | File> = new Map()
-  public textures: Map<string, BABYLON.Texture> = new Map()
 
   public rootEntity = new BaseEntity('0', this)
 
   public logger: ILogger = defaultLogger
 
   public readonly internalBaseUrl: string
+  public onDisposeObservable = new Observable<SharedSceneContext>()
 
-  private textureSet: Set<BABYLON.Texture> = new Set()
   private _disposed = false
   private eventSubscriber = new EventDispatcher()
   private shouldUpdateMetrics = true
@@ -94,50 +90,60 @@ export class SharedSceneContext implements BABYLON.IDisposable {
   constructor(public baseUrl: string, public readonly domain: string, public useMappings: boolean = true) {
     this.internalBaseUrl = domain ? `dcl://${domain}/` : baseUrl
     registerLoadingContext(this)
+    registerContextInResourceManager(this)
     scene.onAfterRenderObservable.add(this.afterRenderScene)
   }
 
   afterRenderScene = () => {
     if (this.shouldUpdateMetrics === true) {
       this.shouldUpdateMetrics = false
-      let entities = 0
+      const entities = this.entities.size - 1
       let triangles = 0
       let bodies = 0
-      let textures = 0
-      let materials = 0
-      let geometries = 0
+      const currentUsage = this.getCurrentUsages()
 
-      this.disposableComponents.forEach($ => {
-        textures += $.contributions.textureCount
-        materials += $.contributions.materialCount
-        geometries += $.contributions.geometriesCount
-      })
+      this.entities.forEach((entity, key) => {
+        if (key === '0') return
 
-      // TODO:(agus) textures += this.textures.size
+        const childrenMeshes = entity.getChildMeshes()
 
-      entities++
-
-      const childrenMeshes = this.rootEntity.getChildTransformNodes(false, node => {
-        if ('isDCLEntity' in node) {
-          entities++
+        for (let i = 0; i < childrenMeshes.length; i++) {
+          const r = measureObject3D(childrenMeshes[i])
+          triangles += r.triangles
+          bodies += r.bodies
         }
-        return node instanceof BABYLON.AbstractMesh
       })
 
-      for (let i = 0; i < childrenMeshes.length; i++) {
-        const r = measureObject3D(childrenMeshes[i])
-        entities += r.entities
-        triangles += r.triangles
-        bodies += r.bodies
+      this.metrics = {
+        entities,
+        triangles,
+        bodies,
+        textures: currentUsage.textures.size,
+        materials: currentUsage.materials.size,
+        geometries: currentUsage.geometries.size
       }
-
-      this.metrics = { entities, triangles, bodies, textures, materials, geometries }
 
       this.emit('metricsUpdate', {
         given: this.metrics,
         limit: this.metricsLimits
       })
     }
+  }
+
+  getCurrentUsages() {
+    let textures = new Set<BABYLON.Texture>()
+    let materials = new Set<BABYLON.Material>()
+    let geometries = new Set<BABYLON.Geometry>()
+    let audioClips = new Set<any>()
+
+    this.disposableComponents.forEach($ => {
+      $.contributions.textures.forEach($ => textures.add($))
+      $.contributions.materials.forEach($ => materials.add($))
+      $.contributions.geometries.forEach($ => geometries.add($))
+      $.contributions.audioClips.forEach($ => audioClips.add($))
+    })
+
+    return { textures, materials, geometries, audioClips }
   }
 
   /**
@@ -355,11 +361,6 @@ export class SharedSceneContext implements BABYLON.IDisposable {
     }
   }
 
-  public registerTexture(texture: BABYLON.Texture): any {
-    this.textureSet.add(texture)
-    texture.onDisposeObservable.add(this.textureGotRemoved)
-  }
-
   public isDisposed() {
     return this._disposed
   }
@@ -369,39 +370,15 @@ export class SharedSceneContext implements BABYLON.IDisposable {
       throw new Error(`SharedSceneContext(${this.domain}) is disposed`)
     }
 
-    if (!this.textures.has(path)) {
-      if (path.match(/^data:[^\/]+\/[^;]+;base64,/)) {
-        const defer = future<BABYLON.Texture>()
-        const texture = new BABYLON.Texture(
-          null,
-          scene,
-          false,
-          false,
-          BABYLON.Texture.BILINEAR_SAMPLINGMODE,
-          () => {
-            defer.resolve(texture)
-          },
-          (message, exception) => {
-            defer.reject(message || exception || `Error loading ${path}`)
-            this.textureGotRemoved(texture)
-          },
-          path,
-          true
-        )
+    let pathToLoad = path
 
-        this.textures.set(path, texture)
-        this.registerTexture(texture)
-
-        return defer
-      } else {
-        const resolvedPath = resolveUrl(this.internalBaseUrl, path)
-        const texture = await loadTexture(resolvedPath)
-        this.textures.set(path, texture)
-        this.registerTexture(texture)
-      }
+    if (path.match(/^data:[^\/]+\/[^;]+;base64,/)) {
+      pathToLoad = path
+    } else {
+      pathToLoad = this.resolveUrl(path)
     }
 
-    return this.textures.get(path)
+    return loadTexture(pathToLoad)
   }
 
   public async getFile(url: string): Promise<File> {
@@ -413,7 +390,7 @@ export class SharedSceneContext implements BABYLON.IDisposable {
     return new File([blob], url)
   }
 
-  public resolveUrl(url: string) {
+  public resolveUrl(url: string): string {
     if (this._disposed) {
       throw new Error(`SharedSceneContext(${this.domain}) is disposed`)
     }
@@ -448,6 +425,9 @@ export class SharedSceneContext implements BABYLON.IDisposable {
   }
 
   public dispose() {
+    this.onDisposeObservable.notifyObservers(this)
+    this.onDisposeObservable.clear()
+
     scene.onAfterRenderObservable.removeCallback(this.afterRenderScene)
 
     if (this.rootEntity) {
@@ -460,17 +440,10 @@ export class SharedSceneContext implements BABYLON.IDisposable {
       delete this.rootEntity
     }
 
-    this.textureSet.forEach((texture, name) => {
-      texture.dispose()
-    })
-
     this.disposableComponents.forEach($ => $.dispose())
-
-    this.textureSet.clear()
-    this.textures.clear()
+    this.disposableComponents.clear()
 
     this._disposed = true
-    removeLoadingContext(this)
   }
 
   public registerMappings(mappings: Array<ContentMapping>) {
@@ -515,10 +488,5 @@ export class SharedSceneContext implements BABYLON.IDisposable {
       throw new Error('Invalid URL')
     }
     return decodeURIComponent(BABYLON.Tools.CleanUrl(url.replace(/^(\/+)/, '').toLowerCase()))
-  }
-
-  private textureGotRemoved = (texture: BABYLON.Texture) => {
-    texture.getScene().removeTexture(texture)
-    this.textureSet.delete(texture)
   }
 }

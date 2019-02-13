@@ -12,6 +12,8 @@ export class OBJShape extends DisposableComponent {
   src: string | null = null
   loadingDone = false
 
+  private didFillContributions = false
+
   onAttach(entity: BaseEntity): void {
     if (this.src) {
       const url = resolveUrl(this.context.internalBaseUrl, this.src)
@@ -41,7 +43,6 @@ export class OBJShape extends DisposableComponent {
                 if (!assetContainer.textures.includes(t)) {
                   if (t.url.includes(this.context.domain)) {
                     assetContainer.textures.push(t)
-                    this.context.registerTexture(t)
                   }
                 }
               }
@@ -65,9 +66,19 @@ export class OBJShape extends DisposableComponent {
               $.parent = node
             })
 
-            this.contributions.materialCount = assetContainer.materials.length
-            this.contributions.geometriesCount = assetContainer.geometries.length
-            this.contributions.textureCount = assetContainer.textures.length
+            // TODO: Remove this if after we instantiate GLTF
+            if (!this.didFillContributions) {
+              this.didFillContributions = true
+              assetContainer.materials.forEach($ => {
+                this.contributions.materials.add($)
+              })
+              assetContainer.geometries.forEach($ => {
+                this.contributions.geometries.add($)
+              })
+              assetContainer.textures.forEach($ => {
+                this.contributions.textures.add($)
+              })
+            }
 
             node.scaling.set(1, 1, -1)
 
@@ -76,14 +87,12 @@ export class OBJShape extends DisposableComponent {
             cleanupAssetContainer(assetContainer)
           }
           this.loadingDone = true
-          this.context.logger.log('obj loaded')
         },
         null,
         (_scene, message, exception) => {
           this.context.logger.error('Error loading OBJ', message || exception)
           this.onDetach(entity)
           this.loadingDone = true
-          debugger
         },
         '.obj'
       )

@@ -11,7 +11,7 @@ import { Color3 } from 'decentraland-ecs/src'
 import { checkerboardMaterial } from 'engine/renderer/ambientLights'
 import { ignoreBoundaryChecksOnObject } from './checkParcelSceneLimits'
 
-const debugContext = new SharedSceneContext('.', uuid())
+const debugContext = new SharedSceneContext('.', 'debug-shared-context')
 
 const box = new BoxShape(debugContext, uuid())
 
@@ -26,6 +26,7 @@ zMaterial.updateData({ albedoColor: '#0000FF' }).catch($ => debugContext.logger.
 
 export function createAxisEntity() {
   const ret = new BaseEntity(uuid(), debugContext)
+  ignoreBoundaryChecksOnObject(ret)
 
   const xAxis = new BaseEntity(uuid(), debugContext)
   xAxis.setParentEntity(ret)

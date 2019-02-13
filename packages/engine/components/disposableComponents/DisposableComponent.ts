@@ -6,10 +6,10 @@ type SharedSceneContext = import('engine/entities/SharedSceneContext').SharedSce
 
 export abstract class DisposableComponent {
   contributions = {
-    textureCount: 0,
-    materialCount: 0,
-    geometriesCount: 0,
-    audioClips: 0
+    textures: new Set(),
+    materials: new Set(),
+    geometries: new Set(),
+    audioClips: new Set()
   }
 
   entities: Set<BaseEntity> = new Set()
@@ -68,7 +68,6 @@ export abstract class BasicShape<T> extends DisposableComponent {
 
   constructor(public context: SharedSceneContext, public uuid: string) {
     super(context, uuid)
-    this.contributions.geometriesCount += 1
   }
 
   abstract generateModel(): BABYLON.AbstractMesh
@@ -92,6 +91,9 @@ export abstract class BasicShape<T> extends DisposableComponent {
       entity.removeObject3D(BasicShape.nameInEntity)
     } else {
       const mesh = this.generateModel()
+
+      this.contributions.geometries.clear()
+      this.contributions.geometries.add(mesh)
 
       mesh.cullingStrategy = BABYLON.AbstractMesh.CULLINGSTRATEGY_BOUNDINGSPHERE_ONLY
       mesh.isPickable = true

@@ -1,4 +1,6 @@
-import { log } from './Engine'
+import { error } from './helpers'
+
+declare var Promise: any
 
 export type TaskResult<T> = Promise<T> & {
   isComplete: boolean
@@ -7,13 +9,15 @@ export type TaskResult<T> = Promise<T> & {
   result?: T
 }
 
+const _defer = Promise.resolve().then.bind(Promise.resolve())
+
 /**
  * Executes an asynchronous task
  * @param task - the task to execute
  * @beta
  */
 export function executeTask<T>(task: () => Promise<T>): TaskResult<T> {
-  const result: TaskResult<T> = task() as any
+  const result: TaskResult<T> = _defer(task)
 
   result.isComplete = false
 
@@ -27,7 +31,7 @@ export function executeTask<T>(task: () => Promise<T>): TaskResult<T> {
       result.isComplete = true
       result.error = $
       result.didFail = true
-      log('executeTask: FAILED', $.toString(), $)
+      error('executeTask: FAILED ' + $.toString(), $)
     })
 
   return result

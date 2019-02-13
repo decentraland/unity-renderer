@@ -54,6 +54,7 @@ export class AudioSource extends BaseComponent<typeof defaultValue> {
           $.updateOptions({
             loop: this.value.loop
           })
+          $.setPosition(this.entity.absolutePosition)
           if (!this.value.loop && this.value.playing && $.isPlaying) {
             $.stop()
           }
@@ -64,7 +65,6 @@ export class AudioSource extends BaseComponent<typeof defaultValue> {
           }
         })
         .catch(() => void 0)
-      this.updatePosition()
     }
   }
 
@@ -87,9 +87,10 @@ export class AudioSource extends BaseComponent<typeof defaultValue> {
                   .catch(() => void 0)
               },
               {
+                autoplay: false,
                 spatialSound: true,
                 distanceModel: 'exponential',
-                rolloffFactor: 1.5
+                rolloffFactor: 1
               }
             )
           })

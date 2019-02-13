@@ -1,5 +1,37 @@
 let lastGeneratedId = 0
 
+declare var console: any
+declare var dcl: any
+
+/**
+ * Log function. Only works in debug mode, otherwise it does nothing.
+ * @param args - any loggable parameter
+ * @public
+ */
+export function log(...args: any[]) {
+  if (typeof dcl !== 'undefined') {
+    dcl.log(...args)
+  } else {
+    // tslint:disable-next-line:no-console
+    console.log('DEBUG:', ...args)
+  }
+}
+
+/**
+ * Error function. Prints a console error. Only works in debug mode, otherwise it does nothing.
+ * @param error - string or Error object.
+ * @param data - any debug information.
+ * @public
+ */
+export function error(error: string | Error, data?: any) {
+  if (typeof dcl !== 'undefined') {
+    dcl.error(error, data)
+  } else {
+    // tslint:disable-next-line:no-console
+    console.error('ERROR:', error, data)
+  }
+}
+
 /**
  * Generates a new prefixed id
  * @beta
@@ -23,10 +55,10 @@ export function uuid() {
 
 /**
  * Returns an array of the given size filled with element built from the given constructor and the paramters
- * @param size the number of element to construct and put in the array
- * @param itemBuilder a callback responsible for creating new instance of item. Called once per array entry.
+ * @param size - the number of element to construct and put in the array
+ * @param itemBuilder - a callback responsible for creating new instance of item. Called once per array entry.
  * @returns a new array filled with new objects
- * @public
+ * @internal
  */
 export function buildArray<T>(size: number, itemBuilder: () => T): Array<T> {
   const a: T[] = []

@@ -17,7 +17,7 @@ export class AudioClip extends DisposableComponent {
 
   constructor(ctx: SharedSceneContext, uuid: string) {
     super(ctx, uuid)
-    this.contributions.audioClips += 1
+    this.contributions.audioClips.add(this)
     this.loadingDone = false
     this.arrayBuffer.catch($ => this.context.logger.error($))
   }

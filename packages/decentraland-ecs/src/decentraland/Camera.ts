@@ -1,4 +1,4 @@
-import { Vector3, Quaternion } from './math'
+import { Vector3, Quaternion, ReadOnlyVector3, ReadOnlyQuaternion } from './math'
 import { DecentralandInterface, IEvents } from './Types'
 
 declare let dcl: DecentralandInterface | void
@@ -21,10 +21,10 @@ export class Camera {
   public readonly rotation: Quaternion = new Quaternion()
 
   // @internal
-  private lastEventPosition: { x: number; y: number; z: number } = { x: 0, y: 0, z: 0 }
+  private lastEventPosition: ReadOnlyVector3 = { x: 0, y: 0, z: 0 }
 
   // @internal
-  private lastEventRotation: { x: number; y: number; z: number; w: number } = { x: 0, y: 0, z: 0, w: 1.0 }
+  private lastEventRotation: ReadOnlyQuaternion = { x: 0, y: 0, z: 0, w: 1.0 }
 
   constructor() {
     if (typeof dcl !== 'undefined') {

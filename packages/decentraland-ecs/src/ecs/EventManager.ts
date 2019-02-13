@@ -1,4 +1,4 @@
-import { error } from './Engine'
+import { error } from './helpers'
 
 const eventNameSymbol = '__event_name__'
 

@@ -73,8 +73,6 @@ export class UUIDEventSystem implements ISystem {
       if (handler) {
         if (handler.callback && 'call' in handler.callback) {
           handler.callback(event.payload)
-        } else {
-          debugger
         }
       }
     }

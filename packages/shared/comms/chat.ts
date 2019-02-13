@@ -1,4 +1,4 @@
-import { Observable } from 'babylonjs'
+import { Observable } from 'decentraland-ecs'
 
 export const ChatEvent = {
   MESSAGE_RECEIVED: 'MESSAGE_RECEIVED',

@@ -4,6 +4,8 @@ export * from './ecs/Component'
 export * from './ecs/System'
 export * from './ecs/Entity'
 export * from './ecs/Task'
+export * from './ecs/helpers'
+export * from './ecs/Observable'
 
 import { DecentralandSynchronizationSystem } from './decentraland/Implementation'
 

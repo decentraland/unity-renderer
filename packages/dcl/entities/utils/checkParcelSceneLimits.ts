@@ -13,6 +13,10 @@ export function ignoreBoundaryChecksOnObject(obj: BABYLON.Node, ignore = true) {
   obj[ignoreBoundaryCheck] = ignore
 }
 
+export function areBoundariesIgnored(obj: BABYLON.Node) {
+  return !!obj[ignoreBoundaryCheck]
+}
+
 export function measureObject3D(obj: BABYLON.AbstractMesh | BABYLON.Mesh | BABYLON.TransformNode): IParcelSceneLimits {
   let entities = 0
   let triangles = 0
@@ -21,7 +25,7 @@ export function measureObject3D(obj: BABYLON.AbstractMesh | BABYLON.Mesh | BABYL
   let materials = 0
   let geometries = 0
 
-  if (obj && !obj[ignoreBoundaryCheck]) {
+  if (obj && !areBoundariesIgnored(obj)) {
     if ('geometry' in obj && obj.geometry) {
       bodies++
       geometries++

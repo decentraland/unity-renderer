@@ -1,4 +1,14 @@
-import { Transform, engine, Entity, BoxShape, ISystem, log, OnPointerDown } from 'decentraland-ecs/src'
+import {
+  Transform,
+  engine,
+  Entity,
+  BoxShape,
+  ISystem,
+  log,
+  OnPointerDown,
+  Material,
+  Color3
+} from 'decentraland-ecs/src'
 
 export class RotatorSystem implements ISystem {
   group = engine.getComponentGroup(Transform)
@@ -17,7 +27,10 @@ export class RotatorSystem implements ISystem {
 }
 
 const cube = new Entity()
+const material = new Material()
+material.emissiveColor = Color3.Yellow()
 
+cube.set(material)
 cube.set(new Transform())
 cube.get(Transform).position.set(5, 1, 5)
 cube.set(new BoxShape())

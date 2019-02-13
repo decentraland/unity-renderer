@@ -7,7 +7,7 @@ import { scene, engineMicroQueue } from '../renderer'
 import { DisposableComponent, BasicShape } from 'engine/components/disposableComponents/DisposableComponent'
 import { UpdateEntityComponentPayload } from 'shared/types'
 
-import { CLASS_ID } from 'decentraland-ecs/src'
+import { CLASS_ID, Observable } from 'decentraland-ecs/src'
 import { IEventNames, IEvents } from 'decentraland-ecs/src/decentraland/Types'
 
 // tslint:disable-next-line:whitespace
@@ -41,7 +41,7 @@ export class BaseEntity extends BABYLON.AbstractMesh {
 
   components: { [key: string]: BaseComponent<any> } = {}
 
-  onChangeObject3DObservable = new BABYLON.Observable<{ type: string; object: BABYLON.TransformNode }>()
+  onChangeObject3DObservable = new Observable<{ type: string; object: BABYLON.TransformNode }>()
 
   sendPositionsPending = false
   loadingDone = true

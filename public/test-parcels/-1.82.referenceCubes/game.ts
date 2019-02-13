@@ -8,8 +8,10 @@ greenMaterial.albedoColor = Color3.FromHexString('#00FF00')
 const blueMaterial = new Material()
 blueMaterial.albedoColor = Color3.FromHexString('#0000FF')
 
-function spawnAxis(pos: Vector3, rot: Quaternion) {
+function spawnAxis() {
   const axis = new Entity()
+  engine.addEntity(axis)
+
   const xAxis = new Entity(axis)
   const yAxis = new Entity(axis)
   const zAxis = new Entity(axis)
@@ -41,13 +43,6 @@ function spawnAxis(pos: Vector3, rot: Quaternion) {
     })
   )
 
-  const t = new Transform({
-    position: pos,
-    rotation: rot
-  })
-  axis.set(t)
-
-  engine.addEntity(axis)
   engine.addEntity(xAxis)
   engine.addEntity(yAxis)
   engine.addEntity(zAxis)
@@ -59,7 +54,7 @@ function spawnCube(position: Vector3, rotation: Vector3) {
   const ent = new Entity()
   const box = new BoxShape()
   const rot = Quaternion.Euler(rotation.x, rotation.y, rotation.z)
-  const axis = spawnAxis(position, rot)
+  const axis = spawnAxis()
   ent.set(
     new Transform({
       position,
@@ -67,8 +62,8 @@ function spawnCube(position: Vector3, rotation: Vector3) {
     })
   )
   ent.set(box)
-  axis.setParent(ent)
   engine.addEntity(ent)
+  axis.setParent(ent)
 }
 
 spawnCube(new Vector3(0, 5, 0), new Vector3(50, 0, 0))

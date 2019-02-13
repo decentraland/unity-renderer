@@ -210,8 +210,9 @@ export function initMonkeyLoader() {
 
 export function registerLoadingContext(sharedContext: SharedSceneContext) {
   registeredContext.set(sharedContext.domain, sharedContext)
+  sharedContext.onDisposeObservable.add(removeLoadingContext)
 }
 
-export function removeLoadingContext(sharedContext: SharedSceneContext) {
+function removeLoadingContext(sharedContext: SharedSceneContext) {
   registeredContext.delete(sharedContext.domain)
 }

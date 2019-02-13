@@ -1,5 +1,5 @@
 import { getFromLocalStorage, saveToLocalStorage } from 'atomicHelpers/localStorage'
-import { Observable } from 'babylonjs'
+import { Observable } from 'decentraland-ecs'
 
 export const getUserProfile = () => getFromLocalStorage('dcl-profile') || {}
 export const getBlockedUsers: () => Set<string> = () => new Set(getFromLocalStorage('dcl-blocked-users') || [])

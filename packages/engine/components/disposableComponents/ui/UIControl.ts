@@ -28,8 +28,6 @@ export abstract class UIControl<T, K extends BABYLON.GUI.Control> extends Dispos
       parent.fullscreenTexture.addControl(this.control)
     } else if (parent instanceof UIControl && 'addControl' in parent.control) {
       parent.control.addControl(this.control)
-    } else {
-      debugger
     }
   }
 }

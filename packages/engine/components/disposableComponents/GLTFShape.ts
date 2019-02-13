@@ -8,12 +8,24 @@ import { probe } from 'engine/renderer/ambientLights'
 import { DEBUG } from 'config'
 import { log } from 'util'
 import { Animator } from '../ephemeralComponents/Animator'
+import { deleteUnusedTextures } from 'engine/entities/loader'
+
+BABYLON.SceneLoader.OnPluginActivatedObservable.add(function(plugin) {
+  if (plugin instanceof BABYLON.GLTFFileLoader) {
+    plugin.animationStartMode = BABYLON.GLTFLoaderAnimationStartMode.NONE
+    plugin.compileMaterials = true
+    plugin.validate = true
+    plugin.animationStartMode = 0
+  }
+})
 
 export class GLTFShape extends DisposableComponent {
   src: string | null = null
   loadingDone = false
   assetContainerEntity = new Map<string, BABYLON.AssetContainer>()
   entityIsLoading = new Set<string>()
+
+  private didFillContributions = false
 
   onAttach(entity: BaseEntity): void {
     if (this.src && !this.entityIsLoading.has(entity.uuid)) {
@@ -24,7 +36,7 @@ export class GLTFShape extends DisposableComponent {
 
       const file = url.replace(baseUrl, '')
 
-      const loader: BABYLON.GLTFFileLoader = BABYLON.SceneLoader.LoadAssetContainer(
+      BABYLON.SceneLoader.LoadAssetContainer(
         baseUrl,
         file,
         scene,
@@ -57,7 +69,6 @@ export class GLTFShape extends DisposableComponent {
                     (t.url.startsWith('data:/') && t.url.includes(file))
                   ) {
                     assetContainer.textures.push(t)
-                    this.context && this.context.registerTexture(t)
                   }
                 }
               }
@@ -85,9 +96,19 @@ export class GLTFShape extends DisposableComponent {
 
             assetContainer.addAllToScene()
 
-            this.contributions.materialCount = assetContainer.materials.length
-            this.contributions.geometriesCount = assetContainer.geometries.length
-            this.contributions.textureCount = assetContainer.textures.length
+            // TODO: Remove this if after we instantiate GLTF
+            if (!this.didFillContributions) {
+              this.didFillContributions = true
+              assetContainer.materials.forEach($ => {
+                this.contributions.materials.add($)
+              })
+              assetContainer.geometries.forEach($ => {
+                this.contributions.geometries.add($)
+              })
+              assetContainer.textures.forEach($ => {
+                this.contributions.textures.add($)
+              })
+            }
 
             // This is weird. Verify what does this do.
             assetContainer.transformNodes.filter($ => $.name === '__root__').forEach($ => {
@@ -126,9 +147,7 @@ export class GLTFShape extends DisposableComponent {
 
           this.loadingDone = true
         }
-      ) as any
-
-      loader.animationStartMode = 0
+      )
     }
   }
 
@@ -149,6 +168,8 @@ export class GLTFShape extends DisposableComponent {
       cleanupAssetContainer(assetContainer)
       this.assetContainerEntity.delete(entity.uuid)
     }
+
+    deleteUnusedTextures()
   }
 
   async updateData(data: any): Promise<void> {
@@ -175,3 +196,32 @@ export class GLTFShape extends DisposableComponent {
 }
 
 DisposableComponent.registerClassId(CLASS_ID.GLTF_SHAPE, GLTFShape)
+
+BABYLON.Animation.AllowMatricesInterpolation = true
+
+/*
+const NAME = 'DCL_urlResolver'
+
+// tslint:disable-next-line:class-name
+export class DCL_urlResolver implements BABYLON.GLTF2.IGLTFLoaderExtension {
+  public readonly name = NAME
+  public enabled = true
+
+  private _loader: BABYLON.GLTF2.GLTFLoader
+
+  constructor(loader: BABYLON.GLTF2.GLTFLoader) {
+    this._loader = loader
+  }
+
+  public dispose() {
+    delete this._loader
+  }
+
+  _loadUriAsync(context: string, uri: string): null | Promise<ArrayBufferView> {
+    console.log('loader extension', context, uri)
+    return null
+  }
+}
+
+BABYLON.GLTF2.GLTFLoader.RegisterExtension(NAME, loader => new DCL_urlResolver(loader))
+*/

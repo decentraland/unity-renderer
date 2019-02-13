@@ -168,7 +168,7 @@ function findParentEntity<T extends BABYLON.Node & { isDCLEntity?: boolean }>(
 }
 
 export function interactWithScene(pointerEvent: 'pointerUp' | 'pointerDown', x: number, y: number, pointerId: number) {
-  const pickingResult = scene.pick(x, y)
+  const pickingResult = scene.pick(x, y, null, false)
 
   const mesh = pickingResult.pickedMesh
 

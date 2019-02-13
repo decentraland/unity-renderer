@@ -15,15 +15,15 @@
   "tsdoc": {
     "tsdocFlavor": "AEDoc"
   },
-  "author": "",
+  "author": "Decentraland",
   "license": "Apache 2.0",
   "files": [
     "dist",
     "types",
     "docs",
+    "LICENSE",
     "docs-yaml",
-    "artifacts",
-    "api-extractor.json"
+    "artifacts"
   ],
   "dependencies": {},
   "devDependencies": {}

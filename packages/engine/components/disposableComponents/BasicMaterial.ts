@@ -2,8 +2,9 @@ import { DisposableComponent, BasicShape } from './DisposableComponent'
 import { BaseEntity } from '../../entities/BaseEntity'
 import { validators } from '../helpers/schemaValidator'
 import { scene } from '../../renderer'
-import { CLASS_ID } from 'decentraland-ecs/src'
+import { CLASS_ID, Observer } from 'decentraland-ecs/src'
 import { TextureSamplingMode, TextureWrapping } from 'shared/types'
+import { deleteUnusedTextures } from 'engine/entities/loader'
 
 BABYLON.Effect.ShadersStore['dclShadelessVertexShader'] = `
   precision highp float;
@@ -56,11 +57,11 @@ const defaults = {
 export class BasicMaterial extends DisposableComponent {
   material: BABYLON.ShaderMaterial
 
-  meshObserver: BABYLON.Observer<{ type: string; object: BABYLON.TransformNode }>
+  meshObserver: Observer<{ type: string; object: BABYLON.TransformNode }>
 
   constructor(ctx, uuid) {
     super(ctx, uuid)
-    this.contributions.materialCount += 1
+    this.contributions.materials.add(this.material)
     this.material = new BABYLON.ShaderMaterial(
       '#' + this.uuid,
       scene,
@@ -109,6 +110,7 @@ export class BasicMaterial extends DisposableComponent {
 
   dispose() {
     this.material.dispose(false, false)
+    deleteUnusedTextures()
     super.dispose()
   }
 
@@ -128,11 +130,16 @@ export class BasicMaterial extends DisposableComponent {
         texture.wrapU = wrap
         texture.wrapV = wrap
 
+        this.contributions.textures.clear()
+        this.contributions.textures.add(texture)
+
         this.material.setTexture('textureSampler', texture)
       }
 
       const alphaTest = validators.float(data.alphaTest, defaults.alphaTest)
       this.material.setFloat('alphaTest', alphaTest)
+
+      deleteUnusedTextures()
     }
     this.loadingDone = true
   }

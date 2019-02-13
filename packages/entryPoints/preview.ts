@@ -8,7 +8,7 @@ import { initBabylonClient } from '../dcl'
 import { log } from '../engine/logger'
 import { bodyReadyFuture, engine } from '../engine/renderer/init'
 import { initShared } from '../shared'
-import { loadedParcelSceneWorkers } from '../shared/world/parcelSceneManager'
+import { loadedParcelSceneWorkers, enablePositionReporting } from '../shared/world/parcelSceneManager'
 import { ETHEREUM_NETWORK, DEBUG } from '../config'
 import { ILandToLoadableParcelScene, ILand, IScene, MappingsResponse } from '../shared/types'
 import { SceneWorker } from '../shared/world/SceneWorker'
@@ -52,6 +52,8 @@ async function initializePreview(userScene: ILand) {
 
   // we need closeParcelScenes to enable interactions in preview mode
   loadedParcelSceneWorkers.add(parcelSceneWorker)
+
+  enablePositionReporting()
 
   if (!didStartPosition) {
     // The 0,-15 rotation is a hack to put a player into a corner of the scene and look at the center
