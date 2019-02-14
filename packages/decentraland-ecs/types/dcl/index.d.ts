@@ -3924,6 +3924,38 @@ declare class Transform extends ObservableComponent {
 /**
  * @beta
  */
+declare class UIButtonShape extends UIShape {
+  id: string | null
+  opacity: number
+  fontFamily: string
+  fontSize: number
+  fontWeight: string
+  thickness: number
+  cornerRadius: number
+  width: string
+  height: string
+  top: string
+  left: string
+  color: string
+  background: string
+  hAlign: string
+  vAlign: string
+  paddingTop: string
+  paddingRight: string
+  paddingBottom: string
+  paddingLeft: string
+  shadowBlur: number
+  shadowOffsetX: number
+  shadowOffsetY: number
+  shadowColor: string
+  text: string
+  visible: boolean
+  isPointerBlocker: boolean
+}
+
+/**
+ * @beta
+ */
 declare class UIContainerRectShape extends UIShape {
   id: string | null
   opacity: number

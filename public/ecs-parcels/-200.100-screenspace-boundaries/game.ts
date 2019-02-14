@@ -9,18 +9,19 @@ textShape.fontSize = 30
 textShape.height = '25px'
 
 const close = new Entity()
-const closeShape = new UIImageShape(screenSpaceUI)
-closeShape.source = './images/close-button.png'
-closeShape.sourceWidth = '483px'
-closeShape.sourceHeight = '148px'
-closeShape.sourceTop = '0px'
-closeShape.sourceLeft = '0px'
+const closeShape = new UIButtonShape(screenSpaceUI)
+closeShape.text = 'Close UI'
+closeShape.fontSize = 15
+closeShape.color = 'black'
+closeShape.background = 'yellow'
+closeShape.cornerRadius = 10
+closeShape.thickness = 1
 closeShape.width = '120px'
-closeShape.height = '50px'
+closeShape.height = '30px'
 closeShape.top = '80px'
 close.set(
   new OnClick(() => {
-    log('clicked on the close image')
+    log('clicked on the close button')
     screenSpaceUI.visible = false
   })
 )

@@ -27,6 +27,7 @@ import './disposableComponents/ui/UIImage'
 import './disposableComponents/ui/UIInputText'
 import './disposableComponents/ui/UISlider'
 import './disposableComponents/ui/UIText'
+import './disposableComponents/ui/UIButton'
 
 import { CLASS_ID } from 'decentraland-ecs/src'
 import { DEBUG, PREVIEW, EDITOR } from 'config'

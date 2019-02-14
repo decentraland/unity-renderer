@@ -2,7 +2,7 @@ import { ObservableComponent, DisposableComponent, getComponentId } from '../ecs
 import { CLASS_ID } from './Components'
 
 /**
- * @beta
+ * @alpha
  */
 export abstract class UIShape extends ObservableComponent {
   /**
@@ -45,7 +45,7 @@ export class UIFullScreenShape extends UIShape {
 }
 
 /**
- * @beta
+ * @alpha
  */
 @DisposableComponent('engine.shape', CLASS_ID.UI_WORLD_SPACE_SHAPE)
 export class UIWorldSpaceShape extends UIShape {
@@ -67,7 +67,7 @@ export class UIWorldSpaceShape extends UIShape {
 }
 
 /**
- * @beta
+ * @alpha
  */
 @DisposableComponent('engine.shape', CLASS_ID.UI_SCREEN_SPACE_SHAPE)
 export class UIScreenSpaceShape extends UIShape {
@@ -83,7 +83,7 @@ export class UIScreenSpaceShape extends UIShape {
 }
 
 /**
- * @beta
+ * @alpha
  */
 @DisposableComponent('engine.shape', CLASS_ID.UI_CONTAINER_RECT)
 export class UIContainerRectShape extends UIShape {
@@ -137,7 +137,7 @@ export class UIContainerRectShape extends UIShape {
 }
 
 /**
- * @beta
+ * @alpha
  */
 @DisposableComponent('engine.shape', CLASS_ID.UI_CONTAINER_STACK)
 export class UIContainerStackShape extends UIShape {
@@ -188,7 +188,91 @@ export class UIContainerStackShape extends UIShape {
 }
 
 /**
- * @beta
+ * @alpha
+ */
+@DisposableComponent('engine.shape', CLASS_ID.UI_BUTTON_SHAPE)
+export class UIButtonShape extends UIShape {
+  @ObservableComponent.field
+  id: string | null = null
+
+  @ObservableComponent.field
+  opacity: number = 1
+
+  @ObservableComponent.field
+  fontFamily: string = 'Arial'
+
+  @ObservableComponent.field
+  fontSize: number = 30
+
+  @ObservableComponent.field
+  fontWeight: string = 'normal'
+
+  @ObservableComponent.field
+  thickness: number = 0
+
+  @ObservableComponent.field
+  cornerRadius: number = 0
+
+  @ObservableComponent.field
+  width: string = '100%'
+
+  @ObservableComponent.field
+  height: string = '100%'
+
+  @ObservableComponent.field
+  top: string = '0px'
+
+  @ObservableComponent.field
+  left: string = '0px'
+
+  @ObservableComponent.field
+  color: string = 'white'
+
+  @ObservableComponent.field
+  background: string = 'black'
+
+  @ObservableComponent.field
+  hAlign: string = 'center'
+
+  @ObservableComponent.field
+  vAlign: string = 'center'
+
+  @ObservableComponent.field
+  paddingTop: string = '0px'
+
+  @ObservableComponent.field
+  paddingRight: string = '0px'
+
+  @ObservableComponent.field
+  paddingBottom: string = '0px'
+
+  @ObservableComponent.field
+  paddingLeft: string = '0px'
+
+  @ObservableComponent.field
+  shadowBlur: number = 0
+
+  @ObservableComponent.field
+  shadowOffsetX: number = 0
+
+  @ObservableComponent.field
+  shadowOffsetY: number = 0
+
+  @ObservableComponent.field
+  shadowColor: string = '#fff'
+
+  @ObservableComponent.field
+  text: string = 'button'
+
+  @ObservableComponent.field
+  visible: boolean = true
+
+  @ObservableComponent.field
+  isPointerBlocker: boolean = false
+}
+
+/**
+ * @alpha
  */
 @DisposableComponent('engine.shape', CLASS_ID.UI_TEXT_SHAPE)
 export class UITextShape extends UIShape {
@@ -290,7 +374,7 @@ export class UITextShape extends UIShape {
 }
 
 /**
- * @beta
+ * @alpha
  */
 @DisposableComponent('engine.shape', CLASS_ID.UI_INPUT_TEXT_SHAPE)
 export class UIInputTextShape extends UIShape {
@@ -392,7 +476,7 @@ export class UIInputTextShape extends UIShape {
 }
 
 /**
- * @beta
+ * @alpha
  */
 @DisposableComponent('engine.shape', CLASS_ID.UI_IMAGE_SHAPE)
 export class UIImageShape extends UIShape {
@@ -455,7 +539,7 @@ export class UIImageShape extends UIShape {
 }
 
 /**
- * @beta
+ * @alpha
  */
 @DisposableComponent('engine.shape', CLASS_ID.UI_SLIDER_SHAPE)
 export class UISliderShape extends UIShape {
