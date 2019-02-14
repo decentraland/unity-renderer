@@ -407,13 +407,18 @@ export async function positionCamera(opts: PlayerCamera = null) {
   const camera = scene.activeCamera as BABYLON.FreeCamera
 
   if (opts) {
-    camera.position.set(opts.from[0], opts.from[1], opts.from[2])
+    gridToWorld(opts.from[0], opts.from[2], camera.position)
+    camera.position.y = opts.from[1]
 
     if (!camera.rotationQuaternion) {
       camera.rotationQuaternion = BABYLON.Quaternion.Identity()
     }
 
-    LookAtRef(camera, new BABYLON.Vector3(opts.lookAt[0], opts.lookAt[1], opts.lookAt[2]), camera.rotationQuaternion)
+    const at = new BABYLON.Vector3()
+    gridToWorld(opts.lookAt[0], opts.lookAt[2], at)
+    at.y = opts.lookAt[1]
+
+    LookAtRef(camera, at, camera.rotationQuaternion)
     camera._getViewMatrix()
     camera.update()
   }
@@ -421,7 +426,8 @@ export async function positionCamera(opts: PlayerCamera = null) {
   await untilNextFrame()
 
   if (opts) {
-    camera.position.set(opts.from[0], opts.from[1], opts.from[2])
+    gridToWorld(opts.from[0], opts.from[2], camera.position)
+    camera.position.y = opts.from[1]
   }
 
   reposition()

@@ -7360,15 +7360,8 @@
       "members": {
         "__constructor": {
           "kind": "constructor",
-          "signature": "constructor(_parent?: Entity | null, name?: string | undefined);",
+          "signature": "constructor(name?: string | undefined);",
           "parameters": {
-            "_parent": {
-              "name": "_parent",
-              "description": [],
-              "isOptional": true,
-              "isSpread": false,
-              "type": "Entity | null"
-            },
             "name": {
               "name": "name",
               "description": [],

@@ -14,7 +14,7 @@ const box = new BoxShape()
 const sphere = new SphereShape()
 
 function makeBox(parent: Entity, x: number, y: number, z: number, color?: Material) {
-  const ent = new Entity(parent)
+  const ent = new Entity()
   ent.set(
     new Transform({
       position: new Vector3(x, y, z)
@@ -23,11 +23,12 @@ function makeBox(parent: Entity, x: number, y: number, z: number, color?: Materi
   color && ent.set(color)
   ent.set(box)
   engine.addEntity(ent)
+  ent.setParent(parent)
   return ent
 }
 
 function makeSphere(parent: Entity, x: number, y: number, z: number, color?: Material) {
-  const ent = new Entity(parent)
+  const ent = new Entity()
   ent.set(
     new Transform({
       position: new Vector3(x, y, z)
@@ -36,6 +37,7 @@ function makeSphere(parent: Entity, x: number, y: number, z: number, color?: Mat
   ent.set(sphere)
   color && ent.set(color)
   engine.addEntity(ent)
+  ent.setParent(parent)
   return ent
 }
 
@@ -60,8 +62,9 @@ makeSphere(root, 3, 1.25, 5, materialB)
   .scale.set(1.25, 1.25, 1.25)
 
 {
-  const newRoot = new Entity(root)
+  const newRoot = new Entity()
   engine.addEntity(newRoot)
+  newRoot.setParent(root)
   newRoot.getOrCreate(Transform).position.set(0, 1, 10)
   makeBox(newRoot, 0.5, 0.5, 0.5, materialA)
   makeBox(newRoot, 9.5, 0.5, 9.5, materialB)
@@ -71,8 +74,9 @@ makeSphere(root, 3, 1.25, 5, materialB)
 }
 
 {
-  const newRoot = new Entity(root)
+  const newRoot = new Entity()
   engine.addEntity(newRoot)
+  newRoot.setParent(root)
   newRoot.getOrCreate(Transform).position.set(-10, 2, 10)
 
   makeBox(newRoot, 0.5, 0.5, 0.5, materialA)

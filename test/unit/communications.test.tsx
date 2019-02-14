@@ -153,7 +153,7 @@ describe('Communications', function() {
   describe('onPositionUpdate()', () => {
     it('should update current position and connections', () => {
       const [context] = createContext()
-      const position = [0, 0, 10.3, 0, 0, 0, 0] as Position
+      const position = [0, 0, 16.3, 0, 0, 0, 0] as Position
       onPositionUpdate(context, position)
       expect(context.currentPosition.position).to.deep.equal(position)
       expect(context.currentPosition.parcel).to.deep.equal({ x: 0, z: 1 })

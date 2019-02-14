@@ -23,8 +23,8 @@ loadTestParcel('Crocs', 200, 10, function(root, futureParcelScene) {
   // 1 })
 
   saveScreenshot(`crocs.png`, {
-    from: [1997, 1, 105],
-    lookAt: [2011, -1, 105]
+    from: [199.7, 1, 10.5],
+    lookAt: [201.1, -1, 10.5]
   })
 
   wait(10)

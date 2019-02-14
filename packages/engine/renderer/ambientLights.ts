@@ -40,6 +40,7 @@ let sunInclination = -0.31
   checkerboardMaterial.gridRatio = 1
   checkerboardMaterial.mainColor = BABYLON.Color3.Gray()
   checkerboardMaterial.lineColor = BABYLON.Color3.White()
+  checkerboardMaterial.majorUnitFrequency = 8
   checkerboardMaterial.zOffset = 1
   checkerboardMaterial.fogEnabled = false
 

@@ -10,9 +10,9 @@ blueMaterial.albedoColor = Color3.FromHexString('#0000FF')
 
 function spawnAxis(pos: Vector3) {
   const axis = new Entity()
-  const xAxis = new Entity(axis)
-  const yAxis = new Entity(axis)
-  const zAxis = new Entity(axis)
+  const xAxis = new Entity()
+  const yAxis = new Entity()
+  const zAxis = new Entity()
 
   xAxis.set(box)
   xAxis.set(redMaterial)
@@ -51,6 +51,10 @@ function spawnAxis(pos: Vector3) {
   engine.addEntity(xAxis)
   engine.addEntity(yAxis)
   engine.addEntity(zAxis)
+
+  xAxis.setParent(axis)
+  yAxis.setParent(axis)
+  zAxis.setParent(axis)
 
   return axis
 }

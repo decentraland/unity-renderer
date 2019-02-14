@@ -21,26 +21,26 @@ describe('position unit tests', function() {
     expect(wPosition.z).to.eq(0)
 
     gridToWorld(-1, 1, wPosition)
-    expect(wPosition.x).to.eq(-10)
+    expect(wPosition.x).to.eq(-16)
     expect(wPosition.y).to.eq(0)
-    expect(wPosition.z).to.eq(10)
+    expect(wPosition.z).to.eq(16)
 
     gridToWorld(1, -1, wPosition)
-    expect(wPosition.x).to.eq(10)
+    expect(wPosition.x).to.eq(16)
     expect(wPosition.y).to.eq(0)
-    expect(wPosition.z).to.eq(-10)
+    expect(wPosition.z).to.eq(-16)
   })
 
   // (0,0)
-  verifyW2G(10, 0, 1, 0)
+  verifyW2G(16, 0, 1, 0)
   verifyW2G(5, 5, 0, 0)
   verifyW2G(9, 9, 0, 0)
 
-  verifyW2G(6, 36, 0, 3)
-  verifyW2G(6, 36, 0, 3)
+  verifyW2G(6, 36, 0, 2)
+  verifyW2G(6, 36, 0, 2)
 
-  verifyW2G(6, 46, 0, 4)
-  verifyW2G(6, 46, 0, 4)
+  verifyW2G(6, 46, 0, 2)
+  verifyW2G(6, 46, 0, 2)
 
   verifyW2G(0, 0, 0, 0)
   verifyW2G(-5, 5, -1, 0)
@@ -48,6 +48,6 @@ describe('position unit tests', function() {
 
   verifyW2G(5, -5, 0, -1)
 
-  verifyW2G(-15, 15, -2, 1)
-  verifyW2G(-10, 10, -1, 1)
+  verifyW2G(-17, 17, -2, 1)
+  verifyW2G(-10, 10, -1, 0)
 })

@@ -22,12 +22,8 @@ export class Entity {
   // @internal
   private _parent: Entity | null = null
 
-  constructor(_parent: Entity | null = null, public name?: string) {
-    if (!_parent && this.engine) {
-      this._parent = this.engine.rootEntity
-    } else {
-      this._parent = _parent
-    }
+  constructor(public name?: string) {
+    // stub
   }
 
   /**

@@ -1,5 +1,9 @@
 import { engine, Entity, Transform, Vector3, TextShape } from 'decentraland-ecs'
 
+const root = new Entity()
+engine.addEntity(root)
+root.getOrCreate(Transform).scale.setAll(1.6)
+
 function createText(position: Vector3, text: string, params: any) {
   const ent = new Entity()
   const shape = new TextShape(text)
@@ -11,6 +15,7 @@ function createText(position: Vector3, text: string, params: any) {
     })
   )
   engine.addEntity(ent)
+  ent.setParent(root)
 }
 
 createText(new Vector3(7, 2, 8.01), 'Hello world!', { color: '#000000', fontSize: 70 })

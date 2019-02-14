@@ -1,47 +1,47 @@
 import { loadTestParcel, saveScreenshot } from '../testHelpers'
 
-const realX = -10
-const realY = 810
+const realX = -1
+const realY = 81
 
 loadTestParcel('Sky and Lights visual validation', -1, 81, function(root, futureParcelScene) {
   saveScreenshot(`skyAndLights.0.png`, {
-    from: [realX + 10, 2, realY + 0],
-    lookAt: [realX + 5, 2, realY + 5]
+    from: [realX + 1, 2, realY],
+    lookAt: [realX + 0.5, 2, realY + 0.5]
   })
 
   saveScreenshot(`skyAndLights.1.png`, {
-    from: [realX + 10, 2, realY - 10],
-    lookAt: [realX + 5, 2, realY + 5]
+    from: [realX + 1, 2, realY - 1],
+    lookAt: [realX + 0.5, 2, realY + 0.5]
   })
 
   saveScreenshot(`skyAndLights.2.png`, {
     from: [realX + 90000000, 3, realY + 90000000],
-    lookAt: [realX + 0, 0, realY + 0]
+    lookAt: [realX, 0, realY]
   })
 
   saveScreenshot(`skyAndLights.3.png`, {
-    from: [realX + 0, 2, realY - 10],
-    lookAt: [realX + 5, 2, realY + 5]
+    from: [realX, 2, realY - 1],
+    lookAt: [realX + 0.5, 2, realY + 0.5]
   })
 
   saveScreenshot(`skyAndLights.4.png`, {
     from: [realX - 90000000, 3, realY + 90000000],
-    lookAt: [realX + 0, 0, realY + 0]
+    lookAt: [realX, 0, realY]
   })
 
   saveScreenshot(`skyAndLights.5.png`, {
     from: [realX - 90000000, 3, realY - 90000000],
-    lookAt: [realX + 0, 0, realY + 0]
+    lookAt: [realX, 0, realY]
   })
 
   saveScreenshot(`skyAndLights.6.png`, {
     from: [realX + 90000000, 3, realY - 90000000],
-    lookAt: [realX + 0, 0, realY + 0]
+    lookAt: [realX, 0, realY]
   })
 
   saveScreenshot(`skyAndLights.7.png`, {
     from: [realX - 90000000, 3, realY - 90000000],
-    lookAt: [realX + 90000000, 0, realY + 0]
+    lookAt: [realX + 90000000, 0, realY]
   })
 
   saveScreenshot(`skyAndLights.8.png`, {
@@ -50,7 +50,7 @@ loadTestParcel('Sky and Lights visual validation', -1, 81, function(root, future
   })
 
   saveScreenshot(`sun.png`, {
-    from: [realX + 0, 10, realY + 0],
-    lookAt: [realX + 1000, 1000, realY + 1000]
+    from: [realX, 1, realY],
+    lookAt: [realX + 100, 100, realY + 100]
   })
 })

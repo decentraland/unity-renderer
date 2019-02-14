@@ -12,9 +12,9 @@ function spawnAxis() {
   const axis = new Entity()
   engine.addEntity(axis)
 
-  const xAxis = new Entity(axis)
-  const yAxis = new Entity(axis)
-  const zAxis = new Entity(axis)
+  const xAxis = new Entity()
+  const yAxis = new Entity()
+  const zAxis = new Entity()
 
   xAxis.set(box)
   xAxis.set(redMaterial)
@@ -46,6 +46,10 @@ function spawnAxis() {
   engine.addEntity(xAxis)
   engine.addEntity(yAxis)
   engine.addEntity(zAxis)
+
+  xAxis.setParent(axis)
+  yAxis.setParent(axis)
+  zAxis.setParent(axis)
 
   return axis
 }

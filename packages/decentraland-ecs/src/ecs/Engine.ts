@@ -24,7 +24,7 @@ type SystemEntry = { system: ISystem; priority: number }
  * @internal
  */
 function createRootEntity() {
-  const entity = new Entity(null, 'scene')
+  const entity = new Entity('scene')
   ;(entity as any).uuid = '0'
   return entity
 }

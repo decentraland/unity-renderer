@@ -1,8 +1,11 @@
-import { Component, ISystem, engine, Entity, BoxShape, Vector3, Transform } from 'decentraland-ecs'
+import { Component, ISystem, engine, Entity, BoxShape, Vector3, Transform, Material, Color3 } from 'decentraland-ecs'
 
 const G = 6.674e-11
 const boxShape = new BoxShape()
 const tempVec3 = new Vector3()
+const material = new Material()
+material.albedoColor = Color3.Black()
+material.emissiveColor = Color3.White()
 
 @Component('physics')
 export class Physics {
@@ -54,9 +57,9 @@ export class BoundaryCheckSystem implements ISystem {
   update() {
     for (let entity of this.group.entities) {
       const { position } = entity.get(Transform)
-      if (position.x > 9.5) position.x = 9.5
-      if (position.y > 9.5) position.y = 9.5
-      if (position.z > 9.5) position.z = 9.5
+      if (position.x > 15.5) position.x = 15.5
+      if (position.y > 15.5) position.y = 15.5
+      if (position.z > 15.5) position.z = 15.5
       if (position.x < 0.5) position.x = 0.5
       if (position.y < 0.5) position.y = 0.5
       if (position.z < 0.5) position.z = 0.5
@@ -76,6 +79,7 @@ function spawn(x: number, y: number, z: number, rigid: boolean) {
 
   cube.set(physics)
   cube.set(transform)
+  cube.set(material)
 
   if (physics.rigid) {
     cube.set(boxShape)
@@ -94,8 +98,8 @@ engine.addSystem(new BoundaryCheckSystem())
 
 for (let x = 0; x < 8; x++) {
   for (let z = 0; z < 8; z++) {
-    spawn(Math.random() + 4.5, 5 + Math.random() / 2, Math.random() * 8 + 1, false)
+    spawn(Math.random() + 7.5, 5 + Math.random() / 2, Math.random() * 15 + 1, false)
   }
 }
 
-spawn(4, 5, 4, true)
+spawn(8, 5, 8, true)

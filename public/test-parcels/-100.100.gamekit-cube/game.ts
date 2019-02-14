@@ -32,7 +32,7 @@ material.emissiveColor = Color3.Yellow()
 
 cube.set(material)
 cube.set(new Transform())
-cube.get(Transform).position.set(5, 1, 5)
+cube.get(Transform).position.set(8, 1, 8)
 cube.set(new BoxShape())
 
 cube.set(

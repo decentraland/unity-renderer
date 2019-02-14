@@ -39,9 +39,9 @@ export namespace parcelLimits {
   export const height = 20
   export const geometries = 200
 
-  export const parcelSize = 10 /* meters */
+  export const parcelSize = 16 /* meters */
 
-  export const visibleRadius = 10
+  export const visibleRadius = 6
 
   export const maxParcelX = 3000
   export const maxParcelZ = 3000

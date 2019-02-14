@@ -1149,7 +1149,7 @@ declare class Entity {
   alive: boolean
   readonly uuid: string
   readonly components: Record<string, any>
-  constructor(_parent?: Entity | null, name?: string | undefined)
+  constructor(name?: string | undefined)
   /**
    * Adds or replaces a component in the entity.
    * @param component - component instance.

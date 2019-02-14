@@ -4,12 +4,12 @@ loadTestParcel('transparent material', -100, 114, function(root, futureParcelSce
   wait(4000)
 
   saveScreenshot(`transparent.png`, {
-    from: [-998, 1.6, 1146],
-    lookAt: [-996, 1.6, 1145]
+    from: [-99.8, 1.6, 114.6],
+    lookAt: [-99.6, 1.6, 114.5]
   })
 
   saveScreenshot(`transparent.2.png`, {
-    from: [-992, 1.6, 1146],
-    lookAt: [-996, 1.6, 1145]
+    from: [-99.2, 1.6, 114.6],
+    lookAt: [-99.6, 1.6, 114.5]
   })
 })

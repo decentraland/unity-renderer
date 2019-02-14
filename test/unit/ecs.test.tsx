@@ -706,8 +706,8 @@ describe('ECS', () => {
         })
 
         saveScreenshot(`gamekit-gltf.png`, {
-          from: [-1000, 1.6, 2340],
-          lookAt: [-995, 1, 2345]
+          from: [-100, 1.6, 234],
+          lookAt: [-99.5, 1, 234.5]
         })
 
         wait(100)
@@ -798,7 +798,10 @@ describe('ECS', () => {
       100,
       ({ logs }) => {
         it('locate camera', async () => {
-          vrCamera.position.set(-995, 1, 1000)
+          await positionCamera({
+            from: [-99.5, 1, 100.0],
+            lookAt: [-99.5, 1, 101.0]
+          })
           vrCamera.rotationQuaternion.copyFrom(BABYLON.Quaternion.Identity())
           expect(logs.length).to.eq(0)
         })
@@ -1114,8 +1117,8 @@ describe('ECS', () => {
     testScene(-200, 100, ({ parcelScenePromise, sceneHost, logs }) => {
       let scene = null
       let screenSpace: UIScreenSpace | null = null
-      const insideCamera: PlayerCamera = { from: [-1999, 1.6, 1001], lookAt: [-1995, 1, 1005] }
-      const outsideCamera: PlayerCamera = { from: [-2010, 1.6, 1015], lookAt: [-2000, 1, 1020] }
+      const insideCamera: PlayerCamera = { from: [-199.9, 1.6, 100.1], lookAt: [-199.5, 1, 100.5] }
+      const outsideCamera: PlayerCamera = { from: [-201.0, 1.6, 101.5], lookAt: [-200.0, 1, 102.0] }
 
       it('locate camera', async () => {
         vrCamera.position.set(-1999, 1, 1001)
@@ -1150,14 +1153,14 @@ describe('ECS', () => {
         await sleep(500)
         scene.checkUserInPlace()
 
-        expect(screenSpace.isEnabled).to.eq(true)
+        expect(screenSpace.isEnabled).to.eq(true, 'screen space must be enabled')
 
         await sleep(100)
         sceneHost.fireEvent({ type: 'TEST_TRIGGER' })
 
         await sleep(500)
 
-        expect(screenSpace.data.visible).to.eq(true)
+        expect(screenSpace.data.visible).to.eq(true, 'screen space must be visible')
       })
 
       wait(100)
@@ -1291,8 +1294,8 @@ describe('ECS', () => {
       })
 
       saveScreenshot(`material-billboard.png`, {
-        from: [-10, 1.6, 730],
-        lookAt: [-5, 1.6, 735]
+        from: [-1, 1.6, 73],
+        lookAt: [-0.5, 1.6, 73.5]
       })
 
       wait(100)
