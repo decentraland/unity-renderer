@@ -3922,7 +3922,7 @@ declare class Transform extends ObservableComponent {
 }
 
 /**
- * @beta
+ * @alpha
  */
 declare class UIButtonShape extends UIShape {
   id: string | null
@@ -3954,7 +3954,7 @@ declare class UIButtonShape extends UIShape {
 }
 
 /**
- * @beta
+ * @alpha
  */
 declare class UIContainerRectShape extends UIShape {
   id: string | null
@@ -3976,7 +3976,7 @@ declare class UIContainerRectShape extends UIShape {
 }
 
 /**
- * @beta
+ * @alpha
  */
 declare class UIContainerStackShape extends UIShape {
   id: string | null
@@ -3997,7 +3997,7 @@ declare class UIContainerStackShape extends UIShape {
 }
 
 /**
- * @beta
+ * @alpha
  */
 declare class UIImageShape extends UIShape {
   id: string | null
@@ -4022,7 +4022,7 @@ declare class UIImageShape extends UIShape {
 }
 
 /**
- * @beta
+ * @alpha
  */
 declare class UIInputTextShape extends UIShape {
   id: string | null
@@ -4060,7 +4060,7 @@ declare class UIInputTextShape extends UIShape {
 }
 
 /**
- * @beta
+ * @alpha
  */
 declare class UIScreenSpaceShape extends UIShape {
   id: string | null
@@ -4069,7 +4069,7 @@ declare class UIScreenSpaceShape extends UIShape {
 }
 
 /**
- * @beta
+ * @alpha
  */
 declare abstract class UIShape extends ObservableComponent {
   /**
@@ -4082,7 +4082,7 @@ declare abstract class UIShape extends ObservableComponent {
 }
 
 /**
- * @beta
+ * @alpha
  */
 declare class UISliderShape extends UIShape {
   id: string | null
@@ -4116,7 +4116,7 @@ declare class UISliderShape extends UIShape {
 }
 
 /**
- * @beta
+ * @alpha
  */
 declare class UITextShape extends UIShape {
   id: string | null
@@ -4154,7 +4154,7 @@ declare class UITextShape extends UIShape {
 }
 
 /**
- * @beta
+ * @alpha
  */
 declare class UIWorldSpaceShape extends UIShape {
   id: string | null

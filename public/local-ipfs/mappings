@@ -275,10 +275,6 @@
         "hash": "Qm44Scpo2DjRb2seThw4PC5uusU2qH23AyGjcNuWkjoQaNRg4u878DKBKgXY6nfxCymBkCnoXqBbB1mBwJPVeNhmY3"
       },
       {
-        "file": "scene.js",
-        "hash": "Qm4XNHWgqgEad6RaWVDfUk4J24mia5gFsnkwKnJHW5ZxHhU4xm8T55w5kQ1Y9MgNj5cnouzrbxx6Dj2m17eS12xWrc"
-      },
-      {
         "file": "scene.json",
         "hash": "Qm2N1vBGbtKWns2c6U4z5LKB5tDXTdnyhfUn7LWB9GAcbbKax6YXHUzQ2cTSUT3tdfWjxFfne43JVK7kRdeGfD8jut"
       }
@@ -2289,10 +2285,6 @@
         "hash": "Qm5jCFDnoRBkWSSHdXJVtjDQrRkJjRL4Ka29rVKDKR7JnuY6cPE7fj2ThkFHCo6fhqu3ZRCKqFiPxQ8ZhsgphgU328"
       },
       {
-        "file": "scene.js",
-        "hash": "Qm32TgzhUvNUX3QWWbbgLTwcKVerv9YK9jKhdFoLZiALVvPDmMjgrgNFAsrvkA4buQc7Fjg6H9TjHi464N4kSaKCzV"
-      },
-      {
         "file": "scene.json",
         "hash": "Qm47MqpzC2DveNmDxJZ1NJttqBFBjfnZairWroHQZs9ddvV4dNAgYAWKMeKjgC8MZxaVDcrdUxrwyMw7TBEon1xrUg"
       }
@@ -2371,10 +2363,6 @@
         "hash": "Qm3iuNaUQV9JgAX9pGAXrUgRvmPBdHr3e6hF2gcZQKx5NgLyY27iCsmGZBTa5nVMqb8DV6jqAmvnciFmnjoNDFRsgr"
       },
       {
-        "file": "scene.js",
-        "hash": "Qm41XHQr21voCRMhGBRf9xFy625iibksz3YwJqCgeLL5oYBTad4gd6Wmeik6aoosqfA2qQEspvezY1RVbeoPpboYk4"
-      },
-      {
         "file": "scene.json",
         "hash": "Qm3s6C6FCka778KUn6i3oVhSX32L1oaYxnLPKBpGYdTQ1sXtwHDeie5emoQWAt6ygfDDTnXyKMKNBD2PpV7xsoa7yL"
       },
@@ -2398,10 +2386,6 @@
         "hash": "Qm3TiogEr7JZ1dgaxKidnEDX3MbHy7KFdKqcddWua9MMiu6NokkxGhXWuanFd9nyyAHNurCwbPHYc736Wht35y1ZnR"
       },
       {
-        "file": "scene.js",
-        "hash": "Qm5FovCMuoipQuMQj1LkpxKt14bHCAMsHKDDoyvpVZVbMDTMijuxyYqRnyiEUEKY8T8WesHiBvmM6gaJfaaJRezmgv"
-      },
-      {
         "file": "scene.json",
         "hash": "Qm3Dgq1v3PRoLrobrTM5JeHjCveBJJPmdrmAPnpfzrEMkwpPa7ndbgKeYfiBgbHxaLkkexPAWPGeeQturnZNuW3qwi"
       }
@@ -2423,10 +2407,6 @@
       {
         "file": "img #7 @ $1.png",
         "hash": "Qm3PAWmzDGd9HUySiuPTJmM37BYnu8ABX6Zu2mqh8c3CEQM7s9v65VQNDuqr8prJXtc2q7gg5yr2EXhWVahW2XyKR6"
-      },
-      {
-        "file": "scene.js",
-        "hash": "Qm4S12WBCm91dFxVHsWdGAdtceNwfEAA7Bm5G3MMaBZfab5kzQDaguFzfhSnC8PyLWfpRdGJALN3oqvAjKfpoemZwd"
       },
       {
         "file": "scene.json",
@@ -2454,10 +2434,6 @@
       {
         "file": "images/plus.png",
         "hash": "Qm2JrbADc5QPpfWbzYFz2bDh4v2W14hhKmzj4KwC1MSVvDPrzShRGBbGjHJZvRvEQ6wXoiymqox5iaipcRVNe6ygpJ"
-      },
-      {
-        "file": "scene.js",
-        "hash": "QmnyPz6Tfaj6QnPFhPwpBr6Yb8oC7oCxHZvkDvHnM3wzVwoeiN7mHFNDDaoU1kTsQEfnuxLcR6AFJ28BXDF9Xe92d"
       },
       {
         "file": "scene.json",
@@ -4564,10 +4540,6 @@
     "root_cid": "QmKuHKCRkJQvgcc6sqXRSpAgXaV2nNxr8DoLfv5ex9v4wqyCMpHxxm2pr9r9G4C4eSBtUJWjBWu5sTWv68NXVVF8f",
     "contents": [
       {
-        "file": "scene.js",
-        "hash": "Qm22Syet8BNyesJBNr4eLJawcmqVL916TMTtUvAjcrwktpSxM9XTj3kYMHXNps554mm1kzFiBkgRgnVeVTgKhbkgfV"
-      },
-      {
         "file": "scene.json",
         "hash": "Qm4dTdbVyCD2ti1u7q2xhx8fB1HXybjiKpGpKv1LSja6sKccyMXRVxG1QbLgo2HmuzYfRR69cLGCzq58ey2bK3G1dx"
       },
@@ -4757,10 +4729,6 @@
       {
         "file": "models/title.obj",
         "hash": "Qm5UbCVRygnWGANKtpLFc1vfDmhV2vit8ejcihyCtkyY43g7Yu5Y3F4iUYSqXEGChyBpZKiCKHL6P8gsumfooZijJn"
-      },
-      {
-        "file": "scene.js",
-        "hash": "QmszGToAfw5ydq3zyq3pJ5vughP42x5phN49SSD4evZEpgfRwkMw6kHsAqtNy7WRumRCRbrn954kGKz9BANzUv8QL"
       },
       {
         "file": "scene.json",
@@ -4962,10 +4930,6 @@
         "hash": "Qm5UbCVRygnWGANKtpLFc1vfDmhV2vit8ejcihyCtkyY43g7Yu5Y3F4iUYSqXEGChyBpZKiCKHL6P8gsumfooZijJn"
       },
       {
-        "file": "scene.js",
-        "hash": "QmszGToAfw5ydq3zyq3pJ5vughP42x5phN49SSD4evZEpgfRwkMw6kHsAqtNy7WRumRCRbrn954kGKz9BANzUv8QL"
-      },
-      {
         "file": "scene.json",
         "hash": "Qm62HYb2PKMsKLdjjJQzwKhh4RWxMqscVGLbpbANtL5Q6TQi1B9HjSHZWoegSimnfnypKE2V7t4FQmqaZMrpjViQfY"
       },
@@ -5163,10 +5127,6 @@
       {
         "file": "models/title.obj",
         "hash": "Qm5UbCVRygnWGANKtpLFc1vfDmhV2vit8ejcihyCtkyY43g7Yu5Y3F4iUYSqXEGChyBpZKiCKHL6P8gsumfooZijJn"
-      },
-      {
-        "file": "scene.js",
-        "hash": "QmszGToAfw5ydq3zyq3pJ5vughP42x5phN49SSD4evZEpgfRwkMw6kHsAqtNy7WRumRCRbrn954kGKz9BANzUv8QL"
       },
       {
         "file": "scene.json",
@@ -5368,10 +5328,6 @@
         "hash": "Qm5UbCVRygnWGANKtpLFc1vfDmhV2vit8ejcihyCtkyY43g7Yu5Y3F4iUYSqXEGChyBpZKiCKHL6P8gsumfooZijJn"
       },
       {
-        "file": "scene.js",
-        "hash": "QmszGToAfw5ydq3zyq3pJ5vughP42x5phN49SSD4evZEpgfRwkMw6kHsAqtNy7WRumRCRbrn954kGKz9BANzUv8QL"
-      },
-      {
         "file": "scene.json",
         "hash": "Qm62HYb2PKMsKLdjjJQzwKhh4RWxMqscVGLbpbANtL5Q6TQi1B9HjSHZWoegSimnfnypKE2V7t4FQmqaZMrpjViQfY"
       },
@@ -5403,10 +5359,6 @@
     "root_cid": "Qm4BjwvVXhdomJNzca74PZGQ8Atd22YCoLKrJKWmwpYcRseJYr3nvgzHpWPujuqkZXLQTps3j7EtwUgqu8ZtiTcQWV",
     "contents": [
       {
-        "file": "scene.js",
-        "hash": "Qm3xR3w8f2URG7uN77qMa6AApLfEQwuUZFYsTa6NPvtCTbzJ1gX2hV1j32N4tce6Zs7FZBFvzsHmdRe4KDV9czCCoz"
-      },
-      {
         "file": "scene.json",
         "hash": "Qm56dw7fxpqkR1JoNQfL3DbsivqEwvBjuUbuowZzVdcxKvN9Yzy1TktNVpyZBNhHsGNGmfi2YmxPjqR21fo2CJnwGd"
       },
@@ -5421,10 +5373,6 @@
     "parcel_id": "200,20",
     "root_cid": "Qm5nABwAjM2zn8rzx3qpcX2czoDTizsxENLyN3Bx14KGnMi1psLXnwxASCnch2p59ub3bYwq92Sa6BCQqVv6N5ZGof",
     "contents": [
-      {
-        "file": "scene.js",
-        "hash": "Qm2iqvp79azZawmPc2NBstp3cwLLX6HRFXEwciZhkLrK3uCdvokpc5b6qzSjdXSAihzxwSNSX8iPU9vyZe9nYv4vxw"
-      },
       {
         "file": "scene.json",
         "hash": "Qm5nFd2boiGQ1Fxan4niubvCjhNCnvG9U7bhPmN2bGD3dKH6KbpzGu4Z9naUqJmUhecWYfoZVeoS8Z4oJfHAboXSV"
@@ -5441,10 +5389,6 @@
     "root_cid": "QmzpxCMBrvbzNUYYZxtDsvCgfqprPeXDgMpcB9N4tuwMUM8wQwPJx2zeKSNb7uYQNgWXTC6ZaahgZTieS73MBSN6F",
     "contents": [
       {
-        "file": "scene.js",
-        "hash": "Qm4MSLqDsqHgoJWAyQc3ogzLRFb4k9cwTcYtKqb1hP39nhjDV6fgJCjvgzASLjRb1oZcN1GvXYQbGELB7iz1QvFuSS"
-      },
-      {
         "file": "scene.json",
         "hash": "Qm2VoMAgfw3SpSZMuYdiFtT26QqvfBTVkhbwusDJnNjuY8bv74jx5CdUy1WM3tr6jx6hkUzUfNhCSj7VSURDzNtS2X"
       },
@@ -5459,10 +5403,6 @@
     "parcel_id": "200,50",
     "root_cid": "Qm47ucvSvQwh3SgwgohCszjtb55KsduZtTDARYtRv2xYP6kXwritN4w1x8pGBFv3ESdBciTGr3sMfzuKQWiCEXmeQs",
     "contents": [
-      {
-        "file": "scene.js",
-        "hash": "Qm2oYogaChAz7VcUYt6hfsTSknBJ3kBtbYUD4ioxpia6mHLGgyH9GYKN74JHJoFKsmwgiacQV7AcnjyUyunVThZuyd"
-      },
       {
         "file": "scene.json",
         "hash": "Qmj7xLiHSzbHVkZo3Lj3K5sdgvTLgXtZVPgqqyyj4s8wvhsTCNfEGqcBQYvnzpXSWhNJfUuMgK6vY5nGmqwHPCC7R"
@@ -5479,10 +5419,6 @@
     "root_cid": "Qm47ucvSvQwh3SgwgohCszjtb55KsduZtTDARYtRv2xYP6kXwritN4w1x8pGBFv3ESdBciTGr3sMfzuKQWiCEXmeQs",
     "contents": [
       {
-        "file": "scene.js",
-        "hash": "Qm2oYogaChAz7VcUYt6hfsTSknBJ3kBtbYUD4ioxpia6mHLGgyH9GYKN74JHJoFKsmwgiacQV7AcnjyUyunVThZuyd"
-      },
-      {
         "file": "scene.json",
         "hash": "Qmj7xLiHSzbHVkZo3Lj3K5sdgvTLgXtZVPgqqyyj4s8wvhsTCNfEGqcBQYvnzpXSWhNJfUuMgK6vY5nGmqwHPCC7R"
       },
@@ -5497,10 +5433,6 @@
     "parcel_id": "200,52",
     "root_cid": "Qm47ucvSvQwh3SgwgohCszjtb55KsduZtTDARYtRv2xYP6kXwritN4w1x8pGBFv3ESdBciTGr3sMfzuKQWiCEXmeQs",
     "contents": [
-      {
-        "file": "scene.js",
-        "hash": "Qm2oYogaChAz7VcUYt6hfsTSknBJ3kBtbYUD4ioxpia6mHLGgyH9GYKN74JHJoFKsmwgiacQV7AcnjyUyunVThZuyd"
-      },
       {
         "file": "scene.json",
         "hash": "Qmj7xLiHSzbHVkZo3Lj3K5sdgvTLgXtZVPgqqyyj4s8wvhsTCNfEGqcBQYvnzpXSWhNJfUuMgK6vY5nGmqwHPCC7R"
@@ -5517,10 +5449,6 @@
     "root_cid": "Qm47ucvSvQwh3SgwgohCszjtb55KsduZtTDARYtRv2xYP6kXwritN4w1x8pGBFv3ESdBciTGr3sMfzuKQWiCEXmeQs",
     "contents": [
       {
-        "file": "scene.js",
-        "hash": "Qm2oYogaChAz7VcUYt6hfsTSknBJ3kBtbYUD4ioxpia6mHLGgyH9GYKN74JHJoFKsmwgiacQV7AcnjyUyunVThZuyd"
-      },
-      {
         "file": "scene.json",
         "hash": "Qmj7xLiHSzbHVkZo3Lj3K5sdgvTLgXtZVPgqqyyj4s8wvhsTCNfEGqcBQYvnzpXSWhNJfUuMgK6vY5nGmqwHPCC7R"
       },
@@ -5535,10 +5463,6 @@
     "parcel_id": "200,54",
     "root_cid": "Qm47ucvSvQwh3SgwgohCszjtb55KsduZtTDARYtRv2xYP6kXwritN4w1x8pGBFv3ESdBciTGr3sMfzuKQWiCEXmeQs",
     "contents": [
-      {
-        "file": "scene.js",
-        "hash": "Qm2oYogaChAz7VcUYt6hfsTSknBJ3kBtbYUD4ioxpia6mHLGgyH9GYKN74JHJoFKsmwgiacQV7AcnjyUyunVThZuyd"
-      },
       {
         "file": "scene.json",
         "hash": "Qmj7xLiHSzbHVkZo3Lj3K5sdgvTLgXtZVPgqqyyj4s8wvhsTCNfEGqcBQYvnzpXSWhNJfUuMgK6vY5nGmqwHPCC7R"
@@ -5555,10 +5479,6 @@
     "root_cid": "Qm47ucvSvQwh3SgwgohCszjtb55KsduZtTDARYtRv2xYP6kXwritN4w1x8pGBFv3ESdBciTGr3sMfzuKQWiCEXmeQs",
     "contents": [
       {
-        "file": "scene.js",
-        "hash": "Qm2oYogaChAz7VcUYt6hfsTSknBJ3kBtbYUD4ioxpia6mHLGgyH9GYKN74JHJoFKsmwgiacQV7AcnjyUyunVThZuyd"
-      },
-      {
         "file": "scene.json",
         "hash": "Qmj7xLiHSzbHVkZo3Lj3K5sdgvTLgXtZVPgqqyyj4s8wvhsTCNfEGqcBQYvnzpXSWhNJfUuMgK6vY5nGmqwHPCC7R"
       },
@@ -5573,10 +5493,6 @@
     "parcel_id": "200,56",
     "root_cid": "Qm47ucvSvQwh3SgwgohCszjtb55KsduZtTDARYtRv2xYP6kXwritN4w1x8pGBFv3ESdBciTGr3sMfzuKQWiCEXmeQs",
     "contents": [
-      {
-        "file": "scene.js",
-        "hash": "Qm2oYogaChAz7VcUYt6hfsTSknBJ3kBtbYUD4ioxpia6mHLGgyH9GYKN74JHJoFKsmwgiacQV7AcnjyUyunVThZuyd"
-      },
       {
         "file": "scene.json",
         "hash": "Qmj7xLiHSzbHVkZo3Lj3K5sdgvTLgXtZVPgqqyyj4s8wvhsTCNfEGqcBQYvnzpXSWhNJfUuMgK6vY5nGmqwHPCC7R"
@@ -5593,10 +5509,6 @@
     "root_cid": "Qm62wrdzraXkuBdK5pQYYW7hKE82RzodgzaWDQ2LinbgmUbWqWwJNd8vZ3uNB7t8FnWPYP9VXUNRpgSLu2PiTcF9vg",
     "contents": [
       {
-        "file": "scene.js",
-        "hash": "Qm2pGpKDX8XDX4mSPvSTMy9Tho61ERiWEErYx1nxXKjFhFx11CHxEUXfiD1QqDTXPKrs8ghWKogqc4vAPXWU1GpFE5"
-      },
-      {
         "file": "scene.json",
         "hash": "QmKfnDm8AMMCn2mm6zkXN4nubZd9ew6SLqbtWn9jumxzQ1TTKiuWDqE39xW4dH886qw3Ai1Urh1Crpv3MS2shDpqD"
       },
@@ -5611,10 +5523,6 @@
     "parcel_id": "200,70",
     "root_cid": "Qm1qHmh893GoKGWFaLVzdpuH8uLfd7R2BYzWxkDnEcspTu8YUNMwAhdwxWLKM2SnM8WX2k9L3o4rKfabeUt118XsY",
     "contents": [
-      {
-        "file": "scene.js",
-        "hash": "QmLvHWXvw1Wq6i5nWodwLphSCg1UMwH2adLgq9f5eK6GT5StFR2nhXDufRLFidam8bzFu5PFguPhsRENBPR36RUdj"
-      },
       {
         "file": "scene.json",
         "hash": "Qm5oSLAcE2zkEMngvjuPYiLa6iNnxXzLPLYfjuwHBSKTN1C3dQSJhB5d8QPpggZruVke8TcHgTk5tM2VXTTYsi9Roq"
@@ -5639,10 +5547,6 @@
         "hash": "Qm2diobUPgBWvcgwSTPrvN1yunMYgd8Ca3hcxAH5zXnoSnjNhUv3pCYAGiWmxvqYPn2qANVqo4xen44HLVn7SUyBtz"
       },
       {
-        "file": "scene.js",
-        "hash": "Qm5CsK1bNyvt4YfFhpJzwLPvorxgrtmx3rbkMqkhmE7BpajG9DWDrYG7Gh5ZxgxtbKPUjRZph2EyDvtJ1R6za4oFbP"
-      },
-      {
         "file": "scene.json",
         "hash": "Qmo4UXhFfxqaXvW67HrHdXF27fQ4TfrUpZgkoofH9RXm2NjxJ87S1JeeAy3Uha4mjnqjp91GCBe4bsxiVVKgW68Nk"
       },
@@ -5658,10 +5562,6 @@
     "root_cid": "Qm4NLFSqYfwbN6ktLrcCazxxog97uKFFLNGeTc24PBky8QR5uwpb8bLaxV8mCchJW4dhJ5RL4RdGxtFqG4MfwKygTe",
     "contents": [
       {
-        "file": "scene.js",
-        "hash": "Qmd4RPKqJbksCydL7Envja36iCwX1Z1tpfHCu2LaSEoLapieSZNDCA4Bk3ka1KoajJGjv2ECoqvTTuu7uwz6jtHh5"
-      },
-      {
         "file": "scene.json",
         "hash": "Qm44C37PC7VgzWzxBQNejEPbZ9vdJMaquHDLdG4tkwAGzw3cMcVHRyDNxYd1dgVcr7FPsyMGnGfoLdsjfabN9Y51v6"
       },
@@ -5676,10 +5576,6 @@
     "parcel_id": "210,70",
     "root_cid": "Qm2SbXHC1q4vGyAy34HsY9htLkfzcdgAyTcvsmdRFoW1o4soupZv8c6HnKhHBzt4PC8QnzRH6sj8PEdPNnLJv4oHL",
     "contents": [
-      {
-        "file": "scene.js",
-        "hash": "Qm4yMrjfnxMdRRSxCXDiMjS5BzcX2hNjV2Zy4FiFFqz5LTgkyQXdPLhJUWU1e7k8rQPdm75r2frnX6rikGZmHqD1Hm"
-      },
       {
         "file": "scene.json",
         "hash": "QmJCxGSjUyZT5j4qt32DXMH7Rw3UqUQUbr1SxHSQbnKE1LN7mKCqmwrwYTsWUqYCFaZrsCgaRZUN8r7YnPq5vBpFr"
@@ -5718,10 +5614,6 @@
     "root_cid": "Qm3bEjaxF96etW7WYj6JpWZ63bbZi8mh5RksdxtH1uELctNNoeoRrawtuPqS4yTXuPsFztWcGtjhsHdPv1yF3kCUYv",
     "contents": [
       {
-        "file": "scene.js",
-        "hash": "Qm4n6PFiUtsFfYxHnFmeSXEn9Mm7vpUCeu3baGx6qhf2huzqMBF9yJ6gTG1oVajVwZySaMNxSLxG3F5grweuFgSuaM"
-      },
-      {
         "file": "scene.json",
         "hash": "QmwAESWam1jRgQHKb2pJqTxuzjvShYJuGXTcvPMzVvqETcYtLNZAqjR8L53mSb1Az3Z4UvqzWdWet6Vm2d13i8SXS"
       },
@@ -5736,10 +5628,6 @@
     "parcel_id": "300,60",
     "root_cid": "Qm24M3ExHEGKW3Yju1UM6hVuLxTnLNeGQPJSbdEeSYXP9BqRiu4VsQido4aJNVtSWcFVujuPckrVqwJerCq21fpp9g",
     "contents": [
-      {
-        "file": "scene.js",
-        "hash": "Qm2YVJQ4WJ9Q9DA3cR8ep5YosP4WwNvbGxXzk5U47EB7tQjSnQ5J9VHJ7STcYarL6CqoCsauSKBUr5dsQuKU5TZEuF"
-      },
       {
         "file": "scene.json",
         "hash": "Qm5i8J5XoX4Y6LyFW1W5TV8jGt3vguqgcLU9SpsXmQxu5co7UVzUGAqQ8uB9wbvs1KZFMkdUu39JyCXN8nBPwBf9KS"
@@ -5756,10 +5644,6 @@
     "root_cid": "Qm24M3ExHEGKW3Yju1UM6hVuLxTnLNeGQPJSbdEeSYXP9BqRiu4VsQido4aJNVtSWcFVujuPckrVqwJerCq21fpp9g",
     "contents": [
       {
-        "file": "scene.js",
-        "hash": "Qm2YVJQ4WJ9Q9DA3cR8ep5YosP4WwNvbGxXzk5U47EB7tQjSnQ5J9VHJ7STcYarL6CqoCsauSKBUr5dsQuKU5TZEuF"
-      },
-      {
         "file": "scene.json",
         "hash": "Qm5i8J5XoX4Y6LyFW1W5TV8jGt3vguqgcLU9SpsXmQxu5co7UVzUGAqQ8uB9wbvs1KZFMkdUu39JyCXN8nBPwBf9KS"
       },
@@ -5774,10 +5658,6 @@
     "parcel_id": "301,60",
     "root_cid": "Qm24M3ExHEGKW3Yju1UM6hVuLxTnLNeGQPJSbdEeSYXP9BqRiu4VsQido4aJNVtSWcFVujuPckrVqwJerCq21fpp9g",
     "contents": [
-      {
-        "file": "scene.js",
-        "hash": "Qm2YVJQ4WJ9Q9DA3cR8ep5YosP4WwNvbGxXzk5U47EB7tQjSnQ5J9VHJ7STcYarL6CqoCsauSKBUr5dsQuKU5TZEuF"
-      },
       {
         "file": "scene.json",
         "hash": "Qm5i8J5XoX4Y6LyFW1W5TV8jGt3vguqgcLU9SpsXmQxu5co7UVzUGAqQ8uB9wbvs1KZFMkdUu39JyCXN8nBPwBf9KS"
@@ -5794,10 +5674,6 @@
     "root_cid": "Qm24M3ExHEGKW3Yju1UM6hVuLxTnLNeGQPJSbdEeSYXP9BqRiu4VsQido4aJNVtSWcFVujuPckrVqwJerCq21fpp9g",
     "contents": [
       {
-        "file": "scene.js",
-        "hash": "Qm2YVJQ4WJ9Q9DA3cR8ep5YosP4WwNvbGxXzk5U47EB7tQjSnQ5J9VHJ7STcYarL6CqoCsauSKBUr5dsQuKU5TZEuF"
-      },
-      {
         "file": "scene.json",
         "hash": "Qm5i8J5XoX4Y6LyFW1W5TV8jGt3vguqgcLU9SpsXmQxu5co7UVzUGAqQ8uB9wbvs1KZFMkdUu39JyCXN8nBPwBf9KS"
       },
@@ -5812,10 +5688,6 @@
     "parcel_id": "302,61",
     "root_cid": "Qm24M3ExHEGKW3Yju1UM6hVuLxTnLNeGQPJSbdEeSYXP9BqRiu4VsQido4aJNVtSWcFVujuPckrVqwJerCq21fpp9g",
     "contents": [
-      {
-        "file": "scene.js",
-        "hash": "Qm2YVJQ4WJ9Q9DA3cR8ep5YosP4WwNvbGxXzk5U47EB7tQjSnQ5J9VHJ7STcYarL6CqoCsauSKBUr5dsQuKU5TZEuF"
-      },
       {
         "file": "scene.json",
         "hash": "Qm5i8J5XoX4Y6LyFW1W5TV8jGt3vguqgcLU9SpsXmQxu5co7UVzUGAqQ8uB9wbvs1KZFMkdUu39JyCXN8nBPwBf9KS"
@@ -5832,10 +5704,6 @@
     "root_cid": "Qm3LSnxQ5ex2HHwf7FrBuQT8DAkTmo2YRRXm9JN9965YaJVLHmB5MjoDn6WsBfHXYVLFGTcmmvzi9CextjyWwzwb7H",
     "contents": [
       {
-        "file": "scene.js",
-        "hash": "Qm3DuurBFH5AUYKp7JDPwp2bbDa9bDrZ1gDN4798LccezDprrLuyFQuBRUQDdTpXWJ4CvF1sWeh9zujQwk6SChn9FX"
-      },
-      {
         "file": "scene.json",
         "hash": "Qm61DKGFZwtsA5Rgt6N2TSJwu9ApidAvhACV4aBQdLxSXkaz7ZoAKyXp4bjh9QdxY1bHKYgQGYaPPdMWnXQB5GJWcD"
       },
@@ -5850,10 +5718,6 @@
     "parcel_id": "301,63",
     "root_cid": "Qm3LSnxQ5ex2HHwf7FrBuQT8DAkTmo2YRRXm9JN9965YaJVLHmB5MjoDn6WsBfHXYVLFGTcmmvzi9CextjyWwzwb7H",
     "contents": [
-      {
-        "file": "scene.js",
-        "hash": "Qm3DuurBFH5AUYKp7JDPwp2bbDa9bDrZ1gDN4798LccezDprrLuyFQuBRUQDdTpXWJ4CvF1sWeh9zujQwk6SChn9FX"
-      },
       {
         "file": "scene.json",
         "hash": "Qm61DKGFZwtsA5Rgt6N2TSJwu9ApidAvhACV4aBQdLxSXkaz7ZoAKyXp4bjh9QdxY1bHKYgQGYaPPdMWnXQB5GJWcD"
@@ -5870,10 +5734,6 @@
     "root_cid": "Qm3LSnxQ5ex2HHwf7FrBuQT8DAkTmo2YRRXm9JN9965YaJVLHmB5MjoDn6WsBfHXYVLFGTcmmvzi9CextjyWwzwb7H",
     "contents": [
       {
-        "file": "scene.js",
-        "hash": "Qm3DuurBFH5AUYKp7JDPwp2bbDa9bDrZ1gDN4798LccezDprrLuyFQuBRUQDdTpXWJ4CvF1sWeh9zujQwk6SChn9FX"
-      },
-      {
         "file": "scene.json",
         "hash": "Qm61DKGFZwtsA5Rgt6N2TSJwu9ApidAvhACV4aBQdLxSXkaz7ZoAKyXp4bjh9QdxY1bHKYgQGYaPPdMWnXQB5GJWcD"
       },
@@ -5888,10 +5748,6 @@
     "parcel_id": "300,63",
     "root_cid": "Qm3LSnxQ5ex2HHwf7FrBuQT8DAkTmo2YRRXm9JN9965YaJVLHmB5MjoDn6WsBfHXYVLFGTcmmvzi9CextjyWwzwb7H",
     "contents": [
-      {
-        "file": "scene.js",
-        "hash": "Qm3DuurBFH5AUYKp7JDPwp2bbDa9bDrZ1gDN4798LccezDprrLuyFQuBRUQDdTpXWJ4CvF1sWeh9zujQwk6SChn9FX"
-      },
       {
         "file": "scene.json",
         "hash": "Qm61DKGFZwtsA5Rgt6N2TSJwu9ApidAvhACV4aBQdLxSXkaz7ZoAKyXp4bjh9QdxY1bHKYgQGYaPPdMWnXQB5GJWcD"
@@ -5908,10 +5764,6 @@
     "root_cid": "Qm3LSnxQ5ex2HHwf7FrBuQT8DAkTmo2YRRXm9JN9965YaJVLHmB5MjoDn6WsBfHXYVLFGTcmmvzi9CextjyWwzwb7H",
     "contents": [
       {
-        "file": "scene.js",
-        "hash": "Qm3DuurBFH5AUYKp7JDPwp2bbDa9bDrZ1gDN4798LccezDprrLuyFQuBRUQDdTpXWJ4CvF1sWeh9zujQwk6SChn9FX"
-      },
-      {
         "file": "scene.json",
         "hash": "Qm61DKGFZwtsA5Rgt6N2TSJwu9ApidAvhACV4aBQdLxSXkaz7ZoAKyXp4bjh9QdxY1bHKYgQGYaPPdMWnXQB5GJWcD"
       },
@@ -5927,10 +5779,6 @@
     "root_cid": "Qmz8mjxps9TqRy7nCxJjxUdHYiY9PnZFJiRw9vC65GZUvvBzheGEJFgPApTM3KHgyanuJXN7wxkeFc8xDGYa4SW12",
     "contents": [
       {
-        "file": "scene.js",
-        "hash": "Qm5q13rCHTPFu8rPYDQGgCQ4fRMG2iy4dvkhaTeXfg3Lu8hL9k7dawJ3vWuPuYvJrgU44uDD8ShifEhidscsKkuqi8"
-      },
-      {
         "file": "scene.json",
         "hash": "Qm3JFpLGSSzYAndJAgtrUYJQzfbnD9EQ65Ui76KSrRsf7rVchRuDt5Mi5VkTGMAEDkqxcXCFVjg2gRv7ZRykSatVV2"
       },
@@ -5945,6 +5793,29 @@
       {
         "file": "sounds/sound.ogg",
         "hash": "Qm67BPfRXWkrAy7kvocEA58Gbu4PRz4ZGiPEWUvqRg7GCj9UxrosG4d9SmBwQBe5k4djDGp8Bb7xanRBiA9LTQRd1s"
+      }
+    ]
+  },
+  {
+    "publisher": "0x0f5d2fb29fb7d3cfee444a200298f468908cc942",
+    "parcel_id": "-200,110",
+    "root_cid": "Qm41F1FAaFPyiP8tNTdeZm4NSnj1a9h1kwYZqjetArbTdG2MqjsGp28JLhrXP4qgNUsFNRWdSDqbUYiQ1kdoW5CCRG",
+    "contents": [
+      {
+        "file": "game.js",
+        "hash": "Qm4Aki5nEyc4cMFbkzkruou9HFidGDWR36DNxc1vsdSybyjproJ3uLLkEVgDnKQAGF82v88ApLzJTm97dnTzDVvCvt"
+      },
+      {
+        "file": "game.ts",
+        "hash": "Qm3gMXGkNqrDAGwkLSVzAfFuNdHFYf61JXWqfQZhd22Cniyk2Q2dHS3MRJLCg1FZi17Pet3ggk2tT6NiPWwCASjGap"
+      },
+      {
+        "file": "scene.json",
+        "hash": "QmefgbWbRRHVnf3ifGgbaEvQ9K2uaWBsbzWADxiWtgdphz6zVFaqYHbjdFSrguRYmba34TR4kxF4o73KdgHiMK4Pd"
+      },
+      {
+        "file": "tsconfig.json",
+        "hash": "Qm54yHSJZtfQBPdjzC86YNdNt7wpDvzGtfZHC9aizuo4H3sa839NhXq9bNtRtYv4HxJ16FN5QN2MwzeXYEZH396NjC"
       }
     ]
   },
