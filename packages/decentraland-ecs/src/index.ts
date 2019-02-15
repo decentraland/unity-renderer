@@ -1,7 +1,6 @@
 // CORE DEPENDENCIES
 export * from './ecs/Engine'
 export * from './ecs/Component'
-export * from './ecs/System'
 export * from './ecs/Entity'
 export * from './ecs/Task'
 export * from './ecs/helpers'

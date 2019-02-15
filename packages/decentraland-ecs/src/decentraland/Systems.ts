@@ -1,6 +1,5 @@
-import { Engine } from '../ecs/Engine'
+import { Engine, ISystem } from '../ecs/Engine'
 import { UUIDEvent } from './Events'
-import { ISystem } from '../ecs/System'
 import { DecentralandInterface } from './Types'
 import { OnUUIDEvent } from './Components'
 import { ComponentAdded, ComponentRemoved, Entity } from '../ecs/Entity'

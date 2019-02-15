@@ -1,7 +1,5 @@
 import { getComponentName, ComponentConstructor } from './Component'
-
-// tslint:disable-next-line:whitespace
-type Entity = import('./Entity').Entity
+import { Entity } from './Entity'
 
 /**
  * @public

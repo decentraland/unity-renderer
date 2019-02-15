@@ -19,9 +19,9 @@ console.log(`> remove '^export ' from ${dtsFile}`)
 
   writeFileSync(dtsFile, content.replace(/^export /gm, ''))
 
-  console.log(`> ${dtsFile} must have no /^import /`)
+  console.log(`> ${dtsFile} must have no /import/`)
 
-  if (content.match(/^import /)) {
+  if (content.match(/\bimport\b/)) {
     throw new Error(`The file ${dtsFile} contains imports:\n${content}`)
   }
 

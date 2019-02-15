@@ -881,13 +881,13 @@ declare interface ComponentConstructor<T extends ComponentLike> {
  * @public
  */
 declare class ComponentGroup {
-  readonly entities: ReadonlyArray<Entity_3>
+  readonly entities: ReadonlyArray<Entity>
   readonly requires: ReadonlyArray<ComponentConstructor<any>>
   readonly requiresNames: ReadonlyArray<string>
   active: boolean
   private _requiresNames
   constructor(...requires: ComponentConstructor<any>[])
-  hasEntity(entity: Entity_3): boolean
+  hasEntity(entity: Entity): boolean
 }
 
 /**
@@ -1137,8 +1137,6 @@ declare class Engine {
   private componentRemovedHandler
 }
 
-declare type Engine_2 = import('./Engine').Engine
-
 /**
  * @public
  */
@@ -1213,10 +1211,6 @@ declare class Entity {
   private getCircularAncestor
   private registerAsChild
 }
-
-declare type Entity_2 = import('./Entity').Entity
-
-declare type Entity_3 = import('./Entity').Entity
 
 declare const Epsilon = 0.000001
 
@@ -1490,11 +1484,11 @@ declare interface ISize {
  */
 declare interface ISystem {
   active?: boolean
-  activate?(engine: Engine_2): void
+  activate?(engine: Engine): void
   deactivate?(): void
   update?(dt: number): void
-  onAddEntity?(entity: Entity_2): void
-  onRemoveEntity?(entity: Entity_2): void
+  onAddEntity?(entity: Entity): void
+  onRemoveEntity?(entity: Entity): void
 }
 
 /**

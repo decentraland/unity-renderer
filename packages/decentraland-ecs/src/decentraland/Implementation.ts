@@ -1,5 +1,4 @@
-import { ISystem } from '../ecs/System'
-import { Engine } from '../ecs/Engine'
+import { Engine, ISystem } from '../ecs/Engine'
 import { Entity, ComponentAdded, ComponentRemoved, ParentChanged } from '../ecs/Entity'
 import { UUIDEvent } from './Events'
 import {

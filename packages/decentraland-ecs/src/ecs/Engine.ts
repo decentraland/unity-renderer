@@ -9,11 +9,25 @@ import {
   DisposableComponentRemoved,
   getComponentClassId
 } from './Component'
-import { ISystem } from './System'
 import { EventManager } from './EventManager'
 import { ComponentGroup } from './ComponentGroup'
 
 import { log, error } from './helpers'
+
+/**
+ * @public
+ */
+export interface ISystem {
+  active?: boolean
+
+  activate?(engine: Engine): void
+  deactivate?(): void
+
+  update?(dt: number): void
+
+  onAddEntity?(entity: Entity): void
+  onRemoveEntity?(entity: Entity): void
+}
 
 /**
  * @internal
