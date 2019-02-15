@@ -50,7 +50,11 @@ namespace DCL.Controllers
                     Object.Destroy(plane.GetComponent<MeshCollider>());
 
                     plane.name = $"parcel:{data.parcels[j].x},{data.parcels[j].y}";
+
                     plane.transform.SetParent(gameObject.transform);
+
+                    // the plane mesh with scale 1 occupies a 10 units space
+                    plane.transform.localScale = new Vector3(ParcelSettings.PARCEL_SIZE * 0.1f, 1f, ParcelSettings.PARCEL_SIZE * 0.1f);
 
                     var position = Helpers.Utils.GridToWorldPosition(data.parcels[j].x, data.parcels[j].y);
                     // SET TO A POSITION RELATIVE TO basePosition
@@ -87,7 +91,7 @@ namespace DCL.Controllers
             {
                 return entities[tmpCreateEntityMessage.id];
             }
-            
+
             var newEntity = new DecentralandEntity();
             newEntity.entityId = tmpCreateEntityMessage.id;
             newEntity.gameObject = new GameObject();
@@ -168,7 +172,7 @@ namespace DCL.Controllers
                     decentralandEntity.gameObject.transform.SetParent(rootGameObject.transform);
                 }
             }
-            
+
         }
 
         SharedComponentAttachMessage attachSharedComponentMessage = new SharedComponentAttachMessage();
@@ -233,7 +237,7 @@ namespace DCL.Controllers
                     newComponent.entity = entity;
                     entity.components.Add(classId, newComponent);
 
-                    newComponent.transform.SetParent( entity.gameObject.transform );
+                    newComponent.transform.SetParent(entity.gameObject.transform);
                     newComponent.transform.localPosition = Vector3.zero;
                     newComponent.transform.localRotation = Quaternion.identity;
                     newComponent.transform.localScale = Vector3.one;

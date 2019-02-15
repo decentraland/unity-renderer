@@ -9,6 +9,7 @@ using Newtonsoft.Json;
 using NUnit.Framework;
 using DCL.Models;
 using DCL.Components;
+using DCL.Configuration;
 /*
 * Play Mode Testing Highlights:
 * - All Monobehaviour methods are invoked
@@ -1530,9 +1531,9 @@ namespace Tests
             Assert.AreEqual(theScene.sceneData.parcels.Length, 3);
             Assert.AreEqual(theScene.transform.childCount, 3);
 
-            Assert.IsTrue(theScene.transform.GetChild(0).localPosition == new Vector3(-10.0f + 5f, DCL.Configuration.ParcelSettings.DEBUG_FLOOR_HEIGHT, 0.0f + 5f));
-            Assert.IsTrue(theScene.transform.GetChild(1).localPosition == new Vector3(0.0f + 5f, DCL.Configuration.ParcelSettings.DEBUG_FLOOR_HEIGHT, 0.0f + 5f));
-            Assert.IsTrue(theScene.transform.GetChild(2).localPosition == new Vector3(-10.0f + 5f, DCL.Configuration.ParcelSettings.DEBUG_FLOOR_HEIGHT, 10.0f + 5f));
+            Assert.IsTrue(theScene.transform.GetChild(0).localPosition == new Vector3(-ParcelSettings.PARCEL_SIZE / 2, DCL.Configuration.ParcelSettings.DEBUG_FLOOR_HEIGHT, ParcelSettings.PARCEL_SIZE / 2));
+            Assert.IsTrue(theScene.transform.GetChild(1).localPosition == new Vector3(ParcelSettings.PARCEL_SIZE / 2, DCL.Configuration.ParcelSettings.DEBUG_FLOOR_HEIGHT, ParcelSettings.PARCEL_SIZE / 2));
+            Assert.IsTrue(theScene.transform.GetChild(2).localPosition == new Vector3(-ParcelSettings.PARCEL_SIZE / 2, DCL.Configuration.ParcelSettings.DEBUG_FLOOR_HEIGHT, ParcelSettings.PARCEL_SIZE + ParcelSettings.PARCEL_SIZE / 2));
         }
 
         [UnityTest]
@@ -1555,9 +1556,9 @@ namespace Tests
             Assert.AreEqual(theScene.sceneData.parcels.Length, 3);
             Assert.AreEqual(theScene.transform.childCount, 3);
 
-            Assert.IsTrue(theScene.transform.GetChild(0).localPosition == new Vector3(-10.0f + 5f, DCL.Configuration.ParcelSettings.DEBUG_FLOOR_HEIGHT, 0.0f + 5f));
-            Assert.IsTrue(theScene.transform.GetChild(1).localPosition == new Vector3(0.0f + 5f, DCL.Configuration.ParcelSettings.DEBUG_FLOOR_HEIGHT, 0.0f + 5f));
-            Assert.IsTrue(theScene.transform.GetChild(2).localPosition == new Vector3(-10.0f + 5f, DCL.Configuration.ParcelSettings.DEBUG_FLOOR_HEIGHT, 10.0f + 5f));
+            Assert.IsTrue(theScene.transform.GetChild(0).localPosition == new Vector3(-ParcelSettings.PARCEL_SIZE / 2, DCL.Configuration.ParcelSettings.DEBUG_FLOOR_HEIGHT, ParcelSettings.PARCEL_SIZE / 2));
+            Assert.IsTrue(theScene.transform.GetChild(1).localPosition == new Vector3(ParcelSettings.PARCEL_SIZE / 2, DCL.Configuration.ParcelSettings.DEBUG_FLOOR_HEIGHT, ParcelSettings.PARCEL_SIZE / 2));
+            Assert.IsTrue(theScene.transform.GetChild(2).localPosition == new Vector3(-ParcelSettings.PARCEL_SIZE / 2, DCL.Configuration.ParcelSettings.DEBUG_FLOOR_HEIGHT, ParcelSettings.PARCEL_SIZE + ParcelSettings.PARCEL_SIZE / 2));
         }
     }
 }
