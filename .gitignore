@@ -4,11 +4,12 @@
 Temp/
 Library/
 *.cache
-obj/
+/obj/
 [Bb]uild/
 TestResults/
 Assets/InitTestScene*.unity
 Assets/InitTestScene*.unity.meta
+**/CurrentTestImages/
 
 # ===================================== #
 # Visual Studio / MonoDevelop generated #

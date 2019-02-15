@@ -8,4 +8,7 @@ EditorBuildSettings:
   - enabled: 1
     path: Assets/Scenes/InitialScene.unity
     guid: 99c9720ab356a0642a771bea13969a05
+  - enabled: 1
+    path: Assets/Scenes/Test/VisualTests/VisualTest1.unity
+    guid: d89e4ff6c9ae940c7b882bee39ca8d09
   m_configObjects: {}

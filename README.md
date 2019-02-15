@@ -52,6 +52,19 @@ We are using [UnityGLTF](https://github.com/KhronosGroup/UnityGLTF) as a Dynamic
 
 5. GameObject reparenting is made as soon the root GLTF loading object is created, so a big mesh can be seen in place before the loading finished.
 
+### Visual Tests Pipeline
+
+#### Baseline snapshot images creation/update:
+
+1. Open the Scenes/Test/VisualTests scene (When running the visual tests, that same scene is loaded to use the same configurations like instanced objects, lighting, skybox, sun, etc.)
+2. Toggle the "Take Snapshots" and "Snapshots are baseline" in the TestController object's VisualTestSceneController component
+3. Run the scene and wait until all the snapshots have been saved (there's info in the console for every snapshot)
+4. Dismiss scene changes made on VisualTestSceneController component, we need the toggles untoggled for the tests
+
+#### Notes to consider:
+
+-   Currently visual tests are explicit tests and shouldn't be run along non-visual tests, as they can generate unexpected results in the following non-visual tests. This is because visual tests need to load the scene in which the baseline snapshots where taken (to have the exact same lighting configuration). So at the beginning of every visual test, the corresponding scene is loaded.
+
 ### Known Issues
 
 -   Regarding Basic Materials: If the **alphaTest** value is set on a basic material and the **Assets/Resources/Materials/BasicShapeMaterial** is viewed in the Inspector (be it by selecting the material in the Project tab or by expanding its details from a renderer in the Inspector), its "Alpha Clip" toggle gets untoggled (and the material file modified). We suspect a Unity bug.

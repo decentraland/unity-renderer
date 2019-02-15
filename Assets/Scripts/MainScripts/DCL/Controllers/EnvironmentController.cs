@@ -23,12 +23,14 @@ public class EnvironmentController : MonoBehaviour
 
     void OnEnable()
     {
-        characterController.OnCharacterMoved += UpdateEnvironmentPosition;
+        if (characterController != null)
+            characterController.OnCharacterMoved += UpdateEnvironmentPosition;
     }
 
     void OnDisable()
     {
-        characterController.OnCharacterMoved -= UpdateEnvironmentPosition;
+        if (characterController != null)
+            characterController.OnCharacterMoved -= UpdateEnvironmentPosition;
     }
 
     Vector3 CalculateSunPosition()
