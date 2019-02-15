@@ -23,9 +23,6 @@ namespace DCL
             public const int materials = 20;
             public const int meshes = 200;
 
-            public const float height = 20;
-            public const float parcelSize = 10; /* meters */
-
             public const float visibleRadius = 10;
         }
 
@@ -92,7 +89,7 @@ namespace DCL
             if (isDirty)
             {
                 isDirty = false;
-                Interface.WebInterface.ReportOnMetricsUpdate( scene.sceneData.id, model, GetLimits() );
+                Interface.WebInterface.ReportOnMetricsUpdate(scene.sceneData.id, model, GetLimits());
             }
         }
 

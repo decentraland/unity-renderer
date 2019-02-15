@@ -1,6 +1,7 @@
 using DCL.Components;
 using DCL.Helpers;
 using DCL.Models;
+using DCL.Configuration;
 using Newtonsoft.Json;
 using UnityEngine;
 using UnityEngine.Assertions;
@@ -98,10 +99,11 @@ public class IntegrationTestController : MonoBehaviour
         var cube = scene.entities[entityId];
 
         Assert.IsTrue(cube != null);
-        Assert.AreEqual(cube.gameObject.transform.localPosition, new Vector3(6, 0, 5));
+        Vector3 cubePosition = new Vector3(6, 0, 5);
+        Assert.AreEqual(cube.gameObject.transform.localPosition, cubePosition);
 
         // because basePosition is at 3,3
-        Assert.AreEqual(cube.gameObject.transform.position, new Vector3(36, 0, 35));
+        Assert.AreEqual(cube.gameObject.transform.position, new Vector3(3 * ParcelSettings.PARCEL_SIZE + cubePosition.x, cubePosition.y, 3 * ParcelSettings.PARCEL_SIZE + cubePosition.z));
         Assert.IsNotNull(cube.meshGameObject);
         Assert.IsNotNull(cube.meshGameObject.GetComponentInChildren<MeshFilter>());
 
