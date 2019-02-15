@@ -240,6 +240,18 @@ export namespace editor {
 
   export function setCameraZoomDelta(delta: number) {
     arcCamera.radius += delta
+
+    if (arcCamera.radius > arcCamera.upperRadiusLimit) {
+      arcCamera.radius = arcCamera.upperRadiusLimit
+    }
+
+    if (arcCamera.radius < arcCamera.lowerRadiusLimit) {
+      arcCamera.radius = arcCamera.lowerRadiusLimit
+    }
+  }
+
+  export function getCameraTarget() {
+    return arcCamera.target.clone()
   }
 
   export function resetCameraZoom() {

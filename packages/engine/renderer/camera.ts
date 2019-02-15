@@ -70,7 +70,7 @@ const arcCamera = new BABYLON.ArcRotateCamera(
 
   arcCamera.upperBetaLimit = Math.PI / 2
   arcCamera.allowUpsideDown = false
-  arcCamera.panningDistanceLimit = 20
+  arcCamera.upperRadiusLimit = arcCamera.panningDistanceLimit = 20
   arcCamera.pinchPrecision = 150
   arcCamera.wheelPrecision = 150
   arcCamera.lowerRadiusLimit = 5
