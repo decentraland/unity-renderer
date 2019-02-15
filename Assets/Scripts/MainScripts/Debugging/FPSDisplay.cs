@@ -1,43 +1,80 @@
 ﻿using UnityEngine;
 using UnityEngine.UI;
 
-[RequireComponent(typeof(FPSCounter))]
+[RequireComponent(typeof(FrameTimeCounter))]
 public class FPSDisplay : MonoBehaviour
 {
     [System.Serializable]
-    struct FPSColor
+    public struct FPSColor
     {
         public Color color;
-        public int minimumFPS;
+        public int fps;
+
+        public FPSColor(Color col, int fps) : this()
+        {
+            this.color = col;
+            this.fps = fps;
+        }
     }
 
-    public Text highestFPSLabel, averageFPSLabel, lowestFPSLabel, totalFrames;
-
-    [SerializeField]
-    FPSColor[] coloring;
-    FPSCounter fpsCounter;
-
-    void Awake()
+    public string[] labelText =
     {
-        fpsCounter = GetComponent<FPSCounter>();
-    }
+        "Worst:",
+        "99th: ",
+        "95th: ",
+        "90th: ",
+        "75th: ",
+        "50th: "
+    };
+
+    public Text[] labels;
+
+    public FPSColor[] coloring = {
+        new FPSColor(Color.black, 40),
+        new FPSColor(Color.yellow, 30),
+        new FPSColor(Color.Lerp(Color.yellow, Color.red, 0.3f), 20),
+        new FPSColor(Color.Lerp(Color.yellow, Color.red, 0.7f), 10),
+        new FPSColor(Color.red, 0)
+    };
+
+    public FrameTimeCounter fpsCounter;
 
     void Update()
     {
-        Display(highestFPSLabel, fpsCounter.HighestFPS);
-        Display(averageFPSLabel, fpsCounter.AverageFPS);
-        Display(lowestFPSLabel, fpsCounter.LowestFPS);
-        Display(totalFrames, fpsCounter.TotalFrames);
+        if (!fpsCounter)
+        {
+            fpsCounter = GetComponent<FrameTimeCounter>();
+            if (!fpsCounter)
+            {
+                return;
+            }
+        }
+        for (int i = 0; i < labels.Length; i++)
+        {
+            Display(labels[i], labelText[i], fpsCounter.stats[i]);
+        }
     }
 
-    void Display(Text label, int fps)
+    void Display(Text label, string text, float millis)
     {
-        label.text = fps.ToString();
+        if (millis == 0)
+        {
+            return;
+        }
+        float fps = 1 / millis;
+        string targetText = text + (millis * 1000).ToString("##.000") + " ms";
+        if (targetText!= label.text)
+        {
+            label.text = targetText;
+        }
         for (int i = 0; i < coloring.Length; i++)
         {
-            if (fps >= coloring[i].minimumFPS)
+            if (fps >= coloring[i].fps)
             {
-                label.color = coloring[i].color;
+                if (label.color != coloring[i].color)
+                {
+                    label.color = coloring[i].color;
+                }
                 break;
             }
         }
