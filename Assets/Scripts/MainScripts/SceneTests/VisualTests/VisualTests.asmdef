@@ -1,14 +1,12 @@
 {
-    "name": "EditModeTests",
+    "name": "VisualTests",
     "references": [
         "MainScripts"
     ],
     "optionalUnityReferences": [
         "TestAssemblies"
     ],
-    "includePlatforms": [
-        "Editor"
-    ],
+    "includePlatforms": [],
     "excludePlatforms": [],
     "allowUnsafeCode": false,
     "overrideReferences": false,

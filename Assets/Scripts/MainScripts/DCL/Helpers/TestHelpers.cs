@@ -166,7 +166,7 @@ namespace DCL.Helpers
             new DCLTransform.Model
             {
                 position = position,
-                rotation = new Quaternion(0,0,0,1),
+                rotation = Quaternion.identity,
                 scale = Vector3.one
             });
         }
@@ -287,7 +287,8 @@ namespace DCL.Helpers
 
             if (sceneController != null && sceneController.componentFactory == null)
             {
-                Object.Destroy(sceneController);
+                Utils.SafeDestroy(sceneController);
+
                 sceneController = null;
             }
 
