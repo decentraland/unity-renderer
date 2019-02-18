@@ -70,9 +70,13 @@ export namespace visualConfigurations {
   export const far = farDistance
 }
 
-export const PREVIEW: boolean = !!(global as any)['preview']
-export const EDITOR: boolean = !!(global as any)['isEditor']
-export const DEBUG = location.search.indexOf('DEBUG') !== -1 || !!(global as any)['mocha'] || PREVIEW || EDITOR
+export const PREVIEW: boolean = !!(global as any).preview
+
+export const EDITOR: boolean = !!(global as any).isEditor
+
+export const AVOID_WEB3: boolean = !!(global as any).avoidWeb3 || EDITOR
+
+export const DEBUG = location.search.indexOf('DEBUG') !== -1 || !!(global as any).mocha || PREVIEW || EDITOR
 export const MOBILE_DEBUG = location.search.indexOf('MOBILE_DEBUG') !== -1
 export const DEBUG_METRICS = DEBUG && location.search.indexOf('DEBUG_METRICS') !== -1
 
