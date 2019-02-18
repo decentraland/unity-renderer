@@ -1,5 +1,4 @@
 global['preview'] = window['preview'] = true
-global['avoidWeb3'] = window['avoidWeb3']
 
 import 'engine'
 
@@ -10,7 +9,7 @@ import { log } from '../engine/logger'
 import { bodyReadyFuture, engine } from '../engine/renderer/init'
 import { initShared } from '../shared'
 import { loadedParcelSceneWorkers, enablePositionReporting } from '../shared/world/parcelSceneManager'
-import { ETHEREUM_NETWORK, DEBUG, AVOID_WEB3 } from '../config'
+import { ETHEREUM_NETWORK, DEBUG } from '../config'
 import { ILandToLoadableParcelScene, ILand, IScene, MappingsResponse } from '../shared/types'
 import { SceneWorker } from '../shared/world/SceneWorker'
 import { WebGLParcelScene } from '../dcl/WebGLParcelScene'
@@ -64,14 +63,6 @@ async function initializePreview(userScene: ILand) {
   }
 }
 
-async function initEth() {
-  if (!AVOID_WEB3) {
-    return initShared()
-  }
-
-  return { address: '0x0000000000000000000000000000000000000000', net: ETHEREUM_NETWORK.MAINNET }
-}
-
 async function loadClient() {
   await initBabylonClient()
   await loadScene()
@@ -88,11 +79,12 @@ async function loadClient() {
 
   bodyReadyFuture
     .then(async body => {
+      const { net } = await initShared()
+
       await loadClient()
-      const { net } = await initEth()
 
       // Warn in case wallet is set in mainnet
-      if (net === ETHEREUM_NETWORK.MAINNET && DEBUG && !AVOID_WEB3) {
+      if (net === ETHEREUM_NETWORK.MAINNET && DEBUG) {
         const style = document.createElement('style') as HTMLStyleElement
         style.appendChild(
           document.createTextNode(
