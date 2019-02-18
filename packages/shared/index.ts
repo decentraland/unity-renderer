@@ -1,7 +1,7 @@
 import './apis'
 import { ensureLocalStorageStructure } from './comms/profile'
 import { initializeUrlPositionObserver } from './world/positionThings'
-import { ETHEREUM_NETWORK, MOBILE_DEBUG, networkConfigurations, PREVIEW, EDITOR } from '../config'
+import { ETHEREUM_NETWORK, MOBILE_DEBUG, networkConfigurations, PREVIEW, EDITOR, AVOID_WEB3 } from '../config'
 import { getERC721 } from './ethereum/ERC721'
 import { getUserAccount, getNetwork } from './ethereum/EthereumService'
 import { connect } from './comms'
@@ -9,7 +9,7 @@ import { info, error } from '../engine/logger'
 import { requestManager, awaitWeb3Approval } from './ethereum/provider'
 
 async function grantAccess(address: string | null, net: ETHEREUM_NETWORK) {
-  if (MOBILE_DEBUG || PREVIEW || EDITOR) {
+  if (MOBILE_DEBUG || PREVIEW || EDITOR || AVOID_WEB3) {
     return true
   }
 
@@ -42,6 +42,15 @@ function getNetworkFromDomain(): ETHEREUM_NETWORK {
 }
 
 async function getAddressAndNetwork() {
+  if (AVOID_WEB3) {
+    error('Could not get Ethereum address, communications will be disabled.')
+
+    return {
+      net: getNetworkFromDomain() || ETHEREUM_NETWORK.MAINNET,
+      address: '0x0000000000000000000000000000000000000000'
+    }
+  }
+
   try {
     await awaitWeb3Approval()
     const address = await getUserAccount()
