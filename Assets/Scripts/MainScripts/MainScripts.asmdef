@@ -4,7 +4,10 @@
         "UnityGLTFAssembly",
         "PluginScripts",
         "WebSocketSharp",
-        "Unity.TextMeshPro"
+        "Unity.TextMeshPro",
+        "Utils",
+        "MaterialTransitionController",
+        "Configuration"
     ],
     "optionalUnityReferences": [],
     "includePlatforms": [],

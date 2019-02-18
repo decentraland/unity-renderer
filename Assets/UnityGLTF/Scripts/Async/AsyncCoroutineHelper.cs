@@ -1,65 +1,65 @@
-﻿using System.Collections;
+using System.Collections;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using UnityEngine;
+
 namespace UnityGLTF
 {
-    public interface IAsyncCoroutineHelper
+    public class AsyncCoroutineHelper : MonoBehaviour
     {
-        Task RunAsTask(IEnumerator coroutine, string name);
-    }
+        private Queue<CoroutineInfo> queuedActions = new Queue<CoroutineInfo>();
+        private List<CoroutineInfo> runningActions = new List<CoroutineInfo>();
 
-    public class AsyncCoroutineHelper : MonoBehaviour, IAsyncCoroutineHelper
-    {
-        private Queue<CoroutineInfo> _actions = new Queue<CoroutineInfo>();
+        public int runningActionsCount { get { return runningActions != null ? runningActions.Count : 0; } }
+        public int queuedActionsCount { get { return queuedActions != null ? queuedActions.Count : 0; } }
 
-        public Task RunAsTask(IEnumerator coroutine, string name)
+        public CoroutineInfo RunAsTask(IEnumerator coroutine, string name)
         {
-            TaskCompletionSource<bool> tcs = new TaskCompletionSource<bool>();
-            lock (_actions)
-            {
-                _actions.Enqueue(
-                    new CoroutineInfo
-                    {
-                        Coroutine = coroutine,
-                        Tcs = tcs,
-                        Name = name
-                    }
-                );
-            }
-
-            return tcs.Task;
+            queuedActions.Enqueue(
+                new CoroutineInfo
+                {
+                    Coroutine = coroutine,
+                    finished = false
+                }
+            );
+            
+            return queuedActions.Peek();
         }
 
         private IEnumerator CallMethodOnMainThread(CoroutineInfo coroutineInfo)
         {
             yield return coroutineInfo.Coroutine;
-            coroutineInfo.Tcs.SetResult(true);
+            coroutineInfo.finished = true;
+            runningActions.Remove(coroutineInfo);
+        }
+
+        public bool AllCoroutinesAreFinished()
+        {
+            if (runningActions == null || runningActions.Count == 0)
+                return true;
+
+            return false;
         }
 
         private void Update()
         {
-            CoroutineInfo? coroutineInfo = null;
-
-            lock (_actions)
+            if (queuedActions.Count > 0)
             {
-                if (_actions.Count > 0)
+                CoroutineInfo coroutineInfo = null;
+                coroutineInfo = queuedActions.Dequeue();
+
+                if (coroutineInfo != null)
                 {
-                    coroutineInfo = _actions.Dequeue();
+                    runningActions.Add(coroutineInfo);
+                    StartCoroutine(CallMethodOnMainThread(coroutineInfo));
                 }
-            }
-
-            if (coroutineInfo != null)
-            {
-                StartCoroutine(CallMethodOnMainThread(coroutineInfo.Value));
             }
         }
 
-        private struct CoroutineInfo
+        public class CoroutineInfo
         {
             public IEnumerator Coroutine;
-            public TaskCompletionSource<bool> Tcs;
-            public string Name;
+            public bool finished = false;
         }
     }
 }

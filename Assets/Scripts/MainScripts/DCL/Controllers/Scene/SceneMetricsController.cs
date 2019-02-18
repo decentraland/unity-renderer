@@ -110,15 +110,14 @@ namespace DCL
 
         void Entity_OnShapeUpdated(DecentralandEntity e)
         {
-            //double startTime = Time.realtimeSinceStartup;
             AddGameObject(e.meshGameObject);
-            //Debug.Log("Entity_OnShapeUpdated Perf test = ms" + (Time.realtimeSinceStartup - startTime) * 1000.0f);
         }
 
         void RemoveGameObject(GameObject go)
         {
             if (go == null)
                 return;
+
             //NOTE(Brian): If this proves to be too slow we can spread it with a Coroutine spooler.
             Renderer[] renderers = go.GetComponentsInChildren<Renderer>();
 
@@ -127,8 +126,8 @@ namespace DCL
                 Renderer r = renderers[i];
                 MeshFilter mf = r.gameObject.GetComponent<MeshFilter>();
 
-                //NOTE(Brian): Remove later
-                if (r.gameObject.name == "PlaceholderRenderer")
+                var transitionController = r.gameObject.GetComponentInParent<MaterialTransitionController>();
+                if (transitionController != null && transitionController.placeholder == r.gameObject)
                 {
                     continue;
                 }
@@ -150,9 +149,10 @@ namespace DCL
                 {
                     Material m = r.sharedMaterials[j];
 
-                    if (!uniqueMaterials.Contains(m))
+                    if (uniqueMaterials.Contains(m))
                     {
                         uniqueMaterials.Remove(m);
+                        model.materials = uniqueMaterials.Count;
                     }
                 }
             }
@@ -170,8 +170,8 @@ namespace DCL
             {
                 Renderer r = renderers[i];
 
-                //NOTE(Brian): Remove later
-                if (r.gameObject.name == "PlaceholderRenderer")
+                var transitionController = r.gameObject.GetComponentInParent<MaterialTransitionController>();
+                if (transitionController != null && transitionController.placeholder == r.gameObject)
                 {
                     continue;
                 }

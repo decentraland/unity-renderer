@@ -46,7 +46,6 @@ namespace DCL.Components
         public override IEnumerator ApplyChanges(string newJson)
         {
             model = Utils.SafeFromJson<Model>(newJson);
-            // this component is applied to the gameObjects transform
             UpdateTransform();   
             return null;
         }
@@ -55,9 +54,7 @@ namespace DCL.Components
         {
             if (entity != null && entity.gameObject != null)
             {
-                entity.gameObject.transform.localPosition = Vector3.zero;
-                entity.gameObject.transform.localScale = Vector3.one;
-                entity.gameObject.transform.localRotation = Quaternion.identity;
+                entity.gameObject.transform.ResetLocalTRS();
             }
         }
     }

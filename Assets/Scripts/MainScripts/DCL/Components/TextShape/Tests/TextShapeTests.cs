@@ -17,7 +17,7 @@ namespace Tests
         [UnityTest]
         public IEnumerator TextShapeCreateTest()
         {
-            var sceneController = TestHelpers.InitializeSceneController(true);
+            var sceneController = TestHelpers.InitializeSceneController();
 
             yield return new WaitForSeconds(0.01f);
 

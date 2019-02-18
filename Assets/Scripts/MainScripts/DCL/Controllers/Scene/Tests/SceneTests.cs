@@ -14,7 +14,7 @@ namespace Tests
         [UnityTest]
         public IEnumerator PerformanceLimitControllerTests()
         {
-            var sceneController = TestHelpers.InitializeSceneController(true);
+            var sceneController = TestHelpers.InitializeSceneController();
             var scenesToLoad = (Resources.Load("TestJSON/SceneLoadingTest") as TextAsset).text;
 
             yield return new WaitForSeconds(.1f);
@@ -34,18 +34,18 @@ namespace Tests
             TestHelpers.InstantiateEntityWithShape(scene, "3", DCL.Models.CLASS_ID.PLANE_SHAPE, new Vector3(2, 1, 0));
             TestHelpers.InstantiateEntityWithShape(scene, "4", DCL.Models.CLASS_ID.CONE_SHAPE, new Vector3(4, 1, 0));
             TestHelpers.InstantiateEntityWithShape(scene, "5", DCL.Models.CLASS_ID.CYLINDER_SHAPE, new Vector3(6, 1, 0));
-            TestHelpers.InstantiateEntityWithShape(scene, "6", DCL.Models.CLASS_ID.GLTF_SHAPE, new Vector3(0, 1, 6), "http://127.0.0.1:9991/GLB/Lantern/Lantern.glb");
-            TestHelpers.InstantiateEntityWithShape(scene, "7", DCL.Models.CLASS_ID.OBJ_SHAPE, new Vector3(10, 1, 0), "http://127.0.0.1:9991/OBJ/teapot.obj");
-            TestHelpers.InstantiateEntityWithShape(scene, "8", DCL.Models.CLASS_ID.GLTF_SHAPE, new Vector3(0, 1, 12), "http://127.0.0.1:9991/GLB/CesiumMan/CesiumMan.glb");
+            TestHelpers.InstantiateEntityWithShape(scene, "6", DCL.Models.CLASS_ID.GLTF_SHAPE, new Vector3(0, 1, 6), TestHelpers.GetTestsAssetsPath() + "/GLB/Lantern/Lantern.glb");
+            TestHelpers.InstantiateEntityWithShape(scene, "7", DCL.Models.CLASS_ID.OBJ_SHAPE, new Vector3(10, 1, 0), TestHelpers.GetTestsAssetsPath() + "/OBJ/teapot.obj");
+            TestHelpers.InstantiateEntityWithShape(scene, "8", DCL.Models.CLASS_ID.GLTF_SHAPE, new Vector3(0, 1, 12), TestHelpers.GetTestsAssetsPath() + "/GLB/CesiumMan/CesiumMan.glb");
 
             yield return new WaitForSeconds(8f);
 
             AssertMetricsModel(scene,
-                triangles:11189,
-                materials:3,
+                triangles:17521,
+                materials:5,
                 entities:8,
-                meshes:9,
-                bodies:9,
+                meshes:11,
+                bodies:11,
                 textures:0 );
                 
             TestHelpers.RemoveSceneEntity(scene, "8");
@@ -53,11 +53,11 @@ namespace Tests
             yield return new WaitForSeconds(.1f);
 
             AssertMetricsModel(scene,
-                triangles: 6517,
-                materials: 3,
+                triangles: 12849,
+                materials: 4,
                 entities: 7,
-                meshes: 8,
-                bodies: 8,
+                meshes: 10,
+                bodies: 10,
                 textures: 0);
 
             yield return null;
@@ -66,7 +66,7 @@ namespace Tests
         void AssertMetricsModel(ParcelScene scene, int triangles, int materials, int entities, int meshes, int bodies, int textures)
         {
             SceneMetricsController.Model inputModel = scene.metricsController.GetModel();
-
+            
             Assert.AreEqual(triangles, inputModel.triangles, "Incorrect triangle count, was: "+triangles );
             Assert.AreEqual(materials, inputModel.materials, "Incorrect materials count");
             Assert.AreEqual(entities, inputModel.entities, "Incorrect entities count");

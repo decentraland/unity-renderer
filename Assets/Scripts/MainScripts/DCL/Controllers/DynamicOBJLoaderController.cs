@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections;
 using UnityEngine;
 using UnityEngine.Networking;
@@ -9,8 +9,7 @@ public class DynamicOBJLoaderController : MonoBehaviour
     public string OBJUrl = "";
     public GameObject loadingPlaceholder;
 
-    public delegate void OBJLoaderEventDelegate();
-    public event OBJLoaderEventDelegate OnFinishedLoadingAsset;
+    public event System.Action OnFinishedLoadingAsset;
 
     [HideInInspector] public bool alreadyLoadedAsset = false;
     [HideInInspector] public GameObject loadedOBJGameObject;
@@ -55,7 +54,7 @@ public class DynamicOBJLoaderController : MonoBehaviour
 
             if (webRequest.isNetworkError || webRequest.isHttpError)
             {
-                Debug.Log("Couldn't get OBJ, error: " + webRequest.error);
+                Debug.Log("Couldn't get OBJ, error: " + webRequest.error + " ... " + OBJUrl );
             }
             else
             {

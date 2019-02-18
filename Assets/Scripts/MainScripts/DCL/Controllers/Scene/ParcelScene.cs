@@ -39,13 +39,13 @@ namespace DCL.Controllers
 
             this.name = gameObject.name = $"scene:{data.id}";
 
-            gameObject.transform.position = Helpers.Utils.GridToWorldPosition(data.basePosition.x, data.basePosition.y);
+            gameObject.transform.position = GridToWorldPosition(data.basePosition.x, data.basePosition.y);
 
             if (Environment.DEBUG)
             {
                 for (int j = 0; j < data.parcels.Length; j++)
                 {
-                    var plane = GameObject.CreatePrimitive(PrimitiveType.Plane);
+                    GameObject plane = GameObject.CreatePrimitive(PrimitiveType.Plane);
 
                     Object.Destroy(plane.GetComponent<MeshCollider>());
 
@@ -56,12 +56,18 @@ namespace DCL.Controllers
                     // the plane mesh with scale 1 occupies a 10 units space
                     plane.transform.localScale = new Vector3(ParcelSettings.PARCEL_SIZE * 0.1f, 1f, ParcelSettings.PARCEL_SIZE * 0.1f);
 
-                    var position = Helpers.Utils.GridToWorldPosition(data.parcels[j].x, data.parcels[j].y);
+                    Vector3 position = GridToWorldPosition(data.parcels[j].x, data.parcels[j].y);
                     // SET TO A POSITION RELATIVE TO basePosition
 
                     position.Set(position.x + ParcelSettings.PARCEL_SIZE / 2, ParcelSettings.DEBUG_FLOOR_HEIGHT, position.z + ParcelSettings.PARCEL_SIZE / 2);
 
                     plane.transform.position = position;
+
+                    var matTransition = plane.AddComponent<MaterialTransitionController>();
+                    matTransition.delay = 0;
+                    matTransition.useHologram = false;
+                    matTransition.fadeThickness = 20;
+                    matTransition.OnDidFinishLoading(plane.GetComponent<Renderer>().sharedMaterial);
                 }
             }
         }
@@ -96,8 +102,7 @@ namespace DCL.Controllers
             newEntity.entityId = tmpCreateEntityMessage.id;
             newEntity.gameObject = new GameObject();
             newEntity.gameObject.transform.SetParent(gameObject.transform);
-            newEntity.gameObject.transform.localScale = Vector3.one;
-            newEntity.gameObject.transform.localPosition = Vector3.zero;
+            newEntity.gameObject.transform.ResetLocalTRS();
             newEntity.gameObject.name = "ENTITY_" + tmpCreateEntityMessage.id;
             newEntity.scene = this;
 
@@ -237,10 +242,8 @@ namespace DCL.Controllers
                     newComponent.entity = entity;
                     entity.components.Add(classId, newComponent);
 
-                    newComponent.transform.SetParent(entity.gameObject.transform);
-                    newComponent.transform.localPosition = Vector3.zero;
-                    newComponent.transform.localRotation = Quaternion.identity;
-                    newComponent.transform.localScale = Vector3.one;
+                    newComponent.transform.SetParent( entity.gameObject.transform );
+                    newComponent.transform.ResetLocalTRS();
 
                     newComponent.UpdateFromJSON(createEntityComponentMessage.json);
                 }
@@ -460,6 +463,29 @@ namespace DCL.Controllers
             }
 
             return decentralandEntity;
+        }
+
+        /**
+         * Transforms a grid position into a world-relative 3d position
+         */
+        public static Vector3 GridToWorldPosition(float xGridPosition, float yGridPosition)
+        {
+            return new Vector3(
+              x: xGridPosition * ParcelSettings.PARCEL_SIZE,
+              y: 0f,
+              z: yGridPosition * ParcelSettings.PARCEL_SIZE
+            );
+        }
+
+        /**
+         * Transforms a world position into a grid position
+         */
+        public static Vector2 worldToGrid(Vector3 vector)
+        {
+            return new Vector2(
+              Mathf.Floor(vector.x / ParcelSettings.PARCEL_SIZE),
+              Mathf.Floor(vector.z / ParcelSettings.PARCEL_SIZE)
+            );
         }
     }
 }

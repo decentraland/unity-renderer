@@ -1,7 +1,8 @@
 {
     "name": "UnityGLTFAssembly",
     "references": [
-        "CoroutineHelpers"
+        "CoroutineHelpers",
+        "MaterialTransitionController"
     ],
     "optionalUnityReferences": [],
     "includePlatforms": [],

@@ -21,6 +21,7 @@ namespace Tests
 {
     public class PlayModeTests
     {
+
         [UnityTest]
         public IEnumerator EntityCreation()
         {
@@ -104,7 +105,7 @@ namespace Tests
         [Explicit("This test fails in cloud build")]
         public IEnumerator CreateAnimationComponent()
         {
-            var sceneController = TestHelpers.InitializeSceneController(true);
+            var sceneController = TestHelpers.InitializeSceneController();
 
             yield return new WaitForEndOfFrame();
 
@@ -123,7 +124,7 @@ namespace Tests
 
             TestHelpers.CreateAndSetShape(scene, entityId, DCL.Models.CLASS_ID.GLTF_SHAPE, JsonConvert.SerializeObject(new
             {
-                src = "http://127.0.0.1:9991/GLB/CesiumMan/CesiumMan.glb"
+                src = TestHelpers.GetTestsAssetsPath() + "/GLB/CesiumMan/CesiumMan.glb"
             }));
 
             string animJson = JsonConvert.SerializeObject(new DCLAnimator.Model
@@ -389,12 +390,10 @@ namespace Tests
             Assert.AreEqual("DCL Cone50v0t1b2l2o Instance", meshName);
         }
 
-        // TODO: Find a way to run this test on Unity Cloud Build, even though it passes locally, the webserver fails to find the .obj when running in unity cloud build...
         [UnityTest]
-        [Explicit("This test fails in cloud build")]
         public IEnumerator OBJShapeUpdate()
         {
-            var sceneController = TestHelpers.InitializeSceneController(true);
+            var sceneController = TestHelpers.InitializeSceneController();
 
             yield return new WaitForSeconds(0.01f);
 
@@ -414,7 +413,7 @@ namespace Tests
 
             TestHelpers.CreateAndSetShape(scene, entityId, DCL.Models.CLASS_ID.OBJ_SHAPE, JsonConvert.SerializeObject(new
             {
-                src = "http://127.0.0.1:9991/OBJ/teapot.obj"
+                src = TestHelpers.GetTestsAssetsPath() + "/OBJ/teapot.obj"
             }));
 
             yield return new WaitForSeconds(8f);
@@ -426,10 +425,12 @@ namespace Tests
             Assert.AreNotSame(placeholderLoadingMaterial, childRenderer.sharedMaterial, "Since the shape has already been updated, the child renderer found shouldn't have the 'AssetLoading' placeholder material");
         }
 
+
+
         [UnityTest]
         public IEnumerator GLTFShapeUpdate()
         {
-            var sceneController = TestHelpers.InitializeSceneController(true);
+            var sceneController = TestHelpers.InitializeSceneController();
 
             yield return new WaitForSeconds(0.01f);
 
@@ -445,7 +446,7 @@ namespace Tests
 
             TestHelpers.CreateAndSetShape(scene, entityId, DCL.Models.CLASS_ID.GLTF_SHAPE, JsonConvert.SerializeObject(new
             {
-                src = "http://127.0.0.1:9991/GLB/Lantern/Lantern.glb"
+                src = TestHelpers.GetTestsAssetsPath() + "/GLB/Lantern/Lantern.glb"
             }));
 
             yield return new WaitForSeconds(8f);
@@ -456,7 +457,7 @@ namespace Tests
         [UnityTest]
         public IEnumerator ShapeMeshObjectIsReused()
         {
-            var sceneController = TestHelpers.InitializeSceneController(true);
+            var sceneController = TestHelpers.InitializeSceneController();
 
             yield return new WaitForSeconds(0.01f);
 
@@ -491,7 +492,7 @@ namespace Tests
         [UnityTest]
         public IEnumerator PreExistentShapeUpdate()
         {
-            var sceneController = TestHelpers.InitializeSceneController(true);
+            var sceneController = TestHelpers.InitializeSceneController();
 
             yield return new WaitForSeconds(0.01f);
 
@@ -529,7 +530,7 @@ namespace Tests
             // Update its shape to a GLTF
             TestHelpers.CreateAndSetShape(scene, entityId, DCL.Models.CLASS_ID.GLTF_SHAPE, JsonConvert.SerializeObject(new
             {
-                src = "http://127.0.0.1:9991/GLB/Lantern/Lantern.glb"
+                src = TestHelpers.GetTestsAssetsPath() + "/GLB/Lantern/Lantern.glb"
             }));
 
             yield return new WaitForSeconds(8f);
@@ -557,7 +558,7 @@ namespace Tests
         [UnityTest]
         public IEnumerator PreExistentGLTFShapeUpdate()
         {
-            var sceneController = TestHelpers.InitializeSceneController(true);
+            var sceneController = TestHelpers.InitializeSceneController();
 
             yield return new WaitForSeconds(0.01f);
 
@@ -571,7 +572,7 @@ namespace Tests
 
             TestHelpers.CreateAndSetShape(scene, entityId, DCL.Models.CLASS_ID.GLTF_SHAPE, JsonConvert.SerializeObject(new
             {
-                src = "http://127.0.0.1:9991/GLB/Lantern/Lantern.glb"
+                src = TestHelpers.GetTestsAssetsPath() + "/GLB/Lantern/Lantern.glb"
             }));
 
             yield return new WaitForSeconds(8f);
@@ -580,7 +581,7 @@ namespace Tests
 
             TestHelpers.CreateAndSetShape(scene, entityId, DCL.Models.CLASS_ID.GLTF_SHAPE, JsonConvert.SerializeObject(new
             {
-                src = "http://127.0.0.1:9991/GLB/DamagedHelmet/DamagedHelmet.glb"
+                src = TestHelpers.GetTestsAssetsPath() + "/GLB/DamagedHelmet/DamagedHelmet.glb"
             }));
 
             yield return new WaitForSeconds(8f);
@@ -591,7 +592,7 @@ namespace Tests
         [UnityTest]
         public IEnumerator PreExistentGLTFShapeImmediateUpdate()
         {
-            var sceneController = TestHelpers.InitializeSceneController(true);
+            var sceneController = TestHelpers.InitializeSceneController();
 
             yield return new WaitForSeconds(0.01f);
 
@@ -605,12 +606,12 @@ namespace Tests
 
             TestHelpers.CreateAndSetShape(scene, entityId, DCL.Models.CLASS_ID.GLTF_SHAPE, JsonConvert.SerializeObject(new
             {
-                src = "http://127.0.0.1:9991/GLB/Lantern/Lantern.glb"
+                src = TestHelpers.GetTestsAssetsPath() + "/GLB/Lantern/Lantern.glb"
             }));
 
             TestHelpers.CreateAndSetShape(scene, entityId, DCL.Models.CLASS_ID.GLTF_SHAPE, JsonConvert.SerializeObject(new
             {
-                src = "http://127.0.0.1:9991/GLB/DamagedHelmet/DamagedHelmet.glb"
+                src = TestHelpers.GetTestsAssetsPath() + "/GLB/DamagedHelmet/DamagedHelmet.glb"
             }));
 
             yield return new WaitForSeconds(8f);
@@ -694,7 +695,7 @@ namespace Tests
         [UnityTest]
         public IEnumerator GLTFShapeWithCollisionsUpdate()
         {
-            var sceneController = TestHelpers.InitializeSceneController(true);
+            var sceneController = TestHelpers.InitializeSceneController();
 
             yield return new WaitForSeconds(0.01f);
 
@@ -708,7 +709,7 @@ namespace Tests
 
             TestHelpers.CreateAndSetShape(scene, entityId, DCL.Models.CLASS_ID.GLTF_SHAPE, JsonConvert.SerializeObject(new
             {
-                src = "http://127.0.0.1:9991/GLB/Roads/Roads.glb" // this glb has the "..._collider" object inside with the pre-defined collision geometry.
+                src = TestHelpers.GetTestsAssetsPath() + "/GLB/Roads/Roads.glb" // this glb has the "..._collider" object inside with the pre-defined collision geometry.
             }));
 
             yield return new WaitForSeconds(8f);
@@ -751,7 +752,7 @@ namespace Tests
         [UnityTest]
         public IEnumerator OnClickComponentInitializesWithGLTFShape()
         {
-            var sceneController = TestHelpers.InitializeSceneController(true);
+            var sceneController = TestHelpers.InitializeSceneController();
 
             yield return new WaitForSeconds(0.01f);
 
@@ -768,7 +769,7 @@ namespace Tests
 
             TestHelpers.CreateAndSetShape(scene, entityId, DCL.Models.CLASS_ID.GLTF_SHAPE, JsonConvert.SerializeObject(new
             {
-                src = "http://127.0.0.1:9991/GLB/Lantern/Lantern.glb"
+                src = TestHelpers.GetTestsAssetsPath() + "/GLB/Lantern/Lantern.glb"
             }));
 
             yield return new WaitForSeconds(8f);
@@ -795,7 +796,7 @@ namespace Tests
         [UnityTest]
         public IEnumerator OnClickComponentInitializesWithGLTFShapeAsynchronously()
         {
-            var sceneController = TestHelpers.InitializeSceneController(true);
+            var sceneController = TestHelpers.InitializeSceneController();
 
             yield return new WaitForSeconds(0.01f);
 
@@ -811,7 +812,7 @@ namespace Tests
 
             TestHelpers.CreateAndSetShape(scene, entityId, DCL.Models.CLASS_ID.GLTF_SHAPE, JsonConvert.SerializeObject(new
             {
-                src = "http://127.0.0.1:9991/GLB/Lantern/Lantern.glb"
+                src = TestHelpers.GetTestsAssetsPath() + "/GLB/Lantern/Lantern.glb"
             }));
 
             string clickUuid = "click-1";
@@ -876,7 +877,7 @@ namespace Tests
         [UnityTest]
         public IEnumerator PBRMaterialUpdate()
         {
-            var sceneController = TestHelpers.InitializeSceneController(true);
+            var sceneController = TestHelpers.InitializeSceneController();
 
             yield return new WaitForSeconds(0.01f);
 
@@ -887,7 +888,7 @@ namespace Tests
 
             string entityId = "1";
             string materialID = "a-material";
-            string textureURL = "http://127.0.0.1:9991/Images/atlas.png";
+            string textureURL = TestHelpers.GetTestsAssetsPath() + "/Images/atlas.png";
 
             TestHelpers.InstantiateEntityWithMaterial(scene, entityId, Vector3.zero,
                 new PBRMaterial.Model
@@ -924,7 +925,7 @@ namespace Tests
         [UnityTest]
         public IEnumerator PBRMaterialPropertiesUpdate()
         {
-            var sceneController = TestHelpers.InitializeSceneController(true);
+            var sceneController = TestHelpers.InitializeSceneController();
 
             yield return new WaitForSeconds(0.01f);
 
@@ -979,7 +980,7 @@ namespace Tests
             }
 
             // Update material
-            string textureURL = "http://127.0.0.1:9991/Images/atlas.png";
+            string textureURL = TestHelpers.GetTestsAssetsPath() + "/Images/atlas.png";
 
             scene.SharedComponentUpdate(JsonUtility.ToJson(new DCL.Models.SharedComponentUpdateMessage
             {
@@ -1259,7 +1260,7 @@ namespace Tests
         [UnityTest]
         public IEnumerator BasicMaterialAttachBeforeShape()
         {
-            var sceneController = TestHelpers.InitializeSceneController(true);
+            var sceneController = TestHelpers.InitializeSceneController();
 
             yield return new WaitForSeconds(0.01f);
 
@@ -1273,7 +1274,7 @@ namespace Tests
             BasicMaterial mat = TestHelpers.SharedComponentCreate<BasicMaterial, BasicMaterial.Model>(scene, CLASS_ID.BASIC_MATERIAL,
                 new BasicMaterial.Model
                 {
-                    texture = "http://127.0.0.1:9991/Images/atlas.png",
+                    texture = TestHelpers.GetTestsAssetsPath() + "/Images/atlas.png",
                     samplingMode = 2,
                     wrap = 3,
                     alphaTest = 0.5f
@@ -1297,7 +1298,7 @@ namespace Tests
         [UnityTest]
         public IEnumerator PBRMaterialAttachBeforeShape()
         {
-            var sceneController = TestHelpers.InitializeSceneController(true);
+            var sceneController = TestHelpers.InitializeSceneController();
 
             yield return new WaitForSeconds(0.01f);
 
@@ -1308,7 +1309,7 @@ namespace Tests
 
             DecentralandEntity entity = TestHelpers.CreateSceneEntity(scene);
 
-            string textureURL = "http://127.0.0.1:9991/Images/atlas.png";
+            string textureURL = TestHelpers.GetTestsAssetsPath() + "/Images/atlas.png";
 
             PBRMaterial mat = TestHelpers.SharedComponentCreate<PBRMaterial, PBRMaterial.Model>(scene, CLASS_ID.PBR_MATERIAL,
                 new PBRMaterial.Model
@@ -1338,7 +1339,7 @@ namespace Tests
         [UnityTest]
         public IEnumerator EntityBasicMaterialUpdate()
         {
-            var sceneController = TestHelpers.InitializeSceneController(true);
+            var sceneController = TestHelpers.InitializeSceneController();
 
             yield return new WaitForSeconds(0.01f);
 
@@ -1380,7 +1381,7 @@ namespace Tests
             }
 
             // Update material
-            string textureURL = "http://127.0.0.1:9991/Images/atlas.png";
+            string textureURL = TestHelpers.GetTestsAssetsPath() + "/Images/atlas.png";
 
             scene.SharedComponentUpdate(JsonUtility.ToJson(new DCL.Models.SharedComponentUpdateMessage
             {

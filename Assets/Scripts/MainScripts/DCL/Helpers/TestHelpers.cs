@@ -10,6 +10,18 @@ namespace DCL.Helpers
 {
     public static class TestHelpers
     {
+        public static string GetTestsAssetsPath(bool useWebServerPath = false)
+        {
+            if (useWebServerPath)
+                return "http://127.0.0.1:9991";
+            else
+            {
+                var uri = new System.Uri(Application.dataPath + "/../TestResources");
+                var converted = uri.AbsoluteUri;
+                return converted;
+            }
+        }
+
         public static string CreateSceneMessage(string sceneId, string method, string payload)
         {
             return $"{sceneId}\t{method}\t{payload}\n";
@@ -116,24 +128,16 @@ namespace DCL.Helpers
             return textShape;
         }
 
-        public static DecentralandEntity InstantiateEntityWithShape(ParcelScene scene, DCL.Models.CLASS_ID classId, Vector3 position, out BaseShape shape, string remoteSrc = "")
+        public static T InstantiateEntityWithShape<T, K>(ParcelScene scene, DCL.Models.CLASS_ID classId, Vector3 position, out DecentralandEntity entity, K model)
+        where T : BaseShape
+        where K : class
         {
-            DecentralandEntity entity = CreateSceneEntity(scene);
+            entity = CreateSceneEntity(scene);
             string shapeId = "";
 
-            if (string.IsNullOrEmpty(remoteSrc))
-            {
-                shapeId = CreateAndSetShape(scene, entity.entityId, classId, "{}");
-            }
-            else
-            {
-                shapeId = CreateAndSetShape(scene, entity.entityId, classId, JsonConvert.SerializeObject(new
-                {
-                    src = remoteSrc
-                }));
-            }
+            shapeId = CreateAndSetShape(scene, entity.entityId, classId, JsonConvert.SerializeObject(model));
 
-            shape = scene.disposableComponents[shapeId] as BaseShape;
+            T shape = scene.disposableComponents[shapeId] as T;
 
             EntityComponentCreate<DCLTransform, DCLTransform.Model>(scene, entity,
             new DCLTransform.Model
@@ -143,7 +147,7 @@ namespace DCL.Helpers
                 scale = Vector3.one
             });
 
-            return entity;
+            return shape;
         }
 
         public static void InstantiateEntityWithShape(ParcelScene scene, string entityId, DCL.Models.CLASS_ID classId, Vector3 position, string remoteSrc = "")
@@ -311,6 +315,7 @@ namespace DCL.Helpers
                 }
             }
 
+            Configuration.ParcelSettings.VISUAL_LOADING_ENABLED = false;
             sceneController.UnloadAllScenes();
 
             return sceneController;
