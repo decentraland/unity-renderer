@@ -13,7 +13,7 @@ if (DEBUG && !isRunningTest) {
   // we only set this interval in debug mode because this boxes are only visible in that mode
   setInterval(() => {
     overlayColor.set(1 - overlayColor.r, overlayColor.g, 1 - overlayColor.b)
-  }, 160)
+  }, 1000)
 }
 
 function filterMeshes($: BABYLON.TransformNode) {
@@ -66,7 +66,7 @@ export class HighlightBox extends BaseComponent<{ highlight: boolean }> {
       for (let child of children) {
         child.renderOverlay = false
         child.showBoundingBox = false
-        child.overlayColor = new BABYLON.Color3()
+        child.overlayColor = mesh.overlayColor
       }
     }
   }

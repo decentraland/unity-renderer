@@ -47,46 +47,63 @@ export class GLTFShape extends DisposableComponent {
             this.onDetach(entity)
           }
 
-          // Find all the materials from all the meshes and add to $.materials
           assetContainer.meshes.forEach(mesh => {
-            if (mesh.material) {
-              if (!assetContainer.materials.includes(mesh.material)) {
-                assetContainer.materials.push(mesh.material)
+            if (mesh instanceof BABYLON.Mesh) {
+              if (mesh.geometry && !assetContainer.geometries.includes(mesh.geometry)) {
+                assetContainer.geometries.push(mesh.geometry)
               }
             }
-          })
-
-          // Find the textures in the materials that share the same domain as the context
-          // then add the textures to the $.textures
-          assetContainer.materials.forEach((material: BABYLON.Material | BABYLON.PBRMaterial) => {
-            for (let i in material) {
-              const t = material[i]
-
-              if (i.endsWith('Texture') && t instanceof BABYLON.Texture && t !== probe.cubeTexture) {
-                if (!assetContainer.textures.includes(t)) {
-                  if (
-                    (this.context && t.url.includes(this.context.domain)) ||
-                    (t.url.startsWith('data:/') && t.url.includes(file))
-                  ) {
-                    assetContainer.textures.push(t)
+            mesh.subMeshes &&
+              mesh.subMeshes.forEach(subMesh => {
+                const mesh = subMesh.getMesh()
+                if (mesh instanceof BABYLON.Mesh) {
+                  if (mesh.geometry && !assetContainer.geometries.includes(mesh.geometry)) {
+                    assetContainer.geometries.push(mesh.geometry)
                   }
                 }
-              }
-            }
-
-            if ('reflectionTexture' in material) {
-              material.reflectionTexture = probe.cubeTexture
-            }
+              })
           })
 
           // TODO(menduz): what happens if the load ends when the entity got removed?
           if (!entity.isDisposed()) {
             processColliders(assetContainer)
 
+            // Find all the materials from all the meshes and add to $.materials
+            assetContainer.meshes.forEach(mesh => {
+              mesh.cullingStrategy = BABYLON.AbstractMesh.CULLINGSTRATEGY_BOUNDINGSPHERE_ONLY
+              if (mesh.material) {
+                if (!assetContainer.materials.includes(mesh.material)) {
+                  assetContainer.materials.push(mesh.material)
+                }
+              }
+            })
+
+            // Find the textures in the materials that share the same domain as the context
+            // then add the textures to the $.textures
+            assetContainer.materials.forEach((material: BABYLON.Material | BABYLON.PBRMaterial) => {
+              for (let i in material) {
+                const t = material[i]
+
+                if (i.endsWith('Texture') && t instanceof BABYLON.Texture && t !== probe.cubeTexture) {
+                  if (!assetContainer.textures.includes(t)) {
+                    if (
+                      (this.context && t.url.includes(this.context.domain)) ||
+                      (t.url.startsWith('data:/') && t.url.includes(file))
+                    ) {
+                      assetContainer.textures.push(t)
+                    }
+                  }
+                }
+              }
+
+              if ('reflectionTexture' in material) {
+                material.reflectionTexture = probe.cubeTexture
+              }
+            })
+
             // Fin the main mesh and add it as the BasicShape.nameInEntity component.
             assetContainer.meshes.filter($ => $.name === '__root__').forEach(mesh => {
               entity.setObject3D(BasicShape.nameInEntity, mesh)
-              mesh.cullingStrategy = BABYLON.AbstractMesh.CULLINGSTRATEGY_BOUNDINGSPHERE_ONLY
               mesh.rotation.set(0, Math.PI, 0)
             })
 
@@ -196,8 +213,6 @@ export class GLTFShape extends DisposableComponent {
 }
 
 DisposableComponent.registerClassId(CLASS_ID.GLTF_SHAPE, GLTFShape)
-
-BABYLON.Animation.AllowMatricesInterpolation = true
 
 /*
 const NAME = 'DCL_urlResolver'

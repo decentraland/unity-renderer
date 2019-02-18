@@ -36,49 +36,64 @@ describe('parcelScenePositions unit tests', () => {
     describe.skip('vertical limits', () => {
       it('(20) -> true', () => {
         const bbox = { maximum: { x: 1, y: 20, z: 1 }, minimum: { x: 0, y: 0, z: 0 } }
-        const result = isOnLimits(bbox, new Set(['0,0']))
+        const result = isOnLimits(bbox, [{ x: 0, y: 0, z: 0 }])
         expect(result).to.eq(true)
       })
       it('(20.1) -> false', () => {
         const bbox = { maximum: { x: 1, y: 20.1, z: 1 }, minimum: { x: 0, y: 0, z: 0 } }
-        const result = isOnLimits(bbox, new Set(['0,0']))
+        const result = isOnLimits(bbox, [{ x: 0, y: 0, z: 0 }])
         expect(result).to.eq(false)
       })
       it('(-20) -> true', () => {
         const bbox = { maximum: { x: 1, y: 0, z: 1 }, minimum: { x: 0, y: -20, z: 0 } }
-        const result = isOnLimits(bbox, new Set(['0,0']))
+        const result = isOnLimits(bbox, [{ x: 0, y: 0, z: 0 }])
         expect(result).to.eq(true)
       })
       it('(-20.1) -> false', () => {
         const bbox = { maximum: { x: 1, y: 0, z: 1 }, minimum: { x: 0, y: -20.1, z: 0 } }
-        const result = isOnLimits(bbox, new Set(['0,0']))
+        const result = isOnLimits(bbox, [{ x: 0, y: 0, z: 0 }])
         expect(result).to.eq(false)
       })
     })
     describe('horizontal limits', () => {
       it('(16, 16) -> true', () => {
         const bbox = { maximum: { x: 16, y: 0, z: 16 }, minimum: { x: 0, y: 0, z: 0 } }
-        const result = isOnLimits(bbox, new Set(['0,0']))
+        const result = isOnLimits(bbox, [{ x: 0, y: 0, z: 0 }])
         expect(result).to.eq(true)
       })
       it('(0, 0) -> true', () => {
         const bbox = { maximum: { x: 0, y: 0, z: 0 }, minimum: { x: 0, y: 0, z: 0 } }
-        const result = isOnLimits(bbox, new Set(['0,0']))
+        const result = isOnLimits(bbox, [{ x: 0, y: 0, z: 0 }])
         expect(result).to.eq(true)
       })
       it('a(16, 16) -> true', () => {
         const bbox = { maximum: { x: 16, y: 0, z: 16 }, minimum: { x: 16, y: 0, z: 16 } }
-        const result = isOnLimits(bbox, new Set(['1,1']))
+        const result = isOnLimits(bbox, [{ x: 16, y: 0, z: 16 }])
         expect(result).to.eq(true)
       })
       it('(16.1, 16.1) -> false', () => {
         const bbox = { maximum: { x: 16.1, y: 0, z: 16.1 }, minimum: { x: 0, y: 0, z: 0 } }
-        const result = isOnLimits(bbox, new Set(['0,0']))
+        const result = isOnLimits(bbox, [{ x: 0, y: 0, z: 0 }])
+        expect(result).to.eq(false)
+      })
+      it('(16.001, 16.001) -> true', () => {
+        const bbox = { maximum: { x: 16.001, y: 0, z: 16.001 }, minimum: { x: 0, y: 0, z: 0 } }
+        const result = isOnLimits(bbox, [{ x: 0, y: 0, z: 0 }])
+        expect(result).to.eq(true)
+      })
+      it('(-0.001, -0.001) -> true', () => {
+        const bbox = { maximum: { x: -0.001, y: 0, z: -0.001 }, minimum: { x: 0, y: 0, z: 0 } }
+        const result = isOnLimits(bbox, [{ x: 0, y: 0, z: 0 }])
+        expect(result).to.eq(true)
+      })
+      it('(-0.01, -0.01) -> false', () => {
+        const bbox = { maximum: { x: -0.01, y: 0, z: -0.01 }, minimum: { x: 0, y: 0, z: 0 } }
+        const result = isOnLimits(bbox, [{ x: 0, y: 0, z: 0 }])
         expect(result).to.eq(false)
       })
       it('(-0.1, -0.1) -> false', () => {
         const bbox = { maximum: { x: 1, y: 0, z: 1 }, minimum: { x: -0.1, y: 0, z: -0.1 } }
-        const result = isOnLimits(bbox, new Set(['0,0']))
+        const result = isOnLimits(bbox, [{ x: 0, y: 0, z: 0 }])
         expect(result).to.eq(false)
       })
     })

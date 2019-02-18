@@ -1,7 +1,7 @@
 import { scene } from '../../renderer'
 const colliderSymbol = Symbol('isCollider')
 
-const colliderMaterial = new BABYLON.GridMaterial('collider-material', scene)
+export const colliderMaterial = new BABYLON.GridMaterial('collider-material', scene)
 
 colliderMaterial.opacity = 0.99
 colliderMaterial.sideOrientation = 0

@@ -2,7 +2,6 @@ import { parcelLimits } from 'config'
 import { Vector2Component, Vector3Component, isEqual } from './landHelpers'
 
 let auxVec3: Vector3Component = { x: 0, y: 0, z: 0 }
-let auxVec2: Vector2Component = { x: 0, y: 0 }
 
 export interface BoundingInfo {
   maximum: Vector3Component
@@ -26,46 +25,34 @@ export function worldToGrid(vector: Vector3Component, target: Vector2Component):
   target.y = Math.floor(vector.z / parcelLimits.parcelSize)
 }
 
+const highDelta = parcelLimits.parcelSize + parcelLimits.centimeter
+const lowDelta = parcelLimits.centimeter
 /**
- * Returns true if value is on grid limit
+ * Returns true if a vector is inside a parcel
  */
-export function isOnLimit(value: number): boolean {
-  return Number.isInteger(value / parcelLimits.parcelSize)
+export function isInParcel(test: Vector3Component, center: Vector3Component): boolean {
+  return (
+    test.x < center.x + highDelta &&
+    test.x > center.x - lowDelta &&
+    test.z < center.z + highDelta &&
+    test.z > center.z - lowDelta
+  )
 }
 
-export function isOnLimits({ maximum, minimum }: BoundingInfo, parcels: Set<string>): boolean {
+export function isOnLimits({ maximum, minimum }: BoundingInfo, parcels: Vector3Component[]): boolean {
   // Computes the world-axis-aligned bounding box of an object (including its children),
   // accounting for both the object's, and children's, world transforms
 
-  auxVec3.x = minimum.x
-  auxVec3.z = minimum.z
-  worldToGrid(auxVec3, auxVec2)
-  if (!parcels.has(`${auxVec2.x},${auxVec2.y}`)) {
-    return false
+  let minInside = false
+  let maxInside = false
+
+  for (let i = 0; i < parcels.length; i++) {
+    maxInside = maxInside || isInParcel(maximum, parcels[i])
+    minInside = minInside || isInParcel(minimum, parcels[i])
   }
 
-  auxVec3.x = isOnLimit(maximum.x) ? minimum.x : maximum.x
-  auxVec3.z = isOnLimit(maximum.z) ? minimum.z : maximum.z
-  worldToGrid(auxVec3, auxVec2)
-  if (!parcels.has(`${auxVec2.x},${auxVec2.y}`)) {
-    return false
-  }
-
-  auxVec3.x = minimum.x
-  auxVec3.z = isOnLimit(maximum.z) ? minimum.z : maximum.z
-  worldToGrid(auxVec3, auxVec2)
-  if (!parcels.has(`${auxVec2.x},${auxVec2.y}`)) {
-    return false
-  }
-
-  auxVec3.x = isOnLimit(maximum.x) ? minimum.x : maximum.x
-  auxVec3.z = minimum.z
-  worldToGrid(auxVec3, auxVec2)
-  if (!parcels.has(`${auxVec2.x},${auxVec2.y}`)) {
-    return false
-  }
-
-  return true
+  // If the max&min points are inside some of the whitelisted areas, it is considered inside the parcel
+  return minInside && maxInside
 }
 
 /**

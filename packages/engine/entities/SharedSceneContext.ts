@@ -25,6 +25,7 @@ import { IParcelSceneLimits } from 'atomicHelpers/landHelpers'
 import { measureObject3D } from 'dcl/entities/utils/checkParcelSceneLimits'
 import { IEventNames, IEvents, PointerEvent } from 'decentraland-ecs/src/decentraland/Types'
 import { Observable } from 'decentraland-ecs/src'
+import { colliderMaterial } from './utils/colliders'
 
 function validateHierarchy(entity: BaseEntity) {
   let parent = entity
@@ -142,6 +143,9 @@ export class SharedSceneContext implements BABYLON.IDisposable {
       $.contributions.geometries.forEach($ => geometries.add($))
       $.contributions.audioClips.forEach($ => audioClips.add($))
     })
+
+    materials.delete(scene.defaultMaterial)
+    materials.delete(colliderMaterial)
 
     return { textures, materials, geometries, audioClips }
   }

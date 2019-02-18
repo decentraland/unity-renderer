@@ -40,6 +40,8 @@ export namespace parcelLimits {
   export const geometries = 200
 
   export const parcelSize = 16 /* meters */
+  export const halfParcelSize = parcelSize / 2 /* meters */
+  export const centimeter = 0.01
 
   export const visibleRadius = 6
 

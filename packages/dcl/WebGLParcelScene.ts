@@ -5,12 +5,7 @@ import { getParcelSceneLimits } from 'atomicHelpers/landHelpers'
 import { DEBUG, EDITOR } from 'config'
 import { checkParcelSceneBoundaries } from './entities/utils/checkParcelSceneLimits'
 import { BaseEntity } from 'engine/entities/BaseEntity'
-import {
-  encodeParcelSceneBoundaries,
-  gridToWorld,
-  worldToGrid,
-  encodeParcelPosition
-} from 'atomicHelpers/parcelScenePositions'
+import { encodeParcelSceneBoundaries, gridToWorld, worldToGrid } from 'atomicHelpers/parcelScenePositions'
 import { removeEntityHighlight, highlightEntity } from 'engine/components/ephemeralComponents/HighlightBox'
 import { createAxisEntity, createParcelOutline } from './entities/utils/debugEntities'
 import { createLogger } from 'shared/logger'
@@ -35,7 +30,7 @@ export class WebGLParcelScene extends WebGLScene<LoadableParcelScene> {
   public userInPlace: string | null = null
 
   private uiComponent = null
-  private parcelSet = new Set<string>()
+  private parcelCenters: BABYLON.Vector3[] = []
   private shouldValidateBoundaries = false
 
   constructor(public data: EnvironmentData<LoadableParcelScene>) {
@@ -68,8 +63,11 @@ export class WebGLParcelScene extends WebGLScene<LoadableParcelScene> {
 
     this.encodedPositions = encodeParcelSceneBoundaries(data.data.basePosition, data.data.parcels)
 
-    this.parcelSet.add(encodeParcelPosition(data.data.basePosition))
-    data.data.parcels.forEach($ => this.parcelSet.add(encodeParcelPosition($)))
+    this.parcelCenters = data.data.parcels.map($ => {
+      const vec = new BABYLON.Vector3()
+      gridToWorld($.x, $.y, vec)
+      return vec
+    })
 
     Object.assign(this.context.metricsLimits, getParcelSceneLimits(data.data.parcels.length))
 
@@ -183,7 +181,7 @@ export class WebGLParcelScene extends WebGLScene<LoadableParcelScene> {
 
     const newSet = new Set<BaseEntity>()
 
-    this.context.entities.forEach(entity => checkParcelSceneBoundaries(this.parcelSet, newSet, entity))
+    this.context.entities.forEach(entity => checkParcelSceneBoundaries(this.parcelCenters, newSet, entity))
     // remove the highlight from the entities that were outside but they are no longer outside
     this.setOfEntitiesOutsideBoundaries.forEach($ => {
       if (!newSet.has($) && this.context.entities.has($.id)) {

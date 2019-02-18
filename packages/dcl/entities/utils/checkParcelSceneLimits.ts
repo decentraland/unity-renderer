@@ -1,6 +1,6 @@
 import * as BABYLON from 'babylonjs'
 import { isOnLimits } from 'atomicHelpers/parcelScenePositions'
-import { IParcelSceneLimits } from 'atomicHelpers/landHelpers'
+import { IParcelSceneLimits, Vector3Component } from 'atomicHelpers/landHelpers'
 import { BaseEntity } from 'engine/entities/BaseEntity'
 import { parcelLimits } from 'config'
 import { BasicShape } from 'engine/components/disposableComponents/DisposableComponent'
@@ -58,11 +58,12 @@ export function measureObject3D(obj: BABYLON.AbstractMesh | BABYLON.Mesh | BABYL
  * Receives the encoded parcelScene parcels and the entity to traverse
  */
 export function checkParcelSceneBoundaries(
-  encodedParcels: Set<string>,
+  encodedParcels: Vector3Component[],
   objectsOutside: Set<BaseEntity>,
   entity: BaseEntity
 ) {
-  const maxHeight = Math.log2(encodedParcels.size + 1) * parcelLimits.height
+  const maxHeight = Math.log2(encodedParcels.length + 1) * parcelLimits.height
+
   const minHeight = -maxHeight
 
   entity.traverseControl(entity => {
