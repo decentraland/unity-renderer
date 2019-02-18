@@ -1,13 +1,13 @@
 import { WebSocketProvider, RequestManager } from 'eth-connect'
 import { error } from 'engine/logger'
 import { future } from 'fp-future'
-import { EDITOR } from 'config'
+import { AVOID_WEB3 } from 'config'
 
 export const providerFuture = future()
 export const requestManager = new RequestManager(null)
 
 {
-  if (!EDITOR) {
+  if (!AVOID_WEB3) {
     window.addEventListener('load', async () => {
       // Modern dapp browsers...
       if (window['ethereum']) {

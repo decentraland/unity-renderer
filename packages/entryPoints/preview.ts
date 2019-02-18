@@ -1,4 +1,5 @@
 global['preview'] = window['preview'] = true
+global['avoidWeb3'] = window['avoidWeb3']
 
 import 'engine'
 
@@ -9,7 +10,7 @@ import { log } from '../engine/logger'
 import { bodyReadyFuture, engine } from '../engine/renderer/init'
 import { initShared } from '../shared'
 import { loadedParcelSceneWorkers, enablePositionReporting } from '../shared/world/parcelSceneManager'
-import { ETHEREUM_NETWORK, DEBUG } from '../config'
+import { ETHEREUM_NETWORK, DEBUG, AVOID_WEB3 } from '../config'
 import { ILandToLoadableParcelScene, ILand, IScene, MappingsResponse } from '../shared/types'
 import { SceneWorker } from '../shared/world/SceneWorker'
 import { WebGLParcelScene } from '../dcl/WebGLParcelScene'
@@ -80,11 +81,10 @@ async function loadClient() {
   bodyReadyFuture
     .then(async body => {
       const { net } = await initShared()
-
       await loadClient()
 
       // Warn in case wallet is set in mainnet
-      if (net === ETHEREUM_NETWORK.MAINNET && DEBUG) {
+      if (net === ETHEREUM_NETWORK.MAINNET && DEBUG && !AVOID_WEB3) {
         const style = document.createElement('style') as HTMLStyleElement
         style.appendChild(
           document.createTextNode(
