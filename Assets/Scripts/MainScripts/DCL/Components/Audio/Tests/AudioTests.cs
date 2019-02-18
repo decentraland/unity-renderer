@@ -53,7 +53,7 @@ namespace Tests
 
             DCLAudioClip.Model model = new DCLAudioClip.Model
             {
-                url = url,//"http://127.0.0.1:9991/Audio/Train.wav",
+                url = url,//TestHelpers.GetTestsAssetsPath() + "/Audio/Train.wav",
                 loop = loop,
                 shouldTryToLoad = loading,
                 volume = volume
@@ -78,7 +78,7 @@ namespace Tests
 
         public IEnumerator CreateAndLoadAudioClip(bool waitForLoading = true)
         {
-            var sceneController = TestHelpers.InitializeSceneController(true);
+            var sceneController = TestHelpers.InitializeSceneController();
 
             yield return new WaitForSeconds(0.01f);
 
@@ -89,7 +89,7 @@ namespace Tests
 
             yield return LoadAudioClip(scene,
                 audioClipId: "audioClipTest",
-                url: "http://127.0.0.1:9991/Audio/Train.wav",
+                url: TestHelpers.GetTestsAssetsPath() + "/Audio/Train.wav",
                 loop: true,
                 loading: true,
                 volume: 1.0f,

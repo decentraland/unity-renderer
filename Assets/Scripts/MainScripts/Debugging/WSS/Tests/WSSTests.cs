@@ -20,7 +20,7 @@ namespace Tests
         [Explicit("This test fails in cloud build")]
         public IEnumerator BasicConnectionTest()
         {
-            var sceneController = TestHelpers.InitializeSceneController(true);
+            var sceneController = TestHelpers.InitializeSceneController();
 
             yield return new WaitForEndOfFrame();
 

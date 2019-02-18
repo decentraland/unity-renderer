@@ -1,3 +1,4 @@
+using DCL.Helpers;
 using System;
 using System.Collections.Generic;
 using UnityEngine;
@@ -46,7 +47,7 @@ namespace DCL.Models
                 if (url.StartsWith("file://"))
                     return true;
 
-                if (url.StartsWith("http://127.0.0.1:9991"))
+                if (url.StartsWith(TestHelpers.GetTestsAssetsPath()))
                     return true;
 
                 return false;

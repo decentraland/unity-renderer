@@ -113,7 +113,19 @@ namespace DCL.Components
                 return;
 
             var meshRenderer = meshGameObject.GetComponent<MeshRenderer>();
-            meshRenderer.sharedMaterial = material;
+
+            if (meshRenderer != null && meshRenderer.sharedMaterial != material)
+            {
+                MaterialTransitionController matTransition = meshGameObject.GetComponent<MaterialTransitionController>();
+
+                if (matTransition != null && matTransition.canSwitchMaterial)
+                {
+                    matTransition.finalMaterials = new Material[] { material };
+                    matTransition.PopulateLoadingMaterialWithFinalMaterial();
+                }
+
+                meshRenderer.sharedMaterial = material;
+            }
         }
 
         private void OnShapeUpdated(DecentralandEntity entity)

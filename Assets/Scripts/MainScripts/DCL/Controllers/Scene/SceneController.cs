@@ -13,7 +13,6 @@ public class SceneController : MonoBehaviour
 {
     public static SceneController i { get; private set; }
 
-    public bool isPreviewMode = false;
     public bool startDecentralandAutomatically = true;
 
     [FormerlySerializedAs("factoryManifest")]

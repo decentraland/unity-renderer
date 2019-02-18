@@ -1,16 +1,13 @@
-﻿/*
+/*
 (C) 2015 AARO4130
 DO NOT USE PARTS OF, OR THE ENTIRE SCRIPT, AND CLAIM AS YOUR OWN WORK
 */
 
 using System;
 using UnityEngine;
-using System.Collections;
 using System.Collections.Generic;
-using System.Globalization;
 using System.IO;
 using System.Linq;
-using System.Text.RegularExpressions;
 #if UNITY_EDITOR
 using UnityEditor;
 #endif
@@ -56,6 +53,7 @@ public class OBJLoader
         }
         return new Vector2(x, y);
     }
+
     public static Color ParseColorFromCMPS(string[] cmps, float scalar = 1.0f)
     {
         float Kr = float.Parse(cmps[1]) * scalar;
@@ -69,6 +67,7 @@ public class OBJLoader
         foreach (string sp in searchPaths)
         {
             string s = sp.Replace("%FileName%", fileName);
+
             if (File.Exists(basePath + s + path))
             {
                 return basePath + s + path;
@@ -81,6 +80,7 @@ public class OBJLoader
 
         return null;
     }
+
     public static Material[] LoadMTLFile(string fn)
     {
         Material currentMaterial = null;
@@ -88,6 +88,7 @@ public class OBJLoader
         FileInfo mtlFileInfo = new FileInfo(fn);
         string baseFileName = Path.GetFileNameWithoutExtension(fn);
         string mtlFileDirectory = mtlFileInfo.Directory.FullName + Path.DirectorySeparatorChar;
+
         foreach (string ln in File.ReadAllLines(fn))
         {
             string l = ln.Trim().Replace("  ", " ");
@@ -100,7 +101,8 @@ public class OBJLoader
                 {
                     matlList.Add(currentMaterial);
                 }
-                currentMaterial = new Material(Shader.Find("Standard (Specular setup)"));
+                //NOTE(Brian): This will get pink with LWRP?
+                currentMaterial = new Material(Shader.Find("Standard (Specular setup)")); 
                 currentMaterial.name = data;
             }
             else if (cmps[0] == "Kd")
@@ -112,14 +114,19 @@ public class OBJLoader
                 //TEXTURE
                 string fpth = OBJGetFilePath(data, mtlFileDirectory, baseFileName);
                 if (fpth != null)
+                {
+                    //NOTE(Brian): This will break because we don't download the textures?
                     currentMaterial.SetTexture("_MainTex", TextureLoader.LoadTexture(fpth));
+                }
             }
             else if (cmps[0] == "map_Bump")
             {
                 //TEXTURE
                 string fpth = OBJGetFilePath(data, mtlFileDirectory, baseFileName);
+
                 if (fpth != null)
                 {
+                    //NOTE(Brian): This will break because we don't download the textures?
                     currentMaterial.SetTexture("_BumpMap", TextureLoader.LoadTexture(fpth, true));
                     currentMaterial.EnableKeyword("_NORMALMAP");
                 }
@@ -153,7 +160,6 @@ public class OBJLoader
                     currentMaterial.DisableKeyword("_ALPHAPREMULTIPLY_ON");
                     currentMaterial.renderQueue = 3000;
                 }
-
             }
             else if (cmps[0] == "Ns")
             {
@@ -163,10 +169,12 @@ public class OBJLoader
 
             }
         }
+
         if (currentMaterial != null)
         {
             matlList.Add(currentMaterial);
         }
+
         return matlList.ToArray();
     }
 
@@ -224,8 +232,9 @@ public class OBJLoader
                     //load cache
                     string pth = OBJGetFilePath(data, OBJFileInfo.Directory.FullName + Path.DirectorySeparatorChar, meshName);
                     if (pth != null)
+                    {
                         materialCache = LoadMTLFile(pth);
-
+                    }
                 }
                 else if ((cmps[0] == "g" || cmps[0] == "o") && splitByMaterial == false)
                 {
@@ -340,9 +349,9 @@ public class OBJLoader
                         f1.indexes = new int[] { indexes[0], indexes[1], indexes[2] };
                         f1.meshName = (splitByMaterial) ? cmaterial : cmesh;
                         faceList.Add(f1);
+
                         if (indexes.Length > 3)
                         {
-
                             OBJFace f2 = new OBJFace();
                             f2.materialName = cmaterial;
                             f2.meshName = (splitByMaterial) ? cmaterial : cmesh;
@@ -355,14 +364,17 @@ public class OBJLoader
         }
 
         if (objectNames.Count == 0)
+        {
             objectNames.Add("default");
+        }
 
         //build objects
         GameObject parentObject = new GameObject(meshName);
 
 
-        foreach (string obj in objectNames)
+        for (int objectNamesIndex = 0; objectNamesIndex < objectNames.Count; objectNamesIndex++)
         {
+            string obj = objectNames[objectNamesIndex];
             GameObject subObjectParent = new GameObject(obj);
             subObjectParent.transform.parent = parentObject.transform;
 
@@ -382,21 +394,28 @@ public class OBJLoader
             List<string> meshMaterialNames = new List<string>();
 
             OBJFace[] ofaces = faceList.Where(x => x.meshName == obj).ToArray();
+
             foreach (string mn in materialNames)
             {
                 OBJFace[] faces = ofaces.Where(x => x.materialName == mn).ToArray();
+
                 if (faces.Length > 0)
                 {
                     int[] indexes = new int[0];
+
                     foreach (OBJFace f in faces)
                     {
                         int l = indexes.Length;
                         System.Array.Resize(ref indexes, l + f.indexes.Length);
                         System.Array.Copy(f.indexes, 0, indexes, l, f.indexes.Length);
                     }
+
                     meshMaterialNames.Add(mn);
+
                     if (m.subMeshCount != meshMaterialNames.Count)
+                    {
                         m.subMeshCount = meshMaterialNames.Count;
+                    }
 
                     for (int i = 0; i < indexes.Length; i++)
                     {
@@ -419,10 +438,6 @@ public class OBJLoader
 
                     processedIndexes.Add(indexes);
                 }
-                else
-                {
-
-                }
             }
 
             //apply stuff
@@ -439,32 +454,30 @@ public class OBJLoader
             {
                 m.RecalculateNormals();
             }
+
             m.RecalculateBounds();
 
             MeshFilter mf = subObject.AddComponent<MeshFilter>();
             MeshRenderer mr = subObject.AddComponent<MeshRenderer>();
 
             Material[] processedMaterials = new Material[meshMaterialNames.Count];
+
             for (int i = 0; i < meshMaterialNames.Count; i++)
             {
-
                 if (materialCache == null)
                 {
                     processedMaterials[i] = new Material(Shader.Find("Lightweight Render Pipeline/Simple Lit"));
                 }
                 else
                 {
-                    Material mfn = Array.Find(materialCache, x => x.name == meshMaterialNames[i]); ;
-                    if (mfn == null)
-                    {
-                        processedMaterials[i] = new Material(Shader.Find("Lightweight Render Pipeline/Simple Lit"));
-                    }
-                    else
-                    {
-                        processedMaterials[i] = mfn;
-                    }
+                    Material mfn = Array.Find(materialCache, x => x.name == meshMaterialNames[i]);
 
+                    if (mfn == null)
+                        processedMaterials[i] = new Material(Shader.Find("Lightweight Render Pipeline/Simple Lit"));
+                    else
+                        processedMaterials[i] = mfn;
                 }
+
                 processedMaterials[i].name = meshMaterialNames[i];
             }
 

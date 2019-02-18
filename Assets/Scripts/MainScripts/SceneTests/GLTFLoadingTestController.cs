@@ -24,13 +24,13 @@ public class GLTFLoadingTestController : MonoBehaviour
         var scene = sceneController.loadedScenes["0,0"];
 
         // FULL GLB
-        TestHelpers.InstantiateEntityWithShape(scene, "1", DCL.Models.CLASS_ID.GLTF_SHAPE, new Vector3(-2.5f, 1, 0), "http://127.0.0.1:9991/GLB/Trunk/Trunk.glb");
+        TestHelpers.InstantiateEntityWithShape(scene, "1", DCL.Models.CLASS_ID.GLTF_SHAPE, new Vector3(-2.5f, 1, 0), TestHelpers.GetTestsAssetsPath() + "/GLB/Trunk/Trunk.glb");
 
         // GLB + Separated Textures
-        TestHelpers.InstantiateEntityWithShape(scene, "2", DCL.Models.CLASS_ID.GLTF_SHAPE, new Vector3(0f, 1, 0), "http://127.0.0.1:9991/GLB/TrunkSeparatedTextures/Trunk.glb");
+        TestHelpers.InstantiateEntityWithShape(scene, "2", DCL.Models.CLASS_ID.GLTF_SHAPE, new Vector3(0f, 1, 0), TestHelpers.GetTestsAssetsPath() + "/GLB/TrunkSeparatedTextures/Trunk.glb");
 
         // GLTF
-        TestHelpers.InstantiateEntityWithShape(scene, "3", DCL.Models.CLASS_ID.GLTF_SHAPE, new Vector3(2.5f, 1, 0), "http://127.0.0.1:9991/GLTF/Trunk/Trunk.gltf");
+        TestHelpers.InstantiateEntityWithShape(scene, "3", DCL.Models.CLASS_ID.GLTF_SHAPE, new Vector3(2.5f, 1, 0), TestHelpers.GetTestsAssetsPath() + "/GLTF/Trunk/Trunk.gltf");
         // ---------
 
         /* gltfRenderers = GetComponentsInChildren<GLTFComponent>(true);

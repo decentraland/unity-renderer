@@ -1,7 +1,8 @@
 {
     "name": "VisualTests",
     "references": [
-        "MainScripts"
+        "MainScripts",
+        "Configuration"
     ],
     "optionalUnityReferences": [
         "TestAssemblies"

@@ -2,7 +2,8 @@
     "name": "PlayModeTests",
     "references": [
         "MainScripts",
-        "UnityGLTFAssembly"
+        "UnityGLTFAssembly",
+        "Configuration"
     ],
     "optionalUnityReferences": [
         "TestAssemblies"

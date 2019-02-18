@@ -20,9 +20,11 @@ namespace UnityGLTF
         public string GLTFUri = null;
         public bool Multithreaded = true;
         public bool UseStream = false;
+        public bool UseVisualFeedback = true;
 
         public int MaximumLod = 300;
         public int Timeout = 8;
+        public Material LoadingTextureMaterial;
         public GLTFSceneImporter.ColliderType Collider = GLTFSceneImporter.ColliderType.None;
 
         public GameObject loadingPlaceholder;
@@ -56,14 +58,20 @@ namespace UnityGLTF
                 StopCoroutine(loadingRoutine);
             }
 
+#if UNITY_EDITOR
+            //GLTFSceneImporter.RunCoroutineSync( LoadAssetCoroutine() );
+            StartCoroutine(LoadAssetCoroutine());
+#else
             loadingRoutine = DCL.CoroutineHelpers.StartThrowingCoroutine(this, LoadAssetCoroutine(), OnFail);
+#endif
         }
 
         private void OnFail(Exception obj)
         {
-            Debug.LogError("Loading GLTF failure!");
             if (OnFailedLoadingAsset != null)
                 OnFailedLoadingAsset.Invoke();
+
+            Debug.LogError("GLTF Loading Failed! " + obj.ToString());
         }
 
         public IEnumerator LoadAssetCoroutine()
@@ -116,8 +124,9 @@ namespace UnityGLTF
                     sceneImporter.MaximumLod = MaximumLod;
                     sceneImporter.Timeout = Timeout;
                     sceneImporter.isMultithreaded = Multithreaded;
+                    sceneImporter.UseMaterialTransition = UseVisualFeedback;
                     sceneImporter.CustomShaderName = shaderOverride ? shaderOverride.name : null;
-
+                    sceneImporter.LoadingTextureMaterial = LoadingTextureMaterial;
                     /* if (MaterialsOnly)
                     {
                         var mat = await sceneImporter.LoadMaterialAsync(0);
@@ -131,7 +140,8 @@ namespace UnityGLTF
                     {
                         await sceneImporter.LoadSceneAsync();
                     } */
-                    
+
+                    float time = Time.realtimeSinceStartup;
 
                     yield return sceneImporter.LoadScene(-1);
 

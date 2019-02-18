@@ -13,6 +13,7 @@ using System.Threading;
 #endif
 using System.Threading.Tasks;
 using UnityEngine;
+using UnityEngine.Profiling;
 using UnityEngine.Rendering;
 using UnityGLTF.Cache;
 using UnityGLTF.Extensions;
@@ -91,10 +92,16 @@ namespace UnityGLTF
         /// </summary>
         public string CustomShaderName { get; set; }
 
+        /// <summary>
+        /// Material to be applied while textures are being loaded
+        /// </summary>
+        public Material LoadingTextureMaterial { get; set; }
 
         public float BudgetPerFrameInMilliseconds = 10f;
 
         public bool KeepCPUCopyOfMesh = true;
+
+        public bool UseMaterialTransition = true;
 
         protected struct GLBStream
         {
@@ -189,6 +196,16 @@ namespace UnityGLTF
                 }
 
                 yield return _LoadScene(sceneIndex, showSceneObj);
+
+                yield return null; // NOTE(Brian): DO NOT REMOVE, we must wait a frame in order to
+                                   //              start enqueued coroutines, if this is removed
+                                   //              the WaitUntil below will fail.
+
+                yield return new WaitUntil(
+                () =>
+                {
+                    return _asyncCoroutineHelper.AllCoroutinesAreFinished();
+                });
             }
             /* catch (Exception ex)
             {
@@ -338,6 +355,7 @@ namespace UnityGLTF
 
             const string msft_LODExtName = MSFT_LODExtensionFactory.EXTENSION_NAME;
             MSFT_LODExtension lodsextension = null;
+
             if (_gltfRoot.ExtensionsUsed != null
                 && _gltfRoot.ExtensionsUsed.Contains(msft_LODExtName)
                 && node.Extensions != null
@@ -386,6 +404,7 @@ namespace UnityGLTF
         protected IEnumerator ConstructImageBuffer(GLTFTexture texture, int textureIndex)
         {
             int sourceId = GetTextureSourceId(texture);
+
             if (_assetCache.ImageStreamCache[sourceId] == null)
             {
                 GLTFImage image = _gltfRoot.Images[sourceId];
@@ -458,7 +477,7 @@ namespace UnityGLTF
             }
         }
 
-        private static void RunCoroutineSync(IEnumerator streamEnum)
+        public static void RunCoroutineSync(IEnumerator streamEnum)
         {
             var stack = new Stack<IEnumerator>();
             stack.Push(streamEnum);
@@ -477,7 +496,7 @@ namespace UnityGLTF
             }
         }
 
-        private IEnumerator _LoadNode(int nodeIndex)
+        private IEnumerator _LoadNode(int nodeIndex, Transform parent=null)
         {
             if (nodeIndex >= _gltfRoot.Nodes.Count)
             {
@@ -495,7 +514,7 @@ namespace UnityGLTF
                 yield return ConstructBufferData(nodeToLoad);
             }
 
-            yield return ConstructNode(nodeToLoad, nodeIndex);
+            yield return ConstructNode(nodeToLoad, nodeIndex, parent);
         }
 
         /// <summary>
@@ -591,7 +610,7 @@ namespace UnityGLTF
                     }
                 }
 
-                yield return TryYieldOnTimeout();
+                if ( ShouldYieldOnTimeout() ) yield return YieldOnTimeout();
                 yield return ConstructUnityTexture(stream, markGpuOnly, linear, image, imageCacheIndex);
             }
         }
@@ -622,12 +641,12 @@ namespace UnityGLTF
                     stream.Read(buffer, 0, (int)stream.Length);
                 }
 
-                yield return TryYieldOnTimeout();
+                if (ShouldYieldOnTimeout()) yield return YieldOnTimeout();
                 //	NOTE: the second parameter of LoadImage() marks non-readable, but we can't mark it until after we call Apply()
                 texture.LoadImage(buffer, false);
             }
 
-            yield return TryYieldOnTimeout();
+            if (ShouldYieldOnTimeout()) yield return YieldOnTimeout();
             // After we conduct the Apply(), then we can make the texture non-readable and never create a CPU copy
             texture.Apply(true, markGpuOnly);
 
@@ -696,16 +715,19 @@ namespace UnityGLTF
                 AttributeAccessor attributeAccessor = attributeAccessors[SemanticProperties.POSITION];
                 SchemaExtensions.ConvertVector3CoordinateSpace(ref attributeAccessor, SchemaExtensions.CoordinateSpaceConversionScale);
             }
+
             if (attributeAccessors.ContainsKey(SemanticProperties.INDICES))
             {
                 AttributeAccessor attributeAccessor = attributeAccessors[SemanticProperties.INDICES];
                 SchemaExtensions.FlipFaces(ref attributeAccessor);
             }
+
             if (attributeAccessors.ContainsKey(SemanticProperties.NORMAL))
             {
                 AttributeAccessor attributeAccessor = attributeAccessors[SemanticProperties.NORMAL];
                 SchemaExtensions.ConvertVector3CoordinateSpace(ref attributeAccessor, SchemaExtensions.CoordinateSpaceConversionScale);
             }
+
             // TexCoord goes from 0 to 3 to match GLTFHelpers.BuildMeshAttributes
             for (int i = 0; i < 4; i++)
             {
@@ -715,6 +737,7 @@ namespace UnityGLTF
                     SchemaExtensions.FlipTexCoordArrayV(ref attributeAccessor);
                 }
             }
+
             if (attributeAccessors.ContainsKey(SemanticProperties.TANGENT))
             {
                 AttributeAccessor attributeAccessor = attributeAccessors[SemanticProperties.TANGENT];
@@ -865,6 +888,7 @@ namespace UnityGLTF
                         break;
 
                     case GLTFAnimationChannelPath.rotation:
+
                         for (int i = 0; i < input.AsFloats.Length; ++i)
                         {
                             var time = input.AsFloats[i];
@@ -876,6 +900,7 @@ namespace UnityGLTF
                             curveZ.AddKey(time, rot.z);
                             curveW.AddKey(time, rot.w);
                         }
+
                         yield return SetCurveMode(curveX, samplerCache.Interpolation);
                         yield return SetCurveMode(curveY, samplerCache.Interpolation);
                         yield return SetCurveMode(curveZ, samplerCache.Interpolation);
@@ -1022,9 +1047,8 @@ namespace UnityGLTF
             for (int i = 0; i < scene.Nodes.Count; ++i)
             {
                 NodeId node = scene.Nodes[i];
-                yield return _LoadNode(node.Id);
+                yield return _LoadNode(node.Id, sceneObj.transform);
                 GameObject nodeObj = _assetCache.NodeCache[node.Id];
-                nodeObj.transform.SetParent(sceneObj.transform, false);
                 nodeTransforms[i] = nodeObj.transform;
             }
 
@@ -1056,7 +1080,7 @@ namespace UnityGLTF
         }
 
 
-        protected virtual IEnumerator ConstructNode(Node node, int nodeIndex)
+        protected virtual IEnumerator ConstructNode(Node node, int nodeIndex, Transform parent=null)
         {
             if (_assetCache.NodeCache[nodeIndex] != null)
             {
@@ -1064,21 +1088,17 @@ namespace UnityGLTF
             }
 
             var nodeObj = new GameObject(string.IsNullOrEmpty(node.Name) ? ("GLTFNode" + nodeIndex) : node.Name);
-            // If we're creating a really large node, we need it to not be visible in partial stages. So we hide it while we create it
-            nodeObj.SetActive(false);
 
-            Vector3 position;
+            Vector3 position, scale;
             Quaternion rotation;
-            Vector3 scale;
+
             node.GetUnityTRSProperties(out position, out rotation, out scale);
             nodeObj.transform.localPosition = position;
             nodeObj.transform.localRotation = rotation;
             nodeObj.transform.localScale = scale;
+            Transform finalParent = parent ?? SceneParent;
+            nodeObj.transform.SetParent(finalParent, false);
 
-            if (node.Mesh != null)
-            {
-                yield return ConstructMesh(node.Mesh.Value, nodeObj.transform, node.Mesh.Id, node.Skin != null ? node.Skin.Value : null);
-            }
             /* TODO: implement camera (probably a flag to disable for VR as well)
 			if (camera != null)
 			{
@@ -1089,20 +1109,23 @@ namespace UnityGLTF
 
             if (node.Children != null)
             {
-                foreach (var child in node.Children)
+                for (int i = 0; i < node.Children.Count; i++)
                 {
+                    NodeId child = node.Children[i];
+
                     // todo blgross: replace with an iterartive solution
-                    yield return ConstructNode(child.Value, child.Id);
+                    yield return ConstructNode(child.Value, child.Id, nodeObj.transform);
+
                     GameObject childObj = _assetCache.NodeCache[child.Id];
                     childObj.transform.SetParent(nodeObj.transform, false);
                 }
             }
 
-            nodeObj.SetActive(true);
             _assetCache.NodeCache[nodeIndex] = nodeObj;
 
             const string msft_LODExtName = MSFT_LODExtensionFactory.EXTENSION_NAME;
             MSFT_LODExtension lodsextension = null;
+
             if (_gltfRoot.ExtensionsUsed != null
                 && _gltfRoot.ExtensionsUsed.Contains(msft_LODExtName)
                 && node.Extensions != null
@@ -1115,22 +1138,30 @@ namespace UnityGLTF
                     List<double> lodCoverage = lodsextension.GetLODCoverage(node);
 
                     var lodGroupNodeObj = new GameObject(string.IsNullOrEmpty(node.Name) ? ("GLTFNode_LODGroup" + nodeIndex) : node.Name);
+
                     lodGroupNodeObj.SetActive(false);
+
                     nodeObj.transform.SetParent(lodGroupNodeObj.transform, false);
+
                     MeshRenderer[] childRenders = nodeObj.GetComponentsInChildren<MeshRenderer>();
                     lods[0] = new LOD(GetLodCoverage(lodCoverage, 0), childRenders);
 
                     LODGroup lodGroup = lodGroupNodeObj.AddComponent<LODGroup>();
+
                     for (int i = 0; i < lodsextension.MeshIds.Count; i++)
                     {
                         int lodNodeId = lodsextension.MeshIds[i];
-                        yield return ConstructNode(_gltfRoot.Nodes[lodNodeId], lodNodeId);
+
+                        yield return ConstructNode(_gltfRoot.Nodes[lodNodeId], lodNodeId, lodGroupNodeObj.transform);
+
                         int lodIndex = i + 1;
                         GameObject lodNodeObj = _assetCache.NodeCache[lodNodeId];
                         lodNodeObj.transform.SetParent(lodGroupNodeObj.transform, false);
+
                         childRenders = lodNodeObj.GetComponentsInChildren<MeshRenderer>();
                         lods[lodIndex] = new LOD(GetLodCoverage(lodCoverage, lodIndex), childRenders);
                     }
+
                     lodGroup.SetLODs(lods);
                     lodGroup.RecalculateBounds();
                     lodGroupNodeObj.SetActive(true);
@@ -1138,6 +1169,10 @@ namespace UnityGLTF
                 }
             }
 
+            if (node.Mesh != null)
+            {
+                yield return ConstructMesh(node.Mesh.Value, nodeObj.transform, node.Mesh.Id, node.Skin != null ? node.Skin.Value : null);
+            }
         }
 
         float GetLodCoverage(List<double> lodcoverageExtras, int lodIndex)
@@ -1173,6 +1208,7 @@ namespace UnityGLTF
             Transform[] bones = new Transform[boneCount];
 
             int bufferId = skin.InverseBindMatrices.Value.BufferView.Value.Buffer.Id;
+
             AttributeAccessor attributeAccessor = new AttributeAccessor
             {
                 AccessorId = skin.InverseBindMatrices,
@@ -1188,9 +1224,8 @@ namespace UnityGLTF
             for (int i = 0; i < boneCount; i++)
             {
                 if (_assetCache.NodeCache[skin.Joints[i].Id] == null)
-                {
-                    yield return ConstructNode(_gltfRoot.Nodes[skin.Joints[i].Id], skin.Joints[i].Id);
-                }
+                    yield return ConstructNode(_gltfRoot.Nodes[skin.Joints[i].Id], skin.Joints[i].Id, primitiveObj.transform.parent);
+
                 bones[i] = _assetCache.NodeCache[skin.Joints[i].Id].transform;
                 bindPoses[i] = gltfBindPoses[i].ToUnityMatrix4x4Convert();
             }
@@ -1250,39 +1285,56 @@ namespace UnityGLTF
                 var primitive = mesh.Primitives[i];
                 int materialIndex = primitive.Material != null ? primitive.Material.Id : -1;
 
+                // NOTE(Brian): Submesh loading
                 yield return ConstructMeshPrimitive(primitive, meshId, i, materialIndex);
-
+                
                 var primitiveObj = new GameObject("Primitive");
+                primitiveObj.transform.SetParent(parent, false);
+                primitiveObj.SetActive(UseMaterialTransition || LoadingTextureMaterial != null);
 
-                MaterialCacheData materialCacheData =
-                    materialIndex >= 0 ? _assetCache.MaterialCache[materialIndex] : _defaultLoadedMaterial;
-
-                Material material = materialCacheData.GetContents(primitive.Attributes.ContainsKey(SemanticProperties.Color(0)));
-
+                SkinnedMeshRenderer skinnedMeshRenderer = null;
+                MeshRenderer meshRenderer = null;
+                Renderer renderer = null;
+                
                 Mesh curMesh = _assetCache.MeshCache[meshId][i].LoadedMesh;
+
                 if (NeedsSkinnedMeshRenderer(primitive, skin))
                 {
-                    var skinnedMeshRenderer = primitiveObj.AddComponent<SkinnedMeshRenderer>();
-                    skinnedMeshRenderer.material = material;
+                    skinnedMeshRenderer = primitiveObj.AddComponent<SkinnedMeshRenderer>();
+                    skinnedMeshRenderer.sharedMesh = curMesh;
                     skinnedMeshRenderer.quality = SkinQuality.Auto;
-                    // TODO: add support for blend shapes/morph targets
-                    //if (HasBlendShapes(primitive))
-                    //	SetupBlendShapes(primitive);
+                    renderer = skinnedMeshRenderer;
+
                     if (HasBones(skin))
                     {
                         yield return SetupBones(skin, primitive, skinnedMeshRenderer, primitiveObj, curMesh);
                     }
-
-                    skinnedMeshRenderer.sharedMesh = curMesh;
                 }
                 else
                 {
-                    var meshRenderer = primitiveObj.AddComponent<MeshRenderer>();
-                    meshRenderer.material = material;
+                    meshRenderer = primitiveObj.AddComponent<MeshRenderer>();
+                    renderer = meshRenderer;
                 }
 
                 MeshFilter meshFilter = primitiveObj.AddComponent<MeshFilter>();
                 meshFilter.sharedMesh = curMesh;
+
+                //// NOTE(Brian): Texture loading
+                if (UseMaterialTransition)
+                {
+                    var matController = primitiveObj.AddComponent<MaterialTransitionController>();
+                    _asyncCoroutineHelper.RunAsTask(DownloadAndConstructMaterial(primitive, materialIndex, renderer, matController), "matDownload");
+                }
+                else
+                {
+                    if (LoadingTextureMaterial != null)
+                        renderer.sharedMaterial = LoadingTextureMaterial;
+
+                    yield return DownloadAndConstructMaterial(primitive, materialIndex, renderer, null);
+
+                    if ( LoadingTextureMaterial == null )
+                        primitiveObj.SetActive(true);
+                }
 
                 switch (Collider)
                 {
@@ -1302,10 +1354,31 @@ namespace UnityGLTF
                         break;
                 }
 
-                primitiveObj.transform.SetParent(parent, false);
-                primitiveObj.SetActive(true);
                 _assetCache.MeshCache[meshId][i].PrimitiveGO = primitiveObj;
             }
+        }
+
+        IEnumerator DownloadAndConstructMaterial(MeshPrimitive primitive, int materialIndex, Renderer renderer, MaterialTransitionController matController)
+        {
+            bool shouldUseDefaultMaterial = primitive.Material == null;
+
+            GLTFMaterial materialToLoad = shouldUseDefaultMaterial ? DefaultMaterial : primitive.Material.Value;
+
+            if ((shouldUseDefaultMaterial && _defaultLoadedMaterial == null) ||
+                (!shouldUseDefaultMaterial && _assetCache.MaterialCache[materialIndex] == null))
+            {
+                yield return ConstructMaterial(materialToLoad, shouldUseDefaultMaterial ? -1 : materialIndex);
+            }
+
+            MaterialCacheData materialCacheData =
+                materialIndex >= 0 ? _assetCache.MaterialCache[materialIndex] : _defaultLoadedMaterial;
+
+            Material material = materialCacheData.GetContents(primitive.Attributes.ContainsKey(SemanticProperties.Color(0)));
+
+            if (matController != null)
+                matController.OnDidFinishLoading(material);
+            else
+                renderer.sharedMaterial = material;
         }
 
 
@@ -1335,30 +1408,20 @@ namespace UnityGLTF
                 } */
                 unityMeshData = ConvertAccessorsToUnityTypes(meshConstructionData);
 
-                yield return null;
-
+                //yield return null;
                 yield return ConstructUnityMesh(meshConstructionData, meshID, primitiveIndex, unityMeshData);
-            }
-
-            bool shouldUseDefaultMaterial = primitive.Material == null;
-
-            GLTFMaterial materialToLoad = shouldUseDefaultMaterial ? DefaultMaterial : primitive.Material.Value;
-            if ((shouldUseDefaultMaterial && _defaultLoadedMaterial == null) ||
-                (!shouldUseDefaultMaterial && _assetCache.MaterialCache[materialIndex] == null))
-            {
-                yield return ConstructMaterial(materialToLoad, shouldUseDefaultMaterial ? -1 : materialIndex);
             }
         }
 
-        protected IEnumerator TryYieldOnTimeout()
+        protected bool ShouldYieldOnTimeout()
         {
-            if ((Time.realtimeSinceStartup - _timeAtLastYield) > BudgetPerFrameInMilliseconds * 1000f)
-            {
-                _timeAtLastYield = Time.realtimeSinceStartup;
+            return ((Time.realtimeSinceStartup - _timeAtLastYield) > BudgetPerFrameInMilliseconds * 1000f);
+        }
 
-                // empty yield
-                yield return EmptyYieldEnum();
-            }
+        protected IEnumerator YieldOnTimeout()
+        {
+            _timeAtLastYield = Time.realtimeSinceStartup;
+            yield return null;
         }
 
         protected UnityMeshData ConvertAccessorsToUnityTypes(MeshConstructionData meshConstructionData)
@@ -1416,7 +1479,8 @@ namespace UnityGLTF
 
         protected virtual IEnumerator ConstructMaterialImageBuffers(GLTFMaterial def)
         {
-            // var tasks = new List<Task>(8);
+            var tasks = new List<AsyncCoroutineHelper.CoroutineInfo>(8);
+
             if (def.PbrMetallicRoughness != null)
             {
                 var pbr = def.PbrMetallicRoughness;
@@ -1424,13 +1488,14 @@ namespace UnityGLTF
                 if (pbr.BaseColorTexture != null)
                 {
                     var textureId = pbr.BaseColorTexture.Index;
-                    yield return ConstructImageBuffer(textureId.Value, textureId.Id);
+                    tasks.Add( _asyncCoroutineHelper.RunAsTask(ConstructImageBuffer(textureId.Value, textureId.Id), ""));
+
                 }
+
                 if (pbr.MetallicRoughnessTexture != null)
                 {
                     var textureId = pbr.MetallicRoughnessTexture.Index;
-
-                    yield return ConstructImageBuffer(textureId.Value, textureId.Id);
+                    tasks.Add( _asyncCoroutineHelper.RunAsTask(ConstructImageBuffer(textureId.Value, textureId.Id), ""));
                 }
             }
 
@@ -1439,15 +1504,14 @@ namespace UnityGLTF
                 if (def.CommonConstant.LightmapTexture != null)
                 {
                     var textureId = def.CommonConstant.LightmapTexture.Index;
-
-                    yield return ConstructImageBuffer(textureId.Value, textureId.Id);
+                    tasks.Add(_asyncCoroutineHelper.RunAsTask(ConstructImageBuffer(textureId.Value, textureId.Id), ""));
                 }
             }
 
             if (def.NormalTexture != null)
             {
                 var textureId = def.NormalTexture.Index;
-                yield return ConstructImageBuffer(textureId.Value, textureId.Id);
+                tasks.Add(_asyncCoroutineHelper.RunAsTask(ConstructImageBuffer(textureId.Value, textureId.Id), ""));
             }
 
             if (def.OcclusionTexture != null)
@@ -1458,35 +1522,52 @@ namespace UnityGLTF
                         && def.PbrMetallicRoughness.MetallicRoughnessTexture != null
                         && def.PbrMetallicRoughness.MetallicRoughnessTexture.Index.Id == textureId.Id))
                 {
-                    yield return ConstructImageBuffer(textureId.Value, textureId.Id);
+                    tasks.Add(_asyncCoroutineHelper.RunAsTask(ConstructImageBuffer(textureId.Value, textureId.Id), ""));
                 }
             }
 
             if (def.EmissiveTexture != null)
             {
                 var textureId = def.EmissiveTexture.Index;
-                yield return ConstructImageBuffer(textureId.Value, textureId.Id);
+                tasks.Add(_asyncCoroutineHelper.RunAsTask(ConstructImageBuffer(textureId.Value, textureId.Id), "A"));
             }
 
             // pbr_spec_gloss extension
             const string specGlossExtName = KHR_materials_pbrSpecularGlossinessExtensionFactory.EXTENSION_NAME;
+
             if (def.Extensions != null && def.Extensions.ContainsKey(specGlossExtName))
             {
                 var specGlossDef = (KHR_materials_pbrSpecularGlossinessExtension)def.Extensions[specGlossExtName];
+
                 if (specGlossDef.DiffuseTexture != null)
                 {
                     var textureId = specGlossDef.DiffuseTexture.Index;
-                    yield return ConstructImageBuffer(textureId.Value, textureId.Id);
+                    tasks.Add(_asyncCoroutineHelper.RunAsTask(ConstructImageBuffer(textureId.Value, textureId.Id), "2"));
                 }
 
                 if (specGlossDef.SpecularGlossinessTexture != null)
                 {
                     var textureId = specGlossDef.SpecularGlossinessTexture.Index;
-                    yield return ConstructImageBuffer(textureId.Value, textureId.Id);
+                    tasks.Add(_asyncCoroutineHelper.RunAsTask(ConstructImageBuffer(textureId.Value, textureId.Id), "3"));
                 }
             }
 
-            // return Task.WhenAll(tasks);
+            yield return null;
+
+            yield return new WaitUntil(
+                () =>
+                    {
+                        for ( int i = 0; i < tasks.Count; i++ )
+                        {
+                            if (!tasks[i].finished)
+                            {
+                                return false;
+                            }
+                        }
+
+                        return true;
+                    }
+                );
         }
 
         protected IEnumerator ConstructUnityMesh(MeshConstructionData meshConstructionData, int meshId, int primitiveIndex, UnityMeshData unityMeshData)
@@ -1495,7 +1576,7 @@ namespace UnityGLTF
             int vertexCount = (int)primitive.Attributes[SemanticProperties.POSITION].Value.Count;
             bool hasNormals = unityMeshData.Normals != null;
 
-            yield return TryYieldOnTimeout();
+            if (ShouldYieldOnTimeout()) yield return YieldOnTimeout();
             Mesh mesh = new Mesh
             {
 
@@ -1505,25 +1586,25 @@ namespace UnityGLTF
             };
 
             mesh.vertices = unityMeshData.Vertices;
-            yield return TryYieldOnTimeout();
+            if (ShouldYieldOnTimeout()) yield return YieldOnTimeout();
             mesh.normals = unityMeshData.Normals;
-            yield return TryYieldOnTimeout();
+            if (ShouldYieldOnTimeout()) yield return YieldOnTimeout();
             mesh.uv = unityMeshData.Uv1;
-            yield return TryYieldOnTimeout();
+            if (ShouldYieldOnTimeout()) yield return YieldOnTimeout();
             mesh.uv2 = unityMeshData.Uv2;
-            yield return TryYieldOnTimeout();
+            if (ShouldYieldOnTimeout()) yield return YieldOnTimeout();
             mesh.uv3 = unityMeshData.Uv3;
-            yield return TryYieldOnTimeout();
+            if (ShouldYieldOnTimeout()) yield return YieldOnTimeout();
             mesh.uv4 = unityMeshData.Uv4;
-            yield return TryYieldOnTimeout();
+            if (ShouldYieldOnTimeout()) yield return YieldOnTimeout();
             mesh.colors = unityMeshData.Colors;
-            yield return TryYieldOnTimeout();
+            if (ShouldYieldOnTimeout()) yield return YieldOnTimeout();
             mesh.triangles = unityMeshData.Triangles;
-            yield return TryYieldOnTimeout();
+            if (ShouldYieldOnTimeout()) yield return YieldOnTimeout();
             mesh.tangents = unityMeshData.Tangents;
-            yield return TryYieldOnTimeout();
+            if (ShouldYieldOnTimeout()) yield return YieldOnTimeout();
             mesh.boneWeights = unityMeshData.BoneWeights;
-            yield return TryYieldOnTimeout();
+            if (ShouldYieldOnTimeout()) yield return YieldOnTimeout();
 
             if (!hasNormals)
             {
@@ -1657,7 +1738,7 @@ namespace UnityGLTF
 
             mapper.EmissiveFactor = def.EmissiveFactor.ToUnityColorRaw();
 
-            var vertColorMapper = mapper.Clone();
+            IUniformMap vertColorMapper = mapper.Clone();
             vertColorMapper.VertexColorsEnabled = true;
 
             MaterialCacheData materialWrapper = new MaterialCacheData
@@ -1819,7 +1900,8 @@ namespace UnityGLTF
             var bufferContents = _assetCache.BufferCache[bufferView.Buffer.Id];
             bufferContents.Stream.Position = bufferView.ByteOffset + bufferContents.ChunkOffset;
             bufferContents.Stream.Read(data, 0, data.Length);
-            texture.LoadImage(data);
+            
+            texture.LoadImage(data, true);
 
             _assetCache.ImageCache[imageCacheIndex] = texture;
 

@@ -32,8 +32,22 @@ namespace DCL.Components
             MeshFilter meshFilter = entity.meshGameObject.AddComponent<MeshFilter>();
             MeshRenderer meshRenderer = entity.meshGameObject.AddComponent<MeshRenderer>();
 
-            meshRenderer.sharedMaterial = Resources.Load<Material>("Materials/Default");
+
             meshFilter.sharedMesh = currentMesh;
+
+            if (Configuration.ParcelSettings.VISUAL_LOADING_ENABLED)
+            {
+                MaterialTransitionController transition = entity.meshGameObject.AddComponent<MaterialTransitionController>();
+                Material finalMaterial = Resources.Load<Material>("Materials/Default");
+                transition.delay = 0;
+                transition.useHologram = false;
+                transition.fadeThickness = 20;
+                transition.OnDidFinishLoading(finalMaterial);
+            }
+            else
+            {
+                meshRenderer.sharedMaterial = Resources.Load<Material>("Materials/Default");
+            }
 
             if (entity.OnShapeUpdated != null)
                 entity.OnShapeUpdated.Invoke(entity);

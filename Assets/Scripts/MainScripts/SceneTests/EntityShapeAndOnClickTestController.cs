@@ -25,11 +25,11 @@ public class EntityShapeAndOnClickTestController : MonoBehaviour
         TestHelpers.InstantiateEntityWithShape(scene, "3", DCL.Models.CLASS_ID.PLANE_SHAPE, new Vector3(2, 1, 0));
         TestHelpers.InstantiateEntityWithShape(scene, "4", DCL.Models.CLASS_ID.CONE_SHAPE, new Vector3(4, 1, 0));
         TestHelpers.InstantiateEntityWithShape(scene, "5", DCL.Models.CLASS_ID.CYLINDER_SHAPE, new Vector3(6, 1, 0));
-        // TestHelpers.InstantiateEntityWithShape(scene, "6", DCL.Models.CLASS_ID.GLTF_SHAPE, new Vector3(0, 1, 6), "http://127.0.0.1:9991/GLB/Trunk/Trunk.glb");
-        // TestHelpers.InstantiateEntityWithShape(scene, "6", DCL.Models.CLASS_ID.GLTF_SHAPE, new Vector3(0, 1, 6), "http://127.0.0.1:9991/GLB/Lantern/Lantern.glb");
-        TestHelpers.InstantiateEntityWithShape(scene, "6", DCL.Models.CLASS_ID.GLTF_SHAPE, new Vector3(0, 1, 6), "http://127.0.0.1:9991/GLTF/Trunk/Trunk.gltf");
-        TestHelpers.InstantiateEntityWithShape(scene, "7", DCL.Models.CLASS_ID.OBJ_SHAPE, new Vector3(10, 1, 0), "http://127.0.0.1:9991/OBJ/teapot.obj");
-        TestHelpers.InstantiateEntityWithShape(scene, "8", DCL.Models.CLASS_ID.GLTF_SHAPE, new Vector3(0, 1, 12), "http://127.0.0.1:9991/GLB/CesiumMan/CesiumMan.glb");
+        // TestHelpers.InstantiateEntityWithShape(scene, "6", DCL.Models.CLASS_ID.GLTF_SHAPE, new Vector3(0, 1, 6), TestHelpers.GetTestsAssetsPath() + "/GLB/Trunk/Trunk.glb");
+        // TestHelpers.InstantiateEntityWithShape(scene, "6", DCL.Models.CLASS_ID.GLTF_SHAPE, new Vector3(0, 1, 6), TestHelpers.GetTestsAssetsPath() + "/GLB/Lantern/Lantern.glb");
+        TestHelpers.InstantiateEntityWithShape(scene, "6", DCL.Models.CLASS_ID.GLTF_SHAPE, new Vector3(0, 1, 6), TestHelpers.GetTestsAssetsPath() + "/GLTF/Trunk/Trunk.gltf");
+        TestHelpers.InstantiateEntityWithShape(scene, "7", DCL.Models.CLASS_ID.OBJ_SHAPE, new Vector3(10, 1, 0), TestHelpers.GetTestsAssetsPath() + "/OBJs/teapot.obj");
+        TestHelpers.InstantiateEntityWithShape(scene, "8", DCL.Models.CLASS_ID.GLTF_SHAPE, new Vector3(0, 1, 12), TestHelpers.GetTestsAssetsPath() + "/GLB/CesiumMan/CesiumMan.glb");
 
         Assert.IsNotNull(scene.entities["1"]);
         Assert.IsNotNull(scene.entities["2"]);
@@ -66,7 +66,7 @@ public class EntityShapeAndOnClickTestController : MonoBehaviour
         //  name = "shape",
         //  classId = (int)DCL.Models.CLASS_ID.GLTF_SHAPE,
         //  json = JsonConvert.SerializeObject(new {
-        //    src = "http://127.0.0.1:9991/GLB/DamagedHelmet/DamagedHelmet.glb"
+        //    src = TestHelpers.GetTestsAssetsPath() + "/GLB/DamagedHelmet/DamagedHelmet.glb"
         //  })
         //}));
 
@@ -83,9 +83,7 @@ public class EntityShapeAndOnClickTestController : MonoBehaviour
                 }
             }
         });
-
-        Debug.Log("animJson = " + animJson);
-
+        
         scene.EntityComponentCreate(JsonUtility.ToJson(new DCL.Models.EntityComponentCreateMessage
         {
             entityId = "8",
@@ -95,14 +93,14 @@ public class EntityShapeAndOnClickTestController : MonoBehaviour
         }));
 
 
-        //TestHelpers.CreateSceneEntity(scene, "9");
-        //scene.EntityComponentCreate(JsonUtility.ToJson(new DCL.Models.EntityComponentCreateMessage
-        //{
-        //    entityId = "9",
-        //    name = "text",
-        //    classId = (int)DCL.Models.CLASS_ID_COMPONENT.TEXT_SHAPE,
-        //    json = animJson
-        //}));
+        TestHelpers.CreateSceneEntity(scene, "9");
+        scene.EntityComponentCreate(JsonUtility.ToJson(new DCL.Models.EntityComponentCreateMessage
+        {
+            entityId = "9",
+            name = "text",
+            classId = (int)DCL.Models.CLASS_ID_COMPONENT.TEXT_SHAPE,
+            json = animJson
+        }));
 
         var model = new TextShape.Model() { value = "Hello World!", width = 0.5f, height = 0.5f, hAlign = 0.5f, vAlign = 0.5f }; 
         TestHelpers.InstantiateEntityWithTextShape(scene, new Vector3(5, 5, 5), model);
