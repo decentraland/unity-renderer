@@ -1,5 +1,5 @@
 import * as BABYLON from 'babylonjs'
-import { loadTexture, registerContextInResourceManager } from './loader'
+import { loadTexture, registerContextInResourceManager, loadFile } from './loader'
 import { scene } from '../renderer'
 import { registerLoadingContext } from 'engine/renderer/monkeyLoader'
 import { resolveUrl } from 'atomicHelpers/parseUrl'
@@ -385,15 +385,6 @@ export class SharedSceneContext implements BABYLON.IDisposable {
     return loadTexture(pathToLoad)
   }
 
-  public async getFile(url: string): Promise<File> {
-    if (this._disposed) {
-      throw new Error(`SharedSceneContext(${this.domain}) is disposed`)
-    }
-    const blob = await this.getBlob(url)
-
-    return new File([blob], url)
-  }
-
   public resolveUrl(url: string): string {
     if (this._disposed) {
       throw new Error(`SharedSceneContext(${this.domain}) is disposed`)
@@ -412,20 +403,11 @@ export class SharedSceneContext implements BABYLON.IDisposable {
   }
 
   public async getBlob(url: string): Promise<Blob> {
-    if (this._disposed) {
-      throw new Error(`SharedSceneContext(${this.domain}) is disposed`)
-    }
-    const sanitizedUrl = this.sanitizeURL(url)
+    return this.fetchBlob(this.resolveUrl(url))
+  }
 
-    if (this.useMappings) {
-      if (!this.registeredMappings.has(sanitizedUrl)) {
-        throw new Error(`File not found: ${sanitizedUrl}`)
-      } else {
-        return this.loadMapping(this.registeredMappings.get(sanitizedUrl))
-      }
-    } else {
-      return this.loadRelative(sanitizedUrl)
-    }
+  public async getArrayBuffer(url: string): Promise<ArrayBuffer> {
+    return this.fetchArrayBuffer(this.resolveUrl(url))
   }
 
   public dispose() {
@@ -458,33 +440,16 @@ export class SharedSceneContext implements BABYLON.IDisposable {
     }
   }
 
-  private async loadRelative(relativePath: string | File | Blob): Promise<Blob> {
-    if (relativePath instanceof Blob) {
-      return relativePath
-    }
-
-    const urlToLoad = resolveUrl(this.baseUrl, relativePath)
-
-    return this.fetch(urlToLoad)
-  }
-
-  private async loadMapping(mappingValue: string | File | Blob): Promise<Blob> {
-    if (mappingValue instanceof Blob) {
-      return mappingValue
-    }
-
-    return this.fetch(resolveUrl(this.baseUrl, mappingValue))
-  }
-
-  private async fetch(urlToLoad: string) {
+  private async fetchBlob(urlToLoad: string) {
     // TODO: cache fetch promise so we execute 1 concurrent request only
-    const fetchResult = await fetch(urlToLoad)
+    const data = await loadFile(urlToLoad)
 
-    if (!fetchResult.ok) {
-      throw new Error('Error loading ' + urlToLoad)
-    }
+    return new Blob([new Uint8Array(data)])
+  }
 
-    return fetchResult.blob()
+  private async fetchArrayBuffer(urlToLoad: string) {
+    // TODO: cache fetch promise so we execute 1 concurrent request only
+    return loadFile(urlToLoad)
   }
 
   private sanitizeURL(url: string): string {

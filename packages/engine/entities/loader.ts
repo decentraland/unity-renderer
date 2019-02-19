@@ -1,6 +1,6 @@
 import * as BABYLON from 'babylonjs'
 import { future, IFuture } from 'fp-future'
-import { scene } from '../renderer'
+import { scene, engineMicroQueue } from '../renderer'
 
 // tslint:disable-next-line:whitespace
 type SharedSceneContext = import('./SharedSceneContext').SharedSceneContext
@@ -18,7 +18,7 @@ function registerTexture(texture: BABYLON.Texture, url: string) {
 
 function deRegisterContext(context: SharedSceneContext) {
   registeredSharedContexts.delete(context)
-  queueMicrotask(deleteUnusedTextures)
+  engineMicroQueue.queueMicroTask(deleteUnusedTextures)
 }
 
 export function registerContextInResourceManager(context: SharedSceneContext) {
@@ -30,7 +30,7 @@ let deletionPending = false
 
 export function deleteUnusedTextures() {
   deletionPending = true
-  queueMicrotask(() => {
+  engineMicroQueue.queueMicroTask(() => {
     if (!deletionPending) return
     deletionPending = false
 

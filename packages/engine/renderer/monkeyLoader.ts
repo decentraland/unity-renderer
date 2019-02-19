@@ -59,11 +59,12 @@ function ensureContext(domain: string, onError: (_, error?: Error) => void): Sha
  * @returns a file request object
  */
 function ReadFileAsync(
-  fileToLoadPromise: Promise<File>,
+  fileToLoadPromise: Promise<Blob>,
   callback: (data: any) => void,
-  progressCallBack?: (ev: ProgressEvent) => any,
-  onError?: (xhr: any, exception: Error) => any,
-  useArrayBuffer?: boolean
+  progressCallBack: (ev: ProgressEvent) => any,
+  onError: (xhr: any, exception: Error) => any,
+  useArrayBuffer: boolean,
+  fileName: string
 ): IFileRequest {
   let reader = new FileReader()
   let request: IFileRequest = {
@@ -75,7 +76,7 @@ function ReadFileAsync(
     .then(fileToLoad => {
       reader.onloadend = e => request.onCompleteObservable.notifyObservers(request)
       reader.onerror = e => {
-        Tools.Log('Error while reading file: ' + fileToLoad.name)
+        Tools.Log('Error while reading file: ' + fileName)
         callback(
           JSON.stringify({
             autoClear: true,
@@ -132,9 +133,30 @@ export function initMonkeyLoader() {
 
       const ctx = ensureContext(domain, onError)
 
-      const filePromise = ctx.getFile(path)
+      if (useArrayBuffer) {
+        const abPromise = ctx.getArrayBuffer(path)
 
-      return ReadFileAsync(filePromise, onSuccess, onProgress, onError, useArrayBuffer)
+        let request: IFileRequest = {
+          onCompleteObservable: new Observable<IFileRequest>(),
+          abort: () => void 0
+        }
+
+        abPromise
+          .then($ => {
+            onSuccess && onSuccess($)
+            request.onCompleteObservable.notifyObservers(request)
+          })
+          .catch($ => {
+            onError && onError(null, $)
+          })
+
+        return request
+      } else {
+        const fileName = ctx.resolveUrl(path)
+        const blobPromise = ctx.getBlob(path)
+
+        return ReadFileAsync(blobPromise, onSuccess, onProgress, onError, useArrayBuffer, fileName)
+      }
     }
 
     return originalFileLoader.apply(Tools, arguments)

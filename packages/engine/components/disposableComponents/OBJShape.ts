@@ -73,10 +73,6 @@ export class OBJShape extends DisposableComponent {
                   }
                 }
               }
-
-              if ('reflectionTexture' in material) {
-                material.reflectionTexture = probe.cubeTexture
-              }
             })
             this.assetContainerEntity.set(entity.uuid, assetContainer)
 

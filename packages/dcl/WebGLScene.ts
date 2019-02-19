@@ -26,9 +26,13 @@ export class WebGLScene<T> implements ParcelSceneAPI {
   sendBatch(actions: EntityAction[]): void {
     if (!this.disposed) {
       for (let i = 0; i < actions.length; i++) {
-        const action = actions[i]
-        const fn = this.context[action.type] as ((x: any) => void)
-        fn.call(this.context, JSON.parse(action.payload))
+        try {
+          const action = actions[i]
+          const fn = this.context[action.type] as ((x: any) => void)
+          fn.call(this.context, JSON.parse(action.payload))
+        } catch (e) {
+          this.logger.error(e)
+        }
       }
     }
   }

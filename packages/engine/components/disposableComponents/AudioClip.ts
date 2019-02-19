@@ -38,16 +38,9 @@ export class AudioClip extends DisposableComponent {
       this.data.url = data.url
 
       this.context
-        .getFile(data.url)
-        .then(file => {
-          const fr = new FileReader()
-          fr.readAsArrayBuffer(file)
-          fr.onloadend = () => {
-            this.arrayBuffer.resolve(fr.result as ArrayBuffer)
-          }
-          fr.onerror = () => {
-            this.arrayBuffer.reject(fr.error)
-          }
+        .getArrayBuffer(data.url)
+        .then(ab => {
+          this.arrayBuffer.resolve(ab)
           this.loadingDone = true
         })
         .catch($ => {
