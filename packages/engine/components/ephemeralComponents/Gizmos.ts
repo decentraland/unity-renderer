@@ -2,6 +2,7 @@ import { BaseComponent } from '../BaseComponent'
 import { scene } from 'engine/renderer'
 import { BaseEntity } from 'engine/entities/BaseEntity'
 import { Gizmo } from 'decentraland-ecs/src/decentraland/Gizmos'
+import { removeEntityOutline, addEntityOutline } from './Outline'
 
 type GizmoConfiguration = {
   position: boolean
@@ -146,7 +147,22 @@ export function selectGizmo(type: Gizmo) {
   return true
 }
 
+function selectActiveEntity(entity: BaseEntity) {
+  if (activeEntity === entity) {
+    return
+  }
+  if (activeEntity) {
+    removeEntityOutline(activeEntity)
+  }
+  activeEntity = entity
+  if (activeEntity) {
+    addEntityOutline(entity)
+  }
+}
+
 export class Gizmos extends BaseComponent<GizmoConfiguration> {
+  readonly name: string = 'gizmos'
+
   active = true
 
   transformValue(data: GizmoConfiguration) {
@@ -162,7 +178,7 @@ export class Gizmos extends BaseComponent<GizmoConfiguration> {
     if (currentConfiguration.cycle && this.entity === activeEntity) {
       selectGizmo(switchGizmo())
     } else {
-      activeEntity = this.entity
+      selectActiveEntity(this.entity)
 
       if (currentConfiguration.selectedGizmo) {
         selectGizmo(currentConfiguration.selectedGizmo)
@@ -210,8 +226,8 @@ export class Gizmos extends BaseComponent<GizmoConfiguration> {
       gizmoManager.gizmos.positionGizmo.attachedMesh = null
       gizmoManager.gizmos.rotationGizmo.attachedMesh = null
       gizmoManager.gizmos.scaleGizmo.attachedMesh = null
+      selectActiveEntity(null)
     }
-    activeEntity = null
     this.entity = null
   }
 }

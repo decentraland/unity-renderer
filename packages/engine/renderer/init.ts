@@ -31,7 +31,8 @@ export const engine = new Babylon.Engine(canvas, !isRunningTest, {
   deterministicLockstep: true,
   lockstepMaxSteps: 4,
   alpha: false,
-  antialias: !isRunningTest
+  antialias: !isRunningTest,
+  stencil: true
 })
 
 /**
@@ -54,7 +55,11 @@ export const bodyReadyFuture = future<HTMLBodyElement>()
 
 export const audioEngine = BABYLON.Engine.audioEngine
 
-export const effectLayers: BABYLON.EffectLayer[] = []
+let highlightLayer: BABYLON.HighlightLayer
+
+const gl = new BABYLON.GlowLayer('glow', scene)
+
+export const effectLayers: BABYLON.EffectLayer[] = [gl]
 
 /// --- SIDE EFFECTS ---
 
@@ -117,20 +122,36 @@ export const effectLayers: BABYLON.EffectLayer[] = []
 
   if (!isStandaloneHeadset || isRunningTest) {
     scene.onReadyObservable.add(() => {
-      const gl = new BABYLON.GlowLayer('glow', scene)
-      scene.addEffectLayer(gl)
+      effectLayers.forEach($ => scene.effectLayers.includes($) || scene.addEffectLayer($))
 
       scene.removeEffectLayer = function(layer) {
-        if (layer === gl) return
+        if (effectLayers.includes(layer)) return
         scene.constructor.prototype.removeEffectLayer.apply(this, arguments)
       } as any
 
       scene.addEffectLayer = function(layer) {
-        if (layer === gl) return
+        if (effectLayers.includes(layer)) return
         scene.constructor.prototype.addEffectLayer.apply(this, arguments)
       } as any
     })
   }
 
   initMonkeyLoader()
+}
+
+export function getHighlightLayer() {
+  if (highlightLayer) {
+    return highlightLayer
+  }
+
+  highlightLayer = new BABYLON.HighlightLayer('highlight', scene)
+
+  scene.effectLayers.includes(highlightLayer) || scene.addEffectLayer(highlightLayer)
+
+  highlightLayer.innerGlow = false
+  highlightLayer.outerGlow = true
+
+  effectLayers.push(highlightLayer)
+
+  return highlightLayer
 }

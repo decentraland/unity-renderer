@@ -141,6 +141,30 @@ export namespace editor {
     }
   }
 
+  export function setGridResolution(position: number, scale: number, radians: number) {
+    Gizmos.gizmoManager.gizmos.positionGizmo.snapDistance = position
+    Gizmos.gizmoManager.gizmos.scaleGizmo.snapDistance = scale
+    Gizmos.gizmoManager.gizmos.rotationGizmo.snapDistance = radians
+  }
+
+  export function selectEntity(entityId: string) {
+    if (webGlParcelScene) {
+      const context = webGlParcelScene.context as SharedSceneContext
+      const entity = context.entities.get(entityId)
+      if (!entity) {
+        throw new Error(`Entity(${entityId}) not found`)
+      }
+
+      const gizmos = entity.getBehaviorByName('gizmos') as Gizmos.Gizmos
+
+      if (!entity) {
+        throw new Error(`Entity(${entityId}) has no gizmo component`)
+      }
+
+      gizmos.activate()
+    }
+  }
+
   export function getDCLCanvas() {
     return domReadyFuture.isPending ? domReadyFuture : Promise.resolve(canvas)
   }

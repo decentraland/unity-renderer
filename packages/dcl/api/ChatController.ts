@@ -237,13 +237,11 @@ export class ChatController extends ExposableAPI implements IChatController {
         id: v4(),
         isCommand: true,
         sender: 'Decentraland',
-        message: `Available commands:\n${
-          Object.keys(this.chatCommands)
-            .filter(name => name !== 'help')
-            .map(name => `\t'${name}': ${this.chatCommands[name].description}`)
-            .concat('\thelp: Show this list of commands')
-            .join('\n')
-          }`
+        message: `Available commands:\n${Object.keys(this.chatCommands)
+          .filter(name => name !== 'help')
+          .map(name => `\t'${name}': ${this.chatCommands[name].description}`)
+          .concat('\thelp: Show this list of commands')
+          .join('\n')}`
       }
     })
   }
