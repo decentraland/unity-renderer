@@ -125,3 +125,9 @@ only-watch:
 			"$(PARALLEL_COMPILER) build.entryPoints.json --watch" \
 			"node ./scripts/buildECSprojects.js --watch" \
 			"node ./scripts/test.js --keep-open"
+
+dev-watch:
+	@node_modules/.bin/concurrently \
+		-n "sdk,entryPoints,ecs-builder,server" \
+			"$(PARALLEL_COMPILER) build.entryPoints.json --watch" \
+			"node ./scripts/test.js --keep-open"
