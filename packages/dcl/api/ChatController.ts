@@ -50,7 +50,16 @@ export class ChatController extends ExposableAPI implements IChatController {
 
   @exposeMethod
   async send(messageEntry: MessageEntry): Promise<boolean | MessageEntry> {
-    const cmd = this.handleChatCommand(messageEntry)
+    let cmd = this.handleChatCommand(messageEntry)
+    // If the message looks like a command but no command was found, provide some feedback
+    if (!cmd && messageEntry.message[0] === '/') {
+      cmd = {
+        id: v4(),
+        isCommand: true,
+        sender: 'Decentraland',
+        message: `That command doesn’t exist. Type /help for a full list of commands.`
+      }
+    }
     // If the message was not a command ("/cmdname"), then send message through wire
     if (!cmd) {
       sendPublicChatMessage(messageEntry.id, messageEntry.message)
@@ -81,20 +90,16 @@ export class ChatController extends ExposableAPI implements IChatController {
   }
 
   // @internal
-  addChatCommand(name: string, description: string, fn: (message: string) => void): void {
+  addChatCommand(name: string, description: string, fn: (message: string) => MessageEntry): void {
     if (this.chatCommands[name]) {
       // Chat command already registered
       return
     }
-    const newCommand = {
-      [name]: {
-        name,
-        description,
-        run: message => fn(message)
-      }
+    this.chatCommands[name] = {
+      name,
+      description,
+      run: message => fn(message)
     }
-
-    Object.assign(this.chatCommands, newCommand)
   }
 
   // @internal
@@ -124,6 +129,7 @@ export class ChatController extends ExposableAPI implements IChatController {
         message: `Avatar type changed to ${message}.`
       }
     })
+
     this.addChatCommand('setname', 'Sets your username', message => {
       const avatarAttrs = persistCurrentUser({ displayName: message })
 
@@ -134,6 +140,7 @@ export class ChatController extends ExposableAPI implements IChatController {
         message: `Display Name was changed to ${avatarAttrs.displayName}.`
       }
     })
+
     this.addChatCommand('getname', 'Gets your username', message => {
       const avatarAttrs = getCurrentUser()
 
@@ -144,6 +151,7 @@ export class ChatController extends ExposableAPI implements IChatController {
         message: `Your Display Name is ${avatarAttrs.displayName}.`
       }
     })
+
     this.addChatCommand('block', 'Block [username]', message => {
       const username = message
       // Cannot block yourself
@@ -161,6 +169,7 @@ export class ChatController extends ExposableAPI implements IChatController {
 
       return { id: v4(), isCommand: true, sender: 'Decentraland', message: `You blocked user ${username}.` }
     })
+
     this.addChatCommand('unblock', 'Unblock [username]', message => {
       const username = message
 
@@ -174,6 +183,7 @@ export class ChatController extends ExposableAPI implements IChatController {
 
       return { id: v4(), isCommand: true, sender: 'Decentraland', message: `You unblocked user ${username}.` }
     })
+
     this.addChatCommand('mute', 'Mute [username]', message => {
       const username = message
       // Cannot mute yourself
@@ -188,6 +198,7 @@ export class ChatController extends ExposableAPI implements IChatController {
 
       return { id: v4(), isCommand: true, sender: 'Decentraland', message: `You muted user ${username}.` }
     })
+
     this.addChatCommand('unmute', 'Unmute [username]', message => {
       const username = message
       // Cannot unmute or mute yourself
@@ -203,6 +214,7 @@ export class ChatController extends ExposableAPI implements IChatController {
 
       return { id: v4(), isCommand: true, sender: 'Decentraland', message: `You unmuted user ${username}.` }
     })
+
     this.addChatCommand('setstatus', 'Sets your status', message => {
       const avatarAttrs = persistCurrentUser({ status: message })
 
@@ -213,10 +225,26 @@ export class ChatController extends ExposableAPI implements IChatController {
         message: `Your status was changed to ${avatarAttrs.status}.`
       }
     })
+
     this.addChatCommand('getstatus', 'Gets your status', message => {
       const avatarAttrs = getCurrentUser()
 
       return { id: v4(), isCommand: true, sender: 'Decentraland', message: `Your status is ${avatarAttrs.status}.` }
+    })
+
+    this.addChatCommand('help', 'Show a list of commands', message => {
+      return {
+        id: v4(),
+        isCommand: true,
+        sender: 'Decentraland',
+        message: `Available commands:\n${
+          Object.keys(this.chatCommands)
+            .filter(name => name !== 'help')
+            .map(name => `\t'${name}': ${this.chatCommands[name].description}`)
+            .concat('\thelp: Show this list of commands')
+            .join('\n')
+          }`
+      }
     })
   }
 }
