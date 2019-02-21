@@ -16,6 +16,7 @@ namespace DCL.Models
 
         public System.Action<MonoBehaviour> OnComponentUpdated;
         public System.Action<DecentralandEntity> OnShapeUpdated;
+        public System.Action<DecentralandEntity> OnRemoved;
 
         public GameObject meshGameObject;
         public BaseShape currentShape;

@@ -49,6 +49,8 @@ namespace UnityGLTF
 
     public class GLTFSceneImporter : IDisposable
     {
+        public static bool VERBOSE = false;
+
         public enum ColliderType
         {
             None,
@@ -496,7 +498,7 @@ namespace UnityGLTF
             }
         }
 
-        private IEnumerator _LoadNode(int nodeIndex, Transform parent=null)
+        private IEnumerator _LoadNode(int nodeIndex, Transform parent = null)
         {
             if (nodeIndex >= _gltfRoot.Nodes.Count)
             {
@@ -610,7 +612,7 @@ namespace UnityGLTF
                     }
                 }
 
-                if ( ShouldYieldOnTimeout() ) yield return YieldOnTimeout();
+                if (ShouldYieldOnTimeout()) yield return YieldOnTimeout();
                 yield return ConstructUnityTexture(stream, markGpuOnly, linear, image, imageCacheIndex);
             }
         }
@@ -686,7 +688,7 @@ namespace UnityGLTF
 
                     if (_assetCache.BufferCache[bufferId] == null)
                     {
-                        ConstructBuffer(primitive.Indices.Value.BufferView.Value.Buffer.Value, bufferId);
+                        yield return ConstructBuffer(primitive.Indices.Value.BufferView.Value.Buffer.Value, bufferId);
                     }
 
                     AttributeAccessor indexBuilder = new AttributeAccessor
@@ -789,6 +791,13 @@ namespace UnityGLTF
 
                 // set up input accessors
                 BufferCacheData bufferCacheData = _assetCache.BufferCache[samplerDef.Input.Value.BufferView.Value.Buffer.Id];
+
+                if (bufferCacheData == null)
+                {
+                    if (VERBOSE) Debug.Log("A GLTF Animation buffer cache data is null, skipping animation sampler for " + animation.Name);
+                    continue;
+                }
+
                 AttributeAccessor attributeAccessor = new AttributeAccessor
                 {
                     AccessorId = samplerDef.Input,
@@ -865,6 +874,19 @@ namespace UnityGLTF
                     curveY = new AnimationCurve(),
                     curveZ = new AnimationCurve(),
                     curveW = new AnimationCurve();
+
+                if (samplerCache.Input == null)
+                {
+                    if (VERBOSE) Debug.Log("GLTF Animation: samplerCache input is null for " + node.parent.name + ", skipping animation channel", node);
+                    continue;
+                }
+
+                if (samplerCache.Output == null)
+                {
+                    if (VERBOSE) Debug.Log("GLTF Animation: samplerCache output is null for " + node.parent.name + ", skipping animation channel", node);
+                    continue;
+                }
+
                 NumericArray input = samplerCache.Input.AccessorContent,
                     output = samplerCache.Output.AccessorContent;
 
@@ -1080,7 +1102,7 @@ namespace UnityGLTF
         }
 
 
-        protected virtual IEnumerator ConstructNode(Node node, int nodeIndex, Transform parent=null)
+        protected virtual IEnumerator ConstructNode(Node node, int nodeIndex, Transform parent = null)
         {
             if (_assetCache.NodeCache[nodeIndex] != null)
             {
@@ -1209,6 +1231,12 @@ namespace UnityGLTF
 
             int bufferId = skin.InverseBindMatrices.Value.BufferView.Value.Buffer.Id;
 
+            if (_assetCache.BufferCache[bufferId] == null)
+            {
+                if (VERBOSE) Debug.Log("A GLTF BufferCache in " + renderer.name + " is null, exiting current SetUpBones() process", renderer);
+                yield break;
+            }
+
             AttributeAccessor attributeAccessor = new AttributeAccessor
             {
                 AccessorId = skin.InverseBindMatrices,
@@ -1287,7 +1315,7 @@ namespace UnityGLTF
 
                 // NOTE(Brian): Submesh loading
                 yield return ConstructMeshPrimitive(primitive, meshId, i, materialIndex);
-                
+
                 var primitiveObj = new GameObject("Primitive");
                 primitiveObj.transform.SetParent(parent, false);
                 primitiveObj.SetActive(UseMaterialTransition || LoadingTextureMaterial != null);
@@ -1295,7 +1323,7 @@ namespace UnityGLTF
                 SkinnedMeshRenderer skinnedMeshRenderer = null;
                 MeshRenderer meshRenderer = null;
                 Renderer renderer = null;
-                
+
                 Mesh curMesh = _assetCache.MeshCache[meshId][i].LoadedMesh;
 
                 if (NeedsSkinnedMeshRenderer(primitive, skin))
@@ -1332,7 +1360,7 @@ namespace UnityGLTF
 
                     yield return DownloadAndConstructMaterial(primitive, materialIndex, renderer, null);
 
-                    if ( LoadingTextureMaterial == null )
+                    if (LoadingTextureMaterial == null)
                         primitiveObj.SetActive(true);
                 }
 
@@ -1488,14 +1516,14 @@ namespace UnityGLTF
                 if (pbr.BaseColorTexture != null)
                 {
                     var textureId = pbr.BaseColorTexture.Index;
-                    tasks.Add( _asyncCoroutineHelper.RunAsTask(ConstructImageBuffer(textureId.Value, textureId.Id), ""));
+                    tasks.Add(_asyncCoroutineHelper.RunAsTask(ConstructImageBuffer(textureId.Value, textureId.Id), ""));
 
                 }
 
                 if (pbr.MetallicRoughnessTexture != null)
                 {
                     var textureId = pbr.MetallicRoughnessTexture.Index;
-                    tasks.Add( _asyncCoroutineHelper.RunAsTask(ConstructImageBuffer(textureId.Value, textureId.Id), ""));
+                    tasks.Add(_asyncCoroutineHelper.RunAsTask(ConstructImageBuffer(textureId.Value, textureId.Id), ""));
                 }
             }
 
@@ -1557,7 +1585,7 @@ namespace UnityGLTF
             yield return new WaitUntil(
                 () =>
                     {
-                        for ( int i = 0; i < tasks.Count; i++ )
+                        for (int i = 0; i < tasks.Count; i++)
                         {
                             if (!tasks[i].finished)
                             {
@@ -1900,7 +1928,7 @@ namespace UnityGLTF
             var bufferContents = _assetCache.BufferCache[bufferView.Buffer.Id];
             bufferContents.Stream.Position = bufferView.ByteOffset + bufferContents.ChunkOffset;
             bufferContents.Stream.Read(data, 0, data.Length);
-            
+
             texture.LoadImage(data, true);
 
             _assetCache.ImageCache[imageCacheIndex] = texture;

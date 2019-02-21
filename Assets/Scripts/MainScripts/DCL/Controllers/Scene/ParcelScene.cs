@@ -63,11 +63,19 @@ namespace DCL.Controllers
 
                     plane.transform.position = position;
 
-                    var matTransition = plane.AddComponent<MaterialTransitionController>();
-                    matTransition.delay = 0;
-                    matTransition.useHologram = false;
-                    matTransition.fadeThickness = 20;
-                    matTransition.OnDidFinishLoading(plane.GetComponent<Renderer>().sharedMaterial);
+                    if (Configuration.ParcelSettings.VISUAL_LOADING_ENABLED)
+                    {
+                        Material finalMaterial = Utils.EnsureResourcesMaterial("Materials/Default");
+                        var matTransition = plane.AddComponent<MaterialTransitionController>();
+                        matTransition.delay = 0;
+                        matTransition.useHologram = false;
+                        matTransition.fadeThickness = 20;
+                        matTransition.OnDidFinishLoading(finalMaterial);
+                    }
+                    else
+                    {
+                        plane.GetComponent<MeshRenderer>().sharedMaterial = Utils.EnsureResourcesMaterial("Materials/Default");
+                    }
                 }
             }
         }
@@ -124,6 +132,9 @@ namespace DCL.Controllers
             {
                 if (OnEntityRemoved != null)
                     OnEntityRemoved.Invoke(entities[tmpRemoveEntityMessage.id]);
+
+                if (entities[tmpRemoveEntityMessage.id].OnRemoved != null )
+                    entities[tmpRemoveEntityMessage.id].OnRemoved.Invoke(entities[tmpRemoveEntityMessage.id]);
 
                 Object.Destroy(entities[tmpRemoveEntityMessage.id].gameObject);
                 entities.Remove(tmpRemoveEntityMessage.id);

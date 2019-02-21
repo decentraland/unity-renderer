@@ -1,8 +1,6 @@
-using System;
-using System.Collections;
-using System.Collections.Generic;
 using DCL.Controllers;
 using DCL.Helpers;
+using System.Collections.Generic;
 using UnityEngine;
 
 namespace DCL.Components
@@ -21,10 +19,16 @@ namespace DCL.Components
 
         public PlaneShape(ParcelScene scene) : base(scene) { }
 
+        public static Mesh planeMesh = null;
+
         public override Mesh GenerateGeometry()
         {
+            if (planeMesh == null)
+            {
+                planeMesh = PrimitiveMeshBuilder.BuildPlane(1f);
+            }
             // TODO: Set UVs
-            return PrimitiveMeshBuilder.BuildPlane(1f);
+            return planeMesh;
         }
     }
 }

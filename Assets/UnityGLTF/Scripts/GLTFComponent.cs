@@ -71,7 +71,7 @@ namespace UnityGLTF
             if (OnFailedLoadingAsset != null)
                 OnFailedLoadingAsset.Invoke();
 
-            Debug.LogError("GLTF Loading Failed! " + obj.ToString());
+            Debug.Log("GLTF Loading Failed! " + obj.ToString());
         }
 
         public IEnumerator LoadAssetCoroutine()

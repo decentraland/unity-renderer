@@ -190,7 +190,7 @@ namespace DCL.Components
                     Resources.UnloadUnusedAssets();
                 }
 
-                material = new Material(Resources.Load<Material>(MATERIAL_RESOURCES_PATH + name));
+                material = new Material(Utils.EnsureResourcesMaterial(MATERIAL_RESOURCES_PATH + name));
                 material.name = name;
 
                 material.enableInstancing = true;
@@ -260,6 +260,14 @@ namespace DCL.Components
             {
                 meshRenderer.sharedMaterial = null;
             }
+        }
+
+        public override void Dispose()
+        {
+            if (material != null)
+                GameObject.Destroy(material);
+
+            base.Dispose();
         }
     }
 }

@@ -1,9 +1,5 @@
-using System;
-using System.Collections;
-using System.Collections.Generic;
 using DCL.Controllers;
 using DCL.Helpers;
-using DCL.Models;
 using UnityEngine;
 
 namespace DCL.Components
@@ -19,10 +15,15 @@ namespace DCL.Components
 
         public BoxShape(ParcelScene scene) : base(scene) { }
 
-        public static Mesh cubeMesh = PrimitiveMeshBuilder.BuildCube(1f);
+        public static Mesh cubeMesh = null;
 
         public override Mesh GenerateGeometry()
         {
+            if (cubeMesh == null)
+            {
+                cubeMesh = PrimitiveMeshBuilder.BuildCube(1f);
+            }
+
             return cubeMesh;
         }
     }

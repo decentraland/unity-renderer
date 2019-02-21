@@ -15,10 +15,12 @@ namespace Tests
         public IEnumerator IntegrationTest_SceneIntegration1()
         {
             var GO = new GameObject();
-            var sceneController = TestHelpers.InitializeSceneController(usesWebServer:false);
             var testScene = GO.AddComponent<IntegrationTestController>();
 
-            yield return new WaitForSeconds(0.01f); // We wait to let unity creates
+            yield return null; // We wait to let unity create
+
+            yield return testScene.Initialize();
+
             testScene.Verify();
 
             Object.DestroyImmediate(GO);

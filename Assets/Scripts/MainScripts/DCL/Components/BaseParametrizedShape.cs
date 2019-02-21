@@ -1,9 +1,7 @@
-using System;
-using System.Collections;
-using System.Collections.Generic;
 using DCL.Controllers;
 using DCL.Helpers;
 using DCL.Models;
+using System.Collections;
 using UnityEngine;
 
 namespace DCL.Components
@@ -25,20 +23,21 @@ namespace DCL.Components
         void OnShapeAttached(DecentralandEntity entity)
         {
             if (entity == null)
+            {
                 return;
+            }
 
             entity.EnsureMeshGameObject(componentName + " mesh");
 
             MeshFilter meshFilter = entity.meshGameObject.AddComponent<MeshFilter>();
             MeshRenderer meshRenderer = entity.meshGameObject.AddComponent<MeshRenderer>();
 
-
             meshFilter.sharedMesh = currentMesh;
 
             if (Configuration.ParcelSettings.VISUAL_LOADING_ENABLED)
             {
                 MaterialTransitionController transition = entity.meshGameObject.AddComponent<MaterialTransitionController>();
-                Material finalMaterial = Resources.Load<Material>("Materials/Default");
+                Material finalMaterial = Utils.EnsureResourcesMaterial("Materials/Default");
                 transition.delay = 0;
                 transition.useHologram = false;
                 transition.fadeThickness = 20;
@@ -46,11 +45,13 @@ namespace DCL.Components
             }
             else
             {
-                meshRenderer.sharedMaterial = Resources.Load<Material>("Materials/Default");
+                meshRenderer.sharedMaterial = Utils.EnsureResourcesMaterial("Materials/Default");
             }
 
             if (entity.OnShapeUpdated != null)
+            {
                 entity.OnShapeUpdated.Invoke(entity);
+            }
 
             ConfigureColliders(entity, model.withCollisions);
         }
@@ -58,10 +59,23 @@ namespace DCL.Components
         void OnShapeDetached(DecentralandEntity entity)
         {
             if (entity == null || entity.meshGameObject == null)
+            {
                 return;
+            }
+
+            if (attachedEntities.Count == 0)
+            {
+                if (currentMesh != null)
+                {
+                    GameObject.Destroy(currentMesh);
+                }
+
+                Utils.CleanMaterials(entity.meshGameObject.GetComponent<Renderer>());
+            }
 
             Utils.SafeDestroy(entity.meshGameObject);
             entity.meshGameObject = null;
+
         }
 
         public override IEnumerator ApplyChanges(string newJson)

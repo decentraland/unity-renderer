@@ -20,12 +20,15 @@ public class MaterialTransitionController : MonoBehaviour
     private static int ShaderId_FadeDirection = Shader.PropertyToID("_FadeDirection");
     private static int ShaderId_LoadingColor = Shader.PropertyToID("_LoadingColor");
 
+    Material loadingMaterial;
+
     [System.NonSerialized] public float delay = 0.5f;
     [System.NonSerialized] public bool useHologram = true;
     [System.NonSerialized] public float fadeThickness = 10;
 
     public Material hologramMaterial;
-    public Material loadingMaterial;
+    List<Material> loadingMaterialCopies;
+
     public Material[] finalMaterials;
 
     Renderer targetRendererValue;
@@ -50,14 +53,14 @@ public class MaterialTransitionController : MonoBehaviour
 
     public bool materialReady { get; private set; }
     public bool canSwitchMaterial { get { return materialReady && state != State.FINISHED; } }
-    
+
     public void PopulateLoadingMaterialWithFinalMaterial()
     {
-        List<Material> newMats = new List<Material>();
+        loadingMaterialCopies = new List<Material>();
 
         for (int i = 0; i < finalMaterials.Length; i++)
         {
-            Material material = new Material( loadingMaterial );
+            Material material = new Material(loadingMaterial);
             material.CopyPropertiesFromMaterial(finalMaterials[i]);
 
             material.SetFloat(ShaderId_CullYPlane, currentCullYPlane);
@@ -65,11 +68,13 @@ public class MaterialTransitionController : MonoBehaviour
             material.SetFloat(ShaderId_FadeDirection, 0);
             material.SetFloat(ShaderId_FadeThickness, fadeThickness);
 
-            newMats.Add(material);
+            loadingMaterialCopies.Add(material);
         }
 
-        targetRenderer.materials = newMats.ToArray();
+        targetRenderer.sharedMaterials = loadingMaterialCopies.ToArray();
     }
+
+
 
     private void Awake()
     {
@@ -82,7 +87,7 @@ public class MaterialTransitionController : MonoBehaviour
     {
         targetRenderer.enabled = false;
 
-        if ( useHologram )
+        if (useHologram)
             InitHologram();
 
         lowerYRendererBounds = GetLowerBoundsY(targetRenderer);
@@ -101,7 +106,7 @@ public class MaterialTransitionController : MonoBehaviour
         MeshFilter newMeshFilter = placeholder.AddComponent<MeshFilter>();
         newMeshFilter.sharedMesh = GetComponent<MeshFilter>().sharedMesh;
         hologramMaterial = new Material(Resources.Load("Materials/HologramMaterial") as Material);
-        newRenderer.materials = new Material[] { hologramMaterial };
+        newRenderer.sharedMaterials = new Material[] { hologramMaterial };
     }
 
 
@@ -110,9 +115,7 @@ public class MaterialTransitionController : MonoBehaviour
     {
         if (targetRenderer == null)
         {
-            if ( placeholder != null )
-                Destroy(placeholder);
-
+            DestroyPlaceholder();
             state = State.INVALID;
             return;
         }
@@ -125,9 +128,9 @@ public class MaterialTransitionController : MonoBehaviour
                     currentCullYPlane = Mathf.Clamp(currentCullYPlane, lowerYRendererBounds, topYRendererBounds);
                     time += Time.deltaTime;
 
-                    if ( hologramMaterial != null )
+                    if (hologramMaterial != null)
                         hologramMaterial.SetFloat(ShaderId_CullYPlane, currentCullYPlane);
-                    
+
                     if (materialReady && time > delay)
                     {
                         currentCullYPlane = topYRendererBounds;
@@ -143,9 +146,9 @@ public class MaterialTransitionController : MonoBehaviour
                     currentCullYPlane += (lowerYRendererBounds - currentCullYPlane) * 0.1f;
                     currentCullYPlane = Mathf.Clamp(currentCullYPlane, lowerYRendererBounds, topYRendererBounds);
 
-                    for (int i = 0; i < targetRenderer.materials.Length; i++)
+                    for (int i = 0; i < targetRenderer.sharedMaterials.Length; i++)
                     {
-                        Material material = targetRenderer.materials[i];
+                        Material material = targetRenderer.sharedMaterials[i];
                         material.SetFloat(ShaderId_CullYPlane, currentCullYPlane);
                     }
 
@@ -154,8 +157,9 @@ public class MaterialTransitionController : MonoBehaviour
 
                     if (currentCullYPlane <= lowerYRendererBounds + 0.1f)
                     {
-                        Destroy(placeholder);
-                        targetRenderer.materials = finalMaterials;
+                        Destroy(hologramMaterial);
+                        DestroyPlaceholder();
+                        targetRenderer.sharedMaterials = finalMaterials;
                         state = State.FINISHED;
                     }
 
@@ -166,15 +170,44 @@ public class MaterialTransitionController : MonoBehaviour
                     Destroy(this);
                     break;
                 }
-        }       
+        }
+    }
+
+    private void OnDestroy()
+    {
+        DestroyPlaceholder();
+
+        if (hologramMaterial != null)
+            Destroy(hologramMaterial);
+
+        if (loadingMaterialCopies != null)
+        {
+            foreach (Material m in loadingMaterialCopies)
+            {
+                if (m != null)
+                    Destroy(m);
+            }
+        }
+    }
+
+    void DestroyPlaceholder()
+    {
+        if (placeholder != null)
+        {
+            Destroy(placeholder);
+        }
     }
 
     public void OnDidFinishLoading(Material finishMaterial)
     {
-        if ( finishMaterial.shader.name.Contains("Simple") )
-            loadingMaterial = Resources.Load("Materials/LoadingTextureMaterial_LitSimple") as Material;
+        if (finishMaterial.shader.name.Contains("Simple"))
+        {
+            loadingMaterial = Utils.EnsureResourcesMaterial("Materials/LoadingTextureMaterial_LitSimple");
+        }
         else
-            loadingMaterial = Resources.Load("Materials/LoadingTextureMaterial_Lit") as Material;
+        {
+            loadingMaterial = Utils.EnsureResourcesMaterial("Materials/LoadingTextureMaterial_Lit");
+        }
 
         finalMaterials = new Material[] { finishMaterial };
         materialReady = true;

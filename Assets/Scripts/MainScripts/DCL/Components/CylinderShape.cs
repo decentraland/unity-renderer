@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using DCL.Controllers;
 using DCL.Helpers;
+using DCL.Models;
 using UnityEngine;
 
 namespace DCL.Components
@@ -27,7 +28,17 @@ namespace DCL.Components
 
         public override Mesh GenerateGeometry()
         {
-            return PrimitiveMeshBuilder.BuildCylinder(50, model.radiusTop, model.radiusBottom, 2f, 0f, true, false);
+            return PrimitiveMeshBuilder.BuildCylinder(50, model.radiusTop, model.radiusBottom, 2f, 0f, true, false); ;
+        }
+
+        public override void DetachFrom(DecentralandEntity entity)
+        {
+            if (!attachedEntities.Contains(entity))
+                return;
+
+            base.DetachFrom(entity);
+
+
         }
     }
 }
