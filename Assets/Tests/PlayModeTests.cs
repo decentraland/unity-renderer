@@ -1351,6 +1351,8 @@ namespace Tests
             string entityId = "1";
             string materialID = "a-material";
 
+            Assert.IsFalse(scene.disposableComponents.ContainsKey(materialID));
+
             // Instantiate entity with default PBR Material
             TestHelpers.InstantiateEntityWithMaterial(scene, entityId, Vector3.zero, new DCL.Components.BasicMaterial.Model(), materialID);
 
@@ -1415,6 +1417,8 @@ namespace Tests
 
             sceneController.LoadParcelScenes((Resources.Load("TestJSON/SceneLoadingTest") as TextAsset).text);
 
+            yield return null;
+
             string loadedSceneID = "0,0";
 
             Assert.IsTrue(sceneController.loadedScenes.ContainsKey(loadedSceneID));
@@ -1460,6 +1464,8 @@ namespace Tests
 
             sceneController.LoadParcelScenes((Resources.Load("TestJSON/SceneLoadingTest") as TextAsset).text);
 
+            yield return null;
+
             string loadedSceneID = "0,0";
 
             Assert.IsTrue(sceneController.loadedScenes.ContainsKey(loadedSceneID));
@@ -1493,6 +1499,8 @@ namespace Tests
             Assert.AreEqual(sceneController.loadedScenes.Count, 0);
             sceneController.LoadParcelScenes(jsonMessageToLoad);
 
+            yield return null;
+
             var referenceCheck = new System.Collections.Generic.List<DCL.Controllers.ParcelScene>();
 
             foreach (var kvp in sceneController.loadedScenes)
@@ -1525,6 +1533,9 @@ namespace Tests
 
             Assert.AreEqual(sceneController.loadedScenes.Count, 0);
             sceneController.LoadParcelScenes(jsonMessageToLoad);
+
+            yield return null;
+
             Assert.AreEqual(sceneController.loadedScenes.Count, 1);
 
             var theScene = sceneController.loadedScenes["xxx"];
@@ -1550,6 +1561,9 @@ namespace Tests
 
             Assert.AreEqual(sceneController.loadedScenes.Count, 0);
             sceneController.LoadParcelScenes(jsonMessageToLoad);
+
+            yield return null;
+
             Assert.AreEqual(sceneController.loadedScenes.Count, 1);
 
             var theScene = sceneController.loadedScenes["xxx"];

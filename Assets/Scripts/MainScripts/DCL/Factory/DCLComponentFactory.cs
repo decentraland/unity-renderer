@@ -6,7 +6,7 @@ using UnityEngine;
 
 namespace DCL
 {
-    public class DCLComponentFactory : ScriptableObject 
+    public class DCLComponentFactory : ScriptableObject
     {
         [System.Serializable]
         public class Item
@@ -23,7 +23,8 @@ namespace DCL
         {
             if (factoryDict == null)
             {
-                factoryDict = new Dictionary<CLASS_ID_COMPONENT, Item>(new Utils.FastEnumIntEqualityComparer<CLASS_ID_COMPONENT>());
+                factoryDict = new Dictionary<CLASS_ID_COMPONENT, Item>();
+
                 for (int i = 0; i < factoryList.Length; i++)
                 {
                     Item item = factoryList[i];

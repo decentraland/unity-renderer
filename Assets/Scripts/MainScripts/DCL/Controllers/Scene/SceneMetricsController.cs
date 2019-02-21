@@ -137,10 +137,10 @@ namespace DCL
                     model.bodies--;
                     isDirty = true;
 
-                    if (uniqueMeshes.Contains(mf.mesh))
+                    if (uniqueMeshes.Contains(mf.sharedMesh))
                     {
                         if (VERBOSE) { Debug.Log("Removing mesh... " + go.name); }
-                        uniqueMeshes.Remove(mf.mesh);
+                        uniqueMeshes.Remove(mf.sharedMesh);
                         RemoveMesh(mf.sharedMesh);
                     }
                 }
@@ -183,7 +183,7 @@ namespace DCL
                     model.bodies++;
                     isDirty = true;
 
-                    if (!uniqueMeshes.Contains(mf.mesh))
+                    if (!uniqueMeshes.Contains(mf.sharedMesh))
                     {
                         if (VERBOSE) { Debug.Log("Adding mesh... " + go.name, r.gameObject); }
 

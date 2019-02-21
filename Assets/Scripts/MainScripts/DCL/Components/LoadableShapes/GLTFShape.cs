@@ -13,7 +13,7 @@ namespace DCL.Components
     {
         GLTFComponent gltfLoaderComponent;
 
-        public override void Load(string src, bool useVisualFeedback=true)
+        public override void Load(string src, bool useVisualFeedback=false)
         {
             // GLTF Loader can't be reused "out of the box", so we re-instantiate it when needed
             if (gltfLoaderComponent != null)
@@ -28,7 +28,7 @@ namespace DCL.Components
 
             gltfLoaderComponent.UseVisualFeedback = useVisualFeedback;
             gltfLoaderComponent.Multithreaded = false;
-            gltfLoaderComponent.LoadingTextureMaterial = Resources.Load("Materials/LoadingTextureMaterial") as Material;
+            gltfLoaderComponent.LoadingTextureMaterial = Utils.EnsureResourcesMaterial("Materials/LoadingTextureMaterial");
             gltfLoaderComponent.LoadAsset(src, true);
         }
 

@@ -1,81 +1,109 @@
-﻿using UnityEngine;
+using UnityEngine;
 using UnityEngine.UI;
 
-[RequireComponent(typeof(FrameTimeCounter))]
-public class FPSDisplay : MonoBehaviour
+namespace DCL
 {
-    [System.Serializable]
-    public struct FPSColor
+    [RequireComponent(typeof(FrameTimeCounter))]
+    public class FPSDisplay : MonoBehaviour
     {
-        public Color color;
-        public int fps;
-
-        public FPSColor(Color col, int fps) : this()
+        [System.Serializable]
+        public struct FPSColor
         {
-            this.color = col;
-            this.fps = fps;
+            public Color color;
+            public int fps;
+
+            public FPSColor(Color col, int fps) : this()
+            {
+                this.color = col;
+                this.fps = fps;
+            }
         }
-    }
 
-    public string[] labelText =
-    {
-        "Worst:",
-        "99th: ",
-        "95th: ",
-        "90th: ",
-        "75th: ",
-        "50th: "
-    };
-
-    public Text[] labels;
-
-    public FPSColor[] coloring = {
-        new FPSColor(Color.black, 40),
-        new FPSColor(Color.yellow, 30),
-        new FPSColor(Color.Lerp(Color.yellow, Color.red, 0.3f), 20),
-        new FPSColor(Color.Lerp(Color.yellow, Color.red, 0.7f), 10),
-        new FPSColor(Color.red, 0)
-    };
-
-    public FrameTimeCounter fpsCounter;
-
-    void Update()
-    {
-        if (!fpsCounter)
+        string[] labelText =
         {
-            fpsCounter = GetComponent<FrameTimeCounter>();
+            "Current: ",
+            "50th: ",
+            "75th: ",
+            "90th: ",
+            "95th: ",
+            "99th: ",
+        };
+
+        public Text[] labels;
+
+        FPSColor[] coloring =
+        {
+            new FPSColor(Color.white, 40),
+            new FPSColor(Color.yellow, 30),
+            new FPSColor(Color.Lerp(Color.yellow, Color.red, 0.3f), 20),
+            new FPSColor(Color.Lerp(Color.yellow, Color.red, 0.7f), 10),
+            new FPSColor(Color.red, 0),
+        };
+
+        public FrameTimeCounter fpsCounter;
+
+        private void Start()
+        {
+            InvokeRepeating("LazyUpdate", 5.0f, 0.15f);
+        }
+
+        void LazyUpdate()
+        {
             if (!fpsCounter)
+            {
+                fpsCounter = GetComponent<FrameTimeCounter>();
+
+                if (!fpsCounter)
+                {
+                    return;
+                }
+            }
+
+            float fps = 1.0f / Time.deltaTime;
+            string targetText = labelText[0] + (Time.deltaTime * 1000).ToString("##.000") + "ms (fps: " + fps + ")";
+
+            if (labels[0].text != targetText)
+            {
+                labels[0].text = targetText;
+            }
+
+            DisplayColor(labels[0], fps);
+
+            for (int i = 1; i < labels.Length; i++)
+            {
+                DisplayText(labels[i], labelText[i], fpsCounter.stats[i]);
+                DisplayColor(labels[i], 1 / fpsCounter.stats[i]);
+            }
+        }
+
+        void DisplayColor(Text label, float fps)
+        {
+            for (int i = 0; i < coloring.Length; i++)
+            {
+                if (fps >= coloring[i].fps)
+                {
+                    if (label.color != coloring[i].color)
+                    {
+                        label.color = coloring[i].color;
+                    }
+
+                    break;
+                }
+            }
+        }
+
+        void DisplayText(Text label, string text, float value)
+        {
+            if (value == 0)
             {
                 return;
             }
-        }
-        for (int i = 0; i < labels.Length; i++)
-        {
-            Display(labels[i], labelText[i], fpsCounter.stats[i]);
-        }
-    }
 
-    void Display(Text label, string text, float millis)
-    {
-        if (millis == 0)
-        {
-            return;
-        }
-        float fps = 1 / millis;
-        string targetText = text + (millis * 1000).ToString("##.000") + " ms";
-        if (targetText!= label.text)
-        {
-            label.text = targetText;
-        }
-        for (int i = 0; i < coloring.Length; i++)
-        {
-            if (fps >= coloring[i].fps)
+            string targetText = text + (value * 1000).ToString("##.000") + "ms";
+
+            if (targetText != label.text)
             {
-                if (label.color != coloring[i].color)
-                {
-                    label.color = coloring[i].color;
-                }
-                break;
+                label.text = targetText;
             }
         }
     }

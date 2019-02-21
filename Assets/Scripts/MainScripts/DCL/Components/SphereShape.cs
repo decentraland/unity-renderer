@@ -1,6 +1,3 @@
-using System;
-using System.Collections;
-using System.Collections.Generic;
 using DCL.Controllers;
 using DCL.Helpers;
 using UnityEngine;
@@ -18,9 +15,16 @@ namespace DCL.Components
 
         public SphereShape(ParcelScene scene) : base(scene) { }
 
+        public static Mesh mesh = null;
+
         public override Mesh GenerateGeometry()
         {
-            return PrimitiveMeshBuilder.BuildSphere(1f);
+            if (mesh == null)
+            {
+                mesh = PrimitiveMeshBuilder.BuildSphere(1f);
+            }
+
+            return mesh;
         }
     }
 }

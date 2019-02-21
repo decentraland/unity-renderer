@@ -67,7 +67,7 @@ namespace Tests
         {
             SceneMetricsController.Model inputModel = scene.metricsController.GetModel();
             
-            Assert.AreEqual(triangles, inputModel.triangles, "Incorrect triangle count, was: "+triangles );
+            Assert.AreEqual(triangles, inputModel.triangles, "Incorrect triangle count, was: " + triangles );
             Assert.AreEqual(materials, inputModel.materials, "Incorrect materials count");
             Assert.AreEqual(entities, inputModel.entities, "Incorrect entities count");
             Assert.AreEqual(meshes, inputModel.meshes, "Incorrect geometries/meshes count");

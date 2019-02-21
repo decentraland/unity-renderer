@@ -96,7 +96,7 @@ namespace DCL.Components
         {
             entity.OnShapeUpdated += OnComponentUpdated;
 
-            if (entity.meshGameObject.GetComponentInChildren<Animation>() != null)
+            if (entity.meshGameObject && entity.meshGameObject.GetComponentInChildren<Animation>() != null)
             {
                 Initialize();
             }

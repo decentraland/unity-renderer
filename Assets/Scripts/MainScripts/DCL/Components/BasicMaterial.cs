@@ -28,10 +28,9 @@ namespace DCL.Components
         public Material material;
         bool isLoadingTexture = false;
 
-
         public BasicMaterial(ParcelScene scene) : base(scene)
         {
-            material = UnityEngine.Object.Instantiate(Resources.Load<Material>("Materials/BasicShapeMaterial"));
+            material = new Material(Utils.EnsureResourcesMaterial("Materials/BasicShapeMaterial"));
 
             OnAttach += OnMaterialAttached;
             OnDetach += OnMaterialDetached;
@@ -39,9 +38,10 @@ namespace DCL.Components
             isLoadingTexture = false;
         }
 
-
         public override IEnumerator ApplyChanges(string newJson)
         {
+            if (material == null) yield break; // We escape ApplyChanges called in the parent's constructor
+
             model = JsonUtility.FromJson<Model>(newJson);
 
             if (!string.IsNullOrEmpty(model.texture) && !isLoadingTexture)
@@ -52,6 +52,8 @@ namespace DCL.Components
                     yield return Utils.FetchTexture(scene.sceneData.GetContentsUrl(model.texture), InitTexture);
                 }
             }
+
+            material.SetFloat("_AlphaClip", model.alphaTest);
         }
 
         void InitTexture(Texture texture)
@@ -86,9 +88,6 @@ namespace DCL.Components
                     material.mainTexture.filterMode = FilterMode.Point;
                     break;
             }
-
-            // ALPHA CONFIGURATION
-            material.SetFloat("_AlphaClip", model.alphaTest);
         }
 
         void OnMaterialAttached(DecentralandEntity entity)
@@ -151,6 +150,14 @@ namespace DCL.Components
             {
                 meshRenderer.sharedMaterial = null;
             }
+        }
+
+        public override void Dispose()
+        {
+            if (material != null)
+                GameObject.Destroy(material);
+
+            base.Dispose();
         }
     }
 }

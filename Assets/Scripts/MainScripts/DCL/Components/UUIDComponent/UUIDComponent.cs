@@ -9,6 +9,8 @@ namespace DCL
 {
     public class UUIDComponent : BaseComponent
     {
+        public override string componentName => "UUIDComponent";
+
         public class Model
         {
             public string type;
@@ -29,10 +31,8 @@ namespace DCL
                     SetUpComponent<OnClickComponent>(scene, entity, uuid, type);
                     return;
             }
-#if UNITY_EDITOR || DEVELOPMENT_BUILD
-            throw new UnityException($"Cannot create UUIDComponent of type '{type}'.");
-#endif
 
+            Debug.LogWarning($"Cannot create UUIDComponent of type '{type}'.");
         }
 
         public static void RemoveFromEntity(DecentralandEntity entity, string type)
@@ -43,14 +43,14 @@ namespace DCL
                     RemoveComponent<OnClickComponent>(entity);
                     break;
             }
-#if UNITY_EDITOR || DEVELOPMENT_BUILD
-            throw new UnityException($"Cannot remove UUIDComponent of type '{type}'.");
-#endif
+
+            Debug.LogWarning($"Cannot remove UUIDComponent of type '{type}'.");
         }
 
         private static void RemoveComponent<T>(DecentralandEntity entity) where T : UUIDComponent
         {
             var currentComponent = entity.gameObject.GetComponent<T>();
+
             if (currentComponent != null)
             {
 #if UNITY_EDITOR
@@ -63,18 +63,16 @@ namespace DCL
 
         private static void SetUpComponent<T>(ParcelScene scene, DecentralandEntity entity, string uuid, string type) where T : UUIDComponent
         {
-            var currentComponent = DCL.Helpers.Utils.GetOrCreateComponent<T>(entity.gameObject);
+            var currentComponent = Utils.GetOrCreateComponent<T>(entity.gameObject);
 
             currentComponent.Setup(scene, entity, uuid, type);
         }
-
-        public override string componentName => "UUIDComponent";
 
         public override IEnumerator ApplyChanges(string newJson)
         {
             model = Utils.SafeFromJson<Model>(newJson);
 
-            if ( !string.IsNullOrEmpty( model.uuid ) )
+            if (!string.IsNullOrEmpty(model.uuid))
                 SetForEntity(scene, entity, model.uuid, model.type);
 
             yield return null;

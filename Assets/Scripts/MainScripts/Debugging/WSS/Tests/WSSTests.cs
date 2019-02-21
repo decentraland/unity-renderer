@@ -86,7 +86,7 @@ namespace Tests
                     yield return null;
                 }
 
-                Assert.LessOrEqual(time, 8, "timeout waiting for server approval!");
+                Assert.LessOrEqual(Mathf.FloorToInt(time), 8);
 
                 string loadedSceneID = "0,0";
 

@@ -136,7 +136,7 @@ namespace DCL
                                 characterController.SetPosition(msg.payload);
                                 break;
                             case "Reset":
-                                sceneController.UnloadAllScenes();
+                                sceneController.UnloadAllScenesQueued();
                                 break;
                             default:
                                 Debug.Log("<b><color=#FF0000>WSSController</color></b> WHAT IS " + msg.type);

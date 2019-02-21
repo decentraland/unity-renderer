@@ -1,8 +1,6 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.IO;
-using System.Linq.Expressions;
 using UnityEngine;
 using UnityEngine.Networking;
 
@@ -10,14 +8,46 @@ namespace DCL.Helpers
 {
     public static class Utils
     {
+        public static Dictionary<string, Material> staticMaterials;
+
+        public static Material EnsureResourcesMaterial(string path)
+        {
+            if (staticMaterials == null)
+                staticMaterials = new Dictionary<string, Material>();
+
+            if (!staticMaterials.ContainsKey(path))
+            {
+                Material material = Resources.Load(path) as Material;
+
+                if ( material != null )
+                    staticMaterials.Add(path, material);
+
+                return material;
+            }
+
+            return staticMaterials[path];
+        }
+
+        public static void CleanMaterials(Renderer r)
+        {
+            if (r != null)
+            {
+                foreach (Material m in r.materials)
+                {
+                    if (m != null)
+                    {
+                        Material.Destroy(m);
+                    }
+                }
+            }
+        }
+
         public static void ResetLocalTRS(this Transform t)
         {
             t.localPosition = Vector3.zero;
             t.localRotation = Quaternion.identity;
             t.localScale = Vector3.one;
         }
-
-
 
         public static T GetOrCreateComponent<T>(GameObject gameObject) where T : UnityEngine.Component
         {
@@ -36,7 +66,7 @@ namespace DCL.Helpers
             return request != null && !request.isNetworkError && !request.isHttpError;
         }
 
-        static IEnumerator FetchAsset(string url, UnityWebRequest request, System.Action<UnityWebRequest> OnSuccess=null, System.Action<string> OnFail = null)
+        static IEnumerator FetchAsset(string url, UnityWebRequest request, System.Action<UnityWebRequest> OnSuccess = null, System.Action<string> OnFail = null)
         {
             if (!string.IsNullOrEmpty(url))
             {
@@ -64,10 +94,10 @@ namespace DCL.Helpers
             }
             else
             {
-                Debug.LogError( string.Format("Can't fetch asset as the url is empty!") );
+                Debug.LogError(string.Format("Can't fetch asset as the url is empty!"));
             }
         }
-        
+
         public static IEnumerator FetchAudioClip(string url, AudioType audioType, Action<AudioClip> OnSuccess, Action<string> OnFail)
         {
             //NOTE(Brian): This closure is called when the download is a success.
@@ -171,7 +201,6 @@ namespace DCL.Helpers
             return returningValue;
         }
 
-
         public static GameObject AttachPlaceholderRendererGameObject(UnityEngine.Transform targetTransform)
         {
             var placeholderRenderer = GameObject.CreatePrimitive(PrimitiveType.Cube).GetComponent<MeshRenderer>();
@@ -198,40 +227,6 @@ namespace DCL.Helpers
 #else
             UnityEngine.Object.Destroy(obj);
 #endif
-        }
-
-        // todo; check if your TEnum is enum && typeCode == TypeCode.Int
-        public struct FastEnumIntEqualityComparer<TEnum> : IEqualityComparer<TEnum>
-            where TEnum : struct
-        {
-            static class BoxAvoidance
-            {
-                static readonly Func<TEnum, int> _wrapper;
-
-                public static int ToInt(TEnum enu)
-                {
-                    return _wrapper(enu);
-                }
-
-                static BoxAvoidance()
-                {
-                    var p = Expression.Parameter(typeof(TEnum), null);
-                    var c = Expression.ConvertChecked(p, typeof(int));
-
-                    _wrapper = Expression.Lambda<Func<TEnum, int>>(c, p).Compile();
-                }
-            }
-
-            public bool Equals(TEnum firstEnum, TEnum secondEnum)
-            {
-                return BoxAvoidance.ToInt(firstEnum) ==
-                    BoxAvoidance.ToInt(secondEnum);
-            }
-
-            public int GetHashCode(TEnum firstEnum)
-            {
-                return BoxAvoidance.ToInt(firstEnum);
-            }
         }
     }
 }

@@ -21,7 +21,7 @@ namespace DCL.Components
         private string oldSerialization = null;
 
         protected DCL.Controllers.ParcelScene scene { get; }
-        protected HashSet<DecentralandEntity> attachedEntities = new HashSet<DecentralandEntity>();
+        public HashSet<DecentralandEntity> attachedEntities = new HashSet<DecentralandEntity>();
 
         public void UpdateFromJSON(string json)
         {
@@ -66,10 +66,10 @@ namespace DCL.Components
                 OnAttach.Invoke(entity);
 
             attachedEntities.Add(entity);
-            entity.scene.OnEntityRemoved += Scene_OnEntityRemoved;
+            entity.OnRemoved += OnEntityRemoved;
         }
 
-        private void Scene_OnEntityRemoved(DecentralandEntity entity)
+        private void OnEntityRemoved(DecentralandEntity entity)
         {
             DetachFrom(entity);
         }
@@ -82,7 +82,7 @@ namespace DCL.Components
             if (OnDetach != null)
                 OnDetach.Invoke(entity);
 
-            entity.scene.OnEntityRemoved -= Scene_OnEntityRemoved;
+            entity.OnRemoved -= OnEntityRemoved;
             attachedEntities.Remove(entity);
         }
 
@@ -98,7 +98,7 @@ namespace DCL.Components
             }
         }
 
-        public void Dispose()
+        public virtual void Dispose()
         {
             DetachFromEveryEntity();
             Resources.UnloadUnusedAssets(); //NOTE(Brian): This will ensure assets are freed correctly.

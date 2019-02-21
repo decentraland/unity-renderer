@@ -20,6 +20,25 @@ public class SceneController : MonoBehaviour
 
     public Dictionary<string, ParcelScene> loadedScenes = new Dictionary<string, ParcelScene>();
 
+
+    class QueuedSceneMessage
+    {
+        public enum Type
+        {
+            NONE,
+            SCENE_MESSAGE,
+            LOAD_PARCEL,
+            TELEPORT,
+            UNLOAD_SCENES
+        }
+
+        public Type type;
+        public string sceneId;
+        public string message;
+    }
+
+    Queue<QueuedSceneMessage> pendingMessages = new Queue<QueuedSceneMessage>();
+
     void Awake()
     {
         if (i != null)
@@ -49,6 +68,34 @@ public class SceneController : MonoBehaviour
         else if (Input.GetKeyDown(KeyCode.Escape))
         {
             UnlockCursor();
+        }
+
+        if (pendingMessages.Count > 0)
+        {
+            float startTime = Time.realtimeSinceStartup;
+            
+            while ((Time.realtimeSinceStartup - startTime) < 0.03f)
+            {
+                QueuedSceneMessage m = pendingMessages.Dequeue();
+
+                switch (m.type)
+                {
+                    case QueuedSceneMessage.Type.NONE:
+                        break;
+                    case QueuedSceneMessage.Type.SCENE_MESSAGE:
+                        ProcessMessage(m.sceneId, m.message);
+                        break;
+                    case QueuedSceneMessage.Type.LOAD_PARCEL:
+                        LoadParcelScenesExecute(m.message);
+                        break;
+                    case QueuedSceneMessage.Type.UNLOAD_SCENES:
+                        UnloadAllScenes();
+                        break;
+                }
+
+                if (pendingMessages.Count == 0)
+                    break;
+            }
         }
     }
 
@@ -86,7 +133,7 @@ public class SceneController : MonoBehaviour
 
     private LoadParcelScenesMessage loadParcelScenesMessage = new LoadParcelScenesMessage();
 
-    public void LoadParcelScenes(string decentralandSceneJSON)
+    public void LoadParcelScenesExecute(string decentralandSceneJSON)
     {
         JsonUtility.FromJsonOverwrite(decentralandSceneJSON, this.loadParcelScenesMessage);
 
@@ -130,7 +177,10 @@ public class SceneController : MonoBehaviour
                 UnloadScene(loadedScene.Key);
             }
         }
+
     }
+
+
 
     public void UnloadScene(string sceneKey)
     {
@@ -147,6 +197,8 @@ public class SceneController : MonoBehaviour
         }
     }
 
+
+
     public void UnloadAllScenes()
     {
         var list = loadedScenes.ToArray();
@@ -154,6 +206,16 @@ public class SceneController : MonoBehaviour
         {
             UnloadScene(list[i].Key);
         }
+    }
+
+    public void LoadParcelScenes(string decentralandSceneJSON)
+    {
+        pendingMessages.Enqueue(new QueuedSceneMessage() { type = QueuedSceneMessage.Type.LOAD_PARCEL, message = decentralandSceneJSON });
+    }
+
+    public void UnloadAllScenesQueued()
+    {
+        pendingMessages.Enqueue(new QueuedSceneMessage() { type = QueuedSceneMessage.Type.UNLOAD_SCENES });
     }
 
     public void SendSceneMessage(string payload)
@@ -170,10 +232,13 @@ public class SceneController : MonoBehaviour
 
                 var sceneId = chunks[i].Substring(0, separatorPosition);
                 var message = chunks[i].Substring(separatorPosition + 1);
-                ProcessMessage(sceneId, message);
+
+                pendingMessages.Enqueue(new QueuedSceneMessage() { type = QueuedSceneMessage.Type.SCENE_MESSAGE, sceneId = sceneId, message = message });
             }
         }
     }
+
+
 
     public void ProcessMessage(string sceneId, string message)
     {
@@ -181,6 +246,9 @@ public class SceneController : MonoBehaviour
 
         if (loadedScenes.TryGetValue(sceneId, out scene))
         {
+            if (!scene.gameObject.activeInHierarchy)
+                return;
+
             var separatorPosition = message.IndexOf('\t');
             var method = message.Substring(0, separatorPosition);
             var payload = message.Substring(separatorPosition + 1);
@@ -200,20 +268,14 @@ public class SceneController : MonoBehaviour
                 case "ComponentDisposed": scene.SharedComponentDispose(payload); break;
                 case "ComponentUpdated": scene.SharedComponentUpdate(payload); break;
                 case "RemoveEntity": scene.RemoveEntity(payload); break;
-                default:
-#if UNITY_EDITOR || DEVELOPMENT_BUILD
-                    throw new UnityException($"Unknown method {method}");
-#else
-          return;
-#endif
+                default: Debug.LogError($"Unknown method {method}"); return;
+
             }
         }
-#if UNITY_EDITOR || DEVELOPMENT_BUILD
         else
         {
-            throw new UnityException($"Scene not found {sceneId}");
+            Debug.LogError($"Scene not found {sceneId}");
         }
-#endif
     }
 
     public ParcelScene CreateTestScene(LoadParcelScenesMessage.UnityParcelScene data)

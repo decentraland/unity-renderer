@@ -5,14 +5,16 @@ using DCL.Configuration;
 using Newtonsoft.Json;
 using UnityEngine;
 using UnityEngine.Assertions;
+using System.Collections;
 
 public class IntegrationTestController : MonoBehaviour
 {
     string entityId = "a5f571bd-bce1-4cf8-a158-b8f3e92e4fb0";
+    string sceneName = "the-loaded-scene";
 
-    void Awake()
+    public IEnumerator Initialize()
     {
-        var sceneController = Object.FindObjectOfType<SceneController>();
+        var sceneController = TestHelpers.InitializeSceneController();
 
         var scenesToLoad = new
         {
@@ -20,7 +22,7 @@ public class IntegrationTestController : MonoBehaviour
             {
                 new LoadParcelScenesMessage.UnityParcelScene()
                 {
-                    id = "the-loaded-scene",
+                    id = sceneName,
                     basePosition = new Vector2Int(3, 3),
                     parcels = new []
                     {
@@ -37,12 +39,14 @@ public class IntegrationTestController : MonoBehaviour
         sceneController.UnloadAllScenes();
         sceneController.LoadParcelScenes(JsonConvert.SerializeObject(scenesToLoad));
 
-        var scene = sceneController.loadedScenes["the-loaded-scene"];
+        yield return null;
+
+        var scene = sceneController.loadedScenes[sceneName];
 
         //NOTE(Brian): This is making my eyes bleed.
         sceneController.SendSceneMessage(
           TestHelpers.CreateSceneMessage(
-                "the-loaded-scene",
+                sceneName,
                 "CreateEntity",
                 JsonConvert.SerializeObject(
                     new CreateEntityMessage
@@ -54,7 +58,7 @@ public class IntegrationTestController : MonoBehaviour
         //NOTE(Brian): This is making my eyes bleed.
         sceneController.SendSceneMessage(
           TestHelpers.CreateSceneMessage(
-            "the-loaded-scene",
+            sceneName,
             "SetEntityParent",
             JsonConvert.SerializeObject(
                 new
@@ -64,6 +68,8 @@ public class IntegrationTestController : MonoBehaviour
                 })
              )
         );
+
+        yield return null;
 
         Assert.IsTrue(scene.entities[entityId].meshGameObject == null, "meshGameObject must be null");
 
@@ -92,10 +98,10 @@ public class IntegrationTestController : MonoBehaviour
         TestHelpers.InstantiateEntityWithTextShape(scene, new Vector3(10, 10, 10), new TextShape.Model() { value = "Hello World!!!" });
     }
 
-    public void Verify()
+    public IEnumerator Verify()
     {
         var sceneController = FindObjectOfType<SceneController>();
-        var scene = sceneController.loadedScenes["the-loaded-scene"];
+        var scene = sceneController.loadedScenes[sceneName];
         var cube = scene.entities[entityId];
 
         Assert.IsTrue(cube != null);
@@ -141,7 +147,8 @@ public class IntegrationTestController : MonoBehaviour
             Assert.AreNotEqual(mesh.name, newMesh.name, "The mesh instance remains the same, a new instance should have been created.");
         }
 
-
         // TODO: test ComponentRemoved
+
+        yield return null;
     }
 }
