@@ -42,6 +42,24 @@ namespace DCL.Helpers
             }
         }
 
+        public static Vector2[] FloatArrayToV2List(float[] uvs)
+        {
+            Vector2[] uvsResult = new Vector2[uvs.Length / 2];
+            int uvsResultIndex = 0;
+
+            for (int i = 0; i < uvs.Length;)
+            {
+                Vector2 tmpUv = Vector2.zero;
+                tmpUv.x = uvs[i++];
+                tmpUv.y = uvs[i++];
+
+                uvsResult[uvsResultIndex++] = tmpUv;
+            }
+
+            return uvsResult;
+        }
+
+
         public static void ResetLocalTRS(this Transform t)
         {
             t.localPosition = Vector3.zero;

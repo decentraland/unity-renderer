@@ -12,7 +12,7 @@ namespace DCL.Components
 
         public abstract Mesh GenerateGeometry();
 
-        private Mesh currentMesh = null;
+        public Mesh currentMesh { get; private set; }
 
         public BaseParametrizedShape(ParcelScene scene) : base(scene)
         {
@@ -81,7 +81,7 @@ namespace DCL.Components
         public override IEnumerator ApplyChanges(string newJson)
         {
             bool hadCollisions = model.withCollisions;
-            JsonUtility.FromJsonOverwrite(newJson, model);
+            model = JsonUtility.FromJson<T>(newJson);
 
             var newMesh = GenerateGeometry();
 

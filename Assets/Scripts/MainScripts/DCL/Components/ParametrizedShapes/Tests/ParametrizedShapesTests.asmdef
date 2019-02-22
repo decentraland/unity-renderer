@@ -1,0 +1,17 @@
+{
+    "name": "ParametrizedShapesTests",
+    "references": [
+        "MainScripts",
+        "Utils"
+    ],
+    "optionalUnityReferences": [
+        "TestAssemblies"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": []
+}
