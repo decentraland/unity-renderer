@@ -1,8 +1,10 @@
 import * as BABYLON from 'babylonjs'
 
 import { vrHelper, scene, engine } from './init'
-import { playerConfigurations, visualConfigurations } from 'config'
+import { playerConfigurations, visualConfigurations, parcelLimits } from 'config'
 import { keyState, Keys } from './input'
+import { gridToWorld } from 'atomicHelpers/parcelScenePositions'
+import { teleportObserver } from 'shared/world/positionThings'
 
 export const DEFAULT_CAMERA_ZOOM = 20
 const CAMERA_SPEED = 0.01
@@ -171,4 +173,21 @@ function unprojectToPlane(vec: BABYLON.Vector3) {
   dir.scaleInPlace(distance)
   onPlane = scene.activeCamera.position.add(dir)
   return onPlane
+}
+
+teleportObserver.add((position: { x: number, y: number }) => {
+  return teleportTo(position.x, position.y)
+})
+
+export async function teleportTo(x: number, y: number) {
+  if (!(parcelLimits.minLandCoordinateX <= x
+    && x <= parcelLimits.maxLandCoordinateX
+    && parcelLimits.minLandCoordinateY <= y
+    && y <= parcelLimits.maxLandCoordinateY)) {
+    return false
+  }
+  // Option A: Load scene description, list teleporting point(s), pick one at random if list, calculate world position and set camera
+  // ... not implemented!
+  // Option B: Set world position :D
+  gridToWorld(x, y, vrCamera.position)
 }

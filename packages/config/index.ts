@@ -49,6 +49,11 @@ export namespace parcelLimits {
   export const maxParcelZ = 3000
   export const minParcelX = -3000
   export const minParcelZ = -3000
+
+  export const minLandCoordinateX = -150
+  export const minLandCoordinateY = -150
+  export const maxLandCoordinateX = 150
+  export const maxLandCoordinateY = 150
 }
 
 export namespace playerConfigurations {
