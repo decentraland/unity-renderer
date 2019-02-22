@@ -1,4 +1,4 @@
-﻿using System.Collections;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEditor;
@@ -142,15 +142,15 @@ namespace DCL.Helpers
 
             int vIndex = 0;
             Vector3 start = new Vector3(-_size / 2, _size / 2, 0);
-            vertices[vIndex++] = start;
-            vertices[vIndex++] = start + Vector3.right * _size;
-            vertices[vIndex++] = start + Vector3.right * _size + Vector3.down * _size;
-            vertices[vIndex++] = start + Vector3.down * _size;
+            vertices[vIndex++] = new Vector3(-start.x, -start.y, 0);
+            vertices[vIndex++] = new Vector3(start.x, -start.y, 0);
+            vertices[vIndex++] = new Vector3(start.x, start.y, 0);
+            vertices[vIndex++] = new Vector3(-start.x, start.y, 0);
 
-            vertices[vIndex++] = start;
-            vertices[vIndex++] = start + Vector3.right * _size;
-            vertices[vIndex++] = start + Vector3.right * _size + Vector3.down * _size;
-            vertices[vIndex++] = start + Vector3.down * _size;
+            vertices[vIndex++] = new Vector3(-start.x, -start.y, 0);
+            vertices[vIndex++] = new Vector3(start.x, -start.y, 0);
+            vertices[vIndex++] = new Vector3(start.x, start.y, 0);
+            vertices[vIndex++] = new Vector3(-start.x, start.y, 0);
 
             vIndex = 0;
             uvs[vIndex++] = new Vector2(0f, 1f);
@@ -186,19 +186,19 @@ namespace DCL.Helpers
             colors[vIndex++] = Color.white;
 
             int cnt = 0;
-            tris[cnt++] = 0;
+            tris[cnt++] = 2;
             tris[cnt++] = 1;
+            tris[cnt++] = 0;
+            tris[cnt++] = 3;
             tris[cnt++] = 2;
             tris[cnt++] = 0;
-            tris[cnt++] = 2;
-            tris[cnt++] = 3;
 
-            tris[cnt++] = 4 + 0;
-            tris[cnt++] = 4 + 2;
             tris[cnt++] = 4 + 1;
-            tris[cnt++] = 4 + 0;
-            tris[cnt++] = 4 + 3;
             tris[cnt++] = 4 + 2;
+            tris[cnt++] = 4 + 0;
+            tris[cnt++] = 4 + 2;
+            tris[cnt++] = 4 + 3;
+            tris[cnt++] = 4 + 0;
 
             mesh.vertices = vertices;
             mesh.normals = normals;
@@ -367,6 +367,7 @@ namespace DCL.Helpers
 
 
             int cnt = 0;
+
             //top and bottom
             tris[cnt++] = 0;
             tris[cnt++] = 1;
@@ -418,6 +419,7 @@ namespace DCL.Helpers
             mesh.uv2 = uvs2;
 
             mesh.triangles = tris;
+
             return mesh;
         }
 

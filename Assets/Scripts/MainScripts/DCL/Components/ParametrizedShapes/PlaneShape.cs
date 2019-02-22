@@ -1,5 +1,6 @@
 using DCL.Controllers;
 using DCL.Helpers;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -10,7 +11,7 @@ namespace DCL.Components
         [System.Serializable]
         new public class Model : BaseShape.Model
         {
-            public List<float>[] uvs;
+            public float[] uvs;
             public float width = 1f;   // Plane
             public float height = 1f;  // Plane
         }
@@ -19,16 +20,17 @@ namespace DCL.Components
 
         public PlaneShape(ParcelScene scene) : base(scene) { }
 
-        public static Mesh planeMesh = null;
 
         public override Mesh GenerateGeometry()
         {
-            if (planeMesh == null)
+            Mesh mesh = PrimitiveMeshBuilder.BuildPlane(1f);
+
+            if (model.uvs != null && model.uvs.Length > 0)
             {
-                planeMesh = PrimitiveMeshBuilder.BuildPlane(1f);
+                mesh.uv = Utils.FloatArrayToV2List(model.uvs);
             }
-            // TODO: Set UVs
-            return planeMesh;
+
+            return mesh;
         }
     }
 }
