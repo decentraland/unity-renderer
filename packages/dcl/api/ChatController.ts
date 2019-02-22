@@ -12,7 +12,7 @@ import {
   getBlockedUsers,
   getMutedUsers
 } from 'shared/comms/profile'
-import { getCurrentUser, muteUsers, hideBlockedUsers, findPeerByName } from 'dcl/comms/peers'
+import { getCurrentUser, muteUsers, hideBlockedUsers, findPeerByName, getPeer } from 'dcl/comms/peers'
 import { chatObservable, ChatEvent } from 'shared/comms/chat'
 import { ExposableAPI } from '../../shared/apis/ExposableAPI'
 import { IChatCommand, MessageEntry } from 'shared/types'
@@ -202,6 +202,30 @@ export class ChatController extends ExposableAPI implements IChatController {
       muteUsers(getMutedUsers())
 
       return { id: v4(), isCommand: true, sender: 'Decentraland', message: `You unblocked user ${username}.` }
+    })
+
+    this.addChatCommand('blocked', 'Show a list of blocked users', message => {
+      const users = getBlockedUsers()
+      if (!users || users.size === 0) {
+        return {
+          id: v4(),
+          sender: 'Decentraland',
+          isCommand: true,
+          message: `No blocked users. Use the '/block [username]' command to block someone.`
+        }
+      }
+
+      return {
+        id: v4(),
+        isCommand: true,
+        sender: 'Decentraland',
+        message: `These are the users you are blocking:\n${[...users]
+          .map(user => {
+            const profile = getPeer(user)
+            return `\t${profile ? `${profile.user.displayName}: ${user}` : user}\n`
+          })
+          .join('\n')}`
+      }
     })
 
     this.addChatCommand('mute', 'Mute [username]', message => {
