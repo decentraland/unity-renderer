@@ -286,6 +286,24 @@ export namespace editor {
     return rayToGround(localX, localY)
   }
 
+  export function loadImage(url: string, image: HTMLImageElement) {
+    scene.database.loadImageFromDB(url, image)
+  }
+
+  export function preloadFile(url: string, useArrayBuffer = true): Promise<string | ArrayBuffer> {
+    const defer = future()
+    scene.database.loadFileFromDB(
+      url,
+      data => defer.resolve(data),
+      null,
+      () => {
+        defer.reject(new Error(`Error while loading ${url}`))
+      },
+      useArrayBuffer
+    )
+    return defer
+  }
+
   export function setCameraRotation(alpha: number, beta?: number) {
     arcCamera.alpha = alpha
     if (beta !== undefined) {

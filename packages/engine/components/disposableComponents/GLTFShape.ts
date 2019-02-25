@@ -153,7 +153,7 @@ export class GLTFShape extends DisposableComponent {
         (_scene, message, exception) => {
           this.entityIsLoading.delete(entity.uuid)
 
-          this.context.logger.error('Error loading GLTF', message || exception)
+          this.context.logger.error('Error loading GLTF', message, exception)
           this.onDetach(entity)
           entity.assetContainer = null
 

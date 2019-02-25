@@ -50,70 +50,6 @@ function ensureContext(domain: string, onError: (_, error?: Error) => void): Sha
   return ctx
 }
 
-/**
- * Loads a file
- * @param fileToLoad defines the file to load
- * @param callback defines the callback to call when data is loaded
- * @param progressCallBack defines the callback to call during loading process
- * @param useArrayBuffer defines a boolean indicating that data must be returned as an ArrayBuffer
- * @returns a file request object
- */
-function ReadFileAsync(
-  fileToLoadPromise: Promise<Blob>,
-  callback: (data: any) => void,
-  progressCallBack: (ev: ProgressEvent) => any,
-  onError: (xhr: any, exception: Error) => any,
-  useArrayBuffer: boolean,
-  fileName: string
-): IFileRequest {
-  let reader = new FileReader()
-  let request: IFileRequest = {
-    onCompleteObservable: new Observable<IFileRequest>(),
-    abort: () => reader.abort()
-  }
-
-  fileToLoadPromise
-    .then(fileToLoad => {
-      reader.onloadend = e => request.onCompleteObservable.notifyObservers(request)
-      reader.onerror = e => {
-        Tools.Log('Error while reading file: ' + fileName)
-        callback(
-          JSON.stringify({
-            autoClear: true,
-            clearColor: [1, 0, 0],
-            ambientColor: [0, 0, 0],
-            gravity: [0, -9.807, 0],
-            meshes: [],
-            cameras: [],
-            lights: []
-          })
-        )
-      }
-      reader.onload = e => {
-        // target doesn't have result from ts 1.3
-        callback((e.target as any)['result'])
-      }
-      if (progressCallBack) {
-        reader.onprogress = progressCallBack
-      }
-      if (!useArrayBuffer) {
-        // Asynchronous read
-        reader.readAsText(fileToLoad)
-      } else {
-        reader.readAsArrayBuffer(fileToLoad)
-      }
-    })
-    .catch(e => {
-      if (onError) {
-        onError(null, e)
-      } else {
-        error(e)
-      }
-    })
-
-  return request
-}
-
 /// --- EXPORTS ---
 
 export function initMonkeyLoader() {
@@ -133,30 +69,23 @@ export function initMonkeyLoader() {
 
       const ctx = ensureContext(domain, onError)
 
-      if (useArrayBuffer) {
-        const abPromise = ctx.getArrayBuffer(path)
-
-        let request: IFileRequest = {
-          onCompleteObservable: new Observable<IFileRequest>(),
-          abort: () => void 0
-        }
-
-        abPromise
-          .then($ => {
-            onSuccess && onSuccess($)
-            request.onCompleteObservable.notifyObservers(request)
-          })
-          .catch($ => {
-            onError && onError(null, $)
-          })
-
-        return request
-      } else {
-        const fileName = ctx.resolveUrl(path)
-        const blobPromise = ctx.getBlob(path)
-
-        return ReadFileAsync(blobPromise, onSuccess, onProgress, onError, useArrayBuffer, fileName)
+      let request: IFileRequest = {
+        onCompleteObservable: new Observable<IFileRequest>(),
+        abort: () => void 0
       }
+
+      const abPromise = useArrayBuffer ? ctx.getArrayBuffer(path) : ctx.getText(path)
+
+      abPromise
+        .then($ => {
+          onSuccess && onSuccess($)
+          request.onCompleteObservable.notifyObservers(request)
+        })
+        .catch($ => {
+          onError && onError(null, $)
+        })
+
+      return request
     }
 
     return originalFileLoader.apply(Tools, arguments)
@@ -170,40 +99,68 @@ export function initMonkeyLoader() {
 
       const img = new Image()
 
-      const loadHandler = function() {
-        URL.revokeObjectURL(img.src)
-        img.removeEventListener('load', loadHandler)
-        // tslint:disable-next-line
-        img.removeEventListener('error', errorHandler)
-        if (onLoad) {
-          onLoad(img)
+      if (database) {
+        const url = ctx.resolveUrl(path)
+
+        const loadHandler = function() {
+          img.removeEventListener('load', loadHandler)
+          // tslint:disable-next-line
+          img.removeEventListener('error', errorHandler)
+          if (onLoad) {
+            onLoad(img)
+          }
         }
-      }
 
-      const errorHandler = function(err) {
-        URL.revokeObjectURL(img.src)
+        const errorHandler = function(err) {
+          img.removeEventListener('load', loadHandler)
+          img.removeEventListener('error', errorHandler)
+          if (onError) {
+            onError('Error while trying to load image: ' + url, err)
+          }
+        }
+
         img.removeEventListener('load', loadHandler)
         img.removeEventListener('error', errorHandler)
-        if (onError) {
-          onError('Error while trying to load image: ' + url, err)
+
+        img.addEventListener('load', loadHandler)
+        img.addEventListener('error', errorHandler)
+
+        database.loadImageFromDB(url, img)
+      } else {
+        const loadHandler = function() {
+          URL.revokeObjectURL(img.src)
+          img.removeEventListener('load', loadHandler)
+          // tslint:disable-next-line
+          img.removeEventListener('error', errorHandler)
+          if (onLoad) {
+            onLoad(img)
+          }
         }
+
+        const errorHandler = function(err) {
+          URL.revokeObjectURL(img.src)
+          img.removeEventListener('load', loadHandler)
+          img.removeEventListener('error', errorHandler)
+          if (onError) {
+            onError('Error while trying to load image: ' + url, err)
+          }
+        }
+
+        img.removeEventListener('load', loadHandler)
+        img.removeEventListener('error', errorHandler)
+
+        img.addEventListener('load', loadHandler)
+        img.addEventListener('error', errorHandler)
+
+        ctx
+          .getBlob(path)
+          .then(blob => {
+            img.src = URL.createObjectURL(blob)
+          })
+          .catch(e => {
+            errorHandler(e)
+          })
       }
-
-      img.removeEventListener('load', loadHandler)
-      img.removeEventListener('error', errorHandler)
-
-      img.addEventListener('load', loadHandler)
-      img.addEventListener('error', errorHandler)
-
-      ctx
-        .getBlob(path)
-        .then(blob => {
-          img.src = URL.createObjectURL(blob)
-        })
-        .catch(e => {
-          errorHandler(e)
-        })
-
       return img
     }
 

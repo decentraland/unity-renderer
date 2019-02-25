@@ -57,7 +57,7 @@ export async function enableParcelSceneLoading(network: ETHEREUM_NETWORK, option
     })
   }
 
-  teleportObserver.add((position: { x: number, y: number }) => {
+  teleportObserver.add((position: { x: number; y: number }) => {
     ret.server.notify('User.setPosition', { position })
   })
   positionObserver.add(obj => {

@@ -147,7 +147,12 @@ export class ChatController extends ExposableAPI implements IChatController {
     this.addChatCommand('goto', 'Teleport to another parcel', message => {
       const coordinates = positionRegex.exec(message)
       if (!coordinates) {
-        return { id: v4(), isCommand: true, sender: 'Decentraland', message: 'Could not recognize the coordinates provided. Example usage: /goto 42,42' }
+        return {
+          id: v4(),
+          isCommand: true,
+          sender: 'Decentraland',
+          message: 'Could not recognize the coordinates provided. Example usage: /goto 42,42'
+        }
       }
       const x = coordinates[1]
       const y = coordinates[2]

@@ -6,7 +6,7 @@ import { domReadyFuture } from 'engine'
 
 import { error } from 'engine/logger'
 
-import { setSize, scene, initDCL, onWindowResize } from 'engine/renderer'
+import { setSize, scene, initDCL, onWindowResize, engineMicroQueue } from 'engine/renderer'
 import { initKeyboard } from 'engine/renderer/input'
 import { reposition } from 'engine/renderer/ambientLights'
 
@@ -192,6 +192,11 @@ export function enableVisualTests(name: string, cb: (root: BABYLON.TransformNode
 
       root.setParent(null)
       root.dispose()
+
+      engineMicroQueue.flushMicroTaskQueue()
+      engineMicroQueue.flushTaskQueue()
+
+      await untilNextFrame()
 
       stop()
 

@@ -111,7 +111,7 @@ export class OBJShape extends DisposableComponent {
         },
         null,
         (_scene, message, exception) => {
-          this.context.logger.error('Error loading OBJ', message || exception)
+          this.context.logger.error('Error loading OBJ', message, exception)
           this.onDetach(entity)
           this.loadingDone = true
         },

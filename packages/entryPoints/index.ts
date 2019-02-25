@@ -4,7 +4,7 @@ import 'engine'
 
 import { ETHEREUM_NETWORK, DEBUG } from '../config'
 import { initBabylonClient } from '../dcl'
-import { domReadyFuture, bodyReadyFuture } from '../engine/renderer/init'
+import { domReadyFuture, bodyReadyFuture, scene } from '../engine/renderer/init'
 import { initShared } from '../shared'
 import { enableParcelSceneLoading } from '../shared/world/parcelSceneManager'
 import { WebGLParcelScene } from '../dcl/WebGLParcelScene'
@@ -46,3 +46,6 @@ bodyReadyFuture
     document.body.classList.remove('dcl-loading')
     document.body.innerHTML = `<h3>${error.message}</h3>`
   })
+
+// tslint:disable-next-line:no-console
+console.log(scene)

@@ -61,6 +61,8 @@ const gl = new BABYLON.GlowLayer('glow', scene)
 
 export const effectLayers: BABYLON.EffectLayer[] = [gl]
 
+const database = new BABYLON.Database('no-scene', () => void 0, true)
+
 /// --- SIDE EFFECTS ---
 
 {
@@ -116,6 +118,49 @@ export const effectLayers: BABYLON.EffectLayer[] = [gl]
   scene.actionManager = new BABYLON.ActionManager(scene)
 
   engine.enableOfflineSupport = (!DEBUG && !PREVIEW) || EDITOR
+
+  if (!isRunningTest && !PREVIEW) {
+    database.openAsync(
+      () => {
+        Object.defineProperty(scene, 'database', {
+          get: () => database,
+          set: () => void 0
+        })
+
+        Object.defineProperty(database, 'mustUpdateRessources', {
+          get: () => false,
+          set: () => void 0
+        })
+
+        const initialGetFile = database.loadFileFromDB
+
+        database.loadFileFromDB = function(...args: any[]) {
+          const url = args[0]
+
+          if (url.startsWith('data:') || url.startsWith('blob:')) {
+            const onNoIDB = args[3]
+            if (onNoIDB) {
+              onNoIDB()
+              return
+            }
+          }
+
+          return initialGetFile.apply(database, args)
+        }
+
+        const initialGetImage = database.loadImageFromDB
+
+        database.loadImageFromDB = function(...args: any[]) {
+          return initialGetImage.apply(database, args)
+        }
+      },
+      () => {
+        // tslint:disable-next-line:no-console
+        console.error('Error opening IDB')
+      }
+    )
+  }
+
   engine.disableManifestCheck = true
 
   scene.getBoundingBoxRenderer().showBackLines = false

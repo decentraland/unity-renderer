@@ -7,6 +7,7 @@ type SharedSceneContext = import('./SharedSceneContext').SharedSceneContext
 
 export const loadingManager = new BABYLON.AssetsManager(scene)
 export const loadedTextures = new Map<string, IFuture<BABYLON.Texture>>()
+export const loadedFiles = new Map<string, IFuture<ArrayBuffer>>()
 
 const registeredSharedContexts = new Set<SharedSceneContext>()
 
@@ -46,6 +47,12 @@ export function deleteUnusedTextures() {
         )
       }
     })
+
+    loadedFiles.forEach(($, key) => {
+      if (!$.isPending) {
+        loadedFiles.delete(key)
+      }
+    })
   })
 }
 
@@ -59,21 +66,28 @@ function getUsedTextures(): Set<string> {
   return usedTextures
 }
 
-export async function loadFile(url: string): Promise<ArrayBuffer> {
-  return new Promise<ArrayBuffer>((ok, reject) => {
-    BABYLON.Tools.LoadFile(
-      url,
-      ab => {
-        ok(ab as ArrayBuffer)
-      },
-      null,
-      scene.database,
-      true,
-      (_xhr, exc) => {
-        reject(exc)
-      }
-    )
-  })
+export async function loadFile(url: string, useArrayBuffer = true): Promise<ArrayBuffer> {
+  if (loadedFiles.has(url)) {
+    return loadedFiles.get(url)
+  }
+
+  const defer = future<ArrayBuffer>()
+  loadedFiles.set(url, defer)
+
+  BABYLON.Tools.LoadFile(
+    url,
+    ab => {
+      defer.resolve(ab as ArrayBuffer)
+    },
+    null,
+    scene.database,
+    useArrayBuffer,
+    (_xhr, exc) => {
+      defer.reject(exc)
+    }
+  )
+
+  return defer
 }
 
 export async function loadTexture(url: string): Promise<BABYLON.Texture> {
@@ -89,7 +103,7 @@ export async function loadTexture(url: string): Promise<BABYLON.Texture> {
       null,
       scene,
       false,
-      false,
+      true,
       BABYLON.Texture.BILINEAR_SAMPLINGMODE,
       () => {
         texture.url = url
@@ -104,16 +118,23 @@ export async function loadTexture(url: string): Promise<BABYLON.Texture> {
       true
     )
   } else {
-    const task = loadingManager.addTextureTask(url, url)
-
-    task.run(
+    const texture = new BABYLON.Texture(
+      url,
       scene,
+      false,
+      true,
+      BABYLON.Texture.BILINEAR_SAMPLINGMODE,
       () => {
-        task.texture.url = url
-        defer.resolve(task.texture)
-        registerTexture(task.texture, url)
+        texture.url = url
+        defer.resolve(texture)
+        registerTexture(texture, url)
       },
-      (message, error) => defer.reject(error || message || task.errorObject || `Error loading texture ${url}`)
+      (message, exception) => {
+        loadedTextures.delete(url)
+        if (!this._disposed) {
+          defer.reject(message || exception || `Error loading texture (${url})`)
+        }
+      }
     )
   }
   return defer

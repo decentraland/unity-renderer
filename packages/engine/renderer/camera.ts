@@ -175,15 +175,19 @@ function unprojectToPlane(vec: BABYLON.Vector3) {
   return onPlane
 }
 
-teleportObserver.add((position: { x: number, y: number }) => {
+teleportObserver.add((position: { x: number; y: number }) => {
   return teleportTo(position.x, position.y)
 })
 
 export async function teleportTo(x: number, y: number) {
-  if (!(parcelLimits.minLandCoordinateX <= x
-    && x <= parcelLimits.maxLandCoordinateX
-    && parcelLimits.minLandCoordinateY <= y
-    && y <= parcelLimits.maxLandCoordinateY)) {
+  if (
+    !(
+      parcelLimits.minLandCoordinateX <= x &&
+      x <= parcelLimits.maxLandCoordinateX &&
+      parcelLimits.minLandCoordinateY <= y &&
+      y <= parcelLimits.maxLandCoordinateY
+    )
+  ) {
     return false
   }
   // Option A: Load scene description, list teleporting point(s), pick one at random if list, calculate world position and set camera

@@ -410,6 +410,10 @@ export class SharedSceneContext implements BABYLON.IDisposable {
     return this.fetchArrayBuffer(this.resolveUrl(url))
   }
 
+  public async getText(url: string): Promise<ArrayBuffer> {
+    return this.fetchText(this.resolveUrl(url))
+  }
+
   public dispose() {
     this.onDisposeObservable.notifyObservers(this)
     this.onDisposeObservable.clear()
@@ -450,6 +454,11 @@ export class SharedSceneContext implements BABYLON.IDisposable {
   private async fetchArrayBuffer(urlToLoad: string) {
     // TODO: cache fetch promise so we execute 1 concurrent request only
     return loadFile(urlToLoad)
+  }
+
+  private async fetchText(urlToLoad: string) {
+    // TODO: cache fetch promise so we execute 1 concurrent request only
+    return loadFile(urlToLoad, false)
   }
 
   private sanitizeURL(url: string): string {
