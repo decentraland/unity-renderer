@@ -20,7 +20,6 @@ public class SceneController : MonoBehaviour
 
     public Dictionary<string, ParcelScene> loadedScenes = new Dictionary<string, ParcelScene>();
 
-
     class QueuedSceneMessage
     {
         public enum Type
@@ -41,6 +40,8 @@ public class SceneController : MonoBehaviour
 
     void Awake()
     {
+        Debug.Log("DCL Unity Build Version: " + DCL.Configuration.ApplicationSettings.version);
+
         if (i != null)
         {
             Destroy(this);
@@ -73,7 +74,7 @@ public class SceneController : MonoBehaviour
         if (pendingMessages.Count > 0)
         {
             float startTime = Time.realtimeSinceStartup;
-            
+
             while ((Time.realtimeSinceStartup - startTime) < 0.03f)
             {
                 QueuedSceneMessage m = pendingMessages.Dequeue();

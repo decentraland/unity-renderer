@@ -1,6 +1,11 @@
 
 namespace DCL.Configuration
 {
+    public static class ApplicationSettings
+    {
+        public static float version = 0.01f;
+    }
+
     public static class Environment
     {
         public static bool DEBUG = true;
