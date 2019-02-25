@@ -139,8 +139,6 @@ public class DCLCharacterController : MonoBehaviour
     {
         if (isJumping) return;
 
-        Debug.Log("JUMP");
-
         isJumping = true;
 
         velocity.y = jumpForce;
