@@ -50,6 +50,7 @@ namespace DCL.Components
             if (entity.meshGameObject == null) return;
 
             MeshCollider collider;
+            MeshRenderer renderer;
             MeshFilter[] meshFilters = entity.meshGameObject.GetComponentsInChildren<MeshFilter>();
 
             for (int i = 0; i < meshFilters.Length; i++)
@@ -58,7 +59,13 @@ namespace DCL.Components
                 {
                     if (!meshFilters[i].transform.parent.name.EndsWith("_collider")) continue;
 
-                    meshFilters[i].GetComponent<MeshRenderer>().enabled = false;
+                    renderer = meshFilters[i].GetComponent<MeshRenderer>();
+                    if (renderer != null)
+                    {
+                        renderer.enabled = false;
+                        GameObject.Destroy(renderer);
+                    }
+
                     meshFilters[i].gameObject.AddComponent<MeshCollider>().sharedMesh = meshFilters[i].sharedMesh;
                 }
                 else

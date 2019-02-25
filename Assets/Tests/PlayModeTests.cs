@@ -624,14 +624,14 @@ namespace Tests
 
             TestHelpers.CreateAndSetShape(scene, entityId, DCL.Models.CLASS_ID.GLTF_SHAPE, JsonConvert.SerializeObject(new
             {
-                src = TestHelpers.GetTestsAssetsPath() + "/GLB/Roads/Roads.glb" // this glb has the "..._collider" object inside with the pre-defined collision geometry.
+                src = TestHelpers.GetTestsAssetsPath() + "/GLB/PalmTree_01.glb" // this glb has the "..._collider" object inside with the pre-defined collision geometry.
             }));
 
             yield return new WaitForSeconds(8f);
 
-            var colliderObject = scene.entities[entityId].gameObject.GetComponentInChildren<MeshCollider>();
-            Assert.IsNotNull(colliderObject);
-            Assert.IsFalse(colliderObject.GetComponent<MeshRenderer>().enabled);
+            var colliderObject = scene.entities[entityId].gameObject.GetComponentInChildren<Collider>();
+            Assert.IsTrue(colliderObject != null);
+            Assert.IsTrue(colliderObject.GetComponent<MeshRenderer>() == null);
         }
 
         [UnityTest]

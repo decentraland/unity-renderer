@@ -1303,6 +1303,8 @@ namespace UnityGLTF
 
         protected virtual IEnumerator ConstructMesh(GLTFMesh mesh, Transform parent, int meshId, Skin skin)
         {
+            bool isColliderMesh = parent.name.EndsWith("_collider");
+
             if (_assetCache.MeshCache[meshId] == null)
             {
                 _assetCache.MeshCache[meshId] = new MeshCacheData[mesh.Primitives.Count];
@@ -1325,43 +1327,49 @@ namespace UnityGLTF
                 Renderer renderer = null;
 
                 Mesh curMesh = _assetCache.MeshCache[meshId][i].LoadedMesh;
+                MeshFilter meshFilter = primitiveObj.AddComponent<MeshFilter>();
+                meshFilter.sharedMesh = curMesh;
 
-                if (NeedsSkinnedMeshRenderer(primitive, skin))
+                if (!isColliderMesh)
                 {
-                    skinnedMeshRenderer = primitiveObj.AddComponent<SkinnedMeshRenderer>();
-                    skinnedMeshRenderer.sharedMesh = curMesh;
-                    skinnedMeshRenderer.quality = SkinQuality.Auto;
-                    renderer = skinnedMeshRenderer;
-
-                    if (HasBones(skin))
+                    if (NeedsSkinnedMeshRenderer(primitive, skin))
                     {
-                        yield return SetupBones(skin, primitive, skinnedMeshRenderer, primitiveObj, curMesh);
+                        skinnedMeshRenderer = primitiveObj.AddComponent<SkinnedMeshRenderer>();
+                        skinnedMeshRenderer.sharedMesh = curMesh;
+                        skinnedMeshRenderer.quality = SkinQuality.Auto;
+                        renderer = skinnedMeshRenderer;
+
+                        if (HasBones(skin))
+                        {
+                            yield return SetupBones(skin, primitive, skinnedMeshRenderer, primitiveObj, curMesh);
+                        }
+                    }
+                    else
+                    {
+                        meshRenderer = primitiveObj.AddComponent<MeshRenderer>();
+                        renderer = meshRenderer;
+                    }
+
+                    //// NOTE(Brian): Texture loading
+                    if (UseMaterialTransition)
+                    {
+                        var matController = primitiveObj.AddComponent<MaterialTransitionController>();
+                        _asyncCoroutineHelper.RunAsTask(DownloadAndConstructMaterial(primitive, materialIndex, renderer, matController), "matDownload");
+                    }
+                    else
+                    {
+                        if (LoadingTextureMaterial != null)
+                            renderer.sharedMaterial = LoadingTextureMaterial;
+
+                        yield return DownloadAndConstructMaterial(primitive, materialIndex, renderer, null);
+
+                        if (LoadingTextureMaterial == null)
+                            primitiveObj.SetActive(true);
                     }
                 }
                 else
                 {
-                    meshRenderer = primitiveObj.AddComponent<MeshRenderer>();
-                    renderer = meshRenderer;
-                }
-
-                MeshFilter meshFilter = primitiveObj.AddComponent<MeshFilter>();
-                meshFilter.sharedMesh = curMesh;
-
-                //// NOTE(Brian): Texture loading
-                if (UseMaterialTransition)
-                {
-                    var matController = primitiveObj.AddComponent<MaterialTransitionController>();
-                    _asyncCoroutineHelper.RunAsTask(DownloadAndConstructMaterial(primitive, materialIndex, renderer, matController), "matDownload");
-                }
-                else
-                {
-                    if (LoadingTextureMaterial != null)
-                        renderer.sharedMaterial = LoadingTextureMaterial;
-
-                    yield return DownloadAndConstructMaterial(primitive, materialIndex, renderer, null);
-
-                    if (LoadingTextureMaterial == null)
-                        primitiveObj.SetActive(true);
+                    primitiveObj.SetActive(true);
                 }
 
                 switch (Collider)
