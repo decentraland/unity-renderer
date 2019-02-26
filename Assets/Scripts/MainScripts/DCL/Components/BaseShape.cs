@@ -13,7 +13,7 @@ namespace DCL.Components
         [System.Serializable]
         public class Model
         {
-            public bool withCollisions;
+            public bool withCollisions = false;
         }
 
         public override string componentName => "shape";

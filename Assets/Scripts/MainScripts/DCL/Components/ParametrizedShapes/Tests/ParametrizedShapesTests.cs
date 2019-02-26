@@ -88,7 +88,7 @@ namespace Tests
                     height = 1,
                     width = 1,
                     uvs = uvs
-                } );
+                });
 
 
             yield return new WaitForSeconds(0.01f);
@@ -132,6 +132,223 @@ namespace Tests
             var meshName = scene.entities[entityId].gameObject.GetComponentInChildren<MeshFilter>().mesh.name;
 
             Assert.AreEqual("DCL Cone50v0t1b2l2o Instance", meshName);
+        }
+
+        [UnityTest]
+        public IEnumerator BoxShapeComponentMissingValuesGetDefaultedOnUpdate()
+        {
+            var sceneController = TestHelpers.InitializeSceneController();
+
+            yield return new WaitForSeconds(0.01f);
+
+            var sceneData = new LoadParcelScenesMessage.UnityParcelScene();
+            var scene = sceneController.CreateTestScene(sceneData);
+
+            string entityId = "1";
+            TestHelpers.CreateSceneEntity(scene, entityId);
+
+            yield return new WaitForSeconds(0.01f);
+
+            // 1. Create component with non-default configs
+            string componentJSON = JsonUtility.ToJson(new BoxShape.Model
+            {
+                withCollisions = true
+            });
+
+            string componentId = TestHelpers.CreateAndSetShape(scene, entityId, DCL.Models.CLASS_ID.BOX_SHAPE,
+              componentJSON
+            );
+
+            yield return new WaitForSeconds(0.01f);
+
+            BoxShape boxShapeComponent = (BoxShape)scene.GetSharedComponent(componentId);
+
+            // 2. Check configured values
+            Assert.IsTrue(boxShapeComponent.model.withCollisions);
+
+            // 3. Update component with missing values
+            componentJSON = JsonUtility.ToJson(new BoxShape.Model { });
+            scene.SharedComponentUpdate(JsonUtility.ToJson(new DCL.Models.SharedComponentUpdateMessage
+            {
+                id = componentId,
+                json = componentJSON
+            }));
+
+            // 4. Check defaulted values
+            Assert.IsFalse(boxShapeComponent.model.withCollisions);
+        }
+
+        [UnityTest]
+        public IEnumerator ConeShapeComponentMissingValuesGetDefaultedOnUpdate()
+        {
+            var sceneController = TestHelpers.InitializeSceneController();
+
+            yield return new WaitForSeconds(0.01f);
+
+            var sceneData = new LoadParcelScenesMessage.UnityParcelScene();
+            var scene = sceneController.CreateTestScene(sceneData);
+
+            string entityId = "1";
+            TestHelpers.CreateSceneEntity(scene, entityId);
+
+            yield return new WaitForSeconds(0.01f);
+
+            // 1. Create component with non-default configs
+            string componentJSON = JsonUtility.ToJson(new ConeShape.Model
+            {
+                radiusBottom = 0.5f,
+                segmentsHeight = 0.3f,
+                segmentsRadial = 12f,
+                openEnded = false,
+                arc = 123f,
+                withCollisions = true
+            });
+
+            string componentId = TestHelpers.CreateAndSetShape(scene, entityId, DCL.Models.CLASS_ID.CONE_SHAPE,
+              componentJSON
+            );
+
+            yield return new WaitForSeconds(0.01f);
+
+            ConeShape coneShapeComponent = (ConeShape)scene.GetSharedComponent(componentId);
+
+            // 2. Check configured values
+            Assert.AreEqual(0.5f, coneShapeComponent.model.radiusBottom);
+            Assert.AreEqual(0.3f, coneShapeComponent.model.segmentsHeight);
+            Assert.AreEqual(12f, coneShapeComponent.model.segmentsRadial);
+            Assert.AreEqual(123f, coneShapeComponent.model.arc);
+            Assert.IsTrue(coneShapeComponent.model.withCollisions);
+
+            // 3. Update component with missing values
+            componentJSON = JsonUtility.ToJson(new ConeShape.Model
+            {
+                openEnded = false
+            });
+
+            scene.SharedComponentUpdate(JsonUtility.ToJson(new DCL.Models.SharedComponentUpdateMessage
+            {
+                id = componentId,
+                json = componentJSON
+            }));
+
+            // 4. Check defaulted values
+            Assert.AreEqual(1f, coneShapeComponent.model.radiusBottom);
+            Assert.AreEqual(1f, coneShapeComponent.model.segmentsHeight);
+            Assert.AreEqual(36f, coneShapeComponent.model.segmentsRadial);
+            Assert.AreEqual(360f, coneShapeComponent.model.arc);
+            Assert.IsFalse(coneShapeComponent.model.withCollisions);
+        }
+
+        [UnityTest]
+        public IEnumerator CylinderShapeComponentMissingValuesGetDefaultedOnUpdate()
+        {
+            var sceneController = TestHelpers.InitializeSceneController();
+
+            yield return new WaitForSeconds(0.01f);
+
+            var sceneData = new LoadParcelScenesMessage.UnityParcelScene();
+            var scene = sceneController.CreateTestScene(sceneData);
+
+            string entityId = "1";
+            TestHelpers.CreateSceneEntity(scene, entityId);
+
+            yield return new WaitForSeconds(0.01f);
+
+            // 1. Create component with non-default configs
+            string componentJSON = JsonUtility.ToJson(new CylinderShape.Model
+            {
+                radiusBottom = 0.5f,
+                segmentsHeight = 0.3f,
+                segmentsRadial = 12f,
+                openEnded = false,
+                arc = 123f,
+                withCollisions = true
+            });
+
+            string componentId = TestHelpers.CreateAndSetShape(scene, entityId, DCL.Models.CLASS_ID.CYLINDER_SHAPE,
+              componentJSON
+            );
+
+            yield return new WaitForSeconds(0.01f);
+
+            CylinderShape cylinderShapeComponent = (CylinderShape)scene.GetSharedComponent(componentId);
+
+            // 2. Check configured values
+            Assert.AreEqual(0.5f, cylinderShapeComponent.model.radiusBottom);
+            Assert.AreEqual(0.3f, cylinderShapeComponent.model.segmentsHeight);
+            Assert.AreEqual(12f, cylinderShapeComponent.model.segmentsRadial);
+            Assert.AreEqual(123f, cylinderShapeComponent.model.arc);
+            Assert.IsTrue(cylinderShapeComponent.model.withCollisions);
+
+            // 3. Update component with missing values
+            componentJSON = JsonUtility.ToJson(new CylinderShape.Model
+            {
+                openEnded = false
+            });
+
+            scene.SharedComponentUpdate(JsonUtility.ToJson(new DCL.Models.SharedComponentUpdateMessage
+            {
+                id = componentId,
+                json = componentJSON
+            }));
+
+            // 4. Check defaulted values
+            Assert.AreEqual(1f, cylinderShapeComponent.model.radiusBottom);
+            Assert.AreEqual(1f, cylinderShapeComponent.model.segmentsHeight);
+            Assert.AreEqual(36f, cylinderShapeComponent.model.segmentsRadial);
+            Assert.AreEqual(360f, cylinderShapeComponent.model.arc);
+            Assert.IsFalse(cylinderShapeComponent.model.withCollisions);
+        }
+
+        [UnityTest]
+        public IEnumerator PlaneShapeComponentMissingValuesGetDefaultedOnUpdate()
+        {
+            var sceneController = TestHelpers.InitializeSceneController();
+
+            yield return new WaitForSeconds(0.01f);
+
+            var sceneData = new LoadParcelScenesMessage.UnityParcelScene();
+            var scene = sceneController.CreateTestScene(sceneData);
+
+            string entityId = "1";
+            TestHelpers.CreateSceneEntity(scene, entityId);
+
+            yield return new WaitForSeconds(0.01f);
+
+            // 1. Create component with non-default configs
+            string componentJSON = JsonUtility.ToJson(new PlaneShape.Model
+            {
+                width = 0.45f,
+                height = 0.77f,
+                withCollisions = true
+            });
+
+            string componentId = TestHelpers.CreateAndSetShape(scene, entityId, DCL.Models.CLASS_ID.PLANE_SHAPE,
+              componentJSON
+            );
+
+            yield return new WaitForSeconds(0.01f);
+
+            PlaneShape planeShapeComponent = (PlaneShape)scene.GetSharedComponent(componentId);
+
+            // 2. Check configured values
+            Assert.AreEqual(0.45f, planeShapeComponent.model.width);
+            Assert.AreEqual(0.77f, planeShapeComponent.model.height);
+            Assert.IsTrue(planeShapeComponent.model.withCollisions);
+
+            // 3. Update component with missing values
+            componentJSON = JsonUtility.ToJson(new PlaneShape.Model { });
+
+            scene.SharedComponentUpdate(JsonUtility.ToJson(new DCL.Models.SharedComponentUpdateMessage
+            {
+                id = componentId,
+                json = componentJSON
+            }));
+
+            // 4. Check defaulted values
+            Assert.AreEqual(1f, planeShapeComponent.model.width);
+            Assert.AreEqual(1f, planeShapeComponent.model.height);
+            Assert.IsFalse(planeShapeComponent.model.withCollisions);
         }
     }
 }

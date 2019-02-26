@@ -11,9 +11,9 @@ namespace DCL.Components
         [System.Serializable]
         public class Model
         {
-            public Vector3 position;
-            public Quaternion rotation;
-            public Vector3 scale;
+            public Vector3 position = Vector3.zero;
+            public Quaternion rotation = Quaternion.identity;
+            public Vector3 scale = Vector3.one;
         }
 
         public override string componentName => "transform";
@@ -46,7 +46,7 @@ namespace DCL.Components
         public override IEnumerator ApplyChanges(string newJson)
         {
             model = Utils.SafeFromJson<Model>(newJson);
-            UpdateTransform();   
+            UpdateTransform();
             return null;
         }
 

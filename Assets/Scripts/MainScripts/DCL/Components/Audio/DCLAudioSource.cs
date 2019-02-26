@@ -15,12 +15,12 @@ namespace DCL.Components
         {
             public string audioClipId;
             public bool playing;
-            public float volume;
-            public bool loop;
-            public float pitch;
+            public float volume = 1f;
+            public bool loop = false;
+            public float pitch = 1f;
         }
 
-        Model model;
+        public Model model;
         AudioSource audioSource;
         DCLAudioClip lastDCLAudioClip;
 
@@ -44,7 +44,7 @@ namespace DCL.Components
             if (model.playing)
             {
                 DCLAudioClip dclAudioClip = scene.GetSharedComponent(model.audioClipId) as DCLAudioClip;
-                
+
                 if (dclAudioClip != null)
                 {
                     InitDCLAudioClip(dclAudioClip);

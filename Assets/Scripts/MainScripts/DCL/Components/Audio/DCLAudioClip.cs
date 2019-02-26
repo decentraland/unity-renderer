@@ -18,10 +18,12 @@ namespace DCL.Components
             public string url;
             public bool loop = false;
             public bool shouldTryToLoad = true;
-            public double volume = 1.0f;
+
+            [Range(0f, 1f)]
+            public double volume = 1f;
         }
 
-        Model model;
+        public Model model;
         public AudioClip audioClip;
 
         public enum LoadState
