@@ -32,7 +32,7 @@ import {
 import { setEditorEnvironment } from '../engine/renderer/ambientLights'
 import { sleep } from '../atomicHelpers/sleep'
 import * as Gizmos from '../engine/components/ephemeralComponents/Gizmos'
-import { Gizmo } from '../decentraland-ecs/src/decentraland/Gizmos'
+import { Gizmo } from '../decentraland-ecs/src/decentraland/Types'
 import { Vector3 } from 'babylonjs'
 import future, { IFuture } from 'fp-future'
 

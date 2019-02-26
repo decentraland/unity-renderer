@@ -213,18 +213,18 @@ function createMessage(parent: UIShape, props: { sender: string; message: string
   const { sender, message, isCommand } = props
   const color = isCommand ? COMMAND_COLOR : PRIMARY_TEXT_COLOR
 
-  const component = new UIContainerStackShape(parent)
-  component.vertical = false
-  component.hAlign = 'left'
-  component.vAlign = 'bottom'
-  component.height = '30px'
-  component.width = '400px'
-  component.top = '-50px'
+  const stack = new UIContainerStackShape(parent)
+  stack.vertical = false
+  stack.hAlign = 'left'
+  stack.vAlign = 'bottom'
+  stack.height = '30px'
+  stack.width = '400px'
+  stack.top = '-50px'
 
-  renderSender(component, { color, sender })
-  renderMessage(component, { color, message })
+  renderSender(stack, { color, sender })
+  renderMessage(stack, { color, message })
 
-  return { component }
+  return { component: stack }
 }
 
 function createMessagesScrollbar(parent: UIShape, changed: (ev: IEvents['onChange']) => void) {

@@ -1,7 +1,7 @@
 import { BaseComponent } from '../BaseComponent'
 import { scene } from 'engine/renderer'
 import { BaseEntity } from 'engine/entities/BaseEntity'
-import { Gizmo } from 'decentraland-ecs/src/decentraland/Gizmos'
+import { Gizmo } from 'decentraland-ecs/src/decentraland/Types'
 import { removeEntityOutline, addEntityOutline } from './Outline'
 
 type GizmoConfiguration = {
@@ -40,6 +40,8 @@ function isSelectedGizmoValid() {
       return !!currentConfiguration.rotation
     case Gizmo.SCALE:
       return !!currentConfiguration.scale
+    case Gizmo.NONE:
+      return true
   }
   return false
 }
@@ -77,6 +79,76 @@ function switchGizmo() {
   }
 
   return nextGizmo
+}
+const dragBehavior = new BABYLON.PointerDragBehavior({ dragPlaneNormal: BABYLON.Vector3.Up() })
+{
+  // Add drag behavior to handle events when the gizmo is dragged
+  dragBehavior.moveAttached = false
+
+  let localDelta = new BABYLON.Vector3()
+  let dragTarget = new BABYLON.Vector3()
+  let tmpMatrix = new BABYLON.Matrix()
+
+  dragBehavior.onDragStartObservable.add(event => {
+    dragTarget.copyFrom(activeEntity.position)
+  })
+
+  dragBehavior.onDragObservable.add(event => {
+    // Convert delta to local translation if it has a parent
+    if (activeEntity.parent) {
+      activeEntity.parent.computeWorldMatrix().invertToRef(tmpMatrix)
+      tmpMatrix.setTranslationFromFloats(0, 0, 0)
+      BABYLON.Vector3.TransformCoordinatesToRef(event.delta, tmpMatrix, localDelta)
+    } else {
+      localDelta.copyFrom(event.delta)
+    }
+
+    dragTarget.addInPlace(localDelta)
+    const { snapDistance } = gizmoManager.gizmos.positionGizmo
+    if (snapDistance) {
+      activeEntity.position.set(
+        dragTarget.x - (dragTarget.x % snapDistance),
+        dragTarget.y - (dragTarget.y % snapDistance),
+        dragTarget.z - (dragTarget.z % snapDistance)
+      )
+    } else {
+      activeEntity.position.copyFrom(dragTarget)
+    }
+  })
+
+  dragBehavior.onDragEndObservable.add(() => {
+    if (!activeEntity) return
+
+    activeEntity.dispatchUUIDEvent('gizmoEvent', {
+      type: 'gizmoDragEnded',
+      transform: {
+        position: activeEntity.position,
+        rotation: activeEntity.rotationQuaternion,
+        scale: activeEntity.scaling
+      },
+      entityId: activeEntity.uuid
+    })
+  })
+
+  gizmoManager.gizmos.positionGizmo.onDragStartObservable.add(() => {
+    const { snapDistance } = gizmoManager.gizmos.positionGizmo
+    if (snapDistance) {
+      activeEntity.position.x -= activeEntity.position.x % snapDistance
+      activeEntity.position.y -= activeEntity.position.y % snapDistance
+      activeEntity.position.z -= activeEntity.position.z % snapDistance
+    }
+  })
+
+  gizmoManager.gizmos.rotationGizmo.onDragStartObservable.add(() => {
+    const { snapDistance } = gizmoManager.gizmos.rotationGizmo
+    if (snapDistance) {
+      const angles = activeEntity.rotationQuaternion.toEulerAngles()
+      angles.x -= angles.x % snapDistance
+      angles.y -= angles.y % snapDistance
+      angles.z -= angles.z % snapDistance
+      activeEntity.rotationQuaternion = BABYLON.Quaternion.RotationYawPitchRoll(angles.y, angles.x, angles.z)
+    }
+  })
 }
 
 {
@@ -153,10 +225,12 @@ function selectActiveEntity(entity: BaseEntity) {
   }
   if (activeEntity) {
     removeEntityOutline(activeEntity)
+    activeEntity.removeBehavior(dragBehavior)
   }
   activeEntity = entity
   if (activeEntity) {
     addEntityOutline(entity)
+    activeEntity.addBehavior(dragBehavior, true)
   }
 }
 
@@ -174,7 +248,6 @@ export class Gizmos extends BaseComponent<GizmoConfiguration> {
 
   activate = () => {
     this.configureGizmos()
-
     if (currentConfiguration.cycle && this.entity === activeEntity) {
       selectGizmo(switchGizmo())
     } else {
@@ -189,12 +262,16 @@ export class Gizmos extends BaseComponent<GizmoConfiguration> {
       }
     }
 
-    if (selectedGizmo !== Gizmo.NONE) {
-      activeEntity.dispatchUUIDEvent('gizmoEvent', {
-        type: 'gizmoSelected',
-        gizmoType: selectedGizmo,
-        entityId: this.entity.uuid
-      })
+    activeEntity.dispatchUUIDEvent('gizmoEvent', {
+      type: 'gizmoSelected',
+      gizmoType: selectedGizmo,
+      entityId: this.entity.uuid
+    })
+  }
+
+  didUpdateMesh = () => {
+    if (activeEntity === this.entity) {
+      this.update()
     }
   }
 
@@ -217,11 +294,14 @@ export class Gizmos extends BaseComponent<GizmoConfiguration> {
   attach(entity: BaseEntity) {
     super.attach(entity)
     entity.addListener('onClick', this.activate)
+    this.entity.onChangeObject3DObservable.add(this.didUpdateMesh)
+    this.didUpdateMesh()
   }
 
   detach() {
     this.active = false
     this.entity.removeListener('onClick', this.activate)
+    this.entity.onChangeObject3DObservable.removeCallback(this.didUpdateMesh)
     if (activeEntity === this.entity) {
       gizmoManager.gizmos.positionGizmo.attachedMesh = null
       gizmoManager.gizmos.rotationGizmo.attachedMesh = null

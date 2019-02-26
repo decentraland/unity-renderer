@@ -247,9 +247,20 @@ export type GizmoDragEndEvent = {
   entityId: string
 }
 
+/**
+ * Gizmo identifiers
+ * @beta
+ */
+export enum Gizmo {
+  MOVE = 'MOVE',
+  ROTATE = 'ROTATE',
+  SCALE = 'SCALE',
+  NONE = 'NONE'
+}
+
 export type GizmoSelectedEvent = {
   type: 'gizmoSelected'
-  gizmoType: 'MOVE' | 'ROTATE' | 'SCALE'
+  gizmoType: Gizmo
   entityId: string
 }
 
