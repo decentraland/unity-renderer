@@ -37,7 +37,7 @@ namespace DCL.Components
             public bool disableLighting = false;
 
             [Range(0, 3)]
-            public int transparencyMode; // 0: OPAQUE; 1: ALPHATEST; 2: ALPHBLEND; 3: ALPHATESTANDBLEND
+            public int transparencyMode = 0; // 0: OPAQUE; 1: ALPHATEST; 2: ALPHBLEND; 3: ALPHATESTANDBLEND
         }
 
         public override string componentName => "material";

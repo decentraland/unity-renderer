@@ -14,38 +14,38 @@ namespace DCL.Components
         public class Model
         {
             [Header("Font Properties")]
-            public string value = "Hello world!";
+            public string value = "";
 
             //Font properties
             public Color color = Color.white;
-            public float opacity = 1;
-            public float fontSize = 10;
-            public string fontFamily; //NOTE(Brian): Should we make this a new object type?
-            public string fontWeight;
+            public float opacity = 1f;
+            public float fontSize = 10f;
+            public string fontFamily = "Arial"; //NOTE(Brian): Should we make this a new object type?
+            public string fontWeight = "normal";
 
 
             //Text box properties
             [Header("Text box properties")]
-            public float hAlign;
-            public float vAlign;
+            public float hAlign = 0;
+            public float vAlign = 0;
             public float width = 1f;
-            public float height = .2f;
-            public bool resizeToFit;
-            public float paddingTop;
-            public float paddingRight;
-            public float paddingBottom;
-            public float paddingLeft;
-            public float zIndex;
-            public float lineSpacing;
-            public int lineCount;
-            public bool textWrapping;
+            public float height = 0.2f;
+            public bool resizeToFit = false;
+            public float paddingTop = 0f;
+            public float paddingRight = 0f;
+            public float paddingBottom = 0f;
+            public float paddingLeft = 0f;
+            public float zIndex = 0f;
+            public float lineSpacing = 0f;
+            public int lineCount = 0;
+            public bool textWrapping = false;
 
             //Text shadow + outline
             [Header("Text shadow properties")]
-            public float shadowBlur;
-            public float shadowOffsetX;
-            public float shadowOffsetY;
-            public Color shadowColor;
+            public float shadowBlur = 0f;
+            public float shadowOffsetX = 0f;
+            public float shadowOffsetY = 0f;
+            public Color shadowColor = new Color(1, 1, 1);
         }
 
 
@@ -102,7 +102,7 @@ namespace DCL.Components
 
             text.alignment = GetAlignment(model.hAlign, model.vAlign);
             text.lineSpacing = model.lineSpacing;
-            text.maxVisibleLines = Mathf.Max( model.lineCount, 1 );
+            text.maxVisibleLines = Mathf.Max(model.lineCount, 1);
             text.enableWordWrapping = model.textWrapping;
 
             if (model.shadowOffsetX == 0 && model.shadowOffsetY == 0)

@@ -14,16 +14,16 @@ namespace DCL.Components
             public string texture;
 
             [Range(1, 3)]
-            public int samplingMode;  // 1: NEAREST; 2: BILINEAR; 3: TRILINEAR
+            public int samplingMode = 2;  // 1: NEAREST; 2: BILINEAR; 3: TRILINEAR
 
             [Range(1, 3)]
-            public int wrap;          // 1: CLAMP; 2: WRAP; 3: MIRROR
+            public int wrap = 0;          // 1: CLAMP; 2: WRAP; 3: MIRROR
 
             [Range(0f, 1f)]
-            public float alphaTest = 1f; // value that defines if a pixel is visible or invisible (no transparency gradients)
+            public float alphaTest = 0.5f; // value that defines if a pixel is visible or invisible (no transparency gradients)
         }
 
-        Model model = new Model();
+        public Model model = new Model();
         public override string componentName => "material";
         public Material material;
         bool isLoadingTexture = false;

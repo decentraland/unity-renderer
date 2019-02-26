@@ -133,7 +133,7 @@ namespace DCL.Controllers
                 if (OnEntityRemoved != null)
                     OnEntityRemoved.Invoke(entities[tmpRemoveEntityMessage.id]);
 
-                if (entities[tmpRemoveEntityMessage.id].OnRemoved != null )
+                if (entities[tmpRemoveEntityMessage.id].OnRemoved != null)
                     entities[tmpRemoveEntityMessage.id].OnRemoved.Invoke(entities[tmpRemoveEntityMessage.id]);
 
                 Object.Destroy(entities[tmpRemoveEntityMessage.id].gameObject);
@@ -253,7 +253,7 @@ namespace DCL.Controllers
                     newComponent.entity = entity;
                     entity.components.Add(classId, newComponent);
 
-                    newComponent.transform.SetParent( entity.gameObject.transform );
+                    newComponent.transform.SetParent(entity.gameObject.transform);
                     newComponent.transform.ResetLocalTRS();
 
                     newComponent.UpdateFromJSON(createEntityComponentMessage.json);
@@ -261,11 +261,31 @@ namespace DCL.Controllers
             }
             else
             {
-                newComponent = entity.components[classId];
-                newComponent.UpdateFromJSON(createEntityComponentMessage.json);
+                EntityComponentUpdate(entity, classId, createEntityComponentMessage.json);
             }
 
             return newComponent;
+        }
+
+        // The EntityComponentUpdate() parameters differ from other similar methods because there is no EntityComponentUpdate protocol message yet.
+        public BaseComponent EntityComponentUpdate(DecentralandEntity entity, CLASS_ID_COMPONENT classId, string componentJson)
+        {
+            if (entity == null)
+            {
+                Debug.LogError($"Can't update the {classId} component of a nonexistent entity!", this);
+                return null;
+            }
+
+            if (!entity.components.ContainsKey(classId))
+            {
+                Debug.LogError($"Entity {entity.entityId} doesn't have a {classId} component to update!", this);
+                return null;
+            }
+
+            BaseComponent targetComponent = entity.components[classId];
+            targetComponent.UpdateFromJSON(componentJson);
+
+            return targetComponent;
         }
 
         SharedComponentCreateMessage sharedComponentCreatedMessage = new SharedComponentCreateMessage();

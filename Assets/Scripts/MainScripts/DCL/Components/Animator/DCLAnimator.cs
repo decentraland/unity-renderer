@@ -22,6 +22,13 @@ namespace DCL.Components
                 {
                     DCLAnimator.Model.DCLAnimationState animState = dclComponent.GetStateByString(statePlayablePair.Key);
 
+                    if (animState == null)
+                    {
+                        Debug.Log("Skipping nonexistent animation state", dclComponent);
+
+                        continue;
+                    }
+
                     if (animState.playing && animState.looping)
                     {
                         if (statePlayablePair.Value.GetPlayState() == PlayState.Playing)
@@ -56,9 +63,9 @@ namespace DCL.Components
                 public AnimationClip clipReference;
                 public bool playing;
                 [Range(0, 1)]
-                public float weight;
-                public float speed;
-                public bool looping;
+                public float weight = 1f;
+                public float speed = 1f;
+                public bool looping = true;
 
                 public DCLAnimationState Clone()
                 {
@@ -123,10 +130,11 @@ namespace DCL.Components
 
         public override IEnumerator ApplyChanges(string newJson)
         {
-            if (!Helpers.Utils.SafeFromJsonOverwrite(newJson, model))
-                yield break;
+            model = Utils.SafeFromJson<Model>(newJson);
 
             Initialize();
+
+            return null;
         }
 
         private void OnComponentUpdated(DecentralandEntity e)

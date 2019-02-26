@@ -1294,7 +1294,7 @@ namespace Tests
             // Check default properties
             {
                 Assert.IsNull(materialComponent.material.GetTexture("_MainTex"));
-                Assert.AreEqual("1", materialComponent.material.GetFloat("_AlphaClip").ToString());
+                Assert.AreEqual(0.5f, materialComponent.material.GetFloat("_AlphaClip"));
             }
 
             // Update material
@@ -1321,6 +1321,249 @@ namespace Tests
                 Assert.AreEqual(TextureWrapMode.Mirror, materialComponent.material.mainTexture.wrapMode);
                 Assert.AreEqual(FilterMode.Bilinear, materialComponent.material.mainTexture.filterMode);
             }
+        }
+
+        [UnityTest]
+        public IEnumerator AnimationComponentMissingValuesGetDefaultedOnUpdate()
+        {
+            var sceneController = TestHelpers.InitializeSceneController();
+
+            yield return new WaitForEndOfFrame();
+
+            var sceneData = new LoadParcelScenesMessage.UnityParcelScene();
+            var scene = sceneController.CreateTestScene(sceneData);
+
+            yield return new WaitForEndOfFrame();
+
+            string entityId = "1";
+            TestHelpers.CreateSceneEntity(scene, entityId);
+
+            TestHelpers.CreateAndSetShape(scene, entityId, DCL.Models.CLASS_ID.GLTF_SHAPE, JsonConvert.SerializeObject(new
+            {
+                src = TestHelpers.GetTestsAssetsPath() + "/GLB/CesiumMan/CesiumMan.glb"
+            }));
+
+            // 1. Create component with non-default configs
+            string componentJSON = JsonUtility.ToJson(new DCLAnimator.Model
+            {
+                states = new DCLAnimator.Model.DCLAnimationState[]
+                {
+                    new DCLAnimator.Model.DCLAnimationState
+                    {
+                        name = "clip01",
+                        clip = "animation:0",
+                        playing = true,
+                        weight = 0.7f,
+                        speed = 0.1f
+                    }
+                }
+            });
+
+            DCLAnimator animatorComponent = (DCLAnimator)scene.EntityComponentCreate(JsonUtility.ToJson(new DCL.Models.EntityComponentCreateMessage
+            {
+                entityId = entityId,
+                name = "animation",
+                classId = (int)DCL.Models.CLASS_ID_COMPONENT.ANIMATOR,
+                json = componentJSON
+            }));
+
+            GLTFLoader gltfShape = scene.entities[entityId].gameObject.GetComponentInChildren<GLTFLoader>();
+
+            yield return new WaitUntil(() => gltfShape.alreadyLoaded == true);
+
+            // 2. Check configured values
+            Assert.AreEqual(0.7f, animatorComponent.model.states[0].weight);
+            Assert.AreEqual(0.1f, animatorComponent.model.states[0].speed);
+
+            // 3. Update component with missing values
+            componentJSON = JsonUtility.ToJson(new DCLAnimator.Model
+            {
+                states = new DCLAnimator.Model.DCLAnimationState[]
+                {
+                    new DCLAnimator.Model.DCLAnimationState
+                    {
+                        name = "clip02",
+                        clip = "animation:0",
+                        playing = true
+                    }
+                }
+            });
+
+            scene.EntityComponentUpdate(scene.entities[entityId], CLASS_ID_COMPONENT.ANIMATOR, componentJSON);
+
+            // 4. Check changed values
+            Assert.AreEqual("clip02", animatorComponent.model.states[0].name);
+
+            // 5. Check defaulted values
+            Assert.AreEqual(1f, animatorComponent.model.states[0].weight);
+            Assert.AreEqual(1f, animatorComponent.model.states[0].speed);
+        }
+
+        [UnityTest]
+        public IEnumerator TransformComponentMissingValuesGetDefaultedOnUpdate()
+        {
+            var sceneController = TestHelpers.InitializeSceneController();
+
+            yield return new WaitForEndOfFrame();
+
+            var sceneData = new LoadParcelScenesMessage.UnityParcelScene();
+            var scene = sceneController.CreateTestScene(sceneData);
+
+            yield return new WaitForEndOfFrame();
+
+            string entityId = "1";
+            TestHelpers.CreateSceneEntity(scene, entityId);
+
+            // 1. Create component with non-default configs
+            string componentJSON = JsonUtility.ToJson(new DCLTransform.Model
+            {
+                position = new Vector3(3f, 7f, 1f),
+                rotation = new Quaternion(4f, 9f, 1f, 7f),
+                scale = new Vector3(5f, 0.7f, 2f)
+            });
+
+            DCLTransform transformComponent = (DCLTransform)scene.EntityComponentCreate(JsonUtility.ToJson(new DCL.Models.EntityComponentCreateMessage
+            {
+                entityId = entityId,
+                name = "animation",
+                classId = (int)DCL.Models.CLASS_ID_COMPONENT.TRANSFORM,
+                json = componentJSON
+            }));
+
+            // 2. Check configured values
+            Assert.AreEqual(new Vector3(3f, 7f, 1f), transformComponent.model.position);
+            Assert.AreEqual(new Quaternion(4f, 9f, 1f, 7f), transformComponent.model.rotation);
+            Assert.AreEqual(new Vector3(5f, 0.7f, 2f), transformComponent.model.scale);
+
+            // 3. Update component with missing values
+            componentJSON = JsonUtility.ToJson(new DCLTransform.Model
+            {
+                position = new Vector3(30f, 70f, 10f)
+            });
+
+            scene.EntityComponentUpdate(scene.entities[entityId], CLASS_ID_COMPONENT.TRANSFORM, componentJSON);
+
+            // 4. Check changed values
+            Assert.AreEqual(new Vector3(30f, 70f, 10f), transformComponent.model.position);
+
+            // 5. Check defaulted values
+            Assert.AreEqual(Quaternion.identity, transformComponent.model.rotation);
+            Assert.AreEqual(Vector3.one, transformComponent.model.scale);
+        }
+
+        [UnityTest]
+        public IEnumerator BasicMaterialComponentMissingValuesGetDefaultedOnUpdate()
+        {
+            var sceneController = TestHelpers.InitializeSceneController();
+
+            yield return new WaitForSeconds(0.01f);
+
+            var sceneData = new LoadParcelScenesMessage.UnityParcelScene();
+            var scene = sceneController.CreateTestScene(sceneData);
+
+            yield return new WaitForSeconds(0.01f);
+
+            // 1. Create component with non-default configs
+            string componentJSON = JsonUtility.ToJson(new BasicMaterial.Model
+            {
+                samplingMode = 1,
+                wrap = 1,
+                alphaTest = 1f
+            });
+
+            string componentId = TestHelpers.GetUniqueId("shape", (int)DCL.Models.CLASS_ID.BASIC_MATERIAL, "1");
+
+            BasicMaterial BasicMaterialComponent = (BasicMaterial)scene.SharedComponentCreate(JsonUtility.ToJson(new DCL.Models.SharedComponentCreateMessage
+            {
+                id = componentId,
+                classId = (int)DCL.Models.CLASS_ID.BASIC_MATERIAL
+            }));
+
+            scene.SharedComponentUpdate(JsonUtility.ToJson(new DCL.Models.SharedComponentUpdateMessage
+            {
+                id = componentId,
+                json = componentJSON
+            }));
+
+            yield return new WaitForSeconds(0.01f);
+
+            // 2. Check configured values
+            Assert.AreEqual(1, BasicMaterialComponent.model.samplingMode);
+            Assert.AreEqual(1, BasicMaterialComponent.model.wrap);
+            Assert.AreEqual(1f, BasicMaterialComponent.model.alphaTest);
+
+            // 3. Update component with missing values
+            componentJSON = JsonUtility.ToJson(new BasicMaterial.Model { });
+
+            scene.SharedComponentUpdate(JsonUtility.ToJson(new DCL.Models.SharedComponentUpdateMessage
+            {
+                id = componentId,
+                json = componentJSON
+            }));
+
+            // 4. Check defaulted values
+            Assert.AreEqual(2, BasicMaterialComponent.model.samplingMode);
+            Assert.AreEqual(0, BasicMaterialComponent.model.wrap);
+            Assert.AreEqual(0.5f, BasicMaterialComponent.model.alphaTest);
+        }
+
+        [UnityTest]
+        public IEnumerator PBRMaterialComponentMissingValuesGetDefaultedOnUpdate()
+        {
+            var sceneController = TestHelpers.InitializeSceneController();
+
+            yield return new WaitForSeconds(0.01f);
+
+            var sceneData = new LoadParcelScenesMessage.UnityParcelScene();
+            var scene = sceneController.CreateTestScene(sceneData);
+
+            yield return new WaitForSeconds(0.01f);
+
+            // 1. Create component with non-default configs
+            string componentJSON = JsonUtility.ToJson(new PBRMaterial.Model
+            {
+                albedoColor = "#808080",
+                metallic = 0.3f,
+                directIntensity = 0.1f,
+                specularIntensity = 3f
+            });
+
+            string componentId = TestHelpers.GetUniqueId("shape", (int)DCL.Models.CLASS_ID.PBR_MATERIAL, "1");
+
+            PBRMaterial PBRMaterialComponent = (PBRMaterial)scene.SharedComponentCreate(JsonUtility.ToJson(new DCL.Models.SharedComponentCreateMessage
+            {
+                id = componentId,
+                classId = (int)DCL.Models.CLASS_ID.PBR_MATERIAL
+            }));
+
+            scene.SharedComponentUpdate(JsonUtility.ToJson(new DCL.Models.SharedComponentUpdateMessage
+            {
+                id = componentId,
+                json = componentJSON
+            }));
+
+            yield return new WaitForSeconds(0.01f);
+
+            // 2. Check configured values
+            Assert.AreEqual("#808080", PBRMaterialComponent.model.albedoColor);
+            Assert.AreEqual(0.3f, PBRMaterialComponent.model.metallic);
+            Assert.AreEqual(0.1f, PBRMaterialComponent.model.directIntensity);
+            Assert.AreEqual(3f, PBRMaterialComponent.model.specularIntensity);
+
+            // 3. Update component with missing values
+            componentJSON = JsonUtility.ToJson(new PBRMaterial.Model { });
+
+            scene.SharedComponentUpdate(JsonUtility.ToJson(new DCL.Models.SharedComponentUpdateMessage
+            {
+                id = componentId,
+                json = componentJSON
+            }));
+
+            // 4. Check defaulted values
+            Assert.AreEqual("#fff", PBRMaterialComponent.model.albedoColor);
+            Assert.AreEqual(0.5f, PBRMaterialComponent.model.metallic);
+            Assert.AreEqual(1, PBRMaterialComponent.model.directIntensity);
+            Assert.AreEqual(1f, PBRMaterialComponent.model.specularIntensity);
         }
 
         [UnityTest]
