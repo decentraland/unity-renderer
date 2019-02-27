@@ -1,5 +1,5 @@
 {
-    "name": "AnimatorTests",
+    "name": "LoadableShapesTests",
     "references": [
         "MainScripts",
         "UnityGLTFAssembly"

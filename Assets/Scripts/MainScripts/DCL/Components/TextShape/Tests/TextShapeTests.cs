@@ -72,9 +72,9 @@ namespace Tests
 
             TextMeshPro tmpro = textShape.GetComponentInChildren<TextMeshPro>();
 
-            Assert.NotNull(textShape, "Component creation fail!");
-            Assert.NotNull(tmpro, "TextMeshPro doesn't exists for TextShape!");
-            Assert.NotNull(textShape.text, "Unity Text component doesn't exists for TextShape!");
+            Assert.IsTrue(textShape != null, "Component creation fail!");
+            Assert.IsTrue(tmpro != null, "TextMeshPro doesn't exists for TextShape!");
+            Assert.IsTrue(textShape.text != null, "Unity Text component doesn't exists for TextShape!");
 
 
             yield return new WaitForSeconds(0.1f);

@@ -1,7 +1,8 @@
 {
     "name": "SceneTests",
     "references": [
-        "MainScripts"
+        "MainScripts",
+        "Configuration"
     ],
     "optionalUnityReferences": [
         "TestAssemblies"

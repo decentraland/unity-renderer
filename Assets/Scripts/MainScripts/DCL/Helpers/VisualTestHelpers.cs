@@ -8,10 +8,10 @@ namespace DCL.Helpers
 {
     public class VisualTestHelpers
     {
-        public static IEnumerator TakeSnapshot(string snapshotPath, Camera camera)
+        public static IEnumerator TakeSnapshot(string snapshotPath, string snapshotName, Camera camera, int width, int height)
         {
 #if UNITY_EDITOR
-            if (string.IsNullOrEmpty(snapshotPath) || camera == null)
+            if (string.IsNullOrEmpty(snapshotPath) || string.IsNullOrEmpty(snapshotName) || camera == null)
             {
                 Debug.Log("snapshot path or camera is not valid. Snapshot aborted.");
 
@@ -20,7 +20,7 @@ namespace DCL.Helpers
 
             QualitySettings.SetQualityLevel((int)QualityLevel.Good, true);
 
-            string finalPath = Application.dataPath + snapshotPath;
+            string finalPath = snapshotPath + snapshotName;
             float fileProcessStartingTime;
 
             if (File.Exists(finalPath))
@@ -38,10 +38,6 @@ namespace DCL.Helpers
             // We should only read the screen buffer after rendering is complete
             yield return new WaitForEndOfFrame();
 
-            // Dimensions must be POT, otherwise when loading the image using Resources.Load() the image size is changed.
-            int width = 1280;
-            int height = 720;
-
             RenderTexture renderTexture = new RenderTexture(width, height, 24);
             camera.targetTexture = renderTexture;
             camera.Render();
@@ -52,6 +48,11 @@ namespace DCL.Helpers
             currentSnapshot.Apply();
 
             yield return new WaitForEndOfFrame();
+
+            if (!Directory.Exists(snapshotPath))
+            {
+                Directory.CreateDirectory(snapshotPath);
+            }
 
             byte[] bytes = currentSnapshot.EncodeToPNG();
             File.WriteAllBytes(finalPath, bytes);
@@ -68,7 +69,7 @@ namespace DCL.Helpers
             RenderTexture.active = null;
             renderTexture.Release();
 
-            AssetDatabase.Refresh();
+            // AssetDatabase.Refresh();
 #else
             yield break;
 #endif
@@ -78,6 +79,13 @@ namespace DCL.Helpers
         {
             baselineImage = DuplicateTextureAsReadable(baselineImage);
             testImage = DuplicateTextureAsReadable(testImage);
+
+            if (string.IsNullOrEmpty(diffImagePath))
+            {
+                Debug.Log("diff image path is not valid. Image affinity percentage check aborted.");
+
+                return -1;
+            }
 
             if (baselineImage.width != testImage.width || baselineImage.height != testImage.height)
             {
@@ -91,12 +99,12 @@ namespace DCL.Helpers
             Color32[] baselineImagePixels = baselineImage.GetPixels32();
             Color32[] testImagePixels = testImage.GetPixels32();
             Color32[] diffImagePixels = new Color32[testImagePixels.Length];
-            Color32 diffColor = new Color32(255, 0, 0, 0);
+            Color32 diffColor = new Color32(255, 0, 0, 255);
             int differentPixels = 0;
 
             for (int i = 0; i < testImagePixels.Length; i++)
             {
-                if (!IsSamePixel(testImagePixels[i], baselineImagePixels[i]))
+                if (!IsSamePixel(testImagePixels[i], baselineImagePixels[i], TestSettings.VISUAL_TESTS_PIXELS_CHECK_THRESHOLD))
                 {
                     differentPixels++;
                     diffImagePixels[i] = diffColor;
@@ -117,14 +125,14 @@ namespace DCL.Helpers
                 diffImage.SetPixels32(diffImagePixels);
                 diffImage.Apply();
                 byte[] bytes = diffImage.EncodeToPNG();
-                File.WriteAllBytes(Application.dataPath + "/Resources/" + diffImagePath, bytes);
+                File.WriteAllBytes(diffImagePath, bytes);
             }
-            else if (File.Exists(Application.dataPath + "/Resources/" + diffImagePath))
+            else if (File.Exists(diffImagePath))
             {
-                File.Delete(Application.dataPath + "/Resources/" + diffImagePath);
+                File.Delete(diffImagePath);
 
-                if (File.Exists(Application.dataPath + "/Resources/" + diffImagePath + ".meta"))
-                    File.Delete(Application.dataPath + "/Resources/" + diffImagePath + ".meta");
+                if (File.Exists(diffImagePath + ".meta"))
+                    File.Delete(diffImagePath + ".meta");
             }
 
             return imageAffinity;
@@ -173,11 +181,11 @@ namespace DCL.Helpers
             return newTex;
         }
 
-        public static bool IsSamePixel(Color32 pixelA, Color32 pixelB)
+        public static bool IsSamePixel(Color32 pixelA, Color32 pixelB, float checkThreshold)
         {
-            return pixelA.r == pixelB.r &&
-                    pixelA.g == pixelB.g &&
-                    pixelA.b == pixelB.b;
+            return (pixelA.r > pixelB.r - checkThreshold && pixelA.r < pixelB.r + checkThreshold) &&
+                    (pixelA.g > pixelB.g - checkThreshold && pixelA.g < pixelB.g + checkThreshold) &&
+                    (pixelA.b > pixelB.b - checkThreshold && pixelA.b < pixelB.b + checkThreshold);
         }
 
         public static void RepositionVisualTestsCamera(Transform cameraTransform, Vector3 newPosition)
