@@ -49,7 +49,7 @@ namespace Tests
 
             yield return new WaitForSeconds(0.01f);
 
-            Assert.NotNull(scene.disposableComponents.ContainsKey("audioClipTest"), "Shared component was not created correctly!");
+            Assert.IsTrue(scene.disposableComponents.ContainsKey("audioClipTest"), "Shared component was not created correctly!");
 
             DCLAudioClip.Model model = new DCLAudioClip.Model
             {
@@ -108,9 +108,9 @@ namespace Tests
             DCLAudioSource dclAudioSource = scene.entities[entityId].gameObject.GetComponentInChildren<DCLAudioSource>();
             AudioSource unityAudioSource = dclAudioSource.GetComponentInChildren<AudioSource>();
 
-            Assert.NotNull(scene.entities.ContainsKey(entityId), "Entity was not created correctly!");
-            Assert.NotNull(dclAudioSource, "DCLAudioSource Creation Failure!");
-            Assert.NotNull(unityAudioSource, "Unity AudioSource Creation Failure!");
+            Assert.IsTrue(scene.entities.ContainsKey(entityId), "Entity was not created correctly!");
+            Assert.IsTrue(dclAudioSource != null, "DCLAudioSource Creation Failure!");
+            Assert.IsTrue(unityAudioSource != null, "Unity AudioSource Creation Failure!");
 
             yield return new WaitForSeconds(5f);
 

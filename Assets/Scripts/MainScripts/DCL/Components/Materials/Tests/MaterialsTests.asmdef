@@ -1,8 +1,8 @@
 {
-    "name": "AnimatorTests",
+    "name": "MaterialsTests",
     "references": [
         "MainScripts",
-        "UnityGLTFAssembly"
+        "Utils"
     ],
     "optionalUnityReferences": [
         "TestAssemblies"

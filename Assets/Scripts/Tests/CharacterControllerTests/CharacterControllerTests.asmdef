@@ -1,8 +1,10 @@
 {
-    "name": "AnimatorTests",
+    "name": "CharacterControllerTests",
     "references": [
         "MainScripts",
-        "UnityGLTFAssembly"
+        "UnityGLTFAssembly",
+        "Configuration",
+        "Utils"
     ],
     "optionalUnityReferences": [
         "TestAssemblies"

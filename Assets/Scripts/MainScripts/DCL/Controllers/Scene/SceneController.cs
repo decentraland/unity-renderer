@@ -40,15 +40,19 @@ public class SceneController : MonoBehaviour
 
     void Awake()
     {
-        Debug.Log("DCL Unity Build Version: " + DCL.Configuration.ApplicationSettings.version);
-
         if (i != null)
         {
-            Destroy(this);
+#if UNITY_EDITOR
+            DestroyImmediate(this); // We need the DestroyImmediate() when dealing with tests (like visual tests)
+#else
+            Utils.SafeDestroy(this);
+#endif
             return;
         }
 
         i = this;
+
+        Debug.Log("DCL Unity Build Version: " + DCL.Configuration.ApplicationSettings.version);
 
         // We trigger the Decentraland logic once SceneController has been instanced and is ready to act.
         if (startDecentralandAutomatically)
