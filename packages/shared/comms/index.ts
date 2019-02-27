@@ -1,274 +1,75 @@
 import 'webrtc-adapter'
-import { TransportBasedServer } from 'decentraland-rpc/lib/host/TransportBasedServer'
-import { ScriptingTransport } from 'decentraland-rpc/lib/common/json-rpc/types'
-import { WebWorkerTransport } from 'decentraland-rpc/lib/common/transports/WebWorker'
 
-import { parcelLimits, ETHEREUM_NETWORK } from 'config'
-import { getUserProfile } from './profile'
+import { commConfigurations as config, ETHEREUM_NETWORK, commConfigurations, networkConfigurations } from 'config'
+import { saveToLocalStorage } from 'atomicHelpers/localStorage'
+import { positionObserver } from 'shared/world/positionThings'
+import { CommunicationArea, squareDistance, Position, position2parcel, sameParcel } from './utils'
+import { Stats, NetworkStats, PkgStats } from './debug'
+
 import {
-  getUser,
-  setLocalProfile,
-  ensureAvatar,
-  removeById,
-  receiveUserData,
-  receiveUserPose,
-  getCurrentUser,
-  UserInformation,
   getCurrentPeer,
   localProfileUUID,
-  Pose
-} from '../../dcl/comms/peers'
-import { saveToLocalStorage } from 'atomicHelpers/localStorage'
-import { getEphemeralKeys } from 'shared/ethereum/EthereumService'
+  getUser,
+  removeById,
+  setLocalProfile,
+  getCurrentUser,
+  receiveUserData,
+  receiveUserVisible,
+  receiveUserPose,
+  getUserProfile
+} from './peers'
+
+import { ChatData, PositionData, ProfileData } from './commproto_pb'
 import { chatObservable, ChatEvent } from './chat'
-import { positionObserver } from 'shared/world/positionThings'
-import { PositionMessage } from './worldcomm_pb'
-import { log, error as logError } from 'engine/logger'
+import { WorldInstanceConnection } from './worldInstanceConnection'
 import { ReadOnlyVector3, ReadOnlyQuaternion } from 'decentraland-ecs/src'
+import { UserInformation, Pose } from './types'
 
-const loaderWorkerRaw = require('raw-loader!../../../static/systems/comms.system.js')
-const loaderWorkerBLOB = new Blob([loaderWorkerRaw])
-const loaderWorkerUrl = URL.createObjectURL(loaderWorkerBLOB)
-const worker: Worker = new Worker(loaderWorkerUrl)
+type Timestamp = number
+type PeerAlias = string
 
-class CommunicationServer extends TransportBasedServer {
-  public buffer = []
-  public rtcConn: RTCPeerConnection | null = null
-  public serverId: number = -1
-  public requestInfoInterval: any = null
+export class PeerTrackingInfo {
+  public position: Position | null = null
+  public profile: UserInformation | null = null
+  public lastPositionUpdate: Timestamp = 0
+  public lastProfileUpdate: Timestamp = 0
+  public receivedPublicChatMessages = new Set<string>()
+}
 
-  constructor(transport: ScriptingTransport) {
-    super(transport)
+export class Context {
+  public stats: Stats | null = null
+  public commRadius: number
 
-    this.on('infoCollected', info => {
-      for (let peerInfo of info.peers) {
-        const { peerId } = peerInfo
+  public peerData = new Map<PeerAlias, PeerTrackingInfo>()
+  public userProfile: UserInformation
 
-        if (peerInfo.position) {
-          receiveUserPose(peerId, { v: peerInfo.position as Pose })
-          if (peerInfo.profile) {
-            receiveUserData(peerId, peerInfo.profile)
-          }
-        } else {
-          removeById(peerId)
-        }
-      }
-    })
+  public positionTopics = new Set<string>()
+  public profileTopics = new Set<string>()
+  public chatTopics = new Set<string>()
 
-    this.on('onPublicChatReceived', ({ peerId, msgId, text }) => {
-      const user = getUser(peerId)
+  public currentPosition: Position | null = null
 
-      if (user) {
-        const { displayName } = user
-        const entry = {
-          id: msgId,
-          sender: displayName,
-          message: text,
-          isCommand: false
-        }
-        chatObservable.notifyObservers({ type: ChatEvent.MESSAGE_RECEIVED, messageEntry: entry })
-      }
-    })
+  public network: ETHEREUM_NETWORK | null
 
-    this.on('onNewEphemeralKeyRequired', async ({ network }) => {
-      const key = await getEphemeralKeys(network, true)
-      this.notify('onEphemeralKeyGenerated', { key })
-    })
+  public worldInstanceConnection: WorldInstanceConnection | null
 
-    this.requestInfoInterval = setInterval(() => {
-      this.requestInfo()
-    }, 100)
+  constructor(userProfile: UserInformation, network?: ETHEREUM_NETWORK) {
+    this.userProfile = userProfile
+    this.network = network || null
 
-    this.on('openWebRtcRequest', async ({ serverId }) => {
-      if (this.rtcConn) {
-        this.closeWebRtcConnection()
-      }
-      this.serverId = serverId
-      this.rtcConn = new RTCPeerConnection({
-        iceServers: [
-          {
-            urls: 'stun:stun.l.google.com:19302'
-          }
-        ]
-      })
-
-      this.rtcConn.onnegotiationneeded = async () => {
-        // NOTE pion doesn't actually support renegotiation yet
-        this.closeWebRtcConnection()
-      }
-
-      this.rtcConn.onsignalingstatechange = e => log(`signaling state: ${this.rtcConn.signalingState}`)
-      this.rtcConn.oniceconnectionstatechange = e => log(`ice connection state: ${this.rtcConn.iceConnectionState}`)
-
-      this.rtcConn.onicecandidate = async event => {
-        // NOTE: null candidate means the end of getting candidates
-        if (event.candidate === null) {
-          const sdp = this.rtcConn.localDescription.sdp
-          this.notify('onAnswerGenerated', { sdp: sdp, serverId: this.serverId })
-        } else {
-          this.notify('onIceCandidate', { sdp: event.candidate.candidate, serverId: this.serverId })
-        }
-      }
-
-      this.rtcConn.ondatachannel = e => {
-        let dc = e.channel
-
-        log('New DataChannel ' + dc.label)
-        dc.onclose = () => log('dc has closed')
-        dc.onopen = () => log('dc has opened')
-        dc.onmessage = e => {
-          const data = e.data
-
-          let message
-          try {
-            message = PositionMessage.deserializeBinary(data)
-          } catch (e) {
-            logError('cannot deserialize position message (webrtc)', e, data)
-          }
-
-          const parcelSize = parcelLimits.parcelSize
-          const position = [
-            message.getPositionX() * parcelSize,
-            message.getPositionY(),
-            message.getPositionZ() * parcelSize,
-            message.getRotationX(),
-            message.getRotationY(),
-            message.getRotationZ(),
-            message.getRotationW()
-          ]
-
-          const msg = { position, alias: message.getAlias(), time: message.getTime(), serverId: this.serverId }
-          this.buffer.push(msg)
-        }
-      }
-    })
-
-    this.on('offerReceived', async ({ sdp, serverId }) => {
-      log('offer received')
-      try {
-        await this.rtcConn.setRemoteDescription(new RTCSessionDescription({ type: 'offer', sdp: sdp }))
-        const desc = await this.rtcConn.createAnswer()
-        await this.rtcConn.setLocalDescription(desc)
-      } catch (err) {
-        logError(err)
-      }
-    })
-
-    // NOTE: this actually never happens, because we are not sending an offer, however, I added to the protocol
-    // to support other implemenentations, specially if we have to ditch pion
-    this.on('answerReceived', async ({ sdp, serverId }) => {
-      if (this.serverId === serverId) {
-        try {
-          await this.rtcConn.setRemoteDescription(sdp)
-        } catch (err) {
-          logError(err)
-        }
-      }
-    })
-
-    this.on('iceCandidateReceived', async ({ sdp, serverId }) => {
-      if (this.serverId === serverId) {
-        try {
-          await this.rtcConn.addIceCandidate(sdp)
-        } catch (err) {
-          logError(err)
-        }
-      }
-    })
-
-    this.on('closeWebRtcConnection', ({ serverId }) => {
-      if (this.serverId === serverId) {
-        this.closeWebRtcConnection()
-      }
-    })
-  }
-
-  closeWebRtcConnection() {
-    const serverId = this.serverId
-    this.serverId = -1
-    this.rtcConn.close()
-    this.rtcConn.onsignalingstatechange = null
-    this.rtcConn.oniceconnectionstatechange = null
-    this.rtcConn.onicecandidate = null
-    this.rtcConn.ondatachannel = null
-    this.rtcConn = null
-    this.notify('onWebRtcConnectionClosed', { serverId })
-  }
-
-  enable() {
-    super.enable()
-  }
-
-  init(peerId: string, network: string, key, user: UserInformation) {
-    this.notify('init', {
-      peerId,
-      profile: {
-        displayName: user.displayName,
-        publicKey: user.publicKey,
-        avatarType: user.avatarType
-      },
-      network,
-      key
-    })
-  }
-
-  sendPublicChatMessage(id: string, text: string) {
-    this.notify('sendPublicChatMessage', { id, text })
-  }
-
-  onParcelDataLoaded(data) {
-    this.notify('onParcelDataLoaded', { data })
-  }
-
-  onProfileUpdate(user: UserInformation) {
-    this.notify('onProfileUpdate', {
-      profile: {
-        displayName: user.displayName,
-        publicKey: user.publicKey,
-        avatarType: user.avatarType
-      }
-    })
-  }
-
-  onPositionUpdate(
-    obj: Readonly<{
-      position: ReadOnlyVector3
-      rotation: ReadOnlyVector3
-      quaternion: ReadOnlyQuaternion
-    }>
-  ) {
-    this.notify('onPositionUpdate', {
-      position: [
-        obj.position.x,
-        obj.position.y,
-        obj.position.z,
-        obj.quaternion.x,
-        obj.quaternion.y,
-        obj.quaternion.z,
-        obj.quaternion.w
-      ]
-    })
-  }
-
-  requestInfo() {
-    this.notify('requestInfo', { data: this.buffer })
-    this.buffer = []
+    this.stats = config.debug ? new Stats(this) : null
+    this.commRadius = commConfigurations.commRadius
   }
 }
 
-const server = new CommunicationServer(WebWorkerTransport(worker))
+let context: Context | null
 
-export function sendPublicChatMessage(id: string, text: string): void {
-  server.sendPublicChatMessage(id, text)
+export function sendPublicChatMessage(messageId: string, text: string) {
+  if (context.currentPosition) {
+    context.worldInstanceConnection.sendChatMessage(context.currentPosition, messageId, text)
+  }
 }
 
-export function setCommData(data) {
-  server.onParcelDataLoaded(data)
-}
-
-/**
- * This function persists the current user data.
- */
 export function persistCurrentUser(changes: Partial<UserInformation>): Readonly<UserInformation> {
   const peer = getCurrentPeer()
 
@@ -279,11 +80,256 @@ export function persistCurrentUser(changes: Partial<UserInformation>): Readonly<
   receiveUserData(localProfileUUID, peer.user)
 
   const user = peer.user
+  if (!context) {
+    throw new Error('persistCurrentUser before initialization')
+  }
   if (user) {
-    server.onProfileUpdate(user)
+    context.userProfile = user
   }
 
   return peer.user
+}
+
+function ensurePeerTrackingInfo(context: Context, alias: string): PeerTrackingInfo {
+  let peerTrackingInfo = context.peerData.get(alias)
+
+  if (!peerTrackingInfo) {
+    peerTrackingInfo = new PeerTrackingInfo()
+    context.peerData.set(alias, peerTrackingInfo)
+  }
+  return peerTrackingInfo
+}
+
+export function processChatMessage(
+  context: Context,
+  conn: WorldInstanceConnection,
+  fromAlias: string,
+  data: Uint8Array
+): PkgStats {
+  const chatData = ChatData.deserializeBinary(data)
+  const msgId = chatData.getMessageId()
+
+  const peerTrackingInfo = ensurePeerTrackingInfo(context, fromAlias)
+  if (!peerTrackingInfo.receivedPublicChatMessages.has(msgId)) {
+    const text = chatData.getText()
+    peerTrackingInfo.receivedPublicChatMessages.add(msgId)
+
+    const user = getUser(fromAlias)
+
+    if (user) {
+      const { displayName } = user
+      const entry = {
+        id: msgId,
+        sender: displayName,
+        message: text,
+        isCommand: false
+      }
+      chatObservable.notifyObservers({ type: ChatEvent.MESSAGE_RECEIVED, messageEntry: entry })
+    }
+  }
+
+  return conn.stats ? conn.stats.chat : null
+}
+
+export function processProfileMessage(
+  context: Context,
+  conn: WorldInstanceConnection,
+  fromAlias: string,
+  data: Uint8Array
+): PkgStats {
+  const profileData = ProfileData.deserializeBinary(data)
+  const msgTimestamp = profileData.getTime()
+
+  const peerTrackingInfo = ensurePeerTrackingInfo(context, fromAlias)
+
+  if (msgTimestamp > peerTrackingInfo.lastProfileUpdate) {
+    const publicKey = profileData.getPublicKey()
+    const avatarType = profileData.getAvatarType()
+    const displayName = profileData.getDisplayName()
+
+    peerTrackingInfo.profile = {
+      displayName,
+      publicKey,
+      avatarType
+    }
+
+    peerTrackingInfo.lastProfileUpdate = msgTimestamp
+  }
+  return conn.stats ? conn.stats.profile : null
+}
+
+export function processPositionMessage(
+  context: Context,
+  conn: WorldInstanceConnection,
+  fromAlias: string,
+  data: Uint8Array
+): PkgStats {
+  const positionData = PositionData.deserializeBinary(data)
+  const msgTimestamp = positionData.getTime()
+
+  const peerTrackingInfo = ensurePeerTrackingInfo(context, fromAlias)
+  if (msgTimestamp > peerTrackingInfo.lastPositionUpdate) {
+    const p = [
+      positionData.getPositionX(),
+      positionData.getPositionY(),
+      positionData.getPositionZ(),
+      positionData.getRotationX(),
+      positionData.getRotationY(),
+      positionData.getRotationZ(),
+      positionData.getRotationW()
+    ] as Position
+
+    peerTrackingInfo.position = p
+    peerTrackingInfo.lastPositionUpdate = msgTimestamp
+  }
+
+  return conn.stats ? conn.stats.position : null
+}
+
+type ProcessingPeerInfo = {
+  alias: PeerAlias
+  profile: UserInformation
+  squareDistance: number
+  position: Position
+}
+
+function updateTopics(
+  conn: WorldInstanceConnection,
+  oldTopics: Set<string>,
+  newTopics: Set<string>,
+  handler: (fromAlias: string, data: Uint8Array) => PkgStats
+) {
+  for (let topic of newTopics) {
+    if (!oldTopics.has(topic)) {
+      conn.addTopic(topic, handler)
+    } else {
+      oldTopics.delete(topic)
+    }
+  }
+
+  for (let topic of oldTopics) {
+    conn.removeTopic(topic)
+  }
+
+  return newTopics
+}
+
+export function onPositionUpdate(context: Context, p: Position) {
+  if (!context.worldInstanceConnection.unreliableDataChannel || !context.worldInstanceConnection.reliableDataChannel) {
+    return
+  }
+
+  const oldParcel = context.currentPosition ? position2parcel(context.currentPosition) : null
+  const newParcel = position2parcel(p)
+
+  if (!sameParcel(oldParcel, newParcel)) {
+    const newPositionTopics = new Set<string>()
+    const newProfileTopics = new Set<string>()
+    const newChatTopics = new Set<string>()
+
+    const commArea = new CommunicationArea(newParcel, context.commRadius)
+    for (let x = commArea.vMin.x; x <= commArea.vMax.x; ++x) {
+      for (let z = commArea.vMin.z; z <= commArea.vMax.z; ++z) {
+        newPositionTopics.add(`position:${x}:${z}`)
+        newProfileTopics.add(`profile:${x}:${z}`)
+        newChatTopics.add(`chat:${x}:${z}`)
+      }
+    }
+
+    context.positionTopics = updateTopics(
+      context.worldInstanceConnection,
+      context.positionTopics,
+      newPositionTopics,
+      (fromAlias: string, data: Uint8Array) =>
+        processPositionMessage(context, context.worldInstanceConnection, fromAlias, data)
+    )
+
+    context.profileTopics = updateTopics(
+      context.worldInstanceConnection,
+      context.profileTopics,
+      newProfileTopics,
+      (fromAlias: string, data: Uint8Array) =>
+        processProfileMessage(context, context.worldInstanceConnection, fromAlias, data)
+    )
+
+    context.chatTopics = updateTopics(
+      context.worldInstanceConnection,
+      context.chatTopics,
+      newChatTopics,
+      (fromAlias: string, data: Uint8Array) =>
+        processChatMessage(context, context.worldInstanceConnection, fromAlias, data)
+    )
+  }
+
+  context.currentPosition = p
+  context.worldInstanceConnection.sendPositionMessage(p)
+}
+
+function collectInfo(context: Context) {
+  if (context.stats) {
+    context.stats.collectInfoDuration.start()
+  }
+
+  if (!context.currentPosition) {
+    return
+  }
+
+  const now = Date.now()
+  const visiblePeers: ProcessingPeerInfo[] = []
+  const commArea = new CommunicationArea(position2parcel(context.currentPosition), commConfigurations.commRadius)
+  for (let [peerAlias, trackingInfo] of context.peerData) {
+    if (!trackingInfo.position || !trackingInfo.profile) {
+      continue
+    }
+
+    if (!commArea.contains(trackingInfo.position)) {
+      receiveUserVisible(peerAlias, false)
+      continue
+    }
+
+    const msSinceLastUpdate = now - Math.max(trackingInfo.lastPositionUpdate, trackingInfo.lastProfileUpdate)
+
+    if (msSinceLastUpdate > config.peerTtlMs) {
+      context.peerData.delete(peerAlias)
+      removeById(peerAlias)
+      continue
+    }
+
+    visiblePeers.push({
+      position: trackingInfo.position,
+      profile: trackingInfo.profile,
+      squareDistance: squareDistance(context.currentPosition, trackingInfo.position),
+      alias: peerAlias
+    })
+  }
+
+  if (visiblePeers.length <= config.maxVisiblePeers) {
+    for (let peerInfo of visiblePeers) {
+      const alias = peerInfo.alias
+      receiveUserVisible(alias, true)
+      receiveUserPose(alias, peerInfo.position as Pose)
+      receiveUserData(alias, peerInfo.profile)
+    }
+  } else {
+    const sortedBySqDistanceVisiblePeers = visiblePeers.sort((p1, p2) => p1.squareDistance - p2.squareDistance)
+    for (let i = 0; i < sortedBySqDistanceVisiblePeers.length; ++i) {
+      const peer = sortedBySqDistanceVisiblePeers[i]
+      const alias = peer.alias
+
+      if (i < config.maxVisiblePeers) {
+        receiveUserVisible(alias, true)
+        receiveUserPose(alias, peer.position as Pose)
+        receiveUserData(alias, peer.profile)
+      } else {
+        receiveUserVisible(alias, false)
+      }
+    }
+  }
+
+  if (context.stats) {
+    context.stats.visiblePeersCount = visiblePeers.length
+    context.stats.collectInfoDuration.stop()
+  }
 }
 
 export async function connect(ethAddress: string, network?: ETHEREUM_NETWORK) {
@@ -294,13 +340,51 @@ export async function connect(ethAddress: string, network?: ETHEREUM_NETWORK) {
     publicKey: ethAddress
   })
 
-  ensureAvatar(peerId)
-
   const user = getCurrentUser()
   if (user) {
-    let key = network ? await getEphemeralKeys(network) : null
-    server.init(peerId, network, key, user)
-  }
+    const userProfile = {
+      displayName: user.displayName,
+      publicKey: user.publicKey,
+      avatarType: user.avatarType
+    }
+    context = new Context(userProfile, network)
+    context.worldInstanceConnection = new WorldInstanceConnection(networkConfigurations[network].worldInstanceUrl)
 
-  positionObserver.add(p => server.onPositionUpdate(p))
+    if (context.stats) {
+      context.worldInstanceConnection.stats = new NetworkStats(context.worldInstanceConnection)
+      context.stats.primaryNetworkStats = context.worldInstanceConnection.stats
+    }
+
+    context.worldInstanceConnection.connect()
+
+    setInterval(() => {
+      if (context.currentPosition) {
+        context.worldInstanceConnection.sendProfileMessage(context.currentPosition, context.userProfile)
+      }
+    }, 1000)
+
+    positionObserver.add(
+      (
+        obj: Readonly<{
+          position: ReadOnlyVector3
+          rotation: ReadOnlyVector3
+          quaternion: ReadOnlyQuaternion
+        }>
+      ) => {
+        const p = [
+          obj.position.x,
+          obj.position.y,
+          obj.position.z,
+          obj.quaternion.x,
+          obj.quaternion.y,
+          obj.quaternion.z,
+          obj.quaternion.w
+        ] as Position
+
+        onPositionUpdate(context, p)
+      }
+    )
+
+    setInterval(() => collectInfo(context), 100)
+  }
 }

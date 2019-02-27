@@ -2,22 +2,24 @@
 import { registerAPI, exposeMethod, APIOptions } from 'decentraland-rpc/lib/host'
 import { v4 } from 'uuid'
 
-import { avatarTypes } from 'dcl/entities/utils/avatarHelpers'
 import { persistCurrentUser, sendPublicChatMessage } from 'shared/comms'
-import {
-  addToBlockedUsers,
-  addToMutedUsers,
-  removeFromBlockedUsers,
-  removeFromMutedUsers,
-  getBlockedUsers,
-  getMutedUsers
-} from 'shared/comms/profile'
-import { getCurrentUser, muteUsers, hideBlockedUsers, findPeerByName, getPeer } from 'dcl/comms/peers'
 import { chatObservable, ChatEvent } from 'shared/comms/chat'
-import { ExposableAPI } from '../../shared/apis/ExposableAPI'
+import { ExposableAPI } from 'shared/apis/ExposableAPI'
 import { IChatCommand, MessageEntry } from 'shared/types'
 import { EngineAPI } from 'shared/apis/EngineAPI'
 import { teleportObserver } from 'shared/world/positionThings'
+import {
+  getCurrentUser,
+  findPeerByName,
+  getPeer,
+  addToBlockedUsers,
+  addToMutedUsers,
+  getBlockedUsers,
+  removeFromBlockedUsers,
+  removeFromMutedUsers
+} from 'shared/comms/peers'
+
+import { avatarTypes } from 'dcl/entities/utils/avatarHelpers'
 
 export const positionRegex = new RegExp('^(-?[0-9]+) *, *(-?[0-9]+)$')
 
@@ -26,7 +28,7 @@ export interface IChatController {
    * Send the chat message
    * @param messageEntry
    */
-  send(messageEntry: MessageEntry): Promise<boolean | MessageEntry>
+  send(message: string): Promise<MessageEntry>
   /**
    * Return list of chat commands
    */
@@ -52,23 +54,29 @@ export class ChatController extends ExposableAPI implements IChatController {
   }
 
   @exposeMethod
-  async send(messageEntry: MessageEntry): Promise<boolean | MessageEntry> {
-    let cmd = this.handleChatCommand(messageEntry)
+  async send(message: string): Promise<MessageEntry> {
+    let entry = this.handleChatCommand(message)
     // If the message looks like a command but no command was found, provide some feedback
-    if (!cmd && messageEntry.message[0] === '/') {
-      cmd = {
+    if (!entry && message[0] === '/') {
+      entry = {
         id: v4(),
         isCommand: true,
         sender: 'Decentraland',
         message: `That command doesn’t exist. Type /help for a full list of commands.`
       }
-    }
-    // If the message was not a command ("/cmdname"), then send message through wire
-    if (!cmd) {
-      sendPublicChatMessage(messageEntry.id, messageEntry.message)
+    } else {
+      // If the message was not a command ("/cmdname"), then send message through wire
+      const currentUser = getCurrentUser()
+      entry = {
+        id: v4(),
+        isCommand: false,
+        sender: currentUser.displayName || currentUser.publicKey,
+        message
+      }
+      sendPublicChatMessage(entry.id, entry.message)
     }
 
-    return cmd
+    return entry
   }
 
   @exposeMethod
@@ -77,8 +85,8 @@ export class ChatController extends ExposableAPI implements IChatController {
   }
 
   // @internal
-  handleChatCommand(messageEntry: MessageEntry) {
-    const words = messageEntry.message.split(' ')
+  handleChatCommand(message: string) {
+    const words = message.split(' ')
     const command = words[0].substring(1)
     // Remove command from sentence
     words.shift()
@@ -89,7 +97,7 @@ export class ChatController extends ExposableAPI implements IChatController {
       return cmd.run(restOfMessage)
     }
 
-    return false
+    return null
   }
 
   // @internal
@@ -189,9 +197,6 @@ export class ChatController extends ExposableAPI implements IChatController {
       addToBlockedUsers(user.publicKey)
       addToMutedUsers(user.publicKey)
 
-      hideBlockedUsers(getBlockedUsers())
-      muteUsers(getMutedUsers())
-
       return { id: v4(), isCommand: true, sender: 'Decentraland', message: `You blocked user ${username}.` }
     })
 
@@ -203,8 +208,6 @@ export class ChatController extends ExposableAPI implements IChatController {
       removeFromBlockedUsers(user.publicKey)
       // TODO: Remove this literal mute, muting shold happen automatticaly with block
       removeFromMutedUsers(user.publicKey)
-      hideBlockedUsers(getBlockedUsers())
-      muteUsers(getMutedUsers())
 
       return { id: v4(), isCommand: true, sender: 'Decentraland', message: `You unblocked user ${username}.` }
     })
@@ -243,7 +246,6 @@ export class ChatController extends ExposableAPI implements IChatController {
       const user = findPeerByName(username)
 
       addToMutedUsers(user.publicKey)
-      muteUsers(getMutedUsers())
 
       return { id: v4(), isCommand: true, sender: 'Decentraland', message: `You muted user ${username}.` }
     })
@@ -258,8 +260,6 @@ export class ChatController extends ExposableAPI implements IChatController {
       const user = findPeerByName(username)
 
       removeFromMutedUsers(user.publicKey)
-
-      muteUsers(getMutedUsers())
 
       return { id: v4(), isCommand: true, sender: 'Decentraland', message: `You unmuted user ${username}.` }
     })

@@ -1,7 +1,6 @@
 import { expect } from 'chai'
-import { setLocalProfile, peerMap, removeById } from 'dcl/comms/peers'
-
 import { v4 } from 'uuid'
+import { setLocalProfile, peerMap, removeById } from 'shared/comms/peers'
 
 describe('comms', function() {
   const localId = v4()
@@ -13,8 +12,6 @@ describe('comms', function() {
     const peer = peerMap.get(localId)
 
     expect(peer.user.status).to.eq('test')
-
-    expect(peer.avatar).to.eq(undefined)
 
     removeById(localId)
 

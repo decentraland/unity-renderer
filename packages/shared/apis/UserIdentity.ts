@@ -1,7 +1,7 @@
 import { registerAPI, exposeMethod } from 'decentraland-rpc/lib/host'
-import { getCurrentUser } from 'dcl/comms/peers'
 import { ExposableAPI } from './ExposableAPI'
 import { UserData } from 'shared/types'
+import { getCurrentUser } from 'shared/comms/peers'
 
 export interface IUserIdentity {
   /**

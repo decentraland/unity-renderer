@@ -17,12 +17,6 @@
     "target": "webworker"
   },
   {
-    "name": "Compile communications system",
-    "kind": "Webpack",
-    "file": "./packages/communications/*.ts",
-    "target": "webworker"
-  },
-  {
     "name": "Compile Gamekit (BUNDLE)",
     "kind": "Webpack",
     "file": "./packages/decentraland-ecs/src/index.ts",

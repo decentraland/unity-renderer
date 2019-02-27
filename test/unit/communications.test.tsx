@@ -1,344 +1,549 @@
-import { expect } from 'chai'
-import { commConfigurations as config, commConfigurations, parcelLimits } from 'config'
-import {
-  Context,
-  Position,
-  PeerTrackingInfo,
-  ServerConnection,
-  processConnections,
-  onPositionUpdate,
-  makeCurrentPosition,
-  collectInfo,
-  SocketReadyState,
-  onCommDataLoaded
-} from 'communications/src/client'
-import { V2, CommunicationArea } from 'communications/src/utils'
-import { Adapter } from 'communications/src/adapter'
-import { ScriptingTransport } from 'decentraland-rpc/lib/common/json-rpc/types'
+import * as chai from 'chai'
 import * as sinon from 'sinon'
+import * as sinonChai from 'sinon-chai'
 
-const { parcelSize } = parcelLimits
+import {
+  WebRtcMessage, ConnectMessage, WelcomeMessage, AuthMessage, TopicMessage, PingMessage,
+  PositionData, ProfileData, ChatData,
+  ChangeTopicMessage, MessageType, Role
+} from '../../packages/shared/comms/commproto_pb'
+import { Position, CommunicationArea, Parcel } from 'shared/comms/utils'
+import { WorldInstanceConnection, SocketReadyState } from 'shared/comms/worldInstanceConnection'
+import { Context, processChatMessage, processPositionMessage, processProfileMessage, PeerTrackingInfo, onPositionUpdate } from 'shared/comms'
+import { PkgStats } from 'shared/comms/debug'
 
-function createContext(): [Context, Adapter] {
-  const peerId = 'peer-1'
-  const transport = {} as ScriptingTransport
-  transport.onMessage = sinon.stub()
-  const connector = new Adapter(transport)
-  sinon.stub(connector, 'notify')
+chai.use(sinonChai)
 
-  const userProfile = {
-    displayName: 'testPeer',
-    publicKey: 'key',
-    avatarType: 'fox'
-  }
+const expect = chai.expect
 
-  const context = new Context(connector, peerId, userProfile)
-  return [context, connector]
-}
-
-let registeredWebSockets = []
+let webSocket = null
 
 class MockWebSocket {
   public readyState: SocketReadyState = SocketReadyState.CLOSED
 
   constructor(public url: string) {
-    registeredWebSockets.push(this)
+    webSocket = this
   }
 }
 
 describe('Communications', function() {
-  const ORIGINAL_WEB_SOCKET = window['WebSocket']
-
-  before(() => {
-    // NOTE: little hack to be able to mock websocket requests
-    window['WebSocket'] = MockWebSocket
-  })
-
-  beforeEach(() => {
-    registeredWebSockets = []
-  })
-
-  after(() => {
-    window['WebSocket'] = ORIGINAL_WEB_SOCKET
-  })
-
   describe('CommunicationArea', () => {
+
+    function makePosition(x: number, z: number): Position {
+      return [x, 0, z, 0, 0, 0, 0]
+    }
+
     it('should contain the center', () => {
-      const area = new CommunicationArea(new V2(0, 0), 2)
-      expect(area.contains(new V2(0, 0))).to.be.true
+      const area = new CommunicationArea(new Parcel(0, 0), 2)
+      expect(area.contains(makePosition(0, 0))).to.be.true
     })
 
     it('should contain the vertexes', () => {
-      const area = new CommunicationArea(new V2(0, 0), 2)
-      expect(area.contains(new V2(2, 2))).to.be.true
-      expect(area.contains(new V2(-2, 0))).to.be.true
-      expect(area.contains(new V2(-2, -2))).to.be.true
-      expect(area.contains(new V2(2, -2))).to.be.true
+      const area = new CommunicationArea(new Parcel(0, 0), 2)
+      expect(area.contains(makePosition(2, 2))).to.be.true
+      expect(area.contains(makePosition(-2, 0))).to.be.true
+      expect(area.contains(makePosition(-2, -2))).to.be.true
+      expect(area.contains(makePosition(2, -2))).to.be.true
     })
 
     it('should contain a point outside the area', () => {
-      const area = new CommunicationArea(new V2(0, 0), 2)
-      expect(area.contains(new V2(1.3, 0))).to.be.true
+      const area = new CommunicationArea(new Parcel(0, 0), 2)
+      expect(area.contains(makePosition(1.3, 0))).to.be.true
     })
 
     it('should not contain a point outside the area', () => {
-      const area = new CommunicationArea(new V2(0, 0), 2)
-      expect(area.contains(new V2(3, 0))).to.be.false
+      const area = new CommunicationArea(new Parcel(0, 0), 2)
+      expect(area.contains(makePosition(60, 0))).to.be.false
     })
   })
 
-  describe('ServerConnection', () => {
-    describe('containsLocation()', () => {
-      it('should return true if contains the location', () => {
-        const conn = new ServerConnection(0, 'test-comm-server', new V2(10, 1))
-        conn.locations.push(new V2(3, 3))
-        expect(conn.containsLocation(new V2(3, 3))).to.be.true
+  describe('WorldInstanceConnection', () => {
+
+    const ORIGINAL_WEB_SOCKET = window['WebSocket']
+
+    before(() => {
+      // NOTE: little hack to be able to mock websocket requests
+      window['WebSocket'] = MockWebSocket
+    })
+
+    let worldConn
+    beforeEach(() => {
+      webSocket = null
+      worldConn = new WorldInstanceConnection('coordinator')
+      worldConn.connect()
+
+      const mockWebRtc = {
+        addIceCandidate: sinon.stub(),
+        setRemoteDescription: sinon.stub(),
+        setLocalDescription: sinon.stub(),
+        createAnswer: sinon.stub(),
+        onicecandidate: worldConn.webRtcConn.onicecandidate,
+        ondatachannel: worldConn.webRtcConn.ondatachannel
+      }
+      worldConn.webRtcConn = mockWebRtc
+      webSocket.readyState = SocketReadyState.OPEN
+      webSocket.send = sinon.stub()
+    })
+
+    after(() => {
+      window['WebSocket'] = ORIGINAL_WEB_SOCKET
+    })
+
+    describe('coordinator messages', () => {
+      it('welcome', async () => {
+        const msg = new WelcomeMessage()
+        msg.setType(MessageType.WELCOME)
+        msg.setAlias('client1')
+        msg.setAvailableServersList(['server1'])
+
+        await webSocket.onmessage({ data: msg.serializeBinary() })
+
+        expect(worldConn.alias).to.equal('client1')
+
+        expect(webSocket.send).to.have.been.calledWithMatch((bytes) => {
+          const msgType = ConnectMessage.deserializeBinary(bytes).getType()
+          expect(msgType).to.equal(MessageType.CONNECT)
+          return true
+        })
       })
 
-      it("should return false if doesn't contains the location", () => {
-        const conn = new ServerConnection(0, 'test-comm-server', new V2(10, 1))
-        expect(conn.containsLocation(new V2(3, 3))).to.be.false
+      it('webrtc ice candidate (from unknown peer)', async () => {
+        const msg = new WebRtcMessage()
+        msg.setType(MessageType.WEBRTC_ICE_CANDIDATE)
+        msg.setFromAlias('server2')
+
+        await webSocket.onmessage({ data: msg.serializeBinary() })
+
+        expect(worldConn.webRtcConn.addIceCandidate).to.not.have.been.called
+      })
+
+      it('webrtc ice candidate', async () => {
+        worldConn.commServerAlias = 'server1'
+        const msg = new WebRtcMessage()
+        msg.setType(MessageType.WEBRTC_ICE_CANDIDATE)
+        msg.setFromAlias('server1')
+        msg.setSdp('sdp')
+
+        await webSocket.onmessage({ data: msg.serializeBinary() })
+
+        expect(worldConn.webRtcConn.addIceCandidate).to.have.been.calledWith('sdp')
+      })
+
+      it('webrtc offer', async () => {
+        worldConn.commServerAlias = 'server1'
+
+        const answer = { sdp: "answer-sdp" }
+        worldConn.webRtcConn.createAnswer.resolves(answer)
+
+        const msg = new WebRtcMessage()
+        msg.setType(MessageType.WEBRTC_OFFER)
+        msg.setFromAlias('server1')
+        msg.setSdp('sdp')
+
+        await webSocket.onmessage({ data: msg.serializeBinary() })
+
+        expect(worldConn.webRtcConn.setRemoteDescription).to.have.been.calledWithMatch((desc) => {
+          expect(desc.type).to.be.equal('offer')
+          expect(desc.sdp).to.be.equal('sdp')
+          return true
+        })
+
+        expect(worldConn.webRtcConn.createAnswer).to.have.been.called
+        expect(worldConn.webRtcConn.setLocalDescription).to.have.been.calledWith(answer)
+
+        expect(webSocket.send).to.have.been.calledWithMatch((bytes) => {
+          const msg = WebRtcMessage.deserializeBinary(bytes)
+          expect(msg.getType()).to.equal(MessageType.WEBRTC_ANSWER)
+          expect(msg.getSdp()).to.equal(answer.sdp)
+          expect(msg.getToAlias()).to.equal('server1')
+          return true
+        })
+      })
+
+      it('webrtc answer', async () => {
+        worldConn.commServerAlias = 'server1'
+        const msg = new WebRtcMessage()
+        msg.setType(MessageType.WEBRTC_ANSWER)
+        msg.setFromAlias('server1')
+        msg.setSdp('sdp')
+
+        await webSocket.onmessage({ data: msg.serializeBinary() })
+
+        expect(worldConn.webRtcConn.setRemoteDescription).to.have.been.calledWithMatch((desc) => {
+          expect(desc.type).to.be.equal('answer')
+          expect(desc.sdp).to.be.equal('sdp')
+          return true
+        })
       })
     })
 
-    describe('containsAnyLocations()', () => {
-      it('should return true if contains at least one of the locations', () => {
-        const conn = new ServerConnection(0, 'test-comm-server', new V2(10, 1))
-        conn.locations.push(new V2(3, 3))
-        expect(conn.containsAnyLocations([new V2(10, 1), new V2(8, 3)])).to.be.true
-      })
-
-      it("should return false if doesn't contains any of the location", () => {
-        const conn = new ServerConnection(0, 'test-comm-server', new V2(10, 1))
-        expect(conn.containsAnyLocations([new V2(12, 1), new V2(3, 3)])).to.be.false
-      })
-    })
-
-    describe('removeLocation()', () => {
-      it('should return remove the location if present', () => {
-        const conn = new ServerConnection(0, 'test-comm-server', new V2(10, 1))
-        conn.locations.push(new V2(3, 3))
-        conn.locations.push(new V2(1, 3))
-        conn.locations.push(new V2(10, 10))
-
-        conn.removeLocation(new V2(3, 3))
-
-        expect(conn.locations).to.have.lengthOf(3)
-        expect(conn.containsLocation(new V2(3, 3))).to.be.false
-        expect(conn.containsLocation(new V2(10, 10))).to.be.true
-        expect(conn.containsLocation(new V2(10, 1))).to.be.true
-        expect(conn.containsLocation(new V2(1, 3))).to.be.true
-      })
-    })
-
-    it('addLocation()', () => {
-      const conn = new ServerConnection(0, 'test-comm-server', new V2(10, 1))
-      conn.addLocation(new V2(0, 0))
-
-      expect(conn.locations).to.deep.equal([new V2(10, 1), new V2(0, 0)])
-    })
-
-    describe('minSquareDistance()', () => {
-      it('should return the minium square distance to the point', () => {
-        const conn = new ServerConnection(0, 'test-comm-server', new V2(10, 1))
-        conn.addLocation(new V2(0, 0))
-
-        expect(conn.minSquareDistance(new V2(0, 0))).to.equal(0)
-        expect(conn.minSquareDistance(new V2(10, 1))).to.equal(0)
-        expect(conn.minSquareDistance(new V2(10, 0))).to.equal(1)
-      })
-    })
-  })
-
-  describe('onPositionUpdate()', () => {
-    it('should update current position and connections', () => {
-      const [context] = createContext()
-      const position = [0, 0, 16.3, 0, 0, 0, 0] as Position
-      onPositionUpdate(context, position)
-      expect(context.currentPosition.position).to.deep.equal(position)
-      expect(context.currentPosition.parcel).to.deep.equal({ x: 0, z: 1 })
-
-      expect(context.connections.length).to.be.gt(0)
-
-      for (let connection of context.connections) {
-        expect(connection.ws).to.be.null
-        for (let location of connection.locations) {
-          expect(context.currentPosition.commArea.contains(location)).to.be.true
+    describe('webrtc', () => {
+      it('onicecandidate', () => {
+        worldConn.commServerAlias = 'server1'
+        const event = {
+          candidate: {
+            candidate: 'candidate-sdp'
+          }
         }
-      }
-    })
-  })
+        worldConn.webRtcConn.onicecandidate(event)
 
-  describe('processConnections()', () => {
-    it(`should connect to a max of ${config.maxConcurrentConnectionRequests}`, () => {
-      const [context] = createContext()
-      context.currentPosition = makeCurrentPosition([0, 0, 0, 0, 0, 0, 0])
+        expect(webSocket.send).to.have.been.calledWithMatch((bytes) => {
+          const msg = WebRtcMessage.deserializeBinary(bytes)
+          expect(msg.getType()).to.equal(MessageType.WEBRTC_ICE_CANDIDATE)
+          expect(msg.getToAlias()).to.equal('server1')
+          expect(msg.getSdp()).to.equal('candidate-sdp')
+          return true
+        })
+      })
 
-      const connections = []
-      for (let i = 0; i < config.maxConcurrentConnectionRequests + 10; ++i) {
-        connections.push(new ServerConnection(i, 'ws://comm-server-${i}', new V2(parcelSize * i, 0)))
-      }
-      context.connections = connections
-      processConnections(context)
-      expect(registeredWebSockets).to.have.lengthOf(config.maxConcurrentConnectionRequests)
-    })
+      describe('reliable data channel', () => {
+        let channel
 
-    it('should connect to near servers first', () => {
-      const [context] = createContext()
-      context.currentPosition = makeCurrentPosition([0, 0, 0, 0, 0, 0, 0])
-      context.connections = [
-        new ServerConnection(0, 'ws://far-server-test-comm-server', new V2(10, 10)),
-        new ServerConnection(1, 'ws://close-server-test-comm-server', new V2(10, 0)),
-        new ServerConnection(2, 'ws://parcel-server-test-comm-server', new V2(0, 0))
-      ]
-      processConnections(context)
-      const urls = registeredWebSockets.map(ws => ws.url)
-      expect(urls).to.be.deep.equal([
-        'ws://parcel-server-test-comm-server',
-        'ws://close-server-test-comm-server',
-        'ws://far-server-test-comm-server'
-      ])
-    })
+        beforeEach(() => {
+          worldConn.commServerAlias = 'server1'
+          channel = {
+            send: sinon.stub(),
+            label: 'reliable'
+          }
 
-    it('should clean up negotiating connections', () => {
-      const [context] = createContext()
-      context.currentPosition = makeCurrentPosition([0, 0, 0, 0, 0, 0, 0])
-      const ws = new MockWebSocket('')
-      ws.readyState = SocketReadyState.OPEN
-      context.negotiatingConnection.add(ws as WebSocket)
-      processConnections(context)
-      expect(context.negotiatingConnection.size).to.be.equal(0)
-    })
+          const event = { channel }
 
-    it('should disconnect servers tracking no location', () => {
-      const [context] = createContext()
-      context.currentPosition = makeCurrentPosition([0, 0, 0, 0, 0, 0, 0])
-      const conn = new ServerConnection(0, 'ws://far-server-test-comm-server', new V2(0, 0))
-      conn.removeLocation(new V2(0, 0))
-      context.connections = [conn]
-      processConnections(context)
-      expect(context.connections).to.have.lengthOf(0)
-    })
-  })
+          worldConn.webRtcConn.ondatachannel(event)
 
-  describe('collectInfo()', () => {
-    it('should return no peer info if nothing is tracked', () => {
-      const [context] = createContext()
-      context.currentPosition = makeCurrentPosition([0, 0, 0, 0, 0, 0, 0])
-      const info = collectInfo(context)
-      expect(info.peers).to.have.lengthOf(0)
-    })
+          channel['onopen']()
 
-    it('should return all peers', () => {
-      const [context] = createContext()
-      context.currentPosition = makeCurrentPosition([0, 0, 0, 0, 0, 0, 0])
+        })
 
-      let peerInfo = new PeerTrackingInfo()
-      peerInfo.servers.set(0, Date.now())
-      peerInfo.position = [0, 0, 0, 0, 0, 0, 0]
-      peerInfo.profile = { displayName: 'test', publicKey: 'test', avatarType: 'fox' }
-      context.peerData.set('peer-1', peerInfo)
+        it('register datachannel', () => {
+          expect(worldConn.reliableDataChannel).to.equal(channel)
+          expect(worldConn.authenticated).to.be.true
 
-      peerInfo = new PeerTrackingInfo()
-      peerInfo.servers.set(0, Date.now())
-      peerInfo.profile = { displayName: 'test', publicKey: 'test', avatarType: 'fox' }
-      context.peerData.set('peer-2', peerInfo)
+          expect(channel.send).to.have.been.calledWithMatch((bytes) => {
+            const msg = AuthMessage.deserializeBinary(bytes)
+            expect(msg.getType()).to.equal(MessageType.AUTH)
+            expect(msg.getRole()).to.equal(Role.CLIENT)
+            expect(msg.getMethod()).to.equal('noop')
+            return true
+          })
+        })
 
-      peerInfo = new PeerTrackingInfo()
-      peerInfo.servers.set(0, Date.now())
-      peerInfo.position = [0, 0, 0, 0, 0, 0, 0]
-      context.peerData.set('peer-3', peerInfo)
+        it('receive topic message, no handler registered', () => {
+          const msg = new TopicMessage()
+          msg.setType(MessageType.TOPIC)
+          msg.setFromAlias('client2')
+          msg.setTopic('topic1')
 
-      // NOTE: outside comm area
-      peerInfo = new PeerTrackingInfo()
-      peerInfo.servers.set(0, Date.now())
-      peerInfo.position = [2000, 0, 0, 0, 0, 0, 0]
-      peerInfo.profile = { displayName: 'test', publicKey: 'test', avatarType: 'fox' }
-      context.peerData.set('peer-4', peerInfo)
+          const e = { data: msg.serializeBinary() }
+          channel.onmessage(e)
+        })
 
-      peerInfo = new PeerTrackingInfo()
-      peerInfo.servers.set(0, Date.now())
-      peerInfo.position = [10, 10, 0, 0, 0, 0, 0]
-      peerInfo.profile = { displayName: 'test', publicKey: 'test', avatarType: 'fox' }
-      context.peerData.set('peer-5', peerInfo)
+        it('receive topic message, handler registered', () => {
+          const handler = sinon.stub()
+          worldConn.subscriptions.set('topic1', handler)
+          const msg = new TopicMessage()
+          msg.setType(MessageType.TOPIC)
+          msg.setFromAlias('client2')
+          msg.setTopic('topic1')
 
-      peerInfo = new PeerTrackingInfo()
-      peerInfo.position = [0, 0, 0, 0, 0, 0, 0]
-      peerInfo.profile = { displayName: 'test', publicKey: 'test', avatarType: 'fox' }
-      context.peerData.set('peer-6', peerInfo)
+          const e = { data: msg.serializeBinary() }
+          channel.onmessage(e)
+          expect(handler).to.have.been.calledWith('client2')
+        })
 
-      const info = collectInfo(context)
-      expect(info.peers).to.have.lengthOf(6)
+        it('receive ping message', () => {
+          const msg = new PingMessage()
+          msg.setType(MessageType.PING)
+          msg.setTime(new Date(2008).getTime())
 
-      for (let peer of info.peers) {
-        const { peerId } = peer
-        if (peerId === 'peer-1' || peerId === 'peer-5') {
-          expect(peer.position).to.not.be.null
-          expect(peer.profile).to.not.be.null
-        } else {
-          expect(peer.position).to.be.null
-          expect(peer.profile).to.be.null
+          const e = { data: msg.serializeBinary() }
+          channel.onmessage(e)
+          expect(worldConn.ping).to.be.gt(0)
+        })
+      })
+
+      it('register datachannel (unreliable)', () => {
+        worldConn.commServerAlias = 'server1'
+        const channel = {
+          send: sinon.stub(),
+          label: 'unreliable'
         }
-      }
-    })
 
-    it('should return all peers but limit visibility', () => {
-      const [context] = createContext()
-      context.currentPosition = makeCurrentPosition([0, 0, 0, 0, 0, 0, 0])
+        const event = { channel }
 
-      for (let i = 0; i < 100; ++i) {
-        let peerInfo = new PeerTrackingInfo()
-        peerInfo.servers.set(0, Date.now())
-        peerInfo.position = [0, 0, 0, 0, 0, 0, 0]
-        peerInfo.profile = { displayName: 'test', publicKey: 'test', avatarType: 'fox' }
-        context.peerData.set(`peer-${i}`, peerInfo)
-      }
+        worldConn.webRtcConn.ondatachannel(event)
 
-      const info = collectInfo(context)
-      expect(info.peers).to.have.lengthOf(100)
+        channel['onopen']()
 
-      let visiblePeerCount = 0
-      for (let peer of info.peers) {
-        const { position, profile } = peer
-        if (position || profile) {
-          visiblePeerCount++
-        }
-      }
+        expect(worldConn.unreliableDataChannel).to.equal(channel)
+        expect(worldConn.authenticated).to.be.false
+      })
 
-      expect(visiblePeerCount).to.equal(commConfigurations.maxVisiblePeers)
+      describe('outbound messages', () => {
+        beforeEach(() => {
+          worldConn.reliableDataChannel = {
+            send: sinon.stub()
+          }
+          worldConn.unreliableDataChannel = {
+            send: sinon.stub()
+          }
+        })
+
+        it('add topic', () => {
+          const handler = (fromAlias: string, data:Uint8Array): PkgStats | null => {
+            return null
+          }
+          worldConn.addTopic('topic1', handler)
+
+          expect(worldConn.subscriptions).to.have.key('topic1')
+          expect(worldConn.subscriptions.get('topic1')).to.equal(handler)
+          expect(worldConn.reliableDataChannel.send).to.have.been.calledWithMatch((bytes) => {
+            const msg = ChangeTopicMessage.deserializeBinary(bytes)
+            expect(msg.getType()).to.equal(MessageType.ADD_TOPIC)
+            expect(msg.getTopic()).to.equal('topic1')
+            return true
+          })
+        })
+
+        it('remove topic', () => {
+          const handler = (fromAlias: string, data:Uint8Array): PkgStats | null => {
+            return null
+          }
+          worldConn.subscriptions.set('topic1', handler)
+
+          worldConn.removeTopic('topic1')
+
+          expect(worldConn.subscriptions).to.not.have.key('topic1')
+          expect(worldConn.reliableDataChannel.send).to.have.been.calledWithMatch((bytes) => {
+            const msg = ChangeTopicMessage.deserializeBinary(bytes)
+            expect(msg.getType()).to.equal(MessageType.REMOVE_TOPIC)
+            expect(msg.getTopic()).to.equal('topic1')
+            return true
+          })
+        })
+
+        it('position', () => {
+          const p = [ 20, 20, 20, 20, 20, 20, 20 ]
+          worldConn.sendPositionMessage(p)
+
+          expect(worldConn.unreliableDataChannel.send).to.have.been.calledWithMatch((bytes) => {
+            const msg = TopicMessage.deserializeBinary(bytes)
+            expect(msg.getType()).to.equal(MessageType.TOPIC)
+            expect(msg.getTopic()).to.equal('position:1:1')
+
+            const data = PositionData.deserializeBinary(msg.getBody() as Uint8Array)
+            expect(data.getPositionX()).to.equal(20)
+            expect(data.getPositionY()).to.equal(20)
+            expect(data.getPositionZ()).to.equal(20)
+            expect(data.getRotationX()).to.equal(20)
+            expect(data.getRotationY()).to.equal(20)
+            expect(data.getRotationZ()).to.equal(20)
+            expect(data.getRotationW()).to.equal(20)
+            return true
+          })
+        })
+
+        it('profile', () => {
+          const p = [ 20, 20, 20, 20, 20, 20, 20 ]
+          const profile = {
+            displayName: 'testname',
+            publicKey: 'pubkey',
+            avatarType: 'fox'
+          }
+          worldConn.sendProfileMessage(p, profile)
+
+          expect(worldConn.reliableDataChannel.send).to.have.been.calledWithMatch((bytes) => {
+            const msg = TopicMessage.deserializeBinary(bytes)
+            expect(msg.getType()).to.equal(MessageType.TOPIC)
+            expect(msg.getTopic()).to.equal('profile:1:1')
+
+            const data = ProfileData.deserializeBinary(msg.getBody() as Uint8Array)
+            expect(data.getAvatarType()).to.equal('fox')
+            expect(data.getDisplayName()).to.equal('testname')
+            expect(data.getPublicKey()).to.equal('pubkey')
+            return true
+          })
+        })
+
+        it('chat', () => {
+          const p = [ 20, 20, 20, 20, 20, 20, 20 ]
+          const messageId = 'chat1'
+          const text = 'hello'
+          worldConn.sendChatMessage(p, messageId, text)
+
+          expect(worldConn.reliableDataChannel.send).to.have.been.calledWithMatch((bytes) => {
+            const msg = TopicMessage.deserializeBinary(bytes)
+            expect(msg.getType()).to.equal(MessageType.TOPIC)
+            expect(msg.getTopic()).to.equal('chat:1:1')
+
+            const data = ChatData.deserializeBinary(msg.getBody() as Uint8Array)
+            expect(data.getMessageId()).to.equal(messageId)
+            expect(data.getText()).to.equal(text)
+            return true
+          })
+        })
+      })
     })
   })
 
-  describe('onCommDataLoaded()', () => {
-    it('should do nothing in the info matches the current one', () => {
-      const serverUrl = 'test-server-url'
-      const conn = new ServerConnection(0, serverUrl, new V2(0, 0))
+  describe('topic handlers', () => {
+    it('chat handler', () => {
+        const context = new Context({})
+        const worldConn = new WorldInstanceConnection('coordinator')
+        const chatData = new ChatData()
+        chatData.setText('text')
+        chatData.setMessageId('chat1')
+        const bytes = chatData.serializeBinary()
+        processChatMessage(context, worldConn, 'client2', bytes)
 
-      const [context] = createContext()
-      context.connections = [conn]
-      context.commData.set('0,0', { commServerUrl: serverUrl })
-
-      onCommDataLoaded(context, [{ commServerUrl: serverUrl, x: 0, y: 0 }])
-
-      expect(context.connections).to.have.lengthOf(1)
-      expect(context.connections[0]).to.deep.equal(conn)
+        expect(context.peerData).to.have.key('client2')
+        expect(context.peerData.get('client2').receivedPublicChatMessages).to.have.key('chat1')
     })
 
-    it('should change connection if there is a new url for the parcel', () => {
-      const oldServerUrl = 'test-server-url'
-      const conn = new ServerConnection(0, oldServerUrl, new V2(0, 0))
+    describe('position handler', () => {
+      it('new position', () => {
+        const context = new Context({})
+        const worldConn = new WorldInstanceConnection('coordinator')
+        const positionData = new PositionData()
 
-      const [context] = createContext()
-      context.connections = [conn]
-      context.commData.set('0,0', { commServerUrl: oldServerUrl })
+        positionData.setTime(Date.now())
+        positionData.setPositionX(20)
+        positionData.setPositionY(20)
+        positionData.setPositionZ(20)
+        positionData.setRotationX(20)
+        positionData.setRotationY(20)
+        positionData.setRotationZ(20)
+        positionData.setRotationW(20)
 
-      const newServerUrl = 'new-test-server-url'
-      onCommDataLoaded(context, [{ commServerUrl: newServerUrl, x: 0, y: 0 }])
+        const bytes = positionData.serializeBinary()
+        processPositionMessage(context, worldConn, 'client2', bytes)
 
-      expect(context.connections).to.have.lengthOf(2)
-      expect(context.connections[0].locations).to.have.lengthOf(0)
-      expect(context.connections[1].url).to.equal(newServerUrl)
-      expect(context.connections[1].locations).to.deep.equal([new V2(0, 0)])
+        expect(context.peerData).to.have.key('client2')
+        const trackingInfo = context.peerData.get('client2')
+        expect(trackingInfo.position).to.deep.equal([20, 20, 20, 20, 20, 20, 20])
+      })
+      it('old position', () => {
+        const context = new Context({})
+        const info = new PeerTrackingInfo()
+        info.lastPositionUpdate = Date.now()
+        info.position = [20, 20, 20, 20, 20, 20, 20]
+        context.peerData.set('client2', info)
+        const worldConn = new WorldInstanceConnection('coordinator')
+        const positionData = new PositionData()
+
+        positionData.setTime(new Date(2008).getTime())
+        positionData.setPositionX(30)
+        positionData.setPositionY(30)
+        positionData.setPositionZ(30)
+        positionData.setRotationX(30)
+        positionData.setRotationY(30)
+        positionData.setRotationZ(30)
+        positionData.setRotationW(30)
+
+        const bytes = positionData.serializeBinary()
+        processPositionMessage(context, worldConn, 'client2', bytes)
+
+        expect(context.peerData).to.have.key('client2')
+        const trackingInfo = context.peerData.get('client2')
+        expect(trackingInfo.position).to.deep.equal([20, 20, 20, 20, 20, 20, 20])
+      })
+    })
+
+    describe('profile handler', () => {
+      it('new profile message', () => {
+        const context = new Context({})
+        const worldConn = new WorldInstanceConnection('coordinator')
+
+        const profileData = new ProfileData()
+        profileData.setTime(Date.now())
+        profileData.setDisplayName('testname')
+        profileData.setPublicKey('pubkey')
+        profileData.setAvatarType('fox')
+
+        const bytes = profileData.serializeBinary()
+        processProfileMessage(context, worldConn, 'client2', bytes)
+
+        expect(context.peerData).to.have.key('client2')
+        const trackingInfo = context.peerData.get('client2')
+        expect(trackingInfo.profile).to.deep.equal({
+          displayName: 'testname',
+          publicKey: 'pubkey',
+          avatarType: 'fox'
+        })
+      })
+
+      it('old profile message', () => {
+        const profile = {
+          displayName: 'testname1',
+          publicKey: 'pubkey1',
+          avatarType: 'fox1'
+        }
+
+        const context = new Context({})
+        const info = new PeerTrackingInfo()
+        info.lastProfileUpdate = Date.now()
+        info.profile = profile
+        context.peerData.set('client2', info)
+        const worldConn = new WorldInstanceConnection('coordinator')
+
+        const profileData = new ProfileData()
+        profileData.setTime(new Date(2008).getTime())
+        profileData.setDisplayName('testname')
+        profileData.setPublicKey('pubkey')
+        profileData.setAvatarType('fox')
+
+        const bytes = profileData.serializeBinary()
+        processProfileMessage(context, worldConn, 'client2', bytes)
+
+        expect(context.peerData).to.have.key('client2')
+        const trackingInfo = context.peerData.get('client2')
+        expect(trackingInfo.profile).to.equal(profile)
+      })
+    })
+  })
+
+  describe('onPositionUpdate', () => {
+    it('parcel has changed', () => {
+      const context = new Context({})
+      context.commRadius = 1
+      context.currentPosition = [ 20, 20, 20, 20, 20, 20, 20 ]
+      context.positionTopics.add('position:50:50')
+      context.positionTopics.add('position:0:0')
+      const worldConn = new WorldInstanceConnection('coordinator')
+      worldConn.reliableDataChannel = { send: sinon.stub() }
+      worldConn.unreliableDataChannel = { send: sinon.stub() }
+      worldConn.addTopic = sinon.stub()
+      worldConn.removeTopic = sinon.stub()
+      context.worldInstanceConnection = worldConn
+      onPositionUpdate(context, [ 0, 0, 0, 0, 0, 0, 0 ])
+
+      expect(context.positionTopics.size).to.equal(9)
+      expect(context.profileTopics.size).to.equal(9)
+      expect(context.chatTopics.size).to.equal(9)
+
+      // NOTE; there are 27 topics, but we were already subscribed to position:0:0
+      expect(worldConn.addTopic).to.have.callCount(26)
+
+      expect(worldConn.removeTopic).to.have.been.calledWith('position:50:50')
+    })
+
+    it('parcel has no changed', () => {
+      const context = new Context({})
+      context.commRadius = 1
+      context.currentPosition = [ 20, 20, 20, 20, 20, 20, 20 ]
+      const worldConn = new WorldInstanceConnection('coordinator')
+      worldConn.reliableDataChannel = { send: sinon.stub() }
+      worldConn.unreliableDataChannel = { send: sinon.stub() }
+      worldConn.addTopic = sinon.stub()
+      worldConn.removeTopic = sinon.stub()
+      context.worldInstanceConnection = worldConn
+      onPositionUpdate(context, context.currentPosition)
+
+      expect(context.positionTopics.size).to.equal(0)
+      expect(context.profileTopics.size).to.equal(0)
+      expect(context.chatTopics.size).to.equal(0)
+
+      expect(worldConn.addTopic).to.have.not.been.called
+      expect(worldConn.removeTopic).to.have.not.been.called
     })
   })
 })

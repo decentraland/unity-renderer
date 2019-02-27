@@ -7,6 +7,7 @@ import {
   UIShape
 } from 'decentraland-ecs/src/decentraland/UIShapes'
 import { DecentralandInterface, IEvents } from 'decentraland-ecs/src/decentraland/Types'
+import { ShowProfileMessage } from 'shared/comms/types'
 
 declare var dcl: DecentralandInterface
 declare var require: any
@@ -257,12 +258,12 @@ let blockButton = createBlockButton(blockAndMuteContainer, toggleBlock)
 // Close button
 let closeButton = createCloseButton(guiContainerComponent, hide)
 
-const show = (data: any) => {
+const show = (data: ShowProfileMessage) => {
   internalState.visible = true
   closeButton.component.visible = true
   guiContainerComponent.visible = true
 
-  setAvatarIcon(data.avatarUrl)
+  data.avatarUrl && setAvatarIcon(data.avatarUrl)
 
   internalState.publicKey = data.publicKey
 

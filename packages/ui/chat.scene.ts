@@ -30,14 +30,6 @@ type MessageEntry = {
   isCommand?: boolean
 }
 
-function uuid() {
-  return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
-    let r = (Math.random() * 16) | 0
-    let v = c === 'x' ? r : (r & 0x3) | 0x8
-    return v.toString(16)
-  })
-}
-
 // UI creators -------------------
 
 function createMinimizeButton(parent: UIShape, click: (ev: IEvents['onClick']) => void) {
@@ -387,15 +379,7 @@ async function sendMsg() {
   const currentMessage = textInput.component.value
 
   if (currentMessage) {
-    const profile = await execute('Identity', 'getUserData', [null])
-    // At least use some display name as a sender (first 4 letters of public key if undefined)
-    const displayName = profile.displayName || profile.publicKey.substr(0, 4)
-
-    const message = { id: uuid(), sender: displayName, message: currentMessage, isCommand: false }
-
-    addMessage(message)
-
-    const cmd = await execute('ChatController', 'send', [message])
+    const cmd = await execute('ChatController', 'send', [currentMessage])
     // If the command was recognized, add the confirming message to the list
     if (cmd) {
       addMessage(cmd as MessageEntry)

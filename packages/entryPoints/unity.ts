@@ -1,5 +1,4 @@
 // tslint:disable:no-console
-import 'engine'
 import { initializeEngine } from '../unity-interface/dcl'
 import * as queryString from 'query-string'
 

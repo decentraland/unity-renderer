@@ -2,7 +2,7 @@ import { SharedSceneContext } from 'engine/entities/SharedSceneContext'
 import { WebGLScene } from 'dcl/WebGLScene'
 import { SceneWorker } from 'shared/world/SceneWorker'
 import { ChatController } from 'dcl/api/ChatController'
-import { SocialController } from 'dcl/api/SocialController'
+import { SocialController } from 'shared/apis/SocialController'
 
 const chatWorkerRaw = require('raw-loader!../../../static/systems/chat.scene.js')
 const chatWorkerBLOB = new Blob([chatWorkerRaw])

@@ -28,6 +28,8 @@ import { loadedParcelSceneWorkers } from 'shared/world/parcelSceneManager'
 import { WebGLParcelScene } from './WebGLParcelScene'
 import { IParcelSceneLimits } from 'atomicHelpers/landHelpers'
 
+import './comms/peers'
+
 let isEngineRunning = false
 
 // Draw Parcel metrics (triangles, entities, objects)

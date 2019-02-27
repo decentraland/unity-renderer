@@ -4,11 +4,12 @@ import { validators } from 'engine/components/helpers/schemaValidator'
 import { playerConfigurations } from 'config'
 import { avatarTypes, loadAvatarModel, createGltfChild } from './avatarHelpers'
 import { audioEngine } from 'engine/renderer/init'
-import { profileObservable, ProfileEvent } from 'shared/comms/profile'
 import { SharedSceneContext } from 'engine/entities/SharedSceneContext'
 import { uuid } from 'atomicHelpers/math'
 import { setEntityText } from 'engine/components/ephemeralComponents/TextShape'
 import { Color3, ReadOnlyVector3, ReadOnlyQuaternion, Observer } from 'decentraland-ecs/src'
+import { AvatarMessageType } from 'shared/comms/types'
+import { avatarMessageObservable } from 'shared/comms/peers'
 
 export type AvatarAttributes = {
   displayName: string
@@ -111,24 +112,24 @@ export class AvatarEntity extends BaseEntity {
     this.setAttributes(defaultAttributes)
     this.initInteraction()
 
-    this.profileObserver = profileObservable.add((event: any) => {
+    this.profileObserver = avatarMessageObservable.add((event: any) => {
       if (event.publicKey !== this.attrs.publicKey) {
         return
       }
 
-      if (event.type === ProfileEvent.MUTE) {
+      if (event.type === AvatarMessageType.USER_MUTED) {
         this.setAttributes({ muted: false })
       }
 
-      if (event.type === ProfileEvent.UNMUTE) {
+      if (event.type === AvatarMessageType.USER_UNMUTED) {
         this.setAttributes({ muted: true })
       }
 
-      if (event.type === ProfileEvent.BLOCK) {
+      if (event.type === AvatarMessageType.USER_BLOCKED) {
         this.setAttributes({ visible: false, muted: true, blocked: true })
       }
 
-      if (event.type === ProfileEvent.UNBLOCK) {
+      if (event.type === AvatarMessageType.USER_UNBLOCKED) {
         this.setAttributes({ visible: true, muted: false, blocked: false })
       }
     })
@@ -163,7 +164,7 @@ export class AvatarEntity extends BaseEntity {
     this.disposeModels()
     this.displayName.disposeTree()
     this.displayName = null
-    profileObservable.remove(this.profileObserver)
+    avatarMessageObservable.remove(this.profileObserver)
     super.dispose()
   }
 
@@ -227,21 +228,21 @@ export class AvatarEntity extends BaseEntity {
       icon
     )
 
-    profileObservable.notifyObservers({
-      type: ProfileEvent.SHOW_PROFILE,
-      displayName: this.attrs.displayName,
+    avatarMessageObservable.notifyObservers({
+      type: AvatarMessageType.SHOW_PROFILE,
+      uuid: this.attrs.publicKey,
       publicKey: this.attrs.publicKey,
-      avatarType: this.attrs.avatarType,
-      isMuted: this.attrs.muted,
-      isBlocked: this.attrs.blocked,
-      avatarUrl: icon.toDataURL()
+      avatarUrl: icon.toDataURL(),
+      displayName: this.attrs.displayName,
+      isMuted: this.attrs.visible,
+      isBlocked: this.attrs.blocked
     })
 
     document.exitPointerLock()
   }
   // tslint:disable-next-line:prefer-function-over-method
   hideProfile() {
-    profileObservable.notifyObservers({ type: ProfileEvent.HIDE_PROFILE })
+    avatarMessageObservable.notifyObservers({ type: AvatarMessageType.HIDE_PROFILE })
   }
 
   setDisplayText() {

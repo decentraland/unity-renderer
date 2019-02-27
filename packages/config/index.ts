@@ -90,17 +90,11 @@ export const DEBUG_METRICS = DEBUG && location.search.indexOf('DEBUG_METRICS') !
 export namespace commConfigurations {
   export const debug = DEBUG
   export const commRadius = 4
-  export const antennaRadius = 2
 
-  export const processConnectionsIntervalMs = 500
-  export const maxConcurrentConnectionRequests = 5
-  export const peerTtlMs = 10 * 1000
+  export const peerTtlMs = 60 * 1000
 
   export const maxVisiblePeers = 25
 
-  export const defaultCommServerUrl = 'wss://world-comm.decentraland.today/connector'
-
-  export const webrtcSupportEnabled = false
   export const iceServers = [
     {
       urls: 'stun:stun.l.google.com:19302'
@@ -134,6 +128,9 @@ export const networkConfigurations = {
     },
 
     content: 'https://content.decentraland.org',
+
+    worldInstanceUrl: 'wss://world-comm.decentraland.org/connect?method=noop',
+
     invite: '0xf886313f213c198458eba7ae9329525e64eb763a'
   },
   [ETHEREUM_NETWORK.ROPSTEN]: {
@@ -152,6 +149,9 @@ export const networkConfigurations = {
     },
 
     content: 'https://content.decentraland.zone',
+
+    worldInstanceUrl: 'wss://world-comm.decentraland.zone/connect?method=noop',
+
     invite: '0x7557dfa02f3bd7d274851e3f627de2ed2ff390e8'
   }
 }

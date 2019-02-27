@@ -1,7 +1,8 @@
 import { log } from 'engine/logger'
-import { Context, SocketReadyState } from './client'
+import { WorldInstanceConnection, SocketReadyState } from './worldInstanceConnection'
+import { Context } from './index'
 
-class TrackAvgDuration {
+export class TrackAvgDuration {
   public durationsMs: number[] = []
   public currentDurationStart: number = -1
 
@@ -24,7 +25,7 @@ class TrackAvgDuration {
   }
 }
 
-class PkgStats {
+export class PkgStats {
   public recv: number = 0
   public sent: number = 0
   public recvBytes: number = 0
@@ -48,42 +49,55 @@ class PkgStats {
   }
 }
 
-class WebRtcPkgStats {
-  public recv: number = 0
-
-  public incrementRecv(n: number) {
-    this.recv += n
-  }
-
-  public reset() {
-    this.recv = 0
-  }
-}
-
 export class NetworkStats {
-  public chat = new PkgStats()
-  public position = new PkgStats()
-  public profile = new PkgStats()
+  public topic = new PkgStats()
   public others = new PkgStats()
   public ping = new PkgStats()
+  public position = new PkgStats()
+  public profile = new PkgStats()
+  public chat = new PkgStats()
   public webRtcSession = new PkgStats()
-  public processConnectionDuration = new TrackAvgDuration()
-  public collectInfoDuration = new TrackAvgDuration()
-  public positionWebRtcPackages = new WebRtcPkgStats()
 
-  private reportInterval: any
+  constructor(public connection: WorldInstanceConnection) {}
 
-  constructor(public context: Context) {
+  report(context: Context) {
     const reportPkgStats = (name: string, stats: PkgStats) => {
       log(`${name}: sent: ${stats.sent} (${stats.sentBytes} bytes), recv: ${stats.recv} (${stats.recvBytes} bytes)`)
       stats.reset()
     }
 
-    const reportWebRtcPkgStats = (name: string, stats: WebRtcPkgStats) => {
-      log(`${name}: recv: ${stats.recv}`)
-      stats.reset()
+    const url = this.connection.url
+    if (this.connection.ws && this.connection.ws.readyState === SocketReadyState.OPEN) {
+      const state =
+        (this.connection.authenticated ? 'authenticated' : 'not authenticated') +
+        `- my alias is ${this.connection.alias}`
+      if (this.connection.ping >= 0) {
+        log(`  ${url}, ping: ${this.connection.ping} ms (${state})`)
+      } else {
+        log(`  ${url}, no ping info available (${state})`)
+      }
+    } else {
+      log(`  non active coordinator connection to ${url}`)
     }
 
+    reportPkgStats('  topic (total)', this.topic)
+    reportPkgStats('    - position', this.position)
+    reportPkgStats('    - profile', this.profile)
+    reportPkgStats('    - chat', this.chat)
+    reportPkgStats('  ping', this.ping)
+    reportPkgStats('  webrtc session', this.webRtcSession)
+    reportPkgStats('  others', this.others)
+  }
+}
+
+export class Stats {
+  public primaryNetworkStats: NetworkStats | null
+  public collectInfoDuration = new TrackAvgDuration()
+  public visiblePeersCount = 0
+
+  private reportInterval: any
+
+  constructor(context: Context) {
     const reportDuration = (name: string, duration: TrackAvgDuration) => {
       const durationsMs = duration.durationsMs
       if (durationsMs.length > 0) {
@@ -95,29 +109,14 @@ export class NetworkStats {
 
     this.reportInterval = setInterval(() => {
       log(`------- ${new Date()}: `)
-      reportPkgStats('position (websocket)', this.position)
-      reportWebRtcPkgStats('position (webrtc)', this.positionWebRtcPackages)
-      reportPkgStats('chat', this.chat)
-      reportPkgStats('profile', this.profile)
-      reportPkgStats('ping', this.ping)
-      reportPkgStats('webrtc session', this.webRtcSession)
-      reportPkgStats('others', this.others)
-
-      reportDuration('processConnection', this.processConnectionDuration)
       reportDuration('collectInfo', this.collectInfoDuration)
+      log('visible peers: ', this.visiblePeersCount)
 
-      for (let connection of context.connections) {
-        const url = connection.url
-        if (connection.ws && connection.ws.readyState === SocketReadyState.OPEN) {
-          if (connection.ping >= 0) {
-            log(`connected to ${url}, ping: ${connection.ping} ms`)
-          } else {
-            log(`connected to ${url}, no ping info available`)
-          }
-        } else {
-          log(`non active connection to ${url}`)
-        }
+      if (this.primaryNetworkStats) {
+        log('Primary world instance: ')
+        this.primaryNetworkStats.report(context)
       }
+
       log('-------')
     }, 10000)
   }

@@ -1,5 +1,4 @@
 import './apis'
-import { ensureLocalStorageStructure } from './comms/profile'
 import { initializeUrlPositionObserver } from './world/positionThings'
 import { ETHEREUM_NETWORK, MOBILE_DEBUG, networkConfigurations, PREVIEW, EDITOR, AVOID_WEB3 } from '../config'
 import { getERC721 } from './ethereum/ERC721'
@@ -32,6 +31,7 @@ async function grantAccess(address: string | null, net: ETHEREUM_NETWORK) {
 
 function getNetworkFromDomain(): ETHEREUM_NETWORK {
   const domain = window.location.host
+
   if (domain.endsWith('.decentraland.org') || domain.endsWith('.decentraland.today')) {
     return ETHEREUM_NETWORK.MAINNET
   } else if (domain.endsWith('.decentraland.zone')) {
@@ -99,7 +99,6 @@ export async function initShared() {
     throw new Error(`The address ${address} is not whitelisted`)
   }
 
-  ensureLocalStorageStructure()
   initializeUrlPositionObserver()
 
   return {
