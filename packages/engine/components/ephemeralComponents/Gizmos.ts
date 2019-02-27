@@ -1,7 +1,7 @@
 import { BaseComponent } from '../BaseComponent'
 import { scene } from 'engine/renderer'
 import { BaseEntity } from 'engine/entities/BaseEntity'
-import { Gizmo } from 'decentraland-ecs/src/decentraland/Types'
+import { Gizmo } from 'decentraland-ecs/src/decentraland/Gizmos'
 import { removeEntityOutline, addEntityOutline } from './Outline'
 
 type GizmoConfiguration = {
@@ -107,9 +107,9 @@ const dragBehavior = new BABYLON.PointerDragBehavior({ dragPlaneNormal: BABYLON.
     const { snapDistance } = gizmoManager.gizmos.positionGizmo
     if (snapDistance) {
       activeEntity.position.set(
-        dragTarget.x - (dragTarget.x % snapDistance),
-        dragTarget.y - (dragTarget.y % snapDistance),
-        dragTarget.z - (dragTarget.z % snapDistance)
+        Math.round(dragTarget.x / snapDistance) * snapDistance,
+        Math.round(dragTarget.y / snapDistance) * snapDistance,
+        Math.round(dragTarget.z / snapDistance) * snapDistance
       )
     } else {
       activeEntity.position.copyFrom(dragTarget)

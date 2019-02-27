@@ -1053,6 +1053,49 @@ declare class CylinderShape extends Shape {
 
 declare const DEG2RAD: number
 
+declare type DecentralandInterface = {
+  /** are we running in debug mode? */
+  DEBUG: boolean
+  /** update the entity shape */
+  updateEntity?: never
+  /** log function */
+  log(...a: any[]): void
+  /** error function */
+  error(message: string, data?: any): void
+  /** update tick */
+  onUpdate(cb: (deltaTime: number) => void): void
+  /** called when it is time to wake the sandbox */
+  onStart(cb: Function): void
+  /** create the entity in the engine */
+  addEntity(entityId: string): void
+  /** remove the entity from the engine */
+  removeEntity(entityId: string): void
+  /** called after adding a component to the entity or after updating a component */
+  updateEntityComponent(entityId: string, componentName: string, classId: number, json: string): void
+  /** called after adding a DisposableComponent to the entity */
+  attachEntityComponent(entityId: string, componentName: string, componentId: string): void
+  /** called after removing a component from the entity */
+  removeEntityComponent(entityId: string, componentName: string): void
+  /** set a new parent for the entity */
+  setParent(entityId: string, parentId: string): void
+  /** called after creating a component in the kernel  */
+  componentCreated(componentId: string, componentName: string, classId: number): void
+  /** colled after removing a component from the kernel */
+  componentDisposed(componentId: string): void
+  /** called after globally updating a component */
+  componentUpdated(componentId: string, json: string): void
+  /** event from the engine */
+  onEvent(cb: (event: EngineEvent) => void): void
+  /** subscribe to specific events, events will be handled by the onEvent function */
+  subscribe(eventName: string): void
+  /** unsubscribe to specific event */
+  unsubscribe(eventName: string): void
+  /** load a module */
+  loadModule(moduleName: string): PromiseLike<ModuleDescriptor>
+  /** called when calling a module method */
+  callRpc(rpcHandle: string, methodName: string, args: ArrayLike<any>): PromiseLike<any>
+}
+
 /**
  * @public
  */
@@ -1135,6 +1178,12 @@ declare class Engine {
   private checkRequirements
   private componentAddedHandler
   private componentRemovedHandler
+}
+
+declare type EngineEvent<T extends IEventNames = IEventNames, V = IEvents[T]> = {
+  /** eventName */
+  type: T
+  data: V
 }
 
 /**
@@ -1312,7 +1361,7 @@ declare type GizmoDragEndEvent = {
 
 declare type GizmoSelectedEvent = {
   type: 'gizmoSelected'
-  gizmoType: 'MOVE' | 'ROTATE' | 'SCALE'
+  gizmoType: 'MOVE' | 'ROTATE' | 'SCALE' | 'NONE'
   entityId: string
 }
 
@@ -1354,6 +1403,11 @@ declare interface IEventConstructor<T> {
   new (...args: any[]): T
 }
 
+declare type IEventNames = keyof IEvents
+
+/**
+ * @public
+ */
 declare interface IEvents {
   /**
    * `positionChanged` is triggered when the position of the camera changes
@@ -1372,7 +1426,7 @@ declare interface IEvents {
    * This event is throttled to 10 times per second.
    */
   rotationChanged: {
-    /** {X,Y,Z} Degree vector. Same as entities */
+    /** Degree vector. Same as entities */
     rotation: ReadOnlyVector3
     /** Rotation quaternion, useful in some scenarios. */
     quaternion: ReadOnlyQuaternion
@@ -2452,6 +2506,15 @@ declare class Matrix {
    * Toggles projection matrix from being right handed to left handed in place and vice versa
    */
   toggleProjectionMatrixHandInPlace(): void
+}
+
+declare type MethodDescriptor = {
+  name: string
+}
+
+declare type ModuleDescriptor = {
+  rpcHandle: string
+  methods: MethodDescriptor[]
 }
 
 /**

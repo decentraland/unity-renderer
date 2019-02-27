@@ -1,7 +1,5 @@
 import { ReadOnlyVector3, ReadOnlyQuaternion } from './math'
 
-export type Component = any
-
 export type ModuleDescriptor = {
   rpcHandle: string
   methods: MethodDescriptor[]
@@ -105,6 +103,9 @@ export type PointerEvent = {
   }
 }
 
+/**
+ * @public
+ */
 export interface IEvents {
   /**
    * `positionChanged` is triggered when the position of the camera changes
@@ -126,7 +127,7 @@ export interface IEvents {
    * This event is throttled to 10 times per second.
    */
   rotationChanged: {
-    /** {X,Y,Z} Degree vector. Same as entities */
+    /** Degree vector. Same as entities */
     rotation: ReadOnlyVector3
     /** Rotation quaternion, useful in some scenarios. */
     quaternion: ReadOnlyQuaternion
@@ -247,20 +248,9 @@ export type GizmoDragEndEvent = {
   entityId: string
 }
 
-/**
- * Gizmo identifiers
- * @beta
- */
-export enum Gizmo {
-  MOVE = 'MOVE',
-  ROTATE = 'ROTATE',
-  SCALE = 'SCALE',
-  NONE = 'NONE'
-}
-
 export type GizmoSelectedEvent = {
   type: 'gizmoSelected'
-  gizmoType: Gizmo
+  gizmoType: 'MOVE' | 'ROTATE' | 'SCALE' | 'NONE'
   entityId: string
 }
 

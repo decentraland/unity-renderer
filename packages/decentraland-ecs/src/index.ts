@@ -36,6 +36,7 @@ const uuidEventSystem = new UUIDEventSystem()
 engine.addSystem(uuidEventSystem)
 
 // DECENTRALAND DEPENDENCIES
+export * from './decentraland/Types'
 export * from './decentraland/Components'
 export * from './decentraland/Systems'
 export * from './decentraland/Events'

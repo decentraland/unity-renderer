@@ -1,6 +1,16 @@
 import { Component, ObservableComponent } from '../ecs/Component'
 import { CLASS_ID, OnUUIDEvent } from './Components'
-import { Gizmo } from './Types'
+
+/**
+ * Gizmo identifiers
+ * @beta
+ */
+export enum Gizmo {
+  MOVE = 'MOVE',
+  ROTATE = 'ROTATE',
+  SCALE = 'SCALE',
+  NONE = 'NONE'
+}
 
 /**
  * This event is triggered after the user finalizes dragging a gizmo.

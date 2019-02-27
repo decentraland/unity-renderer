@@ -8646,6 +8646,418 @@
         }
       }
     },
+    "IEvents": {
+      "kind": "interface",
+      "extends": "",
+      "implements": "",
+      "typeParameters": [],
+      "deprecatedMessage": [],
+      "summary": [],
+      "remarks": [],
+      "isBeta": false,
+      "isSealed": false,
+      "members": {
+        "chatMessage": {
+          "kind": "property",
+          "signature": "chatMessage:",
+          "isOptional": false,
+          "isReadOnly": false,
+          "isStatic": false,
+          "type": "{\n        id: string;\n        sender: string;\n        message: string;\n        isCommand: boolean;\n    }",
+          "deprecatedMessage": [],
+          "summary": [
+            {
+              "kind": "code",
+              "text": "chatMessage",
+              "highlighter": "plain"
+            },
+            {
+              "kind": "text",
+              "text": " is triggered when the user sends a message through chat entity."
+            }
+          ],
+          "remarks": [],
+          "isBeta": false,
+          "isSealed": false,
+          "isVirtual": false,
+          "isOverride": false,
+          "isEventProperty": false
+        },
+        "entityBackInScene": {
+          "kind": "property",
+          "signature": "entityBackInScene:",
+          "isOptional": false,
+          "isReadOnly": false,
+          "isStatic": false,
+          "type": "{\n        entityId: string;\n    }",
+          "deprecatedMessage": [],
+          "summary": [
+            {
+              "kind": "text",
+              "text": "This event gets triggered when an entity enters the scene fences."
+            }
+          ],
+          "remarks": [],
+          "isBeta": false,
+          "isSealed": false,
+          "isVirtual": false,
+          "isOverride": false,
+          "isEventProperty": false
+        },
+        "entityOutOfScene": {
+          "kind": "property",
+          "signature": "entityOutOfScene:",
+          "isOptional": false,
+          "isReadOnly": false,
+          "isStatic": false,
+          "type": "{\n        entityId: string;\n    }",
+          "deprecatedMessage": [],
+          "summary": [
+            {
+              "kind": "text",
+              "text": "This event gets triggered when an entity leaves the scene fences."
+            }
+          ],
+          "remarks": [],
+          "isBeta": false,
+          "isSealed": false,
+          "isVirtual": false,
+          "isOverride": false,
+          "isEventProperty": false
+        },
+        "gizmoEvent": {
+          "kind": "property",
+          "signature": "gizmoEvent: GizmoDragEndEvent | GizmoSelectedEvent;",
+          "isOptional": false,
+          "isReadOnly": false,
+          "isStatic": false,
+          "type": "GizmoDragEndEvent | GizmoSelectedEvent",
+          "deprecatedMessage": [],
+          "summary": [
+            {
+              "kind": "text",
+              "text": "For gizmos"
+            }
+          ],
+          "remarks": [],
+          "isBeta": false,
+          "isSealed": false,
+          "isVirtual": false,
+          "isOverride": false,
+          "isEventProperty": false
+        },
+        "limitsExceeded": {
+          "kind": "property",
+          "signature": "limitsExceeded:",
+          "isOptional": false,
+          "isReadOnly": false,
+          "isStatic": false,
+          "type": "{\n        given: Record<string, number>;\n        limit: Record<string, number>;\n    }",
+          "deprecatedMessage": [],
+          "summary": [],
+          "remarks": [],
+          "isBeta": false,
+          "isSealed": false,
+          "isVirtual": false,
+          "isOverride": false,
+          "isEventProperty": false
+        },
+        "metricsUpdate": {
+          "kind": "property",
+          "signature": "metricsUpdate:",
+          "isOptional": false,
+          "isReadOnly": false,
+          "isStatic": false,
+          "type": "{\n        given: Record<string, number>;\n        limit: Record<string, number>;\n    }",
+          "deprecatedMessage": [],
+          "summary": [],
+          "remarks": [],
+          "isBeta": false,
+          "isSealed": false,
+          "isVirtual": false,
+          "isOverride": false,
+          "isEventProperty": false
+        },
+        "onBlur": {
+          "kind": "property",
+          "signature": "onBlur:",
+          "isOptional": false,
+          "isReadOnly": false,
+          "isStatic": false,
+          "type": "{\n        /** ID of the entitiy of the event */\n        entityId: string;\n        /** ID of the pointer that triggered the event */\n        pointerId: number;\n    }",
+          "deprecatedMessage": [],
+          "summary": [
+            {
+              "kind": "code",
+              "text": "onBlur",
+              "highlighter": "plain"
+            },
+            {
+              "kind": "text",
+              "text": " is triggered when an entity loses its focus. Dispatched by the "
+            },
+            {
+              "kind": "code",
+              "text": "ui-input",
+              "highlighter": "plain"
+            },
+            {
+              "kind": "text",
+              "text": " and "
+            },
+            {
+              "kind": "code",
+              "text": "ui-password",
+              "highlighter": "plain"
+            },
+            {
+              "kind": "text",
+              "text": " entities when the value is changed. It triggers a callback."
+            },
+            {
+              "kind": "paragraph"
+            },
+            {
+              "kind": "text",
+              "text": "Notice: Only entities with ID will be listening for click events."
+            }
+          ],
+          "remarks": [],
+          "isBeta": false,
+          "isSealed": false,
+          "isVirtual": false,
+          "isOverride": false,
+          "isEventProperty": false
+        },
+        "onChange": {
+          "kind": "property",
+          "signature": "onChange:",
+          "isOptional": false,
+          "isReadOnly": false,
+          "isStatic": false,
+          "type": "{\n        value?: any;\n        /** ID of the pointer that triggered the event */\n        pointerId?: number;\n    }",
+          "deprecatedMessage": [],
+          "summary": [
+            {
+              "kind": "code",
+              "text": "onChange",
+              "highlighter": "plain"
+            },
+            {
+              "kind": "text",
+              "text": " is triggered when an entity changes its own internal state. Dispatched by the "
+            },
+            {
+              "kind": "code",
+              "text": "ui-*",
+              "highlighter": "plain"
+            },
+            {
+              "kind": "text",
+              "text": " entities when their value is changed. It triggers a callback. Notice: Only entities with ID will be listening for click events."
+            }
+          ],
+          "remarks": [],
+          "isBeta": false,
+          "isSealed": false,
+          "isVirtual": false,
+          "isOverride": false,
+          "isEventProperty": false
+        },
+        "onClick": {
+          "kind": "property",
+          "signature": "onClick:",
+          "isOptional": false,
+          "isReadOnly": false,
+          "isStatic": false,
+          "type": "{\n        entityId: string;\n    }",
+          "deprecatedMessage": [],
+          "summary": [
+            {
+              "kind": "text",
+              "text": "The onClick event is only used for UI elements"
+            }
+          ],
+          "remarks": [],
+          "isBeta": false,
+          "isSealed": false,
+          "isVirtual": false,
+          "isOverride": false,
+          "isEventProperty": false
+        },
+        "onFocus": {
+          "kind": "property",
+          "signature": "onFocus:",
+          "isOptional": false,
+          "isReadOnly": false,
+          "isStatic": false,
+          "type": "{\n        /** ID of the entitiy of the event */\n        entityId: string;\n        /** ID of the pointer that triggered the event */\n        pointerId: number;\n    }",
+          "deprecatedMessage": [],
+          "summary": [
+            {
+              "kind": "code",
+              "text": "onFocus",
+              "highlighter": "plain"
+            },
+            {
+              "kind": "text",
+              "text": " is triggered when an entity focus is active. Dispatched by the "
+            },
+            {
+              "kind": "code",
+              "text": "ui-input",
+              "highlighter": "plain"
+            },
+            {
+              "kind": "text",
+              "text": " and "
+            },
+            {
+              "kind": "code",
+              "text": "ui-password",
+              "highlighter": "plain"
+            },
+            {
+              "kind": "text",
+              "text": " entities when the value is changed. It triggers a callback."
+            },
+            {
+              "kind": "paragraph"
+            },
+            {
+              "kind": "text",
+              "text": "Notice: Only entities with ID will be listening for click events."
+            }
+          ],
+          "remarks": [],
+          "isBeta": false,
+          "isSealed": false,
+          "isVirtual": false,
+          "isOverride": false,
+          "isEventProperty": false
+        },
+        "pointerDown": {
+          "kind": "property",
+          "signature": "pointerDown: PointerEvent;",
+          "isOptional": false,
+          "isReadOnly": false,
+          "isStatic": false,
+          "type": "PointerEvent",
+          "deprecatedMessage": [],
+          "summary": [
+            {
+              "kind": "code",
+              "text": "pointerDown",
+              "highlighter": "plain"
+            },
+            {
+              "kind": "text",
+              "text": " is triggered when the user press an input pointer. It could be a VR controller, a touch screen or the mouse."
+            }
+          ],
+          "remarks": [],
+          "isBeta": false,
+          "isSealed": false,
+          "isVirtual": false,
+          "isOverride": false,
+          "isEventProperty": false
+        },
+        "pointerUp": {
+          "kind": "property",
+          "signature": "pointerUp: PointerEvent;",
+          "isOptional": false,
+          "isReadOnly": false,
+          "isStatic": false,
+          "type": "PointerEvent",
+          "deprecatedMessage": [],
+          "summary": [
+            {
+              "kind": "code",
+              "text": "pointerUp",
+              "highlighter": "plain"
+            },
+            {
+              "kind": "text",
+              "text": " is triggered when the user releases an input pointer. It could be a VR controller, a touch screen or the mouse."
+            }
+          ],
+          "remarks": [],
+          "isBeta": false,
+          "isSealed": false,
+          "isVirtual": false,
+          "isOverride": false,
+          "isEventProperty": false
+        },
+        "positionChanged": {
+          "kind": "property",
+          "signature": "positionChanged:",
+          "isOptional": false,
+          "isReadOnly": false,
+          "isStatic": false,
+          "type": "{\n        /** Position relative to the base parcel of the scene */\n        position: ReadOnlyVector3;\n        /** Camera position, this is a absolute world position */\n        cameraPosition: ReadOnlyVector3;\n        /** Eye height, in meters. */\n        playerHeight: number;\n    }",
+          "deprecatedMessage": [],
+          "summary": [
+            {
+              "kind": "code",
+              "text": "positionChanged",
+              "highlighter": "plain"
+            },
+            {
+              "kind": "text",
+              "text": " is triggered when the position of the camera changes This event is throttled to 10 times per second."
+            }
+          ],
+          "remarks": [],
+          "isBeta": false,
+          "isSealed": false,
+          "isVirtual": false,
+          "isOverride": false,
+          "isEventProperty": false
+        },
+        "rotationChanged": {
+          "kind": "property",
+          "signature": "rotationChanged:",
+          "isOptional": false,
+          "isReadOnly": false,
+          "isStatic": false,
+          "type": "{\n        /** Degree vector. Same as entities */\n        rotation: ReadOnlyVector3;\n        /** Rotation quaternion, useful in some scenarios. */\n        quaternion: ReadOnlyQuaternion;\n    }",
+          "deprecatedMessage": [],
+          "summary": [
+            {
+              "kind": "code",
+              "text": "rotationChanged",
+              "highlighter": "plain"
+            },
+            {
+              "kind": "text",
+              "text": " is triggered when the rotation of the camera changes. This event is throttled to 10 times per second."
+            }
+          ],
+          "remarks": [],
+          "isBeta": false,
+          "isSealed": false,
+          "isVirtual": false,
+          "isOverride": false,
+          "isEventProperty": false
+        },
+        "uuidEvent": {
+          "kind": "property",
+          "signature": "uuidEvent:",
+          "isOptional": false,
+          "isReadOnly": false,
+          "isStatic": false,
+          "type": "{\n        uuid: string;\n        payload: any;\n    }",
+          "deprecatedMessage": [],
+          "summary": [],
+          "remarks": [],
+          "isBeta": false,
+          "isSealed": false,
+          "isVirtual": false,
+          "isOverride": false,
+          "isEventProperty": false
+        }
+      }
+    },
     "Input": {
       "kind": "class",
       "extends": "",
