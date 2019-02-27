@@ -1201,31 +1201,31 @@ declare class Entity {
    * Adds or replaces a component in the entity.
    * @param component - component instance.
    */
-  set<T extends object>(component: T): void
+  addComponentOrReplace<T extends object>(component: T): void
   /**
    * Returns a boolean indicating if a component is present in the entity.
    * @param component - component class, instance or name
    */
-  has<T = any>(component: string): boolean
-  has<T>(component: ComponentConstructor<T>): boolean
-  has<T extends object>(component: T): boolean
+  hasComponent<T = any>(component: string): boolean
+  hasComponent<T>(component: ComponentConstructor<T>): boolean
+  hasComponent<T extends object>(component: T): boolean
   /**
    * Gets a component, if it doesn't exist, it throws an Error.
    * @param component - component class or name
    */
-  get<T = any>(component: string): T
-  get<T>(component: ComponentConstructor<T>): T
+  getComponent<T = any>(component: string): T
+  getComponent<T>(component: ComponentConstructor<T>): T
   /**
    * Gets a component, if it doesn't exist, it returns null.
    * @param component - component class or name
    */
-  getOrNull<T = any>(component: string): T | null
-  getOrNull<T>(component: ComponentConstructor<T>): T | null
+  getComponentOrNull<T = any>(component: string): T | null
+  getComponentOrNull<T>(component: ComponentConstructor<T>): T | null
   /**
    * Gets a component, if it doesn't exist, it creates the component and returns it.
    * @param component - component class
    */
-  getOrCreate<T>(
+  getComponentOrCreate<T>(
     component: ComponentConstructor<T> & {
       new (): T
     }
@@ -1234,15 +1234,15 @@ declare class Entity {
    * Adds a component. If the component already exist, it throws an Error.
    * @param component - component instance.
    */
-  add<T extends object>(component: T): void
+  addComponent<T extends object>(component: T): void
   /**
    * Removes a component instance from the entity.
    * @param component - component instance to remove
    * @param triggerRemovedEvent - should this action trigger an event?
    */
-  remove(component: string, triggerRemovedEvent?: boolean): void
-  remove<T extends object>(component: T, triggerRemovedEvent?: boolean): void
-  remove(component: ComponentConstructor<any>, triggerRemovedEvent?: boolean): void
+  removeComponent(component: string, triggerRemovedEvent?: boolean): void
+  removeComponent<T extends object>(component: T, triggerRemovedEvent?: boolean): void
+  removeComponent(component: ComponentConstructor<any>, triggerRemovedEvent?: boolean): void
   /**
    * Returns true if the entity is already added to the engine.
    * Returns false if no engine was defined.

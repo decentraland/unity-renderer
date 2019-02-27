@@ -7,7 +7,7 @@ const transform = new Transform()
 
 transform.position.set(5, 1, 5)
 
-gltf.add(transform)
-gltf.add(shape)
+gltf.addComponent(transform)
+gltf.addComponent(shape)
 
 engine.addEntity(gltf)

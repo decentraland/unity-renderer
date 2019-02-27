@@ -4,7 +4,7 @@ const c1 = Color3.FromHexString('#ff0000')
 const c2 = Color3.FromHexString('#00ffFF')
 
 const ent = new Entity()
-ent.set(
+ent.addComponentOrReplace(
   new Transform({
     position: new Vector3()
   })
@@ -12,11 +12,11 @@ ent.set(
 
 const mat = new Material()
 mat.albedoColor = c1
-ent.set(mat)
+ent.addComponentOrReplace(mat)
 
-ent.set(new BoxShape())
+ent.addComponentOrReplace(new BoxShape())
 
-ent.set(
+ent.addComponentOrReplace(
   new OnPointerDown(() => {
     mat.albedoColor = mat.albedoColor && mat.albedoColor.toHexString() === '#ff0000' ? c2 : c1
   })

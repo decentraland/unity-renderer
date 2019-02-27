@@ -7,8 +7,8 @@ const mat1 = new Material()
 mat1.albedoColor = Color3.FromHexString('#cccccc')
 
 const ent = new Entity()
-ent.set(new SphereShape())
-ent.set(
+ent.addComponentOrReplace(new SphereShape())
+ent.addComponentOrReplace(
   new Transform({
     position: new Vector3(2, 1, 2)
   })
@@ -22,7 +22,7 @@ class TestSystem {
       this.currentMaterial = mat1
     }
 
-    ent.set(this.currentMaterial)
+    ent.addComponentOrReplace(this.currentMaterial)
   }
 }
 

@@ -61,8 +61,8 @@ function createWinkButton(parent: UIShape, click: (event: IEvents['onClick']) =>
   component.isPointerBlocker = true
 
   const entity = new Entity()
-  entity.set(component)
-  entity.set(new OnClick(click))
+  entity.addComponentOrReplace(component)
+  entity.addComponentOrReplace(new OnClick(click))
   engine.addEntity(entity)
   return { component, entity }
 }
@@ -81,8 +81,8 @@ function createFriendButton(parent: UIShape, click: (event: IEvents['onClick']) 
   component.isPointerBlocker = true
 
   const entity = new Entity()
-  entity.set(component)
-  entity.set(new OnClick(click))
+  entity.addComponentOrReplace(component)
+  entity.addComponentOrReplace(new OnClick(click))
   engine.addEntity(entity)
   return { component, entity }
 }
@@ -100,8 +100,8 @@ function createMuteButton(parent: UIShape, click: (event: IEvents['onClick']) =>
   component.isPointerBlocker = true
 
   const entity = new Entity()
-  entity.set(component)
-  entity.set(new OnClick(click))
+  entity.addComponentOrReplace(component)
+  entity.addComponentOrReplace(new OnClick(click))
   engine.addEntity(entity)
   return { component, entity }
 }
@@ -120,8 +120,8 @@ function createBlockButton(parent: UIShape, click: (event: IEvents['onClick']) =
   component.isPointerBlocker = true
 
   const entity = new Entity()
-  entity.set(component)
-  entity.set(new OnClick(click))
+  entity.addComponentOrReplace(component)
+  entity.addComponentOrReplace(new OnClick(click))
   engine.addEntity(entity)
   return { component, entity }
 }
@@ -142,8 +142,8 @@ function createCloseButton(parent: UIShape, click: (event: IEvents['onClick']) =
   component.visible = false
 
   const entity = new Entity()
-  entity.set(component)
-  entity.set(new OnClick(click))
+  entity.addComponentOrReplace(component)
+  entity.addComponentOrReplace(new OnClick(click))
   engine.addEntity(entity)
 
   return { component, entity }

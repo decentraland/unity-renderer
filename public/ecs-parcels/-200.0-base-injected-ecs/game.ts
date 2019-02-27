@@ -8,7 +8,7 @@ const group = engine.getComponentGroup(Transform)
 export class RotatorSystem {
   update(dt: number) {
     for (let entity of group.entities) {
-      const t = entity.get(Transform)
+      const t = entity.getComponent(Transform)
       t.rotate(Vector3.Up(), dt * 10)
     }
   }
@@ -19,8 +19,8 @@ export class TraslatorSystem {
 
   update(dt: number) {
     for (let entity of this.group.entities) {
-      const t = entity.get(Transform)
-      const counter = entity.get(Counter)
+      const t = entity.getComponent(Transform)
+      const counter = entity.getComponent(Counter)
       t.position.x = 5 + 3 * Math.sin(counter.number)
       t.position.z = 3 + 3 * Math.cos(counter.number)
       counter.number += dt / 10
@@ -35,10 +35,10 @@ export class Counter {
 
 const cube = new Entity()
 
-cube.getOrCreate(Transform)
-cube.getOrCreate(BoxShape)
-cube.getOrCreate(Counter)
-cube.add(material)
+cube.getComponentOrCreate(Transform)
+cube.getComponentOrCreate(BoxShape)
+cube.getComponentOrCreate(Counter)
+cube.addComponent(material)
 
 engine.addEntity(cube)
 

@@ -22,8 +22,8 @@ engine.addSystem(AWaiterSystem.instance)
 
 function makeGLTF(src: string, position: Vector3, scale: Vector3) {
   const ent = new Entity()
-  ent.set(new GLTFShape(src))
-  ent.set(
+  ent.addComponentOrReplace(new GLTFShape(src))
+  ent.addComponentOrReplace(
     new Transform({
       position,
       scale

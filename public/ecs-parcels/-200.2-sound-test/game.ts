@@ -3,20 +3,22 @@
   const cube = new Entity()
   const source = new AudioSource(clip)
 
-  cube.set(
+  cube.addComponentOrReplace(
     new Transform({
       position: new Vector3(5, 1, 5)
     })
   )
-  cube.getOrCreate(BoxShape)
-  cube.set(
+  cube.getComponentOrCreate(BoxShape)
+  cube.addComponentOrReplace(
     new OnPointerDown(() => {
-      cube.get(Transform).position.set(Math.random() * 8 + 1, Math.random() * 8 + 1, Math.random() * 8 + 1)
+      cube
+        .getComponent(Transform)
+        .position.addComponentOrReplace(Math.random() * 8 + 1, Math.random() * 8 + 1, Math.random() * 8 + 1)
     })
   )
   source.playing = true
   source.loop = true
-  cube.set(source)
+  cube.addComponentOrReplace(source)
 
   engine.addEntity(cube)
 }
@@ -28,22 +30,22 @@
   const source = new AudioSource(clip)
   source.loop = false
 
-  cube.set(
+  cube.addComponentOrReplace(
     new Transform({
       position: new Vector3(5, 1, 2),
       scale: new Vector3(0.2, 0.2, 0.2)
     })
   )
 
-  cube.getOrCreate(BoxShape)
+  cube.getComponentOrCreate(BoxShape)
 
-  cube.set(
+  cube.addComponentOrReplace(
     new OnPointerDown(() => {
       source.playOnce()
     })
   )
 
-  cube.set(source)
+  cube.addComponentOrReplace(source)
 
   engine.addEntity(cube)
 }

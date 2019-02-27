@@ -1,6 +1,6 @@
 const ui = new Entity()
 const screenSpaceUI = new UIScreenSpaceShape()
-ui.set(screenSpaceUI)
+ui.addComponentOrReplace(screenSpaceUI)
 engine.addEntity(ui)
 
 const textShape = new UITextShape(screenSpaceUI)
@@ -19,13 +19,13 @@ closeShape.thickness = 1
 closeShape.width = '120px'
 closeShape.height = '30px'
 closeShape.top = '80px'
-close.set(
+close.addComponentOrReplace(
   new OnClick(() => {
     log('clicked on the close button')
     screenSpaceUI.visible = false
   })
 )
-close.set(closeShape)
+close.addComponentOrReplace(closeShape)
 engine.addEntity(close)
 
 const textTopShape = new UITextShape(screenSpaceUI)
@@ -52,16 +52,16 @@ textRightShape.fontSize = 30
 
 const cube = new Entity()
 const transform = new Transform({ position: new Vector3(5, 1, 5) })
-cube.set(transform)
+cube.addComponentOrReplace(transform)
 
-cube.set(
+cube.addComponentOrReplace(
   new OnClick(() => {
     log('clicked on the box')
     screenSpaceUI.visible = true
   })
 )
 
-cube.set(new BoxShape())
+cube.addComponentOrReplace(new BoxShape())
 
 engine.addEntity(cube)
 
@@ -69,6 +69,6 @@ declare var dcl: any
 
 dcl.onEvent((evt: any) => {
   if (evt.type === 'TEST_TRIGGER') {
-    cube.get(OnClick).callback({} as any)
+    cube.getComponent(OnClick).callback({} as any)
   }
 })

@@ -30,7 +30,7 @@ export class Entity {
    * Adds or replaces a component in the entity.
    * @param component - component instance.
    */
-  set<T extends object>(component: T): void {
+  addComponentOrReplace<T extends object>(component: T): void {
     if (typeof component === 'function') {
       throw new Error('You passed a function or class as a component, an instance of component is expected')
     }
@@ -45,20 +45,20 @@ export class Entity {
       if (this.components[componentName] === component) {
         return
       }
-      this.remove(this.components[componentName], false)
+      this.removeComponent(this.components[componentName], false)
     }
 
-    this.add(component)
+    this.addComponent(component)
   }
 
   /**
    * Returns a boolean indicating if a component is present in the entity.
    * @param component - component class, instance or name
    */
-  has<T = any>(component: string): boolean
-  has<T>(component: ComponentConstructor<T>): boolean
-  has<T extends object>(component: T): boolean
-  has<T>(component: ComponentConstructor<T> | string): boolean {
+  hasComponent<T = any>(component: string): boolean
+  hasComponent<T>(component: ComponentConstructor<T>): boolean
+  hasComponent<T extends object>(component: T): boolean
+  hasComponent<T>(component: ComponentConstructor<T> | string): boolean {
     const typeOfComponent = typeof component
 
     if (typeOfComponent !== 'string' && typeOfComponent !== 'object' && typeOfComponent !== 'function') {
@@ -90,9 +90,9 @@ export class Entity {
    * Gets a component, if it doesn't exist, it throws an Error.
    * @param component - component class or name
    */
-  get<T = any>(component: string): T
-  get<T>(component: ComponentConstructor<T>): T
-  get<T>(component: ComponentConstructor<T> | string): T {
+  getComponent<T = any>(component: string): T
+  getComponent<T>(component: ComponentConstructor<T>): T
+  getComponent<T>(component: ComponentConstructor<T> | string): T {
     const typeOfComponent = typeof component
 
     if (typeOfComponent !== 'string' && typeOfComponent !== 'function') {
@@ -122,9 +122,9 @@ export class Entity {
    * Gets a component, if it doesn't exist, it returns null.
    * @param component - component class or name
    */
-  getOrNull<T = any>(component: string): T | null
-  getOrNull<T>(component: ComponentConstructor<T>): T | null
-  getOrNull<T>(component: ComponentConstructor<T> | string): T | null {
+  getComponentOrNull<T = any>(component: string): T | null
+  getComponentOrNull<T>(component: ComponentConstructor<T>): T | null
+  getComponentOrNull<T>(component: ComponentConstructor<T> | string): T | null {
     const typeOfComponent = typeof component
 
     if (typeOfComponent !== 'string' && typeOfComponent !== 'function') {
@@ -154,18 +154,18 @@ export class Entity {
    * Gets a component, if it doesn't exist, it creates the component and returns it.
    * @param component - component class
    */
-  getOrCreate<T>(component: ComponentConstructor<T> & { new (): T }): T {
+  getComponentOrCreate<T>(component: ComponentConstructor<T> & { new (): T }): T {
     if (typeof component !== 'function') {
       throw new Error('Entity#getOrCreate(component): component is not a class')
     }
 
-    let ret = this.getOrNull(component)
+    let ret = this.getComponentOrNull(component)
 
     if (!ret) {
       ret = new component()
       // Safe-guard to only add registered components to entities
       getComponentName(ret)
-      this.set(ret as any)
+      this.addComponentOrReplace(ret as any)
     }
 
     return ret
@@ -175,7 +175,7 @@ export class Entity {
    * Adds a component. If the component already exist, it throws an Error.
    * @param component - component instance.
    */
-  add<T extends object>(component: T) {
+  addComponent<T extends object>(component: T) {
     if (typeof component !== 'object') {
       throw new Error(
         'Entity#add(component): You passed a function or class as a component, an instance of component is expected'
@@ -201,10 +201,10 @@ export class Entity {
    * @param component - component instance to remove
    * @param triggerRemovedEvent - should this action trigger an event?
    */
-  remove(component: string, triggerRemovedEvent?: boolean): void
-  remove<T extends object>(component: T, triggerRemovedEvent?: boolean): void
-  remove(component: ComponentConstructor<any>, triggerRemovedEvent?: boolean): void
-  remove(component: object | string | Function, triggerRemovedEvent = true): void {
+  removeComponent(component: string, triggerRemovedEvent?: boolean): void
+  removeComponent<T extends object>(component: T, triggerRemovedEvent?: boolean): void
+  removeComponent(component: ComponentConstructor<any>, triggerRemovedEvent?: boolean): void
+  removeComponent(component: object | string | Function, triggerRemovedEvent = true): void {
     const typeOfComponent = typeof component
 
     if (typeOfComponent !== 'string' && typeOfComponent !== 'function' && typeOfComponent !== 'object') {

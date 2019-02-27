@@ -2,8 +2,8 @@ import { Entity, engine, Vector3, Transform, OBJShape, Quaternion } from 'decent
 
 function makeOBJ(src: string, position: Vector3, rotation: Vector3, scale: Vector3) {
   const ent = new Entity()
-  ent.set(new OBJShape(src))
-  ent.set(
+  ent.addComponentOrReplace(new OBJShape(src))
+  ent.addComponentOrReplace(
     new Transform({
       position,
       rotation: Quaternion.Euler(rotation.x, rotation.y, rotation.z),

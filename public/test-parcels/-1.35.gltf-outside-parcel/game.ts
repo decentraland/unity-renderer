@@ -2,8 +2,8 @@ import { Entity, GLTFShape, engine, Vector3, Transform, OBJShape } from 'decentr
 
 function makeGLTF(src: string, position: Vector3, scale: Vector3) {
   const ent = new Entity()
-  ent.set(new GLTFShape(src))
-  ent.set(
+  ent.addComponentOrReplace(new GLTFShape(src))
+  ent.addComponentOrReplace(
     new Transform({
       position,
       scale
@@ -15,8 +15,8 @@ function makeGLTF(src: string, position: Vector3, scale: Vector3) {
 
 function makeOBJ(src: string, position: Vector3, scale: Vector3) {
   const ent = new Entity()
-  ent.set(new OBJShape(src))
-  ent.set(
+  ent.addComponentOrReplace(new OBJShape(src))
+  ent.addComponentOrReplace(
     new Transform({
       position,
       scale

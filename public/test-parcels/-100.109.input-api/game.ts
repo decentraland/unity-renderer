@@ -62,38 +62,38 @@ const spawner = {
       z: (Math.random() - Math.random()) / 2
     }
 
-    if (!ent.getOrNull(OnPointerDown)) {
-      ent.set(
+    if (!ent.getComponentOrNull(OnPointerDown)) {
+      ent.addComponentOrReplace(
         new OnPointerDown(() => {
           engine.removeEntity(ent)
         })
       )
     }
 
-    if (!ent.getOrNull(PlaneShape)) {
+    if (!ent.getComponentOrNull(PlaneShape)) {
       const shape = new PlaneShape()
-      ent.set(new Billboard())
-      ent.set(shape)
+      ent.addComponentOrReplace(new Billboard())
+      ent.addComponentOrReplace(shape)
     }
 
-    if (!ent.getOrNull(BasicMaterial)) {
-      ent.set(bubbleMaterial)
+    if (!ent.getComponentOrNull(BasicMaterial)) {
+      ent.addComponentOrReplace(bubbleMaterial)
     }
 
-    if (!ent.getOrNull(Transform)) {
+    if (!ent.getComponentOrNull(Transform)) {
       const t = new Transform()
-      ent.set(t)
+      ent.addComponentOrReplace(t)
       t.scale.set(0.3, 0.3, 0.3)
       t.position.set(5, 0, 5)
     } else {
-      const t = ent.get(Transform)
+      const t = ent.getComponent(Transform)
       t.position.set(5, 0, 5)
     }
 
-    if (!ent.getOrNull(Velocity)) {
-      ent.set(new Velocity(newVel.x, newVel.y, newVel.z))
+    if (!ent.getComponentOrNull(Velocity)) {
+      ent.addComponentOrReplace(new Velocity(newVel.x, newVel.y, newVel.z))
     } else {
-      const vel = ent.get(Velocity)
+      const vel = ent.getComponent(Velocity)
       vel.set(newVel.x, newVel.y, newVel.z)
     }
 
@@ -119,8 +119,8 @@ class BubbleSystem implements ISystem {
 
   update(dt: number) {
     for (let entity of this.group.entities) {
-      const transform = entity.get(Transform)
-      const velocity = entity.get(Velocity)
+      const transform = entity.getComponent(Transform)
+      const velocity = entity.getComponent(Velocity)
 
       transform.position.x += velocity.x * dt
       transform.position.y += velocity.y * dt

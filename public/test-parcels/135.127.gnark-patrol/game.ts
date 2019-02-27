@@ -1,4 +1,14 @@
-import { Entity, GLTFShape, engine, Vector3, Transform, AnimationClip, Animator, Component, Camera } from 'decentraland-ecs/src'
+import {
+  Entity,
+  GLTFShape,
+  engine,
+  Vector3,
+  Transform,
+  AnimationClip,
+  Animator,
+  Component,
+  Camera
+} from 'decentraland-ecs/src'
 
 // Coordinates of path to patrol
 const point1 = new Vector3(5, 0, 5)
@@ -10,7 +20,7 @@ const path: Vector3[] = [point1, point2, point3, point4]
 const TURN_TIME = 0.9
 
 // LerpData component
-@Component("lerpData")
+@Component('lerpData')
 export class LerpData {
   array: Vector3[] = path
   origin: number = 0
@@ -19,10 +29,10 @@ export class LerpData {
 }
 
 // Rotate component
-@Component("timeOut")
+@Component('timeOut')
 export class TimeOut {
   timeLeft: number
-  constructor( time: number){
+  constructor(time: number) {
     this.timeLeft = time
   }
 }
@@ -32,24 +42,28 @@ export const paused = engine.getComponentGroup(TimeOut)
 
 // Create temple
 const temple = new Entity()
-temple.add(new GLTFShape('models/Temple.gltf'))
-temple.add(new Transform({
-  position: new Vector3(10, 0, 10)
-}))
+temple.addComponent(new GLTFShape('models/Temple.gltf'))
+temple.addComponent(
+  new Transform({
+    position: new Vector3(10, 0, 10)
+  })
+)
 
 // Add temple to engine
 engine.addEntity(temple)
 
 // Create Gnark
 let gnark = new Entity()
-gnark.add(new Transform({
- position: new Vector3(5, 0, 5),
- scale: new Vector3(0.75, 0.75, 0.75)
-}))
-gnark.add(new GLTFShape('models/gnark.gltf'))
+gnark.addComponent(
+  new Transform({
+    position: new Vector3(5, 0, 5),
+    scale: new Vector3(0.75, 0.75, 0.75)
+  })
+)
+gnark.addComponent(new GLTFShape('models/gnark.gltf'))
 
 // Add LerpData component to Gnark
-gnark.add(new LerpData())
+gnark.addComponent(new LerpData())
 
 // Add Gnark to engine
 engine.addEntity(gnark)
@@ -57,12 +71,12 @@ engine.addEntity(gnark)
 // Add walk animation
 const animator = new Animator()
 const walkClip = new AnimationClip('walk')
-const turnRClip = new AnimationClip('turnRight', {looping: true})
+const turnRClip = new AnimationClip('turnRight', { looping: true })
 const raiseDeadClip = new AnimationClip('raiseDead')
 animator.addClip(walkClip)
 animator.addClip(turnRClip)
 animator.addClip(raiseDeadClip)
-gnark.add(animator)
+gnark.addComponent(animator)
 
 // Activate walk animation
 walkClip.play()
@@ -70,17 +84,13 @@ walkClip.play()
 // Walk System
 export class GnarkWalk {
   update(dt: number) {
-    if (!gnark.has(TimeOut) && !raiseDeadClip.playing ){
-      let transform = gnark.get(Transform)
-      let path = gnark.get(LerpData)
+    if (!gnark.hasComponent(TimeOut) && !raiseDeadClip.playing) {
+      let transform = gnark.getComponent(Transform)
+      let path = gnark.getComponent(LerpData)
       walkClip.playing = true
       if (path.fraction < 1) {
-        path.fraction += dt/6
-        transform.position = Vector3.Lerp(
-          path.array[path.origin],
-          path.array[path.target],
-          path.fraction
-        ) 
+        path.fraction += dt / 6
+        transform.position = Vector3.Lerp(path.array[path.origin], path.array[path.target], path.fraction)
       } else {
         path.origin = path.target
         path.target += 1
@@ -91,7 +101,7 @@ export class GnarkWalk {
         transform.lookAt(path.array[path.target])
         walkClip.pause()
         turnRClip.play()
-        gnark.set(new TimeOut(TURN_TIME))
+        gnark.addComponentOrReplace(new TimeOut(TURN_TIME))
       }
     }
   }
@@ -102,13 +112,13 @@ engine.addSystem(new GnarkWalk())
 // Wait System
 export class WaitSystem {
   update(dt: number) {
-    for (let ent of paused.entities){
-      let time = ent.getOrNull(TimeOut)
-      if (time){
+    for (let ent of paused.entities) {
+      let time = ent.getComponentOrNull(TimeOut)
+      if (time) {
         if (time.timeLeft > 0) {
           time.timeLeft -= dt
         } else {
-          ent.remove(TimeOut)
+          ent.removeComponent(TimeOut)
         }
       }
     }
@@ -121,16 +131,15 @@ engine.addSystem(new WaitSystem())
 
 export class BattleCry {
   update() {
-    let transform = gnark.get(Transform)
-    let path = gnark.get(LerpData)
+    let transform = gnark.getComponent(Transform)
+    let path = gnark.getComponent(LerpData)
     let dist = distance(transform.position, camera.position)
-    if ( dist < 16) {
+    if (dist < 16) {
       raiseDeadClip.playing = true
       walkClip.playing = false
       turnRClip.playing = false
       transform.lookAt(camera.position)
-    }
-    else if (raiseDeadClip.playing){
+    } else if (raiseDeadClip.playing) {
       raiseDeadClip.pause()
       transform.lookAt(path.array[path.target])
     }
@@ -143,7 +152,7 @@ engine.addSystem(new BattleCry())
 const camera = Camera.instance
 
 // Get distance
-/* 
+/*
 Note:
 This function really returns distance squared, as it's a lot more efficient to calculate.
 The square root operation is expensive and isn't really necessary if we compare the result to squared values.

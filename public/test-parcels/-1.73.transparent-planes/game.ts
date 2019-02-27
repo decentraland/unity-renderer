@@ -17,18 +17,18 @@ const billboard = new Billboard(true, true, true)
 
 {
   const e1 = new Entity()
-  e1.set(p1)
-  e1.set(m1)
-  e1.set(billboard)
+  e1.addComponentOrReplace(p1)
+  e1.addComponentOrReplace(m1)
+  e1.addComponentOrReplace(billboard)
   engine.addEntity(e1)
-  e1.getOrCreate(Transform).position.set(5, 1.6, 5)
+  e1.getComponentOrCreate(Transform).position.set(5, 1.6, 5)
 }
 
 {
   const e2 = new Entity()
-  e2.set(p1)
-  e2.set(m2)
-  e2.set(billboard)
+  e2.addComponentOrReplace(p1)
+  e2.addComponentOrReplace(m2)
+  e2.addComponentOrReplace(billboard)
   engine.addEntity(e2)
-  e2.getOrCreate(Transform).position.set(4, 1.6, 5)
+  e2.getComponentOrCreate(Transform).position.set(4, 1.6, 5)
 }

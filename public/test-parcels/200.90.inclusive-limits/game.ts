@@ -3,8 +3,8 @@ import { Entity, BoxShape, engine, Vector3, Transform } from 'decentraland-ecs/s
 export function makeBox(position: Vector3) {
   const ent = new Entity()
   const box = new BoxShape()
-  ent.set(box)
-  ent.set(
+  ent.addComponentOrReplace(box)
+  ent.addComponentOrReplace(
     new Transform({
       position
     })

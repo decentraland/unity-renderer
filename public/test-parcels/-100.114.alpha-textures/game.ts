@@ -2,7 +2,7 @@ import { engine, Material, Entity, Transform, PlaneShape, Vector3, Billboard } f
 
 const root = new Entity()
 engine.addEntity(root)
-root.getOrCreate(Transform).scale.setAll(1.6)
+root.getComponentOrCreate(Transform).scale.setAll(1.6)
 
 const ent1 = new Entity()
 const mat1 = new Material()
@@ -16,10 +16,10 @@ mat1.roughness = 1
 mat1.albedoTexture = 'img.png'
 mat1.alphaTexture = 'img.png'
 ent1.setParent(root)
-ent1.set(new Billboard())
-ent1.set(mat1)
-ent1.set(t1)
-ent1.set(shape1)
+ent1.addComponentOrReplace(new Billboard())
+ent1.addComponentOrReplace(mat1)
+ent1.addComponentOrReplace(t1)
+ent1.addComponentOrReplace(shape1)
 engine.addEntity(ent1)
 
 const ent2 = new Entity()
@@ -32,9 +32,9 @@ mat2.metallic = 0
 mat2.roughness = 1
 mat2.albedoTexture = 'img.png'
 mat2.hasAlpha = true
-ent2.set(new Billboard())
-ent2.set(mat2)
-ent2.set(t2)
-ent2.set(shape2)
+ent2.addComponentOrReplace(new Billboard())
+ent2.addComponentOrReplace(mat2)
+ent2.addComponentOrReplace(t2)
+ent2.addComponentOrReplace(shape2)
 ent2.setParent(root)
 engine.addEntity(ent2)

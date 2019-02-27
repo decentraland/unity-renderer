@@ -16,27 +16,27 @@ function spawnAxis() {
   const yAxis = new Entity()
   const zAxis = new Entity()
 
-  xAxis.set(box)
-  xAxis.set(redMaterial)
-  xAxis.set(
+  xAxis.addComponentOrReplace(box)
+  xAxis.addComponentOrReplace(redMaterial)
+  xAxis.addComponentOrReplace(
     new Transform({
       position: new Vector3(0.5, 0, 0),
       scale: new Vector3(1, 0.02, 0.02)
     })
   )
 
-  yAxis.set(box)
-  yAxis.set(greenMaterial)
-  yAxis.set(
+  yAxis.addComponentOrReplace(box)
+  yAxis.addComponentOrReplace(greenMaterial)
+  yAxis.addComponentOrReplace(
     new Transform({
       position: new Vector3(0, 0.5, 0),
       scale: new Vector3(0.02, 1, 0.02)
     })
   )
 
-  zAxis.set(box)
-  zAxis.set(blueMaterial)
-  zAxis.set(
+  zAxis.addComponentOrReplace(box)
+  zAxis.addComponentOrReplace(blueMaterial)
+  zAxis.addComponentOrReplace(
     new Transform({
       position: new Vector3(0, 0, 0.5),
       scale: new Vector3(0.02, 0.02, 1)
@@ -59,13 +59,13 @@ function spawnCube(position: Vector3, rotation: Vector3) {
   const box = new BoxShape()
   const rot = Quaternion.Euler(rotation.x, rotation.y, rotation.z)
   const axis = spawnAxis()
-  ent.set(
+  ent.addComponentOrReplace(
     new Transform({
       position,
       rotation: rot
     })
   )
-  ent.set(box)
+  ent.addComponentOrReplace(box)
   engine.addEntity(ent)
   axis.setParent(ent)
 }

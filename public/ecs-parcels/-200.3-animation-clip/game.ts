@@ -13,13 +13,13 @@ executeTask(async () => {
 
 const cube = new Entity()
 
-cube.set(
+cube.addComponentOrReplace(
   new Transform({
     position: new Vector3(5, 1, 5)
   })
 )
-cube.getOrCreate(BoxShape)
-cube.set(
+cube.getComponentOrCreate(BoxShape)
+cube.addComponentOrReplace(
   new OnPointerDown(() => {
     executeTask(async () => {
       // 1 await pauseSound()

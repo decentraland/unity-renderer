@@ -2,14 +2,14 @@ import { engine, Entity, Transform, Vector3, TextShape } from 'decentraland-ecs'
 
 const root = new Entity()
 engine.addEntity(root)
-root.getOrCreate(Transform).scale.setAll(1.6)
+root.getComponentOrCreate(Transform).scale.setAll(1.6)
 
 function createText(position: Vector3, text: string, params: any) {
   const ent = new Entity()
   const shape = new TextShape(text)
-  ent.set(shape)
+  ent.addComponentOrReplace(shape)
   Object['assign'](shape, params)
-  ent.set(
+  ent.addComponentOrReplace(
     new Transform({
       position
     })

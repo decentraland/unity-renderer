@@ -7,7 +7,7 @@ export class RotatorSystem implements ISystem {
 
   update(dt: number) {
     for (let entity of this.group.entities) {
-      const transform = entity.get(Transform)
+      const transform = entity.getComponent(Transform)
       const euler = transform.rotation.eulerAngles
       euler.y += dt * 10
       transform.rotation.eulerAngles = euler
@@ -18,10 +18,10 @@ export class RotatorSystem implements ISystem {
 const cube = new Entity()
 const transform = new Transform()
 
-cube.set(transform)
+cube.addComponentOrReplace(transform)
 transform.position.set(5, 0, 5)
 
-cube.set(boxShape)
+cube.addComponentOrReplace(boxShape)
 
 engine.addEntity(cube)
 

@@ -7398,9 +7398,9 @@
           ],
           "remarks": []
         },
-        "add": {
+        "addComponent": {
           "kind": "method",
-          "signature": "add<T extends object>(component: T): void;",
+          "signature": "addComponent<T extends object>(component: T): void;",
           "accessModifier": "",
           "isOptional": false,
           "isStatic": false,
@@ -7427,6 +7427,43 @@
             {
               "kind": "text",
               "text": "Adds a component. If the component already exist, it throws an Error."
+            }
+          ],
+          "remarks": [],
+          "isBeta": false,
+          "isSealed": false,
+          "isVirtual": false,
+          "isOverride": false
+        },
+        "addComponentOrReplace": {
+          "kind": "method",
+          "signature": "addComponentOrReplace<T extends object>(component: T): void;",
+          "accessModifier": "",
+          "isOptional": false,
+          "isStatic": false,
+          "returnValue": {
+            "type": "void",
+            "description": []
+          },
+          "parameters": {
+            "component": {
+              "name": "component",
+              "description": [
+                {
+                  "kind": "text",
+                  "text": "component instance."
+                }
+              ],
+              "isOptional": false,
+              "isSpread": false,
+              "type": "T"
+            }
+          },
+          "deprecatedMessage": [],
+          "summary": [
+            {
+              "kind": "text",
+              "text": "Adds or replaces a component in the entity."
             }
           ],
           "remarks": [],
@@ -7499,9 +7536,9 @@
           "isOverride": false,
           "isEventProperty": false
         },
-        "get": {
+        "getComponent": {
           "kind": "method",
-          "signature": "get<T = any>(component: string): T;",
+          "signature": "getComponent<T = any>(component: string): T;",
           "accessModifier": "",
           "isOptional": false,
           "isStatic": false,
@@ -7536,9 +7573,9 @@
           "isVirtual": false,
           "isOverride": false
         },
-        "getOrCreate": {
+        "getComponentOrCreate": {
           "kind": "method",
-          "signature": "getOrCreate<T>(component: ComponentConstructor<T> & {\n        new (): T;\n    }): T;",
+          "signature": "getComponentOrCreate<T>(component: ComponentConstructor<T> & {\n        new (): T;\n    }): T;",
           "accessModifier": "",
           "isOptional": false,
           "isStatic": false,
@@ -7573,9 +7610,9 @@
           "isVirtual": false,
           "isOverride": false
         },
-        "getOrNull": {
+        "getComponentOrNull": {
           "kind": "method",
-          "signature": "getOrNull<T = any>(component: string): T | null;",
+          "signature": "getComponentOrNull<T = any>(component: string): T | null;",
           "accessModifier": "",
           "isOptional": false,
           "isStatic": false,
@@ -7634,9 +7671,9 @@
           "isVirtual": false,
           "isOverride": false
         },
-        "has": {
+        "hasComponent": {
           "kind": "method",
-          "signature": "has<T = any>(component: string): boolean;",
+          "signature": "hasComponent<T = any>(component: string): boolean;",
           "accessModifier": "",
           "isOptional": false,
           "isStatic": false,
@@ -7711,9 +7748,9 @@
           "isOverride": false,
           "isEventProperty": false
         },
-        "remove": {
+        "removeComponent": {
           "kind": "method",
-          "signature": "remove(component: string, triggerRemovedEvent?: boolean): void;",
+          "signature": "removeComponent(component: string, triggerRemovedEvent?: boolean): void;",
           "accessModifier": "",
           "isOptional": false,
           "isStatic": false,
@@ -7752,43 +7789,6 @@
             {
               "kind": "text",
               "text": "Removes a component instance from the entity."
-            }
-          ],
-          "remarks": [],
-          "isBeta": false,
-          "isSealed": false,
-          "isVirtual": false,
-          "isOverride": false
-        },
-        "set": {
-          "kind": "method",
-          "signature": "set<T extends object>(component: T): void;",
-          "accessModifier": "",
-          "isOptional": false,
-          "isStatic": false,
-          "returnValue": {
-            "type": "void",
-            "description": []
-          },
-          "parameters": {
-            "component": {
-              "name": "component",
-              "description": [
-                {
-                  "kind": "text",
-                  "text": "component instance."
-                }
-              ],
-              "isOptional": false,
-              "isSpread": false,
-              "type": "T"
-            }
-          },
-          "deprecatedMessage": [],
-          "summary": [
-            {
-              "kind": "text",
-              "text": "Adds or replaces a component in the entity."
             }
           ],
           "remarks": [],

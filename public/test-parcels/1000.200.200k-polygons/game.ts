@@ -2,8 +2,8 @@ import { Entity, engine, Vector3, Transform, GLTFShape } from 'decentraland-ecs/
 
 function makeGLTF(src: string, position: Vector3) {
   const ent = new Entity()
-  ent.set(new GLTFShape(src))
-  ent.set(
+  ent.addComponentOrReplace(new GLTFShape(src))
+  ent.addComponentOrReplace(
     new Transform({
       position
     })

@@ -18,7 +18,7 @@ model.src = 'example.gltf'
 const ent = new Entity()
 ;(ent as any).uuid = '__test_id__'
 
-ent.set(model)
+ent.addComponentOrReplace(model)
 
 log('start')
 

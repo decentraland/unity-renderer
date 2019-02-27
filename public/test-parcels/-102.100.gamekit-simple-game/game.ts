@@ -23,18 +23,18 @@ export class PhysicsSystem implements ISystem {
   update(deltaTime: number) {
     const dt = deltaTime * 150
     for (let entity of this.group.entities) {
-      const physics = entity.get(Physics)
+      const physics = entity.getComponent(Physics)
 
       if (physics.rigid) continue
 
-      const transform = entity.get(Transform)
+      const transform = entity.getComponent(Transform)
 
       physics.acceleration.setAll(0)
 
       for (let e of this.group.entities) {
         if (e !== entity) {
-          const positionE = e.get(Transform).position
-          const physicsE = e.get(Physics)
+          const positionE = e.getComponent(Transform).position
+          const physicsE = e.getComponent(Physics)
 
           tempVec3.copyFrom(transform.position).subtractInPlace(positionE)
 
@@ -56,7 +56,7 @@ export class BoundaryCheckSystem implements ISystem {
 
   update() {
     for (let entity of this.group.entities) {
-      const { position } = entity.get(Transform)
+      const { position } = entity.getComponent(Transform)
       if (position.x > 15.5) position.x = 15.5
       if (position.y > 15.5) position.y = 15.5
       if (position.z > 15.5) position.z = 15.5
@@ -77,14 +77,14 @@ function spawn(x: number, y: number, z: number, rigid: boolean) {
 
   physics.mass = physics.rigid ? 10000 : Math.random() * 100
 
-  cube.set(physics)
-  cube.set(transform)
-  cube.set(material)
+  cube.addComponentOrReplace(physics)
+  cube.addComponentOrReplace(transform)
+  cube.addComponentOrReplace(material)
 
   if (physics.rigid) {
-    cube.set(boxShape)
+    cube.addComponentOrReplace(boxShape)
   } else {
-    cube.set(boxShape)
+    cube.addComponentOrReplace(boxShape)
     transform.scale.set(0.01 + physics.mass / 1000, 0.01 + physics.mass / 1000, 0.01 + physics.mass / 1000)
   }
 

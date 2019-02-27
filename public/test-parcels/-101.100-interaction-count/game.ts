@@ -18,12 +18,12 @@ function executeAction() {
     case 1: {
       log('CREATE_SHAPE')
       shape = new BoxShape()
-      entity.add(shape)
+      entity.addComponent(shape)
       break
     }
     case 2: {
       log('SET_TRANSFORM')
-      const t = entity.getOrCreate(Transform)
+      const t = entity.getComponentOrCreate(Transform)
       t.position.x = 5
       t.position.y = 5
       t.position.z = 5
@@ -35,7 +35,7 @@ function executeAction() {
     case 3: {
       log('SET_MATERIAL')
       material = new Material()
-      entity.add(material)
+      entity.addComponent(material)
       break
     }
     case 4: {
@@ -45,7 +45,7 @@ function executeAction() {
     }
     case 5: {
       log('REMOVE_MATERIAL')
-      entity.remove(material)
+      entity.removeComponent(material)
       // TODO: fix that `as any`
       engine.disposeComponent(material as any)
       material = null
@@ -53,14 +53,14 @@ function executeAction() {
     }
     case 6: {
       log('REMOVE_SHAPE')
-      entity.remove(shape)
+      entity.removeComponent(shape)
       engine.disposeComponent(shape)
       shape = null
       break
     }
     case 7: {
       log('REMOVE_TRANSFORM')
-      entity.remove(Transform)
+      entity.removeComponent(Transform)
       break
     }
     case 8: {

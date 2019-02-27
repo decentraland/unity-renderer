@@ -408,7 +408,7 @@ const abi = [
 
 const cube = new Entity()
 
-cube.set(
+cube.addComponentOrReplace(
   new Transform({
     position: new Vector3(5, 1, 5)
   })
@@ -416,8 +416,8 @@ cube.set(
 const text = new TextShape('Click to create transaction')
 text.billboard = true
 text.isPickable = true
-cube.set(text)
-cube.set(
+cube.addComponentOrReplace(text)
+cube.addComponentOrReplace(
   new OnPointerDown(() => {
     executeTask(async () => {
       const provider = await getProvider()

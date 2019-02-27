@@ -2,8 +2,8 @@ import { Entity, GLTFShape, engine, Vector3, Transform, AnimationClip, Animator 
 
 function makeGLTF(src: string, position: Vector3) {
   const ent = new Entity()
-  ent.set(new GLTFShape(src))
-  ent.set(
+  ent.addComponentOrReplace(new GLTFShape(src))
+  ent.addComponentOrReplace(
     new Transform({
       position
     })
@@ -22,7 +22,7 @@ const clip2 = new AnimationClip('shark_skeleton_swim', {
   weight: 0.1,
   looping: true
 })
-const animator = m1.getOrCreate(Animator)
+const animator = m1.getComponentOrCreate(Animator)
 animator.addClip(clip1)
 animator.addClip(clip2)
 

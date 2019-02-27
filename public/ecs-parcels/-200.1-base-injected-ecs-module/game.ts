@@ -21,9 +21,9 @@ executeTask(async () => {
   }
 })
 
-cube.set(material)
-cube.set(shape)
-cube.set(
+cube.addComponentOrReplace(material)
+cube.addComponentOrReplace(shape)
+cube.addComponentOrReplace(
   new Transform({
     position: new Vector3(5, 1, 5)
   })

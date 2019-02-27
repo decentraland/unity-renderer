@@ -1,14 +1,14 @@
 import { Entity, Transform, engine, BoxShape, Vector3, Quaternion } from 'decentraland-ecs/src'
 
 const ent = new Entity()
-ent.set(new BoxShape())
+ent.addComponentOrReplace(new BoxShape())
 const initialRotation = Quaternion.Euler(0, 0, 120)
 const t = new Transform({
   position: new Vector3(5, 0, 5),
   rotation: initialRotation
 })
 
-ent.set(t)
+ent.addComponentOrReplace(t)
 
 class MySystem {
   private counter: number = 0

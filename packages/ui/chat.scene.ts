@@ -48,8 +48,8 @@ function createMinimizeButton(parent: UIShape, click: (ev: IEvents['onClick']) =
   component.isPointerBlocker = true
 
   const entity = new Entity()
-  entity.set(component)
-  entity.set(new OnClick(click))
+  entity.addComponentOrReplace(component)
+  entity.addComponentOrReplace(new OnClick(click))
   engine.addEntity(entity)
 
   return { entity, component }
@@ -70,8 +70,8 @@ function createSendButton(parent: UIShape, click: (ev: IEvents['onClick']) => vo
   component.isPointerBlocker = true
 
   const entity = new Entity()
-  entity.set(component)
-  entity.set(new OnClick(click))
+  entity.addComponentOrReplace(component)
+  entity.addComponentOrReplace(new OnClick(click))
   engine.addEntity(entity)
 
   return { entity, component }
@@ -92,8 +92,8 @@ function createHelpButton(parent: UIShape, click: (ev: IEvents['onClick']) => vo
   component.isPointerBlocker = true
 
   const entity = new Entity()
-  entity.set(component)
-  entity.set(new OnClick(click))
+  entity.addComponentOrReplace(component)
+  entity.addComponentOrReplace(new OnClick(click))
   engine.addEntity(entity)
 
   return { entity, component }
@@ -115,8 +115,8 @@ function createCloseButton(parent: UIShape, click: (ev: IEvents['onClick']) => v
   component.visible = false
 
   const entity = new Entity()
-  entity.set(component)
-  entity.set(new OnClick(click))
+  entity.addComponentOrReplace(component)
+  entity.addComponentOrReplace(new OnClick(click))
   engine.addEntity(entity)
 
   return { entity, component }
@@ -138,8 +138,8 @@ function createHelpCloseButton(parent: UIShape, click: (data: IEvents['onClick']
   component.isPointerBlocker = true
 
   const entity = new Entity()
-  entity.set(component)
-  entity.set(new OnClick(click))
+  entity.addComponentOrReplace(component)
+  entity.addComponentOrReplace(new OnClick(click))
   engine.addEntity(entity)
 
   return { entity, component }
@@ -164,8 +164,8 @@ function createTextInput(parent: UIShape, changed: (ev: IEvents['onChange']) => 
   component.isPointerBlocker = true
 
   const entity = new Entity()
-  entity.set(component)
-  entity.set(new OnChanged(changed))
+  entity.addComponentOrReplace(component)
+  entity.addComponentOrReplace(new OnChanged(changed))
   engine.addEntity(entity)
 
   return { component }
@@ -239,8 +239,8 @@ function createMessagesScrollbar(parent: UIShape, changed: (ev: IEvents['onChang
   component.isPointerBlocker = true
 
   const entity = new Entity()
-  entity.set(component)
-  entity.set(new OnChanged(changed))
+  entity.addComponentOrReplace(component)
+  entity.addComponentOrReplace(new OnChanged(changed))
   engine.addEntity(entity)
 
   return { entity, component }
@@ -476,8 +476,8 @@ function initializeMinimizedChat(parent: UIFullScreenShape) {
   minimizedIcon.isPointerBlocker = true
 
   const minimizedIconEntity = new Entity()
-  minimizedIconEntity.set(minimizedIcon)
-  minimizedIconEntity.set(new OnClick(toggleChat))
+  minimizedIconEntity.addComponentOrReplace(minimizedIcon)
+  minimizedIconEntity.addComponentOrReplace(new OnClick(toggleChat))
   engine.addEntity(minimizedIconEntity)
 
   const helpIcon = createHelpButton(containerMinimized, openHelp)
@@ -527,8 +527,8 @@ helpSliderComponent.background = '#262626'
 helpSliderComponent.isPointerBlocker = true
 
 const sliderEntity = new Entity()
-sliderEntity.set(helpSliderComponent)
-sliderEntity.set(new OnChanged(onHelpSliderChanged))
+sliderEntity.addComponentOrReplace(helpSliderComponent)
+sliderEntity.addComponentOrReplace(new OnChanged(onHelpSliderChanged))
 engine.addEntity(sliderEntity)
 
 const closeButtonContainer = new UIContainerRectShape(helpContainer)

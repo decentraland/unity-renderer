@@ -4,10 +4,10 @@ export function makeBox(position: Vector3, scale: Vector3, color: string, x: boo
   const ent = new Entity()
   const box = new BoxShape()
   const mat = new Material()
-  ent.set(new Billboard(x, y, z))
+  ent.addComponentOrReplace(new Billboard(x, y, z))
   mat.albedoColor = Color3.FromHexString(color)
-  ent.set(box)
-  ent.set(
+  ent.addComponentOrReplace(box)
+  ent.addComponentOrReplace(
     new Transform({
       position,
       scale

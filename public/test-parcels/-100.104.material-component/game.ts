@@ -31,14 +31,14 @@ function spawn(x: number, y: number, z: number) {
   transform.position.y = y
   transform.position.z = z
 
-  ent.set(box)
-  ent.set(niceMaterial)
-  ent.set(transform)
+  ent.addComponentOrReplace(box)
+  ent.addComponentOrReplace(niceMaterial)
+  ent.addComponentOrReplace(transform)
 
-  ent.set(
+  ent.addComponentOrReplace(
     new OnPointerDown(() => {
       log('setting ' + ent.uuid + ' <- ' + getComponentId(niceNewMaterial as any))
-      ent.set(niceNewMaterial)
+      ent.addComponentOrReplace(niceNewMaterial)
     })
   )
 
@@ -53,7 +53,7 @@ const ent = spawn(5, 1, 5)
 dcl.onEvent((evt: any) => {
   if (evt.type === 'TEST_TRIGGER') {
     log('TEST_TRIGGER', evt)
-    ent.get(OnPointerDown).callback({} as any)
+    ent.getComponent(OnPointerDown).callback({} as any)
   }
 })
 

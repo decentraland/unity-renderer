@@ -14,8 +14,8 @@ export class MovementSystem implements ISystem {
 
   update(dt: number) {
     for (let entity of this.group.entities) {
-      const transform = entity.get(Transform)
-      const velocity = entity.get(Velocity)
+      const transform = entity.getComponent(Transform)
+      const velocity = entity.getComponent(Velocity)
 
       transform.position.x += velocity.x * dt
       transform.position.y += velocity.y * dt
@@ -40,9 +40,9 @@ function spawn() {
   const transform = new Transform()
   transform.position.set(Math.random() * 8 + 1, Math.random() * 4 + 1, Math.random() * 8 + 1)
 
-  cube.set(transform)
-  cube.set(new Velocity((Math.random() - Math.random()) / 10, Math.random() / 10, (Math.random() - Math.random()) / 10))
-  cube.set(boxShape)
+  cube.addComponentOrReplace(transform)
+  cube.addComponentOrReplace(new Velocity((Math.random() - Math.random()) / 10, Math.random() / 10, (Math.random() - Math.random()) / 10))
+  cube.addComponentOrReplace(boxShape)
 
   engine.addEntity(cube)
 }

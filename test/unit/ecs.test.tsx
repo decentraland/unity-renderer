@@ -78,11 +78,11 @@ describe('ECS', () => {
 
       it('should add the component to an entity using the indicated component name', () => {
         const entity = new Entity()
-        entity.add(new TheDispoCompo())
-        expect(entity.get(TheDispoCompo)).to.be.instanceOf(TheDispoCompo)
+        entity.addComponent(new TheDispoCompo())
+        expect(entity.getComponent(TheDispoCompo)).to.be.instanceOf(TheDispoCompo)
         expect(entity.components[componentName]).to.be.instanceOf(TheDispoCompo)
-        expect(entity.components[componentName]).to.eq(entity.get(TheDispoCompo))
-        entity.remove(entity.get(TheDispoCompo))
+        expect(entity.components[componentName]).to.eq(entity.getComponent(TheDispoCompo))
+        entity.removeComponent(entity.getComponent(TheDispoCompo))
         expect(entity.components[componentName]).to.be.undefined
 
         // TODO: WHAT HAPPENS WITH DISPOSABLE COMPONENTS NOT ADDED TO THE ENSHIN?
@@ -119,20 +119,20 @@ describe('ECS', () => {
 
         const compo = new TheCompo()
 
-        expect(entity.has(compo)).to.eq(false)
-        expect(entity.has(TheCompo)).to.eq(false)
-        expect(entity.has(TheCompoNotTheCompo)).to.eq(false)
-        expect(entity.has(componentName)).to.eq(false)
-        entity.add(compo)
-        expect(entity.has(compo)).to.eq(true, 'has(compo)')
-        expect(entity.has(TheCompo)).to.eq(true, 'has(TheCompo)')
-        expect(entity.has(TheCompoNotTheCompo)).to.eq(false, 'has(TheCompoNotTheCompo)')
-        expect(entity.has(componentName)).to.eq(true, 'has(componentName)')
+        expect(entity.hasComponent(compo)).to.eq(false)
+        expect(entity.hasComponent(TheCompo)).to.eq(false)
+        expect(entity.hasComponent(TheCompoNotTheCompo)).to.eq(false)
+        expect(entity.hasComponent(componentName)).to.eq(false)
+        entity.addComponent(compo)
+        expect(entity.hasComponent(compo)).to.eq(true, 'has(compo)')
+        expect(entity.hasComponent(TheCompo)).to.eq(true, 'has(TheCompo)')
+        expect(entity.hasComponent(TheCompoNotTheCompo)).to.eq(false, 'has(TheCompoNotTheCompo)')
+        expect(entity.hasComponent(componentName)).to.eq(true, 'has(componentName)')
 
-        expect(entity.get(TheCompo)).to.be.instanceOf(TheCompo)
+        expect(entity.getComponent(TheCompo)).to.be.instanceOf(TheCompo)
         expect(entity.components[componentName]).to.be.instanceOf(TheCompo)
-        expect(entity.components[componentName]).to.eq(entity.get(TheCompo))
-        entity.remove(entity.get(TheCompo))
+        expect(entity.components[componentName]).to.eq(entity.getComponent(TheCompo))
+        entity.removeComponent(entity.getComponent(TheCompo))
         expect(entity.components[componentName]).to.be.undefined
       })
     })
@@ -150,12 +150,12 @@ describe('ECS', () => {
         expect(group.entities.length).to.eq(0)
         engine.addEntity(entity)
         expect(group.entities.length).to.eq(0)
-        const transform = entity.getOrCreate(Transform)
+        const transform = entity.getComponentOrCreate(Transform)
         expect(transform).to.be.instanceOf(Transform)
         expect(Object.values(entity.components)).to.contain(transform)
         expect(group.entities.length).to.eq(1)
         expect(group.entities[0]).to.eq(entity)
-        entity.remove(transform)
+        entity.removeComponent(transform)
         expect(Object.values(entity.components)).to.not.contain(transform)
         expect(group.entities.length).to.eq(0)
         engine.removeEntity(entity)
@@ -175,7 +175,7 @@ describe('ECS', () => {
       it('instantiate an entity with a component and add it to the engine should modify the group', () => {
         const entity = new Entity()
         const component = new AComponent()
-        entity.set(component)
+        entity.addComponentOrReplace(component)
         expect(group.entities.length).to.eq(0)
         engine.addEntity(entity)
         expect(group.entities.length).to.eq(1)
@@ -191,12 +191,12 @@ describe('ECS', () => {
         expect(group.entities.length).to.eq(0)
 
         const component = new AComponent()
-        entity.set(component)
+        entity.addComponentOrReplace(component)
 
         expect(group.entities.length).to.eq(1, 'the entity should be added to the group')
         expect(group.entities[0]).to.eq(entity)
 
-        entity.remove(component)
+        entity.removeComponent(component)
 
         expect(group.entities.length).to.eq(0, 'the entity should be removed from the group')
 
@@ -223,10 +223,10 @@ describe('ECS', () => {
         const entity = new Entity()
         const component = new AComponent()
         const component2 = new AnotherComponent()
-        entity.set(component)
+        entity.addComponentOrReplace(component)
         expect(group.entities.length).to.eq(0)
         engine.addEntity(entity)
-        entity.set(component2)
+        entity.addComponentOrReplace(component2)
         expect(group.entities.length).to.eq(1)
         expect(group.entities[0]).to.eq(entity)
         engine.removeEntity(entity)
@@ -237,13 +237,13 @@ describe('ECS', () => {
         const entity = new Entity()
         const component = new AComponent()
         const component2 = new AnotherComponent()
-        entity.set(component)
+        entity.addComponentOrReplace(component)
         expect(group.entities.length).to.eq(0)
         engine.addEntity(entity)
-        entity.set(component2)
+        entity.addComponentOrReplace(component2)
         expect(group.entities.length).to.eq(1)
         expect(group.entities[0]).to.eq(entity)
-        entity.remove(component)
+        entity.removeComponent(component)
         expect(group.entities.length).to.eq(0)
         engine.removeEntity(entity)
       })
@@ -256,8 +256,8 @@ describe('ECS', () => {
 
         const component = new AComponent()
         const component2 = new AnotherComponent()
-        entity.set(component)
-        entity.set(component2)
+        entity.addComponentOrReplace(component)
+        entity.addComponentOrReplace(component2)
 
         expect(group.entities.length).to.eq(1, 'the entity should be added to the group')
         expect(group.entities[0]).to.eq(entity)
@@ -266,7 +266,7 @@ describe('ECS', () => {
 
         expect(group.entities.length).to.eq(0, 'the entity should be removed from the group')
 
-        entity.remove(component2)
+        entity.removeComponent(component2)
 
         expect(group.entities.length).to.eq(0, 'the entity should be removed from the group 2')
       })
@@ -283,9 +283,9 @@ describe('ECS', () => {
         const entity = new Entity()
         const component = new AComponent()
         const component2 = new AnotherComponent()
-        entity.set(component)
+        entity.addComponentOrReplace(component)
         engine.addEntity(entity)
-        entity.set(component2)
+        entity.addComponentOrReplace(component2)
         const group = engine.getComponentGroup(AComponent, AnotherComponent)
         expect(group.entities.length).to.eq(1)
         expect(group.entities[0]).to.eq(entity)
@@ -298,13 +298,13 @@ describe('ECS', () => {
         const entity = new Entity()
         const component = new AComponent()
         const component2 = new AnotherComponent()
-        entity.set(component)
+        entity.addComponentOrReplace(component)
         engine.addEntity(entity)
-        entity.set(component2)
+        entity.addComponentOrReplace(component2)
         const group = engine.getComponentGroup(AComponent, AnotherComponent)
         expect(group.entities.length).to.eq(1)
         expect(group.entities[0]).to.eq(entity)
-        entity.remove(component)
+        entity.removeComponent(component)
         expect(group.entities.length).to.eq(0)
         engine.removeEntity(entity)
         engine.removeComponentGroup(group)
@@ -316,8 +316,8 @@ describe('ECS', () => {
 
         const component = new AComponent()
         const component2 = new AnotherComponent()
-        entity.set(component)
-        entity.set(component2)
+        entity.addComponentOrReplace(component)
+        entity.addComponentOrReplace(component2)
 
         const group = engine.getComponentGroup(AComponent, AnotherComponent)
 
@@ -328,7 +328,7 @@ describe('ECS', () => {
 
         expect(group.entities.length).to.eq(0, 'the entity should be removed from the group')
 
-        entity.remove(component2)
+        entity.removeComponent(component2)
 
         expect(group.entities.length).to.eq(0, 'the entity should be removed from the group 2')
 
@@ -350,7 +350,7 @@ describe('ECS', () => {
           uuidEventFutureComponent.resolve(event)
         })
 
-        entity.set(clicker)
+        entity.addComponentOrReplace(clicker)
 
         engine.addEntity(entity)
 
@@ -389,7 +389,7 @@ describe('ECS', () => {
 
         engine.addEntity(entity)
 
-        entity.set(clicker)
+        entity.addComponentOrReplace(clicker)
 
         engine.eventManager.addListener(UUIDEvent, uuidEventFuture, event => {
           uuidEventFuture.resolve(event.uuid)
@@ -421,11 +421,11 @@ describe('ECS', () => {
           uuidEventFutureComponent.reject(new Error())
         })
 
-        entity.set(clicker)
+        entity.addComponentOrReplace(clicker)
 
         engine.addEntity(entity)
 
-        entity.remove(clicker)
+        entity.removeComponent(clicker)
 
         engine.eventManager.addListener(UUIDEvent, uuidEventFuture, event => {
           uuidEventFuture.resolve(event.uuid)
@@ -465,7 +465,7 @@ describe('ECS', () => {
       const model = new GLTFModel()
       const id = getComponentId(model)
       const ent = new Entity()
-      ent.set(model)
+      ent.addComponentOrReplace(model)
       model.src = 'example.gltf'
 
       expect(await idFuture).to.eq(id, 'event should be fired')
@@ -491,7 +491,7 @@ describe('ECS', () => {
       const model = new GLTFModel()
       const id = getComponentId(model)
       const ent = new Entity()
-      ent.set(model)
+      ent.addComponentOrReplace(model)
       model.src = 'example.gltf'
       engine.disposeComponent(model)
 

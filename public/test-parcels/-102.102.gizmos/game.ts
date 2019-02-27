@@ -7,14 +7,14 @@ let z = 1
 
 function createCube(i: number) {
   const cube = new Entity()
-  cube.add(shape)
+  cube.addComponent(shape)
 
-  cube.getOrCreate(Transform).position.z = z += 0.5
-  cube.getOrCreate(Transform).position.y = 1
-  cube.getOrCreate(Transform).position.x = i & 8 ? 1 : 5
-  cube.getOrCreate(Transform).scale.z = 0.4
-  cube.getOrCreate(Transform).scale.y = 0.4
-  cube.getOrCreate(Transform).scale.x = 0.4
+  cube.getComponentOrCreate(Transform).position.z = z += 0.5
+  cube.getComponentOrCreate(Transform).position.y = 1
+  cube.getComponentOrCreate(Transform).position.x = i & 8 ? 1 : 5
+  cube.getComponentOrCreate(Transform).scale.z = 0.4
+  cube.getComponentOrCreate(Transform).scale.y = 0.4
+  cube.getComponentOrCreate(Transform).scale.x = 0.4
 
   const gizmo = new Gizmos()
   gizmo.position = !!(i & 1)
@@ -22,8 +22,8 @@ function createCube(i: number) {
   gizmo.rotation = !!(i & 4)
   gizmo.cycle = !!(i & 8)
 
-  cube.set(gizmo)
-  cube.set(
+  cube.addComponentOrReplace(gizmo)
+  cube.addComponentOrReplace(
     new OnGizmoEvent(evt => {
       log(evt)
       if (evt.type === 'gizmoDragEnded') {
@@ -37,7 +37,7 @@ function createCube(i: number) {
 }
 
 for (let i = 0; i < 16; i++) {
-  createCube(i).set(new OnPointerDown(e => log(`click on ${i}`, e)))
+  createCube(i).addComponentOrReplace(new OnPointerDown(e => log(`click on ${i}`, e)))
 }
 
 log('initialized the cubes')

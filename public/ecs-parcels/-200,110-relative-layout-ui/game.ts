@@ -2,7 +2,7 @@ const SEND_ICON = './images/send-icon.png'
 
 const ui = new UIScreenSpaceShape()
 const uiEntity = new Entity()
-uiEntity.set(ui)
+uiEntity.addComponentOrReplace(ui)
 engine.addEntity(uiEntity)
 
 const container = new UIContainerRectShape(ui)
@@ -90,8 +90,8 @@ input.paddingRight = '20px'
 // When you want to bind event listener to UI component, you have to
 // create new entity and add component with event listener to it
 const inputEntity = new Entity()
-inputEntity.set(input)
-inputEntity.set(
+inputEntity.addComponentOrReplace(input)
+inputEntity.addComponentOrReplace(
   new OnChanged((data: { value: string }) => {
     inputTextState = data.value
   })
@@ -110,7 +110,7 @@ sendButtonShape.height = '30px'
 sendButtonShape.hAlign = 'right'
 sendButtonShape.top = '-40px'
 sendButtonShape.left = '-20px'
-sendButton.set(
+sendButton.addComponentOrReplace(
   new OnClick(() => {
     if (inputTextState) {
       textFromInput.value = inputTextState
@@ -120,7 +120,7 @@ sendButton.set(
     }
   })
 )
-sendButton.set(sendButtonShape)
+sendButton.addComponentOrReplace(sendButtonShape)
 engine.addEntity(sendButton)
 
 // --- SLIDERS
@@ -161,13 +161,13 @@ sliderShape1.width = '20px'
 sliderShape1.height = '100px'
 sliderShape1.top = '0px'
 sliderShape1.left = '-60px'
-slider1.set(
+slider1.addComponentOrReplace(
   new OnChanged((data: { value: number }) => {
     const value = Math.round(data.value)
     valueFromSlider1.value = value.toString()
   })
 )
-slider1.set(sliderShape1)
+slider1.addComponentOrReplace(sliderShape1)
 engine.addEntity(slider1)
 
 const slider2 = new Entity()
@@ -191,13 +191,13 @@ sliderShape2.height = '20px'
 sliderShape2.top = '130px'
 sliderShape2.left = '-40px'
 sliderShape2.swapOrientation = true
-slider2.set(
+slider2.addComponentOrReplace(
   new OnChanged((data: { value: number }) => {
     const value = Math.round(data.value)
     valueFromSlider2.value = value.toString()
   })
 )
-slider2.set(sliderShape2)
+slider2.addComponentOrReplace(sliderShape2)
 engine.addEntity(slider2)
 
 const topText = new UITextShape(container)
@@ -234,12 +234,12 @@ closeShape.height = '30px'
 closeShape.vAlign = 'bottom'
 closeShape.top = '-80px'
 closeShape.isPointerBlocker = false
-closeButton.set(
+closeButton.addComponentOrReplace(
   new OnClick(() => {
     ui.visible = false
   })
 )
-closeButton.set(closeShape)
+closeButton.addComponentOrReplace(closeShape)
 engine.addEntity(closeButton)
 
 // -----------------------------
@@ -251,20 +251,20 @@ instructionText.width = 5
 instructionText.fontSize = 40
 
 const instructions = new Entity()
-instructions.set(new Transform({ position: new Vector3(5, 1.5, 5) }))
-instructions.set(instructionText)
+instructions.addComponentOrReplace(new Transform({ position: new Vector3(5, 1.5, 5) }))
+instructions.addComponentOrReplace(instructionText)
 engine.addEntity(instructions)
 
 const uiTrigger = new Entity()
 const transform = new Transform({ position: new Vector3(5, 1, 5), scale: new Vector3(0.3, 0.3, 0.3) })
-uiTrigger.set(transform)
+uiTrigger.addComponentOrReplace(transform)
 
-uiTrigger.set(
+uiTrigger.addComponentOrReplace(
   new OnClick(() => {
     ui.visible = true
   })
 )
 
-uiTrigger.set(new BoxShape())
+uiTrigger.addComponentOrReplace(new BoxShape())
 
 engine.addEntity(uiTrigger)

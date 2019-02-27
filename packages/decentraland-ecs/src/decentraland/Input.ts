@@ -164,7 +164,7 @@ export class Input {
 
     if (newData.hit && newData.hit.entityId && DisposableComponent.engine) {
       const entity = DisposableComponent.engine.entities[newData.hit.entityId]
-      const handler = entity && entity.getOrNull(OnPointerUp)
+      const handler = entity && entity.getComponentOrNull(OnPointerUp)
       if (handler) {
         handler.callback(newData)
       }
@@ -196,7 +196,7 @@ export class Input {
 
     if (newData.hit && newData.hit.entityId && DisposableComponent.engine) {
       const entity = DisposableComponent.engine.entities[newData.hit.entityId]
-      const handler = entity && entity.getOrNull(OnPointerDown)
+      const handler = entity && entity.getComponentOrNull(OnPointerDown)
       if (handler) {
         handler.callback(newData)
       }
