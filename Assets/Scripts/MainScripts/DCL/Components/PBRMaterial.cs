@@ -27,7 +27,7 @@ namespace DCL.Components
             public string alphaTexture;
             public string emissiveTexture;
             public string emissiveColor = "#000";
-            public float emissiveIntensity = 1f;
+            public float emissiveIntensity = 2f;
             public string reflectionColor = "#fff"; // Specular color
             public string reflectivityColor = "#fff";
             public float directIntensity = 1f;
@@ -96,6 +96,9 @@ namespace DCL.Components
                 // METALLIC/SPECULAR CONFIGURATIONS
                 ColorUtility.TryParseHtmlString(model.emissiveColor, out auxColor);
                 material.SetColor("_EmissionColor", auxColor * model.emissiveIntensity);
+
+                if ( auxColor != Color.clear && auxColor != Color.black )
+                    material.EnableKeyword("_EMISSION");
 
                 ColorUtility.TryParseHtmlString(model.reflectivityColor, out auxColor);
                 material.SetColor("_SpecColor", auxColor);
