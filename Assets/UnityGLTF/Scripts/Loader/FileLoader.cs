@@ -1,4 +1,4 @@
-﻿using System.IO;
+using System.IO;
 using GLTF;
 using UnityEngine;
 using System;
@@ -39,8 +39,8 @@ namespace UnityGLTF.Loader
             }
 
             yield return null;
-
             LoadedStream = File.OpenRead(pathToLoad);
+
         }
 
         public void LoadStreamSync(string gltfFilePath)

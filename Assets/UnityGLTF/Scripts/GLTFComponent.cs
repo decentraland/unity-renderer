@@ -17,6 +17,9 @@ namespace UnityGLTF
     /// </summary>
     public class GLTFComponent : MonoBehaviour
     {
+        const int GLTF_DOWNLOAD_THROTTLING_LIMIT = 30;
+        public static bool VERBOSE = false;
+
         public string GLTFUri = null;
         public bool Multithreaded = true;
         public bool UseStream = false;
@@ -44,6 +47,8 @@ namespace UnityGLTF
         private AsyncCoroutineHelper asyncCoroutineHelper;
         Coroutine loadingRoutine = null;
 
+        static int downloadingCount;
+
         public void LoadAsset(string incomingURI = "", bool loadEvenIfAlreadyLoaded = false)
         {
             if (alreadyLoadedAsset && !loadEvenIfAlreadyLoaded) return;
@@ -58,12 +63,7 @@ namespace UnityGLTF
                 StopCoroutine(loadingRoutine);
             }
 
-#if UNITY_EDITOR
-            //GLTFSceneImporter.RunCoroutineSync( LoadAssetCoroutine() );
-            StartCoroutine(LoadAssetCoroutine());
-#else
             loadingRoutine = DCL.CoroutineHelpers.StartThrowingCoroutine(this, LoadAssetCoroutine(), OnFail);
-#endif
         }
 
         private void OnFail(Exception obj)
@@ -71,7 +71,8 @@ namespace UnityGLTF
             if (OnFailedLoadingAsset != null)
                 OnFailedLoadingAsset.Invoke();
 
-            Debug.Log("GLTF Loading Failed! " + obj.ToString());
+            downloadingCount--;
+            if ( VERBOSE ) Debug.Log($"(ERROR) downloadingCount-- = {downloadingCount}");
         }
 
         public IEnumerator LoadAssetCoroutine()
@@ -143,7 +144,20 @@ namespace UnityGLTF
 
                     float time = Time.realtimeSinceStartup;
 
+
+
+                    if (downloadingCount > GLTF_DOWNLOAD_THROTTLING_LIMIT)
+                    {
+                        yield return new WaitUntil(() => { return downloadingCount <= GLTF_DOWNLOAD_THROTTLING_LIMIT; });
+                    }
+
+                    downloadingCount++;
+                    if ( VERBOSE ) Debug.Log($"downloadingCount++ = {downloadingCount}");
+
                     yield return sceneImporter.LoadScene(-1);
+
+                    downloadingCount--;
+                    if ( VERBOSE ) Debug.Log($"downloadingCount-- = {downloadingCount}");
 
                     // Override the shaders on all materials if a shader is provided
                     if (shaderOverride != null)
@@ -154,6 +168,7 @@ namespace UnityGLTF
                             renderer.sharedMaterial.shader = shaderOverride;
                         }
                     }
+
                 }
                 finally
                 {
