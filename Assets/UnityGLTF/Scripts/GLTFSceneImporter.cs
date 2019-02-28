@@ -415,6 +415,7 @@ namespace UnityGLTF
                 if (image.Uri != null && !URIHelper.IsBase64Uri(image.Uri))
                 {
                     yield return _loader.LoadStream(image.Uri);
+
                     _assetCache.ImageStreamCache[sourceId] = _loader.LoadedStream;
                 }
                 else if (image.Uri == null && image.BufferView != null && _assetCache.BufferCache[image.BufferView.Value.Buffer.Id] == null)
@@ -478,6 +479,7 @@ namespace UnityGLTF
                 GLTFParser.ParseJson(_gltfStream.Stream, out _gltfRoot, _gltfStream.StartPosition);
             }
         }
+
 
         public static void RunCoroutineSync(IEnumerator streamEnum)
         {
@@ -572,6 +574,7 @@ namespace UnityGLTF
                 else
                 {
                     yield return _loader.LoadStream(buffer.Uri);
+                    
                     bufferDataStream = _loader.LoadedStream;
                 }
 
@@ -1066,6 +1069,7 @@ namespace UnityGLTF
             sceneObj.transform.localScale = Vector3.one;
 
             Transform[] nodeTransforms = new Transform[scene.Nodes.Count];
+
             for (int i = 0; i < scene.Nodes.Count; ++i)
             {
                 NodeId node = scene.Nodes[i];
@@ -1090,6 +1094,7 @@ namespace UnityGLTF
                     clip.wrapMode = WrapMode.Loop;
 
                     animation.AddClip(clip, clip.name);
+
                     if (i == 0)
                     {
                         animation.clip = clip;
@@ -1256,6 +1261,12 @@ namespace UnityGLTF
 
                 bones[i] = _assetCache.NodeCache[skin.Joints[i].Id].transform;
                 bindPoses[i] = gltfBindPoses[i].ToUnityMatrix4x4Convert();
+            }
+
+            if (_assetCache.NodeCache[skin.Skeleton.Id] == null)
+            {
+                if (VERBOSE) Debug.Log("A GLTF BufferCache in " + renderer.name + " is null, exiting current SetUpBones() process", renderer);
+                yield break;
             }
 
             renderer.rootBone = _assetCache.NodeCache[skin.Skeleton.Id].transform;
