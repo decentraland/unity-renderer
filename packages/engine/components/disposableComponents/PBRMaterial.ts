@@ -4,7 +4,7 @@ import { validators } from '../helpers/schemaValidator'
 import { scene } from '../../renderer'
 import { probe } from '../../renderer/ambientLights'
 import { CLASS_ID, Observer } from 'decentraland-ecs/src'
-import { deleteUnusedTextures } from 'engine/entities/loader'
+import { deleteUnusedTextures } from 'engine/renderer/monkeyLoader'
 
 const defaults = {
   alpha: 1,

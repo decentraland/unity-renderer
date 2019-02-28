@@ -1,11 +1,11 @@
 import * as Babylon from 'babylonjs'
 
-import { initMonkeyLoader } from './monkeyLoader'
-
 import 'babylonjs-gui'
 import 'babylonjs-materials'
 import 'babylonjs-loaders'
 import 'babylonjs-procedural-textures'
+
+import { initMonkeyLoader } from './monkeyLoader'
 
 import { future } from 'fp-future'
 import {

@@ -8,7 +8,7 @@ import { probe } from 'engine/renderer/ambientLights'
 import { DEBUG } from 'config'
 import { log } from 'util'
 import { Animator } from '../ephemeralComponents/Animator'
-import { deleteUnusedTextures } from 'engine/entities/loader'
+import { deleteUnusedTextures, isSceneTexture } from 'engine/renderer/monkeyLoader'
 
 BABYLON.SceneLoader.OnPluginActivatedObservable.add(function(plugin) {
   if (plugin instanceof BABYLON.GLTFFileLoader) {
@@ -86,10 +86,7 @@ export class GLTFShape extends DisposableComponent {
 
                 if (i.endsWith('Texture') && t instanceof BABYLON.Texture && t !== probe.cubeTexture) {
                   if (!assetContainer.textures.includes(t)) {
-                    if (
-                      (this.context && t.url.includes(this.context.domain)) ||
-                      (t.url.startsWith('data:/') && t.url.includes(file))
-                    ) {
+                    if (isSceneTexture(t)) {
                       assetContainer.textures.push(t)
                     }
                   }
@@ -213,30 +210,3 @@ export class GLTFShape extends DisposableComponent {
 }
 
 DisposableComponent.registerClassId(CLASS_ID.GLTF_SHAPE, GLTFShape)
-
-/*
-const NAME = 'DCL_urlResolver'
-
-// tslint:disable-next-line:class-name
-export class DCL_urlResolver implements BABYLON.GLTF2.IGLTFLoaderExtension {
-  public readonly name = NAME
-  public enabled = true
-
-  private _loader: BABYLON.GLTF2.GLTFLoader
-
-  constructor(loader: BABYLON.GLTF2.GLTFLoader) {
-    this._loader = loader
-  }
-
-  public dispose() {
-    delete this._loader
-  }
-
-  _loadUriAsync(context: string, uri: string): null | Promise<ArrayBufferView> {
-    console.log('loader extension', context, uri)
-    return null
-  }
-}
-
-BABYLON.GLTF2.GLTFLoader.RegisterExtension(NAME, loader => new DCL_urlResolver(loader))
-*/

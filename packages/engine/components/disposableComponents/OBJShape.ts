@@ -6,6 +6,7 @@ import { resolveUrl } from 'atomicHelpers/parseUrl'
 import { scene } from 'engine/renderer'
 import { probe } from 'engine/renderer/ambientLights'
 import { DEBUG } from 'config'
+import { isSceneTexture } from 'engine/renderer/monkeyLoader'
 
 export class OBJShape extends DisposableComponent {
   assetContainerEntity = new Map<string, BABYLON.AssetContainer>()
@@ -67,7 +68,7 @@ export class OBJShape extends DisposableComponent {
 
                 if (i.endsWith('Texture') && t instanceof BABYLON.Texture && t !== probe.cubeTexture) {
                   if (!assetContainer.textures.includes(t)) {
-                    if (this.context && t.url.includes(this.context.domain)) {
+                    if (isSceneTexture(t)) {
                       assetContainer.textures.push(t)
                     }
                   }

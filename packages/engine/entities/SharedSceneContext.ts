@@ -1,5 +1,5 @@
 import * as BABYLON from 'babylonjs'
-import { loadTexture, registerContextInResourceManager, loadFile } from './loader'
+import { loadTexture, registerContextInResourceManager, loadFile } from '../renderer/monkeyLoader'
 import { scene } from '../renderer'
 import { registerLoadingContext } from 'engine/renderer/monkeyLoader'
 import { resolveUrl } from 'atomicHelpers/parseUrl'
@@ -115,7 +115,7 @@ export class SharedSceneContext implements BABYLON.IDisposable {
         }
       })
 
-      this.metrics = {
+      const newMetrics = {
         entities,
         triangles,
         bodies,
@@ -123,6 +123,12 @@ export class SharedSceneContext implements BABYLON.IDisposable {
         materials: currentUsage.materials.size,
         geometries: currentUsage.geometries.size
       }
+
+      if (JSON.stringify(newMetrics) === JSON.stringify(this.metrics)) {
+        return
+      }
+
+      this.metrics = newMetrics
 
       this.emit('metricsUpdate', {
         given: this.metrics,

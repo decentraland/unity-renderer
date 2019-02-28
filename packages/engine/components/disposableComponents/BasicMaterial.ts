@@ -4,7 +4,7 @@ import { validators } from '../helpers/schemaValidator'
 import { scene } from '../../renderer'
 import { CLASS_ID, Observer } from 'decentraland-ecs/src'
 import { TextureSamplingMode, TextureWrapping } from 'shared/types'
-import { deleteUnusedTextures } from 'engine/entities/loader'
+import { deleteUnusedTextures } from 'engine/renderer/monkeyLoader'
 
 BABYLON.Effect.ShadersStore['dclShadelessVertexShader'] = `
   precision highp float;

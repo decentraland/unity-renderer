@@ -347,6 +347,7 @@ export async function connect(ethAddress: string, network?: ETHEREUM_NETWORK) {
       publicKey: user.publicKey,
       avatarType: user.avatarType
     }
+
     context = new Context(userProfile, network)
     context.worldInstanceConnection = new WorldInstanceConnection(networkConfigurations[network].worldInstanceUrl)
 

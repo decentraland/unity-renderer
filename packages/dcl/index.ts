@@ -113,7 +113,11 @@ const notifyPositionObservers = (() => {
 function getMetrics(): Metrics {
   return [...loadedParcelSceneWorkers]
     .filter(parcelScene => (parcelScene.parcelScene as WebGLParcelScene).context)
-    .map(parcelScene => (parcelScene.parcelScene as WebGLParcelScene).context.metrics)
+    .map(parcelScene => {
+      const context = (parcelScene.parcelScene as WebGLParcelScene).context
+      context.updateMetrics()
+      return context.metrics
+    })
     .filter(metrics => !!metrics)
     .reduce<IParcelSceneLimits>(
       (metrics, m) => {

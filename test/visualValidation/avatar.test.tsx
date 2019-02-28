@@ -92,6 +92,10 @@ enableVisualTests('Avatar visual validation', function(root) {
     avatar3.dispose()
     avatar3 = null
 
+    avatarContext.disposableComponents.forEach((_, id) => {
+      avatarContext.ComponentDisposed({ id })
+    })
+
     // avatarContext.dispose()
     ;(await (await hud).worker).dispose()
   })

@@ -44,7 +44,8 @@ export function cleanupAssetContainer($: BABYLON.AssetContainer) {
     $.transformNodes && $.transformNodes.forEach(disposeNodeDelegate)
     $.rootNodes && $.rootNodes.forEach(disposeNodeDelegate)
     $.meshes && $.meshes.forEach(disposeNodeDelegate)
-    $.textures && $.textures.forEach(disposeDelegate)
+    // Textures disposals are handled by monkeyLoader.ts
+    // NOTE: $.textures && $.textures.forEach(disposeDelegate)
     $.animationGroups && $.animationGroups.forEach(disposeAnimationGroups)
     $.multiMaterials && $.multiMaterials.forEach(disposeDelegate)
     $.sounds && $.sounds.forEach(disposeDelegate)
