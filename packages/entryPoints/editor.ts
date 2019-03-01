@@ -292,15 +292,20 @@ export namespace editor {
 
   export function preloadFile(url: string, useArrayBuffer = true): Promise<string | ArrayBuffer> {
     const defer = future()
-    scene.database.loadFileFromDB(
+
+    BABYLON.Tools.LoadFile(
       url,
-      data => defer.resolve(data),
-      null,
-      () => {
-        defer.reject(new Error(`Error while loading ${url}`))
+      data => {
+        defer.resolve(data)
       },
-      useArrayBuffer
+      null,
+      scene.database,
+      useArrayBuffer,
+      (_, err) => {
+        defer.reject(err)
+      }
     )
+
     return defer
   }
 

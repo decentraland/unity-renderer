@@ -1,3 +1,4 @@
+// tslint:disable-next-line:whitespace
 {
   const clip = new AudioClip('carnivalrides.ogg')
   const cube = new Entity()
@@ -13,7 +14,7 @@
     new OnPointerDown(() => {
       cube
         .getComponent(Transform)
-        .position.addComponentOrReplace(Math.random() * 8 + 1, Math.random() * 8 + 1, Math.random() * 8 + 1)
+        .position.addInPlaceFromFloats(Math.random() * 8 + 1, Math.random() * 8 + 1, Math.random() * 8 + 1)
     })
   )
   source.playing = true
