@@ -6,8 +6,9 @@ import { keyState, Keys } from './input'
 import { gridToWorld } from 'atomicHelpers/parcelScenePositions'
 import { teleportObserver } from 'shared/world/positionThings'
 
-export const DEFAULT_CAMERA_ZOOM = 20
-const CAMERA_SPEED = 0.01
+export const DEFAULT_CAMERA_ZOOM = 32
+export const MAX_CAMERA_ZOOM = 100
+const CAMERA_SPEED = 0.02
 const CAMERA_LEFT = BABYLON.Quaternion.RotationYawPitchRoll(Math.PI / 2, 0, 0)
 const CAMERA_RIGHT = BABYLON.Quaternion.RotationYawPitchRoll(-Math.PI / 2, 0, 0)
 const CAMERA_FORWARD = BABYLON.Quaternion.RotationYawPitchRoll(Math.PI, 0, 0)
@@ -72,7 +73,7 @@ const arcCamera = new BABYLON.ArcRotateCamera(
 
   arcCamera.upperBetaLimit = Math.PI / 2
   arcCamera.allowUpsideDown = false
-  arcCamera.upperRadiusLimit = arcCamera.panningDistanceLimit = 20
+  arcCamera.upperRadiusLimit = arcCamera.panningDistanceLimit = MAX_CAMERA_ZOOM
   arcCamera.pinchPrecision = 150
   arcCamera.wheelPrecision = 150
   arcCamera.lowerRadiusLimit = 5
@@ -107,9 +108,11 @@ function applyQuaternion(v: BABYLON.Vector3, q: BABYLON.Quaternion) {
   return v
 }
 
-function moveCamera(camera: any, directionRotation: BABYLON.Quaternion, speed: number) {
-  const direction = camera.position.subtract(camera.target).normalize()
+function moveCamera(camera: BABYLON.ArcRotateCamera, directionRotation: BABYLON.Quaternion, speed: number) {
+  const direction = camera.position.subtract(camera.target)
   direction.y = 0
+  direction.normalize()
+
   applyQuaternion(direction, directionRotation)
   return direction.scaleInPlace(speed)
 }
