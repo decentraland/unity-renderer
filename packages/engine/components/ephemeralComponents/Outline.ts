@@ -1,7 +1,6 @@
 import * as BABYLON from 'babylonjs'
 
 import { BaseComponent } from '../BaseComponent'
-import { BasicShape } from '../disposableComponents/DisposableComponent'
 import { BaseEntity } from '../../entities/BaseEntity'
 import { getHighlightLayer } from 'engine/renderer/init'
 
@@ -31,35 +30,20 @@ export class Outline extends BaseComponent<{}> {
   }
 
   update() {
-    const mesh: BABYLON.AbstractMesh = this.entity.getObject3D(BasicShape.nameInEntity) as any
+    const children = this.entity.getChildMeshes(false) as BABYLON.Mesh[]
 
-    if (mesh) {
-      if (mesh instanceof BABYLON.Mesh) {
-        getHighlightLayer().addMesh(mesh, outlineColor)
-      }
-
-      const children = mesh.getChildMeshes(false) as BABYLON.Mesh[]
-
-      for (let child of children) {
-        getHighlightLayer().addMesh(child, outlineColor)
-      }
+    for (let child of children) {
+      getHighlightLayer().addMesh(child, outlineColor)
     }
   }
 
   detach() {
     this.entity.onChangeObject3DObservable.removeCallback(this.didUpdateMesh)
 
-    const mesh: BABYLON.AbstractMesh = this.entity.getObject3D(BasicShape.nameInEntity) as any
-    if (mesh) {
-      if (mesh instanceof BABYLON.Mesh) {
-        getHighlightLayer().removeMesh(mesh)
-      }
+    const children = this.entity.getChildMeshes(false) as BABYLON.Mesh[]
 
-      const children = mesh.getChildMeshes(false) as BABYLON.Mesh[]
-
-      for (let child of children) {
-        getHighlightLayer().removeMesh(child)
-      }
+    for (let child of children) {
+      getHighlightLayer().removeMesh(child)
     }
   }
 }

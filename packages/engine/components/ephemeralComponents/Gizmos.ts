@@ -80,7 +80,9 @@ function switchGizmo() {
 
   return nextGizmo
 }
-const dragBehavior = new BABYLON.PointerDragBehavior({ dragPlaneNormal: BABYLON.Vector3.Up() })
+const upVector = BABYLON.Vector3.Up()
+
+const dragBehavior = new BABYLON.PointerDragBehavior({ dragPlaneNormal: upVector })
 {
   // Add drag behavior to handle events when the gizmo is dragged
   dragBehavior.moveAttached = false
@@ -91,6 +93,10 @@ const dragBehavior = new BABYLON.PointerDragBehavior({ dragPlaneNormal: BABYLON.
 
   dragBehavior.onDragStartObservable.add(event => {
     dragTarget.copyFrom(activeEntity.position)
+
+    activeEntity.computeWorldMatrix().invertToRef(tmpMatrix)
+    tmpMatrix.setTranslationFromFloats(0, 0, 0)
+    BABYLON.Vector3.TransformCoordinatesToRef(BABYLON.Vector3.Up(), tmpMatrix, upVector)
   })
 
   dragBehavior.onDragObservable.add(event => {
@@ -219,17 +225,20 @@ export function selectGizmo(type: Gizmo) {
   return true
 }
 
-function selectActiveEntity(entity: BaseEntity) {
-  if (activeEntity === entity) {
+function selectActiveEntity(newActiveEntity: BaseEntity) {
+  if (activeEntity === newActiveEntity) {
     return
   }
+
   if (activeEntity) {
     removeEntityOutline(activeEntity)
     activeEntity.removeBehavior(dragBehavior)
   }
-  activeEntity = entity
+
+  activeEntity = newActiveEntity
+
   if (activeEntity) {
-    addEntityOutline(entity)
+    addEntityOutline(newActiveEntity)
     activeEntity.addBehavior(dragBehavior, true)
   }
 }
@@ -270,9 +279,7 @@ export class Gizmos extends BaseComponent<GizmoConfiguration> {
   }
 
   didUpdateMesh = () => {
-    if (activeEntity === this.entity) {
-      this.update()
-    }
+    this.update()
   }
 
   configureGizmos() {
