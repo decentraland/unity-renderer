@@ -1,6 +1,6 @@
 import { BaseComponent } from '../BaseComponent'
 import { scene } from 'engine/renderer'
-import { BaseEntity } from 'engine/entities/BaseEntity'
+import { BaseEntity, findParentEntity } from 'engine/entities/BaseEntity'
 import { Gizmo } from 'decentraland-ecs/src/decentraland/Gizmos'
 import { removeEntityOutline, addEntityOutline } from './Outline'
 
@@ -230,7 +230,12 @@ function selectActiveEntity(newActiveEntity: BaseEntity) {
     return
   }
 
+  let context = activeEntity && activeEntity.context
+
   if (activeEntity) {
+    gizmoManager.gizmos.positionGizmo.attachedMesh = null
+    gizmoManager.gizmos.rotationGizmo.attachedMesh = null
+    gizmoManager.gizmos.scaleGizmo.attachedMesh = null
     removeEntityOutline(activeEntity)
     activeEntity.removeBehavior(dragBehavior)
   }
@@ -241,7 +246,43 @@ function selectActiveEntity(newActiveEntity: BaseEntity) {
     addEntityOutline(newActiveEntity)
     activeEntity.addBehavior(dragBehavior, true)
   }
+
+  if (context && !newActiveEntity) {
+    context.emit('uuidEvent', {
+      uuid: 'gizmo-event',
+      payload: {
+        type: 'gizmoSelected',
+        gizmoType: selectedGizmo,
+        entityId: null
+      }
+    })
+  }
 }
+
+scene.onPointerObservable.add(evt => {
+  if (evt.type === BABYLON.PointerEventTypes.POINTERTAP) {
+    let shouldDeselect = !evt.pickInfo.pickedMesh
+
+    if (activeEntity && evt.pickInfo.pickedMesh) {
+      const parent = findParentEntity(evt.pickInfo.pickedMesh)
+
+      if (!parent) {
+        shouldDeselect = true
+      } else {
+        const hasGizmo = !!parent.getBehaviorByName('gizmos')
+        if (!hasGizmo) {
+          shouldDeselect = true
+        } else {
+          // it will be automatically selected
+        }
+      }
+    }
+
+    if (shouldDeselect) {
+      selectActiveEntity(null)
+    }
+  }
+})
 
 export class Gizmos extends BaseComponent<GizmoConfiguration> {
   readonly name: string = 'gizmos'
@@ -310,9 +351,6 @@ export class Gizmos extends BaseComponent<GizmoConfiguration> {
     this.entity.removeListener('onClick', this.activate)
     this.entity.onChangeObject3DObservable.removeCallback(this.didUpdateMesh)
     if (activeEntity === this.entity) {
-      gizmoManager.gizmos.positionGizmo.attachedMesh = null
-      gizmoManager.gizmos.rotationGizmo.attachedMesh = null
-      gizmoManager.gizmos.scaleGizmo.attachedMesh = null
       selectActiveEntity(null)
     }
     this.entity = null
