@@ -6,6 +6,7 @@ import 'babylonjs-loaders'
 import 'babylonjs-procedural-textures'
 
 import { initMonkeyLoader } from './monkeyLoader'
+import { Database } from '../database'
 
 import { future } from 'fp-future'
 import {
@@ -61,7 +62,7 @@ const gl = new BABYLON.GlowLayer('glow', scene)
 
 export const effectLayers: BABYLON.EffectLayer[] = [gl]
 
-const database = new BABYLON.Database('no-scene', () => void 0, true)
+const database: BABYLON.Database = new Database() as any
 
 /// --- SIDE EFFECTS ---
 
