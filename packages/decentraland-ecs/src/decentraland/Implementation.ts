@@ -53,7 +53,7 @@ export class DecentralandSynchronizationSystem implements ISystem {
   }
 
   /**
-   * system.onRemoveEntity is called by the engine when a entity is added to the
+   * system.onAddEntity is called by the engine when a entity is added to the
    * engine.
    */
   onAddEntity(entity: Entity) {

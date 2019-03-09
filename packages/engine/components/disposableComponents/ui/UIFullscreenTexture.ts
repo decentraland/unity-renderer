@@ -1,7 +1,7 @@
 import { DisposableComponent } from '../DisposableComponent'
 import { CLASS_ID } from 'decentraland-ecs/src'
 import { BaseEntity } from 'engine/entities/BaseEntity'
-import { UIScreenSpaceShape } from 'decentraland-ecs/src/decentraland/UIShapes'
+import { UIFullScreenShape } from 'decentraland-ecs/src/decentraland/UIShapes'
 
 export class UIFullScreenTexture extends DisposableComponent {
   fullscreenTexture: BABYLON.GUI.AdvancedDynamicTexture = BABYLON.GUI.AdvancedDynamicTexture.CreateFullscreenUI(
@@ -25,9 +25,9 @@ export class UIFullScreenTexture extends DisposableComponent {
     super.dispose()
   }
 
-  async updateData(_: UIScreenSpaceShape): Promise<void> {
+  async updateData(_: UIFullScreenShape): Promise<void> {
     // noop
   }
 }
 
-DisposableComponent.registerClassId(CLASS_ID.UI_SCREEN_SPACE_SHAPE, UIFullScreenTexture)
+DisposableComponent.registerClassId(CLASS_ID.UI_FULLSCREEN_SHAPE, UIFullScreenTexture)

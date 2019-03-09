@@ -40,7 +40,7 @@ const schemaValidator = createSchemaValidator({
   visible: { type: 'boolean', default: true }
 })
 
-class Class extends UIControl<UITextShape, BABYLON.GUI.TextBlock> {
+class UIText extends UIControl<UITextShape, BABYLON.GUI.TextBlock> {
   control = new BABYLON.GUI.TextBlock('text', '')
 
   onAttach(_entity: BaseEntity): void {
@@ -97,4 +97,4 @@ class Class extends UIControl<UITextShape, BABYLON.GUI.TextBlock> {
   }
 }
 
-DisposableComponent.registerClassId(CLASS_ID.UI_TEXT_SHAPE, Class)
+DisposableComponent.registerClassId(CLASS_ID.UI_TEXT_SHAPE, UIText)

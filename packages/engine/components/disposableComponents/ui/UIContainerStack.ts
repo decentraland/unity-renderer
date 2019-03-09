@@ -50,13 +50,16 @@ export class UIContainerStack extends UIControl<UIContainerStackShape, BABYLON.G
     this.control.horizontalAlignment = parseHorizontalAlignment(this.data.hAlign)
     this.control.alpha = Math.max(0, Math.min(1, this.data.opacity))
     this.control.width = this.data.width
-    this.control.height = this.data.height
     this.control.left = this.data.left
     this.control.top = this.data.top
     this.control.color = this.data.color
     this.control.background = this.data.background
     this.control.isVisible = this.data.visible
     this.control.isVertical = this.data.vertical
+    // Only set height manually if the stack container is not in vertical mode
+    if (!this.data.vertical) {
+      this.control.height = this.data.height
+    }
 
     this.setParent(this.data.parentComponent)
   }

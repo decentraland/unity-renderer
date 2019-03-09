@@ -7,7 +7,7 @@ import {
   UIContainerStackShape,
   UISliderShape,
   UIContainerRectShape,
-  UIScreenSpaceShape,
+  UIFullScreenShape,
   UIShape
 } from 'decentraland-ecs/src/decentraland/UIShapes'
 
@@ -17,8 +17,7 @@ declare var require: any
 const UI_CHAT = require('../../static/images/ui-chat.png')
 
 // ScreenSpace UI
-const parent = new UIScreenSpaceShape()
-parent.id = 'chat-ui'
+const parent = new UIFullScreenShape()
 
 const MAX_CHARS = 94
 const PRIMARY_TEXT_COLOR = 'white'
@@ -467,7 +466,7 @@ const sliderOpenedChat = createMessagesScrollbar(container, onSliderChanged)
 const chatHeader = createChatHeader(container)
 createMinimizeButton(chatHeader.container, toggleChat)
 
-function initializeMinimizedChat(parent: UIScreenSpaceShape) {
+function initializeMinimizedChat(parent: UIFullScreenShape) {
   const containerMinimized = new UIContainerRectShape(parent)
   containerMinimized.id = 'gui-container-minimized'
   containerMinimized.adaptHeight = true

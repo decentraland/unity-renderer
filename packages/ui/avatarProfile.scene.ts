@@ -3,7 +3,7 @@ import {
   UIImageShape,
   UIContainerRectShape,
   UITextShape,
-  UIScreenSpaceShape,
+  UIFullScreenShape,
   UIShape
 } from 'decentraland-ecs/src/decentraland/UIShapes'
 import { DecentralandInterface, IEvents } from 'decentraland-ecs/src/decentraland/Types'
@@ -202,8 +202,7 @@ dcl.onEvent(event => {
 })
 
 // ScreenSpace UI
-const screenSpaceUI = new UIScreenSpaceShape()
-screenSpaceUI.id = 'avatar-profile-ui'
+const screenSpaceUI = new UIFullScreenShape()
 
 // Main container
 const guiContainerComponent = new UIContainerRectShape(screenSpaceUI)

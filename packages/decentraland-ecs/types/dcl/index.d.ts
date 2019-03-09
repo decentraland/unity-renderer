@@ -3922,6 +3922,217 @@ declare class Transform extends ObservableComponent {
 }
 
 /**
+ * @beta
+ */
+declare class UIContainerRectShape extends UIShape {
+  id: string | null
+  opacity: number
+  adaptWidth: boolean
+  adaptHeight: boolean
+  thickness: number
+  cornerRadius: number
+  width: string
+  height: string
+  top: string
+  left: string
+  color: string
+  background: string
+  hAlign: string
+  vAlign: string
+  visible: boolean
+  isPointerBlocker: boolean
+}
+
+/**
+ * @beta
+ */
+declare class UIContainerStackShape extends UIShape {
+  id: string | null
+  opacity: number
+  adaptWidth: boolean
+  adaptHeight: boolean
+  width: string
+  height: string
+  top: string
+  left: string
+  color: string
+  background: string
+  hAlign: string
+  vAlign: string
+  vertical: boolean
+  visible: boolean
+  isPointerBlocker: boolean
+}
+
+/**
+ * @beta
+ */
+declare class UIImageShape extends UIShape {
+  id: string | null
+  opacity: number
+  sourceLeft: string | null
+  sourceTop: string | null
+  sourceWidth: string | null
+  sourceHeight: string | null
+  source: string | null
+  width: string
+  height: string
+  top: string
+  left: string
+  hAlign: string
+  vAlign: string
+  paddingTop: string
+  paddingRight: string
+  paddingBottom: string
+  paddingLeft: string
+  visible: boolean
+  isPointerBlocker: boolean
+}
+
+/**
+ * @beta
+ */
+declare class UIInputTextShape extends UIShape {
+  id: string | null
+  color: string
+  thickness: number
+  fontFamily: string
+  fontSize: number
+  fontWeight: string
+  opacity: number
+  value: string
+  placeholderColor: string
+  placeholder: string
+  margin: string
+  maxWidth: string
+  autoStretchWidth: boolean
+  background: string
+  focusedBackground: string
+  shadowBlur: number
+  shadowOffsetX: number
+  shadowOffsetY: number
+  shadowColor: string
+  zIndex: number
+  hAlign: string
+  vAlign: string
+  width: string
+  height: string
+  top: string
+  left: string
+  paddingTop: string
+  paddingRight: string
+  paddingBottom: string
+  paddingLeft: string
+  visible: boolean
+  isPointerBlocker: boolean
+}
+
+/**
+ * @beta
+ */
+declare class UIScreenSpaceShape extends UIShape {
+  id: string | null
+  visible: boolean
+  constructor()
+}
+
+/**
+ * @beta
+ */
+declare abstract class UIShape extends ObservableComponent {
+  /**
+   * Defines if the entity and its children should be rendered
+   */
+  visible: boolean
+  private _parent?
+  constructor(parent: UIShape | null)
+  readonly parent: UIShape | undefined
+}
+
+/**
+ * @beta
+ */
+declare class UISliderShape extends UIShape {
+  id: string | null
+  minimum: number
+  maximum: number
+  color: string
+  opacity: number
+  value: number
+  borderColor: string
+  background: string
+  barOffset: string
+  thumbWidth: string
+  isThumbCircle: boolean
+  isThumbClamped: boolean
+  isVertical: boolean
+  visible: boolean
+  zIndex: number
+  hAlign: string
+  vAlign: string
+  width: string
+  height: string
+  top: string
+  left: string
+  paddingTop: string
+  paddingRight: string
+  paddingBottom: string
+  paddingLeft: string
+  onChanged: string
+  swapOrientation: boolean
+  isPointerBlocker: boolean
+}
+
+/**
+ * @beta
+ */
+declare class UITextShape extends UIShape {
+  id: string | null
+  outlineWidth: number
+  outlineColor: string
+  color: string
+  fontFamily: string
+  fontSize: number
+  fontWeight: string
+  opacity: number
+  value: string
+  lineSpacing: string
+  lineCount: number
+  resizeToFit: boolean
+  textWrapping: boolean
+  shadowBlur: number
+  shadowOffsetX: number
+  shadowOffsetY: number
+  shadowColor: string
+  zIndex: number
+  hAlign: string
+  vAlign: string
+  hTextAlign: string
+  vTextAlign: string
+  width: string
+  height: string
+  top: string
+  left: string
+  paddingTop: string
+  paddingRight: string
+  paddingBottom: string
+  paddingLeft: string
+  visible: boolean
+  isPointerBlocker: boolean
+}
+
+/**
+ * @beta
+ */
+declare class UIWorldSpaceShape extends UIShape {
+  id: string | null
+  width: string
+  height: string
+  visible: boolean
+  constructor()
+}
+
+/**
  * @public
  */
 declare class UUIDEvent<T = any> {
@@ -5502,3 +5713,9 @@ declare function isDisposableComponent(component: ComponentLike): boolean
  * @public
  */
 declare function log(...args: any[]): void
+
+/**
+ * Generates a new prefixed id
+ * @beta
+ */
+declare function newId(type: string): string

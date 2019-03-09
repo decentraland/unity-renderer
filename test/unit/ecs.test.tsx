@@ -19,7 +19,15 @@ import {
 } from 'decentraland-ecs/src'
 
 import { future } from 'fp-future'
-import { loadTestParcel, testScene, saveScreenshot, wait, waitForMesh } from '../testHelpers'
+import {
+  loadTestParcel,
+  testScene,
+  saveScreenshot,
+  wait,
+  waitForMesh,
+  PlayerCamera,
+  positionCamera
+} from '../testHelpers'
 import { sleep } from 'atomicHelpers/sleep'
 import { BaseEntity } from 'engine/entities/BaseEntity'
 import { AudioClip } from 'engine/components/disposableComponents/AudioClip'
@@ -33,6 +41,7 @@ import { BasicShape } from 'engine/components/disposableComponents/DisposableCom
 import { PBRMaterial } from 'engine/components/disposableComponents/PBRMaterial'
 import { WebGLParcelScene } from 'dcl/WebGLParcelScene'
 import { BoxShape } from 'engine/components/disposableComponents/BoxShape'
+import { UIScreenSpace } from 'engine/components/disposableComponents/ui/UIScreenSpace'
 
 declare var describe: any, it: any
 
@@ -1099,6 +1108,71 @@ describe('ECS', () => {
         expect(newMesh == mesh).to.eq(true, 'mesh == oldmesh')
 
         expect(newMesh.material === M2.material).to.eq(true, 'M2 must be set')
+      })
+    })
+
+    testScene(-200, 100, ({ parcelScenePromise, sceneHost, logs }) => {
+      let scene = null
+      let screenSpace: UIScreenSpace | null = null
+      const insideCamera: PlayerCamera = { from: [-1999, 1.6, 1001], lookAt: [-1995, 1, 1005] }
+      const outsideCamera: PlayerCamera = { from: [-2010, 1.6, 1015], lookAt: [-2000, 1, 1020] }
+
+      it('locate camera', async () => {
+        vrCamera.position.set(-1999, 1, 1001)
+        vrCamera.rotationQuaternion.copyFrom(BABYLON.Quaternion.Identity())
+      })
+
+      it('should have an UIScreenSpace component', async () => {
+        const parcelScene = await parcelScenePromise
+        scene = parcelScene
+
+        while (scene.context.disposableComponents.size < 8) {
+          await sleep(100)
+        }
+
+        scene.checkBoundaries()
+
+        expect(scene.context.disposableComponents.size).eq(8)
+        expect(scene.context.entities.size).eq(4)
+
+        screenSpace = scene.context.disposableComponents.values().next().value
+
+        expect(screenSpace).to.exist
+        expect(screenSpace).to.be.instanceOf(UIScreenSpace)
+      })
+
+      wait(100)
+
+      it('should be enabled', async () => {
+        await positionCamera(insideCamera)
+
+        scene.checkBoundaries()
+        await sleep(500)
+        scene.checkUserInPlace()
+
+        expect(screenSpace.isEnabled).to.eq(true)
+
+        await sleep(100)
+        sceneHost.fireEvent({ type: 'TEST_TRIGGER' })
+
+        await sleep(500)
+
+        expect(screenSpace.data.visible).to.eq(true)
+      })
+
+      wait(100)
+
+      it('should not be enabled', async () => {
+        await positionCamera(outsideCamera)
+
+        scene.checkBoundaries()
+        await sleep(500)
+        scene.checkUserInPlace()
+
+        await sleep(100)
+
+        expect(screenSpace.isEnabled).to.eq(false)
+        expect(screenSpace.data.visible).to.eq(true)
       })
     })
 

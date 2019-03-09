@@ -29,7 +29,7 @@ const schemaValidator = createSchemaValidator({
   isPointerBlocker: { type: 'boolean', default: false }
 })
 
-class Class extends UIControl<UIImageShape, BABYLON.GUI.Image> {
+class UIImage extends UIControl<UIImageShape, BABYLON.GUI.Image> {
   control = new BABYLON.GUI.Image('image', '')
 
   constructor(ctx: SharedSceneContext, uuid: string) {
@@ -91,4 +91,4 @@ class Class extends UIControl<UIImageShape, BABYLON.GUI.Image> {
   }
 }
 
-DisposableComponent.registerClassId(CLASS_ID.UI_IMAGE_SHAPE, Class)
+DisposableComponent.registerClassId(CLASS_ID.UI_IMAGE_SHAPE, UIImage)

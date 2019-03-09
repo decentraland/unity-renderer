@@ -37,6 +37,8 @@ export enum CLASS_ID {
 
   ANIMATION = 33,
 
+  UI_FULLSCREEN_SHAPE = 40, // internal fullscreen scenes
+
   GLTF_SHAPE = 54,
   OBJ_SHAPE = 55,
   BASIC_MATERIAL = 64,

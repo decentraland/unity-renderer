@@ -42,7 +42,7 @@ const schemaValidator = createSchemaValidator({
   isPointerBlocker: { type: 'boolean', default: false }
 })
 
-class Class extends UIControl<UIInputTextShape, BABYLON.GUI.InputText> {
+class UIInputText extends UIControl<UIInputTextShape, BABYLON.GUI.InputText> {
   control = new BABYLON.GUI.InputText('input')
 
   constructor(ctx: SharedSceneContext, uuid: string) {
@@ -135,4 +135,4 @@ class Class extends UIControl<UIInputTextShape, BABYLON.GUI.InputText> {
   }
 }
 
-DisposableComponent.registerClassId(CLASS_ID.UI_INPUT_TEXT_SHAPE, Class)
+DisposableComponent.registerClassId(CLASS_ID.UI_INPUT_TEXT_SHAPE, UIInputText)

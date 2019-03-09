@@ -31,6 +31,11 @@ import { BasicShape } from 'engine/components/disposableComponents/DisposableCom
 
 const baseUrl = 'http://localhost:8080/local-ipfs/contents/'
 
+export type PlayerCamera = {
+  lookAt: [number, number, number]
+  from: [number, number, number]
+}
+
 declare var gc: any
 declare var it: any
 declare var describe: any
@@ -63,10 +68,7 @@ function filterBabylonTextures(texture: BABYLON.Texture) {
  * @param name name of the file to save
  * @param path folder
  */
-export function saveScreenshot(
-  name: string,
-  opts: { lookAt: [number, number, number]; from: [number, number, number] } = null
-) {
+export function saveScreenshot(name: string, opts: PlayerCamera = null) {
   it(`save the screenshot ${name} #${count++}`, async function() {
     // tslint:disable-next-line:no-console
     this.timeout(20000)
@@ -74,27 +76,7 @@ export function saveScreenshot(
 
     await untilNextFrame()
 
-    const camera = scene.activeCamera as BABYLON.FreeCamera
-
-    if (opts) {
-      camera.position.set(opts.from[0], opts.from[1], opts.from[2])
-
-      if (!camera.rotationQuaternion) {
-        camera.rotationQuaternion = BABYLON.Quaternion.Identity()
-      }
-
-      LookAtRef(camera, new BABYLON.Vector3(opts.lookAt[0], opts.lookAt[1], opts.lookAt[2]), camera.rotationQuaternion)
-      camera._getViewMatrix()
-      camera.update()
-    }
-
-    await untilNextFrame()
-
-    if (opts) {
-      camera.position.set(opts.from[0], opts.from[1], opts.from[2])
-    }
-
-    reposition()
+    await positionCamera(opts)
 
     await untilNextFrame()
 
@@ -417,6 +399,32 @@ function LookAtRef(camera: BABYLON.TargetCamera, target: BABYLON.Vector3, ref: B
   BABYLON.Matrix.LookAtLHToRef(camera.position, target, new BABYLON.Vector3(0, 1, 0), result)
   result.invert()
   BABYLON.Quaternion.FromRotationMatrixToRef(result, ref)
+}
+
+export async function positionCamera(opts: PlayerCamera = null) {
+  await untilNextFrame()
+
+  const camera = scene.activeCamera as BABYLON.FreeCamera
+
+  if (opts) {
+    camera.position.set(opts.from[0], opts.from[1], opts.from[2])
+
+    if (!camera.rotationQuaternion) {
+      camera.rotationQuaternion = BABYLON.Quaternion.Identity()
+    }
+
+    LookAtRef(camera, new BABYLON.Vector3(opts.lookAt[0], opts.lookAt[1], opts.lookAt[2]), camera.rotationQuaternion)
+    camera._getViewMatrix()
+    camera.update()
+  }
+
+  await untilNextFrame()
+
+  if (opts) {
+    camera.position.set(opts.from[0], opts.from[1], opts.from[2])
+  }
+
+  reposition()
 }
 
 export function testScene(

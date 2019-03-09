@@ -5,20 +5,36 @@ import { getParcelSceneLimits } from 'atomicHelpers/landHelpers'
 import { DEBUG, EDITOR } from 'config'
 import { checkParcelSceneBoundaries } from './entities/utils/checkParcelSceneLimits'
 import { BaseEntity } from 'engine/entities/BaseEntity'
-import { encodeParcelSceneBoundaries, gridToWorld, encodeParcelPosition } from 'atomicHelpers/parcelScenePositions'
+import {
+  encodeParcelSceneBoundaries,
+  gridToWorld,
+  worldToGrid,
+  encodeParcelPosition
+} from 'atomicHelpers/parcelScenePositions'
 import { removeEntityHighlight, highlightEntity } from 'engine/components/ephemeralComponents/HighlightBox'
 import { createAxisEntity, createParcelOutline } from './entities/utils/debugEntities'
 import { createLogger } from 'shared/logger'
 import { DevTools } from 'shared/apis/DevTools'
 import { ParcelIdentity } from 'shared/apis/ParcelIdentity'
 import { WebGLScene } from './WebGLScene'
+import { isScreenSpaceComponent } from 'engine/components/helpers/ui'
 import { IEvents } from 'decentraland-ecs/src/decentraland/Types'
-import { scene } from 'engine/renderer'
+import { camera, scene } from 'engine/renderer'
+import { positionObserver } from 'shared/world/positionThings'
+
+const auxVec2 = BABYLON.Vector2.Zero()
+
+export const getUserInPlace = () => {
+  worldToGrid(camera.position, auxVec2)
+  return `${auxVec2.x},${auxVec2.y}`
+}
 
 export class WebGLParcelScene extends WebGLScene<LoadableParcelScene> {
   public encodedPositions: string
   public setOfEntitiesOutsideBoundaries = new Set<BaseEntity>()
+  public userInPlace: string | null = null
 
+  private uiComponent = null
   private parcelSet = new Set<string>()
   private shouldValidateBoundaries = false
 
@@ -40,7 +56,10 @@ export class WebGLParcelScene extends WebGLScene<LoadableParcelScene> {
         if (hash.startsWith('data:') || hash.startsWith('Qm')) {
           this.context.registerMappings([{ file, hash }])
         } else {
-          this.logger.error(`Invalid injected mapping "${file}" it is not a data url or IPFS mapping`, { file, hash })
+          this.logger.error(`Invalid injected mapping "${file}" it is not a data url or IPFS mapping`, {
+            file,
+            hash
+          })
         }
       }
     }
@@ -63,6 +82,8 @@ export class WebGLParcelScene extends WebGLScene<LoadableParcelScene> {
     gridToWorld(this.data.data.basePosition.x, this.data.data.basePosition.y, this.context.rootEntity.position)
     this.context.rootEntity.freezeWorldMatrix()
 
+    this.userInPlace = getUserInPlace()
+
     this.context.on('metricsUpdate', data => {
       if (!EDITOR) {
         this.checkLimits(data)
@@ -79,6 +100,8 @@ export class WebGLParcelScene extends WebGLScene<LoadableParcelScene> {
     this.context.updateMetrics()
 
     scene.onAfterRenderObservable.add(this.afterRender)
+
+    positionObserver.add(this.checkUserInPlace)
   }
 
   afterRender = () => {
@@ -106,6 +129,7 @@ export class WebGLParcelScene extends WebGLScene<LoadableParcelScene> {
   dispose(): void {
     super.dispose()
     scene.onAfterRenderObservable.removeCallback(this.afterRender)
+    positionObserver.removeCallback(this.checkUserInPlace)
   }
 
   /**
@@ -134,6 +158,20 @@ export class WebGLParcelScene extends WebGLScene<LoadableParcelScene> {
     }
   }
 
+  checkUserInPlace = () => {
+    if (!this.uiComponent) return
+
+    this.userInPlace = getUserInPlace()
+
+    if (!this.uiComponent.isEnabled && this.encodedPositions.includes(this.userInPlace)) {
+      this.uiComponent.isEnabled = true
+    }
+
+    if (this.uiComponent.isEnabled && !this.encodedPositions.includes(this.userInPlace)) {
+      this.uiComponent.isEnabled = false
+    }
+  }
+
   /**
    * Looks for entities outisde of the fences of the scene.
    * - **DEBUG**: it highlights the entities
@@ -141,6 +179,8 @@ export class WebGLParcelScene extends WebGLScene<LoadableParcelScene> {
    * In both cases, when the entity re-enters the legal fences, it reapears.
    */
   checkBoundaries() {
+    this.getUIComponent()
+
     const newSet = new Set<BaseEntity>()
 
     this.context.entities.forEach(entity => checkParcelSceneBoundaries(this.parcelSet, newSet, entity))
@@ -149,10 +189,7 @@ export class WebGLParcelScene extends WebGLScene<LoadableParcelScene> {
       if (!newSet.has($) && this.context.entities.has($.id)) {
         removeEntityHighlight($)
         $.setEnabled(true)
-
-        this.context.emit('entityBackInScene', {
-          entityId: $.uuid
-        })
+        this.context.emit('entityBackInScene', { entityId: $.uuid })
 
         this.setOfEntitiesOutsideBoundaries.delete($)
       }
@@ -165,12 +202,21 @@ export class WebGLParcelScene extends WebGLScene<LoadableParcelScene> {
         } else {
           $.setEnabled(false)
         }
-        this.context.emit('entityOutOfScene', {
-          entityId: $.uuid
-        })
+        this.context.emit('entityOutOfScene', { entityId: $.uuid })
         this.setOfEntitiesOutsideBoundaries.add($)
       }
     })
+  }
+
+  private getUIComponent() {
+    if (this.uiComponent) return
+
+    for (let [, component] of this.context.disposableComponents) {
+      if (isScreenSpaceComponent(component)) {
+        this.uiComponent = component
+        return
+      }
+    }
   }
 
   private initDebugEntities() {

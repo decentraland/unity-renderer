@@ -32,6 +32,19 @@ export abstract class UIShape extends ObservableComponent {
 }
 
 /**
+ * @internal
+ */
+@DisposableComponent('engine.shape', CLASS_ID.UI_FULLSCREEN_SHAPE)
+export class UIFullScreenShape extends UIShape {
+  @ObservableComponent.field
+  visible: boolean = true
+
+  constructor() {
+    super(null)
+  }
+}
+
+/**
  * @beta
  */
 @DisposableComponent('engine.shape', CLASS_ID.UI_WORLD_SPACE_SHAPE)
@@ -118,6 +131,9 @@ export class UIContainerRectShape extends UIShape {
 
   @ObservableComponent.field
   visible: boolean = true
+
+  @ObservableComponent.field
+  isPointerBlocker: boolean = false
 }
 
 /**
@@ -166,6 +182,9 @@ export class UIContainerStackShape extends UIShape {
 
   @ObservableComponent.field
   visible: boolean = true
+
+  @ObservableComponent.field
+  isPointerBlocker: boolean = false
 }
 
 /**
@@ -265,6 +284,9 @@ export class UITextShape extends UIShape {
 
   @ObservableComponent.field
   visible: boolean = true
+
+  @ObservableComponent.field
+  isPointerBlocker: boolean = false
 }
 
 /**

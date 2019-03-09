@@ -37,7 +37,7 @@ const schemaValidator = createSchemaValidator({
   isPointerBlocker: { type: 'boolean', default: false }
 })
 
-class Class extends UIControl<UISliderShape, BABYLON.GUI.Slider> {
+class UISlider extends UIControl<UISliderShape, BABYLON.GUI.Slider> {
   control = new BABYLON.GUI.Slider('slider')
 
   constructor(ctx: SharedSceneContext, uuid: string) {
@@ -109,4 +109,4 @@ class Class extends UIControl<UISliderShape, BABYLON.GUI.Slider> {
   }
 }
 
-DisposableComponent.registerClassId(CLASS_ID.UI_SLIDER_SHAPE, Class)
+DisposableComponent.registerClassId(CLASS_ID.UI_SLIDER_SHAPE, UISlider)
