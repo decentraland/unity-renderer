@@ -1,3 +1,5 @@
+[![CircleCI](https://circleci.com/gh/decentraland/explorer.svg?style=svg)](https://circleci.com/gh/decentraland/explorer)
+
 # Refactor victims
 
 - MessageBusController
