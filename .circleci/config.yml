@@ -7,14 +7,14 @@ jobs:
           # avoid automatic download of LFS files
           GIT_LFS_SKIP_SMUDGE: 1
 
-    working_directory: /tmp/client
+    working_directory: /tmp/explorer
     steps:
       # install lfs
       - run: mkdir -p ~/.ssh
       - run: ssh-keyscan -H github.com >> ~/.ssh/known_hosts
       - run: curl -s https://packagecloud.io/install/repositories/github/git-lfs/script.deb.sh | sudo bash
       - run: sudo apt-get install git-lfs=2.4.0
-      - run: ssh git@github.com git-lfs-authenticate decentraland/client.git download
+      - run: ssh git@github.com git-lfs-authenticate decentraland/explorer.git download
       - run: git lfs install
 
       # The `ledger-wallet-provider` lib has `node-hid` as a dependency, which won't build on certain
@@ -93,7 +93,7 @@ jobs:
   deploy:
     docker:
       - image: circleci/node:10-browsers
-    working_directory: /tmp/client
+    working_directory: /tmp/explorer
     steps:
       - restore_cache:
           keys:
@@ -117,7 +117,7 @@ jobs:
   pull-deploy:
     docker:
       - image: circleci/node:10-browsers
-    working_directory: /tmp/client
+    working_directory: /tmp/explorer
     steps:
       - restore_cache:
           keys:
