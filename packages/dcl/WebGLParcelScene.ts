@@ -177,6 +177,7 @@ export class WebGLParcelScene extends WebGLScene<LoadableParcelScene> {
    * In both cases, when the entity re-enters the legal fences, it reapears.
    */
   checkBoundaries() {
+    let didChange = false
     this.getUIComponent()
 
     const newSet = new Set<BaseEntity>()
@@ -190,8 +191,10 @@ export class WebGLParcelScene extends WebGLScene<LoadableParcelScene> {
         this.context.emit('entityBackInScene', { entityId: $.uuid })
 
         this.setOfEntitiesOutsideBoundaries.delete($)
+        didChange = true
       }
     })
+
     // add the highlight to the entities outside fences
     newSet.forEach($ => {
       if (!this.setOfEntitiesOutsideBoundaries.has($)) {
@@ -202,8 +205,15 @@ export class WebGLParcelScene extends WebGLScene<LoadableParcelScene> {
         }
         this.context.emit('entityOutOfScene', { entityId: $.uuid })
         this.setOfEntitiesOutsideBoundaries.add($)
+        didChange = true
       }
     })
+
+    if (didChange) {
+      const entities = []
+      this.setOfEntitiesOutsideBoundaries.forEach($ => entities.push($.uuid))
+      this.context.emit('entitiesOutOfBoundaries', { entities })
+    }
   }
 
   private getUIComponent() {

@@ -105,6 +105,18 @@ async function initializePreview(userScene: EnvironmentData<LoadableParcelScene>
     })
   })
 
+  context.on('entitiesOutOfBoundaries', e => {
+    evtEmitter.emit('entitiesOutOfBoundaries', e)
+  })
+
+  context.on('entityOutOfScene', e => {
+    evtEmitter.emit('entityOutOfScene', e)
+  })
+
+  context.on('entityBackInScene', e => {
+    evtEmitter.emit('entityBackInScene', e)
+  })
+
   // we need closeParcelScenes to enable interactions in preview mode
   loadedParcelSceneWorkers.add(parcelScene)
 
