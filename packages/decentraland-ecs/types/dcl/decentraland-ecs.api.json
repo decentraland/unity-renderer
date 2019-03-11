@@ -8683,6 +8683,27 @@
           "isOverride": false,
           "isEventProperty": false
         },
+        "entitiesOutOfBoundaries": {
+          "kind": "property",
+          "signature": "entitiesOutOfBoundaries:",
+          "isOptional": false,
+          "isReadOnly": false,
+          "isStatic": false,
+          "type": "{\n        entities: string[];\n    }",
+          "deprecatedMessage": [],
+          "summary": [
+            {
+              "kind": "text",
+              "text": "After checking entities outside the fences, if any is outside, this event will be triggered with all the entities outside the scene."
+            }
+          ],
+          "remarks": [],
+          "isBeta": false,
+          "isSealed": false,
+          "isVirtual": false,
+          "isOverride": false,
+          "isEventProperty": false
+        },
         "entityBackInScene": {
           "kind": "property",
           "signature": "entityBackInScene:",

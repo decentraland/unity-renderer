@@ -1502,6 +1502,13 @@ declare interface IEvents {
   entityBackInScene: {
     entityId: string
   }
+  /**
+   * After checking entities outside the fences, if any is outside, this event
+   * will be triggered with all the entities outside the scene.
+   */
+  entitiesOutOfBoundaries: {
+    entities: string[]
+  }
   uuidEvent: {
     uuid: string
     payload: any
