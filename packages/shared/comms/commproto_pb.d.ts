@@ -157,27 +157,36 @@ export namespace PingMessage {
   }
 }
 
-export class ChangeTopicMessage extends jspb.Message {
+export class TopicSubscriptionMessage extends jspb.Message {
   getType(): MessageType
   setType(value: MessageType): void
 
-  getTopic(): string
-  setTopic(value: string): void
+  getFormat(): Format
+  setFormat(value: Format): void
+
+  getTopics(): Uint8Array | string
+  getTopics_asU8(): Uint8Array
+  getTopics_asB64(): string
+  setTopics(value: Uint8Array | string): void
 
   serializeBinary(): Uint8Array
-  toObject(includeInstance?: boolean): ChangeTopicMessage.AsObject
-  static toObject(includeInstance: boolean, msg: ChangeTopicMessage): ChangeTopicMessage.AsObject
+  toObject(includeInstance?: boolean): TopicSubscriptionMessage.AsObject
+  static toObject(includeInstance: boolean, msg: TopicSubscriptionMessage): TopicSubscriptionMessage.AsObject
   static extensions: { [key: number]: jspb.ExtensionFieldInfo<jspb.Message> }
   static extensionsBinary: { [key: number]: jspb.ExtensionFieldBinaryInfo<jspb.Message> }
-  static serializeBinaryToWriter(message: ChangeTopicMessage, writer: jspb.BinaryWriter): void
-  static deserializeBinary(bytes: Uint8Array): ChangeTopicMessage
-  static deserializeBinaryFromReader(message: ChangeTopicMessage, reader: jspb.BinaryReader): ChangeTopicMessage
+  static serializeBinaryToWriter(message: TopicSubscriptionMessage, writer: jspb.BinaryWriter): void
+  static deserializeBinary(bytes: Uint8Array): TopicSubscriptionMessage
+  static deserializeBinaryFromReader(
+    message: TopicSubscriptionMessage,
+    reader: jspb.BinaryReader
+  ): TopicSubscriptionMessage
 }
 
-export namespace ChangeTopicMessage {
+export namespace TopicSubscriptionMessage {
   export type AsObject = {
     type: MessageType
-    topic: string
+    format: Format
+    topics: Uint8Array | string
   }
 }
 
@@ -366,14 +375,19 @@ export enum MessageType {
   WEBRTC_ANSWER = 5,
   WEBRTC_ICE_CANDIDATE = 6,
   PING = 7,
-  ADD_TOPIC = 8,
-  REMOVE_TOPIC = 9,
-  TOPIC = 10,
-  AUTH = 11
+  TOPIC_SUBSCRIPTION = 8,
+  TOPIC = 9,
+  AUTH = 10
 }
 
 export enum Role {
   UNKNOWN_ROLE = 0,
   CLIENT = 1,
   COMMUNICATION_SERVER = 2
+}
+
+export enum Format {
+  UNKNOWN_FORMAT = 0,
+  PLAIN = 1,
+  GZIP = 2
 }

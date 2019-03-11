@@ -4,11 +4,11 @@ import * as sinonChai from 'sinon-chai'
 
 import {
   WebRtcMessage, ConnectMessage, WelcomeMessage, AuthMessage, TopicMessage, PingMessage,
-  PositionData, ProfileData, ChatData,
-  ChangeTopicMessage, MessageType, Role
+  PositionData, ProfileData, ChatData, TopicSubscriptionMessage,
+  MessageType, Role, Format
 } from '../../packages/shared/comms/commproto_pb'
 import { Position, CommunicationArea, Parcel } from 'shared/comms/utils'
-import { WorldInstanceConnection, SocketReadyState } from 'shared/comms/worldInstanceConnection'
+import { WorldInstanceConnection, SocketReadyState, TopicHandler, positionHash } from 'shared/comms/worldInstanceConnection'
 import { Context, processChatMessage, processPositionMessage, processProfileMessage, PeerTrackingInfo, onPositionUpdate } from 'shared/comms'
 import { PkgStats } from 'shared/comms/debug'
 
@@ -288,35 +288,21 @@ describe('Communications', function() {
           }
         })
 
-        it('add topic', () => {
+        it('topic subscriptions', () => {
           const handler = (fromAlias: string, data:Uint8Array): PkgStats | null => {
             return null
           }
-          worldConn.addTopic('topic1', handler)
+          const subscriptions = new Map<string, TopicHandler>()
+          subscriptions.set('topic1', handler)
+          subscriptions.set('topic2', handler)
+          worldConn.updateSubscriptions(subscriptions, 'topic1 topic2')
 
-          expect(worldConn.subscriptions).to.have.key('topic1')
-          expect(worldConn.subscriptions.get('topic1')).to.equal(handler)
+          expect(worldConn.subscriptions).to.equal(subscriptions)
           expect(worldConn.reliableDataChannel.send).to.have.been.calledWithMatch((bytes) => {
-            const msg = ChangeTopicMessage.deserializeBinary(bytes)
-            expect(msg.getType()).to.equal(MessageType.ADD_TOPIC)
-            expect(msg.getTopic()).to.equal('topic1')
-            return true
-          })
-        })
-
-        it('remove topic', () => {
-          const handler = (fromAlias: string, data:Uint8Array): PkgStats | null => {
-            return null
-          }
-          worldConn.subscriptions.set('topic1', handler)
-
-          worldConn.removeTopic('topic1')
-
-          expect(worldConn.subscriptions).to.not.have.key('topic1')
-          expect(worldConn.reliableDataChannel.send).to.have.been.calledWithMatch((bytes) => {
-            const msg = ChangeTopicMessage.deserializeBinary(bytes)
-            expect(msg.getType()).to.equal(MessageType.REMOVE_TOPIC)
-            expect(msg.getTopic()).to.equal('topic1')
+            const msg = TopicSubscriptionMessage.deserializeBinary(bytes)
+            expect(msg.getType()).to.equal(MessageType.TOPIC_SUBSCRIPTION)
+            expect(msg.getFormat()).to.equal(Format.PLAIN)
+            expect(Buffer.from(msg.getTopics()).toString('utf8')).to.equal('topic1 topic2')
             return true
           })
         })
@@ -328,7 +314,7 @@ describe('Communications', function() {
           expect(worldConn.unreliableDataChannel.send).to.have.been.calledWithMatch((bytes) => {
             const msg = TopicMessage.deserializeBinary(bytes)
             expect(msg.getType()).to.equal(MessageType.TOPIC)
-            expect(msg.getTopic()).to.equal('position:1:1')
+            expect(msg.getTopic()).to.equal('position:755:755')
 
             const data = PositionData.deserializeBinary(msg.getBody() as Uint8Array)
             expect(data.getPositionX()).to.equal(20)
@@ -354,7 +340,7 @@ describe('Communications', function() {
           expect(worldConn.reliableDataChannel.send).to.have.been.calledWithMatch((bytes) => {
             const msg = TopicMessage.deserializeBinary(bytes)
             expect(msg.getType()).to.equal(MessageType.TOPIC)
-            expect(msg.getTopic()).to.equal('profile:1:1')
+            expect(msg.getTopic()).to.equal('profile:755:755')
 
             const data = ProfileData.deserializeBinary(msg.getBody() as Uint8Array)
             expect(data.getAvatarType()).to.equal('fox')
@@ -373,7 +359,7 @@ describe('Communications', function() {
           expect(worldConn.reliableDataChannel.send).to.have.been.calledWithMatch((bytes) => {
             const msg = TopicMessage.deserializeBinary(bytes)
             expect(msg.getType()).to.equal(MessageType.TOPIC)
-            expect(msg.getTopic()).to.equal('chat:1:1')
+            expect(msg.getTopic()).to.equal('chat:755:755')
 
             const data = ChatData.deserializeBinary(msg.getBody() as Uint8Array)
             expect(data.getMessageId()).to.equal(messageId)
@@ -421,6 +407,7 @@ describe('Communications', function() {
         const trackingInfo = context.peerData.get('client2')
         expect(trackingInfo.position).to.deep.equal([20, 20, 20, 20, 20, 20, 20])
       })
+
       it('old position', () => {
         const context = new Context({})
         const info = new PeerTrackingInfo()
@@ -501,49 +488,70 @@ describe('Communications', function() {
     })
   })
 
+  describe('positionHash', () => {
+    function testHash(p: Position) {
+      it(`hash ${p[0]}:${p[2]}`, () => {
+        const hash = positionHash(p)
+        const [ x, z ] = hash.split(':').map((n) => parseInt(n, 10))
+
+        const unhashX = (x << 2) - 3000
+        const unhashZ = (z << 2) - 3000
+
+        expect(p[0]).to.be.gte(unhashX)
+        expect(p[0]).to.be.lte(unhashX + 4)
+        expect(p[2]).to.be.gte(unhashZ)
+        expect(p[2]).to.be.lte(unhashZ + 4)
+      })
+    }
+
+    testHash([ 20, 0, 20, 0, 0, 0, 0 ])
+    testHash([ 21, 0, 21, 0, 0, 0, 0 ])
+    testHash([ -1, 0, -1, 0, 0, 0, 0 ])
+    testHash([ -1, 0, 0, 0, 0, 0, 0 ])
+    testHash([ -1, 0, 1, 0, 0, 0, 0 ])
+    testHash([ 0, 0, -1, 0, 0, 0, 0 ])
+    testHash([ 0, 0, 0, 0, 0, 0, 0 ])
+    testHash([ 0, 0, 1, 0, 0, 0, 0 ])
+    testHash([ 1, 0, -1, 0, 0, 0, 0 ])
+    testHash([ 1, 0, 0, 0, 0, 0, 0 ])
+    testHash([ 1, 0, 1, 0, 0, 0, 0 ])
+  })
+
   describe('onPositionUpdate', () => {
     it('parcel has changed', () => {
       const context = new Context({})
       context.commRadius = 1
       context.currentPosition = [ 20, 20, 20, 20, 20, 20, 20 ]
-      context.positionTopics.add('position:50:50')
-      context.positionTopics.add('position:0:0')
       const worldConn = new WorldInstanceConnection('coordinator')
       worldConn.reliableDataChannel = { send: sinon.stub() }
       worldConn.unreliableDataChannel = { send: sinon.stub() }
-      worldConn.addTopic = sinon.stub()
-      worldConn.removeTopic = sinon.stub()
+      worldConn.updateSubscriptions = sinon.stub()
       context.worldInstanceConnection = worldConn
+
       onPositionUpdate(context, [ 0, 0, 0, 0, 0, 0, 0 ])
 
-      expect(context.positionTopics.size).to.equal(9)
-      expect(context.profileTopics.size).to.equal(9)
-      expect(context.chatTopics.size).to.equal(9)
-
-      // NOTE; there are 27 topics, but we were already subscribed to position:0:0
-      expect(worldConn.addTopic).to.have.callCount(26)
-
-      expect(worldConn.removeTopic).to.have.been.calledWith('position:50:50')
+      expect(worldConn.updateSubscriptions).to.have.been.calledWithMatch((subscriptions) => {
+        expect(subscriptions).to.have.length(12)
+        return true
+      }, (rawTopics) => {
+        expect(rawTopics.split(" ")).to.have.length(12)
+        return true
+      })
     })
 
-    it('parcel has no changed', () => {
+    it('parcel has not changed', () => {
       const context = new Context({})
       context.commRadius = 1
       context.currentPosition = [ 20, 20, 20, 20, 20, 20, 20 ]
       const worldConn = new WorldInstanceConnection('coordinator')
       worldConn.reliableDataChannel = { send: sinon.stub() }
       worldConn.unreliableDataChannel = { send: sinon.stub() }
-      worldConn.addTopic = sinon.stub()
-      worldConn.removeTopic = sinon.stub()
+      worldConn.updateSubscriptions = sinon.stub()
       context.worldInstanceConnection = worldConn
+
       onPositionUpdate(context, context.currentPosition)
 
-      expect(context.positionTopics.size).to.equal(0)
-      expect(context.profileTopics.size).to.equal(0)
-      expect(context.chatTopics.size).to.equal(0)
-
-      expect(worldConn.addTopic).to.have.not.been.called
-      expect(worldConn.removeTopic).to.have.not.been.called
+      expect(worldConn.updateSubscriptions).to.have.not.been.called
     })
   })
 })
