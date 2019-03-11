@@ -137,7 +137,6 @@ export class GLTFShape extends DisposableComponent {
             // Fin the main mesh and add it as the BasicShape.nameInEntity component.
             assetContainer.meshes.filter($ => $.name === '__root__').forEach(mesh => {
               entity.setObject3D(BasicShape.nameInEntity, mesh)
-              mesh.rotation.set(0, Math.PI, 0)
             })
 
             loadingEntity.dispose(false, false)
