@@ -15,10 +15,12 @@ import {
   ConnectMessage,
   AuthMessage,
   Role,
-  ChangeTopicMessage
+  Format,
+  TopicSubscriptionMessage
 } from './commproto_pb'
-import { Position, position2parcel } from './utils'
+import { Position } from './utils'
 import { UserInformation } from './types'
+import { parcelLimits } from 'config'
 
 export enum SocketReadyState {
   CONNECTING,
@@ -35,13 +37,21 @@ export interface IDataChannel {
   send(bytes: Uint8Array)
 }
 
+export type TopicHandler = (fromAlias: string, data: Uint8Array) => PkgStats | null
+
+export function positionHash(p: Position) {
+  const x = (p[0] + parcelLimits.maxParcelX) >> 2
+  const z = (p[2] + parcelLimits.maxParcelZ) >> 2
+  return `${x}:${z}`
+}
+
 export class WorldInstanceConnection {
   public alias: string = null
   public ping: number = -1
   public commServerAlias: string | null = null
   public ws: WebSocket | null
   public webRtcConn: RTCPeerConnection | null
-  public subscriptions = new Map<string, (fromAlias: string, data: Uint8Array) => PkgStats | null>()
+  public subscriptions = new Map<string, TopicHandler>()
   public authenticated = false
   public reliableDataChannel: IDataChannel | null
   public unreliableDataChannel: IDataChannel | null
@@ -297,8 +307,7 @@ export class WorldInstanceConnection {
   }
 
   sendPositionMessage(p: Position) {
-    const parcel = position2parcel(p)
-    const topic = `position:${parcel.x}:${parcel.z}`
+    const topic = `position:${positionHash(p)}`
 
     const d = new PositionData()
     d.setTime(Date.now())
@@ -317,8 +326,7 @@ export class WorldInstanceConnection {
   }
 
   sendProfileMessage(p: Position, userProfile: UserInformation) {
-    const parcel = position2parcel(p)
-    const topic = `profile:${parcel.x}:${parcel.z}`
+    const topic = `profile:${positionHash(p)}`
 
     const d = new ProfileData()
     d.setTime(Date.now())
@@ -333,8 +341,7 @@ export class WorldInstanceConnection {
   }
 
   sendChatMessage(p: Position, messageId: string, text: string) {
-    const parcel = position2parcel(p)
-    const topic = `chat:${parcel.x}:${parcel.z}`
+    const topic = `chat:${positionHash(p)}`
 
     const d = new ChatData()
     d.setTime(Date.now())
@@ -376,25 +383,16 @@ export class WorldInstanceConnection {
     return new SendResult(bytes.length)
   }
 
-  addTopic(topic: string, handler: (fromAlias: string, data: Uint8Array) => PkgStats | null) {
-    this.subscriptions.set(topic, handler)
-    this.sendChangeTopicMessage(MessageType.ADD_TOPIC, topic)
-  }
-
-  removeTopic(topic: string) {
-    this.subscriptions.delete(topic)
-    this.sendChangeTopicMessage(MessageType.REMOVE_TOPIC, topic)
-  }
-
-  sendChangeTopicMessage(msgType: MessageType, topic: string) {
+  updateSubscriptions(subscriptions: Map<string, TopicHandler>, rawTopics: string) {
     if (!this.reliableDataChannel) {
-      throw new Error('trying to send a change message using null reliable channel')
+      throw new Error('trying to send topic subscription message using null reliable channel')
     }
-    const changeTopicMessage = new ChangeTopicMessage()
-    changeTopicMessage.setType(msgType)
-    changeTopicMessage.setTopic(topic)
-
-    const bytes = changeTopicMessage.serializeBinary()
+    this.subscriptions = subscriptions
+    const subscriptionMessage = new TopicSubscriptionMessage()
+    subscriptionMessage.setType(MessageType.TOPIC_SUBSCRIPTION)
+    subscriptionMessage.setFormat(Format.PLAIN)
+    subscriptionMessage.setTopics(Buffer.from(rawTopics, 'utf8'))
+    const bytes = subscriptionMessage.serializeBinary()
     this.reliableDataChannel.send(bytes)
   }
 

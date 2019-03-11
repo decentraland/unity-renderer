@@ -1,6 +1,6 @@
 import 'webrtc-adapter'
 
-import { commConfigurations as config, ETHEREUM_NETWORK, commConfigurations, networkConfigurations } from 'config'
+import { parcelLimits, ETHEREUM_NETWORK, commConfigurations, networkConfigurations } from 'config'
 import { saveToLocalStorage } from 'atomicHelpers/localStorage'
 import { positionObserver } from 'shared/world/positionThings'
 import { CommunicationArea, squareDistance, Position, position2parcel, sameParcel } from './utils'
@@ -21,7 +21,7 @@ import {
 
 import { ChatData, PositionData, ProfileData } from './commproto_pb'
 import { chatObservable, ChatEvent } from './chat'
-import { WorldInstanceConnection } from './worldInstanceConnection'
+import { WorldInstanceConnection, TopicHandler } from './worldInstanceConnection'
 import { ReadOnlyVector3, ReadOnlyQuaternion } from 'decentraland-ecs/src'
 import { UserInformation, Pose } from './types'
 
@@ -43,10 +43,6 @@ export class Context {
   public peerData = new Map<PeerAlias, PeerTrackingInfo>()
   public userProfile: UserInformation
 
-  public positionTopics = new Set<string>()
-  public profileTopics = new Set<string>()
-  public chatTopics = new Set<string>()
-
   public currentPosition: Position | null = null
 
   public network: ETHEREUM_NETWORK | null
@@ -57,7 +53,7 @@ export class Context {
     this.userProfile = userProfile
     this.network = network || null
 
-    this.stats = config.debug ? new Stats(this) : null
+    this.stats = commConfigurations.debug ? new Stats(this) : null
     this.commRadius = commConfigurations.commRadius
   }
 }
@@ -193,27 +189,6 @@ type ProcessingPeerInfo = {
   position: Position
 }
 
-function updateTopics(
-  conn: WorldInstanceConnection,
-  oldTopics: Set<string>,
-  newTopics: Set<string>,
-  handler: (fromAlias: string, data: Uint8Array) => PkgStats
-) {
-  for (let topic of newTopics) {
-    if (!oldTopics.has(topic)) {
-      conn.addTopic(topic, handler)
-    } else {
-      oldTopics.delete(topic)
-    }
-  }
-
-  for (let topic of oldTopics) {
-    conn.removeTopic(topic)
-  }
-
-  return newTopics
-}
-
 export function onPositionUpdate(context: Context, p: Position) {
   if (!context.worldInstanceConnection.unreliableDataChannel || !context.worldInstanceConnection.reliableDataChannel) {
     return
@@ -223,42 +198,46 @@ export function onPositionUpdate(context: Context, p: Position) {
   const newParcel = position2parcel(p)
 
   if (!sameParcel(oldParcel, newParcel)) {
-    const newPositionTopics = new Set<string>()
-    const newProfileTopics = new Set<string>()
-    const newChatTopics = new Set<string>()
-
     const commArea = new CommunicationArea(newParcel, context.commRadius)
-    for (let x = commArea.vMin.x; x <= commArea.vMax.x; ++x) {
-      for (let z = commArea.vMin.z; z <= commArea.vMax.z; ++z) {
-        newPositionTopics.add(`position:${x}:${z}`)
-        newProfileTopics.add(`profile:${x}:${z}`)
-        newChatTopics.add(`chat:${x}:${z}`)
+
+    const positionHandler = (fromAlias: string, data: Uint8Array) =>
+      processPositionMessage(context, context.worldInstanceConnection, fromAlias, data)
+
+    const profileHandler = (fromAlias: string, data: Uint8Array) =>
+      processProfileMessage(context, context.worldInstanceConnection, fromAlias, data)
+
+    const chatHandler = (fromAlias: string, data: Uint8Array) =>
+      processChatMessage(context, context.worldInstanceConnection, fromAlias, data)
+
+    const xMin = ((commArea.vMin.x + parcelLimits.maxParcelX) >> 2) << 2
+    const xMax = ((commArea.vMax.x + parcelLimits.maxParcelX) >> 2) << 2
+    const zMin = ((commArea.vMin.z + parcelLimits.maxParcelZ) >> 2) << 2
+    const zMax = ((commArea.vMax.z + parcelLimits.maxParcelZ) >> 2) << 2
+
+    const subscriptions = new Map<string, TopicHandler>()
+    let rawTopics = ''
+    for (let x = xMin; x <= xMax; x += 4) {
+      for (let z = zMin; z <= zMax; z += 4) {
+        const hash = `${x >> 2}:${z >> 2}`
+        let topic = `position:${hash}`
+        subscriptions.set(topic, positionHandler)
+        rawTopics += topic + ' '
+
+        topic = `profile:${hash}`
+        subscriptions.set(topic, profileHandler)
+        rawTopics += topic + ' '
+
+        topic = `chat:${hash}`
+        subscriptions.set(topic, chatHandler)
+        rawTopics += topic
+
+        if (x !== xMax || z !== zMax) {
+          rawTopics += ' '
+        }
       }
     }
 
-    context.positionTopics = updateTopics(
-      context.worldInstanceConnection,
-      context.positionTopics,
-      newPositionTopics,
-      (fromAlias: string, data: Uint8Array) =>
-        processPositionMessage(context, context.worldInstanceConnection, fromAlias, data)
-    )
-
-    context.profileTopics = updateTopics(
-      context.worldInstanceConnection,
-      context.profileTopics,
-      newProfileTopics,
-      (fromAlias: string, data: Uint8Array) =>
-        processProfileMessage(context, context.worldInstanceConnection, fromAlias, data)
-    )
-
-    context.chatTopics = updateTopics(
-      context.worldInstanceConnection,
-      context.chatTopics,
-      newChatTopics,
-      (fromAlias: string, data: Uint8Array) =>
-        processChatMessage(context, context.worldInstanceConnection, fromAlias, data)
-    )
+    context.worldInstanceConnection.updateSubscriptions(subscriptions, rawTopics)
   }
 
   context.currentPosition = p
@@ -289,7 +268,7 @@ function collectInfo(context: Context) {
 
     const msSinceLastUpdate = now - Math.max(trackingInfo.lastPositionUpdate, trackingInfo.lastProfileUpdate)
 
-    if (msSinceLastUpdate > config.peerTtlMs) {
+    if (msSinceLastUpdate > commConfigurations.peerTtlMs) {
       context.peerData.delete(peerAlias)
       removeById(peerAlias)
       continue
@@ -303,7 +282,7 @@ function collectInfo(context: Context) {
     })
   }
 
-  if (visiblePeers.length <= config.maxVisiblePeers) {
+  if (visiblePeers.length <= commConfigurations.maxVisiblePeers) {
     for (let peerInfo of visiblePeers) {
       const alias = peerInfo.alias
       receiveUserVisible(alias, true)
@@ -316,7 +295,7 @@ function collectInfo(context: Context) {
       const peer = sortedBySqDistanceVisiblePeers[i]
       const alias = peer.alias
 
-      if (i < config.maxVisiblePeers) {
+      if (i < commConfigurations.maxVisiblePeers) {
         receiveUserVisible(alias, true)
         receiveUserPose(alias, peer.position as Pose)
         receiveUserData(alias, peer.profile)

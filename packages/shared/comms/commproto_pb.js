@@ -12,16 +12,17 @@ var goog = jspb;
 var global = Function('return this')();
 
 goog.exportSymbol('proto.AuthMessage', null, global);
-goog.exportSymbol('proto.ChangeTopicMessage', null, global);
 goog.exportSymbol('proto.ChatData', null, global);
 goog.exportSymbol('proto.ConnectMessage', null, global);
 goog.exportSymbol('proto.CoordinatorMessage', null, global);
+goog.exportSymbol('proto.Format', null, global);
 goog.exportSymbol('proto.MessageType', null, global);
 goog.exportSymbol('proto.PingMessage', null, global);
 goog.exportSymbol('proto.PositionData', null, global);
 goog.exportSymbol('proto.ProfileData', null, global);
 goog.exportSymbol('proto.Role', null, global);
 goog.exportSymbol('proto.TopicMessage', null, global);
+goog.exportSymbol('proto.TopicSubscriptionMessage', null, global);
 goog.exportSymbol('proto.WebRtcMessage', null, global);
 goog.exportSymbol('proto.WelcomeMessage', null, global);
 goog.exportSymbol('proto.WorldCommMessage', null, global);
@@ -1125,12 +1126,12 @@ proto.PingMessage.prototype.setTime = function(value) {
  * @extends {jspb.Message}
  * @constructor
  */
-proto.ChangeTopicMessage = function(opt_data) {
+proto.TopicSubscriptionMessage = function(opt_data) {
   jspb.Message.initialize(this, opt_data, 0, -1, null, null);
 };
-goog.inherits(proto.ChangeTopicMessage, jspb.Message);
+goog.inherits(proto.TopicSubscriptionMessage, jspb.Message);
 if (goog.DEBUG && !COMPILED) {
-  proto.ChangeTopicMessage.displayName = 'proto.ChangeTopicMessage';
+  proto.TopicSubscriptionMessage.displayName = 'proto.TopicSubscriptionMessage';
 }
 
 
@@ -1145,8 +1146,8 @@ if (jspb.Message.GENERATE_TO_OBJECT) {
  *     for transitional soy proto support: http://goto/soy-param-migration
  * @return {!Object}
  */
-proto.ChangeTopicMessage.prototype.toObject = function(opt_includeInstance) {
-  return proto.ChangeTopicMessage.toObject(opt_includeInstance, this);
+proto.TopicSubscriptionMessage.prototype.toObject = function(opt_includeInstance) {
+  return proto.TopicSubscriptionMessage.toObject(opt_includeInstance, this);
 };
 
 
@@ -1155,14 +1156,15 @@ proto.ChangeTopicMessage.prototype.toObject = function(opt_includeInstance) {
  * @param {boolean|undefined} includeInstance Whether to include the JSPB
  *     instance for transitional soy proto support:
  *     http://goto/soy-param-migration
- * @param {!proto.ChangeTopicMessage} msg The msg instance to transform.
+ * @param {!proto.TopicSubscriptionMessage} msg The msg instance to transform.
  * @return {!Object}
  * @suppress {unusedLocalVariables} f is only used for nested messages
  */
-proto.ChangeTopicMessage.toObject = function(includeInstance, msg) {
+proto.TopicSubscriptionMessage.toObject = function(includeInstance, msg) {
   var f, obj = {
     type: jspb.Message.getFieldWithDefault(msg, 1, 0),
-    topic: jspb.Message.getFieldWithDefault(msg, 2, "")
+    format: jspb.Message.getFieldWithDefault(msg, 2, 0),
+    topics: msg.getTopics_asB64()
   };
 
   if (includeInstance) {
@@ -1176,23 +1178,23 @@ proto.ChangeTopicMessage.toObject = function(includeInstance, msg) {
 /**
  * Deserializes binary data (in protobuf wire format).
  * @param {jspb.ByteSource} bytes The bytes to deserialize.
- * @return {!proto.ChangeTopicMessage}
+ * @return {!proto.TopicSubscriptionMessage}
  */
-proto.ChangeTopicMessage.deserializeBinary = function(bytes) {
+proto.TopicSubscriptionMessage.deserializeBinary = function(bytes) {
   var reader = new jspb.BinaryReader(bytes);
-  var msg = new proto.ChangeTopicMessage;
-  return proto.ChangeTopicMessage.deserializeBinaryFromReader(msg, reader);
+  var msg = new proto.TopicSubscriptionMessage;
+  return proto.TopicSubscriptionMessage.deserializeBinaryFromReader(msg, reader);
 };
 
 
 /**
  * Deserializes binary data (in protobuf wire format) from the
  * given reader into the given message object.
- * @param {!proto.ChangeTopicMessage} msg The message object to deserialize into.
+ * @param {!proto.TopicSubscriptionMessage} msg The message object to deserialize into.
  * @param {!jspb.BinaryReader} reader The BinaryReader to use.
- * @return {!proto.ChangeTopicMessage}
+ * @return {!proto.TopicSubscriptionMessage}
  */
-proto.ChangeTopicMessage.deserializeBinaryFromReader = function(msg, reader) {
+proto.TopicSubscriptionMessage.deserializeBinaryFromReader = function(msg, reader) {
   while (reader.nextField()) {
     if (reader.isEndGroup()) {
       break;
@@ -1204,8 +1206,12 @@ proto.ChangeTopicMessage.deserializeBinaryFromReader = function(msg, reader) {
       msg.setType(value);
       break;
     case 2:
-      var value = /** @type {string} */ (reader.readString());
-      msg.setTopic(value);
+      var value = /** @type {!proto.Format} */ (reader.readEnum());
+      msg.setFormat(value);
+      break;
+    case 3:
+      var value = /** @type {!Uint8Array} */ (reader.readBytes());
+      msg.setTopics(value);
       break;
     default:
       reader.skipField();
@@ -1220,9 +1226,9 @@ proto.ChangeTopicMessage.deserializeBinaryFromReader = function(msg, reader) {
  * Serializes the message to binary data (in protobuf wire format).
  * @return {!Uint8Array}
  */
-proto.ChangeTopicMessage.prototype.serializeBinary = function() {
+proto.TopicSubscriptionMessage.prototype.serializeBinary = function() {
   var writer = new jspb.BinaryWriter();
-  proto.ChangeTopicMessage.serializeBinaryToWriter(this, writer);
+  proto.TopicSubscriptionMessage.serializeBinaryToWriter(this, writer);
   return writer.getResultBuffer();
 };
 
@@ -1230,11 +1236,11 @@ proto.ChangeTopicMessage.prototype.serializeBinary = function() {
 /**
  * Serializes the given message to binary data (in protobuf wire
  * format), writing to the given BinaryWriter.
- * @param {!proto.ChangeTopicMessage} message
+ * @param {!proto.TopicSubscriptionMessage} message
  * @param {!jspb.BinaryWriter} writer
  * @suppress {unusedLocalVariables} f is only used for nested messages
  */
-proto.ChangeTopicMessage.serializeBinaryToWriter = function(message, writer) {
+proto.TopicSubscriptionMessage.serializeBinaryToWriter = function(message, writer) {
   var f = undefined;
   f = message.getType();
   if (f !== 0.0) {
@@ -1243,10 +1249,17 @@ proto.ChangeTopicMessage.serializeBinaryToWriter = function(message, writer) {
       f
     );
   }
-  f = message.getTopic();
-  if (f.length > 0) {
-    writer.writeString(
+  f = message.getFormat();
+  if (f !== 0.0) {
+    writer.writeEnum(
       2,
+      f
+    );
+  }
+  f = message.getTopics_asU8();
+  if (f.length > 0) {
+    writer.writeBytes(
+      3,
       f
     );
   }
@@ -1257,29 +1270,68 @@ proto.ChangeTopicMessage.serializeBinaryToWriter = function(message, writer) {
  * optional MessageType type = 1;
  * @return {!proto.MessageType}
  */
-proto.ChangeTopicMessage.prototype.getType = function() {
+proto.TopicSubscriptionMessage.prototype.getType = function() {
   return /** @type {!proto.MessageType} */ (jspb.Message.getFieldWithDefault(this, 1, 0));
 };
 
 
 /** @param {!proto.MessageType} value */
-proto.ChangeTopicMessage.prototype.setType = function(value) {
+proto.TopicSubscriptionMessage.prototype.setType = function(value) {
   jspb.Message.setProto3EnumField(this, 1, value);
 };
 
 
 /**
- * optional string topic = 2;
- * @return {string}
+ * optional Format format = 2;
+ * @return {!proto.Format}
  */
-proto.ChangeTopicMessage.prototype.getTopic = function() {
-  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 2, ""));
+proto.TopicSubscriptionMessage.prototype.getFormat = function() {
+  return /** @type {!proto.Format} */ (jspb.Message.getFieldWithDefault(this, 2, 0));
 };
 
 
-/** @param {string} value */
-proto.ChangeTopicMessage.prototype.setTopic = function(value) {
-  jspb.Message.setProto3StringField(this, 2, value);
+/** @param {!proto.Format} value */
+proto.TopicSubscriptionMessage.prototype.setFormat = function(value) {
+  jspb.Message.setProto3EnumField(this, 2, value);
+};
+
+
+/**
+ * optional bytes topics = 3;
+ * @return {!(string|Uint8Array)}
+ */
+proto.TopicSubscriptionMessage.prototype.getTopics = function() {
+  return /** @type {!(string|Uint8Array)} */ (jspb.Message.getFieldWithDefault(this, 3, ""));
+};
+
+
+/**
+ * optional bytes topics = 3;
+ * This is a type-conversion wrapper around `getTopics()`
+ * @return {string}
+ */
+proto.TopicSubscriptionMessage.prototype.getTopics_asB64 = function() {
+  return /** @type {string} */ (jspb.Message.bytesAsB64(
+      this.getTopics()));
+};
+
+
+/**
+ * optional bytes topics = 3;
+ * Note that Uint8Array is not supported on all browsers.
+ * @see http://caniuse.com/Uint8Array
+ * This is a type-conversion wrapper around `getTopics()`
+ * @return {!Uint8Array}
+ */
+proto.TopicSubscriptionMessage.prototype.getTopics_asU8 = function() {
+  return /** @type {!Uint8Array} */ (jspb.Message.bytesAsU8(
+      this.getTopics()));
+};
+
+
+/** @param {!(string|Uint8Array)} value */
+proto.TopicSubscriptionMessage.prototype.setTopics = function(value) {
+  jspb.Message.setProto3BytesField(this, 3, value);
 };
 
 
@@ -2539,10 +2591,9 @@ proto.MessageType = {
   WEBRTC_ANSWER: 5,
   WEBRTC_ICE_CANDIDATE: 6,
   PING: 7,
-  ADD_TOPIC: 8,
-  REMOVE_TOPIC: 9,
-  TOPIC: 10,
-  AUTH: 11
+  TOPIC_SUBSCRIPTION: 8,
+  TOPIC: 9,
+  AUTH: 10
 };
 
 /**
@@ -2552,6 +2603,15 @@ proto.Role = {
   UNKNOWN_ROLE: 0,
   CLIENT: 1,
   COMMUNICATION_SERVER: 2
+};
+
+/**
+ * @enum {number}
+ */
+proto.Format = {
+  UNKNOWN_FORMAT: 0,
+  PLAIN: 1,
+  GZIP: 2
 };
 
 goog.object.extend(exports, proto);
