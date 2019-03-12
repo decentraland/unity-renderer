@@ -45,10 +45,15 @@ export namespace parcelLimits {
 
   export const visibleRadius = 6
 
-  export const maxParcelX = 3000
-  export const maxParcelZ = 3000
-  export const minParcelX = -3000
-  export const minParcelZ = -3000
+  export const maxX = 3000
+  export const maxZ = 3000
+  export const minX = -3000
+  export const minZ = -3000
+
+  export const maxParcelX = 150
+  export const maxParcelZ = 150
+  export const minParcelX = -150
+  export const minParcelZ = -150
 
   export const minLandCoordinateX = -150
   export const minLandCoordinateY = -150
