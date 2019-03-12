@@ -2,12 +2,13 @@ import * as chai from 'chai'
 import * as sinon from 'sinon'
 import * as sinonChai from 'sinon-chai'
 
+import { parcelLimits } from 'config'
 import {
   WebRtcMessage, ConnectMessage, WelcomeMessage, AuthMessage, TopicMessage, PingMessage,
   PositionData, ProfileData, ChatData, TopicSubscriptionMessage,
   MessageType, Role, Format
 } from '../../packages/shared/comms/commproto_pb'
-import { Position, CommunicationArea, Parcel } from 'shared/comms/utils'
+import { Position, CommunicationArea, Parcel, position2parcel } from 'shared/comms/utils'
 import { WorldInstanceConnection, SocketReadyState, TopicHandler, positionHash } from 'shared/comms/worldInstanceConnection'
 import { Context, processChatMessage, processPositionMessage, processProfileMessage, PeerTrackingInfo, onPositionUpdate } from 'shared/comms'
 import { PkgStats } from 'shared/comms/debug'
@@ -314,7 +315,7 @@ describe('Communications', function() {
           expect(worldConn.unreliableDataChannel.send).to.have.been.calledWithMatch((bytes) => {
             const msg = TopicMessage.deserializeBinary(bytes)
             expect(msg.getType()).to.equal(MessageType.TOPIC)
-            expect(msg.getTopic()).to.equal('position:755:755')
+            expect(msg.getTopic()).to.equal('position:37:37')
 
             const data = PositionData.deserializeBinary(msg.getBody() as Uint8Array)
             expect(data.getPositionX()).to.equal(20)
@@ -340,7 +341,7 @@ describe('Communications', function() {
           expect(worldConn.reliableDataChannel.send).to.have.been.calledWithMatch((bytes) => {
             const msg = TopicMessage.deserializeBinary(bytes)
             expect(msg.getType()).to.equal(MessageType.TOPIC)
-            expect(msg.getTopic()).to.equal('profile:755:755')
+            expect(msg.getTopic()).to.equal('profile:37:37')
 
             const data = ProfileData.deserializeBinary(msg.getBody() as Uint8Array)
             expect(data.getAvatarType()).to.equal('fox')
@@ -359,7 +360,7 @@ describe('Communications', function() {
           expect(worldConn.reliableDataChannel.send).to.have.been.calledWithMatch((bytes) => {
             const msg = TopicMessage.deserializeBinary(bytes)
             expect(msg.getType()).to.equal(MessageType.TOPIC)
-            expect(msg.getTopic()).to.equal('chat:755:755')
+            expect(msg.getTopic()).to.equal('chat:37:37')
 
             const data = ChatData.deserializeBinary(msg.getBody() as Uint8Array)
             expect(data.getMessageId()).to.equal(messageId)
@@ -489,32 +490,69 @@ describe('Communications', function() {
   })
 
   describe('positionHash', () => {
-    function testHash(p: Position) {
+    function testHashByPosition(p: Position) {
       it(`hash ${p[0]}:${p[2]}`, () => {
+        const parcel = position2parcel(p)
         const hash = positionHash(p)
         const [ x, z ] = hash.split(':').map((n) => parseInt(n, 10))
 
-        const unhashX = (x << 2) - 3000
-        const unhashZ = (z << 2) - 3000
+        const unhashX = (x << 2) - parcelLimits.maxParcelX
+        const unhashZ = (z << 2) - parcelLimits.maxParcelZ
 
-        expect(p[0]).to.be.gte(unhashX)
-        expect(p[0]).to.be.lte(unhashX + 4)
-        expect(p[2]).to.be.gte(unhashZ)
-        expect(p[2]).to.be.lte(unhashZ + 4)
+        expect(parcel.x).to.be.gte(unhashX)
+        expect(parcel.x).to.be.lte(unhashX + 4)
+        expect(parcel.z).to.be.gte(unhashZ)
+        expect(parcel.z).to.be.lte(unhashZ + 4)
       })
     }
 
-    testHash([ 20, 0, 20, 0, 0, 0, 0 ])
-    testHash([ 21, 0, 21, 0, 0, 0, 0 ])
-    testHash([ -1, 0, -1, 0, 0, 0, 0 ])
-    testHash([ -1, 0, 0, 0, 0, 0, 0 ])
-    testHash([ -1, 0, 1, 0, 0, 0, 0 ])
-    testHash([ 0, 0, -1, 0, 0, 0, 0 ])
-    testHash([ 0, 0, 0, 0, 0, 0, 0 ])
-    testHash([ 0, 0, 1, 0, 0, 0, 0 ])
-    testHash([ 1, 0, -1, 0, 0, 0, 0 ])
-    testHash([ 1, 0, 0, 0, 0, 0, 0 ])
-    testHash([ 1, 0, 1, 0, 0, 0, 0 ])
+    function testHashByParcel(parcel: Parcel) {
+      it(`parcel ${parcel.x}:${parcel.z}`, () => {
+          const p = [
+              parcel.x * parcelLimits.parcelSize,
+              0,
+              parcel.z * parcelLimits.parcelSize,
+              0,
+              0,
+              0,
+              0
+          ] as Position
+        const hash = positionHash(p)
+        const [ x, z ] = hash.split(':').map((n) => parseInt(n, 10))
+
+        const unhashX = (x << 2) - 150
+        const unhashZ = (z << 2) - 150
+
+        expect(parcel.x).to.be.gte(unhashX)
+        expect(parcel.x).to.be.lte(unhashX + 4)
+        expect(parcel.z).to.be.gte(unhashZ)
+        expect(parcel.z).to.be.lte(unhashZ + 4)
+      })
+    }
+
+    testHashByPosition([1000, 0, 1000, 0, 0, 0, 0])
+    testHashByPosition([21, 0, 21, 0, 0, 0, 0])
+    testHashByPosition([-1, 0, -1, 0, 0, 0, 0])
+    testHashByPosition([-1, 0, 0, 0, 0, 0, 0])
+    testHashByPosition([-1, 0, 1, 0, 0, 0, 0])
+    testHashByPosition([0, 0, -1, 0, 0, 0, 0])
+    testHashByPosition([0, 0, 0, 0, 0, 0, 0])
+    testHashByPosition([0, 0, 1, 0, 0, 0, 0])
+    testHashByPosition([1, 0, -1, 0, 0, 0, 0])
+    testHashByPosition([1, 0, 0, 0, 0, 0, 0])
+    testHashByPosition([1, 0, 1, 0, 0, 0, 0])
+
+    testHashByParcel(new Parcel(20, 20))
+    testHashByParcel(new Parcel(21, 21))
+    testHashByParcel(new Parcel(-1, -1))
+    testHashByParcel(new Parcel(-1, 0))
+    testHashByParcel(new Parcel(-1, 1))
+    testHashByParcel(new Parcel( 0, -1))
+    testHashByParcel(new Parcel( 0, 0))
+    testHashByParcel(new Parcel( 0, 1))
+    testHashByParcel(new Parcel( 1, -1))
+    testHashByParcel(new Parcel( 1, 0))
+    testHashByParcel(new Parcel( 1, 1))
   })
 
   describe('onPositionUpdate', () => {
@@ -531,10 +569,10 @@ describe('Communications', function() {
       onPositionUpdate(context, [ 0, 0, 0, 0, 0, 0, 0 ])
 
       expect(worldConn.updateSubscriptions).to.have.been.calledWithMatch((subscriptions) => {
-        expect(subscriptions).to.have.length(12)
+        expect(subscriptions).to.have.length(3)
         return true
       }, (rawTopics) => {
-        expect(rawTopics.split(" ")).to.have.length(12)
+        expect(rawTopics.split(" ")).to.have.length(3)
         return true
       })
     })

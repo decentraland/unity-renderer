@@ -18,7 +18,7 @@ import {
   Format,
   TopicSubscriptionMessage
 } from './commproto_pb'
-import { Position } from './utils'
+import { Position, position2parcel } from './utils'
 import { UserInformation } from './types'
 import { parcelLimits } from 'config'
 
@@ -40,8 +40,9 @@ export interface IDataChannel {
 export type TopicHandler = (fromAlias: string, data: Uint8Array) => PkgStats | null
 
 export function positionHash(p: Position) {
-  const x = (p[0] + parcelLimits.maxParcelX) >> 2
-  const z = (p[2] + parcelLimits.maxParcelZ) >> 2
+  const parcel = position2parcel(p)
+  const x = (parcel.x + parcelLimits.maxParcelX) >> 2
+  const z = (parcel.z + parcelLimits.maxParcelZ) >> 2
   return `${x}:${z}`
 }
 
