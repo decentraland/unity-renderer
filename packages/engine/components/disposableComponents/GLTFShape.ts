@@ -132,6 +132,15 @@ export class GLTFShape extends DisposableComponent {
               if ('reflectionTexture' in material) {
                 material.reflectionTexture = probe.cubeTexture
               }
+
+              if ('albedoTexture' in material) {
+                if (material.alphaMode === 2) {
+                  if (material.albedoTexture) {
+                    material.albedoTexture.hasAlpha = true
+                    material.useAlphaFromAlbedoTexture = true
+                  }
+                }
+              }
             })
 
             // Fin the main mesh and add it as the BasicShape.nameInEntity component.
