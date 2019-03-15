@@ -14,6 +14,7 @@ public class SceneController : MonoBehaviour
     public static SceneController i { get; private set; }
 
     public bool startDecentralandAutomatically = true;
+    public bool VERBOSE = false;
 
     [FormerlySerializedAs("factoryManifest")]
     public DCLComponentFactory componentFactory;
@@ -116,18 +117,18 @@ public class SceneController : MonoBehaviour
         Cursor.lockState = CursorLockMode.None;
     }
 
-    ParcelScene GetDecentralandSceneOfParcel(Vector2Int parcel)
+    ParcelScene GetDecentralandSceneOfGridPosition(Vector2Int gridPosition)
     {
         foreach (var estate in loadedScenes)
         {
-            if (estate.Value.sceneData.basePosition.Equals(parcel))
+            if (estate.Value.sceneData.basePosition.Equals(gridPosition))
             {
                 return estate.Value;
             }
 
             foreach (var iteratedParcel in estate.Value.sceneData.parcels)
             {
-                if (iteratedParcel.Equals(parcel))
+                if (iteratedParcel == gridPosition)
                 {
                     return estate.Value;
                 }
@@ -257,6 +258,9 @@ public class SceneController : MonoBehaviour
             var separatorPosition = message.IndexOf('\t');
             var method = message.Substring(0, separatorPosition);
             var payload = message.Substring(separatorPosition + 1);
+
+            if (VERBOSE)
+                Debug.Log("SceneController ProcessMessage: " + payload);
 
             switch (method)
             {
