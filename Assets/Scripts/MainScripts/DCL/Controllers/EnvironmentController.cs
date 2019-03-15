@@ -14,8 +14,6 @@ public class EnvironmentController : MonoBehaviour
 
     void Awake()
     {
-        characterController = FindObjectOfType<DCLCharacterController>();
-
         sunLight = sun.GetComponent<Light>();
 
         sun.transform.position = CalculateSunPosition();
@@ -23,14 +21,12 @@ public class EnvironmentController : MonoBehaviour
 
     void OnEnable()
     {
-        if (characterController != null)
-            characterController.OnCharacterMoved += UpdateEnvironmentPosition;
+        DCLCharacterController.OnCharacterMoved += UpdateEnvironmentPosition;
     }
 
     void OnDisable()
     {
-        if (characterController != null)
-            characterController.OnCharacterMoved -= UpdateEnvironmentPosition;
+        DCLCharacterController.OnCharacterMoved -= UpdateEnvironmentPosition;
     }
 
     Vector3 CalculateSunPosition()
@@ -45,14 +41,14 @@ public class EnvironmentController : MonoBehaviour
         );
     }
 
-    public void UpdateEnvironmentPosition()
+    public void UpdateEnvironmentPosition(Vector3 characterPosition)
     {
         var originalY = ground.transform.position.y;
 
         ground.transform.position = new Vector3(
-          Mathf.Floor(characterController.transform.position.x / ParcelSettings.PARCEL_SIZE) * ParcelSettings.PARCEL_SIZE,
+          Mathf.Floor(characterPosition.x / ParcelSettings.PARCEL_SIZE) * ParcelSettings.PARCEL_SIZE,
           originalY,
-          Mathf.Floor(characterController.transform.position.z / ParcelSettings.PARCEL_SIZE) * ParcelSettings.PARCEL_SIZE
+          Mathf.Floor(characterPosition.z / ParcelSettings.PARCEL_SIZE) * ParcelSettings.PARCEL_SIZE
         );
 
         var sunfade = 1.0f - Mathf.Min(Mathf.Max(1.0f - Mathf.Exp(sun.transform.position.y / 10f), 0.0f), 0.9f);

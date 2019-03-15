@@ -35,8 +35,7 @@ public class DCLCharacterController : MonoBehaviour
     bool jumpButtonPressedThisFrame = false;
     CharacterController characterController;
 
-    public delegate void CharacterControllerEventDelegate();
-    public event CharacterControllerEventDelegate OnCharacterMoved;
+    public static System.Action<Vector3> OnCharacterMoved;
 
     void Awake()
     {
@@ -175,7 +174,7 @@ public class DCLCharacterController : MonoBehaviour
 
         if (OnCharacterMoved != null)
         {
-            OnCharacterMoved();
+            OnCharacterMoved(transform.position);
         }
     }
 }

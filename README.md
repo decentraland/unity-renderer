@@ -22,9 +22,26 @@ To be able to use the Test libraries for unit testing, we are using several [Ass
 
 This assembly contains all of our custom classes and scripts (which must stay inside its directory or in its hierarchy below).
 
-#### PlayModeTests.asmdef and EditModeTests.asmdef
+#### Other .asmdef files
 
-These assemblies are marked as test assemblies so that they get stripped when building the project. Also, PlayModeTests.asmdef references MainScripts.asmdef to be able to have our own classes available at unit tests code.
+On every component directory there is a /test folder with an assembly definition file marked as a test assembly so that it gets stripped when building the project and references the test libraries for assertions. Also, these .asmdef files reference the MainScripts.asmdef to be able to have our own classes available at unit tests code.
+
+### Component implementation high-level guidelines
+
+Before implementing a component on unity's side, it's recommended to check in the [CLIENT](https://github.com/decentraland/client) repo for the same component and verify whether it is a Disposable/Shared component or not, as their implementation pipeline differs.
+Every component declaration should be under the **/packages/decentraland-ecs/src/decentraland/** directory (Be aware that your IDE may find the component also in a ".ts" script, dismiss those declarations as they correspond to interfaces for the components in typescript).
+
+#### Entity/Non-Shared/Non-Disposable component:
+
+-   Make sure the corresponding CLASS_ID_COMPONENT value exists in MainScripts/DCL/Models/Protocol.cs, otherwise add it.
+-   Create the component script and prefab in MainScripts/DCL/Components/[Corresponding Folder]/
+-   From the Unity editor, update the MainScripts/DCL/Factory/DCLComponentFactory scriptable object adding the new element in the Factory List with the correct CLASS_ID_COMPONENT value and its prefab reference
+
+#### Shared/Disposable component:
+
+-   Make sure the corresponding CLASS_ID value exists in MainScripts/DCL/Models/Protocol.cs, otherwise add it.
+-   Create the component script in MainScripts/DCL/Components/[Corresponding Folder]/
+-   Edit the SharedComponentCreate() method in MainScripts/DCL/Controllers/Scene/ParcelScene.cs to make sure it instantiates the new shared component.
 
 ### Shaders Scene-Forced PreWarm
 

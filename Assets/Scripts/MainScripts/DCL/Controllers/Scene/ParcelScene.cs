@@ -5,6 +5,7 @@ using DCL.Models;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
+using UnityEngine.UI;
 using UnityEngine.Assertions;
 
 namespace DCL.Controllers
@@ -13,14 +14,13 @@ namespace DCL.Controllers
     {
         public Dictionary<string, DecentralandEntity> entities = new Dictionary<string, DecentralandEntity>();
         public Dictionary<string, BaseDisposable> disposableComponents = new Dictionary<string, BaseDisposable>();
-
         public LoadParcelScenesMessage.UnityParcelScene sceneData { get; private set; }
         public SceneController ownerController;
+        public SceneMetricsController metricsController;
+        public Canvas uiScreenSpaceCanvas;
 
         public event System.Action<DecentralandEntity> OnEntityAdded;
         public event System.Action<DecentralandEntity> OnEntityRemoved;
-
-        public SceneMetricsController metricsController;
 
         public void Awake()
         {
@@ -93,6 +93,47 @@ namespace DCL.Controllers
         public override string ToString()
         {
             return "gameObjectReference: " + this.ToString() + "\n" + sceneData.ToString();
+        }
+
+        public void EnsureScreenSpaceCanvasGameObject(string gameObjectName = "UIScreenSpaceShape")
+        {
+            if (uiScreenSpaceCanvas == null)
+            {
+                GameObject canvasGameObject = new GameObject(gameObjectName);
+                canvasGameObject.transform.SetParent(gameObject.transform);
+
+                // Canvas
+                uiScreenSpaceCanvas = canvasGameObject.AddComponent<Canvas>();
+                uiScreenSpaceCanvas.enabled = false; // It will be enabled later when the player enters this scene
+                uiScreenSpaceCanvas.renderMode = RenderMode.ScreenSpaceOverlay;
+
+                // Canvas Scaler (for maintaining ui aspect ratio)
+                CanvasScaler canvasScaler = canvasGameObject.AddComponent<CanvasScaler>();
+                canvasScaler.uiScaleMode = CanvasScaler.ScaleMode.ScaleWithScreenSize;
+                canvasScaler.referenceResolution = new Vector2(1280f, 720f);
+                canvasScaler.matchWidthOrHeight = 1f; // Match height, recommended for landscape projects
+
+                // Graphics Raycaster (for allowing touch/click input on the ui components)
+                canvasGameObject.AddComponent<GraphicRaycaster>();
+            }
+        }
+
+        public bool IsInsideSceneBoundaries(Vector3 worldPosition)
+        {
+            return IsInsideSceneBoundaries(WorldToGridPosition(worldPosition));
+        }
+
+        public bool IsInsideSceneBoundaries(Vector2 gridPosition)
+        {
+            for (int i = 0; i < sceneData.parcels.Length; i++)
+            {
+                if (sceneData.parcels[i] == gridPosition)
+                {
+                    return true;
+                }
+            }
+
+            return false;
         }
 
         private CreateEntityMessage tmpCreateEntityMessage = new CreateEntityMessage();
@@ -355,6 +396,22 @@ namespace DCL.Controllers
                         newComponent = new DCLAudioClip(this);
                         break;
                     }
+                case CLASS_ID.UI_SCREEN_SPACE_SHAPE:
+                    {
+                        newComponent = new UIScreenSpaceShape(this);
+                        break;
+                    }
+                case CLASS_ID.UI_CONTAINER_RECT:
+                    {
+                        if (uiScreenSpaceCanvas == null)
+                        {
+                            Debug.LogError("UIContainerRectShape cannot be created if there is no UIScreenSpace in the scene");
+                            break;
+                        }
+
+                        newComponent = new UIContainerRectShape(this);
+                        break;
+                    }
                 default:
 #if UNITY_EDITOR || DEVELOPMENT_BUILD
                     throw new UnityException($"Unknown classId {json}");
@@ -511,7 +568,7 @@ namespace DCL.Controllers
         /**
          * Transforms a world position into a grid position
          */
-        public static Vector2 worldToGrid(Vector3 vector)
+        public static Vector2 WorldToGridPosition(Vector3 vector)
         {
             return new Vector2(
               Mathf.Floor(vector.x / ParcelSettings.PARCEL_SIZE),

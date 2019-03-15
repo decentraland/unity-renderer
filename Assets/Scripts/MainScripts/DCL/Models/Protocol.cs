@@ -7,8 +7,8 @@ namespace DCL.Models
         NONE = 0,
         TRANSFORM = 1,
         UUID_CALLBACK = 8,
-        ANIMATOR = 33,
         TEXT_SHAPE = 21,
+        ANIMATOR = 33,
         AUDIO_SOURCE = 201,
     }
 
