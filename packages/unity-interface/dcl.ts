@@ -14,6 +14,7 @@ import { ParcelIdentity } from '../shared/apis/ParcelIdentity'
 import { Vector3, Quaternion, ReadOnlyVector3, ReadOnlyQuaternion } from '../decentraland-ecs/src/decentraland/math'
 
 let gameInstance: GameInstance = null
+const preloadedScenes = new Set<string>()
 
 const positionEvent = {
   position: Vector3.Zero(),
@@ -29,7 +30,6 @@ const browserInterface = {
     positionEvent.position.set(data.position.x, data.position.y, data.position.z)
     positionEvent.quaternion.set(data.rotation.x, data.rotation.y, data.rotation.z, data.rotation.w)
     positionEvent.rotation.copyFrom(positionEvent.quaternion.eulerAngles)
-
     positionObserver.notifyObservers(positionEvent)
   },
 
@@ -39,6 +39,10 @@ const browserInterface = {
       const parcelScene = scene.parcelScene as UnityParcelScene
       parcelScene.emit(data.eventType as IEventNames, data.payload)
     }
+  },
+
+  PreloadFinished(data: { sceneId: string }) {
+    preloadedScenes.add(data.sceneId)
   }
 }
 
@@ -67,6 +71,10 @@ const unityInterface = {
     }
     gameInstance.SendMessage(`SceneController`, `SendSceneMessage`, `${parcelSceneId}\t${method}\t${payload}`)
   }
+}
+
+export function finishScenePreload(id: string): void {
+  preloadedScenes.add(id)
 }
 
 window['unityInterface'] = unityInterface
@@ -127,6 +135,12 @@ export async function initializeEngine(_gameInstance: GameInstance) {
 
   await enableParcelSceneLoading(net, {
     parcelSceneClass: UnityParcelScene,
+    shouldLoadParcelScene: land => {
+      return true
+      // TODO integrate with unity the preloading feature
+      // tslint:disable-next-line: no-commented-out-code
+      // return preloadedScenes.has(land.scene.scene.base)
+    },
     onLoadParcelScenes: scenes => {
       unityInterface.LoadParcelScenes(
         scenes.map($ => {
