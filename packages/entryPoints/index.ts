@@ -1,5 +1,3 @@
-// In preview mode we can walk around the scene
-
 import 'engine'
 
 import { ETHEREUM_NETWORK, DEBUG } from '../config'
@@ -15,7 +13,8 @@ export async function loadClient(net: ETHEREUM_NETWORK) {
   document.body.appendChild(enableMiniMap())
 
   await enableParcelSceneLoading(net, {
-    parcelSceneClass: WebGLParcelScene
+    parcelSceneClass: WebGLParcelScene,
+    shouldLoadParcelScene: () => true
   })
 
   document.body.classList.remove('dcl-loading')
