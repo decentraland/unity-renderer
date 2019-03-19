@@ -185,12 +185,16 @@ export class WebGLParcelScene extends WebGLScene<LoadableParcelScene> {
     this.context.entities.forEach(entity => checkParcelSceneBoundaries(this.parcelCenters, newSet, entity))
     // remove the highlight from the entities that were outside but they are no longer outside
     this.setOfEntitiesOutsideBoundaries.forEach($ => {
-      if (!newSet.has($) && this.context.entities.has($.id)) {
-        removeEntityHighlight($)
-        $.setEnabled(true)
-        this.context.emit('entityBackInScene', { entityId: $.uuid })
-
+      if (!newSet.has($)) {
         this.setOfEntitiesOutsideBoundaries.delete($)
+
+        if (this.context.entities.has($.id)) {
+          removeEntityHighlight($)
+
+          $.setEnabled(true)
+          this.context.emit('entityBackInScene', { entityId: $.uuid })
+        }
+
         didChange = true
       }
     })
