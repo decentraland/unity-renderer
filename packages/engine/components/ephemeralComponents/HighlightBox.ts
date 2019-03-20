@@ -32,6 +32,15 @@ export class HighlightBox extends BaseComponent<{ highlight: boolean }> {
     return true
   }
 
+  didUpdateMesh = () => {
+    this.update()
+  }
+
+  attach() {
+    this.entity.onChangeObject3DObservable.add(this.didUpdateMesh)
+    this.update()
+  }
+
   update() {
     const newValue = !this.value || this.value.highlight
     const mesh: BABYLON.AbstractMesh = this.entity.getObject3D(BasicShape.nameInEntity) as any
@@ -55,6 +64,7 @@ export class HighlightBox extends BaseComponent<{ highlight: boolean }> {
   }
 
   detach() {
+    this.entity.onChangeObject3DObservable.removeCallback(this.didUpdateMesh)
     const mesh: BABYLON.AbstractMesh = this.entity.getObject3D(BasicShape.nameInEntity) as any
     if (mesh) {
       mesh.renderOverlay = false
