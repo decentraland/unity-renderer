@@ -4,7 +4,7 @@ import { vrHelper, scene, engine } from './init'
 import { playerConfigurations, visualConfigurations, parcelLimits } from 'config'
 import { keyState, Keys } from './input'
 import { gridToWorld } from 'atomicHelpers/parcelScenePositions'
-import { teleportObserver } from 'shared/world/positionThings'
+import { teleportObservable } from 'shared/world/positionThings'
 
 export const DEFAULT_CAMERA_ZOOM = 32
 export const MAX_CAMERA_ZOOM = 100
@@ -178,7 +178,7 @@ function unprojectToPlane(vec: BABYLON.Vector3) {
   return onPlane
 }
 
-teleportObserver.add((position: { x: number; y: number }) => {
+teleportObservable.add((position: { x: number; y: number }) => {
   return teleportTo(position.x, position.y)
 })
 

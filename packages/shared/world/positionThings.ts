@@ -10,7 +10,7 @@ import {
 } from 'decentraland-ecs/src/decentraland/math'
 import { Observable } from 'decentraland-ecs/src/ecs/Observable'
 
-export const positionObserver = new Observable<
+export const positionObservable = new Observable<
   Readonly<{
     position: ReadOnlyVector3
     rotation: ReadOnlyVector3
@@ -18,11 +18,11 @@ export const positionObserver = new Observable<
   }>
 >()
 
-export const teleportObserver = new Observable<ReadOnlyVector2>()
+export const teleportObservable = new Observable<ReadOnlyVector2>()
 
 export const lastPlayerPosition = new Vector3()
 
-positionObserver.add(event => {
+positionObservable.add(event => {
   lastPlayerPosition.copyFrom(event.position)
 })
 
@@ -53,7 +53,7 @@ export function initializeUrlPositionObserver() {
     }
   }
 
-  positionObserver.add(event => {
+  positionObservable.add(event => {
     updateUrlPosition(event.position)
   })
 

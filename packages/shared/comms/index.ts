@@ -2,7 +2,7 @@ import 'webrtc-adapter'
 
 import { parcelLimits, ETHEREUM_NETWORK, commConfigurations, networkConfigurations } from 'config'
 import { saveToLocalStorage } from 'atomicHelpers/localStorage'
-import { positionObserver } from 'shared/world/positionThings'
+import { positionObservable } from 'shared/world/positionThings'
 import { CommunicationArea, squareDistance, Position, position2parcel, sameParcel } from './utils'
 import { Stats, NetworkStats, PkgStats } from './debug'
 
@@ -343,7 +343,7 @@ export async function connect(ethAddress: string, network?: ETHEREUM_NETWORK) {
       }
     }, 1000)
 
-    positionObserver.add(
+    positionObservable.add(
       (
         obj: Readonly<{
           position: ReadOnlyVector3

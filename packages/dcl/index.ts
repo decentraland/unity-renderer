@@ -7,7 +7,7 @@ import './api'
 // Our imports
 import { DEBUG, PREVIEW, NETWORK_HZ, EDITOR } from 'config'
 
-import { positionObserver, lastPlayerPosition } from 'shared/world/positionThings'
+import { positionObservable, lastPlayerPosition } from 'shared/world/positionThings'
 
 import { createStats } from './widgets/stats'
 import { Metrics, drawMetrics } from './widgets/metrics'
@@ -79,7 +79,7 @@ const notifyPositionObservers = (() => {
         quaternionToRotationBABYLON(quaternion, rotation)
       }
 
-      positionObserver.notifyObservers(objectToSend)
+      positionObservable.notifyObservers(objectToSend)
     }
   }
 })()
