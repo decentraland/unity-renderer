@@ -12,6 +12,7 @@ import { SceneWorker, ParcelSceneAPI } from '../shared/world/SceneWorker'
 import { EventDispatcher } from 'decentraland-rpc/lib/common/core/EventDispatcher'
 import { ParcelIdentity } from '../shared/apis/ParcelIdentity'
 import { Vector3, Quaternion, ReadOnlyVector3, ReadOnlyQuaternion } from '../decentraland-ecs/src/decentraland/math'
+import { DEBUG } from '../config'
 
 let gameInstance: GameInstance = null
 const preloadedScenes = new Set<string>()
@@ -50,6 +51,9 @@ let lastParcelScenesSent = ''
 
 const unityInterface = {
   debug: false,
+  SetDebug() {
+    gameInstance.SendMessage('SceneController', 'SetDebug')
+  },
   /** Sends the camera position to the engine */
   SetPosition(x: number, y: number, z: number) {
     let theY = y <= 0 ? 2 : y
@@ -132,6 +136,10 @@ export async function initializeEngine(_gameInstance: GameInstance) {
   const { net } = await initShared()
 
   unityInterface.SetPosition(lastPlayerPosition.x, lastPlayerPosition.y, lastPlayerPosition.z)
+
+  if (DEBUG) {
+    unityInterface.SetDebug()
+  }
 
   await enableParcelSceneLoading(net, {
     parcelSceneClass: UnityParcelScene,
