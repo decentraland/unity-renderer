@@ -70,6 +70,7 @@ namespace DCL
 
     public class WSSController : MonoBehaviour
     {
+        public static WSSController i { get; private set; }
         static bool VERBOSE = false;
         WebSocketServer ws;
         public SceneController sceneController;
@@ -83,7 +84,13 @@ namespace DCL
         public bool isServerReady { get { return ws.IsListening; } }
 
         public bool openBrowserWhenStart;
+        public bool useClientDebugMode = true;
         public Vector2 startInCoords = new Vector2(-99, 109);
+
+        private void Awake()
+        {
+            i = this;
+        }
 
         private void OnEnable()
         {
@@ -95,8 +102,17 @@ namespace DCL
 
             if (openBrowserWhenStart)
             {
-                Application.OpenURL("http://localhost:8080/tetra.html?DEBUG&position=" + startInCoords.x + "%2C" + startInCoords.y + "&ws=ws%3A%2F%2Flocalhost%3A5000%2Fdcl");
+                string debugString = "";
+
+                if (useClientDebugMode)
+                {
+                    debugString = "DEBUG&";
+                }
+
+                Application.OpenURL( $"http://localhost:8080/tetra.html?{debugString}position={startInCoords.x}%2C{startInCoords.y}&ws=ws%3A%2F%2Flocalhost%3A5000%2Fdcl");
             }
+#else
+            useClientDebugMode = false;
 #endif
         }
 
@@ -126,6 +142,9 @@ namespace DCL
 
                         switch (msg.type)
                         {
+                            case "SetDebug":
+                                sceneController.SetDebug();
+                                break;
                             case "SendSceneMessage":
                                 sceneController.SendSceneMessage(msg.payload);
                                 break;

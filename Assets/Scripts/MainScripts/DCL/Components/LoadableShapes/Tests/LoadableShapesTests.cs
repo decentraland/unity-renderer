@@ -56,8 +56,7 @@ namespace Tests
 
             yield return new WaitForSeconds(0.01f);
 
-            var sceneData = new LoadParcelScenesMessage.UnityParcelScene();
-            var scene = sceneController.CreateTestScene(sceneData);
+            var scene = sceneController.CreateTestScene();
 
             yield return new WaitForSeconds(0.01f);
 
@@ -199,7 +198,12 @@ namespace Tests
 
             yield return new WaitForSeconds(8f);
 
-            Assert.IsTrue(scene.entities[entityId].gameObject.GetComponentInChildren<GLTFComponent>().loadedAssetRootGameObject.transform.Find("Lantern") != null);
+            {
+                var gltfObject = scene.entities[entityId].gameObject.GetComponentInChildren<InstantiatedGLTFObject>();
+
+                Assert.IsTrue(gltfObject != null, "InstantiatedGLTFObject is null in first object!");
+                Assert.IsTrue(gltfObject.transform.Find("Lantern") != null, "Can't find \"Lantern!\"");
+            }
 
             TestHelpers.CreateAndSetShape(scene, entityId, DCL.Models.CLASS_ID.GLTF_SHAPE, JsonConvert.SerializeObject(new
             {
@@ -208,7 +212,12 @@ namespace Tests
 
             yield return new WaitForSeconds(8f);
 
-            Assert.IsTrue(scene.entities[entityId].gameObject.GetComponentInChildren<GLTFComponent>().loadedAssetRootGameObject.transform.Find("node_damagedHelmet_-6514") != null);
+            {
+                var gltfObject = scene.entities[entityId].gameObject.GetComponentInChildren<InstantiatedGLTFObject>();
+
+                Assert.IsTrue(gltfObject != null, "InstantiatedGLTFObject is null in second object!");
+                Assert.IsTrue(gltfObject.transform.Find("node_damagedHelmet_-6514") != null, "Can't find \"node_damagedHelmet_-6514\"!");
+            }
         }
 
         [UnityTest]

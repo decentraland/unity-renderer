@@ -8,7 +8,7 @@ Shader "DCL/FX/Hologram"
 
         _ThrobbScale("Throbbing Scale", float ) = 0.1
 
-        _CullYPlane ("Cull Y Plane", Float) = 0.5
+        [PerRendererData] _CullYPlane ("Cull Y Plane", Float) = 0.5
         _FadeThickness ("Fade Thickness", Float) = 5
         _FadeDirection ("Fade Direction", Float) = 0
 	}

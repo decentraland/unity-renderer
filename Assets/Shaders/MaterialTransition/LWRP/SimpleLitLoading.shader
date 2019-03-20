@@ -39,7 +39,7 @@ Shader "DCL/LWRP/Simple Lit Loading"
 
         [ToogleOff] _ReceiveShadows("Receive Shadows", Float) = 1.0
 
-        _CullYPlane ("Cull Y Plane", Float) = 0.5
+        [PerRendererData] _CullYPlane ("Cull Y Plane", Float) = 0.5
     }
 
     SubShader

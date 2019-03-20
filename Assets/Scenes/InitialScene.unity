@@ -18,8 +18,8 @@ RenderSettings:
   m_FogColor: {r: 0.77647066, g: 0.9058824, b: 1, a: 1}
   m_FogMode: 1
   m_FogDensity: 0.0001
-  m_LinearFogStart: 200
-  m_LinearFogEnd: 300
+  m_LinearFogStart: 40
+  m_LinearFogEnd: 50
   m_AmbientSkyColor: {r: 0.8396226, g: 0.3675553, b: 0.30495724, a: 1}
   m_AmbientEquatorColor: {r: 0.8773585, g: 0.7329541, b: 0.7242346, a: 1}
   m_AmbientGroundColor: {r: 0.6273585, g: 0.8350604, b: 1, a: 1}
@@ -89,7 +89,7 @@ LightmapSettings:
     m_PVRFilteringAtrousPositionSigmaAO: 1
     m_ShowResolutionOverlay: 1
   m_LightingDataAsset: {fileID: 0}
-  m_UseShadowmask: 1
+  m_UseShadowmask: 0
 --- !u!196 &4
 NavMeshSettings:
   serializedVersion: 2
@@ -556,6 +556,7 @@ MonoBehaviour:
   sceneController: {fileID: 322303338}
   characterController: {fileID: 1989862556}
   openBrowserWhenStart: 1
+  useClientDebugMode: 1
   startInCoords: {x: 146, y: 123}
 --- !u!4 &1444882337
 Transform:
@@ -792,16 +793,6 @@ PrefabInstance:
     - target: {fileID: 6922703132412175459, guid: 68bb549c9718c7649abcfc45e6ad7190,
         type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 6922703132371683186, guid: 68bb549c9718c7649abcfc45e6ad7190,
-        type: 3}
-      propertyPath: m_ShowToolkit
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 6922703132371683186, guid: 68bb549c9718c7649abcfc45e6ad7190,
-        type: 3}
-      propertyPath: m_ShowCustomSorter
       value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents: []

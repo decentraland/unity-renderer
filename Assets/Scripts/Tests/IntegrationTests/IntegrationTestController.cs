@@ -39,7 +39,7 @@ public class IntegrationTestController : MonoBehaviour
         sceneController.UnloadAllScenes();
         sceneController.LoadParcelScenes(JsonConvert.SerializeObject(scenesToLoad));
 
-        yield return null;
+        yield return new WaitForAllMessagesProcessed();
 
         var scene = sceneController.loadedScenes[sceneName];
 
@@ -69,7 +69,7 @@ public class IntegrationTestController : MonoBehaviour
              )
         );
 
-        yield return null;
+        yield return new WaitForAllMessagesProcessed();
 
         Assert.IsTrue(scene.entities[entityId].meshGameObject == null, "meshGameObject must be null");
 

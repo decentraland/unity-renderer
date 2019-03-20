@@ -53,13 +53,14 @@ namespace UnityGLTF.Loader
 #endif
             if ((int)www.responseCode >= 400)
             {
-                throw new IOException($"{www.responseCode} - {www.url}");
+                Debug.LogError($"{www.responseCode} - {www.url}");
+                yield break;
             }
 
             if (www.downloadedBytes > int.MaxValue)
             {
-                throw new IOException("Stream is larger than can be copied into byte array");
-
+                Debug.LogError("Stream is larger than can be copied into byte array");
+                yield break;
             }
 
             LoadedStream = new MemoryStream(www.downloadHandler.data, 0, www.downloadHandler.data.Length, true, true);

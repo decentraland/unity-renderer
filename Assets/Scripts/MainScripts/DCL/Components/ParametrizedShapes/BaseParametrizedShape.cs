@@ -53,7 +53,7 @@ namespace DCL.Components
                 entity.OnShapeUpdated.Invoke(entity);
             }
 
-            ConfigureColliders(entity, model.withCollisions);
+            ConfigureColliders(entity.meshGameObject, model.withCollisions);
         }
 
         void OnShapeDetached(DecentralandEntity entity)
@@ -102,7 +102,7 @@ namespace DCL.Components
                 {
                     foreach (var entity in this.attachedEntities)
                     {
-                        ConfigureColliders(entity, model.withCollisions);
+                        ConfigureColliders(entity.meshGameObject, model.withCollisions);
                     }
                 }
             }

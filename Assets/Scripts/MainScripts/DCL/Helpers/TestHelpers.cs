@@ -8,6 +8,11 @@ using UnityEngine.Assertions;
 
 namespace DCL.Helpers
 {
+    public class WaitForAllMessagesProcessed : CustomYieldInstruction
+    {
+        public override bool keepWaiting => SceneController.i.hasPendingMessages;
+    }
+
     public static class TestHelpers
     {
         public static string GetTestsAssetsPath(bool useWebServerPath = false)
@@ -128,9 +133,33 @@ namespace DCL.Helpers
             return textShape;
         }
 
+        public static GLTFShape AttachGLTFShape(DecentralandEntity entity, ParcelScene scene, Vector3 position, GLTFShape.Model model)
+        {
+            string componentId = GetUniqueId("gltfShape", (int)CLASS_ID.GLTF_SHAPE, entity.entityId);
+            GLTFShape gltfShape = SharedComponentCreate<GLTFShape, GLTFShape.Model>(scene, CLASS_ID.GLTF_SHAPE, model);
+
+            EntityComponentCreate<DCLTransform, DCLTransform.Model>(scene, entity,
+                new DCLTransform.Model
+                {
+                    position = position,
+                    rotation = Quaternion.identity,
+                    scale = Vector3.one
+                });
+
+            SharedComponentAttach(gltfShape, entity);
+            return gltfShape;
+        }
+
+        public static GLTFShape CreateEntityWithGLTFShape(ParcelScene scene, Vector3 position, GLTFShape.Model model)
+        {
+            DecentralandEntity entity = CreateSceneEntity(scene);
+            GLTFShape gltfShape = AttachGLTFShape(entity, scene, position, model);
+            return gltfShape;
+        }
+
         public static T InstantiateEntityWithShape<T, K>(ParcelScene scene, DCL.Models.CLASS_ID classId, Vector3 position, out DecentralandEntity entity, K model)
-        where T : BaseShape
-        where K : class
+            where T : BaseShape
+            where K : class
         {
             entity = CreateSceneEntity(scene);
             string shapeId = "";
@@ -292,7 +321,6 @@ namespace DCL.Helpers
             if (sceneController != null && sceneController.componentFactory == null)
             {
                 Utils.SafeDestroy(sceneController);
-
                 sceneController = null;
             }
 
@@ -301,6 +329,10 @@ namespace DCL.Helpers
                 GameObject GO = GameObject.Instantiate(Resources.Load("Prefabs/SceneController") as GameObject);
                 sceneController = GO.GetComponent<SceneController>();
             }
+
+            AssetManager_GLTF assetMgr = sceneController.GetComponentInChildren<AssetManager_GLTF>();
+            Assert.IsTrue(assetMgr != null, "AssetManager is null???");
+            assetMgr.ClearLibrary();
 
             if (usesWebServer)
             {

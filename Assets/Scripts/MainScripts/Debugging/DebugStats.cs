@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
+using UnityGLTF;
 
 public class DebugStats : MonoBehaviour
 {
@@ -10,7 +11,7 @@ public class DebugStats : MonoBehaviour
 
     private void Start()
     {
-        InvokeRepeating("LazyUpdate", 0, 0.5f);
+        InvokeRepeating("LazyUpdate", 0, 0.2f);
     }
 
     private void LazyUpdate()
@@ -48,5 +49,12 @@ public class DebugStats : MonoBehaviour
         debugStats.text += "\n";
         debugStats.text += "\nMaterial Count:" + materialCount;
         debugStats.text += "\nMeshes Count:" + meshesCount;
+        debugStats.text += "\nGLTFs being loaded:" + GLTFComponent.downloadingCount;
+        debugStats.text += "\nPending messages:" + SceneController.i.pendingMessagesCount;
+        debugStats.text += "\nPending messages per frame:" + (lastPendingMessages - SceneController.i.pendingMessagesCount);
+
+        lastPendingMessages = SceneController.i.pendingMessagesCount;
     }
+
+    int lastPendingMessages;
 }

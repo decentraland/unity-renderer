@@ -45,6 +45,8 @@ public class MaterialTransitionController : MonoBehaviour
     }
 
     public GameObject placeholder { get; private set; }
+    public Renderer placeholderRenderer { get; private set; }
+    MaterialPropertyBlock placeholderPropertyBlock;
 
     float lowerYRendererBounds;
     float topYRendererBounds;
@@ -56,22 +58,17 @@ public class MaterialTransitionController : MonoBehaviour
 
     public void PopulateLoadingMaterialWithFinalMaterial()
     {
-        loadingMaterialCopies = new List<Material>();
-
         for (int i = 0; i < finalMaterials.Length; i++)
         {
-            Material material = new Material(loadingMaterial);
-            material.CopyPropertiesFromMaterial(finalMaterials[i]);
+            Material material = finalMaterials[i];
 
             material.SetFloat(ShaderId_CullYPlane, currentCullYPlane);
             material.SetColor(ShaderId_LoadingColor, Color.clear);
             material.SetFloat(ShaderId_FadeDirection, 0);
             material.SetFloat(ShaderId_FadeThickness, fadeThickness);
-
-            loadingMaterialCopies.Add(material);
         }
 
-        targetRenderer.sharedMaterials = loadingMaterialCopies.ToArray();
+        targetRenderer.sharedMaterials = finalMaterials;
     }
 
 
@@ -85,14 +82,17 @@ public class MaterialTransitionController : MonoBehaviour
 
     private void Start()
     {
-        targetRenderer.enabled = false;
+        Renderer tr = targetRenderer;
+        tr.enabled = false;
 
         if (useHologram)
             InitHologram();
 
-        lowerYRendererBounds = GetLowerBoundsY(targetRenderer);
-        topYRendererBounds = GetTopBoundsY(targetRenderer);
+        lowerYRendererBounds = GetLowerBoundsY(tr);
+        topYRendererBounds = GetTopBoundsY(tr);
         currentCullYPlane = lowerYRendererBounds;
+
+        placeholderPropertyBlock = new MaterialPropertyBlock();
     }
 
     void InitHologram()
@@ -102,18 +102,18 @@ public class MaterialTransitionController : MonoBehaviour
         placeholder.transform.SetParent(transform, false);
         placeholder.transform.ResetLocalTRS();
 
-        MeshRenderer newRenderer = placeholder.AddComponent<MeshRenderer>();
+        placeholderRenderer = placeholder.AddComponent<MeshRenderer>();
         MeshFilter newMeshFilter = placeholder.AddComponent<MeshFilter>();
         newMeshFilter.sharedMesh = GetComponent<MeshFilter>().sharedMesh;
-        hologramMaterial = new Material(Resources.Load("Materials/HologramMaterial") as Material);
-        newRenderer.sharedMaterials = new Material[] { hologramMaterial };
+        hologramMaterial = Resources.Load("Materials/HologramMaterial") as Material;
+        placeholderRenderer.sharedMaterials = new Material[] { hologramMaterial };
     }
 
 
 
     private void Update()
     {
-        if (targetRenderer == null)
+        if (targetRendererValue == null)
         {
             DestroyPlaceholder();
             state = State.INVALID;
@@ -128,13 +128,17 @@ public class MaterialTransitionController : MonoBehaviour
                     currentCullYPlane = Mathf.Clamp(currentCullYPlane, lowerYRendererBounds, topYRendererBounds);
                     time += Time.deltaTime;
 
-                    if (hologramMaterial != null)
-                        hologramMaterial.SetFloat(ShaderId_CullYPlane, currentCullYPlane);
+                    if (placeholderRenderer != null)
+                    {
+                        placeholderRenderer.GetPropertyBlock(placeholderPropertyBlock);
+                        placeholderPropertyBlock.SetFloat(ShaderId_CullYPlane, currentCullYPlane);
+                        placeholderRenderer.SetPropertyBlock(placeholderPropertyBlock);
+                    }
 
                     if (materialReady && time > delay)
                     {
                         currentCullYPlane = topYRendererBounds;
-                        targetRenderer.enabled = true;
+                        targetRendererValue.enabled = true;
                         PopulateLoadingMaterialWithFinalMaterial();
 
                         state = State.SHOWING_LOADED;
@@ -146,20 +150,26 @@ public class MaterialTransitionController : MonoBehaviour
                     currentCullYPlane += (lowerYRendererBounds - currentCullYPlane) * 0.1f;
                     currentCullYPlane = Mathf.Clamp(currentCullYPlane, lowerYRendererBounds, topYRendererBounds);
 
-                    for (int i = 0; i < targetRenderer.sharedMaterials.Length; i++)
+                    for (int i = 0; i < targetRendererValue.sharedMaterials.Length; i++)
                     {
-                        Material material = targetRenderer.sharedMaterials[i];
-                        material.SetFloat(ShaderId_CullYPlane, currentCullYPlane);
+                        if (targetRendererValue != null)
+                        {
+                            targetRendererValue.GetPropertyBlock(placeholderPropertyBlock);
+                            placeholderPropertyBlock.SetFloat(ShaderId_CullYPlane, currentCullYPlane);
+                            targetRendererValue.SetPropertyBlock(placeholderPropertyBlock, i);
+                        }
                     }
 
-                    if (hologramMaterial != null)
-                        hologramMaterial.SetFloat(ShaderId_CullYPlane, currentCullYPlane);
+                    if (placeholderRenderer != null)
+                    {
+                        placeholderRenderer.GetPropertyBlock(placeholderPropertyBlock);
+                        placeholderPropertyBlock.SetFloat(ShaderId_CullYPlane, currentCullYPlane);
+                        placeholderRenderer.SetPropertyBlock(placeholderPropertyBlock);
+                    }
 
                     if (currentCullYPlane <= lowerYRendererBounds + 0.1f)
                     {
-                        Destroy(hologramMaterial);
                         DestroyPlaceholder();
-                        targetRenderer.sharedMaterials = finalMaterials;
                         state = State.FINISHED;
                     }
 
@@ -176,9 +186,6 @@ public class MaterialTransitionController : MonoBehaviour
     private void OnDestroy()
     {
         DestroyPlaceholder();
-
-        if (hologramMaterial != null)
-            Destroy(hologramMaterial);
 
         if (loadingMaterialCopies != null)
         {
@@ -223,6 +230,40 @@ public class MaterialTransitionController : MonoBehaviour
         return targetRenderer.bounds.max.y + fadeThickness;
     }
 
+    static MaterialPropertyBlock block = null;
 
+    public static void ApplyToLoadedObjectFast(GameObject meshContainer)
+    {
+        if (block == null)
+            block = new MaterialPropertyBlock();
+
+        Renderer[] renderers = meshContainer.GetComponentsInChildren<Renderer>();
+
+        for (int i = 0; i < renderers.Length; i++)
+        {
+            Renderer r = renderers[i];
+            float lowBounds = r.bounds.min.y - 20;
+            r.GetPropertyBlock(block);
+            block.SetFloat(ShaderId_CullYPlane, lowBounds);
+            r.SetPropertyBlock(block);
+        }
+    }
+
+
+    public static void ApplyToLoadedObject(GameObject meshContainer, bool useHologram=true, float fadeThickness=20, float delay=0)
+    {
+        Renderer[] renderers = meshContainer.GetComponentsInChildren<Renderer>();
+
+        for (int i = 0; i < renderers.Length; i++)
+        {
+            Renderer r = renderers[i];
+            MaterialTransitionController transition = r.gameObject.AddComponent<MaterialTransitionController>();
+            Material finalMaterial = r.sharedMaterial;
+            transition.delay = delay;
+            transition.useHologram = useHologram;
+            transition.fadeThickness = fadeThickness;
+            transition.OnDidFinishLoading(finalMaterial);
+        }
+    }
 
 }

@@ -13,11 +13,12 @@ namespace DCL.Components
         public bool alreadyLoaded = false;
         public DecentralandEntity entity;
 
-        public abstract void Load(string src, bool useVisualFeedback);
+        public abstract void Load(string url, bool useVisualFeedback);
+        public abstract void Unload();
     }
 
-    public class BaseLoadableShape<LoadableShape> : BaseShape
-        where LoadableShape : LoadableMonoBehavior
+    public class BaseLoadableShape<Loadable> : BaseShape
+        where Loadable : LoadableMonoBehavior
     {
         [System.Serializable]
         public class Model
@@ -50,7 +51,7 @@ namespace DCL.Components
                 if (scene.sceneData.TryGetContentsUrl(currentSrc, out finalUrl))
                 {
                     entity.EnsureMeshGameObject(componentName + " mesh");
-                    LoadableShape loadableShape = Helpers.Utils.GetOrCreateComponent<LoadableShape>(entity.meshGameObject);
+                    Loadable loadableShape = Helpers.Utils.GetOrCreateComponent<Loadable>(entity.meshGameObject);
                     loadableShape.entity = entity;
                     loadableShape.Load(finalUrl, Configuration.ParcelSettings.VISUAL_LOADING_ENABLED);
                 }
@@ -62,13 +63,18 @@ namespace DCL.Components
             if (entity == null || entity.meshGameObject == null)
                 return;
 
+            Loadable loadableShape = Helpers.Utils.GetOrCreateComponent<Loadable>(entity.meshGameObject);
+
+            if ( loadableShape != null )
+                loadableShape.Unload();
+
             Utils.SafeDestroy(entity.meshGameObject);
             entity.meshGameObject = null;
         }
 
         public override IEnumerator ApplyChanges(string newJson)
         {
-            Helpers.Utils.SafeFromJsonOverwrite(newJson, model);
+            model = Helpers.Utils.SafeFromJson<Model>(newJson);
 
             // TODO: changing src is not allowed in loadableShapes
             if (!string.IsNullOrEmpty(model.src) && currentSrc != model.src)

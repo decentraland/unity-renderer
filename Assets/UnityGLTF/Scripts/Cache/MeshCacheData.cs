@@ -1,4 +1,4 @@
-﻿using GLTF;
+using GLTF;
 using System.Collections.Generic;
 using UnityEngine;
 

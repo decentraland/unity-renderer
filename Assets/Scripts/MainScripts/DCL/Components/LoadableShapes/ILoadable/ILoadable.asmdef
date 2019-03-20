@@ -1,10 +1,6 @@
 {
-    "name": "UnityGLTFAssembly",
-    "references": [
-        "CoroutineHelpers",
-        "MaterialTransitionController",
-        "ILoader"
-    ],
+    "name": "ILoader",
+    "references": [],
     "optionalUnityReferences": [],
     "includePlatforms": [],
     "excludePlatforms": [],

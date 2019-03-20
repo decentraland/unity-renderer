@@ -99,7 +99,7 @@ namespace UnityGLTF
         /// </summary>
         public Material LoadingTextureMaterial { get; set; }
 
-        public float BudgetPerFrameInMilliseconds = 10f;
+        public float BudgetPerFrameInMilliseconds = 1f;
 
         public bool KeepCPUCopyOfMesh = true;
 
@@ -981,7 +981,11 @@ namespace UnityGLTF
         public static IEnumerator SetCurveMode(AnimationCurve curve, InterpolationType mode)
         {
             float startTime = Time.realtimeSinceStartup;
-            for (int i = 0; i < curve.keys.Length; ++i)
+
+            //NOTE(Brian): This boosts performance
+            Keyframe[] curveKeys = curve.keys;
+
+            for (int i = 0; i < curveKeys.Length; ++i)
             {
                 float intangent = 0;
                 float outtangent = 0;
@@ -997,7 +1001,7 @@ namespace UnityGLTF
                     intangent = 0; intangent_set = true;
                 }
 
-                if (i == curve.keys.Length - 1)
+                if (i == curveKeys.Length - 1)
                 {
                     outtangent = 0; outtangent_set = true;
                 }
@@ -1013,10 +1017,10 @@ namespace UnityGLTF
                         {
                             if (!intangent_set)
                             {
-                                point1.x = curve.keys[i - 1].time;
-                                point1.y = curve.keys[i - 1].value;
-                                point2.x = curve.keys[i].time;
-                                point2.y = curve.keys[i].value;
+                                point1.x = curveKeys[i - 1].time;
+                                point1.y = curveKeys[i - 1].value;
+                                point2.x = curveKeys[i].time;
+                                point2.y = curveKeys[i].value;
 
                                 deltapoint = point2 - point1;
 
@@ -1024,10 +1028,10 @@ namespace UnityGLTF
                             }
                             if (!outtangent_set)
                             {
-                                point1.x = curve.keys[i].time;
-                                point1.y = curve.keys[i].value;
-                                point2.x = curve.keys[i + 1].time;
-                                point2.y = curve.keys[i + 1].value;
+                                point1.x = curveKeys[i].time;
+                                point1.y = curveKeys[i].value;
+                                point2.x = curveKeys[i + 1].time;
+                                point2.y = curveKeys[i + 1].value;
 
                                 deltapoint = point2 - point1;
 
@@ -1049,7 +1053,7 @@ namespace UnityGLTF
                 key.outTangent = outtangent;
                 curve.MoveKey(i, key);
 
-                if (Time.realtimeSinceStartup - startTime > 0.016f)
+                if (Time.realtimeSinceStartup - startTime > 0.004f)
                 {
                     startTime = Time.realtimeSinceStartup;
                     yield return null;
@@ -1062,6 +1066,7 @@ namespace UnityGLTF
         protected virtual IEnumerator ConstructScene(GLTFScene scene, bool showSceneObj)
         {
             var sceneObj = new GameObject(string.IsNullOrEmpty(scene.Name) ? ("GLTFScene") : scene.Name);
+
             sceneObj.SetActive(showSceneObj);
             sceneObj.transform.parent = SceneParent;
             sceneObj.transform.localPosition = Vector3.zero;
@@ -1100,6 +1105,8 @@ namespace UnityGLTF
                         animation.clip = clip;
                     }
                 }
+
+                animation.enabled = false;
             }
 
             CreatedObject = sceneObj;
@@ -1305,7 +1312,7 @@ namespace UnityGLTF
             {
                 var weightSum = (weights[i].x + weights[i].y + weights[i].z + weights[i].w);
 
-                if (!Mathf.Approximately(weightSum, 0))
+                if (weightSum > 0.001f || weightSum < -0.001f)
                 {
                     weights[i] /= weightSum;
                 }

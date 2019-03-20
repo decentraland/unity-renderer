@@ -26,7 +26,7 @@ namespace Tests
 
             sceneController.LoadParcelScenes(scenesToLoad);
 
-            yield return new WaitForSeconds(.1f);
+            yield return new WaitForAllMessagesProcessed();
 
             var scene = sceneController.loadedScenes["0,0"];
 
@@ -85,7 +85,7 @@ namespace Tests
 
             sceneController.LoadParcelScenes((Resources.Load("TestJSON/SceneLoadingTest") as TextAsset).text);
 
-            yield return null;
+            yield return new WaitForAllMessagesProcessed();
 
             string loadedSceneID = "0,0";
 
@@ -103,7 +103,7 @@ namespace Tests
 
             sceneController.LoadParcelScenes((Resources.Load("TestJSON/SceneLoadingTest") as TextAsset).text);
 
-            yield return null;
+            yield return new WaitForAllMessagesProcessed();
 
             string loadedSceneID = "0,0";
 
@@ -138,20 +138,20 @@ namespace Tests
             Assert.AreEqual(sceneController.loadedScenes.Count, 0);
             sceneController.LoadParcelScenes(jsonMessageToLoad);
 
-            yield return null;
+            yield return new WaitForAllMessagesProcessed();
 
-            var referenceCheck = new System.Collections.Generic.List<DCL.Controllers.ParcelScene>();
+            var referenceCheck = new List<DCL.Controllers.ParcelScene>();
 
             foreach (var kvp in sceneController.loadedScenes)
             {
                 referenceCheck.Add(kvp.Value);
             };
 
-            Assert.AreEqual(sceneController.loadedScenes.Count, 11);
+            Assert.AreEqual(11, sceneController.loadedScenes.Count);
 
             sceneController.LoadParcelScenes(jsonMessageToLoad);
 
-            Assert.AreEqual(sceneController.loadedScenes.Count, 11);
+            Assert.AreEqual(11, sceneController.loadedScenes.Count);
 
             foreach (var reference in referenceCheck)
             {
@@ -173,7 +173,7 @@ namespace Tests
             Assert.AreEqual(sceneController.loadedScenes.Count, 0);
             sceneController.LoadParcelScenes(jsonMessageToLoad);
 
-            yield return null;
+            yield return new WaitForAllMessagesProcessed();
 
             Assert.AreEqual(sceneController.loadedScenes.Count, 1);
 
@@ -201,7 +201,7 @@ namespace Tests
             Assert.AreEqual(sceneController.loadedScenes.Count, 0);
             sceneController.LoadParcelScenes(jsonMessageToLoad);
 
-            yield return null;
+            yield return new WaitForAllMessagesProcessed();
 
             Assert.AreEqual(sceneController.loadedScenes.Count, 1);
 

@@ -45,13 +45,13 @@ namespace DCL.Components
             entity.currentShape = null;
         }
 
-        public static void ConfigureColliders(DecentralandEntity entity, bool hasCollision, bool filterByColliderName = false)
+        public static void ConfigureColliders(GameObject meshGameObject, bool hasCollision, bool filterByColliderName = false)
         {
-            if (entity.meshGameObject == null) return;
+            if (meshGameObject == null) return;
 
             MeshCollider collider;
             MeshRenderer renderer;
-            MeshFilter[] meshFilters = entity.meshGameObject.GetComponentsInChildren<MeshFilter>();
+            MeshFilter[] meshFilters = meshGameObject.GetComponentsInChildren<MeshFilter>();
 
             for (int i = 0; i < meshFilters.Length; i++)
             {
