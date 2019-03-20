@@ -7,7 +7,7 @@ import { chatObservable, ChatEvent } from 'shared/comms/chat'
 import { ExposableAPI } from 'shared/apis/ExposableAPI'
 import { IChatCommand, MessageEntry } from 'shared/types'
 import { EngineAPI } from 'shared/apis/EngineAPI'
-import { teleportObserver } from 'shared/world/positionThings'
+import { teleportObservable } from 'shared/world/positionThings'
 import {
   getCurrentUser,
   findPeerByName,
@@ -164,7 +164,7 @@ export class ChatController extends ExposableAPI implements IChatController {
       }
       const x = coordinates[1]
       const y = coordinates[2]
-      teleportObserver.notifyObservers({ x: parseInt(x, 10), y: parseInt(y, 10) })
+      teleportObservable.notifyObservers({ x: parseInt(x, 10), y: parseInt(y, 10) })
 
       return {
         id: v4(),

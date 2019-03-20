@@ -1,6 +1,6 @@
 import { initParcelSceneWorker } from '../../decentraland-loader/worker'
 import { ETHEREUM_NETWORK } from '../../config'
-import { positionObserver, teleportObserver } from './positionThings'
+import { positionObservable, teleportObservable } from './positionThings'
 import { worldToGrid } from '../../atomicHelpers/parcelScenePositions'
 import { SceneWorker, ParcelSceneAPI } from './SceneWorker'
 import { LoadableParcelScene, EnvironmentData, ILand, ILandToLoadableParcelScene } from '../types'
@@ -56,10 +56,10 @@ export async function enableParcelSceneLoading(network: ETHEREUM_NETWORK, option
     })
   }
 
-  teleportObserver.add((position: { x: number; y: number }) => {
+  teleportObservable.add((position: { x: number; y: number }) => {
     ret.server.notify('User.setPosition', { position })
   })
-  positionObserver.add(obj => {
+  positionObservable.add(obj => {
     worldToGrid(obj.position, position)
     ret.server.notify('User.setPosition', { position })
   })
@@ -84,7 +84,7 @@ export function enablePositionReporting() {
   isPositionReportingEnabled = true
   const position = Vector2.Zero()
 
-  positionObserver.add(obj => {
+  positionObservable.add(obj => {
     worldToGrid(obj.position, position)
     for (let parcelSceneWorker of loadedParcelSceneWorkers) {
       if (parcelSceneWorker && 'sendUserViewMatrix' in parcelSceneWorker) {
