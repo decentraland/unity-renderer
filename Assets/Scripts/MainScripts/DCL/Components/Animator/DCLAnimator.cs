@@ -93,6 +93,7 @@ namespace DCL.Components
         PlayableGraph playableGraph;
         AnimationPlayableOutput playableOutput;
         AnimationMixerPlayable mixerPlayable;
+        ScriptPlayable<DCLAnimatorClipPlayableBehaviour> scriptPlayable;
         Animator animator;
 
         Dictionary<string, AnimationClipPlayable> stateToPlayable = new Dictionary<string, AnimationClipPlayable>();
@@ -229,19 +230,22 @@ namespace DCL.Components
                 }
             }
 
-            //NOTE(Brian): Mixer is connected to this custom playable behaviour, and this to the output playable.
-            //             This is done to implement loop behaviour. And maybe more advanced stuff later.
-            //             We could make the looping in Update() too but this feels more legit.
-            var blenderPlayable = ScriptPlayable<DCLAnimatorClipPlayableBehaviour>.Create(playableGraph, 1);
-            blenderPlayable.GetBehaviour().dclComponent = this;
-            blenderPlayable.GetBehaviour().stateToPlayable = stateToPlayable;
-
-            playableGraph.Connect(mixerPlayable, 0, blenderPlayable, 0);
-
-            if (!playableOutput.IsOutputValid())
+            if (!scriptPlayable.IsValid())
             {
-                playableOutput = AnimationPlayableOutput.Create(playableGraph, "Animation", animator);
-                playableOutput.SetSourcePlayable(blenderPlayable);
+                //NOTE(Brian): Mixer is connected to this custom playable behaviour, and this to the output playable.
+                //             This is done to implement loop behaviour. And maybe more advanced stuff later.
+                //             We could make the looping in Update() too but this feels more legit.
+                scriptPlayable = ScriptPlayable<DCLAnimatorClipPlayableBehaviour>.Create(playableGraph, 1);
+                scriptPlayable.GetBehaviour().dclComponent = this;
+                scriptPlayable.GetBehaviour().stateToPlayable = stateToPlayable;
+
+                playableGraph.Connect(mixerPlayable, 0, scriptPlayable, 0);
+
+                if (!playableOutput.IsOutputValid())
+                {
+                    playableOutput = AnimationPlayableOutput.Create(playableGraph, "Animation", animator);
+                    playableOutput.SetSourcePlayable(scriptPlayable);
+                }
             }
 
             playableGraph.Play();
