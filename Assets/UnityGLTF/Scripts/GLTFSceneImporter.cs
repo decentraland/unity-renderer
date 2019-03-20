@@ -509,14 +509,7 @@ namespace UnityGLTF
 
             Node nodeToLoad = _gltfRoot.Nodes[nodeIndex];
 
-            if (!isMultithreaded)
-            {
-                yield return ConstructBufferData(nodeToLoad);
-            }
-            else
-            {
-                yield return ConstructBufferData(nodeToLoad);
-            }
+            yield return ConstructBufferData(nodeToLoad);
 
             yield return ConstructNode(nodeToLoad, nodeIndex, parent);
         }
@@ -767,6 +760,51 @@ namespace UnityGLTF
             throw new Exception("no RelativePath");
         }
 
+        IEnumerator LoadAnimationBufferData(GLTFAnimation animation, int animationId)
+        {
+            var typeMap = new Dictionary<int, string>();
+            foreach (var channel in animation.Channels)
+            {
+                typeMap[channel.Sampler.Id] = channel.Target.Path.ToString();
+            }
+
+            for (var i = 0; i < animation.Samplers.Count; i++)
+            {
+                // no sense generating unused samplers
+                if (!typeMap.ContainsKey(i))
+                {
+                    continue;
+                }
+
+                var samplerDef = animation.Samplers[i];
+
+                // set up input accessors
+                int bufferId = samplerDef.Input.Value.BufferView.Value.Buffer.Id;
+                BufferCacheData bufferCacheData = _assetCache.BufferCache[bufferId];
+
+                if (bufferCacheData == null)
+                {
+                    yield return ConstructBuffer(_gltfRoot.Buffers[bufferId], bufferId);
+                    bufferCacheData = _assetCache.BufferCache[bufferId];
+
+                    if (VERBOSE) Debug.Log("A GLTF Animation buffer cache data is null, skipping animation sampler for " + animation.Name);
+                    //continue;
+                }
+
+                // set up output accessors
+                int anotherBufferId = samplerDef.Output.Value.BufferView.Value.Buffer.Id;
+                bufferCacheData = _assetCache.BufferCache[anotherBufferId];
+
+                if (bufferCacheData == null)
+                {
+                    yield return ConstructBuffer(_gltfRoot.Buffers[anotherBufferId], anotherBufferId);
+                    bufferCacheData = _assetCache.BufferCache[anotherBufferId];
+                    if (VERBOSE) Debug.Log("A GLTF Animation buffer cache data is null, skipping animation sampler for " + animation.Name);
+                    //continue;
+                }
+            }
+        }
+
         protected virtual void BuildAnimationSamplers(GLTFAnimation animation, int animationId)
         {
             // look up expected data types
@@ -793,13 +831,8 @@ namespace UnityGLTF
                 var samplerDef = animation.Samplers[i];
 
                 // set up input accessors
-                BufferCacheData bufferCacheData = _assetCache.BufferCache[samplerDef.Input.Value.BufferView.Value.Buffer.Id];
-
-                if (bufferCacheData == null)
-                {
-                    if (VERBOSE) Debug.Log("A GLTF Animation buffer cache data is null, skipping animation sampler for " + animation.Name);
-                    continue;
-                }
+                int bufferId = samplerDef.Input.Value.BufferView.Value.Buffer.Id;
+                BufferCacheData bufferCacheData = _assetCache.BufferCache[bufferId];
 
                 AttributeAccessor attributeAccessor = new AttributeAccessor
                 {
@@ -812,7 +845,9 @@ namespace UnityGLTF
                 samplersByType["time"].Add(attributeAccessor);
 
                 // set up output accessors
-                bufferCacheData = _assetCache.BufferCache[samplerDef.Output.Value.BufferView.Value.Buffer.Id];
+                int anotherBufferId = samplerDef.Output.Value.BufferView.Value.Buffer.Id;
+                bufferCacheData = _assetCache.BufferCache[anotherBufferId];
+
                 attributeAccessor = new AttributeAccessor
                 {
                     AccessorId = samplerDef.Output,
@@ -1067,8 +1102,10 @@ namespace UnityGLTF
         {
             var sceneObj = new GameObject(string.IsNullOrEmpty(scene.Name) ? ("GLTFScene") : scene.Name);
 
+            CreatedObject = sceneObj;
+
             sceneObj.SetActive(showSceneObj);
-            sceneObj.transform.parent = SceneParent;
+            sceneObj.transform.SetParent( SceneParent, false );
             sceneObj.transform.localPosition = Vector3.zero;
             sceneObj.transform.localRotation = Quaternion.identity;
             sceneObj.transform.localScale = Vector3.one;
@@ -1092,6 +1129,8 @@ namespace UnityGLTF
                     GLTFAnimation gltfAnimation = null;
                     AnimationCacheData animationCache = null;
 
+                    yield return LoadAnimationBufferData(_gltfRoot.Animations[i], i);
+
                     AnimationClip clip = ConstructClip(sceneObj.transform, _assetCache.NodeCache, i, out gltfAnimation, out animationCache);
 
                     yield return ProcessCurves(sceneObj.transform, _assetCache.NodeCache, clip, gltfAnimation, animationCache);
@@ -1109,7 +1148,6 @@ namespace UnityGLTF
                 animation.enabled = false;
             }
 
-            CreatedObject = sceneObj;
             InitializeGltfTopLevelObject();
         }
 
@@ -1118,7 +1156,7 @@ namespace UnityGLTF
         {
             if (_assetCache.NodeCache[nodeIndex] != null)
             {
-                yield return null;
+                yield break;
             }
 
             var nodeObj = new GameObject(string.IsNullOrEmpty(node.Name) ? ("GLTFNode" + nodeIndex) : node.Name);
@@ -1130,16 +1168,8 @@ namespace UnityGLTF
             nodeObj.transform.localPosition = position;
             nodeObj.transform.localRotation = rotation;
             nodeObj.transform.localScale = scale;
-            Transform finalParent = parent ?? SceneParent;
-            nodeObj.transform.SetParent(finalParent, false);
 
-            /* TODO: implement camera (probably a flag to disable for VR as well)
-			if (camera != null)
-			{
-				GameObject cameraObj = camera.Value.Create();
-				cameraObj.transform.parent = nodeObj.transform;
-			}
-			*/
+            _assetCache.NodeCache[nodeIndex] = nodeObj;
 
             if (node.Children != null)
             {
@@ -1149,13 +1179,11 @@ namespace UnityGLTF
 
                     // todo blgross: replace with an iterartive solution
                     yield return ConstructNode(child.Value, child.Id, nodeObj.transform);
-
-                    GameObject childObj = _assetCache.NodeCache[child.Id];
-                    childObj.transform.SetParent(nodeObj.transform, false);
                 }
             }
 
-            _assetCache.NodeCache[nodeIndex] = nodeObj;
+            Transform finalParent = parent ?? SceneParent;
+            nodeObj.transform.SetParent(finalParent, false);
 
             const string msft_LODExtName = MSFT_LODExtensionFactory.EXTENSION_NAME;
             MSFT_LODExtension lodsextension = null;
@@ -1243,10 +1271,10 @@ namespace UnityGLTF
 
             int bufferId = skin.InverseBindMatrices.Value.BufferView.Value.Buffer.Id;
 
+            // on cache miss, load the buffer
             if (_assetCache.BufferCache[bufferId] == null)
             {
-                if (VERBOSE) Debug.Log("A GLTF BufferCache in " + renderer.name + " is null, exiting current SetUpBones() process", renderer);
-                yield break;
+                yield return ConstructBuffer(_gltfRoot.Buffers[bufferId], bufferId);
             }
 
             AttributeAccessor attributeAccessor = new AttributeAccessor
@@ -1261,19 +1289,18 @@ namespace UnityGLTF
             Matrix4x4[] gltfBindPoses = attributeAccessor.AccessorContent.AsMatrix4x4s;
             UnityEngine.Matrix4x4[] bindPoses = new UnityEngine.Matrix4x4[skin.Joints.Count];
 
+            if (_assetCache.NodeCache[skin.Skeleton.Id] == null)
+            {
+                yield return ConstructNode(_gltfRoot.Nodes[skin.Skeleton.Id], skin.Skeleton.Id, primitiveObj.transform);
+            }
+
             for (int i = 0; i < boneCount; i++)
             {
                 if (_assetCache.NodeCache[skin.Joints[i].Id] == null)
-                    yield return ConstructNode(_gltfRoot.Nodes[skin.Joints[i].Id], skin.Joints[i].Id, primitiveObj.transform.parent);
+                    yield return ConstructNode(_gltfRoot.Nodes[skin.Joints[i].Id], skin.Joints[i].Id, _assetCache.NodeCache[skin.Skeleton.Id].transform);
 
                 bones[i] = _assetCache.NodeCache[skin.Joints[i].Id].transform;
                 bindPoses[i] = gltfBindPoses[i].ToUnityMatrix4x4Convert();
-            }
-
-            if (_assetCache.NodeCache[skin.Skeleton.Id] == null)
-            {
-                if (VERBOSE) Debug.Log("A GLTF BufferCache in " + renderer.name + " is null, exiting current SetUpBones() process", renderer);
-                yield break;
             }
 
             renderer.rootBone = _assetCache.NodeCache[skin.Skeleton.Id].transform;
@@ -1883,6 +1910,8 @@ namespace UnityGLTF
         protected virtual IEnumerator ConstructTexture(GLTFTexture texture, int textureIndex,
             bool markGpuOnly = false, bool isLinear = true)
         {
+            yield return new WaitUntil(() => _assetCache.TextureCache[textureIndex] != null);
+
             if (_assetCache.TextureCache[textureIndex].Texture == null)
             {
                 int sourceId = GetTextureSourceId(texture);
