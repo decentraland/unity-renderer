@@ -132,7 +132,7 @@ namespace DCL
                     continue;
                 }
 
-                if (mf != null)
+                if (mf != null && mf.sharedMesh != null)
                 {
                     model.bodies--;
                     isDirty = true;
@@ -178,7 +178,7 @@ namespace DCL
 
                 MeshFilter mf = r.gameObject.GetComponent<MeshFilter>();
 
-                if (mf != null)
+                if (mf != null && mf.sharedMesh != null)
                 {
                     model.bodies++;
                     isDirty = true;

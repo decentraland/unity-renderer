@@ -58,7 +58,7 @@ namespace Tests
                 new GLTFShape.Model() { src = TestHelpers.GetTestsAssetsPath() + "/GLB/Lantern/Lantern.glb" });
 
 
-            yield return new WaitForSeconds(0.1f);
+            yield return new WaitForSeconds(0.5f);
 
             float timeout = 0;
 

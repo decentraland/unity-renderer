@@ -25,11 +25,10 @@ namespace DCL.Components
                     if (animState == null)
                     {
                         Debug.Log("Skipping nonexistent animation state", dclComponent);
-
                         continue;
                     }
 
-                    if (animState.playing && animState.looping)
+                    if (animState.playing && animState.looping && animState.clipReference != null)
                     {
                         if (statePlayablePair.Value.GetPlayState() == PlayState.Playing)
                         {
@@ -151,20 +150,18 @@ namespace DCL.Components
                 return;
 
             if (previousState != null && !CheckIfDirty(model.states, previousState))
-            {
                 return;
-            }
 
             if (model.states == null || model.states.Length == 0)
                 return;
 
-            clipNameToClip.Clear();
-
-            Animation animComponent = entity.meshGameObject.GetComponentInChildren<Animation>();
+            Animation animComponent = entity.meshGameObject.GetComponentInChildren<Animation>(true);
 
             //NOTE(Brian): fetch all the AnimationClips in Animation component.
-            if (animComponent != null)
+            if (animComponent != null && animator == null)
             {
+                clipNameToClip.Clear();
+
                 foreach (AnimationState s in animComponent)
                 {
                     clipNameToClip[s.clip.name] = s.clip;
@@ -174,11 +171,10 @@ namespace DCL.Components
                     s.clip.wrapMode = WrapMode.Loop;
                 }
 
-                if (animator == null)
-                {
-                    animator = animComponent.gameObject.AddComponent<Animator>();
-                }
+                animComponent.enabled = false;
+                animator = Utils.GetOrCreateComponent<Animator>(animComponent.gameObject);
             }
+
 
             if (clipNameToClip.Count == 0)
                 return;
@@ -326,7 +322,6 @@ namespace DCL.Components
                     }
                 }
             }
-
 
             return false;
         }

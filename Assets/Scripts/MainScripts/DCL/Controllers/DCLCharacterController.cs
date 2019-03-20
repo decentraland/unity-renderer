@@ -1,8 +1,10 @@
-﻿using DCL.Configuration;
+using DCL.Configuration;
 using UnityEngine;
 
 public class DCLCharacterController : MonoBehaviour
 {
+    public static DCLCharacterController i { get; private set; }
+
     [Header("Aiming")]
     public float aimingHorizontalSpeed = 300f;
     public float aimingVerticalSpeed = 300f;
@@ -39,6 +41,13 @@ public class DCLCharacterController : MonoBehaviour
 
     void Awake()
     {
+        if (i != null)
+        {
+            Destroy(gameObject);
+            return;
+        }
+
+        i = this;
         characterController = GetComponent<CharacterController>();
         rigidbody = GetComponent<Rigidbody>();
         collider = GetComponent<Collider>();

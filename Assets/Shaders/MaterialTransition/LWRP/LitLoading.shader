@@ -44,7 +44,7 @@ Shader "DCL/LWRP/Lit Loading"
         _ReceiveShadows("Receive Shadows", Float) = 1.0
 
         _LoadingColor ("LoadingColor", Color) = (1,1,1,1)
-        _CullYPlane ("Cull Y Plane", Float) = 0.5
+        [PerRendererData] _CullYPlane ("Cull Y Plane", Float) = 0.5
         _FadeThickness ("Fade Thickness", Float) = 5
         _FadeDirection ("Fade Direction", Float) = 0
     }

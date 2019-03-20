@@ -1,6 +1,7 @@
 using DCL.Helpers;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
 namespace DCL.Models
@@ -26,18 +27,26 @@ namespace DCL.Models
             public List<ContentMapping> contents;
             public Dictionary<string, string> fileToHash;
 
+            public ContentMapping GetMappingForHash(string hash)
+            {
+                if (contents == null)
+                    return null;
+
+                return contents.FirstOrDefault((x) => x.hash == hash);
+            }
+
             public void BakeHashes()
             {
                 if (contents == null)
                     return;
 
                 if (VERBOSE) Debug.Log("Baking hashes...");
-                fileToHash = new Dictionary<string, string>();
+                fileToHash = new Dictionary<string, string>(contents.Count);
 
                 for (int i = 0; i < contents.Count; i++)
                 {
                     ContentMapping m = contents[i];
-                    fileToHash.Add(m.file.ToLower(), m.hash);
+                    fileToHash.Add(m.file, m.hash);
                     if (VERBOSE) Debug.Log(string.Format("found file = {0} ... hash = {1}", m.file, m.hash));
                 }
             }

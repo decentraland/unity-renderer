@@ -8,17 +8,19 @@ using GLTF;
 using GLTF.Schema;
 using UnityEngine;
 using UnityGLTF.Loader;
+using DCL.Components;
 
 namespace UnityGLTF
 {
-
     /// <summary>
     /// Component to load a GLTF scene with
     /// </summary>
-    public class GLTFComponent : MonoBehaviour
+    public class GLTFComponent : MonoBehaviour, ILoadable
     {
-        const int GLTF_DOWNLOAD_THROTTLING_LIMIT = 30;
+        const int GLTF_DOWNLOAD_THROTTLING_LIMIT = 3;
         public static bool VERBOSE = false;
+
+        public static int downloadingCount;
 
         public string GLTFUri = null;
         public bool Multithreaded = true;
@@ -47,7 +49,11 @@ namespace UnityGLTF
         private AsyncCoroutineHelper asyncCoroutineHelper;
         Coroutine loadingRoutine = null;
 
-        static int downloadingCount;
+        public Action OnSuccess { get { return OnFinishedLoadingAsset; } set { OnFinishedLoadingAsset = value; } }
+        public Action OnFail { get { return OnFailedLoadingAsset; } set { OnFailedLoadingAsset = value; } }
+
+        bool alreadyFailed;
+        bool alreadyDecrementedRefCount;
 
         public void LoadAsset(string incomingURI = "", bool loadEvenIfAlreadyLoaded = false)
         {
@@ -63,16 +69,30 @@ namespace UnityGLTF
                 StopCoroutine(loadingRoutine);
             }
 
-            loadingRoutine = DCL.CoroutineHelpers.StartThrowingCoroutine(this, LoadAssetCoroutine(), OnFail);
+            alreadyFailed = false;
+            alreadyDecrementedRefCount = false;
+
+            loadingRoutine = DCL.CoroutineHelpers.StartThrowingCoroutine(this, LoadAssetCoroutine(), OnFail_Internal);
         }
 
-        private void OnFail(Exception obj)
+        private void OnFail_Internal(Exception obj)
         {
+            if (alreadyFailed)
+                return;
+
+            alreadyFailed = true;
+
             if (OnFailedLoadingAsset != null)
                 OnFailedLoadingAsset.Invoke();
 
-            downloadingCount--;
-            if ( VERBOSE ) Debug.Log($"(ERROR) downloadingCount-- = {downloadingCount}");
+            if (!alreadyDecrementedRefCount)
+            {
+                downloadingCount--;
+                alreadyDecrementedRefCount = true;
+                if (VERBOSE) Debug.Log($"(ERROR) downloadingCount-- = {downloadingCount}");
+            }
+
+            Debug.Log("GLTF Failure " + obj.ToString());
         }
 
         public IEnumerator LoadAssetCoroutine()
@@ -80,6 +100,7 @@ namespace UnityGLTF
             if (!string.IsNullOrEmpty(GLTFUri))
             {
                 asyncCoroutineHelper = gameObject.GetComponent<AsyncCoroutineHelper>() ?? gameObject.AddComponent<AsyncCoroutineHelper>();
+
                 GLTFSceneImporter sceneImporter = null;
                 ILoader loader = null;
 
@@ -128,36 +149,25 @@ namespace UnityGLTF
                     sceneImporter.UseMaterialTransition = UseVisualFeedback;
                     sceneImporter.CustomShaderName = shaderOverride ? shaderOverride.name : null;
                     sceneImporter.LoadingTextureMaterial = LoadingTextureMaterial;
-                    /* if (MaterialsOnly)
-                    {
-                        var mat = await sceneImporter.LoadMaterialAsync(0);
-
-                        var cube = GameObject.CreatePrimitive(PrimitiveType.Cube);
-                        cube.transform.SetParent(gameObject.transform);
-                        var renderer = cube.GetComponent<Renderer>();
-                        renderer.sharedMaterial = mat;
-                    }
-                    else
-                    {
-                        await sceneImporter.LoadSceneAsync();
-                    } */
 
                     float time = Time.realtimeSinceStartup;
 
-
-
-                    if (downloadingCount > GLTF_DOWNLOAD_THROTTLING_LIMIT)
+                    if (downloadingCount >= GLTF_DOWNLOAD_THROTTLING_LIMIT)
                     {
-                        yield return new WaitUntil(() => { return downloadingCount <= GLTF_DOWNLOAD_THROTTLING_LIMIT; });
+                        yield return new WaitUntil(() => { return downloadingCount < GLTF_DOWNLOAD_THROTTLING_LIMIT; });
                     }
 
                     downloadingCount++;
                     if ( VERBOSE ) Debug.Log($"downloadingCount++ = {downloadingCount}");
 
                     yield return sceneImporter.LoadScene(-1);
-
-                    downloadingCount--;
-                    if ( VERBOSE ) Debug.Log($"downloadingCount-- = {downloadingCount}");
+                    
+                    if (!alreadyDecrementedRefCount)
+                    {
+                        downloadingCount--;
+                        alreadyDecrementedRefCount = true;
+                        if (VERBOSE) Debug.Log($"downloadingCount-- = {downloadingCount}");
+                    }
 
                     // Override the shaders on all materials if a shader is provided
                     if (shaderOverride != null)
@@ -202,18 +212,14 @@ namespace UnityGLTF
                 Debug.Log("couldn't load GLTF because url is empty");
             }
 
-            if (loadingPlaceholder != null)
-            {
-                loadingPlaceholder.SetActive(false);
-            }
-
             loadingRoutine = null;
+            Destroy(loadingPlaceholder);
+            Destroy(this);
         }
 
-        void OnDestroy()
+        public void Load(string url, bool useVisualFeedback)
         {
-            Destroy(loadingPlaceholder);
-            Destroy(loadedAssetRootGameObject);
+            throw new NotImplementedException();
         }
     }
 }

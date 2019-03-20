@@ -27,9 +27,21 @@ namespace DCL.Controllers
             metricsController = new SceneMetricsController(this);
         }
 
+        bool flaggedToUnload = false;
         private void Update()
         {
             metricsController.SendEvent();
+
+            if (!flaggedToUnload && sceneData != null && DCLCharacterController.i != null)
+            {
+                Vector3 position = GridToWorldPosition(sceneData.parcels[0].x, sceneData.parcels[0].y);
+
+                if (Vector3.Distance(DCLCharacterController.i.transform.position, position) > ParcelSettings.UNLOAD_DISTANCE)
+                {
+                    flaggedToUnload = true;
+                    SceneController.i.UnloadScene(sceneData.id);
+                }
+            }
         }
 
         public void SetData(LoadParcelScenesMessage.UnityParcelScene data)
