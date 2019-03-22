@@ -96,7 +96,7 @@ export namespace commConfigurations {
   export const debug = DEBUG_METRICS
   export const commRadius = 4
 
-  export const peerTtlMs = 60 * 1000
+  export const peerTtlMs = 1000
 
   export const maxVisiblePeers = 25
 

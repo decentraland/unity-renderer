@@ -1,6 +1,6 @@
 import { Message } from 'google-protobuf'
 import { log, error as logError } from 'engine/logger'
-import { NetworkStats, PkgStats } from './debug'
+import { Stats } from './debug'
 import {
   ChatData,
   PositionData,
@@ -20,7 +20,7 @@ import {
 } from './commproto_pb'
 import { Position, position2parcel } from './utils'
 import { UserInformation } from './types'
-import { parcelLimits } from 'config'
+import { parcelLimits, commConfigurations } from 'config'
 
 export enum SocketReadyState {
   CONNECTING,
@@ -37,7 +37,7 @@ export interface IDataChannel {
   send(bytes: Uint8Array)
 }
 
-export type TopicHandler = (fromAlias: string, data: Uint8Array) => PkgStats | null
+export type TopicHandler = (fromAlias: string, rawMessage: Uint8Array, data: Uint8Array) => void
 
 export function positionHash(p: Position) {
   const parcel = position2parcel(p)
@@ -57,8 +57,9 @@ export class WorldInstanceConnection {
   public reliableDataChannel: IDataChannel | null
   public unreliableDataChannel: IDataChannel | null
   public pingInterval: any = null
+  public stats: Stats | null = null
 
-  constructor(public url: string, public stats?: NetworkStats) {}
+  constructor(public url: string) {}
 
   connect() {
     this.pingInterval = setInterval(() => {
@@ -70,13 +71,7 @@ export class WorldInstanceConnection {
         this.unreliableDataChannel.send(bytes)
       }
     }, 10000)
-    this.webRtcConn = new RTCPeerConnection({
-      iceServers: [
-        {
-          urls: 'stun:stun.l.google.com:19302'
-        }
-      ]
-    })
+    this.webRtcConn = new RTCPeerConnection({ iceServers: commConfigurations.iceServers })
 
     this.webRtcConn.onsignalingstatechange = e => log(`signaling state: ${this.webRtcConn.signalingState}`)
     this.webRtcConn.oniceconnectionstatechange = e => log(`ice connection state: ${this.webRtcConn.iceConnectionState}`)
@@ -239,11 +234,21 @@ export class WorldInstanceConnection {
       }
 
       dc.onmessage = e => {
+        if (this.stats) {
+          this.stats.dispatchTopicDuration.start()
+        }
+
         const data = e.data
         const msg = new Uint8Array(data)
         const msgSize = msg.length
 
-        const msgType = WorldCommMessage.deserializeBinary(data).getType()
+        let msgType = MessageType.UNKNOWN_MESSAGE_TYPE
+        try {
+          msgType = WorldCommMessage.deserializeBinary(data).getType()
+        } catch (err) {
+          logError('cannot deserialize worldcomm message header ' + dc.label + ' ' + msgSize)
+          return
+        }
 
         switch (msgType) {
           case MessageType.UNKNOWN_MESSAGE_TYPE: {
@@ -262,6 +267,7 @@ export class WorldInstanceConnection {
               message = TopicMessage.deserializeBinary(data)
             } catch (e) {
               logError('cannot process topic message', e)
+              break
             }
 
             const topic = message.getTopic()
@@ -272,10 +278,11 @@ export class WorldInstanceConnection {
               break
             }
 
-            const pkgStats = handler(message.getFromAlias(), message.getBody())
-            if (pkgStats) {
-              pkgStats.incrementRecv(msgSize)
+            if (this.stats) {
+              this.stats.dispatchTopicDuration.stop()
             }
+
+            handler(message.getFromAlias(), msg, message.getBody())
             break
           }
           case MessageType.PING: {
