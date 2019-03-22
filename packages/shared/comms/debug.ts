@@ -1,6 +1,7 @@
 import { log } from 'engine/logger'
-import { WorldInstanceConnection, SocketReadyState } from './worldInstanceConnection'
+import { SocketReadyState } from './worldInstanceConnection'
 import { Context } from './index'
+import { PositionData } from './commproto_pb'
 
 export class TrackAvgDuration {
   public durationsMs: number[] = []
@@ -49,7 +50,42 @@ export class PkgStats {
   }
 }
 
-export class NetworkStats {
+class AvgFrequency {
+  public samples = 0
+  public total = 0
+  public lastTs = -1
+
+  public seen(ts: number) {
+    if (this.lastTs === -1) {
+      this.lastTs = ts
+    } else {
+      const duration = ts - this.lastTs
+      this.lastTs = ts
+      this.total += duration
+      this.samples++
+    }
+  }
+
+  public avg() {
+    if (this.samples === 0) {
+      return 0
+    }
+
+    return this.total / this.samples
+  }
+}
+
+class PeerStats {
+  public positionAvgFrequency = new AvgFrequency()
+
+  public onPositionMessage() {
+    this.positionAvgFrequency.seen(Date.now())
+  }
+}
+
+export class Stats {
+  public peers = new Map<string, PeerStats>()
+
   public topic = new PkgStats()
   public others = new PkgStats()
   public ping = new PkgStats()
@@ -57,43 +93,10 @@ export class NetworkStats {
   public profile = new PkgStats()
   public chat = new PkgStats()
   public webRtcSession = new PkgStats()
-
-  constructor(public connection: WorldInstanceConnection) {}
-
-  report(context: Context) {
-    const reportPkgStats = (name: string, stats: PkgStats) => {
-      log(`${name}: sent: ${stats.sent} (${stats.sentBytes} bytes), recv: ${stats.recv} (${stats.recvBytes} bytes)`)
-      stats.reset()
-    }
-
-    const url = this.connection.url
-    if (this.connection.ws && this.connection.ws.readyState === SocketReadyState.OPEN) {
-      const state =
-        (this.connection.authenticated ? 'authenticated' : 'not authenticated') +
-        `- my alias is ${this.connection.alias}`
-      if (this.connection.ping >= 0) {
-        log(`  ${url}, ping: ${this.connection.ping} ms (${state})`)
-      } else {
-        log(`  ${url}, no ping info available (${state})`)
-      }
-    } else {
-      log(`  non active coordinator connection to ${url}`)
-    }
-
-    reportPkgStats('  topic (total)', this.topic)
-    reportPkgStats('    - position', this.position)
-    reportPkgStats('    - profile', this.profile)
-    reportPkgStats('    - chat', this.chat)
-    reportPkgStats('  ping', this.ping)
-    reportPkgStats('  webrtc session', this.webRtcSession)
-    reportPkgStats('  others', this.others)
-  }
-}
-
-export class Stats {
-  public primaryNetworkStats: NetworkStats | null
   public collectInfoDuration = new TrackAvgDuration()
+  public dispatchTopicDuration = new TrackAvgDuration()
   public visiblePeersCount = 0
+  public trackingPeersCount = 0
 
   private reportInterval: any
 
@@ -107,18 +110,67 @@ export class Stats {
       duration.clear()
     }
 
+    const reportPkgStats = (name: string, stats: PkgStats) => {
+      log(`${name}: sent: ${stats.sent} (${stats.sentBytes} bytes), recv: ${stats.recv} (${stats.recvBytes} bytes)`)
+      stats.reset()
+    }
+
     this.reportInterval = setInterval(() => {
       log(`------- ${new Date()}: `)
       reportDuration('collectInfo', this.collectInfoDuration)
-      log('visible peers: ', this.visiblePeersCount)
+      reportDuration('dispatchTopic', this.dispatchTopicDuration)
+      log(`tracking peers: ${this.trackingPeersCount}, visible peers: ${this.visiblePeersCount}`)
 
-      if (this.primaryNetworkStats) {
-        log('Primary world instance: ')
-        this.primaryNetworkStats.report(context)
+      log('World instance: ')
+
+      const connection = context.worldInstanceConnection
+      const url = connection.url
+      if (connection.ws && connection.ws.readyState === SocketReadyState.OPEN) {
+        const state =
+          (connection.authenticated ? 'authenticated' : 'not authenticated') + ` - my alias is ${connection.alias}`
+        if (connection.ping >= 0) {
+          log(`  ${url}, ping: ${connection.ping} ms (${state})`)
+        } else {
+          log(`  ${url}, no ping info available (${state})`)
+        }
+      } else {
+        log(`  non active coordinator connection to ${url}`)
       }
+
+      reportPkgStats('  topic (total)', this.topic)
+      reportPkgStats('    - position', this.position)
+      reportPkgStats('    - profile', this.profile)
+      reportPkgStats('    - chat', this.chat)
+      reportPkgStats('  ping', this.ping)
+      reportPkgStats('  webrtc session', this.webRtcSession)
+      reportPkgStats('  others', this.others)
+
+      this.peers.forEach((stat, alias) => {
+        const positionAvgFreq = stat.positionAvgFrequency
+        if (positionAvgFreq.samples > 1) {
+          const samples = positionAvgFreq.samples
+          const avg = positionAvgFreq.avg()
+          log(`${alias} avg duration between position messages ${avg}ms, from ${samples} samples`)
+        }
+      })
 
       log('-------')
     }, 10000)
+  }
+
+  public onPositionMessage(fromAlias: string, data: PositionData) {
+    let stats = this.peers.get(fromAlias)
+
+    if (!stats) {
+      stats = new PeerStats()
+      this.peers.set(fromAlias, stats)
+    }
+
+    stats.onPositionMessage()
+  }
+
+  public onPeerRemoved(alias: string) {
+    this.peers.delete(alias)
   }
 
   public close() {

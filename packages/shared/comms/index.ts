@@ -4,7 +4,7 @@ import { parcelLimits, ETHEREUM_NETWORK, commConfigurations, networkConfiguratio
 import { saveToLocalStorage } from 'atomicHelpers/localStorage'
 import { positionObservable } from 'shared/world/positionThings'
 import { CommunicationArea, squareDistance, Position, position2parcel, sameParcel } from './utils'
-import { Stats, NetworkStats, PkgStats } from './debug'
+import { Stats } from './debug'
 
 import {
   getCurrentPeer,
@@ -33,6 +33,7 @@ export class PeerTrackingInfo {
   public profile: UserInformation | null = null
   public lastPositionUpdate: Timestamp = 0
   public lastProfileUpdate: Timestamp = 0
+  public lastUpdate: Timestamp = 0
   public receivedPublicChatMessages = new Set<string>()
 }
 
@@ -53,7 +54,6 @@ export class Context {
     this.userProfile = userProfile
     this.network = network || null
 
-    this.stats = commConfigurations.debug ? new Stats(this) : null
     this.commRadius = commConfigurations.commRadius
   }
 }
@@ -96,13 +96,13 @@ function ensurePeerTrackingInfo(context: Context, alias: string): PeerTrackingIn
   return peerTrackingInfo
 }
 
-export function processChatMessage(
-  context: Context,
-  conn: WorldInstanceConnection,
-  fromAlias: string,
-  data: Uint8Array
-): PkgStats {
+export function processChatMessage(context: Context, fromAlias: string, rawMessage: Uint8Array, data: Uint8Array) {
   const chatData = ChatData.deserializeBinary(data)
+
+  if (context.stats) {
+    context.stats.chat.incrementRecv(rawMessage.length)
+  }
+
   const msgId = chatData.getMessageId()
 
   const peerTrackingInfo = ensurePeerTrackingInfo(context, fromAlias)
@@ -123,17 +123,13 @@ export function processChatMessage(
       chatObservable.notifyObservers({ type: ChatEvent.MESSAGE_RECEIVED, messageEntry: entry })
     }
   }
-
-  return conn.stats ? conn.stats.chat : null
 }
 
-export function processProfileMessage(
-  context: Context,
-  conn: WorldInstanceConnection,
-  fromAlias: string,
-  data: Uint8Array
-): PkgStats {
+export function processProfileMessage(context: Context, fromAlias: string, rawMessage: Uint8Array, data: Uint8Array) {
   const profileData = ProfileData.deserializeBinary(data)
+  if (context.stats) {
+    context.stats.profile.incrementRecv(rawMessage.length)
+  }
   const msgTimestamp = profileData.getTime()
 
   const peerTrackingInfo = ensurePeerTrackingInfo(context, fromAlias)
@@ -150,17 +146,18 @@ export function processProfileMessage(
     }
 
     peerTrackingInfo.lastProfileUpdate = msgTimestamp
+    peerTrackingInfo.lastUpdate = Date.now()
   }
-  return conn.stats ? conn.stats.profile : null
 }
 
-export function processPositionMessage(
-  context: Context,
-  conn: WorldInstanceConnection,
-  fromAlias: string,
-  data: Uint8Array
-): PkgStats {
+export function processPositionMessage(context: Context, fromAlias: string, rawMessage: Uint8Array, data: Uint8Array) {
   const positionData = PositionData.deserializeBinary(data)
+
+  if (context.stats) {
+    context.stats.position.incrementRecv(rawMessage.length)
+    context.stats.onPositionMessage(fromAlias, positionData)
+  }
+
   const msgTimestamp = positionData.getTime()
 
   const peerTrackingInfo = ensurePeerTrackingInfo(context, fromAlias)
@@ -177,9 +174,8 @@ export function processPositionMessage(
 
     peerTrackingInfo.position = p
     peerTrackingInfo.lastPositionUpdate = msgTimestamp
+    peerTrackingInfo.lastUpdate = Date.now()
   }
-
-  return conn.stats ? conn.stats.position : null
 }
 
 type ProcessingPeerInfo = {
@@ -200,14 +196,14 @@ export function onPositionUpdate(context: Context, p: Position) {
   if (!sameParcel(oldParcel, newParcel)) {
     const commArea = new CommunicationArea(newParcel, context.commRadius)
 
-    const positionHandler = (fromAlias: string, data: Uint8Array) =>
-      processPositionMessage(context, context.worldInstanceConnection, fromAlias, data)
+    const positionHandler = (fromAlias: string, rawMsg: Uint8Array, data: Uint8Array) =>
+      processPositionMessage(context, fromAlias, rawMsg, data)
 
-    const profileHandler = (fromAlias: string, data: Uint8Array) =>
-      processProfileMessage(context, context.worldInstanceConnection, fromAlias, data)
+    const profileHandler = (fromAlias: string, rawMsg: Uint8Array, data: Uint8Array) =>
+      processProfileMessage(context, fromAlias, rawMsg, data)
 
-    const chatHandler = (fromAlias: string, data: Uint8Array) =>
-      processChatMessage(context, context.worldInstanceConnection, fromAlias, data)
+    const chatHandler = (fromAlias: string, rawMsg: Uint8Array, data: Uint8Array) =>
+      processChatMessage(context, fromAlias, rawMsg, data)
 
     const xMin = ((commArea.vMin.x + parcelLimits.maxParcelX) >> 2) << 2
     const xMax = ((commArea.vMax.x + parcelLimits.maxParcelX) >> 2) << 2
@@ -257,20 +253,22 @@ function collectInfo(context: Context) {
   const visiblePeers: ProcessingPeerInfo[] = []
   const commArea = new CommunicationArea(position2parcel(context.currentPosition), commConfigurations.commRadius)
   for (let [peerAlias, trackingInfo] of context.peerData) {
+    const msSinceLastUpdate = now - trackingInfo.lastUpdate
+
+    if (msSinceLastUpdate > commConfigurations.peerTtlMs) {
+      context.peerData.delete(peerAlias)
+      removeById(peerAlias)
+
+      context.stats.onPeerRemoved(peerAlias)
+      continue
+    }
+
     if (!trackingInfo.position || !trackingInfo.profile) {
       continue
     }
 
     if (!commArea.contains(trackingInfo.position)) {
       receiveUserVisible(peerAlias, false)
-      continue
-    }
-
-    const msSinceLastUpdate = now - Math.max(trackingInfo.lastPositionUpdate, trackingInfo.lastProfileUpdate)
-
-    if (msSinceLastUpdate > commConfigurations.peerTtlMs) {
-      context.peerData.delete(peerAlias)
-      removeById(peerAlias)
       continue
     }
 
@@ -307,6 +305,7 @@ function collectInfo(context: Context) {
 
   if (context.stats) {
     context.stats.visiblePeersCount = visiblePeers.length
+    context.stats.trackingPeersCount = context.peerData.size
     context.stats.collectInfoDuration.stop()
   }
 }
@@ -330,9 +329,9 @@ export async function connect(ethAddress: string, network?: ETHEREUM_NETWORK) {
     context = new Context(userProfile, network)
     context.worldInstanceConnection = new WorldInstanceConnection(networkConfigurations[network].worldInstanceUrl)
 
-    if (context.stats) {
-      context.worldInstanceConnection.stats = new NetworkStats(context.worldInstanceConnection)
-      context.stats.primaryNetworkStats = context.worldInstanceConnection.stats
+    if (commConfigurations.debug) {
+      context.stats = new Stats(context)
+      context.worldInstanceConnection.stats = context.stats
     }
 
     context.worldInstanceConnection.connect()
