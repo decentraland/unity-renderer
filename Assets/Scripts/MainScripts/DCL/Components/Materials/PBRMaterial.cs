@@ -80,17 +80,14 @@ namespace DCL.Components
                 // FETCH AND LOAD EMISSIVE TEXTURE
                 if (!string.IsNullOrEmpty(model.emissiveTexture) && !loadingEmissiveTexture)
                 {
-                    string texUrl;
+                    loadingEmissiveTexture = true;
 
-                    if (scene.sceneData.TryGetContentsUrl(model.emissiveTexture, out texUrl))
-                    {
-                        loadingEmissiveTexture = true;
-                        yield return Utils.FetchTexture(texUrl, (fetchedEmissiveTexture) =>
+                    yield return DCLTexture.FetchFromComponent(scene, model.emissiveTexture,
+                        (fetchedEmissiveTexture) =>
                         {
                             material.SetTexture("_EmissionMap", fetchedEmissiveTexture);
                             loadingEmissiveTexture = false;
                         });
-                    }
                 }
 
                 // METALLIC/SPECULAR CONFIGURATIONS
@@ -115,32 +112,25 @@ namespace DCL.Components
             // FETCH AND LOAD TEXTURES
             if (!string.IsNullOrEmpty(model.albedoTexture) && !loadingAlbedoTexture)
             {
-                string albedoTextureUrl;
+                loadingAlbedoTexture = true;
 
-                if (scene.sceneData.TryGetContentsUrl(model.albedoTexture, out albedoTextureUrl))
-                {
-                    loadingAlbedoTexture = true;
-                    yield return Utils.FetchTexture(albedoTextureUrl, (fetchedAlbedoTexture) =>
+                yield return DCLTexture.FetchFromComponent(scene, model.albedoTexture,
+                    (fetchedAlbedoTexture) =>
                     {
                         loadingAlbedoTexture = false;
                         material.SetTexture("_MainTex", fetchedAlbedoTexture);
                     });
-                }
             }
 
             if (!string.IsNullOrEmpty(model.bumpTexture) && !loadingBumpTexture)
             {
-                string bumpTextureUrl;
-
-                if (scene.sceneData.TryGetContentsUrl(model.bumpTexture, out bumpTextureUrl))
-                {
-                    loadingBumpTexture = true;
-                    yield return Utils.FetchTexture(bumpTextureUrl, (fetchedBumpTexture) =>
+                loadingBumpTexture = true;
+                yield return DCLTexture.FetchFromComponent(scene, model.bumpTexture,
+                    (fetchedBumpTexture) =>
                     {
                         loadingBumpTexture = false;
                         material.SetTexture("_BumpMap", fetchedBumpTexture);
                     });
-                }
             }
 
             // ALPHA CONFIGURATION

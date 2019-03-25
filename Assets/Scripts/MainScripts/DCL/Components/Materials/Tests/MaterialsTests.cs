@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using DCL;
 using DCL.Components;
 using DCL.Controllers;
 using DCL.Helpers;
@@ -11,67 +12,51 @@ using UnityEngine.UI;
 
 namespace Tests
 {
-    public class MaterialsTests
+    public class MaterialsTests : TestsBase
     {
         [UnityTest]
         public IEnumerator PBRMaterialUpdate()
         {
-            var sceneController = TestHelpers.InitializeSceneController();
+            yield return InitScene();
 
-            yield return new WaitForSeconds(0.01f);
+            DCLTexture texture = TestHelpers.CreateDCLTexture(scene, TestHelpers.GetTestsAssetsPath() + "/Images/atlas.png");
 
-            var sceneData = new LoadParcelScenesMessage.UnityParcelScene();
-            var scene = sceneController.CreateTestScene(sceneData);
+            yield return texture.routine;
 
-            yield return new WaitForSeconds(0.01f);
+            DecentralandEntity entity = null;
 
-            string entityId = "1";
-            string materialID = "a-material";
-            string textureURL = TestHelpers.GetTestsAssetsPath() + "/Images/atlas.png";
-
-            TestHelpers.InstantiateEntityWithMaterial(scene, entityId, Vector3.zero,
+            PBRMaterial matPBR = TestHelpers.CreateEntityWithPBRMaterial(scene,
                 new PBRMaterial.Model
                 {
-                    albedoTexture = textureURL,
+                    albedoTexture = texture.id,
                     metallic = 0,
                     roughness = 1,
                     hasAlpha = true
                 },
-                materialID);
+                out entity);
 
-            var materialComponent = scene.disposableComponents[materialID] as DCL.Components.PBRMaterial;
-
-            Assert.IsTrue(materialComponent is DCL.Components.PBRMaterial, "material is PBRMaterial");
-
-            yield return materialComponent.routine;
+            yield return matPBR.routine;
 
             {
-                Assert.IsTrue(scene.entities[entityId].meshGameObject != null, "Every entity with a shape should have the mandatory 'Mesh' object as a child");
+                Assert.IsTrue(entity.meshGameObject != null, "Every entity with a shape should have the mandatory 'Mesh' object as a child");
 
-                var meshRenderer = scene.entities[entityId].meshGameObject.GetComponent<MeshRenderer>();
+                var meshRenderer = entity.meshGameObject.GetComponent<MeshRenderer>();
                 Assert.IsTrue(meshRenderer != null, "MeshRenderer must exist");
 
                 var assignedMaterial = meshRenderer.sharedMaterial;
                 Assert.IsTrue(meshRenderer != null, "MeshRenderer.sharedMaterial must be the same as assignedMaterial");
-                Assert.AreEqual(assignedMaterial, materialComponent.material, "Assigned material");
-                Assert.AreEqual(textureURL, materialComponent.model.albedoTexture, "Texture data must be correct");
+                Assert.AreEqual(assignedMaterial, matPBR.material, "Assigned material");
 
                 var loadedTexture = meshRenderer.sharedMaterial.mainTexture;
                 Assert.IsTrue(loadedTexture != null, "Texture must be loaded");
+                Assert.AreEqual(texture.texture, loadedTexture, "Texture data must be correct");
             }
         }
 
         [UnityTest]
         public IEnumerator PBRMaterialPropertiesUpdate()
         {
-            var sceneController = TestHelpers.InitializeSceneController();
-
-            yield return new WaitForSeconds(0.01f);
-
-            var sceneData = new LoadParcelScenesMessage.UnityParcelScene();
-            var scene = sceneController.CreateTestScene(sceneData);
-
-            yield return new WaitForSeconds(0.01f);
+            yield return InitScene();
 
             string entityId = "1";
             string materialID = "a-material";
@@ -119,16 +104,19 @@ namespace Tests
             }
 
             // Update material
-            string textureURL = TestHelpers.GetTestsAssetsPath() + "/Images/atlas.png";
+            DCLTexture texture = TestHelpers.CreateDCLTexture(scene, TestHelpers.GetTestsAssetsPath() + "/Images/atlas.png");
+
+            yield return new WaitForSeconds(1);
 
             scene.SharedComponentUpdate(JsonUtility.ToJson(new DCL.Models.SharedComponentUpdateMessage
             {
                 id = materialID,
                 json = JsonUtility.ToJson(new DCL.Components.PBRMaterial.Model
                 {
-                    albedoTexture = textureURL,
+                    albedoTexture = texture.id,
                     albedoColor = "#99deff",
                     emissiveColor = "#42f4aa",
+                    emissiveIntensity = 1,
                     reflectivityColor = "#601121",
                     metallic = 0.37f,
                     roughness = 0.9f,
@@ -145,7 +133,7 @@ namespace Tests
             // Check updated properties
             {
                 // Texture
-                Assert.IsTrue(materialComponent.material.GetTexture("_MainTex") != null);
+                Assert.IsTrue(materialComponent.material.GetTexture("_MainTex") != null, "texture is null!");
 
                 // Colors
                 Assert.AreEqual("99DEFF", ColorUtility.ToHtmlStringRGB(materialComponent.material.GetColor("_Color")));
@@ -168,14 +156,7 @@ namespace Tests
         [UnityTest]
         public IEnumerator MaterialIsSharedCorrectly()
         {
-            var sceneController = TestHelpers.InitializeSceneController();
-
-            yield return new WaitForSeconds(0.01f);
-
-            var sceneData = new LoadParcelScenesMessage.UnityParcelScene();
-            var scene = sceneController.CreateTestScene(sceneData);
-
-            yield return new WaitForSeconds(0.01f);
+            yield return InitScene();
 
             // Create first entity with material
             string firstEntityID = "1";
@@ -223,14 +204,7 @@ namespace Tests
         [UnityTest]
         public IEnumerator MaterialUpdateAffectsCorrectEntities()
         {
-            var sceneController = TestHelpers.InitializeSceneController();
-
-            yield return new WaitForSeconds(0.01f);
-
-            var sceneData = new LoadParcelScenesMessage.UnityParcelScene();
-            var scene = sceneController.CreateTestScene(sceneData);
-
-            yield return new WaitForSeconds(0.01f);
+            yield return InitScene();
 
             // Create first entity with material
             string firstEntityID = "1";
@@ -298,14 +272,7 @@ namespace Tests
         [UnityTest]
         public IEnumerator MaterialDetach()
         {
-            var sceneController = TestHelpers.InitializeSceneController();
-
-            yield return new WaitForSeconds(0.01f);
-
-            var sceneData = new LoadParcelScenesMessage.UnityParcelScene();
-            var scene = sceneController.CreateTestScene(sceneData);
-
-            yield return new WaitForSeconds(0.01f);
+            yield return InitScene();
 
             string entityId = "1";
             string materialID = "a-material";
@@ -338,14 +305,8 @@ namespace Tests
         [UnityTest]
         public IEnumerator MaterialDisposedGetsDetached()
         {
-            var sceneController = TestHelpers.InitializeSceneController();
+            yield return InitScene();
 
-            yield return new WaitForSeconds(0.01f);
-
-            var sceneData = new LoadParcelScenesMessage.UnityParcelScene();
-            var scene = sceneController.CreateTestScene(sceneData);
-
-            yield return new WaitForSeconds(0.01f);
 
             string firstEntityId = "1";
             string secondEntityId = "2";
@@ -399,23 +360,24 @@ namespace Tests
         [UnityTest]
         public IEnumerator BasicMaterialAttachBeforeShape()
         {
-            var sceneController = TestHelpers.InitializeSceneController();
-
-            yield return new WaitForSeconds(0.01f);
-
-            var sceneData = new LoadParcelScenesMessage.UnityParcelScene();
-            var scene = sceneController.CreateTestScene(sceneData);
-
-            yield return new WaitForSeconds(0.01f);
+            yield return InitScene();
 
             DecentralandEntity entity = TestHelpers.CreateSceneEntity(scene);
 
-            BasicMaterial mat = TestHelpers.SharedComponentCreate<BasicMaterial, BasicMaterial.Model>(scene, CLASS_ID.BASIC_MATERIAL,
+            DCLTexture dclTexture = TestHelpers.CreateDCLTexture(
+                scene,
+                TestHelpers.GetTestsAssetsPath() + "/Images/atlas.png",
+                DCLTexture.BabylonWrapMode.CLAMP,
+                FilterMode.Bilinear);
+
+            yield return new WaitForSeconds(1.0f);
+
+
+            BasicMaterial mat = TestHelpers.SharedComponentCreate<BasicMaterial, BasicMaterial.Model>
+                (scene, CLASS_ID.BASIC_MATERIAL,
                 new BasicMaterial.Model
                 {
-                    texture = TestHelpers.GetTestsAssetsPath() + "/Images/atlas.png",
-                    samplingMode = 2,
-                    wrap = 3,
+                    texture = dclTexture.id,
                     alphaTest = 0.5f
                 });
 
@@ -437,23 +399,20 @@ namespace Tests
         [UnityTest]
         public IEnumerator PBRMaterialAttachBeforeShape()
         {
-            var sceneController = TestHelpers.InitializeSceneController();
-
-            yield return new WaitForSeconds(0.01f);
-
-            var sceneData = new LoadParcelScenesMessage.UnityParcelScene();
-            var scene = sceneController.CreateTestScene(sceneData);
-
-            yield return new WaitForSeconds(0.01f);
+            yield return InitScene();
 
             DecentralandEntity entity = TestHelpers.CreateSceneEntity(scene);
 
-            string textureURL = TestHelpers.GetTestsAssetsPath() + "/Images/atlas.png";
+            DCLTexture dclTexture = TestHelpers.CreateDCLTexture(
+                scene,
+                TestHelpers.GetTestsAssetsPath() + "/Images/atlas.png",
+                DCLTexture.BabylonWrapMode.CLAMP,
+                FilterMode.Bilinear);
 
             PBRMaterial mat = TestHelpers.SharedComponentCreate<PBRMaterial, PBRMaterial.Model>(scene, CLASS_ID.PBR_MATERIAL,
                 new PBRMaterial.Model
                 {
-                    albedoTexture = textureURL,
+                    albedoTexture = dclTexture.id,
                     metallic = 0,
                     roughness = 1,
                     hasAlpha = true
@@ -478,14 +437,7 @@ namespace Tests
         [UnityTest]
         public IEnumerator EntityBasicMaterialUpdate()
         {
-            var sceneController = TestHelpers.InitializeSceneController();
-
-            yield return new WaitForSeconds(0.01f);
-
-            var sceneData = new LoadParcelScenesMessage.UnityParcelScene();
-            var scene = sceneController.CreateTestScene(sceneData);
-
-            yield return new WaitForSeconds(0.01f);
+            yield return InitScene();
 
             string entityId = "1";
             string materialID = "a-material";
@@ -521,17 +473,19 @@ namespace Tests
                 Assert.AreEqual(0.5f, materialComponent.material.GetFloat("_AlphaClip"));
             }
 
-            // Update material
-            string textureURL = TestHelpers.GetTestsAssetsPath() + "/Images/atlas.png";
+            DCLTexture dclTexture = TestHelpers.CreateDCLTexture(
+                scene,
+                TestHelpers.GetTestsAssetsPath() + "/Images/atlas.png",
+                DCLTexture.BabylonWrapMode.MIRROR,
+                FilterMode.Bilinear);
 
+            // Update material
             scene.SharedComponentUpdate(JsonUtility.ToJson(new DCL.Models.SharedComponentUpdateMessage
             {
                 id = materialID,
                 json = JsonUtility.ToJson(new DCL.Components.BasicMaterial.Model
                 {
-                    texture = textureURL,
-                    samplingMode = 2,
-                    wrap = 3,
+                    texture = dclTexture.id,
                     alphaTest = 0.5f
                 })
             }));
@@ -550,20 +504,11 @@ namespace Tests
         [UnityTest]
         public IEnumerator BasicMaterialComponentMissingValuesGetDefaultedOnUpdate()
         {
-            var sceneController = TestHelpers.InitializeSceneController();
-
-            yield return new WaitForSeconds(0.01f);
-
-            var sceneData = new LoadParcelScenesMessage.UnityParcelScene();
-            var scene = sceneController.CreateTestScene(sceneData);
-
-            yield return new WaitForSeconds(0.01f);
+            yield return InitScene();
 
             // 1. Create component with non-default configs
             string componentJSON = JsonUtility.ToJson(new BasicMaterial.Model
             {
-                samplingMode = 1,
-                wrap = 1,
                 alphaTest = 1f
             });
 
@@ -584,8 +529,6 @@ namespace Tests
             yield return new WaitForSeconds(0.01f);
 
             // 2. Check configured values
-            Assert.AreEqual(1, BasicMaterialComponent.model.samplingMode);
-            Assert.AreEqual(1, BasicMaterialComponent.model.wrap);
             Assert.AreEqual(1f, BasicMaterialComponent.model.alphaTest);
 
             // 3. Update component with missing values
@@ -598,22 +541,13 @@ namespace Tests
             }));
 
             // 4. Check defaulted values
-            Assert.AreEqual(2, BasicMaterialComponent.model.samplingMode);
-            Assert.AreEqual(0, BasicMaterialComponent.model.wrap);
             Assert.AreEqual(0.5f, BasicMaterialComponent.model.alphaTest);
         }
 
         [UnityTest]
         public IEnumerator PBRMaterialComponentMissingValuesGetDefaultedOnUpdate()
         {
-            var sceneController = TestHelpers.InitializeSceneController();
-
-            yield return new WaitForSeconds(0.01f);
-
-            var sceneData = new LoadParcelScenesMessage.UnityParcelScene();
-            var scene = sceneController.CreateTestScene(sceneData);
-
-            yield return new WaitForSeconds(0.01f);
+            yield return InitScene();
 
             // 1. Create component with non-default configs
             string componentJSON = JsonUtility.ToJson(new PBRMaterial.Model

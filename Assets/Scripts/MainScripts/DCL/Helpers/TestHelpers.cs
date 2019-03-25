@@ -5,12 +5,30 @@ using Newtonsoft.Json;
 using DCL.Components;
 using DCL.Models;
 using UnityEngine.Assertions;
+using System.Collections;
 
 namespace DCL.Helpers
 {
     public class WaitForAllMessagesProcessed : CustomYieldInstruction
     {
         public override bool keepWaiting => SceneController.i.hasPendingMessages;
+    }
+
+    public class TestsBase
+    {
+        protected SceneController sceneController;
+        protected ParcelScene scene;
+
+        protected IEnumerator InitScene(bool usesWebServer=false)
+        {
+            sceneController = TestHelpers.InitializeSceneController(usesWebServer);
+
+            yield return new WaitForSeconds(0.01f);
+
+            scene = sceneController.CreateTestScene();
+
+            yield return new WaitForSeconds(0.01f);
+        }
     }
 
     public static class TestHelpers
@@ -79,10 +97,32 @@ namespace DCL.Helpers
             return result;
         }
 
-
-
-        public static T SharedComponentCreate<T, K>(ParcelScene scene, CLASS_ID id, K model) where T : BaseDisposable
+        public static DCLTexture CreateDCLTexture(ParcelScene scene,
+            string url,
+            DCLTexture.BabylonWrapMode wrapMode = DCLTexture.BabylonWrapMode.CLAMP,
+            FilterMode filterMode = FilterMode.Bilinear)
         {
+            return SharedComponentCreate<DCLTexture, DCLTexture.Model>
+                (
+                    scene,
+                    DCL.Models.CLASS_ID.TEXTURE,
+                    new DCLTexture.Model
+                    {
+                        src = url,
+                        wrap = wrapMode,
+                        samplingMode = filterMode,
+                    }
+                );
+        }
+
+
+        public static T SharedComponentCreate<T, K>(ParcelScene scene, CLASS_ID id, K model=null)
+            where T : BaseDisposable
+            where K : class, new()
+        {
+            if (model == null)
+                model = new K();
+
             disposableIdCounter++;
 
             string uniqueId = GetUniqueId("material", (int)id, "-shared-" + disposableIdCounter);
@@ -133,19 +173,24 @@ namespace DCL.Helpers
             return textShape;
         }
 
+        public static void AttachDCLTransform(DecentralandEntity entity, ParcelScene scene, Vector3 pos, Quaternion? rot=null, Vector3? scale=null)
+        {
+            EntityComponentCreate<DCLTransform, DCLTransform.Model>(scene, entity,
+                new DCLTransform.Model
+                {
+                    position = pos,
+                    rotation = rot.Value,
+                    scale = scale.Value
+                });
+        }
+
+
         public static GLTFShape AttachGLTFShape(DecentralandEntity entity, ParcelScene scene, Vector3 position, GLTFShape.Model model)
         {
             string componentId = GetUniqueId("gltfShape", (int)CLASS_ID.GLTF_SHAPE, entity.entityId);
             GLTFShape gltfShape = SharedComponentCreate<GLTFShape, GLTFShape.Model>(scene, CLASS_ID.GLTF_SHAPE, model);
 
-            EntityComponentCreate<DCLTransform, DCLTransform.Model>(scene, entity,
-                new DCLTransform.Model
-                {
-                    position = position,
-                    rotation = Quaternion.identity,
-                    scale = Vector3.one
-                });
-
+            AttachDCLTransform(entity, scene, position, Quaternion.identity, Vector3.one);
             SharedComponentAttach(gltfShape, entity);
             return gltfShape;
         }
@@ -157,10 +202,41 @@ namespace DCL.Helpers
             return gltfShape;
         }
 
-        public static T InstantiateEntityWithShape<T, K>(ParcelScene scene, DCL.Models.CLASS_ID classId, Vector3 position, out DecentralandEntity entity, K model)
-            where T : BaseShape
-            where K : class
+        public static BoxShape CreateEntityWithBoxShape(ParcelScene scene, Vector3 position, BoxShape.Model model=null)
         {
+            if (model == null)
+                model = new BoxShape.Model();
+
+            DecentralandEntity entity = CreateSceneEntity(scene);
+            BoxShape shape = SharedComponentCreate<BoxShape, BoxShape.Model>(scene, CLASS_ID.BOX_SHAPE, new BoxShape.Model());
+            SharedComponentAttach(shape, entity);
+            AttachDCLTransform(entity, scene, position);
+            return shape;
+        }
+
+        public static BasicMaterial CreateEntityWithBasicMaterial(ParcelScene scene, BasicMaterial.Model model, out DecentralandEntity entity)
+        {
+            InstantiateEntityWithShape<BoxShape, BoxShape.Model>(scene, DCL.Models.CLASS_ID.BOX_SHAPE, Vector3.zero, out entity);
+            BasicMaterial material = SharedComponentCreate<BasicMaterial, BasicMaterial.Model>(scene, CLASS_ID.BASIC_MATERIAL, model);
+            SharedComponentAttach(material, entity);
+            return material;
+        }
+
+        public static PBRMaterial CreateEntityWithPBRMaterial(ParcelScene scene, PBRMaterial.Model model, out DecentralandEntity entity)
+        {
+            InstantiateEntityWithShape<BoxShape, BoxShape.Model>(scene, DCL.Models.CLASS_ID.BOX_SHAPE, Vector3.zero, out entity);
+            PBRMaterial material = SharedComponentCreate<PBRMaterial, PBRMaterial.Model>(scene, CLASS_ID.PBR_MATERIAL, model);
+            SharedComponentAttach(material, entity);
+            return material;
+        }
+
+        public static T InstantiateEntityWithShape<T, K>(ParcelScene scene, DCL.Models.CLASS_ID classId, Vector3 position, out DecentralandEntity entity, K model=null)
+            where T : BaseShape
+            where K : class, new()
+        {
+            if (model == null)
+                model = new K();
+
             entity = CreateSceneEntity(scene);
             string shapeId = "";
 

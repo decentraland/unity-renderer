@@ -1,4 +1,4 @@
-﻿using DCL.Helpers;
+using DCL.Helpers;
 using DCL.Components;
 using DCL.Models;
 using DCL.Configuration;
@@ -43,8 +43,6 @@ public class VisualTestSceneController1 : MonoBehaviour
         TestHelpers.InstantiateEntityWithMaterial(scene, "1", new Vector3(-3, 1, 3), new DCL.Components.BasicMaterial.Model
         {
             texture = textureUrl,
-            samplingMode = 0,
-            wrap = 0
         }, "testBasicMaterial");
 
         TestHelpers.InstantiateEntityWithMaterial(scene, "2", new Vector3(0, 1, 3), new DCL.Components.PBRMaterial.Model

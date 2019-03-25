@@ -13,12 +13,6 @@ namespace DCL.Components
         {
             public string texture;
 
-            [Range(1, 3)]
-            public int samplingMode = 2;  // 1: NEAREST; 2: BILINEAR; 3: TRILINEAR
-
-            [Range(1, 3)]
-            public int wrap = 0;          // 1: CLAMP; 2: WRAP; 3: MIRROR
-
             [Range(0f, 1f)]
             public float alphaTest = 0.5f; // value that defines if a pixel is visible or invisible (no transparency gradients)
         }
@@ -46,11 +40,8 @@ namespace DCL.Components
 
             if (!string.IsNullOrEmpty(model.texture) && !isLoadingTexture)
             {
-                if (scene.sceneData.HasContentsUrl(model.texture))
-                {
-                    isLoadingTexture = true;
-                    yield return Utils.FetchTexture(scene.sceneData.GetContentsUrl(model.texture), InitTexture);
-                }
+                isLoadingTexture = true;
+                yield return DCLTexture.FetchFromComponent(scene, model.texture, InitTexture);
             }
 
             material.SetFloat("_AlphaClip", model.alphaTest);
@@ -60,34 +51,6 @@ namespace DCL.Components
         {
             isLoadingTexture = false;
             material.mainTexture = texture;
-
-            // WRAP MODE CONFIGURATION
-            switch (model.wrap)
-            {
-                case 2:
-                    material.mainTexture.wrapMode = TextureWrapMode.Repeat;
-                    break;
-                case 3:
-                    material.mainTexture.wrapMode = TextureWrapMode.Mirror;
-                    break;
-                default:
-                    material.mainTexture.wrapMode = TextureWrapMode.Clamp;
-                    break;
-            }
-
-            // SAMPLING/FILTER MODE CONFIGURATION
-            switch (model.samplingMode)
-            {
-                case 2:
-                    material.mainTexture.filterMode = FilterMode.Bilinear;
-                    break;
-                case 3:
-                    material.mainTexture.filterMode = FilterMode.Trilinear;
-                    break;
-                default:
-                    material.mainTexture.filterMode = FilterMode.Point;
-                    break;
-            }
         }
 
         void OnMaterialAttached(DecentralandEntity entity)

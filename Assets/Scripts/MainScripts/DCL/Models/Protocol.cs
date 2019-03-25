@@ -40,6 +40,8 @@ namespace DCL.Models
 
         HIGHLIGHT_ENTITY = 66,
 
+        TEXTURE = 68,
+
         AUDIO_CLIP = 200,
     }
 

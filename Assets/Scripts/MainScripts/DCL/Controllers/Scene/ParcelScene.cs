@@ -408,6 +408,11 @@ namespace DCL.Controllers
                         newComponent = new DCLAudioClip(this);
                         break;
                     }
+                case CLASS_ID.TEXTURE:
+                    {
+                        newComponent = new DCLTexture(this);
+                        break;
+                    }
                 case CLASS_ID.UI_SCREEN_SPACE_SHAPE:
                     {
                         newComponent = new UIScreenSpaceShape(this);

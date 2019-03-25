@@ -11,24 +11,6 @@ using UnityGLTF;
 
 namespace Tests
 {
-    //TODO(Brian): Move this to a more global scope and make all tests use it.
-    public class TestsBase
-    {
-        protected SceneController sceneController;
-        protected ParcelScene scene;
-
-        protected IEnumerator InitScene()
-        {
-            sceneController = TestHelpers.InitializeSceneController();
-
-            yield return new WaitForSeconds(0.01f);
-
-            scene = sceneController.CreateTestScene();
-
-            yield return new WaitForSeconds(0.01f);
-        }
-    }
-
     public class AssetManagerTests : TestsBase
     {
         [UnityTest]
