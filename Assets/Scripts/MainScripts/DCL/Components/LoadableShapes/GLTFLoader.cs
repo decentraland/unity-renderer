@@ -2,7 +2,6 @@
 
 using System;
 using UnityEngine;
-using UnityGLTF;
 
 namespace DCL.Components
 {
@@ -38,13 +37,22 @@ namespace DCL.Components
 
         public void OnDestroy()
         {
-            if ( Application.isPlaying )
+            if (Application.isPlaying)
+            {
                 Unload();
+            }
         }
 
         void CallOnFailure()
         {
             gameObject.name += " - Failed loading";
+
+            MaterialTransitionController[] c = GetComponentsInChildren<MaterialTransitionController>(true);
+
+            foreach (MaterialTransitionController m in c)
+            {
+                Destroy(m);
+            }
         }
 
         void CallOnComponentUpdatedEvent()

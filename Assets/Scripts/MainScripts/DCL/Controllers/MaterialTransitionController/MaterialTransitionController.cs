@@ -83,6 +83,19 @@ public class MaterialTransitionController : MonoBehaviour
     private void Start()
     {
         Renderer tr = targetRenderer;
+
+        if (float.IsInfinity(tr.bounds.min.y) || float.IsNaN(tr.bounds.min.y))
+        {
+            Destroy(this);
+            return;
+        }
+
+        if (float.IsInfinity(tr.bounds.max.y) || float.IsNaN(tr.bounds.max.y))
+        {
+            Destroy(this);
+            return;
+        }
+
         tr.enabled = false;
 
         if (useHologram)

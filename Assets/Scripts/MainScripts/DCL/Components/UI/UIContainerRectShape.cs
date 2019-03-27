@@ -1,4 +1,4 @@
-﻿using System.Collections;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
@@ -32,7 +32,7 @@ namespace DCL.Components
 
         public UIContainerRectShape(ParcelScene scene) : base(scene)
         {
-        }
+        } 
 
         public override void AttachTo(DecentralandEntity entity)
         {
