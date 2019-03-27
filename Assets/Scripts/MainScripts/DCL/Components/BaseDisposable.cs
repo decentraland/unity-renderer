@@ -31,7 +31,6 @@ namespace DCL.Components
         public BaseDisposable(DCL.Controllers.ParcelScene scene)
         {
             this.scene = scene;
-            ApplyChangesIfModified(oldSerialization ?? "{}");
         }
 
         private void ApplyChangesIfModified(string newSerialization)

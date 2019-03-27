@@ -38,7 +38,7 @@ RenderSettings:
   m_ReflectionIntensity: 1
   m_CustomReflection: {fileID: 0}
   m_Sun: {fileID: 943100645024490816}
-  m_IndirectSpecularColor: {r: 0.12828654, g: 0.18683773, b: 0.28094715, a: 1}
+  m_IndirectSpecularColor: {r: 0.12828718, g: 0.18683854, b: 0.28094834, a: 1}
   m_UseRadianceAmbientProbe: 0
 --- !u!157 &3
 LightmapSettings:
@@ -89,7 +89,7 @@ LightmapSettings:
     m_PVRFilteringAtrousPositionSigmaAO: 1
     m_ShowResolutionOverlay: 1
   m_LightingDataAsset: {fileID: 0}
-  m_UseShadowmask: 0
+  m_UseShadowmask: 1
 --- !u!196 &4
 NavMeshSettings:
   serializedVersion: 2
@@ -557,7 +557,7 @@ MonoBehaviour:
   characterController: {fileID: 1989862556}
   openBrowserWhenStart: 1
   useClientDebugMode: 1
-  startInCoords: {x: 146, y: 123}
+  startInCoords: {x: 615.9, y: 615.9}
 --- !u!4 &1444882337
 Transform:
   m_ObjectHideFlags: 0
