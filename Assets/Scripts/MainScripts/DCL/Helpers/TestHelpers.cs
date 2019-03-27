@@ -19,7 +19,7 @@ namespace DCL.Helpers
         protected SceneController sceneController;
         protected ParcelScene scene;
 
-        protected IEnumerator InitScene(bool usesWebServer=false)
+        protected IEnumerator InitScene(bool usesWebServer = false)
         {
             sceneController = TestHelpers.InitializeSceneController(usesWebServer);
 
@@ -28,6 +28,21 @@ namespace DCL.Helpers
             scene = sceneController.CreateTestScene();
 
             yield return new WaitForSeconds(0.01f);
+
+            if (DCLCharacterController.i == null)
+                GameObject.Instantiate(Resources.Load("Prefabs/CharacterController"));
+        }
+
+        protected IEnumerator WaitForUICanvasUpdate()
+        {
+            yield break;
+            // Unity takes several frames to update the canvas info 
+            //(LayoutRebuilder.ForceRebuildLayoutImmediate() and Canvas.ForceUpdateCanvases() don't seem to work)
+
+            //yield return null;
+            //yield return null;
+            //yield return null;
+            //yield return null;
         }
     }
 
@@ -116,7 +131,7 @@ namespace DCL.Helpers
         }
 
 
-        public static T SharedComponentCreate<T, K>(ParcelScene scene, CLASS_ID id, K model=null)
+        public static T SharedComponentCreate<T, K>(ParcelScene scene, CLASS_ID id, K model = null)
             where T : BaseDisposable
             where K : class, new()
         {
@@ -173,7 +188,7 @@ namespace DCL.Helpers
             return textShape;
         }
 
-        public static void AttachDCLTransform(DecentralandEntity entity, ParcelScene scene, Vector3 pos, Quaternion? rot=null, Vector3? scale=null)
+        public static void AttachDCLTransform(DecentralandEntity entity, ParcelScene scene, Vector3 pos, Quaternion? rot = null, Vector3? scale = null)
         {
             EntityComponentCreate<DCLTransform, DCLTransform.Model>(scene, entity,
                 new DCLTransform.Model
@@ -202,7 +217,7 @@ namespace DCL.Helpers
             return gltfShape;
         }
 
-        public static BoxShape CreateEntityWithBoxShape(ParcelScene scene, Vector3 position, BoxShape.Model model=null)
+        public static BoxShape CreateEntityWithBoxShape(ParcelScene scene, Vector3 position, BoxShape.Model model = null)
         {
             if (model == null)
                 model = new BoxShape.Model();
@@ -230,7 +245,7 @@ namespace DCL.Helpers
             return material;
         }
 
-        public static T InstantiateEntityWithShape<T, K>(ParcelScene scene, DCL.Models.CLASS_ID classId, Vector3 position, out DecentralandEntity entity, K model=null)
+        public static T InstantiateEntityWithShape<T, K>(ParcelScene scene, DCL.Models.CLASS_ID classId, Vector3 position, out DecentralandEntity entity, K model = null)
             where T : BaseShape
             where K : class, new()
         {

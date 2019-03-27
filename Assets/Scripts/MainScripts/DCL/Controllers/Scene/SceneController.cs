@@ -319,7 +319,7 @@ public class SceneController : MonoBehaviour
             var payload = message.Substring(separatorPosition + 1);
 
             if (VERBOSE)
-                Debug.Log("SceneController ProcessMessage: " + payload);
+                Debug.Log("SceneController ProcessMessage: \nMethod: " + method + "\nPayload: " + payload);
 
             switch (method)
             {

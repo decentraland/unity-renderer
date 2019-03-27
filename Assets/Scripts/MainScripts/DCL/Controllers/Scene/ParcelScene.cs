@@ -3,6 +3,7 @@ using DCL.Configuration;
 using DCL.Helpers;
 using DCL.Models;
 using System.Collections.Generic;
+using System.Collections;
 using System.Linq;
 using UnityEngine;
 using UnityEngine.UI;
@@ -105,29 +106,6 @@ namespace DCL.Controllers
         public override string ToString()
         {
             return "gameObjectReference: " + this.ToString() + "\n" + sceneData.ToString();
-        }
-
-        public void EnsureScreenSpaceCanvasGameObject(string gameObjectName = "UIScreenSpaceShape")
-        {
-            if (uiScreenSpaceCanvas == null)
-            {
-                GameObject canvasGameObject = new GameObject(gameObjectName);
-                canvasGameObject.transform.SetParent(gameObject.transform);
-
-                // Canvas
-                uiScreenSpaceCanvas = canvasGameObject.AddComponent<Canvas>();
-                uiScreenSpaceCanvas.enabled = false; // It will be enabled later when the player enters this scene
-                uiScreenSpaceCanvas.renderMode = RenderMode.ScreenSpaceOverlay;
-
-                // Canvas Scaler (for maintaining ui aspect ratio)
-                CanvasScaler canvasScaler = canvasGameObject.AddComponent<CanvasScaler>();
-                canvasScaler.uiScaleMode = CanvasScaler.ScaleMode.ScaleWithScreenSize;
-                canvasScaler.referenceResolution = new Vector2(1280f, 720f);
-                canvasScaler.matchWidthOrHeight = 1f; // Match height, recommended for landscape projects
-
-                // Graphics Raycaster (for allowing touch/click input on the ui components)
-                canvasGameObject.AddComponent<GraphicRaycaster>();
-            }
         }
 
         public bool IsInsideSceneBoundaries(Vector3 worldPosition)
@@ -420,13 +398,12 @@ namespace DCL.Controllers
                     }
                 case CLASS_ID.UI_CONTAINER_RECT:
                     {
-                        if (uiScreenSpaceCanvas == null)
-                        {
-                            Debug.LogError("UIContainerRectShape cannot be created if there is no UIScreenSpace in the scene");
-                            break;
-                        }
-
                         newComponent = new UIContainerRectShape(this);
+                        break;
+                    }
+                case CLASS_ID.UI_IMAGE_SHAPE:
+                    {
+                        newComponent = new UIImageShape(this);
                         break;
                     }
                 default:
