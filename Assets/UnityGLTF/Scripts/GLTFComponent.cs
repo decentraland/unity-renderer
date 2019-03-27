@@ -92,6 +92,12 @@ namespace UnityGLTF
                 if (VERBOSE) Debug.Log($"(ERROR) downloadingCount-- = {downloadingCount}");
             }
 
+            if (obj is IndexOutOfRangeException)
+            {
+                Debug.Log("Destroying...");
+                Destroy(gameObject);
+            }
+
             Debug.Log("GLTF Failure " + obj.ToString());
         }
 
