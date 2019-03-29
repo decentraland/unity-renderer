@@ -1,5 +1,5 @@
 import { worldToGrid, gridToWorld, parseParcelPosition } from 'atomicHelpers/parcelScenePositions'
-import * as qs from 'query-string'
+const qs: any = require('query-string')
 import { ILand } from 'shared/types'
 import {
   Vector3,
@@ -9,6 +9,9 @@ import {
   ReadOnlyVector2
 } from 'decentraland-ecs/src/decentraland/math'
 import { Observable } from 'decentraland-ecs/src/ecs/Observable'
+
+declare var location: any
+declare var history: any
 
 export const positionObservable = new Observable<
   Readonly<{
@@ -29,7 +32,7 @@ positionObservable.add(event => {
 export function initializeUrlPositionObserver() {
   let lastTime: number = performance.now()
 
-  let previousPosition = null
+  let previousPosition: string | null = null
   const gridPosition = Vector2.Zero()
 
   function updateUrlPosition(cameraVector: ReadOnlyVector3) {
@@ -43,7 +46,7 @@ export function initializeUrlPositionObserver() {
         const stateObj = { position: currentPosition }
         previousPosition = currentPosition
 
-        const q = qs.parse(document.location.search)
+        const q = qs.parse(location.search)
         q.position = currentPosition
 
         history.replaceState(stateObj, 'position', `?${qs.stringify(q)}`)

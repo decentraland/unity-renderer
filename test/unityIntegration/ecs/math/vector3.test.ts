@@ -8,7 +8,7 @@ const results = {
   rotatedWithQuat04: '(-115.4, -138.8, 327.7)'
 }
 
-const normalize = v => (v === '-0.0' ? '0.0' : v)
+const normalize = (v: string) => (v === '-0.0' ? '0.0' : v)
 
 function vector3ToString(vec: Vector3) {
   const x = normalize(vec.x.toFixed(1).substr(0, 6))

@@ -56,12 +56,12 @@ import './visualValidation/uiElements.test'
 import './visualValidation/lookAt.test'
 import './visualValidation/referenceCubes.test'
 
-import './visualValidation/ccPaymentUI.test'
-
 import * as engine from 'engine'
 import * as renderer from 'engine/renderer'
+declare var mocha: any
+declare var global: any
+
 global['engine'] = engine
 global['renderer'] = renderer
-declare var mocha: any
 
 mocha.run()

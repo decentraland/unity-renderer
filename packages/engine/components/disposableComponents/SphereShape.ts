@@ -17,7 +17,7 @@ export class SphereShape extends BasicShape<{}> {
   generateModel() {
     const ret = new BABYLON.Mesh('sphere-instance')
 
-    base.geometry.applyToMesh(ret)
+    base.geometry!.applyToMesh(ret)
 
     return ret
   }

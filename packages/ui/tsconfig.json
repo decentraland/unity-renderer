@@ -1,7 +1,7 @@
 {
   "compilerOptions": {
-    "module": "commonjs",
-    "target": "es5",
+    "module": "esnext",
+    "target": "es2017",
     "emitDecoratorMetadata": true,
     "experimentalDecorators": true,
     "sourceMap": true,
@@ -17,18 +17,19 @@
     "newLine": "LF",
     "stripInternal": true,
     "strict": true,
+    "strictNullChecks": true,
+    "jsx": "react",
+    "jsxFactory": "createElement",
     "removeComments": true,
     "pretty": true,
     "outDir": "../../static/systems",
-    "noLib": true,
+    "lib": ["es2017", "webworker"],
     "baseUrl": "..",
     "plugins": [
       {
         "name": "tslint-language-service"
       }
-    ],
-    "types": ["env"],
-    "typeRoots": ["../decentraland-ecs/types"]
+    ]
   },
   "exclude": ["../../node_modules"]
 }

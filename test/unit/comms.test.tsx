@@ -1,9 +1,9 @@
 import { expect } from 'chai'
-import { v4 } from 'uuid'
 import { setLocalProfile, peerMap, removeById } from 'shared/comms/peers'
+import { uuid } from 'atomicHelpers/math'
 
 describe('comms', function() {
-  const localId = v4()
+  const localId = uuid()
   it('set local user and remove it', () => {
     setLocalProfile(localId, { status: 'test' })
 
@@ -11,7 +11,7 @@ describe('comms', function() {
 
     const peer = peerMap.get(localId)
 
-    expect(peer.user.status).to.eq('test')
+    expect(peer!.user!.status).to.eq('test')
 
     removeById(localId)
 

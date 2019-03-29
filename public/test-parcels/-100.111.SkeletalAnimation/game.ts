@@ -10,6 +10,10 @@ import {
   log
 } from 'decentraland-ecs/src'
 
+onerror = function() {
+  debugger
+}
+
 // First way to
 const shark = new Entity()
 const shape = new GLTFShape('shark_anim.gltf')

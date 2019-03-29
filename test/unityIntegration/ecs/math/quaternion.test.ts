@@ -45,7 +45,7 @@ const results = {
   setFromToRotation04: '(0.4, 0.0, 0.0, 0.9)'
 }
 
-const normalize = v => (v === '-0.0' ? '0.0' : v)
+const normalize = (v: string) => (v === '-0.0' ? '0.0' : v)
 
 function quaternionToString(quat: Quaternion) {
   const x = normalize(quat.x.toFixed(1).substr(0, 6))

@@ -29,11 +29,11 @@ function makeRequestFlushFromTimer(flush: Function) {
 function onError(error: Error, task: Task, longStacks: boolean) {
   if (longStacks && task.stack && typeof (error as any) === 'object' && (error as any) !== null) {
     // Note: IE sets error.stack when throwing but does not override a defined .stack.
-    error.stack = filterFlushStack(error.stack) + task.stack
+    error.stack = filterFlushStack(error.stack || '') + task.stack
   }
 
   if ('onError' in task) {
-    task.onError(error)
+    task.onError!(error)
   } else {
     setTimeout(() => {
       throw error
@@ -69,15 +69,15 @@ export class TaskQueue {
    */
   longStacks = false
 
-  microTaskQueue = []
-  taskQueue = []
+  microTaskQueue: Task[] = []
+  taskQueue: Task[] = []
 
   requestFlushTaskQueue = makeRequestFlushFromTimer(() => this.flushTaskQueue())
 
   stack?: string
 
   requestFlushMicroTaskQueue = () => {
-    defer(() => this.flushMicroTaskQueue())
+    defer(async () => this.flushMicroTaskQueue())
   }
 
   /**
@@ -145,12 +145,12 @@ export class TaskQueue {
    * @param queue The task queue or micro task queue
    */
   private flushQueue(queue: Task[]): void {
-    let task: Task
+    let task: Task | null = null
 
     try {
       this.flushing = true
       while (queue.length) {
-        task = queue.shift()
+        task = queue.shift() as Task
 
         if (this.longStacks) {
           this.stack = typeof task.stack === 'string' ? task.stack : undefined
@@ -159,7 +159,7 @@ export class TaskQueue {
         task.call()
       }
     } catch (error) {
-      onError(error, task, this.longStacks)
+      onError(error, task as any, this.longStacks)
     } finally {
       this.flushing = false
       this.stack = undefined

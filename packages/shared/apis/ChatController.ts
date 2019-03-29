@@ -1,6 +1,5 @@
 // tslint:disable:prefer-function-over-method
 import { registerAPI, exposeMethod, APIOptions } from 'decentraland-rpc/lib/host'
-import { v4 } from 'uuid'
 
 import { persistCurrentUser, sendPublicChatMessage } from 'shared/comms'
 import { chatObservable, ChatEvent } from 'shared/comms/chat'
@@ -18,8 +17,7 @@ import {
   removeFromBlockedUsers,
   removeFromMutedUsers
 } from 'shared/comms/peers'
-
-import { avatarTypes } from 'dcl/entities/utils/avatarHelpers'
+import { uuid } from 'atomicHelpers/math'
 
 export const positionRegex = new RegExp('^(-?[0-9]+) *, *(-?[0-9]+)$')
 
@@ -59,7 +57,7 @@ export class ChatController extends ExposableAPI implements IChatController {
     // If the message looks like a command but no command was found, provide some feedback
     if (!entry && message[0] === '/') {
       entry = {
-        id: v4(),
+        id: uuid(),
         isCommand: true,
         sender: 'Decentraland',
         message: `That command doesn’t exist. Type /help for a full list of commands.`
@@ -67,13 +65,14 @@ export class ChatController extends ExposableAPI implements IChatController {
     } else {
       // If the message was not a command ("/cmdname"), then send message through wire
       const currentUser = getCurrentUser()
-      entry = {
-        id: v4(),
+      if (!currentUser) throw new Error('cannotGetCurrentUser')
+      const newEntry = (entry = {
+        id: uuid(),
         isCommand: false,
-        sender: currentUser.displayName || currentUser.publicKey,
+        sender: currentUser.displayName || currentUser.publicKey || 'unknown',
         message
-      }
-      sendPublicChatMessage(entry.id, entry.message)
+      })
+      sendPublicChatMessage(newEntry.id, newEntry.message)
     }
 
     return entry
@@ -121,20 +120,10 @@ export class ChatController extends ExposableAPI implements IChatController {
         .join('-')
         .toLowerCase()
 
-      // Stop if user tries to set unsupported avatar type
-      if (!avatarTypes.has(avatarType)) {
-        return {
-          id: v4(),
-          isCommand: true,
-          sender: 'Decentraland',
-          message: `Avatar type "${message}" is not supported! (use fox, round robot or square robot instead)`
-        }
-      }
-
       persistCurrentUser({ avatarType: avatarType })
 
       return {
-        id: v4(),
+        id: uuid(),
         isCommand: true,
         sender: 'Decentraland',
         message: `Avatar type changed to ${message}.`
@@ -145,7 +134,7 @@ export class ChatController extends ExposableAPI implements IChatController {
       const avatarAttrs = persistCurrentUser({ displayName: message })
 
       return {
-        id: v4(),
+        id: uuid(),
         isCommand: true,
         sender: 'Decentraland',
         message: `Display Name was changed to ${avatarAttrs.displayName}.`
@@ -156,7 +145,7 @@ export class ChatController extends ExposableAPI implements IChatController {
       const coordinates = positionRegex.exec(message)
       if (!coordinates) {
         return {
-          id: v4(),
+          id: uuid(),
           isCommand: true,
           sender: 'Decentraland',
           message: 'Could not recognize the coordinates provided. Example usage: /goto 42,42'
@@ -167,7 +156,7 @@ export class ChatController extends ExposableAPI implements IChatController {
       teleportObservable.notifyObservers({ x: parseInt(x, 10), y: parseInt(y, 10) })
 
       return {
-        id: v4(),
+        id: uuid(),
         isCommand: true,
         sender: 'Decentraland',
         message: `Teleporting to ${x}, ${y}...`
@@ -176,9 +165,9 @@ export class ChatController extends ExposableAPI implements IChatController {
 
     this.addChatCommand('getname', 'Gets your username', message => {
       const avatarAttrs = getCurrentUser()
-
+      if (!avatarAttrs) throw new Error('cannotGetCurrentUser')
       return {
-        id: v4(),
+        id: uuid(),
         isCommand: true,
         sender: 'Decentraland',
         message: `Your Display Name is ${avatarAttrs.displayName}.`
@@ -187,17 +176,35 @@ export class ChatController extends ExposableAPI implements IChatController {
 
     this.addChatCommand('block', 'Block [username]', message => {
       const username = message
-      // Cannot block yourself
-      if (username === getCurrentUser().displayName) {
-        return { id: v4(), isCommand: true, sender: 'Decentraland', message: `You cannot block yourself.` }
-      }
+      const currentUser = getCurrentUser()
+
+      if (!currentUser) throw new Error('cannotGetCurrentUser')
 
       const user = findPeerByName(username)
 
-      addToBlockedUsers(user.publicKey)
-      addToMutedUsers(user.publicKey)
+      if (user && user.publicKey) {
+        // Cannot block yourself
+        if (user.publicKey === currentUser.publicKey) {
+          return { id: uuid(), isCommand: true, sender: 'Decentraland', message: `You cannot block yourself.` }
+        }
 
-      return { id: v4(), isCommand: true, sender: 'Decentraland', message: `You blocked user ${username}.` }
+        addToBlockedUsers(user.publicKey)
+        addToMutedUsers(user.publicKey)
+
+        return {
+          id: uuid(),
+          isCommand: true,
+          sender: 'Decentraland',
+          message: `You blocked user ${JSON.stringify(username)}.`
+        }
+      } else {
+        return {
+          id: uuid(),
+          isCommand: true,
+          sender: 'Decentraland',
+          message: `User not found ${JSON.stringify(username)}.`
+        }
+      }
     })
 
     this.addChatCommand('unblock', 'Unblock [username]', message => {
@@ -205,18 +212,27 @@ export class ChatController extends ExposableAPI implements IChatController {
 
       const user = findPeerByName(username)
 
-      removeFromBlockedUsers(user.publicKey)
-      // TODO: Remove this literal mute, muting shold happen automatticaly with block
-      removeFromMutedUsers(user.publicKey)
+      if (user && user.publicKey) {
+        removeFromBlockedUsers(user.publicKey)
+        // TODO: Remove this literal mute, muting shold happen automatticaly with block
+        removeFromMutedUsers(user.publicKey)
 
-      return { id: v4(), isCommand: true, sender: 'Decentraland', message: `You unblocked user ${username}.` }
+        return { id: uuid(), isCommand: true, sender: 'Decentraland', message: `You unblocked user ${username}.` }
+      } else {
+        return {
+          id: uuid(),
+          isCommand: true,
+          sender: 'Decentraland',
+          message: `User not found ${JSON.stringify(username)}.`
+        }
+      }
     })
 
     this.addChatCommand('blocked', 'Show a list of blocked users', message => {
       const users = getBlockedUsers()
       if (!users || users.size === 0) {
         return {
-          id: v4(),
+          id: uuid(),
           sender: 'Decentraland',
           isCommand: true,
           message: `No blocked users. Use the '/block [username]' command to block someone.`
@@ -224,13 +240,13 @@ export class ChatController extends ExposableAPI implements IChatController {
       }
 
       return {
-        id: v4(),
+        id: uuid(),
         isCommand: true,
         sender: 'Decentraland',
         message: `These are the users you are blocking:\n${[...users]
           .map(user => {
             const profile = getPeer(user)
-            return `\t${profile ? `${profile.user.displayName}: ${user}` : user}\n`
+            return `\t${profile && profile.user ? `${profile.user.displayName}: ${user}` : user}\n`
           })
           .join('\n')}`
       }
@@ -238,37 +254,60 @@ export class ChatController extends ExposableAPI implements IChatController {
 
     this.addChatCommand('mute', 'Mute [username]', message => {
       const username = message
-      // Cannot mute yourself
-      if (username === getCurrentUser().displayName) {
-        return { id: v4(), isCommand: true, sender: 'Decentraland', message: `You cannot mute yourself.` }
-      }
+      const currentUser = getCurrentUser()
+      if (!currentUser) throw new Error('cannotGetCurrentUser')
 
       const user = findPeerByName(username)
+      if (user && user.publicKey) {
+        // Cannot mute yourself
+        if (username === currentUser.displayName) {
+          return { id: uuid(), isCommand: true, sender: 'Decentraland', message: `You cannot mute yourself.` }
+        }
 
-      addToMutedUsers(user.publicKey)
+        addToMutedUsers(user.publicKey)
 
-      return { id: v4(), isCommand: true, sender: 'Decentraland', message: `You muted user ${username}.` }
+        return { id: uuid(), isCommand: true, sender: 'Decentraland', message: `You muted user ${username}.` }
+      } else {
+        return {
+          id: uuid(),
+          isCommand: true,
+          sender: 'Decentraland',
+          message: `User not found ${JSON.stringify(username)}.`
+        }
+      }
     })
 
     this.addChatCommand('unmute', 'Unmute [username]', message => {
       const username = message
-      // Cannot unmute or mute yourself
-      if (username === getCurrentUser().displayName) {
-        return { id: v4(), isCommand: true, sender: 'Decentraland', message: `You cannot mute or unmute yourself.` }
-      }
+      const currentUser = getCurrentUser()
+      if (!currentUser) throw new Error('cannotGetCurrentUser')
 
       const user = findPeerByName(username)
 
-      removeFromMutedUsers(user.publicKey)
+      if (user && user.publicKey) {
+        // Cannot unmute or mute yourself
+        if (username === currentUser.displayName) {
+          return { id: uuid(), isCommand: true, sender: 'Decentraland', message: `You cannot mute or unmute yourself.` }
+        }
 
-      return { id: v4(), isCommand: true, sender: 'Decentraland', message: `You unmuted user ${username}.` }
+        removeFromMutedUsers(user.publicKey)
+
+        return { id: uuid(), isCommand: true, sender: 'Decentraland', message: `You unmuted user ${username}.` }
+      } else {
+        return {
+          id: uuid(),
+          isCommand: true,
+          sender: 'Decentraland',
+          message: `User not found ${JSON.stringify(username)}.`
+        }
+      }
     })
 
     this.addChatCommand('setstatus', 'Sets your status', message => {
       const avatarAttrs = persistCurrentUser({ status: message })
 
       return {
-        id: v4(),
+        id: uuid(),
         isCommand: true,
         sender: 'Decentraland',
         message: `Your status was changed to ${avatarAttrs.status}.`
@@ -276,14 +315,15 @@ export class ChatController extends ExposableAPI implements IChatController {
     })
 
     this.addChatCommand('getstatus', 'Gets your status', message => {
-      const avatarAttrs = getCurrentUser()
+      const currentUser = getCurrentUser()
+      if (!currentUser) throw new Error('cannotGetCurrentUser')
 
-      return { id: v4(), isCommand: true, sender: 'Decentraland', message: `Your status is ${avatarAttrs.status}.` }
+      return { id: uuid(), isCommand: true, sender: 'Decentraland', message: `Your status is ${currentUser.status}.` }
     })
 
     this.addChatCommand('help', 'Show a list of commands', message => {
       return {
-        id: v4(),
+        id: uuid(),
         isCommand: true,
         sender: 'Decentraland',
         message: `Available commands:\n${Object.keys(this.chatCommands)

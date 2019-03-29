@@ -27,13 +27,13 @@ export class WelcomeMessage extends jspb.Message {
   getType(): MessageType
   setType(value: MessageType): void
 
-  getAlias(): string
-  setAlias(value: string): void
+  getAlias(): number
+  setAlias(value: number): void
 
   clearAvailableServersList(): void
-  getAvailableServersList(): Array<string>
-  setAvailableServersList(value: Array<string>): void
-  addAvailableServers(value: string, index?: number): string
+  getAvailableServersList(): Array<number>
+  setAvailableServersList(value: Array<number>): void
+  addAvailableServers(value: number, index?: number): number
 
   serializeBinary(): Uint8Array
   toObject(includeInstance?: boolean): WelcomeMessage.AsObject
@@ -48,8 +48,8 @@ export class WelcomeMessage extends jspb.Message {
 export namespace WelcomeMessage {
   export type AsObject = {
     type: MessageType
-    alias: string
-    availableServersList: Array<string>
+    alias: number
+    availableServersList: Array<number>
   }
 }
 
@@ -57,11 +57,11 @@ export class ConnectMessage extends jspb.Message {
   getType(): MessageType
   setType(value: MessageType): void
 
-  getFromAlias(): string
-  setFromAlias(value: string): void
+  getFromAlias(): number
+  setFromAlias(value: number): void
 
-  getToAlias(): string
-  setToAlias(value: string): void
+  getToAlias(): number
+  setToAlias(value: number): void
 
   serializeBinary(): Uint8Array
   toObject(includeInstance?: boolean): ConnectMessage.AsObject
@@ -76,8 +76,8 @@ export class ConnectMessage extends jspb.Message {
 export namespace ConnectMessage {
   export type AsObject = {
     type: MessageType
-    fromAlias: string
-    toAlias: string
+    fromAlias: number
+    toAlias: number
   }
 }
 
@@ -85,11 +85,11 @@ export class WebRtcMessage extends jspb.Message {
   getType(): MessageType
   setType(value: MessageType): void
 
-  getFromAlias(): string
-  setFromAlias(value: string): void
+  getFromAlias(): number
+  setFromAlias(value: number): void
 
-  getToAlias(): string
-  setToAlias(value: string): void
+  getToAlias(): number
+  setToAlias(value: number): void
 
   getSdp(): string
   setSdp(value: string): void
@@ -107,8 +107,8 @@ export class WebRtcMessage extends jspb.Message {
 export namespace WebRtcMessage {
   export type AsObject = {
     type: MessageType
-    fromAlias: string
-    toAlias: string
+    fromAlias: number
+    toAlias: number
     sdp: string
   }
 }
@@ -194,11 +194,11 @@ export class TopicMessage extends jspb.Message {
   getType(): MessageType
   setType(value: MessageType): void
 
+  getFromAlias(): number
+  setFromAlias(value: number): void
+
   getTopic(): string
   setTopic(value: string): void
-
-  getFromAlias(): string
-  setFromAlias(value: string): void
 
   getBody(): Uint8Array | string
   getBody_asU8(): Uint8Array
@@ -218,8 +218,38 @@ export class TopicMessage extends jspb.Message {
 export namespace TopicMessage {
   export type AsObject = {
     type: MessageType
+    fromAlias: number
     topic: string
-    fromAlias: string
+    body: Uint8Array | string
+  }
+}
+
+export class DataMessage extends jspb.Message {
+  getType(): MessageType
+  setType(value: MessageType): void
+
+  getFromAlias(): number
+  setFromAlias(value: number): void
+
+  getBody(): Uint8Array | string
+  getBody_asU8(): Uint8Array
+  getBody_asB64(): string
+  setBody(value: Uint8Array | string): void
+
+  serializeBinary(): Uint8Array
+  toObject(includeInstance?: boolean): DataMessage.AsObject
+  static toObject(includeInstance: boolean, msg: DataMessage): DataMessage.AsObject
+  static extensions: { [key: number]: jspb.ExtensionFieldInfo<jspb.Message> }
+  static extensionsBinary: { [key: number]: jspb.ExtensionFieldBinaryInfo<jspb.Message> }
+  static serializeBinaryToWriter(message: DataMessage, writer: jspb.BinaryWriter): void
+  static deserializeBinary(bytes: Uint8Array): DataMessage
+  static deserializeBinaryFromReader(message: DataMessage, reader: jspb.BinaryReader): DataMessage
+}
+
+export namespace DataMessage {
+  export type AsObject = {
+    type: MessageType
+    fromAlias: number
     body: Uint8Array | string
   }
 }
@@ -258,7 +288,30 @@ export namespace AuthMessage {
   }
 }
 
+export class DataHeader extends jspb.Message {
+  getCategory(): Category
+  setCategory(value: Category): void
+
+  serializeBinary(): Uint8Array
+  toObject(includeInstance?: boolean): DataHeader.AsObject
+  static toObject(includeInstance: boolean, msg: DataHeader): DataHeader.AsObject
+  static extensions: { [key: number]: jspb.ExtensionFieldInfo<jspb.Message> }
+  static extensionsBinary: { [key: number]: jspb.ExtensionFieldBinaryInfo<jspb.Message> }
+  static serializeBinaryToWriter(message: DataHeader, writer: jspb.BinaryWriter): void
+  static deserializeBinary(bytes: Uint8Array): DataHeader
+  static deserializeBinaryFromReader(message: DataHeader, reader: jspb.BinaryReader): DataHeader
+}
+
+export namespace DataHeader {
+  export type AsObject = {
+    category: Category
+  }
+}
+
 export class PositionData extends jspb.Message {
+  getCategory(): Category
+  setCategory(value: Category): void
+
   getTime(): number
   setTime(value: number): void
 
@@ -295,6 +348,7 @@ export class PositionData extends jspb.Message {
 
 export namespace PositionData {
   export type AsObject = {
+    category: Category
     time: number
     positionX: number
     positionY: number
@@ -307,6 +361,9 @@ export namespace PositionData {
 }
 
 export class ProfileData extends jspb.Message {
+  getCategory(): Category
+  setCategory(value: Category): void
+
   getTime(): number
   setTime(value: number): void
 
@@ -331,6 +388,7 @@ export class ProfileData extends jspb.Message {
 
 export namespace ProfileData {
   export type AsObject = {
+    category: Category
     time: number
     avatarType: string
     displayName: string
@@ -339,6 +397,9 @@ export namespace ProfileData {
 }
 
 export class ChatData extends jspb.Message {
+  getCategory(): Category
+  setCategory(value: Category): void
+
   getTime(): number
   setTime(value: number): void
 
@@ -360,6 +421,7 @@ export class ChatData extends jspb.Message {
 
 export namespace ChatData {
   export type AsObject = {
+    category: Category
     time: number
     messageId: string
     text: string
@@ -377,7 +439,8 @@ export enum MessageType {
   PING = 7,
   TOPIC_SUBSCRIPTION = 8,
   TOPIC = 9,
-  AUTH = 10
+  DATA = 10,
+  AUTH = 11
 }
 
 export enum Role {
@@ -390,4 +453,11 @@ export enum Format {
   UNKNOWN_FORMAT = 0,
   PLAIN = 1,
   GZIP = 2
+}
+
+export enum Category {
+  UNKNOWN = 0,
+  POSITION = 1,
+  PROFILE = 2,
+  CHAT = 3
 }

@@ -107,7 +107,8 @@ generate-mocks:
 	$(NODE) ./scripts/createMockJson.js
 
 lint:
-	node_modules/.bin/madge packages/entryPoints/index.ts --circular
+	node_modules/.bin/madge packages/entryPoints/index.ts --circular --warning
+	node_modules/.bin/madge packages --orphans --extensions ts --exclude '.+\.d.ts|.+/dist\/.+'
 	node_modules/.bin/tslint --project tsconfig.json
 
 lint-fix:

@@ -36,11 +36,24 @@ loadingShape.setEnabled(false)
 
 export class GLTFShape extends DisposableComponent {
   src: string | null = null
-  loadingDone = false
   assetContainerEntity = new Map<string, BABYLON.AssetContainer>()
   entityIsLoading = new Set<string>()
+  error = false
 
   private didFillContributions = false
+
+  loadingDone(entity: BaseEntity): boolean {
+    if (this.error) {
+      return true
+    }
+    if (this.entities.has(entity)) {
+      if (this.entityIsLoading.has(entity.uuid)) {
+        return false
+      }
+      return true
+    }
+    return false
+  }
 
   onAttach(entity: BaseEntity): void {
     if (this.src && !this.entityIsLoading.has(entity.uuid)) {
@@ -100,55 +113,56 @@ export class GLTFShape extends DisposableComponent {
               })
           })
 
-          // TODO(menduz): what happens if the load ends when the entity got removed?
-          if (!entity.isDisposed()) {
-            processColliders(assetContainer)
+          processColliders(assetContainer)
 
-            // Find all the materials from all the meshes and add to $.materials
-            assetContainer.meshes.forEach(mesh => {
-              mesh.cullingStrategy = BABYLON.AbstractMesh.CULLINGSTRATEGY_BOUNDINGSPHERE_ONLY
-              if (mesh.material) {
-                if (!assetContainer.materials.includes(mesh.material)) {
-                  assetContainer.materials.push(mesh.material)
-                }
+          // Find all the materials from all the meshes and add to $.materials
+          assetContainer.meshes.forEach(mesh => {
+            mesh.cullingStrategy = BABYLON.AbstractMesh.CULLINGSTRATEGY_BOUNDINGSPHERE_ONLY
+            if (mesh.material) {
+              if (!assetContainer.materials.includes(mesh.material)) {
+                assetContainer.materials.push(mesh.material)
               }
-            })
+            }
+          })
 
-            // Find the textures in the materials that share the same domain as the context
-            // then add the textures to the $.textures
-            assetContainer.materials.forEach((material: BABYLON.Material | BABYLON.PBRMaterial) => {
-              for (let i in material) {
-                const t = material[i]
+          // Find the textures in the materials that share the same domain as the context
+          // then add the textures to the $.textures
+          assetContainer.materials.forEach((material: BABYLON.Material | BABYLON.PBRMaterial) => {
+            for (let i in material) {
+              const t = (material as any)[i]
 
-                if (i.endsWith('Texture') && t instanceof BABYLON.Texture && t !== probe.cubeTexture) {
-                  if (!assetContainer.textures.includes(t)) {
-                    if (isSceneTexture(t)) {
-                      assetContainer.textures.push(t)
-                    }
+              if (i.endsWith('Texture') && t instanceof BABYLON.Texture && t !== probe.cubeTexture) {
+                if (!assetContainer.textures.includes(t)) {
+                  if (isSceneTexture(t)) {
+                    assetContainer.textures.push(t)
                   }
                 }
               }
+            }
 
-              if ('reflectionTexture' in material) {
-                material.reflectionTexture = probe.cubeTexture
-              }
+            if ('reflectionTexture' in material) {
+              material.reflectionTexture = probe.cubeTexture
+            }
 
-              if ('albedoTexture' in material) {
-                if (material.alphaMode === 2) {
-                  if (material.albedoTexture) {
-                    material.albedoTexture.hasAlpha = true
-                    material.useAlphaFromAlbedoTexture = true
-                  }
+            if ('albedoTexture' in material) {
+              if (material.alphaMode === 2) {
+                if (material.albedoTexture) {
+                  material.albedoTexture.hasAlpha = true
+                  material.useAlphaFromAlbedoTexture = true
                 }
               }
-            })
+            }
+          })
 
+          loadingEntity.dispose(false, false)
+
+          if (this.isStillValid(entity)) {
             // Fin the main mesh and add it as the BasicShape.nameInEntity component.
-            assetContainer.meshes.filter($ => $.name === '__root__').forEach(mesh => {
-              entity.setObject3D(BasicShape.nameInEntity, mesh)
-            })
-
-            loadingEntity.dispose(false, false)
+            assetContainer.meshes
+              .filter($ => $.name === '__root__')
+              .forEach(mesh => {
+                entity.setObject3D(BasicShape.nameInEntity, mesh)
+              })
 
             this.assetContainerEntity.set(entity.uuid, assetContainer)
 
@@ -178,14 +192,14 @@ export class GLTFShape extends DisposableComponent {
             }
 
             const animator: Animator = entity.getBehaviorByName('animator') as Animator
+
             if (animator) {
-              animator.transformValue(animator.value)
+              animator.transformValue(animator.value!)
             }
           } else {
             cleanupAssetContainer(assetContainer)
+            deleteUnusedTextures()
           }
-
-          this.loadingDone = true
         },
         null,
         (_scene, message, exception) => {
@@ -193,14 +207,13 @@ export class GLTFShape extends DisposableComponent {
 
           this.context.logger.error('Error loading GLTF', message, exception)
           this.onDetach(entity)
-          entity.assetContainer = null
+          entity.assetContainer = void 0
 
           const animator: Animator = entity.getBehaviorByName('animator') as Animator
-          if (animator) {
-            animator.transformValue(animator.value)
-          }
 
-          this.loadingDone = true
+          if (animator) {
+            animator.transformValue(animator.value!)
+          }
         }
       )
     }
@@ -215,7 +228,7 @@ export class GLTFShape extends DisposableComponent {
       entity.removeObject3D(BasicShape.nameInEntity)
     }
 
-    entity.assetContainer = null
+    entity.assetContainer = void 0
 
     const assetContainer = this.assetContainerEntity.get(entity.uuid)
 
@@ -227,10 +240,14 @@ export class GLTFShape extends DisposableComponent {
     deleteUnusedTextures()
   }
 
+  isStillValid(entity: BaseEntity) {
+    return !entity.isDisposed() && this.entities.has(entity)
+  }
+
   async updateData(data: any): Promise<void> {
     if ('src' in data) {
       if (this.src !== null && this.src !== data.src && DEBUG) {
-        log('Cannot set OBJShape.src twice')
+        log('Cannot set GLTFShape.src twice')
       }
       if (this.src === null) {
         this.src = data.src

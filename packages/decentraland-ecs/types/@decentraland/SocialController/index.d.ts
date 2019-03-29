@@ -24,6 +24,16 @@ declare module '@decentraland/SocialController' {
   export function unblock(user: string): void
 
   /**
+   * Gets a list of blocked users
+   */
+  export function getBlockedUsers(): Promise<string[]>
+
+  /**
+   * Gets a list of muted users
+   */
+  export function getMutedUsers(): Promise<string[]>
+
+  /**
    * Subscribes to events dispatched by the EntityController
    * Use it to listen to events from the scene (like `click`)
    * @param event

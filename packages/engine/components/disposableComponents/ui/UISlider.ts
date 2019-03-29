@@ -101,7 +101,7 @@ class UISlider extends UIControl<UISliderShape, BABYLON.GUI.Slider> {
       this.control.rotation = Math.PI
     }
 
-    this.setParent(this.data.parentComponent)
+    this.data.parentComponent && this.setParent(this.data.parentComponent)
   }
 
   dispatchOnChanged = (data: IEvents['onChange']) => {

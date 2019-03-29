@@ -39,7 +39,7 @@ import { interactWithScene } from 'engine/renderer/input'
 import { scene } from 'engine/renderer'
 import { BasicShape } from 'engine/components/disposableComponents/DisposableComponent'
 import { PBRMaterial } from 'engine/components/disposableComponents/PBRMaterial'
-import { WebGLParcelScene } from 'dcl/WebGLParcelScene'
+import { WebGLParcelScene } from 'engine/dcl/WebGLParcelScene'
 import { BoxShape } from 'engine/components/disposableComponents/BoxShape'
 import { UIScreenSpace } from 'engine/components/disposableComponents/ui/UIScreenSpace'
 
@@ -665,7 +665,7 @@ describe('ECS', () => {
     it('should recursively remove entities', () => {
       // cleanup previous stuff
       for (let key in engine['_entities']) {
-        engine.removeEntity(engine['_entities'][key], true)
+        engine.removeEntity(engine['_entities'][key])
       }
 
       const ent1 = new Entity()
@@ -679,7 +679,7 @@ describe('ECS', () => {
       engine.addEntity(ent2)
       engine.addEntity(ent3)
 
-      engine.removeEntity(ent1, true)
+      engine.removeEntity(ent1)
 
       expect(Object.keys(engine['_entities']).length).to.eq(0)
     })
@@ -690,7 +690,7 @@ describe('ECS', () => {
       let entityFuture = future<BaseEntity>()
 
       testScene(-100, 234, ({ parcelScenePromise }) => {
-        it('should have a transform component', async function() {
+        it('should have a transform component', async function(this: any) {
           this.timeout(50000)
           const parcelScene = await parcelScenePromise
           const [, [, entity]] = parcelScene.context.entities // should be the first child
@@ -728,13 +728,13 @@ describe('ECS', () => {
         it('dcl.onUpdate must work', async () => {
           sceneHost.update(0)
 
-          while (sceneHost.devToolsAdapter.exceptions.length < 1) {
+          while (sceneHost.devToolsAdapter!.exceptions.length < 1) {
             await sleep(100)
           }
 
-          expect(sceneHost.devToolsAdapter.exceptions.length).eq(1)
+          expect(sceneHost.devToolsAdapter!.exceptions.length).eq(1)
 
-          expect(sceneHost.devToolsAdapter.exceptions[0].toString()).to.include('onUpdate works')
+          expect(sceneHost.devToolsAdapter!.exceptions[0].toString()).to.include('onUpdate works')
         })
 
         it('should have a transform component', async () => {
@@ -802,16 +802,16 @@ describe('ECS', () => {
             from: [-99.5, 1, 100.0],
             lookAt: [-99.5, 1, 101.0]
           })
-          vrCamera.rotationQuaternion.copyFrom(BABYLON.Quaternion.Identity())
+          vrCamera!.rotationQuaternion.copyFrom(BABYLON.Quaternion.Identity())
           expect(logs.length).to.eq(0)
         })
         it('clicks in the middle of the screen', async () => {
           const canvas = scene.getEngine().getRenderingCanvas()
 
-          interactWithScene('pointerDown', canvas.width / 2, canvas.height / 2, 1)
+          interactWithScene('pointerDown', canvas!.width / 2, canvas!.height / 2, 1)
           await sleep(100)
           expect(logs.filter($ => $[1] === 'event').length).to.eq(1, 'event must have been triggered once')
-          interactWithScene('pointerUp', canvas.width / 2, canvas.height / 2, 1)
+          interactWithScene('pointerUp', canvas!.width / 2, canvas!.height / 2, 1)
           await sleep(100)
 
           expect(logs.length).to.gt(0)
@@ -834,8 +834,8 @@ describe('ECS', () => {
 
     testScene(-100, 104, ({ parcelScenePromise, sceneHost, logs }) => {
       it('locate camera', async () => {
-        vrCamera.position.set(-995, 1, 1040)
-        vrCamera.rotationQuaternion.copyFrom(BABYLON.Quaternion.Identity())
+        vrCamera!.position.set(-995, 1, 1040)
+        vrCamera!.rotationQuaternion.copyFrom(BABYLON.Quaternion.Identity())
       })
 
       it('changing a material must work', async () => {
@@ -847,8 +847,8 @@ describe('ECS', () => {
             entity = $
           }
         })
-        expect(!!entity).to.eq(true)
-        const mesh = entity.getObject3D(BasicShape.nameInEntity) as BABYLON.AbstractMesh
+        expect(!!entity!).to.eq(true)
+        const mesh = entity!.getObject3D(BasicShape.nameInEntity) as BABYLON.AbstractMesh
         expect(!!mesh).to.eq(true)
 
         const M1 = parcelScene.context.disposableComponents.get('C3') as PBRMaterial
@@ -864,9 +864,9 @@ describe('ECS', () => {
         await sleep(1000)
         const newLogs = logs.map($ => $[1])
 
-        expect(newLogs).to.include(`setting ${entity.uuid} <- C4`)
+        expect(newLogs).to.include(`setting ${entity!.uuid} <- C4`)
 
-        const newMesh = entity.getObject3D(BasicShape.nameInEntity) as BABYLON.AbstractMesh
+        const newMesh = entity!.getObject3D(BasicShape.nameInEntity) as BABYLON.AbstractMesh
         expect(!!newMesh).to.eq(true)
         expect(newMesh == mesh).to.eq(true, 'mesh == oldmesh')
 
@@ -878,8 +878,8 @@ describe('ECS', () => {
       let scene: WebGLParcelScene
       it('locate camera', async () => {
         scene = await parcelScenePromise
-        vrCamera.position.set(-995, 1, 1000)
-        vrCamera.rotationQuaternion.copyFrom(BABYLON.Quaternion.Identity())
+        vrCamera!.position.set(-995, 1, 1000)
+        vrCamera!.rotationQuaternion.copyFrom(BABYLON.Quaternion.Identity())
       })
 
       function doTest() {
@@ -1073,8 +1073,8 @@ describe('ECS', () => {
 
     testScene(-100, 104, ({ parcelScenePromise, sceneHost, logs }) => {
       it('locate camera', async () => {
-        vrCamera.position.set(-995, 1, 1040)
-        vrCamera.rotationQuaternion.copyFrom(BABYLON.Quaternion.Identity())
+        vrCamera!.position.set(-995, 1, 1040)
+        vrCamera!.rotationQuaternion.copyFrom(BABYLON.Quaternion.Identity())
       })
 
       it('changing a material must work', async () => {
@@ -1087,8 +1087,8 @@ describe('ECS', () => {
           }
         })
 
-        expect(!!entity).to.eq(true)
-        const mesh = entity.getObject3D(BasicShape.nameInEntity) as BABYLON.AbstractMesh
+        expect(!!entity!).to.eq(true)
+        const mesh = entity!.getObject3D(BasicShape.nameInEntity) as BABYLON.AbstractMesh
         expect(!!mesh).to.eq(true)
 
         const M1 = parcelScene.context.disposableComponents.get('C3') as PBRMaterial
@@ -1104,9 +1104,9 @@ describe('ECS', () => {
         await sleep(1000)
         const newLogs = logs.map($ => $[1])
 
-        expect(newLogs).to.include(`setting ${entity.uuid} <- C4`)
+        expect(newLogs).to.include(`setting ${entity!.uuid} <- C4`)
 
-        const newMesh = entity.getObject3D(BasicShape.nameInEntity) as BABYLON.AbstractMesh
+        const newMesh = entity!.getObject3D(BasicShape.nameInEntity) as BABYLON.AbstractMesh
         expect(!!newMesh).to.eq(true)
         expect(newMesh == mesh).to.eq(true, 'mesh == oldmesh')
 
@@ -1115,14 +1115,14 @@ describe('ECS', () => {
     })
 
     testScene(-200, 100, ({ parcelScenePromise, sceneHost, logs }) => {
-      let scene = null
+      let scene: WebGLParcelScene
       let screenSpace: UIScreenSpace | null = null
       const insideCamera: PlayerCamera = { from: [-199.9, 1.6, 100.1], lookAt: [-199.5, 1, 100.5] }
       const outsideCamera: PlayerCamera = { from: [-201.0, 1.6, 101.5], lookAt: [-200.0, 1, 102.0] }
 
       it('locate camera', async () => {
-        vrCamera.position.set(-1999, 1, 1001)
-        vrCamera.rotationQuaternion.copyFrom(BABYLON.Quaternion.Identity())
+        vrCamera!.position.set(-1999, 1, 1001)
+        vrCamera!.rotationQuaternion.copyFrom(BABYLON.Quaternion.Identity())
       })
 
       it('should have an UIScreenSpace component', async () => {
@@ -1138,7 +1138,7 @@ describe('ECS', () => {
         expect(scene.context.disposableComponents.size).eq(8)
         expect(scene.context.entities.size).eq(4)
 
-        screenSpace = scene.context.disposableComponents.values().next().value
+        screenSpace = scene.context.disposableComponents.values().next().value as any
 
         expect(screenSpace).to.exist
         expect(screenSpace).to.be.instanceOf(UIScreenSpace)
@@ -1153,14 +1153,14 @@ describe('ECS', () => {
         await sleep(500)
         scene.checkUserInPlace()
 
-        expect(screenSpace.isEnabled).to.eq(true, 'screen space must be enabled')
+        expect(screenSpace!.isEnabled).to.eq(true, 'screen space must be enabled')
 
         await sleep(100)
         sceneHost.fireEvent({ type: 'TEST_TRIGGER' })
 
         await sleep(500)
 
-        expect(screenSpace.data.visible).to.eq(true, 'screen space must be visible')
+        expect(screenSpace!.data.visible).to.eq(true, 'screen space must be visible')
       })
 
       wait(100)
@@ -1174,8 +1174,8 @@ describe('ECS', () => {
 
         await sleep(100)
 
-        expect(screenSpace.isEnabled).to.eq(false)
-        expect(screenSpace.data.visible).to.eq(true)
+        expect(screenSpace!.isEnabled).to.eq(false)
+        expect(screenSpace!.data.visible).to.eq(true)
       })
     })
 

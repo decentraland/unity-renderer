@@ -1,12 +1,12 @@
 import * as BABYLON from 'babylonjs'
 
 import { playerConfigurations, DEBUG } from 'config'
-import { scene } from './init'
+import { scene, engine } from './init'
 import Joystick from './controls/joystick'
 import PlaneCanvasControl from './controls/planeCanvasControl'
-import { isThirdPersonCamera, vrCamera } from './camera'
+import { isThirdPersonCamera, vrCamera, arcCamera } from './camera'
 import { loadedParcelSceneWorkers } from 'shared/world/parcelSceneManager'
-import { WebGLScene } from 'dcl/WebGLScene'
+import { WebGLScene } from '../dcl/WebGLScene'
 
 /**
  * This is a map of keys (see enum Keys): boolean
@@ -40,7 +40,10 @@ enum Keys {
 
 export { keyState, Keys }
 
+let didInit = false
 export function initKeyboard() {
+  if (didInit) return
+  didInit = true
   vrCamera.keysUp = [Keys.KEY_W as number] // W
   vrCamera.keysDown = [Keys.KEY_S as number] // S
   vrCamera.keysLeft = [Keys.KEY_A as number] // A
@@ -75,6 +78,71 @@ export function initKeyboard() {
     keyState[Keys.KEY_CTRL] = e.ctrlKey
     keyState[e.keyCode] = false
   })
+
+  const CAMERA_SPEED = 0.02
+  const CAMERA_LEFT = BABYLON.Quaternion.RotationYawPitchRoll(Math.PI / 2, 0, 0)
+  const CAMERA_RIGHT = BABYLON.Quaternion.RotationYawPitchRoll(-Math.PI / 2, 0, 0)
+  const CAMERA_FORWARD = BABYLON.Quaternion.RotationYawPitchRoll(Math.PI, 0, 0)
+  const CAMERA_BACKWARD = BABYLON.Quaternion.RotationYawPitchRoll(0, 0, 0)
+
+  arcCamera.keysDown = []
+  arcCamera.keysUp = []
+  arcCamera.keysLeft = []
+  arcCamera.keysRight = []
+
+  arcCamera.onAfterCheckInputsObservable.add(() => {
+    if (arcCamera === scene.activeCamera) {
+      if (keyState[Keys.KEY_LEFT]) {
+        arcCamera.target.addInPlace(moveCamera(arcCamera, CAMERA_LEFT, CAMERA_SPEED * engine.getDeltaTime()))
+      }
+
+      if (keyState[Keys.KEY_RIGHT]) {
+        arcCamera.target.addInPlace(moveCamera(arcCamera, CAMERA_RIGHT, CAMERA_SPEED * engine.getDeltaTime()))
+      }
+
+      if (keyState[Keys.KEY_UP]) {
+        arcCamera.target.addInPlace(moveCamera(arcCamera, CAMERA_FORWARD, CAMERA_SPEED * engine.getDeltaTime()))
+      }
+
+      if (keyState[Keys.KEY_DOWN]) {
+        arcCamera.target.addInPlace(moveCamera(arcCamera, CAMERA_BACKWARD, CAMERA_SPEED * engine.getDeltaTime()))
+      }
+    }
+  })
+}
+
+function moveCamera(camera: BABYLON.ArcRotateCamera, directionRotation: BABYLON.Quaternion, speed: number) {
+  const direction = camera.position.subtract(camera.target)
+  direction.y = 0
+  direction.normalize()
+
+  applyQuaternion(direction, directionRotation)
+  return direction.scaleInPlace(speed)
+}
+
+function applyQuaternion(v: BABYLON.Vector3, q: BABYLON.Quaternion) {
+  let x = v.x
+  let y = v.y
+  let z = v.z
+  let qx = q.x
+  let qy = q.y
+  let qz = q.z
+  let qw = q.w
+
+  // calculate quat * vector
+
+  let ix = qw * x + qy * z - qz * y
+  let iy = qw * y + qz * x - qx * z
+  let iz = qw * z + qx * y - qy * x
+  let iw = -qx * x - qy * y - qz * z
+
+  // calculate result * inverse quat
+
+  v.x = ix * qw + iw * -qx + iy * -qz - iz * -qy
+  v.y = iy * qw + iw * -qy + iz * -qx - ix * -qz
+  v.z = iz * qw + iw * -qz + ix * -qy - iy * -qx
+
+  return v
 }
 
 export function enableVirtualJoystick(sceneCanvas: HTMLCanvasElement) {
@@ -102,6 +170,7 @@ function enableMovementJoystick() {
 
   joystick.onMove(e => {
     const cameraTransform = BABYLON.Matrix.RotationYawPitchRoll(vrCamera.rotation.y, vrCamera.rotation.x, 0)
+
     const deltaTransform = BABYLON.Vector3.TransformCoordinates(
       new BABYLON.Vector3((e.deltaX * joystickSensibility) / 10, 0, ((e.deltaY * joystickSensibility) / 10) * -1),
       cameraTransform
@@ -155,7 +224,7 @@ function findParentEntity<T extends BABYLON.Node & { isDCLEntity?: boolean }>(
   handleClick(pointerEvent: 'pointerUp' | 'pointerDown', pointerId: number, pickingResult: BABYLON.PickingInfo): void
 } | null {
   // Find the next entity parent to dispatch the event
-  let parent: BABYLON.Node = node.parent
+  let parent: BABYLON.Node | null = node.parent
 
   while (parent && !('isDCLEntity' in parent)) {
     parent = parent.parent
@@ -168,18 +237,18 @@ function findParentEntity<T extends BABYLON.Node & { isDCLEntity?: boolean }>(
 }
 
 export function interactWithScene(pointerEvent: 'pointerUp' | 'pointerDown', x: number, y: number, pointerId: number) {
-  const pickingResult = scene.pick(x, y, null, false)
+  const pickingResult = scene.pick(x, y, void 0, false)
 
-  const mesh = pickingResult.pickedMesh
+  const mesh = pickingResult!.pickedMesh
 
   const entity = mesh && findParentEntity(mesh)
 
   if (entity) {
-    entity.handleClick(pointerEvent, pointerId, pickingResult)
+    entity.handleClick(pointerEvent, pointerId, pickingResult!)
   } else {
     for (let scene of loadedParcelSceneWorkers) {
       if (scene.parcelScene instanceof WebGLScene) {
-        scene.parcelScene.context.sendPointerEvent(pointerEvent, pointerId, null, pickingResult)
+        scene.parcelScene.context.sendPointerEvent(pointerEvent, pointerId, null as any, pickingResult!)
       }
     }
   }

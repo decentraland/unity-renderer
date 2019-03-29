@@ -108,7 +108,7 @@ class UIButton extends UIControl<UIButtonShape, BABYLON.GUI.Button> {
     this.textBlock.text = this.data.text
     this.textBlock.color = this.data.color
 
-    this.setParent(this.data.parentComponent)
+    this.data.parentComponent && this.setParent(this.data.parentComponent)
   }
 
   dispatchOnClick = (pointerId: number) => {

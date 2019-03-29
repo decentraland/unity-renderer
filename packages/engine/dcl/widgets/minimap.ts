@@ -1,5 +1,5 @@
-import { scene } from '../../engine/renderer'
-import { parcelLimits } from '../../config'
+import { parcelLimits } from '../../../config'
+import { scene } from '../../renderer'
 
 export function enableMiniMap() {
   const div = document.createElement('div')
@@ -41,8 +41,8 @@ export function enableMiniMap() {
   div.style.overflow = 'hidden'
 
   setInterval(() => {
-    const X = (mapScale * (-landSize * scene.activeCamera.position.x)) / parcelLimits.parcelSize
-    const Y = (mapScale * (-landSize * scene.activeCamera.position.z)) / parcelLimits.parcelSize
+    const X = (mapScale * (-landSize * scene.activeCamera!.position.x)) / parcelLimits.parcelSize
+    const Y = (mapScale * (-landSize * scene.activeCamera!.position.z)) / parcelLimits.parcelSize
 
     const halfMap = (mapSize * mapScale) / 2
 

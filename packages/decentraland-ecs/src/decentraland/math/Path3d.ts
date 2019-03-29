@@ -177,14 +177,14 @@ export class Path3D {
   // private function normalVector(v0, vt, va) :
   // returns an arbitrary point in the plane defined by the point v0 and the vector vt orthogonal to this plane
   // if va is passed, it returns the va projection on the plane orthogonal to vt at the point v0
-  private _normalVector(v0: Vector3, vt: Vector3, va: Nullable<Vector3>): Vector3 {
+  private _normalVector(v0: Vector3, vt: Vector3, va: Vector3 | null): Vector3 {
     let normal0: Vector3
     let tgl = vt.length()
     if (tgl === 0.0) {
       tgl = 1.0
     }
 
-    if (va === undefined || va === null) {
+    if ((va as any) === undefined || va === null) {
       let point: Vector3
       if (!Scalar.WithinEpsilon(Math.abs(vt.y) / tgl, 1.0, Epsilon)) {
         // search for a point in the plane

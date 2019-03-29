@@ -1,6 +1,6 @@
 const hasOwn = Object.prototype.hasOwnProperty
 
-export function shallowEqual(objA, objB) {
+export function shallowEqual(objA: any, objB: any) {
   if (objA === objB) {
     return true
   }

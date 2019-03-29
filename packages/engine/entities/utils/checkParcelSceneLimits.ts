@@ -10,11 +10,12 @@ const ignoreBoundaryCheck = Symbol('ignoreBoundaryCheck')
 /// --- EXPORTS ---
 
 export function ignoreBoundaryChecksOnObject(obj: BABYLON.Node, ignore = true) {
-  obj[ignoreBoundaryCheck] = ignore
+  // tslint:disable-next-line:semicolon
+  ;(obj as any)[ignoreBoundaryCheck] = ignore
 }
 
 export function areBoundariesIgnored(obj: BABYLON.Node) {
-  return !!obj[ignoreBoundaryCheck]
+  return !!(obj as any)[ignoreBoundaryCheck]
 }
 
 export function measureObject3D(obj: BABYLON.AbstractMesh | BABYLON.Mesh | BABYLON.TransformNode): IParcelSceneLimits {
@@ -67,7 +68,7 @@ export function checkParcelSceneBoundaries(
   const minHeight = -maxHeight
 
   entity.traverseControl(entity => {
-    if (entity[ignoreBoundaryCheck]) {
+    if ((entity as any)[ignoreBoundaryCheck]) {
       return 'BREAK'
     }
 
@@ -77,7 +78,7 @@ export function checkParcelSceneBoundaries(
       return 'CONTINUE'
     }
 
-    if (mesh[ignoreBoundaryCheck]) {
+    if ((mesh as any)[ignoreBoundaryCheck]) {
       return 'BREAK'
     }
 

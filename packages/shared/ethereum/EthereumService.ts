@@ -6,7 +6,7 @@ import { IFuture, future } from 'fp-future'
 import { getERC20 } from './ERC20'
 import { requestManager } from './provider'
 import { getERC721 } from './ERC721'
-import { networkConfigurations, MOBILE_DEBUG } from 'config'
+import { networkConfigurations, MOBILE_DEBUG, ETHEREUM_NETWORK } from 'config'
 import { generateEphemeralKeys, UserData as EphemeralKey } from 'ephemeralkey'
 import { saveToLocalStorage, removeFromLocalStorage, getFromLocalStorage } from 'atomicHelpers/localStorage'
 import { RPCSendableMessage } from 'shared/types'
@@ -97,7 +97,7 @@ export async function sendAsync(message: RPCSendableMessage): Promise<any> {
 
   // TODO: Sanitize and filter messages
 
-  requestManager.provider.sendAsync(message, (error, res: { id: number }) => {
+  requestManager.provider.sendAsync(message, (error: Error, res: { id: number }) => {
     if (error) {
       theFuture.reject(error)
     } else {
@@ -165,10 +165,10 @@ export async function requirePayment(toAddress: string, amount: number, currency
         from: fromAddress,
         // TODO: fix this in eth-connect
         value: toWei(amount as any, 'ether') as any,
-        data: null
+        data: null as any
       })
     } else {
-      const supportedTokens = {} // a TODO: networkConfigurations[network].paymentTokens
+      const supportedTokens: Record<string, string> = {} // a TODO: networkConfigurations[network].paymentTokens
 
       if (currency in supportedTokens === false) {
         return false
@@ -254,8 +254,8 @@ export async function convertMessageToObject(message: string): Promise<MessageDi
   return arr.reduce((o, [key, value]) => ({ ...o, [key]: value }), {})
 }
 
-export async function getEphemeralKeys(network, regenerate: boolean = false): Promise<EphemeralKey> {
-  const storageKey = `ephemeral-data-{network}`
+export async function getEphemeralKeys(network: ETHEREUM_NETWORK, regenerate: boolean = false): Promise<EphemeralKey> {
+  const storageKey = `ephemeral-data-${network}`
   let keys = null
 
   if (!regenerate) {

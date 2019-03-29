@@ -12,7 +12,7 @@ export const avatarMessageObservable = new Observable<AvatarMessage>()
 
 export let localProfileUUID: UUID | null = null
 
-export function findPeerByName(displayName: string): UserInformation {
+export function findPeerByName(displayName: string): UserInformation | null {
   for (let [, peer] of peerMap) {
     if (peer.user && peer.user.displayName === displayName) {
       return peer.user
@@ -103,7 +103,7 @@ export function getUser(uuid: UUID): Readonly<UserInformation> | null {
  * If not exist, sets up a new avatar and profile object
  * @param uuid
  */
-export function setUpID(uuid: UUID) {
+export function setUpID(uuid: UUID): PeerInformation | null {
   if (!uuid) return null
   if (typeof (uuid as any) !== 'string') throw new Error('Did not receive a valid UUID')
 
@@ -117,7 +117,7 @@ export function setUpID(uuid: UUID) {
 
     peerMap.set(uuid, peer)
   } else {
-    peer = peerMap.get(uuid)
+    peer = peerMap.get(uuid) as PeerInformation
   }
 
   return peer
@@ -125,21 +125,23 @@ export function setUpID(uuid: UUID) {
 
 export function receiveUserData(uuid: string, data: Partial<UserInformation>) {
   const peerData = setUpID(uuid)
-  const userData = peerData.user || (peerData.user = peerData.user || {})
+  if (peerData) {
+    const userData = peerData.user || (peerData.user = peerData.user || {})
 
-  const profileChanged =
-    (data.displayName && userData.displayName !== data.displayName) ||
-    (data.publicKey && userData.publicKey !== data.publicKey) ||
-    (data.avatarType && userData.avatarType !== data.avatarType)
+    const profileChanged =
+      (data.displayName && userData.displayName !== data.displayName) ||
+      (data.publicKey && userData.publicKey !== data.publicKey) ||
+      (data.avatarType && userData.avatarType !== data.avatarType)
 
-  if (profileChanged) {
-    Object.assign(userData, data)
+    if (profileChanged) {
+      Object.assign(userData, data)
 
-    avatarMessageObservable.notifyObservers({
-      type: AvatarMessageType.USER_DATA,
-      uuid,
-      data
-    })
+      avatarMessageObservable.notifyObservers({
+        type: AvatarMessageType.USER_DATA,
+        uuid,
+        data
+      })
+    }
   }
 }
 

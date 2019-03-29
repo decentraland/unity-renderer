@@ -23,7 +23,7 @@ export const loadedFiles = new Map<string, IFuture<ArrayBuffer>>()
 
 function readDclUrl(
   url: string,
-  onError: (_, error?: Error) => void = (_, error) => {
+  onError: (_: any, error?: Error) => void = (_, error) => {
     throw error
   }
 ) {
@@ -50,7 +50,7 @@ function readDclUrl(
 
 function ensureContext(
   domain: string,
-  onError: (_, error?: Error) => void = (_, error) => {
+  onError: (_: any, error?: Error) => void = (_, error) => {
     throw error
   }
 ): SharedSceneContext {
@@ -79,11 +79,12 @@ function deRegisterContext(context: SharedSceneContext) {
 }
 
 function markSceneTexture(texture: BABYLON.Texture, url: string) {
-  texture[sceneTextureSymbol] = url
+  // tslint:disable-next-line:semicolon
+  ;(texture as any)[sceneTextureSymbol] = url
 
   texture.onDisposeObservable.add(() => {
     const url = isSceneTexture(texture) || texture.url
-    loadedTextures.delete(url)
+    if (url) loadedTextures.delete(url)
   })
 }
 
@@ -115,7 +116,7 @@ export function registerContextInResourceManager(context: SharedSceneContext) {
 }
 
 export function isSceneTexture(texture: BABYLON.Texture): string | null {
-  return texture[sceneTextureSymbol] || null
+  return (texture as any)[sceneTextureSymbol] || null
 }
 
 export function deleteUnusedTextures() {
@@ -128,7 +129,7 @@ export function deleteUnusedTextures() {
 
     loadedTextures.forEach(async (value, key) => {
       if (!value.isPending && !usedTextures.has(key)) {
-        loadedTextures.get(key).then(
+        value.then(
           $ => {
             $.dispose()
           },
@@ -147,7 +148,7 @@ export function deleteUnusedTextures() {
 
 export async function loadFile(url: string, useArrayBuffer = true): Promise<ArrayBuffer> {
   if (loadedFiles.has(url)) {
-    return loadedFiles.get(url)
+    return loadedFiles.get(url)!
   }
 
   const defer = future<ArrayBuffer>()
@@ -158,7 +159,7 @@ export async function loadFile(url: string, useArrayBuffer = true): Promise<Arra
     ab => {
       defer.resolve(ab as ArrayBuffer)
     },
-    null,
+    void 0,
     scene.database,
     useArrayBuffer,
     (_xhr, exc) => {
@@ -176,7 +177,7 @@ export async function loadTextureFromAB(
   samplerData?: BABYLON.GLTF2.Loader._ISamplerData
 ) {
   if (loadedTextures.has(url)) {
-    return loadedTextures.get(url)
+    return loadedTextures.get(url)!
   }
 
   const defer = future<BABYLON.Texture>()
@@ -226,7 +227,7 @@ export async function loadTexture(
   }
 
   if (loadedTextures.has(url)) {
-    return loadedTextures.get(url)
+    return loadedTextures.get(url)!
   }
 
   const defer = future<BABYLON.Texture>()
@@ -266,7 +267,7 @@ export async function loadTexture(
         markSceneTexture(texture, url)
         defer.resolve(texture)
       },
-      (message, exception) => {
+      function(this: any, message, exception) {
         loadedTextures.delete(url)
         if (!this._disposed) {
           defer.reject(message || exception || `Error loading texture (${url})`)
@@ -312,17 +313,17 @@ export function initMonkeyLoader() {
           request.onCompleteObservable.notifyObservers(request)
         })
         .catch($ => {
-          onError && onError(null, $)
+          onError && onError(void 0, $)
         })
 
       return request
     }
 
-    return originalFileLoader.apply(BABYLON.Tools, arguments)
+    return originalFileLoader.apply(BABYLON.Tools, (Array.prototype.slice as any).call(arguments))
   }
 
   const newImageLoader: typeof originalImageLoader = function(url: string, onLoad, onError, database) {
-    if (typeof url === 'string' && url.startsWith('dcl://')) {
+    if (typeof (url as any) === 'string' && url.startsWith('dcl://')) {
       const { domain, path } = readDclUrl(url, onError)
 
       const ctx = ensureContext(domain, onError)
@@ -341,7 +342,7 @@ export function initMonkeyLoader() {
           }
         }
 
-        const errorHandler = function(err) {
+        const errorHandler = function(err: any) {
           img.removeEventListener('load', loadHandler)
           img.removeEventListener('error', errorHandler)
           if (onError) {
@@ -367,7 +368,7 @@ export function initMonkeyLoader() {
           }
         }
 
-        const errorHandler = function(err) {
+        const errorHandler = function(err: any) {
           URL.revokeObjectURL(img.src)
           img.removeEventListener('load', loadHandler)
           img.removeEventListener('error', errorHandler)
@@ -394,7 +395,7 @@ export function initMonkeyLoader() {
       return img
     }
 
-    return originalImageLoader.apply(BABYLON.Tools, arguments)
+    return originalImageLoader.apply(BABYLON.Tools, (Array.prototype.slice as any).call(arguments))
   }
 
   BABYLON.Tools.LoadFile = newFileLoader
@@ -404,7 +405,7 @@ export function initMonkeyLoader() {
     const originalScriptLoader = BABYLON.Tools.LoadScript
     BABYLON.Tools.LoadScript = function(scriptUrl, _1, onError?) {
       error(`Warning. Loading script. This doesn't work in production. ${scriptUrl}`)
-      return originalScriptLoader.apply(this, arguments)
+      return originalScriptLoader.apply(this, (Array.prototype.slice as any).call(arguments))
     }
   } else {
     BABYLON.Tools.LoadScript = function(scriptUrl, _1, onError?) {
@@ -433,7 +434,7 @@ export function initMonkeyLoader() {
 
     const image = BABYLON.GLTF2.ArrayItem.Get(`${context}/source`, this.gltf.images, texture.source)
 
-    let babylonTexture: BABYLON.Texture = null
+    let babylonTexture!: BABYLON.Texture
 
     if (!image._data) {
       if (image.uri) {
@@ -452,7 +453,7 @@ export function initMonkeyLoader() {
       const data = await image._data
       const name = image.uri || `${(this as any)._fileName}#image${image.index}`
       const dataUrl = `${(this as any)._rootUrl}${name}`
-      babylonTexture = await loadTextureFromAB(dataUrl, data, image.mimeType, samplerData)
+      babylonTexture = await loadTextureFromAB(dataUrl, data, image.mimeType || 'image/png', samplerData)
     }
 
     babylonTexture.wrapU = samplerData.wrapU

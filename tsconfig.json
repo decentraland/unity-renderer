@@ -8,6 +8,7 @@
     "sourceMap": true,
     "moduleResolution": "node",
     "stripInternal": true,
+    "strictNullChecks": true,
     "pretty": true,
     "forceConsistentCasingInFileNames": true,
     "allowSyntheticDefaultImports": true,

@@ -13,7 +13,7 @@ const defaultAttributes = {
   arc: 360
 }
 
-export class ConeShape extends BasicShape<typeof defaultAttributes> {
+export class ConeShape extends BasicShape<Partial<typeof defaultAttributes>> {
   generateModel() {
     return BABYLON.MeshBuilder.CreateCylinder(
       'cone',

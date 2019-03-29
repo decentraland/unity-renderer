@@ -16,12 +16,12 @@ if (DEBUG && !isRunningTest) {
   }, 1000)
 }
 
-function filterMeshes($: BABYLON.TransformNode) {
+function filterMeshes($: BABYLON.Node) {
   return $ instanceof BABYLON.AbstractMesh
 }
 
 export class HighlightBox extends BaseComponent<{ highlight: boolean }> {
-  transformValue(x) {
+  transformValue(x: any) {
     return {
       nonce: Math.random(),
       highlight: validators.boolean(x, true)

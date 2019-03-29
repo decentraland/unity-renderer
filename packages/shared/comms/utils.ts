@@ -11,7 +11,7 @@ export function position2parcel(p: Position): Parcel {
   return new Parcel(Math.trunc(p[0] / parcelSize), Math.trunc(p[2] / parcelSize))
 }
 
-export function sameParcel(p1: Parcel, p2: Parcel) {
+export function sameParcel(p1: Parcel | null, p2: Parcel | null) {
   if (!p1 || !p2) {
     return false
   }

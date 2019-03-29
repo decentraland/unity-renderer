@@ -17,8 +17,8 @@ interface Colors {
 export class Panel {
   private min = Infinity
   private max = 0
-  private canvas: HTMLCanvasElement
-  private context: CanvasRenderingContext2D
+  private canvas!: HTMLCanvasElement
+  private context!: CanvasRenderingContext2D
   private colors: Colors
   private name: string
 
@@ -35,7 +35,7 @@ export class Panel {
     canvas.height = HEIGHT
     canvas.style.cssText = 'width:80px;height:48px'
 
-    const context = canvas.getContext('2d')
+    const context = canvas.getContext('2d') as CanvasRenderingContext2D
     context.font = 'bold ' + 9 * PR + 'px Helvetica,Arial,sans-serif'
     context.textBaseline = 'top'
 

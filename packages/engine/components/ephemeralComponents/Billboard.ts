@@ -18,8 +18,10 @@ export class Billboard extends BaseComponent<typeof defaultValue> {
   }
 
   update() {
-    const { x, y, z } = this.value
-    this.entity.billboardMode = (x ? 1 : 0) | (y ? 2 : 0) | (z ? 4 : 0)
+    if (this.value) {
+      const { x, y, z } = this.value
+      this.entity.billboardMode = (x ? 1 : 0) | (y ? 2 : 0) | (z ? 4 : 0)
+    }
   }
 
   detach() {

@@ -11,7 +11,7 @@ describe('ecs integration', () => {
       const system = await worker.system
       const tools = system.getAPIInstance(DevTools)
       expect(tools.exceptions.size).to.eq(1)
-      expect(tools.exceptions.get(0).text).to.include('bad things may happen')
+      expect(tools.exceptions.get(0)!.text).to.include('bad things may happen')
     })
   })
 

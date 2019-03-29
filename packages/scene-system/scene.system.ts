@@ -204,7 +204,7 @@ export default class GamekitScene extends Script {
 
         /** update tick */
         onUpdate(cb: (deltaTime: number) => void): void {
-          if (typeof cb !== 'function') {
+          if (typeof (cb as any) !== 'function') {
             that.onError(new Error('onUpdate must be called with only a function argument'))
           } else {
             that.onUpdateFunctions.push(cb)
@@ -213,7 +213,7 @@ export default class GamekitScene extends Script {
 
         /** event from the engine */
         onEvent(cb: (event: any) => void): void {
-          if (typeof cb !== 'function') {
+          if (typeof (cb as any) !== 'function') {
             that.onError(new Error('onEvent must be called with only a function argument'))
           } else {
             that.onEventFunctions.push(cb)

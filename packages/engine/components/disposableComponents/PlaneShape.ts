@@ -10,10 +10,8 @@ const defaultAttributes = {
 }
 
 export class PlaneShape extends BasicShape<typeof defaultAttributes> {
-  shape: BABYLON.Mesh
-
   generateModel() {
-    const uvs = validators.floatArray(this.data.uvs, null)
+    const uvs = this.data.uvs ? validators.floatArray(this.data.uvs, []) : null
     const mesh = BABYLON.MeshBuilder.CreatePlane(
       'plane-shape',
       {

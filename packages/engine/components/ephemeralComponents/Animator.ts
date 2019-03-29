@@ -4,7 +4,7 @@ import { validators } from '../helpers/schemaValidator'
 import { scene } from '../../renderer'
 import { disposeAnimationGroups } from 'engine/entities/utils/processModels'
 
-function validateClip(clipDef: SkeletalAnimationValue): SkeletalAnimationValue {
+function validateClip(clipDef: SkeletalAnimationValue): SkeletalAnimationValue | null {
   if ((clipDef as any) != null && typeof (clipDef as any) === 'object') {
     clipDef.weight = Math.max(Math.min(1, validators.float(clipDef.weight, 1)), 0)
     clipDef.loop = validators.boolean(clipDef.loop, true)
@@ -17,6 +17,7 @@ function validateClip(clipDef: SkeletalAnimationValue): SkeletalAnimationValue {
 
     return clipDef
   }
+  return null
 }
 
 /// --- EXPORTS ---
@@ -24,22 +25,24 @@ function validateClip(clipDef: SkeletalAnimationValue): SkeletalAnimationValue {
 export class Animator extends BaseComponent<SkeletalAnimationComponent> {
   name = 'animator'
 
-  currentAnimations: Map<string, BABYLON.AnimationGroup>
+  currentAnimations: Map<string, BABYLON.AnimationGroup> = new Map()
 
   transformValue(value: SkeletalAnimationComponent) {
-    this.currentAnimations = this.currentAnimations || new Map()
     const assetContainer = this.entity.assetContainer
 
     const usedClipsByName = new Set<string>()
 
     for (let clipIndex in value.states) {
-      value.states[clipIndex] = validateClip(value.states[clipIndex])
-      usedClipsByName.add(value.states[clipIndex].name)
+      const state = validateClip(value.states[clipIndex])
+      if (state) {
+        value.states[clipIndex] = state
+        usedClipsByName.add(value.states[clipIndex].name)
+      }
     }
 
     if (assetContainer) {
       for (let animationAttributes of value.states) {
-        let clip: BABYLON.AnimationGroup = this.currentAnimations.get(animationAttributes.name)
+        let clip: BABYLON.AnimationGroup | void = this.currentAnimations.get(animationAttributes.name)
 
         if (!clip) {
           const base = assetContainer.animationGroups.find($ => $.name === animationAttributes.clip)
@@ -53,7 +56,9 @@ export class Animator extends BaseComponent<SkeletalAnimationComponent> {
           this.currentAnimations.set(animationAttributes.name, clip)
         }
 
-        clip.speedRatio = animationAttributes.speed
+        if (animationAttributes.speed !== undefined) {
+          clip.speedRatio = animationAttributes.speed
+        }
 
         if (animationAttributes.playing && !(clip as any).isPlaying) {
           clip.play(animationAttributes.loop)
@@ -61,7 +66,9 @@ export class Animator extends BaseComponent<SkeletalAnimationComponent> {
           clip.pause()
         }
 
-        clip.setWeightForAllAnimatables(animationAttributes.weight)
+        if (animationAttributes.weight !== undefined) {
+          clip.setWeightForAllAnimatables(animationAttributes.weight)
+        }
       }
     }
 

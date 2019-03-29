@@ -2,7 +2,7 @@ import { expect } from 'chai'
 import { shallowEqual } from 'atomicHelpers/shallowEqual'
 import { deepEqual } from 'atomicHelpers/deepEqual'
 
-function testComparer(comparer: Function, a, b, expectedResult: boolean) {
+function testComparer(comparer: Function, a: any, b: any, expectedResult: boolean) {
   expect(comparer(a, a)).to.eq(true)
   expect(comparer(b, b)).to.eq(true)
   expect(comparer(a, b)).to.eq(expectedResult)

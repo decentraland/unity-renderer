@@ -103,9 +103,18 @@ export class Engine {
     }
 
     entity.alive = true
+
+    for (let i in entity.children) {
+      const child = entity.children[i]
+      if (child) {
+        if (!child.isAddedToEngine()) {
+          this.addEntity(child)
+        }
+      }
+    }
   }
 
-  removeEntity(entity: Entity, removeChildren: boolean = false, newParent?: Entity) {
+  removeEntity(entity: Entity) {
     const id = entity.uuid
 
     if (entity.isAddedToEngine()) {
@@ -129,20 +138,10 @@ export class Engine {
         }
       }
 
-      if (removeChildren) {
-        for (let i in entity.children) {
-          const child = entity.children[i]
-          if (child) {
-            this.removeEntity(child, true)
-          }
-        }
-      } else {
-        // If a new Parent is defined, this Entity will be set as the new Parent
-        for (let i in entity.children) {
-          const child = entity.children[i]
-          if (child) {
-            child.setParent(newParent || this.rootEntity)
-          }
+      for (let i in entity.children) {
+        const child = entity.children[i]
+        if (child) {
+          this.removeEntity(child)
         }
       }
 
@@ -259,7 +258,9 @@ export class Engine {
       if (component.onDispose) {
         component.onDispose()
       }
+      return true
     }
+    return false
   }
 
   updateComponent(component: DisposableComponentLike) {

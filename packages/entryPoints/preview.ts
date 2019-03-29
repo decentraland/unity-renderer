@@ -1,3 +1,6 @@
+declare var global: any
+declare var window: any
+
 global['preview'] = window['preview'] = true
 global['avoidWeb3'] = window['avoidWeb3']
 
@@ -5,7 +8,7 @@ import 'engine'
 
 import { initLocalPlayer, domReadyFuture } from '../engine/renderer'
 
-import { initBabylonClient } from '../dcl'
+import { initBabylonClient } from '../engine/dcl'
 import { log } from '../engine/logger'
 import { bodyReadyFuture, engine } from '../engine/renderer/init'
 import { initShared } from '../shared'
@@ -13,7 +16,7 @@ import { loadedParcelSceneWorkers, enablePositionReporting } from '../shared/wor
 import { ETHEREUM_NETWORK, DEBUG, AVOID_WEB3 } from '../config'
 import { ILandToLoadableParcelScene, ILand, IScene, MappingsResponse } from '../shared/types'
 import { SceneWorker } from '../shared/world/SceneWorker'
-import { WebGLParcelScene } from '../dcl/WebGLParcelScene'
+import { WebGLParcelScene } from '../engine/dcl/WebGLParcelScene'
 
 let didStartPosition = false
 
@@ -72,7 +75,7 @@ async function loadClient() {
 }
 
 {
-  global['handleServerMessage'] = function(message) {
+  global['handleServerMessage'] = function(message: any) {
     if (message.type === 'update') {
       loadScene()
     }
