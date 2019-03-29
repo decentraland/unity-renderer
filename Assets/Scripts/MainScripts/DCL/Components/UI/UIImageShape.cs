@@ -28,7 +28,12 @@ namespace DCL.Components
         public UIImageReferencesContainer referencesContainer;
         public override string componentName => "UIImageShape";
 
-        Model model = new Model();
+        new Model model
+        {
+            get { return base.model as Model; }
+            set { base.model = value; }
+        }
+
         bool isLoadingTexture = false;
         string loadedSource = "";
 
@@ -51,7 +56,7 @@ namespace DCL.Components
 
             if (referencesContainer == null)
             {
-                referencesContainer = InstantiateUIGameObject<UIImageReferencesContainer>("Prefabs/UIImageShape", model);
+                referencesContainer = InstantiateUIGameObject<UIImageReferencesContainer>("Prefabs/UIImageShape");
 
                 // Configure transform reference used by future children ui components
                 transform = referencesContainer.imageRectTransform;
@@ -94,7 +99,7 @@ namespace DCL.Components
 
             RectTransform parentRecTransform = referencesContainer.GetComponentInParent<RectTransform>();
             yield return ResizeAlignAndReposition(referencesContainer.paddingLayoutRectTransform,
-                                                model, parentRecTransform.rect.width, parentRecTransform.rect.height,
+                                                parentRecTransform.rect.width, parentRecTransform.rect.height,
                                                 referencesContainer.alignmentLayoutGroup,
                                                 referencesContainer.paddingLayoutElement);
 

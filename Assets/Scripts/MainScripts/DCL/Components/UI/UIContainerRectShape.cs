@@ -21,11 +21,15 @@ namespace DCL.Components
 
         public override string componentName => "UIContainerRectShape";
 
-        Model model;
+        new Model model
+        {
+            get { return base.model as Model; }
+            set { base.model = value; }
+        }
 
         public UIContainerRectShape(ParcelScene scene) : base(scene)
         {
-        } 
+        }
 
         public override void AttachTo(DecentralandEntity entity)
         {
@@ -42,7 +46,7 @@ namespace DCL.Components
 
             if (referencesContainer == null)
             {
-                referencesContainer = InstantiateUIGameObject<UIContainerRectReferencesContainer>("Prefabs/UIContainerRectShape", model);
+                referencesContainer = InstantiateUIGameObject<UIContainerRectReferencesContainer>("Prefabs/UIContainerRectShape");
 
                 // Configure transform reference used by future children ui components
                 transform = referencesContainer.imageRectTransform;
@@ -53,7 +57,7 @@ namespace DCL.Components
             referencesContainer.image.enabled = model.visible;
 
             RectTransform parentRecTransform = referencesContainer.GetComponentInParent<RectTransform>();
-            yield return ResizeAlignAndReposition(transform, model, parentRecTransform.rect.width, parentRecTransform.rect.height,
+            yield return ResizeAlignAndReposition(transform, parentRecTransform.rect.width, parentRecTransform.rect.height,
                                                 referencesContainer.alignmentLayoutGroup,
                                                 referencesContainer.imageLayoutElement);
 

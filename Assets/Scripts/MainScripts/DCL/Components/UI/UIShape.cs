@@ -29,7 +29,7 @@ namespace DCL.Components
         public override string componentName => "UIShape";
         public RectTransform transform;
 
-        Model model = new Model();
+        protected Model model = new Model();
 
         public UIShape(ParcelScene scene) : base(scene)
         {
@@ -40,7 +40,7 @@ namespace DCL.Components
             yield break;
         }
 
-        protected T InstantiateUIGameObject<T>(string prefabPath, Model model) where T : UIReferencesContainer
+        protected T InstantiateUIGameObject<T>(string prefabPath) where T : UIReferencesContainer
         {
             GameObject uiGameObject = GameObject.Instantiate(Resources.Load(prefabPath)) as GameObject;
             T referencesContainer = uiGameObject.GetComponent<T>();
@@ -64,7 +64,6 @@ namespace DCL.Components
 
         protected IEnumerator ResizeAlignAndReposition(
             RectTransform targetTransform,
-            Model model,
             float parentWidth,
             float parentHeight,
             LayoutGroup alignmentLayout,
@@ -77,7 +76,7 @@ namespace DCL.Components
 
             // Alignment (Alignment uses size so we should always align AFTER reisizing)
             alignedLayoutElement.ignoreLayout = false;
-            ConfigureAlignment(alignmentLayout, model);
+            ConfigureAlignment(alignmentLayout);
 
             LayoutRebuilder.ForceRebuildLayoutImmediate(alignmentLayout.transform as RectTransform);
 
@@ -88,7 +87,7 @@ namespace DCL.Components
             yield break;
         }
 
-        protected void ConfigureAlignment(LayoutGroup layout, Model model)
+        protected void ConfigureAlignment(LayoutGroup layout)
         {
             switch (model.vAlign)
             {
