@@ -3,11 +3,11 @@ import { SceneWorker } from 'shared/world/SceneWorker'
 import { SharedSceneContext } from 'engine/entities/SharedSceneContext'
 import { getParcelSceneLimits } from 'atomicHelpers/landHelpers'
 import { DEBUG, EDITOR } from 'config'
-import { checkParcelSceneBoundaries } from './entities/utils/checkParcelSceneLimits'
+import { checkParcelSceneBoundaries } from '../entities/utils/checkParcelSceneLimits'
 import { BaseEntity } from 'engine/entities/BaseEntity'
 import { encodeParcelSceneBoundaries, gridToWorld, worldToGrid } from 'atomicHelpers/parcelScenePositions'
 import { removeEntityHighlight, highlightEntity } from 'engine/components/ephemeralComponents/HighlightBox'
-import { createAxisEntity, createParcelOutline } from './entities/utils/debugEntities'
+import { createAxisEntity, createParcelOutline } from '../entities/utils/debugEntities'
 import { createLogger } from 'shared/logger'
 import { DevTools } from 'shared/apis/DevTools'
 import { ParcelIdentity } from 'shared/apis/ParcelIdentity'
@@ -29,7 +29,7 @@ export class WebGLParcelScene extends WebGLScene<LoadableParcelScene> {
   public setOfEntitiesOutsideBoundaries = new Set<BaseEntity>()
   public userInPlace: string | null = null
 
-  private uiComponent = null
+  private uiComponent: any = null
   private parcelCenters: BABYLON.Vector3[] = []
   private shouldValidateBoundaries = false
 
@@ -112,7 +112,7 @@ export class WebGLParcelScene extends WebGLScene<LoadableParcelScene> {
   registerWorker(worker: SceneWorker): void {
     super.registerWorker(worker)
 
-    gridToWorld(this.data.data.basePosition.x, this.data.data.basePosition.y, this.worker.position)
+    gridToWorld(this.data.data.basePosition.x, this.data.data.basePosition.y, this.worker!.position)
 
     worker.system
       .then(system => {
@@ -157,16 +157,16 @@ export class WebGLParcelScene extends WebGLScene<LoadableParcelScene> {
   }
 
   checkUserInPlace = () => {
-    if (!this.uiComponent) return
+    if (this.uiComponent) {
+      this.userInPlace = getUserInPlace()
 
-    this.userInPlace = getUserInPlace()
+      if (!this.uiComponent.isEnabled && this.encodedPositions.includes(this.userInPlace)) {
+        this.uiComponent.isEnabled = true
+      }
 
-    if (!this.uiComponent.isEnabled && this.encodedPositions.includes(this.userInPlace)) {
-      this.uiComponent.isEnabled = true
-    }
-
-    if (this.uiComponent.isEnabled && !this.encodedPositions.includes(this.userInPlace)) {
-      this.uiComponent.isEnabled = false
+      if (this.uiComponent.isEnabled && !this.encodedPositions.includes(this.userInPlace)) {
+        this.uiComponent.isEnabled = false
+      }
     }
   }
 
@@ -214,7 +214,7 @@ export class WebGLParcelScene extends WebGLScene<LoadableParcelScene> {
     })
 
     if (didChange) {
-      const entities = []
+      const entities: string[] = []
       this.setOfEntitiesOutsideBoundaries.forEach($ => entities.push($.uuid))
       this.context.emit('entitiesOutOfBoundaries', { entities })
     }

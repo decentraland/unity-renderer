@@ -1,7 +1,7 @@
 import { getComponentName, ComponentConstructor, getComponentClassId, ComponentLike } from './Component'
 import { Engine } from './Engine'
 import { EventManager, EventConstructor } from './EventManager'
-import { newId, log, error } from './helpers'
+import { newId, log } from './helpers'
 
 // tslint:disable:no-use-before-declare
 
@@ -65,7 +65,7 @@ export class Entity {
       throw new Error('Entity#has(component): component is not a class, name or instance')
     }
 
-    if (component == null) return false
+    if ((component as any) == null) return false
 
     const componentName = typeOfComponent === 'string' ? (component as string) : getComponentName(component as any)
 
@@ -155,7 +155,7 @@ export class Entity {
    * @param component - component class
    */
   getComponentOrCreate<T>(component: ComponentConstructor<T> & { new (): T }): T {
-    if (typeof component !== 'function') {
+    if (typeof (component as any) !== 'function') {
       throw new Error('Entity#getOrCreate(component): component is not a class')
     }
 
@@ -274,13 +274,6 @@ export class Entity {
       return
     }
 
-    if (newParent.uuid !== '0' && !newParent.isAddedToEngine()) {
-      error(
-        `entity.setParent(parent): parent(${newParent.uuid}) must be added to the engine before setting any child`,
-        newParent
-      )
-    }
-
     const circularAncestor = this.getCircularAncestor(newParent)
 
     if (circularAncestor) {
@@ -293,6 +286,17 @@ export class Entity {
 
     if (currentParent) {
       delete currentParent.children[this.uuid]
+    }
+
+    if (newParent.uuid !== '0') {
+      if (!newParent.isAddedToEngine() && this.isAddedToEngine()) {
+        // tslint:disable-next-line:semicolon
+        ;(this.engine as any).removeEntity(this)
+      }
+      if (newParent.isAddedToEngine() && !this.isAddedToEngine()) {
+        // tslint:disable-next-line:semicolon
+        ;(newParent.engine as any).addEntity(this)
+      }
     }
 
     this._parent = parent || null

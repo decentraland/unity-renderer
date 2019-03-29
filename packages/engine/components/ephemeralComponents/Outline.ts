@@ -10,7 +10,7 @@ const outlineColor = BABYLON.Color3.FromHexString('#1D82FF')
 export class Outline extends BaseComponent<{}> {
   readonly name = OUTLINE_NAME
 
-  transformValue(x) {
+  transformValue(x: any) {
     return {
       nonce: Math.random()
     }
@@ -58,6 +58,6 @@ export function removeEntityOutline(entity: BaseEntity) {
 export function addEntityOutline(entity: BaseEntity) {
   const b = entity.getBehaviorByName(OUTLINE_NAME)
   if (!b) {
-    entity.addBehavior(new Outline(entity, {}))
+    entity.addBehavior(new Outline(entity))
   }
 }

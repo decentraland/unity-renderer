@@ -2,7 +2,7 @@ import * as BABYLON from 'babylonjs'
 import * as TWEEN from '@tweenjs/tween.js'
 
 // register the interfaces that will be used by the entity system
-import './api'
+import 'shared/apis'
 
 // Our imports
 import { DEBUG, PREVIEW, NETWORK_HZ, EDITOR } from 'config'
@@ -22,13 +22,11 @@ import { vrCamera } from 'engine/renderer/camera'
 import { isMobile } from 'shared/comms/mobile'
 
 import { toggleColliderHighlight, toggleBoundingBoxes } from 'engine/entities/utils/colliders'
-import { initChatSystem, initHudSystem } from './widgets/ui'
+import { initHudSystem } from './widgets/ui'
 
 import { loadedParcelSceneWorkers } from 'shared/world/parcelSceneManager'
 import { WebGLParcelScene } from './WebGLParcelScene'
 import { IParcelSceneLimits } from 'atomicHelpers/landHelpers'
-
-import './comms/peers'
 
 let isEngineRunning = false
 
@@ -69,10 +67,10 @@ const notifyPositionObservers = (() => {
   return () => {
     if (isEngineRunning) {
       const rotationCamera: BABYLON.TargetCamera = (vrHelper.isInVRMode
-        ? vrHelper.currentVRCamera.leftCamera || vrHelper.currentVRCamera
+        ? vrHelper.currentVRCamera!.leftCamera || vrHelper.currentVRCamera
         : scene.activeCamera) as BABYLON.TargetCamera
 
-      position.copyFrom(scene.activeCamera.position)
+      position.copyFrom(scene.activeCamera!.position)
 
       if (rotationCamera.rotationQuaternion) {
         quaternion.copyFrom(rotationCamera.rotationQuaternion)
@@ -122,7 +120,8 @@ function getMetrics(): Metrics {
     .reduce<IParcelSceneLimits>(
       (metrics, m) => {
         Object.keys(metrics).map(key => {
-          metrics[key] += m[key]
+          // tslint:disable-next-line:semicolon
+          ;(metrics as any)[key] += (m as any)[key]
         })
         return metrics
       },
@@ -132,7 +131,7 @@ function getMetrics(): Metrics {
 
 function updateMetrics(): void {
   const metrics = getMetrics()
-  if (!EDITOR) {
+  if (!EDITOR && parcelMetrics) {
     parcelMetrics.update(metrics)
   }
 }
@@ -161,12 +160,11 @@ export async function initBabylonClient() {
   initLocalPlayer(lastPlayerPosition)
 
   if (isMobile()) {
-    enableVirtualJoystick(engine.getRenderingCanvas())
+    enableVirtualJoystick(engine.getRenderingCanvas()!)
   } else if (!EDITOR) {
-    await initChatSystem()
     await initHudSystem()
   }
-  enableMouseLock(engine.getRenderingCanvas())
+  enableMouseLock(engine.getRenderingCanvas()!)
 
   initKeyboard()
   initDebugCommands()

@@ -228,7 +228,7 @@ export class EnvironmentHelper {
   /**
    * Gets the skybox created by the helper.
    */
-  public get skybox(): BABYLON.Nullable<BABYLON.Mesh> {
+  public get skybox(): BABYLON.Mesh {
     return this._skybox
   }
   /**
@@ -273,17 +273,17 @@ export class EnvironmentHelper {
    */
   public onErrorObservable: Observable<{ message?: string; exception?: any }>
 
-  private _rootMesh: BABYLON.Mesh
+  private _rootMesh!: BABYLON.Mesh
 
-  private _skybox: BABYLON.Nullable<BABYLON.Mesh>
+  private _skybox!: BABYLON.Mesh
 
-  private _skyboxMaterial: BABYLON.Nullable<BABYLON.ShaderMaterial>
+  private _skyboxMaterial!: BABYLON.Nullable<BABYLON.ShaderMaterial>
 
-  private _ground: BABYLON.Nullable<BABYLON.Mesh>
+  private _ground!: BABYLON.Nullable<BABYLON.Mesh>
 
-  private _groundMirror: BABYLON.Nullable<BABYLON.MirrorTexture>
+  private _groundMirror!: BABYLON.Nullable<BABYLON.MirrorTexture>
 
-  private _groundMaterial: BABYLON.Nullable<BABYLON.PBRMetallicRoughnessMaterial>
+  private _groundMaterial!: BABYLON.Nullable<BABYLON.PBRMetallicRoughnessMaterial>
 
   /**
    * Stores the creation options.
@@ -364,7 +364,7 @@ export class EnvironmentHelper {
 
     if (this._skybox && !newOptions.createSkybox) {
       this._skybox.dispose()
-      this._skybox = null
+      delete this._skybox
     }
 
     if (this._skyboxMaterial && !newOptions.createSkybox) {
@@ -496,7 +496,7 @@ export class EnvironmentHelper {
       this._skybox.material = this.skyboxMaterial
 
       this._skybox.onDisposeObservable.add(() => {
-        this._skybox = null
+        delete this._skybox
       })
     }
   }

@@ -27,6 +27,10 @@ export class TrackAvgDuration {
 }
 
 export class PkgStats {
+  public recvTotal = 0
+  public sentTotal = 0
+  public recvTotalBytes = 0
+  public sentTotalBytes = 0
   public recv: number = 0
   public sent: number = 0
   public recvBytes: number = 0
@@ -43,6 +47,10 @@ export class PkgStats {
   }
 
   public reset() {
+    this.recvTotal += this.recv
+    this.sentTotal += this.sent
+    this.recvTotalBytes += this.recvBytes
+    this.sentTotalBytes += this.sentBytes
     this.recv = 0
     this.sent = 0
     this.recvBytes = 0
@@ -111,7 +119,11 @@ export class Stats {
     }
 
     const reportPkgStats = (name: string, stats: PkgStats) => {
-      log(`${name}: sent: ${stats.sent} (${stats.sentBytes} bytes), recv: ${stats.recv} (${stats.recvBytes} bytes)`)
+      const sent = `${stats.sent}x${stats.sentBytes} bytes in this period`
+      const sentTotal = `${stats.sentTotal}x${stats.sentTotalBytes} bytes in this period`
+      const recv = `${stats.recv}x${stats.recvBytes} bytes in this period`
+      const recvTotal = `${stats.recvTotal}x${stats.recvTotalBytes} bytes total`
+      log(`${name}: sent: ${sent} (${sentTotal}), recv: ${recv} (${recvTotal})`)
       stats.reset()
     }
 
@@ -123,7 +135,7 @@ export class Stats {
 
       log('World instance: ')
 
-      const connection = context.worldInstanceConnection
+      const connection = context.worldInstanceConnection!
       const url = connection.url
       if (connection.ws && connection.ws.readyState === SocketReadyState.OPEN) {
         const state =

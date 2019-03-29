@@ -13,7 +13,7 @@ export interface ParcelMetrics {
   update: Function
 }
 
-export function drawMetrics(metrics: Metrics): ParcelMetrics {
+export function drawMetrics(metrics: Metrics): ParcelMetrics | void {
   if (!EDITOR) {
     const parcelMetrics = createParcelMetrics(metrics)
     parcelMetrics.dom.style.visibility = 'hidden'
@@ -34,7 +34,7 @@ function createParcelMetrics(metrics: Metrics): ParcelMetrics {
   containerParcelMetrics.setAttribute('class', 'parcel-metrics')
 
   for (let metric of Object.keys(metrics)) {
-    const dom = getMetricDOM(metric, metrics[metric])
+    const dom = getMetricDOM(metric, (metrics as any)[metric])
     containerParcelMetrics.appendChild(dom)
   }
 
@@ -56,7 +56,10 @@ function getMetricDOM(name: string, value: string): HTMLDivElement {
 function update(parcelMetrics: HTMLDivElement, metrics: Metrics): void {
   for (let metric of Object.keys(metrics)) {
     const dom = document.getElementById('ui-' + metric)
-    dom.innerText = `${capitalizeFirstLetter(metric)}: ${metrics[metric]}`
+
+    if (dom) {
+      dom.innerText = `${capitalizeFirstLetter(metric)}: ${(metrics as any)[metric]}`
+    }
   }
 }
 

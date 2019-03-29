@@ -35,9 +35,9 @@ const schemaValidator = createSchemaValidator({
 
 export class TextShape extends BaseComponent<ECSTextShape> {
   currentFont: any = null
-  textBlock: BABYLON.GUI.TextBlock
-  texture: BABYLON.GUI.AdvancedDynamicTexture
-  private mesh: BABYLON.Mesh
+  textBlock!: BABYLON.GUI.TextBlock | void
+  texture!: BABYLON.GUI.AdvancedDynamicTexture | void
+  private mesh!: BABYLON.Mesh | void
 
   transformValue(value: any) {
     return schemaValidator(value)
@@ -49,7 +49,7 @@ export class TextShape extends BaseComponent<ECSTextShape> {
   }
 
   generateGeometry() {
-    if (this.mesh) return
+    if (this.mesh || !this.value) return
 
     this.mesh = BABYLON.MeshBuilder.CreatePlane(
       'text-plane',
@@ -80,7 +80,7 @@ export class TextShape extends BaseComponent<ECSTextShape> {
   detach() {
     this.entity.removeObject3D('text')
 
-    if (this.texture) {
+    if (this.texture && this.textBlock) {
       this.texture.removeControl(this.textBlock)
       this.textBlock.dispose()
       this.texture.dispose()
@@ -99,31 +99,35 @@ export class TextShape extends BaseComponent<ECSTextShape> {
 
   private setTextAttributes() {
     if (!this.textBlock) return
+    if (this.value) {
+      this.textBlock.alpha = Math.max(0, Math.min(1, this.value.opacity))
+      this.textBlock.color = validators.color(this.value.color, BABYLON.Color3.Black()).toHexString()
+      this.textBlock.fontFamily = this.value.fontFamily
+      this.textBlock.fontSize = this.value.fontSize
+      this.textBlock.zIndex = this.value.zIndex
+      this.textBlock.shadowBlur = this.value.shadowBlur
+      this.textBlock.shadowOffsetX = this.value.shadowOffsetX
+      this.textBlock.shadowOffsetY = this.value.shadowOffsetY
+      this.textBlock.shadowColor = validators.color(this.value.shadowColor, BABYLON.Color3.Black()).toHexString()
+      this.textBlock.lineSpacing = this.value.lineSpacing
+      this.textBlock.text = this.value.value || ''
+      this.textBlock.textWrapping = this.value.textWrapping
+      this.textBlock.resizeToFit = this.value.resizeToFit
+      this.textBlock.textHorizontalAlignment = parseHorizontalAlignment(this.value.hAlign)
+      this.textBlock.textVerticalAlignment = parseVerticalAlignment(this.value.vAlign)
+      this.textBlock.outlineWidth = this.value.outlineWidth
+      this.textBlock.outlineColor = validators.color(this.value.outlineColor, BABYLON.Color3.Black()).toHexString()
+      this.textBlock.fontWeight = this.value.fontWeight
+      this.textBlock.paddingTop = this.value.paddingTop
+      this.textBlock.paddingRight = this.value.paddingRight
+      this.textBlock.paddingBottom = this.value.paddingBottom
+      this.textBlock.paddingLeft = this.value.paddingLeft
 
-    this.textBlock.alpha = Math.max(0, Math.min(1, this.value.opacity))
-    this.textBlock.color = validators.color(this.value.color, BABYLON.Color3.Black()).toHexString()
-    this.textBlock.fontFamily = this.value.fontFamily
-    this.textBlock.fontSize = this.value.fontSize
-    this.textBlock.zIndex = this.value.zIndex
-    this.textBlock.shadowBlur = this.value.shadowBlur
-    this.textBlock.shadowOffsetX = this.value.shadowOffsetX
-    this.textBlock.shadowOffsetY = this.value.shadowOffsetY
-    this.textBlock.shadowColor = validators.color(this.value.shadowColor, BABYLON.Color3.Black()).toHexString()
-    this.textBlock.lineSpacing = this.value.lineSpacing
-    this.textBlock.text = this.value.value || ''
-    this.textBlock.textWrapping = this.value.textWrapping
-    this.textBlock.resizeToFit = this.value.resizeToFit
-    this.textBlock.textHorizontalAlignment = parseHorizontalAlignment(this.value.hAlign)
-    this.textBlock.textVerticalAlignment = parseVerticalAlignment(this.value.vAlign)
-    this.textBlock.outlineWidth = this.value.outlineWidth
-    this.textBlock.outlineColor = validators.color(this.value.outlineColor, BABYLON.Color3.Black()).toHexString()
-    this.textBlock.fontWeight = this.value.fontWeight
-    this.textBlock.paddingTop = this.value.paddingTop
-    this.textBlock.paddingRight = this.value.paddingRight
-    this.textBlock.paddingBottom = this.value.paddingBottom
-    this.textBlock.paddingLeft = this.value.paddingLeft
-    this.mesh.isPickable = this.value.isPickable
-    this.mesh.billboardMode = this.value.billboard ? 7 : 0
+      if (this.mesh) {
+        this.mesh.isPickable = this.value.isPickable
+        this.mesh.billboardMode = this.value.billboard ? 7 : 0
+      }
+    }
   }
 }
 

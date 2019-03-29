@@ -60,7 +60,7 @@ export class UIContainerRect extends UIControl<UIContainerRectShape, BABYLON.GUI
     this.control.background = this.data.background
     this.control.isVisible = this.data.visible
 
-    this.setParent(this.data.parentComponent)
+    this.data.parentComponent && this.setParent(this.data.parentComponent)
   }
 }
 

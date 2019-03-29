@@ -13,10 +13,13 @@ export abstract class DisposableComponent {
   }
 
   entities: Set<BaseEntity> = new Set()
-  loadingDone: boolean = true
 
   constructor(public context: SharedSceneContext, public uuid: string) {
     // stub
+  }
+
+  loadingDone(_entity: BaseEntity): boolean {
+    return true
   }
 
   attachTo(entity: BaseEntity) {

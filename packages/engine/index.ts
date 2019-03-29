@@ -20,6 +20,6 @@ import './renderer'
 import './entities'
 
 // register the components that will be used by the entity system
-import './components'
+import './components/index'
 
 export { domReadyFuture } from './renderer'

@@ -28,7 +28,7 @@ const defaultValue: GizmoConfiguration = {
   localReference: false
 }
 
-let activeEntity: BaseEntity = null
+let activeEntity: BaseEntity | null = null
 let selectedGizmo: Gizmo = Gizmo.MOVE
 let currentConfiguration = defaultValue
 
@@ -92,33 +92,37 @@ const dragBehavior = new BABYLON.PointerDragBehavior({ dragPlaneNormal: upVector
   let tmpMatrix = new BABYLON.Matrix()
 
   dragBehavior.onDragStartObservable.add(event => {
-    dragTarget.copyFrom(activeEntity.position)
+    if (activeEntity) {
+      dragTarget.copyFrom(activeEntity.position)
 
-    activeEntity.computeWorldMatrix().invertToRef(tmpMatrix)
-    tmpMatrix.setTranslationFromFloats(0, 0, 0)
-    BABYLON.Vector3.TransformCoordinatesToRef(BABYLON.Vector3.Up(), tmpMatrix, upVector)
+      activeEntity.computeWorldMatrix().invertToRef(tmpMatrix)
+      tmpMatrix.setTranslationFromFloats(0, 0, 0)
+      BABYLON.Vector3.TransformCoordinatesToRef(BABYLON.Vector3.Up(), tmpMatrix, upVector)
+    }
   })
 
   dragBehavior.onDragObservable.add(event => {
-    // Convert delta to local translation if it has a parent
-    if (activeEntity.parent) {
-      activeEntity.parent.computeWorldMatrix().invertToRef(tmpMatrix)
-      tmpMatrix.setTranslationFromFloats(0, 0, 0)
-      BABYLON.Vector3.TransformCoordinatesToRef(event.delta, tmpMatrix, localDelta)
-    } else {
-      localDelta.copyFrom(event.delta)
-    }
+    if (activeEntity) {
+      // Convert delta to local translation if it has a parent
+      if (activeEntity.parent) {
+        activeEntity.parent.computeWorldMatrix().invertToRef(tmpMatrix)
+        tmpMatrix.setTranslationFromFloats(0, 0, 0)
+        BABYLON.Vector3.TransformCoordinatesToRef(event.delta, tmpMatrix, localDelta)
+      } else {
+        localDelta.copyFrom(event.delta)
+      }
 
-    dragTarget.addInPlace(localDelta)
-    const { snapDistance } = gizmoManager.gizmos.positionGizmo
-    if (snapDistance) {
-      activeEntity.position.set(
-        Math.round(dragTarget.x / snapDistance) * snapDistance,
-        Math.round(dragTarget.y / snapDistance) * snapDistance,
-        Math.round(dragTarget.z / snapDistance) * snapDistance
-      )
-    } else {
-      activeEntity.position.copyFrom(dragTarget)
+      dragTarget.addInPlace(localDelta)
+      const { snapDistance } = gizmoManager.gizmos.positionGizmo!
+      if (snapDistance) {
+        activeEntity.position.set(
+          Math.round(dragTarget.x / snapDistance) * snapDistance,
+          Math.round(dragTarget.y / snapDistance) * snapDistance,
+          Math.round(dragTarget.z / snapDistance) * snapDistance
+        )
+      } else {
+        activeEntity.position.copyFrom(dragTarget)
+      }
     }
   })
 
@@ -129,15 +133,17 @@ const dragBehavior = new BABYLON.PointerDragBehavior({ dragPlaneNormal: upVector
       type: 'gizmoDragEnded',
       transform: {
         position: activeEntity.position,
-        rotation: activeEntity.rotationQuaternion,
+        rotation: activeEntity.rotationQuaternion!,
         scale: activeEntity.scaling
       },
       entityId: activeEntity.uuid
     })
   })
 
-  gizmoManager.gizmos.positionGizmo.onDragStartObservable.add(() => {
-    const { snapDistance } = gizmoManager.gizmos.positionGizmo
+  gizmoManager.gizmos.positionGizmo!.onDragStartObservable.add(() => {
+    if (!activeEntity) return
+
+    const { snapDistance } = gizmoManager.gizmos.positionGizmo!
     if (snapDistance) {
       activeEntity.position.x -= activeEntity.position.x % snapDistance
       activeEntity.position.y -= activeEntity.position.y % snapDistance
@@ -145,10 +151,12 @@ const dragBehavior = new BABYLON.PointerDragBehavior({ dragPlaneNormal: upVector
     }
   })
 
-  gizmoManager.gizmos.rotationGizmo.onDragStartObservable.add(() => {
-    const { snapDistance } = gizmoManager.gizmos.rotationGizmo
+  gizmoManager.gizmos.rotationGizmo!.onDragStartObservable.add(() => {
+    if (!activeEntity) return
+
+    const { snapDistance } = gizmoManager.gizmos.rotationGizmo!
     if (snapDistance) {
-      const angles = activeEntity.rotationQuaternion.toEulerAngles()
+      const angles = activeEntity.rotationQuaternion!.toEulerAngles()
       angles.x -= angles.x % snapDistance
       angles.y -= angles.y % snapDistance
       angles.z -= angles.z % snapDistance
@@ -158,41 +166,42 @@ const dragBehavior = new BABYLON.PointerDragBehavior({ dragPlaneNormal: upVector
 }
 
 {
-  gizmoManager.gizmos.positionGizmo.onDragEndObservable.add(() => {
+  gizmoManager.gizmos.positionGizmo!.onDragEndObservable.add(() => {
     if (!activeEntity) return
+
     activeEntity.dispatchUUIDEvent('gizmoEvent', {
       type: 'gizmoDragEnded',
       transform: {
         position: activeEntity.position,
-        rotation: activeEntity.rotationQuaternion,
+        rotation: activeEntity.rotationQuaternion!,
         scale: activeEntity.scaling
       },
       entityId: activeEntity.uuid
     })
   })
 
-  gizmoManager.gizmos.scaleGizmo.onDragEndObservable.add(() => {
+  gizmoManager.gizmos.scaleGizmo!.onDragEndObservable.add(() => {
     if (!activeEntity) return
 
     activeEntity.dispatchUUIDEvent('gizmoEvent', {
       type: 'gizmoDragEnded',
       transform: {
         position: activeEntity.position,
-        rotation: activeEntity.rotationQuaternion,
+        rotation: activeEntity.rotationQuaternion!,
         scale: activeEntity.scaling
       },
       entityId: activeEntity.uuid
     })
   })
 
-  gizmoManager.gizmos.rotationGizmo.onDragEndObservable.add(() => {
+  gizmoManager.gizmos.rotationGizmo!.onDragEndObservable.add(() => {
     if (!activeEntity) return
 
     activeEntity.dispatchUUIDEvent('gizmoEvent', {
       type: 'gizmoDragEnded',
       transform: {
         position: activeEntity.position,
-        rotation: activeEntity.rotationQuaternion,
+        rotation: activeEntity.rotationQuaternion!,
         scale: activeEntity.scaling
       },
       entityId: activeEntity.uuid
@@ -204,28 +213,28 @@ export function selectGizmo(type: Gizmo) {
   selectedGizmo = type
 
   if (type === Gizmo.MOVE && currentConfiguration.position) {
-    gizmoManager.gizmos.positionGizmo.attachedMesh = activeEntity
-    gizmoManager.gizmos.rotationGizmo.attachedMesh = null
-    gizmoManager.gizmos.scaleGizmo.attachedMesh = null
+    gizmoManager.gizmos.positionGizmo!.attachedMesh = activeEntity
+    gizmoManager.gizmos.rotationGizmo!.attachedMesh = null
+    gizmoManager.gizmos.scaleGizmo!.attachedMesh = null
   } else if (type === Gizmo.ROTATE && currentConfiguration.rotation) {
-    gizmoManager.gizmos.positionGizmo.attachedMesh = null
-    gizmoManager.gizmos.rotationGizmo.attachedMesh = activeEntity
-    gizmoManager.gizmos.scaleGizmo.attachedMesh = null
+    gizmoManager.gizmos.positionGizmo!.attachedMesh = null
+    gizmoManager.gizmos.rotationGizmo!.attachedMesh = activeEntity
+    gizmoManager.gizmos.scaleGizmo!.attachedMesh = null
   } else if (type === Gizmo.SCALE && currentConfiguration.scale) {
-    gizmoManager.gizmos.positionGizmo.attachedMesh = null
-    gizmoManager.gizmos.rotationGizmo.attachedMesh = null
-    gizmoManager.gizmos.scaleGizmo.attachedMesh = activeEntity
+    gizmoManager.gizmos.positionGizmo!.attachedMesh = null
+    gizmoManager.gizmos.rotationGizmo!.attachedMesh = null
+    gizmoManager.gizmos.scaleGizmo!.attachedMesh = activeEntity
   } else {
-    gizmoManager.gizmos.positionGizmo.attachedMesh = null
-    gizmoManager.gizmos.rotationGizmo.attachedMesh = null
-    gizmoManager.gizmos.scaleGizmo.attachedMesh = null
+    gizmoManager.gizmos.positionGizmo!.attachedMesh = null
+    gizmoManager.gizmos.rotationGizmo!.attachedMesh = null
+    gizmoManager.gizmos.scaleGizmo!.attachedMesh = null
     selectedGizmo = Gizmo.NONE
     return false
   }
   return true
 }
 
-function selectActiveEntity(newActiveEntity: BaseEntity) {
+function selectActiveEntity(newActiveEntity: BaseEntity | null) {
   if (activeEntity === newActiveEntity) {
     return
   }
@@ -233,18 +242,18 @@ function selectActiveEntity(newActiveEntity: BaseEntity) {
   let context = activeEntity && activeEntity.context
 
   if (activeEntity) {
-    gizmoManager.gizmos.positionGizmo.attachedMesh = null
-    gizmoManager.gizmos.rotationGizmo.attachedMesh = null
-    gizmoManager.gizmos.scaleGizmo.attachedMesh = null
+    gizmoManager.gizmos.positionGizmo!.attachedMesh = null
+    gizmoManager.gizmos.rotationGizmo!.attachedMesh = null
+    gizmoManager.gizmos.scaleGizmo!.attachedMesh = null
     removeEntityOutline(activeEntity)
     activeEntity.removeBehavior(dragBehavior)
   }
 
   activeEntity = newActiveEntity
 
-  if (activeEntity) {
+  if (newActiveEntity) {
     addEntityOutline(newActiveEntity)
-    activeEntity.addBehavior(dragBehavior, true)
+    newActiveEntity.addBehavior(dragBehavior, true)
   }
 
   if (context && !newActiveEntity) {
@@ -261,9 +270,9 @@ function selectActiveEntity(newActiveEntity: BaseEntity) {
 
 scene.onPointerObservable.add(evt => {
   if (evt.type === BABYLON.PointerEventTypes.POINTERTAP) {
-    let shouldDeselect = !evt.pickInfo.pickedMesh
+    let shouldDeselect = !evt.pickInfo || !evt.pickInfo.pickedMesh
 
-    if (activeEntity && evt.pickInfo.pickedMesh) {
+    if (activeEntity && evt.pickInfo && evt.pickInfo.pickedMesh) {
       const parent = findParentEntity(evt.pickInfo.pickedMesh)
 
       if (!parent) {
@@ -312,7 +321,7 @@ export class Gizmos extends BaseComponent<GizmoConfiguration> {
       }
     }
 
-    activeEntity.dispatchUUIDEvent('gizmoEvent', {
+    activeEntity!.dispatchUUIDEvent('gizmoEvent', {
       type: 'gizmoSelected',
       gizmoType: selectedGizmo,
       entityId: this.entity.uuid
@@ -324,13 +333,15 @@ export class Gizmos extends BaseComponent<GizmoConfiguration> {
   }
 
   configureGizmos() {
-    currentConfiguration = this.value
-    const isWorldCoordinates = !currentConfiguration.localReference
-    gizmoManager.gizmos.positionGizmo.updateGizmoPositionToMatchAttachedMesh = !isWorldCoordinates
-    gizmoManager.gizmos.positionGizmo.updateGizmoRotationToMatchAttachedMesh = !isWorldCoordinates
-    gizmoManager.gizmos.scaleGizmo.updateGizmoPositionToMatchAttachedMesh = !isWorldCoordinates
-    gizmoManager.gizmos.rotationGizmo.updateGizmoRotationToMatchAttachedMesh = !isWorldCoordinates
-    gizmoManager.gizmos.rotationGizmo.updateGizmoPositionToMatchAttachedMesh = !isWorldCoordinates
+    if (this.value) {
+      currentConfiguration = this.value
+      const isWorldCoordinates = !currentConfiguration.localReference
+      gizmoManager.gizmos.positionGizmo!.updateGizmoPositionToMatchAttachedMesh = !isWorldCoordinates
+      gizmoManager.gizmos.positionGizmo!.updateGizmoRotationToMatchAttachedMesh = !isWorldCoordinates
+      gizmoManager.gizmos.scaleGizmo!.updateGizmoPositionToMatchAttachedMesh = !isWorldCoordinates
+      gizmoManager.gizmos.rotationGizmo!.updateGizmoRotationToMatchAttachedMesh = !isWorldCoordinates
+      gizmoManager.gizmos.rotationGizmo!.updateGizmoPositionToMatchAttachedMesh = !isWorldCoordinates
+    }
   }
 
   update() {
@@ -353,6 +364,6 @@ export class Gizmos extends BaseComponent<GizmoConfiguration> {
     if (activeEntity === this.entity) {
       selectActiveEntity(null)
     }
-    this.entity = null
+    delete this.entity
   }
 }

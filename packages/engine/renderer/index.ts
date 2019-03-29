@@ -1,6 +1,5 @@
 // We need to import the custom shaders before creating anything
 import * as BABYLON from 'babylonjs'
-import bodyScrollLock = require('body-scroll-lock')
 BABYLON.DebugLayer.InspectorURL = require('url-loader!babylonjs-inspector')
 
 import { TaskQueue } from 'atomicHelpers/taskQueue'
@@ -14,10 +13,11 @@ import './ambientLights'
 import { resizeRotationCanvas } from './input'
 import { ReadOnlyVector3, ReadOnlyVector2 } from 'decentraland-ecs/src'
 
+const bodyScrollLock = require('body-scroll-lock')
 const engineMicroQueue = new TaskQueue()
 
 const defer = Promise.resolve().then.bind(Promise.resolve())
-
+declare var global: any
 /**
  * Instance of WebGLRenderer
  */
@@ -49,7 +49,7 @@ export function initDCL() {
         shouldFlushMicroQueue = false
       }
       if (shouldFlushTaskQueue) {
-        defer(() => engineMicroQueue.flushTaskQueue())
+        defer(async () => engineMicroQueue.flushTaskQueue())
         shouldFlushTaskQueue = false
       }
     })
@@ -121,8 +121,8 @@ export function setSize(w: number, h: number) {
 }
 
 export function initLocalPlayer(initialPosition?: ReadOnlyVector3, initialRotation?: ReadOnlyVector2) {
-  vrCamera.position.x = initialPosition.x || 0
-  vrCamera.position.z = initialPosition.z || 0
+  vrCamera.position.x = initialPosition!.x || 0
+  vrCamera.position.z = initialPosition!.z || 0
 
   if (vrHelper.vrDeviceOrientationCamera) {
     vrHelper.vrDeviceOrientationCamera.position.copyFrom(vrCamera.position)

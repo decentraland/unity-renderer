@@ -2,7 +2,9 @@
   "compilerOptions": {
     "outDir": "../../dist",
     "baseUrl": "..",
-    "experimentalDecorators": true
+    "experimentalDecorators": true,
+    "strict": true,
+    "strictNullChecks": true
   },
   "extends": "../../tsconfig.json"
 }

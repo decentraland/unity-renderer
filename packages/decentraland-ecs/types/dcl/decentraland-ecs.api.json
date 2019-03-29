@@ -7042,12 +7042,12 @@
         },
         "disposeComponent": {
           "kind": "method",
-          "signature": "disposeComponent(component: DisposableComponentLike): void;",
+          "signature": "disposeComponent(component: DisposableComponentLike): boolean;",
           "accessModifier": "",
           "isOptional": false,
           "isStatic": false,
           "returnValue": {
-            "type": "void",
+            "type": "boolean",
             "description": []
           },
           "parameters": {
@@ -7209,7 +7209,7 @@
         },
         "removeEntity": {
           "kind": "method",
-          "signature": "removeEntity(entity: Entity, removeChildren?: boolean, newParent?: Entity): void;",
+          "signature": "removeEntity(entity: Entity): void;",
           "accessModifier": "",
           "isOptional": false,
           "isStatic": false,
@@ -7222,20 +7222,6 @@
               "name": "entity",
               "description": [],
               "isOptional": false,
-              "isSpread": false,
-              "type": "Entity"
-            },
-            "removeChildren": {
-              "name": "removeChildren",
-              "description": [],
-              "isOptional": true,
-              "isSpread": false,
-              "type": "boolean"
-            },
-            "newParent": {
-              "name": "newParent",
-              "description": [],
-              "isOptional": true,
               "isSpread": false,
               "type": "Entity"
             }
@@ -7889,6 +7875,142 @@
       ],
       "remarks": [],
       "isBeta": false
+    },
+    "EventConstructor": {
+      "kind": "function",
+      "signature": "export function EventConstructor(eventName: string): ClassDecorator;",
+      "returnValue": {
+        "type": "ClassDecorator",
+        "description": []
+      },
+      "parameters": {
+        "eventName": {
+          "name": "eventName",
+          "description": [],
+          "isOptional": false,
+          "isSpread": false,
+          "type": "string"
+        }
+      },
+      "deprecatedMessage": [],
+      "summary": [],
+      "remarks": [],
+      "isBeta": false
+    },
+    "EventManager": {
+      "kind": "class",
+      "extends": "",
+      "implements": "",
+      "typeParameters": [],
+      "deprecatedMessage": [],
+      "summary": [],
+      "remarks": [],
+      "isBeta": false,
+      "isSealed": false,
+      "members": {
+        "addListener": {
+          "kind": "method",
+          "signature": "addListener<T, X>(eventClass: IEventConstructor<T>, listener: X, listenerFunction: (this: X, event: T) => void): void;",
+          "accessModifier": "",
+          "isOptional": false,
+          "isStatic": false,
+          "returnValue": {
+            "type": "void",
+            "description": []
+          },
+          "parameters": {
+            "eventClass": {
+              "name": "eventClass",
+              "description": [],
+              "isOptional": false,
+              "isSpread": false,
+              "type": "IEventConstructor<T>"
+            },
+            "listener": {
+              "name": "listener",
+              "description": [],
+              "isOptional": false,
+              "isSpread": false,
+              "type": "X"
+            },
+            "listenerFunction": {
+              "name": "listenerFunction",
+              "description": [],
+              "isOptional": false,
+              "isSpread": false,
+              "type": "(this: X, event: T) => void"
+            }
+          },
+          "deprecatedMessage": [],
+          "summary": [],
+          "remarks": [],
+          "isBeta": false,
+          "isSealed": false,
+          "isVirtual": false,
+          "isOverride": false
+        },
+        "fireEvent": {
+          "kind": "method",
+          "signature": "fireEvent<T extends object>(event: T): void;",
+          "accessModifier": "",
+          "isOptional": false,
+          "isStatic": false,
+          "returnValue": {
+            "type": "void",
+            "description": []
+          },
+          "parameters": {
+            "event": {
+              "name": "event",
+              "description": [],
+              "isOptional": false,
+              "isSpread": false,
+              "type": "T"
+            }
+          },
+          "deprecatedMessage": [],
+          "summary": [],
+          "remarks": [],
+          "isBeta": false,
+          "isSealed": false,
+          "isVirtual": false,
+          "isOverride": false
+        },
+        "removeListener": {
+          "kind": "method",
+          "signature": "removeListener<X>(listener: X, eventClass: IEventConstructor<any>): boolean;",
+          "accessModifier": "",
+          "isOptional": false,
+          "isStatic": false,
+          "returnValue": {
+            "type": "boolean",
+            "description": []
+          },
+          "parameters": {
+            "listener": {
+              "name": "listener",
+              "description": [],
+              "isOptional": false,
+              "isSpread": false,
+              "type": "X"
+            },
+            "eventClass": {
+              "name": "eventClass",
+              "description": [],
+              "isOptional": false,
+              "isSpread": false,
+              "type": "IEventConstructor<any>"
+            }
+          },
+          "deprecatedMessage": [],
+          "summary": [],
+          "remarks": [],
+          "isBeta": false,
+          "isSealed": false,
+          "isVirtual": false,
+          "isOverride": false
+        }
+      }
     },
     "executeTask": {
       "kind": "function",
@@ -8643,6 +8765,48 @@
           "isVirtual": false,
           "isOverride": false,
           "isEventProperty": false
+        }
+      }
+    },
+    "IEventConstructor": {
+      "kind": "interface",
+      "extends": "",
+      "implements": "",
+      "typeParameters": [
+        "T"
+      ],
+      "deprecatedMessage": [],
+      "summary": [],
+      "remarks": [],
+      "isBeta": false,
+      "isSealed": false,
+      "members": {
+        "__new": {
+          "kind": "method",
+          "signature": "new (...args: any[]): T;",
+          "accessModifier": "",
+          "isOptional": false,
+          "isStatic": false,
+          "returnValue": {
+            "type": "T",
+            "description": []
+          },
+          "parameters": {
+            "args": {
+              "name": "args",
+              "description": [],
+              "isOptional": false,
+              "isSpread": true,
+              "type": "any[]"
+            }
+          },
+          "deprecatedMessage": [],
+          "summary": [],
+          "remarks": [],
+          "isBeta": false,
+          "isSealed": false,
+          "isVirtual": false,
+          "isOverride": false
         }
       }
     },

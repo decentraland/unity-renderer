@@ -1,5 +1,7 @@
 import { Panel } from './utils/Panel'
 
+declare var self: any
+
 export function createStats() {
   let mode = 0
 
@@ -16,14 +18,15 @@ export function createStats() {
     false
   )
 
-  function addPanel(panel) {
+  function addPanel(panel: Panel) {
     container.appendChild(panel.getDOM())
     return panel
   }
 
-  function showPanel(id) {
+  function showPanel(id: number) {
     for (let i = 0; i < container.children.length; i++) {
-      container.children[i]['style'].display = i === id ? 'block' : 'none'
+      // tslint:disable-next-line:semicolon
+      ;(container.children[i] as any)['style'].display = i === id ? 'block' : 'none'
     }
 
     mode = id
@@ -35,7 +38,7 @@ export function createStats() {
 
   let msPanel = addPanel(new Panel('MS', '#0f0', '#020'))
   let fpsPanel = addPanel(new Panel('FPS', '#0ff', '#002'))
-  let memPanel
+  let memPanel: Panel | null = null
 
   if (self.performance && self.performance['memory']) {
     memPanel = addPanel(new Panel('MB', '#f08', '#201'))
@@ -69,7 +72,7 @@ export function createStats() {
         frames = 0
 
         if (memPanel) {
-          let memory = performance['memory']
+          let memory = self.performance['memory']
           memPanel.update(memory.usedJSHeapSize / 1048576, memory.jsHeapSizeLimit / 1048576)
         }
       }

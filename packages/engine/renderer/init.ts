@@ -1,4 +1,4 @@
-import * as Babylon from 'babylonjs'
+import * as BABYLON from 'babylonjs'
 
 import 'babylonjs-gui'
 import 'babylonjs-materials'
@@ -26,7 +26,7 @@ canvas.oncontextmenu = function(e) {
   e.preventDefault()
 }
 
-export const engine = new Babylon.Engine(canvas, !isRunningTest, {
+export const engine = new BABYLON.Engine(canvas, !isRunningTest, {
   audioEngine: true,
   autoEnableWebVR: true,
   deterministicLockstep: true,
@@ -39,7 +39,7 @@ export const engine = new Babylon.Engine(canvas, !isRunningTest, {
 /**
  * This is the main scene of the engine.
  */
-export const scene = new Babylon.Scene(engine)
+export const scene = new BABYLON.Scene(engine)
 export const vrHelper = scene.createDefaultVRExperience({
   defaultHeight: playerConfigurations.height,
   rayLength: interactionLimits.clickDistance,
@@ -146,13 +146,13 @@ const database: BABYLON.Database = new Database() as any
             }
           }
 
-          return initialGetFile.apply(database, args)
+          return initialGetFile.apply(database, args as any)
         }
 
         const initialGetImage = database.loadImageFromDB
 
         database.loadImageFromDB = function(...args: any[]) {
-          return initialGetImage.apply(database, args)
+          return initialGetImage.apply(database, args as any)
         }
       },
       () => {
@@ -170,12 +170,12 @@ const database: BABYLON.Database = new Database() as any
     scene.onReadyObservable.add(() => {
       effectLayers.forEach($ => scene.effectLayers.includes($) || scene.addEffectLayer($))
 
-      scene.removeEffectLayer = function(layer) {
+      scene.removeEffectLayer = function(this: any, layer: BABYLON.EffectLayer) {
         if (effectLayers.includes(layer)) return
         scene.constructor.prototype.removeEffectLayer.apply(this, arguments)
       } as any
 
-      scene.addEffectLayer = function(layer) {
+      scene.addEffectLayer = function(this: any, layer: BABYLON.EffectLayer) {
         if (effectLayers.includes(layer)) return
         scene.constructor.prototype.addEffectLayer.apply(this, arguments)
       } as any

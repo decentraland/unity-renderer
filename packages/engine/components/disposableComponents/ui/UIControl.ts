@@ -4,8 +4,8 @@ import { UIFullScreenTexture } from './UIFullscreenTexture'
 import { UIScreenSpace } from './UIScreenSpace'
 
 export abstract class UIControl<T, K extends BABYLON.GUI.Control> extends DisposableComponent {
-  data: T
-  control: K
+  data!: T
+  control!: K
 
   onAttach(_entity: BaseEntity): void {
     // noop

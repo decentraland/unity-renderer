@@ -20,7 +20,7 @@ export const envHelper = new EnvironmentHelper(
   scene
 )
 
-let editorEnvHelper: BABYLON.EnvironmentHelper = null
+let editorEnvHelper: BABYLON.EnvironmentHelper | null = null
 
 const skybox = BABYLON.MeshBuilder.CreateSphere(
   'skybox',
@@ -54,12 +54,12 @@ let sunInclination = -0.31
     throw new Error('cannot dispose sky reflections')
   }
 
-  probe.renderList.push(envHelper.skybox)
+  probe.renderList!.push(envHelper.skybox)
 
   probe.attachToMesh(envHelper.skybox)
   probe.refreshRate = BABYLON.RenderTargetTexture.REFRESHRATE_RENDER_ONEVERYFRAME
 
-  envHelper.groundMaterial.environmentTexture = probe.cubeTexture
+  envHelper.groundMaterial!.environmentTexture = probe.cubeTexture
 
   {
     skybox.material = skyMaterial2(scene)
@@ -84,12 +84,12 @@ export function setEditorEnvironment(enabled: boolean) {
     if (!editorEnvHelper) {
       const editorColor = BABYLON.Color3.FromHexString('#0e0c12')
       editorEnvHelper = scene.createDefaultEnvironment({
-        environmentTexture: null,
+        environmentTexture: void 0,
         groundColor: editorColor,
         skyboxColor: editorColor
       })
-      editorEnvHelper.ground.position.y = 0
-      editorEnvHelper.rootMesh.position.y = -0.1
+      editorEnvHelper!.ground!.position.y = 0
+      editorEnvHelper!.rootMesh.position.y = -0.1
     }
 
     checkerboardMaterial.mainColor = BABYLON.Color3.FromHexString('#242129')
@@ -97,12 +97,12 @@ export function setEditorEnvironment(enabled: boolean) {
 
     scene.fogEnabled = false
     skybox.visibility = 0
-    envHelper.ground.visibility = 0
+    envHelper.ground!.visibility = 0
 
     crossHair.visibility = 0
   } else {
     if (editorEnvHelper) {
-      editorEnvHelper.ground.dispose()
+      editorEnvHelper.ground!.dispose()
       editorEnvHelper.dispose()
       editorEnvHelper = null
     }
@@ -112,7 +112,7 @@ export function setEditorEnvironment(enabled: boolean) {
 
     scene.fogEnabled = true
     skybox.visibility = 1
-    envHelper.ground.visibility = 1
+    envHelper.ground!.visibility = 1
 
     crossHair.visibility = 1
   }
@@ -125,15 +125,15 @@ export function setSunInclination(inclination: number) {
 }
 
 export function reposition() {
-  skybox.position = scene.activeCamera.position
+  skybox.position = scene.activeCamera!.position
 
   envHelper.rootMesh.position.set(
-    Math.floor(scene.activeCamera.position.x / parcelLimits.parcelSize) * parcelLimits.parcelSize,
+    Math.floor(scene.activeCamera!.position.x / parcelLimits.parcelSize) * parcelLimits.parcelSize,
     0,
-    Math.floor(scene.activeCamera.position.z / parcelLimits.parcelSize) * parcelLimits.parcelSize
+    Math.floor(scene.activeCamera!.position.z / parcelLimits.parcelSize) * parcelLimits.parcelSize
   )
 
-  envHelper.ground.position.set(scene.activeCamera.position.x, 0, scene.activeCamera.position.z)
+  envHelper.ground!.position.set(scene.activeCamera!.position.x, 0, scene.activeCamera!.position.z)
 
   const theta = Math.PI * sunInclination
   const phi = Math.PI * -0.4

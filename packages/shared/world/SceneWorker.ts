@@ -23,6 +23,10 @@ const gamekitWorkerRaw = require('raw-loader!../../../static/systems/scene.syste
 const gamekitWorkerBLOB = new Blob([gamekitWorkerRaw])
 const gamekitWorkerUrl = URL.createObjectURL(gamekitWorkerBLOB)
 
+const hudWorkerRaw = require('raw-loader!../../../static/systems/decentraland-ui.scene.js')
+const hudWorkerBLOB = new Blob([hudWorkerRaw])
+export const hudWorkerUrl = URL.createObjectURL(hudWorkerBLOB)
+
 // this function is used in a onSystemReady.then(unmountSystem).
 // we keep it separated and global because it is highly reusable
 function unmountSystem(system: ScriptingHost) {

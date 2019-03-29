@@ -11,7 +11,7 @@ export class BoxShape extends BasicShape<{}> {
   generateModel() {
     const ret = new BABYLON.Mesh('box-instance')
 
-    base.geometry.applyToMesh(ret)
+    base.geometry!.applyToMesh(ret)
 
     return ret
   }

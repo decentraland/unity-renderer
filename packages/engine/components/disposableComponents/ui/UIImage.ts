@@ -59,10 +59,13 @@ class UIImage extends UIControl<UIImageShape, BABYLON.GUI.Image> {
 
   async updateData(data: UIImageShape): Promise<void> {
     this.data = schemaValidator(data)
-
+    // @ts-ignore
     this.control.sourceLeft = parseInt(this.data.sourceLeft, 10)
+    // @ts-ignore
     this.control.sourceTop = parseInt(this.data.sourceTop, 10)
+    // @ts-ignore
     this.control.sourceWidth = parseInt(this.data.sourceWidth, 10)
+    // @ts-ignore
     this.control.sourceHeight = parseInt(this.data.sourceHeight, 10)
     this.control.source = this.data.source
     this.control.width = this.data.width
@@ -79,7 +82,7 @@ class UIImage extends UIControl<UIImageShape, BABYLON.GUI.Image> {
     this.control.isVisible = this.data.visible
     this.control.isPointerBlocker = this.data.isPointerBlocker
 
-    this.setParent(this.data.parentComponent)
+    this.data.parentComponent && this.setParent(this.data.parentComponent)
   }
 
   dispatchOnClick = (pointerId: number) => {

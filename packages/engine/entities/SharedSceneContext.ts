@@ -22,13 +22,13 @@ import {
 import { ILogger, defaultLogger } from 'shared/logger'
 import { EventDispatcher } from 'decentraland-rpc/lib/common/core/EventDispatcher'
 import { IParcelSceneLimits } from 'atomicHelpers/landHelpers'
-import { measureObject3D } from 'dcl/entities/utils/checkParcelSceneLimits'
+import { measureObject3D } from './utils/checkParcelSceneLimits'
 import { IEventNames, IEvents, PointerEvent } from 'decentraland-ecs/src/decentraland/Types'
-import { Observable } from 'decentraland-ecs/src'
+import { Observable, ReadOnlyVector3 } from 'decentraland-ecs/src'
 import { colliderMaterial } from './utils/colliders'
 
 function validateHierarchy(entity: BaseEntity) {
-  let parent = entity
+  let parent: BaseEntity = entity
 
   if (!entity.parentEntity) {
     entity.context.logger.error('the entity has no parent')
@@ -36,7 +36,7 @@ function validateHierarchy(entity: BaseEntity) {
   }
 
   do {
-    parent = parent.parentEntity
+    parent = parent.parentEntity!
 
     if (parent.isDisposed()) {
       entity.context.logger.error('parenting to a disposed entity')
@@ -353,13 +353,13 @@ export class SharedSceneContext implements BABYLON.IDisposable {
       event.hit = {
         length: pickingResult.distance,
         hitPoint: {
-          x: pickingResult.pickedPoint.x - this.rootEntity.position.x,
-          y: pickingResult.pickedPoint.y - this.rootEntity.position.y,
-          z: pickingResult.pickedPoint.z - this.rootEntity.position.z
+          x: pickingResult.pickedPoint!.x - this.rootEntity.position.x,
+          y: pickingResult.pickedPoint!.y - this.rootEntity.position.y,
+          z: pickingResult.pickedPoint!.z - this.rootEntity.position.z
         },
-        normal: pickingResult.getNormal(),
-        worldNormal: pickingResult.getNormal(true),
-        meshName: pickingResult.pickedMesh.name,
+        normal: pickingResult.getNormal() as ReadOnlyVector3,
+        worldNormal: pickingResult.getNormal(true) as ReadOnlyVector3,
+        meshName: pickingResult.pickedMesh!.name,
         entityId
       }
     }

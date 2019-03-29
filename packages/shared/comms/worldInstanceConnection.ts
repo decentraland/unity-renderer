@@ -1,7 +1,10 @@
+/// <reference lib="dom" />
+
 import { Message } from 'google-protobuf'
 import { log, error as logError } from 'engine/logger'
 import { Stats } from './debug'
 import {
+  Category,
   ChatData,
   PositionData,
   ProfileData,
@@ -10,6 +13,8 @@ import {
   CoordinatorMessage,
   WebRtcMessage,
   TopicMessage,
+  DataMessage,
+  DataHeader,
   WorldCommMessage,
   WelcomeMessage,
   ConnectMessage,
@@ -33,11 +38,10 @@ class SendResult {
   constructor(public bytesSize: number) {}
 }
 
-export interface IDataChannel {
-  send(bytes: Uint8Array)
+type IDataChannel = {
+  readyState: RTCDataChannelState
+  send(bytes: Uint8Array): void
 }
-
-export type TopicHandler = (fromAlias: string, rawMessage: Uint8Array, data: Uint8Array) => void
 
 export function positionHash(p: Position) {
   const parcel = position2parcel(p)
@@ -47,15 +51,18 @@ export function positionHash(p: Position) {
 }
 
 export class WorldInstanceConnection {
-  public alias: string = null
+  public alias: string | null = null
   public ping: number = -1
-  public commServerAlias: string | null = null
-  public ws: WebSocket | null
-  public webRtcConn: RTCPeerConnection | null
-  public subscriptions = new Map<string, TopicHandler>()
+
+  public commServerAlias: number | null = null
+  public ws: WebSocket | null = null
+  public webRtcConn: RTCPeerConnection | null = null
+  public positionHandler: ((fromAlias: string, positionData: PositionData) => void) | null = null
+  public profileHandler: ((fromAlias: string, profileData: ProfileData) => void) | null = null
+  public chatHandler: ((fromAlias: string, chatData: ChatData) => void) | null = null
   public authenticated = false
-  public reliableDataChannel: IDataChannel | null
-  public unreliableDataChannel: IDataChannel | null
+  public reliableDataChannel: IDataChannel | null = null
+  public unreliableDataChannel: IDataChannel | null = null
   public pingInterval: any = null
   public stats: Stats | null = null
 
@@ -68,13 +75,22 @@ export class WorldInstanceConnection {
         msg.setType(MessageType.PING)
         msg.setTime(Date.now())
         const bytes = msg.serializeBinary()
-        this.unreliableDataChannel.send(bytes)
+
+        if (this.unreliableDataChannel.readyState === 'open') {
+          this.unreliableDataChannel.send(bytes)
+        } else {
+          this.ping = -1
+        }
       }
     }, 10000)
-    this.webRtcConn = new RTCPeerConnection({ iceServers: commConfigurations.iceServers })
 
-    this.webRtcConn.onsignalingstatechange = e => log(`signaling state: ${this.webRtcConn.signalingState}`)
-    this.webRtcConn.oniceconnectionstatechange = e => log(`ice connection state: ${this.webRtcConn.iceConnectionState}`)
+    this.webRtcConn = new RTCPeerConnection({
+      iceServers: commConfigurations.iceServers
+    })
+
+    this.webRtcConn.onsignalingstatechange = (e: Event) => log(`signaling state: ${this.webRtcConn!.signalingState}`)
+    this.webRtcConn.oniceconnectionstatechange = (e: Event) =>
+      log(`ice connection state: ${this.webRtcConn!.iceConnectionState}`)
 
     this.ws = new WebSocket(this.url)
     this.ws.binaryType = 'arraybuffer'
@@ -122,7 +138,7 @@ export class WorldInstanceConnection {
             break
           }
 
-          const alias = message.getAlias()
+          const alias = `${message.getAlias()}`
           const availableServers = message.getAvailableServersList()
 
           if (availableServers.length === 0) {
@@ -147,7 +163,7 @@ export class WorldInstanceConnection {
             this.stats.webRtcSession.incrementRecv(msgSize)
           }
 
-          let message
+          let message: WebRtcMessage
           try {
             message = WebRtcMessage.deserializeBinary(msg)
           } catch (e) {
@@ -163,24 +179,26 @@ export class WorldInstanceConnection {
           }
 
           if (msgType === MessageType.WEBRTC_ICE_CANDIDATE) {
-            await this.webRtcConn.addIceCandidate(sdp)
+            await this.webRtcConn!.addIceCandidate({ candidate: sdp })
           } else if (msgType === MessageType.WEBRTC_OFFER) {
             try {
-              await this.webRtcConn.setRemoteDescription(new RTCSessionDescription({ type: 'offer', sdp: sdp }))
-              const desc = await this.webRtcConn.createAnswer()
-              await this.webRtcConn.setLocalDescription(desc)
+              await this.webRtcConn!.setRemoteDescription(new RTCSessionDescription({ type: 'offer', sdp: sdp }))
+              const desc = await this.webRtcConn!.createAnswer()
+              await this.webRtcConn!.setLocalDescription(desc)
 
-              const msg = new WebRtcMessage()
-              msg.setToAlias(this.commServerAlias)
-              msg.setType(MessageType.WEBRTC_ANSWER)
-              msg.setSdp(desc.sdp)
-              sendCoordinatorMessage(msg)
+              if (desc.sdp) {
+                const msg = new WebRtcMessage()
+                msg.setToAlias(this.commServerAlias)
+                msg.setType(MessageType.WEBRTC_ANSWER)
+                msg.setSdp(desc.sdp)
+                sendCoordinatorMessage(msg)
+              }
             } catch (err) {
               logError(err)
             }
           } else if (msgType === MessageType.WEBRTC_ANSWER) {
             try {
-              await this.webRtcConn.setRemoteDescription(new RTCSessionDescription({ type: 'answer', sdp: sdp }))
+              await this.webRtcConn!.setRemoteDescription(new RTCSessionDescription({ type: 'answer', sdp: sdp }))
             } catch (err) {
               logError(err)
             }
@@ -201,17 +219,18 @@ export class WorldInstanceConnection {
       logError('socket error', event)
     }
 
-    this.webRtcConn.onicecandidate = async event => {
+    this.webRtcConn.onicecandidate = async (event: RTCPeerConnectionIceEvent) => {
       if (event.candidate !== null) {
         const msg = new WebRtcMessage()
         msg.setType(MessageType.WEBRTC_ICE_CANDIDATE)
-        msg.setToAlias(this.commServerAlias)
+        // TODO: Ensure commServerAlias, it may be null
+        msg.setToAlias(this.commServerAlias!)
         msg.setSdp(event.candidate.candidate)
         sendCoordinatorMessage(msg)
       }
     }
 
-    this.webRtcConn.ondatachannel = e => {
+    this.webRtcConn.ondatachannel = (e: RTCDataChannelEvent) => {
       let dc = e.channel
 
       dc.onclose = () => log('dc has closed')
@@ -226,14 +245,19 @@ export class WorldInstanceConnection {
           authMessage.setRole(Role.CLIENT)
           authMessage.setMethod('noop')
           const bytes = authMessage.serializeBinary()
-          this.reliableDataChannel.send(bytes)
-          this.authenticated = true
+
+          if (dc.readyState === 'open') {
+            dc.send(bytes)
+            this.authenticated = true
+          } else {
+            logError('cannot send authentication, data channel is not ready')
+          }
         } else if (label === 'unreliable') {
           this.unreliableDataChannel = dc
         }
       }
 
-      dc.onmessage = e => {
+      dc.onmessage = (e: MessageEvent) => {
         if (this.stats) {
           this.stats.dispatchTopicDuration.start()
         }
@@ -258,31 +282,68 @@ export class WorldInstanceConnection {
             log('unsopported message')
             break
           }
-          case MessageType.TOPIC: {
+          case MessageType.DATA: {
             if (this.stats) {
               this.stats.topic.incrementRecv(msgSize)
             }
-            let message
+            let message: DataMessage
             try {
-              message = TopicMessage.deserializeBinary(data)
+              message = DataMessage.deserializeBinary(data)
             } catch (e) {
               logError('cannot process topic message', e)
               break
             }
 
-            const topic = message.getTopic()
-            const handler = this.subscriptions.get(topic)
+            const body = message.getBody() as any
 
-            if (!handler) {
-              log('ignoring topic message with topic', topic)
+            let dataHeader: DataHeader
+            try {
+              dataHeader = DataHeader.deserializeBinary(body)
+            } catch (e) {
+              logError('cannot process data header', e)
               break
             }
 
-            if (this.stats) {
-              this.stats.dispatchTopicDuration.stop()
-            }
+            const alias = `${message.getFromAlias()}`
+            const category = dataHeader.getCategory()
+            switch (category) {
+              case Category.POSITION: {
+                const positionData = PositionData.deserializeBinary(body)
 
-            handler(message.getFromAlias(), msg, message.getBody())
+                if (this.stats) {
+                  this.stats.dispatchTopicDuration.stop()
+                  this.stats.position.incrementRecv(msgSize)
+                  this.stats.onPositionMessage(alias, positionData)
+                }
+
+                this.positionHandler && this.positionHandler(alias, positionData)
+                break
+              }
+              case Category.CHAT: {
+                const chatData = ChatData.deserializeBinary(body)
+
+                if (this.stats) {
+                  this.stats.dispatchTopicDuration.stop()
+                  this.stats.chat.incrementRecv(msgSize)
+                }
+
+                this.chatHandler && this.chatHandler(alias, chatData)
+                break
+              }
+              case Category.PROFILE: {
+                const profileData = ProfileData.deserializeBinary(body)
+                if (this.stats) {
+                  this.stats.dispatchTopicDuration.stop()
+                  this.stats.profile.incrementRecv(msgSize)
+                }
+                this.profileHandler && this.profileHandler(alias, profileData)
+                break
+              }
+              default: {
+                log('ignoring category', category)
+                break
+              }
+            }
             break
           }
           case MessageType.PING: {
@@ -318,6 +379,7 @@ export class WorldInstanceConnection {
     const topic = `position:${positionHash(p)}`
 
     const d = new PositionData()
+    d.setCategory(Category.POSITION)
     d.setTime(Date.now())
     d.setPositionX(p[0])
     d.setPositionY(p[1])
@@ -337,10 +399,11 @@ export class WorldInstanceConnection {
     const topic = `profile:${positionHash(p)}`
 
     const d = new ProfileData()
+    d.setCategory(Category.PROFILE)
     d.setTime(Date.now())
-    d.setAvatarType(userProfile.avatarType)
-    d.setDisplayName(userProfile.displayName)
-    d.setPublicKey(userProfile.publicKey)
+    userProfile.avatarType && d.setAvatarType(userProfile.avatarType)
+    userProfile.displayName && d.setDisplayName(userProfile.displayName)
+    userProfile.publicKey && d.setPublicKey(userProfile.publicKey)
 
     const r = this.sendTopicMessage(true, topic, d)
     if (this.stats) {
@@ -352,6 +415,7 @@ export class WorldInstanceConnection {
     const topic = `chat:${positionHash(p)}`
 
     const d = new ChatData()
+    d.setCategory(Category.CHAT)
     d.setTime(Date.now())
     d.setMessageId(messageId)
     d.setText(text)
@@ -380,22 +444,27 @@ export class WorldInstanceConnection {
       if (!this.reliableDataChannel) {
         throw new Error('trying to send a topic message using null reliable channel')
       }
-      this.reliableDataChannel.send(bytes)
+
+      if (this.reliableDataChannel.readyState === 'open') {
+        this.reliableDataChannel.send(bytes)
+      }
     } else {
       if (!this.unreliableDataChannel) {
         throw new Error('trying to send a topic message using null unreliable channel')
       }
-      this.unreliableDataChannel.send(bytes)
+
+      if (this.unreliableDataChannel.readyState === 'open') {
+        this.unreliableDataChannel.send(bytes)
+      }
     }
 
     return new SendResult(bytes.length)
   }
 
-  updateSubscriptions(subscriptions: Map<string, TopicHandler>, rawTopics: string) {
-    if (!this.reliableDataChannel) {
-      throw new Error('trying to send topic subscription message using null reliable channel')
+  updateSubscriptions(rawTopics: string) {
+    if (!this.reliableDataChannel || this.reliableDataChannel.readyState !== 'open') {
+      throw new Error('trying to send topic subscription message but reliable channel is not ready')
     }
-    this.subscriptions = subscriptions
     const subscriptionMessage = new TopicSubscriptionMessage()
     subscriptionMessage.setType(MessageType.TOPIC_SUBSCRIPTION)
     subscriptionMessage.setFormat(Format.PLAIN)

@@ -1,10 +1,12 @@
-import * as Hammer from 'hammerjs'
-import { Ticker } from '@createjs/easeljs'
+const Hammer = require('hammerjs')
+const { Ticker } = require('@createjs/easeljs')
+
+import { HammerEvent } from './joystick'
 
 export default class PlaneCanvasControl {
   private dom: HTMLCanvasElement
-  private onMoveFn: (e?: Event) => void
-  private onTouchFn: (e?: Event) => void
+  private onMoveFn!: (e: HammerEvent) => void
+  private onTouchFn!: (e: HammerEvent) => void
 
   constructor() {
     const canvas = document.createElement('canvas')
@@ -18,11 +20,11 @@ export default class PlaneCanvasControl {
     return this.dom
   }
 
-  onMove(fn: (Event) => void): void {
+  onMove(fn: (e: HammerEvent) => void): void {
     this.onMoveFn = fn
   }
 
-  onTouch(fn: (Event) => void): void {
+  onTouch(fn: (e: HammerEvent) => void): void {
     this.onTouchFn = fn
   }
 
@@ -30,7 +32,7 @@ export default class PlaneCanvasControl {
     // on debug we should draw lines or maybe a background opaque color to detect the canvas and movements
     const hammer = new Hammer(this.dom)
     let isMoving = false
-    let lastEvent
+    let lastEvent: HammerEvent | null = null
 
     Ticker.addEventListener('tick', () => {
       if (isMoving && 'onMoveFn' in this && lastEvent) {

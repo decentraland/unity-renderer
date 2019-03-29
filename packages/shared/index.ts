@@ -1,4 +1,6 @@
-import './apis'
+import './apis/index'
+import './events'
+
 import { initializeUrlPositionObserver } from './world/positionThings'
 import { ETHEREUM_NETWORK, MOBILE_DEBUG, networkConfigurations, PREVIEW, EDITOR, AVOID_WEB3 } from '../config'
 import { getERC721 } from './ethereum/ERC721'
@@ -14,7 +16,7 @@ async function grantAccess(address: string | null, net: ETHEREUM_NETWORK) {
 
   let isWhitelisted = location.hostname === 'localhost' || navigator.userAgent.includes('Oculus')
 
-  if (!isWhitelisted) {
+  if (!isWhitelisted && address) {
     const contract = await getERC721(requestManager, networkConfigurations[net].invite)
 
     const balance = await contract.balanceOf(address)
@@ -29,7 +31,7 @@ async function grantAccess(address: string | null, net: ETHEREUM_NETWORK) {
   return isWhitelisted
 }
 
-function getNetworkFromDomain(): ETHEREUM_NETWORK {
+function getNetworkFromDomain(): ETHEREUM_NETWORK | null {
   const domain = window.location.host
 
   if (domain.endsWith('.decentraland.org') || domain.endsWith('.decentraland.today')) {

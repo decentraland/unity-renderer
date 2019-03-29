@@ -9,7 +9,7 @@ const defaultValue = {
   volume: 1,
   playing: true,
   pitch: 1,
-  audioClipId: null,
+  audioClipId: null as string | null,
   clip: null as AudioClip | null
 }
 
@@ -17,7 +17,8 @@ export class AudioSource extends BaseComponent<typeof defaultValue> {
   sound = future<BABYLON.Sound>()
 
   transformValue(value: typeof defaultValue) {
-    let clip = this.entity.context.disposableComponents.get(value.audioClipId) as AudioClip
+    let clip =
+      (value.audioClipId && (this.entity.context.disposableComponents.get(value.audioClipId) as AudioClip)) || null
 
     if (!(clip instanceof AudioClip)) {
       clip = null
@@ -52,15 +53,15 @@ export class AudioSource extends BaseComponent<typeof defaultValue> {
       this.sound
         .then($ => {
           $.updateOptions({
-            loop: this.value.loop
+            loop: this.value!.loop
           })
           $.setPosition(this.entity.absolutePosition)
-          if (!this.value.loop && this.value.playing && $.isPlaying) {
+          if (!this.value!.loop && this.value!.playing && $.isPlaying) {
             $.stop()
           }
-          if (!$.isPlaying && this.value.playing) {
+          if (!$.isPlaying && this.value!.playing) {
             $.play()
-          } else if ($.isPlaying && !this.value.playing) {
+          } else if ($.isPlaying && !this.value!.playing) {
             $.stop()
           }
         })

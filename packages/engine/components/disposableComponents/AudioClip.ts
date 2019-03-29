@@ -12,13 +12,13 @@ const defaults = {
 
 export class AudioClip extends DisposableComponent {
   readonly arrayBuffer = future<ArrayBuffer>()
-
+  loadingDonePrivate: boolean = false
   data = Object.create(defaults) as typeof defaults
 
   constructor(ctx: SharedSceneContext, uuid: string) {
     super(ctx, uuid)
     this.contributions.audioClips.add(this)
-    this.loadingDone = false
+
     this.arrayBuffer.catch($ => this.context.logger.error($))
   }
 
@@ -31,7 +31,7 @@ export class AudioClip extends DisposableComponent {
   }
 
   async updateData(data: typeof defaults): Promise<void> {
-    this.loadingDone = false
+    this.loadingDonePrivate = false
     this.data.volume = data.volume || 1
     this.data.loop = !!data.loop
     if (data.url && !this.data.url) {
@@ -41,13 +41,17 @@ export class AudioClip extends DisposableComponent {
         .getArrayBuffer(data.url)
         .then(ab => {
           this.arrayBuffer.resolve(ab)
-          this.loadingDone = true
+          this.loadingDonePrivate = true
         })
         .catch($ => {
           this.arrayBuffer.reject($)
-          this.loadingDone = true
+          this.loadingDonePrivate = true
         })
     }
+  }
+
+  loadingDone() {
+    return this.loadingDonePrivate
   }
 }
 

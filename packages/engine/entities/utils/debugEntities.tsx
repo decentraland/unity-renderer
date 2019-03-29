@@ -1,14 +1,14 @@
-import { BaseEntity } from 'engine/entities/BaseEntity'
-import { uuid } from 'atomicHelpers/math'
-import { SharedSceneContext } from 'engine/entities/SharedSceneContext'
-import { BoxShape } from 'engine/components/disposableComponents/BoxShape'
-import { PBRMaterial } from 'engine/components/disposableComponents/PBRMaterial'
-import { setEntityText } from 'engine/components/ephemeralComponents/TextShape'
-import { scene } from 'engine/renderer'
-import { decodeParcelSceneBoundaries, gridToParcel } from 'atomicHelpers/parcelScenePositions'
 import { parcelLimits } from 'config'
+import { uuid } from 'atomicHelpers/math'
+import { decodeParcelSceneBoundaries, gridToParcel } from 'atomicHelpers/parcelScenePositions'
 import { Color3 } from 'decentraland-ecs/src'
-import { checkerboardMaterial } from 'engine/renderer/ambientLights'
+import { BaseEntity } from '../BaseEntity'
+import { SharedSceneContext } from '../SharedSceneContext'
+import { BoxShape } from '../../components/disposableComponents/BoxShape'
+import { PBRMaterial } from '../../components/disposableComponents/PBRMaterial'
+import { setEntityText } from '../../components/ephemeralComponents/TextShape'
+import { scene } from '../../renderer'
+import { checkerboardMaterial } from '../../renderer/ambientLights'
 import { ignoreBoundaryChecksOnObject } from './checkParcelSceneLimits'
 
 const debugContext = new SharedSceneContext('.', 'debug-shared-context')
@@ -117,7 +117,7 @@ export function createParcelOutline(positions: string) {
     }
   }
 
-  const ground = BABYLON.Mesh.MergeMeshes(groundMeshes, true)
+  const ground = BABYLON.Mesh.MergeMeshes(groundMeshes, true) as BABYLON.Mesh
   ground.isPickable = false
 
   const lines = BABYLON.MeshBuilder.CreateLineSystem('lines', { lines: points }, scene)

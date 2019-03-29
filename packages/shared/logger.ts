@@ -8,9 +8,14 @@ export type ILogger = {
 
 export function createLogger(prefix: string): ILogger {
   return {
-    error(message: string, ...args: any[]): void {
-      // tslint:disable-next-line:no-console
-      console.error(prefix + message, ...args)
+    error(message: string | Error, ...args: any[]): void {
+      if (typeof message === 'object' && message.stack) {
+        // tslint:disable-next-line:no-console
+        console.error(prefix + message, ...args, message.stack)
+      } else {
+        // tslint:disable-next-line:no-console
+        console.error(prefix + message, ...args)
+      }
     },
     log(message: string, ...args: any[]): void {
       // tslint:disable-next-line:no-console

@@ -29,7 +29,7 @@ export class Database {
   private _enableTexturesOffline: boolean
   private manifestVersionFound: number
   private hasReachedQuota: boolean
-  private isSupported: boolean
+  private isSupported: boolean = true
 
   // Handling various flavors of prefixed version of IndexedDB
   private idbFactory = window.indexedDB || window.mozIndexedDB || window.webkitIndexedDB || window.msIndexedDB

@@ -118,7 +118,7 @@ describe('entity tree tests', function() {
     child.updateComponent({
       name: 'transform',
       classId: CLASS_ID.TRANSFORM,
-      entityId: null,
+      entityId: child.uuid,
       json: JSON.stringify({
         position: { x: 1, y: 1, z: 1 },
         scale: { x: 1, y: 1, z: 1 },

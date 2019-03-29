@@ -3,6 +3,8 @@ import { error } from 'engine/logger'
 import { future } from 'fp-future'
 import { AVOID_WEB3 } from 'config'
 
+declare var window: any
+
 export const providerFuture = future()
 export const requestManager = new RequestManager(null)
 

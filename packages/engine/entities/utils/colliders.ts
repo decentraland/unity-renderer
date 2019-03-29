@@ -9,12 +9,13 @@ colliderMaterial.zOffset = -1
 colliderMaterial.fogEnabled = false
 
 export function markAsCollider(mesh: BABYLON.AbstractMesh) {
-  mesh[colliderSymbol] = true
+  // tslint:disable-next-line:semicolon
+  ;(mesh as any)[colliderSymbol] = true
   mesh.material = colliderMaterial
 }
 
 export function isCollider(mesh: BABYLON.AbstractMesh) {
-  return !!mesh[colliderSymbol]
+  return !!(mesh as any)[colliderSymbol]
 }
 
 function isMesh($: BABYLON.Node) {

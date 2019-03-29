@@ -6,7 +6,8 @@ function disposeDelegate($: { dispose: Function }) {
   $.dispose()
 }
 
-function disposeNodeDelegate($: BABYLON.TransformNode) {
+function disposeNodeDelegate($: BABYLON.Node | null) {
+  if (!$) return
   $.setEnabled(false)
   $.parent = null
   $.dispose(false)
@@ -20,7 +21,7 @@ function disposeSkeleton($: BABYLON.Skeleton) {
   })
 }
 
-function disposeAnimatable($: BABYLON.Animatable) {
+function disposeAnimatable($: BABYLON.Animatable | null) {
   if (!$) return
   $.disposeOnEnd = true
   $.loopAnimation = false

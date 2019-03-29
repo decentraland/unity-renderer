@@ -12,9 +12,12 @@ var goog = jspb;
 var global = Function('return this')();
 
 goog.exportSymbol('proto.AuthMessage', null, global);
+goog.exportSymbol('proto.Category', null, global);
 goog.exportSymbol('proto.ChatData', null, global);
 goog.exportSymbol('proto.ConnectMessage', null, global);
 goog.exportSymbol('proto.CoordinatorMessage', null, global);
+goog.exportSymbol('proto.DataHeader', null, global);
+goog.exportSymbol('proto.DataMessage', null, global);
 goog.exportSymbol('proto.Format', null, global);
 goog.exportSymbol('proto.MessageType', null, global);
 goog.exportSymbol('proto.PingMessage', null, global);
@@ -223,7 +226,7 @@ proto.WelcomeMessage.prototype.toObject = function(opt_includeInstance) {
 proto.WelcomeMessage.toObject = function(includeInstance, msg) {
   var f, obj = {
     type: jspb.Message.getFieldWithDefault(msg, 1, 0),
-    alias: jspb.Message.getFieldWithDefault(msg, 2, ""),
+    alias: jspb.Message.getFieldWithDefault(msg, 2, 0),
     availableServersList: jspb.Message.getRepeatedField(msg, 3)
   };
 
@@ -266,12 +269,12 @@ proto.WelcomeMessage.deserializeBinaryFromReader = function(msg, reader) {
       msg.setType(value);
       break;
     case 2:
-      var value = /** @type {string} */ (reader.readString());
+      var value = /** @type {number} */ (reader.readUint64());
       msg.setAlias(value);
       break;
     case 3:
-      var value = /** @type {string} */ (reader.readString());
-      msg.addAvailableServers(value);
+      var value = /** @type {!Array<number>} */ (reader.readPackedUint64());
+      msg.setAvailableServersList(value);
       break;
     default:
       reader.skipField();
@@ -310,15 +313,15 @@ proto.WelcomeMessage.serializeBinaryToWriter = function(message, writer) {
     );
   }
   f = message.getAlias();
-  if (f.length > 0) {
-    writer.writeString(
+  if (f !== 0) {
+    writer.writeUint64(
       2,
       f
     );
   }
   f = message.getAvailableServersList();
   if (f.length > 0) {
-    writer.writeRepeatedString(
+    writer.writePackedUint64(
       3,
       f
     );
@@ -342,37 +345,37 @@ proto.WelcomeMessage.prototype.setType = function(value) {
 
 
 /**
- * optional string alias = 2;
- * @return {string}
+ * optional uint64 alias = 2;
+ * @return {number}
  */
 proto.WelcomeMessage.prototype.getAlias = function() {
-  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 2, ""));
+  return /** @type {number} */ (jspb.Message.getFieldWithDefault(this, 2, 0));
 };
 
 
-/** @param {string} value */
+/** @param {number} value */
 proto.WelcomeMessage.prototype.setAlias = function(value) {
-  jspb.Message.setProto3StringField(this, 2, value);
+  jspb.Message.setProto3IntField(this, 2, value);
 };
 
 
 /**
- * repeated string available_servers = 3;
- * @return {!Array<string>}
+ * repeated uint64 available_servers = 3;
+ * @return {!Array<number>}
  */
 proto.WelcomeMessage.prototype.getAvailableServersList = function() {
-  return /** @type {!Array<string>} */ (jspb.Message.getRepeatedField(this, 3));
+  return /** @type {!Array<number>} */ (jspb.Message.getRepeatedField(this, 3));
 };
 
 
-/** @param {!Array<string>} value */
+/** @param {!Array<number>} value */
 proto.WelcomeMessage.prototype.setAvailableServersList = function(value) {
   jspb.Message.setField(this, 3, value || []);
 };
 
 
 /**
- * @param {!string} value
+ * @param {!number} value
  * @param {number=} opt_index
  */
 proto.WelcomeMessage.prototype.addAvailableServers = function(value, opt_index) {
@@ -433,8 +436,8 @@ proto.ConnectMessage.prototype.toObject = function(opt_includeInstance) {
 proto.ConnectMessage.toObject = function(includeInstance, msg) {
   var f, obj = {
     type: jspb.Message.getFieldWithDefault(msg, 1, 0),
-    fromAlias: jspb.Message.getFieldWithDefault(msg, 2, ""),
-    toAlias: jspb.Message.getFieldWithDefault(msg, 3, "")
+    fromAlias: jspb.Message.getFieldWithDefault(msg, 2, 0),
+    toAlias: jspb.Message.getFieldWithDefault(msg, 3, 0)
   };
 
   if (includeInstance) {
@@ -476,11 +479,11 @@ proto.ConnectMessage.deserializeBinaryFromReader = function(msg, reader) {
       msg.setType(value);
       break;
     case 2:
-      var value = /** @type {string} */ (reader.readString());
+      var value = /** @type {number} */ (reader.readUint64());
       msg.setFromAlias(value);
       break;
     case 3:
-      var value = /** @type {string} */ (reader.readString());
+      var value = /** @type {number} */ (reader.readUint64());
       msg.setToAlias(value);
       break;
     default:
@@ -520,15 +523,15 @@ proto.ConnectMessage.serializeBinaryToWriter = function(message, writer) {
     );
   }
   f = message.getFromAlias();
-  if (f.length > 0) {
-    writer.writeString(
+  if (f !== 0) {
+    writer.writeUint64(
       2,
       f
     );
   }
   f = message.getToAlias();
-  if (f.length > 0) {
-    writer.writeString(
+  if (f !== 0) {
+    writer.writeUint64(
       3,
       f
     );
@@ -552,32 +555,32 @@ proto.ConnectMessage.prototype.setType = function(value) {
 
 
 /**
- * optional string from_alias = 2;
- * @return {string}
+ * optional uint64 from_alias = 2;
+ * @return {number}
  */
 proto.ConnectMessage.prototype.getFromAlias = function() {
-  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 2, ""));
+  return /** @type {number} */ (jspb.Message.getFieldWithDefault(this, 2, 0));
 };
 
 
-/** @param {string} value */
+/** @param {number} value */
 proto.ConnectMessage.prototype.setFromAlias = function(value) {
-  jspb.Message.setProto3StringField(this, 2, value);
+  jspb.Message.setProto3IntField(this, 2, value);
 };
 
 
 /**
- * optional string to_alias = 3;
- * @return {string}
+ * optional uint64 to_alias = 3;
+ * @return {number}
  */
 proto.ConnectMessage.prototype.getToAlias = function() {
-  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 3, ""));
+  return /** @type {number} */ (jspb.Message.getFieldWithDefault(this, 3, 0));
 };
 
 
-/** @param {string} value */
+/** @param {number} value */
 proto.ConnectMessage.prototype.setToAlias = function(value) {
-  jspb.Message.setProto3StringField(this, 3, value);
+  jspb.Message.setProto3IntField(this, 3, value);
 };
 
 
@@ -629,8 +632,8 @@ proto.WebRtcMessage.prototype.toObject = function(opt_includeInstance) {
 proto.WebRtcMessage.toObject = function(includeInstance, msg) {
   var f, obj = {
     type: jspb.Message.getFieldWithDefault(msg, 1, 0),
-    fromAlias: jspb.Message.getFieldWithDefault(msg, 2, ""),
-    toAlias: jspb.Message.getFieldWithDefault(msg, 3, ""),
+    fromAlias: jspb.Message.getFieldWithDefault(msg, 2, 0),
+    toAlias: jspb.Message.getFieldWithDefault(msg, 3, 0),
     sdp: jspb.Message.getFieldWithDefault(msg, 4, "")
   };
 
@@ -673,11 +676,11 @@ proto.WebRtcMessage.deserializeBinaryFromReader = function(msg, reader) {
       msg.setType(value);
       break;
     case 2:
-      var value = /** @type {string} */ (reader.readString());
+      var value = /** @type {number} */ (reader.readUint64());
       msg.setFromAlias(value);
       break;
     case 3:
-      var value = /** @type {string} */ (reader.readString());
+      var value = /** @type {number} */ (reader.readUint64());
       msg.setToAlias(value);
       break;
     case 4:
@@ -721,15 +724,15 @@ proto.WebRtcMessage.serializeBinaryToWriter = function(message, writer) {
     );
   }
   f = message.getFromAlias();
-  if (f.length > 0) {
-    writer.writeString(
+  if (f !== 0) {
+    writer.writeUint64(
       2,
       f
     );
   }
   f = message.getToAlias();
-  if (f.length > 0) {
-    writer.writeString(
+  if (f !== 0) {
+    writer.writeUint64(
       3,
       f
     );
@@ -760,32 +763,32 @@ proto.WebRtcMessage.prototype.setType = function(value) {
 
 
 /**
- * optional string from_alias = 2;
- * @return {string}
+ * optional uint64 from_alias = 2;
+ * @return {number}
  */
 proto.WebRtcMessage.prototype.getFromAlias = function() {
-  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 2, ""));
+  return /** @type {number} */ (jspb.Message.getFieldWithDefault(this, 2, 0));
 };
 
 
-/** @param {string} value */
+/** @param {number} value */
 proto.WebRtcMessage.prototype.setFromAlias = function(value) {
-  jspb.Message.setProto3StringField(this, 2, value);
+  jspb.Message.setProto3IntField(this, 2, value);
 };
 
 
 /**
- * optional string to_alias = 3;
- * @return {string}
+ * optional uint64 to_alias = 3;
+ * @return {number}
  */
 proto.WebRtcMessage.prototype.getToAlias = function() {
-  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 3, ""));
+  return /** @type {number} */ (jspb.Message.getFieldWithDefault(this, 3, 0));
 };
 
 
-/** @param {string} value */
+/** @param {number} value */
 proto.WebRtcMessage.prototype.setToAlias = function(value) {
-  jspb.Message.setProto3StringField(this, 3, value);
+  jspb.Message.setProto3IntField(this, 3, value);
 };
 
 
@@ -1383,8 +1386,8 @@ proto.TopicMessage.prototype.toObject = function(opt_includeInstance) {
 proto.TopicMessage.toObject = function(includeInstance, msg) {
   var f, obj = {
     type: jspb.Message.getFieldWithDefault(msg, 1, 0),
+    fromAlias: jspb.Message.getFieldWithDefault(msg, 2, 0),
     topic: jspb.Message.getFieldWithDefault(msg, 3, ""),
-    fromAlias: jspb.Message.getFieldWithDefault(msg, 4, ""),
     body: msg.getBody_asB64()
   };
 
@@ -1426,15 +1429,15 @@ proto.TopicMessage.deserializeBinaryFromReader = function(msg, reader) {
       var value = /** @type {!proto.MessageType} */ (reader.readEnum());
       msg.setType(value);
       break;
+    case 2:
+      var value = /** @type {number} */ (reader.readUint64());
+      msg.setFromAlias(value);
+      break;
     case 3:
       var value = /** @type {string} */ (reader.readString());
       msg.setTopic(value);
       break;
     case 4:
-      var value = /** @type {string} */ (reader.readString());
-      msg.setFromAlias(value);
-      break;
-    case 5:
       var value = /** @type {!Uint8Array} */ (reader.readBytes());
       msg.setBody(value);
       break;
@@ -1474,6 +1477,13 @@ proto.TopicMessage.serializeBinaryToWriter = function(message, writer) {
       f
     );
   }
+  f = message.getFromAlias();
+  if (f !== 0) {
+    writer.writeUint64(
+      2,
+      f
+    );
+  }
   f = message.getTopic();
   if (f.length > 0) {
     writer.writeString(
@@ -1481,17 +1491,10 @@ proto.TopicMessage.serializeBinaryToWriter = function(message, writer) {
       f
     );
   }
-  f = message.getFromAlias();
-  if (f.length > 0) {
-    writer.writeString(
-      4,
-      f
-    );
-  }
   f = message.getBody_asU8();
   if (f.length > 0) {
     writer.writeBytes(
-      5,
+      4,
       f
     );
   }
@@ -1514,6 +1517,21 @@ proto.TopicMessage.prototype.setType = function(value) {
 
 
 /**
+ * optional uint64 from_alias = 2;
+ * @return {number}
+ */
+proto.TopicMessage.prototype.getFromAlias = function() {
+  return /** @type {number} */ (jspb.Message.getFieldWithDefault(this, 2, 0));
+};
+
+
+/** @param {number} value */
+proto.TopicMessage.prototype.setFromAlias = function(value) {
+  jspb.Message.setProto3IntField(this, 2, value);
+};
+
+
+/**
  * optional string topic = 3;
  * @return {string}
  */
@@ -1529,31 +1547,16 @@ proto.TopicMessage.prototype.setTopic = function(value) {
 
 
 /**
- * optional string from_alias = 4;
- * @return {string}
- */
-proto.TopicMessage.prototype.getFromAlias = function() {
-  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 4, ""));
-};
-
-
-/** @param {string} value */
-proto.TopicMessage.prototype.setFromAlias = function(value) {
-  jspb.Message.setProto3StringField(this, 4, value);
-};
-
-
-/**
- * optional bytes body = 5;
+ * optional bytes body = 4;
  * @return {!(string|Uint8Array)}
  */
 proto.TopicMessage.prototype.getBody = function() {
-  return /** @type {!(string|Uint8Array)} */ (jspb.Message.getFieldWithDefault(this, 5, ""));
+  return /** @type {!(string|Uint8Array)} */ (jspb.Message.getFieldWithDefault(this, 4, ""));
 };
 
 
 /**
- * optional bytes body = 5;
+ * optional bytes body = 4;
  * This is a type-conversion wrapper around `getBody()`
  * @return {string}
  */
@@ -1564,7 +1567,7 @@ proto.TopicMessage.prototype.getBody_asB64 = function() {
 
 
 /**
- * optional bytes body = 5;
+ * optional bytes body = 4;
  * Note that Uint8Array is not supported on all browsers.
  * @see http://caniuse.com/Uint8Array
  * This is a type-conversion wrapper around `getBody()`
@@ -1578,7 +1581,227 @@ proto.TopicMessage.prototype.getBody_asU8 = function() {
 
 /** @param {!(string|Uint8Array)} value */
 proto.TopicMessage.prototype.setBody = function(value) {
-  jspb.Message.setProto3BytesField(this, 5, value);
+  jspb.Message.setProto3BytesField(this, 4, value);
+};
+
+
+
+/**
+ * Generated by JsPbCodeGenerator.
+ * @param {Array=} opt_data Optional initial data array, typically from a
+ * server response, or constructed directly in Javascript. The array is used
+ * in place and becomes part of the constructed object. It is not cloned.
+ * If no data is provided, the constructed object will be empty, but still
+ * valid.
+ * @extends {jspb.Message}
+ * @constructor
+ */
+proto.DataMessage = function(opt_data) {
+  jspb.Message.initialize(this, opt_data, 0, -1, null, null);
+};
+goog.inherits(proto.DataMessage, jspb.Message);
+if (goog.DEBUG && !COMPILED) {
+  proto.DataMessage.displayName = 'proto.DataMessage';
+}
+
+
+if (jspb.Message.GENERATE_TO_OBJECT) {
+/**
+ * Creates an object representation of this proto suitable for use in Soy templates.
+ * Field names that are reserved in JavaScript and will be renamed to pb_name.
+ * To access a reserved field use, foo.pb_<name>, eg, foo.pb_default.
+ * For the list of reserved names please see:
+ *     com.google.apps.jspb.JsClassTemplate.JS_RESERVED_WORDS.
+ * @param {boolean=} opt_includeInstance Whether to include the JSPB instance
+ *     for transitional soy proto support: http://goto/soy-param-migration
+ * @return {!Object}
+ */
+proto.DataMessage.prototype.toObject = function(opt_includeInstance) {
+  return proto.DataMessage.toObject(opt_includeInstance, this);
+};
+
+
+/**
+ * Static version of the {@see toObject} method.
+ * @param {boolean|undefined} includeInstance Whether to include the JSPB
+ *     instance for transitional soy proto support:
+ *     http://goto/soy-param-migration
+ * @param {!proto.DataMessage} msg The msg instance to transform.
+ * @return {!Object}
+ * @suppress {unusedLocalVariables} f is only used for nested messages
+ */
+proto.DataMessage.toObject = function(includeInstance, msg) {
+  var f, obj = {
+    type: jspb.Message.getFieldWithDefault(msg, 1, 0),
+    fromAlias: jspb.Message.getFieldWithDefault(msg, 2, 0),
+    body: msg.getBody_asB64()
+  };
+
+  if (includeInstance) {
+    obj.$jspbMessageInstance = msg;
+  }
+  return obj;
+};
+}
+
+
+/**
+ * Deserializes binary data (in protobuf wire format).
+ * @param {jspb.ByteSource} bytes The bytes to deserialize.
+ * @return {!proto.DataMessage}
+ */
+proto.DataMessage.deserializeBinary = function(bytes) {
+  var reader = new jspb.BinaryReader(bytes);
+  var msg = new proto.DataMessage;
+  return proto.DataMessage.deserializeBinaryFromReader(msg, reader);
+};
+
+
+/**
+ * Deserializes binary data (in protobuf wire format) from the
+ * given reader into the given message object.
+ * @param {!proto.DataMessage} msg The message object to deserialize into.
+ * @param {!jspb.BinaryReader} reader The BinaryReader to use.
+ * @return {!proto.DataMessage}
+ */
+proto.DataMessage.deserializeBinaryFromReader = function(msg, reader) {
+  while (reader.nextField()) {
+    if (reader.isEndGroup()) {
+      break;
+    }
+    var field = reader.getFieldNumber();
+    switch (field) {
+    case 1:
+      var value = /** @type {!proto.MessageType} */ (reader.readEnum());
+      msg.setType(value);
+      break;
+    case 2:
+      var value = /** @type {number} */ (reader.readUint64());
+      msg.setFromAlias(value);
+      break;
+    case 3:
+      var value = /** @type {!Uint8Array} */ (reader.readBytes());
+      msg.setBody(value);
+      break;
+    default:
+      reader.skipField();
+      break;
+    }
+  }
+  return msg;
+};
+
+
+/**
+ * Serializes the message to binary data (in protobuf wire format).
+ * @return {!Uint8Array}
+ */
+proto.DataMessage.prototype.serializeBinary = function() {
+  var writer = new jspb.BinaryWriter();
+  proto.DataMessage.serializeBinaryToWriter(this, writer);
+  return writer.getResultBuffer();
+};
+
+
+/**
+ * Serializes the given message to binary data (in protobuf wire
+ * format), writing to the given BinaryWriter.
+ * @param {!proto.DataMessage} message
+ * @param {!jspb.BinaryWriter} writer
+ * @suppress {unusedLocalVariables} f is only used for nested messages
+ */
+proto.DataMessage.serializeBinaryToWriter = function(message, writer) {
+  var f = undefined;
+  f = message.getType();
+  if (f !== 0.0) {
+    writer.writeEnum(
+      1,
+      f
+    );
+  }
+  f = message.getFromAlias();
+  if (f !== 0) {
+    writer.writeUint64(
+      2,
+      f
+    );
+  }
+  f = message.getBody_asU8();
+  if (f.length > 0) {
+    writer.writeBytes(
+      3,
+      f
+    );
+  }
+};
+
+
+/**
+ * optional MessageType type = 1;
+ * @return {!proto.MessageType}
+ */
+proto.DataMessage.prototype.getType = function() {
+  return /** @type {!proto.MessageType} */ (jspb.Message.getFieldWithDefault(this, 1, 0));
+};
+
+
+/** @param {!proto.MessageType} value */
+proto.DataMessage.prototype.setType = function(value) {
+  jspb.Message.setProto3EnumField(this, 1, value);
+};
+
+
+/**
+ * optional uint64 from_alias = 2;
+ * @return {number}
+ */
+proto.DataMessage.prototype.getFromAlias = function() {
+  return /** @type {number} */ (jspb.Message.getFieldWithDefault(this, 2, 0));
+};
+
+
+/** @param {number} value */
+proto.DataMessage.prototype.setFromAlias = function(value) {
+  jspb.Message.setProto3IntField(this, 2, value);
+};
+
+
+/**
+ * optional bytes body = 3;
+ * @return {!(string|Uint8Array)}
+ */
+proto.DataMessage.prototype.getBody = function() {
+  return /** @type {!(string|Uint8Array)} */ (jspb.Message.getFieldWithDefault(this, 3, ""));
+};
+
+
+/**
+ * optional bytes body = 3;
+ * This is a type-conversion wrapper around `getBody()`
+ * @return {string}
+ */
+proto.DataMessage.prototype.getBody_asB64 = function() {
+  return /** @type {string} */ (jspb.Message.bytesAsB64(
+      this.getBody()));
+};
+
+
+/**
+ * optional bytes body = 3;
+ * Note that Uint8Array is not supported on all browsers.
+ * @see http://caniuse.com/Uint8Array
+ * This is a type-conversion wrapper around `getBody()`
+ * @return {!Uint8Array}
+ */
+proto.DataMessage.prototype.getBody_asU8 = function() {
+  return /** @type {!Uint8Array} */ (jspb.Message.bytesAsU8(
+      this.getBody()));
+};
+
+
+/** @param {!(string|Uint8Array)} value */
+proto.DataMessage.prototype.setBody = function(value) {
+  jspb.Message.setProto3BytesField(this, 3, value);
 };
 
 
@@ -1840,6 +2063,148 @@ proto.AuthMessage.prototype.setBody = function(value) {
  * @extends {jspb.Message}
  * @constructor
  */
+proto.DataHeader = function(opt_data) {
+  jspb.Message.initialize(this, opt_data, 0, -1, null, null);
+};
+goog.inherits(proto.DataHeader, jspb.Message);
+if (goog.DEBUG && !COMPILED) {
+  proto.DataHeader.displayName = 'proto.DataHeader';
+}
+
+
+if (jspb.Message.GENERATE_TO_OBJECT) {
+/**
+ * Creates an object representation of this proto suitable for use in Soy templates.
+ * Field names that are reserved in JavaScript and will be renamed to pb_name.
+ * To access a reserved field use, foo.pb_<name>, eg, foo.pb_default.
+ * For the list of reserved names please see:
+ *     com.google.apps.jspb.JsClassTemplate.JS_RESERVED_WORDS.
+ * @param {boolean=} opt_includeInstance Whether to include the JSPB instance
+ *     for transitional soy proto support: http://goto/soy-param-migration
+ * @return {!Object}
+ */
+proto.DataHeader.prototype.toObject = function(opt_includeInstance) {
+  return proto.DataHeader.toObject(opt_includeInstance, this);
+};
+
+
+/**
+ * Static version of the {@see toObject} method.
+ * @param {boolean|undefined} includeInstance Whether to include the JSPB
+ *     instance for transitional soy proto support:
+ *     http://goto/soy-param-migration
+ * @param {!proto.DataHeader} msg The msg instance to transform.
+ * @return {!Object}
+ * @suppress {unusedLocalVariables} f is only used for nested messages
+ */
+proto.DataHeader.toObject = function(includeInstance, msg) {
+  var f, obj = {
+    category: jspb.Message.getFieldWithDefault(msg, 1, 0)
+  };
+
+  if (includeInstance) {
+    obj.$jspbMessageInstance = msg;
+  }
+  return obj;
+};
+}
+
+
+/**
+ * Deserializes binary data (in protobuf wire format).
+ * @param {jspb.ByteSource} bytes The bytes to deserialize.
+ * @return {!proto.DataHeader}
+ */
+proto.DataHeader.deserializeBinary = function(bytes) {
+  var reader = new jspb.BinaryReader(bytes);
+  var msg = new proto.DataHeader;
+  return proto.DataHeader.deserializeBinaryFromReader(msg, reader);
+};
+
+
+/**
+ * Deserializes binary data (in protobuf wire format) from the
+ * given reader into the given message object.
+ * @param {!proto.DataHeader} msg The message object to deserialize into.
+ * @param {!jspb.BinaryReader} reader The BinaryReader to use.
+ * @return {!proto.DataHeader}
+ */
+proto.DataHeader.deserializeBinaryFromReader = function(msg, reader) {
+  while (reader.nextField()) {
+    if (reader.isEndGroup()) {
+      break;
+    }
+    var field = reader.getFieldNumber();
+    switch (field) {
+    case 1:
+      var value = /** @type {!proto.Category} */ (reader.readEnum());
+      msg.setCategory(value);
+      break;
+    default:
+      reader.skipField();
+      break;
+    }
+  }
+  return msg;
+};
+
+
+/**
+ * Serializes the message to binary data (in protobuf wire format).
+ * @return {!Uint8Array}
+ */
+proto.DataHeader.prototype.serializeBinary = function() {
+  var writer = new jspb.BinaryWriter();
+  proto.DataHeader.serializeBinaryToWriter(this, writer);
+  return writer.getResultBuffer();
+};
+
+
+/**
+ * Serializes the given message to binary data (in protobuf wire
+ * format), writing to the given BinaryWriter.
+ * @param {!proto.DataHeader} message
+ * @param {!jspb.BinaryWriter} writer
+ * @suppress {unusedLocalVariables} f is only used for nested messages
+ */
+proto.DataHeader.serializeBinaryToWriter = function(message, writer) {
+  var f = undefined;
+  f = message.getCategory();
+  if (f !== 0.0) {
+    writer.writeEnum(
+      1,
+      f
+    );
+  }
+};
+
+
+/**
+ * optional Category category = 1;
+ * @return {!proto.Category}
+ */
+proto.DataHeader.prototype.getCategory = function() {
+  return /** @type {!proto.Category} */ (jspb.Message.getFieldWithDefault(this, 1, 0));
+};
+
+
+/** @param {!proto.Category} value */
+proto.DataHeader.prototype.setCategory = function(value) {
+  jspb.Message.setProto3EnumField(this, 1, value);
+};
+
+
+
+/**
+ * Generated by JsPbCodeGenerator.
+ * @param {Array=} opt_data Optional initial data array, typically from a
+ * server response, or constructed directly in Javascript. The array is used
+ * in place and becomes part of the constructed object. It is not cloned.
+ * If no data is provided, the constructed object will be empty, but still
+ * valid.
+ * @extends {jspb.Message}
+ * @constructor
+ */
 proto.PositionData = function(opt_data) {
   jspb.Message.initialize(this, opt_data, 0, -1, null, null);
 };
@@ -1876,14 +2241,15 @@ proto.PositionData.prototype.toObject = function(opt_includeInstance) {
  */
 proto.PositionData.toObject = function(includeInstance, msg) {
   var f, obj = {
-    time: +jspb.Message.getFieldWithDefault(msg, 1, 0.0),
-    positionX: +jspb.Message.getFieldWithDefault(msg, 2, 0.0),
-    positionY: +jspb.Message.getFieldWithDefault(msg, 3, 0.0),
-    positionZ: +jspb.Message.getFieldWithDefault(msg, 4, 0.0),
-    rotationX: +jspb.Message.getFieldWithDefault(msg, 5, 0.0),
-    rotationY: +jspb.Message.getFieldWithDefault(msg, 6, 0.0),
-    rotationZ: +jspb.Message.getFieldWithDefault(msg, 7, 0.0),
-    rotationW: +jspb.Message.getFieldWithDefault(msg, 8, 0.0)
+    category: jspb.Message.getFieldWithDefault(msg, 1, 0),
+    time: +jspb.Message.getFieldWithDefault(msg, 2, 0.0),
+    positionX: +jspb.Message.getFieldWithDefault(msg, 3, 0.0),
+    positionY: +jspb.Message.getFieldWithDefault(msg, 4, 0.0),
+    positionZ: +jspb.Message.getFieldWithDefault(msg, 5, 0.0),
+    rotationX: +jspb.Message.getFieldWithDefault(msg, 6, 0.0),
+    rotationY: +jspb.Message.getFieldWithDefault(msg, 7, 0.0),
+    rotationZ: +jspb.Message.getFieldWithDefault(msg, 8, 0.0),
+    rotationW: +jspb.Message.getFieldWithDefault(msg, 9, 0.0)
   };
 
   if (includeInstance) {
@@ -1921,34 +2287,38 @@ proto.PositionData.deserializeBinaryFromReader = function(msg, reader) {
     var field = reader.getFieldNumber();
     switch (field) {
     case 1:
+      var value = /** @type {!proto.Category} */ (reader.readEnum());
+      msg.setCategory(value);
+      break;
+    case 2:
       var value = /** @type {number} */ (reader.readDouble());
       msg.setTime(value);
       break;
-    case 2:
+    case 3:
       var value = /** @type {number} */ (reader.readFloat());
       msg.setPositionX(value);
       break;
-    case 3:
+    case 4:
       var value = /** @type {number} */ (reader.readFloat());
       msg.setPositionY(value);
       break;
-    case 4:
+    case 5:
       var value = /** @type {number} */ (reader.readFloat());
       msg.setPositionZ(value);
       break;
-    case 5:
+    case 6:
       var value = /** @type {number} */ (reader.readFloat());
       msg.setRotationX(value);
       break;
-    case 6:
+    case 7:
       var value = /** @type {number} */ (reader.readFloat());
       msg.setRotationY(value);
       break;
-    case 7:
+    case 8:
       var value = /** @type {number} */ (reader.readFloat());
       msg.setRotationZ(value);
       break;
-    case 8:
+    case 9:
       var value = /** @type {number} */ (reader.readFloat());
       msg.setRotationW(value);
       break;
@@ -1981,59 +2351,66 @@ proto.PositionData.prototype.serializeBinary = function() {
  */
 proto.PositionData.serializeBinaryToWriter = function(message, writer) {
   var f = undefined;
+  f = message.getCategory();
+  if (f !== 0.0) {
+    writer.writeEnum(
+      1,
+      f
+    );
+  }
   f = message.getTime();
   if (f !== 0.0) {
     writer.writeDouble(
-      1,
+      2,
       f
     );
   }
   f = message.getPositionX();
   if (f !== 0.0) {
     writer.writeFloat(
-      2,
+      3,
       f
     );
   }
   f = message.getPositionY();
   if (f !== 0.0) {
     writer.writeFloat(
-      3,
+      4,
       f
     );
   }
   f = message.getPositionZ();
   if (f !== 0.0) {
     writer.writeFloat(
-      4,
+      5,
       f
     );
   }
   f = message.getRotationX();
   if (f !== 0.0) {
     writer.writeFloat(
-      5,
+      6,
       f
     );
   }
   f = message.getRotationY();
   if (f !== 0.0) {
     writer.writeFloat(
-      6,
+      7,
       f
     );
   }
   f = message.getRotationZ();
   if (f !== 0.0) {
     writer.writeFloat(
-      7,
+      8,
       f
     );
   }
   f = message.getRotationW();
   if (f !== 0.0) {
     writer.writeFloat(
-      8,
+      9,
       f
     );
   }
@@ -2041,122 +2418,137 @@ proto.PositionData.serializeBinaryToWriter = function(message, writer) {
 
 
 /**
- * optional double time = 1;
- * @return {number}
+ * optional Category category = 1;
+ * @return {!proto.Category}
  */
-proto.PositionData.prototype.getTime = function() {
-  return /** @type {number} */ (+jspb.Message.getFieldWithDefault(this, 1, 0.0));
+proto.PositionData.prototype.getCategory = function() {
+  return /** @type {!proto.Category} */ (jspb.Message.getFieldWithDefault(this, 1, 0));
 };
 
 
-/** @param {number} value */
-proto.PositionData.prototype.setTime = function(value) {
-  jspb.Message.setProto3FloatField(this, 1, value);
+/** @param {!proto.Category} value */
+proto.PositionData.prototype.setCategory = function(value) {
+  jspb.Message.setProto3EnumField(this, 1, value);
 };
 
 
 /**
- * optional float position_x = 2;
+ * optional double time = 2;
  * @return {number}
  */
-proto.PositionData.prototype.getPositionX = function() {
+proto.PositionData.prototype.getTime = function() {
   return /** @type {number} */ (+jspb.Message.getFieldWithDefault(this, 2, 0.0));
 };
 
 
 /** @param {number} value */
-proto.PositionData.prototype.setPositionX = function(value) {
+proto.PositionData.prototype.setTime = function(value) {
   jspb.Message.setProto3FloatField(this, 2, value);
 };
 
 
 /**
- * optional float position_y = 3;
+ * optional float position_x = 3;
  * @return {number}
  */
-proto.PositionData.prototype.getPositionY = function() {
+proto.PositionData.prototype.getPositionX = function() {
   return /** @type {number} */ (+jspb.Message.getFieldWithDefault(this, 3, 0.0));
 };
 
 
 /** @param {number} value */
-proto.PositionData.prototype.setPositionY = function(value) {
+proto.PositionData.prototype.setPositionX = function(value) {
   jspb.Message.setProto3FloatField(this, 3, value);
 };
 
 
 /**
- * optional float position_z = 4;
+ * optional float position_y = 4;
  * @return {number}
  */
-proto.PositionData.prototype.getPositionZ = function() {
+proto.PositionData.prototype.getPositionY = function() {
   return /** @type {number} */ (+jspb.Message.getFieldWithDefault(this, 4, 0.0));
 };
 
 
 /** @param {number} value */
-proto.PositionData.prototype.setPositionZ = function(value) {
+proto.PositionData.prototype.setPositionY = function(value) {
   jspb.Message.setProto3FloatField(this, 4, value);
 };
 
 
 /**
- * optional float rotation_x = 5;
+ * optional float position_z = 5;
  * @return {number}
  */
-proto.PositionData.prototype.getRotationX = function() {
+proto.PositionData.prototype.getPositionZ = function() {
   return /** @type {number} */ (+jspb.Message.getFieldWithDefault(this, 5, 0.0));
 };
 
 
 /** @param {number} value */
-proto.PositionData.prototype.setRotationX = function(value) {
+proto.PositionData.prototype.setPositionZ = function(value) {
   jspb.Message.setProto3FloatField(this, 5, value);
 };
 
 
 /**
- * optional float rotation_y = 6;
+ * optional float rotation_x = 6;
  * @return {number}
  */
-proto.PositionData.prototype.getRotationY = function() {
+proto.PositionData.prototype.getRotationX = function() {
   return /** @type {number} */ (+jspb.Message.getFieldWithDefault(this, 6, 0.0));
 };
 
 
 /** @param {number} value */
-proto.PositionData.prototype.setRotationY = function(value) {
+proto.PositionData.prototype.setRotationX = function(value) {
   jspb.Message.setProto3FloatField(this, 6, value);
 };
 
 
 /**
- * optional float rotation_z = 7;
+ * optional float rotation_y = 7;
  * @return {number}
  */
-proto.PositionData.prototype.getRotationZ = function() {
+proto.PositionData.prototype.getRotationY = function() {
   return /** @type {number} */ (+jspb.Message.getFieldWithDefault(this, 7, 0.0));
 };
 
 
 /** @param {number} value */
-proto.PositionData.prototype.setRotationZ = function(value) {
+proto.PositionData.prototype.setRotationY = function(value) {
   jspb.Message.setProto3FloatField(this, 7, value);
 };
 
 
 /**
- * optional float rotation_w = 8;
+ * optional float rotation_z = 8;
  * @return {number}
  */
-proto.PositionData.prototype.getRotationW = function() {
+proto.PositionData.prototype.getRotationZ = function() {
   return /** @type {number} */ (+jspb.Message.getFieldWithDefault(this, 8, 0.0));
 };
 
 
 /** @param {number} value */
-proto.PositionData.prototype.setRotationW = function(value) {
+proto.PositionData.prototype.setRotationZ = function(value) {
   jspb.Message.setProto3FloatField(this, 8, value);
+};
+
+
+/**
+ * optional float rotation_w = 9;
+ * @return {number}
+ */
+proto.PositionData.prototype.getRotationW = function() {
+  return /** @type {number} */ (+jspb.Message.getFieldWithDefault(this, 9, 0.0));
+};
+
+
+/** @param {number} value */
+proto.PositionData.prototype.setRotationW = function(value) {
+  jspb.Message.setProto3FloatField(this, 9, value);
 };
 
 
@@ -2207,10 +2599,11 @@ proto.ProfileData.prototype.toObject = function(opt_includeInstance) {
  */
 proto.ProfileData.toObject = function(includeInstance, msg) {
   var f, obj = {
-    time: +jspb.Message.getFieldWithDefault(msg, 1, 0.0),
-    avatarType: jspb.Message.getFieldWithDefault(msg, 2, ""),
-    displayName: jspb.Message.getFieldWithDefault(msg, 3, ""),
-    publicKey: jspb.Message.getFieldWithDefault(msg, 4, "")
+    category: jspb.Message.getFieldWithDefault(msg, 1, 0),
+    time: +jspb.Message.getFieldWithDefault(msg, 2, 0.0),
+    avatarType: jspb.Message.getFieldWithDefault(msg, 3, ""),
+    displayName: jspb.Message.getFieldWithDefault(msg, 4, ""),
+    publicKey: jspb.Message.getFieldWithDefault(msg, 5, "")
   };
 
   if (includeInstance) {
@@ -2248,18 +2641,22 @@ proto.ProfileData.deserializeBinaryFromReader = function(msg, reader) {
     var field = reader.getFieldNumber();
     switch (field) {
     case 1:
+      var value = /** @type {!proto.Category} */ (reader.readEnum());
+      msg.setCategory(value);
+      break;
+    case 2:
       var value = /** @type {number} */ (reader.readDouble());
       msg.setTime(value);
       break;
-    case 2:
+    case 3:
       var value = /** @type {string} */ (reader.readString());
       msg.setAvatarType(value);
       break;
-    case 3:
+    case 4:
       var value = /** @type {string} */ (reader.readString());
       msg.setDisplayName(value);
       break;
-    case 4:
+    case 5:
       var value = /** @type {string} */ (reader.readString());
       msg.setPublicKey(value);
       break;
@@ -2292,31 +2689,38 @@ proto.ProfileData.prototype.serializeBinary = function() {
  */
 proto.ProfileData.serializeBinaryToWriter = function(message, writer) {
   var f = undefined;
+  f = message.getCategory();
+  if (f !== 0.0) {
+    writer.writeEnum(
+      1,
+      f
+    );
+  }
   f = message.getTime();
   if (f !== 0.0) {
     writer.writeDouble(
-      1,
+      2,
       f
     );
   }
   f = message.getAvatarType();
   if (f.length > 0) {
     writer.writeString(
-      2,
+      3,
       f
     );
   }
   f = message.getDisplayName();
   if (f.length > 0) {
     writer.writeString(
-      3,
+      4,
       f
     );
   }
   f = message.getPublicKey();
   if (f.length > 0) {
     writer.writeString(
-      4,
+      5,
       f
     );
   }
@@ -2324,62 +2728,77 @@ proto.ProfileData.serializeBinaryToWriter = function(message, writer) {
 
 
 /**
- * optional double time = 1;
+ * optional Category category = 1;
+ * @return {!proto.Category}
+ */
+proto.ProfileData.prototype.getCategory = function() {
+  return /** @type {!proto.Category} */ (jspb.Message.getFieldWithDefault(this, 1, 0));
+};
+
+
+/** @param {!proto.Category} value */
+proto.ProfileData.prototype.setCategory = function(value) {
+  jspb.Message.setProto3EnumField(this, 1, value);
+};
+
+
+/**
+ * optional double time = 2;
  * @return {number}
  */
 proto.ProfileData.prototype.getTime = function() {
-  return /** @type {number} */ (+jspb.Message.getFieldWithDefault(this, 1, 0.0));
+  return /** @type {number} */ (+jspb.Message.getFieldWithDefault(this, 2, 0.0));
 };
 
 
 /** @param {number} value */
 proto.ProfileData.prototype.setTime = function(value) {
-  jspb.Message.setProto3FloatField(this, 1, value);
+  jspb.Message.setProto3FloatField(this, 2, value);
 };
 
 
 /**
- * optional string avatar_type = 2;
+ * optional string avatar_type = 3;
  * @return {string}
  */
 proto.ProfileData.prototype.getAvatarType = function() {
-  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 2, ""));
-};
-
-
-/** @param {string} value */
-proto.ProfileData.prototype.setAvatarType = function(value) {
-  jspb.Message.setProto3StringField(this, 2, value);
-};
-
-
-/**
- * optional string display_name = 3;
- * @return {string}
- */
-proto.ProfileData.prototype.getDisplayName = function() {
   return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 3, ""));
 };
 
 
 /** @param {string} value */
-proto.ProfileData.prototype.setDisplayName = function(value) {
+proto.ProfileData.prototype.setAvatarType = function(value) {
   jspb.Message.setProto3StringField(this, 3, value);
 };
 
 
 /**
- * optional string public_key = 4;
+ * optional string display_name = 4;
  * @return {string}
  */
-proto.ProfileData.prototype.getPublicKey = function() {
+proto.ProfileData.prototype.getDisplayName = function() {
   return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 4, ""));
 };
 
 
 /** @param {string} value */
-proto.ProfileData.prototype.setPublicKey = function(value) {
+proto.ProfileData.prototype.setDisplayName = function(value) {
   jspb.Message.setProto3StringField(this, 4, value);
+};
+
+
+/**
+ * optional string public_key = 5;
+ * @return {string}
+ */
+proto.ProfileData.prototype.getPublicKey = function() {
+  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 5, ""));
+};
+
+
+/** @param {string} value */
+proto.ProfileData.prototype.setPublicKey = function(value) {
+  jspb.Message.setProto3StringField(this, 5, value);
 };
 
 
@@ -2430,9 +2849,10 @@ proto.ChatData.prototype.toObject = function(opt_includeInstance) {
  */
 proto.ChatData.toObject = function(includeInstance, msg) {
   var f, obj = {
-    time: +jspb.Message.getFieldWithDefault(msg, 1, 0.0),
-    messageId: jspb.Message.getFieldWithDefault(msg, 2, ""),
-    text: jspb.Message.getFieldWithDefault(msg, 3, "")
+    category: jspb.Message.getFieldWithDefault(msg, 1, 0),
+    time: +jspb.Message.getFieldWithDefault(msg, 2, 0.0),
+    messageId: jspb.Message.getFieldWithDefault(msg, 3, ""),
+    text: jspb.Message.getFieldWithDefault(msg, 4, "")
   };
 
   if (includeInstance) {
@@ -2470,14 +2890,18 @@ proto.ChatData.deserializeBinaryFromReader = function(msg, reader) {
     var field = reader.getFieldNumber();
     switch (field) {
     case 1:
+      var value = /** @type {!proto.Category} */ (reader.readEnum());
+      msg.setCategory(value);
+      break;
+    case 2:
       var value = /** @type {number} */ (reader.readDouble());
       msg.setTime(value);
       break;
-    case 2:
+    case 3:
       var value = /** @type {string} */ (reader.readString());
       msg.setMessageId(value);
       break;
-    case 3:
+    case 4:
       var value = /** @type {string} */ (reader.readString());
       msg.setText(value);
       break;
@@ -2510,24 +2934,31 @@ proto.ChatData.prototype.serializeBinary = function() {
  */
 proto.ChatData.serializeBinaryToWriter = function(message, writer) {
   var f = undefined;
+  f = message.getCategory();
+  if (f !== 0.0) {
+    writer.writeEnum(
+      1,
+      f
+    );
+  }
   f = message.getTime();
   if (f !== 0.0) {
     writer.writeDouble(
-      1,
+      2,
       f
     );
   }
   f = message.getMessageId();
   if (f.length > 0) {
     writer.writeString(
-      2,
+      3,
       f
     );
   }
   f = message.getText();
   if (f.length > 0) {
     writer.writeString(
-      3,
+      4,
       f
     );
   }
@@ -2535,47 +2966,62 @@ proto.ChatData.serializeBinaryToWriter = function(message, writer) {
 
 
 /**
- * optional double time = 1;
+ * optional Category category = 1;
+ * @return {!proto.Category}
+ */
+proto.ChatData.prototype.getCategory = function() {
+  return /** @type {!proto.Category} */ (jspb.Message.getFieldWithDefault(this, 1, 0));
+};
+
+
+/** @param {!proto.Category} value */
+proto.ChatData.prototype.setCategory = function(value) {
+  jspb.Message.setProto3EnumField(this, 1, value);
+};
+
+
+/**
+ * optional double time = 2;
  * @return {number}
  */
 proto.ChatData.prototype.getTime = function() {
-  return /** @type {number} */ (+jspb.Message.getFieldWithDefault(this, 1, 0.0));
+  return /** @type {number} */ (+jspb.Message.getFieldWithDefault(this, 2, 0.0));
 };
 
 
 /** @param {number} value */
 proto.ChatData.prototype.setTime = function(value) {
-  jspb.Message.setProto3FloatField(this, 1, value);
+  jspb.Message.setProto3FloatField(this, 2, value);
 };
 
 
 /**
- * optional string message_id = 2;
+ * optional string message_id = 3;
  * @return {string}
  */
 proto.ChatData.prototype.getMessageId = function() {
-  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 2, ""));
-};
-
-
-/** @param {string} value */
-proto.ChatData.prototype.setMessageId = function(value) {
-  jspb.Message.setProto3StringField(this, 2, value);
-};
-
-
-/**
- * optional string text = 3;
- * @return {string}
- */
-proto.ChatData.prototype.getText = function() {
   return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 3, ""));
 };
 
 
 /** @param {string} value */
-proto.ChatData.prototype.setText = function(value) {
+proto.ChatData.prototype.setMessageId = function(value) {
   jspb.Message.setProto3StringField(this, 3, value);
+};
+
+
+/**
+ * optional string text = 4;
+ * @return {string}
+ */
+proto.ChatData.prototype.getText = function() {
+  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 4, ""));
+};
+
+
+/** @param {string} value */
+proto.ChatData.prototype.setText = function(value) {
+  jspb.Message.setProto3StringField(this, 4, value);
 };
 
 
@@ -2593,7 +3039,8 @@ proto.MessageType = {
   PING: 7,
   TOPIC_SUBSCRIPTION: 8,
   TOPIC: 9,
-  AUTH: 10
+  DATA: 10,
+  AUTH: 11
 };
 
 /**
@@ -2612,6 +3059,16 @@ proto.Format = {
   UNKNOWN_FORMAT: 0,
   PLAIN: 1,
   GZIP: 2
+};
+
+/**
+ * @enum {number}
+ */
+proto.Category = {
+  UNKNOWN: 0,
+  POSITION: 1,
+  PROFILE: 2,
+  CHAT: 3
 };
 
 goog.object.extend(exports, proto);

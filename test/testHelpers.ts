@@ -10,7 +10,7 @@ import { setSize, scene, initDCL, onWindowResize, engineMicroQueue } from 'engin
 import { initKeyboard } from 'engine/renderer/input'
 import { reposition } from 'engine/renderer/ambientLights'
 
-import { start, stop } from 'dcl'
+import { start } from 'engine/dcl'
 
 import { resolveUrl } from 'atomicHelpers/parseUrl'
 import { sleep, untilNextFrame } from 'atomicHelpers/sleep'
@@ -20,7 +20,7 @@ import { BaseEntity } from 'engine/entities/BaseEntity'
 import { SharedSceneContext } from 'engine/entities/SharedSceneContext'
 import { EngineAPI } from 'shared/apis/EngineAPI'
 import { loadedParcelSceneWorkers } from 'shared/world/parcelSceneManager'
-import { WebGLParcelScene } from 'dcl/WebGLParcelScene'
+import { WebGLParcelScene } from 'engine/dcl/WebGLParcelScene'
 import { ILandToLoadableParcelScene, ILand, MappingsResponse, IScene } from 'shared/types'
 import { SceneWorker } from 'shared/world/SceneWorker'
 import { MemoryTransport } from 'decentraland-rpc'
@@ -28,6 +28,8 @@ import { MemoryTransport } from 'decentraland-rpc'
 import GamekitScene from '../packages/scene-system/scene.system'
 import { gridToWorld } from 'atomicHelpers/parcelScenePositions'
 import { BasicShape } from 'engine/components/disposableComponents/DisposableComponent'
+import { initHudSystem } from 'engine/dcl/widgets/ui'
+import { AVATAR_OBSERVABLE } from 'decentraland-ecs/src/decentraland/Types'
 
 const baseUrl = 'http://localhost:8080/local-ipfs/contents/'
 
@@ -48,7 +50,7 @@ let count = 0
  * @param ms milliseconds to wait
  */
 export function wait(ms: number) {
-  it(`wait ${ms}ms #${count++}`, async function() {
+  it(`wait ${ms}ms #${count++}`, async function(this: any) {
     this.timeout(ms + 1000)
     await sleep(ms)
     await untilNextFrame()
@@ -58,7 +60,7 @@ export function wait(ms: number) {
 function filterBabylonMaterials(material: BABYLON.Material) {
   return !['colorShader'].includes(material.name)
 }
-function filterBabylonTextures(texture: BABYLON.Texture) {
+function filterBabylonTextures(texture: BABYLON.BaseTexture) {
   return !['HighlightLayerMainRTT', 'GlowLayerBlurRTT', 'GlowLayerBlurRTT2', 'VerifiedBadge'].includes(texture.name)
 }
 
@@ -68,8 +70,8 @@ function filterBabylonTextures(texture: BABYLON.Texture) {
  * @param name name of the file to save
  * @param path folder
  */
-export function saveScreenshot(name: string, opts: PlayerCamera = null) {
-  it(`save the screenshot ${name} #${count++}`, async function() {
+export function saveScreenshot(name: string, opts: PlayerCamera | null = null) {
+  it(`save the screenshot ${name} #${count++}`, async function(this: any) {
     // tslint:disable-next-line:no-console
     this.timeout(20000)
     const canvas = await domReadyFuture
@@ -117,7 +119,7 @@ function getSceneNumbers() {
   return {
     transformNodes: scene.transformNodes.slice(),
     rootNodes: scene.rootNodes.slice(),
-    sounds: scene.sounds.slice(),
+    sounds: (scene.sounds && scene.sounds.slice()) || [],
     skeletons: scene.skeletons.slice(),
     animatables: scene.animatables.slice(),
     animationGroups: scene.animationGroups.slice(),
@@ -128,6 +130,44 @@ function getSceneNumbers() {
     textures: scene.textures.slice()
   }
 }
+
+async function initHud() {
+  initKeyboard()
+  const canvas = initDCL()
+  const body = await bodyReadyFuture
+  if (!canvas.parentElement) {
+    body.appendChild(canvas)
+  }
+  // Test output will be 800x600
+  setSize(800, 600)
+  onWindowResize()
+
+  await untilNextFrame()
+
+  let attempts = 0
+
+  while (!scene) {
+    if (attempts++ > 10) throw new Error('!scene')
+    await sleep(300)
+  }
+
+  const hudScene = await initHudSystem()
+  const system = await hudScene.worker!.system
+  const socialController = system.getAPIInstance(EngineAPI)
+
+  attempts = 0
+
+  while (!(AVATAR_OBSERVABLE in socialController.subscribedEvents)) {
+    if (attempts++ > 10) throw new Error(AVATAR_OBSERVABLE + ' not subscribed')
+    await sleep(300)
+  }
+
+  await untilNextFrame()
+
+  return hudScene
+}
+
+let hud = initHud()
 
 /**
  * Enables visual tests
@@ -140,7 +180,7 @@ export function enableVisualTests(name: string, cb: (root: BABYLON.TransformNode
 
     scene.removeTransformNode(root)
 
-    let initialNumbers: ReturnType<typeof getSceneNumbers> = null
+    let initialNumbers: ReturnType<typeof getSceneNumbers> | null = null
 
     it('Cleans the scene and append a new root', async () => {
       while (true) {
@@ -163,16 +203,7 @@ export function enableVisualTests(name: string, cb: (root: BABYLON.TransformNode
     })
 
     it('start the renderer', async () => {
-      initKeyboard()
-      start()
-      const canvas = initDCL()
-      const body = await bodyReadyFuture
-      if (!canvas.parentElement) {
-        body.appendChild(canvas)
-      }
-      // Test output will be 800x600
-      setSize(800, 600)
-      onWindowResize()
+      await hud
     })
 
     try {
@@ -198,8 +229,6 @@ export function enableVisualTests(name: string, cb: (root: BABYLON.TransformNode
 
       await untilNextFrame()
 
-      stop()
-
       if (typeof gc === 'function') {
         gc()
       }
@@ -212,26 +241,32 @@ export function enableVisualTests(name: string, cb: (root: BABYLON.TransformNode
       for (let i in actual) {
         if (i === 'materials') {
           actual[i] = actual[i].filter(filterBabylonMaterials)
-          initialNumbers[i] = initialNumbers[i].filter(filterBabylonMaterials)
+          initialNumbers![i] = initialNumbers![i].filter(filterBabylonMaterials)
         }
 
         if (i === 'textures') {
           actual[i] = actual[i].filter(filterBabylonTextures)
-          initialNumbers[i] = initialNumbers[i].filter(filterBabylonTextures)
+          initialNumbers![i] = initialNumbers![i].filter(filterBabylonTextures)
         }
 
         if (i === 'rootNodes') {
           actual[i] = actual[i].filter($ => $.name !== 'rootForTests')
-          initialNumbers[i] = initialNumbers[i].filter($ => $.name !== 'rootForTests')
+          initialNumbers![i] = initialNumbers![i].filter($ => $.name !== 'rootForTests')
         }
 
-        if (actual[i].length !== initialNumbers[i].length) {
-          errors.push(`${i}: actual ${actual[i].length} != ${initialNumbers[i].length} expected`)
+        if ((actual as any)[i].length !== (initialNumbers as any)[i].length) {
+          errors.push(`${i}: actual ${(actual as any)[i].length} != ${(initialNumbers as any)[i].length} expected`)
 
           // tslint:disable-next-line:no-console
-          console.log('extra in actual ' + i, actual[i].filter($ => !initialNumbers[i].includes($)))
+          console.log(
+            'extra in actual ' + i,
+            (actual as any)[i].filter(($: any) => !(initialNumbers as any)[i].includes($))
+          )
           // tslint:disable-next-line:no-console
-          console.log('missing in actual ' + i, initialNumbers[i].filter($ => !actual[i].includes($)))
+          console.log(
+            'missing in actual ' + i,
+            (initialNumbers as any)[i].filter(($: any) => !(actual as any)[i].includes($))
+          )
         }
       }
 
@@ -290,11 +325,11 @@ export function loadTestParcel(
   enableVisualTests(name, root => {
     const _parcelScene = future<SceneWorker>()
     const _glParcelScene = future<WebGLParcelScene>()
-    let context: SharedSceneContext = null
-    it(`loads the test scene at ${x},${y}`, async function() {
-      const origY = scene.activeCamera.position.y
-      gridToWorld(x, y, scene.activeCamera.position)
-      scene.activeCamera.position.y = origY
+    let context: SharedSceneContext
+    it(`loads the test scene at ${x},${y}`, async function(this: any) {
+      const origY = scene.activeCamera!.position.y
+      gridToWorld(x, y, scene.activeCamera!.position)
+      scene.activeCamera!.position.y = origY
       this.timeout(10000)
       const land = await loadMock('http://localhost:8080/local-ipfs/mappings', { x, y })
       let webGLParcelScene: WebGLParcelScene
@@ -328,7 +363,7 @@ export function loadTestParcel(
 
       await sleep(100)
 
-      await waitToBeLoaded(webGLParcelScene.context.rootEntity)
+      await waitToBeLoaded(webGLParcelScene!.context.rootEntity)
     })
     try {
       cb(root, _glParcelScene, _parcelScene)
@@ -406,7 +441,7 @@ function LookAtRef(camera: BABYLON.TargetCamera, target: BABYLON.Vector3, ref: B
   BABYLON.Quaternion.FromRotationMatrixToRef(result, ref)
 }
 
-export async function positionCamera(opts: PlayerCamera = null) {
+export async function positionCamera(opts: PlayerCamera | null = null) {
   await untilNextFrame()
 
   const camera = scene.activeCamera as BABYLON.FreeCamera
@@ -457,16 +492,17 @@ export function testScene(
 
     const parcelScenePromise = future<WebGLParcelScene>()
     const sceneHost = new GamekitScene(transport.client)
-    const logs = []
+    const logs: any[] = []
 
     sceneHost.manualUpdate = manualUpdate
 
-    it('loads the mock and starts the system', async function() {
+    it('loads the mock and starts the system', async function(this: any) {
       this.timeout(5000)
 
       const land = await loadMock('http://localhost:8080/local-ipfs/mappings', { x, y })
 
       try {
+        if (!land) throw new Error(`Cannot load the parcel at ${x},${y}`)
         const loadableParcelScene = ILandToLoadableParcelScene(land)
 
         parcelScenePromise.resolve(new WebGLParcelScene(loadableParcelScene))
@@ -476,14 +512,14 @@ export function testScene(
       }
     })
 
-    it('waits for the system to be loaded and ready', async function() {
+    it('waits for the system to be loaded and ready', async function(this: any) {
       this.timeout(5000)
       const parcelScene = await parcelScenePromise
 
       const originalLog = parcelScene.context.logger.log
       parcelScene.context.logger.log = function(...args: any[]) {
         logs.push(args)
-        return originalLog.apply(this, args)
+        return (originalLog as any).apply(this, args)
       }
 
       const worker = new SceneWorker(parcelScene, transport.server)
@@ -499,9 +535,9 @@ export function testScene(
     try {
       cb({
         ensureNoErrors: () => {
-          expect(sceneHost.devToolsAdapter.exceptions.length).to.eq(
+          expect(sceneHost.devToolsAdapter!.exceptions.length).to.eq(
             0,
-            `Found some(${sceneHost.devToolsAdapter.exceptions.length}) errors`
+            `Found some(${sceneHost.devToolsAdapter!.exceptions.length}) errors`
           )
         },
         sceneHost,
@@ -524,7 +560,23 @@ export function testScene(
       parcelScene.dispose()
       expect(rootEntity.isDisposed()).to.eq(true)
       expect(scene.getTransformNodesByID(rootEntity.id).length).to.eq(0, 'ParcelScene is still in the scene')
-      loadedParcelSceneWorkers.delete(worker)
+      if (worker) {
+        loadedParcelSceneWorkers.delete(worker)
+      }
     })
   })
 }
+
+export async function awaitHud() {
+  it('await hud system to be ready', async function(this: any) {
+    this.timeout(10000)
+    await hud
+  })
+  return hud
+}
+
+describe('Avatar hud initialization', () => {
+  awaitHud()
+})
+
+start()

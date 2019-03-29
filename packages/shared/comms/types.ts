@@ -13,8 +13,7 @@ export enum AvatarMessageType {
   USER_UNBLOCKED = 'USER_UNBLOCKED',
 
   ADD_FRIEND = 'ADD_FRIEND',
-  SHOW_PROFILE = 'SHOW_PROFILE',
-  HIDE_PROFILE = 'HIDE_PROFILE'
+  SHOW_WINDOW = 'SHOW_WINDOW'
 }
 
 export type ReceiveUserDataMessage = {
@@ -40,20 +39,6 @@ export type UserRemovedMessage = {
   uuid: string
 }
 
-export type HideProfileMessage = {
-  type: AvatarMessageType.HIDE_PROFILE
-}
-
-export type ShowProfileMessage = {
-  type: AvatarMessageType.SHOW_PROFILE
-  uuid: string
-  publicKey: string
-  displayName: string
-  isMuted: boolean
-  isBlocked: boolean
-  avatarUrl?: string
-}
-
 export type UserMessage = {
   type:
     | AvatarMessageType.SET_LOCAL_UUID
@@ -61,6 +46,7 @@ export type UserMessage = {
     | AvatarMessageType.USER_UNBLOCKED
     | AvatarMessageType.USER_MUTED
     | AvatarMessageType.USER_UNMUTED
+    | AvatarMessageType.SHOW_WINDOW
   uuid: string
 }
 
@@ -70,8 +56,6 @@ export type AvatarMessage =
   | ReceiveUserVisibleMessage
   | UserRemovedMessage
   | UserMessage
-  | ShowProfileMessage
-  | HideProfileMessage
 
 export type UUID = string
 
@@ -99,6 +83,7 @@ export type UserInformation = {
   publicKey?: string
   avatarType?: string
   status?: string
+  pose?: Pose
 }
 
 // The order is [X,Y,Z,Qx,Qy,Qz,Qw]

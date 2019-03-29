@@ -7,9 +7,12 @@ import {
   removeFromMutedUsers,
   addToBlockedUsers,
   removeFromBlockedUsers,
-  avatarMessageObservable
+  avatarMessageObservable,
+  getBlockedUsers,
+  getMutedUsers
 } from 'shared/comms/peers'
-import { AvatarMessageType } from 'shared/comms/types'
+import { AvatarMessage } from 'shared/comms/types'
+import { AVATAR_OBSERVABLE } from 'decentraland-ecs/src/decentraland/Types'
 
 export interface IProfileData {
   displayName: string
@@ -18,19 +21,6 @@ export interface IProfileData {
   avatarType: string
   isMuted: boolean
   isBlocked: boolean
-}
-
-export interface SocialController {
-  /**
-   * Adds user to list of muted users (stored in localStorage)
-   * @param user
-   */
-  mute(user: string): void
-  /**
-   * Adds user to list of blocked users (stored in localStorage)
-   * @param user
-   */
-  block(user: string): void
 }
 
 @registerAPI('SocialController')
@@ -43,10 +33,7 @@ export class SocialController extends ExposableAPI {
     const engineAPI = options.getAPIInstance(EngineAPI)
 
     avatarMessageObservable.add((event: any) => {
-      if (event.type === AvatarMessageType.SHOW_PROFILE || event.type === AvatarMessageType.HIDE_PROFILE) {
-        const { type, ...data } = event
-        engineAPI.sendSubscriptionEvent(event.type, data)
-      }
+      engineAPI.sendSubscriptionEvent(AVATAR_OBSERVABLE as any, event)
     })
   }
 
@@ -70,4 +57,23 @@ export class SocialController extends ExposableAPI {
     removeFromBlockedUsers(publicKey)
     removeFromMutedUsers(publicKey)
   }
+
+  @exposeMethod
+  async getBlockedUsers() {
+    return [...getBlockedUsers()]
+  }
+
+  @exposeMethod
+  async getMutedUsers() {
+    return [...getMutedUsers()]
+  }
 }
+
+export namespace avatarMock {
+  export function sendMessage(msg: AvatarMessage) {
+    avatarMessageObservable.notifyObservers(msg)
+  }
+}
+
+// tslint:disable-next-line:semicolon
+;(global as any)['avatarMock'] = avatarMock

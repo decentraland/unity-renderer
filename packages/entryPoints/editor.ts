@@ -1,10 +1,13 @@
+declare var global: any
+declare var window: any
+
 global['isEditor'] = window['isEditor'] = true
 
 import 'engine'
 
 import { initLocalPlayer, domReadyFuture, onWindowResize } from '../engine/renderer'
 
-import { initBabylonClient } from '../dcl'
+import { initBabylonClient } from '../engine/dcl'
 import * as _envHelper from '../engine/renderer/envHelper'
 import { canvas, scene } from '../engine/renderer/init'
 import { loadedParcelSceneWorkers, enablePositionReporting } from '../shared/world/parcelSceneManager'
@@ -18,7 +21,7 @@ import {
   normalizeContentMappings
 } from '../shared/types'
 import { SceneWorker } from '../shared/world/SceneWorker'
-import { WebGLParcelScene } from '../dcl/WebGLParcelScene'
+import { WebGLParcelScene } from '../engine/dcl/WebGLParcelScene'
 import { EventEmitter } from 'events'
 import { SharedSceneContext } from '../engine/entities/SharedSceneContext'
 import {
@@ -135,7 +138,7 @@ async function initializePreview(userScene: EnvironmentData<LoadableParcelScene>
 
   const system = await parcelScene.system
 
-  const engineAPI = parcelScene.engineAPI
+  const engineAPI = parcelScene.engineAPI!
 
   while (!system.isEnabled || !engineAPI.didStart) {
     await sleep(10)
@@ -147,16 +150,16 @@ async function initializePreview(userScene: EnvironmentData<LoadableParcelScene>
 export namespace editor {
   export const babylon = BABYLON
 
-  export async function handleMessage(message) {
+  export async function handleMessage(message: any) {
     if (message.type === 'update') {
       await loadScene(message.payload.scene)
     }
   }
 
   export function setGridResolution(position: number, scale: number, radians: number) {
-    Gizmos.gizmoManager.gizmos.positionGizmo.snapDistance = position
-    Gizmos.gizmoManager.gizmos.scaleGizmo.snapDistance = scale
-    Gizmos.gizmoManager.gizmos.rotationGizmo.snapDistance = radians
+    Gizmos.gizmoManager.gizmos.positionGizmo!.snapDistance = position
+    Gizmos.gizmoManager.gizmos.scaleGizmo!.snapDistance = scale
+    Gizmos.gizmoManager.gizmos.rotationGizmo!.snapDistance = radians
   }
 
   export function selectEntity(entityId: string) {
@@ -202,9 +205,9 @@ export namespace editor {
       canvas.focus()
       canvas.requestPointerLock()
       if (webGlParcelScene) {
-        vrCamera.position.x = webGlParcelScene.worker.position.x + 5
+        vrCamera.position.x = webGlParcelScene.worker!.position.x + 5
         vrCamera.position.y = 1.6
-        vrCamera.position.z = webGlParcelScene.worker.position.z + 5
+        vrCamera.position.z = webGlParcelScene.worker!.position.z + 5
       }
     }
   }
@@ -213,7 +216,7 @@ export namespace editor {
    * Call this function when the content mappings has changed
    */
   function setMappings(mappings: Record<string, string> | Array<ContentMapping>) {
-    const context = webGlParcelScene.context as SharedSceneContext
+    const context = webGlParcelScene!.context as SharedSceneContext
     const seenMappings = new Set()
 
     const sanitizedMappings = normalizeContentMappings(mappings)
@@ -242,7 +245,7 @@ export namespace editor {
         setMappings(action.payload.mappings)
       }
 
-      worker.engineAPI.sendSubscriptionEvent('externalAction', action)
+      worker.engineAPI!.sendSubscriptionEvent('externalAction', action)
     }
   }
 
@@ -277,12 +280,12 @@ export namespace editor {
   export function setCameraZoomDelta(delta: number) {
     arcCamera.radius += delta
 
-    if (arcCamera.radius > arcCamera.upperRadiusLimit) {
-      arcCamera.radius = arcCamera.upperRadiusLimit
+    if (arcCamera.radius > arcCamera.upperRadiusLimit!) {
+      arcCamera.radius = arcCamera.upperRadiusLimit!
     }
 
-    if (arcCamera.radius < arcCamera.lowerRadiusLimit) {
-      arcCamera.radius = arcCamera.lowerRadiusLimit
+    if (arcCamera.radius < arcCamera.lowerRadiusLimit!) {
+      arcCamera.radius = arcCamera.lowerRadiusLimit!
     }
   }
 
@@ -310,10 +313,10 @@ export namespace editor {
       data => {
         defer.resolve(data)
       },
-      null,
+      void 0,
       scene.database,
       useArrayBuffer,
-      (_, err) => {
+      (_: any, err: any) => {
         defer.reject(err)
       }
     )
