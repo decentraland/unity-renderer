@@ -11,7 +11,7 @@ using UnityEngine.TestTools;
 
 namespace Tests
 {
-    public class AudioTests
+    public class AudioTests : TestsBase
     {
         public IEnumerator CreateAudioSource(ParcelScene scene, string entityId, string audioClipId, bool playing)
         {
@@ -25,32 +25,13 @@ namespace Tests
                 pitch = 1.0f
             };
 
-            scene.EntityComponentCreate(JsonUtility.ToJson(new DCL.Models.EntityComponentCreateMessage
-            {
-                entityId = entityId,
-                name = "audioSourceTest",
-                classId = (int)DCL.Models.CLASS_ID_COMPONENT.AUDIO_SOURCE,
-                json = JsonUtility.ToJson(audioSourceModel)
-            }));
+            DCLAudioSource audioSource = TestHelpers.EntityComponentCreate<DCLAudioSource, DCLAudioSource.Model>(scene, scene.entities[entityId], audioSourceModel);
 
-            yield return null;
+            yield return audioSource.routine;
         }
 
         public IEnumerator LoadAudioClip(ParcelScene scene, string audioClipId, string url, bool loop, bool loading, float volume, bool waitForLoading = true)
         {
-            DCLAudioClip audioClip = null;
-
-            audioClip = scene.SharedComponentCreate(JsonUtility.ToJson(new DCL.Models.SharedComponentCreateMessage
-            {
-                id = audioClipId,//"audioClipTest",
-                name = "audioClip",
-                classId = (int)DCL.Models.CLASS_ID.AUDIO_CLIP,
-            })) as DCLAudioClip;
-
-            yield return new WaitForSeconds(0.01f);
-
-            Assert.IsTrue(scene.disposableComponents.ContainsKey("audioClipTest"), "Shared component was not created correctly!");
-
             DCLAudioClip.Model model = new DCLAudioClip.Model
             {
                 url = url,//TestHelpers.GetTestsAssetsPath() + "/Audio/Train.wav",
@@ -59,11 +40,22 @@ namespace Tests
                 volume = volume
             };
 
+            DCLAudioClip audioClip = scene.SharedComponentCreate(JsonUtility.ToJson(new DCL.Models.SharedComponentCreateMessage
+            {
+                id = audioClipId,
+                name = "audioClip",
+                classId = (int)DCL.Models.CLASS_ID.AUDIO_CLIP,
+            })) as DCLAudioClip;
+
             scene.SharedComponentUpdate(JsonUtility.ToJson(new DCL.Models.SharedComponentUpdateMessage
             {
                 id = audioClipId,
                 json = JsonUtility.ToJson(model)
             }));
+
+            yield return audioClip.routine;
+
+            Assert.IsTrue(scene.disposableComponents.ContainsKey("audioClipTest"), "Shared component was not created correctly!");
 
             if (waitForLoading)
             {
@@ -78,14 +70,7 @@ namespace Tests
 
         public IEnumerator CreateAndLoadAudioClip(bool waitForLoading = true)
         {
-            var sceneController = TestHelpers.InitializeSceneController();
-
-            yield return new WaitForSeconds(0.01f);
-
-            var sceneData = new LoadParcelScenesMessage.UnityParcelScene();
-            var scene = sceneController.CreateTestScene(sceneData);
-
-            yield return new WaitForSeconds(0.01f);
+            yield return InitScene();
 
             yield return LoadAudioClip(scene,
                 audioClipId: "audioClipTest",
@@ -95,34 +80,33 @@ namespace Tests
                 volume: 1.0f,
                 waitForLoading: waitForLoading);
 
-            string entityId = "e1";
-            TestHelpers.CreateSceneEntity(scene, entityId);
-            yield return new WaitForSeconds(0.01f);
+            DecentralandEntity entity = TestHelpers.CreateSceneEntity(scene);
+            yield return null;
 
             //NOTE(Brian): Play test
             yield return CreateAudioSource(scene,
-                entityId: entityId,
+                entityId: entity.entityId,
                 audioClipId: "audioClipTest",
                 playing: true);
 
-            DCLAudioSource dclAudioSource = scene.entities[entityId].gameObject.GetComponentInChildren<DCLAudioSource>();
+            DCLAudioSource dclAudioSource = entity.gameObject.GetComponentInChildren<DCLAudioSource>();
             AudioSource unityAudioSource = dclAudioSource.GetComponentInChildren<AudioSource>();
 
-            Assert.IsTrue(scene.entities.ContainsKey(entityId), "Entity was not created correctly!");
+            Assert.IsTrue(scene.entities.ContainsKey(entity.entityId), "Entity was not created correctly!");
             Assert.IsTrue(dclAudioSource != null, "DCLAudioSource Creation Failure!");
             Assert.IsTrue(unityAudioSource != null, "Unity AudioSource Creation Failure!");
 
-            yield return new WaitForSeconds(5f);
+            yield return dclAudioSource.routine;
 
             Assert.IsTrue(unityAudioSource.isPlaying, "Audio Source is not playing when it should!");
 
             //NOTE(Brian): Stop test
             yield return CreateAudioSource(scene,
-                entityId: entityId,
+                entityId: entity.entityId,
                 audioClipId: "audioClipTest",
                 playing: false);
 
-            yield return new WaitForSeconds(0.1f);
+            yield return null;
 
             Assert.IsTrue(!unityAudioSource.isPlaying, "Audio Source is playing when it should NOT play!");
         }
@@ -148,49 +132,35 @@ namespace Tests
         [UnityTest]
         public IEnumerator AudioComponentMissingValuesGetDefaultedOnUpdate()
         {
-            var sceneController = TestHelpers.InitializeSceneController();
+            yield return InitScene();
 
-            yield return new WaitForEndOfFrame();
-
-            var sceneData = new LoadParcelScenesMessage.UnityParcelScene();
-            var scene = sceneController.CreateTestScene(sceneData);
-
-            yield return new WaitForEndOfFrame();
-
-            string entityId = "1";
-            TestHelpers.CreateSceneEntity(scene, entityId);
+            DecentralandEntity entity = TestHelpers.CreateSceneEntity(scene);
 
             // 1. Create component with non-default configs
-            string componentJSON = JsonUtility.ToJson(new DCLAudioSource.Model()
+            DCLAudioSource.Model componentModel = new DCLAudioSource.Model()
             {
                 audioClipId = "audioClipTest",
                 playing = false,
                 volume = 0.3f,
                 loop = true,
                 pitch = 0.8f
-            });
+            };
 
-            DCLAudioSource audioSourceComponent = (DCLAudioSource)scene.EntityComponentCreate(JsonUtility.ToJson(new DCL.Models.EntityComponentCreateMessage
-            {
-                entityId = entityId,
-                name = "audioSourceTest",
-                classId = (int)DCL.Models.CLASS_ID_COMPONENT.AUDIO_SOURCE,
-                json = componentJSON
-            }));
+            DCLAudioSource audioSourceComponent = TestHelpers.EntityComponentCreate<DCLAudioSource, DCLAudioSource.Model>(scene, entity, componentModel);
 
             // 2. Check configured values
             Assert.AreEqual(0.3f, audioSourceComponent.model.volume);
             Assert.AreEqual(0.8f, audioSourceComponent.model.pitch);
 
             // 3. Update component with missing values
-            componentJSON = JsonUtility.ToJson(new DCLAudioSource.Model()
+            componentModel = new DCLAudioSource.Model()
             {
                 audioClipId = "audioClipTest",
                 playing = false,
                 loop = false
-            });
+            };
 
-            scene.EntityComponentUpdate(scene.entities[entityId], CLASS_ID_COMPONENT.AUDIO_SOURCE, componentJSON);
+            scene.EntityComponentUpdate(entity, CLASS_ID_COMPONENT.AUDIO_SOURCE, JsonUtility.ToJson(componentModel));
 
             // 4. Check changed values
             Assert.IsFalse(audioSourceComponent.model.loop);
@@ -203,57 +173,40 @@ namespace Tests
         [UnityTest]
         public IEnumerator AudioClipMissingValuesGetDefaultedOnUpdate()
         {
-            var sceneController = TestHelpers.InitializeSceneController();
-
-            yield return new WaitForSeconds(0.01f);
-
-            var sceneData = new LoadParcelScenesMessage.UnityParcelScene();
-            var scene = sceneController.CreateTestScene(sceneData);
-
-            yield return new WaitForSeconds(0.01f);
+            yield return InitScene();
 
             // 1. Create component with non-default configs
-            string componentJSON = JsonUtility.ToJson(new DCLAudioClip.Model
+            DCLAudioClip.Model componentModel = new DCLAudioClip.Model
             {
                 loop = true,
                 shouldTryToLoad = false,
                 volume = 0.8f
-            });
+            };
 
-            string componentId = TestHelpers.GetUniqueId("shape", (int)DCL.Models.CLASS_ID.AUDIO_CLIP, "1");
+            DCLAudioClip audioClip = TestHelpers.SharedComponentCreate<DCLAudioClip, DCLAudioClip.Model>(scene, CLASS_ID.AUDIO_CLIP, componentModel);
 
-            DCLAudioClip PBRMaterialComponent = (DCLAudioClip)scene.SharedComponentCreate(JsonUtility.ToJson(new DCL.Models.SharedComponentCreateMessage
-            {
-                id = componentId,
-                classId = (int)DCL.Models.CLASS_ID.AUDIO_CLIP
-            }));
-
-            scene.SharedComponentUpdate(JsonUtility.ToJson(new DCL.Models.SharedComponentUpdateMessage
-            {
-                id = componentId,
-                json = componentJSON
-            }));
-
-            yield return new WaitForSeconds(0.01f);
+            yield return audioClip.routine;
 
             // 2. Check configured values
-            Assert.IsTrue(PBRMaterialComponent.model.loop);
-            Assert.IsFalse(PBRMaterialComponent.model.shouldTryToLoad);
-            Assert.AreEqual(0.8f, PBRMaterialComponent.model.volume);
+            Assert.IsTrue(audioClip.model.loop);
+            Assert.IsFalse(audioClip.model.shouldTryToLoad);
+            Assert.AreEqual(0.8f, audioClip.model.volume);
 
             // 3. Update component with missing values
-            componentJSON = JsonUtility.ToJson(new DCLAudioClip.Model { });
+            componentModel = new DCLAudioClip.Model { };
 
             scene.SharedComponentUpdate(JsonUtility.ToJson(new DCL.Models.SharedComponentUpdateMessage
             {
-                id = componentId,
-                json = componentJSON
+                id = audioClip.id,
+                json = JsonUtility.ToJson(componentModel)
             }));
 
+            yield return audioClip.routine;
+
             // 4. Check defaulted values
-            Assert.IsFalse(PBRMaterialComponent.model.loop);
-            Assert.IsTrue(PBRMaterialComponent.model.shouldTryToLoad);
-            Assert.AreEqual(1f, PBRMaterialComponent.model.volume);
+            Assert.IsFalse(audioClip.model.loop);
+            Assert.IsTrue(audioClip.model.shouldTryToLoad);
+            Assert.AreEqual(1f, audioClip.model.volume);
         }
     }
 }

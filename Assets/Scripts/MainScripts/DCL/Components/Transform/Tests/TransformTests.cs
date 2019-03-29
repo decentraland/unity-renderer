@@ -12,21 +12,12 @@ using Newtonsoft.Json;
 
 namespace Tests
 {
-    public class TransformTests
+    public class TransformTests : TestsBase
     {
         [UnityTest]
         public IEnumerator TransformUpdate()
         {
-            var sceneController = TestHelpers.InitializeSceneController();
-
-            yield return new WaitForSeconds(0.01f);
-
-            Assert.IsTrue(sceneController != null);
-
-            var sceneData = new LoadParcelScenesMessage.UnityParcelScene();
-            var scene = sceneController.CreateTestScene(sceneData);
-
-            Assert.IsTrue(scene != null);
+            yield return InitScene();
 
             string entityId = "1";
             TestHelpers.CreateSceneEntity(scene, entityId);
@@ -76,7 +67,6 @@ namespace Tests
                 Assert.AreNotEqual(originalTransformScale, entityObject.gameObject.transform.localScale);
                 Assert.AreEqual(scale, entityObject.gameObject.transform.localScale);
             }
-
 
             {
                 Vector3 originalTransformPosition = entityObject.gameObject.transform.position;
@@ -139,7 +129,7 @@ namespace Tests
 
                 scene.EntityComponentRemove(rawJSON);
 
-                yield return new WaitForSeconds(0.01f);
+                yield return null;
 
                 Assert.AreNotEqual(originalTransformPosition, entityObject.gameObject.transform.position);
                 Assert.AreEqual(position, entityObject.gameObject.transform.position);
@@ -155,33 +145,20 @@ namespace Tests
         [UnityTest]
         public IEnumerator TransformComponentMissingValuesGetDefaultedOnUpdate()
         {
-            var sceneController = TestHelpers.InitializeSceneController();
-
-            yield return new WaitForEndOfFrame();
-
-            var sceneData = new LoadParcelScenesMessage.UnityParcelScene();
-            var scene = sceneController.CreateTestScene(sceneData);
-
-            yield return new WaitForEndOfFrame();
+            yield return InitScene();
 
             string entityId = "1";
             TestHelpers.CreateSceneEntity(scene, entityId);
 
             // 1. Create component with non-default configs
-            string componentJSON = JsonUtility.ToJson(new DCLTransform.Model
+            DCLTransform.Model componentModel = new DCLTransform.Model
             {
                 position = new Vector3(3f, 7f, 1f),
                 rotation = new Quaternion(4f, 9f, 1f, 7f),
                 scale = new Vector3(5f, 0.7f, 2f)
-            });
+            };
 
-            DCLTransform transformComponent = (DCLTransform)scene.EntityComponentCreate(JsonUtility.ToJson(new DCL.Models.EntityComponentCreateMessage
-            {
-                entityId = entityId,
-                name = "animation",
-                classId = (int)DCL.Models.CLASS_ID_COMPONENT.TRANSFORM,
-                json = componentJSON
-            }));
+            DCLTransform transformComponent = TestHelpers.EntityComponentCreate<DCLTransform, DCLTransform.Model>(scene, scene.entities[entityId], componentModel);
 
             // 2. Check configured values
             Assert.AreEqual(new Vector3(3f, 7f, 1f), transformComponent.model.position);
@@ -189,12 +166,12 @@ namespace Tests
             Assert.AreEqual(new Vector3(5f, 0.7f, 2f), transformComponent.model.scale);
 
             // 3. Update component with missing values
-            componentJSON = JsonUtility.ToJson(new DCLTransform.Model
+            componentModel = new DCLTransform.Model
             {
                 position = new Vector3(30f, 70f, 10f)
-            });
+            };
 
-            scene.EntityComponentUpdate(scene.entities[entityId], CLASS_ID_COMPONENT.TRANSFORM, componentJSON);
+            scene.EntityComponentUpdate(scene.entities[entityId], CLASS_ID_COMPONENT.TRANSFORM, JsonUtility.ToJson(componentModel));
 
             // 4. Check changed values
             Assert.AreEqual(new Vector3(30f, 70f, 10f), transformComponent.model.position);

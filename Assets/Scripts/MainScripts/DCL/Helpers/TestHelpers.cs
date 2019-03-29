@@ -36,13 +36,6 @@ namespace DCL.Helpers
         protected IEnumerator WaitForUICanvasUpdate()
         {
             yield break;
-            // Unity takes several frames to update the canvas info 
-            //(LayoutRebuilder.ForceRebuildLayoutImmediate() and Canvas.ForceUpdateCanvases() don't seem to work)
-
-            //yield return null;
-            //yield return null;
-            //yield return null;
-            //yield return null;
         }
     }
 
@@ -390,9 +383,9 @@ namespace DCL.Helpers
             return componentId;
         }
 
-        public static void AddOnClickComponent(ParcelScene scene, string entityID, string uuid)
+        public static OnClickComponent AddOnClickComponent(ParcelScene scene, string entityID, string uuid)
         {
-            scene.EntityComponentCreate(JsonUtility.ToJson(new DCL.Models.EntityComponentCreateMessage
+            return scene.EntityComponentCreate(JsonUtility.ToJson(new DCL.Models.EntityComponentCreateMessage
             {
                 entityId = entityID,
                 name = "onClick",
@@ -402,7 +395,7 @@ namespace DCL.Helpers
                     type = "onClick",
                     uuid = uuid
                 })
-            }));
+            })) as OnClickComponent;
         }
 
         public static SceneController InitializeSceneController(bool usesWebServer = false)

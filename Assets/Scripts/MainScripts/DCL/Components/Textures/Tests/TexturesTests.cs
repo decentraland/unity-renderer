@@ -23,7 +23,7 @@ namespace Tests
                 DCLTexture.BabylonWrapMode.CLAMP,
                 FilterMode.Bilinear);
 
-            yield return new WaitForSeconds(1);
+            yield return dclTexture.routine;
 
             Assert.IsTrue(dclTexture.texture != null, "Texture didn't load correctly?");
             Assert.IsTrue(dclTexture.unityWrap == TextureWrapMode.Clamp, "Bad wrap mode!");

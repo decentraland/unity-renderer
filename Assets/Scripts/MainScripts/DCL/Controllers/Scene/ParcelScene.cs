@@ -292,7 +292,7 @@ namespace DCL.Controllers
             }
             else
             {
-                EntityComponentUpdate(entity, classId, createEntityComponentMessage.json);
+                newComponent = EntityComponentUpdate(entity, classId, createEntityComponentMessage.json);
             }
 
             return newComponent;
