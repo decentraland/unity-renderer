@@ -12,27 +12,19 @@ using UnityEngine.UI;
 
 namespace Tests
 {
-    public class TextShapeTests
+    public class TextShapeTests : TestsBase
     {
         [UnityTest]
         public IEnumerator TextShapeCreateTest()
         {
-            var sceneController = TestHelpers.InitializeSceneController();
-
-            yield return new WaitForSeconds(0.01f);
-
-            var sceneData = new LoadParcelScenesMessage.UnityParcelScene();
-            var scene = sceneController.CreateTestScene(sceneData);
-
-            yield return new WaitForSeconds(0.01f);
+            yield return InitScene();
 
             string entityId = "e1";
 
             TestHelpers.CreateSceneEntity(scene, entityId);
 
-            yield return new WaitForSeconds(0.01f);
+            yield return null;
 
-            Debug.Log("Creating/updating text shape...");
             var textShapeModel = new TextShape.Model()
             {
                 value = "Hello world!",
@@ -60,15 +52,9 @@ namespace Tests
                 shadowColor = Color.white
             };
 
-            TextShape textShape = scene.EntityComponentCreate(JsonUtility.ToJson(new DCL.Models.EntityComponentCreateMessage
-            {
-                entityId = entityId,
-                name = "textShapeTest",
-                classId = (int)DCL.Models.CLASS_ID_COMPONENT.TEXT_SHAPE,
-                json = JsonUtility.ToJson(textShapeModel)
-            })) as TextShape;
+            TextShape textShape = TestHelpers.EntityComponentCreate<TextShape, TextShape.Model>(scene, scene.entities[entityId], textShapeModel);
 
-            yield return new WaitForSeconds(0.01f);
+            yield return textShape.routine;
 
             TextMeshPro tmpro = textShape.GetComponentInChildren<TextMeshPro>();
 
@@ -76,8 +62,7 @@ namespace Tests
             Assert.IsTrue(tmpro != null, "TextMeshPro doesn't exists for TextShape!");
             Assert.IsTrue(textShape.text != null, "Unity Text component doesn't exists for TextShape!");
 
-
-            yield return new WaitForSeconds(0.1f);
+            yield return null;
 
             TMProConsistencyAsserts(tmpro, textShapeModel);
 
@@ -85,15 +70,7 @@ namespace Tests
             textShapeModel.paddingRight = 15;
             textShapeModel.value = "Hello world again!";
 
-            scene.EntityComponentCreate(JsonUtility.ToJson(new DCL.Models.EntityComponentCreateMessage
-            {
-                entityId = entityId,
-                name = "textShapeTest",
-                classId = (int)DCL.Models.CLASS_ID_COMPONENT.TEXT_SHAPE,
-                json = JsonUtility.ToJson(textShapeModel)
-            }));
-
-            yield return new WaitForSeconds(0.1f);
+            TextShape textShape2 = TestHelpers.EntityComponentCreate<TextShape, TextShape.Model>(scene, scene.entities[entityId], textShapeModel);
 
             TMProConsistencyAsserts(tmpro, textShapeModel);
 
@@ -128,35 +105,24 @@ namespace Tests
         [UnityTest]
         public IEnumerator TextShapeComponentMissingValuesGetDefaultedOnUpdate()
         {
-            var sceneController = TestHelpers.InitializeSceneController();
-
-            yield return new WaitForEndOfFrame();
-
-            var sceneData = new LoadParcelScenesMessage.UnityParcelScene();
-            var scene = sceneController.CreateTestScene(sceneData);
-
-            yield return new WaitForEndOfFrame();
+            yield return InitScene();
 
             string entityId = "1";
             TestHelpers.CreateSceneEntity(scene, entityId);
 
             // 1. Create component with non-default configs
-            string componentJSON = JsonUtility.ToJson(new TextShape.Model
+            TextShape.Model textShapeModel = new TextShape.Model
             {
                 color = Color.green,
                 width = 0.25f,
                 lineCount = 3,
                 resizeToFit = true,
                 shadowColor = Color.red
-            });
+            };
 
-            TextShape textShapeComponent = (TextShape)scene.EntityComponentCreate(JsonUtility.ToJson(new DCL.Models.EntityComponentCreateMessage
-            {
-                entityId = entityId,
-                name = "animation",
-                classId = (int)DCL.Models.CLASS_ID_COMPONENT.TEXT_SHAPE,
-                json = componentJSON
-            }));
+            TextShape textShapeComponent = TestHelpers.EntityComponentCreate<TextShape, TextShape.Model>(scene, scene.entities[entityId], textShapeModel);
+
+            yield return textShapeComponent.routine;
 
             // 2. Check configured values
             Assert.AreEqual(Color.green, textShapeComponent.model.color);
@@ -166,9 +132,9 @@ namespace Tests
             Assert.AreEqual(Color.red, textShapeComponent.model.shadowColor);
 
             // 3. Update component with missing values
-            componentJSON = JsonUtility.ToJson(new TextShape.Model { });
+            scene.EntityComponentUpdate(scene.entities[entityId], CLASS_ID_COMPONENT.TEXT_SHAPE, JsonUtility.ToJson(new TextShape.Model { }));
 
-            scene.EntityComponentUpdate(scene.entities[entityId], CLASS_ID_COMPONENT.TEXT_SHAPE, componentJSON);
+            yield return textShapeComponent.routine;
 
             // 4. Check defaulted values
             Assert.AreEqual(Color.white, textShapeComponent.model.color);

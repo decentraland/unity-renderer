@@ -106,7 +106,7 @@ namespace Tests
             // Update material
             DCLTexture texture = TestHelpers.CreateDCLTexture(scene, TestHelpers.GetTestsAssetsPath() + "/Images/atlas.png");
 
-            yield return new WaitForSeconds(1);
+            yield return texture.routine;
 
             scene.SharedComponentUpdate(JsonUtility.ToJson(new DCL.Models.SharedComponentUpdateMessage
             {
@@ -370,8 +370,7 @@ namespace Tests
                 DCLTexture.BabylonWrapMode.CLAMP,
                 FilterMode.Bilinear);
 
-            yield return new WaitForSeconds(1.0f);
-
+            yield return dclTexture.routine;
 
             BasicMaterial mat = TestHelpers.SharedComponentCreate<BasicMaterial, BasicMaterial.Model>
                 (scene, CLASS_ID.BASIC_MATERIAL,
@@ -381,7 +380,7 @@ namespace Tests
                     alphaTest = 0.5f
                 });
 
-            yield return new WaitForSeconds(1.0f);
+            yield return mat.routine;
 
             TestHelpers.SharedComponentAttach(mat, entity);
 
@@ -409,6 +408,8 @@ namespace Tests
                 DCLTexture.BabylonWrapMode.CLAMP,
                 FilterMode.Bilinear);
 
+            yield return dclTexture.routine;
+
             PBRMaterial mat = TestHelpers.SharedComponentCreate<PBRMaterial, PBRMaterial.Model>(scene, CLASS_ID.PBR_MATERIAL,
                 new PBRMaterial.Model
                 {
@@ -419,12 +420,14 @@ namespace Tests
                 }
             );
 
-            yield return new WaitForSeconds(1.0f);
+            yield return mat.routine;
 
             TestHelpers.SharedComponentAttach(mat, entity);
 
             SphereShape shape = TestHelpers.SharedComponentCreate<SphereShape, SphereShape.Model>(scene, CLASS_ID.SPHERE_SHAPE,
                 new SphereShape.Model { });
+
+            yield return shape.routine;
 
             TestHelpers.SharedComponentAttach(shape, entity);
 
@@ -507,41 +510,29 @@ namespace Tests
             yield return InitScene();
 
             // 1. Create component with non-default configs
-            string componentJSON = JsonUtility.ToJson(new BasicMaterial.Model
+            BasicMaterial basicMaterialComponent = TestHelpers.SharedComponentCreate<BasicMaterial, BasicMaterial.Model>(scene, CLASS_ID.BASIC_MATERIAL,
+            new BasicMaterial.Model
             {
                 alphaTest = 1f
             });
 
-            string componentId = TestHelpers.GetUniqueId("shape", (int)DCL.Models.CLASS_ID.BASIC_MATERIAL, "1");
-
-            BasicMaterial BasicMaterialComponent = (BasicMaterial)scene.SharedComponentCreate(JsonUtility.ToJson(new DCL.Models.SharedComponentCreateMessage
-            {
-                id = componentId,
-                classId = (int)DCL.Models.CLASS_ID.BASIC_MATERIAL
-            }));
-
-            scene.SharedComponentUpdate(JsonUtility.ToJson(new DCL.Models.SharedComponentUpdateMessage
-            {
-                id = componentId,
-                json = componentJSON
-            }));
-
-            yield return new WaitForSeconds(0.01f);
+            yield return basicMaterialComponent.routine;
 
             // 2. Check configured values
-            Assert.AreEqual(1f, BasicMaterialComponent.model.alphaTest);
+            Assert.AreEqual(1f, basicMaterialComponent.model.alphaTest);
 
             // 3. Update component with missing values
-            componentJSON = JsonUtility.ToJson(new BasicMaterial.Model { });
 
             scene.SharedComponentUpdate(JsonUtility.ToJson(new DCL.Models.SharedComponentUpdateMessage
             {
-                id = componentId,
-                json = componentJSON
+                id = basicMaterialComponent.id,
+                json = JsonUtility.ToJson(new BasicMaterial.Model { })
             }));
 
+            yield return basicMaterialComponent.routine;
+
             // 4. Check defaulted values
-            Assert.AreEqual(0.5f, BasicMaterialComponent.model.alphaTest);
+            Assert.AreEqual(0.5f, basicMaterialComponent.model.alphaTest);
         }
 
         [UnityTest]
@@ -550,7 +541,8 @@ namespace Tests
             yield return InitScene();
 
             // 1. Create component with non-default configs
-            string componentJSON = JsonUtility.ToJson(new PBRMaterial.Model
+            PBRMaterial PBRMaterialComponent = TestHelpers.SharedComponentCreate<PBRMaterial, PBRMaterial.Model>(scene, CLASS_ID.PBR_MATERIAL,
+            new PBRMaterial.Model
             {
                 albedoColor = "#808080",
                 metallic = 0.3f,
@@ -558,21 +550,7 @@ namespace Tests
                 specularIntensity = 3f
             });
 
-            string componentId = TestHelpers.GetUniqueId("shape", (int)DCL.Models.CLASS_ID.PBR_MATERIAL, "1");
-
-            PBRMaterial PBRMaterialComponent = (PBRMaterial)scene.SharedComponentCreate(JsonUtility.ToJson(new DCL.Models.SharedComponentCreateMessage
-            {
-                id = componentId,
-                classId = (int)DCL.Models.CLASS_ID.PBR_MATERIAL
-            }));
-
-            scene.SharedComponentUpdate(JsonUtility.ToJson(new DCL.Models.SharedComponentUpdateMessage
-            {
-                id = componentId,
-                json = componentJSON
-            }));
-
-            yield return new WaitForSeconds(0.01f);
+            yield return PBRMaterialComponent.routine;
 
             // 2. Check configured values
             Assert.AreEqual("#808080", PBRMaterialComponent.model.albedoColor);
@@ -581,13 +559,13 @@ namespace Tests
             Assert.AreEqual(3f, PBRMaterialComponent.model.specularIntensity);
 
             // 3. Update component with missing values
-            componentJSON = JsonUtility.ToJson(new PBRMaterial.Model { });
-
             scene.SharedComponentUpdate(JsonUtility.ToJson(new DCL.Models.SharedComponentUpdateMessage
             {
-                id = componentId,
-                json = componentJSON
+                id = PBRMaterialComponent.id,
+                json = JsonUtility.ToJson(new PBRMaterial.Model { })
             }));
+
+            yield return PBRMaterialComponent.routine;
 
             // 4. Check defaulted values
             Assert.AreEqual("#fff", PBRMaterialComponent.model.albedoColor);

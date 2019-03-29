@@ -9,18 +9,13 @@ using UnityEngine.TestTools;
 
 namespace Tests
 {
-    public class ParametrizedShapesTests
+    public class ParametrizedShapesTests : TestsBase
     {
 
         [UnityTest]
         public IEnumerator BoxShapeUpdate()
         {
-            var sceneController = TestHelpers.InitializeSceneController();
-
-            yield return new WaitForSeconds(0.01f);
-
-            var sceneData = new LoadParcelScenesMessage.UnityParcelScene();
-            var scene = sceneController.CreateTestScene(sceneData);
+            yield return InitScene();
 
             string entityId = "1";
             TestHelpers.InstantiateEntityWithShape(scene, entityId, DCL.Models.CLASS_ID.BOX_SHAPE, Vector3.zero);
@@ -32,12 +27,7 @@ namespace Tests
         [UnityTest]
         public IEnumerator SphereShapeUpdate()
         {
-            var sceneController = TestHelpers.InitializeSceneController();
-
-            yield return new WaitForSeconds(0.01f);
-
-            var sceneData = new LoadParcelScenesMessage.UnityParcelScene();
-            var scene = sceneController.CreateTestScene(sceneData);
+            yield return InitScene();
 
             string entityId = "2";
             TestHelpers.InstantiateEntityWithShape(scene, entityId, DCL.Models.CLASS_ID.SPHERE_SHAPE, Vector3.zero);
@@ -49,12 +39,7 @@ namespace Tests
         [UnityTest]
         public IEnumerator PlaneShapeUpdate()
         {
-            var sceneController = TestHelpers.InitializeSceneController();
-
-            yield return new WaitForSeconds(0.01f);
-
-            var sceneData = new LoadParcelScenesMessage.UnityParcelScene();
-            var scene = sceneController.CreateTestScene(sceneData);
+            yield return InitScene();
 
             string entityId = "3";
             TestHelpers.InstantiateEntityWithShape(scene, entityId, DCL.Models.CLASS_ID.PLANE_SHAPE, Vector3.zero);
@@ -67,12 +52,7 @@ namespace Tests
         [UnityTest]
         public IEnumerator PlaneShapeUpdateWithUVs()
         {
-            var sceneController = TestHelpers.InitializeSceneController();
-
-            yield return new WaitForSeconds(0.01f);
-
-            var sceneData = new LoadParcelScenesMessage.UnityParcelScene();
-            var scene = sceneController.CreateTestScene(sceneData);
+            yield return InitScene();
 
             float[] uvs = new float[] { 0, 0.75f, 0.25f, 0.75f, 0.25f, 1, 0, 1, 0, 0.75f, 0.25f, 0.75f, 0.25f, 1, 0, 1 };
 
@@ -90,8 +70,7 @@ namespace Tests
                     uvs = uvs
                 });
 
-
-            yield return new WaitForSeconds(0.01f);
+            yield return plane.routine;
 
             Assert.IsTrue(entity != null);
             Assert.IsTrue(plane != null);
@@ -102,12 +81,7 @@ namespace Tests
         [UnityTest]
         public IEnumerator CylinderShapeUpdate()
         {
-            var sceneController = TestHelpers.InitializeSceneController();
-
-            yield return new WaitForSeconds(0.01f);
-
-            var sceneData = new LoadParcelScenesMessage.UnityParcelScene();
-            var scene = sceneController.CreateTestScene(sceneData);
+            yield return InitScene();
 
             string entityId = "5";
             TestHelpers.InstantiateEntityWithShape(scene, entityId, DCL.Models.CLASS_ID.CYLINDER_SHAPE, Vector3.zero);
@@ -119,12 +93,7 @@ namespace Tests
         [UnityTest]
         public IEnumerator ConeShapeUpdate()
         {
-            var sceneController = TestHelpers.InitializeSceneController();
-
-            yield return new WaitForSeconds(0.01f);
-
-            var sceneData = new LoadParcelScenesMessage.UnityParcelScene();
-            var scene = sceneController.CreateTestScene(sceneData);
+            yield return InitScene();
 
             string entityId = "4";
             TestHelpers.InstantiateEntityWithShape(scene, entityId, DCL.Models.CLASS_ID.CONE_SHAPE, Vector3.zero);
@@ -137,17 +106,10 @@ namespace Tests
         [UnityTest]
         public IEnumerator BoxShapeComponentMissingValuesGetDefaultedOnUpdate()
         {
-            var sceneController = TestHelpers.InitializeSceneController();
-
-            yield return new WaitForSeconds(0.01f);
-
-            var sceneData = new LoadParcelScenesMessage.UnityParcelScene();
-            var scene = sceneController.CreateTestScene(sceneData);
+            yield return InitScene();
 
             string entityId = "1";
             TestHelpers.CreateSceneEntity(scene, entityId);
-
-            yield return new WaitForSeconds(0.01f);
 
             // 1. Create component with non-default configs
             string componentJSON = JsonUtility.ToJson(new BoxShape.Model
@@ -158,8 +120,6 @@ namespace Tests
             string componentId = TestHelpers.CreateAndSetShape(scene, entityId, DCL.Models.CLASS_ID.BOX_SHAPE,
               componentJSON
             );
-
-            yield return new WaitForSeconds(0.01f);
 
             BoxShape boxShapeComponent = (BoxShape)scene.GetSharedComponent(componentId);
 
@@ -181,17 +141,10 @@ namespace Tests
         [UnityTest]
         public IEnumerator ConeShapeComponentMissingValuesGetDefaultedOnUpdate()
         {
-            var sceneController = TestHelpers.InitializeSceneController();
-
-            yield return new WaitForSeconds(0.01f);
-
-            var sceneData = new LoadParcelScenesMessage.UnityParcelScene();
-            var scene = sceneController.CreateTestScene(sceneData);
+            yield return InitScene();
 
             string entityId = "1";
             TestHelpers.CreateSceneEntity(scene, entityId);
-
-            yield return new WaitForSeconds(0.01f);
 
             // 1. Create component with non-default configs
             string componentJSON = JsonUtility.ToJson(new ConeShape.Model
@@ -207,8 +160,6 @@ namespace Tests
             string componentId = TestHelpers.CreateAndSetShape(scene, entityId, DCL.Models.CLASS_ID.CONE_SHAPE,
               componentJSON
             );
-
-            yield return new WaitForSeconds(0.01f);
 
             ConeShape coneShapeComponent = (ConeShape)scene.GetSharedComponent(componentId);
 
@@ -242,17 +193,10 @@ namespace Tests
         [UnityTest]
         public IEnumerator CylinderShapeComponentMissingValuesGetDefaultedOnUpdate()
         {
-            var sceneController = TestHelpers.InitializeSceneController();
-
-            yield return new WaitForSeconds(0.01f);
-
-            var sceneData = new LoadParcelScenesMessage.UnityParcelScene();
-            var scene = sceneController.CreateTestScene(sceneData);
+            yield return InitScene();
 
             string entityId = "1";
             TestHelpers.CreateSceneEntity(scene, entityId);
-
-            yield return new WaitForSeconds(0.01f);
 
             // 1. Create component with non-default configs
             string componentJSON = JsonUtility.ToJson(new CylinderShape.Model
@@ -268,8 +212,6 @@ namespace Tests
             string componentId = TestHelpers.CreateAndSetShape(scene, entityId, DCL.Models.CLASS_ID.CYLINDER_SHAPE,
               componentJSON
             );
-
-            yield return new WaitForSeconds(0.01f);
 
             CylinderShape cylinderShapeComponent = (CylinderShape)scene.GetSharedComponent(componentId);
 
@@ -303,17 +245,10 @@ namespace Tests
         [UnityTest]
         public IEnumerator PlaneShapeComponentMissingValuesGetDefaultedOnUpdate()
         {
-            var sceneController = TestHelpers.InitializeSceneController();
-
-            yield return new WaitForSeconds(0.01f);
-
-            var sceneData = new LoadParcelScenesMessage.UnityParcelScene();
-            var scene = sceneController.CreateTestScene(sceneData);
+            yield return InitScene();
 
             string entityId = "1";
             TestHelpers.CreateSceneEntity(scene, entityId);
-
-            yield return new WaitForSeconds(0.01f);
 
             // 1. Create component with non-default configs
             string componentJSON = JsonUtility.ToJson(new PlaneShape.Model
@@ -326,8 +261,6 @@ namespace Tests
             string componentId = TestHelpers.CreateAndSetShape(scene, entityId, DCL.Models.CLASS_ID.PLANE_SHAPE,
               componentJSON
             );
-
-            yield return new WaitForSeconds(0.01f);
 
             PlaneShape planeShapeComponent = (PlaneShape)scene.GetSharedComponent(componentId);
 

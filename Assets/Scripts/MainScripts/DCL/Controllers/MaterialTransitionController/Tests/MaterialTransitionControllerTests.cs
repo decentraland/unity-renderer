@@ -11,7 +11,7 @@ using UnityEngine.TestTools;
 
 namespace Tests
 {
-    public class MaterialTransitionControllerTests
+    public class MaterialTransitionControllerTests : TestsBase
     {
         ParcelScene scene;
         SceneController sceneController;
@@ -33,7 +33,6 @@ namespace Tests
 
             scene = sceneController.loadedScenes["0,0"];
         }
-
 
         [UnityTest]
         public IEnumerator MaterialTransitionWithGLTF()
@@ -57,8 +56,8 @@ namespace Tests
                 out entity,
                 new GLTFShape.Model() { src = TestHelpers.GetTestsAssetsPath() + "/GLB/Lantern/Lantern.glb" });
 
-
-            yield return new WaitForSeconds(0.5f);
+            GLTFLoader gltfShape = entity.gameObject.GetComponentInChildren<GLTFLoader>(true);
+            yield return new WaitUntil(() => gltfShape.alreadyLoaded);
 
             float timeout = 0;
 
@@ -91,10 +90,8 @@ namespace Tests
                 yield return null;
             }
 
-            Assert.Less(timeout, 10, "Timeout! MaterialTransitionController never appeared?"); 
+            Assert.Less(timeout, 10.1f, "Timeout! MaterialTransitionController never appeared?");
 
-            // Use the Assert class to test conditions.
-            // Use yield to skip a frame.
             yield return null;
         }
 
@@ -116,7 +113,7 @@ namespace Tests
                 out entity,
                 new ConeShape.Model());
 
-            yield return new WaitForSeconds(0.1f);
+            yield return null;
 
             float timeout = 0;
             while (timeout < 10)
@@ -127,7 +124,7 @@ namespace Tests
                 {
                     var c = entity.meshGameObject.GetComponentInChildren<MaterialTransitionController>();
 
-                    if (c != null ) // NOTE(Brian): Wait for it
+                    if (c != null) // NOTE(Brian): Wait for it
                     {
                         Assert.IsTrue(!c.useHologram, "useHologram must be false");
                         Assert.IsTrue(entity.meshGameObject != null, "meshGameObject is null");
@@ -144,11 +141,8 @@ namespace Tests
                 yield return null;
             }
 
+            Assert.Less(timeout, 10.1f, "Timeout! MaterialTransitionController never appeared?");
 
-            Assert.Less(timeout, 10, "Timeout! MaterialTransitionController never appeared?");
-
-            // Use the Assert class to test conditions.
-            // Use yield to skip a frame.
             yield return null;
         }
     }

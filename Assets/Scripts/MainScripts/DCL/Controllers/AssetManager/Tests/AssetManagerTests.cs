@@ -32,7 +32,8 @@ namespace Tests
 
             TestHelpers.AttachGLTFShape(e, scene, Vector3.zero, gltfModel);
 
-            yield return new WaitForSeconds(8f);
+            GLTFLoader gltfShape = e.gameObject.GetComponentInChildren<GLTFLoader>(true);
+            yield return new WaitUntil(() => gltfShape.alreadyLoaded);
 
             GLTFShape newShape = TestHelpers.CreateEntityWithGLTFShape(scene, Vector3.zero, gltfModel);
 
@@ -70,7 +71,8 @@ namespace Tests
 
             Assert.IsTrue(GLTFComponent.downloadingCount == 1, "Multiple GLTF loading detected, caching not working?");
 
-            yield return new WaitForSeconds(8f);
+            GLTFLoader gltfShape = e.gameObject.GetComponentInChildren<GLTFLoader>(true);
+            yield return new WaitUntil(() => gltfShape.alreadyLoaded);
 
             Assert.IsTrue(shape1 != null, "shape1 is null??");
             Assert.IsTrue(shape2 != null, "shape2 is null??");

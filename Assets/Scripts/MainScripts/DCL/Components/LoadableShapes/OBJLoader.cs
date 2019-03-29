@@ -19,6 +19,8 @@ namespace DCL.Components
         {
             if (!string.IsNullOrEmpty(src))
             {
+                alreadyLoaded = false;
+
                 objLoaderComponent.LoadAsset(src, true);
 
                 if (objLoaderComponent.loadingPlaceholder == null)
@@ -34,6 +36,8 @@ namespace DCL.Components
 
         void CallOnComponentUpdated()
         {
+            alreadyLoaded = true;
+
             if (entity.OnComponentUpdated != null)
             {
                 entity.OnComponentUpdated.Invoke(this);

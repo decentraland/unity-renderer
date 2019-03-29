@@ -19,21 +19,12 @@ using DCL.Configuration;
 
 namespace Tests
 {
-    public class EntityTests
+    public class EntityTests : TestsBase
     {
         [UnityTest]
         public IEnumerator EntityCreation()
         {
-            var sceneController = TestHelpers.InitializeSceneController();
-
-            yield return new WaitForSeconds(0.01f);
-
-            Assert.IsTrue(sceneController != null);
-
-            var sceneData = new LoadParcelScenesMessage.UnityParcelScene();
-            var scene = sceneController.CreateTestScene(sceneData);
-
-            Assert.IsTrue(scene != null);
+            yield return InitScene();
 
             // Create first entity
             string entityId = "1";
@@ -60,16 +51,7 @@ namespace Tests
         [UnityTest]
         public IEnumerator EntityParenting()
         {
-            var sceneController = TestHelpers.InitializeSceneController();
-
-            yield return new WaitForSeconds(0.01f);
-
-            Assert.IsTrue(sceneController != null);
-
-            var sceneData = new LoadParcelScenesMessage.UnityParcelScene();
-            var scene = sceneController.CreateTestScene(sceneData);
-
-            Assert.IsTrue(scene != null);
+            yield return InitScene();
 
             string entityId = "2";
             string parentEntityId = "3";
@@ -102,18 +84,11 @@ namespace Tests
         [UnityTest]
         public IEnumerator EntityRemoval()
         {
-            var sceneController = TestHelpers.InitializeSceneController();
-
-            yield return new WaitForSeconds(0.01f);
-
-            string entityId = "2";
-
-            Assert.IsTrue(sceneController != null);
-
-            var sceneData = new LoadParcelScenesMessage.UnityParcelScene();
-            var scene = sceneController.CreateTestScene(sceneData);
+            yield return InitScene();
 
             Assert.IsTrue(scene != null);
+
+            string entityId = "2";
 
             TestHelpers.CreateSceneEntity(scene, entityId);
 
@@ -121,7 +96,7 @@ namespace Tests
 
             TestHelpers.RemoveSceneEntity(scene, entityId);
 
-            yield return new WaitForSeconds(0.01f);
+            yield return null;
 
             Assert.IsTrue(!scene.entities.ContainsKey(entityId));
 

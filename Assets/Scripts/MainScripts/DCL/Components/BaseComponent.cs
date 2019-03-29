@@ -22,11 +22,12 @@ namespace DCL.Components
 
     public abstract class BaseComponent : UpdateableComponent
     {
+        public Coroutine routine = null;
+
         [NonSerialized] public ParcelScene scene;
         [NonSerialized] public DecentralandEntity entity;
 
         private string oldSerialization = null;
-        private Coroutine routine = null;
 
         public override void UpdateFromJSON(string json)
         {

@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using DCL.Helpers;
+using DCL.Components;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.TestTools;
@@ -12,26 +13,19 @@ using DCL.Components;
 
 namespace Tests
 {
-    public class LoadableShapesTests
+    public class LoadableShapesTests : TestsBase
     {
         [UnityTest]
         public IEnumerator OBJShapeUpdate()
         {
-            var sceneController = TestHelpers.InitializeSceneController();
-
-            yield return new WaitForSeconds(0.01f);
-
-            var sceneData = new LoadParcelScenesMessage.UnityParcelScene();
-            var scene = sceneController.CreateTestScene(sceneData);
-
-            yield return new WaitForSeconds(0.01f);
+            yield return InitScene();
 
             string entityId = "1";
             TestHelpers.CreateSceneEntity(scene, entityId);
 
             Material placeholderLoadingMaterial = Resources.Load<Material>("Materials/AssetLoading");
 
-            yield return new WaitForSeconds(0.01f);
+            yield return null;
 
             Assert.IsTrue(scene.entities[entityId].meshGameObject == null, "Since the shape hasn't been updated yet, the child mesh shouldn't exist");
 
@@ -40,7 +34,8 @@ namespace Tests
                 src = TestHelpers.GetTestsAssetsPath() + "/OBJ/teapot.obj"
             }));
 
-            yield return new WaitForSeconds(8f);
+            OBJLoader objShape = scene.entities[entityId].gameObject.GetComponentInChildren<OBJLoader>(true);
+            yield return new WaitUntil(() => objShape.alreadyLoaded);
 
             Assert.IsTrue(scene.entities[entityId].meshGameObject != null, "Every entity with a shape should have the mandatory 'Mesh' object as a child");
 
@@ -52,13 +47,7 @@ namespace Tests
         [UnityTest]
         public IEnumerator GLTFShapeUpdate()
         {
-            var sceneController = TestHelpers.InitializeSceneController();
-
-            yield return new WaitForSeconds(0.01f);
-
-            var scene = sceneController.CreateTestScene();
-
-            yield return new WaitForSeconds(0.01f);
+            yield return InitScene();
 
             string entityId = "1";
             TestHelpers.CreateSceneEntity(scene, entityId);
@@ -70,76 +59,35 @@ namespace Tests
                 src = TestHelpers.GetTestsAssetsPath() + "/GLB/Lantern/Lantern.glb"
             }));
 
-            yield return new WaitForSeconds(8f);
+            GLTFLoader gltfShape = scene.entities[entityId].gameObject.GetComponentInChildren<GLTFLoader>(true);
+            yield return new WaitUntil(() => gltfShape.alreadyLoaded);
 
             Assert.IsTrue(scene.entities[entityId].gameObject.GetComponentInChildren<UnityGLTF.InstantiatedGLTFObject>() != null, "'GLTFScene' child object with 'InstantiatedGLTF' component should exist if the GLTF was loaded correctly");
         }
 
         [UnityTest]
-        public IEnumerator ShapeMeshObjectIsReused()
-        {
-            var sceneController = TestHelpers.InitializeSceneController();
-
-            yield return new WaitForSeconds(0.01f);
-
-            var sceneData = new LoadParcelScenesMessage.UnityParcelScene();
-            var scene = sceneController.CreateTestScene(sceneData);
-
-            yield return new WaitForSeconds(0.01f);
-
-            string entityId = "1";
-            TestHelpers.CreateSceneEntity(scene, entityId);
-
-            // Set its shape as a BOX
-            TestHelpers.CreateAndSetShape(scene, entityId, DCL.Models.CLASS_ID.BOX_SHAPE, "{}");
-
-            yield return new WaitForSeconds(0.01f);
-
-            var originalMeshGO = scene.entities[entityId].meshGameObject;
-
-            Assert.IsTrue(originalMeshGO != null, "originalMeshGO is not null");
-
-            // Update its shape to a SPHERE
-            TestHelpers.CreateAndSetShape(scene, entityId, DCL.Models.CLASS_ID.SPHERE_SHAPE, "{}");
-
-            var newMeshGO = scene.entities[entityId].meshGameObject;
-
-            Assert.IsTrue(originalMeshGO != null, "originalMeshGO is not null");
-            Assert.IsTrue(newMeshGO, "newMeshGO is not null");
-            Assert.AreNotSame(newMeshGO, originalMeshGO, "meshGameObject must NOT be reused across different shapes, because Destroy() delays a frame and the Detach/Attach behaviour wouldn't work. We shouldn't use DestroyImmediate in runtime.");
-        }
-
-
-        [UnityTest]
         public IEnumerator PreExistentShapeUpdate()
         {
-            var sceneController = TestHelpers.InitializeSceneController();
-
-            yield return new WaitForSeconds(0.01f);
-
-            var sceneData = new LoadParcelScenesMessage.UnityParcelScene();
-            var scene = sceneController.CreateTestScene(sceneData);
-
-            yield return new WaitForSeconds(0.01f);
+            yield return InitScene();
 
             string entityId = "1";
             TestHelpers.CreateSceneEntity(scene, entityId);
             var entity = scene.entities[entityId];
 
             Assert.IsTrue(entity.meshGameObject == null, "meshGameObject should be null");
+
             // Set its shape as a BOX
             TestHelpers.CreateAndSetShape(scene, entityId, CLASS_ID.BOX_SHAPE, "{}");
-            yield return new WaitForSeconds(0.01f);
+            yield return null;
 
             var meshName = entity.meshGameObject.GetComponent<MeshFilter>().mesh.name;
             Assert.AreEqual("DCL Box Instance", meshName);
 
             // Update its shape to a cylinder
             TestHelpers.CreateAndSetShape(scene, entityId, CLASS_ID.CYLINDER_SHAPE, "{}");
-            yield return new WaitForSeconds(8.01f);
+            yield return null;
 
             Assert.IsTrue(entity.meshGameObject != null, "meshGameObject should not be null");
-
 
             meshName = entity.meshGameObject.GetComponent<MeshFilter>().mesh.name;
             Assert.AreEqual("DCL Cylinder Instance", meshName);
@@ -154,7 +102,8 @@ namespace Tests
                 src = TestHelpers.GetTestsAssetsPath() + "/GLB/Lantern/Lantern.glb"
             }));
 
-            yield return new WaitForSeconds(8f);
+            GLTFLoader gltfShape = scene.entities[entityId].gameObject.GetComponentInChildren<GLTFLoader>(true);
+            yield return new WaitUntil(() => gltfShape.alreadyLoaded);
 
             Assert.IsTrue(entity.currentShape != null, "current shape must exist 2");
             Assert.IsTrue(entity.currentShape is GLTFShape, "current shape is GLTFShape");
@@ -166,7 +115,8 @@ namespace Tests
 
             // Update its shape to a sphere
             TestHelpers.CreateAndSetShape(scene, entityId, CLASS_ID.CYLINDER_SHAPE, "{}");
-            yield return new WaitForSeconds(1f);
+
+            yield return null;
 
             Assert.IsTrue(entity.meshGameObject != null);
 
@@ -179,14 +129,7 @@ namespace Tests
         [UnityTest]
         public IEnumerator PreExistentGLTFShapeUpdate()
         {
-            var sceneController = TestHelpers.InitializeSceneController();
-
-            yield return new WaitForSeconds(0.01f);
-
-            var sceneData = new LoadParcelScenesMessage.UnityParcelScene();
-            var scene = sceneController.CreateTestScene(sceneData);
-
-            yield return new WaitForSeconds(0.01f);
+            yield return InitScene();
 
             string entityId = "1";
             TestHelpers.CreateSceneEntity(scene, entityId);
@@ -196,7 +139,8 @@ namespace Tests
                 src = TestHelpers.GetTestsAssetsPath() + "/GLB/Lantern/Lantern.glb"
             }));
 
-            yield return new WaitForSeconds(8f);
+            GLTFLoader gltfShape = scene.entities[entityId].gameObject.GetComponentInChildren<GLTFLoader>(true);
+            yield return new WaitUntil(() => gltfShape.alreadyLoaded);
 
             {
                 var gltfObject = scene.entities[entityId].gameObject.GetComponentInChildren<InstantiatedGLTFObject>();
@@ -210,7 +154,8 @@ namespace Tests
                 src = TestHelpers.GetTestsAssetsPath() + "/GLB/DamagedHelmet/DamagedHelmet.glb"
             }));
 
-            yield return new WaitForSeconds(8f);
+            gltfShape = scene.entities[entityId].gameObject.GetComponentInChildren<GLTFLoader>(true);
+            yield return new WaitUntil(() => gltfShape.alreadyLoaded);
 
             {
                 var gltfObject = scene.entities[entityId].gameObject.GetComponentInChildren<InstantiatedGLTFObject>();
@@ -223,14 +168,7 @@ namespace Tests
         [UnityTest]
         public IEnumerator PreExistentGLTFShapeImmediateUpdate()
         {
-            var sceneController = TestHelpers.InitializeSceneController();
-
-            yield return new WaitForSeconds(0.01f);
-
-            var sceneData = new LoadParcelScenesMessage.UnityParcelScene();
-            var scene = sceneController.CreateTestScene(sceneData);
-
-            yield return new WaitForSeconds(0.01f);
+            yield return InitScene();
 
             string entityId = "1";
             TestHelpers.CreateSceneEntity(scene, entityId);
@@ -240,12 +178,16 @@ namespace Tests
                 src = TestHelpers.GetTestsAssetsPath() + "/GLB/Lantern/Lantern.glb"
             }));
 
+            GLTFLoader gltfShape = scene.entities[entityId].gameObject.GetComponentInChildren<GLTFLoader>(true);
+            yield return new WaitUntil(() => gltfShape.alreadyLoaded);
+
             TestHelpers.CreateAndSetShape(scene, entityId, DCL.Models.CLASS_ID.GLTF_SHAPE, JsonConvert.SerializeObject(new
             {
                 src = TestHelpers.GetTestsAssetsPath() + "/GLB/DamagedHelmet/DamagedHelmet.glb"
             }));
 
-            yield return new WaitForSeconds(8f);
+            gltfShape = scene.entities[entityId].gameObject.GetComponentInChildren<GLTFLoader>(true);
+            yield return new WaitUntil(() => gltfShape.alreadyLoaded);
 
             Assert.AreEqual(1, scene.entities[entityId].gameObject.GetComponentsInChildren<InstantiatedGLTFObject>().Length, "Only 1 'InstantiatedGLTFObject' should remain once the GLTF shape has been updated");
         }
@@ -253,12 +195,7 @@ namespace Tests
         [UnityTest]
         public IEnumerator ShapeWithCollisionsUpdate()
         {
-            var sceneController = TestHelpers.InitializeSceneController();
-
-            yield return new WaitForSeconds(0.01f);
-
-            var sceneData = new LoadParcelScenesMessage.UnityParcelScene();
-            var scene = sceneController.CreateTestScene(sceneData);
+            yield return InitScene();
 
             string entityId = "1";
             TestHelpers.CreateSceneEntity(scene, entityId);
@@ -288,7 +225,7 @@ namespace Tests
                 withCollisions = false
             }));
 
-            yield return new WaitForSeconds(0.01f);
+            yield return null;
 
             Assert.IsTrue(scene.entities[entityId].gameObject.GetComponentInChildren<MeshCollider>() == null);
 
@@ -298,7 +235,7 @@ namespace Tests
                 withCollisions = true
             }));
 
-            yield return new WaitForSeconds(0.01f);
+            yield return null;
 
             Assert.IsTrue(scene.entities[entityId].gameObject.GetComponentInChildren<MeshCollider>() != null);
 
@@ -308,7 +245,7 @@ namespace Tests
                 withCollisions = false
             }));
 
-            yield return new WaitForSeconds(0.01f);
+            yield return null;
 
             Assert.IsFalse(scene.entities[entityId].gameObject.GetComponentInChildren<MeshCollider>().enabled);
 
@@ -318,7 +255,7 @@ namespace Tests
                 withCollisions = true
             }));
 
-            yield return new WaitForSeconds(0.01f);
+            yield return null;
 
             Assert.IsTrue(scene.entities[entityId].gameObject.GetComponentInChildren<MeshCollider>().enabled);
         }
@@ -326,14 +263,7 @@ namespace Tests
         [UnityTest]
         public IEnumerator GLTFShapeWithCollisionsUpdate()
         {
-            var sceneController = TestHelpers.InitializeSceneController();
-
-            yield return new WaitForSeconds(0.01f);
-
-            var sceneData = new LoadParcelScenesMessage.UnityParcelScene();
-            var scene = sceneController.CreateTestScene(sceneData);
-
-            yield return new WaitForSeconds(0.01f);
+            yield return InitScene();
 
             string entityId = "1";
             TestHelpers.CreateSceneEntity(scene, entityId);
@@ -343,7 +273,8 @@ namespace Tests
                 src = TestHelpers.GetTestsAssetsPath() + "/GLB/PalmTree_01.glb" // this glb has the "..._collider" object inside with the pre-defined collision geometry.
             }));
 
-            yield return new WaitForSeconds(8f);
+            GLTFLoader gltfShape = scene.entities[entityId].gameObject.GetComponentInChildren<GLTFLoader>(true);
+            yield return new WaitUntil(() => gltfShape.alreadyLoaded);
 
             var colliderObject = scene.entities[entityId].gameObject.GetComponentInChildren<Collider>();
             Assert.IsTrue(colliderObject != null);

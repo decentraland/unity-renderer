@@ -11,7 +11,7 @@ using WebSocketSharp.Net;
 
 namespace Tests
 {
-    public class WSSTests
+    public class WSSTests : TestsBase
     {
         // TODO: Find a way to run this test on Unity Cloud Build, even though it passes locally, it fails on timeout in Unity Cloud Build
         // A UnityTest behaves like a coroutine in Play Mode. In Edit Mode you can use
@@ -20,9 +20,7 @@ namespace Tests
         [Explicit("This test fails in cloud build")]
         public IEnumerator BasicConnectionTest()
         {
-            var sceneController = TestHelpers.InitializeSceneController();
-
-            yield return new WaitForEndOfFrame();
+            yield return InitScene();
 
             GameObject wssControllerGO = new GameObject("WSS Controller");
 

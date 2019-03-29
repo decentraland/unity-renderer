@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using DCL;
+using DCL.Components;
 using DCL.Controllers;
 using DCL.Helpers;
 using DCL.Configuration;
@@ -10,7 +11,7 @@ using UnityEngine.TestTools;
 
 namespace Tests
 {
-    public class SceneTests
+    public class SceneTests : TestsBase
     {
         [UnityTest]
         public IEnumerator PerformanceLimitControllerTests()
@@ -18,11 +19,11 @@ namespace Tests
             var sceneController = TestHelpers.InitializeSceneController();
             var scenesToLoad = (Resources.Load("TestJSON/SceneLoadingTest") as TextAsset).text;
 
-            yield return new WaitForSeconds(.1f);
+            yield return new WaitForSeconds(0.1f);
 
             sceneController.UnloadAllScenes();
 
-            yield return new WaitForSeconds(.1f);
+            yield return new WaitForSeconds(0.1f);
 
             sceneController.LoadParcelScenes(scenesToLoad);
 
@@ -35,11 +36,21 @@ namespace Tests
             TestHelpers.InstantiateEntityWithShape(scene, "3", DCL.Models.CLASS_ID.PLANE_SHAPE, new Vector3(2, 1, 0));
             TestHelpers.InstantiateEntityWithShape(scene, "4", DCL.Models.CLASS_ID.CONE_SHAPE, new Vector3(4, 1, 0));
             TestHelpers.InstantiateEntityWithShape(scene, "5", DCL.Models.CLASS_ID.CYLINDER_SHAPE, new Vector3(6, 1, 0));
-            TestHelpers.InstantiateEntityWithShape(scene, "6", DCL.Models.CLASS_ID.GLTF_SHAPE, new Vector3(0, 1, 6), TestHelpers.GetTestsAssetsPath() + "/GLB/Lantern/Lantern.glb");
-            TestHelpers.InstantiateEntityWithShape(scene, "7", DCL.Models.CLASS_ID.OBJ_SHAPE, new Vector3(10, 1, 0), TestHelpers.GetTestsAssetsPath() + "/OBJ/teapot.obj");
-            TestHelpers.InstantiateEntityWithShape(scene, "8", DCL.Models.CLASS_ID.GLTF_SHAPE, new Vector3(0, 1, 12), TestHelpers.GetTestsAssetsPath() + "/GLB/CesiumMan/CesiumMan.glb");
 
-            yield return new WaitForSeconds(8f);
+            TestHelpers.InstantiateEntityWithShape(scene, "6", DCL.Models.CLASS_ID.GLTF_SHAPE, new Vector3(0, 1, 6), TestHelpers.GetTestsAssetsPath() + "/GLB/Lantern/Lantern.glb");
+            yield return null;
+            GLTFLoader gltfShape = scene.entities["6"].gameObject.GetComponentInChildren<GLTFLoader>(true);
+            yield return new WaitUntil(() => gltfShape.alreadyLoaded);
+
+            TestHelpers.InstantiateEntityWithShape(scene, "7", DCL.Models.CLASS_ID.OBJ_SHAPE, new Vector3(10, 1, 0), TestHelpers.GetTestsAssetsPath() + "/OBJ/teapot.obj");
+            yield return null;
+            OBJLoader objshape = scene.entities["7"].gameObject.GetComponentInChildren<OBJLoader>(true);
+            yield return new WaitUntil(() => objshape.alreadyLoaded);
+
+            TestHelpers.InstantiateEntityWithShape(scene, "8", DCL.Models.CLASS_ID.GLTF_SHAPE, new Vector3(0, 1, 12), TestHelpers.GetTestsAssetsPath() + "/GLB/CesiumMan/CesiumMan.glb");
+            yield return null;
+            gltfShape = scene.entities["8"].gameObject.GetComponentInChildren<GLTFLoader>(true);
+            yield return new WaitUntil(() => gltfShape.alreadyLoaded);
 
             AssertMetricsModel(scene,
                 triangles: 17521,
@@ -51,7 +62,7 @@ namespace Tests
 
             TestHelpers.RemoveSceneEntity(scene, "8");
 
-            yield return new WaitForSeconds(.1f);
+            yield return null;
 
             AssertMetricsModel(scene,
                 triangles: 12849,
