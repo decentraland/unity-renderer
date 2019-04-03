@@ -1,8 +1,11 @@
-﻿using UnityEngine;
+using UnityEngine;
 using UnityEngine.UI;
 
-public class UIReferencesContainer : MonoBehaviour
+namespace DCL.Components.UI
 {
-    public RectTransform rectTransform;
-    public HorizontalLayoutGroup alignmentLayoutGroup;
+    public class UIReferencesContainer : MonoBehaviour
+    {
+        public RectTransform rectTransform;
+        public HorizontalLayoutGroup alignmentLayoutGroup;
+    }
 }

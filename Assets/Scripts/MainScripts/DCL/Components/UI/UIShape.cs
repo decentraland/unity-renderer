@@ -5,25 +5,54 @@ using UnityEngine.UI;
 using DCL.Helpers;
 using DCL.Controllers;
 using DCL.Models;
+using DCL.Components.UI;
 
 namespace DCL.Components
 {
+    [System.Serializable]
+    public struct UIValue
+    {
+        public enum Unit
+        {
+            PERCENT,
+            PIXELS
+        }
+
+        public float value;
+        public Unit type;
+
+        public UIValue(float value, Unit unitType = Unit.PIXELS)
+        {
+            this.value = value;
+            this.type = unitType;
+        }
+
+        public float GetScaledValue(float parentSize)
+        {
+            float tmpValue = value;
+
+            if (type == Unit.PERCENT)
+                tmpValue /= 100;
+
+            return tmpValue * (type == Unit.PIXELS ? 1 : parentSize);
+        }
+    }
+
     public class UIShape : BaseDisposable
     {
         [System.Serializable]
         public class Model
         {
-            public string id;
             public string parentComponent;
             public bool visible = true;
             public string hAlign = "center";
             public string vAlign = "center";
-            public bool sizeInPixels = true; // If false, the size is 0~1 based on the parent size
-            public float width = 100f;
-            public float height = 100f;
-            public bool positionInPixels = true;
-            public Vector2 position; // If false, the position is 0~1 based on the parent size
-            public bool isPointerBlocker = false;
+
+            public UIValue width = new UIValue(100f);
+            public UIValue height = new UIValue(100f);
+            public UIValue positionX;
+            public UIValue positionY;
+            public bool isPointerBlocker;
         }
 
         public override string componentName => "UIShape";
@@ -42,24 +71,27 @@ namespace DCL.Components
 
         protected T InstantiateUIGameObject<T>(string prefabPath) where T : UIReferencesContainer
         {
-            GameObject uiGameObject = GameObject.Instantiate(Resources.Load(prefabPath)) as GameObject;
-            T referencesContainer = uiGameObject.GetComponent<T>();
+            Transform parent = null;
+
+            if (!string.IsNullOrEmpty(model.parentComponent))
+                parent = (scene.disposableComponents[model.parentComponent] as UIShape).transform;
+            else
+                parent = scene.uiScreenSpaceCanvas.transform;
+
+            GameObject uiGameObject = GameObject.Instantiate(Resources.Load(prefabPath), parent) as GameObject;
+            T referencesContainer = uiGameObject.GetComponentInChildren<T>();
 
             referencesContainer.name = componentName + " - " + id;
 
-            return referencesContainer;
-        }
-
-        protected void ReparentComponent(RectTransform targetTransform, string targetParent)
-        {
-            if (!string.IsNullOrEmpty(targetParent))
-                targetTransform.SetParent((scene.disposableComponents[targetParent] as UIShape).transform);
+            if (!string.IsNullOrEmpty(model.parentComponent))
+                referencesContainer.rectTransform.SetParent((scene.disposableComponents[model.parentComponent] as UIShape).transform);
             else
-                targetTransform.SetParent(scene.uiScreenSpaceCanvas.transform);
+                referencesContainer.rectTransform.SetParent(scene.uiScreenSpaceCanvas.transform);
 
-            targetTransform.ResetLocalTRS();
-            targetTransform.sizeDelta = Vector2.zero;
-            targetTransform.ForceUpdateRectTransforms();
+            referencesContainer.rectTransform.ResetLocalTRS();
+            referencesContainer.rectTransform.sizeDelta = Vector2.zero;
+
+            return referencesContainer;
         }
 
         protected IEnumerator ResizeAlignAndReposition(
@@ -70,20 +102,23 @@ namespace DCL.Components
             LayoutElement alignedLayoutElement)
         {
             // Resize
-            targetTransform.SetSizeWithCurrentAnchors(RectTransform.Axis.Horizontal, model.width * (model.sizeInPixels ? 1f : parentWidth));
-            targetTransform.SetSizeWithCurrentAnchors(RectTransform.Axis.Vertical, model.height * (model.sizeInPixels ? 1f : parentHeight));
+            targetTransform.SetSizeWithCurrentAnchors(RectTransform.Axis.Horizontal, model.width.GetScaledValue(parentWidth));
+            targetTransform.SetSizeWithCurrentAnchors(RectTransform.Axis.Vertical, model.height.GetScaledValue(parentHeight));
+
             targetTransform.ForceUpdateRectTransforms();
 
             // Alignment (Alignment uses size so we should always align AFTER reisizing)
             alignedLayoutElement.ignoreLayout = false;
             ConfigureAlignment(alignmentLayout);
-
             LayoutRebuilder.ForceRebuildLayoutImmediate(alignmentLayout.transform as RectTransform);
-
             alignedLayoutElement.ignoreLayout = true;
 
             // Reposition
-            targetTransform.localPosition += new Vector3(model.position.x * (model.positionInPixels ? 1f : parentWidth), model.position.y * (model.positionInPixels ? 1f : parentHeight), 0f);
+            Vector3 position = Vector3.zero;
+            position.x = model.positionX.GetScaledValue(parentWidth);
+            position.y = model.positionY.GetScaledValue(parentHeight);
+
+            targetTransform.localPosition += position;
             yield break;
         }
 

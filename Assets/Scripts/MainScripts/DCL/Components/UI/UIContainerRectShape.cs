@@ -6,15 +6,16 @@ using DCL.Helpers;
 using DCL.Controllers;
 using DCL.Models;
 
-namespace DCL.Components
+namespace DCL.Components.UI
 {
-    public class UIContainerRectShape : UIShape
+    public class ContainerRectShape : UIShape
     {
         [System.Serializable]
         new public class Model : UIShape.Model
         {
             public float thickness = 0f;
             public Color color = new Color(0f, 0f, 0f, 1f);
+            public float opacity = 1f;
         }
 
         public UIContainerRectReferencesContainer referencesContainer;
@@ -27,7 +28,7 @@ namespace DCL.Components
             set { base.model = value; }
         }
 
-        public UIContainerRectShape(ParcelScene scene) : base(scene)
+        public ContainerRectShape(ParcelScene scene) : base(scene)
         {
         }
 
@@ -52,16 +53,15 @@ namespace DCL.Components
                 transform = referencesContainer.imageRectTransform;
             }
 
-            ReparentComponent(referencesContainer.rectTransform, model.parentComponent);
-
             referencesContainer.image.enabled = model.visible;
 
             RectTransform parentRecTransform = referencesContainer.GetComponentInParent<RectTransform>();
+
             yield return ResizeAlignAndReposition(transform, parentRecTransform.rect.width, parentRecTransform.rect.height,
                                                 referencesContainer.alignmentLayoutGroup,
                                                 referencesContainer.imageLayoutElement);
 
-            referencesContainer.image.color = model.color * 255f;
+            referencesContainer.image.color = new Color(model.color.r * 255, model.color.g * 255, model.color.b * 255, model.opacity);
 
             Outline outline = referencesContainer.image.GetComponent<Outline>();
 

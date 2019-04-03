@@ -6,9 +6,9 @@ using DCL.Helpers;
 using DCL.Controllers;
 using DCL.Models;
 
-namespace DCL.Components
+namespace DCL.Components.UI
 {
-    public class UIImageShape : UIShape
+    public class ImageShape : UIShape
     {
         [System.Serializable]
         new public class Model : UIShape.Model
@@ -23,12 +23,13 @@ namespace DCL.Components
             public float paddingRight = 0f;
             public float paddingBottom = 0f;
             public float paddingLeft = 0f;
+            public bool sizeInPixels = true;
         }
 
         public UIImageReferencesContainer referencesContainer;
         public override string componentName => "UIImageShape";
 
-        new Model model
+        new public Model model
         {
             get { return base.model as Model; }
             set { base.model = value; }
@@ -37,7 +38,7 @@ namespace DCL.Components
         bool isLoadingTexture = false;
         string loadedSource = "";
 
-        public UIImageShape(ParcelScene scene) : base(scene)
+        public ImageShape(ParcelScene scene) : base(scene)
         {
         }
 
@@ -61,8 +62,6 @@ namespace DCL.Components
                 // Configure transform reference used by future children ui components
                 transform = referencesContainer.imageRectTransform;
             }
-
-            ReparentComponent(referencesContainer.rectTransform, model.parentComponent);
 
             // Fetch texture
             if (!string.IsNullOrEmpty(model.source))

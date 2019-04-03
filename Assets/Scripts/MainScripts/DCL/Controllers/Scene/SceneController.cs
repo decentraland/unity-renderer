@@ -372,6 +372,7 @@ public class SceneController : MonoBehaviour
         var newScene = go.AddComponent<ParcelScene>();
         newScene.SetData(data);
         newScene.ownerController = this;
+        newScene.isTestScene = true;
 
         if (!loadedScenes.ContainsKey(data.id))
         {
