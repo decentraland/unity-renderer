@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Networking;
+using TMPro;
 
 namespace DCL.Helpers
 {
@@ -19,7 +20,7 @@ namespace DCL.Helpers
             {
                 Material material = Resources.Load(path) as Material;
 
-                if ( material != null )
+                if (material != null)
                     staticMaterials.Add(path, material);
 
                 return material;

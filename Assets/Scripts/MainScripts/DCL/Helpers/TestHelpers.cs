@@ -1,11 +1,10 @@
-using UnityEngine;
-using DCL.Configuration;
-using DCL.Controllers;
-using Newtonsoft.Json;
 using DCL.Components;
+using DCL.Controllers;
 using DCL.Models;
-using UnityEngine.Assertions;
+using Newtonsoft.Json;
 using System.Collections;
+using UnityEngine;
+using UnityEngine.Assertions;
 
 namespace DCL.Helpers
 {
@@ -19,7 +18,7 @@ namespace DCL.Helpers
         protected SceneController sceneController;
         protected ParcelScene scene;
 
-        protected IEnumerator InitScene(bool usesWebServer = false)
+        protected IEnumerator InitScene(bool usesWebServer = false, bool spawnCharController = true)
         {
             sceneController = TestHelpers.InitializeSceneController(usesWebServer);
 
@@ -29,8 +28,13 @@ namespace DCL.Helpers
 
             yield return new WaitForSeconds(0.01f);
 
-            if (DCLCharacterController.i == null)
-                GameObject.Instantiate(Resources.Load("Prefabs/CharacterController"));
+            if (spawnCharController)
+            {
+                if (DCLCharacterController.i == null)
+                {
+                    GameObject.Instantiate(Resources.Load("Prefabs/CharacterController"));
+                }
+            }
         }
 
         protected IEnumerator WaitForUICanvasUpdate()
@@ -44,7 +48,9 @@ namespace DCL.Helpers
         public static string GetTestsAssetsPath(bool useWebServerPath = false)
         {
             if (useWebServerPath)
+            {
                 return "http://127.0.0.1:9991";
+            }
             else
             {
                 var uri = new System.Uri(Application.dataPath + "/../TestResources");
@@ -129,7 +135,9 @@ namespace DCL.Helpers
             where K : class, new()
         {
             if (model == null)
+            {
                 model = new K();
+            }
 
             disposableIdCounter++;
 
@@ -213,7 +221,9 @@ namespace DCL.Helpers
         public static BoxShape CreateEntityWithBoxShape(ParcelScene scene, Vector3 position, BoxShape.Model model = null)
         {
             if (model == null)
+            {
                 model = new BoxShape.Model();
+            }
 
             DecentralandEntity entity = CreateSceneEntity(scene);
             BoxShape shape = SharedComponentCreate<BoxShape, BoxShape.Model>(scene, CLASS_ID.BOX_SHAPE, new BoxShape.Model());
@@ -243,7 +253,9 @@ namespace DCL.Helpers
             where K : class, new()
         {
             if (model == null)
+            {
                 model = new K();
+            }
 
             entity = CreateSceneEntity(scene);
             string shapeId = "";
@@ -293,7 +305,9 @@ namespace DCL.Helpers
             DecentralandEntity entity = null;
 
             if (!scene.entities.TryGetValue(fromEntityId, out entity))
+            {
                 return;
+            }
 
             scene.GetSharedComponent(sharedComponentId).DetachFrom(entity);
 

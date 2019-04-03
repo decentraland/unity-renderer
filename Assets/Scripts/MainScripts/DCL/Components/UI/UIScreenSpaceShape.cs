@@ -1,4 +1,4 @@
-﻿using System.Collections;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
@@ -6,16 +6,14 @@ using DCL.Helpers;
 using DCL.Controllers;
 using DCL.Models;
 
-namespace DCL.Components
+namespace DCL.Components.UI
 {
-    public class UIScreenSpaceShape : UIShape
+    public class ScreenSpaceShape : UIShape
     {
+        static bool VERBOSE = false;
         public override string componentName => "UIScreenSpaceShape";
 
-        Model model = new Model();
-        bool verbose = false;
-
-        public UIScreenSpaceShape(ParcelScene scene) : base(scene)
+        public ScreenSpaceShape(ParcelScene scene) : base(scene)
         {
             DCLCharacterController.OnCharacterMoved += OnCharacterMoved;
         }
@@ -29,6 +27,7 @@ namespace DCL.Components
         {
         }
 
+
         public override IEnumerator ApplyChanges(string newJson)
         {
             model = Utils.SafeFromJson<Model>(newJson);
@@ -38,7 +37,10 @@ namespace DCL.Components
                 yield return InitializeCanvas();
             }
 
-            OnCharacterMoved(DCLCharacterController.i.transform.position);
+            transform = scene.uiScreenSpaceCanvas.GetComponent<RectTransform>();
+
+            if (DCLCharacterController.i != null)
+                OnCharacterMoved(DCLCharacterController.i.transform.position);
         }
 
         public override void Dispose()
@@ -55,14 +57,14 @@ namespace DCL.Components
             {
                 scene.uiScreenSpaceCanvas.enabled = model.visible && scene.IsInsideSceneBoundaries(newCharacterPosition);
 
-                if (verbose)
+                if (VERBOSE)
                     Debug.Log($"set screenspace = {scene.uiScreenSpaceCanvas.enabled}... {newCharacterPosition}");
             }
         }
 
         IEnumerator InitializeCanvas()
         {
-            if (verbose)
+            if (VERBOSE)
                 Debug.Log("Started canvas initialization in " + id);
 
             GameObject canvasGameObject = new GameObject("UIScreenSpaceShape");
@@ -91,7 +93,7 @@ namespace DCL.Components
             yield return null;
             yield return null;
 
-            if (verbose)
+            if (VERBOSE)
             {
                 Debug.Log("canvas initialized, width: " + transform.rect.width);
                 Debug.Log("canvas initialized, height: " + transform.rect.height);
@@ -99,9 +101,10 @@ namespace DCL.Components
 
             scene.uiScreenSpaceCanvas.enabled = false; // It will be enabled later when the player enters this scene
 
-            OnCharacterMoved(DCLCharacterController.i.transform.position);
+            if (DCLCharacterController.i != null)
+                OnCharacterMoved(DCLCharacterController.i.transform.position);
 
-            if (verbose)
+            if (VERBOSE)
                 Debug.Log("Finished canvas initialization in " + id);
         }
     }

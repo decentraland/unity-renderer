@@ -1,9 +1,12 @@
-﻿using UnityEngine;
+using UnityEngine;
 using UnityEngine.UI;
 
-public class UIContainerRectReferencesContainer : UIReferencesContainer
+namespace DCL.Components.UI
 {
-    public Image image;
-    public LayoutElement imageLayoutElement;
-    public RectTransform imageRectTransform;
+   public class UIContainerRectReferencesContainer : UIReferencesContainer
+    {
+        public Image image;
+        public LayoutElement imageLayoutElement;
+        public RectTransform imageRectTransform;
+    }
 }

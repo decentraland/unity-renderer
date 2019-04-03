@@ -64,9 +64,11 @@ public class DCLCharacterController : MonoBehaviour
             newPosition.y = 3f;
         }
 
-        transform.position = newPosition;
-
-        ReportMovement();
+        if (Vector3.Distance(transform.position, newPosition) > 0.001f)
+        {
+            transform.position = newPosition;
+            ReportMovement();
+        }
     }
 
     void Update()

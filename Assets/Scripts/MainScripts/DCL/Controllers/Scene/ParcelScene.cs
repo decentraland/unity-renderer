@@ -29,11 +29,14 @@ namespace DCL.Controllers
         }
 
         bool flaggedToUnload = false;
+        [System.NonSerialized]
+        public bool isTestScene = false;
+
         private void Update()
         {
             metricsController.SendEvent();
 
-            if (!flaggedToUnload && sceneData != null && DCLCharacterController.i != null)
+            if (!isTestScene && !flaggedToUnload && sceneData != null && DCLCharacterController.i != null)
             {
                 Vector3 position = GridToWorldPosition(sceneData.parcels[0].x, sceneData.parcels[0].y);
 
@@ -391,19 +394,29 @@ namespace DCL.Controllers
                         newComponent = new DCLTexture(this);
                         break;
                     }
+                case CLASS_ID.UI_INPUT_TEXT_SHAPE:
+                    {
+                        newComponent = new Components.UI.InputText(this);
+                        break;
+                    }
                 case CLASS_ID.UI_SCREEN_SPACE_SHAPE:
                     {
-                        newComponent = new UIScreenSpaceShape(this);
+                        newComponent = new Components.UI.ScreenSpaceShape(this);
                         break;
                     }
                 case CLASS_ID.UI_CONTAINER_RECT:
                     {
-                        newComponent = new UIContainerRectShape(this);
+                        newComponent = new Components.UI.ContainerRectShape(this);
                         break;
                     }
                 case CLASS_ID.UI_IMAGE_SHAPE:
                     {
-                        newComponent = new UIImageShape(this);
+                        newComponent = new Components.UI.ImageShape(this);
+                        break;
+                    }
+                case CLASS_ID.UI_TEXT_SHAPE:
+                    {
+                        newComponent = new Components.UI.TextShape(this);
                         break;
                     }
                 default:

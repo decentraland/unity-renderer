@@ -29,7 +29,7 @@ namespace DCL.Interface
         private class SceneEvent<T>
         {
             public string sceneId;
-            public string eventType; // uuidEvent
+            public string eventType;
             public T payload;
         }
 
@@ -44,6 +44,34 @@ namespace DCL.Interface
         {
             public string uuid;
             public OnClickEventPayload payload = new OnClickEventPayload();
+        }
+
+        [System.Serializable]
+        public class OnBlurEvent
+        {
+            public string entityId;
+            public int pointerId = -1;
+        }
+
+        [System.Serializable]
+        public class OnFocusEvent
+        {
+            public string entityId;
+            public int pointerId = -1;
+        }
+
+        [System.Serializable]
+        public class OnTextSubmitEventPayload
+        {
+            public string id;
+            public string text;
+        }
+
+        [System.Serializable]
+        private class OnTextSubmitEvent
+        {
+            public string uuid;
+            public OnTextSubmitEventPayload payload = new OnTextSubmitEventPayload();
         }
 
         [System.Serializable]
@@ -82,6 +110,8 @@ namespace DCL.Interface
         private static OnClickEvent onClickEvent = new OnClickEvent();
         private static OnMetricsUpdate onMetricsUpdate = new OnMetricsUpdate();
 
+        private static OnTextSubmitEvent onTextSubmitEvent = new OnTextSubmitEvent();
+
         public static void SendSceneEvent<T>(string sceneId, string eventType, T payload)
         {
             SceneEvent<T> sceneEvent = new SceneEvent<T>();
@@ -107,6 +137,20 @@ namespace DCL.Interface
 
             SendSceneEvent(sceneId, "uuidEvent", onClickEvent);
         }
+
+        public static void ReportOnTextSubmitEvent(string sceneId, string uuid, string text)
+        {
+            onTextSubmitEvent.uuid = uuid;
+            onTextSubmitEvent.payload.text = text;
+
+            SendSceneEvent(sceneId, "uuidEvent", onTextSubmitEvent);
+        }
+
+        public static void ReportEvent<T>(string sceneId, T @event)
+        {
+            SendSceneEvent(sceneId, "uuidEvent", @event); //NOTE(Brian): Esto esta todo mal
+        }
+
 
         public static void ReportOnMetricsUpdate(string sceneId, SceneMetricsController.Model current, SceneMetricsController.Model limit)
         {

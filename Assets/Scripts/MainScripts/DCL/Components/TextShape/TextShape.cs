@@ -15,19 +15,17 @@ namespace DCL.Components
         {
             [Header("Font Properties")]
             public string value = "";
-
-            //Font properties
             public Color color = Color.white;
             public float opacity = 1f;
-            public float fontSize = 10f;
+            public float fontSize = 100f;
             public string fontFamily = "Arial"; //NOTE(Brian): Should we make this a new object type?
             public string fontWeight = "normal";
 
-
-            //Text box properties
             [Header("Text box properties")]
             public float hAlign = 0;
             public float vAlign = 0;
+            public float hTextAlign = 0;
+            public float vTextAlign = 0;
             public float width = 1f;
             public float height = 0.2f;
             public bool resizeToFit = false;
@@ -37,19 +35,22 @@ namespace DCL.Components
             public float paddingLeft = 0f;
             public float zIndex = 0f;
             public float lineSpacing = 0f;
-            public int lineCount = 0;
+            public int lineCount = 1;
             public bool textWrapping = false;
 
-            //Text shadow + outline
             [Header("Text shadow properties")]
             public float shadowBlur = 0f;
             public float shadowOffsetX = 0f;
             public float shadowOffsetY = 0f;
             public Color shadowColor = new Color(1, 1, 1);
+
+            [Header("Text outline properties")]
+            public float outlineWidth = 0f;
+            public Color outlineColor = Color.white;
         }
 
 
-        enum AlignFlags
+        public enum AlignFlags
         {
             CENTER = 0,
 
@@ -71,12 +72,7 @@ namespace DCL.Components
         public override IEnumerator ApplyChanges(string newJson)
         {
             model = Utils.SafeFromJson<Model>(newJson);
-            ApplyModelChanges(model);
-            yield return null;
-        }
 
-        void ApplyModelChanges(Model model)
-        {
             rectTransform.sizeDelta = new Vector2(model.width, model.height);
 
             rectTransform.anchorMin = Vector2.zero;
@@ -84,10 +80,16 @@ namespace DCL.Components
             rectTransform.offsetMin = Vector2.zero;
             rectTransform.offsetMax = Vector2.zero;
 
+            ApplyModelChanges(text, model);
+            yield return null;
+        }
+
+        public static void ApplyModelChanges(TMP_Text text, Model model)
+        {
             text.text = model.value;
 
             text.color = new Color(model.color.r, model.color.g, model.color.b, model.opacity);
-            text.fontSize = (int)model.fontSize / 20.0f;
+            text.fontSize = (int)model.fontSize;
             text.richText = true;
             text.overflowMode = TextOverflowModes.Overflow;
             text.enableAutoSizing = model.resizeToFit;
@@ -100,23 +102,31 @@ namespace DCL.Components
                     (int)model.paddingBottom
                 );
 
-            text.alignment = GetAlignment(model.hAlign, model.vAlign);
+            text.alignment = GetAlignment(model.hTextAlign, model.vTextAlign);
             text.lineSpacing = model.lineSpacing;
             text.maxVisibleLines = Mathf.Max(model.lineCount, 1);
-            text.enableWordWrapping = model.textWrapping;
+            text.enableWordWrapping = model.textWrapping && !text.enableAutoSizing;
 
-            if (model.shadowOffsetX == 0 && model.shadowOffsetY == 0)
-            {
-                if (text.fontMaterial.IsKeywordEnabled("UNDERLAY_ON"))
-                {
-                    text.fontMaterial.DisableKeyword("UNDERLAY_ON");
-                }
-            }
-            else
+            if (model.shadowOffsetX != 0 || model.shadowOffsetY != 0)
             {
                 text.fontMaterial.EnableKeyword("UNDERLAY_ON");
                 text.fontMaterial.SetColor("_UnderlayColor", model.shadowColor);
                 text.fontMaterial.SetFloat("_UnderlaySoftness", model.shadowBlur);
+            }
+            else if (text.fontMaterial.IsKeywordEnabled("UNDERLAY_ON"))
+            {
+                text.fontMaterial.DisableKeyword("UNDERLAY_ON");
+            }
+
+            if (model.outlineWidth > 0f)
+            {
+                text.fontMaterial.EnableKeyword("OUTLINE_ON");
+                text.outlineWidth = model.outlineWidth;
+                text.outlineColor = model.outlineColor;
+            }
+            else if (text.fontMaterial.IsKeywordEnabled("OUTLINE_ON"))
+            {
+                text.fontMaterial.DisableKeyword("OUTLINE_ON");
             }
         }
 
