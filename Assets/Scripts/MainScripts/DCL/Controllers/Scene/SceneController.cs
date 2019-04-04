@@ -166,7 +166,7 @@ public class SceneController : MonoBehaviour
 
     public IEnumerator LoadParcelScenesExecute_Spread(string decentralandSceneJSON)
     {
-        string[] jsons = decentralandSceneJSON.Split(new string[] { "<break>" }, StringSplitOptions.None);
+        string[] jsons = decentralandSceneJSON.Split(new string[] { "}{" }, StringSplitOptions.None);
 
         foreach (string json in jsons)
         {
