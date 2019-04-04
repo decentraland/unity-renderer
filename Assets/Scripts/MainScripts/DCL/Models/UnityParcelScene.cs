@@ -6,6 +6,11 @@ using UnityEngine;
 
 namespace DCL.Models
 {
+    [Serializable]
+    public struct CreateUISceneMessage
+    {
+        public string id;
+    }
 
     [Serializable]
     public class LoadParcelScenesMessage

@@ -29,21 +29,28 @@ namespace DCL.Controllers
         }
 
         bool flaggedToUnload = false;
+
         [System.NonSerialized]
         public bool isTestScene = false;
+
+        [System.NonSerialized]
+        public bool unloadWithDistance = true;
 
         private void Update()
         {
             metricsController.SendEvent();
 
-            if (!isTestScene && !flaggedToUnload && sceneData != null && DCLCharacterController.i != null)
+            if (unloadWithDistance)
             {
-                Vector3 position = GridToWorldPosition(sceneData.parcels[0].x, sceneData.parcels[0].y);
-
-                if (Vector3.Distance(DCLCharacterController.i.transform.position, position) > ParcelSettings.UNLOAD_DISTANCE)
+                if (!isTestScene && !flaggedToUnload && sceneData != null && DCLCharacterController.i != null)
                 {
-                    flaggedToUnload = true;
-                    SceneController.i.UnloadScene(sceneData.id);
+                    Vector3 position = GridToWorldPosition(sceneData.parcels[0].x, sceneData.parcels[0].y);
+
+                    if (Vector3.Distance(DCLCharacterController.i.transform.position, position) > ParcelSettings.UNLOAD_DISTANCE)
+                    {
+                        flaggedToUnload = true;
+                        SceneController.i.UnloadScene(sceneData.id);
+                    }
                 }
             }
         }
@@ -116,7 +123,7 @@ namespace DCL.Controllers
             return IsInsideSceneBoundaries(WorldToGridPosition(worldPosition));
         }
 
-        public bool IsInsideSceneBoundaries(Vector2 gridPosition)
+        public virtual bool IsInsideSceneBoundaries(Vector2 gridPosition)
         {
             for (int i = 0; i < sceneData.parcels.Length; i++)
             {
