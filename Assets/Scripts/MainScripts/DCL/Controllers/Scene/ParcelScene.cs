@@ -408,7 +408,7 @@ namespace DCL.Controllers
                     }
                 case CLASS_ID.UI_SCREEN_SPACE_SHAPE:
                     {
-                        newComponent = new UIScreenSpaceShape(this);
+                        newComponent = new UIScreenSpace(this);
                         break;
                     }
                 case CLASS_ID.UI_CONTAINER_RECT:
