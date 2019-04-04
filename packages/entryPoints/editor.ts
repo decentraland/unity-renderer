@@ -38,6 +38,7 @@ import * as Gizmos from '../engine/components/ephemeralComponents/Gizmos'
 import { Gizmo } from '../decentraland-ecs/src/decentraland/Gizmos'
 import { Vector3 } from 'babylonjs'
 import future, { IFuture } from 'fp-future'
+import { BaseEntity } from '../engine/entities/BaseEntity'
 
 let didStartPosition = false
 
@@ -329,6 +330,15 @@ export namespace editor {
     if (beta !== undefined) {
       arcCamera.beta = beta
     }
+  }
+
+  export function getLoadingEntity(): BaseEntity | null {
+    if (webGlParcelScene) {
+      const context = webGlParcelScene.context as SharedSceneContext
+      return context.rootEntity.getLoadingEntity()
+    }
+
+    return null
   }
 
   export function takeScreenshot(): IFuture<string> {
