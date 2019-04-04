@@ -1,7 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
 using DCL.Components;
-using DCL.Components.UI;
 using DCL.Controllers;
 using DCL.Helpers;
 using DCL.Models;
@@ -9,8 +8,6 @@ using NUnit.Framework;
 using UnityEngine;
 using UnityEngine.TestTools;
 using UnityEngine.UI;
-using UITextShape = DCL.Components.UI.TextShape;
-using TextShape = DCL.Components.TextShape;
 using Newtonsoft.Json;
 
 namespace Tests
@@ -66,11 +63,11 @@ namespace Tests
             }));
 
             // Create UIScreenSpaceShape
-            ScreenSpaceShape screenSpaceShape = TestHelpers.SharedComponentCreate<ScreenSpaceShape, ScreenSpaceShape.Model>(scene, CLASS_ID.UI_SCREEN_SPACE_SHAPE);
+            UIScreenSpaceShape screenSpaceShape = TestHelpers.SharedComponentCreate<UIScreenSpaceShape, UIScreenSpaceShape.Model>(scene, CLASS_ID.UI_SCREEN_SPACE_SHAPE);
 
             yield return screenSpaceShape.routine;
 
-            Canvas canvas = screenSpaceShape.transform.GetComponent<Canvas>();
+            Canvas canvas = screenSpaceShape.childHookRectTransform.GetComponent<Canvas>();
 
             // Check visibility
             Assert.IsTrue(canvas.enabled, "When the character is inside the scene, the UIScreenSpaceShape should be visible");
@@ -79,11 +76,11 @@ namespace Tests
             screenSpaceShape = scene.SharedComponentUpdate(JsonUtility.ToJson(new SharedComponentUpdateMessage
             {
                 id = screenSpaceShape.id,
-                json = JsonUtility.ToJson(new ScreenSpaceShape.Model
+                json = JsonUtility.ToJson(new UIScreenSpaceShape.Model
                 {
                     visible = false
                 })
-            })) as ScreenSpaceShape;
+            })) as UIScreenSpaceShape;
 
             yield return screenSpaceShape.routine;
 
@@ -94,11 +91,11 @@ namespace Tests
             screenSpaceShape = scene.SharedComponentUpdate(JsonUtility.ToJson(new SharedComponentUpdateMessage
             {
                 id = screenSpaceShape.id,
-                json = JsonUtility.ToJson(new ScreenSpaceShape.Model
+                json = JsonUtility.ToJson(new UIScreenSpaceShape.Model
                 {
                     visible = true
                 })
-            })) as ScreenSpaceShape;
+            })) as UIScreenSpaceShape;
 
             yield return screenSpaceShape.routine;
 
@@ -139,11 +136,11 @@ namespace Tests
             yield return null;
 
             // Create UIScreenSpaceShape
-            ScreenSpaceShape screenSpaceShape = TestHelpers.SharedComponentCreate<ScreenSpaceShape, ScreenSpaceShape.Model>(scene, CLASS_ID.UI_SCREEN_SPACE_SHAPE);
+            UIScreenSpaceShape screenSpaceShape = TestHelpers.SharedComponentCreate<UIScreenSpaceShape, UIScreenSpaceShape.Model>(scene, CLASS_ID.UI_SCREEN_SPACE_SHAPE);
 
             yield return screenSpaceShape.routine;
 
-            RectTransform canvasRectTransform = screenSpaceShape.transform.GetComponent<RectTransform>();
+            RectTransform canvasRectTransform = screenSpaceShape.childHookRectTransform.GetComponent<RectTransform>();
 
             // Check if canvas size is correct (1280x720 taking into account unity scaling minor inconsistences)
             Assert.IsTrue(canvasRectTransform.rect.width >= 1275 && canvasRectTransform.rect.width <= 1285);
@@ -168,11 +165,11 @@ namespace Tests
             }));
 
             // Create UIScreenSpaceShape
-            ScreenSpaceShape screenSpaceShape = TestHelpers.SharedComponentCreate<ScreenSpaceShape, ScreenSpaceShape.Model>(scene, CLASS_ID.UI_SCREEN_SPACE_SHAPE);
+            UIScreenSpaceShape screenSpaceShape = TestHelpers.SharedComponentCreate<UIScreenSpaceShape, UIScreenSpaceShape.Model>(scene, CLASS_ID.UI_SCREEN_SPACE_SHAPE);
 
             yield return screenSpaceShape.routine;
 
-            Canvas canvas = screenSpaceShape.transform.GetComponent<Canvas>();
+            Canvas canvas = screenSpaceShape.childHookRectTransform.GetComponent<Canvas>();
 
             // Check visibility
             Assert.IsTrue(canvas.enabled, "When the character is inside the scene, the UIScreenSpaceShape should be visible");
@@ -181,11 +178,11 @@ namespace Tests
             screenSpaceShape = scene.SharedComponentUpdate(JsonUtility.ToJson(new SharedComponentUpdateMessage
             {
                 id = screenSpaceShape.id,
-                json = JsonUtility.ToJson(new ScreenSpaceShape.Model
+                json = JsonUtility.ToJson(new UIScreenSpaceShape.Model
                 {
                     visible = false
                 })
-            })) as ScreenSpaceShape;
+            })) as UIScreenSpaceShape;
 
             yield return screenSpaceShape.routine;
 
@@ -196,8 +193,8 @@ namespace Tests
             screenSpaceShape = scene.SharedComponentUpdate(JsonUtility.ToJson(new SharedComponentUpdateMessage
             {
                 id = screenSpaceShape.id,
-                json = JsonUtility.ToJson(new ScreenSpaceShape.Model { })
-            })) as ScreenSpaceShape;
+                json = JsonUtility.ToJson(new UIScreenSpaceShape.Model { })
+            })) as UIScreenSpaceShape;
 
             yield return screenSpaceShape.routine;
 
@@ -223,43 +220,43 @@ namespace Tests
             }));
 
             // Create UIScreenSpaceShape
-            ScreenSpaceShape screenSpaceShape = TestHelpers.SharedComponentCreate<ScreenSpaceShape, ScreenSpaceShape.Model>(scene, CLASS_ID.UI_SCREEN_SPACE_SHAPE);
+            UIScreenSpaceShape screenSpaceShape = TestHelpers.SharedComponentCreate<UIScreenSpaceShape, UIScreenSpaceShape.Model>(scene, CLASS_ID.UI_SCREEN_SPACE_SHAPE);
 
             yield return screenSpaceShape.routine;
 
             // Create UIContainerRectShape
             string uiContainerRectShapeId = "uiContainerRectShape";
 
-            ContainerRectShape uiContainerRectShape = scene.SharedComponentCreate(JsonUtility.ToJson(new SharedComponentCreateMessage
+            UIContainerRect uiContainerRectShape = scene.SharedComponentCreate(JsonUtility.ToJson(new SharedComponentCreateMessage
             {
                 classId = (int)CLASS_ID.UI_CONTAINER_RECT,
                 id = uiContainerRectShapeId,
                 name = "UIContainerRectShape"
-            })) as ContainerRectShape;
+            })) as UIContainerRect;
 
             scene.SharedComponentUpdate(JsonUtility.ToJson(new SharedComponentUpdateMessage
             {
                 id = uiContainerRectShapeId,
-                json = JsonUtility.ToJson(new ContainerRectShape.Model { })
+                json = JsonUtility.ToJson(new UIContainerRect.Model { })
             }));
 
             yield return uiContainerRectShape.routine;
 
-            Image image = uiContainerRectShape.referencesContainer.image;
+            UnityEngine.UI.Image image = uiContainerRectShape.referencesContainer.image;
 
             // Check default properties are applied correctly
             Assert.IsTrue(image.GetComponent<Outline>() == null);
             Assert.IsTrue(image.color == new Color(0f, 0f, 0f, 1f));
             Assert.IsFalse(image.raycastTarget);
-            Assert.AreEqual(100f, uiContainerRectShape.transform.rect.width);
-            Assert.AreEqual(100f, uiContainerRectShape.transform.rect.height);
-            Assert.AreEqual(Vector3.zero, uiContainerRectShape.transform.localPosition);
+            Assert.AreEqual(100f, uiContainerRectShape.childHookRectTransform.rect.width);
+            Assert.AreEqual(100f, uiContainerRectShape.childHookRectTransform.rect.height);
+            Assert.AreEqual(Vector3.zero, uiContainerRectShape.childHookRectTransform.localPosition);
 
             // Update UIContainerRectShape properties
             uiContainerRectShape = scene.SharedComponentUpdate(JsonUtility.ToJson(new SharedComponentUpdateMessage
             {
                 id = uiContainerRectShapeId,
-                json = JsonUtility.ToJson(new ContainerRectShape.Model
+                json = JsonUtility.ToJson(new UIContainerRect.Model
                 {
                     parentComponent = screenSpaceShape.id,
                     thickness = 5,
@@ -272,23 +269,23 @@ namespace Tests
                     hAlign = "right",
                     vAlign = "bottom"
                 })
-            })) as ContainerRectShape;
+            })) as UIContainerRect;
 
             yield return uiContainerRectShape.routine;
 
             // Check updated properties are applied correctly
-            Assert.IsTrue(uiContainerRectShape.referencesContainer.transform.parent == screenSpaceShape.transform);
+            Assert.IsTrue(uiContainerRectShape.referencesContainer.transform.parent == screenSpaceShape.childHookRectTransform);
             Assert.IsTrue(image.GetComponent<Outline>() != null);
             Assert.IsTrue(image.color == new Color(0.2f * 255f, 0.7f * 255f, 0.05f * 255f, 1f));
             Assert.IsTrue(image.raycastTarget);
-            Assert.AreEqual(275f, uiContainerRectShape.transform.rect.width);
-            Assert.AreEqual(130f, uiContainerRectShape.transform.rect.height);
+            Assert.AreEqual(275f, uiContainerRectShape.childHookRectTransform.rect.width);
+            Assert.AreEqual(130f, uiContainerRectShape.childHookRectTransform.rect.height);
             Assert.IsTrue(uiContainerRectShape.referencesContainer.alignmentLayoutGroup.childAlignment == TextAnchor.LowerRight);
 
-            Vector2 alignedPosition = CalculateAlignedPosition(screenSpaceShape.transform.rect, uiContainerRectShape.transform.rect, "bottom", "right");
+            Vector2 alignedPosition = CalculateAlignedPosition(screenSpaceShape.childHookRectTransform.rect, uiContainerRectShape.childHookRectTransform.rect, "bottom", "right");
             alignedPosition += new Vector2(-30, -15); // apply offset position
 
-            Assert.AreEqual(alignedPosition.ToString(), uiContainerRectShape.transform.anchoredPosition.ToString());
+            Assert.AreEqual(alignedPosition.ToString(), uiContainerRectShape.childHookRectTransform.anchoredPosition.ToString());
 
             screenSpaceShape.Dispose();
         }
@@ -309,19 +306,19 @@ namespace Tests
             }));
 
             // Create UIScreenSpaceShape
-            ScreenSpaceShape screenSpaceShape = TestHelpers.SharedComponentCreate<ScreenSpaceShape, ScreenSpaceShape.Model>(scene, CLASS_ID.UI_SCREEN_SPACE_SHAPE);
+            UIScreenSpaceShape screenSpaceShape = TestHelpers.SharedComponentCreate<UIScreenSpaceShape, UIScreenSpaceShape.Model>(scene, CLASS_ID.UI_SCREEN_SPACE_SHAPE);
 
             yield return screenSpaceShape.routine;
 
             // Create UIContainerRectShape
             string uiContainerRectShapeId = "uiContainerRectShape";
 
-            ContainerRectShape uiContainerRectShape = scene.SharedComponentCreate(JsonUtility.ToJson(new SharedComponentCreateMessage
+            UIContainerRect uiContainerRectShape = scene.SharedComponentCreate(JsonUtility.ToJson(new SharedComponentCreateMessage
             {
                 classId = (int)CLASS_ID.UI_CONTAINER_RECT,
                 id = uiContainerRectShapeId,
                 name = "UIContainerRectShape"
-            })) as ContainerRectShape;
+            })) as UIContainerRect;
 
             yield return uiContainerRectShape.routine;
 
@@ -329,26 +326,26 @@ namespace Tests
             uiContainerRectShape = scene.SharedComponentUpdate(JsonUtility.ToJson(new SharedComponentUpdateMessage
             {
                 id = uiContainerRectShapeId,
-                json = JsonUtility.ToJson(new ContainerRectShape.Model
+                json = JsonUtility.ToJson(new UIContainerRect.Model
                 {
                     parentComponent = screenSpaceShape.id,
                 })
-            })) as ContainerRectShape;
+            })) as UIContainerRect;
 
             yield return uiContainerRectShape.routine;
 
             // Check updated parent
-            Assert.IsTrue(uiContainerRectShape.referencesContainer.transform.parent == screenSpaceShape.transform);
+            Assert.IsTrue(uiContainerRectShape.referencesContainer.transform.parent == screenSpaceShape.childHookRectTransform);
 
             // Create 2nd UIContainerRectShape
             string uiContainerRectShape2Id = "uiContainerRectShape2";
 
-            ContainerRectShape uiContainerRectShape2 = scene.SharedComponentCreate(JsonUtility.ToJson(new SharedComponentCreateMessage
+            UIContainerRect uiContainerRectShape2 = scene.SharedComponentCreate(JsonUtility.ToJson(new SharedComponentCreateMessage
             {
                 classId = (int)CLASS_ID.UI_CONTAINER_RECT,
                 id = uiContainerRectShape2Id,
                 name = "UIContainerRectShape2"
-            })) as ContainerRectShape;
+            })) as UIContainerRect;
 
             yield return uiContainerRectShape2.routine;
 
@@ -356,16 +353,16 @@ namespace Tests
             uiContainerRectShape2 = scene.SharedComponentUpdate(JsonUtility.ToJson(new SharedComponentUpdateMessage
             {
                 id = uiContainerRectShape2Id,
-                json = JsonUtility.ToJson(new ContainerRectShape.Model
+                json = JsonUtility.ToJson(new UIContainerRect.Model
                 {
                     parentComponent = uiContainerRectShapeId,
                 })
-            })) as ContainerRectShape;
+            })) as UIContainerRect;
 
             yield return uiContainerRectShape2.routine;
 
             // Check updated parent
-            Assert.IsTrue(uiContainerRectShape2.referencesContainer.transform.parent == uiContainerRectShape.transform);
+            Assert.IsTrue(uiContainerRectShape2.referencesContainer.transform.parent == uiContainerRectShape.childHookRectTransform);
 
             screenSpaceShape.Dispose();
         }
@@ -386,7 +383,7 @@ namespace Tests
             }));
 
             // Create UIScreenSpaceShape
-            ScreenSpaceShape screenSpaceShape = TestHelpers.SharedComponentCreate<ScreenSpaceShape, ScreenSpaceShape.Model>(scene, CLASS_ID.UI_SCREEN_SPACE_SHAPE);
+            UIScreenSpaceShape screenSpaceShape = TestHelpers.SharedComponentCreate<UIScreenSpaceShape, UIScreenSpaceShape.Model>(scene, CLASS_ID.UI_SCREEN_SPACE_SHAPE);
 
             yield return screenSpaceShape.routine;
 
@@ -395,12 +392,12 @@ namespace Tests
             // Create UIContainerRectShape
             string uiContainerRectShapeId = "uiContainerRectShape";
 
-            ContainerRectShape uiContainerRectShape = scene.SharedComponentCreate(JsonUtility.ToJson(new SharedComponentCreateMessage
+            UIContainerRect uiContainerRectShape = scene.SharedComponentCreate(JsonUtility.ToJson(new SharedComponentCreateMessage
             {
                 classId = (int)CLASS_ID.UI_CONTAINER_RECT,
                 id = uiContainerRectShapeId,
                 name = "UIContainerRectShape"
-            })) as ContainerRectShape;
+            })) as UIContainerRect;
 
             yield return uiContainerRectShape.routine;
 
@@ -408,7 +405,7 @@ namespace Tests
             uiContainerRectShape = scene.SharedComponentUpdate(JsonUtility.ToJson(new SharedComponentUpdateMessage
             {
                 id = uiContainerRectShapeId,
-                json = JsonUtility.ToJson(new ContainerRectShape.Model
+                json = JsonUtility.ToJson(new UIContainerRect.Model
                 {
                     parentComponent = screenSpaceShape.id,
                     thickness = 5,
@@ -419,30 +416,30 @@ namespace Tests
                     positionX = new UIValue(20f),
                     positionY = new UIValue(45f)
                 })
-            })) as ContainerRectShape;
+            })) as UIContainerRect;
 
             yield return uiContainerRectShape.routine;
 
-            Image image = uiContainerRectShape.referencesContainer.image;
+            UnityEngine.UI.Image image = uiContainerRectShape.referencesContainer.image;
 
             // Check updated properties are applied correctly
-            Assert.IsTrue(uiContainerRectShape.referencesContainer.transform.parent == screenSpaceShape.transform);
+            Assert.IsTrue(uiContainerRectShape.referencesContainer.transform.parent == screenSpaceShape.childHookRectTransform);
             Assert.IsTrue(image.GetComponent<Outline>() != null);
             Assert.IsTrue(image.color == new Color(0.5f * 255f, 0.8f * 255f, 0.1f * 255f, 1f));
             Assert.IsTrue(image.raycastTarget);
-            Assert.AreEqual(200f, uiContainerRectShape.transform.rect.width);
-            Assert.AreEqual(150f, uiContainerRectShape.transform.rect.height);
-            Assert.AreEqual(new Vector3(20f, 45f, 0f), uiContainerRectShape.transform.localPosition);
+            Assert.AreEqual(200f, uiContainerRectShape.childHookRectTransform.rect.width);
+            Assert.AreEqual(150f, uiContainerRectShape.childHookRectTransform.rect.height);
+            Assert.AreEqual(new Vector3(20f, 45f, 0f), uiContainerRectShape.childHookRectTransform.localPosition);
 
             // Update UIContainerRectShape with missing values
             uiContainerRectShape = scene.SharedComponentUpdate(JsonUtility.ToJson(new SharedComponentUpdateMessage
             {
                 id = uiContainerRectShapeId,
-                json = JsonUtility.ToJson(new ContainerRectShape.Model
+                json = JsonUtility.ToJson(new UIContainerRect.Model
                 {
                     parentComponent = screenSpaceShape.id
                 })
-            })) as ContainerRectShape;
+            })) as UIContainerRect;
 
             yield return uiContainerRectShape.routine;
 
@@ -450,9 +447,9 @@ namespace Tests
             Assert.IsTrue(image.GetComponent<Outline>() == null);
             Assert.IsTrue(image.color == new Color(0f, 0f, 0f, 1f));
             Assert.IsFalse(image.raycastTarget);
-            Assert.AreEqual(100f, uiContainerRectShape.transform.rect.width);
-            Assert.AreEqual(100f, uiContainerRectShape.transform.rect.height);
-            Assert.AreEqual(Vector3.zero, uiContainerRectShape.transform.localPosition);
+            Assert.AreEqual(100f, uiContainerRectShape.childHookRectTransform.rect.width);
+            Assert.AreEqual(100f, uiContainerRectShape.childHookRectTransform.rect.height);
+            Assert.AreEqual(Vector3.zero, uiContainerRectShape.childHookRectTransform.localPosition);
 
             screenSpaceShape.Dispose();
         }
@@ -473,19 +470,19 @@ namespace Tests
             }));
 
             // Create UIScreenSpaceShape
-            ScreenSpaceShape screenSpaceShape = TestHelpers.SharedComponentCreate<ScreenSpaceShape, ScreenSpaceShape.Model>(scene, CLASS_ID.UI_SCREEN_SPACE_SHAPE);
+            UIScreenSpaceShape screenSpaceShape = TestHelpers.SharedComponentCreate<UIScreenSpaceShape, UIScreenSpaceShape.Model>(scene, CLASS_ID.UI_SCREEN_SPACE_SHAPE);
 
             yield return screenSpaceShape.routine;
 
             // Create UIContainerRectShape
             string uiContainerRectShapeId = "uiContainerRectShape";
 
-            ContainerRectShape uiContainerRectShape = scene.SharedComponentCreate(JsonUtility.ToJson(new SharedComponentCreateMessage
+            UIContainerRect uiContainerRectShape = scene.SharedComponentCreate(JsonUtility.ToJson(new SharedComponentCreateMessage
             {
                 classId = (int)CLASS_ID.UI_CONTAINER_RECT,
                 id = uiContainerRectShapeId,
                 name = "UIContainerRectShape"
-            })) as ContainerRectShape;
+            })) as UIContainerRect;
 
             yield return uiContainerRectShape.routine;
 
@@ -493,21 +490,21 @@ namespace Tests
             uiContainerRectShape = scene.SharedComponentUpdate(JsonUtility.ToJson(new SharedComponentUpdateMessage
             {
                 id = uiContainerRectShapeId,
-                json = JsonUtility.ToJson(new ContainerRectShape.Model
+                json = JsonUtility.ToJson(new UIContainerRect.Model
                 {
                     parentComponent = screenSpaceShape.id,
-                    width = new UIValue(50f, UIValue.Unit.PERCENT),
-                    height = new UIValue(30f, UIValue.Unit.PERCENT)
+                    width = new UIValue(50, UIValue.Unit.PERCENT),
+                    height = new UIValue(30, UIValue.Unit.PERCENT)
                 })
-            })) as ContainerRectShape;
+            })) as UIContainerRect;
 
             yield return uiContainerRectShape.routine;
 
-            Image image = uiContainerRectShape.transform.GetComponent<Image>();
+            UnityEngine.UI.Image image = uiContainerRectShape.childHookRectTransform.GetComponent<UnityEngine.UI.Image>();
 
             // Check updated properties are applied correctly
-            Assert.AreEqual(screenSpaceShape.transform.rect.width * 0.5f, uiContainerRectShape.transform.rect.width);
-            Assert.AreEqual(screenSpaceShape.transform.rect.height * 0.3f, uiContainerRectShape.transform.rect.height);
+            Assert.AreEqual(screenSpaceShape.childHookRectTransform.rect.width * 0.5f, uiContainerRectShape.childHookRectTransform.rect.width);
+            Assert.AreEqual(screenSpaceShape.childHookRectTransform.rect.height * 0.3f, uiContainerRectShape.childHookRectTransform.rect.height);
 
             screenSpaceShape.Dispose();
         }
@@ -528,45 +525,45 @@ namespace Tests
             }));
 
             // Create UIScreenSpaceShape
-            ScreenSpaceShape screenSpaceShape = TestHelpers.SharedComponentCreate<ScreenSpaceShape, ScreenSpaceShape.Model>(scene, CLASS_ID.UI_SCREEN_SPACE_SHAPE);
+            UIScreenSpaceShape screenSpaceShape = TestHelpers.SharedComponentCreate<UIScreenSpaceShape, UIScreenSpaceShape.Model>(scene, CLASS_ID.UI_SCREEN_SPACE_SHAPE);
 
             yield return screenSpaceShape.routine;
 
             // Create UIContainerRectShape
             string uiImageShapeId = "uiImageShape";
 
-            ImageShape uiImageshape = scene.SharedComponentCreate(JsonUtility.ToJson(new SharedComponentCreateMessage
+            UIImage uiImageshape = scene.SharedComponentCreate(JsonUtility.ToJson(new SharedComponentCreateMessage
             {
                 classId = (int)CLASS_ID.UI_IMAGE_SHAPE,
                 id = uiImageShapeId,
                 name = "UIImageShape"
-            })) as ImageShape;
+            })) as UIImage;
 
             scene.SharedComponentUpdate(JsonUtility.ToJson(new SharedComponentUpdateMessage
             {
                 id = uiImageShapeId,
-                json = JsonUtility.ToJson(new ImageShape.Model { })
+                json = JsonUtility.ToJson(new UIImage.Model { })
             }));
 
             yield return uiImageshape.routine;
 
             // Check default properties are applied correctly
-            Assert.IsTrue(uiImageshape.referencesContainer.transform.parent == screenSpaceShape.transform);
+            Assert.IsTrue(uiImageshape.referencesContainer.transform.parent == screenSpaceShape.childHookRectTransform);
             Assert.IsTrue(uiImageshape.referencesContainer.image.color == new Color(255f, 255f, 255f, 255f));
             Assert.IsFalse(uiImageshape.referencesContainer.image.raycastTarget);
-            Assert.AreEqual(100f, uiImageshape.transform.rect.width);
-            Assert.AreEqual(100f, uiImageshape.transform.rect.height);
+            Assert.AreEqual(100f, uiImageshape.childHookRectTransform.rect.width);
+            Assert.AreEqual(100f, uiImageshape.childHookRectTransform.rect.height);
             Assert.IsTrue(uiImageshape.referencesContainer.image.enabled);
             Assert.IsTrue(uiImageshape.referencesContainer.image.texture == null);
 
-            Vector2 alignedPosition = CalculateAlignedPosition(screenSpaceShape.transform.rect, uiImageshape.transform.rect);
+            Vector2 alignedPosition = CalculateAlignedPosition(screenSpaceShape.childHookRectTransform.rect, uiImageshape.childHookRectTransform.rect);
             Assert.AreEqual(alignedPosition.ToString(), uiImageshape.referencesContainer.paddingLayoutRectTransform.anchoredPosition.ToString());
 
             // Update UIContainerRectShape properties
             uiImageshape = scene.SharedComponentUpdate(JsonUtility.ToJson(new SharedComponentUpdateMessage
             {
                 id = uiImageShapeId,
-                json = JsonUtility.ToJson(new ImageShape.Model
+                json = JsonUtility.ToJson(new UIImage.Model
                 {
                     parentComponent = screenSpaceShape.id,
                     source = TestHelpers.GetTestsAssetsPath() + "/Images/atlas.png",
@@ -587,21 +584,21 @@ namespace Tests
                     paddingBottom = 10f,
                     paddingLeft = 10f
                 })
-            })) as ImageShape;
+            })) as UIImage;
 
             yield return uiImageshape.routine;
 
             // Check default properties are applied correctly
-            Assert.IsTrue(uiImageshape.referencesContainer.transform.parent == screenSpaceShape.transform);
+            Assert.IsTrue(uiImageshape.referencesContainer.transform.parent == screenSpaceShape.childHookRectTransform);
             Assert.AreEqual(new Color(255f, 255f, 255f, 255f * 0.7f), uiImageshape.referencesContainer.image.color);
             Assert.IsTrue(uiImageshape.referencesContainer.image.raycastTarget);
 
-            Assert.AreEqual(108f, uiImageshape.transform.rect.width); // 128 - 20 (left and right padding)
-            Assert.AreEqual(108f, uiImageshape.transform.rect.height); // 128 - 20 (left and right padding)
+            Assert.AreEqual(108f, uiImageshape.childHookRectTransform.rect.width); // 128 - 20 (left and right padding)
+            Assert.AreEqual(108f, uiImageshape.childHookRectTransform.rect.height); // 128 - 20 (left and right padding)
             Assert.IsTrue(uiImageshape.referencesContainer.image.enabled);
             Assert.IsTrue(uiImageshape.referencesContainer.image.texture != null);
 
-            alignedPosition = CalculateAlignedPosition(screenSpaceShape.transform.rect, uiImageshape.transform.rect, "bottom", "right");
+            alignedPosition = CalculateAlignedPosition(screenSpaceShape.childHookRectTransform.rect, uiImageshape.childHookRectTransform.rect, "bottom", "right");
             alignedPosition += new Vector2(-65f, 40f); // affected by padding
 
             Assert.AreEqual(alignedPosition.ToString(), uiImageshape.referencesContainer.paddingLayoutRectTransform.anchoredPosition.ToString());
@@ -634,12 +631,12 @@ namespace Tests
             }));
 
             // Create UIScreenSpaceShape
-            ScreenSpaceShape screenSpaceShape = TestHelpers.SharedComponentCreate<ScreenSpaceShape, ScreenSpaceShape.Model>(scene, CLASS_ID.UI_SCREEN_SPACE_SHAPE);
+            UIScreenSpaceShape screenSpaceShape = TestHelpers.SharedComponentCreate<UIScreenSpaceShape, UIScreenSpaceShape.Model>(scene, CLASS_ID.UI_SCREEN_SPACE_SHAPE);
 
             yield return screenSpaceShape.routine;
 
             // Create UIContainerRectShape
-            ImageShape uiImageshape = TestHelpers.SharedComponentCreate<ImageShape, ImageShape.Model>(scene, CLASS_ID.UI_IMAGE_SHAPE);
+            UIImage uiImageshape = TestHelpers.SharedComponentCreate<UIImage, UIImage.Model>(scene, CLASS_ID.UI_IMAGE_SHAPE);
 
             yield return uiImageshape.routine;
 
@@ -647,7 +644,7 @@ namespace Tests
             uiImageshape = scene.SharedComponentUpdate(JsonUtility.ToJson(new SharedComponentUpdateMessage
             {
                 id = uiImageshape.id,
-                json = JsonUtility.ToJson(new ImageShape.Model
+                json = JsonUtility.ToJson(new UIImage.Model
                 {
                     parentComponent = screenSpaceShape.id,
                     source = TestHelpers.GetTestsAssetsPath() + "/Images/atlas.png",
@@ -668,21 +665,21 @@ namespace Tests
                     paddingBottom = 10f,
                     paddingLeft = 10f
                 })
-            })) as ImageShape;
+            })) as UIImage;
 
             yield return uiImageshape.routine;
 
             // Check properties are applied correctly
-            Assert.IsTrue(uiImageshape.referencesContainer.transform.parent == screenSpaceShape.transform);
+            Assert.IsTrue(uiImageshape.referencesContainer.transform.parent == screenSpaceShape.childHookRectTransform);
             Assert.AreEqual(new Color(255f, 255f, 255f, 255f * 0.7f), uiImageshape.referencesContainer.image.color);
             Assert.IsTrue(uiImageshape.referencesContainer.image.raycastTarget);
 
-            Assert.AreEqual(108f, uiImageshape.transform.rect.width); // 128 - 20 (left and right padding)
-            Assert.AreEqual(108f, uiImageshape.transform.rect.height); // 128 - 20 (left and right padding)
+            Assert.AreEqual(108f, uiImageshape.childHookRectTransform.rect.width); // 128 - 20 (left and right padding)
+            Assert.AreEqual(108f, uiImageshape.childHookRectTransform.rect.height); // 128 - 20 (left and right padding)
             Assert.IsTrue(uiImageshape.referencesContainer.image.enabled);
             Assert.IsTrue(uiImageshape.referencesContainer.image.texture != null);
 
-            Vector2 alignedPosition = CalculateAlignedPosition(screenSpaceShape.transform.rect, uiImageshape.transform.rect, "bottom", "right");
+            Vector2 alignedPosition = CalculateAlignedPosition(screenSpaceShape.childHookRectTransform.rect, uiImageshape.childHookRectTransform.rect, "bottom", "right");
             alignedPosition += new Vector2(7f, 42f); // affected by padding
 
             Assert.AreEqual(alignedPosition.ToString(), uiImageshape.referencesContainer.paddingLayoutRectTransform.anchoredPosition.ToString());
@@ -700,21 +697,21 @@ namespace Tests
             uiImageshape = scene.SharedComponentUpdate(JsonUtility.ToJson(new SharedComponentUpdateMessage
             {
                 id = uiImageshape.id,
-                json = JsonUtility.ToJson(new ImageShape.Model { })
-            })) as ImageShape;
+                json = JsonUtility.ToJson(new UIImage.Model { })
+            })) as UIImage;
 
             yield return uiImageshape.routine;
 
             // Check default properties are applied correctly
-            Assert.IsTrue(uiImageshape.referencesContainer.transform.parent == screenSpaceShape.transform);
+            Assert.IsTrue(uiImageshape.referencesContainer.transform.parent == screenSpaceShape.childHookRectTransform);
             Assert.IsTrue(uiImageshape.referencesContainer.image.color == new Color(255f, 255f, 255f, 255f));
             Assert.IsFalse(uiImageshape.referencesContainer.image.raycastTarget);
-            Assert.AreEqual(100f, uiImageshape.transform.rect.width);
-            Assert.AreEqual(100f, uiImageshape.transform.rect.height);
+            Assert.AreEqual(100f, uiImageshape.childHookRectTransform.rect.width);
+            Assert.AreEqual(100f, uiImageshape.childHookRectTransform.rect.height);
             Assert.IsTrue(uiImageshape.referencesContainer.image.enabled);
             Assert.IsTrue(uiImageshape.referencesContainer.image.texture == null);
 
-            alignedPosition = CalculateAlignedPosition(screenSpaceShape.transform.rect, uiImageshape.transform.rect);
+            alignedPosition = CalculateAlignedPosition(screenSpaceShape.childHookRectTransform.rect, uiImageshape.childHookRectTransform.rect);
             Assert.AreEqual(alignedPosition.ToString(), uiImageshape.referencesContainer.paddingLayoutRectTransform.anchoredPosition.ToString());
 
             screenSpaceShape.Dispose();
@@ -736,19 +733,19 @@ namespace Tests
             }));
 
             // Create UIScreenSpaceShape
-            ScreenSpaceShape screenSpaceShape = TestHelpers.SharedComponentCreate<ScreenSpaceShape, ScreenSpaceShape.Model>(scene, CLASS_ID.UI_SCREEN_SPACE_SHAPE);
+            UIScreenSpaceShape screenSpaceShape = TestHelpers.SharedComponentCreate<UIScreenSpaceShape, UIScreenSpaceShape.Model>(scene, CLASS_ID.UI_SCREEN_SPACE_SHAPE);
 
             yield return screenSpaceShape.routine;
 
             // Create UIContainerRectShape
             string uiImageShapeId = "uiImageShape";
 
-            ImageShape uiImageshape = scene.SharedComponentCreate(JsonUtility.ToJson(new SharedComponentCreateMessage
+            UIImage uiImageshape = scene.SharedComponentCreate(JsonUtility.ToJson(new SharedComponentCreateMessage
             {
                 classId = (int)CLASS_ID.UI_IMAGE_SHAPE,
                 id = uiImageShapeId,
                 name = "UIImageShape"
-            })) as ImageShape;
+            })) as UIImage;
 
             yield return uiImageshape.routine;
 
@@ -756,7 +753,7 @@ namespace Tests
             uiImageshape = scene.SharedComponentUpdate(JsonUtility.ToJson(new SharedComponentUpdateMessage
             {
                 id = uiImageShapeId,
-                json = JsonUtility.ToJson(new ImageShape.Model
+                json = JsonUtility.ToJson(new UIImage.Model
                 {
                     parentComponent = screenSpaceShape.id,
                     source = TestHelpers.GetTestsAssetsPath() + "/Images/atlas.png",
@@ -765,13 +762,13 @@ namespace Tests
                     hAlign = "right",
                     vAlign = "bottom",
                 })
-            })) as ImageShape;
+            })) as UIImage;
 
             // waiting for the texture fetching
             yield return uiImageshape.routine;
 
             // Check alignment position was applied correctly
-            Vector2 alignedPosition = CalculateAlignedPosition(screenSpaceShape.transform.rect, uiImageshape.transform.rect, "bottom", "right");
+            Vector2 alignedPosition = CalculateAlignedPosition(screenSpaceShape.childHookRectTransform.rect, uiImageshape.childHookRectTransform.rect, "bottom", "right");
             Assert.AreEqual(alignedPosition.ToString(), uiImageshape.referencesContainer.paddingLayoutRectTransform.anchoredPosition.ToString());
             Assert.AreEqual(TextAnchor.LowerRight, uiImageshape.referencesContainer.alignmentLayoutGroup.childAlignment);
 
@@ -779,7 +776,7 @@ namespace Tests
             uiImageshape = scene.SharedComponentUpdate(JsonUtility.ToJson(new SharedComponentUpdateMessage
             {
                 id = uiImageShapeId,
-                json = JsonUtility.ToJson(new ImageShape.Model
+                json = JsonUtility.ToJson(new UIImage.Model
                 {
                     source = TestHelpers.GetTestsAssetsPath() + "/Images/atlas.png",
                     width = new UIValue(128f),
@@ -787,12 +784,12 @@ namespace Tests
                     hAlign = "right",
                     vAlign = "center",
                 })
-            })) as ImageShape;
+            })) as UIImage;
 
             yield return uiImageshape.routine;
 
             // Check alignment position was applied correctly
-            alignedPosition = CalculateAlignedPosition(screenSpaceShape.transform.rect, uiImageshape.transform.rect, "center", "right");
+            alignedPosition = CalculateAlignedPosition(screenSpaceShape.childHookRectTransform.rect, uiImageshape.childHookRectTransform.rect, "center", "right");
             Assert.AreEqual(alignedPosition.ToString(), uiImageshape.referencesContainer.paddingLayoutRectTransform.anchoredPosition.ToString());
             Assert.AreEqual(TextAnchor.MiddleRight, uiImageshape.referencesContainer.alignmentLayoutGroup.childAlignment);
 
@@ -800,7 +797,7 @@ namespace Tests
             uiImageshape = scene.SharedComponentUpdate(JsonUtility.ToJson(new SharedComponentUpdateMessage
             {
                 id = uiImageShapeId,
-                json = JsonUtility.ToJson(new ImageShape.Model
+                json = JsonUtility.ToJson(new UIImage.Model
                 {
                     source = TestHelpers.GetTestsAssetsPath() + "/Images/atlas.png",
                     width = new UIValue(128f),
@@ -808,12 +805,12 @@ namespace Tests
                     hAlign = "right",
                     vAlign = "top",
                 })
-            })) as ImageShape;
+            })) as UIImage;
 
             yield return uiImageshape.routine;
 
             // Check alignment position was applied correctly
-            alignedPosition = CalculateAlignedPosition(screenSpaceShape.transform.rect, uiImageshape.transform.rect, "top", "right");
+            alignedPosition = CalculateAlignedPosition(screenSpaceShape.childHookRectTransform.rect, uiImageshape.childHookRectTransform.rect, "top", "right");
             Assert.AreEqual(alignedPosition.ToString(), uiImageshape.referencesContainer.paddingLayoutRectTransform.anchoredPosition.ToString());
             Assert.AreEqual(TextAnchor.UpperRight, uiImageshape.referencesContainer.alignmentLayoutGroup.childAlignment);
 
@@ -821,7 +818,7 @@ namespace Tests
             uiImageshape = scene.SharedComponentUpdate(JsonUtility.ToJson(new SharedComponentUpdateMessage
             {
                 id = uiImageShapeId,
-                json = JsonUtility.ToJson(new ImageShape.Model
+                json = JsonUtility.ToJson(new UIImage.Model
                 {
                     source = TestHelpers.GetTestsAssetsPath() + "/Images/atlas.png",
                     width = new UIValue(128f),
@@ -829,12 +826,12 @@ namespace Tests
                     hAlign = "center",
                     vAlign = "bottom",
                 })
-            })) as ImageShape;
+            })) as UIImage;
 
             yield return uiImageshape.routine;
 
             // Check alignment position was applied correctly
-            alignedPosition = CalculateAlignedPosition(screenSpaceShape.transform.rect, uiImageshape.transform.rect, "bottom", "center");
+            alignedPosition = CalculateAlignedPosition(screenSpaceShape.childHookRectTransform.rect, uiImageshape.childHookRectTransform.rect, "bottom", "center");
             Assert.AreEqual(alignedPosition.ToString(), uiImageshape.referencesContainer.paddingLayoutRectTransform.anchoredPosition.ToString());
             Assert.AreEqual(TextAnchor.LowerCenter, uiImageshape.referencesContainer.alignmentLayoutGroup.childAlignment);
 
@@ -842,7 +839,7 @@ namespace Tests
             uiImageshape = scene.SharedComponentUpdate(JsonUtility.ToJson(new SharedComponentUpdateMessage
             {
                 id = uiImageShapeId,
-                json = JsonUtility.ToJson(new ImageShape.Model
+                json = JsonUtility.ToJson(new UIImage.Model
                 {
                     source = TestHelpers.GetTestsAssetsPath() + "/Images/atlas.png",
                     width = new UIValue(128f),
@@ -850,12 +847,12 @@ namespace Tests
                     hAlign = "center",
                     vAlign = "center",
                 })
-            })) as ImageShape;
+            })) as UIImage;
 
             yield return uiImageshape.routine;
 
             // Check alignment position was applied correctly
-            alignedPosition = CalculateAlignedPosition(screenSpaceShape.transform.rect, uiImageshape.transform.rect, "center", "center");
+            alignedPosition = CalculateAlignedPosition(screenSpaceShape.childHookRectTransform.rect, uiImageshape.childHookRectTransform.rect, "center", "center");
             Assert.AreEqual(alignedPosition.ToString(), uiImageshape.referencesContainer.paddingLayoutRectTransform.anchoredPosition.ToString());
             Assert.AreEqual(TextAnchor.MiddleCenter, uiImageshape.referencesContainer.alignmentLayoutGroup.childAlignment);
 
@@ -863,7 +860,7 @@ namespace Tests
             uiImageshape = scene.SharedComponentUpdate(JsonUtility.ToJson(new SharedComponentUpdateMessage
             {
                 id = uiImageShapeId,
-                json = JsonUtility.ToJson(new ImageShape.Model
+                json = JsonUtility.ToJson(new UIImage.Model
                 {
                     source = TestHelpers.GetTestsAssetsPath() + "/Images/atlas.png",
                     width = new UIValue(128f),
@@ -871,12 +868,12 @@ namespace Tests
                     hAlign = "center",
                     vAlign = "top",
                 })
-            })) as ImageShape;
+            })) as UIImage;
 
             yield return uiImageshape.routine;
 
             // Check alignment position was applied correctly
-            alignedPosition = CalculateAlignedPosition(screenSpaceShape.transform.rect, uiImageshape.transform.rect, "top", "center");
+            alignedPosition = CalculateAlignedPosition(screenSpaceShape.childHookRectTransform.rect, uiImageshape.childHookRectTransform.rect, "top", "center");
             Assert.AreEqual(alignedPosition.ToString(), uiImageshape.referencesContainer.paddingLayoutRectTransform.anchoredPosition.ToString());
             Assert.AreEqual(TextAnchor.UpperCenter, uiImageshape.referencesContainer.alignmentLayoutGroup.childAlignment);
 
@@ -884,7 +881,7 @@ namespace Tests
             uiImageshape = scene.SharedComponentUpdate(JsonUtility.ToJson(new SharedComponentUpdateMessage
             {
                 id = uiImageShapeId,
-                json = JsonUtility.ToJson(new ImageShape.Model
+                json = JsonUtility.ToJson(new UIImage.Model
                 {
                     source = TestHelpers.GetTestsAssetsPath() + "/Images/atlas.png",
                     width = new UIValue(128f),
@@ -892,12 +889,12 @@ namespace Tests
                     hAlign = "left",
                     vAlign = "bottom",
                 })
-            })) as ImageShape;
+            })) as UIImage;
 
             yield return uiImageshape.routine;
 
             // Check alignment position was applied correctly
-            alignedPosition = CalculateAlignedPosition(screenSpaceShape.transform.rect, uiImageshape.transform.rect, "bottom", "left");
+            alignedPosition = CalculateAlignedPosition(screenSpaceShape.childHookRectTransform.rect, uiImageshape.childHookRectTransform.rect, "bottom", "left");
             Assert.AreEqual(alignedPosition.ToString(), uiImageshape.referencesContainer.paddingLayoutRectTransform.anchoredPosition.ToString());
             Assert.AreEqual(TextAnchor.LowerLeft, uiImageshape.referencesContainer.alignmentLayoutGroup.childAlignment);
 
@@ -905,7 +902,7 @@ namespace Tests
             uiImageshape = scene.SharedComponentUpdate(JsonUtility.ToJson(new SharedComponentUpdateMessage
             {
                 id = uiImageShapeId,
-                json = JsonUtility.ToJson(new ImageShape.Model
+                json = JsonUtility.ToJson(new UIImage.Model
                 {
                     source = TestHelpers.GetTestsAssetsPath() + "/Images/atlas.png",
                     width = new UIValue(128f),
@@ -913,12 +910,12 @@ namespace Tests
                     hAlign = "left",
                     vAlign = "center",
                 })
-            })) as ImageShape;
+            })) as UIImage;
 
             yield return uiImageshape.routine;
 
             // Check alignment position was applied correctly
-            alignedPosition = CalculateAlignedPosition(screenSpaceShape.transform.rect, uiImageshape.transform.rect, "center", "left");
+            alignedPosition = CalculateAlignedPosition(screenSpaceShape.childHookRectTransform.rect, uiImageshape.childHookRectTransform.rect, "center", "left");
             Assert.AreEqual(alignedPosition.ToString(), uiImageshape.referencesContainer.paddingLayoutRectTransform.anchoredPosition.ToString());
             Assert.AreEqual(TextAnchor.MiddleLeft, uiImageshape.referencesContainer.alignmentLayoutGroup.childAlignment);
 
@@ -926,7 +923,7 @@ namespace Tests
             uiImageshape = scene.SharedComponentUpdate(JsonUtility.ToJson(new SharedComponentUpdateMessage
             {
                 id = uiImageShapeId,
-                json = JsonUtility.ToJson(new ImageShape.Model
+                json = JsonUtility.ToJson(new UIImage.Model
                 {
                     source = TestHelpers.GetTestsAssetsPath() + "/Images/atlas.png",
                     width = new UIValue(128f),
@@ -934,12 +931,12 @@ namespace Tests
                     hAlign = "left",
                     vAlign = "top",
                 })
-            })) as ImageShape;
+            })) as UIImage;
 
             yield return uiImageshape.routine;
 
             // Check alignment position was applied correctly
-            alignedPosition = CalculateAlignedPosition(screenSpaceShape.transform.rect, uiImageshape.transform.rect, "top", "left");
+            alignedPosition = CalculateAlignedPosition(screenSpaceShape.childHookRectTransform.rect, uiImageshape.childHookRectTransform.rect, "top", "left");
             Assert.AreEqual(alignedPosition.ToString(), uiImageshape.referencesContainer.paddingLayoutRectTransform.anchoredPosition.ToString());
             Assert.AreEqual(TextAnchor.UpperLeft, uiImageshape.referencesContainer.alignmentLayoutGroup.childAlignment);
 
@@ -962,21 +959,21 @@ namespace Tests
             }));
 
             // Create UIScreenSpaceShape
-            ScreenSpaceShape screenSpaceShape = TestHelpers.SharedComponentCreate<ScreenSpaceShape, ScreenSpaceShape.Model>(scene, CLASS_ID.UI_SCREEN_SPACE_SHAPE);
+            UIScreenSpaceShape screenSpaceShape = TestHelpers.SharedComponentCreate<UIScreenSpaceShape, UIScreenSpaceShape.Model>(scene, CLASS_ID.UI_SCREEN_SPACE_SHAPE);
 
             yield return screenSpaceShape.routine;
 
             // Create UITextShape
-            UITextShape uiTextShape = TestHelpers.SharedComponentCreate<UITextShape, UITextShape.Model>(scene, CLASS_ID.UI_TEXT_SHAPE,
-            new UITextShape.Model { });
+            UIText uiTextShape = TestHelpers.SharedComponentCreate<UIText, UIText.Model>(scene, CLASS_ID.UI_TEXT_SHAPE,
+            new UIText.Model { });
 
             yield return uiTextShape.routine;
 
             // Check default properties are applied correctly
-            Assert.IsTrue(uiTextShape.referencesContainer.transform.parent == screenSpaceShape.transform);
+            Assert.IsTrue(uiTextShape.referencesContainer.transform.parent == screenSpaceShape.childHookRectTransform);
             Assert.IsFalse(uiTextShape.referencesContainer.text.raycastTarget);
-            Assert.AreEqual(100f, uiTextShape.transform.rect.width);
-            Assert.AreEqual(100f, uiTextShape.transform.rect.height);
+            Assert.AreEqual(100f, uiTextShape.childHookRectTransform.rect.width);
+            Assert.AreEqual(100f, uiTextShape.childHookRectTransform.rect.height);
             Assert.IsTrue(uiTextShape.referencesContainer.text.enabled);
             Assert.AreEqual(Color.white, uiTextShape.referencesContainer.text.color);
             Assert.AreEqual(100f, uiTextShape.referencesContainer.text.fontSize);
@@ -987,8 +984,8 @@ namespace Tests
             Assert.IsFalse(uiTextShape.referencesContainer.text.enableWordWrapping);
             Assert.IsFalse(uiTextShape.referencesContainer.text.fontMaterial.IsKeywordEnabled("UNDERLAY_ON"));
 
-            Vector2 alignedPosition = CalculateAlignedPosition(screenSpaceShape.transform.rect, uiTextShape.transform.rect);
-            Assert.AreEqual(alignedPosition.ToString(), uiTextShape.transform.anchoredPosition.ToString());
+            Vector2 alignedPosition = CalculateAlignedPosition(screenSpaceShape.childHookRectTransform.rect, uiTextShape.childHookRectTransform.rect);
+            Assert.AreEqual(alignedPosition.ToString(), uiTextShape.childHookRectTransform.anchoredPosition.ToString());
 
             Assert.AreEqual(0, uiTextShape.referencesContainer.text.margin.x);
             Assert.AreEqual(0, uiTextShape.referencesContainer.text.margin.y);
@@ -999,7 +996,7 @@ namespace Tests
             uiTextShape = scene.SharedComponentUpdate(JsonUtility.ToJson(new SharedComponentUpdateMessage
             {
                 id = uiTextShape.id,
-                json = JsonUtility.ToJson(new UITextShape.Model
+                json = JsonUtility.ToJson(new UIText.Model
                 {
                     isPointerBlocker = true,
                     hAlign = "left",
@@ -1024,15 +1021,15 @@ namespace Tests
                         textWrapping = true
                     }
                 })
-            })) as UITextShape;
+            })) as UIText;
 
             yield return uiTextShape.routine;
 
             // Check default properties are applied correctly
-            Assert.IsTrue(uiTextShape.referencesContainer.transform.parent == screenSpaceShape.transform);
+            Assert.IsTrue(uiTextShape.referencesContainer.transform.parent == screenSpaceShape.childHookRectTransform);
             Assert.IsTrue(uiTextShape.referencesContainer.text.raycastTarget);
-            Assert.AreEqual(100f, uiTextShape.transform.rect.width);
-            Assert.AreEqual(100f, uiTextShape.transform.rect.height);
+            Assert.AreEqual(100f, uiTextShape.childHookRectTransform.rect.width);
+            Assert.AreEqual(100f, uiTextShape.childHookRectTransform.rect.height);
             Assert.AreEqual("hello world", uiTextShape.referencesContainer.text.text);
             Assert.IsTrue(uiTextShape.referencesContainer.text.enabled);
             Assert.AreEqual(new Color(0f, 1f, 0f, 0.5f), uiTextShape.referencesContainer.text.color);
@@ -1043,8 +1040,8 @@ namespace Tests
             Assert.IsTrue(uiTextShape.referencesContainer.text.fontMaterial.IsKeywordEnabled("UNDERLAY_ON"));
             Assert.AreEqual(Color.yellow, uiTextShape.referencesContainer.text.fontMaterial.GetColor("_UnderlayColor"));
 
-            alignedPosition = CalculateAlignedPosition(screenSpaceShape.transform.rect, uiTextShape.transform.rect, "bottom", "left");
-            Assert.AreEqual(alignedPosition.ToString(), uiTextShape.transform.anchoredPosition.ToString());
+            alignedPosition = CalculateAlignedPosition(screenSpaceShape.childHookRectTransform.rect, uiTextShape.childHookRectTransform.rect, "bottom", "left");
+            Assert.AreEqual(alignedPosition.ToString(), uiTextShape.childHookRectTransform.anchoredPosition.ToString());
 
             Assert.AreEqual(15f, uiTextShape.referencesContainer.text.margin.x);
             Assert.AreEqual(10f, uiTextShape.referencesContainer.text.margin.y);

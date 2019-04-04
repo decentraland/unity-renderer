@@ -5,7 +5,7 @@ using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
 
-namespace DCL.Components.UI
+namespace DCL.Components
 {
     public class InputTextRefContainer : UIReferencesContainer
     {
@@ -13,5 +13,6 @@ namespace DCL.Components.UI
         public TMP_Text text;
         public TMP_InputField inputField;
         public LayoutElement textLayoutElement;
+        public RectTransform textLayoutElementRT;
     }
 }

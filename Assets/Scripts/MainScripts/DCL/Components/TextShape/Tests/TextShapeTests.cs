@@ -139,7 +139,7 @@ namespace Tests
             // 4. Check defaulted values
             Assert.AreEqual(Color.white, textShapeComponent.model.color);
             Assert.AreEqual(1f, textShapeComponent.model.width);
-            Assert.AreEqual(0, textShapeComponent.model.lineCount);
+            Assert.AreEqual(1, textShapeComponent.model.lineCount);
             Assert.IsFalse(textShapeComponent.model.resizeToFit);
             Assert.AreEqual(new Color(1, 1, 1), textShapeComponent.model.shadowColor);
         }

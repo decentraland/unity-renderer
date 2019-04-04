@@ -68,6 +68,15 @@ namespace DCL.Helpers
             t.localScale = Vector3.one;
         }
 
+        public static void SetToMaxStretch(this RectTransform t)
+        {
+            t.anchorMin = Vector2.zero;
+            t.offsetMin = Vector2.zero;
+            t.anchorMax = Vector2.one;
+            t.offsetMax = Vector2.one;
+            t.sizeDelta = Vector2.zero;
+        }
+
         public static T GetOrCreateComponent<T>(GameObject gameObject) where T : UnityEngine.Component
         {
             T component = gameObject.GetComponent<T>();

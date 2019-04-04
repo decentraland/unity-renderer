@@ -1,7 +1,7 @@
 using UnityEngine;
 using UnityEngine.UI;
 
-namespace DCL.Components.UI
+namespace DCL.Components
 {
     public class UIReferencesContainer : MonoBehaviour
     {

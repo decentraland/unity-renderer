@@ -6,9 +6,9 @@ using DCL.Helpers;
 using DCL.Controllers;
 using DCL.Models;
 
-namespace DCL.Components.UI
+namespace DCL.Components
 {
-    public class ContainerRectShape : UIShape
+    public class UIContainerRect : UIShape
     {
         [System.Serializable]
         new public class Model : UIShape.Model
@@ -28,7 +28,7 @@ namespace DCL.Components.UI
             set { base.model = value; }
         }
 
-        public ContainerRectShape(ParcelScene scene) : base(scene)
+        public UIContainerRect(ParcelScene scene) : base(scene)
         {
         }
 
@@ -50,14 +50,18 @@ namespace DCL.Components.UI
                 referencesContainer = InstantiateUIGameObject<UIContainerRectReferencesContainer>("Prefabs/UIContainerRectShape");
 
                 // Configure transform reference used by future children ui components
-                transform = referencesContainer.imageRectTransform;
+                childHookRectTransform = referencesContainer.imageRectTransform;
+            }
+            else
+            {
+                ReparentComponent(referencesContainer.rectTransform, model.parentComponent);
             }
 
             referencesContainer.image.enabled = model.visible;
 
             RectTransform parentRecTransform = referencesContainer.GetComponentInParent<RectTransform>();
 
-            yield return ResizeAlignAndReposition(transform, parentRecTransform.rect.width, parentRecTransform.rect.height,
+            yield return ResizeAlignAndReposition(childHookRectTransform, parentRecTransform.rect.width, parentRecTransform.rect.height,
                                                 referencesContainer.alignmentLayoutGroup,
                                                 referencesContainer.imageLayoutElement);
 

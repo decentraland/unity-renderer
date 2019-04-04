@@ -5,7 +5,6 @@ using UnityEngine.UI;
 using DCL.Helpers;
 using DCL.Controllers;
 using DCL.Models;
-using DCL.Components.UI;
 
 namespace DCL.Components
 {
@@ -47,16 +46,15 @@ namespace DCL.Components
             public bool visible = true;
             public string hAlign = "center";
             public string vAlign = "center";
-
-            public UIValue width = new UIValue(100f);
-            public UIValue height = new UIValue(100f);
-            public UIValue positionX;
-            public UIValue positionY;
+            public UIValue width = new UIValue(100, UIValue.Unit.PIXELS);
+            public UIValue height = new UIValue(100, UIValue.Unit.PIXELS);
+            public UIValue positionX; 
+            public UIValue positionY; 
             public bool isPointerBlocker;
         }
 
         public override string componentName => "UIShape";
-        public RectTransform transform;
+        public RectTransform childHookRectTransform;
 
         protected Model model = new Model();
 
@@ -74,24 +72,26 @@ namespace DCL.Components
             Transform parent = null;
 
             if (!string.IsNullOrEmpty(model.parentComponent))
-                parent = (scene.disposableComponents[model.parentComponent] as UIShape).transform;
+                parent = (scene.disposableComponents[model.parentComponent] as UIShape).childHookRectTransform;
             else
                 parent = scene.uiScreenSpaceCanvas.transform;
 
-            GameObject uiGameObject = GameObject.Instantiate(Resources.Load(prefabPath), parent) as GameObject;
+            GameObject uiGameObject = Object.Instantiate(Resources.Load(prefabPath), parent) as GameObject;
             T referencesContainer = uiGameObject.GetComponentInChildren<T>();
 
-            referencesContainer.name = componentName + " - " + id;
+            RectTransform rootRT = uiGameObject.GetComponent<RectTransform>();
+            rootRT.SetToMaxStretch();
 
-            if (!string.IsNullOrEmpty(model.parentComponent))
-                referencesContainer.rectTransform.SetParent((scene.disposableComponents[model.parentComponent] as UIShape).transform);
-            else
-                referencesContainer.rectTransform.SetParent(scene.uiScreenSpaceCanvas.transform);
-
-            referencesContainer.rectTransform.ResetLocalTRS();
-            referencesContainer.rectTransform.sizeDelta = Vector2.zero;
-
+            childHookRectTransform = referencesContainer.rectTransform;
             return referencesContainer;
+        }
+
+        protected void ReparentComponent(RectTransform targetTransform, string targetParent)
+        {
+            if (!string.IsNullOrEmpty(targetParent))
+                targetTransform.SetParent((scene.disposableComponents[targetParent] as UIShape).childHookRectTransform, false);
+            else
+                targetTransform.SetParent(scene.uiScreenSpaceCanvas.transform, false);
         }
 
         protected IEnumerator ResizeAlignAndReposition(
@@ -173,7 +173,7 @@ namespace DCL.Components
 
         public override void Dispose()
         {
-            Utils.SafeDestroy(transform.gameObject);
+            Utils.SafeDestroy(childHookRectTransform.gameObject);
 
             base.Dispose();
         }

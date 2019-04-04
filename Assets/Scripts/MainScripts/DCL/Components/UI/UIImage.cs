@@ -6,9 +6,9 @@ using DCL.Helpers;
 using DCL.Controllers;
 using DCL.Models;
 
-namespace DCL.Components.UI
+namespace DCL.Components
 {
-    public class ImageShape : UIShape
+    public class UIImage : UIShape
     {
         [System.Serializable]
         new public class Model : UIShape.Model
@@ -38,7 +38,7 @@ namespace DCL.Components.UI
         bool isLoadingTexture = false;
         string loadedSource = "";
 
-        public ImageShape(ParcelScene scene) : base(scene)
+        public UIImage(ParcelScene scene) : base(scene)
         {
         }
 
@@ -60,7 +60,11 @@ namespace DCL.Components.UI
                 referencesContainer = InstantiateUIGameObject<UIImageReferencesContainer>("Prefabs/UIImageShape");
 
                 // Configure transform reference used by future children ui components
-                transform = referencesContainer.imageRectTransform;
+                childHookRectTransform = referencesContainer.imageRectTransform;
+            }
+            else
+            {
+                ReparentComponent(referencesContainer.rectTransform, model.parentComponent);
             }
 
             // Fetch texture

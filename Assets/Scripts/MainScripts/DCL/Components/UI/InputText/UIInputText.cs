@@ -5,33 +5,33 @@ using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
-namespace DCL.Components.UI
+namespace DCL.Components
 {
-    public class InputText : UIShape
+    public class UIInputText : UIShape
     {
         [System.Serializable]
         new public class Model : UIShape.Model
         {
-            public DCL.Components.TextShape.Model textModel;
+            public TextShape.Model textModel;
             public string placeholder;
             public Color placeholderColor;
             public Color focusedBackground;
             public string onTextSubmitEvent;
         }
 
-        new Model model
+        public new Model model
         {
             get { return base.model as Model; }
             set { base.model = value; }
         }
 
-        public TMP_Text text => refContainer.text;
+        public TMP_Text tmpText => refContainer.text;
         public TMP_InputField inputField => refContainer.inputField;
         public RectTransform rectTransform => refContainer.rectTransform;
 
         public InputTextRefContainer refContainer;
 
-        public InputText(ParcelScene scene) : base(scene)
+        public UIInputText(ParcelScene scene) : base(scene)
         {
         }
 
@@ -40,11 +40,19 @@ namespace DCL.Components.UI
             //NOTE(Brian): We have to serialize twice now, but in the future we should fix the
             //             client data structure to be like this, so we can serialize all of it in one shot.
             model = JsonUtility.FromJson<Model>(newJson);
-            model.textModel = JsonUtility.FromJson<DCL.Components.TextShape.Model>(newJson);
+
+            if (!scene.isTestScene)
+                model.textModel = JsonUtility.FromJson<TextShape.Model>(newJson);
 
             if (refContainer == null)
             {
                 refContainer = InstantiateUIGameObject<InputTextRefContainer>("InputText");
+                // Configure transform reference used by future children ui components
+                childHookRectTransform = refContainer.inputField.GetComponent<RectTransform>();
+            }
+            else
+            {
+                ReparentComponent(refContainer.rectTransform, model.parentComponent);
             }
 
             inputField.enabled = model.visible;
@@ -55,48 +63,23 @@ namespace DCL.Components.UI
             inputField.onDeselect.AddListener(OnBlur);
             inputField.onSubmit.AddListener(OnSubmit);
 
-            DCL.Components.TextShape.ApplyModelChanges(text, model.textModel);
-            RectTransform prefabRT = refContainer.GetComponent<RectTransform>();
+            DCL.Components.TextShape.ApplyModelChanges(tmpText, model.textModel);
 
-            prefabRT.sizeDelta = Vector2.zero;
+            RectTransform parentRT = refContainer.rectTransform;
 
-            prefabRT.anchorMin = Vector2.zero;
-            prefabRT.anchorMax = Vector2.one;
-            prefabRT.offsetMin = Vector2.zero;
-            prefabRT.offsetMax = Vector2.one;
-            prefabRT.ForceUpdateRectTransforms();
-
-            RectTransform parentRecTransform = refContainer.GetComponentInParent<RectTransform>();
-
-            RectTransform targetTransform = refContainer.rectTransform;
-            float parentWidth = parentRecTransform.rect.width;
-            float parentHeight = parentRecTransform.rect.height;
-            var alignedLayoutElement = refContainer.textLayoutElement;
-            var alignmentLayout = refContainer.alignmentLayoutGroup;
-
-            RectTransform layoutElementRT = alignedLayoutElement.GetComponent<RectTransform>();
-            // Resize
-            layoutElementRT.SetSizeWithCurrentAnchors(RectTransform.Axis.Horizontal, model.width.GetScaledValue(parentWidth));
-            layoutElementRT.SetSizeWithCurrentAnchors(RectTransform.Axis.Vertical, model.height.GetScaledValue(parentHeight));
-            layoutElementRT.ForceUpdateRectTransforms();
-
-            // Alignment (Alignment uses size so we should always align AFTER reisizing)
-            alignedLayoutElement.ignoreLayout = false;
-            ConfigureAlignment(alignmentLayout);
-            LayoutRebuilder.ForceRebuildLayoutImmediate(alignmentLayout.transform as RectTransform);
-            alignedLayoutElement.ignoreLayout = true;
-
-            // Reposition
-            targetTransform.localPosition += new Vector3(model.positionX.GetScaledValue(parentWidth),
-                                                            model.positionY.GetScaledValue(parentHeight), 0f);
+            yield return ResizeAlignAndReposition(  targetTransform:        refContainer.textLayoutElementRT,
+                                                    parentWidth:            parentRT.rect.width,
+                                                    parentHeight:           parentRT.rect.height,
+                                                    alignmentLayout:        refContainer.alignmentLayoutGroup,
+                                                    alignedLayoutElement:   refContainer.textLayoutElement);
 
             inputField.text = model.placeholder;
-            inputField.textComponent.color = new Color(model.placeholderColor.r, model.placeholderColor.g, model.placeholderColor.b, model.textModel.opacity);
-            refContainer.bgImage.color = new Color(model.focusedBackground.r, model.focusedBackground.g, model.focusedBackground.b, model.textModel.opacity);
+            inputField.textComponent.color = new Color( model.placeholderColor.r, model.placeholderColor.g, model.placeholderColor.b, model.textModel.opacity );
+            refContainer.bgImage.color = new Color( model.focusedBackground.r, model.focusedBackground.g, model.focusedBackground.b, model.textModel.opacity );
             yield break;
         }
 
-        private void OnFocus(string call)
+        public void OnFocus(string call)
         {
             if (inputField.text == model.placeholder)
                 inputField.text = "";
@@ -105,12 +88,12 @@ namespace DCL.Components.UI
             inputField.caretColor = Color.white;
         }
 
-        private void OnBlur(string call)
+        public void OnBlur(string call)
         {
             HideCaret();
         }
 
-        void HideCaret()
+        public void HideCaret()
         {
             if (string.IsNullOrEmpty(inputField.text))
                 inputField.text = model.placeholder;
@@ -123,9 +106,9 @@ namespace DCL.Components.UI
             inputField.selectionStringFocusPosition = 0;
         }
 
-        private void OnSubmit(string call)
+        public void OnSubmit(string call)
         {
-            Interface.WebInterface.ReportOnTextSubmitEvent(scene.sceneData.id, model.onTextSubmitEvent, text.text);
+            Interface.WebInterface.ReportOnTextSubmitEvent(scene.sceneData.id, model.onTextSubmitEvent, tmpText.text);
 
             inputField.text = "";
             inputField.caretColor = Color.white;

@@ -1,4 +1,4 @@
-﻿using System.Collections;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
@@ -7,14 +7,14 @@ using DCL.Controllers;
 using DCL.Models;
 using TMPro;
 
-namespace DCL.Components.UI
+namespace DCL.Components
 {
-    public class TextShape : UIShape
+    public class UIText : UIShape
     {
         [System.Serializable]
         new public class Model : UIShape.Model
         {
-            public Components.TextShape.Model textModel;
+            public TextShape.Model textModel;
         }
 
         public UITextReferencesContainer referencesContainer;
@@ -26,7 +26,7 @@ namespace DCL.Components.UI
             set { base.model = value; }
         }
 
-        public TextShape(ParcelScene scene) : base(scene)
+        public UIText(ParcelScene scene) : base(scene)
         {
         }
 
@@ -44,25 +44,30 @@ namespace DCL.Components.UI
             model = JsonUtility.FromJson<Model>(newJson);
 
             if (!scene.isTestScene)
-                model.textModel = JsonUtility.FromJson<Components.TextShape.Model>(newJson);
+                model.textModel = JsonUtility.FromJson<TextShape.Model>(newJson);
 
             if (referencesContainer == null)
             {
                 referencesContainer = InstantiateUIGameObject<UITextReferencesContainer>("Prefabs/UITextShape");
 
                 // Configure transform reference used by future children ui components
-                transform = referencesContainer.textRectTransform;
+                childHookRectTransform = referencesContainer.textRectTransform;
             }
+            else
+            {
+                ReparentComponent(referencesContainer.rectTransform, model.parentComponent);
+            }
+
 
             RectTransform parentRecTransform = referencesContainer.GetComponentInParent<RectTransform>();
             float parentWidth = parentRecTransform.rect.width - parentRecTransform.sizeDelta.x;
             float parentHeight = parentRecTransform.rect.height - parentRecTransform.sizeDelta.y;
 
-            yield return ResizeAlignAndReposition(transform, parentWidth, parentHeight,
+            yield return ResizeAlignAndReposition(childHookRectTransform, parentWidth, parentHeight,
                                                 referencesContainer.alignmentLayoutGroup,
                                                 referencesContainer.alignedLayoutElement);
 
-            DCL.Components.TextShape.ApplyModelChanges(referencesContainer.text, model.textModel);
+            TextShape.ApplyModelChanges(referencesContainer.text, model.textModel);
 
             referencesContainer.text.raycastTarget = model.isPointerBlocker;
             referencesContainer.text.enabled = model.visible;

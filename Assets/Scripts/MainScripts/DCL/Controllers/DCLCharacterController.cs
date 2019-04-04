@@ -48,6 +48,7 @@ public class DCLCharacterController : MonoBehaviour
         }
 
         i = this;
+
         characterController = GetComponent<CharacterController>();
         rigidbody = GetComponent<Rigidbody>();
         collider = GetComponent<Collider>();
@@ -64,9 +65,11 @@ public class DCLCharacterController : MonoBehaviour
             newPosition.y = 3f;
         }
 
-        if (Vector3.Distance(transform.position, newPosition) > 0.001f)
+        Vector3 oldPosition = transform.position;
+        transform.position = newPosition;
+
+        if (Vector3.Distance(transform.position, oldPosition) > 0.001f)
         {
-            transform.position = newPosition;
             ReportMovement();
         }
     }
