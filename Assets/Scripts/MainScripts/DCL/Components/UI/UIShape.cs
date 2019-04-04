@@ -82,7 +82,7 @@ namespace DCL.Components
             RectTransform rootRT = uiGameObject.GetComponent<RectTransform>();
             rootRT.SetToMaxStretch();
 
-            childHookRectTransform = referencesContainer.rectTransform;
+            childHookRectTransform = referencesContainer.childHookRectTransform;
             return referencesContainer;
         }
 

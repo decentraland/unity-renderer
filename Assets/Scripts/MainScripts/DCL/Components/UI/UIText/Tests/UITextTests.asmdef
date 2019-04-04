@@ -1,0 +1,17 @@
+{
+    "name": "UITextTests",
+    "references": [
+        "MainScripts",
+        "Unity.TextMeshPro"
+    ],
+    "optionalUnityReferences": [
+        "TestAssemblies"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": []
+}

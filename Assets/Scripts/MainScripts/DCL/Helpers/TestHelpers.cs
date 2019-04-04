@@ -41,6 +41,39 @@ namespace DCL.Helpers
         {
             yield break;
         }
+
+        protected Vector2 CalculateAlignedPosition(Rect parentRect, Rect elementRect, string vAlign = "center", string hAlign = "center")
+        {
+            Vector2 result = Vector2.zero;
+
+            switch (vAlign)
+            {
+                case "top":
+                    result.y = -elementRect.height / 2;
+                    break;
+                case "bottom":
+                    result.y = -(parentRect.height - elementRect.height / 2);
+                    break;
+                default: // center
+                    result.y = -parentRect.height / 2;
+                    break;
+            }
+
+            switch (hAlign)
+            {
+                case "left":
+                    result.x = elementRect.width / 2;
+                    break;
+                case "right":
+                    result.x = (parentRect.width - elementRect.width / 2);
+                    break;
+                default: // center
+                    result.x = parentRect.width / 2;
+                    break;
+            }
+
+            return result;
+        }
     }
 
     public static class TestHelpers
