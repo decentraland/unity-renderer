@@ -74,6 +74,35 @@ public class SceneController : MonoBehaviour
         StartCoroutine(ProcessMessages(pendingMessages));
     }
 
+    public void CreateUIScene(string json)
+    {
+        CreateUISceneMessage uiScene = JsonUtility.FromJson<CreateUISceneMessage>(json);
+
+        string uiSceneId = uiScene.id;
+
+        if (!loadedScenes.ContainsKey(uiSceneId))
+        {
+            var newGameObject = new GameObject("UI Scene - " + uiSceneId );
+
+            var newScene = newGameObject.AddComponent<GlobalScene>();
+            newScene.ownerController = this;
+            newScene.unloadWithDistance = false;
+
+            LoadParcelScenesMessage.UnityParcelScene data = new LoadParcelScenesMessage.UnityParcelScene();
+            data.id = uiSceneId;
+            data.basePosition = new Vector2Int(0, 0);
+
+            if (!loadedScenes.ContainsKey(uiSceneId))
+            {
+                loadedScenes.Add(uiSceneId, newScene);
+            }
+            else
+            {
+                loadedScenes[uiSceneId] = newScene;
+            }
+        }
+    }
+
     IEnumerator ProcessMessages(Queue<QueuedSceneMessage> queue)
     {
         while (true)
@@ -218,6 +247,9 @@ public class SceneController : MonoBehaviour
 
             if (!loadedScenes.ContainsKey(sceneToLoad.id))
             {
+                if (VERBOSE)
+                    Debug.Log($"Creating scene {sceneToLoad.id}");
+
                 var newGameObject = new GameObject("New Scene");
 
                 var newScene = newGameObject.AddComponent<ParcelScene>();
@@ -243,6 +275,9 @@ public class SceneController : MonoBehaviour
     {
         if (loadedScenes.ContainsKey(sceneKey))
         {
+            if (VERBOSE)
+                Debug.Log($"Destroying scene {sceneKey}");
+
             var scene = loadedScenes[sceneKey];
 
             loadedScenes.Remove(sceneKey);
