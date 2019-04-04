@@ -82,7 +82,7 @@ const unityInterface = {
       lastParcelScenesSent = parcelScenes
       let finalJson: string = ''
 
-      //NOTE(Brian): split json to be able to throttle the json parsing process in engine's side
+      // NOTE(Brian): split json to be able to throttle the json parsing process in engine's side
       for (let i = 0; i < parcelsToLoad.length; i++) {
         const parcel = parcelsToLoad[i]
         const json = JSON.stringify(parcel)
@@ -225,7 +225,9 @@ async function initializeDecentralandUI() {
     mappings: []
   })
 
-  await ensureUiApis(scene.worker)
+  const worker = new SceneWorker(scene)
+
+  await ensureUiApis(worker)
 
   unityInterface.CreateUIScene({ id: scene.unitySceneId })
 }
