@@ -79,19 +79,18 @@ const unityInterface = {
   LoadParcelScenes(parcelsToLoad: LoadableParcelScene[]) {
     const parcelScenes = JSON.stringify({ parcelsToLoad })
     if (parcelScenes !== lastParcelScenesSent) {
-
       lastParcelScenesSent = parcelScenes
-      let finalJson: string = "";
+      let finalJson: string = ''
 
       //NOTE(Brian): split json to be able to throttle the json parsing process in engine's side
       for (let i = 0; i < parcelsToLoad.length; i++) {
         const parcel = parcelsToLoad[i]
         const json = JSON.stringify(parcel)
 
-        finalJson += json;
+        finalJson += json
 
         if (i < parcelsToLoad.length - 1) {
-          finalJson += "}{"
+          finalJson += '}{'
         }
       }
 

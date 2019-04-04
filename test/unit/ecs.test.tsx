@@ -768,12 +768,12 @@ describe('ECS', () => {
         sceneHost.update(0)
         const parcelScene = await parcelScenePromise
 
-        while (parcelScene.context.disposableComponents.size < 2) {
+        while (parcelScene.context.disposableComponents.size < 3) {
           await sleep(100)
         }
 
-        expect(parcelScene.context.disposableComponents.size).eq(2)
-        expect(parcelScene.context.entities.size).eq(2)
+        expect(parcelScene.context.disposableComponents.size).eq(3, 'components')
+        expect(parcelScene.context.entities.size).eq(2, 'entities')
 
         const material = parcelScene.context.disposableComponents.values().next().value
 

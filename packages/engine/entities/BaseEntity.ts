@@ -67,10 +67,10 @@ export class BaseEntity extends BABYLON.AbstractMesh {
   addUUIDEvent(type: IEventNames, uuid: string): void {
     this.uuidEvents.set(type, uuid)
   }
+
   attachDisposableComponent(name: string, component: DisposableComponent) {
     const current = this.disposableComponents.get(name)
     if (current && current !== component) {
-      this.context.logger.log('Removing component', name, current, component)
       current.removeFrom(this)
     }
     component.attachTo(this)
@@ -238,6 +238,7 @@ export class BaseEntity extends BABYLON.AbstractMesh {
 
     if (current) {
       current.removeFrom(this)
+      this.disposableComponents.delete(name)
     }
 
     this.removeUUIDEvent(name as any)

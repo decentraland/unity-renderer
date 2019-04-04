@@ -5,6 +5,7 @@ import { TextShape } from './ephemeralComponents/TextShape'
 import { Gizmos } from './ephemeralComponents/Gizmos'
 import { AudioSource } from './ephemeralComponents/AudioSource'
 
+import './disposableComponents/Texture'
 import './disposableComponents/BasicMaterial'
 import './disposableComponents/BoxShape'
 import './disposableComponents/CircleShape'

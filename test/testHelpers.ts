@@ -30,6 +30,7 @@ import { gridToWorld } from 'atomicHelpers/parcelScenePositions'
 import { BasicShape } from 'engine/components/disposableComponents/DisposableComponent'
 import { initHudSystem } from 'engine/dcl/widgets/ui'
 import { AVATAR_OBSERVABLE } from 'decentraland-ecs/src/decentraland/Types'
+import { deleteUnusedTextures } from 'engine/renderer/monkeyLoader'
 
 const baseUrl = 'http://localhost:8080/local-ipfs/contents/'
 
@@ -193,6 +194,8 @@ export function enableVisualTests(name: string, cb: (root: BABYLON.TransformNode
         }
       }
 
+      await hud
+
       initialNumbers = getSceneNumbers()
 
       scene.addTransformNode(root)
@@ -223,6 +226,8 @@ export function enableVisualTests(name: string, cb: (root: BABYLON.TransformNode
 
       root.setParent(null)
       root.dispose()
+
+      deleteUnusedTextures()
 
       engineMicroQueue.flushMicroTaskQueue()
       engineMicroQueue.flushTaskQueue()
@@ -330,7 +335,7 @@ export function loadTestParcel(
       const origY = scene.activeCamera!.position.y
       gridToWorld(x, y, scene.activeCamera!.position)
       scene.activeCamera!.position.y = origY
-      this.timeout(10000)
+      this.timeout(15000)
       const land = await loadMock('http://localhost:8080/local-ipfs/mappings', { x, y })
       let webGLParcelScene: WebGLParcelScene
       if (land) {
@@ -476,15 +481,13 @@ export async function positionCamera(opts: PlayerCamera | null = null) {
 export function testScene(
   x: number,
   y: number,
-  cb: (
-    promises: {
-      ensureNoErrors: () => void
-      sceneHost: GamekitScene
-      parcelScenePromise: Promise<WebGLParcelScene>
-      root: BABYLON.TransformNode
-      logs: any[]
-    }
-  ) => void,
+  cb: (promises: {
+    ensureNoErrors: () => void
+    sceneHost: GamekitScene
+    parcelScenePromise: Promise<WebGLParcelScene>
+    root: BABYLON.TransformNode
+    logs: any[]
+  }) => void,
   manualUpdate = false
 ) {
   enableVisualTests(`testScene ${x},${y}`, root => {

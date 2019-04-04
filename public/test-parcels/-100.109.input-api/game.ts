@@ -11,7 +11,8 @@ import {
   Pointer,
   OnPointerDown,
   Billboard,
-  log
+  log,
+  Texture
 } from 'decentraland-ecs/src'
 
 declare var dcl: any
@@ -28,8 +29,7 @@ export class Velocity extends Vector3 {
 }
 
 const bubbleMaterial = new BasicMaterial()
-bubbleMaterial.texture = 'bubble.png'
-bubbleMaterial.samplingMode = 1
+bubbleMaterial.texture = new Texture('bubble.png', { samplingMode: 1 })
 
 const spawner = {
   MAX_POOL_SIZE: 20,

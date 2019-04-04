@@ -375,7 +375,14 @@ export class SharedSceneContext implements BABYLON.IDisposable {
     return this._disposed
   }
 
-  public async getTexture(path: string, _allowExternal = false): Promise<BABYLON.Texture> {
+  public getComponent(id: string): DisposableComponent | null {
+    return this.disposableComponents.get(id) || null
+  }
+
+  public getTexture(
+    path: string,
+    samplerData?: BABYLON.GLTF2.Loader._ISamplerData & { invertY?: boolean }
+  ): BABYLON.Texture {
     if (this._disposed) {
       throw new Error(`SharedSceneContext(${this.domain}) is disposed`)
     }
@@ -388,7 +395,7 @@ export class SharedSceneContext implements BABYLON.IDisposable {
       pathToLoad = this.resolveUrl(path)
     }
 
-    return loadTexture(pathToLoad)
+    return loadTexture(pathToLoad, samplerData)
   }
 
   public resolveUrl(url: string): string {

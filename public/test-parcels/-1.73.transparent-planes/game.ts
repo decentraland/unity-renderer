@@ -1,13 +1,15 @@
-import { PlaneShape, Material, Entity, engine, Transform, Billboard } from 'decentraland-ecs/src'
+import { PlaneShape, Material, Entity, engine, Transform, Billboard, Texture } from 'decentraland-ecs/src'
+
+const tex = new Texture('img #7 @ $1.png', { hasAlpha: true })
 
 const m1 = new Material()
-m1.albedoTexture = 'img #7 @ $1.png'
-m1.alphaTexture = 'img #7 @ $1.png'
+m1.albedoTexture = tex
+m1.alphaTexture = tex
 m1.metallic = 1
 m1.roughness = 1
 
 const m2 = new Material()
-m2.albedoTexture = 'img #7 @ $1.png'
+m2.albedoTexture = tex
 m2.hasAlpha = true
 m2.metallic = 0
 m2.roughness = 1

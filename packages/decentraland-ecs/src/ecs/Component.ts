@@ -267,6 +267,44 @@ export class ObservableComponent {
   data: any = {}
   private subscriptions: Array<ObservableComponentSubscription> = []
 
+  static component(target: ObservableComponent, propertyKey: string) {
+    if (delete (target as any)[propertyKey]) {
+      const componentSymbol = propertyKey + '_' + Math.random()
+      ;(target as any)[componentSymbol] = undefined
+
+      Object.defineProperty(target, componentSymbol, {
+        ...Object.getOwnPropertyDescriptor(target, componentSymbol),
+        enumerable: false
+      })
+
+      Object.defineProperty(target, propertyKey.toString(), {
+        get: function() {
+          return this[componentSymbol]
+        },
+        set: function(value) {
+          const oldValue = this[componentSymbol]
+
+          if (value) {
+            this.data[propertyKey] = getComponentId(value)
+          } else {
+            this.data[propertyKey] = null
+          }
+
+          this[componentSymbol] = value
+
+          if (value !== oldValue) {
+            this.dirty = true
+
+            for (let i = 0; i < this.subscriptions.length; i++) {
+              this.subscriptions[i](propertyKey, value, oldValue)
+            }
+          }
+        },
+        enumerable: true
+      })
+    }
+  }
+
   static field(target: ObservableComponent, propertyKey: string) {
     if (delete (target as any)[propertyKey]) {
       Object.defineProperty(target, propertyKey.toString(), {

@@ -156,6 +156,21 @@ export class GLTFShape extends DisposableComponent {
 
           loadingEntity.dispose(false, false)
 
+          if (!this.didFillContributions) {
+            this.didFillContributions = true
+            assetContainer.materials.forEach($ => {
+              this.contributions.materials.add($)
+            })
+            assetContainer.geometries.forEach($ => {
+              this.contributions.geometries.add($)
+            })
+            assetContainer.textures.forEach($ => {
+              this.contributions.textures.add($)
+            })
+          }
+
+          assetContainer.addAllToScene()
+
           if (this.isStillValid(entity)) {
             // Fin the main mesh and add it as the BasicShape.nameInEntity component.
             assetContainer.meshes
@@ -167,22 +182,6 @@ export class GLTFShape extends DisposableComponent {
             this.assetContainerEntity.set(entity.uuid, assetContainer)
 
             entity.assetContainer = assetContainer
-
-            assetContainer.addAllToScene()
-
-            // TODO: Remove this if after we instantiate GLTF
-            if (!this.didFillContributions) {
-              this.didFillContributions = true
-              assetContainer.materials.forEach($ => {
-                this.contributions.materials.add($)
-              })
-              assetContainer.geometries.forEach($ => {
-                this.contributions.geometries.add($)
-              })
-              assetContainer.textures.forEach($ => {
-                this.contributions.textures.add($)
-              })
-            }
 
             for (let ag of assetContainer.animationGroups) {
               ag.stop()
