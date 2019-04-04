@@ -18,13 +18,15 @@ export class PlaneShape extends BasicShape<typeof defaultAttributes> {
         width: validators.float(this.data.width, defaultAttributes.width),
         height: validators.float(this.data.height, defaultAttributes.height),
         sideOrientation: 2,
-        updatable: uvs ? true : false
+        updatable: true
       },
       scene
     )
 
-    if (uvs) {
+    if (uvs && uvs.length) {
       mesh.updateVerticesData(BABYLON.VertexBuffer.UVKind, uvs)
+    } else {
+      mesh.updateVerticesData(BABYLON.VertexBuffer.UVKind, [0, 1, 1, 1, 1, 0, 0, 0, 0, 1, 1, 1, 1, 0, 0, 0])
     }
 
     return mesh

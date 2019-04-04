@@ -483,6 +483,10 @@ export class Color3 {
    * Serializes Color3
    */
   public toJSON() {
-    return this.toHexString()
+    return {
+      r: this.r,
+      g: this.g,
+      b: this.b
+    }
   }
 }

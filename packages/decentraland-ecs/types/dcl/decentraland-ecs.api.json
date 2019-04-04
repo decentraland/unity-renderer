@@ -1214,60 +1214,18 @@
           "isOverride": false,
           "isEventProperty": false
         },
-        "samplingMode": {
-          "kind": "property",
-          "signature": "samplingMode: number;",
-          "isOptional": false,
-          "isReadOnly": false,
-          "isStatic": false,
-          "type": "number",
-          "deprecatedMessage": [],
-          "summary": [
-            {
-              "kind": "text",
-              "text": "Enables crisper images based on the provided sampling mode. | Value | Type | |-------|-----------| | 1 | NEAREST | | 2 | BILINEAR | | 3 | TRILINEAR |"
-            }
-          ],
-          "remarks": [],
-          "isBeta": false,
-          "isSealed": false,
-          "isVirtual": false,
-          "isOverride": false,
-          "isEventProperty": false
-        },
         "texture": {
           "kind": "property",
-          "signature": "texture: string;",
-          "isOptional": false,
+          "signature": "texture?: Texture;",
+          "isOptional": true,
           "isReadOnly": false,
           "isStatic": false,
-          "type": "string",
+          "type": "Texture",
           "deprecatedMessage": [],
           "summary": [
             {
               "kind": "text",
               "text": "The source of the texture image."
-            }
-          ],
-          "remarks": [],
-          "isBeta": false,
-          "isSealed": false,
-          "isVirtual": false,
-          "isOverride": false,
-          "isEventProperty": false
-        },
-        "wrap": {
-          "kind": "property",
-          "signature": "wrap: number;",
-          "isOptional": false,
-          "isReadOnly": false,
-          "isStatic": false,
-          "type": "number",
-          "deprecatedMessage": [],
-          "summary": [
-            {
-              "kind": "text",
-              "text": "Enables texture wrapping for this material. | Value | Type | |-------|-----------| | 1 | CLAMP | | 2 | WRAP | | 3 | MIRROR |"
             }
           ],
           "remarks": [],
@@ -3447,12 +3405,12 @@
         },
         "toJSON": {
           "kind": "method",
-          "signature": "toJSON(): string;",
+          "signature": "toJSON:",
           "accessModifier": "",
           "isOptional": false,
           "isStatic": false,
           "returnValue": {
-            "type": "string",
+            "type": "{\n        r: number;\n        g: number;\n        b: number;\n    }",
             "description": []
           },
           "parameters": {},
@@ -9714,11 +9672,11 @@
         },
         "albedoTexture": {
           "kind": "property",
-          "signature": "albedoTexture?: string;",
+          "signature": "albedoTexture?: Texture;",
           "isOptional": true,
           "isReadOnly": false,
           "isStatic": false,
-          "type": "string",
+          "type": "Texture",
           "deprecatedMessage": [],
           "summary": [
             {
@@ -9756,11 +9714,11 @@
         },
         "alphaTexture": {
           "kind": "property",
-          "signature": "alphaTexture?: string;",
+          "signature": "alphaTexture?: Texture;",
           "isOptional": true,
           "isReadOnly": false,
           "isStatic": false,
-          "type": "string",
+          "type": "Texture",
           "deprecatedMessage": [],
           "summary": [
             {
@@ -9798,11 +9756,11 @@
         },
         "bumpTexture": {
           "kind": "property",
-          "signature": "bumpTexture?: string;",
+          "signature": "bumpTexture?: Texture;",
           "isOptional": true,
           "isReadOnly": false,
           "isStatic": false,
-          "type": "string",
+          "type": "Texture",
           "deprecatedMessage": [],
           "summary": [
             {
@@ -9903,11 +9861,11 @@
         },
         "emissiveTexture": {
           "kind": "property",
-          "signature": "emissiveTexture?: string;",
+          "signature": "emissiveTexture?: Texture;",
           "isOptional": true,
           "isReadOnly": false,
           "isStatic": false,
-          "type": "string",
+          "type": "Texture",
           "deprecatedMessage": [],
           "summary": [
             {
@@ -10050,11 +10008,11 @@
         },
         "refractionTexture": {
           "kind": "property",
-          "signature": "refractionTexture?: string;",
+          "signature": "refractionTexture?: Texture;",
           "isOptional": true,
           "isReadOnly": false,
           "isStatic": false,
-          "type": "string",
+          "type": "Texture",
           "deprecatedMessage": [],
           "summary": [
             {
@@ -16562,6 +16520,40 @@
       "isBeta": false,
       "isSealed": false,
       "members": {
+        "component": {
+          "kind": "method",
+          "signature": "static component(target: ObservableComponent, propertyKey: string): void;",
+          "accessModifier": "",
+          "isOptional": false,
+          "isStatic": true,
+          "returnValue": {
+            "type": "void",
+            "description": []
+          },
+          "parameters": {
+            "target": {
+              "name": "target",
+              "description": [],
+              "isOptional": false,
+              "isSpread": false,
+              "type": "ObservableComponent"
+            },
+            "propertyKey": {
+              "name": "propertyKey",
+              "description": [],
+              "isOptional": false,
+              "isSpread": false,
+              "type": "string"
+            }
+          },
+          "deprecatedMessage": [],
+          "summary": [],
+          "remarks": [],
+          "isBeta": false,
+          "isSealed": false,
+          "isVirtual": false,
+          "isOverride": false
+        },
         "data": {
           "kind": "property",
           "signature": "data: any;",
@@ -19016,8 +19008,8 @@
         },
         "uvs": {
           "kind": "property",
-          "signature": "uvs: number[];",
-          "isOptional": false,
+          "signature": "uvs?: number[];",
+          "isOptional": true,
           "isReadOnly": false,
           "isStatic": false,
           "type": "number[]",
@@ -24574,6 +24566,145 @@
           "type": "number",
           "deprecatedMessage": [],
           "summary": [],
+          "remarks": [],
+          "isBeta": false,
+          "isSealed": false,
+          "isVirtual": false,
+          "isOverride": false,
+          "isEventProperty": false
+        }
+      }
+    },
+    "Texture": {
+      "kind": "class",
+      "extends": "ObservableComponent",
+      "implements": "",
+      "typeParameters": [],
+      "deprecatedMessage": [],
+      "summary": [],
+      "remarks": [],
+      "isBeta": false,
+      "isSealed": false,
+      "members": {
+        "__constructor": {
+          "kind": "constructor",
+          "signature": "constructor(src: string, opts?: Partial<Pick<Texture, 'samplingMode' | 'wrap' | 'hasAlpha'>>);",
+          "parameters": {
+            "src": {
+              "name": "src",
+              "description": [],
+              "isOptional": false,
+              "isSpread": false,
+              "type": "string"
+            },
+            "opts": {
+              "name": "opts",
+              "description": [],
+              "isOptional": true,
+              "isSpread": false,
+              "type": "Partial<Pick<Texture, 'samplingMode' | 'wrap' | 'hasAlpha'>>"
+            }
+          },
+          "deprecatedMessage": [],
+          "summary": [
+            {
+              "kind": "text",
+              "text": "Constructs a new instance of the "
+            },
+            {
+              "kind": "api-link",
+              "elements": [
+                {
+                  "kind": "text",
+                  "text": "Texture"
+                }
+              ],
+              "target": {
+                "scopeName": "",
+                "packageName": "decentraland-ecs",
+                "exportName": "Texture",
+                "memberName": ""
+              }
+            },
+            {
+              "kind": "text",
+              "text": " class"
+            }
+          ],
+          "remarks": []
+        },
+        "hasAlpha": {
+          "kind": "property",
+          "signature": "readonly hasAlpha: boolean;",
+          "isOptional": false,
+          "isReadOnly": true,
+          "isStatic": false,
+          "type": "boolean",
+          "deprecatedMessage": [],
+          "summary": [
+            {
+              "kind": "text",
+              "text": "Defines if this texture has an alpha channel"
+            }
+          ],
+          "remarks": [],
+          "isBeta": false,
+          "isSealed": false,
+          "isVirtual": false,
+          "isOverride": false,
+          "isEventProperty": false
+        },
+        "samplingMode": {
+          "kind": "property",
+          "signature": "readonly samplingMode: number;",
+          "isOptional": false,
+          "isReadOnly": true,
+          "isStatic": false,
+          "type": "number",
+          "deprecatedMessage": [],
+          "summary": [
+            {
+              "kind": "text",
+              "text": "Enables crisper images based on the provided sampling mode. | Value | Type | |-------|-----------| | 1 | NEAREST | | 2 | BILINEAR | | 3 | TRILINEAR |"
+            }
+          ],
+          "remarks": [],
+          "isBeta": false,
+          "isSealed": false,
+          "isVirtual": false,
+          "isOverride": false,
+          "isEventProperty": false
+        },
+        "src": {
+          "kind": "property",
+          "signature": "readonly src: string;",
+          "isOptional": false,
+          "isReadOnly": true,
+          "isStatic": false,
+          "type": "string",
+          "deprecatedMessage": [],
+          "summary": [],
+          "remarks": [],
+          "isBeta": false,
+          "isSealed": false,
+          "isVirtual": false,
+          "isOverride": false,
+          "isEventProperty": false
+        },
+        "wrap": {
+          "kind": "property",
+          "signature": "readonly wrap: number;",
+          "isOptional": false,
+          "isReadOnly": true,
+          "isStatic": false,
+          "type": "number",
+          "deprecatedMessage": [],
+          "summary": [
+            {
+              "kind": "text",
+              "text": "Enables texture wrapping for this material. | Value | Type | |-------|-----------| | 1 | CLAMP | | 2 | WRAP | | 3 | MIRROR |"
+            }
+          ],
           "remarks": [],
           "isBeta": false,
           "isSealed": false,

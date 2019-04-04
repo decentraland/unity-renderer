@@ -5,6 +5,7 @@ import { scene } from '../../renderer'
 import { CLASS_ID } from 'decentraland-ecs/src'
 import { TextureSamplingMode, TextureWrapping } from 'shared/types'
 import { deleteUnusedTextures } from 'engine/renderer/monkeyLoader'
+import { Texture } from './Texture'
 import { SharedSceneContext } from 'engine/entities/SharedSceneContext'
 
 BABYLON.Effect.ShadersStore['dclShadelessVertexShader'] = `
@@ -118,30 +119,18 @@ export class BasicMaterial extends DisposableComponent {
   async updateData(data: any): Promise<void> {
     this.loadingDonePrivate = false
     if (data.texture) {
-      const src = validators.string(data.texture, defaults.texture)
-      if (src) {
-        const url = src.match(/^base64,/i) && !src.startsWith('data:') ? `data:image/png;${src}` : src
-        const texture = await this.context.getTexture(url)
-        const validatedSamplingMode = validators.number(data.samplingMode, defaults.samplingMode)
-        const validatedWrap = validators.number(data.wrap, defaults.wrap)
-        const samplingMode = Math.max(Math.min(3, Math.floor(validators.int(validatedSamplingMode, 1))), 1)
-        const wrap = Math.max(Math.min(2, Math.floor(validators.int(validatedWrap, 0))), 0)
+      const texture = await Texture.getFromComponent(this.context, data.texture)
 
-        texture.updateSamplingMode(samplingMode)
-        texture.wrapU = wrap
-        texture.wrapV = wrap
-
-        this.contributions.textures.clear()
-        this.contributions.textures.add(texture)
-
+      if (texture) {
         this.material.setTexture('textureSampler', texture)
       }
-
-      const alphaTest = validators.float(data.alphaTest, defaults.alphaTest)
-      this.material.setFloat('alphaTest', alphaTest)
-
-      deleteUnusedTextures()
     }
+
+    const alphaTest = validators.float(data.alphaTest, defaults.alphaTest)
+    this.material.setFloat('alphaTest', alphaTest)
+
+    deleteUnusedTextures()
+
     this.loadingDonePrivate = true
   }
   loadingDone() {

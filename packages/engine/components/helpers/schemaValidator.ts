@@ -143,6 +143,22 @@ export const validators = {
     return color
   },
 
+  color4(x: any, def: BABYLON.Color3) {
+    if (x === null || x === undefined) return def
+    const color = new BABYLON.Color4(0, 0, 0, 0)
+    if (typeof x === 'string') {
+      const v = x.trim()
+      if (v.startsWith('#')) {
+        color.copyFrom(BABYLON.Color4.FromHexString(x))
+      }
+    } else if (typeof x === 'object' && (x.r !== undefined && x.g !== undefined && x.b !== undefined)) {
+      color.copyFrom(x)
+    } else if (typeof x === 'number') {
+      color.copyFrom(BABYLON.Color4.FromHexString('#' + ('00000000' + (x | 0).toString(16)).substr(-8)))
+    }
+    return color
+  },
+
   side(val: any, def: number) {
     if (val === 0 || val === 1 || val === 2) {
       return val

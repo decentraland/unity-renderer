@@ -4,6 +4,7 @@ import { AvatarMessageType, Pose } from 'shared/comms/types'
 import { gridToWorld } from 'atomicHelpers/parcelScenePositions'
 import { Quaternion } from 'babylonjs'
 import { sleep } from 'atomicHelpers/sleep'
+import { deleteUnusedTextures, getUsedTextures, loadedTextures } from 'engine/renderer/monkeyLoader'
 enableVisualTests('Avatar visual validation', function(root) {
   // const playerProfile = {
   //   displayName: 'Test Avatar',
@@ -87,6 +88,19 @@ enableVisualTests('Avatar visual validation', function(root) {
       type: AvatarMessageType.USER_REMOVED,
       uuid: 'avatar3'
     })
+  })
+
+  wait(200)
+
+  it('deletes all the textures', async () => {
+    deleteUnusedTextures()
+
+    const h = await hud
+
+    console.log('loaded textures', loadedTextures)
+    console.log('used textures', getUsedTextures())
+    console.log('components', h.context.disposableComponents)
+    console.log('entities', h.context.entities)
   })
 
   wait(2000)

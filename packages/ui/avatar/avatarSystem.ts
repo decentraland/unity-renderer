@@ -71,11 +71,12 @@ function cleanupUnusedModels() {
     }
   })
 
-  new Map(models).forEach(($, key) => {
-    if (!usedModels.has($)) {
+  for (let [key, model] of models.entries()) {
+    if (!usedModels.has(model)) {
+      engine.disposeComponent(model as any)
       models.delete(key)
     }
-  })
+  }
 }
 
 @Component('animatedTransform')
