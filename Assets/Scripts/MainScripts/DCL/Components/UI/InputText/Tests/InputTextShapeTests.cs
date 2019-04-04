@@ -1,7 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
 using DCL.Components;
-using DCL.Components.UI;
 using DCL.Helpers;
 using NUnit.Framework;
 using UnityEngine;
@@ -11,28 +10,33 @@ namespace Tests
 {
     public class InputTextShapeTests : TestsBase
     {
-        [UnityTest]
+        UIScreenSpaceShape ssshape;
+        UIInputText textInput;
+        Camera mockCamera;
+
         public IEnumerator InputTextCreate()
         {
             yield return InitScene(spawnCharController: false);
 
-            ScreenSpaceShape ssshape = TestHelpers.SharedComponentCreate<ScreenSpaceShape, ScreenSpaceShape.Model>(
+            ssshape = TestHelpers.SharedComponentCreate<UIScreenSpaceShape, UIScreenSpaceShape.Model>(
                 scene,
                 DCL.Models.CLASS_ID.UI_SCREEN_SPACE_SHAPE);
 
             yield return ssshape.routine;
 
-            GameObject go = new GameObject("Mock camera");
-            Camera c = go.AddComponent<Camera>();
-            c.clearFlags = CameraClearFlags.Color;
-            c.backgroundColor = Color.black;
-            scene.uiScreenSpaceCanvas.renderMode = RenderMode.ScreenSpaceCamera;
-            scene.uiScreenSpaceCanvas.worldCamera = c;
+            if (mockCamera == null)
+            {
+                GameObject go = new GameObject("Mock camera");
+                mockCamera = go.AddComponent<Camera>();
+                mockCamera.clearFlags = CameraClearFlags.Color;
+                mockCamera.backgroundColor = Color.black;
+                scene.uiScreenSpaceCanvas.renderMode = RenderMode.ScreenSpaceOverlay;
+            }
 
-            InputText text = TestHelpers.SharedComponentCreate<InputText, InputText.Model>(
+            textInput = TestHelpers.SharedComponentCreate<UIInputText, UIInputText.Model>(
                 scene,
                 DCL.Models.CLASS_ID.UI_INPUT_TEXT_SHAPE,
-                new InputText.Model()
+                new UIInputText.Model()
                 {
                     textModel = new DCL.Components.TextShape.Model()
                     {
@@ -50,9 +54,66 @@ namespace Tests
                     width = new UIValue(100),
                 });
 
-            yield return text.routine;
+            yield return textInput.routine;
+            yield return null;
+        }
 
-            yield return new WaitForSeconds(5000000);
+        [UnityTest]
+        public IEnumerator InputTextCreateTest()
+        {
+            yield return InputTextCreate();
+
+            Assert.AreEqual(Color.white, textInput.model.textModel.color);
+            Assert.AreEqual(1, textInput.model.textModel.opacity);
+            Assert.AreEqual("Chat here!", textInput.inputField.text);
+            Assert.IsTrue(textInput.refContainer != null, "Ref container is null?!");
+            Assert.AreEqual(textInput.refContainer.transform.parent, ssshape.childHookRectTransform);
+            Assert.AreEqual(textInput.model.focusedBackground.r, textInput.refContainer.bgImage.color.r);
+            Assert.AreEqual(textInput.model.focusedBackground.g, textInput.refContainer.bgImage.color.g);
+            Assert.AreEqual(textInput.model.focusedBackground.b, textInput.refContainer.bgImage.color.b);
+            Assert.AreEqual(textInput.model.textModel.opacity, textInput.refContainer.bgImage.color.a);
+
+            ssshape.Dispose();
+            textInput.Dispose();
+            Object.DestroyImmediate(mockCamera.gameObject);
+        }
+
+        [UnityTest]
+        public IEnumerator InputTextOnFocusTest()
+        {
+            yield return InputTextCreate();
+
+            textInput.OnFocus("");
+
+            Assert.IsTrue(textInput.inputField.caretColor == Color.white);
+            Assert.IsTrue(textInput.inputField.text == "");
+
+            textInput.OnBlur("");
+
+            Assert.IsTrue(textInput.inputField.text == textInput.model.placeholder);
+            Assert.IsTrue(textInput.inputField.caretColor == Color.clear);
+
+            ssshape.Dispose();
+            textInput.Dispose();
+            Object.DestroyImmediate(mockCamera.gameObject);
+
+        }
+
+
+        [UnityTest]
+        public IEnumerator InputTextOnSubmitTest()
+        {
+            yield return InputTextCreate();
+
+            textInput.inputField.text = "hello world";
+            textInput.OnSubmit("");
+
+            Assert.IsTrue(textInput.inputField.text == "");
+            Assert.IsTrue(textInput.inputField.caretColor == Color.white);
+
+            ssshape.Dispose();
+            textInput.Dispose();
+            Object.DestroyImmediate(mockCamera.gameObject);
         }
     }
 }

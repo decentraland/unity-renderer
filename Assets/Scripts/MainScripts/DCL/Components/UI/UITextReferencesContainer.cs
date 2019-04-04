@@ -1,8 +1,8 @@
-﻿using UnityEngine;
+using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
 
-namespace DCL.Components.UI
+namespace DCL.Components
 {
     public class UITextReferencesContainer : UIReferencesContainer
     {

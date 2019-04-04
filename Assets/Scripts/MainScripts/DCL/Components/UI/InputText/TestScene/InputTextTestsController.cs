@@ -1,5 +1,4 @@
 using DCL.Components;
-using DCL.Components.UI;
 using DCL.Controllers;
 using DCL.Helpers;
 using System.Collections;
@@ -37,16 +36,16 @@ namespace DCL
 
             DCLCharacterController.i.gravity = 0;
 
-            ScreenSpaceShape ssshape = TestHelpers.SharedComponentCreate<ScreenSpaceShape, ScreenSpaceShape.Model>(
+            UIScreenSpaceShape ssshape = TestHelpers.SharedComponentCreate<UIScreenSpaceShape, UIScreenSpaceShape.Model>(
                 scene,
                 DCL.Models.CLASS_ID.UI_SCREEN_SPACE_SHAPE);
 
             yield return ssshape.routine;
 
-            InputText text = TestHelpers.SharedComponentCreate<InputText, InputText.Model>(
+            UIInputText text = TestHelpers.SharedComponentCreate<UIInputText, UIInputText.Model>(
                 scene,
                 Models.CLASS_ID.UI_INPUT_TEXT_SHAPE,
-                new InputText.Model()
+                new UIInputText.Model()
                 {
                     textModel = new DCL.Components.TextShape.Model()
                     {

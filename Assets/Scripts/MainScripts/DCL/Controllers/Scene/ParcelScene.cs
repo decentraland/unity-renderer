@@ -396,27 +396,27 @@ namespace DCL.Controllers
                     }
                 case CLASS_ID.UI_INPUT_TEXT_SHAPE:
                     {
-                        newComponent = new Components.UI.InputText(this);
+                        newComponent = new UIInputText(this);
                         break;
                     }
                 case CLASS_ID.UI_SCREEN_SPACE_SHAPE:
                     {
-                        newComponent = new Components.UI.ScreenSpaceShape(this);
+                        newComponent = new UIScreenSpaceShape(this);
                         break;
                     }
                 case CLASS_ID.UI_CONTAINER_RECT:
                     {
-                        newComponent = new Components.UI.ContainerRectShape(this);
+                        newComponent = new UIContainerRect(this);
                         break;
                     }
                 case CLASS_ID.UI_IMAGE_SHAPE:
                     {
-                        newComponent = new Components.UI.ImageShape(this);
+                        newComponent = new UIImage(this);
                         break;
                     }
                 case CLASS_ID.UI_TEXT_SHAPE:
                     {
-                        newComponent = new Components.UI.TextShape(this);
+                        newComponent = new UIText(this);
                         break;
                     }
                 default:

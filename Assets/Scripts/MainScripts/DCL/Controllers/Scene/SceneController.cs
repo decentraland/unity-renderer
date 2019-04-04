@@ -130,13 +130,13 @@ public class SceneController : MonoBehaviour
         isDebugMode = true;
     }
 
-    void LockCursor()
+    public void LockCursor()
     {
         Cursor.visible = false;
         Cursor.lockState = CursorLockMode.Locked;
     }
 
-    void UnlockCursor()
+    public void UnlockCursor()
     {
         Cursor.visible = true;
         Cursor.lockState = CursorLockMode.None;

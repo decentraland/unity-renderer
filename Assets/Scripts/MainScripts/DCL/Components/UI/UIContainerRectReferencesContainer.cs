@@ -1,7 +1,7 @@
 using UnityEngine;
 using UnityEngine.UI;
 
-namespace DCL.Components.UI
+namespace DCL.Components
 {
    public class UIContainerRectReferencesContainer : UIReferencesContainer
     {
@@ -10,3 +10,4 @@ namespace DCL.Components.UI
         public RectTransform imageRectTransform;
     }
 }
+

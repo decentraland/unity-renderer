@@ -1,7 +1,8 @@
 {
     "name": "InputTextShapeTests",
     "references": [
-        "MainScripts"
+        "MainScripts",
+        "Unity.TextMeshPro"
     ],
     "optionalUnityReferences": [
         "TestAssemblies"

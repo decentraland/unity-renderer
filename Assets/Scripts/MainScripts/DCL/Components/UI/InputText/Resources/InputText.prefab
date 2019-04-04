@@ -153,12 +153,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cbda0702d5062724fb3fc3e51941573d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  rectTransform: {fileID: 7981744296803612803}
+  rectTransform: {fileID: 7164372453373240356}
   alignmentLayoutGroup: {fileID: 3510635133753685448}
   bgImage: {fileID: 4259842131996997273}
   text: {fileID: 8159873823445132116}
   inputField: {fileID: 1867715396876657037}
   textLayoutElement: {fileID: 2188561398209007703}
+  textLayoutElementRT: {fileID: 7981744296803612803}
 --- !u!114 &3510635133753685448
 MonoBehaviour:
   m_ObjectHideFlags: 0
