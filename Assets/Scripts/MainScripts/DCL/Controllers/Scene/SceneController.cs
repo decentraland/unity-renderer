@@ -125,7 +125,7 @@ public class SceneController : MonoBehaviour
                         ProcessMessage(m.sceneId, m.message);
                         break;
                     case QueuedSceneMessage.Type.LOAD_PARCEL:
-                        yield return LoadParcelScenesExecute(m.message);
+                        yield return LoadParcelScenesExecute_Spread(m.message);
                         break;
                     case QueuedSceneMessage.Type.UNLOAD_SCENES:
                         UnloadAllScenes();
