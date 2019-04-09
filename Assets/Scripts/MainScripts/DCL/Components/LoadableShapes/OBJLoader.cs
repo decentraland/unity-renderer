@@ -1,3 +1,5 @@
+using DCL.Helpers;
+
 namespace DCL.Components
 {
     public class OBJLoader : LoadableMonoBehavior
@@ -6,7 +8,7 @@ namespace DCL.Components
 
         void Awake()
         {
-            objLoaderComponent = Helpers.Utils.GetOrCreateComponent<DynamicOBJLoaderController>(gameObject);
+            objLoaderComponent = gameObject.GetOrCreateComponent<DynamicOBJLoaderController>();
             objLoaderComponent.OnFinishedLoadingAsset += CallOnComponentUpdated;
         }
 

@@ -66,12 +66,12 @@ namespace Tests
             Assert.AreEqual(Color.white, textInput.model.textModel.color);
             Assert.AreEqual(1, textInput.model.textModel.opacity);
             Assert.AreEqual("Chat here!", textInput.inputField.text);
-            Assert.IsTrue(textInput.refContainer != null, "Ref container is null?!");
-            Assert.AreEqual(textInput.refContainer.transform.parent, ssshape.childHookRectTransform);
-            Assert.AreEqual(textInput.model.focusedBackground.r, textInput.refContainer.bgImage.color.r);
-            Assert.AreEqual(textInput.model.focusedBackground.g, textInput.refContainer.bgImage.color.g);
-            Assert.AreEqual(textInput.model.focusedBackground.b, textInput.refContainer.bgImage.color.b);
-            Assert.AreEqual(textInput.model.textModel.opacity, textInput.refContainer.bgImage.color.a);
+            Assert.IsTrue(textInput.referencesContainer != null, "Ref container is null?!");
+            Assert.AreEqual(textInput.referencesContainer.transform.parent, ssshape.childHookRectTransform);
+            Assert.AreEqual(textInput.model.focusedBackground.r, textInput.referencesContainer.bgImage.color.r);
+            Assert.AreEqual(textInput.model.focusedBackground.g, textInput.referencesContainer.bgImage.color.g);
+            Assert.AreEqual(textInput.model.focusedBackground.b, textInput.referencesContainer.bgImage.color.b);
+            Assert.AreEqual(textInput.model.textModel.opacity, textInput.referencesContainer.bgImage.color.a);
 
             ssshape.Dispose();
             textInput.Dispose();

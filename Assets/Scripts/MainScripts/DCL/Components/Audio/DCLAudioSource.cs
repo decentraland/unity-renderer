@@ -34,7 +34,7 @@ namespace DCL.Components
 
         public override IEnumerator ApplyChanges(string newJson)
         {
-            audioSource = Utils.GetOrCreateComponent<AudioSource>(gameObject);
+            audioSource = gameObject.GetOrCreateComponent<AudioSource>();
             model = Utils.SafeFromJson<Model>(newJson);
 
             audioSource.volume = model.volume;

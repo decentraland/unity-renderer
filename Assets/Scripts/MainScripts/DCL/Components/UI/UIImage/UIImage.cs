@@ -26,13 +26,18 @@ namespace DCL.Components
             public bool sizeInPixels = true;
         }
 
-        public UIImageReferencesContainer referencesContainer;
         public override string componentName => "UIImage";
 
         new public Model model
         {
             get { return base.model as Model; }
             set { base.model = value; }
+        }
+
+        new public UIImageReferencesContainer referencesContainer
+        {
+            get { return base.referencesContainer as UIImageReferencesContainer; }
+            set { base.referencesContainer = value; }
         }
 
         bool isLoadingTexture = false;

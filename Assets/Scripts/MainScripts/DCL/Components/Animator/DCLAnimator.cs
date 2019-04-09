@@ -173,7 +173,7 @@ namespace DCL.Components
                 }
 
                 animComponent.enabled = false;
-                animator = Utils.GetOrCreateComponent<Animator>(animComponent.gameObject);
+                animator = animComponent.gameObject.GetOrCreateComponent<Animator>();
             }
 
 

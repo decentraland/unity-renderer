@@ -16,9 +16,9 @@ namespace DCL.Components
             public float thickness = 0f;
             public Color color = new Color(0f, 0f, 0f, 1f);
             public float opacity = 1f;
+            public bool adaptWidth = false;
+            public bool adaptHeight = false;
         }
-
-        public UIContainerRectReferencesContainer referencesContainer;
 
         public override string componentName => "UIContainerRect";
 
@@ -26,6 +26,12 @@ namespace DCL.Components
         {
             get { return base.model as Model; }
             set { base.model = value; }
+        }
+
+        new public UIContainerRectReferencesContainer referencesContainer
+        {
+            get { return base.referencesContainer as UIContainerRectReferencesContainer; }
+            set { base.referencesContainer = value; }
         }
 
         public UIContainerRect(ParcelScene scene) : base(scene)
@@ -62,16 +68,13 @@ namespace DCL.Components
                                                 referencesContainer.alignmentLayoutGroup,
                                                 referencesContainer.imageLayoutElement);
 
-            referencesContainer.image.color = new Color(model.color.r * 255, model.color.g * 255, model.color.b * 255, model.opacity);
+            referencesContainer.image.color = new Color(model.color.r, model.color.g, model.color.b, model.opacity);
 
             Outline outline = referencesContainer.image.GetComponent<Outline>();
-
             if (model.thickness > 0f)
             {
                 if (outline == null)
-                {
                     outline = referencesContainer.image.gameObject.AddComponent<Outline>();
-                }
 
                 outline.effectDistance = new Vector2(model.thickness, model.thickness);
             }

@@ -77,7 +77,7 @@ namespace DCL.Helpers
             t.sizeDelta = Vector2.zero;
         }
 
-        public static T GetOrCreateComponent<T>(GameObject gameObject) where T : UnityEngine.Component
+        public static T GetOrCreateComponent<T>(this GameObject gameObject) where T : UnityEngine.Component
         {
             T component = gameObject.GetComponent<T>();
 
