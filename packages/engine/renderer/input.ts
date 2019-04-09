@@ -7,6 +7,7 @@ import PlaneCanvasControl from './controls/planeCanvasControl'
 import { isThirdPersonCamera, vrCamera, arcCamera } from './camera'
 import { loadedParcelSceneWorkers } from 'shared/world/parcelSceneManager'
 import { WebGLScene } from '../dcl/WebGLScene'
+import { hud } from '../dcl/widgets/ui'
 
 /**
  * This is a map of keys (see enum Keys): boolean
@@ -41,6 +42,7 @@ enum Keys {
 export { keyState, Keys }
 
 let didInit = false
+
 export function initKeyboard() {
   if (didInit) return
   didInit = true
@@ -50,9 +52,8 @@ export function initKeyboard() {
   vrCamera.keysRight = [Keys.KEY_D as number] // D
 
   document.body.addEventListener('keydown', e => {
-    if (document.activeElement && document.activeElement.nodeName === 'INPUT') {
-      // CHAT
-      return
+    if (e.code === 'Enter' && hud) {
+      hud.context.entities.forEach(e => e.dispatchUUIDEvent('onEnter', {}))
     }
 
     keyState[Keys.KEY_SHIFT] = e.shiftKey
