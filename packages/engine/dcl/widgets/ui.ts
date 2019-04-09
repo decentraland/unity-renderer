@@ -23,7 +23,7 @@ export class WebGLUIScene extends WebGLScene<any> {
   }
 }
 
-let hud: WebGLUIScene | null = null
+export let hud: WebGLUIScene | null = null
 
 export async function initHudSystem(): Promise<WebGLUIScene> {
   if (!hud) {
