@@ -48,15 +48,17 @@ namespace DCL.Components
             public string vAlign = "center";
             public UIValue width = new UIValue(100, UIValue.Unit.PIXELS);
             public UIValue height = new UIValue(100, UIValue.Unit.PIXELS);
-            public UIValue positionX; 
-            public UIValue positionY; 
+            public UIValue positionX;
+            public UIValue positionY;
             public bool isPointerBlocker;
         }
 
         public override string componentName => "UIShape";
+        public UIReferencesContainer referencesContainer;
         public RectTransform childHookRectTransform;
 
         protected Model model = new Model();
+        protected UIShape parentUIComponent;
 
         public UIShape(ParcelScene scene) : base(scene)
         {
@@ -69,29 +71,58 @@ namespace DCL.Components
 
         protected T InstantiateUIGameObject<T>(string prefabPath) where T : UIReferencesContainer
         {
-            Transform parent = null;
+            GameObject uiGameObject = null;
 
             if (!string.IsNullOrEmpty(model.parentComponent))
-                parent = (scene.disposableComponents[model.parentComponent] as UIShape).childHookRectTransform;
+            {
+                parentUIComponent = scene.disposableComponents[model.parentComponent] as UIShape;
+                uiGameObject = Object.Instantiate(Resources.Load(prefabPath), parentUIComponent.childHookRectTransform) as GameObject;
+                referencesContainer = uiGameObject.GetComponent<T>();
+
+                parentUIComponent.OnChildComponentAttached(this);
+            }
             else
-                parent = scene.uiScreenSpaceCanvas.transform;
+            {
+                uiGameObject = Object.Instantiate(Resources.Load(prefabPath), scene.uiScreenSpaceCanvas.transform) as GameObject;
+                referencesContainer = uiGameObject.GetComponent<T>();
+            }
 
-            GameObject uiGameObject = Object.Instantiate(Resources.Load(prefabPath), parent) as GameObject;
-            T referencesContainer = uiGameObject.GetComponentInChildren<T>();
-
-            RectTransform rootRT = uiGameObject.GetComponent<RectTransform>();
-            rootRT.SetToMaxStretch();
+            referencesContainer.rectTransform.SetToMaxStretch();
 
             childHookRectTransform = referencesContainer.childHookRectTransform;
-            return referencesContainer;
+
+            return referencesContainer as T;
         }
 
         protected void ReparentComponent(RectTransform targetTransform, string targetParent)
         {
+            if (parentUIComponent != null)
+            {
+                if (parentUIComponent == scene.disposableComponents[targetParent]) return;
+
+                parentUIComponent.OnChildComponentDettached(this);
+            }
+
             if (!string.IsNullOrEmpty(targetParent))
-                targetTransform.SetParent((scene.disposableComponents[targetParent] as UIShape).childHookRectTransform, false);
+            {
+                parentUIComponent = scene.disposableComponents[targetParent] as UIShape;
+
+                targetTransform.SetParent(parentUIComponent.childHookRectTransform, false);
+
+                parentUIComponent.OnChildComponentAttached(this);
+            }
             else
+            {
                 targetTransform.SetParent(scene.uiScreenSpaceCanvas.transform, false);
+            }
+        }
+
+        protected virtual void OnChildComponentAttached(UIShape childComponent)
+        {
+        }
+
+        protected virtual void OnChildComponentDettached(UIShape childComponent)
+        {
         }
 
         protected IEnumerator ResizeAlignAndReposition(
@@ -111,14 +142,19 @@ namespace DCL.Components
             alignedLayoutElement.ignoreLayout = false;
             ConfigureAlignment(alignmentLayout);
             LayoutRebuilder.ForceRebuildLayoutImmediate(alignmentLayout.transform as RectTransform);
-            alignedLayoutElement.ignoreLayout = true;
 
             // Reposition
             Vector3 position = Vector3.zero;
             position.x = model.positionX.GetScaledValue(parentWidth);
             position.y = model.positionY.GetScaledValue(parentHeight);
 
-            targetTransform.localPosition += position;
+            if (position != Vector3.zero)
+            {
+                alignedLayoutElement.ignoreLayout = true;
+
+                targetTransform.localPosition += position;
+            }
+
             yield break;
         }
 

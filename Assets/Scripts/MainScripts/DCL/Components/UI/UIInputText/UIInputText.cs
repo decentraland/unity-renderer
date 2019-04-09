@@ -25,14 +25,17 @@ namespace DCL.Components
             set { base.model = value; }
         }
 
+        new public UIInputTextRefContainer referencesContainer
+        {
+            get { return base.referencesContainer as UIInputTextRefContainer; }
+            set { base.referencesContainer = value; }
+        }
+
         public override string componentName => "UIInputText";
 
-
-        public TMP_Text tmpText => refContainer.text;
-        public TMP_InputField inputField => refContainer.inputField;
-        public RectTransform rectTransform => refContainer.rectTransform;
-
-        public UIInputTextRefContainer refContainer;
+        public TMP_Text tmpText => referencesContainer.text;
+        public TMP_InputField inputField => referencesContainer.inputField;
+        public RectTransform rectTransform => referencesContainer.rectTransform;
 
         public UIInputText(ParcelScene scene) : base(scene)
         {
@@ -47,13 +50,13 @@ namespace DCL.Components
             if (!scene.isTestScene)
                 model.textModel = JsonUtility.FromJson<TextShape.Model>(newJson);
 
-            if (refContainer == null)
+            if (referencesContainer == null)
             {
-                refContainer = InstantiateUIGameObject<UIInputTextRefContainer>("UIInputText");
+                referencesContainer = InstantiateUIGameObject<UIInputTextRefContainer>("UIInputText");
             }
             else
             {
-                ReparentComponent(refContainer.rectTransform, model.parentComponent);
+                ReparentComponent(referencesContainer.rectTransform, model.parentComponent);
             }
 
             inputField.enabled = model.visible;
@@ -66,17 +69,17 @@ namespace DCL.Components
 
             DCL.Components.TextShape.ApplyModelChanges(tmpText, model.textModel);
 
-            RectTransform parentRT = refContainer.rectTransform;
+            RectTransform parentRT = referencesContainer.rectTransform;
 
-            yield return ResizeAlignAndReposition(  targetTransform:        refContainer.textLayoutElementRT,
-                                                    parentWidth:            parentRT.rect.width,
-                                                    parentHeight:           parentRT.rect.height,
-                                                    alignmentLayout:        refContainer.alignmentLayoutGroup,
-                                                    alignedLayoutElement:   refContainer.textLayoutElement);
+            yield return ResizeAlignAndReposition(targetTransform: referencesContainer.textLayoutElementRT,
+                                                    parentWidth: parentRT.rect.width,
+                                                    parentHeight: parentRT.rect.height,
+                                                    alignmentLayout: referencesContainer.alignmentLayoutGroup,
+                                                    alignedLayoutElement: referencesContainer.textLayoutElement);
 
             inputField.text = model.placeholder;
-            inputField.textComponent.color = new Color( model.placeholderColor.r, model.placeholderColor.g, model.placeholderColor.b, model.textModel.opacity );
-            refContainer.bgImage.color = new Color( model.focusedBackground.r, model.focusedBackground.g, model.focusedBackground.b, model.textModel.opacity );
+            inputField.textComponent.color = new Color(model.placeholderColor.r, model.placeholderColor.g, model.placeholderColor.b, model.textModel.opacity);
+            referencesContainer.bgImage.color = new Color(model.focusedBackground.r, model.focusedBackground.g, model.focusedBackground.b, model.textModel.opacity);
             yield break;
         }
 

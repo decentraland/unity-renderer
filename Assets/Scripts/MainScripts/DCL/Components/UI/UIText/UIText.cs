@@ -17,13 +17,18 @@ namespace DCL.Components
             public TextShape.Model textModel;
         }
 
-        public UITextReferencesContainer referencesContainer;
         public override string componentName => "UIText";
 
         new public Model model
         {
             get { return base.model as Model; }
             set { base.model = value; }
+        }
+
+        new public UITextReferencesContainer referencesContainer
+        {
+            get { return base.referencesContainer as UITextReferencesContainer; }
+            set { base.referencesContainer = value; }
         }
 
         public UIText(ParcelScene scene) : base(scene)
@@ -42,7 +47,6 @@ namespace DCL.Components
         public override IEnumerator ApplyChanges(string newJson)
         {
             model = JsonUtility.FromJson<Model>(newJson);
-
             if (!scene.isTestScene)
                 model.textModel = JsonUtility.FromJson<TextShape.Model>(newJson);
 

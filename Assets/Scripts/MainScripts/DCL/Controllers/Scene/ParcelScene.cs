@@ -260,7 +260,7 @@ namespace DCL.Controllers
 
         public T CreateAndInitComponent<T>(DecentralandEntity entity, EntityComponentCreateMessage message) where T : BaseComponent
         {
-            var component = Utils.GetOrCreateComponent<T>(entity.gameObject);
+            var component = entity.gameObject.GetOrCreateComponent<T>();
             component.scene = this;
             component.entity = entity;
             component.UpdateFromJSON(createEntityComponentMessage.json);
@@ -414,6 +414,11 @@ namespace DCL.Controllers
                 case CLASS_ID.UI_CONTAINER_RECT:
                     {
                         newComponent = new UIContainerRect(this);
+                        break;
+                    }
+                case CLASS_ID.UI_CONTAINER_STACK:
+                    {
+                        newComponent = new UIContainerStack(this);
                         break;
                     }
                 case CLASS_ID.UI_IMAGE_SHAPE:

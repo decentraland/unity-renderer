@@ -51,7 +51,7 @@ namespace DCL.Components
                 if (scene.sceneData.TryGetContentsUrl(currentSrc, out finalUrl))
                 {
                     entity.EnsureMeshGameObject(componentName + " mesh");
-                    Loadable loadableShape = Helpers.Utils.GetOrCreateComponent<Loadable>(entity.meshGameObject);
+                    Loadable loadableShape = entity.meshGameObject.GetOrCreateComponent<Loadable>();
                     loadableShape.entity = entity;
                     loadableShape.Load(finalUrl, Configuration.ParcelSettings.VISUAL_LOADING_ENABLED);
                 }
@@ -63,9 +63,9 @@ namespace DCL.Components
             if (entity == null || entity.meshGameObject == null)
                 return;
 
-            Loadable loadableShape = Helpers.Utils.GetOrCreateComponent<Loadable>(entity.meshGameObject);
+            Loadable loadableShape = entity.meshGameObject.GetOrCreateComponent<Loadable>();
 
-            if ( loadableShape != null )
+            if (loadableShape != null)
                 loadableShape.Unload();
 
             Utils.SafeDestroy(entity.meshGameObject);

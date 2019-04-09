@@ -34,20 +34,7 @@ namespace Tests
             yield return screenSpaceShape.routine;
 
             // Create UIContainerRectShape
-            string uiContainerRectShapeId = "uiContainerRectShape";
-
-            UIContainerRect uiContainerRectShape = scene.SharedComponentCreate(JsonUtility.ToJson(new SharedComponentCreateMessage
-            {
-                classId = (int)CLASS_ID.UI_CONTAINER_RECT,
-                id = uiContainerRectShapeId,
-                name = "UIContainerRectShape"
-            })) as UIContainerRect;
-
-            scene.SharedComponentUpdate(JsonUtility.ToJson(new SharedComponentUpdateMessage
-            {
-                id = uiContainerRectShapeId,
-                json = JsonUtility.ToJson(new UIContainerRect.Model { })
-            }));
+            UIContainerRect uiContainerRectShape = TestHelpers.SharedComponentCreate<UIContainerRect, UIContainerRect.Model>(scene, CLASS_ID.UI_CONTAINER_RECT);
 
             yield return uiContainerRectShape.routine;
 
@@ -64,7 +51,7 @@ namespace Tests
             // Update UIContainerRectShape properties
             uiContainerRectShape = scene.SharedComponentUpdate(JsonUtility.ToJson(new SharedComponentUpdateMessage
             {
-                id = uiContainerRectShapeId,
+                id = uiContainerRectShape.id,
                 json = JsonUtility.ToJson(new UIContainerRect.Model
                 {
                     parentComponent = screenSpaceShape.id,
@@ -85,7 +72,7 @@ namespace Tests
             // Check updated properties are applied correctly
             Assert.IsTrue(uiContainerRectShape.referencesContainer.transform.parent == screenSpaceShape.childHookRectTransform);
             Assert.IsTrue(image.GetComponent<Outline>() != null);
-            Assert.IsTrue(image.color == new Color(0.2f * 255f, 0.7f * 255f, 0.05f * 255f, 1f));
+            Assert.IsTrue(image.color == new Color(0.2f, 0.7f, 0.05f, 1f));
             Assert.IsTrue(image.raycastTarget);
             Assert.AreEqual(275f, uiContainerRectShape.childHookRectTransform.rect.width);
             Assert.AreEqual(130f, uiContainerRectShape.childHookRectTransform.rect.height);
@@ -116,58 +103,39 @@ namespace Tests
 
             // Create UIScreenSpaceShape
             UIScreenSpace screenSpaceShape = TestHelpers.SharedComponentCreate<UIScreenSpace, UIScreenSpace.Model>(scene, CLASS_ID.UI_SCREEN_SPACE_SHAPE);
-
             yield return screenSpaceShape.routine;
 
             // Create UIContainerRectShape
-            string uiContainerRectShapeId = "uiContainerRectShape";
-
-            UIContainerRect uiContainerRectShape = scene.SharedComponentCreate(JsonUtility.ToJson(new SharedComponentCreateMessage
-            {
-                classId = (int)CLASS_ID.UI_CONTAINER_RECT,
-                id = uiContainerRectShapeId,
-                name = "UIContainerRectShape"
-            })) as UIContainerRect;
-
+            UIContainerRect uiContainerRectShape = TestHelpers.SharedComponentCreate<UIContainerRect, UIContainerRect.Model>(scene, CLASS_ID.UI_CONTAINER_RECT);
             yield return uiContainerRectShape.routine;
 
             // Update UIContainerRectShape parent
-            uiContainerRectShape = scene.SharedComponentUpdate(JsonUtility.ToJson(new SharedComponentUpdateMessage
+            scene.SharedComponentUpdate(JsonUtility.ToJson(new SharedComponentUpdateMessage
             {
-                id = uiContainerRectShapeId,
+                id = uiContainerRectShape.id,
                 json = JsonUtility.ToJson(new UIContainerRect.Model
                 {
                     parentComponent = screenSpaceShape.id,
                 })
-            })) as UIContainerRect;
-
+            }));
             yield return uiContainerRectShape.routine;
 
             // Check updated parent
             Assert.IsTrue(uiContainerRectShape.referencesContainer.transform.parent == screenSpaceShape.childHookRectTransform);
 
             // Create 2nd UIContainerRectShape
-            string uiContainerRectShape2Id = "uiContainerRectShape2";
-
-            UIContainerRect uiContainerRectShape2 = scene.SharedComponentCreate(JsonUtility.ToJson(new SharedComponentCreateMessage
-            {
-                classId = (int)CLASS_ID.UI_CONTAINER_RECT,
-                id = uiContainerRectShape2Id,
-                name = "UIContainerRectShape2"
-            })) as UIContainerRect;
-
+            UIContainerRect uiContainerRectShape2 = TestHelpers.SharedComponentCreate<UIContainerRect, UIContainerRect.Model>(scene, CLASS_ID.UI_CONTAINER_RECT);
             yield return uiContainerRectShape2.routine;
 
             // Update UIContainerRectShape parent to the previous container
-            uiContainerRectShape2 = scene.SharedComponentUpdate(JsonUtility.ToJson(new SharedComponentUpdateMessage
+            scene.SharedComponentUpdate(JsonUtility.ToJson(new SharedComponentUpdateMessage
             {
-                id = uiContainerRectShape2Id,
+                id = uiContainerRectShape2.id,
                 json = JsonUtility.ToJson(new UIContainerRect.Model
                 {
-                    parentComponent = uiContainerRectShapeId,
+                    parentComponent = uiContainerRectShape.id,
                 })
-            })) as UIContainerRect;
-
+            }));
             yield return uiContainerRectShape2.routine;
 
             // Check updated parent
@@ -193,27 +161,18 @@ namespace Tests
 
             // Create UIScreenSpaceShape
             UIScreenSpace screenSpaceShape = TestHelpers.SharedComponentCreate<UIScreenSpace, UIScreenSpace.Model>(scene, CLASS_ID.UI_SCREEN_SPACE_SHAPE);
-
             yield return screenSpaceShape.routine;
 
             Assert.IsFalse(screenSpaceShape == null);
 
             // Create UIContainerRectShape
-            string uiContainerRectShapeId = "uiContainerRectShape";
-
-            UIContainerRect uiContainerRectShape = scene.SharedComponentCreate(JsonUtility.ToJson(new SharedComponentCreateMessage
-            {
-                classId = (int)CLASS_ID.UI_CONTAINER_RECT,
-                id = uiContainerRectShapeId,
-                name = "UIContainerRectShape"
-            })) as UIContainerRect;
-
+            UIContainerRect uiContainerRectShape = TestHelpers.SharedComponentCreate<UIContainerRect, UIContainerRect.Model>(scene, CLASS_ID.UI_CONTAINER_RECT);
             yield return uiContainerRectShape.routine;
 
             // Update UIContainerRectShape properties
-            uiContainerRectShape = scene.SharedComponentUpdate(JsonUtility.ToJson(new SharedComponentUpdateMessage
+            scene.SharedComponentUpdate(JsonUtility.ToJson(new SharedComponentUpdateMessage
             {
-                id = uiContainerRectShapeId,
+                id = uiContainerRectShape.id,
                 json = JsonUtility.ToJson(new UIContainerRect.Model
                 {
                     parentComponent = screenSpaceShape.id,
@@ -225,8 +184,7 @@ namespace Tests
                     positionX = new UIValue(20f),
                     positionY = new UIValue(45f)
                 })
-            })) as UIContainerRect;
-
+            }));
             yield return uiContainerRectShape.routine;
 
             UnityEngine.UI.Image image = uiContainerRectShape.referencesContainer.image;
@@ -234,22 +192,21 @@ namespace Tests
             // Check updated properties are applied correctly
             Assert.IsTrue(uiContainerRectShape.referencesContainer.transform.parent == screenSpaceShape.childHookRectTransform);
             Assert.IsTrue(image.GetComponent<Outline>() != null);
-            Assert.IsTrue(image.color == new Color(0.5f * 255f, 0.8f * 255f, 0.1f * 255f, 1f));
+            Assert.IsTrue(image.color == new Color(0.5f, 0.8f, 0.1f, 1f));
             Assert.IsTrue(image.raycastTarget);
             Assert.AreEqual(200f, uiContainerRectShape.childHookRectTransform.rect.width);
             Assert.AreEqual(150f, uiContainerRectShape.childHookRectTransform.rect.height);
             Assert.AreEqual(new Vector3(20f, 45f, 0f), uiContainerRectShape.childHookRectTransform.localPosition);
 
             // Update UIContainerRectShape with missing values
-            uiContainerRectShape = scene.SharedComponentUpdate(JsonUtility.ToJson(new SharedComponentUpdateMessage
+            scene.SharedComponentUpdate(JsonUtility.ToJson(new SharedComponentUpdateMessage
             {
-                id = uiContainerRectShapeId,
+                id = uiContainerRectShape.id,
                 json = JsonUtility.ToJson(new UIContainerRect.Model
                 {
                     parentComponent = screenSpaceShape.id
                 })
-            })) as UIContainerRect;
-
+            }));
             yield return uiContainerRectShape.routine;
 
             // Check default properties are applied correctly
@@ -280,25 +237,16 @@ namespace Tests
 
             // Create UIScreenSpaceShape
             UIScreenSpace screenSpaceShape = TestHelpers.SharedComponentCreate<UIScreenSpace, UIScreenSpace.Model>(scene, CLASS_ID.UI_SCREEN_SPACE_SHAPE);
-
             yield return screenSpaceShape.routine;
 
             // Create UIContainerRectShape
-            string uiContainerRectShapeId = "uiContainerRectShape";
-
-            UIContainerRect uiContainerRectShape = scene.SharedComponentCreate(JsonUtility.ToJson(new SharedComponentCreateMessage
-            {
-                classId = (int)CLASS_ID.UI_CONTAINER_RECT,
-                id = uiContainerRectShapeId,
-                name = "UIContainerRectShape"
-            })) as UIContainerRect;
-
+            UIContainerRect uiContainerRectShape = TestHelpers.SharedComponentCreate<UIContainerRect, UIContainerRect.Model>(scene, CLASS_ID.UI_CONTAINER_RECT);
             yield return uiContainerRectShape.routine;
 
             // Update UIContainerRectShape properties
             uiContainerRectShape = scene.SharedComponentUpdate(JsonUtility.ToJson(new SharedComponentUpdateMessage
             {
-                id = uiContainerRectShapeId,
+                id = uiContainerRectShape.id,
                 json = JsonUtility.ToJson(new UIContainerRect.Model
                 {
                     parentComponent = screenSpaceShape.id,
@@ -306,7 +254,6 @@ namespace Tests
                     height = new UIValue(30, UIValue.Unit.PERCENT)
                 })
             })) as UIContainerRect;
-
             yield return uiContainerRectShape.routine;
 
             UnityEngine.UI.Image image = uiContainerRectShape.childHookRectTransform.GetComponent<UnityEngine.UI.Image>();

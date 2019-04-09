@@ -63,7 +63,7 @@ namespace DCL
 
         private static void SetUpComponent<T>(ParcelScene scene, DecentralandEntity entity, string uuid, string type) where T : UUIDComponent
         {
-            var currentComponent = Utils.GetOrCreateComponent<T>(entity.gameObject);
+            var currentComponent = entity.gameObject.GetOrCreateComponent<T>();
 
             currentComponent.Setup(scene, entity, uuid, type);
         }
