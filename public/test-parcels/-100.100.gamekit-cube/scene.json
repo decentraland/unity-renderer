@@ -19,6 +19,6 @@
     "fly": true,
     "voiceEnabled": true,
     "blacklist": [],
-    "teleportPosition": ""
+    "teleportPosition": "5,0,5"
   }
 }

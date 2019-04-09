@@ -23,7 +23,7 @@
     "fly": true,
     "voiceEnabled": true,
     "blacklist": [],
-    "teleportPosition": ""
+    "teleportPosition": "5,0,5"
   },
   "main": "game.js",
   "tags": []

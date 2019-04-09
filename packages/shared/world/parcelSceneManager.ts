@@ -1,3 +1,5 @@
+const qs = require('query-string')
+
 import { initParcelSceneWorker } from '../../decentraland-loader/worker'
 import { ETHEREUM_NETWORK } from '../../config'
 import { positionObservable, teleportObservable } from './positionThings'
@@ -9,6 +11,7 @@ import { Vector2 } from 'decentraland-ecs/src/decentraland/math'
 export type EnableParcelSceneLoadingOptions = {
   parcelSceneClass: { new (x: EnvironmentData<LoadableParcelScene>): ParcelSceneAPI }
   shouldLoadParcelScene: (parcelToLoad: ILand) => boolean
+  onSpawnpoint?: (initialLand: ILand) => void
   onLoadParcelScenes?(x: ILand[]): void
 }
 
@@ -56,6 +59,14 @@ export async function enableParcelSceneLoading(network: ETHEREUM_NETWORK, option
     })
   }
 
+  let initialized = false
+  let spawnpointLand = qs.parse(location.search).position
+
+  teleportObservable.add(position => {
+    initialized = false
+    spawnpointLand = `${position.x},${position.y}`
+  })
+
   teleportObservable.add((position: { x: number; y: number }) => {
     ret.server.notify('User.setPosition', { position })
   })
@@ -68,6 +79,14 @@ export async function enableParcelSceneLoading(network: ETHEREUM_NETWORK, option
 
   ret.server.on('ParcelScenes.notify', (data: { parcelScenes: ILand[] }) => {
     setParcelScenes(data.parcelScenes.filter(land => options.shouldLoadParcelScene(land)))
+    if (!initialized && options.onSpawnpoint) {
+      const initialLand = data.parcelScenes.find(land => land.scene.scene.base === spawnpointLand)
+      if (initialLand) {
+        options.onSpawnpoint(initialLand)
+        initialized = true
+      }
+    }
+
     if (options.onLoadParcelScenes) {
       options.onLoadParcelScenes(data.parcelScenes)
     }
