@@ -74,6 +74,30 @@ export function initializeUrlPositionObserver() {
   }
 }
 
+export function getWorldSpawnpoint(land: ILand): Vector3 {
+  const spawnpoint = getSpawnpoint(land)
+
+  if (!spawnpoint) {
+    return lastPlayerPosition
+  }
+
+  const [x, y, z] = spawnpoint.split(',')
+
+  return new Vector3(
+    (lastPlayerPosition.x += parseFloat(x)),
+    (lastPlayerPosition.y += parseFloat(y)),
+    (lastPlayerPosition.z += parseFloat(z))
+  )
+}
+
+function getSpawnpoint(land: ILand) {
+  if (!land.scene && !land.scene['policy']) {
+    return
+  }
+
+  return (land.scene as any).policy.teleportPosition
+}
+
 export function getLandBase(land: ILand): { x: number; y: number } {
   if (
     land.scene &&
