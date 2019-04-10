@@ -343,11 +343,13 @@ function toggleChat() {
 
   container!.visible = !visible
   containerMinimized!.visible = visible
+  transparentContainer!.visible = visible
 }
 
 function closeChat() {
   container!.visible = false
   containerMinimized!.visible = true
+  transparentContainer!.visible = true
 }
 
 function onSliderChanged(data: any) {
@@ -412,6 +414,8 @@ function addMessage(messageEntry: MessageEntry): void {
 function addEntryAndResize(messageEntry: MessageEntry) {
   messageContainer!.height = `${getMessagesListHeight()}px`
   createMessage(messageContainer, messageEntry)
+  transparentMessageContainer!.height = `${getMessagesListHeight()}px`
+  createMessage(transparentMessageContainer, messageEntry)
 }
 
 const container = new UIContainerRectShape(screenSpaceUI)
@@ -434,6 +438,24 @@ messageContainer.hAlign = 'left'
 messageContainer.top = '-105px'
 messageContainer.left = '15px'
 messageContainer.height = '200px'
+
+const transparentContainer = new UIContainerRectShape(screenSpaceUI)
+transparentContainer.id = 'gui-transparent-container'
+transparentContainer.vAlign = 'bottom'
+transparentContainer.hAlign = 'left'
+transparentContainer.width = '400px'
+transparentContainer.height = '250px'
+transparentContainer.left = '20px'
+transparentContainer.top = '-60px'
+transparentContainer.thickness = 0
+transparentContainer.visible = true
+
+const transparentMessageContainer = new UIContainerStackShape(transparentContainer)
+transparentMessageContainer.vAlign = 'bottom'
+transparentMessageContainer.hAlign = 'left'
+transparentMessageContainer.top = '-105px'
+transparentMessageContainer.left = '15px'
+transparentMessageContainer.height = '200px'
 
 const footerContainer = new UIContainerRectShape(container)
 footerContainer.adaptHeight = true
