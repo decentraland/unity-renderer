@@ -6,6 +6,7 @@ import { parseVerticalAlignment, parseHorizontalAlignment } from 'engine/entitie
 import { UIImageShape } from 'decentraland-ecs/src/decentraland/UIShapes'
 import { SharedSceneContext } from 'engine/entities/SharedSceneContext'
 import { UIControl } from './UIControl'
+import { Texture } from '../Texture'
 
 const schemaValidator = createSchemaValidator({
   id: { type: 'string', default: null },
@@ -67,7 +68,18 @@ class UIImage extends UIControl<UIImageShape, BABYLON.GUI.Image> {
     this.control.sourceWidth = parseInt(this.data.sourceWidth, 10)
     // @ts-ignore
     this.control.sourceHeight = parseInt(this.data.sourceHeight, 10)
-    this.control.source = this.data.source
+
+    if (data.source) {
+      const texture = await Texture.getFromComponent(this.context, data.source as any)
+
+      this.contributions.textures.clear()
+
+      if (texture) {
+        this.contributions.textures.add(texture)
+        this.control.source = texture.url
+      }
+    }
+
     this.control.width = this.data.width
     this.control.height = this.data.height
     this.control.top = this.data.top

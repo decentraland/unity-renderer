@@ -1,5 +1,5 @@
 import { ObservableComponent, DisposableComponent, getComponentId } from '../ecs/Component'
-import { CLASS_ID } from './Components'
+import { CLASS_ID, Texture } from './Components'
 
 /**
  * @alpha
@@ -498,8 +498,8 @@ export class UIImageShape extends UIShape {
   @ObservableComponent.field
   sourceHeight: string | null = null
 
-  @ObservableComponent.field
-  source: string | null = null
+  @ObservableComponent.component
+  source?: Texture
 
   @ObservableComponent.field
   width: string = '100%'

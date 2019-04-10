@@ -1,5 +1,5 @@
 import { DecentralandInterface, IEvents } from 'decentraland-ecs/src/decentraland/Types'
-import { Entity, engine, OnChanged, OnClick, OnEnter, OnPointerLock } from 'decentraland-ecs/src'
+import { Entity, engine, OnChanged, OnClick, OnEnter, OnPointerLock, Texture } from 'decentraland-ecs/src'
 import {
   UIImageShape,
   UIInputTextShape,
@@ -17,6 +17,7 @@ declare var dcl: DecentralandInterface
 declare var require: any
 
 const UI_CHAT = require('../../../static/images/ui-chat.png')
+const uiChatTexture = new Texture(UI_CHAT)
 
 const MAX_CHARS = 94
 const PRIMARY_TEXT_COLOR = 'white'
@@ -36,7 +37,7 @@ function createMinimizeButton(parent: UIShape, click: (ev: IEvents['onClick']) =
   component.id = 'minimize-icon'
   component.width = '20px'
   component.height = '20px'
-  component.source = UI_CHAT
+  component.source = uiChatTexture
   component.sourceWidth = '40px'
   component.sourceHeight = '40px'
   component.sourceTop = '10px'
@@ -59,7 +60,7 @@ function createSendButton(parent: UIShape, click: (ev: IEvents['onClick']) => vo
   component.id = 'send-icon'
   component.width = '23px'
   component.height = '23px'
-  component.source = UI_CHAT
+  component.source = uiChatTexture
   component.sourceWidth = '48px'
   component.sourceHeight = '48px'
   component.sourceTop = '0px'
@@ -81,7 +82,7 @@ function createHelpButton(parent: UIShape, click: (ev: IEvents['onClick']) => vo
   component.id = 'help-icon'
   component.width = '23px'
   component.height = '23px'
-  component.source = UI_CHAT
+  component.source = uiChatTexture
   component.sourceWidth = '48px'
   component.sourceHeight = '48px'
   component.sourceTop = '0px'
@@ -103,7 +104,7 @@ function createCloseButton(parent: UIShape, click: (ev: IEvents['onClick']) => v
   component.id = 'close-icon'
   component.width = '20px'
   component.height = '20px'
-  component.source = UI_CHAT
+  component.source = uiChatTexture
   component.sourceWidth = '35px'
   component.sourceHeight = '35px'
   component.sourceTop = '5px'
@@ -126,7 +127,7 @@ function createHelpCloseButton(parent: UIShape, click: (data: IEvents['onClick']
   component.id = 'help-close-icon'
   component.width = '25px'
   component.height = '25px'
-  component.source = UI_CHAT
+  component.source = uiChatTexture
   component.sourceWidth = '59px'
   component.sourceHeight = '60px'
   component.sourceTop = '-5px'
@@ -492,7 +493,7 @@ function initializeMinimizedChat(parent: UIFullScreenShape) {
   minimizedIcon.id = 'minimize-icon'
   minimizedIcon.width = '230px'
   minimizedIcon.height = '55px'
-  minimizedIcon.source = UI_CHAT
+  minimizedIcon.source = uiChatTexture
   minimizedIcon.sourceWidth = '210px'
   minimizedIcon.sourceHeight = '50px'
   minimizedIcon.sourceTop = '50px'

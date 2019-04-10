@@ -1252,7 +1252,7 @@ declare const Epsilon = 0.000001
 /**
  * @public
  */
-declare function EventConstructor(eventName: string): ClassDecorator
+declare function EventConstructor(): ClassDecorator
 
 /**
  * @public
@@ -4254,8 +4254,9 @@ declare class UIWorldSpaceShape extends UIShape {
  * @public
  */
 declare class UUIDEvent<T = any> {
-  uuid: string
-  payload: T
+  readonly uuid: string
+  readonly payload: T
+  constructor(uuid: string, payload: T)
 }
 
 /**

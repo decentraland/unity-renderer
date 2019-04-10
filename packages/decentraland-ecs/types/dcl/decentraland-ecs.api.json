@@ -7836,20 +7836,12 @@
     },
     "EventConstructor": {
       "kind": "function",
-      "signature": "export function EventConstructor(eventName: string): ClassDecorator;",
+      "signature": "export function EventConstructor(): ClassDecorator;",
       "returnValue": {
         "type": "ClassDecorator",
         "description": []
       },
-      "parameters": {
-        "eventName": {
-          "name": "eventName",
-          "description": [],
-          "isOptional": false,
-          "isSpread": false,
-          "type": "string"
-        }
-      },
+      "parameters": {},
       "deprecatedMessage": [],
       "summary": [],
       "remarks": [],
@@ -24959,11 +24951,58 @@
       "isBeta": false,
       "isSealed": false,
       "members": {
+        "__constructor": {
+          "kind": "constructor",
+          "signature": "constructor(uuid: string, payload: T);",
+          "parameters": {
+            "uuid": {
+              "name": "uuid",
+              "description": [],
+              "isOptional": false,
+              "isSpread": false,
+              "type": "string"
+            },
+            "payload": {
+              "name": "payload",
+              "description": [],
+              "isOptional": false,
+              "isSpread": false,
+              "type": "T"
+            }
+          },
+          "deprecatedMessage": [],
+          "summary": [
+            {
+              "kind": "text",
+              "text": "Constructs a new instance of the "
+            },
+            {
+              "kind": "api-link",
+              "elements": [
+                {
+                  "kind": "text",
+                  "text": "UUIDEvent"
+                }
+              ],
+              "target": {
+                "scopeName": "",
+                "packageName": "decentraland-ecs",
+                "exportName": "UUIDEvent",
+                "memberName": ""
+              }
+            },
+            {
+              "kind": "text",
+              "text": " class"
+            }
+          ],
+          "remarks": []
+        },
         "payload": {
           "kind": "property",
-          "signature": "payload: T;",
+          "signature": "readonly payload: T;",
           "isOptional": false,
-          "isReadOnly": false,
+          "isReadOnly": true,
           "isStatic": false,
           "type": "T",
           "deprecatedMessage": [],
@@ -24977,9 +25016,9 @@
         },
         "uuid": {
           "kind": "property",
-          "signature": "uuid: string;",
+          "signature": "readonly uuid: string;",
           "isOptional": false,
-          "isReadOnly": false,
+          "isReadOnly": true,
           "isStatic": false,
           "type": "string",
           "deprecatedMessage": [],
