@@ -174,6 +174,13 @@ export interface IEvents {
   onEnter: {}
 
   /**
+   * @internal
+   * `onPointerLock` is triggered when the user clicks the world canvas and the
+   * pointer locks to it so the pointer moves the camera
+   */
+  onPointerLock: {}
+
+  /**
    * `onFocus` is triggered when an entity focus is active.
    * Dispatched by the `ui-input` and `ui-password` entities when the value is changed.
    * It triggers a callback.

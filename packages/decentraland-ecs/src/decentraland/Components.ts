@@ -747,6 +747,15 @@ export class OnEnter extends OnUUIDEvent<'onEnter'> {
 }
 
 /**
+ * @internal
+ */
+@Component('engine.onPointerLock', CLASS_ID.UUID_CALLBACK)
+export class OnPointerLock extends OnUUIDEvent<'onPointerLock'> {
+  @ObservableComponent.readonly
+  readonly type: string = 'onPointerLock'
+}
+
+/**
  * @public
  */
 @Component('engine.onFocus', CLASS_ID.UUID_CALLBACK)

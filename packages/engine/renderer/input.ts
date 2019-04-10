@@ -53,7 +53,7 @@ export function initKeyboard() {
 
   document.body.addEventListener('keydown', e => {
     if (e.code === 'Enter' && hud) {
-      hud.context.entities.forEach(e => e.dispatchUUIDEvent('onEnter', {}))
+      hud.context.entities.forEach((e: any) => e.dispatchUUIDEvent('onEnter', {}))
     }
 
     keyState[Keys.KEY_SHIFT] = e.shiftKey
@@ -276,6 +276,10 @@ export function enableMouseLock(canvas: HTMLCanvasElement) {
   scene.onPointerObservable.add(e => {
     if (e.type === BABYLON.PointerEventTypes.POINTERDOWN) {
       const evt = e.event as PointerEvent
+
+      if (hud) {
+        hud.context.entities.forEach((e: any) => e.dispatchUUIDEvent('onPointerLock', {}))
+      }
 
       if (isThirdPersonCamera()) {
         canvas.focus()
