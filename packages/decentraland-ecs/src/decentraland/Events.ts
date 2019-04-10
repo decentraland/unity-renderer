@@ -3,8 +3,7 @@ import { EventConstructor } from '../ecs/EventManager'
 /**
  * @public
  */
-@EventConstructor('uuidEvent')
+@EventConstructor()
 export class UUIDEvent<T = any> {
-  uuid!: string
-  payload!: T
+  constructor(public readonly uuid: string, public readonly payload: T) {}
 }

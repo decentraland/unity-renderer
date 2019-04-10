@@ -533,6 +533,8 @@ export function testScene(
       while (!sceneHost.didStart) {
         await sleep(10)
       }
+
+      await parcelScene.context
     })
 
     try {

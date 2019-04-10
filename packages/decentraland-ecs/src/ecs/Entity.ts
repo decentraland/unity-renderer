@@ -345,7 +345,7 @@ export class Entity {
 /**
  * @public
  */
-@EventConstructor('dcl-component-removed')
+@EventConstructor()
 export class ComponentRemoved {
   constructor(public entity: Entity, public componentName: string, public component: ComponentLike) {
     // stub
@@ -355,7 +355,7 @@ export class ComponentRemoved {
 /**
  * @public
  */
-@EventConstructor('dcl-component-added')
+@EventConstructor()
 export class ComponentAdded {
   constructor(public entity: Entity, public componentName: string, public classId: number | null) {
     // stub
@@ -365,7 +365,7 @@ export class ComponentAdded {
 /**
  * @public
  */
-@EventConstructor('dcl-parent-changed')
+@EventConstructor()
 export class ParentChanged {
   constructor(public entity: Entity, public parent: Entity) {
     // stub

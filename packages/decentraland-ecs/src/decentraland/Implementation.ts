@@ -42,10 +42,8 @@ export class DecentralandSynchronizationSystem implements ISystem {
     this.dcl.onEvent(event => {
       switch (event.type) {
         case 'uuidEvent':
-          const e = new UUIDEvent()
-          e.uuid = (event.data as any).uuid
-          e.payload = (event.data as any).payload
-          engine.eventManager.fireEvent(e)
+          const data = event.data as any
+          engine.eventManager.fireEvent(new UUIDEvent(data.uuid, data.payload))
           break
       }
     })

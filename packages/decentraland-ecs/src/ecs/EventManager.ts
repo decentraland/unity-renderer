@@ -1,4 +1,4 @@
-import { error } from './helpers'
+import { error, newId } from './helpers'
 
 const eventNameSymbol = '__event_name__'
 
@@ -20,11 +20,16 @@ function getEventNameFromConstructor<T>(ctor: IEventConstructor<T>): string {
   return (ctor[eventNameSymbol] as any) as string
 }
 
+type EventListener<X> = {
+  listener: X
+  fn: (this: X, event: any) => void
+}
+
 /**
  * @public
  */
 export class EventManager {
-  private listeners: Record<string, Array<{ listener: any; fn: (event: any) => void }>> = {}
+  private listeners: Record<string, Array<EventListener<any>>> = {}
 
   addListener<T, X>(eventClass: IEventConstructor<T>, listener: X, listenerFunction: (this: X, event: T) => void) {
     if (!eventClass || typeof (eventClass as any) !== 'function') {
@@ -96,10 +101,8 @@ export class EventManager {
 /**
  * @public
  */
-export function EventConstructor(eventName: string): ClassDecorator {
-  if (!eventName || typeof (eventName as any) !== 'string') {
-    throw new Error(`Invalid event name ${eventName}`)
-  }
+export function EventConstructor(): ClassDecorator {
+  const eventName = newId('EV')
 
   if (takenEventNames.indexOf(eventName) !== -1) {
     throw new Error(`The event name ${eventName} is already taken`)
@@ -107,8 +110,9 @@ export function EventConstructor(eventName: string): ClassDecorator {
 
   takenEventNames.push(eventName)
 
-  return (target: any) => {
-    target[eventNameSymbol] = eventName
+  return <TFunction extends Function>(target: TFunction): TFunction | void => {
+    // tslint:disable-next-line:semicolon
+    ;(target as any)[eventNameSymbol] = eventName
     return target
   }
 }
