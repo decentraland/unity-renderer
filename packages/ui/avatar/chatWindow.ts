@@ -1,5 +1,5 @@
 import { DecentralandInterface, IEvents } from 'decentraland-ecs/src/decentraland/Types'
-import { Entity, engine, OnChanged, OnClick, OnEnter } from 'decentraland-ecs/src'
+import { Entity, engine, OnChanged, OnClick, OnEnter, OnPointerLock } from 'decentraland-ecs/src'
 import {
   UIImageShape,
   UIInputTextShape,
@@ -345,6 +345,11 @@ function toggleChat() {
   containerMinimized!.visible = visible
 }
 
+function closeChat() {
+  container!.visible = false
+  containerMinimized!.visible = true
+}
+
 function onSliderChanged(data: any) {
   const value = Math.round(data.value)
   sliderOpenedChat.component.value = value
@@ -478,6 +483,7 @@ function initializeMinimizedChat(parent: UIFullScreenShape) {
   minimizedIconEntity.addComponentOrReplace(minimizedIcon)
   minimizedIconEntity.addComponentOrReplace(new OnClick(toggleChat))
   minimizedIconEntity.addComponentOrReplace(new OnEnter(toggleChat))
+  minimizedIconEntity.addComponentOrReplace(new OnPointerLock(closeChat))
   engine.addEntity(minimizedIconEntity)
 
   const helpIcon = createHelpButton(containerMinimized, openHelp)
