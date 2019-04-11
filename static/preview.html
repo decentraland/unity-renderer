@@ -26,11 +26,19 @@
       .dcl-loading {
         background: url(images/decentraland-loading.gif) center center no-repeat;
       }
+
+      canvas {
+        position: relative;
+        z-index: 1000;
+        width: 100%;
+        height: 100%;
+      }
     </style>
+    <script src="https://code.jquery.com/pep/0.4.3/pep.js"></script>
   </head>
 
   <body class="dcl-loading">
-    <script src="/@/artifacts/preview.js"></script>
+    <div id="gameContainer" style="width: 100%; height: 100%; margin: auto"></div>
     <script>
       const ws = new WebSocket(`${location.protocol === 'https:' ? 'wss' : 'ws'}://${document.location.host}`)
 
@@ -47,4 +55,6 @@
       })
     </script>
   </body>
+  <script src="/@/artifacts/unity/Build/UnityLoader.js"></script>
+  <script defer async src="/@/artifacts/preview.js"></script>
 </html>

@@ -1,116 +1,124 @@
+// tslint:disable:no-console
 declare var global: any
 declare var window: any
+declare var UnityLoader: UnityLoaderType
 
 global['preview'] = window['preview'] = true
 global['avoidWeb3'] = window['avoidWeb3']
 
-import 'engine'
-
-import { initLocalPlayer, domReadyFuture } from '../engine/renderer'
-
-import { initBabylonClient } from '../engine/dcl'
-import { log } from '../engine/logger'
-import { bodyReadyFuture, engine } from '../engine/renderer/init'
-import { initShared } from '../shared'
-import { loadedParcelSceneWorkers, enablePositionReporting } from '../shared/world/parcelSceneManager'
+import { initializeEngine } from '../unity-interface/dcl'
 import { ETHEREUM_NETWORK, DEBUG, AVOID_WEB3 } from '../config'
-import { ILandToLoadableParcelScene, ILand, IScene, MappingsResponse } from '../shared/types'
-import { SceneWorker } from '../shared/world/SceneWorker'
-import { WebGLParcelScene } from '../engine/dcl/WebGLParcelScene'
+const queryString = require('query-string')
+const qs = queryString.parse(document.location.search)
 
-let didStartPosition = false
-
-async function loadScene() {
-  const result = await fetch('/scene.json?nocache=' + Math.random())
-
-  if (result.ok) {
-    // we load the scene to get the metadata
-    // about rhe bounds and position of the scene
-    // TODO(fmiras): Validate scene according to https://github.com/decentraland/proposals/blob/master/dsp/0020.mediawiki
-    const scene = (await result.json()) as IScene
-
-    const mappingsFetch = await fetch('/mappings')
-    const mappingsResponse = (await mappingsFetch.json()) as MappingsResponse
-
-    let defaultScene: ILand = {
-      baseUrl: location.toString().replace(/\?[^\n]+/g, ''),
-      scene,
-      mappingsResponse: mappingsResponse
-    }
-
-    await initializePreview(defaultScene)
-  } else {
-    throw new Error('Could not load scene.json')
-  }
+type UnityLoaderType = {
+  instantiate(divId: string, manifest: string): UnityGame
 }
 
-async function initializePreview(userScene: ILand) {
-  log('Starting Preview...')
-
-  loadedParcelSceneWorkers.forEach($ => {
-    $.dispose()
-    loadedParcelSceneWorkers.delete($)
-  })
-
-  let parcelSceneWorker = new SceneWorker(new WebGLParcelScene(ILandToLoadableParcelScene(userScene)))
-
-  // we need closeParcelScenes to enable interactions in preview mode
-  loadedParcelSceneWorkers.add(parcelSceneWorker)
-
-  enablePositionReporting()
-
-  if (!didStartPosition) {
-    // The 0,-15 rotation is a hack to put a player into a corner of the scene and look at the center
-    initLocalPlayer({ x: parcelSceneWorker.position.x, y: 0, z: parcelSceneWorker.position.z }, { x: 0, y: 50.54 })
-
-    didStartPosition = true
-  }
+type UnityGame = {
+  SendMessage(object: string, method: string, args: number | string): void
+  SetFullscreen(): void
 }
 
-async function loadClient() {
-  await initBabylonClient()
-  await loadScene()
+let instancedJS: ReturnType<typeof initializeEngine> | null = null
+let gameInstance: UnityGame | null = null
 
-  document.body.classList.remove('dcl-loading')
-}
+if (qs.ws) {
+  console.info(`Connecting WS to ${qs.ws}`)
+  document.body.innerHTML = `<h3>Connecting...</h3>`
+  const ws = new WebSocket(qs.ws)
 
-{
-  global['handleServerMessage'] = function(message: any) {
-    if (message.type === 'update') {
-      loadScene()
-    }
+  ws.onclose = function(e) {
+    console.error('WS closed!', e)
+    document.body.innerHTML = `<h3 style='color:red'>Disconnected</h3>`
   }
 
-  bodyReadyFuture
-    .then(async body => {
-      const { net } = await initShared()
-      await loadClient()
+  ws.onerror = function(e) {
+    console.error('WS error!', e)
+    document.body.innerHTML = `<h3 style='color:red'>EERRORR</h3>`
+  }
 
-      // Warn in case wallet is set in mainnet
-      if (net === ETHEREUM_NETWORK.MAINNET && DEBUG && !AVOID_WEB3) {
-        const style = document.createElement('style') as HTMLStyleElement
-        style.appendChild(
-          document.createTextNode(
-            `body:before{content:'You are using Mainnet Ethereum Network, real transactions are going to be made.';background:#ff0044;color:#fff;text-align:center;text-transform:uppercase;height:24px;width:100%;position:fixed;padding-top:2px}#main-canvas{padding-top:24px};`
-          )
-        )
-        document.head.appendChild(style)
+  ws.onmessage = function(ev) {
+    console.log('>>>', ev.data)
+
+    try {
+      const m = JSON.parse(ev.data)
+      if (m.type && m.payload) {
+        const payload = JSON.parse(m.payload)
+        instancedJS!.then($ => $.onMessage(m.type, payload))
+      } else {
+        console.error('Dont know what to do with ', m)
       }
+    } catch (e) {
+      console.error(e)
+    }
+  }
 
-      domReadyFuture.then(canvas => {
-        body.appendChild(canvas)
-        engine.resize()
-      })
-    })
-    .catch(error => {
-      document.body.classList.remove('dcl-loading')
-      document.body.innerHTML = `
-        <div style='padding: 30px; color: red; font-size: 16pt'>
-          <h1>Error loading scene</h1>
-          <pre>
-              <code>${error.message}</code>
-          </pre>
-        </div>
-      `
-    })
+  gameInstance = {
+    SendMessage(_obj, type, payload) {
+      if (ws.readyState === ws.OPEN) {
+        const msg = JSON.stringify({ type, payload })
+        ws.send(msg)
+      }
+    },
+    SetFullscreen() {
+      // stub
+    }
+  }
+
+  ws.onopen = function() {
+    document.body.classList.remove('dcl-loading')
+    console.info('WS open!')
+    gameInstance!.SendMessage('', 'Reset', '')
+    document.body.innerHTML = `<h3  style='color:green'>Connected</h3>`
+    DCL.EngineStarted()
+  }
+} else {
+  gameInstance! = UnityLoader.instantiate('gameContainer', '/unity/Build/unity.json')
 }
+
+namespace DCL {
+  export function EngineStarted() {
+    instancedJS = initializeEngine(gameInstance!)
+
+    instancedJS
+      .then(({ net, loadPreviewScene }) => {
+        global['handleServerMessage'] = function(message: any) {
+          if (message.type === 'update') {
+            loadPreviewScene()
+              .then()
+              .catch(console.error)
+          }
+        }
+
+        // Warn in case wallet is set in mainnet
+        if (net === ETHEREUM_NETWORK.MAINNET && DEBUG && !AVOID_WEB3) {
+          const style = document.createElement('style')
+          style.appendChild(
+            document.createTextNode(
+              `body:before{content:'You are using Mainnet Ethereum Network, real transactions are going to be made.';background:#ff0044;color:#fff;text-align:center;text-transform:uppercase;height:24px;width:100%;position:fixed;padding-top:2px}#main-canvas{padding-top:24px};`
+            )
+          )
+          document.head.appendChild(style)
+        }
+      })
+      .catch(error => {
+        document.body.classList.remove('dcl-loading')
+        document.body.innerHTML = `<h3>${error.message}</h3>`
+      })
+  }
+
+  export function MessageFromEngine(type: string, jsonEncodedMessage: string) {
+    if (instancedJS) {
+      instancedJS
+        .then($ => $.onMessage(type, JSON.parse(jsonEncodedMessage)))
+        .catch(() => {
+          console.error('Message received without initializing engine', type, jsonEncodedMessage)
+        })
+    } else {
+      console.error('Message received without initializing engine', type, jsonEncodedMessage)
+    }
+  }
+}
+
+global['DCL'] = DCL
