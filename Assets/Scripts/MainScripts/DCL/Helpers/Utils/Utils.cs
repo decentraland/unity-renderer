@@ -75,6 +75,28 @@ namespace DCL.Helpers
             t.anchorMax = Vector2.one;
             t.offsetMax = Vector2.one;
             t.sizeDelta = Vector2.zero;
+            t.anchoredPosition = Vector2.zero;
+            t.ForceUpdateRectTransforms();
+        }
+
+        public static void SetToCentered(this RectTransform t)
+        {
+            t.anchorMin = Vector2.one * 0.5f;
+            t.offsetMin = Vector2.one * 0.5f;
+            t.anchorMax = Vector2.one * 0.5f;
+            t.offsetMax = Vector2.one * 0.5f;
+            t.sizeDelta = Vector2.one * 100;
+            t.ForceUpdateRectTransforms();
+        }
+
+        public static void SetToBottomLeft(this RectTransform t)
+        {
+            t.anchorMin = Vector2.zero;
+            t.offsetMin = Vector2.zero;
+            t.anchorMax = Vector2.zero;
+            t.offsetMax = Vector2.zero;
+            t.sizeDelta = Vector2.one * 100;
+            t.ForceUpdateRectTransforms();
         }
 
         public static T GetOrCreateComponent<T>(this GameObject gameObject) where T : UnityEngine.Component

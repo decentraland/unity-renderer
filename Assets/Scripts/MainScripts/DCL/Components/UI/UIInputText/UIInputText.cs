@@ -1,6 +1,7 @@
 using DCL.Controllers;
 using System.Collections;
 using System.Collections.Generic;
+using System.Text.RegularExpressions;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
@@ -61,7 +62,7 @@ namespace DCL.Components
 
             inputField.enabled = model.visible;
             inputField.textComponent.enabled = model.visible;
-            inputField.textViewport = scene.uiScreenSpaceCanvas.transform as RectTransform;
+            inputField.textViewport = referencesContainer.rectTransform;
 
             inputField.onSelect.AddListener(OnFocus);
             inputField.onDeselect.AddListener(OnBlur);
@@ -112,7 +113,15 @@ namespace DCL.Components
 
         public void OnSubmit(string call)
         {
-            Interface.WebInterface.ReportOnTextSubmitEvent(scene.sceneData.id, model.onTextSubmitEvent, tmpText.text);
+            bool validString = !string.IsNullOrEmpty(tmpText.text);
+
+            if (tmpText.text.Length == 1 && (byte)tmpText.text[0] == 11) //NOTE(Brian): Trim doesn't work. neither IsNullOrWhitespace.
+                validString = false;
+
+            if (validString)
+            {
+                Interface.WebInterface.ReportOnTextSubmitEvent(scene.sceneData.id, model.onTextSubmitEvent, tmpText.text);
+            }
 
             inputField.text = "";
             inputField.caretColor = Color.white;
@@ -127,6 +136,5 @@ namespace DCL.Components
             inputField.onSubmit.RemoveAllListeners();
             base.Dispose();
         }
-
     }
 }

@@ -34,30 +34,27 @@ namespace DCL.Interface
         }
 
         [System.Serializable]
+        private class UUIDEvent<TPayload>
+            where TPayload : class, new()
+        {
+            public string uuid;
+            public TPayload payload = new TPayload();
+        }
+
+        [System.Serializable]
+        private class OnClickEvent : UUIDEvent<OnClickEventPayload> { };
+
+        [System.Serializable]
+        private class OnTextSubmitEvent : UUIDEvent<OnTextSubmitEventPayload> { };
+
+        [System.Serializable]
+        private class OnChangeEvent : UUIDEvent<OnChangeEventPayload> { };
+
+
+        [System.Serializable]
         public class OnClickEventPayload
         {
             public int pointerId;
-        }
-
-        [System.Serializable]
-        private class OnClickEvent
-        {
-            public string uuid;
-            public OnClickEventPayload payload = new OnClickEventPayload();
-        }
-
-        [System.Serializable]
-        public class OnBlurEvent
-        {
-            public string entityId;
-            public int pointerId = -1;
-        }
-
-        [System.Serializable]
-        public class OnFocusEvent
-        {
-            public string entityId;
-            public int pointerId = -1;
         }
 
         [System.Serializable]
@@ -68,10 +65,10 @@ namespace DCL.Interface
         }
 
         [System.Serializable]
-        private class OnTextSubmitEvent
+        public class OnChangeEventPayload
         {
-            public string uuid;
-            public OnTextSubmitEventPayload payload = new OnTextSubmitEventPayload();
+            public object value;
+            public string pointerId;
         }
 
         [System.Serializable]
@@ -103,14 +100,19 @@ namespace DCL.Interface
 
         public static void SendMessage<T>(string type, T message)
         {
-            MessageFromEngine(type, JsonUtility.ToJson(message));
+            string messageJson = JsonUtility.ToJson(message);
+
+            if (VERBOSE) Debug.Log($"Sending message: " + messageJson);
+
+            MessageFromEngine(type, messageJson);
         }
 
         private static ReportPositionPayload positionPayload = new ReportPositionPayload();
-        private static OnClickEvent onClickEvent = new OnClickEvent();
         private static OnMetricsUpdate onMetricsUpdate = new OnMetricsUpdate();
 
+        private static OnClickEvent onClickEvent = new OnClickEvent();
         private static OnTextSubmitEvent onTextSubmitEvent = new OnTextSubmitEvent();
+        private static OnChangeEvent onChangeEvent = new OnChangeEvent();
 
         public static void SendSceneEvent<T>(string sceneId, string eventType, T payload)
         {
@@ -146,9 +148,18 @@ namespace DCL.Interface
             SendSceneEvent(sceneId, "uuidEvent", onTextSubmitEvent);
         }
 
+        public static void ReportOnScrollChange(string sceneId, string uuid, Vector2 value, string pointerId)
+        {
+            onChangeEvent.uuid = uuid;
+            onChangeEvent.payload.value = value;
+            onChangeEvent.payload.pointerId = pointerId;
+
+            SendSceneEvent(sceneId, "uuidEvent", onChangeEvent );
+        }
+
         public static void ReportEvent<T>(string sceneId, T @event)
         {
-            SendSceneEvent(sceneId, "uuidEvent", @event); //NOTE(Brian): Esto esta todo mal
+            SendSceneEvent(sceneId, "uuidEvent", @event);
         }
 
 

@@ -33,6 +33,10 @@ namespace DCL.Components
             this.scene = scene;
         }
 
+        public virtual void OnAppliedChanges()
+        {
+        }
+
         private void ApplyChangesIfModified(string newSerialization)
         {
             if (newSerialization == oldSerialization)
@@ -47,7 +51,7 @@ namespace DCL.Components
                 routine = null;
             }
 
-            var enumerator = ApplyChanges(newSerialization);
+            var enumerator = ApplyChangesWrapper(newSerialization);
             if (enumerator != null)
             {
                 // we don't want to start coroutines if we have early finalization in IEnumerators
@@ -101,6 +105,12 @@ namespace DCL.Components
         {
             DetachFromEveryEntity();
             Resources.UnloadUnusedAssets(); //NOTE(Brian): This will ensure assets are freed correctly.
+        }
+
+        public IEnumerator ApplyChangesWrapper(string newJson)
+        {
+            yield return ApplyChanges(newJson);
+            OnAppliedChanges();
         }
 
         public abstract IEnumerator ApplyChanges(string newJson);

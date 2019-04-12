@@ -83,6 +83,7 @@ GameObject:
   - component: {fileID: 1231610846333877600}
   - component: {fileID: 8678527581720629646}
   - component: {fileID: 1705150512210581689}
+  - component: {fileID: 3457819571539467863}
   m_Layer: 0
   m_Name: UIImage
   m_TagString: Untagged
@@ -123,6 +124,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   rectTransform: {fileID: 1231610846333877600}
+  canvasGroup: {fileID: 3457819571539467863}
   alignmentLayoutGroup: {fileID: 1705150512210581689}
   childHookRectTransform: {fileID: 4490166200948036571}
   paddingLayoutGroup: {fileID: 5554716190968433857}
@@ -153,6 +155,18 @@ MonoBehaviour:
   m_ChildForceExpandHeight: 0
   m_ChildControlWidth: 0
   m_ChildControlHeight: 0
+--- !u!225 &3457819571539467863
+CanvasGroup:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1694113080363351649}
+  m_Enabled: 1
+  m_Alpha: 1
+  m_Interactable: 1
+  m_BlocksRaycasts: 1
+  m_IgnoreParentGroups: 1
 --- !u!1 &7324442821574377625
 GameObject:
   m_ObjectHideFlags: 0

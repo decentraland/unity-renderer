@@ -15,7 +15,6 @@ namespace DCL.Components
         {
             public float thickness = 0f;
             public Color color = new Color(0f, 0f, 0f, 1f);
-            public float opacity = 1f;
             public bool adaptWidth = false;
             public bool adaptHeight = false;
         }
@@ -64,13 +63,16 @@ namespace DCL.Components
 
             RectTransform parentRecTransform = referencesContainer.GetComponentInParent<RectTransform>();
 
-            yield return ResizeAlignAndReposition(childHookRectTransform, parentRecTransform.rect.width, parentRecTransform.rect.height,
+            yield return ResizeAlignAndReposition(childHookRectTransform,
+                                                parentRecTransform.rect.width,
+                                                parentRecTransform.rect.height,
                                                 referencesContainer.alignmentLayoutGroup,
                                                 referencesContainer.imageLayoutElement);
 
-            referencesContainer.image.color = new Color(model.color.r, model.color.g, model.color.b, model.opacity);
+            referencesContainer.image.color = new Color(model.color.r, model.color.g, model.color.b, model.color.a);
 
             Outline outline = referencesContainer.image.GetComponent<Outline>();
+
             if (model.thickness > 0f)
             {
                 if (outline == null)
@@ -84,7 +86,8 @@ namespace DCL.Components
                 yield return null;
             }
 
-            referencesContainer.image.raycastTarget = model.isPointerBlocker;
+            referencesContainer.canvasGroup.alpha = model.opacity;
+            referencesContainer.canvasGroup.blocksRaycasts = model.isPointerBlocker;
         }
 
         public override void Dispose()

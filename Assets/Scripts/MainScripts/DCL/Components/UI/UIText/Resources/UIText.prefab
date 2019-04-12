@@ -11,6 +11,7 @@ GameObject:
   - component: {fileID: 1231610846333877600}
   - component: {fileID: 4943943724426989627}
   - component: {fileID: 1705150512210581689}
+  - component: {fileID: 3591048808618873972}
   m_Layer: 0
   m_Name: UIText
   m_TagString: Untagged
@@ -51,6 +52,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   rectTransform: {fileID: 1231610846333877600}
+  canvasGroup: {fileID: 3591048808618873972}
   alignmentLayoutGroup: {fileID: 1705150512210581689}
   childHookRectTransform: {fileID: 4577512276136032512}
   text: {fileID: 2265338682705848464}
@@ -79,6 +81,18 @@ MonoBehaviour:
   m_ChildForceExpandHeight: 0
   m_ChildControlWidth: 0
   m_ChildControlHeight: 0
+--- !u!225 &3591048808618873972
+CanvasGroup:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1694113080363351649}
+  m_Enabled: 1
+  m_Alpha: 1
+  m_Interactable: 1
+  m_BlocksRaycasts: 1
+  m_IgnoreParentGroups: 1
 --- !u!1 &2091844807093637731
 GameObject:
   m_ObjectHideFlags: 0

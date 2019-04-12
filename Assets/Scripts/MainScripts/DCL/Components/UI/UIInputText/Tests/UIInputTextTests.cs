@@ -30,7 +30,6 @@ namespace Tests
                 mockCamera = go.AddComponent<Camera>();
                 mockCamera.clearFlags = CameraClearFlags.Color;
                 mockCamera.backgroundColor = Color.black;
-                scene.uiScreenSpaceCanvas.renderMode = RenderMode.ScreenSpaceOverlay;
             }
 
             textInput = TestHelpers.SharedComponentCreate<UIInputText, UIInputText.Model>(

@@ -14,7 +14,7 @@ namespace Tests
     public class UIScreenSpaceTests : TestsBase
     {
         [UnityTest]
-        public IEnumerator UIScreenSpaceShapeVisibilityUpdate()
+        public IEnumerator UIScreenSpaceVisibilityUpdate()
         {
             yield return InitScene();
 
@@ -85,7 +85,7 @@ namespace Tests
         }
 
         [UnityTest]
-        public IEnumerator UIScreenSpaceShapeIsScaledWhenCharacterIsElsewhere()
+        public IEnumerator UIScreenSpaceIsScaledWhenCharacterIsElsewhere()
         {
             yield return InitScene();
 
@@ -116,58 +116,10 @@ namespace Tests
         }
 
         [UnityTest]
-        public IEnumerator UIScreenSpaceShapeMissingValuesGetDefaultedOnUpdate()
+        public IEnumerator UIScreenSpaceMissingValuesGetDefaultedOnUpdate()
         {
             yield return InitScene();
-
-            DCLCharacterController.i.gravity = 0f;
-
-            // Position character inside parcel (0,0)
-            DCLCharacterController.i.SetPosition(JsonConvert.SerializeObject(new
-            {
-                x = 0f,
-                y = 0f,
-                z = 0f
-            }));
-
-            // Create UIScreenSpaceShape
-            UIScreenSpace screenSpaceShape = TestHelpers.SharedComponentCreate<UIScreenSpace, UIScreenSpace.Model>(scene, CLASS_ID.UI_SCREEN_SPACE_SHAPE);
-
-            yield return screenSpaceShape.routine;
-
-            Canvas canvas = screenSpaceShape.childHookRectTransform.GetComponent<Canvas>();
-
-            // Check visibility
-            Assert.IsTrue(canvas.enabled, "When the character is inside the scene, the UIScreenSpaceShape should be visible");
-
-            // Update canvas visibility value manually
-            screenSpaceShape = scene.SharedComponentUpdate(JsonUtility.ToJson(new SharedComponentUpdateMessage
-            {
-                id = screenSpaceShape.id,
-                json = JsonUtility.ToJson(new UIScreenSpace.Model
-                {
-                    visible = false
-                })
-            })) as UIScreenSpace;
-
-            yield return screenSpaceShape.routine;
-
-            // Check visibility
-            Assert.IsFalse(canvas.enabled, "When the UIScreenSpaceShape is explicitly updated as 'invisible', its canvas shouldn't be visible");
-
-            // Update model without the visible property
-            screenSpaceShape = scene.SharedComponentUpdate(JsonUtility.ToJson(new SharedComponentUpdateMessage
-            {
-                id = screenSpaceShape.id,
-                json = JsonUtility.ToJson(new UIScreenSpace.Model { })
-            })) as UIScreenSpace;
-
-            yield return screenSpaceShape.routine;
-
-            // Check visibility
-            Assert.IsTrue(canvas.enabled);
-
-            screenSpaceShape.Dispose();
+            yield return TestHelpers.TestSharedComponentDefaultsOnUpdate<UIScreenSpace.Model, UIScreenSpace>(scene, CLASS_ID.UI_SCREEN_SPACE_SHAPE);
         }
     }
 }

@@ -3,6 +3,8 @@ using DCL.Controllers;
 using DCL.Models;
 using Newtonsoft.Json;
 using System.Collections;
+using System.Linq;
+using System.Reflection;
 using UnityEngine;
 using UnityEngine.Assertions;
 
@@ -162,6 +164,21 @@ namespace DCL.Helpers
                 );
         }
 
+        public static void SharedComponentUpdate<T, K>(ParcelScene scene, T component, K model = null)
+            where T : BaseDisposable
+            where K : class, new()
+        {
+            if (model == null)
+            {
+                model = new K();
+            }
+
+            scene.SharedComponentUpdate(JsonUtility.ToJson(new DCL.Models.SharedComponentUpdateMessage
+            {
+                id = component.id,
+                json = JsonUtility.ToJson(model)
+            }));
+        }
 
         public static T SharedComponentCreate<T, K>(ParcelScene scene, CLASS_ID id, K model = null)
             where T : BaseDisposable
@@ -429,6 +446,96 @@ namespace DCL.Helpers
             return componentId;
         }
 
+        public static IEnumerator TestSharedComponentDefaultsOnUpdate<TModel, TComponent>(ParcelScene scene, CLASS_ID id)
+            where TComponent : BaseDisposable
+            where TModel : class, new()
+        {
+
+            TComponent component = TestHelpers.SharedComponentCreate<TComponent, TModel>(scene, id);
+
+            yield return component.routine;
+
+            TModel generatedModel = new TModel();
+
+            foreach (FieldInfo f in typeof(TModel).GetFields())
+            {
+                System.Type t = f.FieldType;
+                object valueToSet = null;
+
+                if (t == typeof(float))
+                {
+                    valueToSet = 79014.5f;
+                }
+                else if (t == typeof(int))
+                {
+                    valueToSet = 79014;
+                }
+                else if (t == typeof(string))
+                {
+                    valueToSet = "test";
+                }
+                else if (t == typeof(Color))
+                {
+                    valueToSet = Color.magenta;
+                }
+
+                f.SetValue(generatedModel, valueToSet);
+            }
+
+            SharedComponentUpdate(scene, component, generatedModel);
+
+            yield return component.routine;
+
+            scene.SharedComponentUpdate(JsonUtility.ToJson(new DCL.Models.SharedComponentUpdateMessage
+            {
+                id = component.id,
+                json = "{}"
+            }));
+
+            yield return component.routine;
+
+            MemberInfo modelMember = null;
+
+            modelMember = typeof(TComponent).GetRuntimeProperties().FirstOrDefault((x) => x.Name == "model");
+
+            if (modelMember == null)
+            {
+                modelMember = typeof(TComponent).GetRuntimeFields().FirstOrDefault((x) => x.Name == "model");
+            }
+
+            Assert.IsTrue(modelMember != null, "model is null!!");
+
+            TModel defaultedModel = new TModel();
+
+            foreach (FieldInfo f in typeof(TModel).GetFields())
+            {
+                System.Type t = f.GetType();
+
+                object model = null;
+
+                if (modelMember is FieldInfo)
+                {
+                    model = (modelMember as FieldInfo).GetValue(component);
+                }
+                else if (modelMember is PropertyInfo)
+                {
+                    model = (modelMember as PropertyInfo).GetValue(component);
+                }
+
+                object defaultValue = f.GetValue(defaultedModel);
+                object modelValue = f.GetValue(model);
+                string fieldName = f.Name;
+
+                //NOTE(Brian): Corner case, strings are defaulted as null, but json deserialization inits them as ""
+                if (modelValue is string && string.IsNullOrEmpty( modelValue as string ))
+                    modelValue = null;
+
+                Assert.AreEqual(defaultValue, modelValue, $"Checking {fieldName} failed! Is not default value! error!");
+            }
+
+            component.Dispose();
+        }
+
         public static OnClickComponent AddOnClickComponent(ParcelScene scene, string entityID, string uuid)
         {
             return scene.EntityComponentCreate(JsonUtility.ToJson(new DCL.Models.EntityComponentCreateMessage
@@ -481,6 +588,16 @@ namespace DCL.Helpers
             sceneController.UnloadAllScenes();
 
             return sceneController;
+        }
+
+
+        public static void TestRectTransformMaxStretched(RectTransform rt)
+        {
+            Assert.AreEqual( Vector2.zero, rt.anchorMin, $"Rect transform {rt.name} isn't stretched out!. unexpected anchorMin value." );
+            Assert.AreEqual( Vector2.zero, rt.offsetMin, $"Rect transform {rt.name} isn't stretched out!. unexpected offsetMin value.");
+            Assert.AreEqual( Vector2.one, rt.anchorMax, $"Rect transform {rt.name} isn't stretched out!. unexpected anchorMax value.");
+            Assert.AreEqual( Vector2.one, rt.offsetMax, $"Rect transform {rt.name} isn't stretched out!. unexpected offsetMax value.");
+            Assert.AreEqual( Vector2.zero, rt.sizeDelta, $"Rect transform {rt.name} isn't stretched out!. unexpected sizeDelta value.");
         }
     }
 }

@@ -5,6 +5,7 @@ using UnityEngine.UI;
 using DCL.Helpers;
 using DCL.Controllers;
 using DCL.Models;
+using System;
 
 namespace DCL.Components
 {
@@ -44,13 +45,14 @@ namespace DCL.Components
         {
             public string parentComponent;
             public bool visible = true;
+            public float opacity = 1;
             public string hAlign = "center";
             public string vAlign = "center";
             public UIValue width = new UIValue(100, UIValue.Unit.PIXELS);
             public UIValue height = new UIValue(100, UIValue.Unit.PIXELS);
             public UIValue positionX;
             public UIValue positionY;
-            public bool isPointerBlocker;
+            public bool isPointerBlocker = true;
         }
 
         public override string componentName => "UIShape";
@@ -60,8 +62,16 @@ namespace DCL.Components
         protected Model model = new Model();
         protected UIShape parentUIComponent;
 
+        public Action OnShapeUpdated;
+
         public UIShape(ParcelScene scene) : base(scene)
         {
+        }
+
+        public override void OnAppliedChanges()
+        {
+            if (OnShapeUpdated != null)
+                OnShapeUpdated.Invoke();
         }
 
         public override IEnumerator ApplyChanges(string newJson)
@@ -75,46 +85,53 @@ namespace DCL.Components
 
             if (!string.IsNullOrEmpty(model.parentComponent))
             {
-                parentUIComponent = scene.disposableComponents[model.parentComponent] as UIShape;
-                uiGameObject = Object.Instantiate(Resources.Load(prefabPath), parentUIComponent.childHookRectTransform) as GameObject;
-                referencesContainer = uiGameObject.GetComponent<T>();
-
-                parentUIComponent.OnChildComponentAttached(this);
+                if (scene.disposableComponents.ContainsKey(model.parentComponent))
+                    parentUIComponent = (scene.disposableComponents[model.parentComponent] as UIShape);
+                else
+                    parentUIComponent = scene.uiScreenSpace as UIShape;
             }
             else
             {
-                uiGameObject = Object.Instantiate(Resources.Load(prefabPath), scene.uiScreenSpaceCanvas.transform) as GameObject;
-                referencesContainer = uiGameObject.GetComponent<T>();
+                parentUIComponent = scene.uiScreenSpace as UIShape;
             }
+
+            parentUIComponent.OnChildComponentAttached(this);
+
+            uiGameObject = UnityEngine.Object.Instantiate(Resources.Load(prefabPath), parentUIComponent.childHookRectTransform) as GameObject;
+            referencesContainer = uiGameObject.GetComponent<T>();
 
             referencesContainer.rectTransform.SetToMaxStretch();
 
             childHookRectTransform = referencesContainer.childHookRectTransform;
+
+            referencesContainer.owner = this;
 
             return referencesContainer as T;
         }
 
         protected void ReparentComponent(RectTransform targetTransform, string targetParent)
         {
-            if (parentUIComponent != null)
+            bool targetParentExists = targetParent != null && scene.disposableComponents.ContainsKey(targetParent);
+
+            if (parentUIComponent != null && targetParentExists)
             {
-                if (parentUIComponent == scene.disposableComponents[targetParent]) return;
+                if (parentUIComponent == scene.disposableComponents[targetParent])
+                    return;
 
                 parentUIComponent.OnChildComponentDettached(this);
             }
 
-            if (!string.IsNullOrEmpty(targetParent))
+            if (!string.IsNullOrEmpty(targetParent) && targetParentExists)
             {
                 parentUIComponent = scene.disposableComponents[targetParent] as UIShape;
-
-                targetTransform.SetParent(parentUIComponent.childHookRectTransform, false);
-
-                parentUIComponent.OnChildComponentAttached(this);
             }
             else
             {
-                targetTransform.SetParent(scene.uiScreenSpaceCanvas.transform, false);
+                parentUIComponent = scene.uiScreenSpace as UIShape;
             }
+
+            targetTransform.SetParent(parentUIComponent.childHookRectTransform, false);
+            parentUIComponent.OnChildComponentAttached(this);
         }
 
         protected virtual void OnChildComponentAttached(UIShape childComponent)
