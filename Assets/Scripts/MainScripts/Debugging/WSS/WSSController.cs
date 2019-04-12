@@ -109,7 +109,7 @@ namespace DCL
                     debugString = "DEBUG&";
                 }
 
-                Application.OpenURL( $"http://localhost:8080/tetra.html?{debugString}position={startInCoords.x}%2C{startInCoords.y}&ws=ws%3A%2F%2Flocalhost%3A5000%2Fdcl");
+                Application.OpenURL($"http://localhost:8080/tetra.html?{debugString}position={startInCoords.x}%2C{startInCoords.y}&ws=ws%3A%2F%2Flocalhost%3A5000%2Fdcl");
             }
 #else
             useClientDebugMode = false;
@@ -156,6 +156,9 @@ namespace DCL
                                 break;
                             case "Reset":
                                 sceneController.UnloadAllScenesQueued();
+                                break;
+                            case "CreateUIScene":
+                                sceneController.CreateUIScene(msg.payload);
                                 break;
                             default:
                                 Debug.Log("<b><color=#FF0000>WSSController</color></b> WHAT IS " + msg.type);

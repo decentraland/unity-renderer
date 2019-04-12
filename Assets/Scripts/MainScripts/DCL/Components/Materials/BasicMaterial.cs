@@ -20,7 +20,6 @@ namespace DCL.Components
         public Model model = new Model();
         public override string componentName => "material";
         public Material material;
-        bool isLoadingTexture = false;
 
         public BasicMaterial(ParcelScene scene) : base(scene)
         {
@@ -28,8 +27,6 @@ namespace DCL.Components
 
             OnAttach += OnMaterialAttached;
             OnDetach += OnMaterialDetached;
-
-            isLoadingTexture = false;
         }
 
         public override IEnumerator ApplyChanges(string newJson)
@@ -38,19 +35,19 @@ namespace DCL.Components
 
             model = JsonUtility.FromJson<Model>(newJson);
 
-            if (!string.IsNullOrEmpty(model.texture) && !isLoadingTexture)
+            if (!string.IsNullOrEmpty(model.texture))
             {
-                isLoadingTexture = true;
-                yield return DCLTexture.FetchFromComponent(scene, model.texture, InitTexture);
+                yield return DCLTexture.FetchFromComponent(scene, model.texture, (downloadedTexture) =>
+                {
+                    material.mainTexture = downloadedTexture;
+                });
+            }
+            else
+            {
+                material.mainTexture = null;
             }
 
             material.SetFloat("_AlphaClip", model.alphaTest);
-        }
-
-        void InitTexture(Texture texture)
-        {
-            isLoadingTexture = false;
-            material.mainTexture = texture;
         }
 
         void OnMaterialAttached(DecentralandEntity entity)

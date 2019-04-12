@@ -82,8 +82,9 @@ namespace DCL.Components
         protected T InstantiateUIGameObject<T>(string prefabPath) where T : UIReferencesContainer
         {
             GameObject uiGameObject = null;
+            bool targetParentExists = !string.IsNullOrEmpty(model.parentComponent) && scene.disposableComponents.ContainsKey(model.parentComponent);
 
-            if (!string.IsNullOrEmpty(model.parentComponent))
+            if (targetParentExists)
             {
                 if (scene.disposableComponents.ContainsKey(model.parentComponent))
                     parentUIComponent = (scene.disposableComponents[model.parentComponent] as UIShape);
@@ -95,8 +96,6 @@ namespace DCL.Components
                 parentUIComponent = scene.uiScreenSpace as UIShape;
             }
 
-            parentUIComponent.OnChildComponentAttached(this);
-
             uiGameObject = UnityEngine.Object.Instantiate(Resources.Load(prefabPath), parentUIComponent.childHookRectTransform) as GameObject;
             referencesContainer = uiGameObject.GetComponent<T>();
 
@@ -104,24 +103,24 @@ namespace DCL.Components
 
             childHookRectTransform = referencesContainer.childHookRectTransform;
 
+            referencesContainer.name = componentName + " - " + id;
             referencesContainer.owner = this;
+
+            parentUIComponent.OnChildComponentAttached(this);
 
             return referencesContainer as T;
         }
 
         protected void ReparentComponent(RectTransform targetTransform, string targetParent)
         {
-            bool targetParentExists = targetParent != null && scene.disposableComponents.ContainsKey(targetParent);
+            bool targetParentExists = !string.IsNullOrEmpty(targetParent) && scene.disposableComponents.ContainsKey(targetParent);
 
-            if (parentUIComponent != null && targetParentExists)
-            {
-                if (parentUIComponent == scene.disposableComponents[targetParent])
-                    return;
+            if (targetParentExists && parentUIComponent == scene.disposableComponents[targetParent]) return;
 
+            if (parentUIComponent != null)
                 parentUIComponent.OnChildComponentDettached(this);
-            }
 
-            if (!string.IsNullOrEmpty(targetParent) && targetParentExists)
+            if (targetParentExists)
             {
                 parentUIComponent = scene.disposableComponents[targetParent] as UIShape;
             }

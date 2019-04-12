@@ -5,6 +5,8 @@ using UnityEngine.UI;
 using DCL.Helpers;
 using DCL.Controllers;
 using DCL.Models;
+using System.Text.RegularExpressions;
+using System;
 
 namespace DCL.Components
 {
@@ -39,9 +41,6 @@ namespace DCL.Components
             set { base.referencesContainer = value; }
         }
 
-        bool isLoadingTexture = false;
-        string loadedSource = "";
-
         public UIImage(ParcelScene scene) : base(scene)
         {
         }
@@ -71,32 +70,14 @@ namespace DCL.Components
             // Fetch texture
             if (!string.IsNullOrEmpty(model.source))
             {
-                if (!isLoadingTexture && model.source != loadedSource)
+                yield return DCLTexture.FetchFromComponent(scene, model.source, (downloadedTexture) =>
                 {
-                    if (scene.sceneData.HasContentsUrl(model.source))
-                    {
-                        isLoadingTexture = true;
-
-                        yield return Utils.FetchTexture(scene.sceneData.GetContentsUrl(model.source), (Texture downloadedTexture) =>
-                        {
-                            isLoadingTexture = false;
-                            loadedSource = model.source;
-
-                            referencesContainer.image.texture = downloadedTexture;
-                        });
-                    }
-                    else
-                    {
-                        Debug.Log($"texture {model.source} for {componentName} with id {id} wasn't found in the scene mappings");
-
-                        yield break;
-                    }
-                }
+                    referencesContainer.image.texture = downloadedTexture;
+                });
             }
-            else if (referencesContainer.image.texture != null)
+            else
             {
-                Utils.SafeDestroy(referencesContainer.image.texture);
-                yield return null;
+                referencesContainer.image.texture = null;
             }
 
             referencesContainer.image.enabled = model.visible;
@@ -110,17 +91,20 @@ namespace DCL.Components
 
             referencesContainer.image.color = Color.white;
 
-            // Configure uv rect
-            Vector2 normalizedSourceCoordinates = new Vector2(model.sourceLeft / referencesContainer.paddingLayoutRectTransform.rect.width,
-                                                             -model.sourceTop / referencesContainer.paddingLayoutRectTransform.rect.height);
+            if (referencesContainer.image.texture != null)
+            {
+                // Configure uv rect
+                Vector2 normalizedSourceCoordinates = new Vector2(model.sourceLeft / referencesContainer.image.texture.width,
+                                                                -model.sourceTop / referencesContainer.image.texture.height);
 
-            Vector2 normalizedSourceSize = new Vector2(model.sourceWidth * (model.sizeInPixels ? 1f : parentRecTransform.rect.width) / referencesContainer.paddingLayoutRectTransform.rect.width,
-                                                        model.sourceHeight * (model.sizeInPixels ? 1f : parentRecTransform.rect.height) / referencesContainer.paddingLayoutRectTransform.rect.height);
+                Vector2 normalizedSourceSize = new Vector2(model.sourceWidth * (model.sizeInPixels ? 1f : parentRecTransform.rect.width) / referencesContainer.image.texture.width,
+                                                            model.sourceHeight * (model.sizeInPixels ? 1f : parentRecTransform.rect.height) / referencesContainer.image.texture.height);
 
-            referencesContainer.image.uvRect = new Rect(normalizedSourceCoordinates.x,
-                                    normalizedSourceCoordinates.y + (1 - normalizedSourceSize.y),
-                                    normalizedSourceSize.x,
-                                    normalizedSourceSize.y);
+                referencesContainer.image.uvRect = new Rect(normalizedSourceCoordinates.x,
+                                        normalizedSourceCoordinates.y + (1 - normalizedSourceSize.y),
+                                        normalizedSourceSize.x,
+                                        normalizedSourceSize.y);
+            }
 
             // Apply padding
             referencesContainer.paddingLayoutGroup.padding.bottom = Mathf.RoundToInt(model.paddingBottom);
