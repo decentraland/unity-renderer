@@ -10,5 +10,9 @@ namespace DCL.Controllers
         {
             return true;
         }
+
+        protected override void SendMetricsEvent()
+        {
+        }
     }
 }

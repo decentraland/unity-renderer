@@ -34,11 +34,14 @@ namespace DCL.Controllers
         public bool isTestScene = false;
 
         [System.NonSerialized]
+        public bool isPersistent = false;
+
+        [System.NonSerialized]
         public bool unloadWithDistance = true;
 
         private void Update()
         {
-            metricsController.SendEvent();
+            SendMetricsEvent();
 
             if (unloadWithDistance)
             {
@@ -63,23 +66,26 @@ namespace DCL.Controllers
             this.name = gameObject.name = $"scene:{data.id}";
 
             gameObject.transform.position = GridToWorldPosition(data.basePosition.x, data.basePosition.y);
+        }
 
-            if (Environment.DEBUG)
+        public void InitializeDebugPlane()
+        {
+            if (Environment.DEBUG && sceneData.parcels != null)
             {
-                for (int j = 0; j < data.parcels.Length; j++)
+                for (int j = 0; j < sceneData.parcels.Length; j++)
                 {
                     GameObject plane = GameObject.CreatePrimitive(PrimitiveType.Plane);
 
                     Object.Destroy(plane.GetComponent<MeshCollider>());
 
-                    plane.name = $"parcel:{data.parcels[j].x},{data.parcels[j].y}";
+                    plane.name = $"parcel:{sceneData.parcels[j].x},{sceneData.parcels[j].y}";
 
                     plane.transform.SetParent(gameObject.transform);
 
                     // the plane mesh with scale 1 occupies a 10 units space
                     plane.transform.localScale = new Vector3(ParcelSettings.PARCEL_SIZE * 0.1f, 1f, ParcelSettings.PARCEL_SIZE * 0.1f);
 
-                    Vector3 position = GridToWorldPosition(data.parcels[j].x, data.parcels[j].y);
+                    Vector3 position = GridToWorldPosition(sceneData.parcels[j].x, sceneData.parcels[j].y);
                     // SET TO A POSITION RELATIVE TO basePosition
 
                     position.Set(position.x + ParcelSettings.PARCEL_SIZE / 2, ParcelSettings.DEBUG_FLOOR_HEIGHT, position.z + ParcelSettings.PARCEL_SIZE / 2);
@@ -406,6 +412,7 @@ namespace DCL.Controllers
                         newComponent = new UIInputText(this);
                         break;
                     }
+                case CLASS_ID.UI_FULLSCREEN_SHAPE:
                 case CLASS_ID.UI_SCREEN_SPACE_SHAPE:
                     {
                         newComponent = new UIScreenSpace(this);
@@ -532,6 +539,10 @@ namespace DCL.Controllers
             return null;
         }
 
+        protected virtual void SendMetricsEvent()
+        {
+            metricsController.SendEvent();
+        }
 
         public BaseDisposable GetSharedComponent(string componentId)
         {

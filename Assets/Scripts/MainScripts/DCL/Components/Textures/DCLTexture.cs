@@ -1,6 +1,7 @@
 using DCL.Components;
 using DCL.Controllers;
 using DCL.Helpers;
+using System;
 using System.Collections;
 using System.Text.RegularExpressions;
 using UnityEngine;
@@ -40,12 +41,19 @@ namespace DCL
         public static IEnumerator FetchFromComponent(ParcelScene scene, string componentId, System.Action<Texture2D> OnFinish)
         {
             if (!scene.disposableComponents.ContainsKey(componentId))
+            {
+                Debug.Log($"couldn't fetch texture, the DCLTexture component with id {componentId} doesn't exist");
+
                 yield break;
+            }
 
             DCLTexture textureComponent = scene.disposableComponents[componentId] as DCLTexture;
-
             if (textureComponent == null)
+            {
+                Debug.Log($"couldn't fetch texture, the shared component with id {componentId} is NOT a DCLTexture");
+
                 yield break;
+            }
 
             if (textureComponent.texture == null)
             {
@@ -62,10 +70,9 @@ namespace DCL
                     }
                 }
             }
-            else
+            else if (OnFinish != null)
             {
-                if (OnFinish != null)
-                    OnFinish.Invoke(textureComponent.texture);
+                OnFinish.Invoke(textureComponent.texture);
             }
         }
 
@@ -88,31 +95,36 @@ namespace DCL
                     break;
             }
 
-            if (texture == null && !string.IsNullOrEmpty( model.src ) )
+            if (texture == null && !string.IsNullOrEmpty(model.src))
             {
-                bool isBase64 = Regex.Match(model.src, "^base64,/i").Success && !model.src.StartsWith("data:");
-                string finalUrl = string.Empty;
+                bool isBase64 = model.src.Contains("image/png;base64");
 
-                if (!isBase64)
+                if (isBase64)
                 {
-                    string contentsUrl = string.Empty;
+                    string base64Data = model.src.Substring(model.src.IndexOf(',') + 1);
 
-                    if (scene.sceneData.TryGetContentsUrl(model.src, out contentsUrl))
+                    // The used texture variable can't be null for the ImageConversion.LoadImage to work
+                    if (texture == null)
+                        texture = new Texture2D(1, 1);
+
+                    if (!ImageConversion.LoadImage(texture, Convert.FromBase64String(base64Data)))
                     {
-                        finalUrl = contentsUrl;
+                        Debug.LogError($"DCLTexture with id {id} couldn't parse its base64 image data.");
                     }
                 }
                 else
                 {
-                    finalUrl = $"data:image/png;${model.src}";
-                }
+                    string contentsUrl = string.Empty;
 
-                if (!string.IsNullOrEmpty(finalUrl))
-                {
-                    yield return Utils.FetchTexture(finalUrl, (tex) =>
+                    scene.sceneData.TryGetContentsUrl(model.src, out contentsUrl);
+
+                    if (!string.IsNullOrEmpty(contentsUrl))
                     {
-                        texture = (Texture2D)tex;
-                    });
+                        yield return Utils.FetchTexture(contentsUrl, (tex) =>
+                        {
+                            texture = (Texture2D)tex;
+                        });
+                    }
                 }
 
                 if (texture != null)
@@ -126,7 +138,9 @@ namespace DCL
 
         public override void Dispose()
         {
-            Object.Destroy(texture);
+            if (texture != null)
+                UnityEngine.Object.Destroy(texture);
+
             base.Dispose();
         }
     }

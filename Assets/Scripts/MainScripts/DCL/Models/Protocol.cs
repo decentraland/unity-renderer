@@ -33,6 +33,9 @@ namespace DCL.Models
         CIRCLE_SHAPE = 31,
         BILLBOARD = 32,
 
+        UI_FULLSCREEN_SHAPE = 40,
+        UI_BUTTON_SHAPE = 41,
+
         GLTF_SHAPE = 54,
         OBJ_SHAPE = 55,
         BASIC_MATERIAL = 64,

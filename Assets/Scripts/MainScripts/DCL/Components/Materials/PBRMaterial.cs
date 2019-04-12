@@ -48,10 +48,6 @@ namespace DCL.Components
         const string BASIC_MATERIAL_NAME = "BasicShapeMaterial";
         const string PBR_MATERIAL_NAME = "ShapeMaterial";
 
-        bool loadingAlbedoTexture = false;
-        bool loadingBumpTexture = false;
-        bool loadingEmissiveTexture = false;
-
         public PBRMaterial(ParcelScene scene) : base(scene)
         {
             model = new Model();
@@ -59,10 +55,6 @@ namespace DCL.Components
 
             OnAttach += OnMaterialAttached;
             OnDetach += OnMaterialDetached;
-
-            loadingAlbedoTexture = false;
-            loadingBumpTexture = false;
-            loadingEmissiveTexture = false;
         }
 
         public override IEnumerator ApplyChanges(string newJson)
@@ -78,23 +70,24 @@ namespace DCL.Components
             {
                 LoadMaterial(PBR_MATERIAL_NAME);
                 // FETCH AND LOAD EMISSIVE TEXTURE
-                if (!string.IsNullOrEmpty(model.emissiveTexture) && !loadingEmissiveTexture)
+                if (!string.IsNullOrEmpty(model.emissiveTexture))
                 {
-                    loadingEmissiveTexture = true;
-
                     yield return DCLTexture.FetchFromComponent(scene, model.emissiveTexture,
                         (fetchedEmissiveTexture) =>
                         {
                             material.SetTexture("_EmissionMap", fetchedEmissiveTexture);
-                            loadingEmissiveTexture = false;
                         });
+                }
+                else
+                {
+                    material.SetTexture("_EmissionMap", null);
                 }
 
                 // METALLIC/SPECULAR CONFIGURATIONS
                 ColorUtility.TryParseHtmlString(model.emissiveColor, out auxColor);
                 material.SetColor("_EmissionColor", auxColor * model.emissiveIntensity);
 
-                if ( auxColor != Color.clear && auxColor != Color.black )
+                if (auxColor != Color.clear && auxColor != Color.black)
                     material.EnableKeyword("_EMISSION");
 
                 ColorUtility.TryParseHtmlString(model.reflectivityColor, out auxColor);
@@ -110,27 +103,30 @@ namespace DCL.Components
             material.SetColor("_Color", auxColor);
 
             // FETCH AND LOAD TEXTURES
-            if (!string.IsNullOrEmpty(model.albedoTexture) && !loadingAlbedoTexture)
+            if (!string.IsNullOrEmpty(model.albedoTexture))
             {
-                loadingAlbedoTexture = true;
-
                 yield return DCLTexture.FetchFromComponent(scene, model.albedoTexture,
                     (fetchedAlbedoTexture) =>
                     {
-                        loadingAlbedoTexture = false;
                         material.SetTexture("_MainTex", fetchedAlbedoTexture);
                     });
             }
-
-            if (!string.IsNullOrEmpty(model.bumpTexture) && !loadingBumpTexture)
+            else
             {
-                loadingBumpTexture = true;
+                material.SetTexture("_MainTex", null);
+            }
+
+            if (!string.IsNullOrEmpty(model.bumpTexture))
+            {
                 yield return DCLTexture.FetchFromComponent(scene, model.bumpTexture,
                     (fetchedBumpTexture) =>
                     {
-                        loadingBumpTexture = false;
                         material.SetTexture("_BumpMap", fetchedBumpTexture);
                     });
+            }
+            else
+            {
+                material.SetTexture("_BumpMap", null);
             }
 
             // ALPHA CONFIGURATION

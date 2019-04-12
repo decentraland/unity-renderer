@@ -61,7 +61,7 @@ namespace DCL.Components
             if (referencesContainer == null)
             {
                 referencesContainer = InstantiateUIGameObject<UIContainerRectReferencesContainer>("UIContainerRect");
-                referencesContainer.name = "UIContainerStack";
+                referencesContainer.name = "UIContainerStack - " + id;
             }
             else
             {
@@ -114,6 +114,8 @@ namespace DCL.Components
                 Utils.SafeDestroy(sizeFitter);
                 yield return null;
             }
+
+            LayoutRebuilder.ForceRebuildLayoutImmediate(referencesContainer.rectTransform);
         }
 
         protected override void OnChildComponentAttached(UIShape childComponent)

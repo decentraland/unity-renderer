@@ -10,7 +10,6 @@ using System.Linq;
 using UnityEngine;
 using UnityEngine.Serialization;
 
-
 public class SceneController : MonoBehaviour
 {
     public static SceneController i { get; private set; }
@@ -76,30 +75,30 @@ public class SceneController : MonoBehaviour
 
     public void CreateUIScene(string json)
     {
+        return;
+
         CreateUISceneMessage uiScene = JsonUtility.FromJson<CreateUISceneMessage>(json);
 
         string uiSceneId = uiScene.id;
 
         if (!loadedScenes.ContainsKey(uiSceneId))
         {
-            var newGameObject = new GameObject("UI Scene - " + uiSceneId );
+            var newGameObject = new GameObject("UI Scene - " + uiSceneId);
 
             var newScene = newGameObject.AddComponent<GlobalScene>();
             newScene.ownerController = this;
             newScene.unloadWithDistance = false;
+            newScene.isPersistent = true;
 
             LoadParcelScenesMessage.UnityParcelScene data = new LoadParcelScenesMessage.UnityParcelScene();
             data.id = uiSceneId;
             data.basePosition = new Vector2Int(0, 0);
+            newScene.SetData(data);
 
-            if (!loadedScenes.ContainsKey(uiSceneId))
-            {
-                loadedScenes.Add(uiSceneId, newScene);
-            }
-            else
-            {
-                loadedScenes[uiSceneId] = newScene;
-            }
+            loadedScenes.Add(uiSceneId, newScene);
+
+            if (VERBOSE)
+                Debug.Log($"Creating scene {uiSceneId}");
         }
     }
 
@@ -139,7 +138,7 @@ public class SceneController : MonoBehaviour
         }
     }
 
-    
+
     public void SetDebug()
     {
         isDebugMode = true;
@@ -198,6 +197,7 @@ public class SceneController : MonoBehaviour
 
                 var newScene = newGameObject.AddComponent<ParcelScene>();
                 newScene.SetData(sceneToLoad);
+                newScene.InitializeDebugPlane();
                 newScene.ownerController = this;
                 loadedScenes.Add(sceneToLoad.id, newScene);
             }
@@ -228,6 +228,7 @@ public class SceneController : MonoBehaviour
 
                 var newScene = newGameObject.AddComponent<ParcelScene>();
                 newScene.SetData(sceneToLoad);
+                newScene.InitializeDebugPlane();
                 newScene.ownerController = this;
 
                 if (!loadedScenes.ContainsKey(sceneToLoad.id))
@@ -244,22 +245,20 @@ public class SceneController : MonoBehaviour
         yield break;
     }
 
-
     public void UnloadScene(string sceneKey)
     {
-        if (loadedScenes.ContainsKey(sceneKey))
+        if (!loadedScenes.ContainsKey(sceneKey) || loadedScenes[sceneKey].isPersistent) return;
+
+        if (VERBOSE)
+            Debug.Log($"Destroying scene {sceneKey}");
+
+        var scene = loadedScenes[sceneKey];
+
+        loadedScenes.Remove(sceneKey);
+
+        if (scene)
         {
-            if (VERBOSE)
-                Debug.Log($"Destroying scene {sceneKey}");
-
-            var scene = loadedScenes[sceneKey];
-
-            loadedScenes.Remove(sceneKey);
-
-            if (scene)
-            {
-                Utils.SafeDestroy(scene.gameObject);
-            }
+            Utils.SafeDestroy(scene.gameObject);
         }
     }
 
@@ -306,8 +305,6 @@ public class SceneController : MonoBehaviour
             }
         }
     }
-
-
 
     public bool ProcessMessage(string sceneId, string message)
     {
@@ -357,7 +354,7 @@ public class SceneController : MonoBehaviour
         }
     }
 
-    public ParcelScene CreateTestScene(LoadParcelScenesMessage.UnityParcelScene data=null)
+    public ParcelScene CreateTestScene(LoadParcelScenesMessage.UnityParcelScene data = null)
     {
         if (data == null)
             data = new LoadParcelScenesMessage.UnityParcelScene();
@@ -380,6 +377,7 @@ public class SceneController : MonoBehaviour
         var go = new GameObject();
         var newScene = go.AddComponent<ParcelScene>();
         newScene.SetData(data);
+        newScene.InitializeDebugPlane();
         newScene.ownerController = this;
         newScene.isTestScene = true;
 
@@ -389,7 +387,7 @@ public class SceneController : MonoBehaviour
         }
         else
         {
-            throw new Exception($"Scene {data.id} is already loaded.");
+            Debug.LogError($"Scene {data.id} is already loaded.");
         }
 
         return newScene;
