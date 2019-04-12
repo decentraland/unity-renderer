@@ -1,4 +1,4 @@
-﻿using System.Collections;
+using System.Collections;
 using System.Collections.Generic;
 using DCL.Components;
 using DCL.Helpers;
@@ -40,7 +40,7 @@ namespace Tests
 
             // Check default properties are applied correctly
             Assert.IsTrue(image.color == new Color(0f, 0f, 0f, 1f));
-            Assert.IsFalse(image.raycastTarget);
+            Assert.IsTrue(uiContainerStack.referencesContainer.canvasGroup.blocksRaycasts);
             Assert.AreEqual(100f, uiContainerStack.childHookRectTransform.rect.width);
             Assert.AreEqual(100f, uiContainerStack.childHookRectTransform.rect.height);
             Assert.AreEqual(Vector3.zero, uiContainerStack.childHookRectTransform.localPosition);
@@ -101,56 +101,7 @@ namespace Tests
 
             Assert.IsFalse(screenSpaceShape == null);
 
-            // Create UIContainerRectShape
-            UIContainerStack uiContainerStack = TestHelpers.SharedComponentCreate<UIContainerStack, UIContainerStack.Model>(scene, CLASS_ID.UI_CONTAINER_STACK);
-            yield return uiContainerStack.routine;
-
-            // Update UIContainerRectShape properties
-            scene.SharedComponentUpdate(JsonUtility.ToJson(new SharedComponentUpdateMessage
-            {
-                id = uiContainerStack.id,
-                json = JsonUtility.ToJson(new UIContainerStack.Model
-                {
-                    parentComponent = screenSpaceShape.id,
-                    color = new Color(0.5f, 0.8f, 0.1f, 1f),
-                    isPointerBlocker = true,
-                    width = new UIValue(200f),
-                    height = new UIValue(150f),
-                    positionX = new UIValue(20f),
-                    positionY = new UIValue(45f)
-                })
-            }));
-            yield return uiContainerStack.routine;
-
-            UnityEngine.UI.Image image = uiContainerStack.referencesContainer.image;
-
-            // Check updated properties are applied correctly
-            Assert.IsTrue(uiContainerStack.referencesContainer.transform.parent == screenSpaceShape.childHookRectTransform);
-            Assert.IsTrue(image.color == new Color(0.5f, 0.8f, 0.1f, 1f));
-            Assert.IsTrue(image.raycastTarget);
-            Assert.AreEqual(200f, uiContainerStack.childHookRectTransform.rect.width);
-            Assert.AreEqual(150f, uiContainerStack.childHookRectTransform.rect.height);
-            Assert.AreEqual(new Vector3(20f, 45f, 0f), uiContainerStack.childHookRectTransform.localPosition);
-
-            // Update UIContainerRectShape with missing values
-            scene.SharedComponentUpdate(JsonUtility.ToJson(new SharedComponentUpdateMessage
-            {
-                id = uiContainerStack.id,
-                json = JsonUtility.ToJson(new UIContainerStack.Model
-                {
-                    parentComponent = screenSpaceShape.id
-                })
-            }));
-            yield return uiContainerStack.routine;
-
-            // Check default properties are applied correctly
-            Assert.IsTrue(image.color == new Color(0f, 0f, 0f, 1f));
-            Assert.IsFalse(image.raycastTarget);
-            Assert.AreEqual(100f, uiContainerStack.childHookRectTransform.rect.width);
-            Assert.AreEqual(100f, uiContainerStack.childHookRectTransform.rect.height);
-            Assert.AreEqual(Vector3.zero, uiContainerStack.childHookRectTransform.localPosition);
-
-            screenSpaceShape.Dispose();
+            yield return TestHelpers.TestSharedComponentDefaultsOnUpdate<UIContainerStack.Model, UIContainerStack>(scene, CLASS_ID.UI_CONTAINER_STACK);
         }
 
         [UnityTest]

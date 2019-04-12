@@ -72,6 +72,9 @@ namespace DCL.Models
                 if (HasTestSchema(url))
                     return true;
 
+                if (fileToHash == null)
+                    return false;
+
                 return fileToHash.ContainsKey(url);
             }
 

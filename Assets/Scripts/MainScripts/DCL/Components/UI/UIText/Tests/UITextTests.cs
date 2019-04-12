@@ -41,7 +41,7 @@ namespace Tests
 
             // Check default properties are applied correctly
             Assert.IsTrue(uiTextShape.referencesContainer.transform.parent == screenSpaceShape.childHookRectTransform);
-            Assert.IsFalse(uiTextShape.referencesContainer.text.raycastTarget);
+            Assert.IsTrue(uiTextShape.referencesContainer.canvasGroup.blocksRaycasts);
             Assert.AreEqual(100f, uiTextShape.childHookRectTransform.rect.width);
             Assert.AreEqual(100f, uiTextShape.childHookRectTransform.rect.height);
             Assert.IsTrue(uiTextShape.referencesContainer.text.enabled);

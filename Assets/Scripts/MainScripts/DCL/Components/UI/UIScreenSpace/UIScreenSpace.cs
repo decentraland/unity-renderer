@@ -13,6 +13,8 @@ namespace DCL.Components
         static bool VERBOSE = false;
         public override string componentName => "UIScreenSpace";
 
+        public Canvas canvas;
+
         public UIScreenSpace(ParcelScene scene) : base(scene)
         {
             DCLCharacterController.OnCharacterMoved += OnCharacterMoved;
@@ -32,12 +34,12 @@ namespace DCL.Components
         {
             model = Utils.SafeFromJson<Model>(newJson);
 
-            if (scene.uiScreenSpaceCanvas == null)
+            if (scene.uiScreenSpace == null)
             {
                 yield return InitializeCanvas();
             }
 
-            childHookRectTransform = scene.uiScreenSpaceCanvas.GetComponent<RectTransform>();
+            childHookRectTransform = canvas.GetComponent<RectTransform>();
 
             if (DCLCharacterController.i != null)
                 OnCharacterMoved(DCLCharacterController.i.transform.position);
@@ -53,12 +55,12 @@ namespace DCL.Components
 
         void OnCharacterMoved(Vector3 newCharacterPosition)
         {
-            if (scene.uiScreenSpaceCanvas != null)
+            if (canvas != null)
             {
-                scene.uiScreenSpaceCanvas.enabled = scene.IsInsideSceneBoundaries(newCharacterPosition) && model.visible;
+                canvas.enabled = scene.IsInsideSceneBoundaries(newCharacterPosition) && model.visible;
 
                 if (VERBOSE)
-                    Debug.Log($"set screenspace = {scene.uiScreenSpaceCanvas.enabled}... {newCharacterPosition}");
+                    Debug.Log($"set screenspace = {canvas.enabled}... {newCharacterPosition}");
             }
         }
 
@@ -71,9 +73,10 @@ namespace DCL.Components
             canvasGameObject.transform.SetParent(scene.transform);
             canvasGameObject.transform.ResetLocalTRS();
 
+            canvas = canvasGameObject.AddComponent<Canvas>();
             // Canvas
-            scene.uiScreenSpaceCanvas = canvasGameObject.AddComponent<Canvas>();
-            scene.uiScreenSpaceCanvas.renderMode = RenderMode.ScreenSpaceOverlay;
+            canvas.renderMode = RenderMode.ScreenSpaceOverlay;
+            scene.uiScreenSpace = this;
 
             // Canvas Scaler (for maintaining ui aspect ratio)
             CanvasScaler canvasScaler = canvasGameObject.AddComponent<CanvasScaler>();
@@ -84,10 +87,10 @@ namespace DCL.Components
             // Graphics Raycaster (for allowing touch/click input on the ui components)
             canvasGameObject.AddComponent<GraphicRaycaster>();
 
-            childHookRectTransform = scene.uiScreenSpaceCanvas.GetComponent<RectTransform>();
+            childHookRectTransform = canvas.GetComponent<RectTransform>();
 
-            scene.uiScreenSpaceCanvas.gameObject.SetActive(false);
-            scene.uiScreenSpaceCanvas.gameObject.SetActive(true);
+            canvas.gameObject.SetActive(false);
+            canvas.gameObject.SetActive(true);
 
             // we enable the canvas for 2 frames to force its auto-scaling
             yield return null;
@@ -99,7 +102,7 @@ namespace DCL.Components
                 Debug.Log("canvas initialized, height: " + childHookRectTransform.rect.height);
             }
 
-            scene.uiScreenSpaceCanvas.enabled = false; // It will be enabled later when the player enters this scene
+            canvas.enabled = false; // It will be enabled later when the player enters this scene
 
             if (DCLCharacterController.i != null)
                 OnCharacterMoved(DCLCharacterController.i.transform.position);

@@ -14,7 +14,7 @@ namespace Tests
     public class UIImageTests : TestsBase
     {
         [UnityTest]
-        public IEnumerator UIImageShapePropertiesAreAppliedCorrectly()
+        public IEnumerator UIImagePropertiesAreAppliedCorrectly()
         {
             yield return InitScene();
 
@@ -53,8 +53,8 @@ namespace Tests
 
             // Check default properties are applied correctly
             Assert.IsTrue(uiImageshape.referencesContainer.transform.parent == screenSpaceShape.childHookRectTransform);
-            Assert.IsTrue(uiImageshape.referencesContainer.image.color == new Color(255f, 255f, 255f, 255f));
-            Assert.IsFalse(uiImageshape.referencesContainer.image.raycastTarget);
+            Assert.IsTrue(uiImageshape.referencesContainer.image.color == new Color(1, 1, 1, 1));
+            Assert.IsTrue(uiImageshape.referencesContainer.canvasGroup.blocksRaycasts);
             Assert.AreEqual(100f, uiImageshape.childHookRectTransform.rect.width);
             Assert.AreEqual(100f, uiImageshape.childHookRectTransform.rect.height);
             Assert.IsTrue(uiImageshape.referencesContainer.image.enabled);
@@ -94,8 +94,8 @@ namespace Tests
 
             // Check default properties are applied correctly
             Assert.IsTrue(uiImageshape.referencesContainer.transform.parent == screenSpaceShape.childHookRectTransform);
-            Assert.AreEqual(new Color(255f, 255f, 255f, 255f * 0.7f), uiImageshape.referencesContainer.image.color);
-            Assert.IsTrue(uiImageshape.referencesContainer.image.raycastTarget);
+            Assert.AreEqual(new Color(1, 1, 1, 1), uiImageshape.referencesContainer.image.color);
+            Assert.IsTrue(uiImageshape.referencesContainer.canvasGroup.blocksRaycasts);
 
             Assert.AreEqual(108f, uiImageshape.childHookRectTransform.rect.width); // 128 - 20 (left and right padding)
             Assert.AreEqual(108f, uiImageshape.childHookRectTransform.rect.height); // 128 - 20 (left and right padding)
@@ -120,105 +120,17 @@ namespace Tests
         }
 
         [UnityTest]
-        public IEnumerator UIImageShapeMissingValuesGetDefaultedOnUpdate()
+        public IEnumerator UIImageMissingValuesGetDefaultedOnUpdate()
         {
             yield return InitScene();
 
-            DCLCharacterController.i.gravity = 0f;
-
-            // Position character inside parcel (0,0)
-            DCLCharacterController.i.SetPosition(JsonConvert.SerializeObject(new
-            {
-                x = 0f,
-                y = 0f,
-                z = 0f
-            }));
-
-            // Create UIScreenSpaceShape
             UIScreenSpace screenSpaceShape = TestHelpers.SharedComponentCreate<UIScreenSpace, UIScreenSpace.Model>(scene, CLASS_ID.UI_SCREEN_SPACE_SHAPE);
 
             yield return screenSpaceShape.routine;
 
-            // Create UIContainerRectShape
-            UIImage uiImageshape = TestHelpers.SharedComponentCreate<UIImage, UIImage.Model>(scene, CLASS_ID.UI_IMAGE_SHAPE);
+            Assert.IsFalse(screenSpaceShape == null);
 
-            yield return uiImageshape.routine;
-
-            // Update UIContainerRectShape properties
-            uiImageshape = scene.SharedComponentUpdate(JsonUtility.ToJson(new SharedComponentUpdateMessage
-            {
-                id = uiImageshape.id,
-                json = JsonUtility.ToJson(new UIImage.Model
-                {
-                    parentComponent = screenSpaceShape.id,
-                    source = TestHelpers.GetTestsAssetsPath() + "/Images/atlas.png",
-                    opacity = 0.7f,
-                    isPointerBlocker = true,
-                    width = new UIValue(128f),
-                    height = new UIValue(128f),
-                    positionX = new UIValue(17f),
-                    positionY = new UIValue(32f),
-                    hAlign = "right",
-                    vAlign = "bottom",
-                    sourceLeft = 64f,
-                    sourceTop = 64f,
-                    sourceWidth = 64f,
-                    sourceHeight = 64f,
-                    paddingTop = 10f,
-                    paddingRight = 10f,
-                    paddingBottom = 10f,
-                    paddingLeft = 10f
-                })
-            })) as UIImage;
-
-            yield return uiImageshape.routine;
-
-            // Check properties are applied correctly
-            Assert.IsTrue(uiImageshape.referencesContainer.transform.parent == screenSpaceShape.childHookRectTransform);
-            Assert.AreEqual(new Color(255f, 255f, 255f, 255f * 0.7f), uiImageshape.referencesContainer.image.color);
-            Assert.IsTrue(uiImageshape.referencesContainer.image.raycastTarget);
-
-            Assert.AreEqual(108f, uiImageshape.childHookRectTransform.rect.width); // 128 - 20 (left and right padding)
-            Assert.AreEqual(108f, uiImageshape.childHookRectTransform.rect.height); // 128 - 20 (left and right padding)
-            Assert.IsTrue(uiImageshape.referencesContainer.image.enabled);
-            Assert.IsTrue(uiImageshape.referencesContainer.image.texture != null);
-
-            Vector2 alignedPosition = CalculateAlignedPosition(screenSpaceShape.childHookRectTransform.rect, uiImageshape.childHookRectTransform.rect, "bottom", "right");
-            alignedPosition += new Vector2(7f, 42f); // affected by padding
-
-            Assert.AreEqual(alignedPosition.ToString(), uiImageshape.referencesContainer.paddingLayoutRectTransform.anchoredPosition.ToString());
-
-            Assert.AreEqual(0.5f, uiImageshape.referencesContainer.image.uvRect.x);
-            Assert.AreEqual(0f, uiImageshape.referencesContainer.image.uvRect.y);
-            Assert.AreEqual(0.5f, uiImageshape.referencesContainer.image.uvRect.width);
-            Assert.AreEqual(0.5f, uiImageshape.referencesContainer.image.uvRect.height);
-            Assert.AreEqual(10, uiImageshape.referencesContainer.paddingLayoutGroup.padding.bottom);
-            Assert.AreEqual(10, uiImageshape.referencesContainer.paddingLayoutGroup.padding.top);
-            Assert.AreEqual(10, uiImageshape.referencesContainer.paddingLayoutGroup.padding.left);
-            Assert.AreEqual(10, uiImageshape.referencesContainer.paddingLayoutGroup.padding.right);
-
-            // Update UIImageShape properties
-            uiImageshape = scene.SharedComponentUpdate(JsonUtility.ToJson(new SharedComponentUpdateMessage
-            {
-                id = uiImageshape.id,
-                json = JsonUtility.ToJson(new UIImage.Model { })
-            })) as UIImage;
-
-            yield return uiImageshape.routine;
-
-            // Check default properties are applied correctly
-            Assert.IsTrue(uiImageshape.referencesContainer.transform.parent == screenSpaceShape.childHookRectTransform);
-            Assert.IsTrue(uiImageshape.referencesContainer.image.color == new Color(255f, 255f, 255f, 255f));
-            Assert.IsFalse(uiImageshape.referencesContainer.image.raycastTarget);
-            Assert.AreEqual(100f, uiImageshape.childHookRectTransform.rect.width);
-            Assert.AreEqual(100f, uiImageshape.childHookRectTransform.rect.height);
-            Assert.IsTrue(uiImageshape.referencesContainer.image.enabled);
-            Assert.IsTrue(uiImageshape.referencesContainer.image.texture == null);
-
-            alignedPosition = CalculateAlignedPosition(screenSpaceShape.childHookRectTransform.rect, uiImageshape.childHookRectTransform.rect);
-            Assert.AreEqual(alignedPosition.ToString(), uiImageshape.referencesContainer.paddingLayoutRectTransform.anchoredPosition.ToString());
-
-            screenSpaceShape.Dispose();
+            yield return TestHelpers.TestSharedComponentDefaultsOnUpdate<UIImage.Model, UIImage>(scene, CLASS_ID.UI_IMAGE_SHAPE);
         }
 
 

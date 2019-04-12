@@ -18,7 +18,7 @@ namespace DCL.Controllers
         public LoadParcelScenesMessage.UnityParcelScene sceneData { get; private set; }
         public SceneController ownerController;
         public SceneMetricsController metricsController;
-        public Canvas uiScreenSpaceCanvas;
+        public UIScreenSpace uiScreenSpace;
 
         public event System.Action<DecentralandEntity> OnEntityAdded;
         public event System.Action<DecentralandEntity> OnEntityRemoved;
@@ -416,6 +416,11 @@ namespace DCL.Controllers
                         newComponent = new UIContainerRect(this);
                         break;
                     }
+                case CLASS_ID.UI_SLIDER_SHAPE:
+                    {
+                        newComponent = new UIScrollRect(this);
+                        break;
+                    }
                 case CLASS_ID.UI_CONTAINER_STACK:
                     {
                         newComponent = new UIContainerStack(this);
@@ -432,12 +437,8 @@ namespace DCL.Controllers
                         break;
                     }
                 default:
-#if UNITY_EDITOR || DEVELOPMENT_BUILD
-                    throw new UnityException($"Unknown classId {json}");
-#else
-                    // Ignore errors outside of the editor
+                    Debug.LogError($"Unknown classId {json}");
                     break;
-#endif
             }
 
             if (newComponent != null)
@@ -523,14 +524,12 @@ namespace DCL.Controllers
                 disposableComponent.UpdateFromJSON(sharedComponentUpdatedMessage.json);
                 return disposableComponent;
             }
-#if UNITY_EDITOR || DEVELOPMENT_BUILD
             else
             {
-                throw new UnityException($"Unknown disposableComponent {sharedComponentUpdatedMessage.id}");
+                Debug.LogError($"Unknown disposableComponent {sharedComponentUpdatedMessage.id}");
             }
-#else
+
             return null;
-#endif
         }
 
 

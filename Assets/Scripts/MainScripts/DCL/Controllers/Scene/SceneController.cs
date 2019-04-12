@@ -139,36 +139,10 @@ public class SceneController : MonoBehaviour
         }
     }
 
-    void Update()
-    {
-        if (Cursor.lockState != CursorLockMode.Locked)
-        {
-            if (Input.GetMouseButtonDown(0))
-            {
-                LockCursor();
-            }
-        }
-        else if (Input.GetKeyDown(KeyCode.Escape))
-        {
-            UnlockCursor();
-        }
-    }
-
+    
     public void SetDebug()
     {
         isDebugMode = true;
-    }
-
-    public void LockCursor()
-    {
-        Cursor.visible = false;
-        Cursor.lockState = CursorLockMode.Locked;
-    }
-
-    public void UnlockCursor()
-    {
-        Cursor.visible = true;
-        Cursor.lockState = CursorLockMode.None;
     }
 
     ParcelScene GetDecentralandSceneOfGridPosition(Vector2Int gridPosition)

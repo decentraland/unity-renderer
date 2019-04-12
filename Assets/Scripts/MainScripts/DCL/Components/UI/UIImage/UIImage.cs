@@ -14,7 +14,6 @@ namespace DCL.Components
         new public class Model : UIShape.Model
         {
             public string source;
-            public float opacity = 1f;
             public float sourceLeft = 0f;
             public float sourceTop = 0f;
             public float sourceWidth = 1f;
@@ -103,14 +102,13 @@ namespace DCL.Components
             referencesContainer.image.enabled = model.visible;
 
             RectTransform parentRecTransform = referencesContainer.GetComponentInParent<RectTransform>();
+
             yield return ResizeAlignAndReposition(referencesContainer.paddingLayoutRectTransform,
                                                 parentRecTransform.rect.width, parentRecTransform.rect.height,
                                                 referencesContainer.alignmentLayoutGroup,
                                                 referencesContainer.paddingLayoutElement);
 
-            referencesContainer.image.color = new Color(255f, 255f, 255f, 255f * model.opacity);
-
-            referencesContainer.image.raycastTarget = model.isPointerBlocker;
+            referencesContainer.image.color = Color.white;
 
             // Configure uv rect
             Vector2 normalizedSourceCoordinates = new Vector2(model.sourceLeft / referencesContainer.paddingLayoutRectTransform.rect.width,
@@ -129,6 +127,9 @@ namespace DCL.Components
             referencesContainer.paddingLayoutGroup.padding.top = Mathf.RoundToInt(model.paddingTop);
             referencesContainer.paddingLayoutGroup.padding.left = Mathf.RoundToInt(model.paddingLeft);
             referencesContainer.paddingLayoutGroup.padding.right = Mathf.RoundToInt(model.paddingRight);
+
+            referencesContainer.canvasGroup.blocksRaycasts = model.isPointerBlocker;
+            referencesContainer.canvasGroup.alpha = model.opacity;
 
             LayoutRebuilder.ForceRebuildLayoutImmediate(parentRecTransform);
         }
