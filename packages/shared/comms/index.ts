@@ -1,6 +1,6 @@
 import 'webrtc-adapter'
 
-import { parcelLimits, ETHEREUM_NETWORK, commConfigurations, networkConfigurations } from 'config'
+import { parcelLimits, ETHEREUM_NETWORK, commConfigurations, networkConfigurations, playerConfigurations } from 'config'
 import { saveToLocalStorage } from 'atomicHelpers/localStorage'
 import { positionObservable } from 'shared/world/positionThings'
 import { CommunicationArea, squareDistance, Position, position2parcel, sameParcel } from './utils'
@@ -334,7 +334,7 @@ export async function connect(ethAddress: string, network: ETHEREUM_NETWORK) {
       ) => {
         const p = [
           obj.position.x,
-          obj.position.y,
+          obj.position.y - playerConfigurations.height,
           obj.position.z,
           obj.quaternion.x,
           obj.quaternion.y,

@@ -161,7 +161,7 @@ export function receiveUserVisible(uuid: string, visible: boolean) {
   avatarMessageObservable.notifyObservers({
     type: AvatarMessageType.USER_VISIBLE,
     uuid,
-    visible: false
+    visible
   })
 }
 
