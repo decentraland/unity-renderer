@@ -30,6 +30,8 @@ import { showAvatarWindow, currentAvatarId, hideAvatarWindow } from './avatarWin
 
 export const avatarMessageObservable = new Observable<AvatarMessage>()
 
+const GENERIC_AVATAR = 'avatar/main.gltf'
+
 const models: Map<string, GLTFShape> = new Map()
 const avatarMap = new Map<string, AvatarEntity>()
 
@@ -133,6 +135,7 @@ export class AvatarEntity extends Entity {
 
   displayName = 'Avatar'
   publicKey = '0x00000000000000000000000000000000'
+  currentAvatarType?: string
 
   readonly label: TextShape = new TextShape(this.displayName)
   readonly body: Entity = new Entity()
@@ -183,16 +186,27 @@ export class AvatarEntity extends Entity {
     this.updateVisibility()
   }
 
-  setUserData(userData: Partial<UserInformation>): void {
-    if (userData.avatarType) {
-      const model = getAvatarModel(userData.avatarType)
+  setAvatarType(avatarType: string) {
+    if (avatarType) {
+      const model = getAvatarModel(avatarType)
+
+      this.currentAvatarType = avatarType
 
       this.body.addComponentOrReplace(model)
 
       cleanupUnusedModels()
     }
+  }
+
+  setUserData(userData: Partial<UserInformation>): void {
+    if (userData.avatarType) {
+      this.setAvatarType(userData.avatarType)
+    }
 
     if (userData.pose) {
+      if (!this.currentAvatarType) {
+        this.setAvatarType(GENERIC_AVATAR)
+      }
       this.setPose(userData.pose)
     }
 
