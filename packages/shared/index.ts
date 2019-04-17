@@ -2,7 +2,7 @@ import './apis/index'
 import './events'
 
 import { initializeUrlPositionObserver } from './world/positionThings'
-import { ETHEREUM_NETWORK, MOBILE_DEBUG, networkConfigurations, PREVIEW, EDITOR, AVOID_WEB3 } from '../config'
+import { ETHEREUM_NETWORK, MOBILE_DEBUG, getNetworkConfigurations, PREVIEW, EDITOR, AVOID_WEB3 } from '../config'
 import { getERC721 } from './ethereum/ERC721'
 import { getUserAccount, getNetwork } from './ethereum/EthereumService'
 import { connect } from './comms'
@@ -17,7 +17,7 @@ async function grantAccess(address: string | null, net: ETHEREUM_NETWORK) {
   let isWhitelisted = location.hostname === 'localhost' || navigator.userAgent.includes('Oculus')
 
   if (!isWhitelisted && address) {
-    const contract = await getERC721(requestManager, networkConfigurations[net].invite)
+    const contract = await getERC721(requestManager, getNetworkConfigurations(net).invite)
 
     const balance = await contract.balanceOf(address)
 

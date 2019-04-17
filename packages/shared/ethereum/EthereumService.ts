@@ -6,7 +6,7 @@ import { IFuture, future } from 'fp-future'
 import { getERC20 } from './ERC20'
 import { requestManager } from './provider'
 import { getERC721 } from './ERC721'
-import { networkConfigurations, MOBILE_DEBUG, ETHEREUM_NETWORK } from 'config'
+import { getNetworkConfigurations, MOBILE_DEBUG, ETHEREUM_NETWORK } from 'config'
 import { generateEphemeralKeys, UserData as EphemeralKey } from 'ephemeralkey'
 import { saveToLocalStorage, removeFromLocalStorage, getFromLocalStorage } from 'atomicHelpers/localStorage'
 import { RPCSendableMessage } from 'shared/types'
@@ -168,7 +168,7 @@ export async function requirePayment(toAddress: string, amount: number, currency
         data: null as any
       })
     } else {
-      const supportedTokens: Record<string, string> = {} // a TODO: networkConfigurations[network].paymentTokens
+      const supportedTokens: Record<string, string> = {} // a TODO: getNetworkConfigurations(network).paymentTokens
 
       if (currency in supportedTokens === false) {
         return false
@@ -271,7 +271,7 @@ export async function getEphemeralKeys(network: ETHEREUM_NETWORK, regenerate: bo
   }
 
   if (!keys) {
-    const inviteAddress = networkConfigurations[network].invite
+    const inviteAddress = getNetworkConfigurations(network).invite
     keys = await generateEphemeralKeys(requestManager.provider, inviteAddress)
     saveToLocalStorage(storageKey, keys)
   }
