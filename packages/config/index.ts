@@ -1,3 +1,5 @@
+declare var window: any
+
 export const performanceConfigurations = [
   { antialiasing: true, downsampling: 0, shadows: true },
   { antialiasing: false, downsampling: 1, shadows: true },
@@ -116,47 +118,57 @@ export enum ETHEREUM_NETWORK {
   ROPSTEN = 'ropsten'
 }
 
-export const networkConfigurations = {
-  [ETHEREUM_NETWORK.MAINNET]: {
-    wss: 'wss://mainnet.infura.io/ws',
-    http: 'https://mainnet.infura.io/',
-    contractAddress: '0xF87E31492Faf9A91B02Ee0dEAAd50d51d56D5d4d',
-    landApi: 'https://api.decentraland.org/v1',
-    etherscan: 'https://etherscan.io',
+function getContentFromDomain() {
+  const domain = window.location.host
+  if (domain.endsWith('.decentraland.org')) {
+    return 'https://content.decentraland.org'
+  } else if (domain.endsWith('.decentraland.today')) {
+    return 'https://content.decentraland.today'
+  } else if (domain.endsWith('.decentraland.zone')) {
+    return 'https://content.decentraland.zone'
+  } else {
+    return null
+  }
+}
 
-    contracts: {
-      serviceLocator: '0x151b11892dd6ab1f91055dcd01d23d03a2c47570'
-    },
+export function getNetworkConfigurations(net: ETHEREUM_NETWORK) {
+  if (net === ETHEREUM_NETWORK.MAINNET) {
+    return {
+      wss: 'wss://mainnet.infura.io/ws',
+      http: 'https://mainnet.infura.io/',
+      contractAddress: '0xF87E31492Faf9A91B02Ee0dEAAd50d51d56D5d4d',
+      landApi: 'https://api.decentraland.org/v1',
+      etherscan: 'https://etherscan.io',
 
-    paymentTokens: {
-      MANA: '0x0F5D2fB29fb7d3CFeE444a200298f468908cC942'
-    },
+      contracts: {
+        serviceLocator: '0x151b11892dd6ab1f91055dcd01d23d03a2c47570'
+      },
 
-    content: 'https://content.decentraland.org',
+      paymentTokens: {
+        MANA: '0x0F5D2fB29fb7d3CFeE444a200298f468908cC942'
+      },
 
-    worldInstanceUrl: 'wss://world-comm.decentraland.org/connect?method=noop',
-
-    invite: '0xf886313f213c198458eba7ae9329525e64eb763a'
-  },
-  [ETHEREUM_NETWORK.ROPSTEN]: {
+      content: getContentFromDomain() || 'https://content.decentraland.org',
+      worldInstanceUrl: 'wss://world-comm.decentraland.org/connect?method=noop',
+      invite: '0xf886313f213c198458eba7ae9329525e64eb763a'
+    }
+  }
+  // if (net === ETHEREUM_NETWORK.ROPSTEN) {
+  return {
     wss: 'wss://ropsten.infura.io/ws',
     http: 'https://ropsten.infura.io/',
     contractAddress: '0x7a73483784ab79257bb11b96fd62a2c3ae4fb75b',
     landApi: 'https://api.decentraland.zone/v1',
     etherscan: 'https://ropsten.etherscan.io',
-
     contracts: {
       serviceLocator: '0xb240b30c12d2a9ea6ba3abbf663d9ae265fbebeb'
     },
-
     paymentTokens: {
       MANA: '0x2a8fd99c19271f4f04b1b7b9c4f7cf264b626edb'
     },
 
-    content: 'https://content.decentraland.zone',
-
+    content: getContentFromDomain() || 'https://content.decentraland.zone',
     worldInstanceUrl: 'wss://world-comm.decentraland.zone/connect?method=noop',
-
     invite: '0x7557dfa02f3bd7d274851e3f627de2ed2ff390e8'
   }
 }

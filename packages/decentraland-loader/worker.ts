@@ -4,7 +4,7 @@ import { WebWorkerTransport } from 'decentraland-rpc/lib/common/transports/WebWo
 
 import { resolveUrl } from 'atomicHelpers/parseUrl'
 
-import { ETHEREUM_NETWORK, networkConfigurations, parcelLimits, DEBUG } from '../config'
+import { ETHEREUM_NETWORK, getNetworkConfigurations, parcelLimits, DEBUG } from '../config'
 import { error } from '../engine/logger'
 
 const loaderWorkerRaw = require('raw-loader!../../static/systems/loader.system.js')
@@ -25,7 +25,7 @@ export class LandLoaderServer extends TransportBasedServer {
 export async function initParcelSceneWorker(network: ETHEREUM_NETWORK) {
   const server = new LandLoaderServer(WebWorkerTransport(worker))
 
-  const ethConfig = networkConfigurations[network]
+  const ethConfig = getNetworkConfigurations(network)
 
   server.enable()
 
