@@ -13,6 +13,11 @@ export interface ComponentLike {
   [componentSymbol]?: string
   // @internal
   [componentClassIdSymbol]?: number
+
+  // @internal
+  addedToEntity?(entity: any): void
+  // @internal
+  removedFromEntity?(entity: any): void
 }
 
 /**
