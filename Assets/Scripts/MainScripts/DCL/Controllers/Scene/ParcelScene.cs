@@ -415,7 +415,8 @@ namespace DCL.Controllers
                 case CLASS_ID.UI_FULLSCREEN_SHAPE:
                 case CLASS_ID.UI_SCREEN_SPACE_SHAPE:
                     {
-                        newComponent = new UIScreenSpace(this);
+                        if (uiScreenSpace == null)
+                            newComponent = new UIScreenSpace(this);
                         break;
                     }
                 case CLASS_ID.UI_CONTAINER_RECT:

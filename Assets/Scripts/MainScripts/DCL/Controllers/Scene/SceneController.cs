@@ -75,8 +75,6 @@ public class SceneController : MonoBehaviour
 
     public void CreateUIScene(string json)
     {
-        return;
-
         CreateUISceneMessage uiScene = JsonUtility.FromJson<CreateUISceneMessage>(json);
 
         string uiSceneId = uiScene.id;
@@ -93,12 +91,13 @@ public class SceneController : MonoBehaviour
             LoadParcelScenesMessage.UnityParcelScene data = new LoadParcelScenesMessage.UnityParcelScene();
             data.id = uiSceneId;
             data.basePosition = new Vector2Int(0, 0);
+            data.baseUrl = uiScene.baseUrl;
             newScene.SetData(data);
 
             loadedScenes.Add(uiSceneId, newScene);
 
             if (VERBOSE)
-                Debug.Log($"Creating scene {uiSceneId}");
+                Debug.Log($"Creating UI scene {uiSceneId}");
         }
     }
 

@@ -29,20 +29,22 @@ namespace DCL.Components
         {
         }
 
-
         public override IEnumerator ApplyChanges(string newJson)
         {
             model = Utils.SafeFromJson<Model>(newJson);
 
             if (scene.uiScreenSpace == null)
             {
-                yield return InitializeCanvas();
+                scene.uiScreenSpace = this;
+
+                SceneController.i.StartCoroutine(InitializeCanvas());
+            }
+            else if (DCLCharacterController.i != null)
+            {
+                OnCharacterMoved(DCLCharacterController.i.transform.position);
             }
 
-            childHookRectTransform = canvas.GetComponent<RectTransform>();
-
-            if (DCLCharacterController.i != null)
-                OnCharacterMoved(DCLCharacterController.i.transform.position);
+            return null;
         }
 
         public override void Dispose()
@@ -76,7 +78,6 @@ namespace DCL.Components
             canvas = canvasGameObject.AddComponent<Canvas>();
             // Canvas
             canvas.renderMode = RenderMode.ScreenSpaceOverlay;
-            scene.uiScreenSpace = this;
 
             // Canvas Scaler (for maintaining ui aspect ratio)
             CanvasScaler canvasScaler = canvasGameObject.AddComponent<CanvasScaler>();
