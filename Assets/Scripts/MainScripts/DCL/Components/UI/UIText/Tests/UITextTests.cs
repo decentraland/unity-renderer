@@ -14,7 +14,7 @@ namespace Tests
     public class UITextTests : TestsBase
     {
         [UnityTest]
-        public IEnumerator UITextShapePropertiesAreAppliedCorrectly()
+        public IEnumerator TestPropertiesAreAppliedCorrectly()
         {
             yield return InitScene();
 
@@ -48,7 +48,7 @@ namespace Tests
             Assert.AreEqual(Color.white, uiTextShape.referencesContainer.text.color);
             Assert.AreEqual(100f, uiTextShape.referencesContainer.text.fontSize);
             Assert.AreEqual("", uiTextShape.referencesContainer.text.text);
-            Assert.AreEqual(1, uiTextShape.referencesContainer.text.maxVisibleLines);
+            Assert.AreEqual(int.MaxValue, uiTextShape.referencesContainer.text.maxVisibleLines);
             Assert.AreEqual(0, uiTextShape.referencesContainer.text.lineSpacing);
             Assert.IsFalse(uiTextShape.referencesContainer.text.enableAutoSizing);
             Assert.IsFalse(uiTextShape.referencesContainer.text.enableWordWrapping);
@@ -102,7 +102,7 @@ namespace Tests
             Assert.AreEqual(100f, uiTextShape.childHookRectTransform.rect.height);
             Assert.AreEqual("hello world", uiTextShape.referencesContainer.text.text);
             Assert.IsTrue(uiTextShape.referencesContainer.text.enabled);
-            Assert.AreEqual(new Color(0f, 1f, 0f, 0.5f), uiTextShape.referencesContainer.text.color);
+            Assert.AreEqual(new Color(0f, 1f, 0f, 1f), uiTextShape.referencesContainer.text.color);
             Assert.AreEqual(35f, uiTextShape.referencesContainer.text.fontSize);
             Assert.AreEqual(3, uiTextShape.referencesContainer.text.maxVisibleLines);
             Assert.AreEqual(0.1f, uiTextShape.referencesContainer.text.lineSpacing);

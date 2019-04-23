@@ -21,7 +21,7 @@ namespace DCL.Components
         where Loadable : LoadableMonoBehavior
     {
         [System.Serializable]
-        public class Model
+        public new class Model : BaseShape.Model
         {
             public string src;
         }

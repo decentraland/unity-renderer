@@ -58,7 +58,7 @@ namespace Tests
         }
 
         [UnityTest]
-        public IEnumerator InputTextCreateTest()
+        public IEnumerator TestPropertiesAreAppliedCorrectly()
         {
             yield return InputTextCreate();
 
@@ -78,7 +78,7 @@ namespace Tests
         }
 
         [UnityTest]
-        public IEnumerator InputTextOnFocusTest()
+        public IEnumerator TestOnFocus()
         {
             yield return InputTextCreate();
 
@@ -100,7 +100,7 @@ namespace Tests
 
 
         [UnityTest]
-        public IEnumerator InputTextOnSubmitTest()
+        public IEnumerator TestOnSubmit()
         {
             yield return InputTextCreate();
 

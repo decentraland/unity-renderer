@@ -15,7 +15,7 @@ public class SceneController : MonoBehaviour
     public static SceneController i { get; private set; }
 
     public bool startDecentralandAutomatically = true;
-    public bool VERBOSE = false;
+    public static bool VERBOSE = false;
 
     [System.NonSerialized]
     public bool isDebugMode;
@@ -25,8 +25,11 @@ public class SceneController : MonoBehaviour
 
     public Dictionary<string, ParcelScene> loadedScenes = new Dictionary<string, ParcelScene>();
 
-    public string[] sceneBlacklist;
-
+    [Header("Debug Tools")]
+    public bool debugScenes;
+    public string debugSceneName;
+    public bool ignoreGlobalScenes = false;
+    public bool msgStepByStep = false;
     class QueuedSceneMessage
     {
         public enum Type
@@ -75,6 +78,11 @@ public class SceneController : MonoBehaviour
 
     public void CreateUIScene(string json)
     {
+#if UNITY_EDITOR
+        if (debugScenes && ignoreGlobalScenes)
+            return;
+#endif
+
         CreateUISceneMessage uiScene = JsonUtility.FromJson<CreateUISceneMessage>(json);
 
         string uiSceneId = uiScene.id;
@@ -120,7 +128,15 @@ public class SceneController : MonoBehaviour
                     case QueuedSceneMessage.Type.NONE:
                         break;
                     case QueuedSceneMessage.Type.SCENE_MESSAGE:
-                        ProcessMessage(m.sceneId, m.message);
+                        if (ProcessMessage(m.sceneId, m.message))
+                        {
+                            if (msgStepByStep)
+                            {
+                                Debug.Log("message: " + m.message);
+                                Debug.Break();
+                                yield return null;
+                            }
+                        }
                         break;
                     case QueuedSceneMessage.Type.LOAD_PARCEL:
                         yield return LoadParcelScenesExecute_Spread(m.message);
@@ -186,7 +202,7 @@ public class SceneController : MonoBehaviour
             var sceneToLoad = scene;
 
 #if UNITY_EDITOR
-            if (sceneBlacklist.Any((x) => { return sceneToLoad.id == x; }))
+            if (debugScenes && sceneToLoad.id != debugSceneName)
                 continue;
 #endif
 
@@ -296,7 +312,7 @@ public class SceneController : MonoBehaviour
                 var message = chunks[i].Substring(separatorPosition + 1);
 
 #if UNITY_EDITOR
-                if (sceneBlacklist.Any((x) => { return sceneId == x; }))
+                if (debugScenes && sceneId != debugSceneName)
                     continue;
 #endif
 
@@ -308,14 +324,18 @@ public class SceneController : MonoBehaviour
     public bool ProcessMessage(string sceneId, string message)
     {
 #if UNITY_EDITOR
-        if (sceneBlacklist.Any((x) => { return sceneId == x; }))
-            return true;
+        if (debugScenes && sceneId != debugSceneName)
+            return false;
 #endif
 
         ParcelScene scene;
 
         if (loadedScenes.TryGetValue(sceneId, out scene))
         {
+#if UNITY_EDITOR
+            if (scene is GlobalScene && ignoreGlobalScenes && debugScenes)
+                return false;
+#endif
             if (!scene.gameObject.activeInHierarchy)
                 return true;
 
@@ -343,7 +363,6 @@ public class SceneController : MonoBehaviour
                 case "RemoveEntity": scene.RemoveEntity(payload); break;
                 default: Debug.LogError($"Unknown method {method}"); return true;
             }
-
             return true;
         }
         else

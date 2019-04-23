@@ -10,8 +10,6 @@ namespace DCL.Components
 {
     public class DCLAudioClip : BaseDisposable
     {
-        public override string componentName => "AudioClip";
-
         [System.Serializable]
         public class Model
         {

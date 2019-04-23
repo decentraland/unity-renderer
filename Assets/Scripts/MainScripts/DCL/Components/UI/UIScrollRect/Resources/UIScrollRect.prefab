@@ -304,10 +304,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   rectTransform: {fileID: 83353336438305660}
   canvasGroup: {fileID: 5364624156990461496}
-  alignmentLayoutGroup: {fileID: 5516778534138712963}
-  childHookRectTransform: {fileID: 8125847689933021503}
+  layoutGroup: {fileID: 5516778534138712963}
   layoutElement: {fileID: 2525528187900339089}
   layoutElementRT: {fileID: 6820324277899345557}
+  childHookRectTransform: {fileID: 8125847689933021503}
   paddingLayoutGroup: {fileID: 5516778534138712963}
   HScrollbar: {fileID: 5706182002887018840}
   VScrollbar: {fileID: 83353335458592239}
@@ -348,7 +348,7 @@ CanvasGroup:
   m_Alpha: 1
   m_Interactable: 1
   m_BlocksRaycasts: 1
-  m_IgnoreParentGroups: 1
+  m_IgnoreParentGroups: 0
 --- !u!1 &83353336461408388
 GameObject:
   m_ObjectHideFlags: 0
@@ -938,6 +938,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   target: {fileID: 83353335335206053}
+  rectTransform: {fileID: 0}
 --- !u!1 &8305915550799965083
 GameObject:
   m_ObjectHideFlags: 0

@@ -1,44 +1,35 @@
-﻿using System.Collections;
+using DCL.Controllers;
+using DCL.Helpers;
+using DCL.Models;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Assertions;
 using UnityEngine.UI;
-using DCL.Helpers;
-using DCL.Controllers;
-using DCL.Models;
 
 namespace DCL.Components
 {
-    public class UIContainerStack : UIShape
+    public class UIContainerStack : UIShape<UIContainerRectReferencesContainer, UIContainerStack.Model>
     {
+        [System.Serializable]
+        new public class Model : UIShape.Model
+        {
+            public Color color = Color.clear;
+            public StackOrientation stackOrientation = StackOrientation.VERTICAL;
+            public bool adaptWidth = false;
+            public bool adaptHeight = false;
+        }
+
         public enum StackOrientation
         {
             VERTICAL,
             HORIZONTAL
         }
 
-        [System.Serializable]
-        new public class Model : UIShape.Model
-        {
-            public Color color = Color.black;
-            public float opacity = 1f;
-            public StackOrientation stackOrientation = StackOrientation.VERTICAL;
-            public bool adaptWidth = false;
-            public bool adaptHeight = false;
-        }
+        public override string referencesContainerPrefabName => "UIContainerRect";
 
-        new Model model
-        {
-            get { return base.model as Model; }
-            set { base.model = value; }
-        }
+        public Dictionary<string, GameObject> stackContainers = new Dictionary<string, GameObject>();
 
-        new public UIContainerRectReferencesContainer referencesContainer
-        {
-            get { return base.referencesContainer as UIContainerRectReferencesContainer; }
-            set { base.referencesContainer = value; }
-        }
-
-        public override string componentName => "UIContainerStack";
         HorizontalOrVerticalLayoutGroup layoutGroup;
 
         public UIContainerStack(ParcelScene scene) : base(scene)
@@ -56,42 +47,16 @@ namespace DCL.Components
 
         public override IEnumerator ApplyChanges(string newJson)
         {
-            model = Utils.SafeFromJson<Model>(newJson);
-
-            if (referencesContainer == null)
-            {
-                referencesContainer = InstantiateUIGameObject<UIContainerRectReferencesContainer>("UIContainerRect");
-                referencesContainer.name = "UIContainerStack - " + id;
-            }
-            else
-            {
-                ReparentComponent(referencesContainer.rectTransform, model.parentComponent);
-            }
-
-            referencesContainer.image.enabled = model.visible;
-
-            RectTransform parentRecTransform = referencesContainer.GetComponentInParent<RectTransform>();
-
-            yield return ResizeAlignAndReposition(childHookRectTransform, parentRecTransform.rect.width, parentRecTransform.rect.height,
-                                                referencesContainer.alignmentLayoutGroup,
-                                                referencesContainer.imageLayoutElement);
-
-            referencesContainer.image.color = new Color(model.color.r, model.color.g, model.color.b, model.opacity);
-
-            referencesContainer.image.raycastTarget = model.isPointerBlocker;
+            referencesContainer.image.color = new Color(model.color.r, model.color.g, model.color.b, model.color.a);
 
             if (model.stackOrientation == StackOrientation.VERTICAL && !(layoutGroup is VerticalLayoutGroup))
             {
-                Utils.SafeDestroy(layoutGroup);
-                yield return null;
-
+                Object.DestroyImmediate(layoutGroup, false);
                 layoutGroup = childHookRectTransform.gameObject.AddComponent<VerticalLayoutGroup>();
             }
             else if (model.stackOrientation == StackOrientation.HORIZONTAL && !(layoutGroup is HorizontalLayoutGroup))
             {
-                Utils.SafeDestroy(layoutGroup);
-                yield return null;
-
+                Object.DestroyImmediate(layoutGroup, false);
                 layoutGroup = childHookRectTransform.gameObject.AddComponent<HorizontalLayoutGroup>();
             }
 
@@ -100,47 +65,94 @@ namespace DCL.Components
             layoutGroup.childForceExpandWidth = false;
             layoutGroup.childForceExpandHeight = false;
 
-            ContentSizeFitter sizeFitter = childHookRectTransform.gameObject.GetComponent<ContentSizeFitter>();
-            if (model.adaptWidth || model.adaptHeight)
-            {
-                if (sizeFitter == null)
-                    sizeFitter = childHookRectTransform.gameObject.AddComponent<ContentSizeFitter>();
-
-                sizeFitter.horizontalFit = model.adaptWidth ? ContentSizeFitter.FitMode.MinSize : ContentSizeFitter.FitMode.Unconstrained;
-                sizeFitter.verticalFit = model.adaptHeight ? ContentSizeFitter.FitMode.MinSize : ContentSizeFitter.FitMode.Unconstrained;
-            }
-            else if (sizeFitter != null)
-            {
-                Utils.SafeDestroy(sizeFitter);
-                yield return null;
-            }
-
-            LayoutRebuilder.ForceRebuildLayoutImmediate(referencesContainer.rectTransform);
+            referencesContainer.sizeFitter.adjustHeight = model.adaptHeight;
+            referencesContainer.sizeFitter.adjustWidth = model.adaptWidth;
+            RefreshSizeFitter();
+            yield break;
         }
 
-        protected override void OnChildComponentAttached(UIShape childComponent)
+        void RefreshContainerForShape(BaseDisposable updatedComponent)
         {
-            ContentSizeFitter sizeFitter = childComponent.referencesContainer.gameObject.GetOrCreateComponent<ContentSizeFitter>();
-            sizeFitter.horizontalFit = ContentSizeFitter.FitMode.MinSize;
-            sizeFitter.verticalFit = ContentSizeFitter.FitMode.MinSize;
+            UIShape childComponent = updatedComponent as UIShape;
+            Assert.IsTrue(childComponent != null, "This should never happen!!!!");
 
-            LayoutRebuilder.ForceRebuildLayoutImmediate(referencesContainer.rectTransform);
+            if (childComponent.model.parentComponent != id)
+            {
+                RefreshSizeFitter();
+                return;
+            }
+
+            GameObject stackContainer = null;
+
+            if (!stackContainers.ContainsKey(childComponent.id))
+            {
+                stackContainer = Object.Instantiate(Resources.Load("UIContainerStackChild")) as GameObject;
+#if UNITY_EDITOR
+                stackContainer.name = "UIContainerStackChild - " + childComponent.id;
+#endif
+                stackContainers.Add(childComponent.id, stackContainer);
+
+                int oldSiblingIndex = childComponent.referencesContainer.transform.GetSiblingIndex();
+                childComponent.referencesContainer.transform.SetParent(stackContainer.transform, false);
+                stackContainer.transform.SetParent(referencesContainer.childHookRectTransform, false);
+                stackContainer.transform.SetSiblingIndex(oldSiblingIndex);
+            }
+            else
+            {
+                stackContainer = stackContainers[childComponent.id];
+            }
+
+            //NOTE(Brian): Resize stackContainer to contain all children
+            UISizeFitter fitter = stackContainer.GetOrCreateComponent<UISizeFitter>();
+
+            fitter.adjustHeight = true;
+            fitter.adjustWidth = true;
+
+            RefreshSizeFitter();
         }
 
-        protected override void OnChildComponentDettached(UIShape childComponent)
+        public override void OnChildAttached(UIShape parentComponent, UIShape childComponent)
         {
-            ContentSizeFitter sizeFitter = childComponent.referencesContainer.gameObject.GetComponent<ContentSizeFitter>();
+            RefreshContainerForShape(childComponent);
+            childComponent.OnAppliedChanges -= RefreshContainerForShape;
+            childComponent.OnAppliedChanges += RefreshContainerForShape;
+        }
 
-            if (sizeFitter != null)
-                GameObject.DestroyImmediate(sizeFitter);
+        void RefreshSizeFitter()
+        {
+            RefreshDCLLayoutRecursively();
+            FixMaxStretchRecursively();
+            base.RefreshDCLLayoutRecursively(refreshSize:false, refreshAlignmentAndPosition:true);
+        }
 
-            LayoutRebuilder.ForceRebuildLayoutImmediate(referencesContainer.rectTransform);
+        public override void RefreshDCLLayoutRecursively(bool refreshSize=true, bool refreshAlignmentAndPosition=true)
+        {
+            base.RefreshDCLLayoutRecursively(refreshSize, refreshAlignmentAndPosition);
+            referencesContainer.sizeFitter.RefreshRecursively();
+        }
+
+        public override void OnChildDetached(UIShape parentComponent, UIShape childComponent)
+        {
+            if (parentComponent != this)
+            {
+                return;
+            }
+
+            if (stackContainers.ContainsKey(childComponent.id))
+            {
+                Object.Destroy(stackContainers[childComponent.id]);
+                stackContainers[childComponent.id].transform.SetParent(null);
+                stackContainers[childComponent.id].name += "- Detached";
+                stackContainers.Remove(childComponent.id);
+            }
+
+            childComponent.OnAppliedChanges -= RefreshContainerForShape;
+            RefreshDCLLayout();
         }
 
         public override void Dispose()
         {
             Utils.SafeDestroy(referencesContainer.gameObject);
-
             base.Dispose();
         }
     }

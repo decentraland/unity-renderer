@@ -11,8 +11,6 @@ namespace DCL.Components
     public class UIScreenSpace : UIShape
     {
         static bool VERBOSE = false;
-        public override string componentName => "UIScreenSpace";
-
         public Canvas canvas;
 
         public UIScreenSpace(ParcelScene scene) : base(scene)

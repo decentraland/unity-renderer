@@ -8,8 +8,6 @@ namespace DCL.Components
 {
     public class DCLAudioSource : BaseComponent
     {
-        public override string componentName => "AudioSource";
-
         [System.Serializable]
         public class Model
         {

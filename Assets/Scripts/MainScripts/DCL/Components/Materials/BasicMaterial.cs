@@ -18,7 +18,6 @@ namespace DCL.Components
         }
 
         public Model model = new Model();
-        public override string componentName => "material";
         public Material material;
 
         public BasicMaterial(ParcelScene scene) : base(scene)

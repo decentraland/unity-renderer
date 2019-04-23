@@ -14,7 +14,7 @@ namespace Tests
     public class UIContainerRectTests : TestsBase
     {
         [UnityTest]
-        public IEnumerator UIContainerRectPropertiesAreAppliedCorrectly()
+        public IEnumerator TestPropertiesAreAppliedCorrectly()
         {
             yield return InitScene();
 
@@ -43,7 +43,7 @@ namespace Tests
 
             // Check default properties are applied correctly
             Assert.IsTrue(image.GetComponent<Outline>() == null);
-            Assert.IsTrue(image.color == new Color(0f, 0f, 0f, 1f));
+            Assert.IsTrue(image.color == new Color(0f, 0f, 0f, 0f));
             Assert.IsTrue(uiContainerRectShape.referencesContainer.canvasGroup.blocksRaycasts);
             Assert.AreEqual(100f, uiContainerRectShape.childHookRectTransform.rect.width);
             Assert.AreEqual(100f, uiContainerRectShape.childHookRectTransform.rect.height);
@@ -77,7 +77,7 @@ namespace Tests
             Assert.IsFalse(uiContainerRectShape.referencesContainer.canvasGroup.blocksRaycasts);
             Assert.AreEqual(275f, uiContainerRectShape.childHookRectTransform.rect.width);
             Assert.AreEqual(130f, uiContainerRectShape.childHookRectTransform.rect.height);
-            Assert.IsTrue(uiContainerRectShape.referencesContainer.alignmentLayoutGroup.childAlignment == TextAnchor.LowerRight);
+            Assert.IsTrue(uiContainerRectShape.referencesContainer.layoutGroup.childAlignment == TextAnchor.LowerRight);
 
             Vector2 alignedPosition = CalculateAlignedPosition(screenSpaceShape.childHookRectTransform.rect, uiContainerRectShape.childHookRectTransform.rect, "bottom", "right");
             alignedPosition += new Vector2(-30, -15); // apply offset position
@@ -88,7 +88,7 @@ namespace Tests
         }
 
         [UnityTest]
-        public IEnumerator UIComponentsParenting()
+        public IEnumerator TestParenting()
         {
             yield return InitScene();
 
@@ -146,7 +146,7 @@ namespace Tests
         }
 
         [UnityTest]
-        public IEnumerator UIContainerRectMissingValuesGetDefaultedOnUpdate()
+        public IEnumerator TestMissingValuesGetDefaultedOnUpdate()
         {
             yield return InitScene();
 
@@ -160,7 +160,7 @@ namespace Tests
         }
 
         [UnityTest]
-        public IEnumerator UIContainerRectShapeNormalizedSize()
+        public IEnumerator TestNormalizedSize()
         {
             yield return InitScene();
 

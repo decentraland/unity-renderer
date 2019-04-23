@@ -11,11 +11,12 @@ namespace DCL.Components
     public abstract class BaseDisposable : IComponent
     {
         public Coroutine routine = null;
-        public abstract string componentName { get; }
+        public virtual string componentName => GetType().Name;
         public string id;
 
         public event System.Action<DecentralandEntity> OnAttach;
         public event System.Action<DecentralandEntity> OnDetach;
+        public event Action<BaseDisposable> OnAppliedChanges;
 
 
         private string oldSerialization = null;
@@ -33,8 +34,12 @@ namespace DCL.Components
             this.scene = scene;
         }
 
-        public virtual void OnAppliedChanges()
+        public void RaiseOnAppliedChanges()
         {
+            if (OnAppliedChanges != null)
+            {
+                OnAppliedChanges.Invoke(this);
+            }
         }
 
         private void ApplyChangesIfModified(string newSerialization)
@@ -107,10 +112,10 @@ namespace DCL.Components
             Resources.UnloadUnusedAssets(); //NOTE(Brian): This will ensure assets are freed correctly.
         }
 
-        public IEnumerator ApplyChangesWrapper(string newJson)
+        public virtual IEnumerator ApplyChangesWrapper(string newJson)
         {
             yield return ApplyChanges(newJson);
-            OnAppliedChanges();
+            RaiseOnAppliedChanges();
         }
 
         public abstract IEnumerator ApplyChanges(string newJson);

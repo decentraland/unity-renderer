@@ -40,7 +40,6 @@ namespace DCL.Components
             public int transparencyMode = 0; // 0: OPAQUE; 1: ALPHATEST; 2: ALPHBLEND; 3: ALPHATESTANDBLEND
         }
 
-        public override string componentName => "material";
         public Model model = new Model();
         public Material material { get; set; }
 

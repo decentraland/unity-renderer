@@ -53,11 +53,12 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   rectTransform: {fileID: 1231610846333877600}
   canvasGroup: {fileID: 3591048808618873972}
-  alignmentLayoutGroup: {fileID: 1705150512210581689}
+  layoutGroup: {fileID: 1705150512210581689}
+  layoutElement: {fileID: 1745810645414158340}
+  layoutElementRT: {fileID: 4577512276136032512}
   childHookRectTransform: {fileID: 4577512276136032512}
   text: {fileID: 2265338682705848464}
   textRectTransform: {fileID: 4577512276136032512}
-  alignedLayoutElement: {fileID: 1745810645414158340}
 --- !u!114 &1705150512210581689
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -92,7 +93,7 @@ CanvasGroup:
   m_Alpha: 1
   m_Interactable: 1
   m_BlocksRaycasts: 1
-  m_IgnoreParentGroups: 1
+  m_IgnoreParentGroups: 0
 --- !u!1 &2091844807093637731
 GameObject:
   m_ObjectHideFlags: 0

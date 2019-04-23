@@ -36,8 +36,6 @@ namespace DCL
         {
         }
 
-        public override string componentName => "texture";
-
         public static IEnumerator FetchFromComponent(ParcelScene scene, string componentId, System.Action<Texture2D> OnFinish)
         {
             if (!scene.disposableComponents.ContainsKey(componentId))

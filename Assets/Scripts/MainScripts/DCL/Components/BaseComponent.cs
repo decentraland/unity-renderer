@@ -16,7 +16,7 @@ namespace DCL.Components
 
     public abstract class UpdateableComponent : MonoBehaviour, IComponent
     {
-        public abstract string componentName { get; }
+        public virtual string componentName => GetType().Name;
         public abstract void UpdateFromJSON(string json);
     }
 

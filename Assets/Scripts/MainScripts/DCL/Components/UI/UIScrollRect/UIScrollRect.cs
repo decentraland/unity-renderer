@@ -9,7 +9,7 @@ using DCL.Interface;
 
 namespace DCL.Components
 {
-    public class UIScrollRect : UIShape
+    public class UIScrollRect : UIShape<UIScrollRectRefContainer, UIScrollRect.Model>
     {
         [System.Serializable]
         new public class Model : UIShape.Model
@@ -27,19 +27,7 @@ namespace DCL.Components
             public string OnChanged;
         }
 
-        new public UIScrollRectRefContainer referencesContainer
-        {
-            get { return base.referencesContainer as UIScrollRectRefContainer; }
-            set { base.referencesContainer = value; }
-        }
-
-        public override string componentName => "UIScrollRect";
-
-        new Model model
-        {
-            get { return base.model as Model; }
-            set { base.model = value; }
-        }
+        public override string referencesContainerPrefabName => "UIScrollRect";
 
         public UIScrollRect(ParcelScene scene) : base(scene)
         {
@@ -54,50 +42,28 @@ namespace DCL.Components
         {
         }
 
-        protected override void OnChildComponentAttached(UIShape childComponent)
+        public override void OnChildAttached(UIShape parent, UIShape childComponent)
         {
-            base.OnChildComponentAttached(childComponent);
+            base.OnChildAttached(parent, childComponent);
             referencesContainer.isDirty = true;
-            childComponent.OnShapeUpdated += SetContentDirty;
+            childComponent.OnAppliedChanges += SetContentDirty;
         }
 
-        protected override void OnChildComponentDettached(UIShape childComponent)
+        public override void OnChildDetached(UIShape parent, UIShape childComponent)
         {
-            base.OnChildComponentDettached(childComponent);
+            base.OnChildDetached(parent, childComponent);
             referencesContainer.isDirty = true;
-            childComponent.OnShapeUpdated -= SetContentDirty;
+            childComponent.OnAppliedChanges -= SetContentDirty;
         }
 
-        void SetContentDirty()
+        void SetContentDirty(BaseDisposable updatedComponent)
         {
             referencesContainer.isDirty = true;
         }
 
         public override IEnumerator ApplyChanges(string newJson)
         {
-            model = Utils.SafeFromJson<Model>(newJson);
-
-            if (referencesContainer == null)
-            {
-                referencesContainer = InstantiateUIGameObject<UIScrollRectRefContainer>("UIScrollRect");
-            }
-            else
-            {
-                ReparentComponent(referencesContainer.rectTransform, model.parentComponent);
-            }
-
-            RectTransform parentRecTransform = referencesContainer.GetComponentInParent<RectTransform>();
-
-            yield return ResizeAlignAndReposition(  referencesContainer.layoutElementRT,
-                                                    parentRecTransform.rect.width,
-                                                    parentRecTransform.rect.height,
-                                                    referencesContainer.alignmentLayoutGroup,
-                                                    referencesContainer.layoutElement);
-
             UIScrollRectRefContainer rc = referencesContainer;
-
-            rc.canvasGroup.blocksRaycasts = model.isPointerBlocker;
-            rc.canvasGroup.alpha = model.opacity;
 
             rc.contentBackground.color = model.backgroundColor;
 
@@ -121,7 +87,7 @@ namespace DCL.Components
 
         void OnChanged(Vector2 scrollingValues)
         {
-            WebInterface.ReportOnScrollChange(scene.sceneData.id, model.OnChanged, scrollingValues, "");
+            WebInterface.ReportOnScrollChange(scene.sceneData.id, model.OnChanged, scrollingValues, 0);
         }
         
         public override void Dispose()
