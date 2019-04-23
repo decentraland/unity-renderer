@@ -26,14 +26,29 @@ namespace DCL.Components
             public string src;
         }
 
-        private string currentSrc = "";
-
+        string currentSrc = "";
         Model model = new Model();
 
         public BaseLoadableShape(ParcelScene scene) : base(scene)
         {
             OnDetach += DetachShape;
             OnAttach += AttachShape;
+        }
+
+        public override IEnumerator ApplyChanges(string newJson)
+        {
+            model = Helpers.Utils.SafeFromJson<Model>(newJson);
+
+            // TODO: changing src is not allowed in loadableShapes
+            if (!string.IsNullOrEmpty(model.src) && currentSrc != model.src)
+            {
+                currentSrc = model.src;
+
+                foreach (var entity in this.attachedEntities)
+                {
+                    yield return AttachShapeCoroutine(entity);
+                }
+            }
         }
 
         private IEnumerator AttachShapeCoroutine(DecentralandEntity entity)
@@ -70,22 +85,6 @@ namespace DCL.Components
 
             Utils.SafeDestroy(entity.meshGameObject);
             entity.meshGameObject = null;
-        }
-
-        public override IEnumerator ApplyChanges(string newJson)
-        {
-            model = Helpers.Utils.SafeFromJson<Model>(newJson);
-
-            // TODO: changing src is not allowed in loadableShapes
-            if (!string.IsNullOrEmpty(model.src) && currentSrc != model.src)
-            {
-                currentSrc = model.src;
-
-                foreach (var entity in this.attachedEntities)
-                {
-                    yield return AttachShapeCoroutine(entity);
-                }
-            }
         }
     }
 }

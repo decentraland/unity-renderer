@@ -27,6 +27,7 @@ public class DCLCharacterController : MonoBehaviour
     float aimingVerticalAngle;
     float lastUngroundedTime = 0f;
     float lastJumpButtonPressedTime = 0f;
+    float lastMovementReportTime;
     Vector3 velocity = Vector3.zero;
     Vector2 aimingInput;
     Vector2 movementInput;
@@ -65,13 +66,18 @@ public class DCLCharacterController : MonoBehaviour
             newPosition.y = 3f;
         }
 
-        Vector3 oldPosition = transform.position;
+        Vector3 previousPosition = transform.position;
         transform.position = newPosition;
 
-        if (Vector3.Distance(transform.position, oldPosition) > 0.001f)
+        if (Moved(previousPosition))
         {
             ReportMovement();
         }
+    }
+
+    bool Moved(Vector3 previousPosition)
+    {
+        return Vector3.Distance(transform.position, previousPosition) > 0.001f;
     }
 
     void Update()
@@ -142,7 +148,7 @@ public class DCLCharacterController : MonoBehaviour
         Vector3 previousPosition = transform.position;
         characterController.Move(velocity * Time.deltaTime);
 
-        if (previousPosition != transform.position)
+        if (Moved(previousPosition) || (Time.realtimeSinceStartup - lastMovementReportTime) > PlayerSettings.POSITION_REPORTING_DELAY)
         {
             ReportMovement();
         }
@@ -190,5 +196,7 @@ public class DCLCharacterController : MonoBehaviour
         {
             OnCharacterMoved(transform.position);
         }
+
+        lastMovementReportTime = Time.realtimeSinceStartup;
     }
 }

@@ -11,6 +11,11 @@ namespace DCL.Configuration
         public static bool DEBUG = true;
     }
 
+    public static class PlayerSettings
+    {
+        public static float POSITION_REPORTING_DELAY = 0.1f; // In seconds
+    }
+
     public static class ParcelSettings
     {
         public static float DEBUG_FLOOR_HEIGHT = 0.01f;

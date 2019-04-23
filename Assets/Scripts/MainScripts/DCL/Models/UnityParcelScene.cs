@@ -10,6 +10,7 @@ namespace DCL.Models
     public struct CreateUISceneMessage
     {
         public string id;
+        public string baseUrl;
     }
 
     [Serializable]
@@ -25,12 +26,20 @@ namespace DCL.Models
         {
             public static bool VERBOSE = false;
             public string id;
+            public string baseUrl;
 
             public Vector2Int basePosition;
             public Vector2Int[] parcels;
 
             public List<ContentMapping> contents;
             public Dictionary<string, string> fileToHash;
+
+            [Serializable]
+            public class ContentMapping
+            {
+                public string file;
+                public string hash;
+            }
 
             public ContentMapping GetMappingForHash(string hash)
             {
@@ -93,31 +102,27 @@ namespace DCL.Models
                 url = url.ToLower();
                 result = url;
 
-                if (HasTestSchema(url))
-                    return true;
+                if (HasTestSchema(url)) return true;
 
-                if (fileToHash == null)
-                    return false;
-
-                if (!fileToHash.ContainsKey(url))
+                if (fileToHash != null)
                 {
-                    Debug.LogError(string.Format("GetContentsUrl >>> File {0} not found!!!", url));
-                    return false;
+                    if (!fileToHash.ContainsKey(url))
+                    {
+                        Debug.LogError(string.Format("GetContentsUrl >>> File {0} not found!!!", url));
+                        return false;
+                    }
+
+                    result = baseUrl + fileToHash[url];
+                }
+                else
+                {
+                    result = baseUrl + "/" + url;
                 }
 
-                result = baseUrl + fileToHash[url];
-                if (VERBOSE) Debug.Log(string.Format(">>> GetContentsURL from ... {0} ... RESULTING URL... = {1}", url, result));
+                if (VERBOSE)
+                    Debug.Log($">>> GetContentsURL from ... {url} ... RESULTING URL... = {result}");
 
                 return true;
-            }
-
-            public string baseUrl;
-
-            [Serializable]
-            public class ContentMapping
-            {
-                public string file;
-                public string hash;
             }
         }
     }

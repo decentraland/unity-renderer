@@ -93,7 +93,8 @@ namespace DCL.Interface
         {
             if (OnMessageFromEngine != null)
                 OnMessageFromEngine.Invoke(type, message);
-            else if ( VERBOSE )
+
+            if (VERBOSE)
                 Debug.Log("MessageFromEngine called with: " + type + ", " + message);
         }
 #endif
@@ -154,7 +155,7 @@ namespace DCL.Interface
             onChangeEvent.payload.value = value;
             onChangeEvent.payload.pointerId = pointerId;
 
-            SendSceneEvent(sceneId, "uuidEvent", onChangeEvent );
+            SendSceneEvent(sceneId, "uuidEvent", onChangeEvent);
         }
 
         public static void ReportEvent<T>(string sceneId, T @event)
