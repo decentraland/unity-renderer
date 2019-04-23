@@ -9,6 +9,5 @@ namespace DCL.Components
         [Header("UI Text Fields")]
         public TextMeshProUGUI text;
         public RectTransform textRectTransform;
-        public LayoutElement alignedLayoutElement;
     }
 }

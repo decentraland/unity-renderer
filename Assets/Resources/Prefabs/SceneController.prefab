@@ -155,6 +155,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   startDecentralandAutomatically: 1
-  VERBOSE: 0
   componentFactory: {fileID: 11400000, guid: 6710053fa2d5d5446b6a599e0e003053, type: 2}
   sceneBlacklist: []
+  ignoreGlobalScenes: 0

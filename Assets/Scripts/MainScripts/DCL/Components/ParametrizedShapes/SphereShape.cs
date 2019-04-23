@@ -11,8 +11,6 @@ namespace DCL.Components
         {
         }
 
-        public override string componentName => "Sphere Shape";
-
         public SphereShape(ParcelScene scene) : base(scene) { }
 
         public static Mesh mesh = null;

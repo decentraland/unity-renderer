@@ -216,8 +216,7 @@ namespace DCL.Helpers
             entity.scene.SharedComponentAttach(JsonUtility.ToJson(new DCL.Models.SharedComponentAttachMessage
             {
                 entityId = entity.entityId,
-                id = component.id,
-                name = component.componentName //NOTE(Brian): useless?
+                id = component.id
             }));
         }
 

@@ -8,7 +8,7 @@ using UnityEngine.UI;
 
 namespace DCL.Components
 {
-    public class UIInputText : UIShape
+    public class UIInputText : UIShape<UIInputTextRefContainer, UIInputText.Model>
     {
         [System.Serializable]
         new public class Model : UIShape.Model
@@ -17,22 +17,14 @@ namespace DCL.Components
             public string placeholder;
             public Color placeholderColor;
             public Color focusedBackground;
-            public string onTextSubmitEvent;
+
+            public string onTextSubmit;
+            public string onChanged;
+            public string onFocus;
+            public string onBlur;
         }
 
-        public new Model model
-        {
-            get { return base.model as Model; }
-            set { base.model = value; }
-        }
-
-        new public UIInputTextRefContainer referencesContainer
-        {
-            get { return base.referencesContainer as UIInputTextRefContainer; }
-            set { base.referencesContainer = value; }
-        }
-
-        public override string componentName => "UIInputText";
+        public override string referencesContainerPrefabName => "UIInputText";
 
         public TMP_Text tmpText => referencesContainer.text;
         public TMP_InputField inputField => referencesContainer.inputField;
@@ -42,45 +34,28 @@ namespace DCL.Components
         {
         }
 
+
         public override IEnumerator ApplyChanges(string newJson)
         {
             //NOTE(Brian): We have to serialize twice now, but in the future we should fix the
             //             client data structure to be like this, so we can serialize all of it in one shot.
-            model = JsonUtility.FromJson<Model>(newJson);
-
             if (!scene.isTestScene)
                 model.textModel = JsonUtility.FromJson<TextShape.Model>(newJson);
 
-            if (referencesContainer == null)
-            {
-                referencesContainer = InstantiateUIGameObject<UIInputTextRefContainer>("UIInputText");
-            }
-            else
-            {
-                ReparentComponent(referencesContainer.rectTransform, model.parentComponent);
-            }
-
-            inputField.enabled = model.visible;
-            inputField.textComponent.enabled = model.visible;
             inputField.textViewport = referencesContainer.rectTransform;
+
+            UnsuscribeFromEvents();
 
             inputField.onSelect.AddListener(OnFocus);
             inputField.onDeselect.AddListener(OnBlur);
             inputField.onSubmit.AddListener(OnSubmit);
+            inputField.onValueChanged.AddListener(OnChanged);
 
             DCL.Components.TextShape.ApplyModelChanges(tmpText, model.textModel);
 
-            RectTransform parentRT = referencesContainer.rectTransform;
-
-            yield return ResizeAlignAndReposition(targetTransform: referencesContainer.textLayoutElementRT,
-                                                    parentWidth: parentRT.rect.width,
-                                                    parentHeight: parentRT.rect.height,
-                                                    alignmentLayout: referencesContainer.alignmentLayoutGroup,
-                                                    alignedLayoutElement: referencesContainer.textLayoutElement);
-
             inputField.text = model.placeholder;
-            inputField.textComponent.color = new Color(model.placeholderColor.r, model.placeholderColor.g, model.placeholderColor.b, model.textModel.opacity);
-            referencesContainer.bgImage.color = new Color(model.focusedBackground.r, model.focusedBackground.g, model.focusedBackground.b, model.textModel.opacity);
+            inputField.textComponent.color = new Color(model.placeholderColor.r, model.placeholderColor.g, model.placeholderColor.b, model.placeholderColor.a);
+            referencesContainer.bgImage.color = new Color(model.focusedBackground.r, model.focusedBackground.g, model.focusedBackground.b, model.focusedBackground.a);
             yield break;
         }
 
@@ -91,11 +66,18 @@ namespace DCL.Components
 
             inputField.customCaretColor = true;
             inputField.caretColor = Color.white;
+            Interface.WebInterface.ReportOnFocusEvent(scene.sceneData.id, model.onFocus);
+        }
+
+        public void OnChanged(string call)
+        {
+            Interface.WebInterface.ReportOnChangedEvent(scene.sceneData.id, model.onChanged, call, 0);
         }
 
         public void OnBlur(string call)
         {
             HideCaret();
+            Interface.WebInterface.ReportOnBlurEvent(scene.sceneData.id, model.onBlur);
         }
 
         public void HideCaret()
@@ -120,7 +102,7 @@ namespace DCL.Components
 
             if (validString)
             {
-                Interface.WebInterface.ReportOnTextSubmitEvent(scene.sceneData.id, model.onTextSubmitEvent, tmpText.text);
+                Interface.WebInterface.ReportOnTextSubmitEvent(scene.sceneData.id, model.onTextSubmit, tmpText.text);
             }
 
             inputField.text = "";
@@ -129,11 +111,18 @@ namespace DCL.Components
             inputField.ActivateInputField();
         }
 
-        public override void Dispose()
+        void UnsuscribeFromEvents()
         {
             inputField.onSelect.RemoveAllListeners();
             inputField.onDeselect.RemoveAllListeners();
             inputField.onSubmit.RemoveAllListeners();
+            inputField.onValueChanged.RemoveAllListeners();
+        }
+
+
+        public override void Dispose()
+        {
+            UnsuscribeFromEvents();
             base.Dispose();
         }
     }

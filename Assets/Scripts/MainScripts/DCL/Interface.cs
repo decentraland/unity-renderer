@@ -50,6 +50,12 @@ namespace DCL.Interface
         [System.Serializable]
         private class OnChangeEvent : UUIDEvent<OnChangeEventPayload> { };
 
+        [System.Serializable]
+        private class OnFocusEvent : UUIDEvent<EmptyPayload> { };
+
+        [System.Serializable]
+        private class OnBlurEvent : UUIDEvent<EmptyPayload> { };
+
 
         [System.Serializable]
         public class OnClickEventPayload
@@ -68,7 +74,12 @@ namespace DCL.Interface
         public class OnChangeEventPayload
         {
             public object value;
-            public string pointerId;
+            public int pointerId;
+        }
+
+        [System.Serializable]
+        public class EmptyPayload
+        {
         }
 
         [System.Serializable]
@@ -114,6 +125,8 @@ namespace DCL.Interface
         private static OnClickEvent onClickEvent = new OnClickEvent();
         private static OnTextSubmitEvent onTextSubmitEvent = new OnTextSubmitEvent();
         private static OnChangeEvent onChangeEvent = new OnChangeEvent();
+        private static OnFocusEvent onFocusEvent = new OnFocusEvent();
+        private static OnBlurEvent onBlurEvent = new OnBlurEvent();
 
         public static void SendSceneEvent<T>(string sceneId, string eventType, T payload)
         {
@@ -135,6 +148,9 @@ namespace DCL.Interface
 
         public static void ReportOnClickEvent(string sceneId, string uuid, int pointerId)
         {
+            if (string.IsNullOrEmpty(uuid))
+                return;
+
             onClickEvent.uuid = uuid;
             onClickEvent.payload.pointerId = pointerId;
 
@@ -143,14 +159,50 @@ namespace DCL.Interface
 
         public static void ReportOnTextSubmitEvent(string sceneId, string uuid, string text)
         {
+            if (string.IsNullOrEmpty(uuid))
+                return;
+
             onTextSubmitEvent.uuid = uuid;
             onTextSubmitEvent.payload.text = text;
 
             SendSceneEvent(sceneId, "uuidEvent", onTextSubmitEvent);
         }
 
-        public static void ReportOnScrollChange(string sceneId, string uuid, Vector2 value, string pointerId)
+        public static void ReportOnFocusEvent(string sceneId, string uuid)
         {
+            if (string.IsNullOrEmpty(uuid))
+                return;
+
+            onFocusEvent.uuid = uuid;
+            SendSceneEvent(sceneId, "uuidEvent", onFocusEvent);
+        }
+
+        public static void ReportOnBlurEvent(string sceneId, string uuid)
+        {
+            if (string.IsNullOrEmpty(uuid))
+                return;
+
+            onBlurEvent.uuid = uuid;
+            SendSceneEvent(sceneId, "uuidEvent", onBlurEvent);
+        }
+
+        public static void ReportOnChangedEvent(string sceneId, string uuid, string text, int pointerId)
+        {
+            if (string.IsNullOrEmpty(uuid))
+                return;
+
+            onChangeEvent.uuid = uuid;
+            onChangeEvent.payload.value = text;
+            onChangeEvent.payload.pointerId = pointerId;
+
+            SendSceneEvent(sceneId, "uuidEvent", onChangeEvent);
+        }
+
+        public static void ReportOnScrollChange(string sceneId, string uuid, Vector2 value, int pointerId)
+        {
+            if (string.IsNullOrEmpty(uuid))
+                return;
+
             onChangeEvent.uuid = uuid;
             onChangeEvent.payload.value = value;
             onChangeEvent.payload.pointerId = pointerId;

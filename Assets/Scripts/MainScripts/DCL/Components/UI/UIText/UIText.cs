@@ -9,7 +9,7 @@ using TMPro;
 
 namespace DCL.Components
 {
-    public class UIText : UIShape
+    public class UIText : UIShape<UITextReferencesContainer, UIText.Model>
     {
         [System.Serializable]
         new public class Model : UIShape.Model
@@ -17,19 +17,7 @@ namespace DCL.Components
             public TextShape.Model textModel;
         }
 
-        public override string componentName => "UIText";
-
-        new public Model model
-        {
-            get { return base.model as Model; }
-            set { base.model = value; }
-        }
-
-        new public UITextReferencesContainer referencesContainer
-        {
-            get { return base.referencesContainer as UITextReferencesContainer; }
-            set { base.referencesContainer = value; }
-        }
+        public override string referencesContainerPrefabName => "UIText";
 
         public UIText(ParcelScene scene) : base(scene)
         {
@@ -46,40 +34,39 @@ namespace DCL.Components
 
         public override IEnumerator ApplyChanges(string newJson)
         {
-            model = JsonUtility.FromJson<Model>(newJson);
             if (!scene.isTestScene)
                 model.textModel = JsonUtility.FromJson<TextShape.Model>(newJson);
 
-            if (referencesContainer == null)
+            TextShape.ApplyModelChanges(referencesContainer.text, model.textModel);
+            yield break;
+        }
+
+        public override void RefreshDCLLayout(bool refreshSize = true, bool refreshAlignmentAndPosition = true)
+        {
+            if (!model.textModel.resizeToFit)
             {
-                referencesContainer = InstantiateUIGameObject<UITextReferencesContainer>("UIText");
+                base.RefreshDCLLayout(refreshSize, refreshAlignmentAndPosition);
             }
             else
             {
-                ReparentComponent(referencesContainer.rectTransform, model.parentComponent);
+                if (refreshSize)
+                {
+                    referencesContainer.text.Rebuild(CanvasUpdate.LatePreRender);
+                    referencesContainer.layoutElementRT.SetSizeWithCurrentAnchors(RectTransform.Axis.Horizontal, referencesContainer.text.renderedWidth);
+                    referencesContainer.layoutElementRT.SetSizeWithCurrentAnchors(RectTransform.Axis.Vertical, referencesContainer.text.renderedHeight);
+                    referencesContainer.layoutElementRT.ForceUpdateRectTransforms();
+                }
+
+                if (refreshAlignmentAndPosition)
+                {
+                    RefreshDCLAlignmentAndPosition();
+                }
             }
-
-
-            RectTransform parentRecTransform = referencesContainer.GetComponentInParent<RectTransform>();
-            float parentWidth = parentRecTransform.rect.width - parentRecTransform.sizeDelta.x;
-            float parentHeight = parentRecTransform.rect.height - parentRecTransform.sizeDelta.y;
-
-            yield return ResizeAlignAndReposition(childHookRectTransform, parentWidth, parentHeight,
-                                                referencesContainer.alignmentLayoutGroup,
-                                                referencesContainer.alignedLayoutElement);
-
-            TextShape.ApplyModelChanges(referencesContainer.text, model.textModel);
-
-            referencesContainer.text.raycastTarget = model.isPointerBlocker;
-            referencesContainer.text.enabled = model.visible;
-
-            LayoutRebuilder.ForceRebuildLayoutImmediate(parentRecTransform);
         }
 
         public override void Dispose()
         {
             Utils.SafeDestroy(referencesContainer.gameObject);
-
             base.Dispose();
         }
     }

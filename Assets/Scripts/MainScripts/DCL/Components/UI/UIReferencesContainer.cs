@@ -1,9 +1,10 @@
+using DCL.Helpers;
 using UnityEngine;
+using UnityEngine.Serialization;
 using UnityEngine.UI;
 
 namespace DCL.Components
 {
-    [RequireComponent(typeof(HorizontalLayoutGroup))]
     public class UIReferencesContainer : MonoBehaviour
     {
         [System.NonSerialized] public UIShape owner;
@@ -12,7 +13,11 @@ namespace DCL.Components
         [Tooltip("This needs to always have the root RectTransform.")]
         public RectTransform rectTransform;
         public CanvasGroup canvasGroup;
-        public HorizontalLayoutGroup alignmentLayoutGroup;
+
+        public HorizontalLayoutGroup layoutGroup;
+        public LayoutElement layoutElement;
+        public RectTransform layoutElementRT;
+
         [Tooltip("Children of this UI object will reparent to this rectTransform.")]
         public RectTransform childHookRectTransform;
     }

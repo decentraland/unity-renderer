@@ -8,8 +8,6 @@ namespace DCL.Components
 {
     public class TextShape : BaseComponent
     {
-        public override string componentName => "TextShape";
-
         [System.Serializable]
         public class Model
         {
@@ -18,6 +16,7 @@ namespace DCL.Components
             public Color color = Color.white;
             public float opacity = 1f;
             public float fontSize = 100f;
+            public bool fontAutoSize = false;
             public string fontFamily = "Arial"; //NOTE(Brian): Should we make this a new object type?
             public string fontWeight = "normal";
 
@@ -35,7 +34,7 @@ namespace DCL.Components
             public float paddingLeft = 0f;
             public float zIndex = 0f;
             public float lineSpacing = 0f;
-            public int lineCount = 1;
+            public int lineCount = 0;
             public bool textWrapping = false;
 
             [Header("Text shadow properties")]
@@ -88,11 +87,12 @@ namespace DCL.Components
         {
             text.text = model.value;
 
-            text.color = new Color(model.color.r, model.color.g, model.color.b, model.opacity);
+            text.color = new Color(model.color.r, model.color.g, model.color.b, model.color.a);
             text.fontSize = (int)model.fontSize;
             text.richText = true;
             text.overflowMode = TextOverflowModes.Overflow;
-            text.enableAutoSizing = model.resizeToFit;
+            text.enableAutoSizing = model.fontAutoSize;
+            
             text.margin =
                 new Vector4
                 (
@@ -104,7 +104,12 @@ namespace DCL.Components
 
             text.alignment = GetAlignment(model.hTextAlign, model.vTextAlign);
             text.lineSpacing = model.lineSpacing;
-            text.maxVisibleLines = Mathf.Max(model.lineCount, 1);
+
+            if (model.lineCount != 0)
+                text.maxVisibleLines = Mathf.Max(model.lineCount, 1);
+            else
+                text.maxVisibleLines = int.MaxValue;
+
             text.enableWordWrapping = model.textWrapping && !text.enableAutoSizing;
 
             if (model.shadowOffsetX != 0 || model.shadowOffsetY != 0)

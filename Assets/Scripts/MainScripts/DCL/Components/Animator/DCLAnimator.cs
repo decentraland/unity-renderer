@@ -86,7 +86,6 @@ namespace DCL.Components
         }
 
         public Model model = new Model();
-        public override string componentName => "animator";
 
         Model.DCLAnimationState[] previousState;
 

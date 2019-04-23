@@ -15,7 +15,7 @@ namespace Tests
     public class TextShapeTests : TestsBase
     {
         [UnityTest]
-        public IEnumerator TextShapeCreateTest()
+        public IEnumerator TestCreate()
         {
             yield return InitScene();
 
@@ -88,7 +88,7 @@ namespace Tests
         }
 
         [UnityTest]
-        public IEnumerator TextShapeAlignTests()
+        public IEnumerator TestTextAlignment()
         {
             Assert.AreEqual(TextAlignmentOptions.BottomLeft, TextShape.GetAlignment(0, 0));
             Assert.AreEqual(TextAlignmentOptions.BottomRight, TextShape.GetAlignment(1, 0));
@@ -103,7 +103,7 @@ namespace Tests
         }
 
         [UnityTest]
-        public IEnumerator TextShapeComponentMissingValuesGetDefaultedOnUpdate()
+        public IEnumerator TestMissingValuesGetDefaultedOnUpdate()
         {
             yield return InitScene();
 
@@ -116,7 +116,7 @@ namespace Tests
                 color = Color.green,
                 width = 0.25f,
                 lineCount = 3,
-                resizeToFit = true,
+                fontAutoSize = true,
                 shadowColor = Color.red
             };
 
@@ -128,7 +128,7 @@ namespace Tests
             Assert.AreEqual(Color.green, textShapeComponent.model.color);
             Assert.AreEqual(0.25f, textShapeComponent.model.width);
             Assert.AreEqual(3, textShapeComponent.model.lineCount);
-            Assert.IsTrue(textShapeComponent.model.resizeToFit);
+            Assert.IsTrue(textShapeComponent.model.fontAutoSize);
             Assert.AreEqual(Color.red, textShapeComponent.model.shadowColor);
 
             // 3. Update component with missing values
@@ -139,8 +139,8 @@ namespace Tests
             // 4. Check defaulted values
             Assert.AreEqual(Color.white, textShapeComponent.model.color);
             Assert.AreEqual(1f, textShapeComponent.model.width);
-            Assert.AreEqual(1, textShapeComponent.model.lineCount);
-            Assert.IsFalse(textShapeComponent.model.resizeToFit);
+            Assert.AreEqual(0, textShapeComponent.model.lineCount);
+            Assert.IsFalse(textShapeComponent.model.fontAutoSize);
             Assert.AreEqual(new Color(1, 1, 1), textShapeComponent.model.shadowColor);
         }
     }

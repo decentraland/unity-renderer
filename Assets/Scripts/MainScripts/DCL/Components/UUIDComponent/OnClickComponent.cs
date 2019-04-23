@@ -14,8 +14,6 @@ namespace DCL.Components
         Rigidbody rigidBody;
         GameObject[] OnClickColliderGameObjects;
 
-        public override string componentName => "OnClickComponent";
-
         public override void Setup(ParcelScene scene, DecentralandEntity entity, string uuid, string type)
         {
             this.entity = entity;

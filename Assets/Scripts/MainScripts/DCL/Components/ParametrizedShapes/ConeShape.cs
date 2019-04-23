@@ -21,8 +21,6 @@ namespace DCL.Components
             public float arc = 360f;            // Cone/Cylinder
         }
 
-        public override string componentName => "Cone Shape";
-
         public ConeShape(ParcelScene scene) : base(scene) { }
 
         public override Mesh GenerateGeometry()

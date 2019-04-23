@@ -13,7 +13,5 @@ namespace DCL.Components
         public RawImage bgImage;
         public TMP_Text text;
         public TMP_InputField inputField;
-        public LayoutElement textLayoutElement;
-        public RectTransform textLayoutElementRT;
     }
 }

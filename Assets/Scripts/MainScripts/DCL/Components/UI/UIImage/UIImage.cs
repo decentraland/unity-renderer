@@ -10,7 +10,7 @@ using System;
 
 namespace DCL.Components
 {
-    public class UIImage : UIShape
+    public class UIImage : UIShape<UIImageReferencesContainer, UIImage.Model>
     {
         [System.Serializable]
         new public class Model : UIShape.Model
@@ -27,19 +27,7 @@ namespace DCL.Components
             public bool sizeInPixels = true;
         }
 
-        public override string componentName => "UIImage";
-
-        new public Model model
-        {
-            get { return base.model as Model; }
-            set { base.model = value; }
-        }
-
-        new public UIImageReferencesContainer referencesContainer
-        {
-            get { return base.referencesContainer as UIImageReferencesContainer; }
-            set { base.referencesContainer = value; }
-        }
+        public override string referencesContainerPrefabName => "UIImage";
 
         public UIImage(ParcelScene scene) : base(scene)
         {
@@ -56,17 +44,6 @@ namespace DCL.Components
 
         public override IEnumerator ApplyChanges(string newJson)
         {
-            model = Utils.SafeFromJson<Model>(newJson);
-
-            if (referencesContainer == null)
-            {
-                referencesContainer = InstantiateUIGameObject<UIImageReferencesContainer>("UIImage");
-            }
-            else
-            {
-                ReparentComponent(referencesContainer.rectTransform, model.parentComponent);
-            }
-
             // Fetch texture
             if (!string.IsNullOrEmpty(model.source))
             {
@@ -82,20 +59,18 @@ namespace DCL.Components
 
             referencesContainer.image.enabled = model.visible;
 
-            RectTransform parentRecTransform = referencesContainer.GetComponentInParent<RectTransform>();
-
-            yield return ResizeAlignAndReposition(referencesContainer.paddingLayoutRectTransform,
-                                                parentRecTransform.rect.width, parentRecTransform.rect.height,
-                                                referencesContainer.alignmentLayoutGroup,
-                                                referencesContainer.paddingLayoutElement);
+            RefreshDCLLayout();
 
             referencesContainer.image.color = Color.white;
+
+            RectTransform parentRecTransform = referencesContainer.GetComponentInParent<RectTransform>();
 
             if (referencesContainer.image.texture != null)
             {
                 // Configure uv rect
                 Vector2 normalizedSourceCoordinates = new Vector2(model.sourceLeft / referencesContainer.image.texture.width,
                                                                 -model.sourceTop / referencesContainer.image.texture.height);
+
 
                 Vector2 normalizedSourceSize = new Vector2(model.sourceWidth * (model.sizeInPixels ? 1f : parentRecTransform.rect.width) / referencesContainer.image.texture.width,
                                                             model.sourceHeight * (model.sizeInPixels ? 1f : parentRecTransform.rect.height) / referencesContainer.image.texture.height);
@@ -107,14 +82,11 @@ namespace DCL.Components
             }
 
             // Apply padding
-            referencesContainer.paddingLayoutGroup.padding.bottom = Mathf.RoundToInt(model.paddingBottom);
-            referencesContainer.paddingLayoutGroup.padding.top = Mathf.RoundToInt(model.paddingTop);
-            referencesContainer.paddingLayoutGroup.padding.left = Mathf.RoundToInt(model.paddingLeft);
-            referencesContainer.paddingLayoutGroup.padding.right = Mathf.RoundToInt(model.paddingRight);
-
-            referencesContainer.canvasGroup.blocksRaycasts = model.isPointerBlocker;
-            referencesContainer.canvasGroup.alpha = model.opacity;
-
+            referencesContainer.layoutGroup.padding.bottom = Mathf.RoundToInt(model.paddingBottom);
+            referencesContainer.layoutGroup.padding.top = Mathf.RoundToInt(model.paddingTop);
+            referencesContainer.layoutGroup.padding.left = Mathf.RoundToInt(model.paddingLeft);
+            referencesContainer.layoutGroup.padding.right = Mathf.RoundToInt(model.paddingRight);
+            
             LayoutRebuilder.ForceRebuildLayoutImmediate(parentRecTransform);
         }
 

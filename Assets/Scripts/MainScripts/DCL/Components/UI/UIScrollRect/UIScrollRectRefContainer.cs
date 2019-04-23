@@ -9,8 +9,6 @@ namespace DCL.Components
     public class UIScrollRectRefContainer : UIReferencesContainer
     {
         [Header("UIScrollRect Fields")]
-        public LayoutElement layoutElement;
-        public RectTransform layoutElementRT;
         public LayoutGroup paddingLayoutGroup;
         public Scrollbar HScrollbar;
         public Scrollbar VScrollbar;
@@ -62,14 +60,6 @@ namespace DCL.Components
 
         public void ComputeContentSize()
         {
-            Rect finalRect = new Rect();
-            finalRect.xMax = float.MinValue;
-            finalRect.yMax = float.MinValue;
-            finalRect.xMin = float.MaxValue;
-            finalRect.yMin = float.MaxValue;
-
-            Vector3[] corners = new Vector3[4];
-
             if (childHookRectTransform.childCount == 0)
             {
                 content.sizeDelta = layoutElementRT.sizeDelta;
@@ -77,6 +67,14 @@ namespace DCL.Components
                 scrollRect.vertical = false;
                 return;
             }
+
+            Rect finalRect = new Rect();
+            finalRect.xMax = float.MinValue;
+            finalRect.yMax = float.MinValue;
+            finalRect.xMin = float.MaxValue;
+            finalRect.yMin = float.MaxValue;
+
+            Vector3[] corners = new Vector3[4];
 
             RectTransform rt = childHookRectTransform as RectTransform;
 

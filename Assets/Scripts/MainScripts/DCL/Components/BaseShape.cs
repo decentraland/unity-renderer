@@ -16,8 +16,6 @@ namespace DCL.Components
             public bool withCollisions = false;
         }
 
-        public override string componentName => "shape";
-
         public BaseShape(ParcelScene scene) : base(scene)
         {
         }

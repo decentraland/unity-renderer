@@ -9,8 +9,6 @@ namespace DCL
 {
     public class UUIDComponent : BaseComponent
     {
-        public override string componentName => "UUIDComponent";
-
         public class Model
         {
             public string type;

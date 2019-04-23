@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Networking;
 using TMPro;
+using UnityEngine.Assertions;
 
 namespace DCL.Helpers
 {
@@ -97,6 +98,24 @@ namespace DCL.Helpers
             t.offsetMax = Vector2.zero;
             t.sizeDelta = Vector2.one * 100;
             t.ForceUpdateRectTransforms();
+        }
+
+        public static void InverseTreeTraversal<TComponent>(Action<TComponent> action, Transform startTransform)
+           where TComponent : Component
+        {
+            Assert.IsTrue(startTransform != null, "startTransform must not be null");
+
+            foreach (Transform t in startTransform)
+            {
+                InverseTreeTraversal(action, t);
+            }
+
+            var component = startTransform.GetComponent<TComponent>();
+
+            if (component != null)
+            {
+                action.Invoke(component);
+            }
         }
 
         public static T GetOrCreateComponent<T>(this GameObject gameObject) where T : UnityEngine.Component
@@ -272,7 +291,7 @@ namespace DCL.Helpers
             }
             else
             {
-                UnityEngine.Object.DestroyImmediate(obj);
+                UnityEngine.Object.DestroyImmediate(obj, false);
             }
 #else
             UnityEngine.Object.Destroy(obj);

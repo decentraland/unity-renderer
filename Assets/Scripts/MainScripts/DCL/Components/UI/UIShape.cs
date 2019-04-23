@@ -1,11 +1,9 @@
-using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
-using UnityEngine.UI;
-using DCL.Helpers;
 using DCL.Controllers;
-using DCL.Models;
-using System;
+using DCL.Helpers;
+using System.Collections;
+using UnityEngine;
+using UnityEngine.Assertions;
+using UnityEngine.UI;
 
 namespace DCL.Components
 {
@@ -21,6 +19,18 @@ namespace DCL.Components
         public float value;
         public Unit type;
 
+        public void SetPixels(float value)
+        {
+            this.type = Unit.PIXELS;
+            this.value = value;
+        }
+
+        public void SetPercent(float value)
+        {
+            this.type = Unit.PERCENT;
+            this.value = value;
+        }
+
         public UIValue(float value, Unit unitType = Unit.PIXELS)
         {
             this.value = value;
@@ -32,9 +42,82 @@ namespace DCL.Components
             float tmpValue = value;
 
             if (type == Unit.PERCENT)
+            {
                 tmpValue /= 100;
+            }
 
             return tmpValue * (type == Unit.PIXELS ? 1 : parentSize);
+        }
+    }
+
+    public class UIShape<ReferencesContainerType, ModelType> : UIShape
+        where ReferencesContainerType : UIReferencesContainer
+        where ModelType : UIShape.Model
+    {
+        public UIShape(ParcelScene scene) : base(scene)
+        {
+        }
+
+        new public ModelType model
+        {
+            get { return base.model as ModelType; }
+            set { base.model = value; }
+        }
+
+        new public ReferencesContainerType referencesContainer
+        {
+            get { return base.referencesContainer as ReferencesContainerType; }
+            set { base.referencesContainer = value; }
+        }
+
+        public override IEnumerator ApplyChangesWrapper(string newJson)
+        {
+            base.ApplyChangesWrapper(newJson);
+
+            model = JsonUtility.FromJson<ModelType>(newJson);
+
+            bool raiseOnAttached = false;
+
+            if (referencesContainer == null)
+            {
+                referencesContainer = InstantiateUIGameObject<ReferencesContainerType>(referencesContainerPrefabName);
+                raiseOnAttached = true;
+            }
+            else
+            {
+                if (ReparentComponent(referencesContainer.rectTransform, model.parentComponent))
+                {
+                    raiseOnAttached = true;
+                }
+            }
+
+            yield return ApplyChanges(newJson);
+
+            RefreshDCLLayout();
+#if UNITY_EDITOR
+            SetComponentDebugName();
+#endif
+
+            if (referencesContainer != null)
+            {
+                referencesContainer.canvasGroup.alpha = model.visible == false ? 0 : model.opacity;
+                referencesContainer.canvasGroup.blocksRaycasts = model.isPointerBlocker;
+            }
+
+            RaiseOnAppliedChanges();
+
+            if (raiseOnAttached && parentUIComponent != null)
+            {
+                UIReferencesContainer[] parents = referencesContainer.GetComponentsInParent<UIReferencesContainer>();
+
+                foreach (var parent in parents)
+                {
+                    if (parent.owner != null)
+                    {
+                        parent.owner.OnChildAttached(parentUIComponent, this);
+                    }
+                }
+            }
         }
     }
 
@@ -43,6 +126,7 @@ namespace DCL.Components
         [System.Serializable]
         public class Model
         {
+            public string name;
             public string parentComponent;
             public bool visible = true;
             public float opacity = 1;
@@ -55,23 +139,24 @@ namespace DCL.Components
             public bool isPointerBlocker = true;
         }
 
-        public override string componentName => "UIShape";
+        public override string componentName => GetDebugName();
+        public virtual string referencesContainerPrefabName => "";
         public UIReferencesContainer referencesContainer;
         public RectTransform childHookRectTransform;
 
-        protected Model model = new Model();
+        public Model model = new Model();
         protected UIShape parentUIComponent;
-
-        public Action OnShapeUpdated;
 
         public UIShape(ParcelScene scene) : base(scene)
         {
         }
 
-        public override void OnAppliedChanges()
+        public string GetDebugName()
         {
-            if (OnShapeUpdated != null)
-                OnShapeUpdated.Invoke();
+            if (string.IsNullOrEmpty(model.name))
+                return GetType().Name;
+            else
+                return GetType().Name + " - " + model.name;
         }
 
         public override IEnumerator ApplyChanges(string newJson)
@@ -87,9 +172,13 @@ namespace DCL.Components
             if (targetParentExists)
             {
                 if (scene.disposableComponents.ContainsKey(model.parentComponent))
+                {
                     parentUIComponent = (scene.disposableComponents[model.parentComponent] as UIShape);
+                }
                 else
+                {
                     parentUIComponent = scene.uiScreenSpace as UIShape;
+                }
             }
             else
             {
@@ -103,22 +192,79 @@ namespace DCL.Components
 
             childHookRectTransform = referencesContainer.childHookRectTransform;
 
-            referencesContainer.name = componentName + " - " + id;
             referencesContainer.owner = this;
-
-            parentUIComponent.OnChildComponentAttached(this);
 
             return referencesContainer as T;
         }
 
-        protected void ReparentComponent(RectTransform targetTransform, string targetParent)
+        public virtual void RefreshDCLLayout(bool refreshSize=true, bool refreshAlignmentAndPosition=true)
+        {
+            RectTransform parentRT = referencesContainer.GetComponentInParent<RectTransform>();
+
+            if ( refreshSize )
+                RefreshDCLSize(parentRT);
+
+            if (refreshAlignmentAndPosition)
+            {
+                // Alignment (Alignment uses size so we should always align AFTER resizing)
+                RefreshDCLAlignmentAndPosition(parentRT);
+            }
+        }
+
+        protected void RefreshDCLSize(RectTransform parentTransform = null)
+        {
+            if (parentTransform == null)
+            {
+                parentTransform = referencesContainer.GetComponentInParent<RectTransform>();
+            }
+
+            referencesContainer.layoutElementRT.SetSizeWithCurrentAnchors(RectTransform.Axis.Horizontal, model.width.GetScaledValue(parentTransform.rect.width));
+            referencesContainer.layoutElementRT.SetSizeWithCurrentAnchors(RectTransform.Axis.Vertical, model.height.GetScaledValue(parentTransform.rect.height));
+
+            referencesContainer.layoutElementRT.ForceUpdateRectTransforms();
+        }
+
+        public void RefreshDCLAlignmentAndPosition(RectTransform parentTransform = null)
+        {
+            if (parentTransform == null)
+            {
+                parentTransform = referencesContainer.GetComponentInParent<RectTransform>();
+            }
+
+            referencesContainer.layoutElement.ignoreLayout = false;
+            ConfigureAlignment(referencesContainer.layoutGroup);
+            LayoutRebuilder.ForceRebuildLayoutImmediate(referencesContainer.layoutGroup.transform as RectTransform);
+            referencesContainer.layoutElement.ignoreLayout = true;
+
+            // Reposition
+            Vector3 position = Vector3.zero;
+            position.x = model.positionX.GetScaledValue(parentTransform.rect.width);
+            position.y = model.positionY.GetScaledValue(parentTransform.rect.height);
+
+            referencesContainer.layoutElementRT.localPosition += position;
+        }
+
+        protected bool ReparentComponent(RectTransform targetTransform, string targetParent)
         {
             bool targetParentExists = !string.IsNullOrEmpty(targetParent) && scene.disposableComponents.ContainsKey(targetParent);
 
-            if (targetParentExists && parentUIComponent == scene.disposableComponents[targetParent]) return;
+            if (targetParentExists && parentUIComponent == scene.disposableComponents[targetParent])
+            {
+                return false;
+            }
 
             if (parentUIComponent != null)
-                parentUIComponent.OnChildComponentDettached(this);
+            {
+                UIReferencesContainer[] parents = referencesContainer.GetComponentsInParent<UIReferencesContainer>();
+
+                foreach (var parent in parents)
+                {
+                    if (parent.owner != null)
+                    {
+                        parent.owner.OnChildDetached(parentUIComponent, this);
+                    }
+                }
+            }
 
             if (targetParentExists)
             {
@@ -130,48 +276,57 @@ namespace DCL.Components
             }
 
             targetTransform.SetParent(parentUIComponent.childHookRectTransform, false);
-            parentUIComponent.OnChildComponentAttached(this);
+            return true;
         }
 
-        protected virtual void OnChildComponentAttached(UIShape childComponent)
+        public virtual void RefreshDCLLayoutRecursively(bool refreshSize = true, bool refreshAlignmentAndPosition = true)
         {
+            UIShape rootParent = GetRootParent();
+
+            Assert.IsTrue(rootParent != null, "root parent must never be null");
+
+            Utils.InverseTreeTraversal<UIReferencesContainer>(
+                (x) =>
+                {
+                    if (x.owner != null)
+                    {
+                        x.owner.RefreshDCLLayout(refreshSize, refreshAlignmentAndPosition);
+                    }
+                },
+                rootParent.referencesContainer.transform);
         }
 
-        protected virtual void OnChildComponentDettached(UIShape childComponent)
+        public void FixMaxStretchRecursively()
         {
-        }
+            UIShape rootParent = GetRootParent();
 
-        protected IEnumerator ResizeAlignAndReposition(
-            RectTransform targetTransform,
-            float parentWidth,
-            float parentHeight,
-            LayoutGroup alignmentLayout,
-            LayoutElement alignedLayoutElement)
-        {
-            // Resize
-            targetTransform.SetSizeWithCurrentAnchors(RectTransform.Axis.Horizontal, model.width.GetScaledValue(parentWidth));
-            targetTransform.SetSizeWithCurrentAnchors(RectTransform.Axis.Vertical, model.height.GetScaledValue(parentHeight));
+            Assert.IsTrue(rootParent != null, "root parent must never be null");
 
-            targetTransform.ForceUpdateRectTransforms();
-
-            // Alignment (Alignment uses size so we should always align AFTER reisizing)
-            alignedLayoutElement.ignoreLayout = false;
-            ConfigureAlignment(alignmentLayout);
-            LayoutRebuilder.ForceRebuildLayoutImmediate(alignmentLayout.transform as RectTransform);
-
-            // Reposition
-            Vector3 position = Vector3.zero;
-            position.x = model.positionX.GetScaledValue(parentWidth);
-            position.y = model.positionY.GetScaledValue(parentHeight);
-
-            if (position != Vector3.zero)
+            Utils.InverseTreeTraversal<UIReferencesContainer>(
+            (x) =>
             {
-                alignedLayoutElement.ignoreLayout = true;
+                if (x.owner != null)
+                {
+                    x.rectTransform.SetToMaxStretch();
+                }
+            },
+            rootParent.referencesContainer.transform);
+        }
 
-                targetTransform.localPosition += position;
+        public UIShape GetRootParent()
+        {
+            UIShape parent = null;
+
+            if (parentUIComponent != null && !(parentUIComponent is UIScreenSpace))
+            {
+                parent = parentUIComponent.GetRootParent();
+            }
+            else
+            {
+                parent = this;
             }
 
-            yield break;
+            return parent;
         }
 
         protected void ConfigureAlignment(LayoutGroup layout)
@@ -223,11 +378,23 @@ namespace DCL.Components
             }
         }
 
+        protected void SetComponentDebugName()
+        {
+            if (referencesContainer == null || model == null)
+            {
+                return;
+            }
+
+            referencesContainer.name = componentName;
+        }
+
         public override void Dispose()
         {
             Utils.SafeDestroy(childHookRectTransform.gameObject);
-
             base.Dispose();
         }
+
+        public virtual void OnChildAttached(UIShape parentComponent, UIShape childComponent) { }
+        public virtual void OnChildDetached(UIShape parentComponent, UIShape childComponent) { }
     }
 }

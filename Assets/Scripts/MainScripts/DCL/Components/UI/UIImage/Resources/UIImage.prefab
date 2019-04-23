@@ -12,7 +12,7 @@ GameObject:
   - component: {fileID: 3734379414975295569}
   - component: {fileID: 7673287680364269346}
   m_Layer: 0
-  m_Name: UIImageShape
+  m_Name: Image
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -125,11 +125,11 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   rectTransform: {fileID: 1231610846333877600}
   canvasGroup: {fileID: 3457819571539467863}
-  alignmentLayoutGroup: {fileID: 1705150512210581689}
+  layoutGroup: {fileID: 1705150512210581689}
+  layoutElement: {fileID: 5419367863745986743}
+  layoutElementRT: {fileID: 6170498012961636253}
   childHookRectTransform: {fileID: 4490166200948036571}
   paddingLayoutGroup: {fileID: 5554716190968433857}
-  paddingLayoutElement: {fileID: 5419367863745986743}
-  paddingLayoutRectTransform: {fileID: 6170498012961636253}
   image: {fileID: 7673287680364269346}
   imageRectTransform: {fileID: 4490166200948036571}
 --- !u!114 &1705150512210581689
@@ -166,7 +166,7 @@ CanvasGroup:
   m_Alpha: 1
   m_Interactable: 1
   m_BlocksRaycasts: 1
-  m_IgnoreParentGroups: 1
+  m_IgnoreParentGroups: 0
 --- !u!1 &7324442821574377625
 GameObject:
   m_ObjectHideFlags: 0

@@ -14,7 +14,7 @@ namespace Tests
     public class UIScreenSpaceTests : TestsBase
     {
         [UnityTest]
-        public IEnumerator UIScreenSpaceVisibilityUpdate()
+        public IEnumerator TestVisibilityUpdate()
         {
             yield return InitScene();
 
@@ -85,7 +85,7 @@ namespace Tests
         }
 
         [UnityTest]
-        public IEnumerator UIScreenSpaceIsScaledWhenCharacterIsElsewhere()
+        public IEnumerator TestScaleWhenCharacterIsElsewhere()
         {
             yield return InitScene();
 
@@ -116,7 +116,7 @@ namespace Tests
         }
 
         [UnityTest]
-        public IEnumerator UIScreenSpaceMissingValuesGetDefaultedOnUpdate()
+        public IEnumerator TestMissingValuesGetDefaultedOnUpdate()
         {
             yield return InitScene();
             yield return TestHelpers.TestSharedComponentDefaultsOnUpdate<UIScreenSpace.Model, UIScreenSpace>(scene, CLASS_ID.UI_SCREEN_SPACE_SHAPE);

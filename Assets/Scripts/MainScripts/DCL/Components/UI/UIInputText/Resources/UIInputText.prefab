@@ -122,7 +122,7 @@ RectTransform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 6478543716498952680}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: -65.11093}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
   - {fileID: 7981744296803612803}
@@ -156,13 +156,13 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   rectTransform: {fileID: 7164372453373240356}
   canvasGroup: {fileID: 2061073791672850056}
-  alignmentLayoutGroup: {fileID: 3510635133753685448}
+  layoutGroup: {fileID: 3510635133753685448}
+  layoutElement: {fileID: 2188561398209007703}
+  layoutElementRT: {fileID: 7981744296803612803}
   childHookRectTransform: {fileID: 6255349749490589391}
   bgImage: {fileID: 4259842131996997273}
   text: {fileID: 8159873823445132116}
   inputField: {fileID: 1867715396876657037}
-  textLayoutElement: {fileID: 2188561398209007703}
-  textLayoutElementRT: {fileID: 7981744296803612803}
 --- !u!114 &3510635133753685448
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -197,7 +197,7 @@ CanvasGroup:
   m_Alpha: 1
   m_Interactable: 1
   m_BlocksRaycasts: 1
-  m_IgnoreParentGroups: 1
+  m_IgnoreParentGroups: 0
 --- !u!1 &7803586496167062275
 GameObject:
   m_ObjectHideFlags: 0

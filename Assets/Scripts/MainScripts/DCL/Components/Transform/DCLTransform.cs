@@ -16,7 +16,6 @@ namespace DCL.Components
             public Vector3 scale = Vector3.one;
         }
 
-        public override string componentName => "transform";
         public Model model = new Model();
 
         void UpdateTransform()

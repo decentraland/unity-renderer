@@ -14,7 +14,7 @@ namespace Tests
     public class UIScrollRectTests : TestsBase
     {
         [UnityTest]
-        public IEnumerator UIScrollRectPropertiesAreAppliedCorrectly()
+        public IEnumerator TestPropertiesAreAppliedCorrectly()
         {
             yield return InitScene();
 
@@ -30,7 +30,6 @@ namespace Tests
 
             // Create UIScreenSpaceShape
             UIScreenSpace screenSpaceShape = TestHelpers.SharedComponentCreate<UIScreenSpace, UIScreenSpace.Model>(scene, CLASS_ID.UI_SCREEN_SPACE_SHAPE);
-
             yield return screenSpaceShape.routine;
 
             UIScrollRect scrRect = TestHelpers.SharedComponentCreate<UIScrollRect, UIScrollRect.Model>(scene, CLASS_ID.UI_SLIDER_SHAPE);
@@ -47,8 +46,8 @@ namespace Tests
             Assert.AreEqual(0, refC.paddingLayoutGroup.padding.left);
             Assert.AreEqual(0, refC.paddingLayoutGroup.padding.right);
 
-            Assert.IsFalse(refC.scrollRect.horizontal);
-            Assert.IsTrue(refC.scrollRect.vertical);
+            Assert.IsFalse(refC.isHorizontal);
+            Assert.IsTrue(refC.isVertical);
 
             Assert.AreEqual(0, refC.HScrollbar.value);
             Assert.AreEqual(0, refC.VScrollbar.value);
@@ -74,7 +73,7 @@ namespace Tests
             Assert.IsFalse(scrRect.referencesContainer.canvasGroup.blocksRaycasts);
             Assert.AreEqual(275f, scrRect.childHookRectTransform.rect.width);
             Assert.AreEqual(130f, scrRect.childHookRectTransform.rect.height);
-            Assert.IsTrue(scrRect.referencesContainer.alignmentLayoutGroup.childAlignment == TextAnchor.LowerRight);
+            Assert.IsTrue(scrRect.referencesContainer.layoutGroup.childAlignment == TextAnchor.LowerRight);
 
             Vector2 alignedPosition = CalculateAlignedPosition(screenSpaceShape.childHookRectTransform.rect, scrRect.childHookRectTransform.rect, "bottom", "right");
             alignedPosition += new Vector2(-30, -15); // apply offset position
@@ -85,7 +84,7 @@ namespace Tests
         }
 
         [UnityTest]
-        public IEnumerator UIScrollRectMissingValuesGetDefaultedOnUpdate()
+        public IEnumerator TestMissingValuesGetDefaultedOnUpdate()
         {
             yield return InitScene();
 
@@ -100,7 +99,7 @@ namespace Tests
         }
 
         [UnityTest]
-        public IEnumerator UIScrollRectShapeNormalizedSize()
+        public IEnumerator TestNormalizedSize()
         {
             yield return InitScene();
 
