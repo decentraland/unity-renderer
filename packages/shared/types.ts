@@ -263,6 +263,11 @@ export type SkeletalAnimationValue = {
    * Is the animation playing? default: true
    */
   playing?: boolean
+
+  /**
+   * Does any anyone asked to reset the animation? default: false
+   */
+  shouldReset?: boolean
 }
 
 export type SkeletalAnimationComponent = {

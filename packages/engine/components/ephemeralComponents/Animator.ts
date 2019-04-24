@@ -60,6 +60,10 @@ export class Animator extends BaseComponent<SkeletalAnimationComponent> {
           clip.speedRatio = animationAttributes.speed
         }
 
+        if (animationAttributes.shouldReset) {
+          clip.reset()
+        }
+
         if (animationAttributes.playing && !(clip as any).isPlaying) {
           clip.play(animationAttributes.loop)
         } else if (!animationAttributes.playing && (clip as any).isPlaying) {
