@@ -6,7 +6,7 @@ import { IFuture, future } from 'fp-future'
 import { getERC20 } from './ERC20'
 import { requestManager } from './provider'
 import { getERC721 } from './ERC721'
-import { getNetworkConfigurations, MOBILE_DEBUG, ETHEREUM_NETWORK } from 'config'
+import { MOBILE_DEBUG, ETHEREUM_NETWORK, decentralandConfigurations } from 'config'
 import { generateEphemeralKeys, UserData as EphemeralKey } from 'ephemeralkey'
 import { saveToLocalStorage, removeFromLocalStorage, getFromLocalStorage } from 'atomicHelpers/localStorage'
 import { RPCSendableMessage } from 'shared/types'
@@ -271,7 +271,7 @@ export async function getEphemeralKeys(network: ETHEREUM_NETWORK, regenerate: bo
   }
 
   if (!keys) {
-    const inviteAddress = getNetworkConfigurations(network).invite
+    const inviteAddress = decentralandConfigurations.invite
     keys = await generateEphemeralKeys(requestManager.provider, inviteAddress)
     saveToLocalStorage(storageKey, keys)
   }

@@ -1,7 +1,7 @@
 import { WebSocketProvider, RequestManager } from 'eth-connect'
 import { error } from 'engine/logger'
 import { future } from 'fp-future'
-import { AVOID_WEB3 } from 'config'
+import { AVOID_WEB3, ethereumConfigurations, ETHEREUM_NETWORK } from 'config'
 
 declare var window: any
 
@@ -26,7 +26,7 @@ export const requestManager = new RequestManager(null)
       } else {
         // tslint:disable-next-line:no-console
         console.log('Non-Ethereum browser detected. You should consider trying MetaMask!')
-        providerFuture.resolve(new WebSocketProvider('wss://mainnet.infura.io/ws'))
+        providerFuture.resolve(new WebSocketProvider(ethereumConfigurations[ETHEREUM_NETWORK.MAINNET].wss))
       }
     })
 
