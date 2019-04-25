@@ -240,14 +240,14 @@ export type SkeletalAnimationValue = {
   name: string
 
   /**
-   * Name or index of the animation in the model
+   * Name of the animation in the model
    */
-  clip: string | number
+  clip: string
 
   /**
    * Does the animation loop?, default: true
    */
-  loop?: boolean
+  looping?: boolean
 
   /**
    * Weight of the animation, values from 0 to 1, used to blend several animations. default: 1

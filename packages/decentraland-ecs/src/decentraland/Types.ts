@@ -181,6 +181,13 @@ export interface IEvents {
   onPointerLock: {}
 
   /**
+   * `onAnimationEnd` is triggered when an animation clip gets finish
+   */
+  onAnimationEnd: {
+    clipName: string
+  }
+
+  /**
    * `onFocus` is triggered when an entity focus is active.
    * Dispatched by the `ui-input` and `ui-password` entities when the value is changed.
    * It triggers a callback.
