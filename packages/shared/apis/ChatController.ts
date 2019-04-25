@@ -18,6 +18,7 @@ import {
   removeFromMutedUsers
 } from 'shared/comms/peers'
 import { uuid } from 'atomicHelpers/math'
+import { hud } from 'engine/dcl/widgets/ui'
 
 export const positionRegex = new RegExp('^(-?[0-9]+) *, *(-?[0-9]+)$')
 
@@ -36,17 +37,18 @@ export interface IChatController {
 @registerAPI('ChatController')
 export class ChatController extends ExposableAPI implements IChatController {
   private chatCommands: { [key: string]: IChatCommand } = {}
+  private engineAPI: EngineAPI
 
   constructor(options: APIOptions) {
     super(options)
     this.initChatCommands()
 
-    const engineAPI = options.getAPIInstance(EngineAPI)
+    this.engineAPI = options.getAPIInstance(EngineAPI)
 
     chatObservable.add((event: any) => {
       if (event.type === ChatEvent.MESSAGE_RECEIVED || event.type === ChatEvent.MESSAGE_SENT) {
         const { type, ...data } = event
-        engineAPI.sendSubscriptionEvent(event.type, data)
+        this.engineAPI.sendSubscriptionEvent(event.type, data)
       }
     })
   }
@@ -81,6 +83,11 @@ export class ChatController extends ExposableAPI implements IChatController {
   @exposeMethod
   async getChatCommands() {
     return this.chatCommands
+  }
+
+  @exposeMethod
+  async getFocus(screenSpaceUI: string, textInput: string) {
+    hud!.moveFocusTo(screenSpaceUI, textInput)
   }
 
   // @internal

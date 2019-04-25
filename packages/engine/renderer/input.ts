@@ -43,7 +43,7 @@ export { keyState, Keys }
 
 let didInit = false
 
-export function initKeyboard() {
+export function initKeyboard(canvas: HTMLCanvasElement) {
   if (didInit) return
   didInit = true
   vrCamera.keysUp = [Keys.KEY_W as number] // W
@@ -51,11 +51,26 @@ export function initKeyboard() {
   vrCamera.keysLeft = [Keys.KEY_A as number] // A
   vrCamera.keysRight = [Keys.KEY_D as number] // D
 
+  const hasPointerLock = () =>
+    document.pointerLockElement === canvas ||
+    document['mozPointerLockElement'] === canvas ||
+    document['webkitPointerLockElement'] === canvas
+
+  document.body.addEventListener('keyup', e => {
+    if (e.code === 'Escape' && hud) {
+      hud.context.entities.forEach((e: any) => e.dispatchUUIDEvent('onEscape', {}))
+      canvas.focus()
+    }
+  })
+
   document.body.addEventListener('keydown', e => {
     if (e.code === 'Enter' && hud) {
       hud.context.entities.forEach((e: any) => e.dispatchUUIDEvent('onEnter', {}))
+      if (hasPointerLock()) {
+        document.exitPointerLock()
+        canvas.focus()
+      }
     }
-
     keyState[Keys.KEY_SHIFT] = e.shiftKey
 
     if (e.shiftKey && vrCamera.applyGravity) {

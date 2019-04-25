@@ -166,7 +166,7 @@ export async function initBabylonClient() {
   }
   enableMouseLock(engine.getRenderingCanvas()!)
 
-  initKeyboard()
+  initKeyboard(engine.getRenderingCanvas()!)
   initDebugCommands()
 
   addStats()
