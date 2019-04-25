@@ -4,8 +4,8 @@ import {
   parcelLimits,
   ETHEREUM_NETWORK,
   commConfigurations,
-  getNetworkConfigurations,
-  playerConfigurations
+  playerConfigurations,
+  getServerConfigurations
 } from 'config'
 
 import { saveToLocalStorage } from 'atomicHelpers/localStorage'
@@ -311,7 +311,7 @@ export async function connect(ethAddress: string, network: ETHEREUM_NETWORK) {
       avatarType: user.avatarType
     }
 
-    const connection = new WorldInstanceConnection(getNetworkConfigurations(network).worldInstanceUrl)
+    const connection = new WorldInstanceConnection(getServerConfigurations().worldInstanceUrl)
     connection.positionHandler = (alias, data) => processPositionMessage(context!, alias, data)
     connection.profileHandler = (alias, data) => processProfileMessage(context!, alias, data)
     connection.chatHandler = (alias, data) => processChatMessage(context!, alias, data)

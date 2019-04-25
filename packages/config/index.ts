@@ -10,17 +10,11 @@ export const performanceConfigurations = [
 
 export const NETWORK_HZ = 10
 
-export const playerSphereRadius = 0.4
-
 export namespace interactionLimits {
   /**
    * click distance, this is the lenght of the ray/lens
    */
   export const clickDistance = 10
-  /**
-   * Scale of the marker on the tip of laser beam from VR controller
-   */
-  export const markerScale = 0.07
 }
 
 export namespace parcelLimits {
@@ -84,12 +78,12 @@ export namespace visualConfigurations {
   export const far = farDistance
 }
 
+// Entry points
 export const PREVIEW: boolean = !!(global as any).preview
-
 export const EDITOR: boolean = !!(global as any).isEditor
 
+// Development
 export const AVOID_WEB3: boolean = !!(global as any).avoidWeb3 || EDITOR
-
 export const DEBUG = location.search.indexOf('DEBUG') !== -1 || !!(global as any).mocha || PREVIEW || EDITOR
 export const MOBILE_DEBUG = location.search.indexOf('MOBILE_DEBUG') !== -1
 export const DEBUG_METRICS = location.search.indexOf('DEBUG_METRICS') !== -1
@@ -97,19 +91,14 @@ export const DEBUG_METRICS = location.search.indexOf('DEBUG_METRICS') !== -1
 export namespace commConfigurations {
   export const debug = DEBUG_METRICS
   export const commRadius = 4
-
   export const peerTtlMs = 1000
-
   export const maxVisiblePeers = 25
-
   export const iceServers = [
     {
       urls: 'stun:stun.l.google.com:19302'
     }
   ]
 }
-
-export const isStandaloneHeadset = navigator && navigator.userAgent.includes('Oculus')
 
 // take address from http://contracts.decentraland.org/addresses.json
 
@@ -118,61 +107,63 @@ export enum ETHEREUM_NETWORK {
   ROPSTEN = 'ropsten'
 }
 
-function getContentFromDomain() {
-  const domain = window.location.host
-  if (domain.endsWith('.decentraland.org')) {
-    return 'https://content.decentraland.org'
-  } else if (domain.endsWith('.decentraland.today')) {
-    return 'https://content.decentraland.today'
-  } else if (domain.endsWith('.decentraland.zone')) {
-    return 'https://content.decentraland.zone'
-  } else {
-    return null
+export let decentralandConfigurations: any = {}
+let contracts: any = null
+let network: ETHEREUM_NETWORK | null = null
+
+export function getTLD() {
+  if (window) {
+    return window.location.hostname.match(/(\w+)$/)[0]
   }
 }
 
-export function getNetworkConfigurations(net: ETHEREUM_NETWORK) {
-  if (net === ETHEREUM_NETWORK.MAINNET) {
-    return {
-      wss: 'wss://mainnet.infura.io/ws',
-      http: 'https://mainnet.infura.io/',
-      contractAddress: '0xF87E31492Faf9A91B02Ee0dEAAd50d51d56D5d4d',
-      landApi: 'https://api.decentraland.org/v1',
-      etherscan: 'https://etherscan.io',
-
-      contracts: {
-        serviceLocator: '0x151b11892dd6ab1f91055dcd01d23d03a2c47570'
-      },
-
-      paymentTokens: {
-        MANA: '0x0F5D2fB29fb7d3CFeE444a200298f468908cC942'
-      },
-
-      content: getContentFromDomain() || 'https://content.decentraland.org',
-      worldInstanceUrl: 'wss://world-comm.decentraland.org/connect?method=noop',
-      invite: '0xf886313f213c198458eba7ae9329525e64eb763a'
-    }
+function getDefaultTLD() {
+  const TLD = getTLD()
+  if (!TLD || TLD === 'localhost') {
+    return network && network === ETHEREUM_NETWORK.ROPSTEN ? 'zone' : 'org'
   }
-  // if (net === ETHEREUM_NETWORK.ROPSTEN) {
+  return TLD
+}
+
+export function getServerConfigurations() {
+  const TLDDefault = getDefaultTLD()
   return {
-    wss: 'wss://ropsten.infura.io/ws',
-    http: 'https://ropsten.infura.io/',
-    contractAddress: '0x7a73483784ab79257bb11b96fd62a2c3ae4fb75b',
-    landApi: 'https://api.decentraland.zone/v1',
-    etherscan: 'https://ropsten.etherscan.io',
+    landApi: `https://api.decentraland.${TLDDefault}/v1`,
+    content: `https://content.decentraland.${TLDDefault}`,
+    worldInstanceUrl: `wss://world-comm.decentraland.${TLDDefault}/connect?method=noop`
+  }
+}
+
+export async function setNetwork(net: ETHEREUM_NETWORK) {
+  const response = await fetch('https://contracts.decentraland.org/addresses.json')
+  const json = await response.json()
+
+  network = net
+  contracts = json[net]
+
+  decentralandConfigurations = {
+    contractAddress: contracts.LANDProxy,
     contracts: {
-      serviceLocator: '0xb240b30c12d2a9ea6ba3abbf663d9ae265fbebeb'
+      serviceLocator: contracts.ServiceLocator
     },
     paymentTokens: {
-      MANA: '0x2a8fd99c19271f4f04b1b7b9c4f7cf264b626edb'
+      MANA: contracts.MANAToken
     },
+    invite: contracts.DecentralandInvite
+  }
+}
 
-    content: getContentFromDomain() || 'https://content.decentraland.zone',
-    worldInstanceUrl: 'wss://world-comm.decentraland.zone/connect?method=noop',
-    invite: '0x7557dfa02f3bd7d274851e3f627de2ed2ff390e8'
+export namespace ethereumConfigurations {
+  export const mainnet = {
+    wss: 'wss://mainnet.infura.io/ws',
+    http: 'https://mainnet.infura.io/',
+    etherscan: 'https://etherscan.io'
+  }
+  export const ropsten = {
+    wss: 'wss://ropsten.infura.io/ws',
+    http: 'https://ropsten.infura.io/',
+    etherscan: 'https://ropsten.etherscan.io'
   }
 }
 
 export const isRunningTest: boolean = (global as any)['isRunningTests'] === true
-
-export const ROADS_DISTRICT = 'f77140f9-c7b4-4787-89c9-9fa0e219b079'
