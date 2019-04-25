@@ -133,8 +133,8 @@ function getSceneNumbers() {
 }
 
 async function initHud() {
-  initKeyboard()
   const canvas = initDCL()
+  initKeyboard(canvas)
   const body = await bodyReadyFuture
   if (!canvas.parentElement) {
     body.appendChild(canvas)

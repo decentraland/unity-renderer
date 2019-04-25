@@ -339,12 +339,33 @@ function closeHelp() {
   helpContainer!.visible = false
 }
 
+async function onEnterReceived() {
+  const visible = container!.visible
+
+  if (!visible) {
+    await toggleChat()
+  } else {
+    await sendMsg()
+    await focusOnInput()
+  }
+}
+
 function toggleChat() {
   const visible = container!.visible
 
   container!.visible = !visible
+  if (container!.visible) {
+    focusOnInput()
+  }
   containerMinimized!.visible = visible
   transparentContainer!.visible = visible
+}
+
+function focusOnInput() {
+  execute('ChatController', 'getFocus', [
+    (screenSpaceUI as any).__component__id_,
+    (textInput as any).component.__component__id_
+  ])
 }
 
 function closeChat() {
@@ -504,8 +525,8 @@ function initializeMinimizedChat(parent: UIFullScreenShape) {
 
   const minimizedIconEntity = new Entity()
   minimizedIconEntity.addComponentOrReplace(minimizedIcon)
-  minimizedIconEntity.addComponentOrReplace(new OnClick(toggleChat))
-  minimizedIconEntity.addComponentOrReplace(new OnEnter(toggleChat))
+  minimizedIconEntity.addComponentOrReplace(new OnClick(onEnterReceived))
+  minimizedIconEntity.addComponentOrReplace(new OnEnter(onEnterReceived))
   minimizedIconEntity.addComponentOrReplace(new OnPointerLock(closeChat))
   engine.addEntity(minimizedIconEntity)
 
