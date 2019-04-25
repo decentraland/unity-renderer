@@ -4092,7 +4092,7 @@ declare class UIImageShape extends UIShape {
   sourceTop: string | null
   sourceWidth: string | null
   sourceHeight: string | null
-  source: string | null
+  source?: Texture
   width: string
   height: string
   top: string

@@ -758,6 +758,15 @@ export class OnPointerLock extends OnUUIDEvent<'onPointerLock'> {
 /**
  * @public
  */
+@Component('engine.onAnimationEnd', CLASS_ID.UUID_CALLBACK)
+export class OnAnimationEnd extends OnUUIDEvent<'onAnimationEnd'> {
+  @ObservableComponent.readonly
+  readonly type: string = 'onAnimationEnd'
+}
+
+/**
+ * @public
+ */
 @Component('engine.onFocus', CLASS_ID.UUID_CALLBACK)
 export class OnFocus extends OnUUIDEvent<'onFocus'> {
   @ObservableComponent.readonly
