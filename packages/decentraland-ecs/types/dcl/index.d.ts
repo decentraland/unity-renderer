@@ -39,10 +39,16 @@ declare class Angle {
   radians(): number
 }
 
+declare type AnimationParams = {
+  looping?: boolean
+  speed?: number
+  weight?: number
+}
+
 /**
  * @public
  */
-declare class AnimationClip extends ObservableComponent {
+declare class AnimationState extends ObservableComponent {
   /**
    * Name of the animation in the model
    */
@@ -60,6 +66,10 @@ declare class AnimationClip extends ObservableComponent {
    */
   playing: boolean
   /**
+   * Does any anyone asked to reset the animation? default: false
+   */
+  shouldReset: boolean
+  /**
    * The animation speed
    */
   speed: number
@@ -68,6 +78,7 @@ declare class AnimationClip extends ObservableComponent {
    * Sets the clip parameters
    */
   setParams(params: AnimationParams): void
+  toJSON(): any
   /**
    * Starts the animation
    */
@@ -76,12 +87,14 @@ declare class AnimationClip extends ObservableComponent {
    * Pauses the animation
    */
   pause(): void
-}
-
-declare type AnimationParams = {
-  looping?: boolean
-  speed?: number
-  weight?: number
+  /**
+   * Resets the animation state to the frame 0
+   */
+  reset(): void
+  /**
+   * Resets and pauses the animation
+   */
+  stop(): void
 }
 
 /**
@@ -90,14 +103,14 @@ declare type AnimationParams = {
 declare class Animator extends Shape {
   private states
   /**
-   * Adds an AnimationClip to the animation lists.
+   * Adds an AnimationState to the animation lists.
    */
-  addClip(clip: AnimationClip): void
+  addClip(clip: AnimationState): void
   /**
    * Gets the animation clip instance for the specified clip name.
    * If the clip doesn't exist a new one will be created.
    */
-  getClip(clipName: string): AnimationClip
+  getClip(clipName: string): AnimationState
 }
 
 /**

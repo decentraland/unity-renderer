@@ -5,7 +5,7 @@ import {
   engine,
   Vector3,
   OnPointerDown,
-  AnimationClip,
+  AnimationState,
   Animator,
   log
 } from 'decentraland-ecs/src'
@@ -31,8 +31,8 @@ shark.addComponentOrReplace(
 )
 
 const shark2 = new Entity()
-const clip2 = new AnimationClip('shark_skeleton_bite', { weight: 0.7, speed: 5 })
-const clip3 = new AnimationClip('shark_skeleton_swim', { weight: 0.7, speed: 0.5 })
+const clip2 = new AnimationState('shark_skeleton_bite', { weight: 0.7, speed: 5 })
+const clip3 = new AnimationState('shark_skeleton_swim', { weight: 0.7, speed: 0.5 })
 const animator2 = shark2.getComponentOrCreate(Animator)
 animator2.addClip(clip2)
 animator2.addClip(clip3)

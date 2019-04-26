@@ -16,7 +16,7 @@ const defaultParams: Required<Pick<AnimationParams, 'looping' | 'speed' | 'weigh
 /**
  * @public
  */
-export class AnimationClip extends ObservableComponent {
+export class AnimationState extends ObservableComponent {
   // @internal
   public isAnimationClip: boolean = true
 

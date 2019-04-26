@@ -1,6 +1,6 @@
 import { Component, ObservableComponent, DisposableComponent } from '../ecs/Component'
 import { Vector3, Quaternion, Matrix, MathTmp, Color3 } from './math'
-import { AnimationClip } from './AnimationClip'
+import { AnimationState } from './AnimationState'
 import { newId } from '../ecs/helpers'
 import { IEvents } from './Types'
 
@@ -374,12 +374,12 @@ export class Texture extends ObservableComponent {
 @Component('engine.animator', CLASS_ID.ANIMATION)
 export class Animator extends Shape {
   @ObservableComponent.readonly
-  private states: AnimationClip[] = []
+  private states: AnimationState[] = []
 
   /**
-   * Adds an AnimationClip to the animation lists.
+   * Adds an AnimationState to the animation lists.
    */
-  addClip(clip: AnimationClip) {
+  addClip(clip: AnimationState) {
     this.states.push(clip)
     clip.onChange(() => {
       this.dirty = true
@@ -390,7 +390,7 @@ export class Animator extends Shape {
    * Gets the animation clip instance for the specified clip name.
    * If the clip doesn't exist a new one will be created.
    */
-  getClip(clipName: string): AnimationClip {
+  getClip(clipName: string): AnimationState {
     for (let i = 0; i < this.states.length; i++) {
       const clip = this.states[i]
       if (clip.clip === clipName) {
@@ -398,7 +398,7 @@ export class Animator extends Shape {
       }
     }
 
-    const newClip = new AnimationClip(clipName)
+    const newClip = new AnimationState(clipName)
     this.addClip(newClip)
     return newClip
   }

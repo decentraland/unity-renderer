@@ -239,7 +239,7 @@
         }
       }
     },
-    "AnimationClip": {
+    "AnimationState": {
       "kind": "class",
       "extends": "ObservableComponent",
       "implements": "",
@@ -280,13 +280,13 @@
               "elements": [
                 {
                   "kind": "text",
-                  "text": "AnimationClip"
+                  "text": "AnimationState"
                 }
               ],
               "target": {
                 "scopeName": "",
                 "packageName": "decentraland-ecs",
-                "exportName": "AnimationClip",
+                "exportName": "AnimationState",
                 "memberName": ""
               }
             },
@@ -408,6 +408,30 @@
           "isOverride": false,
           "isEventProperty": false
         },
+        "reset": {
+          "kind": "method",
+          "signature": "reset(): void;",
+          "accessModifier": "",
+          "isOptional": false,
+          "isStatic": false,
+          "returnValue": {
+            "type": "void",
+            "description": []
+          },
+          "parameters": {},
+          "deprecatedMessage": [],
+          "summary": [
+            {
+              "kind": "text",
+              "text": "Resets the animation state to the frame 0"
+            }
+          ],
+          "remarks": [],
+          "isBeta": false,
+          "isSealed": false,
+          "isVirtual": false,
+          "isOverride": false
+        },
         "setParams": {
           "kind": "method",
           "signature": "setParams(params: AnimationParams): void;",
@@ -440,6 +464,27 @@
           "isVirtual": false,
           "isOverride": false
         },
+        "shouldReset": {
+          "kind": "property",
+          "signature": "shouldReset: boolean;",
+          "isOptional": false,
+          "isReadOnly": false,
+          "isStatic": false,
+          "type": "boolean",
+          "deprecatedMessage": [],
+          "summary": [
+            {
+              "kind": "text",
+              "text": "Does any anyone asked to reset the animation? default: false"
+            }
+          ],
+          "remarks": [],
+          "isBeta": false,
+          "isSealed": false,
+          "isVirtual": false,
+          "isOverride": false,
+          "isEventProperty": false
+        },
         "speed": {
           "kind": "property",
           "signature": "speed: number;",
@@ -460,6 +505,49 @@
           "isVirtual": false,
           "isOverride": false,
           "isEventProperty": false
+        },
+        "stop": {
+          "kind": "method",
+          "signature": "stop(): void;",
+          "accessModifier": "",
+          "isOptional": false,
+          "isStatic": false,
+          "returnValue": {
+            "type": "void",
+            "description": []
+          },
+          "parameters": {},
+          "deprecatedMessage": [],
+          "summary": [
+            {
+              "kind": "text",
+              "text": "Resets and pauses the animation"
+            }
+          ],
+          "remarks": [],
+          "isBeta": false,
+          "isSealed": false,
+          "isVirtual": false,
+          "isOverride": false
+        },
+        "toJSON": {
+          "kind": "method",
+          "signature": "toJSON(): any;",
+          "accessModifier": "",
+          "isOptional": false,
+          "isStatic": false,
+          "returnValue": {
+            "type": "any",
+            "description": []
+          },
+          "parameters": {},
+          "deprecatedMessage": [],
+          "summary": [],
+          "remarks": [],
+          "isBeta": false,
+          "isSealed": false,
+          "isVirtual": false,
+          "isOverride": false
         },
         "weight": {
           "kind": "property",
@@ -497,7 +585,7 @@
       "members": {
         "addClip": {
           "kind": "method",
-          "signature": "addClip(clip: AnimationClip): void;",
+          "signature": "addClip(clip: AnimationState): void;",
           "accessModifier": "",
           "isOptional": false,
           "isStatic": false,
@@ -511,14 +599,14 @@
               "description": [],
               "isOptional": false,
               "isSpread": false,
-              "type": "AnimationClip"
+              "type": "AnimationState"
             }
           },
           "deprecatedMessage": [],
           "summary": [
             {
               "kind": "text",
-              "text": "Adds an AnimationClip to the animation lists."
+              "text": "Adds an AnimationState to the animation lists."
             }
           ],
           "remarks": [],
@@ -529,12 +617,12 @@
         },
         "getClip": {
           "kind": "method",
-          "signature": "getClip(clipName: string): AnimationClip;",
+          "signature": "getClip(clipName: string): AnimationState;",
           "accessModifier": "",
           "isOptional": false,
           "isStatic": false,
           "returnValue": {
-            "type": "AnimationClip",
+            "type": "AnimationState",
             "description": []
           },
           "parameters": {
