@@ -1573,12 +1573,12 @@ declare class Input {
   private handlePointerDown
 }
 
-declare type InputEventKind = 'BUTTON_A_DOWN' | 'BUTTON_A_UP'
+declare type InputEventKind = 'BUTTON_DOWN' | 'BUTTON_UP'
 
 declare type InputState = Record<
   Pointer,
   {
-    BUTTON_A_DOWN: boolean
+    BUTTON_DOWN: boolean
   }
 >
 
