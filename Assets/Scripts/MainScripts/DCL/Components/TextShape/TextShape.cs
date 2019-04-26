@@ -27,12 +27,12 @@ namespace DCL.Components
             public float vTextAlign = 0;
             public float width = 1f;
             public float height = 0.2f;
-            public bool resizeToFit = false;
+            public bool adaptWidth = false;
+            public bool adaptHeight = false;
             public float paddingTop = 0f;
             public float paddingRight = 0f;
             public float paddingBottom = 0f;
             public float paddingLeft = 0f;
-            public float zIndex = 0f;
             public float lineSpacing = 0f;
             public int lineCount = 0;
             public bool textWrapping = false;

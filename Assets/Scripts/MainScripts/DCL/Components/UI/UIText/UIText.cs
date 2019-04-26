@@ -38,29 +38,38 @@ namespace DCL.Components
                 model.textModel = JsonUtility.FromJson<TextShape.Model>(newJson);
 
             TextShape.ApplyModelChanges(referencesContainer.text, model.textModel);
-            yield break;
+
+            RefreshAll();
+            return null;
         }
 
-        public override void RefreshDCLLayout(bool refreshSize = true, bool refreshAlignmentAndPosition = true)
+        public override void RefreshDCLLayout(bool refreshSize=true, bool refreshAlignmentAndPosition=true)
         {
-            if (!model.textModel.resizeToFit)
+            if (refreshSize)
             {
-                base.RefreshDCLLayout(refreshSize, refreshAlignmentAndPosition);
-            }
-            else
-            {
-                if (refreshSize)
-                {
-                    referencesContainer.text.Rebuild(CanvasUpdate.LatePreRender);
-                    referencesContainer.layoutElementRT.SetSizeWithCurrentAnchors(RectTransform.Axis.Horizontal, referencesContainer.text.renderedWidth);
-                    referencesContainer.layoutElementRT.SetSizeWithCurrentAnchors(RectTransform.Axis.Vertical, referencesContainer.text.renderedHeight);
-                    referencesContainer.layoutElementRT.ForceUpdateRectTransforms();
-                }
+                referencesContainer.text.ForceMeshUpdate(false);
+                RectTransform parentTransform = referencesContainer.GetComponentInParent<RectTransform>();
+                float width, height;
+                Bounds b = referencesContainer.text.textBounds;
 
-                if (refreshAlignmentAndPosition)
-                {
-                    RefreshDCLAlignmentAndPosition();
-                }
+                if (model.textModel.adaptWidth)
+                    width = b.size.x;
+                else
+                    width = model.width.GetScaledValue(parentTransform.rect.width);
+
+                if (model.textModel.adaptHeight)
+                    height = b.size.y;
+                else
+                    height = model.width.GetScaledValue(parentTransform.rect.height);
+
+                referencesContainer.layoutElementRT.SetSizeWithCurrentAnchors(RectTransform.Axis.Horizontal, width);
+                referencesContainer.layoutElementRT.SetSizeWithCurrentAnchors(RectTransform.Axis.Vertical, height);
+                referencesContainer.layoutElementRT.ForceUpdateRectTransforms();
+            }
+
+            if (refreshAlignmentAndPosition)
+            {
+                RefreshDCLAlignmentAndPosition();
             }
         }
 

@@ -114,7 +114,11 @@ namespace DCL.Components
 
         public virtual IEnumerator ApplyChangesWrapper(string newJson)
         {
-            yield return ApplyChanges(newJson);
+            var enumerator = ApplyChanges(newJson);
+
+            if (enumerator != null)
+                yield return enumerator;
+
             RaiseOnAppliedChanges();
         }
 

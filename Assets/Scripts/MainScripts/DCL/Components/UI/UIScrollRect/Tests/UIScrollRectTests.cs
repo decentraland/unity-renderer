@@ -46,8 +46,8 @@ namespace Tests
             Assert.AreEqual(0, refC.paddingLayoutGroup.padding.left);
             Assert.AreEqual(0, refC.paddingLayoutGroup.padding.right);
 
-            Assert.IsFalse(refC.isHorizontal);
-            Assert.IsTrue(refC.isVertical);
+            Assert.IsFalse(refC.scrollRect.horizontal);
+            Assert.IsTrue(refC.scrollRect.vertical);
 
             Assert.AreEqual(0, refC.HScrollbar.value);
             Assert.AreEqual(0, refC.VScrollbar.value);

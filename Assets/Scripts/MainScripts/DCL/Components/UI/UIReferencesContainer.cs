@@ -20,5 +20,19 @@ namespace DCL.Components
 
         [Tooltip("Children of this UI object will reparent to this rectTransform.")]
         public RectTransform childHookRectTransform;
+
+#if UNITY_EDITOR
+        [Header("Debug")]
+        public bool forceRefresh;
+
+        public void LateUpdate()
+        {
+            if (forceRefresh)
+            {
+                owner.RefreshDCLLayoutRecursively();
+                forceRefresh = false;
+            }
+        }
+#endif
     }
 }

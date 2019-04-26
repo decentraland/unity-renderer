@@ -50,9 +50,10 @@ namespace DCL.Components
             }
             else if (outline != null)
             {
-                Utils.SafeDestroy(outline);
-                yield return null;
+                Object.DestroyImmediate(outline, false);
             }
+
+            return null;
         }
 
         public override void Dispose()

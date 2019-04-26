@@ -101,7 +101,8 @@ namespace DCL.Components
                 Debug.Log("canvas initialized, height: " + childHookRectTransform.rect.height);
             }
 
-            canvas.enabled = false; // It will be enabled later when the player enters this scene
+            if ( canvas != null )
+                canvas.enabled = false; // It will be enabled later when the player enters this scene
 
             if (DCLCharacterController.i != null)
                 OnCharacterMoved(DCLCharacterController.i.transform.position);

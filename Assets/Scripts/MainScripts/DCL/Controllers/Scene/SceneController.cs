@@ -128,7 +128,8 @@ public class SceneController : MonoBehaviour
                     case QueuedSceneMessage.Type.NONE:
                         break;
                     case QueuedSceneMessage.Type.SCENE_MESSAGE:
-                        if (ProcessMessage(m.sceneId, m.message))
+                        Coroutine routine = null;
+                        if (ProcessMessage(m.sceneId, m.message, out routine))
                         {
                             if (msgStepByStep)
                             {
@@ -137,6 +138,10 @@ public class SceneController : MonoBehaviour
                                 yield return null;
                             }
                         }
+
+                        if ( routine != null )
+                            yield return routine;
+
                         break;
                     case QueuedSceneMessage.Type.LOAD_PARCEL:
                         yield return LoadParcelScenesExecute_Spread(m.message);
@@ -321,8 +326,9 @@ public class SceneController : MonoBehaviour
         }
     }
 
-    public bool ProcessMessage(string sceneId, string message)
+    public bool ProcessMessage(string sceneId, string message, out Coroutine routine)
     {
+        routine = null;
 #if UNITY_EDITOR
         if (debugScenes && sceneId != debugSceneName)
             return false;
@@ -359,7 +365,7 @@ public class SceneController : MonoBehaviour
                 case "AttachEntityComponent": scene.SharedComponentAttach(payload); break;
                 case "ComponentCreated": scene.SharedComponentCreate(payload); break;
                 case "ComponentDisposed": scene.SharedComponentDispose(payload); break;
-                case "ComponentUpdated": scene.SharedComponentUpdate(payload); break;
+                case "ComponentUpdated": scene.SharedComponentUpdate(payload, out routine); break;
                 case "RemoveEntity": scene.RemoveEntity(payload); break;
                 default: Debug.LogError($"Unknown method {method}"); return true;
             }
