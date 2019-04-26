@@ -1,4 +1,4 @@
-import { Entity, GLTFShape, engine, Vector3, Transform, AnimationClip, Animator } from 'decentraland-ecs/src'
+import { Entity, GLTFShape, engine, Vector3, Transform, AnimationState, Animator } from 'decentraland-ecs/src'
 
 function makeGLTF(src: string, position: Vector3) {
   const ent = new Entity()
@@ -14,11 +14,11 @@ function makeGLTF(src: string, position: Vector3) {
 
 const m1 = makeGLTF('models/shark_anim.gltf', new Vector3(5, 3, 5))
 
-const clip1 = new AnimationClip('shark_skeleton_bite', {
+const clip1 = new AnimationState('shark_skeleton_bite', {
   weight: 0.1,
   looping: true
 })
-const clip2 = new AnimationClip('shark_skeleton_swim', {
+const clip2 = new AnimationState('shark_skeleton_swim', {
   weight: 0.1,
   looping: true
 })

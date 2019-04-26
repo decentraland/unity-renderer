@@ -1,4 +1,4 @@
-import { Entity, GLTFShape, engine, Vector3, Transform, AnimationClip, Animator } from 'decentraland-ecs/src'
+import { Entity, GLTFShape, engine, Vector3, Transform, AnimationState, Animator } from 'decentraland-ecs/src'
 
 CreateMesh(new Vector3(1.2, 0, 0.5))
 CreateMesh(new Vector3(4.2, 0, 0.5))
@@ -19,7 +19,7 @@ function CreateMesh(pos: Vector3) {
   entity.addComponent(new Transform({ position: pos }))
 
   const animator = new Animator()
-  let animClip = new AnimationClip('Animation')
+  let animClip = new AnimationState('Animation')
   animator.addClip(animClip)
   entity.addComponent(animator)
 
