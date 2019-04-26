@@ -131,17 +131,17 @@ class BubbleSystem implements ISystem {
       }
     }
 
-    if (input.state[Pointer.PRIMARY].BUTTON_DOWN) {
+    if (input.state[Pointer.PRIMARY].BUTTON_A_DOWN) {
       spawner.spawnBubble()
     }
   }
 }
 
-input.subscribe('BUTTON_UP', e => {
+input.subscribe('BUTTON_A_UP', e => {
   log('pointerUp works', e)
 })
 
-input.subscribe('BUTTON_DOWN', e => {
+input.subscribe('BUTTON_A_DOWN', e => {
   log('pointerDown works', e)
 })
 
