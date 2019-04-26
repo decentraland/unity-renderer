@@ -42,15 +42,26 @@ namespace DCL.Components
         {
         }
 
+        Coroutine fetchRoutine;
+
         public override IEnumerator ApplyChanges(string newJson)
         {
             // Fetch texture
             if (!string.IsNullOrEmpty(model.source))
             {
-                yield return DCLTexture.FetchFromComponent(scene, model.source, (downloadedTexture) =>
+                if (fetchRoutine != null)
+                {
+                    referencesContainer.StopCoroutine(fetchRoutine);
+                    fetchRoutine = null;
+                }
+
+                IEnumerator fetchIEnum = DCLTexture.FetchFromComponent(scene, model.source, (downloadedTexture) =>
                 {
                     referencesContainer.image.texture = downloadedTexture;
+                    fetchRoutine = null;
                 });
+
+                fetchRoutine = referencesContainer.StartCoroutine(fetchIEnum);
             }
             else
             {
@@ -58,9 +69,6 @@ namespace DCL.Components
             }
 
             referencesContainer.image.enabled = model.visible;
-
-            RefreshDCLLayout();
-
             referencesContainer.image.color = Color.white;
 
             RectTransform parentRecTransform = referencesContainer.GetComponentInParent<RectTransform>();
@@ -88,6 +96,7 @@ namespace DCL.Components
             referencesContainer.layoutGroup.padding.right = Mathf.RoundToInt(model.paddingRight);
             
             LayoutRebuilder.ForceRebuildLayoutImmediate(parentRecTransform);
+            return null;
         }
 
         public override void Dispose()

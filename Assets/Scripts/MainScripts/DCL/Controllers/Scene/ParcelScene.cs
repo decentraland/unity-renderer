@@ -521,6 +521,18 @@ namespace DCL.Controllers
 
         SharedComponentUpdateMessage sharedComponentUpdatedMessage = new SharedComponentUpdateMessage();
 
+        public BaseDisposable SharedComponentUpdate(string json, out Coroutine routine)
+        {
+            BaseDisposable result = SharedComponentUpdate(json);
+
+            if (result != null)
+                routine = result.routine;
+            else
+                routine = null;
+
+            return result;
+        }
+
         public BaseDisposable SharedComponentUpdate(string json)
         {
             sharedComponentUpdatedMessage.FromJSON(json);

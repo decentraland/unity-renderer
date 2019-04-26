@@ -1,6 +1,7 @@
 using DCL.Controllers;
 using DCL.Helpers;
 using System.Collections;
+using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Assertions;
 using UnityEngine.UI;
@@ -91,7 +92,12 @@ namespace DCL.Components
                 }
             }
 
-            yield return ApplyChanges(newJson);
+            var enumerator = ApplyChanges(newJson);
+
+            if (enumerator != null)
+            {
+                yield return enumerator;
+            }
 
             RefreshDCLLayout();
 #if UNITY_EDITOR
@@ -161,7 +167,7 @@ namespace DCL.Components
 
         public override IEnumerator ApplyChanges(string newJson)
         {
-            yield break;
+            return null;
         }
 
         protected T InstantiateUIGameObject<T>(string prefabPath) where T : UIReferencesContainer
@@ -195,6 +201,13 @@ namespace DCL.Components
             referencesContainer.owner = this;
 
             return referencesContainer as T;
+        }
+
+        public virtual void RefreshAll()
+        {
+            RefreshDCLLayoutRecursively();
+            FixMaxStretchRecursively();
+            RefreshDCLLayoutRecursively_Internal(refreshSize: false, refreshAlignmentAndPosition: true);
         }
 
         public virtual void RefreshDCLLayout(bool refreshSize=true, bool refreshAlignmentAndPosition=true)
@@ -244,6 +257,45 @@ namespace DCL.Components
             referencesContainer.layoutElementRT.localPosition += position;
         }
 
+        public virtual void RefreshDCLLayoutRecursively(bool refreshSize = true, bool refreshAlignmentAndPosition = true)
+        {
+            RefreshDCLLayoutRecursively_Internal(refreshSize, refreshAlignmentAndPosition);
+        }
+
+        public void RefreshDCLLayoutRecursively_Internal(bool refreshSize = true, bool refreshAlignmentAndPosition = true)
+        {
+            UIShape rootParent = GetRootParent();
+
+            Assert.IsTrue(rootParent != null, "root parent must never be null");
+
+            Utils.InverseTreeTraversal<UIReferencesContainer>(
+                (x) =>
+                {
+                    if (x.owner != null)
+                    {
+                        x.owner.RefreshDCLLayout(refreshSize, refreshAlignmentAndPosition);
+                    }
+                },
+                rootParent.referencesContainer.transform);
+        }
+
+        public void FixMaxStretchRecursively()
+        {
+            UIShape rootParent = GetRootParent();
+
+            Assert.IsTrue(rootParent != null, "root parent must never be null");
+
+            Utils.InverseTreeTraversal<UIReferencesContainer>(
+            (x) =>
+            {
+                if (x.owner != null)
+                {
+                    x.rectTransform.SetToMaxStretch();
+                }
+            },
+            rootParent.referencesContainer.transform);
+        }
+
         protected bool ReparentComponent(RectTransform targetTransform, string targetParent)
         {
             bool targetParentExists = !string.IsNullOrEmpty(targetParent) && scene.disposableComponents.ContainsKey(targetParent);
@@ -277,40 +329,6 @@ namespace DCL.Components
 
             targetTransform.SetParent(parentUIComponent.childHookRectTransform, false);
             return true;
-        }
-
-        public virtual void RefreshDCLLayoutRecursively(bool refreshSize = true, bool refreshAlignmentAndPosition = true)
-        {
-            UIShape rootParent = GetRootParent();
-
-            Assert.IsTrue(rootParent != null, "root parent must never be null");
-
-            Utils.InverseTreeTraversal<UIReferencesContainer>(
-                (x) =>
-                {
-                    if (x.owner != null)
-                    {
-                        x.owner.RefreshDCLLayout(refreshSize, refreshAlignmentAndPosition);
-                    }
-                },
-                rootParent.referencesContainer.transform);
-        }
-
-        public void FixMaxStretchRecursively()
-        {
-            UIShape rootParent = GetRootParent();
-
-            Assert.IsTrue(rootParent != null, "root parent must never be null");
-
-            Utils.InverseTreeTraversal<UIReferencesContainer>(
-            (x) =>
-            {
-                if (x.owner != null)
-                {
-                    x.rectTransform.SetToMaxStretch();
-                }
-            },
-            rootParent.referencesContainer.transform);
         }
 
         public UIShape GetRootParent()

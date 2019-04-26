@@ -18,6 +18,7 @@ namespace DCL.Components
             public StackOrientation stackOrientation = StackOrientation.VERTICAL;
             public bool adaptWidth = false;
             public bool adaptHeight = false;
+            public float spacing = 0;
         }
 
         public enum StackOrientation
@@ -64,11 +65,13 @@ namespace DCL.Components
             layoutGroup.childControlWidth = false;
             layoutGroup.childForceExpandWidth = false;
             layoutGroup.childForceExpandHeight = false;
+            layoutGroup.spacing = model.spacing;
 
             referencesContainer.sizeFitter.adjustHeight = model.adaptHeight;
             referencesContainer.sizeFitter.adjustWidth = model.adaptWidth;
-            RefreshSizeFitter();
-            yield break;
+
+            RefreshAll();
+            return null;
         }
 
         void RefreshContainerForShape(BaseDisposable updatedComponent)
@@ -78,7 +81,7 @@ namespace DCL.Components
 
             if (childComponent.model.parentComponent != id)
             {
-                RefreshSizeFitter();
+                RefreshAll();
                 return;
             }
 
@@ -108,7 +111,7 @@ namespace DCL.Components
             fitter.adjustHeight = true;
             fitter.adjustWidth = true;
 
-            RefreshSizeFitter();
+            RefreshAll();
         }
 
         public override void OnChildAttached(UIShape parentComponent, UIShape childComponent)
@@ -116,13 +119,6 @@ namespace DCL.Components
             RefreshContainerForShape(childComponent);
             childComponent.OnAppliedChanges -= RefreshContainerForShape;
             childComponent.OnAppliedChanges += RefreshContainerForShape;
-        }
-
-        void RefreshSizeFitter()
-        {
-            RefreshDCLLayoutRecursively();
-            FixMaxStretchRecursively();
-            base.RefreshDCLLayoutRecursively(refreshSize:false, refreshAlignmentAndPosition:true);
         }
 
         public override void RefreshDCLLayoutRecursively(bool refreshSize=true, bool refreshAlignmentAndPosition=true)
