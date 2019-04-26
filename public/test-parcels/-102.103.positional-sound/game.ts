@@ -143,7 +143,7 @@ function playNote(fruit: Entity) {
   }
 }
 
-Input.instance.subscribe('BUTTON_A_DOWN', evt => {
+Input.instance.subscribe('BUTTON_DOWN', evt => {
   log(evt)
   if (evt.hit) {
     spawnClick(evt.hit.hitPoint)

@@ -7,7 +7,7 @@ import { Component, DisposableComponent } from '../ecs/Component'
 
 declare let dcl: DecentralandInterface | void
 
-export type InputEventKind = 'BUTTON_A_DOWN' | 'BUTTON_A_UP'
+export type InputEventKind = 'BUTTON_DOWN' | 'BUTTON_UP'
 
 /**
  * @public
@@ -20,7 +20,7 @@ export enum Pointer {
 export type InputState = Record<
   Pointer,
   {
-    BUTTON_A_DOWN: boolean
+    BUTTON_DOWN: boolean
   }
 >
 
@@ -76,16 +76,16 @@ export class Input {
   }
 
   private subscriptions: Record<InputEventKind, Array<(e: LocalPointerEvent) => void>> = {
-    BUTTON_A_DOWN: [],
-    BUTTON_A_UP: []
+    BUTTON_DOWN: [],
+    BUTTON_UP: []
   }
 
   private internalState: InputState = {
     [Pointer.PRIMARY]: {
-      BUTTON_A_DOWN: false
+      BUTTON_DOWN: false
     },
     [Pointer.SECONDARY]: {
-      BUTTON_A_DOWN: false
+      BUTTON_DOWN: false
     }
   }
 
@@ -156,10 +156,10 @@ export class Input {
         : undefined
     }
 
-    this.internalState[Pointer.PRIMARY].BUTTON_A_DOWN = false
+    this.internalState[Pointer.PRIMARY].BUTTON_DOWN = false
 
-    for (let i = 0; i < this.subscriptions['BUTTON_A_UP'].length; i++) {
-      this.subscriptions['BUTTON_A_UP'][i](newData)
+    for (let i = 0; i < this.subscriptions['BUTTON_UP'].length; i++) {
+      this.subscriptions['BUTTON_UP'][i](newData)
     }
 
     if (newData.hit && newData.hit.entityId && DisposableComponent.engine) {
@@ -188,10 +188,10 @@ export class Input {
         : undefined
     }
 
-    this.internalState[Pointer.PRIMARY].BUTTON_A_DOWN = true
+    this.internalState[Pointer.PRIMARY].BUTTON_DOWN = true
 
-    for (let i = 0; i < this.subscriptions['BUTTON_A_DOWN'].length; i++) {
-      this.subscriptions['BUTTON_A_DOWN'][i](newData)
+    for (let i = 0; i < this.subscriptions['BUTTON_DOWN'].length; i++) {
+      this.subscriptions['BUTTON_DOWN'][i](newData)
     }
 
     if (newData.hit && newData.hit.entityId && DisposableComponent.engine) {
