@@ -121,6 +121,9 @@ async function validatePackage(folder: string) {
   copyFile(path.resolve(root, `static/images`), path.resolve(root, `${folder}/artifacts/images`))
   copyFile(path.resolve(root, `static/models`), path.resolve(root, `${folder}/artifacts/models`))
 
+  // unity
+  copyFile(path.resolve(root, `static/unity`), path.resolve(root, `${folder}/artifacts/unity`))
+
   console.log(`> ensure ${folder}/lib exists`)
   {
     if (!fs.pathExists(path.resolve(root, `${folder}/lib`))) {
