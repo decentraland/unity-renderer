@@ -77,8 +77,6 @@ namespace Tests
                         color = Color.green,
                         opacity = 0.5f,
                         fontSize = 35f,
-                        hTextAlign = 0,
-                        vTextAlign = 0,
                         paddingTop = 10f,
                         paddingRight = 30f,
                         paddingBottom = 20f,

@@ -102,7 +102,7 @@ public class EntityShapeAndOnClickTestController : MonoBehaviour
             json = animJson
         }));
 
-        var model = new TextShape.Model() { value = "Hello World!", width = 0.5f, height = 0.5f, hAlign = 0.5f, vAlign = 0.5f }; 
+        var model = new TextShape.Model() { value = "Hello World!", width = 0.5f, height = 0.5f, hTextAlign = "center", vTextAlign = "center" }; 
         TestHelpers.InstantiateEntityWithTextShape(scene, new Vector3(5, 5, 5), model);
 
         yield return null;

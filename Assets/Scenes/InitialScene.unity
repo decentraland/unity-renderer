@@ -589,7 +589,7 @@ MonoBehaviour:
   characterController: {fileID: 1989862556}
   openBrowserWhenStart: 1
   useClientDebugMode: 1
-  startInCoords: {x: 617, y: 616}
+  startInCoords: {x: 100, y: 100}
 --- !u!4 &1444882337
 Transform:
   m_ObjectHideFlags: 0
@@ -716,7 +716,7 @@ PrefabInstance:
     - target: {fileID: 6922703132412175459, guid: 68bb549c9718c7649abcfc45e6ad7190,
         type: 3}
       propertyPath: m_LocalPosition.y
-      value: 0.6
+      value: 1.53
       objectReference: {fileID: 0}
     - target: {fileID: 6922703132412175459, guid: 68bb549c9718c7649abcfc45e6ad7190,
         type: 3}

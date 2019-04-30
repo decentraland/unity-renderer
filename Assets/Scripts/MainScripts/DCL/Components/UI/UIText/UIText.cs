@@ -49,8 +49,9 @@ namespace DCL.Components
             {
                 referencesContainer.text.ForceMeshUpdate(false);
                 RectTransform parentTransform = referencesContainer.GetComponentInParent<RectTransform>();
-                float width, height;
                 Bounds b = referencesContainer.text.textBounds;
+                
+                float width, height;
 
                 if (model.textModel.adaptWidth)
                     width = b.size.x;
