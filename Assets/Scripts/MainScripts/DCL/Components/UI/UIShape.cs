@@ -347,6 +347,8 @@ namespace DCL.Components
             return parent;
         }
 
+
+
         protected void ConfigureAlignment(LayoutGroup layout)
         {
             switch (model.vAlign)

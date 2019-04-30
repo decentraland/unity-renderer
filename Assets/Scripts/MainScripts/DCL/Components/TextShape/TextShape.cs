@@ -11,20 +11,19 @@ namespace DCL.Components
         [System.Serializable]
         public class Model
         {
+            public bool billboard;
+
             [Header("Font Properties")]
             public string value = "";
             public Color color = Color.white;
             public float opacity = 1f;
             public float fontSize = 100f;
             public bool fontAutoSize = false;
-            public string fontFamily = "Arial"; //NOTE(Brian): Should we make this a new object type?
             public string fontWeight = "normal";
 
             [Header("Text box properties")]
-            public float hAlign = 0;
-            public float vAlign = 0;
-            public float hTextAlign = 0;
-            public float vTextAlign = 0;
+            public string hTextAlign = "bottom";
+            public string vTextAlign = "left";
             public float width = 1f;
             public float height = 0.2f;
             public bool adaptWidth = false;
@@ -48,25 +47,17 @@ namespace DCL.Components
             public Color outlineColor = Color.white;
         }
 
-
-        public enum AlignFlags
-        {
-            CENTER = 0,
-
-            LEFT = 1,
-            TOP = 1 << 1,
-            BOTTOM = 1 << 2,
-            RIGHT = 1 << 3,
-
-            TOP_LEFT = LEFT | TOP,
-            TOP_RIGHT = RIGHT | TOP,
-            BOTTOM_LEFT = LEFT | BOTTOM,
-            BOTTOM_RIGHT = RIGHT | BOTTOM,
-        }
-
         public Model model;
         public TextMeshPro text;
         public RectTransform rectTransform;
+
+        public void Update()
+        {
+            if (model.billboard)
+            {
+                transform.forward = Camera.main.transform.forward;
+            }
+        }
 
         public override IEnumerator ApplyChanges(string newJson)
         {
@@ -102,7 +93,7 @@ namespace DCL.Components
                     (int)model.paddingBottom
                 );
 
-            text.alignment = GetAlignment(model.hTextAlign, model.vTextAlign);
+            text.alignment = GetAlignment(model.vTextAlign, model.hTextAlign);
             text.lineSpacing = model.lineSpacing;
 
             if (model.lineCount != 0)
@@ -135,51 +126,43 @@ namespace DCL.Components
             }
         }
 
-        public static TextAlignmentOptions GetAlignment(float hAlign, float vAlign)
+        public static TextAlignmentOptions GetAlignment(string vTextAlign, string hTextAlign)
         {
-            int alignment = (int)AlignFlags.CENTER;
+            vTextAlign = vTextAlign.ToLower();
+            hTextAlign = hTextAlign.ToLower();
 
-            if (hAlign <= 0)
+            switch (vTextAlign)
             {
-                alignment |= (int)AlignFlags.LEFT;
-            }
-            else if (hAlign >= 1)
-            {
-                alignment |= (int)AlignFlags.RIGHT;
-            }
-
-            if (vAlign <= 0)
-            {
-                alignment |= (int)AlignFlags.BOTTOM;
-            }
-            else if (vAlign >= 1)
-            {
-                alignment |= (int)AlignFlags.TOP;
-            }
-
-
-            switch ((AlignFlags)alignment)
-            {
-                case AlignFlags.LEFT:
-                    return TextAlignmentOptions.Left;
-                case AlignFlags.TOP:
-                    return TextAlignmentOptions.Top;
-                case AlignFlags.BOTTOM:
-                    return TextAlignmentOptions.Bottom;
-                case AlignFlags.RIGHT:
-                    return TextAlignmentOptions.Right;
-                case AlignFlags.CENTER:
-                    return TextAlignmentOptions.Center;
-                case AlignFlags.TOP_LEFT:
-                    return TextAlignmentOptions.TopLeft;
-                case AlignFlags.TOP_RIGHT:
-                    return TextAlignmentOptions.TopRight;
-                case AlignFlags.BOTTOM_LEFT:
-                    return TextAlignmentOptions.BottomLeft;
-                case AlignFlags.BOTTOM_RIGHT:
-                    return TextAlignmentOptions.BottomRight;
-                default:
-                    return TextAlignmentOptions.Center;
+                case "top":
+                    switch (hTextAlign)
+                    {
+                        case "left":
+                            return TextAlignmentOptions.TopLeft;
+                        case "right":
+                            return TextAlignmentOptions.TopRight;
+                        default:
+                            return TextAlignmentOptions.Top;
+                    }
+                case "bottom":
+                    switch (hTextAlign)
+                    {
+                        case "left":
+                            return TextAlignmentOptions.BottomLeft;
+                        case "right":
+                            return TextAlignmentOptions.BottomRight;
+                        default:
+                            return TextAlignmentOptions.Bottom;
+                    }
+                default: // center
+                    switch (hTextAlign)
+                    {
+                        case "left":
+                            return TextAlignmentOptions.Left;
+                        case "right":
+                            return TextAlignmentOptions.Right;
+                        default:
+                            return TextAlignmentOptions.Center;
+                    }
             }
         }
     }

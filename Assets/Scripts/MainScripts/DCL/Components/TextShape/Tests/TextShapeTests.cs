@@ -32,11 +32,8 @@ namespace Tests
                 color = Color.white,
                 opacity = 0.5f,
                 fontSize = 10,
-                fontFamily = "",
                 fontWeight = "",
 
-                hAlign = 0,
-                vAlign = 0,
                 width = 20,
                 height = 20,
                 adaptHeight = false,
@@ -90,15 +87,15 @@ namespace Tests
         [UnityTest]
         public IEnumerator TestTextAlignment()
         {
-            Assert.AreEqual(TextAlignmentOptions.BottomLeft, TextShape.GetAlignment(0, 0));
-            Assert.AreEqual(TextAlignmentOptions.BottomRight, TextShape.GetAlignment(1, 0));
-            Assert.AreEqual(TextAlignmentOptions.Center, TextShape.GetAlignment(0.5f, 0.5f));
-            Assert.AreEqual(TextAlignmentOptions.TopLeft, TextShape.GetAlignment(0, 1));
-            Assert.AreEqual(TextAlignmentOptions.TopRight, TextShape.GetAlignment(1, 1));
-            Assert.AreEqual(TextAlignmentOptions.Top, TextShape.GetAlignment(0.5f, 1));
-            Assert.AreEqual(TextAlignmentOptions.Right, TextShape.GetAlignment(1, 0.5f));
-            Assert.AreEqual(TextAlignmentOptions.Bottom, TextShape.GetAlignment(0.5f, 0));
-            Assert.AreEqual(TextAlignmentOptions.Left, TextShape.GetAlignment(0, 0.5f));
+            Assert.AreEqual(TextAlignmentOptions.BottomLeft, TextShape.GetAlignment("bottom", "left"));
+            Assert.AreEqual(TextAlignmentOptions.BottomRight, TextShape.GetAlignment("Bottom", "RIght"));
+            Assert.AreEqual(TextAlignmentOptions.Center, TextShape.GetAlignment("Center", "center"));
+            Assert.AreEqual(TextAlignmentOptions.TopLeft, TextShape.GetAlignment("top", "Left"));
+            Assert.AreEqual(TextAlignmentOptions.TopRight, TextShape.GetAlignment("top", "right"));
+            Assert.AreEqual(TextAlignmentOptions.Top, TextShape.GetAlignment("top", "center"));
+            Assert.AreEqual(TextAlignmentOptions.Right, TextShape.GetAlignment("center", "right"));
+            Assert.AreEqual(TextAlignmentOptions.Bottom, TextShape.GetAlignment("Bottom", "cEnter"));
+            Assert.AreEqual(TextAlignmentOptions.Left, TextShape.GetAlignment("center", "left"));
             yield return null;
         }
 
