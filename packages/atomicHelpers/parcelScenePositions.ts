@@ -46,7 +46,7 @@ export function isOnLimits({ maximum, minimum }: BoundingInfo, parcels: Vector3C
   let minInside = false
   let maxInside = false
 
-  for (let i = 0; i < parcels.length; i++) {
+  for (let i = 0; i < parcels.length && (!minInside || !maxInside); i++) {
     maxInside = maxInside || isInParcel(maximum, parcels[i])
     minInside = minInside || isInParcel(minimum, parcels[i])
   }

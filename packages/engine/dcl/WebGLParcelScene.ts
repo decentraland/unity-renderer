@@ -2,7 +2,7 @@ import { LoadableParcelScene, EnvironmentData } from 'shared/types'
 import { SceneWorker } from 'shared/world/SceneWorker'
 import { SharedSceneContext } from 'engine/entities/SharedSceneContext'
 import { getParcelSceneLimits } from 'atomicHelpers/landHelpers'
-import { DEBUG, EDITOR, PREVIEW } from 'config'
+import { DEBUG, EDITOR } from 'config'
 import { checkParcelSceneBoundaries } from '../entities/utils/checkParcelSceneLimits'
 import { BaseEntity } from 'engine/entities/BaseEntity'
 import { encodeParcelSceneBoundaries, gridToWorld, worldToGrid } from 'atomicHelpers/parcelScenePositions'
@@ -90,7 +90,7 @@ export class WebGLParcelScene extends WebGLScene<LoadableParcelScene> {
 
     if (DEBUG) {
       this.context.onEntityMatrixChangedObservable.add(_entity => {
-        this.shouldValidateBoundaries = !PREVIEW
+        this.shouldValidateBoundaries = true
       })
       this.initDebugEntities()
     }
