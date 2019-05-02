@@ -189,6 +189,8 @@ namespace UnityGLTF
                 _timeAtLastYield = Time.realtimeSinceStartup;
                 if (_gltfRoot == null)
                 {
+                    if (VERBOSE) Debug.Log("LoadScene() GLTF File Name -> " + _gltfFileName);
+
                     yield return LoadJson(_gltfFileName);
                 }
 
@@ -567,7 +569,7 @@ namespace UnityGLTF
                 else
                 {
                     yield return _loader.LoadStream(buffer.Uri);
-                    
+
                     bufferDataStream = _loader.LoadedStream;
                 }
 
@@ -1105,7 +1107,7 @@ namespace UnityGLTF
             CreatedObject = sceneObj;
 
             sceneObj.SetActive(showSceneObj);
-            sceneObj.transform.SetParent( SceneParent, false );
+            sceneObj.transform.SetParent(SceneParent, false);
             sceneObj.transform.localPosition = Vector3.zero;
             sceneObj.transform.localRotation = Quaternion.identity;
             sceneObj.transform.localScale = Vector3.one;

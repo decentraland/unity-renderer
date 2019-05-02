@@ -2,6 +2,13 @@
 
 using System;
 using UnityEngine;
+using UnityGLTF;
+using System;
+using System.Collections;
+using System.IO;
+using GLTF;
+using DCL.Models;
+using DCL.Components;
 
 namespace DCL.Components
 {
@@ -9,8 +16,11 @@ namespace DCL.Components
     {
         GameObject gltfContainer;
         string url;
+        string assetDirectoryPath;
 
-        public override void Load(string url, bool useVisualFeedback = false)
+        bool VERBOSE = false;
+
+        public override void Load(string targetUrl, bool useVisualFeedback = false)
         {
             if (gltfContainer != null)
             {
@@ -18,8 +28,22 @@ namespace DCL.Components
             }
 
             alreadyLoaded = false;
-            this.url = url;
-            gltfContainer = AssetManager_GLTF.i.Get(GetCacheId(), url, transform, CallOnComponentUpdatedEvent, CallOnFailure);
+
+            // We separate the directory path of the GLB and its file name, to be able to use the directory path when 
+            // fetching relative assets like textures in the ParseGLTFWebRequestedFile() event call
+            url = targetUrl.Substring(targetUrl.LastIndexOf('/') + 1);
+            assetDirectoryPath = URIHelper.GetDirectoryName(targetUrl);
+
+            if (VERBOSE) Debug.Log($"Load(): target URL -> {targetUrl},  url -> {url}, directory path -> {assetDirectoryPath}");
+
+            gltfContainer = AssetManager_GLTF.i.Get(GetCacheId(), url, transform, CallOnComponentUpdatedEvent, CallOnFailure, ParseGLTFWebRequestedFile);
+        }
+
+        void ParseGLTFWebRequestedFile(ref string requestedFileName)
+        {
+            string finalURL = string.Empty;
+            entity.scene.TryGetContentsUrl(assetDirectoryPath + requestedFileName, out finalURL);
+            requestedFileName = finalURL;
         }
 
         public object GetCacheId()
@@ -47,11 +71,11 @@ namespace DCL.Components
         {
             gameObject.name += " - Failed loading";
 
-            MaterialTransitionController[] c = GetComponentsInChildren<MaterialTransitionController>(true);
+            MaterialTransitionController[] transitionController = GetComponentsInChildren<MaterialTransitionController>(true);
 
-            foreach (MaterialTransitionController m in c)
+            foreach (MaterialTransitionController material in transitionController)
             {
-                Destroy(m);
+                Destroy(material);
             }
         }
 
@@ -68,7 +92,6 @@ namespace DCL.Components
             {
                 entity.OnShapeUpdated.Invoke(entity);
             }
-
         }
     }
 }

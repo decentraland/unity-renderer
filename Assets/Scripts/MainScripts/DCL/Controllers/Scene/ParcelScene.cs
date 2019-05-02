@@ -13,6 +13,8 @@ namespace DCL.Controllers
 {
     public class ParcelScene : MonoBehaviour
     {
+        public static bool VERBOSE = false;
+
         public Dictionary<string, DecentralandEntity> entities = new Dictionary<string, DecentralandEntity>();
         public Dictionary<string, BaseDisposable> disposableComponents = new Dictionary<string, BaseDisposable>();
         public LoadParcelScenesMessage.UnityParcelScene sceneData { get; private set; }
@@ -555,6 +557,69 @@ namespace DCL.Controllers
         protected virtual void SendMetricsEvent()
         {
             metricsController.SendEvent();
+        }
+
+        public bool HasTestSchema(string url)
+        {
+            if (url.StartsWith("file://"))
+                return true;
+
+            if (url.StartsWith(TestHelpers.GetTestsAssetsPath()))
+                return true;
+
+            return false;
+        }
+
+        public virtual bool HasContentsUrl(string url)
+        {
+            if (string.IsNullOrEmpty(url))
+                return false;
+
+            if (HasTestSchema(url))
+                return true;
+
+            if (sceneData.fileToHash == null)
+                return false;
+
+            return sceneData.fileToHash.ContainsKey(url.ToLower());
+        }
+
+        public string GetContentsUrl(string url)
+        {
+            string result = "";
+
+            if (TryGetContentsUrl(url, out result))
+                return result;
+
+            return null;
+        }
+
+        public virtual bool TryGetContentsUrl(string url, out string result)
+        {
+            url = url.ToLower();
+            result = url;
+
+            if (HasTestSchema(url)) return true;
+
+            if (sceneData.fileToHash != null)
+            {
+                if (!sceneData.fileToHash.ContainsKey(url))
+                {
+                    Debug.LogError(string.Format("GetContentsUrl >>> File {0} not found!!!", url));
+                    return false;
+                }
+
+                result = sceneData.baseUrl + sceneData.fileToHash[url];
+            }
+            else
+            {
+                result = sceneData.baseUrl + "/" + url;
+            }
+
+            if (VERBOSE)
+                Debug.Log($">>> GetContentsURL from ... {url} ... RESULTING URL... = {result}");
+
+            return true;
         }
 
         public BaseDisposable GetSharedComponent(string componentId)
