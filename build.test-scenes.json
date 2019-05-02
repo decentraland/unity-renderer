@@ -1,8 +1,20 @@
 [
   {
-    "name": "Compile test scenes (gamekit)",
+    "name": "Compile test scenes (gamekit, part A)",
     "kind": "Webpack",
-    "file": "./public/test-parcels/*/game.ts",
+    "file": "./public/test-parcels/14*/game.ts",
+    "target": "web"
+  },
+  {
+    "name": "Compile test scenes (gamekit, part B)",
+    "kind": "Webpack",
+    "file": "./public/test-parcels/!(1)*/game.ts",
+    "target": "web"
+  },
+  {
+    "name": "Compile test scenes (gamekit, part C)",
+    "kind": "Webpack",
+    "file": "./public/test-parcels/1!(4)*/game.ts",
     "target": "web"
   }
 ]
