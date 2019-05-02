@@ -9001,6 +9001,32 @@
           "isOverride": false,
           "isEventProperty": false
         },
+        "onAnimationEnd": {
+          "kind": "property",
+          "signature": "onAnimationEnd:",
+          "isOptional": false,
+          "isReadOnly": false,
+          "isStatic": false,
+          "type": "{\n        clipName: string;\n    }",
+          "deprecatedMessage": [],
+          "summary": [
+            {
+              "kind": "code",
+              "text": "onAnimationEnd",
+              "highlighter": "plain"
+            },
+            {
+              "kind": "text",
+              "text": " is triggered when an animation clip gets finish"
+            }
+          ],
+          "remarks": [],
+          "isBeta": false,
+          "isSealed": false,
+          "isVirtual": false,
+          "isOverride": false,
+          "isEventProperty": false
+        },
         "onBlur": {
           "kind": "property",
           "signature": "onBlur:",
@@ -17213,6 +17239,35 @@
           ],
           "remarks": [],
           "isBeta": true,
+          "isSealed": false,
+          "isVirtual": false,
+          "isOverride": false,
+          "isEventProperty": false
+        }
+      }
+    },
+    "OnAnimationEnd": {
+      "kind": "class",
+      "extends": "OnUUIDEvent",
+      "implements": "",
+      "typeParameters": [],
+      "deprecatedMessage": [],
+      "summary": [],
+      "remarks": [],
+      "isBeta": false,
+      "isSealed": false,
+      "members": {
+        "type": {
+          "kind": "property",
+          "signature": "readonly type: string;",
+          "isOptional": false,
+          "isReadOnly": true,
+          "isStatic": false,
+          "type": "string",
+          "deprecatedMessage": [],
+          "summary": [],
+          "remarks": [],
+          "isBeta": false,
           "isSealed": false,
           "isVirtual": false,
           "isOverride": false,
