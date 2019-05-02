@@ -18,8 +18,8 @@ namespace UnityGLTF
     public class GLTFComponent : MonoBehaviour, ILoadable
     {
         const int GLTF_DOWNLOAD_THROTTLING_LIMIT = 3;
-        public static bool VERBOSE = false;
 
+        public static bool VERBOSE = false;
         public static int downloadingCount;
 
         public string GLTFUri = null;
@@ -45,15 +45,15 @@ namespace UnityGLTF
         [SerializeField] private float RetryTimeout = 2.0f;
         [SerializeField] private Shader shaderOverride = null;
 
-        private int numRetries = 0;
-        private AsyncCoroutineHelper asyncCoroutineHelper;
-        Coroutine loadingRoutine = null;
-
-        public Action OnSuccess { get { return OnFinishedLoadingAsset; } set { OnFinishedLoadingAsset = value; } }
-        public Action OnFail { get { return OnFailedLoadingAsset; } set { OnFailedLoadingAsset = value; } }
-
+        int numRetries = 0;
         bool alreadyFailed;
         bool alreadyDecrementedRefCount;
+        AsyncCoroutineHelper asyncCoroutineHelper;
+        Coroutine loadingRoutine = null;
+
+        public WebRequestLoader.WebRequestLoaderEventAction OnWebRequestStartEvent;
+        public Action OnSuccess { get { return OnFinishedLoadingAsset; } set { OnFinishedLoadingAsset = value; } }
+        public Action OnFail { get { return OnFailedLoadingAsset; } set { OnFailedLoadingAsset = value; } }
 
         public void LoadAsset(string incomingURI = "", bool loadEvenIfAlreadyLoaded = false)
         {
@@ -94,7 +94,6 @@ namespace UnityGLTF
 
             if (obj is IndexOutOfRangeException)
             {
-                Debug.Log("Destroying...");
                 Destroy(gameObject);
             }
 
@@ -105,6 +104,8 @@ namespace UnityGLTF
         {
             if (!string.IsNullOrEmpty(GLTFUri))
             {
+                if (VERBOSE) Debug.Log("LoadAssetCoroutine() GLTFUri ->" + GLTFUri);
+
                 asyncCoroutineHelper = gameObject.GetComponent<AsyncCoroutineHelper>() ?? gameObject.AddComponent<AsyncCoroutineHelper>();
 
                 GLTFSceneImporter sceneImporter = null;
@@ -131,15 +132,16 @@ namespace UnityGLTF
                     }
                     else
                     {
-                        string directoryPath = URIHelper.GetDirectoryName(GLTFUri);
-                        loader = new WebRequestLoader(directoryPath);
+                        loader = new WebRequestLoader("");
+
+                        if (OnWebRequestStartEvent != null)
+                            (loader as WebRequestLoader).OnLoadStreamStart += OnWebRequestStartEvent;
 
                         sceneImporter = new GLTFSceneImporter(
-                            URIHelper.GetFileFromUri(new Uri(GLTFUri)),
+                            GLTFUri,
                             loader,
                             asyncCoroutineHelper
                             );
-
                     }
 
                     if (sceneImporter.CreatedObject != null)
@@ -164,10 +166,10 @@ namespace UnityGLTF
                     }
 
                     downloadingCount++;
-                    if ( VERBOSE ) Debug.Log($"downloadingCount++ = {downloadingCount}");
+                    if (VERBOSE) Debug.Log($"downloadingCount++ = {downloadingCount}");
 
                     yield return sceneImporter.LoadScene(-1);
-                    
+
                     if (!alreadyDecrementedRefCount)
                     {
                         downloadingCount--;
@@ -184,7 +186,6 @@ namespace UnityGLTF
                             renderer.sharedMaterial.shader = shaderOverride;
                         }
                     }
-
                 }
                 finally
                 {
@@ -202,13 +203,17 @@ namespace UnityGLTF
                             sceneImporter = null;
                         }
 
+                        if (OnWebRequestStartEvent != null)
+                        {
+                            (loader as WebRequestLoader).OnLoadStreamStart -= OnWebRequestStartEvent;
+                            OnWebRequestStartEvent = null;
+                        }
+
                         loader = null;
                     }
 
                     if (OnFinishedLoadingAsset != null)
-                    {
-                        OnFinishedLoadingAsset.Invoke();
-                    }
+                        OnFinishedLoadingAsset();
 
                     alreadyLoadedAsset = true;
                 }

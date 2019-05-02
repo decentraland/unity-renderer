@@ -1,9 +1,11 @@
+using DCL.Controllers;
 using DCL.Components;
 using DCL.Helpers;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityGLTF;
+using UnityGLTF.Loader;
 
 namespace DCL
 {
@@ -18,8 +20,8 @@ namespace DCL
 
             public void UpdateContainerName()
             {
-                if ( cachedContainer != null && !string.IsNullOrEmpty(name) )
-                   cachedContainer.name = $"refs {referenceCount} -- Cached GLTF: {name}";
+                if (cachedContainer != null && !string.IsNullOrEmpty(name))
+                    cachedContainer.name = $"refs {referenceCount} -- Cached GLTF: {name}";
             }
 
             public override int referenceCount
@@ -36,6 +38,9 @@ namespace DCL
                 }
             }
         }
+
+        bool VERBOSE = false;
+        WebRequestLoader.WebRequestLoaderEventAction OnGLTFLoaderWebRequestStartHook;
 
         private void Awake()
         {
@@ -116,7 +121,6 @@ namespace DCL
 
             GameObject containerCopy = DuplicateGLTF(container);
 
-
             containerCopy.transform.parent = transform;
             containerCopy.transform.ResetLocalTRS();
             containerCopy.SetActive(false);
@@ -146,7 +150,13 @@ namespace DCL
             assetLibrary[id].OnFail = null;
         }
 
-        // Loadable methods
+        public GameObject Get(object id, string url, Transform parent, System.Action OnSuccess, System.Action OnFail, WebRequestLoader.WebRequestLoaderEventAction webRequestStartEventAction)
+        {
+            OnGLTFLoaderWebRequestStartHook = webRequestStartEventAction;
+
+            return Get(id, url, parent, OnSuccess, OnFail);
+        }
+
         protected override GLTFComponent GetLoadable(GameObject container)
         {
             return container.AddComponent<GLTFComponent>();
@@ -154,9 +164,16 @@ namespace DCL
 
         protected override void StartLoading(GLTFComponent loadable, string url)
         {
+            // Hook up a method to parse the http requested files using the scene mappings
+            loadable.OnWebRequestStartEvent = OnGLTFLoaderWebRequestStartHook;
+            OnGLTFLoaderWebRequestStartHook = null;
+
             loadable.UseVisualFeedback = Configuration.ParcelSettings.VISUAL_LOADING_ENABLED;
             loadable.Multithreaded = false;
             loadable.LoadingTextureMaterial = Utils.EnsureResourcesMaterial("Materials/LoadingTextureMaterial");
+
+            if (VERBOSE) Debug.Log("StartLoading() url -> " + url);
+
             loadable.LoadAsset(url, true);
         }
 

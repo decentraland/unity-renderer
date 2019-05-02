@@ -64,66 +64,6 @@ namespace DCL.Models
                     if (VERBOSE) Debug.Log(string.Format("found file = {0} ... hash = {1}", m.file, m.hash));
                 }
             }
-
-            public bool HasTestSchema(string url)
-            {
-                if (url.StartsWith("file://"))
-                    return true;
-
-                if (url.StartsWith(TestHelpers.GetTestsAssetsPath()))
-                    return true;
-
-                return false;
-            }
-
-            public bool HasContentsUrl(string url)
-            {
-                if (HasTestSchema(url))
-                    return true;
-
-                if (fileToHash == null)
-                    return false;
-
-                return fileToHash.ContainsKey(url);
-            }
-
-            public string GetContentsUrl(string url)
-            {
-                string result = "";
-
-                if (TryGetContentsUrl(url, out result))
-                    return result;
-
-                return null;
-            }
-
-            public bool TryGetContentsUrl(string url, out string result)
-            {
-                url = url.ToLower();
-                result = url;
-
-                if (HasTestSchema(url)) return true;
-
-                if (fileToHash != null)
-                {
-                    if (!fileToHash.ContainsKey(url))
-                    {
-                        Debug.LogError(string.Format("GetContentsUrl >>> File {0} not found!!!", url));
-                        return false;
-                    }
-
-                    result = baseUrl + fileToHash[url];
-                }
-                else
-                {
-                    result = baseUrl + "/" + url;
-                }
-
-                if (VERBOSE)
-                    Debug.Log($">>> GetContentsURL from ... {url} ... RESULTING URL... = {result}");
-
-                return true;
-            }
         }
     }
 }

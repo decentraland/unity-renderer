@@ -26,7 +26,8 @@ namespace DCL.Components
             public string src;
         }
 
-        string currentSrc = "";
+        protected string currentSrc = "";
+
         Model model = new Model();
 
         public BaseLoadableShape(ParcelScene scene) : base(scene)
@@ -57,13 +58,13 @@ namespace DCL.Components
             yield return null;
         }
 
-        private void AttachShape(DecentralandEntity entity)
+        protected virtual void AttachShape(DecentralandEntity entity)
         {
             if (!string.IsNullOrEmpty(currentSrc))
             {
                 string finalUrl;
 
-                if (scene.sceneData.TryGetContentsUrl(currentSrc, out finalUrl))
+                if (scene.TryGetContentsUrl(currentSrc, out finalUrl))
                 {
                     entity.EnsureMeshGameObject(componentName + " mesh");
                     Loadable loadableShape = entity.meshGameObject.GetOrCreateComponent<Loadable>();

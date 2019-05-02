@@ -1,4 +1,5 @@
 using DCL.Components;
+using DCL.Controllers;
 using DCL.Helpers;
 using System.Collections;
 using System.Collections.Generic;
@@ -185,7 +186,7 @@ namespace DCL
         /// <summary>
         /// 
         /// </summary>
-        void Cleanup()
+        private void Cleanup()
         {
             // TODO(Brian): Stub cleanup code, improve later using memory size instead library size
             if (assetLibrary.Count <= Configuration.AssetManagerSettings.LIBRARY_CLEANUP_THRESHOLD)

@@ -114,7 +114,7 @@ namespace DCL
                 {
                     string contentsUrl = string.Empty;
 
-                    scene.sceneData.TryGetContentsUrl(model.src, out contentsUrl);
+                    scene.TryGetContentsUrl(model.src, out contentsUrl);
 
                     if (!string.IsNullOrEmpty(contentsUrl))
                     {

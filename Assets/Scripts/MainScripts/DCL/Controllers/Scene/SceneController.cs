@@ -17,9 +17,6 @@ public class SceneController : MonoBehaviour
     public bool startDecentralandAutomatically = true;
     public static bool VERBOSE = false;
 
-    [System.NonSerialized]
-    public bool isDebugMode;
-
     [FormerlySerializedAs("factoryManifest")]
     public DCLComponentFactory componentFactory;
 
@@ -27,9 +24,11 @@ public class SceneController : MonoBehaviour
 
     [Header("Debug Tools")]
     public bool debugScenes;
+
     public string debugSceneName;
     public bool ignoreGlobalScenes = false;
     public bool msgStepByStep = false;
+
     class QueuedSceneMessage
     {
         public enum Type
@@ -45,6 +44,9 @@ public class SceneController : MonoBehaviour
         public string sceneId;
         public string message;
     }
+
+    [System.NonSerialized]
+    public bool isDebugMode;
 
     Queue<QueuedSceneMessage> pendingMessages = new Queue<QueuedSceneMessage>();
 
@@ -139,7 +141,7 @@ public class SceneController : MonoBehaviour
                             }
                         }
 
-                        if ( routine != null )
+                        if (routine != null)
                             yield return routine;
 
                         break;
