@@ -223,5 +223,10 @@ namespace DCL.Interface
 
             SendSceneEvent(sceneId, "metricsUpdate", onMetricsUpdate);
         }
+
+        public static void PreloadFinished(string sceneId)
+        {
+            SendMessage("PreloadFinished", sceneId);
+        }
     }
 }
