@@ -2,19 +2,25 @@
 export * from './ecs/Engine'
 export * from './ecs/Component'
 export * from './ecs/Entity'
+export * from './ecs/IEntity'
 export * from './ecs/Task'
 export * from './ecs/helpers'
 export * from './ecs/Observable'
+export * from './ecs/UIValue'
 export * from './ecs/EventManager'
 
 import { DecentralandSynchronizationSystem } from './decentraland/Implementation'
 
 // ECS INITIALIZATION
 import { Engine } from './ecs/Engine'
+import { Entity } from './ecs/Entity'
+
+const entity = new Entity('scene')
+;(entity as any).uuid = '0'
 
 // Initialize engine
 /** @public */
-const engine = new Engine()
+const engine = new Engine(entity)
 
 import { DisposableComponent } from './ecs/Component'
 DisposableComponent.engine = engine
@@ -29,11 +35,9 @@ if (typeof dcl !== 'undefined') {
   engine.addSystem(new DecentralandSynchronizationSystem(dcl), Infinity)
 }
 
-import { UUIDEventSystem } from './decentraland/Systems'
+import { uuidEventSystem } from './decentraland/Systems'
 
 // Initialize UUID Events system
-/** @internal */
-const uuidEventSystem = new UUIDEventSystem()
 engine.addSystem(uuidEventSystem)
 
 // DECENTRALAND DEPENDENCIES
@@ -48,5 +52,6 @@ export * from './decentraland/Input'
 export * from './decentraland/Audio'
 export * from './decentraland/Gizmos'
 export * from './decentraland/UIShapes'
+export * from './decentraland/UIEvents'
 
 export { engine }

@@ -1,5 +1,5 @@
-import { Engine, ISystem } from '../ecs/Engine'
-import { Entity, ComponentAdded, ComponentRemoved, ParentChanged } from '../ecs/Entity'
+import { Engine } from '../ecs/Engine'
+import { IEntity, ISystem, ComponentAdded, ComponentRemoved, ParentChanged } from '../ecs/IEntity'
 import { UUIDEvent } from './Events'
 import {
   DisposableComponentCreated,
@@ -53,7 +53,7 @@ export class DecentralandSynchronizationSystem implements ISystem {
    * system.onAddEntity is called by the engine when a entity is added to the
    * engine.
    */
-  onAddEntity(entity: Entity) {
+  onAddEntity(entity: IEntity) {
     if (entity && entity.isAddedToEngine()) {
       const entityId = entity.uuid
       const parent = entity.getParent()
@@ -99,7 +99,7 @@ export class DecentralandSynchronizationSystem implements ISystem {
    * system.onRemoveEntity is called by the engine when a entity gets removed
    * from the engine.
    */
-  onRemoveEntity(entity: Entity) {
+  onRemoveEntity(entity: IEntity) {
     if (entity.isAddedToEngine()) {
       const entityId = entity.uuid
 

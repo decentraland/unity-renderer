@@ -1,6 +1,7 @@
 import { ObservableComponent, DisposableComponent, getComponentId } from '../ecs/Component'
-import { CLASS_ID, Texture } from './Components'
-
+import { CLASS_ID, OnUUIDEvent, Texture } from './Components'
+import { Color4 } from './math'
+import { OnTextSubmit, OnBlur, OnChanged, OnClick, OnFocus } from './UIEvents'
 /**
  * @alpha
  */
@@ -9,7 +10,34 @@ export abstract class UIShape extends ObservableComponent {
    * Defines if the entity and its children should be rendered
    */
   @ObservableComponent.field
+  name: string | null = null
+
+  @ObservableComponent.field
   visible: boolean = true
+
+  @ObservableComponent.field
+  opacity: number = 1
+
+  @ObservableComponent.field
+  hAlign: string = 'center'
+
+  @ObservableComponent.field
+  vAlign: string = 'center'
+
+  @ObservableComponent.uiValue
+  width: string | number = '100px'
+
+  @ObservableComponent.uiValue
+  height: string | number = '50px'
+
+  @ObservableComponent.uiValue
+  positionX: string | number = '0px'
+
+  @ObservableComponent.uiValue
+  positionY: string | number = '0px'
+
+  @ObservableComponent.field
+  isPointerBlocker: boolean = true
 
   private _parent?: UIShape
 
@@ -33,34 +61,21 @@ export abstract class UIShape extends ObservableComponent {
 
 /**
  * @internal
+ * NOTE(Brian): this should be deprecated
  */
 @DisposableComponent('engine.shape', CLASS_ID.UI_FULLSCREEN_SHAPE)
-export class UIFullScreenShape extends UIShape {
-  @ObservableComponent.field
-  visible: boolean = true
-
+export class UIFullScreen extends UIShape {
   constructor() {
     super(null)
   }
 }
 
 /**
- * @alpha
+ * @internal
+ * NOTE(Brian): this should be deprecated
  */
 @DisposableComponent('engine.shape', CLASS_ID.UI_WORLD_SPACE_SHAPE)
-export class UIWorldSpaceShape extends UIShape {
-  @ObservableComponent.field
-  id: string | null = null
-
-  @ObservableComponent.field
-  width: string = '1'
-
-  @ObservableComponent.field
-  height: string = '1'
-
-  @ObservableComponent.field
-  visible: boolean = true
-
+export class UIWorldSpace extends UIShape {
   constructor() {
     super(null)
   }
@@ -70,13 +85,7 @@ export class UIWorldSpaceShape extends UIShape {
  * @alpha
  */
 @DisposableComponent('engine.shape', CLASS_ID.UI_SCREEN_SPACE_SHAPE)
-export class UIScreenSpaceShape extends UIShape {
-  @ObservableComponent.field
-  id: string | null = null
-
-  @ObservableComponent.field
-  visible: boolean = true
-
+export class UICanvas extends UIShape {
   constructor() {
     super(null)
   }
@@ -86,13 +95,7 @@ export class UIScreenSpaceShape extends UIShape {
  * @alpha
  */
 @DisposableComponent('engine.shape', CLASS_ID.UI_CONTAINER_RECT)
-export class UIContainerRectShape extends UIShape {
-  @ObservableComponent.field
-  id: string | null = null
-
-  @ObservableComponent.field
-  opacity: number = 1
-
+export class UIContainerRect extends UIShape {
   @ObservableComponent.field
   adaptWidth: boolean = false
 
@@ -103,106 +106,48 @@ export class UIContainerRectShape extends UIShape {
   thickness: number = 0
 
   @ObservableComponent.field
-  cornerRadius: number = 0
+  color: Color4 = Color4.Clear()
 
   @ObservableComponent.field
-  width: string = '100%'
+  alignmentUsesSize: boolean = true
+}
 
-  @ObservableComponent.field
-  height: string = '100%'
-
-  @ObservableComponent.field
-  top: string = '0px'
-
-  @ObservableComponent.field
-  left: string = '0px'
-
-  @ObservableComponent.field
-  color: string = 'white'
-
-  @ObservableComponent.field
-  background: string = 'transparent'
-
-  @ObservableComponent.field
-  hAlign: string = 'center'
-
-  @ObservableComponent.field
-  vAlign: string = 'center'
-
-  @ObservableComponent.field
-  visible: boolean = true
-
-  @ObservableComponent.field
-  isPointerBlocker: boolean = false
+/**
+ * @public
+ */
+export enum UIStackOrientation {
+  VERTICAL,
+  HORIZONTAL
 }
 
 /**
  * @alpha
  */
 @DisposableComponent('engine.shape', CLASS_ID.UI_CONTAINER_STACK)
-export class UIContainerStackShape extends UIShape {
+export class UIContainerStack extends UIShape {
   @ObservableComponent.field
-  id: string | null = null
+  adaptWidth: boolean = true
 
   @ObservableComponent.field
-  opacity: number = 1
+  adaptHeight: boolean = true
 
   @ObservableComponent.field
-  adaptWidth: boolean = false
+  color: Color4 = Color4.Clear()
 
   @ObservableComponent.field
-  adaptHeight: boolean = false
+  stackOrientation: UIStackOrientation = UIStackOrientation.VERTICAL
 
   @ObservableComponent.field
-  width: string = '100%'
-
-  @ObservableComponent.field
-  height: string = '100%'
-
-  @ObservableComponent.field
-  top: string = '0px'
-
-  @ObservableComponent.field
-  left: string = '0px'
-
-  @ObservableComponent.field
-  color: string = 'white'
-
-  @ObservableComponent.field
-  background: string = 'transparent'
-
-  @ObservableComponent.field
-  hAlign: string = 'center'
-
-  @ObservableComponent.field
-  vAlign: string = 'center'
-
-  @ObservableComponent.field
-  vertical: boolean = true
-
-  @ObservableComponent.field
-  visible: boolean = true
-
-  @ObservableComponent.field
-  isPointerBlocker: boolean = false
+  spacing: Number = 0
 }
 
 /**
  * @alpha
  */
 @DisposableComponent('engine.shape', CLASS_ID.UI_BUTTON_SHAPE)
-export class UIButtonShape extends UIShape {
+export class UIButton extends UIShape {
   @ObservableComponent.field
-  id: string | null = null
-
-  @ObservableComponent.field
-  opacity: number = 1
-
-  @ObservableComponent.field
-  fontFamily: string = 'Arial'
-
-  @ObservableComponent.field
-  fontSize: number = 30
+  fontSize: number = 10
 
   @ObservableComponent.field
   fontWeight: string = 'normal'
@@ -214,40 +159,22 @@ export class UIButtonShape extends UIShape {
   cornerRadius: number = 0
 
   @ObservableComponent.field
-  width: string = '100%'
+  color: Color4 = Color4.White()
 
   @ObservableComponent.field
-  height: string = '100%'
+  background: Color4 = Color4.White()
 
   @ObservableComponent.field
-  top: string = '0px'
+  paddingTop: number = 0
 
   @ObservableComponent.field
-  left: string = '0px'
+  paddingRight: number = 0
 
   @ObservableComponent.field
-  color: string = 'white'
+  paddingBottom: number = 0
 
   @ObservableComponent.field
-  background: string = 'black'
-
-  @ObservableComponent.field
-  hAlign: string = 'center'
-
-  @ObservableComponent.field
-  vAlign: string = 'center'
-
-  @ObservableComponent.field
-  paddingTop: string = '0px'
-
-  @ObservableComponent.field
-  paddingRight: string = '0px'
-
-  @ObservableComponent.field
-  paddingBottom: string = '0px'
-
-  @ObservableComponent.field
-  paddingLeft: string = '0px'
+  paddingLeft: number = 0
 
   @ObservableComponent.field
   shadowBlur: number = 0
@@ -259,58 +186,49 @@ export class UIButtonShape extends UIShape {
   shadowOffsetY: number = 0
 
   @ObservableComponent.field
-  shadowColor: string = '#fff'
+  shadowColor: Color4 = Color4.Black()
 
   @ObservableComponent.field
   text: string = 'button'
-
-  @ObservableComponent.field
-  visible: boolean = true
-
-  @ObservableComponent.field
-  isPointerBlocker: boolean = false
 }
 
 /**
  * @alpha
  */
 @DisposableComponent('engine.shape', CLASS_ID.UI_TEXT_SHAPE)
-export class UITextShape extends UIShape {
-  @ObservableComponent.field
-  id: string | null = null
-
+export class UIText extends UIShape {
   @ObservableComponent.field
   outlineWidth: number = 0
 
   @ObservableComponent.field
-  outlineColor: string = '#fff'
+  outlineColor: Color4 = Color4.White()
 
   @ObservableComponent.field
-  color: string = '#fff'
+  color: Color4 = Color4.White()
 
   @ObservableComponent.field
-  fontFamily: string = 'Arial'
+  fontSize: number = 10
 
   @ObservableComponent.field
-  fontSize: number = 100
+  fontAutoSize: boolean = false
 
   @ObservableComponent.field
   fontWeight: string = 'normal'
 
   @ObservableComponent.field
-  opacity: number = 1.0
-
-  @ObservableComponent.field
   value: string = ''
 
   @ObservableComponent.field
-  lineSpacing: string = '0px'
+  lineSpacing: number = 0
 
   @ObservableComponent.field
   lineCount: number = 0
 
   @ObservableComponent.field
-  resizeToFit: boolean = false
+  adaptWidth: boolean = false
+
+  @ObservableComponent.field
+  adaptHeight: boolean = false
 
   @ObservableComponent.field
   textWrapping: boolean = false
@@ -325,103 +243,73 @@ export class UITextShape extends UIShape {
   shadowOffsetY: number = 0
 
   @ObservableComponent.field
-  shadowColor: string = '#fff'
+  shadowColor: Color4 = Color4.Black()
 
   @ObservableComponent.field
-  zIndex: number = 0
+  hTextAlign: string = 'left'
 
   @ObservableComponent.field
-  hAlign: string = 'center'
+  vTextAlign: string = 'bottom'
 
   @ObservableComponent.field
-  vAlign: string = 'center'
+  paddingTop: number = 0
 
   @ObservableComponent.field
-  hTextAlign: string = 'center'
+  paddingRight: number = 0
 
   @ObservableComponent.field
-  vTextAlign: string = 'center'
+  paddingBottom: number = 0
 
   @ObservableComponent.field
-  width: string = '100%'
-
-  @ObservableComponent.field
-  height: string = '100px'
-
-  @ObservableComponent.field
-  top: string = '0px'
-
-  @ObservableComponent.field
-  left: string = '0px'
-
-  @ObservableComponent.field
-  paddingTop: string = '0px'
-
-  @ObservableComponent.field
-  paddingRight: string = '0px'
-
-  @ObservableComponent.field
-  paddingBottom: string = '0px'
-
-  @ObservableComponent.field
-  paddingLeft: string = '0px'
-
-  @ObservableComponent.field
-  visible: boolean = true
-
-  @ObservableComponent.field
-  isPointerBlocker: boolean = false
+  paddingLeft: number = 0
 }
 
 /**
  * @alpha
  */
 @DisposableComponent('engine.shape', CLASS_ID.UI_INPUT_TEXT_SHAPE)
-export class UIInputTextShape extends UIShape {
+export class UIInputText extends UIShape {
   @ObservableComponent.field
-  id: string | null = null
-
-  @ObservableComponent.field
-  color: string = '#fff'
+  color: Color4 = Color4.Clear()
 
   @ObservableComponent.field
   thickness: number = 1
 
   @ObservableComponent.field
-  fontFamily: string = 'Arial'
-
-  @ObservableComponent.field
-  fontSize: number = 100
+  fontSize: number = 10
 
   @ObservableComponent.field
   fontWeight: string = 'normal'
 
   @ObservableComponent.field
-  opacity: number = 1.0
-
-  @ObservableComponent.field
   value: string = ''
 
   @ObservableComponent.field
-  placeholderColor: string = '#fff'
+  placeholderColor: Color4 = Color4.White()
 
   @ObservableComponent.field
   placeholder: string = ''
 
   @ObservableComponent.field
-  margin: string = '10px'
+  margin: number = 10
 
   @ObservableComponent.field
-  maxWidth: string = '100%'
+  maxWidth: number = 100
+
+  @ObservableComponent.field
+  hTextAlign: string = 'left'
+
+  @ObservableComponent.field
+  vTextAlign: string = 'bottom'
 
   @ObservableComponent.field
   autoStretchWidth: boolean = true
 
   @ObservableComponent.field
-  background: string = 'black'
+  background: Color4 = Color4.Black()
 
   @ObservableComponent.field
-  focusedBackground: string = 'black'
+  focusedBackground: Color4 = Color4.Black()
 
   @ObservableComponent.field
   shadowBlur: number = 0
@@ -433,197 +321,112 @@ export class UIInputTextShape extends UIShape {
   shadowOffsetY: number = 0
 
   @ObservableComponent.field
-  shadowColor: string = '#fff'
+  shadowColor: Color4 = Color4.White()
 
   @ObservableComponent.field
-  zIndex: number = 0
+  paddingTop: number = 0
 
   @ObservableComponent.field
-  hAlign: string = 'center'
+  paddingRight: number = 0
 
   @ObservableComponent.field
-  vAlign: string = 'center'
+  paddingBottom: number = 0
 
   @ObservableComponent.field
-  width: string = '100%'
+  paddingLeft: number = 0
 
-  @ObservableComponent.field
-  height: string = '50px'
+  @OnUUIDEvent.uuidEvent
+  onTextSubmit: OnTextSubmit | null = null
 
-  @ObservableComponent.field
-  top: string = '0px'
+  @OnUUIDEvent.uuidEvent
+  onChanged: OnChanged | null = null
 
-  @ObservableComponent.field
-  left: string = '0px'
+  @OnUUIDEvent.uuidEvent
+  onFocus: OnFocus | null = null
 
-  @ObservableComponent.field
-  paddingTop: string = '0px'
-
-  @ObservableComponent.field
-  paddingRight: string = '0px'
-
-  @ObservableComponent.field
-  paddingBottom: string = '0px'
-
-  @ObservableComponent.field
-  paddingLeft: string = '0px'
-
-  @ObservableComponent.field
-  visible: boolean = true
-
-  @ObservableComponent.field
-  isPointerBlocker: boolean = false
+  @OnUUIDEvent.uuidEvent
+  onBlur: OnBlur | null = null
 }
 
 /**
  * @alpha
  */
 @DisposableComponent('engine.shape', CLASS_ID.UI_IMAGE_SHAPE)
-export class UIImageShape extends UIShape {
+export class UIImage extends UIShape {
   @ObservableComponent.field
-  id: string | null = null
+  sourceLeft: number = 0
 
   @ObservableComponent.field
-  opacity: number = 1
+  sourceTop: number = 0
 
   @ObservableComponent.field
-  sourceLeft: string | null = null
+  sourceWidth: number = 1
 
   @ObservableComponent.field
-  sourceTop: string | null = null
-
-  @ObservableComponent.field
-  sourceWidth: string | null = null
-
-  @ObservableComponent.field
-  sourceHeight: string | null = null
+  sourceHeight: number = 1
 
   @ObservableComponent.component
   source?: Texture
 
   @ObservableComponent.field
-  width: string = '100%'
+  paddingTop: number = 0
 
   @ObservableComponent.field
-  height: string = '100%'
+  paddingRight: number = 0
 
   @ObservableComponent.field
-  top: string = '0px'
+  paddingBottom: number = 0
 
   @ObservableComponent.field
-  left: string = '0px'
+  paddingLeft: number = 0
 
   @ObservableComponent.field
-  hAlign: string = 'center'
+  sizeInPixels: boolean = true
 
-  @ObservableComponent.field
-  vAlign: string = 'center'
+  @OnUUIDEvent.uuidEvent
+  onClick: OnClick | null = null
 
-  @ObservableComponent.field
-  paddingTop: string = '0px'
-
-  @ObservableComponent.field
-  paddingRight: string = '0px'
-
-  @ObservableComponent.field
-  paddingBottom: string = '0px'
-
-  @ObservableComponent.field
-  paddingLeft: string = '0px'
-
-  @ObservableComponent.field
-  visible: boolean = true
-
-  @ObservableComponent.field
-  isPointerBlocker: boolean = false
+  constructor(parent: UIShape, source: Texture) {
+    super(parent)
+    this.source = source
+  }
 }
 
 /**
  * @alpha
  */
 @DisposableComponent('engine.shape', CLASS_ID.UI_SLIDER_SHAPE)
-export class UISliderShape extends UIShape {
+export class UIScrollRect extends UIShape {
   @ObservableComponent.field
-  id: string | null = null
+  valueX: number = 0
 
   @ObservableComponent.field
-  minimum: number = 0
+  valueY: number = 0
 
   @ObservableComponent.field
-  maximum: number = 1
+  borderColor: Color4 = Color4.White()
 
   @ObservableComponent.field
-  color: string = '#fff'
+  backgroundColor: Color4 = Color4.Clear()
 
   @ObservableComponent.field
-  opacity: number = 1.0
-
-  @ObservableComponent.field
-  value: number = 0
-
-  @ObservableComponent.field
-  borderColor: string = '#fff'
-
-  @ObservableComponent.field
-  background: string = 'black'
-
-  @ObservableComponent.field
-  barOffset: string = '5px'
-
-  @ObservableComponent.field
-  thumbWidth: string = '30px'
-
-  @ObservableComponent.field
-  isThumbCircle: boolean = false
-
-  @ObservableComponent.field
-  isThumbClamped: boolean = false
+  isHorizontal: boolean = false
 
   @ObservableComponent.field
   isVertical: boolean = false
 
   @ObservableComponent.field
-  visible: boolean = true
+  paddingTop: number = 0
 
   @ObservableComponent.field
-  zIndex: number = 0
+  paddingRight: number = 0
 
   @ObservableComponent.field
-  hAlign: string = 'center'
+  paddingBottom: number = 0
 
   @ObservableComponent.field
-  vAlign: string = 'center'
+  paddingLeft: number = 0
 
-  @ObservableComponent.field
-  width: string = '100%'
-
-  @ObservableComponent.field
-  height: string = '20px'
-
-  @ObservableComponent.field
-  top: string = '0px'
-
-  @ObservableComponent.field
-  left: string = '0px'
-
-  @ObservableComponent.field
-  paddingTop: string = '0px'
-
-  @ObservableComponent.field
-  paddingRight: string = '0px'
-
-  @ObservableComponent.field
-  paddingBottom: string = '0px'
-
-  @ObservableComponent.field
-  paddingLeft: string = '0px'
-
-  @ObservableComponent.field
-  onChanged: string = ''
-
-  @ObservableComponent.field
-  swapOrientation: boolean = false
-
-  @ObservableComponent.field
-  isPointerBlocker: boolean = false
+  @OnUUIDEvent.uuidEvent
+  onChanged: OnChanged | null = null
 }

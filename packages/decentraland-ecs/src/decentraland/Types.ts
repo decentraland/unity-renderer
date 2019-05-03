@@ -247,6 +247,10 @@ export interface IEvents {
     payload: any
   }
 
+  onTextSubmit: {
+    text: string
+  }
+
   metricsUpdate: {
     given: Record<string, number>
     limit: Record<string, number>

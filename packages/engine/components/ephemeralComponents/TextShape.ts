@@ -7,8 +7,8 @@ import { CLASS_ID, TextShape as ECSTextShape } from 'decentraland-ecs/src'
 
 const schemaValidator = createSchemaValidator({
   outlineWidth: { type: 'number', default: 0 },
-  outlineColor: { type: 'string', default: '#ffffff' },
-  color: { type: 'string', default: '#ffffff' },
+  outlineColor: { type: 'color', default: BABYLON.Color3.White() },
+  color: { type: 'color', default: BABYLON.Color3.White() },
   fontFamily: { type: 'string', default: 'Arial' },
   fontSize: { type: 'number', default: 100 },
   fontWeight: { type: 'number', default: 'normal' },
@@ -21,7 +21,7 @@ const schemaValidator = createSchemaValidator({
   shadowBlur: { type: 'number', default: 0 },
   shadowOffsetX: { type: 'number', default: 0 },
   shadowOffsetY: { type: 'number', default: 0 },
-  shadowColor: { type: 'string', default: '#ffffff' },
+  shadowColor: { type: 'color', default: BABYLON.Color3.White() },
   zIndex: { type: 'number', default: 0 },
   hAlign: { type: 'string', default: 'center' },
   vAlign: { type: 'string', default: 'center' },
@@ -102,8 +102,8 @@ export class TextShape extends BaseComponent<ECSTextShape> {
     if (this.value) {
       this.textBlock.alpha = Math.max(0, Math.min(1, this.value.opacity))
       this.textBlock.color = validators.color(this.value.color, BABYLON.Color3.Black()).toHexString()
-      this.textBlock.fontFamily = this.value.fontFamily
-      this.textBlock.fontSize = this.value.fontSize
+      this.textBlock.fontFamily = 'Arial'
+      this.textBlock.fontSize = this.value.fontSize * 10.0
       this.textBlock.zIndex = this.value.zIndex
       this.textBlock.shadowBlur = this.value.shadowBlur
       this.textBlock.shadowOffsetX = this.value.shadowOffsetX
@@ -113,8 +113,8 @@ export class TextShape extends BaseComponent<ECSTextShape> {
       this.textBlock.text = this.value.value || ''
       this.textBlock.textWrapping = this.value.textWrapping
       this.textBlock.resizeToFit = this.value.resizeToFit
-      this.textBlock.textHorizontalAlignment = parseHorizontalAlignment(this.value.hAlign)
-      this.textBlock.textVerticalAlignment = parseVerticalAlignment(this.value.vAlign)
+      this.textBlock.textHorizontalAlignment = parseHorizontalAlignment(this.value.hTextAlign)
+      this.textBlock.textVerticalAlignment = parseVerticalAlignment(this.value.vTextAlign)
       this.textBlock.outlineWidth = this.value.outlineWidth
       this.textBlock.outlineColor = validators.color(this.value.outlineColor, BABYLON.Color3.Black()).toHexString()
       this.textBlock.fontWeight = this.value.fontWeight

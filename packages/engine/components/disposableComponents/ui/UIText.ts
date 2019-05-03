@@ -1,43 +1,49 @@
 import { DisposableComponent } from '../DisposableComponent'
-import { CLASS_ID } from 'decentraland-ecs/src'
+import { CLASS_ID, Color3 } from 'decentraland-ecs/src'
+import { UIValue } from 'decentraland-ecs/src/ecs/UIValue'
 import { BaseEntity } from 'engine/entities/BaseEntity'
 import { createSchemaValidator } from '../../helpers/schemaValidator'
 import { parseVerticalAlignment, parseHorizontalAlignment } from 'engine/entities/utils/parseAttrs'
-import { UITextShape } from 'decentraland-ecs/src/decentraland/UIShapes'
+import { UIText as UITextShape } from 'decentraland-ecs/src/decentraland/UIShapes'
 import { UIControl } from './UIControl'
 
 const schemaValidator = createSchemaValidator({
   id: { type: 'string', default: null },
+  visible: { type: 'boolean', default: true },
+  hAlign: { type: 'string', default: 'center' },
+  vAlign: { type: 'string', default: 'center' },
+  zIndex: { type: 'number', default: 0 },
+  positionX: { type: 'uiValue', default: new UIValue(0) },
+  positionY: { type: 'uiValue', default: new UIValue(0) },
+  width: { type: 'number', default: 100 },
+  height: { type: 'number', default: 20 },
+  isPointerBlocker: { type: 'boolean', default: false },
+
+  paddingTop: { type: 'number', default: 0 },
+  paddingRight: { type: 'number', default: 0 },
+  paddingBottom: { type: 'number', default: 0 },
+  paddingLeft: { type: 'number', default: 0 },
+
+  color: { type: 'color', default: Color3.White() },
+  opacity: { type: 'number', default: 1.0 },
+
   outlineWidth: { type: 'number', default: 0 },
-  outlineColor: { type: 'string', default: '#fff' },
-  color: { type: 'string', default: '#fff' },
+  outlineColor: { type: 'color', default: Color3.White() },
   fontFamily: { type: 'string', default: 'Arial' },
   fontSize: { type: 'number', default: 100 },
   fontWeight: { type: 'string', default: 'normal' },
-  opacity: { type: 'number', default: 1.0 },
   value: { type: 'string', default: '' },
   lineSpacing: { type: 'string', default: '0px' },
   lineCount: { type: 'number', default: 0 },
-  resizeToFit: { type: 'boolean', default: false },
+  adaptWidth: { type: 'boolean', default: false },
+  adaptHeight: { type: 'boolean', default: false },
   textWrapping: { type: 'boolean', default: false },
   shadowBlur: { type: 'number', default: 0 },
   shadowOffsetX: { type: 'number', default: 0 },
   shadowOffsetY: { type: 'number', default: 0 },
-  shadowColor: { type: 'string', default: '#fff' },
-  zIndex: { type: 'number', default: 0 },
-  hAlign: { type: 'string', default: 'center' },
-  vAlign: { type: 'string', default: 'center' },
+  shadowColor: { type: 'color', default: BABYLON.Color3.White() },
   hTextAlign: { type: 'string', default: 'center' },
-  vTextAlign: { type: 'string', default: 'center' },
-  width: { type: 'string', default: '100%' },
-  height: { type: 'string', default: '100px' },
-  top: { type: 'string', default: '0px' },
-  left: { type: 'string', default: '0px' },
-  paddingTop: { type: 'string', default: '0px' },
-  paddingRight: { type: 'string', default: '0px' },
-  paddingBottom: { type: 'string', default: '0px' },
-  paddingLeft: { type: 'string', default: '0px' },
-  visible: { type: 'boolean', default: true }
+  vTextAlign: { type: 'string', default: 'center' }
 })
 
 class UIText extends UIControl<UITextShape, BABYLON.GUI.TextBlock> {
@@ -64,24 +70,22 @@ class UIText extends UIControl<UITextShape, BABYLON.GUI.TextBlock> {
     this.data = schemaValidator(data)
 
     this.control.alpha = Math.max(0, Math.min(1, this.data.opacity))
-    this.control.color = this.data.color
-    this.control.fontFamily = this.data.fontFamily
+    this.control.color = this.data.color.toHexString()
+    this.control.fontFamily = 'Arial'
     this.control.fontSize = this.data.fontSize
-    this.control.zIndex = this.data.zIndex
     this.control.shadowBlur = this.data.shadowBlur
     this.control.shadowOffsetX = this.data.shadowOffsetX
     this.control.shadowOffsetY = this.data.shadowOffsetY
-    this.control.shadowColor = this.data.shadowColor
+    this.control.shadowColor = this.data.shadowColor.toHexString()
     this.control.lineSpacing = this.data.lineSpacing
     this.control.text = this.data.value
     this.control.textWrapping = this.data.textWrapping
-    this.control.resizeToFit = this.data.resizeToFit
     this.control.horizontalAlignment = parseHorizontalAlignment(this.data.hAlign)
     this.control.verticalAlignment = parseVerticalAlignment(this.data.vAlign)
     this.control.textHorizontalAlignment = parseHorizontalAlignment(this.data.hTextAlign)
     this.control.textVerticalAlignment = parseVerticalAlignment(this.data.vTextAlign)
     this.control.outlineWidth = this.data.outlineWidth
-    this.control.outlineColor = this.data.outlineColor
+    this.control.outlineColor = this.data.outlineColor.toHexString()
     this.control.fontWeight = this.data.fontWeight
     this.control.paddingTop = this.data.paddingTop
     this.control.paddingRight = this.data.paddingRight
@@ -89,8 +93,8 @@ class UIText extends UIControl<UITextShape, BABYLON.GUI.TextBlock> {
     this.control.paddingLeft = this.data.paddingLeft
     this.control.width = this.data.width
     this.control.height = this.data.height
-    this.control.top = this.data.top
-    this.control.left = this.data.left
+    this.control.top = -this.data.positionY
+    this.control.left = this.data.positionX
     this.control.isVisible = this.data.visible
 
     this.data.parentComponent && this.setParent(this.data.parentComponent)

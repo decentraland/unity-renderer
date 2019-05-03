@@ -3937,6 +3937,64 @@
           "isOverride": false,
           "isEventProperty": false
         },
+        "Black": {
+          "kind": "method",
+          "signature": "static Black(): Color4;",
+          "accessModifier": "",
+          "isOptional": false,
+          "isStatic": true,
+          "returnValue": {
+            "type": "Color4",
+            "description": [
+              {
+                "kind": "text",
+                "text": "a new Color4 object"
+              }
+            ]
+          },
+          "parameters": {},
+          "deprecatedMessage": [],
+          "summary": [
+            {
+              "kind": "text",
+              "text": "Returns a Color4 value containing a black color"
+            }
+          ],
+          "remarks": [],
+          "isBeta": false,
+          "isSealed": false,
+          "isVirtual": false,
+          "isOverride": false
+        },
+        "Blue": {
+          "kind": "method",
+          "signature": "static Blue(): Color4;",
+          "accessModifier": "",
+          "isOptional": false,
+          "isStatic": true,
+          "returnValue": {
+            "type": "Color4",
+            "description": [
+              {
+                "kind": "text",
+                "text": "a new Color4 object"
+              }
+            ]
+          },
+          "parameters": {},
+          "deprecatedMessage": [],
+          "summary": [
+            {
+              "kind": "text",
+              "text": "Returns a Color4 value containing a blue color"
+            }
+          ],
+          "remarks": [],
+          "isBeta": false,
+          "isSealed": false,
+          "isVirtual": false,
+          "isOverride": false
+        },
         "CheckColors4": {
           "kind": "method",
           "signature": "static CheckColors4(colors: number[], count: number): number[];",
@@ -4049,6 +4107,35 @@
             {
               "kind": "text",
               "text": "Clamps the rgb values by the min and max values and stores the result into \"result\""
+            }
+          ],
+          "remarks": [],
+          "isBeta": false,
+          "isSealed": false,
+          "isVirtual": false,
+          "isOverride": false
+        },
+        "Clear": {
+          "kind": "method",
+          "signature": "static Clear(): Color4;",
+          "accessModifier": "",
+          "isOptional": false,
+          "isStatic": true,
+          "returnValue": {
+            "type": "Color4",
+            "description": [
+              {
+                "kind": "text",
+                "text": "a new Color4 object"
+              }
+            ]
+          },
+          "parameters": {},
+          "deprecatedMessage": [],
+          "summary": [
+            {
+              "kind": "text",
+              "text": "Returns a Color4 value containing a transparent color"
             }
           ],
           "remarks": [],
@@ -4513,6 +4600,64 @@
           "isVirtual": false,
           "isOverride": false
         },
+        "Gray": {
+          "kind": "method",
+          "signature": "static Gray(): Color4;",
+          "accessModifier": "",
+          "isOptional": false,
+          "isStatic": true,
+          "returnValue": {
+            "type": "Color4",
+            "description": [
+              {
+                "kind": "text",
+                "text": "a new Color4 object"
+              }
+            ]
+          },
+          "parameters": {},
+          "deprecatedMessage": [],
+          "summary": [
+            {
+              "kind": "text",
+              "text": "Returns a Color4 value containing a gray color"
+            }
+          ],
+          "remarks": [],
+          "isBeta": false,
+          "isSealed": false,
+          "isVirtual": false,
+          "isOverride": false
+        },
+        "Green": {
+          "kind": "method",
+          "signature": "static Green(): Color4;",
+          "accessModifier": "",
+          "isOptional": false,
+          "isStatic": true,
+          "returnValue": {
+            "type": "Color4",
+            "description": [
+              {
+                "kind": "text",
+                "text": "a new Color4 object"
+              }
+            ]
+          },
+          "parameters": {},
+          "deprecatedMessage": [],
+          "summary": [
+            {
+              "kind": "text",
+              "text": "Returns a Color4 value containing a green color"
+            }
+          ],
+          "remarks": [],
+          "isBeta": false,
+          "isSealed": false,
+          "isVirtual": false,
+          "isOverride": false
+        },
         "Lerp": {
           "kind": "method",
           "signature": "static Lerp(left: Color4, right: Color4, amount: number): Color4;",
@@ -4652,6 +4797,35 @@
           "isVirtual": false,
           "isOverride": false
         },
+        "Magenta": {
+          "kind": "method",
+          "signature": "static Magenta(): Color4;",
+          "accessModifier": "",
+          "isOptional": false,
+          "isStatic": true,
+          "returnValue": {
+            "type": "Color4",
+            "description": [
+              {
+                "kind": "text",
+                "text": "a new Color4 object"
+              }
+            ]
+          },
+          "parameters": {},
+          "deprecatedMessage": [],
+          "summary": [
+            {
+              "kind": "text",
+              "text": "Returns a Color4 value containing a magenta color"
+            }
+          ],
+          "remarks": [],
+          "isBeta": false,
+          "isSealed": false,
+          "isVirtual": false,
+          "isOverride": false
+        },
         "multiply": {
           "kind": "method",
           "signature": "multiply(color: Color4): Color4;",
@@ -4748,6 +4922,35 @@
           "isVirtual": false,
           "isOverride": false
         },
+        "Purple": {
+          "kind": "method",
+          "signature": "static Purple(): Color4;",
+          "accessModifier": "",
+          "isOptional": false,
+          "isStatic": true,
+          "returnValue": {
+            "type": "Color4",
+            "description": [
+              {
+                "kind": "text",
+                "text": "a new Color4 object"
+              }
+            ]
+          },
+          "parameters": {},
+          "deprecatedMessage": [],
+          "summary": [
+            {
+              "kind": "text",
+              "text": "Returns a Color4 value containing a purple color"
+            }
+          ],
+          "remarks": [],
+          "isBeta": false,
+          "isSealed": false,
+          "isVirtual": false,
+          "isOverride": false
+        },
         "r": {
           "kind": "property",
           "signature": "r: number;",
@@ -4768,6 +4971,35 @@
           "isVirtual": false,
           "isOverride": false,
           "isEventProperty": false
+        },
+        "Red": {
+          "kind": "method",
+          "signature": "static Red(): Color4;",
+          "accessModifier": "",
+          "isOptional": false,
+          "isStatic": true,
+          "returnValue": {
+            "type": "Color4",
+            "description": [
+              {
+                "kind": "text",
+                "text": "a new Color3 object"
+              }
+            ]
+          },
+          "parameters": {},
+          "deprecatedMessage": [],
+          "summary": [
+            {
+              "kind": "text",
+              "text": "Returns a Color4 value containing a red color"
+            }
+          ],
+          "remarks": [],
+          "isBeta": false,
+          "isSealed": false,
+          "isVirtual": false,
+          "isOverride": false
         },
         "scale": {
           "kind": "method",
@@ -5093,6 +5325,35 @@
           "isVirtual": false,
           "isOverride": false
         },
+        "Teal": {
+          "kind": "method",
+          "signature": "static Teal(): Color4;",
+          "accessModifier": "",
+          "isOptional": false,
+          "isStatic": true,
+          "returnValue": {
+            "type": "Color4",
+            "description": [
+              {
+                "kind": "text",
+                "text": "a new Color4 object"
+              }
+            ]
+          },
+          "parameters": {},
+          "deprecatedMessage": [],
+          "summary": [
+            {
+              "kind": "text",
+              "text": "Returns a Color4 value containing a teal color"
+            }
+          ],
+          "remarks": [],
+          "isBeta": false,
+          "isSealed": false,
+          "isVirtual": false,
+          "isOverride": false
+        },
         "toArray": {
           "kind": "method",
           "signature": "toArray(array: number[], index?: number): Color4;",
@@ -5346,6 +5607,64 @@
           "isSealed": false,
           "isVirtual": false,
           "isOverride": false
+        },
+        "White": {
+          "kind": "method",
+          "signature": "static White(): Color4;",
+          "accessModifier": "",
+          "isOptional": false,
+          "isStatic": true,
+          "returnValue": {
+            "type": "Color4",
+            "description": [
+              {
+                "kind": "text",
+                "text": "a new Color4 object"
+              }
+            ]
+          },
+          "parameters": {},
+          "deprecatedMessage": [],
+          "summary": [
+            {
+              "kind": "text",
+              "text": "Returns a Color4 value containing a white color"
+            }
+          ],
+          "remarks": [],
+          "isBeta": false,
+          "isSealed": false,
+          "isVirtual": false,
+          "isOverride": false
+        },
+        "Yellow": {
+          "kind": "method",
+          "signature": "static Yellow(): Color4;",
+          "accessModifier": "",
+          "isOptional": false,
+          "isStatic": true,
+          "returnValue": {
+            "type": "Color4",
+            "description": [
+              {
+                "kind": "text",
+                "text": "a new Color4 object"
+              }
+            ]
+          },
+          "parameters": {},
+          "deprecatedMessage": [],
+          "summary": [
+            {
+              "kind": "text",
+              "text": "Returns a Color4 value containing a yellow color"
+            }
+          ],
+          "remarks": [],
+          "isBeta": false,
+          "isSealed": false,
+          "isVirtual": false,
+          "isOverride": false
         }
       }
     },
@@ -5390,14 +5709,14 @@
       "members": {
         "__constructor": {
           "kind": "constructor",
-          "signature": "constructor(entity: Entity, componentName: string, classId: number | null);",
+          "signature": "constructor(entity: IEntity, componentName: string, classId: number | null);",
           "parameters": {
             "entity": {
               "name": "entity",
               "description": [],
               "isOptional": false,
               "isSpread": false,
-              "type": "Entity"
+              "type": "IEntity"
             },
             "componentName": {
               "name": "componentName",
@@ -5476,11 +5795,11 @@
         },
         "entity": {
           "kind": "property",
-          "signature": "entity: Entity;",
+          "signature": "entity: IEntity;",
           "isOptional": false,
           "isReadOnly": false,
           "isStatic": false,
-          "type": "Entity",
+          "type": "IEntity",
           "deprecatedMessage": [],
           "summary": [],
           "remarks": [],
@@ -5590,14 +5909,14 @@
       "members": {
         "__constructor": {
           "kind": "constructor",
-          "signature": "constructor(entity: Entity, componentName: string, component: ComponentLike);",
+          "signature": "constructor(entity: IEntity, componentName: string, component: ComponentLike);",
           "parameters": {
             "entity": {
               "name": "entity",
               "description": [],
               "isOptional": false,
               "isSpread": false,
-              "type": "Entity"
+              "type": "IEntity"
             },
             "componentName": {
               "name": "componentName",
@@ -5676,11 +5995,11 @@
         },
         "entity": {
           "kind": "property",
-          "signature": "entity: Entity;",
+          "signature": "entity: IEntity;",
           "isOptional": false,
           "isReadOnly": false,
           "isStatic": false,
-          "type": "Entity",
+          "type": "IEntity",
           "deprecatedMessage": [],
           "summary": [],
           "remarks": [],
@@ -6969,7 +7288,7 @@
     "Engine": {
       "kind": "class",
       "extends": "",
-      "implements": "",
+      "implements": "IEngine",
       "typeParameters": [],
       "deprecatedMessage": [],
       "summary": [],
@@ -6979,8 +7298,16 @@
       "members": {
         "__constructor": {
           "kind": "constructor",
-          "signature": "constructor();",
-          "parameters": {},
+          "signature": "constructor(rootEntity: IEntity);",
+          "parameters": {
+            "rootEntity": {
+              "name": "rootEntity",
+              "description": [],
+              "isOptional": false,
+              "isSpread": false,
+              "type": "IEntity"
+            }
+          },
           "deprecatedMessage": [],
           "summary": [
             {
@@ -7011,7 +7338,7 @@
         },
         "addEntity": {
           "kind": "method",
-          "signature": "addEntity(entity: Entity): void;",
+          "signature": "addEntity(entity: IEntity): void;",
           "accessModifier": "",
           "isOptional": false,
           "isStatic": false,
@@ -7025,7 +7352,7 @@
               "description": [],
               "isOptional": false,
               "isSpread": false,
-              "type": "Entity"
+              "type": "IEntity"
             }
           },
           "deprecatedMessage": [],
@@ -7115,11 +7442,11 @@
         },
         "entities": {
           "kind": "property",
-          "signature": "readonly entities: Readonly<Record<string, Entity>>;",
+          "signature": "readonly entities: Readonly<Record<string, IEntity>>;",
           "isOptional": false,
           "isReadOnly": true,
           "isStatic": false,
-          "type": "Readonly<Record<string, Entity>>",
+          "type": "Readonly<Record<string, IEntity>>",
           "deprecatedMessage": [],
           "summary": [],
           "remarks": [],
@@ -7255,7 +7582,7 @@
         },
         "removeEntity": {
           "kind": "method",
-          "signature": "removeEntity(entity: Entity): void;",
+          "signature": "removeEntity(entity: IEntity): void;",
           "accessModifier": "",
           "isOptional": false,
           "isStatic": false,
@@ -7269,7 +7596,7 @@
               "description": [],
               "isOptional": false,
               "isSpread": false,
-              "type": "Entity"
+              "type": "IEntity"
             }
           },
           "deprecatedMessage": [],
@@ -7309,11 +7636,11 @@
         },
         "rootEntity": {
           "kind": "property",
-          "signature": "readonly rootEntity: Entity;",
+          "signature": "readonly rootEntity: IEntity;",
           "isOptional": false,
           "isReadOnly": true,
           "isStatic": false,
-          "type": "Entity",
+          "type": "IEntity",
           "deprecatedMessage": [],
           "summary": [],
           "remarks": [],
@@ -7382,7 +7709,7 @@
     "Entity": {
       "kind": "class",
       "extends": "",
-      "implements": "",
+      "implements": "IEntity",
       "typeParameters": [],
       "deprecatedMessage": [],
       "summary": [],
@@ -7522,11 +7849,11 @@
         },
         "children": {
           "kind": "property",
-          "signature": "children: Record<string, Entity>;",
+          "signature": "children: Record<string, IEntity>;",
           "isOptional": false,
           "isReadOnly": false,
           "isStatic": false,
-          "type": "Record<string, Entity>",
+          "type": "Record<string, IEntity>",
           "deprecatedMessage": [],
           "summary": [],
           "remarks": [],
@@ -7681,12 +8008,12 @@
         },
         "getParent": {
           "kind": "method",
-          "signature": "getParent(): Entity | null;",
+          "signature": "getParent(): IEntity | null;",
           "accessModifier": "",
           "isOptional": false,
           "isStatic": false,
           "returnValue": {
-            "type": "Entity | null",
+            "type": "IEntity | null",
             "description": []
           },
           "parameters": {},
@@ -7831,7 +8158,7 @@
         },
         "setParent": {
           "kind": "method",
-          "signature": "setParent(newParent: Entity): void;",
+          "signature": "setParent(newParent: IEntity): void;",
           "accessModifier": "",
           "isOptional": false,
           "isStatic": false,
@@ -7845,7 +8172,7 @@
               "description": [],
               "isOptional": false,
               "isSpread": false,
-              "type": "Entity"
+              "type": "IEntity"
             }
           },
           "deprecatedMessage": [],
@@ -8806,6 +9133,540 @@
         }
       }
     },
+    "IEngine": {
+      "kind": "interface",
+      "extends": "",
+      "implements": "",
+      "typeParameters": [],
+      "deprecatedMessage": [],
+      "summary": [],
+      "remarks": [],
+      "isBeta": false,
+      "isSealed": false,
+      "members": {
+        "addEntity": {
+          "kind": "method",
+          "signature": "addEntity(entity: IEntity): void;",
+          "accessModifier": "",
+          "isOptional": false,
+          "isStatic": false,
+          "returnValue": {
+            "type": "void",
+            "description": []
+          },
+          "parameters": {
+            "entity": {
+              "name": "entity",
+              "description": [],
+              "isOptional": false,
+              "isSpread": false,
+              "type": "IEntity"
+            }
+          },
+          "deprecatedMessage": [],
+          "summary": [],
+          "remarks": [],
+          "isBeta": false,
+          "isSealed": false,
+          "isVirtual": false,
+          "isOverride": false
+        },
+        "addSystem": {
+          "kind": "method",
+          "signature": "addSystem(system: ISystem, priority: number): void;",
+          "accessModifier": "",
+          "isOptional": false,
+          "isStatic": false,
+          "returnValue": {
+            "type": "void",
+            "description": []
+          },
+          "parameters": {
+            "system": {
+              "name": "system",
+              "description": [],
+              "isOptional": false,
+              "isSpread": false,
+              "type": "ISystem"
+            },
+            "priority": {
+              "name": "priority",
+              "description": [],
+              "isOptional": false,
+              "isSpread": false,
+              "type": "number"
+            }
+          },
+          "deprecatedMessage": [],
+          "summary": [],
+          "remarks": [],
+          "isBeta": false,
+          "isSealed": false,
+          "isVirtual": false,
+          "isOverride": false
+        },
+        "entities": {
+          "kind": "property",
+          "signature": "readonly entities: Readonly<Record<string, IEntity>>;",
+          "isOptional": false,
+          "isReadOnly": true,
+          "isStatic": false,
+          "type": "Readonly<Record<string, IEntity>>",
+          "deprecatedMessage": [],
+          "summary": [],
+          "remarks": [],
+          "isBeta": false,
+          "isSealed": false,
+          "isVirtual": false,
+          "isOverride": false,
+          "isEventProperty": false
+        },
+        "removeEntity": {
+          "kind": "method",
+          "signature": "removeEntity(entity: IEntity): void;",
+          "accessModifier": "",
+          "isOptional": false,
+          "isStatic": false,
+          "returnValue": {
+            "type": "void",
+            "description": []
+          },
+          "parameters": {
+            "entity": {
+              "name": "entity",
+              "description": [],
+              "isOptional": false,
+              "isSpread": false,
+              "type": "IEntity"
+            }
+          },
+          "deprecatedMessage": [],
+          "summary": [],
+          "remarks": [],
+          "isBeta": false,
+          "isSealed": false,
+          "isVirtual": false,
+          "isOverride": false
+        },
+        "removeSystem": {
+          "kind": "method",
+          "signature": "removeSystem(system: ISystem): void;",
+          "accessModifier": "",
+          "isOptional": false,
+          "isStatic": false,
+          "returnValue": {
+            "type": "void",
+            "description": []
+          },
+          "parameters": {
+            "system": {
+              "name": "system",
+              "description": [],
+              "isOptional": false,
+              "isSpread": false,
+              "type": "ISystem"
+            }
+          },
+          "deprecatedMessage": [],
+          "summary": [],
+          "remarks": [],
+          "isBeta": false,
+          "isSealed": false,
+          "isVirtual": false,
+          "isOverride": false
+        },
+        "rootEntity": {
+          "kind": "property",
+          "signature": "rootEntity: IEntity;",
+          "isOptional": false,
+          "isReadOnly": false,
+          "isStatic": false,
+          "type": "IEntity",
+          "deprecatedMessage": [],
+          "summary": [],
+          "remarks": [],
+          "isBeta": false,
+          "isSealed": false,
+          "isVirtual": false,
+          "isOverride": false,
+          "isEventProperty": false
+        }
+      }
+    },
+    "IEntity": {
+      "kind": "interface",
+      "extends": "",
+      "implements": "",
+      "typeParameters": [],
+      "deprecatedMessage": [],
+      "summary": [],
+      "remarks": [],
+      "isBeta": false,
+      "isSealed": false,
+      "members": {
+        "addComponent": {
+          "kind": "method",
+          "signature": "addComponent<T extends object>(component: T): void;",
+          "accessModifier": "",
+          "isOptional": false,
+          "isStatic": false,
+          "returnValue": {
+            "type": "void",
+            "description": []
+          },
+          "parameters": {
+            "component": {
+              "name": "component",
+              "description": [
+                {
+                  "kind": "text",
+                  "text": "component instance."
+                }
+              ],
+              "isOptional": false,
+              "isSpread": false,
+              "type": "T"
+            }
+          },
+          "deprecatedMessage": [],
+          "summary": [
+            {
+              "kind": "text",
+              "text": "Adds a component. If the component already exist, it throws an Error."
+            }
+          ],
+          "remarks": [],
+          "isBeta": false,
+          "isSealed": false,
+          "isVirtual": false,
+          "isOverride": false
+        },
+        "addComponentOrReplace": {
+          "kind": "method",
+          "signature": "addComponentOrReplace<T extends object>(component: T): void;",
+          "accessModifier": "",
+          "isOptional": false,
+          "isStatic": false,
+          "returnValue": {
+            "type": "void",
+            "description": []
+          },
+          "parameters": {
+            "component": {
+              "name": "component",
+              "description": [],
+              "isOptional": false,
+              "isSpread": false,
+              "type": "T"
+            }
+          },
+          "deprecatedMessage": [],
+          "summary": [],
+          "remarks": [],
+          "isBeta": false,
+          "isSealed": false,
+          "isVirtual": false,
+          "isOverride": false
+        },
+        "alive": {
+          "kind": "property",
+          "signature": "alive: boolean;",
+          "isOptional": false,
+          "isReadOnly": false,
+          "isStatic": false,
+          "type": "boolean",
+          "deprecatedMessage": [],
+          "summary": [],
+          "remarks": [],
+          "isBeta": false,
+          "isSealed": false,
+          "isVirtual": false,
+          "isOverride": false,
+          "isEventProperty": false
+        },
+        "children": {
+          "kind": "property",
+          "signature": "children: Record<string, IEntity>;",
+          "isOptional": false,
+          "isReadOnly": false,
+          "isStatic": false,
+          "type": "Record<string, IEntity>",
+          "deprecatedMessage": [],
+          "summary": [],
+          "remarks": [],
+          "isBeta": false,
+          "isSealed": false,
+          "isVirtual": false,
+          "isOverride": false,
+          "isEventProperty": false
+        },
+        "components": {
+          "kind": "property",
+          "signature": "readonly components: Record<string, any>;",
+          "isOptional": false,
+          "isReadOnly": true,
+          "isStatic": false,
+          "type": "Record<string, any>",
+          "deprecatedMessage": [],
+          "summary": [],
+          "remarks": [],
+          "isBeta": false,
+          "isSealed": false,
+          "isVirtual": false,
+          "isOverride": false,
+          "isEventProperty": false
+        },
+        "eventManager": {
+          "kind": "property",
+          "signature": "eventManager: EventManager | null;",
+          "isOptional": false,
+          "isReadOnly": false,
+          "isStatic": false,
+          "type": "EventManager | null",
+          "deprecatedMessage": [],
+          "summary": [],
+          "remarks": [],
+          "isBeta": false,
+          "isSealed": false,
+          "isVirtual": false,
+          "isOverride": false,
+          "isEventProperty": false
+        },
+        "getComponent": {
+          "kind": "method",
+          "signature": "getComponent<T = any>(component: string): T;",
+          "accessModifier": "",
+          "isOptional": false,
+          "isStatic": false,
+          "returnValue": {
+            "type": "T",
+            "description": []
+          },
+          "parameters": {
+            "component": {
+              "name": "component",
+              "description": [],
+              "isOptional": false,
+              "isSpread": false,
+              "type": "string"
+            }
+          },
+          "deprecatedMessage": [],
+          "summary": [],
+          "remarks": [],
+          "isBeta": false,
+          "isSealed": false,
+          "isVirtual": false,
+          "isOverride": false
+        },
+        "getComponentOrCreate": {
+          "kind": "method",
+          "signature": "getComponentOrCreate<T>(component: ComponentConstructor<T> & {\n        new (): T;\n    }): T;",
+          "accessModifier": "",
+          "isOptional": false,
+          "isStatic": false,
+          "returnValue": {
+            "type": "T",
+            "description": []
+          },
+          "parameters": {
+            "component": {
+              "name": "component",
+              "description": [],
+              "isOptional": false,
+              "isSpread": false,
+              "type": "ComponentConstructor<T> & {\n        new (): T;\n    }"
+            }
+          },
+          "deprecatedMessage": [],
+          "summary": [],
+          "remarks": [],
+          "isBeta": false,
+          "isSealed": false,
+          "isVirtual": false,
+          "isOverride": false
+        },
+        "getComponentOrNull": {
+          "kind": "method",
+          "signature": "getComponentOrNull<T = any>(component: string): T | null;",
+          "accessModifier": "",
+          "isOptional": false,
+          "isStatic": false,
+          "returnValue": {
+            "type": "T | null",
+            "description": []
+          },
+          "parameters": {
+            "component": {
+              "name": "component",
+              "description": [
+                {
+                  "kind": "text",
+                  "text": "component class or name"
+                }
+              ],
+              "isOptional": false,
+              "isSpread": false,
+              "type": "string"
+            }
+          },
+          "deprecatedMessage": [],
+          "summary": [
+            {
+              "kind": "text",
+              "text": "Gets a component, if it doesn't exist, it returns null."
+            }
+          ],
+          "remarks": [],
+          "isBeta": false,
+          "isSealed": false,
+          "isVirtual": false,
+          "isOverride": false
+        },
+        "getParent": {
+          "kind": "method",
+          "signature": "getParent(): IEntity | null;",
+          "accessModifier": "",
+          "isOptional": false,
+          "isStatic": false,
+          "returnValue": {
+            "type": "IEntity | null",
+            "description": []
+          },
+          "parameters": {},
+          "deprecatedMessage": [],
+          "summary": [],
+          "remarks": [],
+          "isBeta": false,
+          "isSealed": false,
+          "isVirtual": false,
+          "isOverride": false
+        },
+        "hasComponent": {
+          "kind": "method",
+          "signature": "hasComponent<T = any>(component: string): boolean;",
+          "accessModifier": "",
+          "isOptional": false,
+          "isStatic": false,
+          "returnValue": {
+            "type": "boolean",
+            "description": []
+          },
+          "parameters": {
+            "component": {
+              "name": "component",
+              "description": [],
+              "isOptional": false,
+              "isSpread": false,
+              "type": "string"
+            }
+          },
+          "deprecatedMessage": [],
+          "summary": [],
+          "remarks": [],
+          "isBeta": false,
+          "isSealed": false,
+          "isVirtual": false,
+          "isOverride": false
+        },
+        "isAddedToEngine": {
+          "kind": "method",
+          "signature": "isAddedToEngine(): boolean;",
+          "accessModifier": "",
+          "isOptional": false,
+          "isStatic": false,
+          "returnValue": {
+            "type": "boolean",
+            "description": []
+          },
+          "parameters": {},
+          "deprecatedMessage": [],
+          "summary": [],
+          "remarks": [],
+          "isBeta": false,
+          "isSealed": false,
+          "isVirtual": false,
+          "isOverride": false
+        },
+        "removeComponent": {
+          "kind": "method",
+          "signature": "removeComponent(component: string, triggerRemovedEvent?: boolean): void;",
+          "accessModifier": "",
+          "isOptional": false,
+          "isStatic": false,
+          "returnValue": {
+            "type": "void",
+            "description": []
+          },
+          "parameters": {
+            "component": {
+              "name": "component",
+              "description": [],
+              "isOptional": false,
+              "isSpread": false,
+              "type": "string"
+            },
+            "triggerRemovedEvent": {
+              "name": "triggerRemovedEvent",
+              "description": [],
+              "isOptional": true,
+              "isSpread": false,
+              "type": "boolean"
+            }
+          },
+          "deprecatedMessage": [],
+          "summary": [],
+          "remarks": [],
+          "isBeta": false,
+          "isSealed": false,
+          "isVirtual": false,
+          "isOverride": false
+        },
+        "setParent": {
+          "kind": "method",
+          "signature": "setParent(e: IEntity): void;",
+          "accessModifier": "",
+          "isOptional": false,
+          "isStatic": false,
+          "returnValue": {
+            "type": "void",
+            "description": []
+          },
+          "parameters": {
+            "e": {
+              "name": "e",
+              "description": [],
+              "isOptional": false,
+              "isSpread": false,
+              "type": "IEntity"
+            }
+          },
+          "deprecatedMessage": [],
+          "summary": [],
+          "remarks": [],
+          "isBeta": false,
+          "isSealed": false,
+          "isVirtual": false,
+          "isOverride": false
+        },
+        "uuid": {
+          "kind": "property",
+          "signature": "readonly uuid: string;",
+          "isOptional": false,
+          "isReadOnly": true,
+          "isStatic": false,
+          "type": "string",
+          "deprecatedMessage": [],
+          "summary": [],
+          "remarks": [],
+          "isBeta": false,
+          "isSealed": false,
+          "isVirtual": false,
+          "isOverride": false,
+          "isEventProperty": false
+        }
+      }
+    },
     "IEventConstructor": {
       "kind": "interface",
       "extends": "",
@@ -9178,6 +10039,22 @@
               "text": "Notice: Only entities with ID will be listening for click events."
             }
           ],
+          "remarks": [],
+          "isBeta": false,
+          "isSealed": false,
+          "isVirtual": false,
+          "isOverride": false,
+          "isEventProperty": false
+        },
+        "onTextSubmit": {
+          "kind": "property",
+          "signature": "onTextSubmit:",
+          "isOptional": false,
+          "isReadOnly": false,
+          "isStatic": false,
+          "type": "{\n        text: string;\n    }",
+          "deprecatedMessage": [],
+          "summary": [],
           "remarks": [],
           "isBeta": false,
           "isSealed": false,
@@ -9570,7 +10447,7 @@
       "members": {
         "activate": {
           "kind": "method",
-          "signature": "activate?(engine: Engine): void;",
+          "signature": "activate?(engine: IEngine): void;",
           "accessModifier": "",
           "isOptional": true,
           "isStatic": false,
@@ -9584,7 +10461,7 @@
               "description": [],
               "isOptional": false,
               "isSpread": false,
-              "type": "Engine"
+              "type": "IEngine"
             }
           },
           "deprecatedMessage": [],
@@ -9632,7 +10509,7 @@
         },
         "onAddEntity": {
           "kind": "method",
-          "signature": "onAddEntity?(entity: Entity): void;",
+          "signature": "onAddEntity?(entity: IEntity): void;",
           "accessModifier": "",
           "isOptional": true,
           "isStatic": false,
@@ -9646,7 +10523,7 @@
               "description": [],
               "isOptional": false,
               "isSpread": false,
-              "type": "Entity"
+              "type": "IEntity"
             }
           },
           "deprecatedMessage": [],
@@ -9659,7 +10536,7 @@
         },
         "onRemoveEntity": {
           "kind": "method",
-          "signature": "onRemoveEntity?(entity: Entity): void;",
+          "signature": "onRemoveEntity?(entity: IEntity): void;",
           "accessModifier": "",
           "isOptional": true,
           "isStatic": false,
@@ -9673,7 +10550,7 @@
               "description": [],
               "isOptional": false,
               "isSpread": false,
-              "type": "Entity"
+              "type": "IEntity"
             }
           },
           "deprecatedMessage": [],
@@ -16805,6 +17682,40 @@
           "isSealed": false,
           "isVirtual": false,
           "isOverride": false
+        },
+        "uiValue": {
+          "kind": "method",
+          "signature": "static uiValue(target: ObservableComponent, propertyKey: string): void;",
+          "accessModifier": "",
+          "isOptional": false,
+          "isStatic": true,
+          "returnValue": {
+            "type": "void",
+            "description": []
+          },
+          "parameters": {
+            "target": {
+              "name": "target",
+              "description": [],
+              "isOptional": false,
+              "isSpread": false,
+              "type": "ObservableComponent"
+            },
+            "propertyKey": {
+              "name": "propertyKey",
+              "description": [],
+              "isOptional": false,
+              "isSpread": false,
+              "type": "string"
+            }
+          },
+          "deprecatedMessage": [],
+          "summary": [],
+          "remarks": [],
+          "isBeta": false,
+          "isSealed": false,
+          "isVirtual": false,
+          "isOverride": false
         }
       }
     },
@@ -17286,6 +18197,46 @@
       "isBeta": false,
       "isSealed": false,
       "members": {
+        "__constructor": {
+          "kind": "constructor",
+          "signature": "constructor(callback: (event: IEvents['onBlur']) => void);",
+          "parameters": {
+            "callback": {
+              "name": "callback",
+              "description": [],
+              "isOptional": false,
+              "isSpread": false,
+              "type": "(event: IEvents['onBlur']) => void"
+            }
+          },
+          "deprecatedMessage": [],
+          "summary": [
+            {
+              "kind": "text",
+              "text": "Constructs a new instance of the "
+            },
+            {
+              "kind": "api-link",
+              "elements": [
+                {
+                  "kind": "text",
+                  "text": "OnBlur"
+                }
+              ],
+              "target": {
+                "scopeName": "",
+                "packageName": "decentraland-ecs",
+                "exportName": "OnBlur",
+                "memberName": ""
+              }
+            },
+            {
+              "kind": "text",
+              "text": " class"
+            }
+          ],
+          "remarks": []
+        },
         "type": {
           "kind": "property",
           "signature": "readonly type: string;",
@@ -17315,6 +18266,46 @@
       "isBeta": false,
       "isSealed": false,
       "members": {
+        "__constructor": {
+          "kind": "constructor",
+          "signature": "constructor(callback: (event: IEvents['onChange']) => void);",
+          "parameters": {
+            "callback": {
+              "name": "callback",
+              "description": [],
+              "isOptional": false,
+              "isSpread": false,
+              "type": "(event: IEvents['onChange']) => void"
+            }
+          },
+          "deprecatedMessage": [],
+          "summary": [
+            {
+              "kind": "text",
+              "text": "Constructs a new instance of the "
+            },
+            {
+              "kind": "api-link",
+              "elements": [
+                {
+                  "kind": "text",
+                  "text": "OnChanged"
+                }
+              ],
+              "target": {
+                "scopeName": "",
+                "packageName": "decentraland-ecs",
+                "exportName": "OnChanged",
+                "memberName": ""
+              }
+            },
+            {
+              "kind": "text",
+              "text": " class"
+            }
+          ],
+          "remarks": []
+        },
         "type": {
           "kind": "property",
           "signature": "readonly type: string;",
@@ -17344,6 +18335,46 @@
       "isBeta": false,
       "isSealed": false,
       "members": {
+        "__constructor": {
+          "kind": "constructor",
+          "signature": "constructor(callback: (event: IEvents['onClick']) => void);",
+          "parameters": {
+            "callback": {
+              "name": "callback",
+              "description": [],
+              "isOptional": false,
+              "isSpread": false,
+              "type": "(event: IEvents['onClick']) => void"
+            }
+          },
+          "deprecatedMessage": [],
+          "summary": [
+            {
+              "kind": "text",
+              "text": "Constructs a new instance of the "
+            },
+            {
+              "kind": "api-link",
+              "elements": [
+                {
+                  "kind": "text",
+                  "text": "OnClick"
+                }
+              ],
+              "target": {
+                "scopeName": "",
+                "packageName": "decentraland-ecs",
+                "exportName": "OnClick",
+                "memberName": ""
+              }
+            },
+            {
+              "kind": "text",
+              "text": " class"
+            }
+          ],
+          "remarks": []
+        },
         "type": {
           "kind": "property",
           "signature": "readonly type: string;",
@@ -17373,6 +18404,46 @@
       "isBeta": false,
       "isSealed": false,
       "members": {
+        "__constructor": {
+          "kind": "constructor",
+          "signature": "constructor(callback: (event: IEvents['onFocus']) => void);",
+          "parameters": {
+            "callback": {
+              "name": "callback",
+              "description": [],
+              "isOptional": false,
+              "isSpread": false,
+              "type": "(event: IEvents['onFocus']) => void"
+            }
+          },
+          "deprecatedMessage": [],
+          "summary": [
+            {
+              "kind": "text",
+              "text": "Constructs a new instance of the "
+            },
+            {
+              "kind": "api-link",
+              "elements": [
+                {
+                  "kind": "text",
+                  "text": "OnFocus"
+                }
+              ],
+              "target": {
+                "scopeName": "",
+                "packageName": "decentraland-ecs",
+                "exportName": "OnFocus",
+                "memberName": ""
+              }
+            },
+            {
+              "kind": "text",
+              "text": " class"
+            }
+          ],
+          "remarks": []
+        },
         "type": {
           "kind": "property",
           "signature": "readonly type: string;",
@@ -17446,6 +18517,75 @@
       "remarks": [],
       "isBeta": false,
       "isSealed": false
+    },
+    "OnTextSubmit": {
+      "kind": "class",
+      "extends": "OnUUIDEvent",
+      "implements": "",
+      "typeParameters": [],
+      "deprecatedMessage": [],
+      "summary": [],
+      "remarks": [],
+      "isBeta": false,
+      "isSealed": false,
+      "members": {
+        "__constructor": {
+          "kind": "constructor",
+          "signature": "constructor(callback: (event: IEvents['onTextSubmit']) => void);",
+          "parameters": {
+            "callback": {
+              "name": "callback",
+              "description": [],
+              "isOptional": false,
+              "isSpread": false,
+              "type": "(event: IEvents['onTextSubmit']) => void"
+            }
+          },
+          "deprecatedMessage": [],
+          "summary": [
+            {
+              "kind": "text",
+              "text": "Constructs a new instance of the "
+            },
+            {
+              "kind": "api-link",
+              "elements": [
+                {
+                  "kind": "text",
+                  "text": "OnTextSubmit"
+                }
+              ],
+              "target": {
+                "scopeName": "",
+                "packageName": "decentraland-ecs",
+                "exportName": "OnTextSubmit",
+                "memberName": ""
+              }
+            },
+            {
+              "kind": "text",
+              "text": " class"
+            }
+          ],
+          "remarks": []
+        },
+        "type": {
+          "kind": "property",
+          "signature": "readonly type: string;",
+          "isOptional": false,
+          "isReadOnly": true,
+          "isStatic": false,
+          "type": "string",
+          "deprecatedMessage": [],
+          "summary": [],
+          "remarks": [],
+          "isBeta": false,
+          "isSealed": false,
+          "isVirtual": false,
+          "isOverride": false,
+          "isEventProperty": false
+        }
+      }
     },
     "OnUUIDEvent": {
       "kind": "class",
@@ -17566,6 +18706,40 @@
           "isVirtual": false,
           "isOverride": false,
           "isEventProperty": false
+        },
+        "uuidEvent": {
+          "kind": "method",
+          "signature": "static uuidEvent(target: ObservableComponent, propertyKey: string): void;",
+          "accessModifier": "",
+          "isOptional": false,
+          "isStatic": true,
+          "returnValue": {
+            "type": "void",
+            "description": []
+          },
+          "parameters": {
+            "target": {
+              "name": "target",
+              "description": [],
+              "isOptional": false,
+              "isSpread": false,
+              "type": "ObservableComponent"
+            },
+            "propertyKey": {
+              "name": "propertyKey",
+              "description": [],
+              "isOptional": false,
+              "isSpread": false,
+              "type": "string"
+            }
+          },
+          "deprecatedMessage": [],
+          "summary": [],
+          "remarks": [],
+          "isBeta": false,
+          "isSealed": false,
+          "isVirtual": false,
+          "isOverride": false
         }
       }
     },
@@ -17622,21 +18796,21 @@
       "members": {
         "__constructor": {
           "kind": "constructor",
-          "signature": "constructor(entity: Entity, parent: Entity);",
+          "signature": "constructor(entity: IEntity, parent: IEntity);",
           "parameters": {
             "entity": {
               "name": "entity",
               "description": [],
               "isOptional": false,
               "isSpread": false,
-              "type": "Entity"
+              "type": "IEntity"
             },
             "parent": {
               "name": "parent",
               "description": [],
               "isOptional": false,
               "isSpread": false,
-              "type": "Entity"
+              "type": "IEntity"
             }
           },
           "deprecatedMessage": [],
@@ -17669,11 +18843,11 @@
         },
         "entity": {
           "kind": "property",
-          "signature": "entity: Entity;",
+          "signature": "entity: IEntity;",
           "isOptional": false,
           "isReadOnly": false,
           "isStatic": false,
-          "type": "Entity",
+          "type": "IEntity",
           "deprecatedMessage": [],
           "summary": [],
           "remarks": [],
@@ -17685,11 +18859,11 @@
         },
         "parent": {
           "kind": "property",
-          "signature": "parent: Entity;",
+          "signature": "parent: IEntity;",
           "isOptional": false,
           "isReadOnly": false,
           "isStatic": false,
-          "type": "Entity",
+          "type": "IEntity",
           "deprecatedMessage": [],
           "summary": [],
           "remarks": [],
@@ -24308,22 +25482,6 @@
           "isOverride": false,
           "isEventProperty": false
         },
-        "fontFamily": {
-          "kind": "property",
-          "signature": "fontFamily: string;",
-          "isOptional": false,
-          "isReadOnly": false,
-          "isStatic": false,
-          "type": "string",
-          "deprecatedMessage": [],
-          "summary": [],
-          "remarks": [],
-          "isBeta": false,
-          "isSealed": false,
-          "isVirtual": false,
-          "isOverride": false,
-          "isEventProperty": false
-        },
         "fontSize": {
           "kind": "property",
           "signature": "fontSize: number;",
@@ -24356,13 +25514,13 @@
           "isOverride": false,
           "isEventProperty": false
         },
-        "hAlign": {
+        "height": {
           "kind": "property",
-          "signature": "hAlign: string;",
+          "signature": "height: number;",
           "isOptional": false,
           "isReadOnly": false,
           "isStatic": false,
-          "type": "string",
+          "type": "number",
           "deprecatedMessage": [],
           "summary": [],
           "remarks": [],
@@ -24372,13 +25530,13 @@
           "isOverride": false,
           "isEventProperty": false
         },
-        "height": {
+        "hTextAlign": {
           "kind": "property",
-          "signature": "height: number;",
+          "signature": "hTextAlign: string;",
           "isOptional": false,
           "isReadOnly": false,
           "isStatic": false,
-          "type": "number",
+          "type": "string",
           "deprecatedMessage": [],
           "summary": [],
           "remarks": [],
@@ -24644,9 +25802,9 @@
           "isOverride": false,
           "isEventProperty": false
         },
-        "vAlign": {
+        "value": {
           "kind": "property",
-          "signature": "vAlign: string;",
+          "signature": "value: string;",
           "isOptional": false,
           "isReadOnly": false,
           "isStatic": false,
@@ -24660,9 +25818,9 @@
           "isOverride": false,
           "isEventProperty": false
         },
-        "value": {
+        "vTextAlign": {
           "kind": "property",
-          "signature": "value: string;",
+          "signature": "vTextAlign: string;",
           "isOptional": false,
           "isReadOnly": false,
           "isStatic": false,
@@ -25081,6 +26239,31 @@
         }
       }
     },
+    "UIStackOrientation": {
+      "kind": "enum",
+      "values": {
+        "HORIZONTAL": {
+          "kind": "enum value",
+          "value": "1",
+          "deprecatedMessage": [],
+          "summary": [],
+          "remarks": [],
+          "isBeta": false
+        },
+        "VERTICAL": {
+          "kind": "enum value",
+          "value": "0",
+          "deprecatedMessage": [],
+          "summary": [],
+          "remarks": [],
+          "isBeta": false
+        }
+      },
+      "deprecatedMessage": [],
+      "summary": [],
+      "remarks": [],
+      "isBeta": false
+    },
     "UUIDEvent": {
       "kind": "class",
       "extends": "",
@@ -25250,7 +26433,7 @@
         },
         "onAddEntity": {
           "kind": "method",
-          "signature": "onAddEntity(entity: Entity): void;",
+          "signature": "onAddEntity(entity: IEntity): void;",
           "accessModifier": "",
           "isOptional": false,
           "isStatic": false,
@@ -25264,7 +26447,7 @@
               "description": [],
               "isOptional": false,
               "isSpread": false,
-              "type": "Entity"
+              "type": "IEntity"
             }
           },
           "deprecatedMessage": [],
@@ -25277,7 +26460,7 @@
         },
         "onRemoveEntity": {
           "kind": "method",
-          "signature": "onRemoveEntity(entity: Entity): void;",
+          "signature": "onRemoveEntity(entity: IEntity): void;",
           "accessModifier": "",
           "isOptional": false,
           "isStatic": false,
@@ -25291,7 +26474,7 @@
               "description": [],
               "isOptional": false,
               "isSpread": false,
-              "type": "Entity"
+              "type": "IEntity"
             }
           },
           "deprecatedMessage": [],

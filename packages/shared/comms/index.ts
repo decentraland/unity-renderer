@@ -115,12 +115,11 @@ export function processChatMessage(context: Context, fromAlias: string, data: Ch
     peerTrackingInfo.receivedPublicChatMessages.add(msgId)
 
     const user = getUser(fromAlias)
-
     if (user) {
       const { displayName } = user
       const entry = {
         id: msgId,
-        sender: displayName,
+        sender: displayName || user.publicKey || 'unknown',
         message: text,
         isCommand: false
       }

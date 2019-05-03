@@ -1,4 +1,5 @@
-import { Entity, ComponentAdded, ComponentRemoved } from './Entity'
+import { IEngine, ISystem, IEntity, ComponentAdded, ComponentRemoved } from './IEntity'
+
 import {
   getComponentName,
   getComponentId,
@@ -15,51 +16,27 @@ import { ComponentGroup } from './ComponentGroup'
 import { log, error } from './helpers'
 
 /**
- * @public
- */
-export interface ISystem {
-  active?: boolean
-
-  activate?(engine: Engine): void
-  deactivate?(): void
-
-  update?(dt: number): void
-
-  onAddEntity?(entity: Entity): void
-  onRemoveEntity?(entity: Entity): void
-}
-
-/**
  * @internal
  */
 type SystemEntry = { system: ISystem; priority: number }
 
 /**
- * @internal
- */
-function createRootEntity() {
-  const entity = new Entity('scene')
-  ;(entity as any).uuid = '0'
-  return entity
-}
-
-/**
  * @public
  */
-export class Engine {
+export class Engine implements IEngine {
   readonly eventManager: EventManager = new EventManager()
-  readonly rootEntity = createRootEntity()
+  readonly rootEntity: IEntity
 
   // @internal
   readonly systems: SystemEntry[] = []
 
   // @internal
-  readonly entityLists: Record<string, Record<string, Entity>> = {}
+  readonly entityLists: Record<string, Record<string, IEntity>> = {}
 
   // @internal
   readonly addedSystems: ISystem[] = []
 
-  private readonly _entities: Record<string, Entity> = {}
+  private readonly _entities: Record<string, IEntity> = {}
   private readonly _disposableComponents: Record<string, DisposableComponentLike> = {}
   private readonly _componentGroups: Record<string, ComponentGroup[]> = {}
 
@@ -67,19 +44,20 @@ export class Engine {
   private readonly simpleSystems: ISystem[] = []
 
   get entities() {
-    return this._entities as Readonly<Record<string, Entity>>
+    return this._entities as Readonly<Record<string, IEntity>>
   }
 
   get disposableComponents() {
     return this._disposableComponents as Readonly<Record<string, DisposableComponentLike>>
   }
 
-  constructor() {
+  constructor(rootEntity: IEntity) {
     this.eventManager.addListener(ComponentAdded, this, this.componentAddedHandler)
     this.eventManager.addListener(ComponentRemoved, this, this.componentRemovedHandler)
+    this.rootEntity = rootEntity
   }
 
-  addEntity(entity: Entity) {
+  addEntity(entity: IEntity) {
     const parent = entity.getParent()
 
     if (entity.isAddedToEngine()) {
@@ -114,7 +92,7 @@ export class Engine {
     }
   }
 
-  removeEntity(entity: Entity) {
+  removeEntity(entity: IEntity) {
     const id = entity.uuid
 
     if (entity.isAddedToEngine()) {
@@ -227,8 +205,8 @@ export class Engine {
   }
 
   getEntitiesWithComponent(component: string): Record<string, any>
-  getEntitiesWithComponent(component: ComponentConstructor<any>): Record<string, Entity>
-  getEntitiesWithComponent(component: ComponentConstructor<any> | string): Record<string, Entity> {
+  getEntitiesWithComponent(component: ComponentConstructor<any>): Record<string, IEntity>
+  getEntitiesWithComponent(component: ComponentConstructor<any> | string): Record<string, IEntity> {
     const componentName = typeof component === 'string' ? component : getComponentName(component)
 
     if (componentName in this.entityLists) {
@@ -325,7 +303,7 @@ export class Engine {
     this.simpleSystems.push(system)
   }
 
-  private checkRequirementsAndAdd(entity: Entity) {
+  private checkRequirementsAndAdd(entity: IEntity) {
     if (!entity.isAddedToEngine()) return
 
     for (let componentName in entity.components) {
@@ -353,7 +331,7 @@ export class Engine {
     }
   }
 
-  private checkRequirements(entity: Entity, system: ComponentGroup) {
+  private checkRequirements(entity: IEntity, system: ComponentGroup) {
     if (system.meetsRequirements(entity)) {
       if (!system.hasEntity(entity)) {
         system.addEntity(entity)

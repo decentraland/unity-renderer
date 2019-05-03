@@ -1,24 +1,24 @@
 const ui = new Entity()
-const screenSpaceUI = new UIScreenSpaceShape()
+const screenSpaceUI = new UICanvas()
 ui.addComponentOrReplace(screenSpaceUI)
 engine.addEntity(ui)
 
-const textShape = new UITextShape(screenSpaceUI)
+const textShape = new UIText(screenSpaceUI)
 textShape.value = 'Click on the box to open this'
 textShape.fontSize = 30
 textShape.height = '25px'
 
 const close = new Entity()
-const closeShape = new UIButtonShape(screenSpaceUI)
+const closeShape = new UIButton(screenSpaceUI)
 closeShape.text = 'Close UI'
 closeShape.fontSize = 15
-closeShape.color = 'black'
-closeShape.background = 'yellow'
+closeShape.color = Color4.Black()
+closeShape.background = Color4.Yellow()
 closeShape.cornerRadius = 10
 closeShape.thickness = 1
 closeShape.width = '120px'
 closeShape.height = '30px'
-closeShape.top = '80px'
+closeShape.positionY = '80px'
 close.addComponentOrReplace(
   new OnClick(() => {
     log('clicked on the close button')
@@ -28,23 +28,23 @@ close.addComponentOrReplace(
 close.addComponentOrReplace(closeShape)
 engine.addEntity(close)
 
-const textTopShape = new UITextShape(screenSpaceUI)
+const textTopShape = new UIText(screenSpaceUI)
 textTopShape.value = 'Top'
 textTopShape.vAlign = 'top'
 textTopShape.fontSize = 30
 
-const textBottomShape = new UITextShape(screenSpaceUI)
+const textBottomShape = new UIText(screenSpaceUI)
 textBottomShape.value = 'Bottom'
 textBottomShape.vAlign = 'bottom'
 textBottomShape.fontSize = 30
 
-const textLeftShape = new UITextShape(screenSpaceUI)
+const textLeftShape = new UIText(screenSpaceUI)
 textLeftShape.value = 'Left'
 textLeftShape.hAlign = 'left'
 textLeftShape.hTextAlign = 'left'
 textLeftShape.fontSize = 30
 
-const textRightShape = new UITextShape(screenSpaceUI)
+const textRightShape = new UIText(screenSpaceUI)
 textRightShape.value = 'Right'
 textRightShape.hAlign = 'right'
 textRightShape.hTextAlign = 'right'

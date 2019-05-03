@@ -1,11 +1,11 @@
-import { ISystem, Transform, engine, Entity, BoxShape, EventManager, EventConstructor } from 'decentraland-ecs'
+import { IEntity, ISystem, Transform, engine, Entity, BoxShape, EventManager, EventConstructor } from 'decentraland-ecs'
 
 const boxShape = new BoxShape()
 const events = new EventManager()
 
 @EventConstructor()
 class UpdateEvent {
-  constructor(public entity: Entity, public dt: number) {}
+  constructor(public entity: IEntity, public dt: number) {}
 }
 
 export class RotatorSystem implements ISystem {

@@ -1,4 +1,4 @@
-import { UIFullScreenShape } from 'decentraland-ecs/src'
+import { UIFullScreen } from 'decentraland-ecs/src'
 
 // ScreenSpace UI
-export const screenSpaceUI = new UIFullScreenShape()
+export const screenSpaceUI = new UIFullScreen()

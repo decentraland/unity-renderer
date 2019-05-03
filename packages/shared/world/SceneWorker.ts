@@ -42,6 +42,7 @@ export class SceneWorker {
 
   public engineAPI: EngineAPI | null = null
   public enabled = true
+  public persistent = false
 
   public readonly position: Vector3 = new Vector3()
   private readonly lastSentPosition = new Vector3(0, 0, 0)

@@ -483,6 +483,9 @@ export class SharedSceneContext implements BABYLON.IDisposable {
   }
 
   private sanitizeURL(url: string): string {
+    if (url.startsWith('data:')) {
+      return url
+    }
     if (!url) {
       throw new Error('Invalid URL')
     }

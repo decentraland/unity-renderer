@@ -1,0 +1,28 @@
+{
+  "display": {
+    "title": "text-input-ui",
+    "favicon": "favicon_asset"
+  },
+  "contact": {
+    "name": "Brian",
+    "email": ""
+  },
+  "owner": "",
+  "scene": {
+    "parcels": ["618,618"],
+    "base": "618,618"
+  },
+  "communications": {
+    "type": "webrtc",
+    "signalling": "https://signalling-01.decentraland.org"
+  },
+  "policy": {
+    "contentRating": "E",
+    "fly": true,
+    "voiceEnabled": true,
+    "blacklist": [],
+    "teleportPosition": ""
+  },
+  "main": "game.js",
+  "tags": []
+}

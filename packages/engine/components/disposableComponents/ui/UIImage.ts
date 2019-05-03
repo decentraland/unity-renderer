@@ -1,34 +1,9 @@
 import { DisposableComponent } from '../DisposableComponent'
 import { CLASS_ID } from 'decentraland-ecs/src'
 import { BaseEntity } from 'engine/entities/BaseEntity'
-import { createSchemaValidator } from '../../helpers/schemaValidator'
-import { parseVerticalAlignment, parseHorizontalAlignment } from 'engine/entities/utils/parseAttrs'
-import { UIImageShape } from 'decentraland-ecs/src/decentraland/UIShapes'
+import { UIImage as UIImageShape } from 'decentraland-ecs/src/decentraland/UIShapes'
 import { SharedSceneContext } from 'engine/entities/SharedSceneContext'
 import { UIControl } from './UIControl'
-import { Texture } from '../Texture'
-
-const schemaValidator = createSchemaValidator({
-  id: { type: 'string', default: null },
-  opacity: { type: 'number', default: 1 },
-  sourceLeft: { type: 'string', default: null },
-  sourceTop: { type: 'string', default: null },
-  sourceWidth: { type: 'string', default: null },
-  sourceHeight: { type: 'string', default: null },
-  source: { type: 'string', default: null },
-  width: { type: 'string', default: '100%' },
-  height: { type: 'string', default: '100%' },
-  top: { type: 'string', default: '0px' },
-  left: { type: 'string', default: '0px' },
-  hAlign: { type: 'string', default: 'center' },
-  vAlign: { type: 'string', default: 'center' },
-  paddingTop: { type: 'string', default: '0px' },
-  paddingRight: { type: 'string', default: '0px' },
-  paddingBottom: { type: 'string', default: '0px' },
-  paddingLeft: { type: 'string', default: '0px' },
-  visible: { type: 'boolean', default: true },
-  isPointerBlocker: { type: 'boolean', default: false }
-})
 
 class UIImage extends UIControl<UIImageShape, BABYLON.GUI.Image> {
   control = new BABYLON.GUI.Image('image', '')
@@ -50,51 +25,11 @@ class UIImage extends UIControl<UIImageShape, BABYLON.GUI.Image> {
   }
 
   dispose() {
-    if (this.control) {
-      this.control.dispose()
-      delete this.control
-    }
-
-    super.dispose()
+    // noop
   }
 
   async updateData(data: UIImageShape): Promise<void> {
-    this.data = schemaValidator(data)
-    // @ts-ignore
-    this.control.sourceLeft = parseInt(this.data.sourceLeft, 10)
-    // @ts-ignore
-    this.control.sourceTop = parseInt(this.data.sourceTop, 10)
-    // @ts-ignore
-    this.control.sourceWidth = parseInt(this.data.sourceWidth, 10)
-    // @ts-ignore
-    this.control.sourceHeight = parseInt(this.data.sourceHeight, 10)
-
-    if (data.source) {
-      const texture = await Texture.getFromComponent(this.context, data.source as any)
-
-      this.contributions.textures.clear()
-
-      if (texture) {
-        this.contributions.textures.add(texture)
-        this.control.source = texture.url
-      }
-    }
-
-    this.control.width = this.data.width
-    this.control.height = this.data.height
-    this.control.top = this.data.top
-    this.control.left = this.data.left
-    this.control.alpha = Math.max(0, Math.min(1, this.data.opacity))
-    this.control.verticalAlignment = parseVerticalAlignment(this.data.vAlign)
-    this.control.horizontalAlignment = parseHorizontalAlignment(this.data.hAlign)
-    // missing this.uiEntity.fontWeight = this.data.fontWeight
-    this.control.paddingTop = this.data.paddingTop
-    this.control.paddingRight = this.data.paddingRight
-    this.control.paddingBottom = this.data.paddingBottom
-    this.control.isVisible = this.data.visible
-    this.control.isPointerBlocker = this.data.isPointerBlocker
-
-    this.data.parentComponent && this.setParent(this.data.parentComponent)
+    // noop
   }
 
   dispatchOnClick = (pointerId: number) => {
