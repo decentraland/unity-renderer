@@ -11,6 +11,8 @@ namespace DCL.Components
 {
     public class GLTFShape : BaseLoadableShape<GLTFLoader>
     {
+        public override string componentName => "GLTF Shape";
+         
         public GLTFShape(ParcelScene scene) : base(scene)
         {
         }
