@@ -1,4 +1,5 @@
-import { Entity, GLTFShape, engine, Vector3, Transform, AnimationState, Animator, OnClick } from 'decentraland-ecs/src'
+import { Entity, GLTFShape, engine, Vector3, Transform, AnimationState, Animator } from 'decentraland-ecs/src'
+import { OnClick } from 'decentraland-ecs/src/decentraland/UIEvents'
 
 // Add Shark
 let shark = new Entity()

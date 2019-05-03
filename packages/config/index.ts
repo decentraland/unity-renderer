@@ -91,11 +91,19 @@ export const DEBUG_METRICS = location.search.indexOf('DEBUG_METRICS') !== -1
 export namespace commConfigurations {
   export const debug = DEBUG_METRICS
   export const commRadius = 4
+
   export const peerTtlMs = 1000
+
   export const maxVisiblePeers = 25
+
   export const iceServers = [
     {
       urls: 'stun:stun.l.google.com:19302'
+    },
+    {
+      urls: 'turn:184.73.100.50:3478',
+      credential: 'passworddcl',
+      username: 'usernamedcl'
     }
   ]
 }

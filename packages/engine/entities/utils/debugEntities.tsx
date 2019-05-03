@@ -35,7 +35,7 @@ export function createAxisEntity() {
   xAxis.onDisposeObservable.add(() => debugContext.entities.delete(xAxis.id))
   box.attachTo(xAxis)
   xMaterial.attachTo(xAxis)
-  setEntityText(xAxis, { value: 'X', color: new Color3(1, 0, 0), billboard: true })
+  setEntityText(xAxis, { value: 'X', color: new Color3(1, 0, 0), billboard: true, fontSize: 5.0 })
   ignoreBoundaryChecksOnObject(xAxis)
 
   const yAxis = new BaseEntity(uuid(), debugContext)
@@ -45,7 +45,7 @@ export function createAxisEntity() {
   yAxis.onDisposeObservable.add(() => debugContext.entities.delete(yAxis.id))
   box.attachTo(yAxis)
   yMaterial.attachTo(yAxis)
-  setEntityText(yAxis, { value: 'Y', color: new Color3(0, 1, 0), billboard: true })
+  setEntityText(yAxis, { value: 'Y', color: new Color3(0, 1, 0), billboard: true, fontSize: 5.0 })
   ignoreBoundaryChecksOnObject(yAxis)
 
   const zAxis = new BaseEntity(uuid(), debugContext)
@@ -55,7 +55,7 @@ export function createAxisEntity() {
   zAxis.onDisposeObservable.add(() => debugContext.entities.delete(zAxis.id))
   box.attachTo(zAxis)
   zMaterial.attachTo(zAxis)
-  setEntityText(zAxis, { value: 'Z', color: new Color3(0, 0, 1), billboard: true })
+  setEntityText(zAxis, { value: 'Z', color: new Color3(0, 0, 1), billboard: true, fontSize: 5.0 })
   ignoreBoundaryChecksOnObject(zAxis)
 
   return ret

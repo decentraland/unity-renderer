@@ -1,5 +1,6 @@
 import { newId } from './helpers'
 import { EventConstructor } from './EventManager'
+import { UIValue } from './UIValue'
 
 const componentSymbol = '__name__symbol_'
 const componentClassIdSymbol = '__classId__symbol_'
@@ -333,6 +334,32 @@ export class ObservableComponent {
     }
   }
 
+  static uiValue(target: ObservableComponent, propertyKey: string) {
+    if (delete (target as any)[propertyKey]) {
+      Object.defineProperty(target, propertyKey.toString(), {
+        get: function(this: ObservableComponent): string | number {
+          return this.data[propertyKey].toString()
+        },
+        set: function(this: ObservableComponent, value: string | number) {
+          const oldValue = this.data[propertyKey]
+
+          const finalValue = new UIValue(value)
+
+          this.data[propertyKey] = finalValue
+
+          if (finalValue !== oldValue) {
+            this.dirty = true
+
+            for (let i = 0; i < this.subscriptions.length; i++) {
+              this.subscriptions[i](propertyKey, finalValue, oldValue)
+            }
+          }
+        },
+        enumerable: true
+      })
+    }
+  }
+
   static readonly(target: ObservableComponent, propertyKey: string) {
     if (delete (target as any)[propertyKey]) {
       Object.defineProperty(target, propertyKey.toString(), {
@@ -347,6 +374,7 @@ export class ObservableComponent {
             throw new Error(`The field ${propertyKey} is readonly`)
           }
           this.data[propertyKey] = value
+          this.dirty = true
         },
         enumerable: true,
         configurable: false

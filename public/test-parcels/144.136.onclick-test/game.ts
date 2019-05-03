@@ -4,12 +4,12 @@ import {
   engine,
   Vector3,
   Transform,
-  OnClick,
   Material,
   BoxShape,
   PlaneShape,
   Color3,
-  Camera
+  Camera,
+  OnClick
 } from 'decentraland-ecs/src'
 
 class FaceCameraSystem implements ISystem {

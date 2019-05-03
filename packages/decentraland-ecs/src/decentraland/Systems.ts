@@ -1,8 +1,8 @@
-import { Engine, ISystem } from '../ecs/Engine'
+import { Engine } from '../ecs/Engine'
 import { UUIDEvent } from './Events'
 import { DecentralandInterface } from './Types'
 import { OnUUIDEvent } from './Components'
-import { ComponentAdded, ComponentRemoved, Entity } from '../ecs/Entity'
+import { ISystem, ComponentAdded, ComponentRemoved, IEntity } from '../ecs/IEntity'
 
 declare var dcl: DecentralandInterface | void
 
@@ -28,7 +28,7 @@ export class UUIDEventSystem implements ISystem {
     }
   }
 
-  onAddEntity(entity: Entity) {
+  onAddEntity(entity: IEntity) {
     for (let componentName in entity.components) {
       const component = entity.components[componentName]
 
@@ -38,7 +38,7 @@ export class UUIDEventSystem implements ISystem {
     }
   }
 
-  onRemoveEntity(entity: Entity) {
+  onRemoveEntity(entity: IEntity) {
     for (let componentName in entity.components) {
       const component = entity.components[componentName]
 
@@ -77,3 +77,6 @@ export class UUIDEventSystem implements ISystem {
     }
   }
 }
+
+/** @internal */
+export const uuidEventSystem = new UUIDEventSystem()

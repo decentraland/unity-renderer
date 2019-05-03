@@ -433,10 +433,7 @@ export class TextShape extends Shape {
   color: Color3 = new Color3(1, 1, 1)
 
   @ObservableComponent.field
-  fontFamily: string = 'Arial'
-
-  @ObservableComponent.field
-  fontSize: number = 100
+  fontSize: number = 10
 
   @ObservableComponent.field
   fontWeight: string = 'normal'
@@ -475,10 +472,10 @@ export class TextShape extends Shape {
   zIndex: number = 0
 
   @ObservableComponent.field
-  hAlign: string = 'center'
+  hTextAlign: string = 'center'
 
   @ObservableComponent.field
-  vAlign: string = 'center'
+  vTextAlign: string = 'center'
 
   @ObservableComponent.field
   width: number = 1
@@ -714,36 +711,51 @@ export class OnUUIDEvent<T extends keyof IEvents> extends ObservableComponent {
     this.callback = callback
   }
 
+  static uuidEvent(target: ObservableComponent, propertyKey: string) {
+    if (delete (target as any)[propertyKey]) {
+      const componentSymbol = propertyKey + '_' + Math.random()
+      ;(target as any)[componentSymbol] = undefined
+
+      Object.defineProperty(target, componentSymbol, {
+        ...Object.getOwnPropertyDescriptor(target, componentSymbol),
+        enumerable: false
+      })
+
+      Object.defineProperty(target, propertyKey.toString(), {
+        get: function() {
+          return this[componentSymbol]
+        },
+        set: function(value) {
+          const oldValue = this[componentSymbol]
+
+          if (value) {
+            if (value instanceof OnUUIDEvent) {
+              this.data[propertyKey] = value.uuid
+            } else {
+              throw new Error('value is not an OnUUIDEvent')
+            }
+          } else {
+            this.data[propertyKey] = null
+          }
+
+          this[componentSymbol] = value
+
+          if (value !== oldValue) {
+            this.dirty = true
+
+            for (let i = 0; i < this.subscriptions.length; i++) {
+              this.subscriptions[i](propertyKey, value, oldValue)
+            }
+          }
+        },
+        enumerable: true
+      })
+    }
+  }
+
   toJSON() {
     return { uuid: this.uuid, type: this.type }
   }
-}
-
-/**
- * @public
- */
-@Component('engine.onClick', CLASS_ID.UUID_CALLBACK)
-export class OnClick extends OnUUIDEvent<'onClick'> {
-  @ObservableComponent.readonly
-  readonly type: string = 'onClick'
-}
-
-/**
- * @public
- */
-@Component('engine.onChange', CLASS_ID.UUID_CALLBACK)
-export class OnChanged extends OnUUIDEvent<'onChange'> {
-  @ObservableComponent.readonly
-  readonly type: string = 'onChange'
-}
-
-/**
- * @internal
- */
-@Component('engine.onEnter', CLASS_ID.UUID_CALLBACK)
-export class OnEnter extends OnUUIDEvent<'onEnter'> {
-  @ObservableComponent.readonly
-  readonly type: string = 'onEnter'
 }
 
 /**
@@ -765,19 +777,10 @@ export class OnAnimationEnd extends OnUUIDEvent<'onAnimationEnd'> {
 }
 
 /**
- * @public
+ * @internal
  */
-@Component('engine.onFocus', CLASS_ID.UUID_CALLBACK)
-export class OnFocus extends OnUUIDEvent<'onFocus'> {
+@Component('engine.onEnter', CLASS_ID.UUID_CALLBACK)
+export class OnEnter extends OnUUIDEvent<'onEnter'> {
   @ObservableComponent.readonly
-  readonly type: string = 'onFocus'
-}
-
-/**
- * @public
- */
-@Component('engine.onBlur', CLASS_ID.UUID_CALLBACK)
-export class OnBlur extends OnUUIDEvent<'onBlur'> {
-  @ObservableComponent.readonly
-  readonly type: string = 'onBlur'
+  readonly type: string = 'onEnter'
 }

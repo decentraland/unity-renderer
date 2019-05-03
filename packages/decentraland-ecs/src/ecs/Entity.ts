@@ -1,6 +1,6 @@
 import { getComponentName, ComponentConstructor, getComponentClassId, ComponentLike } from './Component'
-import { Engine } from './Engine'
-import { EventManager, EventConstructor } from './EventManager'
+import { IEngine, IEntity, ComponentAdded, ComponentRemoved, ParentChanged } from './IEntity'
+import { EventManager } from './EventManager'
 import { newId, log } from './helpers'
 
 // tslint:disable:no-use-before-declare
@@ -8,8 +8,8 @@ import { newId, log } from './helpers'
 /**
  * @public
  */
-export class Entity {
-  public children: Record<string, Entity> = {}
+export class Entity implements IEntity {
+  public children: Record<string, IEntity> = {}
   public eventManager: EventManager | null = null
   public alive: boolean = false
 
@@ -17,10 +17,10 @@ export class Entity {
   public readonly components: Record<string, any> = {}
 
   // @internal
-  public engine: Engine | null = null
+  public engine: IEngine | null = null
 
   // @internal
-  private _parent: Entity | null = null
+  private _parent: IEntity | null = null
 
   constructor(public name?: string) {
     // stub
@@ -280,7 +280,7 @@ export class Entity {
   /**
    * Sets the parent entity
    */
-  setParent(newParent: Entity) {
+  setParent(newParent: IEntity) {
     let parent = !newParent && this.engine ? this.engine.rootEntity : newParent
     let currentParent = this.getParent()
 
@@ -294,7 +294,7 @@ export class Entity {
       return
     }
 
-    const circularAncestor = this.getCircularAncestor(newParent)
+    const circularAncestor = this.getCircularAncestor(newParent as Entity)
 
     if (circularAncestor) {
       throw new Error(
@@ -311,11 +311,11 @@ export class Entity {
     if (newParent.uuid !== '0') {
       if (!newParent.isAddedToEngine() && this.isAddedToEngine()) {
         // tslint:disable-next-line:semicolon
-        ;(this.engine as any).removeEntity(this)
+        ;(this.engine as IEngine).removeEntity(this)
       }
       if (newParent.isAddedToEngine() && !this.isAddedToEngine()) {
         // tslint:disable-next-line:semicolon
-        ;(newParent.engine as any).addEntity(this)
+        ;(newParent.engine as IEngine).addEntity(this)
       }
     }
 
@@ -323,14 +323,14 @@ export class Entity {
     this.registerAsChild()
 
     if (this.eventManager && this.engine) {
-      this.eventManager.fireEvent(new ParentChanged(this, parent))
+      this.eventManager.fireEvent(new ParentChanged(this as IEntity, parent))
     }
   }
 
   /**
    * Gets the parent entity
    */
-  getParent(): Entity | null {
+  getParent(): IEntity | null {
     return this._parent
   }
 
@@ -340,10 +340,10 @@ export class Entity {
 
   private getCircularAncestor(ent: Entity): string | null {
     const root = this.engine ? this.engine.rootEntity : null
-    let e: Entity | null = ent
+    let e: IEntity | null = ent
 
     while (e && e !== root) {
-      const parent: Entity | null = e.getParent()
+      const parent: IEntity | null = e.getParent()
       if (parent === this) {
         return e.uuid
       }
@@ -359,35 +359,5 @@ export class Entity {
     if (this.uuid && parent) {
       parent.children[this.uuid] = this
     }
-  }
-}
-
-/**
- * @public
- */
-@EventConstructor()
-export class ComponentRemoved {
-  constructor(public entity: Entity, public componentName: string, public component: ComponentLike) {
-    // stub
-  }
-}
-
-/**
- * @public
- */
-@EventConstructor()
-export class ComponentAdded {
-  constructor(public entity: Entity, public componentName: string, public classId: number | null) {
-    // stub
-  }
-}
-
-/**
- * @public
- */
-@EventConstructor()
-export class ParentChanged {
-  constructor(public entity: Entity, public parent: Entity) {
-    // stub
   }
 }

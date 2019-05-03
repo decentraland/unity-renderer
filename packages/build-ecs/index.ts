@@ -154,6 +154,10 @@ function emitFile(fileName: string, services: ts.LanguageService) {
 
     if (WATCH) {
       console.log('\nThe compiler is watching file changes...\n')
+    } else {
+      if (compiled.error) {
+        throw compiled.error
+      }
     }
   })
 }

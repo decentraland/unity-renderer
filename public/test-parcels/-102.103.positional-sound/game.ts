@@ -15,7 +15,7 @@ import {
   Material,
   Color3,
   Gizmos
-} from '../../../packages/decentraland-ecs/src'
+} from 'decentraland-ecs/src'
 
 const g = new Gizmos()
 

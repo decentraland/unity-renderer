@@ -23,11 +23,10 @@ import { enableParcelSceneLoading, getParcelById, loadedParcelSceneWorkers } fro
 import { SceneWorker, ParcelSceneAPI, hudWorkerUrl } from '../shared/world/SceneWorker'
 import { ensureUiApis } from '../shared/world/uiSceneInitializer'
 import { ParcelIdentity } from '../shared/apis/ParcelIdentity'
-
 import { IEventNames, IEvents } from '../decentraland-ecs/src/decentraland/Types'
 import { Vector3, Quaternion, ReadOnlyVector3, ReadOnlyQuaternion } from '../decentraland-ecs/src/decentraland/math'
-
 import { DEBUG, PREVIEW } from '../config'
+import { chatObservable } from '../shared/comms/chat'
 
 let gameInstance!: GameInstance
 const preloadedScenes = new Set<string>()
@@ -51,6 +50,7 @@ const browserInterface = {
 
   SceneEvent(data: { sceneId: string; eventType: string; payload: any }) {
     const scene = getParcelById(data.sceneId)
+
     if (scene) {
       const parcelScene = scene.parcelScene as UnityParcelScene
       parcelScene.emit(data.eventType as IEventNames, data.payload)
@@ -69,8 +69,7 @@ const unityInterface = {
   SetDebug() {
     gameInstance.SendMessage('SceneController', 'SetDebug')
   },
-  CreateUIScene(data: { id: string }) {
-    // TODO: Implement this function in unity
+  CreateUIScene(data: { id: string; baseUrl: string }) {
     /**
      * UI Scenes are scenes that does not check any limit or boundary. The
      * position is fixed at 0,0 and they are universe-wide. An example of this
@@ -239,16 +238,19 @@ async function initializeDecentralandUI() {
   const scene = new UnityScene(id, {
     baseUrl: location.origin,
     main: hudWorkerUrl,
-    data: {},
+    data: { id },
     id,
     mappings: []
   })
 
   const worker = new SceneWorker(scene)
+  worker.persistent = true
 
   await ensureUiApis(worker)
 
-  unityInterface.CreateUIScene({ id: scene.unitySceneId })
+  loadedParcelSceneWorkers.add(worker)
+
+  unityInterface.CreateUIScene({ id: scene.unitySceneId, baseUrl: scene.data.baseUrl })
 }
 
 async function loadPreviewScene() {
@@ -290,3 +292,5 @@ async function loadPreviewScene() {
     throw new Error('Could not load scene.json')
   }
 }
+
+window['messages'] = (e: any) => chatObservable.notifyObservers(e)

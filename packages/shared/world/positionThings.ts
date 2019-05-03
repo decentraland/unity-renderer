@@ -13,13 +13,13 @@ import { Observable } from 'decentraland-ecs/src/ecs/Observable'
 declare var location: any
 declare var history: any
 
-export const positionObservable = new Observable<
-  Readonly<{
-    position: ReadOnlyVector3
-    rotation: ReadOnlyVector3
-    quaternion: ReadOnlyQuaternion
-  }>
->()
+type PositionRotation = {
+  position: ReadOnlyVector3
+  rotation: ReadOnlyVector3
+  quaternion: ReadOnlyQuaternion
+}
+
+export const positionObservable = new Observable<Readonly<PositionRotation>>()
 
 export const teleportObservable = new Observable<ReadOnlyVector2>()
 

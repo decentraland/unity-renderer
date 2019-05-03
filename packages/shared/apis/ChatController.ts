@@ -53,14 +53,20 @@ export class ChatController extends ExposableAPI implements IChatController {
 
   @exposeMethod
   async send(message: string): Promise<MessageEntry> {
-    let entry = this.handleChatCommand(message)
-    // If the message looks like a command but no command was found, provide some feedback
-    if (!entry && message[0] === '/') {
-      entry = {
-        id: uuid(),
-        isCommand: true,
-        sender: 'Decentraland',
-        message: `That command doesn’t exist. Type /help for a full list of commands.`
+    let entry
+
+    // Check if message is a command
+    if (message[0] === '/') {
+      entry = this.handleChatCommand(message)
+
+      // If no such command was found, provide some feedback
+      if (!entry) {
+        entry = {
+          id: uuid(),
+          isCommand: true,
+          sender: 'Decentraland',
+          message: `That command doesn’t exist. Type /help for a full list of commands.`
+        }
       }
     } else {
       // If the message was not a command ("/cmdname"), then send message through wire
@@ -72,6 +78,7 @@ export class ChatController extends ExposableAPI implements IChatController {
         sender: currentUser.displayName || currentUser.publicKey || 'unknown',
         message
       })
+
       sendPublicChatMessage(newEntry.id, newEntry.message)
     }
 
@@ -92,6 +99,7 @@ export class ChatController extends ExposableAPI implements IChatController {
     const restOfMessage = words.join(' ')
 
     const cmd = this.chatCommands[command]
+
     if (cmd) {
       return cmd.run(restOfMessage)
     }
@@ -105,6 +113,7 @@ export class ChatController extends ExposableAPI implements IChatController {
       // Chat command already registered
       return
     }
+
     this.chatCommands[name] = {
       name,
       description,

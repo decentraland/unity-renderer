@@ -1,11 +1,11 @@
 import { getComponentName, ComponentConstructor } from './Component'
-import { Entity } from './Entity'
+import { IEntity } from './IEntity'
 
 /**
  * @public
  */
 export class ComponentGroup {
-  readonly entities: ReadonlyArray<Entity> = []
+  readonly entities: ReadonlyArray<IEntity> = []
   readonly requires!: ReadonlyArray<ComponentConstructor<any>>
   readonly requiresNames!: ReadonlyArray<string>
 
@@ -58,43 +58,43 @@ export class ComponentGroup {
     }
   }
 
-  hasEntity(entity: Entity): boolean {
+  hasEntity(entity: IEntity): boolean {
     if (!entity.isAddedToEngine()) return false
 
     return this.entities.indexOf(entity) !== -1
   }
 
   // @internal
-  addEntity(entity: Entity) {
+  addEntity(entity: IEntity) {
     if (!entity.isAddedToEngine()) {
       throw new TypeError('ComponentGroup: Cannot add a entity that is not added to the engine')
     }
 
     if (this.entities.indexOf(entity) === -1) {
       // tslint:disable-next-line:semicolon
-      ;(this.entities as Entity[]).push(entity)
+      ;(this.entities as IEntity[]).push(entity)
     }
   }
 
   // @internal
-  removeEntity(entity: Entity) {
+  removeEntity(entity: IEntity) {
     const id = this.entities.indexOf(entity)
 
     if (id !== -1) {
       // tslint:disable-next-line:semicolon
-      ;(this.entities as Entity[]).splice(id, 1)
+      ;(this.entities as IEntity[]).splice(id, 1)
     }
   }
 
   // @internal
-  componentRemoved(entity: Entity, component: string) {
+  componentRemoved(entity: IEntity, component: string) {
     if (this._requiresNames.indexOf(component) !== -1) {
       this.removeEntity(entity)
     }
   }
 
   // @internal
-  meetsRequirements(entity: Entity) {
+  meetsRequirements(entity: IEntity) {
     for (let i = 0; i < this._requiresNames.length; i++) {
       const componentName = this._requiresNames[i]
       if (!(componentName in entity.components)) {
