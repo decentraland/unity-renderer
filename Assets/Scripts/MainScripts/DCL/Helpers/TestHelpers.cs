@@ -261,7 +261,13 @@ namespace DCL.Helpers
 
         public static GLTFShape CreateEntityWithGLTFShape(ParcelScene scene, Vector3 position, GLTFShape.Model model)
         {
-            DecentralandEntity entity = CreateSceneEntity(scene);
+            DecentralandEntity entity = null;
+            return CreateEntityWithGLTFShape(scene, position, model, out entity);
+        }
+
+        public static GLTFShape CreateEntityWithGLTFShape(ParcelScene scene, Vector3 position, GLTFShape.Model model, out DecentralandEntity entity)
+        {
+            entity = CreateSceneEntity(scene);
             GLTFShape gltfShape = AttachGLTFShape(entity, scene, position, model);
             return gltfShape;
         }

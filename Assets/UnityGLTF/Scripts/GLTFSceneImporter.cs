@@ -125,6 +125,14 @@ namespace UnityGLTF
         protected ILoader _loader;
         protected bool _isRunning = false;
 
+        struct NodeId_Like
+        {
+            public int Id;
+            public Node Value;
+        }
+
+        List<NodeId_Like> queuedNodeWithMeshes = new List<NodeId_Like>();
+
 
         /// <summary>
         /// Creates a GLTFSceneBuilder object which will be able to construct a scene based off a url
@@ -514,6 +522,15 @@ namespace UnityGLTF
             yield return ConstructBufferData(nodeToLoad);
 
             yield return ConstructNode(nodeToLoad, nodeIndex, parent);
+
+            for (int i = 0; i < queuedNodeWithMeshes.Count; i++)
+            {
+                NodeId_Like nodeId = queuedNodeWithMeshes[i];
+                Node node = nodeId.Value;
+                yield return ConstructMesh(node.Mesh.Value, _assetCache.NodeCache[nodeId.Id].transform, node.Mesh.Id, node.Skin != null ? node.Skin.Value : null);
+            }
+
+            queuedNodeWithMeshes.Clear();
         }
 
         /// <summary>
@@ -562,6 +579,7 @@ namespace UnityGLTF
 
                 byte[] bufferData;
                 URIHelper.TryParseBase64(uri, out bufferData);
+
                 if (bufferData != null)
                 {
                     bufferDataStream = new MemoryStream(bufferData, 0, bufferData.Length, false, true);
@@ -790,7 +808,6 @@ namespace UnityGLTF
                     bufferCacheData = _assetCache.BufferCache[bufferId];
 
                     if (VERBOSE) Debug.Log("A GLTF Animation buffer cache data is null, skipping animation sampler for " + animation.Name);
-                    //continue;
                 }
 
                 // set up output accessors
@@ -802,7 +819,6 @@ namespace UnityGLTF
                     yield return ConstructBuffer(_gltfRoot.Buffers[anotherBufferId], anotherBufferId);
                     bufferCacheData = _assetCache.BufferCache[anotherBufferId];
                     if (VERBOSE) Debug.Log("A GLTF Animation buffer cache data is null, skipping animation sampler for " + animation.Name);
-                    //continue;
                 }
             }
         }
@@ -1161,12 +1177,13 @@ namespace UnityGLTF
                 yield break;
             }
 
-            var nodeObj = new GameObject(string.IsNullOrEmpty(node.Name) ? ("GLTFNode" + nodeIndex) : node.Name);
-
             Vector3 position, scale;
             Quaternion rotation;
 
+            var nodeObj = new GameObject(string.IsNullOrEmpty(node.Name) ? ("GLTFNode" + nodeIndex) : node.Name);
+
             node.GetUnityTRSProperties(out position, out rotation, out scale);
+
             nodeObj.transform.localPosition = position;
             nodeObj.transform.localRotation = rotation;
             nodeObj.transform.localScale = scale;
@@ -1235,7 +1252,7 @@ namespace UnityGLTF
 
             if (node.Mesh != null)
             {
-                yield return ConstructMesh(node.Mesh.Value, nodeObj.transform, node.Mesh.Id, node.Skin != null ? node.Skin.Value : null);
+                queuedNodeWithMeshes.Add(new NodeId_Like { Id = nodeIndex, Value = node });
             }
         }
 
@@ -1291,16 +1308,8 @@ namespace UnityGLTF
             Matrix4x4[] gltfBindPoses = attributeAccessor.AccessorContent.AsMatrix4x4s;
             UnityEngine.Matrix4x4[] bindPoses = new UnityEngine.Matrix4x4[skin.Joints.Count];
 
-            if (_assetCache.NodeCache[skin.Skeleton.Id] == null)
-            {
-                yield return ConstructNode(_gltfRoot.Nodes[skin.Skeleton.Id], skin.Skeleton.Id, primitiveObj.transform);
-            }
-
             for (int i = 0; i < boneCount; i++)
             {
-                if (_assetCache.NodeCache[skin.Joints[i].Id] == null)
-                    yield return ConstructNode(_gltfRoot.Nodes[skin.Joints[i].Id], skin.Joints[i].Id, _assetCache.NodeCache[skin.Skeleton.Id].transform);
-
                 bones[i] = _assetCache.NodeCache[skin.Joints[i].Id].transform;
                 bindPoses[i] = gltfBindPoses[i].ToUnityMatrix4x4Convert();
             }
