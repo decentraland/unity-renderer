@@ -319,11 +319,11 @@ function handleUserPose({ uuid, pose }: ReceiveUserPoseMessage): boolean {
  * This function handles those visible changes.
  */
 function handleUserVisible({ uuid, visible }: ReceiveUserVisibleMessage): void {
-  /* const avatar = ensureAvatar(uuid)
+  const avatar = ensureAvatar(uuid)
 
   if (avatar) {
     avatar.setVisible(visible)
-  } */
+  }
 }
 
 function handleUserRemoved({ uuid }: UserRemovedMessage): void {

@@ -83,9 +83,8 @@ test-docker:
 test-ci:
 	NODE_ENV=production $(MAKE) compile
 	@echo "$(GREEN)================= Running production tests =================$(RESET)"
-	@echo "$(RED)Skipped!$(RESET)"
-	# SINGLE_RUN=true node ./scripts/test.js
-	# node_modules/.bin/nyc report --temp-directory ./test/tmp --reporter=html --reporter=lcov --reporter=text
+	SINGLE_RUN=true node ./scripts/test.js
+	node_modules/.bin/nyc report --temp-directory ./test/tmp --reporter=html --reporter=lcov --reporter=text
 
 generate-images-local: compile-dev
 	@echo "$(GREEN)================== Generating test images ==================$(RESET)"
