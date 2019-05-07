@@ -1366,7 +1366,7 @@ namespace UnityGLTF
 
         protected virtual IEnumerator ConstructMesh(GLTFMesh mesh, Transform parent, int meshId, Skin skin)
         {
-            bool isColliderMesh = parent.name.EndsWith("_collider");
+            bool isColliderMesh = parent.name.ToLower().Contains("_collider");
 
             if (_assetCache.MeshCache[meshId] == null)
             {
