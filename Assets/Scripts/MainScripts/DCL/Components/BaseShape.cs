@@ -55,7 +55,8 @@ namespace DCL.Components
             {
                 if (filterByColliderName)
                 {
-                    if (!meshFilters[i].transform.parent.name.EndsWith("_collider")) continue;
+                    if (!meshFilters[i].transform.parent.name.ToLower().Contains("_collider"))
+                        continue;
 
                     renderer = meshFilters[i].GetComponent<MeshRenderer>();
                     if (renderer != null)
