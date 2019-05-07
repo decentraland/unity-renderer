@@ -1,0 +1,24 @@
+{
+  "display": {
+    "title": "interactive-text",
+    "favicon": "favicon_asset"
+  },
+  "owner": "",
+  "contact": {
+    "name": "king of the bongo",
+    "email": ""
+  },
+  "main": "game.js",
+  "tags": [],
+  "scene": {
+    "parcels": ["-103,102"],
+    "base": "-103,102"
+  },
+  "policy": {
+    "contentRating": "E",
+    "fly": true,
+    "voiceEnabled": true,
+    "blacklist": [],
+    "teleportPosition": ""
+  }
+}

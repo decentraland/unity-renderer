@@ -157,6 +157,7 @@ export function addStats() {
 
 export async function initBabylonClient() {
   initDCL()
+
   initLocalPlayer(lastPlayerPosition)
 
   if (isMobile()) {
