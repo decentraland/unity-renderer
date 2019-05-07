@@ -8,7 +8,7 @@ class AWaiterSystem {
   update(dt: number) {
     totalTime += dt
 
-    if (totalTime > 1) {
+    if (totalTime > 3) {
       engine.removeSystem(AWaiterSystem.instance)
       log('adding models')
       makeGLTF('models/Suzanne/Suzanne.gltf', new Vector3(5, 5, 2), new Vector3(1, 1, 1))

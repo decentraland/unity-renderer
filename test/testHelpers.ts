@@ -71,8 +71,9 @@ function filterBabylonTextures(texture: BABYLON.BaseTexture) {
  * @param name name of the file to save
  * @param path folder
  */
-export function saveScreenshot(name: string, opts: PlayerCamera | null = null) {
-  it(`save the screenshot ${name} #${count++}`, async function(this: any) {
+export function saveScreenshot(name: string, opts: PlayerCamera | null = null, skip: boolean = false) {
+  const testFn = skip ? it.skip : it
+  testFn(`save the screenshot ${name} #${count++}`, async function(this: any) {
     // tslint:disable-next-line:no-console
     this.timeout(20000)
     const canvas = await domReadyFuture
@@ -325,13 +326,15 @@ export function loadTestParcel(
     root: BABYLON.TransformNode,
     webGLParcelScene: Promise<WebGLParcelScene>,
     parcelSceneFuture: Promise<SceneWorker>
-  ) => void
+  ) => void,
+  skip: boolean = false
 ) {
   enableVisualTests(name, root => {
     const _parcelScene = future<SceneWorker>()
     const _glParcelScene = future<WebGLParcelScene>()
     let context: SharedSceneContext
-    it(`loads the test scene at ${x},${y}`, async function(this: any) {
+    const testFn = skip ? it.skip : it
+    testFn(`loads the test scene at ${x},${y}`, async function(this: any) {
       const origY = scene.activeCamera!.position.y
       gridToWorld(x, y, scene.activeCamera!.position)
       scene.activeCamera!.position.y = origY
@@ -374,12 +377,12 @@ export function loadTestParcel(
       cb(root, _glParcelScene, _parcelScene)
     } catch (e) {
       if (e) {
-        it('failed during test descriptor', () => {
+        testFn('failed during test descriptor', () => {
           throw e
         })
       }
     }
-    it('cleans up the parcelScene', async () => {
+    testFn('cleans up the parcelScene', async () => {
       const parcelScene = await _parcelScene
       parcelScene.dispose()
 

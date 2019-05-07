@@ -35,6 +35,7 @@ const schemaValidator = createSchemaValidator({
   value: { type: 'number', default: 0 },
   borderColor: { type: 'color', default: Color3.White() },
   background: { type: 'color', default: Color3.Black() },
+  backgroundColor: { type: 'color', default: Color3.Black() },
   barOffset: { type: 'number', default: 5 },
   thumbWidth: { type: 'number', default: 30 },
   isThumbCircle: { type: 'boolean', default: false },
@@ -80,7 +81,8 @@ class UISlider extends UIControl<UIScrollRect, BABYLON.GUI.Slider> {
     this.control.minimum = 0
     this.control.maximum = 1
     this.control.zIndex = 0
-    this.control.background = this.data.backgroundColor.toHexString()
+    debugger
+    this.control.background = this.data.backgroundColor ? this.data.backgroundColor.toHexString() : '#000000'
     this.control.horizontalAlignment = parseHorizontalAlignment(this.data.hAlign)
     this.control.verticalAlignment = parseVerticalAlignment(this.data.vAlign)
     this.control.width = this.data.width

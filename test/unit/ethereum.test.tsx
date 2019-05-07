@@ -4,7 +4,7 @@ import { convertMessageToObject, messageToString } from 'shared/ethereum/Ethereu
 import { toHex } from 'eth-connect'
 
 describe('EthereumService tests', function() {
-  this.timeout(2500)
+  this.timeout(6500)
 
   wait(2000)
 
