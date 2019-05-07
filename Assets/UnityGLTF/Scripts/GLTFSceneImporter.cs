@@ -99,7 +99,7 @@ namespace UnityGLTF
         /// </summary>
         public Material LoadingTextureMaterial { get; set; }
 
-        public float BudgetPerFrameInMilliseconds = 1f;
+        static public float BudgetPerFrameInMilliseconds = 2f;
 
         public bool KeepCPUCopyOfMesh = true;
 
@@ -111,7 +111,7 @@ namespace UnityGLTF
             public long StartPosition;
         }
 
-        protected float _timeAtLastYield = 0f;
+        static protected float _timeAtLastYield = 0f;
         protected AsyncCoroutineHelper _asyncCoroutineHelper;
 
         protected GameObject _lastLoadedScene;
@@ -957,6 +957,7 @@ namespace UnityGLTF
                             curveY.AddKey(time, position.y);
                             curveZ.AddKey(time, position.z);
                         }
+
                         yield return SetCurveMode(curveX, samplerCache.Interpolation);
                         yield return SetCurveMode(curveY, samplerCache.Interpolation);
                         yield return SetCurveMode(curveZ, samplerCache.Interpolation);
@@ -1033,12 +1034,23 @@ namespace UnityGLTF
 
         public static IEnumerator SetCurveMode(AnimationCurve curve, InterpolationType mode)
         {
-            float startTime = Time.realtimeSinceStartup;
-
-            //NOTE(Brian): This boosts performance
             Keyframe[] curveKeys = curve.keys;
 
-            for (int i = 0; i < curveKeys.Length; ++i)
+            if (mode == InterpolationType.CUBICSPLINE || mode == InterpolationType.CATMULLROMSPLINE)
+            {
+                Keyframe key;
+
+                key = curve.keys[0];
+                key.inTangent = 0;
+                curve.MoveKey(0, key);
+
+                key = curve.keys[curve.keys.Length - 1];
+                key.outTangent = 0;
+                curve.MoveKey(curve.keys.Length - 1, key);
+                yield break;
+            }
+
+            for (int i = 0; i < curve.length; ++i)
             {
                 float intangent = 0;
                 float outtangent = 0;
@@ -1054,10 +1066,11 @@ namespace UnityGLTF
                     intangent = 0; intangent_set = true;
                 }
 
-                if (i == curveKeys.Length - 1)
+                if (i == curve.length - 1)
                 {
                     outtangent = 0; outtangent_set = true;
                 }
+
                 switch (mode)
                 {
                     case InterpolationType.STEP:
@@ -1076,9 +1089,9 @@ namespace UnityGLTF
                                 point2.y = curveKeys[i].value;
 
                                 deltapoint = point2 - point1;
-
                                 intangent = deltapoint.y / deltapoint.x;
                             }
+
                             if (!outtangent_set)
                             {
                                 point1.x = curveKeys[i].time;
@@ -1092,7 +1105,6 @@ namespace UnityGLTF
                             }
                         }
                         break;
-                    //use default unity curve
                     case InterpolationType.CUBICSPLINE:
                         break;
                     case InterpolationType.CATMULLROMSPLINE:
@@ -1101,17 +1113,12 @@ namespace UnityGLTF
                         break;
                 }
 
-
                 key.inTangent = intangent;
                 key.outTangent = outtangent;
                 curve.MoveKey(i, key);
 
-                if (Time.realtimeSinceStartup - startTime > 0.004f)
-                {
-                    startTime = Time.realtimeSinceStartup;
-                    yield return null;
-                }
-
+                if (ShouldYieldOnTimeout())
+                    yield return YieldOnTimeout();
             }
         }
         #endregion
@@ -1505,15 +1512,15 @@ namespace UnityGLTF
             }
         }
 
-        protected bool ShouldYieldOnTimeout()
+        static protected bool ShouldYieldOnTimeout()
         {
-            return ((Time.realtimeSinceStartup - _timeAtLastYield) > BudgetPerFrameInMilliseconds * 1000f);
+            return ((Time.realtimeSinceStartup - _timeAtLastYield) > (BudgetPerFrameInMilliseconds / 1000f / (float)GLTFComponent.downloadingCount));
         }
 
-        protected IEnumerator YieldOnTimeout()
+        static protected IEnumerator YieldOnTimeout()
         {
-            _timeAtLastYield = Time.realtimeSinceStartup;
             yield return null;
+            _timeAtLastYield = Time.realtimeSinceStartup;
         }
 
         protected UnityMeshData ConvertAccessorsToUnityTypes(MeshConstructionData meshConstructionData)

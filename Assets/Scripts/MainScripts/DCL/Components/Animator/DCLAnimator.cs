@@ -9,46 +9,6 @@ using DCL.Models;
 
 namespace DCL.Components
 {
-    public class DCLAnimatorClipPlayableBehaviour : PlayableBehaviour
-    {
-        public Dictionary<string, AnimationClipPlayable> stateToPlayable;
-        public DCLAnimator dclComponent;
-
-        public override void PrepareFrame(Playable playable, FrameData info)
-        {
-            if (stateToPlayable != null)
-            {
-                foreach (var statePlayablePair in stateToPlayable)
-                {
-                    DCLAnimator.Model.DCLAnimationState animState = dclComponent.GetStateByString(statePlayablePair.Key);
-
-                    if (animState == null)
-                    {
-                        Debug.Log("Skipping nonexistent animation state", dclComponent);
-                        continue;
-                    }
-
-                    if (animState.playing && animState.looping && animState.clipReference != null)
-                    {
-                        if (statePlayablePair.Value.GetPlayState() == PlayState.Playing)
-                        {
-                            double clipTime = statePlayablePair.Value.GetTime();
-
-                            if (clipTime + info.deltaTime >= animState.clipReference.length)
-                            {
-                                double error = animState.clipReference.length - clipTime + info.deltaTime;
-                                statePlayablePair.Value.SetTime(error);
-                                statePlayablePair.Value.Play();
-                            }
-                        }
-                    }
-                }
-            }
-
-            base.PrepareFrame(playable, info);
-        }
-    }
-
     public class DCLAnimator : BaseComponent
     {
         [System.Serializable]
@@ -88,15 +48,9 @@ namespace DCL.Components
         public Model model = new Model();
 
         Model.DCLAnimationState[] previousState;
-
-        PlayableGraph playableGraph;
-        AnimationPlayableOutput playableOutput;
-        AnimationMixerPlayable mixerPlayable;
-        ScriptPlayable<DCLAnimatorClipPlayableBehaviour> scriptPlayable;
-        Animator animator;
-
-        Dictionary<string, AnimationClipPlayable> stateToPlayable = new Dictionary<string, AnimationClipPlayable>();
         Dictionary<string, AnimationClip> clipNameToClip = new Dictionary<string, AnimationClip>();
+        Dictionary<AnimationClip, AnimationState> clipToState = new Dictionary<AnimationClip, AnimationState>();
+        Animation animComponent = null;
 
         private void Start()
         {
@@ -111,28 +65,12 @@ namespace DCL.Components
         private void OnDestroy()
         {
             entity.OnShapeUpdated -= OnComponentUpdated;
-
-            if (playableGraph.IsValid())
-                playableGraph.Destroy();
-
-            if (mixerPlayable.IsValid())
-                mixerPlayable.Destroy();
-
-            if (stateToPlayable != null)
-            {
-                foreach (var acp in stateToPlayable)
-                {
-                    acp.Value.Destroy();
-                }
-            }
         }
 
         public override IEnumerator ApplyChanges(string newJson)
         {
             model = Utils.SafeFromJson<Model>(newJson);
-
             Initialize();
-
             return null;
         }
 
@@ -155,140 +93,56 @@ namespace DCL.Components
             if (model.states == null || model.states.Length == 0)
                 return;
 
-            Animation animComponent = entity.meshGameObject.GetComponentInChildren<Animation>(true);
 
             //NOTE(Brian): fetch all the AnimationClips in Animation component.
-            if (animComponent != null && animator == null)
+            if (animComponent == null)
             {
+                animComponent = entity.meshGameObject.GetComponentInChildren<Animation>(true);
+
+                if (animComponent == null)
+                    return;
+
+                animComponent.enabled = true;
+
                 clipNameToClip.Clear();
+                clipToState.Clear();
+                int layerIndex = 0;
 
                 foreach (AnimationState s in animComponent)
                 {
                     clipNameToClip[s.clip.name] = s.clip;
-                    //NOTE(Brian): This is important, legacy clips aren't supported by playables.
-                    //             If this is 'true' it gives an assert error.
-                    s.clip.legacy = false;
+                    
                     s.clip.wrapMode = WrapMode.Loop;
+                    s.layer = layerIndex;
+                    s.blendMode = AnimationBlendMode.Blend;
+                    layerIndex++;
                 }
-
-                animComponent.enabled = false;
-                animator = animComponent.gameObject.GetOrCreateComponent<Animator>();
             }
-
 
             if (clipNameToClip.Count == 0)
                 return;
 
-            //NOTE(Brian): basic playable graph setup.
-            if (!playableGraph.IsValid())
-            {
-                playableGraph = PlayableGraph.Create();
-            }
-
-            if (!mixerPlayable.IsValid())
-            {
-                mixerPlayable = AnimationMixerPlayable.Create(playableGraph, model.states.Length, true);
-            }
-            else
-            {
-                if (model.states.Length > previousState.Length)
-                {
-                    mixerPlayable.SetInputCount(model.states.Length);
-                }
-            }
-
-            //NOTE(Brian): connect an AnimationClipPlayables to the mixer for each clip.
             foreach (Model.DCLAnimationState state in model.states)
             {
-                if (!stateToPlayable.ContainsKey(state.name))
+                if (clipNameToClip.ContainsKey(state.clip))
                 {
-                    if (clipNameToClip.ContainsKey(state.clip))
+                    AnimationState unityState = animComponent[state.clip];
+                    unityState.weight = state.weight;
+                    unityState.wrapMode = state.looping ? WrapMode.Loop : WrapMode.Default;
+                    unityState.speed = state.speed;
+
+                    if (state.playing)
                     {
-                        AnimationClip animClip = clipNameToClip[state.clip];
-
-                        state.clipReference = animClip;
-                        AnimationClipPlayable p = AnimationClipPlayable.Create(playableGraph, animClip);
-                        p.Pause();
-
-                        stateToPlayable[state.name] = p;
-
-                        int freeSlot = 0;
-
-                        //NOTE(Brian): Have to do this because we are forced to pass the slot index in a explicit way.
-                        for (int slotIndex = 0; slotIndex < mixerPlayable.GetInputCount(); slotIndex++)
-                        {
-                            if (!mixerPlayable.GetInput(slotIndex).IsValid())
-                            {
-                                freeSlot = slotIndex;
-                                break;
-                            }
-                        }
-
-                        playableGraph.Connect(p, 0, mixerPlayable, freeSlot);
+                        if (!animComponent.IsPlaying(state.clip))
+                            animComponent.Play(state.clip);
+                    }
+                    else
+                    {
+                        if (animComponent.IsPlaying(state.clip))
+                            animComponent.Stop(state.clip);
                     }
                 }
-            }
 
-            if (!scriptPlayable.IsValid())
-            {
-                //NOTE(Brian): Mixer is connected to this custom playable behaviour, and this to the output playable.
-                //             This is done to implement loop behaviour. And maybe more advanced stuff later.
-                //             We could make the looping in Update() too but this feels more legit.
-                scriptPlayable = ScriptPlayable<DCLAnimatorClipPlayableBehaviour>.Create(playableGraph, 1);
-                scriptPlayable.GetBehaviour().dclComponent = this;
-                scriptPlayable.GetBehaviour().stateToPlayable = stateToPlayable;
-
-                playableGraph.Connect(mixerPlayable, 0, scriptPlayable, 0);
-
-                if (!playableOutput.IsOutputValid())
-                {
-                    playableOutput = AnimationPlayableOutput.Create(playableGraph, "Animation", animator);
-                    playableOutput.SetSourcePlayable(scriptPlayable);
-                }
-            }
-
-            playableGraph.Play();
-
-            //NOTE(Brian): We want to make a deep-ish copy of the current model so we can check for dirtyness
-            //             later.
-            previousState = new Model.DCLAnimationState[model.states.Length];
-
-            for (int i = 0; i < model.states.Length; i++)
-            {
-                previousState[i] = model.states[i].Clone();
-            }
-
-            UpdateAnimatorState();
-        }
-
-        /// <summary>
-        /// This method updates playable and weight animations attributes.
-        /// </summary>
-        private void UpdateAnimatorState()
-        {
-            foreach (var statePlayablePair in stateToPlayable)
-            {
-                Model.DCLAnimationState animState = GetStateByString(statePlayablePair.Key);
-
-                if (animState.playing)
-                {
-                    //TODO(Brian): insert here the lerp transition code
-                    mixerPlayable.SetInputWeight(statePlayablePair.Value, animState.weight);
-                    if (statePlayablePair.Value.GetPlayState() != PlayState.Playing)
-                    {
-                        statePlayablePair.Value.Play();
-                    }
-                }
-                else
-                {
-                    mixerPlayable.SetInputWeight(statePlayablePair.Value, 0);
-
-                    if (statePlayablePair.Value.GetPlayState() == PlayState.Playing)
-                    {
-                        statePlayablePair.Value.Pause();
-                        statePlayablePair.Value.SetTime(0);
-                    }
-                }
             }
         }
 
