@@ -1,18 +1,17 @@
 # unity-client
 
-### Live server communication build process
+### Setup the Explorer project
+1. Run `npm install` in the [Explorer](https://github.com/decentraland/explorer) cloned repo root directory
+2. Run `make watch` in the [Explorer](https://github.com/decentraland/explorer) cloned repo root directory and wait for the make script to complete
+3. Once the explorer automatically opens you a browser tab, you may close it and continue with Unity 
+3. Run the Initial Scene in the Unity editor
+4. Run the build by accessing **[http://localhost:8080/tetra.html?DEBUG&position=-103%2C99&ws=ws%3A%2F%2Flocalhost%3A5000%2Fdcl](http://localhost:8080/tetra.html?DEBUG&position=-103%2C99&ws=ws%3A%2F%2Flocalhost%3A5000%2Fdcl)** in any webbrowser
 
-1. run "npm install" in the [CLIENT](https://github.com/decentraland/client) cloned repo root directory
-2. run "make watch" in the CLIENT cloned repo root directory and wait for the make script to complete
-3. Build unity wasm with its name as "unity" into CLIENT cloned repo **root/static/** directory
-4. Run the build by accessing **http://localhost:8080/tetra.html?DEBUG&position=-101%2C99** in any webbrowser
+### Build Unity Artifact
 
-### Run client in unity
-
-1. run "npm install" in the [CLIENT](https://github.com/decentraland/client) cloned repo root directory
-2. run "make watch" in the CLIENT cloned repo root directory and wait for the make script to complete
-3. Run the Initial Scene in the editor
-4. Run the build by accessing **http://localhost:8080/tetra.html?DEBUG&position=-103%2C99&ws=ws%3A%2F%2Flocalhost%3A5000%2Fdcl** in any webbrowser
+1. Build unity WASM with its name as "unity" into [Explorer](https://github.com/decentraland/explorer) cloned repo **root/static/** directory
+2. Run the command `make watch`
+2. Run the build by accessing **[http://localhost:8080/tetra.html?DEBUG&position=-101%2C99](http://localhost:8080/tetra.html?DEBUG&position=-101%2C99)** in any webbrowser
 
 ### Unity Assembly Definition Files
 

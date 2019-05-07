@@ -8,7 +8,7 @@ namespace DCL.Controllers
     {
         public override bool IsInsideSceneBoundaries(Vector2 gridPosition)
         {
-            return true;
+            return true; 
         }
 
         public override bool HasContentsUrl(string url)
