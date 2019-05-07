@@ -50,9 +50,9 @@ export const audioEngine = BABYLON.Engine.audioEngine
 
 let highlightLayer: BABYLON.HighlightLayer
 
-const gl = new BABYLON.GlowLayer('glow', scene)
+export const effectLayers: BABYLON.EffectLayer[] = []
 
-export const effectLayers: BABYLON.EffectLayer[] = [gl]
+export const sceneReadyFuture = future<void>()
 
 const database: BABYLON.Database = new Database() as any
 
@@ -158,21 +158,24 @@ const database: BABYLON.Database = new Database() as any
 
   scene.getBoundingBoxRenderer().showBackLines = false
 
-  if (isRunningTest) {
-    scene.onReadyObservable.add(() => {
-      effectLayers.forEach($ => scene.effectLayers.includes($) || scene.addEffectLayer($))
+  scene.onReadyObservable.addOnce(() => {
+    const gl = new BABYLON.GlowLayer('glow', scene)
+    effectLayers.push(gl)
 
-      scene.removeEffectLayer = function(this: any, layer: BABYLON.EffectLayer) {
-        if (effectLayers.includes(layer)) return
-        scene.constructor.prototype.removeEffectLayer.apply(this, arguments)
-      } as any
+    effectLayers.forEach($ => scene.effectLayers.includes($) || scene.addEffectLayer($))
 
-      scene.addEffectLayer = function(this: any, layer: BABYLON.EffectLayer) {
-        if (effectLayers.includes(layer)) return
-        scene.constructor.prototype.addEffectLayer.apply(this, arguments)
-      } as any
-    })
-  }
+    scene.removeEffectLayer = function(this: any, layer: BABYLON.EffectLayer) {
+      if (effectLayers.includes(layer)) return
+      scene.constructor.prototype.removeEffectLayer.apply(this, arguments)
+    } as any
+
+    scene.addEffectLayer = function(this: any, layer: BABYLON.EffectLayer) {
+      if (effectLayers.includes(layer)) return
+      scene.constructor.prototype.addEffectLayer.apply(this, arguments)
+    } as any
+
+    sceneReadyFuture.resolve()
+  })
 
   initMonkeyLoader()
 }
@@ -184,7 +187,9 @@ export function getHighlightLayer() {
 
   highlightLayer = new BABYLON.HighlightLayer('highlight', scene)
 
-  scene.effectLayers.includes(highlightLayer) || scene.addEffectLayer(highlightLayer)
+  if (!scene.effectLayers.includes(highlightLayer)) {
+    scene.addEffectLayer(highlightLayer)
+  }
 
   highlightLayer.innerGlow = false
   highlightLayer.outerGlow = true

@@ -102,7 +102,7 @@
     "babylonjs-procedural-textures": "^3.3.0",
     "body-scroll-lock": "^2.5.10",
     "concurrently": "^4.1.0",
-    "decentraland-rpc": "^3.1.5",
+    "decentraland-rpc": "^3.1.6",
     "devtools-protocol": "0.0.615714",
     "ephemeralkey": "^2.0.1",
     "eth-connect": "^4.0.1",

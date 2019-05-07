@@ -133,6 +133,7 @@ export class BasicMaterial extends DisposableComponent {
 
     this.loadingDonePrivate = true
   }
+
   loadingDone() {
     return this.loadingDonePrivate
   }

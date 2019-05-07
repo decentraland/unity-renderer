@@ -1,114 +1,80 @@
 import { DisposableComponent, BasicShape } from './DisposableComponent'
 import { CLASS_ID } from 'decentraland-ecs/src'
 import { BaseEntity } from 'engine/entities/BaseEntity'
-import { cleanupAssetContainer, processColliders } from 'engine/entities/utils/processModels'
-import { resolveUrl } from 'atomicHelpers/parseUrl'
+import { cleanupAssetContainer } from 'engine/entities/utils/processModels'
 import { scene, engine } from 'engine/renderer'
-import { probe } from 'engine/renderer/ambientLights'
 import { DEBUG } from 'config'
 import { log } from 'util'
 import { Animator } from '../ephemeralComponents/Animator'
-import { deleteUnusedTextures, isSceneTexture } from 'engine/renderer/monkeyLoader'
+import { deleteUnusedTextures } from 'engine/renderer/monkeyLoader'
+import { processGLTFAssetContainer, loadingShape } from './GLTFShape'
 
-BABYLON.SceneLoader.OnPluginActivatedObservable.add(function(plugin) {
-  if (plugin instanceof BABYLON.GLTFFileLoader) {
-    plugin.animationStartMode = BABYLON.GLTFLoaderAnimationStartMode.NONE
-    plugin.compileMaterials = true
-    plugin.validate = true
-    plugin.animationStartMode = 0
+let noise: BABYLON.Texture | null = null
+
+function getNoiseTexture() {
+  if (!noise) {
+    noise = new BABYLON.FireProceduralTexture('perlin', 256, scene)
   }
-})
-
-const loadingShapeMaterial = new BABYLON.StandardMaterial('loading-material', scene)
-loadingShapeMaterial.diffuseColor = loadingShapeMaterial.emissiveColor = BABYLON.Color3.FromHexString('#1D82FF') // a '#ff2d55'
-
-export const loadingShape = BABYLON.MeshBuilder.CreateDisc(
-  'loading-disk',
-  {
-    arc: Math.PI * 0.125,
-    radius: 0.3
-  },
-  scene
-)
-loadingShape.material = loadingShapeMaterial
-
-loadingShape.setEnabled(false)
-
-export function processGLTFAssetContainer(assetContainer: BABYLON.AssetContainer) {
-  assetContainer.meshes.forEach(mesh => {
-    if (mesh instanceof BABYLON.Mesh) {
-      if (mesh.geometry && !assetContainer.geometries.includes(mesh.geometry)) {
-        assetContainer.geometries.push(mesh.geometry)
-      }
-    }
-    mesh.subMeshes &&
-      mesh.subMeshes.forEach(subMesh => {
-        const mesh = subMesh.getMesh()
-        if (mesh instanceof BABYLON.Mesh) {
-          if (mesh.geometry && !assetContainer.geometries.includes(mesh.geometry)) {
-            assetContainer.geometries.push(mesh.geometry)
-          }
-        }
-      })
-  })
-
-  processColliders(assetContainer)
-
-  // Find all the materials from all the meshes and add to $.materials
-  assetContainer.meshes.forEach(mesh => {
-    mesh.cullingStrategy = BABYLON.AbstractMesh.CULLINGSTRATEGY_BOUNDINGSPHERE_ONLY
-    if (mesh.material) {
-      if (!assetContainer.materials.includes(mesh.material)) {
-        assetContainer.materials.push(mesh.material)
-      }
-    }
-  })
-
-  // Find the textures in the materials that share the same domain as the context
-  // then add the textures to the $.textures
-  assetContainer.materials.forEach((material: BABYLON.Material | BABYLON.PBRMaterial) => {
-    for (let i in material) {
-      const t = (material as any)[i]
-
-      if (i.endsWith('Texture') && t instanceof BABYLON.Texture && t !== probe.cubeTexture) {
-        if (!assetContainer.textures.includes(t)) {
-          if (isSceneTexture(t)) {
-            assetContainer.textures.push(t)
-          }
-        }
-      }
-    }
-
-    if ('reflectionTexture' in material) {
-      material.reflectionTexture = probe.cubeTexture
-    }
-
-    if ('albedoTexture' in material) {
-      if (material.alphaMode === 2) {
-        if (material.albedoTexture) {
-          material.albedoTexture.hasAlpha = true
-          material.useAlphaFromAlbedoTexture = true
-        }
-      }
-    }
-  })
-
-  for (let ag of assetContainer.animationGroups) {
-    ag.stop()
-    for (let animatable of ag.animatables) {
-      animatable.weight = 0
-    }
-  }
-
-  assetContainer.addAllToScene()
+  return noise
 }
 
-export class GLTFShape extends DisposableComponent {
+function parseProtocolUrl(url: string): { protocol: string; registry: string; asset: string } {
+  const parsedUrl = /([^:]+):\/\/([^/]+)(?:\/(.+))?/.exec(url)
+
+  if (!parsedUrl) throw new Error('The provided URL is not valid: ' + url)
+
+  const result = {
+    asset: parsedUrl[3],
+    registry: parsedUrl[2],
+    protocol: parsedUrl[1]
+  }
+
+  if (result.protocol.endsWith(':')) {
+    result.protocol = result.protocol.replace(/:$/, '')
+  }
+
+  if (result.protocol !== 'ethereum') {
+    throw new Error('Invalid protocol: ' + result.protocol)
+  }
+
+  return result
+}
+
+async function fetchDARAsset(registry: string, assetId: string): Promise<{ image: string; files: any }> {
+  const req = await fetch(`https://schema-api-staging.now.sh/dar/${registry}/asset/${assetId}`)
+  return req.json()
+}
+
+async function fetchBase64Image(url: string) {
+  const response = await fetch(url, {
+    method: 'GET',
+    headers: {},
+    mode: 'cors',
+    cache: 'default'
+  })
+
+  const buffer = await response.arrayBuffer()
+  let base64Flag = `data:${response.headers.get('content-type')};base64,`
+  let imageStr = arrayBufferToBase64(buffer)
+
+  return base64Flag + imageStr
+}
+
+function arrayBufferToBase64(buffer: ArrayBuffer) {
+  let binary = ''
+  let bytes = [].slice.call(new Uint8Array(buffer))
+
+  bytes.forEach((b: number) => (binary += String.fromCharCode(b)))
+
+  return btoa(binary)
+}
+
+export class NFTShape extends DisposableComponent {
   src: string | null = null
   assetContainerEntity = new Map<string, BABYLON.AssetContainer>()
   entityIsLoading = new Set<string>()
   error = false
-
+  tex: BABYLON.Texture | null = null
   private didFillContributions = false
 
   loadingDone(entity: BaseEntity): boolean {
@@ -125,20 +91,15 @@ export class GLTFShape extends DisposableComponent {
   }
 
   onAttach(entity: BaseEntity): void {
-    if (this.src && !this.entityIsLoading.has(entity.uuid)) {
+    if (!this.entityIsLoading.has(entity.uuid)) {
       this.entityIsLoading.add(entity.uuid)
-
-      const url = resolveUrl(this.context.internalBaseUrl, this.src)
-      const baseUrl = url.substr(0, url.lastIndexOf('/') + 1)
-
-      const file = url.replace(baseUrl, '')
 
       const loadingEntity = new BABYLON.TransformNode('loading-padding')
 
       entity.setObject3D(BasicShape.nameInEntity, loadingEntity)
 
       {
-        const loadingInstance = loadingShape.createInstance('a')
+        const loadingInstance = loadingShape.createInstance('nft-loader')
         loadingInstance.parent = loadingEntity
         loadingInstance.position.y = 0.8
         const animationDisposable = scene.onAfterRenderObservable.add(() => {
@@ -155,8 +116,8 @@ export class GLTFShape extends DisposableComponent {
       }
 
       BABYLON.SceneLoader.LoadAssetContainer(
-        baseUrl,
-        file,
+        'models/frames/',
+        'basic.glb',
         scene,
         assetContainer => {
           this.entityIsLoading.delete(entity.uuid)
@@ -180,6 +141,24 @@ export class GLTFShape extends DisposableComponent {
             assetContainer.textures.forEach($ => {
               this.contributions.textures.add($)
             })
+          }
+
+          const pictureMaterial = assetContainer.materials[1] as BABYLON.PBRMaterial
+          const frameMaterial = assetContainer.materials[0] as BABYLON.PBRMaterial
+
+          frameMaterial.emissiveTexture = getNoiseTexture()
+          frameMaterial.albedoTexture = getNoiseTexture()
+          frameMaterial.emissiveIntensity = 1
+
+          if (this.tex) {
+            pictureMaterial.useAlphaFromAlbedoTexture = true
+            pictureMaterial.forceAlphaTest = true
+            pictureMaterial.albedoTexture = this.tex
+            pictureMaterial.emissiveIntensity = 0
+            pictureMaterial.metallic = 0
+            pictureMaterial.roughness = 1
+            pictureMaterial.albedoColor = BABYLON.Color3.White()
+            pictureMaterial.enableSpecularAntiAliasing = true
           }
 
           if (this.isStillValid(entity)) {
@@ -250,24 +229,38 @@ export class GLTFShape extends DisposableComponent {
   async updateData(data: any): Promise<void> {
     if ('src' in data) {
       if (this.src !== null && this.src !== data.src && DEBUG) {
-        log('Cannot set GLTFShape.src twice')
+        log('Cannot set NFTShape.src twice')
+        return
       }
       if (this.src === null) {
         this.src = data.src
       }
       if (this.src) {
-        if ('visible' in data) {
-          if (data.visible === false) {
-            this.entities.forEach($ => this.onDetach($))
-          } else {
-            this.entities.forEach($ => this.onAttach($))
+        const { registry, asset } = parseProtocolUrl(this.src)
+
+        const assetData = await fetchDARAsset(registry, asset)
+
+        // by default, thumbnail should work
+        let image = assetData.image
+
+        // anyways, we search the original file that is supposed to have a better resolution
+        for (let file of assetData.files) {
+          if (file.role === 'dcl-picture-frame-image' && file.name.endsWith('.png')) {
+            image = file.url
           }
-        } else {
-          this.entities.forEach($ => this.onAttach($))
         }
+
+        const realImage = await fetchBase64Image(image)
+
+        this.tex = new BABYLON.Texture(realImage, scene)
+        this.tex.hasAlpha = true
+
+        this.contributions.textures.add(this.tex)
+
+        this.entities.forEach($ => this.onAttach($))
       }
     }
   }
 }
 
-DisposableComponent.registerClassId(CLASS_ID.GLTF_SHAPE, GLTFShape)
+DisposableComponent.registerClassId(CLASS_ID.NFT_SHAPE, NFTShape)

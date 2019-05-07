@@ -13,6 +13,8 @@ import './disposableComponents/ConeShape'
 import './disposableComponents/CylinderShape'
 import './disposableComponents/DisposableComponent'
 import './disposableComponents/GLTFShape'
+import './disposableComponents/NFTShape'
+
 import './disposableComponents/OBJShape'
 import './disposableComponents/PBRMaterial'
 import './disposableComponents/PlaneShape'

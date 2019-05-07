@@ -321,6 +321,20 @@ export class GLTFShape extends Shape {
 }
 
 /**
+ * @internal
+ */
+@DisposableComponent('engine.shape', CLASS_ID.NFT_SHAPE)
+export class NFTShape extends Shape {
+  @Shape.readonly
+  readonly src!: string
+
+  constructor(src: string) {
+    super()
+    this.src = src
+  }
+}
+
+/**
  * @public
  */
 @DisposableComponent('engine.texture', CLASS_ID.TEXTURE)
