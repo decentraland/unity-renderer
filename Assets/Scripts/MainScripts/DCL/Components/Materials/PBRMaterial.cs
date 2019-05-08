@@ -16,9 +16,9 @@ namespace DCL.Components
             [Range(0f, 1f)]
             public float alpha = 1f;
 
-            public string albedoColor = "#fff";
+            public Color albedoColor = Color.white;
             public string albedoTexture;
-            public string ambientColor = "#fff";
+            public Color ambientColor = Color.white;
             public float metallic = 0.5f;
             public float roughness = 0.5f;
             public float microSurface = 1f; // Glossiness
@@ -26,10 +26,10 @@ namespace DCL.Components
             public bool hasAlpha = false;
             public string alphaTexture;
             public string emissiveTexture;
-            public string emissiveColor = "#000";
+            public Color emissiveColor = Color.black;
             public float emissiveIntensity = 2f;
-            public string reflectionColor = "#fff"; // Specular color
-            public string reflectivityColor = "#fff";
+            public Color reflectionColor = Color.white; // Specular color
+            public Color reflectivityColor = Color.white;
             public float directIntensity = 1f;
             public float environmentIntensity = 1f;
             public string bumpTexture;
@@ -59,7 +59,6 @@ namespace DCL.Components
         public override IEnumerator ApplyChanges(string newJson)
         {
             model = JsonUtility.FromJson<Model>(newJson);
-            Color auxColor = new Color();
 
             if (model.disableLighting)
             {
@@ -83,14 +82,12 @@ namespace DCL.Components
                 }
 
                 // METALLIC/SPECULAR CONFIGURATIONS
-                ColorUtility.TryParseHtmlString(model.emissiveColor, out auxColor);
-                material.SetColor("_EmissionColor", auxColor * model.emissiveIntensity);
+                material.SetColor("_EmissionColor", model.emissiveColor * model.emissiveIntensity);
 
-                if (auxColor != Color.clear && auxColor != Color.black)
+                if (model.emissiveColor != Color.clear && model.emissiveColor != Color.black)
                     material.EnableKeyword("_EMISSION");
 
-                ColorUtility.TryParseHtmlString(model.reflectivityColor, out auxColor);
-                material.SetColor("_SpecColor", auxColor);
+                material.SetColor("_SpecColor", model.reflectivityColor);
 
                 material.SetFloat("_Metallic", model.metallic);
                 material.SetFloat("_Glossiness", 1 - model.roughness);
@@ -98,8 +95,7 @@ namespace DCL.Components
                 material.SetFloat("_SpecularHighlights", model.specularIntensity * model.directIntensity);
             }
 
-            ColorUtility.TryParseHtmlString(model.albedoColor, out auxColor);
-            material.SetColor("_Color", auxColor);
+            material.SetColor("_Color", model.albedoColor);
 
             // FETCH AND LOAD TEXTURES
             if (!string.IsNullOrEmpty(model.albedoTexture))

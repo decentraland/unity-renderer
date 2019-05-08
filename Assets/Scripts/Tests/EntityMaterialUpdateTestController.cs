@@ -61,8 +61,10 @@ public class EntityMaterialUpdateTestController : MonoBehaviour
 
         // Re-assign last PBR material to new entity
         BoxShape shape = TestHelpers.CreateEntityWithBoxShape(scene, new Vector3(5, 1, 2));
-
         BasicMaterial m = TestHelpers.SharedComponentCreate<BasicMaterial, BasicMaterial.Model>(scene, CLASS_ID.BASIC_MATERIAL);
+
+        Color color1;
+        ColorUtility.TryParseHtmlString("#FF9292", out color1);
 
         // Update material attached to 2 entities, adding albedoColor
         scene.SharedComponentUpdate(JsonUtility.ToJson(new SharedComponentUpdateMessage
@@ -74,7 +76,7 @@ public class EntityMaterialUpdateTestController : MonoBehaviour
                 metallic = 1,
                 roughness = 1,
                 alphaTexture = dclAvatarTexture.id,
-                albedoColor = "#FF9292"
+                albedoColor = color1
             })
         }));
     }

@@ -108,16 +108,22 @@ namespace Tests
 
             yield return texture.routine;
 
+            Color color1, color2, color3;
+
+            ColorUtility.TryParseHtmlString("#99deff", out color1);
+            ColorUtility.TryParseHtmlString("#42f4aa", out color2);
+            ColorUtility.TryParseHtmlString("#601121", out color3);
+
             scene.SharedComponentUpdate(JsonUtility.ToJson(new DCL.Models.SharedComponentUpdateMessage
             {
                 id = materialID,
                 json = JsonUtility.ToJson(new DCL.Components.PBRMaterial.Model
                 {
                     albedoTexture = texture.id,
-                    albedoColor = "#99deff",
-                    emissiveColor = "#42f4aa",
+                    albedoColor = color1,
+                    emissiveColor = color2,
                     emissiveIntensity = 1,
-                    reflectivityColor = "#601121",
+                    reflectivityColor = color3,
                     metallic = 0.37f,
                     roughness = 0.9f,
                     microSurface = 0.4f,
@@ -540,11 +546,14 @@ namespace Tests
         {
             yield return InitScene();
 
+            Color color1;
+            ColorUtility.TryParseHtmlString("#808080", out color1);
+
             // 1. Create component with non-default configs
             PBRMaterial PBRMaterialComponent = TestHelpers.SharedComponentCreate<PBRMaterial, PBRMaterial.Model>(scene, CLASS_ID.PBR_MATERIAL,
             new PBRMaterial.Model
             {
-                albedoColor = "#808080",
+                albedoColor = color1,
                 metallic = 0.3f,
                 directIntensity = 0.1f,
                 specularIntensity = 3f
@@ -553,7 +562,7 @@ namespace Tests
             yield return PBRMaterialComponent.routine;
 
             // 2. Check configured values
-            Assert.AreEqual("#808080", PBRMaterialComponent.model.albedoColor);
+            Assert.AreEqual(color1, PBRMaterialComponent.model.albedoColor);
             Assert.AreEqual(0.3f, PBRMaterialComponent.model.metallic);
             Assert.AreEqual(0.1f, PBRMaterialComponent.model.directIntensity);
             Assert.AreEqual(3f, PBRMaterialComponent.model.specularIntensity);
@@ -568,7 +577,7 @@ namespace Tests
             yield return PBRMaterialComponent.routine;
 
             // 4. Check defaulted values
-            Assert.AreEqual("#fff", PBRMaterialComponent.model.albedoColor);
+            Assert.AreEqual(Color.white, PBRMaterialComponent.model.albedoColor);
             Assert.AreEqual(0.5f, PBRMaterialComponent.model.metallic);
             Assert.AreEqual(1, PBRMaterialComponent.model.directIntensity);
             Assert.AreEqual(1f, PBRMaterialComponent.model.specularIntensity);
