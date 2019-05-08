@@ -345,7 +345,7 @@ MonoBehaviour:
   startDecentralandAutomatically: 1
   componentFactory: {fileID: 11400000, guid: 6710053fa2d5d5446b6a599e0e003053, type: 2}
   debugScenes: 0
-  debugSceneName: dcl-ui-scene
+  debugSceneName: 145,123
   ignoreGlobalScenes: 0
   msgStepByStep: 0
 --- !u!1001 &503185316
@@ -359,11 +359,6 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Name
       value: FPSPanel
-      objectReference: {fileID: 0}
-    - target: {fileID: 7216045483097485647, guid: 343005e32016c60479b0584c59812b4b,
-        type: 3}
-      propertyPath: m_IsActive
-      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 8901170218733160826, guid: 343005e32016c60479b0584c59812b4b,
         type: 3}

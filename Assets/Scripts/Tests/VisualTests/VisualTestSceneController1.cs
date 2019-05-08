@@ -72,6 +72,8 @@ public class VisualTestSceneController1 : MonoBehaviour
             name = "material"
         }));
 
+        Color color = new Color(1, 0.7f, 0.7f);
+
         // Update material attached to 2 entities, adding albedoColor
         scene.SharedComponentUpdate(JsonUtility.ToJson(new DCL.Models.SharedComponentUpdateMessage
         {
@@ -82,7 +84,7 @@ public class VisualTestSceneController1 : MonoBehaviour
                 metallic = 1,
                 roughness = 1,
                 alphaTexture = textureUrl,
-                albedoColor = "#FF9292"
+                albedoColor = color
             })
         }));
 
