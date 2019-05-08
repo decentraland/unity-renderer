@@ -116,7 +116,7 @@ export class NFTShape extends DisposableComponent {
       }
 
       BABYLON.SceneLoader.LoadAssetContainer(
-        'models/frames/',
+        '/models/frames/',
         'basic.glb',
         scene,
         assetContainer => {
