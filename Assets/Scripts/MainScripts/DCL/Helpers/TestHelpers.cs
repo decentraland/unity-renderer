@@ -532,7 +532,7 @@ namespace DCL.Helpers
                 string fieldName = f.Name;
 
                 //NOTE(Brian): Corner case, strings are defaulted as null, but json deserialization inits them as ""
-                if (modelValue is string && string.IsNullOrEmpty( modelValue as string ))
+                if (modelValue is string && string.IsNullOrEmpty(modelValue as string))
                     modelValue = null;
 
                 Assert.AreEqual(defaultValue, modelValue, $"Checking {fieldName} failed! Is not default value! error!");
@@ -595,14 +595,50 @@ namespace DCL.Helpers
             return sceneController;
         }
 
+        static string lastMessageFromEngineType;
+        static string lastMessageFromEnginePayload;
+        public static IEnumerator WaitForMessageFromEngine(string targetMessageType, string targetMessageJSONPayload, System.Action OnIterationStart, System.Action OnSuccess)
+        {
+            // Hook up to web interface engine message reporting
+            DCL.Interface.WebInterface.OnMessageFromEngine += OnMessageFromEngine;
+
+            lastMessageFromEngineType = "";
+            lastMessageFromEnginePayload = "";
+
+            bool awaitedConditionMet = false;
+            yield return new DCL.WaitUntil(() =>
+            {
+                if (OnIterationStart != null)
+                    OnIterationStart();
+
+                if (lastMessageFromEngineType == targetMessageType && lastMessageFromEnginePayload == targetMessageJSONPayload)
+                {
+                    DCL.Interface.WebInterface.OnMessageFromEngine -= OnMessageFromEngine;
+
+                    if (OnSuccess != null)
+                        OnSuccess();
+
+                    awaitedConditionMet = true;
+                }
+
+                return awaitedConditionMet;
+            }, 2f);
+        }
+
+        // Used in WaitForMessageFromEngine() to capture the triggered event messages from engine
+        static void OnMessageFromEngine(string eventType, string eventPayload)
+        {
+            lastMessageFromEngineType = eventType;
+            lastMessageFromEnginePayload = eventPayload;
+        }
 
         public static void TestRectTransformMaxStretched(RectTransform rt)
         {
-            Assert.AreEqual( Vector2.zero, rt.anchorMin, $"Rect transform {rt.name} isn't stretched out!. unexpected anchorMin value." );
-            Assert.AreEqual( Vector2.zero, rt.offsetMin, $"Rect transform {rt.name} isn't stretched out!. unexpected offsetMin value.");
-            Assert.AreEqual( Vector2.one, rt.anchorMax, $"Rect transform {rt.name} isn't stretched out!. unexpected anchorMax value.");
-            Assert.AreEqual( Vector2.one, rt.offsetMax, $"Rect transform {rt.name} isn't stretched out!. unexpected offsetMax value.");
-            Assert.AreEqual( Vector2.zero, rt.sizeDelta, $"Rect transform {rt.name} isn't stretched out!. unexpected sizeDelta value.");
+            Assert.AreEqual(Vector2.zero, rt.anchorMin, $"Rect transform {rt.name} isn't stretched out!. unexpected anchorMin value.");
+            Assert.AreEqual(Vector2.zero, rt.offsetMin, $"Rect transform {rt.name} isn't stretched out!. unexpected offsetMin value.");
+            Assert.AreEqual(Vector2.one, rt.anchorMax, $"Rect transform {rt.name} isn't stretched out!. unexpected anchorMax value.");
+            Assert.AreEqual(Vector2.one, rt.offsetMax, $"Rect transform {rt.name} isn't stretched out!. unexpected offsetMax value.");
+            Assert.AreEqual(Vector2.zero, rt.sizeDelta, $"Rect transform {rt.name} isn't stretched out!. unexpected sizeDelta value.");
         }
     }
 }

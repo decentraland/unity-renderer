@@ -80,13 +80,7 @@ namespace DCL.Components
         {
             if (!enabled) return;
 
-            int mouseButtonPressed = 0;
-            if (Input.GetMouseButton(1))
-            {
-                mouseButtonPressed = 1;
-            }
-
-            DCL.Interface.WebInterface.ReportOnClickEvent(scene.sceneData.id, model.uuid, mouseButtonPressed);
+            DCL.Interface.WebInterface.ReportOnClickEvent(scene.sceneData.id, model.uuid);
         }
 
         void OnDestroy()

@@ -1,7 +1,8 @@
 {
     "name": "UIImageTests",
     "references": [
-        "MainScripts"
+        "MainScripts",
+        "CoroutineHelpers"
     ],
     "optionalUnityReferences": [
         "TestAssemblies"

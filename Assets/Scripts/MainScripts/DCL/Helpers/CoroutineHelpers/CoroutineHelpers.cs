@@ -51,7 +51,8 @@ namespace DCL
             var stack = new Stack<IEnumerator>();
             stack.Push(enumerator);
 
-            while (stack.Count > 0) {
+            while (stack.Count > 0)
+            {
                 // any inner enumerator will be at the top of the stack
                 // otherwise the original one
                 var currentEnumerator = stack.Peek();
@@ -90,6 +91,26 @@ namespace DCL
                 }
             }
         }
+    }
 
+    // Suspends the coroutine execution until the supplied delegate evaluates to true or the timeout is reached.
+    public class WaitUntil : CustomYieldInstruction
+    {
+        Func<bool> predicate;
+        float waitTime;
+
+        public WaitUntil(Func<bool> predicate, float timeoutInSeconds)
+        {
+            this.predicate = predicate;
+            waitTime = Time.realtimeSinceStartup + timeoutInSeconds;
+        }
+
+        public override bool keepWaiting
+        {
+            get
+            {
+                return !predicate() && Time.realtimeSinceStartup < waitTime;
+            }
+        }
     }
 }
