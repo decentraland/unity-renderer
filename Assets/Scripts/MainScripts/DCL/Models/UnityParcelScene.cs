@@ -59,7 +59,7 @@ namespace DCL.Models
                 for (int i = 0; i < contents.Count; i++)
                 {
                     ContentMapping m = contents[i];
-                    fileToHash.Add(m.file, m.hash);
+                    fileToHash.Add(m.file.ToLower(), m.hash);
 
                     if (VERBOSE) Debug.Log(string.Format("found file = {0} ... hash = {1}", m.file, m.hash));
                 }
