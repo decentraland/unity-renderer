@@ -26,7 +26,7 @@ namespace DCL.Interface
         }
 
         [System.Serializable]
-        private class SceneEvent<T>
+        public class SceneEvent<T>
         {
             public string sceneId;
             public string eventType;
@@ -34,7 +34,7 @@ namespace DCL.Interface
         }
 
         [System.Serializable]
-        private class UUIDEvent<TPayload>
+        public class UUIDEvent<TPayload>
             where TPayload : class, new()
         {
             public string uuid;
@@ -42,7 +42,7 @@ namespace DCL.Interface
         }
 
         [System.Serializable]
-        private class OnClickEvent : UUIDEvent<OnClickEventPayload> { };
+        public class OnClickEvent : UUIDEvent<OnClickEventPayload> { };
 
         [System.Serializable]
         private class OnTextSubmitEvent : UUIDEvent<OnTextSubmitEventPayload> { };
@@ -59,9 +59,7 @@ namespace DCL.Interface
 
         [System.Serializable]
         public class OnClickEventPayload
-        {
-            public int pointerId;
-        }
+        { }
 
         [System.Serializable]
         public class OnTextSubmitEventPayload
@@ -146,13 +144,12 @@ namespace DCL.Interface
             SendMessage("ReportPosition", positionPayload);
         }
 
-        public static void ReportOnClickEvent(string sceneId, string uuid, int pointerId)
+        public static void ReportOnClickEvent(string sceneId, string uuid)
         {
             if (string.IsNullOrEmpty(uuid))
                 return;
 
             onClickEvent.uuid = uuid;
-            onClickEvent.payload.pointerId = pointerId;
 
             SendSceneEvent(sceneId, "uuidEvent", onClickEvent);
         }

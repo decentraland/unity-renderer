@@ -4,6 +4,8 @@ using DCL;
 using DCL.Components;
 using DCL.Helpers;
 using DCL.Models;
+using DCL.Interface;
+using UnityEngine.EventSystems;
 using Newtonsoft.Json;
 using NUnit.Framework;
 using UnityEngine;
@@ -53,31 +55,27 @@ namespace Tests
             DCLTexture texture = TestHelpers.CreateDCLTexture(scene, TestHelpers.GetTestsAssetsPath() + "/Images/atlas.png");
             yield return texture.routine;
 
-            scene.SharedComponentUpdate(JsonUtility.ToJson(new SharedComponentUpdateMessage
+            TestHelpers.SharedComponentUpdate(scene, uiImageShape, new UIImage.Model
             {
-                id = uiImageShape.id,
-                json = JsonUtility.ToJson(new UIImage.Model
-                {
-                    parentComponent = screenSpaceShape.id,
-                    source = texture.id,
-                    opacity = 0.7f,
-                    isPointerBlocker = true,
-                    width = new UIValue(128f),
-                    height = new UIValue(128f),
-                    positionX = new UIValue(-55f),
-                    positionY = new UIValue(30f),
-                    hAlign = "right",
-                    vAlign = "bottom",
-                    sourceLeft = 64f,
-                    sourceTop = 64f,
-                    sourceWidth = 64f,
-                    sourceHeight = 64f,
-                    paddingTop = 10f,
-                    paddingRight = 10f,
-                    paddingBottom = 10f,
-                    paddingLeft = 10f
-                })
-            }));
+                parentComponent = screenSpaceShape.id,
+                source = texture.id,
+                opacity = 0.7f,
+                isPointerBlocker = true,
+                width = new UIValue(128f),
+                height = new UIValue(128f),
+                positionX = new UIValue(-55f),
+                positionY = new UIValue(30f),
+                hAlign = "right",
+                vAlign = "bottom",
+                sourceLeft = 64f,
+                sourceTop = 64f,
+                sourceWidth = 64f,
+                sourceHeight = 64f,
+                paddingTop = 10f,
+                paddingRight = 10f,
+                paddingBottom = 10f,
+                paddingLeft = 10f
+            });
             yield return uiImageShape.routine;
 
             // Check default properties are applied correctly
@@ -121,6 +119,96 @@ namespace Tests
         }
 
         [UnityTest]
+        public IEnumerator TestOnclickEvent()
+        {
+            yield return InitScene();
+
+            UIScreenSpace screenSpaceShape = TestHelpers.SharedComponentCreate<UIScreenSpace, UIScreenSpace.Model>(scene, CLASS_ID.UI_SCREEN_SPACE_SHAPE);
+            yield return screenSpaceShape.routine;
+
+            Assert.IsFalse(screenSpaceShape == null);
+
+            DCLTexture texture = TestHelpers.CreateDCLTexture(scene, TestHelpers.GetTestsAssetsPath() + "/Images/atlas.png");
+            yield return texture.routine;
+
+            UIImage uiImage = TestHelpers.SharedComponentCreate<UIImage, UIImage.Model>(scene, CLASS_ID.UI_IMAGE_SHAPE);
+            yield return uiImage.routine;
+
+            string uiImageOnClickEventId = "UUIDFakeEventId";
+
+            TestHelpers.SharedComponentUpdate(scene, uiImage, new UIImage.Model
+            {
+                parentComponent = screenSpaceShape.id,
+                source = texture.id,
+                width = new UIValue(128f),
+                height = new UIValue(128f),
+                onClick = uiImageOnClickEventId
+            });
+            yield return uiImage.routine;
+
+            // We need to populate the event data with the 'pointerPressRaycast' pointing to the 'clicked' object
+            PointerEventData pointerEventData = new PointerEventData(EventSystem.current);
+            RaycastResult raycastResult = new RaycastResult();
+            raycastResult.gameObject = uiImage.referencesContainer.image.gameObject;
+            pointerEventData.pointerPressRaycast = raycastResult;
+
+            string targetEventType = "SceneEvent";
+
+            var onClickEvent = new WebInterface.OnClickEvent();
+            onClickEvent.uuid = uiImageOnClickEventId;
+
+            var sceneEvent = new WebInterface.SceneEvent<WebInterface.OnClickEvent>();
+            sceneEvent.sceneId = scene.sceneData.id;
+            sceneEvent.payload = onClickEvent;
+            sceneEvent.eventType = "uuidEvent";
+            string eventJSON = JsonUtility.ToJson(sceneEvent);
+
+            bool eventTriggered = false;
+
+            yield return TestHelpers.WaitForMessageFromEngine(targetEventType, eventJSON,
+            () =>
+            {
+                ExecuteEvents.ExecuteHierarchy(raycastResult.gameObject, pointerEventData, ExecuteEvents.pointerDownHandler);
+            },
+            () =>
+            {
+                eventTriggered = true;
+            });
+
+            yield return null;
+
+            // Check image object clicking triggers the correct event
+            Assert.IsTrue(eventTriggered);
+
+            // Check UI children won't trigger the parent/root image component event
+            UIContainerRect uiContainer = TestHelpers.SharedComponentCreate<UIContainerRect, UIContainerRect.Model>(scene, CLASS_ID.UI_CONTAINER_RECT);
+            yield return uiContainer.routine;
+
+            TestHelpers.SharedComponentUpdate(scene, uiContainer, new UIContainerRect.Model
+            {
+                parentComponent = uiImage.id
+            });
+            yield return uiContainer.routine;
+
+            raycastResult.gameObject = uiContainer.referencesContainer.image.gameObject;
+            pointerEventData.pointerPressRaycast = raycastResult;
+
+            eventTriggered = false;
+
+            yield return TestHelpers.WaitForMessageFromEngine(targetEventType, eventJSON,
+            () =>
+            {
+                ExecuteEvents.ExecuteHierarchy(raycastResult.gameObject, pointerEventData, ExecuteEvents.pointerDownHandler);
+            },
+            () =>
+            {
+                eventTriggered = true;
+            });
+
+            Assert.IsFalse(eventTriggered);
+        }
+
+        [UnityTest]
         public IEnumerator TestAlignment()
         {
             yield return InitScene();
@@ -147,20 +235,15 @@ namespace Tests
             yield return texture.routine;
 
             // Align to right-bottom
-            scene.SharedComponentUpdate(JsonUtility.ToJson(new SharedComponentUpdateMessage
+            TestHelpers.SharedComponentUpdate(scene, uiImageShape, new UIImage.Model
             {
-                id = uiImageShape.id,
-                json = JsonUtility.ToJson(new UIImage.Model
-                {
-                    parentComponent = screenSpaceShape.id,
-                    source = texture.id,
-                    width = new UIValue(128f),
-                    height = new UIValue(128f),
-                    hAlign = "right",
-                    vAlign = "bottom",
-                })
-            }));
-
+                parentComponent = screenSpaceShape.id,
+                source = texture.id,
+                width = new UIValue(128f),
+                height = new UIValue(128f),
+                hAlign = "right",
+                vAlign = "bottom"
+            });
             yield return uiImageShape.routine;
 
             // Check alignment position was applied correctly
@@ -169,18 +252,14 @@ namespace Tests
             Assert.AreEqual(TextAnchor.LowerRight, uiImageShape.referencesContainer.layoutGroup.childAlignment);
 
             // Align to right-center
-            scene.SharedComponentUpdate(JsonUtility.ToJson(new SharedComponentUpdateMessage
+            TestHelpers.SharedComponentUpdate(scene, uiImageShape, new UIImage.Model
             {
-                id = uiImageShape.id,
-                json = JsonUtility.ToJson(new UIImage.Model
-                {
-                    source = texture.id,
-                    width = new UIValue(128f),
-                    height = new UIValue(128f),
-                    hAlign = "right",
-                    vAlign = "center",
-                })
-            }));
+                source = texture.id,
+                width = new UIValue(128f),
+                height = new UIValue(128f),
+                hAlign = "right",
+                vAlign = "center"
+            });
             yield return uiImageShape.routine;
 
             // Check alignment position was applied correctly
@@ -189,18 +268,14 @@ namespace Tests
             Assert.AreEqual(TextAnchor.MiddleRight, uiImageShape.referencesContainer.layoutGroup.childAlignment);
 
             // Align to right-top
-            scene.SharedComponentUpdate(JsonUtility.ToJson(new SharedComponentUpdateMessage
+            TestHelpers.SharedComponentUpdate(scene, uiImageShape, new UIImage.Model
             {
-                id = uiImageShape.id,
-                json = JsonUtility.ToJson(new UIImage.Model
-                {
-                    source = texture.id,
-                    width = new UIValue(128f),
-                    height = new UIValue(128f),
-                    hAlign = "right",
-                    vAlign = "top",
-                })
-            }));
+                source = texture.id,
+                width = new UIValue(128f),
+                height = new UIValue(128f),
+                hAlign = "right",
+                vAlign = "top"
+            });
             yield return uiImageShape.routine;
 
             // Check alignment position was applied correctly
@@ -209,18 +284,14 @@ namespace Tests
             Assert.AreEqual(TextAnchor.UpperRight, uiImageShape.referencesContainer.layoutGroup.childAlignment);
 
             // Align to center-bottom
-            scene.SharedComponentUpdate(JsonUtility.ToJson(new SharedComponentUpdateMessage
+            TestHelpers.SharedComponentUpdate(scene, uiImageShape, new UIImage.Model
             {
-                id = uiImageShape.id,
-                json = JsonUtility.ToJson(new UIImage.Model
-                {
-                    source = texture.id,
-                    width = new UIValue(128f),
-                    height = new UIValue(128f),
-                    hAlign = "center",
-                    vAlign = "bottom",
-                })
-            }));
+                source = texture.id,
+                width = new UIValue(128f),
+                height = new UIValue(128f),
+                hAlign = "center",
+                vAlign = "bottom"
+            });
             yield return uiImageShape.routine;
 
             // Check alignment position was applied correctly
@@ -229,18 +300,14 @@ namespace Tests
             Assert.AreEqual(TextAnchor.LowerCenter, uiImageShape.referencesContainer.layoutGroup.childAlignment);
 
             // Align to center-center
-            scene.SharedComponentUpdate(JsonUtility.ToJson(new SharedComponentUpdateMessage
+            TestHelpers.SharedComponentUpdate(scene, uiImageShape, new UIImage.Model
             {
-                id = uiImageShape.id,
-                json = JsonUtility.ToJson(new UIImage.Model
-                {
-                    source = texture.id,
-                    width = new UIValue(128f),
-                    height = new UIValue(128f),
-                    hAlign = "center",
-                    vAlign = "center",
-                })
-            }));
+                source = texture.id,
+                width = new UIValue(128f),
+                height = new UIValue(128f),
+                hAlign = "center",
+                vAlign = "center"
+            });
             yield return uiImageShape.routine;
 
             // Check alignment position was applied correctly
@@ -249,18 +316,14 @@ namespace Tests
             Assert.AreEqual(TextAnchor.MiddleCenter, uiImageShape.referencesContainer.layoutGroup.childAlignment);
 
             // Align to center-top
-            uiImageShape = scene.SharedComponentUpdate(JsonUtility.ToJson(new SharedComponentUpdateMessage
+            TestHelpers.SharedComponentUpdate(scene, uiImageShape, new UIImage.Model
             {
-                id = uiImageShape.id,
-                json = JsonUtility.ToJson(new UIImage.Model
-                {
-                    source = texture.id,
-                    width = new UIValue(128f),
-                    height = new UIValue(128f),
-                    hAlign = "center",
-                    vAlign = "top",
-                })
-            })) as UIImage;
+                source = texture.id,
+                width = new UIValue(128f),
+                height = new UIValue(128f),
+                hAlign = "center",
+                vAlign = "top"
+            });
             yield return uiImageShape.routine;
 
             // Check alignment position was applied correctly
@@ -269,18 +332,14 @@ namespace Tests
             Assert.AreEqual(TextAnchor.UpperCenter, uiImageShape.referencesContainer.layoutGroup.childAlignment);
 
             // Align to left-bottom
-            uiImageShape = scene.SharedComponentUpdate(JsonUtility.ToJson(new SharedComponentUpdateMessage
+            TestHelpers.SharedComponentUpdate(scene, uiImageShape, new UIImage.Model
             {
-                id = uiImageShape.id,
-                json = JsonUtility.ToJson(new UIImage.Model
-                {
-                    source = texture.id,
-                    width = new UIValue(128f),
-                    height = new UIValue(128f),
-                    hAlign = "left",
-                    vAlign = "bottom",
-                })
-            })) as UIImage;
+                source = texture.id,
+                width = new UIValue(128f),
+                height = new UIValue(128f),
+                hAlign = "left",
+                vAlign = "bottom"
+            });
             yield return uiImageShape.routine;
 
             // Check alignment position was applied correctly
@@ -289,18 +348,14 @@ namespace Tests
             Assert.AreEqual(TextAnchor.LowerLeft, uiImageShape.referencesContainer.layoutGroup.childAlignment);
 
             // Align to left-center
-            uiImageShape = scene.SharedComponentUpdate(JsonUtility.ToJson(new SharedComponentUpdateMessage
+            TestHelpers.SharedComponentUpdate(scene, uiImageShape, new UIImage.Model
             {
-                id = uiImageShape.id,
-                json = JsonUtility.ToJson(new UIImage.Model
-                {
-                    source = texture.id,
-                    width = new UIValue(128f),
-                    height = new UIValue(128f),
-                    hAlign = "left",
-                    vAlign = "center",
-                })
-            })) as UIImage;
+                source = texture.id,
+                width = new UIValue(128f),
+                height = new UIValue(128f),
+                hAlign = "left",
+                vAlign = "center"
+            });
             yield return uiImageShape.routine;
 
             // Check alignment position was applied correctly
@@ -309,18 +364,14 @@ namespace Tests
             Assert.AreEqual(TextAnchor.MiddleLeft, uiImageShape.referencesContainer.layoutGroup.childAlignment);
 
             // Align to left-top
-            uiImageShape = scene.SharedComponentUpdate(JsonUtility.ToJson(new SharedComponentUpdateMessage
+            TestHelpers.SharedComponentUpdate(scene, uiImageShape, new UIImage.Model
             {
-                id = uiImageShape.id,
-                json = JsonUtility.ToJson(new UIImage.Model
-                {
-                    source = texture.id,
-                    width = new UIValue(128f),
-                    height = new UIValue(128f),
-                    hAlign = "left",
-                    vAlign = "top",
-                })
-            })) as UIImage;
+                source = texture.id,
+                width = new UIValue(128f),
+                height = new UIValue(128f),
+                hAlign = "left",
+                vAlign = "top",
+            });
             yield return uiImageShape.routine;
 
             // Check alignment position was applied correctly

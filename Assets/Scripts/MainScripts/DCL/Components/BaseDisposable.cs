@@ -21,7 +21,7 @@ namespace DCL.Components
 
         private string oldSerialization = null;
 
-        protected DCL.Controllers.ParcelScene scene { get; }
+        public DCL.Controllers.ParcelScene scene { get; }
         public HashSet<DecentralandEntity> attachedEntities = new HashSet<DecentralandEntity>();
 
         public void UpdateFromJSON(string json)

@@ -8,7 +8,8 @@
         "Utils",
         "MaterialTransitionController",
         "Configuration",
-        "ILoader"
+        "ILoader",
+        "CoroutineHelpers"
     ],
     "optionalUnityReferences": [],
     "includePlatforms": [],

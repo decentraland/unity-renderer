@@ -25,6 +25,7 @@ namespace DCL.Components
             public float paddingBottom = 0f;
             public float paddingLeft = 0f;
             public bool sizeInPixels = true;
+            public string onClick;
         }
 
         public override string referencesContainerPrefabName => "UIImage";
@@ -94,7 +95,7 @@ namespace DCL.Components
             referencesContainer.layoutGroup.padding.top = Mathf.RoundToInt(model.paddingTop);
             referencesContainer.layoutGroup.padding.left = Mathf.RoundToInt(model.paddingLeft);
             referencesContainer.layoutGroup.padding.right = Mathf.RoundToInt(model.paddingRight);
-            
+
             LayoutRebuilder.ForceRebuildLayoutImmediate(parentRecTransform);
             return null;
         }

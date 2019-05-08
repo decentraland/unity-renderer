@@ -93,7 +93,7 @@ namespace DCL
             MaterialTransitionController[] matTransitions = container.GetComponentsInChildren<MaterialTransitionController>(true);
 
             //NOTE(Brian): Wait for the MaterialTransition to finish before copying the object to the library
-            yield return new WaitUntil(
+            yield return new UnityEngine.WaitUntil(
                 () =>
                 {
                     bool finishedTransition = true;
