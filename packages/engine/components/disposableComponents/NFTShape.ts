@@ -9,13 +9,40 @@ import { Animator } from '../ephemeralComponents/Animator'
 import { deleteUnusedTextures } from 'engine/renderer/monkeyLoader'
 import { processGLTFAssetContainer, loadingShape } from './GLTFShape'
 
-let noise: BABYLON.Texture | null = null
+let noise: BABYLON.NoiseProceduralTexture | null = null
 
 function getNoiseTexture() {
   if (!noise) {
-    noise = new BABYLON.FireProceduralTexture('perlin', 256, scene)
+    noise = new BABYLON.NoiseProceduralTexture('perlin', 256, scene)
+    noise.octaves = 6
+    noise.persistence = 1.25
+    noise.animationSpeedFactor = 5
   }
   return noise
+}
+
+export type DARAsset = {
+  name: string
+  owner: string
+  description: string
+  image: string
+  registry: string
+  token_id: string
+  uri: string
+  files: DARAssetFile[]
+  traits: any[]
+}
+
+export type DARAssetFile = {
+  name: string
+  url: string
+  role: string
+}
+
+export type DARAssetTrait = {
+  id: string
+  name: string
+  type: string
 }
 
 function parseProtocolUrl(url: string): { protocol: string; registry: string; asset: string } {
@@ -40,33 +67,9 @@ function parseProtocolUrl(url: string): { protocol: string; registry: string; as
   return result
 }
 
-async function fetchDARAsset(registry: string, assetId: string): Promise<{ image: string; files: any }> {
+async function fetchDARAsset(registry: string, assetId: string): Promise<DARAsset> {
   const req = await fetch(`https://schema-api-staging.now.sh/dar/${registry}/asset/${assetId}`)
   return req.json()
-}
-
-async function fetchBase64Image(url: string) {
-  const response = await fetch(url, {
-    method: 'GET',
-    headers: {},
-    mode: 'cors',
-    cache: 'default'
-  })
-
-  const buffer = await response.arrayBuffer()
-  let base64Flag = `data:${response.headers.get('content-type')};base64,`
-  let imageStr = arrayBufferToBase64(buffer)
-
-  return base64Flag + imageStr
-}
-
-function arrayBufferToBase64(buffer: ArrayBuffer) {
-  let binary = ''
-  let bytes = [].slice.call(new Uint8Array(buffer))
-
-  bytes.forEach((b: number) => (binary += String.fromCharCode(b)))
-
-  return btoa(binary)
 }
 
 export class NFTShape extends DisposableComponent {
@@ -143,12 +146,13 @@ export class NFTShape extends DisposableComponent {
             })
           }
 
-          const pictureMaterial = assetContainer.materials[1] as BABYLON.PBRMaterial
-          const frameMaterial = assetContainer.materials[0] as BABYLON.PBRMaterial
+          const pictureMaterial = assetContainer.materials[0] as BABYLON.PBRMaterial
+          const frameMaterial = assetContainer.materials[2] as BABYLON.PBRMaterial
 
           frameMaterial.emissiveTexture = getNoiseTexture()
-          frameMaterial.albedoTexture = getNoiseTexture()
-          frameMaterial.emissiveIntensity = 1
+          frameMaterial.albedoColor = BABYLON.Color3.FromHexString('#6f28d3')
+          frameMaterial.emissiveColor = BABYLON.Color3.White()
+          frameMaterial.disableLighting = true
 
           if (this.tex) {
             pictureMaterial.useAlphaFromAlbedoTexture = true
@@ -159,6 +163,7 @@ export class NFTShape extends DisposableComponent {
             pictureMaterial.roughness = 1
             pictureMaterial.albedoColor = BABYLON.Color3.White()
             pictureMaterial.enableSpecularAntiAliasing = true
+            pictureMaterial.transparencyMode = 2
           }
 
           if (this.isStillValid(entity)) {
@@ -241,19 +246,21 @@ export class NFTShape extends DisposableComponent {
         const assetData = await fetchDARAsset(registry, asset)
 
         // by default, thumbnail should work
-        let image = assetData.image
+        let image: string = assetData.image
 
-        // anyways, we search the original file that is supposed to have a better resolution
-        for (let file of assetData.files) {
-          if (file.role === 'dcl-picture-frame-image' && file.name.endsWith('.png')) {
-            image = file.url
+        const foundFile = assetData.files.find(f => f.role === 'dcl-picture-frame-image')
+
+        if (foundFile) {
+          // anyways, we search the original file that is supposed to have a better resolution
+          for (let file of assetData.files) {
+            if (file.role === 'dcl-picture-frame-image' && file.name.endsWith('.png')) {
+              image = file.url
+            }
           }
+
+          this.tex = new BABYLON.Texture(image, scene)
+          this.tex.hasAlpha = true
         }
-
-        const realImage = await fetchBase64Image(image)
-
-        this.tex = new BABYLON.Texture(realImage, scene)
-        this.tex.hasAlpha = true
 
         this.contributions.textures.add(this.tex)
 
