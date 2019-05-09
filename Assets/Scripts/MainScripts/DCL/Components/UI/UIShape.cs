@@ -78,11 +78,14 @@ namespace DCL.Components
             model = JsonUtility.FromJson<ModelType>(newJson);
 
             bool raiseOnAttached = false;
+            bool firstApplyChangesCall = false;
 
             if (referencesContainer == null)
             {
                 referencesContainer = InstantiateUIGameObject<ReferencesContainerType>(referencesContainerPrefabName);
+
                 raiseOnAttached = true;
+                firstApplyChangesCall = true;
             }
             else
             {
@@ -100,15 +103,23 @@ namespace DCL.Components
             }
 
             RefreshDCLLayout();
+
 #if UNITY_EDITOR
             SetComponentDebugName();
 #endif
 
-            if (referencesContainer != null)
+            if (firstApplyChangesCall)
             {
-                referencesContainer.canvasGroup.alpha = model.visible == false ? 0 : model.opacity;
-                referencesContainer.canvasGroup.blocksRaycasts = model.isPointerBlocker;
+                // We hide the component visibility when it's created (first applychanges) 
+                // as it has default values and appears in the middle of the screen
+                referencesContainer.canvasGroup.alpha = 0f;
             }
+            else
+            {
+                referencesContainer.canvasGroup.alpha = model.visible ? model.opacity : 0f;
+            }
+
+            referencesContainer.canvasGroup.blocksRaycasts = model.isPointerBlocker;
 
             RaiseOnAppliedChanges();
 
