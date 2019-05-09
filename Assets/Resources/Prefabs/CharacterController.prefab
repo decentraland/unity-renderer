@@ -223,8 +223,8 @@ MonoBehaviour:
   aimingVerticalSpeed: 300
   aimingVerticalMinimumAngle: -89
   aimingVerticalMaximumAngle: 89
-  gravity: -1
-  movementSpeed: 10
+  gravity: -50
+  movementSpeed: 350
   jumpForce: 20
   groundLayers:
     serializedVersion: 2
