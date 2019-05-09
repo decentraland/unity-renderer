@@ -99,7 +99,7 @@ public class DCLCharacterController : MonoBehaviour
             lastUngroundedTime = Time.time;
         }
 
-        velocity.y += gravity;
+        velocity.y += gravity * Time.deltaTime;
 
         if (!Cursor.visible)
         {
@@ -110,24 +110,24 @@ public class DCLCharacterController : MonoBehaviour
             camera.localRotation = Quaternion.Euler(-aimingVerticalAngle, 0f, 0f);
 
             // Horizontal movement
-            var speed = isSprinting ? movementSpeed * 2f : movementSpeed;
+            var speed = movementSpeed * (isSprinting ? 2f : 1f);
 
             if (movementInput.x > 0f)
             {
-                velocity += (transform.right * speed);
+                velocity += (transform.right * speed) * Time.deltaTime;
             }
             else if (movementInput.x < 0f)
             {
-                velocity += (-transform.right * speed);
+                velocity += (-transform.right * speed) * Time.deltaTime;
             }
 
             if (movementInput.y > 0f)
             {
-                velocity += (transform.forward * speed);
+                velocity += (transform.forward * speed) * Time.deltaTime;
             }
             else if (movementInput.y < 0f)
             {
-                velocity += (-transform.forward * speed);
+                velocity += (-transform.forward * speed) * Time.deltaTime;
             }
         }
 
@@ -137,7 +137,7 @@ public class DCLCharacterController : MonoBehaviour
             lastJumpButtonPressedTime = Time.time;
         }
 
-        if (jumpButtonPressed && (Time.time - lastJumpButtonPressedTime < 0.15f)) // almost grounded jump button press allowed time
+        if (jumpButtonPressed && (Time.time - lastJumpButtonPressedTime < 0.15f)) // almost-grounded jump button press allowed time
         {
             if (isGrounded || (Time.time - lastUngroundedTime) < 0.1f) // just-left-ground jump allowed time
             {
