@@ -344,6 +344,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   startDecentralandAutomatically: 1
   componentFactory: {fileID: 11400000, guid: 6710053fa2d5d5446b6a599e0e003053, type: 2}
+  debugPanel: {fileID: 7216045482893348587}
   debugScenes: 0
   debugSceneName: 145,123
   ignoreGlobalScenes: 0
@@ -359,6 +360,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Name
       value: FPSPanel
+      objectReference: {fileID: 0}
+    - target: {fileID: 7216045483097485647, guid: 343005e32016c60479b0584c59812b4b,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 8901170218733160826, guid: 343005e32016c60479b0584c59812b4b,
         type: 3}
@@ -472,6 +478,12 @@ PrefabInstance:
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 343005e32016c60479b0584c59812b4b, type: 3}
+--- !u!1 &7216045482893348587 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 7216045483097485647, guid: 343005e32016c60479b0584c59812b4b,
+    type: 3}
+  m_PrefabInstance: {fileID: 503185316}
+  m_PrefabAsset: {fileID: 0}
 --- !u!224 &8901170218804295390 stripped
 RectTransform:
   m_CorrespondingSourceObject: {fileID: 8901170218733160826, guid: 343005e32016c60479b0584c59812b4b,
