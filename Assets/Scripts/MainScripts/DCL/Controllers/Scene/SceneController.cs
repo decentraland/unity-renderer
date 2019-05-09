@@ -23,6 +23,7 @@ public class SceneController : MonoBehaviour
     public Dictionary<string, ParcelScene> loadedScenes = new Dictionary<string, ParcelScene>();
 
     [Header("Debug Tools")]
+    public GameObject debugPanel;
     public bool debugScenes;
 
     public string debugSceneName;
@@ -164,6 +165,8 @@ public class SceneController : MonoBehaviour
     public void SetDebug()
     {
         isDebugMode = true;
+
+        debugPanel.SetActive(true);
     }
 
     ParcelScene GetDecentralandSceneOfGridPosition(Vector2Int gridPosition)
@@ -219,7 +222,10 @@ public class SceneController : MonoBehaviour
 
                 var newScene = newGameObject.AddComponent<ParcelScene>();
                 newScene.SetData(sceneToLoad);
-                newScene.InitializeDebugPlane();
+
+                if (isDebugMode)
+                    newScene.InitializeDebugPlane();
+
                 newScene.ownerController = this;
                 loadedScenes.Add(sceneToLoad.id, newScene);
             }
