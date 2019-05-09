@@ -283,6 +283,8 @@ namespace DCL.Controllers
 
             if (entity == null)
             {
+                Debug.LogError($"scene '{sceneData.id}': Can't create entity component if the entity {createEntityComponentMessage.entityId} doesn't exist!");
+
                 return null;
             }
 
@@ -312,6 +314,9 @@ namespace DCL.Controllers
             {
                 newComponent = EntityComponentUpdate(entity, classId, createEntityComponentMessage.json);
             }
+
+            if (classId == CLASS_ID_COMPONENT.UUID_CALLBACK && (newComponent as UUIDComponent).model.type == "onClick")
+                newComponent = entity.gameObject.GetComponent<OnClickComponent>();
 
             return newComponent;
         }

@@ -2,7 +2,8 @@
     "name": "UUIDComponentTests",
     "references": [
         "MainScripts",
-        "UnityGLTFAssembly"
+        "UnityGLTFAssembly",
+        "CoroutineHelpers"
     ],
     "optionalUnityReferences": [
         "TestAssemblies"

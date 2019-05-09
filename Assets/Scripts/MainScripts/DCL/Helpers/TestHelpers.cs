@@ -128,22 +128,20 @@ namespace DCL.Helpers
             }));
         }
 
-        public static T EntityComponentCreate<T, K>(ParcelScene scene, DecentralandEntity entity, K model)
+        public static T EntityComponentCreate<T, K>(ParcelScene scene, DecentralandEntity entity, K model, CLASS_ID_COMPONENT classId = CLASS_ID_COMPONENT.NONE)
             where T : BaseComponent
             where K : new()
         {
-            int componentClassId = (int)scene.ownerController.componentFactory.GetIdForType<T>();
+            int componentClassId = classId == CLASS_ID_COMPONENT.NONE ? (int)scene.ownerController.componentFactory.GetIdForType<T>() : (int)classId;
             string componentInstanceId = GetUniqueId(typeof(T).Name, componentClassId, entity.entityId);
 
-            T result = scene.EntityComponentCreate(JsonUtility.ToJson(new EntityComponentCreateMessage
+            return scene.EntityComponentCreate(JsonUtility.ToJson(new EntityComponentCreateMessage
             {
                 entityId = entity.entityId,
                 name = componentInstanceId,
                 classId = componentClassId,
                 json = JsonUtility.ToJson(model)
             })) as T;
-
-            return result;
         }
 
         public static DCLTexture CreateDCLTexture(ParcelScene scene,
@@ -539,21 +537,6 @@ namespace DCL.Helpers
             }
 
             component.Dispose();
-        }
-
-        public static OnClickComponent AddOnClickComponent(ParcelScene scene, string entityID, string uuid)
-        {
-            return scene.EntityComponentCreate(JsonUtility.ToJson(new DCL.Models.EntityComponentCreateMessage
-            {
-                entityId = entityID,
-                name = "onClick",
-                classId = (int)CLASS_ID_COMPONENT.UUID_CALLBACK,
-                json = JsonUtility.ToJson(new DCL.Models.UUIDCallbackMessage
-                {
-                    type = "onClick",
-                    uuid = uuid
-                })
-            })) as OnClickComponent;
         }
 
         public static SceneController InitializeSceneController(bool usesWebServer = false)

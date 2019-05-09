@@ -25,29 +25,27 @@ public class EntityShapeAndOnClickTestController : MonoBehaviour
         TestHelpers.InstantiateEntityWithShape(scene, "3", DCL.Models.CLASS_ID.PLANE_SHAPE, new Vector3(2, 1, 0));
         TestHelpers.InstantiateEntityWithShape(scene, "4", DCL.Models.CLASS_ID.CONE_SHAPE, new Vector3(4, 1, 0));
         TestHelpers.InstantiateEntityWithShape(scene, "5", DCL.Models.CLASS_ID.CYLINDER_SHAPE, new Vector3(6, 1, 0));
-        // TestHelpers.InstantiateEntityWithShape(scene, "6", DCL.Models.CLASS_ID.GLTF_SHAPE, new Vector3(0, 1, 6), TestHelpers.GetTestsAssetsPath() + "/GLB/Trunk/Trunk.glb");
-        // TestHelpers.InstantiateEntityWithShape(scene, "6", DCL.Models.CLASS_ID.GLTF_SHAPE, new Vector3(0, 1, 6), TestHelpers.GetTestsAssetsPath() + "/GLB/Lantern/Lantern.glb");
         TestHelpers.InstantiateEntityWithShape(scene, "6", DCL.Models.CLASS_ID.GLTF_SHAPE, new Vector3(0, 1, 6), TestHelpers.GetTestsAssetsPath() + "/GLTF/Trunk/Trunk.gltf");
         TestHelpers.InstantiateEntityWithShape(scene, "7", DCL.Models.CLASS_ID.OBJ_SHAPE, new Vector3(10, 1, 0), TestHelpers.GetTestsAssetsPath() + "/OBJs/teapot.obj");
         TestHelpers.InstantiateEntityWithShape(scene, "8", DCL.Models.CLASS_ID.GLTF_SHAPE, new Vector3(0, 1, 12), TestHelpers.GetTestsAssetsPath() + "/GLB/CesiumMan/CesiumMan.glb");
 
-        Assert.IsNotNull(scene.entities["1"]);
-        Assert.IsNotNull(scene.entities["2"]);
-        Assert.IsNotNull(scene.entities["3"]);
-        Assert.IsNotNull(scene.entities["4"]);
-        Assert.IsNotNull(scene.entities["5"]);
-        Assert.IsNotNull(scene.entities["6"]);
-        Assert.IsNotNull(scene.entities["7"]);
-        Assert.IsNotNull(scene.entities["8"]);
+        for (int i = 0; i < 8; i++)
+        {
+            Assert.IsNotNull(scene.entities[(i + 1).ToString()]);
+        }
 
-        TestHelpers.AddOnClickComponent(scene, "1", "event1");
-        TestHelpers.AddOnClickComponent(scene, "2", "event1");
-        TestHelpers.AddOnClickComponent(scene, "3", "event1");
-        TestHelpers.AddOnClickComponent(scene, "4", "event1");
-        TestHelpers.AddOnClickComponent(scene, "5", "event2");
-        TestHelpers.AddOnClickComponent(scene, "6", "event3");
-        TestHelpers.AddOnClickComponent(scene, "7", "event4");
-        TestHelpers.AddOnClickComponent(scene, "8", "event5");
+        for (int i = 0; i < 8; i++)
+        {
+            string eventIndex = (i + 1).ToString();
+
+            var OnClickComponentModel = new OnClickComponent.Model()
+            {
+                type = "onClick",
+                uuid = "event" + eventIndex
+            };
+
+            TestHelpers.EntityComponentCreate<OnClickComponent, OnClickComponent.Model>(scene, scene.entities[eventIndex], OnClickComponentModel);
+        }
 
         var charController = FindObjectOfType<DCLCharacterController>();
         charController.SetPosition(JsonConvert.SerializeObject(new
@@ -56,19 +54,6 @@ public class EntityShapeAndOnClickTestController : MonoBehaviour
             y = 0,
             z = 0
         }));
-
-        // Assert.AreEqual(5, scene.disposableComponents.Where(a => a.Value is UUIDCallback).Count());
-
-        //yield return new WaitForSeconds(5f);
-
-        //scene.UpdateEntityComponent(JsonUtility.ToJson(new DCL.Models.UpdateEntityComponentMessage {
-        //  entityId = "6",
-        //  name = "shape",
-        //  classId = (int)DCL.Models.CLASS_ID.GLTF_SHAPE,
-        //  json = JsonConvert.SerializeObject(new {
-        //    src = TestHelpers.GetTestsAssetsPath() + "/GLB/DamagedHelmet/DamagedHelmet.glb"
-        //  })
-        //}));
 
         string animJson = JsonConvert.SerializeObject(new DCLAnimator.Model
         {
@@ -83,7 +68,7 @@ public class EntityShapeAndOnClickTestController : MonoBehaviour
                 }
             }
         });
-        
+
         scene.EntityComponentCreate(JsonUtility.ToJson(new DCL.Models.EntityComponentCreateMessage
         {
             entityId = "8",
@@ -102,7 +87,7 @@ public class EntityShapeAndOnClickTestController : MonoBehaviour
             json = animJson
         }));
 
-        var model = new TextShape.Model() { value = "Hello World!", width = 0.5f, height = 0.5f, hTextAlign = "center", vTextAlign = "center" }; 
+        var model = new TextShape.Model() { value = "Hello World!", width = 0.5f, height = 0.5f, hTextAlign = "center", vTextAlign = "center" };
         TestHelpers.InstantiateEntityWithTextShape(scene, new Vector3(5, 5, 5), model);
 
         yield return null;

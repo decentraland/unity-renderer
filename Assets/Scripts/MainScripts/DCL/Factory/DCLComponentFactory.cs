@@ -58,7 +58,7 @@ namespace DCL
 
             if (!factoryDict.ContainsKey(id))
             {
-                Debug.LogWarning("Class " + id + " can't be instantiated because the field doesn't exists!");
+                Debug.LogError("Class " + id + " can't be instantiated because the field doesn't exist!");
                 return default(ItemType);
             }
 

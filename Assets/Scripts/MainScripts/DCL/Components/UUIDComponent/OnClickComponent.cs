@@ -21,10 +21,7 @@ namespace DCL.Components
             this.model.uuid = uuid;
             this.model.type = type;
 
-            if (entity.meshGameObject && entity.meshGameObject.GetComponentInChildren<MeshFilter>() != null)
-            {
-                Initialize();
-            }
+            Initialize();
 
             entity.OnShapeUpdated -= OnComponentUpdated;
             entity.OnShapeUpdated += OnComponentUpdated;
@@ -76,7 +73,7 @@ namespace DCL.Components
         }
 
         // Unity hook
-        void OnMouseDown()
+        public void OnMouseDown()
         {
             if (!enabled) return;
 
