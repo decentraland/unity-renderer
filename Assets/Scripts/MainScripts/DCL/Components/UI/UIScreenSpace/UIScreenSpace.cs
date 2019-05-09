@@ -88,6 +88,9 @@ namespace DCL.Components
 
             childHookRectTransform = canvas.GetComponent<RectTransform>();
 
+            CanvasGroup canvasGroup = canvas.gameObject.AddComponent<CanvasGroup>();
+            canvasGroup.alpha = 0f;
+
             canvas.gameObject.SetActive(false);
             canvas.gameObject.SetActive(true);
 
@@ -95,13 +98,15 @@ namespace DCL.Components
             yield return null;
             yield return null;
 
+            canvasGroup.alpha = 1f;
+
             if (VERBOSE)
             {
                 Debug.Log("canvas initialized, width: " + childHookRectTransform.rect.width);
                 Debug.Log("canvas initialized, height: " + childHookRectTransform.rect.height);
             }
 
-            if ( canvas != null )
+            if (canvas != null)
                 canvas.enabled = false; // It will be enabled later when the player enters this scene
 
             if (DCLCharacterController.i != null)
