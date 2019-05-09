@@ -4,6 +4,7 @@ using DCL.Components;
 using DCL.Controllers;
 using DCL.Helpers;
 using DCL.Models;
+using DCL.Interface;
 using NUnit.Framework;
 using UnityEngine;
 using UnityEngine.TestTools;
@@ -20,14 +21,27 @@ namespace Tests
         {
             yield return InitScene();
 
-            string entityId = "1";
-            TestHelpers.InstantiateEntityWithShape(scene, entityId, DCL.Models.CLASS_ID.BOX_SHAPE, Vector3.zero);
+            DecentralandEntity entity;
+            BoxShape shape = TestHelpers.InstantiateEntityWithShape<BoxShape, BoxShape.Model>(
+                            scene,
+                            DCL.Models.CLASS_ID.BOX_SHAPE,
+                            Vector3.zero,
+                            out entity,
+                            new BoxShape.Model() { });
 
-            TestHelpers.AddOnClickComponent(scene, entityId, "click-1");
+            yield return shape.routine;
 
-            Assert.IsTrue(scene.entities[entityId].gameObject.GetComponent<Rigidbody>() != null, "the root object should have a rigidbody attached to detect its children collisions for the OnClick functionality");
+            string onClickId = "click-1";
+            var OnClickComponentModel = new OnClickComponent.Model()
+            {
+                type = "onClick",
+                uuid = onClickId
+            };
+            var component = TestHelpers.EntityComponentCreate<OnClickComponent, OnClickComponent.Model>(scene, entity, OnClickComponentModel, CLASS_ID_COMPONENT.UUID_CALLBACK);
 
-            var meshFilter = scene.entities[entityId].gameObject.GetComponentInChildren<MeshFilter>();
+            Assert.IsTrue(entity.gameObject.GetComponent<Rigidbody>() != null, "the root object should have a rigidbody attached to detect its children collisions for the OnClick functionality");
+
+            var meshFilter = entity.gameObject.GetComponentInChildren<MeshFilter>();
             var onClickCollider = meshFilter.transform.Find("OnClickCollider");
 
             Assert.IsTrue(onClickCollider != null, "OnClickCollider should exist under any rendeder");
@@ -57,7 +71,12 @@ namespace Tests
             Assert.IsTrue(scene.entities[entityId].gameObject.GetComponentInChildren<UnityGLTF.InstantiatedGLTFObject>() != null, "'GLTFScene' child object with 'InstantiatedGLTF' component should exist if the GLTF was loaded correctly");
 
             string clickUuid = "click-1";
-            OnClickComponent component = TestHelpers.AddOnClickComponent(scene, entityId, clickUuid);
+            var OnClickComponentModel = new OnClickComponent.Model()
+            {
+                type = "onClick",
+                uuid = clickUuid
+            };
+            TestHelpers.EntityComponentCreate<OnClickComponent, OnClickComponent.Model>(scene, scene.entities[entityId], OnClickComponentModel, CLASS_ID_COMPONENT.UUID_CALLBACK);
 
             Assert.IsTrue(scene.entities[entityId].gameObject.GetComponent<Rigidbody>() != null, "the root object should have a rigidbody attached to detect its children collisions for the OnClick functionality");
 
@@ -87,7 +106,12 @@ namespace Tests
             }));
 
             string clickUuid = "click-1";
-            TestHelpers.AddOnClickComponent(scene, entityId, clickUuid);
+            var OnClickComponentModel = new OnClickComponent.Model()
+            {
+                type = "onClick",
+                uuid = clickUuid
+            };
+            TestHelpers.EntityComponentCreate<OnClickComponent, OnClickComponent.Model>(scene, scene.entities[entityId], OnClickComponentModel, CLASS_ID_COMPONENT.UUID_CALLBACK);
 
             GLTFLoader gltfShape = scene.entities[entityId].gameObject.GetComponentInChildren<GLTFLoader>();
             yield return new WaitUntil(() => gltfShape.alreadyLoaded);
@@ -115,7 +139,12 @@ namespace Tests
             TestHelpers.CreateSceneEntity(scene, entityId);
 
             string clickUuid = "click-1";
-            TestHelpers.AddOnClickComponent(scene, entityId, clickUuid);
+            var OnClickComponentModel = new OnClickComponent.Model()
+            {
+                type = "onClick",
+                uuid = clickUuid
+            };
+            TestHelpers.EntityComponentCreate<OnClickComponent, OnClickComponent.Model>(scene, scene.entities[entityId], OnClickComponentModel, CLASS_ID_COMPONENT.UUID_CALLBACK);
 
             Assert.IsTrue(scene.entities[entityId].gameObject.GetComponent<Rigidbody>() == null, "the root object shouldn't have a rigidbody attached until a shape is added");
 
@@ -133,6 +162,56 @@ namespace Tests
             Assert.IsTrue(onClickCollider != null, "OnClickCollider should exist under any rendeder");
 
             Assert.AreSame(meshFilter.sharedMesh, onClickCollider.GetComponent<MeshCollider>().sharedMesh, "OnClickCollider should have the same mesh info as the mesh renderer");
+        }
+
+        [UnityTest]
+        public IEnumerator OnClickEventIsTriggered()
+        {
+            yield return InitScene();
+
+            DecentralandEntity entity;
+            BoxShape shape = TestHelpers.InstantiateEntityWithShape<BoxShape, BoxShape.Model>(
+                            scene,
+                            DCL.Models.CLASS_ID.BOX_SHAPE,
+                            Vector3.zero,
+                            out entity,
+                            new BoxShape.Model() { });
+
+            yield return shape.routine;
+
+            string onClickId = "click-1";
+            var OnClickComponentModel = new OnClickComponent.Model()
+            {
+                type = "onClick",
+                uuid = onClickId
+            };
+            var component = TestHelpers.EntityComponentCreate<OnClickComponent, OnClickComponent.Model>(scene, entity, OnClickComponentModel, CLASS_ID_COMPONENT.UUID_CALLBACK);
+
+            Assert.IsTrue(component != null);
+
+            string targetEventType = "SceneEvent";
+
+            var onClickEvent = new WebInterface.OnClickEvent();
+            onClickEvent.uuid = onClickId;
+
+            var sceneEvent = new WebInterface.SceneEvent<WebInterface.OnClickEvent>();
+            sceneEvent.sceneId = scene.sceneData.id;
+            sceneEvent.payload = onClickEvent;
+            sceneEvent.eventType = "uuidEvent";
+            string eventJSON = JsonUtility.ToJson(sceneEvent);
+            bool eventTriggered = false;
+
+            yield return TestHelpers.WaitForMessageFromEngine(targetEventType, eventJSON,
+            () =>
+                {
+                    component.OnMouseDown();
+                },
+                () =>
+                {
+                    eventTriggered = true;
+                });
+
+            Assert.IsTrue(eventTriggered);
         }
     }
 }

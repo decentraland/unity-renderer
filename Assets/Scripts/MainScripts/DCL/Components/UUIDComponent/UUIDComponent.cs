@@ -21,7 +21,7 @@ namespace DCL
         {
         }
 
-        public static void SetForEntity(ParcelScene scene, DecentralandEntity entity, string uuid, string type)
+        public void SetForEntity(ParcelScene scene, DecentralandEntity entity, string uuid, string type)
         {
             switch (type)
             {
@@ -33,7 +33,7 @@ namespace DCL
             Debug.LogWarning($"Cannot create UUIDComponent of type '{type}'.");
         }
 
-        public static void RemoveFromEntity(DecentralandEntity entity, string type)
+        public void RemoveFromEntity(DecentralandEntity entity, string type)
         {
             switch (type)
             {
@@ -45,7 +45,7 @@ namespace DCL
             Debug.LogWarning($"Cannot remove UUIDComponent of type '{type}'.");
         }
 
-        private static void RemoveComponent<T>(DecentralandEntity entity) where T : UUIDComponent
+        private void RemoveComponent<T>(DecentralandEntity entity) where T : UUIDComponent
         {
             var currentComponent = entity.gameObject.GetComponent<T>();
 
@@ -59,7 +59,7 @@ namespace DCL
             }
         }
 
-        private static void SetUpComponent<T>(ParcelScene scene, DecentralandEntity entity, string uuid, string type) where T : UUIDComponent
+        private void SetUpComponent<T>(ParcelScene scene, DecentralandEntity entity, string uuid, string type) where T : UUIDComponent
         {
             var currentComponent = entity.gameObject.GetOrCreateComponent<T>();
 
