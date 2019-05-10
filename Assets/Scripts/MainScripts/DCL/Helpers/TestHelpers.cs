@@ -2,6 +2,7 @@ using DCL.Components;
 using DCL.Controllers;
 using DCL.Models;
 using Newtonsoft.Json;
+using System;
 using System.Collections;
 using System.Linq;
 using System.Reflection;
@@ -458,54 +459,36 @@ namespace DCL.Helpers
             return componentId;
         }
 
-        public static IEnumerator TestSharedComponentDefaultsOnUpdate<TModel, TComponent>(ParcelScene scene, CLASS_ID id)
-            where TComponent : BaseDisposable
-            where TModel : class, new()
+        static object GetRandomValueForType(Type t)
         {
-
-            TComponent component = TestHelpers.SharedComponentCreate<TComponent, TModel>(scene, id);
-
-            yield return component.routine;
-
-            TModel generatedModel = new TModel();
-
-            foreach (FieldInfo f in typeof(TModel).GetFields())
+            if (t == typeof(float))
             {
-                System.Type t = f.FieldType;
-                object valueToSet = null;
-
-                if (t == typeof(float))
-                {
-                    valueToSet = 79014.5f;
-                }
-                else if (t == typeof(int))
-                {
-                    valueToSet = 79014;
-                }
-                else if (t == typeof(string))
-                {
-                    valueToSet = "test";
-                }
-                else if (t == typeof(Color))
-                {
-                    valueToSet = Color.magenta;
-                }
-
-                f.SetValue(generatedModel, valueToSet);
+                return 79014.5f;
+            }
+            else if (t == typeof(int))
+            {
+                return 79014;
+            }
+            else if (t == typeof(string))
+            {
+                return "test";
+            }
+            else if (t == typeof(Color))
+            {
+                return Color.magenta;
+            }
+            else if (t == typeof(object))
+            {
+                return Activator.CreateInstance(t);
             }
 
-            SharedComponentUpdate(scene, component, generatedModel);
+            return null;
+        }
 
-            yield return component.routine;
-
-            scene.SharedComponentUpdate(JsonUtility.ToJson(new DCL.Models.SharedComponentUpdateMessage
-            {
-                id = component.id,
-                json = "{}"
-            }));
-
-            yield return component.routine;
-
+        public static void CompareWithDefaultedInstance<TModel, TComponent>(TComponent component)
+            where TModel : class, new()
+            where TComponent : IComponent
+        {
             MemberInfo modelMember = null;
 
             modelMember = typeof(TComponent).GetRuntimeProperties().FirstOrDefault((x) => x.Name == "model");
@@ -516,7 +499,6 @@ namespace DCL.Helpers
             }
 
             Assert.IsTrue(modelMember != null, "model is null!!");
-
             TModel defaultedModel = new TModel();
 
             foreach (FieldInfo f in typeof(TModel).GetFields())
@@ -544,13 +526,73 @@ namespace DCL.Helpers
 
                 Assert.AreEqual(defaultValue, modelValue, $"Checking {fieldName} failed! Is not default value! error!");
             }
+        }
+
+        public static IEnumerator TestEntityComponentDefaultsOnUpdate<TModel, TComponent>(ParcelScene scene)
+            where TComponent : BaseComponent
+            where TModel : class, new()
+        {
+            TModel generatedModel = new TModel();
+
+            foreach (FieldInfo f in typeof(TModel).GetFields())
+            {
+                System.Type t = f.FieldType;
+                object valueToSet = GetRandomValueForType(t);
+                f.SetValue(generatedModel, valueToSet);
+            }
+
+            DecentralandEntity e = CreateSceneEntity(scene);
+            TComponent component = EntityComponentCreate<TComponent, TModel>(scene, e, generatedModel);
+
+            yield return component.routine;
+
+            int id = (int)scene.ownerController.componentFactory.GetIdForType<TComponent>();
+
+            scene.EntityComponentUpdate(e, (CLASS_ID_COMPONENT)id, "{}");
+
+            yield return component.routine;
+
+            CompareWithDefaultedInstance<TModel, TComponent>(component);
+            TestHelpers.RemoveSceneEntity(scene, e.entityId);
+        }
+
+        public static IEnumerator TestSharedComponentDefaultsOnUpdate<TModel, TComponent>(ParcelScene scene, CLASS_ID id)
+            where TComponent : BaseDisposable
+            where TModel : class, new()
+        {
+            TComponent component = TestHelpers.SharedComponentCreate<TComponent, TModel>(scene, id);
+
+            yield return component.routine;
+
+            TModel generatedModel = new TModel();
+
+            foreach (FieldInfo f in typeof(TModel).GetFields())
+            {
+                System.Type t = f.FieldType;
+                object valueToSet = GetRandomValueForType(t);
+                f.SetValue(generatedModel, valueToSet);
+            }
+
+            SharedComponentUpdate(scene, component, generatedModel);
+
+            yield return component.routine;
+
+            scene.SharedComponentUpdate(JsonUtility.ToJson(new DCL.Models.SharedComponentUpdateMessage
+            {
+                id = component.id,
+                json = "{}"
+            }));
+
+            yield return component.routine;
+
+            CompareWithDefaultedInstance<TModel, TComponent>(component);
 
             component.Dispose();
         }
 
         public static SceneController InitializeSceneController(bool usesWebServer = false)
         {
-            var sceneController = Object.FindObjectOfType<SceneController>();
+            var sceneController = UnityEngine.Object.FindObjectOfType<SceneController>();
 
             if (sceneController != null && sceneController.componentFactory == null)
             {
