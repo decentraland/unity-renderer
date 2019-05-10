@@ -7,7 +7,6 @@ using System;
 
 namespace DCL.Components
 {
-
     public interface IComponent
     {
         string componentName { get; }

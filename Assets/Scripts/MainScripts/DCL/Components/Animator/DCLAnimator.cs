@@ -70,7 +70,7 @@ namespace DCL.Components
         public override IEnumerator ApplyChanges(string newJson)
         {
             model = Utils.SafeFromJson<Model>(newJson);
-            Initialize();
+            UpdateAnimationState();
             return null;
         }
 
@@ -102,25 +102,34 @@ namespace DCL.Components
                 if (animComponent == null)
                     return;
 
-                animComponent.enabled = true;
-
                 clipNameToClip.Clear();
                 clipToState.Clear();
                 int layerIndex = 0;
 
-                foreach (AnimationState s in animComponent)
+                animComponent.playAutomatically = false;
+                animComponent.enabled = true;
+
+                foreach (AnimationState unityState in animComponent)
                 {
-                    clipNameToClip[s.clip.name] = s.clip;
+                    clipNameToClip[unityState.clip.name] = unityState.clip;
                     
-                    s.clip.wrapMode = WrapMode.Loop;
-                    s.layer = layerIndex;
-                    s.blendMode = AnimationBlendMode.Blend;
+                    unityState.clip.wrapMode = WrapMode.Loop;
+                    unityState.layer = layerIndex;
+                    unityState.blendMode = AnimationBlendMode.Blend;
                     layerIndex++;
                 }
             }
 
-            if (clipNameToClip.Count == 0)
+            UpdateAnimationState();
+        }
+
+        void UpdateAnimationState()
+        {
+            if (clipNameToClip.Count == 0 || animComponent == null)
                 return;
+
+            animComponent.playAutomatically = false;
+            animComponent.enabled = true;
 
             foreach (Model.DCLAnimationState state in model.states)
             {
@@ -128,21 +137,26 @@ namespace DCL.Components
                 {
                     AnimationState unityState = animComponent[state.clip];
                     unityState.weight = state.weight;
-                    unityState.wrapMode = state.looping ? WrapMode.Loop : WrapMode.Default;
+                    unityState.wrapMode = state.looping ? WrapMode.Loop : WrapMode.ClampForever;
                     unityState.speed = state.speed;
+
+                    state.clipReference = unityState.clip;
 
                     if (state.playing)
                     {
                         if (!animComponent.IsPlaying(state.clip))
+                        {
                             animComponent.Play(state.clip);
+                        }
                     }
                     else
                     {
                         if (animComponent.IsPlaying(state.clip))
+                        {
                             animComponent.Stop(state.clip);
+                        }
                     }
                 }
-
             }
         }
 

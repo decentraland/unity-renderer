@@ -50,7 +50,7 @@ namespace Tests
             GLTFLoader gltfShape = entity.gameObject.GetComponentInChildren<GLTFLoader>();
             yield return new WaitUntil(() => gltfShape.alreadyLoaded == true);
 
-            Assert.IsTrue(entity.gameObject.GetComponentInChildren<Animator>() != null, "'GLTFScene' child object with 'Animator' component should exist if the GLTF was loaded correctly.");
+            Assert.IsTrue(entity.gameObject.GetComponentInChildren<Animation>() != null, "'GLTFScene' child object with 'Animator' component should exist if the GLTF was loaded correctly.");
             Assert.IsTrue(entity.gameObject.GetComponentInChildren<DCLAnimator>() != null, "'GLTFScene' child object with 'DCLAnimator' component should exist if the GLTF was loaded correctly.");
 
             yield return animator.routine;
@@ -65,61 +65,7 @@ namespace Tests
         public IEnumerator AnimationComponentMissingValuesGetDefaultedOnUpdate()
         {
             yield return InitScene();
-
-            DecentralandEntity entity = TestHelpers.CreateSceneEntity(scene);
-
-            TestHelpers.CreateAndSetShape(scene, entity.entityId, DCL.Models.CLASS_ID.GLTF_SHAPE, JsonConvert.SerializeObject(new
-            {
-                src = TestHelpers.GetTestsAssetsPath() + "/GLB/CesiumMan/CesiumMan.glb"
-            }));
-
-            // 1. Create component with non-default configs
-            DCLAnimator.Model componentModel = new DCLAnimator.Model
-            {
-                states = new DCLAnimator.Model.DCLAnimationState[]
-                {
-                    new DCLAnimator.Model.DCLAnimationState
-                    {
-                        name = "clip01",
-                        clip = "animation:0",
-                        playing = true,
-                        weight = 0.7f,
-                        speed = 0.1f
-                    }
-                }
-            };
-
-            DCLAnimator animator = TestHelpers.EntityComponentCreate<DCLAnimator, DCLAnimator.Model>(scene, entity, componentModel);
-
-            GLTFLoader gltfShape = entity.gameObject.GetComponentInChildren<GLTFLoader>();
-            yield return new WaitUntil(() => gltfShape.alreadyLoaded == true);
-
-            // 2. Check configured values
-            Assert.AreEqual(0.7f, animator.model.states[0].weight);
-            Assert.AreEqual(0.1f, animator.model.states[0].speed);
-
-            // 3. Update component with missing values
-            componentModel = new DCLAnimator.Model
-            {
-                states = new DCLAnimator.Model.DCLAnimationState[]
-                {
-                    new DCLAnimator.Model.DCLAnimationState
-                    {
-                        name = "clip02",
-                        clip = "animation:0",
-                        playing = true
-                    }
-                }
-            };
-
-            scene.EntityComponentUpdate(entity, CLASS_ID_COMPONENT.ANIMATOR, JsonUtility.ToJson(componentModel));
-
-            // 4. Check changed values
-            Assert.AreEqual("clip02", animator.model.states[0].name);
-
-            // 5. Check defaulted values
-            Assert.AreEqual(1f, animator.model.states[0].weight);
-            Assert.AreEqual(1f, animator.model.states[0].speed);
+            yield return TestHelpers.TestEntityComponentDefaultsOnUpdate<DCLAnimator.Model, DCLAnimator>(scene);
         }
     }
 }
