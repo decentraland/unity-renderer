@@ -321,7 +321,7 @@ export class GLTFShape extends Shape {
 }
 
 /**
- * @internal
+ * @public
  */
 @DisposableComponent('engine.shape', CLASS_ID.NFT_SHAPE)
 export class NFTShape extends Shape {
