@@ -14,9 +14,12 @@ namespace Tests
     public class UIScrollRectTests : TestsBase
     {
         [UnityTest]
+        [Explicit]
         public IEnumerator TestPropertiesAreAppliedCorrectly()
         {
             yield return InitScene();
+            
+            TestHelpers.ForceUnloadAllScenes(sceneController);
 
             DCLCharacterController.i.gravity = 0f;
 

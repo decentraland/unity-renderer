@@ -17,9 +17,10 @@ namespace Tests
     public class VisualTests
     {
         [UnityTest]
-        [Explicit]
         public IEnumerator VisualTest1()
         {
+            yield return TestHelpers.UnloadAllUnityScenes();
+            
             // ---------------------------------------------
             // LOAD VISUAL TESTS SCENE
             // By doing this we can configure that scene to show whatever we want, with the environment we want,
@@ -30,9 +31,13 @@ namespace Tests
 
             yield return SceneManager.LoadSceneAsync(visualTestsSceneName, LoadSceneMode.Additive);
 
+            SceneController.i.SetDebug();
+
             Scene visualTestsScene = SceneManager.GetSceneByName(visualTestsSceneName);
             SceneManager.SetActiveScene(visualTestsScene);
 
+            DCLCharacterController.i.gravity = 0;
+            
             // ---------------------------------------------
             // TAKE SNAPSHOTS
 

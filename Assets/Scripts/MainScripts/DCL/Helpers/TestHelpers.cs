@@ -8,6 +8,7 @@ using System.Linq;
 using System.Reflection;
 using UnityEngine;
 using UnityEngine.Assertions;
+using UnityEngine.SceneManagement;
 
 namespace DCL.Helpers
 {
@@ -23,6 +24,7 @@ namespace DCL.Helpers
 
         protected IEnumerator InitScene(bool usesWebServer = false, bool spawnCharController = true)
         {
+            yield return TestHelpers.UnloadAllUnityScenes();
             sceneController = TestHelpers.InitializeSceneController(usesWebServer);
 
             yield return new WaitForSeconds(0.01f);
@@ -81,6 +83,8 @@ namespace DCL.Helpers
 
     public static class TestHelpers
     {
+        private static int testSceneIteration;
+        private const string testingSceneName = "DCL_Testing_";
         public static string GetTestsAssetsPath(bool useWebServerPath = false)
         {
             if (useWebServerPath)
@@ -590,8 +594,23 @@ namespace DCL.Helpers
             component.Dispose();
         }
 
+        public static IEnumerator UnloadAllUnityScenes()
+        {
+            for (int i = SceneManager.sceneCount - 1; i >= 0; i--)
+            {
+                var scene = SceneManager.GetSceneAt(i);
+                if (scene.name.Contains(testingSceneName))
+                {
+                    yield return SceneManager.UnloadSceneAsync(scene);
+                }
+            }
+        }
+
         public static SceneController InitializeSceneController(bool usesWebServer = false)
         {
+            var newScene = SceneManager.CreateScene(testingSceneName + (testSceneIteration++));
+            SceneManager.SetActiveScene(newScene);
+
             var sceneController = UnityEngine.Object.FindObjectOfType<SceneController>();
 
             if (sceneController != null && sceneController.componentFactory == null)
@@ -673,6 +692,21 @@ namespace DCL.Helpers
             Assert.AreEqual(Vector2.one, rt.anchorMax, $"Rect transform {rt.name} isn't stretched out!. unexpected anchorMax value.");
             Assert.AreEqual(Vector2.one, rt.offsetMax, $"Rect transform {rt.name} isn't stretched out!. unexpected offsetMax value.");
             Assert.AreEqual(Vector2.zero, rt.sizeDelta, $"Rect transform {rt.name} isn't stretched out!. unexpected sizeDelta value.");
+        }
+        
+        public static void ForceUnloadAllScenes(SceneController sceneController)
+        {
+            if (sceneController == null)
+            {
+                return;
+            }
+
+            foreach (var keyValuePair in sceneController.loadedScenes.Where(x => x.Value.isPersistent))
+            {
+                keyValuePair.Value.isPersistent = false;
+            }
+
+            sceneController.UnloadAllScenes();
         }
     }
 }

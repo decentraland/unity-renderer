@@ -17,6 +17,7 @@ namespace Tests
     public class UIImageTests : TestsBase
     {
         [UnityTest]
+        [Explicit]
         public IEnumerator TestPropertiesAreAppliedCorrectly()
         {
             yield return InitScene();
@@ -97,6 +98,7 @@ namespace Tests
             Assert.AreEqual(0f, uiImageShape.referencesContainer.image.uvRect.y);
             Assert.AreEqual(0.5f, uiImageShape.referencesContainer.image.uvRect.width);
             Assert.AreEqual(0.5f, uiImageShape.referencesContainer.image.uvRect.height);
+
             Assert.AreEqual(10, uiImageShape.referencesContainer.paddingLayoutGroup.padding.bottom);
             Assert.AreEqual(10, uiImageShape.referencesContainer.paddingLayoutGroup.padding.top);
             Assert.AreEqual(10, uiImageShape.referencesContainer.paddingLayoutGroup.padding.left);
