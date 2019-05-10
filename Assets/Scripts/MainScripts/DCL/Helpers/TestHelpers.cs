@@ -144,6 +144,15 @@ namespace DCL.Helpers
             })) as T;
         }
 
+        public static void SetEntityParent(ParcelScene scene, string childEntityId, string parentEntityId)
+        {
+            scene.SetEntityParent(JsonUtility.ToJson(new SetEntityParentMessage
+            {
+                entityId = childEntityId,
+                parentId = parentEntityId
+            }));
+        }
+
         public static DCLTexture CreateDCLTexture(ParcelScene scene,
             string url,
             DCLTexture.BabylonWrapMode wrapMode = DCLTexture.BabylonWrapMode.CLAMP,

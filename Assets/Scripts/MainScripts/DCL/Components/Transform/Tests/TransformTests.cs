@@ -180,5 +180,50 @@ namespace Tests
             Assert.AreEqual(Quaternion.identity, transformComponent.model.rotation);
             Assert.AreEqual(Vector3.one, transformComponent.model.scale);
         }
+
+        [UnityTest]
+        public IEnumerator TransformationsAreKeptRelativeAfterParenting()
+        {
+            yield return InitScene();
+
+            string entityId = "1";
+            TestHelpers.CreateSceneEntity(scene, entityId);
+
+            Vector3 targetPosition = new Vector3(3f, 7f, 1f);
+            Quaternion targetRotation = new Quaternion(4f, 9f, 1f, 7f);
+            Vector3 targetScale = new Vector3(5f, 0.7f, 2f);
+
+            // 1. Create component with non-default configs
+            DCLTransform.Model componentModel = new DCLTransform.Model
+            {
+                position = targetPosition,
+                rotation = targetRotation,
+                scale = targetScale
+            };
+            DCLTransform transformComponent = TestHelpers.EntityComponentCreate<DCLTransform, DCLTransform.Model>(scene, scene.entities[entityId], componentModel);
+
+            // 2. Check configured values
+            Assert.IsTrue(targetPosition == transformComponent.entity.gameObject.transform.localPosition);
+            Assert.IsTrue(targetRotation == transformComponent.entity.gameObject.transform.localRotation);
+            Assert.IsTrue(targetScale == transformComponent.entity.gameObject.transform.localScale);
+
+            // 3. Create new parent entity
+            string parentEntityId = "2";
+            TestHelpers.CreateSceneEntity(scene, parentEntityId);
+            componentModel = new DCLTransform.Model
+            {
+                position = new Vector3(15f, 56f, 0f),
+                rotation = new Quaternion(1f, 3f, 5f, 15f),
+                scale = new Vector3(2f, 3f, 5f)
+            };
+
+            // 4. set new parent
+            TestHelpers.SetEntityParent(scene, entityId, parentEntityId);
+
+            // 5. check transform values remains the same
+            Assert.IsTrue(targetPosition == transformComponent.entity.gameObject.transform.localPosition);
+            Assert.IsTrue(targetRotation == transformComponent.entity.gameObject.transform.localRotation);
+            Assert.IsTrue(targetScale == transformComponent.entity.gameObject.transform.localScale);
+        }
     }
 }

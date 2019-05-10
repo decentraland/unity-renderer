@@ -66,14 +66,14 @@ namespace Tests
 
             var parentEntityObject = scene.entities[parentEntityId];
 
-            scene.SetEntityParent("{\"entityId\": \"" + entityId + "\"," + "\"parentId\": \"" + parentEntityId + "\"}");
+            TestHelpers.SetEntityParent(scene, entityId, parentEntityId);
 
             Assert.IsTrue(
               scene.entities[entityId].gameObject.transform.parent == parentEntityObject.gameObject.transform,
               "parent is set to parentId"
             );
 
-            scene.SetEntityParent("{\"entityId\": \"" + entityId + "\"," + "\"parentId\": \"0\"}");
+            TestHelpers.SetEntityParent(scene, entityId, "0");
 
             Assert.IsTrue(
               scene.entities[entityId].gameObject.transform.parent == scene.gameObject.transform,
