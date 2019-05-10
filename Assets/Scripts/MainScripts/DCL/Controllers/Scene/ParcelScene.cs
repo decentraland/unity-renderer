@@ -234,7 +234,7 @@ namespace DCL.Controllers
                 DecentralandEntity decentralandEntity = GetEntityForUpdate(tmpParentMessage.entityId);
                 if (decentralandEntity != null)
                 {
-                    decentralandEntity.gameObject.transform.SetParent(rootGameObject.transform);
+                    decentralandEntity.gameObject.transform.SetParent(rootGameObject.transform, false);
                 }
             }
 
