@@ -18,6 +18,8 @@ namespace Tests
 
         IEnumerator InitScene()
         {
+            yield return TestHelpers.UnloadAllUnityScenes();
+            
             sceneController = TestHelpers.InitializeSceneController();
             var scenesToLoad = (Resources.Load("TestJSON/SceneLoadingTest") as TextAsset).text;
 
@@ -29,7 +31,7 @@ namespace Tests
 
             sceneController.LoadParcelScenes(scenesToLoad);
 
-            yield return new WaitForSeconds(.1f);
+            yield return new WaitForAllMessagesProcessed();
 
             scene = sceneController.loadedScenes["0,0"];
         }

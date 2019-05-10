@@ -15,23 +15,24 @@ public class IntegrationTestController : MonoBehaviour
     public IEnumerator Initialize()
     {
         var sceneController = TestHelpers.InitializeSceneController();
+        DCLCharacterController.i.gravity = 0;
+         DCLCharacterController.i.SetPosition(JsonConvert.SerializeObject(new
+         {
+             x = 0f,
+             y = 0f,
+             z = 0f
+         }));
 
-        var scenesToLoad = new
+        var scenesToLoad = new LoadParcelScenesMessage.UnityParcelScene()
         {
-            parcelsToLoad = new[]
+            id = sceneName,
+            basePosition = new Vector2Int(3,3),
+            parcels = new[]
             {
-                new LoadParcelScenesMessage.UnityParcelScene()
-                {
-                    id = sceneName,
-                    basePosition = new Vector2Int(3, 3),
-                    parcels = new []
-                    {
-                        new Vector2Int(3, 3),
-                        new Vector2Int(3, 4)
-                    },
-                    baseUrl = "http://localhost:9991/local-ipfs/contents/"
-                }
-            }
+                new Vector2Int(3,3),
+                new Vector2Int(3,4)
+            },
+            baseUrl = "http://localhost:9991/local-ipfs/contents/"
         };
 
         Assert.IsTrue(sceneController != null, "Cannot find SceneController");

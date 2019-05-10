@@ -81,6 +81,8 @@ namespace Tests
             // Check visibility
             Assert.IsFalse(canvas.enabled, "When the character is outside the scene, the UIScreenSpaceShape shouldn't be visible");
 
+            yield return new WaitForAllMessagesProcessed();
+            
             screenSpaceShape.Dispose();
         }
 
@@ -108,10 +110,15 @@ namespace Tests
 
             RectTransform canvasRectTransform = screenSpaceShape.childHookRectTransform.GetComponent<RectTransform>();
 
-            // Check if canvas size is correct (1280x720 taking into account unity scaling minor inconsistences)
-            Assert.IsTrue(canvasRectTransform.rect.width >= 1275 && canvasRectTransform.rect.width <= 1285);
-            Assert.IsTrue(canvasRectTransform.rect.height >= 715 && canvasRectTransform.rect.height <= 725);
+            const float diffThreshold = 0.1f; //to ensure float point comparison
+            Vector2 canvasRealSize = canvasRectTransform.sizeDelta * canvasRectTransform.localScale;
+            Vector2 screenSize = new Vector2(Screen.width, Screen.height);
 
+            //Canvas should have the same size of the screen
+            Assert.IsTrue(Mathf.Abs((canvasRealSize - screenSize).magnitude) < diffThreshold);
+            
+            yield return new WaitForAllMessagesProcessed();
+            
             screenSpaceShape.Dispose();
         }
 

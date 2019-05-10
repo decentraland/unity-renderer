@@ -40,6 +40,7 @@ public class VisualTestSceneController1 : MonoBehaviour
         var scene = sceneController.loadedScenes["0,0"];
         string textureUrl = TestHelpers.GetTestsAssetsPath() + "/Images/atlas.png";
 
+        //TODO(Alex) fix the load of the image
         TestHelpers.InstantiateEntityWithMaterial(scene, "1", new Vector3(-3, 1, 3), new DCL.Components.BasicMaterial.Model
         {
             texture = textureUrl,

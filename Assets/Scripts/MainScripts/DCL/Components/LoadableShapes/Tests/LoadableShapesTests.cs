@@ -278,7 +278,6 @@ namespace Tests
 
             var colliderObject = scene.entities[entityId].gameObject.GetComponentInChildren<Collider>();
             Assert.IsTrue(colliderObject != null);
-            Assert.IsTrue(colliderObject.GetComponent<MeshRenderer>() == null);
         }
     }
 }

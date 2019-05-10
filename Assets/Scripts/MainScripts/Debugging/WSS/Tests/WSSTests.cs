@@ -17,7 +17,6 @@ namespace Tests
         // A UnityTest behaves like a coroutine in Play Mode. In Edit Mode you can use
         // `yield return null;` to skip a frame.
         [UnityTest]
-        [Explicit("This test fails in cloud build")]
         public IEnumerator BasicConnectionTest()
         {
             yield return InitScene();
@@ -26,6 +25,7 @@ namespace Tests
 
             WSSController wssController = wssControllerGO.AddComponent<WSSController>();
             wssController.sceneController = sceneController;
+            DCLCharacterController.i.gravity = 0;
 
             yield return new WaitForSeconds(1.0f);
 

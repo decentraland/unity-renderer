@@ -13,9 +13,9 @@ namespace Tests
     {
         // TODO: Find a way to run this test on Unity Cloud Build, even though it passes locally, it fails on timeout in Unity Cloud Build
         [UnityTest]
-        [Explicit("This test fails in cloud build")]
         public IEnumerator CharacterTeleportReposition()
         {
+            yield return TestHelpers.UnloadAllUnityScenes();
             var characterController = (GameObject.Instantiate(Resources.Load("Prefabs/CharacterController") as GameObject)).GetComponent<DCLCharacterController>();
             characterController.gravity = 0f;
 

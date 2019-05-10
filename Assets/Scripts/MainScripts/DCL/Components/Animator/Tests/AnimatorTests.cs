@@ -58,7 +58,7 @@ namespace Tests
             animator = entity.gameObject.GetComponentInChildren<DCLAnimator>();
 
             Assert.IsTrue(animator.GetStateByString("clip01") != null, "dclAnimator.GetStateByString fail!");
-            Assert.IsTrue(animator.model.states[0].clipReference != null, "dclAnimator clipReference is null!");
+            Assert.IsTrue(animator.model.states[0].clip != null, "dclAnimator clipReference is null!");
         }
 
         [UnityTest]
