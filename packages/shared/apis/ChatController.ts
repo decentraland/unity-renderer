@@ -18,6 +18,7 @@ import {
   removeFromMutedUsers
 } from 'shared/comms/peers'
 import { uuid } from 'atomicHelpers/math'
+import { parcelLimits } from 'config'
 
 export const positionRegex = new RegExp('^(-?[0-9]+) *, *(-?[0-9]+)$')
 
@@ -155,23 +156,37 @@ export class ChatController extends ExposableAPI implements IChatController {
 
     this.addChatCommand('goto', 'Teleport to another parcel', message => {
       const coordinates = positionRegex.exec(message)
+
+      let response = ''
+
       if (!coordinates) {
-        return {
-          id: uuid(),
-          isCommand: true,
-          sender: 'Decentraland',
-          message: 'Could not recognize the coordinates provided. Example usage: /goto 42,42'
+        response = 'Could not recognize the coordinates provided. Example usage: /goto 42,42'
+      } else {
+        const x = parseInt(coordinates[1], 10)
+        const y = parseInt(coordinates[2], 10)
+
+        if (
+          parcelLimits.minLandCoordinateX <= x &&
+          x <= parcelLimits.maxLandCoordinateX &&
+          parcelLimits.minLandCoordinateY <= y &&
+          y <= parcelLimits.maxLandCoordinateY
+        ) {
+          teleportObservable.notifyObservers({ x, y })
+          response = `Teleporting to ${x}, ${y}...`
+        } else {
+          response = `Coordinates are outside of the boundaries. Limits are from ${
+            parcelLimits.minLandCoordinateX
+          } to ${parcelLimits.maxLandCoordinateX} for X and ${parcelLimits.minLandCoordinateY} to ${
+            parcelLimits.maxLandCoordinateY
+          } for Y`
         }
       }
-      const x = coordinates[1]
-      const y = coordinates[2]
-      teleportObservable.notifyObservers({ x: parseInt(x, 10), y: parseInt(y, 10) })
 
       return {
         id: uuid(),
         isCommand: true,
         sender: 'Decentraland',
-        message: `Teleporting to ${x}, ${y}...`
+        message: response
       }
     })
 

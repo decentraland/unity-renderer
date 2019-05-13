@@ -18,7 +18,12 @@ import {
 } from '../shared/types'
 import { DevTools } from '../shared/apis/DevTools'
 import { ILogger, createLogger } from '../shared/logger'
-import { positionObservable, lastPlayerPosition, getWorldSpawnpoint } from '../shared/world/positionThings'
+import {
+  positionObservable,
+  lastPlayerPosition,
+  getWorldSpawnpoint,
+  teleportObservable
+} from '../shared/world/positionThings'
 import { enableParcelSceneLoading, getParcelById, loadedParcelSceneWorkers } from '../shared/world/parcelSceneManager'
 import { SceneWorker, ParcelSceneAPI, hudWorkerUrl } from '../shared/world/SceneWorker'
 import { ensureUiApis } from '../shared/world/uiSceneInitializer'
@@ -292,5 +297,9 @@ async function loadPreviewScene() {
     throw new Error('Could not load scene.json')
   }
 }
+
+teleportObservable.add((position: { x: number; y: number }) => {
+  unityInterface.SetPosition(position.x, 0, position.y)
+})
 
 window['messages'] = (e: any) => chatObservable.notifyObservers(e)
