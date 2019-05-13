@@ -91,10 +91,10 @@ namespace DCL.Components
             }
 
             // Apply padding
-            referencesContainer.layoutGroup.padding.bottom = Mathf.RoundToInt(model.paddingBottom);
-            referencesContainer.layoutGroup.padding.top = Mathf.RoundToInt(model.paddingTop);
-            referencesContainer.layoutGroup.padding.left = Mathf.RoundToInt(model.paddingLeft);
-            referencesContainer.layoutGroup.padding.right = Mathf.RoundToInt(model.paddingRight);
+            referencesContainer.paddingLayoutGroup.padding.bottom = Mathf.RoundToInt(model.paddingBottom);
+            referencesContainer.paddingLayoutGroup.padding.top = Mathf.RoundToInt(model.paddingTop);
+            referencesContainer.paddingLayoutGroup.padding.left = Mathf.RoundToInt(model.paddingLeft);
+            referencesContainer.paddingLayoutGroup.padding.right = Mathf.RoundToInt(model.paddingRight);
 
             LayoutRebuilder.ForceRebuildLayoutImmediate(parentRecTransform);
             return null;
