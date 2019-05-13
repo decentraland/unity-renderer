@@ -72,6 +72,7 @@ export class AnimationState extends ObservableComponent {
   setParams(params: AnimationParams) {
     this.looping = params.looping !== undefined ? params.looping : this.looping
     this.speed = params.speed || this.speed
+    return this
   }
 
   toJSON() {

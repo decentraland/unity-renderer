@@ -94,6 +94,7 @@ export class Transform extends ObservableComponent {
     Matrix.LookAtLHToRef(this.position, target, worldUp, result)
     result.invert()
     Quaternion.FromRotationMatrixToRef(result, this.rotation)
+    return this
   }
 
   /**
@@ -102,6 +103,7 @@ export class Transform extends ObservableComponent {
    */
   rotate(axis: Vector3, angle: number) {
     this.rotation.multiplyInPlace(this.rotation.angleAxis(angle, axis))
+    return this
   }
 
   /**
@@ -110,6 +112,7 @@ export class Transform extends ObservableComponent {
    */
   translate(vec: Vector3) {
     this.position.addInPlace(vec)
+    return this
   }
 }
 
@@ -398,6 +401,7 @@ export class Animator extends Shape {
     clip.onChange(() => {
       this.dirty = true
     })
+    return this
   }
 
   /**

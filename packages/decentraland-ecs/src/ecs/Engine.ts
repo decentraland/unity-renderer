@@ -57,12 +57,12 @@ export class Engine implements IEngine {
     this.rootEntity = rootEntity
   }
 
-  addEntity(entity: IEntity) {
+  addEntity(entity: IEntity): IEntity {
     const parent = entity.getParent()
 
     if (entity.isAddedToEngine()) {
       log('The entity is already in the engine. Please fix this')
-      return
+      return entity
     }
 
     entity.eventManager = this.eventManager
@@ -90,9 +90,11 @@ export class Engine implements IEngine {
         }
       }
     }
+
+    return entity
   }
 
-  removeEntity(entity: IEntity) {
+  removeEntity(entity: IEntity): boolean {
     const id = entity.uuid
 
     if (entity.isAddedToEngine()) {
@@ -127,6 +129,8 @@ export class Engine implements IEngine {
       entity.eventManager = null
 
       delete this._entities[id]
+
+      return true
     } else {
       log('Engine: Trying to remove non existent entity from engine.')
       if (!entity.isAddedToEngine()) {
@@ -138,13 +142,14 @@ export class Engine implements IEngine {
       for (let componentName in entity.components) {
         log(componentName)
       }
+      return false
     }
   }
 
   addSystem(system: ISystem, priority: number = 0) {
     if (this.addedSystems.indexOf(system) !== -1) {
       log('Engine: Trying to add a system that is already added. Aborting')
-      return
+      return system
     }
 
     if (this.systems.length > 0) {
@@ -168,6 +173,8 @@ export class Engine implements IEngine {
     }
 
     this.registerSystem(system)
+
+    return system
   }
 
   removeSystem(system: ISystem) {
@@ -188,7 +195,9 @@ export class Engine implements IEngine {
           this.systems.splice(i, 1)
         }
       }
+      return true
     }
+    return false
   }
 
   update(dt: number) {
@@ -202,6 +211,7 @@ export class Engine implements IEngine {
         }
       }
     }
+    return this
   }
 
   getEntitiesWithComponent(component: string): Record<string, any>
@@ -290,7 +300,9 @@ export class Engine implements IEngine {
           }
         }
       }
+      return true
     }
+    return false
   }
 
   private registerSystem(system: ISystem) {
