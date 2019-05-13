@@ -21,11 +21,8 @@
     "jsxFactory": "createElement",
     "removeComments": true,
     "pretty": true,
-    "outDir": "../../static/loader",
-    "lib": [
-      "es2017",
-      "dom"
-    ],
+    "outDir": "../../static/systems",
+    "lib": ["es2017", "dom"],
     "baseUrl": "..",
     "plugins": [
       {
@@ -33,7 +30,5 @@
       }
     ]
   },
-  "exclude": [
-    "../../node_modules"
-  ]
+  "exclude": ["../../node_modules"]
 }

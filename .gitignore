@@ -4,8 +4,6 @@ npm-debug.log
 static/dist
 public/systems
 static/systems
-static/loader
-static/lifecycle
 
 .decentraland
 
