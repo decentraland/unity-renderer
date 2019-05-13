@@ -1,6 +1,4 @@
-const qs = require('query-string')
-
-import { initParcelSceneWorker } from '../../decentraland-loader/worker'
+import { initParcelSceneWorker } from '../../decentraland-loader/lifecycle/manager'
 import { ETHEREUM_NETWORK } from '../../config'
 import { positionObservable, teleportObservable } from './positionThings'
 import { worldToGrid } from '../../atomicHelpers/parcelScenePositions'
@@ -47,65 +45,52 @@ export async function enableParcelSceneLoading(network: ETHEREUM_NETWORK, option
   const ret = await initParcelSceneWorker(network)
   const position = Vector2.Zero()
 
-  function setParcelScenes(parcelScenes: ILand[]) {
-    const completeListOfParcelsThatShouldBeLoaded = parcelScenes.map($ => $.mappingsResponse.root_cid)
+  ret.on('Scene.shouldPrefetch', async (opts: { sceneCID: string }) => {
+    const parcelSceneToLoad = await ret.getParcelData(opts.sceneCID)
+    if (!options.shouldLoadParcelScene(parcelSceneToLoad)) {
+      return
+    }
+    if (!getParcelById(parcelSceneToLoad.mappingsResponse.root_cid)) {
+      const parcelScene = new options.parcelSceneClass(ILandToLoadableParcelScene(parcelSceneToLoad))
 
-    for (let i = 0; i < parcelScenes.length; i++) {
-      const parcelSceneToLoad = parcelScenes[i]
+      const parcelSceneWorker = new SceneWorker(parcelScene)
 
-      if (!getParcelByCID(parcelSceneToLoad.mappingsResponse.root_cid)) {
-        const parcelScene = new options.parcelSceneClass(ILandToLoadableParcelScene(parcelSceneToLoad))
-
-        const parcelSceneWorker = new SceneWorker(parcelScene)
-
-        if (parcelSceneWorker) {
-          loadedParcelSceneWorkers.add(parcelSceneWorker)
-        }
+      if (parcelSceneWorker) {
+        loadedParcelSceneWorkers.add(parcelSceneWorker)
       }
     }
+    ret.notify('Scene.prefetchDone', opts)
+  })
 
+  ret.on('Scene.shouldStart', async (opts: { sceneCID: string }) => {
+    if (options.onLoadParcelScenes) {
+      options.onLoadParcelScenes([await ret.getParcelData(opts.sceneCID)])
+    }
+  })
+
+  ret.on('Scene.shouldUnload', async (sceneCID: string) => {
+    const parcelSceneToUnload = await ret.getParcelData(sceneCID)
     loadedParcelSceneWorkers.forEach($ => {
-      if (!$.persistent && !completeListOfParcelsThatShouldBeLoaded.includes($.parcelScene.data.id)) {
+      if (!$.persistent && $.parcelScene.data.id === parcelSceneToUnload.mappingsResponse.root_cid) {
         $.dispose()
         loadedParcelSceneWorkers.delete($)
       }
     })
-  }
+  })
 
-  let initialized = false
-  let spawnpointLand = qs.parse(location.search).position
-
-  teleportObservable.add(position => {
-    initialized = false
-    spawnpointLand = `${position.x},${position.y}`
+  ret.on('Position.settled', async (sceneCID: string) => {
+    options.onSpawnpoint && options.onSpawnpoint(await ret.getParcelData(sceneCID))
   })
 
   teleportObservable.add((position: { x: number; y: number }) => {
-    ret.server.notify('User.setPosition', { position })
+    ret.notify('User.setPosition', { position })
   })
   positionObservable.add(obj => {
     worldToGrid(obj.position, position)
-    ret.server.notify('User.setPosition', { position })
+    ret.notify('User.setPosition', { position })
   })
 
   enablePositionReporting()
-
-  ret.server.on('ParcelScenes.notify', (data: { parcelScenes: ILand[] }) => {
-    setParcelScenes(data.parcelScenes.filter(land => options.shouldLoadParcelScene(land)))
-    if (!initialized && options.onSpawnpoint) {
-      const initialLand = data.parcelScenes.find(land => land.scene.scene.base === spawnpointLand)
-      if (initialLand) {
-        options.onSpawnpoint(initialLand)
-        initialized = true
-      }
-    }
-
-    if (options.onLoadParcelScenes) {
-      options.onLoadParcelScenes(data.parcelScenes)
-    }
-  })
-
-  return ret
 }
 
 let isPositionReportingEnabled = false
