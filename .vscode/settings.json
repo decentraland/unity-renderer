@@ -20,5 +20,6 @@
     ".circleci": true,
     "**/*.d.ts": false
   },
-  "prettier.ignorePath": ".prettierignore"
+  "prettier.ignorePath": ".prettierignore",
+  "editor.tabSize": 2
 }

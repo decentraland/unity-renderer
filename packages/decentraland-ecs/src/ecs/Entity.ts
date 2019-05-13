@@ -30,7 +30,7 @@ export class Entity implements IEntity {
    * Adds or replaces a component in the entity.
    * @param component - component instance.
    */
-  addComponentOrReplace<T extends object>(component: T): void {
+  addComponentOrReplace<T extends object>(component: T): T {
     if (typeof component === 'function') {
       throw new Error('You passed a function or class as a component, an instance of component is expected')
     }
@@ -43,12 +43,12 @@ export class Entity implements IEntity {
 
     if (this.components[componentName]) {
       if (this.components[componentName] === component) {
-        return
+        return component
       }
       this.removeComponent(this.components[componentName], false)
     }
 
-    this.addComponent(component)
+    return this.addComponent(component)
   }
 
   /**
@@ -175,7 +175,7 @@ export class Entity implements IEntity {
    * Adds a component. If the component already exist, it throws an Error.
    * @param component - component instance.
    */
-  addComponent<T extends object>(component: T) {
+  addComponent<T extends object>(component: T): T {
     if (typeof component !== 'object') {
       throw new Error(
         'Entity#add(component): You passed a function or class as a component, an instance of component is expected'
@@ -200,6 +200,7 @@ export class Entity implements IEntity {
     if (typeof storedComponent.addedToEntity === 'function') {
       storedComponent.addedToEntity(this)
     }
+    return component
   }
 
   /**
@@ -280,7 +281,7 @@ export class Entity implements IEntity {
   /**
    * Sets the parent entity
    */
-  setParent(newParent: IEntity) {
+  setParent(newParent: IEntity): IEntity {
     let parent = !newParent && this.engine ? this.engine.rootEntity : newParent
     let currentParent = this.getParent()
 
@@ -291,7 +292,7 @@ export class Entity implements IEntity {
     }
 
     if (newParent === currentParent) {
-      return
+      return this
     }
 
     const circularAncestor = this.getCircularAncestor(newParent as Entity)
@@ -325,6 +326,8 @@ export class Entity implements IEntity {
     if (this.eventManager && this.engine) {
       this.eventManager.fireEvent(new ParentChanged(this as IEntity, parent))
     }
+
+    return this
   }
 
   /**

@@ -54,6 +54,8 @@ export class EventManager {
       listener,
       fn: listenerFunction
     })
+
+    return this
   }
 
   removeListener<X>(listener: X, eventClass: IEventConstructor<any>): boolean {
@@ -95,6 +97,8 @@ export class EventManager {
         }
       }
     }
+
+    return this
   }
 }
 
