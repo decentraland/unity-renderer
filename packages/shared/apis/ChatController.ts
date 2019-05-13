@@ -92,8 +92,11 @@ export class ChatController extends ExposableAPI implements IChatController {
 
   // @internal
   handleChatCommand(message: string) {
-    const words = message.split(' ')
-    const command = words[0].substring(1)
+    const words = message
+      .substring(0, message.length - 1) // Remove \n character
+      .split(' ')
+
+    const command = words[0].substring(1).trim()
     // Remove command from sentence
     words.shift()
     const restOfMessage = words.join(' ')
