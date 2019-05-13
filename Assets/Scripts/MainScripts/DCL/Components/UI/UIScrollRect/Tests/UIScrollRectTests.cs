@@ -14,12 +14,9 @@ namespace Tests
     public class UIScrollRectTests : TestsBase
     {
         [UnityTest]
-        [Explicit]
         public IEnumerator TestPropertiesAreAppliedCorrectly()
         {
             yield return InitScene();
-            
-            TestHelpers.ForceUnloadAllScenes(sceneController);
 
             DCLCharacterController.i.gravity = 0f;
 
@@ -37,10 +34,18 @@ namespace Tests
 
             UIScrollRect scrRect = TestHelpers.SharedComponentCreate<UIScrollRect, UIScrollRect.Model>(scene, CLASS_ID.UI_SLIDER_SHAPE);
             yield return scrRect.routine;
+            
+            // Force a new update to pass the first apply
+            TestHelpers.SharedComponentUpdate(scene, scrRect, new UIScrollRect.Model
+            {
+                name = "newName"
+            });
+            yield return scrRect.routine;
 
             var refC = scrRect.referencesContainer;
 
             Assert.IsTrue(refC.canvasGroup.blocksRaycasts);
+            //Canvas group is disabled on first apply
             Assert.AreEqual(1, refC.canvasGroup.alpha);
 
             // Apply padding
@@ -153,6 +158,7 @@ namespace Tests
             Assert.AreEqual(screenSpaceShape.childHookRectTransform.rect.width * 0.5f, uiContainerRectShape.childHookRectTransform.rect.width);
             Assert.AreEqual(screenSpaceShape.childHookRectTransform.rect.height * 0.3f, uiContainerRectShape.childHookRectTransform.rect.height);
 
+            yield return new WaitForAllMessagesProcessed();
             screenSpaceShape.Dispose();
         }
     }
