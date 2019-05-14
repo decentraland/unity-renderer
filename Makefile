@@ -8,12 +8,12 @@ GREEN=\n\033[1;34m
 RED=\n\033[1;31m
 RESET=\033[0m
 
+build: | compile
+	@echo "$(GREEN)===================== Compilation Done =====================$(RESET)"
+
 clean:
 	@echo "$(GREEN)===================== Cleaning project =====================$(RESET)"
 	$(COMPILER) build.clean.json
-
-build: | clean compile
-	@echo "$(GREEN)===================== Compilation Done =====================$(RESET)"
 
 compile: | build-test-scenes generate-mocks compile-entry-points
 
