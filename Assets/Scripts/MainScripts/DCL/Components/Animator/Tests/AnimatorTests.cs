@@ -1,21 +1,18 @@
-using System.Collections;
-using System.Collections.Generic;
 using DCL.Components;
-using DCL.Controllers;
 using DCL.Helpers;
 using DCL.Models;
-using NUnit.Framework;
-using UnityEngine;
-using UnityEngine.TestTools;
-using UnityEngine.UI;
 using Newtonsoft.Json;
-using UnityGLTF;
+using NUnit.Framework;
+using System.Collections;
+using System.IO;
+using UnityEngine;
+using UnityEngine.SceneManagement;
+using UnityEngine.TestTools;
 
 namespace Tests
 {
     public class AnimatorTests : TestsBase
     {
-        // TODO: Find a way to run this test on Unity Cloud Build, even though it passes locally, it fails on timeout in Unity Cloud Build
         [UnityTest]
         public IEnumerator CreateAnimationComponent()
         {

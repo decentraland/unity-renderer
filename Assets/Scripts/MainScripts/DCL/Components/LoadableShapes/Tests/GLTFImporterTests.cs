@@ -18,7 +18,7 @@ namespace Tests
         {
             string src = TestHelpers.GetTestsAssetsPath() + "/GLB/Trevor/Trevor.glb";
             DecentralandEntity entity = null;
-            GLTFShape trevorGLTFShape = TestHelpers.CreateEntityWithGLTFShape(scene, Vector3.zero, new BaseLoadableShape<GLTFLoader>.Model() { src = src }, out entity);
+            GLTFShape trevorGLTFShape = TestHelpers.CreateEntityWithGLTFShape(scene, Vector3.zero, src, out entity);
             yield return trevorGLTFShape.routine;
             yield return new WaitForSeconds(4);
 

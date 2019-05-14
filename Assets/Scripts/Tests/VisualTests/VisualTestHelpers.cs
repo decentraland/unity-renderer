@@ -1,20 +1,66 @@
-﻿using UnityEngine;
-using UnityEditor;
-using System.IO;
-using System.Collections;
 using DCL.Configuration;
+using NUnit.Framework;
+using System.Collections;
+using System.IO;
+using UnityEngine;
 
 namespace DCL.Helpers
 {
-    public class VisualTestHelpers
+    public static class VisualTestHelpers
     {
+        public static string testImagesPath = Application.dataPath + "/../TestResources/VisualTests/CurrentTestImages/";
+        public static string baselineImagesPath = Application.dataPath + "/../TestResources/VisualTests/BaselineImages/";
+
+        private static bool generateBaseline = false;
+        public static string currentTestName;
+        public static int snapshotIndex;
+
+        public static IEnumerator GenerateBaselineForTest(IEnumerator test)
+        {
+            generateBaseline = true;
+            yield return test;
+            generateBaseline = false;
+        }
+
+        public static IEnumerator InitVisualTestsScene(string testName)
+        {
+            currentTestName = testName;
+            snapshotIndex = 0;
+            yield return new WaitForSeconds(2.0f);
+        }
+
+        public static IEnumerator TakeSnapshot(Vector3 position)
+        {
+            yield return TakeSnapshot(currentTestName + "_" + snapshotIndex + ".png", position);
+            snapshotIndex++;
+        }
+
+        public static IEnumerator TakeSnapshot(string snapshotName, Vector3 position)
+        {
+            RepositionVisualTestsCamera(position);
+
+            int snapshotsWidth = TestSettings.VISUAL_TESTS_SNAPSHOT_WIDTH;
+            int snapshotsHeight = TestSettings.VISUAL_TESTS_SNAPSHOT_HEIGHT;
+
+            yield return TakeSnapshot(testImagesPath, snapshotName, VisualTestController.i.camera, snapshotsWidth, snapshotsHeight);
+
+            if (generateBaseline || !File.Exists(baselineImagesPath + snapshotName))
+            {
+                yield return TakeSnapshot(baselineImagesPath, snapshotName, VisualTestController.i.camera, snapshotsWidth, snapshotsHeight);
+            }
+
+            if (!generateBaseline)
+            {
+                float ratio = ComputeImageAffinityPercentage(baselineImagesPath + snapshotName, testImagesPath + snapshotName);
+                Assert.GreaterOrEqual(ratio, TestSettings.VISUAL_TESTS_APPROVED_AFFINITY, $"{snapshotName} has {ratio}% affinity, the minimum is {TestSettings.VISUAL_TESTS_APPROVED_AFFINITY}%. A diff image has been generated. Check it out at {testImagesPath}");
+            }
+        }
+
         public static IEnumerator TakeSnapshot(string snapshotPath, string snapshotName, Camera camera, int width, int height)
         {
-#if UNITY_EDITOR
-            if (string.IsNullOrEmpty(snapshotPath) || string.IsNullOrEmpty(snapshotName) || camera == null)
+            if (string.IsNullOrEmpty(snapshotName) || camera == null)
             {
-                Debug.Log("snapshot path or camera is not valid. Snapshot aborted.");
-
+                Debug.Log("snapshot name or camera is not valid. Snapshot aborted.");
                 yield break;
             }
 
@@ -31,12 +77,12 @@ namespace DCL.Helpers
                 fileProcessStartingTime = Time.time;
                 while (File.Exists(finalPath) && (Time.time - fileProcessStartingTime) < 10)
                 {
-                    yield return new WaitForEndOfFrame();
+                    yield return null;
                 }
             }
 
             // We should only read the screen buffer after rendering is complete
-            yield return new WaitForEndOfFrame();
+            yield return null;
 
             RenderTexture renderTexture = new RenderTexture(width, height, 24);
             camera.targetTexture = renderTexture;
@@ -47,7 +93,7 @@ namespace DCL.Helpers
             currentSnapshot.ReadPixels(new Rect(0, 0, width, height), 0, 0);
             currentSnapshot.Apply();
 
-            yield return new WaitForEndOfFrame();
+            yield return null;
 
             if (!Directory.Exists(snapshotPath))
             {
@@ -57,25 +103,39 @@ namespace DCL.Helpers
             byte[] bytes = currentSnapshot.EncodeToPNG();
             File.WriteAllBytes(finalPath, bytes);
 
-            Debug.Log("saved snapshot in " + finalPath);
-
             // Just in case, wait until the file is created
             fileProcessStartingTime = Time.time;
             while (!File.Exists(finalPath) && (Time.time - fileProcessStartingTime) < 10)
             {
-                yield return new WaitForEndOfFrame();
+                yield return null;
             }
 
             RenderTexture.active = null;
             renderTexture.Release();
 
-            // AssetDatabase.Refresh();
-#else
-            yield break;
-#endif
+            yield return new WaitForSeconds(0.2f);
         }
 
-        public static float GetImageAffinityPercentage(Texture2D baselineImage, Texture2D testImage, string diffImagePath)
+        public static float ComputeImageAffinityPercentage(string baselineImagePathWithFilename, string testImagePathWithFilename)
+        {
+            Texture2D baselineSnapshot = new Texture2D(TestSettings.VISUAL_TESTS_SNAPSHOT_WIDTH, TestSettings.VISUAL_TESTS_SNAPSHOT_HEIGHT, TextureFormat.RGB24, false);
+            baselineSnapshot.LoadImage(File.ReadAllBytes(baselineImagePathWithFilename));
+
+            Texture2D currentSnapshot = new Texture2D(TestSettings.VISUAL_TESTS_SNAPSHOT_WIDTH, TestSettings.VISUAL_TESTS_SNAPSHOT_HEIGHT, TextureFormat.RGB24, false);
+            currentSnapshot.LoadImage(File.ReadAllBytes(testImagePathWithFilename));
+
+            string finalDiffPath = Path.GetDirectoryName(testImagePathWithFilename) + "\\" + Path.GetFileNameWithoutExtension(testImagePathWithFilename) + "_diff" + Path.GetExtension(testImagePathWithFilename);
+            return ComputeImageAffinityPercentage(baselineSnapshot, currentSnapshot, finalDiffPath);
+        }
+
+        /// <summary>
+        /// This will compare the pixels of two images in order to make visual tests.
+        /// </summary>
+        /// <param name="baselineImage">Reference or "golden" image</param>
+        /// <param name="testImage">Image to compare</param>
+        /// <param name="diffImagePath"></param>
+        /// <returns>Affinity percentage</returns>
+        public static float ComputeImageAffinityPercentage(Texture2D baselineImage, Texture2D testImage, string diffImagePath)
         {
             baselineImage = DuplicateTextureAsReadable(baselineImage);
             testImage = DuplicateTextureAsReadable(testImage);
@@ -132,7 +192,9 @@ namespace DCL.Helpers
                 File.Delete(diffImagePath);
 
                 if (File.Exists(diffImagePath + ".meta"))
+                {
                     File.Delete(diffImagePath + ".meta");
+                }
             }
 
             return imageAffinity;
@@ -190,6 +252,13 @@ namespace DCL.Helpers
 
         public static void RepositionVisualTestsCamera(Transform cameraTransform, Vector3 newPosition)
         {
+            cameraTransform.position = newPosition;
+            cameraTransform.forward = Vector3.zero - cameraTransform.position;
+        }
+
+        public static void RepositionVisualTestsCamera(Vector3 newPosition)
+        {
+            Transform cameraTransform = VisualTestController.i.camera.transform;
             cameraTransform.position = newPosition;
             cameraTransform.forward = Vector3.zero - cameraTransform.position;
         }

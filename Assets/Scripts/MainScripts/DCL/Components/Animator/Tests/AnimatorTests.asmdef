@@ -2,7 +2,8 @@
     "name": "AnimatorTests",
     "references": [
         "MainScripts",
-        "UnityGLTFAssembly"
+        "UnityGLTFAssembly",
+        "VisualTests"
     ],
     "optionalUnityReferences": [
         "TestAssemblies"
