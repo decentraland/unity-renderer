@@ -203,7 +203,7 @@ public class SceneController : MonoBehaviour
 
             scene = JsonUtility.FromJson<LoadParcelScenesMessage.UnityParcelScene>(json);
 
-            if (scene == null)
+            if (scene == null || scene.id == null)
                 continue;
 
             if (Time.realtimeSinceStartup - tb > DCL.Configuration.MessageThrottlingSettings.LOAD_PARCEL_SCENES_THROTTLING_TIME)

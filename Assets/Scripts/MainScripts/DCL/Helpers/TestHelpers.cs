@@ -17,14 +17,64 @@ namespace DCL.Helpers
         public override bool keepWaiting => SceneController.i.hasPendingMessages;
     }
 
+    // NOTE(Brian): Attribute used to determine if tests are visual. Those tests will be run to generate the baseline images.
+    [AttributeUsage(AttributeTargets.Method)]
+    public class VisualTestAttribute : Attribute { }
+
+    public class VisualTestsBase : TestsBase
+    {
+        protected override IEnumerator InitScene(bool usesWebServer = false, bool spawnCharController = true)
+        {
+            yield return InitUnityScene("MainVisualTest");
+
+            sceneController = TestHelpers.InitializeSceneController(usesWebServer);
+
+            yield return new WaitForSeconds(0.01f);
+
+            scene = sceneController.CreateTestScene();
+
+            yield return new WaitForSeconds(0.01f);
+
+            if (spawnCharController)
+            {
+                if (DCLCharacterController.i == null)
+                {
+                    GameObject.Instantiate(Resources.Load("Prefabs/CharacterController"));
+                }
+            }
+        }
+    }
+
     public class TestsBase
     {
         protected SceneController sceneController;
         protected ParcelScene scene;
 
-        protected IEnumerator InitScene(bool usesWebServer = false, bool spawnCharController = true)
+        protected IEnumerator InitUnityScene(string sceneName = null)
         {
             yield return TestHelpers.UnloadAllUnityScenes();
+
+            Scene? newScene;
+
+            if (string.IsNullOrEmpty(sceneName))
+            {
+                newScene = SceneManager.CreateScene(TestHelpers.testingSceneName + (TestHelpers.testSceneIteration++));
+                if (newScene.HasValue)
+                {
+                    SceneManager.SetActiveScene(newScene.Value);
+                }
+            }
+            else
+            {
+                yield return SceneManager.LoadSceneAsync(sceneName);
+                SceneManager.SetActiveScene(SceneManager.GetSceneByName(sceneName));
+            }
+        }
+
+        protected virtual IEnumerator InitScene(bool usesWebServer = false, bool spawnCharController = true)
+        {
+            yield return InitUnityScene();
+
             sceneController = TestHelpers.InitializeSceneController(usesWebServer);
 
             yield return new WaitForSeconds(0.01f);
@@ -83,8 +133,9 @@ namespace DCL.Helpers
 
     public static class TestHelpers
     {
-        private static int testSceneIteration;
-        private const string testingSceneName = "DCL_Testing_";
+        public static int testSceneIteration;
+        public const string testingSceneName = "DCL_Testing_";
+
         public static string GetTestsAssetsPath(bool useWebServerPath = false)
         {
             if (useWebServerPath)
@@ -269,6 +320,17 @@ namespace DCL.Helpers
             AttachDCLTransform(entity, scene, position, Quaternion.identity, Vector3.one);
             SharedComponentAttach(gltfShape, entity);
             return gltfShape;
+        }
+
+        public static GLTFShape CreateEntityWithGLTFShape(ParcelScene scene, Vector3 position, string url)
+        {
+            DecentralandEntity entity = null;
+            return CreateEntityWithGLTFShape(scene, position, new GLTFShape.Model() { src = url }, out entity);
+        }
+
+        public static GLTFShape CreateEntityWithGLTFShape(ParcelScene scene, Vector3 position, string url, out DecentralandEntity entity)
+        {
+            return CreateEntityWithGLTFShape(scene, position, new GLTFShape.Model() { src = url }, out entity);
         }
 
         public static GLTFShape CreateEntityWithGLTFShape(ParcelScene scene, Vector3 position, GLTFShape.Model model)
@@ -526,7 +588,9 @@ namespace DCL.Helpers
 
                 //NOTE(Brian): Corner case, strings are defaulted as null, but json deserialization inits them as ""
                 if (modelValue is string && string.IsNullOrEmpty(modelValue as string))
+                {
                     modelValue = null;
+                }
 
                 Assert.AreEqual(defaultValue, modelValue, $"Checking {fieldName} failed! Is not default value! error!");
             }
@@ -599,6 +663,7 @@ namespace DCL.Helpers
             for (int i = SceneManager.sceneCount - 1; i >= 0; i--)
             {
                 var scene = SceneManager.GetSceneAt(i);
+
                 if (scene.name.Contains(testingSceneName))
                 {
                     yield return SceneManager.UnloadSceneAsync(scene);
@@ -608,9 +673,6 @@ namespace DCL.Helpers
 
         public static SceneController InitializeSceneController(bool usesWebServer = false)
         {
-            var newScene = SceneManager.CreateScene(testingSceneName + (testSceneIteration++));
-            SceneManager.SetActiveScene(newScene);
-
             var sceneController = UnityEngine.Object.FindObjectOfType<SceneController>();
 
             if (sceneController != null && sceneController.componentFactory == null)
@@ -662,14 +724,18 @@ namespace DCL.Helpers
             yield return new DCL.WaitUntil(() =>
             {
                 if (OnIterationStart != null)
+                {
                     OnIterationStart();
+                }
 
                 if (lastMessageFromEngineType == targetMessageType && lastMessageFromEnginePayload == targetMessageJSONPayload)
                 {
                     DCL.Interface.WebInterface.OnMessageFromEngine -= OnMessageFromEngine;
 
                     if (OnSuccess != null)
+                    {
                         OnSuccess();
+                    }
 
                     awaitedConditionMet = true;
                 }
@@ -693,7 +759,7 @@ namespace DCL.Helpers
             Assert.AreEqual(Vector2.one, rt.offsetMax, $"Rect transform {rt.name} isn't stretched out!. unexpected offsetMax value.");
             Assert.AreEqual(Vector2.zero, rt.sizeDelta, $"Rect transform {rt.name} isn't stretched out!. unexpected sizeDelta value.");
         }
-        
+
         public static void ForceUnloadAllScenes(SceneController sceneController)
         {
             if (sceneController == null)

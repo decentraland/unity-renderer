@@ -70,12 +70,47 @@ We are using [UnityGLTF](https://github.com/KhronosGroup/UnityGLTF) as a Dynamic
 
 ### Visual Tests Pipeline
 
-#### Baseline snapshot images creation/update:
+#### How to create them
 
-1. Create a scene like the one at Scenes/Test/VisualTests/ and open it (When running the visual tests, that same scene is loaded to use the same configurations like instanced objects, lighting, skybox, sun, etc.)
-2. Toggle the "Take Snapshots" and "Snapshots are baseline" in the TestController object's VisualTestSceneController component
-3. Run the scene and wait until all the snapshots have been saved (there's info in the console for every snapshot)
-4. Dismiss scene changes made on VisualTestSceneController component, we need the toggles untoggled for the tests
+1. Create a new test class that inherits from VisualTestsBase
+2. After the `InitScene()` call, initialize the visual tests using `VisualTestHelpers.InitVisualTestsScene(string)` passing the test name as parameter
+3. Setup your scene as wanted and call `TestHelpers.TakeSnapshot(Vector3)`
+4. Tag the method with the attribute `[VisualTest]`. This isn't used yet but will be used to streamline the baseline images creation.
+
+The pngs will be named automatically using the `InitVisualTestsScene` parameter.
+
+Example:
+```
+public class VisualTests : VisualTestsBase
+{
+    [UnityTest][VisualTest]
+    public IEnumerator VisualTestStub()
+    {
+        yield return InitScene();
+        yield return VisualTestHelpers.InitVisualTestsScene("VisualTestStub");
+
+        // Set up scene
+
+        yield return VisualTestHelpers.TakeSnapshot(new Vector3(10f, 10f, 0f));
+    }
+}
+```
+
+#### How to create visual tests baseline images
+
+1. Create a new test inside the same class of the desired visual test. Give it the same name followed by `_Generate`.
+2. call `VisualTestHelpers.GenerateBaselineForTest(IEnumerator)` inside the method, passing the actual test method as parameter.
+3. remember to make the test `[Explicit]` or the test will give false positives
+
+
+Example:
+```
+[UnityTest][Explicit]
+public IEnumerator VisualTestStub_Generate()
+{
+    yield return VisualTestHelpers.GenerateBaselineForTest(VisualTestStub());
+}
+```
 
 ### Known Issues
 
