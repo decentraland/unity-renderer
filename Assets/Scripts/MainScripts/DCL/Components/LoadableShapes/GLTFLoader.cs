@@ -2,13 +2,6 @@
 
 using System;
 using UnityEngine;
-using UnityGLTF;
-using System;
-using System.Collections;
-using System.IO;
-using GLTF;
-using DCL.Models;
-using DCL.Components;
 
 namespace DCL.Components
 {
@@ -34,7 +27,10 @@ namespace DCL.Components
             url = targetUrl.Substring(targetUrl.LastIndexOf('/') + 1);
             assetDirectoryPath = URIHelper.GetDirectoryName(targetUrl);
 
-            if (VERBOSE) Debug.Log($"Load(): target URL -> {targetUrl},  url -> {url}, directory path -> {assetDirectoryPath}");
+            if (VERBOSE)
+            {
+                Debug.Log($"Load(): target URL -> {targetUrl},  url -> {url}, directory path -> {assetDirectoryPath}");
+            }
 
             gltfContainer = AssetManager_GLTF.i.Get(GetCacheId(), url, transform, CallOnComponentUpdatedEvent, CallOnFailure, ParseGLTFWebRequestedFile);
         }

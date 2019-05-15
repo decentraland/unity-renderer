@@ -1,19 +1,15 @@
 using GLTF;
-using GLTF.Extensions;
 using GLTF.Schema;
 using GLTF.Utilities;
 using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.IO;
-using System.Linq;
 using System.Runtime.ExceptionServices;
 #if !WINDOWS_UWP
 using System.Threading;
 #endif
-using System.Threading.Tasks;
 using UnityEngine;
-using UnityEngine.Profiling;
 using UnityEngine.Rendering;
 using UnityGLTF.Cache;
 using UnityGLTF.Extensions;
@@ -131,8 +127,10 @@ namespace UnityGLTF
             public Node Value;
         }
 
-        List<NodeId_Like> queuedNodeWithMeshes = new List<NodeId_Like>();
+        List<NodeId_Like> nodesWithMeshes = new List<NodeId_Like>();
 
+        //NOTE(Brian): Using primitives in Dictionaries would produce unneeded boxing. Improve later.
+        Dictionary<int, int> nodeToParent = new Dictionary<int, int>();
 
         /// <summary>
         /// Creates a GLTFSceneBuilder object which will be able to construct a scene based off a url
@@ -149,7 +147,10 @@ namespace UnityGLTF
         {
             _gltfRoot = rootNode;
             _loader = externalDataLoader;
-            if (gltfStream != null) _gltfStream = new GLBStream { Stream = gltfStream, StartPosition = gltfStream.Position };
+            if (gltfStream != null)
+            {
+                _gltfStream = new GLBStream { Stream = gltfStream, StartPosition = gltfStream.Position };
+            }
         }
 
         private GLTFSceneImporter(ILoader externalDataLoader, AsyncCoroutineHelper asyncCoroutineHelper)
@@ -197,7 +198,10 @@ namespace UnityGLTF
                 _timeAtLastYield = Time.realtimeSinceStartup;
                 if (_gltfRoot == null)
                 {
-                    if (VERBOSE) Debug.Log("LoadScene() GLTF File Name -> " + _gltfFileName);
+                    if (VERBOSE)
+                    {
+                        Debug.Log("LoadScene() GLTF File Name -> " + _gltfFileName);
+                    }
 
                     yield return LoadJson(_gltfFileName);
                 }
@@ -266,6 +270,7 @@ namespace UnityGLTF
 
                 _timeAtLastYield = Time.realtimeSinceStartup;
                 yield return _LoadNode(nodeIndex);
+
                 CreatedObject = _assetCache.NodeCache[nodeIndex];
                 InitializeGltfTopLevelObject();
             }
@@ -425,7 +430,6 @@ namespace UnityGLTF
                 if (image.Uri != null && !URIHelper.IsBase64Uri(image.Uri))
                 {
                     yield return _loader.LoadStream(image.Uri);
-
                     _assetCache.ImageStreamCache[sourceId] = _loader.LoadedStream;
                 }
                 else if (image.Uri == null && image.BufferView != null && _assetCache.BufferCache[image.BufferView.Value.Buffer.Id] == null)
@@ -523,14 +527,12 @@ namespace UnityGLTF
 
             yield return ConstructNode(nodeToLoad, nodeIndex, parent);
 
-            for (int i = 0; i < queuedNodeWithMeshes.Count; i++)
+            for (int i = 0; i < nodesWithMeshes.Count; i++)
             {
-                NodeId_Like nodeId = queuedNodeWithMeshes[i];
+                NodeId_Like nodeId = nodesWithMeshes[i];
                 Node node = nodeId.Value;
                 yield return ConstructMesh(node.Mesh.Value, _assetCache.NodeCache[nodeId.Id].transform, node.Mesh.Id, node.Skin != null ? node.Skin.Value : null);
             }
-
-            queuedNodeWithMeshes.Clear();
         }
 
         /// <summary>
@@ -628,7 +630,11 @@ namespace UnityGLTF
                     }
                 }
 
-                if (ShouldYieldOnTimeout()) yield return YieldOnTimeout();
+                if (ShouldYieldOnTimeout())
+                {
+                    yield return YieldOnTimeout();
+                }
+
                 yield return ConstructUnityTexture(stream, markGpuOnly, linear, image, imageCacheIndex);
             }
         }
@@ -659,12 +665,18 @@ namespace UnityGLTF
                     stream.Read(buffer, 0, (int)stream.Length);
                 }
 
-                if (ShouldYieldOnTimeout()) yield return YieldOnTimeout();
+                if (ShouldYieldOnTimeout())
+                {
+                    yield return YieldOnTimeout();
+                }
                 //	NOTE: the second parameter of LoadImage() marks non-readable, but we can't mark it until after we call Apply()
                 texture.LoadImage(buffer, false);
             }
 
-            if (ShouldYieldOnTimeout()) yield return YieldOnTimeout();
+            if (ShouldYieldOnTimeout())
+            {
+                yield return YieldOnTimeout();
+            }
             // After we conduct the Apply(), then we can make the texture non-readable and never create a CPU copy
             texture.Apply(true, markGpuOnly);
 
@@ -807,7 +819,10 @@ namespace UnityGLTF
                     yield return ConstructBuffer(_gltfRoot.Buffers[bufferId], bufferId);
                     bufferCacheData = _assetCache.BufferCache[bufferId];
 
-                    if (VERBOSE) Debug.Log("A GLTF Animation buffer cache data is null, skipping animation sampler for " + animation.Name);
+                    if (VERBOSE)
+                    {
+                        Debug.Log("A GLTF Animation buffer cache data is null, skipping animation sampler for " + animation.Name);
+                    }
                 }
 
                 // set up output accessors
@@ -818,7 +833,10 @@ namespace UnityGLTF
                 {
                     yield return ConstructBuffer(_gltfRoot.Buffers[anotherBufferId], anotherBufferId);
                     bufferCacheData = _assetCache.BufferCache[anotherBufferId];
-                    if (VERBOSE) Debug.Log("A GLTF Animation buffer cache data is null, skipping animation sampler for " + animation.Name);
+                    if (VERBOSE)
+                    {
+                        Debug.Log("A GLTF Animation buffer cache data is null, skipping animation sampler for " + animation.Name);
+                    }
                 }
             }
         }
@@ -933,13 +951,21 @@ namespace UnityGLTF
 
                 if (samplerCache.Input == null)
                 {
-                    if (VERBOSE) Debug.Log("GLTF Animation: samplerCache input is null for " + node.parent.name + ", skipping animation channel", node);
+                    if (VERBOSE)
+                    {
+                        Debug.Log("GLTF Animation: samplerCache input is null for " + node.parent.name + ", skipping animation channel", node);
+                    }
+
                     continue;
                 }
 
                 if (samplerCache.Output == null)
                 {
-                    if (VERBOSE) Debug.Log("GLTF Animation: samplerCache output is null for " + node.parent.name + ", skipping animation channel", node);
+                    if (VERBOSE)
+                    {
+                        Debug.Log("GLTF Animation: samplerCache output is null for " + node.parent.name + ", skipping animation channel", node);
+                    }
+
                     continue;
                 }
 
@@ -1118,7 +1144,9 @@ namespace UnityGLTF
                 curve.MoveKey(i, key);
 
                 if (ShouldYieldOnTimeout())
+                {
                     yield return YieldOnTimeout();
+                }
             }
         }
         #endregion
@@ -1176,7 +1204,6 @@ namespace UnityGLTF
             InitializeGltfTopLevelObject();
         }
 
-
         protected virtual IEnumerator ConstructNode(Node node, int nodeIndex, Transform parent = null)
         {
             if (_assetCache.NodeCache[nodeIndex] != null)
@@ -1184,10 +1211,10 @@ namespace UnityGLTF
                 yield break;
             }
 
+            var nodeObj = new GameObject(string.IsNullOrEmpty(node.Name) ? ("GLTFNode" + nodeIndex) : node.Name);
+
             Vector3 position, scale;
             Quaternion rotation;
-
-            var nodeObj = new GameObject(string.IsNullOrEmpty(node.Name) ? ("GLTFNode" + nodeIndex) : node.Name);
 
             node.GetUnityTRSProperties(out position, out rotation, out scale);
 
@@ -1202,6 +1229,11 @@ namespace UnityGLTF
                 for (int i = 0; i < node.Children.Count; i++)
                 {
                     NodeId child = node.Children[i];
+
+                    if (!nodeToParent.ContainsKey(child.Id))
+                    {
+                        nodeToParent.Add(child.Id, nodeIndex);
+                    }
 
                     // todo blgross: replace with an iterartive solution
                     yield return ConstructNode(child.Value, child.Id, nodeObj.transform);
@@ -1259,7 +1291,7 @@ namespace UnityGLTF
 
             if (node.Mesh != null)
             {
-                queuedNodeWithMeshes.Add(new NodeId_Like { Id = nodeIndex, Value = node });
+                nodesWithMeshes.Add(new NodeId_Like { Id = nodeIndex, Value = node });
             }
         }
 
@@ -1290,6 +1322,16 @@ namespace UnityGLTF
             return primitive.Targets != null;
         }
 
+        IEnumerator FindSkeleton(int nodeId, System.Action<int> found)
+        {
+            if (nodeToParent.ContainsKey(nodeId))
+            {
+                yield return FindSkeleton(nodeToParent[nodeId], found);
+            }
+
+            found.Invoke(nodeId);
+        }
+
         protected virtual IEnumerator SetupBones(Skin skin, MeshPrimitive primitive, SkinnedMeshRenderer renderer, GameObject primitiveObj, Mesh curMesh)
         {
             var boneCount = skin.Joints.Count;
@@ -1315,13 +1357,24 @@ namespace UnityGLTF
             Matrix4x4[] gltfBindPoses = attributeAccessor.AccessorContent.AsMatrix4x4s;
             UnityEngine.Matrix4x4[] bindPoses = new UnityEngine.Matrix4x4[skin.Joints.Count];
 
+            int skeletonId = 0;
+
+            if (skin.Skeleton != null)
+            {
+                skeletonId = skin.Skeleton.Id;
+            }
+            else
+            {
+                yield return FindSkeleton(skin.Joints[0].Id, (id) => skeletonId = id);
+            }
+
             for (int i = 0; i < boneCount; i++)
             {
                 bones[i] = _assetCache.NodeCache[skin.Joints[i].Id].transform;
                 bindPoses[i] = gltfBindPoses[i].ToUnityMatrix4x4Convert();
             }
 
-            renderer.rootBone = _assetCache.NodeCache[skin.Skeleton.Id].transform;
+            renderer.rootBone = _assetCache.NodeCache[skeletonId].transform;
             curMesh.bindposes = bindPoses;
             renderer.bones = bones;
         }
@@ -1422,12 +1475,16 @@ namespace UnityGLTF
                     else
                     {
                         if (LoadingTextureMaterial != null)
+                        {
                             renderer.sharedMaterial = LoadingTextureMaterial;
+                        }
 
                         yield return DownloadAndConstructMaterial(primitive, materialIndex, renderer, null);
 
                         if (LoadingTextureMaterial == null)
+                        {
                             primitiveObj.SetActive(true);
+                        }
                     }
                 }
                 else
@@ -1475,9 +1532,13 @@ namespace UnityGLTF
             Material material = materialCacheData.GetContents(primitive.Attributes.ContainsKey(SemanticProperties.Color(0)));
 
             if (matController != null)
+            {
                 matController.OnDidFinishLoading(material);
+            }
             else
+            {
                 renderer.sharedMaterial = material;
+            }
         }
 
 
@@ -1675,7 +1736,11 @@ namespace UnityGLTF
             int vertexCount = (int)primitive.Attributes[SemanticProperties.POSITION].Value.Count;
             bool hasNormals = unityMeshData.Normals != null;
 
-            if (ShouldYieldOnTimeout()) yield return YieldOnTimeout();
+            if (ShouldYieldOnTimeout())
+            {
+                yield return YieldOnTimeout();
+            }
+
             Mesh mesh = new Mesh
             {
 
@@ -1685,25 +1750,64 @@ namespace UnityGLTF
             };
 
             mesh.vertices = unityMeshData.Vertices;
-            if (ShouldYieldOnTimeout()) yield return YieldOnTimeout();
+            if (ShouldYieldOnTimeout())
+            {
+                yield return YieldOnTimeout();
+            }
+
             mesh.normals = unityMeshData.Normals;
-            if (ShouldYieldOnTimeout()) yield return YieldOnTimeout();
+            if (ShouldYieldOnTimeout())
+            {
+                yield return YieldOnTimeout();
+            }
+
             mesh.uv = unityMeshData.Uv1;
-            if (ShouldYieldOnTimeout()) yield return YieldOnTimeout();
+            if (ShouldYieldOnTimeout())
+            {
+                yield return YieldOnTimeout();
+            }
+
             mesh.uv2 = unityMeshData.Uv2;
-            if (ShouldYieldOnTimeout()) yield return YieldOnTimeout();
+            if (ShouldYieldOnTimeout())
+            {
+                yield return YieldOnTimeout();
+            }
+
             mesh.uv3 = unityMeshData.Uv3;
-            if (ShouldYieldOnTimeout()) yield return YieldOnTimeout();
+            if (ShouldYieldOnTimeout())
+            {
+                yield return YieldOnTimeout();
+            }
+
             mesh.uv4 = unityMeshData.Uv4;
-            if (ShouldYieldOnTimeout()) yield return YieldOnTimeout();
+            if (ShouldYieldOnTimeout())
+            {
+                yield return YieldOnTimeout();
+            }
+
             mesh.colors = unityMeshData.Colors;
-            if (ShouldYieldOnTimeout()) yield return YieldOnTimeout();
+            if (ShouldYieldOnTimeout())
+            {
+                yield return YieldOnTimeout();
+            }
+
             mesh.triangles = unityMeshData.Triangles;
-            if (ShouldYieldOnTimeout()) yield return YieldOnTimeout();
+            if (ShouldYieldOnTimeout())
+            {
+                yield return YieldOnTimeout();
+            }
+
             mesh.tangents = unityMeshData.Tangents;
-            if (ShouldYieldOnTimeout()) yield return YieldOnTimeout();
+            if (ShouldYieldOnTimeout())
+            {
+                yield return YieldOnTimeout();
+            }
+
             mesh.boneWeights = unityMeshData.BoneWeights;
-            if (ShouldYieldOnTimeout()) yield return YieldOnTimeout();
+            if (ShouldYieldOnTimeout())
+            {
+                yield return YieldOnTimeout();
+            }
 
             if (!hasNormals)
             {

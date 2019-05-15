@@ -1,14 +1,9 @@
+using DCL.Components;
 using System;
 using System.Collections;
 using System.IO;
-using System.Net.Http;
-using System.Threading.Tasks;
-using System.Threading;
-using GLTF;
-using GLTF.Schema;
 using UnityEngine;
 using UnityGLTF.Loader;
-using DCL.Components;
 
 namespace UnityGLTF
 {
@@ -57,7 +52,10 @@ namespace UnityGLTF
 
         public void LoadAsset(string incomingURI = "", bool loadEvenIfAlreadyLoaded = false)
         {
-            if (alreadyLoadedAsset && !loadEvenIfAlreadyLoaded) return;
+            if (alreadyLoadedAsset && !loadEvenIfAlreadyLoaded)
+            {
+                return;
+            }
 
             if (!string.IsNullOrEmpty(incomingURI))
             {
@@ -78,18 +76,25 @@ namespace UnityGLTF
         private void OnFail_Internal(Exception obj)
         {
             if (alreadyFailed)
+            {
                 return;
+            }
 
             alreadyFailed = true;
 
             if (OnFailedLoadingAsset != null)
+            {
                 OnFailedLoadingAsset.Invoke();
+            }
 
             if (!alreadyDecrementedRefCount)
             {
                 downloadingCount--;
                 alreadyDecrementedRefCount = true;
-                if (VERBOSE) Debug.Log($"(ERROR) downloadingCount-- = {downloadingCount}");
+                if (VERBOSE)
+                {
+                    Debug.Log($"(ERROR) downloadingCount-- = {downloadingCount}");
+                }
             }
 
             if (obj is IndexOutOfRangeException)
@@ -104,7 +109,10 @@ namespace UnityGLTF
         {
             if (!string.IsNullOrEmpty(GLTFUri))
             {
-                if (VERBOSE) Debug.Log("LoadAssetCoroutine() GLTFUri ->" + GLTFUri);
+                if (VERBOSE)
+                {
+                    Debug.Log("LoadAssetCoroutine() GLTFUri ->" + GLTFUri);
+                }
 
                 asyncCoroutineHelper = gameObject.GetComponent<AsyncCoroutineHelper>() ?? gameObject.AddComponent<AsyncCoroutineHelper>();
 
@@ -135,7 +143,9 @@ namespace UnityGLTF
                         loader = new WebRequestLoader("");
 
                         if (OnWebRequestStartEvent != null)
+                        {
                             (loader as WebRequestLoader).OnLoadStreamStart += OnWebRequestStartEvent;
+                        }
 
                         sceneImporter = new GLTFSceneImporter(
                             GLTFUri,
@@ -166,7 +176,10 @@ namespace UnityGLTF
                     }
 
                     downloadingCount++;
-                    if (VERBOSE) Debug.Log($"downloadingCount++ = {downloadingCount}");
+                    if (VERBOSE)
+                    {
+                        Debug.Log($"downloadingCount++ = {downloadingCount}");
+                    }
 
                     yield return sceneImporter.LoadScene(-1);
 
@@ -174,7 +187,10 @@ namespace UnityGLTF
                     {
                         downloadingCount--;
                         alreadyDecrementedRefCount = true;
-                        if (VERBOSE) Debug.Log($"downloadingCount-- = {downloadingCount}");
+                        if (VERBOSE)
+                        {
+                            Debug.Log($"downloadingCount-- = {downloadingCount}");
+                        }
                     }
 
                     // Override the shaders on all materials if a shader is provided
@@ -213,7 +229,9 @@ namespace UnityGLTF
                     }
 
                     if (OnFinishedLoadingAsset != null)
+                    {
                         OnFinishedLoadingAsset();
+                    }
 
                     alreadyLoadedAsset = true;
                 }
