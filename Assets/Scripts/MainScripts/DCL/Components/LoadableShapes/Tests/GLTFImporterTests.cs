@@ -1,35 +1,36 @@
-using System;
-using System.Collections;
-using System.Collections.Generic;
 using DCL.Components;
 using DCL.Helpers;
 using DCL.Models;
 using NUnit.Framework;
+using System.Collections;
 using UnityEngine;
 using UnityEngine.TestTools;
+using UnityGLTF;
 
 namespace Tests
 {
     public class GLTFImporterTests : TestsBase
     {
-        UnityGLTF.InstantiatedGLTFObject trevorModel;
-
-        public IEnumerator LoadTrevorModel()
+        public IEnumerator LoadModel(string path, System.Action<InstantiatedGLTFObject> OnFinishLoading)
         {
-            string src = TestHelpers.GetTestsAssetsPath() + "/GLB/Trevor/Trevor.glb";
+            string src = TestHelpers.GetTestsAssetsPath() + path;
             DecentralandEntity entity = null;
-            GLTFShape trevorGLTFShape = TestHelpers.CreateEntityWithGLTFShape(scene, Vector3.zero, src, out entity);
-            yield return trevorGLTFShape.routine;
+            GLTFShape gltfShape = TestHelpers.CreateEntityWithGLTFShape(scene, Vector3.zero, src, out entity);
+            yield return gltfShape.routine;
             yield return new WaitForSeconds(4);
 
-            trevorModel = entity.meshGameObject.GetComponentInChildren<UnityGLTF.InstantiatedGLTFObject>();
+            if (OnFinishLoading != null)
+            {
+                OnFinishLoading.Invoke(entity.meshGameObject.GetComponentInChildren<InstantiatedGLTFObject>());
+            }
         }
 
         [UnityTest]
         public IEnumerator TrevorModelHasProperScaling()
         {
             yield return InitScene();
-            yield return LoadTrevorModel();
+            InstantiatedGLTFObject trevorModel = null;
+            yield return LoadModel("/GLB/Trevor/Trevor.glb", (m) => trevorModel = m);
 
             Transform child = trevorModel.transform.GetChild(0).GetChild(0);
             Vector3 scale = child.lossyScale;
@@ -41,7 +42,8 @@ namespace Tests
         public IEnumerator TrevorModelHasProperTopology()
         {
             yield return InitScene();
-            yield return LoadTrevorModel();
+            InstantiatedGLTFObject trevorModel = null;
+            yield return LoadModel("/GLB/Trevor/Trevor.glb", (m) => trevorModel = m);
 
             Assert.IsTrue(trevorModel.transform.childCount == 1);
             Assert.IsTrue(trevorModel.transform.GetChild(0).childCount == 2);
@@ -49,5 +51,14 @@ namespace Tests
             Assert.IsTrue(trevorModel.transform.GetChild(0).GetChild(1).name.Contains("mixamorig"));
             yield return null;
         }
+
+        [UnityTest]
+        public IEnumerator GLTFWithoutSkeletonIdIsLoadingCorrectly()
+        {
+            yield return InitScene();
+            InstantiatedGLTFObject trevorModel = null;
+            yield return LoadModel("/GLB/Avatar/Avatar_Idle.glb", (m) => trevorModel = m);
+        }
+
     }
 }
