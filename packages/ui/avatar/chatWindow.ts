@@ -13,9 +13,10 @@ import {
   UIScrollRect
 } from 'decentraland-ecs/src/decentraland/UIShapes'
 
+import { MessageEntry } from 'shared/types'
+
 import { execute } from './rpc'
 import { screenSpaceUI } from './ui'
-import { MessageEntry } from 'shared/types'
 
 declare var dcl: DecentralandInterface
 declare var require: any

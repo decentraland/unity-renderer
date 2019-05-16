@@ -32,6 +32,7 @@ import { IEventNames, IEvents } from '../decentraland-ecs/src/decentraland/Types
 import { Vector3, Quaternion, ReadOnlyVector3, ReadOnlyQuaternion } from '../decentraland-ecs/src/decentraland/math'
 import { DEBUG, PREVIEW } from '../config'
 import { chatObservable } from '../shared/comms/chat'
+import { queueTrackingEvent } from '../shared/analytics'
 
 let gameInstance!: GameInstance
 const preloadedScenes = new Set<string>()
@@ -209,6 +210,7 @@ export async function initializeEngine(_gameInstance: GameInstance) {
       onSpawnpoint: initialLand => {
         const newPosition = getWorldSpawnpoint(initialLand)
         unityInterface.SetPosition(newPosition.x, newPosition.y, newPosition.z)
+        queueTrackingEvent('Scene Spawn', { parcel: initialLand.scene.scene.base, spawnpoint: newPosition })
       },
       onLoadParcelScenes: lands => {
         unityInterface.LoadParcelScenes(

@@ -6,7 +6,7 @@ import { IFuture, future } from 'fp-future'
 import { getERC20 } from './ERC20'
 import { requestManager } from './provider'
 import { getERC721 } from './ERC721'
-import { MOBILE_DEBUG, ETHEREUM_NETWORK, decentralandConfigurations } from 'config'
+import { DEBUG_MOBILE, ETHEREUM_NETWORK, decentralandConfigurations } from 'config'
 import { generateEphemeralKeys, UserData as EphemeralKey } from 'ephemeralkey'
 import { saveToLocalStorage, removeFromLocalStorage, getFromLocalStorage } from 'atomicHelpers/localStorage'
 import { RPCSendableMessage } from 'shared/types'
@@ -51,7 +51,7 @@ function isWhitelistedRPC(msg: RPCSendableMessage) {
 
 export async function getUserAccount(): Promise<string> {
   try {
-    if (MOBILE_DEBUG) {
+    if (DEBUG_MOBILE) {
       return '0x8bed95d830475691c10281f1fea2c0a0fe51304b'
     }
 

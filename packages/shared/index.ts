@@ -4,7 +4,7 @@ import './events'
 import { initializeUrlPositionObserver } from './world/positionThings'
 import {
   ETHEREUM_NETWORK,
-  MOBILE_DEBUG,
+  DEBUG_MOBILE,
   PREVIEW,
   EDITOR,
   AVOID_WEB3,
@@ -17,9 +17,23 @@ import { getUserAccount, getNetwork } from './ethereum/EthereumService'
 import { connect } from './comms'
 import { info, error } from '../engine/logger'
 import { requestManager, awaitWeb3Approval } from './ethereum/provider'
+import { initialize } from './analytics'
+
+// TODO fill with segment keys and integrate identity server
+export async function initializeAnalytics() {
+  const TLD = getTLD()
+  switch (TLD) {
+    case 'org':
+      return initialize('', { id: 'null', name: 'null', email: 'null' })
+    case 'today':
+      return initialize('', { id: 'null', name: 'null', email: 'null' })
+    case 'zone':
+      return initialize('', { id: 'null', name: 'null', email: 'null' })
+  }
+}
 
 async function grantAccess(address: string | null, net: ETHEREUM_NETWORK) {
-  if (MOBILE_DEBUG || PREVIEW || EDITOR || AVOID_WEB3) {
+  if (DEBUG_MOBILE || PREVIEW || EDITOR || AVOID_WEB3) {
     return true
   }
 
@@ -99,6 +113,9 @@ export async function initShared() {
   const { address, net } = await getAddressAndNetwork()
   // Load contracts from https://contracts.decentraland.org
   await setNetwork(net)
+  // TODO uncomment analytics initialization when identity ready
+  // tslint:disable-next-line: no-commented-out-code
+  // await initializeAnalytics()
   const isWhitelisted = await grantAccess(address, net)
 
   if (isWhitelisted) {
