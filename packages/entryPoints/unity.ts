@@ -2,6 +2,7 @@ declare var global: any
 
 // tslint:disable:no-console
 import { initializeEngine } from '../unity-interface/dcl'
+import { DEBUG_MESSAGES } from '../config'
 const queryString = require('query-string')
 
 const qs = queryString.parse(document.location.search)
@@ -37,7 +38,9 @@ if (qs.ws) {
   }
 
   ws.onmessage = function(ev) {
-    console.log('>>>', ev.data)
+    if (DEBUG_MESSAGES) {
+      console.log('>>>', ev.data)
+    }
 
     try {
       const m = JSON.parse(ev.data)
