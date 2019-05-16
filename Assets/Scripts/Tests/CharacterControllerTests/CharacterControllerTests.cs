@@ -28,7 +28,7 @@ namespace Tests
                 z = 0f
             }));
 
-            yield return new WaitForEndOfFrame();
+            yield return null;
 
             Assert.AreEqual(new Vector3(10f, 3f, 0f), characterController.transform.position);
         }

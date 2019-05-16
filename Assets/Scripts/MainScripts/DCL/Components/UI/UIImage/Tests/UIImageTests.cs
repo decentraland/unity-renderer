@@ -17,7 +17,6 @@ namespace Tests
     public class UIImageTests : TestsBase
     {
         [UnityTest]
-        [Explicit]
         public IEnumerator TestPropertiesAreAppliedCorrectly()
         {
             yield return InitScene();
