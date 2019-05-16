@@ -17,10 +17,7 @@ export type SegmentEvent = {
 const trackingQueue: SegmentEvent[] = []
 let tracking = false
 
-export async function initialize(
-  segmentKey: string,
-  { id, name, email }: { id: string; name: string; email: string }
-): Promise<void> {
+export async function initialize(segmentKey: string, id: string): Promise<void> {
   hookObservables()
   if (!window.analytics) {
     return
@@ -29,10 +26,7 @@ export async function initialize(
   window.analytics.load(segmentKey)
   window.analytics.page()
 
-  return window.analytics.identify(id, {
-    name,
-    email
-  })
+  return window.analytics.identify(id)
 }
 
 export function queueTrackingEvent(eventName: string, eventData: any) {

@@ -1,7 +1,8 @@
+import { Auth } from 'decentraland-auth'
+
 import './apis/index'
 import './events'
 
-import { initializeUrlPositionObserver } from './world/positionThings'
 import {
   ETHEREUM_NETWORK,
   DEBUG_MOBILE,
@@ -11,24 +12,27 @@ import {
   setNetwork,
   decentralandConfigurations,
   getTLD
-} from '../config'
+} from 'config'
+import { info, error } from 'engine/logger'
+import { initializeUrlPositionObserver } from './world/positionThings'
 import { getERC721 } from './ethereum/ERC721'
 import { getUserAccount, getNetwork } from './ethereum/EthereumService'
 import { connect } from './comms'
-import { info, error } from '../engine/logger'
 import { requestManager, awaitWeb3Approval } from './ethereum/provider'
 import { initialize } from './analytics'
 
 // TODO fill with segment keys and integrate identity server
-export async function initializeAnalytics() {
+export async function initializeAnalytics(userId: string) {
   const TLD = getTLD()
   switch (TLD) {
     case 'org':
-      return initialize('', { id: 'null', name: 'null', email: 'null' })
+      return initialize('a4h4BC4dL1v7FhIQKKuPHEdZIiNRDVhc', userId)
     case 'today':
-      return initialize('', { id: 'null', name: 'null', email: 'null' })
+      return initialize('a4h4BC4dL1v7FhIQKKuPHEdZIiNRDVhc', userId)
     case 'zone':
-      return initialize('', { id: 'null', name: 'null', email: 'null' })
+      return initialize('a4h4BC4dL1v7FhIQKKuPHEdZIiNRDVhc', userId)
+    default:
+      return initialize('a4h4BC4dL1v7FhIQKKuPHEdZIiNRDVhc', userId)
   }
 }
 
@@ -95,27 +99,30 @@ async function getAddressAndNetwork() {
       address
     }
   } catch (e) {
-    if (PREVIEW) {
-      error('Could not get Ethereum address, WebRTC will be disabled.')
-      info(e)
+    error('Could not get Ethereum address, WebRTC will be disabled.')
+    info(e)
 
-      return {
-        net: getNetworkFromTLD() || ETHEREUM_NETWORK.MAINNET,
-        address: '0x0000000000000000000000000000000000000000'
-      }
-    } else {
-      throw e
+    return {
+      net: getNetworkFromTLD() || ETHEREUM_NETWORK.MAINNET,
+      address: '0x0000000000000000000000000000000000000000'
     }
   }
 }
 
+async function authenticate(): Promise<any> {
+  const auth = new Auth()
+  await auth.login()
+  return auth.getPayload()
+}
+
 export async function initShared() {
+  const { user_id } = await authenticate()
   const { address, net } = await getAddressAndNetwork()
+
   // Load contracts from https://contracts.decentraland.org
   await setNetwork(net)
-  // TODO uncomment analytics initialization when identity ready
-  // tslint:disable-next-line: no-commented-out-code
-  // await initializeAnalytics()
+
+  await initializeAnalytics(user_id)
   const isWhitelisted = await grantAccess(address, net)
 
   if (isWhitelisted) {
