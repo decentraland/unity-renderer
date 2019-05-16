@@ -526,13 +526,6 @@ namespace UnityGLTF
             yield return ConstructBufferData(nodeToLoad);
 
             yield return ConstructNode(nodeToLoad, nodeIndex, parent);
-
-            for (int i = 0; i < nodesWithMeshes.Count; i++)
-            {
-                NodeId_Like nodeId = nodesWithMeshes[i];
-                Node node = nodeId.Value;
-                yield return ConstructMesh(node.Mesh.Value, _assetCache.NodeCache[nodeId.Id].transform, node.Mesh.Id, node.Skin != null ? node.Skin.Value : null);
-            }
         }
 
         /// <summary>
@@ -1173,6 +1166,13 @@ namespace UnityGLTF
                 nodeTransforms[i] = nodeObj.transform;
             }
 
+            for (int i = 0; i < nodesWithMeshes.Count; i++)
+            {
+                NodeId_Like nodeId = nodesWithMeshes[i];
+                Node node = nodeId.Value;
+                yield return ConstructMesh(node.Mesh.Value, _assetCache.NodeCache[nodeId.Id].transform, node.Mesh.Id, node.Skin != null ? node.Skin.Value : null);
+            }
+
             if (_gltfRoot.Animations != null && _gltfRoot.Animations.Count > 0)
             {
                 // create the AnimationClip that will contain animation data
@@ -1419,7 +1419,7 @@ namespace UnityGLTF
 
         protected virtual IEnumerator ConstructMesh(GLTFMesh mesh, Transform parent, int meshId, Skin skin)
         {
-            bool isColliderMesh = parent.name.ToLower().Contains("_collider");
+            bool isColliderMesh = parent.name.Contains("_collider");
 
             if (_assetCache.MeshCache[meshId] == null)
             {

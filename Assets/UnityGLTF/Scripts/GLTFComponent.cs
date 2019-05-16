@@ -25,7 +25,7 @@ namespace UnityGLTF
         public int MaximumLod = 300;
         public int Timeout = 8;
         public Material LoadingTextureMaterial;
-        public GLTFSceneImporter.ColliderType Collider = GLTFSceneImporter.ColliderType.Mesh;
+        public GLTFSceneImporter.ColliderType Collider = GLTFSceneImporter.ColliderType.None;
 
         public GameObject loadingPlaceholder;
         public System.Action OnFinishedLoadingAsset;

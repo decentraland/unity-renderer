@@ -1,4 +1,3 @@
-using DCL.Controllers;
 using DCL.Components;
 using DCL.Helpers;
 using System.Collections;
@@ -21,7 +20,9 @@ namespace DCL
             public void UpdateContainerName()
             {
                 if (cachedContainer != null && !string.IsNullOrEmpty(name))
+                {
                     cachedContainer.name = $"refs {referenceCount} -- Cached GLTF: {name}";
+                }
             }
 
             public override int referenceCount
@@ -45,7 +46,9 @@ namespace DCL
         private void Awake()
         {
             if (i == null)
+            {
                 i = this;
+            }
 
             assetLibrary = new Dictionary<object, AssetInfo>();
         }
@@ -55,7 +58,9 @@ namespace DCL
             foreach (var asset in assetLibrary)
             {
                 if (asset.Value.cachedContainer != null)
+                {
                     Destroy(asset.Value.cachedContainer);
+                }
             }
 
             base.ClearLibrary();
@@ -117,6 +122,8 @@ namespace DCL
                 yield break;
             }
 
+            BaseShape.ConfigureColliders(container, true, true);
+
             GameObject containerCopy = DuplicateGLTF(container);
 
             containerCopy.transform.parent = transform;
@@ -170,7 +177,10 @@ namespace DCL
             loadable.Multithreaded = false;
             loadable.LoadingTextureMaterial = Utils.EnsureResourcesMaterial("Materials/LoadingTextureMaterial");
 
-            if (VERBOSE) Debug.Log("StartLoading() url -> " + url);
+            if (VERBOSE)
+            {
+                Debug.Log("StartLoading() url -> " + url);
+            }
 
             loadable.LoadAsset(url, true);
         }
