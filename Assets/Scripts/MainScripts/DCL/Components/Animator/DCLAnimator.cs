@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 using UnityEngine.Playables;
 using UnityEngine.Animations;
@@ -158,6 +159,23 @@ namespace DCL.Components
                     }
                 }
             }
+        }
+
+        public void ResetAllAnimations()
+        {
+            foreach (var state in model.states)
+            {
+                ResetAnimation(state.name);
+            }
+        }
+
+        public void ResetAnimation(string stateName)
+        {
+            var state = model.states.FirstOrDefault(x => x.name == stateName);
+            if (state == null) return;
+
+            animComponent.Stop(state.clip);
+            animComponent.Play(state.clip);
         }
 
         public Model.DCLAnimationState GetStateByString(string stateName)
