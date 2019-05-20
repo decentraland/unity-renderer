@@ -14,6 +14,7 @@ namespace DCL.Components
         public class Model
         {
             public bool withCollisions = false;
+            public bool visible = true;
         }
 
         public BaseShape(ParcelScene scene) : base(scene)
@@ -89,6 +90,17 @@ namespace DCL.Components
                         collider.enabled = false;
                     }
                 }
+            }
+        }
+
+        public static void ConfigureVisibility(GameObject meshGameObject, bool isVisible)
+        {
+            if (meshGameObject == null) return;
+
+            MeshRenderer[] meshRenderers = meshGameObject.GetComponentsInChildren<MeshRenderer>();
+            foreach (MeshRenderer renderer in meshRenderers)
+            {
+                renderer.enabled = isVisible;
             }
         }
     }

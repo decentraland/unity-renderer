@@ -250,5 +250,14 @@ namespace UnityGLTF
         {
             throw new NotImplementedException();
         }
+
+        private void OnDestroy()
+        {
+            if (!alreadyDecrementedRefCount)
+            {
+                downloadingCount--;
+                alreadyDecrementedRefCount = true;
+            }
+        }
     }
 }

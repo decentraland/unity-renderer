@@ -28,7 +28,7 @@ namespace DCL.Components
 
         protected string currentSrc = "";
 
-        Model model = new Model();
+        public Model model = new Model();
 
         public BaseLoadableShape(ParcelScene scene) : base(scene)
         {
@@ -38,6 +38,7 @@ namespace DCL.Components
 
         public override IEnumerator ApplyChanges(string newJson)
         {
+            bool currentVisible = model.visible;
             model = Helpers.Utils.SafeFromJson<Model>(newJson);
 
             // TODO: changing src is not allowed in loadableShapes
@@ -48,6 +49,14 @@ namespace DCL.Components
                 foreach (var entity in this.attachedEntities)
                 {
                     yield return AttachShapeCoroutine(entity);
+                }
+            }
+
+            if (currentVisible != model.visible)
+            {
+                foreach (var entity in this.attachedEntities)
+                {
+                    ConfigureVisibility(entity.meshGameObject, model.visible);
                 }
             }
         }

@@ -81,6 +81,7 @@ namespace DCL.Components
         public override IEnumerator ApplyChanges(string newJson)
         {
             bool hadCollisions = model.withCollisions;
+            bool isVisible = model.visible;
             model = JsonUtility.FromJson<T>(newJson);
 
             var newMesh = GenerateGeometry();
@@ -106,7 +107,23 @@ namespace DCL.Components
                     }
                 }
             }
+
+            bool visibilityDirty = isVisible != model.visible;
+            if (visibilityDirty)
+            {
+                foreach (var entity in attachedEntities)
+                {
+                    ConfigureVisibility(entity.meshGameObject, model.visible);
+                }
+            }
+
             return null;
+        }
+
+        public override void AttachTo(DecentralandEntity entity)
+        {
+            base.AttachTo(entity);
+            ConfigureVisibility(entity.meshGameObject, model.visible);
         }
     }
 }

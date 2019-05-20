@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using DCL.Components;
 using DCL.Helpers;
 using DCL.Models;
@@ -158,8 +159,8 @@ namespace Tests
             });
 
             string componentId = TestHelpers.CreateAndSetShape(scene, entityId, DCL.Models.CLASS_ID.CONE_SHAPE,
-              componentJSON
-            );
+                componentJSON
+                );
 
             ConeShape coneShapeComponent = (ConeShape)scene.GetSharedComponent(componentId);
 
@@ -259,8 +260,8 @@ namespace Tests
             });
 
             string componentId = TestHelpers.CreateAndSetShape(scene, entityId, DCL.Models.CLASS_ID.PLANE_SHAPE,
-              componentJSON
-            );
+                componentJSON
+                );
 
             PlaneShape planeShapeComponent = (PlaneShape)scene.GetSharedComponent(componentId);
 
@@ -282,6 +283,253 @@ namespace Tests
             Assert.AreEqual(1f, planeShapeComponent.model.width);
             Assert.AreEqual(1f, planeShapeComponent.model.height);
             Assert.IsFalse(planeShapeComponent.model.withCollisions);
+        }
+
+        [UnityTest]
+        public IEnumerator ShapesVisibilityDefault()
+        {
+            #region Arrange
+            yield return InitScene();
+
+            BoxShape boxShapeComponent = TestHelpers.CreateEntityWithBoxShape(scene, Vector3.zero);
+            SphereShape sphereShapeComponent = TestHelpers.CreateEntityWithSphereShape(scene, Vector3.zero);
+            PlaneShape planeShapeComponent = TestHelpers.CreateEntityWithPlaneShape(scene, Vector3.zero);
+            CylinderShape cylinderShapeComponent = TestHelpers.CreateEntityWithCylinderShape(scene, Vector3.zero);
+            ConeShape coneShapeComponent = TestHelpers.CreateEntityWithConeShape(scene, Vector3.zero);
+            #endregion
+
+            #region Act
+            //EMPTY
+            #endregion
+
+            #region Assert
+            Assert.AreEqual(true, boxShapeComponent.model.visible);
+            Assert.IsTrue(CheckVisibility(boxShapeComponent, true));
+
+            Assert.AreEqual(true, sphereShapeComponent.model.visible);
+            Assert.IsTrue(CheckVisibility(sphereShapeComponent, true));
+
+            Assert.AreEqual(true, planeShapeComponent.model.visible);
+            Assert.IsTrue(CheckVisibility(planeShapeComponent, true));
+
+            Assert.AreEqual(true, cylinderShapeComponent.model.visible);
+            Assert.IsTrue(CheckVisibility(cylinderShapeComponent, true));
+
+            Assert.AreEqual(true, coneShapeComponent.model.visible);
+            Assert.IsTrue(CheckVisibility(coneShapeComponent, true));
+            #endregion
+        }
+
+        [UnityTest]
+        public IEnumerator ShapesVisibilityCreateTrue()
+        {
+            #region Arrange
+            yield return InitScene();
+
+            BoxShape boxShapeComponent = TestHelpers.CreateEntityWithBoxShape(scene, Vector3.zero, new BoxShape.Model {visible = true});
+            SphereShape sphereShapeComponent = TestHelpers.CreateEntityWithSphereShape(scene, Vector3.zero, new SphereShape.Model {visible = true});
+            PlaneShape planeShapeComponent = TestHelpers.CreateEntityWithPlaneShape(scene, Vector3.zero, new PlaneShape.Model {visible = true});
+            CylinderShape cylinderShapeComponent = TestHelpers.CreateEntityWithCylinderShape(scene, Vector3.zero, new CylinderShape.Model {visible = true});
+            ConeShape coneShapeComponent = TestHelpers.CreateEntityWithConeShape(scene, Vector3.zero, new ConeShape.Model {visible = true});
+            #endregion
+
+            #region Act
+            //EMPTY
+            #endregion
+
+            #region Assert
+            Assert.AreEqual(true, boxShapeComponent.model.visible);
+            Assert.IsTrue(CheckVisibility(boxShapeComponent, true));
+
+            Assert.AreEqual(true, sphereShapeComponent.model.visible);
+            Assert.IsTrue(CheckVisibility(sphereShapeComponent, true));
+
+            Assert.AreEqual(true, planeShapeComponent.model.visible);
+            Assert.IsTrue(CheckVisibility(planeShapeComponent, true));
+
+            Assert.AreEqual(true, cylinderShapeComponent.model.visible);
+            Assert.IsTrue(CheckVisibility(cylinderShapeComponent, true));
+
+            Assert.AreEqual(true, coneShapeComponent.model.visible);
+            Assert.IsTrue(CheckVisibility(coneShapeComponent, true));
+            #endregion
+        }
+
+        [UnityTest]
+        public IEnumerator ShapesVisibilityCreateFalse()
+        {
+            #region Arrange
+            yield return InitScene();
+
+            BoxShape boxShapeComponent = TestHelpers.CreateEntityWithBoxShape(scene, Vector3.zero, new BoxShape.Model {visible = false});
+            SphereShape sphereShapeComponent = TestHelpers.CreateEntityWithSphereShape(scene, Vector3.zero, new SphereShape.Model {visible = false});
+            PlaneShape planeShapeComponent = TestHelpers.CreateEntityWithPlaneShape(scene, Vector3.zero, new PlaneShape.Model {visible = false});
+            CylinderShape cylinderShapeComponent = TestHelpers.CreateEntityWithCylinderShape(scene, Vector3.zero, new CylinderShape.Model {visible = false});
+            ConeShape coneShapeComponent = TestHelpers.CreateEntityWithConeShape(scene, Vector3.zero, new ConeShape.Model {visible = false});
+            #endregion
+
+            #region Act
+            //EMPTY
+            #endregion
+
+            #region Assert
+            Assert.AreEqual(false, boxShapeComponent.model.visible);
+            Assert.IsTrue(CheckVisibility(boxShapeComponent, false));
+
+            Assert.AreEqual(false, sphereShapeComponent.model.visible);
+            Assert.IsTrue(CheckVisibility(sphereShapeComponent, false));
+
+            Assert.AreEqual(false, planeShapeComponent.model.visible);
+            Assert.IsTrue(CheckVisibility(planeShapeComponent, false));
+
+            Assert.AreEqual(false, cylinderShapeComponent.model.visible);
+            Assert.IsTrue(CheckVisibility(cylinderShapeComponent, false));
+
+            Assert.AreEqual(false, coneShapeComponent.model.visible);
+            Assert.IsTrue(CheckVisibility(coneShapeComponent, false));
+            #endregion
+        }
+
+        [UnityTest]
+        public IEnumerator ShapesVisibilityUpdateTrue()
+        {
+            #region Arrange
+            yield return InitScene();
+
+            BoxShape boxShapeComponent = TestHelpers.CreateEntityWithBoxShape(scene, Vector3.zero, new BoxShape.Model {visible = false});
+            SphereShape sphereShapeComponent = TestHelpers.CreateEntityWithSphereShape(scene, Vector3.zero, new SphereShape.Model {visible = false});
+            PlaneShape planeShapeComponent = TestHelpers.CreateEntityWithPlaneShape(scene, Vector3.zero, new PlaneShape.Model {visible = false});
+            CylinderShape cylinderShapeComponent = TestHelpers.CreateEntityWithCylinderShape(scene, Vector3.zero, new CylinderShape.Model {visible = false});
+            ConeShape coneShapeComponent = TestHelpers.CreateEntityWithConeShape(scene, Vector3.zero, new ConeShape.Model {visible = false});
+            #endregion
+
+            #region Act
+            BaseShape.Model visibleModel = new BaseShape.Model {visible = true};
+            TestHelpers.SharedComponentUpdate(scene, boxShapeComponent, visibleModel);
+            TestHelpers.SharedComponentUpdate(scene, sphereShapeComponent, visibleModel);
+            TestHelpers.SharedComponentUpdate(scene, planeShapeComponent, visibleModel);
+            TestHelpers.SharedComponentUpdate(scene, cylinderShapeComponent, visibleModel); 
+            TestHelpers.SharedComponentUpdate(scene, coneShapeComponent, visibleModel);
+            #endregion
+
+            #region Assert
+            Assert.AreEqual(true, boxShapeComponent.model.visible);
+            Assert.IsTrue(CheckVisibility(boxShapeComponent, true));
+
+            Assert.AreEqual(true, sphereShapeComponent.model.visible);
+            Assert.IsTrue(CheckVisibility(sphereShapeComponent, true));
+
+            Assert.AreEqual(true, planeShapeComponent.model.visible);
+            Assert.IsTrue(CheckVisibility(planeShapeComponent, true));
+
+            Assert.AreEqual(true, cylinderShapeComponent.model.visible);
+            Assert.IsTrue(CheckVisibility(cylinderShapeComponent, true));
+
+            Assert.AreEqual(true, coneShapeComponent.model.visible);
+            Assert.IsTrue(CheckVisibility(coneShapeComponent, true));
+            #endregion
+        }
+
+
+        [UnityTest]
+        public IEnumerator ShapesVisibilityUpdateFalse()
+        {
+            #region Arrange
+            yield return InitScene();
+
+            BoxShape boxShapeComponent = TestHelpers.CreateEntityWithBoxShape(scene, Vector3.zero, new BoxShape.Model {visible = true});
+            SphereShape sphereShapeComponent = TestHelpers.CreateEntityWithSphereShape(scene, Vector3.zero, new SphereShape.Model {visible = true});
+            PlaneShape planeShapeComponent = TestHelpers.CreateEntityWithPlaneShape(scene, Vector3.zero, new PlaneShape.Model {visible = true});
+            CylinderShape cylinderShapeComponent = TestHelpers.CreateEntityWithCylinderShape(scene, Vector3.zero, new CylinderShape.Model {visible = true});
+            ConeShape coneShapeComponent = TestHelpers.CreateEntityWithConeShape(scene, Vector3.zero, new ConeShape.Model {visible = true});
+            #endregion
+
+            #region Act
+            BaseShape.Model hiddenModel = new BaseShape.Model {visible = false};
+            TestHelpers.SharedComponentUpdate(scene, boxShapeComponent, hiddenModel);
+            TestHelpers.SharedComponentUpdate(scene, sphereShapeComponent, hiddenModel);
+            TestHelpers.SharedComponentUpdate(scene, planeShapeComponent, hiddenModel);
+            TestHelpers.SharedComponentUpdate(scene, cylinderShapeComponent, hiddenModel); 
+            TestHelpers.SharedComponentUpdate(scene, coneShapeComponent, hiddenModel);
+            #endregion
+
+            #region Assert
+            Assert.AreEqual(false, boxShapeComponent.model.visible);
+            Assert.IsTrue(CheckVisibility(boxShapeComponent, false));
+
+            Assert.AreEqual(false, sphereShapeComponent.model.visible);
+            Assert.IsTrue(CheckVisibility(sphereShapeComponent, false));
+
+            Assert.AreEqual(false, planeShapeComponent.model.visible);
+            Assert.IsTrue(CheckVisibility(planeShapeComponent, false));
+
+            Assert.AreEqual(false, cylinderShapeComponent.model.visible);
+            Assert.IsTrue(CheckVisibility(cylinderShapeComponent, false));
+
+            Assert.AreEqual(false, coneShapeComponent.model.visible);
+            Assert.IsTrue(CheckVisibility(coneShapeComponent, false));
+            #endregion
+        }
+
+        [UnityTest]
+        public IEnumerator ShapesVisibilityUpdateMixed()
+        {
+            #region Arrange
+            yield return InitScene();
+
+            BoxShape boxShapeComponent = TestHelpers.CreateEntityWithBoxShape(scene, Vector3.zero, new BoxShape.Model {visible = true});
+            SphereShape sphereShapeComponent = TestHelpers.CreateEntityWithSphereShape(scene, Vector3.zero, new SphereShape.Model {visible = false});
+            PlaneShape planeShapeComponent = TestHelpers.CreateEntityWithPlaneShape(scene, Vector3.zero, new PlaneShape.Model {visible = true});
+            CylinderShape cylinderShapeComponent = TestHelpers.CreateEntityWithCylinderShape(scene, Vector3.zero, new CylinderShape.Model {visible = false});
+            ConeShape coneShapeComponent = TestHelpers.CreateEntityWithConeShape(scene, Vector3.zero, new ConeShape.Model {visible = true});
+            #endregion
+
+            #region Act
+            BaseShape.Model visibleModel = new BaseShape.Model {visible = true};
+            BaseShape.Model hiddenModel = new BaseShape.Model {visible = false};
+            TestHelpers.SharedComponentUpdate(scene, boxShapeComponent, hiddenModel);
+            TestHelpers.SharedComponentUpdate(scene, sphereShapeComponent, visibleModel);
+            TestHelpers.SharedComponentUpdate(scene, planeShapeComponent, hiddenModel);
+            TestHelpers.SharedComponentUpdate(scene, cylinderShapeComponent, visibleModel); 
+            TestHelpers.SharedComponentUpdate(scene, coneShapeComponent, hiddenModel);
+            #endregion
+            
+            #region Assert
+            Assert.AreEqual(false, boxShapeComponent.model.visible);
+            Assert.IsTrue(CheckVisibility(boxShapeComponent, false));
+
+            Assert.AreEqual(true, sphereShapeComponent.model.visible);
+            Assert.IsTrue(CheckVisibility(sphereShapeComponent, true));
+
+            Assert.AreEqual(false, planeShapeComponent.model.visible);
+            Assert.IsTrue(CheckVisibility(planeShapeComponent, false));
+
+            Assert.AreEqual(true, cylinderShapeComponent.model.visible);
+            Assert.IsTrue(CheckVisibility(cylinderShapeComponent, true));
+
+            Assert.AreEqual(false, coneShapeComponent.model.visible);
+            Assert.IsTrue(CheckVisibility(coneShapeComponent, false));
+            #endregion
+        }
+
+
+        private bool CheckVisibility(BaseDisposable shapeComponent, bool isVisible)
+        {
+            var meshGameObjects = shapeComponent.attachedEntities.Select(x => x.meshGameObject);
+
+            foreach (GameObject meshGameObject in meshGameObjects)
+            {
+                MeshFilter[] meshFilters = meshGameObject.GetComponentsInChildren<MeshFilter>();
+                foreach (MeshFilter meshFilter in meshFilters)
+                {
+                    MeshRenderer renderer = meshFilter.GetComponent<MeshRenderer>();
+                    if (renderer != null && isVisible != renderer.enabled)
+                    {
+                        return false;
+                    }
+                }
+            }
+            return true;
         }
     }
 }
