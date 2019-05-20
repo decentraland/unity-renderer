@@ -348,15 +348,42 @@ namespace DCL.Helpers
 
         public static BoxShape CreateEntityWithBoxShape(ParcelScene scene, Vector3 position, BoxShape.Model model = null)
         {
+            return CreateEntityWithPrimitive<BoxShape, BoxShape.Model>(scene, position, CLASS_ID.BOX_SHAPE, model);
+        }
+
+        public static SphereShape CreateEntityWithSphereShape(ParcelScene scene, Vector3 position, SphereShape.Model model = null)
+        {
+            return CreateEntityWithPrimitive<SphereShape, SphereShape.Model>(scene, position, CLASS_ID.SPHERE_SHAPE, model);
+        }
+
+        public static PlaneShape CreateEntityWithPlaneShape(ParcelScene scene, Vector3 position, PlaneShape.Model model = null)
+        {
+            return CreateEntityWithPrimitive<PlaneShape, PlaneShape.Model>(scene, position, CLASS_ID.PLANE_SHAPE, model);
+        }
+
+        public static CylinderShape CreateEntityWithCylinderShape(ParcelScene scene, Vector3 position, CylinderShape.Model model = null)
+        {
+            return CreateEntityWithPrimitive<CylinderShape, CylinderShape.Model>(scene, position, CLASS_ID.CYLINDER_SHAPE, model);
+        }
+
+        public static ConeShape CreateEntityWithConeShape(ParcelScene scene, Vector3 position, ConeShape.Model model = null)
+        {
+            return CreateEntityWithPrimitive<ConeShape, ConeShape.Model>(scene, position, CLASS_ID.CONE_SHAPE, model);
+        }
+
+        private static T CreateEntityWithPrimitive<T, K>(ParcelScene scene, Vector3 position, CLASS_ID classId, K model = null)
+            where T : BaseParametrizedShape<K>
+            where K : BaseShape.Model, new()
+        {
             if (model == null)
             {
-                model = new BoxShape.Model();
+                model = new K();
             }
 
             DecentralandEntity entity = CreateSceneEntity(scene);
-            BoxShape shape = SharedComponentCreate<BoxShape, BoxShape.Model>(scene, CLASS_ID.BOX_SHAPE, new BoxShape.Model());
+            T shape = SharedComponentCreate<T, K>(scene, classId, model);
             SharedComponentAttach(shape, entity);
-            AttachDCLTransform(entity, scene, position);
+            AttachDCLTransform(entity, scene, position, Quaternion.identity, Vector3.one);
             return shape;
         }
 

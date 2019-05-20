@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using DCL.Helpers;
 using DCL.Components;
 using UnityEngine;
@@ -278,6 +279,219 @@ namespace Tests
 
             var colliderObject = scene.entities[entityId].gameObject.GetComponentInChildren<Collider>();
             Assert.IsTrue(colliderObject != null);
+        }
+
+        [UnityTest]
+        public IEnumerator GLTFVisibilityDefault()
+        {
+            #region Arrange
+            yield return InitScene();
+
+            BaseLoadableShape<GLTFLoader>.Model gltfModel = new BaseLoadableShape<GLTFLoader>.Model()
+            {
+                src = TestHelpers.GetTestsAssetsPath() + "/GLB/Lantern/Lantern.glb",
+            };
+
+            GLTFShape gltfShape = TestHelpers.CreateEntityWithGLTFShape(scene, Vector3.zero, gltfModel);
+            yield return gltfShape.routine;
+            
+            GLTFLoader gltfLoader = scene.entities[gltfShape.attachedEntities.First().entityId].gameObject.GetComponentInChildren<GLTFLoader>(true);
+            yield return new WaitUntil(() => gltfLoader.alreadyLoaded);
+            #endregion
+
+            #region Act
+            //EMPTY
+            #endregion
+
+            #region Assert
+            Assert.AreEqual(true, gltfShape.model.visible);
+            Assert.IsTrue(CheckVisibility(gltfShape, true));
+            #endregion
+        }
+
+        [UnityTest]
+        public IEnumerator GLTFVisibilityCreateTrue()
+        {
+            #region Arrange
+            yield return InitScene();
+
+            BaseLoadableShape<GLTFLoader>.Model gltfModel = new BaseLoadableShape<GLTFLoader>.Model()
+            {
+                src = TestHelpers.GetTestsAssetsPath() + "/GLB/Lantern/Lantern.glb",
+                visible = true
+            };
+
+            GLTFShape gltfShape = TestHelpers.CreateEntityWithGLTFShape(scene, Vector3.zero, gltfModel);
+            yield return gltfShape.routine;
+            
+            GLTFLoader gltfLoader = scene.entities[gltfShape.attachedEntities.First().entityId].gameObject.GetComponentInChildren<GLTFLoader>(true);
+            yield return new WaitUntil(() => gltfLoader.alreadyLoaded);
+            #endregion
+
+            #region Act
+            //EMPTY
+            #endregion
+
+            #region Assert
+            Assert.AreEqual(true, gltfShape.model.visible);
+            Assert.IsTrue(CheckVisibility(gltfShape, true));
+            #endregion
+        }
+
+        [UnityTest]
+        public IEnumerator GLTFVisibilityCreateFalse()
+        {
+            #region Arrange
+            yield return InitScene();
+
+            BaseLoadableShape<GLTFLoader>.Model gltfModel = new BaseLoadableShape<GLTFLoader>.Model()
+            {
+                src = TestHelpers.GetTestsAssetsPath() + "/GLB/Lantern/Lantern.glb",
+                visible = false
+            };
+
+            GLTFShape gltfShape = TestHelpers.CreateEntityWithGLTFShape(scene, Vector3.zero, gltfModel);
+            yield return gltfShape.routine;
+            
+            GLTFLoader gltfLoader = scene.entities[gltfShape.attachedEntities.First().entityId].gameObject.GetComponentInChildren<GLTFLoader>(true);
+            yield return new WaitUntil(() => gltfLoader.alreadyLoaded);
+            #endregion
+
+            #region Act
+            //EMPTY
+            #endregion
+
+            #region Assert
+            Assert.AreEqual(false, gltfShape.model.visible);
+            Assert.IsTrue(CheckVisibility(gltfShape, false));
+            #endregion
+        }
+
+        [UnityTest]
+        public IEnumerator GLTFVisibilityUpdateFalse()
+        {
+            #region Arrange
+            yield return InitScene();
+
+            BaseLoadableShape<GLTFLoader>.Model gltfModel = new BaseLoadableShape<GLTFLoader>.Model()
+            {
+                src = TestHelpers.GetTestsAssetsPath() + "/GLB/Lantern/Lantern.glb",
+                visible = true
+            };
+
+            GLTFShape gltfShape = TestHelpers.CreateEntityWithGLTFShape(scene, Vector3.zero, gltfModel);
+            yield return gltfShape.routine;
+            
+            GLTFLoader gltfLoader = scene.entities[gltfShape.attachedEntities.First().entityId].gameObject.GetComponentInChildren<GLTFLoader>(true);
+            yield return new WaitUntil(() => gltfLoader.alreadyLoaded);
+            #endregion
+
+            #region Act
+            gltfModel.visible = false;
+            TestHelpers.SharedComponentUpdate(scene, gltfShape, gltfModel);
+            #endregion
+
+            #region Assert
+            Assert.AreEqual(false, gltfShape.model.visible);
+            Assert.IsTrue(CheckVisibility(gltfShape, false));
+            #endregion
+        }
+
+        [UnityTest]
+        public IEnumerator GLTFVisibilityUpdateTrue()
+        {
+            #region Arrange
+            yield return InitScene();
+
+            BaseLoadableShape<GLTFLoader>.Model gltfModel = new BaseLoadableShape<GLTFLoader>.Model()
+            {
+                src = TestHelpers.GetTestsAssetsPath() + "/GLB/Lantern/Lantern.glb",
+                visible = false
+            };
+
+            GLTFShape gltfShape = TestHelpers.CreateEntityWithGLTFShape(scene, Vector3.zero, gltfModel);
+            yield return gltfShape.routine;
+            
+            GLTFLoader gltfLoader = scene.entities[gltfShape.attachedEntities.First().entityId].gameObject.GetComponentInChildren<GLTFLoader>(true);
+            yield return new WaitUntil(() => gltfLoader.alreadyLoaded);
+            #endregion
+
+            #region Act
+            gltfModel.visible = true;
+            TestHelpers.SharedComponentUpdate(scene, gltfShape, gltfModel);
+            #endregion
+
+            #region Assert
+            Assert.AreEqual(true, gltfShape.model.visible);
+            Assert.IsTrue(CheckVisibility(gltfShape, true));
+            #endregion
+        }
+
+        [UnityTest]
+        public IEnumerator GLTFVisibilityUpdateMixed()
+        {
+            #region Arrange
+            yield return InitScene();
+
+            BaseLoadableShape<GLTFLoader>.Model lanternModel = new BaseLoadableShape<GLTFLoader>.Model()
+            {
+                src = TestHelpers.GetTestsAssetsPath() + "/GLB/Lantern/Lantern.glb",
+                visible = false
+            };
+            GLTFShape lanternShape = TestHelpers.CreateEntityWithGLTFShape(scene, Vector3.zero, lanternModel);
+            yield return lanternShape.routine;
+            
+            GLTFLoader gltfLoader = scene.entities[lanternShape.attachedEntities.First().entityId].gameObject.GetComponentInChildren<GLTFLoader>(true);
+            yield return new WaitUntil(() => gltfLoader.alreadyLoaded);
+
+            BaseLoadableShape<GLTFLoader>.Model palmModel = new BaseLoadableShape<GLTFLoader>.Model()
+            {
+                src = TestHelpers.GetTestsAssetsPath() + "/GLB/PalmTree_01.glb",
+                visible = true
+            };
+            GLTFShape palmShape = TestHelpers.CreateEntityWithGLTFShape(scene, Vector3.zero, palmModel);
+            yield return palmShape.routine;
+            
+            gltfLoader = scene.entities[palmShape.attachedEntities.First().entityId].gameObject.GetComponentInChildren<GLTFLoader>(true);
+            yield return new WaitUntil(() => gltfLoader.alreadyLoaded);
+
+            #endregion
+
+            #region Act
+            lanternModel.visible = true;
+            TestHelpers.SharedComponentUpdate(scene, lanternShape, lanternModel);
+
+            palmModel.visible = false;
+            TestHelpers.SharedComponentUpdate(scene, palmShape, palmModel);
+            #endregion
+
+            #region Assert
+            Assert.AreEqual(true, lanternShape.model.visible);
+            Assert.IsTrue(CheckVisibility(lanternShape, true));
+
+            Assert.AreEqual(false, palmShape.model.visible);
+            Assert.IsTrue(CheckVisibility(palmShape, false));
+            #endregion
+        }
+
+        private bool CheckVisibility(BaseDisposable shapeComponent, bool isVisible)
+        {
+            var meshGameObjects = shapeComponent.attachedEntities.Select(x => x.meshGameObject);
+
+            foreach (GameObject meshGameObject in meshGameObjects)
+            {
+                MeshFilter[] meshFilters = meshGameObject.GetComponentsInChildren<MeshFilter>();
+                foreach (MeshFilter meshFilter in meshFilters)
+                {
+                    MeshRenderer renderer = meshFilter.GetComponent<MeshRenderer>();
+                    if (renderer != null && isVisible != renderer.enabled)
+                    {
+                        return false;
+                    }
+                }
+            }
+
+            return true;
         }
     }
 }

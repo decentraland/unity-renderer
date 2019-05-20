@@ -78,6 +78,7 @@ namespace DCL.Components
         void CallOnComponentUpdatedEvent()
         {
             alreadyLoaded = true;
+            BaseShape.ConfigureVisibility(entity.meshGameObject, ((GLTFShape)entity.currentShape).model.visible);
 
             if (entity.OnComponentUpdated != null)
             {
