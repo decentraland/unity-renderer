@@ -110,6 +110,10 @@ async function getAddressAndNetwork() {
 }
 
 async function authenticate(): Promise<any> {
+  if (getTLD() === 'localhost') {
+    return { userId: 'email|5cdd68572d5f842a16d6cc17' }
+  }
+
   const auth = new Auth()
   await auth.login()
   return auth.getPayload()
