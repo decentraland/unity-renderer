@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 using UnityEngine.Playables;
 using UnityEngine.Animations;
@@ -25,6 +26,7 @@ namespace DCL.Components
                 public float weight = 1f;
                 public float speed = 1f;
                 public bool looping = true;
+                public bool shouldReset = false;
 
                 public DCLAnimationState Clone()
                 {
@@ -34,11 +36,12 @@ namespace DCL.Components
                 public bool Equals(DCLAnimationState other)
                 {
                     return name == other.name &&
-                      clip == other.clip &&
-                      playing == other.playing &&
-                      weight == other.weight &&
-                      looping == other.looping &&
-                      speed == other.speed;
+                           clip == other.clip &&
+                           playing == other.playing &&
+                           weight == other.weight &&
+                           looping == other.looping &&
+                           speed == other.speed &&
+                           shouldReset == other.shouldReset;
                 }
             }
 
@@ -142,6 +145,11 @@ namespace DCL.Components
 
                     state.clipReference = unityState.clip;
 
+                    if (state.shouldReset)
+                    {
+                        ResetAnimation(state);
+                    }
+
                     if (state.playing)
                     {
                         if (!animComponent.IsPlaying(state.clip))
@@ -160,13 +168,19 @@ namespace DCL.Components
             }
         }
 
+        public void ResetAnimation(Model.DCLAnimationState state)
+        {
+            animComponent.Stop(state.clip);
+            animComponent.Play(state.clip);
+        }
+
         public Model.DCLAnimationState GetStateByString(string stateName)
         {
-            foreach (Model.DCLAnimationState state in model.states)
+            for (var i = 0; i < model.states.Length; i++)
             {
-                if (state.name == stateName)
+                if (model.states[i].name == stateName)
                 {
-                    return state;
+                    return model.states[i];
                 }
             }
 
