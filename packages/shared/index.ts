@@ -59,7 +59,9 @@ async function grantAccess(address: string | null, net: ETHEREUM_NETWORK) {
 }
 
 function getNetworkFromTLD(): ETHEREUM_NETWORK | null {
-  if (getTLD() === 'localhost') {
+  const tld = getTLD()
+  if (tld === 'localhost' || tld === '1') {
+    // for 127.0.0.1
     return null
   }
 
@@ -110,7 +112,8 @@ async function getAddressAndNetwork() {
 }
 
 async function authenticate(): Promise<any> {
-  if (getTLD() === 'localhost') {
+  const tld = getTLD()
+  if (tld === 'localhost' || tld === '1') {
     return { userId: 'email|5cdd68572d5f842a16d6cc17' }
   }
 
