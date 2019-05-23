@@ -72,8 +72,7 @@ namespace DCL.Components
             Initialize();
         }
 
-        // Unity hook
-        public void OnMouseDown()
+        public void OnPointerDown()
         {
             if (!enabled) return;
 

@@ -204,7 +204,7 @@ namespace Tests
             yield return TestHelpers.WaitForMessageFromEngine(targetEventType, eventJSON,
             () =>
                 {
-                    component.OnMouseDown();
+                    component.OnPointerDown();
                 },
                 () =>
                 {
