@@ -5,6 +5,7 @@ using Newtonsoft.Json;
 using NUnit.Framework;
 using System.Collections;
 using System.IO;
+using System.Linq;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.TestTools;
@@ -62,12 +63,12 @@ namespace Tests
         public IEnumerator DCLAnimatorResetAnimation()
         {
             yield return InitScene();
-            DecentralandEntity entity = TestHelpers.CreateSceneEntity(scene);
-
-            TestHelpers.CreateEntityWithGLTFShape(scene, Vector3.zero, new BaseLoadableShape<GLTFLoader>.Model
+            
+            GLTFShape gltfShape = TestHelpers.CreateEntityWithGLTFShape(scene, Vector3.zero, new BaseLoadableShape<GLTFLoader>.Model
             {
                 src = TestHelpers.GetTestsAssetsPath() + "/GLB/Shark/shark_anim.gltf"
             });
+            var entity = gltfShape.attachedEntities.First();
 
             DCLAnimator.Model animatorModel = new DCLAnimator.Model
             {
@@ -93,8 +94,8 @@ namespace Tests
             };
 
             DCLAnimator animator = TestHelpers.EntityComponentCreate<DCLAnimator, DCLAnimator.Model>(scene, entity, animatorModel);
-            GLTFLoader gltfShape = entity.gameObject.GetComponentInChildren<GLTFLoader>();
-            yield return new WaitUntil(() => gltfShape.alreadyLoaded);
+            GLTFLoader gltfLoader = entity.gameObject.GetComponentInChildren<GLTFLoader>();
+            yield return new WaitUntil(() => gltfLoader.alreadyLoaded);
 
             yield return animator.routine;
 
@@ -127,12 +128,12 @@ namespace Tests
         public IEnumerator DCLAnimatorResetAllAnimations()
         {
             yield return InitScene();
-            DecentralandEntity entity = TestHelpers.CreateSceneEntity(scene);
 
-            TestHelpers.CreateEntityWithGLTFShape(scene, Vector3.zero, new BaseLoadableShape<GLTFLoader>.Model
+            var gltfShape = TestHelpers.CreateEntityWithGLTFShape(scene, Vector3.zero, new BaseLoadableShape<GLTFLoader>.Model
             {
                 src = TestHelpers.GetTestsAssetsPath() + "/GLB/Shark/shark_anim.gltf"
             });
+            var entity = gltfShape.attachedEntities.First();
 
             DCLAnimator.Model animatorModel = new DCLAnimator.Model
             {
@@ -158,8 +159,8 @@ namespace Tests
             };
 
             DCLAnimator animator = TestHelpers.EntityComponentCreate<DCLAnimator, DCLAnimator.Model>(scene, entity, animatorModel);
-            GLTFLoader gltfShape = entity.gameObject.GetComponentInChildren<GLTFLoader>();
-            yield return new WaitUntil(() => gltfShape.alreadyLoaded);
+            GLTFLoader gltfLoader = entity.gameObject.GetComponentInChildren<GLTFLoader>();
+            yield return new WaitUntil(() => gltfLoader.alreadyLoaded);
 
             yield return animator.routine;
 
