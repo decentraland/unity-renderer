@@ -44,7 +44,7 @@ namespace DCL
         // Loadable methods
         //
         protected abstract Loadable GetLoadable(AssetContainerClass container);
-        protected abstract void StartLoading(Loadable loadable, string url);
+        protected abstract void StartLoading(Loadable loadable, string url, bool initialVisibility = true);
 
         /// <summary>
         /// 
@@ -69,10 +69,11 @@ namespace DCL
         /// <param name="parent"></param>
         /// <param name="OnSuccess"></param>
         /// <param name="OnFail"></param>
+        /// <param name="initialVisibility"></param>
         /// <returns></returns>
-        public AssetContainerClass Get(string url, Transform parent, System.Action OnSuccess, System.Action OnFail)
+        public AssetContainerClass Get(string url, Transform parent, System.Action OnSuccess, System.Action OnFail, bool initialVisibility = true)
         {
-            return Get(url, url, parent, OnSuccess, OnFail);
+            return Get(url, url, parent, OnSuccess, OnFail, initialVisibility);
         }
 
         /// <summary>
@@ -83,8 +84,9 @@ namespace DCL
         /// <param name="parent"></param>
         /// <param name="OnSuccess"></param>
         /// <param name="OnFail"></param>
+        /// <param name="initialVisibility"></param>
         /// <returns></returns>
-        public AssetContainerClass Get(object id, string url, Transform parent, System.Action OnSuccess, System.Action OnFail)
+        public AssetContainerClass Get(object id, string url, Transform parent, System.Action OnSuccess, System.Action OnFail, bool initialVisibility = true)
         {
             AssetContainerClass resultContainer = default(AssetContainerClass);
 
@@ -139,7 +141,7 @@ namespace DCL
                 loader.OnSuccess += PreSuccessClosure;
                 loader.OnFail += PreFailClosure;
 
-                StartLoading(loader, url);
+                StartLoading(loader, url, initialVisibility);
 
                 return resultContainer;
             }
@@ -149,7 +151,7 @@ namespace DCL
                 {
                     //NOTE(Brian): If the asset is in the process of being loaded by another object, piggyback on that one
                     //             suscribing to the OnSuccess/OnFail event.
-                    assetLibrary[id].OnSuccess += () => Get(id, url, parent, OnSuccess, OnFail);
+                    assetLibrary[id].OnSuccess += () => Get(id, url, parent, OnSuccess, OnFail, initialVisibility);
                     assetLibrary[id].OnFail += OnFail;
                 }
                 else

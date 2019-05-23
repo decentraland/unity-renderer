@@ -17,7 +17,7 @@ namespace DCL.Components
             throw new System.NotImplementedException();
         }
 
-        public override void Load(string src, bool useVisualFeedback = false)
+        public override void Load(string src, bool useVisualFeedback = false, bool initialVisibility = true)
         {
             if (!string.IsNullOrEmpty(src))
             {

@@ -97,10 +97,19 @@ namespace DCL.Components
         {
             if (meshGameObject == null) return;
 
-            MeshRenderer[] meshRenderers = meshGameObject.GetComponentsInChildren<MeshRenderer>();
-            foreach (MeshRenderer renderer in meshRenderers)
+            if (!isVisible)
             {
-                renderer.enabled = isVisible;
+                MaterialTransitionController[] materialTransitionControllers = meshGameObject.GetComponentsInChildren<MaterialTransitionController>();
+                for (var i = 0; i < materialTransitionControllers.Length; i++)
+                {
+                    GameObject.Destroy(materialTransitionControllers[i]);
+                }
+            }
+            
+            MeshRenderer[] meshRenderers = meshGameObject.GetComponentsInChildren<MeshRenderer>();
+            for (var i = 0; i < meshRenderers.Length; i++)
+            {
+                meshRenderers[i].enabled = isVisible;
             }
         }
     }

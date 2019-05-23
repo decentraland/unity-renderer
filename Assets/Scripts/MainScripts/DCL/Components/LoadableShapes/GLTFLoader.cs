@@ -13,7 +13,7 @@ namespace DCL.Components
 
         bool VERBOSE = false;
 
-        public override void Load(string targetUrl, bool useVisualFeedback = false)
+        public override void Load(string targetUrl, bool useVisualFeedback = false, bool initialVisibility = true)
         {
             if (gltfContainer != null)
             {
@@ -32,7 +32,7 @@ namespace DCL.Components
                 Debug.Log($"Load(): target URL -> {targetUrl},  url -> {url}, directory path -> {assetDirectoryPath}");
             }
 
-            gltfContainer = AssetManager_GLTF.i.Get(GetCacheId(), url, transform, CallOnComponentUpdatedEvent, CallOnFailure, ParseGLTFWebRequestedFile);
+            gltfContainer = AssetManager_GLTF.i.Get(GetCacheId(), url, transform, CallOnComponentUpdatedEvent, CallOnFailure, ParseGLTFWebRequestedFile, initialVisibility);
         }
 
         void ParseGLTFWebRequestedFile(ref string requestedFileName)

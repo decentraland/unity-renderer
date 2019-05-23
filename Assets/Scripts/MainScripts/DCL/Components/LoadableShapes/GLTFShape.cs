@@ -24,7 +24,7 @@ namespace DCL.Components
                 entity.EnsureMeshGameObject(componentName + " mesh");
                 GLTFLoader loadableShape = entity.meshGameObject.GetOrCreateComponent<GLTFLoader>();
                 loadableShape.entity = entity;
-                loadableShape.Load(currentSrc, Configuration.ParcelSettings.VISUAL_LOADING_ENABLED);
+                loadableShape.Load(currentSrc, Configuration.ParcelSettings.VISUAL_LOADING_ENABLED, model.visible);
             }
             else
             {

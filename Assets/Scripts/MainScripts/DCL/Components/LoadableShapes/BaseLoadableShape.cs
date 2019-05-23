@@ -13,7 +13,7 @@ namespace DCL.Components
         public bool alreadyLoaded = false;
         public DecentralandEntity entity;
 
-        public abstract void Load(string url, bool useVisualFeedback);
+        public abstract void Load(string url, bool useVisualFeedback, bool initialVisibility = true);
         public abstract void Unload();
     }
 
@@ -56,6 +56,12 @@ namespace DCL.Components
             {
                 foreach (var entity in this.attachedEntities)
                 {
+                    var loadable = entity.meshGameObject.GetComponentInChildren<ILoadable>();
+                    if (loadable != null)
+                    {
+                        loadable.InitialVisibility = model.visible;
+                    }
+
                     ConfigureVisibility(entity.meshGameObject, model.visible);
                 }
             }
@@ -78,7 +84,7 @@ namespace DCL.Components
                     entity.EnsureMeshGameObject(componentName + " mesh");
                     Loadable loadableShape = entity.meshGameObject.GetOrCreateComponent<Loadable>();
                     loadableShape.entity = entity;
-                    loadableShape.Load(finalUrl, Configuration.ParcelSettings.VISUAL_LOADING_ENABLED);
+                    loadableShape.Load(finalUrl, Configuration.ParcelSettings.VISUAL_LOADING_ENABLED, model.visible);
                 }
             }
         }
