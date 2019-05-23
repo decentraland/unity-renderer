@@ -208,5 +208,13 @@ namespace Tests
             Assert.IsTrue(audioClip.model.shouldTryToLoad);
             Assert.AreEqual(1f, audioClip.model.volume);
         }
+
+        [UnityTest]
+        public IEnumerator AudioClipAttachedGetsReplacedOnNewAttachment()
+        {
+            yield return InitScene();
+
+            yield return TestHelpers.TestAttachedSharedComponentOfSameTypeIsReplaced<DCLAudioClip.Model, DCLAudioClip>(scene, CLASS_ID.AUDIO_CLIP);
+        }
     }
 }

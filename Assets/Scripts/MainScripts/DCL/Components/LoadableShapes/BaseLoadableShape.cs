@@ -94,7 +94,7 @@ namespace DCL.Components
             if (entity == null || entity.meshGameObject == null)
                 return;
 
-            Loadable loadableShape = entity.meshGameObject.GetOrCreateComponent<Loadable>();
+            Loadable loadableShape = entity.meshGameObject.GetComponent<Loadable>();
 
             if (loadableShape != null)
                 loadableShape.Unload();

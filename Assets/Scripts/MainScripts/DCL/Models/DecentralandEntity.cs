@@ -21,9 +21,11 @@ namespace DCL.Models
         public GameObject meshGameObject;
         public BaseShape currentShape;
 
+        Dictionary<Type, BaseDisposable> sharedComponents = new Dictionary<Type, BaseDisposable>();
+
         const string MESH_GAMEOBJECT_NAME = "Mesh";
 
-        public void EnsureMeshGameObject(string gameObjectName=null)
+        public void EnsureMeshGameObject(string gameObjectName = null)
         {
             if (meshGameObject == null)
             {
@@ -34,6 +36,35 @@ namespace DCL.Models
                 meshGameObject.transform.localScale = Vector3.one;
                 meshGameObject.transform.localRotation = Quaternion.identity;
             }
+        }
+
+        public void AddSharedComponent(Type componentType, BaseDisposable component)
+        {
+            if (component == null) return;
+
+            RemoveSharedComponent(componentType);
+
+            sharedComponents.Add(componentType, component);
+        }
+
+        public void RemoveSharedComponent(Type targetType, bool triggerDettaching = true)
+        {
+            BaseDisposable component;
+            if (sharedComponents.TryGetValue(targetType, out component) && component != null)
+            {
+                sharedComponents.Remove(targetType);
+
+                if (triggerDettaching)
+                    component.DetachFrom(this, targetType);
+            }
+        }
+
+        public BaseDisposable GetSharedComponent(Type targetType)
+        {
+            BaseDisposable component;
+            sharedComponents.TryGetValue(targetType, out component);
+
+            return component;
         }
     }
 }

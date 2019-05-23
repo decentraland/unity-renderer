@@ -120,7 +120,7 @@ namespace DCL.Components
             return null;
         }
 
-        public override void AttachTo(DecentralandEntity entity)
+        public override void AttachTo(DecentralandEntity entity, System.Type overridenAttachedType = null)
         {
             base.AttachTo(entity);
             ConfigureVisibility(entity.meshGameObject, model.visible);

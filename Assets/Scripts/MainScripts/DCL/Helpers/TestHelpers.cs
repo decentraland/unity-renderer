@@ -189,7 +189,7 @@ namespace DCL.Helpers
             where K : new()
         {
             int componentClassId = classId == CLASS_ID_COMPONENT.NONE ? (int)scene.ownerController.componentFactory.GetIdForType<T>() : (int)classId;
-            string componentInstanceId = GetUniqueId(typeof(T).Name, componentClassId, entity.entityId);
+            string componentInstanceId = GetComponentUniqueId(scene, typeof(T).Name, componentClassId, entity.entityId);
 
             return scene.EntityComponentCreate(JsonUtility.ToJson(new EntityComponentCreateMessage
             {
@@ -254,7 +254,7 @@ namespace DCL.Helpers
 
             disposableIdCounter++;
 
-            string uniqueId = GetUniqueId("material", (int)id, "-shared-" + disposableIdCounter);
+            string uniqueId = GetComponentUniqueId(scene, "material", (int)id, "-shared-" + disposableIdCounter);
 
             T result = scene.SharedComponentCreate(JsonUtility.ToJson(new DCL.Models.SharedComponentCreateMessage
             {
@@ -286,7 +286,7 @@ namespace DCL.Helpers
         public static TextShape InstantiateEntityWithTextShape(ParcelScene scene, Vector3 position, TextShape.Model model)
         {
             DecentralandEntity entity = CreateSceneEntity(scene);
-            string componentId = GetUniqueId("textShape", (int)CLASS_ID_COMPONENT.TEXT_SHAPE, entity.entityId);
+            string componentId = GetComponentUniqueId(scene, "textShape", (int)CLASS_ID_COMPONENT.TEXT_SHAPE, entity.entityId);
 
             TextShape textShape = EntityComponentCreate<TextShape, TextShape.Model>(scene, entity, model);
 
@@ -314,7 +314,7 @@ namespace DCL.Helpers
 
         public static GLTFShape AttachGLTFShape(DecentralandEntity entity, ParcelScene scene, Vector3 position, GLTFShape.Model model)
         {
-            string componentId = GetUniqueId("gltfShape", (int)CLASS_ID.GLTF_SHAPE, entity.entityId);
+            string componentId = GetComponentUniqueId(scene, "gltfShape", (int)CLASS_ID.GLTF_SHAPE, entity.entityId);
             GLTFShape gltfShape = SharedComponentCreate<GLTFShape, GLTFShape.Model>(scene, CLASS_ID.GLTF_SHAPE, model);
 
             AttachDCLTransform(entity, scene, position, Quaternion.identity, Vector3.one);
@@ -545,14 +545,22 @@ namespace DCL.Helpers
             }));
         }
 
-        public static string GetUniqueId(string salt, int classId, string entityId)
+        public static string GetComponentUniqueId(ParcelScene scene, string salt, int classId, string entityId)
         {
-            return salt + "-" + (int)classId + "-" + entityId;
+            string baseId = salt + "-" + (int)classId + "-" + entityId;
+            string finalId = baseId;
+
+            while (scene.GetSharedComponent(finalId) != null)
+            {
+                finalId = baseId + UnityEngine.Random.Range(1, 10000);
+            }
+
+            return finalId;
         }
 
         public static string CreateAndSetShape(ParcelScene scene, string entityId, CLASS_ID classId, string model)
         {
-            string componentId = GetUniqueId("shape", (int)classId, entityId);
+            string componentId = GetComponentUniqueId(scene, "shape", (int)classId, entityId);
 
             scene.SharedComponentCreate(JsonUtility.ToJson(new DCL.Models.SharedComponentCreateMessage
             {
@@ -674,6 +682,37 @@ namespace DCL.Helpers
 
             CompareWithDefaultedInstance<TModel, TComponent>(component);
             TestHelpers.RemoveSceneEntity(scene, e.entityId);
+        }
+
+        public static IEnumerator TestAttachedSharedComponentOfSameTypeIsReplaced<TModel, TComponent>(ParcelScene scene, CLASS_ID classId)
+            where TComponent : BaseDisposable
+            where TModel : class, new()
+        {
+            // Create scene entity and 1st component
+            DecentralandEntity entity = CreateSceneEntity(scene);
+
+            var component = SharedComponentCreate<TComponent, TModel>(scene, classId);
+            yield return component.routine;
+
+            Type componentType = typeof(TComponent);
+            if (component is BaseShape)
+                componentType = typeof(BaseShape);
+
+            // Attach 1st component to entity
+            TestHelpers.SharedComponentAttach(component, entity);
+
+            Assert.IsTrue(entity.GetSharedComponent(componentType) != null);
+            Assert.AreEqual(component, entity.GetSharedComponent(componentType));
+
+            // Assign 2nd component to same entity
+            var component2 = SharedComponentCreate<TComponent, TModel>(scene, classId);
+            yield return component2.routine;
+
+            TestHelpers.SharedComponentAttach(component2, entity);
+
+            Assert.IsTrue(entity.GetSharedComponent(componentType) != null);
+            Assert.AreEqual(component2, entity.GetSharedComponent(componentType));
+            Assert.IsFalse(component.attachedEntities.Contains(entity));
         }
 
         public static IEnumerator TestSharedComponentDefaultsOnUpdate<TModel, TComponent>(ParcelScene scene, CLASS_ID id)

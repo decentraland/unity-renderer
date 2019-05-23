@@ -23,12 +23,12 @@ namespace DCL.Components
         {
         }
 
-        public override void AttachTo(DecentralandEntity entity)
+        public override void AttachTo(DecentralandEntity entity, System.Type overridenAttachedType = null)
         {
             Debug.LogError("Aborted UITextShape attachment to an entity. UIShapes shouldn't be attached to entities.");
         }
 
-        public override void DetachFrom(DecentralandEntity entity)
+        public override void DetachFrom(DecentralandEntity entity, System.Type overridenAttachedType = null)
         {
         }
 
@@ -43,14 +43,14 @@ namespace DCL.Components
             return null;
         }
 
-        public override void RefreshDCLLayout(bool refreshSize=true, bool refreshAlignmentAndPosition=true)
+        public override void RefreshDCLLayout(bool refreshSize = true, bool refreshAlignmentAndPosition = true)
         {
             if (refreshSize)
             {
                 referencesContainer.text.ForceMeshUpdate(false);
                 RectTransform parentTransform = referencesContainer.GetComponentInParent<RectTransform>();
                 Bounds b = referencesContainer.text.textBounds;
-                
+
                 float width, height;
 
                 if (model.textModel.adaptWidth)

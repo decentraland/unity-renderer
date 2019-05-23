@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using DCL;
 using DCL.Components;
+using DCL.Models;
 using DCL.Helpers;
 using NUnit.Framework;
 using UnityEngine;
@@ -33,6 +34,14 @@ namespace Tests
 
             yield return null;
             Assert.IsTrue(dclTexture.texture == null, "Texture didn't dispose correctly?");
+        }
+
+        [UnityTest]
+        public IEnumerator TextureAttachedGetsReplacedOnNewAttachment()
+        {
+            yield return InitScene();
+
+            yield return TestHelpers.TestAttachedSharedComponentOfSameTypeIsReplaced<DCLTexture.Model, DCLTexture>(scene, CLASS_ID.TEXTURE);
         }
     }
 }

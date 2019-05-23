@@ -1,6 +1,7 @@
 using DCL.Components;
 using DCL.Controllers;
 using DCL.Helpers;
+using DCL.Models;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -38,6 +39,7 @@ namespace DCL.Components
         public DCLAudioClip(ParcelScene scene) : base(scene)
         {
             model = new Model();
+
             loadingState = LoadState.IDLE;
         }
 

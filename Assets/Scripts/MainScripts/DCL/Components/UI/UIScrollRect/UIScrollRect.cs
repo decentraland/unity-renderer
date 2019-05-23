@@ -33,12 +33,12 @@ namespace DCL.Components
         {
         }
 
-        public override void AttachTo(DecentralandEntity entity)
+        public override void AttachTo(DecentralandEntity entity, System.Type overridenAttachedType = null)
         {
             Debug.LogError("Aborted UIScrollRectShape attachment to an entity. UIShapes shouldn't be attached to entities.");
         }
 
-        public override void DetachFrom(DecentralandEntity entity)
+        public override void DetachFrom(DecentralandEntity entity, System.Type overridenAttachedType = null)
         {
         }
 
@@ -110,7 +110,7 @@ namespace DCL.Components
         {
             WebInterface.ReportOnScrollChange(scene.sceneData.id, model.OnChanged, scrollingValues, 0);
         }
-        
+
         public override void Dispose()
         {
             referencesContainer.scrollRect.onValueChanged.RemoveAllListeners();

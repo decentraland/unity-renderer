@@ -1,4 +1,3 @@
-using System;
 using System.Collections;
 using System.Collections.Generic;
 using DCL.Controllers;
@@ -21,27 +20,24 @@ namespace DCL.Components
         {
         }
 
-        public override void AttachTo(DecentralandEntity entity)
+        public override void AttachTo(DecentralandEntity entity, System.Type overridenAttachedType = null)
         {
-            if (attachedEntities.Contains(entity))
-                return;
+            if (attachedEntities.Contains(entity)) return;
 
-            if (entity.currentShape != null)
-                entity.currentShape.DetachFrom(entity);
+            base.AttachTo(entity, typeof(BaseShape));
 
             entity.currentShape = this;
-
-            base.AttachTo(entity);
         }
 
-        public override void DetachFrom(DecentralandEntity entity)
+        public override void DetachFrom(DecentralandEntity entity, System.Type overridenAttachedType = null)
         {
             if (!attachedEntities.Contains(entity))
                 return;
 
-            base.DetachFrom(entity);
             // We do this instead of OnDetach += because it is required to run after every OnDetach listener
             entity.currentShape = null;
+
+            base.DetachFrom(entity, typeof(BaseShape));
         }
 
         public static void ConfigureColliders(GameObject meshGameObject, bool hasCollision, bool filterByColliderName = false)

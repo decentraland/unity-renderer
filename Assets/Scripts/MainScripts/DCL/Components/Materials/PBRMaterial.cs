@@ -1,4 +1,3 @@
-using System;
 using System.Collections;
 using System.Collections.Generic;
 using DCL.Controllers;
@@ -50,10 +49,20 @@ namespace DCL.Components
         public PBRMaterial(ParcelScene scene) : base(scene)
         {
             model = new Model();
+
             LoadMaterial("ShapeMaterial");
 
             OnAttach += OnMaterialAttached;
             OnDetach += OnMaterialDetached;
+        }
+
+        public override void AttachTo(DecentralandEntity entity, System.Type overridenAttachedType = null)
+        {
+            if (attachedEntities.Contains(entity)) return;
+
+            entity.RemoveSharedComponent(typeof(BasicMaterial));
+
+            base.AttachTo(entity);
         }
 
         public override IEnumerator ApplyChanges(string newJson)

@@ -18,12 +18,12 @@ namespace DCL.Components
             DCLCharacterController.OnCharacterMoved += OnCharacterMoved;
         }
 
-        public override void AttachTo(DecentralandEntity entity)
+        public override void AttachTo(DecentralandEntity entity, System.Type overridenAttachedType = null)
         {
             Debug.LogError("Aborted UIScreenShape attachment to an entity. UIShapes shouldn't be attached to entities.");
         }
 
-        public override void DetachFrom(DecentralandEntity entity)
+        public override void DetachFrom(DecentralandEntity entity, System.Type overridenAttachedType = null)
         {
         }
 
