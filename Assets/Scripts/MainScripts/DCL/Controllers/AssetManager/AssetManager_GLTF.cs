@@ -155,11 +155,11 @@ namespace DCL
             assetLibrary[id].OnFail = null;
         }
 
-        public GameObject Get(object id, string url, Transform parent, System.Action OnSuccess, System.Action OnFail, WebRequestLoader.WebRequestLoaderEventAction webRequestStartEventAction)
+        public GameObject Get(object id, string url, Transform parent, System.Action OnSuccess, System.Action OnFail, WebRequestLoader.WebRequestLoaderEventAction webRequestStartEventAction, bool initialVisibility = true)
         {
             OnGLTFLoaderWebRequestStartHook = webRequestStartEventAction;
 
-            return Get(id, url, parent, OnSuccess, OnFail);
+            return Get(id, url, parent, OnSuccess, OnFail, initialVisibility);
         }
 
         protected override GLTFComponent GetLoadable(GameObject container)
@@ -167,7 +167,7 @@ namespace DCL
             return container.AddComponent<GLTFComponent>();
         }
 
-        protected override void StartLoading(GLTFComponent loadable, string url)
+        protected override void StartLoading(GLTFComponent loadable, string url, bool initialVisibility = true)
         {
             // Hook up a method to parse the http requested files using the scene mappings
             loadable.OnWebRequestStartEvent = OnGLTFLoaderWebRequestStartHook;
@@ -176,6 +176,7 @@ namespace DCL
             loadable.UseVisualFeedback = Configuration.ParcelSettings.VISUAL_LOADING_ENABLED;
             loadable.Multithreaded = false;
             loadable.LoadingTextureMaterial = Utils.EnsureResourcesMaterial("Materials/LoadingTextureMaterial");
+            loadable.InitialVisibility = initialVisibility;
 
             if (VERBOSE)
             {

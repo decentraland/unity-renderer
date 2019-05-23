@@ -95,6 +95,11 @@ namespace UnityGLTF
         /// </summary>
         public Material LoadingTextureMaterial { get; set; }
 
+        /// <summary>
+        /// Initial state of the meshes
+        /// </summary>
+        public bool InitialVisibility { get; set; }
+
         static public float BudgetPerFrameInMilliseconds = 2f;
 
         public bool KeepCPUCopyOfMesh = true;
@@ -1467,7 +1472,7 @@ namespace UnityGLTF
                     }
 
                     //// NOTE(Brian): Texture loading
-                    if (UseMaterialTransition)
+                    if (UseMaterialTransition && InitialVisibility)
                     {
                         var matController = primitiveObj.AddComponent<MaterialTransitionController>();
                         _asyncCoroutineHelper.RunAsTask(DownloadAndConstructMaterial(primitive, materialIndex, renderer, matController), "matDownload");
@@ -1486,6 +1491,7 @@ namespace UnityGLTF
                             primitiveObj.SetActive(true);
                         }
                     }
+                    renderer.enabled = InitialVisibility;
                 }
                 else
                 {

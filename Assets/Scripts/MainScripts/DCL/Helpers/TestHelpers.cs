@@ -351,9 +351,19 @@ namespace DCL.Helpers
             return CreateEntityWithPrimitive<BoxShape, BoxShape.Model>(scene, position, CLASS_ID.BOX_SHAPE, model);
         }
 
+        public static BoxShape CreateEntityWithBoxShape(ParcelScene scene, Vector3 position, bool visible)
+        {
+            return CreateEntityWithBoxShape(scene, position, new BoxShape.Model {visible = visible});
+        }
+
         public static SphereShape CreateEntityWithSphereShape(ParcelScene scene, Vector3 position, SphereShape.Model model = null)
         {
             return CreateEntityWithPrimitive<SphereShape, SphereShape.Model>(scene, position, CLASS_ID.SPHERE_SHAPE, model);
+        }
+
+        public static SphereShape CreateEntityWithSphereShape(ParcelScene scene, Vector3 position, bool visible)
+        {
+            return CreateEntityWithSphereShape(scene, position, new SphereShape.Model {visible = visible});
         }
 
         public static PlaneShape CreateEntityWithPlaneShape(ParcelScene scene, Vector3 position, PlaneShape.Model model = null)
@@ -361,14 +371,29 @@ namespace DCL.Helpers
             return CreateEntityWithPrimitive<PlaneShape, PlaneShape.Model>(scene, position, CLASS_ID.PLANE_SHAPE, model);
         }
 
+        public static PlaneShape CreateEntityWithPlaneShape(ParcelScene scene, Vector3 position, bool visible)
+        {
+            return CreateEntityWithPlaneShape(scene, position, new PlaneShape.Model {visible = visible});
+        }
+
         public static CylinderShape CreateEntityWithCylinderShape(ParcelScene scene, Vector3 position, CylinderShape.Model model = null)
         {
             return CreateEntityWithPrimitive<CylinderShape, CylinderShape.Model>(scene, position, CLASS_ID.CYLINDER_SHAPE, model);
         }
 
+        public static CylinderShape CreateEntityWithCylinderShape(ParcelScene scene, Vector3 position, bool visible)
+        {
+            return CreateEntityWithCylinderShape(scene, position, new CylinderShape.Model {visible = visible});
+        }
+
         public static ConeShape CreateEntityWithConeShape(ParcelScene scene, Vector3 position, ConeShape.Model model = null)
         {
             return CreateEntityWithPrimitive<ConeShape, ConeShape.Model>(scene, position, CLASS_ID.CONE_SHAPE, model);
+        }
+
+        public static ConeShape CreateEntityWithConeShape(ParcelScene scene, Vector3 position, bool visible)
+        {
+            return CreateEntityWithConeShape(scene, position, new ConeShape.Model {visible = visible});
         }
 
         private static T CreateEntityWithPrimitive<T, K>(ParcelScene scene, Vector3 position, CLASS_ID classId, K model = null)

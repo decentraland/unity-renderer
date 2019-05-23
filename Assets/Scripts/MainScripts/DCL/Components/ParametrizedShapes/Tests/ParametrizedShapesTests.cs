@@ -361,11 +361,11 @@ namespace Tests
             #region Arrange
             yield return InitScene();
 
-            BoxShape boxShapeComponent = TestHelpers.CreateEntityWithBoxShape(scene, Vector3.zero, new BoxShape.Model {visible = false});
-            SphereShape sphereShapeComponent = TestHelpers.CreateEntityWithSphereShape(scene, Vector3.zero, new SphereShape.Model {visible = false});
-            PlaneShape planeShapeComponent = TestHelpers.CreateEntityWithPlaneShape(scene, Vector3.zero, new PlaneShape.Model {visible = false});
-            CylinderShape cylinderShapeComponent = TestHelpers.CreateEntityWithCylinderShape(scene, Vector3.zero, new CylinderShape.Model {visible = false});
-            ConeShape coneShapeComponent = TestHelpers.CreateEntityWithConeShape(scene, Vector3.zero, new ConeShape.Model {visible = false});
+            BoxShape boxShapeComponent = TestHelpers.CreateEntityWithBoxShape(scene, Vector3.zero, false);
+            SphereShape sphereShapeComponent = TestHelpers.CreateEntityWithSphereShape(scene, Vector3.zero, false);
+            PlaneShape planeShapeComponent = TestHelpers.CreateEntityWithPlaneShape(scene, Vector3.zero, false);
+            CylinderShape cylinderShapeComponent = TestHelpers.CreateEntityWithCylinderShape(scene, Vector3.zero, false);
+            ConeShape coneShapeComponent = TestHelpers.CreateEntityWithConeShape(scene, Vector3.zero, false);
             #endregion
 
             #region Act
@@ -396,11 +396,11 @@ namespace Tests
             #region Arrange
             yield return InitScene();
 
-            BoxShape boxShapeComponent = TestHelpers.CreateEntityWithBoxShape(scene, Vector3.zero, new BoxShape.Model {visible = false});
-            SphereShape sphereShapeComponent = TestHelpers.CreateEntityWithSphereShape(scene, Vector3.zero, new SphereShape.Model {visible = false});
-            PlaneShape planeShapeComponent = TestHelpers.CreateEntityWithPlaneShape(scene, Vector3.zero, new PlaneShape.Model {visible = false});
-            CylinderShape cylinderShapeComponent = TestHelpers.CreateEntityWithCylinderShape(scene, Vector3.zero, new CylinderShape.Model {visible = false});
-            ConeShape coneShapeComponent = TestHelpers.CreateEntityWithConeShape(scene, Vector3.zero, new ConeShape.Model {visible = false});
+            BoxShape boxShapeComponent = TestHelpers.CreateEntityWithBoxShape(scene, Vector3.zero, false);
+            SphereShape sphereShapeComponent = TestHelpers.CreateEntityWithSphereShape(scene, Vector3.zero, false);
+            PlaneShape planeShapeComponent = TestHelpers.CreateEntityWithPlaneShape(scene, Vector3.zero, false);
+            CylinderShape cylinderShapeComponent = TestHelpers.CreateEntityWithCylinderShape(scene, Vector3.zero, false);
+            ConeShape coneShapeComponent = TestHelpers.CreateEntityWithConeShape(scene, Vector3.zero, false);
             #endregion
 
             #region Act
@@ -437,11 +437,11 @@ namespace Tests
             #region Arrange
             yield return InitScene();
 
-            BoxShape boxShapeComponent = TestHelpers.CreateEntityWithBoxShape(scene, Vector3.zero, new BoxShape.Model {visible = true});
-            SphereShape sphereShapeComponent = TestHelpers.CreateEntityWithSphereShape(scene, Vector3.zero, new SphereShape.Model {visible = true});
-            PlaneShape planeShapeComponent = TestHelpers.CreateEntityWithPlaneShape(scene, Vector3.zero, new PlaneShape.Model {visible = true});
-            CylinderShape cylinderShapeComponent = TestHelpers.CreateEntityWithCylinderShape(scene, Vector3.zero, new CylinderShape.Model {visible = true});
-            ConeShape coneShapeComponent = TestHelpers.CreateEntityWithConeShape(scene, Vector3.zero, new ConeShape.Model {visible = true});
+            BoxShape boxShapeComponent = TestHelpers.CreateEntityWithBoxShape(scene, Vector3.zero, true);
+            SphereShape sphereShapeComponent = TestHelpers.CreateEntityWithSphereShape(scene, Vector3.zero, true);
+            PlaneShape planeShapeComponent = TestHelpers.CreateEntityWithPlaneShape(scene, Vector3.zero, true);
+            CylinderShape cylinderShapeComponent = TestHelpers.CreateEntityWithCylinderShape(scene, Vector3.zero, true);
+            ConeShape coneShapeComponent = TestHelpers.CreateEntityWithConeShape(scene, Vector3.zero, true);
             #endregion
 
             #region Act
@@ -477,11 +477,11 @@ namespace Tests
             #region Arrange
             yield return InitScene();
 
-            BoxShape boxShapeComponent = TestHelpers.CreateEntityWithBoxShape(scene, Vector3.zero, new BoxShape.Model {visible = true});
-            SphereShape sphereShapeComponent = TestHelpers.CreateEntityWithSphereShape(scene, Vector3.zero, new SphereShape.Model {visible = false});
-            PlaneShape planeShapeComponent = TestHelpers.CreateEntityWithPlaneShape(scene, Vector3.zero, new PlaneShape.Model {visible = true});
-            CylinderShape cylinderShapeComponent = TestHelpers.CreateEntityWithCylinderShape(scene, Vector3.zero, new CylinderShape.Model {visible = false});
-            ConeShape coneShapeComponent = TestHelpers.CreateEntityWithConeShape(scene, Vector3.zero, new ConeShape.Model {visible = true});
+            BoxShape boxShapeComponent = TestHelpers.CreateEntityWithBoxShape(scene, Vector3.zero, true);
+            SphereShape sphereShapeComponent = TestHelpers.CreateEntityWithSphereShape(scene, Vector3.zero, false);
+            PlaneShape planeShapeComponent = TestHelpers.CreateEntityWithPlaneShape(scene, Vector3.zero, true);
+            CylinderShape cylinderShapeComponent = TestHelpers.CreateEntityWithCylinderShape(scene, Vector3.zero, false);
+            ConeShape coneShapeComponent = TestHelpers.CreateEntityWithConeShape(scene, Vector3.zero, true);
             #endregion
 
             #region Act

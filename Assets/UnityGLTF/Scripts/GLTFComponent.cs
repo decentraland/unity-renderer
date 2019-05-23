@@ -26,6 +26,19 @@ namespace UnityGLTF
         public int Timeout = 8;
         public Material LoadingTextureMaterial;
         public GLTFSceneImporter.ColliderType Collider = GLTFSceneImporter.ColliderType.None;
+        public bool InitialVisibility
+        {
+            get { return initialVisibility; }
+            set
+            {
+                initialVisibility = value;
+                if (sceneImporter != null)
+                {
+                    sceneImporter.InitialVisibility = value;
+                }
+            }
+        }
+        private bool initialVisibility = true;
 
         public GameObject loadingPlaceholder;
         public System.Action OnFinishedLoadingAsset;
@@ -45,6 +58,7 @@ namespace UnityGLTF
         bool alreadyDecrementedRefCount;
         AsyncCoroutineHelper asyncCoroutineHelper;
         Coroutine loadingRoutine = null;
+        private GLTFSceneImporter sceneImporter;
 
         public WebRequestLoader.WebRequestLoaderEventAction OnWebRequestStartEvent;
         public Action OnSuccess { get { return OnFinishedLoadingAsset; } set { OnFinishedLoadingAsset = value; } }
@@ -116,7 +130,7 @@ namespace UnityGLTF
 
                 asyncCoroutineHelper = gameObject.GetComponent<AsyncCoroutineHelper>() ?? gameObject.AddComponent<AsyncCoroutineHelper>();
 
-                GLTFSceneImporter sceneImporter = null;
+                sceneImporter = null;
                 ILoader loader = null;
 
                 Destroy(loadedAssetRootGameObject);
@@ -167,6 +181,7 @@ namespace UnityGLTF
                     sceneImporter.UseMaterialTransition = UseVisualFeedback;
                     sceneImporter.CustomShaderName = shaderOverride ? shaderOverride.name : null;
                     sceneImporter.LoadingTextureMaterial = LoadingTextureMaterial;
+                    sceneImporter.InitialVisibility = initialVisibility;
 
                     float time = Time.realtimeSinceStartup;
 
