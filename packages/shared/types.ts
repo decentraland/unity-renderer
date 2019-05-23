@@ -294,16 +294,25 @@ export function normalizeContentMappings(
 
 export function ILandToLoadableParcelScene(land: ILand): EnvironmentData<LoadableParcelScene> {
   const mappings: ContentMapping[] = normalizeContentMappings(land.mappingsResponse.contents)
+  const sceneJsons = land.mappingsResponse.contents.filter(land => land.file === 'scene.json')
+  if (!sceneJsons.length) {
+    throw new Error('Invalid scene mapping: no scene.json')
+  }
 
   const ret: EnvironmentData<LoadableParcelScene> = {
-    id: land.mappingsResponse.root_cid,
+    id: sceneJsons[0].hash,
     baseUrl: land.baseUrl,
     main: land.scene.main,
     mappings,
     data: {
-      id: land.mappingsResponse.parcel_id,
+      id: land.scene.scene.base,
       basePosition: parseParcelPosition(land.scene.scene.base),
-      parcels: (land.scene && land.scene.scene && land.scene.scene.parcels.map(parseParcelPosition)) || [],
+      parcels:
+        (land.scene &&
+          land.scene.scene &&
+          land.scene.scene.parcels &&
+          land.scene.scene.parcels.map(parseParcelPosition)) ||
+        [],
       baseUrl: land.baseUrl,
       contents: mappings,
       land

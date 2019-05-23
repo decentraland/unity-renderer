@@ -24,7 +24,11 @@ import {
   getWorldSpawnpoint,
   teleportObservable
 } from '../shared/world/positionThings'
-import { enableParcelSceneLoading, getParcelById, loadedParcelSceneWorkers } from '../shared/world/parcelSceneManager'
+import {
+  enableParcelSceneLoading,
+  loadedParcelSceneWorkers,
+  getSceneWorkerByBaseCoordinates
+} from '../shared/world/parcelSceneManager'
 import { SceneWorker, ParcelSceneAPI, hudWorkerUrl } from '../shared/world/SceneWorker'
 import { ensureUiApis } from '../shared/world/uiSceneInitializer'
 import { ParcelIdentity } from '../shared/apis/ParcelIdentity'
@@ -55,7 +59,7 @@ const browserInterface = {
   },
 
   SceneEvent(data: { sceneId: string; eventType: string; payload: any }) {
-    const scene = getParcelById(data.sceneId)
+    const scene = getSceneWorkerByBaseCoordinates(data.sceneId)
 
     if (scene) {
       const parcelScene = scene.parcelScene as UnityParcelScene
@@ -230,7 +234,7 @@ export async function initializeEngine(_gameInstance: GameInstance) {
     onMessage(type: string, message: any) {
       if (type in browserInterface) {
         // tslint:disable-next-line:semicolon
-        ;(browserInterface as any)[type](message)
+        ; (browserInterface as any)[type](message)
       } else {
         // tslint:disable-next-line:no-console
         console.log('MessageFromEngine', type, message)
