@@ -434,12 +434,12 @@
         },
         "setParams": {
           "kind": "method",
-          "signature": "setParams(params: AnimationParams): void;",
+          "signature": "setParams(params: AnimationParams): this;",
           "accessModifier": "",
           "isOptional": false,
           "isStatic": false,
           "returnValue": {
-            "type": "void",
+            "type": "this",
             "description": []
           },
           "parameters": {
@@ -585,12 +585,12 @@
       "members": {
         "addClip": {
           "kind": "method",
-          "signature": "addClip(clip: AnimationState): void;",
+          "signature": "addClip(clip: AnimationState): this;",
           "accessModifier": "",
           "isOptional": false,
           "isStatic": false,
           "returnValue": {
-            "type": "void",
+            "type": "this",
             "description": []
           },
           "parameters": {
@@ -1144,12 +1144,12 @@
         },
         "playOnce": {
           "kind": "method",
-          "signature": "playOnce(): void;",
+          "signature": "playOnce(): this;",
           "accessModifier": "",
           "isOptional": false,
           "isStatic": false,
           "returnValue": {
-            "type": "void",
+            "type": "this",
             "description": []
           },
           "parameters": {},
@@ -7338,12 +7338,12 @@
         },
         "addEntity": {
           "kind": "method",
-          "signature": "addEntity(entity: IEntity): void;",
+          "signature": "addEntity(entity: IEntity): IEntity;",
           "accessModifier": "",
           "isOptional": false,
           "isStatic": false,
           "returnValue": {
-            "type": "void",
+            "type": "IEntity",
             "description": []
           },
           "parameters": {
@@ -7365,12 +7365,12 @@
         },
         "addSystem": {
           "kind": "method",
-          "signature": "addSystem(system: ISystem, priority?: number): void;",
+          "signature": "addSystem(system: ISystem, priority?: number): ISystem;",
           "accessModifier": "",
           "isOptional": false,
           "isStatic": false,
           "returnValue": {
-            "type": "void",
+            "type": "ISystem",
             "description": []
           },
           "parameters": {
@@ -7555,12 +7555,12 @@
         },
         "removeComponentGroup": {
           "kind": "method",
-          "signature": "removeComponentGroup(componentGroup: ComponentGroup): void;",
+          "signature": "removeComponentGroup(componentGroup: ComponentGroup): boolean;",
           "accessModifier": "",
           "isOptional": false,
           "isStatic": false,
           "returnValue": {
-            "type": "void",
+            "type": "boolean",
             "description": []
           },
           "parameters": {
@@ -7582,12 +7582,12 @@
         },
         "removeEntity": {
           "kind": "method",
-          "signature": "removeEntity(entity: IEntity): void;",
+          "signature": "removeEntity(entity: IEntity): boolean;",
           "accessModifier": "",
           "isOptional": false,
           "isStatic": false,
           "returnValue": {
-            "type": "void",
+            "type": "boolean",
             "description": []
           },
           "parameters": {
@@ -7609,12 +7609,12 @@
         },
         "removeSystem": {
           "kind": "method",
-          "signature": "removeSystem(system: ISystem): void;",
+          "signature": "removeSystem(system: ISystem): boolean;",
           "accessModifier": "",
           "isOptional": false,
           "isStatic": false,
           "returnValue": {
-            "type": "void",
+            "type": "boolean",
             "description": []
           },
           "parameters": {
@@ -7652,12 +7652,12 @@
         },
         "update": {
           "kind": "method",
-          "signature": "update(dt: number): void;",
+          "signature": "update(dt: number): this;",
           "accessModifier": "",
           "isOptional": false,
           "isStatic": false,
           "returnValue": {
-            "type": "void",
+            "type": "this",
             "description": []
           },
           "parameters": {
@@ -7759,12 +7759,12 @@
         },
         "addComponent": {
           "kind": "method",
-          "signature": "addComponent<T extends object>(component: T): void;",
+          "signature": "addComponent<T extends object>(component: T): T;",
           "accessModifier": "",
           "isOptional": false,
           "isStatic": false,
           "returnValue": {
-            "type": "void",
+            "type": "T",
             "description": []
           },
           "parameters": {
@@ -7796,12 +7796,12 @@
         },
         "addComponentOrReplace": {
           "kind": "method",
-          "signature": "addComponentOrReplace<T extends object>(component: T): void;",
+          "signature": "addComponentOrReplace<T extends object>(component: T): T;",
           "accessModifier": "",
           "isOptional": false,
           "isStatic": false,
           "returnValue": {
-            "type": "void",
+            "type": "T",
             "description": []
           },
           "parameters": {
@@ -8158,12 +8158,12 @@
         },
         "setParent": {
           "kind": "method",
-          "signature": "setParent(newParent: IEntity): void;",
+          "signature": "setParent(newParent: IEntity): IEntity;",
           "accessModifier": "",
           "isOptional": false,
           "isStatic": false,
           "returnValue": {
-            "type": "void",
+            "type": "IEntity",
             "description": []
           },
           "parameters": {
@@ -8275,12 +8275,12 @@
       "members": {
         "addListener": {
           "kind": "method",
-          "signature": "addListener<T, X>(eventClass: IEventConstructor<T>, listener: X, listenerFunction: (this: X, event: T) => void): void;",
+          "signature": "addListener<T, X>(eventClass: IEventConstructor<T>, listener: X, listenerFunction: (this: X, event: T) => void): this;",
           "accessModifier": "",
           "isOptional": false,
           "isStatic": false,
           "returnValue": {
-            "type": "void",
+            "type": "this",
             "description": []
           },
           "parameters": {
@@ -8316,12 +8316,12 @@
         },
         "fireEvent": {
           "kind": "method",
-          "signature": "fireEvent<T extends object>(event: T): void;",
+          "signature": "fireEvent<T extends object>(event: T): this;",
           "accessModifier": "",
           "isOptional": false,
           "isStatic": false,
           "returnValue": {
-            "type": "void",
+            "type": "this",
             "description": []
           },
           "parameters": {
@@ -10248,12 +10248,12 @@
         },
         "subscribe": {
           "kind": "method",
-          "signature": "subscribe(eventName: InputEventKind, fn: (e: LocalPointerEvent) => void): () => void;",
+          "signature": "subscribe(eventName: InputEventKind, fn: (e: LocalPointerEvent) => void): () => false | ((e: LocalPointerEvent) => void)[];",
           "accessModifier": "",
           "isOptional": false,
           "isStatic": false,
           "returnValue": {
-            "type": "() => void",
+            "type": "() => false | ((e: LocalPointerEvent) => void)[]",
             "description": []
           },
           "parameters": {
@@ -10304,12 +10304,12 @@
         },
         "unsubscribe": {
           "kind": "method",
-          "signature": "unsubscribe(eventName: InputEventKind, fn: (e: LocalPointerEvent) => void): void;",
+          "signature": "unsubscribe(eventName: InputEventKind, fn: (e: LocalPointerEvent) => void): false | ((e: LocalPointerEvent) => void)[];",
           "accessModifier": "",
           "isOptional": false,
           "isStatic": false,
           "returnValue": {
-            "type": "void",
+            "type": "false | ((e: LocalPointerEvent) => void)[]",
             "description": []
           },
           "parameters": {
@@ -16801,6 +16801,75 @@
       "remarks": [],
       "isBeta": true
     },
+    "NFTShape": {
+      "kind": "class",
+      "extends": "Shape",
+      "implements": "",
+      "typeParameters": [],
+      "deprecatedMessage": [],
+      "summary": [],
+      "remarks": [],
+      "isBeta": false,
+      "isSealed": false,
+      "members": {
+        "__constructor": {
+          "kind": "constructor",
+          "signature": "constructor(src: string);",
+          "parameters": {
+            "src": {
+              "name": "src",
+              "description": [],
+              "isOptional": false,
+              "isSpread": false,
+              "type": "string"
+            }
+          },
+          "deprecatedMessage": [],
+          "summary": [
+            {
+              "kind": "text",
+              "text": "Constructs a new instance of the "
+            },
+            {
+              "kind": "api-link",
+              "elements": [
+                {
+                  "kind": "text",
+                  "text": "NFTShape"
+                }
+              ],
+              "target": {
+                "scopeName": "",
+                "packageName": "decentraland-ecs",
+                "exportName": "NFTShape",
+                "memberName": ""
+              }
+            },
+            {
+              "kind": "text",
+              "text": " class"
+            }
+          ],
+          "remarks": []
+        },
+        "src": {
+          "kind": "property",
+          "signature": "readonly src: string;",
+          "isOptional": false,
+          "isReadOnly": true,
+          "isStatic": false,
+          "type": "string",
+          "deprecatedMessage": [],
+          "summary": [],
+          "remarks": [],
+          "isBeta": false,
+          "isSealed": false,
+          "isVirtual": false,
+          "isOverride": false,
+          "isEventProperty": false
+        }
+      }
+    },
     "OBJShape": {
       "kind": "class",
       "extends": "Shape",
@@ -17605,12 +17674,12 @@
         },
         "onChange": {
           "kind": "method",
-          "signature": "onChange(fn: ObservableComponentSubscription): void;",
+          "signature": "onChange(fn: ObservableComponentSubscription): this;",
           "accessModifier": "",
           "isOptional": false,
           "isStatic": false,
           "returnValue": {
-            "type": "void",
+            "type": "this",
             "description": []
           },
           "parameters": {
@@ -26081,12 +26150,12 @@
         },
         "lookAt": {
           "kind": "method",
-          "signature": "lookAt(target: Vector3, worldUp?: Vector3): void;",
+          "signature": "lookAt(target: Vector3, worldUp?: Vector3): this;",
           "accessModifier": "",
           "isOptional": false,
           "isStatic": false,
           "returnValue": {
-            "type": "void",
+            "type": "this",
             "description": []
           },
           "parameters": {
@@ -26136,12 +26205,12 @@
         },
         "rotate": {
           "kind": "method",
-          "signature": "rotate(axis: Vector3, angle: number): void;",
+          "signature": "rotate(axis: Vector3, angle: number): this;",
           "accessModifier": "",
           "isOptional": false,
           "isStatic": false,
           "returnValue": {
-            "type": "void",
+            "type": "this",
             "description": []
           },
           "parameters": {
@@ -26207,12 +26276,12 @@
         },
         "translate": {
           "kind": "method",
-          "signature": "translate(vec: Vector3): void;",
+          "signature": "translate(vec: Vector3): this;",
           "accessModifier": "",
           "isOptional": false,
           "isStatic": false,
           "returnValue": {
-            "type": "void",
+            "type": "this",
             "description": []
           },
           "parameters": {

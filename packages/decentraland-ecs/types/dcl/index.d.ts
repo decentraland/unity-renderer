@@ -78,7 +78,7 @@ declare class AnimationState extends ObservableComponent {
     /**
      * Sets the clip parameters
      */
-    setParams(params: AnimationParams): void;
+    setParams(params: AnimationParams): this;
     toJSON(): any;
     /**
      * Starts the animation
@@ -106,7 +106,7 @@ declare class Animator extends Shape {
     /**
      * Adds an AnimationState to the animation lists.
      */
-    addClip(clip: AnimationState): void;
+    addClip(clip: AnimationState): this;
     /**
      * Gets the animation clip instance for the specified clip name.
      * If the clip doesn't exist a new one will be created.
@@ -205,7 +205,7 @@ declare class AudioSource extends ObservableComponent {
      * Disables the looping and plays the current source once.
      * If the sound was playing, it stops and starts over.
      */
-    playOnce(): void;
+    playOnce(): this;
 }
 
 /**
@@ -1209,18 +1209,18 @@ declare class Engine implements IEngine {
     readonly entities: Readonly<Record<string, IEntity>>;
     readonly disposableComponents: Readonly<Record<string, DisposableComponentLike>>;
     constructor(rootEntity: IEntity);
-    addEntity(entity: IEntity): void;
-    removeEntity(entity: IEntity): void;
-    addSystem(system: ISystem, priority?: number): void;
-    removeSystem(system: ISystem): void;
-    update(dt: number): void;
+    addEntity(entity: IEntity): IEntity;
+    removeEntity(entity: IEntity): boolean;
+    addSystem(system: ISystem, priority?: number): ISystem;
+    removeSystem(system: ISystem): boolean;
+    update(dt: number): this;
     getEntitiesWithComponent(component: string): Record<string, any>;
     getEntitiesWithComponent(component: ComponentConstructor<any>): Record<string, IEntity>;
     registerComponent(component: DisposableComponentLike): void;
     disposeComponent(component: DisposableComponentLike): boolean;
     updateComponent(component: DisposableComponentLike): void;
     getComponentGroup(...requires: ComponentConstructor<any>[]): ComponentGroup;
-    removeComponentGroup(componentGroup: ComponentGroup): void;
+    removeComponentGroup(componentGroup: ComponentGroup): boolean;
     private registerSystem;
     private checkRequirementsAndAdd;
     private checkRequirements;
@@ -1249,7 +1249,7 @@ declare class Entity implements IEntity {
      * Adds or replaces a component in the entity.
      * @param component - component instance.
      */
-    addComponentOrReplace<T extends object>(component: T): void;
+    addComponentOrReplace<T extends object>(component: T): T;
     /**
      * Returns a boolean indicating if a component is present in the entity.
      * @param component - component class, instance or name
@@ -1280,7 +1280,7 @@ declare class Entity implements IEntity {
      * Adds a component. If the component already exist, it throws an Error.
      * @param component - component instance.
      */
-    addComponent<T extends object>(component: T): void;
+    addComponent<T extends object>(component: T): T;
     /**
      * Removes a component instance from the entity.
      * @param component - component instance to remove
@@ -1297,7 +1297,7 @@ declare class Entity implements IEntity {
     /**
      * Sets the parent entity
      */
-    setParent(newParent: IEntity): void;
+    setParent(newParent: IEntity): IEntity;
     /**
      * Gets the parent entity
      */
@@ -1319,9 +1319,9 @@ declare function EventConstructor(): ClassDecorator;
  */
 declare class EventManager {
     private listeners;
-    addListener<T, X>(eventClass: IEventConstructor<T>, listener: X, listenerFunction: (this: X, event: T) => void): void;
+    addListener<T, X>(eventClass: IEventConstructor<T>, listener: X, listenerFunction: (this: X, event: T) => void): this;
     removeListener<X>(listener: X, eventClass: IEventConstructor<any>): boolean;
-    fireEvent<T extends object>(event: T): void;
+    fireEvent<T extends object>(event: T): this;
 }
 
 declare type FloatArray = number[];
@@ -1683,13 +1683,13 @@ declare class Input {
      * @param eventName - The name of the event (see InputEventKind).
      * @param fn - A callback function to be called when the event is triggered.
      */
-    subscribe(eventName: InputEventKind, fn: (e: LocalPointerEvent) => void): () => void;
+    subscribe(eventName: InputEventKind, fn: (e: LocalPointerEvent) => void): () => false | ((e: LocalPointerEvent) => void)[];
     /**
      * Removes an existing input event subscription.
      * @param eventName - The name of the event (see InputEventKind).
      * @param fn - The callback function used when subscribing to the event.
      */
-    unsubscribe(eventName: InputEventKind, fn: (e: LocalPointerEvent) => void): void;
+    unsubscribe(eventName: InputEventKind, fn: (e: LocalPointerEvent) => void): false | ((e: LocalPointerEvent) => void)[];
     private getPointerById;
     private handlePointerUp;
     private handlePointerDown;
@@ -2585,6 +2585,14 @@ declare class MultiObserver<T> {
     dispose(): void;
 }
 
+/**
+ * @public
+ */
+declare class NFTShape extends Shape {
+    readonly src: string;
+    constructor(src: string);
+}
+
 declare type Nullable<T> = T | null;
 
 /**
@@ -2709,7 +2717,7 @@ declare class ObservableComponent {
     static field(target: ObservableComponent, propertyKey: string): void;
     static uiValue(target: ObservableComponent, propertyKey: string): void;
     static readonly(target: ObservableComponent, propertyKey: string): void;
-    onChange(fn: ObservableComponentSubscription): void;
+    onChange(fn: ObservableComponentSubscription): this;
     toJSON(): any;
 }
 
@@ -4043,17 +4051,17 @@ declare class Transform extends ObservableComponent {
      * @public
      * Rotates the transform so the forward vector points at target's current position.
      */
-    lookAt(target: Vector3, worldUp?: Vector3): void;
+    lookAt(target: Vector3, worldUp?: Vector3): this;
     /**
      * @public
      * Applies a rotation of euler angles around the x, y and z axis.
      */
-    rotate(axis: Vector3, angle: number): void;
+    rotate(axis: Vector3, angle: number): this;
     /**
      * @public
      * Moves the transform in the direction and distance of translation.
      */
-    translate(vec: Vector3): void;
+    translate(vec: Vector3): this;
 }
 
 /**

@@ -135,7 +135,8 @@ export function getServerConfigurations() {
   return {
     landApi: `https://api.decentraland.${TLDDefault}/v1`,
     content: `https://content.decentraland.${TLDDefault}`,
-    worldInstanceUrl: `wss://world-comm.decentraland.${TLDDefault}/connect?method=noop`
+    worldInstanceUrl: `wss://world-comm.decentraland.${TLDDefault}/connect?method=noop`,
+    darApi: 'https://schema-api-staging.now.sh/dar'
   }
 }
 

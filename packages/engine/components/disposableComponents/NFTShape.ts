@@ -3,13 +3,15 @@ import { CLASS_ID } from 'decentraland-ecs/src'
 import { BaseEntity } from 'engine/entities/BaseEntity'
 import { cleanupAssetContainer } from 'engine/entities/utils/processModels'
 import { scene, engine } from 'engine/renderer'
-import { DEBUG } from 'config'
+import { DEBUG, getServerConfigurations } from 'config'
 import { log } from 'util'
 import { Animator } from '../ephemeralComponents/Animator'
 import { deleteUnusedTextures } from 'engine/renderer/monkeyLoader'
 import { processGLTFAssetContainer, loadingShape } from './GLTFShape'
 
 let noise: BABYLON.NoiseProceduralTexture | null = null
+
+const config = getServerConfigurations()
 
 function getNoiseTexture() {
   if (!noise) {
@@ -68,7 +70,7 @@ function parseProtocolUrl(url: string): { protocol: string; registry: string; as
 }
 
 async function fetchDARAsset(registry: string, assetId: string): Promise<DARAsset> {
-  const req = await fetch(`https://schema-api-staging.now.sh/dar/${registry}/asset/${assetId}`)
+  const req = await fetch(`${config.darApi}/${registry}/asset/${assetId}`)
   return req.json()
 }
 
