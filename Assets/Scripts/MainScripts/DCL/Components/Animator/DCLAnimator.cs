@@ -1,12 +1,8 @@
-using System;
+using DCL.Models;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
-using UnityEngine.Playables;
-using UnityEngine.Animations;
-using DCL.Helpers;
-using DCL.Models;
 
 namespace DCL.Components
 {
@@ -72,7 +68,7 @@ namespace DCL.Components
 
         public override IEnumerator ApplyChanges(string newJson)
         {
-            model = Utils.SafeFromJson<Model>(newJson);
+            model = SceneController.i.SafeFromJson<Model>(newJson);
             UpdateAnimationState();
             return null;
         }
@@ -88,13 +84,19 @@ namespace DCL.Components
         private void Initialize()
         {
             if (entity == null || entity.meshGameObject == null)
+            {
                 return;
+            }
 
             if (previousState != null && !CheckIfDirty(model.states, previousState))
+            {
                 return;
+            }
 
             if (model.states == null || model.states.Length == 0)
+            {
                 return;
+            }
 
 
             //NOTE(Brian): fetch all the AnimationClips in Animation component.
@@ -103,7 +105,9 @@ namespace DCL.Components
                 animComponent = entity.meshGameObject.GetComponentInChildren<Animation>(true);
 
                 if (animComponent == null)
+                {
                     return;
+                }
 
                 clipNameToClip.Clear();
                 clipToState.Clear();
@@ -191,10 +195,14 @@ namespace DCL.Components
         bool CheckIfDirty(Model.DCLAnimationState[] states1, Model.DCLAnimationState[] states2)
         {
             if (states1 == null || states2 == null)
+            {
                 return true;
+            }
 
             if (states1.Length != states2.Length)
+            {
                 return true;
+            }
 
             //TODO(Brian): bad performance, fix later?
             for (int i = 0; i < states2.Length; i++)

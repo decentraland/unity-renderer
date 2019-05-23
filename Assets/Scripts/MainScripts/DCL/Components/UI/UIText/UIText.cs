@@ -1,11 +1,8 @@
-using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
-using UnityEngine.UI;
-using DCL.Helpers;
 using DCL.Controllers;
+using DCL.Helpers;
 using DCL.Models;
-using TMPro;
+using System.Collections;
+using UnityEngine;
 
 namespace DCL.Components
 {
@@ -35,7 +32,9 @@ namespace DCL.Components
         public override IEnumerator ApplyChanges(string newJson)
         {
             if (!scene.isTestScene)
-                model.textModel = JsonUtility.FromJson<TextShape.Model>(newJson);
+            {
+                model.textModel = SceneController.i.SafeFromJson<TextShape.Model>(newJson);
+            }
 
             TextShape.ApplyModelChanges(referencesContainer.text, model.textModel);
 
@@ -54,14 +53,22 @@ namespace DCL.Components
                 float width, height;
 
                 if (model.textModel.adaptWidth)
+                {
                     width = b.size.x;
+                }
                 else
+                {
                     width = model.width.GetScaledValue(parentTransform.rect.width);
+                }
 
                 if (model.textModel.adaptHeight)
+                {
                     height = b.size.y;
+                }
                 else
+                {
                     height = model.width.GetScaledValue(parentTransform.rect.height);
+                }
 
                 referencesContainer.layoutElementRT.SetSizeWithCurrentAnchors(RectTransform.Axis.Horizontal, width);
                 referencesContainer.layoutElementRT.SetSizeWithCurrentAnchors(RectTransform.Axis.Vertical, height);

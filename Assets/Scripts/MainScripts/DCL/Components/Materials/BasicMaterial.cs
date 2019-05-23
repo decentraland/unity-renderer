@@ -39,9 +39,12 @@ namespace DCL.Components
 
         public override IEnumerator ApplyChanges(string newJson)
         {
-            if (material == null) yield break; // We escape ApplyChanges called in the parent's constructor
+            if (material == null)
+            {
+                yield break; // We escape ApplyChanges called in the parent's constructor
+            }
 
-            model = JsonUtility.FromJson<Model>(newJson);
+            model = SceneController.i.SafeFromJson<Model>(newJson);
 
             if (!string.IsNullOrEmpty(model.texture))
             {
@@ -77,7 +80,9 @@ namespace DCL.Components
         void InitMaterial(GameObject meshGameObject)
         {
             if (meshGameObject == null)
+            {
                 return;
+            }
 
             var meshRenderer = meshGameObject.GetComponent<MeshRenderer>();
 
@@ -123,7 +128,9 @@ namespace DCL.Components
         public override void Dispose()
         {
             if (material != null)
+            {
                 GameObject.Destroy(material);
+            }
 
             base.Dispose();
         }

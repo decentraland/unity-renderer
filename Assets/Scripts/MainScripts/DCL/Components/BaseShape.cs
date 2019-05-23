@@ -1,7 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
 using DCL.Controllers;
-using DCL.Helpers;
 using DCL.Models;
 using UnityEngine;
 
@@ -25,14 +24,15 @@ namespace DCL.Components
             if (attachedEntities.Contains(entity)) return;
 
             base.AttachTo(entity, typeof(BaseShape));
-
             entity.currentShape = this;
         }
 
         public override void DetachFrom(DecentralandEntity entity, System.Type overridenAttachedType = null)
         {
             if (!attachedEntities.Contains(entity))
+            {
                 return;
+            }
 
             // We do this instead of OnDetach += because it is required to run after every OnDetach listener
             entity.currentShape = null;
@@ -42,7 +42,10 @@ namespace DCL.Components
 
         public static void ConfigureColliders(GameObject meshGameObject, bool hasCollision, bool filterByColliderName = false)
         {
-            if (meshGameObject == null) return;
+            if (meshGameObject == null)
+            {
+                return;
+            }
 
             MeshCollider collider;
             MeshRenderer renderer;
@@ -53,9 +56,12 @@ namespace DCL.Components
                 if (filterByColliderName)
                 {
                     if (!meshFilters[i].transform.parent.name.ToLower().Contains("_collider"))
+                    {
                         continue;
+                    }
 
                     renderer = meshFilters[i].GetComponent<MeshRenderer>();
+
                     if (renderer != null)
                     {
                         renderer.enabled = false;

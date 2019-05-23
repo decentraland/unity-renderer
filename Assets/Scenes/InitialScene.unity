@@ -215,6 +215,22 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 1133945607, guid: b387035aa46399445bdc7951a41d5213, type: 3}
+      propertyPath: m_AnchorMin.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1133945607, guid: b387035aa46399445bdc7951a41d5213, type: 3}
+      propertyPath: m_AnchorMax.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1133945607, guid: b387035aa46399445bdc7951a41d5213, type: 3}
+      propertyPath: m_AnchoredPosition.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1133945607, guid: b387035aa46399445bdc7951a41d5213, type: 3}
+      propertyPath: m_AnchoredPosition.y
+      value: 0
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: b387035aa46399445bdc7951a41d5213, type: 3}
 --- !u!114 &322303338 stripped
@@ -261,8 +277,8 @@ MonoBehaviour:
   sceneController: {fileID: 322303338}
   characterController: {fileID: 1989862556}
   openBrowserWhenStart: 1
-  useClientDebugMode: 1
-  startInCoords: {x: 145, y: 123}
+  useClientDebugMode: 0
+  startInCoords: {x: 64, y: -64}
 --- !u!4 &1444882337
 Transform:
   m_ObjectHideFlags: 0

@@ -1,7 +1,5 @@
-using DCL.Components;
 using DCL.Helpers;
 using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 namespace DCL.Components
@@ -25,7 +23,9 @@ namespace DCL.Components
         public void InitDCLAudioClip(DCLAudioClip dclAudioClip)
         {
             if (lastDCLAudioClip != null)
+            {
                 lastDCLAudioClip.OnLoadingFinished -= DclAudioClip_OnLoadingFinished;
+            }
 
             lastDCLAudioClip = dclAudioClip;
         }
@@ -33,7 +33,7 @@ namespace DCL.Components
         public override IEnumerator ApplyChanges(string newJson)
         {
             audioSource = gameObject.GetOrCreateComponent<AudioSource>();
-            model = Utils.SafeFromJson<Model>(newJson);
+            model = SceneController.i.SafeFromJson<Model>(newJson);
 
             audioSource.volume = model.volume;
             audioSource.loop = model.loop;

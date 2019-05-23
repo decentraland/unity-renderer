@@ -1,9 +1,8 @@
-using UnityEngine;
-using System.Collections;
-using System.Collections.Generic;
-using DCL.Models;
 using DCL.Controllers;
+using DCL.Models;
 using System;
+using System.Collections;
+using UnityEngine;
 
 namespace DCL.Components
 {
@@ -62,10 +61,17 @@ namespace DCL.Components
 
         public virtual IEnumerator UpdateComponent(string newJson)
         {
-            yield return ApplyChanges(newJson);
+            var enumerator = ApplyChanges(newJson);
+
+            if (enumerator != null)
+            {
+                yield return enumerator;
+            }
 
             if (entity != null && entity.OnComponentUpdated != null)
+            {
                 entity.OnComponentUpdated.Invoke(this);
+            }
         }
 
         public abstract IEnumerator ApplyChanges(string newJson);

@@ -39,7 +39,7 @@ namespace DCL.Components
         public override IEnumerator ApplyChanges(string newJson)
         {
             bool currentVisible = model.visible;
-            model = Helpers.Utils.SafeFromJson<Model>(newJson);
+            model = SceneController.i.SafeFromJson<Model>(newJson);
 
             // TODO: changing src is not allowed in loadableShapes
             if (!string.IsNullOrEmpty(model.src) && currentSrc != model.src)

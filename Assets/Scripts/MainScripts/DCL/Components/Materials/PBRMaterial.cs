@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using DCL.Controllers;
 using DCL.Helpers;
 using DCL.Models;
+using System.Collections;
 using UnityEngine;
 
 namespace DCL.Components
@@ -67,7 +68,7 @@ namespace DCL.Components
 
         public override IEnumerator ApplyChanges(string newJson)
         {
-            model = JsonUtility.FromJson<Model>(newJson);
+            model = SceneController.i.SafeFromJson<Model>(newJson);
 
             if (model.disableLighting)
             {
@@ -94,7 +95,9 @@ namespace DCL.Components
                 material.SetColor("_EmissionColor", model.emissiveColor * model.emissiveIntensity);
 
                 if (model.emissiveColor != Color.clear && model.emissiveColor != Color.black)
+                {
                     material.EnableKeyword("_EMISSION");
+                }
 
                 material.SetColor("_SpecColor", model.reflectivityColor);
 
@@ -210,7 +213,9 @@ namespace DCL.Components
         void InitMaterial(GameObject meshGameObject)
         {
             if (meshGameObject == null)
+            {
                 return;
+            }
 
             var meshRenderer = meshGameObject.GetComponent<MeshRenderer>();
 
@@ -258,7 +263,9 @@ namespace DCL.Components
         public override void Dispose()
         {
             if (material != null)
+            {
                 GameObject.Destroy(material);
+            }
 
             base.Dispose();
         }

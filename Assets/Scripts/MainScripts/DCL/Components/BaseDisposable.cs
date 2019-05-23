@@ -1,9 +1,7 @@
-using System.Runtime.CompilerServices;
+using DCL.Models;
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using DCL.Helpers;
-using DCL.Models;
 using UnityEngine;
 
 namespace DCL.Components
@@ -45,7 +43,9 @@ namespace DCL.Components
         private void ApplyChangesIfModified(string newSerialization)
         {
             if (newSerialization == oldSerialization)
+            {
                 return;
+            }
 
             oldSerialization = newSerialization;
 
@@ -73,7 +73,9 @@ namespace DCL.Components
             entity.AddSharedComponent(thisType, this);
 
             if (OnAttach != null)
+            {
                 OnAttach.Invoke(entity);
+            }
 
             attachedEntities.Add(entity);
 
@@ -88,7 +90,9 @@ namespace DCL.Components
         public virtual void DetachFrom(DecentralandEntity entity, Type overridenAttachedType = null)
         {
             if (!attachedEntities.Contains(entity))
+            {
                 return;
+            }
 
             entity.OnRemoved -= OnEntityRemoved;
 
@@ -124,7 +128,9 @@ namespace DCL.Components
             var enumerator = ApplyChanges(newJson);
 
             if (enumerator != null)
+            {
                 yield return enumerator;
+            }
 
             RaiseOnAppliedChanges();
         }

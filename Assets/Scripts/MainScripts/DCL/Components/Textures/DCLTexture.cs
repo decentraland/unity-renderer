@@ -4,7 +4,6 @@ using DCL.Helpers;
 using DCL.Models;
 using System;
 using System.Collections;
-using System.Text.RegularExpressions;
 using UnityEngine;
 
 namespace DCL
@@ -63,7 +62,9 @@ namespace DCL
                     if (textureComponent.texture != null)
                     {
                         if (OnFinish != null)
+                        {
                             OnFinish.Invoke(textureComponent.texture);
+                        }
 
                         yield break;
                     }
@@ -77,7 +78,7 @@ namespace DCL
 
         public override IEnumerator ApplyChanges(string newJson)
         {
-            model = JsonUtility.FromJson<Model>(newJson);
+            model = SceneController.i.SafeFromJson<Model>(newJson);
 
             unitySamplingMode = model.samplingMode;
 
@@ -104,7 +105,9 @@ namespace DCL
 
                     // The used texture variable can't be null for the ImageConversion.LoadImage to work
                     if (texture == null)
+                    {
                         texture = new Texture2D(1, 1);
+                    }
 
                     if (!ImageConversion.LoadImage(texture, Convert.FromBase64String(base64Data)))
                     {
@@ -138,7 +141,9 @@ namespace DCL
         public override void Dispose()
         {
             if (texture != null)
+            {
                 UnityEngine.Object.Destroy(texture);
+            }
 
             base.Dispose();
         }
