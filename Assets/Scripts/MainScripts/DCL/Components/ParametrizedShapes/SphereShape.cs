@@ -1,5 +1,6 @@
 using DCL.Controllers;
 using DCL.Helpers;
+using DCL.Models;
 using UnityEngine;
 
 namespace DCL.Components
@@ -11,7 +12,9 @@ namespace DCL.Components
         {
         }
 
-        public SphereShape(ParcelScene scene) : base(scene) { }
+        public SphereShape(ParcelScene scene) : base(scene)
+        {
+        }
 
         public static Mesh mesh = null;
 

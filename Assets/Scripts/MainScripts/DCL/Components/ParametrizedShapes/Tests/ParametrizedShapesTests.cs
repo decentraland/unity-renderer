@@ -5,6 +5,7 @@ using DCL.Components;
 using DCL.Helpers;
 using DCL.Models;
 using NUnit.Framework;
+using Newtonsoft.Json;
 using UnityEngine;
 using UnityEngine.TestTools;
 
@@ -140,55 +141,53 @@ namespace Tests
         }
 
         [UnityTest]
+        public IEnumerator BoxShapeAttachedGetsReplacedOnNewAttachment()
+        {
+            yield return InitScene();
+
+            yield return TestHelpers.TestAttachedSharedComponentOfSameTypeIsReplaced<BoxShape.Model, BoxShape>(scene, CLASS_ID.BOX_SHAPE);
+        }
+
+        [UnityTest]
+        public IEnumerator SphereShapeComponentMissingValuesGetDefaultedOnUpdate()
+        {
+            yield return InitScene();
+
+            var component = TestHelpers.SharedComponentCreate<SphereShape, SphereShape.Model>(scene, CLASS_ID.SPHERE_SHAPE);
+            yield return component.routine;
+
+            Assert.IsFalse(component == null);
+
+            yield return TestHelpers.TestSharedComponentDefaultsOnUpdate<SphereShape.Model, SphereShape>(scene, CLASS_ID.SPHERE_SHAPE);
+        }
+
+        [UnityTest]
+        public IEnumerator SphereShapeAttachedGetsReplacedOnNewAttachment()
+        {
+            yield return InitScene();
+
+            yield return TestHelpers.TestAttachedSharedComponentOfSameTypeIsReplaced<SphereShape.Model, SphereShape>(scene, CLASS_ID.SPHERE_SHAPE);
+        }
+
+        [UnityTest]
         public IEnumerator ConeShapeComponentMissingValuesGetDefaultedOnUpdate()
         {
             yield return InitScene();
 
-            string entityId = "1";
-            TestHelpers.CreateSceneEntity(scene, entityId);
+            var component = TestHelpers.SharedComponentCreate<ConeShape, ConeShape.Model>(scene, CLASS_ID.CONE_SHAPE);
+            yield return component.routine;
 
-            // 1. Create component with non-default configs
-            string componentJSON = JsonUtility.ToJson(new ConeShape.Model
-            {
-                radiusBottom = 0.5f,
-                segmentsHeight = 0.3f,
-                segmentsRadial = 12f,
-                openEnded = false,
-                arc = 123f,
-                withCollisions = true
-            });
+            Assert.IsFalse(component == null);
 
-            string componentId = TestHelpers.CreateAndSetShape(scene, entityId, DCL.Models.CLASS_ID.CONE_SHAPE,
-                componentJSON
-                );
+            yield return TestHelpers.TestSharedComponentDefaultsOnUpdate<ConeShape.Model, ConeShape>(scene, CLASS_ID.CONE_SHAPE);
+        }
 
-            ConeShape coneShapeComponent = (ConeShape)scene.GetSharedComponent(componentId);
+        [UnityTest]
+        public IEnumerator ConeShapeAttachedGetsReplacedOnNewAttachment()
+        {
+            yield return InitScene();
 
-            // 2. Check configured values
-            Assert.AreEqual(0.5f, coneShapeComponent.model.radiusBottom);
-            Assert.AreEqual(0.3f, coneShapeComponent.model.segmentsHeight);
-            Assert.AreEqual(12f, coneShapeComponent.model.segmentsRadial);
-            Assert.AreEqual(123f, coneShapeComponent.model.arc);
-            Assert.IsTrue(coneShapeComponent.model.withCollisions);
-
-            // 3. Update component with missing values
-            componentJSON = JsonUtility.ToJson(new ConeShape.Model
-            {
-                openEnded = false
-            });
-
-            scene.SharedComponentUpdate(JsonUtility.ToJson(new DCL.Models.SharedComponentUpdateMessage
-            {
-                id = componentId,
-                json = componentJSON
-            }));
-
-            // 4. Check defaulted values
-            Assert.AreEqual(1f, coneShapeComponent.model.radiusBottom);
-            Assert.AreEqual(1f, coneShapeComponent.model.segmentsHeight);
-            Assert.AreEqual(36f, coneShapeComponent.model.segmentsRadial);
-            Assert.AreEqual(360f, coneShapeComponent.model.arc);
-            Assert.IsFalse(coneShapeComponent.model.withCollisions);
+            yield return TestHelpers.TestAttachedSharedComponentOfSameTypeIsReplaced<ConeShape.Model, ConeShape>(scene, CLASS_ID.CONE_SHAPE);
         }
 
         [UnityTest]
@@ -196,51 +195,20 @@ namespace Tests
         {
             yield return InitScene();
 
-            string entityId = "1";
-            TestHelpers.CreateSceneEntity(scene, entityId);
+            var component = TestHelpers.SharedComponentCreate<CylinderShape, CylinderShape.Model>(scene, CLASS_ID.CYLINDER_SHAPE);
+            yield return component.routine;
 
-            // 1. Create component with non-default configs
-            string componentJSON = JsonUtility.ToJson(new CylinderShape.Model
-            {
-                radiusBottom = 0.5f,
-                segmentsHeight = 0.3f,
-                segmentsRadial = 12f,
-                openEnded = false,
-                arc = 123f,
-                withCollisions = true
-            });
+            Assert.IsFalse(component == null);
 
-            string componentId = TestHelpers.CreateAndSetShape(scene, entityId, DCL.Models.CLASS_ID.CYLINDER_SHAPE,
-              componentJSON
-            );
+            yield return TestHelpers.TestSharedComponentDefaultsOnUpdate<CylinderShape.Model, CylinderShape>(scene, CLASS_ID.CYLINDER_SHAPE);
+        }
 
-            CylinderShape cylinderShapeComponent = (CylinderShape)scene.GetSharedComponent(componentId);
+        [UnityTest]
+        public IEnumerator CylinderShapeAttachedGetsReplacedOnNewAttachment()
+        {
+            yield return InitScene();
 
-            // 2. Check configured values
-            Assert.AreEqual(0.5f, cylinderShapeComponent.model.radiusBottom);
-            Assert.AreEqual(0.3f, cylinderShapeComponent.model.segmentsHeight);
-            Assert.AreEqual(12f, cylinderShapeComponent.model.segmentsRadial);
-            Assert.AreEqual(123f, cylinderShapeComponent.model.arc);
-            Assert.IsTrue(cylinderShapeComponent.model.withCollisions);
-
-            // 3. Update component with missing values
-            componentJSON = JsonUtility.ToJson(new CylinderShape.Model
-            {
-                openEnded = false
-            });
-
-            scene.SharedComponentUpdate(JsonUtility.ToJson(new DCL.Models.SharedComponentUpdateMessage
-            {
-                id = componentId,
-                json = componentJSON
-            }));
-
-            // 4. Check defaulted values
-            Assert.AreEqual(1f, cylinderShapeComponent.model.radiusBottom);
-            Assert.AreEqual(1f, cylinderShapeComponent.model.segmentsHeight);
-            Assert.AreEqual(36f, cylinderShapeComponent.model.segmentsRadial);
-            Assert.AreEqual(360f, cylinderShapeComponent.model.arc);
-            Assert.IsFalse(cylinderShapeComponent.model.withCollisions);
+            yield return TestHelpers.TestAttachedSharedComponentOfSameTypeIsReplaced<CylinderShape.Model, CylinderShape>(scene, CLASS_ID.CYLINDER_SHAPE);
         }
 
         [UnityTest]
@@ -248,44 +216,92 @@ namespace Tests
         {
             yield return InitScene();
 
-            string entityId = "1";
-            TestHelpers.CreateSceneEntity(scene, entityId);
+            var component = TestHelpers.SharedComponentCreate<PlaneShape, PlaneShape.Model>(scene, CLASS_ID.PLANE_SHAPE);
+            yield return component.routine;
 
-            // 1. Create component with non-default configs
-            string componentJSON = JsonUtility.ToJson(new PlaneShape.Model
-            {
-                width = 0.45f,
-                height = 0.77f,
-                withCollisions = true
-            });
+            Assert.IsFalse(component == null);
 
-            string componentId = TestHelpers.CreateAndSetShape(scene, entityId, DCL.Models.CLASS_ID.PLANE_SHAPE,
-                componentJSON
-                );
-
-            PlaneShape planeShapeComponent = (PlaneShape)scene.GetSharedComponent(componentId);
-
-            // 2. Check configured values
-            Assert.AreEqual(0.45f, planeShapeComponent.model.width);
-            Assert.AreEqual(0.77f, planeShapeComponent.model.height);
-            Assert.IsTrue(planeShapeComponent.model.withCollisions);
-
-            // 3. Update component with missing values
-            componentJSON = JsonUtility.ToJson(new PlaneShape.Model { });
-
-            scene.SharedComponentUpdate(JsonUtility.ToJson(new DCL.Models.SharedComponentUpdateMessage
-            {
-                id = componentId,
-                json = componentJSON
-            }));
-
-            // 4. Check defaulted values
-            Assert.AreEqual(1f, planeShapeComponent.model.width);
-            Assert.AreEqual(1f, planeShapeComponent.model.height);
-            Assert.IsFalse(planeShapeComponent.model.withCollisions);
+            yield return TestHelpers.TestSharedComponentDefaultsOnUpdate<PlaneShape.Model, PlaneShape>(scene, CLASS_ID.PLANE_SHAPE);
         }
 
         [UnityTest]
+        public IEnumerator PlaneShapeAttachedGetsReplacedOnNewAttachment()
+        {
+            yield return InitScene();
+
+            yield return TestHelpers.TestAttachedSharedComponentOfSameTypeIsReplaced<PlaneShape.Model, PlaneShape>(scene, CLASS_ID.PLANE_SHAPE);
+        }
+
+        [UnityTest]
+        public IEnumerator ShapeWithCollisionsUpdate()
+        {
+            yield return InitScene();
+
+            string entityId = "1";
+            TestHelpers.CreateSceneEntity(scene, entityId);
+
+            scene.EntityComponentCreate(JsonUtility.ToJson(new DCL.Models.EntityComponentCreateMessage
+            {
+                entityId = entityId,
+                name = "transform",
+                classId = (int)DCL.Models.CLASS_ID_COMPONENT.TRANSFORM,
+                json = JsonConvert.SerializeObject(new
+                {
+                    position = Vector3.zero,
+                    scale = new Vector3(1, 1, 1),
+                    rotation = new
+                    {
+                        x = 0,
+                        y = 0,
+                        z = 0,
+                        w = 1
+                    }
+                })
+            }));
+
+            // Update shape without collision
+            string shapeId = TestHelpers.CreateAndSetShape(scene, entityId, DCL.Models.CLASS_ID.BOX_SHAPE, JsonConvert.SerializeObject(new
+            {
+                withCollisions = false
+            }));
+
+            yield return null;
+
+            BoxShape shapeComponent = scene.GetSharedComponent(shapeId) as BoxShape;
+
+            Assert.IsFalse(shapeComponent == null);
+            Assert.IsTrue(scene.entities[entityId].gameObject.GetComponentInChildren<MeshCollider>() == null);
+
+            // Update shape with collision
+            TestHelpers.SharedComponentUpdate<BoxShape, BoxShape.Model>(scene, shapeComponent, new BoxShape.Model
+            {
+                withCollisions = true
+            });
+            yield return null;
+
+            MeshCollider meshCollider = scene.entities[entityId].gameObject.GetComponentInChildren<MeshCollider>();
+
+            Assert.IsTrue(meshCollider != null);
+
+            // Update shape without collision
+            TestHelpers.SharedComponentUpdate<BoxShape, BoxShape.Model>(scene, shapeComponent, new BoxShape.Model
+            {
+                withCollisions = false
+            });
+            yield return null;
+
+            Assert.IsFalse(meshCollider.enabled);
+
+            // Update shape with collision
+            TestHelpers.SharedComponentUpdate<BoxShape, BoxShape.Model>(scene, shapeComponent, new BoxShape.Model
+            {
+                withCollisions = true
+            });
+            yield return null;
+
+            Assert.IsTrue(meshCollider.enabled);
+        }
+
         public IEnumerator ShapesVisibilityDefault()
         {
             #region Arrange
@@ -326,11 +342,11 @@ namespace Tests
             #region Arrange
             yield return InitScene();
 
-            BoxShape boxShapeComponent = TestHelpers.CreateEntityWithBoxShape(scene, Vector3.zero, new BoxShape.Model {visible = true});
-            SphereShape sphereShapeComponent = TestHelpers.CreateEntityWithSphereShape(scene, Vector3.zero, new SphereShape.Model {visible = true});
-            PlaneShape planeShapeComponent = TestHelpers.CreateEntityWithPlaneShape(scene, Vector3.zero, new PlaneShape.Model {visible = true});
-            CylinderShape cylinderShapeComponent = TestHelpers.CreateEntityWithCylinderShape(scene, Vector3.zero, new CylinderShape.Model {visible = true});
-            ConeShape coneShapeComponent = TestHelpers.CreateEntityWithConeShape(scene, Vector3.zero, new ConeShape.Model {visible = true});
+            BoxShape boxShapeComponent = TestHelpers.CreateEntityWithBoxShape(scene, Vector3.zero, new BoxShape.Model { visible = true });
+            SphereShape sphereShapeComponent = TestHelpers.CreateEntityWithSphereShape(scene, Vector3.zero, new SphereShape.Model { visible = true });
+            PlaneShape planeShapeComponent = TestHelpers.CreateEntityWithPlaneShape(scene, Vector3.zero, new PlaneShape.Model { visible = true });
+            CylinderShape cylinderShapeComponent = TestHelpers.CreateEntityWithCylinderShape(scene, Vector3.zero, new CylinderShape.Model { visible = true });
+            ConeShape coneShapeComponent = TestHelpers.CreateEntityWithConeShape(scene, Vector3.zero, new ConeShape.Model { visible = true });
             #endregion
 
             #region Act
@@ -404,11 +420,11 @@ namespace Tests
             #endregion
 
             #region Act
-            BaseShape.Model visibleModel = new BaseShape.Model {visible = true};
+            BaseShape.Model visibleModel = new BaseShape.Model { visible = true };
             TestHelpers.SharedComponentUpdate(scene, boxShapeComponent, visibleModel);
             TestHelpers.SharedComponentUpdate(scene, sphereShapeComponent, visibleModel);
             TestHelpers.SharedComponentUpdate(scene, planeShapeComponent, visibleModel);
-            TestHelpers.SharedComponentUpdate(scene, cylinderShapeComponent, visibleModel); 
+            TestHelpers.SharedComponentUpdate(scene, cylinderShapeComponent, visibleModel);
             TestHelpers.SharedComponentUpdate(scene, coneShapeComponent, visibleModel);
             #endregion
 
@@ -430,7 +446,6 @@ namespace Tests
             #endregion
         }
 
-
         [UnityTest]
         public IEnumerator ShapesVisibilityUpdateFalse()
         {
@@ -445,11 +460,11 @@ namespace Tests
             #endregion
 
             #region Act
-            BaseShape.Model hiddenModel = new BaseShape.Model {visible = false};
+            BaseShape.Model hiddenModel = new BaseShape.Model { visible = false };
             TestHelpers.SharedComponentUpdate(scene, boxShapeComponent, hiddenModel);
             TestHelpers.SharedComponentUpdate(scene, sphereShapeComponent, hiddenModel);
             TestHelpers.SharedComponentUpdate(scene, planeShapeComponent, hiddenModel);
-            TestHelpers.SharedComponentUpdate(scene, cylinderShapeComponent, hiddenModel); 
+            TestHelpers.SharedComponentUpdate(scene, cylinderShapeComponent, hiddenModel);
             TestHelpers.SharedComponentUpdate(scene, coneShapeComponent, hiddenModel);
             #endregion
 
@@ -485,15 +500,15 @@ namespace Tests
             #endregion
 
             #region Act
-            BaseShape.Model visibleModel = new BaseShape.Model {visible = true};
-            BaseShape.Model hiddenModel = new BaseShape.Model {visible = false};
+            BaseShape.Model visibleModel = new BaseShape.Model { visible = true };
+            BaseShape.Model hiddenModel = new BaseShape.Model { visible = false };
             TestHelpers.SharedComponentUpdate(scene, boxShapeComponent, hiddenModel);
             TestHelpers.SharedComponentUpdate(scene, sphereShapeComponent, visibleModel);
             TestHelpers.SharedComponentUpdate(scene, planeShapeComponent, hiddenModel);
-            TestHelpers.SharedComponentUpdate(scene, cylinderShapeComponent, visibleModel); 
+            TestHelpers.SharedComponentUpdate(scene, cylinderShapeComponent, visibleModel);
             TestHelpers.SharedComponentUpdate(scene, coneShapeComponent, hiddenModel);
             #endregion
-            
+
             #region Assert
             Assert.AreEqual(false, boxShapeComponent.model.visible);
             Assert.IsTrue(CheckVisibility(boxShapeComponent, false));
@@ -511,7 +526,6 @@ namespace Tests
             Assert.IsTrue(CheckVisibility(coneShapeComponent, false));
             #endregion
         }
-
 
         private bool CheckVisibility(BaseDisposable shapeComponent, bool isVisible)
         {

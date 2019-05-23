@@ -10,7 +10,6 @@ using UnityGLTF;
 using Newtonsoft.Json;
 using NUnit.Framework;
 using DCL.Models;
-using DCL.Components;
 
 namespace Tests
 {
@@ -79,14 +78,12 @@ namespace Tests
 
             // Set its shape as a BOX
             TestHelpers.CreateAndSetShape(scene, entityId, CLASS_ID.BOX_SHAPE, "{}");
-            yield return null;
 
             var meshName = entity.meshGameObject.GetComponent<MeshFilter>().mesh.name;
             Assert.AreEqual("DCL Box Instance", meshName);
 
             // Update its shape to a cylinder
             TestHelpers.CreateAndSetShape(scene, entityId, CLASS_ID.CYLINDER_SHAPE, "{}");
-            yield return null;
 
             Assert.IsTrue(entity.meshGameObject != null, "meshGameObject should not be null");
 
@@ -194,74 +191,6 @@ namespace Tests
         }
 
         [UnityTest]
-        public IEnumerator ShapeWithCollisionsUpdate()
-        {
-            yield return InitScene();
-
-            string entityId = "1";
-            TestHelpers.CreateSceneEntity(scene, entityId);
-
-            scene.EntityComponentCreate(JsonUtility.ToJson(new DCL.Models.EntityComponentCreateMessage
-            {
-                entityId = entityId,
-                name = "transform",
-                classId = (int)DCL.Models.CLASS_ID_COMPONENT.TRANSFORM,
-                json = JsonConvert.SerializeObject(new
-                {
-                    position = Vector3.zero,
-                    scale = new Vector3(1, 1, 1),
-                    rotation = new
-                    {
-                        x = 0,
-                        y = 0,
-                        z = 0,
-                        w = 1
-                    }
-                })
-            }));
-
-            // Update shape without collision
-            TestHelpers.CreateAndSetShape(scene, entityId, DCL.Models.CLASS_ID.BOX_SHAPE, JsonConvert.SerializeObject(new
-            {
-                withCollisions = false
-            }));
-
-            yield return null;
-
-            Assert.IsTrue(scene.entities[entityId].gameObject.GetComponentInChildren<MeshCollider>() == null);
-
-            // Update shape with collision
-            TestHelpers.CreateAndSetShape(scene, entityId, DCL.Models.CLASS_ID.BOX_SHAPE, JsonConvert.SerializeObject(new
-            {
-                withCollisions = true
-            }));
-
-            yield return null;
-
-            Assert.IsTrue(scene.entities[entityId].gameObject.GetComponentInChildren<MeshCollider>() != null);
-
-            // Update shape without collision
-            TestHelpers.CreateAndSetShape(scene, entityId, DCL.Models.CLASS_ID.BOX_SHAPE, JsonConvert.SerializeObject(new
-            {
-                withCollisions = false
-            }));
-
-            yield return null;
-
-            Assert.IsFalse(scene.entities[entityId].gameObject.GetComponentInChildren<MeshCollider>().enabled);
-
-            // Update shape with collision
-            TestHelpers.CreateAndSetShape(scene, entityId, DCL.Models.CLASS_ID.BOX_SHAPE, JsonConvert.SerializeObject(new
-            {
-                withCollisions = true
-            }));
-
-            yield return null;
-
-            Assert.IsTrue(scene.entities[entityId].gameObject.GetComponentInChildren<MeshCollider>().enabled);
-        }
-
-        [UnityTest]
         public IEnumerator GLTFShapeWithCollisionsUpdate()
         {
             yield return InitScene();
@@ -282,6 +211,38 @@ namespace Tests
         }
 
         [UnityTest]
+        public IEnumerator GLTFShapeAttachedGetsReplacedOnNewAttachment()
+        {
+            yield return InitScene();
+
+            DecentralandEntity entity = TestHelpers.CreateSceneEntity(scene);
+
+            // set first GLTF
+            string gltfId1 = TestHelpers.CreateAndSetShape(scene, entity.entityId, DCL.Models.CLASS_ID.GLTF_SHAPE, JsonConvert.SerializeObject(new
+            {
+                src = TestHelpers.GetTestsAssetsPath() + "/GLB/PalmTree_01.glb"
+            }));
+            var gltf1 = scene.GetSharedComponent(gltfId1);
+
+            GLTFLoader gltfShape = entity.gameObject.GetComponentInChildren<GLTFLoader>(true);
+            yield return new WaitUntil(() => gltfShape.alreadyLoaded);
+
+            Assert.AreEqual(gltf1, entity.GetSharedComponent(typeof(BaseShape)));
+
+            // set second GLTF
+            string gltfId2 = TestHelpers.CreateAndSetShape(scene, entity.entityId, DCL.Models.CLASS_ID.GLTF_SHAPE, JsonConvert.SerializeObject(new
+            {
+                src = TestHelpers.GetTestsAssetsPath() + "/GLB/Lantern/Lantern.glb"
+            }));
+
+            gltfShape = entity.gameObject.GetComponentInChildren<GLTFLoader>(true);
+            yield return new WaitUntil(() => gltfShape.alreadyLoaded);
+
+            Assert.AreEqual(scene.GetSharedComponent(gltfId2), entity.GetSharedComponent(typeof(BaseShape)));
+            Assert.IsFalse(gltf1.attachedEntities.Contains(entity));
+        }
+
+        [UnityTest]
         public IEnumerator GLTFVisibilityDefault()
         {
             #region Arrange
@@ -294,7 +255,7 @@ namespace Tests
 
             GLTFShape gltfShape = TestHelpers.CreateEntityWithGLTFShape(scene, Vector3.zero, gltfModel);
             yield return gltfShape.routine;
-            
+
             GLTFLoader gltfLoader = scene.entities[gltfShape.attachedEntities.First().entityId].gameObject.GetComponentInChildren<GLTFLoader>(true);
             yield return new WaitUntil(() => gltfLoader.alreadyLoaded);
             #endregion
@@ -323,7 +284,7 @@ namespace Tests
 
             GLTFShape gltfShape = TestHelpers.CreateEntityWithGLTFShape(scene, Vector3.zero, gltfModel);
             yield return gltfShape.routine;
-            
+
             GLTFLoader gltfLoader = scene.entities[gltfShape.attachedEntities.First().entityId].gameObject.GetComponentInChildren<GLTFLoader>(true);
             yield return new WaitUntil(() => gltfLoader.alreadyLoaded);
             #endregion
@@ -352,7 +313,7 @@ namespace Tests
 
             GLTFShape gltfShape = TestHelpers.CreateEntityWithGLTFShape(scene, Vector3.zero, gltfModel);
             yield return gltfShape.routine;
-            
+
             GLTFLoader gltfLoader = scene.entities[gltfShape.attachedEntities.First().entityId].gameObject.GetComponentInChildren<GLTFLoader>(true);
             yield return new WaitUntil(() => gltfLoader.alreadyLoaded);
             #endregion
@@ -381,7 +342,7 @@ namespace Tests
 
             GLTFShape gltfShape = TestHelpers.CreateEntityWithGLTFShape(scene, Vector3.zero, gltfModel);
             yield return gltfShape.routine;
-            
+
             GLTFLoader gltfLoader = scene.entities[gltfShape.attachedEntities.First().entityId].gameObject.GetComponentInChildren<GLTFLoader>(true);
             yield return new WaitUntil(() => gltfLoader.alreadyLoaded);
             #endregion
@@ -411,7 +372,7 @@ namespace Tests
 
             GLTFShape gltfShape = TestHelpers.CreateEntityWithGLTFShape(scene, Vector3.zero, gltfModel);
             yield return gltfShape.routine;
-            
+
             GLTFLoader gltfLoader = scene.entities[gltfShape.attachedEntities.First().entityId].gameObject.GetComponentInChildren<GLTFLoader>(true);
             yield return new WaitUntil(() => gltfLoader.alreadyLoaded);
             #endregion
@@ -440,7 +401,7 @@ namespace Tests
             };
             GLTFShape lanternShape = TestHelpers.CreateEntityWithGLTFShape(scene, Vector3.zero, lanternModel);
             yield return lanternShape.routine;
-            
+
             GLTFLoader gltfLoader = scene.entities[lanternShape.attachedEntities.First().entityId].gameObject.GetComponentInChildren<GLTFLoader>(true);
             yield return new WaitUntil(() => gltfLoader.alreadyLoaded);
 
@@ -451,7 +412,7 @@ namespace Tests
             };
             GLTFShape palmShape = TestHelpers.CreateEntityWithGLTFShape(scene, Vector3.zero, palmModel);
             yield return palmShape.routine;
-            
+
             gltfLoader = scene.entities[palmShape.attachedEntities.First().entityId].gameObject.GetComponentInChildren<GLTFLoader>(true);
             yield return new WaitUntil(() => gltfLoader.alreadyLoaded);
 

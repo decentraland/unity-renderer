@@ -28,15 +28,5 @@ namespace DCL.Components
         {
             return PrimitiveMeshBuilder.BuildCylinder(50, model.radiusTop, model.radiusBottom, 2f, 0f, true, false); ;
         }
-
-        public override void DetachFrom(DecentralandEntity entity)
-        {
-            if (!attachedEntities.Contains(entity))
-                return;
-
-            base.DetachFrom(entity);
-
-
-        }
     }
 }

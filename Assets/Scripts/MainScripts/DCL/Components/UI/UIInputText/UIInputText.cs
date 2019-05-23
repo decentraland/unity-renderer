@@ -1,4 +1,5 @@
 using DCL.Controllers;
+using DCL.Models;
 using System.Collections;
 using System.Collections.Generic;
 using System.Text.RegularExpressions;
@@ -34,6 +35,14 @@ namespace DCL.Components
         {
         }
 
+        public override void AttachTo(DecentralandEntity entity, System.Type overridenAttachedType = null)
+        {
+            Debug.LogError("Aborted UIContainerRectShape attachment to an entity. UIShapes shouldn't be attached to entities.");
+        }
+
+        public override void DetachFrom(DecentralandEntity entity, System.Type overridenAttachedType = null)
+        {
+        }
 
         public override IEnumerator ApplyChanges(string newJson)
         {

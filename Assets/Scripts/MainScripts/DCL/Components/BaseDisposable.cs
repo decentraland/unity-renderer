@@ -1,3 +1,4 @@
+using System.Runtime.CompilerServices;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -17,7 +18,6 @@ namespace DCL.Components
         public event System.Action<DecentralandEntity> OnAttach;
         public event System.Action<DecentralandEntity> OnDetach;
         public event Action<BaseDisposable> OnAppliedChanges;
-
 
         private string oldSerialization = null;
 
@@ -65,15 +65,18 @@ namespace DCL.Components
             }
         }
 
-        public virtual void AttachTo(DecentralandEntity entity)
+        public virtual void AttachTo(DecentralandEntity entity, Type overridenAttachedType = null)
         {
-            if (attachedEntities.Contains(entity))
-                return;
+            if (attachedEntities.Contains(entity)) return;
+
+            Type thisType = overridenAttachedType != null ? overridenAttachedType : GetType();
+            entity.AddSharedComponent(thisType, this);
 
             if (OnAttach != null)
                 OnAttach.Invoke(entity);
 
             attachedEntities.Add(entity);
+
             entity.OnRemoved += OnEntityRemoved;
         }
 
@@ -82,16 +85,20 @@ namespace DCL.Components
             DetachFrom(entity);
         }
 
-        public virtual void DetachFrom(DecentralandEntity entity)
+        public virtual void DetachFrom(DecentralandEntity entity, Type overridenAttachedType = null)
         {
             if (!attachedEntities.Contains(entity))
                 return;
 
+            entity.OnRemoved -= OnEntityRemoved;
+
+            Type thisType = overridenAttachedType != null ? overridenAttachedType : GetType();
+            entity.RemoveSharedComponent(thisType, false);
+
+            attachedEntities.Remove(entity);
+
             if (OnDetach != null)
                 OnDetach.Invoke(entity);
-
-            entity.OnRemoved -= OnEntityRemoved;
-            attachedEntities.Remove(entity);
         }
 
         public void DetachFromEveryEntity()

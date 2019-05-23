@@ -28,6 +28,15 @@ namespace DCL.Components
             OnDetach += OnMaterialDetached;
         }
 
+        public override void AttachTo(DecentralandEntity entity, System.Type overridenAttachedType = null)
+        {
+            if (attachedEntities.Contains(entity)) return;
+
+            entity.RemoveSharedComponent(typeof(PBRMaterial));
+
+            base.AttachTo(entity);
+        }
+
         public override IEnumerator ApplyChanges(string newJson)
         {
             if (material == null) yield break; // We escape ApplyChanges called in the parent's constructor

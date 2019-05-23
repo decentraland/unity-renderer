@@ -542,6 +542,14 @@ namespace Tests
         }
 
         [UnityTest]
+        public IEnumerator BasicMaterialAttachedGetsReplacedOnNewAttachment()
+        {
+            yield return InitScene();
+
+            yield return TestHelpers.TestAttachedSharedComponentOfSameTypeIsReplaced<BasicMaterial.Model, BasicMaterial>(scene, CLASS_ID.BASIC_MATERIAL);
+        }
+
+        [UnityTest]
         public IEnumerator PBRMaterialComponentMissingValuesGetDefaultedOnUpdate()
         {
             yield return InitScene();
@@ -581,6 +589,14 @@ namespace Tests
             Assert.AreEqual(0.5f, PBRMaterialComponent.model.metallic);
             Assert.AreEqual(1, PBRMaterialComponent.model.directIntensity);
             Assert.AreEqual(1f, PBRMaterialComponent.model.specularIntensity);
+        }
+
+        [UnityTest]
+        public IEnumerator PBRMaterialAttachedGetsReplacedOnNewAttachment()
+        {
+            yield return InitScene();
+
+            yield return TestHelpers.TestAttachedSharedComponentOfSameTypeIsReplaced<PBRMaterial.Model, PBRMaterial>(scene, CLASS_ID.PBR_MATERIAL);
         }
     }
 }
