@@ -16,6 +16,7 @@ namespace UnityGLTF
 
         public static bool VERBOSE = false;
         public static int downloadingCount;
+        public static int queueCount;
 
         public string GLTFUri = null;
         public bool Multithreaded = true;
@@ -184,11 +185,14 @@ namespace UnityGLTF
                     sceneImporter.InitialVisibility = initialVisibility;
 
                     float time = Time.realtimeSinceStartup;
+                    queueCount++;
 
                     if (downloadingCount >= GLTF_DOWNLOAD_THROTTLING_LIMIT)
                     {
                         yield return new WaitUntil(() => { return downloadingCount < GLTF_DOWNLOAD_THROTTLING_LIMIT; });
                     }
+
+                    queueCount--;
 
                     downloadingCount++;
                     if (VERBOSE)

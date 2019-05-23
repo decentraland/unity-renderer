@@ -1,10 +1,8 @@
-using DCL.Components;
 using DCL.Controllers;
 using DCL.Helpers;
 using DCL.Models;
 using System;
 using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 namespace DCL.Components
@@ -56,7 +54,9 @@ namespace DCL.Components
             }
 
             if (OnLoadingFinished != null)
+            {
                 OnLoadingFinished.Invoke(this);
+            }
         }
 
         void OnFail(string error)
@@ -64,7 +64,9 @@ namespace DCL.Components
             loadingState = LoadState.LOADING_FAILED;
 
             if (OnLoadingFinished != null)
+            {
                 OnLoadingFinished.Invoke(this);
+            }
         }
 
         IEnumerator TryToLoad()
@@ -94,7 +96,7 @@ namespace DCL.Components
 
         public override IEnumerator ApplyChanges(string newJson)
         {
-            model = Utils.SafeFromJson<Model>(newJson);
+            model = SceneController.i.SafeFromJson<Model>(newJson);
 
             if (!string.IsNullOrEmpty(model.url))
             {

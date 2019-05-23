@@ -46,6 +46,12 @@ public class SceneController : MonoBehaviour
         public string message;
     }
 
+    class QueuedSceneMessage_Scene : QueuedSceneMessage
+    {
+        public string method;
+        public string payload;
+    }
+
     [System.NonSerialized]
     public bool isDebugMode;
 
@@ -53,6 +59,18 @@ public class SceneController : MonoBehaviour
 
     public bool hasPendingMessages => pendingMessages != null && pendingMessages.Count > 0;
     public int pendingMessagesCount => pendingMessages != null ? pendingMessages.Count : 0;
+
+    #region BENCHMARK_EVENTS
+    //NOTE(Brian): For performance reasons, these events may need to be removed for production.
+    public Action<string> OnMessageWillQueue;
+    public Action<string> OnMessageWillDequeue;
+
+    public Action<string> OnMessageProcessStart;
+    public Action<string> OnMessageProcessEnds;
+
+    public Action<string> OnMessageDecodeStart;
+    public Action<string> OnMessageDecodeEnds;
+    #endregion
 
     void Awake()
     {
@@ -82,10 +100,11 @@ public class SceneController : MonoBehaviour
     {
 #if UNITY_EDITOR
         if (debugScenes && ignoreGlobalScenes)
+        {
             return;
+        }
 #endif
-
-        CreateUISceneMessage uiScene = JsonUtility.FromJson<CreateUISceneMessage>(json);
+        CreateUISceneMessage uiScene = SafeFromJson<CreateUISceneMessage>(json);
 
         string uiSceneId = uiScene.id;
 
@@ -107,7 +126,9 @@ public class SceneController : MonoBehaviour
             loadedScenes.Add(uiSceneId, newScene);
 
             if (VERBOSE)
+            {
                 Debug.Log($"Creating UI scene {uiSceneId}");
+            }
         }
     }
 
@@ -116,9 +137,7 @@ public class SceneController : MonoBehaviour
         while (true)
         {
             float startTime = Time.realtimeSinceStartup;
-
             float prevDeltaTime = Time.deltaTime;
-
             float timeBudget = DCL.Configuration.MessageThrottlingSettings.GLOBAL_FRAME_THROTTLING_TIME;
 
             while (Time.realtimeSinceStartup - startTime < timeBudget && queue.Count > 0)
@@ -131,7 +150,10 @@ public class SceneController : MonoBehaviour
                         break;
                     case QueuedSceneMessage.Type.SCENE_MESSAGE:
                         Coroutine routine = null;
-                        if (ProcessMessage(m.sceneId, m.message, out routine))
+
+                        var messageObject = m as QueuedSceneMessage_Scene;
+
+                        if (ProcessMessage(messageObject.sceneId, messageObject.method, messageObject.payload, out routine))
                         {
                             if (msgStepByStep)
                             {
@@ -142,14 +164,19 @@ public class SceneController : MonoBehaviour
                         }
 
                         if (routine != null)
+                        {
                             yield return routine;
+                        }
 
+                        OnMessageWillDequeue?.Invoke(messageObject.method);
                         break;
                     case QueuedSceneMessage.Type.LOAD_PARCEL:
                         yield return LoadParcelScenesExecute_Spread(m.message);
+                        OnMessageWillDequeue?.Invoke("LoadScene");
                         break;
                     case QueuedSceneMessage.Type.UNLOAD_SCENES:
                         UnloadAllScenes();
+                        OnMessageWillDequeue?.Invoke("UnloadScene");
                         break;
                 }
 
@@ -164,9 +191,9 @@ public class SceneController : MonoBehaviour
     public void SetDebug()
     {
         isDebugMode = true;
-
         debugPanel.SetActive(true);
     }
+
 
     ParcelScene GetDecentralandSceneOfGridPosition(Vector2Int gridPosition)
     {
@@ -192,7 +219,9 @@ public class SceneController : MonoBehaviour
 
     public IEnumerator LoadParcelScenesExecute_Spread(string decentralandSceneJSON)
     {
+        OnMessageDecodeStart?.Invoke("LoadScene");
         string[] jsons = decentralandSceneJSON.Split(new string[] { "}{" }, StringSplitOptions.None);
+        OnMessageDecodeEnds?.Invoke("LoadScene");
 
         foreach (string json in jsons)
         {
@@ -200,21 +229,27 @@ public class SceneController : MonoBehaviour
 
             LoadParcelScenesMessage.UnityParcelScene scene;
 
-            scene = JsonUtility.FromJson<LoadParcelScenesMessage.UnityParcelScene>(json);
+            scene = SafeFromJson<LoadParcelScenesMessage.UnityParcelScene>(json);
 
             if (scene == null || scene.id == null)
+            {
                 continue;
+            }
 
             if (Time.realtimeSinceStartup - tb > DCL.Configuration.MessageThrottlingSettings.LOAD_PARCEL_SCENES_THROTTLING_TIME)
+            {
                 yield return null;
+            }
 
             var sceneToLoad = scene;
 
 #if UNITY_EDITOR
             if (debugScenes && sceneToLoad.id != debugSceneName)
+            {
                 continue;
+            }
 #endif
-
+            OnMessageProcessStart?.Invoke("LoadScene");
             if (!loadedScenes.ContainsKey(sceneToLoad.id))
             {
                 var newGameObject = new GameObject("New Scene");
@@ -223,11 +258,14 @@ public class SceneController : MonoBehaviour
                 newScene.SetData(sceneToLoad);
 
                 if (isDebugMode)
+                {
                     newScene.InitializeDebugPlane();
+                }
 
                 newScene.ownerController = this;
                 loadedScenes.Add(sceneToLoad.id, newScene);
             }
+            OnMessageProcessEnds?.Invoke("LoadScene");
         }
     }
 
@@ -249,7 +287,9 @@ public class SceneController : MonoBehaviour
             if (!loadedScenes.ContainsKey(sceneToLoad.id))
             {
                 if (VERBOSE)
+                {
                     Debug.Log($"Creating scene {sceneToLoad.id}");
+                }
 
                 var newGameObject = new GameObject("New Scene");
 
@@ -274,10 +314,15 @@ public class SceneController : MonoBehaviour
 
     public void UnloadScene(string sceneKey)
     {
-        if (!loadedScenes.ContainsKey(sceneKey) || loadedScenes[sceneKey].isPersistent) return;
+        if (!loadedScenes.ContainsKey(sceneKey) || loadedScenes[sceneKey].isPersistent)
+        {
+            return;
+        }
 
         if (VERBOSE)
+        {
             Debug.Log($"Destroying scene {sceneKey}");
+        }
 
         var scene = loadedScenes[sceneKey];
 
@@ -298,47 +343,79 @@ public class SceneController : MonoBehaviour
         }
     }
 
+
     public void LoadParcelScenes(string decentralandSceneJSON)
     {
-        pendingMessages.Enqueue(new QueuedSceneMessage() { type = QueuedSceneMessage.Type.LOAD_PARCEL, message = decentralandSceneJSON });
+        var queuedMessage = new QueuedSceneMessage() { type = QueuedSceneMessage.Type.LOAD_PARCEL, message = decentralandSceneJSON };
+
+        OnMessageWillQueue?.Invoke("LoadScene");
+
+        pendingMessages.Enqueue(queuedMessage);
     }
 
     public void UnloadAllScenesQueued()
     {
-        pendingMessages.Enqueue(new QueuedSceneMessage() { type = QueuedSceneMessage.Type.UNLOAD_SCENES });
+        var queuedMessage = new QueuedSceneMessage() { type = QueuedSceneMessage.Type.UNLOAD_SCENES };
+
+        OnMessageWillQueue?.Invoke("UnloadScene");
+
+        pendingMessages.Enqueue(queuedMessage);
     }
 
     public void SendSceneMessage(string payload)
     {
+        OnMessageDecodeStart?.Invoke("Misc");
         var chunks = payload.Split('\n');
+        OnMessageDecodeEnds?.Invoke("Misc");
 
         for (int i = 0; i < chunks.Length; i++)
         {
             if (chunks[i].Length > 0)
             {
+                OnMessageDecodeStart?.Invoke("Misc");
                 var separatorPosition = chunks[i].IndexOf('\t');
 
-                if (separatorPosition == -1) continue;
+                if (separatorPosition == -1)
+                {
+                    OnMessageDecodeEnds?.Invoke("Misc");
+                    continue;
+                }
 
                 var sceneId = chunks[i].Substring(0, separatorPosition);
                 var message = chunks[i].Substring(separatorPosition + 1);
+                OnMessageDecodeEnds?.Invoke("Misc");
 
 #if UNITY_EDITOR
                 if (debugScenes && sceneId != debugSceneName)
+                {
                     continue;
+                }
 #endif
 
-                pendingMessages.Enqueue(new QueuedSceneMessage() { type = QueuedSceneMessage.Type.SCENE_MESSAGE, sceneId = sceneId, message = message });
+                var queuedMessage = new QueuedSceneMessage_Scene() { type = QueuedSceneMessage.Type.SCENE_MESSAGE, sceneId = sceneId, message = message };
+
+                OnMessageDecodeStart?.Invoke("Misc");
+                var queuedMessageSeparatorIndex = queuedMessage.message.IndexOf('\t');
+
+                queuedMessage.method = queuedMessage.message.Substring(0, queuedMessageSeparatorIndex);
+                queuedMessage.payload = queuedMessage.message.Substring(queuedMessageSeparatorIndex + 1);
+                OnMessageDecodeEnds?.Invoke("Misc");
+
+                OnMessageWillQueue?.Invoke(queuedMessage.method);
+
+                pendingMessages.Enqueue(queuedMessage);
             }
         }
     }
 
-    public bool ProcessMessage(string sceneId, string message, out Coroutine routine)
+    public bool ProcessMessage(string sceneId, string method, string payload, out Coroutine routine)
     {
         routine = null;
 #if UNITY_EDITOR
         if (debugScenes && sceneId != debugSceneName)
+        {
             return false;
+        }
 #endif
 
         ParcelScene scene;
@@ -347,18 +424,21 @@ public class SceneController : MonoBehaviour
         {
 #if UNITY_EDITOR
             if (scene is GlobalScene && ignoreGlobalScenes && debugScenes)
+            {
                 return false;
+            }
 #endif
             if (!scene.gameObject.activeInHierarchy)
+            {
                 return true;
-
-            var separatorPosition = message.IndexOf('\t');
-            var method = message.Substring(0, separatorPosition);
-            var payload = message.Substring(separatorPosition + 1);
+            }
 
             if (VERBOSE)
+            {
                 Debug.Log("SceneController ProcessMessage: \nMethod: " + method + "\nPayload: " + payload);
+            }
 
+            OnMessageProcessStart?.Invoke(method);
             switch (method)
             {
                 case "CreateEntity": scene.CreateEntity(payload); break;
@@ -374,8 +454,11 @@ public class SceneController : MonoBehaviour
                 case "ComponentDisposed": scene.SharedComponentDispose(payload); break;
                 case "ComponentUpdated": scene.SharedComponentUpdate(payload, out routine); break;
                 case "RemoveEntity": scene.RemoveEntity(payload); break;
+                case "SceneStarted": break;
                 default: Debug.LogError($"Unknown method {method}"); return true;
             }
+
+            OnMessageProcessEnds?.Invoke(method);
             return true;
         }
         else
@@ -385,10 +468,21 @@ public class SceneController : MonoBehaviour
         }
     }
 
+    public T SafeFromJson<T>(string data)
+    {
+        OnMessageDecodeStart?.Invoke("Misc");
+        T result = Utils.SafeFromJson<T>(data);
+        OnMessageDecodeEnds?.Invoke("Misc");
+
+        return result;
+    }
+
     public ParcelScene CreateTestScene(LoadParcelScenesMessage.UnityParcelScene data = null)
     {
         if (data == null)
+        {
             data = new LoadParcelScenesMessage.UnityParcelScene();
+        }
 
         if (data.basePosition == null)
         {

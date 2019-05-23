@@ -1,8 +1,6 @@
-using DCL.Helpers;
 using System.Collections;
 using TMPro;
 using UnityEngine;
-using UnityEngine.UI;
 
 namespace DCL.Components
 {
@@ -61,7 +59,7 @@ namespace DCL.Components
 
         public override IEnumerator ApplyChanges(string newJson)
         {
-            model = Utils.SafeFromJson<Model>(newJson);
+            model = SceneController.i.SafeFromJson<Model>(newJson);
 
             rectTransform.sizeDelta = new Vector2(model.width, model.height);
 
@@ -83,7 +81,7 @@ namespace DCL.Components
             text.richText = true;
             text.overflowMode = TextOverflowModes.Overflow;
             text.enableAutoSizing = model.fontAutoSize;
-            
+
             text.margin =
                 new Vector4
                 (
@@ -97,9 +95,13 @@ namespace DCL.Components
             text.lineSpacing = model.lineSpacing;
 
             if (model.lineCount != 0)
+            {
                 text.maxVisibleLines = Mathf.Max(model.lineCount, 1);
+            }
             else
+            {
                 text.maxVisibleLines = int.MaxValue;
+            }
 
             text.enableWordWrapping = model.textWrapping && !text.enableAutoSizing;
 

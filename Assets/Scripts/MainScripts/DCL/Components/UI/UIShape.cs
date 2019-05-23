@@ -1,7 +1,6 @@
 using DCL.Controllers;
 using DCL.Helpers;
 using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Assertions;
 using UnityEngine.UI;
@@ -75,7 +74,7 @@ namespace DCL.Components
         {
             base.ApplyChangesWrapper(newJson);
 
-            model = JsonUtility.FromJson<ModelType>(newJson);
+            model = SceneController.i.SafeFromJson<ModelType>(newJson);
 
             bool raiseOnAttached = false;
             bool firstApplyChangesCall = false;
@@ -171,9 +170,13 @@ namespace DCL.Components
         public string GetDebugName()
         {
             if (string.IsNullOrEmpty(model.name))
+            {
                 return GetType().Name;
+            }
             else
+            {
                 return GetType().Name + " - " + model.name;
+            }
         }
 
         public override IEnumerator ApplyChanges(string newJson)
@@ -226,7 +229,9 @@ namespace DCL.Components
             RectTransform parentRT = referencesContainer.GetComponentInParent<RectTransform>();
 
             if (refreshSize)
+            {
                 RefreshDCLSize(parentRT);
+            }
 
             if (refreshAlignmentAndPosition)
             {

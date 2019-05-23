@@ -1,11 +1,8 @@
 using DCL.Controllers;
 using DCL.Models;
 using System.Collections;
-using System.Collections.Generic;
-using System.Text.RegularExpressions;
 using TMPro;
 using UnityEngine;
-using UnityEngine.UI;
 
 namespace DCL.Components
 {
@@ -49,7 +46,9 @@ namespace DCL.Components
             //NOTE(Brian): We have to serialize twice now, but in the future we should fix the
             //             client data structure to be like this, so we can serialize all of it in one shot.
             if (!scene.isTestScene)
-                model.textModel = JsonUtility.FromJson<TextShape.Model>(newJson);
+            {
+                model.textModel = SceneController.i.SafeFromJson<TextShape.Model>(newJson);
+            }
 
             inputField.textViewport = referencesContainer.rectTransform;
 
@@ -71,7 +70,9 @@ namespace DCL.Components
         public void OnFocus(string call)
         {
             if (inputField.text == model.placeholder)
+            {
                 inputField.text = "";
+            }
 
             inputField.customCaretColor = true;
             inputField.caretColor = Color.white;
@@ -92,7 +93,9 @@ namespace DCL.Components
         public void HideCaret()
         {
             if (string.IsNullOrEmpty(inputField.text))
+            {
                 inputField.text = model.placeholder;
+            }
 
             inputField.customCaretColor = true;
             inputField.caretColor = Color.clear;
@@ -107,7 +110,9 @@ namespace DCL.Components
             bool validString = !string.IsNullOrEmpty(tmpText.text);
 
             if (tmpText.text.Length == 1 && (byte)tmpText.text[0] == 11) //NOTE(Brian): Trim doesn't work. neither IsNullOrWhitespace.
+            {
                 validString = false;
+            }
 
             if (validString)
             {

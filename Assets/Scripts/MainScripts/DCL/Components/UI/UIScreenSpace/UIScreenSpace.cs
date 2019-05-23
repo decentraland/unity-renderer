@@ -1,10 +1,9 @@
+using DCL.Controllers;
+using DCL.Helpers;
+using DCL.Models;
 using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
-using DCL.Helpers;
-using DCL.Controllers;
-using DCL.Models;
 
 namespace DCL.Components
 {
@@ -29,7 +28,7 @@ namespace DCL.Components
 
         public override IEnumerator ApplyChanges(string newJson)
         {
-            model = Utils.SafeFromJson<Model>(newJson);
+            model = SceneController.i.SafeFromJson<Model>(newJson);
 
             if (scene.uiScreenSpace == null)
             {
@@ -50,7 +49,9 @@ namespace DCL.Components
             DCLCharacterController.OnCharacterMoved -= OnCharacterMoved;
 
             if (childHookRectTransform != null)
+            {
                 Utils.SafeDestroy(childHookRectTransform.gameObject);
+            }
         }
 
         void OnCharacterMoved(Vector3 newCharacterPosition)
@@ -60,14 +61,18 @@ namespace DCL.Components
                 canvas.enabled = scene.IsInsideSceneBoundaries(newCharacterPosition) && model.visible;
 
                 if (VERBOSE)
+                {
                     Debug.Log($"set screenspace = {canvas.enabled}... {newCharacterPosition}");
+                }
             }
         }
 
         IEnumerator InitializeCanvas()
         {
             if (VERBOSE)
+            {
                 Debug.Log("Started canvas initialization in " + id);
+            }
 
             GameObject canvasGameObject = new GameObject("UIScreenSpace");
             canvasGameObject.transform.SetParent(scene.transform);
@@ -107,13 +112,19 @@ namespace DCL.Components
             }
 
             if (canvas != null)
+            {
                 canvas.enabled = false; // It will be enabled later when the player enters this scene
+            }
 
             if (DCLCharacterController.i != null)
+            {
                 OnCharacterMoved(DCLCharacterController.i.transform.position);
+            }
 
             if (VERBOSE)
+            {
                 Debug.Log("Finished canvas initialization in " + id);
+            }
         }
     }
 }

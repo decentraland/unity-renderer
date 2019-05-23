@@ -2,9 +2,8 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.Networking;
-using TMPro;
 using UnityEngine.Assertions;
+using UnityEngine.Networking;
 
 namespace DCL.Helpers
 {
@@ -15,14 +14,18 @@ namespace DCL.Helpers
         public static Material EnsureResourcesMaterial(string path)
         {
             if (staticMaterials == null)
+            {
                 staticMaterials = new Dictionary<string, Material>();
+            }
 
             if (!staticMaterials.ContainsKey(path))
             {
                 Material material = Resources.Load(path) as Material;
 
                 if (material != null)
+                {
                     staticMaterials.Add(path, material);
+                }
 
                 return material;
             }
@@ -245,9 +248,9 @@ namespace DCL.Helpers
             return true;
         }
 
-        public static T SafeFromJson<T>(string json) where T : new()
+        public static T SafeFromJson<T>(string json)
         {
-            T returningValue;
+            T returningValue = default(T);
 
             if (!string.IsNullOrEmpty(json))
             {
@@ -258,13 +261,7 @@ namespace DCL.Helpers
                 catch (System.ArgumentException e)
                 {
                     Debug.LogError("ArgumentException Fail!... Json = " + json + " " + e.ToString());
-
-                    returningValue = new T();
                 }
-            }
-            else
-            {
-                returningValue = new T();
             }
 
             return returningValue;

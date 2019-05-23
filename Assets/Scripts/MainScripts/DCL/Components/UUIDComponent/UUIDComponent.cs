@@ -68,10 +68,12 @@ namespace DCL
 
         public override IEnumerator ApplyChanges(string newJson)
         {
-            model = Utils.SafeFromJson<Model>(newJson);
+            model = SceneController.i.SafeFromJson<Model>(newJson);
 
             if (!string.IsNullOrEmpty(model.uuid))
+            {
                 SetForEntity(scene, entity, model.uuid, model.type);
+            }
 
             yield return null;
         }

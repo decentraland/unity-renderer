@@ -3,10 +3,8 @@ using DCL.Configuration;
 using DCL.Helpers;
 using DCL.Models;
 using System.Collections.Generic;
-using System.Collections;
 using System.Linq;
 using UnityEngine;
-using UnityEngine.UI;
 using UnityEngine.Assertions;
 
 namespace DCL.Controllers
@@ -148,7 +146,9 @@ namespace DCL.Controllers
 
         public DecentralandEntity CreateEntity(string json)
         {
+            SceneController.i.OnMessageDecodeStart?.Invoke("CreateEntity");
             tmpCreateEntityMessage.FromJSON(json);
+            SceneController.i.OnMessageDecodeEnds?.Invoke("CreateEntity");
 
             if (entities.ContainsKey(tmpCreateEntityMessage.id))
             {
@@ -166,7 +166,9 @@ namespace DCL.Controllers
             entities.Add(tmpCreateEntityMessage.id, newEntity);
 
             if (OnEntityAdded != null)
+            {
                 OnEntityAdded.Invoke(newEntity);
+            }
 
             return newEntity;
         }
@@ -175,15 +177,21 @@ namespace DCL.Controllers
 
         public void RemoveEntity(string json)
         {
+            SceneController.i.OnMessageDecodeStart?.Invoke("RemoveEntity");
             tmpRemoveEntityMessage.FromJSON(json);
+            SceneController.i.OnMessageDecodeEnds?.Invoke("RemoveEntity");
 
             if (entities.ContainsKey(tmpRemoveEntityMessage.id))
             {
                 if (OnEntityRemoved != null)
+                {
                     OnEntityRemoved.Invoke(entities[tmpRemoveEntityMessage.id]);
+                }
 
                 if (entities[tmpRemoveEntityMessage.id].OnRemoved != null)
+                {
                     entities[tmpRemoveEntityMessage.id].OnRemoved.Invoke(entities[tmpRemoveEntityMessage.id]);
+                }
 
                 Object.Destroy(entities[tmpRemoveEntityMessage.id].gameObject);
                 entities.Remove(tmpRemoveEntityMessage.id);
@@ -209,10 +217,14 @@ namespace DCL.Controllers
 
         public void SetEntityParent(string json)
         {
+            SceneController.i.OnMessageDecodeStart?.Invoke("SetEntityParent");
             tmpParentMessage.FromJSON(json);
+            SceneController.i.OnMessageDecodeEnds?.Invoke("SetEntityParent");
 
             if (tmpParentMessage.entityId == tmpParentMessage.parentId)
+            {
                 return;
+            }
 
             GameObject rootGameObject = null;
 
@@ -247,12 +259,16 @@ namespace DCL.Controllers
           */
         public void SharedComponentAttach(string json)
         {
+            SceneController.i.OnMessageDecodeStart?.Invoke("AttachEntityComponent");
             attachSharedComponentMessage.FromJSON(json);
+            SceneController.i.OnMessageDecodeEnds?.Invoke("AttachEntityComponent");
 
             DecentralandEntity decentralandEntity = GetEntityForUpdate(attachSharedComponentMessage.entityId);
 
             if (decentralandEntity == null)
+            {
                 return;
+            }
 
             BaseDisposable disposableComponent;
 
@@ -277,7 +293,9 @@ namespace DCL.Controllers
 
         public BaseComponent EntityComponentCreate(string json)
         {
+            SceneController.i.OnMessageDecodeStart?.Invoke("UpdateEntityComponent");
             createEntityComponentMessage.FromJSON(json);
+            SceneController.i.OnMessageDecodeEnds?.Invoke("UpdateEntityComponent");
 
             DecentralandEntity entity = GetEntityForUpdate(createEntityComponentMessage.entityId);
 
@@ -316,7 +334,9 @@ namespace DCL.Controllers
             }
 
             if (classId == CLASS_ID_COMPONENT.UUID_CALLBACK && (newComponent as UUIDComponent).model.type == "onClick")
+            {
                 newComponent = entity.gameObject.GetComponent<OnClickComponent>();
+            }
 
             return newComponent;
         }
@@ -346,7 +366,9 @@ namespace DCL.Controllers
 
         public BaseDisposable SharedComponentCreate(string json)
         {
+            SceneController.i.OnMessageDecodeStart?.Invoke("ComponentCreated");
             sharedComponentCreatedMessage.FromJSON(json);
+            SceneController.i.OnMessageDecodeEnds?.Invoke("ComponentCreated");
 
             BaseDisposable disposableComponent;
 
@@ -423,7 +445,10 @@ namespace DCL.Controllers
                 case CLASS_ID.UI_SCREEN_SPACE_SHAPE:
                     {
                         if (uiScreenSpace == null)
+                        {
                             newComponent = new UIScreenSpace(this);
+                        }
+
                         break;
                     }
                 case CLASS_ID.UI_CONTAINER_RECT:
@@ -468,7 +493,9 @@ namespace DCL.Controllers
         SharedComponentDisposeMessage sharedComponentDisposedMessage = new SharedComponentDisposeMessage();
         public void SharedComponentDispose(string json)
         {
+            SceneController.i.OnMessageDecodeStart?.Invoke("ComponentDisposed");
             sharedComponentDisposedMessage.FromJSON(json);
+            SceneController.i.OnMessageDecodeEnds?.Invoke("ComponentDisposed");
 
             BaseDisposable disposableComponent;
 
@@ -486,7 +513,9 @@ namespace DCL.Controllers
         EntityComponentRemoveMessage entityComponentRemovedMessage = new EntityComponentRemoveMessage();
         public void EntityComponentRemove(string json)
         {
+            SceneController.i.OnMessageDecodeStart?.Invoke("ComponentRemoved");
             entityComponentRemovedMessage.FromJSON(json);
+            SceneController.i.OnMessageDecodeEnds?.Invoke("ComponentRemoved");
 
             DecentralandEntity decentralandEntity = GetEntityForUpdate(entityComponentRemovedMessage.entityId);
             if (decentralandEntity == null)
@@ -530,19 +559,27 @@ namespace DCL.Controllers
 
         public BaseDisposable SharedComponentUpdate(string json, out Coroutine routine)
         {
+            SceneController.i.OnMessageDecodeStart?.Invoke("ComponentUpdated");
             BaseDisposable result = SharedComponentUpdate(json);
+            SceneController.i.OnMessageDecodeEnds?.Invoke("ComponentUpdated");
 
             if (result != null)
+            {
                 routine = result.routine;
+            }
             else
+            {
                 routine = null;
+            }
 
             return result;
         }
 
         public BaseDisposable SharedComponentUpdate(string json)
         {
+            SceneController.i.OnMessageDecodeStart?.Invoke("ComponentUpdated");
             sharedComponentUpdatedMessage.FromJSON(json);
+            SceneController.i.OnMessageDecodeEnds?.Invoke("ComponentUpdated");
 
             BaseDisposable disposableComponent;
 
@@ -567,10 +604,14 @@ namespace DCL.Controllers
         public bool HasTestSchema(string url)
         {
             if (url.StartsWith("file://"))
+            {
                 return true;
+            }
 
             if (url.StartsWith(TestHelpers.GetTestsAssetsPath()))
+            {
                 return true;
+            }
 
             return false;
         }
@@ -578,13 +619,19 @@ namespace DCL.Controllers
         public virtual bool HasContentsUrl(string url)
         {
             if (string.IsNullOrEmpty(url))
+            {
                 return false;
+            }
 
             if (HasTestSchema(url))
+            {
                 return true;
+            }
 
             if (sceneData.fileToHash == null)
+            {
                 return false;
+            }
 
             return sceneData.fileToHash.ContainsKey(url.ToLower());
         }
@@ -594,7 +641,9 @@ namespace DCL.Controllers
             string result = "";
 
             if (TryGetContentsUrl(url, out result))
+            {
                 return result;
+            }
 
             return null;
         }
@@ -604,7 +653,10 @@ namespace DCL.Controllers
             url = url.ToLower();
             result = url;
 
-            if (HasTestSchema(url)) return true;
+            if (HasTestSchema(url))
+            {
+                return true;
+            }
 
             if (sceneData.fileToHash != null)
             {
@@ -622,7 +674,9 @@ namespace DCL.Controllers
             }
 
             if (VERBOSE)
+            {
                 Debug.Log($">>> GetContentsURL from ... {url} ... RESULTING URL... = {result}");
+            }
 
             return true;
         }

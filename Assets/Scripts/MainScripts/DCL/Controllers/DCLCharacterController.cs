@@ -156,7 +156,10 @@ public class DCLCharacterController : MonoBehaviour
 
     void Jump()
     {
-        if (isJumping) return;
+        if (isJumping)
+        {
+            return;
+        }
 
         isJumping = true;
 

@@ -583,7 +583,6 @@ GameObject:
   - component: {fileID: 665022852451238150}
   - component: {fileID: 7873276452880716638}
   - component: {fileID: 1592760362493093889}
-  - component: {fileID: 2059199365876810999}
   m_Layer: 0
   m_Name: FPSPanel
   m_TagString: Untagged
@@ -693,19 +692,6 @@ MonoBehaviour:
   - {fileID: 2142398519812125648}
   - {fileID: 5223579876079635506}
   fpsCounter: {fileID: 7873276452880716638}
---- !u!114 &2059199365876810999
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 7216045483097485647}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: f3d7bc073dd9c1542872e197e69aede2, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  debugStats: {fileID: 9015994244967614587}
 --- !u!1 &7640780781284765754
 GameObject:
   m_ObjectHideFlags: 0

@@ -1,7 +1,5 @@
 using DCL.Helpers;
-using System;
 using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 namespace DCL.Components
@@ -44,7 +42,7 @@ namespace DCL.Components
 
         public override IEnumerator ApplyChanges(string newJson)
         {
-            model = Utils.SafeFromJson<Model>(newJson);
+            model = SceneController.i.SafeFromJson<Model>(newJson);
             UpdateTransform();
             return null;
         }
