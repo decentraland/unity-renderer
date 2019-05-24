@@ -3,22 +3,13 @@ import { Auth } from 'decentraland-auth'
 import './apis/index'
 import './events'
 
-import {
-  ETHEREUM_NETWORK,
-  DEBUG_MOBILE,
-  PREVIEW,
-  EDITOR,
-  AVOID_WEB3,
-  setNetwork,
-  decentralandConfigurations,
-  getTLD
-} from 'config'
+import { ETHEREUM_NETWORK, setNetwork, getTLD } from 'config'
 import { info, error } from 'engine/logger'
-import { initializeUrlPositionObserver } from './world/positionThings'
-import { getERC721 } from './ethereum/ERC721'
+
 import { getUserAccount, getNetwork } from './ethereum/EthereumService'
+import { awaitWeb3Approval } from './ethereum/provider'
+import { initializeUrlPositionObserver } from './world/positionThings'
 import { connect } from './comms'
-import { requestManager, awaitWeb3Approval } from './ethereum/provider'
 import { initialize } from './analytics'
 
 // TODO fill with segment keys and integrate identity server
@@ -36,28 +27,6 @@ export async function initializeAnalytics(userId: string) {
   }
 }
 
-async function grantAccess(address: string | null, net: ETHEREUM_NETWORK) {
-  if (DEBUG_MOBILE || PREVIEW || EDITOR || AVOID_WEB3) {
-    return true
-  }
-
-  let isWhitelisted = location.hostname === 'localhost' || navigator.userAgent.includes('Oculus')
-
-  if (!isWhitelisted && address) {
-    const contract = await getERC721(requestManager, decentralandConfigurations.invite)
-
-    const balance = await contract.balanceOf(address)
-
-    isWhitelisted = balance.gt(0)
-
-    if (!isWhitelisted) {
-      throw new Error(`Unauthorized ${address} [${net}]`)
-    }
-  }
-
-  return isWhitelisted
-}
-
 function getNetworkFromTLD(): ETHEREUM_NETWORK | null {
   const tld = getTLD()
   if (tld === 'localhost' || tld === '1') {
@@ -72,49 +41,35 @@ function getNetworkFromTLD(): ETHEREUM_NETWORK | null {
   return ETHEREUM_NETWORK.MAINNET
 }
 
-async function getAddressAndNetwork() {
-  if (AVOID_WEB3) {
-    error('Could not get Ethereum address, communications will be disabled.')
-
-    return {
-      net: getNetworkFromTLD() || ETHEREUM_NETWORK.MAINNET,
-      address: '0x0000000000000000000000000000000000000000'
-    }
-  }
-
+async function getAddress(): Promise<string | undefined> {
   try {
     await awaitWeb3Approval()
-    const address = await getUserAccount()
-    const web3Network = await getNetwork()
-    const web3net = web3Network === '1' ? ETHEREUM_NETWORK.MAINNET : ETHEREUM_NETWORK.ROPSTEN
-    const net = getNetworkFromTLD() || web3net
-
-    if (web3net && net !== web3net) {
-      // TODO @fmiras show an HTML error if web3 networks differs from domain network and do not load client at all
-      error(`Switch to network ${net}`)
-    }
-
-    info('Using ETH network: ', net)
-
-    return {
-      net,
-      address
-    }
+    return await getUserAccount()
   } catch (e) {
-    error('Could not get Ethereum address, WebRTC will be disabled.')
     info(e)
-
-    return {
-      net: getNetworkFromTLD() || ETHEREUM_NETWORK.MAINNET,
-      address: '0x0000000000000000000000000000000000000000'
-    }
+    return
   }
+}
+
+async function getAppNetwork(): Promise<ETHEREUM_NETWORK> {
+  const web3Network = await getNetwork()
+  const web3net = web3Network === '1' ? ETHEREUM_NETWORK.MAINNET : ETHEREUM_NETWORK.ROPSTEN
+  // TLD environment have priority
+  const net = getNetworkFromTLD() || web3net
+
+  if (web3net && net !== web3net) {
+    // TODO @fmiras show an HTML error if web3 networks differs from domain network and do not load client at all
+    error(`Switch to network ${net}`)
+  }
+
+  info('Using ETH network: ', net)
+  return net
 }
 
 async function authenticate(): Promise<any> {
   const tld = getTLD()
   if (tld === 'localhost' || tld === '1') {
-    return { userId: 'email|5cdd68572d5f842a16d6cc17' }
+    return { user_id: 'email|5cdd68572d5f842a16d6cc17' }
   }
 
   const auth = new Auth()
@@ -122,29 +77,21 @@ async function authenticate(): Promise<any> {
   return auth.getPayload()
 }
 
-export async function initShared() {
+export async function initShared(): Promise<ETHEREUM_NETWORK> {
   const { user_id } = await authenticate()
-  const { address, net } = await getAddressAndNetwork()
+  console['log'](`User ${user_id} logged in`)
+  const address = await getAddress()
+  const net = await getAppNetwork()
 
   // Load contracts from https://contracts.decentraland.org
   await setNetwork(net)
-
   await initializeAnalytics(user_id)
-  const isWhitelisted = await grantAccess(address, net)
-
-  if (isWhitelisted) {
-    await connect(
-      address,
-      net
-    )
-  } else {
-    throw new Error(`The address ${address} is not whitelisted`)
-  }
-
-  initializeUrlPositionObserver()
-
-  return {
+  await connect(
+    user_id,
     net,
     address
-  }
+  )
+  initializeUrlPositionObserver()
+
+  return net
 }

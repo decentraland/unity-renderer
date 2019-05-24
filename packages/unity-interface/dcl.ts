@@ -191,7 +191,7 @@ class UnityParcelScene extends UnityScene<LoadableParcelScene> {
 
 export async function initializeEngine(_gameInstance: GameInstance) {
   gameInstance = _gameInstance
-  const { net } = await initShared()
+  const net = await initShared()
   unityInterface.SetPosition(lastPlayerPosition.x, lastPlayerPosition.y, lastPlayerPosition.z)
 
   if (DEBUG) {
