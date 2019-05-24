@@ -12,8 +12,9 @@ public class DCLCharacterController : MonoBehaviour
     public float aimingVerticalMaximumAngle = 89f;
 
     [Header("Movement")]
-    public float gravity = -1f;
-    public float movementSpeed = 10f;
+    public float minimumYPosition = 1f;
+    public float gravity = -55f;
+    public float movementSpeed = 8f;
     public float jumpForce = 20f;
 
     [Header("Collisions")]
@@ -23,6 +24,8 @@ public class DCLCharacterController : MonoBehaviour
     new Rigidbody rigidbody;
     new Collider collider;
 
+    float deltaTime = 0.032f;
+    float deltaTimeCap = 0.032f; // 32 milliseconds = 30FPS, 16 millisecodns = 60FPS
     float aimingHorizontalAngle;
     float aimingVerticalAngle;
     float lastUngroundedTime = 0f;
@@ -56,23 +59,24 @@ public class DCLCharacterController : MonoBehaviour
         camera = GetComponentInChildren<Camera>().transform;
     }
 
-    public void SetPosition(string positionVector)
+    public void SetPosition(Vector3 newPosition)
     {
-        var newPosition = JsonUtility.FromJson<Vector3>(positionVector);
-
         // failsafe in case something teleports the player below ground collisions
-        if (newPosition.y < 1f)
-        {
-            newPosition.y = 3f;
-        }
+        if (newPosition.y < minimumYPosition)
+            newPosition.y = minimumYPosition + 2f;
 
         Vector3 previousPosition = transform.position;
         transform.position = newPosition;
 
         if (Moved(previousPosition))
-        {
             ReportMovement();
-        }
+    }
+
+    public void SetPosition(string positionVector)
+    {
+        var newPosition = JsonUtility.FromJson<Vector3>(positionVector);
+
+        SetPosition(newPosition);
     }
 
     bool Moved(Vector3 previousPosition)
@@ -82,8 +86,14 @@ public class DCLCharacterController : MonoBehaviour
 
     void Update()
     {
-        velocity.x = 0f;
-        velocity.z = 0f;
+        deltaTime = Mathf.Min(deltaTimeCap, Time.deltaTime);
+
+        if (transform.position.y < minimumYPosition)
+        {
+            SetPosition(transform.position);
+
+            return;
+        }
 
         bool previouslyGrounded = isGrounded;
         isGrounded = IsGrounded();
@@ -99,7 +109,9 @@ public class DCLCharacterController : MonoBehaviour
             lastUngroundedTime = Time.time;
         }
 
-        velocity.y += gravity * Time.deltaTime;
+        velocity.x = 0f;
+        velocity.z = 0f;
+        velocity.y += gravity * deltaTime;
 
         if (!Cursor.visible)
         {
@@ -114,20 +126,20 @@ public class DCLCharacterController : MonoBehaviour
 
             if (movementInput.x > 0f)
             {
-                velocity += (transform.right * speed) * Time.deltaTime;
+                velocity += (transform.right * speed);
             }
             else if (movementInput.x < 0f)
             {
-                velocity += (-transform.right * speed) * Time.deltaTime;
+                velocity += (-transform.right * speed);
             }
 
             if (movementInput.y > 0f)
             {
-                velocity += (transform.forward * speed) * Time.deltaTime;
+                velocity += (transform.forward * speed);
             }
             else if (movementInput.y < 0f)
             {
-                velocity += (-transform.forward * speed) * Time.deltaTime;
+                velocity += (-transform.forward * speed);
             }
         }
 
@@ -146,7 +158,7 @@ public class DCLCharacterController : MonoBehaviour
         }
 
         Vector3 previousPosition = transform.position;
-        characterController.Move(velocity * Time.deltaTime);
+        characterController.Move(velocity * deltaTime);
 
         if (Moved(previousPosition) || (Time.realtimeSinceStartup - lastMovementReportTime) > PlayerSettings.POSITION_REPORTING_DELAY)
         {
@@ -171,8 +183,8 @@ public class DCLCharacterController : MonoBehaviour
         aimingInput.x = Input.GetAxis("Mouse X");
         aimingInput.y = Input.GetAxis("Mouse Y");
 
-        aimingHorizontalAngle += Mathf.Clamp(aimingInput.x, -1, 1) * aimingHorizontalSpeed * Time.deltaTime;
-        aimingVerticalAngle += Mathf.Clamp(aimingInput.y, -1, 1) * aimingVerticalSpeed * Time.deltaTime;
+        aimingHorizontalAngle += Mathf.Clamp(aimingInput.x, -1, 1) * aimingHorizontalSpeed * deltaTime;
+        aimingVerticalAngle += Mathf.Clamp(aimingInput.y, -1, 1) * aimingVerticalSpeed * deltaTime;
 
         // Limit vertical aiming angle
         aimingVerticalAngle = Mathf.Clamp(aimingVerticalAngle, aimingVerticalMinimumAngle, aimingVerticalMaximumAngle);
