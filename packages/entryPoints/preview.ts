@@ -83,7 +83,7 @@ async function loadClient() {
 
   bodyReadyFuture
     .then(async body => {
-      const { net } = await initShared()
+      const net = await initShared()
       await loadClient()
 
       // Warn in case wallet is set in mainnet

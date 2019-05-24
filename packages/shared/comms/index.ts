@@ -294,70 +294,70 @@ function collectInfo(context: Context) {
   }
 }
 
-export async function connect(ethAddress: string, network: ETHEREUM_NETWORK) {
-  const peerId = ethAddress
-
-  setLocalProfile(peerId, {
+export async function connect(userId: string, network: ETHEREUM_NETWORK, ethAddress?: string) {
+  setLocalProfile(userId, {
     ...getUserProfile(),
-    publicKey: ethAddress
+    publicKey: ethAddress || null
   })
 
   const user = getCurrentUser()
-  if (user) {
-    const userProfile = {
-      displayName: user.displayName,
-      publicKey: user.publicKey,
-      avatarType: user.avatarType
-    }
-
-    const connection = new WorldInstanceConnection(getServerConfigurations().worldInstanceUrl)
-    connection.positionHandler = (alias, data) => processPositionMessage(context!, alias, data)
-    connection.profileHandler = (alias, data) => processProfileMessage(context!, alias, data)
-    connection.chatHandler = (alias, data) => processChatMessage(context!, alias, data)
-    context = new Context(userProfile, network)
-    context.worldInstanceConnection = connection
-
-    if (commConfigurations.debug) {
-      context.stats = new Stats(context)
-      context.worldInstanceConnection.stats = context.stats
-    }
-
-    context.worldInstanceConnection.connect()
-
-    setInterval(() => {
-      if (context && context.currentPosition && context.worldInstanceConnection) {
-        context.worldInstanceConnection.sendProfileMessage(context.currentPosition, context.userProfile)
-      }
-    }, 1000)
-
-    positionObservable.add(
-      (
-        obj: Readonly<{
-          position: ReadOnlyVector3
-          rotation: ReadOnlyVector3
-          quaternion: ReadOnlyQuaternion
-        }>
-      ) => {
-        const p = [
-          obj.position.x,
-          obj.position.y - playerConfigurations.height,
-          obj.position.z,
-          obj.quaternion.x,
-          obj.quaternion.y,
-          obj.quaternion.z,
-          obj.quaternion.w
-        ] as Position
-
-        if (context) {
-          onPositionUpdate(context, p)
-        }
-      }
-    )
-
-    setInterval(() => {
-      if (context) {
-        collectInfo(context)
-      }
-    }, 100)
+  if (!user) {
+    return
   }
+
+  const userProfile = {
+    displayName: user.displayName,
+    publicKey: user.publicKey,
+    avatarType: user.avatarType
+  }
+
+  const connection = new WorldInstanceConnection(getServerConfigurations().worldInstanceUrl)
+  connection.positionHandler = (alias, data) => processPositionMessage(context!, alias, data)
+  connection.profileHandler = (alias, data) => processProfileMessage(context!, alias, data)
+  connection.chatHandler = (alias, data) => processChatMessage(context!, alias, data)
+  context = new Context(userProfile, network)
+  context.worldInstanceConnection = connection
+
+  if (commConfigurations.debug) {
+    context.stats = new Stats(context)
+    context.worldInstanceConnection.stats = context.stats
+  }
+
+  context.worldInstanceConnection.connect()
+
+  setInterval(() => {
+    if (context && context.currentPosition && context.worldInstanceConnection) {
+      context.worldInstanceConnection.sendProfileMessage(context.currentPosition, context.userProfile)
+    }
+  }, 1000)
+
+  positionObservable.add(
+    (
+      obj: Readonly<{
+        position: ReadOnlyVector3
+        rotation: ReadOnlyVector3
+        quaternion: ReadOnlyQuaternion
+      }>
+    ) => {
+      const p = [
+        obj.position.x,
+        obj.position.y - playerConfigurations.height,
+        obj.position.z,
+        obj.quaternion.x,
+        obj.quaternion.y,
+        obj.quaternion.z,
+        obj.quaternion.w
+      ] as Position
+
+      if (context) {
+        onPositionUpdate(context, p)
+      }
+    }
+  )
+
+  setInterval(() => {
+    if (context) {
+      collectInfo(context)
+    }
+  }, 100)
 }

@@ -30,7 +30,7 @@ export async function loadClient(net: ETHEREUM_NETWORK) {
 
 bodyReadyFuture
   .then(async body => {
-    const { net } = await initShared()
+    const net = await initShared()
 
     await loadClient(net)
 
