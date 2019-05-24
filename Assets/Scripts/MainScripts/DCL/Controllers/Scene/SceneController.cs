@@ -55,10 +55,11 @@ public class SceneController : MonoBehaviour
     [System.NonSerialized]
     public bool isDebugMode;
 
-    Queue<QueuedSceneMessage> pendingMessages = new Queue<QueuedSceneMessage>();
-
     public bool hasPendingMessages => pendingMessages != null && pendingMessages.Count > 0;
     public int pendingMessagesCount => pendingMessages != null ? pendingMessages.Count : 0;
+
+    LoadParcelScenesMessage loadParcelScenesMessage = new LoadParcelScenesMessage();
+    Queue<QueuedSceneMessage> pendingMessages = new Queue<QueuedSceneMessage>();
 
     #region BENCHMARK_EVENTS
     //NOTE(Brian): For performance reasons, these events may need to be removed for production.
@@ -171,7 +172,7 @@ public class SceneController : MonoBehaviour
                         OnMessageWillDequeue?.Invoke(messageObject.method);
                         break;
                     case QueuedSceneMessage.Type.LOAD_PARCEL:
-                        yield return LoadParcelScenesExecute_Spread(m.message);
+                        yield return LoadParcelScenesExecute(m.message);
                         OnMessageWillDequeue?.Invoke("LoadScene");
                         break;
                     case QueuedSceneMessage.Type.UNLOAD_SCENES:
@@ -186,7 +187,6 @@ public class SceneController : MonoBehaviour
             yield return null;
         }
     }
-
 
     public void SetDebug()
     {
@@ -215,101 +215,40 @@ public class SceneController : MonoBehaviour
         return null;
     }
 
-    private LoadParcelScenesMessage loadParcelScenesMessage = new LoadParcelScenesMessage();
-
-    public IEnumerator LoadParcelScenesExecute_Spread(string decentralandSceneJSON)
-    {
-        OnMessageDecodeStart?.Invoke("LoadScene");
-        string[] jsons = decentralandSceneJSON.Split(new string[] { "}{" }, StringSplitOptions.None);
-        OnMessageDecodeEnds?.Invoke("LoadScene");
-
-        foreach (string json in jsons)
-        {
-            float tb = Time.realtimeSinceStartup;
-
-            LoadParcelScenesMessage.UnityParcelScene scene;
-
-            scene = SafeFromJson<LoadParcelScenesMessage.UnityParcelScene>(json);
-
-            if (scene == null || scene.id == null)
-            {
-                continue;
-            }
-
-            if (Time.realtimeSinceStartup - tb > DCL.Configuration.MessageThrottlingSettings.LOAD_PARCEL_SCENES_THROTTLING_TIME)
-            {
-                yield return null;
-            }
-
-            var sceneToLoad = scene;
-
-#if UNITY_EDITOR
-            if (debugScenes && sceneToLoad.id != debugSceneName)
-            {
-                continue;
-            }
-#endif
-            OnMessageProcessStart?.Invoke("LoadScene");
-            if (!loadedScenes.ContainsKey(sceneToLoad.id))
-            {
-                var newGameObject = new GameObject("New Scene");
-
-                var newScene = newGameObject.AddComponent<ParcelScene>();
-                newScene.SetData(sceneToLoad);
-
-                if (isDebugMode)
-                {
-                    newScene.InitializeDebugPlane();
-                }
-
-                newScene.ownerController = this;
-                loadedScenes.Add(sceneToLoad.id, newScene);
-            }
-            OnMessageProcessEnds?.Invoke("LoadScene");
-        }
-    }
-
-    [Obsolete("We should use the spread variant now")]
     public IEnumerator LoadParcelScenesExecute(string decentralandSceneJSON)
     {
-        JsonUtility.FromJsonOverwrite(decentralandSceneJSON, this.loadParcelScenesMessage);
+        LoadParcelScenesMessage.UnityParcelScene scene;
 
-        var scenesToLoad = loadParcelScenesMessage.parcelsToLoad;
-        var completeListOfParcelsThatShouldBeLoaded = new List<string>();
+        OnMessageDecodeStart?.Invoke("LoadScene");
+        scene = SafeFromJson<LoadParcelScenesMessage.UnityParcelScene>(decentralandSceneJSON);
+        OnMessageDecodeEnds?.Invoke("LoadScene");
 
-        // LOAD MISSING SCENES
-        for (int i = 0; i < scenesToLoad.Count; i++)
+        if (scene == null || scene.id == null) yield break;
+
+        var sceneToLoad = scene;
+
+#if UNITY_EDITOR
+        if (debugScenes && sceneToLoad.id != debugSceneName)
+            yield break;
+#endif
+
+        OnMessageProcessStart?.Invoke("LoadScene");
+        if (!loadedScenes.ContainsKey(sceneToLoad.id))
         {
-            var sceneToLoad = scenesToLoad[i];
+            var newGameObject = new GameObject("New Scene");
 
-            completeListOfParcelsThatShouldBeLoaded.Add(sceneToLoad.id);
+            var newScene = newGameObject.AddComponent<ParcelScene>();
+            newScene.SetData(sceneToLoad);
 
-            if (!loadedScenes.ContainsKey(sceneToLoad.id))
+            if (isDebugMode)
             {
-                if (VERBOSE)
-                {
-                    Debug.Log($"Creating scene {sceneToLoad.id}");
-                }
-
-                var newGameObject = new GameObject("New Scene");
-
-                var newScene = newGameObject.AddComponent<ParcelScene>();
-                newScene.SetData(sceneToLoad);
                 newScene.InitializeDebugPlane();
-                newScene.ownerController = this;
-
-                if (!loadedScenes.ContainsKey(sceneToLoad.id))
-                {
-                    loadedScenes.Add(sceneToLoad.id, newScene);
-                }
-                else
-                {
-                    loadedScenes[sceneToLoad.id] = newScene;
-                }
             }
-        }
 
-        yield break;
+            newScene.ownerController = this;
+            loadedScenes.Add(sceneToLoad.id, newScene);
+        }
+        OnMessageProcessEnds?.Invoke("LoadScene");
     }
 
     public void UnloadScene(string sceneKey)

@@ -3,7 +3,7 @@ namespace DCL.Configuration
 {
     public static class ApplicationSettings
     {
-        public static float version = 0.3f;
+        public static float version = 0.4f;
     }
 
     public static class Environment
