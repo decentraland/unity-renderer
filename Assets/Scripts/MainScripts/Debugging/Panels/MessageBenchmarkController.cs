@@ -170,6 +170,10 @@ public class MessageBenchmarkController : MonoBehaviour, IBenchmarkController
         {
             Init();
         }
+        else
+        {
+            ResetTracker();
+        }
 
         SceneController.i.OnMessageWillQueue += OnMessageWillQueue;
         SceneController.i.OnMessageWillDequeue += OnMessageWillDequeue;

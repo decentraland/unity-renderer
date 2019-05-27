@@ -112,11 +112,7 @@ public class StatsPanelToggler : MonoBehaviour
 
     private void DisableProfiling()
     {
-        if (!deepProfilingEnabled)
-        {
-            DisableDeepProfiling();
-        }
-
+        DisableDeepProfiling();
         miscController.StopProfiling();
         miscController.gameObject.SetActive(false);
 
@@ -125,13 +121,20 @@ public class StatsPanelToggler : MonoBehaviour
 
     void RefreshShortcutText()
     {
-        if (deepProfilingEnabled)
+        if (allProfilingEnabled)
         {
-            text.text = $"[Deep Message Profiling Enabled]\n{SHORTCUT_TEXT}";
+            if (deepProfilingEnabled)
+            {
+                text.text = $"[Deep Message Profiling Enabled]\n{SHORTCUT_TEXT}";
+            }
+            else
+            {
+                text.text = $"[Profiling Enabled]\n{SHORTCUT_TEXT}";
+            }
         }
         else
         {
-            text.text = $"[Profiling Enabled]\n{SHORTCUT_TEXT}";
+            text.text = "";
         }
     }
 }
