@@ -13,9 +13,6 @@ MonoBehaviour:
   m_Name: DCLComponentFactory
   m_EditorClassIdentifier: 
   factoryList:
-  - classId: 1
-    prefab: {fileID: 6321541088581519955, guid: f433f758f67c4474cbba8af4a2885347,
-      type: 3}
   - classId: 8
     prefab: {fileID: 8173520707399800712, guid: 8f4744c5a3ad0714e9924499e0a8b0c8,
       type: 3}

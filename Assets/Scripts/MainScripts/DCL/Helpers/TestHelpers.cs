@@ -283,6 +283,32 @@ namespace DCL.Helpers
             }));
         }
 
+        public static void SetEntityTransform(ParcelScene scene, DecentralandEntity entity, DCLTransform.Model model)
+        {
+            SetEntityTransform(scene, entity, model.position, model.rotation, model.scale);
+        }
+
+        public static void SetEntityTransform(ParcelScene scene, DecentralandEntity entity)
+        {
+            SetEntityTransform(scene, entity, Vector3.zero, Quaternion.identity, Vector3.one);
+        }
+
+        public static void SetEntityTransform(ParcelScene scene, DecentralandEntity entity, Vector3 position, Quaternion rotation, Vector3 scale)
+        {
+            scene.EntityComponentCreate(JsonUtility.ToJson(new EntityComponentCreateMessage
+            {
+                entityId = entity.entityId,
+                name = "",
+                classId = (int)CLASS_ID_COMPONENT.TRANSFORM,
+                json = JsonConvert.SerializeObject(new
+                {
+                    position = position,
+                    rotation = rotation,
+                    scale = scale
+                })
+            }));
+        }
+
         public static TextShape InstantiateEntityWithTextShape(ParcelScene scene, Vector3 position, TextShape.Model model)
         {
             DecentralandEntity entity = CreateSceneEntity(scene);
@@ -290,26 +316,9 @@ namespace DCL.Helpers
 
             TextShape textShape = EntityComponentCreate<TextShape, TextShape.Model>(scene, entity, model);
 
-            EntityComponentCreate<DCLTransform, DCLTransform.Model>(scene, entity,
-                new DCLTransform.Model
-                {
-                    position = position,
-                    rotation = Quaternion.identity,
-                    scale = Vector3.one
-                });
+            SetEntityTransform(scene, entity);
 
             return textShape;
-        }
-
-        public static void AttachDCLTransform(DecentralandEntity entity, ParcelScene scene, Vector3 pos, Quaternion? rot = null, Vector3? scale = null)
-        {
-            EntityComponentCreate<DCLTransform, DCLTransform.Model>(scene, entity,
-                new DCLTransform.Model
-                {
-                    position = pos,
-                    rotation = rot.Value,
-                    scale = scale.Value
-                });
         }
 
         public static GLTFShape AttachGLTFShape(DecentralandEntity entity, ParcelScene scene, Vector3 position, GLTFShape.Model model)
@@ -317,7 +326,7 @@ namespace DCL.Helpers
             string componentId = GetComponentUniqueId(scene, "gltfShape", (int)CLASS_ID.GLTF_SHAPE, entity.entityId);
             GLTFShape gltfShape = SharedComponentCreate<GLTFShape, GLTFShape.Model>(scene, CLASS_ID.GLTF_SHAPE, model);
 
-            AttachDCLTransform(entity, scene, position, Quaternion.identity, Vector3.one);
+            SetEntityTransform(scene, entity, position, Quaternion.identity, Vector3.one);
             SharedComponentAttach(gltfShape, entity);
             return gltfShape;
         }
@@ -408,7 +417,7 @@ namespace DCL.Helpers
             DecentralandEntity entity = CreateSceneEntity(scene);
             T shape = SharedComponentCreate<T, K>(scene, classId, model);
             SharedComponentAttach(shape, entity);
-            AttachDCLTransform(entity, scene, position, Quaternion.identity, Vector3.one);
+            SetEntityTransform(scene, entity, position, Quaternion.identity, Vector3.one);
             return shape;
         }
 
@@ -444,13 +453,7 @@ namespace DCL.Helpers
 
             T shape = scene.disposableComponents[shapeId] as T;
 
-            EntityComponentCreate<DCLTransform, DCLTransform.Model>(scene, entity,
-            new DCLTransform.Model
-            {
-                position = position,
-                rotation = Quaternion.identity,
-                scale = Vector3.one
-            });
+            SetEntityTransform(scene, entity, position, Quaternion.identity, Vector3.one);
 
             return shape;
         }
@@ -471,13 +474,7 @@ namespace DCL.Helpers
                 }));
             }
 
-            EntityComponentCreate<DCLTransform, DCLTransform.Model>(scene, scene.entities[entityId],
-            new DCLTransform.Model
-            {
-                position = position,
-                rotation = Quaternion.identity,
-                scale = Vector3.one
-            });
+            SetEntityTransform(scene, scene.entities[entityId], position, Quaternion.identity, Vector3.one);
         }
 
         public static void DetachSharedComponent(ParcelScene scene, string fromEntityId, string sharedComponentId)
@@ -672,13 +669,19 @@ namespace DCL.Helpers
             DecentralandEntity e = CreateSceneEntity(scene);
             TComponent component = EntityComponentCreate<TComponent, TModel>(scene, e, generatedModel);
 
-            yield return component.routine;
+            if (component.routine != null)
+            {
+                yield return component.routine;
+            }
 
             int id = (int)scene.ownerController.componentFactory.GetIdForType<TComponent>();
 
             scene.EntityComponentUpdate(e, (CLASS_ID_COMPONENT)id, "{}");
 
-            yield return component.routine;
+            if (component.routine != null)
+            {
+                yield return component.routine;
+            }
 
             CompareWithDefaultedInstance<TModel, TComponent>(component);
             TestHelpers.RemoveSceneEntity(scene, e.entityId);
@@ -692,9 +695,14 @@ namespace DCL.Helpers
             DecentralandEntity entity = CreateSceneEntity(scene);
 
             var component = SharedComponentCreate<TComponent, TModel>(scene, classId);
-            yield return component.routine;
+
+            if (component.routine != null)
+            {
+                yield return component.routine;
+            }
 
             Type componentType = typeof(TComponent);
+
             if (component is BaseShape)
                 componentType = typeof(BaseShape);
 
@@ -706,7 +714,11 @@ namespace DCL.Helpers
 
             // Assign 2nd component to same entity
             var component2 = SharedComponentCreate<TComponent, TModel>(scene, classId);
-            yield return component2.routine;
+
+            if (component2.routine != null)
+            {
+                yield return component2.routine;
+            }
 
             TestHelpers.SharedComponentAttach(component2, entity);
 
@@ -721,7 +733,10 @@ namespace DCL.Helpers
         {
             TComponent component = TestHelpers.SharedComponentCreate<TComponent, TModel>(scene, id);
 
-            yield return component.routine;
+            if (component.routine != null)
+            {
+                yield return component.routine;
+            }
 
             TModel generatedModel = new TModel();
 
@@ -734,7 +749,10 @@ namespace DCL.Helpers
 
             SharedComponentUpdate(scene, component, generatedModel);
 
-            yield return component.routine;
+            if (component.routine != null)
+            {
+                yield return component.routine;
+            }
 
             scene.SharedComponentUpdate(JsonUtility.ToJson(new DCL.Models.SharedComponentUpdateMessage
             {
@@ -785,6 +803,7 @@ namespace DCL.Helpers
             if (usesWebServer)
             {
                 var webServer = sceneController.GetComponent<WebServerComponent>();
+
                 if (webServer != null)
                 {
                     webServer.Restart(); // We restart the server to avoid issues with consecutive tests using it
@@ -814,20 +833,13 @@ namespace DCL.Helpers
             bool awaitedConditionMet = false;
             yield return new DCL.WaitUntil(() =>
             {
-                if (OnIterationStart != null)
-                {
-                    OnIterationStart();
-                }
+                OnIterationStart?.Invoke();
 
                 if (lastMessageFromEngineType == targetMessageType && lastMessageFromEnginePayload == targetMessageJSONPayload)
                 {
                     DCL.Interface.WebInterface.OnMessageFromEngine -= OnMessageFromEngine;
 
-                    if (OnSuccess != null)
-                    {
-                        OnSuccess();
-                    }
-
+                    OnSuccess?.Invoke();
                     awaitedConditionMet = true;
                 }
 

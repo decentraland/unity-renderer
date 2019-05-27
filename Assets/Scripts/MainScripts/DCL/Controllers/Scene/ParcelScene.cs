@@ -285,10 +285,19 @@ namespace DCL.Controllers
                 return null;
             }
 
-            DCLComponentFactory factory = ownerController.componentFactory;
             CLASS_ID_COMPONENT classId = (CLASS_ID_COMPONENT)createEntityComponentMessage.classId;
-            BaseComponent newComponent = null;
 
+            if (classId == CLASS_ID_COMPONENT.TRANSFORM)
+            {
+                JsonUtility.FromJsonOverwrite(createEntityComponentMessage.json, DCLTransform.model);
+                entity.gameObject.transform.localPosition = DCLTransform.model.position;
+                entity.gameObject.transform.localRotation = DCLTransform.model.rotation;
+                entity.gameObject.transform.localScale = DCLTransform.model.scale;
+                return null;
+            }
+
+            BaseComponent newComponent = null;
+            DCLComponentFactory factory = ownerController.componentFactory;
             Assert.IsNotNull(factory, "Factory is null?");
 
             if (!entity.components.ContainsKey(classId))
@@ -527,9 +536,6 @@ namespace DCL.Controllers
                     return;
                 case "onClick":
                     RemoveComponentType<OnClickComponent>(entity, CLASS_ID_COMPONENT.UUID_CALLBACK);
-                    return;
-                case "transform":
-                    RemoveComponentType<DCLTransform>(entity, CLASS_ID_COMPONENT.TRANSFORM);
                     return;
             }
         }
