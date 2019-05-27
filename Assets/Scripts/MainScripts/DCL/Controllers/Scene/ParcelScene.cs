@@ -147,9 +147,10 @@ namespace DCL.Controllers
         public DecentralandEntity CreateEntity(string json)
         {
             SceneController.i.OnMessageDecodeStart?.Invoke("CreateEntity");
-            tmpCreateEntityMessage.FromJSON(json);
-            SceneController.i.OnMessageDecodeEnds?.Invoke("CreateEntity");
 
+            tmpCreateEntityMessage.id = json.Substring(7).TrimEnd('"', '}');
+
+            SceneController.i.OnMessageDecodeEnds?.Invoke("CreateEntity");
             if (entities.ContainsKey(tmpCreateEntityMessage.id))
             {
                 return entities[tmpCreateEntityMessage.id];
@@ -157,18 +158,13 @@ namespace DCL.Controllers
 
             var newEntity = new DecentralandEntity();
             newEntity.entityId = tmpCreateEntityMessage.id;
-            newEntity.gameObject = new GameObject();
-            newEntity.gameObject.transform.SetParent(gameObject.transform);
-            newEntity.gameObject.transform.ResetLocalTRS();
-            newEntity.gameObject.name = "ENTITY_" + tmpCreateEntityMessage.id;
+            newEntity.gameObject = new GameObject("ENTITY_" + tmpCreateEntityMessage.id);
+            newEntity.gameObject.transform.SetParent(gameObject.transform, false);
             newEntity.scene = this;
 
             entities.Add(tmpCreateEntityMessage.id, newEntity);
 
-            if (OnEntityAdded != null)
-            {
-                OnEntityAdded.Invoke(newEntity);
-            }
+            OnEntityAdded?.Invoke(newEntity);
 
             return newEntity;
         }
@@ -183,15 +179,8 @@ namespace DCL.Controllers
 
             if (entities.ContainsKey(tmpRemoveEntityMessage.id))
             {
-                if (OnEntityRemoved != null)
-                {
-                    OnEntityRemoved.Invoke(entities[tmpRemoveEntityMessage.id]);
-                }
-
-                if (entities[tmpRemoveEntityMessage.id].OnRemoved != null)
-                {
-                    entities[tmpRemoveEntityMessage.id].OnRemoved.Invoke(entities[tmpRemoveEntityMessage.id]);
-                }
+                OnEntityRemoved?.Invoke(entities[tmpRemoveEntityMessage.id]);
+                entities[tmpRemoveEntityMessage.id].OnRemoved?.Invoke(entities[tmpRemoveEntityMessage.id]);
 
                 Object.Destroy(entities[tmpRemoveEntityMessage.id].gameObject);
                 entities.Remove(tmpRemoveEntityMessage.id);
@@ -199,7 +188,7 @@ namespace DCL.Controllers
 #if UNITY_EDITOR || DEVELOPMENT_BUILD
             else
             {
-                throw new UnityException($"Couldn't remove entity with ID: {tmpRemoveEntityMessage.id} as it doesn't exist.");
+                Debug.LogError($"Couldn't remove entity with ID: {tmpRemoveEntityMessage.id} as it doesn't exist.");
             }
 #endif
         }
@@ -218,6 +207,13 @@ namespace DCL.Controllers
         public void SetEntityParent(string json)
         {
             SceneController.i.OnMessageDecodeStart?.Invoke("SetEntityParent");
+
+            if (json[json.Length - 3] == '0')
+            {
+                SceneController.i.OnMessageDecodeEnds?.Invoke("SetEntityParent");
+                return;
+            }
+
             tmpParentMessage.FromJSON(json);
             SceneController.i.OnMessageDecodeEnds?.Invoke("SetEntityParent");
 
@@ -226,30 +222,13 @@ namespace DCL.Controllers
                 return;
             }
 
-            GameObject rootGameObject = null;
+            DecentralandEntity me = GetEntityForUpdate(tmpParentMessage.entityId);
+            DecentralandEntity myParent = GetEntityForUpdate(tmpParentMessage.parentId);
 
-            if (tmpParentMessage.parentId == "0")
+            if (me != null && myParent != null)
             {
-                rootGameObject = gameObject;
+                me.gameObject.transform.SetParent(myParent.gameObject.transform, false);
             }
-            else
-            {
-                DecentralandEntity decentralandEntity = GetEntityForUpdate(tmpParentMessage.parentId);
-                if (decentralandEntity != null)
-                {
-                    rootGameObject = decentralandEntity.gameObject;
-                }
-            }
-
-            if (rootGameObject != null)
-            {
-                DecentralandEntity decentralandEntity = GetEntityForUpdate(tmpParentMessage.entityId);
-                if (decentralandEntity != null)
-                {
-                    decentralandEntity.gameObject.transform.SetParent(rootGameObject.transform, false);
-                }
-            }
-
         }
 
         SharedComponentAttachMessage attachSharedComponentMessage = new SharedComponentAttachMessage();
