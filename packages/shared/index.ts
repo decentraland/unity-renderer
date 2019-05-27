@@ -3,7 +3,7 @@ import { Auth } from 'decentraland-auth'
 import './apis/index'
 import './events'
 
-import { ETHEREUM_NETWORK, setNetwork, getTLD } from 'config'
+import { ETHEREUM_NETWORK, setNetwork, getTLD, DISABLE_AUTH, PREVIEW } from 'config'
 import { info, error } from 'engine/logger'
 
 import { getUserAccount, getNetwork } from './ethereum/EthereumService'
@@ -68,7 +68,7 @@ async function getAppNetwork(): Promise<ETHEREUM_NETWORK> {
 
 async function authenticate(): Promise<any> {
   const tld = getTLD()
-  if (tld === 'localhost' || tld === '1') {
+  if (DISABLE_AUTH || PREVIEW) {
     return { user_id: 'email|5cdd68572d5f842a16d6cc17' }
   }
 
