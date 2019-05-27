@@ -29,16 +29,15 @@ export async function initializeAnalytics(userId: string) {
 
 function getNetworkFromTLD(): ETHEREUM_NETWORK | null {
   const tld = getTLD()
-  if (tld === 'localhost' || tld === '1') {
-    // for 127.0.0.1
-    return null
-  }
-
-  if (getTLD() === 'zone') {
+  if (tld === 'zone') {
     return ETHEREUM_NETWORK.ROPSTEN
   }
 
-  return ETHEREUM_NETWORK.MAINNET
+  if (tld === 'today' || tld === 'org') {
+    return ETHEREUM_NETWORK.MAINNET
+  }
+
+  return null
 }
 
 async function getAddress(): Promise<string | undefined> {
@@ -67,7 +66,6 @@ async function getAppNetwork(): Promise<ETHEREUM_NETWORK> {
 }
 
 async function authenticate(): Promise<any> {
-  const tld = getTLD()
   if (DISABLE_AUTH || PREVIEW) {
     return { user_id: 'email|5cdd68572d5f842a16d6cc17' }
   }
