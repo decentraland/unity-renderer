@@ -108,6 +108,10 @@ namespace DCL
                 {
                     debugString = "DEBUG&";
                 }
+                else
+                {
+                    debugString = "DISABLE_AUTH&";
+                }
 
                 Application.OpenURL($"http://localhost:8080/tetra.html?{debugString}position={startInCoords.x}%2C{startInCoords.y}&ws=ws%3A%2F%2Flocalhost%3A5000%2Fdcl");
             }
