@@ -210,6 +210,57 @@ namespace Tests
         }
 
         [UnityTest]
+        public IEnumerator TestOnEnterEvent()
+        {
+            yield return InitScene();
+
+            UIScreenSpace screenSpaceShape = TestHelpers.SharedComponentCreate<UIScreenSpace, UIScreenSpace.Model>(scene, CLASS_ID.UI_SCREEN_SPACE_SHAPE);
+            yield return screenSpaceShape.routine;
+
+            Assert.IsFalse(screenSpaceShape == null);
+
+            DCLTexture texture = TestHelpers.CreateDCLTexture(scene, TestHelpers.GetTestsAssetsPath() + "/Images/atlas.png");
+            yield return texture.routine;
+
+            UIImage uiImage = TestHelpers.SharedComponentCreate<UIImage, UIImage.Model>(scene, CLASS_ID.UI_IMAGE_SHAPE);
+            yield return uiImage.routine;
+
+            string uiImageOnEnterUUID = "UUIDFakeEventId";
+
+            TestHelpers.SharedComponentUpdate(scene, uiImage, new UIImage.Model
+            {
+                parentComponent = screenSpaceShape.id,
+                source = texture.id,
+                width = new UIValue(128f),
+                height = new UIValue(128f),
+                onEnter = uiImageOnEnterUUID
+            });
+            yield return uiImage.routine;
+
+            var sceneEvent = new WebInterface.SceneEvent<WebInterface.OnEnterEvent>
+            {
+                sceneId = scene.sceneData.id,
+                payload = new WebInterface.OnEnterEvent {uuid = uiImageOnEnterUUID},
+                eventType = "uuidEvent"
+            };
+
+            bool eventTriggered = false;
+            yield return TestHelpers.WaitForMessageFromEngine("SceneEvent", JsonUtility.ToJson(sceneEvent),
+                () =>
+                {
+                    uiImage.referencesContainer.OnEnterPressed();
+                },
+                () =>
+                {
+                    eventTriggered = true;
+                });
+
+            yield return null;
+
+            Assert.IsTrue(eventTriggered);
+        }
+
+        [UnityTest]
         public IEnumerator TestAlignment()
         {
             yield return InitScene();

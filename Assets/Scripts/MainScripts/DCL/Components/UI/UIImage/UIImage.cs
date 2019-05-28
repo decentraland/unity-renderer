@@ -26,6 +26,8 @@ namespace DCL.Components
             public float paddingLeft = 0f;
             public bool sizeInPixels = true;
             public string onClick;
+            public string onEnter;
+
         }
 
         public override string referencesContainerPrefabName => "UIImage";

@@ -27,5 +27,21 @@ namespace DCL.Components
             if (!string.IsNullOrEmpty(ownerModel.onClick) && eventData.pointerPressRaycast.gameObject == image.gameObject)
                 WebInterface.ReportOnClickEvent(owner.scene.sceneData.id, ownerModel.onClick);
         }
+
+        public void Update()
+        {
+            if (Input.GetKeyDown(KeyCode.Return))
+            {
+                OnEnterPressed();
+            }
+        }
+
+        public void OnEnterPressed()
+        {
+            if (owner.model is UIImage.Model ownerModel && (!string.IsNullOrEmpty(ownerModel.onEnter) && ownerModel.visible))
+            {
+                WebInterface.ReportOnEnterEvent(owner.scene.sceneData.id, ownerModel.onEnter);
+            }
+        }
     }
 }

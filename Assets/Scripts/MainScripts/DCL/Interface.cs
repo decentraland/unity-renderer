@@ -56,6 +56,8 @@ namespace DCL.Interface
         [System.Serializable]
         private class OnBlurEvent : UUIDEvent<EmptyPayload> { };
 
+        [System.Serializable]
+        public class OnEnterEvent : UUIDEvent<OnEnterEventPayload> { };
 
         [System.Serializable]
         public class OnClickEventPayload
@@ -86,6 +88,10 @@ namespace DCL.Interface
             public SceneMetricsController.Model current = new SceneMetricsController.Model();
             public SceneMetricsController.Model limit = new SceneMetricsController.Model();
         }
+        
+        [System.Serializable]
+        public class OnEnterEventPayload
+        { }
 
 #if UNITY_WEBGL && !UNITY_EDITOR
     /**
@@ -125,6 +131,7 @@ namespace DCL.Interface
         private static OnChangeEvent onChangeEvent = new OnChangeEvent();
         private static OnFocusEvent onFocusEvent = new OnFocusEvent();
         private static OnBlurEvent onBlurEvent = new OnBlurEvent();
+        private static OnEnterEvent onEnterEvent = new OnEnterEvent();
 
         public static void SendSceneEvent<T>(string sceneId, string eventType, T payload)
         {
@@ -219,6 +226,16 @@ namespace DCL.Interface
             onMetricsUpdate.limit = limit;
 
             SendSceneEvent(sceneId, "metricsUpdate", onMetricsUpdate);
+        }
+        
+        public static void ReportOnEnterEvent(string sceneId, string uuid)
+        {
+            if (string.IsNullOrEmpty(uuid))
+                return;
+
+            onEnterEvent.uuid = uuid;
+
+            SendSceneEvent(sceneId, "uuidEvent", onEnterEvent);
         }
 
         public static void PreloadFinished(string sceneId)
