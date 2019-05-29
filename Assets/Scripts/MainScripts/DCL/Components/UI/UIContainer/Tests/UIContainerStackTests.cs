@@ -45,7 +45,7 @@ namespace Tests
             Assert.IsTrue(image.color == new Color(0f, 0f, 0f, 0f));
             Assert.IsTrue(uiContainerStack.referencesContainer.canvasGroup.blocksRaycasts);
             Assert.AreEqual(100f, uiContainerStack.childHookRectTransform.rect.width);
-            Assert.AreEqual(100f, uiContainerStack.childHookRectTransform.rect.height);
+            Assert.AreEqual(50f, uiContainerStack.childHookRectTransform.rect.height);
             Assert.AreEqual(Vector3.zero, uiContainerStack.childHookRectTransform.localPosition);
 
             TestHelpers.SharedComponentUpdate(scene, uiContainerStack,

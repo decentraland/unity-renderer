@@ -46,15 +46,15 @@ namespace DCL.Helpers
 
             yield return TakeSnapshot(testImagesPath, snapshotName, VisualTestController.i.camera, snapshotsWidth,
                 snapshotsHeight);
-
             if (generateBaseline || !File.Exists(baselineImagesPath + snapshotName))
             {
                 yield return TakeSnapshot(baselineImagesPath, snapshotName, VisualTestController.i.camera,
                     snapshotsWidth, snapshotsHeight);
             }
-
-            if (!generateBaseline)
+            else
             {
+                yield return TakeSnapshot(testImagesPath, snapshotName, VisualTestController.i.camera, snapshotsWidth, snapshotsHeight);
+
                 float ratio =
                     ComputeImageAffinityPercentage(baselineImagesPath + snapshotName, testImagesPath + snapshotName);
                 Assert.GreaterOrEqual(ratio, TestSettings.VISUAL_TESTS_APPROVED_AFFINITY,
@@ -71,21 +71,17 @@ namespace DCL.Helpers
                 yield break;
             }
 
+            var previousQualityLevel = QualitySettings.GetQualityLevel();
             QualitySettings.SetQualityLevel((int)QualityLevel.Good, true);
 
             string finalPath = snapshotPath + snapshotName;
-            float fileProcessStartingTime;
 
             if (File.Exists(finalPath))
             {
                 File.Delete(finalPath);
 
                 // Just in case, wait until the file is deleted
-                fileProcessStartingTime = Time.time;
-                while (File.Exists(finalPath) && (Time.time - fileProcessStartingTime) < 10)
-                {
-                    yield return null;
-                }
+                yield return new DCL.WaitUntil(() => { return !File.Exists(finalPath); }, 10f);
             }
 
             // We should only read the screen buffer after rendering is complete
@@ -111,16 +107,14 @@ namespace DCL.Helpers
             File.WriteAllBytes(finalPath, bytes);
 
             // Just in case, wait until the file is created
-            fileProcessStartingTime = Time.time;
-            while (!File.Exists(finalPath) && (Time.time - fileProcessStartingTime) < 10)
-            {
-                yield return null;
-            }
+            yield return new DCL.WaitUntil(() => { return File.Exists(finalPath); }, 10f);
 
             RenderTexture.active = null;
             renderTexture.Release();
 
             yield return new WaitForSeconds(0.2f);
+
+            QualitySettings.SetQualityLevel(previousQualityLevel, true);
         }
 
         public static float ComputeImageAffinityPercentage(string baselineImagePathWithFilename,
@@ -134,9 +128,10 @@ namespace DCL.Helpers
                 TestSettings.VISUAL_TESTS_SNAPSHOT_HEIGHT, TextureFormat.RGB24, false);
             currentSnapshot.LoadImage(File.ReadAllBytes(testImagePathWithFilename));
 
-            string finalDiffPath = Path.GetDirectoryName(testImagePathWithFilename) + "\\" +
+            string finalDiffPath = Path.GetDirectoryName(testImagePathWithFilename) + "/" +
                                    Path.GetFileNameWithoutExtension(testImagePathWithFilename) + "_diff" +
                                    Path.GetExtension(testImagePathWithFilename);
+
             return ComputeImageAffinityPercentage(baselineSnapshot, currentSnapshot, finalDiffPath);
         }
 
@@ -206,9 +201,7 @@ namespace DCL.Helpers
                 File.Delete(diffImagePath);
 
                 if (File.Exists(diffImagePath + ".meta"))
-                {
                     File.Delete(diffImagePath + ".meta");
-                }
             }
 
             return imageAffinity;

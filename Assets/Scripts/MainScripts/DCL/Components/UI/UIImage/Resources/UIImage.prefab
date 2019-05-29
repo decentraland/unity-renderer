@@ -11,7 +11,7 @@ GameObject:
   - component: {fileID: 4490166200948036571}
   - component: {fileID: 3734379414975295569}
   - component: {fileID: 7673287680364269346}
-  m_Layer: 0
+  m_Layer: 5
   m_Name: Image
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -84,7 +84,7 @@ GameObject:
   - component: {fileID: 8678527581720629646}
   - component: {fileID: 1705150512210581689}
   - component: {fileID: 3457819571539467863}
-  m_Layer: 0
+  m_Layer: 5
   m_Name: UIImage
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -129,6 +129,7 @@ MonoBehaviour:
   layoutElement: {fileID: 5419367863745986743}
   layoutElementRT: {fileID: 6170498012961636253}
   childHookRectTransform: {fileID: 4490166200948036571}
+  forceRefresh: 0
   paddingLayoutGroup: {fileID: 5554716190968433857}
   image: {fileID: 7673287680364269346}
   imageRectTransform: {fileID: 4490166200948036571}
@@ -178,7 +179,7 @@ GameObject:
   - component: {fileID: 6170498012961636253}
   - component: {fileID: 5554716190968433857}
   - component: {fileID: 5419367863745986743}
-  m_Layer: 0
+  m_Layer: 5
   m_Name: PaddingController
   m_TagString: Untagged
   m_Icon: {fileID: 0}

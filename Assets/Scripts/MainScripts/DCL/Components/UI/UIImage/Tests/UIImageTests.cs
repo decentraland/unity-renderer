@@ -45,7 +45,7 @@ namespace Tests
             Assert.IsTrue(uiImageShape.referencesContainer.image.color == new Color(1, 1, 1, 1));
             Assert.IsTrue(uiImageShape.referencesContainer.canvasGroup.blocksRaycasts);
             Assert.AreEqual(100f, uiImageShape.childHookRectTransform.rect.width);
-            Assert.AreEqual(100f, uiImageShape.childHookRectTransform.rect.height);
+            Assert.AreEqual(50f, uiImageShape.childHookRectTransform.rect.height);
             Assert.IsTrue(uiImageShape.referencesContainer.image.enabled);
             Assert.IsTrue(uiImageShape.referencesContainer.image.texture == null);
 

@@ -2,7 +2,8 @@
     "name": "VisualTests",
     "references": [
         "MainScripts",
-        "Configuration"
+        "Configuration",
+        "CoroutineHelpers"
     ],
     "optionalUnityReferences": [
         "TestAssemblies"

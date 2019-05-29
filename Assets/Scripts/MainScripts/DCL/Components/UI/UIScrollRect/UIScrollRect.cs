@@ -15,14 +15,14 @@ namespace DCL.Components
         {
             public float valueX = 0;
             public float valueY = 0;
-            public Color borderColor;
+            public Color borderColor = Color.white;
             public Color backgroundColor = Color.clear;
             public bool isHorizontal = false;
             public bool isVertical = true;
-            public float paddingTop;
-            public float paddingRight;
-            public float paddingBottom;
-            public float paddingLeft;
+            public float paddingTop = 0f;
+            public float paddingRight = 0f;
+            public float paddingBottom = 0f;
+            public float paddingLeft = 0f;
             public string OnChanged;
         }
 

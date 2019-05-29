@@ -11,7 +11,7 @@ GameObject:
   - component: {fileID: 83353334673920734}
   - component: {fileID: 83353334673920728}
   - component: {fileID: 83353334673920735}
-  m_Layer: 0
+  m_Layer: 5
   m_Name: ScrollBarBG
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -86,7 +86,7 @@ GameObject:
   - component: {fileID: 83353335335206055}
   - component: {fileID: 6306718205074713283}
   - component: {fileID: 2909846499427776987}
-  m_Layer: 0
+  m_Layer: 5
   m_Name: Content
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -174,7 +174,7 @@ GameObject:
   - component: {fileID: 83353335458592238}
   - component: {fileID: 83353335458592239}
   - component: {fileID: 83353335458592232}
-  m_Layer: 0
+  m_Layer: 5
   m_Name: VerticalScrollBar
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -241,7 +241,7 @@ MonoBehaviour:
   m_HandleRect: {fileID: 83353336461408389}
   m_Direction: 2
   m_Value: 0
-  m_Size: 0.99999994
+  m_Size: 1
   m_NumberOfSteps: 0
   m_OnValueChanged:
     m_PersistentCalls:
@@ -280,7 +280,7 @@ GameObject:
   - component: {fileID: 7898606927939962425}
   - component: {fileID: 5516778534138712963}
   - component: {fileID: 5364624156990461496}
-  m_Layer: 0
+  m_Layer: 5
   m_Name: UIScrollRect
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -325,6 +325,7 @@ MonoBehaviour:
   layoutElement: {fileID: 2525528187900339089}
   layoutElementRT: {fileID: 6820324277899345557}
   childHookRectTransform: {fileID: 8125847689933021503}
+  forceRefresh: 0
   paddingLayoutGroup: {fileID: 5516778534138712963}
   HScrollbar: {fileID: 5706182002887018840}
   VScrollbar: {fileID: 83353335458592239}
@@ -377,7 +378,7 @@ GameObject:
   m_Component:
   - component: {fileID: 83353336461408389}
   - component: {fileID: 83353336461408391}
-  m_Layer: 0
+  m_Layer: 5
   m_Name: Thumb
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -422,7 +423,7 @@ GameObject:
   m_Component:
   - component: {fileID: 303027505156144283}
   - component: {fileID: 563785288389832799}
-  m_Layer: 0
+  m_Layer: 5
   m_Name: Thumb
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -468,7 +469,7 @@ GameObject:
   - component: {fileID: 8462019878414040478}
   - component: {fileID: 5445265781484653013}
   - component: {fileID: 2815634565793341560}
-  m_Layer: 0
+  m_Layer: 5
   m_Name: ScrollBarBG
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -542,7 +543,7 @@ GameObject:
   - component: {fileID: 7731509045678890179}
   - component: {fileID: 6377335868653264270}
   - component: {fileID: 4809693563650767985}
-  m_Layer: 0
+  m_Layer: 5
   m_Name: BG Strip
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -615,7 +616,7 @@ GameObject:
   - component: {fileID: 8626930752172585964}
   - component: {fileID: 9168607614571546618}
   - component: {fileID: 8098125932046869458}
-  m_Layer: 0
+  m_Layer: 5
   m_Name: Thumb Graphic
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -703,7 +704,7 @@ GameObject:
   - component: {fileID: 1484461040873362157}
   - component: {fileID: 2025967478968985339}
   - component: {fileID: 1387825692691022547}
-  m_Layer: 0
+  m_Layer: 5
   m_Name: Thumb Graphic
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -791,7 +792,7 @@ GameObject:
   - component: {fileID: 6820324277899345559}
   - component: {fileID: 6820324277899345556}
   - component: {fileID: 2525528187900339089}
-  m_Layer: 0
+  m_Layer: 5
   m_Name: ScrollRect
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -915,7 +916,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 8125847689933021503}
-  m_Layer: 0
+  m_Layer: 5
   m_Name: Child Container
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -952,7 +953,7 @@ GameObject:
   - component: {fileID: 606587645453336002}
   - component: {fileID: 4296442374355516559}
   - component: {fileID: 2422840307883761008}
-  m_Layer: 0
+  m_Layer: 5
   m_Name: BG Strip
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -1024,7 +1025,7 @@ GameObject:
   - component: {fileID: 7088113942969623082}
   - component: {fileID: 5706182002887018840}
   - component: {fileID: 2004740515895346754}
-  m_Layer: 0
+  m_Layer: 5
   m_Name: HorizontalScrollBar
   m_TagString: Untagged
   m_Icon: {fileID: 0}

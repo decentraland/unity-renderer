@@ -76,6 +76,7 @@ namespace DCL.Components
             }
 
             GameObject canvasGameObject = new GameObject("UIScreenSpace");
+            canvasGameObject.layer = LayerMask.NameToLayer("UI");
             canvasGameObject.transform.SetParent(scene.transform);
             canvasGameObject.transform.ResetLocalTRS();
 

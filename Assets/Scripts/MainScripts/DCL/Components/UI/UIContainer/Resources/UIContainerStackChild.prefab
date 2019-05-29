@@ -12,7 +12,7 @@ GameObject:
   - component: {fileID: 6911475509788891023}
   - component: {fileID: 8580427241439885284}
   - component: {fileID: 5731917051144278616}
-  m_Layer: 0
+  m_Layer: 5
   m_Name: UIContainerStackChild
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -64,6 +64,7 @@ MonoBehaviour:
   layoutElement: {fileID: 0}
   layoutElementRT: {fileID: 0}
   childHookRectTransform: {fileID: 4878839740631635299}
+  forceRefresh: 0
 --- !u!114 &5731917051144278616
 MonoBehaviour:
   m_ObjectHideFlags: 0
