@@ -23,7 +23,7 @@ import {
 import { ILogger, defaultLogger } from 'shared/logger'
 import { EventDispatcher } from 'decentraland-rpc/lib/common/core/EventDispatcher'
 import { IParcelSceneLimits } from 'atomicHelpers/landHelpers'
-import { measureObject3D } from './utils/checkParcelSceneLimits'
+import { measureObject3D, areBoundariesIgnored } from './utils/checkParcelSceneLimits'
 import { IEventNames, IEvents, PointerEvent } from 'decentraland-ecs/src/decentraland/Types'
 import { Observable, ReadOnlyVector3 } from 'decentraland-ecs/src'
 import { colliderMaterial } from './utils/colliders'
@@ -106,16 +106,20 @@ export class SharedSceneContext implements BABYLON.IDisposable {
       let bodies = 0
       const currentUsage = this.getCurrentUsages()
 
+      const childrenMeshes = new Set<BABYLON.AbstractMesh>()
+
       this.entities.forEach((entity, key) => {
         if (key === '0') return
 
-        const childrenMeshes = entity.getChildMeshes()
+        entity.getChildMeshes().forEach($ => {
+          if (!areBoundariesIgnored($)) childrenMeshes.add($)
+        })
+      })
 
-        for (let i = 0; i < childrenMeshes.length; i++) {
-          const r = measureObject3D(childrenMeshes[i])
-          triangles += r.triangles
-          bodies += r.bodies
-        }
+      childrenMeshes.forEach(mesh => {
+        const r = measureObject3D(mesh)
+        triangles += r.triangles
+        bodies += r.bodies
       })
 
       const newMetrics = {
