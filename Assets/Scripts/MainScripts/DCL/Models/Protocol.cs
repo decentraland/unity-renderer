@@ -59,8 +59,10 @@ namespace DCL.Models
     {
         /// id of the affected entity
         public string entityId;
+
         /// name of the compoenent
         public string name;
+
         /// ID of the disposable component
         public string id;
 
@@ -79,8 +81,10 @@ namespace DCL.Models
     {
         /// id of the affected entity
         public string entityId;
+
         /// name of the compoenent
         public string name;
+
         /// class of the component that should be instantiated
         public int classId;
 
@@ -102,6 +106,7 @@ namespace DCL.Models
     {
         /// id of the affected entity
         public string entityId;
+
         /// id of the parent entity
         public string parentId;
 
@@ -147,6 +152,7 @@ namespace DCL.Models
     {
         /// id of the affected entity
         public string entityId;
+
         /// name of the compoenent
         public string name;
 
@@ -164,6 +170,7 @@ namespace DCL.Models
     {
         /// ID of the disposable component
         public string id;
+
         public string json;
 
         public void FromJSON(string rawJson)
@@ -194,8 +201,10 @@ namespace DCL.Models
     {
         /// ID of the disposable component
         public string id;
+
         /// name of the compoenent
         public string name;
+
         /// class of the component that should be instantiated
         public int classId;
 
@@ -214,6 +223,7 @@ namespace DCL.Models
     {
         /// ID of the event to trigger
         public string uuid;
+
         /// type of the event
         public string type;
 

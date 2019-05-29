@@ -1,6 +1,5 @@
 using DCL;
 using DCL.Components;
-using DCL.Controllers;
 using DCL.Helpers;
 using DCL.Models;
 using NUnit.Framework;
@@ -20,7 +19,8 @@ namespace Tests
 
             DecentralandEntity e = TestHelpers.CreateSceneEntity(scene);
 
-            Assert.IsTrue(e.gameObject.GetComponentInChildren<UnityGLTF.InstantiatedGLTFObject>() == null, "Since the shape hasn't been updated yet, the 'GLTFScene' child object shouldn't exist");
+            Assert.IsTrue(e.gameObject.GetComponentInChildren<UnityGLTF.InstantiatedGLTFObject>() == null,
+                "Since the shape hasn't been updated yet, the 'GLTFScene' child object shouldn't exist");
 
             string url = TestHelpers.GetTestsAssetsPath() + "/GLB/Lantern/Lantern.glb";
 
@@ -51,7 +51,8 @@ namespace Tests
             DecentralandEntity e = TestHelpers.CreateSceneEntity(scene);
             int currentDownloadingCount = GLTFComponent.downloadingCount;
 
-            Assert.IsTrue(e.gameObject.GetComponentInChildren<UnityGLTF.InstantiatedGLTFObject>() == null, "Since the shape hasn't been updated yet, the 'GLTFScene' child object shouldn't exist");
+            Assert.IsTrue(e.gameObject.GetComponentInChildren<UnityGLTF.InstantiatedGLTFObject>() == null,
+                "Since the shape hasn't been updated yet, the 'GLTFScene' child object shouldn't exist");
 
             string url = TestHelpers.GetTestsAssetsPath() + "/GLB/Lantern/Lantern.glb";
 
@@ -70,7 +71,8 @@ namespace Tests
 
             yield return null;
 
-            Assert.IsTrue(GLTFComponent.downloadingCount == (currentDownloadingCount + 1), "Multiple GLTF loading detected, caching not working?");
+            Assert.IsTrue(GLTFComponent.downloadingCount == (currentDownloadingCount + 1),
+                "Multiple GLTF loading detected, caching not working?");
 
             GLTFLoader gltfShape = e.gameObject.GetComponentInChildren<GLTFLoader>(true);
             yield return new WaitUntil(() => gltfShape.alreadyLoaded);

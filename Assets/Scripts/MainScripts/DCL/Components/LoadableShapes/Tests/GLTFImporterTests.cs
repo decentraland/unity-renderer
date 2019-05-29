@@ -59,6 +59,5 @@ namespace Tests
             InstantiatedGLTFObject trevorModel = null;
             yield return LoadModel("/GLB/Avatar/Avatar_Idle.glb", (m) => trevorModel = m);
         }
-
     }
 }

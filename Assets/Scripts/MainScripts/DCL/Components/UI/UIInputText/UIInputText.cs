@@ -34,7 +34,8 @@ namespace DCL.Components
 
         public override void AttachTo(DecentralandEntity entity, System.Type overridenAttachedType = null)
         {
-            Debug.LogError("Aborted UIContainerRectShape attachment to an entity. UIShapes shouldn't be attached to entities.");
+            Debug.LogError(
+                "Aborted UIContainerRectShape attachment to an entity. UIShapes shouldn't be attached to entities.");
         }
 
         public override void DetachFrom(DecentralandEntity entity, System.Type overridenAttachedType = null)
@@ -62,8 +63,10 @@ namespace DCL.Components
             DCL.Components.TextShape.ApplyModelChanges(tmpText, model.textModel);
 
             inputField.text = model.placeholder;
-            inputField.textComponent.color = new Color(model.placeholderColor.r, model.placeholderColor.g, model.placeholderColor.b, model.placeholderColor.a);
-            referencesContainer.bgImage.color = new Color(model.focusedBackground.r, model.focusedBackground.g, model.focusedBackground.b, model.focusedBackground.a);
+            inputField.textComponent.color = new Color(model.placeholderColor.r, model.placeholderColor.g,
+                model.placeholderColor.b, model.placeholderColor.a);
+            referencesContainer.bgImage.color = new Color(model.focusedBackground.r, model.focusedBackground.g,
+                model.focusedBackground.b, model.focusedBackground.a);
             return null;
         }
 
@@ -109,7 +112,8 @@ namespace DCL.Components
         {
             bool validString = !string.IsNullOrEmpty(tmpText.text);
 
-            if (tmpText.text.Length == 1 && (byte)tmpText.text[0] == 11) //NOTE(Brian): Trim doesn't work. neither IsNullOrWhitespace.
+            if (tmpText.text.Length == 1 && (byte)tmpText.text[0] == 11
+            ) //NOTE(Brian): Trim doesn't work. neither IsNullOrWhitespace.
             {
                 validString = false;
             }

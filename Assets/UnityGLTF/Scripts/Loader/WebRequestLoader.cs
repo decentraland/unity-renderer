@@ -1,10 +1,7 @@
 using System;
 using System.Collections;
 using System.IO;
-using GLTF;
 using UnityEngine;
-using System.Text.RegularExpressions;
-using System.Net;
 using UnityEngine.Networking;
 
 #if WINDOWS_UWP
@@ -33,12 +30,19 @@ namespace UnityGLTF.Loader
         public IEnumerator LoadStream(string filePath)
         {
             if (filePath == null)
+            {
                 throw new ArgumentNullException("gltfFilePath");
+            }
 
-            if (VERBOSE) Debug.Log($"CreateHTTPRequest rootUri: {_rootURI}, httpRequestPath: {filePath}");
+            if (VERBOSE)
+            {
+                Debug.Log($"CreateHTTPRequest rootUri: {_rootURI}, httpRequestPath: {filePath}");
+            }
 
             if (OnLoadStreamStart != null)
+            {
                 OnLoadStreamStart(ref filePath);
+            }
 
             yield return CreateHTTPRequest(_rootURI, filePath);
         }

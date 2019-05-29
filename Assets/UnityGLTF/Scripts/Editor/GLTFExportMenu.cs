@@ -1,8 +1,7 @@
 using System;
 using UnityEditor;
-using UnityGLTF;
-using UnityEngine;
 using UnityEngine.SceneManagement;
+using UnityGLTF;
 
 public class GLTFExportMenu : EditorWindow
 {
@@ -23,7 +22,7 @@ public class GLTFExportMenu : EditorWindow
         EditorGUILayout.LabelField("Exporter", EditorStyles.boldLabel);
         GLTFSceneExporter.ExportFullPath = EditorGUILayout.Toggle("Export using original path", GLTFSceneExporter.ExportFullPath);
         GLTFSceneExporter.ExportNames = EditorGUILayout.Toggle("Export names of nodes", GLTFSceneExporter.ExportNames);
-        GLTFSceneExporter.RequireExtensions= EditorGUILayout.Toggle("Require extensions", GLTFSceneExporter.RequireExtensions);
+        GLTFSceneExporter.RequireExtensions = EditorGUILayout.Toggle("Require extensions", GLTFSceneExporter.RequireExtensions);
         EditorGUILayout.Separator();
         EditorGUILayout.LabelField("Importer", EditorStyles.boldLabel);
         EditorGUILayout.Separator();
@@ -32,55 +31,69 @@ public class GLTFExportMenu : EditorWindow
     }
 
     [MenuItem("GLTF/Export Selected")]
-	static void ExportSelected()
-	{
-		string name;
-		if (Selection.transforms.Length > 1)
-			name = SceneManager.GetActiveScene().name;
-		else if (Selection.transforms.Length == 1)
-			name = Selection.activeGameObject.name;
-		else
-			throw new Exception("No objects selected, cannot export.");
+    static void ExportSelected()
+    {
+        string name;
+        if (Selection.transforms.Length > 1)
+        {
+            name = SceneManager.GetActiveScene().name;
+        }
+        else if (Selection.transforms.Length == 1)
+        {
+            name = Selection.activeGameObject.name;
+        }
+        else
+        {
+            throw new Exception("No objects selected, cannot export.");
+        }
 
-		var exporter = new GLTFSceneExporter(Selection.transforms, RetrieveTexturePath);
+        var exporter = new GLTFSceneExporter(Selection.transforms, RetrieveTexturePath);
 
-		var path = EditorUtility.OpenFolderPanel("glTF Export Path", "", "");
-		if (!string.IsNullOrEmpty(path)) {
-			exporter.SaveGLTFandBin (path, name);
-		}
-	}
-	
-	[MenuItem("GLTF/ExportGLB Selected")]
-	static void ExportGLBSelected()
-	{
-		string name;
-		if (Selection.transforms.Length > 1)
-			name = SceneManager.GetActiveScene().name;
-		else if (Selection.transforms.Length == 1)
-			name = Selection.activeGameObject.name;
-		else
-			throw new Exception("No objects selected, cannot export.");
+        var path = EditorUtility.OpenFolderPanel("glTF Export Path", "", "");
+        if (!string.IsNullOrEmpty(path))
+        {
+            exporter.SaveGLTFandBin(path, name);
+        }
+    }
 
-		var exporter = new GLTFSceneExporter(Selection.transforms, RetrieveTexturePath);
+    [MenuItem("GLTF/ExportGLB Selected")]
+    static void ExportGLBSelected()
+    {
+        string name;
+        if (Selection.transforms.Length > 1)
+        {
+            name = SceneManager.GetActiveScene().name;
+        }
+        else if (Selection.transforms.Length == 1)
+        {
+            name = Selection.activeGameObject.name;
+        }
+        else
+        {
+            throw new Exception("No objects selected, cannot export.");
+        }
 
-		var path = EditorUtility.OpenFolderPanel("glTF Export Path", "", "");
-		if (!string.IsNullOrEmpty(path))
-		{
-			exporter.SaveGLB(path, name);
-		}
-	}
+        var exporter = new GLTFSceneExporter(Selection.transforms, RetrieveTexturePath);
 
-	[MenuItem("GLTF/Export Scene")]
-	static void ExportScene()
-	{
-		var scene = SceneManager.GetActiveScene();
-		var gameObjects = scene.GetRootGameObjects();
-		var transforms = Array.ConvertAll(gameObjects, gameObject => gameObject.transform);
+        var path = EditorUtility.OpenFolderPanel("glTF Export Path", "", "");
+        if (!string.IsNullOrEmpty(path))
+        {
+            exporter.SaveGLB(path, name);
+        }
+    }
 
-		var exporter = new GLTFSceneExporter(transforms, RetrieveTexturePath);
-		var path = EditorUtility.OpenFolderPanel("glTF Export Path", "", "");
-		if (path != "") {
-			exporter.SaveGLTFandBin (path, scene.name);
-		}
-	}
+    [MenuItem("GLTF/Export Scene")]
+    static void ExportScene()
+    {
+        var scene = SceneManager.GetActiveScene();
+        var gameObjects = scene.GetRootGameObjects();
+        var transforms = Array.ConvertAll(gameObjects, gameObject => gameObject.transform);
+
+        var exporter = new GLTFSceneExporter(transforms, RetrieveTexturePath);
+        var path = EditorUtility.OpenFolderPanel("glTF Export Path", "", "");
+        if (path != "")
+        {
+            exporter.SaveGLTFandBin(path, scene.name);
+        }
+    }
 }

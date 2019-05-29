@@ -1,6 +1,5 @@
 using System.Collections;
 using System.Collections.Generic;
-using System.Threading.Tasks;
 using UnityEngine;
 
 namespace UnityGLTF
@@ -22,7 +21,7 @@ namespace UnityGLTF
                     finished = false
                 }
             );
-            
+
             return queuedActions.Peek();
         }
 
@@ -36,7 +35,9 @@ namespace UnityGLTF
         public bool AllCoroutinesAreFinished()
         {
             if (runningActions == null || runningActions.Count == 0)
+            {
                 return true;
+            }
 
             return false;
         }

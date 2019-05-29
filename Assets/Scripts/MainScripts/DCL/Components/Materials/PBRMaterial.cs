@@ -1,5 +1,3 @@
-using System.Collections;
-using System.Collections.Generic;
 using DCL.Controllers;
 using DCL.Helpers;
 using DCL.Models;
@@ -59,7 +57,10 @@ namespace DCL.Components
 
         public override void AttachTo(DecentralandEntity entity, System.Type overridenAttachedType = null)
         {
-            if (attachedEntities.Contains(entity)) return;
+            if (attachedEntities.Contains(entity))
+            {
+                return;
+            }
 
             entity.RemoveSharedComponent(typeof(BasicMaterial));
 
@@ -207,7 +208,6 @@ namespace DCL.Components
                     InitMaterial(entity.meshGameObject);
                 }
             }
-
         }
 
         void InitMaterial(GameObject meshGameObject)
@@ -221,7 +221,8 @@ namespace DCL.Components
 
             if (meshRenderer != null && meshRenderer.sharedMaterial != material)
             {
-                MaterialTransitionController matTransition = meshGameObject.GetComponent<MaterialTransitionController>();
+                MaterialTransitionController
+                    matTransition = meshGameObject.GetComponent<MaterialTransitionController>();
 
                 if (matTransition != null && matTransition.canSwitchMaterial)
                 {

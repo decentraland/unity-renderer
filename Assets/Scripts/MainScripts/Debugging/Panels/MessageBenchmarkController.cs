@@ -290,7 +290,8 @@ public class MessageBenchmarkController : MonoBehaviour, IBenchmarkController
         statsPanel.SetCellText((int)Columns.RATIO, (int)stringToRow[s], finalRatio.ToString("N1") + "%");
 
         //NOTE(Brian): Process ratio times ms
-        float finalMs = (statsTracker[Columns.LOGIC_MS][stringToRow[s]] + statsTracker[Columns.DECODE_MS][stringToRow[s]]);
+        float finalMs = (statsTracker[Columns.LOGIC_MS][stringToRow[s]] +
+                         statsTracker[Columns.DECODE_MS][stringToRow[s]]);
         float finalRatioTimesMs = (finalMs / total) * finalRatio;
         statsPanel.SetCellText((int)Columns.RATIO_TIMES_MS, (int)stringToRow[s], finalRatioTimesMs.ToString("N2"));
 
@@ -304,7 +305,8 @@ public class MessageBenchmarkController : MonoBehaviour, IBenchmarkController
 
             //NOTE(Brian): I substract decode from logic because <check last comment>
             int processedCount = (int)statsTracker[Columns.PROCESSED_COUNT][stringToRow[s]];
-            float avg = statsTracker[Columns.LOGIC_MS][stringToRow[s]] - statsTracker[Columns.DECODE_MS][stringToRow[s]];
+            float avg = statsTracker[Columns.LOGIC_MS][stringToRow[s]] -
+                        statsTracker[Columns.DECODE_MS][stringToRow[s]];
 
             if (processedCount > 0)
             {

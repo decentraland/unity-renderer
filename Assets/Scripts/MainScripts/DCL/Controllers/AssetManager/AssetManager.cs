@@ -1,6 +1,4 @@
 using DCL.Components;
-using DCL.Controllers;
-using DCL.Helpers;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -22,7 +20,6 @@ namespace DCL
         where Loadable : ILoadable
         where AssetInfoClass : AssetInfo, new()
     {
-
         public Dictionary<object, AssetInfoClass> assetLibrary;
 
         public virtual void ClearLibrary()
@@ -54,12 +51,15 @@ namespace DCL
         /// <param name="resultContainer"></param>
         /// <param name="OnSuccess"></param>
         /// <returns></returns>
-        private IEnumerator AddToLibrary_Internal(object id, string url, AssetContainerClass resultContainer, System.Action OnSuccess)
+        private IEnumerator AddToLibrary_Internal(object id, string url, AssetContainerClass resultContainer,
+            System.Action OnSuccess)
         {
             yield return AddToLibrary(id, url, resultContainer);
 
             if (OnSuccess != null)
+            {
                 OnSuccess.Invoke();
+            }
         }
 
         /// <summary>
@@ -71,7 +71,8 @@ namespace DCL
         /// <param name="OnFail"></param>
         /// <param name="initialVisibility"></param>
         /// <returns></returns>
-        public AssetContainerClass Get(string url, Transform parent, System.Action OnSuccess, System.Action OnFail, bool initialVisibility = true)
+        public AssetContainerClass Get(string url, Transform parent, System.Action OnSuccess, System.Action OnFail,
+            bool initialVisibility = true)
         {
             return Get(url, url, parent, OnSuccess, OnFail, initialVisibility);
         }
@@ -86,7 +87,8 @@ namespace DCL
         /// <param name="OnFail"></param>
         /// <param name="initialVisibility"></param>
         /// <returns></returns>
-        public AssetContainerClass Get(object id, string url, Transform parent, System.Action OnSuccess, System.Action OnFail, bool initialVisibility = true)
+        public AssetContainerClass Get(object id, string url, Transform parent, System.Action OnSuccess,
+            System.Action OnFail, bool initialVisibility = true)
         {
             AssetContainerClass resultContainer = default(AssetContainerClass);
 
@@ -126,7 +128,9 @@ namespace DCL
                         loader.OnFail -= OnFail;
 
                         if (OnFail != null)
+                        {
                             OnFail.Invoke();
+                        }
 
                         if (assetInfo.OnFail != null)
                         {
@@ -135,7 +139,6 @@ namespace DCL
                         }
 
                         assetInfo.OnSuccess = null;
-
                     };
 
                 loader.OnSuccess += PreSuccessClosure;
@@ -160,7 +163,9 @@ namespace DCL
                     GetCachedAsset(id, parent);
 
                     if (OnSuccess != null)
+                    {
                         OnSuccess.Invoke();
+                    }
 
                     return resultContainer;
                 }
@@ -192,14 +197,18 @@ namespace DCL
         {
             // TODO(Brian): Stub cleanup code, improve later using memory size instead library size
             if (assetLibrary.Count <= Configuration.AssetManagerSettings.LIBRARY_CLEANUP_THRESHOLD)
+            {
                 return;
+            }
 
             List<object> idsToRemove = new List<object>();
 
             foreach (var pair in assetLibrary)
             {
                 if (pair.Value == null || pair.Value.referenceCount <= 0)
+                {
                     idsToRemove.Add(pair.Key);
+                }
             }
 
             for (int i = 0; i < idsToRemove.Count; i++)
@@ -252,6 +261,5 @@ namespace DCL
 
             return id;
         }
-
     }
 }

@@ -1,13 +1,11 @@
-using System.Collections;
-using System.Collections.Generic;
 using DCL.Components;
 using DCL.Helpers;
 using DCL.Models;
 using Newtonsoft.Json;
 using NUnit.Framework;
+using System.Collections;
 using UnityEngine;
 using UnityEngine.TestTools;
-using UnityEngine.UI;
 
 namespace Tests
 {
@@ -29,12 +27,15 @@ namespace Tests
             }));
 
             // Create UIScreenSpaceShape
-            UIScreenSpace screenSpaceShape = TestHelpers.SharedComponentCreate<UIScreenSpace, UIScreenSpace.Model>(scene, CLASS_ID.UI_SCREEN_SPACE_SHAPE);
+            UIScreenSpace screenSpaceShape =
+                TestHelpers.SharedComponentCreate<UIScreenSpace, UIScreenSpace.Model>(scene,
+                    CLASS_ID.UI_SCREEN_SPACE_SHAPE);
             yield return screenSpaceShape.routine;
 
-            UIScrollRect scrRect = TestHelpers.SharedComponentCreate<UIScrollRect, UIScrollRect.Model>(scene, CLASS_ID.UI_SLIDER_SHAPE);
+            UIScrollRect scrRect =
+                TestHelpers.SharedComponentCreate<UIScrollRect, UIScrollRect.Model>(scene, CLASS_ID.UI_SLIDER_SHAPE);
             yield return scrRect.routine;
-            
+
             // Force a new update to pass the first apply
             TestHelpers.SharedComponentUpdate(scene, scrRect, new UIScrollRect.Model
             {
@@ -83,10 +84,12 @@ namespace Tests
             Assert.AreEqual(130f, scrRect.childHookRectTransform.rect.height);
             Assert.IsTrue(scrRect.referencesContainer.layoutGroup.childAlignment == TextAnchor.LowerRight);
 
-            Vector2 alignedPosition = CalculateAlignedPosition(screenSpaceShape.childHookRectTransform.rect, scrRect.childHookRectTransform.rect, "bottom", "right");
+            Vector2 alignedPosition = CalculateAlignedPosition(screenSpaceShape.childHookRectTransform.rect,
+                scrRect.childHookRectTransform.rect, "bottom", "right");
             alignedPosition += new Vector2(-30, -15); // apply offset position
 
-            Assert.AreEqual(alignedPosition.ToString(), scrRect.referencesContainer.layoutElementRT.anchoredPosition.ToString());
+            Assert.AreEqual(alignedPosition.ToString(),
+                scrRect.referencesContainer.layoutElementRT.anchoredPosition.ToString());
 
             screenSpaceShape.Dispose();
         }
@@ -97,13 +100,16 @@ namespace Tests
             yield return InitScene();
 
             //// Create UIScreenSpaceShape
-            UIScreenSpace screenSpaceShape = TestHelpers.SharedComponentCreate<UIScreenSpace, UIScreenSpace.Model>(scene, CLASS_ID.UI_SCREEN_SPACE_SHAPE);
+            UIScreenSpace screenSpaceShape =
+                TestHelpers.SharedComponentCreate<UIScreenSpace, UIScreenSpace.Model>(scene,
+                    CLASS_ID.UI_SCREEN_SPACE_SHAPE);
 
             yield return screenSpaceShape.routine;
 
             Assert.IsFalse(screenSpaceShape == null);
 
-            yield return TestHelpers.TestSharedComponentDefaultsOnUpdate<UIScrollRect.Model, UIScrollRect>(scene, CLASS_ID.UI_SLIDER_SHAPE);
+            yield return TestHelpers.TestSharedComponentDefaultsOnUpdate<UIScrollRect.Model, UIScrollRect>(scene,
+                CLASS_ID.UI_SLIDER_SHAPE);
         }
 
         [UnityTest]
@@ -122,19 +128,22 @@ namespace Tests
             }));
 
             // Create UIScreenSpaceShape
-            UIScreenSpace screenSpaceShape = TestHelpers.SharedComponentCreate<UIScreenSpace, UIScreenSpace.Model>(scene, CLASS_ID.UI_SCREEN_SPACE_SHAPE);
+            UIScreenSpace screenSpaceShape =
+                TestHelpers.SharedComponentCreate<UIScreenSpace, UIScreenSpace.Model>(scene,
+                    CLASS_ID.UI_SCREEN_SPACE_SHAPE);
 
             yield return screenSpaceShape.routine;
 
             // Create UIContainerRectShape
             string uiContainerRectShapeId = "uiContainerRectShape";
 
-            UIContainerRect uiContainerRectShape = scene.SharedComponentCreate(JsonUtility.ToJson(new SharedComponentCreateMessage
-            {
-                classId = (int)CLASS_ID.UI_CONTAINER_RECT,
-                id = uiContainerRectShapeId,
-                name = "UIContainerRectShape"
-            })) as UIContainerRect;
+            UIContainerRect uiContainerRectShape = scene.SharedComponentCreate(JsonUtility.ToJson(
+                new SharedComponentCreateMessage
+                {
+                    classId = (int)CLASS_ID.UI_CONTAINER_RECT,
+                    id = uiContainerRectShapeId,
+                    name = "UIContainerRectShape"
+                })) as UIContainerRect;
 
             yield return uiContainerRectShape.routine;
 
@@ -152,11 +161,14 @@ namespace Tests
 
             yield return uiContainerRectShape.routine;
 
-            UnityEngine.UI.Image image = uiContainerRectShape.childHookRectTransform.GetComponent<UnityEngine.UI.Image>();
+            UnityEngine.UI.Image image =
+                uiContainerRectShape.childHookRectTransform.GetComponent<UnityEngine.UI.Image>();
 
             // Check updated properties are applied correctly
-            Assert.AreEqual(screenSpaceShape.childHookRectTransform.rect.width * 0.5f, uiContainerRectShape.childHookRectTransform.rect.width);
-            Assert.AreEqual(screenSpaceShape.childHookRectTransform.rect.height * 0.3f, uiContainerRectShape.childHookRectTransform.rect.height);
+            Assert.AreEqual(screenSpaceShape.childHookRectTransform.rect.width * 0.5f,
+                uiContainerRectShape.childHookRectTransform.rect.width);
+            Assert.AreEqual(screenSpaceShape.childHookRectTransform.rect.height * 0.3f,
+                uiContainerRectShape.childHookRectTransform.rect.height);
 
             yield return new WaitForAllMessagesProcessed();
             screenSpaceShape.Dispose();

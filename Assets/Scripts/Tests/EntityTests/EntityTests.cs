@@ -1,15 +1,8 @@
-using System.Collections;
-using System.Collections.Generic;
 using DCL.Helpers;
-using UnityEngine;
-using UnityEngine.SceneManagement;
-using UnityEngine.TestTools;
-using UnityGLTF;
-using Newtonsoft.Json;
 using NUnit.Framework;
-using DCL.Models;
-using DCL.Components;
-using DCL.Configuration;
+using System.Collections;
+using UnityEngine.TestTools;
+
 /*
 * Play Mode Testing Highlights:
 * - All Monobehaviour methods are invoked
@@ -60,8 +53,8 @@ namespace Tests
             TestHelpers.CreateSceneEntity(scene, parentEntityId);
 
             Assert.IsTrue(
-              scene.entities[entityId].gameObject.transform.parent == scene.gameObject.transform,
-              "parent is set to the scene root"
+                scene.entities[entityId].gameObject.transform.parent == scene.gameObject.transform,
+                "parent is set to the scene root"
             );
 
             var parentEntityObject = scene.entities[parentEntityId];
@@ -69,15 +62,15 @@ namespace Tests
             TestHelpers.SetEntityParent(scene, entityId, parentEntityId);
 
             Assert.IsTrue(
-              scene.entities[entityId].gameObject.transform.parent == parentEntityObject.gameObject.transform,
-              "parent is set to parentId"
+                scene.entities[entityId].gameObject.transform.parent == parentEntityObject.gameObject.transform,
+                "parent is set to parentId"
             );
 
             TestHelpers.SetEntityParent(scene, entityId, "0");
 
             Assert.IsTrue(
-              scene.entities[entityId].gameObject.transform.parent == scene.gameObject.transform,
-              "parent is set back to the scene root"
+                scene.entities[entityId].gameObject.transform.parent == scene.gameObject.transform,
+                "parent is set back to the scene root"
             );
         }
 

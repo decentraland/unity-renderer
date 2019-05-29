@@ -187,7 +187,8 @@ namespace DCL.Components
         protected T InstantiateUIGameObject<T>(string prefabPath) where T : UIReferencesContainer
         {
             GameObject uiGameObject = null;
-            bool targetParentExists = !string.IsNullOrEmpty(model.parentComponent) && scene.disposableComponents.ContainsKey(model.parentComponent);
+            bool targetParentExists = !string.IsNullOrEmpty(model.parentComponent) &&
+                                      scene.disposableComponents.ContainsKey(model.parentComponent);
 
             if (targetParentExists)
             {
@@ -205,7 +206,9 @@ namespace DCL.Components
                 parentUIComponent = scene.uiScreenSpace as UIShape;
             }
 
-            uiGameObject = UnityEngine.Object.Instantiate(Resources.Load(prefabPath), parentUIComponent.childHookRectTransform) as GameObject;
+            uiGameObject =
+                UnityEngine.Object.Instantiate(Resources.Load(prefabPath), parentUIComponent.childHookRectTransform) as
+                    GameObject;
             referencesContainer = uiGameObject.GetComponent<T>();
 
             referencesContainer.rectTransform.SetToMaxStretch();
@@ -247,8 +250,10 @@ namespace DCL.Components
                 parentTransform = referencesContainer.GetComponentInParent<RectTransform>();
             }
 
-            referencesContainer.layoutElementRT.SetSizeWithCurrentAnchors(RectTransform.Axis.Horizontal, model.width.GetScaledValue(parentTransform.rect.width));
-            referencesContainer.layoutElementRT.SetSizeWithCurrentAnchors(RectTransform.Axis.Vertical, model.height.GetScaledValue(parentTransform.rect.height));
+            referencesContainer.layoutElementRT.SetSizeWithCurrentAnchors(RectTransform.Axis.Horizontal,
+                model.width.GetScaledValue(parentTransform.rect.width));
+            referencesContainer.layoutElementRT.SetSizeWithCurrentAnchors(RectTransform.Axis.Vertical,
+                model.height.GetScaledValue(parentTransform.rect.height));
 
             referencesContainer.layoutElementRT.ForceUpdateRectTransforms();
         }
@@ -273,12 +278,14 @@ namespace DCL.Components
             referencesContainer.layoutElementRT.localPosition += position;
         }
 
-        public virtual void RefreshDCLLayoutRecursively(bool refreshSize = true, bool refreshAlignmentAndPosition = true)
+        public virtual void RefreshDCLLayoutRecursively(bool refreshSize = true,
+            bool refreshAlignmentAndPosition = true)
         {
             RefreshDCLLayoutRecursively_Internal(refreshSize, refreshAlignmentAndPosition);
         }
 
-        public void RefreshDCLLayoutRecursively_Internal(bool refreshSize = true, bool refreshAlignmentAndPosition = true)
+        public void RefreshDCLLayoutRecursively_Internal(bool refreshSize = true,
+            bool refreshAlignmentAndPosition = true)
         {
             UIShape rootParent = GetRootParent();
 
@@ -302,19 +309,20 @@ namespace DCL.Components
             Assert.IsTrue(rootParent != null, "root parent must never be null");
 
             Utils.InverseTreeTraversal<UIReferencesContainer>(
-            (x) =>
-            {
-                if (x.owner != null)
+                (x) =>
                 {
-                    x.rectTransform.SetToMaxStretch();
-                }
-            },
-            rootParent.referencesContainer.transform);
+                    if (x.owner != null)
+                    {
+                        x.rectTransform.SetToMaxStretch();
+                    }
+                },
+                rootParent.referencesContainer.transform);
         }
 
         protected bool ReparentComponent(RectTransform targetTransform, string targetParent)
         {
-            bool targetParentExists = !string.IsNullOrEmpty(targetParent) && scene.disposableComponents.ContainsKey(targetParent);
+            bool targetParentExists = !string.IsNullOrEmpty(targetParent) &&
+                                      scene.disposableComponents.ContainsKey(targetParent);
 
             if (targetParentExists && parentUIComponent == scene.disposableComponents[targetParent])
             {
@@ -364,7 +372,6 @@ namespace DCL.Components
         }
 
 
-
         protected void ConfigureAlignment(LayoutGroup layout)
         {
             switch (model.vAlign)
@@ -382,6 +389,7 @@ namespace DCL.Components
                             layout.childAlignment = TextAnchor.UpperCenter;
                             break;
                     }
+
                     break;
                 case "bottom":
                     switch (model.hAlign)
@@ -396,6 +404,7 @@ namespace DCL.Components
                             layout.childAlignment = TextAnchor.LowerCenter;
                             break;
                     }
+
                     break;
                 default: // center
                     switch (model.hAlign)
@@ -410,6 +419,7 @@ namespace DCL.Components
                             layout.childAlignment = TextAnchor.MiddleCenter;
                             break;
                     }
+
                     break;
             }
         }

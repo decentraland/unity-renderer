@@ -1,7 +1,6 @@
 using DCL.Models;
 using System.Collections;
 using System.Collections.Generic;
-using System.Linq;
 using UnityEngine;
 
 namespace DCL.Components
@@ -18,8 +17,10 @@ namespace DCL.Components
                 public string clip;
                 public AnimationClip clipReference;
                 public bool playing;
+
                 [Range(0, 1)]
                 public float weight = 1f;
+
                 public float speed = 1f;
                 public bool looping = true;
                 public bool shouldReset = false;
@@ -119,7 +120,7 @@ namespace DCL.Components
                 foreach (AnimationState unityState in animComponent)
                 {
                     clipNameToClip[unityState.clip.name] = unityState.clip;
-                    
+
                     unityState.clip.wrapMode = WrapMode.Loop;
                     unityState.layer = layerIndex;
                     unityState.blendMode = AnimationBlendMode.Blend;
@@ -133,7 +134,9 @@ namespace DCL.Components
         void UpdateAnimationState()
         {
             if (clipNameToClip.Count == 0 || animComponent == null)
+            {
                 return;
+            }
 
             animComponent.playAutomatically = false;
             animComponent.enabled = true;
@@ -218,7 +221,5 @@ namespace DCL.Components
 
             return false;
         }
-
     }
-
 }

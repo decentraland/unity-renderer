@@ -6,7 +6,6 @@ using UnityEngine;
 
 namespace DCL.Components
 {
-
     public abstract class BaseDisposable : IComponent
     {
         public Coroutine routine = null;
@@ -67,7 +66,10 @@ namespace DCL.Components
 
         public virtual void AttachTo(DecentralandEntity entity, Type overridenAttachedType = null)
         {
-            if (attachedEntities.Contains(entity)) return;
+            if (attachedEntities.Contains(entity))
+            {
+                return;
+            }
 
             Type thisType = overridenAttachedType != null ? overridenAttachedType : GetType();
             entity.AddSharedComponent(thisType, this);
@@ -102,7 +104,9 @@ namespace DCL.Components
             attachedEntities.Remove(entity);
 
             if (OnDetach != null)
+            {
                 OnDetach.Invoke(entity);
+            }
         }
 
         public void DetachFromEveryEntity()

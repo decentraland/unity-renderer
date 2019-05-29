@@ -7,7 +7,7 @@ namespace DCL.Components
     {
         [Header("UI Container Rect Fields")]
         public Image image;
+
         public UISizeFitter sizeFitter;
     }
 }
-

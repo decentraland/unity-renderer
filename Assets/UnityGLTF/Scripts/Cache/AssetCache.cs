@@ -1,8 +1,7 @@
-using System;
-using System.Collections.Generic;
-using UnityEngine;
-using System.IO;
 using GLTF.Schema;
+using System;
+using System.IO;
+using UnityEngine;
 
 namespace UnityGLTF.Cache
 {

@@ -31,7 +31,6 @@ namespace Tests
             yield return VisualTestHelpers.TakeSnapshot(new Vector3(0f, 2f, 10f));
             yield return VisualTestHelpers.TakeSnapshot(new Vector3(-2f, 2f, 0f));
             yield return VisualTestHelpers.TakeSnapshot(new Vector3(0f, 2f, -2f));
-
         }
     }
 }

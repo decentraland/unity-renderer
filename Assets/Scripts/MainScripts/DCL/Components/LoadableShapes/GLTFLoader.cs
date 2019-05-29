@@ -32,7 +32,8 @@ namespace DCL.Components
                 Debug.Log($"Load(): target URL -> {targetUrl},  url -> {url}, directory path -> {assetDirectoryPath}");
             }
 
-            gltfContainer = AssetManager_GLTF.i.Get(GetCacheId(), url, transform, CallOnComponentUpdatedEvent, CallOnFailure, ParseGLTFWebRequestedFile, initialVisibility);
+            gltfContainer = AssetManager_GLTF.i.Get(GetCacheId(), url, transform, CallOnComponentUpdatedEvent,
+                CallOnFailure, ParseGLTFWebRequestedFile, initialVisibility);
         }
 
         void ParseGLTFWebRequestedFile(ref string requestedFileName)
@@ -67,7 +68,8 @@ namespace DCL.Components
         {
             gameObject.name += " - Failed loading";
 
-            MaterialTransitionController[] transitionController = GetComponentsInChildren<MaterialTransitionController>(true);
+            MaterialTransitionController[] transitionController =
+                GetComponentsInChildren<MaterialTransitionController>(true);
 
             foreach (MaterialTransitionController material in transitionController)
             {
@@ -77,7 +79,10 @@ namespace DCL.Components
 
         void CallOnComponentUpdatedEvent()
         {
-            if (entity.currentShape == null) return;
+            if (entity.currentShape == null)
+            {
+                return;
+            }
 
             alreadyLoaded = true;
             BaseShape.ConfigureVisibility(entity.meshGameObject, ((GLTFShape)entity.currentShape).model.visible);

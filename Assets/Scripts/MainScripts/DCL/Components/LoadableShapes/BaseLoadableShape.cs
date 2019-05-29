@@ -1,9 +1,7 @@
-using System;
-using System.Collections;
-using System.Collections.Generic;
 using DCL.Controllers;
 using DCL.Helpers;
 using DCL.Models;
+using System.Collections;
 using UnityEngine;
 
 namespace DCL.Components
@@ -92,16 +90,19 @@ namespace DCL.Components
         private void DetachShape(DecentralandEntity entity)
         {
             if (entity == null || entity.meshGameObject == null)
+            {
                 return;
+            }
 
             Loadable loadableShape = entity.meshGameObject.GetComponent<Loadable>();
 
             if (loadableShape != null)
+            {
                 loadableShape.Unload();
+            }
 
             Utils.SafeDestroy(entity.meshGameObject);
             entity.meshGameObject = null;
         }
     }
 }
-

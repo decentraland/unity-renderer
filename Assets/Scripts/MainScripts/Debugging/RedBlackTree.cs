@@ -6,8 +6,8 @@
 // ******************************
 
 using System;
-using System.Diagnostics;
 using System.Collections.Generic;
+using System.Diagnostics;
 
 
 /// <summary>
@@ -16,11 +16,11 @@ using System.Collections.Generic;
 /// </summary>
 public enum DuplicatePolicy
 {
-    InsertFirst,  // Insert a new node before duplicates
-    InsertLast,   // Insert a new node after duplicates
+    InsertFirst, // Insert a new node before duplicates
+    InsertLast, // Insert a new node after duplicates
     ReplaceFirst, // Replace the first of the duplicate nodes
-    ReplaceLast,  // Replace the last of the duplicate nodes
-    DoNothing     // Do nothing to the tree
+    ReplaceLast, // Replace the last of the duplicate nodes
+    DoNothing // Do nothing to the tree
 };
 
 /// <summary>
@@ -36,15 +36,15 @@ public enum DuplicatePolicy
 ///</remarks>
 public class RedBlackTree<T> : IEnumerable<T>
 {
-    private readonly IComparer<T> comparer;      // interface for comparing elements, only Compare is used.
-    private Node root;          // The root of the tree. Can be null when tree is empty.
-    private int count;            // The count of elements in the tree.
+    private readonly IComparer<T> comparer; // interface for comparing elements, only Compare is used.
+    private Node root; // The root of the tree. Can be null when tree is empty.
+    private int count; // The count of elements in the tree.
 
-    private int changeStamp;        // An integer that is changed every time the tree structurally changes.
+    private int changeStamp; // An integer that is changed every time the tree structurally changes.
     // Used so that enumerations throw an exception if the tree is changed
     // during enumeration.
 
-    private Node[] stack;               // A stack of nodes. This is cached locally to avoid constant re-allocated it.
+    private Node[] stack; // A stack of nodes. This is cached locally to avoid constant re-allocated it.
 
     /// <summary>
     /// Create an array of Nodes big enough for any path from top 
@@ -57,14 +57,22 @@ public class RedBlackTree<T> : IEnumerable<T>
         // Maximum depth needed is 2 * lg count + 1.
         int maxDepth;
         if (count < 0x400)
+        {
             maxDepth = 21;
+        }
         else if (count < 0x10000)
+        {
             maxDepth = 41;
+        }
         else
+        {
             maxDepth = 65;
+        }
 
         if (stack == null || stack.Length < maxDepth)
+        {
             stack = new Node[maxDepth];
+        }
 
         return stack;
     }
@@ -89,9 +97,13 @@ public class RedBlackTree<T> : IEnumerable<T>
             set
             {
                 if (value)
+                {
                     count |= REDMASK;
+                }
                 else
+                {
                     count &= ~REDMASK;
+                }
             }
         }
 
@@ -136,10 +148,14 @@ public class RedBlackTree<T> : IEnumerable<T>
             newNode.count = count;
 
             if (left != null)
+            {
                 newNode.left = left.Clone();
+            }
 
             if (right != null)
+            {
                 newNode.right = right.Clone();
+            }
 
             return newNode;
         }
@@ -202,7 +218,10 @@ public class RedBlackTree<T> : IEnumerable<T>
         RedBlackTree<T> newTree = new RedBlackTree<T>(comparer);
         newTree.count = this.count;
         if (this.root != null)
+        {
             newTree.root = this.root.Clone();
+        }
+
         return newTree;
     }
 
@@ -218,8 +237,8 @@ public class RedBlackTree<T> : IEnumerable<T>
     /// <returns>True if the key was found.</returns>
     public bool Find(T key, bool findFirst, bool replace, out T item)
     {
-        Node current = root;      // current search location in the tree
-        Node found = null;      // last node found with the key, or null if none.
+        Node current = root; // current search location in the tree
+        Node found = null; // last node found with the key, or null if none.
 
         while (current != null)
         {
@@ -239,9 +258,13 @@ public class RedBlackTree<T> : IEnumerable<T>
                 Debug.Assert(compare == 0);
                 found = current;
                 if (findFirst)
+                {
                     current = current.left;
+                }
                 else
+                {
                     current = current.right;
+                }
             }
         }
 
@@ -249,7 +272,10 @@ public class RedBlackTree<T> : IEnumerable<T>
         {
             item = found.item;
             if (replace)
+            {
                 found.item = key;
+            }
+
             return true;
         }
         else
@@ -270,9 +296,13 @@ public class RedBlackTree<T> : IEnumerable<T>
     {
         T dummy;
         if (findFirst)
+        {
             return FirstItemInRange(EqualRangeTester(key), out dummy);
+        }
         else
+        {
             return LastItemInRange(EqualRangeTester(key), out dummy);
+        }
     }
 
     /// <summary>
@@ -283,23 +313,33 @@ public class RedBlackTree<T> : IEnumerable<T>
     public T GetItemByIndex(int index)
     {
         if (index < 0 || index >= count)
+        {
             throw new ArgumentOutOfRangeException("index");
+        }
 
-        Node current = root;      // current search location in the tree
+        Node current = root; // current search location in the tree
 
         for (; ; )
         {
             int leftCount;
 
             if (current.left != null)
+            {
                 leftCount = current.left.Count;
+            }
             else
+            {
                 leftCount = 0;
+            }
 
             if (leftCount > index)
+            {
                 current = current.left;
+            }
             else if (leftCount == index)
+            {
                 return current.item;
+            }
             else
             {
                 index -= leftCount + 1;
@@ -319,8 +359,8 @@ public class RedBlackTree<T> : IEnumerable<T>
     public bool Insert(T item, DuplicatePolicy dupPolicy, out T previous)
     {
         Node node = root;
-        Node parent = null, gparent = null, ggparent = null;  // parent, grand, a great-grantparent of node.
-        bool wentLeft = false, wentRight = false;        // direction from parent to node.
+        Node parent = null, gparent = null, ggparent = null; // parent, grand, a great-grantparent of node.
+        bool wentLeft = false, wentRight = false; // direction from parent to node.
         bool rotated;
         Node duplicateFound = null;
 
@@ -332,9 +372,11 @@ public class RedBlackTree<T> : IEnumerable<T>
         // policy means that we will always do an insertion.
         bool needStack = !((dupPolicy == DuplicatePolicy.InsertFirst) || (dupPolicy == DuplicatePolicy.InsertLast));
         Node[] nodeStack = null;
-        int nodeStackPtr = 0;  // first free item on the stack.
+        int nodeStackPtr = 0; // first free item on the stack.
         if (needStack)
+        {
             nodeStack = GetNodeStack();
+        }
 
         while (node != null)
         {
@@ -348,12 +390,16 @@ public class RedBlackTree<T> : IEnumerable<T>
                 {
                     nodeStackPtr -= 2;
                     if (nodeStackPtr < 0)
+                    {
                         nodeStackPtr = 0;
+                    }
                 }
             }
 
             // Keep track of parent, grandparent, great-grand parent.
-            ggparent = gparent; gparent = parent; parent = node;
+            ggparent = gparent;
+            gparent = parent;
+            parent = node;
 
             // Compare the key and the node. 
             int compare = comparer.Compare(item, node.item);
@@ -367,7 +413,9 @@ public class RedBlackTree<T> : IEnumerable<T>
 
                     // Didn't insert after all. Return counts back to their previous value.
                     for (int i = 0; i < nodeStackPtr; ++i)
+                    {
                         nodeStack[i].DecrementCount();
+                    }
 
                     return false;
                 }
@@ -390,18 +438,22 @@ public class RedBlackTree<T> : IEnumerable<T>
 
             node.IncrementCount();
             if (needStack)
+            {
                 nodeStack[nodeStackPtr++] = node;
+            }
 
             // Move to the left or right as needed to find the insertion point.
             if (compare < 0)
             {
                 node = node.left;
-                wentLeft = true; wentRight = false;
+                wentLeft = true;
+                wentRight = false;
             }
             else
             {
                 node = node.right;
-                wentRight = true; wentLeft = false;
+                wentRight = true;
+                wentLeft = false;
             }
         }
 
@@ -416,7 +468,9 @@ public class RedBlackTree<T> : IEnumerable<T>
 
                 // Didn't insert after all. Return counts back to their previous value.
                 for (int i = 0; i < nodeStackPtr; ++i)
+                {
                     nodeStack[i].DecrementCount();
+                }
 
                 return false;
             }
@@ -433,9 +487,13 @@ public class RedBlackTree<T> : IEnumerable<T>
 
         // Link the node into the tree.
         if (wentLeft)
+        {
             parent.left = node;
+        }
         else if (wentRight)
+        {
             parent.right = node;
+        }
         else
         {
             Debug.Assert(root == null);
@@ -464,11 +522,19 @@ public class RedBlackTree<T> : IEnumerable<T>
     private Node InsertSplit(Node ggparent, Node gparent, Node parent, Node node, out bool rotated)
     {
         if (node != root)
+        {
             node.IsRed = true;
+        }
+
         if (node.left != null)
+        {
             node.left.IsRed = false;
+        }
+
         if (node.right != null)
+        {
             node.right.IsRed = false;
+        }
 
         if (parent != null && parent.IsRed)
         {
@@ -524,7 +590,8 @@ public class RedBlackTree<T> : IEnumerable<T>
 
         // Restore the counts.
         child.Count = (child.left != null ? child.left.Count : 0) + (child.right != null ? child.right.Count : 0) + 1;
-        gchild.Count = (gchild.left != null ? gchild.left.Count : 0) + (gchild.right != null ? gchild.right.Count : 0) + 1;
+        gchild.Count = (gchild.left != null ? gchild.left.Count : 0) + (gchild.right != null ? gchild.right.Count : 0) +
+                       1;
 
         if (node == null)
         {
@@ -603,14 +670,20 @@ public class RedBlackTree<T> : IEnumerable<T>
     /// <returns>A RangeTester delegate that tests for an item in the given range.</returns>
     public RangeTester BoundedRangeTester(bool useFirst, T first, bool useLast, T last)
     {
-        return delegate(T item)
+        return delegate (T item)
         {
             if (useFirst && comparer.Compare(first, item) > 0)
-                return -1;     // item is before first.
+            {
+                return -1; // item is before first.
+            }
             else if (useLast && comparer.Compare(last, item) <= 0)
-                return 1;      // item is after or equal to last.
+            {
+                return 1; // item is after or equal to last.
+            }
             else
-                return 0;      // item is greater or equal to first, and less than last.
+            {
+                return 0; // item is greater or equal to first, and less than last.
+            }
         };
     }
 
@@ -624,31 +697,39 @@ public class RedBlackTree<T> : IEnumerable<T>
     /// <returns>A RangeTester delegate that tests for an item in the given range.</returns>
     public RangeTester DoubleBoundedRangeTester(T first, bool firstInclusive, T last, bool lastInclusive)
     {
-        return delegate(T item)
+        return delegate (T item)
         {
             if (firstInclusive)
             {
                 if (comparer.Compare(first, item) > 0)
-                    return -1;     // item is before first.
+                {
+                    return -1; // item is before first.
+                }
             }
             else
             {
                 if (comparer.Compare(first, item) >= 0)
-                    return -1;     // item is before or equal to first.
+                {
+                    return -1; // item is before or equal to first.
+                }
             }
 
             if (lastInclusive)
             {
                 if (comparer.Compare(last, item) < 0)
-                    return 1;      // item is after last.
+                {
+                    return 1; // item is after last.
+                }
             }
             else
             {
                 if (comparer.Compare(last, item) <= 0)
-                    return 1;      // item is after or equal to last
+                {
+                    return 1; // item is after or equal to last
+                }
             }
 
-            return 0;      // item is between first and last.
+            return 0; // item is between first and last.
         };
     }
 
@@ -661,21 +742,29 @@ public class RedBlackTree<T> : IEnumerable<T>
     /// <returns>A RangeTester delegate that tests for an item in the given range.</returns>
     public RangeTester LowerBoundedRangeTester(T first, bool inclusive)
     {
-        return delegate(T item)
+        return delegate (T item)
         {
             if (inclusive)
             {
                 if (comparer.Compare(first, item) > 0)
-                    return -1;     // item is before first.
+                {
+                    return -1; // item is before first.
+                }
                 else
-                    return 0;      // item is after or equal to first
+                {
+                    return 0; // item is after or equal to first
+                }
             }
             else
             {
                 if (comparer.Compare(first, item) >= 0)
-                    return -1;     // item is before or equal to first.
+                {
+                    return -1; // item is before or equal to first.
+                }
                 else
-                    return 0;      // item is after first
+                {
+                    return 0; // item is after first
+                }
             }
         };
     }
@@ -689,21 +778,29 @@ public class RedBlackTree<T> : IEnumerable<T>
     /// <returns>A RangeTester delegate that tests for an item in the given range.</returns>
     public RangeTester UpperBoundedRangeTester(T last, bool inclusive)
     {
-        return delegate(T item)
+        return delegate (T item)
         {
             if (inclusive)
             {
                 if (comparer.Compare(last, item) < 0)
-                    return 1;      // item is after last.
+                {
+                    return 1; // item is after last.
+                }
                 else
-                    return 0;      // item is before or equal to last.
+                {
+                    return 0; // item is before or equal to last.
+                }
             }
             else
             {
                 if (comparer.Compare(last, item) <= 0)
-                    return 1;      // item is after or equal to last
+                {
+                    return 1; // item is after or equal to last
+                }
                 else
-                    return 0;      // item is before last.
+                {
+                    return 0; // item is before last.
+                }
             }
         };
     }
@@ -715,7 +812,7 @@ public class RedBlackTree<T> : IEnumerable<T>
     /// <returns>A RangeTester delegate that tests for an item equal to <paramref name="equalTo"/>.</returns>
     public RangeTester EqualRangeTester(T equalTo)
     {
-        return delegate(T item)
+        return delegate (T item)
         {
             return comparer.Compare(item, equalTo);
         };
@@ -857,11 +954,11 @@ public class RedBlackTree<T> : IEnumerable<T>
     /// <returns>True if an element was deleted, false if the range is empty.</returns>
     public bool DeleteItemFromRange(RangeTester rangeTester, bool deleteFirst, out T item)
     {
-        Node node;      // The current node.
-        Node parent;    // Parent of the current node.
-        Node gparent;    // Grandparent of the current node.
-        Node sib;      // Sibling of the current node.
-        Node keyNode;    // Node with the key that is being removed.
+        Node node; // The current node.
+        Node parent; // Parent of the current node.
+        Node gparent; // Grandparent of the current node.
+        Node sib; // Sibling of the current node.
+        Node keyNode; // Node with the key that is being removed.
 
         // The tree may be changed.
         StopEnumerations();
@@ -876,7 +973,7 @@ public class RedBlackTree<T> : IEnumerable<T>
         // We decrement counts on the way down the tree. If we end up not finding an item to delete
         // we need a stack to adjust the counts back. 
         Node[] nodeStack = GetNodeStack();
-        int nodeStackPtr = 0;  // first free item on the stack.
+        int nodeStackPtr = 0; // first free item on the stack.
 
         // Start at the root.
         node = root;
@@ -940,7 +1037,7 @@ public class RedBlackTree<T> : IEnumerable<T>
             // Compare the key and move down the tree to the correct child.
             do
             {
-                Node nextNode, nextSib;    // Node we've moving to, and it's sibling.
+                Node nextNode, nextSib; // Node we've moving to, and it's sibling.
 
                 node.DecrementCount();
                 nodeStack[nodeStackPtr++] = node;
@@ -957,25 +1054,31 @@ public class RedBlackTree<T> : IEnumerable<T>
                     keyNode = node;
                     if (deleteFirst)
                     {
-                        nextNode = node.left; nextSib = node.right;
+                        nextNode = node.left;
+                        nextSib = node.right;
                     }
                     else
                     {
-                        nextNode = node.right; nextSib = node.left;
+                        nextNode = node.right;
+                        nextSib = node.left;
                     }
                 }
                 else if (compare > 0)
                 {
-                    nextNode = node.left; nextSib = node.right;
+                    nextNode = node.left;
+                    nextSib = node.right;
                 }
                 else
                 {
-                    nextNode = node.right; nextSib = node.left;
+                    nextNode = node.right;
+                    nextSib = node.left;
                 }
 
                 // Have we reached the end of our tree walk?
                 if (nextNode == null)
+                {
                     goto FINISHED;
+                }
 
                 // Move down the tree.
                 gparent = parent;
@@ -1009,11 +1112,15 @@ public class RedBlackTree<T> : IEnumerable<T>
 
             // Return counts back to their previous value.
             for (int i = 0; i < nodeStackPtr; ++i)
+            {
                 nodeStack[i].IncrementCount();
+            }
 
             // Color the root black, in case it was colored red above.
             if (root != null)
+            {
                 root.IsRed = false;
+            }
 
             item = default(T);
             return false;
@@ -1046,7 +1153,9 @@ public class RedBlackTree<T> : IEnumerable<T>
             replacement.IsRed = false;
         }
         else
+        {
             replacement = null;
+        }
 
         if (parent == null)
         {
@@ -1054,7 +1163,9 @@ public class RedBlackTree<T> : IEnumerable<T>
             root = replacement;
         }
         else if (parent.left == node)
+        {
             parent.left = replacement;
+        }
         else
         {
             Debug.Assert(parent.right == node);
@@ -1063,7 +1174,9 @@ public class RedBlackTree<T> : IEnumerable<T>
 
         // Color the root black, in case it was colored red above.
         if (root != null)
+        {
             root.IsRed = false;
+        }
 
         // Update item count.
         count -= 1;
@@ -1087,7 +1200,9 @@ public class RedBlackTree<T> : IEnumerable<T>
         {
             deleted = DeleteItemFromRange(rangeTester, true, out dummy);
             if (deleted)
+            {
                 ++counter;
+            }
         } while (deleted);
 
         return counter;
@@ -1127,7 +1242,7 @@ public class RedBlackTree<T> : IEnumerable<T>
 
             if (compare == 0)
             {
-                counter = 1;  // the node itself
+                counter = 1; // the node itself
                 counter += CountRangeUnderNode(rangeTester, node.left, true, aboveRangeBottom);
                 counter += CountRangeUnderNode(rangeTester, node.right, belowRangeTop, true);
             }
@@ -1136,7 +1251,8 @@ public class RedBlackTree<T> : IEnumerable<T>
                 counter = CountRangeUnderNode(rangeTester, node.right, belowRangeTop, aboveRangeBottom);
             }
             else
-            { // compare > 0
+            {
+                // compare > 0
                 counter = CountRangeUnderNode(rangeTester, node.left, belowRangeTop, aboveRangeBottom);
             }
 
@@ -1168,19 +1284,30 @@ public class RedBlackTree<T> : IEnumerable<T>
             {
                 found = node;
                 if (node.left != null)
+                {
                     foundIndex = curCount + node.left.Count;
+                }
                 else
+                {
                     foundIndex = curCount;
+                }
             }
 
             if (compare >= 0)
+            {
                 node = node.left;
+            }
             else
             {
                 if (node.left != null)
+                {
                     curCount += node.left.Count + 1;
+                }
                 else
+                {
                     curCount += 1;
+                }
+
                 node = node.right;
             }
         }
@@ -1217,21 +1344,32 @@ public class RedBlackTree<T> : IEnumerable<T>
             {
                 found = node;
                 if (node.left != null)
+                {
                     foundIndex = curCount + node.left.Count;
+                }
                 else
+                {
                     foundIndex = curCount;
+                }
             }
 
             if (compare <= 0)
             {
                 if (node.left != null)
+                {
                     curCount += node.left.Count + 1;
+                }
                 else
+                {
                     curCount += 1;
+                }
+
                 node = node.right;
             }
             else
+            {
                 node = node.left;
+            }
         }
 
         if (found != null)
@@ -1267,7 +1405,9 @@ public class RedBlackTree<T> : IEnumerable<T>
     private void PrintSubTree(Node node, string prefixNode, string prefixChildren)
     {
         if (node == null)
+        {
             return;
+        }
 
         // Red nodes marked as "@@", black nodes as "..".
         Console.WriteLine("{0}{1} {2,4} {3}", prefixNode, node.IsRed ? "@@" : "..", node.Count, node.item);
@@ -1287,7 +1427,6 @@ public class RedBlackTree<T> : IEnumerable<T>
         if (root == null)
         {
             Debug.Assert(0 == count, "Count in empty tree should be 0.");
-
         }
         else
         {
@@ -1314,17 +1453,29 @@ public class RedBlackTree<T> : IEnumerable<T>
 
         // Check that this node is sorted with respect to any children.
         if (node.left != null)
-            Debug.Assert(comparer.Compare(node.left.item, node.item) <= 0, "Left child is not less than or equal to node");
+        {
+            Debug.Assert(comparer.Compare(node.left.item, node.item) <= 0,
+                "Left child is not less than or equal to node");
+        }
+
         if (node.right != null)
-            Debug.Assert(comparer.Compare(node.right.item, node.item) >= 0, "Right child is not greater than or equal to node");
+        {
+            Debug.Assert(comparer.Compare(node.right.item, node.item) >= 0,
+                "Right child is not greater than or equal to node");
+        }
 
         // Check that the two-red rule is not violated.
         if (node.IsRed)
         {
             if (node.left != null)
+            {
                 Debug.Assert(!node.left.IsRed, "Node and left child both red");
+            }
+
             if (node.right != null)
+            {
                 Debug.Assert(!node.right.IsRed, "Node and right child both red");
+            }
         }
 
         // Validate sub-trees and get their size and heights.
@@ -1344,11 +1495,11 @@ public class RedBlackTree<T> : IEnumerable<T>
         // Calculate our black height and return the count
         blackHeight = leftBlackHeight;
         if (!node.IsRed)
+        {
             blackHeight += 1;
+        }
+
         return ourCount;
     }
 #endif //DEBUG
-
 }
-
-   

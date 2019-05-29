@@ -39,7 +39,8 @@ namespace DCL.Components
 
         public override void AttachTo(DecentralandEntity entity, System.Type overridenAttachedType = null)
         {
-            Debug.LogError("Aborted UIContainerStack attachment to an entity. UIShapes shouldn't be attached to entities.");
+            Debug.LogError(
+                "Aborted UIContainerStack attachment to an entity. UIShapes shouldn't be attached to entities.");
         }
 
         public override void DetachFrom(DecentralandEntity entity, System.Type overridenAttachedType = null)
@@ -121,7 +122,8 @@ namespace DCL.Components
             childComponent.OnAppliedChanges += RefreshContainerForShape;
         }
 
-        public override void RefreshDCLLayoutRecursively(bool refreshSize = true, bool refreshAlignmentAndPosition = true)
+        public override void RefreshDCLLayoutRecursively(bool refreshSize = true,
+            bool refreshAlignmentAndPosition = true)
         {
             base.RefreshDCLLayoutRecursively(refreshSize, refreshAlignmentAndPosition);
             referencesContainer.sizeFitter.RefreshRecursively();

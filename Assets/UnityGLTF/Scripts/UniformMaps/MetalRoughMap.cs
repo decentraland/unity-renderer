@@ -1,7 +1,4 @@
-using System;
 using UnityEngine;
-using AlphaMode = GLTF.Schema.AlphaMode;
-using CullMode = UnityEngine.Rendering.CullMode;
 
 namespace UnityGLTF
 {

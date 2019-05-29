@@ -1,11 +1,6 @@
-using System;
-using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
-using UnityGLTF;
-using DCL.Helpers;
-using DCL.Models;
 using DCL.Controllers;
+using DCL.Models;
+using UnityEngine;
 
 namespace DCL.Components
 {
@@ -54,7 +49,8 @@ namespace DCL.Components
             {
                 OnClickColliderGameObjects[i] = new GameObject();
                 OnClickColliderGameObjects[i].name = onClickColliderObjectName;
-                OnClickColliderGameObjects[i].layer = onClickColliderObjectLayer; // to avoid movement collisions with its collider
+                OnClickColliderGameObjects[i].layer =
+                    onClickColliderObjectLayer; // to avoid movement collisions with its collider
 
                 var meshCollider = OnClickColliderGameObjects[i].AddComponent<MeshCollider>();
                 meshCollider.sharedMesh = meshFilters[i].sharedMesh;
@@ -74,7 +70,10 @@ namespace DCL.Components
 
         public void OnPointerDown()
         {
-            if (!enabled) return;
+            if (!enabled)
+            {
+                return;
+            }
 
             DCL.Interface.WebInterface.ReportOnClickEvent(scene.sceneData.id, model.uuid);
         }
@@ -90,14 +89,15 @@ namespace DCL.Components
 
         void DestroyOnClickColliders()
         {
-            if (OnClickColliderGameObjects == null) return;
+            if (OnClickColliderGameObjects == null)
+            {
+                return;
+            }
 
             for (int i = 0; i < OnClickColliderGameObjects.Length; i++)
             {
                 Destroy(OnClickColliderGameObjects[i]);
             }
         }
-
-
     }
 }

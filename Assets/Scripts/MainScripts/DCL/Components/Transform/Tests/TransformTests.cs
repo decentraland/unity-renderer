@@ -1,14 +1,11 @@
-using System.Collections;
-using System.Collections.Generic;
 using DCL.Components;
-using DCL.Controllers;
 using DCL.Helpers;
 using DCL.Models;
+using Newtonsoft.Json;
 using NUnit.Framework;
+using System.Collections;
 using UnityEngine;
 using UnityEngine.TestTools;
-using UnityEngine.UI;
-using Newtonsoft.Json;
 
 namespace Tests
 {

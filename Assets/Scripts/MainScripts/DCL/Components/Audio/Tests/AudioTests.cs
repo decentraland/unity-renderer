@@ -1,11 +1,9 @@
-using System.Collections;
-using System.Collections.Generic;
 using DCL.Components;
 using DCL.Controllers;
 using DCL.Helpers;
 using DCL.Models;
-using Newtonsoft.Json;
 using NUnit.Framework;
+using System.Collections;
 using UnityEngine;
 using UnityEngine.TestTools;
 
@@ -25,27 +23,31 @@ namespace Tests
                 pitch = 1.0f
             };
 
-            DCLAudioSource audioSource = TestHelpers.EntityComponentCreate<DCLAudioSource, DCLAudioSource.Model>(scene, scene.entities[entityId], audioSourceModel);
+            DCLAudioSource audioSource =
+                TestHelpers.EntityComponentCreate<DCLAudioSource, DCLAudioSource.Model>(scene, scene.entities[entityId],
+                    audioSourceModel);
 
             yield return audioSource.routine;
         }
 
-        public IEnumerator LoadAudioClip(ParcelScene scene, string audioClipId, string url, bool loop, bool loading, float volume, bool waitForLoading = true)
+        public IEnumerator LoadAudioClip(ParcelScene scene, string audioClipId, string url, bool loop, bool loading,
+            float volume, bool waitForLoading = true)
         {
             DCLAudioClip.Model model = new DCLAudioClip.Model
             {
-                url = url,//TestHelpers.GetTestsAssetsPath() + "/Audio/Train.wav",
+                url = url, //TestHelpers.GetTestsAssetsPath() + "/Audio/Train.wav",
                 loop = loop,
                 shouldTryToLoad = loading,
                 volume = volume
             };
 
-            DCLAudioClip audioClip = scene.SharedComponentCreate(JsonUtility.ToJson(new DCL.Models.SharedComponentCreateMessage
-            {
-                id = audioClipId,
-                name = "audioClip",
-                classId = (int)DCL.Models.CLASS_ID.AUDIO_CLIP,
-            })) as DCLAudioClip;
+            DCLAudioClip audioClip = scene.SharedComponentCreate(JsonUtility.ToJson(
+                new DCL.Models.SharedComponentCreateMessage
+                {
+                    id = audioClipId,
+                    name = "audioClip",
+                    classId = (int)DCL.Models.CLASS_ID.AUDIO_CLIP,
+                })) as DCLAudioClip;
 
             scene.SharedComponentUpdate(JsonUtility.ToJson(new DCL.Models.SharedComponentUpdateMessage
             {
@@ -55,7 +57,8 @@ namespace Tests
 
             yield return audioClip.routine;
 
-            Assert.IsTrue(scene.disposableComponents.ContainsKey("audioClipTest"), "Shared component was not created correctly!");
+            Assert.IsTrue(scene.disposableComponents.ContainsKey("audioClipTest"),
+                "Shared component was not created correctly!");
 
             if (waitForLoading)
             {
@@ -146,7 +149,8 @@ namespace Tests
                 pitch = 0.8f
             };
 
-            DCLAudioSource audioSourceComponent = TestHelpers.EntityComponentCreate<DCLAudioSource, DCLAudioSource.Model>(scene, entity, componentModel);
+            DCLAudioSource audioSourceComponent =
+                TestHelpers.EntityComponentCreate<DCLAudioSource, DCLAudioSource.Model>(scene, entity, componentModel);
 
             // 2. Check configured values
             Assert.AreEqual(0.3f, audioSourceComponent.model.volume);
@@ -183,7 +187,9 @@ namespace Tests
                 volume = 0.8f
             };
 
-            DCLAudioClip audioClip = TestHelpers.SharedComponentCreate<DCLAudioClip, DCLAudioClip.Model>(scene, CLASS_ID.AUDIO_CLIP, componentModel);
+            DCLAudioClip audioClip =
+                TestHelpers.SharedComponentCreate<DCLAudioClip, DCLAudioClip.Model>(scene, CLASS_ID.AUDIO_CLIP,
+                    componentModel);
 
             yield return audioClip.routine;
 
@@ -214,7 +220,8 @@ namespace Tests
         {
             yield return InitScene();
 
-            yield return TestHelpers.TestAttachedSharedComponentOfSameTypeIsReplaced<DCLAudioClip.Model, DCLAudioClip>(scene, CLASS_ID.AUDIO_CLIP);
+            yield return TestHelpers.TestAttachedSharedComponentOfSameTypeIsReplaced<DCLAudioClip.Model, DCLAudioClip>(
+                scene, CLASS_ID.AUDIO_CLIP);
         }
     }
 }

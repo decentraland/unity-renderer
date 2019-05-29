@@ -7,12 +7,14 @@ public class DCLCharacterController : MonoBehaviour
 
     [Header("Aiming")]
     public float aimingHorizontalSpeed = 300f;
+
     public float aimingVerticalSpeed = 300f;
     public float aimingVerticalMinimumAngle = -89f;
     public float aimingVerticalMaximumAngle = 89f;
 
     [Header("Movement")]
     public float minimumYPosition = 1f;
+
     public float gravity = -55f;
     public float movementSpeed = 8f;
     public float jumpForce = 20f;
@@ -63,13 +65,17 @@ public class DCLCharacterController : MonoBehaviour
     {
         // failsafe in case something teleports the player below ground collisions
         if (newPosition.y < minimumYPosition)
+        {
             newPosition.y = minimumYPosition + 2f;
+        }
 
         Vector3 previousPosition = transform.position;
         transform.position = newPosition;
 
         if (Moved(previousPosition))
+        {
             ReportMovement();
+        }
     }
 
     public void SetPosition(string positionVector)
@@ -149,7 +155,8 @@ public class DCLCharacterController : MonoBehaviour
             lastJumpButtonPressedTime = Time.time;
         }
 
-        if (jumpButtonPressed && (Time.time - lastJumpButtonPressedTime < 0.15f)) // almost-grounded jump button press allowed time
+        if (jumpButtonPressed && (Time.time - lastJumpButtonPressedTime < 0.15f)
+        ) // almost-grounded jump button press allowed time
         {
             if (isGrounded || (Time.time - lastUngroundedTime) < 0.1f) // just-left-ground jump allowed time
             {
@@ -160,7 +167,8 @@ public class DCLCharacterController : MonoBehaviour
         Vector3 previousPosition = transform.position;
         characterController.Move(velocity * deltaTime);
 
-        if (Moved(previousPosition) || (Time.realtimeSinceStartup - lastMovementReportTime) > PlayerSettings.POSITION_REPORTING_DELAY)
+        if (Moved(previousPosition) || (Time.realtimeSinceStartup - lastMovementReportTime) >
+            PlayerSettings.POSITION_REPORTING_DELAY)
         {
             ReportMovement();
         }
@@ -200,7 +208,8 @@ public class DCLCharacterController : MonoBehaviour
 
     bool IsGrounded()
     {
-        return characterController.isGrounded || Physics.Raycast(transform.position, Vector3.down, collider.bounds.extents.y + 0.1f, groundLayers);
+        return characterController.isGrounded || Physics.Raycast(transform.position, Vector3.down,
+                   collider.bounds.extents.y + 0.1f, groundLayers);
     }
 
     void ReportMovement()

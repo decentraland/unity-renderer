@@ -19,7 +19,9 @@ namespace DCL.Helpers
 
     // NOTE(Brian): Attribute used to determine if tests are visual. Those tests will be run to generate the baseline images.
     [AttributeUsage(AttributeTargets.Method)]
-    public class VisualTestAttribute : Attribute { }
+    public class VisualTestAttribute : Attribute
+    {
+    }
 
     public class VisualTestsBase : TestsBase
     {
@@ -97,7 +99,8 @@ namespace DCL.Helpers
             yield break;
         }
 
-        protected Vector2 CalculateAlignedPosition(Rect parentRect, Rect elementRect, string vAlign = "center", string hAlign = "center")
+        protected Vector2 CalculateAlignedPosition(Rect parentRect, Rect elementRect, string vAlign = "center",
+            string hAlign = "center")
         {
             Vector2 result = Vector2.zero;
 
@@ -184,11 +187,14 @@ namespace DCL.Helpers
             }));
         }
 
-        public static T EntityComponentCreate<T, K>(ParcelScene scene, DecentralandEntity entity, K model, CLASS_ID_COMPONENT classId = CLASS_ID_COMPONENT.NONE)
+        public static T EntityComponentCreate<T, K>(ParcelScene scene, DecentralandEntity entity, K model,
+            CLASS_ID_COMPONENT classId = CLASS_ID_COMPONENT.NONE)
             where T : BaseComponent
             where K : new()
         {
-            int componentClassId = classId == CLASS_ID_COMPONENT.NONE ? (int)scene.ownerController.componentFactory.GetIdForType<T>() : (int)classId;
+            int componentClassId = classId == CLASS_ID_COMPONENT.NONE
+                ? (int)scene.ownerController.componentFactory.GetIdForType<T>()
+                : (int)classId;
             string componentInstanceId = GetComponentUniqueId(scene, typeof(T).Name, componentClassId, entity.entityId);
 
             return scene.EntityComponentCreate(JsonUtility.ToJson(new EntityComponentCreateMessage
@@ -215,16 +221,16 @@ namespace DCL.Helpers
             FilterMode filterMode = FilterMode.Bilinear)
         {
             return SharedComponentCreate<DCLTexture, DCLTexture.Model>
-                (
-                    scene,
-                    DCL.Models.CLASS_ID.TEXTURE,
-                    new DCLTexture.Model
-                    {
-                        src = url,
-                        wrap = wrapMode,
-                        samplingMode = filterMode,
-                    }
-                );
+            (
+                scene,
+                DCL.Models.CLASS_ID.TEXTURE,
+                new DCLTexture.Model
+                {
+                    src = url,
+                    wrap = wrapMode,
+                    samplingMode = filterMode,
+                }
+            );
         }
 
         public static void SharedComponentUpdate<T, K>(ParcelScene scene, T component, K model = null)
@@ -312,7 +318,8 @@ namespace DCL.Helpers
         public static TextShape InstantiateEntityWithTextShape(ParcelScene scene, Vector3 position, TextShape.Model model)
         {
             DecentralandEntity entity = CreateSceneEntity(scene);
-            string componentId = GetComponentUniqueId(scene, "textShape", (int)CLASS_ID_COMPONENT.TEXT_SHAPE, entity.entityId);
+            string componentId =
+                GetComponentUniqueId(scene, "textShape", (int)CLASS_ID_COMPONENT.TEXT_SHAPE, entity.entityId);
 
             TextShape textShape = EntityComponentCreate<TextShape, TextShape.Model>(scene, entity, model);
 
@@ -337,7 +344,8 @@ namespace DCL.Helpers
             return CreateEntityWithGLTFShape(scene, position, new GLTFShape.Model() { src = url }, out entity);
         }
 
-        public static GLTFShape CreateEntityWithGLTFShape(ParcelScene scene, Vector3 position, string url, out DecentralandEntity entity)
+        public static GLTFShape CreateEntityWithGLTFShape(ParcelScene scene, Vector3 position, string url,
+            out DecentralandEntity entity)
         {
             return CreateEntityWithGLTFShape(scene, position, new GLTFShape.Model() { src = url }, out entity);
         }
@@ -348,64 +356,74 @@ namespace DCL.Helpers
             return CreateEntityWithGLTFShape(scene, position, model, out entity);
         }
 
-        public static GLTFShape CreateEntityWithGLTFShape(ParcelScene scene, Vector3 position, GLTFShape.Model model, out DecentralandEntity entity)
+        public static GLTFShape CreateEntityWithGLTFShape(ParcelScene scene, Vector3 position, GLTFShape.Model model,
+            out DecentralandEntity entity)
         {
             entity = CreateSceneEntity(scene);
             GLTFShape gltfShape = AttachGLTFShape(entity, scene, position, model);
             return gltfShape;
         }
 
-        public static BoxShape CreateEntityWithBoxShape(ParcelScene scene, Vector3 position, BoxShape.Model model = null)
+        public static BoxShape CreateEntityWithBoxShape(ParcelScene scene, Vector3 position,
+            BoxShape.Model model = null)
         {
             return CreateEntityWithPrimitive<BoxShape, BoxShape.Model>(scene, position, CLASS_ID.BOX_SHAPE, model);
         }
 
         public static BoxShape CreateEntityWithBoxShape(ParcelScene scene, Vector3 position, bool visible)
         {
-            return CreateEntityWithBoxShape(scene, position, new BoxShape.Model {visible = visible});
+            return CreateEntityWithBoxShape(scene, position, new BoxShape.Model { visible = visible });
         }
 
-        public static SphereShape CreateEntityWithSphereShape(ParcelScene scene, Vector3 position, SphereShape.Model model = null)
+        public static SphereShape CreateEntityWithSphereShape(ParcelScene scene, Vector3 position,
+            SphereShape.Model model = null)
         {
-            return CreateEntityWithPrimitive<SphereShape, SphereShape.Model>(scene, position, CLASS_ID.SPHERE_SHAPE, model);
+            return CreateEntityWithPrimitive<SphereShape, SphereShape.Model>(scene, position, CLASS_ID.SPHERE_SHAPE,
+                model);
         }
 
         public static SphereShape CreateEntityWithSphereShape(ParcelScene scene, Vector3 position, bool visible)
         {
-            return CreateEntityWithSphereShape(scene, position, new SphereShape.Model {visible = visible});
+            return CreateEntityWithSphereShape(scene, position, new SphereShape.Model { visible = visible });
         }
 
-        public static PlaneShape CreateEntityWithPlaneShape(ParcelScene scene, Vector3 position, PlaneShape.Model model = null)
+        public static PlaneShape CreateEntityWithPlaneShape(ParcelScene scene, Vector3 position,
+            PlaneShape.Model model = null)
         {
-            return CreateEntityWithPrimitive<PlaneShape, PlaneShape.Model>(scene, position, CLASS_ID.PLANE_SHAPE, model);
+            return CreateEntityWithPrimitive<PlaneShape, PlaneShape.Model>(scene, position, CLASS_ID.PLANE_SHAPE,
+                model);
         }
 
         public static PlaneShape CreateEntityWithPlaneShape(ParcelScene scene, Vector3 position, bool visible)
         {
-            return CreateEntityWithPlaneShape(scene, position, new PlaneShape.Model {visible = visible});
+            return CreateEntityWithPlaneShape(scene, position, new PlaneShape.Model { visible = visible });
         }
 
-        public static CylinderShape CreateEntityWithCylinderShape(ParcelScene scene, Vector3 position, CylinderShape.Model model = null)
+        public static CylinderShape CreateEntityWithCylinderShape(ParcelScene scene, Vector3 position,
+            CylinderShape.Model model = null)
         {
-            return CreateEntityWithPrimitive<CylinderShape, CylinderShape.Model>(scene, position, CLASS_ID.CYLINDER_SHAPE, model);
+            return CreateEntityWithPrimitive<CylinderShape, CylinderShape.Model>(scene, position,
+                CLASS_ID.CYLINDER_SHAPE, model);
         }
 
         public static CylinderShape CreateEntityWithCylinderShape(ParcelScene scene, Vector3 position, bool visible)
         {
-            return CreateEntityWithCylinderShape(scene, position, new CylinderShape.Model {visible = visible});
+            return CreateEntityWithCylinderShape(scene, position, new CylinderShape.Model { visible = visible });
         }
 
-        public static ConeShape CreateEntityWithConeShape(ParcelScene scene, Vector3 position, ConeShape.Model model = null)
+        public static ConeShape CreateEntityWithConeShape(ParcelScene scene, Vector3 position,
+            ConeShape.Model model = null)
         {
             return CreateEntityWithPrimitive<ConeShape, ConeShape.Model>(scene, position, CLASS_ID.CONE_SHAPE, model);
         }
 
         public static ConeShape CreateEntityWithConeShape(ParcelScene scene, Vector3 position, bool visible)
         {
-            return CreateEntityWithConeShape(scene, position, new ConeShape.Model {visible = visible});
+            return CreateEntityWithConeShape(scene, position, new ConeShape.Model { visible = visible });
         }
 
-        private static T CreateEntityWithPrimitive<T, K>(ParcelScene scene, Vector3 position, CLASS_ID classId, K model = null)
+        private static T CreateEntityWithPrimitive<T, K>(ParcelScene scene, Vector3 position, CLASS_ID classId,
+            K model = null)
             where T : BaseParametrizedShape<K>
             where K : BaseShape.Model, new()
         {
@@ -421,23 +439,30 @@ namespace DCL.Helpers
             return shape;
         }
 
-        public static BasicMaterial CreateEntityWithBasicMaterial(ParcelScene scene, BasicMaterial.Model model, out DecentralandEntity entity)
+        public static BasicMaterial CreateEntityWithBasicMaterial(ParcelScene scene, BasicMaterial.Model model,
+            out DecentralandEntity entity)
         {
-            InstantiateEntityWithShape<BoxShape, BoxShape.Model>(scene, DCL.Models.CLASS_ID.BOX_SHAPE, Vector3.zero, out entity);
-            BasicMaterial material = SharedComponentCreate<BasicMaterial, BasicMaterial.Model>(scene, CLASS_ID.BASIC_MATERIAL, model);
+            InstantiateEntityWithShape<BoxShape, BoxShape.Model>(scene, DCL.Models.CLASS_ID.BOX_SHAPE, Vector3.zero,
+                out entity);
+            BasicMaterial material =
+                SharedComponentCreate<BasicMaterial, BasicMaterial.Model>(scene, CLASS_ID.BASIC_MATERIAL, model);
             SharedComponentAttach(material, entity);
             return material;
         }
 
-        public static PBRMaterial CreateEntityWithPBRMaterial(ParcelScene scene, PBRMaterial.Model model, out DecentralandEntity entity)
+        public static PBRMaterial CreateEntityWithPBRMaterial(ParcelScene scene, PBRMaterial.Model model,
+            out DecentralandEntity entity)
         {
-            InstantiateEntityWithShape<BoxShape, BoxShape.Model>(scene, DCL.Models.CLASS_ID.BOX_SHAPE, Vector3.zero, out entity);
-            PBRMaterial material = SharedComponentCreate<PBRMaterial, PBRMaterial.Model>(scene, CLASS_ID.PBR_MATERIAL, model);
+            InstantiateEntityWithShape<BoxShape, BoxShape.Model>(scene, DCL.Models.CLASS_ID.BOX_SHAPE, Vector3.zero,
+                out entity);
+            PBRMaterial material =
+                SharedComponentCreate<PBRMaterial, PBRMaterial.Model>(scene, CLASS_ID.PBR_MATERIAL, model);
             SharedComponentAttach(material, entity);
             return material;
         }
 
-        public static T InstantiateEntityWithShape<T, K>(ParcelScene scene, DCL.Models.CLASS_ID classId, Vector3 position, out DecentralandEntity entity, K model = null)
+        public static T InstantiateEntityWithShape<T, K>(ParcelScene scene, DCL.Models.CLASS_ID classId,
+            Vector3 position, out DecentralandEntity entity, K model = null)
             where T : BaseShape
             where K : class, new()
         {
@@ -458,7 +483,8 @@ namespace DCL.Helpers
             return shape;
         }
 
-        public static void InstantiateEntityWithShape(ParcelScene scene, string entityId, DCL.Models.CLASS_ID classId, Vector3 position, string remoteSrc = "")
+        public static void InstantiateEntityWithShape(ParcelScene scene, string entityId, DCL.Models.CLASS_ID classId,
+            Vector3 position, string remoteSrc = "")
         {
             CreateSceneEntity(scene, entityId);
 
@@ -487,10 +513,10 @@ namespace DCL.Helpers
             }
 
             scene.GetSharedComponent(sharedComponentId).DetachFrom(entity);
-
         }
 
-        public static void InstantiateEntityWithMaterial(ParcelScene scene, string entityId, Vector3 position, BasicMaterial.Model basicMaterial, string materialComponentID = "a-material")
+        public static void InstantiateEntityWithMaterial(ParcelScene scene, string entityId, Vector3 position,
+            BasicMaterial.Model basicMaterial, string materialComponentID = "a-material")
         {
             InstantiateEntityWithShape(scene, entityId, DCL.Models.CLASS_ID.BOX_SHAPE, position);
 
@@ -516,8 +542,8 @@ namespace DCL.Helpers
         }
 
 
-
-        public static void InstantiateEntityWithMaterial(ParcelScene scene, string entityId, Vector3 position, PBRMaterial.Model pbrMaterial, string materialComponentID = "a-material")
+        public static void InstantiateEntityWithMaterial(ParcelScene scene, string entityId, Vector3 position,
+            PBRMaterial.Model pbrMaterial, string materialComponentID = "a-material")
         {
             InstantiateEntityWithShape(scene, entityId, DCL.Models.CLASS_ID.BOX_SHAPE, position);
 
@@ -687,7 +713,8 @@ namespace DCL.Helpers
             TestHelpers.RemoveSceneEntity(scene, e.entityId);
         }
 
-        public static IEnumerator TestAttachedSharedComponentOfSameTypeIsReplaced<TModel, TComponent>(ParcelScene scene, CLASS_ID classId)
+        public static IEnumerator TestAttachedSharedComponentOfSameTypeIsReplaced<TModel, TComponent>(ParcelScene scene,
+            CLASS_ID classId)
             where TComponent : BaseDisposable
             where TModel : class, new()
         {
@@ -704,7 +731,9 @@ namespace DCL.Helpers
             Type componentType = typeof(TComponent);
 
             if (component is BaseShape)
+            {
                 componentType = typeof(BaseShape);
+            }
 
             // Attach 1st component to entity
             TestHelpers.SharedComponentAttach(component, entity);
@@ -727,7 +756,8 @@ namespace DCL.Helpers
             Assert.IsFalse(component.attachedEntities.Contains(entity));
         }
 
-        public static IEnumerator TestSharedComponentDefaultsOnUpdate<TModel, TComponent>(ParcelScene scene, CLASS_ID id)
+        public static IEnumerator TestSharedComponentDefaultsOnUpdate<TModel, TComponent>(ParcelScene scene,
+            CLASS_ID id)
             where TComponent : BaseDisposable
             where TModel : class, new()
         {
@@ -822,7 +852,9 @@ namespace DCL.Helpers
 
         static string lastMessageFromEngineType;
         static string lastMessageFromEnginePayload;
-        public static IEnumerator WaitForMessageFromEngine(string targetMessageType, string targetMessageJSONPayload, System.Action OnIterationStart, System.Action OnSuccess)
+
+        public static IEnumerator WaitForMessageFromEngine(string targetMessageType, string targetMessageJSONPayload,
+            System.Action OnIterationStart, System.Action OnSuccess)
         {
             // Hook up to web interface engine message reporting
             DCL.Interface.WebInterface.OnMessageFromEngine += OnMessageFromEngine;
@@ -835,7 +867,8 @@ namespace DCL.Helpers
             {
                 OnIterationStart?.Invoke();
 
-                if (lastMessageFromEngineType == targetMessageType && lastMessageFromEnginePayload == targetMessageJSONPayload)
+                if (lastMessageFromEngineType == targetMessageType &&
+                    lastMessageFromEnginePayload == targetMessageJSONPayload)
                 {
                     DCL.Interface.WebInterface.OnMessageFromEngine -= OnMessageFromEngine;
 
@@ -856,11 +889,16 @@ namespace DCL.Helpers
 
         public static void TestRectTransformMaxStretched(RectTransform rt)
         {
-            Assert.AreEqual(Vector2.zero, rt.anchorMin, $"Rect transform {rt.name} isn't stretched out!. unexpected anchorMin value.");
-            Assert.AreEqual(Vector2.zero, rt.offsetMin, $"Rect transform {rt.name} isn't stretched out!. unexpected offsetMin value.");
-            Assert.AreEqual(Vector2.one, rt.anchorMax, $"Rect transform {rt.name} isn't stretched out!. unexpected anchorMax value.");
-            Assert.AreEqual(Vector2.one, rt.offsetMax, $"Rect transform {rt.name} isn't stretched out!. unexpected offsetMax value.");
-            Assert.AreEqual(Vector2.zero, rt.sizeDelta, $"Rect transform {rt.name} isn't stretched out!. unexpected sizeDelta value.");
+            Assert.AreEqual(Vector2.zero, rt.anchorMin,
+                $"Rect transform {rt.name} isn't stretched out!. unexpected anchorMin value.");
+            Assert.AreEqual(Vector2.zero, rt.offsetMin,
+                $"Rect transform {rt.name} isn't stretched out!. unexpected offsetMin value.");
+            Assert.AreEqual(Vector2.one, rt.anchorMax,
+                $"Rect transform {rt.name} isn't stretched out!. unexpected anchorMax value.");
+            Assert.AreEqual(Vector2.one, rt.offsetMax,
+                $"Rect transform {rt.name} isn't stretched out!. unexpected offsetMax value.");
+            Assert.AreEqual(Vector2.zero, rt.sizeDelta,
+                $"Rect transform {rt.name} isn't stretched out!. unexpected sizeDelta value.");
         }
 
         public static void ForceUnloadAllScenes(SceneController sceneController)

@@ -24,6 +24,7 @@ public class SceneController : MonoBehaviour
 
     [Header("Debug Tools")]
     public GameObject debugPanel;
+
     public bool debugScenes;
 
     public string debugSceneName;
@@ -62,6 +63,7 @@ public class SceneController : MonoBehaviour
     Queue<QueuedSceneMessage> pendingMessages = new Queue<QueuedSceneMessage>();
 
     #region BENCHMARK_EVENTS
+
     //NOTE(Brian): For performance reasons, these events may need to be removed for production.
     public Action<string> OnMessageWillQueue;
     public Action<string> OnMessageWillDequeue;
@@ -71,6 +73,7 @@ public class SceneController : MonoBehaviour
 
     public Action<string> OnMessageDecodeStart;
     public Action<string> OnMessageDecodeEnds;
+
     #endregion
 
     void Awake()
@@ -154,7 +157,8 @@ public class SceneController : MonoBehaviour
 
                         var messageObject = m as QueuedSceneMessage_Scene;
 
-                        if (ProcessMessage(messageObject.sceneId, messageObject.method, messageObject.payload, out routine))
+                        if (ProcessMessage(messageObject.sceneId, messageObject.method, messageObject.payload,
+                            out routine))
                         {
                             if (msgStepByStep)
                             {
@@ -212,6 +216,7 @@ public class SceneController : MonoBehaviour
                 }
             }
         }
+
         return null;
     }
 
@@ -223,13 +228,18 @@ public class SceneController : MonoBehaviour
         scene = SafeFromJson<LoadParcelScenesMessage.UnityParcelScene>(decentralandSceneJSON);
         OnMessageDecodeEnds?.Invoke("LoadScene");
 
-        if (scene == null || scene.id == null) yield break;
+        if (scene == null || scene.id == null)
+        {
+            yield break;
+        }
 
         var sceneToLoad = scene;
 
 #if UNITY_EDITOR
         if (debugScenes && sceneToLoad.id != debugSceneName)
+        {
             yield break;
+        }
 #endif
 
         OnMessageProcessStart?.Invoke("LoadScene");
@@ -248,6 +258,7 @@ public class SceneController : MonoBehaviour
             newScene.ownerController = this;
             loadedScenes.Add(sceneToLoad.id, newScene);
         }
+
         OnMessageProcessEnds?.Invoke("LoadScene");
     }
 
@@ -285,7 +296,8 @@ public class SceneController : MonoBehaviour
 
     public void LoadParcelScenes(string decentralandSceneJSON)
     {
-        var queuedMessage = new QueuedSceneMessage() { type = QueuedSceneMessage.Type.LOAD_PARCEL, message = decentralandSceneJSON };
+        var queuedMessage = new QueuedSceneMessage()
+        { type = QueuedSceneMessage.Type.LOAD_PARCEL, message = decentralandSceneJSON };
 
         OnMessageWillQueue?.Invoke("LoadScene");
 
@@ -331,7 +343,8 @@ public class SceneController : MonoBehaviour
                 }
 #endif
 
-                var queuedMessage = new QueuedSceneMessage_Scene() { type = QueuedSceneMessage.Type.SCENE_MESSAGE, sceneId = sceneId, message = message };
+                var queuedMessage = new QueuedSceneMessage_Scene()
+                { type = QueuedSceneMessage.Type.SCENE_MESSAGE, sceneId = sceneId, message = message };
 
                 OnMessageDecodeStart?.Invoke("Misc");
                 var queuedMessageSeparatorIndex = queuedMessage.message.IndexOf('\t');
@@ -380,21 +393,41 @@ public class SceneController : MonoBehaviour
             OnMessageProcessStart?.Invoke(method);
             switch (method)
             {
-                case "CreateEntity": scene.CreateEntity(payload); break;
-                case "SetEntityParent": scene.SetEntityParent(payload); break;
+                case "CreateEntity":
+                    scene.CreateEntity(payload);
+                    break;
+                case "SetEntityParent":
+                    scene.SetEntityParent(payload);
+                    break;
 
                 //NOTE(Brian): EntityComponent messages
-                case "UpdateEntityComponent": scene.EntityComponentCreate(payload); break;
-                case "ComponentRemoved": scene.EntityComponentRemove(payload); break;
+                case "UpdateEntityComponent":
+                    scene.EntityComponentCreate(payload);
+                    break;
+                case "ComponentRemoved":
+                    scene.EntityComponentRemove(payload);
+                    break;
 
                 //NOTE(Brian): SharedComponent messages
-                case "AttachEntityComponent": scene.SharedComponentAttach(payload); break;
-                case "ComponentCreated": scene.SharedComponentCreate(payload); break;
-                case "ComponentDisposed": scene.SharedComponentDispose(payload); break;
-                case "ComponentUpdated": scene.SharedComponentUpdate(payload, out routine); break;
-                case "RemoveEntity": scene.RemoveEntity(payload); break;
+                case "AttachEntityComponent":
+                    scene.SharedComponentAttach(payload);
+                    break;
+                case "ComponentCreated":
+                    scene.SharedComponentCreate(payload);
+                    break;
+                case "ComponentDisposed":
+                    scene.SharedComponentDispose(payload);
+                    break;
+                case "ComponentUpdated":
+                    scene.SharedComponentUpdate(payload, out routine);
+                    break;
+                case "RemoveEntity":
+                    scene.RemoveEntity(payload);
+                    break;
                 case "SceneStarted": break;
-                default: Debug.LogError($"Unknown method {method}"); return true;
+                default:
+                    Debug.LogError($"Unknown method {method}");
+                    return true;
             }
 
             OnMessageProcessEnds?.Invoke(method);

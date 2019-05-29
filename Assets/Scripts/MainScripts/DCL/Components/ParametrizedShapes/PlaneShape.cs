@@ -1,7 +1,5 @@
 using DCL.Controllers;
 using DCL.Helpers;
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 namespace DCL.Components
@@ -12,8 +10,8 @@ namespace DCL.Components
         new public class Model : BaseShape.Model
         {
             public float[] uvs;
-            public float width = 1f;   // Plane
-            public float height = 1f;  // Plane
+            public float width = 1f; // Plane
+            public float height = 1f; // Plane
         }
 
         public PlaneShape(ParcelScene scene) : base(scene) { }

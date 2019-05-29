@@ -27,7 +27,8 @@ namespace DCL.Components
 
                 if (objLoaderComponent.loadingPlaceholder == null)
                 {
-                    objLoaderComponent.loadingPlaceholder = Helpers.Utils.AttachPlaceholderRendererGameObject(gameObject.transform);
+                    objLoaderComponent.loadingPlaceholder =
+                        Helpers.Utils.AttachPlaceholderRendererGameObject(gameObject.transform);
                 }
                 else
                 {

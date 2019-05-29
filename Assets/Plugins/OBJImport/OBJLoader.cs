@@ -102,7 +102,7 @@ public class OBJLoader
                     matlList.Add(currentMaterial);
                 }
                 //NOTE(Brian): This will get pink with LWRP?
-                currentMaterial = new Material(Shader.Find("Standard (Specular setup)")); 
+                currentMaterial = new Material(Shader.Find("Standard (Specular setup)"));
                 currentMaterial.name = data;
             }
             else if (cmps[0] == "Kd")
@@ -473,9 +473,13 @@ public class OBJLoader
                     Material mfn = Array.Find(materialCache, x => x.name == meshMaterialNames[i]);
 
                     if (mfn == null)
+                    {
                         processedMaterials[i] = new Material(Shader.Find("Lightweight Render Pipeline/Simple Lit"));
+                    }
                     else
+                    {
                         processedMaterials[i] = mfn;
+                    }
                 }
 
                 processedMaterials[i].name = meshMaterialNames[i];

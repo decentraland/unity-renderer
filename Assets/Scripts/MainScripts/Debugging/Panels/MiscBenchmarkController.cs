@@ -150,7 +150,9 @@ public class MiscBenchmarkController : MonoBehaviour, IBenchmarkController
             statsPanel.SetCellText(1, (int)Rows.ENTITY_OBJECTS_COUNT, entityCount.ToString());
             statsPanel.SetCellText(1, (int)Rows.MATERIAL_COUNT, materialCount.ToString());
             statsPanel.SetCellText(1, (int)Rows.MESHES_COUNT, meshesCount.ToString());
-            statsPanel.SetCellText(1, (int)Rows.GLTF_BEING_LOADED, UnityGLTF.GLTFComponent.downloadingCount.ToString() + " / " + UnityGLTF.GLTFComponent.queueCount.ToString());
+            statsPanel.SetCellText(1, (int)Rows.GLTF_BEING_LOADED,
+                UnityGLTF.GLTFComponent.downloadingCount.ToString() + " / " +
+                UnityGLTF.GLTFComponent.queueCount.ToString());
             yield return new WaitForSeconds(0.2f);
         }
     }

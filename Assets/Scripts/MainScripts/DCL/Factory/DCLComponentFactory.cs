@@ -1,5 +1,4 @@
 using DCL.Components;
-using DCL.Helpers;
 using DCL.Models;
 using System.Collections.Generic;
 using UnityEngine;
@@ -70,6 +69,5 @@ namespace DCL
 
             return Instantiate(factoryDict[id].prefab).GetComponent<ItemType>();
         }
-
     }
 }

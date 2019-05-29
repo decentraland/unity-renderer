@@ -95,7 +95,8 @@ namespace DCL
 
         protected override IEnumerator AddToLibrary(object id, string url, GameObject container)
         {
-            MaterialTransitionController[] matTransitions = container.GetComponentsInChildren<MaterialTransitionController>(true);
+            MaterialTransitionController[] matTransitions =
+                container.GetComponentsInChildren<MaterialTransitionController>(true);
 
             //NOTE(Brian): Wait for the MaterialTransition to finish before copying the object to the library
             yield return new UnityEngine.WaitUntil(
@@ -155,7 +156,8 @@ namespace DCL
             assetLibrary[id].OnFail = null;
         }
 
-        public GameObject Get(object id, string url, Transform parent, System.Action OnSuccess, System.Action OnFail, WebRequestLoader.WebRequestLoaderEventAction webRequestStartEventAction, bool initialVisibility = true)
+        public GameObject Get(object id, string url, Transform parent, System.Action OnSuccess, System.Action OnFail,
+            WebRequestLoader.WebRequestLoaderEventAction webRequestStartEventAction, bool initialVisibility = true)
         {
             OnGLTFLoaderWebRequestStartHook = webRequestStartEventAction;
 
@@ -199,7 +201,8 @@ namespace DCL
                 const float MIN_DISTANCE_TO_USE_MATERIAL_TRANSITION = 50;
                 var character = DCLCharacterController.i;
 
-                if (character == null || Vector3.Distance(go.transform.position, character.transform.position) < MIN_DISTANCE_TO_USE_MATERIAL_TRANSITION)
+                if (character == null || Vector3.Distance(go.transform.position, character.transform.position) <
+                    MIN_DISTANCE_TO_USE_MATERIAL_TRANSITION)
                 {
                     if (useMaterialTransition)
                     {

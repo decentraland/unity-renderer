@@ -1,10 +1,8 @@
-using System.Collections;
-using System.Collections.Generic;
 using DCL;
-using DCL.Components;
-using DCL.Models;
 using DCL.Helpers;
+using DCL.Models;
 using NUnit.Framework;
+using System.Collections;
 using UnityEngine;
 using UnityEngine.TestTools;
 
@@ -41,7 +39,8 @@ namespace Tests
         {
             yield return InitScene();
 
-            yield return TestHelpers.TestAttachedSharedComponentOfSameTypeIsReplaced<DCLTexture.Model, DCLTexture>(scene, CLASS_ID.TEXTURE);
+            yield return TestHelpers.TestAttachedSharedComponentOfSameTypeIsReplaced<DCLTexture.Model, DCLTexture>(
+                scene, CLASS_ID.TEXTURE);
         }
     }
 }

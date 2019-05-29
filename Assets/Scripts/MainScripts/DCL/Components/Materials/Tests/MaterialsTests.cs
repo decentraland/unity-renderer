@@ -1,14 +1,11 @@
-using System.Collections;
-using System.Collections.Generic;
 using DCL;
 using DCL.Components;
-using DCL.Controllers;
 using DCL.Helpers;
 using DCL.Models;
 using NUnit.Framework;
+using System.Collections;
 using UnityEngine;
 using UnityEngine.TestTools;
-using UnityEngine.UI;
 
 namespace Tests
 {
@@ -19,7 +16,8 @@ namespace Tests
         {
             yield return InitScene();
 
-            DCLTexture texture = TestHelpers.CreateDCLTexture(scene, TestHelpers.GetTestsAssetsPath() + "/Images/atlas.png");
+            DCLTexture texture =
+                TestHelpers.CreateDCLTexture(scene, TestHelpers.GetTestsAssetsPath() + "/Images/atlas.png");
 
             yield return texture.routine;
 
@@ -38,7 +36,8 @@ namespace Tests
             yield return matPBR.routine;
 
             {
-                Assert.IsTrue(entity.meshGameObject != null, "Every entity with a shape should have the mandatory 'Mesh' object as a child");
+                Assert.IsTrue(entity.meshGameObject != null,
+                    "Every entity with a shape should have the mandatory 'Mesh' object as a child");
 
                 var meshRenderer = entity.meshGameObject.GetComponent<MeshRenderer>();
                 Assert.IsTrue(meshRenderer != null, "MeshRenderer must exist");
@@ -62,7 +61,8 @@ namespace Tests
             string materialID = "a-material";
 
             // Instantiate entity with default PBR Material
-            TestHelpers.InstantiateEntityWithMaterial(scene, entityId, Vector3.zero, new DCL.Components.PBRMaterial.Model(), materialID);
+            TestHelpers.InstantiateEntityWithMaterial(scene, entityId, Vector3.zero,
+                new DCL.Components.PBRMaterial.Model(), materialID);
 
             var materialComponent = scene.disposableComponents[materialID] as DCL.Components.PBRMaterial;
 
@@ -72,7 +72,8 @@ namespace Tests
 
             // Check if material initialized correctly
             {
-                Assert.IsTrue(scene.entities[entityId].meshGameObject != null, "Every entity with a shape should have the mandatory 'Mesh' object as a child");
+                Assert.IsTrue(scene.entities[entityId].meshGameObject != null,
+                    "Every entity with a shape should have the mandatory 'Mesh' object as a child");
 
                 var meshRenderer = scene.entities[entityId].meshGameObject.GetComponent<MeshRenderer>();
 
@@ -91,8 +92,10 @@ namespace Tests
 
                 // Colors
                 Assert.AreEqual("FFFFFF", ColorUtility.ToHtmlStringRGB(materialComponent.material.GetColor("_Color")));
-                Assert.AreEqual("000000", ColorUtility.ToHtmlStringRGB(materialComponent.material.GetColor("_EmissionColor")));
-                Assert.AreEqual("FFFFFF", ColorUtility.ToHtmlStringRGB(materialComponent.material.GetColor("_SpecColor")));
+                Assert.AreEqual("000000",
+                    ColorUtility.ToHtmlStringRGB(materialComponent.material.GetColor("_EmissionColor")));
+                Assert.AreEqual("FFFFFF",
+                    ColorUtility.ToHtmlStringRGB(materialComponent.material.GetColor("_SpecColor")));
 
                 // Other properties
                 Assert.AreEqual("0.5", materialComponent.material.GetFloat("_Metallic").ToString());
@@ -104,7 +107,8 @@ namespace Tests
             }
 
             // Update material
-            DCLTexture texture = TestHelpers.CreateDCLTexture(scene, TestHelpers.GetTestsAssetsPath() + "/Images/atlas.png");
+            DCLTexture texture =
+                TestHelpers.CreateDCLTexture(scene, TestHelpers.GetTestsAssetsPath() + "/Images/atlas.png");
 
             yield return texture.routine;
 
@@ -143,8 +147,10 @@ namespace Tests
 
                 // Colors
                 Assert.AreEqual("99DEFF", ColorUtility.ToHtmlStringRGB(materialComponent.material.GetColor("_Color")));
-                Assert.AreEqual("42F4AA", ColorUtility.ToHtmlStringRGB(materialComponent.material.GetColor("_EmissionColor")));
-                Assert.AreEqual("601121", ColorUtility.ToHtmlStringRGB(materialComponent.material.GetColor("_SpecColor")));
+                Assert.AreEqual("42F4AA",
+                    ColorUtility.ToHtmlStringRGB(materialComponent.material.GetColor("_EmissionColor")));
+                Assert.AreEqual("601121",
+                    ColorUtility.ToHtmlStringRGB(materialComponent.material.GetColor("_SpecColor")));
 
                 // Other properties
                 Assert.AreEqual("0.37", materialComponent.material.GetFloat("_Metallic").ToString());
@@ -153,8 +159,10 @@ namespace Tests
                 Assert.AreEqual("2", materialComponent.material.GetFloat("_SpecularHighlights").ToString());
                 Assert.AreEqual("0.5", materialComponent.material.GetFloat("_AlphaClip").ToString());
                 Assert.AreEqual(3000, materialComponent.material.renderQueue);
-                Assert.AreEqual((int)UnityEngine.Rendering.BlendMode.SrcAlpha, materialComponent.material.GetInt("_SrcBlend"));
-                Assert.AreEqual((int)UnityEngine.Rendering.BlendMode.OneMinusSrcAlpha, materialComponent.material.GetInt("_DstBlend"));
+                Assert.AreEqual((int)UnityEngine.Rendering.BlendMode.SrcAlpha,
+                    materialComponent.material.GetInt("_SrcBlend"));
+                Assert.AreEqual((int)UnityEngine.Rendering.BlendMode.OneMinusSrcAlpha,
+                    materialComponent.material.GetInt("_DstBlend"));
                 Assert.AreEqual(0, materialComponent.material.GetInt("_ZWrite"));
             }
         }
@@ -168,23 +176,27 @@ namespace Tests
             string firstEntityID = "1";
             string firstMaterialID = "a-material";
 
-            TestHelpers.InstantiateEntityWithMaterial(scene, firstEntityID, Vector3.zero, new DCL.Components.PBRMaterial.Model
-            {
-                metallic = 0.3f,
-            }, firstMaterialID);
+            TestHelpers.InstantiateEntityWithMaterial(scene, firstEntityID, Vector3.zero,
+                new DCL.Components.PBRMaterial.Model
+                {
+                    metallic = 0.3f,
+                }, firstMaterialID);
 
-            Assert.IsTrue(scene.entities[firstEntityID].meshGameObject != null, "Every entity with a shape should have the mandatory 'Mesh' object as a child");
+            Assert.IsTrue(scene.entities[firstEntityID].meshGameObject != null,
+                "Every entity with a shape should have the mandatory 'Mesh' object as a child");
 
             // Create second entity with material
             string secondEntityID = "2";
             string secondMaterialID = "b-material";
 
-            TestHelpers.InstantiateEntityWithMaterial(scene, secondEntityID, Vector3.zero, new DCL.Components.PBRMaterial.Model
-            {
-                metallic = 0.66f,
-            }, secondMaterialID);
+            TestHelpers.InstantiateEntityWithMaterial(scene, secondEntityID, Vector3.zero,
+                new DCL.Components.PBRMaterial.Model
+                {
+                    metallic = 0.66f,
+                }, secondMaterialID);
 
-            Assert.IsTrue(scene.entities[secondEntityID].meshGameObject != null, "Every entity with a shape should have the mandatory 'Mesh' object as a child");
+            Assert.IsTrue(scene.entities[secondEntityID].meshGameObject != null,
+                "Every entity with a shape should have the mandatory 'Mesh' object as a child");
 
             // Create third entity and assign 1st material
             string thirdEntityID = "3";
@@ -197,14 +209,17 @@ namespace Tests
                 name = "material"
             }));
 
-            Assert.IsTrue(scene.entities[thirdEntityID].meshGameObject != null, "Every entity with a shape should have the mandatory 'Mesh' object as a child");
+            Assert.IsTrue(scene.entities[thirdEntityID].meshGameObject != null,
+                "Every entity with a shape should have the mandatory 'Mesh' object as a child");
 
             // Check renderers material references
             var firstRenderer = scene.entities[firstEntityID].meshGameObject.GetComponent<MeshRenderer>();
             var secondRenderer = scene.entities[secondEntityID].meshGameObject.GetComponent<MeshRenderer>();
             var thirdRenderer = scene.entities[thirdEntityID].meshGameObject.GetComponent<MeshRenderer>();
-            Assert.AreNotSame(firstRenderer.sharedMaterial, secondRenderer.sharedMaterial, "1st and 2nd entities should have different materials");
-            Assert.AreSame(firstRenderer.sharedMaterial, thirdRenderer.sharedMaterial, "1st and 3rd entities should have the same material");
+            Assert.AreNotSame(firstRenderer.sharedMaterial, secondRenderer.sharedMaterial,
+                "1st and 2nd entities should have different materials");
+            Assert.AreSame(firstRenderer.sharedMaterial, thirdRenderer.sharedMaterial,
+                "1st and 3rd entities should have the same material");
         }
 
         [UnityTest]
@@ -216,23 +231,27 @@ namespace Tests
             string firstEntityID = "1";
             string firstMaterialID = "a-material";
 
-            TestHelpers.InstantiateEntityWithMaterial(scene, firstEntityID, Vector3.zero, new DCL.Components.PBRMaterial.Model
-            {
-                metallic = 0.3f,
-            }, firstMaterialID);
+            TestHelpers.InstantiateEntityWithMaterial(scene, firstEntityID, Vector3.zero,
+                new DCL.Components.PBRMaterial.Model
+                {
+                    metallic = 0.3f,
+                }, firstMaterialID);
 
-            Assert.IsTrue(scene.entities[firstEntityID].meshGameObject != null, "Every entity with a shape should have the mandatory 'Mesh' object as a child");
+            Assert.IsTrue(scene.entities[firstEntityID].meshGameObject != null,
+                "Every entity with a shape should have the mandatory 'Mesh' object as a child");
 
             // Create second entity with material
             string secondEntityID = "2";
             string secondMaterialID = "b-material";
 
-            TestHelpers.InstantiateEntityWithMaterial(scene, secondEntityID, Vector3.zero, new DCL.Components.PBRMaterial.Model
-            {
-                metallic = 0.66f,
-            }, secondMaterialID);
+            TestHelpers.InstantiateEntityWithMaterial(scene, secondEntityID, Vector3.zero,
+                new DCL.Components.PBRMaterial.Model
+                {
+                    metallic = 0.66f,
+                }, secondMaterialID);
 
-            Assert.IsTrue(scene.entities[secondEntityID].meshGameObject != null, "Every entity with a shape should have the mandatory 'Mesh' object as a child");
+            Assert.IsTrue(scene.entities[secondEntityID].meshGameObject != null,
+                "Every entity with a shape should have the mandatory 'Mesh' object as a child");
 
             // Create third entity and assign 1st material
             string thirdEntityID = "3";
@@ -245,14 +264,17 @@ namespace Tests
                 name = "material"
             }));
 
-            Assert.IsTrue(scene.entities[thirdEntityID].meshGameObject != null, "Every entity with a shape should have the mandatory 'Mesh' object as a child");
+            Assert.IsTrue(scene.entities[thirdEntityID].meshGameObject != null,
+                "Every entity with a shape should have the mandatory 'Mesh' object as a child");
 
             // Check renderers material references
             var firstRenderer = scene.entities[firstEntityID].meshGameObject.GetComponent<MeshRenderer>();
             var secondRenderer = scene.entities[secondEntityID].meshGameObject.GetComponent<MeshRenderer>();
             var thirdRenderer = scene.entities[thirdEntityID].meshGameObject.GetComponent<MeshRenderer>();
-            Assert.AreNotSame(firstRenderer.sharedMaterial, secondRenderer.sharedMaterial, "1st and 2nd entities should have different materials");
-            Assert.AreSame(firstRenderer.sharedMaterial, thirdRenderer.sharedMaterial, "1st and 3rd entities should have the same material");
+            Assert.AreNotSame(firstRenderer.sharedMaterial, secondRenderer.sharedMaterial,
+                "1st and 2nd entities should have different materials");
+            Assert.AreSame(firstRenderer.sharedMaterial, thirdRenderer.sharedMaterial,
+                "1st and 3rd entities should have the same material");
 
             // Check material properties before updating them
             Assert.AreEqual("0.3", firstRenderer.sharedMaterial.GetFloat("_Metallic").ToString());
@@ -283,9 +305,11 @@ namespace Tests
             string entityId = "1";
             string materialID = "a-material";
 
-            TestHelpers.InstantiateEntityWithMaterial(scene, entityId, Vector3.zero, new DCL.Components.BasicMaterial.Model(), materialID);
+            TestHelpers.InstantiateEntityWithMaterial(scene, entityId, Vector3.zero,
+                new DCL.Components.BasicMaterial.Model(), materialID);
 
-            Assert.IsTrue(scene.entities[entityId].meshGameObject != null, "Every entity with a shape should have the mandatory 'Mesh' object as a child");
+            Assert.IsTrue(scene.entities[entityId].meshGameObject != null,
+                "Every entity with a shape should have the mandatory 'Mesh' object as a child");
 
             var meshRenderer = scene.entities[entityId].meshGameObject.GetComponent<MeshRenderer>();
             var materialComponent = scene.disposableComponents[materialID] as DCL.Components.BasicMaterial;
@@ -305,7 +329,8 @@ namespace Tests
             materialComponent.DetachFrom(scene.entities[entityId]);
 
             // Check if material was removed correctly
-            Assert.IsTrue(meshRenderer.sharedMaterial == null, "Assigned material should be null as it has been removed");
+            Assert.IsTrue(meshRenderer.sharedMaterial == null,
+                "Assigned material should be null as it has been removed");
         }
 
         [UnityTest]
@@ -319,9 +344,11 @@ namespace Tests
             string materialID = "a-material";
 
             // Instantiate entity with material
-            TestHelpers.InstantiateEntityWithMaterial(scene, firstEntityId, Vector3.zero, new DCL.Components.BasicMaterial.Model(), materialID);
+            TestHelpers.InstantiateEntityWithMaterial(scene, firstEntityId, Vector3.zero,
+                new DCL.Components.BasicMaterial.Model(), materialID);
 
-            Assert.IsTrue(scene.entities[firstEntityId].meshGameObject != null, "Every entity with a shape should have the mandatory 'Mesh' object as a child");
+            Assert.IsTrue(scene.entities[firstEntityId].meshGameObject != null,
+                "Every entity with a shape should have the mandatory 'Mesh' object as a child");
 
             // Create 2nd entity and attach same material to it
             TestHelpers.InstantiateEntityWithShape(scene, secondEntityId, DCL.Models.CLASS_ID.BOX_SHAPE, Vector3.zero);
@@ -332,7 +359,8 @@ namespace Tests
                 name = "material"
             }));
 
-            Assert.IsTrue(scene.entities[secondEntityId].meshGameObject != null, "Every entity with a shape should have the mandatory 'Mesh' object as a child");
+            Assert.IsTrue(scene.entities[secondEntityId].meshGameObject != null,
+                "Every entity with a shape should have the mandatory 'Mesh' object as a child");
 
             var firstMeshRenderer = scene.entities[firstEntityId].meshGameObject.GetComponent<MeshRenderer>();
             var secondMeshRenderer = scene.entities[secondEntityId].meshGameObject.GetComponent<MeshRenderer>();
@@ -379,7 +407,7 @@ namespace Tests
             yield return dclTexture.routine;
 
             BasicMaterial mat = TestHelpers.SharedComponentCreate<BasicMaterial, BasicMaterial.Model>
-                (scene, CLASS_ID.BASIC_MATERIAL,
+            (scene, CLASS_ID.BASIC_MATERIAL,
                 new BasicMaterial.Model
                 {
                     texture = dclTexture.id,
@@ -390,7 +418,8 @@ namespace Tests
 
             TestHelpers.SharedComponentAttach(mat, entity);
 
-            SphereShape shape = TestHelpers.SharedComponentCreate<SphereShape, SphereShape.Model>(scene, CLASS_ID.SPHERE_SHAPE,
+            SphereShape shape = TestHelpers.SharedComponentCreate<SphereShape, SphereShape.Model>(scene,
+                CLASS_ID.SPHERE_SHAPE,
                 new SphereShape.Model { });
 
             TestHelpers.SharedComponentAttach(shape, entity);
@@ -416,7 +445,8 @@ namespace Tests
 
             yield return dclTexture.routine;
 
-            PBRMaterial mat = TestHelpers.SharedComponentCreate<PBRMaterial, PBRMaterial.Model>(scene, CLASS_ID.PBR_MATERIAL,
+            PBRMaterial mat = TestHelpers.SharedComponentCreate<PBRMaterial, PBRMaterial.Model>(scene,
+                CLASS_ID.PBR_MATERIAL,
                 new PBRMaterial.Model
                 {
                     albedoTexture = dclTexture.id,
@@ -430,7 +460,8 @@ namespace Tests
 
             TestHelpers.SharedComponentAttach(mat, entity);
 
-            SphereShape shape = TestHelpers.SharedComponentCreate<SphereShape, SphereShape.Model>(scene, CLASS_ID.SPHERE_SHAPE,
+            SphereShape shape = TestHelpers.SharedComponentCreate<SphereShape, SphereShape.Model>(scene,
+                CLASS_ID.SPHERE_SHAPE,
                 new SphereShape.Model { });
 
             yield return shape.routine;
@@ -454,10 +485,12 @@ namespace Tests
             Assert.IsFalse(scene.disposableComponents.ContainsKey(materialID));
 
             // Instantiate entity with default PBR Material
-            TestHelpers.InstantiateEntityWithMaterial(scene, entityId, Vector3.zero, new DCL.Components.BasicMaterial.Model(), materialID);
+            TestHelpers.InstantiateEntityWithMaterial(scene, entityId, Vector3.zero,
+                new DCL.Components.BasicMaterial.Model(), materialID);
 
             var meshObject = scene.entities[entityId].meshGameObject;
-            Assert.IsTrue(meshObject != null, "Every entity with a shape should have the mandatory 'Mesh' object as a child");
+            Assert.IsTrue(meshObject != null,
+                "Every entity with a shape should have the mandatory 'Mesh' object as a child");
 
             var meshRenderer = meshObject.GetComponent<MeshRenderer>();
             var materialComponent = scene.disposableComponents[materialID] as DCL.Components.BasicMaterial;
@@ -516,11 +549,12 @@ namespace Tests
             yield return InitScene();
 
             // 1. Create component with non-default configs
-            BasicMaterial basicMaterialComponent = TestHelpers.SharedComponentCreate<BasicMaterial, BasicMaterial.Model>(scene, CLASS_ID.BASIC_MATERIAL,
-            new BasicMaterial.Model
-            {
-                alphaTest = 1f
-            });
+            BasicMaterial basicMaterialComponent =
+                TestHelpers.SharedComponentCreate<BasicMaterial, BasicMaterial.Model>(scene, CLASS_ID.BASIC_MATERIAL,
+                    new BasicMaterial.Model
+                    {
+                        alphaTest = 1f
+                    });
 
             yield return basicMaterialComponent.routine;
 
@@ -546,7 +580,9 @@ namespace Tests
         {
             yield return InitScene();
 
-            yield return TestHelpers.TestAttachedSharedComponentOfSameTypeIsReplaced<BasicMaterial.Model, BasicMaterial>(scene, CLASS_ID.BASIC_MATERIAL);
+            yield return
+                TestHelpers.TestAttachedSharedComponentOfSameTypeIsReplaced<BasicMaterial.Model, BasicMaterial>(scene,
+                    CLASS_ID.BASIC_MATERIAL);
         }
 
         [UnityTest]
@@ -558,14 +594,15 @@ namespace Tests
             ColorUtility.TryParseHtmlString("#808080", out color1);
 
             // 1. Create component with non-default configs
-            PBRMaterial PBRMaterialComponent = TestHelpers.SharedComponentCreate<PBRMaterial, PBRMaterial.Model>(scene, CLASS_ID.PBR_MATERIAL,
-            new PBRMaterial.Model
-            {
-                albedoColor = color1,
-                metallic = 0.3f,
-                directIntensity = 0.1f,
-                specularIntensity = 3f
-            });
+            PBRMaterial PBRMaterialComponent = TestHelpers.SharedComponentCreate<PBRMaterial, PBRMaterial.Model>(scene,
+                CLASS_ID.PBR_MATERIAL,
+                new PBRMaterial.Model
+                {
+                    albedoColor = color1,
+                    metallic = 0.3f,
+                    directIntensity = 0.1f,
+                    specularIntensity = 3f
+                });
 
             yield return PBRMaterialComponent.routine;
 
@@ -596,7 +633,8 @@ namespace Tests
         {
             yield return InitScene();
 
-            yield return TestHelpers.TestAttachedSharedComponentOfSameTypeIsReplaced<PBRMaterial.Model, PBRMaterial>(scene, CLASS_ID.PBR_MATERIAL);
+            yield return TestHelpers.TestAttachedSharedComponentOfSameTypeIsReplaced<PBRMaterial.Model, PBRMaterial>(
+                scene, CLASS_ID.PBR_MATERIAL);
         }
     }
 }

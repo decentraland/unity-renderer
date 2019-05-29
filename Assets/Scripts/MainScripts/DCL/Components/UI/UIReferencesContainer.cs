@@ -1,6 +1,4 @@
-using DCL.Helpers;
 using UnityEngine;
-using UnityEngine.Serialization;
 using UnityEngine.UI;
 
 namespace DCL.Components
@@ -12,6 +10,7 @@ namespace DCL.Components
         [Header("Basic Fields")]
         [Tooltip("This needs to always have the root RectTransform.")]
         public RectTransform rectTransform;
+
         public CanvasGroup canvasGroup;
 
         public HorizontalLayoutGroup layoutGroup;

@@ -1,13 +1,11 @@
-using System;
-using System.Collections;
-using System.Collections.Generic;
 using DCL;
 using DCL.Helpers;
 using NUnit.Framework;
+using System;
+using System.Collections;
 using UnityEngine;
 using UnityEngine.TestTools;
 using WebSocketSharp;
-using WebSocketSharp.Net;
 
 namespace Tests
 {
@@ -79,7 +77,9 @@ namespace Tests
                     time += Time.unscaledDeltaTime;
 
                     if (lastMessage.Contains("OK!"))
+                    {
                         break;
+                    }
 
                     yield return null;
                 }
@@ -90,8 +90,10 @@ namespace Tests
 
                 yield return null;
 
-                Assert.IsTrue(sceneController.loadedScenes.ContainsKey(loadedSceneID), "Expected loadedScene not found!");
-                Assert.IsTrue(sceneController.loadedScenes[loadedSceneID] != null, "Expected loadedScene found but was null!!!");
+                Assert.IsTrue(sceneController.loadedScenes.ContainsKey(loadedSceneID),
+                    "Expected loadedScene not found!");
+                Assert.IsTrue(sceneController.loadedScenes[loadedSceneID] != null,
+                    "Expected loadedScene found but was null!!!");
             }
 
             // Use the Assert class to test conditions.

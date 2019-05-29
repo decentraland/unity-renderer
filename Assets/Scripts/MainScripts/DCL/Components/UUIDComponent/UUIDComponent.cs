@@ -59,7 +59,8 @@ namespace DCL
             }
         }
 
-        private void SetUpComponent<T>(ParcelScene scene, DecentralandEntity entity, string uuid, string type) where T : UUIDComponent
+        private void SetUpComponent<T>(ParcelScene scene, DecentralandEntity entity, string uuid, string type)
+            where T : UUIDComponent
         {
             var currentComponent = entity.gameObject.GetOrCreateComponent<T>();
 

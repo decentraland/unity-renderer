@@ -1,7 +1,5 @@
 using System.Collections;
 using System.IO;
-using GLTF;
-using GLTF.Schema;
 namespace UnityGLTF.Loader
 {
     public interface ILoader

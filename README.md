@@ -1,5 +1,11 @@
 # unity-client
 
+### Reading Guide
+1. [Push Request naming standards](https://github.com/decentraland/standards/blob/master/standards/git-usage.md)
+2. [Unity client architecture overview](https://docs.google.com/document/d/1_lzi3V5IDaVRJbTKNsNEcaG0L21VPydiUx5uamiyQnY/edit)
+3. [Coding guidelines](code-guidelines.md)
+
+
 ### Setup the Explorer project
 1. Run `npm install` in the [Explorer](https://github.com/decentraland/explorer) cloned repo root directory
 2. Run `make watch` in the [Explorer](https://github.com/decentraland/explorer) cloned repo root directory and wait for the make script to complete

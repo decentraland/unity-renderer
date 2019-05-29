@@ -41,6 +41,7 @@ public class StatsPanel : MonoBehaviour
     }
 
     CellMap tmpCellMap = new CellMap();
+
     public void SetCellText(int x, int y, string text)
     {
         tmpCellMap.x = x;
@@ -103,5 +104,3 @@ public class StatsPanel : MonoBehaviour
         row.gameObject.SetActive(false);
     }
 }
-
-

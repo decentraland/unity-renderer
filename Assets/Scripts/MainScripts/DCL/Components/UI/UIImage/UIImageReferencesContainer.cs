@@ -1,7 +1,7 @@
-using UnityEngine;
-using UnityEngine.UI;
 using DCL.Interface;
+using UnityEngine;
 using UnityEngine.EventSystems;
+using UnityEngine.UI;
 
 namespace DCL.Components
 {
@@ -9,6 +9,7 @@ namespace DCL.Components
     {
         [Header("UI Image Fields")]
         public HorizontalLayoutGroup paddingLayoutGroup;
+
         public RawImage image;
         public RectTransform imageRectTransform;
 
@@ -20,12 +21,17 @@ namespace DCL.Components
 
             if (VERBOSE)
             {
-                Debug.Log("pointer current raycast: " + eventData.pointerCurrentRaycast, eventData.pointerCurrentRaycast.gameObject);
-                Debug.Log("pointer press raycast: " + eventData.pointerPressRaycast, eventData.pointerPressRaycast.gameObject);
+                Debug.Log("pointer current raycast: " + eventData.pointerCurrentRaycast,
+                    eventData.pointerCurrentRaycast.gameObject);
+                Debug.Log("pointer press raycast: " + eventData.pointerPressRaycast,
+                    eventData.pointerPressRaycast.gameObject);
             }
 
-            if (!string.IsNullOrEmpty(ownerModel.onClick) && eventData.pointerPressRaycast.gameObject == image.gameObject)
+            if (!string.IsNullOrEmpty(ownerModel.onClick) &&
+                eventData.pointerPressRaycast.gameObject == image.gameObject)
+            {
                 WebInterface.ReportOnClickEvent(owner.scene.sceneData.id, ownerModel.onClick);
+            }
         }
 
         public void Update()

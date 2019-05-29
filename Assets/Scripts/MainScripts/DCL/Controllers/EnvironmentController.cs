@@ -1,6 +1,4 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using DCL.Configuration;
+﻿using DCL.Configuration;
 using UnityEngine;
 
 public class EnvironmentController : MonoBehaviour
@@ -35,9 +33,9 @@ public class EnvironmentController : MonoBehaviour
         var phi = Mathf.PI * -0.4f;
 
         return new Vector3(
-          500 * Mathf.Cos(phi),
-          400 * Mathf.Sin(phi) * Mathf.Sin(theta),
-          500 * Mathf.Sin(phi) * Mathf.Cos(theta)
+            500 * Mathf.Cos(phi),
+            400 * Mathf.Sin(phi) * Mathf.Sin(theta),
+            500 * Mathf.Sin(phi) * Mathf.Cos(theta)
         );
     }
 
@@ -46,9 +44,9 @@ public class EnvironmentController : MonoBehaviour
         var originalY = ground.transform.position.y;
 
         ground.transform.position = new Vector3(
-          Mathf.Floor(characterPosition.x / ParcelSettings.PARCEL_SIZE) * ParcelSettings.PARCEL_SIZE,
-          originalY,
-          Mathf.Floor(characterPosition.z / ParcelSettings.PARCEL_SIZE) * ParcelSettings.PARCEL_SIZE
+            Mathf.Floor(characterPosition.x / ParcelSettings.PARCEL_SIZE) * ParcelSettings.PARCEL_SIZE,
+            originalY,
+            Mathf.Floor(characterPosition.z / ParcelSettings.PARCEL_SIZE) * ParcelSettings.PARCEL_SIZE
         );
 
         var sunfade = 1.0f - Mathf.Min(Mathf.Max(1.0f - Mathf.Exp(sun.transform.position.y / 10f), 0.0f), 0.9f);

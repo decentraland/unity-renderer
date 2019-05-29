@@ -1,7 +1,6 @@
 using DCL.Components;
 using DCL.Controllers;
 using DCL.Helpers;
-using DCL.Models;
 using System;
 using System.Collections;
 using UnityEngine;
@@ -36,7 +35,8 @@ namespace DCL
         {
         }
 
-        public static IEnumerator FetchFromComponent(ParcelScene scene, string componentId, System.Action<Texture2D> OnFinish)
+        public static IEnumerator FetchFromComponent(ParcelScene scene, string componentId,
+            System.Action<Texture2D> OnFinish)
         {
             if (!scene.disposableComponents.ContainsKey(componentId))
             {
