@@ -13,8 +13,8 @@ namespace DCL.Components
         {
             public TextShape.Model textModel;
             public string placeholder;
-            public Color placeholderColor;
-            public Color focusedBackground;
+            public Color placeholderColor = Color.white;
+            public Color focusedBackground = Color.black;
 
             public string onTextSubmit;
             public string onChanged;

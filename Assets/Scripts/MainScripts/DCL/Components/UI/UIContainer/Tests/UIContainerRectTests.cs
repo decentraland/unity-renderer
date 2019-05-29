@@ -45,11 +45,12 @@ namespace Tests
             UnityEngine.UI.Image image = uiContainerRectShape.referencesContainer.image;
 
             // Check default properties are applied correctly
+            Assert.AreEqual(0f, uiContainerRectShape.referencesContainer.canvasGroup.alpha);
             Assert.IsTrue(image.GetComponent<Outline>() == null);
             Assert.IsTrue(image.color == new Color(0f, 0f, 0f, 0f));
             Assert.IsTrue(uiContainerRectShape.referencesContainer.canvasGroup.blocksRaycasts);
             Assert.AreEqual(100f, uiContainerRectShape.childHookRectTransform.rect.width);
-            Assert.AreEqual(100f, uiContainerRectShape.childHookRectTransform.rect.height);
+            Assert.AreEqual(50f, uiContainerRectShape.childHookRectTransform.rect.height);
             Assert.AreEqual(Vector3.zero, uiContainerRectShape.childHookRectTransform.localPosition);
 
             // Update UIContainerRectShape properties
@@ -74,8 +75,8 @@ namespace Tests
             yield return uiContainerRectShape.routine;
 
             // Check updated properties are applied correctly
-            Assert.IsTrue(uiContainerRectShape.referencesContainer.transform.parent ==
-                          screenSpaceShape.childHookRectTransform);
+            Assert.AreEqual(1f, uiContainerRectShape.referencesContainer.canvasGroup.alpha);
+            Assert.IsTrue(uiContainerRectShape.referencesContainer.transform.parent == screenSpaceShape.childHookRectTransform);
             Assert.IsTrue(image.GetComponent<Outline>() != null);
             Assert.IsTrue(image.color == new Color(0.2f, 0.7f, 0.05f, 1f));
             Assert.IsFalse(uiContainerRectShape.referencesContainer.canvasGroup.blocksRaycasts);

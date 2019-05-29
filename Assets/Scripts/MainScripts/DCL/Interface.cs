@@ -63,7 +63,9 @@ namespace DCL.Interface
         };
 
         [System.Serializable]
-        public class OnEnterEvent : UUIDEvent<OnEnterEventPayload> { };
+        public class OnEnterEvent : UUIDEvent<OnEnterEventPayload>
+        {
+        };
 
         [System.Serializable]
         public class OnClickEventPayload
@@ -98,7 +100,8 @@ namespace DCL.Interface
 
         [System.Serializable]
         public class OnEnterEventPayload
-        { }
+        {
+        }
 
 #if UNITY_WEBGL && !UNITY_EDITOR
     /**

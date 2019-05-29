@@ -86,12 +86,9 @@ namespace DCL.Components
                 raiseOnAttached = true;
                 firstApplyChangesCall = true;
             }
-            else
+            else if (ReparentComponent(referencesContainer.rectTransform, model.parentComponent))
             {
-                if (ReparentComponent(referencesContainer.rectTransform, model.parentComponent))
-                {
-                    raiseOnAttached = true;
-                }
+                raiseOnAttached = true;
             }
 
             var enumerator = ApplyChanges(newJson);
@@ -107,16 +104,12 @@ namespace DCL.Components
             SetComponentDebugName();
 #endif
 
+            // We hide the component visibility when it's created (first applychanges)
+            // as it has default values and appears in the middle of the screen
             if (firstApplyChangesCall)
-            {
-                // We hide the component visibility when it's created (first applychanges) 
-                // as it has default values and appears in the middle of the screen
                 referencesContainer.canvasGroup.alpha = 0f;
-            }
             else
-            {
                 referencesContainer.canvasGroup.alpha = model.visible ? model.opacity : 0f;
-            }
 
             referencesContainer.canvasGroup.blocksRaycasts = model.isPointerBlocker;
 
@@ -145,13 +138,13 @@ namespace DCL.Components
             public string name;
             public string parentComponent;
             public bool visible = true;
-            public float opacity = 1;
+            public float opacity = 1f;
             public string hAlign = "center";
             public string vAlign = "center";
-            public UIValue width = new UIValue(100, UIValue.Unit.PIXELS);
-            public UIValue height = new UIValue(100, UIValue.Unit.PIXELS);
-            public UIValue positionX;
-            public UIValue positionY;
+            public UIValue width = new UIValue(100f);
+            public UIValue height = new UIValue(50f);
+            public UIValue positionX = new UIValue(0f);
+            public UIValue positionY = new UIValue(0f);
             public bool isPointerBlocker = true;
         }
 

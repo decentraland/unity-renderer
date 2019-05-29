@@ -16,8 +16,8 @@ namespace DCL.Components
         {
             public Color color = Color.clear;
             public StackOrientation stackOrientation = StackOrientation.VERTICAL;
-            public bool adaptWidth = false;
-            public bool adaptHeight = false;
+            public bool adaptWidth = true;
+            public bool adaptHeight = true;
             public float spacing = 0;
         }
 

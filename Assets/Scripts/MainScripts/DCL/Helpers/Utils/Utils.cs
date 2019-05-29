@@ -286,9 +286,12 @@ namespace DCL.Helpers
         public static void SafeDestroy(UnityEngine.Object obj)
         {
 #if UNITY_EDITOR
-            UnityEngine.Object.DestroyImmediate(obj, false);
+            if (Application.isPlaying)
+                UnityEngine.Object.Destroy(obj);
+            else
+                UnityEngine.Object.DestroyImmediate(obj, false);
 #else
-            UnityEngine.Object.Destroy(obj);
+                UnityEngine.Object.Destroy(obj);
 #endif
         }
     }

@@ -12,7 +12,7 @@ GameObject:
   - component: {fileID: 2301020634760613485}
   - component: {fileID: 4259842131996997273}
   - component: {fileID: 2188561398209007703}
-  m_Layer: 0
+  m_Layer: 5
   m_Name: TextContainer
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -107,7 +107,7 @@ GameObject:
   - component: {fileID: 6118440214249282951}
   - component: {fileID: 3510635133753685448}
   - component: {fileID: 2061073791672850056}
-  m_Layer: 0
+  m_Layer: 5
   m_Name: UIInputText
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -160,6 +160,7 @@ MonoBehaviour:
   layoutElement: {fileID: 2188561398209007703}
   layoutElementRT: {fileID: 7981744296803612803}
   childHookRectTransform: {fileID: 6255349749490589391}
+  forceRefresh: 0
   bgImage: {fileID: 4259842131996997273}
   text: {fileID: 8159873823445132116}
   inputField: {fileID: 1867715396876657037}
@@ -443,11 +444,11 @@ MonoBehaviour:
     lineCount: 1
     pageCount: 1
     materialCount: 1
-  m_havePropertiesChanged: 1
+  m_havePropertiesChanged: 0
   m_isUsingLegacyAnimationComponent: 0
   m_isVolumetricText: 0
   m_spriteAnimator: {fileID: 0}
-  m_isInputParsingRequired: 1
+  m_isInputParsingRequired: 0
   m_inputSource: 0
   m_hasFontAssetChanged: 0
   m_subTextObjects:
