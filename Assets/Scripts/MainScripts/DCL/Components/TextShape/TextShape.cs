@@ -13,6 +13,7 @@ namespace DCL.Components
 
             [Header("Font Properties")]
             public string value = "";
+
             public Color color = Color.white;
             public float opacity = 1f;
             public float fontSize = 100f;
@@ -21,6 +22,7 @@ namespace DCL.Components
 
             [Header("Text box properties")]
             public string hTextAlign = "bottom";
+
             public string vTextAlign = "left";
             public float width = 1f;
             public float height = 0.2f;
@@ -36,12 +38,14 @@ namespace DCL.Components
 
             [Header("Text shadow properties")]
             public float shadowBlur = 0f;
+
             public float shadowOffsetX = 0f;
             public float shadowOffsetY = 0f;
             public Color shadowColor = new Color(1, 1, 1);
 
             [Header("Text outline properties")]
             public float outlineWidth = 0f;
+
             public Color outlineColor = Color.white;
         }
 
@@ -145,6 +149,7 @@ namespace DCL.Components
                         default:
                             return TextAlignmentOptions.Top;
                     }
+
                 case "bottom":
                     switch (hTextAlign)
                     {
@@ -155,6 +160,7 @@ namespace DCL.Components
                         default:
                             return TextAlignmentOptions.Bottom;
                     }
+
                 default: // center
                     switch (hTextAlign)
                     {

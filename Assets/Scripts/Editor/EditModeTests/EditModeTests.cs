@@ -1,9 +1,6 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using NUnit.Framework;
-using UnityEngine;
+﻿using NUnit.Framework;
+using System.Collections;
 using UnityEngine.TestTools;
-using DCL.Helpers;
 
 namespace Tests
 {

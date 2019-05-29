@@ -1,4 +1,3 @@
-using DCL.Helpers;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -43,16 +42,25 @@ namespace DCL.Models
 
             public ContentMapping GetMappingForHash(string hash)
             {
-                if (contents == null) return null;
+                if (contents == null)
+                {
+                    return null;
+                }
 
                 return contents.FirstOrDefault((x) => x.hash == hash);
             }
 
             public void BakeHashes()
             {
-                if (contents == null) return;
+                if (contents == null)
+                {
+                    return;
+                }
 
-                if (VERBOSE) Debug.Log("Baking hashes...");
+                if (VERBOSE)
+                {
+                    Debug.Log("Baking hashes...");
+                }
 
                 fileToHash = new Dictionary<string, string>(contents.Count);
 
@@ -61,7 +69,10 @@ namespace DCL.Models
                     ContentMapping m = contents[i];
                     fileToHash.Add(m.file.ToLower(), m.hash);
 
-                    if (VERBOSE) Debug.Log(string.Format("found file = {0} ... hash = {1}", m.file, m.hash));
+                    if (VERBOSE)
+                    {
+                        Debug.Log(string.Format("found file = {0} ... hash = {1}", m.file, m.hash));
+                    }
                 }
             }
         }

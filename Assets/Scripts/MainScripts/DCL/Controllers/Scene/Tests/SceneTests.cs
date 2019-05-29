@@ -1,16 +1,16 @@
+using DCL;
+using DCL.Components;
+using DCL.Configuration;
+using DCL.Controllers;
+using DCL.Helpers;
+using DCL.Models;
+using Newtonsoft.Json;
+using NUnit.Framework;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-using DCL;
-using DCL.Components;
-using DCL.Controllers;
-using DCL.Helpers;
-using DCL.Configuration;
-using NUnit.Framework;
 using UnityEngine;
 using UnityEngine.TestTools;
-using DCL.Models;
-using Newtonsoft.Json;
 
 namespace Tests
 {
@@ -39,19 +39,23 @@ namespace Tests
             TestHelpers.InstantiateEntityWithShape(scene, "2", DCL.Models.CLASS_ID.SPHERE_SHAPE, new Vector3(0, 1, 0));
             TestHelpers.InstantiateEntityWithShape(scene, "3", DCL.Models.CLASS_ID.PLANE_SHAPE, new Vector3(2, 1, 0));
             TestHelpers.InstantiateEntityWithShape(scene, "4", DCL.Models.CLASS_ID.CONE_SHAPE, new Vector3(4, 1, 0));
-            TestHelpers.InstantiateEntityWithShape(scene, "5", DCL.Models.CLASS_ID.CYLINDER_SHAPE, new Vector3(6, 1, 0));
+            TestHelpers.InstantiateEntityWithShape(scene, "5", DCL.Models.CLASS_ID.CYLINDER_SHAPE,
+                new Vector3(6, 1, 0));
 
-            TestHelpers.InstantiateEntityWithShape(scene, "6", DCL.Models.CLASS_ID.GLTF_SHAPE, new Vector3(0, 1, 6), TestHelpers.GetTestsAssetsPath() + "/GLB/Lantern/Lantern.glb");
+            TestHelpers.InstantiateEntityWithShape(scene, "6", DCL.Models.CLASS_ID.GLTF_SHAPE, new Vector3(0, 1, 6),
+                TestHelpers.GetTestsAssetsPath() + "/GLB/Lantern/Lantern.glb");
             yield return null;
             GLTFLoader gltfShape = scene.entities["6"].gameObject.GetComponentInChildren<GLTFLoader>(true);
             yield return new WaitUntil(() => gltfShape.alreadyLoaded);
 
-            TestHelpers.InstantiateEntityWithShape(scene, "7", DCL.Models.CLASS_ID.OBJ_SHAPE, new Vector3(10, 1, 0), TestHelpers.GetTestsAssetsPath() + "/OBJ/teapot.obj");
+            TestHelpers.InstantiateEntityWithShape(scene, "7", DCL.Models.CLASS_ID.OBJ_SHAPE, new Vector3(10, 1, 0),
+                TestHelpers.GetTestsAssetsPath() + "/OBJ/teapot.obj");
             yield return null;
             OBJLoader objshape = scene.entities["7"].gameObject.GetComponentInChildren<OBJLoader>(true);
             yield return new WaitUntil(() => objshape.alreadyLoaded);
 
-            TestHelpers.InstantiateEntityWithShape(scene, "8", DCL.Models.CLASS_ID.GLTF_SHAPE, new Vector3(0, 1, 12), TestHelpers.GetTestsAssetsPath() + "/GLB/CesiumMan/CesiumMan.glb");
+            TestHelpers.InstantiateEntityWithShape(scene, "8", DCL.Models.CLASS_ID.GLTF_SHAPE, new Vector3(0, 1, 12),
+                TestHelpers.GetTestsAssetsPath() + "/GLB/CesiumMan/CesiumMan.glb");
             yield return null;
             gltfShape = scene.entities["8"].gameObject.GetComponentInChildren<GLTFLoader>(true);
             yield return new WaitUntil(() => gltfShape.alreadyLoaded);
@@ -78,10 +82,10 @@ namespace Tests
 
             sceneController.UnloadAllScenes();
             yield return null;
-
         }
 
-        void AssertMetricsModel(ParcelScene scene, int triangles, int materials, int entities, int meshes, int bodies, int textures)
+        void AssertMetricsModel(ParcelScene scene, int triangles, int materials, int entities, int meshes, int bodies,
+            int textures)
         {
             SceneMetricsController.Model inputModel = scene.metricsController.GetModel();
 
@@ -98,7 +102,9 @@ namespace Tests
             sceneController = TestHelpers.InitializeSceneController();
 
             if (DCLCharacterController.i != null)
+            {
                 Object.Destroy(DCLCharacterController.i.gameObject);
+            }
 
             yield return null;
         }
@@ -120,7 +126,6 @@ namespace Tests
 
             TestHelpers.ForceUnloadAllScenes(sceneController);
             yield return null;
-
         }
 
         [UnityTest]
@@ -154,7 +159,6 @@ namespace Tests
 
             TestHelpers.ForceUnloadAllScenes(sceneController);
             yield return null;
-
         }
 
         [UnityTest]
@@ -163,9 +167,11 @@ namespace Tests
             yield return InitializeSceneControllerAndRemoveCharacterController();
 
             string severalparcelsJson = (Resources.Load("TestJSON/TestSceneSeveralParcels") as TextAsset).text;
-                
+
             //Not really elegant, but does the trick
-            var jsonScenes = JsonConvert.DeserializeObject<LoadParcelScenesMessage.UnityParcelScene[]>(severalparcelsJson).Select(x => JsonUtility.ToJson(x));
+            var jsonScenes = JsonConvert
+                .DeserializeObject<LoadParcelScenesMessage.UnityParcelScene[]>(severalparcelsJson)
+                .Select(x => JsonUtility.ToJson(x));
 
             Assert.AreEqual(sceneController.loadedScenes.Count, 0);
             foreach (string jsonScene in jsonScenes)
@@ -180,7 +186,9 @@ namespace Tests
             foreach (var kvp in sceneController.loadedScenes)
             {
                 referenceCheck.Add(kvp.Value);
-            };
+            }
+
+            ;
 
             Assert.AreEqual(11, sceneController.loadedScenes.Count);
 
@@ -194,11 +202,12 @@ namespace Tests
             foreach (var reference in referenceCheck)
             {
                 Assert.IsTrue(sceneController.loadedScenes.ContainsValue(reference), "References must be the same");
-            };
+            }
+
+            ;
 
             TestHelpers.ForceUnloadAllScenes(sceneController);
             yield return null;
-
         }
 
         [UnityTest]
@@ -206,7 +215,8 @@ namespace Tests
         {
             yield return InitializeSceneControllerAndRemoveCharacterController();
 
-            var jsonMessageToLoad = "{\"id\":\"xxx\",\"basePosition\":{\"x\":0,\"y\":0},\"parcels\":[{\"x\":-1,\"y\":0}, {\"x\":0,\"y\":0}, {\"x\":-1,\"y\":1}],\"baseUrl\":\"http://localhost:9991/local-ipfs/contents/\",\"contents\":[],\"owner\":\"0x0f5d2fb29fb7d3cfee444a200298f468908cc942\"}";
+            var jsonMessageToLoad =
+                "{\"id\":\"xxx\",\"basePosition\":{\"x\":0,\"y\":0},\"parcels\":[{\"x\":-1,\"y\":0}, {\"x\":0,\"y\":0}, {\"x\":-1,\"y\":1}],\"baseUrl\":\"http://localhost:9991/local-ipfs/contents/\",\"contents\":[],\"owner\":\"0x0f5d2fb29fb7d3cfee444a200298f468908cc942\"}";
 
             DCL.Configuration.Environment.DEBUG = true;
 
@@ -223,9 +233,13 @@ namespace Tests
             Assert.AreEqual(theScene.sceneData.parcels.Length, 3);
             Assert.AreEqual(theScene.transform.childCount, 3);
 
-            Assert.IsTrue(theScene.transform.GetChild(0).localPosition == new Vector3(-ParcelSettings.PARCEL_SIZE / 2, DCL.Configuration.ParcelSettings.DEBUG_FLOOR_HEIGHT, ParcelSettings.PARCEL_SIZE / 2));
-            Assert.IsTrue(theScene.transform.GetChild(1).localPosition == new Vector3(ParcelSettings.PARCEL_SIZE / 2, DCL.Configuration.ParcelSettings.DEBUG_FLOOR_HEIGHT, ParcelSettings.PARCEL_SIZE / 2));
-            Assert.IsTrue(theScene.transform.GetChild(2).localPosition == new Vector3(-ParcelSettings.PARCEL_SIZE / 2, DCL.Configuration.ParcelSettings.DEBUG_FLOOR_HEIGHT, ParcelSettings.PARCEL_SIZE + ParcelSettings.PARCEL_SIZE / 2));
+            Assert.IsTrue(theScene.transform.GetChild(0).localPosition == new Vector3(-ParcelSettings.PARCEL_SIZE / 2,
+                              DCL.Configuration.ParcelSettings.DEBUG_FLOOR_HEIGHT, ParcelSettings.PARCEL_SIZE / 2));
+            Assert.IsTrue(theScene.transform.GetChild(1).localPosition == new Vector3(ParcelSettings.PARCEL_SIZE / 2,
+                              DCL.Configuration.ParcelSettings.DEBUG_FLOOR_HEIGHT, ParcelSettings.PARCEL_SIZE / 2));
+            Assert.IsTrue(theScene.transform.GetChild(2).localPosition == new Vector3(-ParcelSettings.PARCEL_SIZE / 2,
+                              DCL.Configuration.ParcelSettings.DEBUG_FLOOR_HEIGHT,
+                              ParcelSettings.PARCEL_SIZE + ParcelSettings.PARCEL_SIZE / 2));
 
             TestHelpers.ForceUnloadAllScenes(sceneController);
             yield return null;
@@ -236,7 +250,8 @@ namespace Tests
         {
             yield return InitializeSceneControllerAndRemoveCharacterController();
 
-            var jsonMessageToLoad = "{\"id\":\"xxx\",\"basePosition\":{\"x\":90,\"y\":90},\"parcels\":[{\"x\":89,\"y\":90}, {\"x\":90,\"y\":90}, {\"x\":89,\"y\":91}],\"baseUrl\":\"http://localhost:9991/local-ipfs/contents/\",\"contents\":[],\"owner\":\"0x0f5d2fb29fb7d3cfee444a200298f468908cc942\"}";
+            var jsonMessageToLoad =
+                "{\"id\":\"xxx\",\"basePosition\":{\"x\":90,\"y\":90},\"parcels\":[{\"x\":89,\"y\":90}, {\"x\":90,\"y\":90}, {\"x\":89,\"y\":91}],\"baseUrl\":\"http://localhost:9991/local-ipfs/contents/\",\"contents\":[],\"owner\":\"0x0f5d2fb29fb7d3cfee444a200298f468908cc942\"}";
 
             DCL.Configuration.Environment.DEBUG = true;
 
@@ -253,9 +268,13 @@ namespace Tests
             Assert.AreEqual(3, theScene.sceneData.parcels.Length);
             Assert.AreEqual(3, theScene.transform.childCount);
 
-            Assert.IsTrue(theScene.transform.GetChild(0).localPosition == new Vector3(-ParcelSettings.PARCEL_SIZE / 2, DCL.Configuration.ParcelSettings.DEBUG_FLOOR_HEIGHT, ParcelSettings.PARCEL_SIZE / 2));
-            Assert.IsTrue(theScene.transform.GetChild(1).localPosition == new Vector3(ParcelSettings.PARCEL_SIZE / 2, DCL.Configuration.ParcelSettings.DEBUG_FLOOR_HEIGHT, ParcelSettings.PARCEL_SIZE / 2));
-            Assert.IsTrue(theScene.transform.GetChild(2).localPosition == new Vector3(-ParcelSettings.PARCEL_SIZE / 2, DCL.Configuration.ParcelSettings.DEBUG_FLOOR_HEIGHT, ParcelSettings.PARCEL_SIZE + ParcelSettings.PARCEL_SIZE / 2));
+            Assert.IsTrue(theScene.transform.GetChild(0).localPosition == new Vector3(-ParcelSettings.PARCEL_SIZE / 2,
+                              DCL.Configuration.ParcelSettings.DEBUG_FLOOR_HEIGHT, ParcelSettings.PARCEL_SIZE / 2));
+            Assert.IsTrue(theScene.transform.GetChild(1).localPosition == new Vector3(ParcelSettings.PARCEL_SIZE / 2,
+                              DCL.Configuration.ParcelSettings.DEBUG_FLOOR_HEIGHT, ParcelSettings.PARCEL_SIZE / 2));
+            Assert.IsTrue(theScene.transform.GetChild(2).localPosition == new Vector3(-ParcelSettings.PARCEL_SIZE / 2,
+                              DCL.Configuration.ParcelSettings.DEBUG_FLOOR_HEIGHT,
+                              ParcelSettings.PARCEL_SIZE + ParcelSettings.PARCEL_SIZE / 2));
 
             TestHelpers.ForceUnloadAllScenes(sceneController);
             yield return null;
@@ -296,10 +315,13 @@ namespace Tests
             Assert.IsTrue(scene != null, "Scene isn't a GlobalScene?");
             Assert.IsTrue(sceneGo != null, "scene game object not found!");
             Assert.IsTrue(sceneController.loadedScenes[sceneId] != null, "Scene not in loaded dictionary!");
-            Assert.IsTrue(sceneController.loadedScenes[sceneId].unloadWithDistance == false, "Scene will unload when far!");
+            Assert.IsTrue(sceneController.loadedScenes[sceneId].unloadWithDistance == false,
+                "Scene will unload when far!");
 
-            Assert.IsTrue(scene.IsInsideSceneBoundaries(new Vector2(1000, 1000)), "IsInsideSceneBoundaries() should always return true.");
-            Assert.IsTrue(scene.IsInsideSceneBoundaries(new Vector2(-1000, -1000)), "IsInsideSceneBoundaries() should always return true.");
+            Assert.IsTrue(scene.IsInsideSceneBoundaries(new Vector2(1000, 1000)),
+                "IsInsideSceneBoundaries() should always return true.");
+            Assert.IsTrue(scene.IsInsideSceneBoundaries(new Vector2(-1000, -1000)),
+                "IsInsideSceneBoundaries() should always return true.");
 
             yield return null;
 
@@ -317,11 +339,11 @@ namespace Tests
             sceneGo = GameObject.Find("scene:" + sceneId);
 
             Assert.IsTrue(sceneGo != null, "scene game object not found! UIScenes must not be unloaded by distance!");
-            Assert.IsTrue(sceneController.loadedScenes[sceneId] != null, "Scene not in loaded dictionary when far! UIScenes must not be unloaded by distance!");
+            Assert.IsTrue(sceneController.loadedScenes[sceneId] != null,
+                "Scene not in loaded dictionary when far! UIScenes must not be unloaded by distance!");
 
             TestHelpers.ForceUnloadAllScenes(sceneController);
             yield return null;
-
         }
     }
 }

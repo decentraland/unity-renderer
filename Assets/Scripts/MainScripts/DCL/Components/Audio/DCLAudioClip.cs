@@ -1,6 +1,5 @@
 using DCL.Controllers;
 using DCL.Helpers;
-using DCL.Models;
 using System;
 using System.Collections;
 using UnityEngine;
@@ -78,7 +77,8 @@ namespace DCL.Components
 
                 if (scene.HasContentsUrl(model.url))
                 {
-                    yield return Utils.FetchAudioClip(scene.GetContentsUrl(model.url), Utils.GetAudioTypeFromUrlName(model.url), OnComplete, OnFail);
+                    yield return Utils.FetchAudioClip(scene.GetContentsUrl(model.url),
+                        Utils.GetAudioTypeFromUrlName(model.url), OnComplete, OnFail);
                 }
             }
         }

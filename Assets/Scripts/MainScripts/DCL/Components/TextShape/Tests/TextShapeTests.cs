@@ -1,14 +1,11 @@
-using System.Collections;
-using System.Collections.Generic;
 using DCL.Components;
-using DCL.Controllers;
 using DCL.Helpers;
 using DCL.Models;
 using NUnit.Framework;
+using System.Collections;
 using TMPro;
 using UnityEngine;
 using UnityEngine.TestTools;
-using UnityEngine.UI;
 
 namespace Tests
 {
@@ -49,7 +46,9 @@ namespace Tests
                 shadowColor = Color.white
             };
 
-            TextShape textShape = TestHelpers.EntityComponentCreate<TextShape, TextShape.Model>(scene, scene.entities[entityId], textShapeModel);
+            TextShape textShape =
+                TestHelpers.EntityComponentCreate<TextShape, TextShape.Model>(scene, scene.entities[entityId],
+                    textShapeModel);
 
             yield return textShape.routine;
 
@@ -67,7 +66,9 @@ namespace Tests
             textShapeModel.paddingRight = 15;
             textShapeModel.value = "Hello world again!";
 
-            TextShape textShape2 = TestHelpers.EntityComponentCreate<TextShape, TextShape.Model>(scene, scene.entities[entityId], textShapeModel);
+            TextShape textShape2 =
+                TestHelpers.EntityComponentCreate<TextShape, TextShape.Model>(scene, scene.entities[entityId],
+                    textShapeModel);
 
             TMProConsistencyAsserts(tmpro, textShapeModel);
 
@@ -76,10 +77,14 @@ namespace Tests
 
         void TMProConsistencyAsserts(TextMeshPro tmpro, TextShape.Model model)
         {
-            Assert.AreEqual(model.paddingLeft, tmpro.margin[0], 0.01, string.Format("Left margin must be {0}", model.paddingLeft));
-            Assert.AreEqual(model.paddingTop, tmpro.margin[1], 0.01, string.Format("Top margin must be {0}", model.paddingTop));
-            Assert.AreEqual(model.paddingRight, tmpro.margin[2], 0.01, string.Format("Right margin must be {0}", model.paddingRight));
-            Assert.AreEqual(model.paddingBottom, tmpro.margin[3], 0.01, string.Format("Bottom margin must be {0}", model.paddingBottom));
+            Assert.AreEqual(model.paddingLeft, tmpro.margin[0], 0.01,
+                string.Format("Left margin must be {0}", model.paddingLeft));
+            Assert.AreEqual(model.paddingTop, tmpro.margin[1], 0.01,
+                string.Format("Top margin must be {0}", model.paddingTop));
+            Assert.AreEqual(model.paddingRight, tmpro.margin[2], 0.01,
+                string.Format("Right margin must be {0}", model.paddingRight));
+            Assert.AreEqual(model.paddingBottom, tmpro.margin[3], 0.01,
+                string.Format("Bottom margin must be {0}", model.paddingBottom));
 
             Assert.IsTrue(tmpro.text == model.value, "Text wasn't set correctly!");
         }
@@ -117,7 +122,9 @@ namespace Tests
                 shadowColor = Color.red
             };
 
-            TextShape textShapeComponent = TestHelpers.EntityComponentCreate<TextShape, TextShape.Model>(scene, scene.entities[entityId], textShapeModel);
+            TextShape textShapeComponent =
+                TestHelpers.EntityComponentCreate<TextShape, TextShape.Model>(scene, scene.entities[entityId],
+                    textShapeModel);
 
             yield return textShapeComponent.routine;
 
@@ -129,7 +136,8 @@ namespace Tests
             Assert.AreEqual(Color.red, textShapeComponent.model.shadowColor);
 
             // 3. Update component with missing values
-            scene.EntityComponentUpdate(scene.entities[entityId], CLASS_ID_COMPONENT.TEXT_SHAPE, JsonUtility.ToJson(new TextShape.Model { }));
+            scene.EntityComponentUpdate(scene.entities[entityId], CLASS_ID_COMPONENT.TEXT_SHAPE,
+                JsonUtility.ToJson(new TextShape.Model { }));
 
             yield return textShapeComponent.routine;
 

@@ -116,7 +116,9 @@ namespace DCL
         void RemoveGameObject(GameObject go)
         {
             if (go == null)
+            {
                 return;
+            }
 
             //NOTE(Brian): If this proves to be too slow we can spread it with a Coroutine spooler.
             Renderer[] renderers = go.GetComponentsInChildren<Renderer>();
@@ -140,6 +142,7 @@ namespace DCL
                     if (uniqueMeshes.Contains(mf.sharedMesh))
                     {
                         if (VERBOSE) { Debug.Log("Removing mesh... " + go.name); }
+
                         uniqueMeshes.Remove(mf.sharedMesh);
                         RemoveMesh(mf.sharedMesh);
                     }
@@ -161,7 +164,9 @@ namespace DCL
         void AddGameObject(GameObject go)
         {
             if (go == null)
+            {
                 return;
+            }
 
             //NOTE(Brian): If this proves to be too slow we can spread it with a Coroutine spooler.
             Renderer[] renderers = go.GetComponentsInChildren<Renderer>();
@@ -211,7 +216,9 @@ namespace DCL
             model.triangles += mesh.triangles.Length / 3;
             isDirty = true;
 
-            if (VERBOSE) { Debug.Log("Mesh name = " + mesh.name + " ... tri count = " + (mesh.triangles.Length / 3)); };
+            if (VERBOSE) { Debug.Log("Mesh name = " + mesh.name + " ... tri count = " + (mesh.triangles.Length / 3)); }
+
+            ;
         }
 
         public void RemoveMesh(Mesh mesh)

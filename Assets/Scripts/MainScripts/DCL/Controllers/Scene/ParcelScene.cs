@@ -49,7 +49,8 @@ namespace DCL.Controllers
                 {
                     Vector3 position = GridToWorldPosition(sceneData.parcels[0].x, sceneData.parcels[0].y);
 
-                    if (Vector3.Distance(DCLCharacterController.i.transform.position, position) > ParcelSettings.UNLOAD_DISTANCE)
+                    if (Vector3.Distance(DCLCharacterController.i.transform.position, position) >
+                        ParcelSettings.UNLOAD_DISTANCE)
                     {
                         flaggedToUnload = true;
                         SceneController.i.UnloadScene(sceneData.id);
@@ -83,12 +84,14 @@ namespace DCL.Controllers
                     plane.transform.SetParent(gameObject.transform);
 
                     // the plane mesh with scale 1 occupies a 10 units space
-                    plane.transform.localScale = new Vector3(ParcelSettings.PARCEL_SIZE * 0.1f, 1f, ParcelSettings.PARCEL_SIZE * 0.1f);
+                    plane.transform.localScale = new Vector3(ParcelSettings.PARCEL_SIZE * 0.1f, 1f,
+                        ParcelSettings.PARCEL_SIZE * 0.1f);
 
                     Vector3 position = GridToWorldPosition(sceneData.parcels[j].x, sceneData.parcels[j].y);
                     // SET TO A POSITION RELATIVE TO basePosition
 
-                    position.Set(position.x + ParcelSettings.PARCEL_SIZE / 2, ParcelSettings.DEBUG_FLOOR_HEIGHT, position.z + ParcelSettings.PARCEL_SIZE / 2);
+                    position.Set(position.x + ParcelSettings.PARCEL_SIZE / 2, ParcelSettings.DEBUG_FLOOR_HEIGHT,
+                        position.z + ParcelSettings.PARCEL_SIZE / 2);
 
                     plane.transform.position = position;
 
@@ -103,7 +106,8 @@ namespace DCL.Controllers
                     }
                     else
                     {
-                        plane.GetComponent<MeshRenderer>().sharedMaterial = Utils.EnsureResourcesMaterial("Materials/Default");
+                        plane.GetComponent<MeshRenderer>().sharedMaterial =
+                            Utils.EnsureResourcesMaterial("Materials/Default");
                     }
                 }
             }
@@ -261,7 +265,8 @@ namespace DCL.Controllers
         UUIDCallbackMessage uuidMessage = new UUIDCallbackMessage();
         EntityComponentCreateMessage createEntityComponentMessage = new EntityComponentCreateMessage();
 
-        public T CreateAndInitComponent<T>(DecentralandEntity entity, EntityComponentCreateMessage message) where T : BaseComponent
+        public T CreateAndInitComponent<T>(DecentralandEntity entity, EntityComponentCreateMessage message)
+            where T : BaseComponent
         {
             var component = entity.gameObject.GetOrCreateComponent<T>();
             component.scene = this;
@@ -280,7 +285,8 @@ namespace DCL.Controllers
 
             if (entity == null)
             {
-                Debug.LogError($"scene '{sceneData.id}': Can't create entity component if the entity {createEntityComponentMessage.entityId} doesn't exist!");
+                Debug.LogError(
+                    $"scene '{sceneData.id}': Can't create entity component if the entity {createEntityComponentMessage.entityId} doesn't exist!");
 
                 return null;
             }
@@ -330,7 +336,8 @@ namespace DCL.Controllers
         }
 
         // The EntityComponentUpdate() parameters differ from other similar methods because there is no EntityComponentUpdate protocol message yet.
-        public BaseComponent EntityComponentUpdate(DecentralandEntity entity, CLASS_ID_COMPONENT classId, string componentJson)
+        public BaseComponent EntityComponentUpdate(DecentralandEntity entity, CLASS_ID_COMPONENT classId,
+            string componentJson)
         {
             if (entity == null)
             {
@@ -374,61 +381,73 @@ namespace DCL.Controllers
                         newComponent = new BoxShape(this);
                         break;
                     }
+
                 case CLASS_ID.SPHERE_SHAPE:
                     {
                         newComponent = new SphereShape(this);
                         break;
                     }
+
                 case CLASS_ID.CONE_SHAPE:
                     {
                         newComponent = new ConeShape(this);
                         break;
                     }
+
                 case CLASS_ID.CYLINDER_SHAPE:
                     {
                         newComponent = new CylinderShape(this);
                         break;
                     }
+
                 case CLASS_ID.PLANE_SHAPE:
                     {
                         newComponent = new PlaneShape(this);
                         break;
                     }
+
                 case CLASS_ID.GLTF_SHAPE:
                     {
                         newComponent = new GLTFShape(this);
                         break;
                     }
+
                 case CLASS_ID.OBJ_SHAPE:
                     {
                         newComponent = new OBJShape(this);
                         break;
                     }
+
                 case CLASS_ID.BASIC_MATERIAL:
                     {
                         newComponent = new BasicMaterial(this);
                         break;
                     }
+
                 case CLASS_ID.PBR_MATERIAL:
                     {
                         newComponent = new PBRMaterial(this);
                         break;
                     }
+
                 case CLASS_ID.AUDIO_CLIP:
                     {
                         newComponent = new DCLAudioClip(this);
                         break;
                     }
+
                 case CLASS_ID.TEXTURE:
                     {
                         newComponent = new DCLTexture(this);
                         break;
                     }
+
                 case CLASS_ID.UI_INPUT_TEXT_SHAPE:
                     {
                         newComponent = new UIInputText(this);
                         break;
                     }
+
                 case CLASS_ID.UI_FULLSCREEN_SHAPE:
                 case CLASS_ID.UI_SCREEN_SPACE_SHAPE:
                     {
@@ -439,31 +458,37 @@ namespace DCL.Controllers
 
                         break;
                     }
+
                 case CLASS_ID.UI_CONTAINER_RECT:
                     {
                         newComponent = new UIContainerRect(this);
                         break;
                     }
+
                 case CLASS_ID.UI_SLIDER_SHAPE:
                     {
                         newComponent = new UIScrollRect(this);
                         break;
                     }
+
                 case CLASS_ID.UI_CONTAINER_STACK:
                     {
                         newComponent = new UIContainerStack(this);
                         break;
                     }
+
                 case CLASS_ID.UI_IMAGE_SHAPE:
                     {
                         newComponent = new UIImage(this);
                         break;
                     }
+
                 case CLASS_ID.UI_TEXT_SHAPE:
                     {
                         newComponent = new UIText(this);
                         break;
                     }
+
                 default:
                     Debug.LogError($"Unknown classId {json}");
                     break;
@@ -479,6 +504,7 @@ namespace DCL.Controllers
         }
 
         SharedComponentDisposeMessage sharedComponentDisposedMessage = new SharedComponentDisposeMessage();
+
         public void SharedComponentDispose(string json)
         {
             SceneController.i.OnMessageDecodeStart?.Invoke("ComponentDisposed");
@@ -499,6 +525,7 @@ namespace DCL.Controllers
         }
 
         EntityComponentRemoveMessage entityComponentRemovedMessage = new EntityComponentRemoveMessage();
+
         public void EntityComponentRemove(string json)
         {
             SceneController.i.OnMessageDecodeStart?.Invoke("ComponentRemoved");
@@ -514,7 +541,8 @@ namespace DCL.Controllers
             RemoveEntityComponent(decentralandEntity, entityComponentRemovedMessage.name);
         }
 
-        private void RemoveComponentType<T>(DecentralandEntity entity, CLASS_ID_COMPONENT classId) where T : MonoBehaviour
+        private void RemoveComponentType<T>(DecentralandEntity entity, CLASS_ID_COMPONENT classId)
+            where T : MonoBehaviour
         {
             var component = entity.components[classId].GetComponent<T>();
 
@@ -533,6 +561,7 @@ namespace DCL.Controllers
                     {
                         entity.currentShape.DetachFrom(entity);
                     }
+
                     return;
                 case "onClick":
                     RemoveComponentType<OnClickComponent>(entity, CLASS_ID_COMPONENT.UUID_CALLBACK);
@@ -568,7 +597,8 @@ namespace DCL.Controllers
 
             BaseDisposable disposableComponent;
 
-            if (disposableComponents.TryGetValue(sharedComponentUpdatedMessage.id, out disposableComponent) && disposableComponent != null)
+            if (disposableComponents.TryGetValue(sharedComponentUpdatedMessage.id, out disposableComponent) &&
+                disposableComponent != null)
             {
                 disposableComponent.UpdateFromJSON(sharedComponentUpdatedMessage.json);
                 return disposableComponent;
@@ -710,9 +740,9 @@ namespace DCL.Controllers
         public static Vector3 GridToWorldPosition(float xGridPosition, float yGridPosition)
         {
             return new Vector3(
-              x: xGridPosition * ParcelSettings.PARCEL_SIZE,
-              y: 0f,
-              z: yGridPosition * ParcelSettings.PARCEL_SIZE
+                x: xGridPosition * ParcelSettings.PARCEL_SIZE,
+                y: 0f,
+                z: yGridPosition * ParcelSettings.PARCEL_SIZE
             );
         }
 
@@ -722,8 +752,8 @@ namespace DCL.Controllers
         public static Vector2 WorldToGridPosition(Vector3 vector)
         {
             return new Vector2(
-              Mathf.Floor(vector.x / ParcelSettings.PARCEL_SIZE),
-              Mathf.Floor(vector.z / ParcelSettings.PARCEL_SIZE)
+                Mathf.Floor(vector.x / ParcelSettings.PARCEL_SIZE),
+                Mathf.Floor(vector.z / ParcelSettings.PARCEL_SIZE)
             );
         }
     }

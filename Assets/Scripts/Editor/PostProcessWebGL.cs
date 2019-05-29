@@ -1,13 +1,13 @@
 ﻿#if UNITY_EDITOR && UNITY_WEBGL
 
-using System.Collections.Generic;
-using UnityEngine;
-using UnityEditor.Callbacks;
-using UnityEditor;
-using System.IO;
 using System;
-using System.Text.RegularExpressions;
+using System.Collections.Generic;
+using System.IO;
 using System.Linq;
+using System.Text.RegularExpressions;
+using UnityEditor;
+using UnityEditor.Callbacks;
+using UnityEngine;
 
 public class PostProcessWebGL
 {
@@ -17,7 +17,10 @@ public class PostProcessWebGL
     [PostProcessBuild]
     public static void ChangeWebGLTemplate(BuildTarget buildTarget, string pathToBuiltProject)
     {
-        if (buildTarget != BuildTarget.WebGL) return;
+        if (buildTarget != BuildTarget.WebGL)
+        {
+            return;
+        }
 
         //create template path
         var templatePath = Paths.Combine(Application.dataPath, "WebGLTemplates", __TemplateToUse);
@@ -37,19 +40,24 @@ public class PostProcessWebGL
     {
         //Fetch filenames to be referenced in index.html
         string
-        webglBuildUrl,
-        webglLoaderUrl;
+            webglBuildUrl,
+            webglLoaderUrl;
 
         if (File.Exists(Paths.Combine(pathToBuiltProject, "Build", "UnityLoader.js")))
+        {
             webglLoaderUrl = "Build/UnityLoader.js";
+        }
         else
+        {
             webglLoaderUrl = "Build/UnityLoader.min.js";
+        }
 
         string buildName = pathToBuiltProject.Substring(pathToBuiltProject.LastIndexOf("/") + 1);
         webglBuildUrl = string.Format("Build/{0}.json", buildName);
 
         //webglLoaderUrl = EditorUserBuildSettings.development? "Build/UnityLoader.js": "Build/UnityLoader.min.js";
-        Dictionary<string, string> replaceKeywordsMap = new Dictionary<string, string> {
+        Dictionary<string, string> replaceKeywordsMap = new Dictionary<string, string>
+        {
             {
                 "%UNITY_WIDTH%",
                 PlayerSettings.defaultWebScreenWidth.ToString()
@@ -73,9 +81,14 @@ public class PostProcessWebGL
         };
 
         string indexFilePath = Paths.Combine(pathToBuiltProject, "index.html");
-        Func<string, KeyValuePair<string, string>, string> replaceFunction = (current, replace) => current.Replace(replace.Key, replace.Value);
+        Func<string, KeyValuePair<string, string>, string> replaceFunction = (current, replace) =>
+            current.Replace(replace.Key, replace.Value);
         if (File.Exists(indexFilePath))
-            File.WriteAllText(indexFilePath, replaceKeywordsMap.Aggregate<KeyValuePair<string, string>, string>(File.ReadAllText(indexFilePath), replaceFunction));
+        {
+            File.WriteAllText(indexFilePath,
+                replaceKeywordsMap.Aggregate<KeyValuePair<string, string>, string>(File.ReadAllText(indexFilePath),
+                    replaceFunction));
+        }
     }
 
     class FileUtilExtended
@@ -83,7 +96,9 @@ public class PostProcessWebGL
         internal static void CreateOrCleanDirectory(string dir)
         {
             if (Directory.Exists(dir))
+            {
                 Directory.Delete(dir, true);
+            }
 
             Directory.CreateDirectory(dir);
         }
@@ -95,7 +110,8 @@ public class PostProcessWebGL
         }
 
         //Copies the contents of one directory to another.
-        public static void CopyDirectoryFiltered(string source, string target, bool overwrite, string regExExcludeFilter, bool recursive)
+        public static void CopyDirectoryFiltered(string source, string target, bool overwrite,
+            string regExExcludeFilter, bool recursive)
         {
             RegexMatcher excluder = new RegexMatcher()
             {
@@ -105,11 +121,14 @@ public class PostProcessWebGL
             try
             {
                 if (regExExcludeFilter != null)
+                {
                     excluder.exclude = new Regex(regExExcludeFilter);
+                }
             }
             catch (ArgumentException)
             {
-                UnityEngine.Debug.Log("CopyDirectoryRecursive: Pattern '" + regExExcludeFilter + "' is not a correct Regular Expression. Not excluding any files.");
+                UnityEngine.Debug.Log("CopyDirectoryRecursive: Pattern '" + regExExcludeFilter +
+                                      "' is not a correct Regular Expression. Not excluding any files.");
 
                 return;
             }
@@ -117,7 +136,8 @@ public class PostProcessWebGL
             CopyDirectoryFiltered(source, target, overwrite, excluder.CheckInclude, recursive);
         }
 
-        internal static void CopyDirectoryFiltered(string sourceDir, string targetDir, bool overwrite, Func<string, bool> filtercallback, bool recursive)
+        internal static void CopyDirectoryFiltered(string sourceDir, string targetDir, bool overwrite,
+            Func<string, bool> filtercallback, bool recursive)
         {
             // Create directory if needed
             if (!Directory.Exists(targetDir))
@@ -146,7 +166,8 @@ public class PostProcessWebGL
                     if (filtercallback(subdirectorypath))
                     {
                         string directoryName = Path.GetFileName(subdirectorypath);
-                        CopyDirectoryFiltered(Path.Combine(sourceDir, directoryName), Path.Combine(targetDir, directoryName), overwrite, filtercallback, recursive);
+                        CopyDirectoryFiltered(Path.Combine(sourceDir, directoryName),
+                            Path.Combine(targetDir, directoryName), overwrite, filtercallback, recursive);
                     }
                 }
             }
@@ -169,7 +190,9 @@ public class PostProcessWebGL
         public static string Combine(params string[] components)
         {
             if (components.Length < 1)
+            {
                 throw new ArgumentException("At least one component must be provided!");
+            }
 
             string str = components[0];
 

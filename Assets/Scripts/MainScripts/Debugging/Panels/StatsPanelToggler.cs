@@ -3,7 +3,8 @@ using UnityEngine.UI;
 
 public class StatsPanelToggler : MonoBehaviour
 {
-    const string SHORTCUT_TEXT = "P = Toggle Panel | R = Reset Profile Data | O = Toggle All Profiling | I = Toggle Deep Msg Profiling";
+    const string SHORTCUT_TEXT =
+        "P = Toggle Panel | R = Reset Profile Data | O = Toggle All Profiling | I = Toggle Deep Msg Profiling";
 
     bool allProfilingEnabled;
     bool deepProfilingEnabled;

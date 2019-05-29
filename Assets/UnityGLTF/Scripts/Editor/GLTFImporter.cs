@@ -1,16 +1,16 @@
 #if UNITY_2017_1_OR_NEWER
-using UnityEditor.Experimental.AssetImporters;
-using UnityEditor;
-using System.IO;
-using UnityEngine;
-using System.Collections.Generic;
-using System.Linq;
-using System;
-using Object = UnityEngine.Object;
-using System.Collections;
-using UnityGLTF.Loader;
-using GLTF.Schema;
 using GLTF;
+using GLTF.Schema;
+using System;
+using System.Collections;
+using System.Collections.Generic;
+using System.IO;
+using System.Linq;
+using UnityEditor;
+using UnityEditor.Experimental.AssetImporters;
+using UnityEngine;
+using UnityGLTF.Loader;
+using Object = UnityEngine.Object;
 // using System.Threading.Tasks;
 
 namespace UnityGLTF
@@ -150,7 +150,10 @@ namespace UnityGLTF
                     var textures = materials.SelectMany(mat =>
                     {
                         var shader = mat.shader;
-                        if (!shader) return Enumerable.Empty<Texture2D>();
+                        if (!shader)
+                        {
+                            return Enumerable.Empty<Texture2D>();
+                        }
 
                         var matTextures = new List<Texture2D>();
                         for (var i = 0; i < ShaderUtil.GetPropertyCount(shader); ++i)
@@ -166,7 +169,10 @@ namespace UnityGLTF
                                         var texName = tex.name;
                                         if (string.IsNullOrEmpty(texName))
                                         {
-                                            if (propertyName.StartsWith("_")) texName = propertyName.Substring(Mathf.Min(1, propertyName.Length - 1));
+                                            if (propertyName.StartsWith("_"))
+                                            {
+                                                texName = propertyName.Substring(Mathf.Min(1, propertyName.Length - 1));
+                                            }
                                         }
 
                                         // Ensure name is unique
@@ -231,7 +237,10 @@ namespace UnityGLTF
                                     for (var i = 0; i < sharedMaterials.Length; ++i)
                                     {
                                         var sharedMaterial = sharedMaterials[i];
-                                        if (sharedMaterial.name == mat.name) sharedMaterials[i] = m;
+                                        if (sharedMaterial.name == mat.name)
+                                        {
+                                            sharedMaterials[i] = m;
+                                        }
                                     }
                                     sharedMaterials = sharedMaterials.Where(sm => sm).ToArray();
                                     r.sharedMaterials = sharedMaterials;
@@ -305,7 +314,11 @@ namespace UnityGLTF
             }
             catch
             {
-                if (gltfScene) DestroyImmediate(gltfScene);
+                if (gltfScene)
+                {
+                    DestroyImmediate(gltfScene);
+                }
+
                 throw;
             }
 

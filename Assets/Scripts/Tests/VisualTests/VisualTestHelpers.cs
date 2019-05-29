@@ -9,7 +9,9 @@ namespace DCL.Helpers
     public static class VisualTestHelpers
     {
         public static string testImagesPath = Application.dataPath + "/../TestResources/VisualTests/CurrentTestImages/";
-        public static string baselineImagesPath = Application.dataPath + "/../TestResources/VisualTests/BaselineImages/";
+
+        public static string baselineImagesPath =
+            Application.dataPath + "/../TestResources/VisualTests/BaselineImages/";
 
         private static bool generateBaseline = false;
         public static string currentTestName;
@@ -42,21 +44,26 @@ namespace DCL.Helpers
             int snapshotsWidth = TestSettings.VISUAL_TESTS_SNAPSHOT_WIDTH;
             int snapshotsHeight = TestSettings.VISUAL_TESTS_SNAPSHOT_HEIGHT;
 
-            yield return TakeSnapshot(testImagesPath, snapshotName, VisualTestController.i.camera, snapshotsWidth, snapshotsHeight);
+            yield return TakeSnapshot(testImagesPath, snapshotName, VisualTestController.i.camera, snapshotsWidth,
+                snapshotsHeight);
 
             if (generateBaseline || !File.Exists(baselineImagesPath + snapshotName))
             {
-                yield return TakeSnapshot(baselineImagesPath, snapshotName, VisualTestController.i.camera, snapshotsWidth, snapshotsHeight);
+                yield return TakeSnapshot(baselineImagesPath, snapshotName, VisualTestController.i.camera,
+                    snapshotsWidth, snapshotsHeight);
             }
 
             if (!generateBaseline)
             {
-                float ratio = ComputeImageAffinityPercentage(baselineImagesPath + snapshotName, testImagesPath + snapshotName);
-                Assert.GreaterOrEqual(ratio, TestSettings.VISUAL_TESTS_APPROVED_AFFINITY, $"{snapshotName} has {ratio}% affinity, the minimum is {TestSettings.VISUAL_TESTS_APPROVED_AFFINITY}%. A diff image has been generated. Check it out at {testImagesPath}");
+                float ratio =
+                    ComputeImageAffinityPercentage(baselineImagesPath + snapshotName, testImagesPath + snapshotName);
+                Assert.GreaterOrEqual(ratio, TestSettings.VISUAL_TESTS_APPROVED_AFFINITY,
+                    $"{snapshotName} has {ratio}% affinity, the minimum is {TestSettings.VISUAL_TESTS_APPROVED_AFFINITY}%. A diff image has been generated. Check it out at {testImagesPath}");
             }
         }
 
-        public static IEnumerator TakeSnapshot(string snapshotPath, string snapshotName, Camera camera, int width, int height)
+        public static IEnumerator TakeSnapshot(string snapshotPath, string snapshotName, Camera camera, int width,
+            int height)
         {
             if (string.IsNullOrEmpty(snapshotName) || camera == null)
             {
@@ -116,15 +123,20 @@ namespace DCL.Helpers
             yield return new WaitForSeconds(0.2f);
         }
 
-        public static float ComputeImageAffinityPercentage(string baselineImagePathWithFilename, string testImagePathWithFilename)
+        public static float ComputeImageAffinityPercentage(string baselineImagePathWithFilename,
+            string testImagePathWithFilename)
         {
-            Texture2D baselineSnapshot = new Texture2D(TestSettings.VISUAL_TESTS_SNAPSHOT_WIDTH, TestSettings.VISUAL_TESTS_SNAPSHOT_HEIGHT, TextureFormat.RGB24, false);
+            Texture2D baselineSnapshot = new Texture2D(TestSettings.VISUAL_TESTS_SNAPSHOT_WIDTH,
+                TestSettings.VISUAL_TESTS_SNAPSHOT_HEIGHT, TextureFormat.RGB24, false);
             baselineSnapshot.LoadImage(File.ReadAllBytes(baselineImagePathWithFilename));
 
-            Texture2D currentSnapshot = new Texture2D(TestSettings.VISUAL_TESTS_SNAPSHOT_WIDTH, TestSettings.VISUAL_TESTS_SNAPSHOT_HEIGHT, TextureFormat.RGB24, false);
+            Texture2D currentSnapshot = new Texture2D(TestSettings.VISUAL_TESTS_SNAPSHOT_WIDTH,
+                TestSettings.VISUAL_TESTS_SNAPSHOT_HEIGHT, TextureFormat.RGB24, false);
             currentSnapshot.LoadImage(File.ReadAllBytes(testImagePathWithFilename));
 
-            string finalDiffPath = Path.GetDirectoryName(testImagePathWithFilename) + "\\" + Path.GetFileNameWithoutExtension(testImagePathWithFilename) + "_diff" + Path.GetExtension(testImagePathWithFilename);
+            string finalDiffPath = Path.GetDirectoryName(testImagePathWithFilename) + "\\" +
+                                   Path.GetFileNameWithoutExtension(testImagePathWithFilename) + "_diff" +
+                                   Path.GetExtension(testImagePathWithFilename);
             return ComputeImageAffinityPercentage(baselineSnapshot, currentSnapshot, finalDiffPath);
         }
 
@@ -135,7 +147,8 @@ namespace DCL.Helpers
         /// <param name="testImage">Image to compare</param>
         /// <param name="diffImagePath"></param>
         /// <returns>Affinity percentage</returns>
-        public static float ComputeImageAffinityPercentage(Texture2D baselineImage, Texture2D testImage, string diffImagePath)
+        public static float ComputeImageAffinityPercentage(Texture2D baselineImage, Texture2D testImage,
+            string diffImagePath)
         {
             baselineImage = DuplicateTextureAsReadable(baselineImage);
             testImage = DuplicateTextureAsReadable(testImage);
@@ -164,7 +177,8 @@ namespace DCL.Helpers
 
             for (int i = 0; i < testImagePixels.Length; i++)
             {
-                if (!IsSamePixel(testImagePixels[i], baselineImagePixels[i], TestSettings.VISUAL_TESTS_PIXELS_CHECK_THRESHOLD))
+                if (!IsSamePixel(testImagePixels[i], baselineImagePixels[i],
+                    TestSettings.VISUAL_TESTS_PIXELS_CHECK_THRESHOLD))
                 {
                     differentPixels++;
                     diffImagePixels[i] = diffColor;
@@ -203,11 +217,11 @@ namespace DCL.Helpers
         public static Texture2D DuplicateTextureAsReadable(Texture2D source)
         {
             RenderTexture renderTex = RenderTexture.GetTemporary(
-                        source.width,
-                        source.height,
-                        0,
-                        RenderTextureFormat.Default,
-                        RenderTextureReadWrite.Linear);
+                source.width,
+                source.height,
+                0,
+                RenderTextureFormat.Default,
+                RenderTextureReadWrite.Linear);
 
             Graphics.Blit(source, renderTex);
 
@@ -246,8 +260,8 @@ namespace DCL.Helpers
         public static bool IsSamePixel(Color32 pixelA, Color32 pixelB, float checkThreshold)
         {
             return (pixelA.r > pixelB.r - checkThreshold && pixelA.r < pixelB.r + checkThreshold) &&
-                    (pixelA.g > pixelB.g - checkThreshold && pixelA.g < pixelB.g + checkThreshold) &&
-                    (pixelA.b > pixelB.b - checkThreshold && pixelA.b < pixelB.b + checkThreshold);
+                   (pixelA.g > pixelB.g - checkThreshold && pixelA.g < pixelB.g + checkThreshold) &&
+                   (pixelA.b > pixelB.b - checkThreshold && pixelA.b < pixelB.b + checkThreshold);
         }
 
         public static void RepositionVisualTestsCamera(Transform cameraTransform, Vector3 newPosition)

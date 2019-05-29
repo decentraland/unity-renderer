@@ -1,12 +1,9 @@
+using DCL.Controllers;
+using DCL.Helpers;
+using DCL.Models;
 using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
-using DCL.Helpers;
-using DCL.Controllers;
-using DCL.Models;
-using System.Text.RegularExpressions;
-using System;
 
 namespace DCL.Components
 {
@@ -79,17 +76,21 @@ namespace DCL.Components
             if (referencesContainer.image.texture != null)
             {
                 // Configure uv rect
-                Vector2 normalizedSourceCoordinates = new Vector2(model.sourceLeft / referencesContainer.image.texture.width,
-                                                                -model.sourceTop / referencesContainer.image.texture.height);
+                Vector2 normalizedSourceCoordinates = new Vector2(
+                    model.sourceLeft / referencesContainer.image.texture.width,
+                    -model.sourceTop / referencesContainer.image.texture.height);
 
 
-                Vector2 normalizedSourceSize = new Vector2(model.sourceWidth * (model.sizeInPixels ? 1f : parentRecTransform.rect.width) / referencesContainer.image.texture.width,
-                                                            model.sourceHeight * (model.sizeInPixels ? 1f : parentRecTransform.rect.height) / referencesContainer.image.texture.height);
+                Vector2 normalizedSourceSize = new Vector2(
+                    model.sourceWidth * (model.sizeInPixels ? 1f : parentRecTransform.rect.width) /
+                    referencesContainer.image.texture.width,
+                    model.sourceHeight * (model.sizeInPixels ? 1f : parentRecTransform.rect.height) /
+                    referencesContainer.image.texture.height);
 
                 referencesContainer.image.uvRect = new Rect(normalizedSourceCoordinates.x,
-                                        normalizedSourceCoordinates.y + (1 - normalizedSourceSize.y),
-                                        normalizedSourceSize.x,
-                                        normalizedSourceSize.y);
+                    normalizedSourceCoordinates.y + (1 - normalizedSourceSize.y),
+                    normalizedSourceSize.x,
+                    normalizedSourceSize.y);
             }
 
             // Apply padding

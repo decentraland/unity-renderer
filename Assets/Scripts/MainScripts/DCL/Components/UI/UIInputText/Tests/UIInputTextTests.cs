@@ -1,8 +1,7 @@
-using System.Collections;
-using System.Collections.Generic;
 using DCL.Components;
 using DCL.Helpers;
 using NUnit.Framework;
+using System.Collections;
 using UnityEngine;
 using UnityEngine.TestTools;
 
@@ -95,7 +94,6 @@ namespace Tests
             ssshape.Dispose();
             textInput.Dispose();
             Object.DestroyImmediate(mockCamera.gameObject);
-
         }
 
 

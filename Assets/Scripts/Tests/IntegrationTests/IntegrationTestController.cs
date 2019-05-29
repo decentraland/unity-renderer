@@ -1,11 +1,11 @@
 using DCL.Components;
+using DCL.Configuration;
 using DCL.Helpers;
 using DCL.Models;
-using DCL.Configuration;
 using Newtonsoft.Json;
+using System.Collections;
 using UnityEngine;
 using UnityEngine.Assertions;
-using System.Collections;
 
 public class IntegrationTestController : MonoBehaviour
 {
@@ -16,21 +16,21 @@ public class IntegrationTestController : MonoBehaviour
     {
         var sceneController = TestHelpers.InitializeSceneController();
         DCLCharacterController.i.gravity = 0;
-         DCLCharacterController.i.SetPosition(JsonConvert.SerializeObject(new
-         {
-             x = 0f,
-             y = 0f,
-             z = 0f
-         }));
+        DCLCharacterController.i.SetPosition(JsonConvert.SerializeObject(new
+        {
+            x = 0f,
+            y = 0f,
+            z = 0f
+        }));
 
         var scenesToLoad = new LoadParcelScenesMessage.UnityParcelScene()
         {
             id = sceneName,
-            basePosition = new Vector2Int(3,3),
+            basePosition = new Vector2Int(3, 3),
             parcels = new[]
             {
-                new Vector2Int(3,3),
-                new Vector2Int(3,4)
+                new Vector2Int(3, 3),
+                new Vector2Int(3, 4)
             },
             baseUrl = "http://localhost:9991/local-ipfs/contents/"
         };
@@ -46,7 +46,7 @@ public class IntegrationTestController : MonoBehaviour
 
         //NOTE(Brian): This is making my eyes bleed.
         sceneController.SendSceneMessage(
-          TestHelpers.CreateSceneMessage(
+            TestHelpers.CreateSceneMessage(
                 sceneName,
                 "CreateEntity",
                 JsonConvert.SerializeObject(
@@ -54,20 +54,20 @@ public class IntegrationTestController : MonoBehaviour
                     {
                         id = entityId
                     }))
-                );
+        );
 
         //NOTE(Brian): This is making my eyes bleed.
         sceneController.SendSceneMessage(
-          TestHelpers.CreateSceneMessage(
-            sceneName,
-            "SetEntityParent",
-            JsonConvert.SerializeObject(
-                new
-                {
-                    entityId = entityId,
-                    parentId = "0"
-                })
-             )
+            TestHelpers.CreateSceneMessage(
+                sceneName,
+                "SetEntityParent",
+                JsonConvert.SerializeObject(
+                    new
+                    {
+                        entityId = entityId,
+                        parentId = "0"
+                    })
+            )
         );
 
         yield return new WaitForAllMessagesProcessed();
@@ -82,7 +82,8 @@ public class IntegrationTestController : MonoBehaviour
             entityId = entityId,
             name = "transform",
             classId = (int)CLASS_ID_COMPONENT.TRANSFORM,
-            json = "{\"tag\":\"transform\",\"position\":{\"x\":0,\"y\":0,\"z\":0},\"rotation\":{\"x\":0,\"y\":0,\"z\":0,\"w\":1},\"scale\":{\"x\":1,\"y\":1,\"z\":1}}"
+            json =
+                "{\"tag\":\"transform\",\"position\":{\"x\":0,\"y\":0,\"z\":0},\"rotation\":{\"x\":0,\"y\":0,\"z\":0,\"w\":1},\"scale\":{\"x\":1,\"y\":1,\"z\":1}}"
         }));
 
         // 2nd message
@@ -93,10 +94,12 @@ public class IntegrationTestController : MonoBehaviour
             entityId = entityId,
             name = "transform",
             classId = (int)CLASS_ID_COMPONENT.TRANSFORM,
-            json = "{\"tag\":\"transform\",\"position\":{\"x\":6,\"y\":0,\"z\":5},\"rotation\":{\"x\":0,\"y\":0.39134957508996265,\"z\":0,\"w\":0.9202420931897769},\"scale\":{\"x\":1,\"y\":1,\"z\":1}}"
+            json =
+                "{\"tag\":\"transform\",\"position\":{\"x\":6,\"y\":0,\"z\":5},\"rotation\":{\"x\":0,\"y\":0.39134957508996265,\"z\":0,\"w\":0.9202420931897769},\"scale\":{\"x\":1,\"y\":1,\"z\":1}}"
         }));
 
-        TestHelpers.InstantiateEntityWithTextShape(scene, new Vector3(10, 10, 10), new TextShape.Model() { value = "Hello World!!!" });
+        TestHelpers.InstantiateEntityWithTextShape(scene, new Vector3(10, 10, 10),
+            new TextShape.Model() { value = "Hello World!!!" });
     }
 
     public IEnumerator Verify()
@@ -110,7 +113,9 @@ public class IntegrationTestController : MonoBehaviour
         Assert.AreEqual(cube.gameObject.transform.localPosition, cubePosition);
 
         // because basePosition is at 3,3
-        Assert.AreEqual(cube.gameObject.transform.position, new Vector3(3 * ParcelSettings.PARCEL_SIZE + cubePosition.x, cubePosition.y, 3 * ParcelSettings.PARCEL_SIZE + cubePosition.z));
+        Assert.AreEqual(cube.gameObject.transform.position,
+            new Vector3(3 * ParcelSettings.PARCEL_SIZE + cubePosition.x, cubePosition.y,
+                3 * ParcelSettings.PARCEL_SIZE + cubePosition.z));
         Assert.IsTrue(cube.meshGameObject != null);
         Assert.IsTrue(cube.meshGameObject.GetComponentInChildren<MeshFilter>() != null);
 
@@ -140,12 +145,14 @@ public class IntegrationTestController : MonoBehaviour
 
         {
             // 4nd message, the box should be disposed and the new mesh should be a sphere
-            TestHelpers.CreateAndSetShape(scene, entityId, CLASS_ID.SPHERE_SHAPE, "{\"withCollisions\":false,\"billboard\":0,\"visible\":true,\"tag\":\"sphere\"}");
+            TestHelpers.CreateAndSetShape(scene, entityId, CLASS_ID.SPHERE_SHAPE,
+                "{\"withCollisions\":false,\"billboard\":0,\"visible\":true,\"tag\":\"sphere\"}");
 
             var newMesh = cube.meshGameObject.GetComponentInChildren<MeshFilter>().mesh;
 
             Assert.AreEqual(newMesh.name, "DCL Sphere Instance");
-            Assert.AreNotEqual(mesh.name, newMesh.name, "The mesh instance remains the same, a new instance should have been created.");
+            Assert.AreNotEqual(mesh.name, newMesh.name,
+                "The mesh instance remains the same, a new instance should have been created.");
         }
 
         // TODO: test ComponentRemoved

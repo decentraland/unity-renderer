@@ -70,6 +70,7 @@ namespace DCL
                         // and the while (stack.Count &gt; 0) will pick it up
                         continue;
                     }
+
                     currentYieldedObject = currentEnumerator.Current;
                 }
                 catch (Exception ex)
@@ -78,6 +79,7 @@ namespace DCL
                     done(ex);
                     yield break;
                 }
+
                 // in unity you can yield return whatever the hell you want,
                 // so this will pick up whether it's something to enumerate 
                 // here, or pass through by yield returning it

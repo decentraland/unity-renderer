@@ -46,7 +46,6 @@ namespace DCL
                 WSSController.queuedMessages.Enqueue(finalMessage);
                 WSSController.queuedMessagesDirty = true;
             }
-
         }
 
         protected override void OnError(ErrorEventArgs e)
@@ -78,6 +77,7 @@ namespace DCL
 
         [System.NonSerialized]
         public static Queue<DCLWebSocketService.Message> queuedMessages = new Queue<DCLWebSocketService.Message>();
+
         [System.NonSerialized]
         public static volatile bool queuedMessagesDirty;
 
@@ -113,7 +113,8 @@ namespace DCL
                     debugString = "DISABLE_AUTH&";
                 }
 
-                Application.OpenURL($"http://localhost:8080/tetra.html?{debugString}position={startInCoords.x}%2C{startInCoords.y}&ws=ws%3A%2F%2Flocalhost%3A5000%2Fdcl");
+                Application.OpenURL(
+                    $"http://localhost:8080/tetra.html?{debugString}position={startInCoords.x}%2C{startInCoords.y}&ws=ws%3A%2F%2Flocalhost%3A5000%2Fdcl");
             }
 #else
             useClientDebugMode = false;
@@ -141,7 +142,9 @@ namespace DCL
 
                         if (VERBOSE)
                         {
-                            Debug.Log("<b><color=#0000FF>WSSController</color></b> >>> Got it! passing message of type " + msg.type);
+                            Debug.Log(
+                                "<b><color=#0000FF>WSSController</color></b> >>> Got it! passing message of type " +
+                                msg.type);
                         }
 
                         switch (msg.type)
@@ -175,6 +178,5 @@ namespace DCL
             }
 #endif
         }
-
     }
 }

@@ -1,16 +1,14 @@
-using System.Collections;
-using System.Collections.Generic;
 using DCL;
 using DCL.Components;
 using DCL.Helpers;
-using DCL.Models;
 using DCL.Interface;
-using UnityEngine.EventSystems;
+using DCL.Models;
 using Newtonsoft.Json;
 using NUnit.Framework;
+using System.Collections;
 using UnityEngine;
+using UnityEngine.EventSystems;
 using UnityEngine.TestTools;
-using UnityEngine.UI;
 
 namespace Tests
 {
@@ -32,11 +30,14 @@ namespace Tests
             }));
 
             // Create UIScreenSpaceShape
-            UIScreenSpace screenSpaceShape = TestHelpers.SharedComponentCreate<UIScreenSpace, UIScreenSpace.Model>(scene, CLASS_ID.UI_SCREEN_SPACE_SHAPE);
+            UIScreenSpace screenSpaceShape =
+                TestHelpers.SharedComponentCreate<UIScreenSpace, UIScreenSpace.Model>(scene,
+                    CLASS_ID.UI_SCREEN_SPACE_SHAPE);
             yield return screenSpaceShape.routine;
 
             // Create UIImage
-            UIImage uiImageShape = TestHelpers.SharedComponentCreate<UIImage, UIImage.Model>(scene, CLASS_ID.UI_IMAGE_SHAPE);
+            UIImage uiImageShape =
+                TestHelpers.SharedComponentCreate<UIImage, UIImage.Model>(scene, CLASS_ID.UI_IMAGE_SHAPE);
             yield return uiImageShape.routine;
 
             // Check default properties are applied correctly
@@ -48,11 +49,14 @@ namespace Tests
             Assert.IsTrue(uiImageShape.referencesContainer.image.enabled);
             Assert.IsTrue(uiImageShape.referencesContainer.image.texture == null);
 
-            Vector2 alignedPosition = CalculateAlignedPosition(screenSpaceShape.childHookRectTransform.rect, uiImageShape.childHookRectTransform.rect);
-            Assert.AreEqual(alignedPosition.ToString(), uiImageShape.referencesContainer.layoutElementRT.anchoredPosition.ToString());
+            Vector2 alignedPosition = CalculateAlignedPosition(screenSpaceShape.childHookRectTransform.rect,
+                uiImageShape.childHookRectTransform.rect);
+            Assert.AreEqual(alignedPosition.ToString(),
+                uiImageShape.referencesContainer.layoutElementRT.anchoredPosition.ToString());
 
             // Update UIImage properties
-            DCLTexture texture = TestHelpers.CreateDCLTexture(scene, TestHelpers.GetTestsAssetsPath() + "/Images/atlas.png");
+            DCLTexture texture =
+                TestHelpers.CreateDCLTexture(scene, TestHelpers.GetTestsAssetsPath() + "/Images/atlas.png");
             yield return texture.routine;
 
             TestHelpers.SharedComponentUpdate(scene, uiImageShape, new UIImage.Model
@@ -88,10 +92,12 @@ namespace Tests
             Assert.IsTrue(uiImageShape.referencesContainer.image.enabled);
             Assert.IsTrue(uiImageShape.referencesContainer.image.texture != null);
 
-            alignedPosition = CalculateAlignedPosition(screenSpaceShape.childHookRectTransform.rect, uiImageShape.childHookRectTransform.rect, "bottom", "right");
+            alignedPosition = CalculateAlignedPosition(screenSpaceShape.childHookRectTransform.rect,
+                uiImageShape.childHookRectTransform.rect, "bottom", "right");
             alignedPosition += new Vector2(-65f, 40f); // affected by padding
 
-            Assert.AreEqual(alignedPosition.ToString(), uiImageShape.referencesContainer.layoutElementRT.anchoredPosition.ToString());
+            Assert.AreEqual(alignedPosition.ToString(),
+                uiImageShape.referencesContainer.layoutElementRT.anchoredPosition.ToString());
 
             Assert.AreEqual(0.5f, uiImageShape.referencesContainer.image.uvRect.x);
             Assert.AreEqual(0f, uiImageShape.referencesContainer.image.uvRect.y);
@@ -111,12 +117,15 @@ namespace Tests
         {
             yield return InitScene();
 
-            UIScreenSpace screenSpaceShape = TestHelpers.SharedComponentCreate<UIScreenSpace, UIScreenSpace.Model>(scene, CLASS_ID.UI_SCREEN_SPACE_SHAPE);
+            UIScreenSpace screenSpaceShape =
+                TestHelpers.SharedComponentCreate<UIScreenSpace, UIScreenSpace.Model>(scene,
+                    CLASS_ID.UI_SCREEN_SPACE_SHAPE);
             yield return screenSpaceShape.routine;
 
             Assert.IsFalse(screenSpaceShape == null);
 
-            yield return TestHelpers.TestSharedComponentDefaultsOnUpdate<UIImage.Model, UIImage>(scene, CLASS_ID.UI_IMAGE_SHAPE);
+            yield return TestHelpers.TestSharedComponentDefaultsOnUpdate<UIImage.Model, UIImage>(scene,
+                CLASS_ID.UI_IMAGE_SHAPE);
         }
 
         [UnityTest]
@@ -124,12 +133,15 @@ namespace Tests
         {
             yield return InitScene();
 
-            UIScreenSpace screenSpaceShape = TestHelpers.SharedComponentCreate<UIScreenSpace, UIScreenSpace.Model>(scene, CLASS_ID.UI_SCREEN_SPACE_SHAPE);
+            UIScreenSpace screenSpaceShape =
+                TestHelpers.SharedComponentCreate<UIScreenSpace, UIScreenSpace.Model>(scene,
+                    CLASS_ID.UI_SCREEN_SPACE_SHAPE);
             yield return screenSpaceShape.routine;
 
             Assert.IsFalse(screenSpaceShape == null);
 
-            DCLTexture texture = TestHelpers.CreateDCLTexture(scene, TestHelpers.GetTestsAssetsPath() + "/Images/atlas.png");
+            DCLTexture texture =
+                TestHelpers.CreateDCLTexture(scene, TestHelpers.GetTestsAssetsPath() + "/Images/atlas.png");
             yield return texture.routine;
 
             UIImage uiImage = TestHelpers.SharedComponentCreate<UIImage, UIImage.Model>(scene, CLASS_ID.UI_IMAGE_SHAPE);
@@ -167,14 +179,15 @@ namespace Tests
             bool eventTriggered = false;
 
             yield return TestHelpers.WaitForMessageFromEngine(targetEventType, eventJSON,
-            () =>
-            {
-                ExecuteEvents.ExecuteHierarchy(raycastResult.gameObject, pointerEventData, ExecuteEvents.pointerDownHandler);
-            },
-            () =>
-            {
-                eventTriggered = true;
-            });
+                () =>
+                {
+                    ExecuteEvents.ExecuteHierarchy(raycastResult.gameObject, pointerEventData,
+                        ExecuteEvents.pointerDownHandler);
+                },
+                () =>
+                {
+                    eventTriggered = true;
+                });
 
             yield return null;
 
@@ -182,7 +195,9 @@ namespace Tests
             Assert.IsTrue(eventTriggered);
 
             // Check UI children won't trigger the parent/root image component event
-            UIContainerRect uiContainer = TestHelpers.SharedComponentCreate<UIContainerRect, UIContainerRect.Model>(scene, CLASS_ID.UI_CONTAINER_RECT);
+            UIContainerRect uiContainer =
+                TestHelpers.SharedComponentCreate<UIContainerRect, UIContainerRect.Model>(scene,
+                    CLASS_ID.UI_CONTAINER_RECT);
             yield return uiContainer.routine;
 
             TestHelpers.SharedComponentUpdate(scene, uiContainer, new UIContainerRect.Model
@@ -197,14 +212,15 @@ namespace Tests
             eventTriggered = false;
 
             yield return TestHelpers.WaitForMessageFromEngine(targetEventType, eventJSON,
-            () =>
-            {
-                ExecuteEvents.ExecuteHierarchy(raycastResult.gameObject, pointerEventData, ExecuteEvents.pointerDownHandler);
-            },
-            () =>
-            {
-                eventTriggered = true;
-            });
+                () =>
+                {
+                    ExecuteEvents.ExecuteHierarchy(raycastResult.gameObject, pointerEventData,
+                        ExecuteEvents.pointerDownHandler);
+                },
+                () =>
+                {
+                    eventTriggered = true;
+                });
 
             Assert.IsFalse(eventTriggered);
         }
@@ -240,7 +256,7 @@ namespace Tests
             var sceneEvent = new WebInterface.SceneEvent<WebInterface.OnEnterEvent>
             {
                 sceneId = scene.sceneData.id,
-                payload = new WebInterface.OnEnterEvent {uuid = uiImageOnEnterUUID},
+                payload = new WebInterface.OnEnterEvent { uuid = uiImageOnEnterUUID },
                 eventType = "uuidEvent"
             };
 
@@ -276,14 +292,18 @@ namespace Tests
             }));
 
             // Create UIScreenSpaceShape
-            UIScreenSpace screenSpaceShape = TestHelpers.SharedComponentCreate<UIScreenSpace, UIScreenSpace.Model>(scene, CLASS_ID.UI_SCREEN_SPACE_SHAPE);
+            UIScreenSpace screenSpaceShape =
+                TestHelpers.SharedComponentCreate<UIScreenSpace, UIScreenSpace.Model>(scene,
+                    CLASS_ID.UI_SCREEN_SPACE_SHAPE);
             yield return screenSpaceShape.routine;
 
             // Create UIImage
-            UIImage uiImageShape = TestHelpers.SharedComponentCreate<UIImage, UIImage.Model>(scene, CLASS_ID.UI_IMAGE_SHAPE);
+            UIImage uiImageShape =
+                TestHelpers.SharedComponentCreate<UIImage, UIImage.Model>(scene, CLASS_ID.UI_IMAGE_SHAPE);
             yield return uiImageShape.routine;
 
-            DCLTexture texture = TestHelpers.CreateDCLTexture(scene, TestHelpers.GetTestsAssetsPath() + "/Images/atlas.png");
+            DCLTexture texture =
+                TestHelpers.CreateDCLTexture(scene, TestHelpers.GetTestsAssetsPath() + "/Images/atlas.png");
             yield return texture.routine;
 
             // Align to right-bottom
@@ -299,8 +319,10 @@ namespace Tests
             yield return uiImageShape.routine;
 
             // Check alignment position was applied correctly
-            Vector2 alignedPosition = CalculateAlignedPosition(screenSpaceShape.childHookRectTransform.rect, uiImageShape.childHookRectTransform.rect, "bottom", "right");
-            Assert.AreEqual(alignedPosition.ToString(), uiImageShape.referencesContainer.layoutElementRT.anchoredPosition.ToString());
+            Vector2 alignedPosition = CalculateAlignedPosition(screenSpaceShape.childHookRectTransform.rect,
+                uiImageShape.childHookRectTransform.rect, "bottom", "right");
+            Assert.AreEqual(alignedPosition.ToString(),
+                uiImageShape.referencesContainer.layoutElementRT.anchoredPosition.ToString());
             Assert.AreEqual(TextAnchor.LowerRight, uiImageShape.referencesContainer.layoutGroup.childAlignment);
 
             // Align to right-center
@@ -315,8 +337,10 @@ namespace Tests
             yield return uiImageShape.routine;
 
             // Check alignment position was applied correctly
-            alignedPosition = CalculateAlignedPosition(screenSpaceShape.childHookRectTransform.rect, uiImageShape.childHookRectTransform.rect, "center", "right");
-            Assert.AreEqual(alignedPosition.ToString(), uiImageShape.referencesContainer.layoutElementRT.anchoredPosition.ToString());
+            alignedPosition = CalculateAlignedPosition(screenSpaceShape.childHookRectTransform.rect,
+                uiImageShape.childHookRectTransform.rect, "center", "right");
+            Assert.AreEqual(alignedPosition.ToString(),
+                uiImageShape.referencesContainer.layoutElementRT.anchoredPosition.ToString());
             Assert.AreEqual(TextAnchor.MiddleRight, uiImageShape.referencesContainer.layoutGroup.childAlignment);
 
             // Align to right-top
@@ -331,8 +355,10 @@ namespace Tests
             yield return uiImageShape.routine;
 
             // Check alignment position was applied correctly
-            alignedPosition = CalculateAlignedPosition(screenSpaceShape.childHookRectTransform.rect, uiImageShape.childHookRectTransform.rect, "top", "right");
-            Assert.AreEqual(alignedPosition.ToString(), uiImageShape.referencesContainer.layoutElementRT.anchoredPosition.ToString());
+            alignedPosition = CalculateAlignedPosition(screenSpaceShape.childHookRectTransform.rect,
+                uiImageShape.childHookRectTransform.rect, "top", "right");
+            Assert.AreEqual(alignedPosition.ToString(),
+                uiImageShape.referencesContainer.layoutElementRT.anchoredPosition.ToString());
             Assert.AreEqual(TextAnchor.UpperRight, uiImageShape.referencesContainer.layoutGroup.childAlignment);
 
             // Align to center-bottom
@@ -347,8 +373,10 @@ namespace Tests
             yield return uiImageShape.routine;
 
             // Check alignment position was applied correctly
-            alignedPosition = CalculateAlignedPosition(screenSpaceShape.childHookRectTransform.rect, uiImageShape.childHookRectTransform.rect, "bottom", "center");
-            Assert.AreEqual(alignedPosition.ToString(), uiImageShape.referencesContainer.layoutElementRT.anchoredPosition.ToString());
+            alignedPosition = CalculateAlignedPosition(screenSpaceShape.childHookRectTransform.rect,
+                uiImageShape.childHookRectTransform.rect, "bottom", "center");
+            Assert.AreEqual(alignedPosition.ToString(),
+                uiImageShape.referencesContainer.layoutElementRT.anchoredPosition.ToString());
             Assert.AreEqual(TextAnchor.LowerCenter, uiImageShape.referencesContainer.layoutGroup.childAlignment);
 
             // Align to center-center
@@ -363,8 +391,10 @@ namespace Tests
             yield return uiImageShape.routine;
 
             // Check alignment position was applied correctly
-            alignedPosition = CalculateAlignedPosition(screenSpaceShape.childHookRectTransform.rect, uiImageShape.childHookRectTransform.rect, "center", "center");
-            Assert.AreEqual(alignedPosition.ToString(), uiImageShape.referencesContainer.layoutElementRT.anchoredPosition.ToString());
+            alignedPosition = CalculateAlignedPosition(screenSpaceShape.childHookRectTransform.rect,
+                uiImageShape.childHookRectTransform.rect, "center", "center");
+            Assert.AreEqual(alignedPosition.ToString(),
+                uiImageShape.referencesContainer.layoutElementRT.anchoredPosition.ToString());
             Assert.AreEqual(TextAnchor.MiddleCenter, uiImageShape.referencesContainer.layoutGroup.childAlignment);
 
             // Align to center-top
@@ -379,8 +409,10 @@ namespace Tests
             yield return uiImageShape.routine;
 
             // Check alignment position was applied correctly
-            alignedPosition = CalculateAlignedPosition(screenSpaceShape.childHookRectTransform.rect, uiImageShape.childHookRectTransform.rect, "top", "center");
-            Assert.AreEqual(alignedPosition.ToString(), uiImageShape.referencesContainer.layoutElementRT.anchoredPosition.ToString());
+            alignedPosition = CalculateAlignedPosition(screenSpaceShape.childHookRectTransform.rect,
+                uiImageShape.childHookRectTransform.rect, "top", "center");
+            Assert.AreEqual(alignedPosition.ToString(),
+                uiImageShape.referencesContainer.layoutElementRT.anchoredPosition.ToString());
             Assert.AreEqual(TextAnchor.UpperCenter, uiImageShape.referencesContainer.layoutGroup.childAlignment);
 
             // Align to left-bottom
@@ -395,8 +427,10 @@ namespace Tests
             yield return uiImageShape.routine;
 
             // Check alignment position was applied correctly
-            alignedPosition = CalculateAlignedPosition(screenSpaceShape.childHookRectTransform.rect, uiImageShape.childHookRectTransform.rect, "bottom", "left");
-            Assert.AreEqual(alignedPosition.ToString(), uiImageShape.referencesContainer.layoutElementRT.anchoredPosition.ToString());
+            alignedPosition = CalculateAlignedPosition(screenSpaceShape.childHookRectTransform.rect,
+                uiImageShape.childHookRectTransform.rect, "bottom", "left");
+            Assert.AreEqual(alignedPosition.ToString(),
+                uiImageShape.referencesContainer.layoutElementRT.anchoredPosition.ToString());
             Assert.AreEqual(TextAnchor.LowerLeft, uiImageShape.referencesContainer.layoutGroup.childAlignment);
 
             // Align to left-center
@@ -411,8 +445,10 @@ namespace Tests
             yield return uiImageShape.routine;
 
             // Check alignment position was applied correctly
-            alignedPosition = CalculateAlignedPosition(screenSpaceShape.childHookRectTransform.rect, uiImageShape.childHookRectTransform.rect, "center", "left");
-            Assert.AreEqual(alignedPosition.ToString(), uiImageShape.referencesContainer.layoutElementRT.anchoredPosition.ToString());
+            alignedPosition = CalculateAlignedPosition(screenSpaceShape.childHookRectTransform.rect,
+                uiImageShape.childHookRectTransform.rect, "center", "left");
+            Assert.AreEqual(alignedPosition.ToString(),
+                uiImageShape.referencesContainer.layoutElementRT.anchoredPosition.ToString());
             Assert.AreEqual(TextAnchor.MiddleLeft, uiImageShape.referencesContainer.layoutGroup.childAlignment);
 
             // Align to left-top
@@ -427,12 +463,13 @@ namespace Tests
             yield return uiImageShape.routine;
 
             // Check alignment position was applied correctly
-            alignedPosition = CalculateAlignedPosition(screenSpaceShape.childHookRectTransform.rect, uiImageShape.childHookRectTransform.rect, "top", "left");
-            Assert.AreEqual(alignedPosition.ToString(), uiImageShape.referencesContainer.layoutElementRT.anchoredPosition.ToString());
+            alignedPosition = CalculateAlignedPosition(screenSpaceShape.childHookRectTransform.rect,
+                uiImageShape.childHookRectTransform.rect, "top", "left");
+            Assert.AreEqual(alignedPosition.ToString(),
+                uiImageShape.referencesContainer.layoutElementRT.anchoredPosition.ToString());
             Assert.AreEqual(TextAnchor.UpperLeft, uiImageShape.referencesContainer.layoutGroup.childAlignment);
 
             screenSpaceShape.Dispose();
         }
-
     }
 }

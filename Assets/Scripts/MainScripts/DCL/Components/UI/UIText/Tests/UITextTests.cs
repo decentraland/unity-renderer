@@ -1,13 +1,11 @@
-using System.Collections;
-using System.Collections.Generic;
 using DCL.Components;
 using DCL.Helpers;
 using DCL.Models;
 using Newtonsoft.Json;
 using NUnit.Framework;
+using System.Collections;
 using UnityEngine;
 using UnityEngine.TestTools;
-using UnityEngine.UI;
 
 namespace Tests
 {
@@ -29,13 +27,15 @@ namespace Tests
             }));
 
             // Create UIScreenSpaceShape
-            UIScreenSpace screenSpaceShape = TestHelpers.SharedComponentCreate<UIScreenSpace, UIScreenSpace.Model>(scene, CLASS_ID.UI_SCREEN_SPACE_SHAPE);
+            UIScreenSpace screenSpaceShape =
+                TestHelpers.SharedComponentCreate<UIScreenSpace, UIScreenSpace.Model>(scene,
+                    CLASS_ID.UI_SCREEN_SPACE_SHAPE);
 
             yield return screenSpaceShape.routine;
 
             // Create UITextShape
             UIText uiTextShape = TestHelpers.SharedComponentCreate<UIText, UIText.Model>(scene, CLASS_ID.UI_TEXT_SHAPE,
-            new UIText.Model { });
+                new UIText.Model { });
 
             yield return uiTextShape.routine;
 
@@ -54,7 +54,8 @@ namespace Tests
             Assert.IsFalse(uiTextShape.referencesContainer.text.enableWordWrapping);
             Assert.IsFalse(uiTextShape.referencesContainer.text.fontMaterial.IsKeywordEnabled("UNDERLAY_ON"));
 
-            Vector2 alignedPosition = CalculateAlignedPosition(screenSpaceShape.childHookRectTransform.rect, uiTextShape.childHookRectTransform.rect);
+            Vector2 alignedPosition = CalculateAlignedPosition(screenSpaceShape.childHookRectTransform.rect,
+                uiTextShape.childHookRectTransform.rect);
             Assert.AreEqual(alignedPosition.ToString(), uiTextShape.childHookRectTransform.anchoredPosition.ToString());
 
             Assert.AreEqual(0, uiTextShape.referencesContainer.text.margin.x);
@@ -108,7 +109,8 @@ namespace Tests
             Assert.IsTrue(uiTextShape.referencesContainer.text.fontMaterial.IsKeywordEnabled("UNDERLAY_ON"));
             Assert.AreEqual(Color.yellow, uiTextShape.referencesContainer.text.fontMaterial.GetColor("_UnderlayColor"));
 
-            alignedPosition = CalculateAlignedPosition(screenSpaceShape.childHookRectTransform.rect, uiTextShape.childHookRectTransform.rect, "bottom", "left");
+            alignedPosition = CalculateAlignedPosition(screenSpaceShape.childHookRectTransform.rect,
+                uiTextShape.childHookRectTransform.rect, "bottom", "left");
             Assert.AreEqual(alignedPosition.ToString(), uiTextShape.childHookRectTransform.anchoredPosition.ToString());
 
             Assert.AreEqual(15f, uiTextShape.referencesContainer.text.margin.x);

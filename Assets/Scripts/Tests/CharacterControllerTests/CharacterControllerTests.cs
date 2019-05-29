@@ -1,11 +1,9 @@
+using DCL.Helpers;
+using Newtonsoft.Json;
+using NUnit.Framework;
 using System.Collections;
 using UnityEngine;
 using UnityEngine.TestTools;
-using Newtonsoft.Json;
-using NUnit.Framework;
-using DCL.Helpers;
-using DCL.Models;
-using DCL.Components;
 
 namespace Tests
 {
@@ -16,7 +14,9 @@ namespace Tests
         public IEnumerator CharacterTeleportReposition()
         {
             yield return TestHelpers.UnloadAllUnityScenes();
-            var characterController = (GameObject.Instantiate(Resources.Load("Prefabs/CharacterController") as GameObject)).GetComponent<DCLCharacterController>();
+            var characterController =
+                (GameObject.Instantiate(Resources.Load("Prefabs/CharacterController") as GameObject))
+                .GetComponent<DCLCharacterController>();
             characterController.gravity = 0f;
 
             Assert.AreEqual(new Vector3(0f, 0f, 0f), characterController.transform.position);

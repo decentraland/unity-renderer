@@ -1,6 +1,6 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using UnityEditor;
-using System;
 
 static class BuildCommand
 {
@@ -11,7 +11,9 @@ static class BuildCommand
         for (int i = 0; i < args.Length; i++)
         {
             if (args[i].Contains(name))
+            {
                 return args[i + 1];
+            }
         }
 
         return null;
@@ -24,7 +26,9 @@ static class BuildCommand
         for (int i = 0; i < EditorBuildSettings.scenes.Length; i++)
         {
             if (EditorBuildSettings.scenes[i].enabled)
+            {
                 enabledScenesList.Add(EditorBuildSettings.scenes[i].path);
+            }
         }
 
         // Transform enabled scenes list into an array to be returned.
@@ -50,7 +54,10 @@ static class BuildCommand
         string buildPath = GetArgument("customBuildPath");
         Console.WriteLine(":: Received customBuildPath " + buildPath);
 
-        if (buildPath == "") throw new Exception("customBuildPath argument is missing");
+        if (buildPath == "")
+        {
+            throw new Exception("customBuildPath argument is missing");
+        }
 
         return buildPath;
     }
@@ -60,7 +67,10 @@ static class BuildCommand
         string buildName = GetArgument("customBuildName");
         Console.WriteLine(":: Received customBuildName " + buildName);
 
-        if (buildName == "") throw new Exception("customBuildName argument is missing");
+        if (buildName == "")
+        {
+            throw new Exception("customBuildName argument is missing");
+        }
 
         return buildName;
     }
@@ -84,13 +94,18 @@ static class BuildCommand
     {
         string buildOptions = GetArgument("customBuildOptions");
 
-        return buildOptions == "AcceptExternalModificationsToPlayer" ? BuildOptions.AcceptExternalModificationsToPlayer : BuildOptions.None;
+        return buildOptions == "AcceptExternalModificationsToPlayer"
+            ? BuildOptions.AcceptExternalModificationsToPlayer
+            : BuildOptions.None;
     }
 
     // https://stackoverflow.com/questions/1082532/how-to-tryparse-for-enum-value
     static TEnum ToEnum<TEnum>(this string strEnumValue, TEnum defaultValue)
     {
-        if (!Enum.IsDefined(typeof(TEnum), strEnumValue)) return defaultValue;
+        if (!Enum.IsDefined(typeof(TEnum), strEnumValue))
+        {
+            return defaultValue;
+        }
 
         return (TEnum)Enum.Parse(typeof(TEnum), strEnumValue);
     }
@@ -104,9 +119,13 @@ static class BuildCommand
             if (env_var != null)
             {
                 if (secret)
+                {
                     Console.WriteLine(":: env['" + key + "'] set");
+                }
                 else
+                {
                     Console.WriteLine(":: env['" + key + "'] set to '" + env_var + "'");
+                }
             }
             else
             {

@@ -1,4 +1,3 @@
-using System;
 using System.Collections;
 using UnityEngine;
 using UnityEngine.Networking;
@@ -54,7 +53,7 @@ public class DynamicOBJLoaderController : MonoBehaviour
 
             if (webRequest.isNetworkError || webRequest.isHttpError)
             {
-                Debug.Log("Couldn't get OBJ, error: " + webRequest.error + " ... " + OBJUrl );
+                Debug.Log("Couldn't get OBJ, error: " + webRequest.error + " ... " + OBJUrl);
             }
             else
             {

@@ -104,7 +104,7 @@ namespace DCL.Helpers
         }
 
         public static void InverseTreeTraversal<TComponent>(Action<TComponent> action, Transform startTransform)
-           where TComponent : Component
+            where TComponent : Component
         {
             Assert.IsTrue(startTransform != null, "startTransform must not be null");
 
@@ -138,7 +138,8 @@ namespace DCL.Helpers
             return request != null && !request.isNetworkError && !request.isHttpError;
         }
 
-        static IEnumerator FetchAsset(string url, UnityWebRequest request, System.Action<UnityWebRequest> OnSuccess = null, System.Action<string> OnFail = null)
+        static IEnumerator FetchAsset(string url, UnityWebRequest request,
+            System.Action<UnityWebRequest> OnSuccess = null, System.Action<string> OnFail = null)
         {
             if (!string.IsNullOrEmpty(url))
             {
@@ -148,7 +149,8 @@ namespace DCL.Helpers
 
                     if (!WebRequestSucceded(request))
                     {
-                        Debug.LogError(string.Format("Fetching asset failed ({0}): {1} ", request.url, webRequest.error));
+                        Debug.LogError(
+                            string.Format("Fetching asset failed ({0}): {1} ", request.url, webRequest.error));
 
                         if (OnFail != null)
                         {
@@ -170,7 +172,8 @@ namespace DCL.Helpers
             }
         }
 
-        public static IEnumerator FetchAudioClip(string url, AudioType audioType, Action<AudioClip> OnSuccess, Action<string> OnFail)
+        public static IEnumerator FetchAudioClip(string url, AudioType audioType, Action<AudioClip> OnSuccess,
+            Action<string> OnFail)
         {
             //NOTE(Brian): This closure is called when the download is a success.
             Action<UnityWebRequest> OnSuccessInternal =
@@ -184,15 +187,16 @@ namespace DCL.Helpers
                 };
 
             Action<string> OnFailInternal =
-            (error) =>
-            {
-                if (OnFail != null)
+                (error) =>
                 {
-                    OnFail.Invoke(error);
-                }
-            };
+                    if (OnFail != null)
+                    {
+                        OnFail.Invoke(error);
+                    }
+                };
 
-            yield return FetchAsset(url, UnityWebRequestMultimedia.GetAudioClip(url, audioType), OnSuccessInternal, OnFailInternal);
+            yield return FetchAsset(url, UnityWebRequestMultimedia.GetAudioClip(url, audioType), OnSuccessInternal,
+                OnFailInternal);
         }
 
         public static IEnumerator FetchTexture(string textureURL, Action<Texture> OnSuccess)

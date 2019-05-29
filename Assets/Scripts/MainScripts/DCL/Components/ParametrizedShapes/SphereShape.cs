@@ -1,6 +1,5 @@
 using DCL.Controllers;
 using DCL.Helpers;
-using DCL.Models;
 using UnityEngine;
 
 namespace DCL.Components

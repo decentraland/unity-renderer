@@ -28,13 +28,14 @@ namespace DCL
             }
             catch (Exception any)
             {
-
             }
+
             rbTree.Insert(value, DuplicatePolicy.InsertFirst, out dummy);
             if (index == frameRange)
             {
                 index = 0;
             }
+
             elements[index++] = value;
         }
 
@@ -44,6 +45,7 @@ namespace DCL
             {
                 return rbTree.GetItemByIndex(rbTree.ElementCount - 1);
             }
+
             int element = (int)System.Math.Floor(percentile * rbTree.ElementCount / 100f);
             return rbTree.GetItemByIndex(element);
         }
@@ -82,7 +84,9 @@ namespace DCL
             delay -= Time.deltaTime;
 
             if (delay > 0)
+            {
                 return;
+            }
 
             if (!first && lastTime < Time.time)
             {

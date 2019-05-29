@@ -1,11 +1,10 @@
-using System.Collections;
-using System.Collections.Generic;
-using System.Linq;
 using DCL.Components;
 using DCL.Helpers;
 using DCL.Models;
-using NUnit.Framework;
 using Newtonsoft.Json;
+using NUnit.Framework;
+using System.Collections;
+using System.Linq;
 using UnityEngine;
 using UnityEngine.TestTools;
 
@@ -13,7 +12,6 @@ namespace Tests
 {
     public class ParametrizedShapesTests : TestsBase
     {
-
         [UnityTest]
         public IEnumerator BoxShapeUpdate()
         {
@@ -120,7 +118,7 @@ namespace Tests
             });
 
             string componentId = TestHelpers.CreateAndSetShape(scene, entityId, DCL.Models.CLASS_ID.BOX_SHAPE,
-              componentJSON
+                componentJSON
             );
 
             BoxShape boxShapeComponent = (BoxShape)scene.GetSharedComponent(componentId);
@@ -145,7 +143,8 @@ namespace Tests
         {
             yield return InitScene();
 
-            yield return TestHelpers.TestAttachedSharedComponentOfSameTypeIsReplaced<BoxShape.Model, BoxShape>(scene, CLASS_ID.BOX_SHAPE);
+            yield return TestHelpers.TestAttachedSharedComponentOfSameTypeIsReplaced<BoxShape.Model, BoxShape>(scene,
+                CLASS_ID.BOX_SHAPE);
         }
 
         [UnityTest]
@@ -153,12 +152,14 @@ namespace Tests
         {
             yield return InitScene();
 
-            var component = TestHelpers.SharedComponentCreate<SphereShape, SphereShape.Model>(scene, CLASS_ID.SPHERE_SHAPE);
+            var component =
+                TestHelpers.SharedComponentCreate<SphereShape, SphereShape.Model>(scene, CLASS_ID.SPHERE_SHAPE);
             yield return component.routine;
 
             Assert.IsFalse(component == null);
 
-            yield return TestHelpers.TestSharedComponentDefaultsOnUpdate<SphereShape.Model, SphereShape>(scene, CLASS_ID.SPHERE_SHAPE);
+            yield return TestHelpers.TestSharedComponentDefaultsOnUpdate<SphereShape.Model, SphereShape>(scene,
+                CLASS_ID.SPHERE_SHAPE);
         }
 
         [UnityTest]
@@ -166,7 +167,8 @@ namespace Tests
         {
             yield return InitScene();
 
-            yield return TestHelpers.TestAttachedSharedComponentOfSameTypeIsReplaced<SphereShape.Model, SphereShape>(scene, CLASS_ID.SPHERE_SHAPE);
+            yield return TestHelpers.TestAttachedSharedComponentOfSameTypeIsReplaced<SphereShape.Model, SphereShape>(
+                scene, CLASS_ID.SPHERE_SHAPE);
         }
 
         [UnityTest]
@@ -179,7 +181,8 @@ namespace Tests
 
             Assert.IsFalse(component == null);
 
-            yield return TestHelpers.TestSharedComponentDefaultsOnUpdate<ConeShape.Model, ConeShape>(scene, CLASS_ID.CONE_SHAPE);
+            yield return TestHelpers.TestSharedComponentDefaultsOnUpdate<ConeShape.Model, ConeShape>(scene,
+                CLASS_ID.CONE_SHAPE);
         }
 
         [UnityTest]
@@ -187,7 +190,8 @@ namespace Tests
         {
             yield return InitScene();
 
-            yield return TestHelpers.TestAttachedSharedComponentOfSameTypeIsReplaced<ConeShape.Model, ConeShape>(scene, CLASS_ID.CONE_SHAPE);
+            yield return TestHelpers.TestAttachedSharedComponentOfSameTypeIsReplaced<ConeShape.Model, ConeShape>(scene,
+                CLASS_ID.CONE_SHAPE);
         }
 
         [UnityTest]
@@ -195,12 +199,14 @@ namespace Tests
         {
             yield return InitScene();
 
-            var component = TestHelpers.SharedComponentCreate<CylinderShape, CylinderShape.Model>(scene, CLASS_ID.CYLINDER_SHAPE);
+            var component =
+                TestHelpers.SharedComponentCreate<CylinderShape, CylinderShape.Model>(scene, CLASS_ID.CYLINDER_SHAPE);
             yield return component.routine;
 
             Assert.IsFalse(component == null);
 
-            yield return TestHelpers.TestSharedComponentDefaultsOnUpdate<CylinderShape.Model, CylinderShape>(scene, CLASS_ID.CYLINDER_SHAPE);
+            yield return TestHelpers.TestSharedComponentDefaultsOnUpdate<CylinderShape.Model, CylinderShape>(scene,
+                CLASS_ID.CYLINDER_SHAPE);
         }
 
         [UnityTest]
@@ -208,7 +214,9 @@ namespace Tests
         {
             yield return InitScene();
 
-            yield return TestHelpers.TestAttachedSharedComponentOfSameTypeIsReplaced<CylinderShape.Model, CylinderShape>(scene, CLASS_ID.CYLINDER_SHAPE);
+            yield return
+                TestHelpers.TestAttachedSharedComponentOfSameTypeIsReplaced<CylinderShape.Model, CylinderShape>(scene,
+                    CLASS_ID.CYLINDER_SHAPE);
         }
 
         [UnityTest]
@@ -216,12 +224,14 @@ namespace Tests
         {
             yield return InitScene();
 
-            var component = TestHelpers.SharedComponentCreate<PlaneShape, PlaneShape.Model>(scene, CLASS_ID.PLANE_SHAPE);
+            var component =
+                TestHelpers.SharedComponentCreate<PlaneShape, PlaneShape.Model>(scene, CLASS_ID.PLANE_SHAPE);
             yield return component.routine;
 
             Assert.IsFalse(component == null);
 
-            yield return TestHelpers.TestSharedComponentDefaultsOnUpdate<PlaneShape.Model, PlaneShape>(scene, CLASS_ID.PLANE_SHAPE);
+            yield return TestHelpers.TestSharedComponentDefaultsOnUpdate<PlaneShape.Model, PlaneShape>(scene,
+                CLASS_ID.PLANE_SHAPE);
         }
 
         [UnityTest]
@@ -229,7 +239,8 @@ namespace Tests
         {
             yield return InitScene();
 
-            yield return TestHelpers.TestAttachedSharedComponentOfSameTypeIsReplaced<PlaneShape.Model, PlaneShape>(scene, CLASS_ID.PLANE_SHAPE);
+            yield return TestHelpers.TestAttachedSharedComponentOfSameTypeIsReplaced<PlaneShape.Model, PlaneShape>(
+                scene, CLASS_ID.PLANE_SHAPE);
         }
 
         [UnityTest]
@@ -260,10 +271,11 @@ namespace Tests
             }));
 
             // Update shape without collision
-            string shapeId = TestHelpers.CreateAndSetShape(scene, entityId, DCL.Models.CLASS_ID.BOX_SHAPE, JsonConvert.SerializeObject(new
-            {
-                withCollisions = false
-            }));
+            string shapeId = TestHelpers.CreateAndSetShape(scene, entityId, DCL.Models.CLASS_ID.BOX_SHAPE,
+                JsonConvert.SerializeObject(new
+                {
+                    withCollisions = false
+                }));
 
             yield return null;
 
@@ -305,6 +317,7 @@ namespace Tests
         public IEnumerator ShapesVisibilityDefault()
         {
             #region Arrange
+
             yield return InitScene();
 
             BoxShape boxShapeComponent = TestHelpers.CreateEntityWithBoxShape(scene, Vector3.zero);
@@ -312,13 +325,17 @@ namespace Tests
             PlaneShape planeShapeComponent = TestHelpers.CreateEntityWithPlaneShape(scene, Vector3.zero);
             CylinderShape cylinderShapeComponent = TestHelpers.CreateEntityWithCylinderShape(scene, Vector3.zero);
             ConeShape coneShapeComponent = TestHelpers.CreateEntityWithConeShape(scene, Vector3.zero);
+
             #endregion
 
             #region Act
+
             //EMPTY
+
             #endregion
 
             #region Assert
+
             Assert.AreEqual(true, boxShapeComponent.model.visible);
             Assert.IsTrue(CheckVisibility(boxShapeComponent, true));
 
@@ -333,6 +350,7 @@ namespace Tests
 
             Assert.AreEqual(true, coneShapeComponent.model.visible);
             Assert.IsTrue(CheckVisibility(coneShapeComponent, true));
+
             #endregion
         }
 
@@ -340,20 +358,31 @@ namespace Tests
         public IEnumerator ShapesVisibilityCreateTrue()
         {
             #region Arrange
+
             yield return InitScene();
 
-            BoxShape boxShapeComponent = TestHelpers.CreateEntityWithBoxShape(scene, Vector3.zero, new BoxShape.Model { visible = true });
-            SphereShape sphereShapeComponent = TestHelpers.CreateEntityWithSphereShape(scene, Vector3.zero, new SphereShape.Model { visible = true });
-            PlaneShape planeShapeComponent = TestHelpers.CreateEntityWithPlaneShape(scene, Vector3.zero, new PlaneShape.Model { visible = true });
-            CylinderShape cylinderShapeComponent = TestHelpers.CreateEntityWithCylinderShape(scene, Vector3.zero, new CylinderShape.Model { visible = true });
-            ConeShape coneShapeComponent = TestHelpers.CreateEntityWithConeShape(scene, Vector3.zero, new ConeShape.Model { visible = true });
+            BoxShape boxShapeComponent =
+                TestHelpers.CreateEntityWithBoxShape(scene, Vector3.zero, new BoxShape.Model { visible = true });
+            SphereShape sphereShapeComponent =
+                TestHelpers.CreateEntityWithSphereShape(scene, Vector3.zero, new SphereShape.Model { visible = true });
+            PlaneShape planeShapeComponent =
+                TestHelpers.CreateEntityWithPlaneShape(scene, Vector3.zero, new PlaneShape.Model { visible = true });
+            CylinderShape cylinderShapeComponent =
+                TestHelpers.CreateEntityWithCylinderShape(scene, Vector3.zero,
+                    new CylinderShape.Model { visible = true });
+            ConeShape coneShapeComponent =
+                TestHelpers.CreateEntityWithConeShape(scene, Vector3.zero, new ConeShape.Model { visible = true });
+
             #endregion
 
             #region Act
+
             //EMPTY
+
             #endregion
 
             #region Assert
+
             Assert.AreEqual(true, boxShapeComponent.model.visible);
             Assert.IsTrue(CheckVisibility(boxShapeComponent, true));
 
@@ -368,6 +397,7 @@ namespace Tests
 
             Assert.AreEqual(true, coneShapeComponent.model.visible);
             Assert.IsTrue(CheckVisibility(coneShapeComponent, true));
+
             #endregion
         }
 
@@ -375,20 +405,26 @@ namespace Tests
         public IEnumerator ShapesVisibilityCreateFalse()
         {
             #region Arrange
+
             yield return InitScene();
 
             BoxShape boxShapeComponent = TestHelpers.CreateEntityWithBoxShape(scene, Vector3.zero, false);
             SphereShape sphereShapeComponent = TestHelpers.CreateEntityWithSphereShape(scene, Vector3.zero, false);
             PlaneShape planeShapeComponent = TestHelpers.CreateEntityWithPlaneShape(scene, Vector3.zero, false);
-            CylinderShape cylinderShapeComponent = TestHelpers.CreateEntityWithCylinderShape(scene, Vector3.zero, false);
+            CylinderShape cylinderShapeComponent =
+                TestHelpers.CreateEntityWithCylinderShape(scene, Vector3.zero, false);
             ConeShape coneShapeComponent = TestHelpers.CreateEntityWithConeShape(scene, Vector3.zero, false);
+
             #endregion
 
             #region Act
+
             //EMPTY
+
             #endregion
 
             #region Assert
+
             Assert.AreEqual(false, boxShapeComponent.model.visible);
             Assert.IsTrue(CheckVisibility(boxShapeComponent, false));
 
@@ -403,6 +439,7 @@ namespace Tests
 
             Assert.AreEqual(false, coneShapeComponent.model.visible);
             Assert.IsTrue(CheckVisibility(coneShapeComponent, false));
+
             #endregion
         }
 
@@ -410,25 +447,31 @@ namespace Tests
         public IEnumerator ShapesVisibilityUpdateTrue()
         {
             #region Arrange
+
             yield return InitScene();
 
             BoxShape boxShapeComponent = TestHelpers.CreateEntityWithBoxShape(scene, Vector3.zero, false);
             SphereShape sphereShapeComponent = TestHelpers.CreateEntityWithSphereShape(scene, Vector3.zero, false);
             PlaneShape planeShapeComponent = TestHelpers.CreateEntityWithPlaneShape(scene, Vector3.zero, false);
-            CylinderShape cylinderShapeComponent = TestHelpers.CreateEntityWithCylinderShape(scene, Vector3.zero, false);
+            CylinderShape cylinderShapeComponent =
+                TestHelpers.CreateEntityWithCylinderShape(scene, Vector3.zero, false);
             ConeShape coneShapeComponent = TestHelpers.CreateEntityWithConeShape(scene, Vector3.zero, false);
+
             #endregion
 
             #region Act
+
             BaseShape.Model visibleModel = new BaseShape.Model { visible = true };
             TestHelpers.SharedComponentUpdate(scene, boxShapeComponent, visibleModel);
             TestHelpers.SharedComponentUpdate(scene, sphereShapeComponent, visibleModel);
             TestHelpers.SharedComponentUpdate(scene, planeShapeComponent, visibleModel);
             TestHelpers.SharedComponentUpdate(scene, cylinderShapeComponent, visibleModel);
             TestHelpers.SharedComponentUpdate(scene, coneShapeComponent, visibleModel);
+
             #endregion
 
             #region Assert
+
             Assert.AreEqual(true, boxShapeComponent.model.visible);
             Assert.IsTrue(CheckVisibility(boxShapeComponent, true));
 
@@ -443,6 +486,7 @@ namespace Tests
 
             Assert.AreEqual(true, coneShapeComponent.model.visible);
             Assert.IsTrue(CheckVisibility(coneShapeComponent, true));
+
             #endregion
         }
 
@@ -450,6 +494,7 @@ namespace Tests
         public IEnumerator ShapesVisibilityUpdateFalse()
         {
             #region Arrange
+
             yield return InitScene();
 
             BoxShape boxShapeComponent = TestHelpers.CreateEntityWithBoxShape(scene, Vector3.zero, true);
@@ -457,18 +502,22 @@ namespace Tests
             PlaneShape planeShapeComponent = TestHelpers.CreateEntityWithPlaneShape(scene, Vector3.zero, true);
             CylinderShape cylinderShapeComponent = TestHelpers.CreateEntityWithCylinderShape(scene, Vector3.zero, true);
             ConeShape coneShapeComponent = TestHelpers.CreateEntityWithConeShape(scene, Vector3.zero, true);
+
             #endregion
 
             #region Act
+
             BaseShape.Model hiddenModel = new BaseShape.Model { visible = false };
             TestHelpers.SharedComponentUpdate(scene, boxShapeComponent, hiddenModel);
             TestHelpers.SharedComponentUpdate(scene, sphereShapeComponent, hiddenModel);
             TestHelpers.SharedComponentUpdate(scene, planeShapeComponent, hiddenModel);
             TestHelpers.SharedComponentUpdate(scene, cylinderShapeComponent, hiddenModel);
             TestHelpers.SharedComponentUpdate(scene, coneShapeComponent, hiddenModel);
+
             #endregion
 
             #region Assert
+
             Assert.AreEqual(false, boxShapeComponent.model.visible);
             Assert.IsTrue(CheckVisibility(boxShapeComponent, false));
 
@@ -483,6 +532,7 @@ namespace Tests
 
             Assert.AreEqual(false, coneShapeComponent.model.visible);
             Assert.IsTrue(CheckVisibility(coneShapeComponent, false));
+
             #endregion
         }
 
@@ -490,16 +540,20 @@ namespace Tests
         public IEnumerator ShapesVisibilityUpdateMixed()
         {
             #region Arrange
+
             yield return InitScene();
 
             BoxShape boxShapeComponent = TestHelpers.CreateEntityWithBoxShape(scene, Vector3.zero, true);
             SphereShape sphereShapeComponent = TestHelpers.CreateEntityWithSphereShape(scene, Vector3.zero, false);
             PlaneShape planeShapeComponent = TestHelpers.CreateEntityWithPlaneShape(scene, Vector3.zero, true);
-            CylinderShape cylinderShapeComponent = TestHelpers.CreateEntityWithCylinderShape(scene, Vector3.zero, false);
+            CylinderShape cylinderShapeComponent =
+                TestHelpers.CreateEntityWithCylinderShape(scene, Vector3.zero, false);
             ConeShape coneShapeComponent = TestHelpers.CreateEntityWithConeShape(scene, Vector3.zero, true);
+
             #endregion
 
             #region Act
+
             BaseShape.Model visibleModel = new BaseShape.Model { visible = true };
             BaseShape.Model hiddenModel = new BaseShape.Model { visible = false };
             TestHelpers.SharedComponentUpdate(scene, boxShapeComponent, hiddenModel);
@@ -507,9 +561,11 @@ namespace Tests
             TestHelpers.SharedComponentUpdate(scene, planeShapeComponent, hiddenModel);
             TestHelpers.SharedComponentUpdate(scene, cylinderShapeComponent, visibleModel);
             TestHelpers.SharedComponentUpdate(scene, coneShapeComponent, hiddenModel);
+
             #endregion
 
             #region Assert
+
             Assert.AreEqual(false, boxShapeComponent.model.visible);
             Assert.IsTrue(CheckVisibility(boxShapeComponent, false));
 
@@ -524,6 +580,7 @@ namespace Tests
 
             Assert.AreEqual(false, coneShapeComponent.model.visible);
             Assert.IsTrue(CheckVisibility(coneShapeComponent, false));
+
             #endregion
         }
 
@@ -543,6 +600,7 @@ namespace Tests
                     }
                 }
             }
+
             return true;
         }
     }

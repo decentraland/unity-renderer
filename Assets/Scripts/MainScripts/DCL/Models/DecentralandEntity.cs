@@ -1,7 +1,7 @@
-using System;
-using System.Collections.Generic;
 using DCL.Components;
 using DCL.Controllers;
+using System;
+using System.Collections.Generic;
 using UnityEngine;
 
 namespace DCL.Models
@@ -10,7 +10,10 @@ namespace DCL.Models
     public class DecentralandEntity
     {
         public ParcelScene scene;
-        public Dictionary<CLASS_ID_COMPONENT, BaseComponent> components = new Dictionary<CLASS_ID_COMPONENT, BaseComponent>();
+
+        public Dictionary<CLASS_ID_COMPONENT, BaseComponent> components =
+            new Dictionary<CLASS_ID_COMPONENT, BaseComponent>();
+
         public GameObject gameObject;
         public string entityId;
 
@@ -40,7 +43,10 @@ namespace DCL.Models
 
         public void AddSharedComponent(Type componentType, BaseDisposable component)
         {
-            if (component == null) return;
+            if (component == null)
+            {
+                return;
+            }
 
             RemoveSharedComponent(componentType);
 
@@ -55,7 +61,9 @@ namespace DCL.Models
                 sharedComponents.Remove(targetType);
 
                 if (triggerDettaching)
+                {
                     component.DetachFrom(this, targetType);
+                }
             }
         }
 

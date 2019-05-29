@@ -1,7 +1,6 @@
-using System.Collections;
+using DCL.Helpers;
 using System.Collections.Generic;
 using UnityEngine;
-using DCL.Helpers;
 
 public class MaterialTransitionController : MonoBehaviour
 {
@@ -38,7 +37,9 @@ public class MaterialTransitionController : MonoBehaviour
         get
         {
             if (targetRendererValue == null)
+            {
                 targetRendererValue = GetComponent<Renderer>();
+            }
 
             return targetRendererValue;
         }
@@ -72,7 +73,6 @@ public class MaterialTransitionController : MonoBehaviour
     }
 
 
-
     private void Awake()
     {
         state = State.NOT_LOADED;
@@ -99,7 +99,9 @@ public class MaterialTransitionController : MonoBehaviour
         tr.enabled = false;
 
         if (useHologram)
+        {
             InitHologram();
+        }
 
         lowerYRendererBounds = GetLowerBoundsY(tr);
         topYRendererBounds = GetTopBoundsY(tr);
@@ -121,7 +123,6 @@ public class MaterialTransitionController : MonoBehaviour
         hologramMaterial = Resources.Load("Materials/HologramMaterial") as Material;
         placeholderRenderer.sharedMaterials = new Material[] { hologramMaterial };
     }
-
 
 
     private void Update()
@@ -156,8 +157,10 @@ public class MaterialTransitionController : MonoBehaviour
 
                         state = State.SHOWING_LOADED;
                     }
+
                     break;
                 }
+
             case State.SHOWING_LOADED:
                 {
                     currentCullYPlane += (lowerYRendererBounds - currentCullYPlane) * 0.1f;
@@ -188,6 +191,7 @@ public class MaterialTransitionController : MonoBehaviour
 
                     break;
                 }
+
             case State.FINISHED:
                 {
                     Destroy(this);
@@ -205,7 +209,9 @@ public class MaterialTransitionController : MonoBehaviour
             foreach (Material m in loadingMaterialCopies)
             {
                 if (m != null)
+                {
                     Destroy(m);
+                }
             }
         }
     }
@@ -248,7 +254,9 @@ public class MaterialTransitionController : MonoBehaviour
     public static void ApplyToLoadedObjectFast(GameObject meshContainer)
     {
         if (block == null)
+        {
             block = new MaterialPropertyBlock();
+        }
 
         Renderer[] renderers = meshContainer.GetComponentsInChildren<Renderer>();
 
@@ -263,7 +271,8 @@ public class MaterialTransitionController : MonoBehaviour
     }
 
 
-    public static void ApplyToLoadedObject(GameObject meshContainer, bool useHologram=true, float fadeThickness=20, float delay=0)
+    public static void ApplyToLoadedObject(GameObject meshContainer, bool useHologram = true, float fadeThickness = 20,
+        float delay = 0)
     {
         Renderer[] renderers = meshContainer.GetComponentsInChildren<Renderer>();
 
@@ -278,5 +287,4 @@ public class MaterialTransitionController : MonoBehaviour
             transition.OnDidFinishLoading(finalMaterial);
         }
     }
-
 }

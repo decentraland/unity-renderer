@@ -1,5 +1,3 @@
-using System.Collections;
-using System.Collections.Generic;
 using DCL.Controllers;
 using DCL.Models;
 using UnityEngine;
@@ -21,7 +19,10 @@ namespace DCL.Components
 
         public override void AttachTo(DecentralandEntity entity, System.Type overridenAttachedType = null)
         {
-            if (attachedEntities.Contains(entity)) return;
+            if (attachedEntities.Contains(entity))
+            {
+                return;
+            }
 
             base.AttachTo(entity, typeof(BaseShape));
             entity.currentShape = this;
@@ -40,7 +41,8 @@ namespace DCL.Components
             base.DetachFrom(entity, typeof(BaseShape));
         }
 
-        public static void ConfigureColliders(GameObject meshGameObject, bool hasCollision, bool filterByColliderName = false)
+        public static void ConfigureColliders(GameObject meshGameObject, bool hasCollision,
+            bool filterByColliderName = false)
         {
             if (meshGameObject == null)
             {
@@ -97,17 +99,21 @@ namespace DCL.Components
 
         public static void ConfigureVisibility(GameObject meshGameObject, bool isVisible)
         {
-            if (meshGameObject == null) return;
+            if (meshGameObject == null)
+            {
+                return;
+            }
 
             if (!isVisible)
             {
-                MaterialTransitionController[] materialTransitionControllers = meshGameObject.GetComponentsInChildren<MaterialTransitionController>();
+                MaterialTransitionController[] materialTransitionControllers =
+                    meshGameObject.GetComponentsInChildren<MaterialTransitionController>();
                 for (var i = 0; i < materialTransitionControllers.Length; i++)
                 {
                     GameObject.Destroy(materialTransitionControllers[i]);
                 }
             }
-            
+
             MeshRenderer[] meshRenderers = meshGameObject.GetComponentsInChildren<MeshRenderer>();
             for (var i = 0; i < meshRenderers.Length; i++)
             {
@@ -115,6 +121,4 @@ namespace DCL.Components
             }
         }
     }
-
 }
-

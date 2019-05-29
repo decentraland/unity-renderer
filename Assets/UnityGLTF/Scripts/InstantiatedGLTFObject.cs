@@ -53,7 +53,7 @@ namespace UnityGLTF
 
             InstantiatedGLTFObject newGltfObjectComponent = duplicatedObject.GetComponent<InstantiatedGLTFObject>();
             newGltfObjectComponent.CachedData = CachedData;
-			CachedData.IncreaseRefCount();
+            CachedData.IncreaseRefCount();
 
             return newGltfObjectComponent;
         }

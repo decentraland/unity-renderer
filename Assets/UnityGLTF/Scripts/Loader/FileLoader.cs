@@ -1,8 +1,6 @@
-using System.IO;
-using GLTF;
-using UnityEngine;
 using System;
 using System.Collections;
+using System.IO;
 // using System.Threading.Tasks;
 
 namespace UnityGLTF.Loader

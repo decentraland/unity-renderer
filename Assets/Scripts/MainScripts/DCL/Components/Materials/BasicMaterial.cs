@@ -14,7 +14,8 @@ namespace DCL.Components
             public string texture;
 
             [Range(0f, 1f)]
-            public float alphaTest = 0.5f; // value that defines if a pixel is visible or invisible (no transparency gradients)
+            public float
+                alphaTest = 0.5f; // value that defines if a pixel is visible or invisible (no transparency gradients)
         }
 
         public Model model = new Model();
@@ -30,7 +31,10 @@ namespace DCL.Components
 
         public override void AttachTo(DecentralandEntity entity, System.Type overridenAttachedType = null)
         {
-            if (attachedEntities.Contains(entity)) return;
+            if (attachedEntities.Contains(entity))
+            {
+                return;
+            }
 
             entity.RemoveSharedComponent(typeof(PBRMaterial));
 
@@ -88,7 +92,8 @@ namespace DCL.Components
 
             if (meshRenderer != null && meshRenderer.sharedMaterial != material)
             {
-                MaterialTransitionController matTransition = meshGameObject.GetComponent<MaterialTransitionController>();
+                MaterialTransitionController
+                    matTransition = meshGameObject.GetComponent<MaterialTransitionController>();
 
                 if (matTransition != null && matTransition.canSwitchMaterial)
                 {

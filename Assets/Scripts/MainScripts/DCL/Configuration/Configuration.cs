@@ -1,4 +1,3 @@
-
 namespace DCL.Configuration
 {
     public static class ApplicationSettings

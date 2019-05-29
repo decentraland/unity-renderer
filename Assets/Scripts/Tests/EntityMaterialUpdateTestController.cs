@@ -61,7 +61,8 @@ public class EntityMaterialUpdateTestController : MonoBehaviour
 
         // Re-assign last PBR material to new entity
         BoxShape shape = TestHelpers.CreateEntityWithBoxShape(scene, new Vector3(5, 1, 2));
-        BasicMaterial m = TestHelpers.SharedComponentCreate<BasicMaterial, BasicMaterial.Model>(scene, CLASS_ID.BASIC_MATERIAL);
+        BasicMaterial m =
+            TestHelpers.SharedComponentCreate<BasicMaterial, BasicMaterial.Model>(scene, CLASS_ID.BASIC_MATERIAL);
 
         Color color1;
         ColorUtility.TryParseHtmlString("#FF9292", out color1);

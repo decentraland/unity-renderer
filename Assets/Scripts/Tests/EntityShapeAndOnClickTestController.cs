@@ -13,7 +13,7 @@ public class EntityShapeAndOnClickTestController : MonoBehaviour
         var scenesToLoad = (Resources.Load("TestJSON/SceneLoadingTest") as TextAsset).text;
 
         sceneController.UnloadAllScenes();
-        var scene = sceneController.CreateTestScene();//LoadParcelScenes(scenesToLoad);
+        var scene = sceneController.CreateTestScene(); //LoadParcelScenes(scenesToLoad);
         yield return new WaitForAllMessagesProcessed();
 
         TestHelpers.InstantiateEntityWithShape(scene, "1", DCL.Models.CLASS_ID.BOX_SHAPE, new Vector3(-3, 1, 0));
@@ -23,9 +23,12 @@ public class EntityShapeAndOnClickTestController : MonoBehaviour
         TestHelpers.InstantiateEntityWithShape(scene, "5", DCL.Models.CLASS_ID.CYLINDER_SHAPE, new Vector3(6, 1, 0));
         // TestHelpers.InstantiateEntityWithShape(scene, "6", DCL.Models.CLASS_ID.GLTF_SHAPE, new Vector3(0, 1, 6), TestHelpers.GetTestsAssetsPath() + "/GLB/Trunk/Trunk.glb");
         // TestHelpers.InstantiateEntityWithShape(scene, "6", DCL.Models.CLASS_ID.GLTF_SHAPE, new Vector3(0, 1, 6), TestHelpers.GetTestsAssetsPath() + "/GLB/Lantern/Lantern.glb");
-        TestHelpers.InstantiateEntityWithShape(scene, "6", DCL.Models.CLASS_ID.GLTF_SHAPE, new Vector3(0, 1, 6), TestHelpers.GetTestsAssetsPath() + "/GLTF/Avatar_Idle.glb");
-        TestHelpers.InstantiateEntityWithShape(scene, "7", DCL.Models.CLASS_ID.OBJ_SHAPE, new Vector3(10, 1, 0), TestHelpers.GetTestsAssetsPath() + "/OBJs/teapot.obj");
-        TestHelpers.InstantiateEntityWithShape(scene, "8", DCL.Models.CLASS_ID.GLTF_SHAPE, new Vector3(0, 1, 12), TestHelpers.GetTestsAssetsPath() + "/GLB/CesiumMan/CesiumMan.glb");
+        TestHelpers.InstantiateEntityWithShape(scene, "6", DCL.Models.CLASS_ID.GLTF_SHAPE, new Vector3(0, 1, 6),
+            TestHelpers.GetTestsAssetsPath() + "/GLTF/Avatar_Idle.glb");
+        TestHelpers.InstantiateEntityWithShape(scene, "7", DCL.Models.CLASS_ID.OBJ_SHAPE, new Vector3(10, 1, 0),
+            TestHelpers.GetTestsAssetsPath() + "/OBJs/teapot.obj");
+        TestHelpers.InstantiateEntityWithShape(scene, "8", DCL.Models.CLASS_ID.GLTF_SHAPE, new Vector3(0, 1, 12),
+            TestHelpers.GetTestsAssetsPath() + "/GLB/CesiumMan/CesiumMan.glb");
 
         for (int i = 0; i < 8; i++)
         {
@@ -42,7 +45,8 @@ public class EntityShapeAndOnClickTestController : MonoBehaviour
                 uuid = "event" + eventIndex
             };
 
-            TestHelpers.EntityComponentCreate<OnClickComponent, OnClickComponent.Model>(scene, scene.entities[eventIndex], OnClickComponentModel);
+            TestHelpers.EntityComponentCreate<OnClickComponent, OnClickComponent.Model>(scene,
+                scene.entities[eventIndex], OnClickComponentModel);
         }
 
         var charController = FindObjectOfType<DCLCharacterController>();
@@ -55,14 +59,16 @@ public class EntityShapeAndOnClickTestController : MonoBehaviour
 
         string animJson = JsonConvert.SerializeObject(new DCLAnimator.Model
         {
-            states = new DCLAnimator.Model.DCLAnimationState[] {
-                new DCLAnimator.Model.DCLAnimationState {
-                  name = "clip01",
-                  clip = "animation:0",
-                  playing = true,
-                  looping = true,
-                  weight = 1,
-                  speed = 1
+            states = new DCLAnimator.Model.DCLAnimationState[]
+            {
+                new DCLAnimator.Model.DCLAnimationState
+                {
+                    name = "clip01",
+                    clip = "animation:0",
+                    playing = true,
+                    looping = true,
+                    weight = 1,
+                    speed = 1
                 }
             }
         });
@@ -85,7 +91,8 @@ public class EntityShapeAndOnClickTestController : MonoBehaviour
             json = animJson
         }));
 
-        var model = new TextShape.Model() { value = "Hello World!", width = 0.5f, height = 0.5f, hTextAlign = "center", vTextAlign = "center" };
+        var model = new TextShape.Model()
+        { value = "Hello World!", width = 0.5f, height = 0.5f, hTextAlign = "center", vTextAlign = "center" };
         TestHelpers.InstantiateEntityWithTextShape(scene, new Vector3(5, 5, 5), model);
 
         yield return null;

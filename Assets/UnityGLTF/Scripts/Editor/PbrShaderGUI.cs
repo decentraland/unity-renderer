@@ -76,11 +76,18 @@ namespace UnityEditor
             metallicMap = FindProperty("_MetallicGlossMap", props, false);
             metallic = FindProperty("_Metallic", props, false);
             if (specularMap != null && specularColor != null)
+            {
                 m_WorkflowMode = WorkflowMode.SpecularGlossiness;
+            }
             else if (metallicMap != null && metallic != null)
+            {
                 m_WorkflowMode = WorkflowMode.MetallicRoughness;
+            }
             else
+            {
                 m_WorkflowMode = WorkflowMode.Unlit;
+            }
+
             smoothness = FindProperty("_Glossiness", props);
             bumpScale = FindProperty("_BumpScale", props);
             bumpMap = FindProperty("_BumpMap", props);
@@ -131,18 +138,26 @@ namespace UnityEditor
             if (EditorGUI.EndChangeCheck())
             {
                 foreach (var obj in blendMode.targets)
+                {
                     MaterialChanged((Material)obj, m_WorkflowMode);
+                }
             }
         }
 
         internal void DetermineWorkflow(MaterialProperty[] props)
         {
             if (FindProperty("_SpecGlossMap", props, false) != null && FindProperty("_SpecColor", props, false) != null)
+            {
                 m_WorkflowMode = WorkflowMode.SpecularGlossiness;
+            }
             else if (FindProperty("_MetallicGlossMap", props, false) != null && FindProperty("_Metallic", props, false) != null)
+            {
                 m_WorkflowMode = WorkflowMode.MetallicRoughness;
+            }
             else
+            {
                 m_WorkflowMode = WorkflowMode.Unlit;
+            }
         }
 
         void BlendModePopup()
@@ -180,7 +195,9 @@ namespace UnityEditor
             // If texture was assigned and color was black set color to white
             float brightness = emissionColor.colorValue.maxColorComponent;
             if (emissionMap.textureValue != null && !hadEmissionTexture && brightness <= 0f)
+            {
                 emissionColor.colorValue = Color.white;
+            }
         }
 
         void DoSpecularMetallicArea()
@@ -247,9 +264,13 @@ namespace UnityEditor
             // (MaterialProperty value might come from renderer material property block)
             SetKeyword(material, "_NORMALMAP", material.GetTexture("_BumpMap"));
             if (workflowMode == WorkflowMode.SpecularGlossiness)
+            {
                 SetKeyword(material, "_SPECGLOSSMAP", material.GetTexture("_SpecGlossMap"));
+            }
             else if (workflowMode == WorkflowMode.MetallicRoughness)
+            {
                 SetKeyword(material, "_METALLICGLOSSMAP", material.GetTexture("_MetallicGlossMap"));
+            }
 
             bool shouldEmissionBeEnabled = material.GetColor("_EmissionColor") != Color.black;
             SetKeyword(material, "_EMISSION", shouldEmissionBeEnabled);
@@ -265,9 +286,13 @@ namespace UnityEditor
         static void SetKeyword(Material m, string keyword, bool state)
         {
             if (state)
+            {
                 m.EnableKeyword(keyword);
+            }
             else
+            {
                 m.DisableKeyword(keyword);
+            }
         }
     }
 } // namespace UnityEditor

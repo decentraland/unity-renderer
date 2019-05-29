@@ -1,6 +1,3 @@
-using DCL.Helpers;
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -10,6 +7,7 @@ namespace DCL.Components
     {
         [Header("UIScrollRect Fields")]
         public LayoutGroup paddingLayoutGroup;
+
         public Scrollbar HScrollbar;
         public Scrollbar VScrollbar;
         public ScrollRect scrollRect;

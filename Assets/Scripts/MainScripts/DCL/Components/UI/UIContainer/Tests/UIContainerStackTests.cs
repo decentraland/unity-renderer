@@ -1,10 +1,9 @@
-using System.Collections;
-using System.Collections.Generic;
 using DCL.Components;
 using DCL.Helpers;
 using DCL.Models;
 using Newtonsoft.Json;
 using NUnit.Framework;
+using System.Collections;
 using UnityEngine;
 using UnityEngine.TestTools;
 using UnityEngine.UI;
@@ -29,11 +28,15 @@ namespace Tests
             }));
 
             // Create UIScreenSpaceShape
-            UIScreenSpace screenSpaceShape = TestHelpers.SharedComponentCreate<UIScreenSpace, UIScreenSpace.Model>(scene, CLASS_ID.UI_SCREEN_SPACE_SHAPE);
+            UIScreenSpace screenSpaceShape =
+                TestHelpers.SharedComponentCreate<UIScreenSpace, UIScreenSpace.Model>(scene,
+                    CLASS_ID.UI_SCREEN_SPACE_SHAPE);
             yield return screenSpaceShape.routine;
 
             // Create UIContainerStack
-            UIContainerStack uiContainerStack = TestHelpers.SharedComponentCreate<UIContainerStack, UIContainerStack.Model>(scene, CLASS_ID.UI_CONTAINER_STACK);
+            UIContainerStack uiContainerStack =
+                TestHelpers.SharedComponentCreate<UIContainerStack, UIContainerStack.Model>(scene,
+                    CLASS_ID.UI_CONTAINER_STACK);
             yield return uiContainerStack.routine;
 
             UnityEngine.UI.Image image = uiContainerStack.referencesContainer.image;
@@ -62,17 +65,20 @@ namespace Tests
             yield return uiContainerStack.routine;
 
             // Check updated properties are applied correctly
-            Assert.IsTrue(uiContainerStack.referencesContainer.transform.parent == screenSpaceShape.childHookRectTransform);
+            Assert.IsTrue(uiContainerStack.referencesContainer.transform.parent ==
+                          screenSpaceShape.childHookRectTransform);
             Assert.IsTrue(image.color == new Color(0.2f, 0.7f, 0.05f, 1f));
             Assert.IsTrue(image.raycastTarget);
             Assert.AreEqual(275f, uiContainerStack.childHookRectTransform.rect.width);
             Assert.AreEqual(130f, uiContainerStack.childHookRectTransform.rect.height);
             Assert.IsTrue(uiContainerStack.referencesContainer.layoutGroup.childAlignment == TextAnchor.LowerRight);
 
-            Vector2 alignedPosition = CalculateAlignedPosition(screenSpaceShape.childHookRectTransform.rect, uiContainerStack.childHookRectTransform.rect, "bottom", "right");
+            Vector2 alignedPosition = CalculateAlignedPosition(screenSpaceShape.childHookRectTransform.rect,
+                uiContainerStack.childHookRectTransform.rect, "bottom", "right");
             alignedPosition += new Vector2(-30, -15); // apply offset position
 
-            Assert.AreEqual(alignedPosition.ToString(), uiContainerStack.childHookRectTransform.anchoredPosition.ToString());
+            Assert.AreEqual(alignedPosition.ToString(),
+                uiContainerStack.childHookRectTransform.anchoredPosition.ToString());
 
             screenSpaceShape.Dispose();
         }
@@ -93,12 +99,15 @@ namespace Tests
             }));
 
             // Create UIScreenSpaceShape
-            UIScreenSpace screenSpaceShape = TestHelpers.SharedComponentCreate<UIScreenSpace, UIScreenSpace.Model>(scene, CLASS_ID.UI_SCREEN_SPACE_SHAPE);
+            UIScreenSpace screenSpaceShape =
+                TestHelpers.SharedComponentCreate<UIScreenSpace, UIScreenSpace.Model>(scene,
+                    CLASS_ID.UI_SCREEN_SPACE_SHAPE);
             yield return screenSpaceShape.routine;
 
             Assert.IsFalse(screenSpaceShape == null);
 
-            yield return TestHelpers.TestSharedComponentDefaultsOnUpdate<UIContainerStack.Model, UIContainerStack>(scene, CLASS_ID.UI_CONTAINER_STACK);
+            yield return TestHelpers.TestSharedComponentDefaultsOnUpdate<UIContainerStack.Model, UIContainerStack>(
+                scene, CLASS_ID.UI_CONTAINER_STACK);
         }
 
         [UnityTest]
@@ -117,24 +126,30 @@ namespace Tests
             }));
 
             // Create UIScreenSpaceShape
-            UIScreenSpace screenSpaceShape = TestHelpers.SharedComponentCreate<UIScreenSpace, UIScreenSpace.Model>(scene, CLASS_ID.UI_SCREEN_SPACE_SHAPE);
+            UIScreenSpace screenSpaceShape =
+                TestHelpers.SharedComponentCreate<UIScreenSpace, UIScreenSpace.Model>(scene,
+                    CLASS_ID.UI_SCREEN_SPACE_SHAPE);
             yield return screenSpaceShape.routine;
 
             // Create UIContainerStack
-            UIContainerStack uiContainerStack = TestHelpers.SharedComponentCreate<UIContainerStack, UIContainerStack.Model>(scene, CLASS_ID.UI_CONTAINER_STACK,
-                 new UIContainerStack.Model
-                 {
-                     parentComponent = screenSpaceShape.id,
-                     width = new UIValue(50, UIValue.Unit.PERCENT),
-                     height = new UIValue(30, UIValue.Unit.PERCENT)
-                 });
+            UIContainerStack uiContainerStack =
+                TestHelpers.SharedComponentCreate<UIContainerStack, UIContainerStack.Model>(scene,
+                    CLASS_ID.UI_CONTAINER_STACK,
+                    new UIContainerStack.Model
+                    {
+                        parentComponent = screenSpaceShape.id,
+                        width = new UIValue(50, UIValue.Unit.PERCENT),
+                        height = new UIValue(30, UIValue.Unit.PERCENT)
+                    });
             yield return uiContainerStack.routine;
 
             UnityEngine.UI.Image image = uiContainerStack.childHookRectTransform.GetComponent<UnityEngine.UI.Image>();
 
             // Check updated properties are applied correctly
-            Assert.AreEqual(screenSpaceShape.childHookRectTransform.rect.width * 0.5f, uiContainerStack.childHookRectTransform.rect.width);
-            Assert.AreEqual(screenSpaceShape.childHookRectTransform.rect.height * 0.3f, uiContainerStack.childHookRectTransform.rect.height);
+            Assert.AreEqual(screenSpaceShape.childHookRectTransform.rect.width * 0.5f,
+                uiContainerStack.childHookRectTransform.rect.width);
+            Assert.AreEqual(screenSpaceShape.childHookRectTransform.rect.height * 0.3f,
+                uiContainerStack.childHookRectTransform.rect.height);
 
             screenSpaceShape.Dispose();
             yield return null;
@@ -156,16 +171,21 @@ namespace Tests
             }));
 
             // Create UIScreenSpaceShape
-            UIScreenSpace screenSpaceShape = TestHelpers.SharedComponentCreate<UIScreenSpace, UIScreenSpace.Model>(scene, CLASS_ID.UI_SCREEN_SPACE_SHAPE);
+            UIScreenSpace screenSpaceShape =
+                TestHelpers.SharedComponentCreate<UIScreenSpace, UIScreenSpace.Model>(scene,
+                    CLASS_ID.UI_SCREEN_SPACE_SHAPE);
             yield return screenSpaceShape.routine;
 
             // Create UIContainerStack
-            UIContainerStack uiContainerStack = TestHelpers.SharedComponentCreate<UIContainerStack, UIContainerStack.Model>(scene, CLASS_ID.UI_CONTAINER_STACK);
+            UIContainerStack uiContainerStack =
+                TestHelpers.SharedComponentCreate<UIContainerStack, UIContainerStack.Model>(scene,
+                    CLASS_ID.UI_CONTAINER_STACK);
             yield return uiContainerStack.routine;
 
-           
+
             // Create 1st child object
-            UIContainerRect childComponent1 = TestHelpers.SharedComponentCreate<UIContainerRect, UIContainerRect.Model>(scene, CLASS_ID.UI_CONTAINER_RECT,
+            UIContainerRect childComponent1 = TestHelpers.SharedComponentCreate<UIContainerRect, UIContainerRect.Model>(
+                scene, CLASS_ID.UI_CONTAINER_RECT,
                 new UIContainerRect.Model()
                 {
                     parentComponent = uiContainerStack.id
@@ -174,10 +194,12 @@ namespace Tests
             yield return childComponent1.routine;
 
             Assert.IsTrue(uiContainerStack.stackContainers.ContainsKey(childComponent1.id));
-            Assert.IsTrue(childComponent1.referencesContainer.transform.parent.gameObject == uiContainerStack.stackContainers[childComponent1.id]);
+            Assert.IsTrue(childComponent1.referencesContainer.transform.parent.gameObject ==
+                          uiContainerStack.stackContainers[childComponent1.id]);
 
             // Create 2nd child object
-            UIImage childComponent2 = TestHelpers.SharedComponentCreate<UIImage, UIImage.Model>(scene, CLASS_ID.UI_IMAGE_SHAPE,
+            UIImage childComponent2 = TestHelpers.SharedComponentCreate<UIImage, UIImage.Model>(scene,
+                CLASS_ID.UI_IMAGE_SHAPE,
                 new UIImage.Model
                 {
                     parentComponent = uiContainerStack.id,
@@ -186,7 +208,8 @@ namespace Tests
             yield return childComponent2.routine;
 
             Assert.IsTrue(uiContainerStack.stackContainers.ContainsKey(childComponent2.id));
-            Assert.IsTrue(childComponent2.referencesContainer.transform.parent.gameObject == uiContainerStack.stackContainers[childComponent2.id]);
+            Assert.IsTrue(childComponent2.referencesContainer.transform.parent.gameObject ==
+                          uiContainerStack.stackContainers[childComponent2.id]);
 
             screenSpaceShape.Dispose();
             yield return null;
@@ -208,19 +231,23 @@ namespace Tests
             }));
 
             // Create UIScreenSpaceShape
-            UIScreenSpace screenSpaceShape = TestHelpers.SharedComponentCreate<UIScreenSpace, UIScreenSpace.Model>(scene, CLASS_ID.UI_SCREEN_SPACE_SHAPE);
+            UIScreenSpace screenSpaceShape =
+                TestHelpers.SharedComponentCreate<UIScreenSpace, UIScreenSpace.Model>(scene,
+                    CLASS_ID.UI_SCREEN_SPACE_SHAPE);
             yield return screenSpaceShape.routine;
 
             // Create UIContainerStack
-            UIContainerStack uiContainerStack = TestHelpers.SharedComponentCreate<UIContainerStack, UIContainerStack.Model>(scene, CLASS_ID.UI_CONTAINER_STACK,
-                 new UIContainerStack.Model
-                 {
-                     width = new UIValue(500f),
-                     height = new UIValue(300f)
-                 });
+            UIContainerStack uiContainerStack =
+                TestHelpers.SharedComponentCreate<UIContainerStack, UIContainerStack.Model>(scene,
+                    CLASS_ID.UI_CONTAINER_STACK,
+                    new UIContainerStack.Model
+                    {
+                        width = new UIValue(500f),
+                        height = new UIValue(300f)
+                    });
 
             yield return uiContainerStack.routine;
-            
+
             // Check container stack was initialized correctly
             Assert.IsTrue(uiContainerStack != null);
 
@@ -232,7 +259,8 @@ namespace Tests
             Assert.IsFalse(layoutGroup.childForceExpandHeight);
 
             // Create 1st child object
-            UIContainerRect childComponent1 = TestHelpers.SharedComponentCreate<UIContainerRect, UIContainerRect.Model>(scene, CLASS_ID.UI_CONTAINER_RECT,
+            UIContainerRect childComponent1 = TestHelpers.SharedComponentCreate<UIContainerRect, UIContainerRect.Model>(
+                scene, CLASS_ID.UI_CONTAINER_RECT,
                 new UIContainerRect.Model
                 {
                     parentComponent = uiContainerStack.id,
@@ -241,9 +269,10 @@ namespace Tests
                 });
 
             yield return childComponent1.routine;
-            
+
             // Create 2nd child object
-            UIImage childComponent2 = TestHelpers.SharedComponentCreate<UIImage, UIImage.Model>(scene, CLASS_ID.UI_IMAGE_SHAPE,
+            UIImage childComponent2 = TestHelpers.SharedComponentCreate<UIImage, UIImage.Model>(scene,
+                CLASS_ID.UI_IMAGE_SHAPE,
                 new UIImage.Model
                 {
                     parentComponent = uiContainerStack.id,
@@ -254,7 +283,8 @@ namespace Tests
             yield return childComponent2.routine;
 
             // Create 3rd child object
-            UIInputText childComponent3 = TestHelpers.SharedComponentCreate<UIInputText, UIInputText.Model>(scene, CLASS_ID.UI_INPUT_TEXT_SHAPE,
+            UIInputText childComponent3 = TestHelpers.SharedComponentCreate<UIInputText, UIInputText.Model>(scene,
+                CLASS_ID.UI_INPUT_TEXT_SHAPE,
                 new UIInputText.Model
                 {
                     parentComponent = uiContainerStack.id,
@@ -296,11 +326,15 @@ namespace Tests
             }));
 
             // Create UIScreenSpaceShape
-            UIScreenSpace screenSpaceShape = TestHelpers.SharedComponentCreate<UIScreenSpace, UIScreenSpace.Model>(scene, CLASS_ID.UI_SCREEN_SPACE_SHAPE);
+            UIScreenSpace screenSpaceShape =
+                TestHelpers.SharedComponentCreate<UIScreenSpace, UIScreenSpace.Model>(scene,
+                    CLASS_ID.UI_SCREEN_SPACE_SHAPE);
             yield return screenSpaceShape.routine;
 
             // Create UIContainerStack
-            UIContainerStack uiContainerStack = TestHelpers.SharedComponentCreate<UIContainerStack, UIContainerStack.Model>(scene, CLASS_ID.UI_CONTAINER_STACK);
+            UIContainerStack uiContainerStack =
+                TestHelpers.SharedComponentCreate<UIContainerStack, UIContainerStack.Model>(scene,
+                    CLASS_ID.UI_CONTAINER_STACK);
             yield return uiContainerStack.routine;
 
             TestHelpers.SharedComponentUpdate(scene, uiContainerStack,
@@ -324,7 +358,8 @@ namespace Tests
             Assert.IsFalse(layoutGroup.childForceExpandHeight);
 
             // Create 1st child object
-            UIContainerRect childComponent1 = TestHelpers.SharedComponentCreate<UIContainerRect, UIContainerRect.Model>(scene, CLASS_ID.UI_CONTAINER_RECT,
+            UIContainerRect childComponent1 = TestHelpers.SharedComponentCreate<UIContainerRect, UIContainerRect.Model>(
+                scene, CLASS_ID.UI_CONTAINER_RECT,
                 new UIContainerRect.Model
                 {
                     parentComponent = uiContainerStack.id,
@@ -335,7 +370,8 @@ namespace Tests
             yield return childComponent1.routine;
 
             // Create 2nd child object
-            UIImage childComponent2 = TestHelpers.SharedComponentCreate<UIImage, UIImage.Model>(scene, CLASS_ID.UI_IMAGE_SHAPE,
+            UIImage childComponent2 = TestHelpers.SharedComponentCreate<UIImage, UIImage.Model>(scene,
+                CLASS_ID.UI_IMAGE_SHAPE,
                 new UIImage.Model
                 {
                     parentComponent = uiContainerStack.id,
@@ -345,7 +381,8 @@ namespace Tests
             yield return childComponent2.routine;
 
             /// Create 3rd child object
-            UIInputText childComponent3 = TestHelpers.SharedComponentCreate<UIInputText, UIInputText.Model>(scene, CLASS_ID.UI_INPUT_TEXT_SHAPE,
+            UIInputText childComponent3 = TestHelpers.SharedComponentCreate<UIInputText, UIInputText.Model>(scene,
+                CLASS_ID.UI_INPUT_TEXT_SHAPE,
                 new UIInputText.Model
                 {
                     parentComponent = uiContainerStack.id,
@@ -387,21 +424,26 @@ namespace Tests
             }));
 
             // Create UIScreenSpaceShape
-            UIScreenSpace screenSpaceShape = TestHelpers.SharedComponentCreate<UIScreenSpace, UIScreenSpace.Model>(scene, CLASS_ID.UI_SCREEN_SPACE_SHAPE);
+            UIScreenSpace screenSpaceShape =
+                TestHelpers.SharedComponentCreate<UIScreenSpace, UIScreenSpace.Model>(scene,
+                    CLASS_ID.UI_SCREEN_SPACE_SHAPE);
             yield return screenSpaceShape.routine;
 
             // Create UIContainerStack
-            UIContainerStack uiContainerStack = TestHelpers.SharedComponentCreate<UIContainerStack, UIContainerStack.Model>(scene, CLASS_ID.UI_CONTAINER_STACK,
-                new UIContainerStack.Model
-                {
-                    width = new UIValue(500f),
-                    height = new UIValue(300f)
-                });
+            UIContainerStack uiContainerStack =
+                TestHelpers.SharedComponentCreate<UIContainerStack, UIContainerStack.Model>(scene,
+                    CLASS_ID.UI_CONTAINER_STACK,
+                    new UIContainerStack.Model
+                    {
+                        width = new UIValue(500f),
+                        height = new UIValue(300f)
+                    });
 
             yield return uiContainerStack.routine;
 
             // Create 1st child object
-            UIContainerRect childComponent1 = TestHelpers.SharedComponentCreate<UIContainerRect, UIContainerRect.Model>(scene, CLASS_ID.UI_CONTAINER_RECT,
+            UIContainerRect childComponent1 = TestHelpers.SharedComponentCreate<UIContainerRect, UIContainerRect.Model>(
+                scene, CLASS_ID.UI_CONTAINER_RECT,
                 new UIContainerRect.Model
                 {
                     parentComponent = uiContainerStack.id,
@@ -412,7 +454,8 @@ namespace Tests
             yield return childComponent1.routine;
 
             // Create 2nd child object
-            UIImage childComponent2 = TestHelpers.SharedComponentCreate<UIImage, UIImage.Model>(scene, CLASS_ID.UI_IMAGE_SHAPE,
+            UIImage childComponent2 = TestHelpers.SharedComponentCreate<UIImage, UIImage.Model>(scene,
+                CLASS_ID.UI_IMAGE_SHAPE,
                 new UIImage.Model
                 {
                     parentComponent = uiContainerStack.id,
@@ -422,7 +465,8 @@ namespace Tests
             yield return childComponent2.routine;
 
             // Create 3rd child object
-            UIInputText childComponent3 = TestHelpers.SharedComponentCreate<UIInputText, UIInputText.Model>(scene, CLASS_ID.UI_INPUT_TEXT_SHAPE,
+            UIInputText childComponent3 = TestHelpers.SharedComponentCreate<UIInputText, UIInputText.Model>(scene,
+                CLASS_ID.UI_INPUT_TEXT_SHAPE,
                 new UIInputText.Model
                 {
                     parentComponent = uiContainerStack.id,
@@ -445,8 +489,12 @@ namespace Tests
 
             // Check stacked components position
             Assert.AreEqual(150f, uiContainerStack.childHookRectTransform.rect.width, 0.01f);
-            Assert.AreEqual(childComponent1.referencesContainer.rectTransform.rect.height + childComponent2.referencesContainer.rectTransform.rect.height
-                + childComponent3.referencesContainer.rectTransform.rect.height, uiContainerStack.childHookRectTransform.rect.height, 0.01f);
+            Assert.AreEqual(
+                childComponent1.referencesContainer.rectTransform.rect.height + childComponent2.referencesContainer
+                                                                                  .rectTransform.rect.height
+                                                                              + childComponent3.referencesContainer
+                                                                                  .rectTransform.rect.height,
+                uiContainerStack.childHookRectTransform.rect.height, 0.01f);
 
             screenSpaceShape.Dispose();
             yield return null;

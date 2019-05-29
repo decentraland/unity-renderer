@@ -1,7 +1,4 @@
 using DCL.Controllers;
-using DCL.Helpers;
-using System.Collections;
-using UnityEngine;
 
 namespace DCL.Components
 {

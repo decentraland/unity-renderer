@@ -36,7 +36,8 @@ namespace DCL.Components
 
             if (Configuration.ParcelSettings.VISUAL_LOADING_ENABLED)
             {
-                MaterialTransitionController transition = entity.meshGameObject.AddComponent<MaterialTransitionController>();
+                MaterialTransitionController transition =
+                    entity.meshGameObject.AddComponent<MaterialTransitionController>();
                 Material finalMaterial = Utils.EnsureResourcesMaterial("Materials/Default");
                 transition.delay = 0;
                 transition.useHologram = false;
@@ -75,7 +76,6 @@ namespace DCL.Components
 
             Utils.SafeDestroy(entity.meshGameObject);
             entity.meshGameObject = null;
-
         }
 
         public override IEnumerator ApplyChanges(string newJson)

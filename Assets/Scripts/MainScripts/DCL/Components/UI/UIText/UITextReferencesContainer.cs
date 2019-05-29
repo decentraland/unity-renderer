@@ -1,6 +1,5 @@
-using UnityEngine;
-using UnityEngine.UI;
 using TMPro;
+using UnityEngine;
 
 namespace DCL.Components
 {
@@ -8,6 +7,7 @@ namespace DCL.Components
     {
         [Header("UI Text Fields")]
         public TextMeshProUGUI text;
+
         public RectTransform textRectTransform;
     }
 }

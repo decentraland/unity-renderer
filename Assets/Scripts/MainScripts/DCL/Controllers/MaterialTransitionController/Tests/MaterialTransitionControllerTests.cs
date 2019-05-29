@@ -1,11 +1,10 @@
-using System.Collections;
-using System.Collections.Generic;
 using DCL.Components;
+using DCL.Configuration;
 using DCL.Controllers;
 using DCL.Helpers;
 using DCL.Models;
-using DCL.Configuration;
 using NUnit.Framework;
+using System.Collections;
 using UnityEngine;
 using UnityEngine.TestTools;
 
@@ -19,7 +18,7 @@ namespace Tests
         IEnumerator InitScene()
         {
             yield return TestHelpers.UnloadAllUnityScenes();
-            
+
             sceneController = TestHelpers.InitializeSceneController();
             var scenesToLoad = (Resources.Load("TestJSON/SceneLoadingTest") as TextAsset).text;
 
@@ -52,7 +51,7 @@ namespace Tests
             DecentralandEntity entity = null;
 
             GLTFShape shape = TestHelpers.InstantiateEntityWithShape<GLTFShape, GLTFShape.Model>
-                (scene,
+            (scene,
                 DCL.Models.CLASS_ID.GLTF_SHAPE,
                 Vector3.zero,
                 out entity,
@@ -75,11 +74,16 @@ namespace Tests
                     {
                         Assert.IsTrue(c.useHologram, "useHologram must be true");
                         Assert.IsTrue(entity.meshGameObject != null, "meshGameObject is null");
-                        Assert.AreEqual(c.gameObject.transform, c.placeholder.transform.parent, "MaterialTransitionController is not parented correctly");
-                        Assert.IsTrue(c.placeholder.GetComponent<MeshFilter>() != null, "MeshFilter missing from placeholder object");
-                        Assert.IsTrue(c.placeholder.GetComponent<Renderer>() != null, "Renderer missing from placeholder object");
-                        Assert.IsTrue(c.placeholder.GetComponent<Renderer>().sharedMaterial != null, "SharedMaterial missing from placeholder's renderer");
-                        Assert.AreEqual(hologramShader, c.placeholder.GetComponent<Renderer>().sharedMaterial.shader, "Placeholder is not hologram");
+                        Assert.AreEqual(c.gameObject.transform, c.placeholder.transform.parent,
+                            "MaterialTransitionController is not parented correctly");
+                        Assert.IsTrue(c.placeholder.GetComponent<MeshFilter>() != null,
+                            "MeshFilter missing from placeholder object");
+                        Assert.IsTrue(c.placeholder.GetComponent<Renderer>() != null,
+                            "Renderer missing from placeholder object");
+                        Assert.IsTrue(c.placeholder.GetComponent<Renderer>().sharedMaterial != null,
+                            "SharedMaterial missing from placeholder's renderer");
+                        Assert.AreEqual(hologramShader, c.placeholder.GetComponent<Renderer>().sharedMaterial.shader,
+                            "Placeholder is not hologram");
 
                         yield return new WaitForSeconds(2f);
 
@@ -108,7 +112,7 @@ namespace Tests
 
             DecentralandEntity entity = null;
             ConeShape shape = TestHelpers.InstantiateEntityWithShape<ConeShape, ConeShape.Model>
-                (
+            (
                 scene,
                 DCL.Models.CLASS_ID.CONE_SHAPE,
                 new Vector3(2, 1, 3),
@@ -130,7 +134,8 @@ namespace Tests
                     {
                         Assert.IsTrue(!c.useHologram, "useHologram must be false");
                         Assert.IsTrue(entity.meshGameObject != null, "meshGameObject is null");
-                        Assert.IsTrue(c.placeholder == null, "placeholder must be null because we're not using holograms with parametric shapes.");
+                        Assert.IsTrue(c.placeholder == null,
+                            "placeholder must be null because we're not using holograms with parametric shapes.");
 
                         yield return new WaitForSeconds(2f);
 
