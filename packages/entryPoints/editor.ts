@@ -341,11 +341,11 @@ export namespace editor {
     return null
   }
 
-  export function takeScreenshot(): IFuture<string> {
+  export function takeScreenshot(mime: string = 'image/png'): IFuture<string> {
     const ret = future()
 
     scene.onAfterRenderObservable.addOnce(() => {
-      ret.resolve(canvas.toDataURL())
+      ret.resolve(canvas.toDataURL(mime))
     })
 
     return ret
