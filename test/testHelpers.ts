@@ -32,7 +32,8 @@ import { initHudSystem } from 'engine/dcl/widgets/ui'
 import { AVATAR_OBSERVABLE } from 'decentraland-ecs/src/decentraland/Types'
 import { deleteUnusedTextures } from 'engine/renderer/monkeyLoader'
 
-const baseUrl = 'http://localhost:8080/local-ipfs/contents/'
+const port = process.env.PORT || 8080
+const baseUrl = `http://localhost:${port}/local-ipfs/contents/`
 
 export type PlayerCamera = {
   lookAt: [number, number, number]
@@ -96,7 +97,7 @@ export function saveScreenshot(name: string, opts: PlayerCamera | null = null, s
       const baseName = basename(name)
       fd.append(dirname(name), blob, baseName)
 
-      fetch(`http://${location.hostname}:8080/upload?path=${name}`, {
+      fetch(`http://${location.hostname}:${port}/upload?path=${name}`, {
         method: 'post',
         mode: 'cors',
         body: fd
@@ -339,7 +340,7 @@ export function loadTestParcel(
       gridToWorld(x, y, scene.activeCamera!.position)
       scene.activeCamera!.position.y = origY
       this.timeout(15000)
-      const land = await loadMock('http://localhost:8080/local-ipfs/mappings', { x, y })
+      const land = await loadMock(`http://localhost:${port}/local-ipfs/mappings`, { x, y })
       let webGLParcelScene: WebGLParcelScene
       if (land) {
         webGLParcelScene = new WebGLParcelScene(ILandToLoadableParcelScene(land))
@@ -505,7 +506,7 @@ export function testScene(
     it('loads the mock and starts the system', async function(this: any) {
       this.timeout(5000)
 
-      const land = await loadMock('http://localhost:8080/local-ipfs/mappings', { x, y })
+      const land = await loadMock(`http://localhost:${port}/local-ipfs/mappings`, { x, y })
 
       try {
         if (!land) throw new Error(`Cannot load the parcel at ${x},${y}`)

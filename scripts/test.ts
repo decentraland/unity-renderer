@@ -16,7 +16,7 @@ const singleRun = !(process.env.SINGLE_RUN === 'true')
 // defines if we should replace the base images
 const shouldGenerateNewImages = process.env.GENERATE_NEW_IMAGES === 'true'
 
-const port = 8080
+const port = process.env.PORT || 8080
 
 const resultsDir = path.resolve(__dirname, '../test/results')
 const tmpDir = path.resolve(__dirname, '../test/tmp')
