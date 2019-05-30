@@ -4,11 +4,14 @@ using DCL.Models;
 using Newtonsoft.Json;
 using System;
 using System.Collections;
+using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using UnityEngine;
 using UnityEngine.Assertions;
 using UnityEngine.SceneManagement;
+using UnityEngine.UI;
+using UnityEngine.EventSystems;
 
 namespace DCL.Helpers
 {
@@ -795,6 +798,37 @@ namespace DCL.Helpers
             CompareWithDefaultedInstance<TModel, TComponent>(component);
 
             component.Dispose();
+        }
+
+        // Simulates a mouse click by throwing a ray over a given object and checks 
+        // if that object is the first one that the ray pass through
+        public static bool TestUIClick(Canvas canvas, RectTransform rectT)
+        {
+            PointerEventData pointerEventData = new PointerEventData(EventSystem.current);
+
+            Vector2 imagePos = rectT.position;
+            float scale = canvas.scaleFactor;
+            Vector2 pos = imagePos;
+
+            pos *= scale;
+            pos.x *= ((RectTransform)canvas.transform).sizeDelta.x / Screen.width;
+            pos.y *= ((RectTransform)canvas.transform).sizeDelta.y / Screen.height;
+
+            pointerEventData.position = pos;
+
+            List<RaycastResult> results = new List<RaycastResult>();
+            EventSystem.current.RaycastAll(pointerEventData, results);
+
+            // Check that there's at least one result
+            if (results == null)
+                return false;
+
+            // Check that there's at least one result
+            if (results.Count == 0)
+                return false;
+
+            // Check that the clicked object is the one on the front
+            return results[0].gameObject == rectT.gameObject;
         }
 
         public static IEnumerator UnloadAllUnityScenes()

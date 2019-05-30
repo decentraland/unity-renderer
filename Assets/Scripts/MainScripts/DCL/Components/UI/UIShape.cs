@@ -109,7 +109,13 @@ namespace DCL.Components
             if (firstApplyChangesCall)
                 referencesContainer.canvasGroup.alpha = 0f;
             else
-                referencesContainer.canvasGroup.alpha = model.visible ? model.opacity : 0f;
+            {
+                // Check if we need to change gameObject visibility
+                if (referencesContainer.gameObject.activeSelf != model.visible)
+                    referencesContainer.gameObject.SetActive(model.visible);
+
+                referencesContainer.canvasGroup.alpha = model.opacity;
+            }
 
             referencesContainer.canvasGroup.blocksRaycasts = model.isPointerBlocker;
 
@@ -117,7 +123,7 @@ namespace DCL.Components
 
             if (raiseOnAttached && parentUIComponent != null)
             {
-                UIReferencesContainer[] parents = referencesContainer.GetComponentsInParent<UIReferencesContainer>();
+                UIReferencesContainer[] parents = referencesContainer.GetComponentsInParent<UIReferencesContainer>(true);
 
                 foreach (var parent in parents)
                 {
@@ -324,7 +330,7 @@ namespace DCL.Components
 
             if (parentUIComponent != null)
             {
-                UIReferencesContainer[] parents = referencesContainer.GetComponentsInParent<UIReferencesContainer>();
+                UIReferencesContainer[] parents = referencesContainer.GetComponentsInParent<UIReferencesContainer>(true);
 
                 foreach (var parent in parents)
                 {
@@ -429,7 +435,9 @@ namespace DCL.Components
 
         public override void Dispose()
         {
-            Utils.SafeDestroy(childHookRectTransform.gameObject);
+            if (childHookRectTransform)
+                Utils.SafeDestroy(childHookRectTransform.gameObject);
+
             base.Dispose();
         }
 
