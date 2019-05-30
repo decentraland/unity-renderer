@@ -277,6 +277,129 @@ namespace Tests
         }
 
         [UnityTest]
+        public IEnumerator TestOnClickOnInvisibleShapeEvent()
+        {
+            yield return InitScene();
+
+            UIScreenSpace screenSpaceShape = TestHelpers.SharedComponentCreate<UIScreenSpace, UIScreenSpace.Model>(scene, CLASS_ID.UI_SCREEN_SPACE_SHAPE);
+            yield return screenSpaceShape.routine;
+
+            Assert.IsFalse(screenSpaceShape == null);
+
+            DCLTexture texture = TestHelpers.CreateDCLTexture(scene, TestHelpers.GetTestsAssetsPath() + "/Images/atlas.png");
+            yield return texture.routine;
+
+            // --------------------------------------------------------------------------------------
+            // Visible image that should trigger click events
+            UIImage uiImage = TestHelpers.SharedComponentCreate<UIImage, UIImage.Model>(scene, CLASS_ID.UI_IMAGE_SHAPE);
+            yield return uiImage.routine;
+
+            string uiImageOnClickEventId = "UUIDFakeEventId";
+
+            TestHelpers.SharedComponentUpdate(scene, uiImage, new UIImage.Model
+            {
+                visible = true,
+                parentComponent = screenSpaceShape.id,
+                source = texture.id,
+                width = new UIValue(128f),
+                height = new UIValue(128f),
+                onClick = uiImageOnClickEventId
+            });
+            yield return uiImage.routine;
+
+            // --------------------------------------------------------------------------------------
+            // Invisible image
+            // Create an invisible image to check that it doesn't trigger click events
+            // and that doesn't prevent previous image from triggering click events
+            UIImage uiImage2 = TestHelpers.SharedComponentCreate<UIImage, UIImage.Model>(scene, CLASS_ID.UI_IMAGE_SHAPE);
+            yield return uiImage2.routine;
+
+            TestHelpers.SharedComponentUpdate(scene, uiImage2, new UIImage.Model
+            {
+                visible = false,
+                parentComponent = screenSpaceShape.id,
+                source = texture.id,
+                width = new UIValue(128f),
+                height = new UIValue(128f),
+
+                onClick = uiImageOnClickEventId
+            });
+            yield return uiImage2.routine;
+
+            // --------------------------------------------------------------------------------------
+            // We need to cast a ray to check clicked objects
+            Canvas canvas = screenSpaceShape.canvas;
+
+            Assert.IsTrue(TestHelpers.TestUIClick(canvas, uiImage.referencesContainer.childHookRectTransform));
+            Assert.IsFalse(TestHelpers.TestUIClick(canvas, uiImage2.referencesContainer.childHookRectTransform));
+        }
+
+        [UnityTest]
+        public IEnumerator TestOnClickOnTransparentShapeEvent()
+        {
+            yield return InitScene();
+
+            UIScreenSpace screenSpaceShape = TestHelpers.SharedComponentCreate<UIScreenSpace, UIScreenSpace.Model>(scene, CLASS_ID.UI_SCREEN_SPACE_SHAPE);
+            yield return screenSpaceShape.routine;
+
+            Assert.IsFalse(screenSpaceShape == null);
+
+            DCLTexture texture = TestHelpers.CreateDCLTexture(scene, TestHelpers.GetTestsAssetsPath() + "/Images/atlas.png");
+            yield return texture.routine;
+
+            // --------------------------------------------------------------------------------------
+            // Visible image that should trigger click events
+            UIImage uiImage = TestHelpers.SharedComponentCreate<UIImage, UIImage.Model>(scene, CLASS_ID.UI_IMAGE_SHAPE);
+            yield return uiImage.routine;
+
+            string uiImageOnClickEventId = "UUIDFakeEventId";
+
+            TestHelpers.SharedComponentUpdate(scene, uiImage, new UIImage.Model
+            {
+                visible = true,
+                parentComponent = screenSpaceShape.id,
+                source = texture.id,
+                width = new UIValue(128f),
+                height = new UIValue(128f),
+                sourceLeft = 0,
+                sourceTop = 0,
+                sourceWidth = 1,
+                sourceHeight = 1,
+                onClick = uiImageOnClickEventId
+            });
+            yield return uiImage.routine;
+
+            // --------------------------------------------------------------------------------------
+            // Invisible image
+            // Create an invisible image to check that it doesn't trigger click events
+            // and that doesn't prevent previous image from triggering click events
+            UIImage uiImage2 = TestHelpers.SharedComponentCreate<UIImage, UIImage.Model>(scene, CLASS_ID.UI_IMAGE_SHAPE);
+            yield return uiImage2.routine;
+
+            TestHelpers.SharedComponentUpdate(scene, uiImage2, new UIImage.Model
+            {
+                visible = true,
+                parentComponent = screenSpaceShape.id,
+                source = texture.id,
+                width = new UIValue(128f),
+                height = new UIValue(128f),
+                sourceLeft = 0,
+                sourceTop = 0,
+                sourceWidth = 1,
+                sourceHeight = 1,
+                opacity = 0f,
+                onClick = uiImageOnClickEventId
+            });
+            yield return uiImage2.routine;
+
+            // --------------------------------------------------------------------------------------
+            // We need to cast a ray to check clicked objects
+            Canvas canvas = screenSpaceShape.canvas;
+
+            Assert.IsTrue(TestHelpers.TestUIClick(canvas, uiImage2.referencesContainer.childHookRectTransform));
+        }
+
+        [UnityTest]
         public IEnumerator TestAlignment()
         {
             yield return InitScene();
