@@ -1,4 +1,4 @@
-using DCL.Components;
+﻿using DCL.Components;
 using DCL.Configuration;
 using DCL.Helpers;
 using DCL.Models;

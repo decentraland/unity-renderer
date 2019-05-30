@@ -1,4 +1,4 @@
-using System.Collections;
+﻿using System.Collections;
 using UnityEngine;
 using UnityEngine.Networking;
 
@@ -86,7 +86,6 @@ public class DynamicOBJLoaderController : MonoBehaviour
     void OnDestroy()
     {
         Destroy(loadingPlaceholder);
-
         Destroy(loadedOBJGameObject);
     }
 }

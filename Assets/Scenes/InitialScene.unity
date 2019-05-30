@@ -642,11 +642,6 @@ PrefabInstance:
       propertyPath: m_Name
       value: CharacterController
       objectReference: {fileID: 0}
-    - target: {fileID: 6922703132412175462, guid: 68bb549c9718c7649abcfc45e6ad7190,
-        type: 3}
-      propertyPath: m_IsActive
-      value: 1
-      objectReference: {fileID: 0}
     - target: {fileID: 6922703132412175459, guid: 68bb549c9718c7649abcfc45e6ad7190,
         type: 3}
       propertyPath: m_LocalPosition.x
@@ -701,6 +696,16 @@ PrefabInstance:
         type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6922703132826922303, guid: 68bb549c9718c7649abcfc45e6ad7190,
+        type: 3}
+      propertyPath: m_OcclusionCulling
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6922703132371683186, guid: 68bb549c9718c7649abcfc45e6ad7190,
+        type: 3}
+      propertyPath: volumeLayer.m_Bits
+      value: 256
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 68bb549c9718c7649abcfc45e6ad7190, type: 3}

@@ -1,4 +1,4 @@
-using DCL.Helpers;
+﻿using DCL.Helpers;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -18,6 +18,8 @@ public class MaterialTransitionController : MonoBehaviour
     private static int ShaderId_FadeThickness = Shader.PropertyToID("_FadeThickness");
     private static int ShaderId_FadeDirection = Shader.PropertyToID("_FadeDirection");
     private static int ShaderId_LoadingColor = Shader.PropertyToID("_LoadingColor");
+    private static int ShaderId_SpecularHighlights = Shader.PropertyToID("_SpecularHighlights");
+    private static int ShaderId_GlossyReflections = Shader.PropertyToID("_GlossyReflections");
 
     Material loadingMaterial;
 
@@ -25,7 +27,7 @@ public class MaterialTransitionController : MonoBehaviour
     [System.NonSerialized] public bool useHologram = true;
     [System.NonSerialized] public float fadeThickness = 10;
 
-    public Material hologramMaterial;
+    static Material hologramMaterial;
     List<Material> loadingMaterialCopies;
 
     public Material[] finalMaterials;
@@ -47,7 +49,7 @@ public class MaterialTransitionController : MonoBehaviour
 
     public GameObject placeholder { get; private set; }
     public Renderer placeholderRenderer { get; private set; }
-    MaterialPropertyBlock placeholderPropertyBlock;
+    static MaterialPropertyBlock placeholderPropertyBlock;
 
     float lowerYRendererBounds;
     float topYRendererBounds;
@@ -63,13 +65,21 @@ public class MaterialTransitionController : MonoBehaviour
         {
             Material material = finalMaterials[i];
 
-            material.SetFloat(ShaderId_CullYPlane, currentCullYPlane);
             material.SetColor(ShaderId_LoadingColor, Color.clear);
             material.SetFloat(ShaderId_FadeDirection, 0);
             material.SetFloat(ShaderId_FadeThickness, fadeThickness);
+            material.SetFloat(ShaderId_SpecularHighlights, 0);
+            material.SetFloat(ShaderId_GlossyReflections, 0);
+            material.enableInstancing = false;
         }
 
         targetRenderer.sharedMaterials = finalMaterials;
+
+        EnsurePlaceholderPropertyBlock();
+
+        targetRenderer.GetPropertyBlock(placeholderPropertyBlock);
+        placeholderPropertyBlock.SetFloat(ShaderId_CullYPlane, currentCullYPlane);
+        targetRenderer.SetPropertyBlock(placeholderPropertyBlock);
     }
 
 
@@ -107,7 +117,13 @@ public class MaterialTransitionController : MonoBehaviour
         topYRendererBounds = GetTopBoundsY(tr);
         currentCullYPlane = lowerYRendererBounds;
 
-        placeholderPropertyBlock = new MaterialPropertyBlock();
+        EnsurePlaceholderPropertyBlock();
+    }
+
+    static void EnsurePlaceholderPropertyBlock()
+    {
+        if (placeholderPropertyBlock == null)
+            placeholderPropertyBlock = new MaterialPropertyBlock();
     }
 
     void InitHologram()
@@ -120,7 +136,10 @@ public class MaterialTransitionController : MonoBehaviour
         placeholderRenderer = placeholder.AddComponent<MeshRenderer>();
         MeshFilter newMeshFilter = placeholder.AddComponent<MeshFilter>();
         newMeshFilter.sharedMesh = GetComponent<MeshFilter>().sharedMesh;
-        hologramMaterial = Resources.Load("Materials/HologramMaterial") as Material;
+
+        if (hologramMaterial == null)
+            hologramMaterial = Resources.Load("Materials/HologramMaterial") as Material;
+
         placeholderRenderer.sharedMaterials = new Material[] { hologramMaterial };
     }
 
@@ -166,14 +185,11 @@ public class MaterialTransitionController : MonoBehaviour
                     currentCullYPlane += (lowerYRendererBounds - currentCullYPlane) * 0.1f;
                     currentCullYPlane = Mathf.Clamp(currentCullYPlane, lowerYRendererBounds, topYRendererBounds);
 
-                    for (int i = 0; i < targetRendererValue.sharedMaterials.Length; i++)
+                    if (targetRendererValue != null)
                     {
-                        if (targetRendererValue != null)
-                        {
-                            targetRendererValue.GetPropertyBlock(placeholderPropertyBlock);
-                            placeholderPropertyBlock.SetFloat(ShaderId_CullYPlane, currentCullYPlane);
-                            targetRendererValue.SetPropertyBlock(placeholderPropertyBlock, i);
-                        }
+                        targetRendererValue.GetPropertyBlock(placeholderPropertyBlock);
+                        placeholderPropertyBlock.SetFloat(ShaderId_CullYPlane, currentCullYPlane);
+                        targetRendererValue.SetPropertyBlock(placeholderPropertyBlock);
                     }
 
                     if (placeholderRenderer != null)
@@ -185,6 +201,7 @@ public class MaterialTransitionController : MonoBehaviour
 
                     if (currentCullYPlane <= lowerYRendererBounds + 0.1f)
                     {
+                        targetRendererValue.SetPropertyBlock(null);
                         DestroyPlaceholder();
                         state = State.FINISHED;
                     }
@@ -206,8 +223,9 @@ public class MaterialTransitionController : MonoBehaviour
 
         if (loadingMaterialCopies != null)
         {
-            foreach (Material m in loadingMaterialCopies)
+            for (int i = 0; i < loadingMaterialCopies.Count; i++)
             {
+                Material m = loadingMaterialCopies[i];
                 if (m != null)
                 {
                     Destroy(m);
@@ -226,15 +244,6 @@ public class MaterialTransitionController : MonoBehaviour
 
     public void OnDidFinishLoading(Material finishMaterial)
     {
-        if (finishMaterial.shader.name.Contains("Simple"))
-        {
-            loadingMaterial = Utils.EnsureResourcesMaterial("Materials/LoadingTextureMaterial_LitSimple");
-        }
-        else
-        {
-            loadingMaterial = Utils.EnsureResourcesMaterial("Materials/LoadingTextureMaterial_Lit");
-        }
-
         finalMaterials = new Material[] { finishMaterial };
         materialReady = true;
     }
@@ -249,30 +258,7 @@ public class MaterialTransitionController : MonoBehaviour
         return targetRenderer.bounds.max.y + fadeThickness;
     }
 
-    static MaterialPropertyBlock block = null;
-
-    public static void ApplyToLoadedObjectFast(GameObject meshContainer)
-    {
-        if (block == null)
-        {
-            block = new MaterialPropertyBlock();
-        }
-
-        Renderer[] renderers = meshContainer.GetComponentsInChildren<Renderer>();
-
-        for (int i = 0; i < renderers.Length; i++)
-        {
-            Renderer r = renderers[i];
-            float lowBounds = r.bounds.min.y - 20;
-            r.GetPropertyBlock(block);
-            block.SetFloat(ShaderId_CullYPlane, lowBounds);
-            r.SetPropertyBlock(block);
-        }
-    }
-
-
-    public static void ApplyToLoadedObject(GameObject meshContainer, bool useHologram = true, float fadeThickness = 20,
-        float delay = 0)
+    public static void ApplyToLoadedObject(GameObject meshContainer, bool useHologram = true, float fadeThickness = 20, float delay = 0)
     {
         Renderer[] renderers = meshContainer.GetComponentsInChildren<Renderer>();
 

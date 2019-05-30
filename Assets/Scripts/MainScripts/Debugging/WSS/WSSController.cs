@@ -1,4 +1,4 @@
-using DCL.Interface;
+﻿using DCL.Interface;
 using System.Collections.Generic;
 using UnityEngine;
 using WebSocketSharp;
@@ -97,7 +97,6 @@ namespace DCL
 #if UNITY_EDITOR
             ws = new WebSocketServer("ws://localhost:5000");
             ws.AddWebSocketService<DCLWebSocketService>("/dcl");
-
             ws.Start();
 
             if (openBrowserWhenStart)
@@ -174,6 +173,7 @@ namespace DCL
                     }
 
                     queuedMessagesDirty = false;
+
                 }
             }
 #endif
