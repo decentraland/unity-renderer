@@ -8,7 +8,7 @@ import { SceneWorker, ParcelSceneAPI } from './SceneWorker'
 import { LoadableParcelScene, EnvironmentData, ILand, ILandToLoadableParcelScene } from '../types'
 
 export type EnableParcelSceneLoadingOptions = {
-  parcelSceneClass: { new(x: EnvironmentData<LoadableParcelScene>): ParcelSceneAPI }
+  parcelSceneClass: { new (x: EnvironmentData<LoadableParcelScene>): ParcelSceneAPI }
   shouldLoadParcelScene: (parcelToLoad: ILand) => boolean
   onSpawnpoint?: (initialLand: ILand) => void
   onLoadParcelScenes?(x: ILand[]): void

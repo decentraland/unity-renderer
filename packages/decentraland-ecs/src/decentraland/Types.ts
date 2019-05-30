@@ -167,7 +167,6 @@ export interface IEvents {
   }
 
   /**
-   * @internal
    * `onEnter` is triggered when the user hits the "Enter" key from the keyboard
    * Used principally by the Chat internal scene
    */

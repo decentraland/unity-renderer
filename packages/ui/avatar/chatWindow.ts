@@ -1,5 +1,5 @@
 import { DecentralandInterface, IEvents } from 'decentraland-ecs/src/decentraland/Types'
-import { Color4, Texture } from 'decentraland-ecs/src'
+import { Color4, Texture, OnEnter } from 'decentraland-ecs/src'
 import { OnTextSubmit, OnBlur, OnChanged, OnClick, OnFocus } from 'decentraland-ecs/src/decentraland/UIEvents'
 
 import {
@@ -251,6 +251,7 @@ function initializeMinimizedChat(parent: UIFullScreen) {
   minimizedIcon.vAlign = 'top'
   minimizedIcon.isPointerBlocker = true
   minimizedIcon.onClick = new OnClick(toggleChat)
+  minimizedIcon.onEnter = new OnEnter(toggleChat)
 
   return containerMinimized
 }
