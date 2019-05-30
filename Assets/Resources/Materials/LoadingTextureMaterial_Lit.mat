@@ -9,7 +9,7 @@ Material:
   m_PrefabAsset: {fileID: 0}
   m_Name: LoadingTextureMaterial_Lit
   m_Shader: {fileID: 4800000, guid: 4373df51b4ceb624c80ea0c131ba6ee2, type: 3}
-  m_ShaderKeywords: _RECEIVE_SHADOWS_OFF
+  m_ShaderKeywords: _GLOSSYREFLECTIONS_OFF _RECEIVE_SHADOWS_OFF _SPECULARHIGHLIGHTS_OFF
   m_LightmapFlags: 4
   m_EnableInstancingVariants: 1
   m_DoubleSidedGI: 0
@@ -66,7 +66,7 @@ Material:
     - _Blend: 0
     - _BumpScale: 1
     - _Cull: 2
-    - _CullYPlane: -11
+    - _CullYPlane: -1000
     - _Cutoff: 1
     - _DetailNormalMapScale: 1
     - _DstBlend: 10
@@ -75,7 +75,7 @@ Material:
     - _GlossMapScale: 1
     - _Glossiness: 1
     - _GlossinessSource: 1
-    - _GlossyReflections: 1
+    - _GlossyReflections: 0
     - _Metallic: 0
     - _Mode: 0
     - _OcclusionStrength: 1
@@ -86,7 +86,7 @@ Material:
     - _Shininess: 0
     - _SmoothnessTextureChannel: 0
     - _SpecSource: 0
-    - _SpecularHighlights: 1
+    - _SpecularHighlights: 0
     - _SrcBlend: 5
     - _Surface: 1
     - _ThrobbScale: 0.5

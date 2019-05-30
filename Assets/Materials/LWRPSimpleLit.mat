@@ -8,7 +8,7 @@ Material:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_Name: LWRPSimpleLit
-  m_Shader: {fileID: 4800000, guid: 8d2bb70cbf9db8d4da26e15b26e74248, type: 3}
+  m_Shader: {fileID: 4800000, guid: 9d83a272138d4344aab38b9fa9da2ae5, type: 3}
   m_ShaderKeywords: _GLOSSINESS_FROM_BASE_ALPHA _SPECULAR_COLOR
   m_LightmapFlags: 4
   m_EnableInstancingVariants: 0
@@ -48,6 +48,7 @@ Material:
     - _Blend: 0
     - _BumpScale: 1
     - _Cull: 2
+    - _CullYPlane: 0.5
     - _Cutoff: 0.5
     - _DstBlend: 0
     - _GlossMapScale: 1

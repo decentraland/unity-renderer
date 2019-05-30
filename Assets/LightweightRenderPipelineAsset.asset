@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: LightweightRenderPipelineAsset
   m_EditorClassIdentifier: 
   k_AssetVersion: 4
-  m_RequireDepthTexture: 1
+  m_RequireDepthTexture: 0
   m_RequireOpaqueTexture: 0
   m_OpaqueDownsampling: 1
   m_SupportsHDR: 1
@@ -21,12 +21,12 @@ MonoBehaviour:
   m_RenderScale: 1
   m_MainLightRenderingMode: 1
   m_MainLightShadowsSupported: 1
-  m_MainLightShadowmapResolution: 2048
-  m_AdditionalLightsRenderingMode: 1
+  m_MainLightShadowmapResolution: 1024
+  m_AdditionalLightsRenderingMode: 2
   m_AdditionalLightsPerObjectLimit: 4
   m_AdditionalLightShadowsSupported: 0
   m_AdditionalLightsShadowmapResolution: 512
-  m_ShadowDistance: 75
+  m_ShadowDistance: 45
   m_ShadowCascades: 0
   m_Cascade2Split: 0.28644657
   m_Cascade4Split: {x: 0.067, y: 0.2, z: 0.467}
@@ -34,7 +34,7 @@ MonoBehaviour:
   m_ShadowNormalBias: 1
   m_SoftShadowsSupported: 0
   m_SupportsDynamicBatching: 1
-  m_MixedLightingSupported: 1
+  m_MixedLightingSupported: 0
   m_ShadowType: 1
   m_LocalShadowsSupported: 0
   m_LocalShadowsAtlasResolution: 256

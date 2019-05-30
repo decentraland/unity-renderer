@@ -208,14 +208,6 @@ namespace DCL
                     {
                         MaterialTransitionController.ApplyToLoadedObject(go, false);
                     }
-                    else
-                    {
-                        MaterialTransitionController.ApplyToLoadedObjectFast(go);
-                    }
-                }
-                else
-                {
-                    MaterialTransitionController.ApplyToLoadedObjectFast(go);
                 }
             }
         }
