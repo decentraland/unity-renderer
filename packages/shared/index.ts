@@ -10,7 +10,7 @@ import { getUserAccount, getNetwork } from './ethereum/EthereumService'
 import { awaitWeb3Approval } from './ethereum/provider'
 import { initializeUrlPositionObserver } from './world/positionThings'
 import { connect } from './comms'
-import { initialize } from './analytics'
+import { initialize, queueTrackingEvent } from './analytics'
 
 // TODO fill with segment keys and integrate identity server
 export async function initializeAnalytics(userId: string) {
@@ -46,7 +46,6 @@ async function getAddress(): Promise<string | undefined> {
     return await getUserAccount()
   } catch (e) {
     info(e)
-    return
   }
 }
 
@@ -78,12 +77,18 @@ async function authenticate(): Promise<any> {
 export async function initShared(): Promise<ETHEREUM_NETWORK> {
   const { user_id } = await authenticate()
   console['log'](`User ${user_id} logged in`)
+  await initializeAnalytics(user_id)
+
   const address = await getAddress()
+  if (address) {
+    console['log'](`Identifying address ${address}`)
+    queueTrackingEvent('Use web3 address', { address })
+  }
   const net = await getAppNetwork()
+  queueTrackingEvent('Use network', { net })
 
   // Load contracts from https://contracts.decentraland.org
   await setNetwork(net)
-  await initializeAnalytics(user_id)
   await connect(
     user_id,
     net,

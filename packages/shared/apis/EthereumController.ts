@@ -42,7 +42,7 @@ export interface IEthereumController {
   /**
    * Gets the user's public key
    */
-  getUserAccount(): Promise<string>
+  getUserAccount(): Promise<string | undefined>
 }
 
 @registerAPI('EthereumController')
@@ -68,7 +68,7 @@ export class EthereumController extends ExposableAPI implements IEthereumControl
   }
 
   @exposeMethod
-  async getUserAccount(): Promise<string> {
+  async getUserAccount(): Promise<string | undefined> {
     return getUserAccount()
   }
 }

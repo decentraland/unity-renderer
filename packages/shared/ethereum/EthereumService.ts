@@ -6,7 +6,7 @@ import { IFuture, future } from 'fp-future'
 import { getERC20 } from './ERC20'
 import { requestManager } from './provider'
 import { getERC721 } from './ERC721'
-import { DEBUG_MOBILE, ETHEREUM_NETWORK, decentralandConfigurations } from 'config'
+import { ETHEREUM_NETWORK, decentralandConfigurations } from 'config'
 import { generateEphemeralKeys, UserData as EphemeralKey } from 'ephemeralkey'
 import { saveToLocalStorage, removeFromLocalStorage, getFromLocalStorage } from 'atomicHelpers/localStorage'
 import { RPCSendableMessage } from 'shared/types'
@@ -49,21 +49,17 @@ function isWhitelistedRPC(msg: RPCSendableMessage) {
   return msg.method && whitelist.includes(msg.method)
 }
 
-export async function getUserAccount(): Promise<string> {
+export async function getUserAccount(): Promise<string | undefined> {
   try {
-    if (DEBUG_MOBILE) {
-      return '0x8bed95d830475691c10281f1fea2c0a0fe51304b'
-    }
-
     const publicKeys = await requestManager.eth_accounts()
 
     if (!publicKeys || publicKeys.length === 0) {
-      throw new Error('Account locked')
+      return undefined
     }
 
     return publicKeys[0]
   } catch (error) {
-    throw new Error(`Could not connect to Metamask: "${error.message}"`)
+    throw new Error(`Could not access eth_accounts: "${error.message}"`)
   }
 }
 
@@ -157,6 +153,10 @@ export async function getERC721Owner(ownerAddress: string, tokenId: string, regi
 export async function requirePayment(toAddress: string, amount: number, currency: string): Promise<any> {
   try {
     let fromAddress = await getUserAccount()
+    if (!fromAddress) {
+      throw new Error(`Not a web3 game session`)
+    }
+
     let result: Promise<any>
 
     if (currency === 'ETH') {
@@ -216,6 +216,10 @@ export async function messageToString(dict: MessageDict) {
  */
 export async function signMessage(messageDict: MessageDict) {
   const signerAccount = await getUserAccount()
+  if (!signerAccount) {
+    throw new Error(`Not a web3 game session`)
+  }
+
   const messageToSign = await messageToString(messageDict)
 
   if (messageToSign.indexOf('# DCL Signed message') === -1) {
