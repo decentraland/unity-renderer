@@ -234,7 +234,7 @@ export async function initializeEngine(_gameInstance: GameInstance) {
     onMessage(type: string, message: any) {
       if (type in browserInterface) {
         // tslint:disable-next-line:semicolon
-        ; (browserInterface as any)[type](message)
+        ;(browserInterface as any)[type](message)
       } else {
         // tslint:disable-next-line:no-console
         console.log('MessageFromEngine', type, message)

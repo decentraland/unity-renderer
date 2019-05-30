@@ -793,12 +793,3 @@ export class OnAnimationEnd extends OnUUIDEvent<'onAnimationEnd'> {
   @ObservableComponent.readonly
   readonly type: string = 'onAnimationEnd'
 }
-
-/**
- * @internal
- */
-@Component('engine.onEnter', CLASS_ID.UUID_CALLBACK)
-export class OnEnter extends OnUUIDEvent<'onEnter'> {
-  @ObservableComponent.readonly
-  readonly type: string = 'onEnter'
-}

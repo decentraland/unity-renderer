@@ -75,6 +75,23 @@ export class OnClick extends OnUUIDEvent<'onClick'> {
 /**
  * @public
  */
+@Component('engine.onEnter', CLASS_ID.UUID_CALLBACK)
+export class OnEnter extends OnUUIDEvent<'onEnter'> {
+  @ObservableComponent.readonly
+  readonly type: string = 'onEnter'
+  constructor(callback: (event: IEvents['onEnter']) => void) {
+    super(callback)
+    // This injection is necessary ONLY in events that are ALWAYS turned on and are
+    // not assignable to entities. Like events for the UI elements
+
+    // TODO(Brian): This will be removed when UI gets back to the entity parenting.
+    uuidEventSystem.handlerMap[this.uuid] = this
+  }
+}
+
+/**
+ * @public
+ */
 @Component('engine.onChange', CLASS_ID.UUID_CALLBACK)
 export class OnChanged extends OnUUIDEvent<'onChange'> {
   @ObservableComponent.readonly
