@@ -1,6 +1,7 @@
 ﻿using DCL.Components;
 using DCL.Controllers;
 using DCL.Models;
+using DCL.Interface;
 using Newtonsoft.Json;
 using System;
 using System.Collections;
@@ -798,6 +799,62 @@ namespace DCL.Helpers
             CompareWithDefaultedInstance<TModel, TComponent>(component);
 
             component.Dispose();
+        }
+
+        public static IEnumerator TestUIClickEventPropagation(string sceneId, UIShape.Model model, RectTransform uiObject, System.Action<bool> callback)
+        {
+            string srcOnClick = model.onClick;
+            bool srcIsPointerBlocker = model.isPointerBlocker;
+
+            model.isPointerBlocker = true;
+            model.onClick = "UUIDFakeEventId";
+
+            yield return TestUIClickEventPropagation(sceneId, model.onClick, uiObject, callback);
+
+            model.isPointerBlocker = srcIsPointerBlocker;
+            model.onClick = srcOnClick;
+
+            yield return null;
+        }
+
+
+        public static IEnumerator TestUIClickEventPropagation(string sceneId, string eventUuid, RectTransform uiObject, System.Action<bool> callback)
+        {
+            // We need to populate the event data with the 'pointerPressRaycast' pointing to the 'clicked' object
+            PointerEventData pointerEventData = new PointerEventData(EventSystem.current);
+            RaycastResult raycastResult = new RaycastResult();
+            raycastResult.gameObject = uiObject.gameObject;
+            pointerEventData.pointerPressRaycast = raycastResult;
+
+            string targetEventType = "SceneEvent";
+
+            var onClickEvent = new WebInterface.OnClickEvent();
+            onClickEvent.uuid = eventUuid;
+
+            var sceneEvent = new WebInterface.SceneEvent<WebInterface.OnClickEvent>();
+            sceneEvent.sceneId = sceneId;
+            sceneEvent.payload = onClickEvent;
+            sceneEvent.eventType = "uuidEvent";
+            string eventJSON = JsonUtility.ToJson(sceneEvent);
+
+            bool eventTriggered = false;
+
+            yield return TestHelpers.WaitForMessageFromEngine(targetEventType, eventJSON,
+                () =>
+                {
+                    ExecuteEvents.ExecuteHierarchy(raycastResult.gameObject, pointerEventData,
+                        ExecuteEvents.pointerDownHandler);
+                },
+                () =>
+                {
+                    eventTriggered = true;
+                });
+
+            yield return null;
+
+            // Callback!
+            if (callback != null)
+                callback(eventTriggered);
         }
 
         // Simulates a mouse click by throwing a ray over a given object and checks 

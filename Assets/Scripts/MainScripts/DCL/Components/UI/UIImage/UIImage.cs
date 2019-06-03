@@ -22,7 +22,6 @@ namespace DCL.Components
             public float paddingBottom = 0f;
             public float paddingLeft = 0f;
             public bool sizeInPixels = true;
-            public string onClick;
             public string onEnter;
         }
 

@@ -95,6 +95,74 @@ namespace Tests
         }
 
         [UnityTest]
+        public IEnumerator TestOnClickEvent()
+        {
+            yield return InitScene();
+
+            DCLCharacterController.i.gravity = 0f;
+
+            // Position character inside parcel (0,0)
+            DCLCharacterController.i.SetPosition(JsonConvert.SerializeObject(new
+            {
+                x = 0f,
+                y = 0f,
+                z = 0f
+            }));
+
+            // Create UIScreenSpaceShape
+            UIScreenSpace screenSpaceShape =
+                TestHelpers.SharedComponentCreate<UIScreenSpace, UIScreenSpace.Model>(scene,
+                    CLASS_ID.UI_SCREEN_SPACE_SHAPE);
+            yield return screenSpaceShape.routine;
+
+            UIScrollRect scrRect =
+                TestHelpers.SharedComponentCreate<UIScrollRect, UIScrollRect.Model>(scene, CLASS_ID.UI_SLIDER_SHAPE);
+            yield return scrRect.routine;
+
+            // Force a new update to pass the first apply
+            TestHelpers.SharedComponentUpdate(scene, scrRect, new UIScrollRect.Model
+            {
+                name = "newName"
+            });
+            yield return scrRect.routine;
+
+            // Update UIScrollRect properties
+            TestHelpers.SharedComponentUpdate(scene, scrRect,
+                new UIScrollRect.Model
+                {
+                    parentComponent = screenSpaceShape.id,
+                    isPointerBlocker = false,
+                    width = new UIValue(275f),
+                    height = new UIValue(130f),
+                    positionX = new UIValue(-30f),
+                    positionY = new UIValue(-15f),
+                    hAlign = "right",
+                    vAlign = "bottom",
+                    onClick = "UUIDFakeEventId"
+                });
+
+            yield return scrRect.routine;
+
+            //------------------------------------------------------------------------
+            // Test click events
+            bool eventResult = false;
+
+            yield return TestHelpers.TestUIClickEventPropagation(
+                scene.sceneData.id,
+                scrRect.model.onClick,
+                scrRect.referencesContainer.childHookRectTransform,
+                (bool res) =>
+                {
+                    // Check image object clicking triggers the correct event
+                    eventResult = res;
+                });
+
+            Assert.IsTrue(eventResult);
+
+            screenSpaceShape.Dispose();
+        }
+
+        [UnityTest]
         public IEnumerator TestMissingValuesGetDefaultedOnUpdate()
         {
             yield return InitScene();

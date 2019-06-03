@@ -228,5 +228,63 @@ namespace Tests
 
             screenSpaceShape.Dispose();
         }
+
+        [UnityTest]
+        public IEnumerator TestOnClickEvent()
+        {
+            yield return InitScene();
+
+            // Create UIScreenSpaceShape
+            UIScreenSpace screenSpaceShape =
+                TestHelpers.SharedComponentCreate<UIScreenSpace, UIScreenSpace.Model>(scene,
+                    CLASS_ID.UI_SCREEN_SPACE_SHAPE);
+
+            yield return screenSpaceShape.routine;
+
+            // Create UIContainerRectShape
+            UIContainerRect uiContainerRectShape =
+                TestHelpers.SharedComponentCreate<UIContainerRect, UIContainerRect.Model>(scene,
+                    CLASS_ID.UI_CONTAINER_RECT);
+
+            yield return uiContainerRectShape.routine;
+
+            // Update UIContainerRectShape properties
+            uiContainerRectShape = scene.SharedComponentUpdate(JsonUtility.ToJson(new SharedComponentUpdateMessage
+            {
+                id = uiContainerRectShape.id,
+                json = JsonUtility.ToJson(new UIContainerRect.Model
+                {
+                    parentComponent = screenSpaceShape.id,
+                    thickness = 5,
+                    color = new Color(0.2f, 0.7f, 0.05f, 1f),
+                    isPointerBlocker = false,
+                    width = new UIValue(275f),
+                    height = new UIValue(130f),
+                    positionX = new UIValue(-30f),
+                    positionY = new UIValue(-15f),
+                    hAlign = "right",
+                    vAlign = "bottom",
+                    onClick = "UUIDFakeEventId"
+                })
+            })) as UIContainerRect;
+
+            yield return uiContainerRectShape.routine;
+
+            //------------------------------------------------------------------------
+            // Test click events
+            bool eventResult = false;
+
+            yield return TestHelpers.TestUIClickEventPropagation(
+                scene.sceneData.id,
+                uiContainerRectShape.model.onClick,
+                uiContainerRectShape.referencesContainer.childHookRectTransform,
+                (bool res) =>
+                {
+                    // Check image object clicking triggers the correct event
+                    eventResult = res;
+                });
+
+            Assert.IsTrue(eventResult);
+        }
     }
 }

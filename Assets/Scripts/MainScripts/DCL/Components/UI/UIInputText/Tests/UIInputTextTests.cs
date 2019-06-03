@@ -1,9 +1,12 @@
 using DCL.Components;
 using DCL.Helpers;
+using DCL.Models;
+using DCL.Interface;
 using NUnit.Framework;
 using System.Collections;
 using UnityEngine;
 using UnityEngine.TestTools;
+using UnityEngine.EventSystems;
 
 namespace Tests
 {
@@ -42,6 +45,7 @@ namespace Tests
                         opacity = 1,
                     },
 
+                    isPointerBlocker = true,
                     placeholder = "Chat here!",
                     placeholderColor = Color.grey,
                     focusedBackground = Color.black,
@@ -50,10 +54,52 @@ namespace Tests
                     positionY = new UIValue(0.5f, UIValue.Unit.PERCENT),
                     height = new UIValue(100),
                     width = new UIValue(100),
+                    onClick = "UUIDFakeEventId"
+
                 });
 
             yield return textInput.routine;
             yield return null;
+        }
+
+        [UnityTest]
+        public IEnumerator TestOnClickEvent()
+        {
+            yield return InputTextCreate();
+
+            //------------------------------------------------------------------------
+            // Test click events
+            TMPro.TMP_InputField inputField = textInput.referencesContainer.inputField;
+
+            string targetEventType = "SceneEvent";
+
+            var onClickEvent = new WebInterface.OnClickEvent();
+            onClickEvent.uuid = textInput.model.onClick;
+
+            var sceneEvent = new WebInterface.SceneEvent<WebInterface.OnClickEvent>();
+            sceneEvent.sceneId = scene.sceneData.id;
+            sceneEvent.payload = onClickEvent;
+            sceneEvent.eventType = "uuidEvent";
+            string eventJSON = JsonUtility.ToJson(sceneEvent);
+
+            bool eventTriggered = false;
+
+
+            yield return TestHelpers.WaitForMessageFromEngine(targetEventType, eventJSON,
+                () =>
+                {
+                    UnityEngine.EventSystems.EventSystem.current.SetSelectedGameObject(inputField.gameObject, null);
+                    inputField.ActivateInputField();
+                    inputField.Select();
+                },
+                () =>
+                {
+                    eventTriggered = true;
+                });
+
+            yield return null;
+
+            Assert.IsTrue(eventTriggered);
         }
 
         [UnityTest]

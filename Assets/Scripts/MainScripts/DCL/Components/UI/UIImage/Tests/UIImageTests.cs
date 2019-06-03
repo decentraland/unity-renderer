@@ -157,42 +157,22 @@ namespace Tests
                 height = new UIValue(128f),
                 onClick = uiImageOnClickEventId
             });
+
             yield return uiImage.routine;
 
-            // We need to populate the event data with the 'pointerPressRaycast' pointing to the 'clicked' object
-            PointerEventData pointerEventData = new PointerEventData(EventSystem.current);
-            RaycastResult raycastResult = new RaycastResult();
-            raycastResult.gameObject = uiImage.referencesContainer.image.gameObject;
-            pointerEventData.pointerPressRaycast = raycastResult;
+            bool eventResult = false;
 
-            string targetEventType = "SceneEvent";
-
-            var onClickEvent = new WebInterface.OnClickEvent();
-            onClickEvent.uuid = uiImageOnClickEventId;
-
-            var sceneEvent = new WebInterface.SceneEvent<WebInterface.OnClickEvent>();
-            sceneEvent.sceneId = scene.sceneData.id;
-            sceneEvent.payload = onClickEvent;
-            sceneEvent.eventType = "uuidEvent";
-            string eventJSON = JsonUtility.ToJson(sceneEvent);
-
-            bool eventTriggered = false;
-
-            yield return TestHelpers.WaitForMessageFromEngine(targetEventType, eventJSON,
-                () =>
+            yield return TestHelpers.TestUIClickEventPropagation(
+                scene.sceneData.id,
+                uiImageOnClickEventId,
+                (RectTransform)uiImage.referencesContainer.image.transform,
+                (bool res) =>
                 {
-                    ExecuteEvents.ExecuteHierarchy(raycastResult.gameObject, pointerEventData,
-                        ExecuteEvents.pointerDownHandler);
-                },
-                () =>
-                {
-                    eventTriggered = true;
+                    // Check image object clicking triggers the correct event
+                    eventResult = res;
                 });
 
-            yield return null;
-
-            // Check image object clicking triggers the correct event
-            Assert.IsTrue(eventTriggered);
+            Assert.IsTrue(eventResult);
 
             // Check UI children won't trigger the parent/root image component event
             UIContainerRect uiContainer =
@@ -206,23 +186,19 @@ namespace Tests
             });
             yield return uiContainer.routine;
 
-            raycastResult.gameObject = uiContainer.referencesContainer.image.gameObject;
-            pointerEventData.pointerPressRaycast = raycastResult;
+            eventResult = false;
 
-            eventTriggered = false;
-
-            yield return TestHelpers.WaitForMessageFromEngine(targetEventType, eventJSON,
-                () =>
+            yield return TestHelpers.TestUIClickEventPropagation(
+                scene.sceneData.id,
+                uiImageOnClickEventId,
+                (RectTransform)uiContainer.referencesContainer.image.transform,
+                (bool res) =>
                 {
-                    ExecuteEvents.ExecuteHierarchy(raycastResult.gameObject, pointerEventData,
-                        ExecuteEvents.pointerDownHandler);
-                },
-                () =>
-                {
-                    eventTriggered = true;
+                    // Check image object clicking doesn't trigger event
+                    eventResult = res;
                 });
 
-            Assert.IsFalse(eventTriggered);
+            Assert.IsFalse(eventResult);
         }
 
         [UnityTest]
