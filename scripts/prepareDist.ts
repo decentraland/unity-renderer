@@ -123,11 +123,6 @@ async function validatePackage(folder: string) {
 
   // unity
   copyFile(path.resolve(root, `static/unity`), path.resolve(root, `${folder}/artifacts/unity`))
-  copyFile(path.resolve(root, `static/dist/unityPreview.js`), path.resolve(root, `${folder}/artifacts/unityPreview.js`))
-  copyFile(
-    path.resolve(root, `static/unity-preview.html`),
-    path.resolve(root, `${folder}/artifacts/unity-preview.html`)
-  )
 
   console.log(`> ensure ${folder}/lib exists`)
   {
