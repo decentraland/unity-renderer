@@ -152,6 +152,7 @@ namespace DCL.Components
             public UIValue positionX = new UIValue(0f);
             public UIValue positionY = new UIValue(0f);
             public bool isPointerBlocker = true;
+            public string onClick;
         }
 
         public override string componentName => GetDebugName();
