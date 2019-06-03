@@ -1,3 +1,4 @@
+using System;
 using DCL.Controllers;
 using DCL.Helpers;
 using DCL.Models;
@@ -12,9 +13,29 @@ namespace DCL.Components
         static bool VERBOSE = false;
         public Canvas canvas;
 
+        private static bool globalVisibility = true;
+        private static bool GlobalVisibility
+        {
+            get => globalVisibility;
+            set
+            {
+                globalVisibility = value;
+                OnUIGlobalVisibilityChanged.Invoke();
+            }
+        }
+
+        private static Action OnUIGlobalVisibilityChanged = () => { };
+
+        private Vector3 currentCharacterPosition;
+
         public UIScreenSpace(ParcelScene scene) : base(scene)
         {
             DCLCharacterController.OnCharacterMoved += OnCharacterMoved;
+            //Only no-dcl scenes are listening the the global visibility event
+            if (!scene.isPersistent)
+            {
+                OnUIGlobalVisibilityChanged += UpdateCanvasVisibility;
+            }
         }
 
         public override void AttachTo(DecentralandEntity entity, System.Type overridenAttachedType = null)
@@ -48,6 +69,7 @@ namespace DCL.Components
         public override void Dispose()
         {
             DCLCharacterController.OnCharacterMoved -= OnCharacterMoved;
+            OnUIGlobalVisibilityChanged -= UpdateCanvasVisibility;
 
             if (childHookRectTransform != null)
             {
@@ -59,13 +81,19 @@ namespace DCL.Components
         {
             if (canvas != null)
             {
-                canvas.enabled = scene.IsInsideSceneBoundaries(newCharacterPosition) && model.visible;
+                currentCharacterPosition = newCharacterPosition;
+                UpdateCanvasVisibility();
 
                 if (VERBOSE)
                 {
-                    Debug.Log($"set screenspace = {canvas.enabled}... {newCharacterPosition}");
+                    Debug.Log($"set screenspace = {canvas.enabled}... {currentCharacterPosition}");
                 }
             }
+        }
+        private void UpdateCanvasVisibility()
+        {
+            if (canvas != null && scene != null)
+                canvas.enabled = scene.IsInsideSceneBoundaries(currentCharacterPosition) && model.visible && (scene.isPersistent || GlobalVisibility);
         }
 
         IEnumerator InitializeCanvas()
@@ -127,6 +155,36 @@ namespace DCL.Components
             {
                 Debug.Log("Finished canvas initialization in " + id);
             }
+
+            //Only for the DCL UI scene
+            if (scene.isPersistent)
+            {
+                CreateGlobalVisibilityToggle();
+            }
+            else
+            {
+                UpdateCanvasVisibility();
+            }
+        }
+
+        private void CreateGlobalVisibilityToggle()
+        {
+            GameObject toggleGameObject = UnityEngine.Object.Instantiate(Resources.Load("GlobalVisibilityToggle"), childHookRectTransform) as GameObject;
+            if (toggleGameObject == null)
+            {
+                Debug.Log("Cannot find Global Visibility Toggle");
+                return;
+            }
+
+            var toggle = toggleGameObject.GetComponent<Toggle>();
+            if (toggle == null)
+            {
+                Debug.Log("Global Visibility Toggle contains no toggle");
+                return;
+            }
+
+            toggle.onValueChanged.AddListener((x) => GlobalVisibility = x);
+            toggle.isOn = true;
         }
     }
 }
