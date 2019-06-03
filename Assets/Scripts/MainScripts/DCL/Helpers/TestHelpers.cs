@@ -310,7 +310,7 @@ namespace DCL.Helpers
                 entityId = entity.entityId,
                 name = "",
                 classId = (int)CLASS_ID_COMPONENT.TRANSFORM,
-                json = JsonConvert.SerializeObject(new
+                json = JsonUtility.ToJson(new DCLTransform.Model
                 {
                     position = position,
                     rotation = rotation,

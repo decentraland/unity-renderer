@@ -212,12 +212,6 @@ namespace DCL.Controllers
         {
             SceneController.i.OnMessageDecodeStart?.Invoke("SetEntityParent");
 
-            if (json[json.Length - 3] == '0')
-            {
-                SceneController.i.OnMessageDecodeEnds?.Invoke("SetEntityParent");
-                return;
-            }
-
             tmpParentMessage.FromJSON(json);
             SceneController.i.OnMessageDecodeEnds?.Invoke("SetEntityParent");
 
