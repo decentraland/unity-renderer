@@ -59,10 +59,28 @@ namespace DCL
             uniqueMaterials = new HashSet<Material>();
             model = new Model();
 
-            scene.OnEntityAdded += OnEntityAdded;
-            scene.OnEntityRemoved += OnEntityRemoved;
 
             if (VERBOSE) { Debug.Log("Start ScenePerformanceLimitsController..."); }
+        }
+
+        public void Enable()
+        {
+            if (scene == null)
+                return;
+
+            scene.OnEntityAdded -= OnEntityAdded;
+            scene.OnEntityRemoved -= OnEntityRemoved;
+            scene.OnEntityAdded += OnEntityAdded;
+            scene.OnEntityRemoved += OnEntityRemoved;
+        }
+
+        public void Disable()
+        {
+            if (scene == null)
+                return;
+
+            scene.OnEntityAdded -= OnEntityAdded;
+            scene.OnEntityRemoved -= OnEntityRemoved;
         }
 
         public Model GetLimits()

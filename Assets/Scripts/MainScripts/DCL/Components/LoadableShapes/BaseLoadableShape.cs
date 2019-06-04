@@ -46,7 +46,7 @@ namespace DCL.Components
 
                 foreach (var entity in this.attachedEntities)
                 {
-                    yield return AttachShapeCoroutine(entity);
+                    AttachShape(entity);
                 }
             }
 
@@ -63,12 +63,8 @@ namespace DCL.Components
                     ConfigureVisibility(entity.meshGameObject, model.visible);
                 }
             }
-        }
 
-        private IEnumerator AttachShapeCoroutine(DecentralandEntity entity)
-        {
-            AttachShape(entity);
-            yield return null;
+            return null;
         }
 
         protected virtual void AttachShape(DecentralandEntity entity)

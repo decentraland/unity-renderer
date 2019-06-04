@@ -1,4 +1,4 @@
-using DCL.Controllers;
+﻿using DCL.Controllers;
 using DCL.Helpers;
 using DCL.Models;
 using UnityEngine;
@@ -24,7 +24,9 @@ namespace DCL.Components
             }
             else
             {
+#if UNITY_EDITOR
                 Debug.LogError($"GLTF/GLB '{currentSrc}' not found in scene '{scene.sceneData.id}' mappings");
+#endif
             }
         }
     }

@@ -23,9 +23,10 @@ namespace DCL.Controllers
         public event System.Action<DecentralandEntity> OnEntityAdded;
         public event System.Action<DecentralandEntity> OnEntityRemoved;
 
-        public void Awake()
+        public void Start()
         {
             metricsController = new SceneMetricsController(this);
+            metricsController.Enable();
         }
 
         bool flaggedToUnload = false;
@@ -259,16 +260,6 @@ namespace DCL.Controllers
         UUIDCallbackMessage uuidMessage = new UUIDCallbackMessage();
         EntityComponentCreateMessage createEntityComponentMessage = new EntityComponentCreateMessage();
 
-        public T CreateAndInitComponent<T>(DecentralandEntity entity, EntityComponentCreateMessage message)
-            where T : BaseComponent
-        {
-            var component = entity.gameObject.GetOrCreateComponent<T>();
-            component.scene = this;
-            component.entity = entity;
-            component.UpdateFromJSON(createEntityComponentMessage.json);
-            return component;
-        }
-
         public BaseComponent EntityComponentCreate(string json)
         {
             SceneController.i.OnMessageDecodeStart?.Invoke("UpdateEntityComponent");
@@ -279,9 +270,7 @@ namespace DCL.Controllers
 
             if (entity == null)
             {
-                Debug.LogError(
-                    $"scene '{sceneData.id}': Can't create entity component if the entity {createEntityComponentMessage.entityId} doesn't exist!");
-
+                Debug.LogError($"scene '{sceneData.id}': Can't create entity component if the entity {createEntityComponentMessage.entityId} doesn't exist!");
                 return null;
             }
 
@@ -310,9 +299,7 @@ namespace DCL.Controllers
                     newComponent.entity = entity;
                     entity.components.Add(classId, newComponent);
 
-                    newComponent.transform.SetParent(entity.gameObject.transform);
-                    newComponent.transform.ResetLocalTRS();
-
+                    newComponent.transform.SetParent(entity.gameObject.transform, false);
                     newComponent.UpdateFromJSON(createEntityComponentMessage.json);
                 }
             }
@@ -607,11 +594,13 @@ namespace DCL.Controllers
 
         protected virtual void SendMetricsEvent()
         {
-            metricsController.SendEvent();
+            if (Time.frameCount % 10 == 0)
+                metricsController.SendEvent();
         }
 
         public bool HasTestSchema(string url)
         {
+#if UNITY_EDITOR
             if (url.StartsWith("file://"))
             {
                 return true;
@@ -621,7 +610,7 @@ namespace DCL.Controllers
             {
                 return true;
             }
-
+#endif
             return false;
         }
 
@@ -632,11 +621,12 @@ namespace DCL.Controllers
                 return false;
             }
 
+#if UNITY_EDITOR
             if (HasTestSchema(url))
             {
                 return true;
             }
-
+#endif
             if (sceneData.fileToHash == null)
             {
                 return false;

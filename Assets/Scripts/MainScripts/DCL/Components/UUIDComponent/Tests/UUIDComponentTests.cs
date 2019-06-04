@@ -1,4 +1,4 @@
-using DCL.Components;
+﻿using DCL.Components;
 using DCL.Helpers;
 using DCL.Interface;
 using DCL.Models;
@@ -68,7 +68,7 @@ namespace Tests
                 }));
 
             GLTFLoader gltfShape = scene.entities[entityId].gameObject.GetComponentInChildren<GLTFLoader>();
-            yield return new WaitUntil(() => gltfShape.alreadyLoaded);
+            yield return new DCL.WaitUntil(() => gltfShape.alreadyLoaded, 7f);
 
             Assert.IsTrue(
                 scene.entities[entityId].gameObject.GetComponentInChildren<UnityGLTF.InstantiatedGLTFObject>() != null,
@@ -125,7 +125,7 @@ namespace Tests
                 OnClickComponentModel, CLASS_ID_COMPONENT.UUID_CALLBACK);
 
             GLTFLoader gltfShape = scene.entities[entityId].gameObject.GetComponentInChildren<GLTFLoader>();
-            yield return new WaitUntil(() => gltfShape.alreadyLoaded);
+            yield return new DCL.WaitUntil(() => gltfShape.alreadyLoaded, 7f);
 
             Assert.IsTrue(
                 scene.entities[entityId].gameObject.GetComponentInChildren<UnityGLTF.InstantiatedGLTFObject>() != null,
@@ -159,6 +159,7 @@ namespace Tests
                 type = "onClick",
                 uuid = clickUuid
             };
+
             TestHelpers.EntityComponentCreate<OnClickComponent, OnClickComponent.Model>(scene, scene.entities[entityId],
                 OnClickComponentModel, CLASS_ID_COMPONENT.UUID_CALLBACK);
 

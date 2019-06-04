@@ -60,7 +60,7 @@ public class StatsPanel : MonoBehaviour
         }
     }
 
-    public void PopulateTable(int width, int height)
+    public void PopulateTable(int width, int height, float firstColWidth = 240, float secondColWidth = 80)
     {
         rows = new List<Row>(height);
         columns = new List<Column>(width);
@@ -88,13 +88,13 @@ public class StatsPanel : MonoBehaviour
 
                 if (x == 0)
                 {
-                    columnGameObject.GetComponent<LayoutElement>().preferredWidth = 240;
-                    columnGameObject.GetComponent<LayoutElement>().minWidth = 240;
+                    columnGameObject.GetComponent<LayoutElement>().preferredWidth = firstColWidth;
+                    columnGameObject.GetComponent<LayoutElement>().minWidth = firstColWidth;
                 }
                 else
                 {
-                    columnGameObject.GetComponent<LayoutElement>().preferredWidth = 80;
-                    columnGameObject.GetComponent<LayoutElement>().minWidth = 80;
+                    columnGameObject.GetComponent<LayoutElement>().preferredWidth = secondColWidth;
+                    columnGameObject.GetComponent<LayoutElement>().minWidth = secondColWidth;
                 }
             }
         }
