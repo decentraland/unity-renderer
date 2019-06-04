@@ -1,3 +1,4 @@
+using System;
 using DCL.Components;
 using DCL.Helpers;
 using System.Collections;
@@ -5,6 +6,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityGLTF;
 using UnityGLTF.Loader;
+using Random = UnityEngine.Random;
 
 namespace DCL
 {
@@ -77,10 +79,10 @@ namespace DCL
             return emptyAsset;
         }
 
-        protected override GameObject GetCachedAsset(object id, Transform parent)
+        protected override GameObject GetCachedAsset(object id, Transform parent, Action OnSuccess)
         {
             GameObject cachedAsset = DuplicateGLTF(assetLibrary[id].cachedContainer);
-            StartCoroutine(ShowObject(cachedAsset, Configuration.ParcelSettings.VISUAL_LOADING_ENABLED));
+            StartCoroutine(ShowObject(cachedAsset, Configuration.ParcelSettings.VISUAL_LOADING_ENABLED, OnSuccess));
 
             cachedAsset.transform.parent = parent;
             cachedAsset.transform.ResetLocalTRS();
@@ -188,7 +190,7 @@ namespace DCL
             loadable.LoadAsset(url, true);
         }
 
-        IEnumerator ShowObject(GameObject go, bool useMaterialTransition)
+        IEnumerator ShowObject(GameObject go, bool useMaterialTransition, Action OnSuccess)
         {
             float delay = Random.Range(0, 1f);
             yield return new WaitForSeconds(delay);
@@ -209,6 +211,11 @@ namespace DCL
                         MaterialTransitionController.ApplyToLoadedObject(go, false);
                     }
                 }
+            }
+            
+            if (OnSuccess != null)
+            {
+                OnSuccess.Invoke();
             }
         }
 
