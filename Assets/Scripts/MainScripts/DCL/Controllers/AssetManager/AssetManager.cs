@@ -1,3 +1,4 @@
+using System;
 using DCL.Components;
 using System.Collections;
 using System.Collections.Generic;
@@ -32,7 +33,7 @@ namespace DCL
         //
 
         protected abstract AssetContainerClass CreateEmptyAsset(Transform parent);
-        protected abstract AssetContainerClass GetCachedAsset(object id, Transform parent);
+        protected abstract AssetContainerClass GetCachedAsset(object id, Transform parent, Action OnSuccess);
         protected abstract void CleanCachedAsset(object id);
 
         protected abstract IEnumerator AddToLibrary(object id, string url, AssetContainerClass resultContainer);
@@ -160,13 +161,8 @@ namespace DCL
                 else
                 {
                     assetLibrary[id].referenceCount++;
-                    GetCachedAsset(id, parent);
-
-                    if (OnSuccess != null)
-                    {
-                        OnSuccess.Invoke();
-                    }
-
+                    GetCachedAsset(id, parent, OnSuccess);
+                    
                     return resultContainer;
                 }
             }
