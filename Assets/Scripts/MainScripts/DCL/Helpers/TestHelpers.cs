@@ -1,7 +1,7 @@
 ﻿using DCL.Components;
 using DCL.Controllers;
-using DCL.Models;
 using DCL.Interface;
+using DCL.Models;
 using Newtonsoft.Json;
 using System;
 using System.Collections;
@@ -10,9 +10,8 @@ using System.Linq;
 using System.Reflection;
 using UnityEngine;
 using UnityEngine.Assertions;
-using UnityEngine.SceneManagement;
-using UnityEngine.UI;
 using UnityEngine.EventSystems;
+using UnityEngine.SceneManagement;
 
 namespace DCL.Helpers
 {

@@ -1,4 +1,4 @@
-using DCL.Components;
+﻿using DCL.Components;
 using DCL.Models;
 using System.Collections.Generic;
 using UnityEngine;
@@ -57,7 +57,9 @@ namespace DCL
 
             if (!factoryDict.ContainsKey(id))
             {
+#if UNITY_EDITOR
                 Debug.LogError("Class " + id + " can't be instantiated because the field doesn't exist!");
+#endif
                 return default(ItemType);
             }
 

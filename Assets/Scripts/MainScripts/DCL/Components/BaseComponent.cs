@@ -68,10 +68,7 @@ namespace DCL.Components
                 yield return enumerator;
             }
 
-            if (entity != null && entity.OnComponentUpdated != null)
-            {
-                entity.OnComponentUpdated.Invoke(this);
-            }
+            entity?.OnComponentUpdated?.Invoke(this);
         }
 
         public abstract IEnumerator ApplyChanges(string newJson);

@@ -1,4 +1,4 @@
-using UnityEngine;
+﻿using UnityEngine;
 
 namespace DCL.Models
 {
@@ -81,8 +81,7 @@ namespace DCL.Models
     {
         /// id of the affected entity
         public string entityId;
-
-        /// name of the compoenent
+        /// name of the component
         public string name;
 
         /// class of the component that should be instantiated
@@ -114,7 +113,6 @@ namespace DCL.Models
         {
             entityId = default(string);
             parentId = default(string);
-
             JsonUtility.FromJsonOverwrite(rawJson, this);
         }
     }
@@ -128,7 +126,6 @@ namespace DCL.Models
         public void FromJSON(string rawJson)
         {
             id = default(string);
-
             JsonUtility.FromJsonOverwrite(rawJson, this);
         }
     }

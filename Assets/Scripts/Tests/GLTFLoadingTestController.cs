@@ -1,3 +1,4 @@
+﻿using DCL;
 using DCL.Helpers;
 using System;
 using System.Collections;
@@ -35,17 +36,6 @@ public class GLTFLoadingTestController : MonoBehaviour
         TestHelpers.InstantiateEntityWithShape(scene, "3", DCL.Models.CLASS_ID.GLTF_SHAPE, new Vector3(2.5f, 1, 0),
             TestHelpers.GetTestsAssetsPath() + "/GLTF/Trunk/Trunk.gltf");
         // ---------
-
-        /* gltfRenderers = GetComponentsInChildren<GLTFComponent>(true);
-
-        loadingStartingTime = Time.time;
-
-        for (int i = 0; i < gltfRenderers.Length; i++)
-        {
-            gltfRenderers[i].OnFinishedLoadingAsset += SendLoadingTimeDataToEndpoint;
-
-            gltfRenderers[i].gameObject.SetActive(true);
-        } */
     }
 
     void SendLoadingTimeDataToEndpoint()

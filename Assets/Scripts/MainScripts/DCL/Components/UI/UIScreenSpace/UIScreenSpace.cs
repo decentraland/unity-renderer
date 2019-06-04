@@ -1,7 +1,7 @@
-using System;
 using DCL.Controllers;
 using DCL.Helpers;
 using DCL.Models;
+using System;
 using System.Collections;
 using UnityEngine;
 using UnityEngine.UI;
