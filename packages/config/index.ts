@@ -123,10 +123,12 @@ export function getTLD() {
   }
 }
 
+export const knownTLDs = ['zone', 'org', 'today']
+
 function getDefaultTLD() {
   const TLD = getTLD()
-  if (!TLD || TLD === 'localhost') {
-    return network && network === ETHEREUM_NETWORK.ROPSTEN ? 'zone' : 'org'
+  if (!TLD || !knownTLDs.includes(TLD)) {
+    return network === ETHEREUM_NETWORK.ROPSTEN ? 'zone' : 'org'
   }
   return TLD
 }
