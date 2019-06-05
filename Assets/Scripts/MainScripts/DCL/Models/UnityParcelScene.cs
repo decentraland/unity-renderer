@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
@@ -23,7 +23,7 @@ namespace DCL.Models
         [Serializable]
         public class UnityParcelScene
         {
-            public static bool VERBOSE = false;
+            public static bool VERBOSE = true;
             public string id;
             public string baseUrl;
 
@@ -71,7 +71,7 @@ namespace DCL.Models
 
                     if (VERBOSE)
                     {
-                        Debug.Log(string.Format("found file = {0} ... hash = {1}", m.file, m.hash));
+                        Debug.Log($"found file = {m.file} ... hash = {m.hash}\nfull url = {baseUrl}\\{m.hash}");
                     }
                 }
             }

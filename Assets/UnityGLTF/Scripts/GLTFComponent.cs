@@ -1,4 +1,4 @@
-using DCL.Components;
+﻿using DCL.Components;
 using System;
 using System.Collections;
 using System.IO;
@@ -100,7 +100,6 @@ namespace UnityGLTF
             alreadyDecrementedRefCount = false;
             state = State.NONE;
             mainCamera = Camera.main;
-
             loadingRoutine = DCL.CoroutineHelpers.StartThrowingCoroutine(this, LoadAssetCoroutine(), OnFail_Internal);
         }
 

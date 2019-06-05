@@ -443,8 +443,8 @@ MonoBehaviour:
   startDecentralandAutomatically: 1
   componentFactory: {fileID: 11400000, guid: 6710053fa2d5d5446b6a599e0e003053, type: 2}
   debugPanel: {fileID: 7216045482893348587}
-  debugScenes: 0
-  debugSceneName: 64,-64
+  debugScenes: 1
+  debugSceneName: 59,-56
   ignoreGlobalScenes: 0
   msgStepByStep: 0
 --- !u!114 &301736418073545106
@@ -846,7 +846,7 @@ PrefabInstance:
     - target: {fileID: 7383115124603172022, guid: 44ddd392a9fa06e46833f0a40ab2b6f8,
         type: 3}
       propertyPath: m_AnchoredPosition.x
-      value: 1572
+      value: 1459
       objectReference: {fileID: 0}
     - target: {fileID: 7383115124603172022, guid: 44ddd392a9fa06e46833f0a40ab2b6f8,
         type: 3}
@@ -931,12 +931,12 @@ PrefabInstance:
     - target: {fileID: 7383115125489883641, guid: 44ddd392a9fa06e46833f0a40ab2b6f8,
         type: 3}
       propertyPath: m_AnchoredPosition.x
-      value: 110
+      value: 58
       objectReference: {fileID: 0}
     - target: {fileID: 7383115125489883641, guid: 44ddd392a9fa06e46833f0a40ab2b6f8,
         type: 3}
       propertyPath: m_AnchoredPosition.y
-      value: -30
+      value: -18.5
       objectReference: {fileID: 0}
     - target: {fileID: 7383115124603172021, guid: 44ddd392a9fa06e46833f0a40ab2b6f8,
         type: 3}
@@ -960,11 +960,6 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 2956383689048317341, guid: 44ddd392a9fa06e46833f0a40ab2b6f8,
         type: 3}
-      propertyPath: m_AnchoredPosition.y
-      value: -20
-      objectReference: {fileID: 0}
-    - target: {fileID: 2956383689048317341, guid: 44ddd392a9fa06e46833f0a40ab2b6f8,
-        type: 3}
       propertyPath: m_SizeDelta.x
       value: 0
       objectReference: {fileID: 0}
@@ -973,8 +968,7 @@ PrefabInstance:
       propertyPath: m_SizeDelta.y
       value: 0
       objectReference: {fileID: 0}
-    m_RemovedComponents:
-    - {fileID: 5437409346635807184, guid: 44ddd392a9fa06e46833f0a40ab2b6f8, type: 3}
+    m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 44ddd392a9fa06e46833f0a40ab2b6f8, type: 3}
 --- !u!1 &45779231871842450 stripped
 GameObject:
@@ -1070,7 +1064,7 @@ PrefabInstance:
     - target: {fileID: 7383115124603172022, guid: 44ddd392a9fa06e46833f0a40ab2b6f8,
         type: 3}
       propertyPath: m_AnchoredPosition.x
-      value: 1572
+      value: 1459
       objectReference: {fileID: 0}
     - target: {fileID: 7383115124603172022, guid: 44ddd392a9fa06e46833f0a40ab2b6f8,
         type: 3}
