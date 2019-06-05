@@ -134,9 +134,8 @@ namespace DCL
                 systemsMessagingBus.timeBudget = systemMsgsThrottler.Update(
                     pendingMsgsCount: systemsMessagingBus.pendingMessagesCount,
                     processedMsgsCount: systemsMessagingBus.processedMessagesCount,
-                    maxBudget: Mathf.Max(0, SYSTEM_MSG_BUS_BUDGET_MAX - initMessagingBus.timeBudget));
+                    maxBudget: Mathf.Max(0.01f, SYSTEM_MSG_BUS_BUDGET_MAX - initMessagingBus.timeBudget));
             }
-
         }
 
         public void CreateUIScene(string json)
