@@ -49,7 +49,7 @@ namespace DCL.Components
             {
                 if (fetchRoutine != null)
                 {
-                    referencesContainer.StopCoroutine(fetchRoutine);
+                    scene.StopCoroutine(fetchRoutine);
                     fetchRoutine = null;
                 }
 
@@ -59,7 +59,7 @@ namespace DCL.Components
                     fetchRoutine = null;
                 });
 
-                fetchRoutine = referencesContainer.StartCoroutine(fetchIEnum);
+                fetchRoutine = scene.StartCoroutine(fetchIEnum);
             }
             else
             {

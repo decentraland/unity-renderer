@@ -23,7 +23,7 @@ namespace DCL.Models
         [Serializable]
         public class UnityParcelScene
         {
-            public static bool VERBOSE = true;
+            public static bool VERBOSE = false;
             public string id;
             public string baseUrl;
 
