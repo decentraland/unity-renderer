@@ -98,7 +98,7 @@ namespace DCL.Controllers
 
                     if (Configuration.ParcelSettings.VISUAL_LOADING_ENABLED)
                     {
-                        Material finalMaterial = Utils.EnsureResourcesMaterial("Materials/Default");
+                        Material finalMaterial = Utils.EnsureResourcesMaterial("Materials/DefaultPlane");
                         var matTransition = plane.AddComponent<MaterialTransitionController>();
                         matTransition.delay = 0;
                         matTransition.useHologram = false;
@@ -108,7 +108,7 @@ namespace DCL.Controllers
                     else
                     {
                         plane.GetComponent<MeshRenderer>().sharedMaterial =
-                            Utils.EnsureResourcesMaterial("Materials/Default");
+                            Utils.EnsureResourcesMaterial("Materials/DefaultPlane");
                     }
                 }
             }
