@@ -2,7 +2,7 @@ namespace DCL.Configuration
 {
     public static class ApplicationSettings
     {
-        public static string version = "0.4.1";
+        public static string version = "0.4.2";
     }
 
     public static class Environment
@@ -42,5 +42,10 @@ namespace DCL.Configuration
         public static float SIXTY_FPS_TIME = 1.0f / 60.0f;
         public static float GLOBAL_FRAME_THROTTLING_TIME = SIXTY_FPS_TIME / 8.0f;
         public static float LOAD_PARCEL_SCENES_THROTTLING_TIME = SIXTY_FPS_TIME / 4.0f;
+    }
+
+    public static class UISettings
+    {
+        public static float RESERVED_CANVAS_TOP_PERCENTAGE = 10f;
     }
 }

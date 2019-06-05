@@ -298,12 +298,7 @@ namespace Tests
             DCLCharacterController.i.gravity = 0f;
 
             // Position character inside parcel (0,0)
-            DCLCharacterController.i.SetPosition(JsonConvert.SerializeObject(new
-            {
-                x = 0f,
-                y = 0f,
-                z = 0f
-            }));
+            SetCharacterPosition(Vector3.zero);
 
             string sceneId = "Test UI Scene";
             sceneController.CreateUIScene(JsonUtility.ToJson(new CreateUISceneMessage() { id = sceneId }));
@@ -327,12 +322,7 @@ namespace Tests
 
 
             // Position character inside parcel (0,0)
-            DCLCharacterController.i.SetPosition(JsonConvert.SerializeObject(new
-            {
-                x = 100f,
-                y = 0f,
-                z = 100f
-            }));
+            SetCharacterPosition(new Vector3(100f, 0f, 100f));
 
             yield return null;
 

@@ -9,22 +9,12 @@ using UnityEngine.TestTools;
 
 namespace Tests
 {
-    public class UITextTests : TestsBase
+    public class UITextTests : UITestsBase
     {
         [UnityTest]
         public IEnumerator TestPropertiesAreAppliedCorrectly()
         {
             yield return InitScene();
-
-            DCLCharacterController.i.gravity = 0f;
-
-            // Position character inside parcel (0,0)
-            DCLCharacterController.i.SetPosition(JsonConvert.SerializeObject(new
-            {
-                x = 0f,
-                y = 0f,
-                z = 0f
-            }));
 
             // Create UIScreenSpaceShape
             UIScreenSpace screenSpaceShape =
@@ -54,7 +44,7 @@ namespace Tests
             Assert.IsFalse(uiTextShape.referencesContainer.text.enableWordWrapping);
             Assert.IsFalse(uiTextShape.referencesContainer.text.fontMaterial.IsKeywordEnabled("UNDERLAY_ON"));
 
-            Vector2 alignedPosition = CalculateAlignedPosition(screenSpaceShape.childHookRectTransform.rect,
+            Vector2 alignedPosition = CalculateAlignedAnchoredPosition(screenSpaceShape.childHookRectTransform.rect,
                 uiTextShape.childHookRectTransform.rect);
             Assert.AreEqual(alignedPosition.ToString(), uiTextShape.childHookRectTransform.anchoredPosition.ToString());
 
@@ -106,7 +96,7 @@ namespace Tests
             Assert.IsTrue(uiTextShape.referencesContainer.text.fontMaterial.IsKeywordEnabled("UNDERLAY_ON"));
             Assert.AreEqual(Color.yellow, uiTextShape.referencesContainer.text.fontMaterial.GetColor("_UnderlayColor"));
 
-            alignedPosition = CalculateAlignedPosition(screenSpaceShape.childHookRectTransform.rect,
+            alignedPosition = CalculateAlignedAnchoredPosition(screenSpaceShape.childHookRectTransform.rect,
                 uiTextShape.childHookRectTransform.rect, "bottom", "left");
             Assert.AreEqual(alignedPosition.ToString(), uiTextShape.childHookRectTransform.anchoredPosition.ToString());
 

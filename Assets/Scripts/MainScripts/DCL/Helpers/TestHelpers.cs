@@ -102,8 +102,7 @@ namespace DCL.Helpers
             yield break;
         }
 
-        protected Vector2 CalculateAlignedPosition(Rect parentRect, Rect elementRect, string vAlign = "center",
-            string hAlign = "center")
+        protected Vector2 CalculateAlignedAnchoredPosition(Rect parentRect, Rect elementRect, string vAlign = "center", string hAlign = "center")
         {
             Vector2 result = Vector2.zero;
 
@@ -134,6 +133,11 @@ namespace DCL.Helpers
             }
 
             return result;
+        }
+
+        protected void SetCharacterPosition(Vector3 newPosition)
+        {
+            DCLCharacterController.i.SetPosition(JsonConvert.SerializeObject(newPosition));
         }
     }
 

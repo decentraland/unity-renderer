@@ -9,22 +9,12 @@ using UnityEngine.TestTools;
 
 namespace Tests
 {
-    public class UIScreenSpaceTests : TestsBase
+    public class UIScreenSpaceTests : UITestsBase
     {
         [UnityTest]
         public IEnumerator TestVisibilityUpdate()
         {
             yield return InitScene();
-
-            DCLCharacterController.i.gravity = 0f;
-
-            // Position character inside parcel (0,0)
-            DCLCharacterController.i.SetPosition(JsonConvert.SerializeObject(new
-            {
-                x = 0f,
-                y = 0f,
-                z = 0f
-            }));
 
             // Create UIScreenSpaceShape
             UIScreenSpace screenSpaceShape =
@@ -33,7 +23,7 @@ namespace Tests
 
             yield return screenSpaceShape.routine;
 
-            Canvas canvas = screenSpaceShape.childHookRectTransform.GetComponent<Canvas>();
+            Canvas canvas = screenSpaceShape.canvas;
 
             // Check visibility
             Assert.IsTrue(canvas.enabled,
@@ -72,12 +62,7 @@ namespace Tests
                 "When the UIScreenSpaceShape is explicitly updated as 'visible', its canvas should be visible");
 
             // Position character outside parcel
-            DCLCharacterController.i.SetPosition(JsonConvert.SerializeObject(new
-            {
-                x = 100f,
-                y = 3f,
-                z = 100f
-            }));
+            SetCharacterPosition(new Vector3(100, 3f, 100f));
 
             yield return null;
 
@@ -95,15 +80,8 @@ namespace Tests
         {
             yield return InitScene();
 
-            DCLCharacterController.i.gravity = 0f;
-
-            // Position character outside parcel (1,1)
-            DCLCharacterController.i.SetPosition(JsonConvert.SerializeObject(new
-            {
-                x = 1.5f,
-                y = 0f,
-                z = 1.5f
-            }));
+            // Position character outside parcel
+            SetCharacterPosition(new Vector3(50f, 3f, 50f));
 
             yield return null;
 
@@ -114,7 +92,7 @@ namespace Tests
 
             yield return screenSpaceShape.routine;
 
-            RectTransform canvasRectTransform = screenSpaceShape.childHookRectTransform.GetComponent<RectTransform>();
+            RectTransform canvasRectTransform = screenSpaceShape.canvas.GetComponent<RectTransform>();
 
             const float diffThreshold = 0.1f; //to ensure float point comparison
             Vector2 canvasRealSize = canvasRectTransform.sizeDelta * canvasRectTransform.localScale;
@@ -134,6 +112,48 @@ namespace Tests
             yield return InitScene();
             yield return TestHelpers.TestSharedComponentDefaultsOnUpdate<UIScreenSpace.Model, UIScreenSpace>(scene,
                 CLASS_ID.UI_SCREEN_SPACE_SHAPE);
+        }
+
+        [UnityTest]
+        public IEnumerator TestConstrainedPanelMaskAppliesToParcelsUI()
+        {
+            yield return InitScene();
+
+            yield return null;
+
+            // Create UIScreenSpaceShape
+            UIScreenSpace screenSpaceShape =
+                TestHelpers.SharedComponentCreate<UIScreenSpace, UIScreenSpace.Model>(scene,
+                    CLASS_ID.UI_SCREEN_SPACE_SHAPE);
+
+            yield return screenSpaceShape.routine;
+
+            Assert.IsFalse(scene.isPersistent);
+            Assert.IsTrue(screenSpaceShape.childHookRectTransform.GetComponent<UnityEngine.UI.RectMask2D>() != null);
+
+            screenSpaceShape.Dispose();
+        }
+
+        [UnityTest]
+        public IEnumerator TestConstrainedPanelMaskDoesntApplyToDecentralandUI()
+        {
+            yield return InitScene();
+
+            scene.isPersistent = true;
+
+            yield return null;
+
+            // Create UIScreenSpaceShape
+            UIScreenSpace screenSpaceShape =
+                TestHelpers.SharedComponentCreate<UIScreenSpace, UIScreenSpace.Model>(scene,
+                    CLASS_ID.UI_SCREEN_SPACE_SHAPE);
+
+            yield return screenSpaceShape.routine;
+
+            Assert.IsTrue(scene.isPersistent);
+            Assert.IsTrue(screenSpaceShape.childHookRectTransform.GetComponent<UnityEngine.UI.RectMask2D>() == null);
+
+            screenSpaceShape.Dispose();
         }
     }
 }
