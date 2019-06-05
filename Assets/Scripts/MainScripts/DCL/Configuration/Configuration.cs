@@ -2,7 +2,7 @@ namespace DCL.Configuration
 {
     public static class ApplicationSettings
     {
-        public static string version = "0.4.2";
+        public static string version = "0.4.3";
     }
 
     public static class Environment
