@@ -9,22 +9,12 @@ using UnityEngine.TestTools;
 
 namespace Tests
 {
-    public class UIScrollRectTests : TestsBase
+    public class UIScrollRectTests : UITestsBase
     {
         [UnityTest]
         public IEnumerator TestPropertiesAreAppliedCorrectly()
         {
             yield return InitScene();
-
-            DCLCharacterController.i.gravity = 0f;
-
-            // Position character inside parcel (0,0)
-            DCLCharacterController.i.SetPosition(JsonConvert.SerializeObject(new
-            {
-                x = 0f,
-                y = 0f,
-                z = 0f
-            }));
 
             // Create UIScreenSpaceShape
             UIScreenSpace screenSpaceShape =
@@ -84,7 +74,7 @@ namespace Tests
             Assert.AreEqual(130f, scrRect.childHookRectTransform.rect.height);
             Assert.IsTrue(scrRect.referencesContainer.layoutGroup.childAlignment == TextAnchor.LowerRight);
 
-            Vector2 alignedPosition = CalculateAlignedPosition(screenSpaceShape.childHookRectTransform.rect,
+            Vector2 alignedPosition = CalculateAlignedAnchoredPosition(screenSpaceShape.childHookRectTransform.rect,
                 scrRect.childHookRectTransform.rect, "bottom", "right");
             alignedPosition += new Vector2(-30, -15); // apply offset position
 
@@ -98,16 +88,6 @@ namespace Tests
         public IEnumerator TestOnClickEvent()
         {
             yield return InitScene();
-
-            DCLCharacterController.i.gravity = 0f;
-
-            // Position character inside parcel (0,0)
-            DCLCharacterController.i.SetPosition(JsonConvert.SerializeObject(new
-            {
-                x = 0f,
-                y = 0f,
-                z = 0f
-            }));
 
             // Create UIScreenSpaceShape
             UIScreenSpace screenSpaceShape =
@@ -184,16 +164,6 @@ namespace Tests
         public IEnumerator TestNormalizedSize()
         {
             yield return InitScene();
-
-            DCLCharacterController.i.gravity = 0f;
-
-            // Position character inside parcel (0,0)
-            DCLCharacterController.i.SetPosition(JsonConvert.SerializeObject(new
-            {
-                x = 0f,
-                y = 0f,
-                z = 0f
-            }));
 
             // Create UIScreenSpaceShape
             UIScreenSpace screenSpaceShape =

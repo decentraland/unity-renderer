@@ -22,13 +22,7 @@ public class UIVisualTestsBase : VisualTestsBase
         DCLCharacterController.i.enabled = false;
 
         // Position character inside parcel (0,0)
-        DCLCharacterController.i.SetPosition(JsonConvert.SerializeObject(
-        new
-        {
-            x = 0f,
-            y = 2f,
-            z = 0f
-        }));
+        SetCharacterPosition(new Vector3(0, 2f, 0f));
 
         // Create UIScreenSpace
         UIScreenSpace screenSpace = TestHelpers.SharedComponentCreate<UIScreenSpace, UIScreenSpace.Model>(scene, CLASS_ID.UI_SCREEN_SPACE_SHAPE);

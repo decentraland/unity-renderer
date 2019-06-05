@@ -10,30 +10,38 @@ public class UISizeFitter : MonoBehaviour
     public bool adjustWidth = true;
     public bool adjustHeight = true;
 
-    private Canvas canvas;
+    RectTransform canvasChildHookRT;
 
     public void Refresh()
     {
         FitSizeToChildren(adjustWidth, adjustHeight);
     }
 
-    private Canvas EnsureCanvasInParent()
+    void EnsureCanvasChildHookRectTransform()
     {
-        if (canvas == null)
+        if (canvasChildHookRT == null)
         {
-            canvas = GetComponentInParent<Canvas>();
-        }
+            RectMask2D constrainedPanelMask = GetComponentInParent<RectMask2D>();
 
-        return canvas;
+            if(constrainedPanelMask != null)
+            {
+                canvasChildHookRT = constrainedPanelMask.GetComponent<RectTransform>();
+                return;
+            }
+
+            canvasChildHookRT = GetComponentInParent<Canvas>()?.GetComponent<RectTransform>();
+        }
     }
 
     public void FitSizeToChildren(bool adjustWidth = true, bool adjustHeight = true)
     {
         UIReferencesContainer[] containers = GetComponentsInChildren<UIReferencesContainer>();
-        Canvas canvas = EnsureCanvasInParent();
+        
+        EnsureCanvasChildHookRectTransform();
+        
         RectTransform rt = transform as RectTransform;
 
-        if (rt == null || canvas == null || containers == null || containers.Length == 0)
+        if (rt == null || canvasChildHookRT == null || containers == null || containers.Length == 0)
         {
             return;
         }
@@ -56,7 +64,7 @@ public class UISizeFitter : MonoBehaviour
             //             their positions--we are going to re-add them later. Note that i'm setting the parent to canvas instead null,
             //             this is because worldPositionStays parameter isn't working with rotated/scaled canvases, if I reparent to the
             //             current canvas, this is solved.
-            children[i].SetParent(canvas.transform, true);
+            children[i].SetParent(canvasChildHookRT, true);
         }
 
         foreach (UIReferencesContainer rc in containers)
@@ -76,10 +84,10 @@ public class UISizeFitter : MonoBehaviour
             r.GetWorldCorners(corners);
 
             //NOTE(Brian): We want the coords in canvas space to solve CanvasScaler issues and world canvas arbitrary transform values.
-            corners[0] = canvas.transform.InverseTransformPoint(corners[0]);
-            corners[1] = canvas.transform.InverseTransformPoint(corners[1]);
-            corners[2] = canvas.transform.InverseTransformPoint(corners[2]);
-            corners[3] = canvas.transform.InverseTransformPoint(corners[3]);
+            corners[0] = canvasChildHookRT.InverseTransformPoint(corners[0]);
+            corners[1] = canvasChildHookRT.InverseTransformPoint(corners[1]);
+            corners[2] = canvasChildHookRT.InverseTransformPoint(corners[2]);
+            corners[3] = canvasChildHookRT.InverseTransformPoint(corners[3]);
 
             //TODO(Brian): This'll look cleaner with a Bounds.EncapsulateBounds solution.
             for (int i = 0; i < corners.Length; i++)
@@ -124,7 +132,7 @@ public class UISizeFitter : MonoBehaviour
         //NOTE(Brian): In this last step, we need to transform from canvas space to world space.
         //             We need to use "position" because assumes its pivot in the lower right corner of the rect in world space.
         //             This is exactly what we are looking for as we want an anchor agnostic solution.
-        rt.position = canvas.transform.TransformPoint(finalRect.min + (finalRect.size * rt.pivot));
+        rt.position = canvasChildHookRT.TransformPoint(finalRect.min + (finalRect.size * rt.pivot));
         rt.sizeDelta = new Vector2(finalRect.width, finalRect.height);
 
         for (int i = 0; i < children.Length; i++)

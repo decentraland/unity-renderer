@@ -5,6 +5,7 @@ using System;
 using System.Collections;
 using UnityEngine;
 using UnityEngine.UI;
+using DCL.Configuration;
 
 namespace DCL.Components
 {
@@ -108,8 +109,8 @@ namespace DCL.Components
             canvasGameObject.transform.SetParent(scene.transform);
             canvasGameObject.transform.ResetLocalTRS();
 
-            canvas = canvasGameObject.AddComponent<Canvas>();
             // Canvas
+            canvas = canvasGameObject.AddComponent<Canvas>();
             canvas.renderMode = RenderMode.ScreenSpaceOverlay;
 
             // Canvas Scaler (for maintaining ui aspect ratio)
@@ -121,8 +122,31 @@ namespace DCL.Components
             // Graphics Raycaster (for allowing touch/click input on the ui components)
             canvasGameObject.AddComponent<GraphicRaycaster>();
 
-            childHookRectTransform = canvas.GetComponent<RectTransform>();
+            if(scene.isPersistent)
+            {
+                childHookRectTransform = canvas.GetComponent<RectTransform>();
 
+                // we make sure DCL UI renders above every parcel UI
+                canvas.sortingOrder = 1;
+            }
+            else
+            {
+                // "Constrained" panel mask (to avoid rendering parcels UI on the viewport's top 10%)
+                GameObject constrainedPanel = new GameObject("ConstrainedPanel");
+                constrainedPanel.AddComponent<RectMask2D>();
+                childHookRectTransform = constrainedPanel.GetComponent<RectTransform>();
+                childHookRectTransform.SetParent(canvas.transform);
+                childHookRectTransform.ResetLocalTRS();
+                childHookRectTransform.anchorMin = Vector2.zero;
+                childHookRectTransform.anchorMax = Vector2.one;
+                childHookRectTransform.sizeDelta = Vector2.zero;
+
+                // We scale the panel downwards to release the viewport's top 10%
+                childHookRectTransform.pivot = new Vector2(0.5f, 0f);
+                childHookRectTransform.localScale = new Vector3(1f, 1f - (UISettings.RESERVED_CANVAS_TOP_PERCENTAGE/100), 1f);
+            }
+
+            // Canvas group
             CanvasGroup canvasGroup = canvas.gameObject.AddComponent<CanvasGroup>();
             canvasGroup.alpha = 0f;
 
