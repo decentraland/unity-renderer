@@ -1,4 +1,4 @@
-using GLTF;
+﻿using GLTF;
 using GLTF.Schema;
 using GLTF.Utilities;
 using System;
@@ -435,6 +435,7 @@ namespace UnityGLTF
                 if (image.Uri != null && !URIHelper.IsBase64Uri(image.Uri))
                 {
                     yield return _loader.LoadStream(image.Uri);
+
                     _assetCache.ImageStreamCache[sourceId] = _loader.LoadedStream;
                 }
                 else if (image.Uri == null && image.BufferView != null && _assetCache.BufferCache[image.BufferView.Value.Buffer.Id] == null)
@@ -605,12 +606,26 @@ namespace UnityGLTF
                 Stream stream = null;
                 if (image.Uri == null)
                 {
+                    //NOTE(Zak): This fixes current issues of concurrent texture loading, 
+                    //           but it's possible that it would happen again in the future. 
+                    //           If that happens, we'll have implement some locking behavior for concurrent 
+                    //           import calls.
+
+                    //NOTE(Brian): We can't yield between the stream creation and the stream.Read because
+                    //             another coroutine can modify the stream Position in the next frame.
                     var bufferView = image.BufferView.Value;
                     var data = new byte[bufferView.ByteLength];
 
                     BufferCacheData bufferContents = _assetCache.BufferCache[bufferView.Buffer.Id];
                     bufferContents.Stream.Position = bufferView.ByteOffset + bufferContents.ChunkOffset;
-                    stream = new SubStream(bufferContents.Stream, 0, data.Length);
+                    bufferContents.Stream.Read(data, 0, data.Length);
+
+                    if (ShouldYieldOnTimeout())
+                    {
+                        yield return YieldOnTimeout();
+                    }
+
+                    yield return ConstructUnityTexture(data, markGpuOnly, linear, image, imageCacheIndex);
                 }
                 else
                 {
@@ -626,14 +641,28 @@ namespace UnityGLTF
                     {
                         stream = _assetCache.ImageStreamCache[imageCacheIndex];
                     }
-                }
 
-                if (ShouldYieldOnTimeout())
-                {
-                    yield return YieldOnTimeout();
-                }
+                    if (ShouldYieldOnTimeout())
+                    {
+                        yield return YieldOnTimeout();
+                    }
 
-                yield return ConstructUnityTexture(stream, markGpuOnly, linear, image, imageCacheIndex);
+                    yield return ConstructUnityTexture(stream, markGpuOnly, linear, image, imageCacheIndex);
+                }
+            }
+        }
+
+        protected virtual IEnumerator ConstructUnityTexture(byte[] buffer, bool markGpuOnly, bool linear, GLTFImage image, int imageCacheIndex)
+        {
+            Texture2D texture = new Texture2D(0, 0, TextureFormat.RGBA32, true, linear);
+            //  NOTE: the second parameter of LoadImage() marks non-readable, but we can't mark it until after we call Apply()
+            texture.LoadImage(buffer, markGpuOnly);
+
+            _assetCache.ImageCache[imageCacheIndex] = texture;
+
+            if (ShouldYieldOnTimeout())
+            {
+                yield return YieldOnTimeout();
             }
         }
 
@@ -645,38 +674,15 @@ namespace UnityGLTF
             {
                 using (MemoryStream memoryStream = stream as MemoryStream)
                 {
-                    //	NOTE: the second parameter of LoadImage() marks non-readable, but we can't mark it until after we call Apply()
+                    //  NOTE: the second parameter of LoadImage() marks non-readable, but we can't mark it until after we call Apply()
                     texture.LoadImage(memoryStream.ToArray(), false);
                 }
-            }
-            else
-            {
-                byte[] buffer = new byte[stream.Length];
-
-                // todo: potential optimization is to split stream read into multiple frames (or put it on a thread?)
-                using (stream)
-                {
-                    if (stream.Length > int.MaxValue)
-                    {
-                        throw new Exception("Stream is larger than can be copied into byte array");
-                    }
-                    stream.Read(buffer, 0, (int)stream.Length);
-                }
-
-                if (ShouldYieldOnTimeout())
-                {
-                    yield return YieldOnTimeout();
-                }
-                //	NOTE: the second parameter of LoadImage() marks non-readable, but we can't mark it until after we call Apply()
-                texture.LoadImage(buffer, false);
             }
 
             if (ShouldYieldOnTimeout())
             {
                 yield return YieldOnTimeout();
             }
-            // After we conduct the Apply(), then we can make the texture non-readable and never create a CPU copy
-            texture.Apply(true, markGpuOnly);
 
             _assetCache.ImageCache[imageCacheIndex] = texture;
         }
@@ -2148,7 +2154,7 @@ namespace UnityGLTF
 
 
         /// <summary>
-        ///	 Get the absolute path to a gltf uri reference.
+        ///  Get the absolute path to a gltf uri reference.
         /// </summary>
         /// <param name="gltfPath">The path to the gltf file</param>
         /// <returns>A path without the filename or extension</returns>

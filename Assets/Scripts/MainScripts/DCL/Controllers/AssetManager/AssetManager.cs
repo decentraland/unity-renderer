@@ -1,5 +1,5 @@
+﻿using DCL.Components;
 using System;
-using DCL.Components;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -162,7 +162,7 @@ namespace DCL
                 {
                     assetLibrary[id].referenceCount++;
                     GetCachedAsset(id, parent, OnSuccess);
-                    
+
                     return resultContainer;
                 }
             }

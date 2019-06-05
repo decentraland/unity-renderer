@@ -244,7 +244,7 @@ PrefabInstance:
     - target: {fileID: 45779233502183444, guid: b387035aa46399445bdc7951a41d5213,
         type: 3}
       propertyPath: m_AnchoredPosition.x
-      value: 439
+      value: 1255
       objectReference: {fileID: 0}
     - target: {fileID: 45779233502183444, guid: b387035aa46399445bdc7951a41d5213,
         type: 3}
@@ -274,7 +274,7 @@ PrefabInstance:
     - target: {fileID: 2074172378100744649, guid: b387035aa46399445bdc7951a41d5213,
         type: 3}
       propertyPath: m_AnchoredPosition.x
-      value: 439
+      value: 1255
       objectReference: {fileID: 0}
     - target: {fileID: 2074172378100744649, guid: b387035aa46399445bdc7951a41d5213,
         type: 3}
@@ -419,11 +419,6 @@ PrefabInstance:
     - target: {fileID: 5752104580948044095, guid: b387035aa46399445bdc7951a41d5213,
         type: 3}
       propertyPath: m_AnchorMax.y
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 5752104580948044095, guid: b387035aa46399445bdc7951a41d5213,
-        type: 3}
-      propertyPath: m_AnchoredPosition.y
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 5752104580948044095, guid: b387035aa46399445bdc7951a41d5213,
@@ -513,7 +508,7 @@ MonoBehaviour:
   characterController: {fileID: 1989862556}
   openBrowserWhenStart: 1
   useClientDebugMode: 0
-  startInCoords: {x: 64, y: -64}
+  startInCoords: {x: 59, y: -57}
 --- !u!4 &1444882337
 Transform:
   m_ObjectHideFlags: 0
