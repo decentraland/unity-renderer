@@ -9,7 +9,9 @@
         "MaterialTransitionController",
         "Configuration",
         "ILoader",
-        "CoroutineHelpers"
+        "CoroutineHelpers",
+	    "Cinemachine",
+        "MainAttributes"
     ],
     "optionalUnityReferences": [],
     "includePlatforms": [],
