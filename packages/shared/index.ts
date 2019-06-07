@@ -70,7 +70,7 @@ async function authenticate(): Promise<any> {
   }
 
   const auth = new Auth()
-  await auth.login()
+  await auth.login(document.getElementsByClassName('loading-image')[0] as HTMLElement)
   return auth.getPayload()
 }
 
