@@ -5,7 +5,8 @@ import {
   ETHEREUM_NETWORK,
   commConfigurations,
   playerConfigurations,
-  getServerConfigurations
+  getServerConfigurations,
+  USE_LOCAL_COMMS
 } from 'config'
 
 import { saveToLocalStorage } from 'atomicHelpers/localStorage'
@@ -23,14 +24,20 @@ import {
   receiveUserData,
   receiveUserVisible,
   receiveUserPose,
-  getUserProfile
+  getUserProfile,
+  getPeer
 } from './peers'
 
-import { ChatData, PositionData, ProfileData } from './commproto_pb'
+import { ChatData, PositionData, ProfileData } from './proto/comms'
 import { chatObservable, ChatEvent } from './chat'
 import { WorldInstanceConnection } from './worldInstanceConnection'
+import { BrokerConnection } from './BrokerConnection'
 import { ReadOnlyVector3, ReadOnlyQuaternion } from 'decentraland-ecs/src'
 import { UserInformation, Pose } from './types'
+import { CommunicationsController } from 'shared/apis/CommunicationsController'
+import { CliBrokerConnection } from './CliBrokerConnection'
+import { log } from 'engine/logger'
+import { MessageEntry } from 'shared/types'
 
 type Timestamp = number
 type PeerAlias = string
@@ -66,10 +73,54 @@ export class Context {
 }
 
 let context: Context | null = null
+const scenesSubscribedToCommsEvents = new Set<CommunicationsController>()
+
+/**
+ * Returns a list of CIDs that must receive scene messages from comms
+ */
+function getParcelSceneSubscriptions(): string[] {
+  let ids: string[] = []
+
+  scenesSubscribedToCommsEvents.forEach($ => {
+    ids.push($.cid)
+  })
+
+  return ids
+}
 
 export function sendPublicChatMessage(messageId: string, text: string) {
   if (context && context.currentPosition && context.worldInstanceConnection) {
     context.worldInstanceConnection.sendChatMessage(context.currentPosition, messageId, text)
+  }
+}
+
+export function sendParcelSceneCommsMessage(cid: string, message: string) {
+  if (context && context.currentPosition && context.worldInstanceConnection) {
+    context.worldInstanceConnection.sendParcelSceneCommsMessage(cid, message)
+  }
+}
+
+export function subscribeParcelSceneToCommsMessages(controller: CommunicationsController) {
+  scenesSubscribedToCommsEvents.add(controller)
+}
+
+export function unsubscribeParcelSceneToCommsMessages(controller: CommunicationsController) {
+  scenesSubscribedToCommsEvents.delete(controller)
+}
+
+// TODO: Change ChatData to the new class once it is added to the .proto
+export function processParcelSceneCommsMessage(context: Context, fromAlias: string, data: ChatData) {
+  const cid = data.getMessageId()
+  const text = data.getText()
+
+  const peer = getPeer(fromAlias)
+
+  if (peer) {
+    scenesSubscribedToCommsEvents.forEach($ => {
+      if ($.cid === cid) {
+        $.receiveCommsMessage(text, peer)
+      }
+    })
   }
 }
 
@@ -117,7 +168,7 @@ export function processChatMessage(context: Context, fromAlias: string, data: Ch
     const user = getUser(fromAlias)
     if (user) {
       const { displayName } = user
-      const entry = {
+      const entry: MessageEntry = {
         id: msgId,
         sender: displayName || user.publicKey || 'unknown',
         message: text,
@@ -177,10 +228,13 @@ type ProcessingPeerInfo = {
   position: Position
 }
 
+let currentParcelTopics = ''
+let previousTopics = ''
+
 export function onPositionUpdate(context: Context, p: Position) {
   const worldConnection = context.worldInstanceConnection
 
-  if (!worldConnection || !worldConnection.unreliableDataChannel || !worldConnection.reliableDataChannel) {
+  if (!worldConnection || !worldConnection.connection.hasReliableChannel) {
     return
   }
 
@@ -195,26 +249,31 @@ export function onPositionUpdate(context: Context, p: Position) {
     const zMin = ((commArea.vMin.z + parcelLimits.maxParcelZ) >> 2) << 2
     const zMax = ((commArea.vMax.z + parcelLimits.maxParcelZ) >> 2) << 2
 
-    let rawTopics = ''
+    let rawTopics: string[] = []
     for (let x = xMin; x <= xMax; x += 4) {
       for (let z = zMin; z <= zMax; z += 4) {
         const hash = `${x >> 2}:${z >> 2}`
-        let topic = `position:${hash}`
-        rawTopics += topic + ' '
-
-        topic = `profile:${hash}`
-        rawTopics += topic + ' '
-
-        topic = `chat:${hash}`
-        rawTopics += topic
-
-        if (x !== xMax || z !== zMax) {
-          rawTopics += ' '
+        if (!rawTopics.includes(hash)) {
+          rawTopics.push(hash)
         }
       }
     }
 
-    worldConnection.updateSubscriptions(rawTopics)
+    currentParcelTopics = rawTopics.join(' ')
+  }
+
+  const parcelSceneSubscriptions = getParcelSceneSubscriptions()
+
+  const parcelSceneCommsTopics = parcelSceneSubscriptions.join(' ')
+
+  const topics = currentParcelTopics + (parcelSceneCommsTopics.length ? ' ' + parcelSceneCommsTopics : '')
+
+  if (topics !== previousTopics) {
+    worldConnection.updateSubscriptions(topics)
+    previousTopics = topics
+    if (commConfigurations.debug) {
+      log('Communication topics: ' + topics)
+    }
   }
 
   context.currentPosition = p
@@ -311,19 +370,33 @@ export async function connect(userId: string, network: ETHEREUM_NETWORK, ethAddr
     avatarType: user.avatarType
   }
 
-  const connection = new WorldInstanceConnection(getServerConfigurations().worldInstanceUrl)
-  connection.positionHandler = (alias, data) => processPositionMessage(context!, alias, data)
-  connection.profileHandler = (alias, data) => processProfileMessage(context!, alias, data)
-  connection.chatHandler = (alias, data) => processChatMessage(context!, alias, data)
+  const commsBroker = USE_LOCAL_COMMS
+    ? new CliBrokerConnection(document.location.toString().replace(/^http/, 'ws'))
+    : new BrokerConnection(getServerConfigurations().worldInstanceUrl)
+
+  const connection = new WorldInstanceConnection(commsBroker)
+
+  connection.positionHandler = (alias: string, data: PositionData) => {
+    processPositionMessage(context!, alias, data)
+  }
+  connection.profileHandler = (alias: string, data: ProfileData) => {
+    processProfileMessage(context!, alias, data)
+  }
+  connection.chatHandler = (alias: string, data: ChatData) => {
+    processChatMessage(context!, alias, data)
+  }
+  connection.sceneMessageHandler = (alias: string, data: ChatData) => {
+    processParcelSceneCommsMessage(context!, alias, data)
+  }
+
   context = new Context(userProfile, network)
   context.worldInstanceConnection = connection
 
   if (commConfigurations.debug) {
     context.stats = new Stats(context)
-    context.worldInstanceConnection.stats = context.stats
+    connection.stats = context.stats
+    commsBroker.stats = context.stats
   }
-
-  context.worldInstanceConnection.connect()
 
   setInterval(() => {
     if (context && context.currentPosition && context.worldInstanceConnection) {

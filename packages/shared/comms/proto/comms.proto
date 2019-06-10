@@ -1,0 +1,42 @@
+syntax = "proto3";
+
+package protocol;
+
+enum Category {
+     UNKNOWN = 0;
+     POSITION = 1;
+     PROFILE = 2;
+     CHAT = 3;
+     SCENE_MESSAGE = 4;
+}
+
+message DataHeader {
+    Category category = 1;
+}
+
+message PositionData {
+    Category category = 1;
+    double time = 2;
+    float position_x = 3;
+    float position_y = 4;
+    float position_z = 5;
+    float rotation_x = 6;
+    float rotation_y = 7;
+    float rotation_z = 8;
+    float rotation_w = 9;
+}
+
+message ProfileData {
+    Category category = 1;
+    double time = 2;
+    string avatar_type = 3;
+    string display_name = 4;
+    string public_key = 5;
+}
+
+message ChatData {
+    Category category = 1;
+    double time = 2;
+    string message_id = 3;
+    string text = 4;
+}

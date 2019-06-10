@@ -16,6 +16,7 @@ const IPFSMock = []
 glob
   .sync(path.resolve(__dirname, '../public/test-parcels/*/scene.json'), { absolute: true })
   .concat(glob.sync(path.resolve(__dirname, '../public/ecs-parcels/*/scene.json'), { absolute: true }))
+  .concat(glob.sync(path.resolve(__dirname, '../public/hell-map/*/scene.json'), { absolute: true }))
   .forEach(file => {
     const manifest = require(file)
     const dirName = path.dirname(file)

@@ -3,6 +3,7 @@ import { Vector3 } from './Vector3'
 import { MathTmp } from './preallocatedVariables'
 import { DEG2RAD, RAD2DEG, Epsilon } from './types'
 
+/** @public */
 export type ReadOnlyQuaternion = {
   readonly x: number
   readonly y: number

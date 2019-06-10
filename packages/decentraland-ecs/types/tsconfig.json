@@ -20,7 +20,6 @@
       "@decentraland/ChatController",
       "@decentraland/EthereumController",
       "@decentraland/SocialController",
-      "@decentraland/EntityController",
       "@decentraland/Identity",
       "@decentraland/web3-provider"
     ],

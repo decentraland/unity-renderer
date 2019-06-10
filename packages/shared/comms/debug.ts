@@ -1,7 +1,6 @@
 import { log } from 'engine/logger'
-import { SocketReadyState } from './worldInstanceConnection'
 import { Context } from './index'
-import { PositionData } from './commproto_pb'
+import { PositionData } from './proto/comms'
 
 export class TrackAvgDuration {
   public durationsMs: number[] = []
@@ -100,6 +99,7 @@ export class Stats {
   public position = new PkgStats()
   public profile = new PkgStats()
   public chat = new PkgStats()
+  public sceneComms = new PkgStats()
   public webRtcSession = new PkgStats()
   public collectInfoDuration = new TrackAvgDuration()
   public dispatchTopicDuration = new TrackAvgDuration()
@@ -136,22 +136,18 @@ export class Stats {
       log('World instance: ')
 
       const connection = context.worldInstanceConnection!
-      const url = connection.url
-      if (connection.ws && connection.ws.readyState === SocketReadyState.OPEN) {
-        const state =
-          (connection.authenticated ? 'authenticated' : 'not authenticated') + ` - my alias is ${connection.alias}`
-        if (connection.ping >= 0) {
-          log(`  ${url}, ping: ${connection.ping} ms (${state})`)
-        } else {
-          log(`  ${url}, no ping info available (${state})`)
-        }
+      connection.connection.printDebugInformation()
+
+      if (connection.ping >= 0) {
+        log(`  ping: ${connection.ping} ms`)
       } else {
-        log(`  non active coordinator connection to ${url}`)
+        log(`  ping: ? ms`)
       }
 
       reportPkgStats('  topic (total)', this.topic)
       reportPkgStats('    - position', this.position)
       reportPkgStats('    - profile', this.profile)
+      reportPkgStats('    - sceneComms', this.sceneComms)
       reportPkgStats('    - chat', this.chat)
       reportPkgStats('  ping', this.ping)
       reportPkgStats('  webrtc session', this.webRtcSession)

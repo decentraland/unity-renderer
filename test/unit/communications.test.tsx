@@ -11,15 +11,12 @@ import {
   TopicMessage,
   DataMessage,
   PingMessage,
-  PositionData,
-  ProfileData,
-  ChatData,
   TopicSubscriptionMessage,
   MessageType,
   Role,
-  Format,
-  Category
-} from '../../packages/shared/comms/commproto_pb'
+  Format
+} from '../../packages/shared/comms/proto/broker'
+import { PositionData, ProfileData, ChatData, Category } from '../../packages/shared/comms/proto/comms'
 import { Position, CommunicationArea, Parcel, position2parcel } from 'shared/comms/utils'
 import { WorldInstanceConnection, SocketReadyState, positionHash } from 'shared/comms/worldInstanceConnection'
 import {
@@ -30,6 +27,9 @@ import {
   PeerTrackingInfo,
   onPositionUpdate
 } from 'shared/comms'
+import { BrokerConnection } from 'shared/comms/BrokerConnection'
+import { IBrokerConnection, BrokerMessage } from 'shared/comms/IBrokerConnection'
+import { Observable } from 'decentraland-ecs/src'
 
 chai.use(sinonChai)
 
@@ -83,22 +83,23 @@ describe('Communications', function() {
       ;(window as any)['WebSocket'] = MockWebSocket
     })
 
+    let connection: BrokerConnection
     let worldConn: WorldInstanceConnection
     let mockWebRtc: any
     beforeEach(() => {
       webSocket = null as any
-      worldConn = new WorldInstanceConnection('coordinator')
-      worldConn.connect()
+      connection = new BrokerConnection('')
+      worldConn = new WorldInstanceConnection(connection)
 
       mockWebRtc = {
         addIceCandidate: sinon.stub(),
         setRemoteDescription: sinon.stub(),
         setLocalDescription: sinon.stub(),
         createAnswer: sinon.stub(),
-        onicecandidate: worldConn.webRtcConn!.onicecandidate,
-        ondatachannel: worldConn.webRtcConn!.ondatachannel
+        onicecandidate: connection.webRtcConn!.onicecandidate,
+        ondatachannel: connection.webRtcConn!.ondatachannel
       }
-      worldConn.webRtcConn = mockWebRtc
+      connection.webRtcConn = mockWebRtc
       ;(webSocket as any).readyState = SocketReadyState.OPEN
 
       webSocket.send = sinon.stub()
@@ -116,9 +117,9 @@ describe('Communications', function() {
         msg.setAvailableServersList([1])
 
         const event = new MessageEvent('websocket', { data: msg.serializeBinary() })
-        await worldConn.ws!.onmessage!(event)
+        await connection.onWsMessage(event)
 
-        expect(worldConn.alias).to.equal('1')
+        expect(connection.alias).to.equal('1')
 
         expect(webSocket.send).to.have.been.calledWithMatch((bytes: Uint8Array) => {
           const msgType = ConnectMessage.deserializeBinary(bytes).getType()
@@ -133,13 +134,14 @@ describe('Communications', function() {
         msg.setFromAlias(1)
 
         const event = new MessageEvent('websocket', { data: msg.serializeBinary() })
-        await worldConn.ws!.onmessage!(event)
 
-        expect(worldConn.webRtcConn!.addIceCandidate).to.not.have.been.called
+        await connection.onWsMessage(event)
+
+        expect(connection.webRtcConn!.addIceCandidate).to.not.have.been.called
       })
 
       it('webrtc ice candidate', async () => {
-        worldConn.commServerAlias = 1
+        connection.commServerAlias = 1
         const sdp = 'candidate:702786350 2 udp 41819902 8.8.8.8 60769 typ relay raddr 8.8.8.8'
         const msg = new WebRtcMessage()
         msg.setType(MessageType.WEBRTC_ICE_CANDIDATE)
@@ -147,17 +149,19 @@ describe('Communications', function() {
         msg.setSdp(sdp)
 
         const event = new MessageEvent('websocket', { data: msg.serializeBinary() })
-        await worldConn.ws!.onmessage!(event)
 
-        expect(worldConn.webRtcConn!.addIceCandidate).to.have.been.calledWith({ candidate: sdp })
+        mockWebRtc.addIceCandidate.resolves()
+
+        await connection.onWsMessage(event)
+
+        expect(connection.webRtcConn!.addIceCandidate).to.have.been.calledWith({ candidate: sdp })
       })
 
       it('webrtc offer', async () => {
-        worldConn.commServerAlias = 1
+        connection.commServerAlias = 1
 
         const answer = { sdp: 'answer-sdp' }
-
-        mockWebRtc.createAnswer.resolves(answer)
+        ;(connection.webRtcConn!.createAnswer as any).resolves(answer)
 
         const msg = new WebRtcMessage()
         msg.setType(MessageType.WEBRTC_OFFER)
@@ -165,9 +169,9 @@ describe('Communications', function() {
         msg.setSdp('sdp')
 
         const event = new MessageEvent('websocket', { data: msg.serializeBinary() })
-        await worldConn.ws!.onmessage!(event)
+        await connection.onWsMessage(event)
 
-        expect(worldConn.webRtcConn!.setRemoteDescription).to.have.been.calledWithMatch(
+        expect(connection.webRtcConn!.setRemoteDescription).to.have.been.calledWithMatch(
           (desc: RTCSessionDescription) => {
             expect(desc.type).to.be.equal('offer')
             expect(desc.sdp).to.be.equal('sdp')
@@ -175,8 +179,8 @@ describe('Communications', function() {
           }
         )
 
-        expect(worldConn.webRtcConn!.createAnswer).to.have.been.called
-        expect(worldConn.webRtcConn!.setLocalDescription).to.have.been.calledWith(answer)
+        expect(connection.webRtcConn!.createAnswer).to.have.been.called
+        expect(connection.webRtcConn!.setLocalDescription).to.have.been.calledWith(answer)
 
         expect(webSocket.send).to.have.been.calledWithMatch((bytes: Uint8Array) => {
           const msg = WebRtcMessage.deserializeBinary(bytes)
@@ -188,14 +192,14 @@ describe('Communications', function() {
       })
 
       it('webrtc answer', async () => {
-        worldConn.commServerAlias = 1
+        connection.commServerAlias = 1
         const msg = new WebRtcMessage()
         msg.setType(MessageType.WEBRTC_ANSWER)
         msg.setFromAlias(1)
         msg.setSdp('sdp')
         const event = new MessageEvent('websocket', { data: msg.serializeBinary() })
-        await worldConn.ws!.onmessage!(event)
-        expect(worldConn.webRtcConn!.setRemoteDescription).to.have.been.calledWithMatch(
+        await connection.onWsMessage(event)
+        expect(connection.webRtcConn!.setRemoteDescription).to.have.been.calledWithMatch(
           (desc: RTCSessionDescription) => {
             expect(desc.type).to.be.equal('answer')
             expect(desc.sdp).to.be.equal('sdp')
@@ -207,12 +211,12 @@ describe('Communications', function() {
 
     describe('webrtc', () => {
       it('onicecandidate', () => {
-        worldConn.commServerAlias = 1
+        connection.commServerAlias = 1
 
         const sdp = 'candidate:702786350 2 udp 41819902 8.8.8.8 60769 typ relay raddr 8.8.8.8'
-        const candidate = new RTCIceCandidate({ candidate: sdp })
+        const candidate = new RTCIceCandidate({ candidate: sdp, sdpMid: '0', sdpMLineIndex: 0 })
         const event = new RTCPeerConnectionIceEvent('icecandidate', { candidate })
-        worldConn.webRtcConn!.onicecandidate!(event)
+        connection.webRtcConn!.onicecandidate!(event)
         expect(webSocket.send).to.have.been.calledWithMatch((bytes: Uint8Array) => {
           const msg = WebRtcMessage.deserializeBinary(bytes)
           expect(msg.getType()).to.equal(MessageType.WEBRTC_ICE_CANDIDATE)
@@ -226,20 +230,20 @@ describe('Communications', function() {
         let channel: any
 
         beforeEach(() => {
-          worldConn.commServerAlias = 1
+          connection.commServerAlias = 1
           channel = Object.defineProperties(new RTCPeerConnection().createDataChannel('reliable'), {
             readyState: { value: 'open' },
             send: { value: sinon.stub() }
           })
           const event = new RTCDataChannelEvent('datachannel', { channel })
-          worldConn.webRtcConn!.ondatachannel!(event)
+          connection.webRtcConn!.ondatachannel!(event)
 
           channel['onopen']()
         })
 
         it('register datachannel', () => {
-          expect(worldConn.reliableDataChannel).to.equal(channel)
-          expect(worldConn.authenticated).to.be.true
+          expect(connection.reliableDataChannel).to.equal(channel)
+          expect(connection.authenticated).to.be.true
           expect(channel.send).to.have.been.calledWithMatch((bytes: Uint8Array) => {
             const msg = AuthMessage.deserializeBinary(bytes)
             expect(msg.getType()).to.equal(MessageType.AUTH)
@@ -318,7 +322,7 @@ describe('Communications', function() {
       })
 
       it('register datachannel (unreliable)', () => {
-        worldConn.commServerAlias = 1
+        connection.commServerAlias = 1
 
         const channel = Object.defineProperties(new RTCPeerConnection().createDataChannel('unreliable'), {
           readyState: { value: 'open' },
@@ -326,28 +330,28 @@ describe('Communications', function() {
         })
 
         const event = new RTCDataChannelEvent('datachannel', { channel })
-        worldConn.webRtcConn!.ondatachannel!(event)
+        connection.webRtcConn!.ondatachannel!(event)
         channel['onopen']()
 
-        expect(worldConn.unreliableDataChannel).to.equal(channel)
-        expect(worldConn.authenticated).to.be.false
+        expect(connection.unreliableDataChannel).to.equal(channel)
+        expect(connection.authenticated).to.be.false
       })
 
       describe('outbound messages', () => {
         beforeEach(() => {
-          worldConn.reliableDataChannel = {
+          connection.reliableDataChannel = {
             readyState: 'open',
             send: sinon.stub()
-          }
-          worldConn.unreliableDataChannel = {
+          } as any
+          connection.unreliableDataChannel = {
             readyState: 'open',
             send: sinon.stub()
-          }
+          } as any
         })
 
         it('topic subscriptions', () => {
           worldConn.updateSubscriptions('topic1 topic2')
-          expect(worldConn.reliableDataChannel!.send).to.have.been.calledWithMatch((bytes: Uint8Array) => {
+          expect(connection.reliableDataChannel!.send).to.have.been.calledWithMatch((bytes: Uint8Array) => {
             const msg = TopicSubscriptionMessage.deserializeBinary(bytes)
             expect(msg.getType()).to.equal(MessageType.TOPIC_SUBSCRIPTION)
             expect(msg.getFormat()).to.equal(Format.PLAIN)
@@ -361,10 +365,10 @@ describe('Communications', function() {
 
           worldConn.sendPositionMessage(p)
 
-          expect(worldConn.unreliableDataChannel!.send).to.have.been.calledWithMatch((bytes: Uint8Array) => {
+          expect(connection.unreliableDataChannel!.send).to.have.been.calledWithMatch((bytes: Uint8Array) => {
             const msg = TopicMessage.deserializeBinary(bytes)
             expect(msg.getType()).to.equal(MessageType.TOPIC)
-            expect(msg.getTopic()).to.equal('position:37:37')
+            expect(msg.getTopic()).to.equal('37:37')
 
             const data = PositionData.deserializeBinary(msg.getBody() as Uint8Array)
             expect(data.getPositionX()).to.equal(20)
@@ -387,10 +391,10 @@ describe('Communications', function() {
           }
           worldConn.sendProfileMessage(p, profile)
 
-          expect(worldConn.reliableDataChannel!.send).to.have.been.calledWithMatch((bytes: Uint8Array) => {
+          expect(connection.reliableDataChannel!.send).to.have.been.calledWithMatch((bytes: Uint8Array) => {
             const msg = TopicMessage.deserializeBinary(bytes)
             expect(msg.getType()).to.equal(MessageType.TOPIC)
-            expect(msg.getTopic()).to.equal('profile:37:37')
+            expect(msg.getTopic()).to.equal('37:37')
 
             const data = ProfileData.deserializeBinary(msg.getBody() as Uint8Array)
             expect(data.getAvatarType()).to.equal('fox')
@@ -405,10 +409,10 @@ describe('Communications', function() {
           const messageId = 'chat1'
           const text = 'hello'
           worldConn.sendChatMessage(p, messageId, text)
-          expect(worldConn.reliableDataChannel!.send).to.have.been.calledWithMatch((bytes: Uint8Array) => {
+          expect(connection.reliableDataChannel!.send).to.have.been.calledWithMatch((bytes: Uint8Array) => {
             const msg = TopicMessage.deserializeBinary(bytes)
             expect(msg.getType()).to.equal(MessageType.TOPIC)
-            expect(msg.getTopic()).to.equal('chat:37:37')
+            expect(msg.getTopic()).to.equal('37:37')
 
             const data = ChatData.deserializeBinary(msg.getBody() as Uint8Array)
             expect(data.getMessageId()).to.equal(messageId)
@@ -585,25 +589,53 @@ describe('Communications', function() {
     testHashByParcel(new Parcel(1, 1))
   })
 
+  class BrokerMock implements IBrokerConnection {
+    onMessageObservable = new Observable<BrokerMessage>()
+
+    get hasUnreliableChannel(): boolean {
+      return true
+    }
+    get hasReliableChannel(): boolean {
+      return true
+    }
+
+    reliableDataChannel = { readyState: 'open', send: sinon.stub() }
+    unreliableDataChannel = { readyState: 'open', send: sinon.stub() }
+
+    sendReliable(data: Uint8Array): void {
+      this.reliableDataChannel.send(data)
+    }
+
+    sendUnreliable(data: Uint8Array): void {
+      this.unreliableDataChannel.send(data)
+    }
+
+    printDebugInformation(): void {
+      throw new Error('Method not implemented.')
+    }
+    close(): void {
+      throw new Error('Method not implemented.')
+    }
+  }
+
   describe('onPositionUpdate', () => {
     it('parcel has changed', () => {
       const context = new Context({})
       context.commRadius = 1
       context.currentPosition = [20, 20, 20, 20, 20, 20, 20] as Position
-      const worldConn = new WorldInstanceConnection('coordinator')
-      worldConn.reliableDataChannel = { readyState: 'open', send: sinon.stub() }
-      worldConn.unreliableDataChannel = { readyState: 'open', send: sinon.stub() }
+      const connection = new BrokerMock()
+      const worldConn = new WorldInstanceConnection(connection)
       worldConn.updateSubscriptions = sinon.stub()
       context.worldInstanceConnection = worldConn
 
       onPositionUpdate(context, [0, 0, 0, 0, 0, 0, 0])
 
       expect(worldConn.updateSubscriptions).to.have.been.calledWithMatch((rawTopics: string) => {
-        expect(rawTopics.split(' ')).to.have.length(3)
+        expect(rawTopics.split(' ')).to.have.length(1)
         return true
       })
       expect(worldConn.updateSubscriptions).to.have.been.calledWithMatch((rawTopics: string) => {
-        expect(rawTopics.split(' ')).to.have.length(3)
+        expect(rawTopics.split(' ')).to.have.length(1)
         return true
       })
     })
@@ -612,9 +644,8 @@ describe('Communications', function() {
       const context = new Context({})
       context.commRadius = 1
       context.currentPosition = [20, 20, 20, 20, 20, 20, 20] as Position
-      const worldConn = new WorldInstanceConnection('coordinator')
-      worldConn.reliableDataChannel = { readyState: 'open', send: sinon.stub() }
-      worldConn.unreliableDataChannel = { readyState: 'open', send: sinon.stub() }
+      const connection = new BrokerMock()
+      const worldConn = new WorldInstanceConnection(connection)
       worldConn.updateSubscriptions = sinon.stub()
       context.worldInstanceConnection = worldConn
 

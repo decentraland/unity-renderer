@@ -1,0 +1,92 @@
+syntax = "proto3";
+
+package protocol;
+
+enum MessageType {
+  UNKNOWN_MESSAGE_TYPE = 0;
+  WELCOME = 1;
+  CONNECT = 2;
+  WEBRTC_OFFER = 4;
+  WEBRTC_ANSWER = 5;
+  WEBRTC_ICE_CANDIDATE = 6;
+  PING = 7;
+  TOPIC_SUBSCRIPTION = 8;
+  TOPIC = 9;
+  DATA = 10;
+  AUTH = 11;
+}
+
+enum Role {
+  UNKNOWN_ROLE = 0;
+  CLIENT = 1;
+  COMMUNICATION_SERVER = 2;
+}
+
+enum Format {
+  UNKNOWN_FORMAT = 0;
+  PLAIN = 1;
+  GZIP = 2;
+}
+
+// NOTE: coordination messsages
+
+message CoordinatorMessage {
+    MessageType type = 1;
+}
+
+message WelcomeMessage {
+    MessageType type = 1;
+    uint64 alias = 2;
+    repeated uint64 available_servers = 3;
+}
+
+message ConnectMessage {
+    MessageType type = 1;
+    uint64 from_alias = 2;
+    uint64 to_alias = 3;
+}
+
+message WebRtcMessage {
+    MessageType type = 1;
+    uint64 from_alias = 2;
+    uint64 to_alias = 3;
+    string sdp = 4;
+}
+
+// NOTE: world comm messsages
+
+message MessageHeader {
+    MessageType type = 1;
+}
+
+message PingMessage {
+    MessageType type = 1;
+    double time = 2;
+}
+
+// NOTE: topics is a space separated string in the format specified by Format
+message TopicSubscriptionMessage {
+    MessageType type = 1;
+    Format format = 2;
+    bytes topics = 3;
+}
+
+message TopicMessage {
+    MessageType type = 1;
+    uint64 from_alias = 2;
+    string topic = 3;
+    bytes body = 4;
+}
+
+message DataMessage {
+    MessageType type = 1;
+    uint64 from_alias = 2;
+    bytes body = 3;
+}
+
+message AuthMessage {
+    MessageType type = 1;
+    Role role = 2;
+    string method = 3;
+    bytes body = 4;
+}

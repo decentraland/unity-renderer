@@ -7,7 +7,8 @@ import {
   log,
   OnPointerDown,
   Material,
-  Color3
+  Color3,
+  MessageBus
 } from 'decentraland-ecs/src'
 
 export class RotatorSystem implements ISystem {
@@ -26,6 +27,10 @@ export class RotatorSystem implements ISystem {
   }
 }
 
+const bus = new MessageBus()
+
+log('hello a a s')
+
 const cube = new Entity()
 const material = new Material()
 material.emissiveColor = Color3.Yellow()
@@ -35,17 +40,17 @@ cube.addComponentOrReplace(new Transform())
 cube.getComponent(Transform).position.set(8, 1, 8)
 cube.addComponentOrReplace(new BoxShape())
 
-cube.addComponentOrReplace(
-  new OnPointerDown(evt => {
-    log('cubeClick', evt)
-    if (cube.hasComponent(Transform)) {
-      // this will place the entity at the scene origin (out of bounds)
-      cube.removeComponent(Transform)
-    } else {
-      cube.getComponentOrCreate(Transform).rotation.set(0, 0, 0, 1)
-    }
-  })
-)
+bus.on('click', (evt, sender) => {
+  log('cubeClick1', evt, sender)
+  if (cube.hasComponent(Transform)) {
+    // this will place the entity at the scene origin (out of bounds)
+    cube.removeComponent(Transform)
+  } else {
+    cube.getComponentOrCreate(Transform).rotation.set(0, 0, 0, 1)
+  }
+})
+
+cube.addComponentOrReplace(new OnPointerDown(e => bus.emit('click', e)))
 
 engine.addEntity(cube)
 

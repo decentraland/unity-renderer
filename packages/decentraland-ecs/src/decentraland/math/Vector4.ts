@@ -3,6 +3,7 @@ import { Matrix } from './Matrix'
 import { Scalar } from './Scalar'
 import { Vector3 } from './Vector3'
 
+/** @public */
 export type ReadOnlyVector4 = {
   readonly y: number
   readonly x: number

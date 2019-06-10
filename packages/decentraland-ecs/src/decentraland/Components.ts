@@ -4,6 +4,7 @@ import { AnimationState } from './AnimationState'
 import { newId } from '../ecs/helpers'
 import { IEvents } from './Types'
 
+/** @public */
 export type TranformConstructorArgs = {
   position?: Vector3
   rotation?: Quaternion

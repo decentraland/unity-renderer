@@ -34,7 +34,7 @@ declare module '@decentraland/SocialController' {
   export function getMutedUsers(): Promise<string[]>
 
   /**
-   * Subscribes to events dispatched by the EntityController
+   * Subscribes to events dispatched by the EngineAPI
    * Use it to listen to events from the scene (like `click`)
    * @param event
    */

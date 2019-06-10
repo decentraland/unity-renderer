@@ -12,6 +12,7 @@ static/lifecycle
 **/.decentraland
 
 public/test-parcels/*/*.js
+public/hell-map/*/*.js
 public/ecs-parcels/*/*.js
 public/test-parcels/*/bin/*.js
 
@@ -26,3 +27,11 @@ test/out
 coverage
 
 public/local-ipfs
+
+build.single-debug.json
+
+packages/decentraland-ecs/types/dcl/*
+
+packages/decentraland-ecs/artifacts
+packages/decentraland-ecs/package-lock.json
+

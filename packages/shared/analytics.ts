@@ -64,11 +64,14 @@ function track({ name, data }: SegmentEvent) {
 }
 
 function hookObservables() {
-  chatObservable.add((event: any) => {
+  chatObservable.add(event => {
     if (event.type === ChatEvent.MESSAGE_RECEIVED) {
-      queueTrackingEvent('Chat message received', { lenght: event.data.message.lenght })
+      queueTrackingEvent('Chat message received', { length: event.messageEntry.message.length })
     } else if (event.type === ChatEvent.MESSAGE_SENT) {
-      queueTrackingEvent('Send chat message', { messageId: event.data.messageId, length: event.data.message.length })
+      queueTrackingEvent('Send chat message', {
+        messageId: event.messageEntry.id,
+        length: event.messageEntry.message.length
+      })
     }
   })
 

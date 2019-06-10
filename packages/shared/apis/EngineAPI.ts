@@ -98,6 +98,6 @@ export class EngineAPI extends ExposableAPI implements IEngineAPI {
   }
 
   onSubscribedEvent(fn: any): void {
-    // stub, we implement this function here to fulfill the interface of EntityController
+    // stub, we implement this function here to fulfill the interface of EngineAPI
   }
 }

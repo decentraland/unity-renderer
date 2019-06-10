@@ -42,6 +42,8 @@ export class SceneWorker {
 
   public engineAPI: EngineAPI | null = null
   public enabled = true
+
+  /** false if this worker part of a dynamically loaded scene */
   public persistent = false
 
   public readonly position: Vector3 = new Vector3()
@@ -112,7 +114,7 @@ export class SceneWorker {
   }
 
   private async loadSystem(transport?: ScriptingTransport): Promise<ScriptingHost> {
-    const worker = new (Worker as any)(gamekitWorkerUrl, { name: 'ParcelSceneWorker' })
+    const worker = new (Worker as any)(gamekitWorkerUrl, { name: `ParcelSceneWorker(${this.parcelScene.data.id})` })
     return this.startSystem(transport || WebWorkerTransport(worker))
   }
 }

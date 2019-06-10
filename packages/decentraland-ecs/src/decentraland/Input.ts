@@ -7,6 +7,7 @@ import { Component, DisposableComponent } from '../ecs/Component'
 
 declare let dcl: DecentralandInterface | void
 
+/** @public */
 export type InputEventKind = 'BUTTON_DOWN' | 'BUTTON_UP'
 
 /**
@@ -17,6 +18,7 @@ export enum Pointer {
   SECONDARY = 'SECONDARY'
 }
 
+/** @public */
 export type InputState = Record<
   Pointer,
   {
@@ -24,6 +26,7 @@ export type InputState = Record<
   }
 >
 
+/** @public */
 export type LocalPointerEvent = PointerEvent & {
   origin: Vector3
   direction: Vector3

@@ -8,6 +8,7 @@ import { log } from 'util'
 import { Animator } from '../ephemeralComponents/Animator'
 import { deleteUnusedTextures } from 'engine/renderer/monkeyLoader'
 import { processGLTFAssetContainer, loadingShape } from './GLTFShape'
+import { ignoreBoundaryChecksOnObject } from 'engine/entities/utils/checkParcelSceneLimits'
 
 let noise: BABYLON.NoiseProceduralTexture | null = null
 
@@ -137,15 +138,6 @@ export class NFTShape extends DisposableComponent {
 
           if (!this.didFillContributions) {
             this.didFillContributions = true
-            assetContainer.materials.forEach($ => {
-              this.contributions.materials.add($)
-            })
-            assetContainer.geometries.forEach($ => {
-              this.contributions.geometries.add($)
-            })
-            assetContainer.textures.forEach($ => {
-              this.contributions.textures.add($)
-            })
           }
 
           const pictureMaterial = assetContainer.materials[0] as BABYLON.PBRMaterial
@@ -173,6 +165,7 @@ export class NFTShape extends DisposableComponent {
             assetContainer.meshes
               .filter($ => $.name === '__root__')
               .forEach(mesh => {
+                ignoreBoundaryChecksOnObject(mesh)
                 entity.setObject3D(BasicShape.nameInEntity, mesh)
               })
 

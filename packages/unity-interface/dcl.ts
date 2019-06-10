@@ -27,7 +27,8 @@ import {
 import {
   enableParcelSceneLoading,
   loadedParcelSceneWorkers,
-  getSceneWorkerByBaseCoordinates
+  getSceneWorkerByBaseCoordinates,
+  getParcelSceneCID
 } from '../shared/world/parcelSceneManager'
 import { SceneWorker, ParcelSceneAPI, hudWorkerUrl } from '../shared/world/SceneWorker'
 import { ensureUiApis } from '../shared/world/uiSceneInitializer'
@@ -182,6 +183,7 @@ class UnityParcelScene extends UnityScene<LoadableParcelScene> {
 
         const parcelIdentity = system.getAPIInstance(ParcelIdentity)
         parcelIdentity.land = this.data.data.land
+        parcelIdentity.cid = getParcelSceneCID(worker)
       })
       .catch(e => this.logger.error('Error initializing system', e))
   }
@@ -267,9 +269,11 @@ async function initializeDecentralandUI() {
 async function loadPreviewScene() {
   const result = await fetch('/scene.json?nocache=' + Math.random())
 
-  loadedParcelSceneWorkers.forEach($ => {
-    $.dispose()
-    loadedParcelSceneWorkers.delete($)
+  loadedParcelSceneWorkers.forEach(worker => {
+    if (!worker.persistent) {
+      worker.dispose()
+      loadedParcelSceneWorkers.delete(worker)
+    }
   })
 
   if (result.ok) {

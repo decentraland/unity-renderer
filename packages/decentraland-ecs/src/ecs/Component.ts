@@ -263,6 +263,7 @@ export function getComponentId<T extends DisposableComponentLike>(component: T):
   throw new TypeError(component + ' is not a registered disposable component.')
 }
 
+/** @public */
 export type ObservableComponentSubscription = (key: string, newVal: any, oldVal: any) => void
 
 /**
