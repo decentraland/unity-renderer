@@ -3,7 +3,7 @@ import { CLASS_ID, OnUUIDEvent, Texture } from './Components'
 import { Color4 } from './math'
 import { OnTextSubmit, OnBlur, OnChanged, OnClick, OnFocus, OnEnter } from './UIEvents'
 /**
- * @alpha
+ * @public
  */
 export abstract class UIShape extends ObservableComponent {
   /**
@@ -82,7 +82,7 @@ export class UIWorldSpace extends UIShape {
 }
 
 /**
- * @alpha
+ * @public
  */
 @DisposableComponent('engine.shape', CLASS_ID.UI_SCREEN_SPACE_SHAPE)
 export class UICanvas extends UIShape {
@@ -92,7 +92,7 @@ export class UICanvas extends UIShape {
 }
 
 /**
- * @alpha
+ * @public
  */
 @DisposableComponent('engine.shape', CLASS_ID.UI_CONTAINER_RECT)
 export class UIContainerRect extends UIShape {
@@ -121,7 +121,7 @@ export enum UIStackOrientation {
 }
 
 /**
- * @alpha
+ * @public
  */
 @DisposableComponent('engine.shape', CLASS_ID.UI_CONTAINER_STACK)
 export class UIContainerStack extends UIShape {
@@ -142,7 +142,7 @@ export class UIContainerStack extends UIShape {
 }
 
 /**
- * @alpha
+ * @public
  */
 @DisposableComponent('engine.shape', CLASS_ID.UI_BUTTON_SHAPE)
 export class UIButton extends UIShape {
@@ -193,7 +193,7 @@ export class UIButton extends UIShape {
 }
 
 /**
- * @alpha
+ * @public
  */
 @DisposableComponent('engine.shape', CLASS_ID.UI_TEXT_SHAPE)
 export class UIText extends UIShape {
@@ -265,7 +265,7 @@ export class UIText extends UIShape {
 }
 
 /**
- * @alpha
+ * @public
  */
 @DisposableComponent('engine.shape', CLASS_ID.UI_INPUT_TEXT_SHAPE)
 export class UIInputText extends UIShape {
@@ -349,7 +349,7 @@ export class UIInputText extends UIShape {
 }
 
 /**
- * @alpha
+ * @public
  */
 @DisposableComponent('engine.shape', CLASS_ID.UI_IMAGE_SHAPE)
 export class UIImage extends UIShape {
@@ -396,7 +396,7 @@ export class UIImage extends UIShape {
 }
 
 /**
- * @alpha
+ * @public
  */
 @DisposableComponent('engine.shape', CLASS_ID.UI_SLIDER_SHAPE)
 export class UIScrollRect extends UIShape {

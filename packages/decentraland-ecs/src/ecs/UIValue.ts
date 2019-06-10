@@ -1,5 +1,5 @@
 /**
- * @alpha
+ * @public
  */
 export enum UIValueType {
   PERCENT = 0,
@@ -7,7 +7,7 @@ export enum UIValueType {
 }
 
 /**
- * @alpha
+ * @public
  */
 export class UIValue {
   value: number
