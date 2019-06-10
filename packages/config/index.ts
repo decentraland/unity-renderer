@@ -91,6 +91,8 @@ export const DEBUG_MOBILE = location.search.indexOf('DEBUG_MOBILE') !== -1
 export const DEBUG_METRICS = location.search.indexOf('DEBUG_METRICS') !== -1
 export const DEBUG_MESSAGES = location.search.indexOf('DEBUG_MESSAGES') !== -1
 export const DISABLE_AUTH = location.search.indexOf('DISABLE_AUTH') !== -1 || DEBUG
+export const BENCHMARK_DEV_PANEL = location.search.indexOf('BENCHMARK_DEV_PANEL') !== -1
+export const BENCHMARK_PANEL = location.search.indexOf('BENCHMARK_PANEL') !== -1 && !BENCHMARK_DEV_PANEL
 
 export namespace commConfigurations {
   export const debug = DEBUG_METRICS
