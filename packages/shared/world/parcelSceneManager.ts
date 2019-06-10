@@ -81,7 +81,7 @@ export async function enableParcelSceneLoading(network: ETHEREUM_NETWORK, option
   ret.on('Scene.shouldUnload', async (sceneCID: string) => {
     const parcelSceneToUnload = await ret.getParcelData(sceneCID)
     loadedParcelSceneWorkers.forEach($ => {
-      if (!$.persistent && $.parcelScene.data.id === parcelSceneToUnload.mappingsResponse.root_cid) {
+      if (!$.persistent && getParcelSceneCID($) === parcelSceneToUnload.mappingsResponse.root_cid) {
         $.dispose()
         loadedParcelSceneWorkers.delete($)
       }

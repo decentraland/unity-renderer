@@ -85,11 +85,25 @@ namespace DCL {
 
     instancedJS
       .then(({ net, loadPreviewScene }) => {
+        // this is set to avoid double loading scenes due queued messages
+        let currentlyLoadingScene: Promise<any> | null = null
+
         global['handleServerMessage'] = function(message: any) {
           if (message.type === 'update') {
-            loadPreviewScene()
-              .then()
-              .catch(console.error)
+            // if a scene is currently loading we do not trigger another load
+            if (currentlyLoadingScene) return
+
+            currentlyLoadingScene = loadPreviewScene()
+
+            currentlyLoadingScene
+              .then(() => {
+                currentlyLoadingScene = null
+              })
+              .catch(err => {
+                currentlyLoadingScene = null
+                console.error('Error loading scene')
+                console.error(err)
+              })
           }
         }
 
