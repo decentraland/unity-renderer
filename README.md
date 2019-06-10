@@ -1,9 +1,5 @@
 [![CircleCI](https://circleci.com/gh/decentraland/explorer.svg?style=svg)](https://circleci.com/gh/decentraland/explorer)
 
-# Refactor victims
-
-- MessageBusController
-
 # Decentraland Client
 
 This client is fully front-end, but uses a [WebRTC Signalling Server](https://github.com/decentraland/rendezvous) to establish connections to other users.
@@ -20,11 +16,11 @@ This repo requires `git lfs` to track images and other binary files. https://git
 
 First, build the project:
 
-    `make build`
+    make build
 
 To start hacking, run:
 
-    `make watch`
+    make watch
 
 To run the client in `debug` mode append the following query parameter to the URL:
 
@@ -42,11 +38,11 @@ To spawn in a specific set of coordinates append the following query paramter:
 
 To run all test (and save new screenshots), run:
 
-    `make generate-images`
+    make generate-images
 
 To see test logs/errors directly in the browser, run:
 
-    `make watch` and navigate to http://localhost:8080/test
+    make watch and navigate to http://localhost:8080/test
 
 ### Visual tests
 
