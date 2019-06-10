@@ -15,7 +15,7 @@ const _defer = Promise.resolve().then.bind(Promise.resolve())
 /**
  * Executes an asynchronous task
  * @param task - the task to execute
- * @beta
+ * @public
  */
 export function executeTask<T>(task: () => Promise<T>): TaskResult<T> {
   const result: TaskResult<T> = _defer(task)

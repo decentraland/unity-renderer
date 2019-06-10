@@ -4,7 +4,7 @@ declare var Promise: any
 
 /**
  * A class serves as a medium between the observable and its observers
- * @beta
+ * @public
  */
 export class ObserverEventState {
   /**
@@ -63,7 +63,7 @@ export class ObserverEventState {
 
 /**
  * Represent an Observer registered to a given Observable object.
- * @beta
+ * @public
  */
 export class Observer<T> {
   /**
@@ -98,7 +98,7 @@ export class Observer<T> {
 
 /**
  * Represent a list of observers registered to multiple Observables object.
- * @beta
+ * @public
  */
 export class MultiObserver<T> {
   private _observers: Observer<T>[] | null = null
@@ -156,7 +156,7 @@ export class MultiObserver<T> {
  * For instance you may have a given Observable that have four different types of notifications: Move (mask = 0x01), Stop (mask = 0x02), Turn Right (mask = 0X04), Turn Left (mask = 0X08).
  * A given observer can register itself with only Move and Stop (mask = 0x03), then it will only be notified when one of these two occurs and will never be for Turn Left/Right.
  *
- * @beta
+ * @public
  */
 export class Observable<T> {
   private _observers = new Array<Observer<T>>()
