@@ -53,5 +53,6 @@ export * from './decentraland/Audio'
 export * from './decentraland/Gizmos'
 export * from './decentraland/UIShapes'
 export * from './decentraland/UIEvents'
+export * from './decentraland/MessageBus'
 
 export { engine }

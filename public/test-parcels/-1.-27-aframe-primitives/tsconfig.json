@@ -1,6 +1,7 @@
 {
   "compilerOptions": {
     "baseUrl": "../../../packages",
+    "incremental": true,
     "experimentalDecorators": true
   },
   "includes": "*.ts"

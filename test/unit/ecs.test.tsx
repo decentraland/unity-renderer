@@ -781,7 +781,8 @@ describe('ECS', () => {
             lookAt: [-99.5, 1, 101.0]
           })
           vrCamera!.rotationQuaternion.copyFrom(BABYLON.Quaternion.Identity())
-          expect(logs.length).to.eq(0)
+          expect(logs.length).to.eq(1)
+          logs.length = 0
         })
         it('clicks in the middle of the screen', async () => {
           const canvas = scene.getEngine().getRenderingCanvas()
@@ -793,7 +794,8 @@ describe('ECS', () => {
           await sleep(100)
 
           expect(logs.length).to.gt(0)
-          expect(logs.filter($ => $[1] === 'cubeClick').length).to.eq(1, 'cubeClick must have been triggered')
+          console.dir(logs)
+          expect(logs.filter($ => $[1] === 'cubeClick1').length).to.eq(1, 'cubeClick must have been triggered')
           expect(logs.filter($ => $[1] === 'event').length).to.eq(2, 'event must have been triggered twice')
           logs.length = 0
         })
@@ -1279,8 +1281,24 @@ describe('ECS', () => {
     testScene(-1, 73, ({ parcelScenePromise }) => {
       it('should have a transform component', async () => {
         const parcelScene = await parcelScenePromise
+        const url = await parcelScene.context.resolveUrl('img #7 @ $1.png')
+
+        expect(url).to.contain('http')
+        expect(url).to.contain('Qm')
+
         const texture = await parcelScene.context.getTexture('img #7 @ $1.png')
-        expect(texture.isReady()).to.eq(true)
+
+        const loadFuture = future<BABYLON.Texture>()
+
+        if (!texture.isReady()) {
+          texture.onLoadObservable.add(() => {
+            loadFuture.resolve(texture)
+          })
+        } else {
+          loadFuture.resolve(texture)
+        }
+
+        expect((await loadFuture).isReady()).to.eq(true)
       })
 
       wait(100)

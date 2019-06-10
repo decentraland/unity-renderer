@@ -1,0 +1,26 @@
+[
+  {
+    "name": "Compile test scenes (gamekit, part A)",
+    "kind": "Webpack",
+    "file": "./public/hell-map/14[123]*/game.ts",
+    "target": "web"
+  },
+  {
+    "name": "Compile test scenes (gamekit, part A1)",
+    "kind": "Webpack",
+    "file": "./public/hell-map/14[456]*/game.ts",
+    "target": "web"
+  },
+  {
+    "name": "Compile test scenes (gamekit, part A2)",
+    "kind": "Webpack",
+    "file": "./public/hell-map/14[7890]*/game.ts",
+    "target": "web"
+  },
+  {
+    "name": "Compile test scenes (gamekit, part A3)",
+    "kind": "Webpack",
+    "file": "./public/hell-map/13*/game.ts",
+    "target": "web"
+  }
+]

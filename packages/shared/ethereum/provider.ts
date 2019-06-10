@@ -23,7 +23,7 @@ export const requestManager = new RequestManager(null)
         // User denied account access...
         providerFuture.resolve(new WebSocketProvider(ethereumConfigurations[ETHEREUM_NETWORK.MAINNET].wss))
       }
-    } else if (window.web3) {
+    } else if (window.web3 && window.web3.currentProvider) {
       providerFuture.resolve(window.web3.currentProvider)
     } else {
       providerFuture.resolve(new WebSocketProvider(ethereumConfigurations[ETHEREUM_NETWORK.MAINNET].wss))

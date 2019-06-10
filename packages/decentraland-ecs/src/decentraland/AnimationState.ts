@@ -1,6 +1,7 @@
 import { ObservableComponent } from '../ecs/Component'
 import { newId } from '../ecs/helpers'
 
+/** @public */
 export type AnimationParams = {
   looping?: boolean
   speed?: number

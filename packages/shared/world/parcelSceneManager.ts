@@ -21,7 +21,7 @@ export const loadedParcelSceneWorkers: Set<SceneWorker> = new Set()
  */
 export function getSceneWorkerByCID(id: string) {
   for (let parcelSceneWorker of loadedParcelSceneWorkers) {
-    if (parcelSceneWorker.parcelScene.data.id === id) {
+    if (getParcelSceneCID(parcelSceneWorker) === id) {
       return parcelSceneWorker
     }
   }
@@ -29,6 +29,15 @@ export function getSceneWorkerByCID(id: string) {
 }
 
 /**
+ * Returns the CID of the parcel scene
+ */
+export function getParcelSceneCID(parcelScene: SceneWorker) {
+  return parcelScene.parcelScene.data.id
+}
+
+/**
+ * This function receives the list of { type: string, data: ILand } from a remote worker.
+ * It loads and unloads the ParcelScenes from the world
  * Retrieve the SceneWorker based on the parcelID
  *
  * @param id Base ID of the scene
@@ -86,6 +95,7 @@ export async function enableParcelSceneLoading(network: ETHEREUM_NETWORK, option
   teleportObservable.add((position: { x: number; y: number }) => {
     ret.notify('User.setPosition', { position })
   })
+
   positionObservable.add(obj => {
     worldToGrid(obj.position, position)
     ret.notify('User.setPosition', { position })

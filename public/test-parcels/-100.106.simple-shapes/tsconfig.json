@@ -1,8 +1,8 @@
 {
-    "compilerOptions": {
-      "baseUrl": "../../../packages",
-      "experimentalDecorators": true
-    },
-    "includes": "*.ts"
-  }
-
+  "compilerOptions": {
+    "baseUrl": "../../../packages",
+    "incremental": true,
+    "experimentalDecorators": true
+  },
+  "includes": "*.ts"
+}

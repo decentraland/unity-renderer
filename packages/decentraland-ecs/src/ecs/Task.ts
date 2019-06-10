@@ -2,6 +2,7 @@ import { error } from './helpers'
 
 declare var Promise: any
 
+/** @public */
 export type TaskResult<T> = Promise<T> & {
   isComplete: boolean
   didFail?: boolean

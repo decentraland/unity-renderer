@@ -4,6 +4,8 @@ PARALLEL_COMPILER = node --max-old-space-size=4096 node_modules/.bin/decentralan
 
 DCL_PROJECT=../scenes/test
 
+CWD = $(shell pwd)
+
 GREEN=\n\033[1;34m
 RED=\n\033[1;31m
 RESET=\033[0m
@@ -27,7 +29,7 @@ compile-dev:
 build-sdk: build-support
 	@echo "$(GREEN)======================= Building SDK =======================$(RESET)"
 	$(COMPILER) build.sdk.json
-	cd $(PWD)/packages/decentraland-ecs; $(PWD)/node_modules/.bin/api-extractor run --typescript-compiler-folder "$(PWD)/node_modules/typescript" --local
+	cd $(PWD)/packages/decentraland-ecs; $(PWD)/node_modules/.bin/api-extractor run --typescript-compiler-folder "$(PWD)/node_modules/typescript" --local --verbose
 	node ./scripts/buildEcsTypes.js
 	@echo "$(GREEN)======================= Updating docs ======================$(RESET)"
 	cd $(PWD)/packages/decentraland-ecs; $(PWD)/node_modules/.bin/api-documenter markdown -i types/dcl -o docs
@@ -37,9 +39,14 @@ build-support:
 	@echo "$(GREEN)================== Building support files ==================$(RESET)"
 	$(COMPILER) build.support.json
 
+build-hell-map:
+	@echo "$(GREEN)===================== Building hell map ====================$(RESET)"
+	$(COMPILER) build.hell-map.json
+
 build-test-scenes: build-sdk
 	@echo "$(GREEN)=================== Building test scenes ===================$(RESET)"
 	$(COMPILER) build.test-scenes.json
+	$(MAKE) build-hell-map
 	node scripts/buildECSprojects.js
 
 export-preview: | clean compile-entry-points
@@ -117,9 +124,27 @@ lint-fix:
 	node_modules/.bin/prettier --write 'packages/**/*.{ts,tsx}'
 	node_modules/.bin/prettier --write 'packages/decentraland-ecs/types/dcl/index.d.ts'
 
+watch: export NODE_ENV=development
 watch: compile-dev
 	@echo "$(GREEN)=================== Watching file changes ==================$(RESET)"
 	$(MAKE) only-watch
+
+
+FILE=-100.*
+watch-single:
+	@echo '[{"name": "Debug","kind": "Webpack","file": "public/test-parcels/$(FILE)/game.ts","target": "web"}]' > build.single-debug.json
+	@node_modules/.bin/concurrently \
+		-n "entryPoints,debug-scene,server" \
+			"$(PARALLEL_COMPILER) build.entryPoints.json --watch" \
+			"$(PARALLEL_COMPILER) build.single-debug.json --watch" \
+			"node ./scripts/test.js --keep-open"
+
+watch-single-no-server:
+	@echo '[{"name": "Debug","kind": "Webpack","file": "public/test-parcels/$(FILE)/game.ts","target": "web"}]' > build.single-debug.json
+	@node_modules/.bin/concurrently \
+		-n "entryPoints,debug-scene" \
+			"$(PARALLEL_COMPILER) build.entryPoints.json --watch" \
+			"$(PARALLEL_COMPILER) build.single-debug.json --watch"
 
 only-watch:
 	@node_modules/.bin/concurrently \
@@ -130,8 +155,27 @@ only-watch:
 			"node ./scripts/buildECSprojects.js --watch" \
 			"node ./scripts/test.js --keep-open"
 
+# initializes a local dev environment to test the CLI with a linked version of decentraland-ecs
+initialize-ecs-npm-link: build-sdk
+	rm -rf packages/decentraland-ecs/artifacts || true
+	mkdir packages/decentraland-ecs/artifacts
+	ln -sf $(CWD)/node_modules/dcl-amd/dist/amd.js packages/decentraland-ecs/artifacts/amd.js
+	ln -sf $(CWD)/packages/build-ecs/index.js packages/decentraland-ecs/artifacts/build-ecs.js
+	ln -sf $(CWD)/static/dist/preview.js packages/decentraland-ecs/artifacts/preview.js
+	ln -sf $(CWD)/static/dist/unityPreview.js packages/decentraland-ecs/artifacts/unityPreview.js
+	ln -sf $(CWD)/static/dist/editor.js packages/decentraland-ecs/artifacts/editor.js
+	ln -sf $(CWD)/static/preview.html packages/decentraland-ecs/artifacts/preview.html
+	ln -sf $(CWD)/static/fonts packages/decentraland-ecs/artifacts/fonts
+	ln -sf $(CWD)/static/images packages/decentraland-ecs/artifacts/images
+	ln -sf $(CWD)/static/models packages/decentraland-ecs/artifacts/models
+	ln -sf $(CWD)/static/unity packages/decentraland-ecs/artifacts/unity
+	ln -sf $(CWD)/static/unity-preview.html packages/decentraland-ecs/artifacts/unity-preview.html
+	cd packages/decentraland-ecs; npm link
+
+
+
 dev-watch:
 	@node_modules/.bin/concurrently \
-		-n "sdk,entryPoints,ecs-builder,server" \
+		-n "sdk,entryPoints,server" \
 			"$(PARALLEL_COMPILER) build.entryPoints.json --watch" \
 			"node ./scripts/test.js --keep-open"

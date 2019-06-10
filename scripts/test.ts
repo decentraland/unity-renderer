@@ -9,6 +9,9 @@ import fs = require('fs')
 import mkdirp = require('mkdirp')
 import * as BlinkDiff from 'blink-diff'
 import titere = require('titere')
+import WebSocket = require('ws')
+import http = require('http')
+import proto = require('../packages/shared/comms/proto/broker')
 
 // defines if we should run headless tests and exit (true) or keep the server on (false)
 const singleRun = !(process.env.SINGLE_RUN === 'true')
@@ -33,6 +36,73 @@ const storage = multer.diskStorage({
 
 const upload = multer({ storage })
 const app = express()
+
+const server = http.createServer(app)
+const wss = new WebSocket.Server({ server })
+
+const connections = new Set<WebSocket>()
+const topicsPerConnection = new WeakMap<WebSocket, Set<string>>()
+let connectionCounter = 0
+
+function getTopicList(socket: WebSocket): Set<string> {
+  let set = topicsPerConnection.get(socket)
+  if (!set) {
+    set = new Set()
+    topicsPerConnection.set(socket, set)
+  }
+  return set
+}
+
+wss.on('connection', function connection(ws) {
+  connections.add(ws)
+
+  ws.on('message', message => {
+    const data = message as Buffer
+    const msgType = proto.CoordinatorMessage.deserializeBinary(data).getType()
+
+    if (msgType === proto.MessageType.PING) {
+      ws.send(data)
+    } else if (msgType === proto.MessageType.TOPIC) {
+      const topicMessage = proto.TopicMessage.deserializeBinary(data)
+
+      const topic = topicMessage.getTopic()
+
+      const dataMessage = new proto.DataMessage()
+      dataMessage.setType(proto.MessageType.DATA)
+      dataMessage.setBody(topicMessage.getBody_asU8())
+
+      const topicData = dataMessage.serializeBinary()
+
+      // Reliable/unreliable data
+      connections.forEach($ => {
+        if (ws !== $) {
+          if (getTopicList($).has(topic)) {
+            $.send(topicData)
+          }
+        }
+      })
+    } else if (msgType === proto.MessageType.TOPIC_SUBSCRIPTION) {
+      const topicMessage = proto.TopicSubscriptionMessage.deserializeBinary(data)
+      const rawTopics = topicMessage.getTopics()
+      const topics = Buffer.from(rawTopics).toString('utf8')
+      const set = getTopicList(ws)
+
+      set.clear()
+      topics.split(/\s+/g).forEach($ => set.add($))
+    }
+  })
+
+  ws.on('close', () => connections.delete(ws))
+
+  setTimeout(() => {
+    const welcome = new proto.WelcomeMessage()
+    welcome.setType(proto.MessageType.WELCOME)
+    welcome.setAlias(++connectionCounter)
+    const data = welcome.serializeBinary()
+
+    ws.send(data)
+  }, 100)
+})
 
 function getFile(files: any): Express.Multer.File {
   return files[Object.keys(files)[0]]
@@ -184,7 +254,7 @@ function checkDiff(imageAPath: string, imageBPath: string, threshold: number, di
       })
   })
 
-  app.listen(port, function() {
+  server.listen(port, function() {
     console.info('==>     Listening on port %s. Open up http://localhost:%s/test to run tests', port, port)
     console.info('                              Open up http://localhost:%s/ to test the client.', port)
 

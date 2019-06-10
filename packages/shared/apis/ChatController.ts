@@ -19,8 +19,7 @@ import {
 } from 'shared/comms/peers'
 import { uuid } from 'atomicHelpers/math'
 import { parcelLimits } from 'config'
-
-export const positionRegex = new RegExp('^(-?[0-9]+) *, *(-?[0-9]+)$')
+import { parseParcelPosition } from 'atomicHelpers/parcelScenePositions'
 
 export interface IChatController {
   /**
@@ -155,15 +154,15 @@ export class ChatController extends ExposableAPI implements IChatController {
     })
 
     this.addChatCommand('goto', 'Teleport to another parcel', message => {
-      const coordinates = positionRegex.exec(message)
+      const coordinates = parseParcelPosition(message)
+      const isValid = isFinite(coordinates.x) && isFinite(coordinates.y)
 
       let response = ''
 
-      if (!coordinates) {
+      if (!isValid) {
         response = 'Could not recognize the coordinates provided. Example usage: /goto 42,42'
       } else {
-        const x = parseInt(coordinates[1], 10)
-        const y = parseInt(coordinates[2], 10)
+        const { x, y } = coordinates
 
         if (
           parcelLimits.minLandCoordinateX <= x &&

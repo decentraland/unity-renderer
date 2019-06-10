@@ -77,13 +77,18 @@ async function authenticate(): Promise<any> {
 export async function initShared(): Promise<ETHEREUM_NETWORK> {
   const { user_id } = await authenticate()
   console['log'](`User ${user_id} logged in`)
-  await initializeAnalytics(user_id)
+
+  if (!PREVIEW) {
+    await initializeAnalytics(user_id)
+  }
 
   const address = await getAddress()
+
   if (address) {
     console['log'](`Identifying address ${address}`)
     queueTrackingEvent('Use web3 address', { address })
   }
+
   const net = await getAppNetwork()
   queueTrackingEvent('Use network', { net })
 

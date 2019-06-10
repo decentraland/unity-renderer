@@ -2,6 +2,7 @@ import { Matrix } from './Matrix'
 import { FloatArray, Epsilon } from './types'
 import { Scalar } from './Scalar'
 
+/** @public */
 export type ReadOnlyVector2 = {
   readonly x: number
   readonly y: number

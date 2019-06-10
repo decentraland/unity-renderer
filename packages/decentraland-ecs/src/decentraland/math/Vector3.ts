@@ -4,6 +4,7 @@ import { Matrix } from './Matrix'
 import { Quaternion } from './Quaternion'
 import { Scalar } from './Scalar'
 
+/** @public */
 export type ReadOnlyVector3 = {
   readonly y: number
   readonly x: number

@@ -16,6 +16,7 @@ import { isScreenSpaceComponent } from 'engine/components/helpers/ui'
 import { IEvents } from 'decentraland-ecs/src/decentraland/Types'
 import { camera, scene } from 'engine/renderer'
 import { positionObservable } from 'shared/world/positionThings'
+import { getParcelSceneCID } from 'shared/world/parcelSceneManager'
 
 const auxVec2 = BABYLON.Vector2.Zero()
 
@@ -120,6 +121,7 @@ export class WebGLParcelScene extends WebGLScene<LoadableParcelScene> {
 
         const parcelIdentity = system.getAPIInstance(ParcelIdentity)
         parcelIdentity.land = this.data.data.land
+        parcelIdentity.cid = getParcelSceneCID(worker)
       })
       .catch($ => this.logger.error('registerWorker', $))
   }

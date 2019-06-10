@@ -15,9 +15,21 @@ export async function jsonFetch(url: string): Promise<any> {
 
   requestCache.set(url, futureCache)
 
-  fetch(url)
-    .then($ => $.json(), e => futureCache.reject(e))
-    .then($ => futureCache.resolve($), e => futureCache.reject(e))
+  fetch(url).then(
+    async $ => {
+      if (!$.ok) {
+        futureCache.reject(new Error('Response not ok - ' + url))
+      } else {
+        try {
+          futureCache.resolve(await $.json())
+        } catch (e) {
+          console['error']('Error parsing json: ' + url, $)
+          futureCache.reject(e)
+        }
+      }
+    },
+    e => futureCache.reject(e)
+  )
 
   return futureCache
 }
