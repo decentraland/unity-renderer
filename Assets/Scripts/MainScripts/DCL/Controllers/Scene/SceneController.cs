@@ -37,7 +37,11 @@ namespace DCL
         public Dictionary<string, ParcelScene> loadedScenes = new Dictionary<string, ParcelScene>();
 
         [Header("Debug Tools")]
-        public GameObject debugPanel;
+        public GameObject fpsPanel;
+
+        [Header("Debug Panel")]
+        public GameObject engineDebugPanel;
+        public GameObject sceneDebugPanel;
 
         public bool debugScenes;
 
@@ -177,7 +181,19 @@ namespace DCL
         public void SetDebug()
         {
             isDebugMode = true;
-            debugPanel.SetActive(true);
+            fpsPanel.SetActive(true);
+        }
+
+        public void SetSceneDebugPanel()
+        {
+            engineDebugPanel.SetActive(false);
+            sceneDebugPanel.SetActive(true);
+        }
+
+        public void SetEngineDebugPanel()
+        {
+            sceneDebugPanel.SetActive(false);
+            engineDebugPanel.SetActive(true);
         }
 
         ParcelScene GetDecentralandSceneOfGridPosition(Vector2Int gridPosition)

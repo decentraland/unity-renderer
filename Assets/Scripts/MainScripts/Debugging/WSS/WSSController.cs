@@ -69,6 +69,15 @@ namespace DCL
 
     public class WSSController : MonoBehaviour
     {
+        public enum DebugPanel
+        {
+            Off,
+            Scene,
+            Engine
+        }
+
+        private const string ENGINE_DEBUG_PANEL = "ENGINE_DEBUG_PANEL";
+        private const string SCENE_DEBUG_PANEL = "SCENE_DEBUG_PANEL";
         public static WSSController i { get; private set; }
         static bool VERBOSE = false;
         WebSocketServer ws;
@@ -86,6 +95,9 @@ namespace DCL
         public bool openBrowserWhenStart;
         public bool useClientDebugMode = true;
         public Vector2 startInCoords = new Vector2(-99, 109);
+
+        public DebugPanel debugPanelMode = DebugPanel.Off;
+
 
         private void Awake()
         {
@@ -112,8 +124,18 @@ namespace DCL
                     debugString = "DISABLE_AUTH&";
                 }
 
+                string debugPanelString = "";
+                if(debugPanelMode == DebugPanel.Engine)
+                {
+                    debugPanelString = ENGINE_DEBUG_PANEL + "&";
+                }
+                else if (debugPanelMode == DebugPanel.Scene)
+                {
+                    debugPanelString = SCENE_DEBUG_PANEL + "&";
+                }
+
                 Application.OpenURL(
-                    $"http://localhost:8080/tetra.html?{debugString}position={startInCoords.x}%2C{startInCoords.y}&ws=ws%3A%2F%2Flocalhost%3A5000%2Fdcl");
+                    $"http://localhost:8080/tetra.html?{debugString}{debugPanelString}position={startInCoords.x}%2C{startInCoords.y}&ws=ws%3A%2F%2Flocalhost%3A5000%2Fdcl");
             }
 #else
             useClientDebugMode = false;
@@ -150,6 +172,12 @@ namespace DCL
                         {
                             case "SetDebug":
                                 sceneController.SetDebug();
+                                break;
+                            case "SetSceneDebugPanel":
+                                sceneController.SetSceneDebugPanel();
+                                break;
+                            case "SetEngineDebugPanel":
+                                sceneController.SetEngineDebugPanel();
                                 break;
                             case "SendSceneMessage":
                                 sceneController.SendSceneMessage(msg.payload);

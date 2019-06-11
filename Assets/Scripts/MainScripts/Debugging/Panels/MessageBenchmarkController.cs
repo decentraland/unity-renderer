@@ -80,7 +80,7 @@ namespace DCL
 
         StatsPanel statsPanel;
 
-        Dictionary<Columns, Dictionary<Rows, float>> statsTracker;
+        Dictionary<(Columns, Rows), float> statsTracker;
         Dictionary<Rows, float> processTimeTracker;
         Dictionary<Rows, float> decodeTimeTracker;
         List<Columns> columnsList;
@@ -219,12 +219,12 @@ namespace DCL
 
                 foreach (var strRowPair in stringToRow)
                 {
-                    float processedCount = statsTracker[Columns.PROCESSED_COUNT][strRowPair.Value];
+                    float processedCount = statsTracker[(Columns.PROCESSED_COUNT, strRowPair.Value)];
 
                     if (processedCount > 0)
                     {
-                        logicTotalTime += statsTracker[Columns.LOGIC_MS][strRowPair.Value] / processedCount;
-                        decodeTotalTime += statsTracker[Columns.DECODE_MS][strRowPair.Value] / processedCount;
+                        logicTotalTime += statsTracker[(Columns.LOGIC_MS, strRowPair.Value)] / processedCount;
+                        decodeTotalTime += statsTracker[(Columns.DECODE_MS, strRowPair.Value)] / processedCount;
                     }
                 }
 
@@ -281,19 +281,19 @@ namespace DCL
                 return;
             }
 
-            statsTracker[Columns.PROCESSED_COUNT][stringToRow[s]]++;
-            statsTracker[Columns.PROCESSED_COUNT][Rows.TOTAL]++;
+            statsTracker[(Columns.PROCESSED_COUNT, stringToRow[s])]++;
+            statsTracker[(Columns.PROCESSED_COUNT, Rows.TOTAL)]++;
 
             //NOTE(Brian): Process ratio
-            float current = statsTracker[Columns.PROCESSED_COUNT][stringToRow[s]];
-            float total = statsTracker[Columns.PROCESSED_COUNT][Rows.TOTAL];
+            float current = statsTracker[(Columns.PROCESSED_COUNT, stringToRow[s])];
+            float total = statsTracker[(Columns.PROCESSED_COUNT, Rows.TOTAL)];
             float finalRatio = current / total * 100;
 
             statsPanel.SetCellText((int)Columns.RATIO, (int)stringToRow[s], finalRatio.ToString("N1") + "%");
 
             //NOTE(Brian): Process ratio times ms
-            float finalMs = (statsTracker[Columns.LOGIC_MS][stringToRow[s]] +
-                             statsTracker[Columns.DECODE_MS][stringToRow[s]]);
+            float finalMs = (statsTracker[(Columns.LOGIC_MS, stringToRow[s])] +
+                             statsTracker[(Columns.DECODE_MS, stringToRow[s])]);
             float finalRatioTimesMs = (finalMs / total) * finalRatio;
             statsPanel.SetCellText((int)Columns.RATIO_TIMES_MS, (int)stringToRow[s], finalRatioTimesMs.ToString("N2"));
 
@@ -303,12 +303,12 @@ namespace DCL
             //             with the exception of scene load one.
             if (stringToRow[s] != Rows.SCENE_LOAD)
             {
-                statsTracker[Columns.LOGIC_MS][stringToRow[s]] += dt * 1000;
+                statsTracker[(Columns.LOGIC_MS, stringToRow[s])] += dt * 1000;
 
                 //NOTE(Brian): I substract decode from logic because <check last comment>
-                int processedCount = (int)statsTracker[Columns.PROCESSED_COUNT][stringToRow[s]];
-                float avg = statsTracker[Columns.LOGIC_MS][stringToRow[s]] -
-                            statsTracker[Columns.DECODE_MS][stringToRow[s]];
+                int processedCount = (int)statsTracker[(Columns.PROCESSED_COUNT, stringToRow[s])];
+                float avg = statsTracker[(Columns.LOGIC_MS, stringToRow[s])] -
+                            statsTracker[(Columns.DECODE_MS, stringToRow[s])];
 
                 if (processedCount > 0)
                 {
@@ -337,27 +337,27 @@ namespace DCL
 
         void SumTrackedValue(Columns x, Rows y, int delta)
         {
-            statsTracker[x][y] += delta;
-            statsPanel.SetCellText((int)x, (int)y, statsTracker[x][y].ToString());
+            statsTracker[(x, y)] += delta;
+            statsPanel.SetCellText((int)x, (int)y, statsTracker[(x, y)].ToString());
         }
 
         void AvgTrackedValue(Columns x, Rows y, float ms)
         {
-            int processedCount = (int)statsTracker[Columns.PROCESSED_COUNT][y];
+            int processedCount = (int)statsTracker[(Columns.PROCESSED_COUNT, y)];
             float result = 0;
 
             if (processedCount > 0)
             {
-                statsTracker[x][y] += ms;
-                result = statsTracker[x][y] / processedCount;
+                statsTracker[(x, y)] += ms;
+                result = statsTracker[(x, y)] / processedCount;
             }
             else
             {
                 //NOTE(Brian): If we aren't tracking TOTAL for this particular row, we use the overall msgs total
                 //             for computing the avg. This is currently used by misc row.
-                processedCount = (int)statsTracker[Columns.PROCESSED_COUNT][Rows.TOTAL];
-                statsTracker[x][y] += ms;
-                result = statsTracker[x][y] / (processedCount > 0 ? processedCount : 1.0f);
+                processedCount = (int)statsTracker[(Columns.PROCESSED_COUNT, Rows.TOTAL)];
+                statsTracker[(x, y)] += ms;
+                result = statsTracker[(x, y)] / (processedCount > 0 ? processedCount : 1.0f);
             }
 
             statsPanel.SetCellText((int)x, (int)y, result.ToString("N3") + "ms");
@@ -383,11 +383,11 @@ namespace DCL
             SumTrackedValue(Columns.QUEUED_COUNT, Rows.TOTAL, delta);
             SumTrackedValue(Columns.QUEUED_COUNT, stringToRow[obj], delta);
 
-            if (statsTracker[Columns.QUEUED_COUNT][Rows.TOTAL] < 0)
-                statsTracker[Columns.QUEUED_COUNT][Rows.TOTAL] = 0;
+            if (statsTracker[(Columns.QUEUED_COUNT, Rows.TOTAL)] < 0)
+                statsTracker[(Columns.QUEUED_COUNT, Rows.TOTAL)] = 0;
 
-            if (statsTracker[Columns.QUEUED_COUNT][stringToRow[obj]] < 0)
-                statsTracker[Columns.QUEUED_COUNT][stringToRow[obj]] = 0;
+            if (statsTracker[(Columns.QUEUED_COUNT, stringToRow[obj])] < 0)
+                statsTracker[(Columns.QUEUED_COUNT, stringToRow[obj])] = 0;
         }
 
         void ResetTracker()
@@ -395,7 +395,7 @@ namespace DCL
             //TODO(Brian): Dictionary with enum keys will generate unneeded boxing, fix later. 
             if (statsTracker == null)
             {
-                statsTracker = new Dictionary<Columns, Dictionary<Rows, float>>();
+                statsTracker = new Dictionary<(Columns, Rows), float>();
             }
 
             if (processTimeTracker == null)
@@ -413,36 +413,28 @@ namespace DCL
                 Columns c = columnsList[x];
 
                 //NOTE(Brian): Ignore queued when resetting to avoid queued count go < 0.
-                if (statsTracker.ContainsKey(c) && c == Columns.QUEUED_COUNT)
+                if (c == Columns.QUEUED_COUNT && DictionaryContainsColumn(statsTracker, c))
                 {
                     continue;
                 }
 
-                if (!statsTracker.ContainsKey(c))
-                {
-                    statsTracker.Add(c, new Dictionary<Rows, float>());
-                }
-                else
-                {
-                    statsTracker[c] = new Dictionary<Rows, float>();
-                }
-
                 for (int y = 1; y < rowsList.Count; y++)
                 {
-                    Rows r = rowsList[y];
-
-                    if (!statsTracker[c].ContainsKey(r))
-                    {
-                        statsTracker[c].Add(r, 0);
-                    }
-                    else
-                    {
-                        statsTracker[c][r] = 0;
-                    }
-
+                    statsTracker[(c, rowsList[y])] = 0;
                     statsPanel.SetCellText(x, y, "");
                 }
             }
+        }
+
+        private bool DictionaryContainsColumn( Dictionary<(Columns, Rows), float> dictionary, Columns col)
+        {
+            return dictionary.Any(x => x.Key.Item1 == col);
+        }
+
+        private bool DictionaryContainsRow( Dictionary<(Columns, Rows), float> dictionary, Columns col, Rows row)
+        {
+            //It's faster to check Col again than using DictionaryContainsColumn method
+            return dictionary.Any(x => x.Key.Item1 == col && x.Key.Item2 == row);
         }
     }
 }
