@@ -4,16 +4,13 @@ using System;
 using UnityEngine.Experimental.UIElements;
 
 [RequireComponent(typeof(CinemachineFreeLook))]
-[RequireComponent(typeof(CinemachineCameraOffset))]
-[RequireComponent(typeof(CinemachineCameraOffset))]
+[RequireComponent(typeof(DCLBuilderCameraCinemachineMove))]
 
 public class DCLCinemachineCameraBuilderController : MonoBehaviour
 {
     public DCLBuilderCameraInput cameraInput;
 
     private CinemachineFreeLook freelook;
-    private CinemachineCameraOffset cameraOffset;
-
     private DCLBuilderCameraCinemachineMove cameraMove;
     CinemachineFreeLook.Orbit[] originalOrbits = new CinemachineFreeLook.Orbit[0];
 
@@ -55,7 +52,6 @@ public class DCLCinemachineCameraBuilderController : MonoBehaviour
     void Start()
     {
         freelook = GetComponent<CinemachineFreeLook>();
-        cameraOffset = GetComponent<CinemachineCameraOffset>();
         cameraMove = GetComponent<DCLBuilderCameraCinemachineMove>();
         Initialize();
 
@@ -176,7 +172,8 @@ public class DCLCinemachineCameraBuilderController : MonoBehaviour
 
     void UpdatePan()
     {
-        cameraOffset.m_Offset = new Vector3(panXAxis.Value, panYAxis.Value, 0);
+
+        cameraMove.SetPanAxis(new Vector3(panXAxis.Value, panYAxis.Value, 0));
     }
 
     void UpdateZoom()
