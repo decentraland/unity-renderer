@@ -122,7 +122,7 @@ namespace DCL.Components
             // Graphics Raycaster (for allowing touch/click input on the ui components)
             canvasGameObject.AddComponent<GraphicRaycaster>();
 
-            if(scene.isPersistent)
+            if (scene.isPersistent)
             {
                 childHookRectTransform = canvas.GetComponent<RectTransform>();
 
@@ -143,7 +143,7 @@ namespace DCL.Components
 
                 // We scale the panel downwards to release the viewport's top 10%
                 childHookRectTransform.pivot = new Vector2(0.5f, 0f);
-                childHookRectTransform.localScale = new Vector3(1f, 1f - (UISettings.RESERVED_CANVAS_TOP_PERCENTAGE/100), 1f);
+                childHookRectTransform.localScale = new Vector3(1f, 1f - (UISettings.RESERVED_CANVAS_TOP_PERCENTAGE / 100), 1f);
             }
 
             // Canvas group

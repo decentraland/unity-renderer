@@ -167,8 +167,7 @@ public class DCLCharacterController : MonoBehaviour
         Vector3 previousPosition = transform.position;
         characterController.Move(velocity * deltaTime);
 
-        if (Moved(previousPosition) || (Time.realtimeSinceStartup - lastMovementReportTime) >
-            PlayerSettings.POSITION_REPORTING_DELAY)
+        if ((Time.realtimeSinceStartup - lastMovementReportTime) > PlayerSettings.POSITION_REPORTING_DELAY)
         {
             ReportMovement();
         }
@@ -214,7 +213,10 @@ public class DCLCharacterController : MonoBehaviour
 
     void ReportMovement()
     {
-        DCL.Interface.WebInterface.ReportPosition(transform.position, transform.rotation);
+        var localRotation = camera.localRotation.eulerAngles;
+        var rotation = transform.rotation.eulerAngles;
+
+        DCL.Interface.WebInterface.ReportPosition(transform.position, Quaternion.Euler(localRotation.x, rotation.y, localRotation.z));
 
         if (OnCharacterMoved != null)
         {
