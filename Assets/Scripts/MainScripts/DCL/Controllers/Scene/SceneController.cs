@@ -97,7 +97,7 @@ namespace DCL
             i = this;
 
 #if !UNITY_EDITOR
-        Debug.Log("DCL Unity Build Version: " + DCL.Configuration.ApplicationSettings.version);
+            Debug.Log("DCL Unity Build Version: " + DCL.Configuration.ApplicationSettings.version);
 #endif
 
             // We trigger the Decentraland logic once SceneController has been instanced and is ready to act.
