@@ -1,12 +1,13 @@
 # unity-client
 
 ### Reading Guide
+
 1. [Push Request naming standards](https://github.com/decentraland/standards/blob/master/standards/git-usage.md)
 2. [Unity client architecture overview](https://docs.google.com/document/d/1_lzi3V5IDaVRJbTKNsNEcaG0L21VPydiUx5uamiyQnY/edit)
 3. [Coding guidelines](code-guidelines.md)
 
-
 ### Setup the Explorer project
+
 1. Run `npm install` in the [Explorer](https://github.com/decentraland/explorer) cloned repo root directory
 2. Run `make watch` in the [Explorer](https://github.com/decentraland/explorer) cloned repo root directory and wait for the make script to complete
 3. Once the explorer automatically opens you a browser tab, you may close it and continue with Unity 
@@ -18,6 +19,21 @@
 1. Build unity WASM with its name as "unity" into [Explorer](https://github.com/decentraland/explorer) cloned repo **root/static/** directory
 2. Run the command `make watch`
 2. Run the build by accessing **[http://localhost:8080/tetra.html?DEBUG&position=-101%2C99](http://localhost:8080/tetra.html?DEBUG&position=-101%2C99)** in any webbrowser
+
+### Manual update and deploy of unity build (to be automated soon)
+
+1. Update build version number in MainScripts/DCL/Configuration/Configuration.cs (make a PR to keep this change in master branch)
+2. Build unity WASM with its name as "unity" into [Explorer](https://github.com/decentraland/explorer) cloned repo **root/static/** directory. (this can be done [using the command line](https://docs.unity3d.com/Manual/CommandLineArguments.html))
+3. After testing the build is fine, make a PR in explorer repo to update the new build in master (if the template wasn't updated, it should be just the 3 wasm binary files)
+4. After 30 mins aprox, the new build should be already working in Zone (check browser console for version report)
+
+### Unity Editor debugging with dcl scene in "preview mode"
+
+1. Run 'dcl start' to open the scene in preview mode. Leave the server running and close the newly-opened browser tab
+2. In Unity Editor, in the "InitialScene" scene, select the WSSController gameobject and untoggle the "Open Browser When Start", and toggle the "Use client debug mode". (Make sure the SceneController has the "Debug Scenes" toggle OFF)
+3. In Unity Editor hit PLAY
+4. In a new browser tab go to http://localhost:8000/?UNITY_ENABLED=true&position=0%2C-1&ws=ws%3A%2F%2Flocalhost%3A5000%2Fdcl
+5. Go back to unity and the scene should start loading in there almost immediately
 
 ### Unity Assembly Definition Files
 
