@@ -87,6 +87,5 @@ message DataMessage {
 message AuthMessage {
     MessageType type = 1;
     Role role = 2;
-    string method = 3;
     bytes body = 4;
 }

@@ -108,7 +108,9 @@ export class Stats {
 
   private reportInterval: any
 
-  constructor(context: Context) {
+  constructor(private context: Context) {}
+
+  public printDebugInformation() {
     const reportDuration = (name: string, duration: TrackAvgDuration) => {
       const durationsMs = duration.durationsMs
       if (durationsMs.length > 0) {
@@ -127,43 +129,41 @@ export class Stats {
       stats.reset()
     }
 
-    this.reportInterval = setInterval(() => {
-      log(`------- ${new Date()}: `)
-      reportDuration('collectInfo', this.collectInfoDuration)
-      reportDuration('dispatchTopic', this.dispatchTopicDuration)
-      log(`tracking peers: ${this.trackingPeersCount}, visible peers: ${this.visiblePeersCount}`)
+    log(`------- ${new Date()}: `)
+    reportDuration('collectInfo', this.collectInfoDuration)
+    reportDuration('dispatchTopic', this.dispatchTopicDuration)
+    log(`tracking peers: ${this.trackingPeersCount}, visible peers: ${this.visiblePeersCount}`)
 
-      log('World instance: ')
+    log('World instance: ')
 
-      const connection = context.worldInstanceConnection!
-      connection.connection.printDebugInformation()
+    const connection = this.context.worldInstanceConnection!
+    connection.connection.printDebugInformation()
 
-      if (connection.ping >= 0) {
-        log(`  ping: ${connection.ping} ms`)
-      } else {
-        log(`  ping: ? ms`)
+    if (connection.ping >= 0) {
+      log(`  ping: ${connection.ping} ms`)
+    } else {
+      log(`  ping: ? ms`)
+    }
+
+    reportPkgStats('  topic (total)', this.topic)
+    reportPkgStats('    - position', this.position)
+    reportPkgStats('    - profile', this.profile)
+    reportPkgStats('    - sceneComms', this.sceneComms)
+    reportPkgStats('    - chat', this.chat)
+    reportPkgStats('  ping', this.ping)
+    reportPkgStats('  webrtc session', this.webRtcSession)
+    reportPkgStats('  others', this.others)
+
+    this.peers.forEach((stat, alias) => {
+      const positionAvgFreq = stat.positionAvgFrequency
+      if (positionAvgFreq.samples > 1) {
+        const samples = positionAvgFreq.samples
+        const avg = positionAvgFreq.avg()
+        log(`${alias} avg duration between position messages ${avg}ms, from ${samples} samples`)
       }
+    })
 
-      reportPkgStats('  topic (total)', this.topic)
-      reportPkgStats('    - position', this.position)
-      reportPkgStats('    - profile', this.profile)
-      reportPkgStats('    - sceneComms', this.sceneComms)
-      reportPkgStats('    - chat', this.chat)
-      reportPkgStats('  ping', this.ping)
-      reportPkgStats('  webrtc session', this.webRtcSession)
-      reportPkgStats('  others', this.others)
-
-      this.peers.forEach((stat, alias) => {
-        const positionAvgFreq = stat.positionAvgFrequency
-        if (positionAvgFreq.samples > 1) {
-          const samples = positionAvgFreq.samples
-          const avg = positionAvgFreq.avg()
-          log(`${alias} avg duration between position messages ${avg}ms, from ${samples} samples`)
-        }
-      })
-
-      log('-------')
-    }, 10000)
+    log('-------')
   }
 
   public onPositionMessage(fromAlias: string, data: PositionData) {

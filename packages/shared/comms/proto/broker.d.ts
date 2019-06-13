@@ -1,17 +1,20 @@
+// package: protocol
+// file: broker.proto
+
 import * as jspb from 'google-protobuf'
 
 export class CoordinatorMessage extends jspb.Message {
-  static extensions: { [key: number]: jspb.ExtensionFieldInfo<jspb.Message> }
-  static extensionsBinary: { [key: number]: jspb.ExtensionFieldBinaryInfo<jspb.Message> }
-  static toObject(includeInstance: boolean, msg: CoordinatorMessage): CoordinatorMessage.AsObject
-  static serializeBinaryToWriter(message: CoordinatorMessage, writer: jspb.BinaryWriter): void
-  static deserializeBinary(bytes: Uint8Array): CoordinatorMessage
-  static deserializeBinaryFromReader(message: CoordinatorMessage, reader: jspb.BinaryReader): CoordinatorMessage
   getType(): MessageType
   setType(value: MessageType): void
 
   serializeBinary(): Uint8Array
   toObject(includeInstance?: boolean): CoordinatorMessage.AsObject
+  static toObject(includeInstance: boolean, msg: CoordinatorMessage): CoordinatorMessage.AsObject
+  static extensions: { [key: number]: jspb.ExtensionFieldInfo<jspb.Message> }
+  static extensionsBinary: { [key: number]: jspb.ExtensionFieldBinaryInfo<jspb.Message> }
+  static serializeBinaryToWriter(message: CoordinatorMessage, writer: jspb.BinaryWriter): void
+  static deserializeBinary(bytes: Uint8Array): CoordinatorMessage
+  static deserializeBinaryFromReader(message: CoordinatorMessage, reader: jspb.BinaryReader): CoordinatorMessage
 }
 
 export namespace CoordinatorMessage {
@@ -21,12 +24,6 @@ export namespace CoordinatorMessage {
 }
 
 export class WelcomeMessage extends jspb.Message {
-  static extensions: { [key: number]: jspb.ExtensionFieldInfo<jspb.Message> }
-  static extensionsBinary: { [key: number]: jspb.ExtensionFieldBinaryInfo<jspb.Message> }
-  static toObject(includeInstance: boolean, msg: WelcomeMessage): WelcomeMessage.AsObject
-  static serializeBinaryToWriter(message: WelcomeMessage, writer: jspb.BinaryWriter): void
-  static deserializeBinary(bytes: Uint8Array): WelcomeMessage
-  static deserializeBinaryFromReader(message: WelcomeMessage, reader: jspb.BinaryReader): WelcomeMessage
   getType(): MessageType
   setType(value: MessageType): void
 
@@ -40,6 +37,12 @@ export class WelcomeMessage extends jspb.Message {
 
   serializeBinary(): Uint8Array
   toObject(includeInstance?: boolean): WelcomeMessage.AsObject
+  static toObject(includeInstance: boolean, msg: WelcomeMessage): WelcomeMessage.AsObject
+  static extensions: { [key: number]: jspb.ExtensionFieldInfo<jspb.Message> }
+  static extensionsBinary: { [key: number]: jspb.ExtensionFieldBinaryInfo<jspb.Message> }
+  static serializeBinaryToWriter(message: WelcomeMessage, writer: jspb.BinaryWriter): void
+  static deserializeBinary(bytes: Uint8Array): WelcomeMessage
+  static deserializeBinaryFromReader(message: WelcomeMessage, reader: jspb.BinaryReader): WelcomeMessage
 }
 
 export namespace WelcomeMessage {
@@ -51,12 +54,6 @@ export namespace WelcomeMessage {
 }
 
 export class ConnectMessage extends jspb.Message {
-  static extensions: { [key: number]: jspb.ExtensionFieldInfo<jspb.Message> }
-  static extensionsBinary: { [key: number]: jspb.ExtensionFieldBinaryInfo<jspb.Message> }
-  static toObject(includeInstance: boolean, msg: ConnectMessage): ConnectMessage.AsObject
-  static serializeBinaryToWriter(message: ConnectMessage, writer: jspb.BinaryWriter): void
-  static deserializeBinary(bytes: Uint8Array): ConnectMessage
-  static deserializeBinaryFromReader(message: ConnectMessage, reader: jspb.BinaryReader): ConnectMessage
   getType(): MessageType
   setType(value: MessageType): void
 
@@ -68,6 +65,12 @@ export class ConnectMessage extends jspb.Message {
 
   serializeBinary(): Uint8Array
   toObject(includeInstance?: boolean): ConnectMessage.AsObject
+  static toObject(includeInstance: boolean, msg: ConnectMessage): ConnectMessage.AsObject
+  static extensions: { [key: number]: jspb.ExtensionFieldInfo<jspb.Message> }
+  static extensionsBinary: { [key: number]: jspb.ExtensionFieldBinaryInfo<jspb.Message> }
+  static serializeBinaryToWriter(message: ConnectMessage, writer: jspb.BinaryWriter): void
+  static deserializeBinary(bytes: Uint8Array): ConnectMessage
+  static deserializeBinaryFromReader(message: ConnectMessage, reader: jspb.BinaryReader): ConnectMessage
 }
 
 export namespace ConnectMessage {
@@ -79,12 +82,6 @@ export namespace ConnectMessage {
 }
 
 export class WebRtcMessage extends jspb.Message {
-  static extensions: { [key: number]: jspb.ExtensionFieldInfo<jspb.Message> }
-  static extensionsBinary: { [key: number]: jspb.ExtensionFieldBinaryInfo<jspb.Message> }
-  static toObject(includeInstance: boolean, msg: WebRtcMessage): WebRtcMessage.AsObject
-  static serializeBinaryToWriter(message: WebRtcMessage, writer: jspb.BinaryWriter): void
-  static deserializeBinary(bytes: Uint8Array): WebRtcMessage
-  static deserializeBinaryFromReader(message: WebRtcMessage, reader: jspb.BinaryReader): WebRtcMessage
   getType(): MessageType
   setType(value: MessageType): void
 
@@ -99,6 +96,12 @@ export class WebRtcMessage extends jspb.Message {
 
   serializeBinary(): Uint8Array
   toObject(includeInstance?: boolean): WebRtcMessage.AsObject
+  static toObject(includeInstance: boolean, msg: WebRtcMessage): WebRtcMessage.AsObject
+  static extensions: { [key: number]: jspb.ExtensionFieldInfo<jspb.Message> }
+  static extensionsBinary: { [key: number]: jspb.ExtensionFieldBinaryInfo<jspb.Message> }
+  static serializeBinaryToWriter(message: WebRtcMessage, writer: jspb.BinaryWriter): void
+  static deserializeBinary(bytes: Uint8Array): WebRtcMessage
+  static deserializeBinaryFromReader(message: WebRtcMessage, reader: jspb.BinaryReader): WebRtcMessage
 }
 
 export namespace WebRtcMessage {
@@ -111,17 +114,17 @@ export namespace WebRtcMessage {
 }
 
 export class MessageHeader extends jspb.Message {
-  static extensions: { [key: number]: jspb.ExtensionFieldInfo<jspb.Message> }
-  static extensionsBinary: { [key: number]: jspb.ExtensionFieldBinaryInfo<jspb.Message> }
-  static toObject(includeInstance: boolean, msg: MessageHeader): MessageHeader.AsObject
-  static serializeBinaryToWriter(message: MessageHeader, writer: jspb.BinaryWriter): void
-  static deserializeBinary(bytes: Uint8Array): MessageHeader
-  static deserializeBinaryFromReader(message: MessageHeader, reader: jspb.BinaryReader): MessageHeader
   getType(): MessageType
   setType(value: MessageType): void
 
   serializeBinary(): Uint8Array
   toObject(includeInstance?: boolean): MessageHeader.AsObject
+  static toObject(includeInstance: boolean, msg: MessageHeader): MessageHeader.AsObject
+  static extensions: { [key: number]: jspb.ExtensionFieldInfo<jspb.Message> }
+  static extensionsBinary: { [key: number]: jspb.ExtensionFieldBinaryInfo<jspb.Message> }
+  static serializeBinaryToWriter(message: MessageHeader, writer: jspb.BinaryWriter): void
+  static deserializeBinary(bytes: Uint8Array): MessageHeader
+  static deserializeBinaryFromReader(message: MessageHeader, reader: jspb.BinaryReader): MessageHeader
 }
 
 export namespace MessageHeader {
@@ -131,12 +134,6 @@ export namespace MessageHeader {
 }
 
 export class PingMessage extends jspb.Message {
-  static extensions: { [key: number]: jspb.ExtensionFieldInfo<jspb.Message> }
-  static extensionsBinary: { [key: number]: jspb.ExtensionFieldBinaryInfo<jspb.Message> }
-  static toObject(includeInstance: boolean, msg: PingMessage): PingMessage.AsObject
-  static serializeBinaryToWriter(message: PingMessage, writer: jspb.BinaryWriter): void
-  static deserializeBinary(bytes: Uint8Array): PingMessage
-  static deserializeBinaryFromReader(message: PingMessage, reader: jspb.BinaryReader): PingMessage
   getType(): MessageType
   setType(value: MessageType): void
 
@@ -145,6 +142,12 @@ export class PingMessage extends jspb.Message {
 
   serializeBinary(): Uint8Array
   toObject(includeInstance?: boolean): PingMessage.AsObject
+  static toObject(includeInstance: boolean, msg: PingMessage): PingMessage.AsObject
+  static extensions: { [key: number]: jspb.ExtensionFieldInfo<jspb.Message> }
+  static extensionsBinary: { [key: number]: jspb.ExtensionFieldBinaryInfo<jspb.Message> }
+  static serializeBinaryToWriter(message: PingMessage, writer: jspb.BinaryWriter): void
+  static deserializeBinary(bytes: Uint8Array): PingMessage
+  static deserializeBinaryFromReader(message: PingMessage, reader: jspb.BinaryReader): PingMessage
 }
 
 export namespace PingMessage {
@@ -155,15 +158,6 @@ export namespace PingMessage {
 }
 
 export class TopicSubscriptionMessage extends jspb.Message {
-  static extensions: { [key: number]: jspb.ExtensionFieldInfo<jspb.Message> }
-  static extensionsBinary: { [key: number]: jspb.ExtensionFieldBinaryInfo<jspb.Message> }
-  static toObject(includeInstance: boolean, msg: TopicSubscriptionMessage): TopicSubscriptionMessage.AsObject
-  static serializeBinaryToWriter(message: TopicSubscriptionMessage, writer: jspb.BinaryWriter): void
-  static deserializeBinary(bytes: Uint8Array): TopicSubscriptionMessage
-  static deserializeBinaryFromReader(
-    message: TopicSubscriptionMessage,
-    reader: jspb.BinaryReader
-  ): TopicSubscriptionMessage
   getType(): MessageType
   setType(value: MessageType): void
 
@@ -177,6 +171,15 @@ export class TopicSubscriptionMessage extends jspb.Message {
 
   serializeBinary(): Uint8Array
   toObject(includeInstance?: boolean): TopicSubscriptionMessage.AsObject
+  static toObject(includeInstance: boolean, msg: TopicSubscriptionMessage): TopicSubscriptionMessage.AsObject
+  static extensions: { [key: number]: jspb.ExtensionFieldInfo<jspb.Message> }
+  static extensionsBinary: { [key: number]: jspb.ExtensionFieldBinaryInfo<jspb.Message> }
+  static serializeBinaryToWriter(message: TopicSubscriptionMessage, writer: jspb.BinaryWriter): void
+  static deserializeBinary(bytes: Uint8Array): TopicSubscriptionMessage
+  static deserializeBinaryFromReader(
+    message: TopicSubscriptionMessage,
+    reader: jspb.BinaryReader
+  ): TopicSubscriptionMessage
 }
 
 export namespace TopicSubscriptionMessage {
@@ -188,12 +191,6 @@ export namespace TopicSubscriptionMessage {
 }
 
 export class TopicMessage extends jspb.Message {
-  static extensions: { [key: number]: jspb.ExtensionFieldInfo<jspb.Message> }
-  static extensionsBinary: { [key: number]: jspb.ExtensionFieldBinaryInfo<jspb.Message> }
-  static toObject(includeInstance: boolean, msg: TopicMessage): TopicMessage.AsObject
-  static serializeBinaryToWriter(message: TopicMessage, writer: jspb.BinaryWriter): void
-  static deserializeBinary(bytes: Uint8Array): TopicMessage
-  static deserializeBinaryFromReader(message: TopicMessage, reader: jspb.BinaryReader): TopicMessage
   getType(): MessageType
   setType(value: MessageType): void
 
@@ -210,6 +207,12 @@ export class TopicMessage extends jspb.Message {
 
   serializeBinary(): Uint8Array
   toObject(includeInstance?: boolean): TopicMessage.AsObject
+  static toObject(includeInstance: boolean, msg: TopicMessage): TopicMessage.AsObject
+  static extensions: { [key: number]: jspb.ExtensionFieldInfo<jspb.Message> }
+  static extensionsBinary: { [key: number]: jspb.ExtensionFieldBinaryInfo<jspb.Message> }
+  static serializeBinaryToWriter(message: TopicMessage, writer: jspb.BinaryWriter): void
+  static deserializeBinary(bytes: Uint8Array): TopicMessage
+  static deserializeBinaryFromReader(message: TopicMessage, reader: jspb.BinaryReader): TopicMessage
 }
 
 export namespace TopicMessage {
@@ -222,12 +225,6 @@ export namespace TopicMessage {
 }
 
 export class DataMessage extends jspb.Message {
-  static extensions: { [key: number]: jspb.ExtensionFieldInfo<jspb.Message> }
-  static extensionsBinary: { [key: number]: jspb.ExtensionFieldBinaryInfo<jspb.Message> }
-  static toObject(includeInstance: boolean, msg: DataMessage): DataMessage.AsObject
-  static serializeBinaryToWriter(message: DataMessage, writer: jspb.BinaryWriter): void
-  static deserializeBinary(bytes: Uint8Array): DataMessage
-  static deserializeBinaryFromReader(message: DataMessage, reader: jspb.BinaryReader): DataMessage
   getType(): MessageType
   setType(value: MessageType): void
 
@@ -241,6 +238,12 @@ export class DataMessage extends jspb.Message {
 
   serializeBinary(): Uint8Array
   toObject(includeInstance?: boolean): DataMessage.AsObject
+  static toObject(includeInstance: boolean, msg: DataMessage): DataMessage.AsObject
+  static extensions: { [key: number]: jspb.ExtensionFieldInfo<jspb.Message> }
+  static extensionsBinary: { [key: number]: jspb.ExtensionFieldBinaryInfo<jspb.Message> }
+  static serializeBinaryToWriter(message: DataMessage, writer: jspb.BinaryWriter): void
+  static deserializeBinary(bytes: Uint8Array): DataMessage
+  static deserializeBinaryFromReader(message: DataMessage, reader: jspb.BinaryReader): DataMessage
 }
 
 export namespace DataMessage {
@@ -252,17 +255,8 @@ export namespace DataMessage {
 }
 
 export class AuthMessage extends jspb.Message {
-  static extensions: { [key: number]: jspb.ExtensionFieldInfo<jspb.Message> }
-  static extensionsBinary: { [key: number]: jspb.ExtensionFieldBinaryInfo<jspb.Message> }
-  static toObject(includeInstance: boolean, msg: AuthMessage): AuthMessage.AsObject
-  static serializeBinaryToWriter(message: AuthMessage, writer: jspb.BinaryWriter): void
-  static deserializeBinary(bytes: Uint8Array): AuthMessage
-  static deserializeBinaryFromReader(message: AuthMessage, reader: jspb.BinaryReader): AuthMessage
   getType(): MessageType
   setType(value: MessageType): void
-
-  getMethod(): string
-  setMethod(value: string): void
 
   getRole(): Role
   setRole(value: Role): void
@@ -274,6 +268,12 @@ export class AuthMessage extends jspb.Message {
 
   serializeBinary(): Uint8Array
   toObject(includeInstance?: boolean): AuthMessage.AsObject
+  static toObject(includeInstance: boolean, msg: AuthMessage): AuthMessage.AsObject
+  static extensions: { [key: number]: jspb.ExtensionFieldInfo<jspb.Message> }
+  static extensionsBinary: { [key: number]: jspb.ExtensionFieldBinaryInfo<jspb.Message> }
+  static serializeBinaryToWriter(message: AuthMessage, writer: jspb.BinaryWriter): void
+  static deserializeBinary(bytes: Uint8Array): AuthMessage
+  static deserializeBinaryFromReader(message: AuthMessage, reader: jspb.BinaryReader): AuthMessage
 }
 
 export namespace AuthMessage {
