@@ -1,17 +1,52 @@
+// package: protocol
+// file: comms.proto
+
 import * as jspb from 'google-protobuf'
 
-export class DataHeader extends jspb.Message {
+export class AuthData extends jspb.Message {
+  getSignature(): string
+  setSignature(value: string): void
+
+  getIdentity(): string
+  setIdentity(value: string): void
+
+  getTimestamp(): string
+  setTimestamp(value: string): void
+
+  getAccessToken(): string
+  setAccessToken(value: string): void
+
+  serializeBinary(): Uint8Array
+  toObject(includeInstance?: boolean): AuthData.AsObject
+  static toObject(includeInstance: boolean, msg: AuthData): AuthData.AsObject
   static extensions: { [key: number]: jspb.ExtensionFieldInfo<jspb.Message> }
   static extensionsBinary: { [key: number]: jspb.ExtensionFieldBinaryInfo<jspb.Message> }
-  static toObject(includeInstance: boolean, msg: DataHeader): DataHeader.AsObject
-  static serializeBinaryToWriter(message: DataHeader, writer: jspb.BinaryWriter): void
-  static deserializeBinary(bytes: Uint8Array): DataHeader
-  static deserializeBinaryFromReader(message: DataHeader, reader: jspb.BinaryReader): DataHeader
+  static serializeBinaryToWriter(message: AuthData, writer: jspb.BinaryWriter): void
+  static deserializeBinary(bytes: Uint8Array): AuthData
+  static deserializeBinaryFromReader(message: AuthData, reader: jspb.BinaryReader): AuthData
+}
+
+export namespace AuthData {
+  export type AsObject = {
+    signature: string
+    identity: string
+    timestamp: string
+    accessToken: string
+  }
+}
+
+export class DataHeader extends jspb.Message {
   getCategory(): Category
   setCategory(value: Category): void
 
   serializeBinary(): Uint8Array
   toObject(includeInstance?: boolean): DataHeader.AsObject
+  static toObject(includeInstance: boolean, msg: DataHeader): DataHeader.AsObject
+  static extensions: { [key: number]: jspb.ExtensionFieldInfo<jspb.Message> }
+  static extensionsBinary: { [key: number]: jspb.ExtensionFieldBinaryInfo<jspb.Message> }
+  static serializeBinaryToWriter(message: DataHeader, writer: jspb.BinaryWriter): void
+  static deserializeBinary(bytes: Uint8Array): DataHeader
+  static deserializeBinaryFromReader(message: DataHeader, reader: jspb.BinaryReader): DataHeader
 }
 
 export namespace DataHeader {
@@ -21,12 +56,6 @@ export namespace DataHeader {
 }
 
 export class PositionData extends jspb.Message {
-  static extensions: { [key: number]: jspb.ExtensionFieldInfo<jspb.Message> }
-  static extensionsBinary: { [key: number]: jspb.ExtensionFieldBinaryInfo<jspb.Message> }
-  static toObject(includeInstance: boolean, msg: PositionData): PositionData.AsObject
-  static serializeBinaryToWriter(message: PositionData, writer: jspb.BinaryWriter): void
-  static deserializeBinary(bytes: Uint8Array): PositionData
-  static deserializeBinaryFromReader(message: PositionData, reader: jspb.BinaryReader): PositionData
   getCategory(): Category
   setCategory(value: Category): void
 
@@ -56,6 +85,12 @@ export class PositionData extends jspb.Message {
 
   serializeBinary(): Uint8Array
   toObject(includeInstance?: boolean): PositionData.AsObject
+  static toObject(includeInstance: boolean, msg: PositionData): PositionData.AsObject
+  static extensions: { [key: number]: jspb.ExtensionFieldInfo<jspb.Message> }
+  static extensionsBinary: { [key: number]: jspb.ExtensionFieldBinaryInfo<jspb.Message> }
+  static serializeBinaryToWriter(message: PositionData, writer: jspb.BinaryWriter): void
+  static deserializeBinary(bytes: Uint8Array): PositionData
+  static deserializeBinaryFromReader(message: PositionData, reader: jspb.BinaryReader): PositionData
 }
 
 export namespace PositionData {
@@ -73,12 +108,6 @@ export namespace PositionData {
 }
 
 export class ProfileData extends jspb.Message {
-  static extensions: { [key: number]: jspb.ExtensionFieldInfo<jspb.Message> }
-  static extensionsBinary: { [key: number]: jspb.ExtensionFieldBinaryInfo<jspb.Message> }
-  static toObject(includeInstance: boolean, msg: ProfileData): ProfileData.AsObject
-  static serializeBinaryToWriter(message: ProfileData, writer: jspb.BinaryWriter): void
-  static deserializeBinary(bytes: Uint8Array): ProfileData
-  static deserializeBinaryFromReader(message: ProfileData, reader: jspb.BinaryReader): ProfileData
   getCategory(): Category
   setCategory(value: Category): void
 
@@ -96,6 +125,12 @@ export class ProfileData extends jspb.Message {
 
   serializeBinary(): Uint8Array
   toObject(includeInstance?: boolean): ProfileData.AsObject
+  static toObject(includeInstance: boolean, msg: ProfileData): ProfileData.AsObject
+  static extensions: { [key: number]: jspb.ExtensionFieldInfo<jspb.Message> }
+  static extensionsBinary: { [key: number]: jspb.ExtensionFieldBinaryInfo<jspb.Message> }
+  static serializeBinaryToWriter(message: ProfileData, writer: jspb.BinaryWriter): void
+  static deserializeBinary(bytes: Uint8Array): ProfileData
+  static deserializeBinaryFromReader(message: ProfileData, reader: jspb.BinaryReader): ProfileData
 }
 
 export namespace ProfileData {
@@ -109,12 +144,6 @@ export namespace ProfileData {
 }
 
 export class ChatData extends jspb.Message {
-  static extensions: { [key: number]: jspb.ExtensionFieldInfo<jspb.Message> }
-  static extensionsBinary: { [key: number]: jspb.ExtensionFieldBinaryInfo<jspb.Message> }
-  static toObject(includeInstance: boolean, msg: ChatData): ChatData.AsObject
-  static serializeBinaryToWriter(message: ChatData, writer: jspb.BinaryWriter): void
-  static deserializeBinary(bytes: Uint8Array): ChatData
-  static deserializeBinaryFromReader(message: ChatData, reader: jspb.BinaryReader): ChatData
   getCategory(): Category
   setCategory(value: Category): void
 
@@ -129,6 +158,12 @@ export class ChatData extends jspb.Message {
 
   serializeBinary(): Uint8Array
   toObject(includeInstance?: boolean): ChatData.AsObject
+  static toObject(includeInstance: boolean, msg: ChatData): ChatData.AsObject
+  static extensions: { [key: number]: jspb.ExtensionFieldInfo<jspb.Message> }
+  static extensionsBinary: { [key: number]: jspb.ExtensionFieldBinaryInfo<jspb.Message> }
+  static serializeBinaryToWriter(message: ChatData, writer: jspb.BinaryWriter): void
+  static deserializeBinary(bytes: Uint8Array): ChatData
+  static deserializeBinaryFromReader(message: ChatData, reader: jspb.BinaryReader): ChatData
 }
 
 export namespace ChatData {

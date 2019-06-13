@@ -2,6 +2,13 @@ syntax = "proto3";
 
 package protocol;
 
+message AuthData {
+    string signature = 1;
+    string identity = 2;
+    string timestamp = 3;
+    string access_token = 4;
+}
+
 enum Category {
      UNKNOWN = 0;
      POSITION = 1;

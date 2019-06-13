@@ -1,3 +1,4 @@
+import { future, IFuture } from 'fp-future'
 import * as chai from 'chai'
 import * as sinon from 'sinon'
 import * as sinonChai from 'sinon-chai'
@@ -16,6 +17,7 @@ import {
   Role,
   Format
 } from '../../packages/shared/comms/proto/broker'
+import { AuthData } from '../../packages/shared/comms/proto/comms'
 import { PositionData, ProfileData, ChatData, Category } from '../../packages/shared/comms/proto/comms'
 import { Position, CommunicationArea, Parcel, position2parcel } from 'shared/comms/utils'
 import { WorldInstanceConnection, SocketReadyState, positionHash } from 'shared/comms/worldInstanceConnection'
@@ -86,9 +88,20 @@ describe('Communications', function() {
     let connection: BrokerConnection
     let worldConn: WorldInstanceConnection
     let mockWebRtc: any
+    let auth: any = {
+      getMessageCredentials: async (msg: string) => {
+        return {
+          'x-signature': 'signature',
+          'x-identity': 'identity',
+          'x-timestamp': 'timestamp',
+          'x-access-token': 'access token'
+        }
+      }
+    }
+
     beforeEach(() => {
       webSocket = null as any
-      connection = new BrokerConnection('')
+      connection = new BrokerConnection(auth, '')
       worldConn = new WorldInstanceConnection(connection)
 
       mockWebRtc = {
@@ -229,7 +242,7 @@ describe('Communications', function() {
       describe('reliable data channel', () => {
         let channel: any
 
-        beforeEach(() => {
+        beforeEach(async () => {
           connection.commServerAlias = 1
           channel = Object.defineProperties(new RTCPeerConnection().createDataChannel('reliable'), {
             readyState: { value: 'open' },
@@ -238,7 +251,7 @@ describe('Communications', function() {
           const event = new RTCDataChannelEvent('datachannel', { channel })
           connection.webRtcConn!.ondatachannel!(event)
 
-          channel['onopen']()
+          await channel['onopen']()
         })
 
         it('register datachannel', () => {
@@ -248,7 +261,13 @@ describe('Communications', function() {
             const msg = AuthMessage.deserializeBinary(bytes)
             expect(msg.getType()).to.equal(MessageType.AUTH)
             expect(msg.getRole()).to.equal(Role.CLIENT)
-            expect(msg.getMethod()).to.equal('noop')
+
+            const authData = AuthData.deserializeBinary(msg.getBody() as Uint8Array)
+            expect(authData.getSignature()).to.equal('signature')
+            expect(authData.getIdentity()).to.equal('identity')
+            expect(authData.getTimestamp()).to.equal('timestamp')
+            expect(authData.getAccessToken()).to.equal('access token')
+
             return true
           })
         })
@@ -591,11 +610,21 @@ describe('Communications', function() {
 
   class BrokerMock implements IBrokerConnection {
     onMessageObservable = new Observable<BrokerMessage>()
-
+    connected = future<void>()
+    stats = null
     get hasUnreliableChannel(): boolean {
       return true
     }
     get hasReliableChannel(): boolean {
+      return true
+    }
+
+    get isConnected(): IFuture<void> {
+      this.connected.resolve()
+      return this.connected
+    }
+
+    get isAuthenticated(): boolean {
       return true
     }
 

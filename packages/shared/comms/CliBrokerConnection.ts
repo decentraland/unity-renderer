@@ -1,3 +1,5 @@
+import { future, IFuture } from 'fp-future'
+
 import { MessageType, CoordinatorMessage, WelcomeMessage, ConnectMessage } from './proto/broker'
 import { SocketReadyState } from './worldInstanceConnection'
 import { Stats } from './debug'
@@ -13,6 +15,16 @@ export class CliBrokerConnection implements IBrokerConnection {
   public logger: ILogger = createLogger('Broker: ')
 
   public onMessageObservable = new Observable<BrokerMessage>()
+
+  private connected = future<void>()
+
+  get isAuthenticated() {
+    return !!this.alias
+  }
+
+  get isConnected(): IFuture<void> {
+    return this.connected
+  }
 
   get hasUnreliableChannel() {
     return (this.ws && this.ws.readyState === WebSocket.OPEN) || false
@@ -30,7 +42,7 @@ export class CliBrokerConnection implements IBrokerConnection {
 
   printDebugInformation(): void {
     if (this.ws && this.ws.readyState === SocketReadyState.OPEN) {
-      const state = (this.alias ? 'authenticated' : 'not authenticated') + `my alias is ${this.alias}`
+      const state = (this.alias ? 'authenticated' : 'not authenticated') + ` my alias is ${this.alias}`
       this.logger.log(state)
     } else {
       this.logger.log(`non active coordinator connection to ${this.url}`)
@@ -130,6 +142,7 @@ export class CliBrokerConnection implements IBrokerConnection {
     }
 
     this.ws = new WebSocket(this.url, 'comms')
+    this.connected.resolve()
     this.ws.binaryType = 'arraybuffer'
 
     this.ws.onerror = event => {
