@@ -6,7 +6,7 @@ jobs:
         environment:
           # avoid automatic download of LFS files
           GIT_LFS_SKIP_SMUDGE: 1
-    parallelism: 3
+    parallelism: 1
 
     working_directory: /tmp/explorer
     steps:
