@@ -14,6 +14,7 @@ namespace DCL.Components
         public BoxShape(ParcelScene scene) : base(scene) { }
 
         public static Mesh cubeMesh = null;
+        private static int cubeMeshUses = 0;
 
         public override Mesh GenerateGeometry()
         {
@@ -21,8 +22,18 @@ namespace DCL.Components
             {
                 cubeMesh = PrimitiveMeshBuilder.BuildCube(1f);
             }
+            cubeMeshUses++;
 
             return cubeMesh;
+        }
+
+        protected override void DestroyGeometry()
+        {
+            cubeMeshUses--;
+            if (cubeMeshUses == 0)
+            {
+                GameObject.Destroy(cubeMesh);
+            }
         }
     }
 }
