@@ -20,9 +20,9 @@ RenderSettings:
   m_FogDensity: 0.0001
   m_LinearFogStart: 40
   m_LinearFogEnd: 50
-  m_AmbientSkyColor: {r: 0.8396226, g: 0.3675553, b: 0.30495724, a: 1}
-  m_AmbientEquatorColor: {r: 0.8773585, g: 0.7329541, b: 0.7242346, a: 1}
-  m_AmbientGroundColor: {r: 0.6273585, g: 0.8350604, b: 1, a: 1}
+  m_AmbientSkyColor: {r: 0.6839622, g: 0.86027807, b: 1, a: 1}
+  m_AmbientEquatorColor: {r: 0.8773585, g: 0.8044429, b: 0.7490655, a: 1}
+  m_AmbientGroundColor: {r: 0.7971698, g: 1, b: 0.8699377, a: 1}
   m_AmbientIntensity: 1
   m_AmbientMode: 1
   m_SubtractiveShadowColor: {r: 0.42, g: 0.478, b: 0.627, a: 1}
@@ -38,7 +38,7 @@ RenderSettings:
   m_ReflectionIntensity: 1
   m_CustomReflection: {fileID: 0}
   m_Sun: {fileID: 943100645024490816}
-  m_IndirectSpecularColor: {r: 0.12828654, g: 0.18683773, b: 0.28094715, a: 1}
+  m_IndirectSpecularColor: {r: 0.12828718, g: 0.18683854, b: 0.28094834, a: 1}
   m_UseRadianceAmbientProbe: 0
 --- !u!157 &3
 LightmapSettings:
@@ -291,8 +291,9 @@ MonoBehaviour:
   sceneController: {fileID: 322303338}
   characterController: {fileID: 1989862556}
   openBrowserWhenStart: 1
-  useClientDebugMode: 0
-  startInCoords: {x: 59, y: -57}
+  useClientDebugMode: 1
+  startInCoords: {x: 64, y: -64}
+  debugPanelMode: 0
 --- !u!4 &1444882337
 Transform:
   m_ObjectHideFlags: 0
