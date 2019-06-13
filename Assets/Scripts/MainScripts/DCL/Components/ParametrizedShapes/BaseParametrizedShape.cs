@@ -12,6 +12,11 @@ namespace DCL.Components
 
         public abstract Mesh GenerateGeometry();
 
+        protected virtual void DestroyGeometry()
+        {
+            GameObject.Destroy(currentMesh);
+        }
+
         public Mesh currentMesh { get; private set; }
 
         public BaseParametrizedShape(ParcelScene scene) : base(scene)
@@ -68,7 +73,7 @@ namespace DCL.Components
             {
                 if (currentMesh != null)
                 {
-                    GameObject.Destroy(currentMesh);
+                    DestroyGeometry();
                 }
 
                 Utils.CleanMaterials(entity.meshGameObject.GetComponent<Renderer>());

@@ -16,6 +16,7 @@ namespace DCL.Components
         }
 
         public static Mesh mesh = null;
+        private static int meshUses = 0;
 
         public override Mesh GenerateGeometry()
         {
@@ -23,8 +24,18 @@ namespace DCL.Components
             {
                 mesh = PrimitiveMeshBuilder.BuildSphere(1f);
             }
+            meshUses++;
 
             return mesh;
+        }
+
+        protected override void DestroyGeometry()
+        {
+            meshUses--;
+            if (meshUses == 0)
+            {
+                GameObject.Destroy(mesh);
+            }
         }
     }
 }
