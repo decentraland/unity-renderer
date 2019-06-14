@@ -25,7 +25,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1443545554671983542}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 7.6132913, y: 3.4112124, z: 2.641078}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
   - {fileID: 3826371723285139880}
@@ -45,22 +45,23 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   model:
+    billboard: 0
     value: Hello world!
     color: {r: 1, g: 1, b: 1, a: 1}
     opacity: 1
     fontSize: 10
-    fontFamily: 
+    fontAutoSize: 0
     fontWeight: 
-    hAlign: 0
-    vAlign: 0
+    hTextAlign: bottom
+    vTextAlign: left
     width: 10
     height: 10
-    resizeToFit: 0
+    adaptWidth: 0
+    adaptHeight: 0
     paddingTop: 0
     paddingRight: 0
     paddingBottom: 0
     paddingLeft: 0
-    zIndex: 0
     lineSpacing: 0
     lineCount: 0
     textWrapping: 0
@@ -68,6 +69,8 @@ MonoBehaviour:
     shadowOffsetX: 0
     shadowOffsetY: 0
     shadowColor: {r: 0, g: 0, b: 0, a: 0}
+    outlineWidth: 0
+    outlineColor: {r: 1, g: 1, b: 1, a: 1}
   text: {fileID: 1924286501959050350}
   rectTransform: {fileID: 3826371723285139880}
 --- !u!1 &6459203267593316962
