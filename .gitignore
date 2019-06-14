@@ -34,4 +34,4 @@ packages/decentraland-ecs/types/dcl/*
 
 packages/decentraland-ecs/artifacts
 packages/decentraland-ecs/package-lock.json
-
+.tsbuildinfo
