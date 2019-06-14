@@ -4,24 +4,22 @@ import * as BABYLON from 'babylonjs'
 import { future } from 'fp-future'
 import { domReadyFuture } from 'engine'
 
-import { error } from 'engine/logger'
-
 import { setSize, scene, initDCL, onWindowResize, engineMicroQueue } from 'engine/renderer'
 import { initKeyboard } from 'engine/renderer/input'
 import { reposition } from 'engine/renderer/ambientLights'
 
 import { start } from 'engine/dcl'
 
-import { resolveUrl } from 'atomicHelpers/parseUrl'
 import { sleep, untilNextFrame } from 'atomicHelpers/sleep'
 import { expect } from 'chai'
+import { SceneDataDownloadManager } from 'decentraland-loader/lifecycle/controllers/download'
 import { bodyReadyFuture } from 'engine/renderer/init'
 import { BaseEntity } from 'engine/entities/BaseEntity'
 import { SharedSceneContext } from 'engine/entities/SharedSceneContext'
 import { EngineAPI } from 'shared/apis/EngineAPI'
 import { loadedParcelSceneWorkers } from 'shared/world/parcelSceneManager'
 import { WebGLParcelScene } from 'engine/dcl/WebGLParcelScene'
-import { ILandToLoadableParcelScene, ILand, MappingsResponse, IScene } from 'shared/types'
+import { ILandToLoadableParcelScene } from 'shared/types'
 import { SceneWorker } from 'shared/world/SceneWorker'
 import { MemoryTransport } from 'decentraland-rpc'
 
@@ -33,7 +31,6 @@ import { AVATAR_OBSERVABLE } from 'decentraland-ecs/src/decentraland/Types'
 import { deleteUnusedTextures } from 'engine/renderer/monkeyLoader'
 
 const port = process.env.PORT || 8080
-const baseUrl = `http://localhost:${port}/local-ipfs/contents/`
 
 export type PlayerCamera = {
   lookAt: [number, number, number]
@@ -316,6 +313,8 @@ export async function waitForMesh(entity: BaseEntity) {
   }
 }
 
+const downloader = new SceneDataDownloadManager({ contentServer: `http://localhost:${port}/local-ipfs` })
+
 /**
  * It loads and attach a test parcel into the testing scene
  */
@@ -340,7 +339,7 @@ export function loadTestParcel(
       gridToWorld(x, y, scene.activeCamera!.position)
       scene.activeCamera!.position.y = origY
       this.timeout(15000)
-      const land = await loadMock(`http://localhost:${port}/local-ipfs/mappings`, { x, y })
+      const land = await downloader.getParcelData(`${x},${y}`)
       let webGLParcelScene: WebGLParcelScene
       if (land) {
         webGLParcelScene = new WebGLParcelScene(ILandToLoadableParcelScene(land))
@@ -390,57 +389,6 @@ export function loadTestParcel(
       expect(context.isDisposed()).to.eq(true, 'context is disposed')
     })
   })
-}
-
-/**
- * Returns the scene data for a specific parcel.
- * This is a modified version of the function found on the land worker.
- * @param url The url pointing to the mock.json file
- * @param coords an object containing the X and Y positions of the parcel
- */
-async function loadMock(url: string, coords: { x: number; y: number }): Promise<ILand | null> {
-  const mockRequest = await fetch(url)
-
-  if (!mockRequest.ok) {
-    throw new Error(`Mock ${url} could not be loaded`)
-  }
-
-  const mock: MappingsResponse[] = await mockRequest.json()
-
-  for (let parcel of mock) {
-    try {
-      const [x, y] = parcel.parcel_id.split(/,/).map($ => parseInt($, 10))
-
-      if (x === coords.x && y === coords.y) {
-        const sceneJsonMapping = parcel.contents.find($ => $.file === 'scene.json')
-
-        if (!sceneJsonMapping) {
-          throw new Error('scene.json not found in mock ' + parcel.parcel_id)
-        }
-
-        const sceneUrl = resolveUrl(baseUrl, sceneJsonMapping.hash)
-
-        const sceneFetch = await fetch(sceneUrl)
-
-        if (!sceneFetch.ok) {
-          throw new Error('Error received in ' + sceneUrl + ': ' + (await sceneFetch.text()))
-        }
-
-        const scene = (await sceneFetch.json()) as IScene
-
-        const mockedScene: ILand = {
-          baseUrl,
-          scene,
-          mappingsResponse: parcel
-        }
-
-        return mockedScene
-      }
-    } catch (e) {
-      error(`Error loading mock for ${parcel.parcel_id}`, e.message)
-    }
-  }
-  return null
 }
 
 function LookAtRef(camera: BABYLON.TargetCamera, target: BABYLON.Vector3, ref: BABYLON.Quaternion) {
@@ -506,7 +454,7 @@ export function testScene(
     it('loads the mock and starts the system', async function(this: any) {
       this.timeout(5000)
 
-      const land = await loadMock(`http://localhost:${port}/local-ipfs/mappings`, { x, y })
+      const land = await downloader.getParcelData(`${x},${y}`)
 
       try {
         if (!land) throw new Error(`Cannot load the parcel at ${x},${y}`)

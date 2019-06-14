@@ -7,6 +7,12 @@ export type MappingsResponse = {
   contents: Array<ContentMapping>
 }
 
+export type ParcelInfoResponse = {
+  scene_cid: string
+  root_cid: string
+  content: MappingsResponse
+}
+
 export type ContentMapping = { file: string; hash: string }
 
 export interface MessageDict {
