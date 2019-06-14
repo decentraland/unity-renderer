@@ -64,7 +64,7 @@ public class StatsPanel : MonoBehaviour
         }
         else
         {
-            updateQueue.Add((x, y), text);
+            updateQueue[(x, y)] = text;
         }
     }
 
@@ -97,7 +97,7 @@ public class StatsPanel : MonoBehaviour
         {
             columns.Add(new Column());
         }
-    
+
         for (int y = 0; y < height; y++)
         {
             rows.Add(new Row() { tableColumns = columns });
@@ -130,12 +130,12 @@ public class StatsPanel : MonoBehaviour
         row.gameObject.SetActive(false);
     }
 
-    private bool DictionaryContainsColumn( Dictionary<(int, int), Text> dictionary, int col)
+    private bool DictionaryContainsColumn(Dictionary<(int, int), Text> dictionary, int col)
     {
         return dictionary.Any(x => x.Key.Item1 == col);
     }
 
-    private bool DictionaryContainsColAndRow( Dictionary<(int, int), Text> dictionary, int col, int row)
+    private bool DictionaryContainsColAndRow(Dictionary<(int, int), Text> dictionary, int col, int row)
     {
         //It's faster to check Col again than using DictionaryContainsColumn method
         return dictionary.Any(x => x.Key.Item1 == col && x.Key.Item2 == row);

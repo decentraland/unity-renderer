@@ -26,8 +26,13 @@ namespace DCL
         public bool startDecentralandAutomatically = true;
         public static bool VERBOSE = false;
 
+        private const float CHAT_MSG_BUS_BUDGET_MAX = 0.1f;
+        private const float UI_MSG_BUS_BUDGET_MAX = 0.1f;
         private const float INIT_MSG_BUS_BUDGET_MAX = 0.3f;
         private const float SYSTEM_MSG_BUS_BUDGET_MAX = 0.1f;
+
+        private const float MSG_BUS_BUDGET_MIN = 0.01f;
+
         private const float GLTF_BUDGET_MAX = 2.5f;
 
         [FormerlySerializedAs("factoryManifest")]
@@ -63,15 +68,14 @@ namespace DCL
 
         #endregion
 
-        [System.NonSerialized]
-        public MessageThrottlingController initMsgsThrottler = new MessageThrottlingController();
-        [System.NonSerialized]
-        public MessageThrottlingController systemMsgsThrottler = new MessageThrottlingController();
+#if UNITY_EDITOR
+        public delegate void ProcessDelegate(string sceneId, string method, string payload);
+        public event ProcessDelegate OnMessageProcessInfoStart;
+        public event ProcessDelegate OnMessageProcessInfoEnds;
+#endif
 
-        [System.NonSerialized]
-        public MessagingBus initMessagingBus;
-        [System.NonSerialized]
-        public MessagingBus systemsMessagingBus;
+        public Dictionary<string, MessagingSystem> messagingSystems = new Dictionary<string, MessagingSystem>();
+        private List<string> priorities = new List<string>();
 
         [System.NonSerialized]
         public bool isDebugMode;
@@ -81,13 +85,29 @@ namespace DCL
         {
             get
             {
-                int a = initMessagingBus != null ? initMessagingBus.pendingMessagesCount : 0;
-                int b = systemsMessagingBus != null ? systemsMessagingBus.pendingMessagesCount : 0;
-                return a + b;
+                int total = 0;
+
+                using (var iterator = messagingSystems.GetEnumerator())
+                {
+                    while (iterator.MoveNext())
+                    {
+                        //access to pair using iterator.Current
+                        MessagingBus messageBus = iterator.Current.Value.bus;
+                        total += messageBus != null ? messageBus.pendingMessagesCount : 0;
+                    }
+                }
+
+                return total;
             }
         }
 
+        public string GlobalSceneId
+        {
+            get { return globalSceneId; }
+        }
+
         LoadParcelScenesMessage loadParcelScenesMessage = new LoadParcelScenesMessage();
+        string globalSceneId = "";
 
         void Awake()
         {
@@ -110,8 +130,13 @@ namespace DCL
                 WebInterface.StartDecentraland();
             }
 
-            initMessagingBus = new MessagingBus(this);
-            systemsMessagingBus = new MessagingBus(this);
+            messagingSystems.Add(MessagingBusId.UI, new MessagingSystem(this, MSG_BUS_BUDGET_MIN, UI_MSG_BUS_BUDGET_MAX));
+            messagingSystems.Add(MessagingBusId.INIT, new MessagingSystem(this, MSG_BUS_BUDGET_MIN, INIT_MSG_BUS_BUDGET_MAX));
+            messagingSystems.Add(MessagingBusId.SYSTEM, new MessagingSystem(this, MSG_BUS_BUDGET_MIN, SYSTEM_MSG_BUS_BUDGET_MAX));
+
+            priorities.Add(MessagingBusId.UI);
+            priorities.Add(MessagingBusId.INIT);
+            priorities.Add(MessagingBusId.SYSTEM);
         }
 
         private void Update()
@@ -121,24 +146,14 @@ namespace DCL
 
         private void UpdateThrottling()
         {
-            // NOTE(Brian): First priority is init messages, so we allocate the time budget for those first.
-            initMessagingBus.timeBudget = initMsgsThrottler.Update(
-                pendingMsgsCount: initMessagingBus.pendingMessagesCount,
-                processedMsgsCount: initMessagingBus.processedMessagesCount,
-                maxBudget: INIT_MSG_BUS_BUDGET_MAX);
+            float prevTimeBudget = 0;
 
-            // NOTE(Brian): Then we allocate the GLTF budget with the remainder.
-            float gltfBudget = Mathf.Max(GLTF_BUDGET_MAX - (initMessagingBus.timeBudget * 1000f), 0.1f);
-            UnityGLTF.GLTFSceneImporter.BudgetPerFrameInMilliseconds = gltfBudget;
-
-            if (UnityGLTF.GLTFComponent.queueCount == 0)
+            for (int i = 0; i < priorities.Count; i++)
             {
-                // NOTE(Brian): When all GLTFs finished loading, we start processing the system messages with the Init remainder but 
-                //              with a lower budget cap.
-                systemsMessagingBus.timeBudget = systemMsgsThrottler.Update(
-                    pendingMsgsCount: systemsMessagingBus.pendingMessagesCount,
-                    processedMsgsCount: systemsMessagingBus.processedMessagesCount,
-                    maxBudget: Mathf.Max(0.01f, SYSTEM_MSG_BUS_BUDGET_MAX - initMessagingBus.timeBudget));
+                string id = priorities[i];
+
+                MessagingSystem system = messagingSystems[id];
+                prevTimeBudget += system.Update(prevTimeBudget);
             }
         }
 
@@ -170,6 +185,8 @@ namespace DCL
                 newScene.SetData(data);
 
                 loadedScenes.Add(uiSceneId, newScene);
+
+                globalSceneId = uiSceneId;
 
                 if (VERBOSE)
                 {
@@ -293,7 +310,7 @@ namespace DCL
 
             OnMessageWillQueue?.Invoke("LoadScene");
 
-            initMessagingBus.pendingMessages.Enqueue(queuedMessage);
+            messagingSystems[MessagingBusId.INIT].bus.pendingMessages.Enqueue(queuedMessage);
         }
 
         public void UnloadAllScenesQueued()
@@ -302,11 +319,13 @@ namespace DCL
 
             OnMessageWillQueue?.Invoke("UnloadScene");
 
-            initMessagingBus.pendingMessages.Enqueue(queuedMessage);
+            messagingSystems[MessagingBusId.INIT].bus.pendingMessages.Enqueue(queuedMessage);
         }
 
-        public void SendSceneMessage(string payload)
+        public string SendSceneMessage(string payload)
         {
+            string busId = "none";
+
             OnMessageDecodeStart?.Invoke("Misc");
             var chunks = payload.Split('\n');
             OnMessageDecodeEnds?.Invoke("Misc");
@@ -347,12 +366,24 @@ namespace DCL
 
                     OnMessageWillQueue?.Invoke(queuedMessage.method);
 
-                    if (readyScenes.Contains(sceneId))
-                        systemsMessagingBus.pendingMessages.Enqueue(queuedMessage);
+                    // Check if the message is for UI
+                    if (sceneId == globalSceneId)
+                    {
+                        busId = MessagingBusId.UI;
+                    }
+                    else if (readyScenes.Contains(sceneId))
+                    {
+                        busId = MessagingBusId.SYSTEM;
+                    }
                     else
-                        initMessagingBus.pendingMessages.Enqueue(queuedMessage);
+                    {
+                        busId = MessagingBusId.INIT;
+                    }
+
+                    messagingSystems[busId].bus.pendingMessages.Enqueue(queuedMessage);
                 }
             }
+            return busId;
         }
 
         public bool ProcessMessage(string sceneId, string method, string payload, out Coroutine routine)
@@ -385,6 +416,9 @@ namespace DCL
                     Debug.Log("SceneController ProcessMessage: \nMethod: " + method + "\nPayload: " + payload);
                 }
 
+#if UNITY_EDITOR
+                OnMessageProcessInfoStart?.Invoke(sceneId, method, payload);
+#endif
                 OnMessageProcessStart?.Invoke(method);
                 switch (method)
                 {
@@ -428,6 +462,11 @@ namespace DCL
                 }
 
                 OnMessageProcessEnds?.Invoke(method);
+
+#if UNITY_EDITOR
+                OnMessageProcessInfoEnds?.Invoke(sceneId, method, payload);
+#endif
+
                 return true;
             }
             else

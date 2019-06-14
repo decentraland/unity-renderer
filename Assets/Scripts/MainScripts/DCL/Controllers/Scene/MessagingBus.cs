@@ -36,11 +36,13 @@ namespace DCL
         public long processedMessagesCount { get; private set; }
 
         public float timeBudget;
+        public float budgetMax;
 
-        public MessagingBus(IMessageHandler handler)
+        public MessagingBus(IMessageHandler handler, float budgetMax)
         {
             Assert.IsNotNull(handler, "IMessageHandler can't be null!");
             this.handler = handler;
+            this.budgetMax = budgetMax;
             SceneController.i.StartCoroutine(ProcessMessages(pendingMessages));
         }
 

@@ -57,7 +57,7 @@ public class IntegrationTestController : MonoBehaviour
                     }))
         );
 
-        //NOTE(Brian): This is making my eyes bleed.
+        //NOTE(Brian): This is making my eyes bleed. (Zak): Twice
         sceneController.SendSceneMessage(
             TestHelpers.CreateSceneMessage(
                 sceneName,

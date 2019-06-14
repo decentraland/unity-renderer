@@ -64,9 +64,6 @@ namespace DCL
             //NOTE(Brian): Top-left cell, unused.
             statsPanel.SetCellText(0, 0, "");
 
-            //NOTE(Brian): Column stuff (top horizontal header)
-            statsPanel.SetCellText((int)Columns.NONE, 0, "");
-
             //NOTE(Brian): Row stuff (left vertical header)
             statsPanel.SetCellText(0, (int)Rows.SHARED_OBJECTS_COUNT, SHARED_OBJECTS_COUNT_TEXT);
             statsPanel.SetCellText(0, (int)Rows.COMPONENT_OBJECTS_COUNT, COMPONENT_OBJECTS_COUNT_TEXT);
@@ -113,7 +110,7 @@ namespace DCL
 
         void Update()
         {
-            if (SceneController.i.initMsgsThrottler.currentTimeBudget < 0.001f)
+            if (SceneController.i.messagingSystems[MessagingBusId.INIT].throttler.currentTimeBudget < 0.001f)
                 enableBudgetMax = true;
 
             int messagesProcessedLastFrame = lastPendingMessages - SceneController.i.pendingMessagesCount;
@@ -170,7 +167,7 @@ namespace DCL
                 statsPanel.SetCellText(1, (int)Rows.MESHES_COUNT, meshesCount.ToString());
                 statsPanel.SetCellText(1, (int)Rows.GLTF_BEING_LOADED, UnityGLTF.GLTFComponent.downloadingCount.ToString() + " / " + UnityGLTF.GLTFComponent.queueCount.ToString());
 
-                MessageThrottlingController cpus = SceneController.i.initMsgsThrottler;
+                MessageThrottlingController cpus = SceneController.i.messagingSystems[MessagingBusId.INIT].throttler;
                 float rate = cpus.messagesConsumptionRate;
                 float budget = cpus.currentTimeBudget * 1000f;
 
@@ -179,10 +176,21 @@ namespace DCL
 
                 statsPanel.SetCellText(1, (int)Rows.CPU_SCHEDULER, $"msgs rate: {rate}\nbudget: {budget}ms\nbudget peak: {budgetMax * 1000f}ms");
 
-                float initBus = SceneController.i.initMessagingBus.pendingMessagesCount;
-                float systemBus = SceneController.i.systemsMessagingBus.pendingMessagesCount;
+                string busesLog = "";
 
-                statsPanel.SetCellText(1, (int)Rows.MESSAGE_BUSES, $"init bus: {initBus}\nsystem bus: {systemBus}");
+                using (var iterator = SceneController.i.messagingSystems.GetEnumerator())
+                {
+                    while (iterator.MoveNext())
+                    {
+                        //access to pair using iterator.Current
+                        string key = iterator.Current.Key;
+                        MessagingSystem system = SceneController.i.messagingSystems[key];
+                        int pendingMessagesCount = system.bus.pendingMessagesCount;
+                        busesLog += $"{key} bus: {pendingMessagesCount}\n";
+                    }
+                }
+
+                statsPanel.SetCellText(1, (int)Rows.MESSAGE_BUSES, busesLog);
 
                 yield return new WaitForSeconds(0.2f);
             }
