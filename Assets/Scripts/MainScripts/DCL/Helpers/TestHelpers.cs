@@ -95,6 +95,20 @@ namespace DCL.Helpers
                     GameObject.Instantiate(Resources.Load("Prefabs/CharacterController"));
                 }
             }
+            yield return new WaitForSeconds(0.01f);
+
+            string globalSceneId = "global-scene";
+
+            sceneController.CreateUIScene(
+                JsonConvert.SerializeObject(
+                    new CreateUISceneMessage
+                    {
+                        id = globalSceneId,
+                        baseUrl = "",
+                    })
+            );
+
+            yield return new WaitForAllMessagesProcessed();
         }
 
         protected IEnumerator WaitForUICanvasUpdate()
