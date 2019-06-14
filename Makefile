@@ -65,7 +65,7 @@ publish:
 
 test: compile-dev
 	@echo "$(GREEN)================= Running development tests ================$(RESET)"
-	node scripts/test.js
+	node scripts/runTestServer.js
 
 test-docker:
 	docker run \
@@ -85,17 +85,17 @@ test-docker:
 		-w /usr/src/app \
 		-e SINGLE_RUN=true \
 		circleci/node:10-browsers \
-	 		node ./scripts/test.js
+	 		node ./scripts/runTestServer.js
 
 test-ci:
 	NODE_ENV=production $(MAKE) compile
 	@echo "$(GREEN)================= Running production tests =================$(RESET)"
-	SINGLE_RUN=true node ./scripts/test.js
+	SINGLE_RUN=true node ./scripts/runTestServer.js
 	node_modules/.bin/nyc report --temp-directory ./test/tmp --reporter=html --reporter=lcov --reporter=text
 
 generate-images-local: compile-dev
 	@echo "$(GREEN)================== Generating test images ==================$(RESET)"
-	node scripts/test.js
+	node scripts/runTestServer.js
 
 generate-images:
 	docker run \
@@ -137,7 +137,7 @@ watch-single:
 		-n "entryPoints,debug-scene,server" \
 			"$(PARALLEL_COMPILER) build.entryPoints.json --watch" \
 			"$(PARALLEL_COMPILER) build.single-debug.json --watch" \
-			"node ./scripts/test.js --keep-open"
+			"node ./scripts/runTestServer.js --keep-open"
 
 watch-single-no-server:
 	@echo '[{"name": "Debug","kind": "Webpack","file": "public/test-parcels/$(FILE)/game.ts","target": "web"}]' > build.single-debug.json
@@ -153,7 +153,7 @@ only-watch:
 			"$(PARALLEL_COMPILER) build.test-scenes.json --watch" \
 			"$(PARALLEL_COMPILER) build.entryPoints.json --watch" \
 			"node ./scripts/buildECSprojects.js --watch" \
-			"node ./scripts/test.js --keep-open"
+			"node ./scripts/runTestServer.js --keep-open"
 
 # initializes a local dev environment to test the CLI with a linked version of decentraland-ecs
 initialize-ecs-npm-link: build-sdk
@@ -178,4 +178,4 @@ dev-watch:
 	@node_modules/.bin/concurrently \
 		-n "sdk,entryPoints,server" \
 			"$(PARALLEL_COMPILER) build.entryPoints.json --watch" \
-			"node ./scripts/test.js --keep-open"
+			"node ./scripts/runTestServer.js --keep-open"

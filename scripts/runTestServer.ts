@@ -189,6 +189,73 @@ function checkDiff(imageAPath: string, imageBPath: string, threshold: number, di
     })
   )
 
+  function getAllParcelIdsBetween(coords: { x1: string; x2: string; y1: string; y2: string }) {
+    const result = []
+    try {
+      const x1 = parseInt(coords.x1, 10)
+      const x2 = parseInt(coords.x2, 10)
+      const y1 = parseInt(coords.y1, 10)
+      const y2 = parseInt(coords.y2, 10)
+      for (let i = x1; i <= x2; i++) {
+        for (let j = y1; j <= y2; j++) {
+          result.push(`${i},${j}`)
+        }
+      }
+      return result
+    } catch (e) {
+      throw new TypeError('')
+    }
+  }
+
+  function readAllJsonFiles(filenames: string[]) {
+    return Promise.all(
+      filenames.map(value => {
+        return new Promise((res, reject) => {
+          return fs.readFile(value, (err, data) => {
+            if (err) {
+              return res(null)
+            }
+            return res(JSON.parse(data.toString()))
+          })
+        })
+      })
+    )
+  }
+
+  const sceneEndpoint = async (req, res) => {
+    const coords = getAllParcelIdsBetween(req.query)
+    const fileData = await readAllJsonFiles(
+      coords.map(coord => resolve(__dirname, path.join('..', 'public', 'local-ipfs', 'scene_mapping', coord)))
+    )
+    const length = coords.length
+    const result = []
+    for (let i = 0; i < length; i++) {
+      if (!fileData[i]) continue
+      result.push(fileData[i])
+    }
+    return res.json({ data: result })
+  }
+  app.use('/scenes', sceneEndpoint)
+  app.use('/local-ipfs/scenes', sceneEndpoint)
+
+  const parcelInfoEndpoint = async (req, res) => {
+    const cids = req.query.cids.split(',') as string[]
+    const fileData = await readAllJsonFiles(
+      cids.map(_ => resolve(__dirname, path.join('..', 'public', 'local-ipfs', 'parcel_info', _)))
+    )
+    return res.json({
+      data: fileData
+        .filter(_ => !!_)
+        .map((_: any) => ({
+          root_cid: _.root_cid,
+          publisher: _.publisher,
+          content: _
+        }))
+    })
+  }
+  app.use('/local-ipfs/parcel_info', parcelInfoEndpoint)
+  app.use('/parcel_info', parcelInfoEndpoint)
+
   app.use('/test', express.static(resolve(__dirname, '../test')))
   app.use('/node_modules', express.static(resolve(__dirname, '../node_modules')))
   app.use('/test-parcels', express.static(path.resolve(__dirname, '../public/test-parcels')))
