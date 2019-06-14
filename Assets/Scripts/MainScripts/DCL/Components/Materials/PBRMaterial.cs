@@ -34,8 +34,8 @@ namespace DCL.Components
             public string refractionTexture;
             public bool disableLighting = false;
 
-            [Range(0, 3)]
-            public int transparencyMode = 0; // 0: OPAQUE; 1: ALPHATEST; 2: ALPHBLEND; 3: ALPHATESTANDBLEND
+            [Range(0, 4)]
+            public int transparencyMode = 4; // 0: OPAQUE; 1: ALPHATEST; 2: ALPHBLEND; 3: ALPHATESTANDBLEND; 4: AUTO (Engine decide)
         }
 
         public Model model = new Model();
@@ -140,40 +140,56 @@ namespace DCL.Components
             // ALPHA CONFIGURATION
             material.SetFloat("_AlphaClip", model.alpha);
 
-            if (model.hasAlpha || !string.IsNullOrEmpty(model.alphaTexture))
-            {
-                // Reset shader keywords
-                material.DisableKeyword("_ALPHATEST_ON"); // Cut Out Transparency
-                material.DisableKeyword("_ALPHABLEND_ON"); // Fade Transparency
-                material.DisableKeyword("_ALPHAPREMULTIPLY_ON"); // Transparent
+            // Reset shader keywords
+            material.DisableKeyword("_ALPHATEST_ON"); // Cut Out Transparency
+            material.DisableKeyword("_ALPHABLEND_ON"); // Fade Transparency
+            material.DisableKeyword("_ALPHAPREMULTIPLY_ON"); // Transparent
 
-                switch (model.transparencyMode)
-                {
-                    case 2: // ALPHABLEND
+            switch (model.transparencyMode)
+            {
+                case 0:
+                    material.renderQueue = 2000;
+                    break;
+                case 1: // ALPHATEST
+                    material.EnableKeyword("_ALPHATEST_ON");
+
+                    material.SetInt("_SrcBlend", (int)UnityEngine.Rendering.BlendMode.One);
+                    material.SetInt("_DstBlend", (int)UnityEngine.Rendering.BlendMode.Zero);
+                    material.SetInt("_ZWrite", 1);
+                    material.renderQueue = 2450;
+                    break;
+                case 2: // ALPHABLEND
+                    material.EnableKeyword("_ALPHABLEND_ON");
+
+                    material.SetInt("_SrcBlend", (int)UnityEngine.Rendering.BlendMode.SrcAlpha);
+                    material.SetInt("_DstBlend", (int)UnityEngine.Rendering.BlendMode.OneMinusSrcAlpha);
+                    material.SetInt("_ZWrite", 0);
+                    material.renderQueue = 3000;
+                    break;
+                case 3: // ALPHATESTANDBLEND
+                    material.EnableKeyword("_ALPHAPREMULTIPLY_ON");
+
+                    material.SetInt("_SrcBlend", (int)UnityEngine.Rendering.BlendMode.One);
+                    material.SetInt("_DstBlend", (int)UnityEngine.Rendering.BlendMode.OneMinusSrcAlpha);
+                    material.SetInt("_ZWrite", 0);
+                    material.renderQueue = 3000;
+                    break;
+                default:
+                    if (model.hasAlpha || !string.IsNullOrEmpty(model.alphaTexture)) //AlphaBlend
+                    {
                         material.EnableKeyword("_ALPHABLEND_ON");
 
                         material.SetInt("_SrcBlend", (int)UnityEngine.Rendering.BlendMode.SrcAlpha);
                         material.SetInt("_DstBlend", (int)UnityEngine.Rendering.BlendMode.OneMinusSrcAlpha);
                         material.SetInt("_ZWrite", 0);
                         material.renderQueue = 3000;
-                        break;
-                    case 3: // ALPHATESTANDBLEND
-                        material.EnableKeyword("_ALPHAPREMULTIPLY_ON");
+                    }
+                    else // Opaque
+                    {
+                        material.renderQueue = 2000;
+                    }
 
-                        material.SetInt("_SrcBlend", (int)UnityEngine.Rendering.BlendMode.One);
-                        material.SetInt("_DstBlend", (int)UnityEngine.Rendering.BlendMode.OneMinusSrcAlpha);
-                        material.SetInt("_ZWrite", 0);
-                        material.renderQueue = 3000;
-                        break;
-                    default: // ALPHATEST
-                        material.EnableKeyword("_ALPHATEST_ON");
-
-                        material.SetInt("_SrcBlend", (int)UnityEngine.Rendering.BlendMode.One);
-                        material.SetInt("_DstBlend", (int)UnityEngine.Rendering.BlendMode.Zero);
-                        material.SetInt("_ZWrite", 1);
-                        material.renderQueue = 2450;
-                        break;
-                }
+                    break;
             }
         }
 
