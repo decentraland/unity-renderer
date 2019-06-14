@@ -38,6 +38,7 @@ namespace DCL.Components
             audioSource.volume = model.volume;
             audioSource.loop = model.loop;
             audioSource.pitch = model.pitch;
+            audioSource.spatialBlend = 1;
 
             if (model.playing)
             {
