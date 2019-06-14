@@ -37,7 +37,7 @@ import { ensureUiApis } from '../shared/world/uiSceneInitializer'
 import { ParcelIdentity } from '../shared/apis/ParcelIdentity'
 import { IEventNames, IEvents } from '../decentraland-ecs/src/decentraland/Types'
 import { Vector3, Quaternion, ReadOnlyVector3, ReadOnlyQuaternion } from '../decentraland-ecs/src/decentraland/math'
-import { DEBUG, PREVIEW, ENGINE_DEBUG_PANEL, SCENE_DEBUG_PANEL } from '../config'
+import { DEBUG, PREVIEW, ENGINE_DEBUG_PANEL, SCENE_DEBUG_PANEL, parcelLimits } from '../config'
 import { chatObservable } from '../shared/comms/chat'
 import { queueTrackingEvent } from '../shared/analytics'
 
@@ -328,7 +328,7 @@ async function loadPreviewScene() {
 }
 
 teleportObservable.add((position: { x: number; y: number }) => {
-  unityInterface.SetPosition(position.x, 0, position.y)
+  unityInterface.SetPosition(position.x * parcelLimits.parcelSize, 0, position.y * parcelLimits.parcelSize)
 })
 
 window['messages'] = (e: any) => chatObservable.notifyObservers(e)
