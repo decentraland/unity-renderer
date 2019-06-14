@@ -1,4 +1,4 @@
-import { future, IFuture } from 'fp-future'
+import { future } from 'fp-future'
 
 import {
   MessageType,
@@ -35,10 +35,11 @@ export class BrokerConnection implements IBrokerConnection {
 
   public onMessageObservable = new Observable<BrokerMessage>()
 
-  private connected = future<void>()
+  private unreliableFuture = future<void>()
+  private reliableFuture = future<void>()
 
-  get isConnected(): IFuture<void> {
-    return this.connected
+  get isConnected(): Promise<void> {
+    return Promise.all([this.unreliableFuture, this.reliableFuture]) as Promise<any>
   }
 
   get isAuthenticated() {
@@ -62,8 +63,8 @@ export class BrokerConnection implements IBrokerConnection {
     // TODO: reconnect logic, handle disconnections
 
     setTimeout(() => {
-      if (this.connected.isPending) {
-        this.connected.reject(new Error('Communications link cannot be established (Timeout)'))
+      if (this.reliableFuture.isPending) {
+        this.reliableFuture.reject(new Error('Communications link cannot be established (Timeout)'))
         this.stats && this.stats.printDebugInformation()
       }
     }, 60000)
@@ -311,11 +312,12 @@ export class BrokerConnection implements IBrokerConnection {
         if (dc.readyState === 'open') {
           dc.send(bytes)
           this.authenticated = true
-          this.connected.resolve()
+          this.reliableFuture.resolve()
         } else {
           this.logger.error('cannot send authentication, data channel is not ready')
         }
       } else if (label === 'unreliable') {
+        this.unreliableFuture.resolve()
         this.unreliableDataChannel = dc
       }
     }

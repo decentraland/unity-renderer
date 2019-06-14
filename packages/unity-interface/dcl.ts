@@ -126,13 +126,13 @@ const unityInterface = {
     }
     gameInstance.SendMessage(`SceneController`, `SendSceneMessage`, `${parcelSceneId}\t${method}\t${payload}`)
   },
-  
-  SetSceneDebugPanel(){
-	gameInstance.SendMessage('SceneController', 'SetSceneDebugPanel')
+
+  SetSceneDebugPanel() {
+    gameInstance.SendMessage('SceneController', 'SetSceneDebugPanel')
   },
-  
-  SetEngineDebugPanel(){
-	gameInstance.SendMessage('SceneController', 'SetEngineDebugPanel')
+
+  SetEngineDebugPanel() {
+    gameInstance.SendMessage('SceneController', 'SetEngineDebugPanel')
   }
 }
 
@@ -211,14 +211,14 @@ export async function initializeEngine(_gameInstance: GameInstance) {
   if (DEBUG) {
     unityInterface.SetDebug()
   }
-  
-  if(SCENE_DEBUG_PANEL){	  
-	unityInterface.SetSceneDebugPanel();
-  }	  
-  
-  if(ENGINE_DEBUG_PANEL){
-	unityInterface.SetEngineDebugPanel();
-  }	  
+
+  if (SCENE_DEBUG_PANEL) {
+    unityInterface.SetSceneDebugPanel()
+  }
+
+  if (ENGINE_DEBUG_PANEL) {
+    unityInterface.SetEngineDebugPanel()
+  }
 
   await initializeDecentralandUI()
 
