@@ -112,7 +112,13 @@ namespace DCL.Components
             {
                 // Check if we need to change gameObject visibility
                 if (referencesContainer.gameObject.activeSelf != model.visible)
+                {
                     referencesContainer.gameObject.SetActive(model.visible);
+                    if (model.visible) // Since now we disable GameObjects if model.visble == false, we have to rebuild de layout when enabling
+                    {
+                        RefreshDCLLayoutRecursively();
+                    }
+                }
 
                 referencesContainer.canvasGroup.alpha = model.opacity;
             }
