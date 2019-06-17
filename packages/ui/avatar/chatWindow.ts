@@ -251,7 +251,7 @@ function initializeMinimizedChat(parent: UIFullScreen) {
   minimizedIcon.vAlign = 'top'
   minimizedIcon.isPointerBlocker = true
   minimizedIcon.onClick = new OnClick(toggleChat)
-  minimizedIcon.onEnter = new OnEnter(toggleChat)
+  minimizedIcon.onEnter = new OnEnter(() => setMaximized(true))
 
   return containerMinimized
 }
