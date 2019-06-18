@@ -28,5 +28,17 @@ namespace DCL.Components
             OnPointerDown(pointerEventData);
         }
 
+        //Workaround to focus the chat when pressing enter. This should be deleted once the chat scene gets refactored
+        private void Update()
+        {
+            if (Input.GetKeyDown(KeyCode.Return))
+            {
+                if (owner != null && owner.scene != null && owner.scene.isPersistent && !inputField.isFocused)
+                {
+                    inputField.Select();
+                    FindObjectOfType<MouseCatcher>().UnlockCursor();
+                }
+            }
+        }
     }
 }
