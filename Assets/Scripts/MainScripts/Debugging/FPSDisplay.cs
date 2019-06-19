@@ -59,20 +59,24 @@ namespace DCL
                 }
             }
 
-            float fps = 1.0f / Time.deltaTime;
-            string targetText = labelText[0] + (Time.deltaTime * 1000).ToString("##.000") + "ms (fps: " + fps + ")";
 
-            if (labels[0].text != targetText)
+            if (labels.Length > 0)
             {
-                labels[0].text = targetText;
-            }
+                float fps = 1.0f / Time.deltaTime;
+                string targetText = labelText[0] + (Time.deltaTime * 1000).ToString("##.000") + "ms (fps: " + fps + ")";
 
-            DisplayColor(labels[0], fps);
+                if (labels[0].text != targetText)
+                {
+                    labels[0].text = targetText;
+                }
 
-            for (int i = 1; i < labels.Length; i++)
-            {
-                DisplayText(labels[i], labelText[i], fpsCounter.stats[i]);
-                DisplayColor(labels[i], 1 / fpsCounter.stats[i]);
+                DisplayColor(labels[0], fps);
+
+                for (int i = 1; i < labels.Length; i++)
+                {
+                    DisplayText(labels[i], labelText[i], fpsCounter.stats[i]);
+                    DisplayColor(labels[i], 1 / fpsCounter.stats[i]);
+                }
             }
         }
 
