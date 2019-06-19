@@ -6,7 +6,8 @@ import { WebWorkerTransport } from 'decentraland-rpc'
 import { playerConfigurations } from '../../config'
 import { EntityAction, EnvironmentData } from 'shared/types'
 import { EnvironmentAPI } from 'shared/apis/EnvironmentAPI'
-import { Vector3, Quaternion, ReadOnlyVector3, ReadOnlyQuaternion } from 'decentraland-ecs/src/decentraland/math'
+import { Vector3, Quaternion } from 'decentraland-ecs/src/decentraland/math'
+import { PositionReport } from './positionThings'
 
 // tslint:disable-next-line:whitespace
 type EngineAPI = import('../apis/EngineAPI').EngineAPI
@@ -71,31 +72,29 @@ export class SceneWorker {
     }
   }
 
-  sendUserViewMatrix(
-    obj: Readonly<{ position: ReadOnlyVector3; rotation: ReadOnlyVector3; quaternion: ReadOnlyQuaternion }>
-  ) {
+  sendUserViewMatrix(positionReport: Readonly<PositionReport>) {
     if (this.engineAPI && 'positionChanged' in this.engineAPI.subscribedEvents) {
-      if (!this.lastSentPosition.equals(obj.position)) {
+      if (!this.lastSentPosition.equals(positionReport.position)) {
         this.engineAPI.sendSubscriptionEvent('positionChanged', {
           position: {
-            x: obj.position.x - this.position.x,
-            z: obj.position.z - this.position.z,
-            y: obj.position.y - playerConfigurations.height
+            x: positionReport.position.x - this.position.x,
+            z: positionReport.position.z - this.position.z,
+            y: positionReport.position.y
           },
-          cameraPosition: obj.position,
+          cameraPosition: positionReport.position,
           playerHeight: playerConfigurations.height
         })
-        this.lastSentPosition.copyFrom(obj.position)
+        this.lastSentPosition.copyFrom(positionReport.position)
       }
     }
 
     if (this.engineAPI && 'rotationChanged' in this.engineAPI.subscribedEvents) {
-      if (obj.quaternion && !this.lastSentRotation.equals(obj.quaternion)) {
+      if (positionReport.quaternion && !this.lastSentRotation.equals(positionReport.quaternion)) {
         this.engineAPI.sendSubscriptionEvent('rotationChanged', {
-          rotation: obj.rotation,
-          quaternion: obj.quaternion
+          rotation: positionReport.rotation,
+          quaternion: positionReport.quaternion
         })
-        this.lastSentRotation.copyFrom(obj.quaternion)
+        this.lastSentRotation.copyFrom(positionReport.quaternion)
       }
     }
   }

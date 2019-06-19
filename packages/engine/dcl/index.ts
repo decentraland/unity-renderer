@@ -5,9 +5,9 @@ import * as TWEEN from '@tweenjs/tween.js'
 import 'shared/apis'
 
 // Our imports
-import { DEBUG, PREVIEW, NETWORK_HZ, EDITOR } from 'config'
+import { DEBUG, PREVIEW, NETWORK_HZ, EDITOR, playerConfigurations } from 'config'
 
-import { positionObservable, lastPlayerPosition } from 'shared/world/positionThings'
+import { positionObservable, lastPlayerPosition, PositionReport } from 'shared/world/positionThings'
 
 import { createStats } from './widgets/stats'
 import { Metrics, drawMetrics } from './widgets/metrics'
@@ -62,7 +62,12 @@ const notifyPositionObservers = (() => {
   const rotation = BABYLON.Vector3.Zero()
   const quaternion = BABYLON.Quaternion.Identity()
 
-  const objectToSend = { position, rotation, quaternion }
+  const objectToSend: PositionReport = {
+    position,
+    rotation,
+    quaternion,
+    playerHeight: playerConfigurations.height
+  }
 
   return () => {
     if (isEngineRunning) {

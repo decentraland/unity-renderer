@@ -1,16 +1,9 @@
 import 'webrtc-adapter'
 
-import {
-  parcelLimits,
-  ETHEREUM_NETWORK,
-  commConfigurations,
-  playerConfigurations,
-  getServerConfigurations,
-  USE_LOCAL_COMMS
-} from 'config'
+import { parcelLimits, ETHEREUM_NETWORK, commConfigurations, getServerConfigurations, USE_LOCAL_COMMS } from 'config'
 
 import { saveToLocalStorage } from 'atomicHelpers/localStorage'
-import { positionObservable } from 'shared/world/positionThings'
+import { positionObservable, PositionReport } from 'shared/world/positionThings'
 import { CommunicationArea, squareDistance, Position, position2parcel, sameParcel } from './utils'
 import { Stats } from './debug'
 import { Auth } from 'decentraland-auth'
@@ -33,7 +26,6 @@ import { ChatData, PositionData, ProfileData } from './proto/comms'
 import { chatObservable, ChatEvent } from './chat'
 import { WorldInstanceConnection } from './worldInstanceConnection'
 import { BrokerConnection } from './BrokerConnection'
-import { ReadOnlyVector3, ReadOnlyQuaternion } from 'decentraland-ecs/src'
 import { UserInformation, Pose } from './types'
 import { CommunicationsController } from 'shared/apis/CommunicationsController'
 import { CliBrokerConnection } from './CliBrokerConnection'
@@ -420,29 +412,21 @@ export async function connect(userId: string, network: ETHEREUM_NETWORK, auth: A
     }
   }, 1000)
 
-  positionObservable.add(
-    (
-      obj: Readonly<{
-        position: ReadOnlyVector3
-        rotation: ReadOnlyVector3
-        quaternion: ReadOnlyQuaternion
-      }>
-    ) => {
-      const p = [
-        obj.position.x,
-        obj.position.y - playerConfigurations.height,
-        obj.position.z,
-        obj.quaternion.x,
-        obj.quaternion.y,
-        obj.quaternion.z,
-        obj.quaternion.w
-      ] as Position
+  positionObservable.add((obj: Readonly<PositionReport>) => {
+    const p = [
+      obj.position.x,
+      obj.position.y - obj.playerHeight,
+      obj.position.z,
+      obj.quaternion.x,
+      obj.quaternion.y,
+      obj.quaternion.z,
+      obj.quaternion.w
+    ] as Position
 
-      if (context) {
-        onPositionUpdate(context, p)
-      }
+    if (context) {
+      onPositionUpdate(context, p)
     }
-  )
+  })
 
   setInterval(() => {
     if (context) {

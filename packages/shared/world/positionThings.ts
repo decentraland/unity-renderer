@@ -13,13 +13,18 @@ import { ILand } from 'shared/types'
 declare var location: any
 declare var history: any
 
-type PositionRotation = {
+export type PositionReport = {
+  /** Camera position, world space */
   position: ReadOnlyVector3
-  rotation: ReadOnlyVector3
+  /** Camera rotation */
   quaternion: ReadOnlyQuaternion
+  /** Camera rotation, euler from quaternion */
+  rotation: ReadOnlyVector3
+  /** Camera height, relative to the feet of the avatar or ground */
+  playerHeight: number
 }
 
-export const positionObservable = new Observable<Readonly<PositionRotation>>()
+export const positionObservable = new Observable<Readonly<PositionReport>>()
 
 export const teleportObservable = new Observable<ReadOnlyVector2>()
 
