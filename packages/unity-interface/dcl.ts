@@ -37,7 +37,7 @@ import { ensureUiApis } from '../shared/world/uiSceneInitializer'
 import { ParcelIdentity } from '../shared/apis/ParcelIdentity'
 import { IEventNames, IEvents } from '../decentraland-ecs/src/decentraland/Types'
 import { Vector3, Quaternion, ReadOnlyVector3, ReadOnlyQuaternion } from '../decentraland-ecs/src/decentraland/math'
-import { DEBUG, PREVIEW, ENGINE_DEBUG_PANEL, SCENE_DEBUG_PANEL, parcelLimits } from '../config'
+import { DEBUG, PREVIEW, ENGINE_DEBUG_PANEL, SCENE_DEBUG_PANEL, parcelLimits, playerConfigurations } from '../config'
 import { chatObservable } from '../shared/comms/chat'
 import { queueTrackingEvent } from '../shared/analytics'
 
@@ -47,17 +47,19 @@ const preloadedScenes = new Set<string>()
 const positionEvent = {
   position: Vector3.Zero(),
   quaternion: Quaternion.Identity,
-  rotation: Vector3.Zero()
+  rotation: Vector3.Zero(),
+  playerHeight: playerConfigurations.height
 }
 
 /////////////////////////////////// HANDLERS ///////////////////////////////////
 
 const browserInterface = {
   /** Triggered when the camera moves */
-  ReportPosition(data: { position: ReadOnlyVector3; rotation: ReadOnlyQuaternion }) {
+  ReportPosition(data: { position: ReadOnlyVector3; rotation: ReadOnlyQuaternion; playerHeight?: number }) {
     positionEvent.position.set(data.position.x, data.position.y, data.position.z)
     positionEvent.quaternion.set(data.rotation.x, data.rotation.y, data.rotation.z, data.rotation.w)
     positionEvent.rotation.copyFrom(positionEvent.quaternion.eulerAngles)
+    positionEvent.playerHeight = data.playerHeight || playerConfigurations.height
     positionObservable.notifyObservers(positionEvent)
   },
 

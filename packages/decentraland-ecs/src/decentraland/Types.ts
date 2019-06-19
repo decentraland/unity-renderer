@@ -116,7 +116,7 @@ export interface IEvents {
    * This event is throttled to 10 times per second.
    */
   positionChanged: {
-    /** Position relative to the base parcel of the scene */
+    /** Camera position relative to the base parcel of the scene */
     position: ReadOnlyVector3
 
     /** Camera position, this is a absolute world position */
