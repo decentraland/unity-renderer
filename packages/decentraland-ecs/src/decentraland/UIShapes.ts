@@ -1,7 +1,7 @@
 import { ObservableComponent, DisposableComponent, getComponentId } from '../ecs/Component'
 import { CLASS_ID, OnUUIDEvent, Texture } from './Components'
 import { Color4 } from './math'
-import { OnTextSubmit, OnBlur, OnChanged, OnClick, OnFocus, OnEnter } from './UIEvents'
+import { OnTextSubmit, OnBlur, OnChanged, OnClick, OnFocus } from './UIEvents'
 /**
  * @public
  */
@@ -270,6 +270,12 @@ export class UIText extends UIShape {
 @DisposableComponent('engine.shape', CLASS_ID.UI_INPUT_TEXT_SHAPE)
 export class UIInputText extends UIShape {
   @ObservableComponent.field
+  outlineWidth: number = 0
+
+  @ObservableComponent.field
+  outlineColor: Color4 = Color4.Black()
+
+  @ObservableComponent.field
   color: Color4 = Color4.Clear()
 
   @ObservableComponent.field
@@ -310,6 +316,9 @@ export class UIInputText extends UIShape {
 
   @ObservableComponent.field
   focusedBackground: Color4 = Color4.Black()
+
+  @ObservableComponent.field
+  textWrapping: boolean = false
 
   @ObservableComponent.field
   shadowBlur: number = 0
@@ -385,9 +394,6 @@ export class UIImage extends UIShape {
 
   @OnUUIDEvent.uuidEvent
   onClick: OnClick | null = null
-
-  @OnUUIDEvent.uuidEvent
-  onEnter: OnEnter | null = null
 
   constructor(parent: UIShape, source: Texture) {
     super(parent)
