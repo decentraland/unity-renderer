@@ -56,6 +56,8 @@ namespace DCL
         {
             Cursor.visible = false;
             Cursor.lockState = CursorLockMode.Locked;
+
+            EventSystem.current.SetSelectedGameObject(null);
         }
 
         public void UnlockCursor()

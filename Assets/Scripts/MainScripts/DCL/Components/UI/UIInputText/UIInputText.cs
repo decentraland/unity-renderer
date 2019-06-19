@@ -112,8 +112,7 @@ namespace DCL.Components
         {
             bool validString = !string.IsNullOrEmpty(tmpText.text);
 
-            if (tmpText.text.Length == 1 && (byte)tmpText.text[0] == 11
-            ) //NOTE(Brian): Trim doesn't work. neither IsNullOrWhitespace.
+            if (tmpText.text.Length == 1 && (byte)tmpText.text[0] == 11) //NOTE(Brian): Trim doesn't work. neither IsNullOrWhitespace.
             {
                 validString = false;
             }
@@ -121,8 +120,21 @@ namespace DCL.Components
             if (validString)
             {
                 Interface.WebInterface.ReportOnTextSubmitEvent(scene.sceneData.id, model.onTextSubmit, tmpText.text);
-            }
 
+                ForceFocus(); 
+            }
+            else if(scene.isPersistent) // DCL UI Chat text input
+            {
+                inputField.DeactivateInputField();
+                referencesContainer.mouseCatcher.LockCursor();
+
+                // To avoid focusing the chat in the same frame we unfocused it
+                referencesContainer.inputDetectionPausedTime = 0.01f;
+            }
+        }
+
+        public void ForceFocus()
+        {
             inputField.text = "";
             inputField.caretColor = Color.white;
             inputField.Select();
@@ -136,7 +148,6 @@ namespace DCL.Components
             inputField.onSubmit.RemoveAllListeners();
             inputField.onValueChanged.RemoveAllListeners();
         }
-
 
         public override void Dispose()
         {
