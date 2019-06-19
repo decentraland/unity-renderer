@@ -19,6 +19,7 @@ namespace UnityGLTF
         public static GLTFComponent nearestGLTFComponent;
 
         public static int downloadingCount;
+        public static int totalDownloadedCount;
         public static int queueCount;
 
         public string GLTFUri = null;
@@ -221,6 +222,7 @@ namespace UnityGLTF
                     yield return new WaitUntil(funcTestDistance);
 
                     queueCount--;
+                    totalDownloadedCount++;
 
                     IncrementDownloadCount();
 

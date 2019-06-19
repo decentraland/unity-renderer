@@ -1,0 +1,43 @@
+using System;
+using System.Collections;
+using TMPro;
+using UnityEngine;
+
+namespace DCL
+{
+    public class LoadingScreenView : MonoBehaviour
+    {
+        public float spinnerSpeed = 750f;
+
+        public TextMeshProUGUI percentageText;
+        public GameObject fillingImage;
+        public RectTransform spinnerRectTransform;
+        public CanvasGroup canvasGroup;
+
+        public void SetNormalizedPercentage(float percentage)
+        {
+            percentageText.text = Mathf.Clamp((int)Math.Ceiling(percentage * 100), 0, 100) + "%";
+            fillingImage.transform.localScale = new Vector3(percentage, 1, 1);
+        }
+
+        void Update()
+        {
+            spinnerRectTransform.Rotate(-Vector3.forward * spinnerSpeed * Time.deltaTime);
+        }
+
+        public IEnumerator FadeOutAndDestroy()
+        {
+            enabled = false;
+            spinnerRectTransform.gameObject.SetActive(false);
+
+            while(canvasGroup.alpha > 0)
+            {
+                canvasGroup.alpha -= Time.deltaTime;
+
+                yield return new WaitForEndOfFrame();
+            }
+
+            Destroy(gameObject);
+        }
+    }
+}
