@@ -119,12 +119,12 @@ TextureImporter:
     outline: []
     physicsShape: []
     bones: []
-    spriteID: 
+    spriteID: bf6d10d8965bc402298fa704e9a48da2
     vertices: []
     indices: 
     edges: []
     weights: []
-  spritePackingTag: 
+  spritePackingTag: dcl-ui
   pSDRemoveMatte: 0
   pSDShowRemoveMatteOption: 0
   userData: 

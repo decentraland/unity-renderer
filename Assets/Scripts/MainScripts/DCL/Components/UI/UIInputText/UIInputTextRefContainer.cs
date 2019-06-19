@@ -13,8 +13,16 @@ namespace DCL.Components
         public TMP_Text text;
         public TMP_InputField inputField;
 
+        [System.NonSerialized]
+        public MouseCatcher mouseCatcher;
+
+        [System.NonSerialized]
+        public float inputDetectionPausedTime = 0;
+
         void Start()
         {
+            mouseCatcher = FindObjectOfType<MouseCatcher>();
+
             inputField.onSelect.AddListener(OnSelect);
         }
 
@@ -28,15 +36,21 @@ namespace DCL.Components
             OnPointerDown(pointerEventData);
         }
 
-        //Workaround to focus the chat when pressing enter. This should be deleted once the chat scene gets refactored
-        private void Update()
+        void Update()
         {
+            if(inputDetectionPausedTime > 0)
+            {
+                inputDetectionPausedTime -= Time.deltaTime;
+
+                if(inputDetectionPausedTime > 0) return;
+            }
+
             if (Input.GetKeyDown(KeyCode.Return))
             {
                 if (owner != null && owner.scene != null && owner.scene.isPersistent && !inputField.isFocused)
                 {
                     inputField.Select();
-                    FindObjectOfType<MouseCatcher>().UnlockCursor();
+                    mouseCatcher.UnlockCursor();
                 }
             }
         }
