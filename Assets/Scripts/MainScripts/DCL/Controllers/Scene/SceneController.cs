@@ -43,6 +43,7 @@ namespace DCL
 
         [Header("Debug Tools")]
         public GameObject fpsPanel;
+        public bool enableLoadingScreenInEditor = false;
 
         [Header("Debug Panel")]
         public GameObject engineDebugPanel;
@@ -53,6 +54,8 @@ namespace DCL
         public string debugSceneName;
         public bool ignoreGlobalScenes = false;
         public bool msgStepByStep = false;
+
+        private LoadingScreenController loadingScreenController = null;
 
         #region BENCHMARK_EVENTS
 
@@ -137,6 +140,9 @@ namespace DCL
             priorities.Add(MessagingBusId.UI);
             priorities.Add(MessagingBusId.INIT);
             priorities.Add(MessagingBusId.SYSTEM);
+
+            loadingScreenController = new LoadingScreenController(this, enableLoadingScreenInEditor);
+            loadingScreenController.OnLoadingDone += LoadingDone;
         }
 
         private void Update()
@@ -267,6 +273,15 @@ namespace DCL
 
                 newScene.ownerController = this;
                 loadedScenes.Add(sceneToLoad.id, newScene);
+
+                if (!newScene.isPersistent && !loadingScreenController.started)
+                {
+                    Vector2 playerPos = ParcelScene.WorldToGridPosition(DCLCharacterController.i.transform.position);
+                    if (Vector2Int.Distance(new Vector2Int((int)playerPos.x, (int)playerPos.y), sceneToLoad.basePosition) <= LoadingScreenController.MAX_DISTANCE_TO_PLAYER)
+                    {
+                        loadingScreenController.StartLoadingScreen();
+                    }
+                }
             }
 
             OnMessageProcessEnds?.Invoke("LoadScene");
@@ -524,6 +539,12 @@ namespace DCL
             }
 
             return newScene;
+        }
+
+        private void LoadingDone()
+        {
+            loadingScreenController.OnLoadingDone -= LoadingDone;
+            fpsPanel.GetComponent<DCL.FrameTimeCounter>().Reset();
         }
     }
 }

@@ -17,6 +17,7 @@ namespace DCL
             elements = new T[size];
             rbTree = new RedBlackTree<T>(comparer);
             frameRange = size;
+            index = 0;
         }
 
         public void AddMeasurement(T value)
@@ -76,6 +77,14 @@ namespace DCL
 
         void Start()
         {
+            Reset();
+        }
+
+        public void Reset()
+        {
+            first = true;
+            lastTime = 0;
+            delay = 5.0f;
             perf = new PerfCounter<float>(new FloatComparer(), 2000);
         }
 
