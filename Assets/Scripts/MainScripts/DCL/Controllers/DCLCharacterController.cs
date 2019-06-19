@@ -215,8 +215,11 @@ public class DCLCharacterController : MonoBehaviour
     {
         var localRotation = camera.localRotation.eulerAngles;
         var rotation = transform.rotation.eulerAngles;
+        var feetY = transform.position.y - characterController.height / 2;
+        var playerHeight = camera.position.y - feetY;
+        var compositeRotation = Quaternion.Euler(localRotation.x, rotation.y, localRotation.z);
 
-        DCL.Interface.WebInterface.ReportPosition(transform.position, Quaternion.Euler(localRotation.x, rotation.y, localRotation.z));
+        DCL.Interface.WebInterface.ReportPosition(camera.position, compositeRotation, playerHeight);
 
         if (OnCharacterMoved != null)
         {

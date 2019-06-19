@@ -20,8 +20,12 @@ namespace DCL.Interface
         [System.Serializable]
         private class ReportPositionPayload
         {
+            /** Camera position, world space */
             public Vector3 position;
+            /** Camera rotation */
             public Quaternion rotation;
+            /** Camera height, relative to the feet of the avatar or ground */
+            public float playerHeight;
         }
 
         [System.Serializable]
@@ -163,10 +167,11 @@ namespace DCL.Interface
             SendMessage("SceneEvent", sceneEvent);
         }
 
-        public static void ReportPosition(Vector3 position, Quaternion rotation)
+        public static void ReportPosition(Vector3 position, Quaternion rotation, float playerHeight)
         {
             positionPayload.position = position;
             positionPayload.rotation = rotation;
+            positionPayload.playerHeight = playerHeight;
 
             SendMessage("ReportPosition", positionPayload);
         }
