@@ -17,7 +17,7 @@ export async function initializeAnalytics(userId: string) {
   const TLD = getTLD()
   switch (TLD) {
     case 'org':
-      return initialize('a4h4BC4dL1v7FhIQKKuPHEdZIiNRDVhc', userId)
+      return initialize('1plAT9a2wOOgbPCrTaU8rgGUMzgUTJtU', userId)
     case 'today':
       return initialize('a4h4BC4dL1v7FhIQKKuPHEdZIiNRDVhc', userId)
     case 'zone':
