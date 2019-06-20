@@ -17,7 +17,7 @@ namespace DCL.Components
         public MouseCatcher mouseCatcher;
 
         [System.NonSerialized]
-        public float inputDetectionPausedTime = 0;
+        public int inputDetectionPausedFrames = 0;
 
         void Start()
         {
@@ -38,11 +38,11 @@ namespace DCL.Components
 
         void Update()
         {
-            if(inputDetectionPausedTime > 0)
+            if(inputDetectionPausedFrames > 0)
             {
-                inputDetectionPausedTime -= Time.deltaTime;
+                inputDetectionPausedFrames--;
 
-                if(inputDetectionPausedTime > 0) return;
+                return;
             }
 
             if (Input.GetKeyDown(KeyCode.Return))
