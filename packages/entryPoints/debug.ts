@@ -1,26 +1,14 @@
-declare var global: any
-
 // tslint:disable:no-console
-import { initializeEngine } from '../unity-interface/dcl'
-import { DEBUG_MESSAGES } from '../config'
+import { initializeEngine } from '../unity/init'
+import { UnityGame, UnityLoaderType } from '../unity/types'
 const queryString = require('query-string')
 
-const qs = queryString.parse(document.location.search)
-
-let instancedJS: ReturnType<typeof initializeEngine> | null = null
-
-type UnityLoaderType = {
-  instantiate(divId: string, manifest: string): UnityGame
-}
-
-type UnityGame = {
-  SendMessage(object: string, method: string, args: number | string): void
-  SetFullscreen(): void
-}
-
-let gameInstance: UnityGame | null = null
-
 declare var UnityLoader: UnityLoaderType
+declare var global: any
+
+const qs = queryString.parse(document.location.search)
+let instancedJS: ReturnType<typeof initializeEngine> | null = null
+let gameInstance: UnityGame | null = null
 
 if (qs.ws) {
   console.info(`Connecting WS to ${qs.ws}`)
@@ -35,24 +23,6 @@ if (qs.ws) {
   ws.onerror = function(e) {
     console.error('WS error!', e)
     document.body.innerHTML = `<h3 style='color:red'>EERRORR</h3>`
-  }
-
-  ws.onmessage = function(ev) {
-    if (DEBUG_MESSAGES) {
-      console.log('>>>', ev.data)
-    }
-
-    try {
-      const m = JSON.parse(ev.data)
-      if (m.type && m.payload) {
-        const payload = JSON.parse(m.payload)
-        instancedJS!.then($ => $.onMessage(m.type, payload))
-      } else {
-        console.error('Dont know what to do with ', m)
-      }
-    } catch (e) {
-      console.error(e)
-    }
   }
 
   gameInstance = {
