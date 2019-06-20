@@ -121,7 +121,7 @@ namespace DCL.Components
             {
                 Interface.WebInterface.ReportOnTextSubmitEvent(scene.sceneData.id, model.onTextSubmit, tmpText.text);
 
-                ForceFocus(); 
+                ForceFocus();
             }
             else if(scene.isPersistent) // DCL UI Chat text input
             {
@@ -129,7 +129,7 @@ namespace DCL.Components
                 referencesContainer.mouseCatcher.LockCursor();
 
                 // To avoid focusing the chat in the same frame we unfocused it
-                referencesContainer.inputDetectionPausedTime = 0.01f;
+                referencesContainer.inputDetectionPausedFrames = 1;
             }
         }
 
