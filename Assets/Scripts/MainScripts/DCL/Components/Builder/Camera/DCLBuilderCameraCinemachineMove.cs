@@ -8,16 +8,16 @@ using UnityEngine;
 [AddComponentMenu("")]
 public class DCLBuilderCameraCinemachineMove : CinemachineExtension
 {
-    Vector3 moveAccumulated;
-    Vector3 moveTargetAccumulated;
+    public Vector3 moveAccumulated;
+    public Vector3 moveTargetAccumulated;
     Vector3 panIncrementTarget;
     Vector3 panAccumulated;
-    Vector3 moveIncrement;
+    public Vector3 moveIncrement;
     Vector3 panIncrement;
 
     Vector3 panIncrementLast;
 
-
+    Vector3 initialPosition;
     Vector3 lastPanIncrement = Vector3.zero;
 
     Vector3 targetOriginalPosition;
@@ -36,6 +36,11 @@ public class DCLBuilderCameraCinemachineMove : CinemachineExtension
     public void SetPanAxis(Vector3 pa)
     {
         panIncrement = pa;
+    }
+
+    public void SetPosition(Vector3 pos)
+    {
+        initialPosition = pos;
     }
 
     public void Reset()
@@ -74,7 +79,7 @@ public class DCLBuilderCameraCinemachineMove : CinemachineExtension
 
         moveTargetAccumulated += vCamForward * moveIncrement.z;
         //Move target group
-        target.position = targetOriginalPosition + moveTargetAccumulated + panIncrementTarget;
+        target.position = targetOriginalPosition + moveTargetAccumulated + panIncrementTarget + initialPosition;
 
         moveIncrement = Vector3.zero;
         panIncrementLast = panIncrement;
