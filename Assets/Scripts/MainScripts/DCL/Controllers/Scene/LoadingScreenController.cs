@@ -13,8 +13,8 @@ namespace DCL
 
         private const float LOADING_BUDGET_PER_STEP = 1 / 3f;
 
-        private const float WAIT_BEFORE_FORCED_START = 6f;
-        private const float GATHERING_TIME = 4f;
+        private const float WAIT_BEFORE_FORCED_START = 10f;
+        private const float GATHERING_TIME = 8f;
         private const int SCENES_TO_LOAD = 7; //Assumption that scenes are loaded by distance order
         private const float GLTF_TO_LOAD_PERCENTAGE = 0.65f;
         private const float POLLING_INTERVAL_TIME = 0.25f;
