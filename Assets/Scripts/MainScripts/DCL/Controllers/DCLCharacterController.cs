@@ -1,4 +1,5 @@
 using DCL.Configuration;
+using DCL;
 using UnityEngine;
 
 public class DCLCharacterController : MonoBehaviour
@@ -22,6 +23,9 @@ public class DCLCharacterController : MonoBehaviour
     [Header("Collisions")]
     public LayerMask groundLayers;
 
+    [System.NonSerialized]
+    public bool initialPositionAlreadySet = false;
+
     new Transform camera;
     new Rigidbody rigidbody;
     new Collider collider;
@@ -44,6 +48,7 @@ public class DCLCharacterController : MonoBehaviour
     CharacterController characterController;
 
     public static System.Action<Vector3> OnCharacterMoved;
+    public static System.Action<Vector3> OnPositionSet;
 
     void Awake()
     {
@@ -72,9 +77,19 @@ public class DCLCharacterController : MonoBehaviour
         Vector3 previousPosition = transform.position;
         transform.position = newPosition;
 
+        if(OnPositionSet != null)
+        {
+            OnPositionSet.Invoke(newPosition);
+        }
+
         if (Moved(previousPosition))
         {
             ReportMovement();
+        }
+
+        if(!initialPositionAlreadySet)
+        {
+            initialPositionAlreadySet = true;
         }
     }
 
@@ -223,7 +238,7 @@ public class DCLCharacterController : MonoBehaviour
 
         if (OnCharacterMoved != null)
         {
-            OnCharacterMoved(transform.position);
+            OnCharacterMoved.Invoke(transform.position);
         }
 
         lastMovementReportTime = Time.realtimeSinceStartup;
