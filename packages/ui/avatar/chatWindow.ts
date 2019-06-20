@@ -40,7 +40,7 @@ function createLogMessage(parent: UIShape, props: { sender: string; message: str
   const messageText = new UIText(parent)
   messageText.color = color
   messageText.value = `<b>${sender}:</b> ${message}`
-  messageText.fontSize = 15
+  messageText.fontSize = 14
   messageText.vAlign = 'top'
   messageText.hAlign = 'left'
   messageText.vTextAlign = 'top'
@@ -121,7 +121,7 @@ textInput.color = INITIAL_INPUT_TEXT_COLOR
 textInput.background = Color4.Clear()
 textInput.focusedBackground = Color4.Clear()
 textInput.placeholder = 'Press enter and start talking...'
-textInput.fontSize = 15
+textInput.fontSize = 14
 textInput.width = '90%'
 textInput.height = '100%'
 textInput.thickness = 0
@@ -138,6 +138,19 @@ textInput.onBlur = new OnBlur(onInputBlur)
 textInput.onTextSubmit = new OnTextSubmit(onInputSubmit)
 
 setMaximized(isMaximized)
+
+const instructionsMessage = {
+  id: '',
+  isCommand: true,
+  sender: 'Decentraland',
+  message:
+    `Welcome to Decentraland!` +
+    `\n\nClick on the screen to lock the cursor, later you can unlock it with the [ESC] key.` +
+    `\n\nYou can move with the [WASD] keys and jump with the [SPACE] key.` +
+    `\n\nYou can toggle the chat with the [ENTER] key.` +
+    `\n\nType /help for a full list of commands. Enjoy the metaverse!`
+}
+addMessage(instructionsMessage as MessageEntry)
 
 export async function initializeChat() {
   const chatCmds = await execute('ChatController', 'getChatCommands', [null])
