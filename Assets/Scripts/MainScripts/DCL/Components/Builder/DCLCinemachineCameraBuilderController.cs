@@ -8,6 +8,8 @@ using UnityEngine.Experimental.UIElements;
 
 public class DCLCinemachineCameraBuilderController : MonoBehaviour
 {
+    public DCLBuilderController builderController;
+
     public DCLBuilderCameraInput cameraInput;
 
     private CinemachineFreeLook freelook;
@@ -47,6 +49,7 @@ public class DCLCinemachineCameraBuilderController : MonoBehaviour
     public float maxScale = 1;
 
     public float moveIncrement = 0.1f;
+
 
     // Use this for initialization
     void Start()
@@ -146,12 +149,14 @@ public class DCLCinemachineCameraBuilderController : MonoBehaviour
 
     void Update()
     {
-        UpdateAxisStates(Time.deltaTime);
-
-        UpdateOrbit();
-        UpdatePan();
-        UpdateZoom();
-        UpdateMove();
+        if (!builderController.transformingObject)
+        {
+            UpdateAxisStates(Time.deltaTime);
+            UpdateOrbit();
+            UpdatePan();
+            UpdateZoom();
+            UpdateMove();
+        }
     }
 
     private void UpdateOrbit()
@@ -222,9 +227,13 @@ public class DCLCinemachineCameraBuilderController : MonoBehaviour
         zoomAxis.Value += 0.1f;
     }
 
-    void Move(Vector3 moveAxis)
+    public void Move(Vector3 moveAxis)
     {
         cameraMove.SetMoveAxis(moveAxis);
+    }
 
+    public void SetPosition(Vector3 position)
+    {
+        cameraMove.SetPosition(position);
     }
 }
