@@ -80,7 +80,6 @@ namespace DCL
 
             while(!started && Time.realtimeSinceStartup < waitStart + WAIT_BEFORE_FORCED_START)
             {
-
                 yield return new WaitForEndOfFrame();
             }
 
@@ -143,6 +142,7 @@ namespace DCL
         private IEnumerator WaitForGLTFs()
         {
             int totalGLTFToProcess = GLTFComponent.totalDownloadedCount + Mathf.FloorToInt(GLTFComponent.queueCount * GLTF_TO_LOAD_PERCENTAGE);
+            
             while ( GLTFComponent.totalDownloadedCount < totalGLTFToProcess)
             {
                 yield return new WaitForSeconds(POLLING_INTERVAL_TIME);

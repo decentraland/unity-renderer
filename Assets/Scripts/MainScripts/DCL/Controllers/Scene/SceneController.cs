@@ -141,8 +141,17 @@ namespace DCL
             priorities.Add(MessagingBusId.INIT);
             priorities.Add(MessagingBusId.SYSTEM);
 
-            loadingScreenController = new LoadingScreenController(this, enableLoadingScreenInEditor);
-            loadingScreenController.OnLoadingDone += LoadingDone;
+            InitializeLoadingScreen();
+        }
+
+        private void OnEnable()
+        {
+            DCLCharacterController.OnPositionSet += OnCharacterPositionSet;
+        }
+
+        private void OnDisable()
+        {
+            DCLCharacterController.OnPositionSet -= OnCharacterPositionSet;
         }
 
         private void Update()
@@ -541,10 +550,36 @@ namespace DCL
             return newScene;
         }
 
+        private void InitializeLoadingScreen()
+        {
+            loadingScreenController = new LoadingScreenController(this, enableLoadingScreenInEditor);
+            loadingScreenController.OnLoadingDone += LoadingDone;
+        }
+
+        private void OnCharacterPositionSet(Vector3 newPosition)
+        {
+            if(!DCLCharacterController.i.initialPositionAlreadySet) return;
+
+            InitializeLoadingScreen();
+
+            // Flush pending messages
+            using (var iterator = SceneController.i.messagingSystems.GetEnumerator())
+            {
+                while (iterator.MoveNext())
+                {
+                    iterator.Current.Value.bus.pendingMessages.Clear();
+                }
+            }
+        }
+
         private void LoadingDone()
         {
             loadingScreenController.OnLoadingDone -= LoadingDone;
-            fpsPanel.GetComponent<DCL.FrameTimeCounter>().Reset();
+
+            if(isDebugMode)
+            {
+                fpsPanel.GetComponent<DCL.FrameTimeCounter>().Reset();
+            }
         }
     }
 }
