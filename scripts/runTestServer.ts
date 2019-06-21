@@ -169,21 +169,6 @@ function checkDiff(imageAPath: string, imageBPath: string, threshold: number, di
     res.end()
   })
 
-  app.get('/', (req, res) => {
-    fs.readFile(resolve(__dirname, '../static/index.html'), 'utf8', (err, data) => {
-      if (err) {
-        res.send('There was an error reading index.html')
-        return
-      }
-
-      if (req.url.includes('ws')) {
-        res.send(data.replace('dist/index.js', 'dist/debug.js'))
-      } else {
-        res.send(data)
-      }
-    })
-  })
-
   app.use(
     '/@/artifacts/preview.js',
     express.static(resolve(__dirname, '../static/dist/preview.js'), {
