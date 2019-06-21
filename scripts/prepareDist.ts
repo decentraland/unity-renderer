@@ -13,12 +13,14 @@ const commitHash = execSync('git rev-parse HEAD')
   .trim()
 const md5File = require('md5-file/promise')
 
-async function copyIndex() {
+async function copyIndex(filename: string) {
   let md5 = ''
 
-  console.log(`> copy index.js to index.<hash>.js`)
+  let newFileName = `${filename}.js`
+
+  console.log(`> copy ${filename}.js to ${filename}.<hash>.js`)
   {
-    const src = path.resolve(root, 'static/dist/index.js')
+    const src = path.resolve(root, `static/dist/${filename}.js`)
 
     if (!fs.existsSync(src)) {
       throw new Error(`${src} does not exist`)
@@ -26,7 +28,9 @@ async function copyIndex() {
 
     md5 = await md5File(src)
 
-    const dst = path.resolve(root, `static/dist/index.${md5}.js`)
+    newFileName = `${filename}.${md5}.js`
+
+    const dst = path.resolve(root, `static/dist/${newFileName}`)
 
     await fs.copy(src, dst)
 
@@ -41,15 +45,15 @@ async function copyIndex() {
     throw new Error(`${targetIndexHtml} does not exist`)
   }
 
-  console.log(`> replace index.js -> index.<hash>.js in html`)
+  console.log(`> replace ${filename}.js -> ${newFileName} in html`)
   {
     let content = readFileSync(targetIndexHtml).toString()
 
-    if (!content.includes('index.js')) {
-      throw new Error('indes.html is dirty and does\'t contain the text "index.js"')
+    if (!content.includes(`${filename}.js`)) {
+      throw new Error(`index.html is dirty and does\'t contain the text "${filename}.js"`)
     }
 
-    content = content.replace(/index\.(\S+\.)?js/, `index.${md5}.js`)
+    content = content.replace(new RegExp(filename + '.(S+.)?js'), newFileName)
     content = content.replace(/\s*<!--(.+)-->/, '')
     content = content + `\n\n<!-- ${new Date().toISOString()} commit: ${commitHash} -->`
 
@@ -148,7 +152,7 @@ async function validatePackage(folder: string) {
 
 // tslint:disable-next-line:semicolon
 ;(async function() {
-  await copyIndex()
+  await copyIndex('unity')
   await prepareDecentralandECS('packages/decentraland-ecs')
   copyFile(
     path.resolve(root, `static/dist/editor.js`),

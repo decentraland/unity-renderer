@@ -102,6 +102,8 @@ export class CliBrokerConnection implements IBrokerConnection {
         connectMessage.setFromAlias(this.alias)
         this.sendCoordinatorMessage(connectMessage.serializeBinary())
 
+        this.connected.resolve()
+
         break
       }
       case MessageType.DATA:
@@ -142,7 +144,6 @@ export class CliBrokerConnection implements IBrokerConnection {
     }
 
     this.ws = new WebSocket(this.url, 'comms')
-    this.connected.resolve()
     this.ws.binaryType = 'arraybuffer'
 
     this.ws.onerror = event => {

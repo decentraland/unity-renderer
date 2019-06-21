@@ -3,14 +3,14 @@ import { Auth } from 'decentraland-auth'
 import './apis/index'
 import './events'
 
-import { ETHEREUM_NETWORK, setNetwork, getTLD, PREVIEW } from 'config'
-import { info, error } from 'engine/logger'
+import { ETHEREUM_NETWORK, setNetwork, getTLD, PREVIEW, DEBUG, AVOID_WEB3 } from '../config'
 
 import { getUserAccount, getNetwork } from './ethereum/EthereumService'
 import { awaitWeb3Approval } from './ethereum/provider'
 import { initializeUrlPositionObserver } from './world/positionThings'
 import { connect } from './comms'
 import { initialize, queueTrackingEvent } from './analytics'
+import { defaultLogger } from './logger'
 
 // TODO fill with segment keys and integrate identity server
 export async function initializeAnalytics(userId: string) {
@@ -45,7 +45,7 @@ async function getAddress(): Promise<string | undefined> {
     await awaitWeb3Approval()
     return await getUserAccount()
   } catch (e) {
-    info(e)
+    defaultLogger.info(e)
   }
 }
 
@@ -57,14 +57,14 @@ async function getAppNetwork(): Promise<ETHEREUM_NETWORK> {
 
   if (web3net && net !== web3net) {
     // TODO @fmiras show an HTML error if web3 networks differs from domain network and do not load client at all
-    error(`Switch to network ${net}`)
+    defaultLogger.error(`Switch to network ${net}`)
   }
 
-  info('Using ETH network: ', net)
+  defaultLogger.info('Using ETH network: ', net)
   return net
 }
 
-export async function initShared(): Promise<ETHEREUM_NETWORK> {
+export async function initShared(container: HTMLElement): Promise<ETHEREUM_NETWORK> {
   const auth = new Auth()
 
   let user_id: string
@@ -72,11 +72,20 @@ export async function initShared(): Promise<ETHEREUM_NETWORK> {
   console['group']('connect#login')
 
   if (PREVIEW) {
+    console['log'](`Using test user.`)
     user_id = 'email|5cdd68572d5f842a16d6cc17'
   } else {
-    await auth.login(document.getElementsByClassName('loading-image')[0] as HTMLElement)
-    const payload: any = await auth.getAccessTokenData()
-    user_id = payload.user_id
+    await auth.login(container)
+    try {
+      const payload: any = await auth.getAccessTokenData()
+      user_id = payload.user_id
+    } catch (e) {
+      console['error'](e)
+      console['groupEnd']()
+      auth.logout()
+      throw new Error('Authentication error. Please reload the page to try again. (' + e.toString() + ')')
+    }
+
     await initializeAnalytics(user_id)
   }
 
@@ -109,6 +118,17 @@ export async function initShared(): Promise<ETHEREUM_NETWORK> {
   console['groupEnd']()
 
   initializeUrlPositionObserver()
+
+  // Warn in case wallet is set in mainnet
+  if (net === ETHEREUM_NETWORK.MAINNET && DEBUG && !AVOID_WEB3) {
+    const style = document.createElement('style')
+    style.appendChild(
+      document.createTextNode(
+        `body:before{content:'You are using Mainnet Ethereum Network, real transactions are going to be made.';background:#ff0044;color:#fff;text-align:center;text-transform:uppercase;height:24px;width:100%;position:fixed;padding-top:2px}#main-canvas{padding-top:24px};`
+      )
+    )
+    document.head.appendChild(style)
+  }
 
   return net
 }
