@@ -6,23 +6,18 @@ jobs:
         environment:
           # avoid automatic download of LFS files
           GIT_LFS_SKIP_SMUDGE: 1
-    parallelism: 1
 
     working_directory: /tmp/explorer
     steps:
-      # install lfs
+      # Install lfs
       - run: mkdir -p ~/.ssh
       - run: ssh-keyscan -H github.com >> ~/.ssh/known_hosts
       - run: curl -s https://packagecloud.io/install/repositories/github/git-lfs/script.deb.sh | sudo bash
-      - run: sudo apt-get install git-lfs=2.4.0
-      - run: ssh git@github.com git-lfs-authenticate decentraland/explorer.git download
-      - run: git lfs install
-
       # The `ledger-wallet-provider` lib has `node-hid` as a dependency, which won't build on certain
       # Linux systems without installing libusb first
-      - type: shell
-        name: Install System Dependencies
-        command: sudo apt-get update && sudo apt install -y libusb-1.0-0 libusb-1.0-0-dev
+      - run: sudo apt-get update && sudo apt-get install -y git-lfs=2.7.2 libusb-1.0-0 libusb-1.0-0-dev
+      - run: ssh git@github.com git-lfs-authenticate decentraland/explorer.git download
+      - run: git lfs install
 
       # checkout the actual code
       - checkout
@@ -91,7 +86,8 @@ jobs:
           paths:
             - static
           key: build-{{ .Revision }}
-  deploy:
+
+  deploy-on-pr:
     docker:
       - image: circleci/node:10-browsers
     working_directory: /tmp/explorer
@@ -101,41 +97,88 @@ jobs:
             - build-{{ .Revision }}
       - run: sudo apt-get -y -qq install awscli
       - run:
-          name: Deploy to .zone if tests pass and branch is Master
-          command: aws s3 sync static s3://explorer.decentraland.zone/ --exclude "branch/*" --acl public-read
+          name: Export DEV/STG AWS Keys
+          command: |
+            export AWS_ACCESS_KEY_ID={AWS_DEV_ACCESS_KEY_ID} && export AWS_SECRET_ACCESS_KEY={AWS_DEV_SECRET_ACCESS_KEY}
+      - run:
+          name: Deploy to S3 (.zone) under subfolder if tests pass and branch is not master
+          command: aws s3 sync static s3://explorer.decentraland.zone/branch/${CIRCLE_BRANCH} --acl public-read
       - run:
           name: Invalidate cloudfront cache .zone
           command: aws configure set preview.cloudfront true && aws configure set preview.create-invalidation true && aws cloudfront create-invalidation --distribution-id E297VXIBZFXIXE --paths "/*"
-      #      - run:
-      #          name: Deploy to .today if tests pass and branch is Master
-      #          command: aws s3 sync static s3://explorer.decentraland.today/ --acl public-read
-      - run:
-          name: Deploy tag to .today/tags/$CIRCLE_TAG
-          command: |
-            [ ! -z "${CIRCLE_TAG}" ] && aws s3 sync static s3://explorer.decentraland.today/tags/$CIRCLE_TAG --exclude "tags/*" --acl public-read || true
-      - run:
-          name: Deploy tag to .today
-          command: |
-            [ ! -z "${CIRCLE_TAG}" ] && aws s3 sync static s3://explorer.decentraland.today/ --exclude "tags/*" --acl public-read || true
-      # - run:
-      #     name: Invalidate cloudfront cache .today
-      #     command: |
-      #       [ ! -z "${CIRCLE_TAG}" ] aws cloudfront create-invalidation --distribution-id E315GYHDRD7XX6 --paths "/*"
 
-  pull-deploy:
+  deploy-dev:
     docker:
       - image: circleci/node:10-browsers
     working_directory: /tmp/explorer
-    parallelism: 1
     steps:
       - restore_cache:
           keys:
             - build-{{ .Revision }}
       - run: sudo apt-get -y -qq install awscli
       - run:
-          name: Deploy to S3 under subfolder if tests pass and branch is not master
-          command: aws s3 sync static s3://explorer.decentraland.zone/branch/$CIRCLE_BRANCH --acl public-read
+          name: Export DEV/STG AWS Keys
+          command: |
+            export AWS_ACCESS_KEY_ID={AWS_DEV_ACCESS_KEY_ID} && export AWS_SECRET_ACCESS_KEY={AWS_DEV_SECRET_ACCESS_KEY}
+      - run:
+          name: Deploy to S3 (.zone) if tests pass and branch is master
+          command: aws s3 sync static s3://explorer.decentraland.zone/ --acl public-read
+      - run:
+          name: Invalidate cloudfront cache .zone
+          command: aws configure set preview.cloudfront true && aws configure set preview.create-invalidation true && aws cloudfront create-invalidation --distribution-id E297VXIBZFXIXE --paths "/*"
 
+  deploy-stg:
+    docker:
+      - image: circleci/node:10-browsers
+    working_directory: /tmp/explorer
+    steps:
+      - restore_cache:
+          keys:
+            - build-{{ .Revision }}
+      - run: sudo apt-get -y -qq install awscli
+      - run:
+          name: Export DEV/STG AWS Keys
+          command: |
+            export AWS_ACCESS_KEY_ID={AWS_DEV_ACCESS_KEY_ID} && export AWS_SECRET_ACCESS_KEY={AWS_DEV_SECRET_ACCESS_KEY}
+      - run:
+          name: Deploy tag to .today/tags/${CIRCLE_TAG}
+          command: |
+            aws s3 sync static s3://explorer.decentraland.today/tags/${CIRCLE_TAG} --acl public-read
+      - run:
+          name: Deploy tag to .today
+          command: |
+            aws s3 sync static s3://explorer.decentraland.today/ --acl public-read
+      - run:
+          name: Invalidate cloudfront cache .today
+          command: aws configure set preview.cloudfront true && aws configure set preview.create-invalidation true && aws cloudfront create-invalidation --distribution-id E315GYHDRD7XX6 --paths "/*"
+
+  deploy-prd:
+    docker:
+      - image: circleci/node:10-browsers
+    working_directory: /tmp/explorer
+    steps:
+      - restore_cache:
+          keys:
+            - build-{{ .Revision }}
+      - run: sudo apt-get -y -qq install awscli
+      - run:
+          name: Export PRD AWS Keys
+          command: |
+            export AWS_ACCESS_KEY_ID={AWS_PRD_ACCESS_KEY_ID} && export AWS_SECRET_ACCESS_KEY={AWS_PRD_SECRET_ACCESS_KEY}
+      - run:
+          name: Deploy tag to .org/tags/${CIRCLE_TAG}
+          command: |
+            aws s3 sync static s3://explorer.decentraland.org/tags/${CIRCLE_TAG} --acl public-read
+      - run:
+          name: Deploy tag to .org
+          command: |
+            aws s3 sync static s3://explorer.decentraland.org/ --acl public-read
+      - run:
+          name: Invalidate cloudfront cache .org
+          command: aws configure set preview.cloudfront true && aws configure set preview.create-invalidation true && aws cloudfront create-invalidation --distribution-id E253JP8V3Y9YUI --paths "/*"
+
+# Ignore branches because CircleCI OR's multiple filters
+# https://discuss.circleci.com/t/workflow-job-with-tag-filter-being-run-for-every-commit/20762/4
 workflows:
   version: 2
   build-deploy:
@@ -144,15 +187,45 @@ workflows:
           filters:
             tags:
               only: /.*/
-      - pull-deploy:
+      - hold:
+          type: approval
+          requires:
+            - build
+          filters:
+            branches:
+              ignore: /.*/
+            tags:
+              # Match SemVer N.N.N
+              only: /^(\d+\.)?(\d+\.)?(\*|\d+)$/
+      - deploy-on-pr:
           requires:
             - build
           filters:
             branches:
               ignore: master
-      - deploy:
+      - deploy-dev:
           requires:
             - build
           filters:
             branches:
               only: master
+      - deploy-stg:
+          requires:
+            - build
+            - deploy-dev
+          filters:
+            branches:
+              ignore: /.*/
+            tags:
+              # Match SemVer N.N.N
+              only: /^(\d+\.)?(\d+\.)?(\*|\d+)$/
+      - deploy-prd:
+          requires:
+            - deploy-stg
+            - hold
+          filters:
+            branches:
+              ignore: /.*/
+            tags:
+              # Match SemVer N.N.N
+              only: /^(\d+\.)?(\d+\.)?(\*|\d+)$/
