@@ -1,6 +1,6 @@
 import 'engine'
 
-import { ETHEREUM_NETWORK, DEBUG } from '../config'
+import { ETHEREUM_NETWORK } from '../config'
 import { initBabylonClient } from '../engine/dcl'
 import { domReadyFuture, bodyReadyFuture, scene } from '../engine/renderer/init'
 import { initShared } from '../shared'
@@ -9,9 +9,14 @@ import { WebGLParcelScene } from '../engine/dcl/WebGLParcelScene'
 import { enableMiniMap } from '../engine/dcl/widgets/minimap'
 import { getWorldSpawnpoint } from '../shared/world/positionThings'
 
-export async function loadClient(net: ETHEREUM_NETWORK) {
+document.body.classList.remove('dcl-loading')
+
+const container = document.body
+
+async function loadClient(net: ETHEREUM_NETWORK) {
   await initBabylonClient()
-  document.body.appendChild(enableMiniMap())
+
+  container.appendChild(enableMiniMap())
 
   await enableParcelSceneLoading(net, {
     parcelSceneClass: WebGLParcelScene,
@@ -24,26 +29,13 @@ export async function loadClient(net: ETHEREUM_NETWORK) {
     },
     shouldLoadParcelScene: () => true
   })
-
-  document.body.classList.remove('dcl-loading')
 }
 
 bodyReadyFuture
   .then(async body => {
-    const net = await initShared()
+    const net = await initShared(container)
 
     await loadClient(net)
-
-    // Warn in case wallet is set in mainnet
-    if (net === ETHEREUM_NETWORK.MAINNET && DEBUG) {
-      const style = document.createElement('style')
-      style.appendChild(
-        document.createTextNode(
-          `body:before{content:'You are using Mainnet Ethereum Network, real transactions are going to be made.';background:#ff0044;color:#fff;text-align:center;text-transform:uppercase;height:24px;width:100%;position:fixed;padding-top:2px}#main-canvas{padding-top:24px};`
-        )
-      )
-      document.head.appendChild(style)
-    }
 
     domReadyFuture
       .then(canvas => {
@@ -54,6 +46,6 @@ bodyReadyFuture
   .catch(handleError)
 
 function handleError(e: Error) {
-  document.body.classList.remove('dcl-loading')
-  document.body.innerHTML = `<h3>${e.message}</h3>`
+  container.classList.remove('dcl-loading')
+  container.innerHTML = `<h3>${e.message}</h3>`
 }

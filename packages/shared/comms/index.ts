@@ -29,9 +29,9 @@ import { BrokerConnection } from './BrokerConnection'
 import { UserInformation, Pose } from './types'
 import { CommunicationsController } from 'shared/apis/CommunicationsController'
 import { CliBrokerConnection } from './CliBrokerConnection'
-import { log } from 'engine/logger'
 import { MessageEntry } from 'shared/types'
 import { IBrokerConnection } from './IBrokerConnection'
+import { defaultLogger } from 'shared/logger'
 
 type Timestamp = number
 type PeerAlias = string
@@ -364,7 +364,9 @@ export async function connect(userId: string, network: ETHEREUM_NETWORK, auth: A
   let commsBroker: IBrokerConnection
 
   if (USE_LOCAL_COMMS) {
-    commsBroker = new CliBrokerConnection(document.location.toString().replace(/^http/, 'ws'))
+    const commsUrl = document.location.toString().replace(/^http/, 'ws')
+    defaultLogger.log('Using WebSocket comms: ' + commsUrl)
+    commsBroker = new CliBrokerConnection(commsUrl)
   } else {
     const coordinatorURL = getServerConfigurations().worldInstanceUrl
     const body = `GET:${coordinatorURL}`
@@ -376,8 +378,12 @@ export async function connect(userId: string, network: ETHEREUM_NETWORK, auth: A
       timestamp: credentials['x-timestamp'],
       'access-token': credentials['x-access-token']
     })
+
     const url = new URL(coordinatorURL)
+    defaultLogger.log('Using Remote comms: ' + url)
+
     url.search = qs.toString()
+
     commsBroker = new BrokerConnection(auth, url.toString())
   }
 
@@ -439,7 +445,7 @@ declare var global: any
 
 global['printCommsInformation'] = function() {
   if (context) {
-    log('Communication topics: ' + previousTopics)
+    defaultLogger.log('Communication topics: ' + previousTopics)
     context.stats.printDebugInformation()
   }
 }

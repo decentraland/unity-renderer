@@ -6,7 +6,6 @@ type GameInstance = {
 
 import { EventDispatcher } from 'decentraland-rpc/lib/common/core/EventDispatcher'
 
-import { initShared } from '../shared'
 import {
   LoadableParcelScene,
   EntityAction,
@@ -37,7 +36,14 @@ import { ensureUiApis } from '../shared/world/uiSceneInitializer'
 import { ParcelIdentity } from '../shared/apis/ParcelIdentity'
 import { IEventNames, IEvents } from '../decentraland-ecs/src/decentraland/Types'
 import { Vector3, Quaternion, ReadOnlyVector3, ReadOnlyQuaternion } from '../decentraland-ecs/src/decentraland/math'
-import { DEBUG, PREVIEW, ENGINE_DEBUG_PANEL, SCENE_DEBUG_PANEL, parcelLimits, playerConfigurations } from '../config'
+import {
+  DEBUG,
+  ENGINE_DEBUG_PANEL,
+  SCENE_DEBUG_PANEL,
+  parcelLimits,
+  playerConfigurations,
+  ETHEREUM_NETWORK
+} from '../config'
 import { chatObservable } from '../shared/comms/chat'
 import { queueTrackingEvent } from '../shared/analytics'
 
@@ -205,9 +211,9 @@ class UnityParcelScene extends UnityScene<LoadableParcelScene> {
 
 ////////////////////////////////////////////////////////////////////////////////
 
-export async function initializeEngine(_gameInstance: GameInstance) {
+export async function initializeEngine(net: ETHEREUM_NETWORK, _gameInstance: GameInstance) {
   gameInstance = _gameInstance
-  const net = await initShared()
+
   unityInterface.SetPosition(lastPlayerPosition.x, lastPlayerPosition.y, lastPlayerPosition.z)
 
   if (DEBUG) {
@@ -224,38 +230,11 @@ export async function initializeEngine(_gameInstance: GameInstance) {
 
   await initializeDecentralandUI()
 
-  if (PREVIEW) {
-    enablePositionReporting()
-    await loadPreviewScene()
-  } else {
-    await enableParcelSceneLoading(net, {
-      parcelSceneClass: UnityParcelScene,
-      shouldLoadParcelScene: () => {
-        return true
-        // TODO integrate with unity the preloading feature
-        // tslint:disable-next-line: no-commented-out-code
-        // return preloadedScenes.has(land.scene.scene.base)
-      },
-      onSpawnpoint: initialLand => {
-        const newPosition = getWorldSpawnpoint(initialLand)
-        unityInterface.SetPosition(newPosition.x, newPosition.y, newPosition.z)
-        queueTrackingEvent('Scene Spawn', { parcel: initialLand.scene.scene.base, spawnpoint: newPosition })
-      },
-      onLoadParcelScenes: lands => {
-        unityInterface.LoadParcelScenes(
-          lands.map($ => {
-            const x = Object.assign({}, ILandToLoadableParcelScene($).data)
-            delete x.land
-            return x
-          })
-        )
-      }
-    })
-  }
+  enablePositionReporting()
 
   return {
     net,
-    loadPreviewScene,
+    unityInterface,
     onMessage(type: string, message: any) {
       if (type in browserInterface) {
         // tslint:disable-next-line:semicolon
@@ -266,6 +245,32 @@ export async function initializeEngine(_gameInstance: GameInstance) {
       }
     }
   }
+}
+
+export async function startUnityParcelLoading(net: ETHEREUM_NETWORK) {
+  await enableParcelSceneLoading(net, {
+    parcelSceneClass: UnityParcelScene,
+    shouldLoadParcelScene: () => {
+      return true
+      // TODO integrate with unity the preloading feature
+      // tslint:disable-next-line: no-commented-out-code
+      // return preloadedScenes.has(land.scene.scene.base)
+    },
+    onSpawnpoint: initialLand => {
+      const newPosition = getWorldSpawnpoint(initialLand)
+      unityInterface.SetPosition(newPosition.x, newPosition.y, newPosition.z)
+      queueTrackingEvent('Scene Spawn', { parcel: initialLand.scene.scene.base, spawnpoint: newPosition })
+    },
+    onLoadParcelScenes: lands => {
+      unityInterface.LoadParcelScenes(
+        lands.map($ => {
+          const x = Object.assign({}, ILandToLoadableParcelScene($).data)
+          delete x.land
+          return x
+        })
+      )
+    }
+  })
 }
 
 async function initializeDecentralandUI() {
@@ -289,7 +294,7 @@ async function initializeDecentralandUI() {
   unityInterface.CreateUIScene({ id: scene.unitySceneId, baseUrl: scene.data.baseUrl })
 }
 
-async function loadPreviewScene() {
+export async function loadPreviewScene() {
   const result = await fetch('/scene.json?nocache=' + Math.random())
 
   loadedParcelSceneWorkers.forEach(worker => {
