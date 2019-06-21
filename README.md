@@ -2,19 +2,22 @@
 
 ### Reading Guide
 
-1. [Push Request naming standards](https://github.com/decentraland/standards/blob/master/standards/git-usage.md)
-2. [Unity client architecture overview](https://docs.google.com/document/d/1_lzi3V5IDaVRJbTKNsNEcaG0L21VPydiUx5uamiyQnY/edit)
-3. [Coding guidelines](code-guidelines.md)
+1. [Pull Requests Naming Standards](https://github.com/decentraland/standards/blob/master/standards/git-usage.md)
+2. [Architecture Overview](https://docs.google.com/document/d/1_lzi3V5IDaVRJbTKNsNEcaG0L21VPydiUx5uamiyQnY/edit)
+3. [Coding Guidelines](code-guidelines.md)
 
-### Setup the Explorer project
+### Before you proceed: Setup the sister repo, the Explorer
 
-1. Run `npm install` in the [Explorer](https://github.com/decentraland/explorer) cloned repo root directory
-2. Run `make watch` in the [Explorer](https://github.com/decentraland/explorer) cloned repo root directory and wait for the make script to complete
+1. Run `npm install` in the **root directory** of the [explorer](https://github.com/decentraland/explorer) repo.
+2. Run `make watch` in that same [explorer](https://github.com/decentraland/explorer) folder.
+    2. This might take some time (about 8 minutes on a modern computer). We're working on improving this. Have a coffee or keep reading this until there are no changes in your screen for ~40 seconds.
 3. Once the explorer automatically opens you a browser tab, you may close it and continue with Unity 
 3. Run the Initial Scene in the Unity editor
 4. Run the build by accessing **[http://localhost:8080/tetra.html?DEBUG&position=-103%2C99&ws=ws%3A%2F%2Flocalhost%3A5000%2Fdcl](http://localhost:8080/tetra.html?DEBUG&position=-103%2C99&ws=ws%3A%2F%2Flocalhost%3A5000%2Fdcl)** in any webbrowser
 
-### Build Unity Artifact
+**Wait, what?**: The `explorer` repository holds a big number of business rules about how to run scenes. This setup runs that "operative system" (without the 3D visualization) so that Unity can connect to it and display on debug mode.
+
+### Build a Unity Artifact
 
 1. Build unity WASM with its name as "unity" into [Explorer](https://github.com/decentraland/explorer) cloned repo **root/static/** directory
 2. Run the command `make watch`
