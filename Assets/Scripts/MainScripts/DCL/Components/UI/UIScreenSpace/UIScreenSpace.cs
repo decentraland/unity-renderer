@@ -26,12 +26,14 @@ namespace DCL.Components
         }
 
         private static Action OnUIGlobalVisibilityChanged = () => { };
+        private static Toggle toggle;
 
         private Vector3 currentCharacterPosition;
 
         public UIScreenSpace(ParcelScene scene) : base(scene)
         {
             DCLCharacterController.OnCharacterMoved += OnCharacterMoved;
+
             //Only no-dcl scenes are listening the the global visibility event
             if (!scene.isPersistent)
             {
@@ -83,6 +85,7 @@ namespace DCL.Components
             if (canvas != null)
             {
                 currentCharacterPosition = newCharacterPosition;
+
                 UpdateCanvasVisibility();
 
                 if (VERBOSE)
@@ -95,6 +98,19 @@ namespace DCL.Components
         {
             if (canvas != null && scene != null)
                 canvas.enabled = scene.IsInsideSceneBoundaries(currentCharacterPosition) && model.visible && (scene.isPersistent || GlobalVisibility);
+
+            UpdateToggleVisibility();
+        }
+
+        private void UpdateToggleVisibility()
+        {
+            if (toggle != null)
+            {
+                if (scene.isPersistent)
+                    toggle.gameObject.SetActive(false);
+                else
+                    toggle.gameObject.SetActive(toggle.gameObject.activeSelf || scene.IsInsideSceneBoundaries(currentCharacterPosition));
+            }
         }
 
         IEnumerator InitializeCanvas()
@@ -200,7 +216,7 @@ namespace DCL.Components
                 return;
             }
 
-            var toggle = toggleGameObject.GetComponent<Toggle>();
+            toggle = toggleGameObject.GetComponent<Toggle>();
             if (toggle == null)
             {
                 Debug.Log("Global Visibility Toggle contains no toggle");
@@ -209,6 +225,8 @@ namespace DCL.Components
 
             toggle.onValueChanged.AddListener((x) => GlobalVisibility = x);
             toggle.isOn = true;
+
+            toggle.gameObject.SetActive(false);
         }
     }
 }
