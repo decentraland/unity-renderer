@@ -196,7 +196,7 @@ workflows:
               ignore: /.*/
             tags:
               # Match SemVer N.N.N
-              only: /^(\d+\.)?(\d+\.)?(\*|\d+)$/
+              only: /^(\d+\.)?(\d+\.)?(\*|\d+)/
       - deploy-on-pr:
           requires:
             - build
@@ -218,14 +218,13 @@ workflows:
               ignore: /.*/
             tags:
               # Match SemVer N.N.N
-              only: /^(\d+\.)?(\d+\.)?(\*|\d+)$/
+              only: /^(\d+\.)?(\d+\.)?(\*|\d+)/
       - deploy-prd:
           requires:
-            - deploy-stg
             - hold
           filters:
             branches:
               ignore: /.*/
             tags:
               # Match SemVer N.N.N
-              only: /^(\d+\.)?(\d+\.)?(\*|\d+)$/
+              only: /^(\d+\.)?(\d+\.)?(\*|\d+)/
