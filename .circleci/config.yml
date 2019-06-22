@@ -99,7 +99,7 @@ jobs:
       - run:
           name: Export DEV/STG AWS Keys
           command: |
-            export AWS_ACCESS_KEY_ID={AWS_DEV_ACCESS_KEY_ID} && export AWS_SECRET_ACCESS_KEY={AWS_DEV_SECRET_ACCESS_KEY}
+            export AWS_ACCESS_KEY_ID=${AWS_DEV_ACCESS_KEY_ID} && export AWS_SECRET_ACCESS_KEY=${AWS_DEV_SECRET_ACCESS_KEY}
       - run:
           name: Deploy to S3 (.zone) under subfolder if tests pass and branch is not master
           command: aws s3 sync static s3://explorer.decentraland.zone/branch/${CIRCLE_BRANCH} --acl public-read
@@ -119,7 +119,7 @@ jobs:
       - run:
           name: Export DEV/STG AWS Keys
           command: |
-            export AWS_ACCESS_KEY_ID={AWS_DEV_ACCESS_KEY_ID} && export AWS_SECRET_ACCESS_KEY={AWS_DEV_SECRET_ACCESS_KEY}
+            export AWS_ACCESS_KEY_ID=${AWS_DEV_ACCESS_KEY_ID} && export AWS_SECRET_ACCESS_KEY=${AWS_DEV_SECRET_ACCESS_KEY}
       - run:
           name: Deploy to S3 (.zone) if tests pass and branch is master
           command: aws s3 sync static s3://explorer.decentraland.zone/ --acl public-read
@@ -139,7 +139,7 @@ jobs:
       - run:
           name: Export DEV/STG AWS Keys
           command: |
-            export AWS_ACCESS_KEY_ID={AWS_DEV_ACCESS_KEY_ID} && export AWS_SECRET_ACCESS_KEY={AWS_DEV_SECRET_ACCESS_KEY}
+            export AWS_ACCESS_KEY_ID=${AWS_DEV_ACCESS_KEY_ID} && export AWS_SECRET_ACCESS_KEY=${AWS_DEV_SECRET_ACCESS_KEY}
       - run:
           name: Deploy tag to .today/tags/${CIRCLE_TAG}
           command: |
@@ -164,7 +164,7 @@ jobs:
       - run:
           name: Export PRD AWS Keys
           command: |
-            export AWS_ACCESS_KEY_ID={AWS_PRD_ACCESS_KEY_ID} && export AWS_SECRET_ACCESS_KEY={AWS_PRD_SECRET_ACCESS_KEY}
+            export AWS_ACCESS_KEY_ID=${AWS_PRD_ACCESS_KEY_ID} && export AWS_SECRET_ACCESS_KEY=${AWS_PRD_SECRET_ACCESS_KEY}
       - run:
           name: Deploy tag to .org/tags/${CIRCLE_TAG}
           command: |
