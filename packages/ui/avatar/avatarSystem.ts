@@ -1,16 +1,4 @@
-import {
-  Entity,
-  Observable,
-  engine,
-  Transform,
-  executeTask,
-  GLTFShape,
-  TextShape,
-  Vector3,
-  Quaternion,
-  Component,
-  Scalar
-} from 'decentraland-ecs/src'
+import { Entity, Observable, engine, Transform, executeTask } from 'decentraland-ecs/src'
 import {
   ReceiveUserDataMessage,
   UUID,
@@ -24,152 +12,35 @@ import {
   UserInformation
 } from 'shared/comms/types'
 import { execute } from './rpc'
-import { ComponentGroup } from 'decentraland-ecs/src/ecs/ComponentGroup'
+import { AvatarShape } from 'decentraland-ecs/src/decentraland/AvatarShape'
 
 export const avatarMessageObservable = new Observable<AvatarMessage>()
 
 const GENERIC_AVATAR = 'fox/completeFox.glb'
 
-const models: Map<string, GLTFShape> = new Map()
 const avatarMap = new Map<string, AvatarEntity>()
-
-function getModel(src: string) {
-  let model = models.get(src)
-
-  if (!model) {
-    model = new GLTFShape(src)
-
-    models.set(src, model)
-  }
-
-  return model
-}
-
-function getAvatarModel(avatarName: string) {
-  // Remove possible 'zero width spaces' (unicode 8203) existence in name
-  const fixedAvatarName = avatarName.replace(/(^[\s\u200b]*|[\s\u200b]*$)/g, '')
-
-  if (fixedAvatarName.endsWith('.gltf') || fixedAvatarName.endsWith('.glb')) {
-    return getModel(`models/avatar/${fixedAvatarName}`)
-  }
-
-  return getModel(`models/avatar/${fixedAvatarName}/head.glb`)
-}
-
-function cleanupUnusedModels() {
-  /**
-   * Let S be a set of GLTFModel
-   *
-   * For each avatar A in avatarMap
-   *   Add every model used by this entities to S
-   *
-   * For each model M in models
-   *   if M is not present in S
-   *     remove M from the engine and modeld
-   */
-  let usedModels: Set<GLTFShape> = new Set()
-  avatarMap.forEach($ => {
-    const model = $.body.getComponentOrNull(GLTFShape)
-    if (model) {
-      usedModels.add(model)
-    }
-  })
-
-  for (let [key, model] of models.entries()) {
-    if (!usedModels.has(model)) {
-      engine.disposeComponent(model as any)
-      models.delete(key)
-    }
-  }
-}
-
-@Component('animatedTransform')
-export class TargetTransform {
-  source: Transform = new Transform()
-  target: Transform = new Transform()
-
-  out: Transform = new Transform()
-
-  endTime = 0
-  currentTime = 0
-
-  animate(currentState: Transform, duration: number) {
-    this.out = currentState
-    this.source.position.copyFrom(currentState.position)
-    this.source.scale.copyFrom(currentState.scale)
-    this.source.rotation.copyFrom(currentState.rotation)
-    this.currentTime = 0
-    this.endTime = duration / 1000
-  }
-
-  update(dt: number) {
-    if (this.currentTime < this.endTime) {
-      this.currentTime += dt
-    }
-
-    this.currentTime = Scalar.Clamp(this.currentTime, 0, this.endTime)
-
-    const d = this.currentTime / this.endTime
-
-    Vector3.LerpToRef(this.source.position, this.target.position, d, this.out.position)
-    Vector3.LerpToRef(this.source.scale, this.target.scale, d, this.out.scale)
-    Quaternion.SlerpToRef(this.source.rotation, this.target.rotation, d, this.out.rotation)
-  }
-}
-
-export class InterpolatorSystem {
-  group: ComponentGroup = engine.getComponentGroup(TargetTransform)
-
-  update(dt: number) {
-    for (let entity of this.group.entities) {
-      const animator = entity.getComponent(TargetTransform)
-      animator.update(dt)
-    }
-  }
-}
-
-engine.addSystem(new InterpolatorSystem())
 
 export class AvatarEntity extends Entity {
   blocked = false
   muted = false
   visible = true
+  removeTimer: any | null = null
 
   displayName = 'Avatar'
   publicKey = '0x00000000000000000000000000000000'
-  currentAvatarType?: string
-
-  readonly label: TextShape = new TextShape(this.displayName)
-  readonly body: Entity = new Entity()
-  readonly labelEntity = new Entity()
-  readonly transformAnimation: TargetTransform = this.getComponentOrCreate(TargetTransform)
+  name: string = ''
   readonly transform: Transform = this.getComponentOrCreate(Transform)
+  avatarShape!: AvatarShape
 
-  constructor(public name: string) {
-    super(name)
+  constructor(public uuid: string) {
+    super(uuid)
 
     {
-      this.labelEntity.setParent(this)
-
-      const labelTransform = this.labelEntity.getComponentOrCreate(Transform)
-      labelTransform.position.y = 2
-      labelTransform.rotate(new Vector3(0, 1, 0), 180)
-      this.label.billboard = true
-      this.label.fontSize = 3.5
-      this.label.hTextAlign = 'center'
-      this.label.isPickable = true
-      this.labelEntity.addComponent(this.label)
-
-      const model = getAvatarModel(GENERIC_AVATAR)
-      this.currentAvatarType = GENERIC_AVATAR
-      this.body.addComponentOrReplace(model)
+      this.avatarShape = new AvatarShape()
+      this.addComponentOrReplace(this.avatarShape)
     }
 
-    let bodyTranform = this.body.getComponentOrCreate(Transform)
-    bodyTranform.scale = new Vector3(1, 1, 1)
-    bodyTranform.position.y = 1
-
-    this.body.setParent(this)
+    this.name = uuid
 
     // we need this component to filter the interpolator system
     this.getComponentOrCreate(Transform)
@@ -187,25 +58,7 @@ export class AvatarEntity extends Entity {
     this.updateVisibility()
   }
 
-  setAvatarType(avatarType: string) {
-    if (avatarType) {
-      const model = getAvatarModel(avatarType)
-
-      this.currentAvatarType = avatarType
-
-      this.body.addComponentOrReplace(model)
-
-      cleanupUnusedModels()
-    }
-  }
-
   setUserData(userData: Partial<UserInformation>): void {
-    if (userData.avatarType) {
-      this.setAvatarType(userData.avatarType)
-    } else {
-      this.setAvatarType(GENERIC_AVATAR)
-    }
-
     if (userData.pose) {
       this.setPose(userData.pose)
     }
@@ -216,30 +69,41 @@ export class AvatarEntity extends Entity {
   }
 
   setDisplayName(name: string) {
-    this.label.value = name
-    this.displayName = name
+    this.avatarShape.name = name
   }
 
   setPose(pose: Pose): void {
     const [x, y, z, Qx, Qy, Qz, Qw] = pose
 
-    if (this.transform.position.equalsToFloats(0, 0, 0)) {
-      this.transform.position.set(x, y, z)
-      this.transform.rotation.set(Qx, Qy, Qz, Qw)
+    this.transform.position.set(x, y, z)
+    this.transform.rotation.set(Qx, Qy, Qz, Qw)
+  }
+
+  public removeScheduled() {
+    if (this.removeTimer != null) {
+      clearTimeout(this.removeTimer)
+      this.removeTimer = null
     }
-
-    this.transformAnimation.target.position.set(x, y, z)
-    this.transformAnimation.target.rotation.set(Qx, Qy, Qz, Qw)
-
-    this.transformAnimation.animate(this.transform, 100 /* ms */)
+    this.removeTimer = setTimeout(
+      () => {
+        engine.removeEntity(this)
+        avatarMap.delete(this.name)
+      },
+      10000,
+      null
+    )
   }
 
   private updateVisibility() {
     const visible = this.visible && !this.blocked
-
     if (!visible && this.isAddedToEngine()) {
-      engine.removeEntity(this)
+      this.removeScheduled()
     } else if (visible && !this.isAddedToEngine()) {
+      if (this.removeTimer != null) {
+        clearTimeout(this.removeTimer)
+        this.removeTimer = null
+      }
+
       engine.addEntity(this)
     }
   }
@@ -329,10 +193,8 @@ function handleUserVisible({ uuid, visible }: ReceiveUserVisibleMessage): void {
 function handleUserRemoved({ uuid }: UserRemovedMessage): void {
   const avatar = avatarMap.get(uuid)
   if (avatar) {
-    avatarMap.delete(uuid)
-    engine.removeEntity(avatar)
+    avatar.removeScheduled()
   }
-  cleanupUnusedModels()
 }
 
 function handleShowWindow({ uuid }: UserMessage): void {

@@ -52,6 +52,7 @@ export * from './decentraland/Input'
 export * from './decentraland/Audio'
 export * from './decentraland/Gizmos'
 export * from './decentraland/UIShapes'
+export * from './decentraland/AvatarShape'
 export * from './decentraland/UIEvents'
 export * from './decentraland/MessageBus'
 

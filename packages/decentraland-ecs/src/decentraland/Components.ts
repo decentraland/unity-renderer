@@ -43,6 +43,8 @@ export enum CLASS_ID {
 
   GLTF_SHAPE = 54,
   OBJ_SHAPE = 55,
+  AVATAR_SHAPE = 56,
+
   BASIC_MATERIAL = 64,
   PRB_MATERIAL = 65,
 
