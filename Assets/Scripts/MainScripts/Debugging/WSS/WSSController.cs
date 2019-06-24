@@ -117,7 +117,7 @@ namespace DCL
 
                 if (useClientDebugMode)
                 {
-                    debugString = "DEBUG&";
+                    debugString = "DEBUG_MODE&LOCAL_COMMS&";
                 }
 
                 string debugPanelString = "";
@@ -131,7 +131,7 @@ namespace DCL
                 }
 
                 Application.OpenURL(
-                    $"http://localhost:8080/?{debugString}{debugPanelString}LOCAL_COMMS&position={startInCoords.x}%2C{startInCoords.y}&ws=ws%3A%2F%2Flocalhost%3A5000%2Fdcl");
+                    $"http://localhost:8080/?{debugString}{debugPanelString}&position={startInCoords.x}%2C{startInCoords.y}&ws=ws%3A%2F%2Flocalhost%3A5000%2Fdcl");
             }
 #else
             useClientDebugMode = false;
