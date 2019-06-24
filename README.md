@@ -24,15 +24,15 @@ To start hacking, run:
 
 To run the client in `debug` mode append the following query parameter to the URL:
 
-    http://localhost:8080/?DEBUG
+    http://localhost:8080/?DEBUG_MODE
 
 To run the client in first person perspective append the following query parameter to the URL:
 
-    http://localhost:8080/?DEBUG&fps
+    http://localhost:8080/?DEBUG_MODE&fps
 
 To spawn in a specific set of coordinates append the following query paramter:
 
-    http://localhost:8080/?DEBUG&fps&position=10,10
+    http://localhost:8080/?DEBUG_MODE&fps&position=10,10
 
 ## Running tests
 
