@@ -40,6 +40,8 @@ namespace DCL.Controllers
         [System.NonSerialized]
         public bool unloadWithDistance = true;
 
+        private Bounds bounds = new Bounds();
+
         private void Update()
         {
             SendMetricsEvent();
@@ -48,10 +50,7 @@ namespace DCL.Controllers
             {
                 if (!isTestScene && !flaggedToUnload && sceneData != null && DCLCharacterController.i != null)
                 {
-                    Vector3 position = GridToWorldPosition(sceneData.parcels[0].x, sceneData.parcels[0].y);
-
-                    if (Vector3.Distance(DCLCharacterController.i.transform.position, position) >
-                        ParcelSettings.UNLOAD_DISTANCE)
+                    if (!bounds.Contains(DCLCharacterController.i.transform.position))
                     {
                         flaggedToUnload = true;
                         SceneController.i.UnloadScene(sceneData.id);
@@ -68,6 +67,37 @@ namespace DCL.Controllers
             this.name = gameObject.name = $"scene:{data.id}";
 
             gameObject.transform.position = GridToWorldPosition(data.basePosition.x, data.basePosition.y);
+
+            RecalculateBounds();
+        }
+
+        private void RecalculateBounds()
+        {
+            if (sceneData != null && sceneData.parcels != null)
+            {
+                Vector3 min = Vector3.positiveInfinity;
+                Vector3 max = Vector3.negativeInfinity;
+
+                for (int i = 0; i < sceneData.parcels.Length; i++)
+                {
+                    Vector3 pos = GridToWorldPosition(sceneData.parcels[i].x, sceneData.parcels[i].y);
+
+                    if (min.x > pos.x)
+                        min.x = pos.x;
+                    if (min.z > pos.z)
+                        min.z = pos.z;
+
+                    if (max.x < pos.x)
+                        max.x = pos.x;
+                    if (max.z < pos.z)
+                        max.z = pos.z;
+
+                    min.y = max.y = 0;
+                }
+
+                bounds.min = min - (new Vector3(1, 1, 1) * ParcelSettings.UNLOAD_DISTANCE);
+                bounds.max = max + (new Vector3(1, 1, 1) * ParcelSettings.UNLOAD_DISTANCE);
+            }
         }
 
         public void InitializeDebugPlane()
