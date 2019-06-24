@@ -281,7 +281,7 @@ export class Entity implements IEntity {
   /**
    * Sets the parent entity
    */
-  setParent(newParent: IEntity | null): IEntity {
+  setParent(newParent: IEntity): IEntity {
     let parent = !newParent && this.engine ? this.engine.rootEntity : newParent
     let currentParent = this.getParent()
 
@@ -309,7 +309,7 @@ export class Entity implements IEntity {
       delete currentParent.children[this.uuid]
     }
 
-    if (newParent !== null && newParent.uuid !== '0') {
+    if (newParent.uuid !== '0') {
       if (!newParent.isAddedToEngine() && this.isAddedToEngine()) {
         // tslint:disable-next-line:semicolon
         ;(this.engine as IEngine).removeEntity(this)
@@ -324,7 +324,7 @@ export class Entity implements IEntity {
     this.registerAsChild()
 
     if (this.eventManager && this.engine) {
-      this.eventManager.fireEvent(new ParentChanged(this as IEntity, parent!))
+      this.eventManager.fireEvent(new ParentChanged(this as IEntity, parent))
     }
 
     return this
