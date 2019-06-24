@@ -6,11 +6,6 @@ import { parcelsInScope, ParcelConfigurationOptions } from '../lib/scope'
 import { ParcelLifeCycleStatus } from '../lib/parcel.status'
 
 export class ParcelLifeCycleController extends EventEmitter {
-  constructor(config: ParcelConfigurationOptions) {
-    super()
-    this.config = config
-  }
-
   config: ParcelConfigurationOptions
   currentPosition?: Vector2Component
 
@@ -18,10 +13,14 @@ export class ParcelLifeCycleController extends EventEmitter {
 
   missingDataParcelsCount = 0
 
-  parcelStatus: { [key: string]: ParcelLifeCycleStatus } = {}
+  parcelStatus = new Map<string, ParcelLifeCycleStatus>()
 
-  currentlySightedParcels: { [key: string]: boolean } = {}
-  currentlySightedParcelsArray: string[] = []
+  currentlySightedParcels = new Set<string>()
+
+  constructor(config: ParcelConfigurationOptions) {
+    super()
+    this.config = config
+  }
 
   reportCurrentPosition(position: Vector2Component) {
     if (this.currentPosition && this.currentPosition.x === position.x && this.currentPosition.y === position.y) {
@@ -31,40 +30,41 @@ export class ParcelLifeCycleController extends EventEmitter {
 
     this.isTargetPlaced = true
     const sightedParcels = parcelsInScope(this.config, position)
-    const sightedParcelsDict: { [key: string]: boolean } = {}
+    const sightedParcelsSet = new Set<string>()
     for (const parcel of sightedParcels) {
+      sightedParcelsSet.add(parcel)
       this.parcelSighted(parcel)
     }
-    for (const parcel of this.currentlySightedParcelsArray) {
-      if (!sightedParcelsDict[parcel]) {
+    for (const parcel of this.currentlySightedParcels) {
+      if (!sightedParcelsSet.has(parcel)) {
         this.switchParcelToOutOfSight(parcel)
       }
     }
-    this.currentlySightedParcels = sightedParcelsDict
-    this.currentlySightedParcelsArray = sightedParcels
+    this.currentlySightedParcels = sightedParcelsSet
   }
 
   inSight(parcel: string) {
-    return !!this.currentlySightedParcels[parcel]
+    return !!this.currentlySightedParcels.has(parcel)
   }
 
   parcelSighted(parcel: string) {
-    let status = this.parcelStatus[parcel]
+    let status = this.parcelStatus.get(parcel)
     if (!status) {
-      status = this.parcelStatus[parcel] = new ParcelLifeCycleStatus(parcel)
+      status = new ParcelLifeCycleStatus(parcel)
+      this.parcelStatus.set(parcel, status)
     }
     if (status.isOutOfSight()) {
-      this.currentlySightedParcels[parcel] = true
+      this.currentlySightedParcels.add(parcel)
       status.setInSight()
       this.emit('Sighted', parcel)
     }
   }
 
   switchParcelToOutOfSight(parcel: string) {
-    if (!this.parcelStatus[parcel]) {
+    if (!this.parcelStatus.has(parcel)) {
       return
     }
-    const status = this.parcelStatus[parcel]
+    const status = this.parcelStatus.get(parcel)
     if (status && status.isInSight()) {
       status.setOffSight()
       this.emit('Lost sight', parcel)

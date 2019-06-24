@@ -10,7 +10,12 @@ import { initLocalPlayer, domReadyFuture, onWindowResize } from '../engine/rende
 import { initBabylonClient } from '../engine/dcl'
 import * as _envHelper from '../engine/renderer/envHelper'
 import { canvas, scene } from '../engine/renderer/init'
-import { loadedParcelSceneWorkers, enablePositionReporting } from '../shared/world/parcelSceneManager'
+import {
+  enablePositionReporting,
+  loadParcelScene,
+  loadedSceneWorkers,
+  forceStopParcelSceneWorker
+} from '../shared/world/parcelSceneManager'
 import {
   LoadableParcelScene,
   ILandToLoadableParcelScene,
@@ -78,12 +83,10 @@ async function loadScene(scene: IScene & { baseUrl: string }) {
 }
 
 async function initializePreview(userScene: EnvironmentData<LoadableParcelScene>, parcelCount: number) {
-  loadedParcelSceneWorkers.forEach($ => {
-    $.dispose()
-    loadedParcelSceneWorkers.delete($)
-  })
+  loadedSceneWorkers.forEach($ => forceStopParcelSceneWorker($))
+
   webGlParcelScene = new WebGLParcelScene(userScene)
-  let parcelScene = new SceneWorker(webGlParcelScene)
+  let parcelScene = loadParcelScene(webGlParcelScene)
   const context = webGlParcelScene.context as SharedSceneContext
 
   context.on('uuidEvent' as any, event => {
@@ -120,9 +123,6 @@ async function initializePreview(userScene: EnvironmentData<LoadableParcelScene>
   context.on('entityBackInScene', e => {
     evtEmitter.emit('entityBackInScene', e)
   })
-
-  // we need closeParcelScenes to enable interactions in preview mode
-  loadedParcelSceneWorkers.add(parcelScene)
 
   enablePositionReporting()
 
@@ -186,7 +186,7 @@ export namespace editor {
   }
 
   export function getScenes() {
-    return loadedParcelSceneWorkers
+    return loadedSceneWorkers
   }
 
   function configureEditorEnvironment(enabled: boolean) {
