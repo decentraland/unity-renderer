@@ -5,7 +5,7 @@ import { scene, engine } from './init'
 import Joystick from './controls/joystick'
 import PlaneCanvasControl from './controls/planeCanvasControl'
 import { isThirdPersonCamera, vrCamera, arcCamera } from './camera'
-import { loadedParcelSceneWorkers } from 'shared/world/parcelSceneManager'
+import { loadedSceneWorkers } from 'shared/world/parcelSceneManager'
 import { WebGLScene } from '../dcl/WebGLScene'
 import { hud } from '../dcl/widgets/ui'
 
@@ -247,7 +247,7 @@ export function interactWithScene(pointerEvent: 'pointerUp' | 'pointerDown', x: 
   if (entity) {
     entity.handleClick(pointerEvent, pointerId, pickingResult!)
   } else {
-    for (let scene of loadedParcelSceneWorkers) {
+    for (let scene of loadedSceneWorkers) {
       if (scene.parcelScene instanceof WebGLScene) {
         scene.parcelScene.context.sendPointerEvent(pointerEvent, pointerId, null as any, pickingResult!)
       }

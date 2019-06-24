@@ -17,7 +17,7 @@ import { bodyReadyFuture } from 'engine/renderer/init'
 import { BaseEntity } from 'engine/entities/BaseEntity'
 import { SharedSceneContext } from 'engine/entities/SharedSceneContext'
 import { EngineAPI } from 'shared/apis/EngineAPI'
-import { loadedParcelSceneWorkers } from 'shared/world/parcelSceneManager'
+import { loadParcelScene, stopParcelSceneWorker } from 'shared/world/parcelSceneManager'
 import { WebGLParcelScene } from 'engine/dcl/WebGLParcelScene'
 import { ILandToLoadableParcelScene } from 'shared/types'
 import { SceneWorker } from 'shared/world/SceneWorker'
@@ -346,14 +346,12 @@ export function loadTestParcel(
 
         _glParcelScene.resolve(webGLParcelScene)
 
-        const parcelSceneWorker = new SceneWorker(webGLParcelScene)
+        const parcelSceneWorker = loadParcelScene(webGLParcelScene)
 
         context = webGLParcelScene.context
         context.rootEntity.onDisposeObservable.add(() => {
-          loadedParcelSceneWorkers.delete(parcelSceneWorker)
+          stopParcelSceneWorker(parcelSceneWorker)
         })
-
-        loadedParcelSceneWorkers.add(parcelSceneWorker)
 
         _parcelScene.resolve(parcelSceneWorker)
       } else {
@@ -477,8 +475,7 @@ export function testScene(
         return (originalLog as any).apply(this, args)
       }
 
-      const worker = new SceneWorker(parcelScene, transport.server)
-      loadedParcelSceneWorkers.add(worker)
+      const worker = loadParcelScene(parcelScene, transport.server)
       // keep this to avoid regressions
       await worker.system
 
@@ -518,7 +515,7 @@ export function testScene(
       expect(rootEntity.isDisposed()).to.eq(true)
       expect(scene.getTransformNodesByID(rootEntity.id).length).to.eq(0, 'ParcelScene is still in the scene')
       if (worker) {
-        loadedParcelSceneWorkers.delete(worker)
+        stopParcelSceneWorker(worker)
       }
     })
   })

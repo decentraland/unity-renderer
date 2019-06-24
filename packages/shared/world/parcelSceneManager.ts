@@ -6,6 +6,7 @@ import { ETHEREUM_NETWORK } from 'config'
 import { positionObservable, teleportObservable } from './positionThings'
 import { SceneWorker, ParcelSceneAPI } from './SceneWorker'
 import { LoadableParcelScene, EnvironmentData, ILand, ILandToLoadableParcelScene } from '../types'
+import { ScriptingTransport } from 'decentraland-rpc/lib/common/json-rpc/types'
 
 export type EnableParcelSceneLoadingOptions = {
   parcelSceneClass: { new (x: EnvironmentData<LoadableParcelScene>): ParcelSceneAPI }
@@ -14,41 +15,80 @@ export type EnableParcelSceneLoadingOptions = {
   onLoadParcelScenes?(x: ILand[]): void
 }
 
-export const loadedParcelSceneWorkers: Set<SceneWorker> = new Set()
+export const loadedParcelSceneWorkers = new Map<string, SceneWorker>()
+
+const sceneWorkerByBaseCoordinate = new Map<string, SceneWorker>()
+const userViewMatrixWorkers = new Set<SceneWorker>()
+export const loadedSceneWorkers = new Set<SceneWorker>()
 
 /**
- * Retrieve the Scene based on the Scene CID
+ * Retrieve the Scene based on the Scene Root CID
  */
-export function getSceneWorkerByCID(id: string) {
-  for (let parcelSceneWorker of loadedParcelSceneWorkers) {
-    if (getParcelSceneCID(parcelSceneWorker) === id) {
-      return parcelSceneWorker
-    }
-  }
-  return null
+export function getSceneWorkerByRootCID(rootCID: string) {
+  return loadedParcelSceneWorkers.get(rootCID)
 }
 
 /**
  * Returns the CID of the parcel scene
  */
-export function getParcelSceneCID(parcelScene: SceneWorker) {
-  return parcelScene.parcelScene.data.id
+export function getParcelSceneRootCID(parcelScene: ParcelSceneAPI) {
+  return parcelScene.data.id
 }
 
-/**
- * This function receives the list of { type: string, data: ILand } from a remote worker.
- * It loads and unloads the ParcelScenes from the world
- * Retrieve the SceneWorker based on the parcelID
- *
- * @param id Base ID of the scene
- */
-export function getSceneWorkerByBaseCoordinates(id: string) {
-  for (let parcelSceneWorker of loadedParcelSceneWorkers) {
-    if (parcelSceneWorker.parcelScene.data.data.id === id) {
-      return parcelSceneWorker
+export function getSceneWorkerByBaseCoordinates(coordinates: string) {
+  return sceneWorkerByBaseCoordinate.get(coordinates)
+}
+
+export function getBaseCoordinates(worker: SceneWorker) {
+  return (
+    worker &&
+    worker.parcelScene &&
+    worker.parcelScene.data &&
+    worker.parcelScene.data.data &&
+    worker.parcelScene.data.data.scene &&
+    worker.parcelScene.data.data.scene.base
+  )
+}
+
+export function stopParcelSceneWorker(worker: SceneWorker) {
+  if (worker && !worker.persistent) {
+    forceStopParcelSceneWorker(worker)
+  }
+}
+
+export function forceStopParcelSceneWorker(worker: SceneWorker) {
+  worker.dispose()
+  const rootCID = getParcelSceneRootCID(worker.parcelScene)
+  const parcelSceneWorker = loadedParcelSceneWorkers.get(rootCID)!
+  loadedParcelSceneWorkers.delete(rootCID)
+  const baseCoordinates = getBaseCoordinates(parcelSceneWorker)
+  if (baseCoordinates) {
+    sceneWorkerByBaseCoordinate.delete(baseCoordinates)
+  }
+  userViewMatrixWorkers.delete(worker)
+  loadedSceneWorkers.delete(worker)
+}
+
+export function loadParcelScene(parcelScene: ParcelSceneAPI, transport?: ScriptingTransport) {
+  const id = getParcelSceneRootCID(parcelScene)
+  if (loadedParcelSceneWorkers.get(id)) {
+    return loadedParcelSceneWorkers.get(id)!
+  }
+  const parcelSceneWorker = new SceneWorker(parcelScene, transport)
+
+  if (parcelSceneWorker) {
+    loadedParcelSceneWorkers.set(getParcelSceneRootCID(parcelScene), parcelSceneWorker)
+
+    if ('sendUserViewMatrix' in parcelSceneWorker) {
+      userViewMatrixWorkers.add(parcelSceneWorker)
+    }
+    loadedSceneWorkers.add(parcelSceneWorker)
+    const baseCoordinates = getBaseCoordinates(parcelSceneWorker)
+    if (baseCoordinates) {
+      sceneWorkerByBaseCoordinate.set(baseCoordinates, parcelSceneWorker)
     }
   }
-  return null
+  return parcelSceneWorker
 }
 
 export async function enableParcelSceneLoading(network: ETHEREUM_NETWORK, options: EnableParcelSceneLoadingOptions) {
@@ -60,14 +100,9 @@ export async function enableParcelSceneLoading(network: ETHEREUM_NETWORK, option
     if (!options.shouldLoadParcelScene(parcelSceneToLoad)) {
       return
     }
-    if (!getSceneWorkerByCID(opts.sceneCID)) {
+    if (!getSceneWorkerByRootCID(opts.sceneCID)) {
       const parcelScene = new options.parcelSceneClass(ILandToLoadableParcelScene(parcelSceneToLoad))
-
-      const parcelSceneWorker = new SceneWorker(parcelScene)
-
-      if (parcelSceneWorker) {
-        loadedParcelSceneWorkers.add(parcelSceneWorker)
-      }
+      loadParcelScene(parcelScene)
     }
     ret.notify('Scene.prefetchDone', opts)
   })
@@ -78,14 +113,12 @@ export async function enableParcelSceneLoading(network: ETHEREUM_NETWORK, option
     }
   })
 
-  ret.on('Scene.shouldUnload', async (sceneCID: string) => {
-    const parcelSceneToUnload = await ret.getParcelData(sceneCID)
-    loadedParcelSceneWorkers.forEach($ => {
-      if (!$.persistent && getParcelSceneCID($) === parcelSceneToUnload.mappingsResponse.root_cid) {
-        $.dispose()
-        loadedParcelSceneWorkers.delete($)
-      }
-    })
+  ret.on('Scene.shouldUnload', async (opts: { sceneCID: string }) => {
+    const worker = loadedParcelSceneWorkers.get(opts.sceneCID)
+    if (!worker) {
+      return
+    }
+    stopParcelSceneWorker(worker)
   })
 
   ret.on('Position.settled', async (sceneCID: string) => {
@@ -114,10 +147,8 @@ export function enablePositionReporting() {
 
   positionObservable.add(obj => {
     worldToGrid(obj.position, position)
-    for (let parcelSceneWorker of loadedParcelSceneWorkers) {
-      if (parcelSceneWorker && 'sendUserViewMatrix' in parcelSceneWorker) {
-        parcelSceneWorker.sendUserViewMatrix(obj)
-      }
+    for (let parcelSceneWorker of userViewMatrixWorkers) {
+      parcelSceneWorker.sendUserViewMatrix(obj)
     }
   })
 }

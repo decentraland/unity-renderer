@@ -26,10 +26,11 @@ import {
 } from '../shared/world/positionThings'
 import {
   enableParcelSceneLoading,
-  loadedParcelSceneWorkers,
   getSceneWorkerByBaseCoordinates,
-  getParcelSceneCID,
-  enablePositionReporting
+  getParcelSceneRootCID,
+  enablePositionReporting,
+  stopParcelSceneWorker,
+  loadParcelScene
 } from '../shared/world/parcelSceneManager'
 import { SceneWorker, ParcelSceneAPI, hudWorkerUrl } from '../shared/world/SceneWorker'
 import { ensureUiApis } from '../shared/world/uiSceneInitializer'
@@ -83,8 +84,6 @@ const browserInterface = {
   }
 }
 
-let lastParcelScenesSent = ''
-
 const unityInterface = {
   debug: false,
   SetDebug() {
@@ -107,25 +106,10 @@ const unityInterface = {
   },
   /** Tells the engine which scenes to load */
   LoadParcelScenes(parcelsToLoad: LoadableParcelScene[]) {
-    const parcelScenes = JSON.stringify({ parcelsToLoad })
-    if (parcelScenes !== lastParcelScenesSent) {
-      lastParcelScenesSent = parcelScenes
-      let finalJson: string = ''
-
-      // NOTE(Brian): split json to be able to throttle the json parsing process in engine's side
-      for (let i = 0; i < parcelsToLoad.length; i++) {
-        const parcel = parcelsToLoad[i]
-        const json = JSON.stringify(parcel)
-
-        finalJson += json
-
-        if (i < parcelsToLoad.length - 1) {
-          finalJson += '}{'
-        }
-      }
-
-      gameInstance.SendMessage('SceneController', 'LoadParcelScenes', finalJson)
+    if (parcelsToLoad.length > 1) {
+      throw new Error('Only one scene at a time!')
     }
+    gameInstance.SendMessage('SceneController', 'LoadParcelScenes', JSON.stringify(parcelsToLoad[0]))
   },
   sendSceneMessage(parcelSceneId: string, method: string, payload: string) {
     if (unityInterface.debug) {
@@ -203,7 +187,7 @@ class UnityParcelScene extends UnityScene<LoadableParcelScene> {
 
         const parcelIdentity = system.getAPIInstance(ParcelIdentity)
         parcelIdentity.land = this.data.data.land
-        parcelIdentity.cid = getParcelSceneCID(worker)
+        parcelIdentity.cid = getParcelSceneRootCID(worker.parcelScene)
       })
       .catch(e => this.logger.error('Error initializing system', e))
   }
@@ -284,25 +268,22 @@ async function initializeDecentralandUI() {
     mappings: []
   })
 
-  const worker = new SceneWorker(scene)
+  const worker = loadParcelScene(scene)
   worker.persistent = true
 
   await ensureUiApis(worker)
 
-  loadedParcelSceneWorkers.add(worker)
-
   unityInterface.CreateUIScene({ id: scene.unitySceneId, baseUrl: scene.data.baseUrl })
 }
+
+let currentLoadedScene: SceneWorker
 
 export async function loadPreviewScene() {
   const result = await fetch('/scene.json?nocache=' + Math.random())
 
-  loadedParcelSceneWorkers.forEach(worker => {
-    if (!worker.persistent) {
-      worker.dispose()
-      loadedParcelSceneWorkers.delete(worker)
-    }
-  })
+  if (currentLoadedScene) {
+    stopParcelSceneWorker(currentLoadedScene)
+  }
 
   if (result.ok) {
     // we load the scene to get the metadata
@@ -321,9 +302,7 @@ export async function loadPreviewScene() {
     // tslint:disable-next-line: no-console
     console.log('Starting Preview...')
     const parcelScene = new UnityParcelScene(ILandToLoadableParcelScene(defaultScene))
-    const parcelSceneWorker = new SceneWorker(parcelScene)
-
-    loadedParcelSceneWorkers.add(parcelSceneWorker)
+    currentLoadedScene = loadParcelScene(parcelScene)
 
     const target: LoadableParcelScene = { ...ILandToLoadableParcelScene(defaultScene).data }
     delete target.land

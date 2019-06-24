@@ -7,11 +7,11 @@ import { SceneDataDownloadManager } from './download'
 export class SceneLifeCycleController extends EventEmitter {
   private downloadManager: SceneDataDownloadManager
 
-  private _positionToSceneCID: { [position: string]: string | undefined } = {}
-  private futureOfPositionToCID: { [position: string]: IFuture<string | undefined> } = {}
-  private sceneStatus: { [sceneCID: string]: SceneLifeCycleStatus } = {}
+  private _positionToSceneCID = new Map<string, string | undefined>()
+  private futureOfPositionToCID = new Map<string, IFuture<string | undefined>>()
+  private sceneStatus = new Map<string, SceneLifeCycleStatus>()
 
-  private sceneParcelSightCount: { [sceneCID: string]: number } = {}
+  private sceneParcelSightCount = new Map<string, number>()
 
   constructor(opts: { downloadManager: SceneDataDownloadManager }) {
     super()
@@ -26,25 +26,27 @@ export class SceneLifeCycleController extends EventEmitter {
 
   hasStarted(position: string) {
     return (
-      this._positionToSceneCID[position] &&
-      this.sceneStatus[this._positionToSceneCID[position]!] &&
-      this.sceneStatus[this._positionToSceneCID[position]!].isAwake()
+      this._positionToSceneCID.has(position) &&
+      this.sceneStatus.has(this._positionToSceneCID.get(position)!) &&
+      this.sceneStatus.get(this._positionToSceneCID.get(position)!)!.isAwake()
     )
   }
 
   async onSight(position: string) {
     let sceneCID = await this.requestSceneCID(position)
     if (sceneCID) {
-      this.sceneParcelSightCount[sceneCID] = this.sceneParcelSightCount[sceneCID] || 1
-      if (!this.sceneStatus[sceneCID]) {
+      const previousSightCount = this.sceneParcelSightCount.get(sceneCID) || 0
+      this.sceneParcelSightCount.set(sceneCID, previousSightCount + 1)
+
+      if (!this.sceneStatus.has(sceneCID)) {
         const data = await this.downloadManager.getParcelData(position)
         if (data) {
-          this.sceneStatus[sceneCID] = new SceneLifeCycleStatus(data)
+          this.sceneStatus.set(sceneCID, new SceneLifeCycleStatus(data))
         }
       }
-      if (!this.sceneStatus[sceneCID].isAwake()) {
+      if (this.sceneStatus.get(sceneCID)!.isDead()) {
         this.emit('Preload scene', sceneCID)
-        this.sceneStatus[sceneCID].status = 'awake'
+        this.sceneStatus.get(sceneCID)!.status = 'awake'
       }
     }
   }
@@ -53,55 +55,55 @@ export class SceneLifeCycleController extends EventEmitter {
     if (!sceneCID) {
       return
     }
-    this.sceneParcelSightCount[sceneCID] = this.sceneParcelSightCount[sceneCID] || 0
-    this.sceneParcelSightCount[sceneCID]--
+    const previousSightCount = this.sceneParcelSightCount.get(sceneCID) || 0
+    this.sceneParcelSightCount.set(sceneCID, previousSightCount - 1)
 
-    if (this.sceneParcelSightCount[sceneCID] <= 0) {
-      if (this.sceneStatus[sceneCID] && this.sceneStatus[sceneCID].isAwake()) {
-        this.sceneStatus[sceneCID].status = 'unloaded'
+    if (this.sceneParcelSightCount.get(sceneCID)! <= 0) {
+      if (this.sceneStatus.has(sceneCID) && this.sceneStatus.get(sceneCID)!.isAwake()) {
+        this.sceneStatus.get(sceneCID)!.status = 'unloaded'
         this.emit('Unload scene', sceneCID)
       }
     }
   }
 
   reportDataLoaded(sceneCID: string) {
-    if (this.sceneStatus[sceneCID].status === 'awake') {
-      this.sceneStatus[sceneCID].status = 'ready'
+    if (this.sceneStatus.has(sceneCID) && this.sceneStatus.get(sceneCID)!.status === 'awake') {
+      this.sceneStatus.get(sceneCID)!.status = 'ready'
       this.emit('Start scene', sceneCID)
     }
   }
 
   async requestSceneCID(position: string): Promise<string | undefined> {
-    if (this._positionToSceneCID[position]) {
-      return this._positionToSceneCID[position]
+    if (this._positionToSceneCID.has(position)) {
+      return this._positionToSceneCID.get(position)!
     }
-    if (!this.futureOfPositionToCID[position]) {
-      this.futureOfPositionToCID[position] = future<string | undefined>()
+    if (!this.futureOfPositionToCID.has(position)) {
+      this.futureOfPositionToCID.set(position, future<string | undefined>())
       try {
         const land = await this.downloadManager.getParcelData(position)
         if (!land) {
-          this.futureOfPositionToCID[position].resolve(undefined)
-          return this.futureOfPositionToCID[position]
+          this.futureOfPositionToCID.get(position)!.resolve(undefined)
+          return this.futureOfPositionToCID.get(position)!
         }
         const sceneCID = land.mappingsResponse.contents.filter($ => $.file === 'scene.json')[0].hash
         for (const pos of land.scene.scene.parcels) {
-          if (!this._positionToSceneCID[pos]) {
-            this._positionToSceneCID[pos] = sceneCID
+          if (!this._positionToSceneCID.has(pos)) {
+            this._positionToSceneCID.set(pos, sceneCID)
           }
-          if (!this.futureOfPositionToCID[pos]) {
+          if (!this.futureOfPositionToCID.has(pos)) {
             continue
           }
-          if (this.futureOfPositionToCID[pos].isPending) {
-            this.futureOfPositionToCID[pos].resolve(sceneCID)
+          if (this.futureOfPositionToCID.get(pos)!.isPending) {
+            this.futureOfPositionToCID.get(pos)!.resolve(sceneCID)
           }
         }
       } catch (e) {
-        this.futureOfPositionToCID[position].reject(e)
+        this.futureOfPositionToCID.get(position)!.reject(e)
       }
-      return this.futureOfPositionToCID[position]
+      return this.futureOfPositionToCID.get(position)!
     } else {
-      const cid = await this.futureOfPositionToCID[position]
-      this._positionToSceneCID[position] = cid
+      const cid = await this.futureOfPositionToCID.get(position)!
+      this._positionToSceneCID.set(position, cid)
       return cid
     }
   }
