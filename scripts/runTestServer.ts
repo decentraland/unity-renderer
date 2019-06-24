@@ -55,6 +55,7 @@ function getTopicList(socket: WebSocket): Set<string> {
 
 wss.on('connection', function connection(ws) {
   connections.add(ws)
+  const alias = ++connectionCounter
 
   ws.on('message', message => {
     const data = message as Buffer
@@ -69,6 +70,7 @@ wss.on('connection', function connection(ws) {
 
       const dataMessage = new proto.DataMessage()
       dataMessage.setType(proto.MessageType.DATA)
+      dataMessage.setFromAlias(alias)
       dataMessage.setBody(topicMessage.getBody_asU8())
 
       const topicData = dataMessage.serializeBinary()
@@ -97,7 +99,7 @@ wss.on('connection', function connection(ws) {
   setTimeout(() => {
     const welcome = new proto.WelcomeMessage()
     welcome.setType(proto.MessageType.WELCOME)
-    welcome.setAlias(++connectionCounter)
+    welcome.setAlias(alias)
     const data = welcome.serializeBinary()
 
     ws.send(data)
