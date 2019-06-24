@@ -143,11 +143,11 @@ jobs:
       - run:
           name: Deploy tag to .today/tags/${CIRCLE_TAG}
           command: |
-            aws s3 sync static s3://explorer.decentraland.today/tags/${CIRCLE_TAG} --acl public-read
+            aws s3 sync static s3://explorer.decentraland.today/tags/${CIRCLE_TAG} --exclude "tags/*" --acl public-read
       - run:
           name: Deploy tag to .today
           command: |
-            aws s3 sync static s3://explorer.decentraland.today/ --acl public-read
+            aws s3 sync static s3://explorer.decentraland.today/ --exclude "tags/*" --acl public-read
       - run:
           name: Invalidate cloudfront cache .today
           command: aws configure set preview.cloudfront true && aws configure set preview.create-invalidation true && aws cloudfront create-invalidation --distribution-id E315GYHDRD7XX6 --paths "/*"
@@ -168,11 +168,11 @@ jobs:
       - run:
           name: Deploy tag to .org/tags/${CIRCLE_TAG}
           command: |
-            aws s3 sync static s3://explorer.decentraland.org/tags/${CIRCLE_TAG} --acl public-read
+            aws s3 sync static s3://explorer.decentraland.org/tags/${CIRCLE_TAG} --exclude "tags/*" --acl public-read
       - run:
           name: Deploy tag to .org
           command: |
-            aws s3 sync static s3://explorer.decentraland.org/ --acl public-read
+            aws s3 sync static s3://explorer.decentraland.org/ --exclude "tags/*" --acl public-read
       - run:
           name: Invalidate cloudfront cache .org
           command: aws configure set preview.cloudfront true && aws configure set preview.create-invalidation true && aws cloudfront create-invalidation --distribution-id E253JP8V3Y9YUI --paths "/*"
