@@ -5,6 +5,7 @@ import { Vector2, ReadOnlyVector3, Vector3 } from 'decentraland-ecs/src'
 
 import { chatObservable, ChatEvent } from './comms/chat'
 import { avatarMessageObservable } from './comms/peers'
+import { AvatarMessageType } from './comms/types'
 import { positionObservable } from './world/positionThings'
 
 declare var window: any
@@ -75,7 +76,13 @@ function hookObservables() {
     }
   })
 
-  avatarMessageObservable.add(({ type, ...data }) => queueTrackingEvent(type, data))
+  avatarMessageObservable.add(({ type, ...data }) => {
+    if (type === AvatarMessageType.USER_VISIBLE || type === AvatarMessageType.USER_POSE) {
+      return
+    }
+
+    queueTrackingEvent(type, data)
+  })
 
   let lastTime: number = performance.now()
   let seconds = 0
