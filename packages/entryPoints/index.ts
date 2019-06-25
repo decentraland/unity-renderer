@@ -1,6 +1,5 @@
 import 'engine'
 
-import { ETHEREUM_NETWORK } from '../config'
 import { initBabylonClient } from '../engine/dcl'
 import { domReadyFuture, bodyReadyFuture, scene } from '../engine/renderer/init'
 import { initShared } from '../shared'
@@ -13,12 +12,12 @@ document.body.classList.remove('dcl-loading')
 
 const container = document.body
 
-async function loadClient(net: ETHEREUM_NETWORK) {
+async function loadClient() {
   await initBabylonClient()
 
   container.appendChild(enableMiniMap())
 
-  await enableParcelSceneLoading(net, {
+  await enableParcelSceneLoading({
     parcelSceneClass: WebGLParcelScene,
     onSpawnpoint: initialLand => {
       const newPosition = getWorldSpawnpoint(initialLand)
@@ -27,15 +26,15 @@ async function loadClient(net: ETHEREUM_NETWORK) {
         scene.activeCamera.position.copyFrom(result)
       }
     },
-    shouldLoadParcelScene: () => true
+    preloadScene: async () => true
   })
 }
 
 bodyReadyFuture
   .then(async body => {
-    const net = await initShared(container)
+    await initShared(container)
 
-    await loadClient(net)
+    await loadClient()
 
     domReadyFuture
       .then(canvas => {

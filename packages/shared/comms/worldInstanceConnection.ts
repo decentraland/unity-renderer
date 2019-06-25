@@ -101,14 +101,14 @@ export class WorldInstanceConnection {
     }
   }
 
-  sendParcelSceneCommsMessage(sceneCID: string, message: string) {
-    const topic = sceneCID
+  sendParcelSceneCommsMessage(sceneId: string, message: string) {
+    const topic = sceneId
 
     // TODO: create its own class once we get the .proto file
     const d = new ChatData()
     d.setCategory(Category.SCENE_MESSAGE)
     d.setTime(Date.now())
-    d.setMessageId(sceneCID)
+    d.setMessageId(sceneId)
     d.setText(message)
 
     const r = this.sendTopicMessage(true, topic, d)

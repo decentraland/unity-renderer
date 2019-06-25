@@ -104,6 +104,7 @@ export type EntityAction = {
   payload: string
 }
 
+/** THIS INTERFACE CANNOT CHANGE, IT IS USED IN THE UNITY BUILD */
 export type LoadableParcelScene = {
   id: string
   basePosition: { x: number; y: number }
@@ -161,7 +162,7 @@ export interface IScene {
 }
 
 export type EnvironmentData<T> = {
-  id: string
+  sceneId: string
   main: string
   baseUrl: string
   mappings: Array<ContentMapping>
@@ -169,6 +170,11 @@ export type EnvironmentData<T> = {
 }
 
 export interface ILand {
+  /**
+   * sceneId: Now it is either an internal identifier or the rootCID.
+   * In the future will change to the sceneCID
+   */
+  sceneId: string
   scene: IScene
   baseUrl: string
   mappingsResponse: MappingsResponse
@@ -306,12 +312,12 @@ export function ILandToLoadableParcelScene(land: ILand): EnvironmentData<Loadabl
   }
 
   const ret: EnvironmentData<LoadableParcelScene> = {
-    id: sceneJsons[0].hash,
+    sceneId: land.sceneId,
     baseUrl: land.baseUrl,
     main: land.scene.main,
     mappings,
     data: {
-      id: land.scene.scene.base,
+      id: land.sceneId,
       basePosition: parseParcelPosition(land.scene.scene.base),
       parcels:
         (land.scene &&

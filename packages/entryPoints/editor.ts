@@ -10,12 +10,7 @@ import { initLocalPlayer, domReadyFuture, onWindowResize } from '../engine/rende
 import { initBabylonClient } from '../engine/dcl'
 import * as _envHelper from '../engine/renderer/envHelper'
 import { canvas, scene } from '../engine/renderer/init'
-import {
-  enablePositionReporting,
-  loadParcelScene,
-  loadedSceneWorkers,
-  forceStopParcelSceneWorker
-} from '../shared/world/parcelSceneManager'
+import { loadParcelScene, loadedSceneWorkers, stopParcelSceneWorker } from '../shared/world/parcelSceneManager'
 import {
   LoadableParcelScene,
   ILandToLoadableParcelScene,
@@ -56,10 +51,10 @@ let parcelsY = 1
 async function loadScene(scene: IScene & { baseUrl: string }) {
   if (!scene) return
 
-  let id = '0x0'
+  let parcel_id = '0,0'
   if (scene && scene.scene && scene.scene.base) {
     const [x, y] = scene.scene.base.split(',').map($ => parseInt($, 10))
-    id = `${x},${y}`
+    parcel_id = `${x},${y}`
   }
 
   const publisher = '0x0'
@@ -69,11 +64,12 @@ async function loadScene(scene: IScene & { baseUrl: string }) {
   if (!scene.baseUrl) throw new Error('baseUrl missing in scene')
 
   let defaultScene: ILand = {
+    sceneId: 'editorScene',
     baseUrl: scene.baseUrl,
     scene,
     mappingsResponse: {
       contents,
-      parcel_id: id,
+      parcel_id,
       publisher,
       root_cid: 'Qmtest'
     }
@@ -83,7 +79,8 @@ async function loadScene(scene: IScene & { baseUrl: string }) {
 }
 
 async function initializePreview(userScene: EnvironmentData<LoadableParcelScene>, parcelCount: number) {
-  loadedSceneWorkers.forEach($ => forceStopParcelSceneWorker($))
+  // unload non-persistent scenes
+  loadedSceneWorkers.forEach($ => stopParcelSceneWorker($))
 
   webGlParcelScene = new WebGLParcelScene(userScene)
   let parcelScene = loadParcelScene(webGlParcelScene)
@@ -123,8 +120,6 @@ async function initializePreview(userScene: EnvironmentData<LoadableParcelScene>
   context.on('entityBackInScene', e => {
     evtEmitter.emit('entityBackInScene', e)
   })
-
-  enablePositionReporting()
 
   if (!didStartPosition) {
     // TODO (eordano): Find a fancier way to do this
@@ -185,8 +180,8 @@ export namespace editor {
     return domReadyFuture.isPending ? domReadyFuture : Promise.resolve(canvas)
   }
 
-  export function getScenes() {
-    return loadedSceneWorkers
+  export function getScenes(): Set<SceneWorker> {
+    return new Set(loadedSceneWorkers.values())
   }
 
   function configureEditorEnvironment(enabled: boolean) {

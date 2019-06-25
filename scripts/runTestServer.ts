@@ -247,11 +247,11 @@ function checkDiff(imageAPath: string, imageBPath: string, threshold: number, di
     )
     return res.json({
       data: fileData
-        .filter(_ => !!_)
-        .map((_: any) => ({
-          root_cid: _.root_cid,
-          publisher: _.publisher,
-          content: _
+        .filter($ => !!$)
+        .map(($: any) => ({
+          root_cid: $.root_cid,
+          publisher: $.publisher,
+          content: $
         }))
     })
   }

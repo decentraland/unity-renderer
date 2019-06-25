@@ -115,7 +115,7 @@ const notifyPositionObservers = (() => {
 }
 
 function getMetrics(): Metrics {
-  return [...loadedSceneWorkers]
+  return [...loadedSceneWorkers.values()]
     .map(getContext)
     .filter(onlyTruthy)
     .map(retrieveMetrics)
