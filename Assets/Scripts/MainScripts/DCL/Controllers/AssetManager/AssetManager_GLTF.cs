@@ -1,6 +1,6 @@
-using System;
-using DCL.Components;
+﻿using DCL.Components;
 using DCL.Helpers;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -44,6 +44,7 @@ namespace DCL
 
         bool VERBOSE = false;
         WebRequestLoader.WebRequestLoaderEventAction OnGLTFLoaderWebRequestStartHook;
+        public System.Action<GLTFComponent> OnStartLoading;
 
         private void Awake()
         {
@@ -182,6 +183,9 @@ namespace DCL
             loadable.LoadingTextureMaterial = Utils.EnsureResourcesMaterial("Materials/LoadingTextureMaterial");
             loadable.InitialVisibility = initialVisibility;
 
+            //NOTE(Brian): Not proud of this. We have to design a better way to pass settings to the loader.
+            OnStartLoading?.Invoke(loadable);
+
             if (VERBOSE)
             {
                 Debug.Log("StartLoading() url -> " + url);
@@ -212,7 +216,7 @@ namespace DCL
                     }
                 }
             }
-            
+
             if (OnSuccess != null)
             {
                 OnSuccess.Invoke();

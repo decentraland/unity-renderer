@@ -1,7 +1,6 @@
-using DCL.Components;
+﻿using DCL.Components;
 using DCL.Helpers;
 using DCL.Models;
-using Newtonsoft.Json;
 using NUnit.Framework;
 using System.Collections;
 using UnityEngine;
@@ -62,7 +61,7 @@ namespace Tests
                 "When the UIScreenSpaceShape is explicitly updated as 'visible', its canvas should be visible");
 
             // Position character outside parcel
-            SetCharacterPosition(new Vector3(100, 3f, 100f));
+            TestHelpers.SetCharacterPosition(new Vector3(100, 3f, 100f));
 
             yield return null;
 
@@ -81,7 +80,7 @@ namespace Tests
             yield return InitScene();
 
             // Position character outside parcel
-            SetCharacterPosition(new Vector3(50f, 3f, 50f));
+            TestHelpers.SetCharacterPosition(new Vector3(50f, 3f, 50f));
 
             yield return null;
 

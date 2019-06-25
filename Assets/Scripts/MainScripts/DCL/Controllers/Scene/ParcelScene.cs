@@ -9,19 +9,22 @@ using UnityEngine.Assertions;
 
 namespace DCL.Controllers
 {
+
     public class ParcelScene : MonoBehaviour
     {
         public static bool VERBOSE = false;
 
         public Dictionary<string, DecentralandEntity> entities = new Dictionary<string, DecentralandEntity>();
         public Dictionary<string, BaseDisposable> disposableComponents = new Dictionary<string, BaseDisposable>();
-        public LoadParcelScenesMessage.UnityParcelScene sceneData { get; private set; }
+        public LoadParcelScenesMessage.UnityParcelScene sceneData { get; protected set; }
         public SceneController ownerController;
         public SceneMetricsController metricsController;
         public UIScreenSpace uiScreenSpace;
 
         public event System.Action<DecentralandEntity> OnEntityAdded;
         public event System.Action<DecentralandEntity> OnEntityRemoved;
+
+        public ContentProvider contentProvider;
 
         public void Awake()
         {
@@ -59,10 +62,14 @@ namespace DCL.Controllers
             }
         }
 
-        public void SetData(LoadParcelScenesMessage.UnityParcelScene data)
+        public virtual void SetData(LoadParcelScenesMessage.UnityParcelScene data)
         {
             this.sceneData = data;
-            this.sceneData.BakeHashes();
+
+            contentProvider = new ContentProvider();
+            contentProvider.baseUrl = data.baseUrl;
+            contentProvider.contents = data.contents;
+            contentProvider.BakeHashes();
 
             this.name = gameObject.name = $"scene:{data.id}";
 
@@ -315,9 +322,23 @@ namespace DCL.Controllers
             if (classId == CLASS_ID_COMPONENT.TRANSFORM)
             {
                 JsonUtility.FromJsonOverwrite(createEntityComponentMessage.json, DCLTransform.model);
-                entity.gameObject.transform.localPosition = DCLTransform.model.position;
-                entity.gameObject.transform.localRotation = DCLTransform.model.rotation;
-                entity.gameObject.transform.localScale = DCLTransform.model.scale;
+
+                // HACK (Zak): this hack will be removed when we add a TransformLerped component
+                if (entity.components.ContainsKey(CLASS_ID_COMPONENT.AVATAR_SHAPE))
+                {
+                    AvatarShape avatarShape = (AvatarShape)(entity.components[CLASS_ID_COMPONENT.AVATAR_SHAPE]);
+                    avatarShape.MoveWithLerpTo(
+                        DCLTransform.model.position - Vector3.up * DCLCharacterController.i.characterController.height / 2, // To fix the "always flying" avatars bug, We report the chara's centered position but the body hast its pivot at its feet
+                        DCLTransform.model.rotation,
+                        Vector3.one);
+                }
+                else
+                {
+                    entity.gameObject.transform.localPosition = DCLTransform.model.position;
+                    entity.gameObject.transform.localRotation = DCLTransform.model.rotation;
+                    entity.gameObject.transform.localScale = DCLTransform.model.scale;
+                }
+
                 return null;
             }
 
@@ -634,87 +655,6 @@ namespace DCL.Controllers
                 metricsController.SendEvent();
         }
 
-        public bool HasTestSchema(string url)
-        {
-#if UNITY_EDITOR
-            if (url.StartsWith("file://"))
-            {
-                return true;
-            }
-
-            if (url.StartsWith(TestHelpers.GetTestsAssetsPath()))
-            {
-                return true;
-            }
-#endif
-            return false;
-        }
-
-        public virtual bool HasContentsUrl(string url)
-        {
-            if (string.IsNullOrEmpty(url))
-            {
-                return false;
-            }
-
-#if UNITY_EDITOR
-            if (HasTestSchema(url))
-            {
-                return true;
-            }
-#endif
-            if (sceneData.fileToHash == null)
-            {
-                return false;
-            }
-
-            return sceneData.fileToHash.ContainsKey(url.ToLower());
-        }
-
-        public string GetContentsUrl(string url)
-        {
-            string result = "";
-
-            if (TryGetContentsUrl(url, out result))
-            {
-                return result;
-            }
-
-            return null;
-        }
-
-        public virtual bool TryGetContentsUrl(string url, out string result)
-        {
-            url = url.ToLower();
-            result = url;
-
-            if (HasTestSchema(url))
-            {
-                return true;
-            }
-
-            if (sceneData.fileToHash != null)
-            {
-                if (!sceneData.fileToHash.ContainsKey(url))
-                {
-                    Debug.LogError(string.Format("GetContentsUrl >>> File {0} not found!!!", url));
-                    return false;
-                }
-
-                result = sceneData.baseUrl + sceneData.fileToHash[url];
-            }
-            else
-            {
-                result = sceneData.baseUrl + "/" + url;
-            }
-
-            if (VERBOSE)
-            {
-                Debug.Log($">>> GetContentsURL from ... {url} ... RESULTING URL... = {result}");
-            }
-
-            return true;
-        }
 
         public BaseDisposable GetSharedComponent(string componentId)
         {
@@ -776,5 +716,7 @@ namespace DCL.Controllers
                 Mathf.Floor(vector.z / ParcelSettings.PARCEL_SIZE)
             );
         }
+
+
     }
 }

@@ -26,6 +26,9 @@ public class DCLCharacterController : MonoBehaviour
     [System.NonSerialized]
     public bool initialPositionAlreadySet = false;
 
+    [System.NonSerialized]
+    public CharacterController characterController;
+
     new Transform camera;
     new Rigidbody rigidbody;
     new Collider collider;
@@ -45,7 +48,6 @@ public class DCLCharacterController : MonoBehaviour
     bool isGrounded = false;
     bool jumpButtonPressed = false;
     bool jumpButtonPressedThisFrame = false;
-    CharacterController characterController;
 
     public static System.Action<Vector3> OnCharacterMoved;
     public static System.Action<Vector3> OnPositionSet;

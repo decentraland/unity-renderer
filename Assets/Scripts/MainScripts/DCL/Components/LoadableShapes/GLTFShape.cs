@@ -15,12 +15,15 @@ namespace DCL.Components
 
         protected override void AttachShape(DecentralandEntity entity)
         {
-            if (scene.HasContentsUrl(currentSrc))
+            if (scene.contentProvider.HasContentsUrl(currentSrc))
             {
                 entity.EnsureMeshGameObject(componentName + " mesh");
                 GLTFLoader loadableShape = entity.meshGameObject.GetOrCreateComponent<GLTFLoader>();
                 loadableShape.entity = entity;
-                loadableShape.Load(currentSrc, Configuration.ParcelSettings.VISUAL_LOADING_ENABLED, model.visible);
+                loadableShape.useVisualFeedback = Configuration.ParcelSettings.VISUAL_LOADING_ENABLED;
+                loadableShape.initialVisibility = model.visible;
+                loadableShape.contentProvider = scene.contentProvider;
+                loadableShape.Load(currentSrc, OnLoadCompleted, OnLoadFailed);
             }
             else
             {

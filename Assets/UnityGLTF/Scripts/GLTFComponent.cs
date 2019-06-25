@@ -57,7 +57,7 @@ namespace UnityGLTF
         [SerializeField] private bool MaterialsOnly = false;
         [SerializeField] private int RetryCount = 10;
         [SerializeField] private float RetryTimeout = 2.0f;
-        [SerializeField] private Shader shaderOverride = null;
+        [SerializeField] public Shader shaderOverride = null;
         private bool initialVisibility = true;
 
         private enum State
@@ -122,7 +122,7 @@ namespace UnityGLTF
                 Destroy(gameObject);
             }
 
-            Debug.Log("GLTF Failure " + obj.ToString());
+            Debug.Log("GLTF Failure " + obj.ToString() + " ... url = " + this.GLTFUri);
         }
 
         private void IncrementDownloadCount()
@@ -285,6 +285,9 @@ namespace UnityGLTF
 
         private bool TestDistance()
         {
+            if (mainCamera == null)
+                return true;
+
             float dist = Vector3.Distance(mainCamera.transform.position, transform.position);
 
             if (dist < nearestDistance)

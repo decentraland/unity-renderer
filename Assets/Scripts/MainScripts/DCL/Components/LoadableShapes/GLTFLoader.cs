@@ -1,20 +1,23 @@
-#define USE_FILENAME_AS_HASH
-
-using System;
+﻿using System;
 using UnityEngine;
+using UnityEngine.Assertions;
+using UnityGLTF;
 
 namespace DCL.Components
 {
     public class GLTFLoader : LoadableMonoBehavior
     {
-        GameObject gltfContainer;
+        static bool VERBOSE = false;
+
+        public GameObject gltfContainer;
+
         string url;
         string assetDirectoryPath;
+        public Action<GLTFComponent> OnGLTFConfig;
 
-        bool VERBOSE = false;
-
-        public override void Load(string targetUrl, bool useVisualFeedback = false, bool initialVisibility = true)
+        public override void Load(string targetUrl, Action<LoadableMonoBehavior> OnSuccess, Action<LoadableMonoBehavior> OnFail)
         {
+            Assert.IsFalse(string.IsNullOrEmpty(targetUrl), "url is null!!");
             if (gltfContainer != null)
             {
                 Destroy(gltfContainer);
@@ -32,20 +35,60 @@ namespace DCL.Components
                 Debug.Log($"Load(): target URL -> {targetUrl},  url -> {url}, directory path -> {assetDirectoryPath}");
             }
 
-            gltfContainer = AssetManager_GLTF.i.Get(GetCacheId(), url, transform, CallOnComponentUpdatedEvent,
-                CallOnFailure, ParseGLTFWebRequestedFile, initialVisibility);
+            gltfContainer = AssetManager_GLTF.i.Get(
+                id: GetCacheId(),
+                url: url,
+                parent: transform,
+                OnSuccess: () => OnSuccessWrapper(this, OnSuccess),
+                OnFail: () => OnFailWrapper(this, OnFail),
+                webRequestStartEventAction: ParseGLTFWebRequestedFile,
+                initialVisibility: initialVisibility);
+
+            AssetManager_GLTF.i.OnStartLoading -= OnGLTFConfig_Internal;
+            AssetManager_GLTF.i.OnStartLoading += OnGLTFConfig_Internal;
+        }
+
+        void OnGLTFConfig_Internal(GLTFComponent gltfComponent)
+        {
+            if (gltfComponent.GLTFUri == url)
+            {
+                OnGLTFConfig?.Invoke(gltfComponent);
+                AssetManager_GLTF.i.OnStartLoading -= OnGLTFConfig_Internal;
+            }
+        }
+
+        private void OnFailWrapper(GLTFLoader gLTFLoader, Action<LoadableMonoBehavior> OnFail)
+        {
+            if (VERBOSE)
+            {
+                Debug.Log($"Load(): target URL -> {url}. Failure!");
+            }
+
+            AssetManager_GLTF.i.OnStartLoading -= OnGLTFConfig_Internal;
+            OnFail?.Invoke(this);
+        }
+
+        private void OnSuccessWrapper(GLTFLoader gLTFLoader, Action<LoadableMonoBehavior> OnSuccess)
+        {
+            if (VERBOSE)
+            {
+                Debug.Log($"Load(): target URL -> {url}. Success!");
+            }
+
+            alreadyLoaded = true;
+            OnSuccess?.Invoke(this);
         }
 
         void ParseGLTFWebRequestedFile(ref string requestedFileName)
         {
             string finalURL = string.Empty;
-            entity.scene.TryGetContentsUrl(assetDirectoryPath + requestedFileName, out finalURL);
+            contentProvider.TryGetContentsUrl(assetDirectoryPath + requestedFileName, out finalURL);
             requestedFileName = finalURL;
         }
 
         public object GetCacheId()
         {
-            return AssetManager_GLTF.i.GetIdForAsset(entity.scene.sceneData, url);
+            return AssetManager_GLTF.i.GetIdForAsset(contentProvider, url);
         }
 
         public override void Unload()
@@ -54,6 +97,8 @@ namespace DCL.Components
             {
                 AssetManager_GLTF.i.Release(GetCacheId());
             }
+
+            AssetManager_GLTF.i.OnStartLoading -= OnGLTFConfig_Internal;
         }
 
         public void OnDestroy()
@@ -61,40 +106,6 @@ namespace DCL.Components
             if (Application.isPlaying)
             {
                 Unload();
-            }
-        }
-
-        void CallOnFailure()
-        {
-            gameObject.name += " - Failed loading";
-
-            MaterialTransitionController[] transitionController =
-                GetComponentsInChildren<MaterialTransitionController>(true);
-
-            foreach (MaterialTransitionController material in transitionController)
-            {
-                Destroy(material);
-            }
-        }
-
-        void CallOnComponentUpdatedEvent()
-        {
-            if (entity.currentShape == null)
-            {
-                return;
-            }
-
-            alreadyLoaded = true;
-            BaseShape.ConfigureVisibility(entity.meshGameObject, ((GLTFShape)entity.currentShape).model.visible);
-
-            if (entity.OnComponentUpdated != null)
-            {
-                entity.OnComponentUpdated.Invoke(this);
-            }
-
-            if (entity.OnShapeUpdated != null)
-            {
-                entity.OnShapeUpdated.Invoke(entity);
             }
         }
     }

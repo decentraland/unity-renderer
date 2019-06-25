@@ -1,8 +1,8 @@
-using DCL.Configuration;
-using NUnit.Framework;
+﻿using DCL.Configuration;
 using System.Collections;
 using System.IO;
 using UnityEngine;
+using UnityEngine.Assertions;
 
 namespace DCL.Helpers
 {
@@ -28,18 +28,28 @@ namespace DCL.Helpers
         {
             currentTestName = testName;
             snapshotIndex = 0;
+
+            DCLCharacterController.i.gravity = 0f;
+            DCLCharacterController.i.enabled = false;
+
+            // Position character inside parcel (0,0)
+            TestHelpers.SetCharacterPosition(new Vector3(0, 2f, 0f));
+
             yield return new WaitForSeconds(2.0f);
         }
 
-        public static IEnumerator TakeSnapshot(Vector3 position)
+        public static IEnumerator TakeSnapshot(Vector3 position, Vector3? origin = null)
         {
-            yield return TakeSnapshot(currentTestName + "_" + snapshotIndex + ".png", position);
+            yield return TakeSnapshot(currentTestName + "_" + snapshotIndex + ".png", position, origin);
             snapshotIndex++;
         }
 
-        public static IEnumerator TakeSnapshot(string snapshotName, Vector3 position)
+        public static IEnumerator TakeSnapshot(string snapshotName, Vector3 position, Vector3? origin = null)
         {
-            RepositionVisualTestsCamera(position);
+            RepositionVisualTestsCamera(position, origin);
+
+            yield return null;
+            yield return null;
 
             int snapshotsWidth = TestSettings.VISUAL_TESTS_SNAPSHOT_WIDTH;
             int snapshotsHeight = TestSettings.VISUAL_TESTS_SNAPSHOT_HEIGHT;
@@ -55,7 +65,7 @@ namespace DCL.Helpers
 
                 float ratio =
                     ComputeImageAffinityPercentage(baselineImagesPath + snapshotName, testImagesPath + snapshotName);
-                Assert.GreaterOrEqual(ratio, TestSettings.VISUAL_TESTS_APPROVED_AFFINITY,
+                Assert.IsTrue(ratio > TestSettings.VISUAL_TESTS_APPROVED_AFFINITY,
                     $"{snapshotName} has {ratio}% affinity, the minimum is {TestSettings.VISUAL_TESTS_APPROVED_AFFINITY}%. A diff image has been generated. Check it out at {testImagesPath}");
             }
         }
@@ -255,17 +265,20 @@ namespace DCL.Helpers
                    (pixelA.b > pixelB.b - checkThreshold && pixelA.b < pixelB.b + checkThreshold);
         }
 
-        public static void RepositionVisualTestsCamera(Transform cameraTransform, Vector3 newPosition)
+        public static void RepositionVisualTestsCamera(Transform cameraTransform, Vector3 newPosition, Vector3? origin = null)
         {
+            if (!origin.HasValue)
+            {
+                origin = Vector3.zero;
+            }
+
             cameraTransform.position = newPosition;
-            cameraTransform.forward = Vector3.zero - cameraTransform.position;
+            cameraTransform.forward = origin.Value - cameraTransform.position;
         }
 
-        public static void RepositionVisualTestsCamera(Vector3 newPosition)
+        public static void RepositionVisualTestsCamera(Vector3 newPosition, Vector3? origin = null)
         {
-            Transform cameraTransform = VisualTestController.i.camera.transform;
-            cameraTransform.position = newPosition;
-            cameraTransform.forward = Vector3.zero - cameraTransform.position;
+            RepositionVisualTestsCamera(VisualTestController.i.camera.transform, newPosition, origin);
         }
     }
 }

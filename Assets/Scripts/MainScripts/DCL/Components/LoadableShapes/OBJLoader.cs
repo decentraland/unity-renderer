@@ -1,4 +1,4 @@
-using DCL.Helpers;
+﻿using DCL.Helpers;
 
 namespace DCL.Components
 {
@@ -17,12 +17,12 @@ namespace DCL.Components
             throw new System.NotImplementedException();
         }
 
-        public override void Load(string src, bool useVisualFeedback = false, bool initialVisibility = true)
+        public override void Load(string src, System.Action<LoadableMonoBehavior> OnSuccess, System.Action<LoadableMonoBehavior> OnFail)
         {
             if (!string.IsNullOrEmpty(src))
             {
                 alreadyLoaded = false;
-
+                objLoaderComponent.OnFinishedLoadingAsset += () => OnSuccess(this);
                 objLoaderComponent.LoadAsset(src, true);
 
                 if (objLoaderComponent.loadingPlaceholder == null)

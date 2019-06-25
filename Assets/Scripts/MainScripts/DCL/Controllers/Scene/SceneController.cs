@@ -558,7 +558,7 @@ namespace DCL
 
         private void OnCharacterPositionSet(Vector3 newPosition)
         {
-            if(!DCLCharacterController.i.initialPositionAlreadySet) return;
+            if (!DCLCharacterController.i.initialPositionAlreadySet) return;
 
             InitializeLoadingScreen();
 
@@ -576,7 +576,7 @@ namespace DCL
         {
             loadingScreenController.OnLoadingDone -= LoadingDone;
 
-            if(isDebugMode)
+            if (isDebugMode)
             {
                 fpsPanel.GetComponent<DCL.FrameTimeCounter>().Reset();
             }

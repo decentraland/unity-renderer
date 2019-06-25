@@ -1,4 +1,4 @@
-#if UNITY_2017_1_OR_NEWER
+﻿#if UNITY_2017_1_OR_NEWER
 using GLTF;
 using GLTF.Schema;
 using System;
@@ -63,6 +63,20 @@ namespace UnityGLTF
 
                 // Zero position
                 gltfScene.transform.position = Vector3.zero;
+
+                Animation animation = gltfScene.GetComponentInChildren<Animation>();
+                HashSet<AnimationClip> animationClips = new HashSet<AnimationClip>();
+
+                if (animation != null)
+                {
+                    foreach (AnimationState animationState in animation)
+                    {
+                        if (!animationClips.Contains(animationState.clip))
+                        {
+                            animationClips.Add(animationState.clip);
+                        }
+                    }
+                }
 
                 // Get meshes
                 var meshNames = new List<string>();
@@ -217,6 +231,18 @@ namespace UnityGLTF
                         }
                     }
 
+                    if (animationClips.Count > 0)
+                    {
+                        var materialRoot = string.Concat(folderName, "/", "Animations/");
+                        Directory.CreateDirectory(materialRoot);
+
+                        foreach (AnimationClip clip in animationClips)
+                        {
+                            AssetDatabase.CreateAsset(clip, materialRoot + "/" + clip.name + ".anim");
+                            AssetDatabase.SaveAssets();
+                        }
+                    }
+
                     // Save materials as separate assets and rewrite refs
                     if (materials.Length > 0)
                     {
@@ -354,6 +380,8 @@ namespace UnityGLTF
                 GLTFParser.ParseJson(stream, out gLTFRoot);
                 var loader = new GLTFSceneImporter(gLTFRoot, fileLoader, null, stream);
                 GLTFSceneImporter.BudgetPerFrameInMilliseconds = float.MaxValue;
+                loader.InitialVisibility = true;
+                loader.UseMaterialTransition = false;
                 loader.MaximumLod = _maximumLod;
                 loader.isMultithreaded = true;
 

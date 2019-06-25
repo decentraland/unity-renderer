@@ -1,12 +1,8 @@
-﻿using DCL;
-using DCL.Models;
-using DCL.Components;
+﻿using DCL.Components;
 using DCL.Helpers;
-using Newtonsoft.Json;
-using NUnit.Framework;
+using DCL.Models;
 using System.Collections;
 using UnityEngine;
-using UnityEngine.TestTools;
 
 public class UIVisualTestsBase : VisualTestsBase
 {
@@ -18,12 +14,6 @@ public class UIVisualTestsBase : VisualTestsBase
 
         yield return VisualTestHelpers.InitVisualTestsScene(testName);
 
-        DCLCharacterController.i.gravity = 0f;
-        DCLCharacterController.i.enabled = false;
-
-        // Position character inside parcel (0,0)
-        SetCharacterPosition(new Vector3(0, 2f, 0f));
-
         // Create UIScreenSpace
         UIScreenSpace screenSpace = TestHelpers.SharedComponentCreate<UIScreenSpace, UIScreenSpace.Model>(scene, CLASS_ID.UI_SCREEN_SPACE_SHAPE);
         yield return screenSpace.routine;
@@ -32,12 +22,8 @@ public class UIVisualTestsBase : VisualTestsBase
 
         // The canvas has to be in ScreenSpaceCamera mode to be able to render the UI correctly for the snapshots
         screenSpace.canvas.renderMode = RenderMode.ScreenSpaceCamera;
-        screenSpace.canvas.worldCamera = Camera.main;
+        screenSpace.canvas.worldCamera = VisualTestController.i.camera;
         screenSpace.canvas.planeDistance = 1;
-
-        // UI is rendered on the character's "MainCamera" by default
-        VisualTestController.i.camera.gameObject.SetActive(false);
-        VisualTestController.i.camera = Camera.main;
 
         // The camera should only render UI to decrease conflict chance with future ground changes, etc.
         VisualTestController.i.camera.cullingMask = 1 << LayerMask.NameToLayer("UI");

@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections;
 using System.IO;
 using UnityEngine;
@@ -54,13 +54,20 @@ namespace UnityGLTF.Loader
 
         private IEnumerator CreateHTTPRequest(string rootUri, string httpRequestPath)
         {
-            UnityWebRequest www = new UnityWebRequest(Path.Combine(rootUri, httpRequestPath), "GET", new DownloadHandlerBuffer(), null);
+            string finalUrl = httpRequestPath;
+
+            if (!string.IsNullOrEmpty(rootUri))
+            {
+                finalUrl = Path.Combine(rootUri, httpRequestPath);
+            }
+
+            UnityWebRequest www = new UnityWebRequest(finalUrl, "GET", new DownloadHandlerBuffer(), null);
 
             www.timeout = 5000;
 #if UNITY_2017_2_OR_NEWER
             yield return www.SendWebRequest();
 #else
-			yield return www.Send();
+            yield return www.Send();
 #endif
             if ((int)www.responseCode >= 400)
             {

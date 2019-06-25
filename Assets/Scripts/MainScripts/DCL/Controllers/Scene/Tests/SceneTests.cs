@@ -1,4 +1,4 @@
-using DCL;
+﻿using DCL;
 using DCL.Components;
 using DCL.Configuration;
 using DCL.Controllers;
@@ -65,7 +65,7 @@ namespace Tests
                 materials: 5,
                 entities: 8,
                 meshes: 11,
-                bodies: 11,
+                bodies: 13,
                 textures: 0);
 
             TestHelpers.RemoveSceneEntity(scene, "8");
@@ -77,7 +77,7 @@ namespace Tests
                 materials: 4,
                 entities: 7,
                 meshes: 10,
-                bodies: 10,
+                bodies: 12,
                 textures: 0);
 
             sceneController.UnloadAllScenes();
@@ -287,12 +287,12 @@ namespace Tests
             yield return base.InitScene();
 
             // Position character inside parcel (0,0)
-            SetCharacterPosition(Vector3.zero);
+            TestHelpers.SetCharacterPosition(Vector3.zero);
 
             string sceneId = "Test UI Scene";
             sceneController.CreateUIScene(JsonUtility.ToJson(new CreateUISceneMessage() { id = sceneId }));
 
-            GameObject sceneGo = GameObject.Find("scene:" + sceneId);
+            GameObject sceneGo = GameObject.Find("ui scene:" + sceneId);
 
             GlobalScene scene = sceneController.loadedScenes[sceneId] as GlobalScene;
 
@@ -311,11 +311,11 @@ namespace Tests
 
 
             // Position character inside parcel (0,0)
-            SetCharacterPosition(new Vector3(100f, 0f, 100f));
+            TestHelpers.SetCharacterPosition(new Vector3(100f, 0f, 100f));
 
             yield return null;
 
-            sceneGo = GameObject.Find("scene:" + sceneId);
+            sceneGo = GameObject.Find("ui scene:" + sceneId);
 
             Assert.IsTrue(sceneGo != null, "scene game object not found! UIScenes must not be unloaded by distance!");
             Assert.IsTrue(sceneController.loadedScenes[sceneId] != null,
@@ -333,7 +333,7 @@ namespace Tests
             DCLCharacterController.i.gravity = 0;
 
             // Position character inside parcel (0,0)
-            SetCharacterPosition(Vector3.zero);
+            TestHelpers.SetCharacterPosition(Vector3.zero);
 
             var scenesToLoad = (Resources.Load("TestJSON/SceneLoadingTest") as TextAsset).text;
 
@@ -360,7 +360,7 @@ namespace Tests
             yield return null;
 
             // Position character outside parcel (0,0)
-            SetCharacterPosition(new Vector3(ParcelSettings.UNLOAD_DISTANCE + ParcelSettings.PARCEL_SIZE / 2.0f + 1f, 0f, ParcelSettings.UNLOAD_DISTANCE + ParcelSettings.PARCEL_SIZE / 2.0f + 1f));
+            TestHelpers.SetCharacterPosition(new Vector3(ParcelSettings.UNLOAD_DISTANCE + ParcelSettings.PARCEL_SIZE / 2.0f + 1f, 0f, ParcelSettings.UNLOAD_DISTANCE + ParcelSettings.PARCEL_SIZE / 2.0f + 1f));
             yield return new WaitForSeconds(0.1f);
 
             sceneGo = GameObject.Find("scene:" + sceneId);
