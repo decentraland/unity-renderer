@@ -147,7 +147,7 @@ namespace Tests
             string entityId = "1";
             TestHelpers.CreateSceneEntity(scene, entityId);
 
-            TestHelpers.CreateAndSetShape(scene, entityId, DCL.Models.CLASS_ID.GLTF_SHAPE, JsonConvert.SerializeObject(
+            var componentId = TestHelpers.CreateAndSetShape(scene, entityId, DCL.Models.CLASS_ID.GLTF_SHAPE, JsonConvert.SerializeObject(
                 new
                 {
                     src = TestHelpers.GetTestsAssetsPath() + "/GLB/Lantern/Lantern.glb"
@@ -163,7 +163,7 @@ namespace Tests
                 Assert.IsTrue(gltfObject.transform.Find("Lantern") != null, "Can't find \"Lantern!\"");
             }
 
-            TestHelpers.CreateAndSetShape(scene, entityId, DCL.Models.CLASS_ID.GLTF_SHAPE, JsonConvert.SerializeObject(
+            TestHelpers.UpdateShape(scene, componentId, JsonConvert.SerializeObject(
                 new
                 {
                     src = TestHelpers.GetTestsAssetsPath() + "/GLB/DamagedHelmet/DamagedHelmet.glb"
@@ -189,7 +189,7 @@ namespace Tests
             string entityId = "1";
             TestHelpers.CreateSceneEntity(scene, entityId);
 
-            TestHelpers.CreateAndSetShape(scene, entityId, DCL.Models.CLASS_ID.GLTF_SHAPE, JsonConvert.SerializeObject(
+            var componentId = TestHelpers.CreateAndSetShape(scene, entityId, DCL.Models.CLASS_ID.GLTF_SHAPE, JsonConvert.SerializeObject(
                 new
                 {
                     src = TestHelpers.GetTestsAssetsPath() + "/GLB/Lantern/Lantern.glb"
@@ -198,7 +198,7 @@ namespace Tests
             GLTFLoader gltfShape = scene.entities[entityId].gameObject.GetComponentInChildren<GLTFLoader>(true);
             yield return new WaitUntil(() => gltfShape.alreadyLoaded);
 
-            TestHelpers.CreateAndSetShape(scene, entityId, DCL.Models.CLASS_ID.GLTF_SHAPE, JsonConvert.SerializeObject(
+            TestHelpers.UpdateShape(scene, componentId, JsonConvert.SerializeObject(
                 new
                 {
                     src = TestHelpers.GetTestsAssetsPath() + "/GLB/DamagedHelmet/DamagedHelmet.glb"

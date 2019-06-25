@@ -153,6 +153,10 @@ namespace Tests
             Assert.IsTrue(scene.isPersistent);
             Assert.IsTrue(screenSpaceShape.childHookRectTransform.GetComponent<UnityEngine.UI.RectMask2D>() == null);
 
+            // UIScreenSpace.InitializeCanvas is not awaited by screenSpaceShape.routine
+            // todo fix it properly
+            yield return new WaitForSeconds(0.2f);
+            
             screenSpaceShape.Dispose();
         }
     }
