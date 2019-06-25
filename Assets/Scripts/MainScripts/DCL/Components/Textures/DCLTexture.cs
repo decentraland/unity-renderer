@@ -1,4 +1,4 @@
-using DCL.Components;
+﻿using DCL.Components;
 using DCL.Controllers;
 using DCL.Helpers;
 using System;
@@ -118,7 +118,7 @@ namespace DCL
                 {
                     string contentsUrl = string.Empty;
 
-                    scene.TryGetContentsUrl(model.src, out contentsUrl);
+                    scene.contentProvider.TryGetContentsUrl(model.src, out contentsUrl);
 
                     if (!string.IsNullOrEmpty(contentsUrl))
                     {

@@ -1,3 +1,4 @@
+﻿using DCL.Models;
 using UnityEngine;
 
 namespace DCL.Controllers
@@ -9,28 +10,14 @@ namespace DCL.Controllers
             return true;
         }
 
-        public override bool HasContentsUrl(string url)
+        public override void SetData(LoadParcelScenesMessage.UnityParcelScene data)
         {
-            return !string.IsNullOrEmpty(url);
-        }
+            this.sceneData = data;
 
-        public override bool TryGetContentsUrl(string url, out string result)
-        {
-            result = url;
+            contentProvider = new ContentProvider_Dummy();
+            contentProvider.baseUrl = data.baseUrl;
 
-            if (string.IsNullOrEmpty(url))
-            {
-                return false;
-            }
-
-            result = sceneData.baseUrl + "/" + url;
-
-            if (VERBOSE)
-            {
-                Debug.Log($">>> GetContentsURL from ... {url} ... RESULTING URL... = {result}");
-            }
-
-            return true;
+            this.name = gameObject.name = $"ui scene:{data.id}";
         }
 
         protected override void SendMetricsEvent()

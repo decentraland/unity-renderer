@@ -121,7 +121,7 @@ namespace DCL
                 }
 
                 string debugPanelString = "";
-                if(debugPanelMode == DebugPanel.Engine)
+                if (debugPanelMode == DebugPanel.Engine)
                 {
                     debugPanelString = ENGINE_DEBUG_PANEL + "&";
                 }

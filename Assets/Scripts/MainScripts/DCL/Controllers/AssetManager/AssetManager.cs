@@ -220,7 +220,7 @@ namespace DCL
         /// <param name="sceneData"></param>
         /// <param name="url"></param>
         /// <returns></returns>
-        public string GetIdForAsset(Models.LoadParcelScenesMessage.UnityParcelScene sceneData, string url)
+        public string GetIdForAsset(ContentProvider provider, string url)
         {
             string id = string.Empty;
 
@@ -231,9 +231,9 @@ namespace DCL
                 string[] tmp = url.Split('/');
                 string hash = tmp[tmp.Length - 1];
 
-                if (sceneData.contents != null)
+                if (provider.contents != null)
                 {
-                    var contentMapping = sceneData.GetMappingForHash(hash);
+                    var contentMapping = provider.GetMappingForHash(hash);
 
                     if (contentMapping != null)
                     {

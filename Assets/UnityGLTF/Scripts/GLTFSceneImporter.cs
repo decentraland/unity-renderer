@@ -225,7 +225,7 @@ namespace UnityGLTF
                 yield return new WaitUntil(
                 () =>
                 {
-                    return _asyncCoroutineHelper.AllCoroutinesAreFinished();
+                    return _asyncCoroutineHelper == null || _asyncCoroutineHelper.AllCoroutinesAreFinished();
                 });
             }
             /* catch (Exception ex)
@@ -1481,7 +1481,16 @@ namespace UnityGLTF
                     if (UseMaterialTransition && InitialVisibility)
                     {
                         var matController = primitiveObj.AddComponent<MaterialTransitionController>();
-                        _asyncCoroutineHelper.RunAsTask(DownloadAndConstructMaterial(primitive, materialIndex, renderer, matController), "matDownload");
+                        var coroutine = DownloadAndConstructMaterial(primitive, materialIndex, renderer, matController);
+
+                        if (_asyncCoroutineHelper != null)
+                        {
+                            _asyncCoroutineHelper.RunAsTask(coroutine, "matDownload");
+                        }
+                        else
+                        {
+                            yield return coroutine;
+                        }
                     }
                     else
                     {
@@ -1660,14 +1669,31 @@ namespace UnityGLTF
                 if (pbr.BaseColorTexture != null)
                 {
                     var textureId = pbr.BaseColorTexture.Index;
-                    tasks.Add(_asyncCoroutineHelper.RunAsTask(ConstructImageBuffer(textureId.Value, textureId.Id), ""));
+                    var coroutine = ConstructImageBuffer(textureId.Value, textureId.Id);
 
+                    if (_asyncCoroutineHelper != null)
+                    {
+                        tasks.Add(_asyncCoroutineHelper.RunAsTask(coroutine, ""));
+                    }
+                    else
+                    {
+                        yield return coroutine;
+                    }
                 }
 
                 if (pbr.MetallicRoughnessTexture != null)
                 {
                     var textureId = pbr.MetallicRoughnessTexture.Index;
-                    tasks.Add(_asyncCoroutineHelper.RunAsTask(ConstructImageBuffer(textureId.Value, textureId.Id), ""));
+                    var coroutine = ConstructImageBuffer(textureId.Value, textureId.Id);
+
+                    if (_asyncCoroutineHelper != null)
+                    {
+                        tasks.Add(_asyncCoroutineHelper.RunAsTask(coroutine, ""));
+                    }
+                    else
+                    {
+                        yield return coroutine;
+                    }
                 }
             }
 
@@ -1676,14 +1702,32 @@ namespace UnityGLTF
                 if (def.CommonConstant.LightmapTexture != null)
                 {
                     var textureId = def.CommonConstant.LightmapTexture.Index;
-                    tasks.Add(_asyncCoroutineHelper.RunAsTask(ConstructImageBuffer(textureId.Value, textureId.Id), ""));
+                    var coroutine = ConstructImageBuffer(textureId.Value, textureId.Id);
+
+                    if (_asyncCoroutineHelper != null)
+                    {
+                        tasks.Add(_asyncCoroutineHelper.RunAsTask(coroutine, ""));
+                    }
+                    else
+                    {
+                        yield return coroutine;
+                    }
                 }
             }
 
             if (def.NormalTexture != null)
             {
                 var textureId = def.NormalTexture.Index;
-                tasks.Add(_asyncCoroutineHelper.RunAsTask(ConstructImageBuffer(textureId.Value, textureId.Id), ""));
+                var coroutine = ConstructImageBuffer(textureId.Value, textureId.Id);
+
+                if (_asyncCoroutineHelper != null)
+                {
+                    tasks.Add(_asyncCoroutineHelper.RunAsTask(coroutine, ""));
+                }
+                else
+                {
+                    yield return coroutine;
+                }
             }
 
             if (def.OcclusionTexture != null)
@@ -1694,14 +1738,32 @@ namespace UnityGLTF
                         && def.PbrMetallicRoughness.MetallicRoughnessTexture != null
                         && def.PbrMetallicRoughness.MetallicRoughnessTexture.Index.Id == textureId.Id))
                 {
-                    tasks.Add(_asyncCoroutineHelper.RunAsTask(ConstructImageBuffer(textureId.Value, textureId.Id), ""));
+                    var coroutine = ConstructImageBuffer(textureId.Value, textureId.Id);
+
+                    if (_asyncCoroutineHelper != null)
+                    {
+                        tasks.Add(_asyncCoroutineHelper.RunAsTask(coroutine, ""));
+                    }
+                    else
+                    {
+                        yield return coroutine;
+                    }
                 }
             }
 
             if (def.EmissiveTexture != null)
             {
                 var textureId = def.EmissiveTexture.Index;
-                tasks.Add(_asyncCoroutineHelper.RunAsTask(ConstructImageBuffer(textureId.Value, textureId.Id), "A"));
+                var coroutine = ConstructImageBuffer(textureId.Value, textureId.Id);
+
+                if (_asyncCoroutineHelper != null)
+                {
+                    tasks.Add(_asyncCoroutineHelper.RunAsTask(coroutine, "A"));
+                }
+                else
+                {
+                    yield return coroutine;
+                }
             }
 
             // pbr_spec_gloss extension
@@ -1714,15 +1776,36 @@ namespace UnityGLTF
                 if (specGlossDef.DiffuseTexture != null)
                 {
                     var textureId = specGlossDef.DiffuseTexture.Index;
-                    tasks.Add(_asyncCoroutineHelper.RunAsTask(ConstructImageBuffer(textureId.Value, textureId.Id), "2"));
+                    var coroutine = ConstructImageBuffer(textureId.Value, textureId.Id);
+
+                    if (_asyncCoroutineHelper != null)
+                    {
+                        tasks.Add(_asyncCoroutineHelper.RunAsTask(coroutine, "2"));
+                    }
+                    else
+                    {
+                        yield return coroutine;
+                    }
                 }
 
                 if (specGlossDef.SpecularGlossinessTexture != null)
                 {
                     var textureId = specGlossDef.SpecularGlossinessTexture.Index;
-                    tasks.Add(_asyncCoroutineHelper.RunAsTask(ConstructImageBuffer(textureId.Value, textureId.Id), "3"));
+                    var coroutine = ConstructImageBuffer(textureId.Value, textureId.Id);
+
+                    if (_asyncCoroutineHelper != null)
+                    {
+                        tasks.Add(_asyncCoroutineHelper.RunAsTask(coroutine, "3"));
+                    }
+                    else
+                    {
+                        yield return coroutine;
+                    }
                 }
             }
+
+            if (_asyncCoroutineHelper == null)
+                yield break;
 
             yield return null;
 

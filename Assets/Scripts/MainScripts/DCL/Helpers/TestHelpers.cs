@@ -149,10 +149,6 @@ namespace DCL.Helpers
             return result;
         }
 
-        protected void SetCharacterPosition(Vector3 newPosition)
-        {
-            DCLCharacterController.i.SetPosition(JsonConvert.SerializeObject(newPosition));
-        }
     }
 
     public static class TestHelpers
@@ -1032,5 +1028,11 @@ namespace DCL.Helpers
 
             sceneController.UnloadAllScenes();
         }
+
+        public static void SetCharacterPosition(Vector3 newPosition)
+        {
+            DCLCharacterController.i.SetPosition(JsonConvert.SerializeObject(newPosition));
+        }
+
     }
 }

@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -100,18 +100,27 @@ namespace DCL
     {
         Func<bool> predicate;
         float waitTime;
+        bool waitEnabled = false;
 
-        public WaitUntil(Func<bool> predicate, float timeoutInSeconds)
+        public WaitUntil(Func<bool> predicate, float? timeoutInSeconds = null)
         {
             this.predicate = predicate;
-            waitTime = Time.realtimeSinceStartup + timeoutInSeconds;
+
+            if (timeoutInSeconds.HasValue)
+            {
+                waitEnabled = true;
+                waitTime = Time.realtimeSinceStartup + timeoutInSeconds.Value;
+            }
         }
 
         public override bool keepWaiting
         {
             get
             {
-                return !predicate() && Time.realtimeSinceStartup < waitTime;
+                if (waitEnabled)
+                    return !predicate() && Time.realtimeSinceStartup < waitTime;
+                else
+                    return !predicate();
             }
         }
     }
