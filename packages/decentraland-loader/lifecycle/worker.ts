@@ -22,9 +22,9 @@ let downloadManager: SceneDataDownloadManager
  * Make sure the main thread watches for:
  * - 'Position.settled'
  * - 'Position.unsettled'
- * - 'Scene.shouldStart' (sceneCID: string)
- * - 'Scene.shouldUnload' (sceneCID: string)
- * - 'Scene.shouldPrefetch' (sceneCID: string)
+ * - 'Scene.shouldStart' (sceneId: string)
+ * - 'Scene.shouldUnload' (sceneId: string)
+ * - 'Scene.shouldPrefetch' (sceneId: string)
  *
  * And optionally (to show loading boxes):
  * - 'Parcel.sighted' (xy: string)
@@ -32,7 +32,7 @@ let downloadManager: SceneDataDownloadManager
  *
  * Make sure the main thread reports:
  * - 'User.setPosition' { position: {x: number, y: number } }
- * - 'Scene.prefetchDone' { sceneCID: string }
+ * - 'Scene.prefetchDone' { sceneId: string }
  */
 {
   connector.on('Lifecycle.initialize', (options: { contentServer: string; lineOfSightRadius: number }) => {
@@ -47,21 +47,21 @@ let downloadManager: SceneDataDownloadManager
     parcelController.on('Sighted', (parcel: string) => connector.notify('Parcel.sighted', { parcel }))
     parcelController.on('Lost sight', (parcel: string) => connector.notify('Parcel.lostSight', { parcel }))
 
-    positionController.on('Settled Position', (sceneCID: string) => {
-      connector.notify('Position.settled', { sceneCID })
+    positionController.on('Settled Position', (sceneId: string) => {
+      connector.notify('Position.settled', { sceneId })
     })
     positionController.on('Unsettled Position', () => {
       connector.notify('Position.unsettled')
     })
 
-    sceneController.on('Start scene', sceneCID => {
-      connector.notify('Scene.shouldStart', { sceneCID })
+    sceneController.on('Start scene', sceneId => {
+      connector.notify('Scene.shouldStart', { sceneId })
     })
-    sceneController.on('Preload scene', sceneCID => {
-      connector.notify('Scene.shouldPrefetch', { sceneCID })
+    sceneController.on('Preload scene', sceneId => {
+      connector.notify('Scene.shouldPrefetch', { sceneId })
     })
-    sceneController.on('Unload scene', sceneCID => {
-      connector.notify('Scene.shouldUnload', { sceneCID })
+    sceneController.on('Unload scene', sceneId => {
+      connector.notify('Scene.shouldUnload', { sceneId })
     })
 
     connector.on('User.setPosition', (opt: { position: { x: number; y: number } }) => {
@@ -69,14 +69,14 @@ let downloadManager: SceneDataDownloadManager
       positionController.reportCurrentPosition(opt.position)
     })
 
-    connector.on('Scene.dataRequest', async (data: { sceneCID: string }) =>
+    connector.on('Scene.dataRequest', async (data: { sceneId: string }) =>
       connector.notify('Scene.dataResponse', {
-        data: (await downloadManager.getParcelDataByCID(data.sceneCID)) as ILand
+        data: (await downloadManager.getParcelDataBySceneId(data.sceneId)) as ILand
       })
     )
 
-    connector.on('Scene.prefetchDone', (opt: { sceneCID: string }) => {
-      sceneController.reportDataLoaded(opt.sceneCID)
+    connector.on('Scene.prefetchDone', (opt: { sceneId: string }) => {
+      sceneController.reportDataLoaded(opt.sceneId)
     })
   })
 }

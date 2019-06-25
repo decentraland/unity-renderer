@@ -247,7 +247,7 @@ export function interactWithScene(pointerEvent: 'pointerUp' | 'pointerDown', x: 
   if (entity) {
     entity.handleClick(pointerEvent, pointerId, pickingResult!)
   } else {
-    for (let scene of loadedSceneWorkers) {
+    for (let [, scene] of loadedSceneWorkers) {
       if (scene.parcelScene instanceof WebGLScene) {
         scene.parcelScene.context.sendPointerEvent(pointerEvent, pointerId, null as any, pickingResult!)
       }

@@ -5,19 +5,19 @@ import { SharedSceneContext } from '../../entities/SharedSceneContext'
 import { WebGLScene } from '../WebGLScene'
 
 export class WebGLUIScene extends WebGLScene<any> {
-  constructor(id: string, main: string, context: SharedSceneContext) {
+  constructor(sceneId: string, main: string, context: SharedSceneContext) {
     super(
       {
         baseUrl: context.baseUrl,
         main,
         data: {},
-        id,
+        sceneId,
         mappings: []
       },
       context
     )
 
-    this.context.rootEntity.name = this.context.rootEntity.id = id
+    this.context.rootEntity.name = this.context.rootEntity.id = sceneId
     // tslint:disable-next-line:no-unused-expression
     new SceneWorker(this)
   }

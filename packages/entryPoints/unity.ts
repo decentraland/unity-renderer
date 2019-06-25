@@ -6,14 +6,16 @@ const container = document.getElementById('gameContainer')
 if (!container) throw new Error('cannot find element #gameContainer')
 
 initializeUnity(container)
-  .then(async ret => {
-    await startUnityParcelLoading(ret.net)
+  .then(async _ => {
+    await startUnityParcelLoading()
 
     document.body.classList.remove('dcl-loading')
   })
   .catch(err => {
     console['error']('Error loading Unity')
     console['error'](err)
+
+    container.innerText = err.toString()
 
     document.body.classList.remove('dcl-loading')
   })

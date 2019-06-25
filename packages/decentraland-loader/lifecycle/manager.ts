@@ -20,25 +20,28 @@ const worker: Worker = new (Worker as any)(lifecycleWorkerUrl, { name: 'Lifecycl
 worker.onerror = e => error('Loader worker error', e)
 
 export class LifecycleManager extends TransportBasedServer {
-  sceneCIDToRequest: { [key: string]: IFuture<ILand> } = {}
+  sceneIdToRequest: Map<string, IFuture<ILand>> = new Map()
   enable() {
     super.enable()
     this.on('Scene.dataResponse', (scene: { data: ILand }) => {
       if (scene.data) {
-        const sceneCIDArray = scene.data.mappingsResponse.contents.filter($ => $.file === 'scene.json')
-        if (sceneCIDArray.length) {
-          this.sceneCIDToRequest[sceneCIDArray[0].hash].resolve(scene.data)
+        const future = this.sceneIdToRequest.get(scene.data.sceneId)
+
+        if (future) {
+          future.resolve(scene.data)
         }
       }
     })
   }
 
-  getParcelData(sceneCID: string) {
-    if (!this.sceneCIDToRequest[sceneCID]) {
-      this.sceneCIDToRequest[sceneCID] = future<ILand>()
-      this.notify('Scene.dataRequest', { sceneCID })
+  getParcelData(sceneId: string) {
+    let theFuture = this.sceneIdToRequest.get(sceneId)
+    if (!theFuture) {
+      theFuture = future<ILand>()
+      this.sceneIdToRequest.set(sceneId, theFuture)
+      this.notify('Scene.dataRequest', { sceneId })
     }
-    return this.sceneCIDToRequest[sceneCID]
+    return theFuture
   }
 }
 
@@ -46,7 +49,7 @@ let server: LifecycleManager
 
 export const getServer = () => server
 
-export async function initParcelSceneWorker(network: string) {
+export async function initParcelSceneWorker() {
   server = new LifecycleManager(WebWorkerTransport(worker))
 
   server.enable()

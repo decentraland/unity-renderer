@@ -3,12 +3,15 @@ import { Vector2Component } from 'atomicHelpers/landHelpers'
 import future, { IFuture } from 'fp-future'
 import { EventEmitter } from 'events'
 import { SceneDataDownloadManager } from './download'
+import { createLogger } from 'shared/logger'
+
+const logger = createLogger('SceneLifeCycleController: ')
 
 export class SceneLifeCycleController extends EventEmitter {
   private downloadManager: SceneDataDownloadManager
 
-  private _positionToSceneCID = new Map<string, string | undefined>()
-  private futureOfPositionToCID = new Map<string, IFuture<string | undefined>>()
+  private _positionToSceneId = new Map<string, string | undefined>()
+  private futureOfPositionToSceneId = new Map<string, IFuture<string | undefined>>()
   private sceneStatus = new Map<string, SceneLifeCycleStatus>()
 
   private sceneParcelSightCount = new Map<string, number>()
@@ -26,85 +29,90 @@ export class SceneLifeCycleController extends EventEmitter {
 
   hasStarted(position: string) {
     return (
-      this._positionToSceneCID.has(position) &&
-      this.sceneStatus.has(this._positionToSceneCID.get(position)!) &&
-      this.sceneStatus.get(this._positionToSceneCID.get(position)!)!.isAwake()
+      this._positionToSceneId.has(position) &&
+      this.sceneStatus.has(this._positionToSceneId.get(position)!) &&
+      this.sceneStatus.get(this._positionToSceneId.get(position)!)!.isAwake()
     )
   }
 
   async onSight(position: string) {
-    let sceneCID = await this.requestSceneCID(position)
-    if (sceneCID) {
-      const previousSightCount = this.sceneParcelSightCount.get(sceneCID) || 0
-      this.sceneParcelSightCount.set(sceneCID, previousSightCount + 1)
+    let sceneId = await this.requestSceneId(position)
 
-      if (!this.sceneStatus.has(sceneCID)) {
+    if (sceneId) {
+      const previousSightCount = this.sceneParcelSightCount.get(sceneId) || 0
+      this.sceneParcelSightCount.set(sceneId, previousSightCount + 1)
+
+      if (!this.sceneStatus.has(sceneId)) {
         const data = await this.downloadManager.getParcelData(position)
         if (data) {
-          this.sceneStatus.set(sceneCID, new SceneLifeCycleStatus(data))
+          this.sceneStatus.set(sceneId, new SceneLifeCycleStatus(data))
         }
       }
-      if (this.sceneStatus.get(sceneCID)!.isDead()) {
-        this.emit('Preload scene', sceneCID)
-        this.sceneStatus.get(sceneCID)!.status = 'awake'
+
+      if (this.sceneStatus.get(sceneId)!.isDead()) {
+        this.emit('Preload scene', sceneId)
+        this.sceneStatus.get(sceneId)!.status = 'awake'
       }
     }
   }
   async lostSight(position: string) {
-    let sceneCID = await this.requestSceneCID(position)
-    if (!sceneCID) {
+    let sceneId = await this.requestSceneId(position)
+    if (!sceneId) {
       return
     }
-    const previousSightCount = this.sceneParcelSightCount.get(sceneCID) || 0
-    this.sceneParcelSightCount.set(sceneCID, previousSightCount - 1)
+    const previousSightCount = this.sceneParcelSightCount.get(sceneId) || 0
+    const newSightCount = previousSightCount - 1
+    this.sceneParcelSightCount.set(sceneId, newSightCount)
 
-    if (this.sceneParcelSightCount.get(sceneCID)! <= 0) {
-      if (this.sceneStatus.has(sceneCID) && this.sceneStatus.get(sceneCID)!.isAwake()) {
-        this.sceneStatus.get(sceneCID)!.status = 'unloaded'
-        this.emit('Unload scene', sceneCID)
+    if (newSightCount <= 0) {
+      logger.log('Parcel out of sight killing', sceneId)
+      const sceneStatus = this.sceneStatus.get(sceneId)
+      if (sceneStatus && sceneStatus.isAwake()) {
+        sceneStatus.status = 'unloaded'
+        this.emit('Unload scene', sceneId)
       }
     }
   }
 
-  reportDataLoaded(sceneCID: string) {
-    if (this.sceneStatus.has(sceneCID) && this.sceneStatus.get(sceneCID)!.status === 'awake') {
-      this.sceneStatus.get(sceneCID)!.status = 'ready'
-      this.emit('Start scene', sceneCID)
+  reportDataLoaded(sceneId: string) {
+    if (this.sceneStatus.has(sceneId) && this.sceneStatus.get(sceneId)!.status === 'awake') {
+      this.sceneStatus.get(sceneId)!.status = 'ready'
+      this.emit('Start scene', sceneId)
     }
   }
 
-  async requestSceneCID(position: string): Promise<string | undefined> {
-    if (this._positionToSceneCID.has(position)) {
-      return this._positionToSceneCID.get(position)!
+  async requestSceneId(position: string): Promise<string | undefined> {
+    if (this._positionToSceneId.has(position)) {
+      return this._positionToSceneId.get(position)!
     }
-    if (!this.futureOfPositionToCID.has(position)) {
-      this.futureOfPositionToCID.set(position, future<string | undefined>())
+    if (!this.futureOfPositionToSceneId.has(position)) {
+      this.futureOfPositionToSceneId.set(position, future<string | undefined>())
       try {
         const land = await this.downloadManager.getParcelData(position)
+
         if (!land) {
-          this.futureOfPositionToCID.get(position)!.resolve(undefined)
-          return this.futureOfPositionToCID.get(position)!
+          this.futureOfPositionToSceneId.get(position)!.resolve(undefined)
+          return this.futureOfPositionToSceneId.get(position)!
         }
-        const sceneCID = land.mappingsResponse.contents.filter($ => $.file === 'scene.json')[0].hash
+
         for (const pos of land.scene.scene.parcels) {
-          if (!this._positionToSceneCID.has(pos)) {
-            this._positionToSceneCID.set(pos, sceneCID)
+          if (!this._positionToSceneId.has(pos)) {
+            this._positionToSceneId.set(pos, land.sceneId)
           }
-          if (!this.futureOfPositionToCID.has(pos)) {
-            continue
-          }
-          if (this.futureOfPositionToCID.get(pos)!.isPending) {
-            this.futureOfPositionToCID.get(pos)!.resolve(sceneCID)
+
+          const futurePosition = this.futureOfPositionToSceneId.get(pos)
+          if (futurePosition && futurePosition.isPending) {
+            futurePosition.resolve(land.sceneId)
           }
         }
       } catch (e) {
-        this.futureOfPositionToCID.get(position)!.reject(e)
+        this.futureOfPositionToSceneId.get(position)!.reject(e)
       }
-      return this.futureOfPositionToCID.get(position)!
+      return this.futureOfPositionToSceneId.get(position)!
     } else {
-      const cid = await this.futureOfPositionToCID.get(position)!
-      this._positionToSceneCID.set(position, cid)
-      return cid
+      const sceneId = await this.futureOfPositionToSceneId.get(position)!
+      this._positionToSceneId.set(position, sceneId)
+      return sceneId
     }
   }
 }
