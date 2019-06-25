@@ -51,6 +51,10 @@ namespace Tests
 
             DecentralandEntity entity = null;
 
+            // Character controller is needed due to using of mainCamera in GLTFComponent.TestDistance
+            var characterController = (GameObject.Instantiate(Resources.Load("Prefabs/CharacterController") as GameObject)).GetComponent<DCLCharacterController>();
+            characterController.gravity = 0f;
+
             GLTFShape shape = TestHelpers.InstantiateEntityWithShape<GLTFShape, GLTFShape.Model>
             (scene,
                 DCL.Models.CLASS_ID.GLTF_SHAPE,

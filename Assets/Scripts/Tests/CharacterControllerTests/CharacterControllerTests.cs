@@ -30,7 +30,7 @@ namespace Tests
 
             yield return null;
 
-            Assert.AreEqual(new Vector3(10f, 3f, 0f), characterController.transform.position);
+            Assert.AreEqual(new Vector3(10f, 0f, 0f), characterController.transform.position);
         }
     }
 }

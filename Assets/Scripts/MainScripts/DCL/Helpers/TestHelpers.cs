@@ -628,6 +628,15 @@ namespace DCL.Helpers
 
             return componentId;
         }
+        
+        public static void UpdateShape(ParcelScene scene, string componentId, string model)
+        {
+            scene.SharedComponentUpdate(JsonUtility.ToJson(new DCL.Models.SharedComponentUpdateMessage
+            {
+                id = componentId,
+                json = model
+            }));
+        }
 
         static object GetRandomValueForType(Type t)
         {
@@ -953,7 +962,7 @@ namespace DCL.Helpers
             }
 
             Configuration.ParcelSettings.VISUAL_LOADING_ENABLED = false;
-            sceneController.UnloadAllScenes();
+            ForceUnloadAllScenes(sceneController);
 
             return sceneController;
         }

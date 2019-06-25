@@ -37,22 +37,18 @@ namespace DCL
         public LoadingScreenController(SceneController sceneController, bool enableInEditor = false)
         {
             this.sceneController = sceneController;
-            
-            CreateLoadingScreen();
 
 #if UNITY_EDITOR
-            if(enableInEditor)
+            if(!enableInEditor)
             {
-                sceneController.StartCoroutine(WaitAndForceLoadingIfNoSceneMessage());
-            }
-            else
-            {
-                RemoveLoadingScreen();
+                started = true;
                 OnLoadingDone.Invoke();
+                return;
             }
-#else
-            sceneController.StartCoroutine(WaitAndForceLoadingIfNoSceneMessage());
 #endif
+            CreateLoadingScreen();
+            loadingScreenView.StartCoroutine(WaitAndForceLoadingIfNoSceneMessage());
+
         }
 
         private void CreateLoadingScreen()
@@ -64,14 +60,14 @@ namespace DCL
 
         private void RemoveLoadingScreen() 
         {
-            sceneController.StartCoroutine(loadingScreenView.FadeOutAndDestroy());
+            loadingScreenView.StartCoroutine(loadingScreenView.FadeOutAndDestroy());
         }
 
         public void StartLoadingScreen()
         {
             started = true;
-            var coroutine = sceneController.StartCoroutine(LoadingProcess());
-            timeOutCoroutine = sceneController.StartCoroutine(TimeOut(TIMEOUT, coroutine));
+            var coroutine = loadingScreenView.StartCoroutine(LoadingProcess());
+            timeOutCoroutine = loadingScreenView.StartCoroutine(TimeOut(TIMEOUT, coroutine));
         }
 
         private IEnumerator WaitAndForceLoadingIfNoSceneMessage()
@@ -95,7 +91,7 @@ namespace DCL
 
             yield return WaitForGLTFs();
 
-            sceneController.StopCoroutine(timeOutCoroutine);
+            if (loadingScreenView != null) loadingScreenView.StopCoroutine(timeOutCoroutine);
             RemoveLoadingScreen();
 
             OnLoadingDone.Invoke();
@@ -157,7 +153,7 @@ namespace DCL
         {
             yield return new WaitForSeconds(seconds);
 
-            sceneController.StopCoroutine(loadingCoroutine);
+            if (loadingScreenView != null) loadingScreenView.StopCoroutine(loadingCoroutine);
             RemoveLoadingScreen();
         }
     }

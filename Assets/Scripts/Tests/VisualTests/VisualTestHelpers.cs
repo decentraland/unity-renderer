@@ -44,8 +44,6 @@ namespace DCL.Helpers
             int snapshotsWidth = TestSettings.VISUAL_TESTS_SNAPSHOT_WIDTH;
             int snapshotsHeight = TestSettings.VISUAL_TESTS_SNAPSHOT_HEIGHT;
 
-            yield return TakeSnapshot(testImagesPath, snapshotName, VisualTestController.i.camera, snapshotsWidth,
-                snapshotsHeight);
             if (generateBaseline || !File.Exists(baselineImagesPath + snapshotName))
             {
                 yield return TakeSnapshot(baselineImagesPath, snapshotName, VisualTestController.i.camera,

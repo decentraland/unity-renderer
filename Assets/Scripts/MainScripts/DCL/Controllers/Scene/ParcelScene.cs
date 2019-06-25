@@ -23,7 +23,7 @@ namespace DCL.Controllers
         public event System.Action<DecentralandEntity> OnEntityAdded;
         public event System.Action<DecentralandEntity> OnEntityRemoved;
 
-        public void Start()
+        public void Awake()
         {
             metricsController = new SceneMetricsController(this);
             metricsController.Enable();
@@ -252,6 +252,12 @@ namespace DCL.Controllers
             }
 
             DecentralandEntity me = GetEntityForUpdate(tmpParentMessage.entityId);
+            if (me != null && tmpParentMessage.parentId == "0")
+            {
+                me.gameObject.transform.SetParent(gameObject.transform, false);
+                return;
+            }
+
             DecentralandEntity myParent = GetEntityForUpdate(tmpParentMessage.parentId);
 
             if (me != null && myParent != null)
