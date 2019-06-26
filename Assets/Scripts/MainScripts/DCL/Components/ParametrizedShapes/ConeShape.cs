@@ -1,22 +1,23 @@
-using DCL.Controllers;
+﻿using DCL.Controllers;
 using DCL.Helpers;
 using UnityEngine;
 
 namespace DCL.Components
 {
-    public class ConeShape : BaseParametrizedShape<ConeShape.Model>
+    public class ConeShape : ParametrizedShape<ConeShape.Model>
     {
         [System.Serializable]
         new public class Model : BaseShape.Model
         {
-            public float radiusTop = 0f; // Cone/Cylinder
-            public float radiusBottom = 1f; // Cone/Cylinder
-            public float segmentsHeight = 1f; // Cone/Cylinder
-            public float segmentsRadial = 36f; // Cone/Cylinder
-            public bool openEnded = false; // Cone/Cylinder
-            public float? radius; // Cone/Cylinder
-            public float arc = 360f; // Cone/Cylinder
+            public float radiusTop = 0f;
+            public float radiusBottom = 1f;
+            public float segmentsHeight = 1f;
+            public float segmentsRadial = 36f;
+            public bool openEnded = false;
+            public float? radius;
+            public float arc = 360f;
         }
+
 
         public ConeShape(ParcelScene scene) : base(scene) { }
 

@@ -2,6 +2,8 @@
 
 public class AvatarName : MonoBehaviour
 {
+    const float NAME_VANISHING_POINT_DISTANCE = 40.0f;
+
     public CanvasGroup uiContainer;
     public Transform sourceTransform;
     public Vector3 offset;
@@ -17,8 +19,7 @@ public class AvatarName : MonoBehaviour
     {
         Transform t = sourceTransform;
         Vector3 screenPoint = mainCamera.WorldToViewportPoint(t.position + offset);
-        float near = (mainCamera.farClipPlane - mainCamera.nearClipPlane) * 0.75f;
-        uiContainer.alpha = 1.0f + (1.0f - (screenPoint.z / 40.0f));
+        uiContainer.alpha = 1.0f + (1.0f - (screenPoint.z / NAME_VANISHING_POINT_DISTANCE));
 
         if (screenPoint.z > 0)
         {

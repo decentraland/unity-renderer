@@ -22,6 +22,14 @@ namespace UnityGLTF
         public static int totalDownloadedCount;
         public static int queueCount;
 
+        public class Settings
+        {
+            public bool? useVisualFeedback;
+            public bool? initialVisibility;
+            public Shader shaderOverride;
+            public WebRequestLoader.WebRequestLoaderEventAction OnWebRequestStartEvent;
+        }
+
         public string GLTFUri = null;
         public bool Multithreaded = true;
         public bool UseStream = false;
@@ -81,7 +89,7 @@ namespace UnityGLTF
         public Action OnSuccess { get { return OnFinishedLoadingAsset; } set { OnFinishedLoadingAsset = value; } }
         public Action OnFail { get { return OnFailedLoadingAsset; } set { OnFailedLoadingAsset = value; } }
 
-        public void LoadAsset(string incomingURI = "", bool loadEvenIfAlreadyLoaded = false)
+        public void LoadAsset(string incomingURI = "", bool loadEvenIfAlreadyLoaded = false, Settings settings = null)
         {
             if (alreadyLoadedAsset && !loadEvenIfAlreadyLoaded)
             {
@@ -101,7 +109,36 @@ namespace UnityGLTF
             alreadyDecrementedRefCount = false;
             state = State.NONE;
             mainCamera = Camera.main;
+
+            if (settings != null)
+            {
+                ApplySettings(settings);
+            }
+
             loadingRoutine = DCL.CoroutineHelpers.StartThrowingCoroutine(this, LoadAssetCoroutine(), OnFail_Internal);
+        }
+
+        void ApplySettings(Settings settings)
+        {
+            if (settings.initialVisibility.HasValue)
+            {
+                this.InitialVisibility = settings.initialVisibility.Value;
+            }
+
+            if (settings.useVisualFeedback.HasValue)
+            {
+                this.UseVisualFeedback = settings.useVisualFeedback.Value;
+            }
+
+            if (settings.shaderOverride != null)
+            {
+                this.shaderOverride = settings.shaderOverride;
+            }
+
+            if (settings.OnWebRequestStartEvent != null)
+            {
+                OnWebRequestStartEvent = settings.OnWebRequestStartEvent;
+            }
         }
 
         private void OnFail_Internal(Exception obj)
@@ -309,7 +346,7 @@ namespace UnityGLTF
             return result;
         }
 
-        public void Load(string url, bool useVisualFeedback)
+        public void Load(string url)
         {
             throw new NotImplementedException();
         }

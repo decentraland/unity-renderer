@@ -314,9 +314,9 @@ namespace DCL
                 "mouth");
         }
 
-        GLTFLoader LoadWearable(Model.Wearable wearable,
-                                System.Action<LoadableMonoBehavior> OnSuccess,
-                                System.Action<LoadableMonoBehavior> OnFail)
+        LoadWrapper_GLTF LoadWearable(Model.Wearable wearable,
+                                System.Action<LoadWrapper> OnSuccess,
+                                System.Action<LoadWrapper> OnFail)
         {
             GameObject go = new GameObject(name);
             go.transform.SetParent(transform, false);
@@ -338,7 +338,7 @@ namespace DCL
                 return null;
             }
 
-            GLTFLoader loadableShape = go.GetOrCreateComponent<GLTFLoader>();
+            LoadWrapper_GLTF loadableShape = go.GetOrCreateComponent<LoadWrapper_GLTF>();
             loadableShape.contentProvider = wearable.provider;
             loadableShape.entity = entity;
             loadableShape.initialVisibility = true;
@@ -349,11 +349,11 @@ namespace DCL
             return loadableShape;
         }
 
-        private void OnFail(LoadableMonoBehavior loadable)
+        private void OnFail(LoadWrapper loadable)
         {
         }
 
-        private void OnSuccess(LoadableMonoBehavior loadable)
+        private void OnSuccess(LoadWrapper loadable)
         {
             if (loadable == null)
                 return;
@@ -365,7 +365,7 @@ namespace DCL
             CheckAllWearablesAreLoaded();
         }
 
-        private void OnBaseModelSuccess(LoadableMonoBehavior loadable)
+        private void OnBaseModelSuccess(LoadWrapper loadable)
         {
             if (loadable == null)
                 return;
@@ -379,7 +379,7 @@ namespace DCL
             CheckAllWearablesAreLoaded();
         }
 
-        private void OnBaseModelFail(LoadableMonoBehavior loadable)
+        private void OnBaseModelFail(LoadWrapper loadable)
         {
             state = State.FAILED;
         }

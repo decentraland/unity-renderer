@@ -1,11 +1,10 @@
 ﻿using System;
 using UnityEngine;
 using UnityEngine.Assertions;
-using UnityGLTF;
 
 namespace DCL.Components
 {
-    public class GLTFLoader : LoadableMonoBehavior
+    public class LoadWrapper_GLTF : LoadWrapper
     {
         static bool VERBOSE = false;
 
@@ -13,9 +12,8 @@ namespace DCL.Components
 
         string url;
         string assetDirectoryPath;
-        public Action<GLTFComponent> OnGLTFConfig;
 
-        public override void Load(string targetUrl, Action<LoadableMonoBehavior> OnSuccess, Action<LoadableMonoBehavior> OnFail)
+        public override void Load(string targetUrl, Action<LoadWrapper> OnSuccess, Action<LoadWrapper> OnFail)
         {
             Assert.IsFalse(string.IsNullOrEmpty(targetUrl), "url is null!!");
             if (gltfContainer != null)
@@ -35,40 +33,32 @@ namespace DCL.Components
                 Debug.Log($"Load(): target URL -> {targetUrl},  url -> {url}, directory path -> {assetDirectoryPath}");
             }
 
+            var config = new UnityGLTF.GLTFComponent.Settings
+            {
+                OnWebRequestStartEvent = ParseGLTFWebRequestedFile,
+                initialVisibility = initialVisibility
+            };
+
             gltfContainer = AssetManager_GLTF.i.Get(
                 id: GetCacheId(),
                 url: url,
                 parent: transform,
                 OnSuccess: () => OnSuccessWrapper(this, OnSuccess),
                 OnFail: () => OnFailWrapper(this, OnFail),
-                webRequestStartEventAction: ParseGLTFWebRequestedFile,
-                initialVisibility: initialVisibility);
-
-            AssetManager_GLTF.i.OnStartLoading -= OnGLTFConfig_Internal;
-            AssetManager_GLTF.i.OnStartLoading += OnGLTFConfig_Internal;
+                config);
         }
 
-        void OnGLTFConfig_Internal(GLTFComponent gltfComponent)
-        {
-            if (gltfComponent.GLTFUri == url)
-            {
-                OnGLTFConfig?.Invoke(gltfComponent);
-                AssetManager_GLTF.i.OnStartLoading -= OnGLTFConfig_Internal;
-            }
-        }
-
-        private void OnFailWrapper(GLTFLoader gLTFLoader, Action<LoadableMonoBehavior> OnFail)
+        private void OnFailWrapper(LoadWrapper_GLTF gLTFLoader, Action<LoadWrapper> OnFail)
         {
             if (VERBOSE)
             {
                 Debug.Log($"Load(): target URL -> {url}. Failure!");
             }
 
-            AssetManager_GLTF.i.OnStartLoading -= OnGLTFConfig_Internal;
             OnFail?.Invoke(this);
         }
 
-        private void OnSuccessWrapper(GLTFLoader gLTFLoader, Action<LoadableMonoBehavior> OnSuccess)
+        private void OnSuccessWrapper(LoadWrapper_GLTF gLTFLoader, Action<LoadWrapper> OnSuccess)
         {
             if (VERBOSE)
             {
@@ -86,6 +76,7 @@ namespace DCL.Components
             requestedFileName = finalURL;
         }
 
+
         public object GetCacheId()
         {
             return AssetManager_GLTF.i.GetIdForAsset(contentProvider, url);
@@ -97,8 +88,6 @@ namespace DCL.Components
             {
                 AssetManager_GLTF.i.Release(GetCacheId());
             }
-
-            AssetManager_GLTF.i.OnStartLoading -= OnGLTFConfig_Internal;
         }
 
         public void OnDestroy()

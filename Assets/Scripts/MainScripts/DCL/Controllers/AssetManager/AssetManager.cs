@@ -8,6 +8,7 @@ namespace DCL
 {
     public class AssetInfo
     {
+        public object settings;
         public double timeStamp;
         public bool isLoadingCompleted = false;
 
@@ -21,6 +22,7 @@ namespace DCL
         where Loadable : ILoadable
         where AssetInfoClass : AssetInfo, new()
     {
+
         public Dictionary<object, AssetInfoClass> assetLibrary;
 
         public virtual void ClearLibrary()
@@ -42,7 +44,7 @@ namespace DCL
         // Loadable methods
         //
         protected abstract Loadable GetLoadable(AssetContainerClass container);
-        protected abstract void StartLoading(Loadable loadable, string url, bool initialVisibility = true);
+        protected abstract void StartLoading(Loadable loadable, object id, string url, object settings);
 
         /// <summary>
         /// 
@@ -52,8 +54,10 @@ namespace DCL
         /// <param name="resultContainer"></param>
         /// <param name="OnSuccess"></param>
         /// <returns></returns>
-        private IEnumerator AddToLibrary_Internal(object id, string url, AssetContainerClass resultContainer,
-            System.Action OnSuccess)
+        private IEnumerator AddToLibrary_Internal(object id,
+                                                  string url,
+                                                  AssetContainerClass resultContainer,
+                                                  System.Action OnSuccess)
         {
             yield return AddToLibrary(id, url, resultContainer);
 
@@ -72,10 +76,13 @@ namespace DCL
         /// <param name="OnFail"></param>
         /// <param name="initialVisibility"></param>
         /// <returns></returns>
-        public AssetContainerClass Get(string url, Transform parent, System.Action OnSuccess, System.Action OnFail,
-            bool initialVisibility = true)
+        public AssetContainerClass Get(string url,
+                                       Transform parent,
+                                       System.Action OnSuccess,
+                                       System.Action OnFail,
+                                       object settings = null)
         {
-            return Get(url, url, parent, OnSuccess, OnFail, initialVisibility);
+            return Get(url, url, parent, OnSuccess, OnFail, settings = null);
         }
 
         /// <summary>
@@ -88,8 +95,12 @@ namespace DCL
         /// <param name="OnFail"></param>
         /// <param name="initialVisibility"></param>
         /// <returns></returns>
-        public AssetContainerClass Get(object id, string url, Transform parent, System.Action OnSuccess,
-            System.Action OnFail, bool initialVisibility = true)
+        public AssetContainerClass Get(object id,
+                                       string url,
+                                       Transform parent,
+                                       System.Action OnSuccess,
+                                       System.Action OnFail,
+                                       object settings = null)
         {
             AssetContainerClass resultContainer = default(AssetContainerClass);
 
@@ -106,6 +117,7 @@ namespace DCL
                 assetInfo.isLoadingCompleted = false;
                 assetInfo.timeStamp = Time.realtimeSinceStartup;
                 assetInfo.referenceCount++;
+                assetInfo.settings = settings;
 
                 assetLibrary.Add(id, assetInfo);
 
@@ -145,7 +157,7 @@ namespace DCL
                 loader.OnSuccess += PreSuccessClosure;
                 loader.OnFail += PreFailClosure;
 
-                StartLoading(loader, url, initialVisibility);
+                StartLoading(loader, id, url, settings);
 
                 return resultContainer;
             }
@@ -155,7 +167,7 @@ namespace DCL
                 {
                     //NOTE(Brian): If the asset is in the process of being loaded by another object, piggyback on that one
                     //             suscribing to the OnSuccess/OnFail event.
-                    assetLibrary[id].OnSuccess += () => Get(id, url, parent, OnSuccess, OnFail, initialVisibility);
+                    assetLibrary[id].OnSuccess += () => Get(id, url, parent, OnSuccess, OnFail, settings);
                     assetLibrary[id].OnFail += OnFail;
                 }
                 else

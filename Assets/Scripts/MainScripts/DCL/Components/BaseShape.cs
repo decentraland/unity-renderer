@@ -13,11 +13,8 @@ namespace DCL.Components
             public bool visible = true;
         }
 
-        public Model model { get; set; }
-
         public BaseShape(ParcelScene scene) : base(scene)
         {
-            model = new Model();
         }
 
         public override void AttachTo(DecentralandEntity entity, System.Type overridenAttachedType = null)

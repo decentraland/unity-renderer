@@ -4,7 +4,7 @@ using UnityEngine;
 
 namespace DCL.Components
 {
-    public class PlaneShape : BaseParametrizedShape<PlaneShape.Model>
+    public class PlaneShape : ParametrizedShape<PlaneShape.Model>
     {
         [System.Serializable]
         new public class Model : BaseShape.Model

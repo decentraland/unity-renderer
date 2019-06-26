@@ -1,4 +1,4 @@
-using DCL;
+﻿using DCL;
 using DCL.Components;
 using DCL.Helpers;
 using DCL.Models;
@@ -24,15 +24,15 @@ namespace Tests
 
             string url = TestHelpers.GetTestsAssetsPath() + "/GLB/Lantern/Lantern.glb";
 
-            BaseLoadableShape<GLTFLoader>.Model gltfModel =
-                new BaseLoadableShape<GLTFLoader>.Model()
+            LoadableShape.Model gltfModel =
+                new LoadableShape.Model()
                 {
                     src = url
                 };
 
             TestHelpers.AttachGLTFShape(e, scene, Vector3.zero, gltfModel);
 
-            GLTFLoader gltfShape = e.gameObject.GetComponentInChildren<GLTFLoader>(true);
+            LoadWrapper_GLTF gltfShape = e.gameObject.GetComponentInChildren<LoadWrapper_GLTF>(true);
             yield return new WaitUntil(() => gltfShape.alreadyLoaded);
 
             GLTFShape newShape = TestHelpers.CreateEntityWithGLTFShape(scene, Vector3.zero, gltfModel);
@@ -56,8 +56,8 @@ namespace Tests
 
             string url = TestHelpers.GetTestsAssetsPath() + "/GLB/Lantern/Lantern.glb";
 
-            BaseLoadableShape<GLTFLoader>.Model gltfModel =
-                new BaseLoadableShape<GLTFLoader>.Model()
+            LoadableShape.Model gltfModel =
+                new LoadableShape.Model()
                 {
                     src = url
                 };
@@ -74,7 +74,7 @@ namespace Tests
             Assert.IsTrue(GLTFComponent.downloadingCount == (currentDownloadingCount + 1),
                 "Multiple GLTF loading detected, caching not working?");
 
-            GLTFLoader gltfShape = e.gameObject.GetComponentInChildren<GLTFLoader>(true);
+            LoadWrapper_GLTF gltfShape = e.gameObject.GetComponentInChildren<LoadWrapper_GLTF>(true);
             yield return new WaitUntil(() => gltfShape.alreadyLoaded);
 
             Assert.IsTrue(shape1 != null, "shape1 is null??");

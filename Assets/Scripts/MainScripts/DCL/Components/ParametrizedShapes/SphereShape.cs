@@ -4,7 +4,7 @@ using UnityEngine;
 
 namespace DCL.Components
 {
-    public class SphereShape : BaseParametrizedShape<SphereShape.Model>
+    public class SphereShape : ParametrizedShape<SphereShape.Model>
     {
         [System.Serializable]
         new public class Model : BaseShape.Model

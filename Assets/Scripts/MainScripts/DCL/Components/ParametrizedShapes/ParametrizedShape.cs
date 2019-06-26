@@ -1,4 +1,4 @@
-using DCL.Controllers;
+﻿using DCL.Controllers;
 using DCL.Helpers;
 using DCL.Models;
 using System.Collections;
@@ -6,7 +6,7 @@ using UnityEngine;
 
 namespace DCL.Components
 {
-    public abstract class BaseParametrizedShape<T> : BaseShape where T : BaseShape.Model, new()
+    public abstract class ParametrizedShape<T> : BaseShape where T : BaseShape.Model, new()
     {
         public T model = new T();
 
@@ -19,7 +19,7 @@ namespace DCL.Components
 
         public Mesh currentMesh { get; private set; }
 
-        public BaseParametrizedShape(ParcelScene scene) : base(scene)
+        public ParametrizedShape(ParcelScene scene) : base(scene)
         {
             OnAttach += OnShapeAttached;
             OnDetach += OnShapeDetached;
