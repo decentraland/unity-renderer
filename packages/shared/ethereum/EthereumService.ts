@@ -1,15 +1,15 @@
 import { fromWei, toHex, toWei } from 'eth-connect'
-import BigNumber from 'bignumber.js'
-
-import { error } from 'engine/logger'
 import { IFuture, future } from 'fp-future'
+import BigNumber from 'bignumber.js'
+import { generateEphemeralKeys, UserData as EphemeralKey } from 'ephemeralkey'
+
+import { ETHEREUM_NETWORK, decentralandConfigurations } from 'config'
+import { saveToLocalStorage, removeFromLocalStorage, getFromLocalStorage } from 'atomicHelpers/localStorage'
+import { RPCSendableMessage } from 'shared/types'
+import { defaultLogger } from 'shared/logger'
 import { getERC20 } from './ERC20'
 import { requestManager } from './provider'
 import { getERC721 } from './ERC721'
-import { ETHEREUM_NETWORK, decentralandConfigurations } from 'config'
-import { generateEphemeralKeys, UserData as EphemeralKey } from 'ephemeralkey'
-import { saveToLocalStorage, removeFromLocalStorage, getFromLocalStorage } from 'atomicHelpers/localStorage'
-import { RPCSendableMessage } from 'shared/types'
 
 export interface MessageDict {
   [key: string]: string
@@ -190,7 +190,7 @@ export async function requirePayment(toAddress: string, amount: number, currency
     }
     return result
   } catch (err) {
-    error('Error in EthereumController#requirePayment', err)
+    defaultLogger.error('Error in EthereumController#requirePayment', err)
     throw new Error(err)
   }
 }

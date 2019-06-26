@@ -1,7 +1,6 @@
 #!/usr/bin/env node
 
 // tslint:disable:no-console
-
 import * as fs from 'fs'
 import * as ts from 'typescript'
 import * as uglify from 'uglify-js'

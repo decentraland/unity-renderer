@@ -1,6 +1,5 @@
 import { future, IFuture } from 'fp-future'
 import * as BABYLON from 'babylonjs'
-import { error } from '../logger'
 import { isRunningTest, DEBUG } from 'config'
 import { scene, engineMicroQueue } from '../renderer'
 import { defaultLogger } from 'shared/logger'
@@ -406,7 +405,7 @@ export function initMonkeyLoader() {
   if (DEBUG || isRunningTest) {
     const originalScriptLoader = BABYLON.Tools.LoadScript
     BABYLON.Tools.LoadScript = function(scriptUrl, _1, onError?) {
-      error(`Warning. Loading script. This doesn't work in production. ${scriptUrl}`)
+      defaultLogger.error(`Warning. Loading script. This doesn't work in production. ${scriptUrl}`)
       return originalScriptLoader.apply(this, (Array.prototype.slice as any).call(arguments))
     }
   } else {

@@ -2,6 +2,7 @@ import 'webrtc-adapter'
 
 import { parcelLimits, ETHEREUM_NETWORK, commConfigurations, getServerConfigurations, USE_LOCAL_COMMS } from 'config'
 
+import { defaultLogger } from 'shared/logger'
 import { saveToLocalStorage } from 'atomicHelpers/localStorage'
 import { positionObservable, PositionReport } from 'shared/world/positionThings'
 import { CommunicationArea, squareDistance, Position, position2parcel, sameParcel } from './utils'
@@ -31,7 +32,6 @@ import { CommunicationsController } from 'shared/apis/CommunicationsController'
 import { CliBrokerConnection } from './CliBrokerConnection'
 import { MessageEntry } from 'shared/types'
 import { IBrokerConnection } from './IBrokerConnection'
-import { defaultLogger } from 'shared/logger'
 
 type Timestamp = number
 type PeerAlias = string

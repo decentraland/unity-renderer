@@ -109,8 +109,7 @@ const unityInterface = {
   },
   SendSceneMessage(parcelSceneId: string, method: string, payload: string) {
     if (unityInterface.debug) {
-      // tslint:disable-next-line:no-console
-      console.log(parcelSceneId, method, payload)
+      defaultLogger.info(parcelSceneId, method, payload)
     }
     gameInstance.SendMessage(`SceneController`, `SendSceneMessage`, `${parcelSceneId}\t${method}\t${payload}`)
   },
@@ -213,8 +212,7 @@ export async function initializeEngine(_gameInstance: GameInstance) {
         // tslint:disable-next-line:semicolon
         ;(browserInterface as any)[type](message)
       } else {
-        // tslint:disable-next-line:no-console
-        console.log('MessageFromEngine', type, message)
+        defaultLogger.info('MessageFromEngine', type, message)
       }
     }
   }
@@ -294,8 +292,7 @@ export async function loadPreviewScene() {
       mappingsResponse: mappingsResponse
     }
 
-    // tslint:disable-next-line: no-console
-    console.log('Starting Preview...')
+    defaultLogger.info('Starting Preview...')
     const parcelScene = new UnityParcelScene(ILandToLoadableParcelScene(defaultScene))
     currentLoadedScene = loadParcelScene(parcelScene)
 
