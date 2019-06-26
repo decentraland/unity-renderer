@@ -3,9 +3,6 @@ import { Vector2Component } from 'atomicHelpers/landHelpers'
 import future, { IFuture } from 'fp-future'
 import { EventEmitter } from 'events'
 import { SceneDataDownloadManager } from './download'
-import { createLogger } from 'shared/logger'
-
-const logger = createLogger('SceneLifeCycleController: ')
 
 export class SceneLifeCycleController extends EventEmitter {
   private downloadManager: SceneDataDownloadManager
@@ -65,7 +62,6 @@ export class SceneLifeCycleController extends EventEmitter {
     this.sceneParcelSightCount.set(sceneId, newSightCount)
 
     if (newSightCount <= 0) {
-      logger.log('Parcel out of sight killing', sceneId)
       const sceneStatus = this.sceneStatus.get(sceneId)
       if (sceneStatus && sceneStatus.isAwake()) {
         sceneStatus.status = 'unloaded'
