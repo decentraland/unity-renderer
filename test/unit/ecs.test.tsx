@@ -560,14 +560,67 @@ describe('ECS', () => {
     })
 
     it('should correctly set parent entities', () => {
-      const ent1 = new Entity()
-      const ent2 = new Entity()
-      ent1.setParent(ent2)
-      engine.addEntity(ent1)
-      engine.addEntity(ent2)
+      const child = new Entity()
+      const parent = new Entity()
+      child.setParent(parent)
 
-      expect(ent1.getParent()).to.eq(ent2)
-      expect(Object.keys(ent2.children).some(c => c === ent1.uuid)).to.eq(true)
+      expect(parent.isAddedToEngine()).to.eq(false)
+      expect(child.isAddedToEngine()).to.eq(false)
+
+      engine.addEntity(parent)
+
+      expect(child.isAddedToEngine()).to.eq(true)
+      expect(parent.isAddedToEngine()).to.eq(true)
+
+      expect(child.getParent()).to.eq(parent)
+      expect(Object.keys(parent.children).some(c => c === child.uuid)).to.eq(true)
+    })
+
+    it('should correctly set the rootEntity when setParent(null) is called AND the entity is added to the engine', () => {
+      const child = new Entity()
+      const parent = new Entity()
+      child.setParent(parent)
+
+      expect(parent.isAddedToEngine()).to.eq(false)
+      expect(child.isAddedToEngine()).to.eq(false)
+
+      expect(parent.getParent()).to.eq(null)
+      expect(child.getParent() === parent).to.eq(true, 'child.parent === parent')
+
+      engine.addEntity(parent)
+
+      expect(child.isAddedToEngine()).to.eq(true)
+      expect(parent.isAddedToEngine()).to.eq(true)
+
+      child.setParent(null)
+
+      expect(child.getParent() === engine.rootEntity).to.eq(true, 'child.parent === engine.rootEntity')
+      expect(Object.keys(parent.children).some(c => c === child.uuid)).to.eq(false)
+    })
+
+    it('should correctly set null when setParent(null) is called AND the entity is NOT added to the engine', () => {
+      const child = new Entity()
+      const parent = new Entity()
+      child.setParent(parent)
+
+      expect(parent.isAddedToEngine()).to.eq(false, 'parent is not added to the engine')
+      expect(child.isAddedToEngine()).to.eq(false, 'child is not added to the engine')
+
+      expect(parent.getParent()).to.eq(null)
+      expect(child.getParent() === parent).to.eq(true, 'child.parent === parent')
+
+      expect(Object.keys(parent.children).some(c => c === child.uuid)).to.eq(
+        true,
+        'parent must have the child in the children list'
+      )
+
+      child.setParent(null)
+
+      expect(child.getParent()).to.eq(null)
+      expect(Object.keys(parent.children).some(c => c === child.uuid)).to.eq(
+        false,
+        'parent must not have the child in the children list'
+      )
     })
 
     it('should set parents after adding entities to engine', () => {

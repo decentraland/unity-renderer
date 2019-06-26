@@ -13,6 +13,9 @@ import {
 
 import { DecentralandInterface } from './Types'
 
+// This number is defined in the protocol ECS.SetEntityParent.3
+const ROOT_ENTITY_ID = '0'
+
 export class DecentralandSynchronizationSystem implements ISystem {
   cachedComponents: Record<string, Record<string, string>> = {}
   engine!: Engine
@@ -211,6 +214,6 @@ export class DecentralandSynchronizationSystem implements ISystem {
    * This method is called when a parent changes in an entity.
    */
   private parentChanged(event: ParentChanged) {
-    this.dcl.setParent(event.entity.uuid, event.parent.uuid)
+    this.dcl.setParent(event.entity.uuid, event.parent ? event.parent.uuid : ROOT_ENTITY_ID)
   }
 }
