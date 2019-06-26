@@ -1,11 +1,11 @@
 import * as BABYLON from 'babylonjs'
 
-import { error } from '../logger'
+import { UpdateEntityComponentPayload } from 'shared/types'
+import { defaultLogger } from 'shared/logger'
 
 import { componentRegistry, BaseComponent } from '../components'
 import { scene, engineMicroQueue } from '../renderer'
 import { DisposableComponent, BasicShape } from 'engine/components/disposableComponents/DisposableComponent'
-import { UpdateEntityComponentPayload } from 'shared/types'
 
 import { CLASS_ID, Observable } from 'decentraland-ecs/src'
 import { IEventNames, IEvents } from 'decentraland-ecs/src/decentraland/Types'
@@ -297,7 +297,7 @@ export class BaseEntity extends BABYLON.AbstractMesh {
     }
 
     if (this.children.length) {
-      error(`Warning, disposing an entity with children. This should not happen`)
+      defaultLogger.error(`Warning, disposing an entity with children. This should not happen`)
     }
 
     for (let type in this.object3DMap) {

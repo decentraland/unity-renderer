@@ -3,6 +3,7 @@ import { ReadOnlyVector2, ReadOnlyVector3, ReadOnlyQuaternion } from 'decentrala
 import { DEBUG } from 'config'
 import { UIValue } from 'decentraland-ecs/src/ecs/UIValue'
 import { UIStackOrientation } from 'decentraland-ecs/src/decentraland/UIShapes'
+import { defaultLogger } from 'shared/logger'
 
 export type ISchema<Keys> = { [key: string]: { type: keyof Keys; default?: any } }
 export type Validator<T = any> = (x: any, defaultValue: T) => T
@@ -165,7 +166,7 @@ export const validators = {
         color.copyFrom(BABYLON.Color3.FromHexString(x))
       } else {
         // tslint:disable-next-line:no-console
-        DEBUG && console.warn('Cannot parse color3', x)
+        DEBUG && defaultLogger.warn('Cannot parse color3', x)
       }
     } else if (typeof x === 'object' && (x.r !== undefined && x.g !== undefined && x.b !== undefined)) {
       color.copyFrom(x)
@@ -173,7 +174,7 @@ export const validators = {
       color.copyFrom(BABYLON.Color3.FromHexString('#' + ('000000' + (x | 0).toString(16)).substr(-6)))
     } else {
       // tslint:disable-next-line:no-console
-      DEBUG && console.warn('Cannot parse color3', x)
+      DEBUG && defaultLogger.warn('Cannot parse color3', x)
     }
     return color
   },
@@ -187,7 +188,7 @@ export const validators = {
         color.copyFrom(BABYLON.Color4.FromHexString(x))
       } else {
         // tslint:disable-next-line:no-console
-        DEBUG && console.warn('Cannot parse color4', x)
+        DEBUG && defaultLogger.warn('Cannot parse color4', x)
       }
     } else if (typeof x === 'object' && (x.r !== undefined && x.g !== undefined && x.b !== undefined)) {
       color.copyFrom(x)
@@ -195,7 +196,7 @@ export const validators = {
       color.copyFrom(BABYLON.Color4.FromHexString('#' + ('00000000' + (x | 0).toString(16)).substr(-8)))
     } else {
       // tslint:disable-next-line:no-console
-      DEBUG && console.warn('Cannot parse color4', x)
+      DEBUG && defaultLogger.warn('Cannot parse color4', x)
     }
     return color
   },

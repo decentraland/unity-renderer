@@ -13,6 +13,8 @@ import {
   ComponentUpdatedPayload
 } from 'shared/types'
 import { DecentralandInterface } from 'decentraland-ecs/src/decentraland/Types'
+import { defaultLogger } from 'shared/logger'
+
 import { customEval, getES5Context } from './sdk/sandbox'
 import { DevToolsAdapter } from './sdk/DevToolsAdapter'
 
@@ -76,8 +78,7 @@ export default class GamekitScene extends Script {
     if (this.devToolsAdapter) {
       this.devToolsAdapter.error(error)
     } else {
-      // tslint:disable-next-line:no-console
-      console.error(error)
+      defaultLogger.error('', error)
     }
   }
 
@@ -85,8 +86,7 @@ export default class GamekitScene extends Script {
     if (this.devToolsAdapter) {
       this.devToolsAdapter.log(...messages)
     } else {
-      // tslint:disable-next-line:no-console
-      console.log(...messages)
+      defaultLogger.info('', ...messages)
     }
   }
 
