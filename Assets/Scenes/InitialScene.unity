@@ -21,8 +21,8 @@ RenderSettings:
   m_LinearFogStart: 40
   m_LinearFogEnd: 50
   m_AmbientSkyColor: {r: 0.6839622, g: 0.86027807, b: 1, a: 1}
-  m_AmbientEquatorColor: {r: 0.8773585, g: 0.8044429, b: 0.7490655, a: 1}
-  m_AmbientGroundColor: {r: 0.7971698, g: 1, b: 0.8699377, a: 1}
+  m_AmbientEquatorColor: {r: 0.8962264, g: 0.8743203, b: 0.85817903, a: 1}
+  m_AmbientGroundColor: {r: 1, g: 1, b: 1, a: 1}
   m_AmbientIntensity: 1
   m_AmbientMode: 1
   m_SubtractiveShadowColor: {r: 0.42, g: 0.478, b: 0.627, a: 1}
@@ -32,11 +32,11 @@ RenderSettings:
   m_FlareFadeSpeed: 3
   m_HaloTexture: {fileID: 0}
   m_SpotCookie: {fileID: 10001, guid: 0000000000000000e000000000000000, type: 0}
-  m_DefaultReflectionMode: 0
+  m_DefaultReflectionMode: 1
   m_DefaultReflectionResolution: 512
   m_ReflectionBounces: 1
   m_ReflectionIntensity: 1
-  m_CustomReflection: {fileID: 0}
+  m_CustomReflection: {fileID: 8900000, guid: 56a68e301a0ff55469ae441c0112d256, type: 3}
   m_Sun: {fileID: 943100645024490816}
   m_IndirectSpecularColor: {r: 0.12828654, g: 0.18683773, b: 0.28094715, a: 1}
   m_UseRadianceAmbientProbe: 0
