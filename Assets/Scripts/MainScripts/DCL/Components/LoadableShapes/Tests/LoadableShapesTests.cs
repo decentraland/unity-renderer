@@ -1,4 +1,4 @@
-using DCL.Components;
+﻿using DCL.Components;
 using DCL.Helpers;
 using DCL.Models;
 using Newtonsoft.Json;
@@ -34,7 +34,7 @@ namespace Tests
                     src = TestHelpers.GetTestsAssetsPath() + "/OBJ/teapot.obj"
                 }));
 
-            OBJLoader objShape = scene.entities[entityId].gameObject.GetComponentInChildren<OBJLoader>(true);
+            LoadWrapper_OBJ objShape = scene.entities[entityId].gameObject.GetComponentInChildren<LoadWrapper_OBJ>(true);
             yield return new WaitUntil(() => objShape.alreadyLoaded);
 
             Assert.IsTrue(scene.entities[entityId].meshGameObject != null,
@@ -65,7 +65,7 @@ namespace Tests
                     src = TestHelpers.GetTestsAssetsPath() + "/GLB/Lantern/Lantern.glb"
                 }));
 
-            GLTFLoader gltfShape = scene.entities[entityId].gameObject.GetComponentInChildren<GLTFLoader>(true);
+            LoadWrapper_GLTF gltfShape = scene.entities[entityId].gameObject.GetComponentInChildren<LoadWrapper_GLTF>(true);
             yield return new WaitUntil(() => gltfShape.alreadyLoaded);
 
             Assert.IsTrue(
@@ -110,7 +110,7 @@ namespace Tests
                     src = TestHelpers.GetTestsAssetsPath() + "/GLB/Lantern/Lantern.glb"
                 }));
 
-            GLTFLoader gltfShape = scene.entities[entityId].gameObject.GetComponentInChildren<GLTFLoader>(true);
+            LoadWrapper_GLTF gltfShape = scene.entities[entityId].gameObject.GetComponentInChildren<LoadWrapper_GLTF>(true);
             yield return new WaitUntil(() => gltfShape.alreadyLoaded);
 
             Assert.IsTrue(entity.currentShape != null, "current shape must exist 2");
@@ -153,7 +153,7 @@ namespace Tests
                     src = TestHelpers.GetTestsAssetsPath() + "/GLB/Lantern/Lantern.glb"
                 }));
 
-            GLTFLoader gltfShape = scene.entities[entityId].gameObject.GetComponentInChildren<GLTFLoader>(true);
+            LoadWrapper_GLTF gltfShape = scene.entities[entityId].gameObject.GetComponentInChildren<LoadWrapper_GLTF>(true);
             yield return new WaitUntil(() => gltfShape.alreadyLoaded);
 
             {
@@ -169,7 +169,7 @@ namespace Tests
                     src = TestHelpers.GetTestsAssetsPath() + "/GLB/DamagedHelmet/DamagedHelmet.glb"
                 }));
 
-            gltfShape = scene.entities[entityId].gameObject.GetComponentInChildren<GLTFLoader>(true);
+            gltfShape = scene.entities[entityId].gameObject.GetComponentInChildren<LoadWrapper_GLTF>(true);
             yield return new WaitUntil(() => gltfShape.alreadyLoaded);
 
             {
@@ -195,7 +195,7 @@ namespace Tests
                     src = TestHelpers.GetTestsAssetsPath() + "/GLB/Lantern/Lantern.glb"
                 }));
 
-            GLTFLoader gltfShape = scene.entities[entityId].gameObject.GetComponentInChildren<GLTFLoader>(true);
+            LoadWrapper_GLTF gltfShape = scene.entities[entityId].gameObject.GetComponentInChildren<LoadWrapper_GLTF>(true);
             yield return new WaitUntil(() => gltfShape.alreadyLoaded);
 
             TestHelpers.UpdateShape(scene, componentId, JsonConvert.SerializeObject(
@@ -204,7 +204,7 @@ namespace Tests
                     src = TestHelpers.GetTestsAssetsPath() + "/GLB/DamagedHelmet/DamagedHelmet.glb"
                 }));
 
-            gltfShape = scene.entities[entityId].gameObject.GetComponentInChildren<GLTFLoader>(true);
+            gltfShape = scene.entities[entityId].gameObject.GetComponentInChildren<LoadWrapper_GLTF>(true);
             yield return new WaitUntil(() => gltfShape.alreadyLoaded);
 
             Assert.AreEqual(1,
@@ -227,7 +227,7 @@ namespace Tests
                           "/GLB/PalmTree_01.glb" // this glb has the "..._collider" object inside with the pre-defined collision geometry.
                 }));
 
-            GLTFLoader gltfShape = scene.entities[entityId].gameObject.GetComponentInChildren<GLTFLoader>(true);
+            LoadWrapper_GLTF gltfShape = scene.entities[entityId].gameObject.GetComponentInChildren<LoadWrapper_GLTF>(true);
             yield return new WaitUntil(() => gltfShape.alreadyLoaded);
 
             var colliderObject = scene.entities[entityId].gameObject.GetComponentInChildren<Collider>();
@@ -249,7 +249,7 @@ namespace Tests
                 }));
             var gltf1 = scene.GetSharedComponent(gltfId1);
 
-            GLTFLoader gltfShape = entity.gameObject.GetComponentInChildren<GLTFLoader>(true);
+            LoadWrapper_GLTF gltfShape = entity.gameObject.GetComponentInChildren<LoadWrapper_GLTF>(true);
             yield return new WaitUntil(() => gltfShape.alreadyLoaded);
 
             Assert.AreEqual(gltf1, entity.GetSharedComponent(typeof(BaseShape)));
@@ -261,7 +261,7 @@ namespace Tests
                     src = TestHelpers.GetTestsAssetsPath() + "/GLB/Lantern/Lantern.glb"
                 }));
 
-            gltfShape = entity.gameObject.GetComponentInChildren<GLTFLoader>(true);
+            gltfShape = entity.gameObject.GetComponentInChildren<LoadWrapper_GLTF>(true);
             yield return new WaitUntil(() => gltfShape.alreadyLoaded);
 
             Assert.AreEqual(scene.GetSharedComponent(gltfId2), entity.GetSharedComponent(typeof(BaseShape)));
@@ -275,7 +275,7 @@ namespace Tests
 
             yield return InitScene();
 
-            BaseLoadableShape<GLTFLoader>.Model gltfModel = new BaseLoadableShape<GLTFLoader>.Model()
+            LoadableShape.Model gltfModel = new LoadableShape.Model()
             {
                 src = TestHelpers.GetTestsAssetsPath() + "/GLB/Lantern/Lantern.glb",
             };
@@ -283,8 +283,8 @@ namespace Tests
             GLTFShape gltfShape = TestHelpers.CreateEntityWithGLTFShape(scene, Vector3.zero, gltfModel);
             yield return gltfShape.routine;
 
-            GLTFLoader gltfLoader = scene.entities[gltfShape.attachedEntities.First().entityId].gameObject
-                .GetComponentInChildren<GLTFLoader>(true);
+            LoadWrapper_GLTF gltfLoader = scene.entities[gltfShape.attachedEntities.First().entityId].gameObject
+                .GetComponentInChildren<LoadWrapper_GLTF>(true);
             yield return new WaitUntil(() => gltfLoader.alreadyLoaded);
 
             #endregion
@@ -310,7 +310,7 @@ namespace Tests
 
             yield return InitScene();
 
-            BaseLoadableShape<GLTFLoader>.Model gltfModel = new BaseLoadableShape<GLTFLoader>.Model()
+            LoadableShape.Model gltfModel = new LoadableShape.Model()
             {
                 src = TestHelpers.GetTestsAssetsPath() + "/GLB/Lantern/Lantern.glb",
                 visible = true
@@ -319,8 +319,8 @@ namespace Tests
             GLTFShape gltfShape = TestHelpers.CreateEntityWithGLTFShape(scene, Vector3.zero, gltfModel);
             yield return gltfShape.routine;
 
-            GLTFLoader gltfLoader = scene.entities[gltfShape.attachedEntities.First().entityId].gameObject
-                .GetComponentInChildren<GLTFLoader>(true);
+            LoadWrapper_GLTF gltfLoader = scene.entities[gltfShape.attachedEntities.First().entityId].gameObject
+                .GetComponentInChildren<LoadWrapper_GLTF>(true);
             yield return new WaitUntil(() => gltfLoader.alreadyLoaded);
 
             #endregion
@@ -346,7 +346,7 @@ namespace Tests
 
             yield return InitScene();
 
-            BaseLoadableShape<GLTFLoader>.Model gltfModel = new BaseLoadableShape<GLTFLoader>.Model()
+            LoadableShape.Model gltfModel = new LoadableShape.Model()
             {
                 src = TestHelpers.GetTestsAssetsPath() + "/GLB/Lantern/Lantern.glb",
                 visible = false
@@ -355,8 +355,8 @@ namespace Tests
             GLTFShape gltfShape = TestHelpers.CreateEntityWithGLTFShape(scene, Vector3.zero, gltfModel);
             yield return gltfShape.routine;
 
-            GLTFLoader gltfLoader = scene.entities[gltfShape.attachedEntities.First().entityId].gameObject
-                .GetComponentInChildren<GLTFLoader>(true);
+            LoadWrapper_GLTF gltfLoader = scene.entities[gltfShape.attachedEntities.First().entityId].gameObject
+                .GetComponentInChildren<LoadWrapper_GLTF>(true);
             yield return new WaitUntil(() => gltfLoader.alreadyLoaded);
 
             #endregion
@@ -382,7 +382,7 @@ namespace Tests
 
             yield return InitScene();
 
-            BaseLoadableShape<GLTFLoader>.Model gltfModel = new BaseLoadableShape<GLTFLoader>.Model()
+            LoadableShape.Model gltfModel = new LoadableShape.Model()
             {
                 src = TestHelpers.GetTestsAssetsPath() + "/GLB/Lantern/Lantern.glb",
                 visible = true
@@ -391,8 +391,8 @@ namespace Tests
             GLTFShape gltfShape = TestHelpers.CreateEntityWithGLTFShape(scene, Vector3.zero, gltfModel);
             yield return gltfShape.routine;
 
-            GLTFLoader gltfLoader = scene.entities[gltfShape.attachedEntities.First().entityId].gameObject
-                .GetComponentInChildren<GLTFLoader>(true);
+            LoadWrapper_GLTF gltfLoader = scene.entities[gltfShape.attachedEntities.First().entityId].gameObject
+                .GetComponentInChildren<LoadWrapper_GLTF>(true);
             yield return new WaitUntil(() => gltfLoader.alreadyLoaded);
 
             #endregion
@@ -419,7 +419,7 @@ namespace Tests
 
             yield return InitScene();
 
-            BaseLoadableShape<GLTFLoader>.Model gltfModel = new BaseLoadableShape<GLTFLoader>.Model()
+            LoadableShape.Model gltfModel = new LoadableShape.Model()
             {
                 src = TestHelpers.GetTestsAssetsPath() + "/GLB/Lantern/Lantern.glb",
                 visible = false
@@ -428,8 +428,8 @@ namespace Tests
             GLTFShape gltfShape = TestHelpers.CreateEntityWithGLTFShape(scene, Vector3.zero, gltfModel);
             yield return gltfShape.routine;
 
-            GLTFLoader gltfLoader = scene.entities[gltfShape.attachedEntities.First().entityId].gameObject
-                .GetComponentInChildren<GLTFLoader>(true);
+            LoadWrapper_GLTF gltfLoader = scene.entities[gltfShape.attachedEntities.First().entityId].gameObject
+                .GetComponentInChildren<LoadWrapper_GLTF>(true);
             yield return new WaitUntil(() => gltfLoader.alreadyLoaded);
 
             #endregion
@@ -456,7 +456,7 @@ namespace Tests
 
             yield return InitScene();
 
-            BaseLoadableShape<GLTFLoader>.Model lanternModel = new BaseLoadableShape<GLTFLoader>.Model()
+            LoadableShape.Model lanternModel = new LoadableShape.Model()
             {
                 src = TestHelpers.GetTestsAssetsPath() + "/GLB/Lantern/Lantern.glb",
                 visible = false
@@ -464,11 +464,11 @@ namespace Tests
             GLTFShape lanternShape = TestHelpers.CreateEntityWithGLTFShape(scene, Vector3.zero, lanternModel);
             yield return lanternShape.routine;
 
-            GLTFLoader gltfLoader = scene.entities[lanternShape.attachedEntities.First().entityId].gameObject
-                .GetComponentInChildren<GLTFLoader>(true);
+            LoadWrapper_GLTF gltfLoader = scene.entities[lanternShape.attachedEntities.First().entityId].gameObject
+                .GetComponentInChildren<LoadWrapper_GLTF>(true);
             yield return new WaitUntil(() => gltfLoader.alreadyLoaded);
 
-            BaseLoadableShape<GLTFLoader>.Model palmModel = new BaseLoadableShape<GLTFLoader>.Model()
+            LoadableShape.Model palmModel = new LoadableShape.Model()
             {
                 src = TestHelpers.GetTestsAssetsPath() + "/GLB/PalmTree_01.glb",
                 visible = true
@@ -477,7 +477,7 @@ namespace Tests
             yield return palmShape.routine;
 
             gltfLoader = scene.entities[palmShape.attachedEntities.First().entityId].gameObject
-                .GetComponentInChildren<GLTFLoader>(true);
+                .GetComponentInChildren<LoadWrapper_GLTF>(true);
             yield return new WaitUntil(() => gltfLoader.alreadyLoaded);
 
             #endregion

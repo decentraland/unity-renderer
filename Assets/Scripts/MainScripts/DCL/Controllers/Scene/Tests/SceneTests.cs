@@ -45,19 +45,19 @@ namespace Tests
             TestHelpers.InstantiateEntityWithShape(scene, "6", DCL.Models.CLASS_ID.GLTF_SHAPE, new Vector3(0, 1, 6),
                 TestHelpers.GetTestsAssetsPath() + "/GLB/Lantern/Lantern.glb");
             yield return null;
-            GLTFLoader gltfShape = scene.entities["6"].gameObject.GetComponentInChildren<GLTFLoader>(true);
+            LoadWrapper_GLTF gltfShape = scene.entities["6"].gameObject.GetComponentInChildren<LoadWrapper_GLTF>(true);
             yield return new WaitUntil(() => gltfShape.alreadyLoaded);
 
             TestHelpers.InstantiateEntityWithShape(scene, "7", DCL.Models.CLASS_ID.OBJ_SHAPE, new Vector3(10, 1, 0),
                 TestHelpers.GetTestsAssetsPath() + "/OBJ/teapot.obj");
             yield return null;
-            OBJLoader objshape = scene.entities["7"].gameObject.GetComponentInChildren<OBJLoader>(true);
+            LoadWrapper_OBJ objshape = scene.entities["7"].gameObject.GetComponentInChildren<LoadWrapper_OBJ>(true);
             yield return new WaitUntil(() => objshape.alreadyLoaded);
 
             TestHelpers.InstantiateEntityWithShape(scene, "8", DCL.Models.CLASS_ID.GLTF_SHAPE, new Vector3(0, 1, 12),
                 TestHelpers.GetTestsAssetsPath() + "/GLB/CesiumMan/CesiumMan.glb");
             yield return null;
-            gltfShape = scene.entities["8"].gameObject.GetComponentInChildren<GLTFLoader>(true);
+            gltfShape = scene.entities["8"].gameObject.GetComponentInChildren<LoadWrapper_GLTF>(true);
             yield return new WaitUntil(() => gltfShape.alreadyLoaded);
 
             AssertMetricsModel(scene,

@@ -62,7 +62,7 @@ namespace Tests
                 out entity,
                 new GLTFShape.Model() { src = TestHelpers.GetTestsAssetsPath() + "/GLB/Lantern/Lantern.glb" });
 
-            GLTFLoader gltfShape = entity.gameObject.GetComponentInChildren<GLTFLoader>(true);
+            LoadWrapper_GLTF gltfShape = entity.gameObject.GetComponentInChildren<LoadWrapper_GLTF>(true);
             yield return new WaitUntil(() => gltfShape.alreadyLoaded);
 
             float timeout = 0;

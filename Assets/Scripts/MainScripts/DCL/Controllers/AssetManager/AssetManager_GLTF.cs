@@ -5,13 +5,13 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityGLTF;
-using UnityGLTF.Loader;
 using Random = UnityEngine.Random;
 
 namespace DCL
 {
     public class AssetManager_GLTF : AssetManager<AssetManager_GLTF.AssetInfo, GameObject, GLTFComponent>
     {
+        static bool VERBOSE = false;
         public static AssetManager_GLTF i { get; private set; }
 
         public class AssetInfo : DCL.AssetInfo
@@ -42,9 +42,6 @@ namespace DCL
             }
         }
 
-        bool VERBOSE = false;
-        WebRequestLoader.WebRequestLoaderEventAction OnGLTFLoaderWebRequestStartHook;
-        public System.Action<GLTFComponent> OnStartLoading;
 
         private void Awake()
         {
@@ -159,12 +156,15 @@ namespace DCL
             assetLibrary[id].OnFail = null;
         }
 
-        public GameObject Get(object id, string url, Transform parent, System.Action OnSuccess, System.Action OnFail,
-            WebRequestLoader.WebRequestLoaderEventAction webRequestStartEventAction, bool initialVisibility = true)
-        {
-            OnGLTFLoaderWebRequestStartHook = webRequestStartEventAction;
 
-            return Get(id, url, parent, OnSuccess, OnFail, initialVisibility);
+        public GameObject Get(object id,
+                              string url,
+                              Transform parent,
+                              System.Action OnSuccess,
+                              System.Action OnFail,
+                              GLTFComponent.Settings settings)
+        {
+            return base.Get(id, url, parent, OnSuccess, OnFail, settings);
         }
 
         protected override GLTFComponent GetLoadable(GameObject container)
@@ -172,26 +172,17 @@ namespace DCL
             return container.AddComponent<GLTFComponent>();
         }
 
-        protected override void StartLoading(GLTFComponent loadable, string url, bool initialVisibility = true)
+        protected override void StartLoading(GLTFComponent loadable,
+                                             object id,
+                                             string url,
+                                             object settings = null)
         {
-            // Hook up a method to parse the http requested files using the scene mappings
-            loadable.OnWebRequestStartEvent = OnGLTFLoaderWebRequestStartHook;
-            OnGLTFLoaderWebRequestStartHook = null;
-
-            loadable.UseVisualFeedback = Configuration.ParcelSettings.VISUAL_LOADING_ENABLED;
-            loadable.Multithreaded = false;
-            loadable.LoadingTextureMaterial = Utils.EnsureResourcesMaterial("Materials/LoadingTextureMaterial");
-            loadable.InitialVisibility = initialVisibility;
-
-            //NOTE(Brian): Not proud of this. We have to design a better way to pass settings to the loader.
-            OnStartLoading?.Invoke(loadable);
-
             if (VERBOSE)
             {
                 Debug.Log("StartLoading() url -> " + url);
             }
 
-            loadable.LoadAsset(url, true);
+            loadable.LoadAsset(url, true, settings as GLTFComponent.Settings);
         }
 
         IEnumerator ShowObject(GameObject go, bool useMaterialTransition, Action OnSuccess)

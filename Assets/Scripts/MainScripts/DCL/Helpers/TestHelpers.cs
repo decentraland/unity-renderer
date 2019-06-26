@@ -441,7 +441,7 @@ namespace DCL.Helpers
 
         private static T CreateEntityWithPrimitive<T, K>(ParcelScene scene, Vector3 position, CLASS_ID classId,
             K model = null)
-            where T : BaseParametrizedShape<K>
+            where T : ParametrizedShape<K>
             where K : BaseShape.Model, new()
         {
             if (model == null)
@@ -624,7 +624,7 @@ namespace DCL.Helpers
 
             return componentId;
         }
-        
+
         public static void UpdateShape(ParcelScene scene, string componentId, string model)
         {
             scene.SharedComponentUpdate(JsonUtility.ToJson(new DCL.Models.SharedComponentUpdateMessage
@@ -676,21 +676,27 @@ namespace DCL.Helpers
             Assert.IsTrue(modelMember != null, "model is null!!");
             TModel defaultedModel = new TModel();
 
+            object tmpModel = null;
+
+            //NOTE(Brian): Get model object
+            if (modelMember is FieldInfo)
+            {
+                tmpModel = (modelMember as FieldInfo).GetValue(component);
+            }
+            else if (modelMember is PropertyInfo)
+            {
+                tmpModel = (modelMember as PropertyInfo).GetValue(component);
+            }
+
+            TModel model = tmpModel as TModel;
+
+            Assert.IsTrue(model != null, "Model is null, there's a type mismatch between TModel type and the actual model type");
+
             foreach (FieldInfo f in typeof(TModel).GetFields())
             {
                 System.Type t = f.GetType();
 
-                object model = null;
-
-                if (modelMember is FieldInfo)
-                {
-                    model = (modelMember as FieldInfo).GetValue(component);
-                }
-                else if (modelMember is PropertyInfo)
-                {
-                    model = (modelMember as PropertyInfo).GetValue(component);
-                }
-
+                //NOTE(Brian): Get model field
                 object defaultValue = f.GetValue(defaultedModel);
                 object modelValue = f.GetValue(model);
                 string fieldName = f.Name;

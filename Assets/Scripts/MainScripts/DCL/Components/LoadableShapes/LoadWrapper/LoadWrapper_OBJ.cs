@@ -2,7 +2,7 @@
 
 namespace DCL.Components
 {
-    public class OBJLoader : LoadableMonoBehavior
+    public class LoadWrapper_OBJ : LoadWrapper
     {
         DynamicOBJLoaderController objLoaderComponent;
 
@@ -17,7 +17,7 @@ namespace DCL.Components
             throw new System.NotImplementedException();
         }
 
-        public override void Load(string src, System.Action<LoadableMonoBehavior> OnSuccess, System.Action<LoadableMonoBehavior> OnFail)
+        public override void Load(string src, System.Action<LoadWrapper> OnSuccess, System.Action<LoadWrapper> OnFail)
         {
             if (!string.IsNullOrEmpty(src))
             {

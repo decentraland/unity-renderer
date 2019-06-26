@@ -67,7 +67,7 @@ namespace Tests
                     src = TestHelpers.GetTestsAssetsPath() + "/GLB/Lantern/Lantern.glb"
                 }));
 
-            GLTFLoader gltfShape = scene.entities[entityId].gameObject.GetComponentInChildren<GLTFLoader>();
+            LoadWrapper_GLTF gltfShape = scene.entities[entityId].gameObject.GetComponentInChildren<LoadWrapper_GLTF>();
             yield return new DCL.WaitUntil(() => gltfShape.alreadyLoaded, 7f);
 
             Assert.IsTrue(
@@ -124,7 +124,7 @@ namespace Tests
             TestHelpers.EntityComponentCreate<OnClickComponent, OnClickComponent.Model>(scene, scene.entities[entityId],
                 OnClickComponentModel, CLASS_ID_COMPONENT.UUID_CALLBACK);
 
-            GLTFLoader gltfShape = scene.entities[entityId].gameObject.GetComponentInChildren<GLTFLoader>();
+            LoadWrapper_GLTF gltfShape = scene.entities[entityId].gameObject.GetComponentInChildren<LoadWrapper_GLTF>();
             yield return new DCL.WaitUntil(() => gltfShape.alreadyLoaded, 7f);
 
             Assert.IsTrue(
