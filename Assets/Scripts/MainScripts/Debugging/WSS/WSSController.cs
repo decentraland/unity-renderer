@@ -94,6 +94,7 @@ namespace DCL
 
         public bool openBrowserWhenStart;
         public bool useClientDebugMode = true;
+        public bool forceLocalComms = true;
         public Vector2 startInCoords = new Vector2(-99, 109);
 
         public DebugPanel debugPanelMode = DebugPanel.Off;
@@ -119,6 +120,10 @@ namespace DCL
                 {
                     debugString = "DEBUG_MODE&LOCAL_COMMS&";
                 }
+                else if(forceLocalComms)
+                {
+                    debugString = "LOCAL_COMMS&";
+                }
 
                 string debugPanelString = "";
                 if (debugPanelMode == DebugPanel.Engine)
@@ -131,7 +136,7 @@ namespace DCL
                 }
 
                 Application.OpenURL(
-                    $"http://localhost:8080/?{debugString}{debugPanelString}&position={startInCoords.x}%2C{startInCoords.y}&ws=ws%3A%2F%2Flocalhost%3A5000%2Fdcl");
+                    $"http://localhost:8080/?{debugString}{debugPanelString}position={startInCoords.x}%2C{startInCoords.y}&ws=ws%3A%2F%2Flocalhost%3A5000%2Fdcl");
             }
 #else
             useClientDebugMode = false;
@@ -180,6 +185,9 @@ namespace DCL
                                 break;
                             case "LoadParcelScenes":
                                 sceneController.LoadParcelScenes(msg.payload);
+                                break;
+                            case "UnloadScene":
+                                sceneController.UnloadScene(msg.payload);
                                 break;
                             case "SetPosition":
                                 characterController.SetPosition(msg.payload);
