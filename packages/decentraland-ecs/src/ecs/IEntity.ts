@@ -104,7 +104,7 @@ export class ComponentAdded {
  */
 @EventConstructor()
 export class ParentChanged {
-  constructor(public entity: IEntity, public parent: IEntity) {
+  constructor(public entity: IEntity, public parent: IEntity | null) {
     // stub
   }
 }
