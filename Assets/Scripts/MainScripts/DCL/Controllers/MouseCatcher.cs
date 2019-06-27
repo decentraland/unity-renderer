@@ -27,10 +27,12 @@ namespace DCL
 
         void Update()
         {
+            #if UNITY_EDITOR
             if (Input.GetKeyDown(KeyCode.Escape))
             {
                 UnlockCursor();
             }
+            #endif
 
             if (Cursor.lockState != CursorLockMode.None && Input.GetMouseButtonDown(0))
             {
@@ -60,6 +62,7 @@ namespace DCL
             EventSystem.current.SetSelectedGameObject(null);
         }
 
+        //Externally called by the browser
         public void UnlockCursor()
         {
             Cursor.visible = true;
