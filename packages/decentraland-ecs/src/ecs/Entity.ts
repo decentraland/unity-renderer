@@ -271,7 +271,7 @@ export class Entity implements IEntity {
    * Returns false if no engine was defined.
    */
   isAddedToEngine(): boolean {
-    if (this.engine && this.uuid in this.engine.entities) {
+    if (this.engine && (this.uuid in this.engine.entities || this.engine.rootEntity === this)) {
       return true
     }
 
