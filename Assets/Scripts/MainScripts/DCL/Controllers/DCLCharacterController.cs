@@ -136,7 +136,7 @@ public class DCLCharacterController : MonoBehaviour
         velocity.z = 0f;
         velocity.y += gravity * deltaTime;
 
-        if (!Cursor.visible)
+        if (Cursor.lockState == CursorLockMode.Locked)
         {
             DetectInput();
 
