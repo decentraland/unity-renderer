@@ -31,7 +31,7 @@ namespace UnityGLTF
         }
 
         public string GLTFUri = null;
-        public bool Multithreaded = true;
+        public bool Multithreaded = false;
         public bool UseStream = false;
         public bool UseVisualFeedback = true;
 
