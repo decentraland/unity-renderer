@@ -576,6 +576,17 @@ describe('ECS', () => {
       expect(Object.keys(parent.children).some(c => c === child.uuid)).to.eq(true)
     })
 
+    it('should be able to re-add an entity to the engine', () => {
+      const ent = new Entity()
+      expect(ent.isAddedToEngine()).to.eq(false)
+      engine.addEntity(ent)
+      expect(ent.isAddedToEngine()).to.eq(true)
+      engine.removeEntity(ent)
+      expect(ent.isAddedToEngine()).to.eq(false)
+      engine.addEntity(ent)
+      expect(ent.isAddedToEngine()).to.eq(true)
+    })
+
     it('should correctly set the rootEntity when setParent(null) is called AND the entity is added to the engine', () => {
       const child = new Entity()
       const parent = new Entity()

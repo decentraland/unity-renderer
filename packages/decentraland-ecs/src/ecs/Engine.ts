@@ -75,8 +75,8 @@ export class Engine implements IEngine {
     if (!parent) {
       entity.setParent(this.rootEntity)
     } else {
-      if (!parent.isAddedToEngine()) {
-        log('Engine: warning, added an entity with a parent not present in the engine')
+      if (!parent.isAddedToEngine() && parent !== this.rootEntity) {
+        log('Engine: warning, added an entity with a parent not present in the engine. Parent id: ' + parent.uuid)
       }
     }
 
