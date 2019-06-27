@@ -66,7 +66,8 @@ namespace DCL.Components
                 OnCharacterMoved(DCLCharacterController.i.transform.position);
             }
 
-            return null;
+            //We have to wait a frame for the Canvas Scaler to act
+            yield return null;
         }
 
         public override void Dispose()
