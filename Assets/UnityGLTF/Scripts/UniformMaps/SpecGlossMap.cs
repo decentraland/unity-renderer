@@ -1,10 +1,10 @@
-using UnityEngine;
+﻿using UnityEngine;
 
 namespace UnityGLTF
 {
     class SpecGlossMap : SpecGloss2StandardMap
     {
-        public SpecGlossMap(int MaxLOD = 1000) : base("DCL/LWRP/Lit Loading", MaxLOD) { }
+        public SpecGlossMap(int MaxLOD = 1000) : base("DCL/LWRP/Lit", MaxLOD) { }
         public SpecGlossMap(string shaderName, int MaxLOD = 1000) : base(shaderName, MaxLOD) { }
         protected SpecGlossMap(Material m, int MaxLOD = 1000) : base(m, MaxLOD) { }
 

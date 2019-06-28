@@ -283,7 +283,13 @@ namespace DCL
                 newScene.ownerController = this;
                 loadedScenes.Add(sceneToLoad.id, newScene);
 
-                if (!newScene.isPersistent && !loadingScreenController.started)
+                bool enableLoadingScreen = true;
+
+#if UNITY_EDITOR
+                enableLoadingScreen = enableLoadingScreenInEditor;
+#endif
+
+                if (!newScene.isPersistent && !loadingScreenController.started && enableLoadingScreen)
                 {
                     Vector2 playerPos = ParcelScene.WorldToGridPosition(DCLCharacterController.i.transform.position);
                     if (Vector2Int.Distance(new Vector2Int((int)playerPos.x, (int)playerPos.y), sceneToLoad.basePosition) <= LoadingScreenController.MAX_DISTANCE_TO_PLAYER)
