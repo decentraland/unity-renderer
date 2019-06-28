@@ -18,8 +18,6 @@ public class MaterialTransitionController : MonoBehaviour
     private static int ShaderId_FadeThickness = Shader.PropertyToID("_FadeThickness");
     private static int ShaderId_FadeDirection = Shader.PropertyToID("_FadeDirection");
     private static int ShaderId_LoadingColor = Shader.PropertyToID("_LoadingColor");
-    private static int ShaderId_SpecularHighlights = Shader.PropertyToID("_SpecularHighlights");
-    private static int ShaderId_GlossyReflections = Shader.PropertyToID("_GlossyReflections");
 
     Material loadingMaterial;
 

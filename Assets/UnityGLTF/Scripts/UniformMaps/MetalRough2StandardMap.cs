@@ -10,8 +10,8 @@ namespace UnityGLTF
 
         public virtual Texture BaseColorTexture
         {
-            get { return _material.GetTexture("_MainTex"); }
-            set { _material.SetTexture("_MainTex", value); }
+            get { return _material.GetTexture("_BaseMap"); }
+            set { _material.SetTexture("_BaseMap", value); }
         }
 
         // not implemented by the Standard shader
@@ -23,8 +23,8 @@ namespace UnityGLTF
 
         public virtual Color BaseColorFactor
         {
-            get { return _material.GetColor("_Color"); }
-            set { _material.SetColor("_Color", value); }
+            get { return _material.GetColor("_BaseColor"); }
+            set { _material.SetColor("_BaseColor", value); }
         }
 
         public virtual Texture MetallicRoughnessTexture
