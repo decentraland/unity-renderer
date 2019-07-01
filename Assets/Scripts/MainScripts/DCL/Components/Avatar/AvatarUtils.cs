@@ -7,9 +7,9 @@ using UnityEngine;
 
 public static class AvatarUtils
 {
-    public static int _Color = Shader.PropertyToID("_Color");
+    public static int _BaseColor = Shader.PropertyToID("_BaseColor");
     public static int _EmissionColor = Shader.PropertyToID("_EmissionColor");
-    public static int _MainTex = Shader.PropertyToID("_MainTex");
+    public static int _BaseMap = Shader.PropertyToID("_BaseMap");
     public static int _EyesTexture = Shader.PropertyToID("_EyesTexture");
     public static int _EyeTint = Shader.PropertyToID("_EyeTint");
     public static int _IrisMask = Shader.PropertyToID("_IrisMask");
@@ -80,7 +80,7 @@ public static class AvatarUtils
     public static void SetColorInHierarchy(Transform transformRoot,
                                            string materialsContainingThisName,
                                            Color colorToChange,
-                                           string shaderId = "_Color")
+                                           string shaderId = "_BaseColor")
     {
         Renderer[] renderers = transformRoot.GetComponentsInChildren<Renderer>();
 
@@ -135,8 +135,8 @@ public static class AvatarUtils
             (mat) =>
             {
                 Material copy = new Material(replaceThemWith);
-                copy.SetTexture(_MainTex, mat.GetTexture(_MainTex));
-                copy.SetColor(_Color, mat.GetColor(_Color));
+                copy.SetTexture(_BaseMap, mat.GetTexture(_BaseMap));
+                copy.SetColor(_BaseColor, mat.GetColor(_BaseColor));
                 copy.SetColor(_EmissionColor, mat.GetColor(_EmissionColor));
                 result.Add(copy);
                 return copy;

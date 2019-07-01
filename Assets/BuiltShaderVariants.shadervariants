@@ -35,3 +35,19 @@ ShaderVariantCollection:
   - first: {fileID: 4800000, guid: 9836e4430eb58204086d7d1440e16a4f, type: 3}
     second:
       variants: []
+  - first: {fileID: 4800000, guid: acd491c64cf95fb43828192802060ca0, type: 3}
+    second:
+      variants: []
+  - first: {fileID: 4800000, guid: c8f1036d047721a43a74331d59080020, type: 3}
+    second:
+      variants:
+      - keywords: FOG_LINEAR
+        passType: 0
+  - first: {fileID: 4800000, guid: ffacb48709ca4ec4d8a1f587776d4a11, type: 3}
+    second:
+      variants:
+      - keywords: FOG_LINEAR
+        passType: 0
+  - first: {fileID: 4800000, guid: 7bc4dc8666ba3c94e80873a8e72e5b06, type: 3}
+    second:
+      variants: []
