@@ -57,7 +57,7 @@ export class AudioSource extends ObservableComponent {
    * Is this AudioSource playing?
    */
   @ObservableComponent.field
-  playing: boolean = true
+  playing: boolean = false
 
   /**
    * Pitch, default: 1.0, range from 0.0 to MaxFloat
