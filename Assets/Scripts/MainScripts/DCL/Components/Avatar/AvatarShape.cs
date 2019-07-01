@@ -282,10 +282,10 @@ namespace DCL
             AvatarUtils.MapSharedMaterialsRecursively(baseBody.transform,
                 (mat) =>
                 {
-                    eyebrowMaterialCopy.SetTexture(AvatarUtils._MainTex, loadedTexture);
+                    eyebrowMaterialCopy.SetTexture(AvatarUtils._BaseMap, loadedTexture);
 
                     //NOTE(Brian): This isn't an error, we must also apply hair color to this mat
-                    eyebrowMaterialCopy.SetColor(AvatarUtils._Color, model.hair.color);
+                    eyebrowMaterialCopy.SetColor(AvatarUtils._BaseColor, model.hair.color);
 
                     return eyebrowMaterialCopy;
                 },
@@ -304,10 +304,10 @@ namespace DCL
             AvatarUtils.MapSharedMaterialsRecursively(baseBody.transform,
                 (mat) =>
                 {
-                    mouthMaterialCopy.SetTexture(AvatarUtils._MainTex, loadedTexture);
+                    mouthMaterialCopy.SetTexture(AvatarUtils._BaseMap, loadedTexture);
 
                     //NOTE(Brian): This isn't an error, we must also apply skin color to this mat
-                    mouthMaterialCopy.SetColor(AvatarUtils._Color, model.skin.color);
+                    mouthMaterialCopy.SetColor(AvatarUtils._BaseColor, model.skin.color);
 
                     return mouthMaterialCopy;
                 },

@@ -1,4 +1,4 @@
-using DCL.Controllers;
+﻿using DCL.Controllers;
 using DCL.Helpers;
 using DCL.Models;
 using System.Collections;
@@ -78,6 +78,23 @@ namespace DCL.Components
             else
             {
                 LoadMaterial(PBR_MATERIAL_NAME);
+
+                material.SetColor("_BaseColor", model.albedoColor);
+
+                if (model.emissiveColor != Color.clear && model.emissiveColor != Color.black)
+                {
+                    material.EnableKeyword("_EMISSION");
+                }
+
+                // METALLIC/SPECULAR CONFIGURATIONS
+                material.SetColor("_EmissionColor", model.emissiveColor * model.emissiveIntensity);
+                material.SetColor("_SpecColor", model.reflectivityColor);
+
+                material.SetFloat("_Metallic", model.metallic);
+                material.SetFloat("_Smoothness", 1 - model.roughness);
+                material.SetFloat("_EnvironmentReflections", model.microSurface);
+                material.SetFloat("_SpecularHighlights", model.specularIntensity * model.directIntensity);
+
                 // FETCH AND LOAD EMISSIVE TEXTURE
                 if (!string.IsNullOrEmpty(model.emissiveTexture))
                 {
@@ -91,24 +108,9 @@ namespace DCL.Components
                 {
                     material.SetTexture("_EmissionMap", null);
                 }
-
-                // METALLIC/SPECULAR CONFIGURATIONS
-                material.SetColor("_EmissionColor", model.emissiveColor * model.emissiveIntensity);
-
-                if (model.emissiveColor != Color.clear && model.emissiveColor != Color.black)
-                {
-                    material.EnableKeyword("_EMISSION");
-                }
-
-                material.SetColor("_SpecColor", model.reflectivityColor);
-
-                material.SetFloat("_Metallic", model.metallic);
-                material.SetFloat("_Glossiness", 1 - model.roughness);
-                material.SetFloat("_GlossyReflections", model.microSurface);
-                material.SetFloat("_SpecularHighlights", model.specularIntensity * model.directIntensity);
             }
 
-            material.SetColor("_Color", model.albedoColor);
+            SetupTransparencyMode();
 
             // FETCH AND LOAD TEXTURES
             if (!string.IsNullOrEmpty(model.albedoTexture))
@@ -116,12 +118,12 @@ namespace DCL.Components
                 yield return DCLTexture.FetchFromComponent(scene, model.albedoTexture,
                     (fetchedAlbedoTexture) =>
                     {
-                        material.SetTexture("_MainTex", fetchedAlbedoTexture);
+                        material.SetTexture("_BaseMap", fetchedAlbedoTexture);
                     });
             }
             else
             {
-                material.SetTexture("_MainTex", null);
+                material.SetTexture("_BaseMap", null);
             }
 
             if (!string.IsNullOrEmpty(model.bumpTexture))
@@ -137,6 +139,14 @@ namespace DCL.Components
                 material.SetTexture("_BumpMap", null);
             }
 
+            foreach (string key in material.shaderKeywords)
+            {
+                Debug.Log("found key " + key);
+            }
+        }
+
+        private void SetupTransparencyMode()
+        {
             // ALPHA CONFIGURATION
             material.SetFloat("_AlphaClip", model.alpha);
 

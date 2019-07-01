@@ -1,8 +1,8 @@
 ﻿Shader "DCL/Unlit Cutout Tinted" {
 Properties {
-    _MainTex ("Base (RGB) Trans (A)", 2D) = "white" {}
+    _BaseMap ("Base (RGB) Trans (A)", 2D) = "white" {}
     _Cutoff ("Alpha cutoff", Range(0,1)) = 0.5
-    _Color ("Color", Color) = (0,0,0,0)
+    _BaseColor ("Color", Color) = (0,0,0,0)
 }
 SubShader {
     Tags {"Queue"="AlphaTest" "IgnoreProjector"="True" "RenderType"="TransparentCutout"}
@@ -32,10 +32,10 @@ SubShader {
                 UNITY_VERTEX_OUTPUT_STEREO
             };
  
-            sampler2D _MainTex;
-            float4 _MainTex_ST;
+            sampler2D _BaseMap;
+            float4 _BaseMap_ST;
             fixed _Cutoff;
-            fixed4 _Color;
+            fixed4 _BaseColor;
  
             v2f vert (appdata_t v)
             {
@@ -43,14 +43,14 @@ SubShader {
                 UNITY_SETUP_INSTANCE_ID(v);
                 UNITY_INITIALIZE_VERTEX_OUTPUT_STEREO(o);
                 o.vertex = UnityObjectToClipPos(v.vertex);
-                o.texcoord = TRANSFORM_TEX(v.texcoord, _MainTex);
+                o.texcoord = TRANSFORM_TEX(v.texcoord, _BaseMap);
                 UNITY_TRANSFER_FOG(o,o.vertex);
                 return o;
             }
  
             fixed4 frag (v2f i) : SV_Target
             {
-                fixed4 col = tex2D(_MainTex, i.texcoord) * _Color;
+                fixed4 col = tex2D(_BaseMap, i.texcoord) * _BaseColor;
                 clip(col.a - _Cutoff);
                 UNITY_APPLY_FOG(i.fogCoord, col);
                 return col;
