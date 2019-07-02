@@ -1,7 +1,7 @@
 import { initializeUnity } from '../unity-interface/initializer'
 import { startUnityParcelLoading } from '../unity-interface/dcl'
 
-const container = document.getElementsByTagName('body')[0]
+const container = document.getElementById('gameContainer')
 
 if (!container) throw new Error('cannot find element #gameContainer')
 
