@@ -4,6 +4,7 @@ using DCL.Helpers;
 using DCL.Models;
 using NUnit.Framework;
 using System.Collections;
+using System.Linq;
 using UnityEngine;
 using UnityEngine.TestTools;
 
@@ -11,7 +12,7 @@ namespace Tests
 {
     public class AudioTests : TestsBase
     {
-        public IEnumerator CreateAudioSource(ParcelScene scene, string entityId, string audioClipId, bool playing)
+        public IEnumerator CreateAudioSource(ParcelScene scene, string entityId, string audioClipId, bool playing, bool loop = true)
         {
             Debug.Log("Creating/updating audio source...");
             var audioSourceModel = new DCLAudioSource.Model()
@@ -19,7 +20,7 @@ namespace Tests
                 audioClipId = audioClipId,
                 playing = playing,
                 volume = 1.0f,
-                loop = true,
+                loop = loop,
                 pitch = 1.0f
             };
 
@@ -57,7 +58,7 @@ namespace Tests
 
             yield return audioClip.routine;
 
-            Assert.IsTrue(scene.disposableComponents.ContainsKey("audioClipTest"),
+            Assert.IsTrue(scene.disposableComponents.ContainsKey(audioClipId),
                 "Shared component was not created correctly!");
 
             if (waitForLoading)
@@ -213,6 +214,42 @@ namespace Tests
             Assert.IsFalse(audioClip.model.loop);
             Assert.IsTrue(audioClip.model.shouldTryToLoad);
             Assert.AreEqual(1f, audioClip.model.volume);
+        }
+
+        [UnityTest]
+        public IEnumerator AudioIsLooped()
+        {
+            yield return InitScene();
+
+            DecentralandEntity entity = TestHelpers.CreateSceneEntity(scene);
+            yield return null;
+
+            yield return LoadAudioClip(scene, "1", TestHelpers.GetTestsAssetsPath() + "/Audio/short_effect.ogg", false, true, 1);
+
+            yield return CreateAudioSource(scene, entity.entityId, "1", true, loop: true);
+
+            yield return new WaitForSeconds((scene.GetSharedComponent("1") as DCLAudioClip).audioClip.length + 0.1f);
+
+            DCLAudioSource dclAudioSource = entity.components.Values.FirstOrDefault(x => x is DCLAudioSource) as DCLAudioSource;
+            Assert.AreNotEqual(0, dclAudioSource.playTime);
+        }
+        
+        [UnityTest]
+        public IEnumerator AudioIsNotLooped()
+        {
+            yield return InitScene();
+
+            DecentralandEntity entity = TestHelpers.CreateSceneEntity(scene);
+            yield return null;
+
+            yield return LoadAudioClip(scene, "1", TestHelpers.GetTestsAssetsPath() + "/Audio/short_effect.ogg", false, true, 1);
+
+            yield return CreateAudioSource(scene, entity.entityId, "1", true, loop: false);
+
+            yield return new WaitForSeconds((scene.GetSharedComponent("1") as DCLAudioClip).audioClip.length + 0.1f);
+
+            DCLAudioSource dclAudioSource = entity.components.Values.FirstOrDefault(x => x is DCLAudioSource) as DCLAudioSource;
+            Assert.AreEqual(0, dclAudioSource.playTime);
         }
 
         [UnityTest]

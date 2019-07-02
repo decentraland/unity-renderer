@@ -16,6 +16,7 @@ namespace DCL.Components
             public float pitch = 1f;
         }
 
+        public float playTime => audioSource.time;
         public Model model;
         AudioSource audioSource;
         DCLAudioClip lastDCLAudioClip;
@@ -39,6 +40,7 @@ namespace DCL.Components
             audioSource.loop = model.loop;
             audioSource.pitch = model.pitch;
             audioSource.spatialBlend = 1;
+            audioSource.dopplerLevel = 0.1f;
 
             if (model.playing)
             {
@@ -50,7 +52,8 @@ namespace DCL.Components
                     //NOTE(Brian): Play if finished loading, otherwise will wait for the loading to complete (or fail).
                     if (dclAudioClip.loadingState == DCLAudioClip.LoadState.LOADING_COMPLETED)
                     {
-                        audioSource.PlayOneShot(dclAudioClip.audioClip);
+                        audioSource.clip = dclAudioClip.audioClip;
+                        audioSource.Play();
                     }
                     else
                     {
