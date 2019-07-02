@@ -12,6 +12,10 @@ initializeUnity(container)
     document.body.classList.remove('dcl-loading')
   })
   .catch(err => {
+    if (err.message.includes('Authentication error')) {
+      window.location.reload()
+    }
+
     console['error']('Error loading Unity')
     console['error'](err)
 
