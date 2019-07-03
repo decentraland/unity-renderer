@@ -49,6 +49,7 @@ public class IntegrationTestController : MonoBehaviour
         sceneController.SendSceneMessage(
             TestHelpers.CreateSceneMessage(
                 sceneName,
+                entityId,
                 "CreateEntity",
                 JsonConvert.SerializeObject(
                     new CreateEntityMessage
@@ -61,6 +62,7 @@ public class IntegrationTestController : MonoBehaviour
         sceneController.SendSceneMessage(
             TestHelpers.CreateSceneMessage(
                 sceneName,
+                entityId,
                 "SetEntityParent",
                 JsonConvert.SerializeObject(
                     new

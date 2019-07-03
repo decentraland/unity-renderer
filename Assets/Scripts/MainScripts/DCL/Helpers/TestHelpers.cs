@@ -170,9 +170,9 @@ namespace DCL.Helpers
             }
         }
 
-        public static string CreateSceneMessage(string sceneId, string method, string payload)
+        public static string CreateSceneMessage(string sceneId, string tag, string method, string payload)
         {
-            return $"{sceneId}\t{method}\t{payload}\n";
+            return $"{sceneId}\t{method}\t{payload}\t{tag}\n";
         }
 
         static int entityCounter = 123;
@@ -182,7 +182,7 @@ namespace DCL.Helpers
         {
             entityCounter++;
             string id = $"{entityCounter}";
-            return scene.CreateEntity(JsonUtility.ToJson(new DCL.Models.CreateEntityMessage
+            return scene.CreateEntity(id, JsonUtility.ToJson(new DCL.Models.CreateEntityMessage
             {
                 id = id
             }));
@@ -190,7 +190,7 @@ namespace DCL.Helpers
 
         public static void CreateSceneEntity(ParcelScene scene, string id)
         {
-            scene.CreateEntity(JsonUtility.ToJson(new DCL.Models.CreateEntityMessage
+            scene.CreateEntity(id, JsonUtility.ToJson(new DCL.Models.CreateEntityMessage
             {
                 id = id
             }));
@@ -198,10 +198,7 @@ namespace DCL.Helpers
 
         public static void RemoveSceneEntity(ParcelScene scene, string id)
         {
-            scene.RemoveEntity(JsonUtility.ToJson(new DCL.Models.RemoveEntityMessage
-            {
-                id = id
-            }));
+            scene.RemoveEntity(id);
         }
 
         public static T EntityComponentCreate<T, K>(ParcelScene scene, DecentralandEntity entity, K model,
@@ -627,11 +624,12 @@ namespace DCL.Helpers
 
         public static void UpdateShape(ParcelScene scene, string componentId, string model)
         {
-            scene.SharedComponentUpdate(JsonUtility.ToJson(new DCL.Models.SharedComponentUpdateMessage
-            {
-                id = componentId,
-                json = model
-            }));
+            scene.SharedComponentUpdate(
+                JsonUtility.ToJson(new DCL.Models.SharedComponentUpdateMessage
+                {
+                    id = componentId,
+                    json = model
+                }));
         }
 
         static object GetRandomValueForType(Type t)
