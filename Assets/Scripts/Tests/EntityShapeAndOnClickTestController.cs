@@ -72,19 +72,22 @@ public class EntityShapeAndOnClickTestController : MonoBehaviour
             }
         });
 
+        string entityId = "8";
+
         scene.EntityComponentCreate(JsonUtility.ToJson(new DCL.Models.EntityComponentCreateMessage
         {
-            entityId = "8",
+            entityId = entityId,
             name = "animation",
             classId = (int)DCL.Models.CLASS_ID_COMPONENT.ANIMATOR,
             json = animJson
         }));
 
+        entityId = "9";
 
-        TestHelpers.CreateSceneEntity(scene, "9");
+        TestHelpers.CreateSceneEntity(scene, entityId);
         scene.EntityComponentCreate(JsonUtility.ToJson(new DCL.Models.EntityComponentCreateMessage
         {
-            entityId = "9",
+            entityId = entityId,
             name = "text",
             classId = (int)DCL.Models.CLASS_ID_COMPONENT.TEXT_SHAPE,
             json = animJson

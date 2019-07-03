@@ -186,13 +186,12 @@ namespace DCL.Controllers
 
         private CreateEntityMessage tmpCreateEntityMessage = new CreateEntityMessage();
 
-        public DecentralandEntity CreateEntity(string json)
+        public DecentralandEntity CreateEntity(string id, string json)
         {
             SceneController.i.OnMessageDecodeStart?.Invoke("CreateEntity");
-
-            tmpCreateEntityMessage.id = json.Substring(7).TrimEnd('"', '}');
-
+            tmpCreateEntityMessage.id = id;
             SceneController.i.OnMessageDecodeEnds?.Invoke("CreateEntity");
+
             if (entities.ContainsKey(tmpCreateEntityMessage.id))
             {
                 return entities[tmpCreateEntityMessage.id];
@@ -213,10 +212,10 @@ namespace DCL.Controllers
 
         private RemoveEntityMessage tmpRemoveEntityMessage = new RemoveEntityMessage();
 
-        public void RemoveEntity(string json)
+        public void RemoveEntity(string id)
         {
             SceneController.i.OnMessageDecodeStart?.Invoke("RemoveEntity");
-            tmpRemoveEntityMessage.FromJSON(json);
+            tmpRemoveEntityMessage.id = id;
             SceneController.i.OnMessageDecodeEnds?.Invoke("RemoveEntity");
 
             if (entities.ContainsKey(tmpRemoveEntityMessage.id))
@@ -249,7 +248,6 @@ namespace DCL.Controllers
         public void SetEntityParent(string json)
         {
             SceneController.i.OnMessageDecodeStart?.Invoke("SetEntityParent");
-
             tmpParentMessage.FromJSON(json);
             SceneController.i.OnMessageDecodeEnds?.Invoke("SetEntityParent");
 
@@ -306,7 +304,9 @@ namespace DCL.Controllers
         public BaseComponent EntityComponentCreate(string json)
         {
             SceneController.i.OnMessageDecodeStart?.Invoke("UpdateEntityComponent");
+
             createEntityComponentMessage.FromJSON(json);
+
             SceneController.i.OnMessageDecodeEnds?.Invoke("UpdateEntityComponent");
 
             DecentralandEntity entity = GetEntityForUpdate(createEntityComponentMessage.entityId);
@@ -567,7 +567,9 @@ namespace DCL.Controllers
         public void EntityComponentRemove(string json)
         {
             SceneController.i.OnMessageDecodeStart?.Invoke("ComponentRemoved");
+
             entityComponentRemovedMessage.FromJSON(json);
+
             SceneController.i.OnMessageDecodeEnds?.Invoke("ComponentRemoved");
 
             DecentralandEntity decentralandEntity = GetEntityForUpdate(entityComponentRemovedMessage.entityId);

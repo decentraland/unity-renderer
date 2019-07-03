@@ -5,6 +5,21 @@ using UnityEngine.Assertions;
 
 namespace DCL
 {
+
+    public struct PendingMessage
+    {
+        public MessagingBus.QueuedSceneMessage_Scene message;
+        public string busId;
+        public QueueMode queueMode;
+
+        public PendingMessage(string busId, MessagingBus.QueuedSceneMessage_Scene message, QueueMode queueMode)
+        {
+            this.busId = busId;
+            this.message = message;
+            this.queueMode = queueMode;
+        }
+    }
+
     public class MessagingBus
     {
         public class QueuedSceneMessage
@@ -18,7 +33,7 @@ namespace DCL
                 UNLOAD_SCENES,
                 SCENE_STARTED
             }
-
+            public string tag;
             public Type type;
             public string sceneId;
             public string message;
@@ -30,7 +45,8 @@ namespace DCL
         }
 
         public IMessageHandler handler;
-        public Queue<QueuedSceneMessage> pendingMessages = new Queue<QueuedSceneMessage>();
+
+        public LinkedList<QueuedSceneMessage> pendingMessages = new LinkedList<QueuedSceneMessage>();
         public bool hasPendingMessages => pendingMessages != null && pendingMessages.Count > 0;
         public int pendingMessagesCount => pendingMessages != null ? pendingMessages.Count : 0;
         public long processedMessagesCount { get; private set; }
@@ -46,7 +62,7 @@ namespace DCL
             SceneController.i.StartCoroutine(ProcessMessages(pendingMessages));
         }
 
-        IEnumerator ProcessMessages(Queue<QueuedSceneMessage> queue)
+        IEnumerator ProcessMessages(LinkedList<QueuedSceneMessage> queue)
         {
             while (true)
             {
@@ -56,33 +72,33 @@ namespace DCL
 
                 while (Time.realtimeSinceStartup - startTime < timeBudget && queue.Count > 0)
                 {
-                    QueuedSceneMessage m = queue.Peek();
+                    QueuedSceneMessage m = queue.First.Value;
 
                     switch (m.type)
                     {
                         case QueuedSceneMessage.Type.NONE:
                             break;
                         case QueuedSceneMessage.Type.SCENE_MESSAGE:
-                            Coroutine routine = null;
 
                             var messageObject = m as QueuedSceneMessage_Scene;
+                            Coroutine routine = null;
 
-#if UNITY_EDITOR
-                            if (handler.ProcessMessage(messageObject.sceneId, messageObject.method, messageObject.payload, out routine))
+                            if (handler.ProcessMessage(messageObject.sceneId, messageObject.tag, messageObject.method, messageObject.payload, out routine))
                             {
+#if UNITY_EDITOR
                                 if (SceneController.i.msgStepByStep)
                                 {
                                     Debug.Log("message: " + m.message);
                                     Debug.Break();
                                     yield return null;
                                 }
-                            }
-#else
-                            handler.ProcessMessage(messageObject.sceneId, messageObject.method, messageObject.payload, out routine);
 #endif
+                            }
 
                             if (routine != null)
                             {
+                                processedMessagesCount++;
+
                                 yield return routine;
                             }
 
@@ -99,7 +115,9 @@ namespace DCL
                     }
 
                     processedMessagesCount++;
-                    queue.Dequeue();
+
+                    if (queue.First != null)
+                        queue.RemoveFirst();
                 }
 
                 yield return null;

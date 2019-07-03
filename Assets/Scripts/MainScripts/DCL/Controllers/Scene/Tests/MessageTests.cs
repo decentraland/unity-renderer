@@ -1,6 +1,7 @@
 ﻿using DCL;
 using DCL.Helpers;
 using DCL.Models;
+using DCL.Components;
 using Newtonsoft.Json;
 using System.Collections;
 using System.Collections.Generic;
@@ -31,33 +32,36 @@ namespace Tests
         {
             yield return InitScene();
 
-            var scenesToLoad = (Resources.Load("TestJSON/SceneLoadingTest") as TextAsset).text;
+            // For UI component creation to work, we need a screenSpaceShape in the scene
+            UIScreenSpace screenSpaceShape =
+                TestHelpers.SharedComponentCreate<UIScreenSpace, UIScreenSpace.Model>(scene,
+                    CLASS_ID.UI_SCREEN_SPACE_SHAPE);
+            yield return screenSpaceShape.routine;
 
-            yield return new WaitForSeconds(0.1f);
+            UIImage image = TestHelpers.SharedComponentCreate<UIImage, UIImage.Model>(scene, CLASS_ID.UI_IMAGE_SHAPE);
 
-            sceneController.UnloadAllScenes();
-
-            yield return new WaitForSeconds(0.1f);
-
-            sceneController.LoadParcelScenes(scenesToLoad);
-
-            yield return new WaitForAllMessagesProcessed();
+            yield return image.routine;
 
             string uiSceneId = sceneController.GlobalSceneId;
-            string entityId = "a5f571bd-bce1-4cf8-a158-b8f3e92e4fb0";
-            string sceneId = "0,0";
+            string entityId = "E1";
+            string sceneId = scene.sceneData.id;
             string busId = "";
 
             List<Message> msgs = new List<Message>();
 
             // First pack of messages to process
             msgs.Add(new Message(uiSceneId, "CreateEntity"));
-            msgs.Add(new Message(uiSceneId, "SetEntityParent"));
             msgs.Add(new Message(uiSceneId, "CreateEntity"));
+            msgs.Add(new Message(uiSceneId, "SetEntityParent"));
             msgs.Add(new Message(sceneId, "CreateEntity"));
+
+            // Although we sent several component update messages for the same id, 
+            // it should process only one because they are unreliable
             msgs.Add(new Message(sceneId, "SceneStarted"));
-            msgs.Add(new Message(sceneId, "SetEntityParent"));
             msgs.Add(new Message(sceneId, "CreateEntity"));
+            msgs.Add(new Message(sceneId, "UpdateEntityComponent"));
+            msgs.Add(new Message(sceneId, "SetEntityParent"));
+
             // Second pack of messages
             msgs.Add(new Message(uiSceneId, "SetEntityParent"));
             msgs.Add(new Message(uiSceneId, "CreateEntity"));
@@ -69,7 +73,9 @@ namespace Tests
             sceneController.OnMessageProcessInfoStart += delegate (string id, string method, string payload)
             {
                 if (VERBOSE)
-                    Debug.Log($"Msg Processed: {id} - {method}");
+                {
+                    Debug.Log($"Msg Processed: {id} - {method} | expected: {msgs[msgId].id} - {msgs[msgId].method}");
+                }
 
                 Assert.IsTrue(msgs[msgId].id == id && msgs[msgId].method == method);
 
@@ -81,6 +87,7 @@ namespace Tests
             busId = sceneController.SendSceneMessage(
                 TestHelpers.CreateSceneMessage(
                     uiSceneId,
+                    entityId,
                     "CreateEntity",
                     JsonConvert.SerializeObject(
                         new CreateEntityMessage
@@ -94,6 +101,7 @@ namespace Tests
             busId = sceneController.SendSceneMessage(
                 TestHelpers.CreateSceneMessage(
                     sceneId,
+                    entityId,
                     "CreateEntity",
                     JsonConvert.SerializeObject(
                         new CreateEntityMessage
@@ -107,6 +115,55 @@ namespace Tests
             busId = sceneController.SendSceneMessage(
                 TestHelpers.CreateSceneMessage(
                     sceneId,
+                    entityId + "_" + (int)CLASS_ID_COMPONENT.TRANSFORM,
+                    "UpdateEntityComponent",
+                    JsonConvert.SerializeObject(
+                        new EntityComponentCreateMessage
+                        {
+                            entityId = entityId,
+                            classId = (int)CLASS_ID_COMPONENT.TRANSFORM,
+                        }
+                    ))
+            );
+
+            Assert.IsTrue(busId == MessagingBusId.INIT);
+
+            busId = sceneController.SendSceneMessage(
+                TestHelpers.CreateSceneMessage(
+                    sceneId,
+                    entityId + "_" + (int)CLASS_ID_COMPONENT.TRANSFORM,
+                    "UpdateEntityComponent",
+                    JsonConvert.SerializeObject(
+                        new EntityComponentCreateMessage
+                        {
+                            entityId = entityId,
+                            classId = (int)CLASS_ID_COMPONENT.TRANSFORM,
+                        }
+                    ))
+            );
+
+            Assert.IsTrue(busId == MessagingBusId.INIT);
+
+            busId = sceneController.SendSceneMessage(
+                TestHelpers.CreateSceneMessage(
+                    sceneId,
+                    entityId + "_" + (int)CLASS_ID_COMPONENT.TRANSFORM,
+                    "UpdateEntityComponent",
+                    JsonConvert.SerializeObject(
+                        new EntityComponentCreateMessage
+                        {
+                            entityId = entityId,
+                            classId = (int)CLASS_ID_COMPONENT.TRANSFORM,
+                        }
+                    ))
+            );
+
+            Assert.IsTrue(busId == MessagingBusId.INIT);
+
+            busId = sceneController.SendSceneMessage(
+                TestHelpers.CreateSceneMessage(
+                    sceneId,
+                    "",
                     "SceneStarted",
                     ""
                 )
@@ -117,6 +174,7 @@ namespace Tests
             busId = sceneController.SendSceneMessage(
                 TestHelpers.CreateSceneMessage(
                     uiSceneId,
+                    entityId,
                     "SetEntityParent",
                     JsonConvert.SerializeObject(
                         new
@@ -132,6 +190,23 @@ namespace Tests
             busId = sceneController.SendSceneMessage(
                 TestHelpers.CreateSceneMessage(
                     sceneId,
+                    entityId + "_" + (int)CLASS_ID_COMPONENT.TRANSFORM,
+                    "UpdateEntityComponent",
+                    JsonConvert.SerializeObject(
+                        new EntityComponentCreateMessage
+                        {
+                            entityId = entityId,
+                            classId = (int)CLASS_ID_COMPONENT.TRANSFORM,
+                        }
+                    ))
+            );
+
+            Assert.IsTrue(busId == MessagingBusId.INIT);
+
+            busId = sceneController.SendSceneMessage(
+                TestHelpers.CreateSceneMessage(
+                    sceneId,
+                    entityId,
                     "SetEntityParent",
                     JsonConvert.SerializeObject(
                         new
@@ -147,6 +222,7 @@ namespace Tests
             busId = sceneController.SendSceneMessage(
                 TestHelpers.CreateSceneMessage(
                     uiSceneId,
+                    entityId,
                     "CreateEntity",
                     JsonConvert.SerializeObject(
                         new CreateEntityMessage
@@ -160,6 +236,7 @@ namespace Tests
             busId = sceneController.SendSceneMessage(
                 TestHelpers.CreateSceneMessage(
                     sceneId,
+                    entityId,
                     "CreateEntity",
                     JsonConvert.SerializeObject(
                         new CreateEntityMessage
@@ -175,6 +252,7 @@ namespace Tests
             busId = sceneController.SendSceneMessage(
                 TestHelpers.CreateSceneMessage(
                     uiSceneId,
+                    entityId,
                     "SetEntityParent",
                     JsonConvert.SerializeObject(
                         new
@@ -190,6 +268,7 @@ namespace Tests
             busId = sceneController.SendSceneMessage(
                 TestHelpers.CreateSceneMessage(
                     sceneId,
+                    entityId,
                     "SetEntityParent",
                     JsonConvert.SerializeObject(
                         new
@@ -205,6 +284,7 @@ namespace Tests
             busId = sceneController.SendSceneMessage(
                 TestHelpers.CreateSceneMessage(
                     uiSceneId,
+                    entityId,
                     "CreateEntity",
                     JsonConvert.SerializeObject(
                         new CreateEntityMessage
@@ -218,6 +298,7 @@ namespace Tests
             busId = sceneController.SendSceneMessage(
                 TestHelpers.CreateSceneMessage(
                     sceneId,
+                    entityId,
                     "CreateEntity",
                     JsonConvert.SerializeObject(
                         new CreateEntityMessage

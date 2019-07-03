@@ -186,7 +186,8 @@ namespace DCL
                         string key = iterator.Current.Key;
                         MessagingSystem system = SceneController.i.messagingSystems[key];
                         int pendingMessagesCount = system.bus.pendingMessagesCount;
-                        busesLog += $"{key} bus: {pendingMessagesCount}\n";
+                        int messagesReplaced = system.unreliableMessagesReplaced;
+                        busesLog += $"{key} bus: {pendingMessagesCount} replaced: {messagesReplaced}\n";
                     }
                 }
 

@@ -75,9 +75,11 @@ public class VisualTestController : MonoBehaviour
         // Re-assign last PBR material to new entity
         TestHelpers.InstantiateEntityWithShape(scene, "4", DCL.Models.CLASS_ID.BOX_SHAPE, new Vector3(6, 1, 3));
 
+        string entityId = "4";
+
         scene.SharedComponentAttach(JsonUtility.ToJson(new DCL.Models.SharedComponentAttachMessage
         {
-            entityId = "4",
+            entityId = entityId,
             id = materialID,
             name = "material"
         }));
