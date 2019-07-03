@@ -107,11 +107,11 @@ const unityInterface = {
   UnloadScene(sceneId: string) {
     gameInstance.SendMessage('SceneController', 'UnloadScene', sceneId)
   },
-  SendSceneMessage(parcelSceneId: string, method: string, payload: string) {
+  SendSceneMessage(parcelSceneId: string, method: string, payload: string, tag: string = '') {
     if (unityInterface.debug) {
-      defaultLogger.info(parcelSceneId, method, payload)
+      defaultLogger.info(parcelSceneId, method, payload, tag)
     }
-    gameInstance.SendMessage(`SceneController`, `SendSceneMessage`, `${parcelSceneId}\t${method}\t${payload}`)
+    gameInstance.SendMessage(`SceneController`, `SendSceneMessage`, `${parcelSceneId}\t${method}\t${payload}\t${tag}`)
   },
 
   SetSceneDebugPanel() {
@@ -144,7 +144,7 @@ class UnityScene<T> implements ParcelSceneAPI {
     const sceneId = getParcelSceneID(this)
     for (let i = 0; i < actions.length; i++) {
       const action = actions[i]
-      unityInterface.SendSceneMessage(sceneId, action.type, action.payload)
+      unityInterface.SendSceneMessage(sceneId, action.type, action.payload, action.tag)
     }
   }
 

@@ -101,6 +101,7 @@ export type ComponentUpdatedPayload = {
 
 export type EntityAction = {
   type: EntityActionType
+  tag?: string
   payload: string
 }
 
