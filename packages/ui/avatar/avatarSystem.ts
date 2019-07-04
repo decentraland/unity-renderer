@@ -24,26 +24,18 @@ export class AvatarEntity extends Entity {
   blocked = false
   muted = false
   visible = true
-  removeTimer: any | null = null
 
-  displayName = 'Avatar'
-  publicKey = '0x00000000000000000000000000000000'
-  name: string = ''
-  readonly transform: Transform = this.getComponentOrCreate(Transform)
+  readonly transform: Transform
   avatarShape!: AvatarShape
 
-  constructor(public uuid: string) {
+  constructor(uuid?: string) {
     super(uuid)
 
-    {
-      this.avatarShape = new AvatarShape()
-      this.addComponentOrReplace(this.avatarShape)
-    }
-
-    this.name = uuid
+    this.avatarShape = new AvatarShape()
+    this.addComponentOrReplace(this.avatarShape)
 
     // we need this component to filter the interpolator system
-    this.getComponentOrCreate(Transform)
+    this.transform = this.getComponentOrCreate(Transform)
 
     this.setVisible(true)
   }
@@ -79,31 +71,18 @@ export class AvatarEntity extends Entity {
     this.transform.rotation.set(Qx, Qy, Qz, Qw)
   }
 
-  public removeScheduled() {
-    if (this.removeTimer != null) {
-      clearTimeout(this.removeTimer)
-      this.removeTimer = null
+  public remove() {
+    if (this.isAddedToEngine()) {
+      engine.removeEntity(this)
+      avatarMap.delete(this.uuid)
     }
-    this.removeTimer = setTimeout(
-      () => {
-        engine.removeEntity(this)
-        avatarMap.delete(this.name)
-      },
-      10000,
-      null
-    )
   }
 
   private updateVisibility() {
     const visible = this.visible && !this.blocked
     if (!visible && this.isAddedToEngine()) {
-      this.removeScheduled()
+      this.remove()
     } else if (visible && !this.isAddedToEngine()) {
-      if (this.removeTimer != null) {
-        clearTimeout(this.removeTimer)
-        this.removeTimer = null
-      }
-
       engine.addEntity(this)
     }
   }
@@ -193,7 +172,7 @@ function handleUserVisible({ uuid, visible }: ReceiveUserVisibleMessage): void {
 function handleUserRemoved({ uuid }: UserRemovedMessage): void {
   const avatar = avatarMap.get(uuid)
   if (avatar) {
-    avatar.removeScheduled()
+    avatar.remove()
   }
 }
 
