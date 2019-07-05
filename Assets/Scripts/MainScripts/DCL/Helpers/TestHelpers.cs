@@ -78,7 +78,7 @@ namespace DCL.Helpers
 
         protected virtual IEnumerator InitScene(bool usesWebServer = false, bool spawnCharController = true)
         {
-            yield return InitUnityScene();
+            yield return InitUnityScene("MainTest");
 
             sceneController = TestHelpers.InitializeSceneController(usesWebServer);
 
@@ -187,6 +187,15 @@ namespace DCL.Helpers
                 id = id
             }));
         }
+
+        public static void RemoveSceneEntity(ParcelScene scene, DecentralandEntity entity)
+        {
+            scene.RemoveEntity(JsonUtility.ToJson(new DCL.Models.RemoveEntityMessage
+            {
+                id = entity.entityId
+            }));
+        }
+
 
         public static void CreateSceneEntity(ParcelScene scene, string id)
         {

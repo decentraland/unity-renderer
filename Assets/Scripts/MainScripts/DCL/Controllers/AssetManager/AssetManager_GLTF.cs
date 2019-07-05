@@ -204,6 +204,7 @@ namespace DCL
                     if (useMaterialTransition)
                     {
                         MaterialTransitionController.ApplyToLoadedObject(go, false);
+                        yield return new WaitForSeconds(1);
                     }
                 }
             }

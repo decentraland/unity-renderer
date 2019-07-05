@@ -38,15 +38,33 @@ namespace DCL.Helpers
             yield return new WaitForSeconds(2.0f);
         }
 
-        public static IEnumerator TakeSnapshot(Vector3 position, Vector3? origin = null)
+        /// <summary>
+        /// This coroutine will take a visual test snapshot positioning the camera from shotPosition and pointing at shotTarget.
+        /// Used in tandem with GenerateBaselineForTest(), TakeSnapshot will also generate the baseline test images.
+        /// 
+        /// Snapshot name will be generated dinamically using the name set in InitVisualTestsScene() and an static counter.
+        /// </summary>
+        /// <param name="shotPosition">camera will be placed here.</param>
+        /// <param name="shotTarget">camera will point towards here.</param>
+        public static IEnumerator TakeSnapshot(Vector3? shotPosition = null, Vector3? shotTarget = null)
         {
-            yield return TakeSnapshot(currentTestName + "_" + snapshotIndex + ".png", position, origin);
+            yield return TakeSnapshot(currentTestName + "_" + snapshotIndex + ".png", shotPosition, shotTarget);
             snapshotIndex++;
         }
 
-        public static IEnumerator TakeSnapshot(string snapshotName, Vector3 position, Vector3? origin = null)
+        /// <summary>
+        /// This coroutine will take a visual test snapshot positioning the camera from shotPosition and pointing at shotTarget.
+        /// Used in tandem with GenerateBaselineForTest(), TakeSnapshot will also generate the baseline test images.
+        /// </summary>
+        /// <param name="snapshotName">name used for saving the visual test file</param>
+        /// <param name="shotPosition">camera will be placed here.</param>
+        /// <param name="shotTarget">camera will point towards here.</param>
+        public static IEnumerator TakeSnapshot(string snapshotName, Vector3? shotPosition = null, Vector3? shotTarget = null)
         {
-            RepositionVisualTestsCamera(position, origin);
+            if (shotPosition.HasValue || shotTarget.HasValue)
+            {
+                RepositionVisualTestsCamera(shotPosition, shotTarget);
+            }
 
             yield return null;
             yield return null;
@@ -70,6 +88,15 @@ namespace DCL.Helpers
             }
         }
 
+        /// <summary>
+        /// This coroutine will take a visual test snapshot using the camera provided, with the given image size.
+        /// The image will be saved to disk as png.
+        /// </summary>
+        /// <param name="snapshotPath">Path to the directory where the image will be saved. Will be created if not exists.</param>
+        /// <param name="snapshotName">output filename, it should include the png extension</param>
+        /// <param name="camera">camera used to take the shot</param>
+        /// <param name="width">Width of the final image</param>
+        /// <param name="height">Height of the final image</param>
         public static IEnumerator TakeSnapshot(string snapshotPath, string snapshotName, Camera camera, int width,
             int height)
         {
@@ -265,20 +292,22 @@ namespace DCL.Helpers
                    (pixelA.b > pixelB.b - checkThreshold && pixelA.b < pixelB.b + checkThreshold);
         }
 
-        public static void RepositionVisualTestsCamera(Transform cameraTransform, Vector3 newPosition, Vector3? origin = null)
+        public static void RepositionVisualTestsCamera(Transform cameraTransform, Vector3? position = null, Vector3? target = null)
         {
-            if (!origin.HasValue)
+            if (position.HasValue)
             {
-                origin = Vector3.zero;
+                cameraTransform.position = position.Value;
             }
 
-            cameraTransform.position = newPosition;
-            cameraTransform.forward = origin.Value - cameraTransform.position;
+            if (target.HasValue)
+            {
+                cameraTransform.forward = target.Value - cameraTransform.position;
+            }
         }
 
-        public static void RepositionVisualTestsCamera(Vector3 newPosition, Vector3? origin = null)
+        public static void RepositionVisualTestsCamera(Vector3? position = null, Vector3? target = null)
         {
-            RepositionVisualTestsCamera(VisualTestController.i.camera.transform, newPosition, origin);
+            RepositionVisualTestsCamera(VisualTestController.i.camera.transform, position, target);
         }
     }
 }
