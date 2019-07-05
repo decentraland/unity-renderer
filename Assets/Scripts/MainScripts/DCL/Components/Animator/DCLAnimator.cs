@@ -177,8 +177,15 @@ namespace DCL.Components
 
         public void ResetAnimation(Model.DCLAnimationState state)
         {
+            if (state == null || state.clipReference == null)
+            {
+                Debug.LogError("Clip not found");
+                return;
+            }
+
             animComponent.Stop(state.clip);
-            animComponent.Play(state.clip);
+            //Manually sample the animation. If the reset is not played again the frame 0 wont be applied
+            state.clipReference.SampleAnimation(animComponent.gameObject, 0);
         }
 
         public Model.DCLAnimationState GetStateByString(string stateName)
