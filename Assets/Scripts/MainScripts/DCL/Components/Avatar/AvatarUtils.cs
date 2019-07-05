@@ -62,7 +62,6 @@ public static class AvatarUtils
                     string newMatName = sharedMats[i1].name;
                     Material newMat = mapFunction.Invoke(sharedMats[i1]);
                     newMat.name = newMatName;
-                    if (AvatarShape.VERBOSE) Debug.Log("Replacing " + m.name + " by " + newMat.name);
                     sharedMats[i1] = newMat;
                 }
             }

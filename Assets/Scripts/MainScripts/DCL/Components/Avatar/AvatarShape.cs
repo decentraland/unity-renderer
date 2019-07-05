@@ -93,7 +93,7 @@ namespace DCL
         public Material eyebrowMaterial;
         public Material mouthMaterial;
 
-        public TextMeshProUGUI text;
+        public AvatarName avatarName;
 
         public AnimationClip[] maleAnims;
         public AnimationClip[] femaleAnims;
@@ -103,12 +103,16 @@ namespace DCL
         State state = State.IDLE;
         bool loadingHasStarted = false;
         bool baseBodyIsReady = false;
+        bool eyesReady = false;
+        bool browsReady = false;
+        bool mouthReady = false;
 
         public Model model = new Model();
 
         [NonSerialized] public GameObject baseBody;
         [NonSerialized] public List<GameObject> wearables;
-        public bool everythingIsLoaded { get { return state == State.READY; } }
+        public bool everythingIsLoaded { get { return state == State.READY && eyesReady && mouthReady && browsReady; } }
+        public bool isLoading { get { return state == State.LOADING; } }
 
         Material eyeMaterialCopy;
         Material eyebrowMaterialCopy;
@@ -132,23 +136,60 @@ namespace DCL
 
         void Start()
         {
+            InitMaterials();
+        }
+
+        void OnDestroy()
+        {
+            UnloadMaterials();
+        }
+        void InitMaterials()
+        {
             eyeMaterialCopy = new Material(eyeMaterial);
             mouthMaterialCopy = new Material(mouthMaterial);
             eyebrowMaterialCopy = new Material(eyebrowMaterial);
             defaultMaterialCopies = new List<Material>();
         }
-
-        void OnDestroy()
+        void UnloadMaterials()
         {
             Destroy(eyeMaterialCopy);
             Destroy(mouthMaterialCopy);
             Destroy(eyebrowMaterialCopy);
 
-            for (int i = 0; i < defaultMaterialCopies.Count; i++)
+            if (defaultMaterialCopies != null)
             {
-                Material mat = defaultMaterialCopies[i];
-                Destroy(mat);
+                for (int i = 0; i < defaultMaterialCopies.Count; i++)
+                {
+                    Destroy(defaultMaterialCopies[i]);
+                }
             }
+
+            defaultMaterialCopies.Clear();
+        }
+        void ResetAvatar()
+        {
+            UnloadMaterials();
+            InitMaterials();
+
+            Destroy(baseBody);
+
+            if (wearables != null)
+            {
+                for (int i = 0; i < wearables.Count; i++)
+                {
+                    Destroy(wearables[i]);
+                }
+            }
+
+            wearables.Clear();
+
+            loadingHasStarted = false;
+            loadedWearablesCount = 0;
+            baseBodyIsReady = false;
+            eyesReady = false;
+            browsReady = false;
+            mouthReady = false;
+            state = State.IDLE;
         }
 
 
@@ -158,6 +199,7 @@ namespace DCL
             if (newJson == "{}")
                 yield break;
 
+            Model lastModel = model;
             Model tmpModel = SceneController.i.SafeFromJson<Model>(newJson);
 
             if (tmpModel.useDummyModel)
@@ -179,20 +221,22 @@ namespace DCL
 
                 model = randomizer.GetRandomModel(seed);
                 model.name = name;
+                model.useDummyModel = true;
             }
             else
             {
                 model = tmpModel;
             }
 
-            text.text = model.name;
-
-            LayoutGroup[] groups = text.transform.GetComponentsInParent<LayoutGroup>();
-
-            for (int i = 0; i < groups.Length; i++)
+            if (lastModel.name != model.name)
             {
-                LayoutGroup group = groups[i];
-                LayoutRebuilder.ForceRebuildLayoutImmediate(group.transform as RectTransform);
+                avatarName.SetName(model.name);
+
+                //NOTE(Brian): regenerate avatar if name changes
+                if (model.useDummyModel && loadingHasStarted)
+                {
+                    ResetAvatar();
+                }
             }
 
             if (string.IsNullOrEmpty(model.bodyShape.contentName))
@@ -208,6 +252,10 @@ namespace DCL
 
             wearables = new List<GameObject>();
 
+            StopCoroutine(SetupEyes());
+            StopCoroutine(SetupEyebrows());
+            StopCoroutine(SetupMouth());
+
             var loader = LoadWearable(model.bodyShape, OnBaseModelSuccess, OnBaseModelFail);
 
             if (loader == null)
@@ -220,6 +268,10 @@ namespace DCL
 
             loader.gameObject.name = "Base Body - " + model.bodyShape.contentName;
 
+            //NOTE(Brian): Model loading can finish instantly, so setting this after LoadWearable can overwrite 
+            //             the State.READY value!
+            state = State.LOADING;
+
             for (int i = 0; i < model.wearables.Length; i++)
             {
                 loader = LoadWearable(model.wearables[i], OnSuccess, OnFail);
@@ -230,8 +282,6 @@ namespace DCL
                 loader.gameObject.name = "Body Part " + i;
             }
 
-            state = State.LOADING;
-
             yield return new WaitUntil(() => state != State.LOADING);
 
             if (state == State.FAILED)
@@ -240,18 +290,18 @@ namespace DCL
                 yield break;
             }
 
-            if (VERBOSE) Debug.Log("Avatar loading success!!");
+            if (VERBOSE) Debug.Log($"{entity.entityId} - Avatar loading success!!");
 
             SetupAnimator();
 
-            SceneController.i.StartCoroutine(SetupEyes());
-            SceneController.i.StartCoroutine(SetupEyebrows());
-            SceneController.i.StartCoroutine(SetupMouth());
+            StartCoroutine(SetupEyes());
+            StartCoroutine(SetupEyebrows());
+            StartCoroutine(SetupMouth());
         }
 
         IEnumerator SetupEyes()
         {
-            if (VERBOSE) Debug.Log("fetching eyes materials...");
+            if (VERBOSE) Debug.Log($"{entity.entityId} - fetching eyes materials...");
 
             Texture loadedTexture = null;
             Texture loadedMask = null;
@@ -270,10 +320,12 @@ namespace DCL
                     return eyeMaterialCopy;
                 },
                 "eyes");
+
+            eyesReady = true;
         }
         IEnumerator SetupEyebrows()
         {
-            if (VERBOSE) Debug.Log("fetching eyebrows materials...");
+            if (VERBOSE) Debug.Log($"{entity.entityId} - fetching eyebrows materials...");
 
             Texture loadedTexture = null;
 
@@ -291,11 +343,12 @@ namespace DCL
                 },
                 "eyebrows");
 
+            browsReady = true;
         }
 
         IEnumerator SetupMouth()
         {
-            if (VERBOSE) Debug.Log("fetching mouth materials...");
+            if (VERBOSE) Debug.Log($"{entity.entityId} - fetching mouth materials...");
 
             Texture loadedTexture = null;
 
@@ -312,6 +365,8 @@ namespace DCL
                     return mouthMaterialCopy;
                 },
                 "mouth");
+
+            mouthReady = true;
         }
 
         LoadWrapper_GLTF LoadWearable(Model.Wearable wearable,
@@ -387,12 +442,12 @@ namespace DCL
 
         void CheckAllWearablesAreLoaded()
         {
-            if (VERBOSE) Debug.Log($"CheckAllWearablesLoaded... ready = {baseBodyIsReady} ... {loadedWearablesCount} >= {model.wearables.Length} ... state == {state}");
+            if (VERBOSE) Debug.Log($"{entity.entityId} - CheckAllWearablesLoaded... ready = {baseBodyIsReady} ... {loadedWearablesCount} >= {model.wearables.Length} ... state == {state}");
             if (baseBodyIsReady && loadedWearablesCount >= model.wearables.Length && state == State.LOADING)
             {
                 // TODO(Brian): Here we take the animations from the baseBody and put them into each wearable.
                 state = State.READY;
-                if (VERBOSE) Debug.Log("ready!");
+                if (VERBOSE) Debug.Log($"{entity.entityId} - Ready!");
             }
         }
 

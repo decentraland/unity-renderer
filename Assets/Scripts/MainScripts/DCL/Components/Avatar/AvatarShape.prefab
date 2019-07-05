@@ -60,6 +60,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   uiContainer: {fileID: 8543971490908220782}
   sourceTransform: {fileID: 2842120016485600253}
+  nameText: {fileID: 1905714436465122683}
   offset: {x: 0, y: 3, z: 0}
 --- !u!1 &1905714436465122565
 GameObject:
@@ -163,7 +164,6 @@ MonoBehaviour:
   m_fontSizeMax: 72
   m_fontStyle: 0
   m_textAlignment: 514
-  m_isAlignmentEnumConverted: 1
   m_characterSpacing: 0
   m_wordSpacing: 0
   m_lineSpacing: 0
@@ -190,6 +190,7 @@ MonoBehaviour:
   m_verticalMapping: 0
   m_uvLineOffset: 0
   m_geometrySortingOrder: 0
+  m_VertexBufferAutoSizeReduction: 1
   m_firstVisibleCharacter: 0
   m_useMaxVisibleDescender: 1
   m_pageToDisplay: 1
@@ -204,12 +205,9 @@ MonoBehaviour:
     lineCount: 0
     pageCount: 0
     materialCount: 1
-  m_havePropertiesChanged: 0
   m_isUsingLegacyAnimationComponent: 0
   m_isVolumetricText: 0
   m_spriteAnimator: {fileID: 0}
-  m_isInputParsingRequired: 0
-  m_inputSource: 0
   m_hasFontAssetChanged: 0
   m_subTextObjects:
   - {fileID: 0}
@@ -351,6 +349,8 @@ MonoBehaviour:
   m_ChildForceExpandHeight: 0
   m_ChildControlWidth: 0
   m_ChildControlHeight: 0
+  m_ChildScaleWidth: 0
+  m_ChildScaleHeight: 0
 --- !u!225 &8543971490908220782
 CanvasGroup:
   m_ObjectHideFlags: 0
@@ -412,7 +412,7 @@ MonoBehaviour:
   eyeMaterial: {fileID: 2100000, guid: fcfa021e0982c0840aaefe7411340f7f, type: 2}
   eyebrowMaterial: {fileID: 2100000, guid: db9e974bee285614b8ea2d8832d1a563, type: 2}
   mouthMaterial: {fileID: 2100000, guid: aa8f029bd537edb44b72b4737ca9b81d, type: 2}
-  text: {fileID: 1905714436465122683}
+  avatarName: {fileID: 3717630171843337652}
   maleAnims:
   - {fileID: 7400000, guid: 4fef0b7f5be12aa48a2e9d8facaaa42b, type: 2}
   - {fileID: 7400000, guid: cd48d8cde6039fa4fac548ddab2ff277, type: 2}
@@ -425,6 +425,30 @@ MonoBehaviour:
   - {fileID: 7400000, guid: ec6a6c2a81a2b984f986fd6cbc8279d3, type: 2}
   - {fileID: 7400000, guid: 1e3081b9c1f466743bc7602362784e93, type: 2}
   - {fileID: 7400000, guid: db8c33ed0888f7b44af0b2acde9bd2b5, type: 2}
+  model:
+    baseUrl: 
+    name: 
+    bodyShape:
+      category: 
+      contentName: 
+      contents: []
+    wearables: []
+    skin:
+      color: {r: 0, g: 0, b: 0, a: 0}
+    hair:
+      color: {r: 0, g: 0, b: 0, a: 0}
+    eyes:
+      mask: 
+      texture: 
+      color: {r: 0, g: 0, b: 0, a: 0}
+    eyebrows:
+      mask: 
+      texture: 
+    mouth:
+      mask: 
+      texture: 
+    useDummyModel: 1
+  lastName: 
 --- !u!114 &5451946646277210429
 MonoBehaviour:
   m_ObjectHideFlags: 0

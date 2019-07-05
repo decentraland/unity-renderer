@@ -1,8 +1,6 @@
-﻿using DCL;
-using DCL.Models;
-using DCL.Components;
+﻿using DCL.Components;
 using DCL.Helpers;
-using Newtonsoft.Json;
+using DCL.Models;
 using NUnit.Framework;
 using System.Collections;
 using UnityEngine;
