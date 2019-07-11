@@ -22,10 +22,10 @@ namespace Tests
 
             yield return screenSpaceShape.routine;
 
-            Canvas canvas = screenSpaceShape.canvas;
+            CanvasGroup canvasGroup = screenSpaceShape.canvas.GetComponent<CanvasGroup>();
 
             // Check visibility
-            Assert.IsTrue(canvas.enabled,
+            Assert.IsTrue(canvasGroup.alpha == 1f,
                 "When the character is inside the scene, the UIScreenSpaceShape should be visible");
 
             // Update canvas visibility value manually
@@ -41,7 +41,7 @@ namespace Tests
             yield return screenSpaceShape.routine;
 
             // Check visibility
-            Assert.IsFalse(canvas.enabled,
+            Assert.IsTrue(canvasGroup.alpha == 0f,
                 "When the UIScreenSpaceShape is explicitly updated as 'invisible', its canvas shouldn't be visible");
 
             // Re-enable visibility
@@ -57,7 +57,7 @@ namespace Tests
             yield return screenSpaceShape.routine;
 
             // Check visibility
-            Assert.IsTrue(canvas.enabled,
+            Assert.IsTrue(canvasGroup.alpha == 1f,
                 "When the UIScreenSpaceShape is explicitly updated as 'visible', its canvas should be visible");
 
             // Position character outside parcel
@@ -66,7 +66,7 @@ namespace Tests
             yield return null;
 
             // Check visibility
-            Assert.IsFalse(canvas.enabled,
+            Assert.IsTrue(canvasGroup.alpha == 0f,
                 "When the character is outside the scene, the UIScreenSpaceShape shouldn't be visible");
 
             yield return new WaitForAllMessagesProcessed();

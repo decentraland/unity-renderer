@@ -836,6 +836,36 @@ namespace DCL.Helpers
             component.Dispose();
         }
 
+        public static IEnumerator TestUIElementAddedCorrectlyOnInvisibleParent<TComponent, TComponentModel>(ParcelScene scene, CLASS_ID classId) 
+        where TComponent : UIShape
+        where TComponentModel : UIShape.Model, new()
+        {
+            UIScreenSpace parentElement = TestHelpers.SharedComponentCreate<UIScreenSpace, UIScreenSpace.Model>(scene, CLASS_ID.UI_SCREEN_SPACE_SHAPE);
+            yield return parentElement.routine;
+
+            // make canvas invisible
+            SharedComponentUpdate(scene, parentElement, new UIScreenSpace.Model{visible = false});
+            yield return parentElement.routine;
+
+            TComponent targetUIElement =
+                    SharedComponentCreate<TComponent, TComponentModel>(scene,
+                        classId,
+                        new TComponentModel
+                        {
+                            parentComponent = parentElement.id,
+                            width = new UIValue(100f),
+                            height = new UIValue(100f)
+                        });
+            yield return targetUIElement.routine;
+
+            RectTransform uiCanvasRectTransform = parentElement.childHookRectTransform.GetComponentInParent<RectTransform>();
+            Assert.AreEqual(uiCanvasRectTransform.rect.width/2, targetUIElement.referencesContainer.layoutElementRT.anchoredPosition.x);
+            Assert.AreEqual(-uiCanvasRectTransform.rect.height/2, targetUIElement.referencesContainer.layoutElementRT.anchoredPosition.y);
+
+            Assert.AreEqual(100f, targetUIElement.referencesContainer.layoutElementRT.rect.width);
+            Assert.AreEqual(100f, targetUIElement.referencesContainer.layoutElementRT.rect.height);
+        }
+
         public static IEnumerator TestUIClickEventPropagation(string sceneId, UIShape.Model model, RectTransform uiObject, System.Action<bool> callback)
         {
             string srcOnClick = model.onClick;

@@ -39,14 +39,9 @@ namespace DCL.Components
 
         public float GetScaledValue(float parentSize)
         {
-            float tmpValue = value;
+            if(type == Unit.PIXELS) return value;
 
-            if (type == Unit.PERCENT)
-            {
-                tmpValue /= 100;
-            }
-
-            return tmpValue * (type == Unit.PIXELS ? 1 : parentSize);
+            return value / 100 * parentSize;
         }
     }
 
@@ -109,21 +104,9 @@ namespace DCL.Components
             if (firstApplyChangesCall)
                 referencesContainer.canvasGroup.alpha = 0f;
             else
-            {
-                // Check if we need to change gameObject visibility
-                if (referencesContainer.gameObject.activeSelf != model.visible)
-                {
-                    referencesContainer.gameObject.SetActive(model.visible);
-                    if (model.visible) // Since now we disable GameObjects if model.visble == false, we have to rebuild de layout when enabling
-                    {
-                        RefreshDCLLayoutRecursively();
-                    }
-                }
+                referencesContainer.canvasGroup.alpha = model.visible ? model.opacity : 0f;
 
-                referencesContainer.canvasGroup.alpha = model.opacity;
-            }
-
-            referencesContainer.canvasGroup.blocksRaycasts = model.isPointerBlocker;
+            referencesContainer.canvasGroup.blocksRaycasts = model.visible && model.isPointerBlocker;
 
             RaiseOnAppliedChanges();
 

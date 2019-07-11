@@ -161,6 +161,14 @@ namespace Tests
         }
 
         [UnityTest]
+        public IEnumerator AddedCorrectlyOnInvisibleParent()
+        {
+            yield return InitScene();
+
+            yield return TestHelpers.TestUIElementAddedCorrectlyOnInvisibleParent<UIScrollRect, UIScrollRect.Model>(scene, CLASS_ID.UI_SLIDER_SHAPE);
+        }
+
+        [UnityTest]
         public IEnumerator TestNormalizedSize()
         {
             yield return InitScene();
@@ -204,9 +212,9 @@ namespace Tests
 
             // Check updated properties are applied correctly
             Assert.AreEqual(screenSpaceShape.childHookRectTransform.rect.width * 0.5f,
-                uiContainerRectShape.childHookRectTransform.rect.width);
+                uiContainerRectShape.childHookRectTransform.rect.width, 0.01f);
             Assert.AreEqual(screenSpaceShape.childHookRectTransform.rect.height * 0.3f,
-                uiContainerRectShape.childHookRectTransform.rect.height);
+                uiContainerRectShape.childHookRectTransform.rect.height, 0.01f);
 
             yield return new WaitForAllMessagesProcessed();
             screenSpaceShape.Dispose();

@@ -84,10 +84,16 @@ namespace Tests
                     CLASS_ID.UI_SCREEN_SPACE_SHAPE);
             yield return screenSpaceShape.routine;
 
-            Assert.IsFalse(screenSpaceShape == null);
-
             yield return TestHelpers.TestSharedComponentDefaultsOnUpdate<UIContainerStack.Model, UIContainerStack>(
                 scene, CLASS_ID.UI_CONTAINER_STACK);
+        }
+
+        [UnityTest]
+        public IEnumerator AddedCorrectlyOnInvisibleParent()
+        {
+            yield return InitScene();
+
+            yield return TestHelpers.TestUIElementAddedCorrectlyOnInvisibleParent<UIContainerStack, UIContainerStack.Model>(scene, CLASS_ID.UI_CONTAINER_STACK);
         }
 
         [UnityTest]
@@ -117,9 +123,9 @@ namespace Tests
 
             // Check updated properties are applied correctly
             Assert.AreEqual(screenSpaceShape.childHookRectTransform.rect.width * 0.5f,
-                uiContainerStack.childHookRectTransform.rect.width);
+                uiContainerStack.childHookRectTransform.rect.width, 0.01f);
             Assert.AreEqual(screenSpaceShape.childHookRectTransform.rect.height * 0.3f,
-                uiContainerStack.childHookRectTransform.rect.height);
+                uiContainerStack.childHookRectTransform.rect.height, 0.01f);
 
             screenSpaceShape.Dispose();
             yield return null;

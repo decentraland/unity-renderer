@@ -67,7 +67,7 @@ namespace DCL.Components
                 }
                 else
                 {
-                    height = model.width.GetScaledValue(parentTransform.rect.height);
+                    height = model.height.GetScaledValue(parentTransform.rect.height);
                 }
 
                 referencesContainer.layoutElementRT.SetSizeWithCurrentAnchors(RectTransform.Axis.Horizontal, width);

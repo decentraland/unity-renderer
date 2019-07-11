@@ -29,6 +29,7 @@ namespace DCL.Components
         private static Toggle toggle;
 
         private Vector3 currentCharacterPosition;
+        private CanvasGroup canvasGroup;
 
         public UIScreenSpace(ParcelScene scene) : base(scene)
         {
@@ -59,7 +60,7 @@ namespace DCL.Components
             {
                 scene.uiScreenSpace = this;
 
-                SceneController.i.StartCoroutine(InitializeCanvas());
+                InitializeCanvas();
             }
             else if (DCLCharacterController.i != null)
             {
@@ -91,14 +92,19 @@ namespace DCL.Components
 
                 if (VERBOSE)
                 {
-                    Debug.Log($"set screenspace = {canvas.enabled}... {currentCharacterPosition}");
+                    Debug.Log($"set screenspace = {currentCharacterPosition}");
                 }
             }
         }
+        
         private void UpdateCanvasVisibility()
         {
             if (canvas != null && scene != null)
-                canvas.enabled = scene.IsInsideSceneBoundaries(currentCharacterPosition) && model.visible && (scene.isPersistent || GlobalVisibility);
+            {
+                bool shouldBeVisible = scene.IsInsideSceneBoundaries(currentCharacterPosition) && model.visible && (scene.isPersistent || GlobalVisibility);
+                canvasGroup.alpha = shouldBeVisible ? 1f : 0f;
+                canvasGroup.blocksRaycasts = shouldBeVisible;
+            }
 
             UpdateToggleVisibility();
         }
@@ -114,7 +120,7 @@ namespace DCL.Components
             }
         }
 
-        IEnumerator InitializeCanvas()
+        void InitializeCanvas()
         {
             if (VERBOSE)
             {
@@ -164,27 +170,14 @@ namespace DCL.Components
             }
 
             // Canvas group
-            CanvasGroup canvasGroup = canvas.gameObject.AddComponent<CanvasGroup>();
-            canvasGroup.alpha = 0f;
-
-            canvas.gameObject.SetActive(false);
-            canvas.gameObject.SetActive(true);
-
-            // we enable the canvas for 2 frames to force its auto-scaling
-            yield return null;
-            yield return null;
-
-            canvasGroup.alpha = 1f;
+            canvasGroup = canvas.gameObject.AddComponent<CanvasGroup>();
+            canvasGroup.alpha = 0f; // Alpha will be updated later when the player enters this scene
+            canvasGroup.blocksRaycasts = false;
 
             if (VERBOSE)
             {
                 Debug.Log("canvas initialized, width: " + childHookRectTransform.rect.width);
                 Debug.Log("canvas initialized, height: " + childHookRectTransform.rect.height);
-            }
-
-            if (canvas != null)
-            {
-                canvas.enabled = false; // It will be enabled later when the player enters this scene
             }
 
             if (DCLCharacterController.i != null)

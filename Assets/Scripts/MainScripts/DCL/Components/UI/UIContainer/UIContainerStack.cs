@@ -106,12 +106,6 @@ namespace DCL.Components
                 stackContainer = stackContainers[childComponent.id];
             }
 
-            //NOTE(Brian): Resize stackContainer to contain all children
-            UISizeFitter fitter = stackContainer.GetOrCreateComponent<UISizeFitter>();
-
-            fitter.adjustHeight = true;
-            fitter.adjustWidth = true;
-
             RefreshAll();
         }
 
