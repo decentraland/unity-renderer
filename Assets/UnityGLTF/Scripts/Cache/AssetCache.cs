@@ -1,10 +1,19 @@
 using GLTF.Schema;
 using System;
 using System.IO;
+using System.Collections.Generic;
 using UnityEngine;
 
 namespace UnityGLTF.Cache
 {
+    /// <summary>
+    /// Caches textures and counts their references to minimize memory usage
+    /// </summary>
+    public class PersistentAssetCache
+    {
+        public static Dictionary<string, RefCountedTextureData> ImageCacheByUri = new Dictionary<string, RefCountedTextureData>();
+    }
+
     /// <summary>
     /// Caches data in order to construct a unity object
     /// </summary>
