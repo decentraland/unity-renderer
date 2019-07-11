@@ -98,11 +98,11 @@ namespace DCL.Components
                 // FETCH AND LOAD EMISSIVE TEXTURE
                 if (!string.IsNullOrEmpty(model.emissiveTexture))
                 {
-                    yield return DCLTexture.FetchFromComponent(scene, model.emissiveTexture,
+                    scene.StartCoroutine( DCLTexture.FetchFromComponent(scene, model.emissiveTexture,
                         (fetchedEmissiveTexture) =>
                         {
                             material.SetTexture("_EmissionMap", fetchedEmissiveTexture);
-                        });
+                        }));
                 }
                 else
                 {
@@ -115,11 +115,11 @@ namespace DCL.Components
             // FETCH AND LOAD TEXTURES
             if (!string.IsNullOrEmpty(model.albedoTexture))
             {
-                yield return DCLTexture.FetchFromComponent(scene, model.albedoTexture,
+                scene.StartCoroutine(DCLTexture.FetchFromComponent(scene, model.albedoTexture,
                     (fetchedAlbedoTexture) =>
                     {
                         material.SetTexture("_BaseMap", fetchedAlbedoTexture);
-                    });
+                    }));
             }
             else
             {
@@ -128,11 +128,11 @@ namespace DCL.Components
 
             if (!string.IsNullOrEmpty(model.bumpTexture))
             {
-                yield return DCLTexture.FetchFromComponent(scene, model.bumpTexture,
+                scene.StartCoroutine(DCLTexture.FetchFromComponent(scene, model.bumpTexture,
                     (fetchedBumpTexture) =>
                     {
                         material.SetTexture("_BumpMap", fetchedBumpTexture);
-                    });
+                    }));
             }
             else
             {
@@ -143,6 +143,8 @@ namespace DCL.Components
             {
                 Debug.Log("found key " + key);
             }
+            
+            return null;
         }
 
         private void SetupTransparencyMode()
