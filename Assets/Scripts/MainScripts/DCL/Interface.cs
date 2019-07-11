@@ -110,6 +110,19 @@ namespace DCL.Interface
         {
         }
 
+        [System.Serializable]
+        public class OnGizmoEvent : UUIDEvent<OnGizmoEventPayload>
+        {
+        };
+
+        [System.Serializable]
+        public class OnGizmoEventPayload
+        {
+            public string type;
+            public string gizmoType;
+            public string entityId;
+        }
+
 #if UNITY_WEBGL && !UNITY_EDITOR
     /**
      * This method is called after the first render. It marks the loading of the
@@ -156,6 +169,9 @@ namespace DCL.Interface
         private static OnFocusEvent onFocusEvent = new OnFocusEvent();
         private static OnBlurEvent onBlurEvent = new OnBlurEvent();
         private static OnEnterEvent onEnterEvent = new OnEnterEvent();
+
+        private static OnGizmoEvent onGizmoEvent = new OnGizmoEvent();
+
 
         public static void SendSceneEvent<T>(string sceneId, string eventType, T payload)
         {
@@ -279,6 +295,21 @@ namespace DCL.Interface
         public static void PreloadFinished(string sceneId)
         {
             SendMessage("PreloadFinished", sceneId);
+        }
+
+
+        public static void ReportGizmoEvent(string sceneId, string uuid, string type, string gizmoType)
+        {
+            if (string.IsNullOrEmpty(uuid))
+            {
+                return;
+            }
+
+            onGizmoEvent.uuid = uuid;
+            onGizmoEvent.payload.type = type;
+            onGizmoEvent.payload.gizmoType = gizmoType;
+            onGizmoEvent.payload.entityId = uuid;
+            SendSceneEvent(sceneId, "uuidEvent", onGizmoEvent);
         }
     }
 }

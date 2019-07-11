@@ -20,7 +20,7 @@ public abstract class GizmoAxis : MonoBehaviour
     {
         renderer = GetComponent<Renderer>();
         props = new MaterialPropertyBlock();
-        colorPropertyID = Shader.PropertyToID("_Color");
+        colorPropertyID = Shader.PropertyToID("_BaseColor");
         renderer.GetPropertyBlock(props);
         props.SetColor(colorPropertyID, color);
         renderer.SetPropertyBlock(props);

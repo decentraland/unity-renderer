@@ -45,7 +45,7 @@ public class DCLCinemachineCameraBuilderController : MonoBehaviour
     public float minScale = 0.5f;
 
     [Tooltip("The maximum scale for the orbits")]
-    [Range(1F, 5f)]
+    [Range(1F, 15f)]
     public float maxScale = 1;
 
     public float moveIncrement = 0.1f;

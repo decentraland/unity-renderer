@@ -4,6 +4,7 @@ using UnityEngine;
 
 public class Gizmo : MonoBehaviour
 {
+    public string gizmoType;
     public bool transformWithObject;
 
     public void SetObject(GameObject selectedObject)
