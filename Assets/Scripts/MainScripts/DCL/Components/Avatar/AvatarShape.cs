@@ -162,9 +162,9 @@ namespace DCL
                 {
                     Destroy(defaultMaterialCopies[i]);
                 }
-            }
 
-            defaultMaterialCopies.Clear();
+                defaultMaterialCopies.Clear();
+            }
         }
         void ResetAvatar()
         {
