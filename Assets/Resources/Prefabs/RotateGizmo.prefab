@@ -41,7 +41,7 @@ MeshFilter:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 754015279}
-  m_Mesh: {fileID: 4300008, guid: 1e768d2d0d75046e8b540a9a7539d277, type: 3}
+  m_Mesh: {fileID: 4300004, guid: 1e768d2d0d75046e8b540a9a7539d277, type: 3}
 --- !u!23 &754015289
 MeshRenderer:
   m_ObjectHideFlags: 0
@@ -92,7 +92,7 @@ MeshCollider:
   serializedVersion: 3
   m_Convex: 0
   m_CookingOptions: 14
-  m_Mesh: {fileID: 4300008, guid: 1e768d2d0d75046e8b540a9a7539d277, type: 3}
+  m_Mesh: {fileID: 4300004, guid: 1e768d2d0d75046e8b540a9a7539d277, type: 3}
 --- !u!114 &754015282
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -109,8 +109,7 @@ MonoBehaviour:
   color: {r: 0.5882353, g: 1, b: 0.5882353, a: 0}
   selectedColor: {r: 0, g: 1, b: 0, a: 0}
   originPointerPosition: {x: 0, y: 0, z: 0}
-  transformWithObject: 0
-  rotateFactor: 5000
+  rotateFactor: 2000
 --- !u!1 &754015280
 GameObject:
   m_ObjectHideFlags: 0
@@ -220,8 +219,7 @@ MonoBehaviour:
   color: {r: 0.5882353, g: 0.5882353, b: 1, a: 0}
   selectedColor: {r: 0, g: 0, b: 1, a: 0}
   originPointerPosition: {x: 0, y: 0, z: 0}
-  transformWithObject: 0
-  rotateFactor: 5000
+  rotateFactor: 2000
 --- !u!1 &754015281
 GameObject:
   m_ObjectHideFlags: 0
@@ -263,7 +261,7 @@ MeshFilter:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 754015281}
-  m_Mesh: {fileID: 4300006, guid: 1e768d2d0d75046e8b540a9a7539d277, type: 3}
+  m_Mesh: {fileID: 4300000, guid: 1e768d2d0d75046e8b540a9a7539d277, type: 3}
 --- !u!23 &754015295
 MeshRenderer:
   m_ObjectHideFlags: 0
@@ -314,7 +312,7 @@ MeshCollider:
   serializedVersion: 3
   m_Convex: 0
   m_CookingOptions: 14
-  m_Mesh: {fileID: 4300006, guid: 1e768d2d0d75046e8b540a9a7539d277, type: 3}
+  m_Mesh: {fileID: 4300000, guid: 1e768d2d0d75046e8b540a9a7539d277, type: 3}
 --- !u!114 &754015286
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -331,8 +329,7 @@ MonoBehaviour:
   color: {r: 1, g: 0.5882353, b: 0.5882353, a: 0}
   selectedColor: {r: 1, g: 0, b: 0, a: 0}
   originPointerPosition: {x: 0, y: 0, z: 0}
-  transformWithObject: 0
-  rotateFactor: 5000
+  rotateFactor: 2000
 --- !u!1 &2062176172
 GameObject:
   m_ObjectHideFlags: 0
@@ -379,4 +376,5 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9cb9ee815d0094b2691dbefc7ca8425c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  gizmoType: ROTATE
   transformWithObject: 0

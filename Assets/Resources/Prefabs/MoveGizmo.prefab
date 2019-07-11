@@ -108,7 +108,6 @@ MonoBehaviour:
   color: {r: 1, g: 0.5882353, b: 0.5882353, a: 0}
   selectedColor: {r: 1, g: 0, b: 0, a: 0}
   originPointerPosition: {x: 0, y: 0, z: 0}
-  transformWithObject: 0
   moveFactor: 100
 --- !u!1 &857158739
 GameObject:
@@ -156,6 +155,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9cb9ee815d0094b2691dbefc7ca8425c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  gizmoType: MOVE
   transformWithObject: 1
 --- !u!1 &1472157648
 GameObject:
@@ -265,7 +265,6 @@ MonoBehaviour:
   color: {r: 0.5882353, g: 1, b: 0.5882353, a: 0}
   selectedColor: {r: 0, g: 1, b: 0, a: 0}
   originPointerPosition: {x: 0, y: 0, z: 0}
-  transformWithObject: 0
   moveFactor: 100
 --- !u!1 &1712324708
 GameObject:
@@ -375,5 +374,4 @@ MonoBehaviour:
   color: {r: 0.5882353, g: 0.5882353, b: 1, a: 0}
   selectedColor: {r: 0, g: 0, b: 1, a: 0}
   originPointerPosition: {x: 0, y: 0, z: 0}
-  transformWithObject: 0
   moveFactor: 100
