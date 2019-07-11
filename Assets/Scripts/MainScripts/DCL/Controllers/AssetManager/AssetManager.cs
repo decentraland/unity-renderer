@@ -163,18 +163,18 @@ namespace DCL
             }
             else
             {
+                assetLibrary[id].referenceCount++;
+
                 if (!assetLibrary[id].isLoadingCompleted)
                 {
                     //NOTE(Brian): If the asset is in the process of being loaded by another object, piggyback on that one
                     //             suscribing to the OnSuccess/OnFail event.
-                    assetLibrary[id].OnSuccess += () => Get(id, url, parent, OnSuccess, OnFail, settings);
+                    assetLibrary[id].OnSuccess += () => GetCachedAsset(id, parent, OnSuccess);
                     assetLibrary[id].OnFail += OnFail;
                 }
                 else
                 {
-                    assetLibrary[id].referenceCount++;
                     GetCachedAsset(id, parent, OnSuccess);
-
                     return resultContainer;
                 }
             }

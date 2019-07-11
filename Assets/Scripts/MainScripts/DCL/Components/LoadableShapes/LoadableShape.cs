@@ -133,9 +133,6 @@ namespace DCL.Components
             LoadWrapper loadWrapper = entity.meshGameObject.GetComponent<LoadWrapper>();
 
             loadWrapper?.Unload();
-
-            Utils.SafeDestroy(entity.meshGameObject);
-            entity.meshGameObject = null;
         }
     }
 }

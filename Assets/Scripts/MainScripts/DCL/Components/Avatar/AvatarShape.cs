@@ -109,8 +109,8 @@ namespace DCL
 
         public Model model = new Model();
 
-        [NonSerialized] public GameObject baseBody;
-        [NonSerialized] public List<GameObject> wearables;
+        [NonSerialized] public LoadWrapper baseBody;
+        [NonSerialized] public List<LoadWrapper> wearables;
         public bool everythingIsLoaded { get { return state == State.READY && eyesReady && mouthReady && browsReady; } }
         public bool isLoading { get { return state == State.LOADING; } }
 
@@ -142,6 +142,12 @@ namespace DCL
         void OnDestroy()
         {
             UnloadMaterials();
+            baseBody?.Unload();
+            for (int index = 0; index < wearables.Count; index++)
+            {
+                var loadWrapper = wearables[index];
+                loadWrapper?.Unload();
+            }
         }
         void InitMaterials()
         {
@@ -250,7 +256,7 @@ namespace DCL
                 yield break;
             }
 
-            wearables = new List<GameObject>();
+            wearables = new List<LoadWrapper>();
 
             StopCoroutine(SetupEyes());
             StopCoroutine(SetupEyebrows());
@@ -414,7 +420,7 @@ namespace DCL
                 return;
 
             loadedWearablesCount++;
-            wearables.Add(loadable.gameObject);
+            wearables.Add(loadable);
 
             ApplyDefaultMaterial(loadable.transform);
             CheckAllWearablesAreLoaded();
@@ -426,10 +432,10 @@ namespace DCL
                 return;
 
             baseBodyIsReady = true;
-            baseBody = loadable.gameObject;
+            baseBody = loadable;
 
             ApplyDefaultMaterial(loadable.transform);
-            AvatarUtils.RemoveUnusedBodyParts_Hack(baseBody);
+            AvatarUtils.RemoveUnusedBodyParts_Hack(baseBody.gameObject);
 
             CheckAllWearablesAreLoaded();
         }
