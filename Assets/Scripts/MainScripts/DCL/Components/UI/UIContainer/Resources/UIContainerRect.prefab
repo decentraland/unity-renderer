@@ -92,6 +92,8 @@ MonoBehaviour:
   m_ChildForceExpandHeight: 0
   m_ChildControlWidth: 0
   m_ChildControlHeight: 0
+  m_ChildScaleWidth: 0
+  m_ChildScaleHeight: 0
 --- !u!225 &6407918535855574709
 CanvasGroup:
   m_ObjectHideFlags: 0
@@ -212,6 +214,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1d65a4fd630e51f448ead4320a989c39, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  adjustWidth: 1
-  adjustHeight: 1
+  adjustWidth: 0
+  adjustHeight: 0
   forceRefresh: 0

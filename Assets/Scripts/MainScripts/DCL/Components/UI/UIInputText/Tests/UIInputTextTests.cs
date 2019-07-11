@@ -123,6 +123,14 @@ namespace Tests
         }
 
         [UnityTest]
+        public IEnumerator AddedCorrectlyOnInvisibleParent()
+        {
+            yield return InitScene();
+
+            yield return TestHelpers.TestUIElementAddedCorrectlyOnInvisibleParent<UIInputText, UIInputText.Model>(scene, CLASS_ID.UI_INPUT_TEXT_SHAPE);
+        }
+
+        [UnityTest]
         public IEnumerator TestOnFocus()
         {
             yield return InputTextCreate();

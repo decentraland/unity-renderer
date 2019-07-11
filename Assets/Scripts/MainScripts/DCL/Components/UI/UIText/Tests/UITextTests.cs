@@ -33,7 +33,7 @@ namespace Tests
             Assert.IsTrue(uiTextShape.referencesContainer.transform.parent == screenSpaceShape.childHookRectTransform);
             Assert.IsTrue(uiTextShape.referencesContainer.canvasGroup.blocksRaycasts);
             Assert.AreEqual(100f, uiTextShape.childHookRectTransform.rect.width);
-            Assert.AreEqual(100f, uiTextShape.childHookRectTransform.rect.height);
+            Assert.AreEqual(50f, uiTextShape.childHookRectTransform.rect.height);
             Assert.IsTrue(uiTextShape.referencesContainer.text.enabled);
             Assert.AreEqual(Color.white, uiTextShape.referencesContainer.text.color);
             Assert.AreEqual(100f, uiTextShape.referencesContainer.text.fontSize);
@@ -85,7 +85,7 @@ namespace Tests
             Assert.IsTrue(uiTextShape.referencesContainer.transform.parent == screenSpaceShape.childHookRectTransform);
             Assert.IsTrue(uiTextShape.referencesContainer.text.raycastTarget);
             Assert.AreEqual(100f, uiTextShape.childHookRectTransform.rect.width);
-            Assert.AreEqual(100f, uiTextShape.childHookRectTransform.rect.height);
+            Assert.AreEqual(50f, uiTextShape.childHookRectTransform.rect.height);
             Assert.AreEqual("hello world", uiTextShape.referencesContainer.text.text);
             Assert.IsTrue(uiTextShape.referencesContainer.text.enabled);
             Assert.AreEqual(new Color(0f, 1f, 0f, 1f), uiTextShape.referencesContainer.text.color);
@@ -172,5 +172,12 @@ namespace Tests
             Assert.IsTrue(eventResult);
         }
 
+        [UnityTest]
+        public IEnumerator AddedCorrectlyOnInvisibleParent()
+        {
+            yield return InitScene();
+
+            yield return TestHelpers.TestUIElementAddedCorrectlyOnInvisibleParent<UIText, UIText.Model>(scene, CLASS_ID.UI_TEXT_SHAPE);
+        }
     }
 }
