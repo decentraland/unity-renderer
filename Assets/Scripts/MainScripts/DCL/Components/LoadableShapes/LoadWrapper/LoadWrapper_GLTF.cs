@@ -1,6 +1,8 @@
 ﻿using System;
+using DCL.Helpers;
 using UnityEngine;
 using UnityEngine.Assertions;
+using UnityGLTF;
 
 namespace DCL.Components
 {
@@ -12,6 +14,11 @@ namespace DCL.Components
 
         string url;
         string assetDirectoryPath;
+
+        private static readonly Vector3 MORDOR = Vector3.one * -1000;
+
+        //todo (Alex) Refactor: This flag prevents unload from being called twice. Destroying should be part of the shape detachment
+        private bool unloaded = false;
 
         public override void Load(string targetUrl, Action<LoadWrapper> OnSuccess, Action<LoadWrapper> OnFail)
         {
@@ -39,8 +46,10 @@ namespace DCL.Components
                 initialVisibility = initialVisibility
             };
 
+            var cacheId = GetCacheId();
+
             gltfContainer = AssetManager_GLTF.i.Get(
-                id: GetCacheId(),
+                id: cacheId,
                 url: url,
                 parent: transform,
                 OnSuccess: () => OnSuccessWrapper(this, OnSuccess),
@@ -84,10 +93,47 @@ namespace DCL.Components
 
         public override void Unload()
         {
+            if (unloaded) return;
+
+            unloaded = true;
+
             if (!String.IsNullOrEmpty(url))
             {
-                AssetManager_GLTF.i.Release(GetCacheId());
+                var cacheId = GetCacheId();
+                AssetManager_GLTF.i.Release(cacheId);
+
+                if (AssetManager_GLTF.i.assetLibrary.ContainsKey(cacheId) && !AssetManager_GLTF.i.assetLibrary[cacheId].isLoadingCompleted)
+                {
+                    AssetManager_GLTF.i.assetLibrary[cacheId].OnSuccess += OnSuccessAssetLoaded;
+                    RelocateLoader();
+                }
+                else
+                {
+                    RemoveMeshObject();
+                }
             }
+        }
+
+        private void OnSuccessAssetLoaded()
+        {
+            AssetManager_GLTF.i.assetLibrary[GetCacheId()].OnSuccess -= RemoveMeshObject;
+            RemoveMeshObject();
+        }
+
+        private void RelocateLoader()
+        {
+            var gltfComponent = GetComponentInChildren<GLTFComponent>();
+            if (gltfComponent != null && AssetManager_GLTF.i != null)
+            {
+                gltfComponent.transform.SetParent(AssetManager_GLTF.i.transform);
+                gltfComponent.transform.position = MORDOR;
+            }
+        }
+
+        private void RemoveMeshObject()
+        {
+            Utils.SafeDestroy(entity.meshGameObject);
+            entity.meshGameObject = null;
         }
 
         public void OnDestroy()

@@ -5,6 +5,7 @@ using Newtonsoft.Json;
 using NUnit.Framework;
 using System.Collections;
 using System.Linq;
+using DCL;
 using UnityEngine;
 using UnityEngine.TestTools;
 using UnityGLTF;
@@ -447,6 +448,43 @@ namespace Tests
             Assert.IsTrue(CheckVisibility(gltfShape, true));
 
             #endregion
+        }
+
+        [UnityTest]
+        public IEnumerator GLTFEntityDownloadingIsRemoved()
+        {
+
+            #region Arrange
+
+            yield return InitScene();
+
+            LoadableShape.Model palmModel = new LoadableShape.Model()
+            {
+                src = TestHelpers.GetTestsAssetsPath() + "/GLB/PalmTree_01.glb",
+                visible = true
+            };
+
+            GLTFShape palmShape = TestHelpers.CreateEntityWithGLTFShape(scene, Vector3.zero, palmModel, out DecentralandEntity entity1);
+            GLTFShape palmShape2 = TestHelpers.CreateEntityWithGLTFShape(scene, Vector3.zero, palmModel, out DecentralandEntity entity2);
+            GLTFShape palmShape3 = TestHelpers.CreateEntityWithGLTFShape(scene, Vector3.zero, palmModel, out DecentralandEntity entity3);
+
+            object libraryEntryId = entity1.gameObject.GetComponentInChildren<LoadWrapper_GLTF>().GetCacheId();
+            Assert.AreEqual(0, AssetManager_GLTF.i.transform.childCount);
+            Assert.AreEqual(3, AssetManager_GLTF.i.assetLibrary[libraryEntryId].referenceCount);
+
+            scene.RemoveEntity(entity1.entityId);
+
+            Assert.AreEqual(1, AssetManager_GLTF.i.transform.childCount);
+            Assert.AreEqual(2, AssetManager_GLTF.i.assetLibrary[libraryEntryId].referenceCount);
+
+            yield return palmShape2.routine;
+            yield return palmShape3.routine;
+
+            Assert.NotNull(entity2.gameObject.GetComponentInChildren<LoadWrapper_GLTF>());
+            Assert.NotNull(entity3.gameObject.GetComponentInChildren<LoadWrapper_GLTF>());
+
+            #endregion
+
         }
 
         [UnityTest]

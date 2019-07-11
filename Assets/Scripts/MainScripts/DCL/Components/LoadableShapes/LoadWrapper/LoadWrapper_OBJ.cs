@@ -14,7 +14,8 @@ namespace DCL.Components
 
         public override void Unload()
         {
-            throw new System.NotImplementedException();
+            Utils.SafeDestroy(entity.meshGameObject);
+            entity.meshGameObject = null;
         }
 
         public override void Load(string src, System.Action<LoadWrapper> OnSuccess, System.Action<LoadWrapper> OnFail)

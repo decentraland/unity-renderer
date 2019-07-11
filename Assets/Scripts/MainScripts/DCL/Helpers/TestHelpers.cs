@@ -190,10 +190,7 @@ namespace DCL.Helpers
 
         public static void RemoveSceneEntity(ParcelScene scene, DecentralandEntity entity)
         {
-            scene.RemoveEntity(JsonUtility.ToJson(new DCL.Models.RemoveEntityMessage
-            {
-                id = entity.entityId
-            }));
+            scene.RemoveEntity(entity.entityId);
         }
 
 

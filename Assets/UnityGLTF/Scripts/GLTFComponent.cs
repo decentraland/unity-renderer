@@ -216,7 +216,7 @@ namespace UnityGLTF
                             Path.GetFileName(GLTFUri),
                             loader,
                             asyncCoroutineHelper
-                            );
+                        );
                     }
                     else
                     {
@@ -231,7 +231,7 @@ namespace UnityGLTF
                             GLTFUri,
                             loader,
                             asyncCoroutineHelper
-                            );
+                        );
                     }
 
                     if (sceneImporter.CreatedObject != null)
