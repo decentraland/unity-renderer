@@ -28,7 +28,7 @@ namespace DCL.Components
         private static Action OnUIGlobalVisibilityChanged = () => { };
         private static Toggle toggle;
 
-        private Vector3 currentCharacterPosition;
+        private DCLCharacterPosition currentCharacterPosition;
         private CanvasGroup canvasGroup;
 
         public UIScreenSpace(ParcelScene scene) : base(scene)
@@ -64,7 +64,7 @@ namespace DCL.Components
             }
             else if (DCLCharacterController.i != null)
             {
-                OnCharacterMoved(DCLCharacterController.i.transform.position);
+                OnCharacterMoved(DCLCharacterController.i.characterPosition);
             }
 
             //We have to wait a frame for the Canvas Scaler to act
@@ -82,7 +82,7 @@ namespace DCL.Components
             }
         }
 
-        void OnCharacterMoved(Vector3 newCharacterPosition)
+        void OnCharacterMoved(DCLCharacterPosition newCharacterPosition)
         {
             if (canvas != null)
             {
@@ -96,7 +96,7 @@ namespace DCL.Components
                 }
             }
         }
-        
+
         private void UpdateCanvasVisibility()
         {
             if (canvas != null && scene != null)
@@ -182,7 +182,7 @@ namespace DCL.Components
 
             if (DCLCharacterController.i != null)
             {
-                OnCharacterMoved(DCLCharacterController.i.transform.position);
+                OnCharacterMoved(DCLCharacterController.i.characterPosition);
             }
 
             if (VERBOSE)

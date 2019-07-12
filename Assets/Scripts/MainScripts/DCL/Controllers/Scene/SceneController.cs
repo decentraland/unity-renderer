@@ -292,7 +292,7 @@ namespace DCL
 
                 if (!newScene.isPersistent && !loadingScreenController.started && enableLoadingScreen)
                 {
-                    Vector2 playerPos = ParcelScene.WorldToGridPosition(DCLCharacterController.i.transform.position);
+                    Vector2 playerPos = ParcelScene.WorldToGridPosition(DCLCharacterController.i.characterPosition.worldPosition);
                     if (Vector2Int.Distance(new Vector2Int((int)playerPos.x, (int)playerPos.y), sceneToLoad.basePosition) <= LoadingScreenController.MAX_DISTANCE_TO_PLAYER)
                     {
                         loadingScreenController.StartLoadingScreen();
@@ -771,7 +771,7 @@ namespace DCL
             loadingScreenController.OnLoadingDone += LoadingDone;
         }
 
-        private void OnCharacterPositionSet(Vector3 newPosition)
+        private void OnCharacterPositionSet(DCLCharacterPosition newPosition)
         {
             if (!DCLCharacterController.i.initialPositionAlreadySet) return;
 

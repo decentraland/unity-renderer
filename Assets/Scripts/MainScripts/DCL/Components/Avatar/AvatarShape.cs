@@ -123,6 +123,7 @@ namespace DCL
         Vector3 sourceScale;
         Quaternion sourceRotation;
 
+        Vector3 currentWorldPos = Vector3.zero;
         Vector3 targetPosition;
         Vector3 targetScale;
         Quaternion targetRotation;
@@ -137,16 +138,25 @@ namespace DCL
         void Start()
         {
             InitMaterials();
+            DCLCharacterController.i.characterPosition.OnPrecisionAdjust += OnPrecisionAdjust;
         }
 
         void OnDestroy()
         {
             UnloadMaterials();
+
+            if (DCLCharacterController.i)
+                DCLCharacterController.i.characterPosition.OnPrecisionAdjust -= OnPrecisionAdjust;
+
             baseBody?.Unload();
-            for (int index = 0; index < wearables.Count; index++)
+
+            if (wearables != null)
             {
-                var loadWrapper = wearables[index];
-                loadWrapper?.Unload();
+                for (int index = 0; index < wearables.Count; index++)
+                {
+                    var loadWrapper = wearables[index];
+                    loadWrapper?.Unload();
+                }
             }
         }
         void InitMaterials()
@@ -515,15 +525,17 @@ namespace DCL
 
         public void MoveWithLerpTo(Vector3 pos, Quaternion rotation, Vector3 scale)
         {
-            if (entity.gameObject.transform.position == Vector3.zero)
+            if (currentWorldPos == Vector3.zero)
             {
-                entity.gameObject.transform.position = pos;
+                currentWorldPos = pos;
+                entity.gameObject.transform.position = DCLCharacterController.i.characterPosition.WorldToUnityPosition(currentWorldPos);
+
                 entity.gameObject.transform.rotation = rotation;
                 entity.gameObject.transform.localScale = scale;
             }
             else
             {
-                sourcePosition = entity.gameObject.transform.position;
+                sourcePosition = currentWorldPos;
                 sourceRotation = entity.gameObject.transform.rotation;
 
                 targetPosition = pos;
@@ -539,6 +551,10 @@ namespace DCL
             }
         }
 
+        void OnPrecisionAdjust(DCLCharacterPosition position)
+        {
+            entity.gameObject.transform.position = position.WorldToUnityPosition(currentWorldPos);
+        }
 
         void UpdateLerp(float dt)
         {
@@ -549,7 +565,9 @@ namespace DCL
 
                 float d = this.currentMovementTime / this.endMovementTime;
 
-                entity.gameObject.transform.position = Vector3.Lerp(this.sourcePosition, this.targetPosition, d);
+                currentWorldPos = Vector3.Lerp(this.sourcePosition, this.targetPosition, d);
+
+                entity.gameObject.transform.position = DCLCharacterController.i.characterPosition.WorldToUnityPosition(currentWorldPos);
             }
 
             if (this.currentTime < ROTATION_SCALE_TIME)
