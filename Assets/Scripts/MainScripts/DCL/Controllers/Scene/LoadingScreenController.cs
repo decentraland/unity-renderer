@@ -39,7 +39,7 @@ namespace DCL
             this.sceneController = sceneController;
 
 #if UNITY_EDITOR
-            if(!enableInEditor)
+            if (!enableInEditor)
             {
                 started = true;
                 OnLoadingDone.Invoke();
@@ -58,7 +58,7 @@ namespace DCL
             loadingScreenView.SetNormalizedPercentage(0);
         }
 
-        private void RemoveLoadingScreen() 
+        private void RemoveLoadingScreen()
         {
             loadingScreenView.StartCoroutine(loadingScreenView.FadeOutAndDestroy());
         }
@@ -74,12 +74,12 @@ namespace DCL
         {
             float waitStart = Time.realtimeSinceStartup;
 
-            while(!started && Time.realtimeSinceStartup < waitStart + WAIT_BEFORE_FORCED_START)
+            while (!started && Time.realtimeSinceStartup < waitStart + WAIT_BEFORE_FORCED_START)
             {
                 yield return new WaitForEndOfFrame();
             }
 
-            if(!started)
+            if (!started)
                 StartLoadingScreen();
         }
 
@@ -102,7 +102,7 @@ namespace DCL
             while (time < GATHERING_TIME)
             {
                 time = Mathf.Min(time + Time.deltaTime, GATHERING_TIME);
-                float currentPercentage = Mathf.Clamp( LOADING_BUDGET_PER_STEP * time / GATHERING_TIME, 0, LOADING_BUDGET_PER_STEP);
+                float currentPercentage = Mathf.Clamp(LOADING_BUDGET_PER_STEP * time / GATHERING_TIME, 0, LOADING_BUDGET_PER_STEP);
                 loadingScreenView.SetNormalizedPercentage(currentPercentage);
                 yield return null;
             }
@@ -111,9 +111,9 @@ namespace DCL
 
         private IEnumerator WaitForScenesReady()
         {
-            Vector2 playerPos = ParcelScene.WorldToGridPosition(DCLCharacterController.i.transform.position);
+            Vector2 playerPos = ParcelScene.WorldToGridPosition(DCLCharacterController.i.characterPosition.worldPosition);
             var scenesToCheck = sceneController.loadedScenes
-                .Where(x => Vector2Int.Distance(x.Value.sceneData.basePosition, new Vector2Int((int)playerPos.x, (int)playerPos.y)) < 20 )
+                .Where(x => Vector2Int.Distance(x.Value.sceneData.basePosition, new Vector2Int((int)playerPos.x, (int)playerPos.y)) < 20)
                 .Select(x => x.Key).ToList();
             scenesToCheck = scenesToCheck.GetRange(0, Math.Min(scenesToCheck.Count, SCENES_TO_LOAD));
 
@@ -124,12 +124,12 @@ namespace DCL
 
                 //we have to update scenesToCheck since some scenes can be removed
                 scenesToCheck = sceneController.loadedScenes
-                    .Where(x => Vector2Int.Distance(x.Value.sceneData.basePosition, new Vector2Int((int)playerPos.x, (int)playerPos.y)) < 20 )
+                    .Where(x => Vector2Int.Distance(x.Value.sceneData.basePosition, new Vector2Int((int)playerPos.x, (int)playerPos.y)) < 20)
                     .Select(x => x.Key).ToList();
                 scenesToCheck = scenesToCheck.GetRange(0, Math.Min(scenesToCheck.Count, SCENES_TO_LOAD));
                 scenesReady = sceneController.readyScenes.Intersect(scenesToCheck).ToList();
 
-                float currentPercentage = Mathf.Clamp( LOADING_BUDGET_PER_STEP * scenesReady.Count() / scenesToCheck.Count, 0, LOADING_BUDGET_PER_STEP);
+                float currentPercentage = Mathf.Clamp(LOADING_BUDGET_PER_STEP * scenesReady.Count() / scenesToCheck.Count, 0, LOADING_BUDGET_PER_STEP);
                 loadingScreenView.SetNormalizedPercentage(LOADING_BUDGET_PER_STEP + currentPercentage);
             }
             loadingScreenView.SetNormalizedPercentage(2 * LOADING_BUDGET_PER_STEP);
@@ -138,12 +138,12 @@ namespace DCL
         private IEnumerator WaitForGLTFs()
         {
             int totalGLTFToProcess = GLTFComponent.totalDownloadedCount + Mathf.FloorToInt(GLTFComponent.queueCount * GLTF_TO_LOAD_PERCENTAGE);
-            
-            while ( GLTFComponent.totalDownloadedCount < totalGLTFToProcess)
+
+            while (GLTFComponent.totalDownloadedCount < totalGLTFToProcess)
             {
                 yield return new WaitForSeconds(POLLING_INTERVAL_TIME);
 
-                float currentPercentage = Mathf.Clamp( LOADING_BUDGET_PER_STEP * GLTFComponent.totalDownloadedCount / totalGLTFToProcess, 0, LOADING_BUDGET_PER_STEP);
+                float currentPercentage = Mathf.Clamp(LOADING_BUDGET_PER_STEP * GLTFComponent.totalDownloadedCount / totalGLTFToProcess, 0, LOADING_BUDGET_PER_STEP);
                 loadingScreenView.SetNormalizedPercentage(2 * LOADING_BUDGET_PER_STEP + currentPercentage);
             }
             loadingScreenView.SetNormalizedPercentage(1);

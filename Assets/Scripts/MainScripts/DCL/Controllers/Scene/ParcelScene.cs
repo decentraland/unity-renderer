@@ -30,6 +30,8 @@ namespace DCL.Controllers
         {
             metricsController = new SceneMetricsController(this);
             metricsController.Enable();
+
+            DCLCharacterController.i.characterPosition.OnPrecisionAdjust += OnPrecisionAdjust;
         }
 
         bool flaggedToUnload = false;
@@ -53,7 +55,7 @@ namespace DCL.Controllers
             {
                 if (!isTestScene && !flaggedToUnload && sceneData != null && DCLCharacterController.i != null)
                 {
-                    if (!bounds.Contains(DCLCharacterController.i.transform.position))
+                    if (!bounds.Contains(DCLCharacterController.i.characterPosition.worldPosition))
                     {
                         flaggedToUnload = true;
                         SceneController.i.UnloadScene(sceneData.id);
@@ -73,8 +75,14 @@ namespace DCL.Controllers
 
             this.name = gameObject.name = $"scene:{data.id}";
 
-            gameObject.transform.position = GridToWorldPosition(data.basePosition.x, data.basePosition.y);
+            gameObject.transform.position = DCLCharacterController.i.characterPosition.WorldToUnityPosition(GridToWorldPosition(data.basePosition.x, data.basePosition.y));
 
+            RecalculateBounds();
+        }
+
+        void OnPrecisionAdjust(DCLCharacterPosition position)
+        {
+            gameObject.transform.position = position.WorldToUnityPosition(GridToWorldPosition(sceneData.basePosition.x, sceneData.basePosition.y));
             RecalculateBounds();
         }
 
@@ -153,6 +161,11 @@ namespace DCL.Controllers
 
         void OnDestroy()
         {
+            if (DCLCharacterController.i)
+            {
+                DCLCharacterController.i.characterPosition.OnPrecisionAdjust -= OnPrecisionAdjust;
+            }
+
             foreach (var entity in entities)
             {
                 Destroy(entity.Value.gameObject);
@@ -166,9 +179,9 @@ namespace DCL.Controllers
             return "gameObjectReference: " + this.ToString() + "\n" + sceneData.ToString();
         }
 
-        public bool IsInsideSceneBoundaries(Vector3 worldPosition)
+        public bool IsInsideSceneBoundaries(DCLCharacterPosition charPosition)
         {
-            return IsInsideSceneBoundaries(WorldToGridPosition(worldPosition));
+            return IsInsideSceneBoundaries(WorldToGridPosition(charPosition.worldPosition));
         }
 
         public virtual bool IsInsideSceneBoundaries(Vector2 gridPosition)
@@ -711,11 +724,11 @@ namespace DCL.Controllers
         /**
          * Transforms a world position into a grid position
          */
-        public static Vector2 WorldToGridPosition(Vector3 vector)
+        public static Vector2 WorldToGridPosition(Vector3 worldPosition)
         {
             return new Vector2(
-                Mathf.Floor(vector.x / ParcelSettings.PARCEL_SIZE),
-                Mathf.Floor(vector.z / ParcelSettings.PARCEL_SIZE)
+                Mathf.Floor(worldPosition.x / ParcelSettings.PARCEL_SIZE),
+                Mathf.Floor(worldPosition.z / ParcelSettings.PARCEL_SIZE)
             );
         }
 

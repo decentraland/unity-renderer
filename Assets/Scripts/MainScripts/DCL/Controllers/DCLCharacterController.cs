@@ -19,6 +19,7 @@ public class DCLCharacterController : MonoBehaviour
     public float gravity = -55f;
     public float movementSpeed = 8f;
     public float jumpForce = 20f;
+    public DCLCharacterPosition characterPosition = new DCLCharacterPosition();
 
     [Header("Collisions")]
     public LayerMask groundLayers;
@@ -49,8 +50,8 @@ public class DCLCharacterController : MonoBehaviour
     bool jumpButtonPressed = false;
     bool jumpButtonPressedThisFrame = false;
 
-    public static System.Action<Vector3> OnCharacterMoved;
-    public static System.Action<Vector3> OnPositionSet;
+    public static System.Action<DCLCharacterPosition> OnCharacterMoved;
+    public static System.Action<DCLCharacterPosition> OnPositionSet;
 
     void Awake()
     {
@@ -66,6 +67,18 @@ public class DCLCharacterController : MonoBehaviour
         rigidbody = GetComponent<Rigidbody>();
         collider = GetComponent<Collider>();
         camera = GetComponentInChildren<Camera>().transform;
+
+        characterPosition.OnPrecisionAdjust += OnPrecisionAdjust;
+    }
+
+    void OnDestroy()
+    {
+        characterPosition.OnPrecisionAdjust -= OnPrecisionAdjust;
+    }
+
+    void OnPrecisionAdjust(DCLCharacterPosition charPos)
+    {
+        this.transform.position = charPos.unityPosition;
     }
 
     public void SetPosition(Vector3 newPosition)
@@ -76,12 +89,13 @@ public class DCLCharacterController : MonoBehaviour
             newPosition.y = minimumYPosition + 2f;
         }
 
-        Vector3 previousPosition = transform.position;
-        transform.position = newPosition;
+        Vector3 previousPosition = characterPosition.worldPosition;
+        characterPosition.worldPosition = newPosition;
+        transform.position = characterPosition.unityPosition;
 
-        if(OnPositionSet != null)
+        if (OnPositionSet != null)
         {
-            OnPositionSet.Invoke(newPosition);
+            OnPositionSet.Invoke(characterPosition);
         }
 
         if (Moved(previousPosition))
@@ -89,7 +103,7 @@ public class DCLCharacterController : MonoBehaviour
             ReportMovement();
         }
 
-        if(!initialPositionAlreadySet)
+        if (!initialPositionAlreadySet)
         {
             initialPositionAlreadySet = true;
         }
@@ -104,16 +118,16 @@ public class DCLCharacterController : MonoBehaviour
 
     bool Moved(Vector3 previousPosition)
     {
-        return Vector3.Distance(transform.position, previousPosition) > 0.001f;
+        return Vector3.Distance(characterPosition.worldPosition, previousPosition) > 0.001f;
     }
 
     void Update()
     {
         deltaTime = Mathf.Min(deltaTimeCap, Time.deltaTime);
 
-        if (transform.position.y < minimumYPosition)
+        if (characterPosition.worldPosition.y < minimumYPosition)
         {
-            SetPosition(transform.position);
+            SetPosition(characterPosition.worldPosition);
 
             return;
         }
@@ -181,8 +195,8 @@ public class DCLCharacterController : MonoBehaviour
             }
         }
 
-        Vector3 previousPosition = transform.position;
         characterController.Move(velocity * deltaTime);
+        characterPosition.unityPosition = transform.position;
 
         if ((Time.realtimeSinceStartup - lastMovementReportTime) > PlayerSettings.POSITION_REPORTING_DELAY)
         {
@@ -224,7 +238,7 @@ public class DCLCharacterController : MonoBehaviour
 
     bool IsGrounded()
     {
-        return characterController.isGrounded || Physics.Raycast(transform.position, Vector3.down,
+        return characterController.isGrounded || Physics.Raycast(characterPosition.unityPosition, Vector3.down,
                    collider.bounds.extents.y + 0.1f, groundLayers);
     }
 
@@ -232,15 +246,18 @@ public class DCLCharacterController : MonoBehaviour
     {
         var localRotation = camera.localRotation.eulerAngles;
         var rotation = transform.rotation.eulerAngles;
-        var feetY = transform.position.y - characterController.height / 2;
+        var feetY = characterPosition.worldPosition.y - characterController.height / 2;
         var playerHeight = camera.position.y - feetY;
         var compositeRotation = Quaternion.Euler(localRotation.x, rotation.y, localRotation.z);
 
-        DCL.Interface.WebInterface.ReportPosition(camera.position, compositeRotation, playerHeight);
+        var reportPosition = characterPosition.worldPosition;
+        reportPosition.y += camera.localPosition.y;
+
+        DCL.Interface.WebInterface.ReportPosition(reportPosition, compositeRotation, playerHeight);
 
         if (OnCharacterMoved != null)
         {
-            OnCharacterMoved.Invoke(transform.position);
+            OnCharacterMoved.Invoke(characterPosition);
         }
 
         lastMovementReportTime = Time.realtimeSinceStartup;
