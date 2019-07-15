@@ -97,15 +97,11 @@ namespace DCL.Controllers
                 {
                     Vector3 pos = GridToWorldPosition(sceneData.parcels[i].x, sceneData.parcels[i].y);
 
-                    if (min.x > pos.x)
-                        min.x = pos.x;
-                    if (min.z > pos.z)
-                        min.z = pos.z;
+                    if (min.x > pos.x) min.x = pos.x;
+                    if (min.z > pos.z) min.z = pos.z;
 
-                    if (max.x < pos.x)
-                        max.x = pos.x;
-                    if (max.z < pos.z)
-                        max.z = pos.z;
+                    if (max.x < pos.x) max.x = pos.x;
+                    if (max.z < pos.z) max.z = pos.z;
 
                     min.y = max.y = 0;
                 }
@@ -339,11 +335,10 @@ namespace DCL.Controllers
                 // HACK (Zak): this hack will be removed when we add a TransformLerped component
                 if (entity.components.ContainsKey(CLASS_ID_COMPONENT.AVATAR_SHAPE))
                 {
-                    AvatarShape avatarShape = (AvatarShape)(entity.components[CLASS_ID_COMPONENT.AVATAR_SHAPE]);
-                    avatarShape.MoveWithLerpTo(
+                    AvatarShape avatarShape = (AvatarShape)entity.components[CLASS_ID_COMPONENT.AVATAR_SHAPE];
+                    avatarShape.avatarMovementController.MoveTo(
                         DCLTransform.model.position - Vector3.up * DCLCharacterController.i.characterController.height / 2, // To fix the "always flying" avatars bug, We report the chara's centered position but the body hast its pivot at its feet
-                        DCLTransform.model.rotation,
-                        Vector3.one);
+                        DCLTransform.model.rotation);
                 }
                 else
                 {

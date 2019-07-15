@@ -61,6 +61,7 @@ MonoBehaviour:
   uiContainer: {fileID: 8543971490908220782}
   sourceTransform: {fileID: 2842120016485600253}
   nameText: {fileID: 1905714436465122683}
+  layoutGroupRTs: []
   offset: {x: 0, y: 3, z: 0}
 --- !u!1 &1905714436465122565
 GameObject:
@@ -359,9 +360,9 @@ CanvasGroup:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 2725452921866538699}
   m_Enabled: 1
-  m_Alpha: 1
-  m_Interactable: 1
-  m_BlocksRaycasts: 1
+  m_Alpha: 0
+  m_Interactable: 0
+  m_BlocksRaycasts: 0
   m_IgnoreParentGroups: 0
 --- !u!1 &3389185268529299172
 GameObject:
@@ -374,6 +375,7 @@ GameObject:
   - component: {fileID: 2842120016485600253}
   - component: {fileID: 5523974814614327640}
   - component: {fileID: 5451946646277210429}
+  - component: {fileID: 122622683908687435}
   m_Layer: 0
   m_Name: AvatarShape
   m_TagString: Untagged
@@ -413,6 +415,7 @@ MonoBehaviour:
   eyebrowMaterial: {fileID: 2100000, guid: db9e974bee285614b8ea2d8832d1a563, type: 2}
   mouthMaterial: {fileID: 2100000, guid: aa8f029bd537edb44b72b4737ca9b81d, type: 2}
   avatarName: {fileID: 3717630171843337652}
+  avatarMovementController: {fileID: 122622683908687435}
   maleAnims:
   - {fileID: 7400000, guid: 4fef0b7f5be12aa48a2e9d8facaaa42b, type: 2}
   - {fileID: 7400000, guid: cd48d8cde6039fa4fac548ddab2ff277, type: 2}
@@ -448,7 +451,6 @@ MonoBehaviour:
       mask: 
       texture: 
     useDummyModel: 1
-  lastName: 
 --- !u!114 &5451946646277210429
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -470,13 +472,150 @@ MonoBehaviour:
     fall: Fall
     special: 
   blackboard:
-    walkSpeedFactor: 1
-    runSpeedFactor: 2
-    forwardSpeed: 0
+    walkSpeedFactor: 20
+    runSpeedFactor: 10
+    movementSpeed: 0
     verticalSpeed: 0
-    strafeSpeed: 0
-    isGrounded: 0
+    isGrounded: 1
   target: {fileID: 2842120016485600253}
+  walkBlendtreeCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0.00044631958
+      value: 0
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    - serializedVersion: 3
+      time: 0.070767246
+      value: 1
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    - serializedVersion: 3
+      time: 0.67525685
+      value: 1
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    - serializedVersion: 3
+      time: 0.9299866
+      value: 0
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    - serializedVersion: 3
+      time: 1
+      value: 0
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+  runBlendtreeCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 0
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    - serializedVersion: 3
+      time: 0.67064095
+      value: 0
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    - serializedVersion: 3
+      time: 0.93293583
+      value: 1
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    - serializedVersion: 3
+      time: 1
+      value: 1
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+  idleBlendtreeCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 1
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    - serializedVersion: 3
+      time: 0.08866989
+      value: 0
+      inSlope: -0.029007528
+      outSlope: 0
+      tangentMode: 65
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.09491654
+    - serializedVersion: 3
+      time: 0.99554443
+      value: 0
+      inSlope: -0
+      outSlope: 0
+      tangentMode: 5
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+--- !u!114 &122622683908687435
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3389185268529299172}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8b2e184f0ec373f4e807d927e1f8aef3, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &3856371094997965333
 GameObject:
   m_ObjectHideFlags: 0
