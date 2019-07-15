@@ -472,8 +472,8 @@ MonoBehaviour:
     fall: Fall
     special: 
   blackboard:
-    walkSpeedFactor: 20
-    runSpeedFactor: 10
+    walkSpeedFactor: 0.5
+    runSpeedFactor: 0.25
     movementSpeed: 0
     verticalSpeed: 0
     isGrounded: 1
