@@ -18,7 +18,7 @@ public class AvatarAnimatorLegacy : MonoBehaviour
     const float ELEVATION_OFFSET = 0.6f;
     const float RAY_OFFSET_LENGTH = 3.0f;
 
-    const float MAX_VELOCITY = 0.1f;
+    const float MAX_VELOCITY = 6.25f;
 
     [System.Serializable]
     public class Clips
@@ -114,10 +114,10 @@ public class AvatarAnimatorLegacy : MonoBehaviour
 
     void State_Ground(BlackBoard bb)
     {
-        animation[clips.run].normalizedSpeed = bb.movementSpeed * bb.runSpeedFactor;
-        animation[clips.walk].normalizedSpeed = bb.movementSpeed * bb.walkSpeedFactor;
+        animation[clips.run].normalizedSpeed = bb.movementSpeed / Time.deltaTime * bb.runSpeedFactor;
+        animation[clips.walk].normalizedSpeed = bb.movementSpeed / Time.deltaTime * bb.walkSpeedFactor;
 
-        float normalizedSpeed = bb.movementSpeed / MAX_VELOCITY;
+        float normalizedSpeed = bb.movementSpeed / Time.deltaTime / MAX_VELOCITY;
 
         float idleWeight = idleBlendtreeCurve.Evaluate(normalizedSpeed);
         float runWeight = runBlendtreeCurve.Evaluate(normalizedSpeed);
