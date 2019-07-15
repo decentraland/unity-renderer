@@ -125,6 +125,8 @@ namespace DCL
 
 #if !UNITY_EDITOR
             Debug.Log("DCL Unity Build Version: " + DCL.Configuration.ApplicationSettings.version);
+
+            Debug.unityLogger.logEnabled = false;
 #endif
 
             // We trigger the Decentraland logic once SceneController has been instanced and is ready to act.
@@ -213,6 +215,8 @@ namespace DCL
 
         public void SetDebug()
         {
+            Debug.unityLogger.logEnabled = true;
+
             isDebugMode = true;
             fpsPanel.SetActive(true);
         }
