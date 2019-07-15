@@ -2,14 +2,23 @@
 
 public class AvatarAnimatorLegacy : MonoBehaviour
 {
-    private const float IDLE_TRANSITION_TIME = 0.15f;
-    private const float STRAFE_TRANSITION_TIME = 0.25f;
-    private const float RUN_TRANSITION_TIME = 0.01f;
-    private const float WALK_TRANSITION_TIME = 0.01f;
-    private const float JUMP_TRANSITION_TIME = 0.05f;
-    private const float FALL_TRANSITION_TIME = 0.1f;
+    const float IDLE_TRANSITION_TIME = 0.15f;
+    const float STRAFE_TRANSITION_TIME = 0.25f;
+    const float RUN_TRANSITION_TIME = 0.01f;
+    const float WALK_TRANSITION_TIME = 0.01f;
+    const float JUMP_TRANSITION_TIME = 0.01f;
+    const float FALL_TRANSITION_TIME = 0.5f;
 
-    private const float RUN_SPEED_THRESHOLD = 0.15f;
+    const float AIR_EXIT_TRANSITION_TIME = 0.2f;
+    const float GROUND_BLENDTREE_TRANSITION_TIME = 0.15f;
+
+    const float RUN_SPEED_THRESHOLD = 0.05f;
+    const float WALK_SPEED_THRESHOLD = 0.03f;
+
+    const float ELEVATION_OFFSET = 0.6f;
+    const float RAY_OFFSET_LENGTH = 3.0f;
+
+    const float MAX_VELOCITY = 0.1f;
 
     [System.Serializable]
     public class Clips
@@ -27,9 +36,8 @@ public class AvatarAnimatorLegacy : MonoBehaviour
     {
         public float walkSpeedFactor;
         public float runSpeedFactor;
-        public float forwardSpeed;
+        public float movementSpeed;
         public float verticalSpeed;
-        public float strafeSpeed;
         public bool isGrounded;
     }
 
@@ -37,6 +45,11 @@ public class AvatarAnimatorLegacy : MonoBehaviour
     public Clips clips;
     public BlackBoard blackboard;
     public Transform target;
+
+    public AnimationCurve walkBlendtreeCurve;
+    public AnimationCurve runBlendtreeCurve;
+    public AnimationCurve idleBlendtreeCurve;
+
 
     System.Action<BlackBoard> currentState;
 
@@ -54,7 +67,6 @@ public class AvatarAnimatorLegacy : MonoBehaviour
 
         UpdateInterface();
         currentState?.Invoke(blackboard);
-        transform.rotation = Quaternion.Euler(0, transform.eulerAngles.y, 0);
     }
 
 
@@ -66,20 +78,20 @@ public class AvatarAnimatorLegacy : MonoBehaviour
         float verticalVelocity = flattenedVelocity.y;
         blackboard.verticalSpeed = verticalVelocity;
 
-        //NOTE(Brian): Forward/backwards speed
         flattenedVelocity.y = 0;
-        float forwardFactor = Vector3.Dot(target.forward, flattenedVelocity.normalized);
-        float strafeFactor = Mathf.Max(Vector3.Dot(target.right, flattenedVelocity.normalized),
-                                       Vector3.Dot(target.right * -1, flattenedVelocity.normalized));
 
-        blackboard.forwardSpeed = flattenedVelocity.magnitude * forwardFactor;
-        blackboard.strafeSpeed = flattenedVelocity.magnitude * strafeFactor;
+        blackboard.movementSpeed = flattenedVelocity.magnitude;
 
+        Vector3 rayOffset = Vector3.up * RAY_OFFSET_LENGTH;
         //NOTE(Brian): isGrounded?
-        blackboard.isGrounded = Physics.Raycast(target.transform.position + Vector3.up,
+        blackboard.isGrounded = Physics.Raycast(target.transform.position + rayOffset,
                                                 Vector3.down,
-                                                1.001f,
+                                                RAY_OFFSET_LENGTH - ELEVATION_OFFSET,
                                                 DCLCharacterController.i.groundLayers);
+
+#if UNITY_EDITOR
+        Debug.DrawRay(target.transform.position + rayOffset, Vector3.down * (RAY_OFFSET_LENGTH - ELEVATION_OFFSET), blackboard.isGrounded ? Color.green : Color.red);
+#endif
 
         lastPosition = target.position;
     }
@@ -98,34 +110,29 @@ public class AvatarAnimatorLegacy : MonoBehaviour
         }
     }
 
+
+
     void State_Ground(BlackBoard bb)
     {
-        if (Mathf.Abs(bb.forwardSpeed) < 0.01f && Mathf.Abs(bb.strafeSpeed) < 0.01f)
-        {
-            animation.CrossFade(clips.idle, IDLE_TRANSITION_TIME);
-        }
-        else
-        {
-            if (bb.strafeSpeed > 0.1f)
-            {
-                animation.CrossFade(clips.walk, STRAFE_TRANSITION_TIME);
-            }
-            else
-            {
-                float moveSpeed = DCLCharacterController.i.movementSpeed;
+        animation[clips.run].normalizedSpeed = bb.movementSpeed * bb.runSpeedFactor;
+        animation[clips.walk].normalizedSpeed = bb.movementSpeed * bb.walkSpeedFactor;
 
-                if (bb.forwardSpeed > RUN_SPEED_THRESHOLD)
-                {
-                    animation[clips.walk].normalizedSpeed = Mathf.Sign(bb.forwardSpeed) * (moveSpeed / 2.0f) * bb.runSpeedFactor;
-                    animation.CrossFade(clips.run, RUN_TRANSITION_TIME);
-                }
-                else
-                {
-                    animation[clips.walk].normalizedSpeed = Mathf.Sign(bb.forwardSpeed) * (moveSpeed / 2.0f) * bb.walkSpeedFactor;
-                    animation.CrossFade(clips.walk, WALK_TRANSITION_TIME);
-                }
-            }
-        }
+        float normalizedSpeed = bb.movementSpeed / MAX_VELOCITY;
+
+        float idleWeight = idleBlendtreeCurve.Evaluate(normalizedSpeed);
+        float runWeight = runBlendtreeCurve.Evaluate(normalizedSpeed);
+        float walkWeight = walkBlendtreeCurve.Evaluate(normalizedSpeed);
+
+        //NOTE(Brian): Normalize weights
+        float weightSum = idleWeight + runWeight + walkWeight;
+
+        idleWeight /= weightSum;
+        runWeight /= weightSum;
+        walkWeight /= weightSum;
+
+        animation.Blend(clips.idle, idleWeight, GROUND_BLENDTREE_TRANSITION_TIME);
+        animation.Blend(clips.run, runWeight, GROUND_BLENDTREE_TRANSITION_TIME);
+        animation.Blend(clips.walk, walkWeight, GROUND_BLENDTREE_TRANSITION_TIME);
 
         if (!bb.isGrounded)
         {
@@ -138,15 +145,17 @@ public class AvatarAnimatorLegacy : MonoBehaviour
     {
         if (bb.verticalSpeed > 0)
         {
-            animation.CrossFade(clips.jump, JUMP_TRANSITION_TIME);
+            animation.CrossFade(clips.jump, JUMP_TRANSITION_TIME, PlayMode.StopAll);
         }
         else
         {
-            animation.CrossFade(clips.fall, FALL_TRANSITION_TIME);
+            animation.CrossFade(clips.fall, FALL_TRANSITION_TIME, PlayMode.StopAll);
         }
 
         if (bb.isGrounded)
         {
+            animation.Blend(clips.jump, 0, AIR_EXIT_TRANSITION_TIME);
+            animation.Blend(clips.fall, 0, AIR_EXIT_TRANSITION_TIME);
             currentState = State_Ground;
             Update();
         }

@@ -88,12 +88,14 @@ namespace DCL
             public bool useDummyModel = true;
         }
 
+
         public Material defaultMaterial;
         public Material eyeMaterial;
         public Material eyebrowMaterial;
         public Material mouthMaterial;
 
         public AvatarName avatarName;
+        public AvatarMovementController avatarMovementController;
 
         public AnimationClip[] maleAnims;
         public AnimationClip[] femaleAnims;
@@ -119,34 +121,16 @@ namespace DCL
         Material mouthMaterialCopy;
         List<Material> defaultMaterialCopies;
 
-        Vector3 sourcePosition;
-        Vector3 sourceScale;
-        Quaternion sourceRotation;
-
-        Vector3 currentWorldPos = Vector3.zero;
-        Vector3 targetPosition;
-        Vector3 targetScale;
-        Quaternion targetRotation;
-
-        float currentMovementTime = 0;
-        float endMovementTime = 0;
-
-        float currentTime = 0;
-
         AvatarRandomizer randomizer;
 
         void Start()
         {
             InitMaterials();
-            DCLCharacterController.i.characterPosition.OnPrecisionAdjust += OnPrecisionAdjust;
         }
 
         void OnDestroy()
         {
             UnloadMaterials();
-
-            if (DCLCharacterController.i)
-                DCLCharacterController.i.characterPosition.OnPrecisionAdjust -= OnPrecisionAdjust;
 
             baseBody?.Unload();
 
@@ -159,6 +143,7 @@ namespace DCL
                 }
             }
         }
+
         void InitMaterials()
         {
             eyeMaterialCopy = new Material(eyeMaterial);
@@ -520,73 +505,5 @@ namespace DCL
             AvatarUtils.SetColorInHierarchy(root, MATERIAL_FILTER_SKIN, model.skin.color);
             AvatarUtils.SetColorInHierarchy(root, MATERIAL_FILTER_HAIR, model.hair.color);
         }
-
-        #region LerpMethods
-
-        public void MoveWithLerpTo(Vector3 pos, Quaternion rotation, Vector3 scale)
-        {
-            if (currentWorldPos == Vector3.zero)
-            {
-                currentWorldPos = pos;
-                entity.gameObject.transform.position = DCLCharacterController.i.characterPosition.WorldToUnityPosition(currentWorldPos);
-
-                entity.gameObject.transform.rotation = rotation;
-                entity.gameObject.transform.localScale = scale;
-            }
-            else
-            {
-                sourcePosition = currentWorldPos;
-                sourceRotation = entity.gameObject.transform.rotation;
-
-                targetPosition = pos;
-                targetRotation = rotation;
-                entity.gameObject.transform.localScale = scale;
-
-                this.currentTime = 0;
-                this.currentMovementTime = 0;
-
-                float distance = (targetPosition - sourcePosition).magnitude;
-
-                this.endMovementTime = distance / MOVEMENT_SPEED;
-            }
-        }
-
-        void OnPrecisionAdjust(DCLCharacterPosition position)
-        {
-            entity.gameObject.transform.position = position.WorldToUnityPosition(currentWorldPos);
-        }
-
-        void UpdateLerp(float dt)
-        {
-            if (this.currentMovementTime < this.endMovementTime)
-            {
-                this.currentMovementTime += dt;
-                this.currentMovementTime = Mathf.Clamp(this.currentMovementTime, 0, this.endMovementTime);
-
-                float d = this.currentMovementTime / this.endMovementTime;
-
-                currentWorldPos = Vector3.Lerp(this.sourcePosition, this.targetPosition, d);
-
-                entity.gameObject.transform.position = DCLCharacterController.i.characterPosition.WorldToUnityPosition(currentWorldPos);
-            }
-
-            if (this.currentTime < ROTATION_SCALE_TIME)
-            {
-                this.currentTime += dt;
-                this.currentTime = Mathf.Clamp(this.currentTime, 0, ROTATION_SCALE_TIME);
-
-                float d = this.currentTime / ROTATION_SCALE_TIME;
-
-                entity.gameObject.transform.rotation = Quaternion.Slerp(this.sourceRotation, this.targetRotation, d);
-            }
-        }
-
-        void Update()
-        {
-            UpdateLerp(Time.deltaTime);
-        }
-
-        #endregion LerpMethods
-
     }
 }
