@@ -8,6 +8,8 @@ namespace UnityGLTF
 {
     class StandardMap : IUniformMap
     {
+        private const float EMISSIVE_HDR_INTENSITY = 5f;
+        
         protected Material _material;
         private AlphaMode _alphaMode = AlphaMode.OPAQUE;
         private double _alphaCutoff = 0.5;
@@ -161,7 +163,9 @@ namespace UnityGLTF
             {
                 if (_material.HasProperty("_EmissionColor"))
                 {
-                    _material.SetColor("_EmissionColor", value);
+                    _material.globalIlluminationFlags = MaterialGlobalIlluminationFlags.RealtimeEmissive;
+                    _material.SetColor("_EmissionColor", value * EMISSIVE_HDR_INTENSITY);
+                    _material.EnableKeyword("_EMISSION");
                 }
                 else
                 {

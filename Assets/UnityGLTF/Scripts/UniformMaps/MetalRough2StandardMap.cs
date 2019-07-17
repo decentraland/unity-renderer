@@ -50,11 +50,10 @@ namespace UnityGLTF
             set { _material.SetFloat("_Metallic", (float)value); }
         }
 
-        // not supported by the Standard shader
         public virtual double RoughnessFactor
         {
-            get { return 0.5; }
-            set { return; }
+            get { return 1f - _material.GetFloat("_Smoothness"); }
+            set { _material.SetFloat("_Smoothness", 1f - (float)value); }
         }
 
         public override IUniformMap Clone()

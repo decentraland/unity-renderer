@@ -886,7 +886,7 @@ namespace UnityGLTF
 
         private bool IsPBRMetallicRoughness(Material material)
         {
-            return material.HasProperty("_Metallic") && material.HasProperty("_MetallicGlossMap");
+            return material.HasProperty("_Metallic") && material.HasProperty("_METALLICSPECGLOSSMAP");
         }
 
         private bool IsCommonConstant(Material material)
@@ -1016,7 +1016,7 @@ namespace UnityGLTF
                 pbr.RoughnessFactor = (metallicGlossMap != null) ? 1.0 : material.GetFloat("_Glossiness");
             }
 
-            if (material.HasProperty("_MetallicGlossMap"))
+            if (material.HasProperty("_METALLICSPECGLOSSMAP"))
             {
                 var mrTex = material.GetTexture("_MetallicGlossMap");
 
