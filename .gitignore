@@ -12,11 +12,14 @@ Assets/InitTestScene*.unity.meta
 **/CurrentTestImages/
 
 # ===================================== #
-# Visual Studio / MonoDevelop generated #
+# Visual Studio / MonoDevelop / Rider   #
 # ===================================== #
 ExportedObj/
 .vs/
 .vscode/
+.idea/
+Assets/Plugins/Editor/JetBrains.meta
+Assets/Plugins/Editor/JetBrains/
 *.svd
 *.userprefs
 *.csproj
