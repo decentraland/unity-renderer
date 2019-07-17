@@ -2005,9 +2005,13 @@ namespace UnityGLTF
                     mrMapper.MetallicRoughnessTexture = _assetCache.TextureCache[textureId.Id].CachedTexture.Texture;
                     _assetCache.TextureCache[textureId.Id].CachedTexture.IncreaseRefCount();
                     mrMapper.MetallicRoughnessTexCoord = pbr.MetallicRoughnessTexture.TexCoord;
+                    mrMapper.RoughnessFactor = 0;
+                }
+                else
+                {
+                    mrMapper.RoughnessFactor = pbr.RoughnessFactor;
                 }
 
-                mrMapper.RoughnessFactor = pbr.RoughnessFactor;
             }
 
             var sgMapper = mapper as ISpecGlossUniformMap;

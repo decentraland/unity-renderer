@@ -38,7 +38,7 @@ namespace UnityGLTF
             set
             {
                 _material.SetTexture("_MetallicGlossMap", value);
-                _material.EnableKeyword("_METALLICGLOSSMAP");
+                _material.EnableKeyword("_METALLICSPECGLOSSMAP");
             }
         }
 

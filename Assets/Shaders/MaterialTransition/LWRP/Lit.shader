@@ -122,7 +122,7 @@ Shader "DCL/LWRP/Lit"
             #pragma vertex LitPassVertex
             #pragma fragment LitPassFragment
 
-            #include "Packages/com.unity.render-pipelines.lightweight/Shaders/LitInput.hlsl"
+            #include "LitInput.hlsl"
             #include "LitForwardPass.hlsl"
             ENDHLSL
         }
@@ -154,7 +154,7 @@ Shader "DCL/LWRP/Lit"
             #pragma vertex ShadowPassVertex
             #pragma fragment ShadowPassFragment
 
-            #include "Packages/com.unity.render-pipelines.lightweight/Shaders/LitInput.hlsl"
+            #include "LitInput.hlsl"
             #include "Packages/com.unity.render-pipelines.lightweight/Shaders/ShadowCasterPass.hlsl"
             ENDHLSL
         }
@@ -186,7 +186,7 @@ Shader "DCL/LWRP/Lit"
             // GPU Instancing
             #pragma multi_compile_instancing
 
-            #include "Packages/com.unity.render-pipelines.lightweight/Shaders/LitInput.hlsl"
+            #include "LitInput.hlsl"
             #include "Packages/com.unity.render-pipelines.lightweight/Shaders/DepthOnlyPass.hlsl"
             ENDHLSL
         }
@@ -215,7 +215,7 @@ Shader "DCL/LWRP/Lit"
 
             #pragma shader_feature _SPECGLOSSMAP
 
-            #include "Packages/com.unity.render-pipelines.lightweight/Shaders/LitInput.hlsl"
+            #include "LitInput.hlsl"
             #include "Packages/com.unity.render-pipelines.lightweight/Shaders/LitMetaPass.hlsl"
 
             ENDHLSL
