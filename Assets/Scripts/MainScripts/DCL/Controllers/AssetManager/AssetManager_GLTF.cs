@@ -79,13 +79,21 @@ namespace DCL
 
         protected override GameObject GetCachedAsset(object id, Transform parent, Action OnSuccess)
         {
-            GameObject cachedAsset = DuplicateGLTF(assetLibrary[id].cachedContainer);
-            StartCoroutine(ShowObject(cachedAsset, Configuration.ParcelSettings.VISUAL_LOADING_ENABLED, OnSuccess));
+            // WARNING (Zak): This HACK was necessary because there's no way to know if
+            // the parent will be destroyed when this method is called. It's a limitation
+            // of current design - it won't be necessary when we refactor the AssetManager
+            if (parent)
+            {
+                GameObject cachedAsset = DuplicateGLTF(assetLibrary[id].cachedContainer);
+                StartCoroutine(ShowObject(cachedAsset, Configuration.ParcelSettings.VISUAL_LOADING_ENABLED, OnSuccess));
 
-            cachedAsset.transform.parent = parent;
-            cachedAsset.transform.ResetLocalTRS();
+                cachedAsset.transform.parent = parent;
+                cachedAsset.transform.ResetLocalTRS();
 
-            return cachedAsset;
+                return cachedAsset;
+            }
+
+            return null;
         }
 
         protected override void CleanCachedAsset(object id)

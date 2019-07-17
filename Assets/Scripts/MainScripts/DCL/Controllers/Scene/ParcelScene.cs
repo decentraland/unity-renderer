@@ -135,7 +135,7 @@ namespace DCL.Controllers
                     position.Set(position.x + ParcelSettings.PARCEL_SIZE / 2, ParcelSettings.DEBUG_FLOOR_HEIGHT,
                         position.z + ParcelSettings.PARCEL_SIZE / 2);
 
-                    plane.transform.position = position;
+                    plane.transform.position = DCLCharacterController.i.characterPosition.WorldToUnityPosition(position);
 
                     if (Configuration.ParcelSettings.VISUAL_LOADING_ENABLED)
                     {

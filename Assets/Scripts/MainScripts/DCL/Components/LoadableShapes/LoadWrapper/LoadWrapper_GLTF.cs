@@ -100,7 +100,6 @@ namespace DCL.Components
             if (!String.IsNullOrEmpty(url))
             {
                 var cacheId = GetCacheId();
-                AssetManager_GLTF.i.Release(cacheId);
 
                 if (AssetManager_GLTF.i.assetLibrary.ContainsKey(cacheId) && !AssetManager_GLTF.i.assetLibrary[cacheId].isLoadingCompleted)
                 {
@@ -109,6 +108,7 @@ namespace DCL.Components
                 }
                 else
                 {
+                    AssetManager_GLTF.i.Release(cacheId);
                     RemoveMeshObject();
                 }
             }
@@ -116,16 +116,20 @@ namespace DCL.Components
 
         private void OnSuccessAssetLoaded()
         {
-            AssetManager_GLTF.i.assetLibrary[GetCacheId()].OnSuccess -= RemoveMeshObject;
+            var cacheId = GetCacheId();
+
+            AssetManager_GLTF.i.assetLibrary[cacheId].OnSuccess -= OnSuccessAssetLoaded;
+            AssetManager_GLTF.i.Release(cacheId);
+
             RemoveMeshObject();
         }
 
         private void RelocateLoader()
         {
             var gltfComponent = GetComponentInChildren<GLTFComponent>();
+
             if (gltfComponent != null && AssetManager_GLTF.i != null)
             {
-                gltfComponent.transform.SetParent(AssetManager_GLTF.i.transform);
                 gltfComponent.transform.position = MORDOR;
             }
         }
