@@ -13,7 +13,7 @@ GameObject:
   - component: {fileID: 754015289}
   - component: {fileID: 754015283}
   - component: {fileID: 754015282}
-  m_Layer: 0
+  m_Layer: 11
   m_Name: y
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -59,7 +59,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: 3173fdfda2e4d0145afc93aff81f7b74, type: 2}
+  - {fileID: 2100000, guid: 31321ba15b8f8eb4c954353edc038b1d, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -109,7 +109,8 @@ MonoBehaviour:
   color: {r: 0.5882353, g: 1, b: 0.5882353, a: 0}
   selectedColor: {r: 0, g: 1, b: 0, a: 0}
   originPointerPosition: {x: 0, y: 0, z: 0}
-  rotateFactor: 2000
+  cam: {fileID: 0}
+  rotateFactor: 1
 --- !u!1 &754015280
 GameObject:
   m_ObjectHideFlags: 0
@@ -123,7 +124,7 @@ GameObject:
   - component: {fileID: 754015292}
   - component: {fileID: 754015285}
   - component: {fileID: 754015284}
-  m_Layer: 0
+  m_Layer: 11
   m_Name: z
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -169,7 +170,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: 3173fdfda2e4d0145afc93aff81f7b74, type: 2}
+  - {fileID: 2100000, guid: 31321ba15b8f8eb4c954353edc038b1d, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -219,7 +220,8 @@ MonoBehaviour:
   color: {r: 0.5882353, g: 0.5882353, b: 1, a: 0}
   selectedColor: {r: 0, g: 0, b: 1, a: 0}
   originPointerPosition: {x: 0, y: 0, z: 0}
-  rotateFactor: 2000
+  cam: {fileID: 0}
+  rotateFactor: 1
 --- !u!1 &754015281
 GameObject:
   m_ObjectHideFlags: 0
@@ -233,7 +235,7 @@ GameObject:
   - component: {fileID: 754015295}
   - component: {fileID: 754015287}
   - component: {fileID: 754015286}
-  m_Layer: 0
+  m_Layer: 11
   m_Name: x
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -279,7 +281,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: 3173fdfda2e4d0145afc93aff81f7b74, type: 2}
+  - {fileID: 2100000, guid: 31321ba15b8f8eb4c954353edc038b1d, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -329,7 +331,8 @@ MonoBehaviour:
   color: {r: 1, g: 0.5882353, b: 0.5882353, a: 0}
   selectedColor: {r: 1, g: 0, b: 0, a: 0}
   originPointerPosition: {x: 0, y: 0, z: 0}
-  rotateFactor: 2000
+  cam: {fileID: 0}
+  rotateFactor: 1
 --- !u!1 &2062176172
 GameObject:
   m_ObjectHideFlags: 0
@@ -340,7 +343,7 @@ GameObject:
   m_Component:
   - component: {fileID: 2062176173}
   - component: {fileID: 6637786930640128910}
-  m_Layer: 0
+  m_Layer: 11
   m_Name: RotateGizmo
   m_TagString: Untagged
   m_Icon: {fileID: 0}

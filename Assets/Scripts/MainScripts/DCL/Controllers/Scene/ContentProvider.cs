@@ -43,7 +43,10 @@ namespace DCL
                 Debug.Log("Baking hashes...");
             }
 
-            fileToHash = new Dictionary<string, string>(contents.Count);
+            if (fileToHash == null)
+            {
+                fileToHash = new Dictionary<string, string>(contents.Count);
+            }
 
             for (int i = 0; i < contents.Count; i++)
             {

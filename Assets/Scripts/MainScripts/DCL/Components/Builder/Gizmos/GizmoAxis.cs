@@ -1,10 +1,13 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
+using DCL.Components;
+using DCL.Models;
 using UnityEngine;
 using UnityEngine.EventSystems;
 
 public abstract class GizmoAxis : MonoBehaviour
 {
+    public Gizmo gizmo;
     public Vector3 axis;
     public Color color;
     public Color selectedColor;
@@ -49,7 +52,8 @@ public abstract class GizmoAxis : MonoBehaviour
         originPointerPosition = Vector3.zero;
     }
 
-    public abstract void UpdateTransformation(Vector3 pointerPosition, GameObject selectedObject);
+    public abstract void UpdateTransformation(Vector3 inputPosition, Vector3 pointerPosition, GameObject selectedObject, RaycastHit hitInfo);
+
 
 
 

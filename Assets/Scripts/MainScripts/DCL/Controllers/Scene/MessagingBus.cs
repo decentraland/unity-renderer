@@ -29,6 +29,7 @@ namespace DCL
                 NONE,
                 SCENE_MESSAGE,
                 LOAD_PARCEL,
+                UPDATE_PARCEL,
                 TELEPORT,
                 UNLOAD_SCENES,
                 SCENE_STARTED
@@ -107,6 +108,10 @@ namespace DCL
                         case QueuedSceneMessage.Type.LOAD_PARCEL:
                             handler.LoadParcelScenesExecute(m.message);
                             SceneController.i.OnMessageWillDequeue?.Invoke("LoadScene");
+                            break;
+                        case QueuedSceneMessage.Type.UPDATE_PARCEL:
+                            handler.UpdateParcelScenesExecute(m.message);
+                            SceneController.i.OnMessageWillDequeue?.Invoke("UpdateScene");
                             break;
                         case QueuedSceneMessage.Type.UNLOAD_SCENES:
                             handler.UnloadAllScenes();

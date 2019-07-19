@@ -14,6 +14,7 @@ namespace DCL
     {
         bool ProcessMessage(string sceneId, string id, string method, string payload, out Coroutine routine);
         void LoadParcelScenesExecute(string decentralandSceneJSON);
+        void UpdateParcelScenesExecute(string decentralandSceneJSON);
         void UnloadAllScenes();
     }
 
@@ -307,6 +308,50 @@ namespace DCL
             OnMessageProcessEnds?.Invoke(MessagingTypes.SCENE_LOAD);
         }
 
+
+        public void UpdateParcelScenesExecute(string decentralandSceneJSON)
+        {
+            LoadParcelScenesMessage.UnityParcelScene scene;
+
+            OnMessageDecodeStart?.Invoke(MessagingTypes.SCENE_UPDATE);
+            scene = SafeFromJson<LoadParcelScenesMessage.UnityParcelScene>(decentralandSceneJSON);
+            OnMessageDecodeEnds?.Invoke(MessagingTypes.SCENE_UPDATE);
+
+            if (scene == null || scene.id == null)
+                return;
+
+            var sceneToLoad = scene;
+
+#if UNITY_EDITOR
+            if (debugScenes && sceneToLoad.id != debugSceneName)
+                return;
+#endif
+
+            OnMessageProcessStart?.Invoke(MessagingTypes.SCENE_UPDATE);
+            if (loadedScenes.ContainsKey(sceneToLoad.id))
+            {
+                loadedScenes[sceneToLoad.id].SetUpdateData(sceneToLoad);
+            }
+            else
+            {
+                var newGameObject = new GameObject("New Scene");
+
+                var newScene = newGameObject.AddComponent<ParcelScene>();
+                newScene.SetData(sceneToLoad);
+
+                if (isDebugMode)
+                {
+                    newScene.InitializeDebugPlane();
+                }
+
+                newScene.ownerController = this;
+                loadedScenes.Add(sceneToLoad.id, newScene);
+
+            }
+
+            OnMessageProcessEnds?.Invoke(MessagingTypes.SCENE_UPDATE);
+        }
+
         public void UnloadScene(string sceneKey)
         {
             if (!loadedScenes.ContainsKey(sceneKey) || loadedScenes[sceneKey].isPersistent)
@@ -346,6 +391,17 @@ namespace DCL
             OnMessageWillQueue?.Invoke(MessagingTypes.SCENE_LOAD);
 
             messagingSystems[MessagingBusId.INIT].Enqueue(queuedMessage);
+        }
+
+        public void UpdateParcelScenes(string decentralandSceneJSON)
+        {
+            var queuedMessage = new MessagingBus.QueuedSceneMessage()
+            { type = MessagingBus.QueuedSceneMessage.Type.UPDATE_PARCEL, message = decentralandSceneJSON };
+
+            OnMessageWillQueue?.Invoke(MessagingTypes.SCENE_UPDATE);
+
+            messagingSystems[MessagingBusId.INIT].Enqueue(queuedMessage);
+
         }
 
         public void UnloadAllScenesQueued()
