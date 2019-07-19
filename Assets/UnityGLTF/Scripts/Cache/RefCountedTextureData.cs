@@ -6,14 +6,20 @@ namespace UnityGLTF.Cache
     public class RefCountedTextureData : RefCountedBase
     {
         public Texture2D Texture;
-        public RefCountedTextureData(Texture2D texture)
+        private string uri;
+
+        public RefCountedTextureData(string uri, Texture2D texture)
         {
-            Texture = texture;
+            this.uri = uri;
+            this.Texture = texture;
         }
 
         protected override void OnDestroyCachedData()
         {
             UnityEngine.Object.Destroy(Texture);
+
+            if (!string.IsNullOrEmpty(uri) && PersistentAssetCache.ImageCacheByUri.ContainsKey(uri))
+                PersistentAssetCache.ImageCacheByUri.Remove(uri);
         }
     }
 }

@@ -34,7 +34,7 @@ namespace DCL
         Lossy,
     }
 
-    public class MessagingSystem
+    public class MessagingSystem : System.IDisposable
     {
         public MessagingBus bus;
         public MessageThrottlingController throttler;
@@ -44,6 +44,11 @@ namespace DCL
         Dictionary<string, LinkedListNode<MessagingBus.QueuedSceneMessage>> unreliableMessages = new Dictionary<string, LinkedListNode<MessagingBus.QueuedSceneMessage>>();
         System.Text.StringBuilder stringBuilder = new System.Text.StringBuilder();
         public int unreliableMessagesReplaced = 0;
+
+        public void Dispose()
+        {
+            bus.Dispose();
+        }
 
         public float Update(float prevTimeBudget)
         {
@@ -108,43 +113,6 @@ namespace DCL
                 }
             }
 
-        }
-
-        public void Purge(string sceneId, string tag)
-        {
-            MessagingBus.QueuedSceneMessage message = null;
-
-            bool dequeued = false;
-
-            stringBuilder.Clear();
-
-            LinkedListNode<MessagingBus.QueuedSceneMessage> node = null;
-
-            stringBuilder.Append(tag);
-            stringBuilder.Append(sceneId);
-
-            string id = stringBuilder.ToString();
-
-            if (unreliableMessages.ContainsKey(id))
-            {
-                node = unreliableMessages[id];
-
-                if (node.List != null)
-                {
-                    message = node.Value;
-                    node.List.Remove(node);
-                    dequeued = true;
-                }
-            }
-
-            if (dequeued)
-            {
-                if (message.type == MessagingBus.QueuedSceneMessage.Type.SCENE_MESSAGE)
-                {
-                    MessagingBus.QueuedSceneMessage_Scene sm = message as MessagingBus.QueuedSceneMessage_Scene;
-                    SceneController.i.OnMessageWillDequeue?.Invoke(sm.method);
-                }
-            }
         }
 
         public MessagingSystem(IMessageHandler handler, float budgetMin = 0.01f, float budgetMax = 0.1f, bool enableThrottler = false)

@@ -426,12 +426,12 @@ namespace DCL
             }
         }
 
-        private bool DictionaryContainsColumn( Dictionary<(Columns, Rows), float> dictionary, Columns col)
+        private bool DictionaryContainsColumn(Dictionary<(Columns, Rows), float> dictionary, Columns col)
         {
             return dictionary.Any(x => x.Key.Item1 == col);
         }
 
-        private bool DictionaryContainsRow( Dictionary<(Columns, Rows), float> dictionary, Columns col, Rows row)
+        private bool DictionaryContainsRow(Dictionary<(Columns, Rows), float> dictionary, Columns col, Rows row)
         {
             //It's faster to check Col again than using DictionaryContainsColumn method
             return dictionary.Any(x => x.Key.Item1 == col && x.Key.Item2 == row);

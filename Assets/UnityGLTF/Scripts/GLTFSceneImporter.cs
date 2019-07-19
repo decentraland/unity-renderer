@@ -2180,7 +2180,7 @@ namespace UnityGLTF
                 else
                 {
                     yield return ConstructImage(image, sourceId, markGpuOnly, isLinear);
-                    source = new RefCountedTextureData(_assetCache.ImageCache[sourceId]);
+                    source = new RefCountedTextureData(image.Uri, _assetCache.ImageCache[sourceId]);
 
                     if (image.Uri != null)
                         PersistentAssetCache.ImageCacheByUri[image.Uri] = source;
@@ -2236,7 +2236,7 @@ namespace UnityGLTF
                     unityTexture.filterMode = desiredFilterMode;
                     unityTexture.wrapMode = desiredWrapMode;
 
-                    _assetCache.TextureCache[textureIndex].CachedTexture = new RefCountedTextureData(unityTexture);
+                    _assetCache.TextureCache[textureIndex].CachedTexture = new RefCountedTextureData(image.Uri, unityTexture);
                 }
             }
         }

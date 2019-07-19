@@ -31,7 +31,8 @@ namespace DCL.Controllers
             metricsController = new SceneMetricsController(this);
             metricsController.Enable();
 
-            DCLCharacterController.i.characterPosition.OnPrecisionAdjust += OnPrecisionAdjust;
+            if (DCLCharacterController.i)
+                DCLCharacterController.i.characterPosition.OnPrecisionAdjust += OnPrecisionAdjust;
         }
 
         bool flaggedToUnload = false;
