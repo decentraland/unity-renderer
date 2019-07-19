@@ -110,7 +110,7 @@ namespace DCL
 
         void Update()
         {
-            if (SceneController.i.messagingSystems[MessagingBusId.INIT].throttler.currentTimeBudget < 0.001f)
+            if (SceneController.i.messagingControllers[SceneController.GLOBAL_MESSAGING_CONTROLLER].messagingSystems[MessagingBusId.INIT].throttler.currentTimeBudget < 0.001f)
                 enableBudgetMax = true;
 
             int messagesProcessedLastFrame = lastPendingMessages - SceneController.i.pendingMessagesCount;
@@ -167,29 +167,56 @@ namespace DCL
                 statsPanel.SetCellText(1, (int)Rows.MESHES_COUNT, meshesCount.ToString());
                 statsPanel.SetCellText(1, (int)Rows.GLTF_BEING_LOADED, UnityGLTF.GLTFComponent.downloadingCount.ToString() + " / " + UnityGLTF.GLTFComponent.queueCount.ToString());
 
-                MessageThrottlingController cpus = SceneController.i.messagingSystems[MessagingBusId.INIT].throttler;
-                float rate = cpus.messagesConsumptionRate;
-                float budget = cpus.currentTimeBudget * 1000f;
+                float rate = 0;
+                float budget = 0;
 
-                if (enableBudgetMax)
-                    budgetMax = Mathf.Max(cpus.currentTimeBudget, budgetMax);
+                using (var controllersIter = SceneController.i.messagingControllers.GetEnumerator())
+                {
+                    while (controllersIter.MoveNext())
+                    {
+                        MessageThrottlingController cpus = controllersIter.Current.Value.messagingSystems[MessagingBusId.INIT].throttler;
+                        rate += cpus.messagesConsumptionRate;
+                        budget += cpus.currentTimeBudget * 1000f;
+
+                        if (enableBudgetMax)
+                            budgetMax = Mathf.Max(cpus.currentTimeBudget, budgetMax);
+                    }
+                }
 
                 statsPanel.SetCellText(1, (int)Rows.CPU_SCHEDULER, $"msgs rate: {rate}\nbudget: {budget}ms\nbudget peak: {budgetMax * 1000f}ms");
 
                 string busesLog = "";
+                Dictionary<string, int> pendingMessagesCount = new Dictionary<string, int>();
+                Dictionary<string, int> messagesReplaced = new Dictionary<string, int>();
 
-                using (var iterator = SceneController.i.messagingSystems.GetEnumerator())
+                using (var controllersIter = SceneController.i.messagingControllers.GetEnumerator())
                 {
-                    while (iterator.MoveNext())
+                    while (controllersIter.MoveNext())
                     {
-                        //access to pair using iterator.Current
-                        string key = iterator.Current.Key;
-                        MessagingSystem system = SceneController.i.messagingSystems[key];
-                        int pendingMessagesCount = system.bus.pendingMessagesCount;
-                        int messagesReplaced = system.unreliableMessagesReplaced;
-                        busesLog += $"{key} bus: {pendingMessagesCount} replaced: {messagesReplaced}\n";
+                        using (var iterator = controllersIter.Current.Value.messagingSystems.GetEnumerator())
+                        {
+                            while (iterator.MoveNext())
+                            {
+                                //access to pair using iterator.Current
+                                string key = iterator.Current.Key;
+                                MessagingSystem system = controllersIter.Current.Value.messagingSystems[key];
+
+                                if (!pendingMessagesCount.ContainsKey(key))
+                                    pendingMessagesCount[key] = 0;
+
+                                if (!messagesReplaced.ContainsKey(key))
+                                    messagesReplaced[key] = 0;
+
+                                pendingMessagesCount[key] += system.bus.pendingMessagesCount;
+                                messagesReplaced[key] += system.unreliableMessagesReplaced;
+                            }
+                        }
                     }
                 }
+
+                busesLog += $"{MessagingBusId.UI} bus: {pendingMessagesCount[MessagingBusId.UI]} replaced: {messagesReplaced[MessagingBusId.UI]}\n";
+                busesLog += $"{MessagingBusId.INIT} bus: {pendingMessagesCount[MessagingBusId.INIT]} replaced: {messagesReplaced[MessagingBusId.INIT]}\n";
+                busesLog += $"{MessagingBusId.SYSTEM} bus: {pendingMessagesCount[MessagingBusId.SYSTEM]} replaced: {messagesReplaced[MessagingBusId.SYSTEM]}\n";
 
                 statsPanel.SetCellText(1, (int)Rows.MESSAGE_BUSES, busesLog);
 

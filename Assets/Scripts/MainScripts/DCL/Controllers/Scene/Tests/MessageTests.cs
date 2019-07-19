@@ -50,23 +50,28 @@ namespace Tests
             List<Message> msgs = new List<Message>();
 
             // First pack of messages to process
-            msgs.Add(new Message(uiSceneId, "CreateEntity"));
-            msgs.Add(new Message(uiSceneId, "CreateEntity"));
-            msgs.Add(new Message(uiSceneId, "SetEntityParent"));
-            msgs.Add(new Message(sceneId, "CreateEntity"));
+            msgs.Add(new Message(uiSceneId, MessagingTypes.ENTITY_CREATE));
+            msgs.Add(new Message(uiSceneId, MessagingTypes.ENTITY_REPARENT));
+            msgs.Add(new Message(uiSceneId, MessagingTypes.ENTITY_CREATE));
+            msgs.Add(new Message(uiSceneId, MessagingTypes.ENTITY_REPARENT));
+            msgs.Add(new Message(uiSceneId, MessagingTypes.ENTITY_REPARENT));
+            msgs.Add(new Message(uiSceneId, MessagingTypes.ENTITY_CREATE));
+            msgs.Add(new Message(sceneId, MessagingTypes.SHARED_COMPONENT_CREATE));
 
             // Although we sent several component update messages for the same id, 
             // it should process only one because they are unreliable
-            msgs.Add(new Message(sceneId, "SceneStarted"));
-            msgs.Add(new Message(sceneId, "CreateEntity"));
-            msgs.Add(new Message(sceneId, "UpdateEntityComponent"));
-            msgs.Add(new Message(sceneId, "SetEntityParent"));
+            msgs.Add(new Message(sceneId, MessagingTypes.ENTITY_COMPONENT_CREATE));
+            msgs.Add(new Message(sceneId, MessagingTypes.ENTITY_COMPONENT_CREATE));
+            msgs.Add(new Message(sceneId, MessagingTypes.ENTITY_COMPONENT_CREATE));
+            msgs.Add(new Message(sceneId, MessagingTypes.SCENE_STARTED));
+
+
+            msgs.Add(new Message(sceneId, MessagingTypes.ENTITY_CREATE));
+            msgs.Add(new Message(sceneId, MessagingTypes.ENTITY_REPARENT));
 
             // Second pack of messages
-            msgs.Add(new Message(uiSceneId, "SetEntityParent"));
-            msgs.Add(new Message(uiSceneId, "CreateEntity"));
-            msgs.Add(new Message(sceneId, "SetEntityParent"));
-            msgs.Add(new Message(sceneId, "CreateEntity"));
+            msgs.Add(new Message(sceneId, MessagingTypes.ENTITY_REPARENT));
+            msgs.Add(new Message(sceneId, MessagingTypes.ENTITY_CREATE));
 
             int msgId = 0;
 
@@ -77,18 +82,18 @@ namespace Tests
                     Debug.Log($"Msg Processed: {id} - {method} | expected: {msgs[msgId].id} - {msgs[msgId].method}");
                 }
 
-                Assert.IsTrue(msgs[msgId].id == id && msgs[msgId].method == method);
+                Assert.IsTrue(msgs[msgId].id == id && msgs[msgId].method == method, $"Msg Processed: [{msgId}] {id} - {method} | expected: {msgs[msgId].id} - {msgs[msgId].method}");
 
                 msgId++;
             };
 
-            yield return new WaitForAllMessagesProcessed();
+            yield return null;
 
             busId = sceneController.SendSceneMessage(
                 TestHelpers.CreateSceneMessage(
                     uiSceneId,
                     entityId,
-                    "CreateEntity",
+                    MessagingTypes.ENTITY_CREATE,
                     JsonConvert.SerializeObject(
                         new CreateEntityMessage
                         {
@@ -102,7 +107,7 @@ namespace Tests
                 TestHelpers.CreateSceneMessage(
                     sceneId,
                     entityId,
-                    "CreateEntity",
+                    MessagingTypes.SHARED_COMPONENT_CREATE,
                     JsonConvert.SerializeObject(
                         new CreateEntityMessage
                         {
@@ -116,7 +121,7 @@ namespace Tests
                 TestHelpers.CreateSceneMessage(
                     sceneId,
                     entityId + "_" + (int)CLASS_ID_COMPONENT.TRANSFORM,
-                    "UpdateEntityComponent",
+                    MessagingTypes.ENTITY_COMPONENT_CREATE,
                     JsonConvert.SerializeObject(
                         new EntityComponentCreateMessage
                         {
@@ -132,7 +137,7 @@ namespace Tests
                 TestHelpers.CreateSceneMessage(
                     sceneId,
                     entityId + "_" + (int)CLASS_ID_COMPONENT.TRANSFORM,
-                    "UpdateEntityComponent",
+                    MessagingTypes.ENTITY_COMPONENT_CREATE,
                     JsonConvert.SerializeObject(
                         new EntityComponentCreateMessage
                         {
@@ -148,7 +153,7 @@ namespace Tests
                 TestHelpers.CreateSceneMessage(
                     sceneId,
                     entityId + "_" + (int)CLASS_ID_COMPONENT.TRANSFORM,
-                    "UpdateEntityComponent",
+                    MessagingTypes.ENTITY_COMPONENT_CREATE,
                     JsonConvert.SerializeObject(
                         new EntityComponentCreateMessage
                         {
@@ -164,7 +169,7 @@ namespace Tests
                 TestHelpers.CreateSceneMessage(
                     sceneId,
                     "",
-                    "SceneStarted",
+                    MessagingTypes.SCENE_STARTED,
                     ""
                 )
             );
@@ -175,7 +180,7 @@ namespace Tests
                 TestHelpers.CreateSceneMessage(
                     uiSceneId,
                     entityId,
-                    "SetEntityParent",
+                    MessagingTypes.ENTITY_REPARENT,
                     JsonConvert.SerializeObject(
                         new
                         {
@@ -191,7 +196,7 @@ namespace Tests
                 TestHelpers.CreateSceneMessage(
                     sceneId,
                     entityId + "_" + (int)CLASS_ID_COMPONENT.TRANSFORM,
-                    "UpdateEntityComponent",
+                    MessagingTypes.ENTITY_COMPONENT_CREATE,
                     JsonConvert.SerializeObject(
                         new EntityComponentCreateMessage
                         {
@@ -201,75 +206,13 @@ namespace Tests
                     ))
             );
 
-            Assert.IsTrue(busId == MessagingBusId.INIT);
+            Assert.IsTrue(busId == MessagingBusId.SYSTEM);
 
             busId = sceneController.SendSceneMessage(
                 TestHelpers.CreateSceneMessage(
                     sceneId,
                     entityId,
-                    "SetEntityParent",
-                    JsonConvert.SerializeObject(
-                        new
-                        {
-                            entityId = entityId,
-                            parentId = "0"
-                        })
-                )
-            );
-
-            Assert.IsTrue(busId == MessagingBusId.INIT);
-
-            busId = sceneController.SendSceneMessage(
-                TestHelpers.CreateSceneMessage(
-                    uiSceneId,
-                    entityId,
-                    "CreateEntity",
-                    JsonConvert.SerializeObject(
-                        new CreateEntityMessage
-                        {
-                            id = entityId
-                        }))
-            );
-
-            Assert.IsTrue(busId == MessagingBusId.UI);
-
-            busId = sceneController.SendSceneMessage(
-                TestHelpers.CreateSceneMessage(
-                    sceneId,
-                    entityId,
-                    "CreateEntity",
-                    JsonConvert.SerializeObject(
-                        new CreateEntityMessage
-                        {
-                            id = entityId
-                        }))
-            );
-
-            Assert.IsTrue(busId == MessagingBusId.INIT);
-
-            yield return new WaitForAllMessagesProcessed();
-
-            busId = sceneController.SendSceneMessage(
-                TestHelpers.CreateSceneMessage(
-                    uiSceneId,
-                    entityId,
-                    "SetEntityParent",
-                    JsonConvert.SerializeObject(
-                        new
-                        {
-                            entityId = entityId,
-                            parentId = "0"
-                        })
-                )
-            );
-
-            Assert.IsTrue(busId == MessagingBusId.UI);
-
-            busId = sceneController.SendSceneMessage(
-                TestHelpers.CreateSceneMessage(
-                    sceneId,
-                    entityId,
-                    "SetEntityParent",
+                    MessagingTypes.ENTITY_REPARENT,
                     JsonConvert.SerializeObject(
                         new
                         {
@@ -285,7 +228,7 @@ namespace Tests
                 TestHelpers.CreateSceneMessage(
                     uiSceneId,
                     entityId,
-                    "CreateEntity",
+                    MessagingTypes.ENTITY_CREATE,
                     JsonConvert.SerializeObject(
                         new CreateEntityMessage
                         {
@@ -299,7 +242,7 @@ namespace Tests
                 TestHelpers.CreateSceneMessage(
                     sceneId,
                     entityId,
-                    "CreateEntity",
+                    MessagingTypes.ENTITY_CREATE,
                     JsonConvert.SerializeObject(
                         new CreateEntityMessage
                         {
@@ -309,7 +252,69 @@ namespace Tests
 
             Assert.IsTrue(busId == MessagingBusId.SYSTEM);
 
-            yield return new WaitForAllMessagesProcessed();
+            yield return new WaitForSeconds(1f);
+
+            busId = sceneController.SendSceneMessage(
+                TestHelpers.CreateSceneMessage(
+                    uiSceneId,
+                    entityId,
+                    MessagingTypes.ENTITY_REPARENT,
+                    JsonConvert.SerializeObject(
+                        new
+                        {
+                            entityId = entityId,
+                            parentId = "0"
+                        })
+                )
+            );
+
+            Assert.IsTrue(busId == MessagingBusId.UI);
+
+            busId = sceneController.SendSceneMessage(
+                TestHelpers.CreateSceneMessage(
+                    sceneId,
+                    entityId,
+                    MessagingTypes.ENTITY_REPARENT,
+                    JsonConvert.SerializeObject(
+                        new
+                        {
+                            entityId = entityId,
+                            parentId = "0"
+                        })
+                )
+            );
+
+            Assert.IsTrue(busId == MessagingBusId.SYSTEM);
+
+            busId = sceneController.SendSceneMessage(
+                TestHelpers.CreateSceneMessage(
+                    uiSceneId,
+                    entityId,
+                    MessagingTypes.ENTITY_REPARENT,
+                    JsonConvert.SerializeObject(
+                        new CreateEntityMessage
+                        {
+                            id = entityId
+                        }))
+            );
+
+            Assert.IsTrue(busId == MessagingBusId.UI);
+
+            busId = sceneController.SendSceneMessage(
+                TestHelpers.CreateSceneMessage(
+                    sceneId,
+                    entityId,
+                    MessagingTypes.ENTITY_CREATE,
+                    JsonConvert.SerializeObject(
+                        new CreateEntityMessage
+                        {
+                            id = entityId
+                        }))
+            );
+
+            Assert.IsTrue(busId == MessagingBusId.SYSTEM);
+
+            yield return new WaitForSeconds(1f);
         }
     }
 }

@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Assertions;
+using System;
 
 namespace DCL
 {
@@ -20,7 +21,7 @@ namespace DCL
         }
     }
 
-    public class MessagingBus
+    public class MessagingBus : IDisposable
     {
         public class QueuedSceneMessage
         {
@@ -54,13 +55,23 @@ namespace DCL
 
         public float timeBudget;
         public float budgetMax;
+        private Coroutine mainCoroutine;
+        private Coroutine msgRoutine = null;
 
         public MessagingBus(IMessageHandler handler, float budgetMax)
         {
             Assert.IsNotNull(handler, "IMessageHandler can't be null!");
             this.handler = handler;
             this.budgetMax = budgetMax;
-            SceneController.i.StartCoroutine(ProcessMessages(pendingMessages));
+            mainCoroutine = SceneController.i.StartCoroutine(ProcessMessages(pendingMessages));
+        }
+
+        public void Dispose()
+        {
+            SceneController.i.StopCoroutine(mainCoroutine);
+
+            if (msgRoutine != null)
+                SceneController.i.StopCoroutine(msgRoutine);
         }
 
         IEnumerator ProcessMessages(LinkedList<QueuedSceneMessage> queue)
@@ -82,9 +93,8 @@ namespace DCL
                         case QueuedSceneMessage.Type.SCENE_MESSAGE:
 
                             var messageObject = m as QueuedSceneMessage_Scene;
-                            Coroutine routine = null;
 
-                            if (handler.ProcessMessage(messageObject.sceneId, messageObject.tag, messageObject.method, messageObject.payload, out routine))
+                            if (handler.ProcessMessage(messageObject.sceneId, messageObject.tag, messageObject.method, messageObject.payload, out msgRoutine))
                             {
 #if UNITY_EDITOR
                                 if (SceneController.i.msgStepByStep)
@@ -96,11 +106,13 @@ namespace DCL
 #endif
                             }
 
-                            if (routine != null)
+                            if (msgRoutine != null)
                             {
                                 processedMessagesCount++;
 
-                                yield return routine;
+                                yield return msgRoutine;
+
+                                msgRoutine = null;
                             }
 
                             SceneController.i.OnMessageWillDequeue?.Invoke(messageObject.method);
