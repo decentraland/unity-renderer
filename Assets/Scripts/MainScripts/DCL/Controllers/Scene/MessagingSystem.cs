@@ -45,6 +45,11 @@ namespace DCL
         System.Text.StringBuilder stringBuilder = new System.Text.StringBuilder();
         public int unreliableMessagesReplaced = 0;
 
+        public bool isThrottled
+        {
+            get { return throttler != null; }
+        }
+        
         public void Dispose()
         {
             bus.Dispose();

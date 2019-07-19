@@ -1,4 +1,4 @@
-using GLTF.Schema;
+﻿using GLTF.Schema;
 using System;
 using System.IO;
 using System.Collections.Generic;
@@ -12,6 +12,7 @@ namespace UnityGLTF.Cache
     public class PersistentAssetCache
     {
         public static Dictionary<string, RefCountedTextureData> ImageCacheByUri = new Dictionary<string, RefCountedTextureData>();
+        public static Dictionary<string, RefCountedMaterialData> MaterialCacheByCRC = new Dictionary<string, RefCountedMaterialData>();
     }
 
     /// <summary>
@@ -97,7 +98,7 @@ namespace UnityGLTF.Cache
 #if !WINDOWS_UWP
                             bufferCacheData.Stream.Close();
 #else
-							bufferCacheData.Stream.Dispose();
+                            bufferCacheData.Stream.Dispose();
 #endif
                         }
 
