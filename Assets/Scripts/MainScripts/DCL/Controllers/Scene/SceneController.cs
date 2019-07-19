@@ -103,7 +103,15 @@ namespace DCL
         {
             get
             {
-                return messagingControllers.Values.Sum(x => x.pendingThrottledMessagesCount);
+                int total = 0;
+                using (var iterator = messagingControllers.GetEnumerator())
+                {
+                    while (iterator.MoveNext())
+                    {
+                        total += iterator.Current.Value.pendingThrottledMessagesCount;
+                    }
+                }
+                return total;
             }
         }
 
