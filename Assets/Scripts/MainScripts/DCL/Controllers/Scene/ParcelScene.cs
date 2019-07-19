@@ -86,6 +86,17 @@ namespace DCL.Controllers
             RecalculateBounds();
         }
 
+        public virtual void SetUpdateData(LoadParcelScenesMessage.UnityParcelScene data)
+        {
+            this.sceneData = data;
+
+            contentProvider = new ContentProvider();
+            contentProvider.baseUrl = data.baseUrl;
+            contentProvider.contents = data.contents;
+            contentProvider.BakeHashes();
+
+        }
+
         private void RecalculateBounds()
         {
             if (sceneData != null && sceneData.parcels != null)

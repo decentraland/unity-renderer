@@ -16,6 +16,7 @@ namespace DCL
         public const string ENTITY_DESTROY = "RemoveEntity";
         public const string SCENE_STARTED = "SceneStarted";
         public const string SCENE_LOAD = "LoadScene";
+        public const string SCENE_UPDATE = "UpdateScene";
         public const string SCENE_DESTROY = "UnloadScene";
     }
 

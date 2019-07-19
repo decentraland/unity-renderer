@@ -121,6 +121,7 @@ namespace DCL.Interface
             public string type;
             public string gizmoType;
             public string entityId;
+            public string transform;
         }
 
 #if UNITY_WEBGL && !UNITY_EDITOR
@@ -298,7 +299,7 @@ namespace DCL.Interface
         }
 
 
-        public static void ReportGizmoEvent(string sceneId, string uuid, string type, string gizmoType)
+        public static void ReportGizmoEvent(string sceneId, string uuid, string type, string gizmoType, Transform entityTransform = null)
         {
             if (string.IsNullOrEmpty(uuid))
             {
@@ -309,6 +310,14 @@ namespace DCL.Interface
             onGizmoEvent.payload.type = type;
             onGizmoEvent.payload.gizmoType = gizmoType;
             onGizmoEvent.payload.entityId = uuid;
+            if (entityTransform != null)
+            {
+                DCL.Components.DCLTransform.Model model = new DCL.Components.DCLTransform.Model();
+                model.position = entityTransform.position;
+                model.rotation = entityTransform.rotation;
+                model.scale = entityTransform.localScale;
+                onGizmoEvent.payload.transform = JsonUtility.ToJson(model);
+            }
             SendSceneEvent(sceneId, "uuidEvent", onGizmoEvent);
         }
     }

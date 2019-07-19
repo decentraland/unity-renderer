@@ -13,7 +13,7 @@ GameObject:
   - component: {fileID: 347847847}
   - component: {fileID: 347847846}
   - component: {fileID: 347847844}
-  m_Layer: 0
+  m_Layer: 11
   m_Name: x
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -119,7 +119,7 @@ GameObject:
   m_Component:
   - component: {fileID: 857158740}
   - component: {fileID: 8469184939327777951}
-  m_Layer: 0
+  m_Layer: 11
   m_Name: MoveGizmo
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -170,7 +170,7 @@ GameObject:
   - component: {fileID: 1472157653}
   - component: {fileID: 1472157652}
   - component: {fileID: 1472157650}
-  m_Layer: 0
+  m_Layer: 11
   m_Name: y
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -279,7 +279,7 @@ GameObject:
   - component: {fileID: 1712324713}
   - component: {fileID: 1712324712}
   - component: {fileID: 1712324710}
-  m_Layer: 0
+  m_Layer: 11
   m_Name: z
   m_TagString: Untagged
   m_Icon: {fileID: 0}
