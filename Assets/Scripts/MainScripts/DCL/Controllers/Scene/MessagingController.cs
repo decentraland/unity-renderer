@@ -54,6 +54,27 @@ namespace DCL
             }
         }
 
+        public int pendingThrottledMessagesCount
+        {
+            get
+            {
+                int throttledSystemsPendingCount = 0;
+
+                using (var iterator = messagingSystems.GetEnumerator())
+                {
+                    while (iterator.MoveNext())
+                    {
+                        if (iterator.Current.Value.isThrottled)
+                        {
+                            throttledSystemsPendingCount += iterator.Current.Value.bus.pendingMessagesCount;
+                        }
+                    }
+                }
+
+                return throttledSystemsPendingCount;
+            }
+        }
+
         public MessagingController(IMessageHandler messageHandler)
         {
             messagingSystems.Add(MessagingBusId.UI, new MessagingSystem(messageHandler, MSG_BUS_BUDGET_MIN, UI_MSG_BUS_BUDGET_MAX, enableThrottler: false));

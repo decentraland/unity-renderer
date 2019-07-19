@@ -2075,12 +2075,40 @@ namespace UnityGLTF
             IUniformMap vertColorMapper = mapper.Clone();
             vertColorMapper.VertexColorsEnabled = true;
 
-            MaterialCacheData materialWrapper = new MaterialCacheData
+            Material[] material = new Material[2];
+
+            const int MATERIAL = 0;
+            const int MATERIAL_WITH_VERTEX_COLORS = 1;
+
+            material[MATERIAL] = mapper.Material;
+            material[MATERIAL_WITH_VERTEX_COLORS] = vertColorMapper.Material;
+
+            MaterialCacheData materialWrapper = new MaterialCacheData();
+
+            for (int i = 0; i < 2; i++)
             {
-                UnityMaterial = mapper.Material,
-                UnityMaterialWithVertexColor = vertColorMapper.Material,
-                GLTFMaterial = def
-            };
+                string materialCRC = material[i].ComputeCRC().ToString();
+
+                //TODO(Brian): Remove old material here if the material won't be used. 
+                //             (We can use Resources.UnloadUnusedAssets too, but I hate to rely on this)
+                if (!PersistentAssetCache.MaterialCacheByCRC.ContainsKey(materialCRC))
+                {
+                    RefCountedMaterialData newRefCountedMaterial = new RefCountedMaterialData(materialCRC, material[i]);
+                    PersistentAssetCache.MaterialCacheByCRC.Add(materialCRC, newRefCountedMaterial);
+                }
+
+                switch (i)
+                {
+                    case MATERIAL:
+                        materialWrapper.CachedMaterial = PersistentAssetCache.MaterialCacheByCRC[materialCRC];
+                        break;
+                    case MATERIAL_WITH_VERTEX_COLORS:
+                        materialWrapper.CachedMaterialWithVertexColor = PersistentAssetCache.MaterialCacheByCRC[materialCRC];
+                        break;
+                }
+            }
+
+            materialWrapper.GLTFMaterial = def;
 
             if (materialIndex >= 0)
             {

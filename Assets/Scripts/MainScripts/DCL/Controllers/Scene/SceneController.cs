@@ -17,6 +17,9 @@ namespace DCL
         public bool startDecentralandAutomatically = true;
         public static bool VERBOSE = false;
 
+        private const float GLTF_BUDGET_MAX = 0.003f;
+        private const float GLTF_BUDGET_MIN = 0.001f;
+
         public const string GLOBAL_MESSAGING_CONTROLLER = "global_messaging_controller";
 
         [FormerlySerializedAs("factoryManifest")]
@@ -40,6 +43,17 @@ namespace DCL
         public bool msgStepByStep = false;
 
         private LoadingScreenController loadingScreenController = null;
+
+        public bool isLoadingScreenVisible
+        {
+            get
+            {
+                if (loadingScreenController == null)
+                    return false;
+
+                return loadingScreenController.isScreenVisible;
+            }
+        }
 
         #region BENCHMARK_EVENTS
 
@@ -82,6 +96,14 @@ namespace DCL
                     }
                 }
                 return total;
+            }
+        }
+
+        public int pendingThrottledMessagesCount
+        {
+            get
+            {
+                return messagingControllers.Values.Sum(x => x.pendingThrottledMessagesCount);
             }
         }
 
@@ -153,6 +175,11 @@ namespace DCL
             {
                 ParcelScene scene = messagingControllersPriority[i];
                 prevTimeBudget += messagingControllers[scene.sceneData.id].UpdateThrottling(prevTimeBudget);
+            }
+
+            if (pendingThrottledMessagesCount == 0)
+            {
+                UnityGLTF.GLTFSceneImporter.BudgetPerFrameInMilliseconds = Mathf.Clamp(GLTF_BUDGET_MAX - prevTimeBudget, GLTF_BUDGET_MIN, GLTF_BUDGET_MAX) * 1000f;
             }
         }
 

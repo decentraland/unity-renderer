@@ -66,7 +66,7 @@ public class MaterialTransitionController : MonoBehaviour
             material.SetColor(ShaderId_LoadingColor, Color.clear);
             material.SetFloat(ShaderId_FadeDirection, 0);
             material.SetFloat(ShaderId_FadeThickness, fadeThickness);
-            material.enableInstancing = false;
+            material.enableInstancing = true;
         }
 
         targetRenderer.sharedMaterials = finalMaterials;

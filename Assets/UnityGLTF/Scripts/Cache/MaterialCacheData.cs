@@ -5,13 +5,22 @@ namespace UnityGLTF.Cache
 {
     public class MaterialCacheData
     {
-        public Material UnityMaterial { get; set; }
-        public Material UnityMaterialWithVertexColor { get; set; }
         public GLTFMaterial GLTFMaterial { get; set; }
 
+        public RefCountedMaterialData CachedMaterial;
+        public RefCountedMaterialData CachedMaterialWithVertexColor;
         public Material GetContents(bool useVertexColors)
         {
-            return useVertexColors ? UnityMaterialWithVertexColor : UnityMaterial;
+            if (useVertexColors)
+            {
+                CachedMaterialWithVertexColor.IncreaseRefCount();
+                return CachedMaterialWithVertexColor.material;
+            }
+            else
+            {
+                CachedMaterial.IncreaseRefCount();
+                return CachedMaterial.material;
+            }
         }
 
         /// <summary>
@@ -19,15 +28,8 @@ namespace UnityGLTF.Cache
         /// </summary>
         public void Unload()
         {
-            if (UnityMaterial != null)
-            {
-                Object.Destroy(UnityMaterial);
-            }
-
-            if (UnityMaterialWithVertexColor != null)
-            {
-                Object.Destroy(UnityMaterialWithVertexColor);
-            }
+            CachedMaterial?.DecreaseRefCount();
+            CachedMaterialWithVertexColor?.DecreaseRefCount();
         }
     }
 }

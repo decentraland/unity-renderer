@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections;
 using System.Linq;
 using DCL.Controllers;
@@ -28,6 +28,8 @@ namespace DCL
             private set;
         }
 
+        public bool isScreenVisible { get; private set; }
+
         private readonly SceneController sceneController;
 
         private GameObject loadingScreen;
@@ -56,15 +58,21 @@ namespace DCL
             loadingScreen = GameObject.Instantiate(Resources.Load<GameObject>("Prefabs/LoadingScreen"));
             loadingScreenView = loadingScreen.GetComponent<LoadingScreenView>();
             loadingScreenView.SetNormalizedPercentage(0);
+            Camera.main.clearFlags = CameraClearFlags.Nothing;
+            Camera.main.cullingMask = LayerMask.GetMask("UI");
         }
 
         private void RemoveLoadingScreen()
         {
+            Camera.main.clearFlags = CameraClearFlags.Skybox;
+            Camera.main.cullingMask = -1; //NOTE(Brian): Everything
             loadingScreenView.StartCoroutine(loadingScreenView.FadeOutAndDestroy());
+            isScreenVisible = false;
         }
 
         public void StartLoadingScreen()
         {
+            isScreenVisible = true;
             started = true;
             var coroutine = loadingScreenView.StartCoroutine(LoadingProcess());
             timeOutCoroutine = loadingScreenView.StartCoroutine(TimeOut(TIMEOUT, coroutine));
@@ -139,6 +147,8 @@ namespace DCL
         {
             int totalGLTFToProcess = GLTFComponent.totalDownloadedCount + Mathf.FloorToInt(GLTFComponent.queueCount * GLTF_TO_LOAD_PERCENTAGE);
 
+            UnityGLTF.GLTFSceneImporter.BudgetPerFrameInMilliseconds = float.MaxValue;
+
             while (GLTFComponent.totalDownloadedCount < totalGLTFToProcess)
             {
                 yield return new WaitForSeconds(POLLING_INTERVAL_TIME);
@@ -146,6 +156,8 @@ namespace DCL
                 float currentPercentage = Mathf.Clamp(LOADING_BUDGET_PER_STEP * GLTFComponent.totalDownloadedCount / totalGLTFToProcess, 0, LOADING_BUDGET_PER_STEP);
                 loadingScreenView.SetNormalizedPercentage(2 * LOADING_BUDGET_PER_STEP + currentPercentage);
             }
+
+            UnityGLTF.GLTFSceneImporter.BudgetPerFrameInMilliseconds = 3.0f;
             loadingScreenView.SetNormalizedPercentage(1);
         }
 
