@@ -36,7 +36,7 @@ public class AvatarName : MonoBehaviour
         }
     }
 
-    private void Start()
+    private void Awake()
     {
         mainCamera = Camera.main;
         canvas = GetComponentInParent<Canvas>();
