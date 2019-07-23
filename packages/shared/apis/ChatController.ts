@@ -352,11 +352,15 @@ export class ChatController extends ExposableAPI implements IChatController {
         id: uuid(),
         isCommand: true,
         sender: 'Decentraland',
-        message: `Available commands:\n${Object.keys(this.chatCommands)
-          .filter(name => name !== 'help')
-          .map(name => `\t'${name}': ${this.chatCommands[name].description}`)
-          .concat('\thelp: Show this list of commands')
-          .join('\n')}`
+        message:
+          `Click on the screen to lock the cursor, later you can unlock it with the [ESC] key.` +
+          `\n\nYou can move with the [WASD] keys and jump with the [SPACE] key.` +
+          `\n\nYou can toggle the chat with the [ENTER] key.` +
+          `\n\nAvailable commands:\n${Object.keys(this.chatCommands)
+            .filter(name => name !== 'help')
+            .map(name => `\t'${name}': ${this.chatCommands[name].description}`)
+            .concat('\thelp: Show this list of commands')
+            .join('\n')}`
       }
     })
   }
