@@ -108,9 +108,9 @@ namespace DCL.Components
                 }
                 else
                 {
-                    AssetManager_GLTF.i.Release(cacheId);
                     RemoveMeshObject();
                 }
+                AssetManager_GLTF.i.Release(cacheId);
             }
         }
 
@@ -119,7 +119,6 @@ namespace DCL.Components
             var cacheId = GetCacheId();
 
             AssetManager_GLTF.i.assetLibrary[cacheId].OnSuccess -= OnSuccessAssetLoaded;
-            AssetManager_GLTF.i.Release(cacheId);
 
             RemoveMeshObject();
         }

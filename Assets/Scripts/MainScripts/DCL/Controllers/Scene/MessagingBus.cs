@@ -33,6 +33,7 @@ namespace DCL
                 UPDATE_PARCEL,
                 TELEPORT,
                 UNLOAD_SCENES,
+                UNLOAD_PARCEL,
                 SCENE_STARTED
             }
             public string tag;
@@ -86,6 +87,9 @@ namespace DCL
                 {
                     QueuedSceneMessage m = queue.First.Value;
 
+                    if (queue.First != null)
+                        queue.RemoveFirst();
+
                     switch (m.type)
                     {
                         case QueuedSceneMessage.Type.NONE:
@@ -121,20 +125,21 @@ namespace DCL
                             handler.LoadParcelScenesExecute(m.message);
                             SceneController.i.OnMessageWillDequeue?.Invoke("LoadScene");
                             break;
+                        case QueuedSceneMessage.Type.UNLOAD_PARCEL:
+                            handler.UnloadParcelSceneExecute(m.message);
+                            SceneController.i.OnMessageWillDequeue?.Invoke("UnloadScene");
+                            break;
                         case QueuedSceneMessage.Type.UPDATE_PARCEL:
                             handler.UpdateParcelScenesExecute(m.message);
                             SceneController.i.OnMessageWillDequeue?.Invoke("UpdateScene");
                             break;
                         case QueuedSceneMessage.Type.UNLOAD_SCENES:
                             handler.UnloadAllScenes();
-                            SceneController.i.OnMessageWillDequeue?.Invoke("UnloadScene");
+                            SceneController.i.OnMessageWillDequeue?.Invoke("UnloadAllScenes");
                             break;
                     }
 
                     processedMessagesCount++;
-
-                    if (queue.First != null)
-                        queue.RemoveFirst();
                 }
 
                 yield return null;

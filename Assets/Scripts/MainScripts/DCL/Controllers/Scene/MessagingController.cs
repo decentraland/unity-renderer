@@ -10,6 +10,7 @@ namespace DCL
     {
         bool ProcessMessage(string sceneId, string id, string method, string payload, out Coroutine routine);
         void LoadParcelScenesExecute(string decentralandSceneJSON);
+        void UnloadParcelSceneExecute(string sceneKey);
         void UnloadAllScenes();
         void UpdateParcelScenesExecute(string sceneKey);
     }
@@ -24,11 +25,11 @@ namespace DCL
             Stopped
         }
 
-        private const float UI_MSG_BUS_BUDGET_MAX = 0.0016f;
-        private const float INIT_MSG_BUS_BUDGET_MAX = 0.003f;
-        private const float SYSTEM_MSG_BUS_BUDGET_MAX = 0.0016f;
+        private const float UI_MSG_BUS_BUDGET_MAX = 0.016f;
+        private const float INIT_MSG_BUS_BUDGET_MAX = 0.03f;
+        private const float SYSTEM_MSG_BUS_BUDGET_MAX = 0.016f;
 
-        private const float MSG_BUS_BUDGET_MIN = 0.0001f;
+        private const float MSG_BUS_BUDGET_MIN = 0.0016f;
 
         public Dictionary<string, MessagingSystem> messagingSystems = new Dictionary<string, MessagingSystem>();
 
@@ -78,7 +79,7 @@ namespace DCL
         public MessagingController(IMessageHandler messageHandler)
         {
             messagingSystems.Add(MessagingBusId.UI, new MessagingSystem(messageHandler, MSG_BUS_BUDGET_MIN, UI_MSG_BUS_BUDGET_MAX, enableThrottler: false));
-            messagingSystems.Add(MessagingBusId.INIT, new MessagingSystem(messageHandler, MSG_BUS_BUDGET_MIN, INIT_MSG_BUS_BUDGET_MAX, enableThrottler: true));
+            messagingSystems.Add(MessagingBusId.INIT, new MessagingSystem(messageHandler, MSG_BUS_BUDGET_MIN, INIT_MSG_BUS_BUDGET_MAX, enableThrottler: false));
             messagingSystems.Add(MessagingBusId.SYSTEM, new MessagingSystem(messageHandler, MSG_BUS_BUDGET_MIN, SYSTEM_MSG_BUS_BUDGET_MAX, enableThrottler: false));
 
             currentState = State.Initializing;
@@ -90,6 +91,11 @@ namespace DCL
             {
                 currentState = MessagingController.State.Running;
             }
+        }
+
+        public void Stop()
+        {
+            currentState = MessagingController.State.Stopped;
         }
 
         public void Dispose()
@@ -164,11 +170,6 @@ namespace DCL
                 // scene started has been processed
                 else if (queuedMessage.method == MessagingTypes.SCENE_STARTED)
                     currentState = MessagingController.State.FinishingInitializing;
-
-                // When a SCENE DESTROY message is enqueued, we need to stop enqueuing
-                // messages for this controller
-                else if (queuedMessage.method == MessagingTypes.SCENE_DESTROY)
-                    currentState = MessagingController.State.Stopped;
 
                 messagingSystems[busId].Enqueue(queuedMessage, queueMode);
             }

@@ -49,7 +49,7 @@ namespace DCL
         {
             get { return throttler != null; }
         }
-        
+
         public void Dispose()
         {
             bus.Dispose();
@@ -98,15 +98,17 @@ namespace DCL
 
                     if (node.List != null)
                     {
-                        node.List.Remove(node);
-                        unreliableMessagesReplaced++;
+                        node.Value = message;
                         enqueued = false;
+                        unreliableMessagesReplaced++;
                     }
                 }
 
-                node = bus.pendingMessages.AddLast(message);
-
-                unreliableMessages[tag] = node;
+                if (enqueued)
+                {
+                    node = bus.pendingMessages.AddLast(message);
+                    unreliableMessages[tag] = node;
+                }
             }
 
             if (enqueued)
@@ -117,7 +119,6 @@ namespace DCL
                     SceneController.i.OnMessageWillQueue?.Invoke(sm.method);
                 }
             }
-
         }
 
         public MessagingSystem(IMessageHandler handler, float budgetMin = 0.01f, float budgetMax = 0.1f, bool enableThrottler = false)
