@@ -143,12 +143,7 @@ const instructionsMessage = {
   id: '',
   isCommand: true,
   sender: 'Decentraland',
-  message:
-    `Welcome to Decentraland!` +
-    `\n\nClick on the screen to lock the cursor, later you can unlock it with the [ESC] key.` +
-    `\n\nYou can move with the [WASD] keys and jump with the [SPACE] key.` +
-    `\n\nYou can toggle the chat with the [ENTER] key.` +
-    `\n\nType /help for a full list of commands. Enjoy the metaverse!`
+  message: 'Type /help for info about controls'
 }
 addMessage(instructionsMessage as MessageEntry)
 
