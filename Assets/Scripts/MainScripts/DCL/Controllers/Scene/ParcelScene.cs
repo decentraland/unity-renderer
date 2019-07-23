@@ -51,18 +51,6 @@ namespace DCL.Controllers
         private void Update()
         {
             SendMetricsEvent();
-
-            if (unloadWithDistance)
-            {
-                if (!isTestScene && !flaggedToUnload && sceneData != null && DCLCharacterController.i != null)
-                {
-                    if (!bounds.Contains(DCLCharacterController.i.characterPosition.worldPosition))
-                    {
-                        flaggedToUnload = true;
-                        SceneController.i.UnloadScene(sceneData.id);
-                    }
-                }
-            }
         }
 
         public virtual void SetData(LoadParcelScenesMessage.UnityParcelScene data)
@@ -77,14 +65,11 @@ namespace DCL.Controllers
             this.name = gameObject.name = $"scene:{data.id}";
 
             gameObject.transform.position = DCLCharacterController.i.characterPosition.WorldToUnityPosition(GridToWorldPosition(data.basePosition.x, data.basePosition.y));
-
-            RecalculateBounds();
         }
 
         void OnPrecisionAdjust(DCLCharacterPosition position)
         {
             gameObject.transform.position = position.WorldToUnityPosition(GridToWorldPosition(sceneData.basePosition.x, sceneData.basePosition.y));
-            RecalculateBounds();
         }
 
         public virtual void SetUpdateData(LoadParcelScenesMessage.UnityParcelScene data)
@@ -96,31 +81,6 @@ namespace DCL.Controllers
             contentProvider.contents = data.contents;
             contentProvider.BakeHashes();
 
-        }
-
-        private void RecalculateBounds()
-        {
-            if (sceneData != null && sceneData.parcels != null)
-            {
-                Vector3 min = Vector3.positiveInfinity;
-                Vector3 max = Vector3.negativeInfinity;
-
-                for (int i = 0; i < sceneData.parcels.Length; i++)
-                {
-                    Vector3 pos = GridToWorldPosition(sceneData.parcels[i].x, sceneData.parcels[i].y);
-
-                    if (min.x > pos.x) min.x = pos.x;
-                    if (min.z > pos.z) min.z = pos.z;
-
-                    if (max.x < pos.x) max.x = pos.x;
-                    if (max.z < pos.z) max.z = pos.z;
-
-                    min.y = max.y = 0;
-                }
-
-                bounds.min = min - (new Vector3(1, 1, 1) * ParcelSettings.UNLOAD_DISTANCE);
-                bounds.max = max + (new Vector3(1, 1, 1) * ParcelSettings.UNLOAD_DISTANCE);
-            }
         }
 
         public void InitializeDebugPlane()

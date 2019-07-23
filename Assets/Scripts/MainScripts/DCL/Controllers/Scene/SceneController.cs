@@ -402,6 +402,21 @@ namespace DCL
 
         public void UnloadScene(string sceneKey)
         {
+            var queuedMessage = new MessagingBus.QueuedSceneMessage()
+            { type = MessagingBus.QueuedSceneMessage.Type.UNLOAD_PARCEL, message = sceneKey };
+
+            OnMessageWillQueue?.Invoke(MessagingTypes.SCENE_DESTROY);
+
+            messagingControllers[GLOBAL_MESSAGING_CONTROLLER].ForceEnqueue(MessagingBusId.INIT, queuedMessage);
+
+            if (messagingControllers.ContainsKey(sceneKey))
+                messagingControllers[sceneKey].Stop();
+        }
+
+        public void UnloadParcelSceneExecute(string sceneKey)
+        {
+            OnMessageProcessStart?.Invoke(MessagingTypes.SCENE_DESTROY);
+
             if (!loadedScenes.ContainsKey(sceneKey) || loadedScenes[sceneKey].isPersistent)
             {
                 return;
@@ -431,6 +446,8 @@ namespace DCL
             {
                 Utils.SafeDestroy(scene.gameObject);
             }
+
+            OnMessageProcessEnds?.Invoke(MessagingTypes.SCENE_DESTROY);
         }
 
         public void UnloadAllScenes()
@@ -438,7 +455,7 @@ namespace DCL
             var list = loadedScenes.ToArray();
             for (int i = 0; i < list.Length; i++)
             {
-                UnloadScene(list[i].Key);
+                UnloadParcelSceneExecute(list[i].Key);
             }
         }
 
