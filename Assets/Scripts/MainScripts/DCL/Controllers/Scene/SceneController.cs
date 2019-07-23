@@ -20,6 +20,8 @@ namespace DCL
         private const float GLTF_BUDGET_MAX = 0.003f;
         private const float GLTF_BUDGET_MIN = 0.001f;
 
+        private const float TIME_BETWEEN_UNLOAD_ASSETS = 10.0f;
+
         public const string GLOBAL_MESSAGING_CONTROLLER = "global_messaging_controller";
 
         [FormerlySerializedAs("factoryManifest")]
@@ -41,6 +43,8 @@ namespace DCL
         public string debugSceneName;
         public bool ignoreGlobalScenes = false;
         public bool msgStepByStep = false;
+
+        private float lastTimeUnloadUnusedAssets = 0;
 
         private LoadingScreenController loadingScreenController = null;
 
@@ -99,7 +103,7 @@ namespace DCL
             }
         }
 
-        public int pendingThrottledMessagesCount
+        public int pendingInitMessagesCount
         {
             get
             {
@@ -108,7 +112,7 @@ namespace DCL
                 {
                     while (iterator.MoveNext())
                     {
-                        total += iterator.Current.Value.pendingThrottledMessagesCount;
+                        total += iterator.Current.Value.pendingInitMessagesCount;
                     }
                 }
                 return total;
@@ -185,7 +189,7 @@ namespace DCL
                 prevTimeBudget += messagingControllers[scene.sceneData.id].UpdateThrottling(prevTimeBudget);
             }
 
-            if (pendingThrottledMessagesCount == 0)
+            if (pendingInitMessagesCount == 0)
             {
                 UnityGLTF.GLTFSceneImporter.BudgetPerFrameInMilliseconds = Mathf.Clamp(GLTF_BUDGET_MAX - prevTimeBudget, GLTF_BUDGET_MIN, GLTF_BUDGET_MAX) * 1000f;
             }
@@ -448,6 +452,12 @@ namespace DCL
             }
 
             OnMessageProcessEnds?.Invoke(MessagingTypes.SCENE_DESTROY);
+
+            if (Time.realtimeSinceStartup - lastTimeUnloadUnusedAssets >= TIME_BETWEEN_UNLOAD_ASSETS)
+            {
+                lastTimeUnloadUnusedAssets = Time.realtimeSinceStartup;
+                Resources.UnloadUnusedAssets();
+            }
         }
 
         public void UnloadAllScenes()

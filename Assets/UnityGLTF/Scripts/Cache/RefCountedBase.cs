@@ -9,6 +9,8 @@ namespace UnityGLTF.Cache
         private int _refCount = 0;
         private readonly object _refCountLock = new object();
 
+        public int RefCount { get { return _refCount; } }
+
         public void IncreaseRefCount()
         {
             if (_isDisposed)

@@ -16,10 +16,10 @@ namespace UnityGLTF.Cache
 
         protected override void OnDestroyCachedData()
         {
-            UnityEngine.Object.Destroy(Texture);
-
             if (!string.IsNullOrEmpty(uri) && PersistentAssetCache.ImageCacheByUri.ContainsKey(uri))
                 PersistentAssetCache.ImageCacheByUri.Remove(uri);
+
+            UnityEngine.Object.Destroy(Texture);
         }
     }
 }

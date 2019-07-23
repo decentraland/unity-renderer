@@ -9,7 +9,7 @@ namespace UnityGLTF
     class StandardMap : IUniformMap
     {
         private const float EMISSIVE_HDR_INTENSITY = 5f;
-        
+
         protected Material _material;
         private AlphaMode _alphaMode = AlphaMode.OPAQUE;
         private double _alphaCutoff = 0.5;
