@@ -239,6 +239,7 @@ namespace DCL
             else
             {
                 GLTFCopy = Instantiate(original);
+                GLTFCopy.GetComponent<InstantiatedGLTFObject>().CachedData.IncreaseRefCount();
             }
 
             return GLTFCopy;

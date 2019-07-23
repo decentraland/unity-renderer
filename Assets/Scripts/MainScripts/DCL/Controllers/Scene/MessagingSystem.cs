@@ -38,6 +38,7 @@ namespace DCL
     {
         public MessagingBus bus;
         public MessageThrottlingController throttler;
+        public string id;
 
         float budgetMin = 0;
 
@@ -121,8 +122,9 @@ namespace DCL
             }
         }
 
-        public MessagingSystem(IMessageHandler handler, float budgetMin = 0.01f, float budgetMax = 0.1f, bool enableThrottler = false)
+        public MessagingSystem(string id, IMessageHandler handler, float budgetMin = 0.01f, float budgetMax = 0.1f, bool enableThrottler = false)
         {
+            this.id = id;
             this.budgetMin = budgetMin;
             this.bus = new MessagingBus(handler, budgetMax);
 

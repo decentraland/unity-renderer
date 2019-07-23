@@ -26,7 +26,7 @@ namespace DCL
         }
 
         private const float UI_MSG_BUS_BUDGET_MAX = 0.016f;
-        private const float INIT_MSG_BUS_BUDGET_MAX = 0.03f;
+        private const float INIT_MSG_BUS_BUDGET_MAX = 0.02f;
         private const float SYSTEM_MSG_BUS_BUDGET_MAX = 0.016f;
 
         private const float MSG_BUS_BUDGET_MIN = 0.0016f;
@@ -55,34 +55,39 @@ namespace DCL
             }
         }
 
-        public int pendingThrottledMessagesCount
+        public int pendingInitMessagesCount
         {
             get
             {
-                int throttledSystemsPendingCount = 0;
+                int total = 0;
 
                 using (var iterator = messagingSystems.GetEnumerator())
                 {
                     while (iterator.MoveNext())
                     {
-                        if (iterator.Current.Value.isThrottled)
+                        if (iterator.Current.Value.id == MessagingBusId.INIT)
                         {
-                            throttledSystemsPendingCount += iterator.Current.Value.bus.pendingMessagesCount;
+                            total += iterator.Current.Value.bus.pendingMessagesCount;
                         }
                     }
                 }
 
-                return throttledSystemsPendingCount;
+                return total;
             }
         }
 
         public MessagingController(IMessageHandler messageHandler)
         {
-            messagingSystems.Add(MessagingBusId.UI, new MessagingSystem(messageHandler, MSG_BUS_BUDGET_MIN, UI_MSG_BUS_BUDGET_MAX, enableThrottler: false));
-            messagingSystems.Add(MessagingBusId.INIT, new MessagingSystem(messageHandler, MSG_BUS_BUDGET_MIN, INIT_MSG_BUS_BUDGET_MAX, enableThrottler: false));
-            messagingSystems.Add(MessagingBusId.SYSTEM, new MessagingSystem(messageHandler, MSG_BUS_BUDGET_MIN, SYSTEM_MSG_BUS_BUDGET_MAX, enableThrottler: false));
+            AddMessageSystem(MessagingBusId.UI, messageHandler, MSG_BUS_BUDGET_MIN, UI_MSG_BUS_BUDGET_MAX, enableThrottler: false);
+            AddMessageSystem(MessagingBusId.INIT, messageHandler, MSG_BUS_BUDGET_MIN, INIT_MSG_BUS_BUDGET_MAX, enableThrottler: false);
+            AddMessageSystem(MessagingBusId.SYSTEM, messageHandler, MSG_BUS_BUDGET_MIN, SYSTEM_MSG_BUS_BUDGET_MAX, enableThrottler: false);
 
             currentState = State.Initializing;
+        }
+
+        private void AddMessageSystem(string id, IMessageHandler handler, float budgetMin, float budgetMax, bool enableThrottler)
+        {
+            messagingSystems.Add(id, new MessagingSystem(id, handler, budgetMin, budgetMax, enableThrottler));
         }
 
         public void Start()

@@ -2096,6 +2096,10 @@ namespace UnityGLTF
                     RefCountedMaterialData newRefCountedMaterial = new RefCountedMaterialData(materialCRC, material[i]);
                     PersistentAssetCache.MaterialCacheByCRC.Add(materialCRC, newRefCountedMaterial);
                 }
+                else if (material[i] != PersistentAssetCache.MaterialCacheByCRC[materialCRC].material)
+                {
+                    Material.Destroy(material[i]);
+                }
 
                 switch (i)
                 {

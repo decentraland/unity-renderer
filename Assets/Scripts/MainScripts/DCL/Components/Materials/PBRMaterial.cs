@@ -98,7 +98,7 @@ namespace DCL.Components
                 // FETCH AND LOAD EMISSIVE TEXTURE
                 if (!string.IsNullOrEmpty(model.emissiveTexture))
                 {
-                    scene.StartCoroutine( DCLTexture.FetchFromComponent(scene, model.emissiveTexture,
+                    scene.StartCoroutine(DCLTexture.FetchFromComponent(scene, model.emissiveTexture,
                         (fetchedEmissiveTexture) =>
                         {
                             material.SetTexture("_EmissionMap", fetchedEmissiveTexture);
@@ -143,7 +143,7 @@ namespace DCL.Components
             {
                 Debug.Log("found key " + key);
             }
-            
+
             return null;
         }
 
