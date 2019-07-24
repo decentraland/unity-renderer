@@ -1,0 +1,18 @@
+{
+    "name": "UserProfileTests",
+    "references": [
+        "GUID:e555144732b726c4cba5b0f6337fea75",
+        "GUID:d1951a0a85cc9894eb555ed530f7f129"
+    ],
+    "optionalUnityReferences": [
+        "TestAssemblies"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": []
+}
