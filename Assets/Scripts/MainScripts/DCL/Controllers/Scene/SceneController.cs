@@ -59,6 +59,8 @@ namespace DCL
             }
         }
 
+        [NonSerialized] public UserProfile ownUserProfile;
+
         #region BENCHMARK_EVENTS
 
         //NOTE(Brian): For performance reasons, these events may need to be removed for production.
@@ -140,6 +142,7 @@ namespace DCL
             }
 
             i = this;
+            ownUserProfile = UserProfile.GetOwnUserProfile();
 
 #if !UNITY_EDITOR
             Debug.Log("DCL Unity Build Version: " + DCL.Configuration.ApplicationSettings.version);
@@ -781,6 +784,11 @@ namespace DCL
             {
                 fpsPanel.GetComponent<DCL.FrameTimeCounter>().Reset();
             }
+        }
+
+        public void UpdateUserProfile(string payload)
+        {
+            ownUserProfile.UpdateData(JsonUtility.FromJson<UserProfileModel>(payload));
         }
     }
 }

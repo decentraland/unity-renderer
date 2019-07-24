@@ -1,0 +1,18 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a838952fc6194ad47bb434e26365da9b, type: 3}
+  m_Name: OwnUserProfile
+  m_EditorClassIdentifier: 
+  name: Testing Name
+  mail: testing@decentraland.org
+  avatarPicURL: https://s3.amazonaws.com/nico.decentraland.zone/email%7C5d1cfd47027519401384f6cc/body.png
+  defaultTexture: {fileID: 21300000, guid: af3ceb136e126477f809677ea5eb67e2, type: 3}

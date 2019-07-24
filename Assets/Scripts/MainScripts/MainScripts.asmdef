@@ -10,8 +10,9 @@
         "Configuration",
         "ILoader",
         "CoroutineHelpers",
-	    "Cinemachine",
-        "MainAttributes"
+        "Cinemachine",
+        "MainAttributes",
+        "UserProfile"
     ],
     "optionalUnityReferences": [],
     "includePlatforms": [],
@@ -20,5 +21,6 @@
     "overrideReferences": false,
     "precompiledReferences": [],
     "autoReferenced": true,
-    "defineConstraints": []
+    "defineConstraints": [],
+    "versionDefines": []
 }

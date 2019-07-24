@@ -198,6 +198,9 @@ namespace DCL
                             case "CreateUIScene":
                                 sceneController.CreateUIScene(msg.payload);
                                 break;
+                            case "UserProfile":
+                                sceneController.UpdateUserProfile(msg.payload);
+                                break;
                             default:
                                 Debug.Log("<b><color=#FF0000>WSSController</color></b> WHAT IS " + msg.type);
                                 break;
