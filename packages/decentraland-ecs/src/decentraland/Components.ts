@@ -334,9 +334,14 @@ export class NFTShape extends Shape {
   @Shape.readonly
   readonly src!: string
 
-  constructor(src: string) {
+  @ObservableComponent.field
+  color: Color3
+
+  // Light purple as the default background color
+  constructor(src: string, color: Color3 = new Color3(0.6404918, 0.611472, 0.8584906)) {
     super()
     this.src = src
+    this.color = color
   }
 }
 
