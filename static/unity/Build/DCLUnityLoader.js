@@ -5112,8 +5112,8 @@ var UnityLoader = UnityLoader || {
   Progress: {
     handler: function (e, t) {
       if (e.Module) {
-        document.getElementById('gameContainer').style.cssText = 'background: #24222b; width: 100%; height: 100%; margin: auto'
-        document.querySelector('.loading .progress .full').style.animation = 'progress_50 5s forwards'
+        document.getElementById('gameContainer').classList.add('loaded')
+        document.querySelector('.progress').classList.add('loaded')
       }
     },
     update: function (e, t, r) {

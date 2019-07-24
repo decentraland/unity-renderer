@@ -18,6 +18,19 @@
     #gameContainer {
       width: 100vw;
       height: 100vh;
+      position: relative;
+    }
+
+    #gameContainer.loaded {
+      width: 100%;
+      height: 100%;
+      margin: auto;
+    }
+
+    #gameContainer.loaded,
+    body {
+      background: #24222b url(images/progress-logo.png) no-repeat center !important;
+      background-size: 309px 58px !important;
     }
 
     * {
@@ -25,8 +38,7 @@
     }
 
     body {
-      background: #e3e3e3;
-      color: #333;
+      color: #fff;
       font-family: 'open sans', roboto, 'helvetica neue', sans-serif;
       font-size: 0.8em;
     }
@@ -38,49 +50,39 @@
       height: 100%;
     }
 
-    .loading {
-      background: #24222b;
+    .dcl-loading .progress {
+      display: block;
+    }
+
+    .progress {
       position: absolute;
-      top: 0;
-      left: 0;
-      right: 0;
-      bottom: 0;
-      align-items: center;
-      justify-content: center;
-      z-index: 1;
-      display: none;
-    }
-
-    .dcl-loading .loading {
-      display: flex;
-    }
-
-    .loading .logo {
-      background-image: url(images/progress-logo.png);
-      background-repeat: no-repeat;
-      background-position: center;
-      background-size: contain;
-      width: 309px;
-      height: 58px;
-    }
-
-    .loading .progress {
-      position: absolute;
-      height: 35px;
+      height: 30px;
       width: 100%;
       bottom: 0;
+      left: 0;
+      right: 0;
       border-style: solid;
       border-width: thick;
       text-align: center;
+      border-color: #333;
+      display: none;
     }
 
-    .loading .progress .full {
+    .progress .full {
       float: left;
       width: 0%;
       height: 100%;
       display: inline-flex;
       background-color: #eb455a;
       animation: progress_30 10s forwards;
+    }
+
+    .progress.loaded {
+      z-index: 1;
+    }
+
+    .progress.loaded .full {
+      animation: progress_50 5s forwards;
     }
 
     @keyframes progress_30 {
@@ -106,11 +108,8 @@
 </head>
 
 <body class="dcl-loading">
-  <div class="loading">
-    <div class="logo"></div>
-    <div class="progress">
-      <div class="full"></div>
-    </div>
+  <div class="progress">
+    <div class="full"></div>
   </div>
   <div id="gameContainer"></div>
   <script async src="https://www.googletagmanager.com/gtag/js?id=UA-63691338-5"></script>
