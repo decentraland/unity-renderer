@@ -172,16 +172,17 @@ namespace DCL
             UnloadMaterials();
             InitMaterials();
 
-            Destroy(baseBody);
+            Destroy(baseBody.gameObject);
 
             if (wearables != null)
             {
                 for (int i = 0; i < wearables.Count; i++)
                 {
-                    Destroy(wearables[i]);
+                    Destroy(wearables[i].gameObject);
                 }
             }
 
+            baseBody = null;
             wearables.Clear();
 
             loadingHasStarted = false;

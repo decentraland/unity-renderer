@@ -25,6 +25,7 @@ namespace DCL
 
         Transform avatarTransformValue;
 
+        bool isInitialPosition = true;
         Vector3 currentPosition
         {
             get
@@ -70,35 +71,35 @@ namespace DCL
 
         public void MoveTo(Vector3 position, Quaternion rotation)
         {
+            // Edge case on first initialization
+            if (isInitialPosition)
+            {
+                currentPosition = position;
+                avatarTransform.rotation = rotation;
+                isInitialPosition = false;
+            }
+
             Vector3 flatEulerRotation = rotation.eulerAngles;
             flatEulerRotation.z = flatEulerRotation.x = 0;
             rotation = Quaternion.Euler(flatEulerRotation);
 
-            if (currentWorldPosition == Vector3.zero)
+            targetPosition = position;
+            targetRotation = rotation;
+
+            float distance = Vector3.Distance(targetPosition, currentWorldPosition);
+
+            //NOTE(Brian): More distance to goal = faster movement.
+            if (distance >= 50)
             {
-                currentPosition = position;
-                avatarTransform.rotation = rotation;
+                this.movementSpeed = float.MaxValue;
+            }
+            else if (distance >= 3)
+            {
+                this.movementSpeed = Mathf.Lerp(SPEED_SLOW, SPEED_ULTRA_FAST, (distance - 3) / 10.0f);
             }
             else
             {
-                targetPosition = position;
-                targetRotation = rotation;
-
-                float distance = Vector3.Distance(targetPosition, currentWorldPosition);
-
-                //NOTE(Brian): More distance to goal = faster movement.
-                if (distance >= 50)
-                {
-                    this.movementSpeed = float.MaxValue;
-                }
-                else if (distance >= 3)
-                {
-                    this.movementSpeed = Mathf.Lerp(SPEED_SLOW, SPEED_ULTRA_FAST, (distance - 3) / 10.0f);
-                }
-                else
-                {
-                    this.movementSpeed = SPEED_SLOW;
-                }
+                this.movementSpeed = SPEED_SLOW;
             }
         }
 
