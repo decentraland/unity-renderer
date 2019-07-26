@@ -2,7 +2,7 @@
 {
     public static class ApplicationSettings
     {
-        public static string version = "0.6.2";
+        public static string version = "0.6.3";
     }
 
     public static class Environment
