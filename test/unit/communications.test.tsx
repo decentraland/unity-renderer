@@ -173,13 +173,15 @@ describe('Communications', function() {
       it('webrtc offer', async () => {
         connection.commServerAlias = 1
 
-        const answer = { sdp: 'answer-sdp' }
+        const answer = { sdp: 'answer-sdp', type: 'answer' }
         ;(connection.webRtcConn!.createAnswer as any).resolves(answer)
 
         const msg = new WebRtcMessage()
         msg.setType(MessageType.WEBRTC_OFFER)
         msg.setFromAlias(1)
         msg.setSdp('sdp')
+
+        connection.gotCandidatesFuture.resolve(answer as any)
 
         const event = new MessageEvent('websocket', { data: msg.serializeBinary() })
         await connection.onWsMessage(event)
