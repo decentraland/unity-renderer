@@ -179,6 +179,8 @@ export class DecentralandSynchronizationSystem implements ISystem {
   private componentRemoved(event: ComponentRemoved) {
     if (event.entity.isAddedToEngine()) {
       this.dcl.removeEntityComponent(event.entity.uuid, event.componentName)
+
+      // Remove the cached component so we can send it again when re-adding
       delete this.cachedComponents[event.entity.uuid][event.componentName]
     }
   }

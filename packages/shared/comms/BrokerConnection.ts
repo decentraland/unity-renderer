@@ -35,6 +35,7 @@ export class BrokerConnection implements IBrokerConnection {
 
   public onMessageObservable = new Observable<BrokerMessage>()
 
+  public gotCandidatesFuture = future<RTCSessionDescription>()
   private unreliableFuture = future<void>()
   private reliableFuture = future<void>()
 
@@ -188,14 +189,22 @@ export class BrokerConnection implements IBrokerConnection {
         } else if (msgType === MessageType.WEBRTC_OFFER) {
           try {
             await this.webRtcConn!.setRemoteDescription(new RTCSessionDescription({ type: 'offer', sdp }))
-            const desc = await this.webRtcConn!.createAnswer()
+            const desc = await this.webRtcConn!.createAnswer({})
             await this.webRtcConn!.setLocalDescription(desc)
 
-            if (desc.sdp) {
+            let offer = this.webRtcConn!.localDescription
+
+            if (!this.webRtcConn!.canTrickleIceCandidates) {
+              this.logger.log("can't trickle iceCandidates, waiting for candidates")
+              offer = await this.gotCandidatesFuture
+              this.logger.log('got candidates')
+            }
+
+            if (offer && offer.sdp) {
               const msg = new WebRtcMessage()
               msg.setToAlias(this.commServerAlias)
               msg.setType(MessageType.WEBRTC_ANSWER)
-              msg.setSdp(desc.sdp)
+              msg.setSdp(offer.sdp)
               this.sendCoordinatorMessage(msg)
             }
           } catch (err) {
@@ -281,6 +290,8 @@ export class BrokerConnection implements IBrokerConnection {
       msg.setSdp(event.candidate.candidate)
       // TODO: add sdp fields
       this.sendCoordinatorMessage(msg)
+    } else {
+      this.gotCandidatesFuture.resolve(this.webRtcConn!.localDescription!)
     }
   }
 
