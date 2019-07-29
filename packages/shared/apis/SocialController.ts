@@ -12,6 +12,8 @@ import {
 } from 'shared/comms/peers'
 import { AvatarMessage } from 'shared/comms/types'
 import { AVATAR_OBSERVABLE } from 'decentraland-ecs/src/decentraland/Types'
+import { Profile } from '../types'
+import * as profiles from '../world/profiles'
 
 export interface IProfileData {
   displayName: string
@@ -65,6 +67,11 @@ export class SocialController extends ExposableAPI {
   @exposeMethod
   async getMutedUsers() {
     return [...getMutedUsers()]
+  }
+
+  @exposeMethod
+  async resolveProfile(uuid: string): Promise<Profile> {
+    return profiles.resolveProfile(uuid)
   }
 }
 

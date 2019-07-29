@@ -1,4 +1,5 @@
 import { parseParcelPosition } from 'atomicHelpers/parcelScenePositions'
+import { Wearable } from '../decentraland-ecs/src/decentraland/AvatarShape'
 
 export type MappingsResponse = {
   parcel_id: string
@@ -285,6 +286,92 @@ export type SkeletalAnimationValue = {
 
 export type SkeletalAnimationComponent = {
   states: SkeletalAnimationValue[]
+}
+
+export type Profile = {
+  userId: string
+  name: string
+  email: string
+  description: string
+  created_at: number
+  updated_at: number
+  version: string
+  avatar: Avatar
+}
+
+export type Color4 = {
+  r: number
+  g: number
+  b: number
+  a: number
+}
+
+export type Avatar = {
+  baseUrl: string
+  wearables: Wearable[]
+  bodyShape: Wearable
+  skin: { color: Color4 }
+  hair: { color: Color4 }
+  eyes: {
+    texture: string
+    mask?: string
+    color?: Color4
+  }
+  eyebrows: {
+    texture: string
+  }
+  mouth: {
+    texture: string
+  }
+}
+
+export type ProfileSpec = {
+  description: string
+  created_at: number
+  updated_at: number
+  version: string
+  avatar: AvatarSpec
+}
+
+export type AvatarSpec = {
+  version: number
+  skin: Colored
+  hair: Colored
+  eyes: Colored
+  bodyShape: DclAssetUrl
+  wearables: DclAssetUrl[]
+  snapshots: {
+    body: string
+    face: string
+  }
+}
+
+export type Colored = {
+  color: {
+    r: number
+    g: number
+    b: number
+  }
+}
+
+export type DclAssetUrl = string
+
+export type AvatarAsset = {
+  thumbnail: string
+  contents: Array<{
+    file: string
+    name: string
+  }>
+  path: string
+  id: string
+  name: string
+  tags: string[]
+  category: string
+  i18n: { [language: string]: string }
+  main: Array<{
+    type: string
+    model: string
+  }>
 }
 
 export function normalizeContentMappings(

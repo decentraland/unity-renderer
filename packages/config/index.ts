@@ -156,6 +156,12 @@ export function getServerConfigurations() {
     landApi: `https://api.decentraland.${TLDDefault}/v1`,
     content: `https://content.decentraland.${TLDDefault}`,
     worldInstanceUrl: `wss://world-comm.decentraland.${TLDDefault}/connect`,
+    profile: `https://profile.decentraland.${TLDDefault}/api/v1`,
+    avatar: {
+      catalog: 'https://avatar-assets.now.sh',
+      contents: `https://s3.amazonaws.com/content-service.decentraland.${TLDDefault}/`,
+      presets: `https://s3.amazonaws.com/avatars-storage.decentraland.org/mobile-avatars`
+    },
     darApi:
       TLDDefault === 'zone' || TLDDefault === 'today'
         ? 'https://schema-api-v2.now.sh/dar'

@@ -200,7 +200,7 @@ export class WorldInstanceConnection {
         if (this.stats) {
           this.stats.others.incrementRecv(msgSize)
         }
-        this.logger.log('unsopported message')
+        this.logger.log('unsupported message')
         break
       }
       case MessageType.DATA: {

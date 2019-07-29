@@ -13,10 +13,10 @@ import {
 } from 'shared/comms/types'
 import { execute } from './rpc'
 import { AvatarShape } from 'decentraland-ecs/src/decentraland/AvatarShape'
+import { Profile } from '../../shared/types'
+import defaultLogger from '../../shared/logger'
 
 export const avatarMessageObservable = new Observable<AvatarMessage>()
-
-const GENERIC_AVATAR = 'fox/completeFox.glb'
 
 const avatarMap = new Map<string, AvatarEntity>()
 
@@ -28,15 +28,35 @@ export class AvatarEntity extends Entity {
   readonly transform: Transform
   avatarShape!: AvatarShape
 
-  constructor(uuid?: string) {
+  constructor(uuid?: string, avatarShape = new AvatarShape()) {
     super(uuid)
+    this.avatarShape = avatarShape
 
-    this.avatarShape = new AvatarShape()
     this.addComponentOrReplace(this.avatarShape)
 
     // we need this component to filter the interpolator system
     this.transform = this.getComponentOrCreate(Transform)
+  }
 
+  loadProfile(profile: Profile) {
+    if (profile) {
+      const { avatar } = profile
+
+      const shape = new AvatarShape()
+      shape.id = profile.userId
+      shape.name = profile.name
+
+      shape.baseUrl = avatar.baseUrl
+      shape.skin = avatar.skin
+      shape.hair = avatar.hair
+      shape.wearables = avatar.wearables
+      shape.bodyShape = avatar.bodyShape
+      shape.eyes = avatar.eyes
+      shape.eyebrows = avatar.eyebrows
+      shape.mouth = avatar.mouth
+
+      this.addComponentOrReplace(shape)
+    }
     this.setVisible(true)
   }
 
@@ -89,11 +109,12 @@ export class AvatarEntity extends Entity {
 }
 
 /**
- * for every UUID, ensures that exist an avatar and a user in the local state.
+ * For every UUID, ensures synchronously that an avatar exists in the local state.
  * Returns the AvatarEntity instance
  * @param uuid
  */
-function ensureAvatar(uuid: UUID): AvatarEntity | null {
+function ensureAvatar(uuid: UUID): AvatarEntity {
+  // TODO - we should be using the user id instead of the comms alias, to be introduced with the profile message - moliva - 29/07/2019
   let avatar = avatarMap.get(uuid)
 
   if (avatar) {
@@ -101,12 +122,22 @@ function ensureAvatar(uuid: UUID): AvatarEntity | null {
   }
 
   avatar = new AvatarEntity(uuid)
-
   avatarMap.set(uuid, avatar)
+
+  resolveProfile(uuid)
+    .then(profile => avatar!.loadProfile(profile))
+    .catch(e => {
+      defaultLogger.error(`error loading profile for user ${uuid}`)
+      defaultLogger.error(e)
+    })
 
   executeTask(hideBlockedUsers)
 
   return avatar
+}
+
+async function resolveProfile(uuid: string) {
+  return execute('SocialController', 'resolveProfile', [uuid])
 }
 
 async function getBlockedUsers(): Promise<Array<string>> {
@@ -136,10 +167,6 @@ function handleUserData(message: ReceiveUserDataMessage): void {
 
   if (avatar) {
     const userData = message.data
-
-    // We force the GENERIC_AVATAR for now until the Avatar system and creation/integration pipeline has been defined
-    // TODO: Remove this override once the Avatar system design has been defined.
-    userData.avatarType = GENERIC_AVATAR
 
     avatar.setUserData(userData)
   }

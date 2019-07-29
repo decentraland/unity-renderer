@@ -4,6 +4,13 @@ import { Scalar } from './Scalar'
 
 import { ToLinearSpace, ToGammaSpace } from './types'
 
+export type ReadOnlyColor4 = {
+  readonly r: number
+  readonly g: number
+  readonly b: number
+  readonly a: number
+}
+
 /**
  * Class used to hold a RBGA color
  * @public
