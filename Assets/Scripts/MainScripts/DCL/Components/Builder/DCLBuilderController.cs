@@ -40,16 +40,17 @@ public class DCLBuilderController : MonoBehaviour
     LayerMask groundMask;
     int selectionLayer;
     int defaultLayer;
+
     void Start()
     {
         originPointerPosition = Vector3.zero;
         gizmoAxis = null;
-        defaultMask = LayerMask.GetMask("Default");
+        defaultMask = LayerMask.GetMask("Default") | LayerMask.GetMask("Selection");
         gizmoMask = LayerMask.GetMask("Gizmo");
         groundMask = LayerMask.GetMask("Ground");
         selectionLayer = LayerMask.NameToLayer("Selection");
         defaultLayer = LayerMask.NameToLayer("Default");
-
+        ReportMovement();
 
     }
 
@@ -103,6 +104,10 @@ public class DCLBuilderController : MonoBehaviour
                 }
                 originPointerPosition = Vector3.zero;
                 transformingObject = false;
+                if (isOrbitingCamera)
+                {
+                    ReportMovement();
+                }
             }
         }
         if (transformingObject)
@@ -113,7 +118,23 @@ public class DCLBuilderController : MonoBehaviour
         {
             UpdateGizmoOver();
         }
+
+        if (Input.GetMouseButtonUp(1))
+        {
+            ReportMovement();
+        }
+
+
     }
+
+    void OnApplicationFocus(bool hasFocus)
+    {
+        if (!hasFocus)
+        {
+            ReportMovement();
+        }
+    }
+
 
     void SelectObject(GameObject sObject)
     {
@@ -137,21 +158,24 @@ public class DCLBuilderController : MonoBehaviour
     void SelectionEffect(GameObject s)
     {
         s.layer = selectionLayer;
-        ChangeLayersRecursively(s.transform, selectionLayer);
+        ChangeLayersRecursively(s.transform, selectionLayer, defaultLayer);
     }
     void UnSelectionEffect(GameObject s)
     {
         s.layer = defaultLayer;
-        ChangeLayersRecursively(s.transform, defaultLayer);
+        ChangeLayersRecursively(s.transform, defaultLayer, selectionLayer);
     }
 
-    void ChangeLayersRecursively(Transform trans, int layer)
+    void ChangeLayersRecursively(Transform trans, int layer, int currentLayer)
     {
         for (int i = 0; i < trans.childCount; i++)
         {
             Transform child = trans.GetChild(i);
-            child.gameObject.layer = layer;
-            ChangeLayersRecursively(child, layer);
+            if (child.gameObject.layer == currentLayer)
+            {
+                child.gameObject.layer = layer;
+                ChangeLayersRecursively(child, layer, currentLayer);
+            }
         }
     }
 
@@ -297,7 +321,6 @@ public class DCLBuilderController : MonoBehaviour
             bool hit = MousePointerRaycast(groundMask, true);
             if (hit && selectedObject != null)
             {
-
                 selectedObject.transform.position = new Vector3(hitInfo.point.x,
                                                                selectedObject.transform.position.y,
                                                                hitInfo.point.z);
@@ -354,6 +377,7 @@ public class DCLBuilderController : MonoBehaviour
         return Physics.Raycast(camera.ScreenPointToRay(Input.mousePosition), out hitInfo, 10000, mask);
     }
 
+
     public void ZoomDelta(string delta)
     {
         if (int.Parse(delta) < 0)
@@ -390,5 +414,13 @@ public class DCLBuilderController : MonoBehaviour
         DecentralandEntity entity = wrapper.entity;
         DCL.Interface.WebInterface.ReportGizmoEvent(entity.scene.sceneData.id, entity.entityId, "gizmoDragEnded", GizmoType.NONE, selectedObject.transform);
     }
+
+    void ReportMovement()
+    {
+        var rotation = camera.transform.rotation;
+        var reportCameraPosition = cameraController.GetLookAtPosition();
+        DCL.Interface.WebInterface.ReportPosition(reportCameraPosition, rotation, 0);
+    }
+
 
 }
