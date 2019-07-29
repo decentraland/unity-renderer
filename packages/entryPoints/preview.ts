@@ -3,7 +3,7 @@ declare var global: any
 declare var window: any
 
 global['preview'] = window['preview'] = true
-global['avoidWeb3'] = window['avoidWeb3']
+global['enableWeb3'] = window['enableWeb3']
 
 import { initializeUnity } from '../unity-interface/initializer'
 import { loadPreviewScene } from '../unity-interface/dcl'

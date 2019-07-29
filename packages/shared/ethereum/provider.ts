@@ -12,8 +12,11 @@ declare var window: Window & {
 export const providerFuture = future()
 export const requestManager = new RequestManager(null)
 
-{
-  window.addEventListener('load', async () => {
+let providerRequested = false
+
+export async function awaitWeb3Approval() {
+  if (!providerRequested) {
+    providerRequested = true
     // Modern dapp browsers...
     if (window['ethereum']) {
       try {
@@ -29,11 +32,7 @@ export const requestManager = new RequestManager(null)
     } else {
       providerFuture.resolve(new WebSocketProvider(ethereumConfigurations[ETHEREUM_NETWORK.MAINNET].wss))
     }
-  })
+  }
 
   providerFuture.then(provider => requestManager.setProvider(provider)).catch(defaultLogger.error)
-}
-
-export async function awaitWeb3Approval() {
-  await providerFuture
 }
