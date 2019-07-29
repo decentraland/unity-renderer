@@ -26,6 +26,8 @@ namespace DCL.Interface
             public Quaternion rotation;
             /** Camera height, relative to the feet of the avatar or ground */
             public float playerHeight;
+
+            public Vector3 mousePosition;
         }
 
         [System.Serializable]

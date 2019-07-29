@@ -236,4 +236,9 @@ public class DCLCinemachineCameraBuilderController : MonoBehaviour
     {
         cameraMove.SetPosition(position);
     }
+
+    public Vector3 GetLookAtPosition()
+    {
+        return freelook.LookAt.position;
+    }
 }

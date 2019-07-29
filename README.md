@@ -144,6 +144,15 @@ public IEnumerator VisualTestStub_Generate()
 }
 ```
 
+### Builder Integration
+
+The following layers were created for builder functionality: 
+-Ground: used to facilitate ground raycasting and objects movement-
+-Gizmo: used to identify the gizmos and effects.
+-Selected: used for selected object effects.
+
+
+
 ### Known Issues
 
 -   Regarding Basic Materials: If the **alphaTest** value is set on a basic material and the **Assets/Resources/Materials/BasicShapeMaterial** is viewed in the Inspector (be it by selecting the material in the Project tab or by expanding its details from a renderer in the Inspector), its "Alpha Clip" toggle gets untoggled (and the material file modified). We suspect a Unity bug.
