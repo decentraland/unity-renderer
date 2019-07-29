@@ -10,6 +10,7 @@ import { connect } from './comms'
 import { initialize, queueTrackingEvent } from './analytics'
 import { defaultLogger } from './logger'
 import { initWeb3, getNetworkFromTLD, getAppNetwork } from './web3'
+import { fetchProfile, generateRandomAvatarSpec, createProfile } from './world/profiles'
 
 // TODO fill with segment keys and integrate identity server
 export async function initializeAnalytics(userId: string) {
@@ -29,28 +30,27 @@ export async function initializeAnalytics(userId: string) {
 export async function initShared(container: HTMLElement): Promise<ETHEREUM_NETWORK> {
   const auth = new Auth()
 
-  let user_id: string
+  let userId: string
 
   console['group']('connect#login')
 
   if (PREVIEW) {
     defaultLogger.log(`Using test user.`)
-    user_id = 'email|5cdd68572d5f842a16d6cc17'
+    userId = 'email|5cdd68572d5f842a16d6cc17'
   } else {
     await auth.login(container)
     try {
       const payload: any = await auth.getAccessTokenData()
-      user_id = payload.user_id
+      userId = payload.user_id
     } catch (e) {
       defaultLogger.error(e)
       console['groupEnd']()
       throw new Error('Authentication error. Please reload the page to try again. (' + e.toString() + ')')
     }
-
-    await initializeAnalytics(user_id)
+    await initializeAnalytics(userId)
   }
 
-  defaultLogger.log(`User ${user_id} logged in`)
+  defaultLogger.log(`User ${userId} logged in`)
 
   console['groupEnd']()
 
@@ -62,7 +62,7 @@ export async function initShared(container: HTMLElement): Promise<ETHEREUM_NETWO
     await initWeb3()
     net = await getAppNetwork()
   } else {
-    net = (await getNetworkFromTLD()) || ETHEREUM_NETWORK.MAINNET
+    net = getNetworkFromTLD() || ETHEREUM_NETWORK.MAINNET
   }
 
   queueTrackingEvent('Use network', { net })
@@ -73,7 +73,7 @@ export async function initShared(container: HTMLElement): Promise<ETHEREUM_NETWO
 
   console['group']('connect#comms')
   await connect(
-    user_id,
+    userId,
     net,
     auth
   )
@@ -91,6 +91,22 @@ export async function initShared(container: HTMLElement): Promise<ETHEREUM_NETWO
     )
     document.head.appendChild(style)
   }
+
+  // initialize profile
+  console['group']('connect#profile')
+  const response = await fetchProfile()
+  if (!response.ok) {
+    defaultLogger.info(`Non existing profile, creating a random one`)
+    const avatar = await generateRandomAvatarSpec(userId)
+    try {
+      const creationResponse = await createProfile(avatar)
+      defaultLogger.info(`New profile created with response ${creationResponse.status}`)
+    } catch (e) {
+      defaultLogger.error(`Error while creating profile`)
+      defaultLogger.error(e)
+    }
+  }
+  console['groupEnd']()
 
   return net
 }

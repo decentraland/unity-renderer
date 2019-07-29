@@ -1,27 +1,44 @@
 import { ObservableComponent, Component } from '../ecs/Component'
 import { CLASS_ID } from './Components'
-import { Color4 } from './math'
+import { ReadOnlyColor4 } from './math'
 
+/**
+ * @public
+ */
 export class Wearable {
-  category!: string
-  contentName!: string
+  constructor(
+    public category: string,
+    public contentName: string,
+    public contents: { file: string; hash: string }[] = []
+  ) {}
 }
 
+/**
+ * @public
+ */
 export class Skin {
-  color!: Color4
+  constructor(public color: ReadOnlyColor4) {}
 }
 
+/**
+ * @public
+ */
 export class Hair {
-  color!: Color4
+  constructor(public color: ReadOnlyColor4) {}
 }
 
+/**
+ * @public
+ */
 export class Face {
-  mask!: string
-  texture!: string
+  constructor(public texture: string) {}
 }
 
-export class Eyes extends Face {
-  color!: Color4
+/**
+ * @public
+ */
+export class Eyes {
+  constructor(public texture: string, public mask?: string, public color?: ReadOnlyColor4) {}
 }
 
 /**
@@ -58,4 +75,13 @@ export class AvatarShape extends ObservableComponent {
 
   @ObservableComponent.field
   mouth!: Face
+
+  @ObservableComponent.field
+  useDummyModel: boolean = false
+
+  public static Dummy(): AvatarShape {
+    const avatarShape = new AvatarShape()
+    avatarShape.useDummyModel = true
+    return avatarShape
+  }
 }
