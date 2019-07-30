@@ -4,12 +4,12 @@ import { getServerConfigurations } from '../../config/index'
 import defaultLogger from '../logger'
 import { Auth } from 'decentraland-auth'
 
-export async function resolveProfile(uuid: string): Promise<Profile> {
+export async function resolveProfile(uuid: string = ''): Promise<Profile> {
   let response
   try {
     response = await fetchProfile(uuid)
   } catch (e) {
-    defaultLogger.error(`failed to fetch profile for user id ${uuid}`)
+    defaultLogger.error(`failed to fetch profile for ${uuid ? 'user id ' + uuid : 'current user'}`)
     defaultLogger.error(e)
   }
 
@@ -24,11 +24,12 @@ export async function resolveProfile(uuid: string): Promise<Profile> {
       updated_at: 1,
       created_at: 1,
       version: '0',
-      avatar: await generateRandomAvatarSpec(uuid)
+      avatar: await generateRandomAvatarSpec()
     }
   }
 
   const avatar = await mapAvatarToShape(spec.avatar)
+
   // TODO - fetch name from claim server - moliva - 22/07/2019
   const name = `Guest_${uuid.replace('email|', '').slice(0, 7)}` // strip email| from auth0 uuid
 
@@ -54,9 +55,19 @@ function fromColored(colored: Colored): { color: Color4 } {
   return { color: new Color4(color.r, color.g, color.b) }
 }
 
+const DCL_ASSET_BASE_URL = 'dcl://base-avatars/'
+
 function fromDclAssertUrl(url: DclAssetUrl): string {
-  return url.slice('dcl://base-avatars/'.length)
+  return url.slice(DCL_ASSET_BASE_URL.length)
 }
+
+function toDclAssertUrl(assetName: string): DclAssetUrl {
+  return DCL_ASSET_BASE_URL + assetName
+}
+
+const DEFAULT_ASSETS: { [base: string]: Array<DclAssetUrl> } = {}
+DEFAULT_ASSETS[toDclAssertUrl('BaseMale')] = ['eyes_00', 'eyebrows_00', 'mouth_00'].map($ => toDclAssertUrl($))
+DEFAULT_ASSETS[toDclAssertUrl('BaseFemale')] = ['f_eyes_00', 'f_eyebrows_00', 'f_mouth_00'].map($ => toDclAssertUrl($))
 
 async function mapAvatarToShape(avatar: AvatarSpec): Promise<Avatar> {
   const shape: any = {}
@@ -71,7 +82,9 @@ async function mapAvatarToShape(avatar: AvatarSpec): Promise<Avatar> {
   shape.baseUrl = getServerConfigurations().avatar.contents
   shape.wearables = []
 
-  avatar.wearables.forEach(wearable => {
+  const defaults = DEFAULT_ASSETS[avatar.bodyShape]
+
+  defaults.concat(avatar.wearables).forEach(wearable => {
     const name = fromDclAssertUrl(wearable)
     const assets = avatarCatalog.filter($ => $.name === name)
     if (assets.length === 0) {
@@ -166,7 +179,7 @@ const numbers = [
   '00016'
 ]
 
-export async function generateRandomAvatarSpec(uuid: string): Promise<AvatarSpec> {
+export async function generateRandomAvatarSpec(): Promise<AvatarSpec> {
   const sex = randomIn(sexes)
   const skin = randomIn(skins)
   const _number = randomIn(numbers)

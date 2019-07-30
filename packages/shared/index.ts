@@ -97,7 +97,7 @@ export async function initShared(container: HTMLElement): Promise<ETHEREUM_NETWO
   const response = await fetchProfile()
   if (!response.ok) {
     defaultLogger.info(`Non existing profile, creating a random one`)
-    const avatar = await generateRandomAvatarSpec(userId)
+    const avatar = await generateRandomAvatarSpec()
     try {
       const creationResponse = await createProfile(avatar)
       defaultLogger.info(`New profile created with response ${creationResponse.status}`)
