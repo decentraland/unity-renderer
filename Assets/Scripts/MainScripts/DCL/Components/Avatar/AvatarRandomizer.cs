@@ -68,6 +68,9 @@ public class AvatarRandomizer
 
     string[] faceCategories = new string[] { AvatarShape.CATEGORY_EYES, AvatarShape.CATEGORY_EYEBROWS, AvatarShape.CATEGORY_MOUTH };
 
+    Color[] hairColorPresets = new Color[5] { new Color(0.1f, 0.1f, 0.1f, 1), new Color(0.36f, 0.19f, 0.06f, 1), new Color(0.54f, 0.12f, 0.08f, 1), new Color(1, 0.74f, 0.15f, 1), new Color(0.92f, 0.90f, 0.88f, 1) };
+    Color[] skinColorPresets = new Color[5] { new Color(1f, 0.86f, 0.73f, 1), new Color(0.86f, 0.69f, 0.56f, 1), new Color(0.80f, 0.60f, 0.46f, 1), new Color(0.49f, 0.36f, 0.27f, 1), new Color(0.32f, 0.17f, 0.10f, 1) };
+
     public AvatarRandomizer()
     {
     }
@@ -94,8 +97,8 @@ public class AvatarRandomizer
         result.bodyShape = set.bodyShape;
         var wearables = new List<AvatarShape.Model.Wearable>();
 
-        result.hair = new AvatarShape.Model.Hair() { color = Random.ColorHSV(0, 1, 0.5f, 1, 0.5f, 1) };
-        result.skin = new AvatarShape.Model.Skin() { color = Random.ColorHSV(0, 1, 0.2f, 0.5f, 0.7f, 1) };
+        result.hair = new AvatarShape.Model.Hair() { color = hairColorPresets[Random.Range(0, hairColorPresets.Length)] };
+        result.skin = new AvatarShape.Model.Skin() { color = skinColorPresets[Random.Range(0, skinColorPresets.Length)] };
         result.eyes = new AvatarShape.Model.Eyes() { color = Random.ColorHSV(0, 1, 0.5f, 1, 0.1f, 0.5f) };
         result.eyebrows = new AvatarShape.Model.Face() { };
         result.mouth = new AvatarShape.Model.Face() { };
