@@ -1,16 +1,18 @@
 import { Profile, AvatarAsset, Colored, DclAssetUrl, ProfileSpec, Avatar, AvatarSpec } from '../types'
 import { Color4 } from '../../decentraland-ecs/src/decentraland/math/Color4'
-import { getServerConfigurations } from '../../config/index'
+import { getServerConfigurations, PREVIEW } from '../../config/index'
 import defaultLogger from '../logger'
 import { Auth } from 'decentraland-auth'
 
 export async function resolveProfile(uuid: string = ''): Promise<Profile> {
   let response
-  try {
-    response = await fetchProfile(uuid)
-  } catch (e) {
-    defaultLogger.error(`failed to fetch profile for ${uuid ? 'user id ' + uuid : 'current user'}`)
-    defaultLogger.error(e)
+  if (!PREVIEW) {
+    try {
+      response = await fetchProfile(uuid)
+    } catch (e) {
+      defaultLogger.error(`failed to fetch profile for ${uuid ? 'user id ' + uuid : 'current user'}`)
+      defaultLogger.error(e)
+    }
   }
 
   let spec: ProfileSpec
