@@ -94,16 +94,24 @@ export async function initShared(container: HTMLElement): Promise<ETHEREUM_NETWO
 
   // initialize profile
   console['group']('connect#profile')
-  const response = await fetchProfile()
-  if (!response.ok) {
-    defaultLogger.info(`Non existing profile, creating a random one`)
-    const avatar = await generateRandomAvatarSpec()
+  if (!PREVIEW) {
+    let response
     try {
-      const creationResponse = await createProfile(avatar)
-      defaultLogger.info(`New profile created with response ${creationResponse.status}`)
+      response = await fetchProfile()
     } catch (e) {
-      defaultLogger.error(`Error while creating profile`)
-      defaultLogger.error(e)
+      defaultLogger.error(`Not able to fetch profile for current user`)
+    }
+
+    if (!response || !response.ok) {
+      defaultLogger.info(`Non existing profile, creating a random one`)
+      const avatar = await generateRandomAvatarSpec()
+      try {
+        const creationResponse = await createProfile(avatar)
+        defaultLogger.info(`New profile created with response ${creationResponse.status}`)
+      } catch (e) {
+        defaultLogger.error(`Error while creating profile`)
+        defaultLogger.error(e)
+      }
     }
   }
   console['groupEnd']()
