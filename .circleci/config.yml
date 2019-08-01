@@ -65,16 +65,6 @@ jobs:
           name: send coverage to codecov
           command: npx codecov
 
-      - run:
-          name: Set up NPM
-          command: echo "//registry.npmjs.org/:_authToken=${NPM_TOKEN}" > ~/.npmrc
-          when: on_success
-
-      - run:
-          name: publish decentraland-api
-          command: make publish
-          when: on_success
-
       - store_artifacts:
           path: packages/decentraland-ecs/api-docs-review/decentraland-ecs.api.ts
           when: on_fail
@@ -86,6 +76,25 @@ jobs:
           paths:
             - static
           key: build-{{ .Revision }}
+
+  publish-ecs:
+    docker:
+      - image: circleci/node:10-browsers
+    working_directory: /tmp/explorer
+    steps:
+      - restore_cache:
+          keys:
+            - build-{{ .Revision }}
+      - run:
+          name: Set up NPM
+          command: echo "//registry.npmjs.org/:_authToken=${NPM_TOKEN}" > ~/.npmrc
+          when: on_success
+
+      - run:
+          name: publish decentraland-api
+          command: make publish
+          when: on_success
+
 
   deploy-on-pr:
     docker:
@@ -208,6 +217,12 @@ workflows:
           filters:
             branches:
               only: master
+      - publish-ecs:
+          requires:
+              - build 
+          filters:
+            branches:
+              only: master
       - deploy-stg:
           requires:
             - build
@@ -218,6 +233,14 @@ workflows:
             tags:
               only: /^\d+\.\d+\.\d(.*)/
       - deploy-prd:
+          requires:
+            - hold
+          filters:
+            branches:
+              ignore: /.*/
+            tags:
+              only: /^\d+\.\d+\.\d(.*)/
+      - publish-ecs:
           requires:
             - hold
           filters:
