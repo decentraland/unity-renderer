@@ -75,6 +75,57 @@ namespace Tests
         }
 
         [UnityTest]
+        public IEnumerator NFTShapeUpdate()
+        {
+            yield return InitScene();
+
+            string entityId = "1";
+            TestHelpers.CreateSceneEntity(scene, entityId);
+
+            var entity = scene.entities[entityId];
+            Assert.IsTrue(entity.meshGameObject == null, "entity mesh object should be null as the NFTShape hasn't been initialized yet");
+
+            var componentModel = new NFTShape.Model() 
+            {
+                src = "ethereum://0x06012c8cf97BEaD5deAe237070F9587f8E7A266d/558536"
+            };
+
+            NFTShape component = TestHelpers.SharedComponentCreate<NFTShape, NFTShape.Model>(scene, CLASS_ID.NFT_SHAPE, componentModel);
+            yield return component.routine;
+
+            TestHelpers.SharedComponentAttach(component, entity);
+
+            Assert.IsTrue(entity.meshGameObject != null, "entity mesh object should already exist as the NFTShape already initialized");
+
+            var nftShape = entity.meshGameObject.GetComponent<LoadWrapper_NFT>();
+            var backgroundMaterialPropertyBlock = new MaterialPropertyBlock();
+            nftShape.loaderController.meshRenderer.GetPropertyBlock(backgroundMaterialPropertyBlock, 1);
+
+            Assert.IsTrue(backgroundMaterialPropertyBlock.GetColor("_BaseColor") == new Color(0.6404918f, 0.611472f, 0.8584906f), "The NFT frame background color should be the default one");
+
+            // Update color and check if it changed
+            componentModel.color = Color.yellow;
+            TestHelpers.SharedComponentUpdate<NFTShape, NFTShape.Model>(scene, component, componentModel);
+            yield return component.routine;
+
+            nftShape.loaderController.meshRenderer.GetPropertyBlock(backgroundMaterialPropertyBlock, 1);
+            Assert.AreEqual(Color.yellow, backgroundMaterialPropertyBlock.GetColor("_BaseColor"), "The NFT frame background color should be yellow");
+        }
+
+        [UnityTest]
+        public IEnumerator NFTShapeMissingValuesGetDefaultedOnUpdate()
+        {
+            yield return InitScene();
+
+            var component = TestHelpers.SharedComponentCreate<NFTShape, NFTShape.Model>(scene, CLASS_ID.NFT_SHAPE);
+            yield return component.routine;
+
+            Assert.IsFalse(component == null);
+
+            yield return TestHelpers.TestSharedComponentDefaultsOnUpdate<NFTShape.Model, NFTShape>(scene, CLASS_ID.NFT_SHAPE);
+        }
+
+        [UnityTest]
         public IEnumerator PreExistentShapeUpdate()
         {
             yield return InitScene();

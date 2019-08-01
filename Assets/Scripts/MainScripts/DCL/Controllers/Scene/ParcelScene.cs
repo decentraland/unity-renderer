@@ -430,6 +430,12 @@ namespace DCL.Controllers
                         break;
                     }
 
+                case CLASS_ID.NFT_SHAPE:
+                    {
+                        newComponent = new NFTShape(this);
+                        break;
+                    }
+
                 case CLASS_ID.OBJ_SHAPE:
                     {
                         newComponent = new OBJShape(this);
