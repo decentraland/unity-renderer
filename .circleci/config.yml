@@ -78,6 +78,8 @@ jobs:
             - Makefile
             - packages
             - scripts
+            - package-lock.json
+            - package.json
           key: build-{{ .Revision }}
 
   publish-ecs-latest:
