@@ -75,9 +75,11 @@ jobs:
       - save_cache:
           paths:
             - static
+            - Makefile
+            - packages
           key: build-{{ .Revision }}
 
-  publish-ecs:
+  publish-ecs-latest:
     docker:
       - image: circleci/node:10-browsers
     working_directory: /tmp/explorer
@@ -95,6 +97,23 @@ jobs:
           command: make publish
           when: on_success
 
+  publish-ecs-next:
+    docker:
+      - image: circleci/node:10-browsers
+    working_directory: /tmp/explorer
+    steps:
+      - restore_cache:
+          keys:
+            - build-{{ .Revision }}
+      - run:
+          name: Set up NPM
+          command: echo "//registry.npmjs.org/:_authToken=${NPM_TOKEN}" > ~/.npmrc
+          when: on_success
+
+      - run:
+          name: publish decentraland-api
+          command: make publish
+          when: on_success
 
   deploy-on-pr:
     docker:
@@ -196,7 +215,16 @@ workflows:
           filters:
             tags:
               only: /.*/
-      - hold:
+      - hold-explorer:
+          type: approval
+          requires:
+            - build
+          filters:
+            branches:
+              ignore: /.*/
+            tags:
+              only: /^\d+\.\d+\.\d(.*)/
+      - hold-ecs:
           type: approval
           requires:
             - build
@@ -217,9 +245,9 @@ workflows:
           filters:
             branches:
               only: master
-      - publish-ecs:
+      - publish-ecs-next:
           requires:
-              - build 
+            - build
           filters:
             branches:
               only: master
@@ -234,15 +262,15 @@ workflows:
               only: /^\d+\.\d+\.\d(.*)/
       - deploy-prd:
           requires:
-            - hold
+            - hold-explorer
           filters:
             branches:
               ignore: /.*/
             tags:
               only: /^\d+\.\d+\.\d(.*)/
-      - publish-ecs:
+      - publish-ecs-latest:
           requires:
-            - hold
+            - hold-ecs
           filters:
             branches:
               ignore: /.*/

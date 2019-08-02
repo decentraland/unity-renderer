@@ -12,13 +12,7 @@
     },
     "packages/metaverse-api/*.js": {
       "when": "$(basename).ts"
-    },
-    "dist": true,
-    ".prettierignore": true,
-    ".vscode": true,
-    ".github": true,
-    ".circleci": true,
-    "**/*.d.ts": false
+    }
   },
   "prettier.ignorePath": ".prettierignore",
   "editor.tabSize": 2
