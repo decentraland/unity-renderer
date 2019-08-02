@@ -142,8 +142,12 @@ const run = async () => {
         linkLatest = true
         newVersion = gitTag
       } else if (prerelease && prerelease.includes('rc')) {
-        // It's a release candidate, publish it as such
+        // Release candidate
         npmTag = 'rc'
+        newVersion = gitTag
+      } else if (prerelease && prerelease.includes('er')) {
+        // Explorer release
+        npmTag = 'er'
         newVersion = gitTag
       } else {
         npmTag = 'tag-' + gitTag
