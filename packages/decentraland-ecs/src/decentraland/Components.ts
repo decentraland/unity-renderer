@@ -150,7 +150,7 @@ export class Shape extends ObservableComponent {
    * Set to true to turn on the collider for the entity.
    */
   @ObservableComponent.field
-  withCollisions: boolean = false
+  withCollisions: boolean = true
 
   /**
    * Defines if the entity and its children should be rendered
