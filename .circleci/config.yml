@@ -95,6 +95,8 @@ jobs:
       - restore_cache:
           keys:
             - build-{{ .Revision }}
+      - restore_cache:
+          keys:
             - build-npm-{{ .Revision }}
       # restore node_modules
       - restore_cache:
@@ -120,6 +122,8 @@ jobs:
       - restore_cache:
           keys:
             - build-{{ .Revision }}
+      - restore_cache:
+          keys:
             - build-npm-{{ .Revision }}
       # restore node_modules
       - restore_cache:
