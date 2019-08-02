@@ -85,9 +85,15 @@ jobs:
       - image: circleci/node:10-browsers
     working_directory: /tmp/explorer
     steps:
+      # restore build files
       - restore_cache:
           keys:
             - build-{{ .Revision }}
+      # restore node_modules
+      - restore_cache:
+          keys:
+            - v1-dependencies-{{ checksum "package-lock.json" }}
+            - v1-dependencies-
       - run:
           name: Set up NPM
           command: echo "//registry.npmjs.org/:_authToken=${NPM_TOKEN}" > ~/.npmrc
@@ -103,9 +109,15 @@ jobs:
       - image: circleci/node:10-browsers
     working_directory: /tmp/explorer
     steps:
+      # restore build files
       - restore_cache:
           keys:
             - build-{{ .Revision }}
+      # restore node_modules
+      - restore_cache:
+          keys:
+            - v1-dependencies-{{ checksum "package-lock.json" }}
+            - v1-dependencies-
       - run:
           name: Set up NPM
           command: echo "//registry.npmjs.org/:_authToken=${NPM_TOKEN}" > ~/.npmrc
