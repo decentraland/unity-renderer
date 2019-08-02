@@ -75,12 +75,16 @@ jobs:
       - save_cache:
           paths:
             - static
+          key: build-{{ .Revision }}
+      - save_cache:
+          paths:
             - Makefile
             - packages
             - scripts
             - package-lock.json
             - package.json
-          key: build-{{ .Revision }}
+            - .git
+          key: build-npm-{{ .Revision }}
 
   publish-ecs-latest:
     docker:
@@ -91,6 +95,7 @@ jobs:
       - restore_cache:
           keys:
             - build-{{ .Revision }}
+            - build-npm-{{ .Revision }}
       # restore node_modules
       - restore_cache:
           keys:
@@ -115,6 +120,7 @@ jobs:
       - restore_cache:
           keys:
             - build-{{ .Revision }}
+            - build-npm-{{ .Revision }}
       # restore node_modules
       - restore_cache:
           keys:
