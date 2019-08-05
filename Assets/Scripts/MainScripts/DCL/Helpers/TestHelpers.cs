@@ -833,6 +833,87 @@ namespace DCL.Helpers
             component.Dispose();
         }
 
+        public static IEnumerator TestShapeVisibility(BaseShape shapeComponent, BaseShape.Model shapeModel, DecentralandEntity entity)
+        {
+            var scene = shapeComponent.scene;
+
+            // make sure the shape is visible first
+            shapeModel.visible = true;
+            SharedComponentUpdate(scene, shapeComponent, shapeModel);
+            yield return shapeComponent.routine;
+
+            // check every mesh is shown by default
+            Renderer[] renderers = entity.meshGameObject.GetComponentsInChildren<Renderer>(true);
+
+            Assert.IsTrue(renderers.Length > 0);
+
+            for (int i = 0; i < renderers.Length; i++)
+            {
+                Assert.IsTrue(renderers[i].enabled);
+            }
+            yield return TestShapeOnClickCollider(entity);
+
+            // update visibility with 'false'
+            shapeModel.visible = false;
+            SharedComponentUpdate(scene, shapeComponent, shapeModel);
+            yield return shapeComponent.routine;
+
+            // check renderers correct behaviour
+            for (int i = 0; i < renderers.Length; i++)
+            {
+                Assert.IsFalse(renderers[i].enabled);
+            }
+            yield return TestShapeOnClickCollider(entity);
+
+            // update visibility with 'true'
+            shapeModel.visible = true;
+            SharedComponentUpdate(scene, shapeComponent, shapeModel);
+            yield return shapeComponent.routine;
+
+            // check renderers correct behaviour
+            for (int i = 0; i < renderers.Length; i++)
+            {
+                Assert.IsTrue(renderers[i].enabled);
+            }
+            yield return TestShapeOnClickCollider(entity);
+        }
+
+        public static IEnumerator TestShapeOnClickCollider(DecentralandEntity entity)
+        {
+            Renderer[] renderers = entity.meshGameObject.GetComponentsInChildren<Renderer>(true);
+
+            Assert.IsTrue(renderers.Length > 0);
+
+            var onClickComponentModel = new OnClickComponent.Model()
+            {
+                type = "onClick",
+                uuid = "onClick"
+            };
+            var onClickComponent = TestHelpers.EntityComponentCreate<OnClickComponent, OnClickComponent.Model>(entity.scene, entity, onClickComponentModel, CLASS_ID_COMPONENT.UUID_CALLBACK);
+            yield return onClickComponent.routine;
+
+            Collider onClickCollider;
+            int onClickLayer = LayerMask.NameToLayer("OnClick");
+            for (int i = 0; i < renderers.Length; i++)
+            {
+                Assert.IsTrue(renderers[i].transform.childCount > 0, "OnClick collider should exist as this mesh's child");
+                
+                onClickCollider = renderers[i].transform.GetChild(0).GetComponent<Collider>();
+                Assert.IsTrue(onClickCollider != null);
+                Assert.IsTrue(onClickCollider.gameObject.layer == onClickLayer);
+
+                // check the onClick collide enabled state is the same as the renderer's state
+                Assert.IsTrue(onClickCollider.enabled == renderers[i].enabled);
+            }
+
+            entity.scene.EntityComponentRemove(JsonUtility.ToJson(new EntityComponentRemoveMessage
+            {
+                entityId = entity.entityId,
+                name = onClickComponent.name,
+            }));
+            yield return null;
+        }
+
         public static IEnumerator TestUIElementAddedCorrectlyOnInvisibleParent<TComponent, TComponentModel>(ParcelScene scene, CLASS_ID classId) 
         where TComponent : UIShape
         where TComponentModel : UIShape.Model, new()

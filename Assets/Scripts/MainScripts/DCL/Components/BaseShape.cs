@@ -103,21 +103,32 @@ namespace DCL.Components
             {
                 return;
             }
-
+            
             if (!isVisible)
             {
-                MaterialTransitionController[] materialTransitionControllers =
-                    meshGameObject.GetComponentsInChildren<MaterialTransitionController>();
+                MaterialTransitionController[] materialTransitionControllers = meshGameObject.GetComponentsInChildren<MaterialTransitionController>();
+                
                 for (var i = 0; i < materialTransitionControllers.Length; i++)
                 {
                     GameObject.Destroy(materialTransitionControllers[i]);
                 }
             }
 
-            MeshRenderer[] meshRenderers = meshGameObject.GetComponentsInChildren<MeshRenderer>();
-            for (var i = 0; i < meshRenderers.Length; i++)
+            Renderer[] renderers = meshGameObject.GetComponentsInChildren<Renderer>(true);
+            Collider onClickCollider;
+            int onClickLayer = LayerMask.NameToLayer("OnClick");
+
+            for (var i = 0; i < renderers.Length; i++)
             {
-                meshRenderers[i].enabled = isVisible;
+                renderers[i].enabled = isVisible;
+                
+                if(renderers[i].transform.childCount > 0)
+                {
+                    onClickCollider = renderers[i].transform.GetChild(0).GetComponent<Collider>();
+
+                    if(onClickCollider != null && onClickCollider.gameObject.layer == onClickLayer)
+                        onClickCollider.enabled = isVisible;
+                }
             }
         }
     }

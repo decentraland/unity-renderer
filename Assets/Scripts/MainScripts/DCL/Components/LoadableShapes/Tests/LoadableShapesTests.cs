@@ -321,187 +321,6 @@ namespace Tests
         }
 
         [UnityTest]
-        public IEnumerator GLTFVisibilityDefault()
-        {
-            #region Arrange
-
-            yield return InitScene();
-
-            LoadableShape.Model gltfModel = new LoadableShape.Model()
-            {
-                src = TestHelpers.GetTestsAssetsPath() + "/GLB/Lantern/Lantern.glb",
-            };
-
-            GLTFShape gltfShape = TestHelpers.CreateEntityWithGLTFShape(scene, Vector3.zero, gltfModel);
-            yield return gltfShape.routine;
-
-            LoadWrapper_GLTF gltfLoader = scene.entities[gltfShape.attachedEntities.First().entityId].gameObject
-                .GetComponentInChildren<LoadWrapper_GLTF>(true);
-            yield return new WaitUntil(() => gltfLoader.alreadyLoaded);
-
-            #endregion
-
-            #region Act
-
-            //EMPTY
-
-            #endregion
-
-            #region Assert
-
-            Assert.AreEqual(true, gltfShape.model.visible);
-            Assert.IsTrue(CheckVisibility(gltfShape, true));
-
-            #endregion
-        }
-
-        [UnityTest]
-        public IEnumerator GLTFVisibilityCreateTrue()
-        {
-            #region Arrange
-
-            yield return InitScene();
-
-            LoadableShape.Model gltfModel = new LoadableShape.Model()
-            {
-                src = TestHelpers.GetTestsAssetsPath() + "/GLB/Lantern/Lantern.glb",
-                visible = true
-            };
-
-            GLTFShape gltfShape = TestHelpers.CreateEntityWithGLTFShape(scene, Vector3.zero, gltfModel);
-            yield return gltfShape.routine;
-
-            LoadWrapper_GLTF gltfLoader = scene.entities[gltfShape.attachedEntities.First().entityId].gameObject
-                .GetComponentInChildren<LoadWrapper_GLTF>(true);
-            yield return new WaitUntil(() => gltfLoader.alreadyLoaded);
-
-            #endregion
-
-            #region Act
-
-            //EMPTY
-
-            #endregion
-
-            #region Assert
-
-            Assert.AreEqual(true, gltfShape.model.visible);
-            Assert.IsTrue(CheckVisibility(gltfShape, true));
-
-            #endregion
-        }
-
-        [UnityTest]
-        public IEnumerator GLTFVisibilityCreateFalse()
-        {
-            #region Arrange
-
-            yield return InitScene();
-
-            LoadableShape.Model gltfModel = new LoadableShape.Model()
-            {
-                src = TestHelpers.GetTestsAssetsPath() + "/GLB/Lantern/Lantern.glb",
-                visible = false
-            };
-
-            GLTFShape gltfShape = TestHelpers.CreateEntityWithGLTFShape(scene, Vector3.zero, gltfModel);
-            yield return gltfShape.routine;
-
-            LoadWrapper_GLTF gltfLoader = scene.entities[gltfShape.attachedEntities.First().entityId].gameObject
-                .GetComponentInChildren<LoadWrapper_GLTF>(true);
-            yield return new WaitUntil(() => gltfLoader.alreadyLoaded);
-
-            #endregion
-
-            #region Act
-
-            //EMPTY
-
-            #endregion
-
-            #region Assert
-
-            Assert.AreEqual(false, gltfShape.model.visible);
-            Assert.IsTrue(CheckVisibility(gltfShape, false));
-
-            #endregion
-        }
-
-        [UnityTest]
-        public IEnumerator GLTFVisibilityUpdateFalse()
-        {
-            #region Arrange
-
-            yield return InitScene();
-
-            LoadableShape.Model gltfModel = new LoadableShape.Model()
-            {
-                src = TestHelpers.GetTestsAssetsPath() + "/GLB/Lantern/Lantern.glb",
-                visible = true
-            };
-
-            GLTFShape gltfShape = TestHelpers.CreateEntityWithGLTFShape(scene, Vector3.zero, gltfModel);
-            yield return gltfShape.routine;
-
-            LoadWrapper_GLTF gltfLoader = scene.entities[gltfShape.attachedEntities.First().entityId].gameObject
-                .GetComponentInChildren<LoadWrapper_GLTF>(true);
-            yield return new WaitUntil(() => gltfLoader.alreadyLoaded);
-
-            #endregion
-
-            #region Act
-
-            gltfModel.visible = false;
-            TestHelpers.SharedComponentUpdate(scene, gltfShape, gltfModel);
-
-            #endregion
-
-            #region Assert
-
-            Assert.AreEqual(false, gltfShape.model.visible);
-            Assert.IsTrue(CheckVisibility(gltfShape, false));
-
-            #endregion
-        }
-
-        [UnityTest]
-        public IEnumerator GLTFVisibilityUpdateTrue()
-        {
-            #region Arrange
-
-            yield return InitScene();
-
-            LoadableShape.Model gltfModel = new LoadableShape.Model()
-            {
-                src = TestHelpers.GetTestsAssetsPath() + "/GLB/Lantern/Lantern.glb",
-                visible = false
-            };
-
-            GLTFShape gltfShape = TestHelpers.CreateEntityWithGLTFShape(scene, Vector3.zero, gltfModel);
-            yield return gltfShape.routine;
-
-            LoadWrapper_GLTF gltfLoader = scene.entities[gltfShape.attachedEntities.First().entityId].gameObject
-                .GetComponentInChildren<LoadWrapper_GLTF>(true);
-            yield return new WaitUntil(() => gltfLoader.alreadyLoaded);
-
-            #endregion
-
-            #region Act
-
-            gltfModel.visible = true;
-            TestHelpers.SharedComponentUpdate(scene, gltfShape, gltfModel);
-
-            #endregion
-
-            #region Assert
-
-            Assert.AreEqual(true, gltfShape.model.visible);
-            Assert.IsTrue(CheckVisibility(gltfShape, true));
-
-            #endregion
-        }
-
-        [UnityTest]
         public IEnumerator GLTFEntityDownloadingIsRemoved()
         {
 
@@ -539,77 +358,53 @@ namespace Tests
         }
 
         [UnityTest]
-        public IEnumerator GLTFVisibilityUpdateMixed()
+        public IEnumerator GLTFVisibleProperty()
         {
-            #region Arrange
-
             yield return InitScene();
 
-            LoadableShape.Model lanternModel = new LoadableShape.Model()
-            {
-                src = TestHelpers.GetTestsAssetsPath() + "/GLB/Lantern/Lantern.glb",
-                visible = false
-            };
-            GLTFShape lanternShape = TestHelpers.CreateEntityWithGLTFShape(scene, Vector3.zero, lanternModel);
-            yield return lanternShape.routine;
+            string entityId = "entityId";
+            TestHelpers.CreateSceneEntity(scene, entityId);
+            var entity = scene.entities[entityId];
+            yield return null;
+            
+            // Create shape component
+            var shapeModel = new LoadableShape<LoadWrapper_GLTF>.Model();
+            shapeModel.src = TestHelpers.GetTestsAssetsPath() + "/GLB/PalmTree_01.glb";
+            
+            var shapeComponent = TestHelpers.SharedComponentCreate<LoadableShape<LoadWrapper_GLTF>, LoadableShape<LoadWrapper_GLTF>.Model>(scene, CLASS_ID.GLTF_SHAPE, shapeModel);
+            yield return shapeComponent.routine;
 
-            LoadWrapper_GLTF gltfLoader = scene.entities[lanternShape.attachedEntities.First().entityId].gameObject
-                .GetComponentInChildren<LoadWrapper_GLTF>(true);
-            yield return new WaitUntil(() => gltfLoader.alreadyLoaded);
+            TestHelpers.SharedComponentAttach(shapeComponent, entity);
 
-            LoadableShape.Model palmModel = new LoadableShape.Model()
-            {
-                src = TestHelpers.GetTestsAssetsPath() + "/GLB/PalmTree_01.glb",
-                visible = true
-            };
-            GLTFShape palmShape = TestHelpers.CreateEntityWithGLTFShape(scene, Vector3.zero, palmModel);
-            yield return palmShape.routine;
+            var shapeLoader = entity.gameObject.GetComponentInChildren<LoadWrapper_GLTF>(true);
+            yield return new WaitUntil(() => shapeLoader.alreadyLoaded);
 
-            gltfLoader = scene.entities[palmShape.attachedEntities.First().entityId].gameObject
-                .GetComponentInChildren<LoadWrapper_GLTF>(true);
-            yield return new WaitUntil(() => gltfLoader.alreadyLoaded);
-
-            #endregion
-
-            #region Act
-
-            lanternModel.visible = true;
-            TestHelpers.SharedComponentUpdate(scene, lanternShape, lanternModel);
-
-            palmModel.visible = false;
-            TestHelpers.SharedComponentUpdate(scene, palmShape, palmModel);
-
-            #endregion
-
-            #region Assert
-
-            Assert.AreEqual(true, lanternShape.model.visible);
-            Assert.IsTrue(CheckVisibility(lanternShape, true));
-
-            Assert.AreEqual(false, palmShape.model.visible);
-            Assert.IsTrue(CheckVisibility(palmShape, false));
-
-            #endregion
+            yield return TestHelpers.TestShapeVisibility(shapeComponent, shapeModel, entity);
         }
 
-        private bool CheckVisibility(BaseDisposable shapeComponent, bool isVisible)
+        [UnityTest]
+        public IEnumerator NFTShapeVisibleProperty()
         {
-            var meshGameObjects = shapeComponent.attachedEntities.Select(x => x.meshGameObject);
+            yield return InitScene();
 
-            foreach (GameObject meshGameObject in meshGameObjects)
-            {
-                MeshFilter[] meshFilters = meshGameObject.GetComponentsInChildren<MeshFilter>();
-                foreach (MeshFilter meshFilter in meshFilters)
-                {
-                    MeshRenderer renderer = meshFilter.GetComponent<MeshRenderer>();
-                    if (renderer != null && isVisible != renderer.enabled)
-                    {
-                        return false;
-                    }
-                }
-            }
+            string entityId = "entityId";
+            TestHelpers.CreateSceneEntity(scene, entityId);
+            var entity = scene.entities[entityId];
+            yield return null;
+            
+            // Create shape component
+            var shapeModel = new LoadableShape<LoadWrapper_NFT>.Model();
+            shapeModel.src = "ethereum://0x06012c8cf97BEaD5deAe237070F9587f8E7A266d/558536";
+            
+            var shapeComponent = TestHelpers.SharedComponentCreate<LoadableShape<LoadWrapper_NFT>, LoadableShape<LoadWrapper_NFT>.Model>(scene, CLASS_ID.NFT_SHAPE, shapeModel);
+            yield return shapeComponent.routine;
 
-            return true;
+            TestHelpers.SharedComponentAttach(shapeComponent, entity);
+
+            var shapeLoader = entity.gameObject.GetComponentInChildren<LoadWrapper_NFT>(true);
+            yield return new WaitUntil(() => shapeLoader.alreadyLoaded);
+
+            yield return TestHelpers.TestShapeVisibility(shapeComponent, shapeModel, entity);
         }
     }
 }

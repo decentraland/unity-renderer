@@ -18,12 +18,26 @@ namespace DCL.Components
             public float arc = 360f;
         }
 
-
         public ConeShape(ParcelScene scene) : base(scene) { }
 
         public override Mesh GenerateGeometry()
         {
             return PrimitiveMeshBuilder.BuildCone(50, model.radiusTop, model.radiusBottom, 2f, 0f, true, false);
+        }
+
+        protected override bool ShouldGenerateNewMesh(BaseShape.Model newModel)
+        {
+            if(currentMesh == null) return true;
+
+            Model newConeModel = newModel as Model;
+
+            return  newConeModel.radius != model.radius
+                    || newConeModel.radiusTop != model.radiusTop
+                    || newConeModel.radiusBottom != model.radiusBottom
+                    || newConeModel.segmentsHeight != model.segmentsHeight
+                    || newConeModel.segmentsRadial != model.segmentsRadial
+                    || newConeModel.openEnded != model.openEnded
+                    || newConeModel.arc != model.arc;
         }
     }
 }

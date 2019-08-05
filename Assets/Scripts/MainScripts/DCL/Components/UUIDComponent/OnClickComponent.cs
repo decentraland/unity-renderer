@@ -24,10 +24,11 @@ namespace DCL.Components
 
         public void Initialize()
         {
-            if (!entity.meshGameObject || entity.meshGameObject.GetComponentInChildren<MeshFilter>() == null)
-            {
-                return;
-            }
+            if (!entity.meshGameObject) return;
+
+            var renderers = entity.meshGameObject.GetComponentsInChildren<Renderer>(true);
+
+            if (renderers == null || renderers.Length == 0) return;
 
             // we add a rigidbody to be able to detect the children colliders for the OnClick functionality
             if (gameObject.GetComponent<Rigidbody>() == null)
@@ -38,25 +39,24 @@ namespace DCL.Components
             }
 
             // Create OnClickCollider child
-            var meshFilters = GetComponentsInChildren<MeshFilter>();
             var onClickColliderObjectName = "OnClickCollider";
             var onClickColliderObjectLayer = LayerMask.NameToLayer("OnClick");
 
             DestroyOnClickColliders();
 
-            OnClickColliderGameObjects = new GameObject[meshFilters.Length];
+            OnClickColliderGameObjects = new GameObject[renderers.Length];
             for (int i = 0; i < OnClickColliderGameObjects.Length; i++)
             {
                 OnClickColliderGameObjects[i] = new GameObject();
                 OnClickColliderGameObjects[i].name = onClickColliderObjectName;
-                OnClickColliderGameObjects[i].layer =
-                    onClickColliderObjectLayer; // to avoid movement collisions with its collider
+                OnClickColliderGameObjects[i].layer = onClickColliderObjectLayer; // to avoid character collisions with onclick collider
 
                 var meshCollider = OnClickColliderGameObjects[i].AddComponent<MeshCollider>();
-                meshCollider.sharedMesh = meshFilters[i].sharedMesh;
+                meshCollider.sharedMesh = renderers[i].GetComponent<MeshFilter>().sharedMesh;
+                meshCollider.enabled = renderers[i].enabled;
 
                 // Reset objects position, rotation and scale once it's been parented
-                OnClickColliderGameObjects[i].transform.SetParent(meshFilters[i].transform);
+                OnClickColliderGameObjects[i].transform.SetParent(renderers[i].transform);
                 OnClickColliderGameObjects[i].transform.localScale = Vector3.one;
                 OnClickColliderGameObjects[i].transform.localRotation = Quaternion.identity;
                 OnClickColliderGameObjects[i].transform.localPosition = Vector3.zero;
