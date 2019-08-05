@@ -144,15 +144,23 @@ export const knownTLDs = ['zone', 'org', 'today']
 
 function getDefaultTLD() {
   const TLD = getTLD()
+
+  // web3 is now disabled by default
+  if (!ENABLE_WEB3 && TLD === 'localhost') {
+    return 'zone'
+  }
+
   if (!TLD || !knownTLDs.includes(TLD)) {
     return network === ETHEREUM_NETWORK.ROPSTEN ? 'zone' : 'org'
   }
+
   return TLD
 }
 
 export function getServerConfigurations() {
   const TLDDefault = getDefaultTLD()
   return {
+    auth: `https://auth.decentraland.${TLDDefault}/api/v1`,
     landApi: `https://api.decentraland.${TLDDefault}/v1`,
     content: `https://content.decentraland.${TLDDefault}`,
     worldInstanceUrl: `wss://world-comm.decentraland.${TLDDefault}/connect`,

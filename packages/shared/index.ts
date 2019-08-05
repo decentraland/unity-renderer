@@ -1,4 +1,4 @@
-import { Auth } from 'decentraland-auth'
+import { Auth } from './auth'
 
 import './apis/index'
 import './events'
@@ -56,7 +56,7 @@ export async function initShared(container: HTMLElement): Promise<ETHEREUM_NETWO
 
   console['group']('connect#ethereum')
 
-  let net
+  let net: ETHEREUM_NETWORK
 
   if (ENABLE_WEB3) {
     await initWeb3()
