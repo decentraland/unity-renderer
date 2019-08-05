@@ -27,5 +27,21 @@ namespace DCL.Components
 
             return mesh;
         }
+
+        protected override bool ShouldGenerateNewMesh(BaseShape.Model newModel)
+        {
+            if(currentMesh == null) return true;
+
+            Model newPlaneModel = newModel as Model;
+
+            if(newPlaneModel.uvs?.Length != model.uvs?.Length) return true;
+
+            for (int i = 0; i < newPlaneModel.uvs.Length; i++)
+            {
+                if(newPlaneModel.uvs[i] != model.uvs[i]) return true;
+            }
+
+            return  newPlaneModel.width != model.width || newPlaneModel.height != model.height;
+        }
     }
 }

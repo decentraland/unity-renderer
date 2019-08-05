@@ -87,13 +87,15 @@ namespace DCL.Components
         {
             bool hadCollisions = model.withCollisions;
             bool isVisible = model.visible;
-            model = JsonUtility.FromJson<T>(newJson);
 
-            var newMesh = GenerateGeometry();
+            var newModel = JsonUtility.FromJson<T>(newJson);
+            bool generateNewMesh = ShouldGenerateNewMesh(newModel);
+            
+            model = newModel;
 
-            if (currentMesh != newMesh)
+            if(generateNewMesh)
             {
-                currentMesh = newMesh;
+                currentMesh = GenerateGeometry();
                 foreach (var entity in this.attachedEntities)
                 {
                     OnShapeDetached(entity);
@@ -103,7 +105,6 @@ namespace DCL.Components
             else
             {
                 bool collisionsDirty = hadCollisions != model.withCollisions;
-
                 if (collisionsDirty)
                 {
                     foreach (var entity in this.attachedEntities)
@@ -129,6 +130,11 @@ namespace DCL.Components
         {
             base.AttachTo(entity);
             ConfigureVisibility(entity.meshGameObject, model.visible);
+        }
+
+        protected virtual bool ShouldGenerateNewMesh(BaseShape.Model newModel)
+        {
+            return true;
         }
     }
 }

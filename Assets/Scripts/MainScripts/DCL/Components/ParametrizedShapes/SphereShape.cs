@@ -37,5 +37,10 @@ namespace DCL.Components
                 GameObject.Destroy(mesh);
             }
         }
+
+        protected override bool ShouldGenerateNewMesh(BaseShape.Model newModel)
+        {
+            return currentMesh == null;
+        }
     }
 }

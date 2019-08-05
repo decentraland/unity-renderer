@@ -117,7 +117,7 @@ namespace DCL.Components
                 return;
             }
 
-            BaseShape.ConfigureVisibility(loadWrapper.entity.meshGameObject, (entity.currentShape as LoadableShape).model.visible);
+            ConfigureVisibility(loadWrapper.entity.meshGameObject, model.visible);
 
             entity.OnComponentUpdated?.Invoke(loadWrapper);
             entity.OnShapeUpdated?.Invoke(entity);

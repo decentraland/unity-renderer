@@ -35,5 +35,10 @@ namespace DCL.Components
                 GameObject.Destroy(cubeMesh);
             }
         }
+
+        protected override bool ShouldGenerateNewMesh(BaseShape.Model newModel)
+        {
+            return currentMesh == null;
+        }
     }
 }
