@@ -10,7 +10,7 @@ using UnityEngine.Assertions;
 namespace DCL.Controllers
 {
 
-    public class ParcelScene : MonoBehaviour
+    public class ParcelScene : MonoBehaviour, ICleanable
     {
         public static bool VERBOSE = false;
 
@@ -45,6 +45,8 @@ namespace DCL.Controllers
 
         [System.NonSerialized]
         public bool unloadWithDistance = true;
+
+        private bool isReleased = false;
 
         private Bounds bounds = new Bounds();
 
@@ -129,6 +131,14 @@ namespace DCL.Controllers
 
         void OnDestroy()
         {
+            Cleanup();
+        }
+
+        public void Cleanup()
+        {
+            if (isReleased)
+                return;
+
             if (DCLCharacterController.i)
             {
                 DCLCharacterController.i.characterPosition.OnPrecisionAdjust -= OnPrecisionAdjust;
@@ -136,10 +146,12 @@ namespace DCL.Controllers
 
             foreach (var entity in entities)
             {
-                Destroy(entity.Value.gameObject);
+                entity.Value.Cleanup();
             }
 
             entities.Clear();
+
+            isReleased = true;
         }
 
         public override string ToString()
@@ -166,7 +178,7 @@ namespace DCL.Controllers
         }
 
         private CreateEntityMessage tmpCreateEntityMessage = new CreateEntityMessage();
-
+        private const string EMPTY_GO_POOL_NAME = "Empty";
         public DecentralandEntity CreateEntity(string id, string json)
         {
             SceneController.i.OnMessageDecodeStart?.Invoke("CreateEntity");
@@ -180,9 +192,27 @@ namespace DCL.Controllers
 
             var newEntity = new DecentralandEntity();
             newEntity.entityId = tmpCreateEntityMessage.id;
-            newEntity.gameObject = new GameObject("ENTITY_" + tmpCreateEntityMessage.id);
+
+            // We need to manually create the Pool for empty game objects if it doesn't exist
+            if (!PoolManager.i.ContainsPool(EMPTY_GO_POOL_NAME))
+            {
+                GameObject go = new GameObject();
+
+                PoolManager.i.AddPool(EMPTY_GO_POOL_NAME, go);
+
+                // We destroy the gameobject because we don't need it anymore,
+                // as the pool creates a copy of it
+                Destroy(go);
+            }
+
+            // As we know that the pool already exists, we just get one gameobject from it
+            PoolableObject po = PoolManager.i.GetIfPoolExists(EMPTY_GO_POOL_NAME);
+            newEntity.gameObject = po.gameObject;
+            newEntity.gameObject.name = "ENTITY_" + tmpCreateEntityMessage.id;
             newEntity.gameObject.transform.SetParent(gameObject.transform, false);
+            newEntity.gameObject.SetActive(true);
             newEntity.scene = this;
+            newEntity.OnCleanupEvent += po.OnCleanup;
 
             entities.Add(tmpCreateEntityMessage.id, newEntity);
 
@@ -203,8 +233,7 @@ namespace DCL.Controllers
             {
                 OnEntityRemoved?.Invoke(entities[tmpRemoveEntityMessage.id]);
                 entities[tmpRemoveEntityMessage.id].OnRemoved?.Invoke(entities[tmpRemoveEntityMessage.id]);
-
-                Object.Destroy(entities[tmpRemoveEntityMessage.id].gameObject);
+                entities[tmpRemoveEntityMessage.id].Cleanup();
                 entities.Remove(tmpRemoveEntityMessage.id);
             }
 #if UNITY_EDITOR || DEVELOPMENT_BUILD

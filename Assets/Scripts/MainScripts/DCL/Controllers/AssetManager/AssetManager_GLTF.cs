@@ -42,6 +42,7 @@ namespace DCL
             }
         }
 
+        private readonly PoolInstantiator_GLTF instantiator = new PoolInstantiator_GLTF();
 
         private void Awake()
         {
@@ -55,13 +56,8 @@ namespace DCL
 
         public override void ClearLibrary()
         {
-            foreach (var asset in assetLibrary)
-            {
-                if (asset.Value.cachedContainer != null)
-                {
-                    Destroy(asset.Value.cachedContainer);
-                }
-            }
+            foreach (var id in assetLibrary.Keys)
+                PoolManager.i.CleanupPool(id);
 
             base.ClearLibrary();
         }
@@ -84,7 +80,7 @@ namespace DCL
             // of current design - it won't be necessary when we refactor the AssetManager
             if (parent)
             {
-                GameObject cachedAsset = DuplicateGLTF(assetLibrary[id].cachedContainer);
+                GameObject cachedAsset = DuplicateGLTF(id, assetLibrary[id].cachedContainer);
                 StartCoroutine(ShowObject(cachedAsset, Configuration.ParcelSettings.VISUAL_LOADING_ENABLED, OnSuccess));
 
                 cachedAsset.transform.parent = parent;
@@ -98,7 +94,15 @@ namespace DCL
 
         protected override void CleanCachedAsset(object id)
         {
-            Destroy(assetLibrary[id].cachedContainer);
+            if (assetLibrary.ContainsKey(id) && assetLibrary[id].cachedContainer)
+            {
+                PoolableObject po = assetLibrary[id].cachedContainer.GetComponent<PoolableObject>();
+
+                if (po)
+                    po.Release();
+                else
+                    Destroy(assetLibrary[id].cachedContainer);
+            }
         }
 
         protected override IEnumerator AddToLibrary(object id, string url, GameObject container)
@@ -133,7 +137,7 @@ namespace DCL
 
             BaseShape.ConfigureColliders(container, true, true);
 
-            GameObject containerCopy = DuplicateGLTF(container);
+            GameObject containerCopy = DuplicateGLTF(id, container);
 
             containerCopy.transform.parent = transform;
             containerCopy.transform.ResetLocalTRS();
@@ -227,22 +231,9 @@ namespace DCL
             OnSuccess?.Invoke();
         }
 
-        GameObject DuplicateGLTF(GameObject original)
+        GameObject DuplicateGLTF(object id, GameObject original)
         {
-            GameObject GLTFCopy;
-            InstantiatedGLTFObject gltfDuplicator = original.GetComponentInChildren<InstantiatedGLTFObject>(true);
-
-            if (gltfDuplicator != null)
-            {
-                GLTFCopy = gltfDuplicator.Duplicate().gameObject;
-            }
-            else
-            {
-                GLTFCopy = Instantiate(original);
-                GLTFCopy.GetComponent<InstantiatedGLTFObject>().CachedData.IncreaseRefCount();
-            }
-
-            return GLTFCopy;
+            return PoolManager.i.Get<PoolInstantiator_GLTF>(id, original, instantiator).gameObject;
         }
     }
 }

@@ -3,11 +3,12 @@ using DCL.Controllers;
 using System;
 using System.Collections.Generic;
 using UnityEngine;
+using DCL.Helpers;
 
 namespace DCL.Models
 {
     [Serializable]
-    public class DecentralandEntity
+    public class DecentralandEntity : DCL.ICleanable, DCL.ICleanableEventDispatcher
     {
         public ParcelScene scene;
 
@@ -21,12 +22,16 @@ namespace DCL.Models
         public System.Action<DecentralandEntity> OnShapeUpdated;
         public System.Action<DecentralandEntity> OnRemoved;
 
+        public System.Action<ICleanableEventDispatcher> OnCleanupEvent { get; set; }
+
         public GameObject meshGameObject;
         public BaseShape currentShape;
 
         Dictionary<Type, BaseDisposable> sharedComponents = new Dictionary<Type, BaseDisposable>();
 
         const string MESH_GAMEOBJECT_NAME = "Mesh";
+
+        bool isReleased = false;
 
         public void EnsureMeshGameObject(string gameObjectName = null)
         {
@@ -40,6 +45,23 @@ namespace DCL.Models
                 meshGameObject.transform.localRotation = Quaternion.identity;
             }
         }
+
+        public void Cleanup()
+        {
+            if (isReleased)
+                return;
+
+            OnCleanupEvent?.Invoke(this);
+
+            if (meshGameObject)
+            {
+                Utils.SafeDestroy(meshGameObject);
+                meshGameObject = null;
+            }
+
+            isReleased = true;
+        }
+
 
         public void AddSharedComponent(Type componentType, BaseDisposable component)
         {
