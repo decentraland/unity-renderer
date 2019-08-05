@@ -7,7 +7,7 @@ import { saveToLocalStorage } from 'atomicHelpers/localStorage'
 import { positionObservable, PositionReport } from 'shared/world/positionThings'
 import { CommunicationArea, squareDistance, Position, position2parcel, sameParcel } from './utils'
 import { Stats } from './debug'
-import { Auth } from 'decentraland-auth'
+import { Auth } from 'shared/auth'
 
 import {
   getCurrentPeer,

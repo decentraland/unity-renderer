@@ -2,7 +2,7 @@ import { Profile, AvatarAsset, Colored, DclAssetUrl, ProfileSpec, Avatar, Avatar
 import { Color4 } from '../../decentraland-ecs/src/decentraland/math/Color4'
 import { getServerConfigurations, PREVIEW } from '../../config/index'
 import defaultLogger from '../logger'
-import { Auth } from 'decentraland-auth'
+import { Auth } from 'shared/auth'
 
 export async function resolveProfile(uuid: string = ''): Promise<Profile> {
   let response
