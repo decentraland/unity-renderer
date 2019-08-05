@@ -182,7 +182,7 @@ namespace DCL
 
             // If we already have a messaging controller for global scene,
             // we update throttling
-            if (!string.IsNullOrEmpty(globalSceneId))
+            if (!string.IsNullOrEmpty(globalSceneId) && messagingControllers.ContainsKey(globalSceneId))
                 prevTimeBudget += messagingControllers[globalSceneId].UpdateThrottling(prevTimeBudget);
 
             // Update throttling to the rest of the messaging controllers
@@ -451,6 +451,7 @@ namespace DCL
 
             if (scene)
             {
+                scene.Cleanup();
                 Utils.SafeDestroy(scene.gameObject);
             }
 

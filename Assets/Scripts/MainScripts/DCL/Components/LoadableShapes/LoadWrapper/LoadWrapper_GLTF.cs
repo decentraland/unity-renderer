@@ -75,6 +75,15 @@ namespace DCL.Components
             }
 
             alreadyLoaded = true;
+
+            if (entity.meshGameObject)
+            {
+                PoolableObject po = entity.meshGameObject.GetComponentInChildren<PoolableObject>();
+
+                if (po)
+                    this.entity.OnCleanupEvent += po.OnCleanup;
+            }
+
             OnSuccess?.Invoke(this);
         }
 
@@ -110,6 +119,7 @@ namespace DCL.Components
                 {
                     RemoveMeshObject();
                 }
+
                 AssetManager_GLTF.i.Release(cacheId);
             }
         }
@@ -135,8 +145,7 @@ namespace DCL.Components
 
         private void RemoveMeshObject()
         {
-            Utils.SafeDestroy(entity.meshGameObject);
-            entity.meshGameObject = null;
+            entity.Cleanup();
         }
 
         public void OnDestroy()
