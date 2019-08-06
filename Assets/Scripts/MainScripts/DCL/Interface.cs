@@ -28,7 +28,10 @@ namespace DCL.Interface
             public float playerHeight;
 
             public Vector3 mousePosition;
+
+            public string id;
         }
+
 
         [System.Serializable]
         public class SceneEvent<T>
@@ -117,6 +120,8 @@ namespace DCL.Interface
         {
         };
 
+
+
         [System.Serializable]
         public class OnGizmoEventPayload
         {
@@ -125,6 +130,20 @@ namespace DCL.Interface
             public string entityId;
             public string transform;
         }
+
+        [System.Serializable]
+        public class OnGetLoadingEntity
+        {
+            public string id;
+            public object value;
+
+        };
+
+        public class OnSendScreenshot
+        {
+            public string id;
+            public string encodedTexture;
+        };
 
 #if UNITY_WEBGL && !UNITY_EDITOR
     /**
@@ -165,16 +184,15 @@ namespace DCL.Interface
 
         private static ReportPositionPayload positionPayload = new ReportPositionPayload();
         private static OnMetricsUpdate onMetricsUpdate = new OnMetricsUpdate();
-
         private static OnClickEvent onClickEvent = new OnClickEvent();
         private static OnTextSubmitEvent onTextSubmitEvent = new OnTextSubmitEvent();
         private static OnChangeEvent onChangeEvent = new OnChangeEvent();
         private static OnFocusEvent onFocusEvent = new OnFocusEvent();
         private static OnBlurEvent onBlurEvent = new OnBlurEvent();
         private static OnEnterEvent onEnterEvent = new OnEnterEvent();
-
         private static OnGizmoEvent onGizmoEvent = new OnGizmoEvent();
-
+        private static OnGetLoadingEntity onGetLoadingEntity = new OnGetLoadingEntity();
+        private static OnSendScreenshot onSendScreenshot = new OnSendScreenshot();
 
         public static void SendSceneEvent<T>(string sceneId, string eventType, T payload)
         {
@@ -322,5 +340,27 @@ namespace DCL.Interface
             }
             SendSceneEvent(sceneId, "uuidEvent", onGizmoEvent);
         }
+
+        public static void ReportMousePosition(Vector3 mousePosition, string id)
+        {
+            positionPayload.mousePosition = mousePosition;
+            positionPayload.id = id;
+            SendMessage("ReportMousePosition", positionPayload);
+        }
+
+        public static void SetLoadingEntity(object loadingEntity, string id)
+        {
+            onGetLoadingEntity.id = id;
+            onGetLoadingEntity.value = loadingEntity;
+            SendMessage("SetLoadingEntity", onGetLoadingEntity);
+        }
+
+        public static void SendScreenshot(string encodedTexture, string id)
+        {
+            onSendScreenshot.encodedTexture = encodedTexture;
+            onSendScreenshot.id = id;
+            SendMessage("SendScreenshot", onSendScreenshot);
+        }
+
     }
 }
