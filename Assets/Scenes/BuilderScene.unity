@@ -20,13 +20,13 @@ RenderSettings:
   m_FogDensity: 0.0001
   m_LinearFogStart: 40
   m_LinearFogEnd: 50
-  m_AmbientSkyColor: {r: 0.8396226, g: 0.3675553, b: 0.30495724, a: 1}
-  m_AmbientEquatorColor: {r: 0.8773585, g: 0.7329541, b: 0.7242346, a: 1}
-  m_AmbientGroundColor: {r: 0.6273585, g: 0.8350604, b: 1, a: 1}
+  m_AmbientSkyColor: {r: 0.6037736, g: 0.6037736, b: 0.6037736, a: 1}
+  m_AmbientEquatorColor: {r: 0.4433962, g: 0.4433962, b: 0.4433962, a: 1}
+  m_AmbientGroundColor: {r: 0, g: 0, b: 0, a: 1}
   m_AmbientIntensity: 1
   m_AmbientMode: 1
   m_SubtractiveShadowColor: {r: 0.42, g: 0.478, b: 0.627, a: 1}
-  m_SkyboxMaterial: {fileID: 2100000, guid: 8cf2550febdfe4b3ebb958bc5e605a78, type: 2}
+  m_SkyboxMaterial: {fileID: 2100000, guid: 07add70863f434f3fab08fa867bfef30, type: 2}
   m_HaloStrength: 0.5
   m_FlareStrength: 1
   m_FlareFadeSpeed: 3
@@ -97,7 +97,7 @@ LightmapSettings:
     m_ShowResolutionOverlay: 1
     m_ExportTrainingData: 0
   m_LightingDataAsset: {fileID: 0}
-  m_UseShadowmask: 0
+  m_UseShadowmask: 1
 --- !u!196 &4
 NavMeshSettings:
   serializedVersion: 2
@@ -190,7 +190,6 @@ GameObject:
   - component: {fileID: 31650637}
   - component: {fileID: 31650636}
   - component: {fileID: 31650640}
-  - component: {fileID: 31650635}
   - component: {fileID: 31650639}
   m_Layer: 0
   m_Name: Camera
@@ -198,19 +197,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
---- !u!114 &31650635
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 31650634}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: ba6af5eaa8d821f4e93093fd37ee3484, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
+  m_IsActive: 1
 --- !u!81 &31650636
 AudioListener:
   m_ObjectHideFlags: 0
@@ -246,7 +233,7 @@ Camera:
   far clip plane: 5000
   field of view: 60
   orthographic: 0
-  orthographic size: 5
+  orthographic size: 10
   m_Depth: 0
   m_CullingMask:
     serializedVersion: 2
@@ -269,7 +256,7 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 31650634}
-  m_LocalRotation: {x: 0.33585107, y: -0, z: -0, w: 0.9419151}
+  m_LocalRotation: {x: 0.33585104, y: -0, z: -0, w: 0.9419151}
   m_LocalPosition: {x: 0.43730628, y: 2.4839997, z: -3.06}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
@@ -1791,7 +1778,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 580683851, guid: b387035aa46399445bdc7951a41d5213, type: 3}
       propertyPath: m_Enabled
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 580683850, guid: b387035aa46399445bdc7951a41d5213, type: 3}
       propertyPath: m_Enabled
@@ -2403,7 +2390,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   builderController: {fileID: 1948480738}
   cameraInput: {fileID: 11400000, guid: 48459c3a9bb4a4215b3f513979663b73, type: 2}
-  freelook: {fileID: 0}
   orbitXAxis:
     Value: 0
     m_MaxSpeed: 500
@@ -3154,7 +3140,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: ef05df0d5cd0141169ff3a5ab43111c0, type: 2}
+  - {fileID: 2100000, guid: 3173fdfda2e4d0145afc93aff81f7b74, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -3620,7 +3606,7 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1845004881}
-  m_LocalRotation: {x: 0.33585107, y: 3.7386396e-16, z: -1.0485245e-15, w: 0.9419151}
+  m_LocalRotation: {x: 0.33585107, y: 3.738639e-16, z: -1.0485245e-15, w: 0.9419151}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
@@ -3684,6 +3670,8 @@ MonoBehaviour:
   activeGizmo: {fileID: 0}
   gizmoAxis: {fileID: 0}
   gizmoAxisOver: {fileID: 0}
+  defaultSkybox: {fileID: 10304, guid: 0000000000000000f000000000000000, type: 0}
+  builderSkybox: {fileID: 2100000, guid: 07add70863f434f3fab08fa867bfef30, type: 2}
   snapFactor: 0.005
 --- !u!4 &1948480739
 Transform:
@@ -4109,7 +4097,7 @@ MonoBehaviour:
   alreadyLoaded: 0
   entity:
     scene: {fileID: 0}
-    gameObject: {fileID: 0}
+    gameObject: {fileID: 2093903311}
     entityId: AAAAAA
     meshGameObject: {fileID: 0}
   gltfContainer: {fileID: 0}
