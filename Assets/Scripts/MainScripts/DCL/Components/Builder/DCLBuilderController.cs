@@ -1,12 +1,12 @@
-﻿using System;
+﻿using DCL;
+using DCL.Components;
+using DCL.Configuration;
+using DCL.Models;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.EventSystems;
-using DCL.Components;
-using DCL.Models;
-using DCL.Configuration;
-using DCL;
 
 public static class GizmoType
 {
@@ -42,7 +42,6 @@ public class DCLBuilderController : MonoBehaviour
     int defaultLayer;
 
     public Material defaultSkybox;
-
     public Material builderSkybox;
 
 
@@ -63,19 +62,19 @@ public class DCLBuilderController : MonoBehaviour
         groundMask = LayerMask.GetMask("Ground");
         selectionLayer = LayerMask.NameToLayer("Selection");
         defaultLayer = LayerMask.NameToLayer("Default");
-        ReportMovement();
 
+        ReportMovement();
     }
 
 
     void Update()
     {
-
         if (Input.GetMouseButtonDown(0))
         {
             lastMouseDownPosition = Input.mousePosition;
 
             bool hit = MousePointerRaycast(lastMouseDownPosition, defaultMask, true);
+
             if (hit)
             {
                 gizmoAxis = hitInfo.collider.gameObject.GetComponent<GizmoAxis>();
@@ -88,6 +87,7 @@ public class DCLBuilderController : MonoBehaviour
                     DeselectObject();
                     SelectObject(GetEntity(hitInfo.collider.gameObject));
                 }
+
                 transformingObject = true;
                 lastMouseDownTime = Time.time;
             }
@@ -98,25 +98,28 @@ public class DCLBuilderController : MonoBehaviour
             bool isOrbitingCamera = Vector2.Distance(lastMouseDownPosition, Input.mousePosition) > 0.01f;
             // Avoid deselect when just select
             bool justSelected = (Time.time - lastMouseDownTime) < 0.2f;
+
             if (!isOrbitingCamera && !justSelected)
             {
                 if (selectedObject != null)
-                {
                     DeselectObject();
-                }
             }
+
             if (gizmoAxis != null)
             {
                 gizmoAxis.SelectAxis(false);
                 gizmoAxis.ResetTransformation();
                 gizmoAxis = null;
             }
+
             if (selectedObject != null)
             {
                 NotifyGizmoEvent(selectedObject);
             }
+
             originPointerPosition = Vector3.zero;
             transformingObject = false;
+
             if (isOrbitingCamera)
             {
                 ReportMovement();
@@ -136,8 +139,6 @@ public class DCLBuilderController : MonoBehaviour
         {
             ReportMovement();
         }
-
-
     }
 
     void OnApplicationFocus(bool hasFocus)
@@ -158,6 +159,7 @@ public class DCLBuilderController : MonoBehaviour
                 ActivateGizmo(activeGizmo, true);
 
             LoadWrapper wrapper = selectedObject.GetComponentInChildren<LoadWrapper>();
+
             if (wrapper == null)
                 return;
 
@@ -193,6 +195,7 @@ public class DCLBuilderController : MonoBehaviour
     GameObject GetEntity(GameObject currentSelected)
     {
         LoadWrapper wrapper = currentSelected.GetComponent<LoadWrapper>();
+
         if (wrapper?.entity != null)
         {
             return wrapper.entity.gameObject;
@@ -200,7 +203,10 @@ public class DCLBuilderController : MonoBehaviour
         else
         {
             if (currentSelected.transform.parent != null)
+            {
                 return GetEntity(currentSelected.transform.parent.gameObject);
+            }
+
             return null;
         }
     }
@@ -210,7 +216,9 @@ public class DCLBuilderController : MonoBehaviour
         if (selectedObject != null)
         {
             UnSelectionEffect(selectedObject);
+
             selectedObject = null;
+
             if (activeGizmo != null && activeGizmo.gameObject.activeSelf)
             {
                 activeGizmo.gameObject.SetActive(false);
@@ -221,6 +229,7 @@ public class DCLBuilderController : MonoBehaviour
     public void SetReady()
     {
         characterController.gameObject.SetActive(false);
+
         cameraController.SetPosition(new Vector3(characterController.transform.position.x + ParcelSettings.PARCEL_SIZE / 2,
                                                 0,
                                                 characterController.transform.position.z + ParcelSettings.PARCEL_SIZE / 2));
@@ -232,6 +241,7 @@ public class DCLBuilderController : MonoBehaviour
         if (selectedObject != null)
         {
             selectedObject.transform.localRotation = Quaternion.identity;
+
             if (activeGizmo != null)
                 activeGizmo.transform.localRotation = Quaternion.identity;
         }
@@ -260,7 +270,9 @@ public class DCLBuilderController : MonoBehaviour
     public void SelectGizmo(string gizmoType)
     {
         ActivateGizmo(activeGizmo, false);
+
         Gizmo gizmo = GetGizmo(gizmoType);
+
         if (gizmo != null)
         {
             ActivateGizmo(gizmo, true);
@@ -275,6 +287,7 @@ public class DCLBuilderController : MonoBehaviour
             if (gizmo.gizmoType.CompareTo(gizmoType) == 0)
                 return gizmo;
         }
+
         return null;
     }
 
@@ -286,7 +299,9 @@ public class DCLBuilderController : MonoBehaviour
             {
                 ActivateGizmo(activeGizmo, false);
             }
+
             activeGizmo = gizmo;
+
             if (selectedObject != null)
             {
                 gizmo.SetObject(selectedObject);
@@ -295,6 +310,7 @@ public class DCLBuilderController : MonoBehaviour
         else
         {
             activeGizmo = null;
+
             if (gizmo != null)
                 gizmo.SetObject(null);
         }
@@ -306,6 +322,7 @@ public class DCLBuilderController : MonoBehaviour
     void UpdateTransformation()
     {
         Vector3 pointerPosition = camera.ScreenToWorldPoint(new Vector3(Input.mousePosition.x, Input.mousePosition.y, camera.nearClipPlane));
+
         if (gizmoAxis == null)
         {
             DragMove(pointerPosition);
@@ -323,19 +340,23 @@ public class DCLBuilderController : MonoBehaviour
         {
             originPointerPosition = pointerPosition;
         }
+
         if (Mathf.Abs(Vector3.Distance(originPointerPosition, pointerPosition)) > snapFactor)
         {
             bool hit = MousePointerRaycast(Input.mousePosition, groundMask, true);
+
             if (hit && selectedObject != null)
             {
                 selectedObject.transform.position = new Vector3(hitInfo.point.x,
                                                                selectedObject.transform.position.y,
                                                                hitInfo.point.z);
+
                 if (activeGizmo != null && !activeGizmo.transformWithObject)
                 {
                     activeGizmo.transform.position = selectedObject.transform.position;
                 }
             }
+
             originPointerPosition = pointerPosition;
         }
     }
@@ -355,11 +376,12 @@ public class DCLBuilderController : MonoBehaviour
 
     void UpdateGizmoOver()
     {
-
         bool hit = MousePointerRaycast(Input.mousePosition, gizmoMask);
+
         if (hit)
         {
             GizmoAxis gizmoAxis = hitInfo.collider.gameObject.GetComponent<GizmoAxis>();
+
             if (gizmoAxis != null)
             {
                 gizmoAxisOver = gizmoAxis;
@@ -375,12 +397,15 @@ public class DCLBuilderController : MonoBehaviour
     bool MousePointerRaycast(Vector3 mousePosition, LayerMask mask, bool checkGizmo = false)
     {
         hitInfo = new RaycastHit();
+
         if (checkGizmo)
         {
-            bool hit = MousePointerRaycast(mousePosition, gizmoMask);
-            if (hit)
+            if (MousePointerRaycast(mousePosition, gizmoMask))
+            {
                 return true;
+            }
         }
+
         return Physics.Raycast(camera.ScreenPointToRay(mousePosition), out hitInfo, 10000, mask);
     }
 
@@ -415,6 +440,7 @@ public class DCLBuilderController : MonoBehaviour
     public void NotifyGizmoEvent(GameObject selectedObject)
     {
         LoadWrapper wrapper = selectedObject.GetComponentInChildren<LoadWrapper>();
+
         if (wrapper == null)
             return;
 
@@ -432,11 +458,12 @@ public class DCLBuilderController : MonoBehaviour
     public void UpdateMousePositionData(string newJson)
     {
         MousePayload m = SceneController.i.SafeFromJson<MousePayload>(newJson);
+
         Vector3 mousePosition = new Vector3(m.x, Screen.height - m.y, 0);
+
         if (MousePointerRaycast(mousePosition, groundMask))
         {
             DCL.Interface.WebInterface.ReportMousePosition(hitInfo.point, m.id);
-
         }
     }
 
@@ -453,14 +480,9 @@ public class DCLBuilderController : MonoBehaviour
     IEnumerator TakeScreenshotRoutine(string id)
     {
         yield return new WaitForEndOfFrame();
+
         var texture = ScreenCapture.CaptureScreenshotAsTexture();
         DCL.Interface.WebInterface.SendScreenshot(Convert.ToBase64String(texture.EncodeToPNG()), id);
-        UnityEngine.Object.Destroy(texture);
+        Destroy(texture);
     }
-
-
-
-
 }
-
-
