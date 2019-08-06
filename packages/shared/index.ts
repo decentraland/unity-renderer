@@ -10,7 +10,10 @@ import { connect } from './comms'
 import { initialize, queueTrackingEvent } from './analytics'
 import { defaultLogger } from './logger'
 import { initWeb3, getNetworkFromTLD, getAppNetwork } from './web3'
-import { fetchProfile, generateRandomAvatarSpec, createProfile } from './world/profiles'
+import { fetchProfile, createProfile, createStubProfileSpec, resolveProfileSpec } from './world/profiles'
+import { ProfileSpec } from './types'
+import { persistCurrentUser } from './comms/index'
+import { localProfileUUID } from './comms/peers'
 
 // TODO fill with segment keys and integrate identity server
 export async function initializeAnalytics(userId: string) {
@@ -102,9 +105,14 @@ export async function initShared(container: HTMLElement): Promise<ETHEREUM_NETWO
       defaultLogger.error(`Not able to fetch profile for current user`)
     }
 
-    if (!response || !response.ok) {
+    let spec: ProfileSpec
+    if (response && response.ok) {
+      spec = await response.json()
+    } else {
       defaultLogger.info(`Non existing profile, creating a random one`)
-      const avatar = await generateRandomAvatarSpec()
+      spec = await createStubProfileSpec()
+
+      const avatar = spec.avatar
       try {
         const creationResponse = await createProfile(avatar)
         defaultLogger.info(`New profile created with response ${creationResponse.status}`)
@@ -113,6 +121,10 @@ export async function initShared(container: HTMLElement): Promise<ETHEREUM_NETWO
         defaultLogger.error(e)
       }
     }
+
+    const profile = await resolveProfileSpec(localProfileUUID!, spec)
+
+    persistCurrentUser({ userId: localProfileUUID!, version: profile.version, profile })
   }
   console['groupEnd']()
 

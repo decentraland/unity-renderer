@@ -323,6 +323,10 @@ export type Avatar = {
   mouth: {
     texture: string
   }
+  snapshots: {
+    body: string
+    face: string
+  }
 }
 
 export type ProfileSpec = {

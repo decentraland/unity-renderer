@@ -14,7 +14,7 @@ export let localProfileUUID: UUID | null = null
 
 export function findPeerByName(displayName: string): UserInformation | null {
   for (let [, peer] of peerMap) {
-    if (peer.user && peer.user.displayName === displayName) {
+    if (peer.user && peer.user.profile && peer.user.profile.name === displayName) {
       return peer.user
     }
   }
@@ -128,10 +128,7 @@ export function receiveUserData(uuid: string, data: Partial<UserInformation>) {
   if (peerData) {
     const userData = peerData.user || (peerData.user = peerData.user || {})
 
-    const profileChanged =
-      (data.displayName && userData.displayName !== data.displayName) ||
-      (data.publicKey && userData.publicKey !== data.publicKey) ||
-      (data.avatarType && userData.avatarType !== data.avatarType)
+    const profileChanged = (data.version && userData.version !== data.version) || (!userData.profile && data.profile)
 
     if (profileChanged) {
       Object.assign(userData, data)

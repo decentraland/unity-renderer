@@ -39,6 +39,8 @@ import { Vector3, Quaternion, ReadOnlyVector3, ReadOnlyQuaternion } from '../dec
 import { DEBUG, ENGINE_DEBUG_PANEL, SCENE_DEBUG_PANEL, parcelLimits, playerConfigurations } from '../config'
 import { chatObservable } from '../shared/comms/chat'
 import { queueTrackingEvent } from '../shared/analytics'
+import { Profile } from '../shared/types'
+import { getUserProfile } from '../shared/comms/peers'
 
 let gameInstance!: GameInstance
 
@@ -81,6 +83,9 @@ const unityInterface = {
   debug: false,
   SetDebug() {
     gameInstance.SendMessage('SceneController', 'SetDebug')
+  },
+  LoadProfile(profile: Profile) {
+    gameInstance.SendMessage('SceneController', 'LoadProfile', JSON.stringify(profile))
   },
   CreateUIScene(data: { id: string; baseUrl: string }) {
     /**
@@ -270,6 +275,7 @@ async function initializeDecentralandUI() {
   await ensureUiApis(worker)
 
   unityInterface.CreateUIScene({ id: getParcelSceneID(scene), baseUrl: scene.data.baseUrl })
+  unityInterface.LoadProfile(getUserProfile().profile)
 }
 
 let currentLoadedScene: SceneWorker

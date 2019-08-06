@@ -36,8 +36,8 @@ export namespace AuthData {
 }
 
 export class DataHeader extends jspb.Message {
-  getCategory(): Category
-  setCategory(value: Category): void
+  getCategory(): CategoryMap[keyof CategoryMap]
+  setCategory(value: CategoryMap[keyof CategoryMap]): void
 
   serializeBinary(): Uint8Array
   toObject(includeInstance?: boolean): DataHeader.AsObject
@@ -51,13 +51,13 @@ export class DataHeader extends jspb.Message {
 
 export namespace DataHeader {
   export type AsObject = {
-    category: Category
+    category: CategoryMap[keyof CategoryMap]
   }
 }
 
 export class PositionData extends jspb.Message {
-  getCategory(): Category
-  setCategory(value: Category): void
+  getCategory(): CategoryMap[keyof CategoryMap]
+  setCategory(value: CategoryMap[keyof CategoryMap]): void
 
   getTime(): number
   setTime(value: number): void
@@ -95,7 +95,7 @@ export class PositionData extends jspb.Message {
 
 export namespace PositionData {
   export type AsObject = {
-    category: Category
+    category: CategoryMap[keyof CategoryMap]
     time: number
     positionX: number
     positionY: number
@@ -108,20 +108,14 @@ export namespace PositionData {
 }
 
 export class ProfileData extends jspb.Message {
-  getCategory(): Category
-  setCategory(value: Category): void
+  getCategory(): CategoryMap[keyof CategoryMap]
+  setCategory(value: CategoryMap[keyof CategoryMap]): void
 
   getTime(): number
   setTime(value: number): void
 
-  getAvatarType(): string
-  setAvatarType(value: string): void
-
-  getDisplayName(): string
-  setDisplayName(value: string): void
-
-  getPublicKey(): string
-  setPublicKey(value: string): void
+  getProfileVersion(): string
+  setProfileVersion(value: string): void
 
   serializeBinary(): Uint8Array
   toObject(includeInstance?: boolean): ProfileData.AsObject
@@ -135,17 +129,15 @@ export class ProfileData extends jspb.Message {
 
 export namespace ProfileData {
   export type AsObject = {
-    category: Category
+    category: CategoryMap[keyof CategoryMap]
     time: number
-    avatarType: string
-    displayName: string
-    publicKey: string
+    profileVersion: string
   }
 }
 
 export class ChatData extends jspb.Message {
-  getCategory(): Category
-  setCategory(value: Category): void
+  getCategory(): CategoryMap[keyof CategoryMap]
+  setCategory(value: CategoryMap[keyof CategoryMap]): void
 
   getTime(): number
   setTime(value: number): void
@@ -168,17 +160,19 @@ export class ChatData extends jspb.Message {
 
 export namespace ChatData {
   export type AsObject = {
-    category: Category
+    category: CategoryMap[keyof CategoryMap]
     time: number
     messageId: string
     text: string
   }
 }
 
-export enum Category {
-  UNKNOWN = 0,
-  POSITION = 1,
-  PROFILE = 2,
-  CHAT = 3,
-  SCENE_MESSAGE = 4
+export interface CategoryMap {
+  UNKNOWN: 0
+  POSITION: 1
+  PROFILE: 2
+  CHAT: 3
+  SCENE_MESSAGE: 4
 }
+
+export const Category: CategoryMap

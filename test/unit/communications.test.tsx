@@ -10,12 +10,13 @@ import {
   WelcomeMessage,
   AuthMessage,
   TopicMessage,
-  DataMessage,
+  TopicFWMessage,
   PingMessage,
-  TopicSubscriptionMessage,
+  SubscriptionMessage,
   MessageType,
   Role,
-  Format
+  Format,
+  TopicIdentityMessage
 } from '../../packages/shared/comms/proto/broker'
 import { AuthData } from '../../packages/shared/comms/proto/comms'
 import { PositionData, ProfileData, ChatData, Category } from '../../packages/shared/comms/proto/comms'
@@ -32,6 +33,7 @@ import {
 import { BrokerConnection } from 'shared/comms/BrokerConnection'
 import { IBrokerConnection, BrokerMessage } from 'shared/comms/IBrokerConnection'
 import { Observable } from 'decentraland-ecs/src'
+import { TopicIdentityFWMessage } from '../../packages/shared/comms/proto/broker'
 
 chai.use(sinonChai)
 
@@ -155,11 +157,15 @@ describe('Communications', function() {
 
       it('webrtc ice candidate', async () => {
         connection.commServerAlias = 1
-        const sdp = 'candidate:702786350 2 udp 41819902 8.8.8.8 60769 typ relay raddr 8.8.8.8'
         const msg = new WebRtcMessage()
         msg.setType(MessageType.WEBRTC_ICE_CANDIDATE)
         msg.setFromAlias(1)
-        msg.setSdp(sdp)
+        const candidate = {
+          candidate: 'candidate:702786350 2 udp 41819902 8.8.8.8 60769 typ relay raddr 8.8.8.8'
+        }
+
+        const encoder = new TextEncoder()
+        msg.setData(encoder.encode(JSON.stringify(candidate)))
 
         const event = new MessageEvent('websocket', { data: msg.serializeBinary() })
 
@@ -167,7 +173,7 @@ describe('Communications', function() {
 
         await connection.onWsMessage(event)
 
-        expect(connection.webRtcConn!.addIceCandidate).to.have.been.calledWith({ candidate: sdp })
+        expect(connection.webRtcConn!.addIceCandidate).to.have.been.calledWith(candidate)
       })
 
       it('webrtc offer', async () => {
@@ -176,11 +182,14 @@ describe('Communications', function() {
         const answer = { sdp: 'answer-sdp', type: 'answer' }
         ;(connection.webRtcConn!.createAnswer as any).resolves(answer)
 
+        const offer = { sdp: 'offer-sdp', type: 'offer' }
+
         const msg = new WebRtcMessage()
         msg.setType(MessageType.WEBRTC_OFFER)
         msg.setFromAlias(1)
-        msg.setSdp('sdp')
-
+        const encoder = new TextEncoder()
+        msg.setData(encoder.encode(JSON.stringify(offer)))
+        ;(connection.webRtcConn! as any)['localDescription'] = answer
         connection.gotCandidatesFuture.resolve(answer as any)
 
         const event = new MessageEvent('websocket', { data: msg.serializeBinary() })
@@ -189,7 +198,7 @@ describe('Communications', function() {
         expect(connection.webRtcConn!.setRemoteDescription).to.have.been.calledWithMatch(
           (desc: RTCSessionDescription) => {
             expect(desc.type).to.be.equal('offer')
-            expect(desc.sdp).to.be.equal('sdp')
+            expect(desc.sdp).to.be.equal('offer-sdp')
             return true
           }
         )
@@ -200,24 +209,33 @@ describe('Communications', function() {
         expect(webSocket.send).to.have.been.calledWithMatch((bytes: Uint8Array) => {
           const msg = WebRtcMessage.deserializeBinary(bytes)
           expect(msg.getType()).to.equal(MessageType.WEBRTC_ANSWER)
-          expect(msg.getSdp()).to.equal(answer.sdp)
           expect(msg.getToAlias()).to.equal(1)
+
+          const decoder = new TextDecoder('utf8')
+          const r = JSON.parse(decoder.decode(msg.getData() as ArrayBuffer))
+          expect(r.sdp).to.be.equal(answer.sdp)
+          expect(r.type).to.be.equal(answer.type)
           return true
         })
       })
 
       it('webrtc answer', async () => {
+        const answer = { sdp: 'answer-sdp', type: 'answer' }
+
         connection.commServerAlias = 1
         const msg = new WebRtcMessage()
         msg.setType(MessageType.WEBRTC_ANSWER)
         msg.setFromAlias(1)
-        msg.setSdp('sdp')
+        const encoder = new TextEncoder()
+        msg.setData(encoder.encode(JSON.stringify(answer)))
+
         const event = new MessageEvent('websocket', { data: msg.serializeBinary() })
         await connection.onWsMessage(event)
+
         expect(connection.webRtcConn!.setRemoteDescription).to.have.been.calledWithMatch(
           (desc: RTCSessionDescription) => {
             expect(desc.type).to.be.equal('answer')
-            expect(desc.sdp).to.be.equal('sdp')
+            expect(desc.sdp).to.be.equal('answer-sdp')
             return true
           }
         )
@@ -236,7 +254,9 @@ describe('Communications', function() {
           const msg = WebRtcMessage.deserializeBinary(bytes)
           expect(msg.getType()).to.equal(MessageType.WEBRTC_ICE_CANDIDATE)
           expect(msg.getToAlias()).to.equal(1)
-          expect(msg.getSdp()).to.equal(sdp)
+          const decoder = new TextDecoder('utf8')
+          const r = JSON.parse(decoder.decode(msg.getData() as ArrayBuffer))
+          expect(r.candidate).to.be.equal(candidate.candidate)
           return true
         })
       })
@@ -283,8 +303,8 @@ describe('Communications', function() {
 
           const bodyEncoded = body.serializeBinary()
 
-          const msg = new DataMessage()
-          msg.setType(MessageType.DATA)
+          const msg = new TopicFWMessage()
+          msg.setType(MessageType.TOPIC_FW)
           msg.setFromAlias(1)
           msg.setBody(bodyEncoded)
 
@@ -302,14 +322,15 @@ describe('Communications', function() {
 
           const bodyEncoded = body.serializeBinary()
 
-          const msg = new DataMessage()
-          msg.setType(MessageType.DATA)
+          const msg = new TopicIdentityFWMessage()
+          msg.setType(MessageType.TOPIC_IDENTITY_FW)
           msg.setFromAlias(1)
+          msg.setIdentity(btoa('id'))
           msg.setBody(bodyEncoded)
 
           const e = { data: msg.serializeBinary() }
           channel.onmessage(e)
-          expect(worldConn.profileHandler).to.have.been.calledWith('1', body)
+          expect(worldConn.profileHandler).to.have.been.calledWith('1', 'id', body)
         })
 
         it('receive chat data message', () => {
@@ -321,8 +342,8 @@ describe('Communications', function() {
 
           const bodyEncoded = body.serializeBinary()
 
-          const msg = new DataMessage()
-          msg.setType(MessageType.DATA)
+          const msg = new TopicFWMessage()
+          msg.setType(MessageType.TOPIC_FW)
           msg.setFromAlias(1)
           msg.setBody(bodyEncoded)
 
@@ -373,8 +394,8 @@ describe('Communications', function() {
         it('topic subscriptions', () => {
           worldConn.updateSubscriptions('topic1 topic2')
           expect(connection.reliableDataChannel!.send).to.have.been.calledWithMatch((bytes: Uint8Array) => {
-            const msg = TopicSubscriptionMessage.deserializeBinary(bytes)
-            expect(msg.getType()).to.equal(MessageType.TOPIC_SUBSCRIPTION)
+            const msg = SubscriptionMessage.deserializeBinary(bytes)
+            expect(msg.getType()).to.equal(MessageType.SUBSCRIPTION)
             expect(msg.getFormat()).to.equal(Format.PLAIN)
             expect(Buffer.from(msg.getTopics()).toString('utf8')).to.equal('topic1 topic2')
             return true
@@ -406,21 +427,17 @@ describe('Communications', function() {
         it('profile', () => {
           const p = [20, 20, 20, 20, 20, 20, 20] as Position
           const profile = {
-            displayName: 'testname',
-            publicKey: 'pubkey',
-            avatarType: 'fox'
+            version: 'version'
           }
           worldConn.sendProfileMessage(p, profile)
 
           expect(connection.reliableDataChannel!.send).to.have.been.calledWithMatch((bytes: Uint8Array) => {
-            const msg = TopicMessage.deserializeBinary(bytes)
-            expect(msg.getType()).to.equal(MessageType.TOPIC)
+            const msg = TopicIdentityMessage.deserializeBinary(bytes)
+            expect(msg.getType()).to.equal(MessageType.TOPIC_IDENTITY)
             expect(msg.getTopic()).to.equal('37:37')
 
             const data = ProfileData.deserializeBinary(msg.getBody() as Uint8Array)
-            expect(data.getAvatarType()).to.equal('fox')
-            expect(data.getDisplayName()).to.equal('testname')
-            expect(data.getPublicKey()).to.equal('pubkey')
+            expect(data.getProfileVersion()).to.equal('version')
             return true
           })
         })
@@ -509,45 +526,40 @@ describe('Communications', function() {
 
         const profileData = new ProfileData()
         profileData.setTime(Date.now())
-        profileData.setDisplayName('testname')
-        profileData.setPublicKey('pubkey')
-        profileData.setAvatarType('fox')
+        profileData.setProfileVersion('version')
 
-        processProfileMessage(context, 'client2', profileData)
+        const info = new PeerTrackingInfo()
+        sinon.spy(info, 'loadProfileIfNecessary')
+        context.peerData.set('client2', info)
+
+        processProfileMessage(context, 'client2', 'userId1', profileData)
 
         expect(context.peerData).to.have.key('client2')
         const trackingInfo = context.peerData.get('client2') as PeerTrackingInfo
-        expect(trackingInfo.profile).to.deep.equal({
-          displayName: 'testname',
-          publicKey: 'pubkey',
-          avatarType: 'fox'
+        expect(trackingInfo.identity).to.equal('userId1')
+        expect(trackingInfo.userInfo).to.deep.equal({
+          userId: 'userId1'
         })
+        expect(trackingInfo.loadProfileIfNecessary).to.have.been.calledWith('version')
       })
 
       it('old profile message', () => {
-        const profile = {
-          displayName: 'testname1',
-          publicKey: 'pubkey1',
-          avatarType: 'fox1'
-        }
-
         const context = new Context({})
         const info = new PeerTrackingInfo()
         info.lastProfileUpdate = Date.now()
-        info.profile = profile
+        info.identity = 'identity2'
+        sinon.spy(info, 'loadProfileIfNecessary')
         context.peerData.set('client2', info)
 
         const profileData = new ProfileData()
         profileData.setTime(new Date(2008).getTime())
-        profileData.setDisplayName('testname')
-        profileData.setPublicKey('pubkey')
-        profileData.setAvatarType('fox')
+        profileData.setProfileVersion('version1')
 
-        processProfileMessage(context, 'client2', profileData)
+        processProfileMessage(context, 'client2', 'identity2', profileData)
 
         expect(context.peerData).to.have.key('client2')
         const trackingInfo = context.peerData.get('client2') as PeerTrackingInfo
-        expect(trackingInfo.profile).to.equal(profile)
+        expect(trackingInfo.loadProfileIfNecessary).to.not.have.been.calledWith('version1')
       })
     })
   })

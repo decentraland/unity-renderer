@@ -173,38 +173,36 @@ export class BrokerConnection implements IBrokerConnection {
           break
         }
 
-        const sdp = message.getSdp()
-
         if (message.getFromAlias() !== this.commServerAlias) {
           this.logger.log('ignore webrtc message from unknown peer', message.getFromAlias())
           break
         }
 
+        const decoder = new TextDecoder('utf8')
+        const sessionData = decoder.decode(message.getData() as ArrayBuffer)
+
         if (msgType === MessageType.WEBRTC_ICE_CANDIDATE) {
           try {
-            await this.webRtcConn!.addIceCandidate({ candidate: sdp })
+            const candidate = JSON.parse(sessionData)
+            await this.webRtcConn!.addIceCandidate(candidate)
           } catch (err) {
             this.logger.error(err)
           }
         } else if (msgType === MessageType.WEBRTC_OFFER) {
           try {
-            await this.webRtcConn!.setRemoteDescription(new RTCSessionDescription({ type: 'offer', sdp }))
+            await this.webRtcConn!.setRemoteDescription(JSON.parse(sessionData))
             const desc = await this.webRtcConn!.createAnswer({})
             await this.webRtcConn!.setLocalDescription(desc)
 
-            let offer = this.webRtcConn!.localDescription
+            let answer = this.webRtcConn!.localDescription
 
-            if (!this.webRtcConn!.canTrickleIceCandidates) {
-              this.logger.log("can't trickle iceCandidates, waiting for candidates")
-              offer = await this.gotCandidatesFuture
-              this.logger.log('got candidates')
-            }
-
-            if (offer && offer.sdp) {
+            if (answer && answer.sdp) {
               const msg = new WebRtcMessage()
               msg.setToAlias(this.commServerAlias)
               msg.setType(MessageType.WEBRTC_ANSWER)
-              msg.setSdp(offer.sdp)
+              const encoder = new TextEncoder()
+              const data = encoder.encode(JSON.stringify(answer))
+              msg.setData(data)
               this.sendCoordinatorMessage(msg)
             }
           } catch (err) {
@@ -212,7 +210,7 @@ export class BrokerConnection implements IBrokerConnection {
           }
         } else if (msgType === MessageType.WEBRTC_ANSWER) {
           try {
-            await this.webRtcConn!.setRemoteDescription(new RTCSessionDescription({ type: 'answer', sdp }))
+            await this.webRtcConn!.setRemoteDescription(JSON.parse(sessionData))
           } catch (err) {
             this.logger.error(err)
           }
@@ -287,8 +285,11 @@ export class BrokerConnection implements IBrokerConnection {
       msg.setType(MessageType.WEBRTC_ICE_CANDIDATE)
       // TODO: Ensure commServerAlias, it may be null
       msg.setToAlias(this.commServerAlias!)
-      msg.setSdp(event.candidate.candidate)
-      // TODO: add sdp fields
+
+      const encoder = new TextEncoder()
+      const data = encoder.encode(JSON.stringify(event.candidate.toJSON()))
+      msg.setData(data)
+
       this.sendCoordinatorMessage(msg)
     } else {
       this.gotCandidatesFuture.resolve(this.webRtcConn!.localDescription!)

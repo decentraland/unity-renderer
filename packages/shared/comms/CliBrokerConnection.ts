@@ -106,7 +106,8 @@ export class CliBrokerConnection implements IBrokerConnection {
 
         break
       }
-      case MessageType.DATA:
+      case MessageType.TOPIC_FW:
+      case MessageType.TOPIC_IDENTITY_FW:
       case MessageType.PING: {
         if (this.stats) {
           this.stats.dispatchTopicDuration.start()

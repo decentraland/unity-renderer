@@ -1,3 +1,4 @@
+import { Profile } from '../types'
 export enum AvatarMessageType {
   // Networking related messages
   USER_DATA = 'USER_DATA',
@@ -76,14 +77,11 @@ export type PeerInformation = {
 }
 
 export type UserInformation = {
-  /**
-   * User's display name
-   */
-  displayName?: string
-  publicKey?: string
-  avatarType?: string
+  userId?: string
+  version?: string
   status?: string
   pose?: Pose
+  profile?: Profile
 }
 
 // The order is [X,Y,Z,Qx,Qy,Qz,Qw]

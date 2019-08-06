@@ -6,10 +6,12 @@ import {
   MessageType,
   PingMessage,
   TopicMessage,
-  DataMessage,
+  TopicFWMessage,
   Format,
-  TopicSubscriptionMessage,
-  MessageHeader
+  SubscriptionMessage,
+  MessageHeader,
+  TopicIdentityMessage,
+  TopicIdentityFWMessage
 } from './proto/broker'
 import { Position, position2parcel } from './utils'
 import { UserInformation } from './types'
@@ -38,7 +40,7 @@ export function positionHash(p: Position) {
 
 export class WorldInstanceConnection {
   public positionHandler: ((fromAlias: string, positionData: PositionData) => void) | null = null
-  public profileHandler: ((fromAlias: string, profileData: ProfileData) => void) | null = null
+  public profileHandler: ((fromAlias: string, identity: string, profileData: ProfileData) => void) | null = null
   public chatHandler: ((fromAlias: string, chatData: ChatData) => void) | null = null
   // TODO: Once we have the correct class, change ChatData
   public sceneMessageHandler: ((fromAlias: string, chatData: ChatData) => void) | null = null
@@ -91,11 +93,9 @@ export class WorldInstanceConnection {
     const d = new ProfileData()
     d.setCategory(Category.PROFILE)
     d.setTime(Date.now())
-    userProfile.avatarType && d.setAvatarType(userProfile.avatarType)
-    userProfile.displayName && d.setDisplayName(userProfile.displayName)
-    userProfile.publicKey && d.setPublicKey(userProfile.publicKey)
+    userProfile.version && d.setProfileVersion(userProfile.version)
 
-    const r = this.sendTopicMessage(true, topic, d)
+    const r = this.sendTopicIdentityMessage(true, topic, d)
     if (this.stats) {
       this.stats.profile.incrementSent(1, r.bytesSize)
     }
@@ -137,39 +137,31 @@ export class WorldInstanceConnection {
   sendTopicMessage(reliable: boolean, topic: string, body: Message): SendResult {
     const encodedBody = body.serializeBinary()
 
-    const topicMessage = new TopicMessage()
-    topicMessage.setType(MessageType.TOPIC)
-    topicMessage.setTopic(topic)
-    topicMessage.setBody(encodedBody)
+    const message = new TopicMessage()
+    message.setType(MessageType.TOPIC)
+    message.setTopic(topic)
+    message.setBody(encodedBody)
 
-    const bytes = topicMessage.serializeBinary()
-    if (this.stats) {
-      this.stats.topic.incrementSent(1, bytes.length)
-    }
+    return this.sendMessage(reliable, message)
+  }
 
-    if (reliable) {
-      if (!this.connection.hasReliableChannel) {
-        throw new Error('trying to send a topic message using null reliable channel')
-      }
+  sendTopicIdentityMessage(reliable: boolean, topic: string, body: Message): SendResult {
+    const encodedBody = body.serializeBinary()
 
-      this.connection.sendReliable(bytes)
-    } else {
-      if (!this.connection.hasUnreliableChannel) {
-        throw new Error('trying to send a topic message using null unreliable channel')
-      }
+    const message = new TopicIdentityMessage()
+    message.setType(MessageType.TOPIC_IDENTITY)
+    message.setTopic(topic)
+    message.setBody(encodedBody)
 
-      this.connection.sendUnreliable(bytes)
-    }
-
-    return new SendResult(bytes.length)
+    return this.sendMessage(reliable, message)
   }
 
   updateSubscriptions(rawTopics: string) {
     if (!this.connection.hasReliableChannel) {
       throw new Error('trying to send topic subscription message but reliable channel is not ready')
     }
-    const subscriptionMessage = new TopicSubscriptionMessage()
-    subscriptionMessage.setType(MessageType.TOPIC_SUBSCRIPTION)
+    const subscriptionMessage = new SubscriptionMessage()
+    subscriptionMessage.setType(MessageType.SUBSCRIPTION)
     subscriptionMessage.setFormat(Format.PLAIN)
     // TODO: use TextDecoder instead of Buffer, it is a native browser API, works faster
     subscriptionMessage.setTopics(Buffer.from(rawTopics, 'utf8'))
@@ -203,13 +195,13 @@ export class WorldInstanceConnection {
         this.logger.log('unsupported message')
         break
       }
-      case MessageType.DATA: {
+      case MessageType.TOPIC_FW: {
         if (this.stats) {
           this.stats.topic.incrementRecv(msgSize)
         }
-        let dataMessage: DataMessage
+        let dataMessage: TopicFWMessage
         try {
-          dataMessage = DataMessage.deserializeBinary(message.data)
+          dataMessage = TopicFWMessage.deserializeBinary(message.data)
         } catch (e) {
           this.logger.error('cannot process topic message', e)
           break
@@ -262,13 +254,46 @@ export class WorldInstanceConnection {
             this.sceneMessageHandler && this.sceneMessageHandler(alias, chatData)
             break
           }
+          default: {
+            this.logger.log('ignoring category', category)
+            break
+          }
+        }
+        break
+      }
+      case MessageType.TOPIC_IDENTITY_FW: {
+        if (this.stats) {
+          this.stats.topic.incrementRecv(msgSize)
+        }
+        let dataMessage: TopicIdentityFWMessage
+        try {
+          dataMessage = TopicIdentityFWMessage.deserializeBinary(message.data)
+        } catch (e) {
+          this.logger.error('cannot process topic identity message', e)
+          break
+        }
+
+        const body = dataMessage.getBody() as any
+
+        let dataHeader: DataHeader
+        try {
+          dataHeader = DataHeader.deserializeBinary(body)
+        } catch (e) {
+          this.logger.error('cannot process data header', e)
+          break
+        }
+
+        const alias = dataMessage.getFromAlias().toString()
+        const userId = atob(dataMessage.getIdentity_asB64())
+        const category = dataHeader.getCategory()
+        switch (category) {
           case Category.PROFILE: {
             const profileData = ProfileData.deserializeBinary(body)
             if (this.stats) {
               this.stats.dispatchTopicDuration.stop()
               this.stats.profile.incrementRecv(msgSize)
             }
-            this.profileHandler && this.profileHandler(alias, profileData)
+            this.profileHandler && this.profileHandler(alias, userId, profileData)
             break
           }
           default: {
@@ -303,5 +328,24 @@ export class WorldInstanceConnection {
         break
       }
     }
+  }
+
+  private sendMessage(reliable: boolean, topicMessage: Message) {
+    const bytes = topicMessage.serializeBinary()
+    if (this.stats) {
+      this.stats.topic.incrementSent(1, bytes.length)
+    }
+    if (reliable) {
+      if (!this.connection.hasReliableChannel) {
+        throw new Error('trying to send a topic message using null reliable channel')
+      }
+      this.connection.sendReliable(bytes)
+    } else {
+      if (!this.connection.hasUnreliableChannel) {
+        throw new Error('trying to send a topic message using null unreliable channel')
+      }
+      this.connection.sendUnreliable(bytes)
+    }
+    return new SendResult(bytes.length)
   }
 }
