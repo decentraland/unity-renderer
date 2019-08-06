@@ -36,9 +36,7 @@ message PositionData {
 message ProfileData {
     Category category = 1;
     double time = 2;
-    string avatar_type = 3;
-    string display_name = 4;
-    string public_key = 5;
+    string profile_version = 3;
 }
 
 message ChatData {

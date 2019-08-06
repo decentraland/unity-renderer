@@ -14,7 +14,6 @@ import {
 import { execute } from './rpc'
 import { AvatarShape } from 'decentraland-ecs/src/decentraland/AvatarShape'
 import { Profile } from '../../shared/types'
-import defaultLogger from '../../shared/logger'
 
 export const avatarMessageObservable = new Observable<AvatarMessage>()
 
@@ -75,13 +74,9 @@ export class AvatarEntity extends Entity {
       this.setPose(userData.pose)
     }
 
-    if (userData.displayName) {
-      this.setDisplayName(userData.displayName)
+    if (userData.profile) {
+      this.loadProfile(userData.profile)
     }
-  }
-
-  setDisplayName(name: string) {
-    this.avatarShape.name = name
   }
 
   setPose(pose: Pose): void {
@@ -114,7 +109,6 @@ export class AvatarEntity extends Entity {
  * @param uuid
  */
 function ensureAvatar(uuid: UUID): AvatarEntity {
-  // TODO - we should be using the user id instead of the comms alias, to be introduced with the profile message - moliva - 29/07/2019
   let avatar = avatarMap.get(uuid)
 
   if (avatar) {
@@ -124,20 +118,9 @@ function ensureAvatar(uuid: UUID): AvatarEntity {
   avatar = new AvatarEntity(uuid)
   avatarMap.set(uuid, avatar)
 
-  resolveProfile(uuid)
-    .then(profile => avatar!.loadProfile(profile))
-    .catch(e => {
-      defaultLogger.error(`error loading profile for user ${uuid}`)
-      defaultLogger.error(e)
-    })
-
   executeTask(hideBlockedUsers)
 
   return avatar
-}
-
-async function resolveProfile(uuid: string) {
-  return execute('SocialController', 'resolveProfile', [uuid])
 }
 
 async function getBlockedUsers(): Promise<Array<string>> {

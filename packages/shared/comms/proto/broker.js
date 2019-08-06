@@ -14,14 +14,16 @@ var global = Function('return this')();
 goog.exportSymbol('proto.protocol.AuthMessage', null, global);
 goog.exportSymbol('proto.protocol.ConnectMessage', null, global);
 goog.exportSymbol('proto.protocol.CoordinatorMessage', null, global);
-goog.exportSymbol('proto.protocol.DataMessage', null, global);
 goog.exportSymbol('proto.protocol.Format', null, global);
 goog.exportSymbol('proto.protocol.MessageHeader', null, global);
 goog.exportSymbol('proto.protocol.MessageType', null, global);
 goog.exportSymbol('proto.protocol.PingMessage', null, global);
 goog.exportSymbol('proto.protocol.Role', null, global);
+goog.exportSymbol('proto.protocol.SubscriptionMessage', null, global);
+goog.exportSymbol('proto.protocol.TopicFWMessage', null, global);
+goog.exportSymbol('proto.protocol.TopicIdentityFWMessage', null, global);
+goog.exportSymbol('proto.protocol.TopicIdentityMessage', null, global);
 goog.exportSymbol('proto.protocol.TopicMessage', null, global);
-goog.exportSymbol('proto.protocol.TopicSubscriptionMessage', null, global);
 goog.exportSymbol('proto.protocol.WebRtcMessage', null, global);
 goog.exportSymbol('proto.protocol.WelcomeMessage', null, global);
 
@@ -629,7 +631,7 @@ proto.protocol.WebRtcMessage.toObject = function(includeInstance, msg) {
     type: jspb.Message.getFieldWithDefault(msg, 1, 0),
     fromAlias: jspb.Message.getFieldWithDefault(msg, 2, 0),
     toAlias: jspb.Message.getFieldWithDefault(msg, 3, 0),
-    sdp: jspb.Message.getFieldWithDefault(msg, 4, "")
+    data: msg.getData_asB64()
   };
 
   if (includeInstance) {
@@ -679,8 +681,8 @@ proto.protocol.WebRtcMessage.deserializeBinaryFromReader = function(msg, reader)
       msg.setToAlias(value);
       break;
     case 4:
-      var value = /** @type {string} */ (reader.readString());
-      msg.setSdp(value);
+      var value = /** @type {!Uint8Array} */ (reader.readBytes());
+      msg.setData(value);
       break;
     default:
       reader.skipField();
@@ -732,9 +734,9 @@ proto.protocol.WebRtcMessage.serializeBinaryToWriter = function(message, writer)
       f
     );
   }
-  f = message.getSdp();
+  f = message.getData_asU8();
   if (f.length > 0) {
-    writer.writeString(
+    writer.writeBytes(
       4,
       f
     );
@@ -788,17 +790,41 @@ proto.protocol.WebRtcMessage.prototype.setToAlias = function(value) {
 
 
 /**
- * optional string sdp = 4;
- * @return {string}
+ * optional bytes data = 4;
+ * @return {!(string|Uint8Array)}
  */
-proto.protocol.WebRtcMessage.prototype.getSdp = function() {
-  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 4, ""));
+proto.protocol.WebRtcMessage.prototype.getData = function() {
+  return /** @type {!(string|Uint8Array)} */ (jspb.Message.getFieldWithDefault(this, 4, ""));
 };
 
 
-/** @param {string} value */
-proto.protocol.WebRtcMessage.prototype.setSdp = function(value) {
-  jspb.Message.setProto3StringField(this, 4, value);
+/**
+ * optional bytes data = 4;
+ * This is a type-conversion wrapper around `getData()`
+ * @return {string}
+ */
+proto.protocol.WebRtcMessage.prototype.getData_asB64 = function() {
+  return /** @type {string} */ (jspb.Message.bytesAsB64(
+      this.getData()));
+};
+
+
+/**
+ * optional bytes data = 4;
+ * Note that Uint8Array is not supported on all browsers.
+ * @see http://caniuse.com/Uint8Array
+ * This is a type-conversion wrapper around `getData()`
+ * @return {!Uint8Array}
+ */
+proto.protocol.WebRtcMessage.prototype.getData_asU8 = function() {
+  return /** @type {!Uint8Array} */ (jspb.Message.bytesAsU8(
+      this.getData()));
+};
+
+
+/** @param {!(string|Uint8Array)} value */
+proto.protocol.WebRtcMessage.prototype.setData = function(value) {
+  jspb.Message.setProto3BytesField(this, 4, value);
 };
 
 
@@ -1124,12 +1150,12 @@ proto.protocol.PingMessage.prototype.setTime = function(value) {
  * @extends {jspb.Message}
  * @constructor
  */
-proto.protocol.TopicSubscriptionMessage = function(opt_data) {
+proto.protocol.SubscriptionMessage = function(opt_data) {
   jspb.Message.initialize(this, opt_data, 0, -1, null, null);
 };
-goog.inherits(proto.protocol.TopicSubscriptionMessage, jspb.Message);
+goog.inherits(proto.protocol.SubscriptionMessage, jspb.Message);
 if (goog.DEBUG && !COMPILED) {
-  proto.protocol.TopicSubscriptionMessage.displayName = 'proto.protocol.TopicSubscriptionMessage';
+  proto.protocol.SubscriptionMessage.displayName = 'proto.protocol.SubscriptionMessage';
 }
 
 
@@ -1144,8 +1170,8 @@ if (jspb.Message.GENERATE_TO_OBJECT) {
  *     for transitional soy proto support: http://goto/soy-param-migration
  * @return {!Object}
  */
-proto.protocol.TopicSubscriptionMessage.prototype.toObject = function(opt_includeInstance) {
-  return proto.protocol.TopicSubscriptionMessage.toObject(opt_includeInstance, this);
+proto.protocol.SubscriptionMessage.prototype.toObject = function(opt_includeInstance) {
+  return proto.protocol.SubscriptionMessage.toObject(opt_includeInstance, this);
 };
 
 
@@ -1154,11 +1180,11 @@ proto.protocol.TopicSubscriptionMessage.prototype.toObject = function(opt_includ
  * @param {boolean|undefined} includeInstance Whether to include the JSPB
  *     instance for transitional soy proto support:
  *     http://goto/soy-param-migration
- * @param {!proto.protocol.TopicSubscriptionMessage} msg The msg instance to transform.
+ * @param {!proto.protocol.SubscriptionMessage} msg The msg instance to transform.
  * @return {!Object}
  * @suppress {unusedLocalVariables} f is only used for nested messages
  */
-proto.protocol.TopicSubscriptionMessage.toObject = function(includeInstance, msg) {
+proto.protocol.SubscriptionMessage.toObject = function(includeInstance, msg) {
   var f, obj = {
     type: jspb.Message.getFieldWithDefault(msg, 1, 0),
     format: jspb.Message.getFieldWithDefault(msg, 2, 0),
@@ -1176,23 +1202,23 @@ proto.protocol.TopicSubscriptionMessage.toObject = function(includeInstance, msg
 /**
  * Deserializes binary data (in protobuf wire format).
  * @param {jspb.ByteSource} bytes The bytes to deserialize.
- * @return {!proto.protocol.TopicSubscriptionMessage}
+ * @return {!proto.protocol.SubscriptionMessage}
  */
-proto.protocol.TopicSubscriptionMessage.deserializeBinary = function(bytes) {
+proto.protocol.SubscriptionMessage.deserializeBinary = function(bytes) {
   var reader = new jspb.BinaryReader(bytes);
-  var msg = new proto.protocol.TopicSubscriptionMessage;
-  return proto.protocol.TopicSubscriptionMessage.deserializeBinaryFromReader(msg, reader);
+  var msg = new proto.protocol.SubscriptionMessage;
+  return proto.protocol.SubscriptionMessage.deserializeBinaryFromReader(msg, reader);
 };
 
 
 /**
  * Deserializes binary data (in protobuf wire format) from the
  * given reader into the given message object.
- * @param {!proto.protocol.TopicSubscriptionMessage} msg The message object to deserialize into.
+ * @param {!proto.protocol.SubscriptionMessage} msg The message object to deserialize into.
  * @param {!jspb.BinaryReader} reader The BinaryReader to use.
- * @return {!proto.protocol.TopicSubscriptionMessage}
+ * @return {!proto.protocol.SubscriptionMessage}
  */
-proto.protocol.TopicSubscriptionMessage.deserializeBinaryFromReader = function(msg, reader) {
+proto.protocol.SubscriptionMessage.deserializeBinaryFromReader = function(msg, reader) {
   while (reader.nextField()) {
     if (reader.isEndGroup()) {
       break;
@@ -1224,9 +1250,9 @@ proto.protocol.TopicSubscriptionMessage.deserializeBinaryFromReader = function(m
  * Serializes the message to binary data (in protobuf wire format).
  * @return {!Uint8Array}
  */
-proto.protocol.TopicSubscriptionMessage.prototype.serializeBinary = function() {
+proto.protocol.SubscriptionMessage.prototype.serializeBinary = function() {
   var writer = new jspb.BinaryWriter();
-  proto.protocol.TopicSubscriptionMessage.serializeBinaryToWriter(this, writer);
+  proto.protocol.SubscriptionMessage.serializeBinaryToWriter(this, writer);
   return writer.getResultBuffer();
 };
 
@@ -1234,11 +1260,11 @@ proto.protocol.TopicSubscriptionMessage.prototype.serializeBinary = function() {
 /**
  * Serializes the given message to binary data (in protobuf wire
  * format), writing to the given BinaryWriter.
- * @param {!proto.protocol.TopicSubscriptionMessage} message
+ * @param {!proto.protocol.SubscriptionMessage} message
  * @param {!jspb.BinaryWriter} writer
  * @suppress {unusedLocalVariables} f is only used for nested messages
  */
-proto.protocol.TopicSubscriptionMessage.serializeBinaryToWriter = function(message, writer) {
+proto.protocol.SubscriptionMessage.serializeBinaryToWriter = function(message, writer) {
   var f = undefined;
   f = message.getType();
   if (f !== 0.0) {
@@ -1268,13 +1294,13 @@ proto.protocol.TopicSubscriptionMessage.serializeBinaryToWriter = function(messa
  * optional MessageType type = 1;
  * @return {!proto.protocol.MessageType}
  */
-proto.protocol.TopicSubscriptionMessage.prototype.getType = function() {
+proto.protocol.SubscriptionMessage.prototype.getType = function() {
   return /** @type {!proto.protocol.MessageType} */ (jspb.Message.getFieldWithDefault(this, 1, 0));
 };
 
 
 /** @param {!proto.protocol.MessageType} value */
-proto.protocol.TopicSubscriptionMessage.prototype.setType = function(value) {
+proto.protocol.SubscriptionMessage.prototype.setType = function(value) {
   jspb.Message.setProto3EnumField(this, 1, value);
 };
 
@@ -1283,13 +1309,13 @@ proto.protocol.TopicSubscriptionMessage.prototype.setType = function(value) {
  * optional Format format = 2;
  * @return {!proto.protocol.Format}
  */
-proto.protocol.TopicSubscriptionMessage.prototype.getFormat = function() {
+proto.protocol.SubscriptionMessage.prototype.getFormat = function() {
   return /** @type {!proto.protocol.Format} */ (jspb.Message.getFieldWithDefault(this, 2, 0));
 };
 
 
 /** @param {!proto.protocol.Format} value */
-proto.protocol.TopicSubscriptionMessage.prototype.setFormat = function(value) {
+proto.protocol.SubscriptionMessage.prototype.setFormat = function(value) {
   jspb.Message.setProto3EnumField(this, 2, value);
 };
 
@@ -1298,7 +1324,7 @@ proto.protocol.TopicSubscriptionMessage.prototype.setFormat = function(value) {
  * optional bytes topics = 3;
  * @return {!(string|Uint8Array)}
  */
-proto.protocol.TopicSubscriptionMessage.prototype.getTopics = function() {
+proto.protocol.SubscriptionMessage.prototype.getTopics = function() {
   return /** @type {!(string|Uint8Array)} */ (jspb.Message.getFieldWithDefault(this, 3, ""));
 };
 
@@ -1308,7 +1334,7 @@ proto.protocol.TopicSubscriptionMessage.prototype.getTopics = function() {
  * This is a type-conversion wrapper around `getTopics()`
  * @return {string}
  */
-proto.protocol.TopicSubscriptionMessage.prototype.getTopics_asB64 = function() {
+proto.protocol.SubscriptionMessage.prototype.getTopics_asB64 = function() {
   return /** @type {string} */ (jspb.Message.bytesAsB64(
       this.getTopics()));
 };
@@ -1321,14 +1347,234 @@ proto.protocol.TopicSubscriptionMessage.prototype.getTopics_asB64 = function() {
  * This is a type-conversion wrapper around `getTopics()`
  * @return {!Uint8Array}
  */
-proto.protocol.TopicSubscriptionMessage.prototype.getTopics_asU8 = function() {
+proto.protocol.SubscriptionMessage.prototype.getTopics_asU8 = function() {
   return /** @type {!Uint8Array} */ (jspb.Message.bytesAsU8(
       this.getTopics()));
 };
 
 
 /** @param {!(string|Uint8Array)} value */
-proto.protocol.TopicSubscriptionMessage.prototype.setTopics = function(value) {
+proto.protocol.SubscriptionMessage.prototype.setTopics = function(value) {
+  jspb.Message.setProto3BytesField(this, 3, value);
+};
+
+
+
+/**
+ * Generated by JsPbCodeGenerator.
+ * @param {Array=} opt_data Optional initial data array, typically from a
+ * server response, or constructed directly in Javascript. The array is used
+ * in place and becomes part of the constructed object. It is not cloned.
+ * If no data is provided, the constructed object will be empty, but still
+ * valid.
+ * @extends {jspb.Message}
+ * @constructor
+ */
+proto.protocol.AuthMessage = function(opt_data) {
+  jspb.Message.initialize(this, opt_data, 0, -1, null, null);
+};
+goog.inherits(proto.protocol.AuthMessage, jspb.Message);
+if (goog.DEBUG && !COMPILED) {
+  proto.protocol.AuthMessage.displayName = 'proto.protocol.AuthMessage';
+}
+
+
+if (jspb.Message.GENERATE_TO_OBJECT) {
+/**
+ * Creates an object representation of this proto suitable for use in Soy templates.
+ * Field names that are reserved in JavaScript and will be renamed to pb_name.
+ * To access a reserved field use, foo.pb_<name>, eg, foo.pb_default.
+ * For the list of reserved names please see:
+ *     com.google.apps.jspb.JsClassTemplate.JS_RESERVED_WORDS.
+ * @param {boolean=} opt_includeInstance Whether to include the JSPB instance
+ *     for transitional soy proto support: http://goto/soy-param-migration
+ * @return {!Object}
+ */
+proto.protocol.AuthMessage.prototype.toObject = function(opt_includeInstance) {
+  return proto.protocol.AuthMessage.toObject(opt_includeInstance, this);
+};
+
+
+/**
+ * Static version of the {@see toObject} method.
+ * @param {boolean|undefined} includeInstance Whether to include the JSPB
+ *     instance for transitional soy proto support:
+ *     http://goto/soy-param-migration
+ * @param {!proto.protocol.AuthMessage} msg The msg instance to transform.
+ * @return {!Object}
+ * @suppress {unusedLocalVariables} f is only used for nested messages
+ */
+proto.protocol.AuthMessage.toObject = function(includeInstance, msg) {
+  var f, obj = {
+    type: jspb.Message.getFieldWithDefault(msg, 1, 0),
+    role: jspb.Message.getFieldWithDefault(msg, 2, 0),
+    body: msg.getBody_asB64()
+  };
+
+  if (includeInstance) {
+    obj.$jspbMessageInstance = msg;
+  }
+  return obj;
+};
+}
+
+
+/**
+ * Deserializes binary data (in protobuf wire format).
+ * @param {jspb.ByteSource} bytes The bytes to deserialize.
+ * @return {!proto.protocol.AuthMessage}
+ */
+proto.protocol.AuthMessage.deserializeBinary = function(bytes) {
+  var reader = new jspb.BinaryReader(bytes);
+  var msg = new proto.protocol.AuthMessage;
+  return proto.protocol.AuthMessage.deserializeBinaryFromReader(msg, reader);
+};
+
+
+/**
+ * Deserializes binary data (in protobuf wire format) from the
+ * given reader into the given message object.
+ * @param {!proto.protocol.AuthMessage} msg The message object to deserialize into.
+ * @param {!jspb.BinaryReader} reader The BinaryReader to use.
+ * @return {!proto.protocol.AuthMessage}
+ */
+proto.protocol.AuthMessage.deserializeBinaryFromReader = function(msg, reader) {
+  while (reader.nextField()) {
+    if (reader.isEndGroup()) {
+      break;
+    }
+    var field = reader.getFieldNumber();
+    switch (field) {
+    case 1:
+      var value = /** @type {!proto.protocol.MessageType} */ (reader.readEnum());
+      msg.setType(value);
+      break;
+    case 2:
+      var value = /** @type {!proto.protocol.Role} */ (reader.readEnum());
+      msg.setRole(value);
+      break;
+    case 3:
+      var value = /** @type {!Uint8Array} */ (reader.readBytes());
+      msg.setBody(value);
+      break;
+    default:
+      reader.skipField();
+      break;
+    }
+  }
+  return msg;
+};
+
+
+/**
+ * Serializes the message to binary data (in protobuf wire format).
+ * @return {!Uint8Array}
+ */
+proto.protocol.AuthMessage.prototype.serializeBinary = function() {
+  var writer = new jspb.BinaryWriter();
+  proto.protocol.AuthMessage.serializeBinaryToWriter(this, writer);
+  return writer.getResultBuffer();
+};
+
+
+/**
+ * Serializes the given message to binary data (in protobuf wire
+ * format), writing to the given BinaryWriter.
+ * @param {!proto.protocol.AuthMessage} message
+ * @param {!jspb.BinaryWriter} writer
+ * @suppress {unusedLocalVariables} f is only used for nested messages
+ */
+proto.protocol.AuthMessage.serializeBinaryToWriter = function(message, writer) {
+  var f = undefined;
+  f = message.getType();
+  if (f !== 0.0) {
+    writer.writeEnum(
+      1,
+      f
+    );
+  }
+  f = message.getRole();
+  if (f !== 0.0) {
+    writer.writeEnum(
+      2,
+      f
+    );
+  }
+  f = message.getBody_asU8();
+  if (f.length > 0) {
+    writer.writeBytes(
+      3,
+      f
+    );
+  }
+};
+
+
+/**
+ * optional MessageType type = 1;
+ * @return {!proto.protocol.MessageType}
+ */
+proto.protocol.AuthMessage.prototype.getType = function() {
+  return /** @type {!proto.protocol.MessageType} */ (jspb.Message.getFieldWithDefault(this, 1, 0));
+};
+
+
+/** @param {!proto.protocol.MessageType} value */
+proto.protocol.AuthMessage.prototype.setType = function(value) {
+  jspb.Message.setProto3EnumField(this, 1, value);
+};
+
+
+/**
+ * optional Role role = 2;
+ * @return {!proto.protocol.Role}
+ */
+proto.protocol.AuthMessage.prototype.getRole = function() {
+  return /** @type {!proto.protocol.Role} */ (jspb.Message.getFieldWithDefault(this, 2, 0));
+};
+
+
+/** @param {!proto.protocol.Role} value */
+proto.protocol.AuthMessage.prototype.setRole = function(value) {
+  jspb.Message.setProto3EnumField(this, 2, value);
+};
+
+
+/**
+ * optional bytes body = 3;
+ * @return {!(string|Uint8Array)}
+ */
+proto.protocol.AuthMessage.prototype.getBody = function() {
+  return /** @type {!(string|Uint8Array)} */ (jspb.Message.getFieldWithDefault(this, 3, ""));
+};
+
+
+/**
+ * optional bytes body = 3;
+ * This is a type-conversion wrapper around `getBody()`
+ * @return {string}
+ */
+proto.protocol.AuthMessage.prototype.getBody_asB64 = function() {
+  return /** @type {string} */ (jspb.Message.bytesAsB64(
+      this.getBody()));
+};
+
+
+/**
+ * optional bytes body = 3;
+ * Note that Uint8Array is not supported on all browsers.
+ * @see http://caniuse.com/Uint8Array
+ * This is a type-conversion wrapper around `getBody()`
+ * @return {!Uint8Array}
+ */
+proto.protocol.AuthMessage.prototype.getBody_asU8 = function() {
+  return /** @type {!Uint8Array} */ (jspb.Message.bytesAsU8(
+      this.getBody()));
+};
+
+
+/** @param {!(string|Uint8Array)} value */
+proto.protocol.AuthMessage.prototype.setBody = function(value) {
   jspb.Message.setProto3BytesField(this, 3, value);
 };
 
@@ -1591,12 +1837,12 @@ proto.protocol.TopicMessage.prototype.setBody = function(value) {
  * @extends {jspb.Message}
  * @constructor
  */
-proto.protocol.DataMessage = function(opt_data) {
+proto.protocol.TopicFWMessage = function(opt_data) {
   jspb.Message.initialize(this, opt_data, 0, -1, null, null);
 };
-goog.inherits(proto.protocol.DataMessage, jspb.Message);
+goog.inherits(proto.protocol.TopicFWMessage, jspb.Message);
 if (goog.DEBUG && !COMPILED) {
-  proto.protocol.DataMessage.displayName = 'proto.protocol.DataMessage';
+  proto.protocol.TopicFWMessage.displayName = 'proto.protocol.TopicFWMessage';
 }
 
 
@@ -1611,8 +1857,8 @@ if (jspb.Message.GENERATE_TO_OBJECT) {
  *     for transitional soy proto support: http://goto/soy-param-migration
  * @return {!Object}
  */
-proto.protocol.DataMessage.prototype.toObject = function(opt_includeInstance) {
-  return proto.protocol.DataMessage.toObject(opt_includeInstance, this);
+proto.protocol.TopicFWMessage.prototype.toObject = function(opt_includeInstance) {
+  return proto.protocol.TopicFWMessage.toObject(opt_includeInstance, this);
 };
 
 
@@ -1621,11 +1867,11 @@ proto.protocol.DataMessage.prototype.toObject = function(opt_includeInstance) {
  * @param {boolean|undefined} includeInstance Whether to include the JSPB
  *     instance for transitional soy proto support:
  *     http://goto/soy-param-migration
- * @param {!proto.protocol.DataMessage} msg The msg instance to transform.
+ * @param {!proto.protocol.TopicFWMessage} msg The msg instance to transform.
  * @return {!Object}
  * @suppress {unusedLocalVariables} f is only used for nested messages
  */
-proto.protocol.DataMessage.toObject = function(includeInstance, msg) {
+proto.protocol.TopicFWMessage.toObject = function(includeInstance, msg) {
   var f, obj = {
     type: jspb.Message.getFieldWithDefault(msg, 1, 0),
     fromAlias: jspb.Message.getFieldWithDefault(msg, 2, 0),
@@ -1643,23 +1889,23 @@ proto.protocol.DataMessage.toObject = function(includeInstance, msg) {
 /**
  * Deserializes binary data (in protobuf wire format).
  * @param {jspb.ByteSource} bytes The bytes to deserialize.
- * @return {!proto.protocol.DataMessage}
+ * @return {!proto.protocol.TopicFWMessage}
  */
-proto.protocol.DataMessage.deserializeBinary = function(bytes) {
+proto.protocol.TopicFWMessage.deserializeBinary = function(bytes) {
   var reader = new jspb.BinaryReader(bytes);
-  var msg = new proto.protocol.DataMessage;
-  return proto.protocol.DataMessage.deserializeBinaryFromReader(msg, reader);
+  var msg = new proto.protocol.TopicFWMessage;
+  return proto.protocol.TopicFWMessage.deserializeBinaryFromReader(msg, reader);
 };
 
 
 /**
  * Deserializes binary data (in protobuf wire format) from the
  * given reader into the given message object.
- * @param {!proto.protocol.DataMessage} msg The message object to deserialize into.
+ * @param {!proto.protocol.TopicFWMessage} msg The message object to deserialize into.
  * @param {!jspb.BinaryReader} reader The BinaryReader to use.
- * @return {!proto.protocol.DataMessage}
+ * @return {!proto.protocol.TopicFWMessage}
  */
-proto.protocol.DataMessage.deserializeBinaryFromReader = function(msg, reader) {
+proto.protocol.TopicFWMessage.deserializeBinaryFromReader = function(msg, reader) {
   while (reader.nextField()) {
     if (reader.isEndGroup()) {
       break;
@@ -1691,9 +1937,9 @@ proto.protocol.DataMessage.deserializeBinaryFromReader = function(msg, reader) {
  * Serializes the message to binary data (in protobuf wire format).
  * @return {!Uint8Array}
  */
-proto.protocol.DataMessage.prototype.serializeBinary = function() {
+proto.protocol.TopicFWMessage.prototype.serializeBinary = function() {
   var writer = new jspb.BinaryWriter();
-  proto.protocol.DataMessage.serializeBinaryToWriter(this, writer);
+  proto.protocol.TopicFWMessage.serializeBinaryToWriter(this, writer);
   return writer.getResultBuffer();
 };
 
@@ -1701,11 +1947,11 @@ proto.protocol.DataMessage.prototype.serializeBinary = function() {
 /**
  * Serializes the given message to binary data (in protobuf wire
  * format), writing to the given BinaryWriter.
- * @param {!proto.protocol.DataMessage} message
+ * @param {!proto.protocol.TopicFWMessage} message
  * @param {!jspb.BinaryWriter} writer
  * @suppress {unusedLocalVariables} f is only used for nested messages
  */
-proto.protocol.DataMessage.serializeBinaryToWriter = function(message, writer) {
+proto.protocol.TopicFWMessage.serializeBinaryToWriter = function(message, writer) {
   var f = undefined;
   f = message.getType();
   if (f !== 0.0) {
@@ -1735,13 +1981,13 @@ proto.protocol.DataMessage.serializeBinaryToWriter = function(message, writer) {
  * optional MessageType type = 1;
  * @return {!proto.protocol.MessageType}
  */
-proto.protocol.DataMessage.prototype.getType = function() {
+proto.protocol.TopicFWMessage.prototype.getType = function() {
   return /** @type {!proto.protocol.MessageType} */ (jspb.Message.getFieldWithDefault(this, 1, 0));
 };
 
 
 /** @param {!proto.protocol.MessageType} value */
-proto.protocol.DataMessage.prototype.setType = function(value) {
+proto.protocol.TopicFWMessage.prototype.setType = function(value) {
   jspb.Message.setProto3EnumField(this, 1, value);
 };
 
@@ -1750,13 +1996,13 @@ proto.protocol.DataMessage.prototype.setType = function(value) {
  * optional uint64 from_alias = 2;
  * @return {number}
  */
-proto.protocol.DataMessage.prototype.getFromAlias = function() {
+proto.protocol.TopicFWMessage.prototype.getFromAlias = function() {
   return /** @type {number} */ (jspb.Message.getFieldWithDefault(this, 2, 0));
 };
 
 
 /** @param {number} value */
-proto.protocol.DataMessage.prototype.setFromAlias = function(value) {
+proto.protocol.TopicFWMessage.prototype.setFromAlias = function(value) {
   jspb.Message.setProto3IntField(this, 2, value);
 };
 
@@ -1765,7 +2011,7 @@ proto.protocol.DataMessage.prototype.setFromAlias = function(value) {
  * optional bytes body = 3;
  * @return {!(string|Uint8Array)}
  */
-proto.protocol.DataMessage.prototype.getBody = function() {
+proto.protocol.TopicFWMessage.prototype.getBody = function() {
   return /** @type {!(string|Uint8Array)} */ (jspb.Message.getFieldWithDefault(this, 3, ""));
 };
 
@@ -1775,7 +2021,7 @@ proto.protocol.DataMessage.prototype.getBody = function() {
  * This is a type-conversion wrapper around `getBody()`
  * @return {string}
  */
-proto.protocol.DataMessage.prototype.getBody_asB64 = function() {
+proto.protocol.TopicFWMessage.prototype.getBody_asB64 = function() {
   return /** @type {string} */ (jspb.Message.bytesAsB64(
       this.getBody()));
 };
@@ -1788,14 +2034,14 @@ proto.protocol.DataMessage.prototype.getBody_asB64 = function() {
  * This is a type-conversion wrapper around `getBody()`
  * @return {!Uint8Array}
  */
-proto.protocol.DataMessage.prototype.getBody_asU8 = function() {
+proto.protocol.TopicFWMessage.prototype.getBody_asU8 = function() {
   return /** @type {!Uint8Array} */ (jspb.Message.bytesAsU8(
       this.getBody()));
 };
 
 
 /** @param {!(string|Uint8Array)} value */
-proto.protocol.DataMessage.prototype.setBody = function(value) {
+proto.protocol.TopicFWMessage.prototype.setBody = function(value) {
   jspb.Message.setProto3BytesField(this, 3, value);
 };
 
@@ -1811,12 +2057,12 @@ proto.protocol.DataMessage.prototype.setBody = function(value) {
  * @extends {jspb.Message}
  * @constructor
  */
-proto.protocol.AuthMessage = function(opt_data) {
+proto.protocol.TopicIdentityMessage = function(opt_data) {
   jspb.Message.initialize(this, opt_data, 0, -1, null, null);
 };
-goog.inherits(proto.protocol.AuthMessage, jspb.Message);
+goog.inherits(proto.protocol.TopicIdentityMessage, jspb.Message);
 if (goog.DEBUG && !COMPILED) {
-  proto.protocol.AuthMessage.displayName = 'proto.protocol.AuthMessage';
+  proto.protocol.TopicIdentityMessage.displayName = 'proto.protocol.TopicIdentityMessage';
 }
 
 
@@ -1831,8 +2077,8 @@ if (jspb.Message.GENERATE_TO_OBJECT) {
  *     for transitional soy proto support: http://goto/soy-param-migration
  * @return {!Object}
  */
-proto.protocol.AuthMessage.prototype.toObject = function(opt_includeInstance) {
-  return proto.protocol.AuthMessage.toObject(opt_includeInstance, this);
+proto.protocol.TopicIdentityMessage.prototype.toObject = function(opt_includeInstance) {
+  return proto.protocol.TopicIdentityMessage.toObject(opt_includeInstance, this);
 };
 
 
@@ -1841,14 +2087,17 @@ proto.protocol.AuthMessage.prototype.toObject = function(opt_includeInstance) {
  * @param {boolean|undefined} includeInstance Whether to include the JSPB
  *     instance for transitional soy proto support:
  *     http://goto/soy-param-migration
- * @param {!proto.protocol.AuthMessage} msg The msg instance to transform.
+ * @param {!proto.protocol.TopicIdentityMessage} msg The msg instance to transform.
  * @return {!Object}
  * @suppress {unusedLocalVariables} f is only used for nested messages
  */
-proto.protocol.AuthMessage.toObject = function(includeInstance, msg) {
+proto.protocol.TopicIdentityMessage.toObject = function(includeInstance, msg) {
   var f, obj = {
     type: jspb.Message.getFieldWithDefault(msg, 1, 0),
-    role: jspb.Message.getFieldWithDefault(msg, 2, 0),
+    fromAlias: jspb.Message.getFieldWithDefault(msg, 2, 0),
+    topic: jspb.Message.getFieldWithDefault(msg, 3, ""),
+    identity: msg.getIdentity_asB64(),
+    role: jspb.Message.getFieldWithDefault(msg, 5, 0),
     body: msg.getBody_asB64()
   };
 
@@ -1863,23 +2112,23 @@ proto.protocol.AuthMessage.toObject = function(includeInstance, msg) {
 /**
  * Deserializes binary data (in protobuf wire format).
  * @param {jspb.ByteSource} bytes The bytes to deserialize.
- * @return {!proto.protocol.AuthMessage}
+ * @return {!proto.protocol.TopicIdentityMessage}
  */
-proto.protocol.AuthMessage.deserializeBinary = function(bytes) {
+proto.protocol.TopicIdentityMessage.deserializeBinary = function(bytes) {
   var reader = new jspb.BinaryReader(bytes);
-  var msg = new proto.protocol.AuthMessage;
-  return proto.protocol.AuthMessage.deserializeBinaryFromReader(msg, reader);
+  var msg = new proto.protocol.TopicIdentityMessage;
+  return proto.protocol.TopicIdentityMessage.deserializeBinaryFromReader(msg, reader);
 };
 
 
 /**
  * Deserializes binary data (in protobuf wire format) from the
  * given reader into the given message object.
- * @param {!proto.protocol.AuthMessage} msg The message object to deserialize into.
+ * @param {!proto.protocol.TopicIdentityMessage} msg The message object to deserialize into.
  * @param {!jspb.BinaryReader} reader The BinaryReader to use.
- * @return {!proto.protocol.AuthMessage}
+ * @return {!proto.protocol.TopicIdentityMessage}
  */
-proto.protocol.AuthMessage.deserializeBinaryFromReader = function(msg, reader) {
+proto.protocol.TopicIdentityMessage.deserializeBinaryFromReader = function(msg, reader) {
   while (reader.nextField()) {
     if (reader.isEndGroup()) {
       break;
@@ -1891,10 +2140,22 @@ proto.protocol.AuthMessage.deserializeBinaryFromReader = function(msg, reader) {
       msg.setType(value);
       break;
     case 2:
+      var value = /** @type {number} */ (reader.readUint64());
+      msg.setFromAlias(value);
+      break;
+    case 3:
+      var value = /** @type {string} */ (reader.readString());
+      msg.setTopic(value);
+      break;
+    case 4:
+      var value = /** @type {!Uint8Array} */ (reader.readBytes());
+      msg.setIdentity(value);
+      break;
+    case 5:
       var value = /** @type {!proto.protocol.Role} */ (reader.readEnum());
       msg.setRole(value);
       break;
-    case 4:
+    case 6:
       var value = /** @type {!Uint8Array} */ (reader.readBytes());
       msg.setBody(value);
       break;
@@ -1911,9 +2172,9 @@ proto.protocol.AuthMessage.deserializeBinaryFromReader = function(msg, reader) {
  * Serializes the message to binary data (in protobuf wire format).
  * @return {!Uint8Array}
  */
-proto.protocol.AuthMessage.prototype.serializeBinary = function() {
+proto.protocol.TopicIdentityMessage.prototype.serializeBinary = function() {
   var writer = new jspb.BinaryWriter();
-  proto.protocol.AuthMessage.serializeBinaryToWriter(this, writer);
+  proto.protocol.TopicIdentityMessage.serializeBinaryToWriter(this, writer);
   return writer.getResultBuffer();
 };
 
@@ -1921,11 +2182,11 @@ proto.protocol.AuthMessage.prototype.serializeBinary = function() {
 /**
  * Serializes the given message to binary data (in protobuf wire
  * format), writing to the given BinaryWriter.
- * @param {!proto.protocol.AuthMessage} message
+ * @param {!proto.protocol.TopicIdentityMessage} message
  * @param {!jspb.BinaryWriter} writer
  * @suppress {unusedLocalVariables} f is only used for nested messages
  */
-proto.protocol.AuthMessage.serializeBinaryToWriter = function(message, writer) {
+proto.protocol.TopicIdentityMessage.serializeBinaryToWriter = function(message, writer) {
   var f = undefined;
   f = message.getType();
   if (f !== 0.0) {
@@ -1934,17 +2195,38 @@ proto.protocol.AuthMessage.serializeBinaryToWriter = function(message, writer) {
       f
     );
   }
+  f = message.getFromAlias();
+  if (f !== 0) {
+    writer.writeUint64(
+      2,
+      f
+    );
+  }
+  f = message.getTopic();
+  if (f.length > 0) {
+    writer.writeString(
+      3,
+      f
+    );
+  }
+  f = message.getIdentity_asU8();
+  if (f.length > 0) {
+    writer.writeBytes(
+      4,
+      f
+    );
+  }
   f = message.getRole();
   if (f !== 0.0) {
     writer.writeEnum(
-      2,
+      5,
       f
     );
   }
   f = message.getBody_asU8();
   if (f.length > 0) {
     writer.writeBytes(
-      4,
+      6,
       f
     );
   }
@@ -1955,68 +2237,435 @@ proto.protocol.AuthMessage.serializeBinaryToWriter = function(message, writer) {
  * optional MessageType type = 1;
  * @return {!proto.protocol.MessageType}
  */
-proto.protocol.AuthMessage.prototype.getType = function() {
+proto.protocol.TopicIdentityMessage.prototype.getType = function() {
   return /** @type {!proto.protocol.MessageType} */ (jspb.Message.getFieldWithDefault(this, 1, 0));
 };
 
 
 /** @param {!proto.protocol.MessageType} value */
-proto.protocol.AuthMessage.prototype.setType = function(value) {
+proto.protocol.TopicIdentityMessage.prototype.setType = function(value) {
   jspb.Message.setProto3EnumField(this, 1, value);
 };
 
 
 /**
- * optional Role role = 2;
- * @return {!proto.protocol.Role}
+ * optional uint64 from_alias = 2;
+ * @return {number}
  */
-proto.protocol.AuthMessage.prototype.getRole = function() {
-  return /** @type {!proto.protocol.Role} */ (jspb.Message.getFieldWithDefault(this, 2, 0));
+proto.protocol.TopicIdentityMessage.prototype.getFromAlias = function() {
+  return /** @type {number} */ (jspb.Message.getFieldWithDefault(this, 2, 0));
 };
 
 
-/** @param {!proto.protocol.Role} value */
-proto.protocol.AuthMessage.prototype.setRole = function(value) {
-  jspb.Message.setProto3EnumField(this, 2, value);
+/** @param {number} value */
+proto.protocol.TopicIdentityMessage.prototype.setFromAlias = function(value) {
+  jspb.Message.setProto3IntField(this, 2, value);
 };
 
 
 /**
- * optional bytes body = 4;
+ * optional string topic = 3;
+ * @return {string}
+ */
+proto.protocol.TopicIdentityMessage.prototype.getTopic = function() {
+  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 3, ""));
+};
+
+
+/** @param {string} value */
+proto.protocol.TopicIdentityMessage.prototype.setTopic = function(value) {
+  jspb.Message.setProto3StringField(this, 3, value);
+};
+
+
+/**
+ * optional bytes identity = 4;
  * @return {!(string|Uint8Array)}
  */
-proto.protocol.AuthMessage.prototype.getBody = function() {
+proto.protocol.TopicIdentityMessage.prototype.getIdentity = function() {
   return /** @type {!(string|Uint8Array)} */ (jspb.Message.getFieldWithDefault(this, 4, ""));
 };
 
 
 /**
- * optional bytes body = 4;
+ * optional bytes identity = 4;
+ * This is a type-conversion wrapper around `getIdentity()`
+ * @return {string}
+ */
+proto.protocol.TopicIdentityMessage.prototype.getIdentity_asB64 = function() {
+  return /** @type {string} */ (jspb.Message.bytesAsB64(
+      this.getIdentity()));
+};
+
+
+/**
+ * optional bytes identity = 4;
+ * Note that Uint8Array is not supported on all browsers.
+ * @see http://caniuse.com/Uint8Array
+ * This is a type-conversion wrapper around `getIdentity()`
+ * @return {!Uint8Array}
+ */
+proto.protocol.TopicIdentityMessage.prototype.getIdentity_asU8 = function() {
+  return /** @type {!Uint8Array} */ (jspb.Message.bytesAsU8(
+      this.getIdentity()));
+};
+
+
+/** @param {!(string|Uint8Array)} value */
+proto.protocol.TopicIdentityMessage.prototype.setIdentity = function(value) {
+  jspb.Message.setProto3BytesField(this, 4, value);
+};
+
+
+/**
+ * optional Role role = 5;
+ * @return {!proto.protocol.Role}
+ */
+proto.protocol.TopicIdentityMessage.prototype.getRole = function() {
+  return /** @type {!proto.protocol.Role} */ (jspb.Message.getFieldWithDefault(this, 5, 0));
+};
+
+
+/** @param {!proto.protocol.Role} value */
+proto.protocol.TopicIdentityMessage.prototype.setRole = function(value) {
+  jspb.Message.setProto3EnumField(this, 5, value);
+};
+
+
+/**
+ * optional bytes body = 6;
+ * @return {!(string|Uint8Array)}
+ */
+proto.protocol.TopicIdentityMessage.prototype.getBody = function() {
+  return /** @type {!(string|Uint8Array)} */ (jspb.Message.getFieldWithDefault(this, 6, ""));
+};
+
+
+/**
+ * optional bytes body = 6;
  * This is a type-conversion wrapper around `getBody()`
  * @return {string}
  */
-proto.protocol.AuthMessage.prototype.getBody_asB64 = function() {
+proto.protocol.TopicIdentityMessage.prototype.getBody_asB64 = function() {
   return /** @type {string} */ (jspb.Message.bytesAsB64(
       this.getBody()));
 };
 
 
 /**
- * optional bytes body = 4;
+ * optional bytes body = 6;
  * Note that Uint8Array is not supported on all browsers.
  * @see http://caniuse.com/Uint8Array
  * This is a type-conversion wrapper around `getBody()`
  * @return {!Uint8Array}
  */
-proto.protocol.AuthMessage.prototype.getBody_asU8 = function() {
+proto.protocol.TopicIdentityMessage.prototype.getBody_asU8 = function() {
   return /** @type {!Uint8Array} */ (jspb.Message.bytesAsU8(
       this.getBody()));
 };
 
 
 /** @param {!(string|Uint8Array)} value */
-proto.protocol.AuthMessage.prototype.setBody = function(value) {
-  jspb.Message.setProto3BytesField(this, 4, value);
+proto.protocol.TopicIdentityMessage.prototype.setBody = function(value) {
+  jspb.Message.setProto3BytesField(this, 6, value);
+};
+
+
+
+/**
+ * Generated by JsPbCodeGenerator.
+ * @param {Array=} opt_data Optional initial data array, typically from a
+ * server response, or constructed directly in Javascript. The array is used
+ * in place and becomes part of the constructed object. It is not cloned.
+ * If no data is provided, the constructed object will be empty, but still
+ * valid.
+ * @extends {jspb.Message}
+ * @constructor
+ */
+proto.protocol.TopicIdentityFWMessage = function(opt_data) {
+  jspb.Message.initialize(this, opt_data, 0, -1, null, null);
+};
+goog.inherits(proto.protocol.TopicIdentityFWMessage, jspb.Message);
+if (goog.DEBUG && !COMPILED) {
+  proto.protocol.TopicIdentityFWMessage.displayName = 'proto.protocol.TopicIdentityFWMessage';
+}
+
+
+if (jspb.Message.GENERATE_TO_OBJECT) {
+/**
+ * Creates an object representation of this proto suitable for use in Soy templates.
+ * Field names that are reserved in JavaScript and will be renamed to pb_name.
+ * To access a reserved field use, foo.pb_<name>, eg, foo.pb_default.
+ * For the list of reserved names please see:
+ *     com.google.apps.jspb.JsClassTemplate.JS_RESERVED_WORDS.
+ * @param {boolean=} opt_includeInstance Whether to include the JSPB instance
+ *     for transitional soy proto support: http://goto/soy-param-migration
+ * @return {!Object}
+ */
+proto.protocol.TopicIdentityFWMessage.prototype.toObject = function(opt_includeInstance) {
+  return proto.protocol.TopicIdentityFWMessage.toObject(opt_includeInstance, this);
+};
+
+
+/**
+ * Static version of the {@see toObject} method.
+ * @param {boolean|undefined} includeInstance Whether to include the JSPB
+ *     instance for transitional soy proto support:
+ *     http://goto/soy-param-migration
+ * @param {!proto.protocol.TopicIdentityFWMessage} msg The msg instance to transform.
+ * @return {!Object}
+ * @suppress {unusedLocalVariables} f is only used for nested messages
+ */
+proto.protocol.TopicIdentityFWMessage.toObject = function(includeInstance, msg) {
+  var f, obj = {
+    type: jspb.Message.getFieldWithDefault(msg, 1, 0),
+    fromAlias: jspb.Message.getFieldWithDefault(msg, 2, 0),
+    identity: msg.getIdentity_asB64(),
+    role: jspb.Message.getFieldWithDefault(msg, 4, 0),
+    body: msg.getBody_asB64()
+  };
+
+  if (includeInstance) {
+    obj.$jspbMessageInstance = msg;
+  }
+  return obj;
+};
+}
+
+
+/**
+ * Deserializes binary data (in protobuf wire format).
+ * @param {jspb.ByteSource} bytes The bytes to deserialize.
+ * @return {!proto.protocol.TopicIdentityFWMessage}
+ */
+proto.protocol.TopicIdentityFWMessage.deserializeBinary = function(bytes) {
+  var reader = new jspb.BinaryReader(bytes);
+  var msg = new proto.protocol.TopicIdentityFWMessage;
+  return proto.protocol.TopicIdentityFWMessage.deserializeBinaryFromReader(msg, reader);
+};
+
+
+/**
+ * Deserializes binary data (in protobuf wire format) from the
+ * given reader into the given message object.
+ * @param {!proto.protocol.TopicIdentityFWMessage} msg The message object to deserialize into.
+ * @param {!jspb.BinaryReader} reader The BinaryReader to use.
+ * @return {!proto.protocol.TopicIdentityFWMessage}
+ */
+proto.protocol.TopicIdentityFWMessage.deserializeBinaryFromReader = function(msg, reader) {
+  while (reader.nextField()) {
+    if (reader.isEndGroup()) {
+      break;
+    }
+    var field = reader.getFieldNumber();
+    switch (field) {
+    case 1:
+      var value = /** @type {!proto.protocol.MessageType} */ (reader.readEnum());
+      msg.setType(value);
+      break;
+    case 2:
+      var value = /** @type {number} */ (reader.readUint64());
+      msg.setFromAlias(value);
+      break;
+    case 3:
+      var value = /** @type {!Uint8Array} */ (reader.readBytes());
+      msg.setIdentity(value);
+      break;
+    case 4:
+      var value = /** @type {!proto.protocol.Role} */ (reader.readEnum());
+      msg.setRole(value);
+      break;
+    case 5:
+      var value = /** @type {!Uint8Array} */ (reader.readBytes());
+      msg.setBody(value);
+      break;
+    default:
+      reader.skipField();
+      break;
+    }
+  }
+  return msg;
+};
+
+
+/**
+ * Serializes the message to binary data (in protobuf wire format).
+ * @return {!Uint8Array}
+ */
+proto.protocol.TopicIdentityFWMessage.prototype.serializeBinary = function() {
+  var writer = new jspb.BinaryWriter();
+  proto.protocol.TopicIdentityFWMessage.serializeBinaryToWriter(this, writer);
+  return writer.getResultBuffer();
+};
+
+
+/**
+ * Serializes the given message to binary data (in protobuf wire
+ * format), writing to the given BinaryWriter.
+ * @param {!proto.protocol.TopicIdentityFWMessage} message
+ * @param {!jspb.BinaryWriter} writer
+ * @suppress {unusedLocalVariables} f is only used for nested messages
+ */
+proto.protocol.TopicIdentityFWMessage.serializeBinaryToWriter = function(message, writer) {
+  var f = undefined;
+  f = message.getType();
+  if (f !== 0.0) {
+    writer.writeEnum(
+      1,
+      f
+    );
+  }
+  f = message.getFromAlias();
+  if (f !== 0) {
+    writer.writeUint64(
+      2,
+      f
+    );
+  }
+  f = message.getIdentity_asU8();
+  if (f.length > 0) {
+    writer.writeBytes(
+      3,
+      f
+    );
+  }
+  f = message.getRole();
+  if (f !== 0.0) {
+    writer.writeEnum(
+      4,
+      f
+    );
+  }
+  f = message.getBody_asU8();
+  if (f.length > 0) {
+    writer.writeBytes(
+      5,
+      f
+    );
+  }
+};
+
+
+/**
+ * optional MessageType type = 1;
+ * @return {!proto.protocol.MessageType}
+ */
+proto.protocol.TopicIdentityFWMessage.prototype.getType = function() {
+  return /** @type {!proto.protocol.MessageType} */ (jspb.Message.getFieldWithDefault(this, 1, 0));
+};
+
+
+/** @param {!proto.protocol.MessageType} value */
+proto.protocol.TopicIdentityFWMessage.prototype.setType = function(value) {
+  jspb.Message.setProto3EnumField(this, 1, value);
+};
+
+
+/**
+ * optional uint64 from_alias = 2;
+ * @return {number}
+ */
+proto.protocol.TopicIdentityFWMessage.prototype.getFromAlias = function() {
+  return /** @type {number} */ (jspb.Message.getFieldWithDefault(this, 2, 0));
+};
+
+
+/** @param {number} value */
+proto.protocol.TopicIdentityFWMessage.prototype.setFromAlias = function(value) {
+  jspb.Message.setProto3IntField(this, 2, value);
+};
+
+
+/**
+ * optional bytes identity = 3;
+ * @return {!(string|Uint8Array)}
+ */
+proto.protocol.TopicIdentityFWMessage.prototype.getIdentity = function() {
+  return /** @type {!(string|Uint8Array)} */ (jspb.Message.getFieldWithDefault(this, 3, ""));
+};
+
+
+/**
+ * optional bytes identity = 3;
+ * This is a type-conversion wrapper around `getIdentity()`
+ * @return {string}
+ */
+proto.protocol.TopicIdentityFWMessage.prototype.getIdentity_asB64 = function() {
+  return /** @type {string} */ (jspb.Message.bytesAsB64(
+      this.getIdentity()));
+};
+
+
+/**
+ * optional bytes identity = 3;
+ * Note that Uint8Array is not supported on all browsers.
+ * @see http://caniuse.com/Uint8Array
+ * This is a type-conversion wrapper around `getIdentity()`
+ * @return {!Uint8Array}
+ */
+proto.protocol.TopicIdentityFWMessage.prototype.getIdentity_asU8 = function() {
+  return /** @type {!Uint8Array} */ (jspb.Message.bytesAsU8(
+      this.getIdentity()));
+};
+
+
+/** @param {!(string|Uint8Array)} value */
+proto.protocol.TopicIdentityFWMessage.prototype.setIdentity = function(value) {
+  jspb.Message.setProto3BytesField(this, 3, value);
+};
+
+
+/**
+ * optional Role role = 4;
+ * @return {!proto.protocol.Role}
+ */
+proto.protocol.TopicIdentityFWMessage.prototype.getRole = function() {
+  return /** @type {!proto.protocol.Role} */ (jspb.Message.getFieldWithDefault(this, 4, 0));
+};
+
+
+/** @param {!proto.protocol.Role} value */
+proto.protocol.TopicIdentityFWMessage.prototype.setRole = function(value) {
+  jspb.Message.setProto3EnumField(this, 4, value);
+};
+
+
+/**
+ * optional bytes body = 5;
+ * @return {!(string|Uint8Array)}
+ */
+proto.protocol.TopicIdentityFWMessage.prototype.getBody = function() {
+  return /** @type {!(string|Uint8Array)} */ (jspb.Message.getFieldWithDefault(this, 5, ""));
+};
+
+
+/**
+ * optional bytes body = 5;
+ * This is a type-conversion wrapper around `getBody()`
+ * @return {string}
+ */
+proto.protocol.TopicIdentityFWMessage.prototype.getBody_asB64 = function() {
+  return /** @type {string} */ (jspb.Message.bytesAsB64(
+      this.getBody()));
+};
+
+
+/**
+ * optional bytes body = 5;
+ * Note that Uint8Array is not supported on all browsers.
+ * @see http://caniuse.com/Uint8Array
+ * This is a type-conversion wrapper around `getBody()`
+ * @return {!Uint8Array}
+ */
+proto.protocol.TopicIdentityFWMessage.prototype.getBody_asU8 = function() {
+  return /** @type {!Uint8Array} */ (jspb.Message.bytesAsU8(
+      this.getBody()));
+};
+
+
+/** @param {!(string|Uint8Array)} value */
+proto.protocol.TopicIdentityFWMessage.prototype.setBody = function(value) {
+  jspb.Message.setProto3BytesField(this, 5, value);
 };
 
 
@@ -2027,14 +2676,16 @@ proto.protocol.MessageType = {
   UNKNOWN_MESSAGE_TYPE: 0,
   WELCOME: 1,
   CONNECT: 2,
-  WEBRTC_OFFER: 4,
-  WEBRTC_ANSWER: 5,
-  WEBRTC_ICE_CANDIDATE: 6,
-  PING: 7,
-  TOPIC_SUBSCRIPTION: 8,
+  WEBRTC_OFFER: 3,
+  WEBRTC_ANSWER: 4,
+  WEBRTC_ICE_CANDIDATE: 5,
+  PING: 6,
+  SUBSCRIPTION: 7,
+  AUTH: 8,
   TOPIC: 9,
-  DATA: 10,
-  AUTH: 11
+  TOPIC_FW: 10,
+  TOPIC_IDENTITY: 11,
+  TOPIC_IDENTITY_FW: 12
 };
 
 /**

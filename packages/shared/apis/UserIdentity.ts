@@ -22,18 +22,19 @@ export class UserIdentity extends ExposableAPI implements IUserIdentity {
     const user = getCurrentUser()
     if (!user) return null
 
-    return user.publicKey!
+    return user.userId || null
   }
 
   @exposeMethod
   async getUserData(): Promise<UserData | null> {
     const user = getCurrentUser()
 
-    if (!user) return null
+    // TODO - review this api with identity service - moliva - 06/08/2019
+    if (!user || !user.profile || !user.userId) return null
 
     return {
-      displayName: user.displayName!,
-      publicKey: user.publicKey!
+      displayName: user.profile.name,
+      publicKey: user.userId
     }
   }
 }

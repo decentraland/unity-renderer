@@ -91,8 +91,10 @@ export class WebRtcMessage extends jspb.Message {
   getToAlias(): number
   setToAlias(value: number): void
 
-  getSdp(): string
-  setSdp(value: string): void
+  getData(): Uint8Array | string
+  getData_asU8(): Uint8Array
+  getData_asB64(): string
+  setData(value: Uint8Array | string): void
 
   serializeBinary(): Uint8Array
   toObject(includeInstance?: boolean): WebRtcMessage.AsObject
@@ -109,7 +111,7 @@ export namespace WebRtcMessage {
     type: MessageType
     fromAlias: number
     toAlias: number
-    sdp: string
+    data: Uint8Array | string
   }
 }
 
@@ -157,7 +159,7 @@ export namespace PingMessage {
   }
 }
 
-export class TopicSubscriptionMessage extends jspb.Message {
+export class SubscriptionMessage extends jspb.Message {
   getType(): MessageType
   setType(value: MessageType): void
 
@@ -170,23 +172,50 @@ export class TopicSubscriptionMessage extends jspb.Message {
   setTopics(value: Uint8Array | string): void
 
   serializeBinary(): Uint8Array
-  toObject(includeInstance?: boolean): TopicSubscriptionMessage.AsObject
-  static toObject(includeInstance: boolean, msg: TopicSubscriptionMessage): TopicSubscriptionMessage.AsObject
+  toObject(includeInstance?: boolean): SubscriptionMessage.AsObject
+  static toObject(includeInstance: boolean, msg: SubscriptionMessage): SubscriptionMessage.AsObject
   static extensions: { [key: number]: jspb.ExtensionFieldInfo<jspb.Message> }
   static extensionsBinary: { [key: number]: jspb.ExtensionFieldBinaryInfo<jspb.Message> }
-  static serializeBinaryToWriter(message: TopicSubscriptionMessage, writer: jspb.BinaryWriter): void
-  static deserializeBinary(bytes: Uint8Array): TopicSubscriptionMessage
-  static deserializeBinaryFromReader(
-    message: TopicSubscriptionMessage,
-    reader: jspb.BinaryReader
-  ): TopicSubscriptionMessage
+  static serializeBinaryToWriter(message: SubscriptionMessage, writer: jspb.BinaryWriter): void
+  static deserializeBinary(bytes: Uint8Array): SubscriptionMessage
+  static deserializeBinaryFromReader(message: SubscriptionMessage, reader: jspb.BinaryReader): SubscriptionMessage
 }
 
-export namespace TopicSubscriptionMessage {
+export namespace SubscriptionMessage {
   export type AsObject = {
     type: MessageType
     format: Format
     topics: Uint8Array | string
+  }
+}
+
+export class AuthMessage extends jspb.Message {
+  getType(): MessageType
+  setType(value: MessageType): void
+
+  getRole(): Role
+  setRole(value: Role): void
+
+  getBody(): Uint8Array | string
+  getBody_asU8(): Uint8Array
+  getBody_asB64(): string
+  setBody(value: Uint8Array | string): void
+
+  serializeBinary(): Uint8Array
+  toObject(includeInstance?: boolean): AuthMessage.AsObject
+  static toObject(includeInstance: boolean, msg: AuthMessage): AuthMessage.AsObject
+  static extensions: { [key: number]: jspb.ExtensionFieldInfo<jspb.Message> }
+  static extensionsBinary: { [key: number]: jspb.ExtensionFieldBinaryInfo<jspb.Message> }
+  static serializeBinaryToWriter(message: AuthMessage, writer: jspb.BinaryWriter): void
+  static deserializeBinary(bytes: Uint8Array): AuthMessage
+  static deserializeBinaryFromReader(message: AuthMessage, reader: jspb.BinaryReader): AuthMessage
+}
+
+export namespace AuthMessage {
+  export type AsObject = {
+    type: MessageType
+    role: Role
+    body: Uint8Array | string
   }
 }
 
@@ -224,7 +253,7 @@ export namespace TopicMessage {
   }
 }
 
-export class DataMessage extends jspb.Message {
+export class TopicFWMessage extends jspb.Message {
   getType(): MessageType
   setType(value: MessageType): void
 
@@ -237,16 +266,16 @@ export class DataMessage extends jspb.Message {
   setBody(value: Uint8Array | string): void
 
   serializeBinary(): Uint8Array
-  toObject(includeInstance?: boolean): DataMessage.AsObject
-  static toObject(includeInstance: boolean, msg: DataMessage): DataMessage.AsObject
+  toObject(includeInstance?: boolean): TopicFWMessage.AsObject
+  static toObject(includeInstance: boolean, msg: TopicFWMessage): TopicFWMessage.AsObject
   static extensions: { [key: number]: jspb.ExtensionFieldInfo<jspb.Message> }
   static extensionsBinary: { [key: number]: jspb.ExtensionFieldBinaryInfo<jspb.Message> }
-  static serializeBinaryToWriter(message: DataMessage, writer: jspb.BinaryWriter): void
-  static deserializeBinary(bytes: Uint8Array): DataMessage
-  static deserializeBinaryFromReader(message: DataMessage, reader: jspb.BinaryReader): DataMessage
+  static serializeBinaryToWriter(message: TopicFWMessage, writer: jspb.BinaryWriter): void
+  static deserializeBinary(bytes: Uint8Array): TopicFWMessage
+  static deserializeBinaryFromReader(message: TopicFWMessage, reader: jspb.BinaryReader): TopicFWMessage
 }
 
-export namespace DataMessage {
+export namespace TopicFWMessage {
   export type AsObject = {
     type: MessageType
     fromAlias: number
@@ -254,9 +283,20 @@ export namespace DataMessage {
   }
 }
 
-export class AuthMessage extends jspb.Message {
+export class TopicIdentityMessage extends jspb.Message {
   getType(): MessageType
   setType(value: MessageType): void
+
+  getFromAlias(): number
+  setFromAlias(value: number): void
+
+  getTopic(): string
+  setTopic(value: string): void
+
+  getIdentity(): Uint8Array | string
+  getIdentity_asU8(): Uint8Array
+  getIdentity_asB64(): string
+  setIdentity(value: Uint8Array | string): void
 
   getRole(): Role
   setRole(value: Role): void
@@ -267,18 +307,61 @@ export class AuthMessage extends jspb.Message {
   setBody(value: Uint8Array | string): void
 
   serializeBinary(): Uint8Array
-  toObject(includeInstance?: boolean): AuthMessage.AsObject
-  static toObject(includeInstance: boolean, msg: AuthMessage): AuthMessage.AsObject
+  toObject(includeInstance?: boolean): TopicIdentityMessage.AsObject
+  static toObject(includeInstance: boolean, msg: TopicIdentityMessage): TopicIdentityMessage.AsObject
   static extensions: { [key: number]: jspb.ExtensionFieldInfo<jspb.Message> }
   static extensionsBinary: { [key: number]: jspb.ExtensionFieldBinaryInfo<jspb.Message> }
-  static serializeBinaryToWriter(message: AuthMessage, writer: jspb.BinaryWriter): void
-  static deserializeBinary(bytes: Uint8Array): AuthMessage
-  static deserializeBinaryFromReader(message: AuthMessage, reader: jspb.BinaryReader): AuthMessage
+  static serializeBinaryToWriter(message: TopicIdentityMessage, writer: jspb.BinaryWriter): void
+  static deserializeBinary(bytes: Uint8Array): TopicIdentityMessage
+  static deserializeBinaryFromReader(message: TopicIdentityMessage, reader: jspb.BinaryReader): TopicIdentityMessage
 }
 
-export namespace AuthMessage {
+export namespace TopicIdentityMessage {
   export type AsObject = {
     type: MessageType
+    fromAlias: number
+    topic: string
+    identity: Uint8Array | string
+    role: Role
+    body: Uint8Array | string
+  }
+}
+
+export class TopicIdentityFWMessage extends jspb.Message {
+  getType(): MessageType
+  setType(value: MessageType): void
+
+  getFromAlias(): number
+  setFromAlias(value: number): void
+
+  getIdentity(): Uint8Array | string
+  getIdentity_asU8(): Uint8Array
+  getIdentity_asB64(): string
+  setIdentity(value: Uint8Array | string): void
+
+  getRole(): Role
+  setRole(value: Role): void
+
+  getBody(): Uint8Array | string
+  getBody_asU8(): Uint8Array
+  getBody_asB64(): string
+  setBody(value: Uint8Array | string): void
+
+  serializeBinary(): Uint8Array
+  toObject(includeInstance?: boolean): TopicIdentityFWMessage.AsObject
+  static toObject(includeInstance: boolean, msg: TopicIdentityFWMessage): TopicIdentityFWMessage.AsObject
+  static extensions: { [key: number]: jspb.ExtensionFieldInfo<jspb.Message> }
+  static extensionsBinary: { [key: number]: jspb.ExtensionFieldBinaryInfo<jspb.Message> }
+  static serializeBinaryToWriter(message: TopicIdentityFWMessage, writer: jspb.BinaryWriter): void
+  static deserializeBinary(bytes: Uint8Array): TopicIdentityFWMessage
+  static deserializeBinaryFromReader(message: TopicIdentityFWMessage, reader: jspb.BinaryReader): TopicIdentityFWMessage
+}
+
+export namespace TopicIdentityFWMessage {
+  export type AsObject = {
+    type: MessageType
+    fromAlias: number
+    identity: Uint8Array | string
     role: Role
     body: Uint8Array | string
   }
@@ -288,14 +371,16 @@ export enum MessageType {
   UNKNOWN_MESSAGE_TYPE = 0,
   WELCOME = 1,
   CONNECT = 2,
-  WEBRTC_OFFER = 4,
-  WEBRTC_ANSWER = 5,
-  WEBRTC_ICE_CANDIDATE = 6,
-  PING = 7,
-  TOPIC_SUBSCRIPTION = 8,
+  WEBRTC_OFFER = 3,
+  WEBRTC_ANSWER = 4,
+  WEBRTC_ICE_CANDIDATE = 5,
+  PING = 6,
+  SUBSCRIPTION = 7,
+  AUTH = 8,
   TOPIC = 9,
-  DATA = 10,
-  AUTH = 11
+  TOPIC_FW = 10,
+  TOPIC_IDENTITY = 11,
+  TOPIC_IDENTITY_FW = 12
 }
 
 export enum Role {
