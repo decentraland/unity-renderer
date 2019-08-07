@@ -55,7 +55,9 @@ namespace Tests
             TestHelpers.RemoveSceneEntity(scene, avatar.entity);
 
             yield return null;
-            Assert.IsTrue(goEntity == null);
+
+            bool destroyedOrPooled = goEntity == null || !goEntity.activeSelf;
+            Assert.IsTrue(destroyedOrPooled);
         }
 
         [UnityTest]

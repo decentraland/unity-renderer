@@ -226,6 +226,22 @@ namespace DCL.Helpers
             })) as T;
         }
 
+        public static Coroutine EntityComponentUpdate<T, K>(T component, K model = null)
+            where T : BaseComponent
+            where K : class, new()
+        {
+            if (model == null)
+            {
+                model = new K();
+            }
+
+            CLASS_ID_COMPONENT classId = component.scene.ownerController.componentFactory.GetIdForType<T>();
+
+            component.scene.EntityComponentUpdate(component.entity, classId, JsonUtility.ToJson(model));
+
+            return component.routine;
+        }
+
         public static void SetEntityParent(ParcelScene scene, string childEntityId, string parentEntityId)
         {
             scene.SetEntityParent(JsonUtility.ToJson(new SetEntityParentMessage
@@ -253,7 +269,7 @@ namespace DCL.Helpers
             );
         }
 
-        public static void SharedComponentUpdate<T, K>(ParcelScene scene, T component, K model = null)
+        public static Coroutine SharedComponentUpdate<T, K>(T component, K model = null)
             where T : BaseDisposable
             where K : class, new()
         {
@@ -262,11 +278,13 @@ namespace DCL.Helpers
                 model = new K();
             }
 
-            scene.SharedComponentUpdate(JsonUtility.ToJson(new DCL.Models.SharedComponentUpdateMessage
+            component.scene.SharedComponentUpdate(JsonUtility.ToJson(new DCL.Models.SharedComponentUpdateMessage
             {
                 id = component.id,
                 json = JsonUtility.ToJson(model)
             }));
+
+            return component.routine;
         }
 
         public static T SharedComponentCreate<T, K>(ParcelScene scene, CLASS_ID id, K model = null)
@@ -813,12 +831,7 @@ namespace DCL.Helpers
                 f.SetValue(generatedModel, valueToSet);
             }
 
-            SharedComponentUpdate(scene, component, generatedModel);
-
-            if (component.routine != null)
-            {
-                yield return component.routine;
-            }
+            yield return SharedComponentUpdate(component, generatedModel);
 
             scene.SharedComponentUpdate(JsonUtility.ToJson(new DCL.Models.SharedComponentUpdateMessage
             {
@@ -835,12 +848,9 @@ namespace DCL.Helpers
 
         public static IEnumerator TestShapeVisibility(BaseShape shapeComponent, BaseShape.Model shapeModel, DecentralandEntity entity)
         {
-            var scene = shapeComponent.scene;
-
             // make sure the shape is visible first
             shapeModel.visible = true;
-            SharedComponentUpdate(scene, shapeComponent, shapeModel);
-            yield return shapeComponent.routine;
+            yield return SharedComponentUpdate(shapeComponent, shapeModel);
 
             // check every mesh is shown by default
             Renderer[] renderers = entity.meshGameObject.GetComponentsInChildren<Renderer>(true);
@@ -855,8 +865,7 @@ namespace DCL.Helpers
 
             // update visibility with 'false'
             shapeModel.visible = false;
-            SharedComponentUpdate(scene, shapeComponent, shapeModel);
-            yield return shapeComponent.routine;
+            yield return SharedComponentUpdate(shapeComponent, shapeModel);
 
             // check renderers correct behaviour
             for (int i = 0; i < renderers.Length; i++)
@@ -867,8 +876,7 @@ namespace DCL.Helpers
 
             // update visibility with 'true'
             shapeModel.visible = true;
-            SharedComponentUpdate(scene, shapeComponent, shapeModel);
-            yield return shapeComponent.routine;
+            yield return SharedComponentUpdate(shapeComponent, shapeModel);
 
             // check renderers correct behaviour
             for (int i = 0; i < renderers.Length; i++)
@@ -897,7 +905,7 @@ namespace DCL.Helpers
             for (int i = 0; i < renderers.Length; i++)
             {
                 Assert.IsTrue(renderers[i].transform.childCount > 0, "OnClick collider should exist as this mesh's child");
-                
+
                 onClickCollider = renderers[i].transform.GetChild(0).GetComponent<Collider>();
                 Assert.IsTrue(onClickCollider != null);
                 Assert.IsTrue(onClickCollider.gameObject.layer == onClickLayer);
@@ -914,7 +922,7 @@ namespace DCL.Helpers
             yield return null;
         }
 
-        public static IEnumerator TestUIElementAddedCorrectlyOnInvisibleParent<TComponent, TComponentModel>(ParcelScene scene, CLASS_ID classId) 
+        public static IEnumerator TestUIElementAddedCorrectlyOnInvisibleParent<TComponent, TComponentModel>(ParcelScene scene, CLASS_ID classId)
         where TComponent : UIShape
         where TComponentModel : UIShape.Model, new()
         {
@@ -922,8 +930,7 @@ namespace DCL.Helpers
             yield return parentElement.routine;
 
             // make canvas invisible
-            SharedComponentUpdate(scene, parentElement, new UIScreenSpace.Model{visible = false});
-            yield return parentElement.routine;
+            yield return SharedComponentUpdate(parentElement, new UIScreenSpace.Model { visible = false });
 
             TComponent targetUIElement =
                     SharedComponentCreate<TComponent, TComponentModel>(scene,
@@ -937,8 +944,8 @@ namespace DCL.Helpers
             yield return targetUIElement.routine;
 
             RectTransform uiCanvasRectTransform = parentElement.childHookRectTransform.GetComponentInParent<RectTransform>();
-            Assert.AreEqual(uiCanvasRectTransform.rect.width/2, targetUIElement.referencesContainer.layoutElementRT.anchoredPosition.x);
-            Assert.AreEqual(-uiCanvasRectTransform.rect.height/2, targetUIElement.referencesContainer.layoutElementRT.anchoredPosition.y);
+            Assert.AreEqual(uiCanvasRectTransform.rect.width / 2, targetUIElement.referencesContainer.layoutElementRT.anchoredPosition.x);
+            Assert.AreEqual(-uiCanvasRectTransform.rect.height / 2, targetUIElement.referencesContainer.layoutElementRT.anchoredPosition.y);
 
             Assert.AreEqual(100f, targetUIElement.referencesContainer.layoutElementRT.rect.width);
             Assert.AreEqual(100f, targetUIElement.referencesContainer.layoutElementRT.rect.height);

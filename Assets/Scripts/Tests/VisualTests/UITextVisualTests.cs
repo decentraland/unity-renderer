@@ -24,7 +24,7 @@ public class UITextVisualTests : UIVisualTestsBase
         var uiInputText = TestHelpers.SharedComponentCreate<UIText, UIText.Model>(scene, CLASS_ID.UI_TEXT_SHAPE);
         yield return uiInputText.routine;
 
-        TestHelpers.SharedComponentUpdate<UIText, UIText.Model>(scene, uiInputText, new UIText.Model
+        yield return TestHelpers.SharedComponentUpdate(uiInputText, new UIText.Model
         {
             parentComponent = screenSpaceId,
             name = "testUIText",
@@ -62,7 +62,6 @@ public class UITextVisualTests : UIVisualTestsBase
                 height = 200,
             }
         });
-        yield return uiInputText.routine;
 
         yield return VisualTestHelpers.TakeSnapshot(new Vector3(0f, 2f, 0f));
     }

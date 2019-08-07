@@ -1,10 +1,10 @@
-using DCL;
+﻿using DCL;
 using DCL.Components;
 using DCL.Helpers;
 using DCL.Models;
-using NUnit.Framework;
 using System.Collections;
 using UnityEngine;
+using UnityEngine.Assertions;
 using UnityEngine.TestTools;
 
 namespace Tests
@@ -46,7 +46,7 @@ namespace Tests
                 Assert.IsTrue(meshRenderer != null, "MeshRenderer.sharedMaterial must be the same as assignedMaterial");
                 Assert.AreEqual(assignedMaterial, matPBR.material, "Assigned material");
 
-                var loadedTexture = meshRenderer.sharedMaterial.mainTexture;
+                var loadedTexture = meshRenderer.sharedMaterial.GetTexture("_BaseMap");
                 Assert.IsTrue(loadedTexture != null, "Texture must be loaded");
                 Assert.AreEqual(texture.texture, loadedTexture, "Texture data must be correct");
             }
@@ -62,7 +62,7 @@ namespace Tests
 
             // Instantiate entity with default PBR Material
             TestHelpers.InstantiateEntityWithMaterial(scene, entityId, Vector3.zero,
-                new DCL.Components.PBRMaterial.Model(), materialID);
+                new PBRMaterial.Model(), materialID);
 
             var materialComponent = scene.disposableComponents[materialID] as DCL.Components.PBRMaterial;
 
@@ -88,10 +88,10 @@ namespace Tests
             // Check default properties
             {
                 // Texture
-                Assert.IsTrue(materialComponent.material.GetTexture("_MainTex") == null);
+                Assert.IsTrue(materialComponent.material.GetTexture("_BaseMap") == null);
 
                 // Colors
-                Assert.AreEqual("FFFFFF", ColorUtility.ToHtmlStringRGB(materialComponent.material.GetColor("_Color")));
+                Assert.AreEqual("FFFFFF", ColorUtility.ToHtmlStringRGB(materialComponent.material.GetColor("_BaseColor")));
                 Assert.AreEqual("000000",
                     ColorUtility.ToHtmlStringRGB(materialComponent.material.GetColor("_EmissionColor")));
                 Assert.AreEqual("FFFFFF",
@@ -99,11 +99,11 @@ namespace Tests
 
                 // Other properties
                 Assert.AreEqual("0.5", materialComponent.material.GetFloat("_Metallic").ToString());
-                Assert.AreEqual("0.5", materialComponent.material.GetFloat("_Glossiness").ToString());
-                Assert.AreEqual("1", materialComponent.material.GetFloat("_GlossyReflections").ToString());
+                Assert.AreEqual("0.5", materialComponent.material.GetFloat("_Smoothness").ToString());
+                Assert.AreEqual("1", materialComponent.material.GetFloat("_EnvironmentReflections").ToString());
                 Assert.AreEqual("1", materialComponent.material.GetFloat("_SpecularHighlights").ToString());
                 Assert.AreEqual("1", materialComponent.material.GetFloat("_AlphaClip").ToString());
-                Assert.AreEqual(2000, materialComponent.material.renderQueue);
+                Assert.AreEqual((int)UnityEngine.Rendering.RenderQueue.Geometry, materialComponent.material.renderQueue);
             }
 
             // Update material
@@ -143,10 +143,10 @@ namespace Tests
             // Check updated properties
             {
                 // Texture
-                Assert.IsTrue(materialComponent.material.GetTexture("_MainTex") != null, "texture is null!");
+                Assert.IsTrue(materialComponent.material.GetTexture("_BaseMap") != null, "texture is null!");
 
                 // Colors
-                Assert.AreEqual("99DEFF", ColorUtility.ToHtmlStringRGB(materialComponent.material.GetColor("_Color")));
+                Assert.AreEqual("99DEFF", ColorUtility.ToHtmlStringRGB(materialComponent.material.GetColor("_BaseColor")));
                 Assert.AreEqual("42F4AA",
                     ColorUtility.ToHtmlStringRGB(materialComponent.material.GetColor("_EmissionColor")));
                 Assert.AreEqual("601121",
@@ -154,11 +154,11 @@ namespace Tests
 
                 // Other properties
                 Assert.AreEqual("0.37", materialComponent.material.GetFloat("_Metallic").ToString());
-                Assert.AreEqual("0.1", materialComponent.material.GetFloat("_Glossiness").ToString());
-                Assert.AreEqual("0.4", materialComponent.material.GetFloat("_GlossyReflections").ToString());
+                Assert.AreEqual("0.1", materialComponent.material.GetFloat("_Smoothness").ToString());
+                Assert.AreEqual("0.4", materialComponent.material.GetFloat("_EnvironmentReflections").ToString());
                 Assert.AreEqual("2", materialComponent.material.GetFloat("_SpecularHighlights").ToString());
                 Assert.AreEqual("0.5", materialComponent.material.GetFloat("_AlphaClip").ToString());
-                Assert.AreEqual(3000, materialComponent.material.renderQueue);
+                Assert.AreEqual((int)UnityEngine.Rendering.RenderQueue.Transparent, materialComponent.material.renderQueue);
                 Assert.AreEqual((int)UnityEngine.Rendering.BlendMode.SrcAlpha,
                     materialComponent.material.GetInt("_SrcBlend"));
                 Assert.AreEqual((int)UnityEngine.Rendering.BlendMode.OneMinusSrcAlpha,
@@ -216,9 +216,9 @@ namespace Tests
             var firstRenderer = scene.entities[firstEntityID].meshGameObject.GetComponent<MeshRenderer>();
             var secondRenderer = scene.entities[secondEntityID].meshGameObject.GetComponent<MeshRenderer>();
             var thirdRenderer = scene.entities[thirdEntityID].meshGameObject.GetComponent<MeshRenderer>();
-            Assert.AreNotSame(firstRenderer.sharedMaterial, secondRenderer.sharedMaterial,
+            Assert.IsTrue(firstRenderer.sharedMaterial != secondRenderer.sharedMaterial,
                 "1st and 2nd entities should have different materials");
-            Assert.AreSame(firstRenderer.sharedMaterial, thirdRenderer.sharedMaterial,
+            Assert.IsTrue(firstRenderer.sharedMaterial == thirdRenderer.sharedMaterial,
                 "1st and 3rd entities should have the same material");
         }
 
@@ -271,9 +271,9 @@ namespace Tests
             var firstRenderer = scene.entities[firstEntityID].meshGameObject.GetComponent<MeshRenderer>();
             var secondRenderer = scene.entities[secondEntityID].meshGameObject.GetComponent<MeshRenderer>();
             var thirdRenderer = scene.entities[thirdEntityID].meshGameObject.GetComponent<MeshRenderer>();
-            Assert.AreNotSame(firstRenderer.sharedMaterial, secondRenderer.sharedMaterial,
+            Assert.IsTrue(firstRenderer.sharedMaterial != secondRenderer.sharedMaterial,
                 "1st and 2nd entities should have different materials");
-            Assert.AreSame(firstRenderer.sharedMaterial, thirdRenderer.sharedMaterial,
+            Assert.IsTrue(firstRenderer.sharedMaterial == thirdRenderer.sharedMaterial,
                 "1st and 3rd entities should have the same material");
 
             // Check material properties before updating them
@@ -511,7 +511,7 @@ namespace Tests
 
             // Check default properties
             {
-                Assert.IsTrue(materialComponent.material.GetTexture("_MainTex") == null);
+                Assert.IsTrue(materialComponent.material.GetTexture("_BaseMap") == null);
                 Assert.AreEqual(0.5f, materialComponent.material.GetFloat("_AlphaClip"));
             }
 
@@ -536,10 +536,11 @@ namespace Tests
 
             // Check updated properties
             {
-                Assert.IsTrue(materialComponent.material.GetTexture("_MainTex") != null);
+                Texture mainTex = materialComponent.material.GetTexture("_BaseMap");
+                Assert.IsTrue(mainTex != null);
                 Assert.AreEqual("0.5", materialComponent.material.GetFloat("_AlphaClip").ToString());
-                Assert.AreEqual(TextureWrapMode.Mirror, materialComponent.material.mainTexture.wrapMode);
-                Assert.AreEqual(FilterMode.Bilinear, materialComponent.material.mainTexture.filterMode);
+                Assert.AreEqual(TextureWrapMode.Mirror, mainTex.wrapMode);
+                Assert.AreEqual(FilterMode.Bilinear, mainTex.filterMode);
             }
         }
 

@@ -164,16 +164,19 @@ namespace Tests
         [UnityTest]
         public IEnumerator SeveralParcelsFromJSON()
         {
-            yield return InitializeSceneControllerAndRemoveCharacterController();
+            yield return InitUnityScene("MainTest");
 
-            string severalparcelsJson = (Resources.Load("TestJSON/TestSceneSeveralParcels") as TextAsset).text;
+            sceneController = TestHelpers.InitializeSceneController();
+
+            string severalParcelsJson = (Resources.Load("TestJSON/TestSceneSeveralParcels") as TextAsset).text;
 
             //Not really elegant, but does the trick
             var jsonScenes = JsonConvert
-                .DeserializeObject<LoadParcelScenesMessage.UnityParcelScene[]>(severalparcelsJson)
+                .DeserializeObject<LoadParcelScenesMessage.UnityParcelScene[]>(severalParcelsJson)
                 .Select(x => JsonUtility.ToJson(x));
 
             Assert.AreEqual(sceneController.loadedScenes.Count, 0);
+
             foreach (string jsonScene in jsonScenes)
             {
                 sceneController.LoadParcelScenes(jsonScene);
@@ -325,53 +328,5 @@ namespace Tests
             yield return null;
         }
 
-        [UnityTest]
-        public IEnumerator SceneUnloadByDistance()
-        {
-            yield return base.InitScene();
-
-            DCLCharacterController.i.gravity = 0;
-
-            // Position character inside parcel (0,0)
-            TestHelpers.SetCharacterPosition(Vector3.zero);
-
-            var scenesToLoad = (Resources.Load("TestJSON/SceneLoadingTest") as TextAsset).text;
-
-            yield return new WaitForSeconds(0.1f);
-
-            sceneController.UnloadAllScenes();
-
-            yield return new WaitForSeconds(0.1f);
-
-            sceneController.LoadParcelScenes(scenesToLoad);
-
-            yield return new WaitForAllMessagesProcessed();
-
-            var sceneId = "0,0";
-            var scene = sceneController.loadedScenes[sceneId];
-
-            GameObject sceneGo = GameObject.Find("scene:" + sceneId);
-
-            Assert.IsTrue(sceneGo != null, "scene game object not found!");
-            Assert.IsTrue(sceneController.loadedScenes[sceneId] != null, "Scene not in loaded dictionary!");
-            Assert.IsTrue(sceneController.loadedScenes[sceneId].unloadWithDistance == true,
-                "Scene should unload when far!");
-
-            yield return null;
-
-            // Position character outside parcel (0,0)
-            TestHelpers.SetCharacterPosition(new Vector3(ParcelSettings.UNLOAD_DISTANCE + ParcelSettings.PARCEL_SIZE / 2.0f + 1f, 0f, ParcelSettings.UNLOAD_DISTANCE + ParcelSettings.PARCEL_SIZE / 2.0f + 1f));
-            yield return new WaitForSeconds(0.1f);
-
-            sceneGo = GameObject.Find("scene:" + sceneId);
-
-            Assert.IsTrue(sceneGo == null, "scene game object found! Scene must be unloaded by distance!");
-            Assert.IsFalse(sceneController.loadedScenes.ContainsKey(sceneId),
-                "Scene is still loaded in dictionary when far! Scenes must be unloaded by distance!");
-
-            TestHelpers.ForceUnloadAllScenes(sceneController);
-
-            yield return null;
-        }
     }
 }

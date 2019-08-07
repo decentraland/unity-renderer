@@ -1,7 +1,6 @@
-using DCL.Components;
+﻿using DCL.Components;
 using DCL.Helpers;
 using DCL.Models;
-using Newtonsoft.Json;
 using NUnit.Framework;
 using System.Collections;
 using UnityEngine;
@@ -27,11 +26,10 @@ namespace Tests
             yield return scrRect.routine;
 
             // Force a new update to pass the first apply
-            TestHelpers.SharedComponentUpdate(scene, scrRect, new UIScrollRect.Model
+            yield return TestHelpers.SharedComponentUpdate(scrRect, new UIScrollRect.Model
             {
                 name = "newName"
             });
-            yield return scrRect.routine;
 
             var refC = scrRect.referencesContainer;
 
@@ -52,7 +50,7 @@ namespace Tests
             Assert.AreEqual(0, refC.VScrollbar.value);
 
             // Update UIScrollRect properties
-            TestHelpers.SharedComponentUpdate(scene, scrRect,
+            yield return TestHelpers.SharedComponentUpdate(scrRect,
                 new UIScrollRect.Model
                 {
                     parentComponent = screenSpaceShape.id,
@@ -64,8 +62,6 @@ namespace Tests
                     hAlign = "right",
                     vAlign = "bottom"
                 });
-
-            yield return scrRect.routine;
 
             // Check updated properties are applied correctly
             Assert.IsTrue(scrRect.referencesContainer.transform.parent == screenSpaceShape.childHookRectTransform);
@@ -100,14 +96,13 @@ namespace Tests
             yield return scrRect.routine;
 
             // Force a new update to pass the first apply
-            TestHelpers.SharedComponentUpdate(scene, scrRect, new UIScrollRect.Model
+            yield return TestHelpers.SharedComponentUpdate(scrRect, new UIScrollRect.Model
             {
                 name = "newName"
             });
-            yield return scrRect.routine;
 
             // Update UIScrollRect properties
-            TestHelpers.SharedComponentUpdate(scene, scrRect,
+            yield return TestHelpers.SharedComponentUpdate(scrRect,
                 new UIScrollRect.Model
                 {
                     parentComponent = screenSpaceShape.id,
@@ -120,8 +115,6 @@ namespace Tests
                     vAlign = "bottom",
                     onClick = "UUIDFakeEventId"
                 });
-
-            yield return scrRect.routine;
 
             //------------------------------------------------------------------------
             // Test click events
