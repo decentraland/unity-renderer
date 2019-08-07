@@ -139,11 +139,6 @@ namespace DCL.Components
                 material.SetTexture("_BumpMap", null);
             }
 
-            foreach (string key in material.shaderKeywords)
-            {
-                Debug.Log("found key " + key);
-            }
-
             return null;
         }
 

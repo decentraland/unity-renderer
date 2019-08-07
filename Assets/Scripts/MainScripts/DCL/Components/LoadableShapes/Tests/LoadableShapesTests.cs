@@ -4,8 +4,6 @@ using DCL.Models;
 using Newtonsoft.Json;
 using NUnit.Framework;
 using System.Collections;
-using System.Linq;
-using DCL;
 using UnityEngine;
 using UnityEngine.TestTools;
 using UnityGLTF;
@@ -85,7 +83,7 @@ namespace Tests
             var entity = scene.entities[entityId];
             Assert.IsTrue(entity.meshGameObject == null, "entity mesh object should be null as the NFTShape hasn't been initialized yet");
 
-            var componentModel = new NFTShape.Model() 
+            var componentModel = new NFTShape.Model()
             {
                 src = "ethereum://0x06012c8cf97BEaD5deAe237070F9587f8E7A266d/558536"
             };
@@ -105,8 +103,7 @@ namespace Tests
 
             // Update color and check if it changed
             componentModel.color = Color.yellow;
-            TestHelpers.SharedComponentUpdate<NFTShape, NFTShape.Model>(scene, component, componentModel);
-            yield return component.routine;
+            yield return TestHelpers.SharedComponentUpdate(component, componentModel);
 
             nftShape.loaderController.meshRenderer.GetPropertyBlock(backgroundMaterialPropertyBlock, 1);
             Assert.AreEqual(Color.yellow, backgroundMaterialPropertyBlock.GetColor("_BaseColor"), "The NFT frame background color should be yellow");
@@ -301,8 +298,8 @@ namespace Tests
                 }));
             var gltf1 = scene.GetSharedComponent(gltfId1);
 
-            LoadWrapper_GLTF gltfShape = entity.gameObject.GetComponentInChildren<LoadWrapper_GLTF>(true);
-            yield return new WaitUntil(() => gltfShape.alreadyLoaded);
+            LoadWrapper_GLTF gltfLoader = entity.gameObject.GetComponentInChildren<LoadWrapper_GLTF>(true);
+            yield return new WaitUntil(() => gltfLoader.alreadyLoaded);
 
             Assert.AreEqual(gltf1, entity.GetSharedComponent(typeof(BaseShape)));
 
@@ -313,49 +310,14 @@ namespace Tests
                     src = TestHelpers.GetTestsAssetsPath() + "/GLB/Lantern/Lantern.glb"
                 }));
 
-            gltfShape = entity.gameObject.GetComponentInChildren<LoadWrapper_GLTF>(true);
-            yield return new WaitUntil(() => gltfShape.alreadyLoaded);
+            gltfLoader = entity.gameObject.GetComponentInChildren<LoadWrapper_GLTF>(true);
+            yield return new WaitUntil(() => gltfLoader.alreadyLoaded);
 
             Assert.AreEqual(scene.GetSharedComponent(gltfId2), entity.GetSharedComponent(typeof(BaseShape)));
             Assert.IsFalse(gltf1.attachedEntities.Contains(entity));
         }
 
-        [UnityTest]
-        public IEnumerator GLTFEntityDownloadingIsRemoved()
-        {
 
-            #region Arrange
-
-            yield return InitScene();
-
-            LoadableShape.Model palmModel = new LoadableShape.Model()
-            {
-                src = TestHelpers.GetTestsAssetsPath() + "/GLB/PalmTree_01.glb",
-                visible = true
-            };
-
-            GLTFShape palmShape = TestHelpers.CreateEntityWithGLTFShape(scene, Vector3.zero, palmModel, out DecentralandEntity entity1);
-            GLTFShape palmShape2 = TestHelpers.CreateEntityWithGLTFShape(scene, Vector3.zero, palmModel, out DecentralandEntity entity2);
-            GLTFShape palmShape3 = TestHelpers.CreateEntityWithGLTFShape(scene, Vector3.zero, palmModel, out DecentralandEntity entity3);
-
-            object libraryEntryId = entity1.gameObject.GetComponentInChildren<LoadWrapper_GLTF>().GetCacheId();
-            Assert.AreEqual(0, AssetManager_GLTF.i.transform.childCount);
-            Assert.AreEqual(3, AssetManager_GLTF.i.assetLibrary[libraryEntryId].referenceCount);
-
-            scene.RemoveEntity(entity1.entityId);
-
-            Assert.AreEqual(1, AssetManager_GLTF.i.transform.childCount);
-            Assert.AreEqual(2, AssetManager_GLTF.i.assetLibrary[libraryEntryId].referenceCount);
-
-            yield return palmShape2.routine;
-            yield return palmShape3.routine;
-
-            Assert.NotNull(entity2.gameObject.GetComponentInChildren<LoadWrapper_GLTF>());
-            Assert.NotNull(entity3.gameObject.GetComponentInChildren<LoadWrapper_GLTF>());
-
-            #endregion
-
-        }
 
         [UnityTest]
         public IEnumerator GLTFVisibleProperty()
@@ -366,11 +328,11 @@ namespace Tests
             TestHelpers.CreateSceneEntity(scene, entityId);
             var entity = scene.entities[entityId];
             yield return null;
-            
+
             // Create shape component
             var shapeModel = new LoadableShape<LoadWrapper_GLTF>.Model();
             shapeModel.src = TestHelpers.GetTestsAssetsPath() + "/GLB/PalmTree_01.glb";
-            
+
             var shapeComponent = TestHelpers.SharedComponentCreate<LoadableShape<LoadWrapper_GLTF>, LoadableShape<LoadWrapper_GLTF>.Model>(scene, CLASS_ID.GLTF_SHAPE, shapeModel);
             yield return shapeComponent.routine;
 
@@ -391,11 +353,11 @@ namespace Tests
             TestHelpers.CreateSceneEntity(scene, entityId);
             var entity = scene.entities[entityId];
             yield return null;
-            
+
             // Create shape component
             var shapeModel = new LoadableShape<LoadWrapper_NFT>.Model();
             shapeModel.src = "ethereum://0x06012c8cf97BEaD5deAe237070F9587f8E7A266d/558536";
-            
+
             var shapeComponent = TestHelpers.SharedComponentCreate<LoadableShape<LoadWrapper_NFT>, LoadableShape<LoadWrapper_NFT>.Model>(scene, CLASS_ID.NFT_SHAPE, shapeModel);
             yield return shapeComponent.routine;
 

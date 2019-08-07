@@ -1,7 +1,6 @@
-using DCL.Components;
+﻿using DCL.Components;
 using DCL.Helpers;
 using DCL.Models;
-using Newtonsoft.Json;
 using NUnit.Framework;
 using System.Collections;
 using UnityEngine;
@@ -54,7 +53,7 @@ namespace Tests
             Assert.AreEqual(0, uiTextShape.referencesContainer.text.margin.w);
 
             // Update UITextShape
-            TestHelpers.SharedComponentUpdate<UIText, UIText.Model>(scene, uiTextShape,
+            yield return TestHelpers.SharedComponentUpdate(uiTextShape,
                 new UIText.Model
                 {
                     isPointerBlocker = true,
@@ -78,8 +77,6 @@ namespace Tests
                         textWrapping = true
                     }
                 });
-
-            yield return uiTextShape.routine;
 
             // Check default properties are applied correctly
             Assert.IsTrue(uiTextShape.referencesContainer.transform.parent == screenSpaceShape.childHookRectTransform);
@@ -126,8 +123,8 @@ namespace Tests
             yield return uiTextShape.routine;
 
             // Update UITextShape
-            TestHelpers.SharedComponentUpdate<UIText, UIText.Model>(
-                scene, uiTextShape,
+            yield return TestHelpers.SharedComponentUpdate(
+                uiTextShape,
                 new UIText.Model
                 {
                     isPointerBlocker = true,
@@ -152,8 +149,6 @@ namespace Tests
                         textWrapping = true,
                     }
                 });
-
-            yield return uiTextShape.routine;
 
             //------------------------------------------------------------------------
             // Test click events

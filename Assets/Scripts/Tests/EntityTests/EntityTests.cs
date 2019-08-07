@@ -1,4 +1,4 @@
-using DCL.Helpers;
+﻿using DCL.Helpers;
 using NUnit.Framework;
 using System.Collections;
 using UnityEngine.TestTools;
@@ -93,7 +93,8 @@ namespace Tests
 
             Assert.IsTrue(!scene.entities.ContainsKey(entityId));
 
-            Assert.IsTrue(gameObjectReference == null, "Entity gameobject reference is not getting destroyed.");
+            bool isDestroyedOrPooled = gameObjectReference == null || !gameObjectReference.activeSelf;
+            Assert.IsTrue(isDestroyedOrPooled, "Entity gameobject reference is not getting destroyed nor pooled.");
         }
     }
 }

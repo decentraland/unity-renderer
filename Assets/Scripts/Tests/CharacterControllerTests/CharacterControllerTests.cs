@@ -1,27 +1,23 @@
-using DCL.Helpers;
+﻿using DCL.Helpers;
 using Newtonsoft.Json;
-using NUnit.Framework;
 using System.Collections;
 using UnityEngine;
+using UnityEngine.Assertions;
 using UnityEngine.TestTools;
 
 namespace Tests
 {
-    public class CharacterControllerTests
+    public class CharacterControllerTests : TestsBase
     {
         // TODO: Find a way to run this test on Unity Cloud Build, even though it passes locally, it fails on timeout in Unity Cloud Build
         [UnityTest]
         public IEnumerator CharacterTeleportReposition()
         {
-            yield return TestHelpers.UnloadAllUnityScenes();
-            var characterController =
-                (GameObject.Instantiate(Resources.Load("Prefabs/CharacterController") as GameObject))
-                .GetComponent<DCLCharacterController>();
-            characterController.gravity = 0f;
+            yield return base.InitScene();
 
-            Assert.AreEqual(new Vector3(0f, 0f, 0f), characterController.transform.position);
+            DCLCharacterController.i.gravity = 0f;
 
-            characterController.SetPosition(JsonConvert.SerializeObject(new
+            DCLCharacterController.i.SetPosition(JsonConvert.SerializeObject(new
             {
                 x = 10f,
                 y = 0f,
@@ -30,21 +26,17 @@ namespace Tests
 
             yield return null;
 
-            Assert.AreEqual(new Vector3(10f, 0f, 0f), characterController.transform.position);
+            Assert.IsTrue(new Vector3(10f, 0f, 0f) == DCLCharacterController.i.transform.position);
         }
 
         [UnityTest]
         public IEnumerator CharacterAdjustPosition()
         {
-            yield return TestHelpers.UnloadAllUnityScenes();
-            var characterController =
-                (GameObject.Instantiate(Resources.Load("Prefabs/CharacterController") as GameObject))
-                .GetComponent<DCLCharacterController>();
-            characterController.gravity = 0f;
+            yield return InitScene();
 
-            Assert.AreEqual(new Vector3(0f, 0f, 0f), characterController.transform.position);
+            DCLCharacterController.i.gravity = 0f;
 
-            characterController.SetPosition(JsonConvert.SerializeObject(new
+            DCLCharacterController.i.SetPosition(JsonConvert.SerializeObject(new
             {
                 x = 50f,
                 y = 0f,
@@ -53,9 +45,9 @@ namespace Tests
 
             yield return null;
 
-            Assert.AreEqual(new Vector3(50f, 0f, 0f), characterController.transform.position);
+            Assert.AreEqual(new Vector3(50f, 0f, 0f), DCLCharacterController.i.transform.position);
 
-            characterController.SetPosition(JsonConvert.SerializeObject(new
+            DCLCharacterController.i.SetPosition(JsonConvert.SerializeObject(new
             {
                 x = 50f + DCLCharacterPosition.LIMIT,
                 y = 0f,
@@ -64,9 +56,9 @@ namespace Tests
 
             yield return null;
 
-            Assert.AreEqual(new Vector3(50f, 0f, 50f), characterController.transform.position);
+            Assert.AreEqual(new Vector3(50f, 0f, 50f), DCLCharacterController.i.transform.position);
 
-            characterController.SetPosition(JsonConvert.SerializeObject(new
+            DCLCharacterController.i.SetPosition(JsonConvert.SerializeObject(new
             {
                 x = -50f - DCLCharacterPosition.LIMIT,
                 y = 0f,
@@ -75,7 +67,7 @@ namespace Tests
 
             yield return null;
 
-            Assert.AreEqual(new Vector3(-50f, 0f, -50f), characterController.transform.position);
+            Assert.AreEqual(new Vector3(-50f, 0f, -50f), DCLCharacterController.i.transform.position);
         }
     }
 }

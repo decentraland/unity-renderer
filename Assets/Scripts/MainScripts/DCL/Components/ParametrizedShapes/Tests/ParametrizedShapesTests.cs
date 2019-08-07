@@ -4,7 +4,6 @@ using DCL.Models;
 using Newtonsoft.Json;
 using NUnit.Framework;
 using System.Collections;
-using System.Linq;
 using UnityEngine;
 using UnityEngine.TestTools;
 
@@ -285,31 +284,28 @@ namespace Tests
             Assert.IsTrue(scene.entities[entityId].gameObject.GetComponentInChildren<MeshCollider>() == null);
 
             // Update shape with collision
-            TestHelpers.SharedComponentUpdate<BoxShape, BoxShape.Model>(scene, shapeComponent, new BoxShape.Model
+            yield return TestHelpers.SharedComponentUpdate(shapeComponent, new BoxShape.Model
             {
                 withCollisions = true
             });
-            yield return null;
 
             MeshCollider meshCollider = scene.entities[entityId].gameObject.GetComponentInChildren<MeshCollider>();
 
             Assert.IsTrue(meshCollider != null);
 
             // Update shape without collision
-            TestHelpers.SharedComponentUpdate<BoxShape, BoxShape.Model>(scene, shapeComponent, new BoxShape.Model
+            yield return TestHelpers.SharedComponentUpdate(shapeComponent, new BoxShape.Model
             {
                 withCollisions = false
             });
-            yield return null;
 
             Assert.IsFalse(meshCollider.enabled);
 
             // Update shape with collision
-            TestHelpers.SharedComponentUpdate<BoxShape, BoxShape.Model>(scene, shapeComponent, new BoxShape.Model
+            yield return TestHelpers.SharedComponentUpdate(shapeComponent, new BoxShape.Model
             {
                 withCollisions = true
             });
-            yield return null;
 
             Assert.IsTrue(meshCollider.enabled);
         }
@@ -323,7 +319,7 @@ namespace Tests
             TestHelpers.CreateSceneEntity(scene, entityId);
             var entity = scene.entities[entityId];
             yield return null;
-            
+
             // BoxShape
             BaseShape.Model shapeModel = new BoxShape.Model();
             BaseShape shapeComponent = TestHelpers.SharedComponentCreate<BoxShape, BaseShape.Model>(scene, CLASS_ID.BOX_SHAPE, shapeModel);
@@ -336,7 +332,7 @@ namespace Tests
             TestHelpers.DetachSharedComponent(scene, entityId, shapeComponent.id);
             shapeComponent.Dispose();
             yield return null;
-            
+
             // SphereShape
             shapeModel = new SphereShape.Model();
             shapeComponent = TestHelpers.SharedComponentCreate<SphereShape, BaseShape.Model>(scene, CLASS_ID.SPHERE_SHAPE, shapeModel);

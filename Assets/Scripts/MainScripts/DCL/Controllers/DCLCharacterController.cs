@@ -1,5 +1,4 @@
-using DCL.Configuration;
-using DCL;
+﻿using DCL.Configuration;
 using UnityEngine;
 
 public class DCLCharacterController : MonoBehaviour
@@ -67,7 +66,6 @@ public class DCLCharacterController : MonoBehaviour
         rigidbody = GetComponent<Rigidbody>();
         collider = GetComponent<Collider>();
         camera = GetComponentInChildren<Camera>().transform;
-
         characterPosition.OnPrecisionAdjust += OnPrecisionAdjust;
     }
 

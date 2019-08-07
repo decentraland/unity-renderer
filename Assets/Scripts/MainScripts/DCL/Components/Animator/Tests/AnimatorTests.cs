@@ -113,7 +113,8 @@ namespace Tests
             }
 
             animatorModel.states[1].shouldReset = true;
-            yield return animator.UpdateComponent(JsonUtility.ToJson(animatorModel));
+
+            yield return TestHelpers.EntityComponentUpdate(animator, animatorModel);
 
             animator.ResetAnimation(animator.GetStateByString("Swim"));
             foreach (AnimationState animState in animation)
@@ -181,7 +182,9 @@ namespace Tests
 
             animatorModel.states[0].shouldReset = true;
             animatorModel.states[1].shouldReset = true;
-            yield return animator.UpdateComponent(JsonUtility.ToJson(animatorModel));
+
+            yield return TestHelpers.EntityComponentUpdate(animator, animatorModel);
+
             foreach (AnimationState animState in animation)
             {
                 Assert.AreEqual(0f, animState.time);

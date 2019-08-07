@@ -1,7 +1,6 @@
-using DCL.Components;
+﻿using DCL.Components;
 using DCL.Helpers;
 using DCL.Models;
-using Newtonsoft.Json;
 using NUnit.Framework;
 using System.Collections;
 using UnityEngine;
@@ -38,7 +37,7 @@ namespace Tests
             Assert.AreEqual(50f, uiContainerStack.childHookRectTransform.rect.height);
             Assert.AreEqual(Vector3.zero, uiContainerStack.childHookRectTransform.localPosition);
 
-            TestHelpers.SharedComponentUpdate(scene, uiContainerStack,
+            yield return TestHelpers.SharedComponentUpdate(uiContainerStack,
                 new UIContainerStack.Model
                 {
                     parentComponent = screenSpaceShape.id,
@@ -51,8 +50,6 @@ namespace Tests
                     hAlign = "right",
                     vAlign = "bottom"
                 });
-
-            yield return uiContainerStack.routine;
 
             // Check updated properties are applied correctly
             Assert.IsTrue(uiContainerStack.referencesContainer.transform.parent ==
@@ -283,15 +280,13 @@ namespace Tests
                     CLASS_ID.UI_CONTAINER_STACK);
             yield return uiContainerStack.routine;
 
-            TestHelpers.SharedComponentUpdate(scene, uiContainerStack,
+            yield return TestHelpers.SharedComponentUpdate(uiContainerStack,
                 new UIContainerStack.Model
                 {
                     width = new UIValue(500f),
                     height = new UIValue(300f),
                     stackOrientation = UIContainerStack.StackOrientation.HORIZONTAL
                 });
-
-            yield return uiContainerStack.routine;
 
             // Check container stack was initialized correctly
             Assert.IsTrue(uiContainerStack != null);
@@ -412,14 +407,12 @@ namespace Tests
             yield return childComponent3.routine;
 
 
-            TestHelpers.SharedComponentUpdate(scene, uiContainerStack,
+            yield return TestHelpers.SharedComponentUpdate(uiContainerStack,
                 new UIContainerStack.Model
                 {
                     adaptHeight = true,
                     adaptWidth = true,
                 });
-
-            yield return uiContainerStack.routine;
 
             yield return null;
 
