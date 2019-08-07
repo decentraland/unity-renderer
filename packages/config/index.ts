@@ -167,7 +167,7 @@ export function getServerConfigurations() {
     profile: `https://profile.decentraland.${TLDDefault}/api/v1`,
     avatar: {
       catalog: 'https://avatar-assets.now.sh',
-      contents: `https://s3.amazonaws.com/content-service.decentraland.${TLDDefault}/`,
+      contents: `https://s3.amazonaws.com/content-service.decentraland.org/`,
       presets: `https://s3.amazonaws.com/avatars-storage.decentraland.org/mobile-avatars`
     },
     darApi:
