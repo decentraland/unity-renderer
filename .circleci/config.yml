@@ -179,6 +179,9 @@ jobs:
       - run:
           name: Invalidate cloudfront cache .zone
           command: aws configure set preview.cloudfront true && aws configure set preview.create-invalidation true && aws cloudfront create-invalidation --distribution-id E297VXIBZFXIXE --paths "/*"
+      - run:
+          name: Invalidate cloudflare cache .zone
+          command: curl "$PURGE_CACHE_ZONE"
 
   deploy-stg:
     docker:
@@ -204,6 +207,9 @@ jobs:
       - run:
           name: Invalidate cloudfront cache .today
           command: aws configure set preview.cloudfront true && aws configure set preview.create-invalidation true && aws cloudfront create-invalidation --distribution-id E315GYHDRD7XX6 --paths "/*"
+      - run:
+          name: Invalidate cloudflare cache .today
+          command: curl "$PURGE_CACHE_TODAY"
 
   deploy-prd:
     docker:
@@ -229,6 +235,9 @@ jobs:
       - run:
           name: Invalidate cloudfront cache .org
           command: aws configure set preview.cloudfront true && aws configure set preview.create-invalidation true && aws cloudfront create-invalidation --distribution-id E253JP8V3Y9YUI --paths "/*"
+      - run:
+          name: Invalidate cloudflare cache .org
+          command: curl "$PURGE_CACHE_ORG"
 
 # Ignore branches because CircleCI OR's multiple filters
 # https://discuss.circleci.com/t/workflow-job-with-tag-filter-being-run-for-every-commit/20762/4
