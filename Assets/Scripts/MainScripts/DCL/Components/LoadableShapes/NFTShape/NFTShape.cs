@@ -1,67 +1,28 @@
 using DCL.Controllers;
 using DCL.Models;
 using UnityEngine;
-using System.Collections;
 
 namespace DCL.Components
 {
-    public class NFTShape : LoadableShape<LoadWrapper_NFT>
+    public class NFTShape : LoadableShape<LoadWrapper_NFT, NFTShape.Model>
     {
         [System.Serializable]
         public new class Model : LoadableShape.Model
         {
             public Color color = new Color(0.6404918f, 0.611472f, 0.8584906f); // "light purple" default, same as in explorer
         }
-        public new Model model = new Model();
 
         public override string componentName => "NFT Shape";
         LoadWrapper_NFT loadableShape;
 
         public NFTShape(ParcelScene scene) : base(scene)
         {
-        }
-
-        public override IEnumerator ApplyChanges(string newJson)
-        {
-            if (model == null)
-                model = new Model();
-
-            bool currentVisible = model.visible;
-            model = SceneController.i.SafeFromJson<Model>(newJson);
-
-            if (!string.IsNullOrEmpty(model.src) && currentSrc != model.src)
-            {
-                currentSrc = model.src;
-
-                foreach (var entity in this.attachedEntities)
-                {
-                    AttachShape(entity);
-                }
-            }
-
-            if (currentVisible != model.visible)
-            {
-                foreach (var entity in this.attachedEntities)
-                {
-                    var loadable = entity.meshGameObject.GetComponentInChildren<LoadWrapper>();
-
-                    if (loadable != null)
-                    {
-                        loadable.initialVisibility = model.visible;
-                    }
-
-                    ConfigureVisibility(entity.meshGameObject, model.visible);
-                }
-            }
-
-            loadableShape?.loaderController?.UpdateBackgroundColor(model.color);
-
-            return null;
+            OnEntityShapeUpdated += UpdateBackgroundColor;
         }
 
         protected override void AttachShape(DecentralandEntity entity)
         {
-            if (!string.IsNullOrEmpty(currentSrc))
+            if (!string.IsNullOrEmpty(model.src))
             {
                 entity.meshGameObject = UnityEngine.Object.Instantiate(Resources.Load("NFTShapeLoader")) as GameObject;
                 entity.meshGameObject.name = componentName + " mesh";
@@ -77,14 +38,27 @@ namespace DCL.Components
                 loadableShape.loaderController.collider.enabled = model.withCollisions;
                 loadableShape.loaderController.backgroundColor = model.color;
 
-                loadableShape.Load(currentSrc, OnLoadCompleted, OnLoadFailed);
+                loadableShape.Load(model.src, OnLoadCompleted, OnLoadFailed);
             }
             else
             {
 #if UNITY_EDITOR
-                Debug.LogError($"NFT SHAPE with url '{currentSrc}' couldn't be loaded.");
+                Debug.LogError($"NFT SHAPE with url '{model.src}' couldn't be loaded.");
 #endif
             }
+        }
+
+        protected override void ConfigureColliders(DecentralandEntity entity)
+        {
+            ConfigureColliders(entity.meshGameObject, model.withCollisions);
+        }
+
+        void UpdateBackgroundColor(DecentralandEntity entity)
+        {
+            if(model.color == previousModel.color) return;
+
+            loadableShape = entity.meshGameObject.GetComponent<LoadWrapper_NFT>();
+            loadableShape.loaderController.UpdateBackgroundColor(model.color);
         }
     }
 }

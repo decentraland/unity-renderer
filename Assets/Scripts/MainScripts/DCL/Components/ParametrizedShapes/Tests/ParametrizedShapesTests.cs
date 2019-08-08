@@ -134,7 +134,7 @@ namespace Tests
             }));
 
             // 4. Check defaulted values
-            Assert.IsFalse(boxShapeComponent.model.withCollisions);
+            Assert.IsTrue(boxShapeComponent.model.withCollisions);
         }
 
         [UnityTest]
@@ -243,71 +243,79 @@ namespace Tests
         }
 
         [UnityTest]
-        public IEnumerator ShapeWithCollisionsUpdate()
+        public IEnumerator CollisionProperty()
         {
             yield return InitScene();
 
-            string entityId = "1";
+            string entityId = "entityId";
             TestHelpers.CreateSceneEntity(scene, entityId);
+            var entity = scene.entities[entityId];
+            yield return null;
+            
+            // BoxShape
+            BaseShape.Model shapeModel = new BoxShape.Model();
+            BaseShape shapeComponent = TestHelpers.SharedComponentCreate<BoxShape, BaseShape.Model>(scene, CLASS_ID.BOX_SHAPE, shapeModel);
+            yield return shapeComponent.routine;
 
-            scene.EntityComponentCreate(JsonUtility.ToJson(new DCL.Models.EntityComponentCreateMessage
-            {
-                entityId = entityId,
-                name = "transform",
-                classId = (int)DCL.Models.CLASS_ID_COMPONENT.TRANSFORM,
-                json = JsonConvert.SerializeObject(new
-                {
-                    position = Vector3.zero,
-                    scale = new Vector3(1, 1, 1),
-                    rotation = new
-                    {
-                        x = 0,
-                        y = 0,
-                        z = 0,
-                        w = 1
-                    }
-                })
-            }));
+            TestHelpers.SharedComponentAttach(shapeComponent, entity);
 
-            // Update shape without collision
-            string shapeId = TestHelpers.CreateAndSetShape(scene, entityId, DCL.Models.CLASS_ID.BOX_SHAPE,
-                JsonConvert.SerializeObject(new
-                {
-                    withCollisions = false
-                }));
+            yield return TestHelpers.TestShapeCollision(shapeComponent, shapeModel, entity);
 
+            TestHelpers.DetachSharedComponent(scene, entityId, shapeComponent.id);
+            shapeComponent.Dispose();
+            yield return null;
+            
+            // SphereShape
+            shapeModel = new SphereShape.Model();
+            shapeComponent = TestHelpers.SharedComponentCreate<SphereShape, BaseShape.Model>(scene, CLASS_ID.SPHERE_SHAPE, shapeModel);
+            yield return shapeComponent.routine;
+
+            TestHelpers.SharedComponentAttach(shapeComponent, entity);
+
+            yield return TestHelpers.TestShapeCollision(shapeComponent, shapeModel, entity);
+
+            TestHelpers.DetachSharedComponent(scene, entityId, shapeComponent.id);
+            shapeComponent.Dispose();
             yield return null;
 
-            BoxShape shapeComponent = scene.GetSharedComponent(shapeId) as BoxShape;
+            // ConeShape
+            shapeModel = new ConeShape.Model();
+            shapeComponent = TestHelpers.SharedComponentCreate<ConeShape, BaseShape.Model>(scene, CLASS_ID.CONE_SHAPE, shapeModel);
+            yield return shapeComponent.routine;
 
-            Assert.IsFalse(shapeComponent == null);
-            Assert.IsTrue(scene.entities[entityId].gameObject.GetComponentInChildren<MeshCollider>() == null);
+            TestHelpers.SharedComponentAttach(shapeComponent, entity);
 
-            // Update shape with collision
-            yield return TestHelpers.SharedComponentUpdate(shapeComponent, new BoxShape.Model
-            {
-                withCollisions = true
-            });
+            yield return TestHelpers.TestShapeCollision(shapeComponent, shapeModel, entity);
 
-            MeshCollider meshCollider = scene.entities[entityId].gameObject.GetComponentInChildren<MeshCollider>();
+            TestHelpers.DetachSharedComponent(scene, entityId, shapeComponent.id);
+            shapeComponent.Dispose();
+            yield return null;
 
-            Assert.IsTrue(meshCollider != null);
+            // CylinderShape
+            shapeModel = new CylinderShape.Model();
+            shapeComponent = TestHelpers.SharedComponentCreate<CylinderShape, BaseShape.Model>(scene, CLASS_ID.CYLINDER_SHAPE, shapeModel);
+            yield return shapeComponent.routine;
 
-            // Update shape without collision
-            yield return TestHelpers.SharedComponentUpdate(shapeComponent, new BoxShape.Model
-            {
-                withCollisions = false
-            });
+            TestHelpers.SharedComponentAttach(shapeComponent, entity);
 
-            Assert.IsFalse(meshCollider.enabled);
+            yield return TestHelpers.TestShapeCollision(shapeComponent, shapeModel, entity);
 
-            // Update shape with collision
-            yield return TestHelpers.SharedComponentUpdate(shapeComponent, new BoxShape.Model
-            {
-                withCollisions = true
-            });
+            TestHelpers.DetachSharedComponent(scene, entityId, shapeComponent.id);
+            shapeComponent.Dispose();
+            yield return null;
 
-            Assert.IsTrue(meshCollider.enabled);
+            // PlaneShape
+            shapeModel = new PlaneShape.Model();
+            shapeComponent = TestHelpers.SharedComponentCreate<PlaneShape, BaseShape.Model>(scene, CLASS_ID.PLANE_SHAPE, shapeModel);
+            yield return shapeComponent.routine;
+
+            TestHelpers.SharedComponentAttach(shapeComponent, entity);
+
+            yield return TestHelpers.TestShapeCollision(shapeComponent, shapeModel, entity);
+
+            TestHelpers.DetachSharedComponent(scene, entityId, shapeComponent.id);
+            shapeComponent.Dispose();
+            yield return null;
         }
 
         [UnityTest]

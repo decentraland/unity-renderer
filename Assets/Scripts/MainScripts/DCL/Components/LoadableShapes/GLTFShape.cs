@@ -2,7 +2,7 @@
 
 namespace DCL.Components
 {
-    public class GLTFShape : LoadableShape<LoadWrapper_GLTF>
+    public class GLTFShape : LoadableShape<LoadWrapper_GLTF, LoadableShape.Model>
     {
         public override string componentName => "GLTF Shape";
 

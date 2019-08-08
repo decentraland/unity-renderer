@@ -846,6 +846,57 @@ namespace DCL.Helpers
             component.Dispose();
         }
 
+        public static IEnumerator TestShapeCollision(BaseShape shapeComponent, BaseShape.Model shapeModel, DecentralandEntity entity)
+        {
+            var scene = shapeComponent.scene;
+
+            // make sure the shape is collidable first
+            shapeModel.withCollisions = true;
+            SharedComponentUpdate(shapeComponent, shapeModel);
+            yield return shapeComponent.routine;
+
+            // check every collider is enabled
+            Collider[] fetchedColliders = entity.meshGameObject.GetComponentsInChildren<Collider>(true);
+
+            // make sure we actually have non-onClick colliders
+            int onClickLayer = LayerMask.NameToLayer("OnClick");
+            List<Collider> finalColliders = new List<Collider>();
+            for (int i = 0; i < fetchedColliders.Length; i++)
+            {
+                if(fetchedColliders[i].gameObject.layer == onClickLayer) continue;
+
+                finalColliders.Add(fetchedColliders[i]);
+            }
+            Assert.IsTrue(finalColliders.Count > 0);
+
+            for (int i = 0; i < finalColliders.Count; i++)
+            {
+                Assert.IsTrue(finalColliders[i].enabled);
+            }
+
+            // update collision property with 'false'
+            shapeModel.withCollisions = false;
+            SharedComponentUpdate(shapeComponent, shapeModel);
+            yield return shapeComponent.routine;
+
+            // check colliders correct behaviour
+            for (int i = 0; i < finalColliders.Count; i++)
+            {
+                Assert.IsFalse(finalColliders[i].enabled);
+            }
+
+            // update collision property with 'true' again
+            shapeModel.withCollisions = true;
+            SharedComponentUpdate(shapeComponent, shapeModel);
+            yield return shapeComponent.routine;
+
+            // check colliders correct behaviour
+            for (int i = 0; i < finalColliders.Count; i++)
+            {
+                Assert.IsTrue(finalColliders[i].enabled);
+            }
+        }
+
         public static IEnumerator TestShapeVisibility(BaseShape shapeComponent, BaseShape.Model shapeModel, DecentralandEntity entity)
         {
             // make sure the shape is visible first
