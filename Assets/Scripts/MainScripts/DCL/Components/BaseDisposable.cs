@@ -74,14 +74,11 @@ namespace DCL.Components
             Type thisType = overridenAttachedType != null ? overridenAttachedType : GetType();
             entity.AddSharedComponent(thisType, this);
 
-            if (OnAttach != null)
-            {
-                OnAttach.Invoke(entity);
-            }
-
             attachedEntities.Add(entity);
 
             entity.OnRemoved += OnEntityRemoved;
+
+            OnAttach?.Invoke(entity);
         }
 
         private void OnEntityRemoved(DecentralandEntity entity)
@@ -103,10 +100,7 @@ namespace DCL.Components
 
             attachedEntities.Remove(entity);
 
-            if (OnDetach != null)
-            {
-                OnDetach.Invoke(entity);
-            }
+            OnDetach?.Invoke(entity);
         }
 
         public void DetachFromEveryEntity()

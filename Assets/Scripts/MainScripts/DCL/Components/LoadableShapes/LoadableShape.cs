@@ -15,6 +15,7 @@ namespace DCL.Components
         }
 
         public Model model = new Model();
+        protected Model previousModel = new Model();
 
         public LoadableShape(ParcelScene scene) : base(scene)
         {
@@ -26,10 +27,33 @@ namespace DCL.Components
         }
     }
 
-    public class LoadableShape<LoadWrapperType> : LoadableShape
+    public class LoadableShape<LoadWrapperType, LoadWrapperModelType> : LoadableShape
         where LoadWrapperType : LoadWrapper
+        where LoadWrapperModelType : LoadableShape.Model, new()
     {
-        protected string currentSrc = "";
+        public System.Action<DecentralandEntity> OnEntityShapeUpdated;
+
+        new public LoadWrapperModelType model
+        {
+            get { 
+                    if(base.model == null)
+                        base.model = new LoadWrapperModelType();
+
+                    return base.model as LoadWrapperModelType;
+                }
+            set { base.model = value; }
+        }
+
+        new protected LoadWrapperModelType previousModel
+        {
+            get { 
+                    if(base.previousModel == null)
+                        base.previousModel = new LoadWrapperModelType();
+
+                    return base.previousModel as LoadWrapperModelType;
+                }
+            set { base.previousModel = value; }
+        }
 
         public LoadableShape(ParcelScene scene) : base(scene)
         {
@@ -39,36 +63,25 @@ namespace DCL.Components
 
         public override IEnumerator ApplyChanges(string newJson)
         {
-            if (model == null)
-                model = new Model();
+            previousModel = model;
+            model = SceneController.i.SafeFromJson<LoadWrapperModelType>(newJson);
 
-            bool currentVisible = model.visible;
-            model = SceneController.i.SafeFromJson<Model>(newJson);
-
-            // TODO: changing src is not allowed in loadableShapes
-            if (!string.IsNullOrEmpty(model.src) && currentSrc != model.src)
+            bool updateVisibility = previousModel.visible != model.visible;
+            bool updateCollisions = previousModel.withCollisions != model.withCollisions;
+            bool triggerAttachment = !string.IsNullOrEmpty(model.src) && previousModel.src != model.src;
+            
+            foreach (var entity in attachedEntities)
             {
-                currentSrc = model.src;
-
-                foreach (var entity in this.attachedEntities)
-                {
+                if(triggerAttachment)
                     AttachShape(entity);
-                }
-            }
+                    
+                if (updateVisibility)
+                    ConfigureVisibility(entity);
 
-            if (currentVisible != model.visible)
-            {
-                foreach (var entity in this.attachedEntities)
-                {
-                    var loadable = entity.meshGameObject.GetComponentInChildren<LoadWrapper>();
+                if (updateCollisions)
+                    ConfigureColliders(entity);
 
-                    if (loadable != null)
-                    {
-                        loadable.initialVisibility = model.visible;
-                    }
-
-                    ConfigureVisibility(entity.meshGameObject, model.visible);
-                }
+                OnEntityShapeUpdated?.Invoke(entity);
             }
 
             return null;
@@ -76,7 +89,7 @@ namespace DCL.Components
 
         protected virtual void AttachShape(DecentralandEntity entity)
         {
-            if (scene.contentProvider.HasContentsUrl(currentSrc))
+            if (scene.contentProvider.HasContentsUrl(model.src))
             {
                 entity.EnsureMeshGameObject(componentName + " mesh");
                 LoadWrapperType loadableShape = entity.meshGameObject.GetOrCreateComponent<LoadWrapperType>();
@@ -84,14 +97,29 @@ namespace DCL.Components
                 loadableShape.useVisualFeedback = Configuration.ParcelSettings.VISUAL_LOADING_ENABLED;
                 loadableShape.initialVisibility = model.visible;
                 loadableShape.contentProvider = scene.contentProvider;
-                loadableShape.Load(currentSrc, OnLoadCompleted, OnLoadFailed);
+                loadableShape.Load(model.src, OnLoadCompleted, OnLoadFailed);
             }
             else
             {
 #if UNITY_EDITOR
-                Debug.LogError($"LoadableShape '{currentSrc}' not found in scene '{scene.sceneData.id}' mappings");
+                Debug.LogError($"LoadableShape '{model.src}' not found in scene '{scene.sceneData.id}' mappings");
 #endif
             }
+        }
+
+        void ConfigureVisibility(DecentralandEntity entity)
+        {
+            var loadable = entity.meshGameObject.GetComponentInChildren<LoadWrapper>();
+
+            if (loadable != null)
+                loadable.initialVisibility = model.visible;
+
+            ConfigureVisibility(entity.meshGameObject, model.visible);
+        }
+
+        protected virtual void ConfigureColliders(DecentralandEntity entity)
+        {
+            ConfigureColliders(entity.meshGameObject, model.withCollisions, true);
         }
 
         protected void OnLoadFailed(LoadWrapper loadWrapper)
@@ -117,7 +145,9 @@ namespace DCL.Components
                 return;
             }
 
+            var model = (entity.currentShape as LoadableShape).model;
             ConfigureVisibility(loadWrapper.entity.meshGameObject, model.visible);
+            ConfigureColliders(entity);
 
             entity.OnComponentUpdated?.Invoke(loadWrapper);
             entity.OnShapeUpdated?.Invoke(entity);

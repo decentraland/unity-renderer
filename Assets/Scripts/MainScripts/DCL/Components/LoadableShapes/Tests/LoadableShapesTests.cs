@@ -262,28 +262,6 @@ namespace Tests
         }
 
         [UnityTest]
-        public IEnumerator GLTFShapeWithCollisionsUpdate()
-        {
-            yield return InitScene();
-
-            string entityId = "1";
-            TestHelpers.CreateSceneEntity(scene, entityId);
-
-            TestHelpers.CreateAndSetShape(scene, entityId, DCL.Models.CLASS_ID.GLTF_SHAPE, JsonConvert.SerializeObject(
-                new
-                {
-                    src = TestHelpers.GetTestsAssetsPath() +
-                          "/GLB/PalmTree_01.glb" // this glb has the "..._collider" object inside with the pre-defined collision geometry.
-                }));
-
-            LoadWrapper_GLTF gltfShape = scene.entities[entityId].gameObject.GetComponentInChildren<LoadWrapper_GLTF>(true);
-            yield return new WaitUntil(() => gltfShape.alreadyLoaded);
-
-            var colliderObject = scene.entities[entityId].gameObject.GetComponentInChildren<Collider>();
-            Assert.IsTrue(colliderObject != null);
-        }
-
-        [UnityTest]
         public IEnumerator GLTFShapeAttachedGetsReplacedOnNewAttachment()
         {
             yield return InitScene();
@@ -320,6 +298,31 @@ namespace Tests
 
 
         [UnityTest]
+        public IEnumerator GLTFShapeCollisionProperty()
+        {
+            yield return InitScene();
+
+            string entityId = "entityId";
+            TestHelpers.CreateSceneEntity(scene, entityId);
+            var entity = scene.entities[entityId];
+            yield return null;
+            
+            // Create shape component
+            var shapeModel = new LoadableShape<LoadWrapper_GLTF, LoadableShape.Model>.Model();
+            shapeModel.src = TestHelpers.GetTestsAssetsPath() + "/GLB/PalmTree_01.glb";
+            
+            var shapeComponent = TestHelpers.SharedComponentCreate<LoadableShape<LoadWrapper_GLTF, LoadableShape.Model>, LoadableShape<LoadWrapper_GLTF, LoadableShape.Model>.Model>(scene, CLASS_ID.GLTF_SHAPE, shapeModel);
+            yield return shapeComponent.routine;
+
+            TestHelpers.SharedComponentAttach(shapeComponent, entity);
+
+            var shapeLoader = entity.gameObject.GetComponentInChildren<LoadWrapper_GLTF>(true);
+            yield return new WaitUntil(() => shapeLoader.alreadyLoaded);
+
+            yield return TestHelpers.TestShapeCollision(shapeComponent, shapeModel, entity);
+        }
+
+        [UnityTest]
         public IEnumerator GLTFVisibleProperty()
         {
             yield return InitScene();
@@ -330,10 +333,10 @@ namespace Tests
             yield return null;
 
             // Create shape component
-            var shapeModel = new LoadableShape<LoadWrapper_GLTF>.Model();
+            var shapeModel = new LoadableShape<LoadWrapper_GLTF, LoadableShape.Model>.Model();
             shapeModel.src = TestHelpers.GetTestsAssetsPath() + "/GLB/PalmTree_01.glb";
 
-            var shapeComponent = TestHelpers.SharedComponentCreate<LoadableShape<LoadWrapper_GLTF>, LoadableShape<LoadWrapper_GLTF>.Model>(scene, CLASS_ID.GLTF_SHAPE, shapeModel);
+            var shapeComponent = TestHelpers.SharedComponentCreate<LoadableShape<LoadWrapper_GLTF, LoadableShape.Model>, LoadableShape<LoadWrapper_GLTF, LoadableShape.Model>.Model>(scene, CLASS_ID.GLTF_SHAPE, shapeModel);
             yield return shapeComponent.routine;
 
             TestHelpers.SharedComponentAttach(shapeComponent, entity);
@@ -342,6 +345,31 @@ namespace Tests
             yield return new WaitUntil(() => shapeLoader.alreadyLoaded);
 
             yield return TestHelpers.TestShapeVisibility(shapeComponent, shapeModel, entity);
+        }
+
+        [UnityTest]
+        public IEnumerator NFTShapeCollisionProperty()
+        {
+            yield return InitScene();
+
+            string entityId = "entityId";
+            TestHelpers.CreateSceneEntity(scene, entityId);
+            var entity = scene.entities[entityId];
+            yield return null;
+            
+            // Create shape component
+            var shapeModel = new LoadableShape<LoadWrapper_NFT, NFTShape.Model>.Model();
+            shapeModel.src = "ethereum://0x06012c8cf97BEaD5deAe237070F9587f8E7A266d/558536";
+            
+            var shapeComponent = TestHelpers.SharedComponentCreate<LoadableShape<LoadWrapper_NFT, NFTShape.Model>, LoadableShape<LoadWrapper_NFT, NFTShape.Model>.Model>(scene, CLASS_ID.NFT_SHAPE, shapeModel);
+            yield return shapeComponent.routine;
+
+            TestHelpers.SharedComponentAttach(shapeComponent, entity);
+
+            var shapeLoader = entity.gameObject.GetComponentInChildren<LoadWrapper_NFT>(true);
+            yield return new WaitUntil(() => shapeLoader.alreadyLoaded);
+
+            yield return TestHelpers.TestShapeCollision(shapeComponent, shapeModel, entity);
         }
 
         [UnityTest]
@@ -355,10 +383,10 @@ namespace Tests
             yield return null;
 
             // Create shape component
-            var shapeModel = new LoadableShape<LoadWrapper_NFT>.Model();
+            var shapeModel = new LoadableShape<LoadWrapper_NFT, NFTShape.Model>.Model();
             shapeModel.src = "ethereum://0x06012c8cf97BEaD5deAe237070F9587f8E7A266d/558536";
 
-            var shapeComponent = TestHelpers.SharedComponentCreate<LoadableShape<LoadWrapper_NFT>, LoadableShape<LoadWrapper_NFT>.Model>(scene, CLASS_ID.NFT_SHAPE, shapeModel);
+            var shapeComponent = TestHelpers.SharedComponentCreate<LoadableShape<LoadWrapper_NFT, NFTShape.Model>, LoadableShape<LoadWrapper_NFT, NFTShape.Model>.Model>(scene, CLASS_ID.NFT_SHAPE, shapeModel);
             yield return shapeComponent.routine;
 
             TestHelpers.SharedComponentAttach(shapeComponent, entity);

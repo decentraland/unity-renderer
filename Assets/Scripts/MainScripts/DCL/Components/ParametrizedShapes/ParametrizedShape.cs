@@ -85,41 +85,30 @@ namespace DCL.Components
 
         public override IEnumerator ApplyChanges(string newJson)
         {
-            bool hadCollisions = model.withCollisions;
-            bool isVisible = model.visible;
-
-            var newModel = JsonUtility.FromJson<T>(newJson);
+            var newModel = SceneController.i.SafeFromJson<T>(newJson);
+            bool updateVisibility = newModel.visible != model.visible;
+            bool updateCollisions = newModel.withCollisions != model.withCollisions;
             bool generateNewMesh = ShouldGenerateNewMesh(newModel);
-            
             model = newModel;
 
             if(generateNewMesh)
-            {
                 currentMesh = GenerateGeometry();
+
+            if(generateNewMesh || updateVisibility || updateCollisions)
+            {
                 foreach (var entity in this.attachedEntities)
                 {
-                    OnShapeDetached(entity);
-                    OnShapeAttached(entity);
-                }
-            }
-            else
-            {
-                bool collisionsDirty = hadCollisions != model.withCollisions;
-                if (collisionsDirty)
-                {
-                    foreach (var entity in this.attachedEntities)
+                    if(generateNewMesh)
                     {
-                        ConfigureColliders(entity.meshGameObject, model.withCollisions);
+                        OnShapeDetached(entity);
+                        OnShapeAttached(entity);
                     }
-                }
-            }
 
-            bool visibilityDirty = isVisible != model.visible;
-            if (visibilityDirty)
-            {
-                foreach (var entity in attachedEntities)
-                {
-                    ConfigureVisibility(entity.meshGameObject, model.visible);
+                    if(updateVisibility)
+                        ConfigureVisibility(entity.meshGameObject, model.visible);
+
+                    if(updateCollisions)
+                        ConfigureColliders(entity.meshGameObject, model.withCollisions);
                 }
             }
 
