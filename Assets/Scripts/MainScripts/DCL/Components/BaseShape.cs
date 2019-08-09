@@ -47,13 +47,11 @@ namespace DCL.Components
 
             Collider collider;
             int onClickLayer = LayerMask.NameToLayer("OnClick"); // meshes can have a child collider for the OnClick that should be ignored
-            MeshFilter[] meshFilters = meshGameObject.GetComponentsInChildren<MeshFilter>();
+            MeshFilter[] meshFilters = meshGameObject.GetComponentsInChildren<MeshFilter>(true);
 
             for (int i = 0; i < meshFilters.Length; i++)
             {
                 if(meshFilters[i].gameObject.layer == onClickLayer) continue;
-
-                collider = meshFilters[i].GetComponent<Collider>();
 
                 if (filterByColliderName)
                 {
@@ -62,6 +60,8 @@ namespace DCL.Components
                     // we remove the Renderer of the '_collider' object, as its true renderer is in another castle
                     GameObject.Destroy(meshFilters[i].GetComponent<Renderer>());
                 }
+
+                collider = meshFilters[i].GetComponent<Collider>();
 
                 if (hasCollision)
                 {
@@ -73,7 +73,7 @@ namespace DCL.Components
                 }
 
                 if(collider != null)
-                    collider.enabled = hasCollision;
+                    collider.enabled = hasCollision || filterByColliderName;
             }
         }
 
