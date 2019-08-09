@@ -1495,6 +1495,7 @@ namespace UnityGLTF
                         skinnedMeshRenderer.sharedMesh = curMesh;
                         skinnedMeshRenderer.quality = SkinQuality.Auto;
                         renderer = skinnedMeshRenderer;
+                        renderer.enabled = InitialVisibility;
 
                         if (HasBones(skin))
                         {
@@ -1505,6 +1506,7 @@ namespace UnityGLTF
                     {
                         meshRenderer = primitiveObj.AddComponent<MeshRenderer>();
                         renderer = meshRenderer;
+                        renderer.enabled = InitialVisibility;
                     }
 
                     //// NOTE(Brian): Texture loading
@@ -1536,7 +1538,6 @@ namespace UnityGLTF
                             primitiveObj.SetActive(true);
                         }
                     }
-                    renderer.enabled = InitialVisibility;
                 }
                 else
                 {

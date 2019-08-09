@@ -257,6 +257,7 @@ namespace DCL
             StopCoroutine(SetupEyes());
             StopCoroutine(SetupEyebrows());
             StopCoroutine(SetupMouth());
+            StopCoroutine(ShowAll());
 
             var loader = LoadWearable(model.bodyShape, OnBaseModelSuccess, OnBaseModelFail);
 
@@ -398,7 +399,7 @@ namespace DCL
             LoadWrapper_GLTF loadableShape = go.GetOrCreateComponent<LoadWrapper_GLTF>();
             loadableShape.contentProvider = wearable.provider;
             loadableShape.entity = entity;
-            loadableShape.initialVisibility = true;
+            loadableShape.initialVisibility = false;
             loadableShape.useVisualFeedback = Configuration.ParcelSettings.VISUAL_LOADING_ENABLED;
 
             loadableShape.Load(wearable.contentName, OnSuccess, OnFail);
@@ -449,6 +450,7 @@ namespace DCL
             {
                 // TODO(Brian): Here we take the animations from the baseBody and put them into each wearable.
                 state = State.READY;
+                StartCoroutine(ShowAll());
                 if (VERBOSE) Debug.Log($"{entity.entityId} - Ready!");
             }
         }
@@ -506,5 +508,15 @@ namespace DCL
             AvatarUtils.SetColorInHierarchy(root, MATERIAL_FILTER_SKIN, model.skin.color);
             AvatarUtils.SetColorInHierarchy(root, MATERIAL_FILTER_HAIR, model.hair.color);
         }
+
+        IEnumerator ShowAll()
+        {
+            yield return new WaitUntil(() => everythingIsLoaded);
+            Renderer[] renderers = gameObject.GetComponentsInChildren<Renderer>();
+            for (int i = 0; i < renderers.Length; i++)
+            {
+                renderers[i].enabled = true;
+            }
+        } 
     }
 }
