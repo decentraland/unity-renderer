@@ -15,6 +15,11 @@ namespace DCL.Models
         public Dictionary<CLASS_ID_COMPONENT, BaseComponent> components =
             new Dictionary<CLASS_ID_COMPONENT, BaseComponent>();
 
+        // HACK: (Zak) will be removed when we separate each 
+        // uuid component as a different class id
+        public Dictionary<string, UUIDComponent> uuidComponents =
+            new Dictionary<string, UUIDComponent>();
+
         public GameObject gameObject;
         public string entityId;
 

@@ -40,7 +40,7 @@ public class EntityShapeAndOnClickTestController : MonoBehaviour
 
             var OnClickComponentModel = new OnClickComponent.Model()
             {
-                type = "onClick",
+                type = OnClickComponent.NAME,
                 uuid = "event" + eventIndex
             };
 
