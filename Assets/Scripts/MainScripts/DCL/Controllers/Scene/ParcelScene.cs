@@ -355,31 +355,96 @@ namespace DCL.Controllers
             DCLComponentFactory factory = ownerController.componentFactory;
             Assert.IsNotNull(factory, "Factory is null?");
 
-            if (!entity.components.ContainsKey(classId))
+            // HACK: (Zak) will be removed when we separate each      
+            // uuid component as a different class id
+            if (classId == CLASS_ID_COMPONENT.UUID_CALLBACK)
             {
-                newComponent = factory.CreateItemFromId<BaseComponent>(classId);
+                string type = "";
+                bool shouldAdd = false;
 
-                if (newComponent != null)
+                UUIDComponent.Model model = JsonUtility.FromJson<UUIDComponent.Model>(createEntityComponentMessage.json);
+
+                type = model.type;
+
+                if (!entity.uuidComponents.ContainsKey(type))
                 {
-                    newComponent.scene = this;
-                    newComponent.entity = entity;
-                    entity.components.Add(classId, newComponent);
+                    // We need to create and destroy it 
+                    newComponent = factory.CreateItemFromId<BaseComponent>(classId);
 
-                    newComponent.transform.SetParent(entity.gameObject.transform, false);
-                    newComponent.UpdateFromJSON(createEntityComponentMessage.json);
+                    if (newComponent != null)
+                    {
+                        newComponent.scene = this;
+                        newComponent.entity = entity;
+
+                        newComponent.UpdateFromJSON(createEntityComponentMessage.json);
+
+                        Destroy(newComponent.gameObject);
+
+                        shouldAdd = true;
+                    }
                 }
+                else
+                {
+                    newComponent = EntityUUIDComponentUpdate(entity, type, createEntityComponentMessage.json);
+                }
+
+                if (type == OnClickComponent.NAME)
+                    newComponent = entity.gameObject.GetComponent<OnClickComponent>();
+                else if (type == OnPointerDownComponent.NAME)
+                    newComponent = entity.gameObject.GetComponent<OnPointerDownComponent>();
+                else if (type == OnPointerUpComponent.NAME)
+                    newComponent = entity.gameObject.GetComponent<OnPointerUpComponent>();
+
+                if (shouldAdd)
+                    entity.uuidComponents.Add(type, newComponent as UUIDComponent);
             }
             else
             {
-                newComponent = EntityComponentUpdate(entity, classId, createEntityComponentMessage.json);
-            }
+                if (!entity.components.ContainsKey(classId))
+                {
+                    newComponent = factory.CreateItemFromId<BaseComponent>(classId);
 
-            if (classId == CLASS_ID_COMPONENT.UUID_CALLBACK && (newComponent as UUIDComponent).model.type == "onClick")
-            {
-                newComponent = entity.gameObject.GetComponent<OnClickComponent>();
+                    if (newComponent != null)
+                    {
+                        newComponent.scene = this;
+                        newComponent.entity = entity;
+
+                        entity.components.Add(classId, newComponent);
+
+                        newComponent.transform.SetParent(entity.gameObject.transform, false);
+                        newComponent.UpdateFromJSON(createEntityComponentMessage.json);
+                    }
+                }
+                else
+                {
+                    newComponent = EntityComponentUpdate(entity, classId, createEntityComponentMessage.json);
+                }
             }
 
             return newComponent;
+        }
+
+        // HACK: (Zak) will be removed when we separate each 
+        // uuid component as a different class id
+        public UUIDComponent EntityUUIDComponentUpdate(DecentralandEntity entity, string type,
+            string componentJson)
+        {
+            if (entity == null)
+            {
+                Debug.LogError($"Can't update the {type} uuid component of a nonexistent entity!", this);
+                return null;
+            }
+
+            if (!entity.uuidComponents.ContainsKey(type))
+            {
+                Debug.LogError($"Entity {entity.entityId} doesn't have a {type} uuid component to update!", this);
+                return null;
+            }
+
+            UUIDComponent targetComponent = entity.uuidComponents[type];
+            targetComponent.UpdateFromJSON(componentJson);
+
+            return targetComponent;
         }
 
         // The EntityComponentUpdate() parameters differ from other similar methods because there is no EntityComponentUpdate protocol message yet.
@@ -607,6 +672,19 @@ namespace DCL.Controllers
             }
         }
 
+        // HACK: (Zak) will be removed when we separate each 
+        // uuid component as a different class id
+        private void RemoveUUIDComponentType<T>(DecentralandEntity entity, string type)
+            where T : UUIDComponent
+        {
+            var component = entity.uuidComponents[type].GetComponent<T>();
+
+            if (component != null)
+            {
+                Utils.SafeDestroy(component);
+            }
+        }
+
         private void RemoveEntityComponent(DecentralandEntity entity, string componentName)
         {
             switch (componentName)
@@ -616,10 +694,15 @@ namespace DCL.Controllers
                     {
                         entity.currentShape.DetachFrom(entity);
                     }
-
                     return;
-                case "onClick":
-                    RemoveComponentType<OnClickComponent>(entity, CLASS_ID_COMPONENT.UUID_CALLBACK);
+                case OnClickComponent.NAME:
+                    RemoveUUIDComponentType<OnClickComponent>(entity, componentName);
+                    return;
+                case OnPointerDownComponent.NAME:
+                    RemoveUUIDComponentType<OnPointerDownComponent>(entity, componentName);
+                    return;
+                case OnPointerUpComponent.NAME:
+                    RemoveUUIDComponentType<OnPointerUpComponent>(entity, componentName);
                     return;
             }
         }

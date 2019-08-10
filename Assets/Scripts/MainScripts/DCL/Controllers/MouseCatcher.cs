@@ -1,57 +1,23 @@
 using DCL.Components;
 using UnityEngine;
 using UnityEngine.EventSystems;
+using System.Collections.Generic;
 
 namespace DCL
 {
     public class MouseCatcher : MonoBehaviour, IPointerDownHandler
     {
-        //Default OnClick
+        //Default OnPointerEvent
         public LayerMask OnPointerDownTarget = 1 << 9;
-        private Camera characterCamera;
-
-        private void OnEnable()
-        {
-            RetrieveCharacterCamera();
-        }
-
-        private void RetrieveCharacterCamera()
-        {
-            if (DCLCharacterController.i == null)
-            {
-                return;
-            }
-
-            characterCamera = DCLCharacterController.i.GetComponentInChildren<Camera>();
-        }
 
         void Update()
         {
-            #if UNITY_EDITOR
+#if UNITY_EDITOR
             if (Input.GetKeyDown(KeyCode.Escape))
             {
                 UnlockCursor();
             }
-            #endif
-
-            if (Cursor.lockState != CursorLockMode.None && Input.GetMouseButtonDown(0))
-            {
-                if (characterCamera == null)
-                {
-                    RetrieveCharacterCamera();
-                }
-
-                //Not sure if this is needed
-                if (characterCamera != null)
-                {
-                    if (Physics.Raycast(
-                        characterCamera.ScreenPointToRay(new Vector3(Screen.width / 2, Screen.height / 2, 0)),
-                        out var hitInfo, characterCamera.farClipPlane, OnPointerDownTarget))
-                    {
-                        hitInfo.rigidbody.gameObject.GetComponentInChildren<OnClickComponent>()?.OnPointerDown();
-                    }
-                }
-            }
+#endif
         }
 
         public void LockCursor()

@@ -49,8 +49,25 @@ namespace DCL.Interface
             public TPayload payload = new TPayload();
         }
 
+        public enum POINTER
+        {
+            PRIMARY,
+            SECONDARY,
+        }
+
         [System.Serializable]
         public class OnClickEvent : UUIDEvent<OnClickEventPayload>
+        {
+        };
+
+        [System.Serializable]
+        public class OnPointerDownEvent : UUIDEvent<OnPointerEventPayload>
+        {
+        };
+
+
+        [System.Serializable]
+        public class OnPointerUpEvent : UUIDEvent<OnPointerEventPayload>
         {
         };
 
@@ -82,6 +99,28 @@ namespace DCL.Interface
         [System.Serializable]
         public class OnClickEventPayload
         {
+        }
+
+
+        [System.Serializable]
+        public class OnPointerEventPayload
+        {
+            [System.Serializable]
+            public class Hit
+            {
+                public Vector3 origin;
+                public float length;
+                public Vector3 hitPoint;
+                public Vector3 normal;
+                public Vector3 worldNormal;
+                public string meshName;
+                public string entityId;
+            }
+
+            public POINTER pointerId;
+            public Vector3 origin;
+            public Vector3 direction;
+            public Hit hit;
         }
 
         [System.Serializable]
@@ -185,6 +224,8 @@ namespace DCL.Interface
         private static ReportPositionPayload positionPayload = new ReportPositionPayload();
         private static OnMetricsUpdate onMetricsUpdate = new OnMetricsUpdate();
         private static OnClickEvent onClickEvent = new OnClickEvent();
+        private static OnPointerDownEvent onPointerDownEvent = new OnPointerDownEvent();
+        private static OnPointerUpEvent onPointerUpEvent = new OnPointerUpEvent();
         private static OnTextSubmitEvent onTextSubmitEvent = new OnTextSubmitEvent();
         private static OnChangeEvent onChangeEvent = new OnChangeEvent();
         private static OnFocusEvent onFocusEvent = new OnFocusEvent();
@@ -223,6 +264,62 @@ namespace DCL.Interface
             onClickEvent.uuid = uuid;
 
             SendSceneEvent(sceneId, "uuidEvent", onClickEvent);
+        }
+
+        private static OnPointerEventPayload.Hit CreateHitObject(string entityId, string meshName, RaycastHit hitInfo)
+        {
+            OnPointerEventPayload.Hit hit = new OnPointerEventPayload.Hit();
+
+            hit.hitPoint = hitInfo.point;
+            hit.length = hitInfo.distance;
+            hit.normal = hitInfo.normal;
+            hit.worldNormal = hitInfo.normal;
+            hit.meshName = meshName;
+            hit.entityId = entityId;
+
+            return hit;
+        }
+
+        private static OnPointerEventPayload CreatePointerEventPayload(string entityId, string meshName, Ray ray, RaycastHit hitInfo, bool isHitInfoValid)
+        {
+            OnPointerEventPayload payload = new OnPointerEventPayload();
+
+            payload.origin = ray.origin;
+            payload.direction = ray.direction;
+            payload.pointerId = POINTER.PRIMARY;
+
+            if (isHitInfoValid)
+                payload.hit = CreateHitObject(entityId, meshName, hitInfo);
+            else
+                payload.hit = null;
+
+            return payload;
+        }
+
+        public static void ReportOnPointerDownEvent(string sceneId, string uuid, string entityId, string meshName, Ray ray, RaycastHit hit)
+        {
+            if (string.IsNullOrEmpty(uuid))
+            {
+                return;
+            }
+
+            onPointerDownEvent.uuid = uuid;
+            onPointerDownEvent.payload = CreatePointerEventPayload(entityId, meshName, ray, hit, isHitInfoValid: true);
+
+            SendSceneEvent(sceneId, "uuidEvent", onPointerDownEvent);
+        }
+
+        public static void ReportOnPointerUpEvent(string sceneId, string uuid, string entityId, string meshName, Ray ray, RaycastHit hit, bool isHitInfoValid)
+        {
+            if (string.IsNullOrEmpty(uuid))
+            {
+                return;
+            }
+
+            onPointerUpEvent.uuid = uuid;
+            onPointerUpEvent.payload = CreatePointerEventPayload(entityId, meshName, ray, hit, isHitInfoValid);
+
+            SendSceneEvent(sceneId, "uuidEvent", onPointerUpEvent);
         }
 
         public static void ReportOnTextSubmitEvent(string sceneId, string uuid, string text)

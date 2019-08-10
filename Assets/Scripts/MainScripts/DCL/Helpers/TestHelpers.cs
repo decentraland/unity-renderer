@@ -859,11 +859,11 @@ namespace DCL.Helpers
             Collider[] fetchedColliders = entity.meshGameObject.GetComponentsInChildren<Collider>(true);
 
             // make sure we actually have non-onClick colliders
-            int onClickLayer = LayerMask.NameToLayer("OnClick");
+            int onClickLayer = LayerMask.NameToLayer(OnPointerEventColliders.COLLIDER_LAYER);
             List<Collider> finalColliders = new List<Collider>();
             for (int i = 0; i < fetchedColliders.Length; i++)
             {
-                if(fetchedColliders[i].gameObject.layer == onClickLayer) continue;
+                if (fetchedColliders[i].gameObject.layer == onClickLayer) continue;
 
                 finalColliders.Add(fetchedColliders[i]);
             }
@@ -912,7 +912,7 @@ namespace DCL.Helpers
             {
                 Assert.IsTrue(renderers[i].enabled);
             }
-            yield return TestShapeOnClickCollider(entity);
+            yield return TestShapeOnPointerEventCollider(entity);
 
             // update visibility with 'false'
             shapeModel.visible = false;
@@ -923,7 +923,7 @@ namespace DCL.Helpers
             {
                 Assert.IsFalse(renderers[i].enabled);
             }
-            yield return TestShapeOnClickCollider(entity);
+            yield return TestShapeOnPointerEventCollider(entity);
 
             // update visibility with 'true'
             shapeModel.visible = true;
@@ -934,10 +934,10 @@ namespace DCL.Helpers
             {
                 Assert.IsTrue(renderers[i].enabled);
             }
-            yield return TestShapeOnClickCollider(entity);
+            yield return TestShapeOnPointerEventCollider(entity);
         }
 
-        public static IEnumerator TestShapeOnClickCollider(DecentralandEntity entity)
+        public static IEnumerator TestShapeOnPointerEventCollider(DecentralandEntity entity)
         {
             Renderer[] renderers = entity.meshGameObject.GetComponentsInChildren<Renderer>(true);
 
@@ -945,24 +945,24 @@ namespace DCL.Helpers
 
             var onClickComponentModel = new OnClickComponent.Model()
             {
-                type = "onClick",
+                type = OnClickComponent.NAME,
                 uuid = "onClick"
             };
             var onClickComponent = TestHelpers.EntityComponentCreate<OnClickComponent, OnClickComponent.Model>(entity.scene, entity, onClickComponentModel, CLASS_ID_COMPONENT.UUID_CALLBACK);
             yield return onClickComponent.routine;
 
-            Collider onClickCollider;
-            int onClickLayer = LayerMask.NameToLayer("OnClick");
+            Collider onPointerEventCollider;
+            int onPointerEventLayer = LayerMask.NameToLayer(OnPointerEventColliders.COLLIDER_LAYER);
             for (int i = 0; i < renderers.Length; i++)
             {
                 Assert.IsTrue(renderers[i].transform.childCount > 0, "OnClick collider should exist as this mesh's child");
 
-                onClickCollider = renderers[i].transform.GetChild(0).GetComponent<Collider>();
-                Assert.IsTrue(onClickCollider != null);
-                Assert.IsTrue(onClickCollider.gameObject.layer == onClickLayer);
+                onPointerEventCollider = renderers[i].transform.GetChild(0).GetComponent<Collider>();
+                Assert.IsTrue(onPointerEventCollider != null);
+                Assert.IsTrue(onPointerEventCollider.gameObject.layer == onPointerEventLayer);
 
                 // check the onClick collide enabled state is the same as the renderer's state
-                Assert.IsTrue(onClickCollider.enabled == renderers[i].enabled);
+                Assert.IsTrue(onPointerEventCollider.enabled == renderers[i].enabled);
             }
 
             entity.scene.EntityComponentRemove(JsonUtility.ToJson(new EntityComponentRemoveMessage
@@ -1035,6 +1035,84 @@ namespace DCL.Helpers
             var sceneEvent = new WebInterface.SceneEvent<WebInterface.OnClickEvent>();
             sceneEvent.sceneId = sceneId;
             sceneEvent.payload = onClickEvent;
+            sceneEvent.eventType = "uuidEvent";
+            string eventJSON = JsonUtility.ToJson(sceneEvent);
+
+            bool eventTriggered = false;
+
+            yield return TestHelpers.WaitForMessageFromEngine(targetEventType, eventJSON,
+                () =>
+                {
+                    ExecuteEvents.ExecuteHierarchy(raycastResult.gameObject, pointerEventData,
+                        ExecuteEvents.pointerDownHandler);
+                },
+                () =>
+                {
+                    eventTriggered = true;
+                });
+
+            yield return null;
+
+            // Callback!
+            if (callback != null)
+                callback(eventTriggered);
+        }
+
+        public static IEnumerator TestUIOnPointerDownEventPropagation(string sceneId, string eventUuid, RectTransform uiObject, System.Action<bool> callback)
+        {
+            // We need to populate the event data with the 'pointerPressRaycast' pointing to the 'clicked' object
+            PointerEventData pointerEventData = new PointerEventData(EventSystem.current);
+            RaycastResult raycastResult = new RaycastResult();
+            raycastResult.gameObject = uiObject.gameObject;
+            pointerEventData.pointerPressRaycast = raycastResult;
+
+            string targetEventType = "SceneEvent";
+
+            var onPointerDownEvent = new WebInterface.OnPointerDownEvent();
+            onPointerDownEvent.uuid = eventUuid;
+
+            var sceneEvent = new WebInterface.SceneEvent<WebInterface.OnPointerDownEvent>();
+            sceneEvent.sceneId = sceneId;
+            sceneEvent.payload = onPointerDownEvent;
+            sceneEvent.eventType = "uuidEvent";
+            string eventJSON = JsonUtility.ToJson(sceneEvent);
+
+            bool eventTriggered = false;
+
+            yield return TestHelpers.WaitForMessageFromEngine(targetEventType, eventJSON,
+                () =>
+                {
+                    ExecuteEvents.ExecuteHierarchy(raycastResult.gameObject, pointerEventData,
+                        ExecuteEvents.pointerDownHandler);
+                },
+                () =>
+                {
+                    eventTriggered = true;
+                });
+
+            yield return null;
+
+            // Callback!
+            if (callback != null)
+                callback(eventTriggered);
+        }
+
+        public static IEnumerator TestUIOnPointerUpEventPropagation(string sceneId, string eventUuid, RectTransform uiObject, System.Action<bool> callback)
+        {
+            // We need to populate the event data with the 'pointerPressRaycast' pointing to the 'clicked' object
+            PointerEventData pointerEventData = new PointerEventData(EventSystem.current);
+            RaycastResult raycastResult = new RaycastResult();
+            raycastResult.gameObject = uiObject.gameObject;
+            pointerEventData.pointerPressRaycast = raycastResult;
+
+            string targetEventType = "SceneEvent";
+
+            var onPointerUpEvent = new WebInterface.OnPointerUpEvent();
+            onPointerUpEvent.uuid = eventUuid;
+
+            var sceneEvent = new WebInterface.SceneEvent<WebInterface.OnPointerUpEvent>();
+            sceneEvent.sceneId = sceneId;
+            sceneEvent.payload = onPointerUpEvent;
             sceneEvent.eventType = "uuidEvent";
             string eventJSON = JsonUtility.ToJson(sceneEvent);
 

@@ -46,12 +46,12 @@ namespace DCL.Components
             if (meshGameObject == null) return;
 
             Collider collider;
-            int onClickLayer = LayerMask.NameToLayer("OnClick"); // meshes can have a child collider for the OnClick that should be ignored
+            int onClickLayer = LayerMask.NameToLayer(OnPointerEventColliders.COLLIDER_LAYER); // meshes can have a child collider for the OnClick that should be ignored
             MeshFilter[] meshFilters = meshGameObject.GetComponentsInChildren<MeshFilter>(true);
 
             for (int i = 0; i < meshFilters.Length; i++)
             {
-                if(meshFilters[i].gameObject.layer == onClickLayer) continue;
+                if (meshFilters[i].gameObject.layer == onClickLayer) continue;
 
                 if (filterByColliderName)
                 {
@@ -68,11 +68,11 @@ namespace DCL.Components
                     if (collider == null)
                         collider = meshFilters[i].gameObject.AddComponent<MeshCollider>();
 
-                    if(collider is MeshCollider)
+                    if (collider is MeshCollider)
                         ((MeshCollider)collider).sharedMesh = meshFilters[i].sharedMesh;
                 }
 
-                if(collider != null)
+                if (collider != null)
                     collider.enabled = hasCollision || filterByColliderName;
             }
         }
@@ -83,11 +83,11 @@ namespace DCL.Components
             {
                 return;
             }
-            
+
             if (!isVisible)
             {
                 MaterialTransitionController[] materialTransitionControllers = meshGameObject.GetComponentsInChildren<MaterialTransitionController>();
-                
+
                 for (var i = 0; i < materialTransitionControllers.Length; i++)
                 {
                     GameObject.Destroy(materialTransitionControllers[i]);
@@ -95,19 +95,19 @@ namespace DCL.Components
             }
 
             Renderer[] renderers = meshGameObject.GetComponentsInChildren<Renderer>(true);
-            Collider onClickCollider;
-            int onClickLayer = LayerMask.NameToLayer("OnClick");
+            Collider onPointerEventCollider;
+            int onClickLayer = LayerMask.NameToLayer(OnPointerEventColliders.COLLIDER_LAYER);
 
             for (var i = 0; i < renderers.Length; i++)
             {
                 renderers[i].enabled = isVisible;
-                
-                if(renderers[i].transform.childCount > 0)
-                {
-                    onClickCollider = renderers[i].transform.GetChild(0).GetComponent<Collider>();
 
-                    if(onClickCollider != null && onClickCollider.gameObject.layer == onClickLayer)
-                        onClickCollider.enabled = isVisible;
+                if (renderers[i].transform.childCount > 0)
+                {
+                    onPointerEventCollider = renderers[i].transform.GetChild(0).GetComponent<Collider>();
+
+                    if (onPointerEventCollider != null && onPointerEventCollider.gameObject.layer == onClickLayer)
+                        onPointerEventCollider.enabled = isVisible;
                 }
             }
         }
