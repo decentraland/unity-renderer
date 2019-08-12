@@ -283,7 +283,10 @@ let currentLoadedScene: SceneWorker
 export async function loadPreviewScene() {
   const result = await fetch('/scene.json?nocache=' + Math.random())
 
+  let lastId: string | null = null
+
   if (currentLoadedScene) {
+    lastId = currentLoadedScene.parcelScene.data.sceneId
     stopParcelSceneWorker(currentLoadedScene)
   }
 
@@ -302,17 +305,23 @@ export async function loadPreviewScene() {
       mappingsResponse: mappingsResponse
     }
 
-    defaultLogger.info('Starting Preview...')
     const parcelScene = new UnityParcelScene(ILandToLoadableParcelScene(defaultScene))
     currentLoadedScene = loadParcelScene(parcelScene)
 
     const target: LoadableParcelScene = { ...ILandToLoadableParcelScene(defaultScene).data }
     delete target.land
 
+    defaultLogger.info('Reloading scene...')
+
+    if (lastId) {
+      unityInterface.UnloadScene(lastId)
+    }
+
     unityInterface.LoadParcelScenes([target])
   } else {
     throw new Error('Could not load scene.json')
   }
+  defaultLogger.info('finish...')
 }
 
 teleportObservable.add((position: { x: number; y: number }) => {
