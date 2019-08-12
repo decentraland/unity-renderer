@@ -58,9 +58,11 @@ namespace DCL
 
         public float Update(float prevTimeBudget)
         {
+            float timeBudget = 0;
+
             if (throttler != null)
             {
-                bus.timeBudget = throttler.Update(
+                timeBudget = bus.timeBudget = throttler.Update(
                     pendingMsgsCount: bus.pendingMessagesCount,
                     processedMsgsCount: bus.processedMessagesCount,
                     maxBudget: Mathf.Max(budgetMin, bus.budgetMax - prevTimeBudget)
@@ -69,9 +71,10 @@ namespace DCL
             else
             {
                 bus.timeBudget = Mathf.Max(budgetMin, bus.budgetMax - prevTimeBudget);
+                timeBudget = bus.lastTimeConsumed;
             }
 
-            return bus.timeBudget;
+            return timeBudget;
         }
 
         public void Enqueue(MessagingBus.QueuedSceneMessage message, QueueMode queueMode = QueueMode.Reliable)
