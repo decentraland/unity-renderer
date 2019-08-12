@@ -50,6 +50,13 @@ namespace DCL
             }
 
             [System.Serializable]
+            public class Snapshots
+            {
+                public string face;
+                public string body;
+            }
+
+            [System.Serializable]
             public class Skin
             {
                 public Color color;
@@ -79,6 +86,7 @@ namespace DCL
 
             public Wearable bodyShape = new Wearable();
             public Wearable[] wearables = new Wearable[] { };
+            public Snapshots snapshots;
             public Skin skin;
             public Hair hair;
             public Eyes eyes;
@@ -142,6 +150,9 @@ namespace DCL
                     loadWrapper?.Unload();
                 }
             }
+
+            if (entity != null)
+                entity.OnTransformChange = null;
         }
 
         void InitMaterials()
@@ -200,6 +211,12 @@ namespace DCL
             //NOTE(Brian): Horrible fix to the double ApplyChanges call, as its breaking the needed logic.
             if (newJson == "{}")
                 yield break;
+
+            if (entity.OnTransformChange == null)
+            {
+                var movementController = GetComponent<AvatarMovementController>();
+                entity.OnTransformChange += movementController.OnTransformChanged;
+            }
 
             Model lastModel = model;
             Model tmpModel = SceneController.i.SafeFromJson<Model>(newJson);

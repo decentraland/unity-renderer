@@ -236,9 +236,7 @@ namespace DCL
         {
             string id = string.Empty;
 
-            bool wssDebugMode = WSSController.i != null && WSSController.i.useClientDebugMode;
-
-            if (SceneController.i.isDebugMode || wssDebugMode)
+            if (SceneController.i.isDebugMode || SceneController.i.isWssDebugMode)
             {
                 string[] tmp = url.Split('/');
                 string hash = tmp[tmp.Length - 1];

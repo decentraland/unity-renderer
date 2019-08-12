@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections;
 using System.Runtime.CompilerServices;
+using DCL;
 using UnityEngine;
 using UnityEngine.Networking;
 
@@ -9,64 +10,108 @@ using UnityEngine.Networking;
 [CreateAssetMenu(fileName = "UserProfile", menuName = "UserProfile")]
 public class UserProfile : ScriptableObject
 {
+    [Serializable]
+    public class Model
+    {
+        public string userId;
+        public string name;
+        public string email;
+        public string description;
+        public ulong created_at;
+        public ulong updated_at;
+        public string version;
+        public AvatarShape.Model avatar;
+    }
+
     public event Action<UserProfile> OnUpdate = (x) => { };
 
-    public string userName => model.userName;
-    public string mail => model.mail;
-    public Sprite avatarPic => avatarPicTexture != null ? avatarPicTexture : defaultTexture;
+    public string userName => model.name;
+    public string email => model.email;
+    public Sprite faceSnapshot => faceSnapshotSprite != null ? faceSnapshotSprite : defaultSprite;
+    public Sprite bodySnapshot => bodySnapshotSprite != null ? bodySnapshotSprite : defaultSprite;
 
-    [SerializeField] private Sprite defaultTexture;
+    [SerializeField] private Sprite defaultSprite;
 
-    internal UserProfileModel model = new UserProfileModel();
-    internal Sprite avatarPicTexture = null;
-    internal Coroutine downloadingCoroutine = null;
+    internal Model model = new Model() //Empty initialization to avoid nullchecks
+    {
+        avatar = new AvatarShape.Model()
+        {
+            snapshots = new AvatarShape.Model.Snapshots()
+        }
+    };
+    internal Sprite faceSnapshotSprite = null;
+    internal Sprite bodySnapshotSprite = null;
+    internal Coroutine downloadingFaceCoroutine = null;
+    internal Coroutine downloadingBodyCoroutine = null;
 
-    public void UpdateData(UserProfileModel newModel)
+    public void UpdateData(Model newModel)
     {
         UpdateProperties(newModel);
-        DownloadIfNeeded();
+        DownloadFaceIfNeeded();
+        DownloadBodyIfNeeded();
         OnUpdate(this);
     }
 
-    internal void UpdateProperties(UserProfileModel newModel)
+    internal void UpdateProperties(Model newModel)
     {
-        model.userName = newModel.userName;
-        model.mail = newModel.mail;
+        model.name = newModel.name;
+        model.email = newModel.email;
 
-        if (model.avatarPicURL != newModel.avatarPicURL)
+        if (model.avatar.snapshots.face != newModel.avatar.snapshots.face)
         {
-            avatarPicTexture = null;
+            faceSnapshotSprite = null;
         }
+        model.avatar.snapshots.face = newModel.avatar.snapshots.face;
 
-        model.avatarPicURL = newModel.avatarPicURL;
+        if (model.avatar.snapshots.body != newModel.avatar.snapshots.body)
+        {
+            bodySnapshotSprite = null;
+        }
+        model.avatar.snapshots.body = newModel.avatar.snapshots.body;
     }
 
-    internal void DownloadIfNeeded()
+    internal void DownloadFaceIfNeeded()
     {
-        if (avatarPicTexture != null)
+        if (faceSnapshotSprite != null)
         {
             return;
         }
 
-        if (downloadingCoroutine != null)
+        if (downloadingFaceCoroutine != null)
         {
-            CoroutineStarter.Stop(downloadingCoroutine);
+            CoroutineStarter.Stop(downloadingFaceCoroutine);
         }
 
-        downloadingCoroutine = CoroutineStarter.Start(DownloadCoroutine());
+        faceSnapshotSprite = null;
+        downloadingFaceCoroutine = CoroutineStarter.Start(DownloadSnapshotCoroutine(model.avatar.snapshots.face, (x) => faceSnapshotSprite = x));
     }
 
-    private IEnumerator DownloadCoroutine()
+    internal void DownloadBodyIfNeeded()
     {
-        avatarPicTexture = null;
-        UnityWebRequest www = UnityWebRequestTexture.GetTexture(model.avatarPicURL);
+        if (bodySnapshotSprite != null)
+        {
+            return;
+        }
+
+        if (downloadingBodyCoroutine != null)
+        {
+            CoroutineStarter.Stop(downloadingBodyCoroutine);
+        }
+
+        bodySnapshotSprite = null;
+        downloadingBodyCoroutine = CoroutineStarter.Start(DownloadSnapshotCoroutine(model.avatar.snapshots.body, (x) => bodySnapshotSprite = x));
+    }
+
+    private IEnumerator DownloadSnapshotCoroutine(string url, Action<Sprite> successCallback)
+    {
+        UnityWebRequest www = UnityWebRequestTexture.GetTexture(url);
 
         yield return www.SendWebRequest();
 
         if (!www.isNetworkError && !www.isHttpError)
         {
             var texture = ((DownloadHandlerTexture)www.downloadHandler).texture;
-            avatarPicTexture = Sprite.Create(texture, new Rect(0, 0, texture.width, texture.height), Vector2.zero);
+            successCallback.Invoke(Sprite.Create(texture, new Rect(0, 0, texture.width, texture.height), Vector2.zero));
         }
         else
         {
@@ -74,7 +119,6 @@ public class UserProfile : ScriptableObject
         }
 
         OnUpdate(this);
-        downloadingCoroutine = null;
     }
 
     internal static UserProfile ownUserProfile;
@@ -88,12 +132,4 @@ public class UserProfile : ScriptableObject
 
         return ownUserProfile;
     }
-}
-
-[Serializable]
-public class UserProfileModel
-{
-    public string userName;
-    public string mail;
-    public string avatarPicURL;
 }

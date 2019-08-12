@@ -333,13 +333,9 @@ namespace DCL.Controllers
             {
                 JsonUtility.FromJsonOverwrite(createEntityComponentMessage.json, DCLTransform.model);
 
-                // HACK (Zak): this hack will be removed when we add a TransformLerped component
-                if (entity.components.ContainsKey(CLASS_ID_COMPONENT.AVATAR_SHAPE))
+                if (entity.OnTransformChange != null)
                 {
-                    AvatarShape avatarShape = (AvatarShape)entity.components[CLASS_ID_COMPONENT.AVATAR_SHAPE];
-                    avatarShape.avatarMovementController.MoveTo(
-                        DCLTransform.model.position - Vector3.up * DCLCharacterController.i.characterController.height / 2, // To fix the "always flying" avatars bug, We report the chara's centered position but the body hast its pivot at its feet
-                        DCLTransform.model.rotation);
+                    entity.OnTransformChange.Invoke(DCLTransform.model);
                 }
                 else
                 {

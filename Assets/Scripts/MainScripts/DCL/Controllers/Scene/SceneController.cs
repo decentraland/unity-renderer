@@ -60,7 +60,6 @@ namespace DCL
             }
         }
 
-        [NonSerialized] public UserProfile ownUserProfile;
 
         #region BENCHMARK_EVENTS
 
@@ -87,6 +86,9 @@ namespace DCL
 
         [System.NonSerialized]
         public bool isDebugMode;
+
+        [System.NonSerialized]
+        public bool isWssDebugMode;
 
         public bool hasPendingMessages => pendingMessagesCount > 0;
 
@@ -143,7 +145,6 @@ namespace DCL
             }
 
             i = this;
-            ownUserProfile = UserProfile.GetOwnUserProfile();
 
 #if !UNITY_EDITOR
             Debug.Log("DCL Unity Build Version: " + DCL.Configuration.ApplicationSettings.version);
@@ -788,9 +789,5 @@ namespace DCL
             }
         }
 
-        public void UpdateUserProfile(string payload)
-        {
-            ownUserProfile.UpdateData(JsonUtility.FromJson<UserProfileModel>(payload));
-        }
     }
 }

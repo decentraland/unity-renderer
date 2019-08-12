@@ -1,4 +1,5 @@
 ﻿using System.Collections;
+using DCL;
 using DCL.Helpers;
 using NUnit.Framework;
 using UnityEditor;
@@ -37,16 +38,27 @@ namespace Tests
             yield return InitScene();
             var userProfile = ScriptableObject.CreateInstance<UserProfile>();
 
-            userProfile.UpdateProperties(new UserProfileModel()
+            userProfile.UpdateProperties(new UserProfile.Model()
             {
-                userName = "name",
-                mail = "mail",
-                avatarPicURL = "avatarPicURL"
+                name = "name",
+                email = "mail",
+                avatar = CreateEmptyAvatarWithFaceUrl("avatarPicURL")
             });
 
-            Assert.AreEqual("name", userProfile.model.userName);
-            Assert.AreEqual("mail", userProfile.model.mail);
-            Assert.AreEqual("avatarPicURL", userProfile.model.avatarPicURL);
+            Assert.AreEqual("name", userProfile.model.name);
+            Assert.AreEqual("mail", userProfile.model.email);
+            Assert.AreEqual("avatarPicURL", userProfile.model.avatar.snapshots.face);
+        }
+
+        private static AvatarShape.Model CreateEmptyAvatarWithFaceUrl(string faceUrl)
+        {
+            return new AvatarShape.Model()
+            {
+                snapshots = new AvatarShape.Model.Snapshots()
+                {
+                    face = faceUrl
+                }
+            };
         }
 
         [UnityTest]
@@ -55,16 +67,16 @@ namespace Tests
             yield return InitScene();
             var userProfile = ScriptableObject.CreateInstance<UserProfile>();
 
-            userProfile.UpdateProperties(new UserProfileModel()
+            userProfile.UpdateProperties(new UserProfile.Model()
             {
-                userName = "name2",
-                mail = "mail2",
-                avatarPicURL = "avatarPicURL2"
+                name = "name2",
+                email = "mail2",
+                avatar = CreateEmptyAvatarWithFaceUrl("avatarPicURL2")
             });
 
-            Assert.AreEqual("name2", userProfile.model.userName);
-            Assert.AreEqual("mail2", userProfile.model.mail);
-            Assert.AreEqual("avatarPicURL2", userProfile.model.avatarPicURL);
+            Assert.AreEqual("name2", userProfile.model.name);
+            Assert.AreEqual("mail2", userProfile.model.email);
+            Assert.AreEqual("avatarPicURL2", userProfile.model.avatar.snapshots.face);
         }
 
         [UnityTest]
@@ -72,18 +84,18 @@ namespace Tests
         {
             yield return InitScene();
             var userProfile = ScriptableObject.CreateInstance<UserProfile>();
-            userProfile.UpdateProperties(new UserProfileModel() {userName = "name", mail = "mail", avatarPicURL = "avatarPicURL"});
+            userProfile.UpdateProperties(new UserProfile.Model() {name = "name", email = "mail", avatar = CreateEmptyAvatarWithFaceUrl("avatarPicURL")});
 
-            userProfile.UpdateProperties(new UserProfileModel()
+            userProfile.UpdateProperties(new UserProfile.Model()
             {
-                userName = "name2",
-                mail = "mail2",
-                avatarPicURL = "avatarPicURL2"
+                name = "name2",
+                email = "mail2",
+                avatar = CreateEmptyAvatarWithFaceUrl("avatarPicURL2")
             });
 
-            Assert.AreEqual("name2", userProfile.model.userName);
-            Assert.AreEqual("mail2", userProfile.model.mail);
-            Assert.AreEqual("avatarPicURL2", userProfile.model.avatarPicURL);
+            Assert.AreEqual("name2", userProfile.model.name);
+            Assert.AreEqual("mail2", userProfile.model.email);
+            Assert.AreEqual("avatarPicURL2", userProfile.model.avatar.snapshots.face);
         }
     }
 }
