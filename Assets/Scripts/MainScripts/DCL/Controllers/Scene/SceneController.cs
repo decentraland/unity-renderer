@@ -17,6 +17,7 @@ namespace DCL
         public bool startDecentralandAutomatically = true;
         public static bool VERBOSE = false;
 
+        private const float GLOBAL_MAX_MSG_BUDGET = 0.016f;
         private const float GLTF_BUDGET_MAX = 0.003f;
         private const float GLTF_BUDGET_MIN = 0.001f;
 
@@ -173,23 +174,23 @@ namespace DCL
 
         private void Update()
         {
-            float prevTimeBudget = 0;
+            float prevTimeBudget = GLOBAL_MAX_MSG_BUDGET;
 
             PrioritizeMessageControllerList();
 
             // First we process Load/Unload scene messages
-            prevTimeBudget = messagingControllers[GLOBAL_MESSAGING_CONTROLLER].UpdateThrottling(prevTimeBudget);
+            prevTimeBudget -= messagingControllers[GLOBAL_MESSAGING_CONTROLLER].UpdateThrottling(prevTimeBudget);
 
             // If we already have a messaging controller for global scene,
             // we update throttling
             if (!string.IsNullOrEmpty(globalSceneId) && messagingControllers.ContainsKey(globalSceneId))
-                prevTimeBudget += messagingControllers[globalSceneId].UpdateThrottling(prevTimeBudget);
+                prevTimeBudget -= messagingControllers[globalSceneId].UpdateThrottling(prevTimeBudget);
 
             // Update throttling to the rest of the messaging controllers
             for (int i = 0; i < messagingControllersPriority.Count; i++)
             {
                 ParcelScene scene = messagingControllersPriority[i];
-                prevTimeBudget += messagingControllers[scene.sceneData.id].UpdateThrottling(prevTimeBudget);
+                prevTimeBudget -= messagingControllers[scene.sceneData.id].UpdateThrottling(prevTimeBudget);
             }
 
             if (pendingInitMessagesCount == 0)

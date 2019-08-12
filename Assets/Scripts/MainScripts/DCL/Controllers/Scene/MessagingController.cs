@@ -25,11 +25,11 @@ namespace DCL
             Stopped
         }
 
-        private const float UI_MSG_BUS_BUDGET_MAX = 0.016f;
-        private const float INIT_MSG_BUS_BUDGET_MAX = 0.02f;
-        private const float SYSTEM_MSG_BUS_BUDGET_MAX = 0.016f;
+        private const float UI_MSG_BUS_BUDGET_MAX = 0.012f;
+        private const float INIT_MSG_BUS_BUDGET_MAX = 0.2f;
+        private const float SYSTEM_MSG_BUS_BUDGET_MAX = 0.012f;
 
-        private const float MSG_BUS_BUDGET_MIN = 0.0016f;
+        private const float MSG_BUS_BUDGET_MIN = 0.001f;
 
         public Dictionary<string, MessagingSystem> messagingSystems = new Dictionary<string, MessagingSystem>();
 
@@ -79,7 +79,7 @@ namespace DCL
         public MessagingController(IMessageHandler messageHandler)
         {
             AddMessageSystem(MessagingBusId.UI, messageHandler, MSG_BUS_BUDGET_MIN, UI_MSG_BUS_BUDGET_MAX, enableThrottler: false);
-            AddMessageSystem(MessagingBusId.INIT, messageHandler, MSG_BUS_BUDGET_MIN, INIT_MSG_BUS_BUDGET_MAX, enableThrottler: false);
+            AddMessageSystem(MessagingBusId.INIT, messageHandler, MSG_BUS_BUDGET_MIN, INIT_MSG_BUS_BUDGET_MAX, enableThrottler: true);
             AddMessageSystem(MessagingBusId.SYSTEM, messageHandler, MSG_BUS_BUDGET_MIN, SYSTEM_MSG_BUS_BUDGET_MAX, enableThrottler: false);
 
             currentState = State.Initializing;
@@ -116,11 +116,11 @@ namespace DCL
 
         public float UpdateThrottling(float prevTimeBudget)
         {
-            prevTimeBudget += messagingSystems[MessagingBusId.UI].Update(prevTimeBudget);
-            prevTimeBudget += messagingSystems[MessagingBusId.INIT].Update(prevTimeBudget);
+            prevTimeBudget -= messagingSystems[MessagingBusId.UI].Update(prevTimeBudget);
+            prevTimeBudget -= messagingSystems[MessagingBusId.INIT].Update(prevTimeBudget);
 
             if (currentState != State.Initializing && currentState != State.FinishingInitializing)
-                prevTimeBudget += messagingSystems[MessagingBusId.SYSTEM].Update(prevTimeBudget);
+                prevTimeBudget -= messagingSystems[MessagingBusId.SYSTEM].Update(prevTimeBudget);
 
             return prevTimeBudget;
         }

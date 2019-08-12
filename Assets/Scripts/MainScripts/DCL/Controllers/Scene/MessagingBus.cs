@@ -53,7 +53,7 @@ namespace DCL
         public bool hasPendingMessages => pendingMessages != null && pendingMessages.Count > 0;
         public int pendingMessagesCount => pendingMessages != null ? pendingMessages.Count : 0;
         public long processedMessagesCount { get; private set; }
-
+        public float lastTimeConsumed { get; private set; }
         public float timeBudget;
         public float budgetMax;
         private Coroutine mainCoroutine;
@@ -80,7 +80,6 @@ namespace DCL
             while (true)
             {
                 float startTime = Time.realtimeSinceStartup;
-                float prevDeltaTime = Time.deltaTime;
                 float timeBudget = this.timeBudget;
 
                 while (Time.realtimeSinceStartup - startTime < timeBudget && queue.Count > 0)
@@ -105,6 +104,7 @@ namespace DCL
                                 {
                                     Debug.Log("message: " + m.message);
                                     Debug.Break();
+
                                     yield return null;
                                 }
 #endif
@@ -113,6 +113,8 @@ namespace DCL
                             if (msgRoutine != null)
                             {
                                 processedMessagesCount++;
+
+                                lastTimeConsumed = Time.realtimeSinceStartup - startTime;
 
                                 yield return msgRoutine;
 
@@ -141,6 +143,8 @@ namespace DCL
 
                     processedMessagesCount++;
                 }
+
+                lastTimeConsumed = Time.realtimeSinceStartup - startTime;
 
                 yield return null;
             }
