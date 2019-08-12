@@ -47,14 +47,13 @@
       const ws = new WebSocket(`${location.protocol === 'https:' ? 'wss' : 'ws'}://${document.location.host}`)
 
       ws.addEventListener('message', msg => {
+        console.log('Sending new message to engine.', msg.data)
         if (msg.data === 'update') {
           handleServerMessage({
             type: 'update'
           })
-        } else {
-          if (msg.data.startsWith('{')) {
-            handleServerMessage(JSON.parse(msg.data))
-          }
+        } else if (msg.data.startsWith('{')) {
+          handleServerMessage(JSON.parse(msg.data))
         }
       })
     </script>
