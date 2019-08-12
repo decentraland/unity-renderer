@@ -2,7 +2,7 @@
     "name": "HUD",
     "references": [
         "GUID:9a1d7e67f710d724584ebbbd5614bcf1",
-        "GUID:d1951a0a85cc9894eb555ed530f7f129"
+        "GUID:1de3566cccb280f4a982c59ad0d08c96"
     ],
     "optionalUnityReferences": [],
     "includePlatforms": [],

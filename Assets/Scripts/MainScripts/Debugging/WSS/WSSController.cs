@@ -105,13 +105,20 @@ namespace DCL
             i = this;
         }
 
+        private void Start()
+        {
+            #if UNITY_EDITOR
+            SceneController.i.isWssDebugMode = true;
+            #endif
+        }
+
         private void OnEnable()
         {
 #if UNITY_EDITOR
             ws = new WebSocketServer("ws://localhost:5000");
             ws.AddWebSocketService<DCLWebSocketService>("/dcl");
             ws.Start();
-
+            
             if (openBrowserWhenStart)
             {
                 string debugString = "";
@@ -120,7 +127,7 @@ namespace DCL
                 {
                     debugString = "DEBUG_MODE&LOCAL_COMMS&";
                 }
-                else if(forceLocalComms)
+                else if (forceLocalComms)
                 {
                     debugString = "LOCAL_COMMS&";
                 }
@@ -198,8 +205,8 @@ namespace DCL
                             case "CreateUIScene":
                                 sceneController.CreateUIScene(msg.payload);
                                 break;
-                            case "UserProfile":
-                                sceneController.UpdateUserProfile(msg.payload);
+                            case "LoadProfile":
+                                UserProfileController.i.LoadProfile(msg.payload);
                                 break;
                             default:
                                 Debug.Log("<b><color=#FF0000>WSSController</color></b> WHAT IS " + msg.type);

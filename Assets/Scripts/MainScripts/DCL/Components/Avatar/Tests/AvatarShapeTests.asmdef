@@ -5,7 +5,8 @@
         "UnityGLTFAssembly",
         "VisualTests",
         "Utils",
-        "CoroutineHelpers"
+        "CoroutineHelpers",
+        "AvatarShape"
     ],
     "optionalUnityReferences": [
         "TestAssemblies"
@@ -16,5 +17,6 @@
     "overrideReferences": false,
     "precompiledReferences": [],
     "autoReferenced": true,
-    "defineConstraints": []
+    "defineConstraints": [],
+    "versionDefines": []
 }

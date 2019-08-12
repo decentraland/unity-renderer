@@ -25,8 +25,8 @@ public class HUDController : MonoBehaviour
         avatarHUD.UpdateData(new AvatarHUDModel()
         {
             name = ownUserProfile.userName,
-            mail =  ownUserProfile.mail,
-            avatarPic = ownUserProfile.avatarPic
+            mail =  ownUserProfile.email,
+            avatarPic = ownUserProfile.faceSnapshot
         });
     }
 

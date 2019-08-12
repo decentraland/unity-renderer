@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using DCL.Components;
+using UnityEngine;
 
 namespace DCL
 {
@@ -78,6 +79,13 @@ namespace DCL
         void OnPrecisionAdjust(DCLCharacterPosition position)
         {
             avatarTransform.position = position.WorldToUnityPosition(currentWorldPosition);
+        }
+
+        public void OnTransformChanged(DCLTransform.Model model)
+        {
+            MoveTo(	
+                model.position - Vector3.up * DCLCharacterController.i.characterController.height / 2, // To fix the "always flying" avatars bug, We report the chara's centered position but the body hast its pivot at its feet	
+                model.rotation);
         }
 
         public void MoveTo(Vector3 position, Quaternion rotation)

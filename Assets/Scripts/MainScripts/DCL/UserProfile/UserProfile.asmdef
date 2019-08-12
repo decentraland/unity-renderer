@@ -1,7 +1,8 @@
 {
     "name": "UserProfile",
     "references": [
-        "GUID:760a1d365aad58044916992b072cf2a6"
+        "GUID:760a1d365aad58044916992b072cf2a6",
+        "GUID:9fad297e585ef204c9c2c497d77099f0"
     ],
     "optionalUnityReferences": [],
     "includePlatforms": [],
