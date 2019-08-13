@@ -55,13 +55,13 @@ export class PointerEventComponent {
  * @public
  */
 @Component('pointerDown')
-export class OnPointerDown extends PointerEventComponent {}
+export class GlobalPointerDown extends PointerEventComponent {}
 
 /**
  * @public
  */
 @Component('pointerUp')
-export class OnPointerUp extends PointerEventComponent {}
+export class GlobalPointerUp extends PointerEventComponent {}
 
 /**
  * @public
@@ -168,7 +168,7 @@ export class Input {
 
     if (newData.hit && newData.hit.entityId && DisposableComponent.engine) {
       const entity = DisposableComponent.engine.entities[newData.hit.entityId]
-      const handler = entity && entity.getComponentOrNull(OnPointerUp)
+      const handler = entity && entity.getComponentOrNull(GlobalPointerUp)
       if (handler) {
         handler.callback(newData)
       }
@@ -200,7 +200,7 @@ export class Input {
 
     if (newData.hit && newData.hit.entityId && DisposableComponent.engine) {
       const entity = DisposableComponent.engine.entities[newData.hit.entityId]
-      const handler = entity && entity.getComponentOrNull(OnPointerDown)
+      const handler = entity && entity.getComponentOrNull(GlobalPointerDown)
       if (handler) {
         handler.callback(newData)
       }

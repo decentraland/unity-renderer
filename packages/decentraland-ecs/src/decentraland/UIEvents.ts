@@ -105,3 +105,39 @@ export class OnChanged extends OnUUIDEvent<'onChange'> {
     uuidEventSystem.handlerMap[this.uuid] = this
   }
 }
+
+/**
+ * @public
+ */
+@Component('engine.pointerDown', CLASS_ID.UUID_CALLBACK)
+export class OnPointerDown extends OnUUIDEvent<'pointerDown'> {
+  @ObservableComponent.readonly
+  readonly type: string = 'pointerDown'
+
+  constructor(callback: (event: IEvents['pointerDown']) => void) {
+    super(callback)
+    // This injection is necessary ONLY in events that are ALWAYS turned on and are
+    // not assignable to entities. Like events for the UI elements
+
+    // TODO(Brian): This will be removed when UI gets back to the entity parenting.
+    uuidEventSystem.handlerMap[this.uuid] = this
+  }
+}
+
+/**
+ * @public
+ */
+@Component('engine.pointerUp', CLASS_ID.UUID_CALLBACK)
+export class OnPointerUp extends OnUUIDEvent<'pointerUp'> {
+  @ObservableComponent.readonly
+  readonly type: string = 'pointerUp'
+
+  constructor(callback: (event: IEvents['pointerUp']) => void) {
+    super(callback)
+    // This injection is necessary ONLY in events that are ALWAYS turned on and are
+    // not assignable to entities. Like events for the UI elements
+
+    // TODO(Brian): This will be removed when UI gets back to the entity parenting.
+    uuidEventSystem.handlerMap[this.uuid] = this
+  }
+}
