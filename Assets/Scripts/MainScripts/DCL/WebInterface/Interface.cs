@@ -1,4 +1,5 @@
 ﻿using UnityEngine;
+
 #if UNITY_WEBGL && !UNITY_EDITOR
 using System.Runtime.InteropServices;
 #endif
@@ -22,8 +23,10 @@ namespace DCL.Interface
         {
             /** Camera position, world space */
             public Vector3 position;
+
             /** Camera rotation */
             public Quaternion rotation;
+
             /** Camera height, relative to the feet of the avatar or ground */
             public float playerHeight;
 
@@ -143,10 +146,21 @@ namespace DCL.Interface
         }
 
         [System.Serializable]
+        public class MetricsModel
+        {
+            public int meshes;
+            public int bodies;
+            public int materials;
+            public int textures;
+            public int triangles;
+            public int entities;
+        }
+
+        [System.Serializable]
         private class OnMetricsUpdate
         {
-            public SceneMetricsController.Model current = new SceneMetricsController.Model();
-            public SceneMetricsController.Model limit = new SceneMetricsController.Model();
+            public MetricsModel current = new MetricsModel();
+            public MetricsModel limit = new MetricsModel();
         }
 
         [System.Serializable]
@@ -159,7 +173,13 @@ namespace DCL.Interface
         {
         };
 
-
+        [System.Serializable]
+        public class TransformPayload
+        {
+            public Vector3 position = Vector3.zero;
+            public Quaternion rotation = Quaternion.identity;
+            public Vector3 scale = Vector3.one;
+        }
 
         [System.Serializable]
         public class OnGizmoEventPayload
@@ -175,7 +195,6 @@ namespace DCL.Interface
         {
             public string id;
             public object value;
-
         };
 
         public class OnSendScreenshot
@@ -391,8 +410,8 @@ namespace DCL.Interface
         }
 
 
-        public static void ReportOnMetricsUpdate(string sceneId, SceneMetricsController.Model current,
-            SceneMetricsController.Model limit)
+        public static void ReportOnMetricsUpdate(string sceneId, MetricsModel current,
+            MetricsModel limit)
         {
             onMetricsUpdate.current = current;
             onMetricsUpdate.limit = limit;
@@ -408,6 +427,11 @@ namespace DCL.Interface
             onEnterEvent.uuid = uuid;
 
             SendSceneEvent(sceneId, "uuidEvent", onEnterEvent);
+        }
+
+        public static void LogOut()
+        {
+            SendMessage("logOut", string.Empty);
         }
 
         public static void PreloadFinished(string sceneId)
@@ -429,12 +453,13 @@ namespace DCL.Interface
             onGizmoEvent.payload.entityId = uuid;
             if (entityTransform != null)
             {
-                DCL.Components.DCLTransform.Model model = new DCL.Components.DCLTransform.Model();
-                model.position = entityTransform.position;
-                model.rotation = entityTransform.rotation;
-                model.scale = entityTransform.localScale;
-                onGizmoEvent.payload.transform = JsonUtility.ToJson(model);
+                TransformPayload payload = new TransformPayload();
+                payload.position = entityTransform.position;
+                payload.rotation = entityTransform.rotation;
+                payload.scale = entityTransform.localScale;
+                onGizmoEvent.payload.transform = JsonUtility.ToJson(payload);
             }
+
             SendSceneEvent(sceneId, "uuidEvent", onGizmoEvent);
         }
 
@@ -458,6 +483,5 @@ namespace DCL.Interface
             onSendScreenshot.id = id;
             SendMessage("SendScreenshot", onSendScreenshot);
         }
-
     }
 }

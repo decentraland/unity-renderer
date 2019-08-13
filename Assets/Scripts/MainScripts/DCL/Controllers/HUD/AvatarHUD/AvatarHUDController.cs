@@ -33,7 +33,6 @@ public class AvatarHUDController
     {
         expanded = value;
         view.SetExpanded(expanded);
-
     }
 
     public void ToggleExpanded()
@@ -49,7 +48,6 @@ public class AvatarHUDController
 
     public void SignOut()
     {
-        //TODO
-        Debug.Log("Called AvatarHUD SignOut");
+        DCL.Interface.WebInterface.LogOut();
     }
 }

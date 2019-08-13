@@ -12,7 +12,9 @@
         "CoroutineHelpers",
         "Cinemachine",
         "MainAttributes",
-        "DCLTransform"
+        "DCLTransform",
+        "UserProfile",
+        "WebInterface"
     ],
     "optionalUnityReferences": [],
     "includePlatforms": [],
