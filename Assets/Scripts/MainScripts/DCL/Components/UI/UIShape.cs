@@ -39,7 +39,7 @@ namespace DCL.Components
 
         public float GetScaledValue(float parentSize)
         {
-            if(type == Unit.PIXELS) return value;
+            if (type == Unit.PIXELS) return value;
 
             return value / 100 * parentSize;
         }
@@ -65,14 +65,23 @@ namespace DCL.Components
             set { base.referencesContainer = value; }
         }
 
-        public override IEnumerator ApplyChangesWrapper(string newJson)
+        public override ComponentUpdateHandler CreateUpdateHandler()
         {
-            base.ApplyChangesWrapper(newJson);
+            return new UIShapeUpdateHandler<ReferencesContainerType, ModelType>(this);
+        }
 
+        bool raiseOnAttached;
+        bool firstApplyChangesCall;
+
+        /// <summary>
+        /// This is called by UIShapeUpdateHandler before calling ApplyChanges.
+        /// </summary>
+        public void PreApplyChanges(string newJson)
+        {
             model = SceneController.i.SafeFromJson<ModelType>(newJson);
 
-            bool raiseOnAttached = false;
-            bool firstApplyChangesCall = false;
+            raiseOnAttached = false;
+            firstApplyChangesCall = false;
 
             if (referencesContainer == null)
             {
@@ -85,14 +94,10 @@ namespace DCL.Components
             {
                 raiseOnAttached = true;
             }
+        }
 
-            var enumerator = ApplyChanges(newJson);
-
-            if (enumerator != null)
-            {
-                yield return enumerator;
-            }
-
+        public override void RaiseOnAppliedChanges()
+        {
             RefreshDCLLayout();
 
 #if UNITY_EDITOR
@@ -108,14 +113,15 @@ namespace DCL.Components
 
             referencesContainer.canvasGroup.blocksRaycasts = model.visible && model.isPointerBlocker;
 
-            RaiseOnAppliedChanges();
+            base.RaiseOnAppliedChanges();
 
             if (raiseOnAttached && parentUIComponent != null)
             {
                 UIReferencesContainer[] parents = referencesContainer.GetComponentsInParent<UIReferencesContainer>(true);
 
-                foreach (var parent in parents)
+                for (int i = 0; i < parents.Length; i++)
                 {
+                    UIReferencesContainer parent = parents[i];
                     if (parent.owner != null)
                     {
                         parent.owner.OnChildAttached(parentUIComponent, this);
@@ -173,7 +179,7 @@ namespace DCL.Components
             return null;
         }
 
-        protected T InstantiateUIGameObject<T>(string prefabPath) where T : UIReferencesContainer
+        internal T InstantiateUIGameObject<T>(string prefabPath) where T : UIReferencesContainer
         {
             GameObject uiGameObject = null;
             bool targetParentExists = !string.IsNullOrEmpty(model.parentComponent) &&

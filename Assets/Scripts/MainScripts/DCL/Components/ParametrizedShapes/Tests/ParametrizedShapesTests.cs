@@ -1,7 +1,6 @@
 ﻿using DCL.Components;
 using DCL.Helpers;
 using DCL.Models;
-using Newtonsoft.Json;
 using NUnit.Framework;
 using System.Collections;
 using UnityEngine;
@@ -251,7 +250,7 @@ namespace Tests
             TestHelpers.CreateSceneEntity(scene, entityId);
             var entity = scene.entities[entityId];
             yield return null;
-            
+
             // BoxShape
             BaseShape.Model shapeModel = new BoxShape.Model();
             BaseShape shapeComponent = TestHelpers.SharedComponentCreate<BoxShape, BaseShape.Model>(scene, CLASS_ID.BOX_SHAPE, shapeModel);
@@ -264,7 +263,7 @@ namespace Tests
             TestHelpers.DetachSharedComponent(scene, entityId, shapeComponent.id);
             shapeComponent.Dispose();
             yield return null;
-            
+
             // SphereShape
             shapeModel = new SphereShape.Model();
             shapeComponent = TestHelpers.SharedComponentCreate<SphereShape, BaseShape.Model>(scene, CLASS_ID.SPHERE_SHAPE, shapeModel);

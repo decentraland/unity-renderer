@@ -425,8 +425,12 @@ namespace Tests
                 uuid = clickUuid
             };
 
-            TestHelpers.EntityComponentCreate<OnClickComponent, OnClickComponent.Model>(scene, scene.entities[entityId],
+            var component = TestHelpers.EntityComponentCreate<OnClickComponent, OnClickComponent.Model>(scene, scene.entities[entityId],
                 OnClickComponentModel, CLASS_ID_COMPONENT.UUID_CALLBACK);
+
+            Assert.IsTrue(component != null, "component is null?");
+
+            yield return component.routine;
 
             Assert.IsTrue(scene.entities[entityId].gameObject.GetComponent<Rigidbody>() == null,
                 "the root object shouldn't have a rigidbody attached until a shape is added");

@@ -131,7 +131,10 @@ namespace Tests
         [UnityTest]
         public IEnumerator SceneUnloading()
         {
-            yield return InitializeSceneControllerAndRemoveCharacterController();
+            yield return InitScene(usesWebServer: false,
+                                   spawnCharController: true,
+                                   spawnTestScene: false,
+                                   spawnUIScene: false);
 
             sceneController.LoadParcelScenes((Resources.Load("TestJSON/SceneLoadingTest") as TextAsset).text);
 
@@ -149,7 +152,9 @@ namespace Tests
 
             sceneController.UnloadScene(loadedSceneID);
 
-            yield return new WaitForSeconds(0.01f); // We wait to let unity destroy gameobjects.
+            yield return new WaitForAllMessagesProcessed();
+
+            yield return null;
 
             Assert.IsTrue(sceneController.loadedScenes.ContainsKey(loadedSceneID) == false);
 
@@ -158,6 +163,7 @@ namespace Tests
             Assert.AreEqual(sceneEntities.Count, 0, "Every entity should be removed");
 
             TestHelpers.ForceUnloadAllScenes(sceneController);
+
             yield return null;
         }
 

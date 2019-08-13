@@ -452,7 +452,7 @@ MonoBehaviour:
   engineDebugPanel: {fileID: 1130915824720432023}
   sceneDebugPanel: {fileID: 6902065697670736161}
   debugScenes: 0
-  debugSceneName: 64,-64
+  debugSceneCoords: {x: 63, y: -63}
   ignoreGlobalScenes: 0
   msgStepByStep: 0
 --- !u!114 &1210811942730548506

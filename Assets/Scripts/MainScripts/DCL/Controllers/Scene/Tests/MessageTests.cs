@@ -1,19 +1,19 @@
 ﻿using DCL;
+using DCL.Components;
 using DCL.Helpers;
 using DCL.Models;
-using DCL.Components;
 using Newtonsoft.Json;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.TestTools;
 using UnityEngine.Assertions;
+using UnityEngine.TestTools;
 
 namespace Tests
 {
     public class MessageTests : TestsBase
     {
-        bool VERBOSE = false;
+        static bool VERBOSE = false;
 
         class Message
         {
@@ -28,7 +28,59 @@ namespace Tests
         }
 
         [UnityTest]
-        public IEnumerator MessagingTest()
+        public IEnumerator EntityComponentMessagesArentInterrupted()
+        {
+            yield return InitScene();
+
+            var entity = TestHelpers.CreateSceneEntity(scene);
+
+            yield return null;
+
+            sceneController.SendSceneMessage(
+                TestHelpers.CreateSceneMessage(
+                    scene.sceneData.id,
+                    entity.entityId + "_" + (int)CLASS_ID_COMPONENT.AVATAR_SHAPE,
+                    MessagingTypes.ENTITY_COMPONENT_CREATE_OR_UPDATE,
+                    JsonConvert.SerializeObject(
+                        new EntityComponentCreateMessage
+                        {
+                            entityId = entity.entityId,
+                            classId = (int)CLASS_ID_COMPONENT.AVATAR_SHAPE,
+                            json = JsonUtility.ToJson(new AvatarShape.Model() { name = "test1", useDummyModel = false })
+                        }
+                    ))
+            );
+
+            sceneController.SendSceneMessage(
+                TestHelpers.CreateSceneMessage(
+                    scene.sceneData.id,
+                    entity.entityId + "_" + (int)CLASS_ID_COMPONENT.AVATAR_SHAPE,
+                    MessagingTypes.ENTITY_COMPONENT_CREATE_OR_UPDATE,
+                    JsonConvert.SerializeObject(
+                        new EntityComponentCreateMessage
+                        {
+                            entityId = entity.entityId,
+                            classId = (int)CLASS_ID_COMPONENT.AVATAR_SHAPE,
+                            json = JsonUtility.ToJson(new AvatarShape.Model() { name = "test2", useDummyModel = false })
+                        }
+                    ))
+            );
+
+            sceneController.OnMessageProcessInfoStart += delegate (string id, string method, string payload)
+            {
+                if (VERBOSE)
+                {
+                    Debug.Log($"Msg Processed: {id} - {method} - {payload}");
+                }
+            };
+
+            //NOTE(Brian): Interruption asserts are inside ComponentUpdateHandler.cs
+            yield return new WaitForAllMessagesProcessed();
+        }
+
+
+        [UnityTest]
+        public IEnumerator UnreliableMessagesAreReplacedCorrectly()
         {
             yield return InitScene();
 
@@ -60,9 +112,9 @@ namespace Tests
 
             // Although we sent several component update messages for the same id, 
             // it should process only one because they are unreliable
-            msgs.Add(new Message(sceneId, MessagingTypes.ENTITY_COMPONENT_CREATE));
-            msgs.Add(new Message(sceneId, MessagingTypes.ENTITY_COMPONENT_CREATE));
-            msgs.Add(new Message(sceneId, MessagingTypes.ENTITY_COMPONENT_CREATE));
+            msgs.Add(new Message(sceneId, MessagingTypes.ENTITY_COMPONENT_CREATE_OR_UPDATE));
+            msgs.Add(new Message(sceneId, MessagingTypes.ENTITY_COMPONENT_CREATE_OR_UPDATE));
+            msgs.Add(new Message(sceneId, MessagingTypes.ENTITY_COMPONENT_CREATE_OR_UPDATE));
             msgs.Add(new Message(sceneId, MessagingTypes.SCENE_STARTED));
 
 
@@ -121,7 +173,7 @@ namespace Tests
                 TestHelpers.CreateSceneMessage(
                     sceneId,
                     entityId + "_" + (int)CLASS_ID_COMPONENT.TRANSFORM,
-                    MessagingTypes.ENTITY_COMPONENT_CREATE,
+                    MessagingTypes.ENTITY_COMPONENT_CREATE_OR_UPDATE,
                     JsonConvert.SerializeObject(
                         new EntityComponentCreateMessage
                         {
@@ -137,7 +189,7 @@ namespace Tests
                 TestHelpers.CreateSceneMessage(
                     sceneId,
                     entityId + "_" + (int)CLASS_ID_COMPONENT.TRANSFORM,
-                    MessagingTypes.ENTITY_COMPONENT_CREATE,
+                    MessagingTypes.ENTITY_COMPONENT_CREATE_OR_UPDATE,
                     JsonConvert.SerializeObject(
                         new EntityComponentCreateMessage
                         {
@@ -153,7 +205,7 @@ namespace Tests
                 TestHelpers.CreateSceneMessage(
                     sceneId,
                     entityId + "_" + (int)CLASS_ID_COMPONENT.TRANSFORM,
-                    MessagingTypes.ENTITY_COMPONENT_CREATE,
+                    MessagingTypes.ENTITY_COMPONENT_CREATE_OR_UPDATE,
                     JsonConvert.SerializeObject(
                         new EntityComponentCreateMessage
                         {
@@ -196,7 +248,7 @@ namespace Tests
                 TestHelpers.CreateSceneMessage(
                     sceneId,
                     entityId + "_" + (int)CLASS_ID_COMPONENT.TRANSFORM,
-                    MessagingTypes.ENTITY_COMPONENT_CREATE,
+                    MessagingTypes.ENTITY_COMPONENT_CREATE_OR_UPDATE,
                     JsonConvert.SerializeObject(
                         new EntityComponentCreateMessage
                         {

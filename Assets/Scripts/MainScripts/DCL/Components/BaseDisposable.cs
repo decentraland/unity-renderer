@@ -1,4 +1,4 @@
-using DCL.Models;
+﻿using DCL.Models;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -8,9 +8,13 @@ namespace DCL.Components
 {
     public abstract class BaseDisposable : IComponent
     {
-        public Coroutine routine = null;
         public virtual string componentName => GetType().Name;
         public string id;
+
+        ComponentUpdateHandler updateHandler;
+        public WaitForComponentUpdate yieldInstruction => updateHandler.yieldInstruction;
+        public Coroutine routine => updateHandler.routine;
+        public bool isRoutineRunning => updateHandler.isRoutineRunning;
 
         public event System.Action<DecentralandEntity> OnAttach;
         public event System.Action<DecentralandEntity> OnDetach;
@@ -21,48 +25,23 @@ namespace DCL.Components
         public DCL.Controllers.ParcelScene scene { get; }
         public HashSet<DecentralandEntity> attachedEntities = new HashSet<DecentralandEntity>();
 
+
         public void UpdateFromJSON(string json)
         {
-            ApplyChangesIfModified(json);
+            updateHandler.ApplyChangesIfModified(json);
         }
 
         public BaseDisposable(DCL.Controllers.ParcelScene scene)
         {
             this.scene = scene;
+            updateHandler = CreateUpdateHandler();
         }
 
-        public void RaiseOnAppliedChanges()
+        public virtual void RaiseOnAppliedChanges()
         {
-            if (OnAppliedChanges != null)
-            {
-                OnAppliedChanges.Invoke(this);
-            }
+            OnAppliedChanges?.Invoke(this);
         }
 
-        private void ApplyChangesIfModified(string newSerialization)
-        {
-            if (newSerialization == oldSerialization)
-            {
-                return;
-            }
-
-            oldSerialization = newSerialization;
-
-            // We use the scene start coroutine because we need to divide the computing resources fairly
-            if (routine != null)
-            {
-                scene.StopCoroutine(routine);
-                routine = null;
-            }
-
-            var enumerator = ApplyChangesWrapper(newSerialization);
-            if (enumerator != null)
-            {
-                // we don't want to start coroutines if we have early finalization in IEnumerators
-                // ergo, we return null without yielding any result
-                routine = scene.StartCoroutine(enumerator);
-            }
-        }
 
         public virtual void AttachTo(DecentralandEntity entity, Type overridenAttachedType = null)
         {
@@ -121,18 +100,24 @@ namespace DCL.Components
             Resources.UnloadUnusedAssets(); //NOTE(Brian): This will ensure assets are freed correctly.
         }
 
-        public virtual IEnumerator ApplyChangesWrapper(string newJson)
+        public abstract IEnumerator ApplyChanges(string newJson);
+
+        public MonoBehaviour GetCoroutineOwner()
         {
-            var enumerator = ApplyChanges(newJson);
-
-            if (enumerator != null)
-            {
-                yield return enumerator;
-            }
-
-            RaiseOnAppliedChanges();
+            return scene;
         }
 
-        public abstract IEnumerator ApplyChanges(string newJson);
+        public virtual ComponentUpdateHandler CreateUpdateHandler()
+        {
+            return new ComponentUpdateHandler(this);
+        }
+
+        public void Cleanup()
+        {
+            if (isRoutineRunning)
+            {
+                GetCoroutineOwner().StopCoroutine(routine);
+            }
+        }
     }
 }

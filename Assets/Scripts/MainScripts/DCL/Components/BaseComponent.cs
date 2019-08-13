@@ -6,71 +6,92 @@ using UnityEngine;
 
 namespace DCL.Components
 {
-    public interface IComponent
+    public interface IComponent : ICleanable
     {
+        bool isRoutineRunning { get; }
+        Coroutine routine { get; }
         string componentName { get; }
         void UpdateFromJSON(string json);
+        IEnumerator ApplyChanges(string newJson);
+        void RaiseOnAppliedChanges();
+
+        MonoBehaviour GetCoroutineOwner();
+        ComponentUpdateHandler CreateUpdateHandler();
     }
 
-    public abstract class UpdateableComponent : MonoBehaviour, IComponent
+    /// <summary>
+    /// Unity is unable to yield a coroutine while is already being yielded by another one.
+    /// To fix that we wrap the routine in a CustomYieldInstruction.
+    /// </summary>
+    public class WaitForComponentUpdate : CleanableYieldInstruction
     {
-        public virtual string componentName => GetType().Name;
-        public abstract void UpdateFromJSON(string json);
+        public IComponent component;
+        public WaitForComponentUpdate(IComponent component)
+        {
+            this.component = component;
+        }
+
+        public override bool keepWaiting
+        {
+            get
+            {
+                return component.isRoutineRunning;
+            }
+        }
+        public override void Cleanup()
+        {
+            component.Cleanup();
+        }
     }
 
-    public abstract class BaseComponent : UpdateableComponent
+    public abstract class BaseComponent : MonoBehaviour, IComponent
     {
-        public Coroutine routine = null;
+        ComponentUpdateHandler updateHandler;
+        public WaitForComponentUpdate yieldInstruction => updateHandler.yieldInstruction;
+        public Coroutine routine => updateHandler.routine;
+        public bool isRoutineRunning => updateHandler.isRoutineRunning;
 
         [NonSerialized] public ParcelScene scene;
         [NonSerialized] public DecentralandEntity entity;
 
-        private string oldSerialization = null;
+        public string componentName => "BaseComponent";
 
-        public override void UpdateFromJSON(string json)
+        public void RaiseOnAppliedChanges()
         {
-            ApplyChangesIfModified(json);
+            entity?.OnComponentUpdated?.Invoke(this);
+        }
+
+        public void UpdateFromJSON(string json)
+        {
+            updateHandler.ApplyChangesIfModified(json);
         }
 
         void OnEnable()
         {
-            ApplyChangesIfModified(oldSerialization ?? "{}");
-        }
+            if (updateHandler == null)
+                updateHandler = CreateUpdateHandler();
 
-        private void ApplyChangesIfModified(string newSerialization)
-        {
-            if (newSerialization != oldSerialization)
-            {
-                oldSerialization = newSerialization;
-
-                if (routine != null)
-                {
-                    StopCoroutine(routine);
-                    routine = null;
-                }
-
-                var enumerator = UpdateComponent(newSerialization);
-                if (enumerator != null)
-                {
-                    // we don't want to start coroutines if we have early finalization in IEnumerators
-                    // ergo, we return null without yielding any result
-                    routine = StartCoroutine(enumerator);
-                }
-            }
-        }
-
-        public virtual IEnumerator UpdateComponent(string newJson)
-        {
-            var enumerator = ApplyChanges(newJson);
-
-            if (enumerator != null)
-            {
-                yield return enumerator;
-            }
-
-            entity?.OnComponentUpdated?.Invoke(this);
+            updateHandler.ApplyChangesIfModified(updateHandler.oldSerialization ?? "{}");
         }
 
         public abstract IEnumerator ApplyChanges(string newJson);
+
+        public MonoBehaviour GetCoroutineOwner()
+        {
+            return this;
+        }
+
+        public virtual ComponentUpdateHandler CreateUpdateHandler()
+        {
+            return new ComponentUpdateHandler(this);
+        }
+
+        public void Cleanup()
+        {
+            if (isRoutineRunning)
+            {
+                GetCoroutineOwner().StopCoroutine(routine);
+            }
+        }
     }
 }

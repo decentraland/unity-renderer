@@ -1,4 +1,4 @@
-using DCL.Controllers;
+﻿using DCL.Controllers;
 using DCL.Models;
 using System;
 using System.Collections.Generic;
@@ -6,9 +6,24 @@ using UnityEngine;
 
 namespace DCL
 {
+    public class CleanableYieldInstruction : CustomYieldInstruction, ICleanable
+    {
+        public virtual void Cleanup()
+        {
+        }
+
+        public override bool keepWaiting
+        {
+            get
+            {
+                return false;
+            }
+        }
+    }
+
     public interface IMessageHandler
     {
-        bool ProcessMessage(string sceneId, string id, string method, string payload, out Coroutine routine);
+        bool ProcessMessage(string sceneId, string id, string method, string payload, out CleanableYieldInstruction yieldInstruction);
         void LoadParcelScenesExecute(string decentralandSceneJSON);
         void UnloadParcelSceneExecute(string sceneKey);
         void UnloadAllScenes();
@@ -17,23 +32,25 @@ namespace DCL
 
     public class MessagingController : IDisposable
     {
-        public enum State
+        public enum QueueState
         {
-            Initializing,
-            FinishingInitializing,
-            Running,
-            Stopped
+            Init,
+            Systems,
         }
 
-        private const float UI_MSG_BUS_BUDGET_MAX = 0.012f;
-        private const float INIT_MSG_BUS_BUDGET_MAX = 0.2f;
-        private const float SYSTEM_MSG_BUS_BUDGET_MAX = 0.012f;
+        //TODO(Brian): Improve this. We should distribute the budget between the scenes.
+        public const float UI_MSG_BUS_BUDGET_MAX = 0.012f;
 
-        private const float MSG_BUS_BUDGET_MIN = 0.001f;
+        public const float INIT_MSG_BUS_BUDGET_MAX = 0.2f;
+        public const float SYSTEM_MSG_BUS_BUDGET_MAX = 0.012f;
+
+        public const float MSG_BUS_BUDGET_MIN = 0.001f;
 
         public Dictionary<string, MessagingSystem> messagingSystems = new Dictionary<string, MessagingSystem>();
+        IMessageHandler messageHandler;
+        public string debugTag;
 
-        private State currentState
+        private QueueState currentQueueState
         {
             get;
             set;
@@ -51,6 +68,7 @@ namespace DCL
                         total += iterator.Current.Value.bus.pendingMessagesCount;
                     }
                 }
+
                 return total;
             }
         }
@@ -76,31 +94,62 @@ namespace DCL
             }
         }
 
-        public MessagingController(IMessageHandler messageHandler)
+        public MessagingController(IMessageHandler messageHandler, string debugTag = null)
         {
-            AddMessageSystem(MessagingBusId.UI, messageHandler, MSG_BUS_BUDGET_MIN, UI_MSG_BUS_BUDGET_MAX, enableThrottler: false);
-            AddMessageSystem(MessagingBusId.INIT, messageHandler, MSG_BUS_BUDGET_MIN, INIT_MSG_BUS_BUDGET_MAX, enableThrottler: true);
-            AddMessageSystem(MessagingBusId.SYSTEM, messageHandler, MSG_BUS_BUDGET_MIN, SYSTEM_MSG_BUS_BUDGET_MAX, enableThrottler: false);
+            this.debugTag = debugTag;
+            this.messageHandler = messageHandler;
 
-            currentState = State.Initializing;
+            //TODO(Brian): This is too hacky, most of the controllers won't be using this system. Refactor this in the future.
+            AddMessageSystem(MessagingBusId.UI, budgetMin: MSG_BUS_BUDGET_MIN, budgetMax: UI_MSG_BUS_BUDGET_MAX);
+
+            AddMessageSystem(MessagingBusId.INIT, budgetMin: MSG_BUS_BUDGET_MIN, budgetMax: INIT_MSG_BUS_BUDGET_MAX, enableThrottler: true);
+
+            AddMessageSystem(MessagingBusId.SYSTEM, budgetMin: MSG_BUS_BUDGET_MIN, budgetMax: SYSTEM_MSG_BUS_BUDGET_MAX);
+
+            currentQueueState = QueueState.Init;
+
+            StartBus(MessagingBusId.INIT);
+            StartBus(MessagingBusId.UI);
         }
 
-        private void AddMessageSystem(string id, IMessageHandler handler, float budgetMin, float budgetMax, bool enableThrottler)
+        private MessagingSystem AddMessageSystem(string id, float budgetMin, float budgetMax, bool enableThrottler = false)
         {
-            messagingSystems.Add(id, new MessagingSystem(id, handler, budgetMin, budgetMax, enableThrottler));
+            var newMessagingSystem = new MessagingSystem(id, messageHandler, budgetMin, budgetMax);
+
+            newMessagingSystem.debugTag = debugTag;
+
+            if (enableThrottler)
+                newMessagingSystem.throttler = new MessageThrottlingController();
+
+            messagingSystems.Add(id, newMessagingSystem);
+            return newMessagingSystem;
         }
 
-        public void Start()
+        public void StartBus(string busId)
         {
-            if (currentState != MessagingController.State.Stopped)
+            if (messagingSystems.ContainsKey(busId))
             {
-                currentState = MessagingController.State.Running;
+                messagingSystems[busId].bus.Start();
+            }
+        }
+
+        public void StopBus(string busId)
+        {
+            if (messagingSystems.ContainsKey(busId))
+            {
+                messagingSystems[busId].bus.Stop();
             }
         }
 
         public void Stop()
         {
-            currentState = MessagingController.State.Stopped;
+            using (var iterator = messagingSystems.GetEnumerator())
+            {
+                while (iterator.MoveNext())
+                {
+                    iterator.Current.Value.bus.Stop();
+                }
+            }
         }
 
         public void Dispose()
@@ -116,11 +165,11 @@ namespace DCL
 
         public float UpdateThrottling(float prevTimeBudget)
         {
+            //TODO(Brian): This is too hacky, most of the controllers won't be using this system. Refactor this in the future.
             prevTimeBudget -= messagingSystems[MessagingBusId.UI].Update(prevTimeBudget);
-            prevTimeBudget -= messagingSystems[MessagingBusId.INIT].Update(prevTimeBudget);
 
-            if (currentState != State.Initializing && currentState != State.FinishingInitializing)
-                prevTimeBudget -= messagingSystems[MessagingBusId.SYSTEM].Update(prevTimeBudget);
+            prevTimeBudget -= messagingSystems[MessagingBusId.INIT].Update(prevTimeBudget);
+            prevTimeBudget -= messagingSystems[MessagingBusId.SYSTEM].Update(prevTimeBudget);
 
             return prevTimeBudget;
         }
@@ -134,50 +183,48 @@ namespace DCL
         {
             string busId = "";
 
-            if (currentState != MessagingController.State.Stopped)
+            QueueMode queueMode = QueueMode.Reliable;
+
+            // If current scene is the Global Scene, the bus id should be UI
+            if (scene && scene.sceneData.id == SceneController.i.GlobalSceneId)
             {
-                QueueMode queueMode = QueueMode.Reliable;
+                busId = MessagingBusId.UI;
+            }
+            else if (currentQueueState == MessagingController.QueueState.Init)
+            {
+                busId = MessagingBusId.INIT;
+            }
+            else
+            {
+                busId = MessagingBusId.SYSTEM;
+            }
 
-                // If current scene is the Global Scene, the bus id should be UI
-                if (scene && scene.sceneData.id == SceneController.i.GlobalSceneId)
+            // Check if the message type is an UpdateEntityComponent 
+            if (queuedMessage.method == MessagingTypes.ENTITY_COMPONENT_CREATE_OR_UPDATE)
+            {
+                // By default, the tag is the id of the entity/component
+                string entityId = queuedMessage.tag;
+                int classId = 0;
+
+                // We need to extract the entityId and the classId from the tag.
+                // The tag format is "entityId_classId", i.e: "E1_2". 
+                GetEntityIdAndClassIdFromTag(queuedMessage.tag, out entityId, out classId);
+
+                // If it is a transform update, the queue mode is Lossy
+                if (classId == (int)CLASS_ID_COMPONENT.TRANSFORM)
                 {
-                    busId = MessagingBusId.UI;
+                    queueMode = QueueMode.Lossy;
                 }
-                else if (currentState == MessagingController.State.Initializing)
-                {
-                    busId = MessagingBusId.INIT;
-                }
-                else
-                {
-                    busId = MessagingBusId.SYSTEM;
-                }
-
-                // Check if the message type is an UpdateEntityComponent 
-                if (queuedMessage.method == MessagingTypes.ENTITY_COMPONENT_CREATE)
-                {
-                    // By default, the tag is the id of the entity/component
-                    string entityId = queuedMessage.tag;
-
-                    int classId = 0;
-
-                    // We need to extract the entityId and the classId from the tag.
-                    // The tag format is "entityId_classId", i.e: "E1_2". 
-                    GetEntityIdAndClassIdFromTag(queuedMessage.tag, out entityId, out classId);
-
-                    // If it is a transform update, the queue mode is Lossy
-                    if (classId == (int)CLASS_ID_COMPONENT.TRANSFORM)
-                    {
-                        queueMode = QueueMode.Lossy;
-                    }
-                }
+            }
+            else if (queuedMessage.method == MessagingTypes.SCENE_STARTED)
+            {
                 // When a SCENE STARTED message is enqueued, the next messages should be 
                 // enqueued in SYSTEM message bus, but we don't process them until 
                 // scene started has been processed
-                else if (queuedMessage.method == MessagingTypes.SCENE_STARTED)
-                    currentState = MessagingController.State.FinishingInitializing;
-
-                messagingSystems[busId].Enqueue(queuedMessage, queueMode);
+                currentQueueState = MessagingController.QueueState.Systems;
             }
+
+            messagingSystems[busId].Enqueue(queuedMessage, queueMode);
 
             return busId;
         }

@@ -13,7 +13,6 @@
         "Cinemachine",
         "MainAttributes",
         "DCLTransform",
-        "UserProfile",
         "WebInterface"
     ],
     "optionalUnityReferences": [],

@@ -28,7 +28,7 @@ namespace DCL.Helpers
 
     public class VisualTestsBase : TestsBase
     {
-        protected override IEnumerator InitScene(bool usesWebServer = false, bool spawnCharController = true)
+        protected override IEnumerator InitScene(bool usesWebServer = false, bool spawnCharController = true, bool spawnTestScene = true, bool spawnUIScene = true)
         {
             yield return InitUnityScene("MainVisualTest");
 
@@ -36,9 +36,11 @@ namespace DCL.Helpers
 
             yield return new WaitForSeconds(0.01f);
 
-            scene = sceneController.CreateTestScene();
-
-            yield return new WaitForSeconds(0.01f);
+            if (spawnTestScene)
+            {
+                scene = sceneController.CreateTestScene();
+                yield return new WaitForSeconds(0.01f);
+            }
 
             if (spawnCharController)
             {
@@ -76,7 +78,7 @@ namespace DCL.Helpers
             }
         }
 
-        protected virtual IEnumerator InitScene(bool usesWebServer = false, bool spawnCharController = true)
+        protected virtual IEnumerator InitScene(bool usesWebServer = false, bool spawnCharController = true, bool spawnTestScene = true, bool spawnUIScene = true)
         {
             yield return InitUnityScene("MainTest");
 
@@ -84,9 +86,12 @@ namespace DCL.Helpers
 
             yield return new WaitForSeconds(0.01f);
 
-            scene = sceneController.CreateTestScene();
+            if (spawnTestScene)
+            {
+                scene = sceneController.CreateTestScene();
 
-            yield return new WaitForSeconds(0.01f);
+                yield return new WaitForSeconds(0.01f);
+            }
 
             if (spawnCharController)
             {
@@ -94,19 +99,24 @@ namespace DCL.Helpers
                 {
                     GameObject.Instantiate(Resources.Load("Prefabs/CharacterController"));
                 }
+
+                yield return new WaitForSeconds(0.01f);
             }
-            yield return new WaitForSeconds(0.01f);
 
-            string globalSceneId = "global-scene";
 
-            sceneController.CreateUIScene(
-                JsonConvert.SerializeObject(
-                    new CreateUISceneMessage
-                    {
-                        id = globalSceneId,
-                        baseUrl = "",
-                    })
-            );
+            if (spawnUIScene)
+            {
+                string globalSceneId = "global-scene";
+
+                sceneController.CreateUIScene(
+                    JsonConvert.SerializeObject(
+                        new CreateUISceneMessage
+                        {
+                            id = globalSceneId,
+                            baseUrl = "",
+                        })
+                );
+            }
 
             yield return new WaitForAllMessagesProcessed();
         }
@@ -217,13 +227,13 @@ namespace DCL.Helpers
                 : (int)classId;
             string componentInstanceId = GetComponentUniqueId(scene, typeof(T).Name, componentClassId, entity.entityId);
 
-            return scene.EntityComponentCreate(JsonUtility.ToJson(new EntityComponentCreateMessage
+            return scene.EntityComponentCreateOrUpdate(JsonUtility.ToJson(new EntityComponentCreateMessage
             {
                 entityId = entity.entityId,
                 name = componentInstanceId,
                 classId = componentClassId,
                 json = JsonUtility.ToJson(model)
-            })) as T;
+            }), out CleanableYieldInstruction routine) as T;
         }
 
         public static Coroutine EntityComponentUpdate<T, K>(T component, K model = null)
@@ -339,7 +349,7 @@ namespace DCL.Helpers
 
         public static void SetEntityTransform(ParcelScene scene, DecentralandEntity entity, Vector3 position, Quaternion rotation, Vector3 scale)
         {
-            scene.EntityComponentCreate(JsonUtility.ToJson(new EntityComponentCreateMessage
+            scene.EntityComponentCreateOrUpdate(JsonUtility.ToJson(new EntityComponentCreateMessage
             {
                 entityId = entity.entityId,
                 name = "",
@@ -350,7 +360,7 @@ namespace DCL.Helpers
                     rotation = rotation,
                     scale = scale
                 })
-            }));
+            }), out CleanableYieldInstruction routine);
         }
 
         public static TextShape InstantiateEntityWithTextShape(ParcelScene scene, Vector3 position, TextShape.Model model)
