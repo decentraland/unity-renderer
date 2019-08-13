@@ -1,6 +1,7 @@
 using DCL.Controllers;
 using DCL.Models;
 using System.Collections.Generic;
+using DCL.Interface;
 using UnityEngine;
 
 namespace DCL
@@ -39,6 +40,19 @@ namespace DCL
             public Model Clone()
             {
                 return (Model)MemberwiseClone();
+            }
+
+            public WebInterface.MetricsModel ToMetricsModel()
+            {
+                return new WebInterface.MetricsModel()
+                {
+                    meshes = this.meshes,
+                    bodies = this.bodies,
+                    materials = this.materials,
+                    textures = this.textures,
+                    triangles = this.triangles,
+                    entities = this.entities
+                };
             }
         }
 
@@ -107,7 +121,9 @@ namespace DCL
             if (isDirty)
             {
                 isDirty = false;
-                Interface.WebInterface.ReportOnMetricsUpdate(scene.sceneData.id, model, GetLimits());
+
+                Interface.WebInterface.ReportOnMetricsUpdate(scene.sceneData.id,
+                    model.ToMetricsModel(), GetLimits().ToMetricsModel());
             }
         }
 

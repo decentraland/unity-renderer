@@ -1,14 +1,7 @@
 {
-    "name": "UUIDComponentTests",
-    "references": [
-        "MainScripts",
-        "UnityGLTFAssembly",
-        "CoroutineHelpers",
-        "WebInterface"
-    ],
-    "optionalUnityReferences": [
-        "TestAssemblies"
-    ],
+    "name": "WebInterface",
+    "references": [],
+    "optionalUnityReferences": [],
     "includePlatforms": [],
     "excludePlatforms": [],
     "allowUnsafeCode": false,
