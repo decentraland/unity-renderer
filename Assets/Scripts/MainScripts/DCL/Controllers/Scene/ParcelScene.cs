@@ -311,8 +311,10 @@ namespace DCL.Controllers
         UUIDCallbackMessage uuidMessage = new UUIDCallbackMessage();
         EntityComponentCreateMessage createEntityComponentMessage = new EntityComponentCreateMessage();
 
-        public BaseComponent EntityComponentCreate(string json)
+        public BaseComponent EntityComponentCreateOrUpdate(string json, out CleanableYieldInstruction yieldInstruction)
         {
+            yieldInstruction = null;
+
             SceneController.i.OnMessageDecodeStart?.Invoke("UpdateEntityComponent");
 
             createEntityComponentMessage.FromJSON(json);
@@ -356,7 +358,6 @@ namespace DCL.Controllers
             if (classId == CLASS_ID_COMPONENT.UUID_CALLBACK)
             {
                 string type = "";
-                bool shouldAdd = false;
 
                 UUIDComponent.Model model = JsonUtility.FromJson<UUIDComponent.Model>(createEntityComponentMessage.json);
 
@@ -364,35 +365,42 @@ namespace DCL.Controllers
 
                 if (!entity.uuidComponents.ContainsKey(type))
                 {
-                    // We need to create and destroy it 
-                    newComponent = factory.CreateItemFromId<BaseComponent>(classId);
+                    switch (type)
+                    {
+                        case OnClickComponent.NAME:
+                            newComponent = Utils.GetOrCreateComponent<OnClickComponent>(entity.gameObject);
+                            break;
+                        case OnPointerDownComponent.NAME:
+                            newComponent = Utils.GetOrCreateComponent<OnPointerDownComponent>(entity.gameObject);
+                            break;
+                        case OnPointerUpComponent.NAME:
+                            newComponent = Utils.GetOrCreateComponent<OnPointerUpComponent>(entity.gameObject);
+                            break;
+                    }
 
                     if (newComponent != null)
                     {
-                        newComponent.scene = this;
-                        newComponent.entity = entity;
+                        UUIDComponent uuidComponent = newComponent as UUIDComponent;
 
-                        newComponent.UpdateFromJSON(createEntityComponentMessage.json);
-
-                        Destroy(newComponent.gameObject);
-
-                        shouldAdd = true;
+                        if (uuidComponent != null)
+                        {
+                            uuidComponent.SetForEntity(this, entity, model);
+                            entity.uuidComponents.Add(type, uuidComponent);
+                        }
+                        else
+                        {
+                            Debug.LogError("uuidComponent is not of UUIDComponent type!");
+                        }
+                    }
+                    else
+                    {
+                        Debug.LogError("EntityComponentCreateOrUpdate: Invalid UUID type!");
                     }
                 }
                 else
                 {
                     newComponent = EntityUUIDComponentUpdate(entity, type, createEntityComponentMessage.json);
                 }
-
-                if (type == OnClickComponent.NAME)
-                    newComponent = entity.gameObject.GetComponent<OnClickComponent>();
-                else if (type == OnPointerDownComponent.NAME)
-                    newComponent = entity.gameObject.GetComponent<OnPointerDownComponent>();
-                else if (type == OnPointerUpComponent.NAME)
-                    newComponent = entity.gameObject.GetComponent<OnPointerUpComponent>();
-
-                if (shouldAdd)
-                    entity.uuidComponents.Add(type, newComponent as UUIDComponent);
             }
             else
             {
@@ -417,6 +425,9 @@ namespace DCL.Controllers
                 }
             }
 
+            if (newComponent != null && newComponent.isRoutineRunning)
+                yieldInstruction = newComponent.yieldInstruction;
+
             return newComponent;
         }
 
@@ -439,6 +450,7 @@ namespace DCL.Controllers
 
             UUIDComponent targetComponent = entity.uuidComponents[type];
             targetComponent.UpdateFromJSON(componentJson);
+
 
             return targetComponent;
         }
@@ -705,22 +717,18 @@ namespace DCL.Controllers
 
         SharedComponentUpdateMessage sharedComponentUpdatedMessage = new SharedComponentUpdateMessage();
 
-        public BaseDisposable SharedComponentUpdate(string json, out Coroutine routine)
+        public BaseDisposable SharedComponentUpdate(string json, out CleanableYieldInstruction yieldInstruction)
         {
             SceneController.i.OnMessageDecodeStart?.Invoke("ComponentUpdated");
-            BaseDisposable result = SharedComponentUpdate(json);
+            BaseDisposable newComponent = SharedComponentUpdate(json);
             SceneController.i.OnMessageDecodeEnds?.Invoke("ComponentUpdated");
 
-            if (result != null)
-            {
-                routine = result.routine;
-            }
-            else
-            {
-                routine = null;
-            }
+            yieldInstruction = null;
 
-            return result;
+            if (newComponent != null && newComponent.isRoutineRunning)
+                yieldInstruction = newComponent.yieldInstruction;
+
+            return newComponent;
         }
 
         public BaseDisposable SharedComponentUpdate(string json)
@@ -729,17 +737,23 @@ namespace DCL.Controllers
             sharedComponentUpdatedMessage.FromJSON(json);
             SceneController.i.OnMessageDecodeEnds?.Invoke("ComponentUpdated");
 
-            BaseDisposable disposableComponent;
+            BaseDisposable disposableComponent = null;
 
-            if (disposableComponents.TryGetValue(sharedComponentUpdatedMessage.id, out disposableComponent) &&
-                disposableComponent != null)
+            if (disposableComponents.TryGetValue(sharedComponentUpdatedMessage.id, out disposableComponent))
             {
                 disposableComponent.UpdateFromJSON(sharedComponentUpdatedMessage.json);
                 return disposableComponent;
             }
             else
             {
-                Debug.LogError($"Unknown disposableComponent {sharedComponentUpdatedMessage.id}");
+                if (gameObject == null)
+                {
+                    Debug.LogError($"Unknown disposableComponent {sharedComponentUpdatedMessage.id} -- scene has been destroyed?");
+                }
+                else
+                {
+                    Debug.LogError($"Unknown disposableComponent {sharedComponentUpdatedMessage.id}", gameObject);
+                }
             }
 
             return null;

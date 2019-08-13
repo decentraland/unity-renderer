@@ -46,7 +46,7 @@ namespace DCL.Models
 
         TEXTURE = 68,
 
-        AUDIO_CLIP = 200,
+        AUDIO_CLIP = 200
     }
 
     public class CallMethodComponentMessage

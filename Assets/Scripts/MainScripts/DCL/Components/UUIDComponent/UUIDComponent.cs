@@ -1,4 +1,4 @@
-using DCL.Components;
+﻿using DCL.Components;
 using DCL.Controllers;
 using DCL.Helpers;
 using DCL.Models;
@@ -19,6 +19,11 @@ namespace DCL
 
         public virtual void Setup(ParcelScene scene, DecentralandEntity entity, string uuid, string type)
         {
+        }
+
+        public void SetForEntity(ParcelScene scene, DecentralandEntity entity, UUIDComponent.Model model)
+        {
+            SetForEntity(scene, entity, model.uuid, model.type);
         }
 
         public void SetForEntity(ParcelScene scene, DecentralandEntity entity, string uuid, string type)
@@ -88,7 +93,7 @@ namespace DCL
                 SetForEntity(scene, entity, model.uuid, model.type);
             }
 
-            yield return null;
+            return null;
         }
     }
 }

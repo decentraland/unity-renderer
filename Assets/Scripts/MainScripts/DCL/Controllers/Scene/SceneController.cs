@@ -31,6 +31,8 @@ namespace DCL
         public HashSet<string> readyScenes = new HashSet<string>();
         public Dictionary<string, ParcelScene> loadedScenes = new Dictionary<string, ParcelScene>();
 
+
+
         [Header("Debug Tools")]
         public GameObject fpsPanel;
         public bool enableLoadingScreenInEditor = false;
@@ -41,7 +43,7 @@ namespace DCL
 
         public bool debugScenes;
 
-        public string debugSceneName;
+        public Vector2Int debugSceneCoords;
         public bool ignoreGlobalScenes = false;
         public bool msgStepByStep = false;
 
@@ -82,7 +84,7 @@ namespace DCL
 #endif
         public Dictionary<string, MessagingController> messagingControllers = new Dictionary<string, MessagingController>();
 
-        private List<ParcelScene> messagingControllersPriority = new List<ParcelScene>();
+        private List<ParcelScene> scenesSortedByDistance = new List<ParcelScene>();
 
         [System.NonSerialized]
         public bool isDebugMode;
@@ -152,7 +154,7 @@ namespace DCL
             Debug.unityLogger.logEnabled = false;
 #endif
 
-            messagingControllers[GLOBAL_MESSAGING_CONTROLLER] = new MessagingController(this);
+            messagingControllers[GLOBAL_MESSAGING_CONTROLLER] = new MessagingController(this, GLOBAL_MESSAGING_CONTROLLER);
 
             // We trigger the Decentraland logic once SceneController has been instanced and is ready to act.
             if (startDecentralandAutomatically)
@@ -187,10 +189,12 @@ namespace DCL
             if (!string.IsNullOrEmpty(globalSceneId) && messagingControllers.ContainsKey(globalSceneId))
                 prevTimeBudget -= messagingControllers[globalSceneId].UpdateThrottling(prevTimeBudget);
 
+            if (VERBOSE)
+                Debug.Log("Priority controllers count = " + scenesSortedByDistance.Count);
             // Update throttling to the rest of the messaging controllers
-            for (int i = 0; i < messagingControllersPriority.Count; i++)
+            for (int i = 0; i < scenesSortedByDistance.Count; i++)
             {
-                ParcelScene scene = messagingControllersPriority[i];
+                ParcelScene scene = scenesSortedByDistance[i];
                 prevTimeBudget -= messagingControllers[scene.sceneData.id].UpdateThrottling(prevTimeBudget);
             }
 
@@ -205,7 +209,7 @@ namespace DCL
             if (force || Time.unscaledTime - lastTimeMessageControllerSorted >= SORT_MESSAGE_CONTROLLER_TIME)
             {
                 lastTimeMessageControllerSorted = Time.unscaledDeltaTime;
-                messagingControllersPriority.Sort(SceneMessagingSortByDistance);
+                scenesSortedByDistance.Sort(SceneMessagingSortByDistance);
             }
         }
 
@@ -255,7 +259,7 @@ namespace DCL
                 globalSceneId = uiSceneId;
 
                 if (!messagingControllers.ContainsKey(globalSceneId))
-                    messagingControllers[globalSceneId] = new MessagingController(this);
+                    messagingControllers[globalSceneId] = new MessagingController(this, globalSceneId);
 
                 if (VERBOSE)
                 {
@@ -318,11 +322,6 @@ namespace DCL
 
             var sceneToLoad = scene;
 
-#if UNITY_EDITOR
-            if (debugScenes && sceneToLoad.id != debugSceneName)
-                return;
-#endif
-
             OnMessageProcessStart?.Invoke(MessagingTypes.SCENE_LOAD);
             if (!loadedScenes.ContainsKey(sceneToLoad.id))
             {
@@ -339,10 +338,10 @@ namespace DCL
                 newScene.ownerController = this;
                 loadedScenes.Add(sceneToLoad.id, newScene);
 
-                messagingControllersPriority.Add(newScene);
+                scenesSortedByDistance.Add(newScene);
 
                 if (!messagingControllers.ContainsKey(newScene.sceneData.id))
-                    messagingControllers[newScene.sceneData.id] = new MessagingController(this);
+                    messagingControllers[newScene.sceneData.id] = new MessagingController(this, newScene.sceneData.id);
 
                 PrioritizeMessageControllerList(force: true);
 
@@ -378,11 +377,6 @@ namespace DCL
                 return;
 
             var sceneToLoad = scene;
-
-#if UNITY_EDITOR
-            if (debugScenes && sceneToLoad.id != debugSceneName)
-                return;
-#endif
 
             OnMessageProcessStart?.Invoke(MessagingTypes.SCENE_UPDATE);
             if (loadedScenes.ContainsKey(sceneToLoad.id))
@@ -441,7 +435,7 @@ namespace DCL
             loadedScenes.Remove(sceneKey);
 
             // Remove the scene id from the msg. priorities list
-            messagingControllersPriority.Remove(scene);
+            scenesSortedByDistance.Remove(scene);
 
             // Remove messaging controller for unloaded scene
             if (messagingControllers.ContainsKey(scene.sceneData.id))
@@ -525,12 +519,6 @@ namespace DCL
                         continue;
                     }
 
-#if UNITY_EDITOR
-                    if (debugScenes && sceneId != debugSceneName)
-                    {
-                        continue;
-                    }
-#endif
                     var queuedMessage = DecodeSceneMessage(sceneId, message, tag);
 
                     busId = EnqueueMessage(queuedMessage);
@@ -600,31 +588,33 @@ namespace DCL
 
             // If it doesn't exist, create messaging controller for this scene id
             if (!messagingControllers.ContainsKey(queuedMessage.sceneId))
-                messagingControllers[queuedMessage.sceneId] = new MessagingController(this);
+                messagingControllers[queuedMessage.sceneId] = new MessagingController(this, queuedMessage.sceneId);
 
             busId = messagingControllers[queuedMessage.sceneId].Enqueue(scene, queuedMessage);
 
             return busId;
         }
 
-        public bool ProcessMessage(string sceneId, string tag, string method, string payload, out Coroutine routine)
+        public bool ProcessMessage(string sceneId, string tag, string method, string payload, out CleanableYieldInstruction yieldInstruction)
         {
-            routine = null;
-#if UNITY_EDITOR
-            if (debugScenes && sceneId != debugSceneName)
-            {
-                return false;
-            }
-#endif
+            yieldInstruction = null;
 
             ParcelScene scene;
 
             if (loadedScenes.TryGetValue(sceneId, out scene))
             {
 #if UNITY_EDITOR
-                if (scene is GlobalScene && ignoreGlobalScenes && debugScenes)
+                if (debugScenes)
                 {
-                    return false;
+                    if (scene is GlobalScene && ignoreGlobalScenes)
+                    {
+                        return false;
+                    }
+
+                    if (scene.sceneData.basePosition.ToString() != debugSceneCoords.ToString())
+                    {
+                        return false;
+                    }
                 }
 #endif
                 if (!scene.gameObject.activeInHierarchy)
@@ -651,8 +641,8 @@ namespace DCL
                         break;
 
                     //NOTE(Brian): EntityComponent messages
-                    case MessagingTypes.ENTITY_COMPONENT_CREATE:
-                        scene.EntityComponentCreate(payload);
+                    case MessagingTypes.ENTITY_COMPONENT_CREATE_OR_UPDATE:
+                        scene.EntityComponentCreateOrUpdate(payload, out yieldInstruction);
                         break;
                     case MessagingTypes.ENTITY_COMPONENT_DESTROY:
                         scene.EntityComponentRemove(payload);
@@ -669,7 +659,7 @@ namespace DCL
                         scene.SharedComponentDispose(payload);
                         break;
                     case MessagingTypes.SHARED_COMPONENT_UPDATE:
-                        scene.SharedComponentUpdate(payload, out routine);
+                        scene.SharedComponentUpdate(payload, out yieldInstruction);
                         break;
                     case MessagingTypes.ENTITY_DESTROY:
                         scene.RemoveEntity(tag);
@@ -678,8 +668,10 @@ namespace DCL
                         readyScenes.Add(scene.sceneData.id);
 
                         // Start processing SYSTEM queue 
-                        messagingControllers[scene.sceneData.id].Start();
-
+                        MessagingController sceneMessagingController = messagingControllers[scene.sceneData.id];
+                        sceneMessagingController.StartBus(MessagingBusId.SYSTEM);
+                        sceneMessagingController.StopBus(MessagingBusId.INIT);
+                        sceneMessagingController.StopBus(MessagingBusId.UI);
                         break;
                     default:
                         Debug.LogError($"Unknown method {method}");
@@ -738,6 +730,13 @@ namespace DCL
             newScene.ownerController = this;
             newScene.isTestScene = true;
 
+            scenesSortedByDistance.Add(newScene);
+
+            if (!messagingControllers.ContainsKey(data.id))
+            {
+                messagingControllers[data.id] = new MessagingController(this, data.id);
+            }
+
             if (!loadedScenes.ContainsKey(data.id))
             {
                 loadedScenes.Add(data.id, newScene);
@@ -773,10 +772,10 @@ namespace DCL
 
             // We don't have to clear all the messaging controllers, because we need 
             // global messaging and global scene controllers.
-            for (int i = 0; i < messagingControllersPriority.Count; i++)
-                messagingControllers.Remove(messagingControllersPriority[i].sceneData.id);
+            for (int i = 0; i < scenesSortedByDistance.Count; i++)
+                messagingControllers.Remove(scenesSortedByDistance[i].sceneData.id);
 
-            messagingControllersPriority.Clear();
+            scenesSortedByDistance.Clear();
         }
 
         private void LoadingDone()
@@ -789,5 +788,12 @@ namespace DCL
             }
         }
 
+        public string TryToGetSceneCoordsID(string id)
+        {
+            if (loadedScenes.ContainsKey(id))
+                return loadedScenes[id].sceneData.basePosition.ToString();
+
+            return id;
+        }
     }
 }

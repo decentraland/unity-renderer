@@ -1,11 +1,11 @@
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using UnityEngine;
 
 namespace DCL
 {
     public class MessagingTypes
     {
-        public const string ENTITY_COMPONENT_CREATE = "UpdateEntityComponent";
+        public const string ENTITY_COMPONENT_CREATE_OR_UPDATE = "UpdateEntityComponent";
         public const string ENTITY_CREATE = "CreateEntity";
         public const string ENTITY_REPARENT = "SetEntityParent";
         public const string ENTITY_COMPONENT_DESTROY = "ComponentRemoved";
@@ -36,11 +36,16 @@ namespace DCL
 
     public class MessagingSystem : System.IDisposable
     {
+        static bool VERBOSE = false;
+
+        public MessagingController owner;
         public MessagingBus bus;
         public MessageThrottlingController throttler;
         public string id;
+        public string debugTag;
 
-        float budgetMin = 0;
+        public float budgetMin = MessagingController.MSG_BUS_BUDGET_MIN;
+        public float budgetMax = MessagingController.INIT_MSG_BUS_BUDGET_MAX;
 
         Dictionary<string, LinkedListNode<MessagingBus.QueuedSceneMessage>> unreliableMessages = new Dictionary<string, LinkedListNode<MessagingBus.QueuedSceneMessage>>();
         System.Text.StringBuilder stringBuilder = new System.Text.StringBuilder();
@@ -58,6 +63,9 @@ namespace DCL
 
         public float Update(float prevTimeBudget)
         {
+            if (!bus.isRunning)
+                return prevTimeBudget;
+
             float timeBudget = 0;
 
             if (throttler != null)
@@ -65,14 +73,17 @@ namespace DCL
                 timeBudget = bus.timeBudget = throttler.Update(
                     pendingMsgsCount: bus.pendingMessagesCount,
                     processedMsgsCount: bus.processedMessagesCount,
-                    maxBudget: Mathf.Max(budgetMin, bus.budgetMax - prevTimeBudget)
+                    maxBudget: Mathf.Max(budgetMin, budgetMax - prevTimeBudget)
                 );
             }
             else
             {
-                bus.timeBudget = Mathf.Max(budgetMin, bus.budgetMax - prevTimeBudget);
-                timeBudget = bus.lastTimeConsumed;
+                bus.timeBudget = Mathf.Max(budgetMin, budgetMax - prevTimeBudget);
+                timeBudget = prevTimeBudget - bus.lastTimeConsumed;
             }
+
+            if (VERBOSE)
+                Debug.Log($"tag = {debugTag} id = {id} timeBudget == {timeBudget}");
 
             return timeBudget;
         }
@@ -125,15 +136,12 @@ namespace DCL
             }
         }
 
-        public MessagingSystem(string id, IMessageHandler handler, float budgetMin = 0.01f, float budgetMax = 0.1f, bool enableThrottler = false)
+        public MessagingSystem(string id, IMessageHandler handler, float budgetMin, float budgetMax)
         {
             this.id = id;
             this.budgetMin = budgetMin;
-            this.bus = new MessagingBus(handler, budgetMax);
-
-            if (enableThrottler)
-                this.throttler = new MessageThrottlingController();
+            this.budgetMax = budgetMax;
+            this.bus = new MessagingBus(handler, this);
         }
     }
 }
-

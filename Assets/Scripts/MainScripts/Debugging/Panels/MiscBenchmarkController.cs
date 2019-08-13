@@ -110,7 +110,9 @@ namespace DCL
 
         void Update()
         {
-            if (SceneController.i.messagingControllers[SceneController.GLOBAL_MESSAGING_CONTROLLER].messagingSystems[MessagingBusId.INIT].throttler.currentTimeBudget < 0.001f)
+            MessageThrottlingController globalThrottler = SceneController.i.messagingControllers[SceneController.GLOBAL_MESSAGING_CONTROLLER].messagingSystems[MessagingBusId.INIT].throttler;
+
+            if (globalThrottler != null && globalThrottler.currentTimeBudget < 0.001f)
                 enableBudgetMax = true;
 
             int messagesProcessedLastFrame = lastPendingMessages - SceneController.i.pendingMessagesCount;
@@ -175,11 +177,15 @@ namespace DCL
                     while (controllersIter.MoveNext())
                     {
                         MessageThrottlingController cpus = controllersIter.Current.Value.messagingSystems[MessagingBusId.INIT].throttler;
-                        rate += cpus.messagesConsumptionRate;
-                        budget += cpus.currentTimeBudget * 1000f;
 
-                        if (enableBudgetMax)
-                            budgetMax = Mathf.Max(cpus.currentTimeBudget, budgetMax);
+                        if (cpus != null)
+                        {
+                            rate += cpus.messagesConsumptionRate;
+                            budget += cpus.currentTimeBudget * 1000f;
+
+                            if (enableBudgetMax)
+                                budgetMax = Mathf.Max(cpus.currentTimeBudget, budgetMax);
+                        }
                     }
                 }
 

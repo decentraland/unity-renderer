@@ -1,8 +1,8 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Assertions;
-using System;
 
 namespace DCL
 {
@@ -23,6 +23,7 @@ namespace DCL
 
     public class MessagingBus : IDisposable
     {
+        public static bool VERBOSE = false;
         public class QueuedSceneMessage
         {
             public enum Type
@@ -36,6 +37,7 @@ namespace DCL
                 UNLOAD_PARCEL,
                 SCENE_STARTED
             }
+
             public string tag;
             public Type type;
             public string sceneId;
@@ -55,24 +57,44 @@ namespace DCL
         public long processedMessagesCount { get; private set; }
         public float lastTimeConsumed { get; private set; }
         public float timeBudget;
-        public float budgetMax;
-        private Coroutine mainCoroutine;
-        private Coroutine msgRoutine = null;
 
-        public MessagingBus(IMessageHandler handler, float budgetMax)
+        private Coroutine mainCoroutine;
+        private CleanableYieldInstruction msgYieldInstruction;
+
+        public MessagingSystem owner;
+
+        public MessagingBus(IMessageHandler handler, MessagingSystem owner)
         {
             Assert.IsNotNull(handler, "IMessageHandler can't be null!");
+            this.owner = owner;
             this.handler = handler;
-            this.budgetMax = budgetMax;
-            mainCoroutine = SceneController.i.StartCoroutine(ProcessMessages(pendingMessages));
+        }
+
+        public bool isRunning { get { return mainCoroutine != null; } }
+
+        public void Start()
+        {
+            if (mainCoroutine == null)
+            {
+                mainCoroutine = SceneController.i.StartCoroutine(ProcessMessages(pendingMessages));
+            }
+        }
+
+        public void Stop()
+        {
+            if (mainCoroutine != null)
+            {
+                SceneController.i.StopCoroutine(mainCoroutine);
+                mainCoroutine = null;
+            }
+
+            if (msgYieldInstruction != null)
+                msgYieldInstruction.Cleanup();
         }
 
         public void Dispose()
         {
-            SceneController.i.StopCoroutine(mainCoroutine);
-
-            if (msgRoutine != null)
-                SceneController.i.StopCoroutine(msgRoutine);
+            Stop();
         }
 
         IEnumerator ProcessMessages(LinkedList<QueuedSceneMessage> queue)
@@ -82,12 +104,20 @@ namespace DCL
                 float startTime = Time.realtimeSinceStartup;
                 float timeBudget = this.timeBudget;
 
+                if (VERBOSE && timeBudget == 0)
+                {
+                    string finalTag = SceneController.i.TryToGetSceneCoordsID(owner.debugTag);
+                    Debug.Log($"#{processedMessagesCount} ... bus = {finalTag}, id = {owner.id}... timeBudget is zero!!!");
+                }
+
                 while (Time.realtimeSinceStartup - startTime < timeBudget && queue.Count > 0)
                 {
                     QueuedSceneMessage m = queue.First.Value;
 
                     if (queue.First != null)
                         queue.RemoveFirst();
+
+                    bool shouldLogMessage = VERBOSE;
 
                     switch (m.type)
                     {
@@ -97,28 +127,36 @@ namespace DCL
 
                             var messageObject = m as QueuedSceneMessage_Scene;
 
-                            if (handler.ProcessMessage(messageObject.sceneId, messageObject.tag, messageObject.method, messageObject.payload, out msgRoutine))
+                            if (handler.ProcessMessage(messageObject.sceneId, messageObject.tag, messageObject.method, messageObject.payload, out msgYieldInstruction))
                             {
 #if UNITY_EDITOR
                                 if (SceneController.i.msgStepByStep)
                                 {
-                                    Debug.Log("message: " + m.message);
+                                    if (VERBOSE)
+                                    {
+                                        LogMessage(m, false);
+                                        shouldLogMessage = false;
+                                    }
+
                                     Debug.Break();
 
                                     yield return null;
                                 }
 #endif
                             }
+                            else
+                            {
+                                shouldLogMessage = false;
+                            }
 
-                            if (msgRoutine != null)
+                            if (msgYieldInstruction != null)
                             {
                                 processedMessagesCount++;
 
                                 lastTimeConsumed = Time.realtimeSinceStartup - startTime;
+                                yield return msgYieldInstruction;
 
-                                yield return msgRoutine;
-
-                                msgRoutine = null;
+                                msgYieldInstruction = null;
                             }
 
                             SceneController.i.OnMessageWillDequeue?.Invoke(messageObject.method);
@@ -142,11 +180,32 @@ namespace DCL
                     }
 
                     processedMessagesCount++;
+
+#if UNITY_EDITOR
+                    if (shouldLogMessage)
+                    {
+                        LogMessage(m);
+                    }
+#endif
                 }
 
                 lastTimeConsumed = Time.realtimeSinceStartup - startTime;
-
                 yield return null;
+            }
+        }
+
+
+        private void LogMessage(QueuedSceneMessage m, bool logType = true)
+        {
+            string finalTag = SceneController.i.TryToGetSceneCoordsID(owner.debugTag);
+
+            if (logType)
+            {
+                Debug.Log($"#{processedMessagesCount} ... bus = {finalTag}, id = {owner.id}... processing msg... type = {m.type}... message = {m.message}");
+            }
+            else
+            {
+                Debug.Log($"#{processedMessagesCount} ... Bus = {finalTag}, id = {owner.id}... processing msg... {m.message}");
             }
         }
     }
