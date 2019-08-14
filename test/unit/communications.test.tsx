@@ -245,10 +245,10 @@ describe('Communications', function() {
     describe('webrtc', () => {
       it('onicecandidate', () => {
         connection.commServerAlias = 1
-
         const sdp = 'candidate:702786350 2 udp 41819902 8.8.8.8 60769 typ relay raddr 8.8.8.8'
         const candidate = new RTCIceCandidate({ candidate: sdp, sdpMid: '0', sdpMLineIndex: 0 })
         const event = new RTCPeerConnectionIceEvent('icecandidate', { candidate })
+        connection.webRtcConn!.onicecandidate = connection['onIceCandidate']
         connection.webRtcConn!.onicecandidate!(event)
         expect(webSocket.send).to.have.been.calledWithMatch((bytes: Uint8Array) => {
           const msg = WebRtcMessage.deserializeBinary(bytes)

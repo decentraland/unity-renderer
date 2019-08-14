@@ -205,6 +205,8 @@ export class BrokerConnection implements IBrokerConnection {
               msg.setData(data)
               this.sendCoordinatorMessage(msg)
             }
+
+            this.webRtcConn!.onicecandidate = this.onIceCandidate
           } catch (err) {
             this.logger.error(err)
           }
@@ -254,7 +256,6 @@ export class BrokerConnection implements IBrokerConnection {
       this.logger.log(`ice connection state: ${this.webRtcConn!.iceConnectionState}`)
     }
 
-    this.webRtcConn.onicecandidate = this.onIceCandidate
     this.webRtcConn.ondatachannel = this.onDataChannel
   }
 
@@ -280,7 +281,7 @@ export class BrokerConnection implements IBrokerConnection {
   }
 
   private onIceCandidate = (event: RTCPeerConnectionIceEvent) => {
-    if (event.candidate !== null) {
+    if (event.candidate && event.candidate.candidate) {
       const msg = new WebRtcMessage()
       msg.setType(MessageType.WEBRTC_ICE_CANDIDATE)
       // TODO: Ensure commServerAlias, it may be null
