@@ -12,6 +12,9 @@ namespace DCL.Models
     {
         public ParcelScene scene;
 
+        public Dictionary<string, DecentralandEntity> children = new Dictionary<string, DecentralandEntity>();
+        public DecentralandEntity parent;
+
         public Dictionary<CLASS_ID_COMPONENT, BaseComponent> components =
             new Dictionary<CLASS_ID_COMPONENT, BaseComponent>();
 
@@ -39,6 +42,44 @@ namespace DCL.Models
 
         bool isReleased = false;
 
+        private void AddChild(DecentralandEntity entity)
+        {
+            if (!children.ContainsKey(entity.entityId))
+            {
+                children.Add(entity.entityId, entity);
+            }
+        }
+
+        private void RemoveChild(DecentralandEntity entity)
+        {
+            if (children.ContainsKey(entity.entityId))
+            {
+                children.Remove(entity.entityId);
+            }
+        }
+
+        public void SetParent(DecentralandEntity entity)
+        {
+            if (parent != null)
+            {
+                parent.RemoveChild(this);
+            }
+
+            if (entity != null)
+            {
+                entity.AddChild(this);
+
+                if (entity.gameObject && this.gameObject)
+                    this.gameObject.transform.SetParent(entity.gameObject.transform, false);
+            }
+            else if (this.gameObject)
+            {
+                this.gameObject.transform.SetParent(null, false);
+            }
+
+            parent = entity;
+        }
+
         public void EnsureMeshGameObject(string gameObjectName = null)
         {
             if (meshGameObject == null)
@@ -54,9 +95,13 @@ namespace DCL.Models
 
         public void Cleanup()
         {
+            // Dont't do anything if this object was already released
             if (isReleased)
                 return;
 
+            OnRemoved?.Invoke(this);
+
+            // This will release the poolable objects of the mesh and the entity
             OnCleanupEvent?.Invoke(this);
 
             if (meshGameObject)
@@ -65,9 +110,19 @@ namespace DCL.Models
                 meshGameObject = null;
             }
 
+            if (gameObject)
+            {
+                int childCount = gameObject.transform.childCount;
+
+                // Destroy any other children 
+                for (int i = 0; i < childCount; i++)
+                {
+                    Utils.SafeDestroy(gameObject.transform.GetChild(i).gameObject);
+                }
+            }
+
             isReleased = true;
         }
-
 
         public void AddSharedComponent(Type componentType, BaseDisposable component)
         {

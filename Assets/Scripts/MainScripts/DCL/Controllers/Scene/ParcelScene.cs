@@ -14,6 +14,10 @@ namespace DCL.Controllers
     {
         public static bool VERBOSE = false;
 
+        private const float MAX_CLEANUP_BUDGET = 0.014f;
+        private const float CLEANUP_NOISE = 0.0025f;
+
+
         public Dictionary<string, DecentralandEntity> entities = new Dictionary<string, DecentralandEntity>();
         public Dictionary<string, BaseDisposable> disposableComponents = new Dictionary<string, BaseDisposable>();
         public LoadParcelScenesMessage.UnityParcelScene sceneData { get; protected set; }
@@ -25,6 +29,9 @@ namespace DCL.Controllers
         public event System.Action<DecentralandEntity> OnEntityRemoved;
 
         public ContentProvider contentProvider;
+
+        List<string> entitiesMarkedForRemoval = new List<string>();
+
 
         public void Awake()
         {
@@ -129,27 +136,12 @@ namespace DCL.Controllers
             }
         }
 
-        void OnDestroy()
-        {
-            Cleanup();
-        }
-
         public void Cleanup()
         {
             if (isReleased)
                 return;
 
-            if (DCLCharacterController.i)
-            {
-                DCLCharacterController.i.characterPosition.OnPrecisionAdjust -= OnPrecisionAdjust;
-            }
-
-            foreach (var entity in entities)
-            {
-                entity.Value.Cleanup();
-            }
-
-            entities.Clear();
+            StartCoroutine(CleanupCoroutine());
 
             isReleased = true;
         }
@@ -223,7 +215,7 @@ namespace DCL.Controllers
 
         private RemoveEntityMessage tmpRemoveEntityMessage = new RemoveEntityMessage();
 
-        public void RemoveEntity(string id)
+        public void RemoveEntity(string id, bool removeImmediatelyFromEntitiesList = true)
         {
             SceneController.i.OnMessageDecodeStart?.Invoke("RemoveEntity");
             tmpRemoveEntityMessage.id = id;
@@ -231,10 +223,18 @@ namespace DCL.Controllers
 
             if (entities.ContainsKey(tmpRemoveEntityMessage.id))
             {
-                OnEntityRemoved?.Invoke(entities[tmpRemoveEntityMessage.id]);
-                entities[tmpRemoveEntityMessage.id].OnRemoved?.Invoke(entities[tmpRemoveEntityMessage.id]);
-                entities[tmpRemoveEntityMessage.id].Cleanup();
-                entities.Remove(tmpRemoveEntityMessage.id);
+                if (!entitiesMarkedForRemoval.Contains(tmpRemoveEntityMessage.id))
+                {
+                    DecentralandEntity entity = entities[tmpRemoveEntityMessage.id];
+
+                    entity.SetParent(null);
+
+                    // This will also cleanup its children
+                    CleanUpEntityRecursively(entity);
+
+                    if (removeImmediatelyFromEntitiesList)
+                        CleanEntitiesList();
+                }
             }
 #if UNITY_EDITOR || DEVELOPMENT_BUILD
             else
@@ -244,13 +244,68 @@ namespace DCL.Controllers
 #endif
         }
 
-        public void RemoveAllEntities()
+        void CleanUpEntityRecursively(DecentralandEntity entity)
         {
-            var list = entities.ToArray();
-            for (int i = 0; i < list.Length; i++)
+            // Iterate through all entity children
+            using (var iterator = entity.children.GetEnumerator())
             {
-                RemoveEntity(list[i].Key);
+                while (iterator.MoveNext())
+                {
+                    CleanUpEntityRecursively(iterator.Current.Value);
+                }
             }
+
+            OnEntityRemoved?.Invoke(entity);
+
+            MarkForRemoval(entity);
+
+            entity.Cleanup();
+        }
+
+        void MarkForRemoval(DecentralandEntity entity)
+        {
+            if (!entitiesMarkedForRemoval.Contains(entity.entityId))
+            {
+                entitiesMarkedForRemoval.Add(entity.entityId);
+            }
+        }
+
+        void CleanEntitiesList()
+        {
+            int count = entitiesMarkedForRemoval.Count;
+
+            for (int i = 0; i < count; i++)
+                entities.Remove(entitiesMarkedForRemoval[i]);
+
+            entitiesMarkedForRemoval.Clear();
+        }
+
+        System.Collections.IEnumerator CleanupCoroutine()
+        {
+            using (var iterator = entities.GetEnumerator())
+            {
+                float maxBudget = MAX_CLEANUP_BUDGET + Random.Range(-CLEANUP_NOISE, CLEANUP_NOISE);
+                float lastTime = Time.realtimeSinceStartup;
+
+                while (iterator.MoveNext())
+                {
+                    RemoveEntity(iterator.Current.Key, removeImmediatelyFromEntitiesList: false);
+                    if (Time.realtimeSinceStartup - lastTime >= maxBudget)
+                    {
+                        yield return null;
+                        lastTime = Time.realtimeSinceStartup;
+                    }
+                }
+            }
+
+            CleanEntitiesList();
+
+            if (DCLCharacterController.i)
+            {
+                DCLCharacterController.i.characterPosition.OnPrecisionAdjust -= OnPrecisionAdjust;
+            }
+
+            Destroy(this.gameObject);
         }
 
         private SetEntityParentMessage tmpParentMessage = new SetEntityParentMessage();
@@ -267,8 +322,10 @@ namespace DCL.Controllers
             }
 
             DecentralandEntity me = GetEntityForUpdate(tmpParentMessage.entityId);
+
             if (me != null && tmpParentMessage.parentId == "0")
             {
+                me.SetParent(null);
                 me.gameObject.transform.SetParent(gameObject.transform, false);
                 return;
             }
@@ -277,7 +334,7 @@ namespace DCL.Controllers
 
             if (me != null && myParent != null)
             {
-                me.gameObject.transform.SetParent(myParent.gameObject.transform, false);
+                me.SetParent(myParent);
             }
         }
 

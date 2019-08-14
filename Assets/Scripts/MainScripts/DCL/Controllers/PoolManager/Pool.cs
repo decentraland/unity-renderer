@@ -155,6 +155,8 @@ namespace DCL
         {
             if (!isQuitting)
             {
+                lastGetTime = Time.realtimeSinceStartup;
+
                 if (po)
                 {
                     po.transform.parent = this.transform;
