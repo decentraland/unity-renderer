@@ -7,6 +7,8 @@ namespace DCL
     public class MemoryManager : MonoBehaviour
     {
         private const float TIME_TO_POOL_CLEANUP = 60.0f;
+        private const float MIN_TIME_BETWEEN_UNLOAD_ASSETS = 10.0f;
+        private float lastTimeUnloadUnusedAssets = 0;
 
         void Start()
         {
@@ -55,10 +57,19 @@ namespace DCL
 
                 int count = idsToCleanup.Count;
 
-                for (int i = 0; i < count; i++)
+                if (count > 0)
                 {
-                    PoolManager.i.CleanupPool(idsToCleanup[i]);
-                    yield return null;
+                    for (int i = 0; i < count; i++)
+                    {
+                        PoolManager.i.CleanupPool(idsToCleanup[i]);
+                        yield return null;
+                    }
+
+                    if (Time.realtimeSinceStartup - lastTimeUnloadUnusedAssets >= MIN_TIME_BETWEEN_UNLOAD_ASSETS)
+                    {
+                        lastTimeUnloadUnusedAssets = Time.realtimeSinceStartup;
+                        Resources.UnloadUnusedAssets();
+                    }
                 }
             }
         }

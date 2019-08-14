@@ -39,12 +39,12 @@ namespace DCL
         }
 
         //TODO(Brian): Improve this. We should distribute the budget between the scenes.
-        public const float UI_MSG_BUS_BUDGET_MAX = 0.012f;
+        public const float UI_MSG_BUS_BUDGET_MAX = 0.01f;
 
         public const float INIT_MSG_BUS_BUDGET_MAX = 0.2f;
-        public const float SYSTEM_MSG_BUS_BUDGET_MAX = 0.012f;
+        public const float SYSTEM_MSG_BUS_BUDGET_MAX = 0.01f;
 
-        public const float MSG_BUS_BUDGET_MIN = 0.001f;
+        public const float MSG_BUS_BUDGET_MIN = 0.0001f;
 
         public Dictionary<string, MessagingSystem> messagingSystems = new Dictionary<string, MessagingSystem>();
         IMessageHandler messageHandler;

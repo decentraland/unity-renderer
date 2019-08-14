@@ -17,11 +17,9 @@ namespace DCL
         public bool startDecentralandAutomatically = true;
         public static bool VERBOSE = false;
 
-        private const float GLOBAL_MAX_MSG_BUDGET = 0.016f;
-        private const float GLTF_BUDGET_MAX = 0.003f;
+        private const float GLOBAL_MAX_MSG_BUDGET = 0.012f;
+        private const float GLTF_BUDGET_MAX = 0.012f;
         private const float GLTF_BUDGET_MIN = 0.001f;
-
-        private const float TIME_BETWEEN_UNLOAD_ASSETS = 10.0f;
 
         public const string GLOBAL_MESSAGING_CONTROLLER = "global_messaging_controller";
 
@@ -46,8 +44,6 @@ namespace DCL
         public Vector2Int debugSceneCoords;
         public bool ignoreGlobalScenes = false;
         public bool msgStepByStep = false;
-
-        private float lastTimeUnloadUnusedAssets = 0;
 
         private LoadingScreenController loadingScreenController = null;
 
@@ -201,6 +197,10 @@ namespace DCL
             if (pendingInitMessagesCount == 0)
             {
                 UnityGLTF.GLTFSceneImporter.BudgetPerFrameInMilliseconds = Mathf.Clamp(GLTF_BUDGET_MAX - prevTimeBudget, GLTF_BUDGET_MIN, GLTF_BUDGET_MAX) * 1000f;
+            }
+            else
+            {
+                UnityGLTF.GLTFSceneImporter.BudgetPerFrameInMilliseconds = 0;
             }
         }
 
@@ -448,16 +448,9 @@ namespace DCL
             if (scene)
             {
                 scene.Cleanup();
-                Utils.SafeDestroy(scene.gameObject);
             }
 
             OnMessageProcessEnds?.Invoke(MessagingTypes.SCENE_DESTROY);
-
-            if (Time.realtimeSinceStartup - lastTimeUnloadUnusedAssets >= TIME_BETWEEN_UNLOAD_ASSETS)
-            {
-                lastTimeUnloadUnusedAssets = Time.realtimeSinceStartup;
-                Resources.UnloadUnusedAssets();
-            }
         }
 
         public void UnloadAllScenes()
@@ -670,8 +663,8 @@ namespace DCL
                         // Start processing SYSTEM queue 
                         MessagingController sceneMessagingController = messagingControllers[scene.sceneData.id];
                         sceneMessagingController.StartBus(MessagingBusId.SYSTEM);
+                        sceneMessagingController.StartBus(MessagingBusId.UI);
                         sceneMessagingController.StopBus(MessagingBusId.INIT);
-                        sceneMessagingController.StopBus(MessagingBusId.UI);
                         break;
                     default:
                         Debug.LogError($"Unknown method {method}");
