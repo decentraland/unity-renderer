@@ -1,35 +1,45 @@
 <!DOCTYPE html>
 <html>
   <head>
-    <title>Decentraland Preview</title>
     <meta http-equiv="content-type" content="text/html; charset=UTF-8" />
-
+    <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico" />
+    <title>Decentraland Preview</title>
     <style>
       html,
       body {
         margin: 0;
         padding: 0;
         height: 100%;
+        overflow: hidden;
+        touch-action: none;
+      }
+
+      #gameContainer {
+        width: 100vw;
+        height: 100vh;
+        position: relative;
+      }
+
+      #gameContainer.loaded {
+        width: 100%;
+        height: 100%;
+        margin: auto;
+      }
+
+      #gameContainer.loaded,
+      body {
+        background: #292631 url(images/progress-logo.png) no-repeat center !important;
+        background-size: 309px 58px !important;
       }
 
       * {
         box-sizing: border-box;
       }
 
-      #gameContainer {
-        width: 100vw;
-        height: 100vh;
-      }
-
       body {
-        background: #e3e3e3;
-        color: #333;
+        color: #fff;
         font-family: 'open sans', roboto, 'helvetica neue', sans-serif;
         font-size: 0.8em;
-      }
-
-      .dcl-loading {
-        background: url(images/decentraland-loading.gif) center center no-repeat;
       }
 
       canvas {
@@ -38,11 +48,72 @@
         width: 100%;
         height: 100%;
       }
+
+      .dcl-loading .progress {
+        display: block;
+      }
+
+      .progress {
+        position: absolute;
+        height: 30px;
+        width: 100%;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        border-style: solid;
+        border-width: thick;
+        border-left: none;
+        border-right: none;
+        text-align: center;
+        border-color: #3a383b;
+        background: #3a383b;
+        display: none;
+      }
+
+      .progress .full {
+        float: left;
+        width: 0%;
+        height: 100%;
+        display: inline-flex;
+        background-color: #eb455a;
+        animation: progress_30 10s forwards;
+      }
+
+      .progress.loaded {
+        z-index: 1;
+      }
+
+      .progress.loaded .full {
+        animation: progress_50 5s forwards;
+      }
+
+      @keyframes progress_30 {
+        from {
+          width: 0;
+        }
+
+        to {
+          width: 30%;
+        }
+      }
+
+      @keyframes progress_50 {
+        from {
+          width: 30%;
+        }
+
+        to {
+          width: 50%;
+        }
+      }
     </style>
   </head>
 
   <body class="dcl-loading">
-    <div id="gameContainer" style="width: 100%; height: 100%; margin: auto"></div>
+    <div class="progress">
+      <div class="full"></div>
+    </div>
+    <div id="gameContainer"></div>
     <script>
       const ws = new WebSocket(`${location.protocol === 'https:' ? 'wss' : 'ws'}://${document.location.host}`)
 
@@ -58,6 +129,6 @@
       })
     </script>
   </body>
-  <script src="/@/artifacts/unity/Build/UnityLoader.js"></script>
+  <script src="/@/artifacts/unity/Build/DCLUnityLoader.js"></script>
   <script defer async src="/@/artifacts/preview.js"></script>
 </html>
