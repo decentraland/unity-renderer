@@ -3,7 +3,7 @@ import { Auth } from './auth'
 import './apis/index'
 import './events'
 
-import { ETHEREUM_NETWORK, setNetwork, getTLD, PREVIEW, DEBUG, ENABLE_WEB3 } from '../config'
+import { ETHEREUM_NETWORK, setNetwork, getTLD, PREVIEW, DEBUG, ENABLE_WEB3, STATIC_WORLD } from '../config'
 
 import { initializeUrlPositionObserver } from './world/positionThings'
 import { connect } from './comms'
@@ -74,14 +74,6 @@ export async function initShared(container: HTMLElement): Promise<ETHEREUM_NETWO
   await setNetwork(net)
   console['groupEnd']()
 
-  console['group']('connect#comms')
-  await connect(
-    userId,
-    net,
-    auth
-  )
-  console['groupEnd']()
-
   initializeUrlPositionObserver()
 
   // Warn in case wallet is set in mainnet
@@ -94,6 +86,19 @@ export async function initShared(container: HTMLElement): Promise<ETHEREUM_NETWO
     )
     document.head.appendChild(style)
   }
+
+  // DCL Servers connections/requests after this
+  if (STATIC_WORLD) {
+    return net
+  }
+
+  console['group']('connect#comms')
+  await connect(
+    userId,
+    net,
+    auth
+  )
+  console['groupEnd']()
 
   // initialize profile
   console['group']('connect#profile')
