@@ -120,6 +120,8 @@ async function validatePackage(folder: string) {
   copyFile(path.resolve(root, `static/dist/preview.js`), path.resolve(root, `${folder}/artifacts/preview.js`))
   copyFile(path.resolve(root, `static/preview.html`), path.resolve(root, `${folder}/artifacts/preview.html`))
 
+  copyFile(path.resolve(root, `static/export.html`), path.resolve(root, `${folder}/artifacts/export.html`))
+
   // static resources
   copyFile(path.resolve(root, `static/fonts`), path.resolve(root, `${folder}/artifacts/fonts`))
   copyFile(path.resolve(root, `static/images`), path.resolve(root, `${folder}/artifacts/images`))
