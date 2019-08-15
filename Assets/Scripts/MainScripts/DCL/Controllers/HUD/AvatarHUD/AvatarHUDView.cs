@@ -16,12 +16,12 @@ public class AvatarHUDView : MonoBehaviour
 
     [Header("Minimized UI")]
     [SerializeField] private Image topAvatarPic;
+
     [SerializeField] private Button toggleExpandButton;
 
     [Header("User Info")]
     [SerializeField] private GameObject expandedContainer;
 
-    [SerializeField] private Image expandedAvatarPic;
     [SerializeField] private TextMeshProUGUI nameText;
     [SerializeField] private TextMeshProUGUI mailText;
 
@@ -52,7 +52,6 @@ public class AvatarHUDView : MonoBehaviour
     internal void UpdateData(AvatarHUDModel model)
     {
         topAvatarPic.sprite = model.avatarPic ?? defaultSprite;
-        expandedAvatarPic.sprite = model.avatarPic ?? defaultSprite;
         nameText.text = model.name;
         mailText.text = model.mail;
     }
