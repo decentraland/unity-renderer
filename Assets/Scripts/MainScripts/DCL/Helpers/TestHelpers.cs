@@ -1298,7 +1298,7 @@ namespace DCL.Helpers
 
         public static void SetCharacterPosition(Vector3 newPosition)
         {
-            DCLCharacterController.i.SetPosition(JsonConvert.SerializeObject(newPosition));
+            DCLCharacterController.i.Teleport(JsonConvert.SerializeObject(newPosition));
         }
 
     }

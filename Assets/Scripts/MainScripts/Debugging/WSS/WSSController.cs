@@ -107,9 +107,9 @@ namespace DCL
 
         private void Start()
         {
-            #if UNITY_EDITOR
+#if UNITY_EDITOR
             SceneController.i.isWssDebugMode = true;
-            #endif
+#endif
         }
 
         private void OnEnable()
@@ -118,7 +118,7 @@ namespace DCL
             ws = new WebSocketServer("ws://localhost:5000");
             ws.AddWebSocketService<DCLWebSocketService>("/dcl");
             ws.Start();
-            
+
             if (openBrowserWhenStart)
             {
                 string debugString = "";
@@ -197,7 +197,7 @@ namespace DCL
                                 sceneController.UnloadScene(msg.payload);
                                 break;
                             case "SetPosition":
-                                characterController.SetPosition(msg.payload);
+                                characterController.Teleport(msg.payload);
                                 break;
                             case "Reset":
                                 sceneController.UnloadAllScenesQueued();

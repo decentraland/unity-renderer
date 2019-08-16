@@ -17,7 +17,7 @@ public class IntegrationTestController : MonoBehaviour
     {
         var sceneController = TestHelpers.InitializeSceneController();
         DCLCharacterController.i.gravity = 0;
-        DCLCharacterController.i.SetPosition(JsonConvert.SerializeObject(new
+        DCLCharacterController.i.Teleport(JsonConvert.SerializeObject(new
         {
             x = 0f,
             y = 0f,

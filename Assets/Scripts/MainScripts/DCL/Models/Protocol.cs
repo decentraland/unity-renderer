@@ -11,6 +11,7 @@ namespace DCL.Models
         AVATAR_SHAPE = 56,
         ANIMATOR = 33,
         AUDIO_SOURCE = 201,
+        BILLBOARD = 32,
     }
 
     public enum CLASS_ID
@@ -32,7 +33,6 @@ namespace DCL.Models
         UI_SLIDER_SHAPE = 30,
 
         CIRCLE_SHAPE = 31,
-        BILLBOARD = 32,
 
         UI_FULLSCREEN_SHAPE = 40,
         UI_BUTTON_SHAPE = 41,
