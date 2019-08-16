@@ -17,7 +17,7 @@ namespace Tests
 
             DCLCharacterController.i.gravity = 0f;
 
-            DCLCharacterController.i.SetPosition(JsonConvert.SerializeObject(new
+            DCLCharacterController.i.Teleport(JsonConvert.SerializeObject(new
             {
                 x = 10f,
                 y = 0f,
@@ -36,7 +36,7 @@ namespace Tests
 
             DCLCharacterController.i.gravity = 0f;
 
-            DCLCharacterController.i.SetPosition(JsonConvert.SerializeObject(new
+            DCLCharacterController.i.Teleport(JsonConvert.SerializeObject(new
             {
                 x = 50f,
                 y = 0f,
@@ -47,7 +47,7 @@ namespace Tests
 
             Assert.AreEqual(new Vector3(50f, 0f, 0f), DCLCharacterController.i.transform.position);
 
-            DCLCharacterController.i.SetPosition(JsonConvert.SerializeObject(new
+            DCLCharacterController.i.Teleport(JsonConvert.SerializeObject(new
             {
                 x = 50f + DCLCharacterPosition.LIMIT,
                 y = 0f,
@@ -58,7 +58,7 @@ namespace Tests
 
             Assert.AreEqual(new Vector3(50f, 0f, 50f), DCLCharacterController.i.transform.position);
 
-            DCLCharacterController.i.SetPosition(JsonConvert.SerializeObject(new
+            DCLCharacterController.i.Teleport(JsonConvert.SerializeObject(new
             {
                 x = -50f - DCLCharacterPosition.LIMIT,
                 y = 0f,

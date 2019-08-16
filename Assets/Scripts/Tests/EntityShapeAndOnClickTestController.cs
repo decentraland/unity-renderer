@@ -49,7 +49,7 @@ public class EntityShapeAndOnClickTestController : MonoBehaviour
         }
 
         var charController = FindObjectOfType<DCLCharacterController>();
-        charController.SetPosition(JsonConvert.SerializeObject(new
+        charController.Teleport(JsonConvert.SerializeObject(new
         {
             x = 10,
             y = 0,

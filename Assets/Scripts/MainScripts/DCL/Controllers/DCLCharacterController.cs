@@ -20,6 +20,11 @@ public class DCLCharacterController : MonoBehaviour
     public float jumpForce = 20f;
     public DCLCharacterPosition characterPosition = new DCLCharacterPosition();
 
+    public Transform cameraTransform
+    {
+        get { return camera.transform; }
+    }
+
     [Header("Collisions")]
     public LayerMask groundLayers;
 
@@ -91,14 +96,12 @@ public class DCLCharacterController : MonoBehaviour
         characterPosition.worldPosition = newPosition;
         transform.position = characterPosition.unityPosition;
 
-        if (OnPositionSet != null)
-        {
-            OnPositionSet.Invoke(characterPosition);
-        }
-
         if (Moved(previousPosition))
         {
-            ReportMovement();
+            if (Moved(previousPosition, useThreshold: true))
+                ReportMovement();
+
+            OnCharacterMoved?.Invoke(characterPosition);
         }
 
         if (!initialPositionAlreadySet)
@@ -107,16 +110,30 @@ public class DCLCharacterController : MonoBehaviour
         }
     }
 
-    public void SetPosition(string positionVector)
+    public void Teleport(string positionVector)
     {
         var newPosition = JsonUtility.FromJson<Vector3>(positionVector);
 
         SetPosition(newPosition);
+
+        if (OnPositionSet != null)
+        {
+            OnPositionSet.Invoke(characterPosition);
+        }
     }
 
-    bool Moved(Vector3 previousPosition)
+    [System.Obsolete("SetPosition is deprecated, please use Teleport instead.", true)]
+    public void SetPosition(string positionVector)
     {
-        return Vector3.Distance(characterPosition.worldPosition, previousPosition) > 0.001f;
+        Teleport(positionVector);
+    }
+
+    bool Moved(Vector3 previousPosition, bool useThreshold = false)
+    {
+        if (useThreshold)
+            return Vector3.Distance(characterPosition.worldPosition, previousPosition) > 0.001f;
+        else
+            return characterPosition.worldPosition != previousPosition;
     }
 
     void Update()
@@ -192,9 +209,11 @@ public class DCLCharacterController : MonoBehaviour
                 Jump();
             }
         }
+        Vector3 previousPosition = characterPosition.worldPosition;
 
         characterController.Move(velocity * deltaTime);
-        characterPosition.unityPosition = transform.position;
+
+        SetPosition(characterPosition.UnityToWorldPosition(transform.position));
 
         if ((Time.realtimeSinceStartup - lastMovementReportTime) > PlayerSettings.POSITION_REPORTING_DELAY)
         {
@@ -252,11 +271,6 @@ public class DCLCharacterController : MonoBehaviour
         reportPosition.y += camera.localPosition.y;
 
         DCL.Interface.WebInterface.ReportPosition(reportPosition, compositeRotation, playerHeight);
-
-        if (OnCharacterMoved != null)
-        {
-            OnCharacterMoved.Invoke(characterPosition);
-        }
 
         lastMovementReportTime = Time.realtimeSinceStartup;
     }
