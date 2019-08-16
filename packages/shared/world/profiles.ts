@@ -146,7 +146,6 @@ async function mapSpecToAvatar(avatar: AvatarSpec): Promise<Avatar> {
 
 export async function fetchProfile(uuid: string = '') {
   const auth = new Auth()
-  await auth.login()
 
   const request = await auth.createRequest(`${getServerConfigurations().profile}/profile${uuid ? '/' + uuid : ''}`)
   const response = await fetch(request)
@@ -156,7 +155,6 @@ export async function fetchProfile(uuid: string = '') {
 
 export async function createProfile(avatar: AvatarSpec) {
   const auth = new Auth()
-  await auth.login()
 
   const body = JSON.stringify(avatar)
   const options = {
