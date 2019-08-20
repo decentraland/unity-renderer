@@ -53,6 +53,17 @@
         display: block;
       }
 
+      #overlay {
+        display: none;
+        width: 100%;
+        height: 100%;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        z-index: 2;
+      }
+
       .progress {
         position: absolute;
         height: 30px;
@@ -87,6 +98,10 @@
         animation: progress_50 5s forwards;
       }
 
+      .progress.ingame .full {
+        animation: progress_100 50s forwards;
+      }
+
       @keyframes progress_30 {
         from {
           width: 0;
@@ -106,11 +121,22 @@
           width: 50%;
         }
       }
+
+      @keyframes progress_100 {
+        from {
+          width: 0%;
+        }
+
+        to {
+          width: 100%;
+        }
+      }
     </style>
   </head>
 
   <body class="dcl-loading">
-    <div class="progress">
+    <div id="overlay"></div>
+    <div id="progress-bar" class="progress ingame">
       <div class="full"></div>
     </div>
     <div id="gameContainer"></div>
