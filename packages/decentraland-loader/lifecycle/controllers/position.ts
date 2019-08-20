@@ -1,33 +1,56 @@
 import { Vector2Component } from 'atomicHelpers/landHelpers'
 import { SceneLifeCycleController } from './scene'
 import { EventEmitter } from 'events'
-import { SceneLifeCycleStatus } from '../lib/scene.status'
+import { ParcelLifeCycleController } from './parcel'
 
 export class PositionLifecycleController extends EventEmitter {
-  currentPosition?: Vector2Component
-  isSettled: boolean = false
+  private positionSettled: boolean = false
+  private currentSceneId?: string
+  private currentlySightedScenes: string[] = []
 
-  constructor(public sceneController: SceneLifeCycleController) {
+  constructor(public parcelController: ParcelLifeCycleController, public sceneController: SceneLifeCycleController) {
     super()
+    sceneController.on('Scene ready', () => this.checkPositionSettlement())
   }
 
-  reportCurrentPosition(position: Vector2Component) {
-    if (this.currentPosition && this.currentPosition.x === position.x && this.currentPosition.y === position.y) {
-      return
+  async reportCurrentPosition(position: Vector2Component, teleported: boolean) {
+    const { sighted, lostSight } = this.parcelController.reportCurrentPosition(position)
+
+    this.currentSceneId = await this.sceneController.requestSceneId(`${position.x},${position.y}`)
+
+    if (sighted) {
+      const newlySightedScenes = await this.sceneController.onSight(sighted)
+
+      if (!this.eqSet(this.currentlySightedScenes, newlySightedScenes)) {
+        this.currentlySightedScenes = newlySightedScenes
+      }
     }
-    this.currentPosition = position
-    const currentPosStr = `${position.x},${position.y}`
-    if (this.isSettled && !this.sceneController.hasStarted(currentPosStr)) {
-      // Teleport
-      this.isSettled = false
-      this.emit('Unsettled Position', currentPosStr)
+    if (lostSight) {
+      this.sceneController.lostSight(lostSight)
     }
+
+    if (teleported) {
+      this.positionSettled = false
+      this.emit('Unsettled Position')
+    }
+
+    this.checkPositionSettlement()
   }
 
-  reportSceneStarted(scene: SceneLifeCycleStatus) {
-    if (!this.isSettled && this.sceneController.contains(scene, this.currentPosition!)) {
-      this.isSettled = true
-      this.emit('Settled Position')
+  private eqSet(as: Array<any>, bs: Array<any>) {
+    if (as.length !== bs.length) return false
+    for (const a of as) if (!bs.includes(a)) return false
+    return true
+  }
+
+  private checkPositionSettlement() {
+    if (!this.positionSettled) {
+      const settling = this.currentlySightedScenes.every($ => this.sceneController.isReady($))
+
+      if (settling) {
+        this.positionSettled = settling
+        this.emit('Settled Position', this.currentSceneId)
+      }
     }
   }
 }

@@ -10,11 +10,11 @@ export function squareAndSum(a: number, b: number) {
 
 const cachedDeltas: Vector2Component[] = []
 
-export function parcelsInScope(config: ParcelConfigurationOptions, position: Vector2Component): string[] {
+export function parcelsInScope(lineOfSightRadius: number, position: Vector2Component): string[] {
   const result: string[] = []
   let length = cachedDeltas.length
   if (!length) {
-    calculateCachedDeltas(config)
+    calculateCachedDeltas(lineOfSightRadius)
     length = cachedDeltas.length
   }
   for (let i = 0; i < length; i++) {
@@ -23,8 +23,7 @@ export function parcelsInScope(config: ParcelConfigurationOptions, position: Vec
   return result
 }
 
-function calculateCachedDeltas(config: ParcelConfigurationOptions) {
-  const limit = config.lineOfSightRadius
+function calculateCachedDeltas(limit: number) {
   const squaredRadius = limit * limit
   for (let x = -limit; x <= limit; x++) {
     for (let y = -limit; y <= limit; y++) {

@@ -178,8 +178,8 @@ export class SharedSceneContext implements BABYLON.IDisposable {
     this.eventSubscriber.emit(event, data)
   }
 
-  /// #ECS.SceneStarted: This message is sent after the scene ends executing the initialization code. Before the render loop.
-  SceneStarted(payload: SceneStartedPayload) {
+  /// #ECS.InitMessagesFinished: This message is sent after the scene ends executing the initialization code. Before the render loop.
+  InitMessagesFinished(payload: SceneStartedPayload) {
     this.sceneStarted.resolve(payload)
   }
 

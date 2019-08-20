@@ -11,6 +11,8 @@ import { EnvironmentAPI } from 'shared/apis/EnvironmentAPI'
 import { Vector3, Quaternion, Vector2 } from 'decentraland-ecs/src/decentraland/math'
 import { PositionReport, positionObservable } from './positionThings'
 import { Observer, Observable } from 'decentraland-ecs/src'
+import { sceneLifeCycleObservable } from '../../decentraland-loader/lifecycle/controllers/scene'
+import { worldRunningObservable, isWorldRunning } from './worldState'
 
 // tslint:disable-next-line:whitespace
 type EngineAPI = import('../apis/EngineAPI').EngineAPI
@@ -55,9 +57,17 @@ export class SceneWorker {
   private readonly lastSentPosition = new Vector3(0, 0, 0)
   private readonly lastSentRotation = new Quaternion(0, 0, 0, 1)
   private positionObserver: Observer<any> | null = null
+  private sceneLifeCycleObserver: Observer<any> | null = null
+  private worldRunningObserver: Observer<any> | null = null
+
+  private sceneReady: boolean = false
+  private sceneStarted: boolean = false
 
   constructor(public parcelScene: ParcelSceneAPI, transport?: ScriptingTransport) {
     parcelScene.registerWorker(this)
+
+    this.subscribeToSceneLifeCycleEvents()
+    this.subscribeToWorldRunningEvents()
 
     this.loadSystem(transport)
       .then($ => this.system.resolve($))
@@ -69,6 +79,14 @@ export class SceneWorker {
       if (this.positionObserver) {
         positionObservable.remove(this.positionObserver)
         delete this.positionObserver
+      }
+      if (this.sceneLifeCycleObserver) {
+        sceneLifeCycleObservable.remove(this.sceneLifeCycleObserver)
+        delete this.sceneLifeCycleObserver
+      }
+      if (this.worldRunningObserver) {
+        worldRunningObservable.remove(this.worldRunningObserver)
+        delete this.worldRunningObserver
       }
 
       this.enabled = false
@@ -119,6 +137,30 @@ export class SceneWorker {
 
       this.sendUserViewMatrix(obj)
     })
+  }
+
+  private subscribeToWorldRunningEvents() {
+    this.worldRunningObserver = worldRunningObservable.add(isRunning => {
+      this.sendSceneReadyIfNecessary()
+    })
+  }
+
+  private subscribeToSceneLifeCycleEvents() {
+    this.sceneLifeCycleObserver = sceneLifeCycleObservable.add(obj => {
+      if (this.parcelScene.data.sceneId === obj.sceneId && obj.status === 'ready') {
+        this.sceneReady = true
+        sceneLifeCycleObservable.remove(this.sceneLifeCycleObserver)
+        this.sendSceneReadyIfNecessary()
+      }
+    })
+  }
+
+  private sendSceneReadyIfNecessary() {
+    if (!this.sceneStarted && isWorldRunning() && this.sceneReady) {
+      this.sceneStarted = true
+      this.engineAPI!.sendSubscriptionEvent('sceneStart', {})
+      worldRunningObservable.remove(this.worldRunningObserver)
+    }
   }
 
   private async startSystem(transport: ScriptingTransport) {

@@ -4,6 +4,7 @@ import { SharedSceneContext } from 'engine/entities/SharedSceneContext'
 import { defaultLogger, ILogger } from 'shared/logger'
 import { DevTools } from 'shared/apis/DevTools'
 import { IEvents, IEventNames } from 'decentraland-ecs/src/decentraland/Types'
+import { sceneLifeCycleObservable } from '../../decentraland-loader/lifecycle/controllers/scene'
 
 /**
  * The WebGLScene has the responsibility of communicating the SceneWorker with the SharedSceneContext
@@ -45,6 +46,9 @@ export class WebGLScene<T> implements ParcelSceneAPI {
         system.getAPIInstance(DevTools).logger = this.logger
       })
       .catch($ => this.logger.error('registerWorker', $))
+
+    // TODO - give time for babylon engine to finish loading - remove babylon engine altogether
+    setTimeout(() => sceneLifeCycleObservable.notifyObservers({ sceneId: this.data.sceneId, status: 'ready' }), 500)
   }
 
   dispose(): void {

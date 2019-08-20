@@ -116,7 +116,7 @@ teleportObservable.add((position: { x: number; y: number }) => {
   return teleportTo(position.x, position.y)
 })
 
-export async function teleportTo(x: number, y: number) {
+async function teleportTo(x: number, y: number) {
   if (
     !(
       parcelLimits.minLandCoordinateX <= x &&
