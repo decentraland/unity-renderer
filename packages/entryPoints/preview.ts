@@ -8,6 +8,7 @@ global['enableWeb3'] = window['enableWeb3']
 import { initializeUnity } from '../unity-interface/initializer'
 import { loadPreviewScene } from '../unity-interface/dcl'
 import { DEBUG_WS_MESSAGES } from '../config'
+import defaultLogger from '../shared/logger'
 
 // Remove the 'dcl-loading' class, used until JS loads.
 document.body.classList.remove('dcl-loading')
@@ -56,6 +57,12 @@ function startPreviewWatcher() {
 initializeUnity(container)
   .then(ret => {
     startPreviewWatcher()
+
+    ret.instancedJS
+      .then($ => {
+        $.unityInterface.ActivateRendering()
+      })
+      .catch(defaultLogger.error)
   })
   .catch(err => {
     console['error']('Error loading Unity')
