@@ -244,7 +244,7 @@ namespace UnityGLTF
                     sceneImporter.MaximumLod = MaximumLod;
                     sceneImporter.Timeout = Timeout;
                     sceneImporter.isMultithreaded = Multithreaded;
-                    sceneImporter.UseMaterialTransition = UseVisualFeedback;
+                    sceneImporter.useMaterialTransition = UseVisualFeedback;
                     sceneImporter.CustomShaderName = shaderOverride ? shaderOverride.name : null;
                     sceneImporter.LoadingTextureMaterial = LoadingTextureMaterial;
                     sceneImporter.InitialVisibility = initialVisibility;

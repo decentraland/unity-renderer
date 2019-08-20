@@ -181,7 +181,15 @@ namespace DCL.Helpers
                 {
                     if (OnSuccess != null)
                     {
-                        AudioClip ac = DownloadHandlerAudioClip.GetContent(request);
+                        AudioClip ac = null;
+                        try //In Editor we cannot decode MPEG and it's interrupting the flow
+                        {
+                            ac = DownloadHandlerAudioClip.GetContent(request);
+                        }
+                        catch(Exception e)
+                        {
+                            Debug.LogError(e);
+                        }
                         OnSuccess.Invoke(ac);
                     }
                 };

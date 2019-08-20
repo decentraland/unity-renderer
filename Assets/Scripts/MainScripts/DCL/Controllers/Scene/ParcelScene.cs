@@ -1,4 +1,5 @@
-﻿using DCL.Components;
+﻿using System;
+using DCL.Components;
 using DCL.Configuration;
 using DCL.Helpers;
 using DCL.Models;
@@ -6,12 +7,17 @@ using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 using UnityEngine.Assertions;
+using Environment = DCL.Configuration.Environment;
+using Object = UnityEngine.Object;
+using Random = UnityEngine.Random;
 
 namespace DCL.Controllers
 {
 
     public class ParcelScene : MonoBehaviour, ICleanable
     {
+        private const string PARCEL_BLOCKER_PREFAB = "Prefabs/ParcelBlocker";
+
         public static bool VERBOSE = false;
 
         private const float MAX_CLEANUP_BUDGET = 0.014f;
@@ -24,6 +30,9 @@ namespace DCL.Controllers
         public SceneController ownerController;
         public SceneMetricsController metricsController;
         public UIScreenSpace uiScreenSpace;
+
+        private static GameObject blockerPrefab;
+        private readonly List<GameObject> blockers = new List<GameObject>();
 
         public event System.Action<DecentralandEntity> OnEntityAdded;
         public event System.Action<DecentralandEntity> OnEntityRemoved;
@@ -57,6 +66,9 @@ namespace DCL.Controllers
 
         private Bounds bounds = new Bounds();
 
+        private readonly List<string> disposableNotReady = new List<string>();
+        public int disposableNotReadyCount => disposableNotReady.Count;
+
         private void Update()
         {
             SendMetricsEvent();
@@ -74,6 +86,33 @@ namespace DCL.Controllers
             this.name = gameObject.name = $"scene:{data.id}";
 
             gameObject.transform.position = DCLCharacterController.i.characterPosition.WorldToUnityPosition(GridToWorldPosition(data.basePosition.x, data.basePosition.y));
+            CleanBlockers();
+            SetupBlockers(data.parcels);
+        }
+
+        private void CleanBlockers()
+        {
+            for (var i = blockers.Count - 1; i >= 0; i--)
+            {
+                Destroy(blockers[i]);
+            }
+            blockers.Clear();
+        }
+
+        private void SetupBlockers(Vector2Int[] parcels)
+        {
+            if (blockerPrefab == null)
+            {
+                blockerPrefab = Resources.Load<GameObject>(PARCEL_BLOCKER_PREFAB);
+            }
+
+            for (var i = 0; i < parcels.Length; i++)
+            {
+                Vector2Int pos = parcels[i];
+                var blocker = Instantiate(blockerPrefab, transform);
+                blocker.transform.position = DCLCharacterController.i.characterPosition.WorldToUnityPosition(GridToWorldPosition(pos.x, pos.y)) + (Vector3.up * blockerPrefab.transform.localPosition.y) + new Vector3(ParcelSettings.PARCEL_SIZE/2,0, ParcelSettings.PARCEL_SIZE/2);
+                blockers.Add(blocker);
+            }
         }
 
         void OnPrecisionAdjust(DCLCharacterPosition position)
@@ -884,6 +923,28 @@ namespace DCL.Controllers
             );
         }
 
+        private void OnDisposableReady(BaseDisposable disposable)
+        {
+            disposableNotReady.Remove(disposable.id);
+            if (disposableNotReady.Count == 0)
+            {
+                CleanBlockers();
+                SceneController.i.SendSceneReady(sceneData.id);
+            }
+        }
 
+        public void SetInitMessagesDone()
+        {
+            disposableNotReady.Clear();
+            for (var i = 0; i < disposableComponents.Count; i++)
+            {
+                disposableNotReady.Add(disposableComponents.ElementAt(i).Key);
+            }
+
+            for (var i = 0; i < disposableComponents.Count; i++)
+            {
+                disposableComponents.ElementAt(i).Value.CallWhenReady(OnDisposableReady);
+            }
+        }
     }
 }

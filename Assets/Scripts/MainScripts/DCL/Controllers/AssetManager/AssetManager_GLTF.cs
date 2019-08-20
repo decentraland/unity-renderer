@@ -199,13 +199,6 @@ namespace DCL
 
         IEnumerator ShowObject(GameObject go, bool useMaterialTransition, Action OnSuccess)
         {
-            if (SceneController.i != null && SceneController.i.isLoadingScreenVisible)
-            {
-                go?.SetActive(true);
-                OnSuccess?.Invoke();
-                yield break;
-            }
-
             float delay = Random.Range(0, 1f);
             yield return new WaitForSeconds(delay);
 

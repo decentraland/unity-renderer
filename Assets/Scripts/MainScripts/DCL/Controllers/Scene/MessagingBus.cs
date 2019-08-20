@@ -56,7 +56,14 @@ namespace DCL
         public int pendingMessagesCount => pendingMessages != null ? pendingMessages.Count : 0;
         public long processedMessagesCount { get; private set; }
         public float lastTimeConsumed { get; private set; }
-        public float timeBudget;
+
+        public static bool renderingIsDisabled = false;
+        private float timeBudgetValue;
+        public float timeBudget
+        {
+            get => renderingIsDisabled ? float.MaxValue : timeBudgetValue;
+            set => timeBudgetValue = value;
+        }
 
         private Coroutine mainCoroutine;
         private CleanableYieldInstruction msgYieldInstruction;

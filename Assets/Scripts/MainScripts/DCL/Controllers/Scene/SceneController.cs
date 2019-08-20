@@ -33,7 +33,6 @@ namespace DCL
 
         [Header("Debug Tools")]
         public GameObject fpsPanel;
-        public bool enableLoadingScreenInEditor = false;
 
         [Header("Debug Panel")]
         public GameObject engineDebugPanel;
@@ -44,21 +43,7 @@ namespace DCL
         public Vector2Int debugSceneCoords;
         public bool ignoreGlobalScenes = false;
         public bool msgStepByStep = false;
-
-        private LoadingScreenController loadingScreenController = null;
-
-        public bool isLoadingScreenVisible
-        {
-            get
-            {
-                if (loadingScreenController == null)
-                    return false;
-
-                return loadingScreenController.isScreenVisible;
-            }
-        }
-
-
+        
         #region BENCHMARK_EVENTS
 
         //NOTE(Brian): For performance reasons, these events may need to be removed for production.
@@ -157,8 +142,6 @@ namespace DCL
             {
                 WebInterface.StartDecentraland();
             }
-
-            InitializeLoadingScreen();
         }
 
         private void OnEnable()
@@ -196,11 +179,11 @@ namespace DCL
 
             if (pendingInitMessagesCount == 0)
             {
-                UnityGLTF.GLTFSceneImporter.BudgetPerFrameInMilliseconds = Mathf.Clamp(GLTF_BUDGET_MAX - prevTimeBudget, GLTF_BUDGET_MIN, GLTF_BUDGET_MAX) * 1000f;
+                UnityGLTF.GLTFSceneImporter.budgetPerFrameInMilliseconds = Mathf.Clamp(GLTF_BUDGET_MAX - prevTimeBudget, GLTF_BUDGET_MIN, GLTF_BUDGET_MAX) * 1000f;
             }
             else
             {
-                UnityGLTF.GLTFSceneImporter.BudgetPerFrameInMilliseconds = 0;
+                UnityGLTF.GLTFSceneImporter.budgetPerFrameInMilliseconds = 0;
             }
         }
 
@@ -344,21 +327,6 @@ namespace DCL
                     messagingControllers[newScene.sceneData.id] = new MessagingController(this, newScene.sceneData.id);
 
                 PrioritizeMessageControllerList(force: true);
-
-                bool enableLoadingScreen = true;
-
-#if UNITY_EDITOR
-                enableLoadingScreen = enableLoadingScreenInEditor;
-#endif
-
-                if (!newScene.isPersistent && !loadingScreenController.started && enableLoadingScreen)
-                {
-                    Vector2 playerPos = ParcelScene.WorldToGridPosition(DCLCharacterController.i.characterPosition.worldPosition);
-                    if (Vector2Int.Distance(new Vector2Int((int)playerPos.x, (int)playerPos.y), sceneToLoad.basePosition) <= LoadingScreenController.MAX_DISTANCE_TO_PLAYER)
-                    {
-                        loadingScreenController.StartLoadingScreen();
-                    }
-                }
             }
 
             OnMessageProcessEnds?.Invoke(MessagingTypes.SCENE_LOAD);
@@ -657,14 +625,8 @@ namespace DCL
                     case MessagingTypes.ENTITY_DESTROY:
                         scene.RemoveEntity(tag);
                         break;
-                    case MessagingTypes.SCENE_STARTED:
-                        readyScenes.Add(scene.sceneData.id);
-
-                        // Start processing SYSTEM queue 
-                        MessagingController sceneMessagingController = messagingControllers[scene.sceneData.id];
-                        sceneMessagingController.StartBus(MessagingBusId.SYSTEM);
-                        sceneMessagingController.StartBus(MessagingBusId.UI);
-                        sceneMessagingController.StopBus(MessagingBusId.INIT);
+                    case MessagingTypes.INIT_DONE:
+                        scene.SetInitMessagesDone();
                         break;
                     default:
                         Debug.LogError($"Unknown method {method}");
@@ -742,17 +704,9 @@ namespace DCL
             return newScene;
         }
 
-        private void InitializeLoadingScreen()
-        {
-            loadingScreenController = new LoadingScreenController(this, enableLoadingScreenInEditor);
-            loadingScreenController.OnLoadingDone += LoadingDone;
-        }
-
         private void OnCharacterPositionSet(DCLCharacterPosition newPosition)
         {
             if (!DCLCharacterController.i.initialPositionAlreadySet) return;
-
-            InitializeLoadingScreen();
 
             // Flush pending messages
             using (var controllerIter = messagingControllers.GetEnumerator())
@@ -771,14 +725,27 @@ namespace DCL
             scenesSortedByDistance.Clear();
         }
 
-        private void LoadingDone()
+        public void SendSceneReady(string sceneId)
         {
-            loadingScreenController.OnLoadingDone -= LoadingDone;
+            readyScenes.Add(sceneId);
 
+            // Start processing SYSTEM queue
+            if (messagingControllers.ContainsKey(sceneId))
+            {
+                // Start processing SYSTEM queue 
+                MessagingController sceneMessagingController = messagingControllers[sceneId];
+                sceneMessagingController.StartBus(MessagingBusId.SYSTEM);
+                sceneMessagingController.StartBus(MessagingBusId.UI);
+                sceneMessagingController.StopBus(MessagingBusId.INIT);
+            }
+
+            //TODO LifeCycle Iteration 2:
+            //Temporary location for this code, must be called when browser's LoadingScreen fades out
             if (isDebugMode)
             {
                 fpsPanel.GetComponent<DCL.FrameTimeCounter>().Reset();
             }
+            WebInterface.ReportControlEvent(new WebInterface.SceneReady(sceneId));
         }
 
         public string TryToGetSceneCoordsID(string id)

@@ -1,8 +1,10 @@
-﻿using DCL.Controllers;
+﻿using System;
+using DCL.Controllers;
 using DCL.Helpers;
 using DCL.Models;
 using System.Collections;
 using UnityEngine;
+using Object = UnityEngine.Object;
 
 namespace DCL.Components
 {
@@ -31,6 +33,9 @@ namespace DCL.Components
         where LoadWrapperType : LoadWrapper
         where LoadWrapperModelType : LoadableShape.Model, new()
     {
+        private bool isLoaded = false;
+        private bool failed = true;
+        private event Action<BaseDisposable> OnReadyCallbacks;
         public System.Action<DecentralandEntity> OnEntityShapeUpdated;
 
         new public LoadWrapperModelType model
@@ -91,6 +96,7 @@ namespace DCL.Components
         {
             if (scene.contentProvider.HasContentsUrl(model.src))
             {
+                isLoaded = false;
                 entity.EnsureMeshGameObject(componentName + " mesh");
                 LoadWrapperType loadableShape = entity.meshGameObject.GetOrCreateComponent<LoadWrapperType>();
                 loadableShape.entity = entity;
@@ -104,6 +110,7 @@ namespace DCL.Components
 #if UNITY_EDITOR
                 Debug.LogError($"LoadableShape '{model.src}' not found in scene '{scene.sceneData.id}' mappings");
 #endif
+                failed = true;
             }
         }
 
@@ -134,10 +141,14 @@ namespace DCL.Components
                 MaterialTransitionController material = transitionController[i];
                 Object.Destroy(material);
             }
+            failed = true;
+            OnReadyCallbacks?.Invoke(this);
+            OnReadyCallbacks = null;
         }
 
         protected void OnLoadCompleted(LoadWrapper loadWrapper)
         {
+            isLoaded = true;
             DecentralandEntity entity = loadWrapper.entity;
 
             if (entity.currentShape == null)
@@ -151,6 +162,8 @@ namespace DCL.Components
 
             entity.OnComponentUpdated?.Invoke(loadWrapper);
             entity.OnShapeUpdated?.Invoke(entity);
+            OnReadyCallbacks?.Invoke(this);
+            OnReadyCallbacks = null;
         }
 
         private void DetachShape(DecentralandEntity entity)
@@ -163,6 +176,18 @@ namespace DCL.Components
             LoadWrapper loadWrapper = entity.meshGameObject.GetComponent<LoadWrapper>();
 
             loadWrapper?.Unload();
+        }
+        
+        public override void CallWhenReady(Action<BaseDisposable> callback)
+        {
+            if (attachedEntities.Count == 0 || isLoaded || failed)
+            {
+                callback.Invoke(this);
+            }
+            else
+            {
+                OnReadyCallbacks += callback;
+            }
         }
     }
 }

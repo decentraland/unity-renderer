@@ -31,6 +31,25 @@ namespace Tests
             yield return audioSource.routine;
         }
 
+
+        public DCLAudioClip CreateAudioClip(string url, bool loop, bool shouldTryToLoad, double volume)
+        {
+            DCLAudioClip.Model model = new DCLAudioClip.Model
+            {
+                url = url,
+                loop = loop,
+                shouldTryToLoad = shouldTryToLoad,
+                volume = volume
+            };
+
+            return CreateAudioClip(model);
+        }
+
+        public DCLAudioClip CreateAudioClip(DCLAudioClip.Model model)
+        {
+            return TestHelpers.SharedComponentCreate<DCLAudioClip, DCLAudioClip.Model>(scene, CLASS_ID.AUDIO_CLIP, model);
+        }
+
         public IEnumerator LoadAudioClip(ParcelScene scene, string audioClipId, string url, bool loop, bool loading,
             float volume, bool waitForLoading = true)
         {
@@ -188,9 +207,7 @@ namespace Tests
                 volume = 0.8f
             };
 
-            DCLAudioClip audioClip =
-                TestHelpers.SharedComponentCreate<DCLAudioClip, DCLAudioClip.Model>(scene, CLASS_ID.AUDIO_CLIP,
-                    componentModel);
+            DCLAudioClip audioClip = CreateAudioClip(componentModel);
 
             yield return audioClip.routine;
 
@@ -259,6 +276,44 @@ namespace Tests
 
             yield return TestHelpers.TestAttachedSharedComponentOfSameTypeIsReplaced<DCLAudioClip.Model, DCLAudioClip>(
                 scene, CLASS_ID.AUDIO_CLIP);
+        }
+
+        [UnityTest]
+        public IEnumerator AudioClip_OnReadyBeforeLoading()
+        {
+            yield return InitScene();
+
+            DCLAudioClip dclAudioClip = CreateAudioClip(TestHelpers.GetTestsAssetsPath() + "/Audio/short_effect.ogg", true, true, 1);
+            bool isOnReady = false;
+            dclAudioClip.CallWhenReady((x) => { isOnReady = true; });
+
+            Assert.IsTrue(isOnReady); //DCLAudioClip is ready on creation
+        }
+
+        [UnityTest]
+        public IEnumerator AudioClip_OnReadyWaitLoading()
+        {
+            yield return InitScene();
+
+            DCLAudioClip dclAudioClip = CreateAudioClip(TestHelpers.GetTestsAssetsPath() + "/Audio/short_effect.ogg", true, true, 1);
+            bool isOnReady = false;
+            dclAudioClip.CallWhenReady((x) => { isOnReady = true; });
+            yield return dclAudioClip.routine;
+
+            Assert.IsTrue(isOnReady);
+        }
+
+        [UnityTest]
+        public IEnumerator AudioClip_OnReadyAfterLoadingInstantlyCalled()
+        {
+            yield return InitScene();
+
+            DCLAudioClip dclAudioClip = CreateAudioClip(TestHelpers.GetTestsAssetsPath() + "/Audio/short_effect.ogg", true, true, 1);
+            yield return dclAudioClip.routine;
+            bool isOnReady = false;
+            dclAudioClip.CallWhenReady((x) => { isOnReady = true; });
+
+            Assert.IsTrue(isOnReady);
         }
     }
 }

@@ -14,10 +14,10 @@ namespace DCL
         public const string SHARED_COMPONENT_DISPOSE = "ComponentDisposed";
         public const string SHARED_COMPONENT_UPDATE = "ComponentUpdated";
         public const string ENTITY_DESTROY = "RemoveEntity";
-        public const string SCENE_STARTED = "SceneStarted";
         public const string SCENE_LOAD = "LoadScene";
         public const string SCENE_UPDATE = "UpdateScene";
         public const string SCENE_DESTROY = "UnloadScene";
+        public const string INIT_DONE = "InitMessagesFinished";
     }
 
     public class MessagingBusId

@@ -37,6 +37,41 @@ namespace DCL.Interface
 
 
         [System.Serializable]
+        public abstract class ControlEvent
+        {
+            public string eventType;
+        }
+
+        public abstract class ControlEvent<T> : ControlEvent
+        {
+
+            public T payload;
+            protected ControlEvent(string eventType, T payload)
+            {
+                this.eventType = eventType;
+                this.payload = payload;
+            }
+        }
+
+        [System.Serializable]
+        public class SceneReady : ControlEvent<SceneReady.Payload>
+        {
+            [System.Serializable]
+            public class Payload
+            {
+                public string sceneId;
+            }
+
+            public SceneReady(string sceneId) : base("SceneReady", new Payload() { sceneId = sceneId }){}
+        }
+
+        [System.Serializable]
+        public class ActivateRenderingACK : ControlEvent<object>
+        {
+            public ActivateRenderingACK() : base("ActivateRenderingACK", null){}
+        }
+
+        [System.Serializable]
         public class SceneEvent<T>
         {
             public string sceneId;
@@ -271,6 +306,11 @@ namespace DCL.Interface
             positionPayload.playerHeight = playerHeight;
 
             SendMessage("ReportPosition", positionPayload);
+        }
+
+        public static void ReportControlEvent<T>(T controlEvent) where T : ControlEvent
+        {
+            SendMessage("ControlEvent", controlEvent);
         }
 
         public static void ReportOnClickEvent(string sceneId, string uuid)

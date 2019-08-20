@@ -100,11 +100,22 @@ namespace UnityGLTF
         /// </summary>
         public bool InitialVisibility { get; set; }
 
-        static public float BudgetPerFrameInMilliseconds = 2f;
+        public static bool renderingIsDisabled = false;
+        private static float budgetPerFrameInMillisecondsValue = 2f;
+        public static float budgetPerFrameInMilliseconds
+        {
+            get => renderingIsDisabled ? float.MaxValue : budgetPerFrameInMillisecondsValue;
+            set => budgetPerFrameInMillisecondsValue = value;
+        }
 
         public bool KeepCPUCopyOfMesh = true;
 
-        public bool UseMaterialTransition = true;
+        private bool useMaterialTransitionValue = true;
+        public bool useMaterialTransition
+        {
+            get => useMaterialTransitionValue && !renderingIsDisabled;
+            set => useMaterialTransitionValue = value;
+        }
 
         public const int MAX_TEXTURE_SIZE = 1024;
 
@@ -1477,7 +1488,7 @@ namespace UnityGLTF
 
                 var primitiveObj = new GameObject("Primitive");
                 primitiveObj.transform.SetParent(parent, false);
-                primitiveObj.SetActive(UseMaterialTransition || LoadingTextureMaterial != null);
+                primitiveObj.SetActive(useMaterialTransition || LoadingTextureMaterial != null);
 
                 SkinnedMeshRenderer skinnedMeshRenderer = null;
                 MeshRenderer meshRenderer = null;
@@ -1510,7 +1521,7 @@ namespace UnityGLTF
                     }
 
                     //// NOTE(Brian): Texture loading
-                    if (UseMaterialTransition && InitialVisibility)
+                    if (useMaterialTransition && InitialVisibility)
                     {
                         var matController = primitiveObj.AddComponent<MaterialTransitionController>();
                         var coroutine = DownloadAndConstructMaterial(primitive, materialIndex, renderer, matController);
@@ -1627,7 +1638,7 @@ namespace UnityGLTF
 
         static protected bool ShouldYieldOnTimeout()
         {
-            return ((Time.realtimeSinceStartup - _timeAtLastYield) > (BudgetPerFrameInMilliseconds / 1000f / (float)GLTFComponent.downloadingCount));
+            return ((Time.realtimeSinceStartup - _timeAtLastYield) > (budgetPerFrameInMilliseconds / 1000f / (float)GLTFComponent.downloadingCount));
         }
 
         static protected IEnumerator YieldOnTimeout()

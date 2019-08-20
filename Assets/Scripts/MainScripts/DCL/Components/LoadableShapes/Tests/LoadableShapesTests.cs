@@ -396,5 +396,58 @@ namespace Tests
 
             yield return TestHelpers.TestShapeVisibility(shapeComponent, shapeModel, entity);
         }
+
+        [UnityTest]
+        public IEnumerator GLTF_OnReadyBeforeLoading()
+        {
+            yield return InitScene();
+            GLTFShape gltfShape = TestHelpers.CreateEntityWithGLTFShape(scene, Vector3.zero, TestHelpers.GetTestsAssetsPath() + "/GLB/Trevor/Trevor.glb", out DecentralandEntity entity);
+
+            bool isOnReady = false;
+            gltfShape.CallWhenReady((x) => { isOnReady = true; });
+
+            Assert.IsFalse(isOnReady);
+        }
+
+        [UnityTest]
+        public IEnumerator GLTF_OnReadyWaitLoading()
+        {
+            yield return InitScene();
+            GLTFShape gltfShape = TestHelpers.CreateEntityWithGLTFShape(scene, Vector3.zero, TestHelpers.GetTestsAssetsPath() + "/GLB/Trevor/Trevor.glb", out DecentralandEntity entity);
+
+            bool isOnReady = false;
+            gltfShape.CallWhenReady((x) => { isOnReady = true; });
+            yield return TestHelpers.WaitForGLTFLoad(entity);
+
+            Assert.IsTrue(isOnReady);
+        }
+
+        [UnityTest]
+        public IEnumerator GLTF_OnReadyWithoutAttachInstantlyCalled()
+        {
+            yield return InitScene();
+
+            GLTFShape gltfShape = TestHelpers.SharedComponentCreate<GLTFShape, GLTFShape.Model>(scene, CLASS_ID.GLTF_SHAPE, new LoadableShape.Model()
+            {
+                src = TestHelpers.GetTestsAssetsPath() + "/GLB/Trevor/Trevor.glb"
+            });
+
+            bool isOnReady = false;
+            gltfShape.CallWhenReady((x) => { isOnReady = true; });
+
+            Assert.IsTrue(isOnReady);
+        }
+
+        [UnityTest]
+        public IEnumerator GLTF_OnReadyAfterLoadingInstantlyCalled()
+        {
+            yield return InitScene();
+            GLTFShape gltfShape = TestHelpers.CreateEntityWithGLTFShape(scene, Vector3.zero, TestHelpers.GetTestsAssetsPath() + "/GLB/Trevor/Trevor.glb", out DecentralandEntity entity);
+            yield return TestHelpers.WaitForGLTFLoad(entity);
+
+            bool isOnReady = false;
+            gltfShape.CallWhenReady((x) => { isOnReady = true; });
+            Assert.IsTrue(isOnReady);
+        }
     }
 }

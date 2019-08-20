@@ -79,7 +79,7 @@ namespace DCL
 
             if (VERBOSE)
             {
-                float gltfBudget = UnityGLTF.GLTFSceneImporter.BudgetPerFrameInMilliseconds;
+                float gltfBudget = UnityGLTF.GLTFSceneImporter.budgetPerFrameInMilliseconds;
                 float msgBudget = currentTimeBudget * 1000;
                 float totalBudget = gltfBudget + msgBudget;
 

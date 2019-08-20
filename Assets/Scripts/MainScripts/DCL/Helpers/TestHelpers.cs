@@ -1301,5 +1301,10 @@ namespace DCL.Helpers
             DCLCharacterController.i.Teleport(JsonConvert.SerializeObject(newPosition));
         }
 
+        public static IEnumerator WaitForGLTFLoad(DecentralandEntity entity)
+        {
+            LoadWrapper_GLTF wrapper = entity.gameObject.GetComponentInChildren<LoadWrapper_GLTF>(true);
+            return new WaitUntil(() => wrapper.alreadyLoaded);
+        }
     }
 }

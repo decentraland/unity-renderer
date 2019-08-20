@@ -30,7 +30,6 @@ namespace DCL
         public TextureWrapMode unityWrap;
         public FilterMode unitySamplingMode;
         public Texture2D texture;
-
         public DCLTexture(DCL.Controllers.ParcelScene scene) : base(scene)
         {
         }
