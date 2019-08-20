@@ -1,17 +1,25 @@
-import { SceneLifeCycleStatus } from '../lib/scene.status'
+import { SceneLifeCycleStatus, SceneLifeCycleStatusType } from '../lib/scene.status'
 import { Vector2Component } from 'atomicHelpers/landHelpers'
 import future, { IFuture } from 'fp-future'
 import { EventEmitter } from 'events'
 import { SceneDataDownloadManager } from './download'
+import { Observable } from 'decentraland-ecs/src/ecs/Observable'
+import defaultLogger from 'shared/logger'
+
+export type SceneLifeCycleStatusReport = { sceneId: string; status: SceneLifeCycleStatusType }
+
+export const sceneLifeCycleObservable = new Observable<Readonly<SceneLifeCycleStatusReport>>()
+
+type SceneId = string
 
 export class SceneLifeCycleController extends EventEmitter {
   private downloadManager: SceneDataDownloadManager
 
-  private _positionToSceneId = new Map<string, string | undefined>()
-  private futureOfPositionToSceneId = new Map<string, IFuture<string | undefined>>()
-  private sceneStatus = new Map<string, SceneLifeCycleStatus>()
+  private _positionToSceneId = new Map<string, SceneId | undefined>()
+  private futureOfPositionToSceneId = new Map<string, IFuture<SceneId | undefined>>()
+  private sceneStatus = new Map<SceneId, SceneLifeCycleStatus>()
 
-  private sceneParcelSightCount = new Map<string, number>()
+  private sceneParcelSightCount = new Map<SceneId, number>()
 
   constructor(opts: { downloadManager: SceneDataDownloadManager }) {
     super()
@@ -32,10 +40,16 @@ export class SceneLifeCycleController extends EventEmitter {
     )
   }
 
-  async onSight(position: string) {
-    let sceneId = await this.requestSceneId(position)
+  distinct(value: any, index: number, self: Array<any>) {
+    return self.indexOf(value) === index
+  }
 
-    if (sceneId) {
+  async onSight(positions: string[]) {
+    const positionSceneIds = (await Promise.all(
+      positions.map(position => this.requestSceneId(position).then(sceneId => ({ position, sceneId })))
+    )).filter(({ sceneId }) => sceneId !== undefined) as { position: string; sceneId: SceneId }[]
+
+    positionSceneIds.forEach(async ({ position, sceneId }) => {
       const previousSightCount = this.sceneParcelSightCount.get(sceneId) || 0
       this.sceneParcelSightCount.set(sceneId, previousSightCount + 1)
 
@@ -50,31 +64,52 @@ export class SceneLifeCycleController extends EventEmitter {
         this.emit('Preload scene', sceneId)
         this.sceneStatus.get(sceneId)!.status = 'awake'
       }
-    }
-  }
-  async lostSight(position: string) {
-    let sceneId = await this.requestSceneId(position)
-    if (!sceneId) {
-      return
-    }
-    const previousSightCount = this.sceneParcelSightCount.get(sceneId) || 0
-    const newSightCount = previousSightCount - 1
-    this.sceneParcelSightCount.set(sceneId, newSightCount)
+    })
 
-    if (newSightCount <= 0) {
-      const sceneStatus = this.sceneStatus.get(sceneId)
-      if (sceneStatus && sceneStatus.isAwake()) {
-        sceneStatus.status = 'unloaded'
-        this.emit('Unload scene', sceneId)
+    return positionSceneIds.map($ => $.sceneId).filter(this.distinct)
+  }
+
+  lostSight(positions: string[]) {
+    positions.forEach(async position => {
+      let sceneId = await this.requestSceneId(position)
+      if (!sceneId) {
+        return
       }
-    }
+      const previousSightCount = this.sceneParcelSightCount.get(sceneId) || 0
+      const newSightCount = previousSightCount - 1
+      this.sceneParcelSightCount.set(sceneId, newSightCount)
+
+      if (newSightCount <= 0) {
+        const sceneStatus = this.sceneStatus.get(sceneId)
+        if (sceneStatus && sceneStatus.isAwake()) {
+          sceneStatus.status = 'unloaded'
+          this.emit('Unload scene', sceneId)
+        }
+      }
+    })
   }
 
   reportDataLoaded(sceneId: string) {
     if (this.sceneStatus.has(sceneId) && this.sceneStatus.get(sceneId)!.status === 'awake') {
-      this.sceneStatus.get(sceneId)!.status = 'ready'
+      this.sceneStatus.get(sceneId)!.status = 'loaded'
       this.emit('Start scene', sceneId)
     }
+  }
+
+  isReady(sceneId: SceneId): boolean {
+    const status = this.sceneStatus.get(sceneId)
+    return !!status && status.isReady()
+  }
+
+  reportStatus(sceneId: string, status: SceneLifeCycleStatusType) {
+    const lifeCycleStatus = this.sceneStatus.get(sceneId)
+    if (!lifeCycleStatus) {
+      defaultLogger.info(`no lifecycle status for scene ${sceneId}`)
+      return
+    }
+    lifeCycleStatus.status = status
+
+    this.emit('Scene ready', sceneId)
   }
 
   async requestSceneId(position: string): Promise<string | undefined> {

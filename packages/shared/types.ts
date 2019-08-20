@@ -55,7 +55,7 @@ export type EntityActionType =
   | 'ComponentDisposed'
   | 'ComponentRemoved'
   | 'ComponentUpdated'
-  | 'SceneStarted'
+  | 'InitMessagesFinished'
 
 export type CreateEntityPayload = { id: string }
 

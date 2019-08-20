@@ -1,7 +1,9 @@
 import { ILand } from 'shared/types'
 
+export type SceneLifeCycleStatusType = 'unloaded' | 'awake' | 'loaded' | 'ready'
+
 export class SceneLifeCycleStatus {
-  status: 'unloaded' | 'awake' | 'ready' = 'unloaded'
+  status: SceneLifeCycleStatusType = 'unloaded'
 
   constructor(public sceneDescription: ILand) {}
 
@@ -13,7 +15,7 @@ export class SceneLifeCycleStatus {
     return this.status === 'unloaded'
   }
 
-  isRunning() {
+  isReady() {
     return this.status === 'ready'
   }
 }

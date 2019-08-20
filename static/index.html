@@ -1,137 +1,161 @@
 <!DOCTYPE html>
 <html>
-
-<head>
-  <meta http-equiv="content-type" content="text/html; charset=UTF-8" />
-  <link rel='shortcut icon' type='image/x-icon' href='/favicon.ico' />
-  <title>Decentraland</title>
-  <style>
-    html,
-    body {
-      margin: 0;
-      padding: 0;
-      height: 100%;
-      overflow: hidden;
-      touch-action: none;
-    }
-
-    #gameContainer {
-      width: 100vw;
-      height: 100vh;
-      position: relative;
-    }
-
-    #gameContainer.loaded {
-      width: 100%;
-      height: 100%;
-      margin: auto;
-    }
-
-    #gameContainer.loaded,
-    body {
-      background: #292631 url(images/progress-logo.png) no-repeat center !important;
-      background-size: 309px 58px !important;
-    }
-
-    * {
-      box-sizing: border-box;
-    }
-
-    body {
-      color: #fff;
-      font-family: 'open sans', roboto, 'helvetica neue', sans-serif;
-      font-size: 0.8em;
-    }
-
-    canvas {
-      position: relative;
-      z-index: 1000;
-      width: 100%;
-      height: 100%;
-    }
-
-    .dcl-loading .progress {
-      display: block;
-    }
-
-    .progress {
-      position: absolute;
-      height: 30px;
-      width: 100%;
-      bottom: 0;
-      left: 0;
-      right: 0;
-      border-style: solid;
-      border-width: thick;
-      border-left: none;
-      border-right: none;
-      text-align: center;
-      border-color: #3a383b;
-      background: #3a383b;
-      display: none;
-    }
-
-    .progress .full {
-      float: left;
-      width: 0%;
-      height: 100%;
-      display: inline-flex;
-      background-color: #eb455a;
-      animation: progress_30 10s forwards;
-    }
-
-    .progress.loaded {
-      z-index: 1;
-    }
-
-    .progress.loaded .full {
-      animation: progress_50 5s forwards;
-    }
-
-    @keyframes progress_30 {
-      from {
-        width: 0;
+  <head>
+    <meta http-equiv="content-type" content="text/html; charset=UTF-8" />
+    <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico" />
+    <title>Decentraland</title>
+    <style>
+      html,
+      body {
+        margin: 0;
+        padding: 0;
+        height: 100%;
+        overflow: hidden;
+        touch-action: none;
       }
 
-      to {
-        width: 30%;
-      }
-    }
-
-    @keyframes progress_50 {
-      from {
-        width: 30%;
+      #gameContainer {
+        width: 100vw;
+        height: 100vh;
+        position: relative;
       }
 
-      to {
-        width: 50%;
+      #gameContainer.loaded {
+        width: 100%;
+        height: 100%;
+        margin: auto;
       }
-    }
-  </style>
-</head>
 
-<body class="dcl-loading">
-  <div class="progress">
-    <div class="full"></div>
-  </div>
-  <div id="gameContainer"></div>
-  <script async src="https://www.googletagmanager.com/gtag/js?id=UA-63691338-5"></script>
-  <script>
-    window.dataLayer = window.dataLayer || []
+      #gameContainer.loaded,
+      body {
+        background: #292631 url(images/progress-logo.png) no-repeat center !important;
+        background-size: 309px 58px !important;
+      }
 
-    function gtag() {
-      dataLayer.push(arguments)
-    }
-    gtag('js', new Date())
-    gtag('config', 'UA-63691338-5')
-  </script>
+      * {
+        box-sizing: border-box;
+      }
 
-  <script>
-    // prettier-ignore
-    !function () { var analytics = window.analytics = window.analytics || []; if (!analytics.initialize) if (analytics.invoked) window.console && console.error && console.error("Segment snippet included twice."); else { analytics.invoked = !0; analytics.methods = ["trackSubmit", "trackClick", "trackLink", "trackForm", "pageview", "identify", "reset", "group", "track", "ready", "alias", "debug", "page", "once", "off", "on"]; analytics.factory = function (t) { return function () { var e = Array.prototype.slice.call(arguments); e.unshift(t); analytics.push(e); return analytics } }; for (var t = 0; t < analytics.methods.length; t++) { var e = analytics.methods[t]; analytics[e] = analytics.factory(e) } analytics.load = function (t, e) { var n = document.createElement("script"); n.type = "text/javascript"; n.async = !0; n.src = "https://cdn.segment.com/analytics.js/v1/" + t + "/analytics.min.js"; var a = document.getElementsByTagName("script")[0]; a.parentNode.insertBefore(n, a); analytics._loadOptions = e }; analytics.SNIPPET_VERSION = "4.1.0"; } }();
-  </script>
-</body>
-<script src="unity/Build/DCLUnityLoader.js"></script>
-<script defer async src="dist/unity.js"></script>
+      body {
+        color: #fff;
+        font-family: 'open sans', roboto, 'helvetica neue', sans-serif;
+        font-size: 0.8em;
+      }
 
+      canvas {
+        position: relative;
+        z-index: 1000;
+        width: 100%;
+        height: 100%;
+      }
+
+      .dcl-loading .progress {
+        display: block;
+      }
+
+      #overlay {
+        display: none;
+        width: 100%;
+        height: 100%;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        z-index: 2;
+      }
+
+      .progress {
+        position: absolute;
+        height: 30px;
+        width: 100%;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        border-style: solid;
+        border-width: thick;
+        border-left: none;
+        border-right: none;
+        text-align: center;
+        border-color: #3a383b;
+        background: #3a383b;
+        display: none;
+      }
+
+      .progress .full {
+        float: left;
+        width: 0%;
+        height: 100%;
+        display: inline-flex;
+        background-color: #eb455a;
+        animation: progress_30 10s forwards;
+      }
+
+      .progress.loaded {
+        z-index: 1;
+      }
+
+      .progress.loaded .full {
+        animation: progress_50 5s forwards;
+      }
+
+      .progress.ingame .full {
+        animation: progress_100 50s forwards;
+      }
+
+      @keyframes progress_30 {
+        from {
+          width: 0;
+        }
+
+        to {
+          width: 30%;
+        }
+      }
+
+      @keyframes progress_50 {
+        from {
+          width: 30%;
+        }
+
+        to {
+          width: 50%;
+        }
+      }
+
+      @keyframes progress_100 {
+        from {
+          width: 0%;
+        }
+
+        to {
+          width: 100%;
+        }
+      }
+    </style>
+  </head>
+
+  <body class="dcl-loading">
+    <div id="overlay"></div>
+    <div id="progress-bar" class="progress ingame">
+      <div class="full"></div>
+    </div>
+    <div id="gameContainer"></div>
+    <script async src="https://www.googletagmanager.com/gtag/js?id=UA-63691338-5"></script>
+    <script>
+      window.dataLayer = window.dataLayer || []
+
+      function gtag() {
+        dataLayer.push(arguments)
+      }
+      gtag('js', new Date())
+      gtag('config', 'UA-63691338-5')
+    </script>
+
+    <script>
+      // prettier-ignore
+      !function () { var analytics = window.analytics = window.analytics || []; if (!analytics.initialize) if (analytics.invoked) window.console && console.error && console.error("Segment snippet included twice."); else { analytics.invoked = !0; analytics.methods = ["trackSubmit", "trackClick", "trackLink", "trackForm", "pageview", "identify", "reset", "group", "track", "ready", "alias", "debug", "page", "once", "off", "on"]; analytics.factory = function (t) { return function () { var e = Array.prototype.slice.call(arguments); e.unshift(t); analytics.push(e); return analytics } }; for (var t = 0; t < analytics.methods.length; t++) { var e = analytics.methods[t]; analytics[e] = analytics.factory(e) } analytics.load = function (t, e) { var n = document.createElement("script"); n.type = "text/javascript"; n.async = !0; n.src = "https://cdn.segment.com/analytics.js/v1/" + t + "/analytics.min.js"; var a = document.getElementsByTagName("script")[0]; a.parentNode.insertBefore(n, a); analytics._loadOptions = e }; analytics.SNIPPET_VERSION = "4.1.0"; } }();
+    </script>
+  </body>
+  <script src="unity/Build/DCLUnityLoader.js"></script>
+  <script defer async src="dist/unity.js"></script>
 </html>

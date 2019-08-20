@@ -7,6 +7,7 @@ import { enableParcelSceneLoading } from '../shared/world/parcelSceneManager'
 import { WebGLParcelScene } from '../engine/dcl/WebGLParcelScene'
 import { enableMiniMap } from '../engine/dcl/widgets/minimap'
 import { getWorldSpawnpoint } from '../shared/world/positionThings'
+import { worldRunningObservable } from '../shared/world/worldState'
 
 document.body.classList.remove('dcl-loading')
 
@@ -19,6 +20,9 @@ async function loadClient() {
 
   await enableParcelSceneLoading({
     parcelSceneClass: WebGLParcelScene,
+    onPositionSettled: () => {
+      worldRunningObservable.notifyObservers(true)
+    },
     onSpawnpoint: initialLand => {
       const newPosition = getWorldSpawnpoint(initialLand)
       const result = new BABYLON.Vector3(newPosition.x, newPosition.y, newPosition.z)

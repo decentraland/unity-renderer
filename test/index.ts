@@ -34,7 +34,6 @@ import './unityIntegration/ecs/math/vector3.test'
 import './interactions/click.test'
 
 /* PARCEL SCENES */
-import './parcelScenes/unmount.test'
 import './parcelScenes/gltfLimits.test'
 import './parcelScenes/triangleLimits.test'
 
@@ -45,7 +44,6 @@ import './visualValidation/atlas.test'
 import './visualValidation/aframePrimitives.test'
 import './visualValidation/avatar.test'
 import './visualValidation/skyAndLights.test'
-import './visualValidation/crocs.test'
 import './visualValidation/parcel-shape.test'
 import './visualValidation/changeMaterial.test'
 import './visualValidation/text.test'

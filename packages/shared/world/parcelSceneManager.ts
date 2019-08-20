@@ -6,6 +6,8 @@ import { positionObservable, teleportObservable } from './positionThings'
 import { SceneWorker, ParcelSceneAPI } from './SceneWorker'
 import { LoadableParcelScene, EnvironmentData, ILand, ILandToLoadableParcelScene } from '../types'
 import { ScriptingTransport } from 'decentraland-rpc/lib/common/json-rpc/types'
+import { sceneLifeCycleObservable } from '../../decentraland-loader/lifecycle/controllers/scene'
+import { worldRunningObservable } from './worldState'
 
 export type EnableParcelSceneLoadingOptions = {
   parcelSceneClass: { new (x: EnvironmentData<LoadableParcelScene>): ParcelSceneAPI }
@@ -13,6 +15,8 @@ export type EnableParcelSceneLoadingOptions = {
   onSpawnpoint?: (initialLand: ILand) => void
   onLoadParcelScenes?(x: ILand[]): void
   onUnloadParcelScenes?(x: ILand[]): void
+  onPositionSettled?(): void
+  onPositionUnsettled?(): void
 }
 
 export const loadedSceneWorkers = new Map<string, SceneWorker>()
@@ -100,18 +104,30 @@ export async function enableParcelSceneLoading(options: EnableParcelSceneLoading
     }
   })
 
-  ret.on('Position.settled', async (sceneId: string) => {
-    if (options.onSpawnpoint) {
-      options.onSpawnpoint(await ret.getParcelData(sceneId))
+  ret.on('Position.settled', async (opt: { sceneId: string }) => {
+    // TODO - readd spawnpoint - moliva - 15/08/2019
+    if (options.onPositionSettled) {
+      options.onPositionSettled()
     }
   })
 
+  ret.on('Position.unsettled', () => {
+    if (options.onPositionUnsettled) {
+      options.onPositionUnsettled()
+    }
+    worldRunningObservable.notifyObservers(false)
+  })
+
   teleportObservable.add((position: { x: number; y: number }) => {
-    ret.notify('User.setPosition', { position })
+    ret.notify('User.setPosition', { position, teleported: true })
   })
 
   positionObservable.add(obj => {
     worldToGrid(obj.position, position)
-    ret.notify('User.setPosition', { position })
+    ret.notify('User.setPosition', { position, teleported: false })
+  })
+
+  sceneLifeCycleObservable.add(sceneStatus => {
+    ret.notify('Scene.status', sceneStatus)
   })
 }

@@ -29,6 +29,8 @@ import { BasicShape } from 'engine/components/disposableComponents/DisposableCom
 import { initHudSystem } from 'engine/dcl/widgets/ui'
 import { AVATAR_OBSERVABLE } from 'decentraland-ecs/src/decentraland/Types'
 import { deleteUnusedTextures } from 'engine/renderer/monkeyLoader'
+import { worldRunningObservable } from '../packages/shared/world/worldState'
+import { sceneLifeCycleObservable } from '../packages/decentraland-loader/lifecycle/controllers/scene'
 
 const port = process.env.PORT || 8080
 
@@ -482,6 +484,10 @@ export function testScene(
       while (!sceneHost.didStart) {
         await sleep(10)
       }
+
+      // emulate system events
+      sceneLifeCycleObservable.notifyObservers({ sceneId: parcelScene.data.sceneId, status: 'ready' })
+      worldRunningObservable.notifyObservers(true)
 
       await parcelScene.context
     })

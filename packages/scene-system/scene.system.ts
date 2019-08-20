@@ -17,6 +17,7 @@ import { defaultLogger } from 'shared/logger'
 
 import { customEval, getES5Context } from './sdk/sandbox'
 import { DevToolsAdapter } from './sdk/DevToolsAdapter'
+import { ScriptingTransport, ILogOpts } from 'decentraland-rpc/src/common/json-rpc/types'
 
 // tslint:disable-next-line:whitespace
 type IEngineAPI = import('shared/apis/EngineAPI').IEngineAPI
@@ -73,6 +74,10 @@ export default class GamekitScene extends Script {
 
   didStart = false
   provider: any = null
+
+  constructor(transport: ScriptingTransport, opt?: ILogOpts) {
+    super(transport, opt)
+  }
 
   onError(error: Error) {
     if (this.devToolsAdapter) {
@@ -374,18 +379,28 @@ export default class GamekitScene extends Script {
         }
       }
 
+      this.eventSubscriber.once('sceneStart', () => {
+        if (!this.manualUpdate) {
+          this.startLoop()
+        }
+
+        this.onStartFunctions.forEach($ => {
+          try {
+            $()
+          } catch (e) {
+            this.onError(e)
+          }
+        })
+      })
+
       try {
         await customEval((source as any) as string, getES5Context({ dcl }))
 
         this.events.push({
-          type: 'SceneStarted',
+          type: 'InitMessagesFinished',
           tag: 'scene',
           payload: '{}'
         })
-
-        if (!this.manualUpdate) {
-          this.startLoop()
-        }
 
         this.onStartFunctions.push(() => {
           const engine: IEngineAPI = this.engine as any
@@ -396,17 +411,6 @@ export default class GamekitScene extends Script {
       }
 
       this.sendBatch()
-
-      setTimeout(() => {
-        this.onStartFunctions.forEach($ => {
-          try {
-            $()
-          } catch (e) {
-            that.onError(e)
-          }
-        })
-        // TODO: review this timeout
-      }, 5000)
     } catch (e) {
       this.onError(e)
       // unload should be triggered here
