@@ -78,7 +78,7 @@ namespace DCL.Components
         {
             if (entity.meshGameObject && entity.meshGameObject.GetComponentInChildren<Animation>() != null)
             {
-                Initialize();
+                UpdateAnimationState();
             }
         }
 
@@ -127,12 +127,12 @@ namespace DCL.Components
                     layerIndex++;
                 }
             }
-
-            UpdateAnimationState();
         }
 
         void UpdateAnimationState()
         {
+            Initialize();
+            
             if (clipNameToClip.Count == 0 || animComponent == null)
             {
                 return;

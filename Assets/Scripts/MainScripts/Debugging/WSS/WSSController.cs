@@ -208,6 +208,12 @@ namespace DCL
                             case "LoadProfile":
                                 UserProfileController.i.LoadProfile(msg.payload);
                                 break;
+                            case "DeactivateRendering":
+                                RenderingController.i.DeactivateRendering();
+                                break;
+                            case "ActivateRendering":
+                                RenderingController.i.ActivateRendering();
+                                break;
                             default:
                                 Debug.Log("<b><color=#FF0000>WSSController</color></b> WHAT IS " + msg.type);
                                 break;

@@ -216,9 +216,9 @@ namespace DCL
                     queueMode = QueueMode.Lossy;
                 }
             }
-            else if (queuedMessage.method == MessagingTypes.SCENE_STARTED)
+            else if (queuedMessage.method == MessagingTypes.INIT_DONE)
             {
-                // When a SCENE STARTED message is enqueued, the next messages should be 
+                // When a INIT DONE message is enqueued, the next messages should be 
                 // enqueued in SYSTEM message bus, but we don't process them until 
                 // scene started has been processed
                 currentQueueState = MessagingController.QueueState.Systems;

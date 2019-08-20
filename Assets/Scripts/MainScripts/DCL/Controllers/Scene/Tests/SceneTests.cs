@@ -334,5 +334,68 @@ namespace Tests
             yield return null;
         }
 
+        [UnityTest]
+        public IEnumerator ParcelScene_TrackDisposables_Empty()
+        {
+            yield return base.InitScene();
+
+            Assert.AreEqual(0, scene.disposableNotReadyCount);
+        }
+
+        [UnityTest]
+        public IEnumerator ParcelScene_TrackDisposables_OneGLTF()
+        {
+            yield return base.InitScene();
+            var entity = TestHelpers.CreateSceneEntity(scene);
+
+            TestHelpers.AttachGLTFShape(entity, scene, Vector3.zero, new LoadableShape.Model()
+            {
+                src = TestHelpers.GetTestsAssetsPath() + "/GLB/Lantern/Lantern.glb"
+            });
+
+            Assert.AreEqual(1, scene.disposableNotReadyCount);
+            scene.SetInitMessagesDone();
+            Assert.AreEqual(1, scene.disposableNotReadyCount);
+            yield return TestHelpers.WaitForGLTFLoad(entity);
+            Assert.AreEqual(0, scene.disposableNotReadyCount);
+        }
+
+        [UnityTest]
+        public IEnumerator ParcelScene_TrackDisposables_BeforeInitDone()
+        {
+            yield return base.InitScene();
+
+            TestHelpers.CreateEntityWithBoxShape(scene, Vector3.zero, true);
+            TestHelpers.CreateEntityWithBoxShape(scene, Vector3.zero, true);
+            TestHelpers.CreateEntityWithBoxShape(scene, Vector3.zero, true);
+
+            Assert.AreEqual(3, scene.disposableNotReadyCount);
+        }
+
+        [UnityTest]
+        public IEnumerator ParcelScene_TrackDisposables_AfterInitDone()
+        {
+            yield return base.InitScene();
+            TestHelpers.CreateEntityWithBoxShape(scene, Vector3.zero, true);
+            TestHelpers.CreateEntityWithBoxShape(scene, Vector3.zero, true);
+            TestHelpers.CreateEntityWithBoxShape(scene, Vector3.zero, true);
+
+            scene.SetInitMessagesDone();
+
+            Assert.AreEqual(0, scene.disposableNotReadyCount);
+        }
+
+        [UnityTest]
+        public IEnumerator ParcelScene_TrackDisposables_InstantReadyDisposable()
+        {
+            yield return base.InitScene();
+
+            var boxShape = TestHelpers.CreateEntityWithBoxShape(scene, Vector3.zero, true);
+            Assert.AreEqual(1, scene.disposableNotReadyCount);
+            scene.SetInitMessagesDone();
+            Assert.AreEqual(0,scene.disposableNotReadyCount);
+            yield return boxShape.routine;
+            Assert.AreEqual(0, scene.disposableNotReadyCount);
+        }
     }
 }

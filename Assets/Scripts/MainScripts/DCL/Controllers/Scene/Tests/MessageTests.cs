@@ -107,7 +107,7 @@ namespace Tests
             // Although we sent several component update messages for the same id, 
             // it should process only one because they are unreliable
             msgs.Add(new Message(sceneId, MessagingTypes.ENTITY_COMPONENT_CREATE_OR_UPDATE));
-            msgs.Add(new Message(sceneId, MessagingTypes.SCENE_STARTED));
+            msgs.Add(new Message(sceneId, MessagingTypes.INIT_DONE));
             msgs.Add(new Message(uiSceneId, MessagingTypes.ENTITY_CREATE));
             msgs.Add(new Message(uiSceneId, MessagingTypes.ENTITY_REPARENT));
             msgs.Add(new Message(uiSceneId, MessagingTypes.ENTITY_CREATE));
@@ -221,7 +221,7 @@ namespace Tests
                 TestHelpers.CreateSceneMessage(
                     sceneId,
                     "",
-                    MessagingTypes.SCENE_STARTED,
+                    MessagingTypes.INIT_DONE,
                     ""
                 )
             );

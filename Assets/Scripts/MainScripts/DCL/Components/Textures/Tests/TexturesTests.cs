@@ -42,5 +42,43 @@ namespace Tests
             yield return TestHelpers.TestAttachedSharedComponentOfSameTypeIsReplaced<DCLTexture.Model, DCLTexture>(
                 scene, CLASS_ID.TEXTURE);
         }
+
+        [UnityTest]
+        public IEnumerator Texture_OnReadyBeforeLoading()
+        {
+            yield return InitScene();
+
+            DCLTexture dclTexture = TestHelpers.CreateDCLTexture(scene,TestHelpers.GetTestsAssetsPath() + "/Images/avatar.png");
+            bool isOnReady = false;
+            dclTexture.CallWhenReady((x) => { isOnReady = true; });
+
+            Assert.IsTrue(isOnReady); //DCLTexture is ready on creation
+        }
+
+        [UnityTest]
+        public IEnumerator Texture_OnReadyWaitLoading()
+        {
+            yield return InitScene();
+
+            DCLTexture dclTexture = TestHelpers.CreateDCLTexture(scene,TestHelpers.GetTestsAssetsPath() + "/Images/avatar.png");
+            bool isOnReady = false;
+            dclTexture.CallWhenReady((x) => { isOnReady = true; });
+            yield return dclTexture.routine;
+
+            Assert.IsTrue(isOnReady);
+        }
+
+        [UnityTest]
+        public IEnumerator Texture_OnReadyAfterLoadingInstantlyCalled()
+        {
+            yield return InitScene();
+
+            DCLTexture dclTexture = TestHelpers.CreateDCLTexture(scene,TestHelpers.GetTestsAssetsPath() + "/Images/avatar.png");
+            yield return dclTexture.routine;
+
+            bool isOnReady = false;
+            dclTexture.CallWhenReady((x) => { isOnReady = true; });
+            Assert.IsTrue(isOnReady);
+        }
     }
 }

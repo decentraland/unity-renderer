@@ -55,7 +55,7 @@ namespace DCL.Components
 
         public void Update()
         {
-            if (model.billboard)
+            if (model.billboard && Camera.main != null)
             {
                 transform.forward = Camera.main.transform.forward;
             }

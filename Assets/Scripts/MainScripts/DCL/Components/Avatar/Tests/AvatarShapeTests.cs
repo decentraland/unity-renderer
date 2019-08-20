@@ -14,7 +14,7 @@ namespace Tests
     {
         public static AvatarShape CreateAvatar(ParcelScene scene, string name)
         {
-            GLTFSceneImporter.BudgetPerFrameInMilliseconds = float.MaxValue;
+            GLTFSceneImporter.budgetPerFrameInMilliseconds = float.MaxValue;
             DecentralandEntity entity = TestHelpers.CreateSceneEntity(scene);
             AvatarShape.Model model = new AvatarShape.Model() { useDummyModel = true, name = name };
             AvatarShape shape = TestHelpers.EntityComponentCreate<AvatarShape, AvatarShape.Model>(scene, entity, model, CLASS_ID_COMPONENT.AVATAR_SHAPE);
