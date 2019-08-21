@@ -2,7 +2,6 @@ import { Profile, AvatarAsset, Colored, DclAssetUrl, ProfileSpec, Avatar, Avatar
 import { Color4 } from '../../decentraland-ecs/src/decentraland/math/Color4'
 import { getServerConfigurations, PREVIEW } from '../../config/index'
 import defaultLogger from '../logger'
-import { Auth } from 'shared/auth'
 
 export async function resolveProfile(uuid: string = ''): Promise<Profile> {
   let response
@@ -145,24 +144,20 @@ async function mapSpecToAvatar(avatar: AvatarSpec): Promise<Avatar> {
 }
 
 export async function fetchProfile(uuid: string = '') {
-  const auth = new Auth()
-
-  const request = await auth.createRequest(`${getServerConfigurations().profile}/profile${uuid ? '/' + uuid : ''}`)
+  const request = `${getServerConfigurations().profile}/profile${uuid ? '/' + uuid : ''}`
   const response = await fetch(request)
 
   return response
 }
 
 export async function createProfile(avatar: AvatarSpec) {
-  const auth = new Auth()
-
   const body = JSON.stringify(avatar)
   const options = {
     method: 'PUT',
     body
   }
 
-  const request = await auth.createRequest(`${getServerConfigurations().profile}/profile/avatar`, options)
+  const request = `${getServerConfigurations().profile}/profile/avatar`
   const response = await fetch(request, options)
 
   return response
