@@ -53,6 +53,8 @@ export class SceneWorker {
   public persistent = false
   public readonly onDisposeObservable = new Observable<SceneWorker>()
 
+  public sceneStarted: boolean = false
+
   public readonly position: Vector3 = new Vector3()
   private readonly lastSentPosition = new Vector3(0, 0, 0)
   private readonly lastSentRotation = new Quaternion(0, 0, 0, 1)
@@ -61,7 +63,6 @@ export class SceneWorker {
   private worldRunningObserver: Observer<any> | null = null
 
   private sceneReady: boolean = false
-  private sceneStarted: boolean = false
 
   constructor(public parcelScene: ParcelSceneAPI, transport?: ScriptingTransport) {
     parcelScene.registerWorker(this)

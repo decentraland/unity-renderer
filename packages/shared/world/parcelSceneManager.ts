@@ -79,18 +79,34 @@ export async function enableParcelSceneLoading(options: EnableParcelSceneLoading
   })
 
   ret.on('Scene.shouldStart', async (opts: { sceneId: string }) => {
-    const parcelSceneToStart = await ret.getParcelData(opts.sceneId)
+    const sceneId = opts.sceneId
+    const parcelSceneToStart = await ret.getParcelData(sceneId)
 
     // create the worker if don't exist
-    if (!getSceneWorkerBySceneID(opts.sceneId)) {
+    if (!getSceneWorkerBySceneID(sceneId)) {
       const parcelScene = new options.parcelSceneClass(ILandToLoadableParcelScene(parcelSceneToStart))
       loadParcelScene(parcelScene)
     }
 
+    const observer = sceneLifeCycleObservable.add(sceneStatus => {
+      if (sceneStatus.sceneId === sceneId) {
+        ret.notify('Scene.status', sceneStatus)
+      }
+      sceneLifeCycleObservable.remove(observer)
+    })
+
     // tell the engine to load the parcel scene
     if (options.onLoadParcelScenes) {
-      options.onLoadParcelScenes([await ret.getParcelData(opts.sceneId)])
+      options.onLoadParcelScenes([await ret.getParcelData(sceneId)])
     }
+
+    setTimeout(() => {
+      const worker = getSceneWorkerBySceneID(sceneId)
+      if (worker && !worker.sceneStarted) {
+        sceneLifeCycleObservable.remove(observer)
+        ret.notify('Scene.status', { sceneId, status: 'failed' })
+      }
+    }, 30000)
   })
 
   ret.on('Scene.shouldUnload', async (opts: { sceneId: string }) => {
@@ -125,9 +141,5 @@ export async function enableParcelSceneLoading(options: EnableParcelSceneLoading
   positionObservable.add(obj => {
     worldToGrid(obj.position, position)
     ret.notify('User.setPosition', { position, teleported: false })
-  })
-
-  sceneLifeCycleObservable.add(sceneStatus => {
-    ret.notify('Scene.status', sceneStatus)
   })
 }
