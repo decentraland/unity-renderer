@@ -59,9 +59,10 @@ let downloadManager: SceneDataDownloadManager
     })
 
     connector.on('User.setPosition', (opt: { position: { x: number; y: number }; teleported: boolean }) => {
-      positionController
-        .reportCurrentPosition(opt.position, opt.teleported)
-        .catch(e => defaultLogger.error(`error when updating position`))
+      positionController.reportCurrentPosition(opt.position, opt.teleported).catch(e => {
+        defaultLogger.error(`error while resolving new scenes around`)
+        defaultLogger.error(e)
+      })
     })
 
     connector.on('Scene.dataRequest', async (data: { sceneId: string }) =>
