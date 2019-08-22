@@ -1,6 +1,6 @@
 import { ILand } from 'shared/types'
 
-export type SceneLifeCycleStatusType = 'unloaded' | 'awake' | 'loaded' | 'ready'
+export type SceneLifeCycleStatusType = 'unloaded' | 'awake' | 'loaded' | 'ready' | 'failed'
 
 export class SceneLifeCycleStatus {
   status: SceneLifeCycleStatusType = 'unloaded'
@@ -17,5 +17,9 @@ export class SceneLifeCycleStatus {
 
   isReady() {
     return this.status === 'ready'
+  }
+
+  isFailed() {
+    return this.status === 'failed'
   }
 }

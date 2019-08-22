@@ -101,9 +101,9 @@ export class SceneLifeCycleController extends EventEmitter {
     }
   }
 
-  isReady(sceneId: SceneId): boolean {
+  isRenderable(sceneId: SceneId): boolean {
     const status = this.sceneStatus.get(sceneId)
-    return !!status && status.isReady()
+    return !!status && (status.isReady() || status.isFailed())
   }
 
   reportStatus(sceneId: string, status: SceneLifeCycleStatusType) {
@@ -114,7 +114,7 @@ export class SceneLifeCycleController extends EventEmitter {
     }
     lifeCycleStatus.status = status
 
-    this.emit('Scene ready', sceneId)
+    this.emit('Scene status', { sceneId, status })
   }
 
   async requestSceneId(position: string): Promise<string | undefined> {

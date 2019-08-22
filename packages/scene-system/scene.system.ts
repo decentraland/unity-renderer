@@ -396,11 +396,7 @@ export default class GamekitScene extends Script {
       try {
         await customEval((source as any) as string, getES5Context({ dcl }))
 
-        this.events.push({
-          type: 'InitMessagesFinished',
-          tag: 'scene',
-          payload: '{}'
-        })
+        this.events.push(this.initMessagesFinished())
 
         this.onStartFunctions.push(() => {
           const engine: IEngineAPI = this.engine as any
@@ -408,6 +404,8 @@ export default class GamekitScene extends Script {
         })
       } catch (e) {
         that.onError(e)
+
+        this.events.push(this.initMessagesFinished())
       }
 
       this.sendBatch()
@@ -429,6 +427,14 @@ export default class GamekitScene extends Script {
     }
 
     this.sendBatch()
+  }
+
+  private initMessagesFinished(): EntityAction {
+    return {
+      type: 'InitMessagesFinished',
+      tag: 'scene',
+      payload: '{}'
+    }
   }
 
   private sendBatch() {

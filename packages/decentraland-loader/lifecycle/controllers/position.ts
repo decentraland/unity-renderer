@@ -10,7 +10,7 @@ export class PositionLifecycleController extends EventEmitter {
 
   constructor(public parcelController: ParcelLifeCycleController, public sceneController: SceneLifeCycleController) {
     super()
-    sceneController.on('Scene ready', () => this.checkPositionSettlement())
+    sceneController.on('Scene status', () => this.checkPositionSettlement())
   }
 
   async reportCurrentPosition(position: Vector2Component, teleported: boolean) {
@@ -45,7 +45,7 @@ export class PositionLifecycleController extends EventEmitter {
 
   private checkPositionSettlement() {
     if (!this.positionSettled) {
-      const settling = this.currentlySightedScenes.every($ => this.sceneController.isReady($))
+      const settling = this.currentlySightedScenes.every($ => this.sceneController.isRenderable($))
 
       if (settling) {
         this.positionSettled = settling
