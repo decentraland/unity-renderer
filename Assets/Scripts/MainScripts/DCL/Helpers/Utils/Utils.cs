@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using DCL.Configuration;
 using UnityEngine;
 using UnityEngine.Assertions;
 using UnityEngine.Networking;
@@ -301,6 +302,29 @@ namespace DCL.Helpers
 #else
                 UnityEngine.Object.Destroy(obj);
 #endif
+        }
+
+        /**
+         * Transforms a grid position into a world-relative 3d position
+         */
+        public static Vector3 GridToWorldPosition(float xGridPosition, float yGridPosition)
+        {
+            return new Vector3(
+                x: xGridPosition * ParcelSettings.PARCEL_SIZE,
+                y: 0f,
+                z: yGridPosition * ParcelSettings.PARCEL_SIZE
+            );
+        }
+
+        /**
+         * Transforms a world position into a grid position
+         */
+        public static Vector2 WorldToGridPosition(Vector3 worldPosition)
+        {
+            return new Vector2(
+                Mathf.Floor(worldPosition.x / ParcelSettings.PARCEL_SIZE),
+                Mathf.Floor(worldPosition.z / ParcelSettings.PARCEL_SIZE)
+            );
         }
     }
 }

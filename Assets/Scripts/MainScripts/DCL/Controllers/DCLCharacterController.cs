@@ -1,4 +1,6 @@
 ﻿using DCL.Configuration;
+using DCL.Controllers;
+using DCL.Helpers;
 using UnityEngine;
 
 public class DCLCharacterController : MonoBehaviour
@@ -18,7 +20,7 @@ public class DCLCharacterController : MonoBehaviour
     public float gravity = -55f;
     public float movementSpeed = 8f;
     public float jumpForce = 20f;
-    public DCLCharacterPosition characterPosition = new DCLCharacterPosition();
+    public DCLCharacterPosition characterPosition;
 
     public Transform cameraTransform
     {
@@ -67,6 +69,11 @@ public class DCLCharacterController : MonoBehaviour
 
         i = this;
 
+        CommonScriptableObjects.playerUnityPosition.Set(Vector3.zero);
+        CommonScriptableObjects.playerCoords.Set(Vector2Int.zero);
+        CommonScriptableObjects.playerUnityEulerAngles.Set(Vector3.zero);
+
+        characterPosition = new DCLCharacterPosition();
         characterController = GetComponent<CharacterController>();
         rigidbody = GetComponent<Rigidbody>();
         collider = GetComponent<Collider>();
@@ -95,6 +102,9 @@ public class DCLCharacterController : MonoBehaviour
         Vector3 previousPosition = characterPosition.worldPosition;
         characterPosition.worldPosition = newPosition;
         transform.position = characterPosition.unityPosition;
+
+        CommonScriptableObjects.playerUnityPosition.Set(characterPosition.unityPosition);
+        CommonScriptableObjects.playerCoords.Set(Utils.WorldToGridPosition(characterPosition.worldPosition));
 
         if (Moved(previousPosition))
         {
@@ -172,6 +182,7 @@ public class DCLCharacterController : MonoBehaviour
             // Rotation
             transform.rotation = Quaternion.Euler(0f, aimingHorizontalAngle, 0f);
             camera.localRotation = Quaternion.Euler(-aimingVerticalAngle, 0f, 0f);
+            CommonScriptableObjects.playerUnityEulerAngles.Set( new Vector3(camera.localRotation.x,transform.eulerAngles.y, 0));
 
             // Horizontal movement
             var speed = movementSpeed * (isSprinting ? 2f : 1f);

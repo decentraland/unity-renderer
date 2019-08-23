@@ -1,0 +1,6 @@
+using UnityEngine;
+
+[CreateAssetMenu(fileName = "Vector3Variable", menuName = "Vector3Variable")]
+public class Vector3Variable : BaseVariable<Vector3>
+{
+}

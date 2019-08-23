@@ -1,4 +1,6 @@
-﻿namespace DCL.Configuration
+﻿using UnityEngine;
+
+namespace DCL.Configuration
 {
     public static class ApplicationSettings
     {
