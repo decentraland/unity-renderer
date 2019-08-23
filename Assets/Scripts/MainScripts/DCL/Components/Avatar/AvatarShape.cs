@@ -108,6 +108,8 @@ namespace DCL
         public AnimationClip[] maleAnims;
         public AnimationClip[] femaleAnims;
 
+        [SerializeField] private GameObject minimapRepresentation;
+
         int loadedWearablesCount = 0;
 
         State state = State.IDLE;
@@ -134,6 +136,7 @@ namespace DCL
         void Start()
         {
             InitMaterials();
+            minimapRepresentation.SetActive(false);
         }
 
         void OnDestroy()
@@ -180,6 +183,8 @@ namespace DCL
         }
         void ResetAvatar()
         {
+            minimapRepresentation.SetActive(false);
+
             UnloadMaterials();
             InitMaterials();
 
@@ -534,6 +539,8 @@ namespace DCL
             {
                 renderers[i].enabled = true;
             }
+
+            minimapRepresentation.SetActive(true);
         } 
     }
 }

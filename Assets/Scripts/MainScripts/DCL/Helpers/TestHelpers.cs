@@ -159,6 +159,16 @@ namespace DCL.Helpers
             return result;
         }
 
+        public static T Reflection_GetStaticField<T>(Type baseType, string fieldName)
+        {
+            return (T) baseType.GetField(fieldName, BindingFlags.NonPublic | BindingFlags.Static).GetValue(null);
+        }
+
+        public static T Reflection_GetField<T>(object instance, string fieldName)
+        {
+            return (T) instance.GetType().GetField(fieldName, BindingFlags.NonPublic | BindingFlags.Instance).GetValue(instance);
+        }
+
     }
 
     public static class TestHelpers

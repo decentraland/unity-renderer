@@ -84,8 +84,8 @@ namespace DCL.Controllers
             contentProvider.BakeHashes();
 
             this.name = gameObject.name = $"scene:{data.id}";
-
-            gameObject.transform.position = DCLCharacterController.i.characterPosition.WorldToUnityPosition(GridToWorldPosition(data.basePosition.x, data.basePosition.y));
+            
+            gameObject.transform.position = DCLCharacterController.i.characterPosition.WorldToUnityPosition(Utils.GridToWorldPosition(data.basePosition.x, data.basePosition.y));
             CleanBlockers();
             SetupBlockers(data.parcels);
         }
@@ -110,14 +110,14 @@ namespace DCL.Controllers
             {
                 Vector2Int pos = parcels[i];
                 var blocker = Instantiate(blockerPrefab, transform);
-                blocker.transform.position = DCLCharacterController.i.characterPosition.WorldToUnityPosition(GridToWorldPosition(pos.x, pos.y)) + (Vector3.up * blockerPrefab.transform.localPosition.y) + new Vector3(ParcelSettings.PARCEL_SIZE/2,0, ParcelSettings.PARCEL_SIZE/2);
+                blocker.transform.position = DCLCharacterController.i.characterPosition.WorldToUnityPosition(Utils.GridToWorldPosition(pos.x, pos.y)) + (Vector3.up * blockerPrefab.transform.localPosition.y) + new Vector3(ParcelSettings.PARCEL_SIZE/2,0, ParcelSettings.PARCEL_SIZE/2);
                 blockers.Add(blocker);
             }
         }
 
         void OnPrecisionAdjust(DCLCharacterPosition position)
         {
-            gameObject.transform.position = position.WorldToUnityPosition(GridToWorldPosition(sceneData.basePosition.x, sceneData.basePosition.y));
+            gameObject.transform.position = position.WorldToUnityPosition(Utils.GridToWorldPosition(sceneData.basePosition.x, sceneData.basePosition.y));
         }
 
         public virtual void SetUpdateData(LoadParcelScenesMessage.UnityParcelScene data)
@@ -149,7 +149,7 @@ namespace DCL.Controllers
                     plane.transform.localScale = new Vector3(ParcelSettings.PARCEL_SIZE * 0.1f, 1f,
                         ParcelSettings.PARCEL_SIZE * 0.1f);
 
-                    Vector3 position = GridToWorldPosition(sceneData.parcels[j].x, sceneData.parcels[j].y);
+                    Vector3 position = Utils.GridToWorldPosition(sceneData.parcels[j].x, sceneData.parcels[j].y);
                     // SET TO A POSITION RELATIVE TO basePosition
 
                     position.Set(position.x + ParcelSettings.PARCEL_SIZE / 2, ParcelSettings.DEBUG_FLOOR_HEIGHT,
@@ -192,7 +192,7 @@ namespace DCL.Controllers
 
         public bool IsInsideSceneBoundaries(DCLCharacterPosition charPosition)
         {
-            return IsInsideSceneBoundaries(WorldToGridPosition(charPosition.worldPosition));
+            return IsInsideSceneBoundaries(Utils.WorldToGridPosition(charPosition.worldPosition));
         }
 
         public virtual bool IsInsideSceneBoundaries(Vector2 gridPosition)
@@ -898,29 +898,6 @@ namespace DCL.Controllers
             }
 
             return decentralandEntity;
-        }
-
-        /**
-         * Transforms a grid position into a world-relative 3d position
-         */
-        public static Vector3 GridToWorldPosition(float xGridPosition, float yGridPosition)
-        {
-            return new Vector3(
-                x: xGridPosition * ParcelSettings.PARCEL_SIZE,
-                y: 0f,
-                z: yGridPosition * ParcelSettings.PARCEL_SIZE
-            );
-        }
-
-        /**
-         * Transforms a world position into a grid position
-         */
-        public static Vector2 WorldToGridPosition(Vector3 worldPosition)
-        {
-            return new Vector2(
-                Mathf.Floor(worldPosition.x / ParcelSettings.PARCEL_SIZE),
-                Mathf.Floor(worldPosition.z / ParcelSettings.PARCEL_SIZE)
-            );
         }
 
         private void OnDisposableReady(BaseDisposable disposable)

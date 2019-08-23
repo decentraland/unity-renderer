@@ -13,7 +13,8 @@
         "Cinemachine",
         "MainAttributes",
         "DCLTransform",
-        "WebInterface"
+        "WebInterface",
+        "ScriptableObjects"
     ],
     "optionalUnityReferences": [],
     "includePlatforms": [],

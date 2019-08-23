@@ -1,5 +1,4 @@
 ﻿using System.Collections;
-using System.Reflection;
 using DCL.Helpers;
 using NUnit.Framework;
 using TMPro;
@@ -11,12 +10,18 @@ namespace Tests
 {
     public class AvatarHUDTests : TestsBase
     {
+        private static AvatarHUDView GetViewFromController(AvatarHUDController controller)
+        {
+            return Reflection_GetField<AvatarHUDView>(controller, "view");
+        }
+
         [UnityTest]
         public IEnumerator AvatarHUD_Creation()
         {
             yield return InitScene();
             var controller = new AvatarHUDController();
-            var viewContainer = GameObject.Find(AvatarHUDTestHelpers.ReflectionGet_ViewObjectName());
+            var viewContainerName = Reflection_GetStaticField<string>(typeof(AvatarHUDView), "VIEW_OBJECT_NAME");
+            var viewContainer = GameObject.Find(viewContainerName);
 
             Assert.NotNull(viewContainer);
             Assert.NotNull(viewContainer.GetComponent<AvatarHUDView>());
@@ -29,7 +34,7 @@ namespace Tests
             var controller = new AvatarHUDController();
 
             Assert.AreEqual(true, controller.visibility);
-            Assert.AreEqual(true, controller.ReflectionGet_View().gameObject.activeSelf);
+            Assert.AreEqual(true, GetViewFromController(controller).gameObject.activeSelf);
         }
 
         [UnityTest]
@@ -39,7 +44,7 @@ namespace Tests
             var controller = new AvatarHUDController(visibility: true);
 
             Assert.AreEqual(true, controller.visibility);
-            Assert.AreEqual(true, controller.ReflectionGet_View().gameObject.activeSelf);
+            Assert.AreEqual(true, GetViewFromController(controller).gameObject.activeSelf);
         }
 
         [UnityTest]
@@ -49,7 +54,7 @@ namespace Tests
             var controller = new AvatarHUDController(visibility: false);
 
             Assert.AreEqual(false, controller.visibility);
-            Assert.AreEqual(false, controller.ReflectionGet_View().gameObject.activeSelf);
+            Assert.AreEqual(false, GetViewFromController(controller).gameObject.activeSelf);
         }
 
         [UnityTest]
@@ -59,7 +64,8 @@ namespace Tests
             var controller = new AvatarHUDController();
 
             Assert.AreEqual(false, controller.expanded);
-            Assert.AreEqual(false, controller.ReflectionGet_View().ReflectionGet_ViewField<GameObject>("expandedContainer").activeSelf);
+            var view = GetViewFromController(controller);
+            Assert.AreEqual(false, Reflection_GetField<GameObject>(view, "expandedContainer").activeSelf);
         }
 
         [UnityTest]
@@ -69,7 +75,8 @@ namespace Tests
             var controller = new AvatarHUDController(expanded: true);
 
             Assert.AreEqual(true, controller.expanded);
-            Assert.AreEqual(true, controller.ReflectionGet_View().ReflectionGet_ViewField<GameObject>("expandedContainer").activeSelf);
+            var view = GetViewFromController(controller);
+            Assert.AreEqual(true, Reflection_GetField<GameObject>(view,"expandedContainer").activeSelf);
         }
 
         [UnityTest]
@@ -79,7 +86,8 @@ namespace Tests
             var controller = new AvatarHUDController(expanded: false);
 
             Assert.AreEqual(false, controller.expanded);
-            Assert.AreEqual(false, controller.ReflectionGet_View().ReflectionGet_ViewField<GameObject>("expandedContainer").activeSelf);
+            var view = GetViewFromController(controller);
+            Assert.AreEqual(false, Reflection_GetField<GameObject>(view, "expandedContainer").activeSelf);
         }
 
         [UnityTest]
@@ -138,9 +146,9 @@ namespace Tests
             yield return InitScene();
             var controller = new AvatarHUDController(false);
 
-            controller.ReflectionGet_View().SetVisibility(true);
+            GetViewFromController(controller).SetVisibility(true);
 
-            Assert.AreEqual(true, controller.ReflectionGet_View().gameObject.activeSelf);
+            Assert.AreEqual(true, GetViewFromController(controller).gameObject.activeSelf);
         }
 
         [UnityTest]
@@ -149,9 +157,9 @@ namespace Tests
             yield return InitScene();
             var controller = new AvatarHUDController();
 
-            controller.ReflectionGet_View().SetVisibility(false);
+            GetViewFromController(controller).SetVisibility(false);
 
-            Assert.AreEqual(false, controller.ReflectionGet_View().gameObject.activeSelf);
+            Assert.AreEqual(false, GetViewFromController(controller).gameObject.activeSelf);
         }
 
         [UnityTest]
@@ -180,17 +188,17 @@ namespace Tests
             Sprite sprite = CreateEmptySprite();
             var controller = new AvatarHUDController();
 
-            controller.ReflectionGet_View().UpdateData(new AvatarHUDModel()
+            GetViewFromController(controller).UpdateData(new AvatarHUDModel()
             {
                 name =  "name",
                 mail = "mail",
                 avatarPic = sprite
             });
 
-            Assert.AreEqual("name", controller.ReflectionGet_View().ReflectionGet_ViewField<TextMeshProUGUI>("nameText").text);
-            Assert.AreEqual("mail", controller.ReflectionGet_View().ReflectionGet_ViewField<TextMeshProUGUI>("mailText").text);
-            Assert.AreEqual(sprite, controller.ReflectionGet_View().ReflectionGet_ViewField<Image>("topAvatarPic").sprite);
-            Assert.AreEqual(sprite, controller.ReflectionGet_View().ReflectionGet_ViewField<Image>("expandedAvatarPic").sprite);
+            var view = GetViewFromController(controller);
+            Assert.AreEqual("name", Reflection_GetField<TextMeshProUGUI>(view, "nameText").text);
+            Assert.AreEqual("mail", Reflection_GetField<TextMeshProUGUI>(view, "mailText").text);
+            Assert.AreEqual(sprite, Reflection_GetField<Image>(view, "topAvatarPic").sprite);
         }
 
         [UnityTest]
@@ -199,10 +207,11 @@ namespace Tests
             yield return InitScene();
             var controller = new AvatarHUDController(expanded: false);
 
-            controller.ReflectionGet_View().ReflectionGet_ViewField<Button>("toggleExpandButton").onClick.Invoke();
+            var view = GetViewFromController(controller);
+            Reflection_GetField<Button>(view, "toggleExpandButton").onClick.Invoke();
 
             Assert.AreEqual(true, controller.expanded);
-            Assert.AreEqual(true, controller.ReflectionGet_View().ReflectionGet_ViewField<GameObject>("expandedContainer").activeSelf);
+            Assert.AreEqual(true, Reflection_GetField<GameObject>(view, "expandedContainer").activeSelf);
         }
 
         [UnityTest]
@@ -211,38 +220,16 @@ namespace Tests
             yield return InitScene();
             var controller = new AvatarHUDController(expanded: true);
 
-            controller.ReflectionGet_View().ReflectionGet_ViewField<Button>("toggleExpandButton").onClick.Invoke();
+            var view = GetViewFromController(controller);
+            Reflection_GetField<Button>(view, "toggleExpandButton").onClick.Invoke();
 
             Assert.AreEqual(false, controller.expanded);
-            Assert.AreEqual(false, controller.ReflectionGet_View().ReflectionGet_ViewField<GameObject>("expandedContainer").activeSelf);
+            Assert.AreEqual(false, Reflection_GetField<GameObject>(view, "expandedContainer").activeSelf);
         }
 
         private static Sprite CreateEmptySprite()
         {
             return Sprite.Create(new Texture2D(10, 10), new Rect(Vector2.one, Vector2.one), Vector2.one);
-        }
-    }
-
-    public static class AvatarHUDTestHelpers
-    {
-        public static T ReflectionGet_ViewField<T>(this AvatarHUDView view, string fieldName)
-        {
-            return ReflectionGet_Field<T, AvatarHUDView>(view, fieldName);
-        }
-
-        public static string ReflectionGet_ViewObjectName()
-        {
-            return (string) typeof(AvatarHUDView).GetField("VIEW_OBJECT_NAME", BindingFlags.NonPublic | BindingFlags.Static).GetValue(null);
-        }
-
-        public static AvatarHUDView ReflectionGet_View(this AvatarHUDController controller)
-        {
-            return ReflectionGet_Field<AvatarHUDView, AvatarHUDController>(controller, "view");
-        }
-
-        private static T ReflectionGet_Field<T, K>( K instance, string fieldName)
-        {
-            return (T) instance.GetType().GetField(fieldName, BindingFlags.NonPublic | BindingFlags.Instance).GetValue(instance);
         }
     }
 }

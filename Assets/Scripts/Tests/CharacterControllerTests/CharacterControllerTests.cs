@@ -1,6 +1,7 @@
 ﻿using DCL.Helpers;
 using Newtonsoft.Json;
 using System.Collections;
+using System.Reflection;
 using UnityEngine;
 using UnityEngine.Assertions;
 using UnityEngine.TestTools;
@@ -68,6 +69,40 @@ namespace Tests
             yield return null;
 
             Assert.AreEqual(new Vector3(-50f, 0f, -50f), DCLCharacterController.i.transform.position);
+        }
+
+        [UnityTest]
+        public IEnumerator Character_UpdateSOPosition()
+        {
+            yield return InitScene();
+
+            DCLCharacterController.i.gravity = 0f;
+
+            DCLCharacterController.i.Teleport(JsonConvert.SerializeObject(new
+            {
+                x = 50f,
+                y = 0f,
+                z = 0f
+            }));
+
+            yield return null;
+
+            Assert.AreEqual(new Vector3(50f, 0f, 0f), CommonScriptableObjects.playerUnityPosition);
+        }
+
+        [UnityTest]
+        public IEnumerator Character_UpdateSORotation()
+        {
+            yield return InitScene();
+
+            DCLCharacterController.i.gravity = 0f;
+
+            var newEulerAngle = 10f;
+            DCLCharacterController.i.GetType().GetField("aimingHorizontalAngle", BindingFlags.NonPublic | BindingFlags.Instance).SetValue(DCLCharacterController.i, newEulerAngle);
+            Cursor.lockState = CursorLockMode.Locked;
+            yield return new WaitForSeconds(0.1f);
+
+            Assert.AreEqual(DCLCharacterController.i.transform.eulerAngles, CommonScriptableObjects.playerUnityEulerAngles);
         }
     }
 }

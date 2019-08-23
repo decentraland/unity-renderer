@@ -52,6 +52,11 @@ public class DCLCharacterPosition
         }
     }
 
+    public DCLCharacterPosition()
+    {
+        CommonScriptableObjects.playerUnityToWorldOffset.Set(Vector3.zero);
+    }
+
     private void CheckAndTeleport()
     {
         bool dirty = false;
@@ -77,6 +82,8 @@ public class DCLCharacterPosition
             worldPositionValue = unityPositionValue + offset;
 
             OnPrecisionAdjust?.Invoke(this);
+
+            CommonScriptableObjects.playerUnityToWorldOffset.Set(offset);
         }
     }
 

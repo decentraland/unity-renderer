@@ -4,7 +4,8 @@
         "MainScripts",
         "UnityGLTFAssembly",
         "Configuration",
-        "Utils"
+        "Utils",
+        "ScriptableObjects"
     ],
     "optionalUnityReferences": [
         "TestAssemblies"
@@ -15,5 +16,6 @@
     "overrideReferences": false,
     "precompiledReferences": [],
     "autoReferenced": true,
-    "defineConstraints": []
+    "defineConstraints": [],
+    "versionDefines": []
 }

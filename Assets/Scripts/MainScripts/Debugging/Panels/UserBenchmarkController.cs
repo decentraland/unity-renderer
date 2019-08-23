@@ -2,7 +2,9 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using DCL.Configuration;
 using DCL.Controllers;
+using DCL.Helpers;
 using UnityEngine;
 
 namespace DCL
@@ -142,7 +144,7 @@ namespace DCL
         {
             while (true)
             {
-                var currentPos = ParcelScene.WorldToGridPosition(DCLCharacterController.i.characterPosition.worldPosition);
+                var currentPos = Utils.WorldToGridPosition(DCLCharacterController.i.characterPosition.worldPosition);
 
                 var activeScene = SceneController.i.loadedScenes.Values.FirstOrDefault(x => x.sceneData.parcels != null && x.sceneData.parcels.Any(y => y == currentPos));
                 if (activeScene != null && activeScene.metricsController != null)
