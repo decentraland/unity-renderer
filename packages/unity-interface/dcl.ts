@@ -370,9 +370,7 @@ teleportObservable.add((position: { x: number; y: number }) => {
 
 worldRunningObservable.add(isRunning => {
   if (isRunning) {
-    setTimeout(() => {
-      setLoadingScreenVisible(false)
-    }, 10000)
+    setLoadingScreenVisible(false)
   }
 })
 
