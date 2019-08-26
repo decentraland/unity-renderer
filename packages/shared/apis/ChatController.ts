@@ -10,16 +10,30 @@ import { teleportObservable } from 'shared/world/positionThings'
 import {
   getCurrentUser,
   findPeerByName,
+  peerMap,
   getPeer,
   addToBlockedUsers,
   addToMutedUsers,
   getBlockedUsers,
   removeFromBlockedUsers,
-  removeFromMutedUsers
+  removeFromMutedUsers,
+  avatarMessageObservable
 } from 'shared/comms/peers'
 import { uuid } from 'atomicHelpers/math'
 import { parcelLimits } from 'config'
-import { parseParcelPosition } from 'atomicHelpers/parcelScenePositions'
+import { parseParcelPosition, worldToGrid } from 'atomicHelpers/parcelScenePositions'
+import { Vector3Component } from 'atomicHelpers/landHelpers'
+import { AvatarMessage, AvatarMessageType } from 'shared/comms/types'
+
+const userPose: { [key: string]: Vector3Component } = {}
+avatarMessageObservable.add((pose: AvatarMessage) => {
+  if (pose.type === AvatarMessageType.USER_POSE) {
+    userPose[pose.uuid] = { x: pose.pose[0], y: pose.pose[1], z: pose.pose[2] }
+  }
+  if (pose.type === AvatarMessageType.USER_REMOVED) {
+    delete userPose[pose.uuid]
+  }
+})
 
 export interface IChatController {
   /**
@@ -160,6 +174,26 @@ export class ChatController extends ExposableAPI implements IChatController {
         isCommand: true,
         sender: 'Decentraland',
         message: response
+      }
+    })
+
+    this.addChatCommand('players', 'Shows a list of players around you', message => {
+      const users = [...peerMap.entries()]
+
+      const strings = users
+        .filter(([_, value]) => !!(value && value.user && value.user.profile && value.user.profile.name))
+        .filter(([uuid]) => userPose[uuid])
+        .map(function([uuid, value]) {
+          const pos = { x: 0, y: 0 }
+          worldToGrid(userPose[uuid], pos)
+          return `  ${value.user!.profile!.name}: ${pos.x}, ${pos.y}`
+        })
+        .join('\n')
+      return {
+        id: uuid(),
+        isCommand: true,
+        sender: 'Decentraland',
+        message: strings ? `Players around you:\n${strings}` : 'No other players are near to your location'
       }
     })
 
