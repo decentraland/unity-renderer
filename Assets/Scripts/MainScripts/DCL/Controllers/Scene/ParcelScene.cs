@@ -84,7 +84,7 @@ namespace DCL.Controllers
             contentProvider.BakeHashes();
 
             this.name = gameObject.name = $"scene:{data.id}";
-            
+
             gameObject.transform.position = DCLCharacterController.i.characterPosition.WorldToUnityPosition(Utils.GridToWorldPosition(data.basePosition.x, data.basePosition.y));
             CleanBlockers();
             SetupBlockers(data.parcels);
@@ -110,7 +110,7 @@ namespace DCL.Controllers
             {
                 Vector2Int pos = parcels[i];
                 var blocker = Instantiate(blockerPrefab, transform);
-                blocker.transform.position = DCLCharacterController.i.characterPosition.WorldToUnityPosition(Utils.GridToWorldPosition(pos.x, pos.y)) + (Vector3.up * blockerPrefab.transform.localPosition.y) + new Vector3(ParcelSettings.PARCEL_SIZE/2,0, ParcelSettings.PARCEL_SIZE/2);
+                blocker.transform.position = DCLCharacterController.i.characterPosition.WorldToUnityPosition(Utils.GridToWorldPosition(pos.x, pos.y)) + (Vector3.up * blockerPrefab.transform.localPosition.y) + new Vector3(ParcelSettings.PARCEL_SIZE / 2, 0, ParcelSettings.PARCEL_SIZE / 2);
                 blockers.Add(blocker);
             }
         }
@@ -905,23 +905,32 @@ namespace DCL.Controllers
             disposableNotReady.Remove(disposable.id);
             if (disposableNotReady.Count == 0)
             {
-                CleanBlockers();
-                SceneController.i.SendSceneReady(sceneData.id);
+                SetSceneReady();
             }
         }
 
         public void SetInitMessagesDone()
         {
             disposableNotReady.Clear();
-            for (var i = 0; i < disposableComponents.Count; i++)
-            {
-                disposableNotReady.Add(disposableComponents.ElementAt(i).Key);
-            }
 
-            for (var i = 0; i < disposableComponents.Count; i++)
+            if (disposableComponents.Count > 0)
             {
-                disposableComponents.ElementAt(i).Value.CallWhenReady(OnDisposableReady);
+                for (var i = 0; i < disposableComponents.Count; i++)
+                {
+                    disposableNotReady.Add(disposableComponents.ElementAt(i).Key);
+                    disposableComponents.ElementAt(i).Value.CallWhenReady(OnDisposableReady);
+                }
             }
+            else
+            {
+                SetSceneReady();
+            }
+        }
+
+        private void SetSceneReady()
+        {
+            CleanBlockers();
+            SceneController.i.SendSceneReady(sceneData.id);
         }
     }
 }
