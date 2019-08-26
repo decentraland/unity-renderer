@@ -34,29 +34,31 @@ namespace DCL.Components
         where LoadWrapperModelType : LoadableShape.Model, new()
     {
         private bool isLoaded = false;
-        private bool failed = true;
+        private bool failed = false;
         private event Action<BaseDisposable> OnReadyCallbacks;
         public System.Action<DecentralandEntity> OnEntityShapeUpdated;
 
         new public LoadWrapperModelType model
         {
-            get { 
-                    if(base.model == null)
-                        base.model = new LoadWrapperModelType();
+            get
+            {
+                if (base.model == null)
+                    base.model = new LoadWrapperModelType();
 
-                    return base.model as LoadWrapperModelType;
-                }
+                return base.model as LoadWrapperModelType;
+            }
             set { base.model = value; }
         }
 
         new protected LoadWrapperModelType previousModel
         {
-            get { 
-                    if(base.previousModel == null)
-                        base.previousModel = new LoadWrapperModelType();
+            get
+            {
+                if (base.previousModel == null)
+                    base.previousModel = new LoadWrapperModelType();
 
-                    return base.previousModel as LoadWrapperModelType;
-                }
+                return base.previousModel as LoadWrapperModelType;
+            }
             set { base.previousModel = value; }
         }
 
@@ -74,12 +76,12 @@ namespace DCL.Components
             bool updateVisibility = previousModel.visible != model.visible;
             bool updateCollisions = previousModel.withCollisions != model.withCollisions;
             bool triggerAttachment = !string.IsNullOrEmpty(model.src) && previousModel.src != model.src;
-            
+
             foreach (var entity in attachedEntities)
             {
-                if(triggerAttachment)
+                if (triggerAttachment)
                     AttachShape(entity);
-                    
+
                 if (updateVisibility)
                     ConfigureVisibility(entity);
 
@@ -111,6 +113,7 @@ namespace DCL.Components
                 Debug.LogError($"LoadableShape '{model.src}' not found in scene '{scene.sceneData.id}' mappings");
 #endif
                 failed = true;
+
             }
         }
 
@@ -141,6 +144,7 @@ namespace DCL.Components
                 MaterialTransitionController material = transitionController[i];
                 Object.Destroy(material);
             }
+
             failed = true;
             OnReadyCallbacks?.Invoke(this);
             OnReadyCallbacks = null;
@@ -162,6 +166,7 @@ namespace DCL.Components
 
             entity.OnComponentUpdated?.Invoke(loadWrapper);
             entity.OnShapeUpdated?.Invoke(entity);
+
             OnReadyCallbacks?.Invoke(this);
             OnReadyCallbacks = null;
         }
@@ -177,7 +182,7 @@ namespace DCL.Components
 
             loadWrapper?.Unload();
         }
-        
+
         public override void CallWhenReady(Action<BaseDisposable> callback)
         {
             if (attachedEntities.Count == 0 || isLoaded || failed)
