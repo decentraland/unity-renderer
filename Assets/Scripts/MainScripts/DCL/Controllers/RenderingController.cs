@@ -15,6 +15,7 @@ public class RenderingController : MonoBehaviour
     [ContextMenu("Disable Rendering")]
     public void DeactivateRendering()
     {
+        DCLCharacterController.i.initialPositionAlreadySet = false;
         DCL.Configuration.ParcelSettings.VISUAL_LOADING_ENABLED = false;
         MessagingBus.renderingIsDisabled = true;
         GLTFSceneImporter.renderingIsDisabled = true;

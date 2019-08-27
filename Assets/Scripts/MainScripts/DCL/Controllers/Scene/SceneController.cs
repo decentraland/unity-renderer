@@ -29,8 +29,6 @@ namespace DCL
         public HashSet<string> readyScenes = new HashSet<string>();
         public Dictionary<string, ParcelScene> loadedScenes = new Dictionary<string, ParcelScene>();
 
-
-
         [Header("Debug Tools")]
         public GameObject fpsPanel;
 
@@ -43,7 +41,7 @@ namespace DCL
         public Vector2Int debugSceneCoords;
         public bool ignoreGlobalScenes = false;
         public bool msgStepByStep = false;
-        
+
         #region BENCHMARK_EVENTS
 
         //NOTE(Brian): For performance reasons, these events may need to be removed for production.
@@ -142,16 +140,6 @@ namespace DCL
             {
                 WebInterface.StartDecentraland();
             }
-        }
-
-        private void OnEnable()
-        {
-            DCLCharacterController.OnPositionSet += OnCharacterPositionSet;
-        }
-
-        private void OnDisable()
-        {
-            DCLCharacterController.OnPositionSet -= OnCharacterPositionSet;
         }
 
         private void Update()
@@ -702,27 +690,6 @@ namespace DCL
             }
 
             return newScene;
-        }
-
-        private void OnCharacterPositionSet(DCLCharacterPosition newPosition)
-        {
-            if (!DCLCharacterController.i.initialPositionAlreadySet) return;
-
-            // Flush pending messages
-            using (var controllerIter = messagingControllers.GetEnumerator())
-            {
-                while (controllerIter.MoveNext())
-                {
-                    controllerIter.Dispose();
-                }
-            }
-
-            // We don't have to clear all the messaging controllers, because we need 
-            // global messaging and global scene controllers.
-            for (int i = 0; i < scenesSortedByDistance.Count; i++)
-                messagingControllers.Remove(scenesSortedByDistance[i].sceneData.id);
-
-            scenesSortedByDistance.Clear();
         }
 
         public void SendSceneReady(string sceneId)
