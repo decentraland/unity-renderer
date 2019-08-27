@@ -2099,7 +2099,7 @@ namespace UnityGLTF
 
             for (int i = 0; i < 2; i++)
             {
-                string materialCRC = material[i].ComputeCRC().ToString();
+                string materialCRC = material[i].ComputeCRC().ToString() + material[i].name;
 
                 //TODO(Brian): Remove old material here if the material won't be used. 
                 //             (We can use Resources.UnloadUnusedAssets too, but I hate to rely on this)
