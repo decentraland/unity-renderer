@@ -1,5 +1,6 @@
 import { parseParcelPosition } from 'atomicHelpers/parcelScenePositions'
 import { Wearable } from '../decentraland-ecs/src/decentraland/AvatarShape'
+import { Vector3Component } from '../atomicHelpers/landHelpers'
 
 export type MappingsResponse = {
   parcel_id: string
@@ -160,6 +161,7 @@ export interface IScene {
     base: string
     parcels: string[]
   }
+  spawnPoints?: SpawnPoint[]
   _mappings?: Record<string, string>
 }
 
@@ -180,6 +182,17 @@ export interface ILand {
   scene: IScene
   baseUrl: string
   mappingsResponse: MappingsResponse
+}
+
+export type SpawnPoint = {
+  name?: string
+  position: {
+    x: number | number[]
+    y: number | number[]
+    z: number | number[]
+  }
+  default?: boolean
+  cameraTarget?: Vector3Component
 }
 
 export type SoundComponent = {
