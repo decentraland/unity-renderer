@@ -43,7 +43,7 @@ public class MinimapHUDView : MonoBehaviour
 
     internal void UpdateData(MinimapHUDModel model)
     {
-        sceneNameText.text = model.sceneName;
+        sceneNameText.text = string.IsNullOrEmpty(model.sceneName) ? "Unnamed" : model.sceneName;
         playerPositionText.text = model.playerPosition;
     }
 

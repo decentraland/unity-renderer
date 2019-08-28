@@ -5,7 +5,7 @@ public class MinimapCamera : MonoBehaviour
     private const float HEIGHT = 20f;
     private static readonly Vector3 XZ_PLANE = new Vector3(1, 0, 1);
     private static readonly float MIN_SIZE = 25;
-    private static readonly float MAX_SIZE = 50;
+    private static readonly float MAX_SIZE = 35;
 
     public bool northLocked = true;
     public new Camera camera;
@@ -15,7 +15,7 @@ public class MinimapCamera : MonoBehaviour
 
     private void Awake()
     {
-        SetNormalizedSize(0);
+        SetNormalizedSize(1);
     }
 
     private void Start()
