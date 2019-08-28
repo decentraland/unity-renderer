@@ -15,20 +15,17 @@
 3. Run the Initial Scene in the Unity editor
 4. Run the build by accessing **[http://localhost:8080/?DEBUG_MODE&LOCAL_COMMS&position=-103%2C99&ws=ws%3A%2F%2Flocalhost%3A5000%2Fdcl](http://localhost:8080/?DEBUG_MODE&LOCAL_COMMS&position=-103%2C99&ws=ws%3A%2F%2Flocalhost%3A5000%2Fdcl)** in any webbrowser
 
-**Wait, what?**: The `explorer` repository holds a big number of business rules about how to run scenes. This setup runs that "operative system" (without the 3D visualization) so that Unity can connect to it and display on debug mode.
+**Wait, what?**: The `explorer` repository holds a big number of business rules about how to run scenes. This setup runs that "operating system" (without the 3D visualization) so that Unity can connect to it and display on debug mode.
 
-### Build a Unity Artifact
-
-1. Build unity WASM with its name as "unity" into [Explorer](https://github.com/decentraland/explorer) cloned repo **root/static/** directory
-2. Run the command `make watch`
-2. Run the build by accessing **[http://localhost:8080/?DEBUG_MODE&LOCAL_COMMS&position=-101%2C99](http://localhost:8080/?DEBUG_MODE&LOCAL_COMMS&position=-101%2C99)** in any webbrowser
-
-### Manual update and deploy of unity build (to be automated soon)
+### Manual building and deployment of the Unity Artifact (to be automated soon)
 
 1. Update build version number in MainScripts/DCL/Configuration/Configuration.cs (make a PR to keep this change in master branch)
 2. Build unity WASM with its name as "unity" into [Explorer](https://github.com/decentraland/explorer) cloned repo **root/static/** directory. (this can also be accomplished [using the command line](https://docs.unity3d.com/Manual/CommandLineArguments.html))
-3. After testing the build is fine, make a PR in explorer repo to update the new build in master (if the template wasn't updated, it should be just the 3 wasm binary files)
-4. After 30 mins aprox, the new build should be already working in Zone (check browser console for version report)
+3. (git) Checkout the deletion of static/unity/Build/DCLUnityLoader.js file (building replaces the folder and our unity loader is lost) and remove the unused static/unity/game.js and static/unity/index.html files.
+4. Run the command `make watch` in explorer's directory
+5. Run the build by accessing **[http://localhost:8080/?DEBUG_MODE&LOCAL_COMMS&position=20,20](http://localhost:8080/?DEBUG_MODE&LOCAL_COMMS&position=20,20)** in any webbrowser
+6. After testing the build is fine, make a PR in explorer repo to update the new build in master (it should be just the 3, or sometimes only 2, wasm binary files)
+7. After 30 mins aprox, the new build should be already working in Zone (check browser console for version report)
 
 ### Unity Editor debugging with dcl scene in "preview mode"
 
