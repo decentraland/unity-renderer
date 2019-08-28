@@ -22,10 +22,10 @@ MonoBehaviour:
   m_SamplingShader: {fileID: 4800000, guid: 04c410c9937594faa893a11dceb85f7e, type: 3}
   m_OpaqueLayerMask:
     serializedVersion: 2
-    m_Bits: 4294967295
+    m_Bits: 5943
   m_TransparentLayerMask:
     serializedVersion: 2
-    m_Bits: 4294967295
+    m_Bits: 5943
   m_DefaultStencilState:
     overrideStencilState: 0
     stencilReference: 0
@@ -54,23 +54,23 @@ MonoBehaviour:
         serializedVersion: 2
         m_Bits: 4096
       PassNames: []
-    overrideMaterial: {fileID: 2100000, guid: ef05df0d5cd0141169ff3a5ab43111c0, type: 2}
+    overrideMaterial: {fileID: 2100000, guid: e54b5053aa6c44530a71e7beb641e897, type: 2}
     overrideMaterialPassIndex: 0
     overrideDepthState: 0
     depthCompareFunction: 4
-    enableWrite: 1
+    enableWrite: 0
     stencilSettings:
       overrideStencilState: 0
       stencilReference: 0
-      stencilCompareFunction: 8
-      passOperation: 0
+      stencilCompareFunction: 4
+      passOperation: 7
       failOperation: 0
       zFailOperation: 0
     cameraSettings:
       overrideCamera: 0
       restoreCamera: 1
       offset: {x: 0, y: 0, z: 0, w: 0}
-      cameraFieldOfView: 60
+      cameraFieldOfView: 66.9
 --- !u!114 &7559956321818254571
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -92,7 +92,7 @@ MonoBehaviour:
         serializedVersion: 2
         m_Bits: 2048
       PassNames: []
-    overrideMaterial: {fileID: 2100000, guid: 3173fdfda2e4d0145afc93aff81f7b74, type: 2}
+    overrideMaterial: {fileID: 2100000, guid: 1b6d7b062282040878df170d9446a613, type: 2}
     overrideMaterialPassIndex: 0
     overrideDepthState: 1
     depthCompareFunction: 8

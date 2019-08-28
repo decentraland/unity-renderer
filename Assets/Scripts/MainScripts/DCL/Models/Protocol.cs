@@ -11,6 +11,7 @@ namespace DCL.Models
         AVATAR_SHAPE = 56,
         ANIMATOR = 33,
         AUDIO_SOURCE = 201,
+        GIZMOS = 203,
         BILLBOARD = 32,
     }
 
