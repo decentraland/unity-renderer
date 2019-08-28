@@ -117,7 +117,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0ef622d288be40f0a6bc111fe7b34eec, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  sideCount: 3
+  sideCount: 4
 --- !u!1 &922216676379941323
 GameObject:
   m_ObjectHideFlags: 0
