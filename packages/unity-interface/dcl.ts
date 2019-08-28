@@ -77,6 +77,10 @@ const browserInterface = {
     }
   },
 
+  OpenWebURL(data: { url: string }) {
+    window.open(data.url, '_blank')
+  },
+
   PreloadFinished(data: { sceneId: string }) {
     // stub. there is no code about this in unity side yet
   },
