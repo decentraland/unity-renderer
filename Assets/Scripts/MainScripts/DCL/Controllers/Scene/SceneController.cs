@@ -722,5 +722,10 @@ namespace DCL
 
             return id;
         }
+
+        public void BuilderReady()
+        {
+            UnityEngine.SceneManagement.SceneManager.LoadScene("BuilderScene", UnityEngine.SceneManagement.LoadSceneMode.Additive);
+        }
     }
 }
