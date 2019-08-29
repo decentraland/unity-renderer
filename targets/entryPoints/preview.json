@@ -1,0 +1,8 @@
+[
+  {
+    "name": "Compile preview",
+    "kind": "Webpack",
+    "file": "./packages/entryPoints/preview.ts",
+    "target": "web"
+  }
+]

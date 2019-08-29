@@ -22,7 +22,7 @@
     "removeComments": true,
     "incremental": true,
     "tsBuildInfoFile": ".tscache",
-    "outDir": "../test-parcels",
+    "outDir": "../test-scenes",
     "baseUrl": "../../packages",
     "pretty": true,
     "lib": [
@@ -37,6 +37,6 @@
   },
   "exclude": [
     "../node_modules",
-    "./test-parcels/*/ecs.ts"
+    "./test-scenes/*/ecs.ts"
   ]
 }

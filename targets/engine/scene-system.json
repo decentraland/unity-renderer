@@ -1,0 +1,8 @@
+[
+  {
+    "name": "Compile scene-system system",
+    "kind": "Webpack",
+    "file": "./packages/scene-system/*.ts",
+    "target": "webworker"
+  }
+]

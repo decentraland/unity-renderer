@@ -293,8 +293,8 @@ function checkDiff(imageAPath: string, imageBPath: string, threshold: number, di
 
   app.use('/test', express.static(resolve(__dirname, '../test')))
   app.use('/node_modules', express.static(resolve(__dirname, '../node_modules')))
-  app.use('/test-parcels', express.static(path.resolve(__dirname, '../public/test-parcels')))
-  app.use('/ecs-parcels', express.static(path.resolve(__dirname, '../public/ecs-parcels')))
+  app.use('/test-scenes', express.static(path.resolve(__dirname, '../public/test-scenes')))
+  app.use('/ecs-scenes', express.static(path.resolve(__dirname, '../public/ecs-scenes')))
   app.use('/local-ipfs', express.static(path.resolve(__dirname, '../public/local-ipfs')))
 
   app.use(express.static(path.resolve(__dirname, '..', 'static')))

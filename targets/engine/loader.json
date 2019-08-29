@@ -1,0 +1,8 @@
+[
+  {
+    "name": "Compile decentraland-loader",
+    "kind": "Webpack",
+    "file": "./packages/decentraland-loader/lifecycle/worker.ts",
+    "target": "webworker"
+  }
+]

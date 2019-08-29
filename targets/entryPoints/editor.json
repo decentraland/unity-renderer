@@ -1,0 +1,8 @@
+[
+  {
+    "name": "Compile editor",
+    "kind": "Webpack",
+    "file": "./packages/entryPoints/editor.ts",
+    "target": "web"
+  }
+]

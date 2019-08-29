@@ -36,6 +36,6 @@
   },
   "exclude": [
     "../node_modules",
-    "./test-parcels/*/ecs.ts"
+    "./test-scenes/*/ecs.ts"
   ]
 }

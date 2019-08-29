@@ -2,31 +2,31 @@
   {
     "name": "Compile test scenes (gamekit, part B)",
     "kind": "Webpack",
-    "file": "./public/test-parcels/!(1|-1.|-100|6)*/game.ts",
+    "file": "./public/test-scenes/!(1|-1.|-100|6)*/game.ts",
     "target": "web"
   },
   {
     "name": "Compile test scenes (gamekit, part C1)",
     "kind": "Webpack",
-    "file": "./public/test-parcels/-100*/game.ts",
+    "file": "./public/test-scenes/-100*/game.ts",
     "target": "web"
   },
   {
     "name": "Compile test scenes (gamekit, part C2)",
     "kind": "Webpack",
-    "file": "./public/test-parcels/1!(4)*/game.ts",
+    "file": "./public/test-scenes/1!(4)*/game.ts",
     "target": "web"
   },
   {
     "name": "Compile test scenes (gamekit, part C3)",
     "kind": "Webpack",
-    "file": "./public/test-parcels/-1.*/game.ts",
+    "file": "./public/test-scenes/-1.*/game.ts",
     "target": "web"
   },
   {
     "name": "Compile test scenes (gamekit, part C4)",
     "kind": "Webpack",
-    "file": "./public/test-parcels/6*/game.ts",
+    "file": "./public/test-scenes/6*/game.ts",
     "target": "web"
   }
 ]
