@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using DCL.Helpers;
 
 namespace DCL
 {
@@ -160,6 +161,7 @@ namespace DCL
                 if (po)
                 {
                     po.transform.parent = this.transform;
+                    Utils.ResetLocalTRS(po.transform);
                     po.gameObject.SetActive(false);
 
                     if (!inactiveObjects.Contains(po))
