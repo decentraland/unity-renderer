@@ -1,4 +1,4 @@
-import { getServerConfigurations } from 'config'
+import { getServerConfigurations, getTLD } from 'config'
 
 export type APIOptions = {
   baseURL?: string
@@ -24,7 +24,7 @@ export class API {
 
   auth() {
     return {
-      loginURL: '/auth/login.html',
+      loginURL: '/auth/login.html?ENV=' + getTLD(),
       logoutURL: '/auth/logout.html'
     }
   }

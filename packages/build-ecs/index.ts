@@ -114,13 +114,7 @@ function emitFile(fileName: string, services: ts.LanguageService) {
   output.outputFiles.forEach(o => {
     console.log(`> Emitting ${o.name.replace(ts.sys.getCurrentDirectory(), '')}`)
 
-    let generatedCode: string = o.text
-
-    if (PRODUCTION) {
-      generatedCode = o.text
-    } else {
-      generatedCode = `eval(${JSON.stringify(o.text)});`
-    }
+    let generatedCode: string = PRODUCTION ? o.text : `eval(${JSON.stringify(o.text)});`
 
     let ret =
       `/*! decentraland-ecs@${ecsVersion} */;\n${ecsPackageECS};\n` +
@@ -128,9 +122,12 @@ function emitFile(fileName: string, services: ts.LanguageService) {
       `/*! code */;\n${generatedCode}`
 
     const compiled = uglify.minify(ret, {
-      mangle: {
-        reserved: ['dcl']
-      },
+      mangle: PRODUCTION
+        ? {
+            reserved: ['dcl']
+          }
+        : false,
+      compress: PRODUCTION,
       output: {
         comments: /^!/
       }
