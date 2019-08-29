@@ -4,8 +4,9 @@ public class MinimapCamera : MonoBehaviour
 {
     private const float HEIGHT = 20f;
     private static readonly Vector3 XZ_PLANE = new Vector3(1, 0, 1);
-    private static readonly float MIN_SIZE = 25;
-    private static readonly float MAX_SIZE = 35;
+    
+    public float closestZoom = 25;
+    public float farthestZoom = 50;
 
     public bool northLocked = true;
     public new Camera camera;
@@ -36,7 +37,7 @@ public class MinimapCamera : MonoBehaviour
 
     public void SetNormalizedSize(float normalizedSize)
     {
-        camera.orthographicSize = Mathf.Lerp(MIN_SIZE, MAX_SIZE, normalizedSize);
+        camera.orthographicSize = Mathf.Lerp(closestZoom, farthestZoom, normalizedSize);
     }
 
     private void OnDestroy()
