@@ -19,8 +19,6 @@ export class SceneLifeCycleController extends EventEmitter {
   private futureOfPositionToSceneId = new Map<string, IFuture<SceneId | undefined>>()
   private sceneStatus = new Map<SceneId, SceneLifeCycleStatus>()
 
-  private sceneParcelSightCount = new Map<SceneId, number>()
-
   constructor(opts: { downloadManager: SceneDataDownloadManager }) {
     super()
     this.downloadManager = opts.downloadManager
@@ -44,18 +42,33 @@ export class SceneLifeCycleController extends EventEmitter {
     return self.indexOf(value) === index
   }
 
-  async onSight(positions: string[]) {
-    const positionSceneIds = (await Promise.all(
-      positions.map(position => this.requestSceneId(position).then(sceneId => ({ position, sceneId })))
-    )).filter(({ sceneId }) => sceneId !== undefined) as { position: string; sceneId: SceneId }[]
+  diff<T>(a1: T[], a2: T[]): T[] {
+    return a1.filter(i => a2.indexOf(i) < 0)
+  }
 
-    positionSceneIds.forEach(async ({ position, sceneId }) => {
+  async reportSightedParcels(sightedParcels: string[], lostSightParcels: string[]) {
+    const sighted = await this.fetchSceneIds(sightedParcels)
+    const lostSight = await this.fetchSceneIds(lostSightParcels)
+
+    await this.onSight(sighted)
+
+    const difference = this.diff(lostSight, sighted)
+    this.lostSight(difference)
+
+    return { sighted, lostSight: difference }
+  }
+
+  async fetchSceneIds(positions: string[]): Promise<string[]> {
+    const sceneIds = await Promise.all(positions.map(position => this.requestSceneId(position)))
+
+    return sceneIds.filter($ => !!$).filter(this.distinct) as string[]
+  }
+
+  async onSight(sceneIds: string[]) {
+    sceneIds.forEach(async sceneId => {
       try {
-        const previousSightCount = this.sceneParcelSightCount.get(sceneId) || 0
-        this.sceneParcelSightCount.set(sceneId, previousSightCount + 1)
-
         if (!this.sceneStatus.has(sceneId)) {
-          const data = await this.downloadManager.getParcelData(position)
+          const data = await this.downloadManager.resolveLandData(sceneId)
           if (data) {
             this.sceneStatus.set(sceneId, new SceneLifeCycleStatus(data))
           }
@@ -66,30 +79,17 @@ export class SceneLifeCycleController extends EventEmitter {
           this.sceneStatus.get(sceneId)!.status = 'awake'
         }
       } catch (e) {
-        defaultLogger.error(`error while loading scene ${sceneId}`)
-        defaultLogger.error(e)
+        defaultLogger.error(`error while loading scene ${sceneId}`, e)
       }
     })
-
-    return positionSceneIds.map($ => $.sceneId).filter(this.distinct)
   }
 
-  lostSight(positions: string[]) {
-    positions.forEach(async position => {
-      let sceneId = await this.requestSceneId(position)
-      if (!sceneId) {
-        return
-      }
-      const previousSightCount = this.sceneParcelSightCount.get(sceneId) || 0
-      const newSightCount = previousSightCount - 1
-      this.sceneParcelSightCount.set(sceneId, newSightCount)
-
-      if (newSightCount <= 0) {
-        const sceneStatus = this.sceneStatus.get(sceneId)
-        if (sceneStatus && sceneStatus.isAwake()) {
-          sceneStatus.status = 'unloaded'
-          this.emit('Unload scene', sceneId)
-        }
+  lostSight(sceneIds: string[]) {
+    sceneIds.forEach(sceneId => {
+      const sceneStatus = this.sceneStatus.get(sceneId)
+      if (sceneStatus && sceneStatus.isAwake()) {
+        sceneStatus.status = 'unloaded'
+        this.emit('Unload scene', sceneId)
       }
     })
   }

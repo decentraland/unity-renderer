@@ -27,10 +27,10 @@ export class ParcelLifeCycleController extends EventEmitter {
     this.config = config
   }
 
-  reportCurrentPosition(position: Vector2Component): Partial<ParcelSightSeeingReport> {
+  reportCurrentPosition(position: Vector2Component): ParcelSightSeeingReport | undefined {
     if (this.currentPosition && this.currentPosition.x === position.x && this.currentPosition.y === position.y) {
       // same position, no news
-      return {}
+      return undefined
     }
     this.currentPosition = position
 
