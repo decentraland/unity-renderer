@@ -1,0 +1,8 @@
+[
+  {
+    "name": "Compile Unity client interface",
+    "kind": "Webpack",
+    "file": "./packages/entryPoints/unity.ts",
+    "target": "web"
+  }
+]

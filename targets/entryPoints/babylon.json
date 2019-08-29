@@ -1,0 +1,8 @@
+[
+  {
+    "name": "Compile Babylon client",
+    "kind": "Webpack",
+    "file": "./packages/entryPoints/index.ts",
+    "target": "web"
+  }
+]

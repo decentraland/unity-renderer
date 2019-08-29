@@ -1,4 +1,4 @@
-import { DEBUG_MESSAGES } from '../config'
+import { DEBUG_MESSAGES, DEBUG_WS_MESSAGES } from '../config'
 import { initShared } from '../shared'
 import { defaultLogger } from '../shared/logger'
 import { initializeEngine } from './dcl'
@@ -133,6 +133,9 @@ function initializeUnityEditor(webSocketUrl: string, container: HTMLElement): Un
     SendMessage(_obj, type, payload) {
       if (ws.readyState === ws.OPEN) {
         const msg = JSON.stringify({ type, payload })
+        if (DEBUG_WS_MESSAGES) {
+          console.log(msg)
+        }
         ws.send(msg)
       }
     },

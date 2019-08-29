@@ -1,0 +1,8 @@
+[
+  {
+    "name": "Compile internal-scenes",
+    "kind": "Webpack",
+    "file": "./packages/ui/*.scene.ts",
+    "target": "web"
+  }
+]

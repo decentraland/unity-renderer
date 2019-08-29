@@ -1,104 +1,137 @@
-NODE = @node
+# General setup
+
+NODE = node
 COMPILER = $(NODE) --max-old-space-size=4096 node_modules/.bin/decentraland-compiler
-PARALLEL_COMPILER = node --max-old-space-size=4096 node_modules/.bin/decentraland-compiler
-
-DCL_PROJECT=../scenes/test
-
 CWD = $(shell pwd)
 
-GREEN=\n\033[1;34m
-RED=\n\033[1;31m
-RESET=\033[0m
+# Remove default Makefile rules
 
-build: | compile
-	@echo "$(GREEN)===================== Compilation Done =====================$(RESET)"
+.SUFFIXES:
 
-clean:
-	@echo "$(GREEN)===================== Cleaning project =====================$(RESET)"
-	$(COMPILER) build.clean.json
+# SDK Files
 
-compile: | build-test-scenes generate-mocks compile-entry-points
+SOURCE_SUPPORT_TS_FILES := $(wildcard scripts/*.ts)
+COMPILED_SUPPORT_JS_FILES := $(subst .ts,.js,$(SOURCE_SUPPORT_TS_FILES))
 
-compile-entry-points: | build-sdk
-	@echo "$(GREEN)================== Compiling entry points ==================$(RESET)"
-	$(COMPILER) build.entryPoints.json
+ECS_CONFIG_DEPENDENCIES := packages/decentraland-ecs/package.json packages/decentraland-ecs/tsconfig.json
 
-compile-dev:
-	NODE_ENV=development $(MAKE) compile
+DECENTRALAND_ECS_SOURCES := $(wildcard packages/decentraland-ecs/src/**/*.ts)
+DECENTRALAND_ECS_COMPILED_FILES := packages/decentraland-ecs/dist/src/index.js
 
-build-sdk: build-support
-	@echo "$(GREEN)======================= Building SDK =======================$(RESET)"
-	$(COMPILER) build.sdk.json
-	cd $(PWD)/packages/decentraland-ecs; $(PWD)/node_modules/.bin/api-extractor run --typescript-compiler-folder "$(PWD)/node_modules/typescript" --local --verbose
-	node ./scripts/buildEcsTypes.js
-	@echo "$(GREEN)======================= Updating docs ======================$(RESET)"
-	cd $(PWD)/packages/decentraland-ecs; $(PWD)/node_modules/.bin/api-documenter markdown -i types/dcl -o docs
-	cd $(PWD)/packages/decentraland-ecs; $(PWD)/node_modules/.bin/api-documenter yaml -i types/dcl -o docs-yaml
+DECENTRALAND_ECS_TYPEDEF_FILE := packages/decentraland-ecs/types/dcl/index.d.ts
 
-build-support:
-	@echo "$(GREEN)================== Building support files ==================$(RESET)"
-	$(COMPILER) build.support.json
+SCENE_SYSTEM := static/systems/scene.system.js
+DECENTRALAND_LOADER := static/loader/lifecycle/worker.js
+INTERNAL_SCENES := static/systems/decentraland-ui.scene.js
+BUILD_ECS := packages/build-ecs/index.js
 
-build-hell-map:
-	@echo "$(GREEN)===================== Building hell map ====================$(RESET)"
-	$(COMPILER) build.hell-map.json
+scripts/%.js: $(SOURCE_SUPPORT_TS_FILES) scripts/tsconfig.json
+	npx tsc --build scripts/tsconfig.json
 
-build-test-scenes: build-sdk
-	@echo "$(GREEN)=================== Building test scenes ===================$(RESET)"
-	$(COMPILER) build.test-scenes.json
-	$(MAKE) build-hell-map
-	node scripts/buildECSprojects.js
+packages/build-ecs/%.js: packages/build-ecs/%.ts packages/build-ecs/tsconfig.json
+	npx tsc --build packages/build-ecs/tsconfig.json
 
-export-preview: | clean compile-entry-points
-	@echo "$(GREEN)============== Exporting Preview File to CLI ===============$(RESET)"
-	cp static/dist/preview.js ${DCL_PROJECT}/node_modules/decentraland-ecs/artifacts/
+static/loader/lifecycle/worker.js: packages/decentraland-loader/**/*.ts
+	@$(COMPILER) targets/engine/loader.json
 
-publish:
-	@echo "$(GREEN)=================== getting release ready ==================$(RESET)"
-	$(NODE) ./scripts/prepareDist.js
+static/systems/scene.system.js: $(DECENTRALAND_ECS_TYPEDEF_FILE) packages/scene-system/scene.system.ts
+	@$(COMPILER) targets/engine/scene-system.json
 
-	@echo "$(GREEN)===================== decentraland-ecs =====================$(RESET)"
+static/systems/decentraland-ui.scene.js: $(SCENE_SYSTEM) packages/ui/tsconfig.json packages/ui/decentraland-ui.scene.ts
+	@$(COMPILER) targets/engine/internal-scenes.json
+
+packages/decentraland-ecs/dist/src/index.js: $(DECENTRALAND_ECS_SOURCES) $(ECS_CONFIG_DEPENDENCIES)
+	@$(COMPILER) targets/engine/ecs.json
+
+packages/decentraland-ecs/types/dcl/index.d.ts: $(COMPILED_SUPPORT_JS_FILES) $(DECENTRALAND_ECS_COMPILED_FILES) $(ECS_CONFIG_DEPENDENCIES)
+	@cd $(PWD)/packages/decentraland-ecs; $(PWD)/node_modules/.bin/api-extractor run --typescript-compiler-folder "$(PWD)/node_modules/typescript" --local
+	@node ./scripts/buildEcsTypes.js
+	@npx prettier --write 'packages/decentraland-ecs/types/dcl/index.d.ts'
+	@touch $(DECENTRALAND_ECS_TYPEDEF_FILE)
+
+docs: $(DECENTRALAND_ECS_TYPEDEF_FILE) ## Generate `decentraland-ecs` documentation using @microsoft/api-documenter
+	@cd $(PWD)/packages/decentraland-ecs; $(PWD)/node_modules/.bin/api-documenter markdown -i types/dcl -o docs
+	@echo "\nAPI Documentation was generated in the packages/decentraland-ecs/docs folder"
+
+build-essentials: $(COMPILED_SUPPORT_JS_FILES) $(DECENTRALAND_ECS_TYPEDEF_FILE) $(BUILD_ECS) $(SCENE_SYSTEM) $(INTERNAL_SCENES) $(DECENTRALAND_LOADER) generate-mocks ## Build the basic required files for the explorer
+
+# Hellmap scenes
+
+HELLMAP_SOURCE_FILES := $(wildcard public/hell-map/*/game.ts)
+HELLMAP_GAMEJS_FILES := $(subst .ts,.js,$(HELLMAP_SOURCE_FILES))
+
+public/hell-map/%/game.js: $(SCENE_SYSTEM) public/hell-map/%/game.ts
+	@$(COMPILER) targets/scenes/hell-map.json
+
+# Test scenes
+
+TEST_SCENES_SOURCE_FILES := $(wildcard public/test-scenes/*/game.ts)
+TEST_SCENES_GAMEJS_FILES := $(subst .ts,.js,$(TEST_SCENES_SOURCE_FILES))
+
+public/test-scenes/%/game.js: $(SCENE_SYSTEM) public/test-scenes/%/game.ts
+	@$(COMPILER) targets/scenes/test-scenes.json
+
+TEST_ECS_SCENE_SOURCES := $(wildcard public/ecs-scenes/*/game.ts)
+TEST_ECS_SCENE_GAMEJS_FILES := $(subst .ts,.js,$(TEST_ECS_SCENE_SOURCES))
+
+# ECS scenes
+
+public/ecs-scenes/%/game.js: $(SCENE_SYSTEM) public/ecs-scenes/%/game.ts
+	@node scripts/buildECSprojects.js
+
+# All scenes together
+
+test-scenes: $(TEST_SCENES_GAMEJS_FILES) $(HELLMAP_GAMEJS_FILES) $(TEST_ECS_SCENE_GAMEJS_FILES) ## Build the test scenes
+	$(MAKE) generate-mocks
+
+# Entry points
+
+static/dist/%.js: build-essentials packages/entryPoints/%.ts
+	@$(COMPILER) $<
+	
+# Release
+
+DIST_ENTRYPOINTS := static/dist/editor.js static/dist/unity.js static/dist/preview
+DIST_STATIC_FILES := static/dist/preview.js static/export.html static/preview.html static/fonts static/images static/models static/unity
+DIST_PACKAGE_JSON := packages/decentraland-ecs/package.json
+DIST_UNITY_BUILD := static/unity
+
+build-release: $(DIST_ENTRYPOINTS) $(DIST_STATIC_FILES) $(DIST_PACKAGE_JSON) $(DIST_UNITY_BUILD) ## Build all the entrypoints and run the `scripts/prepareDist` script
+	@node ./scripts/prepareDist.js
+
+publish: build-release ## Release a new version, using the `scripts/npmPublish` script
 	@cd $(PWD)/packages/decentraland-ecs; node $(PWD)/scripts/npmPublish.js
-
-	@echo "$(GREEN)======================== build-ecs =========================$(RESET)"
 	@cd $(PWD)/packages/build-ecs; node $(PWD)/scripts/npmPublish.js
 
-test: compile-dev
-	@echo "$(GREEN)================= Running development tests ================$(RESET)"
-	node scripts/runTestServer.js
+# Testing
 
-test-docker:
-	docker run \
+TEST_SOURCE_FILES := $(wildcard test/**/*.ts)
+
+test/out/index.js: build-essentials $(TEST_SOURCE_FILES)
+	@$(COMPILER) ./targets/test.json
+
+test: build-essentials test-scenes test/out/index.js ## Run all the tests
+	$(MAKE) generate-mocks
+	@node scripts/runTestServer.js
+
+test-docker: ## Run all the tests using a docker container
+	@docker run \
 		-it \
 		--rm \
 		--name node \
 		-v "$(PWD):/usr/src/app" \
 		-w /usr/src/app \
 		-e SINGLE_RUN=true \
+		-p 8080:8080 \
 		circleci/node:10-browsers \
-	 		node ./scripts/createMockJson.js
-	docker run \
-		-it \
-		--rm \
-		--name node \
-		-v "$(PWD):/usr/src/app" \
-		-w /usr/src/app \
-		-e SINGLE_RUN=true \
-		circleci/node:10-browsers \
-	 		node ./scripts/runTestServer.js
+			make test
 
-test-ci:
-	NODE_ENV=production $(MAKE) compile
-	@echo "$(GREEN)================= Running production tests =================$(RESET)"
-	SINGLE_RUN=true node ./scripts/runTestServer.js
-	node_modules/.bin/nyc report --temp-directory ./test/tmp --reporter=html --reporter=lcov --reporter=text
+test-ci: # Run the tests (for use in the continuous integration environment)
+	@SINGLE_RUN=true NODE_ENV=production $(MAKE) test
+	@node_modules/.bin/nyc report --temp-directory ./test/tmp --reporter=html --reporter=lcov --reporter=text
 
-generate-images-local: compile-dev
-	@echo "$(GREEN)================== Generating test images ==================$(RESET)"
-	node scripts/runTestServer.js
-
-generate-images:
-	docker run \
+generate-images: ## Generate the screenshots to run the visual diff validation tests
+	@docker run \
 		-it \
 		--rm \
 		--name node \
@@ -106,57 +139,25 @@ generate-images:
 		-w /usr/src/app \
 		-e SINGLE_RUN=true \
 		-e GENERATE_NEW_IMAGES=true \
-		-p 8080:8080 \
 		circleci/node:10-browsers \
-			make generate-images-local
-	$(MAKE) generate-mocks
+			make test
 
-generate-mocks:
-	$(NODE) ./scripts/createMockJson.js
+public/local-ipfs/mappings:
+	@rm -rf ./public/local-ipfs
+	@node ./scripts/createMockJson.js
 
-lint:
-	node_modules/.bin/madge packages/entryPoints/index.ts --circular --warning
-	node_modules/.bin/madge packages --orphans --extensions ts --exclude '.+\.d.ts|.+/dist\/.+'
-	node_modules/.bin/tslint --project tsconfig.json
+generate-mocks: ./scripts/createMockJson.js public/local-ipfs/mappings ## Build a fake "IPFS" index of all the test scene mappings
+	@rm -rf ./public/local-ipfs
+	@node ./scripts/createMockJson.js
 
-lint-fix:
-	node_modules/.bin/tslint --project tsconfig.json --fix
-	node_modules/.bin/prettier --write 'packages/**/*.{ts,tsx}'
-	node_modules/.bin/prettier --write 'packages/decentraland-ecs/types/dcl/index.d.ts'
+PARCEL_SCENE_JSONS := $(wildcard public/test-scenes/*/scene.json)
+ECS_SCENE_JSONS := $(wildcard public/ecs-scenes/*/scene.json)
+HELLMAP_SCENE_JSONS := $(wildcard public/hell-map/*/scene.json)
+SCENE_JSONS := $(PARCEL_SCENE_JSONS) $(ECS_SCENE_JSONS) $(HELLMAP_SCENE_JSONS)
 
-watch: export NODE_ENV=development
-watch: compile-dev
-	@echo "$(GREEN)=================== Watching file changes ==================$(RESET)"
-	$(MAKE) only-watch
+# CLI
 
-
-FILE=-100.*
-watch-single:
-	@echo '[{"name": "Debug","kind": "Webpack","file": "public/test-parcels/$(FILE)/game.ts","target": "web"}]' > build.single-debug.json
-	@node_modules/.bin/concurrently \
-		-n "entryPoints,debug-scene,server" \
-			"$(PARALLEL_COMPILER) build.entryPoints.json --watch" \
-			"$(PARALLEL_COMPILER) build.single-debug.json --watch" \
-			"node ./scripts/runTestServer.js --keep-open"
-
-watch-single-no-server:
-	@echo '[{"name": "Debug","kind": "Webpack","file": "public/test-parcels/$(FILE)/game.ts","target": "web"}]' > build.single-debug.json
-	@node_modules/.bin/concurrently \
-		-n "entryPoints,debug-scene" \
-			"$(PARALLEL_COMPILER) build.entryPoints.json --watch" \
-			"$(PARALLEL_COMPILER) build.single-debug.json --watch"
-
-only-watch:
-	@node_modules/.bin/concurrently \
-		-n "sdk,test-scenes,entryPoints,ecs-builder,server" \
-			"$(PARALLEL_COMPILER) build.sdk.json --watch" \
-			"$(PARALLEL_COMPILER) build.test-scenes.json --watch" \
-			"$(PARALLEL_COMPILER) build.entryPoints.json --watch" \
-			"node ./scripts/buildECSprojects.js --watch" \
-			"node ./scripts/runTestServer.js --keep-open"
-
-# initializes a local dev environment to test the CLI with a linked version of decentraland-ecs
-initialize-ecs-npm-link: build-sdk
+npm-link: build-essentials static/dist/preview.js static/dist/editor.js ## Run `npm link` to develop local scenes against this project
 	rm -rf packages/decentraland-ecs/artifacts || true
 	mkdir packages/decentraland-ecs/artifacts
 	ln -sf $(CWD)/node_modules/dcl-amd/dist/amd.js packages/decentraland-ecs/artifacts/amd.js
@@ -172,10 +173,58 @@ initialize-ecs-npm-link: build-sdk
 	ln -sf $(CWD)/static/unity-preview.html packages/decentraland-ecs/artifacts/unity-preview.html
 	cd packages/decentraland-ecs; npm link
 
-
-
-dev-watch:
+watch-builder: build-essentials static/dist/editor.js ## Watch the files required for hacking with the builder
 	@node_modules/.bin/concurrently \
-		-n "sdk,entryPoints,server" \
-			"$(PARALLEL_COMPILER) build.entryPoints.json --watch" \
+		-n "ecs,scene-system,internal-scenes,loader,preview,unity,builder,server" \
+			"$(COMPILER) targets/engine/ecs.json --watch" \
+			"$(COMPILER) targets/engine/scene-system.json --watch" \
+			"$(COMPILER) targets/engine/internal-scenes.json --watch" \
+			"$(COMPILER) targets/engine/loader.json --watch" \
+			"$(COMPILER) targets/entryPoints/editor.json --watch" \
 			"node ./scripts/runTestServer.js --keep-open"
+
+watch-cli: build-essentials ## Watch the files required for building the CLI
+	@node_modules/.bin/concurrently \
+		-n "ecs,scene-system,internal-scenes,loader,preview,unity,server" \
+			"$(COMPILER) targets/engine/ecs.json --watch" \
+			"$(COMPILER) targets/engine/scene-system.json --watch" \
+			"$(COMPILER) targets/engine/internal-scenes.json --watch" \
+			"$(COMPILER) targets/engine/loader.json --watch" \
+			"$(COMPILER) targets/entryPoints/preview.json --watch" \
+			"$(COMPILER) targets/entryPoints/unity.json --watch" \
+			"node ./scripts/runTestServer.js --keep-open"
+
+# Aesthetics
+
+lint: ## Validate correct formatting and circular dependencies
+	@node_modules/.bin/madge packages/entryPoints/unity.ts --circular --warning
+	@node_modules/.bin/madge packages --orphans --extensions ts --exclude '.+\.d.ts|.+/dist\/.+'
+	@node_modules/.bin/tslint --project tsconfig.json
+
+lint-fix: ## Fix bad formatting on all .ts and .tsx files
+	@node_modules/.bin/tslint --project tsconfig.json --fix
+	@node_modules/.bin/prettier --write 'packages/**/*.{ts,tsx}'
+
+# Development
+
+watch: $(SOME_MAPPINGS) build-essentials static/dist/unity.js ## Watch the files required for hacking the explorer
+	@NODE_ENV=development npx concurrently \
+		-n "ecs,scene-system,internal-scenes,loader,basic-scenes,unity,server" \
+			"$(COMPILER) targets/engine/ecs.json --watch" \
+			"$(COMPILER) targets/engine/scene-system.json --watch" \
+			"$(COMPILER) targets/engine/internal-scenes.json --watch" \
+			"$(COMPILER) targets/engine/loader.json --watch" \
+			"$(COMPILER) targets/scenes/basic-scenes.json --watch" \
+			"$(COMPILER) targets/entryPoints/unity.json --watch" \
+			"node ./scripts/runTestServer.js --keep-open"
+
+clean: ## Clean all generated files
+	@$(COMPILER) targets/clean.json
+
+# Makefile
+
+.PHONY: help clean watch lint lint-fix generate-images test-ci test-docker
+.DEFAULT_GOAL := help
+help:
+	@grep -E '^[a-zA-Z_-]+:.*?## .*$$' $(MAKEFILE_LIST) | sort | awk 'BEGIN {FS = ":.*?## "}; {printf "\033[36m%-20s\033[0m %s\n", $$1, $$2}'
+	@echo "\nYou probably want to run 'make watch' or 'make test-scenes watch' to build all the test scenes and run the local comms server."

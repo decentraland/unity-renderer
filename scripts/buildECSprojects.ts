@@ -7,7 +7,7 @@ import { dirname } from 'path'
 import { spawn } from 'child_process'
 
 const folders = glob
-  .sync(path.resolve(__dirname, '../public/ecs-parcels/*/game.ts'), { absolute: true })
+  .sync(path.resolve(__dirname, '../public/ecs-scenes/*/game.ts'), { absolute: true })
   .map($ => dirname($))
 
 const PWD = process.cwd()

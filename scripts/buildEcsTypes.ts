@@ -12,20 +12,14 @@ const original = ensureFileExists(root, '/dist/index.d.ts')
 copyFile(original, root + '/types/dcl/index.d.ts')
 
 const dtsFile = ensureFileExists(root, '/types/dcl/index.d.ts')
-
-console.log(`> remove '^export ' from ${dtsFile}`)
 {
   const content = readFileSync(dtsFile).toString()
 
   writeFileSync(dtsFile, content.replace(/^export /gm, ''))
 
-  console.log(`> ${dtsFile} must have no /import/`)
-
   if (content.match(/\bimport\b/)) {
     throw new Error(`The file ${dtsFile} contains imports:\n${content}`)
   }
-
-  console.log(`> ${dtsFile} must have no '/// <ref'`)
 
   if (content.includes('/// <ref')) {
     throw new Error(`The file ${dtsFile} contains '/// <ref':\n${content}`)

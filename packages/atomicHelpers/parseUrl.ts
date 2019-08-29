@@ -21,7 +21,7 @@ export function resolveUrl(baseUrl: string, url: string | URL) {
     } else if (url.match(/^test-local:/)) {
       const folder = url.replace('test-local:', '')
 
-      return URL.resolve(baseUrl, `/test-parcels/${folder}/`)
+      return URL.resolve(baseUrl, `/test-scenes/${folder}/`)
     } else {
       return URL.resolve(baseUrl, url)
     }

@@ -1,0 +1,8 @@
+[
+  {
+    "name": "Compile Gamekit (BUNDLE)",
+    "kind": "Webpack",
+    "file": "./packages/decentraland-ecs/src/index.ts",
+    "target": "this"
+  }
+]

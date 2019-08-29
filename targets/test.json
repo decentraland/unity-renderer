@@ -1,11 +1,5 @@
 [
   {
-    "name": "Compile preview & client",
-    "kind": "Webpack",
-    "file": "./packages/entryPoints/*.ts",
-    "target": "web"
-  },
-  {
     "name": "Compile tests",
     "kind": "Webpack",
     "file": "./test/index.ts",

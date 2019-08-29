@@ -8,7 +8,6 @@ import path = require('path')
 export function ensureFileExists(root: string, file: string) {
   const x = path.resolve(root, file.replace(/^\//, ''))
 
-  console.log(`> ensure ${x} exists`)
   if (!fs.existsSync(x)) {
     throw new Error(`${x} does not exist`)
   }
@@ -17,8 +16,6 @@ export function ensureFileExists(root: string, file: string) {
 }
 
 export function copyFile(from: string, to: string) {
-  console.log(`> copy ${from} to ${to}`)
-
   if (!fs.existsSync(from)) {
     throw new Error(`${from} does not exist`)
   }
