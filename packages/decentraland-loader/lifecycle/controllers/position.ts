@@ -14,19 +14,16 @@ export class PositionLifecycleController extends EventEmitter {
   }
 
   async reportCurrentPosition(position: Vector2Component, teleported: boolean) {
-    const { sighted, lostSight } = this.parcelController.reportCurrentPosition(position)
+    const parcels = this.parcelController.reportCurrentPosition(position)
 
     this.currentSceneId = await this.sceneController.requestSceneId(`${position.x},${position.y}`)
 
-    if (sighted) {
-      const newlySightedScenes = await this.sceneController.onSight(sighted)
+    if (parcels) {
+      const newlySightedScenes = await this.sceneController.reportSightedParcels(parcels.sighted, parcels.lostSight)
 
-      if (!this.eqSet(this.currentlySightedScenes, newlySightedScenes)) {
-        this.currentlySightedScenes = newlySightedScenes
+      if (!this.eqSet(this.currentlySightedScenes, newlySightedScenes.sighted)) {
+        this.currentlySightedScenes = newlySightedScenes.sighted
       }
-    }
-    if (lostSight) {
-      this.sceneController.lostSight(lostSight)
     }
 
     if (teleported) {
