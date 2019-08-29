@@ -86,6 +86,7 @@ export const STATIC_WORLD = location.search.indexOf('STATIC_WORLD') !== -1 || !!
 
 // Development
 export const ENABLE_WEB3 = location.search.indexOf('ENABLE_WEB3') !== -1 || !!(global as any).enableWeb3 || EDITOR
+export const ENV_OVERRIDE = location.search.indexOf('ENV') !== -1
 export const USE_LOCAL_COMMS = location.search.indexOf('LOCAL_COMMS') !== -1 || PREVIEW
 export const DEBUG = location.search.indexOf('DEBUG_MODE') !== -1 || !!(global as any).mocha || PREVIEW || EDITOR
 export const DEBUG_ANALYTICS = location.search.indexOf('DEBUG_ANALYTICS') !== -1
@@ -138,6 +139,9 @@ let contracts: any = null
 let network: ETHEREUM_NETWORK | null = null
 
 export function getTLD() {
+  if (ENV_OVERRIDE) {
+    return window.location.search.match(/ENV=(\w+)/)[1]
+  }
   if (window) {
     return window.location.hostname.match(/(\w+)$/)[0]
   }
@@ -147,6 +151,9 @@ export const knownTLDs = ['zone', 'org', 'today']
 
 function getDefaultTLD() {
   const TLD = getTLD()
+  if (ENV_OVERRIDE) {
+    return TLD
+  }
 
   // web3 is now disabled by default
   if (!ENABLE_WEB3 && TLD === 'localhost') {
@@ -169,6 +176,7 @@ export function getServerConfigurations() {
     worldInstanceUrl: `wss://world-comm.decentraland.${TLDDefault}/connect`,
     profile: `https://profile.decentraland.${TLDDefault}/api/v1`,
     avatar: {
+      server: `https://avatars-api.decentraland.${TLDDefault}/`,
       catalog: 'https://avatar-assets.now.sh',
       contents: `https://s3.amazonaws.com/content-service.decentraland.org/`,
       presets: `https://s3.amazonaws.com/avatars-storage.decentraland.org/mobile-avatars`
@@ -181,21 +189,37 @@ export function getServerConfigurations() {
 }
 
 export async function setNetwork(net: ETHEREUM_NETWORK) {
-  const response = await fetch('https://contracts.decentraland.org/addresses.json')
-  const json = await response.json()
+  try {
+    const response = await fetch('https://contracts.decentraland.org/addresses.json')
+    const json = await response.json()
 
-  network = net
-  contracts = json[net]
+    network = net
+    contracts = json[net]
 
-  decentralandConfigurations = {
-    contractAddress: contracts.LANDProxy,
-    contracts: {
-      serviceLocator: contracts.ServiceLocator
-    },
-    paymentTokens: {
-      MANA: contracts.MANAToken
-    },
-    invite: contracts.DecentralandInvite
+    decentralandConfigurations = {
+      contractAddress: contracts.LANDProxy,
+      contracts: {
+        serviceLocator: contracts.ServiceLocator
+      },
+      paymentTokens: {
+        MANA: contracts.MANAToken
+      }
+    }
+  } catch (e) {
+    // Could not fetch addresses. You might be offline. Setting sensitive defaults for contract addresses...
+
+    network = net
+    contracts = {}
+
+    decentralandConfigurations = {
+      contractAddress: '',
+      contracts: {
+        serviceLocator: ''
+      },
+      paymentTokens: {
+        MANA: ''
+      }
+    }
   }
 }
 

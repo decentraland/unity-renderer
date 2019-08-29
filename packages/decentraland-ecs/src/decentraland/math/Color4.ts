@@ -4,6 +4,9 @@ import { Scalar } from './Scalar'
 
 import { ToLinearSpace, ToGammaSpace } from './types'
 
+/**
+ * @public
+ */
 export type ReadOnlyColor4 = {
   readonly r: number
   readonly g: number
