@@ -52,7 +52,7 @@ Shader "DCL/LWRP/Lit"
         [HideInInspector] _Glossiness("Smoothness", Float) = 0.0
         [HideInInspector] _GlossyReflections("EnvironmentReflections", Float) = 0.0
 
-        [PerRendererData] _CullYPlane ("Cull Y Plane", Float) = 0.5
+        [PerRendererData] _CullYPlane ("Cull Y Plane", Float) = 0
         _FadeThickness ("Fade Thickness", Float) = 5
         _FadeDirection ("Fade Direction", Float) = 0
     }
