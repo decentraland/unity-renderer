@@ -15,12 +15,16 @@ export async function resolveProfile(uuid: string = ''): Promise<Profile> {
   }
 
   let spec: ProfileSpec
-  // FIXME - forcing random generation until profile migration is finished - moliva - 29/07/2019
-  if (false && response && response.ok) {
+  if (response && response.ok) {
     // @ts-ignore
     spec = (await response.json()) as ProfileSpec
   } else {
-    spec = await createStubProfileSpec()
+    const legacy = await fetchLegacy(uuid)
+    if (!PREVIEW && legacy && legacy.ok) {
+      spec = legacyToSpec((await legacy.json()).data)
+    } else {
+      spec = await createStubProfileSpec()
+    }
   }
 
   return resolveProfileSpec(uuid, spec)
@@ -30,7 +34,7 @@ export async function resolveProfileSpec(uuid: string, spec: ProfileSpec): Promi
   const avatar = await mapSpecToAvatar(spec.avatar)
 
   // TODO - fetch name from claim server - moliva - 22/07/2019
-  const name = `Guest_${uuid.replace('email|', '').slice(0, 7)}` // strip email| from auth0 uuid
+  const name = spec.name || `Guest_${uuid.replace('email|', '').slice(0, 7)}` // strip email| from auth0 uuid
 
   return {
     userId: uuid,
@@ -44,8 +48,10 @@ export async function resolveProfileSpec(uuid: string, spec: ProfileSpec): Promi
   }
 }
 
-export async function createStubProfileSpec(): Promise<ProfileSpec> {
+export async function createStubProfileSpec(uuid = ('' + Math.random()).slice(2, 9)): Promise<ProfileSpec> {
+  const name = `Guest_${uuid.replace('email|', '').slice(0, 7)}` // strip email| from auth0 uuid
   return {
+    name,
     description: '',
     updated_at: 1,
     created_at: 1,
@@ -143,10 +149,38 @@ async function mapSpecToAvatar(avatar: AvatarSpec): Promise<Avatar> {
   return shape as Avatar
 }
 
-export async function fetchProfile(uuid: string = '') {
-  const request = `${getServerConfigurations().profile}/profile${uuid ? '/' + uuid : ''}`
-  const response = await fetch(request)
+export async function fetchLegacy(uuid: string = '') {
+  const authHeader = {
+    headers: {
+      Authorization: 'Bearer ' + localStorage.getItem('decentraland-auth-user-token')
+    }
+  }
+  const request = `${getServerConfigurations().avatar.server}api/profile${uuid ? '/' + uuid : ''}`
+  let response = await fetch(request, authHeader)
+  return response
+}
 
+export function legacyToSpec(legacy: any) {
+  const { profile, /* email, */ snapshots, updatedAt, userId } = legacy
+  const { created_at, description, name, avatar } = profile
+  return {
+    description,
+    created_at,
+    updated_at: updatedAt,
+    version: updatedAt,
+    name,
+    avatar: { ...avatar, snapshots, name, userId }
+  }
+}
+
+export async function fetchProfile(uuid: string = '') {
+  const authHeader = {
+    headers: {
+      Authorization: 'Bearer ' + localStorage.getItem('decentraland-auth-user-token')
+    }
+  }
+  const request = `${getServerConfigurations().profile}/profile${uuid ? '/' + uuid : ''}`
+  let response = await fetch(request, authHeader)
   return response
 }
 
@@ -154,7 +188,10 @@ export async function createProfile(avatar: AvatarSpec) {
   const body = JSON.stringify(avatar)
   const options = {
     method: 'PUT',
-    body
+    body,
+    headers: {
+      Authorization: 'Bearer ' + localStorage.getItem('decentraland-auth-user-token')
+    }
   }
 
   const request = `${getServerConfigurations().profile}/profile/avatar`

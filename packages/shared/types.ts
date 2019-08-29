@@ -347,6 +347,7 @@ export type ProfileSpec = {
   created_at: number
   updated_at: number
   version: string
+  name: string
   avatar: AvatarSpec
 }
 
