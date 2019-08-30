@@ -16,7 +16,7 @@ namespace Builder
         public static System.Action<float> OnZoomFromUI;
         public static System.Action<string> OnSelectGizmo;
         public static System.Action OnResetObject;
-        public static System.Action<LoadParcelScenesMessage.UnityParcelScene> OnUpdateSceneParcels;
+        public static System.Action<string> OnUpdateSceneParcels;
         public static System.Action<DecentralandEntity> OnEntityAdded;
         public static System.Action<DecentralandEntity> OnEntityRemoved;
         public static System.Action<bool> OnPreviewModeChanged;
@@ -88,10 +88,6 @@ namespace Builder
             }
         }
 
-        public void BuilderReady()
-        {
-        }
-
         public void TakeScreenshot(string mime)
         {
             StartCoroutine(TakeScreenshotRoutine(mime));
@@ -99,6 +95,7 @@ namespace Builder
 
         public void UpdateParcelScenes(string sceneJSON)
         {
+            OnUpdateSceneParcels?.Invoke(sceneJSON);
         }
 
         #endregion
