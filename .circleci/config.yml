@@ -10,20 +10,22 @@ jobs:
     working_directory: /tmp/explorer
     steps:
       # Install lfs
-      - run: mkdir -p ~/.ssh
-      - run: ssh-keyscan -H github.com >> ~/.ssh/known_hosts
-      - run: curl -s https://packagecloud.io/install/repositories/github/git-lfs/script.deb.sh | sudo bash
-      # The `ledger-wallet-provider` lib has `node-hid` as a dependency, which won't build on certain
-      # Linux systems without installing libusb first
-      - run: sudo apt-get update && sudo apt-get install -y git-lfs=2.7.2 libusb-1.0-0 libusb-1.0-0-dev
-      - run: ssh git@github.com git-lfs-authenticate decentraland/explorer.git download
-      - run: git lfs install
+      - run:
+          name: 'Install git-lfs'
+          command: |
+            mkdir -p ~/.ssh
+            ssh-keyscan -H github.com >> ~/.ssh/known_hosts
+            curl -s https://packagecloud.io/install/repositories/github/git-lfs/script.deb.sh | sudo bash
+            sudo apt-get update && sudo apt-get install -y git-lfs=2.7.2
+            ssh git@github.com git-lfs-authenticate decentraland/kernel.git download
+            git lfs install
 
       # checkout the actual code
       - checkout
 
       # restore cached lfs
       - restore_cache:
+          name: Restore large files from github's lfs repo
           keys:
             - gitlfs-{{ .Branch }}
             - gitlfs
@@ -32,39 +34,41 @@ jobs:
           command: |
             while true; do git reset --hard HEAD && git clean -fd && git lfs pull && break; done
       - save_cache:
+          name: Store large files in cache
           key: gitlfs-{{ .Branch }}
           paths:
             - .git/lfs
 
       # restore node_modules
       - restore_cache:
+          name: Restoring node_modules
           keys:
             - v1-dependencies-{{ checksum "package-lock.json" }}
-            - v1-dependencies-
 
       # install differences in node_modules
-      - run: npm ci
+      - run:
+          name: Install differences in node_modules
+          command: |
+              npm i
+              git checkout -- package-lock.json
       - save_cache:
+          name: Store node_modules cache
           paths:
             - node_modules
           key: v1-dependencies-{{ checksum "package-lock.json" }}
 
-      - run: make lint
-      - run: npm outdated --depth 0 || true
-
-      - run: make test-ci
+      - run:
+          name: Run checks and tests
+          command: |
+              make lint
+              npm outdated --depth 0 || true
+              make test-ci
+              npx codecov
 
       - store_artifacts:
+          name: Save screenshots of visual tests
           path: test/diff
           when: on_fail
-
-      - store_artifacts:
-          path: coverage
-
-      - run:
-          name: send coverage to codecov
-          command: npx codecov
-
       - store_artifacts:
           path: packages/decentraland-ecs/api-docs-review/decentraland-ecs.api.ts
           when: on_fail
@@ -73,43 +77,47 @@ jobs:
           when: on_fail
 
       - save_cache:
+          name: Save the built files
           paths:
             - static
           key: build-{{ .Revision }}
       - save_cache:
+          name: Save the files required to release an SDK version
           paths:
             - Makefile
             - packages
             - scripts
+            - tsconfig.json
             - package-lock.json
             - package.json
             - .git
-          key: build-npm-{{ .Revision }}
+          key: build-sdk-{{ .Revision }}
 
   publish-ecs-latest:
     docker:
       - image: circleci/node:10-browsers
     working_directory: /tmp/explorer
     steps:
-      # restore build files
       - restore_cache:
+          name: Restore built files
           keys:
             - build-{{ .Revision }}
       - restore_cache:
+          name: Restore sdk-release files
           keys:
-            - build-npm-{{ .Revision }}
+            - build-sdk-{{ .Revision }}
       # restore node_modules
       - restore_cache:
+          name: Restore node_modules
           keys:
             - v1-dependencies-{{ checksum "package-lock.json" }}
-            - v1-dependencies-
       - run:
-          name: Set up NPM
+          name: Set up NPM access tokens
           command: echo "//registry.npmjs.org/:_authToken=${NPM_TOKEN}" > ~/.npmrc
           when: on_success
 
       - run:
-          name: publish decentraland-api
+          name: Publish a new version of decentraland-ecs
           command: make publish
           when: on_success
 
@@ -129,7 +137,6 @@ jobs:
       - restore_cache:
           keys:
             - v1-dependencies-{{ checksum "package-lock.json" }}
-            - v1-dependencies-
       - run:
           name: Set up NPM
           command: echo "//registry.npmjs.org/:_authToken=${NPM_TOKEN}" > ~/.npmrc
