@@ -1,4 +1,5 @@
 ﻿using UnityEngine;
+using DCL;
 using DCL.Controllers;
 using DCL.Models;
 
@@ -26,7 +27,7 @@ namespace Builder
         public float panAmount = 0.2f;
         [Header("Zoom")]
         public float zoomMin = 1f;
-        public float zoomMax = 20f;
+        public float zoomMax = 60f;
         public float zoomSpeed = 5f;
         public float zoomAmount = 0.5f;
 
@@ -45,8 +46,9 @@ namespace Builder
 
         private bool isObjectBeingDrag = false;
 
-        private Vector2 sceneMinSize;
-        private Vector2 sceneMaxSize;
+        private Vector2 sceneBoundaryMin;
+        private Vector2 sceneBoundaryMax;
+        private uint sceneParcelsCount;
 
         private bool isGameObjectActive = false;
 
@@ -56,7 +58,12 @@ namespace Builder
             pitchDefault = pitchCurrent = pitchTarget = pitchPivot.localEulerAngles.x;
             yawDefault = yawCurrent = yawTarget = yawPivot.localEulerAngles.y;
 
-            SetSceneSize(GameObject.FindObjectOfType<ParcelScene>());
+            ParcelScene loadedScene = GetLoadedScene();
+            if (loadedScene != null && loadedScene.sceneData != null)
+            {
+                sceneParcelsCount = (uint)loadedScene.sceneData.parcels.Length;
+                CalcSceneBoundaries(loadedScene.sceneData);
+            }
             CenterCamera();
 
             DCLBuilderBridge.OnPreviewModeChanged += OnPreviewModeChanged;
@@ -98,6 +105,7 @@ namespace Builder
                 DCLBuilderInput.OnKeyboardButtonDown += OnKeyboardButtonDown;
                 DCLBuilderBridge.OnResetCamera += OnResetCamera;
                 DCLBuilderBridge.OnZoomFromUI += OnZoomFormUI;
+                DCLBuilderBridge.OnUpdateSceneParcels += OnUpdateSceneParcels;
                 DCLBuilderObjectSelector.OnDraggingObjectStart += OnDragObjectStart;
                 DCLBuilderObjectSelector.OnDraggingObjectEnd += OnDragObjectEnd;
                 DCLBuilderObjectSelector.OnGizmoTransformObjectStart += OnGizmoTransformObjectStart;
@@ -115,6 +123,7 @@ namespace Builder
             DCLBuilderInput.OnKeyboardButtonDown -= OnKeyboardButtonDown;
             DCLBuilderBridge.OnResetCamera -= OnResetCamera;
             DCLBuilderBridge.OnZoomFromUI -= OnZoomFormUI;
+            DCLBuilderBridge.OnUpdateSceneParcels -= OnUpdateSceneParcels;
             DCLBuilderObjectSelector.OnDraggingObjectStart -= OnDragObjectStart;
             DCLBuilderObjectSelector.OnDraggingObjectEnd -= OnDragObjectEnd;
             DCLBuilderObjectSelector.OnGizmoTransformObjectStart -= OnGizmoTransformObjectStart;
@@ -176,7 +185,6 @@ namespace Builder
             pitchCurrent = pitchTarget = pitchDefault;
             yawCurrent = yawTarget = yawDefault;
 
-            //TODO: check if the number of parcels has changed
             CenterCamera();
 
             builderCamera.transform.position.Set(0, 0, zoomCurrent);
@@ -204,9 +212,9 @@ namespace Builder
         private void CenterCamera()
         {
             panCurrent = new Vector3(
-                sceneMinSize.x + ((sceneMaxSize.x + DCL.Configuration.ParcelSettings.PARCEL_SIZE) - sceneMinSize.x) * 0.5f,
+                (sceneBoundaryMax.x + 1) * DCL.Configuration.ParcelSettings.PARCEL_SIZE * 0.5f,
                 0,
-                sceneMinSize.y + ((sceneMaxSize.y + DCL.Configuration.ParcelSettings.PARCEL_SIZE) - sceneMinSize.y) * 0.5f
+                (sceneBoundaryMax.y + 1) * DCL.Configuration.ParcelSettings.PARCEL_SIZE * 0.5f
             );
 
             rootPivot.transform.localPosition = panCurrent;
@@ -235,39 +243,49 @@ namespace Builder
             OnDragObjectEnd(entity, objectPosition);
         }
 
+        private void OnUpdateSceneParcels(string sceneJSON)
+        {
+            ParcelScene loadedScene = GetLoadedScene();
+            if (loadedScene != null && loadedScene.sceneData != null)
+            {
+                uint parcelsCount = (uint)loadedScene.sceneData.parcels.Length;
+                if (parcelsCount != sceneParcelsCount)
+                {
+                    CalcSceneBoundaries(loadedScene.sceneData);
+                }
+            }
+        }
+
         private bool CanOrbit()
         {
             return !isObjectBeingDrag;
         }
 
-        private void SetSceneSize(ParcelScene scene)
+        private void CalcSceneBoundaries(ParcelScene scene)
         {
-            sceneMinSize = Vector2.zero;
-            sceneMaxSize = Vector2.zero;
+            sceneBoundaryMin = Vector2.zero;
+            sceneBoundaryMax = Vector2.zero;
 
             if (scene != null && scene.sceneData != null)
             {
-                SetSceneSize(scene.sceneData);
+                CalcSceneBoundaries(scene.sceneData);
             }
         }
 
-        private void SetSceneSize(LoadParcelScenesMessage.UnityParcelScene scene)
+        private void CalcSceneBoundaries(LoadParcelScenesMessage.UnityParcelScene scene)
         {
-            sceneMinSize = Vector2.zero;
-            sceneMaxSize = Vector2.zero;
+            sceneBoundaryMin = Vector2.zero;
+            sceneBoundaryMax = Vector2.zero;
 
-            if (scene != null)
+            if (scene.parcels.Length > 0)
             {
-                if (scene.parcels.Length > 0)
+                foreach (Vector2Int parcel in scene.parcels)
                 {
-                    foreach (Vector2Int parcel in scene.parcels)
-                    {
-                        Vector3 parcelPosition = new Vector3(parcel.x, 0, parcel.y);
-                        sceneMinSize.x = Mathf.Min(sceneMinSize.x, parcelPosition.x);
-                        sceneMinSize.y = Mathf.Min(sceneMinSize.y, parcelPosition.z);
-                        sceneMaxSize.x = Mathf.Max(sceneMaxSize.x, parcelPosition.x);
-                        sceneMaxSize.y = Mathf.Max(sceneMaxSize.y, parcelPosition.z);
-                    }
+                    Vector3 parcelPosition = new Vector3(parcel.x, 0, parcel.y);
+                    sceneBoundaryMin.x = Mathf.Min(sceneBoundaryMin.x, parcelPosition.x);
+                    sceneBoundaryMin.y = Mathf.Min(sceneBoundaryMin.y, parcelPosition.z);
+                    sceneBoundaryMax.x = Mathf.Max(sceneBoundaryMax.x, parcelPosition.x);
+                    sceneBoundaryMax.y = Mathf.Max(sceneBoundaryMax.y, parcelPosition.z);
                 }
             }
         }
@@ -275,6 +293,21 @@ namespace Builder
         private void OnPreviewModeChanged(bool isPreview)
         {
             gameObject.SetActive(!isPreview);
+        }
+
+        private ParcelScene GetLoadedScene()
+        {
+            ParcelScene loadedScene = null;
+
+            if (SceneController.i != null && SceneController.i.loadedScenes.Count > 0)
+            {
+                using (var iterator = SceneController.i.loadedScenes.GetEnumerator())
+                {
+                    iterator.MoveNext();
+                    loadedScene = iterator.Current.Value;
+                }
+            }
+            return loadedScene;
         }
     }
 }
