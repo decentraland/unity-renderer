@@ -179,7 +179,7 @@ export function getServerConfigurations() {
       server: `https://avatars-api.decentraland.${TLDDefault}/`,
       catalog: 'https://avatar-assets.now.sh',
       contents: `https://s3.amazonaws.com/content-service.decentraland.org/`,
-      presets: `https://s3.amazonaws.com/avatars-storage.decentraland.org/mobile-avatars`
+      presets: `https://avatars-storage.decentraland.org/mobile-avatars`
     },
     darApi:
       TLDDefault === 'zone' || TLDDefault === 'today'
