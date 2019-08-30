@@ -87,11 +87,11 @@ test-scenes: $(TEST_SCENES_GAMEJS_FILES) $(HELLMAP_GAMEJS_FILES) $(TEST_ECS_SCEN
 # Entry points
 
 static/dist/%.js: build-essentials packages/entryPoints/%.ts
-	@$(COMPILER) $<
+	@$(COMPILER) $(word 2,$^)
 	
 # Release
 
-DIST_ENTRYPOINTS := static/dist/editor.js static/dist/unity.js static/dist/preview
+DIST_ENTRYPOINTS := static/dist/editor.js static/dist/unity.js static/dist/preview.js
 DIST_STATIC_FILES := static/dist/preview.js static/export.html static/preview.html static/fonts static/images static/models static/unity
 DIST_PACKAGE_JSON := packages/decentraland-ecs/package.json
 DIST_UNITY_BUILD := static/unity
