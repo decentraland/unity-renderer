@@ -394,7 +394,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 0.02, y: 10.400002}
+  m_AnchoredPosition: {x: 0.019996643, y: 10.400002}
   m_SizeDelta: {x: 180, y: 191}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &8526293694872622314
@@ -1154,10 +1154,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a05f69d5392f744b8afc2d21df653199, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  minimap: {fileID: 7561701758996254988}
-  defaultMapTexture: {fileID: 2800000, guid: e2b1e6e903d98413dbf369417efcf2d5, type: 3}
-  nameText: {fileID: 6701802903851004131}
-  positionText: {fileID: 7327527275377472240}
+  sceneNameText: {fileID: 6701802903851004131}
+  playerPositionText: {fileID: 7327527275377472240}
+  optionsButton: {fileID: 2827894067568205290}
+  optionsPanel: {fileID: 9172043143630568996}
   addBookmarkButton: {fileID: 9217961843191164369}
   reportSceneButton: {fileID: 7331797177246822788}
 --- !u!1 &4665053653492846095
@@ -1983,3 +1983,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: bc25e225a21714473b9b715b8fb34995, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  callback:
+    m_PersistentCalls:
+      m_Calls: []
+    m_TypeName: UnityEngine.Events.UnityEvent, UnityEngine.CoreModule, Version=0.0.0.0,
+      Culture=neutral, PublicKeyToken=null
