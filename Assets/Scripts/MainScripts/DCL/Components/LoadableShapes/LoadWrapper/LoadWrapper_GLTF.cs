@@ -82,6 +82,8 @@ namespace DCL.Components
 
                 if (po)
                     this.entity.OnCleanupEvent += po.OnCleanup;
+
+                CollidersManager.i.ConfigureColliders(entity);
             }
 
             OnSuccess?.Invoke(this);

@@ -259,6 +259,39 @@ namespace DCL
             engineDebugPanel.SetActive(true);
         }
 
+        public bool IsCharacterInsideScene(string sceneId)
+        {
+            bool res = false;
+
+            if (loadedScenes.ContainsKey(sceneId))
+            {
+                ParcelScene scene = loadedScenes[sceneId];
+
+                if (scene.IsInsideSceneBoundaries(DCLCharacterController.i.characterPosition))
+                    res = true;
+            }
+
+            return res;
+        }
+
+        public string GetCurrentScene(DCLCharacterPosition position)
+        {
+            using (var iterator = loadedScenes.GetEnumerator())
+            {
+                while (iterator.MoveNext())
+                {
+                    ParcelScene scene = iterator.Current.Value;
+                    if (scene.sceneData.id != globalSceneId)
+                    {
+                        if (scene.IsInsideSceneBoundaries(DCLCharacterController.i.characterPosition))
+                            return scene.sceneData.id;
+                    }
+                }
+            }
+
+            return null;
+        }
+
         ParcelScene GetDecentralandSceneOfGridPosition(Vector2Int gridPosition)
         {
             foreach (var estate in loadedScenes)

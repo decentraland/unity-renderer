@@ -50,12 +50,12 @@ namespace DCL.Components
 
         protected override void ConfigureColliders(DecentralandEntity entity)
         {
-            ConfigureColliders(entity.meshGameObject, model.withCollisions);
+            CollidersManager.i.ConfigureColliders(entity.meshGameObject, model.withCollisions);
         }
 
         void UpdateBackgroundColor(DecentralandEntity entity)
         {
-            if(model.color == previousModel.color) return;
+            if (model.color == previousModel.color) return;
 
             loadableShape = entity.meshGameObject.GetComponent<LoadWrapper_NFT>();
             loadableShape.loaderController.UpdateBackgroundColor(model.color);

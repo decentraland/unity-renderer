@@ -1,4 +1,5 @@
 ﻿using DCL.Helpers;
+using DCL.Models;
 
 namespace DCL.Components
 {
@@ -51,7 +52,7 @@ namespace DCL.Components
                 entity.OnShapeUpdated.Invoke(entity);
             }
 
-            BaseShape.ConfigureColliders(entity.meshGameObject, true, true);
+            CollidersManager.i.ConfigureColliders(entity);
         }
 
         void OnDestroy()

@@ -18,6 +18,7 @@ public class RenderingController : MonoBehaviour
         DCLCharacterController.i.initialPositionAlreadySet = false;
         DCL.Configuration.ParcelSettings.VISUAL_LOADING_ENABLED = false;
         MessagingBus.renderingIsDisabled = true;
+        PointerEventsController.renderingIsDisabled = true;
         GLTFSceneImporter.renderingIsDisabled = true;
         DCLCharacterController.i.gameObject.SetActive(false);
 
@@ -29,6 +30,7 @@ public class RenderingController : MonoBehaviour
         DCL.Configuration.ParcelSettings.VISUAL_LOADING_ENABLED = true;
         MessagingBus.renderingIsDisabled = false;
         GLTFSceneImporter.renderingIsDisabled = false;
+        PointerEventsController.renderingIsDisabled = false;
         DCLCharacterController.i.gameObject.SetActive(true);
         WebInterface.ReportControlEvent(new WebInterface.ActivateRenderingACK());
     }
