@@ -1,0 +1,33 @@
+version: 2
+jobs:
+  build-test:
+    docker:
+      - image: gableroux/unity3d:2019.1.12f1
+        environment:
+          - BUILD_TARGET: WebGL
+          - BUILD_NAME: unity
+    working_directory: /tmp/project
+    steps:
+      - run: apt update && apt upgrade -y && apt install -y git curl
+      - checkout
+
+      - run: |
+          mkdir -p ~/.ssh
+          ssh-keyscan -H github.com >> ~/.ssh/known_hosts
+          curl -s https://packagecloud.io/install/repositories/github/git-lfs/script.deb.sh | bash
+          apt update && apt install -y git-lfs=2.8.0
+          ssh git@github.com git-lfs-authenticate decentraland/unity-client.git download
+          git lfs install
+          git lfs fetch
+          git lfs checkout -- .
+
+      - run: openssl enc -d -aes-256-cbc -md sha256 -in ./.circleci/Unity_v2019.x.ulf-cipher -out ./.circleci/Unity_v2019.x.ulf -k ${CIPHER_KEY}
+
+      - run: cd /tmp/project && /opt/Unity/Editor/Unity -quit -batchmode -nographics -logFile -projectPath . -manualLicenseFile .circleci/Unity_v2019.x.ulf || exit 0
+
+workflows:
+  version: 2
+  build:
+    jobs:
+      - build-test
+
