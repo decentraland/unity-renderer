@@ -105,7 +105,7 @@ export async function enableParcelSceneLoading(options: EnableParcelSceneLoading
         sceneLifeCycleObservable.remove(observer)
         ret.notify('Scene.status', { sceneId, status: 'failed' })
       }
-    }, 30000)
+    }, 60000)
   })
 
   ret.on('Scene.shouldUnload', async (opts: { sceneId: string }) => {
