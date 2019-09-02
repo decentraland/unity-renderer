@@ -307,7 +307,7 @@ MonoBehaviour:
   minimumYPosition: 0
   gravity: -55
   movementSpeed: 8
-  jumpForce: 20
+  jumpForce: 12
   groundLayers:
     serializedVersion: 2
     m_Bits: 1025
