@@ -1,4 +1,4 @@
-import { Vector3, Entity, Transform, BoxShape, engine, OnClick, OnPointerDown, OnPointerUp, Material, Color3, Billboard, TextShape, Camera, AnimationState, GLTFShape, Animator } from 'decentraland-ecs/src'
+import { Vector3, Entity, Transform, BoxShape, engine, OnClick, OnPointerDown, OnPointerUp, Material, Color3, Billboard, TextShape, Camera, AnimationState, GLTFShape, Animator, Input, log, SphereShape, IEntity } from 'decentraland-ecs/src'
 
 let greenMaterial = new Material()
 greenMaterial.albedoColor = Color3.Green()
@@ -100,6 +100,73 @@ function distance(pos1: Vector3, pos2: Vector3): number {
   const b = pos1.z - pos2.z
   return a * a + b * b
 }
+
+
+
+/////////Global pointerdown
+
+function addLabel(text: string, parent: IEntity) {
+  let label = new Entity()
+  label.setParent(parent)
+  label.addComponent(new Billboard())
+  label.addComponent(textOffset)
+  label.addComponent(new TextShape(text))
+  label.getComponent(TextShape).fontSize = 4
+  engine.addEntity(label)
+}
+
+
+// Instance the input object
+const input = Input.instance
+
+// button down event
+input.subscribe("BUTTON_DOWN", e => {
+  log("button A Down", e)
+  globalPointerDownCube.addComponentOrReplace(greenMaterial)
+})
+
+// button up event
+input.subscribe("BUTTON_UP", e => {
+  log("button A Up", e)
+  globalPointerUpCube.addComponentOrReplace(greenMaterial)
+})
+
+
+
+
+// Global Pointer Down
+let globalPointerDownCube = new Entity()
+globalPointerDownCube.addComponent(new Transform({
+  position: new Vector3(2, 1, 10),
+  scale: new Vector3(0.5, 0.5, 0.5)
+}))
+
+const colliderSphere1 = new SphereShape()
+colliderSphere1.withCollisions = true
+
+globalPointerDownCube.addComponent(colliderSphere1)
+engine.addEntity(globalPointerDownCube)
+
+addLabel("Global down", globalPointerDownCube)
+
+
+
+// Global Pointer Up
+let globalPointerUpCube = new Entity()
+globalPointerUpCube.addComponent(new Transform({
+  position: new Vector3(2, 1, 12),
+  scale: new Vector3(0.5, 0.5, 0.5)
+}))
+
+const colliderSphere2 = new SphereShape()
+colliderSphere2.withCollisions = true
+
+globalPointerUpCube.addComponent(colliderSphere2)
+engine.addEntity(globalPointerUpCube)
+
+addLabel("Global up", globalPointerUpCube)
+
+
 
 /////// ANIMATIONS
 

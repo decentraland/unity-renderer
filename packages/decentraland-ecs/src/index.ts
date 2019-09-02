@@ -35,10 +35,12 @@ if (typeof dcl !== 'undefined') {
   engine.addSystem(new DecentralandSynchronizationSystem(dcl), Infinity)
 }
 
-import { uuidEventSystem } from './decentraland/Systems'
+import { uuidEventSystem, pointerEventSystem } from './decentraland/Systems'
 
 // Initialize UUID Events system
 engine.addSystem(uuidEventSystem)
+// Initialize Pointer Events System
+engine.addSystem(pointerEventSystem)
 
 // DECENTRALAND DEPENDENCIES
 export * from './decentraland/Types'

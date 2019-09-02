@@ -83,7 +83,7 @@ export type DecentralandInterface = {
 }
 
 /** @public */
-export type PointerEvent = {
+export type InputEventResult = {
   /** Origin of the ray, relative to the scene */
   origin: ReadOnlyVector3
   /** Direction vector of the ray (normalized) */
@@ -105,6 +105,17 @@ export type PointerEvent = {
     /** Hit entity ID if any */
     entityId: string
   }
+}
+
+/** @public */
+export enum InputEventType {
+  DOWN,
+  UP
+}
+
+/** @public */
+export type GlobalInputEventResult = InputEventResult & {
+  type: InputEventType
 }
 
 /**
@@ -141,13 +152,19 @@ export interface IEvents {
    * `pointerUp` is triggered when the user releases an input pointer.
    * It could be a VR controller, a touch screen or the mouse.
    */
-  pointerUp: PointerEvent
+  pointerUp: InputEventResult
 
   /**
    * `pointerDown` is triggered when the user press an input pointer.
    * It could be a VR controller, a touch screen or the mouse.
    */
-  pointerDown: PointerEvent
+  pointerDown: InputEventResult
+
+  /**
+   * `pointerEvent` is triggered when the user press or releases an input pointer.
+   * It could be a VR controller, a touch screen or the mouse.
+   */
+  pointerEvent: GlobalInputEventResult
 
   /**
    * `chatMessage` is triggered when the user sends a message through chat entity.
