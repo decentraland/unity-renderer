@@ -24,7 +24,7 @@ import { ILogger, defaultLogger } from 'shared/logger'
 import { EventDispatcher } from 'decentraland-rpc/lib/common/core/EventDispatcher'
 import { IParcelSceneLimits } from 'atomicHelpers/landHelpers'
 import { measureObject3D, areBoundariesIgnored } from './utils/checkParcelSceneLimits'
-import { IEventNames, IEvents, PointerEvent } from 'decentraland-ecs/src/decentraland/Types'
+import { IEventNames, IEvents, InputEventResult } from 'decentraland-ecs/src/decentraland/Types'
 import { Observable, ReadOnlyVector3 } from 'decentraland-ecs/src'
 import { colliderMaterial } from './utils/colliders'
 import future from 'fp-future'
@@ -351,7 +351,7 @@ export class SharedSceneContext implements BABYLON.IDisposable {
   ) {
     if (!pickingResult.ray) return
 
-    const event: PointerEvent = {
+    const event: InputEventResult = {
       pointerId,
       origin: {
         x: pickingResult.ray.origin.x - this.rootEntity.position.x,

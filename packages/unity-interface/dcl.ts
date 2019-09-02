@@ -68,7 +68,6 @@ const browserInterface = {
 
   SceneEvent(data: { sceneId: string; eventType: string; payload: any }) {
     const scene = getSceneWorkerBySceneID(data.sceneId)
-
     if (scene) {
       const parcelScene = scene.parcelScene as UnityParcelScene
       parcelScene.emit(data.eventType as IEventNames, data.payload)
@@ -259,7 +258,7 @@ export async function initializeEngine(_gameInstance: GameInstance) {
         // tslint:disable-next-line:semicolon
         ;(browserInterface as any)[type](message)
       } else {
-        defaultLogger.info('MessageFromEngine', type, message)
+        defaultLogger.info(`Unknown message (did you forget to add ${type} to unity-interface/dcl.ts?)`, message)
       }
     }
   }
