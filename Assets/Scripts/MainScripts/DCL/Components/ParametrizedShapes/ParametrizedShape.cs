@@ -59,7 +59,7 @@ namespace DCL.Components
                 entity.OnShapeUpdated.Invoke(entity);
             }
 
-            ConfigureColliders(entity.meshGameObject, model.withCollisions);
+            CollidersManager.i.ConfigureColliders(entity.meshGameObject, model.withCollisions, entity: entity);
         }
 
         void OnShapeDetached(DecentralandEntity entity)
@@ -91,24 +91,24 @@ namespace DCL.Components
             bool generateNewMesh = ShouldGenerateNewMesh(newModel);
             model = newModel;
 
-            if(generateNewMesh)
+            if (generateNewMesh)
                 currentMesh = GenerateGeometry();
 
-            if(generateNewMesh || updateVisibility || updateCollisions)
+            if (generateNewMesh || updateVisibility || updateCollisions)
             {
                 foreach (var entity in this.attachedEntities)
                 {
-                    if(generateNewMesh)
+                    if (generateNewMesh)
                     {
                         OnShapeDetached(entity);
                         OnShapeAttached(entity);
                     }
 
-                    if(updateVisibility)
+                    if (updateVisibility)
                         ConfigureVisibility(entity.meshGameObject, model.visible);
 
-                    if(updateCollisions)
-                        ConfigureColliders(entity.meshGameObject, model.withCollisions);
+                    if (updateCollisions)
+                        CollidersManager.i.ConfigureColliders(entity.meshGameObject, model.withCollisions);
                 }
             }
 

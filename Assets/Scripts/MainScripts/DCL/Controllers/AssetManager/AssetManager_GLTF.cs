@@ -135,7 +135,7 @@ namespace DCL
                 yield break;
             }
 
-            BaseShape.ConfigureColliders(container, true, true);
+            CollidersManager.i.ConfigureColliders(container, true, true);
 
             GameObject containerCopy = DuplicateGLTF(id, container);
 

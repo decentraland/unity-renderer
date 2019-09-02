@@ -759,7 +759,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ab6ce24ec00c7684b9788ac03231f03e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  OnPointerDownTarget:
+  layerMaskTarget:
     serializedVersion: 2
     m_Bits: 512
 --- !u!1 &6902065697670736161

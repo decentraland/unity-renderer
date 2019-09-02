@@ -62,13 +62,13 @@ namespace DCL.Interface
                 public string sceneId;
             }
 
-            public SceneReady(string sceneId) : base("SceneReady", new Payload() { sceneId = sceneId }){}
+            public SceneReady(string sceneId) : base("SceneReady", new Payload() { sceneId = sceneId }) { }
         }
 
         [System.Serializable]
         public class ActivateRenderingACK : ControlEvent<object>
         {
-            public ActivateRenderingACK() : base("ActivateRenderingACK", null){}
+            public ActivateRenderingACK() : base("ActivateRenderingACK", null) { }
         }
 
         [System.Serializable]
@@ -101,6 +101,13 @@ namespace DCL.Interface
         [System.Serializable]
         public class OnPointerDownEvent : UUIDEvent<OnPointerEventPayload>
         {
+        };
+
+
+        [System.Serializable]
+        public class OnGlobalPointerEvent
+        {
+            public OnGlobalPointerEventPayload payload = new OnGlobalPointerEventPayload();
         };
 
 
@@ -159,6 +166,18 @@ namespace DCL.Interface
             public Vector3 origin;
             public Vector3 direction;
             public Hit hit;
+        }
+
+        [System.Serializable]
+        public class OnGlobalPointerEventPayload : OnPointerEventPayload
+        {
+            public enum InputEventType
+            {
+                DOWN,
+                UP
+            }
+
+            public InputEventType type;
         }
 
         [System.Serializable]
@@ -288,6 +307,9 @@ namespace DCL.Interface
         private static OnGizmoEvent onGizmoEvent = new OnGizmoEvent();
         private static OnGetLoadingEntity onGetLoadingEntity = new OnGetLoadingEntity();
         private static OnSendScreenshot onSendScreenshot = new OnSendScreenshot();
+        private static OnPointerEventPayload onPointerEventPayload = new OnPointerEventPayload();
+        private static OnGlobalPointerEventPayload onGlobalPointerEventPayload = new OnGlobalPointerEventPayload();
+        private static OnGlobalPointerEvent onGlobalPointerEvent = new OnGlobalPointerEvent();
 
         public static void SendSceneEvent<T>(string sceneId, string eventType, T payload)
         {
@@ -339,20 +361,36 @@ namespace DCL.Interface
             return hit;
         }
 
-        private static OnPointerEventPayload CreatePointerEventPayload(string entityId, string meshName, Ray ray, RaycastHit hitInfo, bool isHitInfoValid)
+        private static void SetPointerEventPayload(OnPointerEventPayload pointerEventPayload, string entityId, string meshName, Ray ray, RaycastHit hitInfo, bool isHitInfoValid)
         {
-            OnPointerEventPayload payload = new OnPointerEventPayload();
-
-            payload.origin = ray.origin;
-            payload.direction = ray.direction;
-            payload.pointerId = POINTER.PRIMARY;
+            pointerEventPayload.origin = ray.origin;
+            pointerEventPayload.direction = ray.direction;
+            pointerEventPayload.pointerId = POINTER.PRIMARY;
 
             if (isHitInfoValid)
-                payload.hit = CreateHitObject(entityId, meshName, hitInfo);
+                pointerEventPayload.hit = CreateHitObject(entityId, meshName, hitInfo);
             else
-                payload.hit = null;
+                pointerEventPayload.hit = null;
+        }
 
-            return payload;
+        public static void ReportGlobalPointerDownEvent(Ray ray, RaycastHit hit, string sceneId, string entityId = null, string meshName = null, bool isHitInfoValid = false)
+        {
+            SetPointerEventPayload((OnPointerEventPayload)onGlobalPointerEventPayload, entityId, meshName, ray, hit, isHitInfoValid);
+            onGlobalPointerEventPayload.type = OnGlobalPointerEventPayload.InputEventType.DOWN;
+
+            onGlobalPointerEvent.payload = onGlobalPointerEventPayload;
+
+            SendSceneEvent(sceneId, "pointerEvent", onGlobalPointerEvent);
+        }
+
+        public static void ReportGlobalPointerUpEvent(Ray ray, RaycastHit hit, string sceneId, string entityId = null, string meshName = null, bool isHitInfoValid = false)
+        {
+            SetPointerEventPayload((OnPointerEventPayload)onGlobalPointerEventPayload, entityId, meshName, ray, hit, isHitInfoValid);
+            onGlobalPointerEventPayload.type = OnGlobalPointerEventPayload.InputEventType.UP;
+
+            onGlobalPointerEvent.payload = onGlobalPointerEventPayload;
+
+            SendSceneEvent(sceneId, "pointerEvent", onGlobalPointerEvent);
         }
 
         public static void ReportOnPointerDownEvent(string sceneId, string uuid, string entityId, string meshName, Ray ray, RaycastHit hit)
@@ -363,7 +401,8 @@ namespace DCL.Interface
             }
 
             onPointerDownEvent.uuid = uuid;
-            onPointerDownEvent.payload = CreatePointerEventPayload(entityId, meshName, ray, hit, isHitInfoValid: true);
+            SetPointerEventPayload(onPointerEventPayload, entityId, meshName, ray, hit, isHitInfoValid: true);
+            onPointerDownEvent.payload = onPointerEventPayload;
 
             SendSceneEvent(sceneId, "uuidEvent", onPointerDownEvent);
         }
@@ -376,7 +415,8 @@ namespace DCL.Interface
             }
 
             onPointerUpEvent.uuid = uuid;
-            onPointerUpEvent.payload = CreatePointerEventPayload(entityId, meshName, ray, hit, isHitInfoValid);
+            SetPointerEventPayload(onPointerEventPayload, entityId, meshName, ray, hit, isHitInfoValid: true);
+            onPointerUpEvent.payload = onPointerEventPayload;
 
             SendSceneEvent(sceneId, "uuidEvent", onPointerUpEvent);
         }
