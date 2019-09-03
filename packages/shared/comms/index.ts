@@ -249,6 +249,7 @@ type ProcessingPeerInfo = {
 let currentParcelTopics = ''
 let previousTopics = ''
 
+let lastNetworkUpdatePosition = new Date().getTime()
 export function onPositionUpdate(context: Context, p: Position) {
   const worldConnection = context.worldInstanceConnection
 
@@ -292,7 +293,11 @@ export function onPositionUpdate(context: Context, p: Position) {
   }
 
   context.currentPosition = p
-  worldConnection.sendPositionMessage(p)
+  const now = new Date().getTime()
+  if (now - lastNetworkUpdatePosition > 100) {
+    lastNetworkUpdatePosition = now
+    worldConnection.sendPositionMessage(p)
+  }
 }
 
 function collectInfo(context: Context) {
