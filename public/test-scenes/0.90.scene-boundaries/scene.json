@@ -1,0 +1,26 @@
+{
+  "display": {
+    "title": ""
+  },
+  "owner": "",
+  "contact": {
+    "name": "",
+    "email": ""
+  },
+  "scene": {
+    "parcels": [
+      "0,90",
+      "0,89",
+      "1,89",
+      "1,88"
+    ],
+    "base": "0,90"
+  },
+  "policy": {
+    "fly": true,
+    "voiceEnabled": true,
+    "blacklist": [],
+    "teleportPosition": "0,0,0"
+  },
+  "main": "game.js"
+}
