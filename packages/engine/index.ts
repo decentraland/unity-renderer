@@ -1,14 +1,3 @@
-/**
- * This file starts up all the required components to make the world viewer
- * work correctly.
- *
- * IMPORTANT: The following imports must follow the order they have. This
- * is done this way because of the interdependencies between components.
- *
- * Every entry point or test should include `import 'src'` as the first line
- * of the document.
- */
-
 // preload configurations
 import 'config'
 
