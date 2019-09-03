@@ -94,6 +94,10 @@ jobs:
           path: packages/decentraland-ecs/temp/decentraland-ecs.api.ts
           when: on_fail
 
+      - run:
+          name: Build deployment dist
+          command: |
+              make build-deploy
       - save_cache:
           name: Save the built files
           paths:

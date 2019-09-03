@@ -92,11 +92,12 @@ static/dist/%.js: build-essentials packages/entryPoints/%.ts
 # Release
 
 DIST_ENTRYPOINTS := static/dist/editor.js static/dist/unity.js static/dist/preview.js
-DIST_STATIC_FILES := static/dist/preview.js static/export.html static/preview.html static/fonts static/images static/models static/unity
+DIST_STATIC_FILES := static/export.html static/preview.html static/fonts static/images static/models static/unity
 DIST_PACKAGE_JSON := packages/decentraland-ecs/package.json
-DIST_UNITY_BUILD := static/unity
 
-build-release: $(DIST_ENTRYPOINTS) $(DIST_STATIC_FILES) $(DIST_PACKAGE_JSON) $(DIST_UNITY_BUILD) ## Build all the entrypoints and run the `scripts/prepareDist` script
+build-deploy: $(DIST_ENTRYPOINTS) $(DIST_STATIC_FILES) $(SCENE_SYSTEM) $(INTERNAL_SCENES) ## Build all the entrypoints needed for a deployment
+
+build-release: $(DIST_ENTRYPOINTS) $(DIST_STATIC_FILES) $(DIST_PACKAGE_JSON) ## Build all the entrypoints and run the `scripts/prepareDist` script
 	@node ./scripts/prepareDist.js
 
 publish: build-release ## Release a new version, using the `scripts/npmPublish` script
