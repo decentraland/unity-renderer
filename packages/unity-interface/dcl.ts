@@ -298,7 +298,6 @@ export async function startUnityParcelLoading() {
       land && setInitialPosition(land)
     },
     onPositionUnsettled: () => {
-      setLoadingScreenVisible(true)
       unityInterface.DeactivateRendering()
     }
   })
@@ -371,6 +370,8 @@ export async function loadPreviewScene() {
 }
 
 teleportObservable.add((position: { x: number; y: number }) => {
+  // before setting the new position, show loading screen to avoid showing an empty world
+  setLoadingScreenVisible(true)
   unityInterface.SetPosition(position.x * parcelLimits.parcelSize, 0, position.y * parcelLimits.parcelSize)
 })
 
