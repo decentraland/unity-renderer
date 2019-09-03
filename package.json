@@ -1,14 +1,13 @@
 {
-  "name": "dcl-client",
-  "version": "4.1.0",
+  "name": "dcl-kernel",
+  "version": "6.4.2",
   "license": "Apache-2.0",
   "scripts": {
-    "postinstall": "git lfs install --force && npm i -S decentraland-rpc@latest",
+    "postinstall": "git lfs install --force",
     "start": "make watch",
-    "build": "make build",
+    "build": "make build-essentials",
     "test": "make test-ci"
   },
-  "private": true,
   "prettier": {
     "semi": false,
     "singleQuote": true,
