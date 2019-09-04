@@ -12,6 +12,5 @@
 "cacheControl": {"default": "must-revalidate"},
 "developmentBuild": false,
 "multithreading": false,
-"CachedXMLHttpRequestSilent": true,
 "unityVersion": "2019.1.8f1"
 }
