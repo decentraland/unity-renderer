@@ -22,9 +22,25 @@ public class DCLCharacterController : MonoBehaviour
     public float jumpForce = 20f;
     public DCLCharacterPosition characterPosition;
 
+    [SerializeField]
+    private new Camera camera;
+
+    [SerializeField]
+    private AudioListener audioListener;
+
+    private Transform cameraTransformValue;
+
     public Transform cameraTransform
     {
-        get { return camera.transform; }
+        get
+        {
+            if (cameraTransformValue == null)
+            {
+                cameraTransformValue = camera.transform;
+            }
+
+            return cameraTransformValue;
+        }
     }
 
     [Header("Collisions")]
@@ -36,7 +52,6 @@ public class DCLCharacterController : MonoBehaviour
     [System.NonSerialized]
     public CharacterController characterController;
 
-    new Transform camera;
     new Rigidbody rigidbody;
     new Collider collider;
 
@@ -77,7 +92,6 @@ public class DCLCharacterController : MonoBehaviour
         characterController = GetComponent<CharacterController>();
         rigidbody = GetComponent<Rigidbody>();
         collider = GetComponent<Collider>();
-        camera = GetComponentInChildren<Camera>().transform;
         characterPosition.OnPrecisionAdjust += OnPrecisionAdjust;
     }
 
@@ -138,6 +152,13 @@ public class DCLCharacterController : MonoBehaviour
         Teleport(positionVector);
     }
 
+    public void SetEnabled(bool enabled)
+    {
+        camera.enabled = enabled;
+        audioListener.enabled = enabled;
+        this.enabled = enabled;
+    }
+
     bool Moved(Vector3 previousPosition, bool useThreshold = false)
     {
         if (useThreshold)
@@ -181,8 +202,8 @@ public class DCLCharacterController : MonoBehaviour
 
             // Rotation
             transform.rotation = Quaternion.Euler(0f, aimingHorizontalAngle, 0f);
-            camera.localRotation = Quaternion.Euler(-aimingVerticalAngle, 0f, 0f);
-            CommonScriptableObjects.playerUnityEulerAngles.Set( new Vector3(camera.localRotation.x,transform.eulerAngles.y, 0));
+            cameraTransform.localRotation = Quaternion.Euler(-aimingVerticalAngle, 0f, 0f);
+            CommonScriptableObjects.playerUnityEulerAngles.Set( new Vector3(cameraTransform.localRotation.x, transform.eulerAngles.y, 0));
 
             // Horizontal movement
             var speed = movementSpeed * (isSprinting ? 2f : 1f);
@@ -220,6 +241,7 @@ public class DCLCharacterController : MonoBehaviour
                 Jump();
             }
         }
+
         Vector3 previousPosition = characterPosition.worldPosition;
 
         characterController.Move(velocity * deltaTime);
@@ -272,14 +294,14 @@ public class DCLCharacterController : MonoBehaviour
 
     void ReportMovement()
     {
-        var localRotation = camera.localRotation.eulerAngles;
+        var localRotation = cameraTransform.localRotation.eulerAngles;
         var rotation = transform.rotation.eulerAngles;
         var feetY = characterPosition.worldPosition.y - characterController.height / 2;
-        var playerHeight = camera.position.y - feetY;
+        var playerHeight = cameraTransform.position.y - feetY;
         var compositeRotation = Quaternion.Euler(localRotation.x, rotation.y, localRotation.z);
 
         var reportPosition = characterPosition.worldPosition;
-        reportPosition.y += camera.localPosition.y;
+        reportPosition.y += cameraTransform.localPosition.y;
 
         DCL.Interface.WebInterface.ReportPosition(reportPosition, compositeRotation, playerHeight);
 
