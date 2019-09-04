@@ -89,9 +89,9 @@ export async function enableParcelSceneLoading(options: EnableParcelSceneLoading
 
     const observer = sceneLifeCycleObservable.add(sceneStatus => {
       if (sceneStatus.sceneId === sceneId) {
+        sceneLifeCycleObservable.remove(observer)
         ret.notify('Scene.status', sceneStatus)
       }
-      sceneLifeCycleObservable.remove(observer)
     })
 
     // tell the engine to load the parcel scene
