@@ -1,6 +1,7 @@
 using DCL.Helpers;
 using DCL.Models;
 using UnityEngine;
+using System.Collections.Generic;
 
 namespace DCL.Components
 {
@@ -9,31 +10,33 @@ namespace DCL.Components
     {
         public const string COLLIDER_LAYER = "OnPointerEvent";
         public const string COLLIDER_NAME = "OnPointerEventCollider";
-        public int RefCount { get; set; }
 
-        GameObject[] OnPointerEventColliderGameObjects;
+        [System.NonSerialized] public int refCount;
 
-        public string meshName
+        GameObject[] pointerEventColliderGameObjects;
+        Dictionary<Collider, string> colliderNames = new Dictionary<Collider, string>();
+
+        public string GetMeshName(Collider collider)
         {
-            get;
-            private set;
+            if (colliderNames.ContainsKey(collider))
+                return colliderNames[collider];
+
+            return null;
         }
 
         public void Initialize(DecentralandEntity entity)
         {
-            RefCount++;
+            refCount++;
 
             var renderers = entity.meshGameObject.GetComponentsInChildren<Renderer>(true);
 
             // Cache mesh name
-            meshName = renderers[0].transform.parent?.name;
-
             DestroyOnPointerEventColliders();
 
-            OnPointerEventColliderGameObjects = new GameObject[renderers.Length];
-            for (int i = 0; i < OnPointerEventColliderGameObjects.Length; i++)
+            pointerEventColliderGameObjects = new GameObject[renderers.Length];
+            for (int i = 0; i < pointerEventColliderGameObjects.Length; i++)
             {
-                OnPointerEventColliderGameObjects[i] = CreatePointerEventCollider(renderers[i]);
+                pointerEventColliderGameObjects[i] = CreatePointerEventCollider(renderers[i]);
             }
         }
 
@@ -47,6 +50,9 @@ namespace DCL.Components
             var meshCollider = go.AddComponent<MeshCollider>();
             meshCollider.sharedMesh = renderer.GetComponent<MeshFilter>().sharedMesh;
             meshCollider.enabled = renderer.enabled;
+
+            if (renderer.transform.parent != null)
+                colliderNames.Add(meshCollider, renderer.transform.parent.name);
 
             // Reset objects position, rotation and scale once it's been parented
             Transform t = go.transform;
@@ -64,14 +70,14 @@ namespace DCL.Components
 
         void DestroyOnPointerEventColliders()
         {
-            if (OnPointerEventColliderGameObjects == null)
+            if (pointerEventColliderGameObjects == null)
             {
                 return;
             }
 
-            for (int i = 0; i < OnPointerEventColliderGameObjects.Length; i++)
+            for (int i = 0; i < pointerEventColliderGameObjects.Length; i++)
             {
-                Destroy(OnPointerEventColliderGameObjects[i]);
+                Destroy(pointerEventColliderGameObjects[i]);
             }
         }
     }

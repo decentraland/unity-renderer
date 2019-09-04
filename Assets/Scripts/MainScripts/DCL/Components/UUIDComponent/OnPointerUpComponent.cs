@@ -15,6 +15,11 @@ namespace DCL.Components
                 return;
             }
 
+            string meshName = null;
+
+            if (isHitInfoValid)
+                meshName = GetMeshName(hit.collider);
+
             DCL.Interface.WebInterface.ReportOnPointerUpEvent(scene.sceneData.id, model.uuid, entity.entityId, meshName, ray, hit, isHitInfoValid);
         }
     }
