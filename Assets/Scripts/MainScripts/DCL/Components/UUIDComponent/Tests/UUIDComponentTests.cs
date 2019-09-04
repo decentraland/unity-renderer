@@ -610,7 +610,7 @@ namespace Tests
             onPointerDownEvent.payload = new WebInterface.OnPointerEventPayload();
             onPointerDownEvent.payload.hit = new WebInterface.OnPointerEventPayload.Hit();
             onPointerDownEvent.payload.hit.entityId = component.entity.entityId;
-            onPointerDownEvent.payload.hit.meshName = component.meshName;
+            onPointerDownEvent.payload.hit.meshName = component.name;
 
             var sceneEvent = new WebInterface.SceneEvent<WebInterface.OnPointerDownEvent>();
             sceneEvent.sceneId = scene.sceneData.id;

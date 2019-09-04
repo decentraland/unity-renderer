@@ -10,11 +10,6 @@ namespace DCL.Components
         Rigidbody rigidBody;
         OnPointerEventColliders pointerEventColliders;
 
-        public string meshName
-        {
-            get { return pointerEventColliders ? pointerEventColliders.meshName : null; }
-        }
-
         public override void Setup(ParcelScene scene, DecentralandEntity entity, string uuid, string type)
         {
             this.entity = entity;
@@ -26,6 +21,11 @@ namespace DCL.Components
 
             entity.OnShapeUpdated -= OnComponentUpdated;
             entity.OnShapeUpdated += OnComponentUpdated;
+        }
+
+        public string GetMeshName(Collider collider)
+        {
+            return pointerEventColliders.GetMeshName(collider);
         }
 
         public void Initialize()
@@ -63,9 +63,9 @@ namespace DCL.Components
 
             if (pointerEventColliders)
             {
-                pointerEventColliders.RefCount--;
+                pointerEventColliders.refCount--;
 
-                if (pointerEventColliders.RefCount <= 0)
+                if (pointerEventColliders.refCount <= 0)
                 {
                     Destroy(rigidBody);
                     Destroy(pointerEventColliders);
