@@ -1,5 +1,5 @@
+﻿using DCL.Components;
 using System.Collections;
-using DCL.Components;
 using UnityEngine;
 
 namespace DCL
@@ -19,14 +19,24 @@ namespace DCL
 
         public override IEnumerator ApplyChanges(string newJson)
         {
+            DCLCharacterController.OnCharacterMoved -= OnCharacterMoved;
             DCLCharacterController.OnCharacterMoved += OnCharacterMoved;
 
             model = SceneController.i.SafeFromJson<Model>(newJson);
 
-            yield return null;
-
-            entityTransform = entity.gameObject.transform;
             ChangeOrientation();
+
+            if (entityTransform == null)
+            {
+                //NOTE(Zak): We have to wait one frame because if not the entity will be null. (I'm Brian, but Zak wrote the code so read this in his voice)
+                yield return null;
+                entityTransform = entity.gameObject.transform;
+            }
+        }
+
+        public void OnDestroy()
+        {
+            DCLCharacterController.OnCharacterMoved -= OnCharacterMoved;
         }
 
         Vector3 GetLookAtVector()
@@ -57,7 +67,9 @@ namespace DCL
         void ChangeOrientation()
         {
             if (entityTransform != null)
+            {
                 entityTransform.forward = GetLookAtVector();
+            }
         }
     }
 }
