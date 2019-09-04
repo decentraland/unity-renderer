@@ -61,7 +61,6 @@ export class Engine implements IEngine {
     const parent = entity.getParent()
 
     if (entity.isAddedToEngine()) {
-      log('The entity is already in the engine. Please fix this')
       return entity
     }
 
