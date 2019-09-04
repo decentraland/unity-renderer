@@ -308,6 +308,8 @@ MonoBehaviour:
   gravity: -55
   movementSpeed: 8
   jumpForce: 12
+  camera: {fileID: 6922703132826922303}
+  audioListener: {fileID: 6922703132826922272}
   groundLayers:
     serializedVersion: 2
     m_Bits: 1025
