@@ -62,10 +62,11 @@ jobs:
           command: |
               make build-essentials
               find public -name *.ts | xargs shasum packages/decentraland-ecs/dist/index.d.ts static/systems/scene.system.js | sort > .scene-system-checksum
-      - restore_cache:
-          name: Restore cached test scenes
-          keys:
-            - cached-scenes-{{ checksum ".scene-system-checksum" }}
+      # TODO - reenable cache - moliva - 04/09/19
+      # - restore_cache:
+      #     name: Restore cached test scenes
+      #     keys:
+      #       - cached-scenes-{{ checksum ".scene-system-checksum" }}
       - run:
           name: Build scenes
           command: |
