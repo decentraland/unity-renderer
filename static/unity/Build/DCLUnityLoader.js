@@ -4575,7 +4575,7 @@ var UnityLoader = UnityLoader || {
       var o = r.worker.nextCallbackId++
         ; (r.worker.callbacks[o] = t), r.worker.postMessage({ id: o, compressed: e }, [e.buffer])
     },
-    serverSetupWarningEnabled: !0
+    serverSetupWarningEnabled: 0
   },
   Cryptography: {
     crc32: function (e) {
