@@ -89,7 +89,7 @@ export type InputEventResult = {
   /** Direction vector of the ray (normalized) */
   direction: ReadOnlyVector3
   /** ID of the pointer that triggered the event */
-  pointerId: number
+  buttonId: number
   /** Does this pointer event hit any object? */
   hit?: {
     /** Length of the ray */
