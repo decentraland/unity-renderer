@@ -1,4 +1,4 @@
-import { Vector3, Entity, Transform, BoxShape, engine, OnClick, OnPointerDown, OnPointerUp, Material, Color3, Billboard, TextShape, Camera, AnimationState, GLTFShape, Animator, Input, log, SphereShape, IEntity } from 'decentraland-ecs/src'
+import { Vector3, Entity, Transform, BoxShape, engine, OnClick, OnPointerDown, OnPointerUp, Material, Color3, Billboard, TextShape, Camera, AnimationState, GLTFShape, Animator, Input, log, SphereShape, IEntity, ActionButton } from 'decentraland-ecs/src'
 
 let greenMaterial = new Material()
 greenMaterial.albedoColor = Color3.Green()
@@ -120,14 +120,16 @@ function addLabel(text: string, parent: IEntity) {
 const input = Input.instance
 
 // button down event
-input.subscribe("BUTTON_DOWN", e => {
+input.subscribe("BUTTON_DOWN", ActionButton.POINTER, true, e => {
   log("button A Down", e)
+
   globalPointerDownCube.addComponentOrReplace(greenMaterial)
 })
 
 // button up event
-input.subscribe("BUTTON_UP", e => {
+input.subscribe("BUTTON_UP", ActionButton.POINTER, true, e => {
   log("button A Up", e)
+
   globalPointerUpCube.addComponentOrReplace(greenMaterial)
 })
 

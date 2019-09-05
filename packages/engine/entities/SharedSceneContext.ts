@@ -345,14 +345,14 @@ export class SharedSceneContext implements BABYLON.IDisposable {
 
   sendPointerEvent(
     pointerEventType: 'pointerDown' | 'pointerUp',
-    pointerId: number,
+    buttonId: number,
     entityId: string,
     pickingResult: BABYLON.PickingInfo
   ) {
     if (!pickingResult.ray) return
 
     const event: InputEventResult = {
-      pointerId,
+      buttonId,
       origin: {
         x: pickingResult.ray.origin.x - this.rootEntity.position.x,
         y: pickingResult.ray.origin.y - this.rootEntity.position.y,

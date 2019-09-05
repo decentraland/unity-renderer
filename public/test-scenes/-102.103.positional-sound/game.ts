@@ -14,7 +14,8 @@ import {
   Billboard,
   Material,
   Color3,
-  Gizmos
+  Gizmos,
+  ActionButton
 } from 'decentraland-ecs/src'
 
 const g = new Gizmos()
@@ -143,8 +144,9 @@ function playNote(fruit: Entity) {
   }
 }
 
-Input.instance.subscribe('BUTTON_DOWN', evt => {
+Input.instance.subscribe('BUTTON_DOWN', ActionButton.POINTER, true, evt => {
   log(evt)
+
   if (evt.hit) {
     spawnClick(evt.hit.hitPoint)
     spawnClick2(evt.origin.add(evt.direction.scale(evt.hit.length)))
