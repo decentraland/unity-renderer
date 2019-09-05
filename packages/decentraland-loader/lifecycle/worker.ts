@@ -32,50 +32,53 @@ let downloadManager: SceneDataDownloadManager
  * - 'Scene.prefetchDone' { sceneId: string }
  */
 {
-  connector.on('Lifecycle.initialize', (options: { contentServer: string; lineOfSightRadius: number }) => {
-    downloadManager = new SceneDataDownloadManager({ contentServer: options.contentServer })
-    parcelController = new ParcelLifeCycleController({ lineOfSightRadius: options.lineOfSightRadius })
-    sceneController = new SceneLifeCycleController({ downloadManager })
-    positionController = new PositionLifecycleController(parcelController, sceneController)
+  connector.on(
+    'Lifecycle.initialize',
+    (options: { contentServer: string; lineOfSightRadius: number; emptyScenes: boolean }) => {
+      downloadManager = new SceneDataDownloadManager({ contentServer: options.contentServer })
+      parcelController = new ParcelLifeCycleController({ lineOfSightRadius: options.lineOfSightRadius })
+      sceneController = new SceneLifeCycleController({ downloadManager, enabledEmpty: options.emptyScenes })
+      positionController = new PositionLifecycleController(parcelController, sceneController)
 
-    parcelController.on('Sighted', (parcels: string[]) => connector.notify('Parcel.sighted', { parcels }))
-    parcelController.on('Lost sight', (parcels: string[]) => connector.notify('Parcel.lostSight', { parcels }))
+      parcelController.on('Sighted', (parcels: string[]) => connector.notify('Parcel.sighted', { parcels }))
+      parcelController.on('Lost sight', (parcels: string[]) => connector.notify('Parcel.lostSight', { parcels }))
 
-    positionController.on('Settled Position', (sceneId: string) => {
-      connector.notify('Position.settled', { sceneId })
-    })
-    positionController.on('Unsettled Position', () => {
-      connector.notify('Position.unsettled')
-    })
-
-    sceneController.on('Start scene', sceneId => {
-      connector.notify('Scene.shouldStart', { sceneId })
-    })
-    sceneController.on('Preload scene', sceneId => {
-      connector.notify('Scene.shouldPrefetch', { sceneId })
-    })
-    sceneController.on('Unload scene', sceneId => {
-      connector.notify('Scene.shouldUnload', { sceneId })
-    })
-
-    connector.on('User.setPosition', (opt: { position: { x: number; y: number }; teleported: boolean }) => {
-      positionController.reportCurrentPosition(opt.position, opt.teleported).catch(e => {
-        defaultLogger.error(`error while resolving new scenes around`, e)
+      positionController.on('Settled Position', (sceneId: string) => {
+        connector.notify('Position.settled', { sceneId })
       })
-    })
-
-    connector.on('Scene.dataRequest', async (data: { sceneId: string }) =>
-      connector.notify('Scene.dataResponse', {
-        data: (await downloadManager.getParcelDataBySceneId(data.sceneId)) as ILand
+      positionController.on('Unsettled Position', () => {
+        connector.notify('Position.unsettled')
       })
-    )
 
-    connector.on('Scene.prefetchDone', (opt: { sceneId: string }) => {
-      sceneController.reportDataLoaded(opt.sceneId)
-    })
+      sceneController.on('Start scene', sceneId => {
+        connector.notify('Scene.shouldStart', { sceneId })
+      })
+      sceneController.on('Preload scene', sceneId => {
+        connector.notify('Scene.shouldPrefetch', { sceneId })
+      })
+      sceneController.on('Unload scene', sceneId => {
+        connector.notify('Scene.shouldUnload', { sceneId })
+      })
 
-    connector.on('Scene.status', (data: SceneLifeCycleStatusReport) => {
-      sceneController.reportStatus(data.sceneId, data.status)
-    })
-  })
+      connector.on('User.setPosition', (opt: { position: { x: number; y: number }; teleported: boolean }) => {
+        positionController.reportCurrentPosition(opt.position, opt.teleported).catch(e => {
+          defaultLogger.error(`error while resolving new scenes around`, e)
+        })
+      })
+
+      connector.on('Scene.dataRequest', async (data: { sceneId: string }) =>
+        connector.notify('Scene.dataResponse', {
+          data: (await downloadManager.getParcelDataBySceneId(data.sceneId)) as ILand
+        })
+      )
+
+      connector.on('Scene.prefetchDone', (opt: { sceneId: string }) => {
+        sceneController.reportDataLoaded(opt.sceneId)
+      })
+
+      connector.on('Scene.status', (data: SceneLifeCycleStatusReport) => {
+        sceneController.reportStatus(data.sceneId, data.status)
+      })
+    }
+  )
 }

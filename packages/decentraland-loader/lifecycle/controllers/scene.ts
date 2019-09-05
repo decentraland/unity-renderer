@@ -18,10 +18,12 @@ export class SceneLifeCycleController extends EventEmitter {
   private _positionToSceneId = new Map<string, SceneId | undefined>()
   private futureOfPositionToSceneId = new Map<string, IFuture<SceneId | undefined>>()
   private sceneStatus = new Map<SceneId, SceneLifeCycleStatus>()
+  private enabledEmpty: boolean
 
-  constructor(opts: { downloadManager: SceneDataDownloadManager }) {
+  constructor(opts: { downloadManager: SceneDataDownloadManager; enabledEmpty: boolean }) {
     super()
     this.downloadManager = opts.downloadManager
+    this.enabledEmpty = opts.enabledEmpty
   }
 
   contains(status: SceneLifeCycleStatus, position: Vector2Component) {
@@ -127,7 +129,7 @@ export class SceneLifeCycleController extends EventEmitter {
         const land = await this.downloadManager.getParcelData(position)
 
         if (!land) {
-          this.futureOfPositionToSceneId.get(position)!.resolve(undefined)
+          this.futureOfPositionToSceneId.get(position)!.resolve(this.enabledEmpty ? 'empty-' + position : undefined)
           return this.futureOfPositionToSceneId.get(position)!
         }
 
