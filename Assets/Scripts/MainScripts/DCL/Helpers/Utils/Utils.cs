@@ -261,6 +261,11 @@ namespace DCL.Helpers
             return true;
         }
 
+        public static T FromJsonWithNulls<T>(string json)
+        {
+            return Newtonsoft.Json.JsonConvert.DeserializeObject<T>(json);
+        }
+
         public static T SafeFromJson<T>(string json)
         {
             T returningValue = default(T);
