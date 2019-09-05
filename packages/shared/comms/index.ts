@@ -87,6 +87,10 @@ export class Context {
 
   public worldInstanceConnection: WorldInstanceConnection | null = null
 
+  profileInterval?: NodeJS.Timer
+  positionObserver: any
+  infoCollecterInterval?: NodeJS.Timer
+
   constructor(userInfo: UserInformation, network?: ETHEREUM_NETWORK) {
     this.userInfo = userInfo
     this.network = network || null
@@ -446,13 +450,13 @@ export async function connect(userId: string, network: ETHEREUM_NETWORK, auth: A
     commsBroker.stats = context.stats
   }
 
-  setInterval(() => {
+  context.profileInterval = setInterval(() => {
     if (context && context.currentPosition && context.worldInstanceConnection) {
       context.worldInstanceConnection.sendProfileMessage(context.currentPosition, context.userInfo)
     }
   }, 1000)
 
-  positionObservable.add((obj: Readonly<PositionReport>) => {
+  context.positionObserver = positionObservable.add((obj: Readonly<PositionReport>) => {
     const p = [
       obj.position.x,
       obj.position.y - obj.playerHeight,
@@ -468,11 +472,28 @@ export async function connect(userId: string, network: ETHEREUM_NETWORK, auth: A
     }
   })
 
-  setInterval(() => {
+  context.infoCollecterInterval = setInterval(() => {
     if (context) {
       collectInfo(context)
     }
   }, 100)
+}
+
+export function disconnect() {
+  if (context) {
+    if (context.profileInterval) {
+      clearInterval(context.profileInterval)
+    }
+    if (context.infoCollecterInterval) {
+      clearInterval(context.infoCollecterInterval)
+    }
+    if (context.positionObserver) {
+      positionObservable.remove(context.positionObserver)
+    }
+    if (context.worldInstanceConnection) {
+      context.worldInstanceConnection.close()
+    }
+  }
 }
 
 declare var global: any

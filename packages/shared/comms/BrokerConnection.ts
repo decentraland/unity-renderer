@@ -64,9 +64,8 @@ export class BrokerConnection implements IBrokerConnection {
     // TODO: reconnect logic, handle disconnections
 
     setTimeout(() => {
-      if (this.reliableFuture.isPending) {
-        this.reliableFuture.reject(new Error('Communications link cannot be established (Timeout)'))
-        this.stats && this.stats.printDebugInformation()
+      if (this.reliableFuture.isPending || this.unreliableFuture.isPending) {
+        this.onConnectionError(new Error('Communications link cannot be established (Timeout)'))
       }
     }, 60000)
   }
@@ -100,7 +99,10 @@ export class BrokerConnection implements IBrokerConnection {
       this.webRtcConn.oniceconnectionstatechange = null
       this.webRtcConn.onicecandidate = null
       this.webRtcConn.ondatachannel = null
-      this.webRtcConn.close()
+      if (this.webRtcConn.close) {
+        // TODO - added for tests to run, fix this - moliva - 05/09/2019
+        this.webRtcConn.close()
+      }
       this.webRtcConn = null
     }
 
@@ -108,7 +110,10 @@ export class BrokerConnection implements IBrokerConnection {
       this.ws.onmessage = null
       this.ws.onerror = null
       this.ws.onclose = null
-      this.ws.close()
+      if (this.ws.close) {
+        // TODO - added for tests to run, fix this - moliva - 05/09/2019
+        this.ws.close()
+      }
     }
   }
 
@@ -124,7 +129,7 @@ export class BrokerConnection implements IBrokerConnection {
         if (this.stats) {
           this.stats.others.incrementRecv(msgSize)
         }
-        this.logger.log('unsopported message')
+        this.logger.log('unsupported message')
         break
       }
       case MessageType.WELCOME: {
@@ -144,7 +149,9 @@ export class BrokerConnection implements IBrokerConnection {
         const availableServers = message.getAvailableServersList()
 
         if (availableServers.length === 0) {
-          throw new Error('no available servers')
+          const error = new Error('Communications link cannot be established (no available servers)')
+          this.onConnectionError(error)
+          throw error
         }
 
         const serverAlias = availableServers[0]
@@ -227,6 +234,17 @@ export class BrokerConnection implements IBrokerConnection {
         break
       }
     }
+  }
+
+  private onConnectionError(error: Error) {
+    if (this.reliableFuture.isPending) {
+      this.reliableFuture.reject(error)
+    }
+    if (this.unreliableFuture.isPending) {
+      this.unreliableFuture.reject(error)
+    }
+    this.stats && this.stats.printDebugInformation()
+    this.close()
   }
 
   private sendCoordinatorMessage = (msg: Message) => {
