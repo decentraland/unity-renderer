@@ -1,5 +1,4 @@
-using DCL.Controllers;
-using DCL.Models;
+using DCL.Interface;
 using UnityEngine;
 
 namespace DCL.Components
@@ -8,7 +7,7 @@ namespace DCL.Components
     {
         public const string NAME = "pointerDown";
 
-        public void Report(Ray ray, RaycastHit hit)
+        public void Report(WebInterface.ACTION_BUTTON buttonId, Ray ray, RaycastHit hit)
         {
             if (!enabled)
             {
@@ -17,7 +16,7 @@ namespace DCL.Components
 
             string meshName = GetMeshName(hit.collider);
 
-            DCL.Interface.WebInterface.ReportOnPointerDownEvent(scene.sceneData.id, model.uuid, entity.entityId, meshName, ray, hit);
+            DCL.Interface.WebInterface.ReportOnPointerDownEvent(buttonId, scene.sceneData.id, model.uuid, entity.entityId, meshName, ray, hit);
         }
     }
 }

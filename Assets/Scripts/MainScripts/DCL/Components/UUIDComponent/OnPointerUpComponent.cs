@@ -1,5 +1,4 @@
-using DCL.Controllers;
-using DCL.Models;
+using DCL.Interface;
 using UnityEngine;
 
 namespace DCL.Components
@@ -8,7 +7,7 @@ namespace DCL.Components
     {
         public const string NAME = "pointerUp";
 
-        public void Report(Ray ray, RaycastHit hit, bool isHitInfoValid)
+        public void Report(WebInterface.ACTION_BUTTON buttonId, Ray ray, RaycastHit hit, bool isHitInfoValid)
         {
             if (!enabled)
             {
@@ -20,7 +19,7 @@ namespace DCL.Components
             if (isHitInfoValid)
                 meshName = GetMeshName(hit.collider);
 
-            DCL.Interface.WebInterface.ReportOnPointerUpEvent(scene.sceneData.id, model.uuid, entity.entityId, meshName, ray, hit, isHitInfoValid);
+            DCL.Interface.WebInterface.ReportOnPointerUpEvent(buttonId, scene.sceneData.id, model.uuid, entity.entityId, meshName, ray, hit, isHitInfoValid);
         }
     }
 }
