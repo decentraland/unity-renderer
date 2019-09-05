@@ -571,7 +571,7 @@ namespace Tests
             yield return TestHelpers.WaitForMessageFromEngine(targetEventType, eventJSON,
                 () =>
                 {
-                    component.Report();
+                    component.Report(WebInterface.ACTION_BUTTON.POINTER);
                 },
                 () =>
                 {
@@ -622,7 +622,7 @@ namespace Tests
             yield return TestHelpers.WaitForMessageFromEngine(targetEventType, eventJSON,
                 () =>
                 {
-                    component.Report(new Ray(), new RaycastHit());
+                    component.Report(WebInterface.ACTION_BUTTON.POINTER, new Ray(), new RaycastHit());
                 },
                 () =>
                 {
@@ -669,7 +669,7 @@ namespace Tests
             yield return TestHelpers.WaitForMessageFromEngine(targetEventType, eventJSON,
                 () =>
                 {
-                    component.Report(new Ray(), new RaycastHit(), false);
+                    component.Report(WebInterface.ACTION_BUTTON.POINTER, new Ray(), new RaycastHit(), false);
                 },
                 () =>
                 {

@@ -1,6 +1,8 @@
 using DCL.Controllers;
 using DCL.Models;
 using UnityEngine;
+using DCL.Interface;
+
 
 namespace DCL.Components
 {
@@ -8,14 +10,15 @@ namespace DCL.Components
     {
         public const string NAME = "onClick";
 
-        public void Report()
+        public void Report(WebInterface.ACTION_BUTTON buttonId)
         {
             if (!enabled)
             {
                 return;
             }
 
-            DCL.Interface.WebInterface.ReportOnClickEvent(scene.sceneData.id, model.uuid);
+            if (buttonId == WebInterface.ACTION_BUTTON.POINTER)
+                DCL.Interface.WebInterface.ReportOnClickEvent(scene.sceneData.id, model.uuid);
         }
     }
 }

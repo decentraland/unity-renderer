@@ -127,6 +127,8 @@ namespace DCL
 
             i = this;
 
+            PointerEventsController.i.Initialize();
+
 #if !UNITY_EDITOR
             Debug.Log("DCL Unity Build Version: " + DCL.Configuration.ApplicationSettings.version);
 
@@ -144,6 +146,8 @@ namespace DCL
 
         private void Update()
         {
+            InputController.i.Update();
+
             float prevTimeBudget = GLOBAL_MAX_MSG_BUDGET;
 
             PrioritizeMessageControllerList();

@@ -19,6 +19,7 @@ public class RenderingController : MonoBehaviour
         DCL.Configuration.ParcelSettings.VISUAL_LOADING_ENABLED = false;
         MessagingBus.renderingIsDisabled = true;
         PointerEventsController.renderingIsDisabled = true;
+        InputController.renderingIsDisabled = true;
         GLTFSceneImporter.renderingIsDisabled = true;
         DCLCharacterController.i.SetEnabled(false);
     }
@@ -30,6 +31,7 @@ public class RenderingController : MonoBehaviour
         MessagingBus.renderingIsDisabled = false;
         GLTFSceneImporter.renderingIsDisabled = false;
         PointerEventsController.renderingIsDisabled = false;
+        InputController.renderingIsDisabled = false;
         DCLCharacterController.i.SetEnabled(true);
         WebInterface.ReportControlEvent(new WebInterface.ActivateRenderingACK());
     }

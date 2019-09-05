@@ -1,21 +1,41 @@
 using DCL.Components;
 using UnityEngine;
-using UnityEngine.EventSystems;
-using System.Collections.Generic;
+using DCL.Interface;
 
 namespace DCL
 {
-    public class PointerEventsController : MonoBehaviour
+    public class PointerEventsController
     {
+        private static PointerEventsController instance = null;
+
+        public static PointerEventsController i
+        {
+            get
+            {
+                if (instance == null)
+                    instance = new PointerEventsController();
+
+                return instance;
+            }
+        }
+
         //Default OnPointerEvent
-        public LayerMask layerMaskTarget = 1 << 9;
+        private LayerMask layerMaskTarget = 1 << 9;
 
         public static bool renderingIsDisabled = true;
         private Camera characterCamera;
         private OnPointerUpComponent pointerUpEvent;
 
-        private void OnEnable()
+        private PointerEventsController()
         {
+        }
+
+        public void Initialize()
+        {
+            InputController.i.AddListener(WebInterface.ACTION_BUTTON.POINTER, OnButtonEvent);
+            InputController.i.AddListener(WebInterface.ACTION_BUTTON.PRIMARY, OnButtonEvent);
+            InputController.i.AddListener(WebInterface.ACTION_BUTTON.SECONDARY, OnButtonEvent);
+
             RetrieveCharacterCameraIfNull();
         }
 
@@ -32,52 +52,58 @@ namespace DCL
             }
         }
 
-        void Update()
+        void OnButtonEvent(WebInterface.ACTION_BUTTON buttonId, InputController.EVENT evt, bool useRaycast)
         {
             if (Cursor.lockState != CursorLockMode.None && !renderingIsDisabled)
             {
                 Ray ray;
                 RaycastHit hitInfo;
 
-                if (Input.GetMouseButtonDown(0))
+                if (evt == InputController.EVENT.BUTTON_DOWN)
                 {
                     // Raycast for pointer event components
-                    if (Raycast(out ray, out hitInfo, layerMaskTarget))
+                    if (useRaycast && Raycast(out ray, out hitInfo, layerMaskTarget))
                     {
                         GameObject go = hitInfo.rigidbody.gameObject;
 
-                        go.GetComponentInChildren<OnClickComponent>()?.Report();
-                        go.GetComponentInChildren<OnPointerDownComponent>()?.Report(ray, hitInfo);
+                        go.GetComponentInChildren<OnClickComponent>()?.Report(buttonId);
+                        go.GetComponentInChildren<OnPointerDownComponent>()?.Report(buttonId, ray, hitInfo);
 
                         pointerUpEvent = go.GetComponentInChildren<OnPointerUpComponent>();
                     }
 
                     string sceneId = SceneController.i.GetCurrentScene(DCLCharacterController.i.characterPosition);
 
-                    // Raycast for global pointer events
-                    if (CheckRaycastGlobal(out ray, out hitInfo, out var info))
-                        DCL.Interface.WebInterface.ReportGlobalPointerDownEvent(ray, hitInfo, sceneId, info.entityId, info.meshName, isHitInfoValid: true);
-                    else
-                        DCL.Interface.WebInterface.ReportGlobalPointerDownEvent(ray, hitInfo, sceneId);
+                    if (!string.IsNullOrEmpty(sceneId))
+                    {
+                        // Raycast for global pointer events
+                        if (useRaycast && CheckRaycastGlobal(out ray, out hitInfo, out var info))
+                            DCL.Interface.WebInterface.ReportGlobalPointerDownEvent(buttonId, ray, hitInfo, sceneId, info.entityId, info.meshName, isHitInfoValid: true);
+                        else
+                            DCL.Interface.WebInterface.ReportGlobalPointerDownEvent(buttonId, GetRayFromScreenCenter(), new RaycastHit(), sceneId);
+                    }
                 }
-                else if (Input.GetMouseButtonUp(0))
+                else if (evt == InputController.EVENT.BUTTON_UP)
                 {
                     // Raycast for pointer event components
                     if (pointerUpEvent != null)
                     {
                         bool isHitInfoValid = Raycast(out ray, out hitInfo, layerMaskTarget);
-                        pointerUpEvent.Report(ray, hitInfo, isHitInfoValid);
+                        pointerUpEvent.Report(buttonId, ray, hitInfo, isHitInfoValid);
 
                         pointerUpEvent = null;
                     }
 
                     string sceneId = SceneController.i.GetCurrentScene(DCLCharacterController.i.characterPosition);
 
-                    // Raycast for global pointer events
-                    if (CheckRaycastGlobal(out ray, out hitInfo, out var info))
-                        DCL.Interface.WebInterface.ReportGlobalPointerUpEvent(ray, hitInfo, sceneId, info.entityId, info.meshName, isHitInfoValid: true);
-                    else
-                        DCL.Interface.WebInterface.ReportGlobalPointerUpEvent(ray, hitInfo, sceneId);
+                    if (!string.IsNullOrEmpty(sceneId))
+                    {
+                        // Raycast for global pointer events
+                        if (useRaycast && CheckRaycastGlobal(out ray, out hitInfo, out var info))
+                            DCL.Interface.WebInterface.ReportGlobalPointerUpEvent(buttonId, ray, hitInfo, sceneId, info.entityId, info.meshName, isHitInfoValid: true);
+                        else
+                            DCL.Interface.WebInterface.ReportGlobalPointerUpEvent(buttonId, GetRayFromScreenCenter(), new RaycastHit(), sceneId);
+                    }
                 }
             }
         }
@@ -106,8 +132,13 @@ namespace DCL
         {
             RetrieveCharacterCameraIfNull();
 
-            ray = characterCamera.ScreenPointToRay(new Vector3(Screen.width / 2, Screen.height / 2, 0));
+            ray = GetRayFromScreenCenter();
             return Physics.Raycast(ray, out hitInfo, characterCamera.farClipPlane, layerMask);
+        }
+
+        Ray GetRayFromScreenCenter()
+        {
+            return characterCamera.ScreenPointToRay(new Vector3(Screen.width / 2, Screen.height / 2, 0));
         }
     }
 }
