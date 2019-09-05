@@ -5,6 +5,15 @@ using UnityEngine;
 
 public class DCLCharacterController : MonoBehaviour
 {
+    public class TeleportPayload
+    {
+        public float x;
+        public float y;
+        public float z;
+        public Vector3? cameraTarget;
+    }
+
+
     public static DCLCharacterController i { get; private set; }
 
     [Header("Aiming")]
@@ -134,11 +143,27 @@ public class DCLCharacterController : MonoBehaviour
         }
     }
 
-    public void Teleport(string positionVector)
+    public void SetEulerRotation(Vector3 eulerRotation)
     {
-        var newPosition = JsonUtility.FromJson<Vector3>(positionVector);
+        transform.rotation = Quaternion.Euler(0f, eulerRotation.y, 0f);
+        cameraTransform.localRotation = Quaternion.Euler(eulerRotation.x, 0f, 0f);
+    }
 
+    public void Teleport(string teleportPayload)
+    {
+        var payload = Utils.FromJsonWithNulls<TeleportPayload>(teleportPayload);
+
+        var newPosition = new Vector3(payload.x, payload.y, payload.z);
         SetPosition(newPosition);
+
+        if (payload.cameraTarget != null)
+        {
+            var lookDir = payload.cameraTarget - newPosition;
+            var eulerRotation = Quaternion.LookRotation(lookDir.Value).eulerAngles;
+            aimingVerticalAngle = -eulerRotation.x;
+            aimingHorizontalAngle = eulerRotation.y;
+            SetEulerRotation(eulerRotation);
+        }
 
         if (OnPositionSet != null)
         {
@@ -201,9 +226,9 @@ public class DCLCharacterController : MonoBehaviour
             DetectInput();
 
             // Rotation
-            transform.rotation = Quaternion.Euler(0f, aimingHorizontalAngle, 0f);
-            cameraTransform.localRotation = Quaternion.Euler(-aimingVerticalAngle, 0f, 0f);
-            CommonScriptableObjects.playerUnityEulerAngles.Set( new Vector3(cameraTransform.localRotation.x, transform.eulerAngles.y, 0));
+            var eulerRotation = new Vector3(-aimingVerticalAngle, aimingHorizontalAngle, 0);
+            SetEulerRotation(eulerRotation);
+            CommonScriptableObjects.playerUnityEulerAngles.Set( eulerRotation);
 
             // Horizontal movement
             var speed = movementSpeed * (isSprinting ? 2f : 1f);
