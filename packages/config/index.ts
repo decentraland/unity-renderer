@@ -197,8 +197,6 @@ export function getLoginConfigurationForCurrentDomain() {
   }
 }
 
-export const ENABLE_EMPTY_SCENES = !DEBUG || knownTLDs.includes(getTLD())
-
 export function getServerConfigurations() {
   const TLDDefault = getDefaultTLD()
   return {
