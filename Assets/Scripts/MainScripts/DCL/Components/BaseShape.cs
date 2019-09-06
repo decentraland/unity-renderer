@@ -24,8 +24,8 @@ namespace DCL.Components
                 return;
             }
 
-            base.AttachTo(entity, typeof(BaseShape));
             entity.currentShape = this;
+            base.AttachTo(entity, typeof(BaseShape));
         }
 
         public override void DetachFrom(DecentralandEntity entity, System.Type overridenAttachedType = null)

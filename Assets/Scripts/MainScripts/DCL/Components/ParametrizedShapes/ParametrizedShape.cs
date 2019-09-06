@@ -9,15 +9,21 @@ namespace DCL.Components
     public abstract class ParametrizedShape<T> : BaseShape where T : BaseShape.Model, new()
     {
         public T model = new T();
+        bool visibilityDirty = false;
+        bool collisionsDirty = false;
 
         public abstract Mesh GenerateGeometry();
 
         protected virtual void DestroyGeometry()
         {
-            GameObject.Destroy(currentMesh);
+            if (currentMesh != null)
+            {
+                GameObject.Destroy(currentMesh);
+                currentMesh = null;
+            }
         }
 
-        public Mesh currentMesh { get; private set; }
+        public Mesh currentMesh { get; protected set; }
 
         public ParametrizedShape(ParcelScene scene) : base(scene)
         {
@@ -25,14 +31,32 @@ namespace DCL.Components
             OnDetach += OnShapeDetached;
         }
 
+        void UpdateRenderer(DecentralandEntity entity)
+        {
+            if (visibilityDirty)
+            {
+                ConfigureVisibility(entity.meshGameObject, model.visible);
+                visibilityDirty = false;
+            }
+
+            if (collisionsDirty)
+            {
+                CollidersManager.i.ConfigureColliders(entity.meshGameObject, model.withCollisions, false, entity);
+                collisionsDirty = false;
+            }
+        }
+
         void OnShapeAttached(DecentralandEntity entity)
         {
             if (entity == null)
-            {
                 return;
-            }
 
             entity.EnsureMeshGameObject(componentName + " mesh");
+
+            if (currentMesh == null)
+                currentMesh = GenerateGeometry();
+
+            UpdateRenderer(entity);
 
             MeshFilter meshFilter = entity.meshGameObject.AddComponent<MeshFilter>();
             MeshRenderer meshRenderer = entity.meshGameObject.AddComponent<MeshRenderer>();
@@ -58,8 +82,6 @@ namespace DCL.Components
             {
                 entity.OnShapeUpdated.Invoke(entity);
             }
-
-            CollidersManager.i.ConfigureColliders(entity.meshGameObject, model.withCollisions, entity: entity);
         }
 
         void OnShapeDetached(DecentralandEntity entity)
@@ -71,12 +93,9 @@ namespace DCL.Components
 
             if (attachedEntities.Count == 0)
             {
-                if (currentMesh != null)
-                {
-                    DestroyGeometry();
-                }
-
+                DestroyGeometry();
                 Utils.CleanMaterials(entity.meshGameObject.GetComponent<Renderer>());
+                currentMesh = null;
             }
 
             Utils.SafeDestroy(entity.meshGameObject);
@@ -86,29 +105,25 @@ namespace DCL.Components
         public override IEnumerator ApplyChanges(string newJson)
         {
             var newModel = SceneController.i.SafeFromJson<T>(newJson);
-            bool updateVisibility = newModel.visible != model.visible;
-            bool updateCollisions = newModel.withCollisions != model.withCollisions;
-            bool generateNewMesh = ShouldGenerateNewMesh(newModel);
+            visibilityDirty = newModel.visible != model.visible;
+            collisionsDirty = newModel.withCollisions != model.withCollisions;
+            bool shouldGenerateMesh = ShouldGenerateNewMesh(newModel);
             model = newModel;
 
-            if (generateNewMesh)
-                currentMesh = GenerateGeometry();
-
-            if (generateNewMesh || updateVisibility || updateCollisions)
+            //NOTE(Brian): Only generate meshes here if they already are attached to something.
+            //             Otherwise, the mesh will be created on the OnShapeAttached.
+            if (attachedEntities.Count > 0)
             {
-                foreach (var entity in this.attachedEntities)
+                if (shouldGenerateMesh)
+                    currentMesh = GenerateGeometry();
+
+                using (var iterator = attachedEntities.GetEnumerator())
                 {
-                    if (generateNewMesh)
+                    while (iterator.MoveNext())
                     {
-                        OnShapeDetached(entity);
-                        OnShapeAttached(entity);
+                        var entity = iterator.Current;
+                        UpdateRenderer(entity);
                     }
-
-                    if (updateVisibility)
-                        ConfigureVisibility(entity.meshGameObject, model.visible);
-
-                    if (updateCollisions)
-                        CollidersManager.i.ConfigureColliders(entity.meshGameObject, model.withCollisions);
                 }
             }
 
@@ -118,7 +133,6 @@ namespace DCL.Components
         public override void AttachTo(DecentralandEntity entity, System.Type overridenAttachedType = null)
         {
             base.AttachTo(entity);
-            ConfigureVisibility(entity.meshGameObject, model.visible);
         }
 
         protected virtual bool ShouldGenerateNewMesh(BaseShape.Model newModel)
