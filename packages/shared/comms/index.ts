@@ -52,7 +52,7 @@ export class PeerTrackingInfo {
     version: null
   }
 
-  public loadProfileIfNecessary(profileVersion: string) {
+  public loadProfileIfNecessary(auth: Auth, profileVersion: string) {
     if (this.identity && profileVersion !== this.profilePromise.version) {
       if (!this.userInfo || !this.userInfo.userId) {
         this.userInfo = {
@@ -61,13 +61,15 @@ export class PeerTrackingInfo {
         }
       }
       this.profilePromise = {
-        promise: resolveProfile(this.identity).then(($: Profile) => {
-          const userInfo = this.userInfo || {}
-          userInfo.profile = $
-          userInfo.version = $.version
-          this.userInfo = userInfo
-          return
-        }),
+        promise: auth.getAccessToken().then((token: string) =>
+          resolveProfile(token, this.identity!).then(($: Profile) => {
+            const userInfo = this.userInfo || {}
+            userInfo.profile = $
+            userInfo.version = $.version
+            this.userInfo = userInfo
+            return
+          })
+        ),
         version: profileVersion
       }
     }
@@ -206,7 +208,13 @@ export function processChatMessage(context: Context, fromAlias: string, data: Ch
   }
 }
 
-export function processProfileMessage(context: Context, fromAlias: string, identity: string, data: ProfileData) {
+export function processProfileMessage(
+  auth: Auth,
+  context: Context,
+  fromAlias: string,
+  identity: string,
+  data: ProfileData
+) {
   const msgTimestamp = data.getTime()
 
   const peerTrackingInfo = ensurePeerTrackingInfo(context, fromAlias)
@@ -215,7 +223,7 @@ export function processProfileMessage(context: Context, fromAlias: string, ident
     const profileVersion = data.getProfileVersion()
 
     peerTrackingInfo.identity = identity
-    peerTrackingInfo.loadProfileIfNecessary(profileVersion)
+    peerTrackingInfo.loadProfileIfNecessary(auth, profileVersion)
 
     peerTrackingInfo.lastProfileUpdate = msgTimestamp
     peerTrackingInfo.lastUpdate = Date.now()
@@ -433,7 +441,7 @@ export async function connect(userId: string, network: ETHEREUM_NETWORK, auth: A
     processPositionMessage(context!, alias, data)
   }
   connection.profileHandler = (alias: string, identity: string, data: ProfileData) => {
-    processProfileMessage(context!, alias, identity, data)
+    processProfileMessage(auth, context!, alias, identity, data)
   }
   connection.chatHandler = (alias: string, data: ChatData) => {
     processChatMessage(context!, alias, data)

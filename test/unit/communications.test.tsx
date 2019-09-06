@@ -521,6 +521,9 @@ describe('Communications', function() {
     })
 
     describe('profile handler', () => {
+      const fakeAuth: any = {
+        getAccessToken: () => Promise.resolve('access_token')
+      }
       it('new profile message', () => {
         const context = new Context({})
 
@@ -532,7 +535,7 @@ describe('Communications', function() {
         sinon.spy(info, 'loadProfileIfNecessary')
         context.peerData.set('client2', info)
 
-        processProfileMessage(context, 'client2', 'userId1', profileData)
+        processProfileMessage(fakeAuth, context, 'client2', 'userId1', profileData)
 
         expect(context.peerData).to.have.key('client2')
         const trackingInfo = context.peerData.get('client2') as PeerTrackingInfo
@@ -540,7 +543,7 @@ describe('Communications', function() {
         expect(trackingInfo.userInfo).to.deep.equal({
           userId: 'userId1'
         })
-        expect(trackingInfo.loadProfileIfNecessary).to.have.been.calledWith('version')
+        expect(trackingInfo.loadProfileIfNecessary).to.have.been.calledWith(fakeAuth, 'version')
       })
 
       it('old profile message', () => {
@@ -555,11 +558,11 @@ describe('Communications', function() {
         profileData.setTime(new Date(2008).getTime())
         profileData.setProfileVersion('version1')
 
-        processProfileMessage(context, 'client2', 'identity2', profileData)
+        processProfileMessage(fakeAuth, context, 'client2', 'identity2', profileData)
 
         expect(context.peerData).to.have.key('client2')
         const trackingInfo = context.peerData.get('client2') as PeerTrackingInfo
-        expect(trackingInfo.loadProfileIfNecessary).to.not.have.been.calledWith('version1')
+        expect(trackingInfo.loadProfileIfNecessary).to.not.have.been.calledWith(fakeAuth, 'version1')
       })
     })
   })

@@ -93,7 +93,11 @@
   },
   "dependencies": {
     "@createjs/easeljs": "^2.0.0-beta.4",
+    "@types/auth0-js": "^9.10.6",
+    "@types/jsonwebtoken": "^8.3.3",
+    "@types/uuid": "^3.4.5",
     "@types/ws": "^6.0.1",
+    "auth0-js": "^9.11.3",
     "babylonjs": "^3.3.0",
     "babylonjs-gltf2interface": "^3.3.0",
     "babylonjs-gui": "^3.3.0",
@@ -116,6 +120,10 @@
     "keccakjs": "^0.2.3",
     "multihashes": "^0.4.14",
     "oimo": "^1.0.9",
+    "redux": "^4.0.4",
+    "redux-saga": "^1.0.5",
+    "reselect": "^4.0.0",
+    "typesafe-actions": "^4.4.2",
     "uglify-js": "^3.5.2",
     "webrtc-adapter": "^6.4.8",
     "ws": "^7.0.0"
