@@ -93,6 +93,34 @@ namespace DCL
             return null;
         }
 
+        public virtual bool TryGetContentsUrl_Raw(string url, out string result)
+        {
+            url = url.ToLower();
+            result = url;
+
+            if (HasTestSchema(url))
+            {
+                return true;
+            }
+
+            if (fileToHash != null)
+            {
+                if (!fileToHash.ContainsKey(url))
+                {
+                    Debug.LogError($"GetContentsUrl_Raw >>> File {url} not found!!!");
+                    return false;
+                }
+
+                result = fileToHash[url];
+            }
+            else
+            {
+                result = url;
+            }
+
+            return true;
+        }
+
         public virtual bool TryGetContentsUrl(string url, out string result)
         {
             url = url.ToLower();
@@ -107,7 +135,7 @@ namespace DCL
             {
                 if (!fileToHash.ContainsKey(url))
                 {
-                    Debug.LogError(string.Format("GetContentsUrl >>> File {0} not found!!!", url));
+                    Debug.LogError($"GetContentsUrl >>> File {url} not found!!!");
                     return false;
                 }
 
@@ -120,7 +148,7 @@ namespace DCL
 
             if (VERBOSE)
             {
-                Debug.Log($">>> GetContentsURL from ... {url} ... RESULTING URL... = {result}");
+                Debug.Log($"GetContentsURL >>> from ... {url} ... RESULTING URL... = {result}");
             }
 
             return true;
@@ -142,5 +170,4 @@ namespace DCL
             return false;
         }
     }
-
 }

@@ -1,8 +1,10 @@
 {
-    "name": "AssetManagerTests",
+    "name": "AssetPromiseKeeperTests",
     "references": [
         "MainScripts",
-        "UnityGLTFAssembly"
+        "UnityGLTFAssembly",
+        "CoroutineHelpers",
+        "Utils"
     ],
     "optionalUnityReferences": [
         "TestAssemblies"
@@ -13,5 +15,6 @@
     "overrideReferences": false,
     "precompiledReferences": [],
     "autoReferenced": true,
-    "defineConstraints": []
+    "defineConstraints": [],
+    "versionDefines": []
 }

@@ -1,4 +1,4 @@
-using UnityEngine;
+﻿using UnityEngine;
 
 namespace DCL
 {
@@ -6,26 +6,40 @@ namespace DCL
     {
         public Pool pool;
 
-        public bool isAlive
+        void OnEnable()
         {
-            get;
-            private set;
+            if (pool != null)
+            {
+                pool.OnReleaseAll -= this.OnRelease;
+                pool.OnReleaseAll += this.OnRelease;
+            }
         }
 
-        public void Init()
+        private void OnDisable()
         {
-            pool.OnReleaseAll += this.OnRelease;
-            isAlive = true;
+            if (pool != null)
+                pool.OnReleaseAll -= this.OnRelease;
+        }
+
+        public void OnRelease(Pool pool)
+        {
+            Release();
         }
 
         public void Release()
         {
-            pool.OnReleaseAll -= this.OnRelease;
+            if (this == null)
+            {
+#if UNITY_EDITOR
+                Debug.LogWarning("Release == null??! This shouldn't happen");
+#endif
+                return;
+            }
 
-            if (pool && isAlive)
+            if (pool != null && gameObject.activeSelf)
+            {
                 pool.Release(this);
-
-            isAlive = false;
+            }
         }
 
         public void OnCleanup(DCL.ICleanableEventDispatcher sender)
@@ -34,20 +48,13 @@ namespace DCL
             Release();
         }
 
-        public void OnRelease(Pool pool)
-        {
-            Release();
-        }
-
         void OnDestroy()
         {
-            if (pool)
+            if (pool != null)
             {
                 pool.OnReleaseAll -= this.OnRelease;
-                pool.Unregister(this);
+                pool.RemoveFromPool(this);
             }
-
-            isAlive = false;
         }
     }
 }

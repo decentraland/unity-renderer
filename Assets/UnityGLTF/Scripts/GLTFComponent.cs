@@ -154,12 +154,15 @@ namespace UnityGLTF
 
             OnFailedLoadingAsset?.Invoke();
 
-            if (obj is IndexOutOfRangeException)
+            if (obj != null)
             {
-                Destroy(gameObject);
-            }
+                if (obj is IndexOutOfRangeException)
+                {
+                    Destroy(gameObject);
+                }
 
-            Debug.Log("GLTF Failure " + obj.ToString() + " ... url = " + this.GLTFUri);
+                Debug.Log("GLTF Failure " + obj.ToString() + " ... url = " + this.GLTFUri);
+            }
         }
 
         private void IncrementDownloadCount()
@@ -306,8 +309,8 @@ namespace UnityGLTF
                         loader = null;
                     }
 
-                    OnFinishedLoadingAsset?.Invoke();
                     alreadyLoadedAsset = true;
+                    OnFinishedLoadingAsset?.Invoke();
                 }
             }
             else
@@ -353,16 +356,13 @@ namespace UnityGLTF
 
         private void OnDestroy()
         {
-            if (!alreadyDecrementedRefCount && state != State.NONE && state != State.QUEUED)
+            if (!alreadyLoadedAsset && loadingRoutine != null)
             {
-                downloadingCount--;
-                alreadyDecrementedRefCount = true;
-
-                if (VERBOSE)
-                {
-                    Debug.Log($"downloadingCount-- = {downloadingCount}");
-                }
+                OnFail_Internal(null);
+                return;
             }
+
+            DecrementDownloadCount();
         }
     }
 }

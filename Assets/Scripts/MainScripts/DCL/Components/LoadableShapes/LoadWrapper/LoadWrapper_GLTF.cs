@@ -1,8 +1,6 @@
-﻿using DCL.Helpers;
-using System;
+﻿using System;
 using UnityEngine;
 using UnityEngine.Assertions;
-using UnityGLTF;
 
 namespace DCL.Components
 {
@@ -12,142 +10,94 @@ namespace DCL.Components
 
         public GameObject gltfContainer;
 
-        string url;
+        AssetPromise_GLTF gltfPromise;
+
         string assetDirectoryPath;
 
-        private static readonly Vector3 MORDOR = Vector3.one * -1000;
 
-        //todo (Alex) Refactor: This flag prevents unload from being called twice. Destroying should be part of the shape detachment
-        private bool unloaded = false;
+#if UNITY_EDITOR
+        [ContextMenu("Debug Load Count")]
+        public void DebugLoadCount()
+        {
+            Debug.Log($"promise state = {gltfPromise.state} ... waiting promises = {AssetPromiseKeeper_GLTF.i.waitingPromisesCount}");
+        }
+#endif
 
         public override void Load(string targetUrl, Action<LoadWrapper> OnSuccess, Action<LoadWrapper> OnFail)
         {
             Assert.IsFalse(string.IsNullOrEmpty(targetUrl), "url is null!!");
-            if (gltfContainer != null)
+
+            if (gltfPromise != null)
             {
-                Destroy(gltfContainer);
+                AssetPromiseKeeper_GLTF.i.Forget(gltfPromise);
+
+                if (VERBOSE)
+                    Debug.Log("Forgetting not null promise...");
             }
 
             alreadyLoaded = false;
 
-            // We separate the directory path of the GLB and its file name, to be able to use the directory path when 
-            // fetching relative assets like textures in the ParseGLTFWebRequestedFile() event call
-            url = targetUrl.Substring(targetUrl.LastIndexOf('/') + 1);
-            assetDirectoryPath = URIHelper.GetDirectoryName(targetUrl);
+            gltfPromise = new AssetPromise_GLTF(contentProvider, targetUrl);
 
             if (VERBOSE)
+                Debug.Log($"Load(): target URL -> {targetUrl},  url -> {gltfPromise.url}, directory path -> {assetDirectoryPath}");
+
+            gltfPromise.settings.parent = transform;
+
+            if (initialVisibility == false)
             {
-                Debug.Log($"Load(): target URL -> {targetUrl},  url -> {url}, directory path -> {assetDirectoryPath}");
+                gltfPromise.settings.visibleFlags = AssetPromise_GLTF.VisibleFlags.INVISIBLE;
+            }
+            else
+            {
+                if (useVisualFeedback)
+                    gltfPromise.settings.visibleFlags = AssetPromise_GLTF.VisibleFlags.VISIBLE_WITH_TRANSITION;
+                else
+                    gltfPromise.settings.visibleFlags = AssetPromise_GLTF.VisibleFlags.VISIBLE_WITHOUT_TRANSITION;
             }
 
-            var config = new UnityGLTF.GLTFComponent.Settings
-            {
-                OnWebRequestStartEvent = ParseGLTFWebRequestedFile,
-                initialVisibility = initialVisibility
-            };
+            gltfPromise.OnSuccessEvent += (x) => OnSuccessWrapper(x, OnSuccess);
+            gltfPromise.OnFailEvent += (x) => OnFailWrapper(x, OnFail);
 
-            var cacheId = GetCacheId();
-
-            gltfContainer = AssetManager_GLTF.i.Get(
-                id: cacheId,
-                url: url,
-                parent: transform,
-                OnSuccess: () => OnSuccessWrapper(this, OnSuccess),
-                OnFail: () => OnFailWrapper(this, OnFail),
-                config);
+            AssetPromiseKeeper_GLTF.i.Keep(gltfPromise);
         }
 
-        private void OnFailWrapper(LoadWrapper_GLTF gLTFLoader, Action<LoadWrapper> OnFail)
+        private void OnFailWrapper(Asset_GLTF loadedAsset, Action<LoadWrapper> OnFail)
         {
             if (VERBOSE)
             {
-                Debug.Log($"Load(): target URL -> {url}. Failure!");
+                Debug.Log($"Load(): target URL -> {gltfPromise.url}. Failure!");
             }
 
             OnFail?.Invoke(this);
         }
 
-        private void OnSuccessWrapper(LoadWrapper_GLTF gLTFLoader, Action<LoadWrapper> OnSuccess)
+        private void OnSuccessWrapper(Asset_GLTF loadedAsset, Action<LoadWrapper> OnSuccess)
         {
             if (VERBOSE)
             {
-                Debug.Log($"Load(): target URL -> {url}. Success!");
+                Debug.Log($"Load(): target URL -> {gltfPromise.url}. Success!");
             }
 
             alreadyLoaded = true;
 
-            if (entity.meshGameObject)
+            if (loadedAsset.container != null)
             {
-                PoolableObject po = entity.meshGameObject.GetComponentInChildren<PoolableObject>();
+                PoolableObject poolable = loadedAsset.container.GetComponentInChildren<PoolableObject>();
 
-                if (po)
-                    this.entity.OnCleanupEvent += po.OnCleanup;
-
-                CollidersManager.i.ConfigureColliders(entity);
+                if (poolable != null)
+                {
+                    this.entity.OnCleanupEvent += poolable.OnCleanup;
+                }
             }
 
             OnSuccess?.Invoke(this);
         }
 
-        void ParseGLTFWebRequestedFile(ref string requestedFileName)
-        {
-            string finalURL = string.Empty;
-            contentProvider.TryGetContentsUrl(assetDirectoryPath + requestedFileName, out finalURL);
-            requestedFileName = finalURL;
-        }
-
-
-        public object GetCacheId()
-        {
-            return AssetManager_GLTF.i.GetIdForAsset(contentProvider, url);
-        }
 
         public override void Unload()
         {
-            if (unloaded) return;
-
-            unloaded = true;
-
-            if (!String.IsNullOrEmpty(url))
-            {
-                var cacheId = GetCacheId();
-
-                if (AssetManager_GLTF.i.assetLibrary.ContainsKey(cacheId) && !AssetManager_GLTF.i.assetLibrary[cacheId].isLoadingCompleted)
-                {
-                    AssetManager_GLTF.i.assetLibrary[cacheId].OnSuccess += OnSuccessAssetLoaded;
-                    RelocateLoader();
-                }
-                else
-                {
-                    RemoveMeshObject();
-                }
-
-                AssetManager_GLTF.i.Release(cacheId);
-            }
-        }
-
-        private void OnSuccessAssetLoaded()
-        {
-            var cacheId = GetCacheId();
-
-            AssetManager_GLTF.i.assetLibrary[cacheId].OnSuccess -= OnSuccessAssetLoaded;
-
-            RemoveMeshObject();
-        }
-
-        private void RelocateLoader()
-        {
-            var gltfComponent = GetComponentInChildren<GLTFComponent>();
-
-            if (gltfComponent != null && AssetManager_GLTF.i != null)
-            {
-                gltfComponent.transform.position = MORDOR;
-            }
-        }
-
-        private void RemoveMeshObject()
-        {
-            entity.Cleanup();
+            AssetPromiseKeeper_GLTF.i.Forget(gltfPromise);
         }
 
         public void OnDestroy()
@@ -155,6 +105,16 @@ namespace DCL.Components
             if (Application.isPlaying)
             {
                 Unload();
+
+                if (gltfPromise.state == AssetPromiseState.FINISHED && gltfPromise.asset.container != null)
+                {
+                    PoolableObject poolable = gltfPromise.asset.container.GetComponentInChildren<PoolableObject>();
+
+                    if (poolable != null)
+                    {
+                        this.entity.OnCleanupEvent -= poolable.OnCleanup;
+                    }
+                }
             }
         }
     }

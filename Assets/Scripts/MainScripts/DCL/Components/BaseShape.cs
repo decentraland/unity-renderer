@@ -24,6 +24,8 @@ namespace DCL.Components
                 return;
             }
 
+            //NOTE(Brian): This assignation must be before the base.AttachTo call, or the OnAttach events will receive entity.currentShape == null
+            //             and fail to generate colliders randomly.
             entity.currentShape = this;
             base.AttachTo(entity, typeof(BaseShape));
         }

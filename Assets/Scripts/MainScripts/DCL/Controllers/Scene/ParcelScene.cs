@@ -10,6 +10,7 @@ using UnityEngine.Assertions;
 using Environment = DCL.Configuration.Environment;
 using Object = UnityEngine.Object;
 using Random = UnityEngine.Random;
+using System.Collections;
 
 namespace DCL.Controllers
 {
@@ -32,6 +33,8 @@ namespace DCL.Controllers
         public UIScreenSpace uiScreenSpace;
 
         private static GameObject blockerPrefab;
+        public bool isReady = false;
+
         private readonly List<GameObject> blockers = new List<GameObject>();
 
         public event System.Action<DecentralandEntity> OnEntityAdded;
@@ -64,14 +67,13 @@ namespace DCL.Controllers
 
         private bool isReleased = false;
 
-        private Bounds bounds = new Bounds();
-
         private readonly List<string> disposableNotReady = new List<string>();
         public int disposableNotReadyCount => disposableNotReady.Count;
 
         private void Update()
         {
-            SendMetricsEvent();
+            if (isReady && RenderingController.i.renderingEnabled)
+                SendMetricsEvent();
         }
 
         public virtual void SetData(LoadParcelScenesMessage.UnityParcelScene data)
@@ -83,30 +85,40 @@ namespace DCL.Controllers
             contentProvider.contents = data.contents;
             contentProvider.BakeHashes();
 
-            this.name = gameObject.name = $"scene:{data.id}";
+            this.name = gameObject.name = $"scene:{data.basePosition}";
 
             gameObject.transform.position = DCLCharacterController.i.characterPosition.WorldToUnityPosition(Utils.GridToWorldPosition(data.basePosition.x, data.basePosition.y));
-            CleanBlockers();
+
+#if UNITY_EDITOR
+            //NOTE(Brian): Don't generate parcel blockers if debugScenes is active and is not the desired scene.
+            if (SceneController.i.debugScenes && SceneController.i.debugSceneCoords != data.basePosition)
+            {
+                return;
+            }
+#endif
             SetupBlockers(data.parcels);
         }
 
         private void CleanBlockers()
         {
-            for (var i = blockers.Count - 1; i >= 0; i--)
+            int blockersCount = blockers.Count;
+            for (int i = 0; i < blockersCount; i++)
             {
                 Destroy(blockers[i]);
             }
+
             blockers.Clear();
         }
 
         private void SetupBlockers(Vector2Int[] parcels)
         {
             if (blockerPrefab == null)
-            {
                 blockerPrefab = Resources.Load<GameObject>(PARCEL_BLOCKER_PREFAB);
-            }
 
-            for (var i = 0; i < parcels.Length; i++)
+            CleanBlockers();
+
+            int parcelsLength = parcels.Length;
+            for (int i = 0; i < parcelsLength; i++)
             {
                 Vector2Int pos = parcels[i];
                 var blocker = Instantiate(blockerPrefab, transform);
@@ -135,7 +147,8 @@ namespace DCL.Controllers
         {
             if (Environment.DEBUG && sceneData.parcels != null)
             {
-                for (int j = 0; j < sceneData.parcels.Length; j++)
+                int sceneDataParcelsLength = sceneData.parcels.Length;
+                for (int j = 0; j < sceneDataParcelsLength; j++)
                 {
                     GameObject plane = GameObject.CreatePrimitive(PrimitiveType.Plane);
 
@@ -180,7 +193,24 @@ namespace DCL.Controllers
             if (isReleased)
                 return;
 
-            StartCoroutine(CleanupCoroutine());
+            if (!RenderingController.i.renderingEnabled)
+            {
+                RemoveAllEntitiesCoroutine(instant: true);
+            }
+            else
+            {
+                if (entities.Count > 0)
+                {
+                    CoroutineStarter.Start(RemoveAllEntitiesCoroutine());
+                }
+                else
+                {
+                    Destroy(this.gameObject);
+
+                    if (DCLCharacterController.i)
+                        DCLCharacterController.i.characterPosition.OnPrecisionAdjust -= OnPrecisionAdjust;
+                }
+            }
 
             isReleased = true;
         }
@@ -197,7 +227,8 @@ namespace DCL.Controllers
 
         public virtual bool IsInsideSceneBoundaries(Vector2 gridPosition)
         {
-            for (int i = 0; i < sceneData.parcels.Length; i++)
+            int parcelsCount = sceneData.parcels.Length;
+            for (int i = 0; i < parcelsCount; i++)
             {
                 if (sceneData.parcels[i] == gridPosition)
                 {
@@ -228,16 +259,11 @@ namespace DCL.Controllers
             if (!PoolManager.i.ContainsPool(EMPTY_GO_POOL_NAME))
             {
                 GameObject go = new GameObject();
-
                 PoolManager.i.AddPool(EMPTY_GO_POOL_NAME, go);
-
-                // We destroy the gameobject because we don't need it anymore,
-                // as the pool creates a copy of it
-                Destroy(go);
             }
 
             // As we know that the pool already exists, we just get one gameobject from it
-            PoolableObject po = PoolManager.i.GetIfPoolExists(EMPTY_GO_POOL_NAME);
+            PoolableObject po = PoolManager.i.Get(EMPTY_GO_POOL_NAME);
             newEntity.gameObject = po.gameObject;
             newEntity.gameObject.name = "ENTITY_" + tmpCreateEntityMessage.id;
             newEntity.gameObject.transform.SetParent(gameObject.transform, false);
@@ -319,16 +345,33 @@ namespace DCL.Controllers
             entitiesMarkedForRemoval.Clear();
         }
 
-        System.Collections.IEnumerator CleanupCoroutine()
+        IEnumerator RemoveAllEntitiesCoroutine(bool instant = false)
         {
+            //NOTE(Brian): We need to remove only the rootEntities. 
+            //             If we don't, duplicated entities will get removed when destroying 
+            //             recursively, making this more complicated than it should.
+            List<DecentralandEntity> rootEntities = new List<DecentralandEntity>();
+
             using (var iterator = entities.GetEnumerator())
             {
-                float maxBudget = MAX_CLEANUP_BUDGET + Random.Range(-CLEANUP_NOISE, CLEANUP_NOISE);
-                float lastTime = Time.realtimeSinceStartup;
-
                 while (iterator.MoveNext())
                 {
-                    RemoveEntity(iterator.Current.Key, removeImmediatelyFromEntitiesList: false);
+                    if (iterator.Current.Value.parent == null)
+                        rootEntities.Add(iterator.Current.Value);
+                }
+            }
+
+            float maxBudget = MAX_CLEANUP_BUDGET + Random.Range(-CLEANUP_NOISE, CLEANUP_NOISE);
+            float lastTime = Time.realtimeSinceStartup;
+
+            int rootEntitiesCount = rootEntities.Count;
+            for (int i = 0; i < rootEntitiesCount; i++)
+            {
+                DecentralandEntity entity = rootEntities[i];
+                RemoveEntity(entity.entityId);
+
+                if (!instant)
+                {
                     if (Time.realtimeSinceStartup - lastTime >= maxBudget)
                     {
                         yield return null;
@@ -337,14 +380,10 @@ namespace DCL.Controllers
                 }
             }
 
-            CleanEntitiesList();
+            Destroy(this.gameObject);
 
             if (DCLCharacterController.i)
-            {
                 DCLCharacterController.i.characterPosition.OnPrecisionAdjust -= OnPrecisionAdjust;
-            }
-
-            Destroy(this.gameObject);
         }
 
         private SetEntityParentMessage tmpParentMessage = new SetEntityParentMessage();
@@ -903,6 +942,12 @@ namespace DCL.Controllers
         private void OnDisposableReady(BaseDisposable disposable)
         {
             disposableNotReady.Remove(disposable.id);
+
+            if (VERBOSE)
+            {
+                Debug.Log($"{sceneData.basePosition} Disposable objects left... {disposableNotReady.Count}");
+            }
+
             if (disposableNotReady.Count == 0)
             {
                 SetSceneReady();
@@ -911,14 +956,43 @@ namespace DCL.Controllers
 
         public void SetInitMessagesDone()
         {
+            if (isReady)
+            {
+                Debug.LogWarning($"Init messages done after ready?! {sceneData.basePosition}", gameObject);
+                return;
+            }
+
+            isReady = false;
             disposableNotReady.Clear();
 
+#if UNITY_EDITOR
+            if (SceneController.i.debugScenes && sceneData.basePosition != SceneController.i.debugSceneCoords)
+            {
+                SetSceneReady();
+                return;
+            }
+#endif
             if (disposableComponents.Count > 0)
             {
-                for (var i = 0; i < disposableComponents.Count; i++)
+                //NOTE(Brian): Here, we have to split the iterations. If not, we will get repeated calls of
+                //             SetSceneReady(), as the disposableNotReady count is 1 and gets to 0
+                //             in each OnDisposableReady() call.
+
+                using (var iterator = disposableComponents.GetEnumerator())
                 {
-                    disposableNotReady.Add(disposableComponents.ElementAt(i).Key);
-                    disposableComponents.ElementAt(i).Value.CallWhenReady(OnDisposableReady);
+                    while (iterator.MoveNext())
+                    {
+                        disposableNotReady.Add(iterator.Current.Key);
+                    }
+                }
+
+                var listCopy = new List<string>(disposableNotReady);
+
+                int listCopyCount = listCopy.Count;
+
+                for (int i = 0; i < listCopyCount; i++)
+                {
+                    disposableComponents[listCopy[i]].CallWhenReady(OnDisposableReady);
                 }
             }
             else
@@ -929,6 +1003,18 @@ namespace DCL.Controllers
 
         private void SetSceneReady()
         {
+            if (isReady)
+            {
+                return;
+            }
+
+            if (VERBOSE)
+            {
+                Debug.Log($"{sceneData.basePosition} Scene Ready!");
+            }
+
+            isReady = true;
+
             CleanBlockers();
             SceneController.i.SendSceneReady(sceneData.id);
         }

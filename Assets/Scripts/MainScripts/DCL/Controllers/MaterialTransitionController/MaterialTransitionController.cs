@@ -261,6 +261,10 @@ public class MaterialTransitionController : MonoBehaviour
         for (int i = 0; i < renderers.Length; i++)
         {
             Renderer r = renderers[i];
+
+            if (r.gameObject.GetComponent<MaterialTransitionController>() != null)
+                continue;
+
             MaterialTransitionController transition = r.gameObject.AddComponent<MaterialTransitionController>();
             Material finalMaterial = r.sharedMaterial;
             transition.delay = delay;

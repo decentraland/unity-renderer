@@ -2,7 +2,8 @@
     "name": "PoolManagerTests",
     "references": [
         "MainScripts",
-        "UnityGLTFAssembly"
+        "UnityGLTFAssembly",
+        "Utils"
     ],
     "optionalUnityReferences": [
         "TestAssemblies"
