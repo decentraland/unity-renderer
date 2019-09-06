@@ -22,10 +22,11 @@
 1. Update build version number in MainScripts/DCL/Configuration/Configuration.cs (make a PR to keep this change in master branch)
 2. Build unity WASM with its name as "unity" into [Explorer](https://github.com/decentraland/explorer) cloned repo **root/static/** directory. (this can also be accomplished [using the command line](https://docs.unity3d.com/Manual/CommandLineArguments.html))
 3. (git) Checkout the deletion of static/unity/Build/DCLUnityLoader.js file (building replaces the folder and our unity loader is lost) and remove the unused static/unity/game.js and static/unity/index.html files.
-4. Run the command `make watch` in explorer's directory
-5. Run the build by accessing **[http://localhost:8080/?DEBUG_MODE&LOCAL_COMMS&position=20,20](http://localhost:8080/?DEBUG_MODE&LOCAL_COMMS&position=20,20)** in any webbrowser
-6. After testing the build is fine, make a PR in explorer repo to update the new build in master (it should be just the 3, or sometimes only 2, wasm binary files)
-7. After 30 mins aprox, the new build should be already working in Zone (check browser console for version report)
+4. (git) Checkout the modifications in static/unity/Build/unity.json file (building replaces the folder and our custom changes are lost).
+5. Run the command `make watch` in explorer's directory
+6. Run the build by accessing **[http://localhost:8080/?DEBUG_MODE&LOCAL_COMMS&position=20,20](http://localhost:8080/?DEBUG_MODE&LOCAL_COMMS&position=20,20)** in any webbrowser
+7. After testing the build is fine, make a PR in explorer repo to update the new build in master (it should be just the 3, or sometimes only 2, wasm binary files)
+8. After 30 mins aprox, the new build should be already working in Zone (check browser console for version report)
 
 ### Unity Editor debugging with dcl scene in "preview mode"
 
