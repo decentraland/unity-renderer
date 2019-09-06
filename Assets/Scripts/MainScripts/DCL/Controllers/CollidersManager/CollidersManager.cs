@@ -1,8 +1,7 @@
-﻿using System.Collections;
+﻿using DCL.Components;
+using DCL.Models;
 using System.Collections.Generic;
 using UnityEngine;
-using DCL.Components;
-using DCL.Models;
 
 namespace DCL
 {
@@ -136,7 +135,11 @@ namespace DCL
 
                 collider = meshFilters[i].GetComponent<Collider>();
 
-                if (hasCollision)
+                //HACK(Pravus): Hack to bring back compatibility with old builder scenes that have withCollision = false in the JS code.    
+                //              Remove when we fix this changing the property name or something similar.
+                bool shouldCreateCollider = hasCollision || filterByColliderName;
+
+                if (shouldCreateCollider)
                 {
                     if (collider == null)
                         collider = meshFilters[i].gameObject.AddComponent<MeshCollider>();
@@ -149,7 +152,7 @@ namespace DCL
                 }
 
                 if (collider != null)
-                    collider.enabled = hasCollision || filterByColliderName;
+                    collider.enabled = shouldCreateCollider;
             }
         }
 

@@ -110,7 +110,7 @@ namespace DCL.Components
             else
             {
 #if UNITY_EDITOR
-                Debug.LogError($"LoadableShape '{model.src}' not found in scene '{scene.sceneData.id}' mappings");
+                Debug.LogWarning($"LoadableShape '{model.src}' not found in scene '{scene.sceneData.id}' mappings");
 #endif
                 failed = true;
 
@@ -134,15 +134,19 @@ namespace DCL.Components
 
         protected void OnLoadFailed(LoadWrapper loadWrapper)
         {
-            loadWrapper.gameObject.name += " - Failed loading";
-
-            MaterialTransitionController[] transitionController =
-                loadWrapper.GetComponentsInChildren<MaterialTransitionController>(true);
-
-            for (int i = 0; i < transitionController.Length; i++)
+            if (loadWrapper != null)
             {
-                MaterialTransitionController material = transitionController[i];
-                Object.Destroy(material);
+                if (loadWrapper.gameObject != null)
+                    loadWrapper.gameObject.name += " - Failed loading";
+
+                MaterialTransitionController[] transitionController =
+                    loadWrapper.GetComponentsInChildren<MaterialTransitionController>(true);
+
+                for (int i = 0; i < transitionController.Length; i++)
+                {
+                    MaterialTransitionController material = transitionController[i];
+                    Object.Destroy(material);
+                }
             }
 
             failed = true;
@@ -155,13 +159,16 @@ namespace DCL.Components
             isLoaded = true;
             DecentralandEntity entity = loadWrapper.entity;
 
-            if (entity.currentShape == null)
+            if (entity.currentShape != null)
             {
-                return;
+                var model = (entity.currentShape as LoadableShape).model;
+                ConfigureVisibility(loadWrapper.entity.meshGameObject, model.visible);
+            }
+            else
+            {
+                Debug.LogWarning("WARNING: entity.currentShape == null! this can lead to errors!");
             }
 
-            var model = (entity.currentShape as LoadableShape).model;
-            ConfigureVisibility(loadWrapper.entity.meshGameObject, model.visible);
             ConfigureColliders(entity);
 
             entity.OnComponentUpdated?.Invoke(loadWrapper);

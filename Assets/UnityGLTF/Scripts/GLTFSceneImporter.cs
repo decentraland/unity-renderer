@@ -241,12 +241,37 @@ namespace UnityGLTF
                 {
                     return _asyncCoroutineHelper == null || _asyncCoroutineHelper.AllCoroutinesAreFinished();
                 });
+
+                MaterialTransitionController[] matTransitions = CreatedObject.GetComponentsInChildren<MaterialTransitionController>(true);
+
+                if (matTransitions != null && matTransitions.Length > 0)
+                {
+                    float bailout = 0;
+                    //NOTE(Brian): Wait for the MaterialTransition to finish before copying the object to the library
+                    yield return new WaitUntil(
+                        () =>
+                        {
+                            bailout += Time.deltaTime;
+
+                            if (bailout > 5.0f)
+                                return true;
+
+                            bool finishedTransition = true;
+
+                            for (int i = 0; i < matTransitions.Length; i++)
+                            {
+                                if (matTransitions[i] != null)
+                                {
+                                    finishedTransition = false;
+                                    break;
+                                }
+                            }
+
+                            return finishedTransition;
+                        }
+                    );
+                }
             }
-            /* catch (Exception ex)
-            {
-                onLoadComplete?.Invoke(null, ExceptionDispatchInfo.Capture(ex));
-                throw;
-            } */
             finally
             {
                 lock (this)

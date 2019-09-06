@@ -1,10 +1,10 @@
-using System.Collections;
+﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
 namespace DCL
 {
-    public class MemoryManager : MonoBehaviour
+    public class MemoryManager : Singleton<MemoryManager>
     {
         private const float TIME_TO_POOL_CLEANUP = 60.0f;
         private const float MIN_TIME_BETWEEN_UNLOAD_ASSETS = 10.0f;
@@ -12,7 +12,7 @@ namespace DCL
 
         void Start()
         {
-            StartCoroutine(AutoCleanup());
+            CoroutineStarter.Start(AutoCleanup());
         }
 
         // TODO: here we'll define cleanup criteria
@@ -34,12 +34,13 @@ namespace DCL
             }
         }
 
-        private bool NeedsCleanup(Pool pool)
+        private bool NeedsCleanup(Pool pool, bool forceCleanup = false)
         {
-            return Time.realtimeSinceStartup - pool.lastGetTime >= TIME_TO_POOL_CLEANUP && pool.activeCount == 0;
+            bool timeout = Time.realtimeSinceStartup - pool.lastGetTime >= TIME_TO_POOL_CLEANUP;
+            return (timeout || forceCleanup) && pool.activeCount == 0;
         }
 
-        private IEnumerator CleanupPoolsIfNeeded()
+        public IEnumerator CleanupPoolsIfNeeded(bool forceCleanup = false)
         {
             using (var iterator = PoolManager.i.pools.GetEnumerator())
             {
@@ -49,7 +50,7 @@ namespace DCL
                 {
                     Pool pool = iterator.Current.Value;
 
-                    if (NeedsCleanup(pool))
+                    if (NeedsCleanup(pool, forceCleanup))
                     {
                         idsToCleanup.Add(pool.id);
                     }
@@ -61,7 +62,7 @@ namespace DCL
                 {
                     for (int i = 0; i < count; i++)
                     {
-                        PoolManager.i.CleanupPool(idsToCleanup[i]);
+                        PoolManager.i.RemovePool(idsToCleanup[i]);
                         yield return null;
                     }
 

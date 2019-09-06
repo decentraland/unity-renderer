@@ -34,12 +34,14 @@ namespace DCL.Helpers
 
             sceneController = TestHelpers.InitializeSceneController(usesWebServer);
 
-            yield return new WaitForSeconds(0.01f);
+            AssetPromiseKeeper_GLTF.i.Cleanup();
+
+            yield return null;
 
             if (spawnTestScene)
             {
                 scene = sceneController.CreateTestScene();
-                yield return new WaitForSeconds(0.01f);
+                yield return null;
             }
 
             if (spawnCharController)
@@ -81,6 +83,8 @@ namespace DCL.Helpers
         protected virtual IEnumerator InitScene(bool usesWebServer = false, bool spawnCharController = true, bool spawnTestScene = true, bool spawnUIScene = true)
         {
             yield return InitUnityScene("MainTest");
+
+            yield return MemoryManager.i.CleanupPoolsIfNeeded(true);
 
             sceneController = TestHelpers.InitializeSceneController(usesWebServer);
 
@@ -161,12 +165,12 @@ namespace DCL.Helpers
 
         public static T Reflection_GetStaticField<T>(Type baseType, string fieldName)
         {
-            return (T) baseType.GetField(fieldName, BindingFlags.NonPublic | BindingFlags.Static).GetValue(null);
+            return (T)baseType.GetField(fieldName, BindingFlags.NonPublic | BindingFlags.Static).GetValue(null);
         }
 
         public static T Reflection_GetField<T>(object instance, string fieldName)
         {
-            return (T) instance.GetType().GetField(fieldName, BindingFlags.NonPublic | BindingFlags.Instance).GetValue(instance);
+            return (T)instance.GetType().GetField(fieldName, BindingFlags.NonPublic | BindingFlags.Instance).GetValue(instance);
         }
 
     }
@@ -260,6 +264,15 @@ namespace DCL.Helpers
             component.scene.EntityComponentUpdate(component.entity, classId, JsonUtility.ToJson(model));
 
             return component.routine;
+        }
+
+        public static void SetEntityParent(ParcelScene scene, DecentralandEntity child, DecentralandEntity parent)
+        {
+            scene.SetEntityParent(JsonUtility.ToJson(new SetEntityParentMessage
+            {
+                entityId = child.entityId,
+                parentId = parent.entityId
+            }));
         }
 
         public static void SetEntityParent(ParcelScene scene, string childEntityId, string parentEntityId)
@@ -1215,10 +1228,6 @@ namespace DCL.Helpers
                 GameObject GO = GameObject.Instantiate(Resources.Load("Prefabs/SceneController") as GameObject);
                 sceneController = GO.GetComponent<SceneController>();
             }
-
-            AssetManager_GLTF assetMgr = sceneController.GetComponentInChildren<AssetManager_GLTF>();
-            Assert.IsTrue(assetMgr != null, "AssetManager is null???");
-            assetMgr.ClearLibrary();
 
             if (usesWebServer)
             {
