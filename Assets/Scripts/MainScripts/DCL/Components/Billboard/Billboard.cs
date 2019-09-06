@@ -39,6 +39,13 @@ namespace DCL
             DCLCharacterController.OnCharacterMoved -= OnCharacterMoved;
         }
 
+        public void Update()
+        {
+            //NOTE(Brian): This fixes #757 (https://github.com/decentraland/unity-client/issues/757)
+            //             We must find a more performant way to handle this, until that time, this is the approach.
+            ChangeOrientation();
+        }
+
         Vector3 GetLookAtVector()
         {
             Vector3 lookAtDir = (entityTransform.position - DCLCharacterController.i.cameraTransform.position);
