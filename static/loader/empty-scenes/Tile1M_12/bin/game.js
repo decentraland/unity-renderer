@@ -2341,7 +2341,7 @@
       configurable: !0
     }), t.prototype.addEntity = function (t) {
       var e = t.getParent();
-      if (t.isAddedToEngine()) return u.log("The entity is already in the engine. Please fix this"), t;
+      if (t.isAddedToEngine()) return t;
 
       for (var n in t.eventManager = this.eventManager, t.engine = this, this._entities[t.uuid] = t, this.checkRequirementsAndAdd(t), e ? e.isAddedToEngine() || u.log("Engine: warning, added an entity with a parent not present in the engine") : t.setParent(this.rootEntity), t.alive = !0, t.children) {
         var o = t.children[n];
