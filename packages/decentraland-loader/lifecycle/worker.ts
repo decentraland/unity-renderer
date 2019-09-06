@@ -34,9 +34,12 @@ let downloadManager: SceneDataDownloadManager
 {
   connector.on(
     'Lifecycle.initialize',
-    (options: { contentServer: string; lineOfSightRadius: number; emptyScenes: boolean }) => {
+    (options: { contentServer: string; lineOfSightRadius: number; secureRadius: number; emptyScenes: boolean }) => {
       downloadManager = new SceneDataDownloadManager({ contentServer: options.contentServer })
-      parcelController = new ParcelLifeCycleController({ lineOfSightRadius: options.lineOfSightRadius })
+      parcelController = new ParcelLifeCycleController({
+        lineOfSightRadius: options.lineOfSightRadius,
+        secureRadius: options.secureRadius
+      })
       sceneController = new SceneLifeCycleController({ downloadManager, enabledEmpty: options.emptyScenes })
       positionController = new PositionLifecycleController(parcelController, sceneController)
 
