@@ -43,11 +43,15 @@ export class ParcelLifeCycleController extends EventEmitter {
       return this.parcelSighted(parcel)
     })
 
-    const newlyOOSParcels = [...this.currentlySightedParcels]
-      .filter(parcel => !sightedParcelsSet.has(parcel))
+    const secureParcels = new Set(parcelsInScope(this.config.lineOfSightRadius + this.config.secureRadius, position))
+
+    const currentlyPlusNewlySightedParcels = [...this.currentlySightedParcels] // this.currentlySightedParcels from t - 1 + newSightedParcels (added on this#parcelSighted)
+
+    const newlyOOSParcels = currentlyPlusNewlySightedParcels
+      .filter(parcel => !secureParcels.has(parcel))
       .filter(parcel => this.switchParcelToOutOfSight(parcel))
 
-    this.currentlySightedParcels = sightedParcelsSet
+    this.currentlySightedParcels = new Set(currentlyPlusNewlySightedParcels.filter($ => secureParcels.has($)))
 
     this.emit('Sighted', newlySightedParcels)
     this.emit('Lost sight', newlyOOSParcels)
