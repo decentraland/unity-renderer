@@ -3,11 +3,11 @@ import { Color4 } from '../../decentraland-ecs/src/decentraland/math/Color4'
 import { getServerConfigurations, PREVIEW } from '../../config/index'
 import defaultLogger from '../logger'
 
-export async function resolveProfile(uuid: string = ''): Promise<Profile> {
+export async function resolveProfile(accessToken: string, uuid: string = ''): Promise<Profile> {
   let response
   if (!PREVIEW) {
     try {
-      response = await fetchProfile(uuid)
+      response = await fetchProfile(accessToken, uuid)
     } catch (e) {
       defaultLogger.error(`failed to fetch profile for ${uuid ? 'user id ' + uuid : 'current user'}`)
       defaultLogger.error(e)
@@ -19,7 +19,7 @@ export async function resolveProfile(uuid: string = ''): Promise<Profile> {
     // @ts-ignore
     spec = (await response.json()) as ProfileSpec
   } else {
-    const legacy = await fetchLegacy(uuid)
+    const legacy = await fetchLegacy(accessToken, uuid)
     if (!PREVIEW && legacy && legacy.ok) {
       spec = legacyToSpec((await legacy.json()).data)
     } else {
@@ -149,10 +149,10 @@ async function mapSpecToAvatar(avatar: AvatarSpec): Promise<Avatar> {
   return shape as Avatar
 }
 
-export async function fetchLegacy(uuid: string = '') {
+export async function fetchLegacy(accessToken: string, uuid: string) {
   const authHeader = {
     headers: {
-      Authorization: 'Bearer ' + localStorage.getItem('decentraland-auth-user-token')
+      Authorization: 'Bearer ' + accessToken
     }
   }
   const request = `${getServerConfigurations().avatar.server}api/profile${uuid ? '/' + uuid : ''}`
@@ -173,10 +173,10 @@ export function legacyToSpec(legacy: any) {
   }
 }
 
-export async function fetchProfile(uuid: string = '') {
+export async function fetchProfile(accessToken: string, uuid: string) {
   const authHeader = {
     headers: {
-      Authorization: 'Bearer ' + localStorage.getItem('decentraland-auth-user-token')
+      Authorization: 'Bearer ' + accessToken
     }
   }
   const request = `${getServerConfigurations().profile}/profile${uuid ? '/' + uuid : ''}`
@@ -184,13 +184,13 @@ export async function fetchProfile(uuid: string = '') {
   return response
 }
 
-export async function createProfile(avatar: AvatarSpec) {
+export async function createProfile(accessToken: string, avatar: AvatarSpec) {
   const body = JSON.stringify(avatar)
   const options = {
     method: 'PUT',
     body,
     headers: {
-      Authorization: 'Bearer ' + localStorage.getItem('decentraland-auth-user-token')
+      Authorization: 'Bearer ' + accessToken
     }
   }
 

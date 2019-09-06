@@ -1,4 +1,13 @@
-import { DEBUG, ENABLE_WEB3, ETHEREUM_NETWORK, getTLD, PREVIEW, setNetwork, STATIC_WORLD } from '../config'
+import {
+  DEBUG,
+  ENABLE_WEB3,
+  ETHEREUM_NETWORK,
+  getTLD,
+  PREVIEW,
+  setNetwork,
+  STATIC_WORLD,
+  getLoginConfigurationForCurrentDomain
+} from '../config'
 import { initialize, queueTrackingEvent } from './analytics'
 import './apis/index'
 import { Auth } from './auth'
@@ -35,7 +44,11 @@ export async function initializeAnalytics(userId: string) {
 }
 
 export async function initShared(container: HTMLElement): Promise<ETHEREUM_NETWORK> {
-  const auth = new Auth()
+  const auth = new Auth({
+    ...getLoginConfigurationForCurrentDomain(),
+    redirectUri: window.location.href,
+    ephemeralKeyTTL: 24 * 60 * 60 * 1000
+  })
 
   let userId: string
 
@@ -45,10 +58,9 @@ export async function initShared(container: HTMLElement): Promise<ETHEREUM_NETWO
     defaultLogger.log(`Using test user.`)
     userId = 'email|5cdd68572d5f842a16d6cc17'
   } else {
-    await auth.login(container)
+    auth.setup()
     try {
-      const payload: any = await auth.getAccessTokenData()
-      userId = payload.user_id
+      userId = await auth.getUserId()
     } catch (e) {
       defaultLogger.error(e)
       console['groupEnd']()
@@ -123,14 +135,14 @@ export async function initShared(container: HTMLElement): Promise<ETHEREUM_NETWO
   if (!PREVIEW) {
     let response
     try {
-      response = await fetchProfile()
+      response = await fetchProfile(await auth.getAccessToken(), '')
     } catch (e) {
       defaultLogger.error(`Not able to fetch profile for current user`)
     }
 
     let spec: ProfileSpec
     if (!response || !response.ok) {
-      const legacy = await fetchLegacy()
+      const legacy = await fetchLegacy(await auth.getAccessToken(), '')
       if (legacy.ok) {
         spec = legacyToSpec((await legacy.json()).data)
       } else {
@@ -145,7 +157,7 @@ export async function initShared(container: HTMLElement): Promise<ETHEREUM_NETWO
 
       const avatar = spec.avatar
       try {
-        const creationResponse = await createProfile(avatar)
+        const creationResponse = await createProfile(await auth.getAccessToken(), avatar)
         defaultLogger.info(`New profile created with response ${creationResponse.status}`)
       } catch (e) {
         defaultLogger.error(`Error while creating profile`)

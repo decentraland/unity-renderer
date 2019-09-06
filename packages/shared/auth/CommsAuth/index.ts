@@ -1,32 +1,30 @@
-import { getServerConfigurations, getTLD } from 'config'
+import * as jwt from 'jsonwebtoken'
 
-export type APIOptions = {
-  baseURL?: string
-}
+export class CommsAuth {
+  constructor(public config: { baseURL: string }) {}
 
-export class API {
-  static defaultOptions: APIOptions = {
-    baseURL: getServerConfigurations().auth
-  }
+  async getCommsAccessToken(ephKey: any, accessToken: string) {
+    const pubKey = ephKey.key.publicKeyAsHexString()
 
-  options: APIOptions
-
-  constructor(options: Partial<APIOptions> = {}) {
-    this.options = {
-      ...API.defaultOptions,
-      ...options
+    try {
+      const tokenData = jwt.decode(accessToken) as any
+      if (tokenData.ephemeral_key === pubKey) {
+        const publicKey = await this.pubKey()
+        jwt.verify(accessToken, publicKey)
+        return accessToken
+      }
+    } catch (e) {
+      // invalid token, generate a new one
     }
+    const { token } = await this.token({
+      userToken: accessToken,
+      pubKey
+    })
+    return token
   }
 
   getPath(path: string) {
-    return this.options.baseURL + path
-  }
-
-  auth() {
-    return {
-      loginURL: '/auth/login.html?ENV=' + getTLD(),
-      logoutURL: '/auth/logout.html'
-    }
+    return this.config.baseURL + path
   }
 
   async token(args: { userToken: string; pubKey: string }) {
