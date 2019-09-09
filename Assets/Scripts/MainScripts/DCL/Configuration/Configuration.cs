@@ -1,10 +1,8 @@
-﻿using UnityEngine;
-
-namespace DCL.Configuration
+﻿namespace DCL.Configuration
 {
     public static class ApplicationSettings
     {
-        public static string version = "0.7.5";
+        public static string version = "0.7.6";
     }
 
     public static class Environment
