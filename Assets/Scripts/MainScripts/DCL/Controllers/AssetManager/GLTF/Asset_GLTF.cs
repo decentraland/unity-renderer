@@ -11,7 +11,6 @@ namespace DCL
 
         Coroutine showCoroutine;
 
-        static WaitForSeconds waitOneSecond = new WaitForSeconds(1.0f);
         public Asset_GLTF()
         {
             container = new GameObject();
@@ -63,7 +62,7 @@ namespace DCL
         public IEnumerator ShowCoroutine(System.Action OnFinish)
         {
             float delay = Random.Range(0, 0.5f);
-            yield return new WaitForSeconds(delay);
+            yield return WaitForSecondsCache.Get(delay);
 
             // NOTE(Brian): This GameObject can be removed by distance after the delay
             if (container == null)
@@ -81,7 +80,7 @@ namespace DCL
                 MIN_DISTANCE_TO_USE_MATERIAL_TRANSITION)
             {
                 MaterialTransitionController.ApplyToLoadedObject(container, false);
-                yield return waitOneSecond;
+                yield return WaitForSecondsCache.Get(1.0f);
             }
 
             OnFinish?.Invoke();

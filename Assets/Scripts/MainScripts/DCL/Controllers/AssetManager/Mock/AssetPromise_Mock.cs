@@ -35,7 +35,7 @@ namespace DCL
 
         IEnumerator MockLoadingCoroutine(Action OnSuccess)
         {
-            yield return new WaitForSeconds(loadTime);
+            yield return WaitForSecondsCache.Get(loadTime);
             OnSuccess?.Invoke();
         }
 

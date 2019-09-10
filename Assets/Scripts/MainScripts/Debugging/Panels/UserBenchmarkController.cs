@@ -161,7 +161,7 @@ namespace DCL
                     statsPanel.SetCellText((int)Columns.VALUE, (int)Rows.COMPONENT_OBJECTS_COUNT, activeScene.disposableComponents.Count + activeScene.entities.Select(x => x.Value.components.Count).Sum().ToString());
                 }
 
-                yield return new WaitForSeconds(0.2f);
+                yield return WaitForSecondsCache.Get(0.2f);
             }
         }
     }

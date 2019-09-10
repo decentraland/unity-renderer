@@ -230,7 +230,7 @@ namespace DCL
 
                 statsPanel.SetCellText((int)Columns.LOGIC_MS, (int)Rows.TOTAL, logicTotalTime.ToString("N3") + "ms");
                 statsPanel.SetCellText((int)Columns.DECODE_MS, (int)Rows.TOTAL, decodeTotalTime.ToString("N3") + "ms");
-                yield return new WaitForSeconds(0.5f);
+                yield return WaitForSecondsCache.Get(0.5f);
             }
         }
 

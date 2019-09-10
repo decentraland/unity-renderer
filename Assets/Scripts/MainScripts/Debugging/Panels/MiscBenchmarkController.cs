@@ -226,7 +226,7 @@ namespace DCL
 
                 statsPanel.SetCellText(1, (int)Rows.MESSAGE_BUSES, busesLog);
 
-                yield return new WaitForSeconds(0.2f);
+                yield return WaitForSecondsCache.Get(0.2f);
             }
 
         }
