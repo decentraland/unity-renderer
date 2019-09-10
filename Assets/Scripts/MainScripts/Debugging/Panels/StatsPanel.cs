@@ -152,7 +152,7 @@ public class StatsPanel : MonoBehaviour
 
             updateQueue.Clear();
 
-            yield return new WaitForSeconds(updateInterval);
+            yield return WaitForSecondsCache.Get(updateInterval);
         }
     }
 }
