@@ -23,7 +23,8 @@ namespace DCL
             public const int textures = 10;
             public const int materials = 20;
             public const int meshes = 200;
-
+            
+            public const float height = 20;
             public const float visibleRadius = 10;
         }
 
@@ -36,6 +37,7 @@ namespace DCL
             public int textures;
             public int triangles;
             public int entities;
+            public float sceneHeight;
 
             public Model Clone()
             {
@@ -61,6 +63,7 @@ namespace DCL
 
         private HashSet<Mesh> uniqueMeshes;
         private HashSet<Material> uniqueMaterials;
+
         public bool isDirty { get; private set; }
 
         public Model GetModel() { return model.Clone(); }
@@ -72,7 +75,6 @@ namespace DCL
             uniqueMeshes = new HashSet<Mesh>();
             uniqueMaterials = new HashSet<Material>();
             model = new Model();
-
 
             if (VERBOSE) { Debug.Log("Start ScenePerformanceLimitsController..."); }
         }
@@ -110,7 +112,8 @@ namespace DCL
                 entities = (int)(lineal * LimitsConfig.entities),
                 materials = (int)(log * LimitsConfig.materials),
                 textures = (int)(log * LimitsConfig.textures),
-                meshes = (int)(log * LimitsConfig.meshes)
+                meshes = (int)(log * LimitsConfig.meshes),
+                sceneHeight = (log * LimitsConfig.height)
             };
 
             return result;
