@@ -56,8 +56,6 @@ namespace DCL.Components
             if (currentMesh == null)
                 currentMesh = GenerateGeometry();
 
-            UpdateRenderer(entity);
-
             MeshFilter meshFilter = entity.meshGameObject.AddComponent<MeshFilter>();
             MeshRenderer meshRenderer = entity.meshGameObject.AddComponent<MeshRenderer>();
 
@@ -77,6 +75,10 @@ namespace DCL.Components
             {
                 meshRenderer.sharedMaterial = Utils.EnsureResourcesMaterial("Materials/Default");
             }
+
+            visibilityDirty = true;
+            collisionsDirty = true;
+            UpdateRenderer(entity);
 
             if (entity.OnShapeUpdated != null)
             {
