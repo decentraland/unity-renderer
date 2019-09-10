@@ -1,5 +1,4 @@
 ﻿using DCL.Configuration;
-using DCL.Controllers;
 using DCL.Helpers;
 using UnityEngine;
 
@@ -136,11 +135,6 @@ public class DCLCharacterController : MonoBehaviour
 
             OnCharacterMoved?.Invoke(characterPosition);
         }
-
-        if (!initialPositionAlreadySet)
-        {
-            initialPositionAlreadySet = true;
-        }
     }
 
     public void SetEulerRotation(Vector3 eulerRotation)
@@ -168,6 +162,11 @@ public class DCLCharacterController : MonoBehaviour
         if (OnPositionSet != null)
         {
             OnPositionSet.Invoke(characterPosition);
+        }
+
+        if (!initialPositionAlreadySet)
+        {
+            initialPositionAlreadySet = true;
         }
     }
 
@@ -228,7 +227,7 @@ public class DCLCharacterController : MonoBehaviour
             // Rotation
             var eulerRotation = new Vector3(-aimingVerticalAngle, aimingHorizontalAngle, 0);
             SetEulerRotation(eulerRotation);
-            CommonScriptableObjects.playerUnityEulerAngles.Set( eulerRotation);
+            CommonScriptableObjects.playerUnityEulerAngles.Set(eulerRotation);
 
             // Horizontal movement
             var speed = movementSpeed * (isSprinting ? 2f : 1f);
@@ -328,7 +327,14 @@ public class DCLCharacterController : MonoBehaviour
         var reportPosition = characterPosition.worldPosition;
         reportPosition.y += cameraTransform.localPosition.y;
 
-        DCL.Interface.WebInterface.ReportPosition(reportPosition, compositeRotation, playerHeight);
+        //NOTE(Brian): We have to wait for a Teleport before sending the ReportPosition, because if not ReportPosition events will be sent
+        //             When the spawn point is being selected / scenes being prepared to be sent and the Kernel gets crazy. 
+
+        //             The race conditions that can arise from not having this flag can result in:
+        //                  - Scenes not being sent for loading, making ActivateRenderer never being sent, only in WSS mode.
+        //                  - Random teleports to 0,0 or other positions that shouldn't happen.
+        if (initialPositionAlreadySet)
+            DCL.Interface.WebInterface.ReportPosition(reportPosition, compositeRotation, playerHeight);
 
         lastMovementReportTime = Time.realtimeSinceStartup;
     }

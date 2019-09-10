@@ -22,7 +22,6 @@ public class RenderingController : MonoBehaviour
 
         renderingEnabled = false;
 
-        DCLCharacterController.i.initialPositionAlreadySet = false;
         DCL.Configuration.ParcelSettings.VISUAL_LOADING_ENABLED = false;
         MessagingBus.renderingIsDisabled = true;
         PointerEventsController.renderingIsDisabled = true;
