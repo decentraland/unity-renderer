@@ -43,11 +43,16 @@ export function createSaga(callbackProvider: CallableLogin) {
       data = result.data
       redirectUrl = result.redirectUrl
     } catch (error) {
-      try {
-        data = yield call(() => callbackProvider.restoreSession())
-      } catch (error) {
-        yield put(authFailure(error.message))
+      if (error.error && error.error.includes('unauthorized')) {
+        yield call(() => callbackProvider.logout())
         return
+      } else {
+        try {
+          data = yield call(() => callbackProvider.restoreSession())
+        } catch (error) {
+          yield put(authFailure(error.message))
+          return
+        }
       }
     }
     yield put(authSuccess(data, redirectUrl))
