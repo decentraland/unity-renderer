@@ -76,6 +76,21 @@ namespace DCL
             Engine
         }
 
+        public enum BaseUrl
+        {
+            LOCAL_HOST,
+            CUSTOM,
+        }
+
+        public enum ContentSource
+        {
+            USE_DEFAULT_FROM_URL,
+            LOCAL,
+            ZONE,
+            TODAY,
+            ORG
+        }
+
         private const string ENGINE_DEBUG_PANEL = "ENGINE_DEBUG_PANEL";
         private const string SCENE_DEBUG_PANEL = "SCENE_DEBUG_PANEL";
         public static WSSController i { get; private set; }
@@ -93,9 +108,17 @@ namespace DCL
         public bool isServerReady { get { return ws.IsListening; } }
 
         public bool openBrowserWhenStart;
-        public bool useClientDebugMode = true;
-        public bool forceLocalComms = true;
+
+        [Header("Kernel General Settings")]
+        public BaseUrl baseUrlMode;
+        public string baseUrlCustom;
+
+        [Space(10)]
+        public ContentSource contentSource;
         public Vector2 startInCoords = new Vector2(-99, 109);
+
+        [Header("Kernel Misc Settings")]
+        public bool forceLocalComms = true;
 
         public DebugPanel debugPanelMode = DebugPanel.Off;
 
@@ -121,18 +144,39 @@ namespace DCL
 
             if (openBrowserWhenStart)
             {
+                string baseUrl = "";
                 string debugString = "";
 
-                if (useClientDebugMode)
+                if (baseUrlMode == BaseUrl.CUSTOM)
+                    baseUrl = baseUrlCustom;
+                else
+                    baseUrl = "http://localhost:8080/?";
+
+                switch (contentSource)
                 {
-                    debugString = "DEBUG_MODE&LOCAL_COMMS&";
+                    case ContentSource.USE_DEFAULT_FROM_URL:
+                        break;
+                    case ContentSource.LOCAL:
+                        debugString = "DEBUG_MODE&LOCAL_COMMS&";
+                        break;
+                    case ContentSource.ZONE:
+                        debugString = "ENV=zone&";
+                        break;
+                    case ContentSource.TODAY:
+                        debugString = "ENV=today&";
+                        break;
+                    case ContentSource.ORG:
+                        debugString = "ENV=org&";
+                        break;
                 }
-                else if (forceLocalComms)
+
+                if (contentSource != ContentSource.LOCAL && forceLocalComms)
                 {
                     debugString = "LOCAL_COMMS&";
                 }
 
                 string debugPanelString = "";
+
                 if (debugPanelMode == DebugPanel.Engine)
                 {
                     debugPanelString = ENGINE_DEBUG_PANEL + "&";
@@ -143,10 +187,8 @@ namespace DCL
                 }
 
                 Application.OpenURL(
-                    $"http://localhost:8080/?{debugString}{debugPanelString}position={startInCoords.x}%2C{startInCoords.y}&ws=ws%3A%2F%2Flocalhost%3A5000%2Fdcl");
+                    $"{baseUrl}{debugString}{debugPanelString}position={startInCoords.x}%2C{startInCoords.y}&ws=ws%3A%2F%2Flocalhost%3A5000%2Fdcl");
             }
-#else
-            useClientDebugMode = false;
 #endif
         }
 
