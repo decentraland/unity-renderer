@@ -111,6 +111,7 @@ describe('Communications', function() {
         setRemoteDescription: sinon.stub(),
         setLocalDescription: sinon.stub(),
         createAnswer: sinon.stub(),
+        remoteDescription: true,
         onicecandidate: connection.webRtcConn!.onicecandidate,
         ondatachannel: connection.webRtcConn!.ondatachannel
       }
