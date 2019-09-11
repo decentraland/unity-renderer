@@ -1,0 +1,37 @@
+{
+  "display": {
+    "title": ""
+  },
+  "owner": "",
+  "contact": {
+    "name": "",
+    "email": ""
+  },
+  "scene": {
+    "parcels": [
+      "0,5",
+      "0,6",
+      "1,5",
+      "1,6"
+    ],
+    "base": "0,5"
+  },
+  "spawnPoints": [
+    {
+      "name": "initialPosition",
+      "default": true,
+      "position": {
+        "x": 8,
+        "y": 0,
+        "z": 8
+      }
+    }
+  ],
+  "policy": {
+    "fly": true,
+    "voiceEnabled": true,
+    "blacklist": [],
+    "teleportPosition": "8, 0, 8"
+  },
+  "main": "game.js"
+}
