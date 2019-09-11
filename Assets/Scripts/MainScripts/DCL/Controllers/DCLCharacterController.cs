@@ -1,4 +1,5 @@
-﻿using DCL.Configuration;
+using DCL;
+using DCL.Configuration;
 using DCL.Helpers;
 using UnityEngine;
 
@@ -127,6 +128,7 @@ public class DCLCharacterController : MonoBehaviour
 
         CommonScriptableObjects.playerUnityPosition.Set(characterPosition.unityPosition);
         CommonScriptableObjects.playerCoords.Set(Utils.WorldToGridPosition(characterPosition.worldPosition));
+        CommonScriptableObjects.sceneID.Set(SceneController.i.GetCurrentScene(this.characterPosition));
 
         if (Moved(previousPosition))
         {

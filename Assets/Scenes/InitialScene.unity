@@ -38,7 +38,7 @@ RenderSettings:
   m_ReflectionIntensity: 1
   m_CustomReflection: {fileID: 8900000, guid: ade92094798774df4a51b327374145b8, type: 3}
   m_Sun: {fileID: 943100645024490816}
-  m_IndirectSpecularColor: {r: 0.76268655, g: 0.7965855, b: 0.8308271, a: 1}
+  m_IndirectSpecularColor: {r: 0.76268536, g: 0.7965816, b: 0.830822, a: 1}
   m_UseRadianceAmbientProbe: 0
 --- !u!157 &3
 LightmapSettings:
@@ -97,7 +97,7 @@ LightmapSettings:
     m_ShowResolutionOverlay: 1
     m_ExportTrainingData: 0
   m_LightingDataAsset: {fileID: 0}
-  m_UseShadowmask: 0
+  m_UseShadowmask: 1
 --- !u!196 &4
 NavMeshSettings:
   serializedVersion: 2
@@ -311,10 +311,13 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   sceneController: {fileID: 322303338}
   characterController: {fileID: 1989862556}
+  hudController: {fileID: 491237586}
   openBrowserWhenStart: 1
-  useClientDebugMode: 0
-  forceLocalComms: 1
+  baseUrlMode: 0
+  baseUrlCustom: 
+  contentSource: 1
   startInCoords: {x: 64, y: -64}
+  forceLocalComms: 1
   debugPanelMode: 2
 --- !u!4 &1444882337
 Transform:
