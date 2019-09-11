@@ -105,7 +105,7 @@ namespace Builder
                 DCLBuilderInput.OnKeyboardButtonDown += OnKeyboardButtonDown;
                 DCLBuilderBridge.OnResetCamera += OnResetCamera;
                 DCLBuilderBridge.OnZoomFromUI += OnZoomFormUI;
-                DCLBuilderBridge.OnUpdateSceneParcels += OnUpdateSceneParcels;
+                DCLBuilderBridge.OnResetBuilderScene += OnResetBuilderScene;
                 DCLBuilderObjectSelector.OnDraggingObjectStart += OnDragObjectStart;
                 DCLBuilderObjectSelector.OnDraggingObjectEnd += OnDragObjectEnd;
                 DCLBuilderObjectSelector.OnGizmoTransformObjectStart += OnGizmoTransformObjectStart;
@@ -123,7 +123,7 @@ namespace Builder
             DCLBuilderInput.OnKeyboardButtonDown -= OnKeyboardButtonDown;
             DCLBuilderBridge.OnResetCamera -= OnResetCamera;
             DCLBuilderBridge.OnZoomFromUI -= OnZoomFormUI;
-            DCLBuilderBridge.OnUpdateSceneParcels -= OnUpdateSceneParcels;
+            DCLBuilderBridge.OnResetBuilderScene -= OnResetBuilderScene;
             DCLBuilderObjectSelector.OnDraggingObjectStart -= OnDragObjectStart;
             DCLBuilderObjectSelector.OnDraggingObjectEnd -= OnDragObjectEnd;
             DCLBuilderObjectSelector.OnGizmoTransformObjectStart -= OnGizmoTransformObjectStart;
@@ -243,17 +243,15 @@ namespace Builder
             OnDragObjectEnd(entity, objectPosition);
         }
 
-        private void OnUpdateSceneParcels(string sceneJSON)
+        private void OnResetBuilderScene()
         {
             ParcelScene loadedScene = GetLoadedScene();
             if (loadedScene != null && loadedScene.sceneData != null)
             {
-                uint parcelsCount = (uint)loadedScene.sceneData.parcels.Length;
-                if (parcelsCount != sceneParcelsCount)
-                {
-                    CalcSceneBoundaries(loadedScene.sceneData);
-                }
+                sceneParcelsCount = (uint)loadedScene.sceneData.parcels.Length;
+                CalcSceneBoundaries(loadedScene.sceneData);
             }
+            OnResetCamera();
         }
 
         private bool CanOrbit()
