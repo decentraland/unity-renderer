@@ -150,7 +150,9 @@ namespace DCL
             Pool pool;
 
             if (pools.ContainsKey(id))
+            {
                 pool = pools[id];
+            }
             else
             {
                 Debug.LogError($"Pool doesn't exist for id {id}!");

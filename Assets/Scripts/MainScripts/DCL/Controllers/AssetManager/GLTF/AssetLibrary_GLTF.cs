@@ -17,6 +17,12 @@ namespace DCL
 
         public override void Add(Asset_GLTF asset)
         {
+            if (asset == null)
+            {
+                Debug.LogError("asset == null? This shouldn't happen");
+                return;
+            }
+
             if (!masterAssets.ContainsKey(asset.id))
                 masterAssets.Add(asset.id, asset);
 

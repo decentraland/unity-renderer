@@ -8,6 +8,114 @@ using UnityEngine.TestTools;
 public class AssetPK_GLTF_Tests : TestsBase
 {
     [UnityTest]
+    public IEnumerator DestroyWhileLoad()
+    {
+        yield return base.InitScene();
+
+        var library = new AssetLibrary_GLTF();
+        var keeper = new AssetPromiseKeeper_GLTF(library);
+
+        string url = TestHelpers.GetTestsAssetsPath() + "/GLB/Lantern/Lantern.glb";
+        AssetPromise_GLTF prom = new AssetPromise_GLTF(scene.contentProvider, url);
+
+        bool calledFail = false;
+
+        prom.OnFailEvent +=
+            (x) =>
+            {
+                calledFail = true;
+            };
+
+        keeper.Keep(prom);
+        yield return null;
+
+        Object.Destroy(prom.asset.container);
+        yield return prom;
+
+        Assert.IsTrue(prom != null);
+        Assert.IsTrue(prom.asset == null);
+        Assert.IsTrue(calledFail);
+    }
+
+    [UnityTest]
+    public IEnumerator CancelReuse()
+    {
+        yield return base.InitScene();
+
+        var library = new AssetLibrary_GLTF();
+        var keeper = new AssetPromiseKeeper_GLTF(library);
+
+        string url = TestHelpers.GetTestsAssetsPath() + "/GLB/Lantern/Lantern.glb";
+        AssetPromise_GLTF prom = new AssetPromise_GLTF(scene.contentProvider, url);
+        bool calledFail = false;
+
+        keeper.Keep(prom);
+        yield return prom;
+
+        prom.asset.container.name = "First GLTF";
+
+        AssetPromise_GLTF prom2 = new AssetPromise_GLTF(scene.contentProvider, url);
+
+        prom2.OnFailEvent +=
+            (x) =>
+            {
+                calledFail = true;
+            };
+
+        keeper.Keep(prom2);
+        GameObject container = prom2.asset.container;
+        keeper.Forget(prom2);
+
+        yield return prom2;
+
+        Assert.IsTrue(prom2 != null);
+        Assert.IsTrue(calledFail);
+        Assert.IsTrue(prom2.asset == null, "Asset shouldn't exist after Forget!");
+        Assert.IsTrue(container != null, "Container should be pooled!");
+
+        PoolableObject po = container.GetComponentInChildren<PoolableObject>(true);
+
+        Assert.IsTrue(po.isInsidePool, "Asset should be inside pool!");
+    }
+
+
+    [UnityTest]
+    public IEnumerator LoadAndUnloadSingleFrame2()
+    {
+        yield return base.InitScene();
+
+        var library = new AssetLibrary_GLTF();
+        var keeper = new AssetPromiseKeeper_GLTF(library);
+
+        string url = TestHelpers.GetTestsAssetsPath() + "/GLB/Lantern/Lantern.glb";
+        AssetPromise_GLTF prom = new AssetPromise_GLTF(scene.contentProvider, url);
+        bool calledSuccess = false;
+        bool calledFail = false;
+
+        prom.OnSuccessEvent +=
+            (x) =>
+            {
+                calledSuccess = true;
+            };
+
+        prom.OnFailEvent +=
+            (x) =>
+            {
+                calledFail = true;
+            };
+
+        keeper.Keep(prom);
+        keeper.Forget(prom);
+        keeper.Keep(prom);
+        keeper.Forget(prom);
+
+        Assert.IsTrue(prom != null);
+        Assert.IsTrue(prom.asset == null);
+        Assert.IsFalse(calledSuccess);
+        Assert.IsTrue(calledFail);
+    }
+
+    [UnityTest]
     public IEnumerator LoadAndUnloadSingleFrame()
     {
         yield return base.InitScene();
@@ -30,10 +138,9 @@ public class AssetPK_GLTF_Tests : TestsBase
 
         keeper.Forget(prom);
         keeper.Keep(prom);
+        keeper.Forget(prom);
 
-        yield return prom;
-
-        Assert.IsTrue(prom.asset.container != null);
+        Assert.IsTrue(prom.asset == null);
     }
 
     [UnityTest]
@@ -149,7 +256,15 @@ public class AssetPK_GLTF_Tests : TestsBase
 
         Assert.AreEqual(AssetPromiseState.IDLE_AND_EMPTY, prom.state);
 
-        yield return new WaitForSeconds(1.5f);
+        AssetPromise_GLTF prom2 = new AssetPromise_GLTF(scene.contentProvider, url);
+
+        keeper.Keep(prom2);
+
+        yield return prom2;
+
+        Assert.AreEqual(AssetPromiseState.FINISHED, prom2.state);
+
+        keeper.Forget(prom2);
 
         yield return MemoryManager.i.CleanupPoolsIfNeeded(forceCleanup: true);
 

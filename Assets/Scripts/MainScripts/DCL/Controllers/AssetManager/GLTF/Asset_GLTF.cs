@@ -14,7 +14,7 @@ namespace DCL
         public Asset_GLTF()
         {
             container = new GameObject();
-            container.name = "GLTF Container";
+            container.name = "Asset_GLTF Container";
             visible = true;
         }
 
@@ -33,6 +33,16 @@ namespace DCL
         public void Hide()
         {
             container.transform.position = Vector3.one * 1000;
+        }
+
+
+
+        public void CancelShow()
+        {
+            if (showCoroutine != null)
+                CoroutineStarter.Stop(showCoroutine);
+
+            container?.SetActive(true);
         }
 
         public void Show(bool useMaterialTransition, System.Action OnFinish)

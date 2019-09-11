@@ -32,8 +32,17 @@ namespace DCL.Controllers
         public SceneMetricsController metricsController;
         public UIScreenSpace uiScreenSpace;
 
+        enum State
+        {
+            NOT_READY,
+            WAITING_FOR_INIT_MESSAGES,
+            WAITING_FOR_COMPONENTS,
+            READY,
+        }
+
+        private State state = State.NOT_READY;
+
         private static GameObject blockerPrefab;
-        public bool isReady = false;
 
         private readonly List<GameObject> blockers = new List<GameObject>();
 
@@ -47,6 +56,8 @@ namespace DCL.Controllers
 
         public void Awake()
         {
+            state = State.NOT_READY;
+
             metricsController = new SceneMetricsController(this);
             metricsController.Enable();
 
@@ -72,8 +83,34 @@ namespace DCL.Controllers
 
         private void Update()
         {
-            if (isReady && RenderingController.i.renderingEnabled)
+            if (state == State.READY && RenderingController.i.renderingEnabled)
                 SendMetricsEvent();
+        }
+
+        void RefreshName()
+        {
+#if UNITY_EDITOR
+            switch (state)
+            {
+                case State.NOT_READY:
+                    this.name = gameObject.name = $"scene:{sceneData.basePosition} - not ready...";
+                    break;
+                case State.WAITING_FOR_INIT_MESSAGES:
+                    this.name = gameObject.name = $"scene:{sceneData.basePosition} - waiting for init messages...";
+                    break;
+                case State.WAITING_FOR_COMPONENTS:
+
+                    if (disposableComponents != null && disposableComponents.Count > 0)
+                        this.name = gameObject.name = $"scene:{sceneData.basePosition} - left to ready:{disposableComponents.Count - disposableNotReadyCount}/{disposableComponents.Count}";
+                    else
+                        this.name = gameObject.name = $"scene:{sceneData.basePosition} - no components. waiting...";
+
+                    break;
+                case State.READY:
+                    this.name = gameObject.name = $"scene:{sceneData.basePosition} - ready!";
+                    break;
+            }
+#endif
         }
 
         public virtual void SetData(LoadParcelScenesMessage.UnityParcelScene data)
@@ -85,7 +122,8 @@ namespace DCL.Controllers
             contentProvider.contents = data.contents;
             contentProvider.BakeHashes();
 
-            this.name = gameObject.name = $"scene:{data.basePosition}";
+            state = State.WAITING_FOR_INIT_MESSAGES;
+            RefreshName();
 
             gameObject.transform.position = DCLCharacterController.i.characterPosition.WorldToUnityPosition(Utils.GridToWorldPosition(data.basePosition.x, data.basePosition.y));
 
@@ -956,17 +994,20 @@ namespace DCL.Controllers
             {
                 SetSceneReady();
             }
+
+            RefreshName();
         }
 
         public void SetInitMessagesDone()
         {
-            if (isReady)
+            if (state == State.READY)
             {
                 Debug.LogWarning($"Init messages done after ready?! {sceneData.basePosition}", gameObject);
                 return;
             }
 
-            isReady = false;
+            state = State.WAITING_FOR_COMPONENTS;
+            RefreshName();
             disposableNotReady.Clear();
 
 #if UNITY_EDITOR
@@ -1007,7 +1048,7 @@ namespace DCL.Controllers
 
         private void SetSceneReady()
         {
-            if (isReady)
+            if (state == State.READY)
             {
                 return;
             }
@@ -1017,10 +1058,11 @@ namespace DCL.Controllers
                 Debug.Log($"{sceneData.basePosition} Scene Ready!");
             }
 
-            isReady = true;
+            state = State.READY;
 
             CleanBlockers();
             SceneController.i.SendSceneReady(sceneData.id);
+            RefreshName();
         }
     }
 }

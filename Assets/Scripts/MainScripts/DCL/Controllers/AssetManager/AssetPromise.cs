@@ -131,8 +131,8 @@ namespace DCL
 
             if (state == AssetPromiseState.LOADING)
             {
-                OnLoadFailure();
                 OnCancelLoading();
+                OnLoadFailure();
             }
             else if (state == AssetPromiseState.FINISHED)
             {
@@ -148,6 +148,8 @@ namespace DCL
             {
                 if (library.Contains(asset))
                     library.Release(asset);
+                else
+                    asset.Cleanup();
 
                 asset = null;
             }

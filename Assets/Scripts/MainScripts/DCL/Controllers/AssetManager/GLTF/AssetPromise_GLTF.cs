@@ -47,6 +47,8 @@ namespace DCL
         {
             Transform assetTransform = asset.container.transform;
 
+            asset.container.name = "GLTF: " + url;
+
             if (settings.parent != null)
             {
                 assetTransform.SetParent(settings.parent, false);
@@ -151,6 +153,8 @@ namespace DCL
 
         protected override void OnCancelLoading()
         {
+            if (asset != null)
+                asset.CancelShow();
         }
     }
 }

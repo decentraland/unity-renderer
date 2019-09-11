@@ -354,8 +354,30 @@ namespace UnityGLTF
             throw new NotImplementedException();
         }
 
+#if UNITY_EDITOR
+        // In production it will always be false
+        private bool isQuitting = false;
+
+        // We need to check if application is quitting in editor
+        // to prevent the pool from releasing objects that are
+        // being destroyed 
+        void Awake()
+        {
+            Application.quitting += OnIsQuitting;
+        }
+
+        void OnIsQuitting()
+        {
+            Application.quitting -= OnIsQuitting;
+            isQuitting = true;
+        }
+#endif
         private void OnDestroy()
         {
+#if UNITY_EDITOR
+            if (isQuitting)
+                return;
+#endif
             if (!alreadyLoadedAsset && loadingRoutine != null)
             {
                 OnFail_Internal(null);

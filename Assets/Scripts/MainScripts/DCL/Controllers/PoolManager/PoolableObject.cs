@@ -1,10 +1,14 @@
-﻿using UnityEngine;
+﻿using System.Collections.Generic;
+using UnityEngine;
 
 namespace DCL
 {
     public class PoolableObject : MonoBehaviour
     {
         public Pool pool;
+
+        public bool isInsidePool { get { return pool.IsInPool(this); } }
+        public bool isOutsidePool { get { return pool.IsOutOfPool(this); } }
 
         void OnEnable()
         {
@@ -36,9 +40,15 @@ namespace DCL
                 return;
             }
 
-            if (pool != null && gameObject.activeSelf)
+            if (pool != null)
             {
                 pool.Release(this);
+            }
+            else
+            {
+#if UNITY_EDITOR
+                Debug.LogError("Pool is null upon release!");
+#endif
             }
         }
 

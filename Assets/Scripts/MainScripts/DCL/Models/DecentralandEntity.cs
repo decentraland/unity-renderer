@@ -1,9 +1,9 @@
 ﻿using DCL.Components;
 using DCL.Controllers;
+using DCL.Helpers;
 using System;
 using System.Collections.Generic;
 using UnityEngine;
-using DCL.Helpers;
 
 namespace DCL.Models
 {

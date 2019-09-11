@@ -81,22 +81,20 @@ namespace DCL.Components
 
             alreadyLoaded = true;
 
-            if (loadedAsset.container != null)
-            {
-                PoolableObject poolable = loadedAsset.container.GetComponentInChildren<PoolableObject>();
-
-                if (poolable != null)
-                {
-                    this.entity.OnCleanupEvent += poolable.OnCleanup;
-                }
-            }
+            this.entity.OnCleanupEvent -= OnEntityCleanup;
+            this.entity.OnCleanupEvent += OnEntityCleanup;
 
             OnSuccess?.Invoke(this);
         }
 
+        public void OnEntityCleanup(ICleanableEventDispatcher source)
+        {
+            Unload();
+        }
 
         public override void Unload()
         {
+            this.entity.OnCleanupEvent -= OnEntityCleanup;
             AssetPromiseKeeper_GLTF.i.Forget(gltfPromise);
         }
 
@@ -105,16 +103,6 @@ namespace DCL.Components
             if (Application.isPlaying)
             {
                 Unload();
-
-                if (gltfPromise.state == AssetPromiseState.FINISHED && gltfPromise.asset.container != null)
-                {
-                    PoolableObject poolable = gltfPromise.asset.container.GetComponentInChildren<PoolableObject>();
-
-                    if (poolable != null)
-                    {
-                        this.entity.OnCleanupEvent -= poolable.OnCleanup;
-                    }
-                }
             }
         }
     }
