@@ -39,6 +39,8 @@ export class BrokerConnection implements IBrokerConnection {
   private unreliableFuture = future<void>()
   private reliableFuture = future<void>()
 
+  private pendingCandidates: RTCIceCandidate[] = []
+
   get isConnected(): Promise<void> {
     return Promise.all([this.unreliableFuture, this.reliableFuture]) as Promise<any>
   }
@@ -213,7 +215,10 @@ export class BrokerConnection implements IBrokerConnection {
               this.sendCoordinatorMessage(msg)
             }
 
-            this.webRtcConn!.onicecandidate = this.onIceCandidate
+            this.pendingCandidates.forEach(candidate => {
+              this.sendICECandidate(candidate)
+            })
+            this.pendingCandidates = []
           } catch (err) {
             this.logger.error(err)
           }
@@ -275,6 +280,7 @@ export class BrokerConnection implements IBrokerConnection {
     }
 
     this.webRtcConn.ondatachannel = this.onDataChannel
+    this.webRtcConn.onicecandidate = this.onIceCandidate
   }
 
   private connectWS() {
@@ -300,19 +306,27 @@ export class BrokerConnection implements IBrokerConnection {
 
   private onIceCandidate = (event: RTCPeerConnectionIceEvent) => {
     if (event.candidate && event.candidate.candidate) {
-      const msg = new WebRtcMessage()
-      msg.setType(MessageType.WEBRTC_ICE_CANDIDATE)
-      // TODO: Ensure commServerAlias, it may be null
-      msg.setToAlias(this.commServerAlias!)
-
-      const encoder = new TextEncoder()
-      const data = encoder.encode(JSON.stringify(event.candidate.toJSON()))
-      msg.setData(data)
-
-      this.sendCoordinatorMessage(msg)
+      if (this.webRtcConn!.remoteDescription) {
+        this.sendICECandidate(event.candidate)
+      } else {
+        this.pendingCandidates.push(event.candidate)
+      }
     } else {
       this.gotCandidatesFuture.resolve(this.webRtcConn!.localDescription!)
     }
+  }
+
+  private sendICECandidate = (candidate: RTCIceCandidate) => {
+    const msg = new WebRtcMessage()
+    msg.setType(MessageType.WEBRTC_ICE_CANDIDATE)
+    // TODO: Ensure commServerAlias, it may be null
+    msg.setToAlias(this.commServerAlias!)
+
+    const encoder = new TextEncoder()
+    const data = encoder.encode(JSON.stringify(candidate.toJSON()))
+    msg.setData(data)
+
+    this.sendCoordinatorMessage(msg)
   }
 
   private onDataChannel = (e: RTCDataChannelEvent) => {
