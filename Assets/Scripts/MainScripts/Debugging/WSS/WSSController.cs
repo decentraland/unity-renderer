@@ -98,6 +98,7 @@ namespace DCL
         WebSocketServer ws;
         public SceneController sceneController;
         public DCLCharacterController characterController;
+        public HUDController hudController;
 
         [System.NonSerialized]
         public static Queue<DCLWebSocketService.Message> queuedMessages = new Queue<DCLWebSocketService.Message>();
@@ -111,10 +112,12 @@ namespace DCL
 
         [Header("Kernel General Settings")]
         public BaseUrl baseUrlMode;
+
         public string baseUrlCustom;
 
         [Space(10)]
         public ContentSource contentSource;
+
         public Vector2 startInCoords = new Vector2(-99, 109);
 
         [Header("Kernel Misc Settings")]
@@ -256,6 +259,9 @@ namespace DCL
                             case "ActivateRendering":
                                 RenderingController.i.ActivateRendering();
                                 break;
+                            case "ShowNotification":
+                                hudController.ShowNotificationFromJson(msg.payload);
+                                break;
                             default:
                                 Debug.Log("<b><color=#FF0000>WSSController</color></b> WHAT IS " + msg.type);
                                 break;
@@ -263,7 +269,6 @@ namespace DCL
                     }
 
                     queuedMessagesDirty = false;
-
                 }
             }
 #endif

@@ -14,12 +14,17 @@ public static class CommonScriptableObjects
     private static Vector2IntVariable playerCoordsValue;
     public static Vector2IntVariable playerCoords => GetOrLoad(ref playerCoordsValue , "ScriptableObjects/PlayerCoords");
 
+    private static StringVariable sceneIDValue;
+
+    public static StringVariable sceneID => GetOrLoad(ref sceneIDValue, "ScriptableObjects/SceneID");
+
     private static T GetOrLoad<T>(ref T variable, string path) where T : Object
     {
         if (variable == null)
         {
             variable = Resources.Load<T>(path);
         }
+
         return variable;
     }
 }
