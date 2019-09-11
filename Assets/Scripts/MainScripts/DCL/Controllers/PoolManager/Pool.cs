@@ -263,6 +263,17 @@ namespace DCL
             return false;
         }
 
+        public bool IsInPool(PoolableObject po)
+        {
+            return inactiveObjects.Contains(po);
+        }
+
+        public bool IsOutOfPool(PoolableObject po)
+        {
+            return activeObjects.Contains(po);
+        }
+
+
 #if UNITY_EDITOR
         // In production it will always be false
         private bool isQuitting = false;

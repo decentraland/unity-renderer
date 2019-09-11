@@ -160,8 +160,6 @@ namespace DCL
             if (!string.IsNullOrEmpty(globalSceneId) && messagingControllers.ContainsKey(globalSceneId))
                 prevTimeBudget -= messagingControllers[globalSceneId].UpdateThrottling(prevTimeBudget);
 
-            if (VERBOSE)
-                Debug.Log("Priority controllers count = " + scenesSortedByDistance.Count);
             // Update throttling to the rest of the messaging controllers
             for (int i = 0; i < scenesSortedByDistance.Count; i++)
             {
@@ -352,6 +350,9 @@ namespace DCL
                     messagingControllers[newScene.sceneData.id] = new MessagingController(this, newScene.sceneData.id);
 
                 PrioritizeMessageControllerList(force: true);
+
+                if (VERBOSE)
+                    Debug.Log($"{Time.frameCount} : Load parcel scene {newScene.sceneData.basePosition}");
             }
 
             OnMessageProcessEnds?.Invoke(MessagingTypes.SCENE_LOAD);
@@ -418,10 +419,6 @@ namespace DCL
                 return;
             }
 
-            if (VERBOSE)
-            {
-                Debug.Log($"Destroying scene {sceneKey}");
-            }
 
             var scene = loadedScenes[sceneKey];
 
@@ -441,6 +438,11 @@ namespace DCL
             if (scene)
             {
                 scene.Cleanup();
+
+                if (VERBOSE)
+                {
+                    Debug.Log($"{Time.frameCount} : Destroying scene {scene.sceneData.basePosition}");
+                }
             }
 
             OnMessageProcessEnds?.Invoke(MessagingTypes.SCENE_DESTROY);
@@ -463,6 +465,10 @@ namespace DCL
             OnMessageWillQueue?.Invoke(MessagingTypes.SCENE_LOAD);
 
             messagingControllers[GLOBAL_MESSAGING_CONTROLLER].ForceEnqueue(MessagingBusId.INIT, queuedMessage);
+
+            if (VERBOSE)
+                Debug.Log($"{Time.frameCount} : Load parcel scene queue {decentralandSceneJSON}");
+
         }
 
         public void UpdateParcelScenes(string decentralandSceneJSON)
@@ -606,11 +612,6 @@ namespace DCL
                 if (!scene.gameObject.activeInHierarchy)
                 {
                     return true;
-                }
-
-                if (VERBOSE)
-                {
-                    Debug.Log("SceneController ProcessMessage: \nMethod: " + method + "\nPayload: " + payload);
                 }
 
 #if UNITY_EDITOR
