@@ -20,6 +20,7 @@ namespace Builder
         public static System.Action<DecentralandEntity> OnEntityAdded;
         public static System.Action<DecentralandEntity> OnEntityRemoved;
         public static System.Action<bool> OnPreviewModeChanged;
+        public static System.Action OnResetBuilderScene;
 
         private MouseCatcher mouseCatcher;
         private ParcelScene currentScene;
@@ -88,14 +89,20 @@ namespace Builder
             }
         }
 
-        public void TakeScreenshot(string mime)
+        public void TakeScreenshot(string id)
         {
-            StartCoroutine(TakeScreenshotRoutine(mime));
+            StartCoroutine(TakeScreenshotRoutine(id));
         }
 
         public void UpdateParcelScenes(string sceneJSON)
         {
             OnUpdateSceneParcels?.Invoke(sceneJSON);
+        }
+
+        public void ResetBuilderScene()
+        {
+            OnResetBuilderScene?.Invoke();
+            DCLCharacterController.i?.gameObject.SetActive(false);
         }
 
         #endregion
@@ -217,10 +224,10 @@ namespace Builder
 
         private IEnumerator TakeScreenshotRoutine(string id)
         {
-            yield return null;
+            yield return new WaitForEndOfFrame();
 
             var texture = ScreenCapture.CaptureScreenshotAsTexture();
-            WebInterface.SendScreenshot(System.Convert.ToBase64String(texture.EncodeToPNG()), id);
+            WebInterface.SendScreenshot("data:image/png;base64," + System.Convert.ToBase64String(texture.EncodeToPNG()), id);
             Destroy(texture);
         }
 
@@ -228,8 +235,11 @@ namespace Builder
         {
             isPreviewMode = isPreview;
             OnPreviewModeChanged?.Invoke(isPreview);
-            DCLCharacterController.i?.SetPosition(defaultCharacterPosition);
-            DCLCharacterController.i?.gameObject.SetActive(isPreview);
+            if (DCLCharacterController.i)
+            {
+                DCLCharacterController.i.SetPosition(defaultCharacterPosition);
+                DCLCharacterController.i.gameObject.SetActive(isPreview);
+            }
             if (mouseCatcher != null)
             {
                 mouseCatcher.enabled = isPreview;
