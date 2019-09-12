@@ -32,9 +32,9 @@ namespace DCL
 
         public void Hide()
         {
+            container.transform.parent = null;
             container.transform.position = Vector3.one * 1000;
         }
-
 
 
         public void CancelShow()

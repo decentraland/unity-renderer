@@ -57,7 +57,7 @@ namespace DCL
 
         public AssetPromiseType Keep(AssetPromiseType promise)
         {
-            if (promise.state != AssetPromiseState.IDLE_AND_EMPTY)
+            if (promise == null || promise.state != AssetPromiseState.IDLE_AND_EMPTY || waitingPromises.Contains(promise))
                 return promise;
 
             object id = promise.GetId();
@@ -72,17 +72,22 @@ namespace DCL
             if (masterPromiseById.ContainsKey(id))
             {
                 waitingPromises.Add(promise);
+
+                if (!masterToBlockedPromises.ContainsKey(id))
+                    masterToBlockedPromises.Add(id, new HashSet<AssetPromiseType>());
+
                 masterToBlockedPromises[id].Add(promise);
+
                 blockedPromises.Add(promise);
+
                 return promise;
             }
 
-            // NOTE(Brian): Not in library, add to corresponding lists... 
+            // NOTE(Brian): Not in library, add to corresponding lists...
             if (!library.Contains(promise))
             {
                 waitingPromises.Add(promise);
                 masterPromiseById.Add(id, promise);
-                masterToBlockedPromises.Add(id, new HashSet<AssetPromiseType>());
             }
 
             promise.library = library;
@@ -104,9 +109,10 @@ namespace DCL
 
             if (promise.state == AssetPromiseState.LOADING)
             {
-                bool isMasterPromise = masterPromiseById.ContainsKey(id) && masterPromiseById[id] == promise && masterToBlockedPromises[id].Count > 0;
+                bool isMasterPromise = masterPromiseById.ContainsKey(id) && masterPromiseById[id] == promise;
+                bool hasBlockedPromises = masterToBlockedPromises.ContainsKey(id) && masterToBlockedPromises[id].Count > 0;
 
-                if (isMasterPromise)
+                if (isMasterPromise && hasBlockedPromises)
                 {
                     //NOTE(Brian): Pending promises are waiting for this one.
                     //             We clear the events because we shouldn't call them, as this promise is forgotten.
@@ -124,43 +130,80 @@ namespace DCL
 
         private void OnRequestCompleted(AssetPromise<AssetType> promise)
         {
-            object id = promise.GetId();
-
-            ProcessBlockedPromises(id);
+            ProcessBlockedPromises(promise);
             CleanPromise(promise);
         }
 
-        private void ProcessBlockedPromises(object loadedPromiseId)
+        private void ProcessBlockedPromises(AssetPromise<AssetType> loadedPromise)
         {
+            object loadedPromiseId = loadedPromise.GetId();
+
+            if (!masterToBlockedPromises.ContainsKey(loadedPromiseId))
+                return;
+
+            if (!masterPromiseById.ContainsKey(loadedPromiseId))
+                return;
+
+            if (masterPromiseById[loadedPromiseId] != loadedPromise)
+                return;
+
+            if (loadedPromise.state != AssetPromiseState.FINISHED)
+                ForgetBlockedPromises(loadedPromiseId);
+            else
+                LoadBlockedPromises(loadedPromiseId);
+
             if (masterToBlockedPromises.ContainsKey(loadedPromiseId))
+                masterToBlockedPromises.Remove(loadedPromiseId);
+        }
+
+        private void ForgetBlockedPromises(object loadedPromiseId)
+        {
+            List<AssetPromiseType> blockedPromisesToForget = new List<AssetPromiseType>();
+
+            using (var iterator = masterToBlockedPromises[loadedPromiseId].GetEnumerator())
             {
-                List<AssetPromiseType> blockedPromisesToLoad = new List<AssetPromiseType>();
-
-                using (var iterator = masterToBlockedPromises[loadedPromiseId].GetEnumerator())
+                while (iterator.MoveNext())
                 {
-                    while (iterator.MoveNext())
-                    {
-                        var blockedPromise = iterator.Current;
-
-                        if (blockedPromise.state == AssetPromiseState.IDLE_AND_EMPTY)
-                            blockedPromisesToLoad.Add(blockedPromise);
-
-                        blockedPromises.Remove(blockedPromise);
-                    }
+                    var blockedPromise = iterator.Current;
+                    blockedPromisesToForget.Add(blockedPromise);
                 }
+            }
 
-                int blockedPromsiesToLoadCount = blockedPromisesToLoad.Count;
+            int blockedPromisesToForgetCount = blockedPromisesToForget.Count;
 
-                for (int i = 0; i < blockedPromsiesToLoadCount; i++)
+            for (int i = 0; i < blockedPromisesToForgetCount; i++)
+            {
+                var promise = blockedPromisesToForget[i];
+                promise.ForceFail();
+                Forget(promise);
+            }
+        }
+
+        private void LoadBlockedPromises(object loadedPromiseId)
+        {
+            List<AssetPromiseType> blockedPromisesToLoad = new List<AssetPromiseType>();
+
+            using (var iterator = masterToBlockedPromises[loadedPromiseId].GetEnumerator())
+            {
+                while (iterator.MoveNext())
                 {
-                    AssetPromiseType promise = blockedPromisesToLoad[i];
-                    promise.library = library;
-                    promise.OnPreFinishEvent += CleanPromise;
-                    promise.Load();
-                }
+                    var blockedPromise = iterator.Current;
 
-                if (masterToBlockedPromises.ContainsKey(loadedPromiseId))
-                    masterToBlockedPromises.Remove(loadedPromiseId);
+                    if (blockedPromise.state == AssetPromiseState.IDLE_AND_EMPTY)
+                        blockedPromisesToLoad.Add(blockedPromise);
+
+                    blockedPromises.Remove(blockedPromise);
+                }
+            }
+
+            int blockedPromisesToLoadCount = blockedPromisesToLoad.Count;
+
+            for (int i = 0; i < blockedPromisesToLoadCount; i++)
+            {
+                AssetPromiseType promise = blockedPromisesToLoad[i];
+                promise.library = library;
+                promise.OnPreFinishEvent += CleanPromise;
+                promise.Load();
             }
         }
 
