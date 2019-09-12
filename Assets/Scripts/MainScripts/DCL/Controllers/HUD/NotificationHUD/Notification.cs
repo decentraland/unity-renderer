@@ -35,9 +35,15 @@ public class Notification : MonoBehaviour
     {
         notificationModel = model;
 
-        messageLabel.text = notificationModel.message;
+        if (!string.IsNullOrEmpty(notificationModel.message))
+        {
+            messageLabel.text = notificationModel.message;
+        }
 
-        actionButtonLabel.text = notificationModel.buttonMessage;
+        if (!string.IsNullOrEmpty(notificationModel.buttonMessage))
+        {
+            actionButtonLabel.text = notificationModel.buttonMessage;
+        }
 
         if (notificationModel.timer > 0)
         {
@@ -66,7 +72,7 @@ public class Notification : MonoBehaviour
 
     private IEnumerator TimerCoroutine(float timer)
     {
-        yield return new WaitForSeconds(timer);
+        yield return WaitForSecondsCache.Get(timer);
         Dismiss();
     }
 
