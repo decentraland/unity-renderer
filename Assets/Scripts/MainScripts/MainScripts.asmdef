@@ -14,7 +14,8 @@
         "MainAttributes",
         "DCLTransform",
         "WebInterface",
-        "ScriptableObjects"
+        "ScriptableObjects",
+        "WaitForSecondsCache"
     ],
     "optionalUnityReferences": [],
     "includePlatforms": [],
