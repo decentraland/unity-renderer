@@ -6,9 +6,11 @@ global['preview'] = window['preview'] = true
 global['enableWeb3'] = window['enableWeb3']
 
 import { initializeUnity } from '../unity-interface/initializer'
-import { loadPreviewScene } from '../unity-interface/dcl'
+import { loadPreviewScene, setInitialPosition } from '../unity-interface/dcl'
 import { DEBUG_WS_MESSAGES } from '../config'
 import defaultLogger from '../shared/logger'
+import future from 'fp-future'
+import { worldRunningObservable } from '../shared/world/worldState'
 
 // Remove the 'dcl-loading' class, used until JS loads.
 document.body.classList.remove('dcl-loading')
@@ -17,14 +19,17 @@ const container = document.getElementById('gameContainer')
 
 if (!container) throw new Error('cannot find element #gameContainer')
 
+const defaultScene = future()
+
 function startPreviewWatcher() {
   // this is set to avoid double loading scenes due queued messages
   let isSceneLoading: boolean = true
 
   const loadScene = () => {
     loadPreviewScene()
-      .then(() => {
+      .then(scene => {
         isSceneLoading = false
+        defaultScene.resolve(scene)
       })
       .catch(err => {
         isSceneLoading = false
@@ -55,8 +60,11 @@ function startPreviewWatcher() {
 }
 
 initializeUnity(container)
-  .then(ret => {
+  .then(async ret => {
     startPreviewWatcher()
+
+    const scene = await defaultScene
+    worldRunningObservable.add(running => running && setInitialPosition(scene), undefined, true, undefined, true)
 
     ret.instancedJS
       .then($ => {

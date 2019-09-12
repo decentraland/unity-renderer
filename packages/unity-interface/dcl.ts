@@ -264,7 +264,7 @@ export async function initializeEngine(_gameInstance: GameInstance) {
   }
 }
 
-function setInitialPosition(initialLand: ILand) {
+export function setInitialPosition(initialLand: ILand) {
   const { position, cameraTarget } = getWorldSpawnpoint(initialLand)
   unityInterface.SetPosition(position.x, position.y, position.z, cameraTarget)
   queueTrackingEvent('Scene Spawn', { parcel: initialLand.scene.scene.base, spawnpoint: position })
@@ -363,10 +363,13 @@ export async function loadPreviewScene() {
     }
 
     unityInterface.LoadParcelScenes([target])
+
+    defaultLogger.info('finish...')
+
+    return defaultScene
   } else {
     throw new Error('Could not load scene.json')
   }
-  defaultLogger.info('finish...')
 }
 
 teleportObservable.add((position: { x: number; y: number }) => {
