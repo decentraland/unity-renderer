@@ -50,17 +50,13 @@ namespace DCL
 
             Pool pool = new Pool(id.ToString());
 
-#if UNITY_EDITOR
             pool.container.transform.parent = container.transform;
-#endif
 
             pool.original = original;
-#if UNITY_EDITOR
             pool.original.name = "Original";
             pool.original.transform.parent = pool.container.transform;
-#endif
-            pool.original.SetActive(false);
 
+            pool.original.SetActive(false);
 
             pool.instantiator = instantiator;
             pool.id = id;

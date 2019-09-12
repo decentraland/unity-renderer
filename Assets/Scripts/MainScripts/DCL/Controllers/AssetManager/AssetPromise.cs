@@ -41,6 +41,12 @@ namespace DCL
             OnFailEvent = null;
         }
 
+        internal void ForceFail()
+        {
+            OnPreFinishEvent = null;
+            CallAndClearEvents(false);
+        }
+
         void CallAndClearEvents(bool isSuccess = true)
         {
             if (asset == null)

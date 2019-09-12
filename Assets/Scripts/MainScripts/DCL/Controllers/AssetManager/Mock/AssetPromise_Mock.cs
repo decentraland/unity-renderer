@@ -7,6 +7,7 @@ namespace DCL
 {
     public class AssetPromise_Mock : AssetPromise<Asset_Mock>
     {
+        public bool forceFail = false;
         public float loadTime;
         public object idGenerator;
         private object id;
@@ -25,7 +26,7 @@ namespace DCL
         protected override void OnLoad(Action OnSuccess, Action OnFail)
         {
             loadTime = 1;
-            assetMockCoroutine = CoroutineStarter.Start(MockLoadingCoroutine(OnSuccess));
+            assetMockCoroutine = CoroutineStarter.Start(MockLoadingCoroutine(OnSuccess, OnFail));
         }
 
         protected override void OnCancelLoading()
@@ -33,10 +34,18 @@ namespace DCL
             CoroutineStarter.Stop(assetMockCoroutine);
         }
 
-        IEnumerator MockLoadingCoroutine(Action OnSuccess)
+        IEnumerator MockLoadingCoroutine(Action OnSuccess, Action OnFail)
         {
             yield return WaitForSecondsCache.Get(loadTime);
-            OnSuccess?.Invoke();
+
+            if (forceFail)
+            {
+                OnFail?.Invoke();
+            }
+            else
+            {
+                OnSuccess?.Invoke();
+            }
         }
 
 
