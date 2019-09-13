@@ -306,8 +306,10 @@ MonoBehaviour:
   aimingVerticalMaximumAngle: 89
   minimumYPosition: 0
   gravity: -55
-  movementSpeed: 8
   jumpForce: 12
+  movementSpeed: 8
+  runningSpeedMultiplier: 2
+  movingPlatformAllowedPosDelta: 1.1
   camera: {fileID: 6922703132826922303}
   audioListener: {fileID: 6922703132826922272}
   groundLayers:

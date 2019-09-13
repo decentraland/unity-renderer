@@ -37,6 +37,12 @@ namespace DCL.Components
                 return;
             }
 
+            // In case the character controller has been parented to this entity's mesh
+            if(entity.meshGameObject != null &&  DCLCharacterController.i.transform.parent == entity.meshGameObject.transform)
+            {
+                DCLCharacterController.i.transform.SetParent(null);
+            }
+
             // We do this instead of OnDetach += because it is required to run after every OnDetach listener
             entity.currentShape = null;
 
