@@ -392,6 +392,21 @@ export type AvatarAsset = {
   }>
 }
 
+export enum NotificationType {
+  GENERIC = 0,
+  SCRIPTING_ERROR = 1,
+  COMMS_ERROR = 2
+}
+
+export type Notification = {
+  type: NotificationType
+  message: string
+  buttonMessage: string
+  timer: number // in seconds
+  scene: string
+  externalCallbackID: string
+}
+
 export function normalizeContentMappings(
   mappings: Record<string, string> | Array<ContentMapping>
 ): Array<ContentMapping> {
