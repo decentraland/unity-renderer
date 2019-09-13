@@ -212,12 +212,6 @@ namespace DCL.Helpers
             }));
         }
 
-        public static void RemoveSceneEntity(ParcelScene scene, DecentralandEntity entity)
-        {
-            scene.RemoveEntity(entity.entityId);
-        }
-
-
         public static void CreateSceneEntity(ParcelScene scene, string id)
         {
             scene.CreateEntity(id, JsonUtility.ToJson(new DCL.Models.CreateEntityMessage
@@ -229,6 +223,11 @@ namespace DCL.Helpers
         public static void RemoveSceneEntity(ParcelScene scene, string id)
         {
             scene.RemoveEntity(id);
+        }
+
+        public static void RemoveSceneEntity(ParcelScene scene, DecentralandEntity entity)
+        {
+            scene.RemoveEntity(entity.entityId);
         }
 
         public static T EntityComponentCreate<T, K>(ParcelScene scene, DecentralandEntity entity, K model,
