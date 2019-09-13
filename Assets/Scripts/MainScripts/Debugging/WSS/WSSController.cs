@@ -160,7 +160,7 @@ namespace DCL
                     case ContentSource.USE_DEFAULT_FROM_URL:
                         break;
                     case ContentSource.LOCAL:
-                        debugString = "DEBUG_MODE&LOCAL_COMMS&";
+                        debugString = "DEBUG_MODE&";
                         break;
                     case ContentSource.ZONE:
                         debugString = "ENV=zone&";
@@ -175,7 +175,7 @@ namespace DCL
 
                 if (contentSource != ContentSource.LOCAL && forceLocalComms)
                 {
-                    debugString = "LOCAL_COMMS&";
+                    debugString += "LOCAL_COMMS&";
                 }
 
                 string debugPanelString = "";
