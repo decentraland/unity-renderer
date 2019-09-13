@@ -378,6 +378,11 @@ namespace UnityGLTF
             if (isQuitting)
                 return;
 #endif
+            if (sceneImporter != null)
+            {
+                sceneImporter.Dispose();
+            }
+
             if (!alreadyLoadedAsset && loadingRoutine != null)
             {
                 OnFail_Internal(null);
