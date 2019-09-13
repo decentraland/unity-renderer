@@ -14,7 +14,8 @@ import {
   IScene,
   MappingsResponse,
   ILand,
-  Profile
+  Profile,
+  Notification
 } from '../shared/types'
 import { DevTools } from '../shared/apis/DevTools'
 import { gridToWorld } from '../atomicHelpers/parcelScenePositions'
@@ -163,6 +164,9 @@ const unityInterface = {
   },
   UnlockCursor() {
     gameInstance.SendMessage('MouseCatcher', 'UnlockCursor')
+  },
+  ShowNotification(notification: Notification) {
+    gameInstance.SendMessage('HUDController', 'ShowNotification', JSON.stringify(notification))
   }
 }
 
