@@ -16,6 +16,9 @@ namespace DCL.Controllers
 
         public void EvaluateEntityPosition(DecentralandEntity entity)
         {
+            // TODO: Remove once we fix at least the main plazas geometry to not surpass their scene limits...
+            if(!SceneController.i.isDebugMode) return;
+
             if(entity == null || !scene.entities.ContainsValue(entity)) return;
 
             // Recursively evaluate entity children as well, we need to check this up front because this entity may not have meshes of its own, but the children may.
