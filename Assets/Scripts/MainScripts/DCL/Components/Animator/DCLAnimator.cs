@@ -56,7 +56,7 @@ namespace DCL.Components
         {
             entity.OnShapeUpdated += OnComponentUpdated;
 
-            if (entity.meshGameObject && entity.meshGameObject.GetComponentInChildren<Animation>() != null)
+            if (entity.meshRootGameObject && entity.meshRootGameObject.GetComponentInChildren<Animation>() != null)
             {
                 Initialize();
             }
@@ -76,7 +76,7 @@ namespace DCL.Components
 
         private void OnComponentUpdated(DecentralandEntity e)
         {
-            if (entity.meshGameObject && entity.meshGameObject.GetComponentInChildren<Animation>() != null)
+            if (entity.meshRootGameObject && entity.meshRootGameObject.GetComponentInChildren<Animation>() != null)
             {
                 UpdateAnimationState();
             }
@@ -84,7 +84,7 @@ namespace DCL.Components
 
         private void Initialize()
         {
-            if (entity == null || entity.meshGameObject == null)
+            if (entity == null || entity.meshRootGameObject == null)
             {
                 return;
             }
@@ -103,7 +103,7 @@ namespace DCL.Components
             //NOTE(Brian): fetch all the AnimationClips in Animation component.
             if (animComponent == null)
             {
-                animComponent = entity.meshGameObject.GetComponentInChildren<Animation>(true);
+                animComponent = entity.meshRootGameObject.GetComponentInChildren<Animation>(true);
 
                 if (animComponent == null)
                 {

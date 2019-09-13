@@ -9,7 +9,6 @@ public class DCLCharacterPosition
 
     private Vector3 worldPositionValue;
     private Vector3 unityPositionValue;
-
     private Vector3 offset;
 
     public Vector3 UnityToWorldPosition(Vector3 pos)

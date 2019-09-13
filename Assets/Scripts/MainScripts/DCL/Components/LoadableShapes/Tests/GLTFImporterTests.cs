@@ -19,7 +19,7 @@ public class GLTFImporterTests : TestsBase
 
         if (OnFinishLoading != null)
         {
-            OnFinishLoading.Invoke(entity.meshGameObject.GetComponentInChildren<InstantiatedGLTFObject>());
+            OnFinishLoading.Invoke(entity.meshRootGameObject.GetComponentInChildren<InstantiatedGLTFObject>());
         }
     }
 

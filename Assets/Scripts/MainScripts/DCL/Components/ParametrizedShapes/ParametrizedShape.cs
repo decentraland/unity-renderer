@@ -35,13 +35,13 @@ namespace DCL.Components
         {
             if (visibilityDirty)
             {
-                ConfigureVisibility(entity.meshGameObject, model.visible);
+                ConfigureVisibility(entity.meshRootGameObject, model.visible, entity.meshesInfo.renderers);
                 visibilityDirty = false;
             }
 
             if (collisionsDirty)
             {
-                CollidersManager.i.ConfigureColliders(entity.meshGameObject, model.withCollisions, false, entity);
+                CollidersManager.i.ConfigureColliders(entity.meshRootGameObject, model.withCollisions, false, entity);
                 collisionsDirty = false;
             }
         }
@@ -56,20 +56,25 @@ namespace DCL.Components
             if (currentMesh == null)
                 currentMesh = GenerateGeometry();
 
-            MeshFilter meshFilter = entity.meshGameObject.AddComponent<MeshFilter>();
-            MeshRenderer meshRenderer = entity.meshGameObject.AddComponent<MeshRenderer>();
+            UpdateRenderer(entity);
+            
+            MeshFilter meshFilter = entity.meshRootGameObject.AddComponent<MeshFilter>();
+            MeshRenderer meshRenderer = entity.meshRootGameObject.AddComponent<MeshRenderer>();
+            entity.meshesInfo.renderers = new Renderer[]{meshRenderer};
+            entity.meshesInfo.currentShape = this;
 
             meshFilter.sharedMesh = currentMesh;
 
             if (Configuration.ParcelSettings.VISUAL_LOADING_ENABLED)
             {
-                MaterialTransitionController transition =
-                    entity.meshGameObject.AddComponent<MaterialTransitionController>();
+                MaterialTransitionController transition = entity.meshRootGameObject.AddComponent<MaterialTransitionController>();
                 Material finalMaterial = Utils.EnsureResourcesMaterial("Materials/Default");
                 transition.delay = 0;
                 transition.useHologram = false;
                 transition.fadeThickness = 20;
                 transition.OnDidFinishLoading(finalMaterial);
+
+                transition.onFinishedLoading += () => {entity.OnShapeUpdated?.Invoke(entity);};
             }
             else
             {
@@ -80,28 +85,22 @@ namespace DCL.Components
             collisionsDirty = true;
             UpdateRenderer(entity);
 
-            if (entity.OnShapeUpdated != null)
-            {
-                entity.OnShapeUpdated.Invoke(entity);
-            }
+            entity.OnShapeUpdated?.Invoke(entity);
         }
 
         void OnShapeDetached(DecentralandEntity entity)
         {
-            if (entity == null || entity.meshGameObject == null)
-            {
-                return;
-            }
+            if (entity == null || entity.meshRootGameObject == null) return;
 
             if (attachedEntities.Count == 0)
             {
                 DestroyGeometry();
-                Utils.CleanMaterials(entity.meshGameObject.GetComponent<Renderer>());
+                Utils.CleanMaterials(entity.meshRootGameObject.GetComponent<Renderer>());
                 currentMesh = null;
             }
 
-            Utils.SafeDestroy(entity.meshGameObject);
-            entity.meshGameObject = null;
+            Utils.SafeDestroy(entity.meshRootGameObject);
+            entity.meshesInfo.CleanReferences();
         }
 
         public override IEnumerator ApplyChanges(string newJson)
@@ -125,7 +124,9 @@ namespace DCL.Components
                     {
                         var entity = iterator.Current;
                         UpdateRenderer(entity);
-                    }
+
+                        entity.OnShapeUpdated?.Invoke(entity);
+                    }                    
                 }
             }
 
@@ -134,7 +135,19 @@ namespace DCL.Components
 
         public override void AttachTo(DecentralandEntity entity, System.Type overridenAttachedType = null)
         {
+            if (attachedEntities.Contains(entity)) return;
+
             base.AttachTo(entity);
+        }
+
+        public override bool IsVisible()
+        {
+            return model.visible;
+        }
+
+        public override bool HasCollisions()
+        {
+            return model.withCollisions;
         }
 
         protected virtual bool ShouldGenerateNewMesh(BaseShape.Model newModel)

@@ -375,7 +375,7 @@ public class DCLCharacterController : MonoBehaviour
         isGrounded = groundTransform != null;
     }
 
-    void ResetGround()
+    public void ResetGround()
     {
         groundTransform = null;
 

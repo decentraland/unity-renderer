@@ -30,11 +30,7 @@ namespace DCL.Components
 
         public void Initialize()
         {
-            if (!entity.meshGameObject) return;
-
-            var renderers = entity.meshGameObject.GetComponentsInChildren<Renderer>(true);
-
-            if (renderers == null || renderers.Length == 0) return;
+            if (!entity.meshRootGameObject) return;
 
             // we add a rigidbody to the entity's gameobject to have a 
             // reference to the entity itself on the RaycastHit 

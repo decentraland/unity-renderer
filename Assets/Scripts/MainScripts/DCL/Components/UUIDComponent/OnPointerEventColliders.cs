@@ -26,17 +26,16 @@ namespace DCL.Components
 
         public void Initialize(DecentralandEntity entity)
         {
+            if (!entity.meshRootGameObject || entity.meshesInfo.renderers.Length == 0) return;
+
             refCount++;
 
-            var renderers = entity.meshGameObject.GetComponentsInChildren<Renderer>(true);
-
-            // Cache mesh name
             DestroyOnPointerEventColliders();
 
-            pointerEventColliderGameObjects = new GameObject[renderers.Length];
+            pointerEventColliderGameObjects = new GameObject[entity.meshesInfo.renderers.Length];
             for (int i = 0; i < pointerEventColliderGameObjects.Length; i++)
             {
-                pointerEventColliderGameObjects[i] = CreatePointerEventCollider(renderers[i]);
+                pointerEventColliderGameObjects[i] = CreatePointerEventCollider(entity.meshesInfo.renderers[i]);
             }
         }
 

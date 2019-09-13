@@ -71,14 +71,14 @@ namespace Tests
             {
                 timeout += Time.deltaTime;
 
-                if (entity.meshGameObject != null)
+                if (entity.meshRootGameObject != null)
                 {
-                    var c = entity.meshGameObject.GetComponentInChildren<MaterialTransitionController>();
+                    var c = entity.meshRootGameObject.GetComponentInChildren<MaterialTransitionController>();
 
                     if (c != null && c.placeholder != null) // NOTE(Brian): Wait for it
                     {
                         Assert.IsTrue(c.useHologram, "useHologram must be true");
-                        Assert.IsTrue(entity.meshGameObject != null, "meshGameObject is null");
+                        Assert.IsTrue(entity.meshRootGameObject != null, "meshGameObject is null");
                         Assert.AreEqual(c.gameObject.transform, c.placeholder.transform.parent,
                             "MaterialTransitionController is not parented correctly");
                         Assert.IsTrue(c.placeholder.GetComponent<MeshFilter>() != null,
@@ -131,14 +131,14 @@ namespace Tests
             {
                 timeout += Time.deltaTime;
 
-                if (entity.meshGameObject != null)
+                if (entity.meshRootGameObject != null)
                 {
-                    var c = entity.meshGameObject.GetComponentInChildren<MaterialTransitionController>();
+                    var c = entity.meshRootGameObject.GetComponentInChildren<MaterialTransitionController>();
 
                     if (c != null) // NOTE(Brian): Wait for it
                     {
                         Assert.IsTrue(!c.useHologram, "useHologram must be false");
-                        Assert.IsTrue(entity.meshGameObject != null, "meshGameObject is null");
+                        Assert.IsTrue(entity.meshRootGameObject != null, "meshGameObject is null");
                         Assert.IsTrue(c.placeholder == null,
                             "placeholder must be null because we're not using holograms with parametric shapes.");
 

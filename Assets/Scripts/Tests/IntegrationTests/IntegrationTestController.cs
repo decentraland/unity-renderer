@@ -75,7 +75,7 @@ public class IntegrationTestController : MonoBehaviour
 
         yield return new WaitForAllMessagesProcessed();
 
-        Assert.IsTrue(scene.entities[entityId].meshGameObject == null, "meshGameObject must be null");
+        Assert.IsTrue(scene.entities[entityId].meshRootGameObject == null, "meshGameObject must be null");
 
         // 1st message
         TestHelpers.CreateAndSetShape(scene, entityId, CLASS_ID.BOX_SHAPE, "{}");
@@ -124,10 +124,10 @@ public class IntegrationTestController : MonoBehaviour
         Assert.AreEqual(cube.gameObject.transform.position,
             new Vector3(3 * ParcelSettings.PARCEL_SIZE + cubePosition.x, cubePosition.y,
                 3 * ParcelSettings.PARCEL_SIZE + cubePosition.z));
-        Assert.IsTrue(cube.meshGameObject != null);
-        Assert.IsTrue(cube.meshGameObject.GetComponentInChildren<MeshFilter>() != null);
+        Assert.IsTrue(cube.meshRootGameObject != null);
+        Assert.IsTrue(cube.meshRootGameObject.GetComponentInChildren<MeshFilter>() != null);
 
-        var mesh = cube.meshGameObject.GetComponentInChildren<MeshFilter>().mesh;
+        var mesh = cube.meshRootGameObject.GetComponentInChildren<MeshFilter>().mesh;
 
         Assert.AreEqual(mesh.name, "DCL Box Instance");
 
@@ -135,7 +135,7 @@ public class IntegrationTestController : MonoBehaviour
             // 3nd message, the box should remain the same, including references
             TestHelpers.CreateAndSetShape(scene, entityId, CLASS_ID.BOX_SHAPE, "{}");
 
-            var newMesh = cube.meshGameObject.GetComponentInChildren<MeshFilter>().mesh;
+            var newMesh = cube.meshRootGameObject.GetComponentInChildren<MeshFilter>().mesh;
 
             Assert.AreEqual(newMesh.name, "DCL Box Instance");
             Assert.AreEqual(mesh.name, newMesh.name, "A new instance of the box was created");
@@ -145,7 +145,7 @@ public class IntegrationTestController : MonoBehaviour
             // 3nd message, the box should remain the same, including references
             TestHelpers.CreateAndSetShape(scene, entityId, CLASS_ID.BOX_SHAPE, "{}");
 
-            var newMesh = cube.meshGameObject.GetComponentInChildren<MeshFilter>().mesh;
+            var newMesh = cube.meshRootGameObject.GetComponentInChildren<MeshFilter>().mesh;
 
             Assert.AreEqual(newMesh.name, "DCL Box Instance");
             Assert.AreEqual(mesh.name, newMesh.name, "A new instance of the box was created");
@@ -156,7 +156,7 @@ public class IntegrationTestController : MonoBehaviour
             TestHelpers.CreateAndSetShape(scene, entityId, CLASS_ID.SPHERE_SHAPE,
                 "{\"withCollisions\":false,\"billboard\":0,\"visible\":true,\"tag\":\"sphere\"}");
 
-            var newMesh = cube.meshGameObject.GetComponentInChildren<MeshFilter>().mesh;
+            var newMesh = cube.meshRootGameObject.GetComponentInChildren<MeshFilter>().mesh;
 
             Assert.AreEqual(newMesh.name, "DCL Sphere Instance");
             Assert.AreNotEqual(mesh.name, newMesh.name,

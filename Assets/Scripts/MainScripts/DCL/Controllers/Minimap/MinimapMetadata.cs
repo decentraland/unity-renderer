@@ -86,7 +86,7 @@ public class MinimapMetadata : ScriptableObject
         {
             int index = IndexFromCoordinates(x, y);
 
-            if (index < 0 || index >= tiles.Length) throw new Exception($"Calculated Index: {index} for tile ({x},{y}) should be in the range [0,{tiles.Length})");
+            if (index < 0 || index >= tiles.Length) Debug.LogError($"Calculated Index: {index} for tile ({x},{y}) should be in the range [0,{tiles.Length})");
 
             tiles[index] = tile;
         }
@@ -95,8 +95,15 @@ public class MinimapMetadata : ScriptableObject
         {
             int index = IndexFromCoordinates(x, y);
 
-            if (index < 0 || index >= tiles.Length) throw new Exception($"Calculated Index: {index} for tile ({x},{y}) should be in the range [0,{tiles.Length})");
 
+            if (index < 0 || index >= tiles.Length)
+            {
+#if UNITY_EDITOR
+                return null;
+#else
+                Debug.LogError($"Calculated Index: {index} for tile ({x},{y}) should be in the range [0,{tiles.Length})");
+#endif
+            }
             return tiles[IndexFromCoordinates(x, y)];
         }
 

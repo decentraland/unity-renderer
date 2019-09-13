@@ -17,21 +17,23 @@ namespace DCL.Components
 
         public NFTShape(ParcelScene scene) : base(scene)
         {
-            OnEntityShapeUpdated += UpdateBackgroundColor;
         }
 
         protected override void AttachShape(DecentralandEntity entity)
         {
             if (!string.IsNullOrEmpty(model.src))
             {
-                entity.meshGameObject = UnityEngine.Object.Instantiate(Resources.Load("NFTShapeLoader")) as GameObject;
-                entity.meshGameObject.name = componentName + " mesh";
-                entity.meshGameObject.transform.SetParent(entity.gameObject.transform);
-                entity.meshGameObject.transform.localPosition = Vector3.zero;
-                entity.meshGameObject.transform.localScale = Vector3.one;
-                entity.meshGameObject.transform.localRotation = Quaternion.identity;
+                entity.meshesInfo.meshRootGameObject = UnityEngine.Object.Instantiate(Resources.Load("NFTShapeLoader")) as GameObject;
+                entity.meshRootGameObject.name = componentName + " mesh";
+                entity.meshRootGameObject.transform.SetParent(entity.gameObject.transform);
+                entity.meshRootGameObject.transform.localPosition = Vector3.zero;
+                entity.meshRootGameObject.transform.localScale = Vector3.one;
+                entity.meshRootGameObject.transform.localRotation = Quaternion.identity;
+                entity.meshesInfo.currentShape = this;
+                
+                entity.OnShapeUpdated += UpdateBackgroundColor;
 
-                loadableShape = entity.meshGameObject.GetComponent<LoadWrapper_NFT>();
+                loadableShape = entity.meshRootGameObject.GetComponent<LoadWrapper_NFT>();
                 loadableShape.entity = entity;
                 loadableShape.initialVisibility = model.visible;
 
@@ -48,16 +50,25 @@ namespace DCL.Components
             }
         }
 
+        protected override void DetachShape(DecentralandEntity entity)
+        {
+            if (entity == null || entity.meshRootGameObject == null) return;
+
+            entity.OnShapeUpdated -= UpdateBackgroundColor;
+
+            base.DetachShape(entity);
+        }
+
         protected override void ConfigureColliders(DecentralandEntity entity)
         {
-            CollidersManager.i.ConfigureColliders(entity.meshGameObject, model.withCollisions);
+            CollidersManager.i.ConfigureColliders(entity.meshRootGameObject, model.withCollisions, false, entity);
         }
 
         void UpdateBackgroundColor(DecentralandEntity entity)
         {
             if (model.color == previousModel.color) return;
 
-            loadableShape = entity.meshGameObject.GetComponent<LoadWrapper_NFT>();
+            loadableShape = entity.meshRootGameObject.GetComponent<LoadWrapper_NFT>();
             loadableShape.loaderController.UpdateBackgroundColor(model.color);
         }
     }

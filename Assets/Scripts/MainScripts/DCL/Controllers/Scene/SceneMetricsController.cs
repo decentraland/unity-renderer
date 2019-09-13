@@ -139,7 +139,7 @@ namespace DCL
 
         void OnEntityRemoved(DecentralandEntity e)
         {
-            RemoveGameObject(e.meshGameObject);
+            RemoveGameObject(e.meshRootGameObject);
             e.OnShapeUpdated -= Entity_OnShapeUpdated;
             model.entities--;
             isDirty = true;
@@ -147,7 +147,7 @@ namespace DCL
 
         void Entity_OnShapeUpdated(DecentralandEntity e)
         {
-            AddGameObject(e.meshGameObject);
+            AddGameObject(e.meshRootGameObject);
         }
 
         void RemoveGameObject(GameObject go)

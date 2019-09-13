@@ -28,9 +28,12 @@ namespace DCL.Helpers
 
     public class VisualTestsBase : TestsBase
     {
-        protected override IEnumerator InitScene(bool usesWebServer = false, bool spawnCharController = true, bool spawnTestScene = true, bool spawnUIScene = true)
+        protected override IEnumerator InitScene(bool usesWebServer = false, bool spawnCharController = true, bool spawnTestScene = true, bool spawnUIScene = true, bool debugMode = false)
         {
             yield return InitUnityScene("MainVisualTest");
+
+            if(debugMode)
+                SceneController.i.SetDebug();
 
             sceneController = TestHelpers.InitializeSceneController(usesWebServer);
 
@@ -80,9 +83,12 @@ namespace DCL.Helpers
             }
         }
 
-        protected virtual IEnumerator InitScene(bool usesWebServer = false, bool spawnCharController = true, bool spawnTestScene = true, bool spawnUIScene = true)
+        protected virtual IEnumerator InitScene(bool usesWebServer = false, bool spawnCharController = true, bool spawnTestScene = true, bool spawnUIScene = true, bool debugMode = false)
         {
             yield return InitUnityScene("MainTest");
+
+            if(debugMode)
+                SceneController.i.SetDebug();
 
             yield return MemoryManager.i.CleanupPoolsIfNeeded(true);
 
@@ -888,22 +894,11 @@ namespace DCL.Helpers
             yield return shapeComponent.routine;
 
             // check every collider is enabled
-            Collider[] fetchedColliders = entity.meshGameObject.GetComponentsInChildren<Collider>(true);
+            Assert.IsTrue(entity.meshesInfo.colliders.Count > 0);
 
-            // make sure we actually have non-onClick colliders
-            int onClickLayer = LayerMask.NameToLayer(OnPointerEventColliders.COLLIDER_LAYER);
-            List<Collider> finalColliders = new List<Collider>();
-            for (int i = 0; i < fetchedColliders.Length; i++)
+            for (int i = 0; i < entity.meshesInfo.colliders.Count; i++)
             {
-                if (fetchedColliders[i].gameObject.layer == onClickLayer) continue;
-
-                finalColliders.Add(fetchedColliders[i]);
-            }
-            Assert.IsTrue(finalColliders.Count > 0);
-
-            for (int i = 0; i < finalColliders.Count; i++)
-            {
-                Assert.IsTrue(finalColliders[i].enabled);
+                Assert.IsTrue(entity.meshesInfo.colliders[i].enabled);
             }
 
             // update collision property with 'false'
@@ -912,9 +907,9 @@ namespace DCL.Helpers
             yield return shapeComponent.routine;
 
             // check colliders correct behaviour
-            for (int i = 0; i < finalColliders.Count; i++)
+            for (int i = 0; i < entity.meshesInfo.colliders.Count; i++)
             {
-                Assert.IsFalse(finalColliders[i].enabled);
+                Assert.IsFalse(entity.meshesInfo.colliders[i].enabled);
             }
 
             // update collision property with 'true' again
@@ -923,9 +918,9 @@ namespace DCL.Helpers
             yield return shapeComponent.routine;
 
             // check colliders correct behaviour
-            for (int i = 0; i < finalColliders.Count; i++)
+            for (int i = 0; i < entity.meshesInfo.colliders.Count; i++)
             {
-                Assert.IsTrue(finalColliders[i].enabled);
+                Assert.IsTrue(entity.meshesInfo.colliders[i].enabled);
             }
         }
 
@@ -936,7 +931,7 @@ namespace DCL.Helpers
             yield return SharedComponentUpdate(shapeComponent, shapeModel);
 
             // check every mesh is shown by default
-            Renderer[] renderers = entity.meshGameObject.GetComponentsInChildren<Renderer>(true);
+            Renderer[] renderers = entity.meshesInfo.renderers;
 
             Assert.IsTrue(renderers.Length > 0);
 
@@ -971,7 +966,7 @@ namespace DCL.Helpers
 
         public static IEnumerator TestShapeOnPointerEventCollider(DecentralandEntity entity)
         {
-            Renderer[] renderers = entity.meshGameObject.GetComponentsInChildren<Renderer>(true);
+            Renderer[] renderers = entity.meshesInfo.renderers;
 
             Assert.IsTrue(renderers.Length > 0);
 
