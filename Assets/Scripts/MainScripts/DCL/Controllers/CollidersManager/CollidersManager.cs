@@ -110,12 +110,15 @@ namespace DCL
 
         public void ConfigureColliders(DecentralandEntity entity, bool hasCollision = true, bool filterByColliderName = true)
         {
-            ConfigureColliders(entity.meshGameObject, hasCollision, filterByColliderName, entity);
+            ConfigureColliders(entity.meshRootGameObject, hasCollision, filterByColliderName, entity);
         }
 
         public void ConfigureColliders(GameObject meshGameObject, bool hasCollision, bool filterByColliderName = false, DecentralandEntity entity = null)
         {
             if (meshGameObject == null) return;
+
+            if(entity != null)
+                entity.meshesInfo.colliders.Clear();
 
             Collider collider;
             int onClickLayer = LayerMask.NameToLayer(OnPointerEventColliders.COLLIDER_LAYER); // meshes can have a child collider for the OnClick that should be ignored
@@ -152,9 +155,13 @@ namespace DCL
                 }
 
                 if (collider != null)
+                {
                     collider.enabled = shouldCreateCollider;
+
+                    if(entity != null)
+                        entity.meshesInfo.colliders.Add(collider);
+                }
             }
         }
-
     }
 }

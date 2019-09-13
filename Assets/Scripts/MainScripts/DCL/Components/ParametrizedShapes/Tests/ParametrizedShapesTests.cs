@@ -249,6 +249,9 @@ namespace Tests
             string entityId = "entityId";
             TestHelpers.CreateSceneEntity(scene, entityId);
             var entity = scene.entities[entityId];
+
+            TestHelpers.SetEntityTransform(scene, entity, new DCLTransform.Model { position = new Vector3(8, 1, 8)});
+
             yield return null;
 
             // BoxShape
@@ -325,6 +328,9 @@ namespace Tests
             string entityId = "entityId";
             TestHelpers.CreateSceneEntity(scene, entityId);
             var entity = scene.entities[entityId];
+            
+            TestHelpers.SetEntityTransform(scene, entity, new DCLTransform.Model { position = new Vector3(8, 1, 8)});
+
             yield return null;
 
             // BoxShape

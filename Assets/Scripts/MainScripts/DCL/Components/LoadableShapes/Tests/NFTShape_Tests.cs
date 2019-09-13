@@ -18,7 +18,7 @@ public class NFTShape_Tests : TestsBase
         TestHelpers.CreateSceneEntity(scene, entityId);
 
         var entity = scene.entities[entityId];
-        Assert.IsTrue(entity.meshGameObject == null, "entity mesh object should be null as the NFTShape hasn't been initialized yet");
+        Assert.IsTrue(entity.meshRootGameObject == null, "entity mesh object should be null as the NFTShape hasn't been initialized yet");
 
         var componentModel = new NFTShape.Model()
         {
@@ -30,9 +30,9 @@ public class NFTShape_Tests : TestsBase
 
         TestHelpers.SharedComponentAttach(component, entity);
 
-        Assert.IsTrue(entity.meshGameObject != null, "entity mesh object should already exist as the NFTShape already initialized");
+        Assert.IsTrue(entity.meshRootGameObject != null, "entity mesh object should already exist as the NFTShape already initialized");
 
-        var nftShape = entity.meshGameObject.GetComponent<LoadWrapper_NFT>();
+        var nftShape = entity.meshRootGameObject.GetComponent<LoadWrapper_NFT>();
         var backgroundMaterialPropertyBlock = new MaterialPropertyBlock();
         nftShape.loaderController.meshRenderer.GetPropertyBlock(backgroundMaterialPropertyBlock, 1);
 

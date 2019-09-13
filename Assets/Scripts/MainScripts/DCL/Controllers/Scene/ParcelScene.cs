@@ -1,10 +1,8 @@
-﻿using System;
-using DCL.Components;
+﻿using DCL.Components;
 using DCL.Configuration;
 using DCL.Helpers;
 using DCL.Models;
 using System.Collections.Generic;
-using System.Linq;
 using UnityEngine;
 using UnityEngine.Assertions;
 using Environment = DCL.Configuration.Environment;
@@ -14,24 +12,8 @@ using System.Collections;
 
 namespace DCL.Controllers
 {
-
     public class ParcelScene : MonoBehaviour, ICleanable
     {
-        private const string PARCEL_BLOCKER_PREFAB = "Prefabs/ParcelBlocker";
-
-        public static bool VERBOSE = false;
-
-        private const float MAX_CLEANUP_BUDGET = 0.014f;
-        private const float CLEANUP_NOISE = 0.0025f;
-
-
-        public Dictionary<string, DecentralandEntity> entities = new Dictionary<string, DecentralandEntity>();
-        public Dictionary<string, BaseDisposable> disposableComponents = new Dictionary<string, BaseDisposable>();
-        public LoadParcelScenesMessage.UnityParcelScene sceneData { get; protected set; }
-        public SceneController ownerController;
-        public SceneMetricsController metricsController;
-        public UIScreenSpace uiScreenSpace;
-
         enum State
         {
             NOT_READY,
@@ -40,33 +22,22 @@ namespace DCL.Controllers
             READY,
         }
 
-        private State state = State.NOT_READY;
+        private const string PARCEL_BLOCKER_PREFAB = "Prefabs/ParcelBlocker";
+        private const float MAX_CLEANUP_BUDGET = 0.014f;
+        private const float CLEANUP_NOISE = 0.0025f;
 
-        private static GameObject blockerPrefab;
-
-        private readonly List<GameObject> blockers = new List<GameObject>();
+        public Dictionary<string, DecentralandEntity> entities = new Dictionary<string, DecentralandEntity>();
+        public Dictionary<string, BaseDisposable> disposableComponents = new Dictionary<string, BaseDisposable>();
+        public LoadParcelScenesMessage.UnityParcelScene sceneData { get; protected set; }
+        public SceneController ownerController;
+        public SceneMetricsController metricsController;
+        public UIScreenSpace uiScreenSpace;
 
         public event System.Action<DecentralandEntity> OnEntityAdded;
         public event System.Action<DecentralandEntity> OnEntityRemoved;
-
         public ContentProvider contentProvider;
-
-        List<string> entitiesMarkedForRemoval = new List<string>();
-
-
-        public void Awake()
-        {
-            state = State.NOT_READY;
-
-            metricsController = new SceneMetricsController(this);
-            metricsController.Enable();
-
-            if (DCLCharacterController.i)
-                DCLCharacterController.i.characterPosition.OnPrecisionAdjust += OnPrecisionAdjust;
-        }
-
-        bool flaggedToUnload = false;
-
+        public int disposableNotReadyCount => disposableNotReady.Count;
+     
         [System.NonSerialized]
         public bool isTestScene = false;
 
@@ -75,11 +46,33 @@ namespace DCL.Controllers
 
         [System.NonSerialized]
         public bool unloadWithDistance = true;
-
-        private bool isReleased = false;
-
+     
+        private readonly List<GameObject> blockers = new List<GameObject>();
         private readonly List<string> disposableNotReady = new List<string>();
-        public int disposableNotReadyCount => disposableNotReady.Count;
+        private List<string> entitiesMarkedForRemoval = new List<string>();
+        private bool flaggedToUnload = false;
+        private bool isReleased = false;
+        private State state = State.NOT_READY;
+        private SceneBoundariesChecker boundariesChecker;
+     
+        public static bool VERBOSE = false;
+        private static GameObject blockerPrefab;
+
+        public void Awake()
+        {
+            state = State.NOT_READY;
+
+            metricsController = new SceneMetricsController(this);
+            metricsController.Enable();
+
+            if(SceneController.i.isDebugMode)
+                boundariesChecker = new SceneBoundariesDebugModeChecker(this);
+            else
+                boundariesChecker = new SceneBoundariesChecker(this);
+
+            if (DCLCharacterController.i)
+                DCLCharacterController.i.characterPosition.OnPrecisionAdjust += OnPrecisionAdjust;
+        }
 
         private void Update()
         {
@@ -267,12 +260,44 @@ namespace DCL.Controllers
             return IsInsideSceneBoundaries(Utils.WorldToGridPosition(charPosition.worldPosition));
         }
 
-        public virtual bool IsInsideSceneBoundaries(Vector2 gridPosition)
+        public bool IsInsideSceneBoundaries(Bounds objectBounds)
         {
-            int parcelsCount = sceneData.parcels.Length;
-            for (int i = 0; i < parcelsCount; i++)
-            {
-                if (sceneData.parcels[i] == gridPosition)
+            if(!IsInsideSceneBoundaries(objectBounds.min + CommonScriptableObjects.playerUnityToWorldOffset, objectBounds.max.y)) return false;
+            if(!IsInsideSceneBoundaries(objectBounds.max + CommonScriptableObjects.playerUnityToWorldOffset, objectBounds.max.y)) return false;
+
+            return true;
+        }
+
+        public virtual bool IsInsideSceneBoundaries(Vector2Int gridPosition, float height = 0f)
+        {
+            if(sceneData.parcels == null) return false;
+
+            float heightLimit = metricsController.GetLimits().sceneHeight;
+
+            for (int i = 0; i < sceneData.parcels.Length; i++)
+            {                
+                if(height > heightLimit) continue;
+
+                if (sceneData.parcels[i] == gridPosition) return true;
+            }
+
+            return false;
+        }
+
+        public bool IsInsideSceneBoundaries(Vector3 worldPosition, float height = 0f)
+        {
+            if(sceneData.parcels == null) return false;
+
+            float heightLimit = metricsController.GetLimits().sceneHeight;
+
+            for (int i = 0; i < sceneData.parcels.Length; i++)
+            {                
+                if(height > heightLimit) continue;
+
+                if (worldPosition.x < sceneData.parcels[i].x * ParcelSettings.PARCEL_SIZE + ParcelSettings.PARCEL_SIZE + ParcelSettings.PARCEL_BOUNDARIES_THRESHOLD
+                    && worldPosition.x > sceneData.parcels[i].x * ParcelSettings.PARCEL_SIZE - ParcelSettings.PARCEL_BOUNDARIES_THRESHOLD
+                    && worldPosition.z < sceneData.parcels[i].y * ParcelSettings.PARCEL_SIZE + ParcelSettings.PARCEL_SIZE + ParcelSettings.PARCEL_BOUNDARIES_THRESHOLD
+                    && worldPosition.z > sceneData.parcels[i].y * ParcelSettings.PARCEL_SIZE - ParcelSettings.PARCEL_BOUNDARIES_THRESHOLD)
                 {
                     return true;
                 }
@@ -311,7 +336,9 @@ namespace DCL.Controllers
             newEntity.gameObject.transform.SetParent(gameObject.transform, false);
             newEntity.gameObject.SetActive(true);
             newEntity.scene = this;
+
             newEntity.OnCleanupEvent += po.OnCleanup;
+            newEntity.OnShapeUpdated += boundariesChecker.EvaluateEntityPosition;
 
             entities.Add(tmpCreateEntityMessage.id, newEntity);
 
@@ -521,6 +548,8 @@ namespace DCL.Controllers
                     entity.gameObject.transform.localPosition = DCLTransform.model.position;
                     entity.gameObject.transform.localRotation = DCLTransform.model.rotation;
                     entity.gameObject.transform.localScale = DCLTransform.model.scale;
+
+                    boundariesChecker.EvaluateEntityPosition(entity);
                 }
 
                 return null;
@@ -875,9 +904,9 @@ namespace DCL.Controllers
             switch (componentName)
             {
                 case "shape":
-                    if (entity.currentShape != null)
+                    if (entity.meshesInfo.currentShape != null)
                     {
-                        entity.currentShape.DetachFrom(entity);
+                        entity.meshesInfo.currentShape.DetachFrom(entity);
                     }
                     return;
                 case OnClickComponent.NAME:

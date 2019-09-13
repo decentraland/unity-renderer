@@ -20,7 +20,7 @@ public class LoadableShape_Tests : TestsBase
 
         yield return null;
 
-        Assert.IsTrue(scene.entities[entityId].meshGameObject == null,
+        Assert.IsTrue(scene.entities[entityId].meshRootGameObject == null,
             "Since the shape hasn't been updated yet, the child mesh shouldn't exist");
 
         TestHelpers.CreateAndSetShape(scene, entityId, DCL.Models.CLASS_ID.OBJ_SHAPE, JsonConvert.SerializeObject(
@@ -32,10 +32,10 @@ public class LoadableShape_Tests : TestsBase
         LoadWrapper_OBJ objShape = scene.entities[entityId].gameObject.GetComponentInChildren<LoadWrapper_OBJ>(true);
         yield return new WaitUntil(() => objShape.alreadyLoaded);
 
-        Assert.IsTrue(scene.entities[entityId].meshGameObject != null,
+        Assert.IsTrue(scene.entities[entityId].meshRootGameObject != null,
             "Every entity with a shape should have the mandatory 'Mesh' object as a child");
 
-        var childRenderer = scene.entities[entityId].meshGameObject.GetComponentInChildren<MeshRenderer>();
+        var childRenderer = scene.entities[entityId].meshRootGameObject.GetComponentInChildren<MeshRenderer>();
         Assert.IsTrue(childRenderer != null,
             "Since the shape has already been updated, the child renderer should exist");
         Assert.AreNotSame(placeholderLoadingMaterial, childRenderer.sharedMaterial,
@@ -53,26 +53,26 @@ public class LoadableShape_Tests : TestsBase
         TestHelpers.CreateSceneEntity(scene, entityId);
         var entity = scene.entities[entityId];
 
-        Assert.IsTrue(entity.meshGameObject == null, "meshGameObject should be null");
+        Assert.IsTrue(entity.meshRootGameObject == null, "meshGameObject should be null");
 
         // Set its shape as a BOX
         TestHelpers.CreateAndSetShape(scene, entityId, CLASS_ID.BOX_SHAPE, "{}");
 
-        var meshName = entity.meshGameObject.GetComponent<MeshFilter>().mesh.name;
+        var meshName = entity.meshRootGameObject.GetComponent<MeshFilter>().mesh.name;
         Assert.AreEqual("DCL Box Instance", meshName);
 
         // Update its shape to a cylinder
         TestHelpers.CreateAndSetShape(scene, entityId, CLASS_ID.CYLINDER_SHAPE, "{}");
 
-        Assert.IsTrue(entity.meshGameObject != null, "meshGameObject should not be null");
+        Assert.IsTrue(entity.meshRootGameObject != null, "meshGameObject should not be null");
 
-        meshName = entity.meshGameObject.GetComponent<MeshFilter>().mesh.name;
+        meshName = entity.meshRootGameObject.GetComponent<MeshFilter>().mesh.name;
         Assert.AreEqual("DCL Cylinder Instance", meshName);
-        Assert.IsTrue(entity.meshGameObject.GetComponent<MeshFilter>() != null,
+        Assert.IsTrue(entity.meshRootGameObject.GetComponent<MeshFilter>() != null,
             "After updating the entity shape to a basic shape, the mesh filter shouldn't be removed from the object");
 
-        Assert.IsTrue(entity.currentShape != null, "current shape must exist 1");
-        Assert.IsTrue(entity.currentShape is CylinderShape, "current shape is BoxShape");
+        Assert.IsTrue(entity.meshesInfo.currentShape != null, "current shape must exist 1");
+        Assert.IsTrue(entity.meshesInfo.currentShape is CylinderShape, "current shape is BoxShape");
 
         // Update its shape to a GLTF
         TestHelpers.CreateAndSetShape(scene, entityId, DCL.Models.CLASS_ID.GLTF_SHAPE, JsonConvert.SerializeObject(
@@ -84,12 +84,12 @@ public class LoadableShape_Tests : TestsBase
         LoadWrapper_GLTF gltfShape = scene.entities[entityId].gameObject.GetComponentInChildren<LoadWrapper_GLTF>(true);
         yield return new WaitUntil(() => gltfShape.alreadyLoaded);
 
-        Assert.IsTrue(entity.currentShape != null, "current shape must exist 2");
-        Assert.IsTrue(entity.currentShape is GLTFShape, "current shape is GLTFShape");
+        Assert.IsTrue(entity.meshesInfo.currentShape != null, "current shape must exist 2");
+        Assert.IsTrue(entity.meshesInfo.currentShape is GLTFShape, "current shape is GLTFShape");
 
-        Assert.IsTrue(entity.meshGameObject != null);
+        Assert.IsTrue(entity.meshRootGameObject != null);
 
-        Assert.IsTrue(entity.meshGameObject.GetComponent<MeshFilter>() == null,
+        Assert.IsTrue(entity.meshRootGameObject.GetComponent<MeshFilter>() == null,
             "After updating the entity shape to a GLTF shape, the mesh filter should be removed from the object");
         Assert.IsTrue(
             scene.entities[entityId].gameObject.GetComponentInChildren<UnityGLTF.InstantiatedGLTFObject>() != null,
@@ -100,9 +100,9 @@ public class LoadableShape_Tests : TestsBase
 
         yield return null;
 
-        Assert.IsTrue(entity.meshGameObject != null);
+        Assert.IsTrue(entity.meshRootGameObject != null);
 
-        meshName = entity.meshGameObject.GetComponent<MeshFilter>().mesh.name;
+        meshName = entity.meshRootGameObject.GetComponent<MeshFilter>().mesh.name;
 
         Assert.AreEqual("DCL Cylinder Instance", meshName);
         Assert.IsTrue(

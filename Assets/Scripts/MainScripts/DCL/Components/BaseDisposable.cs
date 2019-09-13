@@ -67,10 +67,7 @@ namespace DCL.Components
 
         public virtual void DetachFrom(DecentralandEntity entity, Type overridenAttachedType = null)
         {
-            if (!attachedEntities.Contains(entity))
-            {
-                return;
-            }
+            if (!attachedEntities.Contains(entity)) return;
 
             entity.OnRemoved -= OnEntityRemoved;
 

@@ -101,7 +101,7 @@ namespace DCL.Components
         {
             if (canvas != null && scene != null)
             {
-                bool shouldBeVisible = scene.IsInsideSceneBoundaries(currentCharacterPosition) && model.visible && (scene.isPersistent || GlobalVisibility);
+                bool shouldBeVisible = scene.IsInsideSceneBoundaries(currentCharacterPosition.worldPosition) && model.visible && (scene.isPersistent || GlobalVisibility);
                 canvasGroup.alpha = shouldBeVisible ? 1f : 0f;
                 canvasGroup.blocksRaycasts = shouldBeVisible;
             }
@@ -116,7 +116,7 @@ namespace DCL.Components
                 if (scene.isPersistent)
                     toggle.gameObject.SetActive(false);
                 else
-                    toggle.gameObject.SetActive(toggle.gameObject.activeSelf || scene.IsInsideSceneBoundaries(currentCharacterPosition));
+                    toggle.gameObject.SetActive(toggle.gameObject.activeSelf || scene.IsInsideSceneBoundaries(currentCharacterPosition.worldPosition));
             }
         }
 

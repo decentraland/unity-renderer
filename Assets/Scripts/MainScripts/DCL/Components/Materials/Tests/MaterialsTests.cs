@@ -36,10 +36,10 @@ namespace Tests
             yield return matPBR.routine;
 
             {
-                Assert.IsTrue(entity.meshGameObject != null,
+                Assert.IsTrue(entity.meshRootGameObject != null,
                     "Every entity with a shape should have the mandatory 'Mesh' object as a child");
 
-                var meshRenderer = entity.meshGameObject.GetComponent<MeshRenderer>();
+                var meshRenderer = entity.meshRootGameObject.GetComponent<MeshRenderer>();
                 Assert.IsTrue(meshRenderer != null, "MeshRenderer must exist");
 
                 var assignedMaterial = meshRenderer.sharedMaterial;
@@ -72,10 +72,10 @@ namespace Tests
 
             // Check if material initialized correctly
             {
-                Assert.IsTrue(scene.entities[entityId].meshGameObject != null,
+                Assert.IsTrue(scene.entities[entityId].meshRootGameObject != null,
                     "Every entity with a shape should have the mandatory 'Mesh' object as a child");
 
-                var meshRenderer = scene.entities[entityId].meshGameObject.GetComponent<MeshRenderer>();
+                var meshRenderer = scene.entities[entityId].meshRootGameObject.GetComponent<MeshRenderer>();
 
                 Assert.IsTrue(meshRenderer != null, "MeshRenderer must exist");
 
@@ -182,7 +182,7 @@ namespace Tests
                     metallic = 0.3f,
                 }, firstMaterialID);
 
-            Assert.IsTrue(scene.entities[firstEntityID].meshGameObject != null,
+            Assert.IsTrue(scene.entities[firstEntityID].meshRootGameObject != null,
                 "Every entity with a shape should have the mandatory 'Mesh' object as a child");
 
             // Create second entity with material
@@ -195,7 +195,7 @@ namespace Tests
                     metallic = 0.66f,
                 }, secondMaterialID);
 
-            Assert.IsTrue(scene.entities[secondEntityID].meshGameObject != null,
+            Assert.IsTrue(scene.entities[secondEntityID].meshRootGameObject != null,
                 "Every entity with a shape should have the mandatory 'Mesh' object as a child");
 
             // Create third entity and assign 1st material
@@ -209,13 +209,13 @@ namespace Tests
                 name = "material"
             }));
 
-            Assert.IsTrue(scene.entities[thirdEntityID].meshGameObject != null,
+            Assert.IsTrue(scene.entities[thirdEntityID].meshRootGameObject != null,
                 "Every entity with a shape should have the mandatory 'Mesh' object as a child");
 
             // Check renderers material references
-            var firstRenderer = scene.entities[firstEntityID].meshGameObject.GetComponent<MeshRenderer>();
-            var secondRenderer = scene.entities[secondEntityID].meshGameObject.GetComponent<MeshRenderer>();
-            var thirdRenderer = scene.entities[thirdEntityID].meshGameObject.GetComponent<MeshRenderer>();
+            var firstRenderer = scene.entities[firstEntityID].meshRootGameObject.GetComponent<MeshRenderer>();
+            var secondRenderer = scene.entities[secondEntityID].meshRootGameObject.GetComponent<MeshRenderer>();
+            var thirdRenderer = scene.entities[thirdEntityID].meshRootGameObject.GetComponent<MeshRenderer>();
             Assert.IsTrue(firstRenderer.sharedMaterial != secondRenderer.sharedMaterial,
                 "1st and 2nd entities should have different materials");
             Assert.IsTrue(firstRenderer.sharedMaterial == thirdRenderer.sharedMaterial,
@@ -237,7 +237,7 @@ namespace Tests
                     metallic = 0.3f,
                 }, firstMaterialID);
 
-            Assert.IsTrue(scene.entities[firstEntityID].meshGameObject != null,
+            Assert.IsTrue(scene.entities[firstEntityID].meshRootGameObject != null,
                 "Every entity with a shape should have the mandatory 'Mesh' object as a child");
 
             // Create second entity with material
@@ -250,7 +250,7 @@ namespace Tests
                     metallic = 0.66f,
                 }, secondMaterialID);
 
-            Assert.IsTrue(scene.entities[secondEntityID].meshGameObject != null,
+            Assert.IsTrue(scene.entities[secondEntityID].meshRootGameObject != null,
                 "Every entity with a shape should have the mandatory 'Mesh' object as a child");
 
             // Create third entity and assign 1st material
@@ -264,13 +264,13 @@ namespace Tests
                 name = "material"
             }));
 
-            Assert.IsTrue(scene.entities[thirdEntityID].meshGameObject != null,
+            Assert.IsTrue(scene.entities[thirdEntityID].meshRootGameObject != null,
                 "Every entity with a shape should have the mandatory 'Mesh' object as a child");
 
             // Check renderers material references
-            var firstRenderer = scene.entities[firstEntityID].meshGameObject.GetComponent<MeshRenderer>();
-            var secondRenderer = scene.entities[secondEntityID].meshGameObject.GetComponent<MeshRenderer>();
-            var thirdRenderer = scene.entities[thirdEntityID].meshGameObject.GetComponent<MeshRenderer>();
+            var firstRenderer = scene.entities[firstEntityID].meshRootGameObject.GetComponent<MeshRenderer>();
+            var secondRenderer = scene.entities[secondEntityID].meshRootGameObject.GetComponent<MeshRenderer>();
+            var thirdRenderer = scene.entities[thirdEntityID].meshRootGameObject.GetComponent<MeshRenderer>();
             Assert.IsTrue(firstRenderer.sharedMaterial != secondRenderer.sharedMaterial,
                 "1st and 2nd entities should have different materials");
             Assert.IsTrue(firstRenderer.sharedMaterial == thirdRenderer.sharedMaterial,
@@ -308,10 +308,10 @@ namespace Tests
             TestHelpers.InstantiateEntityWithMaterial(scene, entityId, Vector3.zero,
                 new DCL.Components.BasicMaterial.Model(), materialID);
 
-            Assert.IsTrue(scene.entities[entityId].meshGameObject != null,
+            Assert.IsTrue(scene.entities[entityId].meshRootGameObject != null,
                 "Every entity with a shape should have the mandatory 'Mesh' object as a child");
 
-            var meshRenderer = scene.entities[entityId].meshGameObject.GetComponent<MeshRenderer>();
+            var meshRenderer = scene.entities[entityId].meshRootGameObject.GetComponent<MeshRenderer>();
             var materialComponent = scene.disposableComponents[materialID] as DCL.Components.BasicMaterial;
 
             yield return materialComponent.routine;
@@ -347,7 +347,7 @@ namespace Tests
             TestHelpers.InstantiateEntityWithMaterial(scene, firstEntityId, Vector3.zero,
                 new DCL.Components.BasicMaterial.Model(), materialID);
 
-            Assert.IsTrue(scene.entities[firstEntityId].meshGameObject != null,
+            Assert.IsTrue(scene.entities[firstEntityId].meshRootGameObject != null,
                 "Every entity with a shape should have the mandatory 'Mesh' object as a child");
 
             // Create 2nd entity and attach same material to it
@@ -359,11 +359,11 @@ namespace Tests
                 name = "material"
             }));
 
-            Assert.IsTrue(scene.entities[secondEntityId].meshGameObject != null,
+            Assert.IsTrue(scene.entities[secondEntityId].meshRootGameObject != null,
                 "Every entity with a shape should have the mandatory 'Mesh' object as a child");
 
-            var firstMeshRenderer = scene.entities[firstEntityId].meshGameObject.GetComponent<MeshRenderer>();
-            var secondMeshRenderer = scene.entities[secondEntityId].meshGameObject.GetComponent<MeshRenderer>();
+            var firstMeshRenderer = scene.entities[firstEntityId].meshRootGameObject.GetComponent<MeshRenderer>();
+            var secondMeshRenderer = scene.entities[secondEntityId].meshRootGameObject.GetComponent<MeshRenderer>();
             var materialComponent = scene.disposableComponents[materialID] as DCL.Components.BasicMaterial;
 
             yield return materialComponent.routine;
@@ -424,9 +424,9 @@ namespace Tests
 
             TestHelpers.SharedComponentAttach(shape, entity);
 
-            Assert.IsTrue(entity.meshGameObject != null);
-            Assert.IsTrue(entity.meshGameObject.GetComponent<MeshRenderer>() != null);
-            Assert.AreEqual(entity.meshGameObject.GetComponent<MeshRenderer>().sharedMaterial, mat.material);
+            Assert.IsTrue(entity.meshRootGameObject != null);
+            Assert.IsTrue(entity.meshRootGameObject.GetComponent<MeshRenderer>() != null);
+            Assert.AreEqual(entity.meshRootGameObject.GetComponent<MeshRenderer>().sharedMaterial, mat.material);
         }
 
 
@@ -468,9 +468,9 @@ namespace Tests
 
             TestHelpers.SharedComponentAttach(shape, entity);
 
-            Assert.IsTrue(entity.meshGameObject != null);
-            Assert.IsTrue(entity.meshGameObject.GetComponent<MeshRenderer>() != null);
-            Assert.AreEqual(entity.meshGameObject.GetComponent<MeshRenderer>().sharedMaterial, mat.material);
+            Assert.IsTrue(entity.meshRootGameObject != null);
+            Assert.IsTrue(entity.meshRootGameObject.GetComponent<MeshRenderer>() != null);
+            Assert.AreEqual(entity.meshRootGameObject.GetComponent<MeshRenderer>().sharedMaterial, mat.material);
         }
 
 
@@ -488,7 +488,7 @@ namespace Tests
             TestHelpers.InstantiateEntityWithMaterial(scene, entityId, Vector3.zero,
                 new DCL.Components.BasicMaterial.Model(), materialID);
 
-            var meshObject = scene.entities[entityId].meshGameObject;
+            var meshObject = scene.entities[entityId].meshRootGameObject;
             Assert.IsTrue(meshObject != null,
                 "Every entity with a shape should have the mandatory 'Mesh' object as a child");
 

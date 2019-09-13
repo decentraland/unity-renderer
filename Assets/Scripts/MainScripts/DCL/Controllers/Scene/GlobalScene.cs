@@ -5,7 +5,7 @@ namespace DCL.Controllers
 {
     public class GlobalScene : ParcelScene
     {
-        public override bool IsInsideSceneBoundaries(Vector2 gridPosition)
+        public override bool IsInsideSceneBoundaries(Vector2Int gridPosition, float height = 0)
         {
             return true;
         }

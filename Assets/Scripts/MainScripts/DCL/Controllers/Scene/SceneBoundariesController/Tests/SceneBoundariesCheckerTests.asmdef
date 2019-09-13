@@ -1,8 +1,8 @@
 {
-    "name": "ParametrizedShapesTests",
+    "name": "SceneBoundariesCheckerTests",
     "references": [
         "MainScripts",
-        "Utils",
+        "Configuration",
         "DCLTransform"
     ],
     "optionalUnityReferences": [

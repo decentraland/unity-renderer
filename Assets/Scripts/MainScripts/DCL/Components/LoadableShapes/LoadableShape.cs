@@ -27,6 +27,16 @@ namespace DCL.Components
         {
             return null;
         }
+
+        public override bool IsVisible()
+        {
+            return model.visible;
+        }
+
+        public override bool HasCollisions()
+        {
+            return model.withCollisions;
+        }
     }
 
     public class LoadableShape<LoadWrapperType, LoadWrapperModelType> : LoadableShape
@@ -37,7 +47,6 @@ namespace DCL.Components
         private bool failed = false;
         private event Action<BaseDisposable> OnReadyCallbacks;
         public System.Action<DecentralandEntity> OnEntityShapeUpdated;
-
         new public LoadWrapperModelType model
         {
             get
@@ -88,7 +97,7 @@ namespace DCL.Components
                 if (updateCollisions)
                     ConfigureColliders(entity);
 
-                OnEntityShapeUpdated?.Invoke(entity);
+                entity.OnShapeUpdated?.Invoke(entity);
             }
 
             return null;
@@ -100,12 +109,14 @@ namespace DCL.Components
             {
                 isLoaded = false;
                 entity.EnsureMeshGameObject(componentName + " mesh");
-                LoadWrapperType loadableShape = entity.meshGameObject.GetOrCreateComponent<LoadWrapperType>();
+                LoadWrapperType loadableShape = entity.meshRootGameObject.GetOrCreateComponent<LoadWrapperType>();
                 loadableShape.entity = entity;
                 loadableShape.useVisualFeedback = Configuration.ParcelSettings.VISUAL_LOADING_ENABLED;
                 loadableShape.initialVisibility = model.visible;
                 loadableShape.contentProvider = scene.contentProvider;
                 loadableShape.Load(model.src, OnLoadCompleted, OnLoadFailed);
+
+                entity.meshesInfo.currentShape = this;
             }
             else
             {
@@ -119,17 +130,17 @@ namespace DCL.Components
 
         void ConfigureVisibility(DecentralandEntity entity)
         {
-            var loadable = entity.meshGameObject.GetComponentInChildren<LoadWrapper>();
+            var loadable = entity.meshRootGameObject.GetComponentInChildren<LoadWrapper>();
 
             if (loadable != null)
                 loadable.initialVisibility = model.visible;
 
-            ConfigureVisibility(entity.meshGameObject, model.visible);
+            ConfigureVisibility(entity.meshRootGameObject, model.visible, entity.meshesInfo.renderers);
         }
 
         protected virtual void ConfigureColliders(DecentralandEntity entity)
         {
-            CollidersManager.i.ConfigureColliders(entity, model.withCollisions, true);
+            CollidersManager.i.ConfigureColliders(entity.meshRootGameObject, model.withCollisions, true, entity);
         }
 
         protected void OnLoadFailed(LoadWrapper loadWrapper)
@@ -159,16 +170,18 @@ namespace DCL.Components
             isLoaded = true;
             DecentralandEntity entity = loadWrapper.entity;
 
-            if (entity.currentShape != null)
+            if (entity.meshesInfo.currentShape != null)
             {
-                var model = (entity.currentShape as LoadableShape).model;
-                ConfigureVisibility(loadWrapper.entity.meshGameObject, model.visible);
+                entity.meshesInfo.renderers = entity.meshRootGameObject.GetComponentsInChildren<Renderer>();
+
+                var model = (entity.meshesInfo.currentShape as LoadableShape).model;
+                ConfigureVisibility(entity.meshRootGameObject, model.visible, loadWrapper.entity.meshesInfo.renderers);
             }
             else
             {
                 Debug.LogWarning("WARNING: entity.currentShape == null! this can lead to errors!");
             }
-
+            
             ConfigureColliders(entity);
 
             entity.OnComponentUpdated?.Invoke(loadWrapper);
@@ -178,16 +191,15 @@ namespace DCL.Components
             OnReadyCallbacks = null;
         }
 
-        private void DetachShape(DecentralandEntity entity)
+        protected virtual void DetachShape(DecentralandEntity entity)
         {
-            if (entity == null || entity.meshGameObject == null)
-            {
-                return;
-            }
+            if (entity == null || entity.meshRootGameObject == null) return;
 
-            LoadWrapper loadWrapper = entity.meshGameObject.GetComponent<LoadWrapper>();
+            LoadWrapper loadWrapper = entity.meshRootGameObject.GetComponent<LoadWrapper>();
 
             loadWrapper?.Unload();
+
+            entity.meshesInfo.CleanReferences();
         }
 
         public override void CallWhenReady(Action<BaseDisposable> callback)

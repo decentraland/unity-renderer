@@ -324,11 +324,11 @@ namespace DCL.Helpers
         /**
          * Transforms a world position into a grid position
          */
-        public static Vector2 WorldToGridPosition(Vector3 worldPosition)
+        public static Vector2Int WorldToGridPosition(Vector3 worldPosition)
         {
-            return new Vector2(
-                Mathf.Floor(worldPosition.x / ParcelSettings.PARCEL_SIZE),
-                Mathf.Floor(worldPosition.z / ParcelSettings.PARCEL_SIZE)
+            return new Vector2Int(
+                (int)Mathf.Floor(worldPosition.x / ParcelSettings.PARCEL_SIZE),
+                (int)Mathf.Floor(worldPosition.z / ParcelSettings.PARCEL_SIZE)
             );
         }
     }

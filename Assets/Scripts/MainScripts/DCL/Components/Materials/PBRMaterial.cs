@@ -222,13 +222,13 @@ namespace DCL.Components
             entity.OnShapeUpdated -= OnShapeUpdated;
             entity.OnShapeUpdated += OnShapeUpdated;
 
-            if (entity.meshGameObject != null)
+            if (entity.meshRootGameObject != null)
             {
-                var meshRenderer = entity.meshGameObject.GetComponent<MeshRenderer>();
+                var meshRenderer = entity.meshRootGameObject.GetComponent<MeshRenderer>();
 
                 if (meshRenderer != null)
                 {
-                    InitMaterial(entity.meshGameObject);
+                    InitMaterial(entity.meshRootGameObject);
                 }
             }
         }
@@ -262,21 +262,21 @@ namespace DCL.Components
         {
             if (entity != null)
             {
-                InitMaterial(entity.meshGameObject);
+                InitMaterial(entity.meshRootGameObject);
             }
         }
 
 
         void OnMaterialDetached(DecentralandEntity entity)
         {
-            if (entity.meshGameObject == null)
+            if (entity.meshRootGameObject == null)
             {
                 return;
             }
 
             entity.OnShapeUpdated -= OnShapeUpdated;
 
-            var meshRenderer = entity.meshGameObject.GetComponent<MeshRenderer>();
+            var meshRenderer = entity.meshRootGameObject.GetComponent<MeshRenderer>();
 
             if (meshRenderer && meshRenderer.sharedMaterial == material)
             {

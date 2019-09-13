@@ -10,21 +10,53 @@ namespace DCL.Models
     [Serializable]
     public class DecentralandEntity : DCL.ICleanable, DCL.ICleanableEventDispatcher
     {
+        [Serializable]
+        public class MeshesInfo
+        {
+            public GameObject meshRootGameObject
+            {
+                get
+                {
+                    return meshRootGameObjectValue;
+                }
+                set
+                {
+                    meshRootGameObjectValue = value;
+                    renderers = meshRootGameObjectValue?.GetComponentsInChildren<Renderer>(true);
+                }
+            }
+
+            public BaseShape currentShape;
+            public Renderer[] renderers;
+            public List<Collider> colliders = new List<Collider>();
+
+            GameObject meshRootGameObjectValue;
+
+            public void CleanReferences()
+            {
+                meshRootGameObject = null;
+                currentShape = null;
+                renderers = null;
+                colliders.Clear();
+            }
+        }
+
         public ParcelScene scene;
 
         public Dictionary<string, DecentralandEntity> children = new Dictionary<string, DecentralandEntity>();
         public DecentralandEntity parent;
 
-        public Dictionary<CLASS_ID_COMPONENT, BaseComponent> components =
-            new Dictionary<CLASS_ID_COMPONENT, BaseComponent>();
+        public Dictionary<CLASS_ID_COMPONENT, BaseComponent> components = new Dictionary<CLASS_ID_COMPONENT, BaseComponent>();
 
         // HACK: (Zak) will be removed when we separate each 
         // uuid component as a different class id
-        public Dictionary<string, UUIDComponent> uuidComponents =
-            new Dictionary<string, UUIDComponent>();
+        public Dictionary<string, UUIDComponent> uuidComponents = new Dictionary<string, UUIDComponent>();
 
         public GameObject gameObject;
         public string entityId;
+        public MeshesInfo meshesInfo = new MeshesInfo();
+        public GameObject meshRootGameObject => meshesInfo.meshRootGameObject;
+        public Renderer[] renderers => meshesInfo.renderers;
 
         public System.Action<MonoBehaviour> OnComponentUpdated;
         public System.Action<DecentralandEntity> OnShapeUpdated;
@@ -32,10 +64,6 @@ namespace DCL.Models
         public System.Action<DCLTransform.Model> OnTransformChange;
 
         public System.Action<ICleanableEventDispatcher> OnCleanupEvent { get; set; }
-
-        public GameObject meshGameObject;
-        public BaseShape currentShape;
-
         Dictionary<Type, BaseDisposable> sharedComponents = new Dictionary<Type, BaseDisposable>();
 
         const string MESH_GAMEOBJECT_NAME = "Mesh";
@@ -69,12 +97,12 @@ namespace DCL.Models
             {
                 entity.AddChild(this);
 
-                if (entity.gameObject && this.gameObject)
-                    this.gameObject.transform.SetParent(entity.gameObject.transform, false);
+                if (entity.gameObject && gameObject)
+                    gameObject.transform.SetParent(entity.gameObject.transform, false);
             }
-            else if (this.gameObject)
+            else if (gameObject)
             {
-                this.gameObject.transform.SetParent(null, false);
+                gameObject.transform.SetParent(null, false);
             }
 
             parent = entity;
@@ -82,30 +110,29 @@ namespace DCL.Models
 
         public void EnsureMeshGameObject(string gameObjectName = null)
         {
-            if (meshGameObject == null)
+            if (meshesInfo.meshRootGameObject == null)
             {
-                meshGameObject = new GameObject();
-                meshGameObject.name = gameObjectName == null ? MESH_GAMEOBJECT_NAME : gameObjectName;
-                meshGameObject.transform.SetParent(gameObject.transform);
-                Utils.ResetLocalTRS(meshGameObject.transform);
+                meshesInfo.meshRootGameObject = new GameObject();
+                meshesInfo.meshRootGameObject.name = gameObjectName == null ? MESH_GAMEOBJECT_NAME : gameObjectName;
+                meshesInfo.meshRootGameObject.transform.SetParent(gameObject.transform);
+                Utils.ResetLocalTRS(meshesInfo.meshRootGameObject.transform);
             }
         }
 
         public void Cleanup()
         {
             // Dont't do anything if this object was already released
-            if (isReleased)
-                return;
+            if (isReleased) return;
 
             OnRemoved?.Invoke(this);
 
             // This will release the poolable objects of the mesh and the entity
             OnCleanupEvent?.Invoke(this);
 
-            if (meshGameObject)
+            if (meshesInfo.meshRootGameObject)
             {
-                Utils.SafeDestroy(meshGameObject);
-                meshGameObject = null;
+                Utils.SafeDestroy(meshesInfo.meshRootGameObject);
+                meshesInfo.CleanReferences();
             }
 
             if (gameObject)
