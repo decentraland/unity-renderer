@@ -75,7 +75,8 @@ namespace DCL
             }
         }
 
-        void RaiseEvent(WebInterface.ACTION_BUTTON buttonId, EVENT evt, bool useRaycast)
+        // Note (Zak): it is public for testing purposes only
+        public void RaiseEvent(WebInterface.ACTION_BUTTON buttonId, EVENT evt, bool useRaycast)
         {
             if (listeners.ContainsKey(buttonId))
             {

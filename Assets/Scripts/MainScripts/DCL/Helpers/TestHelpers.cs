@@ -128,6 +128,8 @@ namespace DCL.Helpers
                 );
             }
 
+            DCL.PointerEventsController.i.Initialize(isTesting: true);
+
             yield return new WaitForAllMessagesProcessed();
         }
 
@@ -1271,6 +1273,36 @@ namespace DCL.Helpers
 
                 return awaitedConditionMet;
             }, 2f);
+        }
+
+        public static IEnumerator WaitForEventFromEngine<T>(string targetMessageType, T evt,
+            System.Action OnIterationStart, Func<T, bool> OnSuccess)
+        {
+            // Hook up to web interface engine message reporting
+            DCL.Interface.WebInterface.OnMessageFromEngine += OnFirstMessageFromEngine;
+
+            lastMessageFromEngineType = "";
+            lastMessageFromEnginePayload = "";
+
+            yield return new DCL.WaitUntil(() =>
+            {
+                OnIterationStart?.Invoke();
+
+                var messageObject = JsonUtility.FromJson<T>(lastMessageFromEnginePayload);
+
+                if (OnSuccess != null)
+                    return OnSuccess.Invoke(messageObject);
+
+                return false;
+            }, 2f);
+        }
+
+        // Used in WaitForPointerDownEventFromEngine() to capture the first triggered event message from engine
+        static void OnFirstMessageFromEngine(string eventType, string eventPayload)
+        {
+            DCL.Interface.WebInterface.OnMessageFromEngine -= OnFirstMessageFromEngine;
+            lastMessageFromEngineType = eventType;
+            lastMessageFromEnginePayload = eventPayload;
         }
 
         // Used in WaitForMessageFromEngine() to capture the triggered event messages from engine

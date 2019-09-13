@@ -654,6 +654,9 @@ namespace DCL
                     case MessagingTypes.INIT_DONE:
                         scene.SetInitMessagesDone();
                         break;
+                    case MessagingTypes.QUERY:
+                        ParseQuery(payload, scene.sceneData.id);
+                        break;
                     default:
                         Debug.LogError($"Unknown method {method}");
                         return true;
@@ -670,6 +673,41 @@ namespace DCL
             else
             {
                 return false;
+            }
+        }
+
+        public Vector3 ConvertUnityToScenePosition(Vector3 pos, ParcelScene scene = null)
+        {
+            if (scene == null)
+            {
+                string sceneId = GetCurrentScene(DCLCharacterController.i.characterPosition);
+
+                if (!string.IsNullOrEmpty(sceneId) && loadedScenes.ContainsKey(sceneId))
+                    scene = loadedScenes[GetCurrentScene(DCLCharacterController.i.characterPosition)];
+                else
+                    return pos;
+            }
+
+            Vector3 worldPosition = DCLCharacterController.i.characterPosition.UnityToWorldPosition(pos);
+            return worldPosition - Utils.GridToWorldPosition(scene.sceneData.basePosition.x, scene.sceneData.basePosition.y);
+        }
+
+        public void ParseQuery(string payload, string sceneId)
+        {
+            QueryMessage query = new QueryMessage();
+            query.FromJSON(payload);
+
+            ParcelScene scene = loadedScenes[sceneId];
+
+            Vector3 worldOrigin = query.payload.ray.origin + Utils.GridToWorldPosition(scene.sceneData.basePosition.x, scene.sceneData.basePosition.y);
+            query.payload.ray.unityOrigin = DCLCharacterController.i.characterPosition.WorldToUnityPosition(worldOrigin);
+
+            switch (query.queryId)
+            {
+                case "raycast":
+                    query.payload.sceneId = sceneId;
+                    PhysicsCast.i.Query(query.payload);
+                    break;
             }
         }
 
