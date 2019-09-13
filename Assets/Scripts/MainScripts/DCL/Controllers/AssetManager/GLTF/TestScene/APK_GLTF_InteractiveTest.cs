@@ -23,7 +23,7 @@ public class APK_GLTF_InteractiveTest : MonoBehaviour
 
     void Generate()
     {
-        string url = TestHelpers.GetTestsAssetsPath() + "/GLB/Lantern/Lantern.glb";
+        string url = TestHelpers.GetTestsAssetsPath() + "/GLB/TrunkSeparatedTextures/Trunk.glb";
         AssetPromise_GLTF promise = new AssetPromise_GLTF(provider, url);
 
         Vector3 pos = Vector3.zero;

@@ -180,9 +180,24 @@ namespace UnityGLTF
 
         public void Dispose()
         {
+            //NOTE(Brian): If the coroutine is interrupted and the local streaming list contains something, 
+            //             we must clean the static list or other GLTFSceneImporter instances might get stuck.
+            int streamingImagesLocalListCount = streamingImagesLocalList.Count;
+
+            for (int i = 0; i < streamingImagesLocalListCount; i++)
+            {
+                string s = streamingImagesLocalList[i];
+
+                if (streamingImagesStaticList.Contains(s))
+                {
+                    streamingImagesStaticList.Remove(s);
+                }
+            }
+
             if (_assetCache != null)
             {
-                Cleanup();
+                _assetCache.Dispose();
+                _assetCache = null;
             }
         }
 
@@ -462,7 +477,8 @@ namespace UnityGLTF
             }
         }
 
-        static List<string> isStreaming = new List<string>();
+        static List<string> streamingImagesStaticList = new List<string>();
+        List<string> streamingImagesLocalList = new List<string>();
 
         protected IEnumerator ConstructImageBuffer(GLTFTexture texture, int textureIndex)
         {
@@ -471,8 +487,10 @@ namespace UnityGLTF
 
             if (image.Uri != null)
             {
-                while (isStreaming.Contains(image.Uri))
+                while (streamingImagesStaticList.Contains(image.Uri))
+                {
                     yield return new WaitForSeconds(0.1f);
+                }
             }
 
             if ((image.Uri == null || !PersistentAssetCache.ImageCacheByUri.ContainsKey(image.Uri)) && _assetCache.ImageStreamCache[sourceId] == null)
@@ -480,10 +498,14 @@ namespace UnityGLTF
                 // we only load the streams if not a base64 uri, meaning the data is in the uri
                 if (image.Uri != null && !URIHelper.IsBase64Uri(image.Uri))
                 {
-                    isStreaming.Add(image.Uri);
+                    streamingImagesStaticList.Add(image.Uri);
+                    streamingImagesLocalList.Add(image.Uri);
+
                     yield return _loader.LoadStream(image.Uri);
                     _assetCache.ImageStreamCache[sourceId] = _loader.LoadedStream;
-                    isStreaming.Remove(image.Uri);
+
+                    streamingImagesStaticList.Remove(image.Uri);
+                    streamingImagesLocalList.Remove(image.Uri);
                 }
                 else if (image.Uri == null && image.BufferView != null && _assetCache.BufferCache[image.BufferView.Value.Buffer.Id] == null)
                 {
@@ -2377,15 +2399,6 @@ namespace UnityGLTF
             var lastIndex = gltfPath.IndexOf(fileName);
             var partialPath = gltfPath.Substring(0, lastIndex);
             return partialPath;
-        }
-
-        /// <summary>
-        /// Cleans up any undisposed streams after loading a scene or a node.
-        /// </summary>
-        private void Cleanup()
-        {
-            _assetCache.Dispose();
-            _assetCache = null;
         }
     }
 }

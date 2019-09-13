@@ -18,7 +18,10 @@ namespace DCL
                 return false;
             }
 
-            result = baseUrl + "/" + url;
+            if (!string.IsNullOrEmpty(baseUrl))
+                result = baseUrl + "/" + url;
+            else
+                result = url;
 
             if (VERBOSE)
             {
