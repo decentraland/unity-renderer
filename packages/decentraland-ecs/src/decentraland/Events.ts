@@ -12,6 +12,20 @@ export class UUIDEvent<T = any> {
  * @public
  */
 @EventConstructor()
+export class RaycastResponse<T> {
+  constructor(
+    public readonly payload: {
+      queryId: string
+      queryType: string
+      payload: T
+    }
+  ) {}
+}
+
+/**
+ * @public
+ */
+@EventConstructor()
 export class PointerEvent<GlobalInputEventResult> {
   constructor(public readonly payload: GlobalInputEventResult) {}
 }

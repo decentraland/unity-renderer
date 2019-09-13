@@ -10,7 +10,8 @@ import {
   SetEntityParentPayload,
   ComponentCreatedPayload,
   ComponentDisposedPayload,
-  ComponentUpdatedPayload
+  ComponentUpdatedPayload,
+  QueryPayload
 } from 'shared/types'
 import { DecentralandInterface } from 'decentraland-ecs/src/decentraland/Types'
 import { defaultLogger } from 'shared/logger'
@@ -18,6 +19,7 @@ import { defaultLogger } from 'shared/logger'
 import { customEval, getES5Context } from './sdk/sandbox'
 import { DevToolsAdapter } from './sdk/DevToolsAdapter'
 import { ScriptingTransport, ILogOpts } from 'decentraland-rpc/src/common/json-rpc/types'
+import { QueryType } from 'decentraland-ecs/src'
 
 // tslint:disable-next-line:whitespace
 type IEngineAPI = import('shared/apis/EngineAPI').IEngineAPI
@@ -281,6 +283,17 @@ export default class GamekitScene extends Script {
               entityId,
               parentId
             } as SetEntityParentPayload)
+          })
+        },
+
+        /** queries for a specific system with a certain query configuration */
+        query(queryId: QueryType, payload: any) {
+          that.events.push({
+            type: 'Query',
+            payload: JSON.stringify({
+              queryId,
+              payload
+            } as QueryPayload)
           })
         },
 

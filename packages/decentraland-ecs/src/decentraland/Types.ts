@@ -1,4 +1,5 @@
 import { ReadOnlyVector3, ReadOnlyQuaternion } from './math'
+import { RaycastResponse } from './Events'
 
 /** @public */
 export type ModuleDescriptor = {
@@ -50,6 +51,10 @@ export type DecentralandInterface = {
 
   /** set a new parent for the entity */
   setParent(entityId: string, parentId: string): void
+
+  // QUERY
+
+  query(queryId: string, payload: any): void
 
   // COMPONENTS
 
@@ -165,6 +170,11 @@ export interface IEvents {
    * It could be a VR controller, a touch screen or the mouse.
    */
   pointerEvent: GlobalInputEventResult
+
+  /**
+   * `raycastResponse` is triggered in response to a raycast query
+   */
+  raycastResponse: RaycastResponse<any>
 
   /**
    * `chatMessage` is triggered when the user sends a message through chat entity.

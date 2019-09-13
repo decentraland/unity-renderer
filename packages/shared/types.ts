@@ -1,6 +1,7 @@
 import { parseParcelPosition } from 'atomicHelpers/parcelScenePositions'
 import { Wearable } from '../decentraland-ecs/src/decentraland/AvatarShape'
 import { Vector3Component } from '../atomicHelpers/landHelpers'
+import { QueryType } from 'decentraland-ecs/src/decentraland/PhysicsCast'
 
 export type MappingsResponse = {
   parcel_id: string
@@ -56,7 +57,10 @@ export type EntityActionType =
   | 'ComponentDisposed'
   | 'ComponentRemoved'
   | 'ComponentUpdated'
+  | 'Query'
   | 'InitMessagesFinished'
+
+export type QueryPayload = { queryId: string; payload: RayQuery }
 
 export type CreateEntityPayload = { id: string }
 
@@ -390,6 +394,18 @@ export type AvatarAsset = {
     type: string
     model: string
   }>
+}
+
+export type Ray = {
+  origin: Vector3Component
+  direction: Vector3Component
+  distance: number
+}
+
+export type RayQuery = {
+  queryId: string
+  queryType: QueryType
+  ray: Ray
 }
 
 export enum NotificationType {

@@ -1,0 +1,24 @@
+{
+  "display": {
+    "title": "raycasting-test",
+    "favicon": "favicon_asset"
+  },
+  "owner": "",
+  "contact": {
+    "name": "",
+    "email": ""
+  },
+  "main": "game.js",
+  "tags": [],
+  "scene": {
+    "parcels": ["-100,40"],
+    "base": "-100,40"
+  },
+  "policy": {
+    "contentRating": "E",
+    "fly": true,
+    "voiceEnabled": true,
+    "blacklist": [],
+    "teleportPosition": ""
+  }
+}

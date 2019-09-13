@@ -336,6 +336,10 @@ export class SharedSceneContext implements BABYLON.IDisposable {
     }
   }
 
+  Query(system: string, config: any) {
+    // nothing to do here
+  }
+
   dispatchUUIDEvent(uuid: string, payload: any): void {
     this.eventSubscriber.emit('uuidEvent', {
       uuid,

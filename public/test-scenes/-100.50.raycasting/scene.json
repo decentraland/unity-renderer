@@ -1,0 +1,41 @@
+{
+  "display": {
+    "title": "raycasting-test",
+    "favicon": "favicon_asset"
+  },
+  "owner": "",
+  "contact": {
+    "name": "",
+    "email": ""
+  },
+  "main": "game.js",
+  "tags": [],
+  "scene": {
+    "parcels": [
+      "-100,50",
+      "-101,50",
+      "-102,50",
+      "-103,50",
+      "-100,51",
+      "-101,51",
+      "-102,51",
+      "-103,51",
+      "-100,52",
+      "-101,52",
+      "-102,52",
+      "-103,52",
+      "-100,53",
+      "-101,53",
+      "-102,53",
+      "-103,53"
+    ],
+    "base": "-100,50"
+  },
+  "policy": {
+    "contentRating": "E",
+    "fly": true,
+    "voiceEnabled": true,
+    "blacklist": [],
+    "teleportPosition": ""
+  }
+}
