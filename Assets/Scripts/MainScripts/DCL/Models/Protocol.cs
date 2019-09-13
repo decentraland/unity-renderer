@@ -1,5 +1,6 @@
 ﻿using UnityEngine;
 
+
 namespace DCL.Models
 {
     public enum CLASS_ID_COMPONENT
@@ -230,6 +231,45 @@ namespace DCL.Models
         {
             uuid = default(string);
             type = default(string);
+
+            JsonUtility.FromJsonOverwrite(rawJson, this);
+        }
+    }
+
+
+    //-----------------------------------------------------
+    // Raycast
+    [System.Serializable]
+    public class Ray
+    {
+        public Vector3 origin;
+
+        [System.NonSerialized]
+        public Vector3 unityOrigin;
+
+        public Vector3 direction;
+        public float distance;
+    }
+
+
+    [System.Serializable]
+    public class RaycastQuery
+    {
+        public string sceneId;
+        public string queryId;
+        public string queryType;
+        public Ray ray;
+    }
+
+    [System.Serializable]
+    public class QueryMessage
+    {
+        public string queryId;
+        public RaycastQuery payload;
+
+        public void FromJSON(string rawJson)
+        {
+            queryId = default(string);
 
             JsonUtility.FromJsonOverwrite(rawJson, this);
         }

@@ -18,6 +18,7 @@ namespace DCL
         public const string SCENE_UPDATE = "UpdateScene";
         public const string SCENE_DESTROY = "UnloadScene";
         public const string INIT_DONE = "InitMessagesFinished";
+        public const string QUERY = "Query";
     }
 
     public class MessagingBusId

@@ -258,6 +258,66 @@ namespace DCL.Interface
             public string encodedTexture;
         };
 
+        //-----------------------------------------------------
+        // Raycast
+        [System.Serializable]
+        public class RayInfo
+        {
+            public Vector3 origin;
+            public Vector3 direction;
+            public float distance;
+        }
+
+        [System.Serializable]
+        public class RaycastHitInfo
+        {
+            public bool didHit;
+            public RayInfo ray;
+
+            public Vector3 hitPoint;
+            public Vector3 hitNormal;
+        }
+
+
+        [System.Serializable]
+        public class HitEntityInfo
+        {
+            public string entityId;
+            public string meshName;
+        }
+
+        [System.Serializable]
+        public class RaycastHitEntity : RaycastHitInfo
+        {
+            public HitEntityInfo entity;
+        }
+
+        [System.Serializable]
+        public class RaycastHitEntities : RaycastHitInfo
+        {
+            public RaycastHitEntity[] entities;
+        }
+
+        [System.Serializable]
+        public class RaycastResponse<T> where T : RaycastHitInfo
+        {
+            public string queryId;
+            public string queryType;
+            public T payload;
+        }
+
+        // Note (Zak): We need to explicitly define this classes for the JsonUtility to
+        // be able to serialize them
+        [System.Serializable]
+        public class RaycastHitFirstResponse : RaycastResponse<RaycastHitEntity>
+        {
+        }
+
+        [System.Serializable]
+        public class RaycastHitAllResponse : RaycastResponse<RaycastHitEntities>
+        {
+        }
+
 #if UNITY_WEBGL && !UNITY_EDITOR
     /**
      * This method is called after the first render. It marks the loading of the
@@ -348,35 +408,55 @@ namespace DCL.Interface
             SendSceneEvent(sceneId, "uuidEvent", onClickEvent);
         }
 
-        private static OnPointerEventPayload.Hit CreateHitObject(string entityId, string meshName, RaycastHit hitInfo)
+        private static void ReportRaycastResult<T, P>(string sceneId, string queryId, string queryType, P payload) where T : RaycastResponse<P>, new() where P : RaycastHitInfo
+        {
+            T response = new T();
+            response.queryId = queryId;
+            response.queryType = queryType;
+            response.payload = payload;
+
+            SendSceneEvent<T>(sceneId, "raycastResponse", response);
+        }
+
+        public static void ReportRaycastHitFirstResult(string sceneId, string queryId, string queryType, RaycastHitEntity payload)
+        {
+            ReportRaycastResult<RaycastHitFirstResponse, RaycastHitEntity>(sceneId, queryId, queryType, payload);
+        }
+
+        public static void ReportRaycastHitAllResult(string sceneId, string queryId, string queryType, RaycastHitEntities payload)
+        {
+            ReportRaycastResult<RaycastHitAllResponse, RaycastHitEntities>(sceneId, queryId, queryType, payload);
+        }
+
+        private static OnPointerEventPayload.Hit CreateHitObject(string entityId, string meshName, Vector3 point, Vector3 normal, float distance)
         {
             OnPointerEventPayload.Hit hit = new OnPointerEventPayload.Hit();
 
-            hit.hitPoint = hitInfo.point;
-            hit.length = hitInfo.distance;
-            hit.normal = hitInfo.normal;
-            hit.worldNormal = hitInfo.normal;
+            hit.hitPoint = point;
+            hit.length = distance;
+            hit.normal = normal;
+            hit.worldNormal = normal;
             hit.meshName = meshName;
             hit.entityId = entityId;
 
             return hit;
         }
 
-        private static void SetPointerEventPayload(OnPointerEventPayload pointerEventPayload, ACTION_BUTTON buttonId, string entityId, string meshName, Ray ray, RaycastHit hitInfo, bool isHitInfoValid)
+        private static void SetPointerEventPayload(OnPointerEventPayload pointerEventPayload, ACTION_BUTTON buttonId, string entityId, string meshName, Ray ray, Vector3 point, Vector3 normal, float distance, bool isHitInfoValid)
         {
             pointerEventPayload.origin = ray.origin;
             pointerEventPayload.direction = ray.direction;
             pointerEventPayload.buttonId = buttonId;
 
             if (isHitInfoValid)
-                pointerEventPayload.hit = CreateHitObject(entityId, meshName, hitInfo);
+                pointerEventPayload.hit = CreateHitObject(entityId, meshName, point, normal, distance);
             else
                 pointerEventPayload.hit = null;
         }
 
-        public static void ReportGlobalPointerDownEvent(ACTION_BUTTON buttonId, Ray ray, RaycastHit hit, string sceneId, string entityId = null, string meshName = null, bool isHitInfoValid = false)
+        public static void ReportGlobalPointerDownEvent(ACTION_BUTTON buttonId, Ray ray, Vector3 point, Vector3 normal, float distance, string sceneId, string entityId = null, string meshName = null, bool isHitInfoValid = false)
         {
-            SetPointerEventPayload((OnPointerEventPayload)onGlobalPointerEventPayload, buttonId, entityId, meshName, ray, hit, isHitInfoValid);
+            SetPointerEventPayload((OnPointerEventPayload)onGlobalPointerEventPayload, buttonId, entityId, meshName, ray, point, normal, distance, isHitInfoValid);
             onGlobalPointerEventPayload.type = OnGlobalPointerEventPayload.InputEventType.DOWN;
 
             onGlobalPointerEvent.payload = onGlobalPointerEventPayload;
@@ -384,9 +464,9 @@ namespace DCL.Interface
             SendSceneEvent(sceneId, "pointerEvent", onGlobalPointerEvent);
         }
 
-        public static void ReportGlobalPointerUpEvent(ACTION_BUTTON buttonId, Ray ray, RaycastHit hit, string sceneId, string entityId = null, string meshName = null, bool isHitInfoValid = false)
+        public static void ReportGlobalPointerUpEvent(ACTION_BUTTON buttonId, Ray ray, Vector3 point, Vector3 normal, float distance, string sceneId, string entityId = null, string meshName = null, bool isHitInfoValid = false)
         {
-            SetPointerEventPayload((OnPointerEventPayload)onGlobalPointerEventPayload, buttonId, entityId, meshName, ray, hit, isHitInfoValid);
+            SetPointerEventPayload((OnPointerEventPayload)onGlobalPointerEventPayload, buttonId, entityId, meshName, ray, point, normal, distance, isHitInfoValid);
             onGlobalPointerEventPayload.type = OnGlobalPointerEventPayload.InputEventType.UP;
 
             onGlobalPointerEvent.payload = onGlobalPointerEventPayload;
@@ -394,7 +474,7 @@ namespace DCL.Interface
             SendSceneEvent(sceneId, "pointerEvent", onGlobalPointerEvent);
         }
 
-        public static void ReportOnPointerDownEvent(ACTION_BUTTON buttonId, string sceneId, string uuid, string entityId, string meshName, Ray ray, RaycastHit hit)
+        public static void ReportOnPointerDownEvent(ACTION_BUTTON buttonId, string sceneId, string uuid, string entityId, string meshName, Ray ray, Vector3 point, Vector3 normal, float distance)
         {
             if (string.IsNullOrEmpty(uuid))
             {
@@ -402,13 +482,13 @@ namespace DCL.Interface
             }
 
             onPointerDownEvent.uuid = uuid;
-            SetPointerEventPayload(onPointerEventPayload, buttonId, entityId, meshName, ray, hit, isHitInfoValid: true);
+            SetPointerEventPayload(onPointerEventPayload, buttonId, entityId, meshName, ray, point, normal, distance, isHitInfoValid: true);
             onPointerDownEvent.payload = onPointerEventPayload;
 
             SendSceneEvent(sceneId, "uuidEvent", onPointerDownEvent);
         }
 
-        public static void ReportOnPointerUpEvent(ACTION_BUTTON buttonId, string sceneId, string uuid, string entityId, string meshName, Ray ray, RaycastHit hit, bool isHitInfoValid)
+        public static void ReportOnPointerUpEvent(ACTION_BUTTON buttonId, string sceneId, string uuid, string entityId, string meshName, Ray ray, Vector3 point, Vector3 normal, float distance, bool isHitInfoValid)
         {
             if (string.IsNullOrEmpty(uuid))
             {
@@ -416,7 +496,7 @@ namespace DCL.Interface
             }
 
             onPointerUpEvent.uuid = uuid;
-            SetPointerEventPayload(onPointerEventPayload, buttonId, entityId, meshName, ray, hit, isHitInfoValid: true);
+            SetPointerEventPayload(onPointerEventPayload, buttonId, entityId, meshName, ray, point, normal, distance, isHitInfoValid: true);
             onPointerUpEvent.payload = onPointerEventPayload;
 
             SendSceneEvent(sceneId, "uuidEvent", onPointerUpEvent);

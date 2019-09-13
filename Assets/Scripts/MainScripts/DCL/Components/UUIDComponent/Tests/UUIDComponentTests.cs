@@ -20,7 +20,6 @@ namespace Tests
                 Vector3.zero,
                 out entity,
                 new BoxShape.Model() { });
-
         }
 
         [UnityTest]
@@ -542,6 +541,9 @@ namespace Tests
             DecentralandEntity entity;
             BoxShape shape;
             InstantiateEntityWithShape(out entity, out shape);
+            TestHelpers.SetEntityTransform(scene, entity, new Vector3(3, 3, 3), Quaternion.identity, new Vector3(5, 5, 5));
+
+            DCLCharacterController.i.SetPosition(new Vector3(3, 2, 12));
 
             yield return shape.routine;
 
@@ -556,6 +558,8 @@ namespace Tests
 
             Assert.IsTrue(component != null);
 
+            yield return null;
+
             string targetEventType = "SceneEvent";
 
             var onPointerEvent = new WebInterface.OnClickEvent();
@@ -565,17 +569,22 @@ namespace Tests
             sceneEvent.sceneId = scene.sceneData.id;
             sceneEvent.payload = onPointerEvent;
             sceneEvent.eventType = "uuidEvent";
-            string eventJSON = JsonUtility.ToJson(sceneEvent);
             bool eventTriggered = false;
 
-            yield return TestHelpers.WaitForMessageFromEngine(targetEventType, eventJSON,
-                () =>
+            yield return TestHelpers.WaitForEventFromEngine(targetEventType, sceneEvent,
+            () =>
                 {
-                    component.Report(WebInterface.ACTION_BUTTON.POINTER);
+                    DCL.InputController.i.RaiseEvent(WebInterface.ACTION_BUTTON.POINTER, DCL.InputController.EVENT.BUTTON_DOWN, true);
                 },
-                () =>
+                (pointerEvent) =>
                 {
-                    eventTriggered = true;
+                    if (pointerEvent.eventType == sceneEvent.eventType && pointerEvent.payload.uuid == sceneEvent.payload.uuid)
+                    {
+                        eventTriggered = true;
+                        return true;
+                    }
+
+                    return false;
                 });
 
             Assert.IsTrue(eventTriggered);
@@ -589,13 +598,16 @@ namespace Tests
             DecentralandEntity entity;
             BoxShape shape;
             InstantiateEntityWithShape(out entity, out shape);
+            TestHelpers.SetEntityTransform(scene, entity, new Vector3(3, 3, 3), Quaternion.identity, new Vector3(5, 5, 5));
+
+            DCLCharacterController.i.SetPosition(new Vector3(3, 2, 12));
 
             yield return shape.routine;
 
             string onPointerId = "pointerevent-1";
             var OnPointerDownComponentModel = new OnPointerDownComponent.Model()
             {
-                type = "pointerDown",
+                type = OnPointerDownComponent.NAME,
                 uuid = onPointerId
             };
             var component = TestHelpers.EntityComponentCreate<OnPointerDownComponent, OnPointerDownComponent.Model>(scene, entity,
@@ -616,17 +628,23 @@ namespace Tests
             sceneEvent.sceneId = scene.sceneData.id;
             sceneEvent.payload = onPointerDownEvent;
             sceneEvent.eventType = "uuidEvent";
-            string eventJSON = JsonUtility.ToJson(sceneEvent);
             bool eventTriggered = false;
 
-            yield return TestHelpers.WaitForMessageFromEngine(targetEventType, eventJSON,
+            yield return TestHelpers.WaitForEventFromEngine(targetEventType, sceneEvent,
                 () =>
                 {
-                    component.Report(WebInterface.ACTION_BUTTON.POINTER, new Ray(), new RaycastHit());
+                    DCL.InputController.i.RaiseEvent(WebInterface.ACTION_BUTTON.POINTER, DCL.InputController.EVENT.BUTTON_DOWN, true);
                 },
-                () =>
+                (pointerEvent) =>
                 {
-                    eventTriggered = true;
+                    if (pointerEvent.eventType == sceneEvent.eventType &&
+                        pointerEvent.payload.uuid == sceneEvent.payload.uuid &&
+                        pointerEvent.payload.payload.hit.entityId == sceneEvent.payload.payload.hit.entityId)
+                    {
+                        eventTriggered = true;
+                        return true;
+                    }
+                    return false;
                 });
 
             Assert.IsTrue(eventTriggered);
@@ -640,13 +658,16 @@ namespace Tests
             DecentralandEntity entity;
             BoxShape shape;
             InstantiateEntityWithShape(out entity, out shape);
+            TestHelpers.SetEntityTransform(scene, entity, new Vector3(3, 3, 3), Quaternion.identity, new Vector3(5, 5, 5));
+
+            DCLCharacterController.i.SetPosition(new Vector3(3, 2, 12));
 
             yield return shape.routine;
 
             string onPointerId = "pointerevent-1";
             var OnPointerUpComponentModel = new OnPointerUpComponent.Model()
             {
-                type = "pointerUp",
+                type = OnPointerUpComponent.NAME,
                 uuid = onPointerId
             };
             var component = TestHelpers.EntityComponentCreate<OnPointerUpComponent, OnPointerUpComponent.Model>(scene, entity,
@@ -658,22 +679,34 @@ namespace Tests
 
             var onPointerUpEvent = new WebInterface.OnPointerUpEvent();
             onPointerUpEvent.uuid = onPointerId;
+            onPointerUpEvent.payload = new WebInterface.OnPointerEventPayload();
+            onPointerUpEvent.payload.hit = new WebInterface.OnPointerEventPayload.Hit();
+            onPointerUpEvent.payload.hit.entityId = component.entity.entityId;
+            onPointerUpEvent.payload.hit.meshName = component.name;
 
             var sceneEvent = new WebInterface.SceneEvent<WebInterface.OnPointerUpEvent>();
             sceneEvent.sceneId = scene.sceneData.id;
             sceneEvent.payload = onPointerUpEvent;
             sceneEvent.eventType = "uuidEvent";
-            string eventJSON = JsonUtility.ToJson(sceneEvent);
             bool eventTriggered = false;
 
-            yield return TestHelpers.WaitForMessageFromEngine(targetEventType, eventJSON,
+            DCL.InputController.i.RaiseEvent(WebInterface.ACTION_BUTTON.POINTER, DCL.InputController.EVENT.BUTTON_DOWN, true);
+
+            yield return TestHelpers.WaitForEventFromEngine(targetEventType, sceneEvent,
                 () =>
                 {
-                    component.Report(WebInterface.ACTION_BUTTON.POINTER, new Ray(), new RaycastHit(), false);
+                    DCL.InputController.i.RaiseEvent(WebInterface.ACTION_BUTTON.POINTER, DCL.InputController.EVENT.BUTTON_UP, true);
                 },
-                () =>
+                (pointerEvent) =>
                 {
-                    eventTriggered = true;
+                    if (pointerEvent.eventType == sceneEvent.eventType &&
+                        pointerEvent.payload.uuid == sceneEvent.payload.uuid &&
+                        pointerEvent.payload.payload.hit.entityId == sceneEvent.payload.payload.hit.entityId)
+                    {
+                        eventTriggered = true;
+                        return true;
+                    }
+                    return false;
                 });
 
             Assert.IsTrue(eventTriggered);
