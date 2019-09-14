@@ -43,11 +43,10 @@ namespace DCL
                 charCamera = DCLCharacterController.i.GetComponentInChildren<Camera>();
             }
         }
+
         private Ray GetRayFromCamera()
         {
-            Ray ray = charCamera.ScreenPointToRay(new Vector3(Screen.width / 2, Screen.height / 2, 0));
-            ray.origin = SceneController.i.ConvertUnityToScenePosition(ray.origin);
-            return ray;
+            return charCamera.ScreenPointToRay(new Vector3(Screen.width / 2, Screen.height / 2, 0));
         }
 
         void OnButtonEvent(WebInterface.ACTION_BUTTON buttonId, InputController.EVENT evt, bool useRaycast)
