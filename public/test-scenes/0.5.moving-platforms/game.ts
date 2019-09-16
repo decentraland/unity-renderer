@@ -94,9 +94,14 @@ let movingPlatformEntity = configureShapeEntityPositions(
   new BoxShape()
 )
 movingPlatformEntity.getComponent(Transform).scale = new Vector3(2, 0.25, 2)
+movingPlatformEntity.addComponentOrReplace(
+  new OnClick(e => {
+    movingPlatformEntity.getComponent(PingPongMovement).speed *= 1.25;
+  })
+)
 
 // Elevator platform
-let elevatorEntity = configureShapeEntityPositions([new Vector3(24, 1, 8), new Vector3(24, 10, 8)], 0.5, new BoxShape())
+let elevatorEntity = configureShapeEntityPositions([new Vector3(24, 0, 8), new Vector3(24, 10, 8)], 0.5, new BoxShape())
 elevatorEntity.getComponent(Transform).scale = new Vector3(2, 0.25, 2)
 
 // Rotating platform
@@ -228,7 +233,7 @@ engine.addEntity(scalingCubeEntity)
 scalingCubeEntity.addComponentOrReplace(new BoxShape())
 scalingCubeEntity.addComponentOrReplace(
   new Transform({
-    position: new Vector3(16, 1, 16),
+    position: new Vector3(18.5, 1, 18.5),
     scale: new Vector3(2, 2, 2)
   })
 )
