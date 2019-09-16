@@ -2,9 +2,9 @@
 
 public class MinimapCamera : MonoBehaviour
 {
-    private const float HEIGHT = 20f;
+    private const float HEIGHT = 400f;
     private static readonly Vector3 XZ_PLANE = new Vector3(1, 0, 1);
-    
+
     public float closestZoom = 25;
     public float farthestZoom = 50;
 
@@ -27,7 +27,7 @@ public class MinimapCamera : MonoBehaviour
 
     private void OnUnityPositionChange(Vector3 current, Vector3 previous)
     {
-        transform.position = Vector3.Scale(XZ_PLANE, current);
+        transform.position = Vector3.up * HEIGHT + Vector3.Scale(XZ_PLANE, current);
     }
 
     private void OnUnityEulerAnglesChange(Vector3 current, Vector3 previous)
