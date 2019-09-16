@@ -1,8 +1,4 @@
-[![CircleCI](https://circleci.com/gh/decentraland/explorer.svg?style=svg)](https://circleci.com/gh/decentraland/explorer)
-
-# Decentraland Client
-
-This client is fully front-end, but uses a [WebRTC Signalling Server](https://github.com/decentraland/rendezvous) to establish connections to other users.
+# Decentraland Kernel
 
 ## Contributing
 
@@ -36,7 +32,7 @@ To spawn in a specific set of coordinates append the following query paramter:
 
 ## Running tests
 
-To run all test (and save new screenshots), run:
+To run all the tests (and save new screenshots), run:
 
     make generate-images
 
@@ -52,7 +48,7 @@ Visual tests are meant to work in a similar way as `snapshot tests`. Each time a
 
 It is possible to define new parcels inside this repo for testing purposes. To do so, create a new folder in `public/test-scenes`. There are several conventions to be followed regarding the name of these folders and the positions of the parcels, these can be found in the [README](https://github.com/decentraland/client/blob/master/public/test-scenes/README.md) file.
 
-All test parcels must be registered in the `mock.json` file located in the same folder. Using the `test-local:` prefix means that the parcel will only be available while running the client locally.
+To edit and make sure that `make watch` is rebuilding the scene when you are hacking on a new feature of the kernel, make sure to modify `targets/scenes/basic-scenes.json` and point to the scene you're working on.
 
 All test parcels can be accessed inside visual tests:
 
@@ -63,14 +59,6 @@ describe('My example test', function() {
   loadTestParcel(200, 10)
   // ...
 ```
-
-# To update babylon version
-
-Run `./scripts/updateBabylon.sh VERSION`, usually to develop we run `./scripts/updateBabylon.sh preview`
-
-For releases we should run `./scripts/updateBabylon.sh latest` before.
-
-> Requires `jq` install using `brew install jq`
 
 ## Copyright info
 
