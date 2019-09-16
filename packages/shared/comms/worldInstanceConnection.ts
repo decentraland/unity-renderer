@@ -46,6 +46,8 @@ export class WorldInstanceConnection {
   public sceneMessageHandler: ((fromAlias: string, chatData: ChatData) => void) | null = null
   public ping: number = -1
 
+  public fatalErrorSent = false
+
   public stats: Stats | null = null
   private pingInterval: any = null
 
@@ -158,7 +160,12 @@ export class WorldInstanceConnection {
 
   updateSubscriptions(rawTopics: string) {
     if (!this.connection.hasReliableChannel) {
-      throw new Error('trying to send topic subscription message but reliable channel is not ready')
+      if (!this.fatalErrorSent) {
+        this.fatalErrorSent = true
+        throw new Error('trying to send topic subscription message but reliable channel is not ready')
+      } else {
+        return
+      }
     }
     const subscriptionMessage = new SubscriptionMessage()
     subscriptionMessage.setType(MessageType.SUBSCRIPTION)
@@ -337,12 +344,22 @@ export class WorldInstanceConnection {
     }
     if (reliable) {
       if (!this.connection.hasReliableChannel) {
-        throw new Error('trying to send a topic message using null reliable channel')
+        if (!this.fatalErrorSent) {
+          this.fatalErrorSent = true
+          throw new Error('trying to send a topic message using null reliable channel')
+        } else {
+          return new SendResult(0)
+        }
       }
       this.connection.sendReliable(bytes)
     } else {
       if (!this.connection.hasUnreliableChannel) {
-        throw new Error('trying to send a topic message using null unreliable channel')
+        if (!this.fatalErrorSent) {
+          this.fatalErrorSent = true
+          throw new Error('trying to send a topic message using null unreliable channel')
+        } else {
+          return new SendResult(0)
+        }
       }
       this.connection.sendUnreliable(bytes)
     }
