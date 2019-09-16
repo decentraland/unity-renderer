@@ -214,7 +214,7 @@ namespace DCL.Interface
         [System.Serializable]
         private class OnMetricsUpdate
         {
-            public MetricsModel current = new MetricsModel();
+            public MetricsModel given = new MetricsModel();
             public MetricsModel limit = new MetricsModel();
         }
 
@@ -244,13 +244,6 @@ namespace DCL.Interface
             public string entityId;
             public string transform;
         }
-
-        [System.Serializable]
-        public class OnGetLoadingEntity
-        {
-            public string id;
-            public object value;
-        };
 
         public class OnSendScreenshot
         {
@@ -366,7 +359,6 @@ namespace DCL.Interface
         private static OnBlurEvent onBlurEvent = new OnBlurEvent();
         private static OnEnterEvent onEnterEvent = new OnEnterEvent();
         private static OnGizmoEvent onGizmoEvent = new OnGizmoEvent();
-        private static OnGetLoadingEntity onGetLoadingEntity = new OnGetLoadingEntity();
         private static OnSendScreenshot onSendScreenshot = new OnSendScreenshot();
         private static OnPointerEventPayload onPointerEventPayload = new OnPointerEventPayload();
         private static OnGlobalPointerEventPayload onGlobalPointerEventPayload = new OnGlobalPointerEventPayload();
@@ -574,7 +566,7 @@ namespace DCL.Interface
         public static void ReportOnMetricsUpdate(string sceneId, MetricsModel current,
             MetricsModel limit)
         {
-            onMetricsUpdate.current = current;
+            onMetricsUpdate.given = current;
             onMetricsUpdate.limit = limit;
 
             SendSceneEvent(sceneId, "metricsUpdate", onMetricsUpdate);
@@ -629,13 +621,6 @@ namespace DCL.Interface
             positionPayload.mousePosition = mousePosition;
             positionPayload.id = id;
             SendMessage("ReportMousePosition", positionPayload);
-        }
-
-        public static void SetLoadingEntity(object loadingEntity, string id)
-        {
-            onGetLoadingEntity.id = id;
-            onGetLoadingEntity.value = loadingEntity;
-            SendMessage("SetLoadingEntity", onGetLoadingEntity);
         }
 
         public static void SendScreenshot(string encodedTexture, string id)

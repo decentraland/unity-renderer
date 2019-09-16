@@ -27,7 +27,8 @@ namespace Builder
         private bool isDraggingObject = false;
         private bool canStartDragging = false;
         private bool isGizmoTransformingObject = false;
-        private bool isSnapEnabled = true;
+
+        private float snapFactorPosition = 0;
 
         private Gizmo activeGizmo = null;
         private GizmoAxis gizmoAxis = null;
@@ -52,11 +53,10 @@ namespace Builder
                 DCLBuilderInput.OnMouseDown += OnMouseDown;
                 DCLBuilderInput.OnMouseDrag += OnMouseDrag;
                 DCLBuilderInput.OnMouseUp += OnMouseUp;
-                DCLBuilderInput.OnKeyboardButtonDown += OnKeyboardButtonDown;
-                DCLBuilderInput.OnKeyboardButtonUp += OnKeyboardButtonUp;
                 DCLBuilderBridge.OnSelectGizmo += OnSelectGizmo;
                 DCLBuilderBridge.OnResetObject += OnResetObject;
                 DCLBuilderBridge.OnEntityAdded += OnEntityAdded;
+                DCLBuilderBridge.OnSetGridResolution += OnSetGridResolution;
             }
         }
 
@@ -66,11 +66,10 @@ namespace Builder
             DCLBuilderInput.OnMouseDown -= OnMouseDown;
             DCLBuilderInput.OnMouseDrag -= OnMouseDrag;
             DCLBuilderInput.OnMouseUp -= OnMouseUp;
-            DCLBuilderInput.OnKeyboardButtonDown -= OnKeyboardButtonDown;
-            DCLBuilderInput.OnKeyboardButtonUp -= OnKeyboardButtonUp;
             DCLBuilderBridge.OnSelectGizmo -= OnSelectGizmo;
             DCLBuilderBridge.OnResetObject -= OnResetObject;
             DCLBuilderBridge.OnEntityAdded -= OnEntityAdded;
+            DCLBuilderBridge.OnSetGridResolution -= OnSetGridResolution;
         }
 
         private void Update()
@@ -160,19 +159,12 @@ namespace Builder
             }
         }
 
-        private void OnKeyboardButtonDown(KeyCode keyCode)
+        private void OnSetGridResolution(float position, float rotation, float scale)
         {
-            if (keyCode == KeyCode.LeftShift || keyCode == KeyCode.RightShift)
+            snapFactorPosition = position;
+            for (int i = 0; i < gizmos.Length; i++)
             {
-                isSnapEnabled = false;
-            }
-        }
-
-        private void OnKeyboardButtonUp(KeyCode keyCode)
-        {
-            if (keyCode == KeyCode.LeftShift || keyCode == KeyCode.RightShift)
-            {
-                isSnapEnabled = true;
+                gizmos[i].SetSnapFactor(position, rotation, scale);
             }
         }
 
@@ -207,7 +199,6 @@ namespace Builder
 
         private void OnEntityShapeUpdated(DecentralandEntity entity)
         {
-            //TODO: avoid autoselecting scene ground
             if (!isDraggingObject && !isGizmoTransformingObject && CanSelect(entity))
             {
                 Select(entity);
@@ -273,9 +264,11 @@ namespace Builder
                 }
                 else
                 {
-                    if (isSnapEnabled)
+                    if (snapFactorPosition > 0)
                     {
-                        newPosition = new Vector3(Mathf.RoundToInt(hitPos.x), hitPos.y, Mathf.RoundToInt(hitPos.z));
+                        newPosition.x = newPosition.x - (newPosition.x % snapFactorPosition);
+                        newPosition.y = newPosition.y - (newPosition.y % snapFactorPosition);
+                        newPosition.z = newPosition.z - (newPosition.z % snapFactorPosition);
                     }
 
                     entity.gameObject.transform.position = newPosition;

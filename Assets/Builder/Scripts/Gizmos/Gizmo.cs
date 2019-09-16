@@ -6,6 +6,9 @@ namespace Builder
     {
         public string gizmoType;
         public bool transformWithObject;
+        public GizmoAxis[] axes;
+
+        protected float snapFactor = 0;
 
         public void SetObject(GameObject selectedObject)
         {
@@ -28,6 +31,13 @@ namespace Builder
             {
                 transform.SetParent(null);
                 gameObject.SetActive(false);
+            }
+        }
+        public void SetSnapFactor(float position, float rotation, float scale)
+        {
+            for (int i = 0; i < axes.Length; i++)
+            {
+                axes[i].SetSnapFactor(position, rotation, scale);
             }
         }
     }

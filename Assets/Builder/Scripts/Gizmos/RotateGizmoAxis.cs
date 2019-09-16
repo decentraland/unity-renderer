@@ -25,5 +25,10 @@ namespace Builder
             }
             originPointerPosition = inputPosition;
         }
+
+        public override void SetSnapFactor(float position, float rotation, float scale)
+        {
+            snapFactor = rotation;
+        }
     }
 }
