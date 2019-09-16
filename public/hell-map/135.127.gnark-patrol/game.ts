@@ -28,7 +28,6 @@ export class LerpData {
   fraction: number = 0
 }
 
-// Rotate component
 @Component('timeOut')
 export class TimeOut {
   timeLeft: number
