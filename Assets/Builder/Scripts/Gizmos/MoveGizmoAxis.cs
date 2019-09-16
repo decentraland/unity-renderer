@@ -8,7 +8,6 @@ namespace Builder
 
         Vector3 difV;
 
-
         public override void UpdateTransformation(Vector3 inputPosition, Vector3 pointerPosition, GameObject selectedObject, Vector3 hitPoint)
         {
             if (originPointerPosition == Vector3.zero)
@@ -19,9 +18,26 @@ namespace Builder
 
             if (selectedObject != null)
             {
-                selectedObject.transform.position = new Vector3(axis.x == 1 ? hitPoint.x + difV.x : selectedObject.transform.position.x,
-                                                                selectedObject.transform.position.y,
-                                                                axis.z == 1 ? hitPoint.z + difV.z : selectedObject.transform.position.z);
+                Vector3 position = selectedObject.transform.position;
+                if (axis.x == 1)
+                {
+                    position.x = hitPoint.x + difV.x;
+                    if (snapFactor > 0)
+                    {
+                        position.x = position.x - (position.x % snapFactor);
+                    }
+                }
+                if (axis.z == 1)
+                {
+                    position.z = hitPoint.z + difV.z;
+                    if (snapFactor > 0)
+                    {
+                        position.z = position.z - (position.z % snapFactor);
+                    }
+                }
+
+                selectedObject.transform.position = position;
+
                 if (axis.y == 1)
                 {
                     Vector3 posDif = originPointerPosition - pointerPosition;
@@ -35,6 +51,10 @@ namespace Builder
             originPointerPosition = pointerPosition;
         }
 
+        public override void SetSnapFactor(float position, float rotation, float scale)
+        {
+            snapFactor = position;
+        }
 
     }
 }

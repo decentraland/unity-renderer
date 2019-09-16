@@ -40,31 +40,20 @@ namespace Builder
         private float zoomCurrent = 0;
         private float zoomTarget = 0;
 
-        private float pitchDefault = 0;
-        private float yawDefault = 0;
         private float zoomDefault = 0;
 
         private bool isObjectBeingDrag = false;
 
         private Vector2 sceneBoundaryMin;
         private Vector2 sceneBoundaryMax;
-        private uint sceneParcelsCount;
 
         private bool isGameObjectActive = false;
 
         private void Awake()
         {
-            zoomDefault = zoomCurrent = zoomTarget = Mathf.Clamp(builderCamera.transform.position.z, -zoomMax, -zoomMin);
-            pitchDefault = pitchCurrent = pitchTarget = pitchPivot.localEulerAngles.x;
-            yawDefault = yawCurrent = yawTarget = yawPivot.localEulerAngles.y;
-
-            ParcelScene loadedScene = GetLoadedScene();
-            if (loadedScene != null && loadedScene.sceneData != null)
-            {
-                sceneParcelsCount = (uint)loadedScene.sceneData.parcels.Length;
-                CalcSceneBoundaries(loadedScene.sceneData);
-            }
-            CenterCamera();
+            zoomDefault = zoomCurrent = zoomTarget = Mathf.Clamp(builderCamera.transform.localPosition.z, -zoomMax, -zoomMin);
+            pitchCurrent = pitchTarget = pitchPivot.localEulerAngles.x;
+            yawCurrent = yawTarget = yawPivot.localEulerAngles.y;
 
             DCLBuilderBridge.OnPreviewModeChanged += OnPreviewModeChanged;
         }
@@ -84,7 +73,7 @@ namespace Builder
             pitchPivot.localRotation = Quaternion.Euler(pitchCurrent, 0, 0);
 
             zoomCurrent += (zoomTarget - zoomCurrent) * Time.deltaTime * zoomSpeed;
-            builderCamera.transform.localPosition = new Vector3(builderCamera.transform.localPosition.x, builderCamera.transform.localPosition.y, zoomCurrent);
+            builderCamera.transform.localPosition = new Vector3(0, 0, zoomCurrent);
 
             Vector3 panOffset = panTarget - panCurrent;
             float sqDist = panOffset.magnitude;
@@ -102,10 +91,10 @@ namespace Builder
                 DCLBuilderInput.OnMouseDrag += OnMouseDrag;
                 DCLBuilderInput.OnMouseWheel += OnMouseWheel;
                 DCLBuilderInput.OnKeyboardButtonHold += OnKeyboardButtonHold;
-                DCLBuilderInput.OnKeyboardButtonDown += OnKeyboardButtonDown;
-                DCLBuilderBridge.OnResetCamera += OnResetCamera;
                 DCLBuilderBridge.OnZoomFromUI += OnZoomFormUI;
-                DCLBuilderBridge.OnResetBuilderScene += OnResetBuilderScene;
+                DCLBuilderBridge.OnSetCameraPosition += OnSetCameraPosition;
+                DCLBuilderBridge.OnSetCameraRotation += OnSetCameraRotation;
+                DCLBuilderBridge.OnResetCameraZoom += OnResetCameraZoom;
                 DCLBuilderObjectSelector.OnDraggingObjectStart += OnDragObjectStart;
                 DCLBuilderObjectSelector.OnDraggingObjectEnd += OnDragObjectEnd;
                 DCLBuilderObjectSelector.OnGizmoTransformObjectStart += OnGizmoTransformObjectStart;
@@ -120,10 +109,10 @@ namespace Builder
             DCLBuilderInput.OnMouseDrag -= OnMouseDrag;
             DCLBuilderInput.OnMouseWheel -= OnMouseWheel;
             DCLBuilderInput.OnKeyboardButtonHold -= OnKeyboardButtonHold;
-            DCLBuilderInput.OnKeyboardButtonDown -= OnKeyboardButtonDown;
-            DCLBuilderBridge.OnResetCamera -= OnResetCamera;
             DCLBuilderBridge.OnZoomFromUI -= OnZoomFormUI;
-            DCLBuilderBridge.OnResetBuilderScene -= OnResetBuilderScene;
+            DCLBuilderBridge.OnSetCameraPosition -= OnSetCameraPosition;
+            DCLBuilderBridge.OnSetCameraRotation -= OnSetCameraRotation;
+            DCLBuilderBridge.OnResetCameraZoom -= OnResetCameraZoom;
             DCLBuilderObjectSelector.OnDraggingObjectStart -= OnDragObjectStart;
             DCLBuilderObjectSelector.OnDraggingObjectEnd -= OnDragObjectEnd;
             DCLBuilderObjectSelector.OnGizmoTransformObjectStart -= OnGizmoTransformObjectStart;
@@ -169,29 +158,6 @@ namespace Builder
                     break;
             }
         }
-        private void OnKeyboardButtonDown(KeyCode keyCode)
-        {
-            switch (keyCode)
-            {
-                case KeyCode.Space:
-                    OnResetCamera();
-                    break;
-            }
-        }
-
-        private void OnResetCamera()
-        {
-            zoomCurrent = zoomTarget = zoomDefault;
-            pitchCurrent = pitchTarget = pitchDefault;
-            yawCurrent = yawTarget = yawDefault;
-
-            CenterCamera();
-
-            builderCamera.transform.position.Set(0, 0, zoomCurrent);
-            pitchPivot.localRotation = Quaternion.Euler(yawCurrent, 0, 0);
-            yawPivot.localRotation = Quaternion.Euler(0, yawCurrent, 0);
-            rootPivot.localPosition = panCurrent;
-        }
 
         private void OnZoomFormUI(float delta)
         {
@@ -207,18 +173,6 @@ namespace Builder
         private void Zoom(float amount)
         {
             zoomTarget = Mathf.Clamp(zoomTarget + amount, -zoomMax, -zoomMin);
-        }
-
-        private void CenterCamera()
-        {
-            panCurrent = new Vector3(
-                (sceneBoundaryMax.x + 1) * DCL.Configuration.ParcelSettings.PARCEL_SIZE * 0.5f,
-                0,
-                (sceneBoundaryMax.y + 1) * DCL.Configuration.ParcelSettings.PARCEL_SIZE * 0.5f
-            );
-
-            rootPivot.transform.localPosition = panCurrent;
-            panTarget = panCurrent;
         }
 
         private void OnDragObjectStart(DecentralandEntity entity, Vector3 objectPosition)
@@ -243,15 +197,27 @@ namespace Builder
             OnDragObjectEnd(entity, objectPosition);
         }
 
-        private void OnResetBuilderScene()
+        private void OnSetCameraPosition(Vector3 position)
         {
-            ParcelScene loadedScene = GetLoadedScene();
-            if (loadedScene != null && loadedScene.sceneData != null)
-            {
-                sceneParcelsCount = (uint)loadedScene.sceneData.parcels.Length;
-                CalcSceneBoundaries(loadedScene.sceneData);
-            }
-            OnResetCamera();
+            panCurrent = position;
+            rootPivot.transform.localPosition = panCurrent;
+            panTarget = panCurrent;
+            pitchCurrent += (pitchTarget - pitchCurrent) * Time.deltaTime * rotationSpeed;
+            pitchPivot.localRotation = Quaternion.Euler(pitchCurrent, 0, 0);
+        }
+
+        private void OnSetCameraRotation(float yaw, float pitch)
+        {
+            yawCurrent = yawTarget = yaw;
+            pitchCurrent = pitchTarget = pitch;
+            yawPivot.localRotation = Quaternion.Euler(0, yawCurrent, 0);
+            pitchPivot.localRotation = Quaternion.Euler(pitchCurrent, 0, 0);
+        }
+
+        private void OnResetCameraZoom()
+        {
+            zoomCurrent = zoomTarget = zoomDefault;
+            builderCamera.transform.position.Set(0, 0, zoomCurrent);
         }
 
         private bool CanOrbit()
@@ -291,21 +257,6 @@ namespace Builder
         private void OnPreviewModeChanged(bool isPreview)
         {
             gameObject.SetActive(!isPreview);
-        }
-
-        private ParcelScene GetLoadedScene()
-        {
-            ParcelScene loadedScene = null;
-
-            if (SceneController.i != null && SceneController.i.loadedScenes.Count > 0)
-            {
-                using (var iterator = SceneController.i.loadedScenes.GetEnumerator())
-                {
-                    iterator.MoveNext();
-                    loadedScene = iterator.Current.Value;
-                }
-            }
-            return loadedScene;
         }
     }
 }

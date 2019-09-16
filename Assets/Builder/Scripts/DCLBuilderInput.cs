@@ -24,22 +24,11 @@ namespace Builder
 
         private float lastMouseWheelAxisValue = 0;
 
-        //TODO: check this. most hotkeys should come from builder
         private KeyCode[] listenKeys = {
             KeyCode.UpArrow,
             KeyCode.DownArrow,
             KeyCode.LeftArrow,
             KeyCode.RightArrow,
-            KeyCode.LeftShift,
-            KeyCode.RightShift,
-            KeyCode.Space,
-            KeyCode.Minus,
-            KeyCode.Underscore,
-            KeyCode.Plus,
-            KeyCode.Equals,
-            KeyCode.W,
-            KeyCode.E,
-            KeyCode.I
         };
 
         private void Update()

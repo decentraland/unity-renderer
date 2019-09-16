@@ -18,6 +18,8 @@ namespace Builder
         static int colorPropertyID;
         static bool isColorPropertyIdSet = false;
 
+        protected float snapFactor = 0;
+
         void Awake()
         {
             if (!isColorPropertyIdSet)
@@ -60,6 +62,7 @@ namespace Builder
         }
 
         public abstract void UpdateTransformation(Vector3 inputPosition, Vector3 pointerPosition, GameObject selectedObject, Vector3 hitPoint);
+        public abstract void SetSnapFactor(float position, float rotation, float scale);
 
     }
 }

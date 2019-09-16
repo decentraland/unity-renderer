@@ -12,15 +12,19 @@ namespace Builder
     {
         public DCLBuilderRaycast builderRaycast;
 
-        public static System.Action OnResetCamera;
+        public delegate void SetGridResolutionDelegate(float position, float rotation, float scale);
+
         public static System.Action<float> OnZoomFromUI;
         public static System.Action<string> OnSelectGizmo;
         public static System.Action OnResetObject;
-        public static System.Action<string> OnUpdateSceneParcels;
         public static System.Action<DecentralandEntity> OnEntityAdded;
         public static System.Action<DecentralandEntity> OnEntityRemoved;
         public static System.Action<bool> OnPreviewModeChanged;
         public static System.Action OnResetBuilderScene;
+        public static System.Action<Vector3> OnSetCameraPosition;
+        public static System.Action<float, float> OnSetCameraRotation;
+        public static System.Action OnResetCameraZoom;
+        public static event SetGridResolutionDelegate OnSetGridResolution;
 
         private MouseCatcher mouseCatcher;
         private ParcelScene currentScene;
@@ -36,6 +40,35 @@ namespace Builder
             public float x = 0;
             public float y = 0;
         }
+
+        [System.Serializable]
+        private class EntityLoadingPayload
+        {
+            public string type;
+            public string entityId;
+        }
+
+        [System.Serializable]
+        private class OnEntityLoadingEvent : DCL.Interface.WebInterface.UUIDEvent<EntityLoadingPayload>
+        {
+        };
+
+        [System.Serializable]
+        private class SetGridResolutionPayload
+        {
+            public float position = 0;
+            public float rotation = 0;
+            public float scale = 0;
+        }
+
+        [System.Serializable]
+        public class BuilderSceneStartEvent
+        {
+            public string sceneId;
+            public string eventType = "builderSceneStart";
+        }
+
+        private static OnEntityLoadingEvent onGetLoadingEntity = new OnEntityLoadingEvent();
 
         #region "Messages from Explorer"
 
@@ -75,11 +108,6 @@ namespace Builder
             }
         }
 
-        public void ResetCamera()
-        {
-            OnResetCamera?.Invoke();
-        }
-
         public void SetPlayMode(string on)
         {
             bool isPreview = false;
@@ -94,15 +122,60 @@ namespace Builder
             StartCoroutine(TakeScreenshotRoutine(id));
         }
 
-        public void UpdateParcelScenes(string sceneJSON)
-        {
-            OnUpdateSceneParcels?.Invoke(sceneJSON);
-        }
-
         public void ResetBuilderScene()
         {
             OnResetBuilderScene?.Invoke();
             DCLCharacterController.i?.gameObject.SetActive(false);
+        }
+
+        public void SetBuilderCameraPosition(string position)
+        {
+            if (!string.IsNullOrEmpty(position))
+            {
+                string[] splitPositionStr = position.Split(',');
+                if (splitPositionStr.Length == 3)
+                {
+                    float x, y, z = 0;
+                    float.TryParse(splitPositionStr[0], out x);
+                    float.TryParse(splitPositionStr[1], out y);
+                    float.TryParse(splitPositionStr[2], out z);
+                    OnSetCameraPosition?.Invoke(new Vector3(x, y, z));
+                }
+            }
+        }
+
+        public void SetBuilderCameraRotation(string yawpitchRotation)
+        {
+            if (!string.IsNullOrEmpty(yawpitchRotation))
+            {
+                string[] splitRotationStr = yawpitchRotation.Split(',');
+                if (splitRotationStr.Length == 2)
+                {
+                    float yaw, pitch = 0;
+                    float.TryParse(splitRotationStr[0], out yaw);
+                    float.TryParse(splitRotationStr[1], out pitch);
+
+                    OnSetCameraRotation?.Invoke(yaw * Mathf.Rad2Deg, pitch * Mathf.Rad2Deg);
+                }
+            }
+        }
+
+        public void ResetBuilderCameraZoom()
+        {
+            OnResetCameraZoom?.Invoke();
+        }
+
+        public void SetGridResolution(string payloadJson)
+        {
+            try
+            {
+                SetGridResolutionPayload payload = JsonUtility.FromJson<SetGridResolutionPayload>(payloadJson);
+                OnSetGridResolution?.Invoke(payload.position, payload.rotation, payload.scale);
+            }
+            catch (System.ArgumentException e)
+            {
+                Debug.LogError("Error parsing bBuilder's SetGridResolution Json = " + payloadJson + " " + e.ToString());
+            }
         }
 
         #endregion
@@ -126,9 +199,24 @@ namespace Builder
             }
         }
 
+        public static ParcelScene GetLoadedScene()
+        {
+            ParcelScene loadedScene = null;
+
+            if (SceneController.i != null && SceneController.i.loadedScenes.Count > 0)
+            {
+                using (var iterator = SceneController.i.loadedScenes.GetEnumerator())
+                {
+                    iterator.MoveNext();
+                    loadedScene = iterator.Current.Value;
+                }
+            }
+            return loadedScene;
+        }
+
         private void Awake()
         {
-            mouseCatcher = FindObjectOfType<MouseCatcher>();
+            mouseCatcher = InitialSceneReferences.i?.mouseCatcher;
             if (mouseCatcher != null)
             {
                 mouseCatcher.enabled = false;
@@ -143,12 +231,45 @@ namespace Builder
             //TODO: we need a better way for doing this
             RemoveNoneBuilderGameObjects();
 
-            currentScene = GameObject.FindObjectOfType<ParcelScene>();
+            currentScene = GetLoadedScene();
             if (currentScene)
             {
-                currentScene.OnEntityAdded += (entity) => OnEntityAdded?.Invoke(entity);
-                currentScene.OnEntityRemoved += (entity) => OnEntityRemoved?.Invoke(entity);
+                currentScene.OnEntityAdded += OnEntityIsAdded;
+                currentScene.OnEntityRemoved += OnEntityIsRemoved;
             }
+
+            SceneController.i?.fpsPanel.SetActive(false);
+        }
+
+        private void Start()
+        {
+            WebInterface.SendMessage("SceneEvent", new BuilderSceneStartEvent() { sceneId = currentScene.sceneData.id });
+        }
+
+        private void OnEntityIsAdded(DecentralandEntity entity)
+        {
+            OnEntityAdded?.Invoke(entity);
+            entity.OnShapeUpdated += OnEntityShapeUpdated;
+
+            onGetLoadingEntity.uuid = entity.entityId;
+            onGetLoadingEntity.payload.entityId = entity.entityId;
+            onGetLoadingEntity.payload.type = "onEntityLoading";
+            WebInterface.SendSceneEvent(currentScene.sceneData.id, "uuidEvent", onGetLoadingEntity);
+        }
+
+        private void OnEntityIsRemoved(DecentralandEntity entity)
+        {
+            OnEntityRemoved?.Invoke(entity);
+        }
+
+        private void OnEntityShapeUpdated(DecentralandEntity entity)
+        {
+            entity.OnShapeUpdated -= OnEntityShapeUpdated;
+
+            onGetLoadingEntity.uuid = entity.entityId;
+            onGetLoadingEntity.payload.entityId = entity.entityId;
+            onGetLoadingEntity.payload.type = "onEntityFinishLoading";
+            WebInterface.SendSceneEvent(currentScene.sceneData.id, "uuidEvent", onGetLoadingEntity);
         }
 
         private void OnEnable()
@@ -158,7 +279,6 @@ namespace Builder
                 DCLBuilderObjectSelector.OnDraggingObjectEnd += OnObjectDragEnd;
                 DCLBuilderObjectSelector.OnSelectedObject += OnObjectSelected;
                 DCLBuilderObjectSelector.OnGizmoTransformObjectEnd += OnGizmoTransformObjectEnded;
-                DCLBuilderInput.OnKeyboardButtonDown += OnKeyDown;
             }
             isGameObjectActive = true;
         }
@@ -169,7 +289,6 @@ namespace Builder
             DCLBuilderObjectSelector.OnDraggingObjectEnd -= OnObjectDragEnd;
             DCLBuilderObjectSelector.OnSelectedObject -= OnObjectSelected;
             DCLBuilderObjectSelector.OnGizmoTransformObjectEnd -= OnGizmoTransformObjectEnded;
-            DCLBuilderInput.OnKeyboardButtonDown -= OnKeyDown;
         }
 
         private void OnObjectDragEnd(DecentralandEntity entity, Vector3 position)
@@ -185,30 +304,6 @@ namespace Builder
         private void OnObjectSelected(DecentralandEntity entity, string gizmoType)
         {
             WebInterface.ReportGizmoEvent(entity.scene.sceneData.id, entity.entityId, "gizmoSelected", gizmoType);
-        }
-
-        private void OnKeyDown(KeyCode keyCode)
-        {
-            switch (keyCode)
-            {
-                case KeyCode.Minus:
-                case KeyCode.Underscore:
-                    OnZoomFromUI?.Invoke(0.5f);
-                    break;
-                case KeyCode.Plus:
-                case KeyCode.Equals:
-                    OnZoomFromUI?.Invoke(-0.5f);
-                    break;
-                case KeyCode.W:
-                    OnSelectGizmo?.Invoke(DCLGizmos.Gizmo.MOVE);
-                    break;
-                case KeyCode.E:
-                    OnSelectGizmo?.Invoke(DCLGizmos.Gizmo.ROTATE);
-                    break;
-                case KeyCode.I:
-                    SetPlayMode(!isPreviewMode);
-                    break;
-            }
         }
 
         private void NotifyGizmoEvent(DecentralandEntity entity, string gizmoType)

@@ -154,9 +154,9 @@ namespace DCL.Controllers
                 Vector2Int pos = parcels[i];
                 var blocker = Instantiate(blockerPrefab, transform);
                 blocker.transform.position = DCLCharacterController.i.characterPosition.WorldToUnityPosition(Utils.GridToWorldPosition(pos.x, pos.y)) + (Vector3.up * blockerPrefab.transform.localPosition.y) + new Vector3(ParcelSettings.PARCEL_SIZE / 2, 0, ParcelSettings.PARCEL_SIZE / 2);
-                
+
                 float sceneHeight = metricsController.GetLimits().sceneHeight;
-                blocker.transform.position = new Vector3(blocker.transform.position.x, sceneHeight/2, blocker.transform.position.z);
+                blocker.transform.position = new Vector3(blocker.transform.position.x, sceneHeight / 2, blocker.transform.position.z);
                 blocker.transform.localScale = new Vector3(blocker.transform.localScale.x, sceneHeight, blocker.transform.localScale.z);
                 blockers.Add(blocker);
             }
@@ -169,8 +169,6 @@ namespace DCL.Controllers
 
         public virtual void SetUpdateData(LoadParcelScenesMessage.UnityParcelScene data)
         {
-            this.sceneData = data;
-
             contentProvider = new ContentProvider();
             contentProvider.baseUrl = data.baseUrl;
             contentProvider.contents = data.contents;
