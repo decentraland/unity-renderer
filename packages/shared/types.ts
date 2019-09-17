@@ -199,6 +199,8 @@ export type SpawnPoint = {
   cameraTarget?: Vector3Component
 }
 
+export type InstancedSpawnPoint = { position: Vector3Component; cameraTarget?: Vector3Component }
+
 export type SoundComponent = {
   /** Distance fading model, default: 'linear' */
   distanceModel?: 'linear' | 'inverse' | 'exponential'

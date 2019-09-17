@@ -6,9 +6,8 @@ import { initShared } from '../shared'
 import { enableParcelSceneLoading } from '../shared/world/parcelSceneManager'
 import { WebGLParcelScene } from '../engine/dcl/WebGLParcelScene'
 import { enableMiniMap } from '../engine/dcl/widgets/minimap'
-import { getWorldSpawnpoint } from '../shared/world/positionThings'
 import { worldRunningObservable } from '../shared/world/worldState'
-import { ILand } from '../shared/types'
+import { InstancedSpawnPoint } from '../shared/types'
 
 document.body.classList.remove('dcl-loading')
 
@@ -21,8 +20,8 @@ async function loadClient() {
 
   await enableParcelSceneLoading({
     parcelSceneClass: WebGLParcelScene,
-    onPositionSettled: initialLand => {
-      initialLand && setInitialPosition(initialLand)
+    onPositionSettled: spawnPoint => {
+      setInitialPosition(spawnPoint)
       worldRunningObservable.notifyObservers(true)
     },
     preloadScene: async () => true
@@ -43,8 +42,8 @@ bodyReadyFuture
   })
   .catch(handleError)
 
-function setInitialPosition(initialLand: ILand) {
-  const newPosition = getWorldSpawnpoint(initialLand).position
+function setInitialPosition(spawnPoint: InstancedSpawnPoint) {
+  const newPosition = spawnPoint.position
   const result = new BABYLON.Vector3(newPosition.x, newPosition.y, newPosition.z)
   if (scene.activeCamera) {
     scene.activeCamera.position.copyFrom(result)

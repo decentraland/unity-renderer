@@ -4,15 +4,16 @@ import { worldToGrid } from 'atomicHelpers/parcelScenePositions'
 
 import { positionObservable, teleportObservable } from './positionThings'
 import { SceneWorker, ParcelSceneAPI } from './SceneWorker'
-import { LoadableParcelScene, EnvironmentData, ILand, ILandToLoadableParcelScene } from '../types'
+import { LoadableParcelScene, EnvironmentData, ILand, ILandToLoadableParcelScene, InstancedSpawnPoint } from '../types'
 import { ScriptingTransport } from 'decentraland-rpc/lib/common/json-rpc/types'
 import { sceneLifeCycleObservable } from '../../decentraland-loader/lifecycle/controllers/scene'
 import { worldRunningObservable } from './worldState'
+import { queueTrackingEvent } from '../analytics'
 
 export type EnableParcelSceneLoadingOptions = {
   parcelSceneClass: { new (x: EnvironmentData<LoadableParcelScene>): ParcelSceneAPI }
   preloadScene: (parcelToLoad: ILand) => Promise<any>
-  onPositionSettled?: (initialLand?: ILand) => void
+  onPositionSettled?: (spawnPoint: InstancedSpawnPoint) => void
   onLoadParcelScenes?(x: ILand[]): void
   onUnloadParcelScenes?(x: ILand[]): void
   onPositionUnsettled?(): void
@@ -119,9 +120,9 @@ export async function enableParcelSceneLoading(options: EnableParcelSceneLoading
     }
   })
 
-  ret.on('Position.settled', async (opts: { sceneId: string }) => {
+  ret.on('Position.settled', async (opts: { spawnPoint: InstancedSpawnPoint }) => {
     if (options.onPositionSettled) {
-      options.onPositionSettled(opts.sceneId ? await ret.getParcelData(opts.sceneId) : undefined)
+      options.onPositionSettled(opts.spawnPoint)
     }
   })
 
@@ -130,6 +131,10 @@ export async function enableParcelSceneLoading(options: EnableParcelSceneLoading
       options.onPositionUnsettled()
     }
     worldRunningObservable.notifyObservers(false)
+  })
+
+  ret.on('Event.track', (event: { name: string; data: any }) => {
+    queueTrackingEvent(event.name, event.data)
   })
 
   teleportObservable.add((position: { x: number; y: number }) => {
