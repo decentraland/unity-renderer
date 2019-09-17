@@ -14,6 +14,7 @@ namespace DCL.Controllers
 {
     public class ParcelScene : MonoBehaviour, ICleanable
     {
+        public static bool VERBOSE = false;
         enum State
         {
             NOT_READY,
@@ -37,7 +38,7 @@ namespace DCL.Controllers
         public event System.Action<DecentralandEntity> OnEntityRemoved;
         public ContentProvider contentProvider;
         public int disposableNotReadyCount => disposableNotReady.Count;
-     
+
         [System.NonSerialized]
         public bool isTestScene = false;
 
@@ -46,7 +47,7 @@ namespace DCL.Controllers
 
         [System.NonSerialized]
         public bool unloadWithDistance = true;
-     
+
         private readonly List<GameObject> blockers = new List<GameObject>();
         private readonly List<string> disposableNotReady = new List<string>();
         private List<string> entitiesMarkedForRemoval = new List<string>();
@@ -54,8 +55,7 @@ namespace DCL.Controllers
         private bool isReleased = false;
         private State state = State.NOT_READY;
         private SceneBoundariesChecker boundariesChecker;
-     
-        public static bool VERBOSE = false;
+
         private static GameObject blockerPrefab;
 
         public void Awake()
@@ -65,7 +65,7 @@ namespace DCL.Controllers
             metricsController = new SceneMetricsController(this);
             metricsController.Enable();
 
-            if(SceneController.i.isDebugMode)
+            if (SceneController.i.isDebugMode)
                 boundariesChecker = new SceneBoundariesDebugModeChecker(this);
             else
                 boundariesChecker = new SceneBoundariesChecker(this);
@@ -124,6 +124,7 @@ namespace DCL.Controllers
             //NOTE(Brian): Don't generate parcel blockers if debugScenes is active and is not the desired scene.
             if (SceneController.i.debugScenes && SceneController.i.debugSceneCoords != data.basePosition)
             {
+                SetSceneReady();
                 return;
             }
 #endif
@@ -260,21 +261,21 @@ namespace DCL.Controllers
 
         public bool IsInsideSceneBoundaries(Bounds objectBounds)
         {
-            if(!IsInsideSceneBoundaries(objectBounds.min + CommonScriptableObjects.playerUnityToWorldOffset, objectBounds.max.y)) return false;
-            if(!IsInsideSceneBoundaries(objectBounds.max + CommonScriptableObjects.playerUnityToWorldOffset, objectBounds.max.y)) return false;
+            if (!IsInsideSceneBoundaries(objectBounds.min + CommonScriptableObjects.playerUnityToWorldOffset, objectBounds.max.y)) return false;
+            if (!IsInsideSceneBoundaries(objectBounds.max + CommonScriptableObjects.playerUnityToWorldOffset, objectBounds.max.y)) return false;
 
             return true;
         }
 
         public virtual bool IsInsideSceneBoundaries(Vector2Int gridPosition, float height = 0f)
         {
-            if(sceneData.parcels == null) return false;
+            if (sceneData.parcels == null) return false;
 
             float heightLimit = metricsController.GetLimits().sceneHeight;
 
             for (int i = 0; i < sceneData.parcels.Length; i++)
-            {                
-                if(height > heightLimit) continue;
+            {
+                if (height > heightLimit) continue;
 
                 if (sceneData.parcels[i] == gridPosition) return true;
             }
@@ -284,13 +285,13 @@ namespace DCL.Controllers
 
         public bool IsInsideSceneBoundaries(Vector3 worldPosition, float height = 0f)
         {
-            if(sceneData.parcels == null) return false;
+            if (sceneData.parcels == null) return false;
 
             float heightLimit = metricsController.GetLimits().sceneHeight;
 
             for (int i = 0; i < sceneData.parcels.Length; i++)
-            {                
-                if(height > heightLimit) continue;
+            {
+                if (height > heightLimit) continue;
 
                 if (worldPosition.x < sceneData.parcels[i].x * ParcelSettings.PARCEL_SIZE + ParcelSettings.PARCEL_SIZE + ParcelSettings.PARCEL_BOUNDARIES_THRESHOLD
                     && worldPosition.x > sceneData.parcels[i].x * ParcelSettings.PARCEL_SIZE - ParcelSettings.PARCEL_BOUNDARIES_THRESHOLD
@@ -1037,13 +1038,6 @@ namespace DCL.Controllers
             RefreshName();
             disposableNotReady.Clear();
 
-#if UNITY_EDITOR
-            if (SceneController.i.debugScenes && sceneData.basePosition != SceneController.i.debugSceneCoords)
-            {
-                SetSceneReady();
-                return;
-            }
-#endif
             if (disposableComponents.Count > 0)
             {
                 //NOTE(Brian): Here, we have to split the iterations. If not, we will get repeated calls of
