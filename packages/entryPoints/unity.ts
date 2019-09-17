@@ -1,8 +1,8 @@
 import { initializeUnity } from '../unity-interface/initializer'
 import { startUnityParcelLoading } from '../unity-interface/dcl'
+import { worldToGrid } from '../atomicHelpers/parcelScenePositions'
 import { lastPlayerPosition, teleportObservable } from '../shared/world/positionThings'
 import defaultLogger from '../shared/logger'
-import { worldToGrid } from '../atomicHelpers/parcelScenePositions'
 
 const container = document.getElementById('gameContainer')
 
@@ -13,13 +13,8 @@ initializeUnity(container)
     await startUnityParcelLoading()
 
     _.instancedJS
-      .then($ => {
-        const gridPosition = { x: 0, y: 0 }
-        worldToGrid(lastPlayerPosition, gridPosition)
-        teleportObservable.notifyObservers(gridPosition)
-      })
+      .then($ => teleportObservable.notifyObservers(worldToGrid(lastPlayerPosition)))
       .catch(defaultLogger.error)
-
     document.body.classList.remove('dcl-loading')
   })
   .catch(err => {

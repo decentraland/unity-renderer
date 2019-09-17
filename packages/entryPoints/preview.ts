@@ -6,11 +6,12 @@ global['preview'] = window['preview'] = true
 global['enableWeb3'] = window['enableWeb3']
 
 import { initializeUnity } from '../unity-interface/initializer'
-import { loadPreviewScene, setInitialPosition } from '../unity-interface/dcl'
+import { loadPreviewScene } from '../unity-interface/dcl'
 import { DEBUG_WS_MESSAGES } from '../config'
-import defaultLogger from '../shared/logger'
-import future from 'fp-future'
-import { worldRunningObservable } from '../shared/world/worldState'
+import defaultLogger from 'shared/logger'
+import { future, IFuture } from 'fp-future'
+import { ILand } from 'shared/types'
+import { pickWorldSpawnpoint } from 'shared/world/positionThings'
 
 // Remove the 'dcl-loading' class, used until JS loads.
 document.body.classList.remove('dcl-loading')
@@ -19,7 +20,7 @@ const container = document.getElementById('gameContainer')
 
 if (!container) throw new Error('cannot find element #gameContainer')
 
-const defaultScene = future()
+const defaultScene: IFuture<ILand> = future()
 
 function startPreviewWatcher() {
   // this is set to avoid double loading scenes due queued messages
@@ -64,11 +65,11 @@ initializeUnity(container)
     startPreviewWatcher()
 
     const scene = await defaultScene
-    worldRunningObservable.add(running => running && setInitialPosition(scene), undefined, true, undefined, true)
 
     ret.instancedJS
-      .then($ => {
-        $.unityInterface.ActivateRendering()
+      .then(({ unityInterface }) => {
+        unityInterface.Teleport(pickWorldSpawnpoint(scene))
+        unityInterface.ActivateRendering()
       })
       .catch(defaultLogger.error)
   })

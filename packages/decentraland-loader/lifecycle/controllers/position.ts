@@ -2,21 +2,41 @@ import { Vector2Component } from 'atomicHelpers/landHelpers'
 import { SceneLifeCycleController } from './scene'
 import { EventEmitter } from 'events'
 import { ParcelLifeCycleController } from './parcel'
+import { SceneDataDownloadManager } from './download'
+import { worldToGrid, gridToWorld } from '../../../atomicHelpers/parcelScenePositions'
+import { pickWorldSpawnpoint } from 'shared/world/positionThings'
+import { InstancedSpawnPoint } from 'shared/types'
 
 export class PositionLifecycleController extends EventEmitter {
   private positionSettled: boolean = false
-  private currentSceneId?: string
   private currentlySightedScenes: string[] = []
+  private currentSpawnpoint?: InstancedSpawnPoint
 
-  constructor(public parcelController: ParcelLifeCycleController, public sceneController: SceneLifeCycleController) {
+  constructor(
+    private downloadManager: SceneDataDownloadManager,
+    private parcelController: ParcelLifeCycleController,
+    private sceneController: SceneLifeCycleController
+  ) {
     super()
     sceneController.on('Scene status', () => this.checkPositionSettlement())
   }
 
   async reportCurrentPosition(position: Vector2Component, teleported: boolean) {
-    const parcels = this.parcelController.reportCurrentPosition(position)
+    let resolvedPosition = position
+    if (teleported) {
+      const land = await this.downloadManager.getParcelData(`${position.x},${position.y}`)
+      if (land) {
+        const spawnPoint = pickWorldSpawnpoint(land)
+        resolvedPosition = worldToGrid(spawnPoint.position)
+        this.queueTrackingEvent('Scene Spawn', { parcel: land.scene.scene.base, spawnpoint: spawnPoint.position })
 
-    this.currentSceneId = await this.sceneController.requestSceneId(`${position.x},${position.y}`)
+        this.currentSpawnpoint = spawnPoint
+      } else {
+        this.currentSpawnpoint = { position: gridToWorld(position.x, position.y) }
+      }
+    }
+
+    const parcels = this.parcelController.reportCurrentPosition(resolvedPosition)
 
     if (parcels) {
       const newlySightedScenes = await this.sceneController.reportSightedParcels(parcels.sighted, parcels.lostSight)
@@ -46,8 +66,12 @@ export class PositionLifecycleController extends EventEmitter {
 
       if (settling) {
         this.positionSettled = settling
-        this.emit('Settled Position', this.currentSceneId)
+        this.emit('Settled Position', this.currentSpawnpoint)
       }
     }
+  }
+
+  private queueTrackingEvent(name: string, data: any) {
+    this.emit('Tracking Event', { name, data })
   }
 }

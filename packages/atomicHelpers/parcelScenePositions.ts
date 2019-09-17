@@ -11,18 +11,20 @@ export interface BoundingInfo {
 /**
  * Transforms a grid position into a world-relative 3d position
  */
-export function gridToWorld(x: number, y: number, target: Vector3Component) {
+export function gridToWorld(x: number, y: number, target: Vector3Component = { x: 0, y: 0, z: 0 }) {
   target.x = x * parcelLimits.parcelSize
   target.y = 0
   target.z = y * parcelLimits.parcelSize
+  return target
 }
 
 /**
  * Transforms a world position into a grid position
  */
-export function worldToGrid(vector: Vector3Component, target: Vector2Component): void {
+export function worldToGrid(vector: Vector3Component, target: Vector2Component = { x: 0, y: 0 }): Vector2Component {
   target.x = Math.floor(vector.x / parcelLimits.parcelSize)
   target.y = Math.floor(vector.z / parcelLimits.parcelSize)
+  return target
 }
 
 const highDelta = parcelLimits.parcelSize + parcelLimits.centimeter

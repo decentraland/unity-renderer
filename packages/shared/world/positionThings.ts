@@ -9,7 +9,7 @@ import {
 } from 'decentraland-ecs/src/decentraland/math'
 import { Observable } from 'decentraland-ecs/src/ecs/Observable'
 import { ILand } from 'shared/types'
-import { Vector3Component } from '../../atomicHelpers/landHelpers'
+import { InstancedSpawnPoint } from '../types'
 
 declare var location: any
 declare var history: any
@@ -86,8 +86,8 @@ export function initializeUrlPositionObserver() {
  *
  * @param land Scene on which the player is spawning
  */
-export function getWorldSpawnpoint(land: ILand): { position: Vector3Component; cameraTarget?: Vector3Component } {
-  const spawnpoint = getSpawnpoint(land)
+export function pickWorldSpawnpoint(land: ILand): InstancedSpawnPoint {
+  const spawnpoint = pickSpawnpoint(land)
 
   if (!spawnpoint) {
     return { position: lastPlayerPosition }
@@ -108,7 +108,7 @@ export function getWorldSpawnpoint(land: ILand): { position: Vector3Component; c
   }
 }
 
-function getSpawnpoint(land: ILand): { position: Vector3Component; cameraTarget?: Vector3Component } | undefined {
+function pickSpawnpoint(land: ILand): InstancedSpawnPoint | undefined {
   if (!land.scene || !land.scene.spawnPoints || land.scene.spawnPoints.length === 0) {
     return undefined
   }

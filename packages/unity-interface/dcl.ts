@@ -15,18 +15,14 @@ import {
   MappingsResponse,
   ILand,
   Profile,
+  InstancedSpawnPoint,
   AvatarAsset,
   Notification
 } from '../shared/types'
 import { DevTools } from '../shared/apis/DevTools'
 import { gridToWorld } from '../atomicHelpers/parcelScenePositions'
 import { ILogger, createLogger, defaultLogger } from '../shared/logger'
-import {
-  positionObservable,
-  lastPlayerPosition,
-  getWorldSpawnpoint,
-  teleportObservable
-} from '../shared/world/positionThings'
+import { positionObservable, teleportObservable } from '../shared/world/positionThings'
 import {
   enableParcelSceneLoading,
   getSceneWorkerBySceneID,
@@ -39,13 +35,11 @@ import { ensureUiApis } from '../shared/world/uiSceneInitializer'
 import { ParcelIdentity } from '../shared/apis/ParcelIdentity'
 import { IEventNames, IEvents } from '../decentraland-ecs/src/decentraland/Types'
 import { Vector3, Quaternion, ReadOnlyVector3, ReadOnlyQuaternion } from '../decentraland-ecs/src/decentraland/math'
-import { DEBUG, ENGINE_DEBUG_PANEL, SCENE_DEBUG_PANEL, parcelLimits, playerConfigurations } from '../config'
+import { DEBUG, ENGINE_DEBUG_PANEL, SCENE_DEBUG_PANEL, playerConfigurations } from '../config'
 import { chatObservable } from '../shared/comms/chat'
-import { queueTrackingEvent } from '../shared/analytics'
 import { getUserProfile } from '../shared/comms/peers'
 import { sceneLifeCycleObservable } from '../decentraland-loader/lifecycle/controllers/scene'
 import { worldRunningObservable } from '../shared/world/worldState'
-import { Vector3Component } from '../atomicHelpers/landHelpers'
 
 let gameInstance!: GameInstance
 
@@ -127,11 +121,11 @@ const unityInterface = {
      */
     gameInstance.SendMessage('SceneController', 'CreateUIScene', JSON.stringify(data))
   },
-  /** Sends the camera position to the engine */
-  SetPosition(x: number, y: number, z: number, cameraTarget?: Vector3Component) {
+  /** Sends the camera position & target to the engine */
+  Teleport({ position: { x, y, z }, cameraTarget }: InstancedSpawnPoint) {
     const theY = y <= 0 ? 2 : y
 
-    gameInstance.SendMessage('CharacterController', 'SetPosition', JSON.stringify({ x, y: theY, z, cameraTarget }))
+    gameInstance.SendMessage('CharacterController', 'Teleport', JSON.stringify({ x, y: theY, z, cameraTarget }))
   },
   /** Tells the engine which scenes to load */
   LoadParcelScenes(parcelsToLoad: LoadableParcelScene[]) {
@@ -166,10 +160,10 @@ const unityInterface = {
   UnlockCursor() {
     gameInstance.SendMessage('MouseCatcher', 'UnlockCursor')
   },
-  AddWearablesToCatalog(wearables: AvatarAsset[]){
+  AddWearablesToCatalog(wearables: AvatarAsset[]) {
     gameInstance.SendMessage('SceneController', 'AddWearablesToCatalog', JSON.stringify(wearables))
   },
-  RemoveWearablesFromCatalog(wearableIds: string[]){
+  RemoveWearablesFromCatalog(wearableIds: string[]) {
     gameInstance.SendMessage('SceneController', 'RemoveWearablesFromCatalog', JSON.stringify(wearableIds))
   },
   ClearWearableCatalog() {
@@ -248,7 +242,6 @@ export async function initializeEngine(_gameInstance: GameInstance) {
 
   setLoadingScreenVisible(true)
 
-  unityInterface.SetPosition(lastPlayerPosition.x, lastPlayerPosition.y, lastPlayerPosition.z)
   unityInterface.DeactivateRendering()
 
   if (DEBUG) {
@@ -278,12 +271,6 @@ export async function initializeEngine(_gameInstance: GameInstance) {
   }
 }
 
-export function setInitialPosition(initialLand: ILand) {
-  const { position, cameraTarget } = getWorldSpawnpoint(initialLand)
-  unityInterface.SetPosition(position.x, position.y, position.z, cameraTarget)
-  queueTrackingEvent('Scene Spawn', { parcel: initialLand.scene.scene.base, spawnpoint: position })
-}
-
 export async function startUnityParcelLoading() {
   await enableParcelSceneLoading({
     parcelSceneClass: UnityParcelScene,
@@ -307,9 +294,9 @@ export async function startUnityParcelLoading() {
         unityInterface.UnloadScene($.sceneId)
       })
     },
-    onPositionSettled: land => {
+    onPositionSettled: spawnPoint => {
+      unityInterface.Teleport(spawnPoint)
       unityInterface.ActivateRendering()
-      land && setInitialPosition(land)
     },
     onPositionUnsettled: () => {
       unityInterface.DeactivateRendering()
@@ -389,7 +376,6 @@ export async function loadPreviewScene() {
 teleportObservable.add((position: { x: number; y: number }) => {
   // before setting the new position, show loading screen to avoid showing an empty world
   setLoadingScreenVisible(true)
-  unityInterface.SetPosition(position.x * parcelLimits.parcelSize, 0, position.y * parcelLimits.parcelSize)
 })
 
 worldRunningObservable.add(isRunning => {
