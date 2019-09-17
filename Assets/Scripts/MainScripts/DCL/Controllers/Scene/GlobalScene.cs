@@ -5,6 +5,13 @@ namespace DCL.Controllers
 {
     public class GlobalScene : ParcelScene
     {
+        protected override string prettyName => "ui-scene";
+
+        public override bool IsInsideSceneBoundaries(Vector3 worldPosition, float height = 0f)
+        {
+            return true;
+        }
+
         public override bool IsInsideSceneBoundaries(Vector2Int gridPosition, float height = 0)
         {
             return true;
@@ -16,8 +23,6 @@ namespace DCL.Controllers
 
             contentProvider = new ContentProvider_Dummy();
             contentProvider.baseUrl = data.baseUrl;
-
-            this.name = gameObject.name = $"ui scene:{data.id}";
         }
 
         protected override void SendMetricsEvent()

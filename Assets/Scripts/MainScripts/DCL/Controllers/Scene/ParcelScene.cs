@@ -80,27 +80,29 @@ namespace DCL.Controllers
                 SendMetricsEvent();
         }
 
-        void RefreshName()
+        protected virtual string prettyName => sceneData.basePosition.ToString();
+
+        protected void RefreshName()
         {
 #if UNITY_EDITOR
             switch (state)
             {
                 case State.NOT_READY:
-                    this.name = gameObject.name = $"scene:{sceneData.basePosition} - not ready...";
+                    this.name = gameObject.name = $"scene:{prettyName} - not ready...";
                     break;
                 case State.WAITING_FOR_INIT_MESSAGES:
-                    this.name = gameObject.name = $"scene:{sceneData.basePosition} - waiting for init messages...";
+                    this.name = gameObject.name = $"scene:{prettyName} - waiting for init messages...";
                     break;
                 case State.WAITING_FOR_COMPONENTS:
 
                     if (disposableComponents != null && disposableComponents.Count > 0)
-                        this.name = gameObject.name = $"scene:{sceneData.basePosition} - left to ready:{disposableComponents.Count - disposableNotReadyCount}/{disposableComponents.Count}";
+                        this.name = gameObject.name = $"scene:{prettyName} - left to ready:{disposableComponents.Count - disposableNotReadyCount}/{disposableComponents.Count}";
                     else
-                        this.name = gameObject.name = $"scene:{sceneData.basePosition} - no components. waiting...";
+                        this.name = gameObject.name = $"scene:{prettyName} - no components. waiting...";
 
                     break;
                 case State.READY:
-                    this.name = gameObject.name = $"scene:{sceneData.basePosition} - ready!";
+                    this.name = gameObject.name = $"scene:{prettyName} - ready!";
                     break;
             }
 #endif
@@ -283,7 +285,7 @@ namespace DCL.Controllers
             return false;
         }
 
-        public bool IsInsideSceneBoundaries(Vector3 worldPosition, float height = 0f)
+        public virtual bool IsInsideSceneBoundaries(Vector3 worldPosition, float height = 0f)
         {
             if (sceneData.parcels == null) return false;
 
