@@ -10,27 +10,24 @@ namespace DCL
         public bool isInsidePool { get { return pool.IsInPool(this); } }
         public bool isOutsidePool { get { return pool.IsOutOfPool(this); } }
 
+        public System.Action OnRelease;
+
         void OnEnable()
         {
             if (pool != null)
             {
-                pool.OnReleaseAll -= this.OnRelease;
-                pool.OnReleaseAll += this.OnRelease;
+                pool.OnReleaseAll -= this.Release;
+                pool.OnReleaseAll += this.Release;
             }
         }
 
         private void OnDisable()
         {
             if (pool != null)
-                pool.OnReleaseAll -= this.OnRelease;
+                pool.OnReleaseAll -= this.Release;
         }
 
-        public void OnRelease(Pool pool)
-        {
-            Release();
-        }
-
-        public void Release()
+        public void Release(Pool releasePool = null)
         {
             if (this == null)
             {
@@ -50,6 +47,8 @@ namespace DCL
                 Debug.LogError("Pool is null upon release!");
 #endif
             }
+
+            OnRelease?.Invoke();
         }
 
         public void OnCleanup(DCL.ICleanableEventDispatcher sender)
@@ -62,7 +61,7 @@ namespace DCL
         {
             if (pool != null)
             {
-                pool.OnReleaseAll -= this.OnRelease;
+                pool.OnReleaseAll -= this.Release;
                 pool.RemoveFromPool(this);
             }
         }
