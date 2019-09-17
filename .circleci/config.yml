@@ -293,7 +293,7 @@ workflows:
             - build
           filters:
             branches:
-              ignore: /.*/
+              only: master
             tags:
               only: /^\d+\.\d+\.\d(.*)/
       - hold-explorer-stg:
@@ -302,7 +302,7 @@ workflows:
             - build
           filters:
             branches:
-              ignore: /.*/
+              only: master
             tags:
               only: /^\d+\.\d+\.\d(.*)/
       - hold-ecs:
