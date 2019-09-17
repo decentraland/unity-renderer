@@ -782,12 +782,6 @@ namespace DCL
                 sceneMessagingController.StopBus(MessagingBusId.INIT);
             }
 
-            //TODO LifeCycle Iteration 2:
-            //Temporary location for this code, must be called when browser's LoadingScreen fades out
-            if (isDebugMode)
-            {
-                fpsPanel.GetComponent<DCL.FrameTimeCounter>().Reset();
-            }
             WebInterface.ReportControlEvent(new WebInterface.SceneReady(sceneId));
         }
 
