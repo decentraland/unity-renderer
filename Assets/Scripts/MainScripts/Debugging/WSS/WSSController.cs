@@ -241,7 +241,7 @@ namespace DCL
                             case "UnloadScene":
                                 sceneController.UnloadScene(msg.payload);
                                 break;
-                            case "SetPosition":
+                            case "Teleport":
                                 characterController.Teleport(msg.payload);
                                 break;
                             case "Reset":
