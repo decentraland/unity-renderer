@@ -1,9 +1,8 @@
-using UnityEngine;
+﻿using UnityEngine;
 using UnityEngine.UI;
 
 namespace DCL
 {
-    [RequireComponent(typeof(FrameTimeCounter))]
     public class FPSDisplay : MonoBehaviour
     {
         [System.Serializable]
@@ -19,17 +18,7 @@ namespace DCL
             }
         }
 
-        string[] labelText =
-        {
-            "Current: ",
-            "50th: ",
-            "75th: ",
-            "90th: ",
-            "95th: ",
-            "99th: ",
-        };
-
-        public Text[] labels;
+        public Text label;
 
         FPSColor[] coloring =
         {
@@ -40,43 +29,21 @@ namespace DCL
             new FPSColor(Color.red, 0),
         };
 
-        public FrameTimeCounter fpsCounter;
-
-        private void Start()
+        void Update()
         {
-            InvokeRepeating("LazyUpdate", 5.0f, 0.15f);
-        }
-
-        void LazyUpdate()
-        {
-            if (!fpsCounter)
+            if (label != null)
             {
-                fpsCounter = GetComponent<FrameTimeCounter>();
+                float fps = 1.0f / Time.smoothDeltaTime;
+                string fpsFormatted = fps.ToString("##.00");
+                string msFormatted = (Time.deltaTime * 1000).ToString("##.00");
+                string targetText = $"Current {msFormatted} ms (fps: {fpsFormatted})";
 
-                if (!fpsCounter)
+                if (label.text != targetText)
                 {
-                    return;
-                }
-            }
-
-
-            if (labels.Length > 0)
-            {
-                float fps = 1.0f / Time.deltaTime;
-                string targetText = labelText[0] + (Time.deltaTime * 1000).ToString("##.000") + "ms (fps: " + fps + ")";
-
-                if (labels[0].text != targetText)
-                {
-                    labels[0].text = targetText;
+                    label.text = targetText;
                 }
 
-                DisplayColor(labels[0], fps);
-
-                for (int i = 1; i < labels.Length; i++)
-                {
-                    DisplayText(labels[i], labelText[i], fpsCounter.stats[i]);
-                    DisplayColor(labels[i], 1 / fpsCounter.stats[i]);
-                }
+                DisplayColor(label, fps);
             }
         }
 
@@ -93,21 +60,6 @@ namespace DCL
 
                     break;
                 }
-            }
-        }
-
-        void DisplayText(Text label, string text, float value)
-        {
-            if (value == 0)
-            {
-                return;
-            }
-
-            string targetText = text + (value * 1000).ToString("##.000") + "ms";
-
-            if (targetText != label.text)
-            {
-                label.text = targetText;
             }
         }
     }
