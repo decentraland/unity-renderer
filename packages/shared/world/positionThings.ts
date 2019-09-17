@@ -87,11 +87,9 @@ export function initializeUrlPositionObserver() {
  * @param land Scene on which the player is spawning
  */
 export function pickWorldSpawnpoint(land: ILand): InstancedSpawnPoint {
-  const spawnpoint = pickSpawnpoint(land)
+  const pick = pickSpawnpoint(land)
 
-  if (!spawnpoint) {
-    return { position: lastPlayerPosition }
-  }
+  const spawnpoint = pick || { position: { x: 0, y: 0, z: 0 } }
 
   const baseParcel = land.scene.scene.base
   const [bx, by] = baseParcel.split(',')
