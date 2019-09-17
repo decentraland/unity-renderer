@@ -1,3 +1,4 @@
+﻿using DCL.Configuration;
 using DCL.Controllers;
 using DCL.Helpers;
 using DCL.Models;
@@ -5,27 +6,28 @@ using System;
 using System.Collections;
 using UnityEngine;
 using UnityEngine.UI;
-using DCL.Configuration;
 
 namespace DCL.Components
 {
     public class UIScreenSpace : UIShape
     {
         static bool VERBOSE = false;
+
+        const string GLOBAL_VISIBILITY_TOGGLE_PATH = "GlobalVisibilityToggle";
         public Canvas canvas;
 
-        private static bool globalVisibility = true;
-        private static bool GlobalVisibility
+        private static bool globalVisibilityToggleValue = true;
+        private static bool globalVisibilityToggle
         {
-            get => globalVisibility;
+            get => globalVisibilityToggleValue;
             set
             {
-                globalVisibility = value;
-                OnUIGlobalVisibilityChanged.Invoke();
+                globalVisibilityToggleValue = value;
+                OnUIGlobalVisibilityToggleChanged.Invoke();
             }
         }
 
-        private static Action OnUIGlobalVisibilityChanged = () => { };
+        private static Action OnUIGlobalVisibilityToggleChanged = () => { };
         private static Toggle toggle;
 
         private DCLCharacterPosition currentCharacterPosition;
@@ -38,7 +40,7 @@ namespace DCL.Components
             //Only no-dcl scenes are listening the the global visibility event
             if (!scene.isPersistent)
             {
-                OnUIGlobalVisibilityChanged += UpdateCanvasVisibility;
+                OnUIGlobalVisibilityToggleChanged += UpdateCanvasVisibility;
             }
         }
 
@@ -74,7 +76,7 @@ namespace DCL.Components
         public override void Dispose()
         {
             DCLCharacterController.OnCharacterMoved -= OnCharacterMoved;
-            OnUIGlobalVisibilityChanged -= UpdateCanvasVisibility;
+            OnUIGlobalVisibilityToggleChanged -= UpdateCanvasVisibility;
 
             if (childHookRectTransform != null)
             {
@@ -101,7 +103,8 @@ namespace DCL.Components
         {
             if (canvas != null && scene != null)
             {
-                bool shouldBeVisible = scene.IsInsideSceneBoundaries(currentCharacterPosition.worldPosition) && model.visible && (scene.isPersistent || GlobalVisibility);
+                bool isInsideSceneBounds = scene.IsInsideSceneBoundaries(currentCharacterPosition.worldPosition);
+                bool shouldBeVisible = scene.isPersistent || (model.visible && isInsideSceneBounds && globalVisibilityToggle);
                 canvasGroup.alpha = shouldBeVisible ? 1f : 0f;
                 canvasGroup.blocksRaycasts = shouldBeVisible;
             }
@@ -201,9 +204,10 @@ namespace DCL.Components
             }
         }
 
+
         private void CreateGlobalVisibilityToggle()
         {
-            GameObject toggleGameObject = UnityEngine.Object.Instantiate(Resources.Load("GlobalVisibilityToggle"), childHookRectTransform) as GameObject;
+            GameObject toggleGameObject = UnityEngine.Object.Instantiate(Resources.Load(GLOBAL_VISIBILITY_TOGGLE_PATH), childHookRectTransform) as GameObject;
             if (toggleGameObject == null)
             {
                 Debug.Log("Cannot find Global Visibility Toggle");
@@ -217,7 +221,7 @@ namespace DCL.Components
                 return;
             }
 
-            toggle.onValueChanged.AddListener((x) => GlobalVisibility = x);
+            toggle.onValueChanged.AddListener((x) => globalVisibilityToggle = x);
             toggle.isOn = true;
 
             toggle.gameObject.SetActive(false);
