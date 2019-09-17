@@ -1,4 +1,4 @@
-using DCL.Models;
+﻿using DCL.Models;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -29,17 +29,6 @@ namespace DCL.Components
                 {
                     return (DCLAnimationState)this.MemberwiseClone();
                 }
-
-                public bool Equals(DCLAnimationState other)
-                {
-                    return name == other.name &&
-                           clip == other.clip &&
-                           playing == other.playing &&
-                           weight == other.weight &&
-                           looping == other.looping &&
-                           speed == other.speed &&
-                           shouldReset == other.shouldReset;
-                }
             }
 
             public DCLAnimationState[] states;
@@ -52,16 +41,6 @@ namespace DCL.Components
         Dictionary<AnimationClip, AnimationState> clipToState = new Dictionary<AnimationClip, AnimationState>();
         Animation animComponent = null;
 
-        private void Start()
-        {
-            entity.OnShapeUpdated += OnComponentUpdated;
-
-            if (entity.meshRootGameObject && entity.meshRootGameObject.GetComponentInChildren<Animation>() != null)
-            {
-                Initialize();
-            }
-        }
-
         private void OnDestroy()
         {
             entity.OnShapeUpdated -= OnComponentUpdated;
@@ -70,7 +49,16 @@ namespace DCL.Components
         public override IEnumerator ApplyChanges(string newJson)
         {
             model = SceneController.i.SafeFromJson<Model>(newJson);
+
+            //NOTE(Brian): Horrible fix to the double ApplyChanges call, as its breaking the needed logic.
+            if (newJson == "{}")
+                return null;
+
+            entity.OnShapeUpdated -= OnComponentUpdated;
+            entity.OnShapeUpdated += OnComponentUpdated;
+
             UpdateAnimationState();
+
             return null;
         }
 
@@ -89,17 +77,6 @@ namespace DCL.Components
                 return;
             }
 
-            if (previousState != null && !CheckIfDirty(model.states, previousState))
-            {
-                return;
-            }
-
-            if (model.states == null || model.states.Length == 0)
-            {
-                return;
-            }
-
-
             //NOTE(Brian): fetch all the AnimationClips in Animation component.
             if (animComponent == null)
             {
@@ -116,6 +93,8 @@ namespace DCL.Components
 
                 animComponent.playAutomatically = false;
                 animComponent.enabled = true;
+                animComponent.Stop(); //NOTE(Brian): When the GLTF is created by GLTFSceneImporter a frame may be elapsed, 
+                                      //putting the component in play state if playAutomatically was true at that point.
 
                 foreach (AnimationState unityState in animComponent)
                 {
@@ -132,17 +111,21 @@ namespace DCL.Components
         void UpdateAnimationState()
         {
             Initialize();
-            
+
             if (clipNameToClip.Count == 0 || animComponent == null)
             {
                 return;
             }
 
-            animComponent.playAutomatically = false;
-            animComponent.enabled = true;
-
-            foreach (Model.DCLAnimationState state in model.states)
+            if (model.states == null || model.states.Length == 0)
             {
+                return;
+            }
+
+            for (int i = 0; i < model.states.Length; i++)
+            {
+                Model.DCLAnimationState state = model.states[i];
+
                 if (clipNameToClip.ContainsKey(state.clip))
                 {
                     AnimationState unityState = animComponent[state.clip];
@@ -199,34 +182,6 @@ namespace DCL.Components
             }
 
             return null;
-        }
-
-
-        bool CheckIfDirty(Model.DCLAnimationState[] states1, Model.DCLAnimationState[] states2)
-        {
-            if (states1 == null || states2 == null)
-            {
-                return true;
-            }
-
-            if (states1.Length != states2.Length)
-            {
-                return true;
-            }
-
-            //TODO(Brian): bad performance, fix later?
-            for (int i = 0; i < states2.Length; i++)
-            {
-                for (int j = 0; j < states1.Length; j++)
-                {
-                    if (states1[j].name == states2[i].name && !states1[j].Equals(states2[i]))
-                    {
-                        return true;
-                    }
-                }
-            }
-
-            return false;
         }
     }
 }
