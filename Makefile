@@ -96,6 +96,7 @@ DIST_STATIC_FILES := static/export.html static/preview.html static/fonts static/
 DIST_PACKAGE_JSON := packages/decentraland-ecs/package.json
 
 build-deploy: $(DIST_ENTRYPOINTS) $(DIST_STATIC_FILES) $(SCENE_SYSTEM) $(INTERNAL_SCENES) ## Build all the entrypoints needed for a deployment
+	@node ./scripts/replaceVersion.js
 
 build-release: $(DIST_ENTRYPOINTS) $(DIST_STATIC_FILES) $(DIST_PACKAGE_JSON) ## Build all the entrypoints and run the `scripts/prepareDist` script
 	@node ./scripts/prepareDist.js
