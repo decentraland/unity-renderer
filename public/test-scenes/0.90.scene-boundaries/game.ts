@@ -142,54 +142,54 @@ sharkVisibilityTrigger.addComponent(
 )
 engine.addEntity(sharkVisibilityTrigger)
 
-// PUSHABLE COLLIDING TREE
-let treeEntity = configureShapeEntityPositions([new Vector3(15, 0, 0)], 0.7, new GLTFShape('models/PalmTree_01.glb'))
+// PUSHABLE COLLIDING NPC
+let npcEntity = configureShapeEntityPositions([new Vector3(16, 0, 0)], 0.7, new GLTFShape('models/Avatar_Idle.glb'))
 
-let treeLeftMovementTrigger = new Entity()
-treeLeftMovementTrigger.addComponentOrReplace(new BoxShape());
-treeLeftMovementTrigger.setParent(treeEntity)
-treeLeftMovementTrigger.addComponent(
-  new Transform({
-    position: new Vector3(-0.25, 2, 0),
-    scale: new Vector3(0.3, 1, 3)
-  })
-)
-treeLeftMovementTrigger.addComponent(
-  new OnClick(e => {
-    treeEntity.getComponent(Transform).position.x += 1
-  })
-)
-engine.addEntity(treeLeftMovementTrigger)
-
-let treeRightMovementTrigger = new Entity()
-treeRightMovementTrigger.addComponentOrReplace(new BoxShape());
-treeRightMovementTrigger.setParent(treeEntity)
-treeRightMovementTrigger.addComponent(
-  new Transform({
-    position: new Vector3(0.25, 2, 0),
-    scale: new Vector3(0.3, 1, 3)
-  })
-)
-treeRightMovementTrigger.addComponent(
-  new OnClick(e => {
-    treeEntity.getComponent(Transform).position.x -= 1
-  })
-)
-engine.addEntity(treeRightMovementTrigger)
-
-let treeVisibilityTrigger = new Entity()
-treeVisibilityTrigger.addComponentOrReplace(new BoxShape());
-treeVisibilityTrigger.setParent(treeEntity)
-treeVisibilityTrigger.addComponent(
+let npcLeftMovementTrigger = new Entity()
+npcLeftMovementTrigger.addComponentOrReplace(new BoxShape());
+npcLeftMovementTrigger.setParent(npcEntity)
+npcLeftMovementTrigger.addComponent(
   new Transform({
     position: new Vector3(-0.25, 3, 0),
+    scale: new Vector3(0.3, 0.5, 2)
+  })
+)
+npcLeftMovementTrigger.addComponent(
+  new OnClick(e => {
+    npcEntity.getComponent(Transform).position.x += 1
+  })
+)
+engine.addEntity(npcLeftMovementTrigger)
+
+let npcRightMovementTrigger = new Entity()
+npcRightMovementTrigger.addComponentOrReplace(new BoxShape());
+npcRightMovementTrigger.setParent(npcEntity)
+npcRightMovementTrigger.addComponent(
+  new Transform({
+    position: new Vector3(0.25, 3, 0),
+    scale: new Vector3(0.3, 0.5, 2)
+  })
+)
+npcRightMovementTrigger.addComponent(
+  new OnClick(e => {
+    npcEntity.getComponent(Transform).position.x -= 1
+  })
+)
+engine.addEntity(npcRightMovementTrigger)
+
+let npcVisibilityTrigger = new Entity()
+npcVisibilityTrigger.addComponentOrReplace(new BoxShape());
+npcVisibilityTrigger.setParent(npcEntity)
+npcVisibilityTrigger.addComponent(
+  new Transform({
+    position: new Vector3(-0.25, 4, 0),
     scale: new Vector3(0.3, 0.3, 0.3)
   })
 )
-treeVisibilityTrigger.addComponent(
+npcVisibilityTrigger.addComponent(
   new OnClick(e => {
-    let shapeComponent = treeEntity.getComponent(GLTFShape)
+    let shapeComponent = npcEntity.getComponent(GLTFShape)
     shapeComponent.visible = !shapeComponent.visible
   })
 )
-engine.addEntity(treeVisibilityTrigger)
+engine.addEntity(npcVisibilityTrigger)
