@@ -245,7 +245,17 @@ namespace UnityGLTF
                     _assetCache = new AssetCache(_gltfRoot);
                 }
 
+
+                float profiling = Time.realtimeSinceStartup;
+                float frames = Time.frameCount;
+
+                if (VERBOSE)
+                    Debug.Log("Load will start");
+
                 yield return _LoadScene(sceneIndex, showSceneObj);
+
+                if (VERBOSE)
+                    Debug.Log("Load finished in " + (Time.realtimeSinceStartup - profiling) + " seconds... frames = " + (Time.frameCount - frames));
 
                 yield return null; // NOTE(Brian): DO NOT REMOVE, we must wait a frame in order to
                                    //              start enqueued coroutines, if this is removed
@@ -469,13 +479,15 @@ namespace UnityGLTF
                 if (_assetCache.MeshCache[meshIdIndex][i].MeshAttributes.Count == 0)
                 {
                     yield return ConstructMeshAttributes(primitive, meshIdIndex, i);
-                    if (primitive.Material != null)
+                    if (primitive.Material != null && !pendingImageBuffers.Contains(primitive.Material.Value))
                     {
-                        yield return ConstructMaterialImageBuffers(primitive.Material.Value);
+                        pendingImageBuffers.Add(primitive.Material.Value);
                     }
                 }
             }
         }
+
+        HashSet<GLTFMaterial> pendingImageBuffers = new HashSet<GLTFMaterial>();
 
         static List<string> streamingImagesStaticList = new List<string>();
         List<string> streamingImagesLocalList = new List<string>();
@@ -599,7 +611,6 @@ namespace UnityGLTF
             Node nodeToLoad = _gltfRoot.Nodes[nodeIndex];
 
             yield return ConstructBufferData(nodeToLoad);
-
             yield return ConstructNode(nodeToLoad, nodeIndex, parent);
         }
 
@@ -1260,17 +1271,40 @@ namespace UnityGLTF
             for (int i = 0; i < scene.Nodes.Count; ++i)
             {
                 NodeId node = scene.Nodes[i];
-                yield return _LoadNode(node.Id, sceneObj.transform);
+
+                if (renderingIsDisabled)
+                {
+                    RunCoroutineSync(_LoadNode(node.Id, sceneObj.transform));
+                }
+                else
+                {
+                    yield return _LoadNode(node.Id, sceneObj.transform);
+                }
+
                 GameObject nodeObj = _assetCache.NodeCache[node.Id];
                 nodeTransforms[i] = nodeObj.transform;
+            }
+
+            foreach (var gltfMaterial in pendingImageBuffers)
+            {
+                yield return ConstructMaterialImageBuffers(gltfMaterial);
             }
 
             for (int i = 0; i < nodesWithMeshes.Count; i++)
             {
                 NodeId_Like nodeId = nodesWithMeshes[i];
                 Node node = nodeId.Value;
-                yield return ConstructMesh(node.Mesh.Value, _assetCache.NodeCache[nodeId.Id].transform, node.Mesh.Id, node.Skin != null ? node.Skin.Value : null);
+
+                if (renderingIsDisabled)
+                {
+                    RunCoroutineSync(ConstructMesh(node.Mesh.Value, _assetCache.NodeCache[nodeId.Id].transform, node.Mesh.Id, node.Skin != null ? node.Skin.Value : null));
+                }
+                else
+                {
+                    yield return ConstructMesh(node.Mesh.Value, _assetCache.NodeCache[nodeId.Id].transform, node.Mesh.Id, node.Skin != null ? node.Skin.Value : null);
+                }
             }
+
 
             if (_gltfRoot.Animations != null && _gltfRoot.Animations.Count > 0)
             {
