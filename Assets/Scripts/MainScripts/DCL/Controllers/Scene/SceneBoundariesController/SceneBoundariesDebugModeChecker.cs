@@ -10,7 +10,7 @@ namespace DCL.Controllers
         class InvalidMeshInfo
         {
             public Dictionary<Renderer, Material> originalMaterials = new Dictionary<Renderer, Material>();
-            public GameObject wireframeObject;
+            public List<GameObject> wireframeObjects = new List<GameObject>();
             public DecentralandEntity.MeshesInfo meshesInfo;
             public System.Action OnResetMaterials;
 
@@ -28,8 +28,11 @@ namespace DCL.Controllers
                     meshesInfo.renderers[i].sharedMaterial = originalMaterials[meshesInfo.renderers[i]];
                 }
 
-                meshesInfo.renderers = meshesInfo.meshRootGameObject.GetComponentsInChildren<Renderer>(true);
-                Utils.SafeDestroy(wireframeObject);
+                int wireframeObjectscount = wireframeObjects.Count;
+                for (int i = 0; i < wireframeObjectscount; i++)
+                {
+                    Utils.SafeDestroy(wireframeObjects[i]);
+                }
 
                 OnResetMaterials?.Invoke();
             }
@@ -39,7 +42,7 @@ namespace DCL.Controllers
         const string INVALID_MESH_MATERIAL_NAME = "Materials/InvalidMesh";
 
         Material invalidMeshMaterial;
-        Dictionary<GameObject, InvalidMeshInfo> invalidMeshesInfo;
+        Dictionary<GameObject, InvalidMeshInfo> invalidMeshesInfo = new Dictionary<GameObject, InvalidMeshInfo>();
 
         public SceneBoundariesDebugModeChecker(ParcelScene ownerScene) : base(ownerScene)
         {
@@ -89,14 +92,15 @@ namespace DCL.Controllers
                 invalidMeshInfo.originalMaterials.Add(entityRenderers[i], entityRenderers[i].sharedMaterial);
 
                 entityRenderers[i].sharedMaterial = invalidMeshMaterial;
-            }
 
-            // Wireframe that shows the boundaries to the dev (We don't use the GameObject.Instantiate(prefab, parent) 
-            // overload because we need to set the position and scale before parenting, to deal with scaled objects)
-            invalidMeshInfo.wireframeObject = GameObject.Instantiate(Resources.Load<GameObject>(WIREFRAME_PREFAB_NAME));
-            invalidMeshInfo.wireframeObject.transform.position = meshBounds.center;
-            invalidMeshInfo.wireframeObject.transform.localScale = meshBounds.size;
-            invalidMeshInfo.wireframeObject.transform.SetParent(entity.gameObject.transform);
+                // Wireframe that shows the boundaries to the dev (We don't use the GameObject.Instantiate(prefab, parent) 
+                // overload because we need to set the position and scale before parenting, to deal with scaled objects)
+                GameObject wireframeObject = GameObject.Instantiate(Resources.Load<GameObject>(WIREFRAME_PREFAB_NAME));
+                wireframeObject.transform.position = entityRenderers[i].bounds.center;
+                wireframeObject.transform.localScale = entityRenderers[i].bounds.size;
+                wireframeObject.transform.SetParent(entity.gameObject.transform);
+                invalidMeshInfo.wireframeObjects.Add(wireframeObject);
+            }
 
             invalidMeshesInfo.Add(entity.gameObject, invalidMeshInfo);
         }
