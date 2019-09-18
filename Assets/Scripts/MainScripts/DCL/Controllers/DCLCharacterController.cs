@@ -25,7 +25,7 @@ public class DCLCharacterController : MonoBehaviour
 
     [Header("Movement")]
     public float minimumYPosition = 1f;
-
+    public float groundCheckExtraDistance = 0.25f;
     public float gravity = -55f;
     public float jumpForce = 12f;
     public float movementSpeed = 8f;
@@ -225,8 +225,6 @@ public class DCLCharacterController : MonoBehaviour
         if (isGrounded)
         {
             isJumping = false;
-
-            velocity.y = 0;
         }
         else if (previouslyGrounded && !isJumping)
         {
@@ -348,8 +346,12 @@ public class DCLCharacterController : MonoBehaviour
 
     void CheckGround()
     {
+#if UNITY_EDITOR
+        Debug.DrawRay(transform.position, -transform.up * (collider.bounds.extents.y + groundCheckExtraDistance), Color.red);
+#endif
+
         RaycastHit hitInfo;
-        if(Physics.Raycast(transform.position, Vector3.down, out hitInfo, collider.bounds.extents.y + 0.1f, groundLayers))
+        if(Physics.Raycast(transform.position, Vector3.down, out hitInfo, collider.bounds.extents.y + groundCheckExtraDistance, groundLayers))
         {
             if(groundTransform == hitInfo.transform)
             {
