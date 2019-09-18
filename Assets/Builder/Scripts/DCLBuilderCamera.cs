@@ -90,7 +90,7 @@ namespace Builder
             {
                 DCLBuilderInput.OnMouseDrag += OnMouseDrag;
                 DCLBuilderInput.OnMouseWheel += OnMouseWheel;
-                DCLBuilderInput.OnKeyboardButtonHold += OnKeyboardButtonHold;
+                DCLBuilderBridge.OnSetArrowKeyDown += OnKeyboardButtonHold;
                 DCLBuilderBridge.OnZoomFromUI += OnZoomFormUI;
                 DCLBuilderBridge.OnSetCameraPosition += OnSetCameraPosition;
                 DCLBuilderBridge.OnSetCameraRotation += OnSetCameraRotation;
@@ -108,7 +108,7 @@ namespace Builder
             isGameObjectActive = false;
             DCLBuilderInput.OnMouseDrag -= OnMouseDrag;
             DCLBuilderInput.OnMouseWheel -= OnMouseWheel;
-            DCLBuilderInput.OnKeyboardButtonHold -= OnKeyboardButtonHold;
+            DCLBuilderBridge.OnSetArrowKeyDown -= OnKeyboardButtonHold;
             DCLBuilderBridge.OnZoomFromUI -= OnZoomFormUI;
             DCLBuilderBridge.OnSetCameraPosition -= OnSetCameraPosition;
             DCLBuilderBridge.OnSetCameraRotation -= OnSetCameraRotation;
