@@ -339,17 +339,15 @@ workflows:
             - hold-explorer-stg
           filters:
             branches:
-              only: master
+              ignore: /.*/
             tags:
               only: /^\d+\.\d+\.\d(.*)/
       - deploy-prd:
           requires:
-            - build
-            - deploy-stg
             - hold-explorer-prd
           filters:
             branches:
-              only: master
+              ignore: /.*/
             tags:
               only: /^\d+\.\d+\.\d(.*)/
       - publish-ecs-latest:
