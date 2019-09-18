@@ -231,7 +231,7 @@ namespace DCL.Controllers
 
             if (!RenderingController.i.renderingEnabled)
             {
-                RemoveAllEntitiesCoroutine(instant: true);
+                RemoveAllEntitiesImmediate();
             }
             else
             {
@@ -454,6 +454,13 @@ namespace DCL.Controllers
 
             if (DCLCharacterController.i)
                 DCLCharacterController.i.characterPosition.OnPrecisionAdjust -= OnPrecisionAdjust;
+        }
+
+        private void RemoveAllEntitiesImmediate()
+        {
+            var enumerator = RemoveAllEntitiesCoroutine(instant: true);
+            //IEnumerator needs call MoveNext to be executed
+            enumerator.MoveNext();
         }
 
         private SetEntityParentMessage tmpParentMessage = new SetEntityParentMessage();

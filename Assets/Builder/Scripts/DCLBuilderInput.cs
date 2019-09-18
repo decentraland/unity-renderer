@@ -18,18 +18,8 @@ namespace Builder
         public static event MouseClickDelegate OnMouseUp;
         public static event MouseDragDelegate OnMouseDrag;
         public static event MouseWheelDelegate OnMouseWheel;
-        public static event KeyboardInputDelegate OnKeyboardButtonHold;
-        public static event KeyboardInputDelegate OnKeyboardButtonDown;
-        public static event KeyboardInputDelegate OnKeyboardButtonUp;
 
         private float lastMouseWheelAxisValue = 0;
-
-        private KeyCode[] listenKeys = {
-            KeyCode.UpArrow,
-            KeyCode.DownArrow,
-            KeyCode.LeftArrow,
-            KeyCode.RightArrow,
-        };
 
         private void Update()
         {
@@ -38,7 +28,6 @@ namespace Builder
                 if (HasMouseButtonInput(i)) break;
             }
             UpdateMouseWheelInput();
-            CheckKeyboardButtons();
         }
 
         private bool HasMouseButtonInput(int button)
@@ -69,25 +58,6 @@ namespace Builder
             {
                 lastMouseWheelAxisValue = axisValue;
                 OnMouseWheel?.Invoke(axisValue);
-            }
-        }
-
-        private void CheckKeyboardButtons()
-        {
-            for (int i = 0; i < listenKeys.Length; i++)
-            {
-                if (Input.GetKeyDown(listenKeys[i]))
-                {
-                    OnKeyboardButtonDown?.Invoke(listenKeys[i]);
-                }
-                else if (Input.GetKey(listenKeys[i]))
-                {
-                    OnKeyboardButtonHold?.Invoke(listenKeys[i]);
-                }
-                else if (Input.GetKeyUp(listenKeys[i]))
-                {
-                    OnKeyboardButtonUp?.Invoke(listenKeys[i]);
-                }
             }
         }
     }

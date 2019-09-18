@@ -24,6 +24,7 @@ namespace Builder
         public static System.Action<Vector3> OnSetCameraPosition;
         public static System.Action<float, float> OnSetCameraRotation;
         public static System.Action OnResetCameraZoom;
+        public static System.Action<KeyCode> OnSetArrowKeyDown;
         public static event SetGridResolutionDelegate OnSetGridResolution;
 
         private MouseCatcher mouseCatcher;
@@ -126,6 +127,13 @@ namespace Builder
         {
             OnResetBuilderScene?.Invoke();
             DCLCharacterController.i?.gameObject.SetActive(false);
+
+            if (currentScene)
+            {
+                currentScene.OnEntityAdded -= OnEntityIsAdded;
+                currentScene.OnEntityRemoved -= OnEntityIsRemoved;
+            }
+            SetCurrentScene();
         }
 
         public void SetBuilderCameraPosition(string position)
@@ -176,6 +184,20 @@ namespace Builder
             {
                 Debug.LogError("Error parsing bBuilder's SetGridResolution Json = " + payloadJson + " " + e.ToString());
             }
+        }
+
+        public void SetArrowKeyDown(string key)
+        {
+            KeyCode arrowKey;
+            if (System.Enum.TryParse(key, false, out arrowKey))
+            {
+                OnSetArrowKeyDown?.Invoke(arrowKey);
+            }
+        }
+
+        public void UnloadScene(string sceneKey)
+        {
+            SceneController.i?.UnloadScene(sceneKey);
         }
 
         #endregion
@@ -231,14 +253,10 @@ namespace Builder
             //TODO: we need a better way for doing this
             RemoveNoneBuilderGameObjects();
 
-            currentScene = GetLoadedScene();
-            if (currentScene)
-            {
-                currentScene.OnEntityAdded += OnEntityIsAdded;
-                currentScene.OnEntityRemoved += OnEntityIsRemoved;
-            }
+            SetCurrentScene();
 
             SceneController.i?.fpsPanel.SetActive(false);
+            SetCaptureAllKeyboard(false);
         }
 
         private void Start()
@@ -249,7 +267,7 @@ namespace Builder
         private void OnEntityIsAdded(DecentralandEntity entity)
         {
             OnEntityAdded?.Invoke(entity);
-            entity.OnShapeUpdated += OnEntityShapeUpdated;
+            entity.OnShapeUpdated += ClearEntityLoadingState;
 
             onGetLoadingEntity.uuid = entity.entityId;
             onGetLoadingEntity.payload.entityId = entity.entityId;
@@ -262,9 +280,9 @@ namespace Builder
             OnEntityRemoved?.Invoke(entity);
         }
 
-        private void OnEntityShapeUpdated(DecentralandEntity entity)
+        private void ClearEntityLoadingState(DecentralandEntity entity)
         {
-            entity.OnShapeUpdated -= OnEntityShapeUpdated;
+            entity.OnShapeUpdated -= ClearEntityLoadingState;
 
             onGetLoadingEntity.uuid = entity.entityId;
             onGetLoadingEntity.payload.entityId = entity.entityId;
@@ -340,6 +358,7 @@ namespace Builder
                 mouseCatcher.enabled = isPreview;
                 if (!isPreview) mouseCatcher.UnlockCursor();
             }
+            SetCaptureAllKeyboard(isPreview);
         }
 
         private void RemoveNoneBuilderGameObjects()
@@ -352,6 +371,23 @@ namespace Builder
             if (go) Destroy(go.gameObject);
             go = FindObjectOfType<MinimapMetadataRetriever>();
             if (go && go.transform.parent) Destroy(go.transform.parent.gameObject);
+        }
+
+        private void SetCaptureAllKeyboard(bool value)
+        {
+#if !UNITY_EDITOR && UNITY_WEBGL
+            WebGLInput.captureAllKeyboardInput = value;
+#endif
+        }
+
+        private void SetCurrentScene()
+        {
+            currentScene = GetLoadedScene();
+            if (currentScene)
+            {
+                currentScene.OnEntityAdded += OnEntityIsAdded;
+                currentScene.OnEntityRemoved += OnEntityIsRemoved;
+            }
         }
     }
 }
