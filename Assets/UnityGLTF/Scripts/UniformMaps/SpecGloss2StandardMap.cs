@@ -10,8 +10,8 @@ namespace UnityGLTF
 
         public virtual Texture DiffuseTexture
         {
-            get { return _material.GetTexture("_BaseMap"); }
-            set { _material.SetTexture("_BaseMap", value); }
+            get { return _material.GetTexture(_BaseMap); }
+            set { _material.SetTexture(_BaseMap, value); }
         }
 
         // not implemented by the Standard shader
@@ -23,17 +23,17 @@ namespace UnityGLTF
 
         public virtual Color DiffuseFactor
         {
-            get { return _material.GetColor("_BaseColor"); }
-            set { _material.SetColor("_BaseColor", value); }
+            get { return _material.GetColor(_BaseColor); }
+            set { _material.SetColor(_BaseColor, value); }
         }
 
         public virtual Texture SpecularGlossinessTexture
         {
-            get { return _material.GetTexture("_SpecGlossMap"); }
+            get { return _material.GetTexture(_SpecGlossMap); }
             set
             {
-                _material.SetTexture("_SpecGlossMap", value);
-                _material.SetFloat("_SmoothnessTextureChannel", 0);
+                _material.SetTexture(_SpecGlossMap, value);
+                _material.SetFloat(_SmoothnessTextureChannel, 0);
                 _material.EnableKeyword("_SPECGLOSSMAP");
             }
         }
@@ -47,17 +47,17 @@ namespace UnityGLTF
 
         public virtual Vector3 SpecularFactor
         {
-            get { return _material.GetVector("_SpecColor"); }
-            set { _material.SetVector("_SpecColor", value); }
+            get { return _material.GetVector(_SpecColor); }
+            set { _material.SetVector(_SpecColor, value); }
         }
 
         public virtual double GlossinessFactor
         {
-            get { return _material.GetFloat("_GlossMapScale"); }
+            get { return _material.GetFloat(_GlossMapScale); }
             set
             {
-                _material.SetFloat("_GlossMapScale", (float)value);
-                _material.SetFloat("_Glossiness", (float)value);
+                _material.SetFloat(_GlossMapScale, (float)value);
+                _material.SetFloat(_Glossiness, (float)value);
             }
         }
 
