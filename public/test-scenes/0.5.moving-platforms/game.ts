@@ -142,7 +142,7 @@ rotatingPlatformEntity.addComponentOrReplace(new BoxShape())
 rotatingPlatformEntity.addComponentOrReplace(
   new Transform({
     position: new Vector3(8, 1, 24),
-    scale: new Vector3(2, 0.25, 2)
+    scale: new Vector3(5, 0.25, 1.5)
   })
 )
 rotatingPlatformEntity.addComponentOrReplace(new ObjectRotation(10, new Vector3(0, 1, 0)))
