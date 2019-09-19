@@ -1272,14 +1272,7 @@ namespace UnityGLTF
             {
                 NodeId node = scene.Nodes[i];
 
-                if (renderingIsDisabled)
-                {
-                    RunCoroutineSync(_LoadNode(node.Id, sceneObj.transform));
-                }
-                else
-                {
-                    yield return _LoadNode(node.Id, sceneObj.transform);
-                }
+                yield return _LoadNode(node.Id, sceneObj.transform);
 
                 GameObject nodeObj = _assetCache.NodeCache[node.Id];
                 nodeTransforms[i] = nodeObj.transform;
@@ -1290,34 +1283,16 @@ namespace UnityGLTF
                 yield return ConstructMaterialImageBuffers(gltfMaterial);
             }
 
+
             for (int i = 0; i < nodesWithMeshes.Count; i++)
             {
                 NodeId_Like nodeId = nodesWithMeshes[i];
                 Node node = nodeId.Value;
 
-                if (renderingIsDisabled)
-                {
-                    RunCoroutineSync(ConstructMesh(mesh: node.Mesh.Value,
-                                                   parent: _assetCache.NodeCache[nodeId.Id].transform,
-                                                   meshId: node.Mesh.Id,
-                                                   skin: node.Skin != null ? node.Skin.Value : null,
-                                                   constructMaterials: false));
-
-                    bool isColliderMesh = _assetCache.NodeCache[nodeId.Id].transform.name.Contains("_collider");
-
-                    if (!isColliderMesh)
-                    {
-                        yield return ConstructMeshMaterials(node.Mesh.Value, node.Mesh.Id);
-                    }
-                }
-                else
-                {
-                    yield return ConstructMesh(mesh: node.Mesh.Value,
-                                               parent: _assetCache.NodeCache[nodeId.Id].transform,
-                                               meshId: node.Mesh.Id,
-                                               skin: node.Skin != null ? node.Skin.Value : null,
-                                               constructMaterials: true);
-                }
+                yield return ConstructMesh(mesh: node.Mesh.Value,
+                                            parent: _assetCache.NodeCache[nodeId.Id].transform,
+                                            meshId: node.Mesh.Id,
+                                            skin: node.Skin != null ? node.Skin.Value : null);
             }
 
 
@@ -1613,7 +1588,7 @@ namespace UnityGLTF
             }
         }
 
-        protected virtual IEnumerator ConstructMesh(GLTFMesh mesh, Transform parent, int meshId, Skin skin, bool constructMaterials)
+        protected virtual IEnumerator ConstructMesh(GLTFMesh mesh, Transform parent, int meshId, Skin skin)
         {
             bool isColliderMesh = parent.name.Contains("_collider");
 
@@ -1666,10 +1641,7 @@ namespace UnityGLTF
                         renderer.enabled = InitialVisibility;
                     }
 
-                    if (constructMaterials)
-                    {
-                        yield return ConstructPrimitiveMaterials(mesh, meshId, i);
-                    }
+                    yield return ConstructPrimitiveMaterials(mesh, meshId, i);
                 }
                 else
                 {
@@ -1973,17 +1945,17 @@ namespace UnityGLTF
 
             yield return new WaitUntil(
                 () =>
+                {
+                    for (int i = 0; i < tasks.Count; i++)
                     {
-                        for (int i = 0; i < tasks.Count; i++)
+                        if (!tasks[i].finished)
                         {
-                            if (!tasks[i].finished)
-                            {
-                                return false;
-                            }
+                            return false;
                         }
-
-                        return true;
                     }
+
+                    return true;
+                }
                 );
         }
 
