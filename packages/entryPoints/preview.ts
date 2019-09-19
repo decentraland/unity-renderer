@@ -12,6 +12,7 @@ import defaultLogger from 'shared/logger'
 import { future, IFuture } from 'fp-future'
 import { ILand } from 'shared/types'
 import { pickWorldSpawnpoint } from 'shared/world/positionThings'
+import { sceneLifeCycleObservable } from 'decentraland-loader/lifecycle/controllers/scene'
 
 // Remove the 'dcl-loading' class, used until JS loads.
 document.body.classList.remove('dcl-loading')
@@ -60,15 +61,37 @@ function startPreviewWatcher() {
   }
 }
 
+function sceneRenderable() {
+  const sceneRenderable = future<void>()
+
+  const timer = setTimeout(() => {
+    if (sceneRenderable.isPending) {
+      sceneRenderable.reject(new Error('scene never got ready'))
+    }
+  }, 30000)
+
+  const observer = sceneLifeCycleObservable.add(async sceneStatus => {
+    if (sceneStatus.sceneId === (await defaultScene).sceneId) {
+      sceneLifeCycleObservable.remove(observer)
+      clearTimeout(timer)
+      sceneRenderable.resolve()
+    }
+  })
+
+  return sceneRenderable
+}
+
 initializeUnity(container)
   .then(async ret => {
+    const renderable = sceneRenderable()
+
     startPreviewWatcher()
 
-    const scene = await defaultScene
+    await renderable
 
     ret.instancedJS
-      .then(({ unityInterface }) => {
-        unityInterface.Teleport(pickWorldSpawnpoint(scene))
+      .then(async ({ unityInterface }) => {
+        unityInterface.Teleport(pickWorldSpawnpoint(await defaultScene))
         unityInterface.ActivateRendering()
       })
       .catch(defaultLogger.error)
