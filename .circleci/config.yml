@@ -235,10 +235,6 @@ jobs:
           command: |
             aws configure set aws_access_key_id ${AWS_DEV_ACCESS_KEY_ID} && aws configure set aws_secret_access_key ${AWS_DEV_SECRET_ACCESS_KEY}
       - run:
-          name: Deploy tag to .today/tags/${CIRCLE_TAG}
-          command: |
-            aws s3 sync static s3://explorer.decentraland.today/tags/${CIRCLE_TAG} --exclude "tags/*" --acl public-read
-      - run:
           name: Deploy tag to .today
           command: |
             aws s3 sync static s3://explorer.decentraland.today/ --exclude "tags/*" --acl public-read
@@ -262,10 +258,6 @@ jobs:
           name: Configure PRD AWS Keys
           command: |
             aws configure set aws_access_key_id ${AWS_PRD_ACCESS_KEY_ID} && aws configure set aws_secret_access_key ${AWS_PRD_SECRET_ACCESS_KEY}
-      - run:
-          name: Deploy tag to .org/tags/${CIRCLE_TAG}
-          command: |
-            aws s3 sync static s3://explorer.decentraland.org/tags/${CIRCLE_TAG} --exclude "tags/*" --acl public-read
       - run:
           name: Deploy tag to .org
           command: |
@@ -339,7 +331,7 @@ workflows:
             - hold-explorer-stg
           filters:
             branches:
-              ignore: /.*/
+              only: master
             tags:
               only: /^\d+\.\d+\.\d(.*)/
       - deploy-prd:
@@ -347,7 +339,7 @@ workflows:
             - hold-explorer-prd
           filters:
             branches:
-              ignore: /.*/
+              only: master
             tags:
               only: /^\d+\.\d+\.\d(.*)/
       - publish-ecs-latest:
