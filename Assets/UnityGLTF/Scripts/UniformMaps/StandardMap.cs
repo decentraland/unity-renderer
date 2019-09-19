@@ -26,14 +26,41 @@ namespace UnityGLTF
             _material = new Material(s);
         }
 
+        protected static readonly int _SpecGlossMap = Shader.PropertyToID("_SpecGlossMap");
+        protected static readonly int _SmoothnessTextureChannel = Shader.PropertyToID("_SmoothnessTextureChannel");
+        protected static readonly int _SpecColor = Shader.PropertyToID("_SpecColor");
+        protected static readonly int _GlossMapScale = Shader.PropertyToID("_GlossMapScale");
+        protected static readonly int _Glossiness = Shader.PropertyToID("_Glossiness");
+
+        protected static readonly int _BaseMap = Shader.PropertyToID("_BaseMap");
+        protected static readonly int _BaseColor = Shader.PropertyToID("_BaseColor");
+        protected static readonly int _Metallic = Shader.PropertyToID("_Metallic");
+        protected static readonly int _Smoothness = Shader.PropertyToID("_Smoothness");
+
+        protected static readonly int _Cutoff = Shader.PropertyToID("_Cutoff");
+        protected static readonly int _BumpMap = Shader.PropertyToID("_BumpMap");
+        protected static readonly int _BumpScale = Shader.PropertyToID("_BumpScale");
+
+        protected static readonly int _OcclusionMap = Shader.PropertyToID("_OcclusionMap");
+        protected static readonly int _OcclusionStrength = Shader.PropertyToID("_OcclusionStrength");
+
+        protected static readonly int _EmissionMap = Shader.PropertyToID("_EmissionMap");
+        protected static readonly int _EmissionColor = Shader.PropertyToID("_EmissionColor");
+
+        protected static readonly int _SrcBlend = Shader.PropertyToID("_SrcBlend");
+        protected static readonly int _DstBlend = Shader.PropertyToID("_DstBlend");
+        protected static readonly int _ZWrite = Shader.PropertyToID("_ZWrite");
+        protected static readonly int _AlphaClip = Shader.PropertyToID("_AlphaClip");
+        protected static readonly int _Cull = Shader.PropertyToID("_Cull");
+
         protected StandardMap(Material mat, int MaxLOD = 1000)
         {
             mat.shader.maximumLOD = MaxLOD;
             _material = mat;
 
-            if (mat.HasProperty("_Cutoff"))
+            if (mat.HasProperty(_Cutoff))
             {
-                _alphaCutoff = mat.GetFloat("_Cutoff");
+                _alphaCutoff = mat.GetFloat(_Cutoff);
             }
 
             switch (mat.renderQueue)
@@ -55,12 +82,12 @@ namespace UnityGLTF
 
         public virtual Texture NormalTexture
         {
-            get { return _material.HasProperty("_BumpMap") ? _material.GetTexture("_BumpMap") : null; }
+            get { return _material.HasProperty(_BumpMap) ? _material.GetTexture(_BumpMap) : null; }
             set
             {
-                if (_material.HasProperty("_BumpMap"))
+                if (_material.HasProperty(_BumpMap))
                 {
-                    _material.SetTexture("_BumpMap", value);
+                    _material.SetTexture(_BumpMap, value);
                     _material.EnableKeyword("_NORMALMAP");
                 }
                 else
@@ -79,12 +106,12 @@ namespace UnityGLTF
 
         public virtual double NormalTexScale
         {
-            get { return _material.HasProperty("_BumpScale") ? _material.GetFloat("_BumpScale") : 1; }
+            get { return _material.HasProperty(_BumpScale) ? _material.GetFloat(_BumpScale) : 1; }
             set
             {
-                if (_material.HasProperty("_BumpScale"))
+                if (_material.HasProperty(_BumpScale))
                 {
-                    _material.SetFloat("_BumpScale", (float)value);
+                    _material.SetFloat(_BumpScale, (float)value);
                 }
                 else
                 {
@@ -95,12 +122,12 @@ namespace UnityGLTF
 
         public virtual Texture OcclusionTexture
         {
-            get { return _material.HasProperty("_OcclusionMap") ? _material.GetTexture("_OcclusionMap") : null; }
+            get { return _material.HasProperty(_OcclusionMap) ? _material.GetTexture(_OcclusionMap) : null; }
             set
             {
-                if (_material.HasProperty("_OcclusionMap"))
+                if (_material.HasProperty(_OcclusionMap))
                 {
-                    _material.SetTexture("_OcclusionMap", value);
+                    _material.SetTexture(_OcclusionMap, value);
                 }
                 else
                 {
@@ -118,12 +145,12 @@ namespace UnityGLTF
 
         public virtual double OcclusionTexStrength
         {
-            get { return _material.HasProperty("_OcclusionStrength") ? _material.GetFloat("_OcclusionStrength") : 1; }
+            get { return _material.HasProperty(_OcclusionStrength) ? _material.GetFloat(_OcclusionStrength) : 1; }
             set
             {
-                if (_material.HasProperty("_OcclusionStrength"))
+                if (_material.HasProperty(_OcclusionStrength))
                 {
-                    _material.SetFloat("_OcclusionStrength", (float)value);
+                    _material.SetFloat(_OcclusionStrength, (float)value);
                 }
                 else
                 {
@@ -134,12 +161,12 @@ namespace UnityGLTF
 
         public virtual Texture EmissiveTexture
         {
-            get { return _material.HasProperty("_EmissionMap") ? _material.GetTexture("_EmissionMap") : null; }
+            get { return _material.HasProperty(_EmissionMap) ? _material.GetTexture(_EmissionMap) : null; }
             set
             {
-                if (_material.HasProperty("_EmissionMap"))
+                if (_material.HasProperty(_EmissionMap))
                 {
-                    _material.SetTexture("_EmissionMap", value);
+                    _material.SetTexture(_EmissionMap, value);
                     _material.EnableKeyword("_EMISSION");
                 }
                 else
@@ -158,13 +185,13 @@ namespace UnityGLTF
 
         public virtual Color EmissiveFactor
         {
-            get { return _material.HasProperty("_EmissionColor") ? _material.GetColor("_EmissionColor") : Color.white; }
+            get { return _material.HasProperty(_EmissionColor) ? _material.GetColor(_EmissionColor) : Color.white; }
             set
             {
-                if (_material.HasProperty("_EmissionColor"))
+                if (_material.HasProperty(_EmissionColor))
                 {
                     _material.globalIlluminationFlags = MaterialGlobalIlluminationFlags.RealtimeEmissive;
-                    _material.SetColor("_EmissionColor", value * EMISSIVE_HDR_INTENSITY);
+                    _material.SetColor(_EmissionColor, value * EMISSIVE_HDR_INTENSITY);
                     _material.EnableKeyword("_EMISSION");
                 }
                 else
@@ -182,24 +209,25 @@ namespace UnityGLTF
                 if (value == AlphaMode.MASK)
                 {
                     _material.SetOverrideTag("RenderType", "TransparentCutout");
-                    _material.SetInt("_SrcBlend", (int)UnityEngine.Rendering.BlendMode.One);
-                    _material.SetInt("_DstBlend", (int)UnityEngine.Rendering.BlendMode.Zero);
-                    _material.SetInt("_ZWrite", 1);
+                    _material.SetInt(_SrcBlend, (int)UnityEngine.Rendering.BlendMode.One);
+                    _material.SetInt(_DstBlend, (int)UnityEngine.Rendering.BlendMode.Zero);
+                    _material.SetInt(_ZWrite, 1);
+                    _material.SetFloat(_AlphaClip, 1);
                     _material.EnableKeyword("_ALPHATEST_ON");
                     _material.DisableKeyword("_ALPHABLEND_ON");
                     _material.DisableKeyword("_ALPHAPREMULTIPLY_ON");
                     _material.renderQueue = (int)UnityEngine.Rendering.RenderQueue.AlphaTest;
-                    if (_material.HasProperty("_Cutoff"))
+                    if (_material.HasProperty(_Cutoff))
                     {
-                        _material.SetFloat("_Cutoff", (float)_alphaCutoff);
+                        _material.SetFloat(_Cutoff, (float)_alphaCutoff);
                     }
                 }
                 else if (value == AlphaMode.BLEND)
                 {
                     _material.SetOverrideTag("RenderType", "Transparent");
-                    _material.SetInt("_SrcBlend", (int)UnityEngine.Rendering.BlendMode.SrcAlpha);
-                    _material.SetInt("_DstBlend", (int)UnityEngine.Rendering.BlendMode.OneMinusSrcAlpha);
-                    _material.SetInt("_ZWrite", 0);
+                    _material.SetInt(_SrcBlend, (int)UnityEngine.Rendering.BlendMode.SrcAlpha);
+                    _material.SetInt(_DstBlend, (int)UnityEngine.Rendering.BlendMode.OneMinusSrcAlpha);
+                    _material.SetInt(_ZWrite, 0);
                     _material.DisableKeyword("_ALPHATEST_ON");
                     _material.EnableKeyword("_ALPHABLEND_ON");
                     _material.DisableKeyword("_ALPHAPREMULTIPLY_ON");
@@ -208,9 +236,9 @@ namespace UnityGLTF
                 else
                 {
                     _material.SetOverrideTag("RenderType", "Opaque");
-                    _material.SetInt("_SrcBlend", (int)UnityEngine.Rendering.BlendMode.One);
-                    _material.SetInt("_DstBlend", (int)UnityEngine.Rendering.BlendMode.Zero);
-                    _material.SetInt("_ZWrite", 1);
+                    _material.SetInt(_SrcBlend, (int)UnityEngine.Rendering.BlendMode.One);
+                    _material.SetInt(_DstBlend, (int)UnityEngine.Rendering.BlendMode.Zero);
+                    _material.SetInt(_ZWrite, 1);
                     _material.DisableKeyword("_ALPHATEST_ON");
                     _material.DisableKeyword("_ALPHABLEND_ON");
                     _material.DisableKeyword("_ALPHAPREMULTIPLY_ON");
@@ -226,9 +254,9 @@ namespace UnityGLTF
             get { return _alphaCutoff; }
             set
             {
-                if ((_alphaMode == AlphaMode.MASK) && _material.HasProperty("_Cutoff"))
+                if ((_alphaMode == AlphaMode.MASK) && _material.HasProperty(_Cutoff))
                 {
-                    _material.SetFloat("_Cutoff", (float)value);
+                    _material.SetFloat(_Cutoff, (float)value);
                 }
                 _alphaCutoff = value;
             }
@@ -236,16 +264,16 @@ namespace UnityGLTF
 
         public virtual bool DoubleSided
         {
-            get { return _material.GetInt("_Cull") == (int)CullMode.Off; }
+            get { return _material.GetInt(_Cull) == (int)CullMode.Off; }
             set
             {
                 if (value)
                 {
-                    _material.SetInt("_Cull", (int)CullMode.Off);
+                    _material.SetInt(_Cull, (int)CullMode.Off);
                 }
                 else
                 {
-                    _material.SetInt("_Cull", (int)CullMode.Back);
+                    _material.SetInt(_Cull, (int)CullMode.Back);
                 }
             }
         }

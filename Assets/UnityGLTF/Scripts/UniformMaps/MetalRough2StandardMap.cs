@@ -10,8 +10,8 @@ namespace UnityGLTF
 
         public virtual Texture BaseColorTexture
         {
-            get { return _material.GetTexture("_BaseMap"); }
-            set { _material.SetTexture("_BaseMap", value); }
+            get { return _material.GetTexture(_BaseMap); }
+            set { _material.SetTexture(_BaseMap, value); }
         }
 
         // not implemented by the Standard shader
@@ -23,8 +23,8 @@ namespace UnityGLTF
 
         public virtual Color BaseColorFactor
         {
-            get { return _material.GetColor("_BaseColor"); }
-            set { _material.SetColor("_BaseColor", value); }
+            get { return _material.GetColor(_BaseColor); }
+            set { _material.SetColor(_BaseColor, value); }
         }
 
         public virtual Texture MetallicRoughnessTexture
@@ -46,14 +46,14 @@ namespace UnityGLTF
 
         public virtual double MetallicFactor
         {
-            get { return _material.GetFloat("_Metallic"); }
-            set { _material.SetFloat("_Metallic", (float)value); }
+            get { return _material.GetFloat(_Metallic); }
+            set { _material.SetFloat(_Metallic, (float)value); }
         }
 
         public virtual double RoughnessFactor
         {
-            get { return 1f - _material.GetFloat("_Smoothness"); }
-            set { _material.SetFloat("_Smoothness", 1f - (float)value); }
+            get { return 1f - _material.GetFloat(_Smoothness); }
+            set { _material.SetFloat(_Smoothness, 1f - (float)value); }
         }
 
         public override IUniformMap Clone()
