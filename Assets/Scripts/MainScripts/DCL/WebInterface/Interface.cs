@@ -584,7 +584,7 @@ namespace DCL.Interface
 
         public static void LogOut()
         {
-            SendMessage("logOut", string.Empty);
+            SendMessage("LogOut", string.Empty);
         }
 
         public static void PreloadFinished(string sceneId)

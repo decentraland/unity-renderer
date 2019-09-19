@@ -812,7 +812,6 @@ GameObject:
   - component: {fileID: 6110501834153000108}
   - component: {fileID: 1051721981414603956}
   - component: {fileID: 5960867254960926024}
-  - component: {fileID: 3575292759057329440}
   m_Layer: 5
   m_Name: SignOut
   m_TagString: Untagged
@@ -917,25 +916,13 @@ MonoBehaviour:
     m_PressedTrigger: Pressed
     m_SelectedTrigger: Selected
     m_DisabledTrigger: Disabled
-  m_Interactable: 0
+  m_Interactable: 1
   m_TargetGraphic: {fileID: 1051721981414603956}
   m_OnClick:
     m_PersistentCalls:
       m_Calls: []
     m_TypeName: UnityEngine.UI.Button+ButtonClickedEvent, UnityEngine.UI, Version=1.0.0.0,
       Culture=neutral, PublicKeyToken=null
---- !u!225 &3575292759057329440
-CanvasGroup:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 3325608021088498842}
-  m_Enabled: 1
-  m_Alpha: 0.4
-  m_Interactable: 1
-  m_BlocksRaycasts: 1
-  m_IgnoreParentGroups: 0
 --- !u!1 &3920603901072298164
 GameObject:
   m_ObjectHideFlags: 0
