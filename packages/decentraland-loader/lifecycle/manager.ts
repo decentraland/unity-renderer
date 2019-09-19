@@ -9,7 +9,7 @@ import { resolveUrl } from 'atomicHelpers/parseUrl'
 import { error } from 'util'
 import { ILand } from 'shared/types'
 
-import { DEBUG, parcelLimits, getServerConfigurations } from '../../config'
+import { DEBUG, parcelLimits, getServerConfigurations, ENABLE_EMPTY_SCENES } from '../../config'
 
 /*
  * The worker is set up on the first require of this file
@@ -57,7 +57,8 @@ export async function initParcelSceneWorker() {
   server.notify('Lifecycle.initialize', {
     contentServer: DEBUG ? resolveUrl(document.location.origin, '/local-ipfs') : getServerConfigurations().content,
     lineOfSightRadius: parcelLimits.visibleRadius,
-    secureRadius: parcelLimits.secureRadius
+    secureRadius: parcelLimits.secureRadius,
+    emptyScenes: ENABLE_EMPTY_SCENES && !(globalThis as any)['isRunningTests']
   })
 
   return server
