@@ -56,6 +56,8 @@ namespace DCL
 
         #endregion
 
+        public static Action OnDebugModeSet;
+
 #if UNITY_EDITOR
         public delegate void ProcessDelegate(string sceneId, string method, string payload);
         public event ProcessDelegate OnMessageProcessInfoStart;
@@ -247,6 +249,8 @@ namespace DCL
 
             isDebugMode = true;
             fpsPanel.SetActive(true);
+
+            OnDebugModeSet?.Invoke();
         }
 
         public void SetSceneDebugPanel()
