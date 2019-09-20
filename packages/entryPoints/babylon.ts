@@ -8,6 +8,7 @@ import { WebGLParcelScene } from '../engine/dcl/WebGLParcelScene'
 import { enableMiniMap } from '../engine/dcl/widgets/minimap'
 import { worldRunningObservable } from '../shared/world/worldState'
 import { InstancedSpawnPoint } from '../shared/types'
+import { Session } from '../shared/session/index'
 
 document.body.classList.remove('dcl-loading')
 
@@ -30,7 +31,7 @@ async function loadClient() {
 
 bodyReadyFuture
   .then(async body => {
-    await initShared(container)
+    Session.current = await initShared()
 
     await loadClient()
 

@@ -21,21 +21,21 @@ export function isTokenExpired(expiresAt: number) {
 }
 
 export class Auth {
-  store: Store<{ auth: AuthState }>
-  ephemeralKey?: BasicEphemeralKey
-
-  webAuth: auth0.WebAuth
-  sagaMiddleware: any
-
-  comms: CommsAuth
-
   isExpired = createSelector<RootState, AuthState['data'], boolean>(
     getData,
     data => !!data && isTokenExpired(data.expiresAt)
   ) as (store: any) => boolean
 
+  private store: Store<{ auth: AuthState }>
+  private ephemeralKey?: BasicEphemeralKey
+
+  private webAuth: auth0.WebAuth
+  private sagaMiddleware: any
+
+  private comms: CommsAuth
+
   constructor(
-    public config: {
+    private config: {
       ephemeralKeyTTL: number
       clientId: string
       domain: string
@@ -60,6 +60,7 @@ export class Auth {
       scope: 'openid email'
     })
   }
+
   setup() {
     this.sagaMiddleware.run(createSaga(this))
   }
@@ -193,7 +194,8 @@ export class Auth {
   logout(): Promise<void> {
     return new Promise(resolve => {
       this.webAuth.logout({
-        returnTo: window.location.origin
+        returnTo: window.location.origin,
+        federated: true
       })
       resolve()
     })

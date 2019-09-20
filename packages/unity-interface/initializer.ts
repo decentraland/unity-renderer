@@ -3,6 +3,7 @@ import { initShared } from '../shared'
 import { defaultLogger } from '../shared/logger'
 import { initializeEngine } from './dcl'
 import future from 'fp-future'
+import { Session } from '../shared/session/index'
 const queryString = require('query-string')
 
 declare var global: any
@@ -45,7 +46,7 @@ const engineInitialized = future()
 export async function initializeUnity(container: HTMLElement): Promise<InitializeUnityResult> {
   _container = container
 
-  await initShared(container)
+  Session.current = await initShared()
 
   const qs = queryString.parse(document.location.search)
 
