@@ -273,13 +273,13 @@ workflows:
           requires:
             - build
           filters:
-            branches:
-              only: master # next
+            # on branch: master we don't want to hold, but publish after the build is done
             tags:
               only: /^\d+\.\d+\.\d(.*)/ # npm tag + latest
       - publish-ecs:
           requires:
-            - hold-ecs
+            - build # on master we don't hold, but publish to next right after the build is done
+            - hold-ecs # on tags we wait until there's an approval
           filters:
             branches:
               only: master # next
