@@ -82,6 +82,7 @@ public class DCLCharacterController : MonoBehaviour
     bool isSprinting = false;
     bool isJumping = false;
     bool isGrounded = false;
+    bool supportsMovingPlatforms = false;
     Transform groundTransform;
     Vector3 lastPosition;
     Vector3 groundLastPosition;
@@ -110,7 +111,9 @@ public class DCLCharacterController : MonoBehaviour
         characterController = GetComponent<CharacterController>();
         rigidbody = GetComponent<Rigidbody>();
         collider = GetComponent<Collider>();
+
         characterPosition.OnPrecisionAdjust += OnPrecisionAdjust;
+        SceneController.OnDebugModeSet += () => {supportsMovingPlatforms = true;};
 
         lastPosition = transform.position;
     }
@@ -355,7 +358,7 @@ public class DCLCharacterController : MonoBehaviour
         {
             if(groundTransform == hitInfo.transform)
             {
-                if(hitInfo.transform.position != groundLastPosition || hitInfo.transform.rotation != groundLastRotation)
+                if(supportsMovingPlatforms && transform.parent == null && (hitInfo.transform.position != groundLastPosition || hitInfo.transform.rotation != groundLastRotation))
                 {
                     // By letting unity parenting handle the transformations for us, the UX is smooth.
                     transform.SetParent(groundTransform);
