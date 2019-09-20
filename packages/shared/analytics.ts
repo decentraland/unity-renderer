@@ -25,8 +25,11 @@ export async function initialize(segmentKey: string, id: string): Promise<void> 
     return
   }
 
-  window.analytics.load(segmentKey)
-  window.analytics.page()
+  if (window.analytics.load) {
+    // loading client for the first time
+    window.analytics.load(segmentKey)
+    window.analytics.page()
+  }
 
   return window.analytics.identify(id)
 }
