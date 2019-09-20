@@ -19,7 +19,6 @@ jobs:
             sudo apt-get update && sudo apt-get install -y git-lfs=2.7.2
             ssh git@github.com git-lfs-authenticate decentraland/kernel.git download
             git lfs install
-
       # checkout the actual code
       - checkout
 
@@ -125,7 +124,7 @@ jobs:
             - .git
           key: build-sdk-{{ .Revision }}
 
-  publish-ecs-latest:
+  publish-ecs:
     docker:
       - image: circleci/node:10-browsers
     working_directory: /tmp/explorer
@@ -149,32 +148,6 @@ jobs:
 
       - run:
           name: Publish a new version of decentraland-ecs
-          command: make publish
-          when: on_success
-
-  publish-ecs-next:
-    docker:
-      - image: circleci/node:10-browsers
-    working_directory: /tmp/explorer
-    steps:
-      # restore build files
-      - restore_cache:
-          keys:
-            - build-{{ .Revision }}
-      - restore_cache:
-          keys:
-            - build-sdk-{{ .Revision }}
-      # restore node_modules
-      - restore_cache:
-          keys:
-            - v1-dependencies-{{ checksum "package-lock.json" }}
-      - run:
-          name: Set up NPM
-          command: echo "//registry.npmjs.org/:_authToken=${NPM_TOKEN}" > ~/.npmrc
-          when: on_success
-
-      - run:
-          name: publish decentraland-api
           command: make publish
           when: on_success
 
@@ -235,7 +208,7 @@ jobs:
           command: |
             aws configure set aws_access_key_id ${AWS_DEV_ACCESS_KEY_ID} && aws configure set aws_secret_access_key ${AWS_DEV_SECRET_ACCESS_KEY}
       - run:
-          name: Deploy tag to .today
+          name: Deploy to .today
           command: |
             aws s3 sync static s3://explorer.decentraland.today/ --exclude "tags/*" --acl public-read
       - run:
@@ -259,7 +232,7 @@ jobs:
           command: |
             aws configure set aws_access_key_id ${AWS_PRD_ACCESS_KEY_ID} && aws configure set aws_secret_access_key ${AWS_PRD_SECRET_ACCESS_KEY}
       - run:
-          name: Deploy tag to .org
+          name: Deploy to .org
           command: |
             aws s3 sync static s3://explorer.decentraland.org/ --exclude "tags/*" --acl public-read
       - run:
@@ -275,78 +248,71 @@ workflows:
   version: 2
   build-deploy:
     jobs:
-      - build:
-          filters:
-            tags:
-              only: /.*/
-      - hold-explorer-prd:
-          type: approval
-          requires:
-            - build
-          filters:
-            branches:
-              only: master
-            tags:
-              only: /^\d+\.\d+\.\d(.*)/
-      - hold-explorer-stg:
-          type: approval
-          requires:
-            - build
-          filters:
-            branches:
-              only: master
-            tags:
-              only: /^\d+\.\d+\.\d(.*)/
-      - hold-ecs:
-          type: approval
-          requires:
-            - build
-          filters:
-            branches:
-              ignore: /.*/
-            tags:
-              only: /^\d+\.\d+\.\d(.*)/
-      - deploy-on-pr:
-          requires:
-            - build
-          filters:
-            branches:
-              ignore: master
+      - build
+
+      # explorer master + pr branch jobs (deploy to dev + pr dev)
       - deploy-dev:
           requires:
             - build
           filters:
             branches:
               only: master
-      - publish-ecs-next:
+      - deploy-on-pr:
           requires:
             - build
           filters:
             branches:
-              only: master
-      - deploy-stg:
+              ignore:
+                - master
+                - release
+
+      # ecs publish jobs (publish as next + latest depending on context branch/tag)
+      # TODO - deploy from release branch + add an additional 'dev' tag to npm replacing 'next' + use 'next' for stg releases
+      - hold-ecs:
+          type: approval
           requires:
             - build
-            - deploy-dev
+          filters:
+            branches:
+              only: master # next
+            tags:
+              only: /^\d+\.\d+\.\d(.*)/ # npm tag + latest
+      - publish-ecs:
+          requires:
+            - hold-ecs
+          filters:
+            branches:
+              only: master # next
+            tags:
+              only: /^\d+\.\d+\.\d(.*)/ # npm tag + latest
+
+      # explorer release branch jobs (stg + prd)
+      - hold-explorer-stg:
+          type: approval
+          requires:
+            - build
+          filters:
+            branches:
+              only:
+                - release
+      - deploy-stg:
+          requires:
             - hold-explorer-stg
           filters:
             branches:
-              only: master
-            tags:
-              only: /^\d+\.\d+\.\d(.*)/
+              only: release
+
+      - hold-explorer-prd:
+          type: approval
+          requires:
+            - build
+          filters:
+            branches:
+              only:
+                - release
       - deploy-prd:
           requires:
             - hold-explorer-prd
           filters:
             branches:
-              only: master
-            tags:
-              only: /^\d+\.\d+\.\d(.*)/
-      - publish-ecs-latest:
-          requires:
-            - hold-ecs
-          filters:
-            branches:
-              ignore: /.*/
-            tags:
-              only: /^\d+\.\d+\.\d(.*)/
+              only: release
