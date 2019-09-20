@@ -1,4 +1,4 @@
-using DCL.Controllers;
+﻿using DCL.Controllers;
 using DCL.Helpers;
 using UnityEngine;
 
@@ -30,18 +30,29 @@ namespace DCL.Components
 
         protected override bool ShouldGenerateNewMesh(BaseShape.Model newModel)
         {
-            if(currentMesh == null) return true;
+            if (currentMesh == null)
+                return true;
 
             Model newPlaneModel = newModel as Model;
 
-            if(newPlaneModel.uvs?.Length != model.uvs?.Length) return true;
-
-            for (int i = 0; i < newPlaneModel.uvs.Length; i++)
+            if (newPlaneModel.uvs != null && model.uvs != null)
             {
-                if(newPlaneModel.uvs[i] != model.uvs[i]) return true;
+                if (newPlaneModel.uvs.Length != model.uvs.Length)
+                    return true;
+
+                for (int i = 0; i < newPlaneModel.uvs.Length; i++)
+                {
+                    if (newPlaneModel.uvs[i] != model.uvs[i])
+                        return true;
+                }
+            }
+            else
+            {
+                if (newPlaneModel.uvs != model.uvs)
+                    return true;
             }
 
-            return  newPlaneModel.width != model.width || newPlaneModel.height != model.height;
+            return newPlaneModel.width != model.width || newPlaneModel.height != model.height;
         }
     }
 }
