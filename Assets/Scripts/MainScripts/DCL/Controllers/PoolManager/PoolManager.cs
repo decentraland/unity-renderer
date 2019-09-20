@@ -7,6 +7,8 @@ namespace DCL
 
     public class PoolManager : Singleton<PoolManager>
     {
+        public const int DEFAULT_PREWARM_COUNT = 100;
+
         public Dictionary<object, Pool> pools = new Dictionary<object, Pool>();
 
         GameObject container
@@ -33,14 +35,14 @@ namespace DCL
             EnsureContainer();
         }
 
-        public Pool AddPool(object id, GameObject original, IPooledObjectInstantiator instantiator = null)
+        public Pool AddPool(object id, GameObject original, IPooledObjectInstantiator instantiator = null, int maxPrewarmCount = DEFAULT_PREWARM_COUNT)
         {
             if (ContainsPool(id))
             {
-                if (Pool.FindPoolInGameObject(original, out Pool poolAlreadyExisting))
+                if (Pool.FindPoolInGameObject(original, out Pool poolAlreadyExists))
                 {
                     Debug.LogWarning("WARNING: Object is already being contained in an existing pool!. Returning it.");
-                    return poolAlreadyExisting;
+                    return poolAlreadyExists;
                 }
 
                 Pool result = GetPool(id);
@@ -48,7 +50,7 @@ namespace DCL
                 return result;
             }
 
-            Pool pool = new Pool(id.ToString());
+            Pool pool = new Pool(id.ToString(), maxPrewarmCount);
 
             pool.container.transform.parent = container.transform;
 
