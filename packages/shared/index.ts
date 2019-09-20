@@ -1,25 +1,27 @@
 import {
-  DEBUG,
   ENABLE_WEB3,
   ETHEREUM_NETWORK,
+  getLoginConfigurationForCurrentDomain,
   getTLD,
   PREVIEW,
   setNetwork,
-  STATIC_WORLD,
-  getLoginConfigurationForCurrentDomain
+  STATIC_WORLD
 } from '../config'
 import { initialize, queueTrackingEvent } from './analytics'
 import './apis/index'
 import { Auth } from './auth'
 import { connect, disconnect } from './comms'
+import { isMobile } from './comms/mobile'
 import { persistCurrentUser } from './comms/index'
 import { localProfileUUID } from './comms/peers'
 import './events'
+import { ReportFatalError } from './loading/ReportFatalError'
+import { AUTH_ERROR_LOGGED_OUT, COMMS_COULD_NOT_BE_ESTABLISHED, MOBILE_NOT_SUPPORTED } from './loading/types'
 import { defaultLogger } from './logger'
+import { Session } from './session/index'
 import { ProfileSpec } from './types'
 import { getAppNetwork, getNetworkFromTLD, initWeb3 } from './web3'
 import { initializeUrlPositionObserver } from './world/positionThings'
-import { Session } from './session/index'
 import {
   createProfile,
   createStubProfileSpec,
@@ -46,7 +48,11 @@ async function initializeAnalytics(userId: string) {
 
 declare let window: any
 
-export async function initShared(): Promise<Session> {
+export async function initShared(): Promise<Session | undefined> {
+  if (isMobile()) {
+    ReportFatalError(MOBILE_NOT_SUPPORTED)
+    return
+  }
   const session = new Session()
 
   const auth = new Auth({
@@ -70,7 +76,8 @@ export async function initShared(): Promise<Session> {
     } catch (e) {
       defaultLogger.error(e)
       console['groupEnd']()
-      throw new Error('Authentication error. Please reload the page to try again. (' + e.toString() + ')')
+      ReportFatalError(AUTH_ERROR_LOGGED_OUT)
+      throw e
     }
     await initializeAnalytics(userId)
   }
@@ -98,17 +105,6 @@ export async function initShared(): Promise<Session> {
 
   initializeUrlPositionObserver()
 
-  // Warn in case wallet is set in mainnet
-  if (net === ETHEREUM_NETWORK.MAINNET && DEBUG && ENABLE_WEB3) {
-    const style = document.createElement('style')
-    style.appendChild(
-      document.createTextNode(
-        `body:before{content:'You are using Mainnet Ethereum Network, real transactions are going to be made.';background:#ff0044;color:#fff;text-align:center;text-transform:uppercase;height:24px;width:100%;position:fixed;padding-top:2px}#main-canvas{padding-top:24px};`
-      )
-    )
-    document.head.appendChild(style)
-  }
-
   // DCL Servers connections/requests after this
   if (STATIC_WORLD) {
     return session
@@ -126,10 +122,11 @@ export async function initShared(): Promise<Session> {
       )
       break
     } catch (e) {
-      if (!e.message.startsWith('Communications link') || i === maxAttemps) {
+      if (!e.message.startsWith('Communications link') || i >= maxAttemps) {
         // max number of attemps reached, rethrow error
         defaultLogger.info(`Max number of attemps reached (${maxAttemps}), unsuccessful connection`)
         disconnect()
+        ReportFatalError(COMMS_COULD_NOT_BE_ESTABLISHED)
         throw e
       }
     }

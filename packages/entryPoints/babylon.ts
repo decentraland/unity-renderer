@@ -31,7 +31,11 @@ async function loadClient() {
 
 bodyReadyFuture
   .then(async body => {
-    Session.current = await initShared()
+    const session = await initShared()
+    if (!session) {
+      throw new Error('Unable to get a session')
+    }
+    Session.current = session as Session
 
     await loadClient()
 

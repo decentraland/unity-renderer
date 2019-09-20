@@ -1,9 +1,10 @@
-import { DEBUG_MESSAGES, DEBUG_WS_MESSAGES } from '../config'
+import future from 'fp-future'
+import { DEBUG_MESSAGES } from '../config'
 import { initShared } from '../shared'
+import { ReportFatalError } from '../shared/loading/ReportFatalError'
 import { defaultLogger } from '../shared/logger'
 import { initializeEngine } from './dcl'
-import future from 'fp-future'
-import { Session } from '../shared/session/index'
+import { Session } from '../shared/session'
 const queryString = require('query-string')
 
 declare var global: any
@@ -25,11 +26,6 @@ type UnityGame = {
 let _instancedJS: ReturnType<typeof initializeEngine> | null = null
 
 /**
- * HTML Container where everything happens
- */
-let _container: HTMLElement | null = null
-
-/**
  * UnityGame instance (Either Unity WebGL or Or Unity editor via WebSocket)
  */
 let _gameInstance: UnityGame | null = null
@@ -44,10 +40,11 @@ const engineInitialized = future()
 
 /** Initialize the engine in a container */
 export async function initializeUnity(container: HTMLElement): Promise<InitializeUnityResult> {
-  _container = container
-
-  Session.current = await initShared()
-
+  const session = await initShared()
+  if (!session) {
+    throw new Error()
+  }
+  Session.current = session as Session
   const qs = queryString.parse(document.location.search)
 
   if (qs.ws) {
@@ -78,8 +75,7 @@ namespace DCL {
       })
       .catch(error => {
         engineInitialized.reject(error)
-        _container!.classList.remove('dcl-loading')
-        _container!.innerHTML = `<h3>${error.message}</h3>`
+        ReportFatalError("Unexpected fatal error")
       })
   }
 
@@ -102,17 +98,17 @@ function initializeUnityEditor(webSocketUrl: string, container: HTMLElement): Un
   container.innerHTML = `<h3>Connecting...</h3>`
   const ws = new WebSocket(webSocketUrl)
 
-  ws.onclose = function(e) {
+  ws.onclose = function (e) {
     defaultLogger.error('WS closed!', e)
     container.innerHTML = `<h3 style='color:red'>Disconnected</h3>`
   }
 
-  ws.onerror = function(e) {
+  ws.onerror = function (e) {
     defaultLogger.error('WS error!', e)
     container.innerHTML = `<h3 style='color:red'>EERRORR</h3>`
   }
 
-  ws.onmessage = function(ev) {
+  ws.onmessage = function (ev) {
     if (DEBUG_MESSAGES) {
       defaultLogger.info('>>>', ev.data)
     }
@@ -123,7 +119,7 @@ function initializeUnityEditor(webSocketUrl: string, container: HTMLElement): Un
         const payload = JSON.parse(m.payload)
         _instancedJS!.then($ => $.onMessage(m.type, payload))
       } else {
-        defaultLogger.error('Dont know what to do with ', m)
+        defaultLogger.error('Unexpected message: ', m)
       }
     } catch (e) {
       defaultLogger.error(e)
@@ -134,9 +130,6 @@ function initializeUnityEditor(webSocketUrl: string, container: HTMLElement): Un
     SendMessage(_obj, type, payload) {
       if (ws.readyState === ws.OPEN) {
         const msg = JSON.stringify({ type, payload })
-        if (DEBUG_WS_MESSAGES) {
-          console.log(msg)
-        }
         ws.send(msg)
       }
     },
@@ -145,7 +138,7 @@ function initializeUnityEditor(webSocketUrl: string, container: HTMLElement): Un
     }
   }
 
-  ws.onopen = function() {
+  ws.onopen = function () {
     container.classList.remove('dcl-loading')
     defaultLogger.info('WS open!')
     gameInstance.SendMessage('', 'Reset', '')
