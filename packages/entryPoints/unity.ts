@@ -1,8 +1,10 @@
-import { initializeUnity } from '../unity-interface/initializer'
-import { startUnityParcelLoading } from '../unity-interface/dcl'
+import { ReportFatalError } from 'shared/loading/ReportFatalError'
+import { FAILED_FETCHING_UNITY } from 'shared/loading/types'
 import { worldToGrid } from '../atomicHelpers/parcelScenePositions'
-import { lastPlayerPosition, teleportObservable } from '../shared/world/positionThings'
 import defaultLogger from '../shared/logger'
+import { lastPlayerPosition, teleportObservable } from '../shared/world/positionThings'
+import { startUnityParcelLoading } from '../unity-interface/dcl'
+import { initializeUnity } from '../unity-interface/initializer'
 
 const container = document.getElementById('gameContainer')
 
@@ -15,7 +17,12 @@ initializeUnity(container)
     _.instancedJS
       .then($ => teleportObservable.notifyObservers(worldToGrid(lastPlayerPosition)))
       .catch(defaultLogger.error)
-    document.body.classList.remove('dcl-loading')
+    document.body.classList.remove('dcl-loading');
+
+    (window as any).UnityLoader.Error.handler = (error: any) => {
+      console.error(error)
+      ReportFatalError(error.message)
+    }
   })
   .catch(err => {
     if (err.message.includes('Authentication error')) {
@@ -24,8 +31,7 @@ initializeUnity(container)
 
     console['error']('Error loading Unity')
     console['error'](err)
-
-    container.innerText = err.toString()
-
     document.body.classList.remove('dcl-loading')
+
+    ReportFatalError(FAILED_FETCHING_UNITY)
   })
