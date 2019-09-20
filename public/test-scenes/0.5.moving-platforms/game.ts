@@ -87,19 +87,6 @@ export function configureShapeEntityPositions(waypointsPath: Vector3[], speed: n
   return entity
 }
 
-// Moving platform
-let movingPlatformEntity = configureShapeEntityPositions(
-  [new Vector3(1, 1, 1), new Vector3(1, 1, 15), new Vector3(15, 1, 15), new Vector3(15, 1, 1), new Vector3(1, 1, 1)],
-  0.1,
-  new BoxShape()
-)
-movingPlatformEntity.getComponent(Transform).scale = new Vector3(2, 0.25, 2)
-movingPlatformEntity.addComponentOrReplace(
-  new OnClick(e => {
-    movingPlatformEntity.getComponent(PingPongMovement).speed *= 1.25;
-  })
-)
-
 // Elevator platform
 let elevatorEntity = configureShapeEntityPositions([new Vector3(24, 0, 8), new Vector3(24, 10, 8)], 0.5, new BoxShape())
 elevatorEntity.getComponent(Transform).scale = new Vector3(2, 0.25, 2)
@@ -147,6 +134,20 @@ rotatingPlatformEntity.addComponentOrReplace(
 )
 rotatingPlatformEntity.addComponentOrReplace(new ObjectRotation(10, new Vector3(0, 1, 0)))
 engine.addEntity(rotatingPlatformEntity)
+
+// Moving platform
+let movingPlatformEntity = configureShapeEntityPositions(
+  [new Vector3(3, 1, 3), new Vector3(3, 1, 15), new Vector3(15, 1, 15), new Vector3(15, 1, 3), new Vector3(3, 1, 3)],
+  0.1,
+  new BoxShape()
+)
+movingPlatformEntity.getComponent(Transform).scale = new Vector3(2, 0.25, 2)
+movingPlatformEntity.addComponentOrReplace(new ObjectRotation(10, new Vector3(0, 1, 0)))
+movingPlatformEntity.addComponentOrReplace(
+  new OnClick(e => {
+    movingPlatformEntity.getComponent(PingPongMovement).speed *= 1.25;
+  })
+)
 
 // "Pendulum" platform
 let pendulumPivotentity = new Entity()
