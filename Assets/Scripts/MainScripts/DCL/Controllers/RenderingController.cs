@@ -12,6 +12,7 @@ public class RenderingController : MonoBehaviour
         i = this;
     }
 
+    public System.Action<bool> OnRenderingStateChanged;
     public bool renderingEnabled { get; private set; } = true;
 
     [ContextMenu("Disable Rendering")]
@@ -21,6 +22,8 @@ public class RenderingController : MonoBehaviour
             return;
 
         renderingEnabled = false;
+
+        OnRenderingStateChanged?.Invoke(renderingEnabled);
 
         DCL.Configuration.ParcelSettings.VISUAL_LOADING_ENABLED = false;
         MessagingBus.renderingIsDisabled = true;
@@ -37,6 +40,9 @@ public class RenderingController : MonoBehaviour
             return;
 
         renderingEnabled = true;
+
+        OnRenderingStateChanged?.Invoke(renderingEnabled);
+
         DCL.Configuration.ParcelSettings.VISUAL_LOADING_ENABLED = true;
         MessagingBus.renderingIsDisabled = false;
         GLTFSceneImporter.renderingIsDisabled = false;

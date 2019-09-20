@@ -13,6 +13,7 @@ namespace DCL
 
     public class Pool : ICleanable
     {
+        public const int PREWARM_ACTIVE_MULTIPLIER = 2;
         public object id;
         public GameObject original;
         public GameObject container;
@@ -24,6 +25,8 @@ namespace DCL
 
         private readonly List<PoolableObject> inactiveObjects = new List<PoolableObject>();
         private readonly List<PoolableObject> activeObjects = new List<PoolableObject>();
+        private int maxPrewarmCount = 0;
+        private bool initializing = true;
 
         public float lastGetTime
         {
@@ -35,7 +38,10 @@ namespace DCL
 
         public int inactiveCount
         {
-            get { return inactiveObjects.Count; }
+            get
+            {
+                return inactiveObjects.Count;
+            }
         }
 
         public int activeCount
@@ -43,20 +49,47 @@ namespace DCL
             get { return activeObjects.Count; }
         }
 
-        public Pool(string name)
+        public Pool(string name, int maxPrewarmCount)
         {
             container = new GameObject("Pool - " + name);
+            this.maxPrewarmCount = maxPrewarmCount;
+            initializing = true;
+            RenderingController.i.OnRenderingStateChanged += OnRenderingStateChanged;
         }
 
+        void OnRenderingStateChanged(bool renderingState)
+        {
+            if (renderingState)
+            {
+                RenderingController.i.OnRenderingStateChanged -= OnRenderingStateChanged;
+                initializing = false;
+            }
+        }
+
+        public void ForcePrewarm()
+        {
+            for (int i = 0; i < maxPrewarmCount; i++)
+                Instantiate();
+        }
 
         public PoolableObject Get()
         {
             PoolableObject poolable = null;
 
-            if (inactiveObjects.Count > 0)
+            if (!initializing && inactiveObjects.Count > 0)
+            {
                 poolable = inactiveObjects[0];
+            }
             else
+            {
+                if (!RenderingController.i.renderingEnabled)
+                {
+                    int count = activeCount;
+                    for (int i = inactiveCount; i < Mathf.Min(count * PREWARM_ACTIVE_MULTIPLIER, maxPrewarmCount); i++)
+                        Instantiate();
+                }
                 poolable = Instantiate();
+            }
 
             EnablePoolableObject(poolable);
 
@@ -184,6 +217,7 @@ namespace DCL
 
             OnCleanup?.Invoke(this);
 
+            RenderingController.i.OnRenderingStateChanged -= OnRenderingStateChanged;
         }
 
         public void EnablePoolableObject(PoolableObject poolable)
