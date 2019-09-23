@@ -311,9 +311,9 @@ namespace Tests
             Assert.IsTrue(sceneController.loadedScenes[sceneId].unloadWithDistance == false,
                 "Scene will unload when far!");
 
-            Assert.IsTrue(scene.IsInsideSceneBoundaries(new Vector2(1000, 1000)),
+            Assert.IsTrue(scene.IsInsideSceneBoundaries(new Vector2Int(1000, 1000)),
                 "IsInsideSceneBoundaries() should always return true.");
-            Assert.IsTrue(scene.IsInsideSceneBoundaries(new Vector2(-1000, -1000)),
+            Assert.IsTrue(scene.IsInsideSceneBoundaries(new Vector2Int(-1000, -1000)),
                 "IsInsideSceneBoundaries() should always return true.");
 
             yield return null;
