@@ -190,10 +190,10 @@ namespace DCL
 
         private int SceneMessagingSortByDistance(ParcelScene sceneA, ParcelScene sceneB)
         {
-            if (sceneA.IsInsideSceneBoundaries(DCLCharacterController.i.characterPosition.worldPosition))
+            if (sceneA.IsInsideSceneBoundaries(Utils.WorldToGridPosition(DCLCharacterController.i.characterPosition.worldPosition)))
                 return -1;
 
-            if (sceneB.IsInsideSceneBoundaries(DCLCharacterController.i.characterPosition.worldPosition))
+            if (sceneB.IsInsideSceneBoundaries(Utils.WorldToGridPosition(DCLCharacterController.i.characterPosition.worldPosition)))
                 return 1;
 
             int dist1 = (int)(sceneA.transform.position - DCLCharacterController.i.transform.position).sqrMagnitude;
