@@ -82,7 +82,7 @@ public class DCLCharacterController : MonoBehaviour
     bool isSprinting = false;
     bool isJumping = false;
     bool isGrounded = false;
-    bool supportsMovingPlatforms = false;
+    bool supportsMovingPlatforms = true;
     Transform groundTransform;
     Vector3 lastPosition;
     Vector3 groundLastPosition;
@@ -113,7 +113,6 @@ public class DCLCharacterController : MonoBehaviour
         collider = GetComponent<Collider>();
 
         characterPosition.OnPrecisionAdjust += OnPrecisionAdjust;
-        SceneController.OnDebugModeSet += () => {supportsMovingPlatforms = true;};
 
         lastPosition = transform.position;
     }
@@ -220,7 +219,7 @@ public class DCLCharacterController : MonoBehaviour
             return;
         }
         
-        LockCharacterScaleAndRotations();
+        LockCharacterScale();
 
         bool previouslyGrounded = isGrounded;
         CheckGround();
@@ -326,10 +325,10 @@ public class DCLCharacterController : MonoBehaviour
         jumpButtonPressed = Input.GetKey(KeyCode.Space);
     }
 
-    void LockCharacterScaleAndRotations()
+    void LockCharacterScale()
     {
-        // To keep the character always at global scale 1 and only rotated in Y
-        if(transform.lossyScale == Vector3.one && transform.localRotation.x == 0f && transform.localRotation.z == 0f) return;
+        // To keep the character always at global scale 1
+        if(transform.lossyScale == Vector3.one) return;
 
         Transform parentTransform = null;
         if(transform.parent != null)
@@ -339,7 +338,6 @@ public class DCLCharacterController : MonoBehaviour
         }
 
         transform.localScale = Vector3.one;
-        transform.localRotation = Quaternion.Euler(0f, transform.rotation.y, 0f);
 
         if(parentTransform != null)
         {
