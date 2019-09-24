@@ -227,6 +227,8 @@ public class DCLCharacterController : MonoBehaviour
         if (isGrounded)
         {
             isJumping = false;
+
+            velocity.y = 0f; // to avoid accumulating gravity in velocity.y while grounded
         }
         else if (previouslyGrounded && !isJumping)
         {
