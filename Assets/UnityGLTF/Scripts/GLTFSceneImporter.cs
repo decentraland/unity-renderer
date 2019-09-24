@@ -386,7 +386,7 @@ namespace UnityGLTF
                     _assetCache = new AssetCache(_gltfRoot);
                 }
 
-                _timeAtLastYield = Time.realtimeSinceStartup;
+                _timeAtLastYield = DCLTime.realtimeSinceStartup;
                 if (_assetCache.MaterialCache[materialIndex] == null)
                 {
                     var def = _gltfRoot.Materials[materialIndex];

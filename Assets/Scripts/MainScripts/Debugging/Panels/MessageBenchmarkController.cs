@@ -254,7 +254,7 @@ namespace DCL
                 s = msgBeingProcessed;
             }
 
-            decodeTimeTracker[stringToRow[s]] = Time.realtimeSinceStartup;
+            decodeTimeTracker[stringToRow[s]] = DCLTime.realtimeSinceStartup;
         }
 
         private void OnMessageDecodeEnds(string s)
@@ -269,7 +269,7 @@ namespace DCL
                 s = msgBeingProcessed;
             }
 
-            float dt = Time.realtimeSinceStartup - decodeTimeTracker[stringToRow[s]];
+            float dt = DCLTime.realtimeSinceStartup - decodeTimeTracker[stringToRow[s]];
 
             AvgTrackedValue(Columns.DECODE_MS, stringToRow[s], dt * 1000);
         }
@@ -297,7 +297,7 @@ namespace DCL
             float finalRatioTimesMs = (finalMs / total) * finalRatio;
             statsPanel.SetCellText((int)Columns.RATIO_TIMES_MS, (int)stringToRow[s], finalRatioTimesMs.ToString("N2"));
 
-            float dt = Time.realtimeSinceStartup - processTimeTracker[stringToRow[s]];
+            float dt = DCLTime.realtimeSinceStartup - processTimeTracker[stringToRow[s]];
 
             //NOTE(Brian): Hack because I expect decode events to be called inside process events,
             //             with the exception of scene load one.
@@ -332,7 +332,7 @@ namespace DCL
             }
 
             msgBeingProcessed = s;
-            processTimeTracker[stringToRow[s]] = Time.realtimeSinceStartup;
+            processTimeTracker[stringToRow[s]] = DCLTime.realtimeSinceStartup;
         }
 
         void SumTrackedValue(Columns x, Rows y, int delta)

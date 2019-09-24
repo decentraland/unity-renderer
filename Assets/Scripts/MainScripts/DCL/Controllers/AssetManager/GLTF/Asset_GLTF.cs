@@ -71,7 +71,7 @@ namespace DCL
 
         public IEnumerator ShowCoroutine(System.Action OnFinish)
         {
-            float delay = Random.Range(0, 0.5f);
+            float delay = Random.Range(0, 1.5f);
             yield return WaitForSecondsCache.Get(delay);
 
             // NOTE(Brian): This GameObject can be removed by distance after the delay
