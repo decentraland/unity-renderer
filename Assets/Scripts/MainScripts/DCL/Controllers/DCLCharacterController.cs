@@ -218,12 +218,12 @@ public class DCLCharacterController : MonoBehaviour
 
             return;
         }
-        
+
         LockCharacterScale();
 
         bool previouslyGrounded = isGrounded;
         CheckGround();
-        
+
         if (isGrounded)
         {
             isJumping = false;
@@ -234,7 +234,7 @@ public class DCLCharacterController : MonoBehaviour
         {
             lastUngroundedTime = Time.time;
         }
-        
+
         velocity.x = 0f;
         velocity.z = 0f;
         velocity.y += gravity * deltaTime;
@@ -278,7 +278,7 @@ public class DCLCharacterController : MonoBehaviour
             }
         }
 
-        if(IsOnMovingPlatform() && Vector3.Distance(lastPosition, transform.position) > movingPlatformAllowedPosDelta)
+        if (IsOnMovingPlatform() && Vector3.Distance(lastPosition, transform.position) > movingPlatformAllowedPosDelta)
         {
             ResetGround();
 
@@ -289,7 +289,7 @@ public class DCLCharacterController : MonoBehaviour
         characterController.Move(velocity * deltaTime);
         SetPosition(characterPosition.UnityToWorldPosition(transform.position));
 
-        if ((Time.realtimeSinceStartup - lastMovementReportTime) > PlayerSettings.POSITION_REPORTING_DELAY)
+        if ((DCLTime.realtimeSinceStartup - lastMovementReportTime) > PlayerSettings.POSITION_REPORTING_DELAY)
         {
             ReportMovement();
         }
@@ -330,10 +330,10 @@ public class DCLCharacterController : MonoBehaviour
     void LockCharacterScale()
     {
         // To keep the character always at global scale 1
-        if(transform.lossyScale == Vector3.one) return;
+        if (transform.lossyScale == Vector3.one) return;
 
         Transform parentTransform = null;
-        if(transform.parent != null)
+        if (transform.parent != null)
         {
             parentTransform = transform.parent;
             transform.SetParent(null);
@@ -341,7 +341,7 @@ public class DCLCharacterController : MonoBehaviour
 
         transform.localScale = Vector3.one;
 
-        if(parentTransform != null)
+        if (parentTransform != null)
         {
             transform.SetParent(parentTransform);
         }
@@ -354,11 +354,11 @@ public class DCLCharacterController : MonoBehaviour
 #endif
 
         RaycastHit hitInfo;
-        if(Physics.Raycast(transform.position, Vector3.down, out hitInfo, collider.bounds.extents.y + groundCheckExtraDistance, groundLayers))
+        if (Physics.Raycast(transform.position, Vector3.down, out hitInfo, collider.bounds.extents.y + groundCheckExtraDistance, groundLayers))
         {
-            if(groundTransform == hitInfo.transform)
+            if (groundTransform == hitInfo.transform)
             {
-                if(supportsMovingPlatforms && transform.parent == null && (hitInfo.transform.position != groundLastPosition || hitInfo.transform.rotation != groundLastRotation))
+                if (supportsMovingPlatforms && transform.parent == null && (hitInfo.transform.position != groundLastPosition || hitInfo.transform.rotation != groundLastRotation))
                 {
                     // By letting unity parenting handle the transformations for us, the UX is smooth.
                     transform.SetParent(groundTransform);
@@ -384,7 +384,7 @@ public class DCLCharacterController : MonoBehaviour
     {
         groundTransform = null;
 
-        if(transform.parent != null)
+        if (transform.parent != null)
         {
             transform.SetParent(null);
             velocity = Vector3.zero;
@@ -416,6 +416,6 @@ public class DCLCharacterController : MonoBehaviour
         if (initialPositionAlreadySet)
             DCL.Interface.WebInterface.ReportPosition(reportPosition, compositeRotation, playerHeight);
 
-        lastMovementReportTime = Time.realtimeSinceStartup;
+        lastMovementReportTime = DCLTime.realtimeSinceStartup;
     }
 }

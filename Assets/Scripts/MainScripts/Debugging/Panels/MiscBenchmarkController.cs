@@ -110,7 +110,7 @@ namespace DCL
 
         void Update()
         {
-            MessageThrottlingController globalThrottler = SceneController.i.messagingControllers[SceneController.GLOBAL_MESSAGING_CONTROLLER].messagingSystems[MessagingBusId.INIT].throttler;
+            MessageThrottlingController globalThrottler = MessagingControllersManager.i.throttler;
 
             if (globalThrottler != null && globalThrottler.currentTimeBudget < 0.001f)
                 enableBudgetMax = true;
@@ -172,21 +172,15 @@ namespace DCL
                 float rate = 0;
                 float budget = 0;
 
-                using (var controllersIter = SceneController.i.messagingControllers.GetEnumerator())
+                MessageThrottlingController cpus = MessagingControllersManager.i.throttler;
+
+                if (cpus != null)
                 {
-                    while (controllersIter.MoveNext())
-                    {
-                        MessageThrottlingController cpus = controllersIter.Current.Value.messagingSystems[MessagingBusId.INIT].throttler;
+                    rate = cpus.messagesConsumptionRate;
+                    budget = cpus.currentTimeBudget * 1000f;
 
-                        if (cpus != null)
-                        {
-                            rate += cpus.messagesConsumptionRate;
-                            budget += cpus.currentTimeBudget * 1000f;
-
-                            if (enableBudgetMax)
-                                budgetMax = Mathf.Max(cpus.currentTimeBudget, budgetMax);
-                        }
-                    }
+                    if (enableBudgetMax)
+                        budgetMax = Mathf.Max(cpus.currentTimeBudget, budgetMax);
                 }
 
                 statsPanel.SetCellText(1, (int)Rows.CPU_SCHEDULER, $"msgs rate: {rate}\nbudget: {budget}ms\nbudget peak: {budgetMax * 1000f}ms");
@@ -195,17 +189,17 @@ namespace DCL
                 Dictionary<string, int> pendingMessagesCount = new Dictionary<string, int>();
                 Dictionary<string, int> messagesReplaced = new Dictionary<string, int>();
 
-                using (var controllersIter = SceneController.i.messagingControllers.GetEnumerator())
+                using (var controllersIter = MessagingControllersManager.i.messagingControllers.GetEnumerator())
                 {
                     while (controllersIter.MoveNext())
                     {
-                        using (var iterator = controllersIter.Current.Value.messagingSystems.GetEnumerator())
+                        using (var iterator = controllersIter.Current.Value.messagingBuses.GetEnumerator())
                         {
                             while (iterator.MoveNext())
                             {
                                 //access to pair using iterator.Current
                                 string key = iterator.Current.Key;
-                                MessagingSystem system = controllersIter.Current.Value.messagingSystems[key];
+                                MessagingBus bus = controllersIter.Current.Value.messagingBuses[key];
 
                                 if (!pendingMessagesCount.ContainsKey(key))
                                     pendingMessagesCount[key] = 0;
@@ -213,8 +207,8 @@ namespace DCL
                                 if (!messagesReplaced.ContainsKey(key))
                                     messagesReplaced[key] = 0;
 
-                                pendingMessagesCount[key] += system.bus.pendingMessagesCount;
-                                messagesReplaced[key] += system.unreliableMessagesReplaced;
+                                pendingMessagesCount[key] += bus.pendingMessagesCount;
+                                messagesReplaced[key] += bus.unreliableMessagesReplaced;
                             }
                         }
                     }

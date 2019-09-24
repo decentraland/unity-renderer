@@ -228,7 +228,7 @@ namespace DCL
                 poolable.gameObject.transform.SetParent(null);
             }
 
-            lastGetTime = Time.realtimeSinceStartup;
+            lastGetTime = DCLTime.realtimeSinceStartup;
 
             if (inactiveObjects.Contains(poolable))
                 inactiveObjects.Remove(poolable);

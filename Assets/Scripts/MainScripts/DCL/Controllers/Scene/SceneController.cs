@@ -17,12 +17,6 @@ namespace DCL
         public bool startDecentralandAutomatically = true;
         public static bool VERBOSE = false;
 
-        private const float GLOBAL_MAX_MSG_BUDGET = 0.012f;
-        private const float GLTF_BUDGET_MAX = 0.012f;
-        private const float GLTF_BUDGET_MIN = 0.001f;
-
-        public const string GLOBAL_MESSAGING_CONTROLLER = "global_messaging_controller";
-
         [FormerlySerializedAs("factoryManifest")]
         public DCLComponentFactory componentFactory;
 
@@ -63,9 +57,7 @@ namespace DCL
         public event ProcessDelegate OnMessageProcessInfoStart;
         public event ProcessDelegate OnMessageProcessInfoEnds;
 #endif
-        public Dictionary<string, MessagingController> messagingControllers = new Dictionary<string, MessagingController>();
-
-        private List<ParcelScene> scenesSortedByDistance = new List<ParcelScene>();
+        public List<ParcelScene> scenesSortedByDistance = new List<ParcelScene>();
 
         [System.NonSerialized]
         public bool isDebugMode;
@@ -79,15 +71,7 @@ namespace DCL
         {
             get
             {
-                int total = 0;
-                using (var iterator = messagingControllers.GetEnumerator())
-                {
-                    while (iterator.MoveNext())
-                    {
-                        total += iterator.Current.Value.pendingMessagesCount;
-                    }
-                }
-                return total;
+                return MessagingControllersManager.i.pendingMessagesCount;
             }
         }
 
@@ -95,15 +79,7 @@ namespace DCL
         {
             get
             {
-                int total = 0;
-                using (var iterator = messagingControllers.GetEnumerator())
-                {
-                    while (iterator.MoveNext())
-                    {
-                        total += iterator.Current.Value.pendingInitMessagesCount;
-                    }
-                }
-                return total;
+                return MessagingControllersManager.i.pendingInitMessagesCount;
             }
         }
 
@@ -137,7 +113,7 @@ namespace DCL
             Debug.unityLogger.logEnabled = false;
 #endif
 
-            messagingControllers[GLOBAL_MESSAGING_CONTROLLER] = new MessagingController(this, GLOBAL_MESSAGING_CONTROLLER);
+            MessagingControllersManager.i.Initialize(this);
 
             // We trigger the Decentraland logic once SceneController has been instanced and is ready to act.
             if (startDecentralandAutomatically)
@@ -150,40 +126,16 @@ namespace DCL
         {
             InputController.i.Update();
 
-            float prevTimeBudget = GLOBAL_MAX_MSG_BUDGET;
-
             PrioritizeMessageControllerList();
 
-            // First we process Load/Unload scene messages
-            prevTimeBudget -= messagingControllers[GLOBAL_MESSAGING_CONTROLLER].UpdateThrottling(prevTimeBudget);
-
-            // If we already have a messaging controller for global scene,
-            // we update throttling
-            if (!string.IsNullOrEmpty(globalSceneId) && messagingControllers.ContainsKey(globalSceneId))
-                prevTimeBudget -= messagingControllers[globalSceneId].UpdateThrottling(prevTimeBudget);
-
-            // Update throttling to the rest of the messaging controllers
-            for (int i = 0; i < scenesSortedByDistance.Count; i++)
-            {
-                ParcelScene scene = scenesSortedByDistance[i];
-                prevTimeBudget -= messagingControllers[scene.sceneData.id].UpdateThrottling(prevTimeBudget);
-            }
-
-            if (pendingInitMessagesCount == 0)
-            {
-                UnityGLTF.GLTFSceneImporter.budgetPerFrameInMilliseconds = Mathf.Clamp(GLTF_BUDGET_MAX - prevTimeBudget, GLTF_BUDGET_MIN, GLTF_BUDGET_MAX) * 1000f;
-            }
-            else
-            {
-                UnityGLTF.GLTFSceneImporter.budgetPerFrameInMilliseconds = 0;
-            }
+            MessagingControllersManager.i.UpdateThrottling();
         }
 
         private void PrioritizeMessageControllerList(bool force = false)
         {
-            if (force || Time.unscaledTime - lastTimeMessageControllerSorted >= SORT_MESSAGE_CONTROLLER_TIME)
+            if (force || DCLTime.realtimeSinceStartup - lastTimeMessageControllerSorted >= SORT_MESSAGE_CONTROLLER_TIME)
             {
-                lastTimeMessageControllerSorted = Time.unscaledDeltaTime;
+                lastTimeMessageControllerSorted = DCLTime.realtimeSinceStartup;
                 scenesSortedByDistance.Sort(SceneMessagingSortByDistance);
             }
         }
@@ -233,8 +185,8 @@ namespace DCL
 
                 globalSceneId = uiSceneId;
 
-                if (!messagingControllers.ContainsKey(globalSceneId))
-                    messagingControllers[globalSceneId] = new MessagingController(this, globalSceneId);
+                if (!MessagingControllersManager.i.ContainsController(globalSceneId))
+                    MessagingControllersManager.i.AddController(this, globalSceneId, isGlobal: true);
 
                 if (VERBOSE)
                 {
@@ -350,8 +302,8 @@ namespace DCL
 
                 scenesSortedByDistance.Add(newScene);
 
-                if (!messagingControllers.ContainsKey(newScene.sceneData.id))
-                    messagingControllers[newScene.sceneData.id] = new MessagingController(this, newScene.sceneData.id);
+                if (!MessagingControllersManager.i.ContainsController(newScene.sceneData.id))
+                    MessagingControllersManager.i.AddController(this, newScene.sceneData.id);
 
                 PrioritizeMessageControllerList(force: true);
 
@@ -408,10 +360,10 @@ namespace DCL
 
             OnMessageWillQueue?.Invoke(MessagingTypes.SCENE_DESTROY);
 
-            messagingControllers[GLOBAL_MESSAGING_CONTROLLER].ForceEnqueue(MessagingBusId.INIT, queuedMessage);
+            MessagingControllersManager.i.ForceEnqueueToGlobal(MessagingBusId.INIT, queuedMessage);
 
-            if (messagingControllers.ContainsKey(sceneKey))
-                messagingControllers[sceneKey].Stop();
+            if (MessagingControllersManager.i.ContainsController(sceneKey))
+                MessagingControllersManager.i.RemoveController(sceneKey);
         }
 
         public void UnloadParcelSceneExecute(string sceneKey)
@@ -432,12 +384,8 @@ namespace DCL
             scenesSortedByDistance.Remove(scene);
 
             // Remove messaging controller for unloaded scene
-            if (messagingControllers.ContainsKey(scene.sceneData.id))
-            {
-                // We need to dispose the messaging controller to stop bus coroutines
-                messagingControllers[scene.sceneData.id].Dispose();
-                messagingControllers.Remove(scene.sceneData.id);
-            }
+            if (MessagingControllersManager.i.ContainsController(scene.sceneData.id))
+                MessagingControllersManager.i.RemoveController(scene.sceneData.id);
 
             if (scene)
             {
@@ -468,7 +416,7 @@ namespace DCL
 
             OnMessageWillQueue?.Invoke(MessagingTypes.SCENE_LOAD);
 
-            messagingControllers[GLOBAL_MESSAGING_CONTROLLER].ForceEnqueue(MessagingBusId.INIT, queuedMessage);
+            MessagingControllersManager.i.ForceEnqueueToGlobal(MessagingBusId.INIT, queuedMessage);
 
             if (VERBOSE)
                 Debug.Log($"{Time.frameCount} : Load parcel scene queue {decentralandSceneJSON}");
@@ -482,7 +430,7 @@ namespace DCL
 
             OnMessageWillQueue?.Invoke(MessagingTypes.SCENE_UPDATE);
 
-            messagingControllers[GLOBAL_MESSAGING_CONTROLLER].ForceEnqueue(MessagingBusId.INIT, queuedMessage);
+            MessagingControllersManager.i.ForceEnqueueToGlobal(MessagingBusId.INIT, queuedMessage);
         }
 
         public void UnloadAllScenesQueued()
@@ -491,7 +439,7 @@ namespace DCL
 
             OnMessageWillQueue?.Invoke(MessagingTypes.SCENE_DESTROY);
 
-            messagingControllers[GLOBAL_MESSAGING_CONTROLLER].ForceEnqueue(MessagingBusId.INIT, queuedMessage);
+            MessagingControllersManager.i.ForceEnqueueToGlobal(MessagingBusId.INIT, queuedMessage);
         }
 
         public string SendSceneMessage(string payload)
@@ -583,10 +531,10 @@ namespace DCL
                 scene = loadedScenes[queuedMessage.sceneId];
 
             // If it doesn't exist, create messaging controller for this scene id
-            if (!messagingControllers.ContainsKey(queuedMessage.sceneId))
-                messagingControllers[queuedMessage.sceneId] = new MessagingController(this, queuedMessage.sceneId);
+            if (!MessagingControllersManager.i.ContainsController(queuedMessage.sceneId))
+                MessagingControllersManager.i.AddController(this, queuedMessage.sceneId);
 
-            busId = messagingControllers[queuedMessage.sceneId].Enqueue(scene, queuedMessage);
+            busId = MessagingControllersManager.i.Enqueue(scene, queuedMessage);
 
             return busId;
         }
@@ -755,10 +703,8 @@ namespace DCL
 
             scenesSortedByDistance.Add(newScene);
 
-            if (!messagingControllers.ContainsKey(data.id))
-            {
-                messagingControllers[data.id] = new MessagingController(this, data.id);
-            }
+            if (!MessagingControllersManager.i.ContainsController(data.id))
+                MessagingControllersManager.i.AddController(this, data.id);
 
             if (!loadedScenes.ContainsKey(data.id))
             {
@@ -776,15 +722,7 @@ namespace DCL
         {
             readyScenes.Add(sceneId);
 
-            // Start processing SYSTEM queue
-            if (messagingControllers.ContainsKey(sceneId))
-            {
-                // Start processing SYSTEM queue 
-                MessagingController sceneMessagingController = messagingControllers[sceneId];
-                sceneMessagingController.StartBus(MessagingBusId.SYSTEM);
-                sceneMessagingController.StartBus(MessagingBusId.UI);
-                sceneMessagingController.StopBus(MessagingBusId.INIT);
-            }
+            MessagingControllersManager.i.SetSceneReady(sceneId);
 
             WebInterface.ReportControlEvent(new WebInterface.SceneReady(sceneId));
         }

@@ -36,7 +36,7 @@ namespace DCL
 
         private bool NeedsCleanup(Pool pool, bool forceCleanup = false)
         {
-            bool timeout = Time.realtimeSinceStartup - pool.lastGetTime >= TIME_TO_POOL_CLEANUP;
+            bool timeout = DCLTime.realtimeSinceStartup - pool.lastGetTime >= TIME_TO_POOL_CLEANUP;
             return (timeout || forceCleanup) && pool.activeCount == 0;
         }
 
@@ -66,9 +66,9 @@ namespace DCL
                         yield return null;
                     }
 
-                    if (Time.realtimeSinceStartup - lastTimeUnloadUnusedAssets >= MIN_TIME_BETWEEN_UNLOAD_ASSETS)
+                    if (DCLTime.realtimeSinceStartup - lastTimeUnloadUnusedAssets >= MIN_TIME_BETWEEN_UNLOAD_ASSETS)
                     {
-                        lastTimeUnloadUnusedAssets = Time.realtimeSinceStartup;
+                        lastTimeUnloadUnusedAssets = DCLTime.realtimeSinceStartup;
                         Resources.UnloadUnusedAssets();
                     }
                 }

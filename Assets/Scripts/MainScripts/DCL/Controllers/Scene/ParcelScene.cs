@@ -15,6 +15,8 @@ namespace DCL.Controllers
     public class ParcelScene : MonoBehaviour, ICleanable
     {
         public static bool VERBOSE = false;
+        static Vector3 MORDOR = new Vector3(1000, 1000, 1000);
+
         enum State
         {
             NOT_READY,
@@ -238,6 +240,11 @@ namespace DCL.Controllers
             {
                 if (entities.Count > 0)
                 {
+                    this.gameObject.transform.position = MORDOR;
+
+                    if (DCLCharacterController.i)
+                        DCLCharacterController.i.characterPosition.OnPrecisionAdjust -= OnPrecisionAdjust;
+
                     CoroutineStarter.Start(RemoveAllEntitiesCoroutine());
                 }
                 else
@@ -364,10 +371,11 @@ namespace DCL.Controllers
                 {
                     DecentralandEntity entity = entities[tmpRemoveEntityMessage.id];
 
-                    entity.SetParent(null);
+                    if (removeImmediatelyFromEntitiesList)
+                        entity.SetParent(null);
 
                     // This will also cleanup its children
-                    CleanUpEntityRecursively(entity);
+                    CleanUpEntityRecursively(entity, !removeImmediatelyFromEntitiesList);
 
                     if (removeImmediatelyFromEntitiesList)
                         CleanEntitiesList();
@@ -381,14 +389,14 @@ namespace DCL.Controllers
 #endif
         }
 
-        void CleanUpEntityRecursively(DecentralandEntity entity)
+        void CleanUpEntityRecursively(DecentralandEntity entity, bool delayed)
         {
             // Iterate through all entity children
             using (var iterator = entity.children.GetEnumerator())
             {
                 while (iterator.MoveNext())
                 {
-                    CleanUpEntityRecursively(iterator.Current.Value);
+                    CleanUpEntityRecursively(iterator.Current.Value, delayed);
                 }
             }
 
@@ -396,7 +404,8 @@ namespace DCL.Controllers
 
             MarkForRemoval(entity);
 
-            entity.Cleanup();
+            if (!delayed)
+                entity.Cleanup();
         }
 
         void MarkForRemoval(DecentralandEntity entity)
@@ -419,35 +428,51 @@ namespace DCL.Controllers
 
         IEnumerator RemoveAllEntitiesCoroutine(bool instant = false)
         {
+            if (!instant)
+                yield return WaitForSecondsCache.Get(Random.Range(0, CLEANUP_NOISE));
+
             //NOTE(Brian): We need to remove only the rootEntities. 
             //             If we don't, duplicated entities will get removed when destroying 
             //             recursively, making this more complicated than it should.
-            List<DecentralandEntity> rootEntities = new List<DecentralandEntity>();
+            float maxBudget = MAX_CLEANUP_BUDGET;
+            float lastTime = DCLTime.realtimeSinceStartup;
 
             using (var iterator = entities.GetEnumerator())
             {
                 while (iterator.MoveNext())
                 {
                     if (iterator.Current.Value.parent == null)
-                        rootEntities.Add(iterator.Current.Value);
+                    {
+                        DecentralandEntity entity = iterator.Current.Value;
+
+                        RemoveEntity(entity.entityId, removeImmediatelyFromEntitiesList: instant);
+
+                        if (DCLTime.realtimeSinceStartup - lastTime >= maxBudget)
+                        {
+                            yield return null;
+                            lastTime = DCLTime.realtimeSinceStartup;
+                        }
+                    }
                 }
             }
 
-            float maxBudget = MAX_CLEANUP_BUDGET + Random.Range(-CLEANUP_NOISE, CLEANUP_NOISE);
-            float lastTime = Time.realtimeSinceStartup;
-
-            int rootEntitiesCount = rootEntities.Count;
-            for (int i = 0; i < rootEntitiesCount; i++)
+            if (!instant)
             {
-                DecentralandEntity entity = rootEntities[i];
-                RemoveEntity(entity.entityId);
+                int entitiesMarkedForRemovalCount = entitiesMarkedForRemoval.Count;
 
-                if (!instant)
+                for (int i = 0; i < entitiesMarkedForRemovalCount; i++)
                 {
-                    if (Time.realtimeSinceStartup - lastTime >= maxBudget)
+                    DecentralandEntity entity = entities[entitiesMarkedForRemoval[i]];
+
+                    entities.Remove(entitiesMarkedForRemoval[i]);
+
+                    entity.SetParent(null);
+                    entity.Cleanup();
+
+                    if (DCLTime.realtimeSinceStartup - lastTime >= maxBudget)
                     {
                         yield return null;
-                        lastTime = Time.realtimeSinceStartup;
+                        lastTime = DCLTime.realtimeSinceStartup;
                     }
                 }
             }
