@@ -1,5 +1,4 @@
 ﻿using UnityEngine;
-using DCL;
 using DCL.Controllers;
 using DCL.Models;
 
@@ -175,24 +174,24 @@ namespace Builder
             zoomTarget = Mathf.Clamp(zoomTarget + amount, -zoomMax, -zoomMin);
         }
 
-        private void OnDragObjectStart(DecentralandEntity entity, Vector3 objectPosition)
+        private void OnDragObjectStart(DCLBuilderEntity entity, Vector3 objectPosition)
         {
             isObjectBeingDrag = true;
         }
 
-        private void OnDragObjectEnd(DecentralandEntity entity, Vector3 objectPosition)
+        private void OnDragObjectEnd(DCLBuilderEntity entity, Vector3 objectPosition)
         {
             isObjectBeingDrag = false;
             pitchTarget = pitchCurrent;
             yawTarget = yawCurrent;
         }
 
-        private void OnGizmoTransformObjectStart(DecentralandEntity entity, Vector3 objectPosition, string gizmoType)
+        private void OnGizmoTransformObjectStart(DCLBuilderEntity entity, Vector3 objectPosition, string gizmoType)
         {
             OnDragObjectStart(entity, objectPosition);
         }
 
-        private void OnGizmoTransformObjectEnd(DecentralandEntity entity, Vector3 objectPosition, string gizmoType)
+        private void OnGizmoTransformObjectEnd(DCLBuilderEntity entity, Vector3 objectPosition, string gizmoType)
         {
             OnDragObjectEnd(entity, objectPosition);
         }

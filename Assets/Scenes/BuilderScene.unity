@@ -237,26 +237,6 @@ PrefabInstance:
       propertyPath: m_IsActive
       value: 0
       objectReference: {fileID: 0}
-    - target: {fileID: 6637786930640128910, guid: 1e37e8caccd9341cd9ef951d5c22cea4,
-        type: 3}
-      propertyPath: axes.Array.size
-      value: 3
-      objectReference: {fileID: 0}
-    - target: {fileID: 6637786930640128910, guid: 1e37e8caccd9341cd9ef951d5c22cea4,
-        type: 3}
-      propertyPath: axes.Array.data[0]
-      value: 
-      objectReference: {fileID: 754015281}
-    - target: {fileID: 6637786930640128910, guid: 1e37e8caccd9341cd9ef951d5c22cea4,
-        type: 3}
-      propertyPath: axes.Array.data[1]
-      value: 
-      objectReference: {fileID: 754015280}
-    - target: {fileID: 6637786930640128910, guid: 1e37e8caccd9341cd9ef951d5c22cea4,
-        type: 3}
-      propertyPath: axes.Array.data[2]
-      value: 
-      objectReference: {fileID: 754015279}
     - target: {fileID: 2062176173, guid: 1e37e8caccd9341cd9ef951d5c22cea4, type: 3}
       propertyPath: m_LocalPosition.x
       value: 0
@@ -301,6 +281,26 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 6637786930640128910, guid: 1e37e8caccd9341cd9ef951d5c22cea4,
+        type: 3}
+      propertyPath: axes.Array.size
+      value: 3
+      objectReference: {fileID: 0}
+    - target: {fileID: 6637786930640128910, guid: 1e37e8caccd9341cd9ef951d5c22cea4,
+        type: 3}
+      propertyPath: axes.Array.data[0]
+      value: 
+      objectReference: {fileID: 754015281}
+    - target: {fileID: 6637786930640128910, guid: 1e37e8caccd9341cd9ef951d5c22cea4,
+        type: 3}
+      propertyPath: axes.Array.data[1]
+      value: 
+      objectReference: {fileID: 754015280}
+    - target: {fileID: 6637786930640128910, guid: 1e37e8caccd9341cd9ef951d5c22cea4,
+        type: 3}
+      propertyPath: axes.Array.data[2]
+      value: 
+      objectReference: {fileID: 754015279}
     - target: {fileID: 754015289, guid: 1e37e8caccd9341cd9ef951d5c22cea4, type: 3}
       propertyPath: m_RenderingLayerMask
       value: 2147483648
@@ -426,26 +426,6 @@ PrefabInstance:
       propertyPath: m_IsActive
       value: 0
       objectReference: {fileID: 0}
-    - target: {fileID: 8469184939327777951, guid: d3cedb539fe0e4ebcbbae821fd70ea56,
-        type: 3}
-      propertyPath: axes.Array.size
-      value: 3
-      objectReference: {fileID: 0}
-    - target: {fileID: 8469184939327777951, guid: d3cedb539fe0e4ebcbbae821fd70ea56,
-        type: 3}
-      propertyPath: axes.Array.data[0]
-      value: 
-      objectReference: {fileID: 1802592091}
-    - target: {fileID: 8469184939327777951, guid: d3cedb539fe0e4ebcbbae821fd70ea56,
-        type: 3}
-      propertyPath: axes.Array.data[1]
-      value: 
-      objectReference: {fileID: 1802592090}
-    - target: {fileID: 8469184939327777951, guid: d3cedb539fe0e4ebcbbae821fd70ea56,
-        type: 3}
-      propertyPath: axes.Array.data[2]
-      value: 
-      objectReference: {fileID: 1802592089}
     - target: {fileID: 857158740, guid: d3cedb539fe0e4ebcbbae821fd70ea56, type: 3}
       propertyPath: m_LocalPosition.x
       value: 0
@@ -490,6 +470,26 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 8469184939327777951, guid: d3cedb539fe0e4ebcbbae821fd70ea56,
+        type: 3}
+      propertyPath: axes.Array.size
+      value: 3
+      objectReference: {fileID: 0}
+    - target: {fileID: 8469184939327777951, guid: d3cedb539fe0e4ebcbbae821fd70ea56,
+        type: 3}
+      propertyPath: axes.Array.data[0]
+      value: 
+      objectReference: {fileID: 1802592091}
+    - target: {fileID: 8469184939327777951, guid: d3cedb539fe0e4ebcbbae821fd70ea56,
+        type: 3}
+      propertyPath: axes.Array.data[1]
+      value: 
+      objectReference: {fileID: 1802592090}
+    - target: {fileID: 8469184939327777951, guid: d3cedb539fe0e4ebcbbae821fd70ea56,
+        type: 3}
+      propertyPath: axes.Array.data[2]
+      value: 
+      objectReference: {fileID: 1802592089}
     - target: {fileID: 347847847, guid: d3cedb539fe0e4ebcbbae821fd70ea56, type: 3}
       propertyPath: m_Materials.Array.data[0]
       value: 
@@ -615,7 +615,7 @@ MonoBehaviour:
   pitchAngleMax: 89
   yawAmount: 10
   panSpeed: 5
-  panAmount: 0.2
+  panAmount: 0.5
   zoomMin: 1
   zoomMax: 100
   zoomSpeed: 5
