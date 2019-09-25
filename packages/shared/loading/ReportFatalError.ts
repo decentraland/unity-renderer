@@ -1,4 +1,10 @@
-import { ExecutionLifecycleEvent, COMMS_COULD_NOT_BE_ESTABLISHED, NOT_INVITED, NO_WEBGL_COULD_BE_CREATED, MOBILE_NOT_SUPPORTED } from "./types";
+import {
+  ExecutionLifecycleEvent,
+  COMMS_COULD_NOT_BE_ESTABLISHED,
+  NOT_INVITED,
+  NO_WEBGL_COULD_BE_CREATED,
+  MOBILE_NOT_SUPPORTED
+} from './types'
 
 let aborted = false
 
@@ -14,11 +20,16 @@ export function bringDownClientAndShowError(event: ExecutionLifecycleEvent) {
 
   body.setAttribute('style', 'background-image: none !important;')
 
-  const targetError = event === COMMS_COULD_NOT_BE_ESTABLISHED ? 'comms'
-    : event === NOT_INVITED ? 'notinvited'
-      : event === NO_WEBGL_COULD_BE_CREATED ? 'notsupported'
-        : event === MOBILE_NOT_SUPPORTED ? 'nomobile'
-          : 'fatal'
+  const targetError =
+    event === COMMS_COULD_NOT_BE_ESTABLISHED
+      ? 'comms'
+      : event === NOT_INVITED
+      ? 'notinvited'
+      : event === NO_WEBGL_COULD_BE_CREATED
+      ? 'notsupported'
+      : event === MOBILE_NOT_SUPPORTED
+      ? 'nomobile'
+      : 'fatal'
 
   document.getElementById('error-' + targetError)!.setAttribute('style', 'display: block !important')
   aborted = true
@@ -28,4 +39,4 @@ export function ReportFatalError(event: ExecutionLifecycleEvent) {
   bringDownClientAndShowError(event)
 }
 
-(global as any).ReportFatalError = ReportFatalError
+;(global as any).ReportFatalError = ReportFatalError
