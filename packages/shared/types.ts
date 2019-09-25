@@ -350,10 +350,11 @@ export type Avatar = {
 
 export type ProfileSpec = {
   description: string
-  created_at: number
-  updated_at: number
-  version: string
-  name: string
+  createdAt: number
+  updatedAt: number
+  version: number
+  name?: string
+  ethAddress?: string
   avatar: AvatarSpec
 }
 

@@ -51,7 +51,7 @@ declare let window: any
 export async function initShared(): Promise<Session | undefined> {
   if (isMobile()) {
     ReportFatalError(MOBILE_NOT_SUPPORTED)
-    return
+    return undefined
   }
   const session = new Session()
 
@@ -138,7 +138,7 @@ export async function initShared(): Promise<Session | undefined> {
   if (!PREVIEW) {
     let response
     try {
-      response = await fetchProfile(await auth.getAccessToken(), '')
+      response = await fetchProfile(await auth.getAccessToken(), userId)
     } catch (e) {
       defaultLogger.error(`Not able to fetch profile for current user`)
     }
@@ -167,7 +167,7 @@ export async function initShared(): Promise<Session | undefined> {
         defaultLogger.error(e)
       }
     }
-    const profile = await resolveProfileSpec(localProfileUUID!, spec!)
+    const profile = await resolveProfileSpec(localProfileUUID!, spec!, await auth.getEmail())
     persistCurrentUser({ userId: localProfileUUID!, version: profile.version, profile })
   }
   console['groupEnd']()

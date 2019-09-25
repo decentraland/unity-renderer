@@ -17,9 +17,8 @@ initializeUnity(container)
     _.instancedJS
       .then($ => teleportObservable.notifyObservers(worldToGrid(lastPlayerPosition)))
       .catch(defaultLogger.error)
-    document.body.classList.remove('dcl-loading');
-
-    (window as any).UnityLoader.Error.handler = (error: any) => {
+    document.body.classList.remove('dcl-loading')
+    ;(window as any).UnityLoader.Error.handler = (error: any) => {
       console.error(error)
       ReportFatalError(error.message)
     }

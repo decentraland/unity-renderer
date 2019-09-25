@@ -6,7 +6,7 @@ import { BasicEphemeralKey, MessageInput } from 'decentraland-auth-protocol'
 
 import { CommsAuth } from './CommsAuth'
 import { authReducer } from './reducer'
-import { getAccessToken, isLoggedIn, getData, getSub } from './selectors'
+import { getAccessToken, isLoggedIn, getData, getSub, getEmail } from './selectors'
 import { AuthState, AuthData } from './types'
 import { CallbackResult, createSaga } from './sagas'
 import { createSelector } from 'reselect'
@@ -68,6 +68,11 @@ export class Auth {
   async getUserId() {
     await this.getAccessToken()
     return getSub(this.store.getState())
+  }
+
+  async getEmail() {
+    await this.getAccessToken()
+    return getEmail(this.store.getState())
   }
 
   async getCommsAccessToken() {
