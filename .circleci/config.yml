@@ -1,33 +1,59 @@
 version: 2
 jobs:
   build-test:
+    resource_class: xlarge
     docker:
-      - image: gableroux/unity3d:2019.1.12f1
+      - image: decentraland/renderer-build
         environment:
           - BUILD_TARGET: WebGL
+          - BUILD_PATH: /tmp/project/Builds/unity
           - BUILD_NAME: unity
     working_directory: /tmp/project
     steps:
-      - run: apt update && apt upgrade -y && apt install -y git curl
       - checkout
 
-      - run: |
-          mkdir -p ~/.ssh
-          ssh-keyscan -H github.com >> ~/.ssh/known_hosts
-          curl -s https://packagecloud.io/install/repositories/github/git-lfs/script.deb.sh | bash
-          apt update && apt install -y git-lfs=2.8.0
-          ssh git@github.com git-lfs-authenticate decentraland/unity-client.git download
-          git lfs install
-          git lfs fetch
-          git lfs checkout -- .
+      - run: 
+          name: "Download LFS files"
+          command: |
+            ssh git@github.com git-lfs-authenticate decentraland/unity-client.git download
+            git lfs install
+            git lfs fetch --all
+            git lfs checkout -- .
 
-      - run: openssl enc -d -aes-256-cbc -md sha256 -in ./.circleci/Unity_v2019.x.ulf-cipher -out ./.circleci/Unity_v2019.x.ulf -k ${CIPHER_KEY}
+      - run:
+          name: "Extract the license key"
+          command: |
+            openssl enc -d -aes-256-cbc -md sha256 -in ./.circleci/license.zip-cipher -out ./.circleci/license.zip -k ${CIPHER_KEY}
+            cd / && unzip /tmp/project/.circleci/license.zip
 
-      - run: cd /tmp/project && /opt/Unity/Editor/Unity -quit -batchmode -nographics -logFile -projectPath . -manualLicenseFile .circleci/Unity_v2019.x.ulf || exit 0
+      - run:
+          name: "Build"
+          command: |
+            chmod +x /tmp/project/build-ci.sh
+            mkdir -p ${BUILD_PATH}
+            ((cd /tmp/project && ./build-ci.sh) & echo $! > /tmp/project/build.pid &)
+            pid=`cat /tmp/project/build.pid`
+            while [ -e /proc/$pid -a /proc/$pid/exe ]; do
+              echo "Running Unity Build..."
+              sleep 60
+            done
+            ls -la ${BUILD_PATH}
+            [ -n "$(ls -A ${BUILD_PATH})" ] # fail job if build folder is empty
+
+      - run:
+          name: Authenticate with registry
+          command: echo "//registry.npmjs.org/:_authToken=${NPMTOKEN}" > /tmp/project/Builds/${BUILD_NAME}/.npmrc
+
+      - run:
+          name: Publish package
+          command: |
+            cd /tmp/project && export RENDERER_VERSION=`[ "$CIRCLE_BRANCH" == "master"  ] && echo "1" || echo "0"``cat Assets/Scripts/MainScripts/DCL/Configuration/Configuration.cs | grep 'version = "[0-9.]\+' | grep -o '\.[0-9.]\+'`
+            cd /tmp/project && export BUILD_VERSIONING=${RENDERER_VERSION}'.'${CIRCLE_BUILD_NUM}`[ "$CIRCLE_BRANCH" == "master"  ] && echo "" || echo "$CIRCLE_BRANCH" | sed -e 's/[^a-zA-Z0-9-]/-/g' | sed -e 's/^/-/g'`
+            cd /tmp/project/Builds/${BUILD_NAME} && echo '{"name": "decentraland-renderer", "version": "'${BUILD_VERSIONING}'", "license": "Apache-2.0"}' > package.json
+            cd /tmp/project/Builds/${BUILD_NAME} && rm game.js index.html Build/UnityLoader.js Build/unity.json && mv Build/* . && npm publish
 
 workflows:
   version: 2
   build:
     jobs:
       - build-test
-
