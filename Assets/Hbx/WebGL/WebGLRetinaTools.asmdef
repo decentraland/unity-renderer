@@ -1,10 +1,6 @@
 {
-    "name": "MainEditor",
-    "references": [
-        "MainScripts",
-        "MainAttributes",
-        "WebGLRetinaTools"
-    ],
+    "name": "WebGLRetinaTools",
+    "references": [],
     "optionalUnityReferences": [],
     "includePlatforms": [
         "Editor"
