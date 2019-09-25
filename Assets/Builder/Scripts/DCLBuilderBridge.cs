@@ -17,8 +17,8 @@ namespace Builder
         public static System.Action<float> OnZoomFromUI;
         public static System.Action<string> OnSelectGizmo;
         public static System.Action OnResetObject;
-        public static System.Action<DecentralandEntity> OnEntityAdded;
-        public static System.Action<DecentralandEntity> OnEntityRemoved;
+        public static System.Action<DCLBuilderEntity> OnEntityAdded;
+        public static System.Action<DCLBuilderEntity> OnEntityRemoved;
         public static System.Action<bool> OnPreviewModeChanged;
         public static System.Action OnResetBuilderScene;
         public static System.Action<Vector3> OnSetCameraPosition;
@@ -26,6 +26,7 @@ namespace Builder
         public static System.Action OnResetCameraZoom;
         public static System.Action<KeyCode> OnSetArrowKeyDown;
         public static event SetGridResolutionDelegate OnSetGridResolution;
+        public static System.Action<ParcelScene> OnSceneChanged;
 
         private MouseCatcher mouseCatcher;
         private ParcelScene currentScene;
@@ -253,20 +254,21 @@ namespace Builder
             //TODO: we need a better way for doing this
             RemoveNoneBuilderGameObjects();
 
-            SetCurrentScene();
-
             SceneController.i?.fpsPanel.SetActive(false);
-            SetCaptureAllKeyboard(false);
+            SetCaptureKeyboardInputEnabled(false);
         }
 
         private void Start()
         {
+            SetCurrentScene();
             WebInterface.SendMessage("SceneEvent", new BuilderSceneStartEvent() { sceneId = currentScene.sceneData.id });
         }
 
         private void OnEntityIsAdded(DecentralandEntity entity)
         {
-            OnEntityAdded?.Invoke(entity);
+            var builderEntity = AddBuilderEntityComponent(entity);
+            OnEntityAdded?.Invoke(builderEntity);
+
             entity.OnShapeUpdated += ClearEntityLoadingState;
 
             onGetLoadingEntity.uuid = entity.entityId;
@@ -277,7 +279,11 @@ namespace Builder
 
         private void OnEntityIsRemoved(DecentralandEntity entity)
         {
-            OnEntityRemoved?.Invoke(entity);
+            var builderEntity = entity.gameObject.GetComponent<DCLBuilderEntity>();
+            if (builderEntity != null)
+            {
+                OnEntityRemoved?.Invoke(builderEntity);
+            }
         }
 
         private void ClearEntityLoadingState(DecentralandEntity entity)
@@ -309,26 +315,26 @@ namespace Builder
             DCLBuilderObjectSelector.OnGizmoTransformObjectEnd -= OnGizmoTransformObjectEnded;
         }
 
-        private void OnObjectDragEnd(DecentralandEntity entity, Vector3 position)
+        private void OnObjectDragEnd(DCLBuilderEntity entity, Vector3 position)
         {
             NotifyGizmoEvent(entity, DCLGizmos.Gizmo.NONE);
         }
 
-        private void OnGizmoTransformObjectEnded(DecentralandEntity entity, Vector3 position, string gizmoType)
+        private void OnGizmoTransformObjectEnded(DCLBuilderEntity entity, Vector3 position, string gizmoType)
         {
             NotifyGizmoEvent(entity, gizmoType);
         }
 
-        private void OnObjectSelected(DecentralandEntity entity, string gizmoType)
+        private void OnObjectSelected(DCLBuilderEntity entity, string gizmoType)
         {
-            WebInterface.ReportGizmoEvent(entity.scene.sceneData.id, entity.entityId, "gizmoSelected", gizmoType);
+            WebInterface.ReportGizmoEvent(entity.rootEntity.scene.sceneData.id, entity.rootEntity.entityId, "gizmoSelected", gizmoType);
         }
 
-        private void NotifyGizmoEvent(DecentralandEntity entity, string gizmoType)
+        private void NotifyGizmoEvent(DCLBuilderEntity entity, string gizmoType)
         {
             WebInterface.ReportGizmoEvent(
-                entity.scene.sceneData.id,
-                entity.entityId,
+                entity.rootEntity.scene.sceneData.id,
+                entity.rootEntity.entityId,
                 "gizmoDragEnded",
                 gizmoType,
                 entity.gameObject.transform
@@ -358,7 +364,7 @@ namespace Builder
                 mouseCatcher.enabled = isPreview;
                 if (!isPreview) mouseCatcher.UnlockCursor();
             }
-            SetCaptureAllKeyboard(isPreview);
+            SetCaptureKeyboardInputEnabled(isPreview);
         }
 
         private void RemoveNoneBuilderGameObjects()
@@ -373,7 +379,7 @@ namespace Builder
             if (go && go.transform.parent) Destroy(go.transform.parent.gameObject);
         }
 
-        private void SetCaptureAllKeyboard(bool value)
+        private void SetCaptureKeyboardInputEnabled(bool value)
         {
 #if !UNITY_EDITOR && UNITY_WEBGL
             WebGLInput.captureAllKeyboardInput = value;
@@ -387,7 +393,19 @@ namespace Builder
             {
                 currentScene.OnEntityAdded += OnEntityIsAdded;
                 currentScene.OnEntityRemoved += OnEntityIsRemoved;
+                OnSceneChanged?.Invoke(currentScene);
             }
+        }
+
+        private DCLBuilderEntity AddBuilderEntityComponent(DecentralandEntity entity)
+        {
+            DCLBuilderEntity builderComponent = entity.gameObject.GetComponent<DCLBuilderEntity>();
+            if (builderComponent == null)
+            {
+                builderComponent = entity.gameObject.AddComponent<DCLBuilderEntity>();
+            }
+            builderComponent.SetEntity(entity);
+            return builderComponent;
         }
     }
 }

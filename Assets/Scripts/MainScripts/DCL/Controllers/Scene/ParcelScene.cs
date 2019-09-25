@@ -57,7 +57,7 @@ namespace DCL.Controllers
         private bool flaggedToUnload = false;
         private bool isReleased = false;
         private State state = State.NOT_READY;
-        private SceneBoundariesChecker boundariesChecker;
+        public SceneBoundariesChecker boundariesChecker { private set; get; }
 
         private static GameObject blockerPrefab;
 
