@@ -264,6 +264,7 @@ workflows:
             branches:
               ignore:
                 - master
+                - staging
                 - release
 
       # ecs publish jobs (publish as next + latest depending on context branch/tag)
@@ -287,33 +288,16 @@ workflows:
             tags:
               only: /^\d+\.\d+\.\d(.*)/ # npm tag + latest
 
-      # explorer release branch jobs (stg + prd)
-      - hold-explorer-stg:
-          type: approval
-          requires:
-            - build
-          filters:
-            branches:
-              only:
-                - release
       - deploy-stg:
           requires:
-            - hold-explorer-stg
-          filters:
-            branches:
-              only: release
-
-      - hold-explorer-prd:
-          type: approval
-          requires:
             - build
           filters:
             branches:
-              only:
-                - release
+              only: staging
+
       - deploy-prd:
           requires:
-            - hold-explorer-prd
+            - build
           filters:
             branches:
               only: release
