@@ -47,10 +47,11 @@ jobs:
       - run:
           name: Publish package
           command: |
-            cd /tmp/project && export RENDERER_VERSION=`[ "$CIRCLE_BRANCH" == "master"  ] && echo "1" || echo "0"``cat Assets/Scripts/MainScripts/DCL/Configuration/Configuration.cs | grep 'version = "[0-9.]\+' | grep -o '\.[0-9.]\+'`
+            cd /tmp/project && export RENDERER_VERSION=`[ "$CIRCLE_BRANCH" == "release" ] && echo "3" || ([ "$CIRCLE_BRANCH" == "staging" ] && echo "2" || ([ "$CIRCLE_BRANCH" == "master" ] && echo "1" || echo "0"))``cat Assets/Scripts/MainScripts/DCL/Configuration/Configuration.cs | grep 'version = "[0-9.]\+' | grep -o '\.[0-9.]\+'`
             cd /tmp/project && export BUILD_VERSIONING=${RENDERER_VERSION}'.'${CIRCLE_BUILD_NUM}`[ "$CIRCLE_BRANCH" == "master"  ] && echo "" || echo "$CIRCLE_BRANCH" | sed -e 's/[^a-zA-Z0-9-]/-/g' | sed -e 's/^/-/g'`
             cd /tmp/project/Builds/${BUILD_NAME} && echo '{"name": "decentraland-renderer", "version": "'${BUILD_VERSIONING}'", "license": "Apache-2.0"}' > package.json
-            cd /tmp/project/Builds/${BUILD_NAME} && rm game.js index.html Build/UnityLoader.js Build/unity.json && mv Build/* . && npm publish
+            cd /tmp/project/Builds/${BUILD_NAME} && rm game.js index.html Build/UnityLoader.js Build/unity.json && mv Build/* . && npm publish --tag `[ "$CIRCLE_BRANCH" == "master"  ] && echo "master" || ([ "$CIRCLE_BRANCH" == "staging" ] && echo "staging" || ([ "$CIRCLE_BRANCH" == "release" ] && echo "release" || echo "dev-$CIRCLE_BRANCH" | sed -e 's/[^a-zA-Z0-9-]/-/g'))`
+            cd /tmp/project/Builds/${BUILD_NAME} && [ "$CIRCLE_BRANCH" == "release" ] && npm publish --tag latest || exit 0
 
 workflows:
   version: 2
