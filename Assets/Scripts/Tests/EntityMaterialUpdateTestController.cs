@@ -1,4 +1,4 @@
-using DCL;
+﻿using DCL;
 using DCL.Components;
 using DCL.Helpers;
 using DCL.Models;
@@ -45,7 +45,6 @@ public class EntityMaterialUpdateTestController : MonoBehaviour
                 albedoTexture = dclAvatarTexture.id,
                 metallic = 0,
                 roughness = 1,
-                hasAlpha = true
             },
             out entity);
 

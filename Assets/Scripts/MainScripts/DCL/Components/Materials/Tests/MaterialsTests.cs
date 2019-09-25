@@ -29,7 +29,6 @@ namespace Tests
                     albedoTexture = texture.id,
                     metallic = 0,
                     roughness = 1,
-                    hasAlpha = true
                 },
                 out entity);
 
@@ -102,7 +101,7 @@ namespace Tests
                 Assert.AreEqual("0.5", materialComponent.material.GetFloat("_Smoothness").ToString());
                 Assert.AreEqual("1", materialComponent.material.GetFloat("_EnvironmentReflections").ToString());
                 Assert.AreEqual("1", materialComponent.material.GetFloat("_SpecularHighlights").ToString());
-                Assert.AreEqual("1", materialComponent.material.GetFloat("_AlphaClip").ToString());
+                Assert.AreEqual("0", materialComponent.material.GetFloat("_AlphaClip").ToString());
                 Assert.AreEqual((int)UnityEngine.Rendering.RenderQueue.Geometry, materialComponent.material.renderQueue);
             }
 
@@ -132,9 +131,7 @@ namespace Tests
                     roughness = 0.9f,
                     microSurface = 0.4f,
                     specularIntensity = 2f,
-                    alpha = 0.5f,
                     transparencyMode = 2,
-                    hasAlpha = true
                 })
             }));
 
@@ -157,7 +154,7 @@ namespace Tests
                 Assert.AreEqual("0.1", materialComponent.material.GetFloat("_Smoothness").ToString());
                 Assert.AreEqual("0.4", materialComponent.material.GetFloat("_EnvironmentReflections").ToString());
                 Assert.AreEqual("2", materialComponent.material.GetFloat("_SpecularHighlights").ToString());
-                Assert.AreEqual("0.5", materialComponent.material.GetFloat("_AlphaClip").ToString());
+                Assert.AreEqual("0", materialComponent.material.GetFloat("_AlphaClip").ToString());
                 Assert.AreEqual((int)UnityEngine.Rendering.RenderQueue.Transparent, materialComponent.material.renderQueue);
                 Assert.AreEqual((int)UnityEngine.Rendering.BlendMode.SrcAlpha,
                     materialComponent.material.GetInt("_SrcBlend"));
@@ -452,7 +449,6 @@ namespace Tests
                     albedoTexture = dclTexture.id,
                     metallic = 0,
                     roughness = 1,
-                    hasAlpha = true
                 }
             );
 
@@ -512,7 +508,7 @@ namespace Tests
             // Check default properties
             {
                 Assert.IsTrue(materialComponent.material.GetTexture("_BaseMap") == null);
-                Assert.AreEqual(0.5f, materialComponent.material.GetFloat("_AlphaClip"));
+                Assert.AreEqual(1f, materialComponent.material.GetFloat("_AlphaClip"));
             }
 
             DCLTexture dclTexture = TestHelpers.CreateDCLTexture(
@@ -528,7 +524,7 @@ namespace Tests
                 json = JsonUtility.ToJson(new DCL.Components.BasicMaterial.Model
                 {
                     texture = dclTexture.id,
-                    alphaTest = 0.5f
+                    alphaTest = 0.5f,
                 })
             }));
 
@@ -538,7 +534,8 @@ namespace Tests
             {
                 Texture mainTex = materialComponent.material.GetTexture("_BaseMap");
                 Assert.IsTrue(mainTex != null);
-                Assert.AreEqual("0.5", materialComponent.material.GetFloat("_AlphaClip").ToString());
+                Assert.AreEqual("0.5", materialComponent.material.GetFloat("_Cutoff").ToString());
+                Assert.AreEqual("1", materialComponent.material.GetFloat("_AlphaClip").ToString());
                 Assert.AreEqual(TextureWrapMode.Mirror, mainTex.wrapMode);
                 Assert.AreEqual(FilterMode.Bilinear, mainTex.filterMode);
             }

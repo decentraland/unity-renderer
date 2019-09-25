@@ -21,8 +21,8 @@ namespace DCL.Components
         public Model model = new Model();
         public Material material;
 
-        private static readonly int _baseMap = Shader.PropertyToID("_BaseMap");
-        private static readonly int _alphaClip = Shader.PropertyToID("_AlphaClip");
+        private static readonly int _BaseMap = Shader.PropertyToID("_BaseMap");
+        private static readonly int _AlphaClip = Shader.PropertyToID("_AlphaClip");
 
         public BasicMaterial(ParcelScene scene) : base(scene)
         {
@@ -57,7 +57,7 @@ namespace DCL.Components
             {
                 yield return DCLTexture.FetchFromComponent(scene, model.texture, (downloadedTexture) =>
                 {
-                    material.SetTexture(_baseMap, downloadedTexture);
+                    material.SetTexture(_BaseMap, downloadedTexture);
                 });
             }
             else
@@ -65,7 +65,11 @@ namespace DCL.Components
                 material.mainTexture = null;
             }
 
-            material.SetFloat(_alphaClip, model.alphaTest);
+            material.SetInt("_ZWrite", 1);
+            material.SetFloat(_AlphaClip, 1);
+            material.SetFloat("_Cutoff", model.alphaTest);
+            material.renderQueue = (int)UnityEngine.Rendering.RenderQueue.AlphaTest;
+
         }
 
         void OnMaterialAttached(DecentralandEntity entity)
