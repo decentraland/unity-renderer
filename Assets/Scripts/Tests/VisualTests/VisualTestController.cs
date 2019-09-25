@@ -60,7 +60,6 @@ public class VisualTestController : MonoBehaviour
             albedoTexture = textureUrl,
             metallic = 0,
             roughness = 1,
-            hasAlpha = true
         }, "testMaterial1");
 
         string materialID = "testMaterial2";

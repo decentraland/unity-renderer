@@ -12,7 +12,7 @@ namespace DCL.Components
         public class Model
         {
             [Range(0f, 1f)]
-            public float alpha = 1f;
+            public float alphaTest = 0.5f;
 
             public Color albedoColor = Color.white;
             public string albedoTexture;
@@ -21,7 +21,7 @@ namespace DCL.Components
             public float roughness = 0.5f;
             public float microSurface = 1f; // Glossiness
             public float specularIntensity = 1f;
-            public bool hasAlpha = false;
+
             public string alphaTexture;
             public string emissiveTexture;
             public Color emissiveColor = Color.black;
@@ -36,6 +36,15 @@ namespace DCL.Components
 
             [Range(0, 4)]
             public int transparencyMode = 4; // 0: OPAQUE; 1: ALPHATEST; 2: ALPHBLEND; 3: ALPHATESTANDBLEND; 4: AUTO (Engine decide)
+        }
+
+        enum TransparencyMode
+        {
+            OPAQUE,
+            ALPHA_TEST,
+            ALPHA_BLEND,
+            ALPHA_TEST_AND_BLEND,
+            AUTO
         }
 
         public Model model = new Model();
@@ -144,58 +153,59 @@ namespace DCL.Components
 
         private void SetupTransparencyMode()
         {
-            // ALPHA CONFIGURATION
-            material.SetFloat("_AlphaClip", model.alpha);
 
             // Reset shader keywords
             material.DisableKeyword("_ALPHATEST_ON"); // Cut Out Transparency
             material.DisableKeyword("_ALPHABLEND_ON"); // Fade Transparency
             material.DisableKeyword("_ALPHAPREMULTIPLY_ON"); // Transparent
 
-            switch (model.transparencyMode)
+            TransparencyMode transparencyMode = (TransparencyMode)model.transparencyMode;
+
+            if (transparencyMode == TransparencyMode.AUTO)
             {
-                case 0:
-                    material.renderQueue = 2000;
+                if (!string.IsNullOrEmpty(model.alphaTexture)) //AlphaBlend
+                {
+                    transparencyMode = TransparencyMode.ALPHA_TEST_AND_BLEND;
+                }
+                else // Opaque
+                {
+                    transparencyMode = TransparencyMode.OPAQUE;
+                }
+            }
+
+            switch (transparencyMode)
+            {
+                case TransparencyMode.OPAQUE:
+                    material.renderQueue = (int)UnityEngine.Rendering.RenderQueue.Geometry;
+                    material.SetFloat("_AlphaClip", 0);
                     break;
-                case 1: // ALPHATEST
+                case TransparencyMode.ALPHA_TEST: // ALPHATEST
                     material.EnableKeyword("_ALPHATEST_ON");
 
                     material.SetInt("_SrcBlend", (int)UnityEngine.Rendering.BlendMode.One);
                     material.SetInt("_DstBlend", (int)UnityEngine.Rendering.BlendMode.Zero);
                     material.SetInt("_ZWrite", 1);
-                    material.renderQueue = 2450;
+                    material.SetFloat("_AlphaClip", 1);
+                    material.SetFloat("_Cutoff", model.alphaTest);
+                    material.renderQueue = (int)UnityEngine.Rendering.RenderQueue.AlphaTest;
                     break;
-                case 2: // ALPHABLEND
+                case TransparencyMode.ALPHA_BLEND: // ALPHABLEND
                     material.EnableKeyword("_ALPHABLEND_ON");
 
                     material.SetInt("_SrcBlend", (int)UnityEngine.Rendering.BlendMode.SrcAlpha);
                     material.SetInt("_DstBlend", (int)UnityEngine.Rendering.BlendMode.OneMinusSrcAlpha);
                     material.SetInt("_ZWrite", 0);
-                    material.renderQueue = 3000;
+                    material.SetFloat("_AlphaClip", 0);
+                    material.renderQueue = (int)UnityEngine.Rendering.RenderQueue.Transparent;
                     break;
-                case 3: // ALPHATESTANDBLEND
+                case TransparencyMode.ALPHA_TEST_AND_BLEND:
                     material.EnableKeyword("_ALPHAPREMULTIPLY_ON");
 
                     material.SetInt("_SrcBlend", (int)UnityEngine.Rendering.BlendMode.One);
                     material.SetInt("_DstBlend", (int)UnityEngine.Rendering.BlendMode.OneMinusSrcAlpha);
                     material.SetInt("_ZWrite", 0);
-                    material.renderQueue = 3000;
-                    break;
-                default:
-                    if (model.hasAlpha || !string.IsNullOrEmpty(model.alphaTexture)) //AlphaBlend
-                    {
-                        material.EnableKeyword("_ALPHABLEND_ON");
-
-                        material.SetInt("_SrcBlend", (int)UnityEngine.Rendering.BlendMode.SrcAlpha);
-                        material.SetInt("_DstBlend", (int)UnityEngine.Rendering.BlendMode.OneMinusSrcAlpha);
-                        material.SetInt("_ZWrite", 0);
-                        material.renderQueue = 3000;
-                    }
-                    else // Opaque
-                    {
-                        material.renderQueue = 2000;
-                    }
-
+                    material.SetFloat("_AlphaClip", 1);
+                    material.renderQueue = (int)UnityEngine.Rendering.RenderQueue.Transparent;
                     break;
             }
         }
