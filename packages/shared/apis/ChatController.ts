@@ -157,11 +157,7 @@ export class ChatController extends ExposableAPI implements IChatController {
           teleportObservable.notifyObservers({ x, y })
           response = `Teleporting to ${x}, ${y}...`
         } else {
-          response = `Coordinates are outside of the boundaries. Limits are from ${
-            parcelLimits.minLandCoordinateX
-          } to ${parcelLimits.maxLandCoordinateX} for X and ${parcelLimits.minLandCoordinateY} to ${
-            parcelLimits.maxLandCoordinateY
-          } for Y`
+          response = `Coordinates are outside of the boundaries. Limits are from ${parcelLimits.minLandCoordinateX} to ${parcelLimits.maxLandCoordinateX} for X and ${parcelLimits.minLandCoordinateY} to ${parcelLimits.maxLandCoordinateY} for Y`
         }
       }
 

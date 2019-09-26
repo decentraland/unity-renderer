@@ -221,12 +221,15 @@ watch: $(SOME_MAPPINGS) build-essentials static/dist/unity.js ## Watch the files
 			"$(COMPILER) targets/test.json --watch" \
 			"node ./scripts/runTestServer.js --keep-open"
 
+update: ## Update the version of the renderer (Unity build)
+	npm install decentraland-renderer@latest
+
 clean: ## Clean all generated files
 	@$(COMPILER) targets/clean.json
 
 # Makefile
 
-.PHONY: help clean watch lint lint-fix generate-images test-ci test-docker
+.PHONY: help clean watch lint lint-fix generate-images test-ci test-docker update
 .DEFAULT_GOAL := help
 help:
 	@grep -E '^[a-zA-Z_-]+:.*?## .*$$' $(MAKEFILE_LIST) | sort | awk 'BEGIN {FS = ":.*?## "}; {printf "\033[36m%-20s\033[0m %s\n", $$1, $$2}'

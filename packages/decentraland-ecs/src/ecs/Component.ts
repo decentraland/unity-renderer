@@ -215,7 +215,7 @@ export function DisposableComponent(componentName: string, classId: number) {
 export namespace DisposableComponent {
   /** @internal */
   // tslint:disable-next-line:whitespace
-  export let engine: import('./Engine').Engine | null = null
+  export let engine: any = null
 }
 
 /**

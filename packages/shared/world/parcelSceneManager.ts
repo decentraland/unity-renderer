@@ -3,12 +3,13 @@ import { initParcelSceneWorker } from 'decentraland-loader/lifecycle/manager'
 import { worldToGrid } from 'atomicHelpers/parcelScenePositions'
 
 import { positionObservable, teleportObservable } from './positionThings'
-import { SceneWorker, ParcelSceneAPI } from './SceneWorker'
+import { SceneWorker } from './SceneWorker'
 import { LoadableParcelScene, EnvironmentData, ILand, ILandToLoadableParcelScene, InstancedSpawnPoint } from '../types'
 import { ScriptingTransport } from 'decentraland-rpc/lib/common/json-rpc/types'
 import { sceneLifeCycleObservable } from '../../decentraland-loader/lifecycle/controllers/scene'
 import { worldRunningObservable } from './worldState'
 import { queueTrackingEvent } from '../analytics'
+import { ParcelSceneAPI } from './ParcelSceneAPI'
 
 export type EnableParcelSceneLoadingOptions = {
   parcelSceneClass: { new (x: EnvironmentData<LoadableParcelScene>): ParcelSceneAPI }

@@ -30,7 +30,7 @@ import {
   stopParcelSceneWorker,
   loadParcelScene
 } from '../shared/world/parcelSceneManager'
-import { SceneWorker, ParcelSceneAPI, hudWorkerUrl } from '../shared/world/SceneWorker'
+import { SceneWorker, hudWorkerUrl } from '../shared/world/SceneWorker'
 import { ensureUiApis } from '../shared/world/uiSceneInitializer'
 import { ParcelIdentity } from '../shared/apis/ParcelIdentity'
 import { IEventNames, IEvents } from '../decentraland-ecs/src/decentraland/Types'
@@ -40,7 +40,8 @@ import { chatObservable } from '../shared/comms/chat'
 import { getUserProfile } from '../shared/comms/peers'
 import { sceneLifeCycleObservable } from '../decentraland-loader/lifecycle/controllers/scene'
 import { worldRunningObservable } from '../shared/world/worldState'
-import { Session } from 'shared/session'
+import { Session } from '../shared/session'
+import { ParcelSceneAPI } from '../shared/world/ParcelSceneAPI'
 
 let gameInstance!: GameInstance
 

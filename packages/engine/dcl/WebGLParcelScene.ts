@@ -73,9 +73,7 @@ export class WebGLParcelScene extends WebGLScene<LoadableParcelScene> {
     Object.assign(this.context.metricsLimits, getParcelSceneLimits(data.data.parcels.length))
 
     // Set a debug name in the root entity
-    this.context.rootEntity.name = this.context.rootEntity.id = `parcelScene:${this.data.data.basePosition.x},${
-      this.data.data.basePosition.y
-    }`
+    this.context.rootEntity.name = this.context.rootEntity.id = `parcelScene:${this.data.data.basePosition.x},${this.data.data.basePosition.y}`
 
     // Set the parcel's initial position
     gridToWorld(this.data.data.basePosition.x, this.data.data.basePosition.y, this.context.rootEntity.position)

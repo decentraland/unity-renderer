@@ -1,15 +1,11 @@
-import { fromWei, toHex, toWei } from 'eth-connect'
-import { IFuture, future } from 'fp-future'
 import BigNumber from 'bignumber.js'
-import { generateEphemeralKeys, UserData as EphemeralKey } from 'ephemeralkey'
-
-import { ETHEREUM_NETWORK, decentralandConfigurations } from 'config'
-import { saveToLocalStorage, removeFromLocalStorage, getFromLocalStorage } from 'atomicHelpers/localStorage'
-import { RPCSendableMessage } from 'shared/types'
+import { fromWei, toHex, toWei } from 'eth-connect'
+import { future, IFuture } from 'fp-future'
 import { defaultLogger } from 'shared/logger'
+import { RPCSendableMessage } from 'shared/types'
 import { getERC20 } from './ERC20'
-import { requestManager } from './provider'
 import { getERC721 } from './ERC721'
+import { requestManager } from './provider'
 
 export interface MessageDict {
   [key: string]: string
@@ -256,29 +252,4 @@ export async function convertMessageToObject(message: string): Promise<MessageDi
 
   // convert the array into object of type MessageDict
   return arr.reduce((o, [key, value]) => ({ ...o, [key]: value }), {})
-}
-
-export async function getEphemeralKeys(network: ETHEREUM_NETWORK, regenerate: boolean = false): Promise<EphemeralKey> {
-  const storageKey = `ephemeral-data-${network}`
-  let keys = null
-
-  if (!regenerate) {
-    keys = getFromLocalStorage(storageKey)
-
-    if (keys) {
-      const expired = Date.now() >= keys.expiresAt
-      if (expired) {
-        removeFromLocalStorage(storageKey)
-        keys = null
-      }
-    }
-  }
-
-  if (!keys) {
-    const inviteAddress = decentralandConfigurations.invite
-    keys = await generateEphemeralKeys(requestManager.provider, inviteAddress)
-    saveToLocalStorage(storageKey, keys)
-  }
-
-  return keys
 }
