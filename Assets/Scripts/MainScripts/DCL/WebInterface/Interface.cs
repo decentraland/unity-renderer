@@ -35,7 +35,6 @@ namespace DCL.Interface
             public string id;
         }
 
-
         [System.Serializable]
         public abstract class ControlEvent
         {
@@ -104,13 +103,11 @@ namespace DCL.Interface
         {
         };
 
-
         [System.Serializable]
         public class OnGlobalPointerEvent
         {
             public OnGlobalPointerEventPayload payload = new OnGlobalPointerEventPayload();
         };
-
 
         [System.Serializable]
         public class OnPointerUpEvent : UUIDEvent<OnPointerEventPayload>
@@ -192,6 +189,7 @@ namespace DCL.Interface
         public class OnChangeEventPayload
         {
             public object value;
+            public string text;
             public int pointerId;
         }
 
@@ -270,7 +268,6 @@ namespace DCL.Interface
             public Vector3 hitPoint;
             public Vector3 hitNormal;
         }
-
 
         [System.Serializable]
         public class HitEntityInfo
@@ -507,6 +504,20 @@ namespace DCL.Interface
             SendSceneEvent(sceneId, "uuidEvent", onTextSubmitEvent);
         }
 
+        public static void ReportOnTextInputChangedEvent(string sceneId, string uuid, string text)
+        {
+            if (string.IsNullOrEmpty(uuid))
+            {
+                return;
+            }
+
+            onChangeEvent.uuid = uuid;
+            onChangeEvent.payload.text = text;
+            onChangeEvent.payload.pointerId = 0;
+
+            SendSceneEvent(sceneId, "uuidEvent", onChangeEvent);
+        }
+
         public static void ReportOnFocusEvent(string sceneId, string uuid)
         {
             if (string.IsNullOrEmpty(uuid))
@@ -527,20 +538,6 @@ namespace DCL.Interface
 
             onBlurEvent.uuid = uuid;
             SendSceneEvent(sceneId, "uuidEvent", onBlurEvent);
-        }
-
-        public static void ReportOnChangedEvent(string sceneId, string uuid, string text, int pointerId)
-        {
-            if (string.IsNullOrEmpty(uuid))
-            {
-                return;
-            }
-
-            onChangeEvent.uuid = uuid;
-            onChangeEvent.payload.value = text;
-            onChangeEvent.payload.pointerId = pointerId;
-
-            SendSceneEvent(sceneId, "uuidEvent", onChangeEvent);
         }
 
         public static void ReportOnScrollChange(string sceneId, string uuid, Vector2 value, int pointerId)

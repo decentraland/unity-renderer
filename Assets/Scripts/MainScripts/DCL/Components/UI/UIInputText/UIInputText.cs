@@ -84,7 +84,7 @@ namespace DCL.Components
 
         public void OnChanged(string call)
         {
-            Interface.WebInterface.ReportOnChangedEvent(scene.sceneData.id, model.onChanged, call, 0);
+            Interface.WebInterface.ReportOnTextInputChangedEvent(scene.sceneData.id, model.onChanged, tmpText.text);
         }
 
         public void OnBlur(string call)
