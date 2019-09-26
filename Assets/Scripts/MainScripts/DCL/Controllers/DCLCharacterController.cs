@@ -82,7 +82,7 @@ public class DCLCharacterController : MonoBehaviour
     bool isSprinting = false;
     bool isJumping = false;
     bool isGrounded = false;
-    bool supportsMovingPlatforms = true;
+    bool supportsMovingPlatforms = false;
     Transform groundTransform;
     Vector3 lastPosition;
     Vector3 groundLastPosition;
@@ -113,6 +113,7 @@ public class DCLCharacterController : MonoBehaviour
         collider = GetComponent<Collider>();
 
         characterPosition.OnPrecisionAdjust += OnPrecisionAdjust;
+        SceneController.OnDebugModeSet += () => supportsMovingPlatforms = true;
 
         lastPosition = transform.position;
     }
