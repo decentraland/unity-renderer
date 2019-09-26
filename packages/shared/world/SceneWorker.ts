@@ -6,24 +6,16 @@ import { WebWorkerTransport } from 'decentraland-rpc'
 import { playerConfigurations } from 'config'
 import { worldToGrid } from 'atomicHelpers/parcelScenePositions'
 import { defaultLogger } from 'shared/logger'
-import { EntityAction, EnvironmentData } from 'shared/types'
 import { EnvironmentAPI } from 'shared/apis/EnvironmentAPI'
 import { Vector3, Quaternion, Vector2 } from 'decentraland-ecs/src/decentraland/math'
 import { PositionReport, positionObservable } from './positionThings'
 import { Observer, Observable } from 'decentraland-ecs/src'
 import { sceneLifeCycleObservable } from '../../decentraland-loader/lifecycle/controllers/scene'
 import { worldRunningObservable, isWorldRunning } from './worldState'
+import { ParcelSceneAPI } from './ParcelSceneAPI'
 
 // tslint:disable-next-line:whitespace
 type EngineAPI = import('../apis/EngineAPI').EngineAPI
-
-export type ParcelSceneAPI = {
-  data: EnvironmentData<any>
-  sendBatch(ctions: EntityAction[]): void
-  registerWorker(event: SceneWorker): void
-  dispose(): void
-  on(event: string, cb: (event: any) => void): void
-}
 
 const gamekitWorkerRaw = require('raw-loader!../../../static/systems/scene.system.js')
 const gamekitWorkerBLOB = new Blob([gamekitWorkerRaw])

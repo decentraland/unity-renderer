@@ -151,10 +151,10 @@ export class SharedSceneContext implements BABYLON.IDisposable {
     let audioClips = new Set<any>()
 
     this.disposableComponents.forEach($ => {
-      $.contributions.textures.forEach($ => textures.add($))
-      $.contributions.materials.forEach($ => materials.add($))
-      $.contributions.geometries.forEach($ => geometries.add($))
-      $.contributions.audioClips.forEach($ => audioClips.add($))
+      $.contributions.textures.forEach(($: any) => textures.add($))
+      $.contributions.materials.forEach(($: any) => materials.add($))
+      $.contributions.geometries.forEach(($: any) => geometries.add($))
+      $.contributions.audioClips.forEach(($: any) => audioClips.add($))
     })
 
     materials.delete(scene.defaultMaterial)
@@ -171,11 +171,11 @@ export class SharedSceneContext implements BABYLON.IDisposable {
   }
 
   on<T extends IEventNames>(event: T, cb: (data: IEvents[T]) => void) {
-    return this.eventSubscriber.on(event, cb)
+    return this.eventSubscriber.on(event as any, cb)
   }
 
   emit<T extends IEventNames>(event: T, data: IEvents[T]) {
-    this.eventSubscriber.emit(event, data)
+    this.eventSubscriber.emit(event as any, data)
   }
 
   /// #ECS.InitMessagesFinished: This message is sent after the scene ends executing the initialization code. Before the render loop.

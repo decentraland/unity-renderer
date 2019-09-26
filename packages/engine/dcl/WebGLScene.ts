@@ -1,10 +1,11 @@
 import { EntityAction, EnvironmentData } from 'shared/types'
-import { SceneWorker, ParcelSceneAPI } from 'shared/world/SceneWorker'
+import { SceneWorker } from 'shared/world/SceneWorker'
 import { SharedSceneContext } from 'engine/entities/SharedSceneContext'
 import { defaultLogger, ILogger } from 'shared/logger'
 import { DevTools } from 'shared/apis/DevTools'
 import { IEvents, IEventNames } from 'decentraland-ecs/src/decentraland/Types'
 import { sceneLifeCycleObservable } from '../../decentraland-loader/lifecycle/controllers/scene'
+import { ParcelSceneAPI } from 'shared/world/ParcelSceneAPI'
 
 /**
  * The WebGLScene has the responsibility of communicating the SceneWorker with the SharedSceneContext

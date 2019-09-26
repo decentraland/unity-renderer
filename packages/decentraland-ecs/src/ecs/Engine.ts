@@ -14,6 +14,7 @@ import { EventManager } from './EventManager'
 import { ComponentGroup } from './ComponentGroup'
 
 import { log, error } from './helpers'
+import { Entity } from './Entity'
 
 /**
  * @internal
@@ -65,7 +66,7 @@ export class Engine implements IEngine {
     }
 
     entity.eventManager = this.eventManager
-    entity.engine = this
+    ;(entity as Entity).engine = this
 
     this._entities[entity.uuid] = entity
 

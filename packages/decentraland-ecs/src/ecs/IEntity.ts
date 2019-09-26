@@ -39,9 +39,6 @@ export interface IEntity {
   readonly uuid: string
   readonly components: Record<string, any>
 
-  // @internal
-  engine: IEngine | null
-
   isAddedToEngine(): boolean
   getParent(): IEntity | null
   setParent(e: IEntity): void
