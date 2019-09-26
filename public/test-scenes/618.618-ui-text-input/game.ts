@@ -1,6 +1,4 @@
-import { UICanvas, UIContainerRect, Color4, UIInputText, log } from 'decentraland-ecs/src'
-
-import { OnTextSubmit } from 'decentraland-ecs/src/decentraland/UIEvents'
+import { UICanvas, UIContainerRect, Color4, UIInputText, log, OnTextSubmit, OnChanged } from 'decentraland-ecs/src'
 
 const ui = new UICanvas()
 
@@ -24,4 +22,7 @@ textInput.positionY = '10px'
 textInput.onTextSubmit = new OnTextSubmit(x => {
   container.color = Color4.Red()
   log('submitted text! ' + x.text)
+})
+textInput.onChanged = new OnChanged(x => {
+  log('text changed: ' + x.value)
 })
