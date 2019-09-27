@@ -26,19 +26,19 @@ public class MinimapMetadata : ScriptableObject
     //This must be replaced by standard Color type when explorer send the model in a proper way
     private static readonly Dictionary<TileType, string> TileColors = new Dictionary<TileType, string>()
     {
-        { TileType.MyParcel, "#ff9990" },
-        { TileType.MyParcelsOnSale, "#ff4053" },
-        { TileType.MyEstates, "#ff9990" },
-        { TileType.MyEstatesOnSale, "#ff4053" },
-        { TileType.WithAccess, "#ffbd33" },
-        { TileType.District, "#5054D4" },
+        { TileType.MyParcel, "#ff9990" },//Color on MktPlace #ff9990
+        { TileType.MyParcelsOnSale, "#ff9990" },//Color on MktPlace #ec5159
+        { TileType.MyEstates, "#ff9990" },//Color on MktPlace #ff9990
+        { TileType.MyEstatesOnSale, "#ff9990" },//Color on MktPlace #ff4053
+        { TileType.WithAccess, "#33303B" },//Color on MktPlace #ffbd33
+        { TileType.District, "#5054D4" },//Color on MktPlace #4f57cc
         { TileType.Contribution, "#563db8" },
-        { TileType.Roads, "#716C7A" },
-        { TileType.Plaza, "#70AC76" },
-        { TileType.Taken, "#3D3A46" },
-        { TileType.OnSale, "#00d3ff" },
-        { TileType.Unowned, "#09080A" },
-        { TileType.Background, "#18141a" },
+        { TileType.Roads, "#525D67" },//Color on MktPlace #706c79
+        { TileType.Plaza, "#3FB86F" },//Color on MktPlace #7daa7b
+        { TileType.Taken, "#33303B" },//Color on MktPlace #3c3a45
+        { TileType.OnSale, "#33303B" },//Color on MktPlace #5ed0fa
+        { TileType.Unowned, "#33303B" },//Color on MktPlace #09080A
+        { TileType.Background, "#000000" },//Color on MktPlace #18141a
         { TileType.Loading, "#110e13" }
     };
 

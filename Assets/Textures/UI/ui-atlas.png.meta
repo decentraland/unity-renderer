@@ -206,6 +206,18 @@ TextureImporter:
   - first:
       213: 725447306006265840
     second: avatar-on-map
+  - first:
+      213: 5974798871286163726
+    second: minimap-zoom-background
+  - first:
+      213: 4201326070708545882
+    second: zoom-out
+  - first:
+      213: -3338119442705910897
+    second: zoom-in
+  - first:
+      213: 1892952138318100791
+    second: map-compass2
   externalObjects: {}
   serializedVersion: 10
   mipmaps:
@@ -869,8 +881,8 @@ TextureImporter:
       name: earrings-icon
       rect:
         serializedVersion: 2
-        x: 242
-        y: 188
+        x: 238
+        y: 190
         width: 100
         height: 74
       alignment: 0
@@ -954,9 +966,9 @@ TextureImporter:
       rect:
         serializedVersion: 2
         x: 523
-        y: 463
+        y: 464
         width: 54
-        height: 47
+        height: 46
       alignment: 9
       pivot: {x: 0.50000113, y: 0.65652144}
       border: {x: 26, y: 30, z: 26, w: 15}
@@ -1017,12 +1029,12 @@ TextureImporter:
       rect:
         serializedVersion: 2
         x: 582
-        y: 462
+        y: 464
         width: 54
-        height: 47
+        height: 45
       alignment: 9
-      pivot: {x: 0.50000226, y: 0.65497863}
-      border: {x: 26, y: 30, z: 26, w: 15}
+      pivot: {x: 0.50000226, y: 0.64395416}
+      border: {x: 26, y: 28, z: 26, w: 15}
       outline: []
       physicsShape: []
       tessellationDetail: 0
@@ -1104,9 +1116,9 @@ TextureImporter:
         y: 478
         width: 32
         height: 32
-      alignment: 0
+      alignment: 9
       pivot: {x: 0.5, y: 0.5}
-      border: {x: 15, y: 0, z: 15, w: 0}
+      border: {x: 15, y: 15, z: 15, w: 15}
       outline: []
       physicsShape: []
       tessellationDetail: 0
@@ -1184,12 +1196,12 @@ TextureImporter:
       name: map-compass
       rect:
         serializedVersion: 2
-        x: 348
-        y: 189
-        width: 60
-        height: 77
-      alignment: 0
-      pivot: {x: 0.5, y: 0.5}
+        x: 339
+        y: 176
+        width: 68
+        height: 86
+      alignment: 9
+      pivot: {x: 0.4966797, y: 0.4802458}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
@@ -1289,10 +1301,10 @@ TextureImporter:
       name: avatar-shadow
       rect:
         serializedVersion: 2
-        x: 474
-        y: 79
-        width: 123
-        height: 127
+        x: 439
+        y: 78
+        width: 127
+        height: 123
       alignment: 9
       pivot: {x: 0.5, y: 0.53}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -1311,12 +1323,12 @@ TextureImporter:
       rect:
         serializedVersion: 2
         x: 585
-        y: 360
+        y: 359
         width: 49
-        height: 98
+        height: 99
       alignment: 9
-      pivot: {x: 0.57139367, y: 0.5365759}
-      border: {x: 26, y: 0, z: 19, w: 0}
+      pivot: {x: 0.5747992, y: 0.5517461}
+      border: {x: 26, y: 51, z: 19, w: 41}
       outline: []
       physicsShape: []
       tessellationDetail: 0
@@ -1337,7 +1349,7 @@ TextureImporter:
         height: 69
       alignment: 0
       pivot: {x: 0.5, y: 0.5}
-      border: {x: 0, y: 0, z: 0, w: 0}
+      border: {x: 1, y: 0, z: 1, w: 0}
       outline: []
       physicsShape: []
       tessellationDetail: 0
@@ -1358,7 +1370,7 @@ TextureImporter:
         height: 69
       alignment: 0
       pivot: {x: 0.5, y: 0.5}
-      border: {x: 0, y: 0, z: 0, w: 0}
+      border: {x: 1, y: 0, z: 1, w: 0}
       outline: []
       physicsShape: []
       tessellationDetail: 0
@@ -1436,7 +1448,7 @@ TextureImporter:
       name: favorite-icon
       rect:
         serializedVersion: 2
-        x: 744
+        x: 716
         y: 471
         width: 44
         height: 39
@@ -1457,10 +1469,10 @@ TextureImporter:
       name: nft-icon
       rect:
         serializedVersion: 2
-        x: 637
-        y: 328
-        width: 116
-        height: 116
+        x: 644
+        y: 385
+        width: 58
+        height: 58
       alignment: 0
       pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -1479,12 +1491,12 @@ TextureImporter:
       rect:
         serializedVersion: 2
         x: 679
-        y: 449
-        width: 61
-        height: 61
+        y: 478
+        width: 32
+        height: 32
       alignment: 0
       pivot: {x: 0.5, y: 0.5}
-      border: {x: 29, y: 29, z: 29, w: 29}
+      border: {x: 15, y: 15, z: 15, w: 15}
       outline: []
       physicsShape: []
       tessellationDetail: 0
@@ -1500,7 +1512,7 @@ TextureImporter:
       rect:
         serializedVersion: 2
         x: 599
-        y: 216
+        y: 248
         width: 93
         height: 97
       alignment: 0
@@ -1583,10 +1595,10 @@ TextureImporter:
       name: avatar-on-map
       rect:
         serializedVersion: 2
-        x: 198
-        y: 356
-        width: 26
-        height: 25
+        x: 201
+        y: 360
+        width: 15
+        height: 15
       alignment: 0
       pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -1596,6 +1608,69 @@ TextureImporter:
       bones: []
       spriteID: 8d4f3595a7c4b4f628823186e9109ddd
       internalID: 725447306006265840
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: minimap-zoom-background
+      rect:
+        serializedVersion: 2
+        x: 219
+        y: 355
+        width: 26
+        height: 26
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 2f0e2d46825484c479b0e820c09852d7
+      internalID: 5974798871286163726
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: zoom-out
+      rect:
+        serializedVersion: 2
+        x: 466
+        y: 230
+        width: 32
+        height: 4
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: b4d8ec931959f43b4a07bdc4905c43a7
+      internalID: 4201326070708545882
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: zoom-in
+      rect:
+        serializedVersion: 2
+        x: 644
+        y: 445
+        width: 32
+        height: 32
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: cf82abd9d8f3d4cffac9d427e939394b
+      internalID: -3338119442705910897
       vertices: []
       indices: 
       edges: []
