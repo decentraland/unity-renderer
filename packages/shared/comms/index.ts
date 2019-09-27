@@ -404,7 +404,9 @@ export async function connect(userId: string, network: ETHEREUM_NETWORK, auth: A
 
   if (USE_LOCAL_COMMS) {
     const location = document.location.toString()
-    const commsUrl = location.replace(/^http/, 'ws').substring(0, location.indexOf('#')) // drop fragment identifier
+    const commsUrl = location
+      .substring(0, location.indexOf('#')) // drop fragment identifier
+      .replace(/^http/, 'ws') // change protocol to ws
 
     const url = new URL(commsUrl)
     const qs = new URLSearchParams({
