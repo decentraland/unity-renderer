@@ -120,7 +120,12 @@ namespace DCL.Interface
         };
 
         [System.Serializable]
-        private class OnChangeEvent : UUIDEvent<OnChangeEventPayload>
+        private class OnTextInputChangeEvent : UUIDEvent<OnTextInputChangeEventPayload>
+        {
+        };
+
+        [System.Serializable]
+        private class OnScrollChangeEvent : UUIDEvent<OnScrollChangeEventPayload>
         {
         };
 
@@ -186,10 +191,15 @@ namespace DCL.Interface
         }
 
         [System.Serializable]
-        public class OnChangeEventPayload
+        public class OnTextInputChangeEventPayload
         {
-            public object value;
-            public string text;
+            public string value;
+        }
+
+        [System.Serializable]
+        public class OnScrollChangeEventPayload
+        {
+            public Vector2 value;
             public int pointerId;
         }
 
@@ -351,7 +361,8 @@ namespace DCL.Interface
         private static OnPointerDownEvent onPointerDownEvent = new OnPointerDownEvent();
         private static OnPointerUpEvent onPointerUpEvent = new OnPointerUpEvent();
         private static OnTextSubmitEvent onTextSubmitEvent = new OnTextSubmitEvent();
-        private static OnChangeEvent onChangeEvent = new OnChangeEvent();
+        private static OnTextInputChangeEvent onTextInputChangeEvent = new OnTextInputChangeEvent();
+        private static OnScrollChangeEvent onScrollChangeEvent = new OnScrollChangeEvent();
         private static OnFocusEvent onFocusEvent = new OnFocusEvent();
         private static OnBlurEvent onBlurEvent = new OnBlurEvent();
         private static OnEnterEvent onEnterEvent = new OnEnterEvent();
@@ -511,11 +522,10 @@ namespace DCL.Interface
                 return;
             }
 
-            onChangeEvent.uuid = uuid;
-            onChangeEvent.payload.text = text;
-            onChangeEvent.payload.pointerId = 0;
+            onTextInputChangeEvent.uuid = uuid;
+            onTextInputChangeEvent.payload.value = text;
 
-            SendSceneEvent(sceneId, "uuidEvent", onChangeEvent);
+            SendSceneEvent(sceneId, "uuidEvent", onTextInputChangeEvent);
         }
 
         public static void ReportOnFocusEvent(string sceneId, string uuid)
@@ -547,11 +557,11 @@ namespace DCL.Interface
                 return;
             }
 
-            onChangeEvent.uuid = uuid;
-            onChangeEvent.payload.value = value;
-            onChangeEvent.payload.pointerId = pointerId;
+            onScrollChangeEvent.uuid = uuid;
+            onScrollChangeEvent.payload.value = value;
+            onScrollChangeEvent.payload.pointerId = pointerId;
 
-            SendSceneEvent(sceneId, "uuidEvent", onChangeEvent);
+            SendSceneEvent(sceneId, "uuidEvent", onScrollChangeEvent);
         }
 
         public static void ReportEvent<T>(string sceneId, T @event)
