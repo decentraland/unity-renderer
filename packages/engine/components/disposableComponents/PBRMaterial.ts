@@ -203,4 +203,4 @@ export class PBRMaterial extends DisposableComponent {
   }
 }
 
-DisposableComponent.registerClassId(CLASS_ID.PRB_MATERIAL, PBRMaterial)
+DisposableComponent.registerClassId(CLASS_ID.PBR_MATERIAL, PBRMaterial)
