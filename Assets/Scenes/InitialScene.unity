@@ -378,7 +378,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   sceneController: {fileID: 322303338}
   characterController: {fileID: 1989862556}
-  hudController: {fileID: 0}
+  hudController: {fileID: 491237586}
   openBrowserWhenStart: 1
   baseUrlMode: 0
   baseUrlCustom: 
