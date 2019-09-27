@@ -53,10 +53,7 @@ public class MinimapParcelsView : MonoBehaviour
             int y = newCoords.y + keyValuePair.Key.Item2;
             var tile = minimapmetadata.GetTile(x, y);
 
-            if (tile == null)
-                continue;
-
-            keyValuePair.Value.material.SetColor("_BaseColor", tile.color);
+            keyValuePair.Value.material.SetColor("_BaseColor", tile?.color ?? Color.grey);
         }
     }
 
