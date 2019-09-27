@@ -222,7 +222,9 @@ watch: $(SOME_MAPPINGS) build-essentials static/dist/unity.js ## Watch the files
 			"node ./scripts/runTestServer.js --keep-open"
 
 update: ## Update the version of the renderer (Unity build)
+	# TODO - make this install the latest published artifact of the current branch
 	npm install decentraland-renderer@latest
+	cp node_modules/decentraland-renderer/*.unityweb static/unity/Build/
 
 clean: ## Clean all generated files
 	@$(COMPILER) targets/clean.json
