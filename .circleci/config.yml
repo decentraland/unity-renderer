@@ -142,6 +142,9 @@ jobs:
           keys:
             - v1-dependencies-{{ checksum "package-lock.json" }}
       - run:
+          name: Copy Unity build to target directory
+          command: cp node_modules/decentraland-renderer/*.unityweb static/unity/Build/
+      - run:
           name: Set up NPM access tokens
           command: echo "//registry.npmjs.org/:_authToken=${NPM_TOKEN}" > ~/.npmrc
           when: on_success

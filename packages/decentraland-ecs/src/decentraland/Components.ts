@@ -385,7 +385,7 @@ export class Texture extends ObservableComponent {
 
     if (opts) {
       for (let i in opts) {
-        (this as any)[i as 'samplingMode' | 'wrap' | 'hasAlpha'] = (opts as any)[i]
+        ;(this as any)[i as 'samplingMode' | 'wrap' | 'hasAlpha'] = (opts as any)[i]
       }
     }
   }
