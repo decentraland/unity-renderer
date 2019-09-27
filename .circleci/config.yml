@@ -251,7 +251,12 @@ workflows:
   version: 2
   build-deploy:
     jobs:
-      - build
+      - build:
+          filters:
+            branches:
+              only: /(.*)/
+            tags:
+              only: /^\d+\.\d+\.\d(.*)/ # npm tag + latest
 
       # explorer master + pr branch jobs (deploy to dev + pr dev)
       - deploy-dev:
