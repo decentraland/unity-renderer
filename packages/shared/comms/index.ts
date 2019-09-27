@@ -403,10 +403,11 @@ export async function connect(userId: string, network: ETHEREUM_NETWORK, auth: A
   let commsBroker: IBrokerConnection
 
   if (USE_LOCAL_COMMS) {
-    const location = document.location.toString()
-    const commsUrl = location
-      .substring(0, location.indexOf('#')) // drop fragment identifier
-      .replace(/^http/, 'ws') // change protocol to ws
+    let location = document.location.toString()
+    if (location.indexOf('#') > -1) {
+      location = location.substring(0, location.indexOf('#')) // drop fragment identifier
+    }
+    const commsUrl = location.replace(/^http/, 'ws') // change protocol to ws
 
     const url = new URL(commsUrl)
     const qs = new URLSearchParams({
