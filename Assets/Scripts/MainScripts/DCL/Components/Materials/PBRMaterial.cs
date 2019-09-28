@@ -163,9 +163,9 @@ namespace DCL.Components
 
             if (transparencyMode == TransparencyMode.AUTO)
             {
-                if (!string.IsNullOrEmpty(model.alphaTexture)) //AlphaBlend
+                if (!string.IsNullOrEmpty(model.alphaTexture) || model.albedoColor.a < 1f) //AlphaBlend
                 {
-                    transparencyMode = TransparencyMode.ALPHA_TEST_AND_BLEND;
+                    transparencyMode = TransparencyMode.ALPHA_BLEND;
                 }
                 else // Opaque
                 {
