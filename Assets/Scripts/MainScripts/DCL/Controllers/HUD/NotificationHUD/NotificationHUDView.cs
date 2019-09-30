@@ -41,4 +41,9 @@ public class NotificationHUDView : MonoBehaviour
         OnNotificationDismissed?.Invoke(n.notificationModel);
         Destroy(n.gameObject);
     }
+
+    public void SetActive(bool active)
+    {
+        gameObject.SetActive(active);
+    }
 }

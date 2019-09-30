@@ -1,6 +1,6 @@
 using UnityEngine;
 
-public class AvatarHUDController
+public class AvatarHUDController : IHUD
 {
     private AvatarHUDView view;
     public AvatarHUDModel model { get; private set; }
@@ -49,5 +49,15 @@ public class AvatarHUDController
     public void SignOut()
     {
         DCL.Interface.WebInterface.LogOut();
+    }
+
+    public void SetConfiguration(HUDConfiguration configuration)
+    {
+        SetActive(configuration.active);
+    }
+
+    private void SetActive(bool active)
+    {
+        view.SetActive(active);
     }
 }
