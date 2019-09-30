@@ -262,6 +262,15 @@ namespace DCL
                             case "ShowNotification":
                                 hudController.ShowNotificationFromJson(msg.payload);
                                 break;
+                            case "ConfigureMinimapHUD":
+                                hudController.ConfigureMinimapHUD(msg.payload);
+                                break;
+                            case "ConfigureAvatarHUD":
+                                hudController.ConfigureAvatarHUD(msg.payload);
+                                break;
+                            case "ConfigureNotificationHUD":
+                                hudController.ConfigureNotificationHUD(msg.payload);
+                                break;
                             default:
                                 Debug.Log("<b><color=#FF0000>WSSController</color></b> WHAT IS " + msg.type);
                                 break;

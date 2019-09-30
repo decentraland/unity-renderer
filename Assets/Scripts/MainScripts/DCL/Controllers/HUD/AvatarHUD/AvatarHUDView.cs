@@ -32,8 +32,7 @@ public class AvatarHUDView : MonoBehaviour
     [SerializeField] private Button signOutButton;
 
     private AvatarHUDController controller;
-
-
+    
     private void Initialize(AvatarHUDController controller)
     {
         gameObject.name = VIEW_OBJECT_NAME;
@@ -64,5 +63,10 @@ public class AvatarHUDView : MonoBehaviour
     internal void SetExpanded(bool visibility)
     {
         expandedContainer.SetActive(visibility);
+    }
+
+    public void SetActive(bool active)
+    {
+        gameObject.SetActive(active);
     }
 }

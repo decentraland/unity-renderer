@@ -1,7 +1,8 @@
 using System;
+using System.ComponentModel;
 using UnityEngine;
 
-public class MinimapHUDController : IDisposable
+public class MinimapHUDController : IDisposable, IHUD
 {
     private MinimapHUDView view;
     public MinimapHUDModel model { get; private set; }
@@ -66,5 +67,15 @@ public class MinimapHUDController : IDisposable
     {
         //TODO:
         Debug.Log("Report scene pressed");
+    }
+
+    public void SetConfiguration(HUDConfiguration configuration)
+    {
+        SetActive(configuration.active);
+    }
+
+    private void SetActive(bool active)
+    {
+        view.SetActive(active);
     }
 }

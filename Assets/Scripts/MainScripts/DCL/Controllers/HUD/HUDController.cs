@@ -14,6 +14,15 @@ public class HUDController : MonoBehaviour
         minimapHUD = new MinimapHUDController(new MinimapHUDModel());
         notificationHud = new NotificationHUDController();
 
+        HUDConfiguration defaultConfiguration = new HUDConfiguration()
+        {
+            active = false
+        };
+
+        avatarHUD.SetConfiguration(defaultConfiguration);
+        minimapHUD.SetConfiguration(defaultConfiguration);
+        notificationHud.SetConfiguration(defaultConfiguration);
+
         ownUserProfile = UserProfile.GetOwnUserProfile();
         ownUserProfile.OnUpdate += OwnUserProfileUpdated;
         OwnUserProfileUpdated(ownUserProfile);
@@ -33,6 +42,24 @@ public class HUDController : MonoBehaviour
     public void ShowNotification(NotificationModel notification)
     {
         notificationHud.ShowNotification(notification);
+    }
+
+    public void ConfigureMinimapHUD(string configurationJson)
+    {
+        HUDConfiguration configuration = JsonUtility.FromJson<HUDConfiguration>(configurationJson);
+        minimapHUD.SetConfiguration(configuration);
+    }
+
+    public void ConfigureAvatarHUD(string configurationJson)
+    {
+        HUDConfiguration configuration = JsonUtility.FromJson<HUDConfiguration>(configurationJson);
+        avatarHUD.SetConfiguration(configuration);
+    }
+
+    public void ConfigureNotificationHUD(string configurationJson)
+    {
+        HUDConfiguration configuration = JsonUtility.FromJson<HUDConfiguration>(configurationJson);
+        notificationHud.SetConfiguration(configuration);
     }
 
     private void UpdateAvatarHUD()

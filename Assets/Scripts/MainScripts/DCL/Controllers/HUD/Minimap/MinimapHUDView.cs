@@ -51,4 +51,9 @@ public class MinimapHUDView : MonoBehaviour
     {
         optionsPanel.SetActive(!optionsPanel.activeSelf);
     }
+
+    public void SetActive(bool active)
+    {
+        gameObject.SetActive(active);
+    }
 }
