@@ -6,7 +6,7 @@ global['preview'] = window['preview'] = true
 global['enableWeb3'] = window['enableWeb3']
 
 import { initializeUnity } from '../unity-interface/initializer'
-import { loadPreviewScene } from '../unity-interface/dcl'
+import { loadPreviewScene, HUD } from '../unity-interface/dcl'
 import { DEBUG_WS_MESSAGES } from '../config'
 import defaultLogger from 'shared/logger'
 import { future, IFuture } from 'fp-future'
@@ -83,6 +83,9 @@ function sceneRenderable() {
 
 initializeUnity(container)
   .then(async ret => {
+    HUD.Minimap.configure({ active: true })
+    HUD.Notification.configure({ active: true })
+
     const renderable = sceneRenderable()
 
     startPreviewWatcher()
