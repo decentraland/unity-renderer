@@ -43,7 +43,7 @@ namespace Tests
 
             // Update UIImage properties
             DCLTexture texture =
-                TestHelpers.CreateDCLTexture(scene, TestHelpers.GetTestsAssetsPath() + "/Images/atlas.png");
+                TestHelpers.CreateDCLTexture(scene, DCL.Helpers.Utils.GetTestsAssetsPath() + "/Images/atlas.png");
             yield return texture.routine;
 
             yield return TestHelpers.SharedComponentUpdate(uiImageShape, new UIImage.Model
@@ -135,7 +135,7 @@ namespace Tests
             Assert.IsFalse(screenSpaceShape == null);
 
             DCLTexture texture =
-                TestHelpers.CreateDCLTexture(scene, TestHelpers.GetTestsAssetsPath() + "/Images/atlas.png");
+                TestHelpers.CreateDCLTexture(scene, DCL.Helpers.Utils.GetTestsAssetsPath() + "/Images/atlas.png");
             yield return texture.routine;
 
             UIImage uiImage = TestHelpers.SharedComponentCreate<UIImage, UIImage.Model>(scene, CLASS_ID.UI_IMAGE_SHAPE);
@@ -202,7 +202,7 @@ namespace Tests
 
             Assert.IsFalse(screenSpaceShape == null);
 
-            DCLTexture texture = TestHelpers.CreateDCLTexture(scene, TestHelpers.GetTestsAssetsPath() + "/Images/atlas.png");
+            DCLTexture texture = TestHelpers.CreateDCLTexture(scene, DCL.Helpers.Utils.GetTestsAssetsPath() + "/Images/atlas.png");
             yield return texture.routine;
 
             // --------------------------------------------------------------------------------------
@@ -258,7 +258,7 @@ namespace Tests
 
             Assert.IsFalse(screenSpaceShape == null);
 
-            DCLTexture texture = TestHelpers.CreateDCLTexture(scene, TestHelpers.GetTestsAssetsPath() + "/Images/atlas.png");
+            DCLTexture texture = TestHelpers.CreateDCLTexture(scene, DCL.Helpers.Utils.GetTestsAssetsPath() + "/Images/atlas.png");
             yield return texture.routine;
 
             // --------------------------------------------------------------------------------------
@@ -328,7 +328,7 @@ namespace Tests
             yield return uiImageShape.routine;
 
             DCLTexture texture =
-                TestHelpers.CreateDCLTexture(scene, TestHelpers.GetTestsAssetsPath() + "/Images/atlas.png");
+                TestHelpers.CreateDCLTexture(scene, DCL.Helpers.Utils.GetTestsAssetsPath() + "/Images/atlas.png");
             yield return texture.routine;
 
             // Align to right-bottom

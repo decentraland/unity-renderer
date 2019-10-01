@@ -17,7 +17,7 @@ namespace AssetPromiseKeeper_GLTF_Tests
             var library = new AssetLibrary_GLTF();
             var keeper = new AssetPromiseKeeper_GLTF(library);
 
-            string url = TestHelpers.GetTestsAssetsPath() + "/GLB/Lantern/Lantern.glb";
+            string url = Utils.GetTestsAssetsPath() + "/GLB/Lantern/Lantern.glb";
             AssetPromise_GLTF prom = new AssetPromise_GLTF(scene.contentProvider, url);
             Asset_GLTF loadedAsset = null;
 

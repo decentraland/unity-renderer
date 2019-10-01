@@ -17,7 +17,7 @@ namespace Tests
             yield return InitScene();
 
             DCLTexture texture =
-                TestHelpers.CreateDCLTexture(scene, TestHelpers.GetTestsAssetsPath() + "/Images/atlas.png");
+                TestHelpers.CreateDCLTexture(scene, Utils.GetTestsAssetsPath() + "/Images/atlas.png");
 
             yield return texture.routine;
 
@@ -107,7 +107,7 @@ namespace Tests
 
             // Update material
             DCLTexture texture =
-                TestHelpers.CreateDCLTexture(scene, TestHelpers.GetTestsAssetsPath() + "/Images/atlas.png");
+                TestHelpers.CreateDCLTexture(scene, Utils.GetTestsAssetsPath() + "/Images/atlas.png");
 
             yield return texture.routine;
 
@@ -397,7 +397,7 @@ namespace Tests
 
             DCLTexture dclTexture = TestHelpers.CreateDCLTexture(
                 scene,
-                TestHelpers.GetTestsAssetsPath() + "/Images/atlas.png",
+                Utils.GetTestsAssetsPath() + "/Images/atlas.png",
                 DCLTexture.BabylonWrapMode.CLAMP,
                 FilterMode.Bilinear);
 
@@ -436,7 +436,7 @@ namespace Tests
 
             DCLTexture dclTexture = TestHelpers.CreateDCLTexture(
                 scene,
-                TestHelpers.GetTestsAssetsPath() + "/Images/atlas.png",
+                Utils.GetTestsAssetsPath() + "/Images/atlas.png",
                 DCLTexture.BabylonWrapMode.CLAMP,
                 FilterMode.Bilinear);
 
@@ -513,7 +513,7 @@ namespace Tests
 
             DCLTexture dclTexture = TestHelpers.CreateDCLTexture(
                 scene,
-                TestHelpers.GetTestsAssetsPath() + "/Images/atlas.png",
+                Utils.GetTestsAssetsPath() + "/Images/atlas.png",
                 DCLTexture.BabylonWrapMode.MIRROR,
                 FilterMode.Bilinear);
 

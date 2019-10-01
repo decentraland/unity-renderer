@@ -3,6 +3,9 @@ using DCL.Controllers;
 using DCL.Helpers;
 using DCL.Models;
 using System.Collections;
+using System.Collections.Generic;
+using System.IO;
+using System.Linq;
 using UnityEngine;
 using UnityEngine.Assertions;
 using UnityEngine.TestTools;
@@ -12,16 +15,31 @@ namespace Tests
 {
     public static class AvatarTestHelpers
     {
-        public static AvatarShape CreateAvatar(ParcelScene scene, string name)
+        public static void CreateTestCatalog()
         {
+            var catalogJson = File.ReadAllText(Application.dataPath + "/../TestResources/Avatar/TestCatalog.json"); //Utils.GetTestAssetPath returns an URI not compatible with the really convenient File.ReadAllText
+            var wearables = Newtonsoft.Json.JsonConvert.DeserializeObject<WearableItem[]>(catalogJson); // JsonUtility cannot deserialize jsons whose root is an array
+            CatalogController.wearableCatalog.Clear();
+            CatalogController.wearableCatalog.Add(wearables.Select(x => new KeyValuePair<string, WearableItem>(x.id, x)).ToArray());
+
+        }
+
+        public static AvatarShape CreateAvatar(ParcelScene scene, string name, string fileName)
+        {
+            CreateTestCatalog();
+
+            var avatarjson = File.ReadAllText(Application.dataPath + "/../TestResources/Avatar/" + fileName);
+            AvatarModel model = JsonUtility.FromJson<AvatarModel>(avatarjson);
+            model.name = name;
+
             GLTFSceneImporter.budgetPerFrameInMilliseconds = float.MaxValue;
             DecentralandEntity entity = TestHelpers.CreateSceneEntity(scene);
-            AvatarShape.Model model = new AvatarShape.Model() { useDummyModel = true, name = name };
-            AvatarShape shape = TestHelpers.EntityComponentCreate<AvatarShape, AvatarShape.Model>(scene, entity, model, CLASS_ID_COMPONENT.AVATAR_SHAPE);
+            AvatarShape shape = TestHelpers.EntityComponentCreate<AvatarShape, AvatarModel>(scene, entity, model, CLASS_ID_COMPONENT.AVATAR_SHAPE);
             TestHelpers.SetEntityTransform(scene, entity, new Vector3(0, 0, 0), Quaternion.identity, Vector3.one);
             return shape;
         }
     }
+
     public class AvatarShapeTests : TestsBase
     {
 
@@ -46,7 +64,7 @@ namespace Tests
         {
             yield return InitScene();
 
-            AvatarShape avatar = AvatarTestHelpers.CreateAvatar(scene, "Abortit");
+            AvatarShape avatar = AvatarTestHelpers.CreateAvatar(scene, "Abortit", "TestAvatar.json");
 
             yield return new WaitForSeconds(3.0f);
 
@@ -65,7 +83,7 @@ namespace Tests
         {
             yield return InitScene();
 
-            AvatarShape avatar = AvatarTestHelpers.CreateAvatar(scene, "Joan Darteis");
+            AvatarShape avatar = AvatarTestHelpers.CreateAvatar(scene, "Joan Darteis", "TestAvatar.json");
             yield return new DCL.WaitUntil(() => avatar.everythingIsLoaded, 20);
 
             AssertMaterialsAreCorrect(avatar.transform);
@@ -76,7 +94,7 @@ namespace Tests
         public IEnumerator NameBackgroundHasCorrectSize()
         {
             yield return InitScene();
-            AvatarShape avatar = AvatarTestHelpers.CreateAvatar(scene, "Maiqel Yacson");
+            AvatarShape avatar = AvatarTestHelpers.CreateAvatar(scene, "Maiqel Yacson", "TestAvatar.json");
 
             yield return new DCL.WaitUntil(() => avatar.everythingIsLoaded, 20);
 
@@ -89,9 +107,10 @@ namespace Tests
         public IEnumerator WhenTwoAvatarsLoadAtTheSameTimeTheyHaveProperMaterials()
         {
             yield return InitScene();
+
             //NOTE(Brian): Avatars must be equal to share their meshes.
-            AvatarShape avatar = AvatarTestHelpers.CreateAvatar(scene, "Naicholas Keig");
-            AvatarShape avatar2 = AvatarTestHelpers.CreateAvatar(scene, "Naicholas Keig");
+            AvatarShape avatar = AvatarTestHelpers.CreateAvatar(scene, "Naicholas Keig", "TestAvatar.json");
+            AvatarShape avatar2 = AvatarTestHelpers.CreateAvatar(scene, "Naicholas Keig", "TestAvatar2.json");
 
             avatar.transform.position = new Vector3(-5, 0, 0);
             avatar2.transform.position = new Vector3(5, 0, 0);
@@ -102,6 +121,7 @@ namespace Tests
             AssertMaterialsAreCorrect(avatar2.transform);
         }
     }
+
     public class AvatarShapeVisualTests : VisualTestsBase
     {
         [UnityTest]
@@ -118,7 +138,7 @@ namespace Tests
             yield return InitScene();
             yield return VisualTestHelpers.InitVisualTestsScene("AvatarShape_A");
 
-            AvatarShape avatar = AvatarTestHelpers.CreateAvatar(scene, "Avatar #1");
+            AvatarShape avatar = AvatarTestHelpers.CreateAvatar(scene, "Avatar #1", "TestAvatar.json");
 
             Vector3 camPos = new Vector3(-0.75f, 2.0f, 2.25f);
             Vector3 camTarget = avatar.transform.position + Vector3.up * 2.0f;
@@ -147,7 +167,7 @@ namespace Tests
             yield return InitScene();
             yield return VisualTestHelpers.InitVisualTestsScene("AvatarShape_B");
 
-            AvatarShape avatar = AvatarTestHelpers.CreateAvatar(scene, "Avatar #2");
+            AvatarShape avatar = AvatarTestHelpers.CreateAvatar(scene, "Avatar #2", "TestAvatar2.json");
 
             Vector3 camPos = new Vector3(-0.75f, 2.0f, 2.25f);
             Vector3 camTarget = avatar.transform.position + Vector3.up * 2.0f;

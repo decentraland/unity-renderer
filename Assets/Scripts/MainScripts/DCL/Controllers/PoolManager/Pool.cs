@@ -96,7 +96,7 @@ namespace DCL
             return poolable;
         }
 
-        private PoolableObject Instantiate()
+        public PoolableObject Instantiate()
         {
             GameObject gameObject = null;
 
@@ -135,8 +135,14 @@ namespace DCL
                 return;
 #endif
 
-            if (poolable == null || inactiveObjects.Contains(poolable))
+            if (poolable == null)
                 return;
+
+            if (inactiveObjects.Contains(poolable))
+            {
+                Object.Destroy(poolable.gameObject);
+                return;
+            }
 
             DisablePoolableObject(poolable);
 #if UNITY_EDITOR

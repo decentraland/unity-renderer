@@ -10,19 +10,6 @@ using UnityEngine.Networking;
 [CreateAssetMenu(fileName = "UserProfile", menuName = "UserProfile")]
 public class UserProfile : ScriptableObject
 {
-    [Serializable]
-    public class Model
-    {
-        public string userId;
-        public string name;
-        public string email;
-        public string description;
-        public ulong created_at;
-        public ulong updated_at;
-        public string version;
-        public AvatarShape.Model avatar;
-    }
-
     public event Action<UserProfile> OnUpdate = (x) => { };
 
     public string userName => model.name;
@@ -32,19 +19,17 @@ public class UserProfile : ScriptableObject
 
     [SerializeField] private Sprite defaultSprite;
 
-    internal Model model = new Model() //Empty initialization to avoid nullchecks
+    internal UserProfileModel model = new UserProfileModel() //Empty initialization to avoid nullchecks
     {
-        avatar = new AvatarShape.Model()
-        {
-            snapshots = new AvatarShape.Model.Snapshots()
-        }
+        avatar = new AvatarModel()
     };
+
     internal Sprite faceSnapshotSprite = null;
     internal Sprite bodySnapshotSprite = null;
     internal Coroutine downloadingFaceCoroutine = null;
     internal Coroutine downloadingBodyCoroutine = null;
 
-    public void UpdateData(Model newModel)
+    public void UpdateData(UserProfileModel newModel)
     {
         UpdateProperties(newModel);
         DownloadFaceIfNeeded();
@@ -52,22 +37,25 @@ public class UserProfile : ScriptableObject
         OnUpdate(this);
     }
 
-    internal void UpdateProperties(Model newModel)
+    internal void UpdateProperties(UserProfileModel newModel)
     {
-        model.name = newModel.name;
-        model.email = newModel.email;
+        var currentFace = model.snapshots?.face;
+        var currentBody = model.snapshots?.body;
 
-        if (model.avatar.snapshots.face != newModel.avatar.snapshots.face)
+        model.name = newModel?.name;
+        model.email = newModel?.email;
+        model.avatar = newModel?.avatar;
+        model.snapshots = newModel?.snapshots;
+
+        if (model.snapshots == null || model.snapshots.face != currentFace)
         {
             faceSnapshotSprite = null;
         }
-        model.avatar.snapshots.face = newModel.avatar.snapshots.face;
 
-        if (model.avatar.snapshots.body != newModel.avatar.snapshots.body)
+        if (model.snapshots == null || model.snapshots.body != currentBody)
         {
-            bodySnapshotSprite = null;
+            faceSnapshotSprite = null;
         }
-        model.avatar.snapshots.body = newModel.avatar.snapshots.body;
     }
 
     internal void DownloadFaceIfNeeded()
@@ -83,7 +71,11 @@ public class UserProfile : ScriptableObject
         }
 
         faceSnapshotSprite = null;
-        downloadingFaceCoroutine = CoroutineStarter.Start(DownloadSnapshotCoroutine(model.avatar.snapshots.face, (x) => faceSnapshotSprite = x));
+
+        if (model == null || string.IsNullOrEmpty(model.snapshots?.face)) 
+            return;
+
+        downloadingFaceCoroutine = CoroutineStarter.Start(DownloadSnapshotCoroutine(model.snapshots.face, (x) => faceSnapshotSprite = x));
     }
 
     internal void DownloadBodyIfNeeded()
@@ -99,7 +91,11 @@ public class UserProfile : ScriptableObject
         }
 
         bodySnapshotSprite = null;
-        downloadingBodyCoroutine = CoroutineStarter.Start(DownloadSnapshotCoroutine(model.avatar.snapshots.body, (x) => bodySnapshotSprite = x));
+
+        if (model == null || string.IsNullOrEmpty(model.snapshots?.body)) 
+            return;
+
+        downloadingBodyCoroutine = CoroutineStarter.Start(DownloadSnapshotCoroutine(model.snapshots.body, (x) => bodySnapshotSprite = x));
     }
 
     private IEnumerator DownloadSnapshotCoroutine(string url, Action<Sprite> successCallback)

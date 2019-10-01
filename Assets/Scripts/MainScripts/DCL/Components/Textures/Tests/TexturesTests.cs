@@ -18,7 +18,7 @@ namespace Tests
             yield return InitScene();
 
             DCLTexture dclTexture = TestHelpers.CreateDCLTexture(scene,
-                TestHelpers.GetTestsAssetsPath() + "/Images/avatar.png",
+                Utils.GetTestsAssetsPath() + "/Images/avatar.png",
                 DCLTexture.BabylonWrapMode.CLAMP,
                 FilterMode.Bilinear);
 
@@ -48,7 +48,7 @@ namespace Tests
         {
             yield return InitScene();
 
-            DCLTexture dclTexture = TestHelpers.CreateDCLTexture(scene,TestHelpers.GetTestsAssetsPath() + "/Images/avatar.png");
+            DCLTexture dclTexture = TestHelpers.CreateDCLTexture(scene,DCL.Helpers.Utils.GetTestsAssetsPath() + "/Images/avatar.png");
             bool isOnReady = false;
             dclTexture.CallWhenReady((x) => { isOnReady = true; });
 
@@ -60,7 +60,7 @@ namespace Tests
         {
             yield return InitScene();
 
-            DCLTexture dclTexture = TestHelpers.CreateDCLTexture(scene,TestHelpers.GetTestsAssetsPath() + "/Images/avatar.png");
+            DCLTexture dclTexture = TestHelpers.CreateDCLTexture(scene,DCL.Helpers.Utils.GetTestsAssetsPath() + "/Images/avatar.png");
             bool isOnReady = false;
             dclTexture.CallWhenReady((x) => { isOnReady = true; });
             yield return dclTexture.routine;
@@ -73,7 +73,7 @@ namespace Tests
         {
             yield return InitScene();
 
-            DCLTexture dclTexture = TestHelpers.CreateDCLTexture(scene,TestHelpers.GetTestsAssetsPath() + "/Images/avatar.png");
+            DCLTexture dclTexture = TestHelpers.CreateDCLTexture(scene,DCL.Helpers.Utils.GetTestsAssetsPath() + "/Images/avatar.png");
             yield return dclTexture.routine;
 
             bool isOnReady = false;

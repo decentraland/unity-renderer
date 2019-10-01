@@ -20,6 +20,16 @@ namespace DCL
             public string hash;
         }
 
+        public ContentProvider()
+        {
+        }
+
+        public ContentProvider(ContentProvider toCopy)
+        {
+            baseUrl = toCopy.baseUrl;
+            contents = new List<MappingPair>(toCopy.contents);
+            fileToHash = new Dictionary<string, string>(toCopy.fileToHash);
+        }
 
         public MappingPair GetMappingForHash(string hash)
         {
@@ -162,7 +172,7 @@ namespace DCL
                 return true;
             }
 
-            if (url.StartsWith(TestHelpers.GetTestsAssetsPath()))
+            if (url.StartsWith(Utils.GetTestsAssetsPath()))
             {
                 return true;
             }

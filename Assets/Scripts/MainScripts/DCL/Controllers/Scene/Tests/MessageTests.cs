@@ -46,7 +46,7 @@ namespace Tests
                         {
                             entityId = entity.entityId,
                             classId = (int)CLASS_ID_COMPONENT.AVATAR_SHAPE,
-                            json = JsonUtility.ToJson(new AvatarShape.Model() { name = "test1", useDummyModel = false })
+                            json = JsonUtility.ToJson(new AvatarModel())
                         }
                     ))
             );
@@ -61,7 +61,7 @@ namespace Tests
                         {
                             entityId = entity.entityId,
                             classId = (int)CLASS_ID_COMPONENT.AVATAR_SHAPE,
-                            json = JsonUtility.ToJson(new AvatarShape.Model() { name = "test2", useDummyModel = false })
+                            json = JsonUtility.ToJson(new AvatarModel())
                         }
                     ))
             );

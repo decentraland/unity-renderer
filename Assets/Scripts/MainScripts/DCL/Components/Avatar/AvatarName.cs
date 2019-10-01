@@ -63,7 +63,7 @@ public class AvatarName : MonoBehaviour
     {
         Transform t = sourceTransform;
 
-        Vector3 screenPoint = mainCamera.WorldToViewportPoint(t.position + offset);
+        Vector3 screenPoint = mainCamera == null ? Vector3.zero : mainCamera.WorldToViewportPoint(t.position + offset);
         uiContainer.alpha = 1.0f + (1.0f - (screenPoint.z / NAME_VANISHING_POINT_DISTANCE));
 
         if (screenPoint.z > 0)

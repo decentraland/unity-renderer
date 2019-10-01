@@ -18,7 +18,7 @@ namespace AssetPromiseKeeper_GLTF_Tests
             var library = new AssetLibrary_GLTF();
             var keeper = new AssetPromiseKeeper_GLTF(library);
 
-            string url = TestHelpers.GetTestsAssetsPath() + "/GLB/Lantern/Lantern.glb";
+            string url = Utils.GetTestsAssetsPath() + "/GLB/Lantern/Lantern.glb";
             GameObject parent = new GameObject("parent");
 
             AssetPromise_GLTF prom = new AssetPromise_GLTF(scene.contentProvider, url);
@@ -72,7 +72,7 @@ namespace AssetPromiseKeeper_GLTF_Tests
             //NOTE(Brian): Expect the 404 error
             LogAssert.Expect(LogType.Error, new Regex("^*.?404"));
 
-            string url = TestHelpers.GetTestsAssetsPath() + "/non_existing_url.glb";
+            string url = Utils.GetTestsAssetsPath() + "/non_existing_url.glb";
 
             AssetPromise_GLTF prom = new AssetPromise_GLTF(scene.contentProvider, url);
             Asset_GLTF asset = null;

@@ -1,0 +1,16 @@
+{
+    "name": "AvatarModel",
+    "references": [
+        "GUID:7ac9f9c835ec1084ab35e3f9b176cf1e",
+        "GUID:4720e174f2805c74bb7aa94cc8bb5bf8"
+    ],
+    "optionalUnityReferences": [],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": []
+}

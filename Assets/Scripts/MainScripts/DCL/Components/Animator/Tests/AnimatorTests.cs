@@ -25,7 +25,7 @@ namespace Tests
             TestHelpers.CreateAndSetShape(scene, entity.entityId, DCL.Models.CLASS_ID.GLTF_SHAPE,
                 JsonConvert.SerializeObject(new
                 {
-                    src = TestHelpers.GetTestsAssetsPath() + "/GLB/CesiumMan/CesiumMan.glb"
+                    src = Utils.GetTestsAssetsPath() + "/GLB/CesiumMan/CesiumMan.glb"
                 }));
 
             DCLAnimator.Model animatorModel = new DCLAnimator.Model
@@ -70,7 +70,7 @@ namespace Tests
             GLTFShape gltfShape = TestHelpers.CreateEntityWithGLTFShape(scene, Vector3.zero,
                 new LoadableShape.Model
                 {
-                    src = TestHelpers.GetTestsAssetsPath() + "/GLB/Shark/shark_anim.gltf"
+                    src = Utils.GetTestsAssetsPath() + "/GLB/Shark/shark_anim.gltf"
                 });
             var entity = gltfShape.attachedEntities.First();
 
@@ -138,7 +138,7 @@ namespace Tests
             var gltfShape = TestHelpers.CreateEntityWithGLTFShape(scene, Vector3.zero,
                 new LoadableShape.Model
                 {
-                    src = TestHelpers.GetTestsAssetsPath() + "/GLB/Shark/shark_anim.gltf"
+                    src = Utils.GetTestsAssetsPath() + "/GLB/Shark/shark_anim.gltf"
                 });
             var entity = gltfShape.attachedEntities.First();
 

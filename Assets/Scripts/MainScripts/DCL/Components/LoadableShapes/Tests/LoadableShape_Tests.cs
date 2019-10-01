@@ -26,7 +26,7 @@ public class LoadableShape_Tests : TestsBase
         TestHelpers.CreateAndSetShape(scene, entityId, DCL.Models.CLASS_ID.OBJ_SHAPE, JsonConvert.SerializeObject(
             new
             {
-                src = TestHelpers.GetTestsAssetsPath() + "/OBJ/teapot.obj"
+                src = Utils.GetTestsAssetsPath() + "/OBJ/teapot.obj"
             }));
 
         LoadWrapper_OBJ objShape = scene.entities[entityId].gameObject.GetComponentInChildren<LoadWrapper_OBJ>(true);
@@ -78,7 +78,7 @@ public class LoadableShape_Tests : TestsBase
         TestHelpers.CreateAndSetShape(scene, entityId, DCL.Models.CLASS_ID.GLTF_SHAPE, JsonConvert.SerializeObject(
             new
             {
-                src = TestHelpers.GetTestsAssetsPath() + "/GLB/Lantern/Lantern.glb"
+                src = Utils.GetTestsAssetsPath() + "/GLB/Lantern/Lantern.glb"
             }));
 
         LoadWrapper_GLTF gltfShape = scene.entities[entityId].gameObject.GetComponentInChildren<LoadWrapper_GLTF>(true);

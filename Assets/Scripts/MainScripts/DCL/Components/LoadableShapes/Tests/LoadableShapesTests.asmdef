@@ -3,7 +3,8 @@
     "references": [
         "MainScripts",
         "UnityGLTFAssembly",
-        "DCLTransform"
+        "DCLTransform",
+        "Utils"
     ],
     "optionalUnityReferences": [
         "TestAssemblies"

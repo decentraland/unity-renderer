@@ -15,7 +15,10 @@
         "DCLTransform",
         "WebInterface",
         "ScriptableObjects",
-        "WaitForSecondsCache"
+        "WaitForSecondsCache",
+        "ContentProvider",
+        "LoadersController",
+        "AvatarAssets"
     ],
     "optionalUnityReferences": [],
     "includePlatforms": [],

@@ -23,11 +23,11 @@ public class EntityShapeAndOnClickTestController : MonoBehaviour
         TestHelpers.InstantiateEntityWithShape(scene, "4", DCL.Models.CLASS_ID.CONE_SHAPE, new Vector3(4, 1, 0));
         TestHelpers.InstantiateEntityWithShape(scene, "5", DCL.Models.CLASS_ID.CYLINDER_SHAPE, new Vector3(6, 1, 0));
         TestHelpers.InstantiateEntityWithShape(scene, "6", DCL.Models.CLASS_ID.GLTF_SHAPE, new Vector3(0, 1, 6),
-            TestHelpers.GetTestsAssetsPath() + "/GLTF/Avatar_Idle.glb");
+            Utils.GetTestsAssetsPath() + "/GLTF/Avatar_Idle.glb");
         TestHelpers.InstantiateEntityWithShape(scene, "7", DCL.Models.CLASS_ID.OBJ_SHAPE, new Vector3(10, 1, 0),
-            TestHelpers.GetTestsAssetsPath() + "/OBJs/teapot.obj");
+            Utils.GetTestsAssetsPath() + "/OBJs/teapot.obj");
         TestHelpers.InstantiateEntityWithShape(scene, "8", DCL.Models.CLASS_ID.GLTF_SHAPE, new Vector3(0, 1, 12),
-            TestHelpers.GetTestsAssetsPath() + "/GLB/CesiumMan/CesiumMan.glb");
+            Utils.GetTestsAssetsPath() + "/GLB/CesiumMan/CesiumMan.glb");
 
         for (int i = 0; i < 8; i++)
         {

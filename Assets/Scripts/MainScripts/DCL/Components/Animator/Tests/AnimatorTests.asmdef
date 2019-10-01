@@ -3,7 +3,8 @@
     "references": [
         "MainScripts",
         "UnityGLTFAssembly",
-        "VisualTests"
+        "VisualTests",
+        "Utils"
     ],
     "optionalUnityReferences": [
         "TestAssemblies"
@@ -14,5 +15,6 @@
     "overrideReferences": false,
     "precompiledReferences": [],
     "autoReferenced": true,
-    "defineConstraints": []
+    "defineConstraints": [],
+    "versionDefines": []
 }

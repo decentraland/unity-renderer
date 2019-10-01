@@ -6,7 +6,10 @@
         "VisualTests",
         "Utils",
         "CoroutineHelpers",
-        "AvatarShape"
+        "AvatarShape",
+        "AvatarModel",
+        "AvatarAssets",
+        "ScriptableObjects"
     ],
     "optionalUnityReferences": [
         "TestAssemblies"

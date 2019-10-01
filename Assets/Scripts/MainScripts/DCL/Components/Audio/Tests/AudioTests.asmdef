@@ -1,7 +1,8 @@
 {
     "name": "AudioTests",
     "references": [
-        "MainScripts"
+        "MainScripts",
+        "Utils"
     ],
     "optionalUnityReferences": [
         "TestAssemblies"
@@ -12,5 +13,6 @@
     "overrideReferences": false,
     "precompiledReferences": [],
     "autoReferenced": true,
-    "defineConstraints": []
+    "defineConstraints": [],
+    "versionDefines": []
 }
