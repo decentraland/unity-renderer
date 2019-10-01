@@ -61,6 +61,13 @@ describe('My example test', function() {
   // ...
 ```
 
+### Testing with different renderers (unity engine builds)
+
+1. Visit https://www.npmjs.com/package/decentraland-renderer -> “versions” tab and choose the wanted deployment tag
+2. In the repo's root directory run the following command: `npm install decentraland-renderer@[CHOSEN TAG]`
+3. Run `make watch` and the local kernel should already use the selected renderer (make sure to restart it if you are already running it).
+4. Whenever the `npm` tag is changed and you would like to update that, run `npm install decentraland-renderer@[CHOSEN TAG]` again!
+
 ## Copyright info
 
 This repository is protected with a standard Apache 2 license. See the terms and conditions in the [LICENSE](https://github.com/decentraland/client/blob/master/LICENSE) file.
