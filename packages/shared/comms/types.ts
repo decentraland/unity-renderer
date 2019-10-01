@@ -1,4 +1,5 @@
-import { Profile } from '../types'
+import { ProfileForRenderer } from 'decentraland-ecs/src'
+
 export enum AvatarMessageType {
   // Networking related messages
   USER_DATA = 'USER_DATA',
@@ -78,10 +79,10 @@ export type PeerInformation = {
 
 export type UserInformation = {
   userId?: string
-  version?: string
+  version?: number
   status?: string
   pose?: Pose
-  profile?: Profile
+  profile?: ProfileForRenderer
 }
 
 // The order is [X,Y,Z,Qx,Qy,Qz,Qw]

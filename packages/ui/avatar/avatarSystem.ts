@@ -1,19 +1,19 @@
-import { Entity, Observable, engine, Transform, executeTask } from 'decentraland-ecs/src'
+import { engine, Entity, executeTask, Observable, Transform } from 'decentraland-ecs/src'
+import { AvatarShape } from 'decentraland-ecs/src/decentraland/AvatarShape'
 import {
+  AvatarMessage,
+  AvatarMessageType,
+  Pose,
   ReceiveUserDataMessage,
-  UUID,
   ReceiveUserPoseMessage,
   ReceiveUserVisibleMessage,
-  UserRemovedMessage,
+  UserInformation,
   UserMessage,
-  AvatarMessageType,
-  AvatarMessage,
-  Pose,
-  UserInformation
+  UserRemovedMessage,
+  UUID
 } from 'shared/comms/types'
 import { execute } from './rpc'
-import { AvatarShape } from 'decentraland-ecs/src/decentraland/AvatarShape'
-import { Profile } from '../../shared/types'
+import { ProfileForRenderer } from 'decentraland-ecs/src/decentraland/Types'
 
 export const avatarMessageObservable = new Observable<AvatarMessage>()
 
@@ -37,7 +37,7 @@ export class AvatarEntity extends Entity {
     this.transform = this.getComponentOrCreate(Transform)
   }
 
-  loadProfile(profile: Profile) {
+  loadProfile(profile: ProfileForRenderer) {
     if (profile) {
       const { avatar } = profile
 
@@ -45,14 +45,11 @@ export class AvatarEntity extends Entity {
       shape.id = profile.userId
       shape.name = profile.name
 
-      shape.baseUrl = avatar.baseUrl
-      shape.skin = avatar.skin
-      shape.hair = avatar.hair
-      shape.wearables = avatar.wearables
       shape.bodyShape = avatar.bodyShape
-      shape.eyes = avatar.eyes
-      shape.eyebrows = avatar.eyebrows
-      shape.mouth = avatar.mouth
+      shape.wearables = avatar.wearables
+      shape.skinColor = avatar.skinColor
+      shape.hairColor = avatar.hairColor
+      shape.eyeColor = avatar.eyeColor
 
       this.addComponentOrReplace(shape)
     }

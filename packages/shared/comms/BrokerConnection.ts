@@ -9,7 +9,7 @@ import {
   AuthMessage,
   Role
 } from './proto/broker'
-import { Auth } from 'shared/auth'
+import { Auth } from 'shared/auth/Auth'
 import { AuthData } from './proto/comms'
 import { Message } from 'google-protobuf'
 import { SocketReadyState } from './worldInstanceConnection'

@@ -131,7 +131,7 @@ export namespace ProfileData {
   export type AsObject = {
     category: CategoryMap[keyof CategoryMap]
     time: number
-    profileVersion: string
+    profileVersion: number
   }
 }
 

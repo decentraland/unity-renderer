@@ -1,45 +1,7 @@
-import { ObservableComponent, Component } from '../ecs/Component'
+import { WearableId } from '../decentraland/Types'
+import { Component, ObservableComponent } from '../ecs/Component'
 import { CLASS_ID } from './Components'
 import { ReadOnlyColor4 } from './math'
-
-/**
- * @public
- */
-export class Wearable {
-  constructor(
-    public category: string,
-    public contentName: string,
-    public contents: { file: string; hash: string }[] = []
-  ) {}
-}
-
-/**
- * @public
- */
-export class Skin {
-  constructor(public color: ReadOnlyColor4) {}
-}
-
-/**
- * @public
- */
-export class Hair {
-  constructor(public color: ReadOnlyColor4) {}
-}
-
-/**
- * @public
- */
-export class Face {
-  constructor(public texture: string) {}
-}
-
-/**
- * @public
- */
-export class Eyes {
-  constructor(public texture: string, public mask?: string, public color?: ReadOnlyColor4) {}
-}
 
 /**
  * @public
@@ -50,31 +12,22 @@ export class AvatarShape extends ObservableComponent {
   id!: string
 
   @ObservableComponent.field
-  baseUrl!: string
-
-  @ObservableComponent.field
   name!: string
 
   @ObservableComponent.field
-  bodyShape!: Wearable
+  bodyShape!: WearableId
 
   @ObservableComponent.field
-  wearables!: Wearable[]
+  wearables!: WearableId[]
 
   @ObservableComponent.field
-  skin!: Skin
+  skinColor!: ReadOnlyColor4
 
   @ObservableComponent.field
-  hair!: Hair
+  hairColor!: ReadOnlyColor4
 
   @ObservableComponent.field
-  eyes!: Eyes
-
-  @ObservableComponent.field
-  eyebrows!: Face
-
-  @ObservableComponent.field
-  mouth!: Face
+  eyeColor!: ReadOnlyColor4
 
   @ObservableComponent.field
   useDummyModel: boolean = false

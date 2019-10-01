@@ -17,6 +17,9 @@ export function createLogger(prefix: string): ILogger {
       }
     },
     log(message: string, ...args: any[]): void {
+      if (args && args[0] && args[0].startsWith && args[0].startsWith('The entity is already in the engine.')) {
+        return
+      }
       console.log(prefix + message, ...args)
     },
     warn(message: string, ...args: any[]): void {
