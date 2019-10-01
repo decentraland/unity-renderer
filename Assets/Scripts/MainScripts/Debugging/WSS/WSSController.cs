@@ -173,7 +173,7 @@ namespace DCL
                         break;
                 }
 
-                if (contentSource != ContentSource.LOCAL && forceLocalComms)
+                if (forceLocalComms)
                 {
                     debugString += "LOCAL_COMMS&";
                 }
