@@ -2,31 +2,26 @@
 
 ### Reading Guide
 
-1. [Pull Requests Naming Standards](https://github.com/decentraland/standards/blob/master/standards/git-usage.md)
+1. [Pull Request Naming Standards](https://github.com/decentraland/standards/blob/master/standards/git-usage.md)
 2. [Architecture Overview](https://docs.google.com/document/d/1_lzi3V5IDaVRJbTKNsNEcaG0L21VPydiUx5uamiyQnY/edit)
 3. [Coding Guidelines](code-guidelines.md)
 
-### Before you proceed: Setup the sister repo, the Explorer
+### Step 1: Setup the sister repo (kernel)
 
-1. Run `npm install` in the **root directory** of the [explorer](https://github.com/decentraland/explorer) repo.
-2. Run `make watch` in that same [explorer](https://github.com/decentraland/explorer) folder.
-    2. This might take some time (about 8 minutes on a modern computer). We're working on improving this. Have a coffee or keep reading this until there are no changes in your screen for ~40 seconds.
-3. Once the explorer automatically opens you a browser tab, you may close it and continue with Unity 
-3. Run the Initial Scene in the Unity editor
-4. Run the build by accessing **[http://localhost:8080/?DEBUG_MODE&LOCAL_COMMS&position=-103%2C99&ws=ws%3A%2F%2Flocalhost%3A5000%2Fdcl](http://localhost:8080/?DEBUG_MODE&LOCAL_COMMS&position=-103%2C99&ws=ws%3A%2F%2Flocalhost%3A5000%2Fdcl)** in any webbrowser
+1. Run `npm install` in the **root directory** of the [kernel](https://github.com/decentraland/kernel) repo.
+2. Run `make watch` in that same [kernel](https://github.com/decentraland/kernel) folder (this might take between 30 seconds and 1 minute).
+3. Once the kernel is ready, continue with the next step
 
-**Wait, what?**: The `explorer` repository holds a big number of business rules about how to run scenes. This setup runs that "operating system" (without the 3D visualization) so that Unity can connect to it and display on debug mode.
+### Step 2: Setup this project (renderer)
+1. Download and install Unity 2019.1.14f1 or a later 2019.1 version (note that 2019.2 does not work!)
+2. Open the Initial Scene
+3. Run the Initial Scene in the Unity editor!
 
-### Manual building and deployment of the Unity Artifact (to be automated soon)
+### Step 3:
+1. Hack away!
 
-1. Update build version number in MainScripts/DCL/Configuration/Configuration.cs (make a PR to keep this change in master branch)
-2. Build unity WASM with its name as "unity" into [Explorer](https://github.com/decentraland/explorer) cloned repo **root/static/** directory. (this can also be accomplished [using the command line](https://docs.unity3d.com/Manual/CommandLineArguments.html))
-3. (git) Checkout the deletion of static/unity/Build/DCLUnityLoader.js file (building replaces the folder and our unity loader is lost) and remove the unused static/unity/game.js and static/unity/index.html files.
-4. (git) Checkout the modifications in static/unity/Build/unity.json file (building replaces the folder and our custom changes are lost).
-5. Run the command `make watch` in explorer's directory
-6. Run the build by accessing **[http://localhost:8080/?DEBUG_MODE&LOCAL_COMMS&position=20,20](http://localhost:8080/?DEBUG_MODE&LOCAL_COMMS&position=20,20)** in any webbrowser
-7. After testing the build is fine, make a PR in explorer repo to update the new build in master (it should be just the 3, or sometimes only 2, wasm binary files)
-8. After 30 mins aprox, the new build should be already working in Zone (check browser console for version report)
+### Notes on `kernel` and `renderer`
+The `kernel` repository holds the business rules about how to run scenes, user login, communications, and content resolution. In this sense, it works as an "operating system" (without the visual interface). The `renderer` in this sense is just receiving event messages from the kernel, regenerating a tree structure and rendering it.
 
 ### Unity Editor debugging with dcl scene in "preview mode"
 
@@ -142,14 +137,29 @@ public IEnumerator VisualTestStub_Generate()
 }
 ```
 
+### Making a manual build
+
+1. Build unity WASM with its name as `unity` into the folder `/static` of the [kernel](https://github.com/decentraland/kernel) repository. **It's very important that the folder/build name is `unity`**.
+2. Checkout the file named `static/unity/Build/DCLUnityLoader.js`. Unity deletes anything on this folder as part of the build process and we need that.
+```
+git checkout -- static/unity/Build/DCLUnityLoader.js
+```
+4. Checkout the modifications in the `static/unity/Build/unity.json` file. Unity deletes our custom changes as part of the build process.	
+```
+git checkout -- static/unity/Build/unity.json
+```
+5. Run `make watch` in the `kernel` project.	
+6. Testing how your new build performs:
+  * Open **[http://localhost:8080/?DEBUG_MODE&LOCAL_COMMS&position=-100,100](http://localhost:8080/?DEBUG_MODE&LOCAL_COMMS&position=-100,100)** to go to an area with a high density of test parcels.
+  * Open **[http://localhost:8080/?DEBUG_MODE&LOCAL_COMMS&ENV=org&position=10,0](http://localhost:8080/?DEBUG_MODE&LOCAL_COMMS&ENV=org&position=10,0)** to open an area with real-life deployments (but without communicating with other users).
+  * Open **[http://localhost:8080/?ENV=org&position=0,90](http://localhost:8080/?ENV=org&position=0,90)** to open the explorer near the Decentraland Museum
+
 ### Builder Integration
 
 The following layers were created for builder functionality: 
 -Ground: used to facilitate ground raycasting and objects movement-
 -Gizmo: used to identify the gizmos and effects.
 -Selected: used for selected object effects.
-
-
 
 ### Known Issues
 
