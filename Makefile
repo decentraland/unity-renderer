@@ -53,7 +53,15 @@ docs: $(DECENTRALAND_ECS_TYPEDEF_FILE) ## Generate `decentraland-ecs` documentat
 	@cd $(PWD)/packages/decentraland-ecs; $(PWD)/node_modules/.bin/api-documenter markdown -i types/dcl -o docs
 	@echo "\nAPI Documentation was generated in the packages/decentraland-ecs/docs folder"
 
-build-essentials: $(COMPILED_SUPPORT_JS_FILES) $(DECENTRALAND_ECS_TYPEDEF_FILE) $(BUILD_ECS) $(SCENE_SYSTEM) $(INTERNAL_SCENES) $(DECENTRALAND_LOADER) generate-mocks ## Build the basic required files for the explorer
+RENDERER_BUILD := static/unity/Build/unity.data.unityweb static/unity/Build/unity.wasm.framework.unityweb static/unity/Build/unity.wasm.code.unityweb
+
+static/unity/Build/%.unityweb: node_modules/decentraland-renderer/%.unityweb
+	@cp node_modules/decentraland-renderer/`basename $@` static/unity/Build/
+
+node_modules/decentraland-renderer/%.unityweb: package.json package-lock.json
+	@npm install
+
+build-essentials: $(COMPILED_SUPPORT_JS_FILES) $(DECENTRALAND_ECS_TYPEDEF_FILE) $(BUILD_ECS) $(SCENE_SYSTEM) $(INTERNAL_SCENES) $(DECENTRALAND_LOADER) $(RENDERER_BUILD) generate-mocks ## Build the basic required files for the explorer
 
 # Hellmap scenes
 
@@ -220,11 +228,6 @@ watch: $(SOME_MAPPINGS) build-essentials static/dist/unity.js ## Watch the files
 			"$(COMPILER) targets/entryPoints/unity.json --watch" \
 			"$(COMPILER) targets/test.json --watch" \
 			"node ./scripts/runTestServer.js --keep-open"
-
-update: ## Update the version of the renderer (Unity build)
-	# TODO - make this install the latest published artifact of the current branch
-	npm install decentraland-renderer@latest
-	cp node_modules/decentraland-renderer/*.unityweb static/unity/Build/
 
 clean: ## Clean all generated files
 	@$(COMPILER) targets/clean.json
