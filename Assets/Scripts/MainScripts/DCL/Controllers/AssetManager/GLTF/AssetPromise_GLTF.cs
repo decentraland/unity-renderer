@@ -22,6 +22,7 @@ namespace DCL
             public Vector3? initialLocalPosition;
             public Quaternion? initialLocalRotation;
             public Vector3? initialLocalScale;
+            public bool forceNewInstance;
         }
 
         public Settings settings = new Settings();
@@ -156,5 +157,18 @@ namespace DCL
             if (asset != null)
                 asset.CancelShow();
         }
+
+        protected override Asset_GLTF GetAsset(object id)
+        {
+            if (settings.forceNewInstance)
+            {
+                return ((AssetLibrary_GLTF)library).GetCopyFromOriginal(id);
+            }
+            else
+            {
+                return base.GetAsset(id);
+            }
+        }
+
     }
 }

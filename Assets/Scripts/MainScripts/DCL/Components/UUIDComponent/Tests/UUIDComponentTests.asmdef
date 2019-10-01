@@ -4,7 +4,8 @@
         "MainScripts",
         "UnityGLTFAssembly",
         "CoroutineHelpers",
-        "WebInterface"
+        "WebInterface",
+        "Utils"
     ],
     "optionalUnityReferences": [
         "TestAssemblies"

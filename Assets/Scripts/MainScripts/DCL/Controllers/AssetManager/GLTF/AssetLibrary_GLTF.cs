@@ -54,6 +54,28 @@ namespace DCL
             return null;
         }
 
+        public Asset_GLTF GetCopyFromOriginal(object id)
+        {
+            if (Contains(id))
+            {
+                Asset_GLTF clone = masterAssets[id].Clone() as Asset_GLTF;
+
+                if (PoolManager.i.ContainsPool(clone.id))
+                {
+                    clone.container = PoolManager.i.GetPool(id).Instantiate().gameObject;
+                }
+                else
+                {
+                    Debug.LogError("Pool was removed and AssetLibrary didn't notice?!");
+                    return null;
+                }
+
+                return clone;
+            }
+
+            return null;
+        }
+
         public override void Release(Asset_GLTF asset)
         {
             if (asset == null)

@@ -1,7 +1,4 @@
-﻿using DCL;
-using DCL.Helpers;
-using System;
-using System.Collections;
+﻿using System;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -134,9 +131,15 @@ public static class AvatarUtils
             (mat) =>
             {
                 Material copy = new Material(replaceThemWith);
-                copy.SetTexture(_BaseMap, mat.GetTexture(_BaseMap));
-                copy.SetColor(_BaseColor, mat.GetColor(_BaseColor));
-                copy.SetColor(_EmissionColor, mat.GetColor(_EmissionColor));
+                if(mat.HasProperty(_BaseMap))
+                    copy.SetTexture(_BaseMap, mat.GetTexture(_BaseMap));
+
+                if(mat.HasProperty(_BaseColor))
+                    copy.SetColor(_BaseColor, mat.GetColor(_BaseColor));
+
+                if(mat.HasProperty(_EmissionColor))
+                    copy.SetColor(_EmissionColor, mat.GetColor(_EmissionColor));
+
                 result.Add(copy);
                 return copy;
             },
@@ -144,33 +147,4 @@ public static class AvatarUtils
 
         return result;
     }
-
-
-
-    public static IEnumerator FetchFaceUrl(AvatarShape.Model.Face face, string baseUrl, System.Action<Texture, Texture> OnSuccess)
-    {
-        string mainTextureUrl = baseUrl + face.texture;
-        string maskUrl = baseUrl + face.mask;
-        Texture loadedTexture = null;
-        Texture loadedMask = null;
-
-        if (!string.IsNullOrEmpty(mainTextureUrl))
-        {
-            yield return Utils.FetchTexture(mainTextureUrl, (tex) =>
-            {
-                loadedTexture = tex;
-            });
-        }
-
-        if (!string.IsNullOrEmpty(maskUrl))
-        {
-            yield return Utils.FetchTexture(maskUrl, (tex) =>
-            {
-                loadedMask = tex;
-            });
-        }
-
-        OnSuccess?.Invoke(loadedTexture, loadedMask);
-    }
-
 }

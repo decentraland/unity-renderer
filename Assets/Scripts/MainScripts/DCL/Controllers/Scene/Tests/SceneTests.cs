@@ -43,19 +43,19 @@ namespace Tests
                 new Vector3(6, 1, 0));
 
             TestHelpers.InstantiateEntityWithShape(scene, "6", DCL.Models.CLASS_ID.GLTF_SHAPE, new Vector3(0, 1, 6),
-                TestHelpers.GetTestsAssetsPath() + "/GLB/Lantern/Lantern.glb");
+                DCL.Helpers.Utils.GetTestsAssetsPath() + "/GLB/Lantern/Lantern.glb");
             yield return null;
             LoadWrapper_GLTF gltfShape = scene.entities["6"].gameObject.GetComponentInChildren<LoadWrapper_GLTF>(true);
             yield return new WaitUntil(() => gltfShape.alreadyLoaded);
 
             TestHelpers.InstantiateEntityWithShape(scene, "7", DCL.Models.CLASS_ID.OBJ_SHAPE, new Vector3(10, 1, 0),
-                TestHelpers.GetTestsAssetsPath() + "/OBJ/teapot.obj");
+                DCL.Helpers.Utils.GetTestsAssetsPath() + "/OBJ/teapot.obj");
             yield return null;
             LoadWrapper_OBJ objshape = scene.entities["7"].gameObject.GetComponentInChildren<LoadWrapper_OBJ>(true);
             yield return new WaitUntil(() => objshape.alreadyLoaded);
 
             TestHelpers.InstantiateEntityWithShape(scene, "8", DCL.Models.CLASS_ID.GLTF_SHAPE, new Vector3(0, 1, 12),
-                TestHelpers.GetTestsAssetsPath() + "/GLB/CesiumMan/CesiumMan.glb");
+                DCL.Helpers.Utils.GetTestsAssetsPath() + "/GLB/CesiumMan/CesiumMan.glb");
             yield return null;
             gltfShape = scene.entities["8"].gameObject.GetComponentInChildren<LoadWrapper_GLTF>(true);
             yield return new WaitUntil(() => gltfShape.alreadyLoaded);
@@ -350,7 +350,7 @@ namespace Tests
 
             TestHelpers.AttachGLTFShape(entity, scene, Vector3.zero, new LoadableShape.Model()
             {
-                src = TestHelpers.GetTestsAssetsPath() + "/GLB/Lantern/Lantern.glb"
+                src = DCL.Helpers.Utils.GetTestsAssetsPath() + "/GLB/Lantern/Lantern.glb"
             });
 
             Assert.AreEqual(1, scene.disposableNotReadyCount);

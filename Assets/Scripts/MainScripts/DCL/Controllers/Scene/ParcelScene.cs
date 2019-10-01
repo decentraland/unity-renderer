@@ -136,7 +136,7 @@ namespace DCL.Controllers
             SetupBlockers(data.parcels);
         }
 
-        private void CleanBlockers()
+        public void CleanBlockers()
         {
             int blockersCount = blockers.Count;
             for (int i = 0; i < blockersCount; i++)

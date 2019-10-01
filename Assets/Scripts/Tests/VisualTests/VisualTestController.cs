@@ -47,7 +47,7 @@ public class VisualTestController : MonoBehaviour
         yield return null;
 
         var scene = sceneController.loadedScenes["0,0"];
-        string textureUrl = TestHelpers.GetTestsAssetsPath() + "/Images/atlas.png";
+        string textureUrl = DCL.Helpers.Utils.GetTestsAssetsPath() + "/Images/atlas.png";
 
         TestHelpers.InstantiateEntityWithMaterial(scene, "1", new Vector3(-3, 1, 3),
             new DCL.Components.BasicMaterial.Model

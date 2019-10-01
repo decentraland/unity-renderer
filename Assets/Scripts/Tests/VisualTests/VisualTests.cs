@@ -23,7 +23,7 @@ namespace Tests
             yield return InitScene();
             yield return VisualTestHelpers.InitVisualTestsScene("BaseTest");
 
-            string src = TestHelpers.GetTestsAssetsPath() + "/GLB/Trevor/Trevor.glb";
+            string src = DCL.Helpers.Utils.GetTestsAssetsPath() + "/GLB/Trevor/Trevor.glb";
             GLTFShape trevorGLTFShape = TestHelpers.CreateEntityWithGLTFShape(scene, Vector3.zero, src);
             yield return trevorGLTFShape.routine;
 

@@ -253,15 +253,31 @@ namespace DCL
                             case "LoadProfile":
                                 UserProfileController.i.LoadProfile(msg.payload);
                                 break;
+
                             case "DeactivateRendering":
                                 RenderingController.i.DeactivateRendering();
                                 break;
                             case "ActivateRendering":
                                 RenderingController.i.ActivateRendering();
                                 break;
+
                             case "ShowNotification":
                                 hudController.ShowNotificationFromJson(msg.payload);
                                 break;
+
+                            case "AddWearableToCatalog":
+                                CatalogController.i.AddWearableToCatalog(msg.payload);
+                                break;
+                            case "AddWearablesToCatalog":
+                                CatalogController.i.AddWearablesToCatalog(msg.payload);
+                                break;
+                            case "RemoveWearablesFromCatalog":
+                                CatalogController.i.RemoveWearablesFromCatalog(msg.payload);
+                                break;
+                            case "ClearWearableCatalog":
+                                CatalogController.i.ClearWearableCatalog();
+                                break;
+
                             case "ConfigureMinimapHUD":
                                 hudController.ConfigureMinimapHUD(msg.payload);
                                 break;
@@ -271,8 +287,9 @@ namespace DCL
                             case "ConfigureNotificationHUD":
                                 hudController.ConfigureNotificationHUD(msg.payload);
                                 break;
+
                             default:
-                                Debug.Log("<b><color=#FF0000>WSSController</color></b> WHAT IS " + msg.type);
+                                Debug.Log("<b><color=#FF0000>WSSController:</color></b> received an unknown message from kernel to renderer: " + msg.type);
                                 break;
                         }
                     }

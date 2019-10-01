@@ -93,6 +93,22 @@ namespace DCL
                 }
             }
         }
+
+        public static IEnumerator WaitForAllIEnumerators(params IEnumerator[] coroutines)
+        {
+            List<Coroutine> coroutineGroup = new List<Coroutine>();
+            for (int i = 0; i < coroutines.Length; i++)
+            {
+                coroutineGroup.Add(CoroutineStarter.Start(coroutines[i]));
+            }
+
+            int coroutineGroupCount = coroutineGroup.Count;
+            for (int index = 0; index < coroutineGroupCount; index++)
+            {
+                var coroutine = coroutineGroup[index];
+                yield return coroutine;
+            }
+        }
     }
 
     // Suspends the coroutine execution until the supplied delegate evaluates to true or the timeout is reached.

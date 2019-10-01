@@ -374,6 +374,7 @@ GameObject:
   m_Component:
   - component: {fileID: 2842120016485600253}
   - component: {fileID: 5523974814614327640}
+  - component: {fileID: 3377148406933134318}
   - component: {fileID: 5451946646277210429}
   - component: {fileID: 122622683908687435}
   m_Layer: 0
@@ -411,24 +412,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 90e289cd869d762489df0f992c1aa5e8, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  defaultMaterial: {fileID: 2100000, guid: 77828a2ff3421ba42a6b4cc7e9a9061e, type: 2}
-  eyeMaterial: {fileID: 2100000, guid: fcfa021e0982c0840aaefe7411340f7f, type: 2}
-  eyebrowMaterial: {fileID: 2100000, guid: db9e974bee285614b8ea2d8832d1a563, type: 2}
-  mouthMaterial: {fileID: 2100000, guid: aa8f029bd537edb44b72b4737ca9b81d, type: 2}
   avatarName: {fileID: 3717630171843337652}
+  avatarRenderer: {fileID: 3377148406933134318}
   avatarMovementController: {fileID: 122622683908687435}
-  maleAnims:
-  - {fileID: 7400000, guid: 4fef0b7f5be12aa48a2e9d8facaaa42b, type: 2}
-  - {fileID: 7400000, guid: cd48d8cde6039fa4fac548ddab2ff277, type: 2}
-  - {fileID: 7400000, guid: 916369dcf45c5944e9f2409e0be10181, type: 2}
-  - {fileID: 7400000, guid: b51f09eb09017384a8ff4b3b88b00c00, type: 2}
-  - {fileID: 7400000, guid: c91199fcab8eef54d8045d809d671896, type: 2}
-  femaleAnims:
-  - {fileID: 7400000, guid: 62d81b2041d701b4381d66d17f7e246e, type: 2}
-  - {fileID: 7400000, guid: 5e5b5c340739da142b767937144ef10b, type: 2}
-  - {fileID: 7400000, guid: ec6a6c2a81a2b984f986fd6cbc8279d3, type: 2}
-  - {fileID: 7400000, guid: 1e3081b9c1f466743bc7602362784e93, type: 2}
-  - {fileID: 7400000, guid: db8c33ed0888f7b44af0b2acde9bd2b5, type: 2}
   minimapRepresentation: {fileID: 7598803346502927653}
   model:
     baseUrl: 
@@ -456,6 +442,35 @@ MonoBehaviour:
       mask: 
       texture: 
     useDummyModel: 1
+  everythingIsLoaded: 0
+--- !u!114 &3377148406933134318
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3389185268529299172}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 53a4f52c7cc5dc348ab140ed3238943a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  defaultMaterial: {fileID: 2100000, guid: 77828a2ff3421ba42a6b4cc7e9a9061e, type: 2}
+  eyeMaterial: {fileID: 2100000, guid: fcfa021e0982c0840aaefe7411340f7f, type: 2}
+  eyebrowMaterial: {fileID: 2100000, guid: db9e974bee285614b8ea2d8832d1a563, type: 2}
+  mouthMaterial: {fileID: 2100000, guid: aa8f029bd537edb44b72b4737ca9b81d, type: 2}
+  maleAnims:
+  - {fileID: 7400000, guid: 4fef0b7f5be12aa48a2e9d8facaaa42b, type: 2}
+  - {fileID: 7400000, guid: c91199fcab8eef54d8045d809d671896, type: 2}
+  - {fileID: 7400000, guid: 916369dcf45c5944e9f2409e0be10181, type: 2}
+  - {fileID: 7400000, guid: b51f09eb09017384a8ff4b3b88b00c00, type: 2}
+  - {fileID: 7400000, guid: cd48d8cde6039fa4fac548ddab2ff277, type: 2}
+  femaleAnims:
+  - {fileID: 7400000, guid: 62d81b2041d701b4381d66d17f7e246e, type: 2}
+  - {fileID: 7400000, guid: db8c33ed0888f7b44af0b2acde9bd2b5, type: 2}
+  - {fileID: 7400000, guid: 1e3081b9c1f466743bc7602362784e93, type: 2}
+  - {fileID: 7400000, guid: ec6a6c2a81a2b984f986fd6cbc8279d3, type: 2}
+  - {fileID: 7400000, guid: 5e5b5c340739da142b767937144ef10b, type: 2}
 --- !u!114 &5451946646277210429
 MonoBehaviour:
   m_ObjectHideFlags: 0

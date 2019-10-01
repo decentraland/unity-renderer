@@ -3,7 +3,8 @@
     "references": [
         "MainScripts",
         "Configuration",
-        "DCLTransform"
+        "DCLTransform",
+        "Utils"
     ],
     "optionalUnityReferences": [
         "TestAssemblies"

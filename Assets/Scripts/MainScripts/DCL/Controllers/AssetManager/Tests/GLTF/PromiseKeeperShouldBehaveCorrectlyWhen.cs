@@ -17,7 +17,7 @@ namespace AssetPromiseKeeper_GLTF_Tests
             var library = new AssetLibrary_GLTF();
             var keeper = new AssetPromiseKeeper_GLTF(library);
 
-            string url = TestHelpers.GetTestsAssetsPath() + "/GLB/Lantern/Lantern.glb";
+            string url = Utils.GetTestsAssetsPath() + "/GLB/Lantern/Lantern.glb";
             AssetPromise_GLTF prom = new AssetPromise_GLTF(scene.contentProvider, url);
 
             bool calledFail = false;
@@ -47,7 +47,7 @@ namespace AssetPromiseKeeper_GLTF_Tests
             var library = new AssetLibrary_GLTF();
             var keeper = new AssetPromiseKeeper_GLTF(library);
 
-            string url = TestHelpers.GetTestsAssetsPath() + "/GLB/Lantern/Lantern.glb";
+            string url = Utils.GetTestsAssetsPath() + "/GLB/Lantern/Lantern.glb";
             AssetPromise_GLTF prom = new AssetPromise_GLTF(scene.contentProvider, url);
             bool calledFail = false;
 
@@ -89,7 +89,7 @@ namespace AssetPromiseKeeper_GLTF_Tests
             var library = new AssetLibrary_GLTF();
             var keeper = new AssetPromiseKeeper_GLTF(library);
 
-            string url = TestHelpers.GetTestsAssetsPath() + "/GLB/Lantern/Lantern.glb";
+            string url = Utils.GetTestsAssetsPath() + "/GLB/Lantern/Lantern.glb";
             AssetPromise_GLTF prom = new AssetPromise_GLTF(scene.contentProvider, url);
             bool calledSuccess = false;
             bool calledFail = false;
@@ -125,7 +125,7 @@ namespace AssetPromiseKeeper_GLTF_Tests
             var library = new AssetLibrary_GLTF();
             var keeper = new AssetPromiseKeeper_GLTF(library);
 
-            string url = TestHelpers.GetTestsAssetsPath() + "/GLB/Lantern/Lantern.glb";
+            string url = Utils.GetTestsAssetsPath() + "/GLB/Lantern/Lantern.glb";
             AssetPromise_GLTF prom = new AssetPromise_GLTF(scene.contentProvider, url);
             Asset_GLTF loadedAsset = null;
 
@@ -154,7 +154,7 @@ namespace AssetPromiseKeeper_GLTF_Tests
             var library = new AssetLibrary_GLTF();
             var keeper = new AssetPromiseKeeper_GLTF(library);
 
-            string url = TestHelpers.GetTestsAssetsPath() + "/GLB/Lantern/Lantern.glb";
+            string url = Utils.GetTestsAssetsPath() + "/GLB/Lantern/Lantern.glb";
             AssetPromise_GLTF prom = new AssetPromise_GLTF(scene.contentProvider, url);
             Asset_GLTF loadedAsset = null;
 
@@ -196,7 +196,7 @@ namespace AssetPromiseKeeper_GLTF_Tests
             var library = new AssetLibrary_GLTF();
             var keeper = new AssetPromiseKeeper_GLTF(library);
 
-            string url = TestHelpers.GetTestsAssetsPath() + "/GLB/Lantern/Lantern.glb";
+            string url = Utils.GetTestsAssetsPath() + "/GLB/Lantern/Lantern.glb";
             AssetPromise_GLTF prom = new AssetPromise_GLTF(scene.contentProvider, url);
             Asset_GLTF asset = null;
             prom.OnSuccessEvent += (x) => { asset = x; };
@@ -234,7 +234,7 @@ namespace AssetPromiseKeeper_GLTF_Tests
             var library = new AssetLibrary_GLTF();
             var keeper = new AssetPromiseKeeper_GLTF(library);
 
-            string url = TestHelpers.GetTestsAssetsPath() + "/GLB/Lantern/Lantern.glb";
+            string url = Utils.GetTestsAssetsPath() + "/GLB/Lantern/Lantern.glb";
 
             string id = "1";
             AssetPromise_GLTF prom = new AssetPromise_GLTF(scene.contentProvider, url);

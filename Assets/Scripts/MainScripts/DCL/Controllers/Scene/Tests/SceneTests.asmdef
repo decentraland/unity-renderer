@@ -3,7 +3,9 @@
     "references": [
         "MainScripts",
         "Configuration",
-        "AvatarShape"
+        "AvatarShape",
+        "Utils",
+        "AvatarModel"
     ],
     "optionalUnityReferences": [
         "TestAssemblies"

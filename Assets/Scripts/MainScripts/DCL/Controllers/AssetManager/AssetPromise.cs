@@ -75,7 +75,7 @@ namespace DCL
             // NOTE(Brian): Get existent library element
             if (library.Contains(id))
             {
-                asset = library.Get(id);
+                asset = GetAsset(id);
 
                 if (asset != null)
                 {
@@ -96,6 +96,11 @@ namespace DCL
             asset.id = id;
 
             OnLoad(OnLoadSuccess, OnLoadFailure);
+        }
+
+        protected virtual AssetType GetAsset(object id)
+        {
+           return library.Get(id);
         }
 
         protected virtual void OnReuse(Action OnFinish)

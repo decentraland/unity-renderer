@@ -54,6 +54,7 @@ namespace DCL.Helpers
                     GameObject.Instantiate(Resources.Load("Prefabs/CharacterController"));
                 }
             }
+            scene.CleanBlockers();
         }
     }
 
@@ -187,20 +188,6 @@ namespace DCL.Helpers
     {
         public static int testSceneIteration;
         public const string testingSceneName = "DCL_Testing_";
-
-        public static string GetTestsAssetsPath(bool useWebServerPath = false)
-        {
-            if (useWebServerPath)
-            {
-                return "http://127.0.0.1:9991";
-            }
-            else
-            {
-                var uri = new System.Uri(Application.dataPath + "/../TestResources");
-                var converted = uri.AbsoluteUri;
-                return converted;
-            }
-        }
 
         public static string CreateSceneMessage(string sceneId, string tag, string method, string payload)
         {

@@ -26,15 +26,15 @@ public class GLTFLoadingTestController : MonoBehaviour
 
         // FULL GLB
         TestHelpers.InstantiateEntityWithShape(scene, "1", DCL.Models.CLASS_ID.GLTF_SHAPE, new Vector3(-2.5f, 1, 0),
-            TestHelpers.GetTestsAssetsPath() + "/GLB/Trunk/Trunk.glb");
+            Utils.GetTestsAssetsPath() + "/GLB/Trunk/Trunk.glb");
 
         // GLB + Separated Textures
         TestHelpers.InstantiateEntityWithShape(scene, "2", DCL.Models.CLASS_ID.GLTF_SHAPE, new Vector3(0f, 1, 0),
-            TestHelpers.GetTestsAssetsPath() + "/GLB/TrunkSeparatedTextures/Trunk.glb");
+            Utils.GetTestsAssetsPath() + "/GLB/TrunkSeparatedTextures/Trunk.glb");
 
         // GLTF
         TestHelpers.InstantiateEntityWithShape(scene, "3", DCL.Models.CLASS_ID.GLTF_SHAPE, new Vector3(2.5f, 1, 0),
-            TestHelpers.GetTestsAssetsPath() + "/GLTF/Trunk/Trunk.gltf");
+            Utils.GetTestsAssetsPath() + "/GLTF/Trunk/Trunk.gltf");
         // ---------
     }
 

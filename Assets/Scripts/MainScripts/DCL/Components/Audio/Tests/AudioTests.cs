@@ -55,7 +55,7 @@ namespace Tests
         {
             DCLAudioClip.Model model = new DCLAudioClip.Model
             {
-                url = url, //TestHelpers.GetTestsAssetsPath() + "/Audio/Train.wav",
+                url = url,
                 loop = loop,
                 shouldTryToLoad = loading,
                 volume = volume
@@ -97,7 +97,7 @@ namespace Tests
 
             yield return LoadAudioClip(scene,
                 audioClipId: "audioClipTest",
-                url: TestHelpers.GetTestsAssetsPath() + "/Audio/Train.wav",
+                url: DCL.Helpers.Utils.GetTestsAssetsPath() + "/Audio/Train.wav",
                 loop: true,
                 loading: true,
                 volume: 1.0f,
@@ -241,7 +241,7 @@ namespace Tests
             DecentralandEntity entity = TestHelpers.CreateSceneEntity(scene);
             yield return null;
 
-            yield return LoadAudioClip(scene, "1", TestHelpers.GetTestsAssetsPath() + "/Audio/short_effect.ogg", false, true, 1);
+            yield return LoadAudioClip(scene, "1", DCL.Helpers.Utils.GetTestsAssetsPath() + "/Audio/short_effect.ogg", false, true, 1);
 
             yield return CreateAudioSource(scene, entity.entityId, "1", true, loop: true);
 
@@ -259,7 +259,7 @@ namespace Tests
             DecentralandEntity entity = TestHelpers.CreateSceneEntity(scene);
             yield return null;
 
-            yield return LoadAudioClip(scene, "1", TestHelpers.GetTestsAssetsPath() + "/Audio/short_effect.ogg", false, true, 1);
+            yield return LoadAudioClip(scene, "1", DCL.Helpers.Utils.GetTestsAssetsPath() + "/Audio/short_effect.ogg", false, true, 1);
 
             yield return CreateAudioSource(scene, entity.entityId, "1", true, loop: false);
 
@@ -283,7 +283,7 @@ namespace Tests
         {
             yield return InitScene();
 
-            DCLAudioClip dclAudioClip = CreateAudioClip(TestHelpers.GetTestsAssetsPath() + "/Audio/short_effect.ogg", true, true, 1);
+            DCLAudioClip dclAudioClip = CreateAudioClip(DCL.Helpers.Utils.GetTestsAssetsPath() + "/Audio/short_effect.ogg", true, true, 1);
             bool isOnReady = false;
             dclAudioClip.CallWhenReady((x) => { isOnReady = true; });
 
@@ -295,7 +295,7 @@ namespace Tests
         {
             yield return InitScene();
 
-            DCLAudioClip dclAudioClip = CreateAudioClip(TestHelpers.GetTestsAssetsPath() + "/Audio/short_effect.ogg", true, true, 1);
+            DCLAudioClip dclAudioClip = CreateAudioClip(DCL.Helpers.Utils.GetTestsAssetsPath() + "/Audio/short_effect.ogg", true, true, 1);
             bool isOnReady = false;
             dclAudioClip.CallWhenReady((x) => { isOnReady = true; });
             yield return dclAudioClip.routine;
@@ -308,7 +308,7 @@ namespace Tests
         {
             yield return InitScene();
 
-            DCLAudioClip dclAudioClip = CreateAudioClip(TestHelpers.GetTestsAssetsPath() + "/Audio/short_effect.ogg", true, true, 1);
+            DCLAudioClip dclAudioClip = CreateAudioClip(DCL.Helpers.Utils.GetTestsAssetsPath() + "/Audio/short_effect.ogg", true, true, 1);
             yield return dclAudioClip.routine;
             bool isOnReady = false;
             dclAudioClip.CallWhenReady((x) => { isOnReady = true; });

@@ -6,6 +6,7 @@ public class UserProfileController : MonoBehaviour
     public static UserProfileController i { get; private set; }
 
     [NonSerialized] public UserProfile ownUserProfile;
+
     public void Awake()
     {
         i = this;
@@ -14,6 +15,10 @@ public class UserProfileController : MonoBehaviour
 
     public void LoadProfile(string payload)
     {
-        ownUserProfile.UpdateData(JsonUtility.FromJson<UserProfile.Model>(payload));
+        if (payload == null)
+        {
+            return;
+        }
+        ownUserProfile.UpdateData(JsonUtility.FromJson<UserProfileModel>(payload));
     }
 }

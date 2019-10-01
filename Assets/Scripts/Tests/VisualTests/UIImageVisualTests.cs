@@ -40,7 +40,7 @@ public class UIImageVisualTests : UIVisualTestsBase
             height = new UIValue(128f)
         }, "imageBack");
 
-        DCLTexture texture = TestHelpers.CreateDCLTexture(scene, TestHelpers.GetTestsAssetsPath() + "/Images/atlas.png");
+        DCLTexture texture = TestHelpers.CreateDCLTexture(scene, DCL.Helpers.Utils.GetTestsAssetsPath() + "/Images/atlas.png");
         yield return texture.routine;
         yield return CreateUIComponent<UIImage, UIImage.Model>(CLASS_ID.UI_IMAGE_SHAPE, new UIImage.Model
         {
