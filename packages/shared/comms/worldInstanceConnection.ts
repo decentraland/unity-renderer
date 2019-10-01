@@ -27,6 +27,8 @@ export enum SocketReadyState {
   CLOSED
 }
 
+import { Reporter } from './PresenceReporter'
+
 class SendResult {
   constructor(public bytesSize: number) {}
 }
@@ -39,6 +41,7 @@ export function positionHash(p: Position) {
 }
 
 export class WorldInstanceConnection {
+  public aliases: Record<number, string> = {}
   public positionHandler: ((fromAlias: string, positionData: PositionData) => void) | null = null
   public profileHandler: ((fromAlias: string, identity: string, profileData: ProfileData) => void) | null = null
   public chatHandler: ((fromAlias: string, chatData: ChatData) => void) | null = null
@@ -95,7 +98,7 @@ export class WorldInstanceConnection {
     const d = new ProfileData()
     d.setCategory(Category.PROFILE)
     d.setTime(Date.now())
-    userProfile.version && d.setProfileVersion(userProfile.version)
+    userProfile.version && d.setProfileVersion('' + userProfile.version)
 
     const r = this.sendTopicIdentityMessage(true, topic, d)
     if (this.stats) {
@@ -167,6 +170,7 @@ export class WorldInstanceConnection {
         return
       }
     }
+    rawTopics.split(' ').map(_ => Reporter.subscribe(_))
     const subscriptionMessage = new SubscriptionMessage()
     subscriptionMessage.setType(MessageType.SUBSCRIPTION)
     subscriptionMessage.setFormat(Format.PLAIN)
@@ -224,7 +228,9 @@ export class WorldInstanceConnection {
           break
         }
 
-        const alias = dataMessage.getFromAlias().toString()
+        const aliasNum = dataMessage.getFromAlias()
+        const alias = aliasNum.toString()
+        if (this.aliases[aliasNum]) Reporter.reportSeen(this.aliases[aliasNum])
         const category = dataHeader.getCategory()
         switch (category) {
           case Category.POSITION: {
@@ -292,6 +298,8 @@ export class WorldInstanceConnection {
 
         const alias = dataMessage.getFromAlias().toString()
         const userId = atob(dataMessage.getIdentity_asB64())
+        Reporter.reportSeen(userId)
+        this.aliases[dataMessage.getFromAlias()] = userId
         const category = dataHeader.getCategory()
         switch (category) {
           case Category.PROFILE: {

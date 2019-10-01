@@ -1,6 +1,6 @@
-import { Auth } from '../auth/index'
 import { disconnect } from '../comms'
 import { setLoadingScreenVisible } from '../../unity-interface/dcl'
+import { Auth } from 'shared/auth/Auth'
 
 export class Session {
   private static _instance: Session = new Session()

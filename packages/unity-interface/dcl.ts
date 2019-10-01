@@ -5,44 +5,42 @@ type GameInstance = {
 }
 
 import { EventDispatcher } from 'decentraland-rpc/lib/common/core/EventDispatcher'
-
+import { Session } from 'shared/session'
+import { gridToWorld } from '../atomicHelpers/parcelScenePositions'
+import { DEBUG, ENGINE_DEBUG_PANEL, playerConfigurations, SCENE_DEBUG_PANEL } from '../config'
+import { Quaternion, ReadOnlyQuaternion, ReadOnlyVector3, Vector3 } from '../decentraland-ecs/src/decentraland/math'
+import { IEventNames, IEvents, ProfileForRenderer } from '../decentraland-ecs/src/decentraland/Types'
+import { sceneLifeCycleObservable } from '../decentraland-loader/lifecycle/controllers/scene'
+import { DevTools } from '../shared/apis/DevTools'
+import { ParcelIdentity } from '../shared/apis/ParcelIdentity'
+import { chatObservable } from '../shared/comms/chat'
+import { createLogger, defaultLogger, ILogger } from '../shared/logger'
+import { saveAvatarRequest } from '../shared/passports/actions'
+import { Avatar, Wearable } from '../shared/passports/types'
 import {
-  LoadableParcelScene,
   EntityAction,
   EnvironmentData,
-  ILandToLoadableParcelScene,
-  IScene,
-  MappingsResponse,
+  HUDConfiguration,
   ILand,
-  Profile,
+  ILandToLoadableParcelScene,
   InstancedSpawnPoint,
-  AvatarAsset,
-  Notification,
-  HUDConfiguration
+  IScene,
+  LoadableParcelScene,
+  MappingsResponse,
+  Notification
 } from '../shared/types'
-import { DevTools } from '../shared/apis/DevTools'
-import { gridToWorld } from '../atomicHelpers/parcelScenePositions'
-import { ILogger, createLogger, defaultLogger } from '../shared/logger'
-import { positionObservable, teleportObservable } from '../shared/world/positionThings'
+import { ParcelSceneAPI } from '../shared/world/ParcelSceneAPI'
 import {
   enableParcelSceneLoading,
-  getSceneWorkerBySceneID,
   getParcelSceneID,
-  stopParcelSceneWorker,
-  loadParcelScene
+  getSceneWorkerBySceneID,
+  loadParcelScene,
+  stopParcelSceneWorker
 } from '../shared/world/parcelSceneManager'
-import { SceneWorker, hudWorkerUrl } from '../shared/world/SceneWorker'
+import { positionObservable, teleportObservable } from '../shared/world/positionThings'
+import { hudWorkerUrl, SceneWorker } from '../shared/world/SceneWorker'
 import { ensureUiApis } from '../shared/world/uiSceneInitializer'
-import { ParcelIdentity } from '../shared/apis/ParcelIdentity'
-import { IEventNames, IEvents } from '../decentraland-ecs/src/decentraland/Types'
-import { Vector3, Quaternion, ReadOnlyVector3, ReadOnlyQuaternion } from '../decentraland-ecs/src/decentraland/math'
-import { DEBUG, ENGINE_DEBUG_PANEL, SCENE_DEBUG_PANEL, playerConfigurations } from '../config'
-import { chatObservable } from '../shared/comms/chat'
-import { getUserProfile } from '../shared/comms/peers'
-import { sceneLifeCycleObservable } from '../decentraland-loader/lifecycle/controllers/scene'
 import { worldRunningObservable } from '../shared/world/worldState'
-import { Session } from '../shared/session'
-import { ParcelSceneAPI } from '../shared/world/ParcelSceneAPI'
 
 let gameInstance!: GameInstance
 
@@ -87,6 +85,10 @@ const browserInterface = {
     Session.current.logout().catch(e => defaultLogger.error('error while logging out', e))
   },
 
+  SaveUserAvatar(data: { face: string; body: string; avatar: Avatar }) {
+    ;(global as any).globalStore.dispatch(saveAvatarRequest(data))
+  },
+
   ControlEvent({ eventType, payload }: { eventType: string; payload: any }) {
     switch (eventType) {
       case 'SceneReady': {
@@ -128,7 +130,7 @@ const unityInterface = {
   SetDebug() {
     gameInstance.SendMessage('SceneController', 'SetDebug')
   },
-  LoadProfile(profile: Profile) {
+  LoadProfile(profile: ProfileForRenderer) {
     gameInstance.SendMessage('SceneController', 'LoadProfile', JSON.stringify(profile))
   },
   CreateUIScene(data: { id: string; baseUrl: string }) {
@@ -180,8 +182,10 @@ const unityInterface = {
   UnlockCursor() {
     gameInstance.SendMessage('MouseCatcher', 'UnlockCursor')
   },
-  AddWearablesToCatalog(wearables: AvatarAsset[]) {
-    gameInstance.SendMessage('SceneController', 'AddWearablesToCatalog', JSON.stringify(wearables))
+  AddWearablesToCatalog(wearables: Wearable[]) {
+    for (let wearable of wearables) {
+      gameInstance.SendMessage('SceneController', 'AddWearableToCatalog', JSON.stringify(wearable))
+    }
   },
   RemoveWearablesFromCatalog(wearableIds: string[]) {
     gameInstance.SendMessage('SceneController', 'RemoveWearablesFromCatalog', JSON.stringify(wearableIds))
@@ -368,7 +372,6 @@ async function initializeDecentralandUI() {
   await ensureUiApis(worker)
 
   unityInterface.CreateUIScene({ id: getParcelSceneID(scene), baseUrl: scene.data.baseUrl })
-  unityInterface.LoadProfile(getUserProfile().profile)
 }
 
 let currentLoadedScene: SceneWorker

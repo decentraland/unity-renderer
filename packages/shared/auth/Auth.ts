@@ -1,18 +1,15 @@
-import future from 'fp-future'
-import { createStore, Store, applyMiddleware, combineReducers, compose } from 'redux'
-import auth0 from 'auth0-js'
-import { v4 as uuid } from 'uuid'
-import { BasicEphemeralKey, MessageInput } from 'decentraland-auth-protocol'
-
-import { CommsAuth } from './CommsAuth'
-import { authReducer } from './reducer'
-import { getAccessToken, isLoggedIn, getData, getSub, getEmail } from './selectors'
-import { AuthState, AuthData } from './types'
-import { CallbackResult, createSaga } from './sagas'
-import { createSelector } from 'reselect'
-import createSagaMiddleware from '@redux-saga/core'
+const auth0 = require('auth0-js')
 import { getServerConfigurations } from 'config'
+import { BasicEphemeralKey, MessageInput } from 'decentraland-auth-protocol'
+import future from 'fp-future'
+import { Store } from 'redux'
+import { createSelector } from 'reselect'
+import { v4 as uuid } from 'uuid'
 import { login } from './actions'
+import { CommsAuth } from './CommsAuth'
+import { CallbackResult } from './sagas'
+import { getAccessToken, getData, getSub, isLoggedIn, getEmail } from './selectors'
+import { AuthData, AuthState } from './types'
 
 type RootState = any
 
@@ -21,16 +18,14 @@ export function isTokenExpired(expiresAt: number) {
 }
 
 export class Auth {
-  isExpired = createSelector<RootState, AuthState['data'], boolean>(
+  public isExpired = createSelector<RootState, AuthState['data'], boolean>(
     getData,
     data => !!data && isTokenExpired(data.expiresAt)
   ) as (store: any) => boolean
 
-  private store: Store<{ auth: AuthState }>
   private ephemeralKey?: BasicEphemeralKey
 
   private webAuth: auth0.WebAuth
-  private sagaMiddleware: any
 
   private comms: CommsAuth
 
@@ -41,15 +36,10 @@ export class Auth {
       domain: string
       redirectUri: string
       audience: string
-    }
+    },
+    public store: Store<{ auth: AuthState }>
   ) {
-    this.sagaMiddleware = createSagaMiddleware()
-    const composeEnhancers = (window as any).__REDUX_DEVTOOLS_EXTENSION_COMPOSE__ || compose
     this.comms = new CommsAuth({ baseURL: getServerConfigurations().auth })
-    this.store = createStore(
-      combineReducers({ auth: authReducer }),
-      composeEnhancers(applyMiddleware(this.sagaMiddleware))
-    )
 
     this.webAuth = new auth0.WebAuth({
       clientID: this.config.clientId,
@@ -59,10 +49,6 @@ export class Auth {
       audience: this.config.audience,
       scope: 'openid email'
     })
-  }
-
-  setup() {
-    this.sagaMiddleware.run(createSaga(this))
   }
 
   async getUserId() {
@@ -139,10 +125,10 @@ export class Auth {
               return
             }
 
-            let redirectUrl = null
+            let redirectUri = undefined
             if (auth.state) {
-              redirectUrl = localStorage.getItem(auth.state)
-              if (redirectUrl) {
+              redirectUri = localStorage.getItem(auth.state) || undefined
+              if (redirectUri) {
                 localStorage.removeItem(auth.state)
               }
             }
@@ -154,7 +140,7 @@ export class Auth {
               accessToken: auth.accessToken!,
               idToken: auth.idToken!
             }
-            resolve({ data, redirectUrl })
+            resolve({ data, redirectUri })
           })
         } else {
           reject(new Error('No access token found in the url hash'))

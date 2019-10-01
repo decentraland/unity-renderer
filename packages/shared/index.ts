@@ -1,3 +1,4 @@
+import { Store } from 'redux'
 import {
   ENABLE_WEB3,
   ETHEREUM_NETWORK,
@@ -9,27 +10,21 @@ import {
 } from '../config'
 import { initialize, queueTrackingEvent } from './analytics'
 import './apis/index'
-import { Auth } from './auth'
 import { connect, disconnect } from './comms'
-import { isMobile } from './comms/mobile'
 import { persistCurrentUser } from './comms/index'
+import { isMobile } from './comms/mobile'
 import { localProfileUUID } from './comms/peers'
 import './events'
 import { ReportFatalError } from './loading/ReportFatalError'
 import { AUTH_ERROR_LOGGED_OUT, COMMS_COULD_NOT_BE_ESTABLISHED, MOBILE_NOT_SUPPORTED } from './loading/types'
 import { defaultLogger } from './logger'
+import { PassportAsPromise } from './passports/PassportAsPromise'
 import { Session } from './session/index'
-import { ProfileSpec } from './types'
+import { RootState } from './store/rootTypes'
+import { buildStore } from './store/store'
 import { getAppNetwork, getNetworkFromTLD, initWeb3 } from './web3'
 import { initializeUrlPositionObserver } from './world/positionThings'
-import {
-  createProfile,
-  createStubProfileSpec,
-  fetchLegacy,
-  fetchProfile,
-  legacyToSpec,
-  resolveProfileSpec
-} from './world/profiles'
+import { setWorldContext } from './protocol/actions'
 
 // TODO fill with segment keys and integrate identity server
 async function initializeAnalytics(userId: string) {
@@ -46,7 +41,7 @@ async function initializeAnalytics(userId: string) {
   }
 }
 
-declare let window: any
+export let globalStore: Store<RootState>
 
 export async function initShared(): Promise<Session | undefined> {
   if (isMobile()) {
@@ -55,12 +50,11 @@ export async function initShared(): Promise<Session | undefined> {
   }
   const session = new Session()
 
-  const auth = new Auth({
+  const { store, startSagas, auth } = buildStore({
     ...getLoginConfigurationForCurrentDomain(),
-    redirectUri: window.location.href,
     ephemeralKeyTTL: 24 * 60 * 60 * 1000
   })
-  session.auth = auth
+  ;(window as any).globalStore = globalStore = store
 
   let userId: string
 
@@ -70,7 +64,7 @@ export async function initShared(): Promise<Session | undefined> {
     defaultLogger.log(`Using test user.`)
     userId = 'email|5cdd68572d5f842a16d6cc17'
   } else {
-    auth.setup()
+    startSagas()
     try {
       userId = await auth.getUserId()
     } catch (e) {
@@ -115,11 +109,14 @@ export async function initShared(): Promise<Session | undefined> {
   for (let i = 1; ; ++i) {
     try {
       defaultLogger.info(`Try number ${i}...`)
-      await connect(
+      const context = await connect(
         userId,
         net,
         auth
       )
+      if (context !== undefined) {
+        store.dispatch(setWorldContext(context))
+      }
       break
     } catch (e) {
       if (!e.message.startsWith('Communications link') || i >= maxAttemps) {
@@ -136,39 +133,8 @@ export async function initShared(): Promise<Session | undefined> {
   // initialize profile
   console['group']('connect#profile')
   if (!PREVIEW) {
-    let response
-    try {
-      response = await fetchProfile(await auth.getAccessToken(), userId)
-    } catch (e) {
-      defaultLogger.error(`Not able to fetch profile for current user`)
-    }
-
-    let spec: ProfileSpec
-    if (!response || !response.ok) {
-      const legacy = await fetchLegacy(await auth.getAccessToken(), '')
-      if (legacy.ok) {
-        spec = legacyToSpec((await legacy.json()).data)
-      } else {
-        defaultLogger.info(`Non existing avatar, creating a random one`)
-        spec = await createStubProfileSpec()
-      }
-    } else if (response && response.ok) {
-      spec = await response.json()
-    } else {
-      defaultLogger.info(`Non existing profile, creating a random one`)
-      spec = await createStubProfileSpec()
-
-      const avatar = spec.avatar
-      try {
-        const creationResponse = await createProfile(await auth.getAccessToken(), avatar)
-        defaultLogger.info(`New profile created with response ${creationResponse.status}`)
-      } catch (e) {
-        defaultLogger.error(`Error while creating profile`)
-        defaultLogger.error(e)
-      }
-    }
-    const profile = await resolveProfileSpec(localProfileUUID!, spec!, await auth.getEmail())
-    persistCurrentUser({ userId: localProfileUUID!, version: profile.version, profile })
+    const profile = await PassportAsPromise(localProfileUUID!)
+    persistCurrentUser({ userId: localProfileUUID!, version: profile.version, ...profile })
   }
   console['groupEnd']()
 

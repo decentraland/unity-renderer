@@ -94,6 +94,7 @@ export const DEBUG_ANALYTICS = location.search.indexOf('DEBUG_ANALYTICS') !== -1
 export const DEBUG_MOBILE = location.search.indexOf('DEBUG_MOBILE') !== -1
 export const DEBUG_MESSAGES = location.search.indexOf('DEBUG_MESSAGES') !== -1
 export const DEBUG_WS_MESSAGES = location.search.indexOf('DEBUG_WS_MESSAGES') !== -1
+export const DEBUG_REDUX = location.search.indexOf('DEBUG_REDUX') !== -1
 
 export const DISABLE_AUTH = location.search.indexOf('DISABLE_AUTH') !== -1 || DEBUG
 export const ENGINE_DEBUG_PANEL = location.search.indexOf('ENGINE_DEBUG_PANEL') !== -1
@@ -207,8 +208,11 @@ export function getServerConfigurations() {
     content: `https://content.decentraland.${TLDDefault === 'today' ? 'org' : TLDDefault}`,
     worldInstanceUrl: `wss://world-comm.decentraland.${TLDDefault}/connect`,
     profile: `https://profile.decentraland.${TLDDefault}/api/v1`,
+    wearablesApi: `https://dcl-wearable-api.now.sh`,
     avatar: {
-      server: `https://avatars-api.decentraland.${TLDDefault}/`,
+      // avatars-api.decentraland.zone is down
+      snapshotStorage: `https://avatars-storage.decentraland.${TLDDefault}/`,
+      server: `https://avatars-api.decentraland.${TLDDefault === 'zone' ? 'today' : TLDDefault}/`,
       catalog: 'https://avatar-assets.now.sh',
       contents: `https://s3.amazonaws.com/content-service.decentraland.org/`,
       presets: `https://avatars-storage.decentraland.org/mobile-avatars`

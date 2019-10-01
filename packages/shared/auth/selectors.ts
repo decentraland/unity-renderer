@@ -22,6 +22,9 @@ export const getSub = createSelector<RootState, AuthState['data'], string | null
   getData,
   data => (data ? data.sub : null)
 ) as (store: any) => string
+
+export const getCurrentUserId = getSub
+
 export const getEmail = createSelector<RootState, AuthState['data'], string | null>(
   getData,
   data => (data ? data.email : null)
