@@ -97,11 +97,11 @@ namespace Tests
                     ColorUtility.ToHtmlStringRGB(materialComponent.material.GetColor("_SpecColor")));
 
                 // Other properties
-                Assert.AreEqual("0.5", materialComponent.material.GetFloat("_Metallic").ToString());
-                Assert.AreEqual("0.5", materialComponent.material.GetFloat("_Smoothness").ToString());
-                Assert.AreEqual("1", materialComponent.material.GetFloat("_EnvironmentReflections").ToString());
-                Assert.AreEqual("1", materialComponent.material.GetFloat("_SpecularHighlights").ToString());
-                Assert.AreEqual("0", materialComponent.material.GetFloat("_AlphaClip").ToString());
+                Assert.AreApproximatelyEqual(0.5f, materialComponent.material.GetFloat("_Metallic"));
+                Assert.AreApproximatelyEqual(0.5f, materialComponent.material.GetFloat("_Smoothness"));
+                Assert.AreApproximatelyEqual(1.0f, materialComponent.material.GetFloat("_EnvironmentReflections"));
+                Assert.AreApproximatelyEqual(1.0f, materialComponent.material.GetFloat("_SpecularHighlights"));
+                Assert.AreApproximatelyEqual(.0f, materialComponent.material.GetFloat("_AlphaClip"));
                 Assert.AreEqual((int)UnityEngine.Rendering.RenderQueue.Geometry, materialComponent.material.renderQueue);
             }
 
@@ -150,11 +150,11 @@ namespace Tests
                     ColorUtility.ToHtmlStringRGB(materialComponent.material.GetColor("_SpecColor")));
 
                 // Other properties
-                Assert.AreEqual("0.37", materialComponent.material.GetFloat("_Metallic").ToString());
-                Assert.AreEqual("0.1", materialComponent.material.GetFloat("_Smoothness").ToString());
-                Assert.AreEqual("0.4", materialComponent.material.GetFloat("_EnvironmentReflections").ToString());
-                Assert.AreEqual("2", materialComponent.material.GetFloat("_SpecularHighlights").ToString());
-                Assert.AreEqual("0", materialComponent.material.GetFloat("_AlphaClip").ToString());
+                Assert.AreApproximatelyEqual(0.37f, materialComponent.material.GetFloat("_Metallic"));
+                Assert.AreApproximatelyEqual(0.1f, materialComponent.material.GetFloat("_Smoothness"));
+                Assert.AreApproximatelyEqual(0.4f, materialComponent.material.GetFloat("_EnvironmentReflections"));
+                Assert.AreApproximatelyEqual(2.0f, materialComponent.material.GetFloat("_SpecularHighlights"));
+                Assert.AreApproximatelyEqual(.0f, materialComponent.material.GetFloat("_AlphaClip"));
                 Assert.AreEqual((int)UnityEngine.Rendering.RenderQueue.Transparent, materialComponent.material.renderQueue);
                 Assert.AreEqual((int)UnityEngine.Rendering.BlendMode.SrcAlpha,
                     materialComponent.material.GetInt("_SrcBlend"));
@@ -274,8 +274,8 @@ namespace Tests
                 "1st and 3rd entities should have the same material");
 
             // Check material properties before updating them
-            Assert.AreEqual("0.3", firstRenderer.sharedMaterial.GetFloat("_Metallic").ToString());
-            Assert.AreEqual("0.66", secondRenderer.sharedMaterial.GetFloat("_Metallic").ToString());
+            Assert.AreApproximatelyEqual(0.3f, firstRenderer.sharedMaterial.GetFloat("_Metallic"));
+            Assert.AreApproximatelyEqual(0.66f, secondRenderer.sharedMaterial.GetFloat("_Metallic"));
 
             // Update material properties
             scene.SharedComponentUpdate(JsonUtility.ToJson(new DCL.Models.SharedComponentUpdateMessage
@@ -290,8 +290,8 @@ namespace Tests
             yield return (scene.disposableComponents[firstMaterialID] as DCL.Components.PBRMaterial).routine;
 
             // Check material properties after updating them
-            Assert.AreEqual("0.95", firstRenderer.sharedMaterial.GetFloat("_Metallic").ToString());
-            Assert.AreEqual("0.66", secondRenderer.sharedMaterial.GetFloat("_Metallic").ToString());
+            Assert.AreApproximatelyEqual(0.95f, firstRenderer.sharedMaterial.GetFloat("_Metallic"));
+            Assert.AreApproximatelyEqual(0.66f, secondRenderer.sharedMaterial.GetFloat("_Metallic"));
         }
 
         [UnityTest]
@@ -508,7 +508,7 @@ namespace Tests
             // Check default properties
             {
                 Assert.IsTrue(materialComponent.material.GetTexture("_BaseMap") == null);
-                Assert.AreEqual(1f, materialComponent.material.GetFloat("_AlphaClip"));
+                Assert.AreApproximatelyEqual(1.0f, materialComponent.material.GetFloat("_AlphaClip"));
             }
 
             DCLTexture dclTexture = TestHelpers.CreateDCLTexture(
@@ -534,8 +534,8 @@ namespace Tests
             {
                 Texture mainTex = materialComponent.material.GetTexture("_BaseMap");
                 Assert.IsTrue(mainTex != null);
-                Assert.AreEqual("0.5", materialComponent.material.GetFloat("_Cutoff").ToString());
-                Assert.AreEqual("1", materialComponent.material.GetFloat("_AlphaClip").ToString());
+                Assert.AreApproximatelyEqual(0.5f, materialComponent.material.GetFloat("_Cutoff"));
+                Assert.AreApproximatelyEqual(1.0f, materialComponent.material.GetFloat("_AlphaClip"));
                 Assert.AreEqual(TextureWrapMode.Mirror, mainTex.wrapMode);
                 Assert.AreEqual(FilterMode.Bilinear, mainTex.filterMode);
             }
