@@ -371,14 +371,8 @@ namespace DCL.Controllers
                 {
                     DecentralandEntity entity = entities[tmpRemoveEntityMessage.id];
 
-                    if (removeImmediatelyFromEntitiesList)
-                        entity.SetParent(null);
-
                     // This will also cleanup its children
                     CleanUpEntityRecursively(entity, !removeImmediatelyFromEntitiesList);
-
-                    if (removeImmediatelyFromEntitiesList)
-                        CleanEntitiesList();
                 }
             }
 #if UNITY_EDITOR || DEVELOPMENT_BUILD
@@ -403,9 +397,6 @@ namespace DCL.Controllers
             OnEntityRemoved?.Invoke(entity);
 
             MarkForRemoval(entity);
-
-            if (!delayed)
-                entity.Cleanup();
         }
 
         void MarkForRemoval(DecentralandEntity entity)
@@ -414,16 +405,6 @@ namespace DCL.Controllers
             {
                 entitiesMarkedForRemoval.Add(entity.entityId);
             }
-        }
-
-        void CleanEntitiesList()
-        {
-            int count = entitiesMarkedForRemoval.Count;
-
-            for (int i = 0; i < count; i++)
-                entities.Remove(entitiesMarkedForRemoval[i]);
-
-            entitiesMarkedForRemoval.Clear();
         }
 
         IEnumerator RemoveAllEntitiesCoroutine(bool instant = false)
@@ -447,7 +428,7 @@ namespace DCL.Controllers
 
                         RemoveEntity(entity.entityId, removeImmediatelyFromEntitiesList: instant);
 
-                        if (DCLTime.realtimeSinceStartup - lastTime >= maxBudget)
+                        if (!instant && DCLTime.realtimeSinceStartup - lastTime >= maxBudget)
                         {
                             yield return null;
                             lastTime = DCLTime.realtimeSinceStartup;
@@ -456,24 +437,21 @@ namespace DCL.Controllers
                 }
             }
 
-            if (!instant)
+            int entitiesMarkedForRemovalCount = entitiesMarkedForRemoval.Count;
+
+            for (int i = 0; i < entitiesMarkedForRemovalCount; i++)
             {
-                int entitiesMarkedForRemovalCount = entitiesMarkedForRemoval.Count;
+                DecentralandEntity entity = entities[entitiesMarkedForRemoval[i]];
 
-                for (int i = 0; i < entitiesMarkedForRemovalCount; i++)
+                entities.Remove(entitiesMarkedForRemoval[i]);
+
+                entity.SetParent(null);
+                entity.Cleanup();
+
+                if (!instant && DCLTime.realtimeSinceStartup - lastTime >= maxBudget)
                 {
-                    DecentralandEntity entity = entities[entitiesMarkedForRemoval[i]];
-
-                    entities.Remove(entitiesMarkedForRemoval[i]);
-
-                    entity.SetParent(null);
-                    entity.Cleanup();
-
-                    if (DCLTime.realtimeSinceStartup - lastTime >= maxBudget)
-                    {
-                        yield return null;
-                        lastTime = DCLTime.realtimeSinceStartup;
-                    }
+                    yield return null;
+                    lastTime = DCLTime.realtimeSinceStartup;
                 }
             }
 
