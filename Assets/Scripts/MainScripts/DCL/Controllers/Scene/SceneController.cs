@@ -444,31 +444,21 @@ namespace DCL
 
         public string SendSceneMessage(string payload)
         {
-            string busId = "none";
-
-            OnMessageDecodeStart?.Invoke("Misc");
-            var chunks = payload.Split('\n');
-            OnMessageDecodeEnds?.Invoke("Misc");
-
-            for (int i = 0; i < chunks.Length; i++)
+            if (payload.IndexOf('\n') != -1)
             {
-                if (chunks[i].Length > 0)
-                {
-                    string sceneId;
-                    string message;
-                    string tag;
-
-                    if (!DecodePayloadChunk(chunks[i], out sceneId, out message, out tag))
-                    {
-                        continue;
-                    }
-
-                    var queuedMessage = DecodeSceneMessage(sceneId, message, tag);
-
-                    busId = EnqueueMessage(queuedMessage);
-                }
+                throw new InvalidProgramException("The kernel sent 'SendSceneMessages' with an end of line");
             }
-            return busId;
+            string sceneId;
+            string message;
+            string messageTag;
+
+            if (!DecodePayloadChunk(payload, out sceneId, out message, out messageTag))
+            {
+                return null;
+            }
+
+            var queuedMessage = DecodeSceneMessage(sceneId, message, messageTag);
+            return EnqueueMessage(queuedMessage);
         }
 
         private bool DecodePayloadChunk(string chunk, out string sceneId, out string message, out string tag)
