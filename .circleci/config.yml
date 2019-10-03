@@ -134,13 +134,13 @@ jobs:
           keys:
             - build-sdk-{{ .Revision }}
       - restore_cache:
-          name: Restore built files
-          keys:
-            - build-{{ .Revision }}
-      - restore_cache:
           name: Restore node_modules
           keys:
             - v1-dependencies-{{ checksum "package-lock.json" }}
+      - restore_cache:
+          name: Restore built files
+          keys:
+            - build-{{ .Revision }}
       - run:
           name: Set up NPM access tokens
           command: echo "//registry.npmjs.org/:_authToken=${NPM_TOKEN}" > ~/.npmrc
