@@ -130,13 +130,13 @@ jobs:
     working_directory: /tmp/explorer
     steps:
       - restore_cache:
-          name: Restore built files
-          keys:
-            - build-{{ .Revision }}
-      - restore_cache:
           name: Restore sdk-release files
           keys:
             - build-sdk-{{ .Revision }}
+      - restore_cache:
+          name: Restore built files
+          keys:
+            - build-{{ .Revision }}
       - restore_cache:
           name: Restore node_modules
           keys:
