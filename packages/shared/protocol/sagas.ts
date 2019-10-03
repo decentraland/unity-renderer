@@ -1,4 +1,4 @@
-import { put, select, takeEvery } from 'redux-saga/effects'
+import { put, select, takeLatest } from 'redux-saga/effects'
 import { Context } from '../comms'
 import { defaultLogger } from '../logger'
 import { SaveAvatarSuccess, SAVE_AVATAR_SUCCESS } from '../passports/actions'
@@ -7,10 +7,10 @@ import { getCommsContext } from './selectors'
 
 export function* rootProtocolSaga() {
   // Forwarding effects
-  yield takeEvery(SAVE_AVATAR_SUCCESS, announceNewAvatar)
+  yield takeLatest(SAVE_AVATAR_SUCCESS, announceNewAvatar)
 
   // Handling of local actions
-  yield takeEvery(ANNOUNCE_PROFILE, handleAnnounceProfile)
+  yield takeLatest(ANNOUNCE_PROFILE, handleAnnounceProfile)
 }
 
 export function* announceNewAvatar(action: SaveAvatarSuccess) {

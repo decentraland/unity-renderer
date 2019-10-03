@@ -360,6 +360,7 @@ async function initializeDecentralandUI() {
 
   const scene = new UnityScene({
     sceneId,
+    name: 'ui',
     baseUrl: location.origin,
     main: hudWorkerUrl,
     data: {},
@@ -395,6 +396,7 @@ export async function loadPreviewScene() {
     const mappingsResponse = (await mappingsFetch.json()) as MappingsResponse
 
     let defaultScene: ILand = {
+      name: scene.name,
       sceneId: 'previewScene',
       baseUrl: location.toString().replace(/\?[^\n]+/g, ''),
       scene,

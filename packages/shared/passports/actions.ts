@@ -33,7 +33,8 @@ export const catalogLoaded = (name: string) => action(CATALOG_LOADED, { name })
 export type CatalogLoadedAction = ReturnType<typeof catalogLoaded>
 
 export const INVENTORY_REQUEST = '[Request] Inventory fetch'
-export const inventoryRequest = (userId: string) => action(INVENTORY_REQUEST, { userId })
+export const inventoryRequest = (userId: string, ethAddress: string) =>
+  action(INVENTORY_REQUEST, { userId, ethAddress })
 export type InventoryRequest = ReturnType<typeof inventoryRequest>
 
 export const INVENTORY_SUCCESS = '[Success] Inventory fetch'

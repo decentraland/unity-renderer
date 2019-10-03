@@ -1,6 +1,6 @@
 import { call, put, race, select, take, takeEvery, takeLatest } from 'redux-saga/effects'
 import { getServerConfigurations } from '../../config'
-import { getAccessToken, getCurrentUserId } from '../auth/selectors'
+import { getAccessToken, getCurrentUserId, getEmail } from '../auth/selectors'
 import defaultLogger from '../logger'
 import { isInitialized } from '../renderer/selectors'
 import { RENDERER_INITIALIZED } from '../renderer/types'
@@ -34,7 +34,7 @@ import {
   passportRequest
 } from './actions'
 import { generateRandomUserProfile } from './generateRandomUserProfile'
-import { baseCatalogsLoaded, getProfile, getProfileDownloadServer, getEthereumAddress } from './selectors'
+import { baseCatalogsLoaded, getProfile, getProfileDownloadServer } from './selectors'
 import { processServerProfile } from './transformations/processServerProfile'
 import { profileToRendererFormat } from './transformations/profileToRendererFormat'
 import { ensureServerFormat } from './transformations/profileToServerFormat'
@@ -89,20 +89,32 @@ export function* handleFetchProfile(action: PassportRequestAction): any {
     const serverUrl = yield select(getProfileDownloadServer)
     const accessToken = yield select(getAccessToken)
     const profile = yield call(profileServerRequest, serverUrl, userId, accessToken)
-    yield put(inventoryRequest(userId))
-    const inventoryResult = yield race({
-      success: take(INVENTORY_SUCCESS),
-      failure: take(INVENTORY_FAILURE)
-    })
-    if (inventoryResult.failure) {
-      defaultLogger.error(`Unable to fetch inventory for ${userId}:`, inventoryResult.failure)
+    const currentId = yield select(getCurrentUserId)
+    if (currentId === userId) {
+      profile.email = yield select(getEmail)
+    }
+    if (profile.ethAddress) {
+      yield put(inventoryRequest(userId, profile.ethAddress))
+      const inventoryResult = yield race({
+        success: take(INVENTORY_SUCCESS),
+        failure: take(INVENTORY_FAILURE)
+      })
+      if (inventoryResult.failure) {
+        defaultLogger.error(`Unable to fetch inventory for ${userId}:`, inventoryResult.failure)
+      } else {
+        profile.inventory = (inventoryResult.success as InventorySuccess).payload.inventory.map(dropIndexFromExclusives)
+      }
     } else {
-      profile.inventory = (inventoryResult.success as InventorySuccess).payload.inventory.map(dropIndexFromExclusives)
+      profile.inventory = []
     }
     const passport = processServerProfile(userId, profile)
     yield put(passportSuccess(userId, passport))
   } catch (error) {
     const randomizedUserProfile = yield call(generateRandomUserProfile, userId)
+    const currentId = yield select(getCurrentUserId)
+    if (currentId === userId) {
+      randomizedUserProfile.email = yield select(getEmail)
+    }
     yield put(inventorySuccess(userId, randomizedUserProfile.inventory))
     yield put(passportRandom(userId, randomizedUserProfile))
   }
@@ -185,10 +197,9 @@ export function fetchCurrentProfile(accessToken: string, uuid: string) {
 }
 
 export function* handleFetchInventory(action: InventoryRequest) {
-  const { userId } = action.payload
-  const ethereumAddress = yield select(getEthereumAddress, userId)
+  const { userId, ethAddress } = action.payload
   try {
-    const inventoryItems = yield call(fetchInventoryItemsByAddress, ethereumAddress)
+    const inventoryItems = yield call(fetchInventoryItemsByAddress, ethAddress)
     yield put(inventorySuccess(userId, inventoryItems))
   } catch (error) {
     yield put(inventoryFailure(userId, error))
@@ -268,8 +279,8 @@ export async function modifyAvatar(params: {
 
 async function saveSnapshots(userURL: string, accessToken: string, face: string, body: string) {
   const data = new FormData()
-  data.append('face', stringToBlob(face), 'face.png')
-  data.append('body', stringToBlob(body), 'body.png')
+  data.append('face', base64ToBlob(face), 'face.png')
+  data.append('body', base64ToBlob(body), 'body.png')
   return (await fetch(`${userURL}/snapshot`, {
     method: 'POST',
     body: data,
@@ -278,6 +289,26 @@ async function saveSnapshots(userURL: string, accessToken: string, face: string,
     }
   })).json()
 }
-function stringToBlob(str: string) {
-  return new Blob([btoa(str)], { type: 'image/png' })
+
+export function base64ToBlob(base64: string): Blob {
+  const sliceSize = 1024
+  const byteChars = window.atob(base64)
+  const byteArrays = []
+  let len = byteChars.length
+
+  for (let offset = 0; offset < len; offset += sliceSize) {
+    const slice = byteChars.slice(offset, offset + sliceSize)
+
+    const byteNumbers = new Array(slice.length)
+    for (let i = 0; i < slice.length; i++) {
+      byteNumbers[i] = slice.charCodeAt(i)
+    }
+
+    const byteArray = new Uint8Array(byteNumbers)
+
+    byteArrays.push(byteArray)
+    len = byteChars.length
+  }
+
+  return new Blob(byteArrays, { type: 'image/jpeg' })
 }

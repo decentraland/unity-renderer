@@ -24,9 +24,16 @@ export function processServerProfile(userId: string, receivedProfile: any): Prof
       Math.random()
         .toFixed(6)
         .substr(2)
+  const snapshots = receivedProfile.snapshots ||
+    (receivedProfile.avatar && receivedProfile.avatar.snapshots) || {
+      face: getServerConfigurations().avatar.snapshotStorage + userId + `/face.png`,
+      body: getServerConfigurations().avatar.snapshotStorage + userId + `/body.png`
+    }
+  snapshots.face = snapshots.face.replace('|', '%7C')
+  snapshots.body = snapshots.body.replace('|', '%7C')
   return {
     userId: userId,
-    email: receivedProfile.email || name.toLowerCase() + '@nowhere.com',
+    email: receivedProfile.email || name.toLowerCase(),
     name: receivedProfile.name || name,
     description: receivedProfile.description || '',
     createdAt: new Date(receivedProfile.createdAt).getTime(),
@@ -35,10 +42,7 @@ export function processServerProfile(userId: string, receivedProfile: any): Prof
       typeof receivedProfile.updatedAt === 'string'
         ? new Date(receivedProfile.updatedAt).getTime()
         : receivedProfile.updatedAt,
-    snapshots: (receivedProfile.avatar && receivedProfile.avatar.snapshots) || {
-      face: getServerConfigurations().avatar.snapshotStorage + userId + `/face.png`,
-      body: getServerConfigurations().avatar.snapshotStorage + userId + `/body.png`
-    },
+    snapshots,
     version: receivedProfile.avatar.version || 1,
     avatar: {
       eyeColor: colorString(receivedProfile.avatar.eyes.color),

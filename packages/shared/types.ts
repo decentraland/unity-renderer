@@ -115,6 +115,7 @@ export type EntityAction = {
 /** THIS INTERFACE CANNOT CHANGE, IT IS USED IN THE UNITY BUILD */
 export type LoadableParcelScene = {
   id: string
+  name: string
   basePosition: { x: number; y: number }
   parcels: Array<{ x: number; y: number }>
   contents: Array<ContentMapping>
@@ -161,6 +162,7 @@ export interface ISceneCommunications {
 export interface IScene {
   assets?: Record<any, string>
   main: string
+  name: string
   communications: ISceneCommunications | null
   scene: {
     base: string
@@ -172,6 +174,7 @@ export interface IScene {
 
 export type EnvironmentData<T> = {
   sceneId: string
+  name: string
   main: string
   baseUrl: string
   mappings: Array<ContentMapping>
@@ -185,6 +188,7 @@ export interface ILand {
    */
   sceneId: string
   scene: IScene
+  name: string
   baseUrl: string
   mappingsResponse: MappingsResponse
 }
@@ -367,11 +371,13 @@ export function ILandToLoadableParcelScene(land: ILand): EnvironmentData<Loadabl
   const ret: EnvironmentData<LoadableParcelScene> = {
     sceneId: land.sceneId,
     baseUrl: land.baseUrl,
+    name: land.scene.name,
     main: land.scene.main,
     mappings,
     data: {
       id: land.sceneId,
       basePosition: parseParcelPosition(land.scene.scene.base),
+      name: land.scene.name || 'Unnamed',
       parcels:
         (land.scene &&
           land.scene.scene &&
