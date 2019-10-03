@@ -18,6 +18,7 @@ export class WebGLUIScene extends WebGLScene<any> {
     super(
       {
         baseUrl: context.baseUrl,
+        name: context.name,
         main,
         data: {},
         id,

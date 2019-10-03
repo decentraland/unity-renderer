@@ -65,6 +65,7 @@ async function loadScene(scene: IScene & { baseUrl: string }) {
 
   let defaultScene: ILand = {
     sceneId: 'editorScene',
+    name: 'Editor scene',
     baseUrl: scene.baseUrl,
     scene,
     mappingsResponse: {

@@ -10,6 +10,7 @@ export class WebGLUIScene extends WebGLScene<any> {
       {
         baseUrl: context.baseUrl,
         main,
+        name: 'ui',
         data: {},
         sceneId,
         mappings: []

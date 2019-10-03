@@ -83,10 +83,12 @@ export class SceneDataDownloadManager {
     return {
       sceneId: sceneId,
       baseUrl: origin + '/loader/empty-scenes/Tile1M_' + pick + '/',
+      name: 'Empty parcel',
       scene: {
         display: { title: 'Empty parcel' },
         owner: '',
         contact: {},
+        name: 'Empty parcel',
         main: 'bin/game.js',
         tags: [],
         scene: { parcels: [coordinates], base: coordinates },
@@ -165,6 +167,7 @@ export class SceneDataDownloadManager {
     const data: ILand = {
       sceneId: sceneId,
       baseUrl,
+      name: scene.name,
       scene,
       mappingsResponse: content.content
     }
