@@ -3,7 +3,6 @@
   "version": "6.4.2",
   "license": "Apache-2.0",
   "scripts": {
-    "postinstall": "git lfs install --force",
     "start": "make watch",
     "build": "make build-essentials",
     "test": "make test-ci"
