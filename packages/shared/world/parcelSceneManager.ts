@@ -10,6 +10,7 @@ import { sceneLifeCycleObservable } from '../../decentraland-loader/lifecycle/co
 import { worldRunningObservable } from './worldState'
 import { queueTrackingEvent } from '../analytics'
 import { ParcelSceneAPI } from './ParcelSceneAPI'
+import { setForegroundTimeout, clearForegroundTimeout } from '../timers/index'
 
 export type EnableParcelSceneLoadingOptions = {
   parcelSceneClass: { new (x: EnvironmentData<LoadableParcelScene>): ParcelSceneAPI }
@@ -89,9 +90,12 @@ export async function enableParcelSceneLoading(options: EnableParcelSceneLoading
       loadParcelScene(parcelScene)
     }
 
+    let timer: any
+
     const observer = sceneLifeCycleObservable.add(sceneStatus => {
       if (sceneStatus.sceneId === sceneId) {
         sceneLifeCycleObservable.remove(observer)
+        clearForegroundTimeout(timer)
         ret.notify('Scene.status', sceneStatus)
       }
     })
@@ -101,7 +105,7 @@ export async function enableParcelSceneLoading(options: EnableParcelSceneLoading
       options.onLoadParcelScenes([await ret.getParcelData(sceneId)])
     }
 
-    setTimeout(() => {
+    timer = setForegroundTimeout(() => {
       const worker = getSceneWorkerBySceneID(sceneId)
       if (worker && !worker.sceneStarted) {
         sceneLifeCycleObservable.remove(observer)
