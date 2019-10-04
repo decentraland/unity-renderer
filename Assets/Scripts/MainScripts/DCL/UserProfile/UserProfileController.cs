@@ -19,6 +19,7 @@ public class UserProfileController : MonoBehaviour
         {
             return;
         }
+
         ownUserProfile.UpdateData(JsonUtility.FromJson<UserProfileModel>(payload));
     }
 }

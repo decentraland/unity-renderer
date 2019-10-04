@@ -8,24 +8,25 @@ using UnityEngine.Networking;
 [assembly: InternalsVisibleTo("UserProfileTests")]
 
 [CreateAssetMenu(fileName = "UserProfile", menuName = "UserProfile")]
-public class UserProfile : ScriptableObject
+public class UserProfile : ScriptableObject //TODO Move to base variable
 {
-    public event Action<UserProfile> OnUpdate = (x) => { };
+    public event Action<UserProfile> OnUpdate;
 
     public string userName => model.name;
     public string email => model.email;
-    public Sprite faceSnapshot => faceSnapshotSprite != null ? faceSnapshotSprite : defaultSprite;
-    public Sprite bodySnapshot => bodySnapshotSprite != null ? bodySnapshotSprite : defaultSprite;
+    public AvatarModel avatar => model.avatar;
+    public string[] inventory => model.inventory;
 
-    [SerializeField] private Sprite defaultSprite;
+    private Texture2D faceSnapshotValue = null;
+    public Texture2D faceSnapshot => faceSnapshotValue;
+    private Texture2D bodySnapshotValue;
+    public Texture2D bodySnapshot => bodySnapshotValue;
 
     internal UserProfileModel model = new UserProfileModel() //Empty initialization to avoid nullchecks
     {
         avatar = new AvatarModel()
     };
 
-    internal Sprite faceSnapshotSprite = null;
-    internal Sprite bodySnapshotSprite = null;
     internal Coroutine downloadingFaceCoroutine = null;
     internal Coroutine downloadingBodyCoroutine = null;
 
@@ -34,7 +35,7 @@ public class UserProfile : ScriptableObject
         UpdateProperties(newModel);
         DownloadFaceIfNeeded();
         DownloadBodyIfNeeded();
-        OnUpdate(this);
+        OnUpdate?.Invoke(this);
     }
 
     internal void UpdateProperties(UserProfileModel newModel)
@@ -44,23 +45,24 @@ public class UserProfile : ScriptableObject
 
         model.name = newModel?.name;
         model.email = newModel?.email;
-        model.avatar = newModel?.avatar;
+        model.avatar.CopyFrom(newModel?.avatar);
         model.snapshots = newModel?.snapshots;
+        model.inventory = newModel?.inventory;
 
         if (model.snapshots == null || model.snapshots.face != currentFace)
         {
-            faceSnapshotSprite = null;
+            faceSnapshotValue = null;
         }
 
         if (model.snapshots == null || model.snapshots.body != currentBody)
         {
-            faceSnapshotSprite = null;
+            faceSnapshotValue = null;
         }
     }
 
     internal void DownloadFaceIfNeeded()
     {
-        if (faceSnapshotSprite != null)
+        if (faceSnapshot != null)
         {
             return;
         }
@@ -70,17 +72,17 @@ public class UserProfile : ScriptableObject
             CoroutineStarter.Stop(downloadingFaceCoroutine);
         }
 
-        faceSnapshotSprite = null;
+        faceSnapshotValue = null;
 
-        if (model == null || string.IsNullOrEmpty(model.snapshots?.face)) 
+        if (model == null || string.IsNullOrEmpty(model.snapshots?.face))
             return;
 
-        downloadingFaceCoroutine = CoroutineStarter.Start(DownloadSnapshotCoroutine(model.snapshots.face, (x) => faceSnapshotSprite = x));
+        downloadingFaceCoroutine = CoroutineStarter.Start(DownloadSnapshotCoroutine(model.snapshots.face, (x) => faceSnapshotValue = x));
     }
 
     internal void DownloadBodyIfNeeded()
     {
-        if (bodySnapshotSprite != null)
+        if (bodySnapshot != null)
         {
             return;
         }
@@ -90,15 +92,15 @@ public class UserProfile : ScriptableObject
             CoroutineStarter.Stop(downloadingBodyCoroutine);
         }
 
-        bodySnapshotSprite = null;
+        bodySnapshotValue = null;
 
-        if (model == null || string.IsNullOrEmpty(model.snapshots?.body)) 
+        if (model == null || string.IsNullOrEmpty(model.snapshots?.body))
             return;
 
-        downloadingBodyCoroutine = CoroutineStarter.Start(DownloadSnapshotCoroutine(model.snapshots.body, (x) => bodySnapshotSprite = x));
+        downloadingBodyCoroutine = CoroutineStarter.Start(DownloadSnapshotCoroutine(model.snapshots.body, (x) => bodySnapshotValue = x));
     }
 
-    private IEnumerator DownloadSnapshotCoroutine(string url, Action<Sprite> successCallback)
+    private IEnumerator DownloadSnapshotCoroutine(string url, Action<Texture2D> successCallback)
     {
         UnityWebRequest www = UnityWebRequestTexture.GetTexture(url);
 
@@ -107,14 +109,26 @@ public class UserProfile : ScriptableObject
         if (!www.isNetworkError && !www.isHttpError)
         {
             var texture = ((DownloadHandlerTexture)www.downloadHandler).texture;
-            successCallback.Invoke(Sprite.Create(texture, new Rect(0, 0, texture.width, texture.height), Vector2.zero));
+            successCallback.Invoke(texture);
         }
         else
         {
             Debug.LogError(www.error);
         }
 
-        OnUpdate(this);
+        OnUpdate?.Invoke(this);
+    }
+
+    public void OverrideTextures(Texture2D face, Texture2D body)
+    {
+        faceSnapshotValue = face;
+        bodySnapshotValue = body;
+        OnUpdate?.Invoke(this);
+    }
+
+    public void OverrideAvatar(AvatarModel newModel)
+    {
+        model.avatar.CopyFrom(newModel);
     }
 
     internal static UserProfile ownUserProfile;
@@ -128,4 +142,18 @@ public class UserProfile : ScriptableObject
 
         return ownUserProfile;
     }
+
+#if UNITY_EDITOR
+    private void OnEnable()
+    {
+        Application.quitting -= CleanUp;
+        Application.quitting += CleanUp;
+    }
+
+    private void CleanUp()
+    {
+        Application.quitting -= CleanUp;
+        Resources.UnloadAsset(this);
+    }
+#endif
 }

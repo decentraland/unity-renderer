@@ -1,0 +1,21 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 23300c19748554de6be6160a98d939df, type: 3}
+  m_Name: ItemToggleFactory
+  m_EditorClassIdentifier: 
+  factoryList:
+  - type: base-wearable
+    prefab: {fileID: 3111115372682583232, guid: da54ec2c2cb194fd28a355c63152233f,
+      type: 3}
+  - type: exclusive
+    prefab: {fileID: 3111115372682583232, guid: b5b05a766c2b14c3b93c2ed6d817e3cc,
+      type: 3}

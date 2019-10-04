@@ -7,6 +7,8 @@ public class AvatarHUDController : IHUD
     public bool visibility { get; private set; }
     public bool expanded { get; private set; }
 
+    public event System.Action OnEditAvatarPressed;
+
     public AvatarHUDController(bool visibility = true, bool expanded = false) : this(new AvatarHUDModel(), visibility, expanded) { }
 
     public AvatarHUDController(AvatarHUDModel model, bool visibility = true, bool expanded = false)
@@ -42,8 +44,7 @@ public class AvatarHUDController : IHUD
 
     public void EditAvatar()
     {
-        //TODO
-        Debug.Log("Called AvatarHUD Edit Avatar");
+        OnEditAvatarPressed?.Invoke();
     }
 
     public void SignOut()

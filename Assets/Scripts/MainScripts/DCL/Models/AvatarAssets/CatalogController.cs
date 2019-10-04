@@ -1,14 +1,12 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
+﻿using UnityEngine;
 
 public class CatalogController : MonoBehaviour
 {
     public static CatalogController i { get; private set; }
 
-    private ItemDictionary itemCatalogValue;
+    private static ItemDictionary itemCatalogValue;
 
-    public ItemDictionary itemCatalog
+    public static ItemDictionary itemCatalog
     {
         get
         {
@@ -22,6 +20,7 @@ public class CatalogController : MonoBehaviour
     }
 
     private static WearableDictionary wearableCatalogValue;
+
     public static WearableDictionary wearableCatalog
     {
         get
@@ -89,7 +88,7 @@ public class CatalogController : MonoBehaviour
 
     public void ClearWearableCatalog()
     {
-        itemCatalog.Clear();
-        wearableCatalog.Clear();
+        itemCatalog?.Clear();
+        wearableCatalog?.Clear();
     }
 }
