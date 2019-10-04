@@ -636,5 +636,23 @@ namespace DCL.Interface
             onSendScreenshot.id = id;
             SendMessage("SendScreenshot", onSendScreenshot);
         }
+
+        [System.Serializable]
+        public class SaveAvatarPayload
+        {
+            public string face;
+            public string body;
+            public AvatarModel avatar;
+        }
+        public static void SendSaveAvatar(AvatarModel avatar, Texture2D faceSnapshot, Texture2D bodySnapshot)
+        {
+            var payload = new SaveAvatarPayload()
+            {
+                avatar = avatar,
+                face = System.Convert.ToBase64String(faceSnapshot.EncodeToPNG()),
+                body = System.Convert.ToBase64String(bodySnapshot.EncodeToPNG())
+            };
+            WebInterface.SendMessage("SaveUserAvatar", payload);
+        }
     }
 }

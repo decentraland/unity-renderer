@@ -1,31 +1,94 @@
-﻿using System;
+using System.Collections;
 using UnityEngine;
 
 public class HUDController : MonoBehaviour
 {
-    private AvatarHUDController avatarHUD;
-    private NotificationHUDController notificationHud;
-    private MinimapHUDController minimapHUD;
-    private UserProfile ownUserProfile;
+    private AvatarHUDController avatarHudValue;
+
+    private AvatarHUDController avatarHud
+    {
+        get
+        {
+            if (avatarHudValue == null)
+            {
+                avatarHudValue = new AvatarHUDController(new AvatarHUDModel());
+            }
+
+            return avatarHudValue;
+        }
+    }
+
+    private NotificationHUDController notificationHudValue;
+
+    private NotificationHUDController notificationHud
+    {
+        get
+        {
+            if (notificationHudValue == null)
+            {
+                notificationHudValue = new NotificationHUDController();
+            }
+
+            return notificationHudValue;
+        }
+    }
+
+    private MinimapHUDController minimapHudValue;
+
+    private MinimapHUDController minimapHud
+    {
+        get
+        {
+            if (minimapHudValue == null)
+            {
+                minimapHudValue = new MinimapHUDController(new MinimapHUDModel());
+            }
+
+            return minimapHudValue;
+        }
+    }
+
+    private AvatarEditorHUDController avatarEditorHudValue;
+
+    private AvatarEditorHUDController avatarEditorHud
+    {
+        get
+        {
+            if (avatarEditorHudValue == null)
+            {
+                avatarEditorHudValue = new AvatarEditorHUDController(ownUserProfile, wearableCatalog);
+            }
+
+            return avatarEditorHudValue;
+        }
+    }
+
+    private UserProfile ownUserProfile => UserProfile.GetOwnUserProfile();
+    private WearableDictionary wearableCatalog => CatalogController.wearableCatalog;
 
     private void Awake()
     {
-        avatarHUD = new AvatarHUDController(new AvatarHUDModel());
-        minimapHUD = new MinimapHUDController(new MinimapHUDModel());
-        notificationHud = new NotificationHUDController();
-
         HUDConfiguration defaultConfiguration = new HUDConfiguration()
         {
             active = false
         };
 
-        avatarHUD.SetConfiguration(defaultConfiguration);
-        minimapHUD.SetConfiguration(defaultConfiguration);
+        avatarHud.SetConfiguration(defaultConfiguration);
+        minimapHud.SetConfiguration(defaultConfiguration);
         notificationHud.SetConfiguration(defaultConfiguration);
+        avatarEditorHud.SetConfiguration(defaultConfiguration);
 
-        ownUserProfile = UserProfile.GetOwnUserProfile();
+        avatarHud.OnEditAvatarPressed += ShowAvatarEditor;
         ownUserProfile.OnUpdate += OwnUserProfileUpdated;
         OwnUserProfileUpdated(ownUserProfile);
+    }
+
+    private void ShowAvatarEditor()
+    {
+        avatarEditorHud.SetConfiguration(new HUDConfiguration()
+        {
+            active = true
+        });
     }
 
     private void OwnUserProfileUpdated(UserProfile profile)
@@ -47,13 +110,13 @@ public class HUDController : MonoBehaviour
     public void ConfigureMinimapHUD(string configurationJson)
     {
         HUDConfiguration configuration = JsonUtility.FromJson<HUDConfiguration>(configurationJson);
-        minimapHUD.SetConfiguration(configuration);
+        minimapHud.SetConfiguration(configuration);
     }
 
     public void ConfigureAvatarHUD(string configurationJson)
     {
         HUDConfiguration configuration = JsonUtility.FromJson<HUDConfiguration>(configurationJson);
-        avatarHUD.SetConfiguration(configuration);
+        avatarHud.SetConfiguration(configuration);
     }
 
     public void ConfigureNotificationHUD(string configurationJson)
@@ -62,9 +125,15 @@ public class HUDController : MonoBehaviour
         notificationHud.SetConfiguration(configuration);
     }
 
+    public void ConfigureAvatarEditorHUD(string configurationJson)
+    {
+        HUDConfiguration configuration = JsonUtility.FromJson<HUDConfiguration>(configurationJson);
+        avatarEditorHud.SetConfiguration(configuration);
+    }
+
     private void UpdateAvatarHUD()
     {
-        avatarHUD.UpdateData(new AvatarHUDModel()
+        avatarHud.UpdateData(new AvatarHUDModel()
         {
             name = ownUserProfile.userName,
             mail =  ownUserProfile.email,
@@ -75,6 +144,6 @@ public class HUDController : MonoBehaviour
     private void OnDestroy()
     {
         ownUserProfile.OnUpdate -= OwnUserProfileUpdated;
-        minimapHUD.Dispose();
+        minimapHud.Dispose();
     }
 }

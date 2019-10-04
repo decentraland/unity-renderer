@@ -106,7 +106,8 @@ namespace DCL
                 bodyShapeController.SetupDefaultMaterial(defaultMaterial, model.skinColor, model.hairColor);
             }
 
-            for (int index = 0; index < this.model.wearables.Length; index++)
+            int wearableCount = model.wearables.Count;
+            for (int index = 0; index < wearableCount; index++)
             {
                 var wearableId = this.model.wearables[index];
 
@@ -148,6 +149,8 @@ namespace DCL
             yield return new WaitUntil( () => eyesReady && eyebrowsReady && mouthReady);
 
             SetupAnimator();
+
+            yield return null;
 
             CleanUpUnusedItems();
             ShowAll();
@@ -252,6 +255,8 @@ namespace DCL
         private void ProcessWearable(string wearableId)
         {
             var wearable = ResolveWearable(wearableId);
+            if (wearable == null) return;
+
             switch (wearable.category)
             {
                 case "eyes":
@@ -294,8 +299,7 @@ namespace DCL
         {
             if (string.IsNullOrEmpty(id)) return null;
 
-            WearableItem wearable = CatalogController.wearableCatalog.Get(id);
-            if (wearable == null)
+            if (!CatalogController.wearableCatalog.TryGetValue(id, out WearableItem wearable))
             {
                 Debug.LogError($"Wearable {id} not found in catalog");
             }

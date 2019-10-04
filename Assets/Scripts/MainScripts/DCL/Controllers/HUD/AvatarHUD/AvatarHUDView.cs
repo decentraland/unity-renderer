@@ -12,10 +12,10 @@ public class AvatarHUDView : MonoBehaviour
     private const string VIEW_OBJECT_NAME = "_AvatarHUD";
 
 
-    [SerializeField] private Sprite defaultSprite;
+    [SerializeField] private GameObject loadingAvatar;
 
     [Header("Minimized UI")]
-    [SerializeField] private Image topAvatarPic;
+    [SerializeField] private RawImage topAvatarPic;
 
     [SerializeField] private Button toggleExpandButton;
 
@@ -50,7 +50,8 @@ public class AvatarHUDView : MonoBehaviour
 
     internal void UpdateData(AvatarHUDModel model)
     {
-        topAvatarPic.sprite = model.avatarPic ?? defaultSprite;
+        topAvatarPic.texture = model.avatarPic;
+        loadingAvatar.SetActive(topAvatarPic.texture == null);
         nameText.text = model.name;
         mailText.text = model.mail;
     }

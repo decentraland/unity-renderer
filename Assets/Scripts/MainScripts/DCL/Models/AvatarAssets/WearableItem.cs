@@ -6,6 +6,10 @@ using DCL;
 [System.Serializable]
 public class WearableItem : Item
 {
+    public static string bodyShapeCategory = "body_shape";
+    public static string baseWearableTag = "base-wearable";
+    public static string nftWearableTag = "exclusive";
+    
     [Serializable]
     public class Representation
     {
@@ -25,7 +29,7 @@ public class WearableItem : Item
     {
         if (representations == null) return null;
 
-        for (var i = 0; i < representations.Length; i++)
+        for (int i = 0; i < representations.Length; i++)
         {
             if (representations[i].bodyShapes.Contains(bodyShapeType))
             {
@@ -36,7 +40,7 @@ public class WearableItem : Item
         return null;
     }
 
-    private readonly Dictionary<string,ContentProvider> cachedContentProviers = new Dictionary<string, ContentProvider>();
+    private readonly Dictionary<string, ContentProvider> cachedContentProviers = new Dictionary<string, ContentProvider>();
 
     public ContentProvider GetContentProvider(string bodyShapeType)
     {
@@ -56,6 +60,21 @@ public class WearableItem : Item
         }
 
         return cachedContentProviers[bodyShapeType];
+    }
+
+    public bool SupportsBodyShape(string bodyShapeType)
+    {
+        if (representations == null) return false;
+
+        for (int i = 0; i < representations.Length; i++)
+        {
+            if (representations[i].bodyShapes.Contains(bodyShapeType))
+            {
+                return true;
+            }
+        }
+
+        return false;
     }
 }
 

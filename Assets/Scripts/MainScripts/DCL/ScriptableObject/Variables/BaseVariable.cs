@@ -32,4 +32,18 @@ public class BaseVariable<T> : ScriptableObject
     [ContextMenu("RaiseOnChange")]
     private void RaiseOnChange() => onChangeValue.Invoke(value, value);
 #endif
+
+#if UNITY_EDITOR
+    private void OnEnable()
+    {
+        Application.quitting -= CleanUp;
+        Application.quitting += CleanUp;
+    }
+
+    private void CleanUp()
+    {
+        Application.quitting -= CleanUp;
+        Resources.UnloadAsset(this);
+    }
+#endif
 }

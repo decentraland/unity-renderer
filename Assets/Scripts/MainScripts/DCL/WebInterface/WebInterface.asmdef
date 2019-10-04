@@ -1,6 +1,8 @@
 {
     "name": "WebInterface",
-    "references": [],
+    "references": [
+        "GUID:43315b150e1df4592868fc0fe58b3429"
+    ],
     "optionalUnityReferences": [],
     "includePlatforms": [],
     "excludePlatforms": [],
