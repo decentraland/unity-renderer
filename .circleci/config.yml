@@ -170,6 +170,9 @@ jobs:
       - run:
           name: Invalidate cloudfront cache .zone
           command: aws configure set preview.cloudfront true && aws configure set preview.create-invalidation true && aws cloudfront create-invalidation --distribution-id E297VXIBZFXIXE --paths "/*"
+      - run:
+          name: Invalidate cloudflare cache .zone
+          command: curl "$PURGE_CACHE_ZONE
 
   deploy-dev:
     docker:
