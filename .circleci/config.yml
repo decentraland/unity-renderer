@@ -27,18 +27,36 @@ jobs:
             cd / && unzip /tmp/project/.circleci/license.zip
 
       - run:
+          name: Get the hash of source files
+          command: |
+            find Assets -type f \( -exec shasum "$PWD"/{} \; \) | sort | shasum > .build-checksum
+
+      - restore_cache:
+          name: Restore build
+          keys:
+            - unitybuild-{{ checksum ".build-checksum" }}
+
+      - run:
           name: "Build"
           command: |
-            chmod +x /tmp/project/build-ci.sh
-            mkdir -p ${BUILD_PATH}
-            ((cd /tmp/project && ./build-ci.sh) & echo $! > /tmp/project/build.pid &)
-            pid=`cat /tmp/project/build.pid`
-            while [ -e /proc/$pid -a /proc/$pid/exe ]; do
-              echo "Running Unity Build..."
-              sleep 60
-            done
-            ls -la ${BUILD_PATH}
-            [ -n "$(ls -A ${BUILD_PATH})" ] # fail job if build folder is empty
+            if [[ ! -e ${BUILD_PATH} ]] || [[ ! -n "$(ls -A ${BUILD_PATH})" ]]; then
+                chmod +x /tmp/project/build-ci.sh
+                mkdir -p ${BUILD_PATH}
+                ((cd /tmp/project && ./build-ci.sh) & echo $! > /tmp/project/build.pid &)
+                pid=`cat /tmp/project/build.pid`
+                while [ -e /proc/$pid -a /proc/$pid/exe ]; do
+                    echo "Running Unity Build..."
+                    sleep 60
+                done
+                ls -la ${BUILD_PATH}
+                [ -n "$(ls -A ${BUILD_PATH})" ] # fail job if build folder is empty
+            fi;
+
+      - save_cache:
+          name: Store build
+          key: unitybuild-{{ checksum ".build-checksum" }}
+          paths:
+            - /tmp/project/Builds/
 
       - run:
           name: Authenticate with registry
