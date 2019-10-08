@@ -7,7 +7,6 @@ import { MessageEntry } from 'shared/types'
 import { positionObservable, PositionReport } from 'shared/world/positionThings'
 import 'webrtc-adapter'
 import { PassportAsPromise } from '../passports/PassportAsPromise'
-import { Profile } from '../passports/types'
 import { BrokerConnection } from './BrokerConnection'
 import { ChatEvent, chatObservable } from './chat'
 import { CliBrokerConnection } from './CliBrokerConnection'
@@ -155,7 +154,7 @@ export function processParcelSceneCommsMessage(context: Context, fromAlias: stri
   }
 }
 
-export function persistCurrentUser(changes: Partial<Profile>): Readonly<UserInformation> {
+export function persistCurrentUser(changes: Partial<UserInformation>): Readonly<UserInformation> {
   const peer = getCurrentPeer()
 
   if (!peer || !localProfileUUID) throw new Error('cannotGetCurrentPeer')
@@ -210,13 +209,7 @@ export function processChatMessage(context: Context, fromAlias: string, data: Ch
   }
 }
 
-export function processProfileMessage(
-  auth: Auth,
-  context: Context,
-  fromAlias: string,
-  identity: string,
-  data: ProfileData
-) {
+export function processProfileMessage(context: Context, fromAlias: string, identity: string, data: ProfileData) {
   const msgTimestamp = data.getTime()
 
   const peerTrackingInfo = ensurePeerTrackingInfo(context, fromAlias)
@@ -447,7 +440,7 @@ export async function connect(userId: string, network: ETHEREUM_NETWORK, auth: A
     processPositionMessage(context!, alias, data)
   }
   connection.profileHandler = (alias: string, identity: string, data: ProfileData) => {
-    processProfileMessage(auth, context!, alias, identity, data)
+    processProfileMessage(context!, alias, identity, data)
   }
   connection.chatHandler = (alias: string, data: ChatData) => {
     processChatMessage(context!, alias, data)
