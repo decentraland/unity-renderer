@@ -25,6 +25,7 @@ import { buildStore } from './store/store'
 import { getAppNetwork, getNetworkFromTLD, initWeb3 } from './web3'
 import { initializeUrlPositionObserver } from './world/positionThings'
 import { setWorldContext } from './protocol/actions'
+import { profileToRendererFormat } from './passports/transformations/profileToRendererFormat'
 
 // TODO fill with segment keys and integrate identity server
 async function initializeAnalytics(userId: string) {
@@ -134,7 +135,11 @@ export async function initShared(): Promise<Session | undefined> {
   console['group']('connect#profile')
   if (!PREVIEW) {
     const profile = await PassportAsPromise(localProfileUUID!)
-    persistCurrentUser({ userId: localProfileUUID!, version: profile.version, ...profile })
+    persistCurrentUser({
+      userId: localProfileUUID!,
+      version: profile.version,
+      profile: profileToRendererFormat(profile)
+    })
   }
   console['groupEnd']()
 

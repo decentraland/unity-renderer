@@ -538,9 +538,6 @@ describe('Communications', function () {
           })
         }
       })
-      const fakeAuth: any = {
-        getAccessToken: () => Promise.resolve('access_token')
-      }
       it('new profile message', () => {
         const context = new Context({})
 
@@ -552,7 +549,7 @@ describe('Communications', function () {
         sinon.spy(info, 'loadProfileIfNecessary')
         context.peerData.set('client2', info)
 
-        processProfileMessage(fakeAuth, context, 'client2', 'userId1', profileData)
+        processProfileMessage(context, 'client2', 'userId1', profileData)
 
         expect(context.peerData).to.have.key('client2')
         const trackingInfo = context.peerData.get('client2') as PeerTrackingInfo
@@ -575,7 +572,7 @@ describe('Communications', function () {
         profileData.setTime(new Date(2008).getTime())
         profileData.setProfileVersion('2')
 
-        processProfileMessage(fakeAuth, context, 'client2', 'identity2', profileData)
+        processProfileMessage(context, 'client2', 'identity2', profileData)
 
         expect(context.peerData).to.have.key('client2')
         const trackingInfo = context.peerData.get('client2') as PeerTrackingInfo
