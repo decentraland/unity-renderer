@@ -1,4 +1,5 @@
-import { call, put, race, select, take, takeEvery, takeLatest } from 'redux-saga/effects'
+import { call, fork, put, race, select, take, takeEvery, takeLatest } from 'redux-saga/effects'
+import { NotificationType } from 'shared/types'
 import { getServerConfigurations } from '../../config'
 import { getAccessToken, getCurrentUserId, getEmail } from '../auth/selectors'
 import defaultLogger from '../logger'
@@ -18,8 +19,11 @@ import {
   INVENTORY_FAILURE,
   INVENTORY_REQUEST,
   INVENTORY_SUCCESS,
+  notifyNewInventoryItem,
+  NOTIFY_NEW_INVENTORY_ITEM,
   passportRandom,
   PassportRandomAction,
+  passportRequest,
   PassportRequestAction,
   passportSuccess,
   PassportSuccessAction,
@@ -30,15 +34,14 @@ import {
   SaveAvatarRequest,
   saveAvatarSuccess,
   SAVE_AVATAR_REQUEST,
-  setProfileServer,
-  passportRequest
+  setProfileServer
 } from './actions'
 import { generateRandomUserProfile } from './generateRandomUserProfile'
-import { baseCatalogsLoaded, getProfile, getProfileDownloadServer } from './selectors'
+import { baseCatalogsLoaded, getEthereumAddress, getInventory, getProfile, getProfileDownloadServer } from './selectors'
 import { processServerProfile } from './transformations/processServerProfile'
 import { profileToRendererFormat } from './transformations/profileToRendererFormat'
 import { ensureServerFormat } from './transformations/profileToServerFormat'
-import { Avatar, Catalog, Profile } from './types'
+import { Avatar, Catalog, Profile, WearableId } from './types'
 
 /**
  * This saga handles both passports and assets required for the renderer to show the
@@ -67,6 +70,10 @@ export function* passportSaga(): any {
   yield takeLatest(SAVE_AVATAR_REQUEST, handleSaveAvatar)
 
   yield takeLatest(INVENTORY_REQUEST, handleFetchInventory)
+
+  yield takeLatest(NOTIFY_NEW_INVENTORY_ITEM, handleNewInventoryItem)
+
+  yield fork(queryInventoryEveryMinute)
 }
 
 export function* initialLoad() {
@@ -165,6 +172,15 @@ declare var window: any
 
 export function sendWearablesCatalog(catalog: Catalog) {
   window['unityInterface'].AddWearablesToCatalog(catalog)
+}
+
+export function handleNewInventoryItem() {
+  window['unityInterface'].ShowNotification({
+    type: NotificationType.GENERIC,
+    message: 'You received an exclusive wearable NFT mask! Check it out in the avatar editor.',
+    buttonMessage: 'OK',
+    timer: 7
+  })
 }
 
 export function* submitPassportToRenderer(action: PassportSuccessAction): any {
@@ -311,4 +327,47 @@ export function base64ToBlob(base64: string): Blob {
   }
 
   return new Blob(byteArrays, { type: 'image/jpeg' })
+}
+
+const MILLIS_PER_SECOND = 1000
+const ONE_MINUTE = 60 * MILLIS_PER_SECOND
+
+export function delay(time: number) {
+  return new Promise(resolve => setTimeout(resolve, time))
+}
+
+export function* queryInventoryEveryMinute() {
+  while (true) {
+    yield delay(ONE_MINUTE)
+    const userId = yield select(getCurrentUserId)
+    if (!userId) {
+      continue
+    }
+    const ethAddress = yield select(getEthereumAddress, userId)
+    const inventory = yield select(getInventory, userId)
+    if (!inventory) {
+      continue
+    }
+    yield put(inventoryRequest(userId, ethAddress))
+    const fetchNewInventory = yield race({
+      success: take(INVENTORY_SUCCESS),
+      fail: take(INVENTORY_FAILURE)
+    })
+    if (fetchNewInventory.success) {
+      const newInventory = yield select(getInventory, userId)
+      if (areInventoriesDifferent(inventory, newInventory)) {
+        yield put(notifyNewInventoryItem())
+        yield call(sendLoadProfile, yield select(getProfile, userId))
+      }
+    }
+  }
+}
+
+function areInventoriesDifferent(inventory1: WearableId[], inventory2: WearableId[]) {
+  const sort1 = inventory1.sort()
+  const sort2 = inventory2.sort()
+  return (
+    inventory1.length !== inventory2.length ||
+    sort1.reduce((result: boolean, next, index) => result && next !== sort2[index], true)
+  )
 }

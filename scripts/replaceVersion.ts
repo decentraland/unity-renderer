@@ -28,7 +28,7 @@ function replaceVersion(placeholder: string) {
       throw new Error(`index.html is dirty and does\'t contain the text '${placeholder}'`)
     }
 
-    content = content.replace(new RegExp(placeholder), version)
+    content = content.replace(new RegExp(placeholder, 'g'), version)
 
     writeFileSync(targetIndexHtml, content)
   }
