@@ -50,6 +50,10 @@ export const SAVE_AVATAR_REQUEST = '[Request] Save Avatar'
 export const SAVE_AVATAR_SUCCESS = '[Success] Save Avatar'
 export const SAVE_AVATAR_FAILURE = '[Failure] Save Avatar'
 
+export const NOTIFY_NEW_INVENTORY_ITEM = '[Inventory] New inventory item'
+export const notifyNewInventoryItem = () => action(NOTIFY_NEW_INVENTORY_ITEM)
+export type NotifyNewInventoryItem = ReturnType<typeof notifyNewInventoryItem>
+
 export const saveAvatarRequest = (profile: { avatar: Avatar; body: string; face: string }, userId?: string) =>
   action(SAVE_AVATAR_REQUEST, { userId, profile })
 export const saveAvatarSuccess = (userId: string, version: number) => action(SAVE_AVATAR_SUCCESS, { userId, version })
