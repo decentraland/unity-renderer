@@ -41,7 +41,8 @@ const seaBed = new Entity()
 seaBed.addComponent(new GLTFShape('models/Underwater.gltf'))
 seaBed.addComponent(
   new Transform({
-    position: new Vector3(10, 0, 10)
+    position: new Vector3(10, 0, 8),
+    scale: new Vector3(0.5, 0.5, 0.5)
   })
 )
 engine.addEntity(seaBed)
