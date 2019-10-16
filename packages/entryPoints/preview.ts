@@ -93,6 +93,5 @@ initializeUnity(container)
       .catch(defaultLogger.error)
   })
   .catch(err => {
-    console['error']('Error loading Unity')
-    console['error'](err)
+    defaultLogger.error('There was an error', err)
   })
