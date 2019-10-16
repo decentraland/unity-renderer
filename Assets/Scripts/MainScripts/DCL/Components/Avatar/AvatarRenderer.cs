@@ -208,6 +208,8 @@ namespace DCL
                     enumerator.Current.Value.SetAnimatorBones(mainSkinnedRenderer);
                 }
             }
+
+            animator.SetIdleFrame();
         }
 
 

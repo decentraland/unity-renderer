@@ -46,13 +46,13 @@ namespace DCL
             model = SceneController.i.SafeFromJson<AvatarModel>(newJson);
 
             everythingIsLoaded = false;
-            avatarName.SetName(model.name);
 
             bool avatarDone = false;
             bool avatarFailed = false;
             avatarRenderer.ApplyModel(model, () => avatarDone = true, () => avatarFailed = true);
             yield return new WaitUntil(() => avatarDone || avatarFailed);
 
+            avatarName.SetName(model.name);
             SetMinimapRepresentationActive(true);
             everythingIsLoaded = true;
         }
