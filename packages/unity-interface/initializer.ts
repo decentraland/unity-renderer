@@ -44,19 +44,19 @@ export async function initializeUnity(container: HTMLElement): Promise<Initializ
   if (!session) {
     throw new Error()
   }
-  Session.current = session as Session
+  Session.current = session
   const qs = queryString.parse(document.location.search)
 
   if (qs.ws) {
-    _gameInstance = await initializeUnityEditor(qs.ws, container)
+    _gameInstance = initializeUnityEditor(qs.ws, container)
   } else {
-    _gameInstance = await UnityLoader.instantiate(container, 'unity/Build/unity.json')
+    _gameInstance = UnityLoader.instantiate(container, '/unity/Build/unity.json')
   }
 
   await engineInitialized
 
   return {
-    engine: _gameInstance!,
+    engine: _gameInstance,
     container,
     instancedJS: _instancedJS!
   }
@@ -67,7 +67,7 @@ namespace DCL {
   export function EngineStarted() {
     if (!_gameInstance) throw new Error('There is no UnityGame')
 
-    _instancedJS = initializeEngine(_gameInstance!)
+    _instancedJS = initializeEngine(_gameInstance)
 
     _instancedJS
       .then($ => {
@@ -81,7 +81,9 @@ namespace DCL {
 
   export function MessageFromEngine(type: string, jsonEncodedMessage: string) {
     if (_instancedJS) {
-      _instancedJS.then($ => $.onMessage(type, JSON.parse(jsonEncodedMessage)))
+      _instancedJS
+        .then($ => $.onMessage(type, JSON.parse(jsonEncodedMessage)))
+        .catch(e => defaultLogger.error(e.message))
     } else {
       defaultLogger.error('Message received without initializing engine', type, jsonEncodedMessage)
     }
@@ -117,7 +119,7 @@ function initializeUnityEditor(webSocketUrl: string, container: HTMLElement): Un
       const m = JSON.parse(ev.data)
       if (m.type && m.payload) {
         const payload = JSON.parse(m.payload)
-        _instancedJS!.then($ => $.onMessage(m.type, payload))
+        _instancedJS!.then($ => $.onMessage(m.type, payload)).catch(e => defaultLogger.error(e.message))
       } else {
         defaultLogger.error('Unexpected message: ', m)
       }

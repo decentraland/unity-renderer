@@ -98,7 +98,7 @@ export class Auth {
     const input = MessageInput.fromMessage(msg)
     const accessToken = await this.getCommsAccessToken()
 
-    const credentials = await this.getEphemeralKey().makeMessageCredentials(input, accessToken)
+    const credentials = this.getEphemeralKey().makeMessageCredentials(input, accessToken)
 
     let result: Record<string, string> = {}
 
