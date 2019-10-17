@@ -52,7 +52,7 @@ async function createBuilderScene(scene: IScene & { baseUrl: string }) {
   if (isFirstRun) {
     unityInterface.SetBuilderReady()
   } else {
-    unityInterface.ResetBuilderObject()
+    unityInterface.ResetBuilderScene()
   }
   await builderSceneLoaded
 
