@@ -28,11 +28,14 @@ public class AvatarHUDView : MonoBehaviour
     [Header("Edit Avatar")]
     [SerializeField] private Button editAvatarButton;
 
+    [SerializeField] private GameObject newWearableNotification;
+    [SerializeField] private TextMeshProUGUI newWearableNotificationText;
+
     [Header("Sign Out")]
     [SerializeField] private Button signOutButton;
 
     private AvatarHUDController controller;
-    
+
     private void Initialize(AvatarHUDController controller)
     {
         gameObject.name = VIEW_OBJECT_NAME;
@@ -54,6 +57,8 @@ public class AvatarHUDView : MonoBehaviour
         loadingAvatar.SetActive(topAvatarPic.texture == null);
         nameText.text = model.name;
         mailText.text = model.mail;
+        newWearableNotificationText.text = model.newWearables.ToString();
+        newWearableNotification.SetActive(model.newWearables != 0);
     }
 
     internal void SetVisibility(bool visibility)
