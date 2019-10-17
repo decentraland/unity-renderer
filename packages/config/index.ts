@@ -208,7 +208,7 @@ export function getServerConfigurations() {
     content: `https://content.decentraland.${TLDDefault === 'today' ? 'org' : TLDDefault}`,
     worldInstanceUrl: `wss://world-comm.decentraland.${TLDDefault}/connect`,
     profile: `https://profile.decentraland.${TLDDefault}/api/v1`,
-    wearablesApi: `https://dcl-wearable-api.now.sh`,
+    wearablesApi: `https://wearable-api.decentraland.org/v1`,
     avatar: {
       snapshotStorage: `https://avatars-storage.decentraland.${TLDDefault}/`,
       server: `https://avatars-api.decentraland.${TLDDefault === 'zone' ? 'today' : TLDDefault}/`,
