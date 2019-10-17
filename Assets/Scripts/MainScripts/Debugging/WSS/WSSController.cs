@@ -274,6 +274,9 @@ namespace DCL
                             case "ClearWearableCatalog":
                                 CatalogController.i.ClearWearableCatalog();
                                 break;
+                            case "ShowNewWearablesNotification":
+                                hudController.ShowNewWearablesNotification(msg.payload);
+                                break;
                             case "ConfigureMinimapHUD":
                                 hudController.ConfigureMinimapHUD(msg.payload);
                                 break;

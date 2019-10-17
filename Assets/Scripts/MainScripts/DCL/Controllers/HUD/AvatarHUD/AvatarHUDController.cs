@@ -44,6 +44,8 @@ public class AvatarHUDController : IHUD
 
     public void EditAvatar()
     {
+        model.newWearables = 0;
+        view.UpdateData(model);
         OnEditAvatarPressed?.Invoke();
     }
 
@@ -60,5 +62,11 @@ public class AvatarHUDController : IHUD
     private void SetActive(bool active)
     {
         view.SetActive(active);
+    }
+
+    public void SetNewWearablesNotification(int wearableCount)
+    {
+        model.newWearables = wearableCount;
+        view.UpdateData(model);
     }
 }

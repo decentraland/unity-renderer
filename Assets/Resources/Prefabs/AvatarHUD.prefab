@@ -1604,6 +1604,8 @@ MonoBehaviour:
   nameText: {fileID: 470573529617210512}
   mailText: {fileID: 6262905685099738811}
   editAvatarButton: {fileID: 8127968709767793726}
+  newWearableNotification: {fileID: 4015978988222737975}
+  newWearableNotificationText: {fileID: 220411951052900668}
   signOutButton: {fileID: 5960867254960926024}
 --- !u!1 &5904321500418823548
 GameObject:

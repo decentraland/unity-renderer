@@ -107,6 +107,14 @@ public class HUDController : MonoBehaviour
         notificationHud.ShowNotification(notification);
     }
 
+    public void ShowNewWearablesNotification(string wearableCountString)
+    {
+        if (int.TryParse(wearableCountString, out int wearableCount))
+        {
+            avatarHud.SetNewWearablesNotification(wearableCount);
+        }
+    }
+
     public void ConfigureMinimapHUD(string configurationJson)
     {
         HUDConfiguration configuration = JsonUtility.FromJson<HUDConfiguration>(configurationJson);
