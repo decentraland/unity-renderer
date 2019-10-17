@@ -81,8 +81,14 @@ namespace DCL {
 
   export function MessageFromEngine(type: string, jsonEncodedMessage: string) {
     if (_instancedJS) {
+      if (type === 'PerformanceReport') {
+        _instancedJS
+          .then($ => $.onMessage(type, jsonEncodedMessage))                     
+          .catch(e => defaultLogger.error(e.message))
+        return
+      }
       _instancedJS
-        .then($ => $.onMessage(type, JSON.parse(jsonEncodedMessage)))
+        .then($ => $.onMessage(type, JSON.parse(jsonEncodedMessage)))                     
         .catch(e => defaultLogger.error(e.message))
     } else {
       defaultLogger.error('Message received without initializing engine', type, jsonEncodedMessage)
@@ -118,7 +124,7 @@ function initializeUnityEditor(webSocketUrl: string, container: HTMLElement): Un
     try {
       const m = JSON.parse(ev.data)
       if (m.type && m.payload) {
-        const payload = JSON.parse(m.payload)
+        const payload = m.type === 'PerformanceReport' ? m.payload : JSON.parse(m.payload)
         _instancedJS!.then($ => $.onMessage(m.type, payload)).catch(e => defaultLogger.error(e.message))
       } else {
         defaultLogger.error('Unexpected message: ', m)
