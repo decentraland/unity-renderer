@@ -45,6 +45,9 @@ import { hudWorkerUrl, SceneWorker } from '../shared/world/SceneWorker'
 import { ensureUiApis } from '../shared/world/uiSceneInitializer'
 import { worldRunningObservable } from '../shared/world/worldState'
 
+const rendererVersion = require('decentraland-renderer')
+window['console'].log('Renderer version: ' + rendererVersion)
+
 let gameInstance!: GameInstance
 
 export let futures: Record<string, IFuture<any>> = {}
