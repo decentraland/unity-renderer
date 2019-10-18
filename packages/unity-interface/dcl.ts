@@ -234,6 +234,9 @@ export const unityInterface = {
   ClearWearableCatalog() {
     gameInstance.SendMessage('SceneController', 'ClearWearableCatalog')
   },
+  ShowNewWearablesNotification(wearableNumber: number) {
+    gameInstance.SendMessage('HUDController', 'ShowNewWearablesNotification', wearableNumber.toString())
+  },
   ShowNotification(notification: Notification) {
     gameInstance.SendMessage('HUDController', 'ShowNotificationFromJson', JSON.stringify(notification))
   },
