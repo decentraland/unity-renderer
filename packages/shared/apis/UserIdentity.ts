@@ -34,7 +34,8 @@ export class UserIdentity extends ExposableAPI implements IUserIdentity {
 
     return {
       displayName: user.profile.name,
-      publicKey: user.userId
+      publicKey: user.userId,
+      userId: user.userId
     }
   }
 }

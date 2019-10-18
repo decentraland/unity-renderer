@@ -26,6 +26,7 @@ export interface MessageDict {
 export type UserData = {
   displayName: string
   publicKey: string
+  userId: string
 }
 
 export type MessageEntry = {
