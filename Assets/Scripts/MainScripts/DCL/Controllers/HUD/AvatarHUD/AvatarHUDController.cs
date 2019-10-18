@@ -46,6 +46,7 @@ public class AvatarHUDController : IHUD
     {
         model.newWearables = 0;
         view.UpdateData(model);
+        DCL.Interface.WebInterface.ReportEditAvatarClicked();
         OnEditAvatarPressed?.Invoke();
     }
 
