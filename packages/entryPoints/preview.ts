@@ -64,16 +64,9 @@ function startPreviewWatcher() {
 function sceneRenderable() {
   const sceneRenderable = future<void>()
 
-  const timer = setTimeout(() => {
-    if (sceneRenderable.isPending) {
-      sceneRenderable.reject(new Error('scene never got ready'))
-    }
-  }, 30000)
-
   const observer = sceneLifeCycleObservable.add(async sceneStatus => {
     if (sceneStatus.sceneId === (await defaultScene).sceneId) {
       sceneLifeCycleObservable.remove(observer)
-      clearTimeout(timer)
       sceneRenderable.resolve()
     }
   })
@@ -100,6 +93,5 @@ initializeUnity(container)
       .catch(defaultLogger.error)
   })
   .catch(err => {
-    console['error']('Error loading Unity')
-    console['error'](err)
+    defaultLogger.error('There was an error', err)
   })

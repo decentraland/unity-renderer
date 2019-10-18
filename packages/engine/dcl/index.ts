@@ -96,7 +96,7 @@ const notifyPositionObservers = (() => {
 
   stats.dom.style.visibility = 'hidden'
 
-  if (DEBUG || PREVIEW) {
+  if ((DEBUG || PREVIEW) && !EDITOR) {
     stats.dom.style.visibility = 'visible'
   }
 
