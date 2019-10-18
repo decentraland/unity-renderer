@@ -278,6 +278,16 @@ export interface IEvents {
   sceneStart: {}
 
   /**
+   * This is triggered once the builder scene is loaded.
+   */
+  builderSceneStart: {}
+
+  /**
+   * This is triggered once the builder scene is unloaded.
+   */
+  builderSceneUnloaded: {}
+
+  /**
    * After checking entities outside the fences, if any is outside, this event
    * will be triggered with all the entities outside the scene.
    */

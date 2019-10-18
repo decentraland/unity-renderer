@@ -1,0 +1,1 @@
+{"display":{"title":"interactive-text","favicon":"favicon_asset"},"contact":{"name":"","email":""},"owner":"","scene":{"parcels":["136,123"],"base":"136,123"},"communications":{"type":"webrtc","signalling":"https://signalling-01.decentraland.org"},"policy":{"contentRating":"E","fly":true,"voiceEnabled":true,"blacklist":[],"teleportPosition":""},"main":"game.js","tags":[]}

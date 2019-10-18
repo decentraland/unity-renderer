@@ -6,7 +6,8 @@ import {
   getTLD,
   PREVIEW,
   setNetwork,
-  STATIC_WORLD
+  STATIC_WORLD,
+  EDITOR
 } from '../config'
 import { initialize, queueTrackingEvent } from './analytics'
 import './apis/index'
@@ -61,7 +62,7 @@ export async function initShared(): Promise<Session | undefined> {
 
   console['group']('connect#login')
 
-  if (PREVIEW) {
+  if (PREVIEW || EDITOR) {
     defaultLogger.log(`Using test user.`)
     userId = 'email|5cdd68572d5f842a16d6cc17'
   } else {
