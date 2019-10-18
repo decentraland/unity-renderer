@@ -153,5 +153,7 @@ public class HUDController : MonoBehaviour
     {
         ownUserProfile.OnUpdate -= OwnUserProfileUpdated;
         minimapHud.Dispose();
+        notificationHud.Dispose();
+        avatarEditorHud.Dispose();
     }
 }

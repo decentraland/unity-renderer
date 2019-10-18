@@ -43,8 +43,8 @@ namespace DCL.Interface
 
         public abstract class ControlEvent<T> : ControlEvent
         {
-
             public T payload;
+
             protected ControlEvent(string eventType, T payload)
             {
                 this.eventType = eventType;
@@ -343,6 +343,11 @@ namespace DCL.Interface
         }
 #endif
 
+        public static void SendMessage(string type)
+        {
+            MessageFromEngine(type, string.Empty);
+        }
+
         public static void SendMessage<T>(string type, T message)
         {
             string messageJson = JsonUtility.ToJson(message);
@@ -591,7 +596,7 @@ namespace DCL.Interface
 
         public static void LogOut()
         {
-            SendMessage("LogOut", string.Empty);
+            SendMessage("LogOut");
         }
 
         public static void PreloadFinished(string sceneId)
@@ -637,6 +642,11 @@ namespace DCL.Interface
             SendMessage("SendScreenshot", onSendScreenshot);
         }
 
+        public static void ReportEditAvatarClicked()
+        {
+            SendMessage("EditAvatarClicked");
+        }
+
         [System.Serializable]
         public class SaveAvatarPayload
         {
@@ -644,6 +654,7 @@ namespace DCL.Interface
             public string body;
             public AvatarModel avatar;
         }
+
         public static void SendSaveAvatar(AvatarModel avatar, Texture2D faceSnapshot, Texture2D bodySnapshot)
         {
             var payload = new SaveAvatarPayload()
