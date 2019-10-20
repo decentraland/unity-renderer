@@ -92,6 +92,26 @@ export class WorldInstanceConnection {
     }
   }
 
+  sendParcelUpdateMessage(current: Position, newPosition: Position) {
+    const topic = positionHash(current)
+
+    const d = new PositionData()
+    d.setCategory(Category.POSITION)
+    d.setTime(Date.now())
+    d.setPositionX(newPosition[0])
+    d.setPositionY(newPosition[1])
+    d.setPositionZ(newPosition[2])
+    d.setRotationX(newPosition[3])
+    d.setRotationY(newPosition[4])
+    d.setRotationZ(newPosition[5])
+    d.setRotationW(newPosition[6])
+
+    const r = this.sendTopicMessage(false, topic, d)
+    if (this.stats) {
+      this.stats.position.incrementSent(1, r.bytesSize)
+    }
+  }
+
   sendProfileMessage(p: Position, userProfile: UserInformation) {
     const topic = positionHash(p)
 
