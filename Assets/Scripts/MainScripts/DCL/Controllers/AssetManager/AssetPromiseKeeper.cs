@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Collections;
 using UnityEngine;
 
 namespace DCL
@@ -18,6 +19,8 @@ namespace DCL
         where AssetLibraryType : AssetLibrary<AssetType>, new()
         where AssetPromiseType : AssetPromise<AssetType>
     {
+        const float PROCESS_PROMISES_TIME_BUDGET = 0.0025f;
+
         private static AssetPromiseKeeper<AssetType, AssetLibraryType, AssetPromiseType> instance;
         public static AssetPromiseKeeper<AssetType, AssetLibraryType, AssetPromiseType> i
         {
@@ -53,6 +56,7 @@ namespace DCL
         public AssetPromiseKeeper(AssetLibraryType library)
         {
             this.library = library;
+            CoroutineStarter.Start(ProcessBlockedPromisesQueue());
         }
 
         public AssetPromiseType Keep(AssetPromiseType promise)
@@ -128,10 +132,43 @@ namespace DCL
             return promise;
         }
 
+        Queue<AssetPromise<AssetType>> blockedPromisesQueue = new Queue<AssetPromise<AssetType>>();
+
         private void OnRequestCompleted(AssetPromise<AssetType> promise)
         {
-            ProcessBlockedPromises(promise);
-            CleanPromise(promise);
+            if (RenderingController.i.renderingEnabled)
+            {
+                blockedPromisesQueue.Enqueue(promise);
+            }
+            else
+            {
+                ProcessBlockedPromises(promise);
+                CleanPromise(promise);
+            }
+        }
+
+        IEnumerator ProcessBlockedPromisesQueue()
+        {
+            float start = Time.unscaledTime;
+            while (true)
+            {
+                while (blockedPromisesQueue.Count > 0)
+                {
+                    AssetPromise<AssetType> promise = blockedPromisesQueue.Dequeue();
+
+                    ProcessBlockedPromises(promise);
+                    CleanPromise(promise);
+
+                    if (Time.realtimeSinceStartup - start >= PROCESS_PROMISES_TIME_BUDGET)
+                    {
+                        yield return null;
+                        start = Time.unscaledTime;
+                    }
+                }
+                yield return null;
+
+                start = Time.unscaledTime;
+            }
         }
 
         private void ProcessBlockedPromises(AssetPromise<AssetType> loadedPromise)

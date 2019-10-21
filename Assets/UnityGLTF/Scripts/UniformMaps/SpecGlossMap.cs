@@ -6,7 +6,7 @@ namespace UnityGLTF
     {
         public SpecGlossMap(int MaxLOD = 1000) : base("DCL/LWRP/Lit", MaxLOD) { }
         public SpecGlossMap(string shaderName, int MaxLOD = 1000) : base(shaderName, MaxLOD) { }
-        protected SpecGlossMap(Material m, int MaxLOD = 1000) : base(m, MaxLOD) { }
+        public SpecGlossMap(Material m, int MaxLOD = 1000) : base(m, MaxLOD) { }
 
         public override int NormalTexCoord
         {

@@ -1,0 +1,17 @@
+{
+    "name": "BaseVariableTests",
+    "references": [
+        "GUID:4720e174f2805c74bb7aa94cc8bb5bf8"
+    ],
+    "optionalUnityReferences": [
+        "TestAssemblies"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": []
+}

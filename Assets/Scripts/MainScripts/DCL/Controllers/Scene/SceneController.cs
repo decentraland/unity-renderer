@@ -3,6 +3,7 @@ using DCL.Helpers;
 using DCL.Interface;
 using DCL.Models;
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
@@ -58,6 +59,7 @@ namespace DCL
         public event ProcessDelegate OnMessageProcessInfoEnds;
 #endif
         public List<ParcelScene> scenesSortedByDistance = new List<ParcelScene>();
+        private Queue<MessagingBus.QueuedSceneMessage_Scene> sceneMessagesPool = new Queue<MessagingBus.QueuedSceneMessage_Scene>();
 
         [System.NonSerialized]
         public bool isDebugMode;
@@ -65,23 +67,7 @@ namespace DCL
         [System.NonSerialized]
         public bool isWssDebugMode;
 
-        public bool hasPendingMessages => pendingMessagesCount > 0;
-
-        public int pendingMessagesCount
-        {
-            get
-            {
-                return MessagingControllersManager.i.pendingMessagesCount;
-            }
-        }
-
-        public int pendingInitMessagesCount
-        {
-            get
-            {
-                return MessagingControllersManager.i.pendingInitMessagesCount;
-            }
-        }
+        public bool hasPendingMessages => MessagingControllersManager.i.pendingMessagesCount > 0;
 
         public string GlobalSceneId
         {
@@ -103,6 +89,11 @@ namespace DCL
                 return;
             }
 
+            for (int i = 0; i < 100000; i++)
+            {
+                sceneMessagesPool.Enqueue(new MessagingBus.QueuedSceneMessage_Scene());
+            }
+
             i = this;
 
             PointerEventsController.i.Initialize();
@@ -120,6 +111,15 @@ namespace DCL
             {
                 WebInterface.StartDecentraland();
             }
+
+            ParcelScene.parcelScenesCleaner.Start();
+
+            StartCoroutine(DeferredDecoding());
+        }
+
+        void OnDestroy()
+        {
+            ParcelScene.parcelScenesCleaner.Stop();
         }
 
         private void Update()
@@ -142,12 +142,6 @@ namespace DCL
 
         private int SceneMessagingSortByDistance(ParcelScene sceneA, ParcelScene sceneB)
         {
-            if (sceneA.IsInsideSceneBoundaries(Utils.WorldToGridPosition(DCLCharacterController.i.characterPosition.worldPosition)))
-                return -1;
-
-            if (sceneB.IsInsideSceneBoundaries(Utils.WorldToGridPosition(DCLCharacterController.i.characterPosition.worldPosition)))
-                return 1;
-
             int dist1 = (int)(sceneA.transform.position - DCLCharacterController.i.transform.position).sqrMagnitude;
             int dist2 = (int)(sceneB.transform.position - DCLCharacterController.i.transform.position).sqrMagnitude;
 
@@ -444,21 +438,79 @@ namespace DCL
 
         public string SendSceneMessage(string payload)
         {
-            if (payload.IndexOf('\n') != -1)
+            return SendSceneMessage(payload, true);
+        }
+
+        public string SendSceneMessage(string payload, bool enqueue)
+        {
+            string[] chunks = payload.Split(new char[] { '\n' });
+            int count = chunks.Length;
+            string lastBusId = null;
+
+            for (int i = 0; i < count; i++)
             {
-                throw new InvalidProgramException("The kernel sent 'SendSceneMessages' with an end of line");
+                if (RenderingController.i.renderingEnabled && enqueue)
+                {
+                    payloadsToDecode.Enqueue(chunks[i]);
+                }
+                else
+                {
+                    lastBusId = DecodeAndEnqueue(chunks[i]);
+                }
             }
+
+            return lastBusId;
+        }
+
+        private string DecodeAndEnqueue(string payload)
+        {
             string sceneId;
             string message;
-            string messageTag;
+            string tag;
+            string busId = "none";
 
-            if (!DecodePayloadChunk(payload, out sceneId, out message, out messageTag))
+            if (!DecodePayloadChunk(payload, out sceneId, out message, out tag))
             {
                 return null;
             }
 
-            var queuedMessage = DecodeSceneMessage(sceneId, message, messageTag);
-            return EnqueueMessage(queuedMessage);
+            var queuedMessage = DecodeSceneMessage(sceneId, message, tag);
+
+            busId = EnqueueMessage(queuedMessage);
+
+            return busId;
+        }
+
+        Queue<string> payloadsToDecode = new Queue<string>();
+        const float MAX_TIME_FOR_DECODE = 0.05f;
+        const float MIN_TIME_FOR_DECODE = 0.016f;
+        float maxTimeForDecode = MAX_TIME_FOR_DECODE;
+        float secsPerThousandMsgs = 0.01f;
+        private IEnumerator DeferredDecoding()
+        {
+            float lastTimeDecoded = Time.unscaledTime;
+
+            while (true)
+            {
+                if (payloadsToDecode.Count > 0)
+                {
+                    string payload = payloadsToDecode.Dequeue();
+
+                    DecodeAndEnqueue(payload);
+
+                    if (Time.realtimeSinceStartup - lastTimeDecoded >= maxTimeForDecode)
+                    {
+                        yield return null;
+                        maxTimeForDecode = Mathf.Clamp(MIN_TIME_FOR_DECODE + (float)payloadsToDecode.Count / 1000.0f * secsPerThousandMsgs, MIN_TIME_FOR_DECODE, MAX_TIME_FOR_DECODE);
+                        lastTimeDecoded = Time.unscaledTime;
+                    }
+                }
+                else
+                {
+                    yield return null;
+                    lastTimeDecoded = Time.unscaledTime;
+                }
+            }
         }
 
         private bool DecodePayloadChunk(string chunk, out string sceneId, out string message, out string tag)
@@ -498,18 +550,25 @@ namespace DCL
 
         private MessagingBus.QueuedSceneMessage_Scene DecodeSceneMessage(string sceneId, string message, string tag)
         {
-            var queuedMessage = new MessagingBus.QueuedSceneMessage_Scene()
-            { type = MessagingBus.QueuedSceneMessage.Type.SCENE_MESSAGE, sceneId = sceneId, message = message, tag = tag };
+            MessagingBus.QueuedSceneMessage_Scene queuedMessage;
+
+            if (sceneMessagesPool.Count > 0)
+                queuedMessage = sceneMessagesPool.Dequeue();
+            else
+                queuedMessage = new MessagingBus.QueuedSceneMessage_Scene();
+
+            queuedMessage.type = MessagingBus.QueuedSceneMessage.Type.SCENE_MESSAGE;
+            queuedMessage.sceneId = sceneId;
+            queuedMessage.message = message;
+            queuedMessage.tag = tag;
 
             OnMessageDecodeStart?.Invoke("Misc");
-            var queuedMessageSeparatorIndex = queuedMessage.message.IndexOf('\t');
-
-            queuedMessage.method = queuedMessage.message.Substring(0, queuedMessageSeparatorIndex);
-            queuedMessage.payload = queuedMessage.message.Substring(queuedMessageSeparatorIndex + 1);
+            queuedMessage = SceneMessageUtilities.DecodeSceneMessage(sceneId, message, tag);
             OnMessageDecodeEnds?.Invoke("Misc");
 
             return queuedMessage;
         }
+
 
         private string EnqueueMessage(MessagingBus.QueuedSceneMessage_Scene queuedMessage)
         {
@@ -529,10 +588,16 @@ namespace DCL
             return busId;
         }
 
-        public bool ProcessMessage(string sceneId, string tag, string method, string payload, out CleanableYieldInstruction yieldInstruction)
+        public bool ProcessMessage(MessagingBus.QueuedSceneMessage_Scene msgObject, out CleanableYieldInstruction yieldInstruction)
         {
+            string sceneId = msgObject.sceneId;
+            string tag = msgObject.tag;
+            string method = msgObject.method;
+            string payload = msgObject.payload;
+
             yieldInstruction = null;
 
+            bool res = false;
             ParcelScene scene;
 
             if (loadedScenes.TryGetValue(sceneId, out scene))
@@ -542,80 +607,88 @@ namespace DCL
                 {
                     if (scene is GlobalScene && ignoreGlobalScenes)
                     {
+                        sceneMessagesPool.Enqueue(msgObject);
                         return false;
                     }
 
                     if (scene.sceneData.basePosition.ToString() != debugSceneCoords.ToString())
                     {
+                        sceneMessagesPool.Enqueue(msgObject);
                         return false;
                     }
                 }
 #endif
                 if (!scene.gameObject.activeInHierarchy)
                 {
-                    return true;
+                    res = true;
                 }
-
-#if UNITY_EDITOR
-                OnMessageProcessInfoStart?.Invoke(sceneId, method, payload);
-#endif
-                OnMessageProcessStart?.Invoke(method);
-                switch (method)
+                else
                 {
-                    case MessagingTypes.ENTITY_CREATE:
-                        scene.CreateEntity(tag, payload);
-                        break;
-                    case MessagingTypes.ENTITY_REPARENT:
-                        scene.SetEntityParent(payload);
-                        break;
+#if UNITY_EDITOR
+                    OnMessageProcessInfoStart?.Invoke(sceneId, method, payload);
+#endif
+                    OnMessageProcessStart?.Invoke(method);
+                    switch (method)
+                    {
+                        case MessagingTypes.ENTITY_CREATE:
+                            scene.CreateEntity(tag, payload);
+                            break;
+                        case MessagingTypes.ENTITY_REPARENT:
+                            scene.SetEntityParent(payload);
+                            break;
 
-                    //NOTE(Brian): EntityComponent messages
-                    case MessagingTypes.ENTITY_COMPONENT_CREATE_OR_UPDATE:
-                        scene.EntityComponentCreateOrUpdate(payload, out yieldInstruction);
-                        break;
-                    case MessagingTypes.ENTITY_COMPONENT_DESTROY:
-                        scene.EntityComponentRemove(payload);
-                        break;
+                        //NOTE(Brian): EntityComponent messages
+                        case MessagingTypes.ENTITY_COMPONENT_CREATE_OR_UPDATE:
+                            scene.EntityComponentCreateOrUpdate(payload, out yieldInstruction);
+                            break;
+                        case MessagingTypes.ENTITY_COMPONENT_DESTROY:
+                            scene.EntityComponentRemove(payload);
+                            break;
 
-                    //NOTE(Brian): SharedComponent messages
-                    case MessagingTypes.SHARED_COMPONENT_ATTACH:
-                        scene.SharedComponentAttach(payload);
-                        break;
-                    case MessagingTypes.SHARED_COMPONENT_CREATE:
-                        scene.SharedComponentCreate(payload);
-                        break;
-                    case MessagingTypes.SHARED_COMPONENT_DISPOSE:
-                        scene.SharedComponentDispose(payload);
-                        break;
-                    case MessagingTypes.SHARED_COMPONENT_UPDATE:
-                        scene.SharedComponentUpdate(payload, out yieldInstruction);
-                        break;
-                    case MessagingTypes.ENTITY_DESTROY:
-                        scene.RemoveEntity(tag);
-                        break;
-                    case MessagingTypes.INIT_DONE:
-                        scene.SetInitMessagesDone();
-                        break;
-                    case MessagingTypes.QUERY:
-                        ParseQuery(payload, scene.sceneData.id);
-                        break;
-                    default:
-                        Debug.LogError($"Unknown method {method}");
-                        return true;
-                }
+                        //NOTE(Brian): SharedComponent messages
+                        case MessagingTypes.SHARED_COMPONENT_ATTACH:
+                            scene.SharedComponentAttach(payload);
+                            break;
+                        case MessagingTypes.SHARED_COMPONENT_CREATE:
+                            scene.SharedComponentCreate(payload);
+                            break;
+                        case MessagingTypes.SHARED_COMPONENT_DISPOSE:
+                            scene.SharedComponentDispose(payload);
+                            break;
+                        case MessagingTypes.SHARED_COMPONENT_UPDATE:
+                            scene.SharedComponentUpdate(payload, out yieldInstruction);
+                            break;
+                        case MessagingTypes.ENTITY_DESTROY:
+                            scene.RemoveEntity(tag);
+                            break;
+                        case MessagingTypes.INIT_DONE:
+                            scene.SetInitMessagesDone();
+                            break;
+                        case MessagingTypes.QUERY:
+                            ParseQuery(payload, scene.sceneData.id);
+                            break;
+                        default:
+                            Debug.LogError($"Unknown method {method}");
+                            return true;
+                    }
 
-                OnMessageProcessEnds?.Invoke(method);
+                    OnMessageProcessEnds?.Invoke(method);
 
 #if UNITY_EDITOR
-                OnMessageProcessInfoEnds?.Invoke(sceneId, method, payload);
+                    OnMessageProcessInfoEnds?.Invoke(sceneId, method, payload);
 #endif
 
-                return true;
+                    res = true;
+                }
             }
             else
             {
-                return false;
+                res = false;
             }
+
+            sceneMessagesPool.Enqueue(msgObject);
+
+            return res;
         }
 
         public Vector3 ConvertUnityToScenePosition(Vector3 pos, ParcelScene scene = null)

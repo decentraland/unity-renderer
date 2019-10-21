@@ -115,7 +115,7 @@ namespace DCL
             if (globalThrottler != null && globalThrottler.currentTimeBudget < 0.001f)
                 enableBudgetMax = true;
 
-            int messagesProcessedLastFrame = lastPendingMessages - SceneController.i.pendingMessagesCount;
+            int messagesProcessedLastFrame = lastPendingMessages - MessagingControllersManager.i.pendingMessagesCount;
 
             if (messagesProcessedLastFrame > 0)
             {
@@ -124,7 +124,7 @@ namespace DCL
                 statsPanel.SetCellText(1, (int)Rows.MESSAGES_PER_SECOND_REAL, (mps / sampleCount).ToString());
             }
 
-            lastPendingMessages = SceneController.i.pendingMessagesCount;
+            lastPendingMessages = MessagingControllersManager.i.pendingMessagesCount;
         }
 
 

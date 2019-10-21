@@ -384,7 +384,7 @@ MonoBehaviour:
   aimingVerticalMinimumAngle: -89
   aimingVerticalMaximumAngle: 89
   minimumYPosition: 0
-  groundCheckExtraDistance: 0.1
+  groundCheckExtraDistance: 0.25
   gravity: -55
   jumpForce: 12
   movementSpeed: 8

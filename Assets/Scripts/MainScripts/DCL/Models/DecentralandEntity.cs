@@ -42,6 +42,7 @@ namespace DCL.Models
         }
 
         public ParcelScene scene;
+        public bool markedForCleanup = false;
 
         public Dictionary<string, DecentralandEntity> children = new Dictionary<string, DecentralandEntity>();
         public DecentralandEntity parent;

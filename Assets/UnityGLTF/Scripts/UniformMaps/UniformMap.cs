@@ -24,6 +24,9 @@ namespace UnityGLTF
         bool VertexColorsEnabled { get; set; }
 
         IUniformMap Clone();
+
+        Material GetMaterialCopy();
+
     }
 
     interface IMetalRoughUniformMap : IUniformMap

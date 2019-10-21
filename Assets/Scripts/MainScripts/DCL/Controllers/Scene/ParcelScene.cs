@@ -15,8 +15,6 @@ namespace DCL.Controllers
     public class ParcelScene : MonoBehaviour, ICleanable
     {
         public static bool VERBOSE = false;
-        static Vector3 MORDOR = new Vector3(1000, 1000, 1000);
-
         enum State
         {
             NOT_READY,
@@ -26,9 +24,8 @@ namespace DCL.Controllers
         }
 
         private const string PARCEL_BLOCKER_PREFAB = "Prefabs/ParcelBlocker";
-        private const float MAX_CLEANUP_BUDGET = 0.014f;
-        private const float CLEANUP_NOISE = 0.0025f;
         private const int ENTITY_POOL_PREWARM_COUNT = 2000;
+        private static Vector3 MORDOR = new Vector3(1000, 1000, 1000);
 
         public Dictionary<string, DecentralandEntity> entities = new Dictionary<string, DecentralandEntity>();
         public Dictionary<string, BaseDisposable> disposableComponents = new Dictionary<string, BaseDisposable>();
@@ -51,9 +48,10 @@ namespace DCL.Controllers
         [System.NonSerialized]
         public bool unloadWithDistance = true;
 
-        private readonly List<GameObject> blockers = new List<GameObject>();
+        public static ParcelScenesCleaner parcelScenesCleaner = new ParcelScenesCleaner();
+
+        private readonly List<PoolableObject> blockers = new List<PoolableObject>();
         private readonly List<string> disposableNotReady = new List<string>();
-        private List<string> entitiesMarkedForRemoval = new List<string>();
         private bool flaggedToUnload = false;
         private bool isReleased = false;
         private State state = State.NOT_READY;
@@ -64,6 +62,17 @@ namespace DCL.Controllers
         public void Awake()
         {
             state = State.NOT_READY;
+
+            if (blockerPrefab == null)
+                blockerPrefab = Resources.Load<GameObject>(PARCEL_BLOCKER_PREFAB);
+
+            // We need to manually create the Pool for empty game objects if it doesn't exist
+            if (!PoolManager.i.ContainsPool(PARCEL_BLOCKER_POOL_NAME))
+            {
+                GameObject go = Instantiate(blockerPrefab);
+                Pool pool = PoolManager.i.AddPool(PARCEL_BLOCKER_POOL_NAME, go);
+                pool.ForcePrewarm();
+            }
 
             metricsController = new SceneMetricsController(this);
             metricsController.Enable();
@@ -138,32 +147,46 @@ namespace DCL.Controllers
 
         public void CleanBlockers()
         {
-            int blockersCount = blockers.Count;
-            for (int i = 0; i < blockersCount; i++)
+            int count = blockers.Count;
+
+            for (int i = 0; i < count; i++)
             {
-                Destroy(blockers[i]);
+                blockers[i].Release();
             }
 
             blockers.Clear();
         }
 
+        const string PARCEL_BLOCKER_POOL_NAME = "ParcelBlocker";
+        Vector3 auxVec = new Vector3();
+
         private void SetupBlockers(Vector2Int[] parcels)
         {
-            if (blockerPrefab == null)
-                blockerPrefab = Resources.Load<GameObject>(PARCEL_BLOCKER_PREFAB);
-
             CleanBlockers();
 
             int parcelsLength = parcels.Length;
             for (int i = 0; i < parcelsLength; i++)
             {
                 Vector2Int pos = parcels[i];
-                var blocker = Instantiate(blockerPrefab, transform);
+
+                PoolableObject blocker = PoolManager.i.Get(PARCEL_BLOCKER_POOL_NAME);
+
+                blocker.transform.SetParent(this.transform, false);
                 blocker.transform.position = DCLCharacterController.i.characterPosition.WorldToUnityPosition(Utils.GridToWorldPosition(pos.x, pos.y)) + (Vector3.up * blockerPrefab.transform.localPosition.y) + new Vector3(ParcelSettings.PARCEL_SIZE / 2, 0, ParcelSettings.PARCEL_SIZE / 2);
 
                 float sceneHeight = metricsController.GetLimits().sceneHeight;
-                blocker.transform.position = new Vector3(blocker.transform.position.x, sceneHeight / 2, blocker.transform.position.z);
-                blocker.transform.localScale = new Vector3(blocker.transform.localScale.x, sceneHeight, blocker.transform.localScale.z);
+
+                auxVec.x = blocker.transform.position.x;
+                auxVec.y = sceneHeight / 2;
+                auxVec.z = blocker.transform.position.z;
+
+                blocker.transform.position = auxVec;
+
+                auxVec.x = ParcelSettings.PARCEL_SIZE;
+                auxVec.y = sceneHeight;
+                auxVec.z = ParcelSettings.PARCEL_SIZE;
+                blocker.transform.localScale = auxVec;
+
                 blockers.Add(blocker);
             }
         }
@@ -179,7 +202,6 @@ namespace DCL.Controllers
             contentProvider.baseUrl = data.baseUrl;
             contentProvider.contents = data.contents;
             contentProvider.BakeHashes();
-
         }
 
         public void InitializeDebugPlane()
@@ -232,6 +254,9 @@ namespace DCL.Controllers
             if (isReleased)
                 return;
 
+            if (DCLCharacterController.i)
+                DCLCharacterController.i.characterPosition.OnPrecisionAdjust -= OnPrecisionAdjust;
+
             if (!RenderingController.i.renderingEnabled)
             {
                 RemoveAllEntitiesImmediate();
@@ -242,17 +267,11 @@ namespace DCL.Controllers
                 {
                     this.gameObject.transform.position = MORDOR;
 
-                    if (DCLCharacterController.i)
-                        DCLCharacterController.i.characterPosition.OnPrecisionAdjust -= OnPrecisionAdjust;
-
-                    CoroutineStarter.Start(RemoveAllEntitiesCoroutine());
+                    RemoveAllEntities();
                 }
                 else
                 {
                     Destroy(this.gameObject);
-
-                    if (DCLCharacterController.i)
-                        DCLCharacterController.i.characterPosition.OnPrecisionAdjust -= OnPrecisionAdjust;
                 }
             }
 
@@ -281,11 +300,14 @@ namespace DCL.Controllers
         {
             if (sceneData.parcels == null) return false;
 
-            float heightLimit = metricsController.GetLimits().sceneHeight;
+            float heightLimit = 0;
+
+            if (height != 0)
+                heightLimit = metricsController.GetLimits().sceneHeight;
 
             for (int i = 0; i < sceneData.parcels.Length; i++)
             {
-                if (height > heightLimit) continue;
+                if (height != 0 && height > heightLimit) continue;
 
                 if (sceneData.parcels[i] == gridPosition) return true;
             }
@@ -366,24 +388,11 @@ namespace DCL.Controllers
             SceneController.i.OnMessageDecodeEnds?.Invoke("RemoveEntity");
             if (entities.ContainsKey(tmpRemoveEntityMessage.id))
             {
-                if (!entitiesMarkedForRemoval.Contains(tmpRemoveEntityMessage.id))
+                DecentralandEntity entity = entities[tmpRemoveEntityMessage.id];
+                if (!entity.markedForCleanup)
                 {
-                    DecentralandEntity entity = entities[tmpRemoveEntityMessage.id];
                     // This will also cleanup its children
-                    CleanUpEntityRecursively(entity);
-
-                    if (removeImmediatelyFromEntitiesList)
-                    {
-                        int entitiesMarkedForRemovalCount = entitiesMarkedForRemoval.Count;
-                        for (int i = 0; i < entitiesMarkedForRemovalCount; i++)
-                        {
-                            entity = entities[entitiesMarkedForRemoval[i]];
-                            entities.Remove(entitiesMarkedForRemoval[i]);
-                            entity.SetParent(null);
-                            entity.Cleanup();
-                        }
-                        entitiesMarkedForRemoval.Clear();
-                    }
+                    CleanUpEntityRecursively(entity, removeImmediatelyFromEntitiesList);
                 }
             }
 #if UNITY_EDITOR || DEVELOPMENT_BUILD
@@ -394,38 +403,33 @@ namespace DCL.Controllers
 #endif
         }
 
-        void CleanUpEntityRecursively(DecentralandEntity entity)
+
+
+        void CleanUpEntityRecursively(DecentralandEntity entity, bool removeImmediatelyFromEntitiesList)
         {
             // Iterate through all entity children
             using (var iterator = entity.children.GetEnumerator())
             {
                 while (iterator.MoveNext())
                 {
-                    CleanUpEntityRecursively(iterator.Current.Value);
+                    CleanUpEntityRecursively(iterator.Current.Value, removeImmediatelyFromEntitiesList);
                 }
             }
+
             OnEntityRemoved?.Invoke(entity);
-            MarkForRemoval(entity);
+
+            if (removeImmediatelyFromEntitiesList)
+                entity.Cleanup();
+            else
+                parcelScenesCleaner.MarkForCleanup(entity);
         }
 
-        void MarkForRemoval(DecentralandEntity entity)
+        void RemoveAllEntities(bool instant = false)
         {
-            if (!entitiesMarkedForRemoval.Contains(entity.entityId))
-            {
-                entitiesMarkedForRemoval.Add(entity.entityId);
-            }
-        }
-
-        IEnumerator RemoveAllEntitiesCoroutine(bool instant = false)
-        {
-            if (!instant)
-                yield return WaitForSecondsCache.Get(Random.Range(0, CLEANUP_NOISE));
-
             //NOTE(Brian): We need to remove only the rootEntities. 
             //             If we don't, duplicated entities will get removed when destroying 
             //             recursively, making this more complicated than it should.
-            float maxBudget = MAX_CLEANUP_BUDGET;
-            float lastTime = DCLTime.realtimeSinceStartup;
+            List<DecentralandEntity> rootEntities = new List<DecentralandEntity>();
 
             using (var iterator = entities.GetEnumerator())
             {
@@ -433,48 +437,32 @@ namespace DCL.Controllers
                 {
                     if (iterator.Current.Value.parent == null)
                     {
-                        DecentralandEntity entity = iterator.Current.Value;
-
-                        RemoveEntity(entity.entityId, false);
-
-                        if (!instant && DCLTime.realtimeSinceStartup - lastTime >= maxBudget)
-                        {
-                            yield return null;
-                            lastTime = DCLTime.realtimeSinceStartup;
-                        }
+                        if (instant)
+                            rootEntities.Add(iterator.Current.Value);
+                        else
+                            parcelScenesCleaner.RemoveEntity(this, iterator.Current.Value);
                     }
                 }
             }
 
-            int entitiesMarkedForRemovalCount = entitiesMarkedForRemoval.Count;
-
-            for (int i = 0; i < entitiesMarkedForRemovalCount; i++)
+            if (instant)
             {
-                DecentralandEntity entity = entities[entitiesMarkedForRemoval[i]];
-
-                entities.Remove(entitiesMarkedForRemoval[i]);
-
-                entity.SetParent(null);
-                entity.Cleanup();
-
-                if (!instant && DCLTime.realtimeSinceStartup - lastTime >= maxBudget)
+                int rootEntitiesCount = rootEntities.Count;
+                for (int i = 0; i < rootEntitiesCount; i++)
                 {
-                    yield return null;
-                    lastTime = DCLTime.realtimeSinceStartup;
+                    DecentralandEntity entity = rootEntities[i];
+                    RemoveEntity(entity.entityId, instant);
                 }
+
+                entities.Clear();
+
+                Destroy(this.gameObject);
             }
-
-            Destroy(this.gameObject);
-
-            if (DCLCharacterController.i)
-                DCLCharacterController.i.characterPosition.OnPrecisionAdjust -= OnPrecisionAdjust;
         }
 
         private void RemoveAllEntitiesImmediate()
         {
-            var enumerator = RemoveAllEntitiesCoroutine(instant: true);
-            //IEnumerator needs call MoveNext to be executed
-            enumerator.MoveNext();
+            RemoveAllEntities(instant: true);
         }
 
         private SetEntityParentMessage tmpParentMessage = new SetEntityParentMessage();
@@ -1034,6 +1022,9 @@ namespace DCL.Controllers
 
         private void OnDisposableReady(BaseDisposable disposable)
         {
+            if (isReleased)
+                return;
+
             disposableNotReady.Remove(disposable.id);
 
             if (VERBOSE)
@@ -1051,6 +1042,9 @@ namespace DCL.Controllers
 
         public void SetInitMessagesDone()
         {
+            if (isReleased)
+                return;
+
             if (state == State.READY)
             {
                 Debug.LogWarning($"Init messages done after ready?! {sceneData.basePosition}", gameObject);

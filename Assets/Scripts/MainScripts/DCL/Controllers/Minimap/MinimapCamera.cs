@@ -21,8 +21,8 @@ public class MinimapCamera : MonoBehaviour
 
     private void Start()
     {
-        playerUnityPosition.onChange += OnUnityPositionChange;
-        playerUnityEulerAngles.onChange += OnUnityEulerAnglesChange;
+        playerUnityPosition.OnChange += OnUnityPositionChange;
+        playerUnityEulerAngles.OnChange += OnUnityEulerAnglesChange;
     }
 
     private void OnUnityPositionChange(Vector3 current, Vector3 previous)
@@ -42,7 +42,7 @@ public class MinimapCamera : MonoBehaviour
 
     private void OnDestroy()
     {
-        playerUnityPosition.onChange -= OnUnityPositionChange;
-        playerUnityEulerAngles.onChange -= OnUnityEulerAnglesChange;
+        playerUnityPosition.OnChange -= OnUnityPositionChange;
+        playerUnityEulerAngles.OnChange -= OnUnityEulerAnglesChange;
     }
 }

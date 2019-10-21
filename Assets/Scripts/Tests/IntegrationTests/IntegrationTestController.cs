@@ -55,7 +55,8 @@ public class IntegrationTestController : MonoBehaviour
                     new CreateEntityMessage
                     {
                         id = entityId
-                    }))
+                    })),
+                enqueue: false
         );
 
         //NOTE(Brian): This is making my eyes bleed. (Zak): Twice
@@ -70,7 +71,8 @@ public class IntegrationTestController : MonoBehaviour
                         entityId = entityId,
                         parentId = "0"
                     })
-            )
+            ),
+            enqueue: false
         );
 
         yield return new WaitForAllMessagesProcessed();

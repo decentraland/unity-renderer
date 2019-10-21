@@ -96,8 +96,8 @@ namespace DCL
         public string id;
         public string debugTag;
 
-        public float budgetMin = MessagingController.MSG_BUS_BUDGET_MIN;
-        public float budgetMax = MessagingController.INIT_MSG_BUS_BUDGET_MAX;
+        public float budgetMin;
+        public float budgetMax;
 
         Dictionary<string, LinkedListNode<MessagingBus.QueuedSceneMessage>> unreliableMessages = new Dictionary<string, LinkedListNode<MessagingBus.QueuedSceneMessage>>();
         System.Text.StringBuilder stringBuilder = new System.Text.StringBuilder();
@@ -139,19 +139,6 @@ namespace DCL
         public void Dispose()
         {
             Stop();
-        }
-
-        public float UpdateTimeBudget(float timeBudget, float prevTimeBudget)
-        {
-            if (!isRunning)
-                return prevTimeBudget;
-
-            timeBudget = Mathf.Clamp(timeBudget, budgetMin, budgetMax);
-
-            if (VERBOSE)
-                Debug.Log($"tag = {debugTag} id = {id} timeBudget == {timeBudget}");
-
-            return timeBudget;
         }
 
         public void Enqueue(MessagingBus.QueuedSceneMessage message, QueueMode queueMode = QueueMode.Reliable)
@@ -197,7 +184,14 @@ namespace DCL
                 if (message.type == MessagingBus.QueuedSceneMessage.Type.SCENE_MESSAGE)
                 {
                     MessagingBus.QueuedSceneMessage_Scene sm = message as MessagingBus.QueuedSceneMessage_Scene;
-                    SceneController.i.OnMessageWillQueue?.Invoke(sm.method);
+                    SceneController.i?.OnMessageWillQueue?.Invoke(sm.method);
+                }
+
+                MessagingControllersManager.i.pendingMessagesCount++;
+
+                if (id == MessagingBusId.INIT)
+                {
+                    MessagingControllersManager.i.pendingInitMessagesCount++;
                 }
             }
         }
@@ -231,10 +225,10 @@ namespace DCL
 
                         var messageObject = m as MessagingBus.QueuedSceneMessage_Scene;
 
-                        if (handler.ProcessMessage(messageObject.sceneId, messageObject.tag, messageObject.method, messageObject.payload, out msgYieldInstruction))
+                        if (handler.ProcessMessage(messageObject, out msgYieldInstruction))
                         {
 #if UNITY_EDITOR
-                            if (SceneController.i.msgStepByStep)
+                            if (SceneController.i && SceneController.i.msgStepByStep)
                             {
                                 if (VERBOSE)
                                 {
@@ -252,6 +246,7 @@ namespace DCL
                             shouldLogMessage = false;
                         }
 
+                        OnMessageProcessed();
                         SceneController.i.OnMessageWillDequeue?.Invoke(messageObject.method);
 
                         if (msgYieldInstruction != null)
@@ -268,24 +263,23 @@ namespace DCL
                         break;
                     case MessagingBus.QueuedSceneMessage.Type.LOAD_PARCEL:
                         handler.LoadParcelScenesExecute(m.message);
-                        SceneController.i.OnMessageWillDequeue?.Invoke("LoadScene");
+                        SceneController.i?.OnMessageWillDequeue?.Invoke("LoadScene");
                         break;
                     case MessagingBus.QueuedSceneMessage.Type.UNLOAD_PARCEL:
                         handler.UnloadParcelSceneExecute(m.message);
-                        SceneController.i.OnMessageWillDequeue?.Invoke("UnloadScene");
+                        SceneController.i?.OnMessageWillDequeue?.Invoke("UnloadScene");
                         break;
                     case MessagingBus.QueuedSceneMessage.Type.UPDATE_PARCEL:
                         handler.UpdateParcelScenesExecute(m.message);
-                        SceneController.i.OnMessageWillDequeue?.Invoke("UpdateScene");
+                        SceneController.i?.OnMessageWillDequeue?.Invoke("UpdateScene");
                         break;
                     case MessagingBus.QueuedSceneMessage.Type.UNLOAD_SCENES:
                         handler.UnloadAllScenes();
-                        SceneController.i.OnMessageWillDequeue?.Invoke("UnloadAllScenes");
+                        SceneController.i?.OnMessageWillDequeue?.Invoke("UnloadAllScenes");
                         break;
                 }
 
-                processedMessagesCount++;
-
+                OnMessageProcessed();
 #if UNITY_EDITOR
                 if (shouldLogMessage)
                 {
@@ -296,6 +290,19 @@ namespace DCL
 
             return false;
         }
+
+        public void OnMessageProcessed()
+        {
+            processedMessagesCount++;
+            MessagingControllersManager.i.pendingMessagesCount--;
+
+            if (id == MessagingBusId.INIT)
+            {
+                MessagingControllersManager.i.pendingInitMessagesCount--;
+                MessagingControllersManager.i.processedInitMessagesCount++;
+            }
+        }
+
 
         private void LogMessage(MessagingBus.QueuedSceneMessage m, MessagingBus bus, bool logType = true)
         {
