@@ -6,19 +6,19 @@ export function getPerformanceInfo(samples: string) {
     entries[i] = samples.charCodeAt(i)
     sum += entries[i]
   }
-  entries.sort()
+  const sorted = entries.sort((a, b) => a - b)
 
   return {
-    fps: length / sum,
+    fps: (1000 * length) / sum,
     avg: sum / length,
     total: sum,
     len: length,
-    min: entries[0],
-    p50: entries[Math.ceil(length * 0.5)],
-    p75: entries[Math.ceil(length * 0.75)],
-    p90: entries[Math.ceil(length * 0.9)],
-    p95: entries[Math.ceil(length * 0.95)],
-    p99: entries[Math.ceil(length * 0.99)],
-    max: entries[length - 1]
+    min: sorted[0],
+    p50: sorted[Math.ceil(length * 0.5)],
+    p75: sorted[Math.ceil(length * 0.75)],
+    p90: sorted[Math.ceil(length * 0.9)],
+    p95: sorted[Math.ceil(length * 0.95)],
+    p99: sorted[Math.ceil(length * 0.99)],
+    max: sorted[length - 1]
   }
 }
