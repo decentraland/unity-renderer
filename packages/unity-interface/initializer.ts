@@ -50,7 +50,7 @@ export async function initializeUnity(container: HTMLElement): Promise<Initializ
   if (qs.ws) {
     _gameInstance = initializeUnityEditor(qs.ws, container)
   } else {
-    _gameInstance = UnityLoader.instantiate(container, '/unity/Build/unity.json')
+    _gameInstance = await UnityLoader.instantiate(container, 'unity/Build/unity.json')
   }
 
   await engineInitialized
