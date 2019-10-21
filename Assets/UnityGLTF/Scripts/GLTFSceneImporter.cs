@@ -14,7 +14,6 @@ using UnityEngine.Rendering;
 using UnityGLTF.Cache;
 using UnityGLTF.Extensions;
 using UnityGLTF.Loader;
-using Matrix4x4 = GLTF.Math.Matrix4x4;
 using Object = UnityEngine.Object;
 #if !WINDOWS_UWP
 using ThreadPriority = System.Threading.ThreadPriority;
@@ -46,6 +45,7 @@ namespace UnityGLTF
     public class GLTFSceneImporter : IDisposable
     {
         public static bool VERBOSE = false;
+        public static bool PROFILING_ENABLED = false;
 
         public enum ColliderType
         {
@@ -208,6 +208,7 @@ namespace UnityGLTF
 
         public Transform enparentTarget;
 
+        public static System.Action<float> OnPerformanceFinish;
         /// <summary>
         /// Loads a glTF Scene into the LastLoadedScene field
         /// </summary>
@@ -229,7 +230,6 @@ namespace UnityGLTF
                     _isRunning = true;
                 }
 
-                _timeAtLastYield = Time.realtimeSinceStartup;
                 if (_gltfRoot == null)
                 {
                     if (VERBOSE)
@@ -237,7 +237,26 @@ namespace UnityGLTF
                         Debug.Log("LoadScene() GLTF File Name -> " + _gltfFileName);
                     }
 
-                    yield return LoadJson(_gltfFileName);
+                    yield return LoadJsonStream(_gltfFileName);
+                }
+
+                float profiling = 0, frames = 0, jsonProfiling = 0;
+
+                _timeAtLastYield = Time.realtimeSinceStartup;
+
+                if (PROFILING_ENABLED)
+                {
+                    jsonProfiling = Time.realtimeSinceStartup;
+                }
+
+                if (_gltfRoot == null)
+                {
+                    yield return LoadJson();
+                }
+
+                if (PROFILING_ENABLED)
+                {
+                    jsonProfiling = ((Time.realtimeSinceStartup - jsonProfiling) * 1000f);
                 }
 
                 if (_assetCache == null)
@@ -246,16 +265,27 @@ namespace UnityGLTF
                 }
 
 
-                float profiling = Time.realtimeSinceStartup;
-                float frames = Time.frameCount;
-
-                if (VERBOSE)
-                    Debug.Log("Load will start");
+                if (PROFILING_ENABLED)
+                {
+                    if (VERBOSE)
+                    {
+                        Debug.Log($"{_gltfFileName} >>> Load will start");
+                    }
+                    profiling = Time.realtimeSinceStartup;
+                    frames = Time.frameCount;
+                }
 
                 yield return _LoadScene(sceneIndex, showSceneObj);
 
-                if (VERBOSE)
-                    Debug.Log("Load finished in " + (Time.realtimeSinceStartup - profiling) + " seconds... frames = " + (Time.frameCount - frames));
+
+                if (PROFILING_ENABLED)
+                {
+                    if (VERBOSE)
+                    {
+                        Debug.Log($"{_gltfFileName} >>> Load finished in {((Time.realtimeSinceStartup - profiling) * 1000f)} ms... frames = {(Time.frameCount - frames)} (json = {jsonProfiling})");
+                    }
+                    OnPerformanceFinish?.Invoke(Time.realtimeSinceStartup - profiling);
+                }
 
                 yield return null; // NOTE(Brian): DO NOT REMOVE, we must wait a frame in order to
                                    //              start enqueued coroutines, if this is removed
@@ -329,7 +359,8 @@ namespace UnityGLTF
 
                 if (_gltfRoot == null)
                 {
-                    yield return LoadJson(_gltfFileName);
+                    yield return LoadJsonStream(_gltfFileName);
+                    yield return LoadJson();
                 }
 
                 if (_assetCache == null)
@@ -542,12 +573,13 @@ namespace UnityGLTF
             yield break;
         }
 
-        private IEnumerator LoadJson(string jsonFilePath)
+
+        private IEnumerator LoadJsonStream(string jsonUrl)
         {
 #if !WINDOWS_UWP
             if (isMultithreaded && _loader.HasSyncLoadMethod)
             {
-                Thread loadThread = new Thread(() => _loader.LoadStreamSync(jsonFilePath));
+                Thread loadThread = new Thread(() => _loader.LoadStreamSync(_gltfFileName));
                 loadThread.Priority = ThreadPriority.Highest;
                 loadThread.Start();
                 RunCoroutineSync(WaitUntilEnum(new WaitUntil(() => !loadThread.IsAlive)));
@@ -556,12 +588,15 @@ namespace UnityGLTF
 #endif
             {
                 // HACK: Force the coroutine to run synchronously in the editor
-                yield return _loader.LoadStream(jsonFilePath);
+                yield return _loader.LoadStream(_gltfFileName);
             }
 
             _gltfStream.Stream = _loader.LoadedStream;
             _gltfStream.StartPosition = 0;
+        }
 
+        private IEnumerator LoadJson()
+        {
 #if !WINDOWS_UWP
             if (isMultithreaded)
             {
@@ -579,6 +614,7 @@ namespace UnityGLTF
             {
                 GLTFParser.ParseJson(_gltfStream.Stream, out _gltfRoot, _gltfStream.StartPosition);
             }
+            yield break;
         }
 
 
@@ -846,7 +882,7 @@ namespace UnityGLTF
             if (attributeAccessors.ContainsKey(SemanticProperties.POSITION))
             {
                 AttributeAccessor attributeAccessor = attributeAccessors[SemanticProperties.POSITION];
-                SchemaExtensions.ConvertVector3CoordinateSpace(ref attributeAccessor, SchemaExtensions.CoordinateSpaceConversionScale);
+                SchemaExtensions.ConvertVector3CoordinateSpaceFast(ref attributeAccessor);
             }
 
             if (attributeAccessors.ContainsKey(SemanticProperties.INDICES))
@@ -858,15 +894,15 @@ namespace UnityGLTF
             if (attributeAccessors.ContainsKey(SemanticProperties.NORMAL))
             {
                 AttributeAccessor attributeAccessor = attributeAccessors[SemanticProperties.NORMAL];
-                SchemaExtensions.ConvertVector3CoordinateSpace(ref attributeAccessor, SchemaExtensions.CoordinateSpaceConversionScale);
+                SchemaExtensions.ConvertVector3CoordinateSpaceFast(ref attributeAccessor);
             }
 
             // TexCoord goes from 0 to 3 to match GLTFHelpers.BuildMeshAttributes
             for (int i = 0; i < 4; i++)
             {
-                if (attributeAccessors.ContainsKey(SemanticProperties.TexCoord(i)))
+                if (attributeAccessors.ContainsKey(SemanticProperties.TexCoord[i]))
                 {
-                    AttributeAccessor attributeAccessor = attributeAccessors[SemanticProperties.TexCoord(i)];
+                    AttributeAccessor attributeAccessor = attributeAccessors[SemanticProperties.TexCoord[i]];
                     SchemaExtensions.FlipTexCoordArrayV(ref attributeAccessor);
                 }
             }
@@ -874,7 +910,7 @@ namespace UnityGLTF
             if (attributeAccessors.ContainsKey(SemanticProperties.TANGENT))
             {
                 AttributeAccessor attributeAccessor = attributeAccessors[SemanticProperties.TANGENT];
-                SchemaExtensions.ConvertVector4CoordinateSpace(ref attributeAccessor, SchemaExtensions.TangentSpaceConversionScale);
+                SchemaExtensions.ConvertVector4CoordinateSpaceFast(ref attributeAccessor);
             }
         }
 
@@ -1081,7 +1117,7 @@ namespace UnityGLTF
                         for (var i = 0; i < input.AsFloats.Length; ++i)
                         {
                             var time = input.AsFloats[i];
-                            Vector3 position = output.AsVec3s[i].ToUnityVector3Convert();
+                            Vector3 position = output.AsVec3s[i];
                             curveX.AddKey(time, position.x);
                             curveY.AddKey(time, position.y);
                             curveZ.AddKey(time, position.z);
@@ -1102,7 +1138,7 @@ namespace UnityGLTF
                             var time = input.AsFloats[i];
                             var rotation = output.AsVec4s[i];
 
-                            Quaternion rot = new GLTF.Math.Quaternion(rotation.X, rotation.Y, rotation.Z, rotation.W).ToUnityQuaternionConvert();
+                            Quaternion rot = new Quaternion(rotation.x, rotation.y, rotation.z, rotation.w).ToUnityQuaternionConvert();
                             curveX.AddKey(time, rot.x);
                             curveY.AddKey(time, rot.y);
                             curveZ.AddKey(time, rot.z);
@@ -1123,7 +1159,7 @@ namespace UnityGLTF
                         for (var i = 0; i < input.AsFloats.Length; ++i)
                         {
                             var time = input.AsFloats[i];
-                            Vector3 scale = output.AsVec3s[i].ToUnityVector3Raw();
+                            Vector3 scale = output.AsVec3s[i];
                             curveX.AddKey(time, scale.x);
                             curveY.AddKey(time, scale.y);
                             curveZ.AddKey(time, scale.z);
@@ -1494,7 +1530,7 @@ namespace UnityGLTF
             for (int i = 0; i < boneCount; i++)
             {
                 bones[i] = _assetCache.NodeCache[skin.Joints[i].Id].transform;
-                bindPoses[i] = gltfBindPoses[i].ToUnityMatrix4x4Convert();
+                bindPoses[i] = gltfBindPoses[i].ToMatrix4x4Convert();
             }
 
             renderer.rootBone = _assetCache.NodeCache[skeletonId].transform;
@@ -1684,7 +1720,7 @@ namespace UnityGLTF
             MaterialCacheData materialCacheData =
                 materialIndex >= 0 ? _assetCache.MaterialCache[materialIndex] : _defaultLoadedMaterial;
 
-            Material material = materialCacheData.GetContents(primitive.Attributes.ContainsKey(SemanticProperties.Color(0)));
+            Material material = materialCacheData.GetContents(primitive.Attributes.ContainsKey(SemanticProperties.COLOR_0));
 
             if (matController != null)
             {
@@ -1750,44 +1786,44 @@ namespace UnityGLTF
             return new UnityMeshData
             {
                 Vertices = primitive.Attributes.ContainsKey(SemanticProperties.POSITION)
-                    ? meshAttributes[SemanticProperties.POSITION].AccessorContent.AsVertices.ToUnityVector3Raw()
+                    ? meshAttributes[SemanticProperties.POSITION].AccessorContent.AsVertices
                     : null,
 
                 Normals = primitive.Attributes.ContainsKey(SemanticProperties.NORMAL)
-                    ? meshAttributes[SemanticProperties.NORMAL].AccessorContent.AsNormals.ToUnityVector3Raw()
+                    ? meshAttributes[SemanticProperties.NORMAL].AccessorContent.AsNormals
                     : null,
 
-                Uv1 = primitive.Attributes.ContainsKey(SemanticProperties.TexCoord(0))
-                    ? meshAttributes[SemanticProperties.TexCoord(0)].AccessorContent.AsTexcoords.ToUnityVector2Raw()
+                Uv1 = primitive.Attributes.ContainsKey(SemanticProperties.TEXCOORD_0)
+                    ? meshAttributes[SemanticProperties.TEXCOORD_0].AccessorContent.AsTexcoords
                     : null,
 
-                Uv2 = primitive.Attributes.ContainsKey(SemanticProperties.TexCoord(1))
-                    ? meshAttributes[SemanticProperties.TexCoord(1)].AccessorContent.AsTexcoords.ToUnityVector2Raw()
+                Uv2 = primitive.Attributes.ContainsKey(SemanticProperties.TEXCOORD_1)
+                    ? meshAttributes[SemanticProperties.TEXCOORD_1].AccessorContent.AsTexcoords
                     : null,
 
-                Uv3 = primitive.Attributes.ContainsKey(SemanticProperties.TexCoord(2))
-                    ? meshAttributes[SemanticProperties.TexCoord(2)].AccessorContent.AsTexcoords.ToUnityVector2Raw()
+                Uv3 = primitive.Attributes.ContainsKey(SemanticProperties.TEXCOORD_2)
+                    ? meshAttributes[SemanticProperties.TEXCOORD_2].AccessorContent.AsTexcoords
                     : null,
 
-                Uv4 = primitive.Attributes.ContainsKey(SemanticProperties.TexCoord(3))
-                    ? meshAttributes[SemanticProperties.TexCoord(3)].AccessorContent.AsTexcoords.ToUnityVector2Raw()
+                Uv4 = primitive.Attributes.ContainsKey(SemanticProperties.TEXCOORD_3)
+                    ? meshAttributes[SemanticProperties.TEXCOORD_3].AccessorContent.AsTexcoords
                     : null,
 
-                Colors = primitive.Attributes.ContainsKey(SemanticProperties.Color(0))
-                    ? meshAttributes[SemanticProperties.Color(0)].AccessorContent.AsColors.ToUnityColorRaw()
+                Colors = primitive.Attributes.ContainsKey(SemanticProperties.COLOR_0)
+                    ? meshAttributes[SemanticProperties.COLOR_0].AccessorContent.AsColors
                     : null,
 
                 Triangles = primitive.Indices != null
-                    ? meshAttributes[SemanticProperties.INDICES].AccessorContent.AsUInts.ToIntArrayRaw()
-                    : MeshPrimitive.GenerateTriangles(vertexCount),
+                    ? meshAttributes[SemanticProperties.INDICES].AccessorContent.AsInts
+                    : MeshPrimitive.GenerateIndices(vertexCount),
 
                 Tangents = primitive.Attributes.ContainsKey(SemanticProperties.TANGENT)
-                    ? meshAttributes[SemanticProperties.TANGENT].AccessorContent.AsTangents.ToUnityVector4Raw()
+                    ? meshAttributes[SemanticProperties.TANGENT].AccessorContent.AsTangents
                     : null,
 
-                BoneWeights = meshAttributes.ContainsKey(SemanticProperties.Weight(0)) && meshAttributes.ContainsKey(SemanticProperties.Joint(0))
-                    ? CreateBoneWeightArray(meshAttributes[SemanticProperties.Joint(0)].AccessorContent.AsVec4s.ToUnityVector4Raw(),
-                    meshAttributes[SemanticProperties.Weight(0)].AccessorContent.AsVec4s.ToUnityVector4Raw(), vertexCount)
+                BoneWeights = meshAttributes.ContainsKey(SemanticProperties.WEIGHTS_0) && meshAttributes.ContainsKey(SemanticProperties.JOINTS_0)
+                    ? CreateBoneWeightArray(meshAttributes[SemanticProperties.JOINTS_0].AccessorContent.AsVec4s,
+                    meshAttributes[SemanticProperties.WEIGHTS_0].AccessorContent.AsVec4s, vertexCount)
                     : null
             };
         }
@@ -2051,6 +2087,9 @@ namespace UnityGLTF
             _assetCache.MeshCache[meshId][primitiveIndex].LoadedMesh = mesh;
         }
 
+        static Material cachedSpecGlossMat;
+        static Material cachedMetalRoughMat;
+
         protected virtual IEnumerator ConstructMaterial(GLTFMaterial def, int materialIndex)
         {
             IUniformMap mapper;
@@ -2064,7 +2103,15 @@ namespace UnityGLTF
                 }
                 else
                 {
-                    mapper = new SpecGlossMap(MaximumLod);
+                    if (cachedSpecGlossMat != null)
+                    {
+                        mapper = new SpecGlossMap(new Material(cachedSpecGlossMat), MaximumLod);
+                    }
+                    else
+                    {
+                        mapper = new SpecGlossMap(MaximumLod);
+                        cachedSpecGlossMat = mapper.GetMaterialCopy();
+                    }
                 }
             }
             else
@@ -2075,9 +2122,19 @@ namespace UnityGLTF
                 }
                 else
                 {
-                    mapper = new MetalRoughMap(MaximumLod);
+                    if (cachedMetalRoughMat != null)
+                    {
+                        mapper = new MetalRoughMap(new Material(cachedMetalRoughMat), MaximumLod);
+                    }
+                    else
+                    {
+                        mapper = new MetalRoughMap(MaximumLod);
+                        cachedMetalRoughMat = mapper.GetMaterialCopy();
+                    }
                 }
+
             }
+
 
             mapper.Material.name = def.Name;
             mapper.AlphaMode = def.AlphaMode;
@@ -2088,7 +2145,7 @@ namespace UnityGLTF
             {
                 var pbr = def.PbrMetallicRoughness;
 
-                mrMapper.BaseColorFactor = pbr.BaseColorFactor.ToUnityColorRaw();
+                mrMapper.BaseColorFactor = pbr.BaseColorFactor;
 
                 if (pbr.BaseColorTexture != null)
                 {
@@ -2123,7 +2180,7 @@ namespace UnityGLTF
             {
                 var specGloss = def.Extensions[specGlossExtName] as KHR_materials_pbrSpecularGlossinessExtension;
 
-                sgMapper.DiffuseFactor = specGloss.DiffuseFactor.ToUnityColorRaw();
+                sgMapper.DiffuseFactor = specGloss.DiffuseFactor;
 
                 if (specGloss.DiffuseTexture != null)
                 {
@@ -2134,7 +2191,7 @@ namespace UnityGLTF
                     sgMapper.DiffuseTexCoord = specGloss.DiffuseTexture.TexCoord;
                 }
 
-                sgMapper.SpecularFactor = specGloss.SpecularFactor.ToUnityVector3Raw();
+                sgMapper.SpecularFactor = specGloss.SpecularFactor;
                 sgMapper.GlossinessFactor = specGloss.GlossinessFactor;
 
                 if (specGloss.SpecularGlossinessTexture != null)
@@ -2174,7 +2231,7 @@ namespace UnityGLTF
                 mapper.EmissiveTexCoord = def.EmissiveTexture.TexCoord;
             }
 
-            mapper.EmissiveFactor = def.EmissiveFactor.ToUnityColorRaw();
+            mapper.EmissiveFactor = def.EmissiveFactor;
 
             IUniformMap vertColorMapper = mapper.Clone();
             vertColorMapper.VertexColorsEnabled = true;
@@ -2255,7 +2312,8 @@ namespace UnityGLTF
 
                 if (_gltfRoot == null)
                 {
-                    yield return LoadJson(_gltfFileName);
+                    yield return LoadJsonStream(_gltfFileName);
+                    yield return LoadJson();
                 }
 
                 if (_assetCache == null)
@@ -2412,11 +2470,11 @@ namespace UnityGLTF
             {
                 ExtTextureTransformExtension ext = (ExtTextureTransformExtension)extension;
 
-                Vector2 temp = ext.Offset.ToUnityVector2Raw();
+                Vector2 temp = ext.Offset;
                 temp = new Vector2(temp.x, -temp.y);
                 mat.SetTextureOffset(texName, temp);
 
-                mat.SetTextureScale(texName, ext.Scale.ToUnityVector2Raw());
+                mat.SetTextureScale(texName, ext.Scale);
             }
         }
 

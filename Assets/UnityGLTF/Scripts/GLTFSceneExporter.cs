@@ -1,4 +1,4 @@
-using GLTF.Schema;
+﻿using GLTF.Schema;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -269,8 +269,8 @@ namespace UnityGLTF
             _root.Serialize(gltfFile);
 
 #if WINDOWS_UWP
-			gltfFile.Dispose();
-			binFile.Dispose();
+            gltfFile.Dispose();
+            binFile.Dispose();
 #else
             gltfFile.Close();
             binFile.Close();
@@ -579,11 +579,11 @@ namespace UnityGLTF
         private static bool IsPrimitive(GameObject gameObject)
         {
             /*
-			 * Primitives have the following properties:
-			 * - have no children
-			 * - have no non-default local transform properties
-			 * - have MeshFilter and MeshRenderer components
-			 */
+             * Primitives have the following properties:
+             * - have no children
+             * - have no non-default local transform properties
+             * - have MeshFilter and MeshRenderer components
+             */
             return gameObject.transform.childCount == 0
                 && gameObject.transform.localPosition == Vector3.zero
                 && gameObject.transform.localRotation == Quaternion.identity
@@ -736,17 +736,17 @@ namespace UnityGLTF
 
                 if (aTexcoord0 != null)
                 {
-                    primitive.Attributes.Add(SemanticProperties.TexCoord(0), aTexcoord0);
+                    primitive.Attributes.Add(SemanticProperties.TEXCOORD_0, aTexcoord0);
                 }
 
                 if (aTexcoord1 != null)
                 {
-                    primitive.Attributes.Add(SemanticProperties.TexCoord(1), aTexcoord1);
+                    primitive.Attributes.Add(SemanticProperties.TEXCOORD_1, aTexcoord1);
                 }
 
                 if (aColor0 != null)
                 {
-                    primitive.Attributes.Add(SemanticProperties.Color(0), aColor0);
+                    primitive.Attributes.Add(SemanticProperties.COLOR_0, aColor0);
                 }
 
                 if (submesh < materialsObj.Length)
@@ -805,7 +805,7 @@ namespace UnityGLTF
 
             if (materialObj.HasProperty("_EmissionColor"))
             {
-                material.EmissiveFactor = materialObj.GetColor("_EmissionColor").ToNumericsColorRaw();
+                material.EmissiveFactor = materialObj.GetColor("_EmissionColor");
             }
 
             if (materialObj.HasProperty("_EmissionMap"))
@@ -937,8 +937,9 @@ namespace UnityGLTF
             }
 
             def.Extensions[ExtTextureTransformExtensionFactory.EXTENSION_NAME] = new ExtTextureTransformExtension(
-                new GLTF.Math.Vector2(offset.x, -offset.y),
-                new GLTF.Math.Vector2(scale.x, scale.y),
+                new Vector2(offset.x, -offset.y),
+                0,
+                new Vector2(scale.x, scale.y),
                 0 // TODO: support UV channels
             );
         }
@@ -983,7 +984,7 @@ namespace UnityGLTF
 
             if (material.HasProperty("_Color"))
             {
-                pbr.BaseColorFactor = material.GetColor("_Color").ToNumericsColorRaw();
+                pbr.BaseColorFactor = material.GetColor("_Color");
             }
 
             if (material.HasProperty("_MainTex"))
@@ -1081,7 +1082,7 @@ namespace UnityGLTF
 
             if (materialObj.HasProperty("_AmbientFactor"))
             {
-                constant.AmbientFactor = materialObj.GetColor("_AmbientFactor").ToNumericsColorRaw();
+                constant.AmbientFactor = materialObj.GetColor("_AmbientFactor");
             }
 
             if (materialObj.HasProperty("_LightMap"))
@@ -1098,7 +1099,7 @@ namespace UnityGLTF
 
             if (materialObj.HasProperty("_LightFactor"))
             {
-                constant.LightmapFactor = materialObj.GetColor("_LightFactor").ToNumericsColorRaw();
+                constant.LightmapFactor = materialObj.GetColor("_LightFactor");
             }
 
             return constant;

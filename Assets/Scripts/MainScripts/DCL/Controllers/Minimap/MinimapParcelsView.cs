@@ -1,6 +1,6 @@
-using System.Collections.Generic;
-using DCL.Configuration;
+﻿using DCL.Configuration;
 using DCL.Helpers;
+using System.Collections.Generic;
 using UnityEngine;
 
 //(Alex) In the future explorer could provide non-existent parcels as well, we could then remove this and simply add a basic logic to change the color of a representation in ParcelScene
@@ -18,12 +18,14 @@ public class MinimapParcelsView : MonoBehaviour
     private Vector3Variable playerUnityToWorldOffset => CommonScriptableObjects.playerUnityToWorldOffset;
     private MinimapMetadata minimapmetadata => MinimapMetadata.GetMetadata();
 
+    public static int _BaseColor = Shader.PropertyToID("_BaseColor");
+
     private void Start()
     {
         SetupIcons();
-        playerCoords.onChange += DrawParcels;
+        playerCoords.OnChange += OnCharacterSetPosition;
         minimapmetadata.OnChange += MinimapMetadataChange;
-        DrawParcels(Vector2Int.zero, Vector2Int.zero);
+        DrawParcels(Vector2Int.zero);
     }
 
     public void SetupIcons()
@@ -42,8 +44,12 @@ public class MinimapParcelsView : MonoBehaviour
             }
         }
     }
+    public void OnCharacterSetPosition(Vector2Int newCoords, Vector2Int oldCoords)
+    {
+        DrawParcels(newCoords);
+    }
 
-    public void DrawParcels(Vector2Int newCoords, Vector2Int oldCoords)
+    public void DrawParcels(Vector2Int newCoords)
     {
         Recenter();
 
@@ -53,13 +59,13 @@ public class MinimapParcelsView : MonoBehaviour
             int y = newCoords.y + keyValuePair.Key.Item2;
             var tile = minimapmetadata.GetTile(x, y);
 
-            keyValuePair.Value.material.SetColor("_BaseColor", tile?.color ?? Color.grey);
+            keyValuePair.Value.material.SetColor(_BaseColor, tile?.color ?? Color.grey);
         }
     }
 
     private void MinimapMetadataChange(MinimapMetadata instance)
     {
-        DrawParcels(playerCoords.Get(), Vector2Int.zero);
+        DrawParcels(playerCoords.Get());
     }
 
     private void Recenter()
@@ -69,7 +75,7 @@ public class MinimapParcelsView : MonoBehaviour
 
     private void OnDestroy()
     {
-        playerCoords.onChange -= DrawParcels;
+        playerCoords.OnChange -= OnCharacterSetPosition;
         minimapmetadata.OnChange -= MinimapMetadataChange;
     }
 }

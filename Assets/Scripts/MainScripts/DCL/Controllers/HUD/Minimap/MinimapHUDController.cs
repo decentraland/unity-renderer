@@ -1,5 +1,4 @@
-using System;
-using System.ComponentModel;
+﻿using System;
 using UnityEngine;
 
 public class MinimapHUDController : IDisposable, IHUD
@@ -11,7 +10,7 @@ public class MinimapHUDController : IDisposable, IHUD
 
     public MinimapHUDController(MinimapHUDModel model)
     {
-        CommonScriptableObjects.playerCoords.onChange += OnPlayerCoordsChange;
+        CommonScriptableObjects.playerCoords.OnChange += OnPlayerCoordsChange;
 
         view = MinimapHUDView.Create(this);
         UpdateData(model);
@@ -19,7 +18,7 @@ public class MinimapHUDController : IDisposable, IHUD
 
     public void Dispose()
     {
-        CommonScriptableObjects.playerCoords.onChange -= OnPlayerCoordsChange;
+        CommonScriptableObjects.playerCoords.OnChange -= OnPlayerCoordsChange;
     }
 
     private void OnPlayerCoordsChange(Vector2Int current, Vector2Int previous)

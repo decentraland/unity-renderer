@@ -23,7 +23,7 @@ namespace DCL
 
     public interface IMessageHandler
     {
-        bool ProcessMessage(string sceneId, string id, string method, string payload, out CleanableYieldInstruction yieldInstruction);
+        bool ProcessMessage(MessagingBus.QueuedSceneMessage_Scene msgObject, out CleanableYieldInstruction yieldInstruction);
         void LoadParcelScenesExecute(string decentralandSceneJSON);
         void UnloadParcelSceneExecute(string sceneKey);
         void UnloadAllScenes();
@@ -38,12 +38,6 @@ namespace DCL
             Systems,
         }
 
-        //TODO(Brian): Improve this. We should distribute the budget between the scenes.
-        public const float UI_MSG_BUS_BUDGET_MAX = 0.008f;
-        public const float INIT_MSG_BUS_BUDGET_MAX = 0.3f;
-        public const float SYSTEM_MSG_BUS_BUDGET_MAX = 0.008f;
-        public const float MSG_BUS_BUDGET_MIN = 0.0001f;
-
         public Dictionary<string, MessagingBus> messagingBuses = new Dictionary<string, MessagingBus>();
         public IMessageHandler messageHandler;
         public string debugTag;
@@ -54,76 +48,15 @@ namespace DCL
             set;
         }
 
-        public int pendingMessagesCount
-        {
-            get
-            {
-                int total = 0;
-                using (var iterator = messagingBuses.GetEnumerator())
-                {
-                    while (iterator.MoveNext())
-                    {
-                        total += iterator.Current.Value.pendingMessagesCount;
-                    }
-                }
-
-                return total;
-            }
-        }
-
-        public int pendingInitMessagesCount
-        {
-            get
-            {
-                int total = 0;
-
-                using (var iterator = messagingBuses.GetEnumerator())
-                {
-                    while (iterator.MoveNext())
-                    {
-                        if (iterator.Current.Value.id == MessagingBusId.INIT)
-                        {
-                            total += iterator.Current.Value.pendingMessagesCount;
-                            break;
-                        }
-                    }
-                }
-
-                return total;
-            }
-        }
-
-        public long processedInitMessagesCount
-        {
-            get
-            {
-                long total = 0;
-
-                using (var iterator = messagingBuses.GetEnumerator())
-                {
-                    while (iterator.MoveNext())
-                    {
-                        if (iterator.Current.Value.id == MessagingBusId.INIT)
-                        {
-                            total += iterator.Current.Value.processedMessagesCount;
-                            break;
-                        }
-                    }
-                }
-
-                return total;
-            }
-        }
-
         public MessagingController(IMessageHandler messageHandler, string debugTag = null)
         {
             this.debugTag = debugTag;
             this.messageHandler = messageHandler;
 
             //TODO(Brian): This is too hacky, most of the controllers won't be using this system. Refactor this in the future.
-            AddMessageBus(MessagingBusId.UI, budgetMin: MSG_BUS_BUDGET_MIN, budgetMax: UI_MSG_BUS_BUDGET_MAX);
-            AddMessageBus(MessagingBusId.INIT, budgetMin: MSG_BUS_BUDGET_MIN, budgetMax: INIT_MSG_BUS_BUDGET_MAX);
-            AddMessageBus(MessagingBusId.SYSTEM, budgetMin: MSG_BUS_BUDGET_MIN, budgetMax: SYSTEM_MSG_BUS_BUDGET_MAX);
+            AddMessageBus(MessagingBusId.UI, budgetMin: MessagingControllersManager.MSG_BUS_BUDGET_MIN, budgetMax: MessagingControllersManager.UI_MSG_BUS_BUDGET_MAX);
+            AddMessageBus(MessagingBusId.INIT, budgetMin: MessagingControllersManager.MSG_BUS_BUDGET_MIN, budgetMax: MessagingControllersManager.INIT_MSG_BUS_BUDGET_MAX);
+            AddMessageBus(MessagingBusId.SYSTEM, budgetMin: MessagingControllersManager.MSG_BUS_BUDGET_MIN, budgetMax: MessagingControllersManager.SYSTEM_MSG_BUS_BUDGET_MAX);
 
             currentQueueState = QueueState.Init;
 
@@ -134,7 +67,6 @@ namespace DCL
         private MessagingBus AddMessageBus(string id, float budgetMin, float budgetMax)
         {
             var newMessagingBus = new MessagingBus(id, messageHandler, budgetMin, budgetMax);
-
             newMessagingBus.debugTag = debugTag;
 
             messagingBuses.Add(id, newMessagingBus);
@@ -179,23 +111,14 @@ namespace DCL
             }
         }
 
-        public float UpdateTimeBudget(string busId, float timeBudget, float prevTimeBudget)
-        {
-            timeBudget = timeBudget < 0 ? 0 : timeBudget;
-
-            prevTimeBudget -= messagingBuses[busId].UpdateTimeBudget(timeBudget, prevTimeBudget);
-
-            return prevTimeBudget < 0 ? 0 : prevTimeBudget;
-        }
-
         public void ForceEnqueue(string busId, MessagingBus.QueuedSceneMessage queuedMessage)
         {
             messagingBuses[busId].Enqueue(queuedMessage);
         }
 
-        public string Enqueue(ParcelScene scene, MessagingBus.QueuedSceneMessage_Scene queuedMessage)
+        public void Enqueue(ParcelScene scene, MessagingBus.QueuedSceneMessage_Scene queuedMessage, out string busId)
         {
-            string busId = "";
+            busId = "";
 
             QueueMode queueMode = QueueMode.Reliable;
 
@@ -239,8 +162,6 @@ namespace DCL
             }
 
             messagingBuses[busId].Enqueue(queuedMessage, queueMode);
-
-            return busId;
         }
 
         private void GetEntityIdAndClassIdFromTag(string tag, out string entityId, out int classId)

@@ -6,26 +6,11 @@ namespace DCL
     public class PoolableObject : MonoBehaviour
     {
         public Pool pool;
+        public LinkedListNode<PoolableObject> node;
 
-        public bool isInsidePool { get { return pool.IsInPool(this); } }
-        public bool isOutsidePool { get { return pool.IsOutOfPool(this); } }
+        public bool isInsidePool { get { return node == null; } }
 
         public System.Action OnRelease;
-
-        void OnEnable()
-        {
-            if (pool != null)
-            {
-                pool.OnReleaseAll -= this.Release;
-                pool.OnReleaseAll += this.Release;
-            }
-        }
-
-        private void OnDisable()
-        {
-            if (pool != null)
-                pool.OnReleaseAll -= this.Release;
-        }
 
         public void Release(Pool releasePool = null)
         {
@@ -61,7 +46,6 @@ namespace DCL
         {
             if (pool != null)
             {
-                pool.OnReleaseAll -= this.Release;
                 pool.RemoveFromPool(this);
             }
         }

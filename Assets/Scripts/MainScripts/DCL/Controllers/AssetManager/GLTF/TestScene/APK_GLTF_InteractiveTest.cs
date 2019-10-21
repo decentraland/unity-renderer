@@ -21,9 +21,8 @@ public class APK_GLTF_InteractiveTest : MonoBehaviour
         keeper = new AssetPromiseKeeper_GLTF(library);
     }
 
-    void Generate()
+    void Generate(string url)
     {
-        string url = Utils.GetTestsAssetsPath() + "/GLB/TrunkSeparatedTextures/Trunk.glb";
         AssetPromise_GLTF promise = new AssetPromise_GLTF(provider, url);
 
         Vector3 pos = Vector3.zero;
@@ -34,12 +33,29 @@ public class APK_GLTF_InteractiveTest : MonoBehaviour
         keeper.Keep(promise);
         promiseList.Add(promise);
     }
-
+    static int counter = 0;
     void Update()
     {
         if (Input.GetKeyUp(KeyCode.Z))
         {
-            Generate();
+            counter++;
+            counter %= 3;
+            switch (counter)
+            {
+                case 0:
+                    string url = Utils.GetTestsAssetsPath() + "/GLB/TrunkSeparatedTextures/Trunk.glb";
+                    Generate(url);
+                    break;
+                case 1:
+                    string url2 = Utils.GetTestsAssetsPath() + "/GLB/Lantern/Lantern.glb";
+                    Generate(url2);
+                    break;
+                case 2:
+                    string url3 = Utils.GetTestsAssetsPath() + "/GLB/DamagedHelmet/DamagedHelmet.glb";
+                    Generate(url3);
+                    break;
+            }
+
         }
         else if (Input.GetKeyUp(KeyCode.X))
         {

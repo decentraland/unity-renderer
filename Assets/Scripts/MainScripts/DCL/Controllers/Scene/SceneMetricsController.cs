@@ -1,7 +1,7 @@
-using DCL.Controllers;
+﻿using DCL.Controllers;
+using DCL.Interface;
 using DCL.Models;
 using System.Collections.Generic;
-using DCL.Interface;
 using UnityEngine;
 
 namespace DCL
@@ -23,7 +23,7 @@ namespace DCL
             public const int textures = 10;
             public const int materials = 20;
             public const int meshes = 200;
-            
+
             public const float height = 20;
             public const float visibleRadius = 10;
         }
@@ -99,24 +99,28 @@ namespace DCL
             scene.OnEntityRemoved -= OnEntityRemoved;
         }
 
+        Model cachedModel = null;
+
         public Model GetLimits()
         {
-            int parcelCount = scene.sceneData.parcels.Length;
-            float log = Mathf.Log(parcelCount + 1, 2);
-            float lineal = parcelCount;
-
-            Model result = new Model()
+            if (cachedModel == null)
             {
-                triangles = (int)(lineal * LimitsConfig.triangles),
-                bodies = (int)(lineal * LimitsConfig.bodies),
-                entities = (int)(lineal * LimitsConfig.entities),
-                materials = (int)(log * LimitsConfig.materials),
-                textures = (int)(log * LimitsConfig.textures),
-                meshes = (int)(log * LimitsConfig.meshes),
-                sceneHeight = (log * LimitsConfig.height)
-            };
+                cachedModel = new Model();
 
-            return result;
+                int parcelCount = scene.sceneData.parcels.Length;
+                float log = Mathf.Log(parcelCount + 1, 2);
+                float lineal = parcelCount;
+
+                cachedModel.triangles = (int)(lineal * LimitsConfig.triangles);
+                cachedModel.bodies = (int)(lineal * LimitsConfig.bodies);
+                cachedModel.entities = (int)(lineal * LimitsConfig.entities);
+                cachedModel.materials = (int)(log * LimitsConfig.materials);
+                cachedModel.textures = (int)(log * LimitsConfig.textures);
+                cachedModel.meshes = (int)(log * LimitsConfig.meshes);
+                cachedModel.sceneHeight = (int)(log * LimitsConfig.height);
+            }
+
+            return cachedModel;
         }
 
         public void SendEvent()

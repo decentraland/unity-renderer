@@ -14,18 +14,6 @@ namespace UnityGLTF
         private AlphaMode _alphaMode = AlphaMode.OPAQUE;
         private double _alphaCutoff = 0.5;
 
-        protected StandardMap(string shaderName, int MaxLOD = 1000)
-        {
-            var s = Shader.Find(shaderName);
-            if (s == null)
-            {
-                throw new ShaderNotFoundException(shaderName + " not found. Did you forget to add it to the build?");
-            }
-
-            s.maximumLOD = MaxLOD;
-            _material = new Material(s);
-        }
-
         protected static readonly int _SpecGlossMap = Shader.PropertyToID("_SpecGlossMap");
         protected static readonly int _SmoothnessTextureChannel = Shader.PropertyToID("_SmoothnessTextureChannel");
         protected static readonly int _SpecColor = Shader.PropertyToID("_SpecColor");
@@ -52,6 +40,23 @@ namespace UnityGLTF
         protected static readonly int _ZWrite = Shader.PropertyToID("_ZWrite");
         protected static readonly int _AlphaClip = Shader.PropertyToID("_AlphaClip");
         protected static readonly int _Cull = Shader.PropertyToID("_Cull");
+
+        public Material GetMaterialCopy()
+        {
+            return new Material(_material);
+        }
+
+        protected StandardMap(string shaderName, int MaxLOD = 1000)
+        {
+            var s = Shader.Find(shaderName);
+            if (s == null)
+            {
+                throw new ShaderNotFoundException(shaderName + " not found. Did you forget to add it to the build?");
+            }
+
+            s.maximumLOD = MaxLOD;
+            _material = new Material(s);
+        }
 
         protected StandardMap(Material mat, int MaxLOD = 1000)
         {
