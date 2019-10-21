@@ -364,15 +364,26 @@ namespace DCL.Controllers
             SceneController.i.OnMessageDecodeStart?.Invoke("RemoveEntity");
             tmpRemoveEntityMessage.id = id;
             SceneController.i.OnMessageDecodeEnds?.Invoke("RemoveEntity");
-
             if (entities.ContainsKey(tmpRemoveEntityMessage.id))
             {
                 if (!entitiesMarkedForRemoval.Contains(tmpRemoveEntityMessage.id))
                 {
                     DecentralandEntity entity = entities[tmpRemoveEntityMessage.id];
-
                     // This will also cleanup its children
-                    CleanUpEntityRecursively(entity, !removeImmediatelyFromEntitiesList);
+                    CleanUpEntityRecursively(entity);
+
+                    if (removeImmediatelyFromEntitiesList)
+                    {
+                        int entitiesMarkedForRemovalCount = entitiesMarkedForRemoval.Count;
+                        for (int i = 0; i < entitiesMarkedForRemovalCount; i++)
+                        {
+                            entity = entities[entitiesMarkedForRemoval[i]];
+                            entities.Remove(entitiesMarkedForRemoval[i]);
+                            entity.SetParent(null);
+                            entity.Cleanup();
+                        }
+                        entitiesMarkedForRemoval.Clear();
+                    }
                 }
             }
 #if UNITY_EDITOR || DEVELOPMENT_BUILD
@@ -383,19 +394,17 @@ namespace DCL.Controllers
 #endif
         }
 
-        void CleanUpEntityRecursively(DecentralandEntity entity, bool delayed)
+        void CleanUpEntityRecursively(DecentralandEntity entity)
         {
             // Iterate through all entity children
             using (var iterator = entity.children.GetEnumerator())
             {
                 while (iterator.MoveNext())
                 {
-                    CleanUpEntityRecursively(iterator.Current.Value, delayed);
+                    CleanUpEntityRecursively(iterator.Current.Value);
                 }
             }
-
             OnEntityRemoved?.Invoke(entity);
-
             MarkForRemoval(entity);
         }
 
@@ -426,7 +435,7 @@ namespace DCL.Controllers
                     {
                         DecentralandEntity entity = iterator.Current.Value;
 
-                        RemoveEntity(entity.entityId, removeImmediatelyFromEntitiesList: instant);
+                        RemoveEntity(entity.entityId, false);
 
                         if (!instant && DCLTime.realtimeSinceStartup - lastTime >= maxBudget)
                         {
