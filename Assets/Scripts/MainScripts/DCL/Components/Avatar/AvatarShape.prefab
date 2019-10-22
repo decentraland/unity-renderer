@@ -417,31 +417,12 @@ MonoBehaviour:
   avatarMovementController: {fileID: 122622683908687435}
   minimapRepresentation: {fileID: 7598803346502927653}
   model:
-    baseUrl: 
     name: 
-    bodyShape:
-      category: 
-      contentName: 
-      contents: []
+    bodyShape: 
+    skinColor: {r: 0, g: 0, b: 0, a: 0}
+    hairColor: {r: 0, g: 0, b: 0, a: 0}
+    eyeColor: {r: 0, g: 0, b: 0, a: 0}
     wearables: []
-    snapshots:
-      face: 
-      body: 
-    skin:
-      color: {r: 0, g: 0, b: 0, a: 0}
-    hair:
-      color: {r: 0, g: 0, b: 0, a: 0}
-    eyes:
-      mask: 
-      texture: 
-      color: {r: 0, g: 0, b: 0, a: 0}
-    eyebrows:
-      mask: 
-      texture: 
-    mouth:
-      mask: 
-      texture: 
-    useDummyModel: 1
   everythingIsLoaded: 0
 --- !u!114 &3377148406933134318
 MonoBehaviour:
@@ -704,6 +685,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1246322601458952529}
   - component: {fileID: 3802347106778656604}
+  - component: {fileID: 4102542249429487371}
   m_Layer: 13
   m_Name: MinimapRepresentation
   m_TagString: Untagged
@@ -774,3 +756,18 @@ SpriteRenderer:
   m_WasSpriteAssigned: 1
   m_MaskInteraction: 0
   m_SpriteSortPoint: 0
+--- !u!114 &4102542249429487371
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7598803346502927653}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d3b93ce7379444f468ecfc07e127ec0e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  scaleFactor: {fileID: 11400000, guid: 3f90ae595450342aea3f5a9e64f24ec5, type: 2}
+  minScale: 2
+  maxScale: 4

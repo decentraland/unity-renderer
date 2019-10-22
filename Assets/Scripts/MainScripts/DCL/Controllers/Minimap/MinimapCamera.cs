@@ -14,9 +14,12 @@ public class MinimapCamera : MonoBehaviour
     private Vector3Variable playerUnityPosition => CommonScriptableObjects.playerUnityPosition;
     private Vector3Variable playerUnityEulerAngles => CommonScriptableObjects.playerUnityEulerAngles;
 
+    private FloatVariable minimapZoom => CommonScriptableObjects.minimapZoom;
+
     private void Awake()
     {
-        SetNormalizedSize(1);
+        minimapZoom.OnChange += (current, previous) => SetNormalizedSize(current);
+        SetNormalizedSize(minimapZoom.Get());
     }
 
     private void Start()

@@ -15,8 +15,10 @@ public static class CommonScriptableObjects
     public static Vector2IntVariable playerCoords => GetOrLoad(ref playerCoordsValue , "ScriptableObjects/PlayerCoords");
 
     private static StringVariable sceneIDValue;
-
     public static StringVariable sceneID => GetOrLoad(ref sceneIDValue, "ScriptableObjects/SceneID");
+
+    private static FloatVariable minimapZoomValue;
+    public static FloatVariable minimapZoom => GetOrLoad(ref minimapZoomValue, "ScriptableObjects/MinimapZoom");
 
     private static T GetOrLoad<T>(ref T variable, string path) where T : Object
     {
