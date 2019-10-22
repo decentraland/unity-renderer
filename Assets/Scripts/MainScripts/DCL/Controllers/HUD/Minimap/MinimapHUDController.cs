@@ -4,6 +4,9 @@ using UnityEngine;
 public class MinimapHUDController : IDisposable, IHUD
 {
     private MinimapHUDView view;
+
+    private FloatVariable minimapZoom => CommonScriptableObjects.minimapZoom;
+    
     public MinimapHUDModel model { get; private set; }
 
     public MinimapHUDController() : this(new MinimapHUDModel()) { }
@@ -11,7 +14,8 @@ public class MinimapHUDController : IDisposable, IHUD
     public MinimapHUDController(MinimapHUDModel model)
     {
         CommonScriptableObjects.playerCoords.OnChange += OnPlayerCoordsChange;
-
+        minimapZoom.Set(1f);
+        
         view = MinimapHUDView.Create(this);
         UpdateData(model);
     }
@@ -49,6 +53,11 @@ public class MinimapHUDController : IDisposable, IHUD
     {
         model.playerPosition = position;
         view.UpdateData(model);
+    }
+
+    public void AddZoomDelta(float delta)
+    {
+        minimapZoom.Set(Mathf.Clamp01(minimapZoom.Get() + delta));
     }
 
     public void ToggleOptions()

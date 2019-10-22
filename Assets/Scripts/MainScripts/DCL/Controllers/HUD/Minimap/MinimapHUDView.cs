@@ -20,6 +20,8 @@ public class MinimapHUDView : MonoBehaviour
     [SerializeField] private Button addBookmarkButton;
 
     [SerializeField] private Button reportSceneButton;
+    
+    [SerializeField] private MinimapZoom minimapZoom;
 
     private MinimapHUDController controller;
 
@@ -32,6 +34,7 @@ public class MinimapHUDView : MonoBehaviour
         optionsButton.onClick.AddListener(controller.ToggleOptions);
         addBookmarkButton.onClick.AddListener(controller.AddBookmark);
         reportSceneButton.onClick.AddListener(controller.ReportScene);
+        minimapZoom.OnZoom += (relativeZoom) => controller.AddZoomDelta(relativeZoom);
     }
 
     internal static MinimapHUDView Create(MinimapHUDController controller)
