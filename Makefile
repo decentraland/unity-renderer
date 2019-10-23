@@ -219,7 +219,7 @@ lint-fix: ## Fix bad formatting on all .ts and .tsx files
 
 watch: $(SOME_MAPPINGS) build-essentials static/dist/unity.js ## Watch the files required for hacking the explorer
 	@NODE_ENV=development npx concurrently \
-		-n "ecs,scene-system,internal-scenes,loader,basic-scenes,unity,test,server" \
+		-n "ecs,scene-system,internal-scenes,loader,basic-scenes,unity,test,simulator,server" \
 			"$(COMPILER) targets/engine/ecs.json --watch" \
 			"$(COMPILER) targets/engine/scene-system.json --watch" \
 			"$(COMPILER) targets/engine/internal-scenes.json --watch" \
@@ -227,6 +227,7 @@ watch: $(SOME_MAPPINGS) build-essentials static/dist/unity.js ## Watch the files
 			"$(COMPILER) targets/scenes/basic-scenes.json --watch" \
 			"$(COMPILER) targets/entryPoints/unity.json --watch" \
 			"$(COMPILER) targets/test.json --watch" \
+			"node ./scripts/runPathSimulator.js" \
 			"node ./scripts/runTestServer.js --keep-open"
 
 clean: ## Clean all generated files

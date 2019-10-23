@@ -62,7 +62,7 @@ export class GlobalPointerDown extends PointerEventComponent {}
 @Component('pointerUp')
 export class GlobalPointerUp extends PointerEventComponent {}
 
-export class Subscription {
+class Subscription {
   public fn: (e: LocalActionButtonEvent) => void
   public useRaycast: boolean
 

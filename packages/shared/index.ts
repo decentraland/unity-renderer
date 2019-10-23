@@ -110,7 +110,7 @@ export async function initShared(): Promise<Session | undefined> {
   const maxAttemps = 5
   for (let i = 1; ; ++i) {
     try {
-      defaultLogger.info(`Try number ${i}...`)
+      defaultLogger.info(`Attempt number ${i}...`)
       const context = await connect(
         userId,
         net,
