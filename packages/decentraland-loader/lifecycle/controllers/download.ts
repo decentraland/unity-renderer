@@ -4,8 +4,6 @@ import { ILand, IScene, ParcelInfoResponse } from 'shared/types'
 import { jsonFetch } from 'atomicHelpers/jsonFetch'
 import { createLogger } from 'shared/logger'
 
-const origin = globalThis.origin
-
 const emptyScenes = require('./emptyScenes.json')
 
 const logger = createLogger('loader')
@@ -75,21 +73,20 @@ export class SceneDataDownloadManager {
     }
   }
 
-  createFakeILand(sceneId: string) {
-    const coordinates = sceneId.replace('empty-', '')
+  createFakeILand(sceneId: string, coordinates: string) {
     const pick = ((coordinates.split(',').reduce((prev, next) => prev + Math.abs(parseInt(next, 10)), 0) % 12) + 1)
       .toString()
       .padStart(2, '0')
     return {
       sceneId: sceneId,
-      baseUrl: origin + '/loader/empty-scenes/Tile1M_' + pick + '/',
+      baseUrl: this.options.contentServer + '/contents/',
       name: 'Empty parcel',
       scene: {
         display: { title: 'Empty parcel' },
         owner: '',
         contact: {},
         name: 'Empty parcel',
-        main: 'bin/game.js',
+        main: `bin/${pick}.js`,
         tags: [],
         scene: { parcels: [coordinates], base: coordinates },
         policy: {},
@@ -100,13 +97,9 @@ export class SceneDataDownloadManager {
         contents: [
           {
             file: 'scene.json',
-            hash: 'scene.json'
-          },
-          {
-            file: 'bin/game.js',
-            hash: 'bin/game.js'
+            hash: 'QmRcgEd7iCWWqLijV78QDEEFQzTXac2htSP2WYCsV9ZC8N'
           }
-        ].concat(emptyScenes[pick]),
+        ].concat(emptyScenes),
         root_cid: sceneId,
         publisher: '0x13371b17ddb77893cd19e10ffa58461396ebcc19'
       }
@@ -121,12 +114,12 @@ export class SceneDataDownloadManager {
     const promised = future<ILand | null>()
     this.sceneIdToLandData.set(sceneId, promised)
 
-    if (sceneId.startsWith('empty-')) {
+    if (sceneId.endsWith('00000000000000000000')) {
       const promisedPos = future<string | null>()
-      const pos = sceneId.replace('empty-', '')
-      promisedPos.resolve(pos)
+      const pos = sceneId.replace('Qm', '').replace(/m0+/, '')
+      promisedPos.resolve(sceneId)
       this.positionToSceneId.set(pos, promisedPos)
-      const scene = this.createFakeILand(sceneId)
+      const scene = this.createFakeILand(sceneId, pos)
       promised.resolve(scene)
       return promised
     }
