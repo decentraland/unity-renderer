@@ -39,9 +39,14 @@ public class AvatarHUDView : MonoBehaviour
     private void Initialize(AvatarHUDController controller)
     {
         gameObject.name = VIEW_OBJECT_NAME;
+
         toggleExpandButton.onClick.AddListener(controller.ToggleExpanded);
+
         editAvatarButton.onClick.AddListener(controller.EditAvatar);
+        editAvatarButton.onClick.AddListener(controller.ToggleExpanded);
+
         signOutButton.onClick.AddListener(controller.SignOut);
+        signOutButton.onClick.AddListener(controller.ToggleExpanded);
     }
 
     internal static AvatarHUDView Create(AvatarHUDController controller)

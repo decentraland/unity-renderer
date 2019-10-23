@@ -76,7 +76,7 @@ namespace Tests
 
             Assert.AreEqual(true, controller.expanded);
             var view = GetViewFromController(controller);
-            Assert.AreEqual(true, Reflection_GetField<GameObject>(view,"expandedContainer").activeSelf);
+            Assert.AreEqual(true, Reflection_GetField<GameObject>(view, "expandedContainer").activeSelf);
         }
 
         [UnityTest]
@@ -222,6 +222,32 @@ namespace Tests
 
             var view = GetViewFromController(controller);
             Reflection_GetField<Button>(view, "toggleExpandButton").onClick.Invoke();
+
+            Assert.AreEqual(false, controller.expanded);
+            Assert.AreEqual(false, Reflection_GetField<GameObject>(view, "expandedContainer").activeSelf);
+        }
+
+        [UnityTest]
+        public IEnumerator AvatarHUD_ExpandToggleFromTrueWhenEditAvatarIsClicked()
+        {
+            yield return InitScene();
+            var controller = new AvatarHUDController(expanded: true);
+
+            var view = GetViewFromController(controller);
+            Reflection_GetField<Button>(view, "editAvatarButton").onClick.Invoke();
+
+            Assert.AreEqual(false, controller.expanded);
+            Assert.AreEqual(false, Reflection_GetField<GameObject>(view, "expandedContainer").activeSelf);
+        }
+
+        [UnityTest]
+        public IEnumerator AvatarHUD_ExpandToggleFromTrueWhenLogOutIsClicked()
+        {
+            yield return InitScene();
+            var controller = new AvatarHUDController(expanded: true);
+
+            var view = GetViewFromController(controller);
+            Reflection_GetField<Button>(view, "signOutButton").onClick.Invoke();
 
             Assert.AreEqual(false, controller.expanded);
             Assert.AreEqual(false, Reflection_GetField<GameObject>(view, "expandedContainer").activeSelf);
