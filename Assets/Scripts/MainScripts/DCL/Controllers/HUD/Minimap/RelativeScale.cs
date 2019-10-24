@@ -1,6 +1,4 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
+﻿using UnityEngine;
 
 public class RelativeScale : MonoBehaviour
 {
@@ -14,6 +12,11 @@ public class RelativeScale : MonoBehaviour
     {
         UpdateScale(scaleFactor.Get());
         scaleFactor.OnChange += FactorUpdated;
+    }
+
+    private void OnDestroy()
+    {
+        scaleFactor.OnChange -= FactorUpdated;
     }
 
     private void FactorUpdated(float current, float previous)
