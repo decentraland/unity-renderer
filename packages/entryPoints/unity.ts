@@ -6,6 +6,7 @@ import { signalRendererInitialized } from '../shared/renderer/actions'
 import { lastPlayerPosition, teleportObservable } from '../shared/world/positionThings'
 import { HUD, startUnityParcelLoading } from '../unity-interface/dcl'
 import { initializeUnity } from '../unity-interface/initializer'
+import { experienceStarted } from '../shared/loading/types'
 
 const container = document.getElementById('gameContainer')
 
@@ -21,16 +22,20 @@ initializeUnity(container)
     await startUnityParcelLoading()
 
     _.instancedJS
-      .then($ => teleportObservable.notifyObservers(worldToGrid(lastPlayerPosition)))
+      .then($ => {
+        teleportObservable.notifyObservers(worldToGrid(lastPlayerPosition))
+        global['globalStore'].dispatch(experienceStarted())
+      })
       .catch(defaultLogger.error)
     document.body.classList.remove('dcl-loading')
     ;(window as any).UnityLoader.Error.handler = (error: any) => {
-      console.error(error)
+      console['error'](error)
       ReportFatalError(error.message)
     }
   })
   .catch(err => {
     if (err.message.includes('Authentication error')) {
+      // TODO - add some feedback here before reloading - moliva - 22/10/2019
       window.location.reload()
     }
 

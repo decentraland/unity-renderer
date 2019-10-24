@@ -1,6 +1,7 @@
-import { all, call, fork, put, takeLatest } from 'redux-saga/effects'
+import { all, call, fork, put, takeLatest, take } from 'redux-saga/effects'
 import { authFailure, authRequest, authSuccess, AUTH_REQUEST, LOGIN, LOGOUT, LoginAction } from './actions'
 import { AuthData } from './types'
+import { NOT_STARTED } from '../loading/types'
 
 export type CallbackResult = { data: AuthData; redirectUri: string | undefined }
 
@@ -14,6 +15,7 @@ export interface CallableLogin {
 
 export function authSaga(callbackProvider: CallableLogin) {
   return function* authSaga(): any {
+    yield take(NOT_STARTED)
     yield fork(handleRestoreSession)
     yield all([
       takeLatest(LOGIN, handleLogin),

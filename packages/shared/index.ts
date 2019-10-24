@@ -7,9 +7,9 @@ import {
   PREVIEW,
   setNetwork,
   STATIC_WORLD,
-  EDITOR
+  WORLD_EXPLORER
 } from '../config'
-import { initialize, queueTrackingEvent } from './analytics'
+import { initialize, queueTrackingEvent, identifyUser } from './analytics'
 import './apis/index'
 import { connect, disconnect } from './comms'
 import { persistCurrentUser } from './comms/index'
@@ -17,7 +17,17 @@ import { isMobile } from './comms/mobile'
 import { localProfileUUID } from './comms/peers'
 import './events'
 import { ReportFatalError } from './loading/ReportFatalError'
-import { AUTH_ERROR_LOGGED_OUT, COMMS_COULD_NOT_BE_ESTABLISHED, MOBILE_NOT_SUPPORTED } from './loading/types'
+import {
+  AUTH_ERROR_LOGGED_OUT,
+  COMMS_COULD_NOT_BE_ESTABLISHED,
+  MOBILE_NOT_SUPPORTED,
+  loadingStarted,
+  authSuccessful,
+  establishingComms,
+  commsEstablished,
+  commsErrorRetrying,
+  notStarted
+} from './loading/types'
 import { defaultLogger } from './logger'
 import { PassportAsPromise } from './passports/PassportAsPromise'
 import { Session } from './session/index'
@@ -29,28 +39,26 @@ import { setWorldContext } from './protocol/actions'
 import { profileToRendererFormat } from './passports/transformations/profileToRendererFormat'
 
 // TODO fill with segment keys and integrate identity server
-async function initializeAnalytics(userId: string) {
+function initializeAnalytics() {
   const TLD = getTLD()
   switch (TLD) {
     case 'org':
-      return initialize('1plAT9a2wOOgbPCrTaU8rgGUMzgUTJtU', userId)
+      return initialize('1plAT9a2wOOgbPCrTaU8rgGUMzgUTJtU')
     case 'today':
-      return initialize('a4h4BC4dL1v7FhIQKKuPHEdZIiNRDVhc', userId)
+      return initialize('a4h4BC4dL1v7FhIQKKuPHEdZIiNRDVhc')
     case 'zone':
-      return initialize('a4h4BC4dL1v7FhIQKKuPHEdZIiNRDVhc', userId)
+      return initialize('a4h4BC4dL1v7FhIQKKuPHEdZIiNRDVhc')
     default:
-      return initialize('a4h4BC4dL1v7FhIQKKuPHEdZIiNRDVhc', userId)
+      return initialize('a4h4BC4dL1v7FhIQKKuPHEdZIiNRDVhc')
   }
 }
 
 export let globalStore: Store<RootState>
 
 export async function initShared(): Promise<Session | undefined> {
-  if (isMobile()) {
-    ReportFatalError(MOBILE_NOT_SUPPORTED)
-    return undefined
+  if (WORLD_EXPLORER) {
+    await initializeAnalytics()
   }
-  const session = new Session()
 
   const { store, startSagas, auth } = buildStore({
     ...getLoginConfigurationForCurrentDomain(),
@@ -58,27 +66,41 @@ export async function initShared(): Promise<Session | undefined> {
   })
   ;(window as any).globalStore = globalStore = store
 
+  if (WORLD_EXPLORER) {
+    startSagas()
+  }
+
+  if (isMobile()) {
+    ReportFatalError(MOBILE_NOT_SUPPORTED)
+    return undefined
+  }
+
+  store.dispatch(notStarted())
+
+  const session = new Session()
+
   let userId: string
 
   console['group']('connect#login')
+  store.dispatch(loadingStarted())
 
-  if (PREVIEW || EDITOR) {
-    defaultLogger.log(`Using test user.`)
-    userId = 'email|5cdd68572d5f842a16d6cc17'
-  } else {
-    startSagas()
+  if (WORLD_EXPLORER) {
     try {
       userId = await auth.getUserId()
+      identifyUser(userId)
     } catch (e) {
       defaultLogger.error(e)
       console['groupEnd']()
       ReportFatalError(AUTH_ERROR_LOGGED_OUT)
       throw e
     }
-    await initializeAnalytics(userId)
+  } else {
+    defaultLogger.log(`Using test user.`)
+    userId = 'email|5cdd68572d5f842a16d6cc17'
   }
 
   defaultLogger.log(`User ${userId} logged in`)
+  store.dispatch(authSuccessful())
 
   console['groupEnd']()
 
@@ -107,6 +129,7 @@ export async function initShared(): Promise<Session | undefined> {
   }
 
   console['group']('connect#comms')
+  store.dispatch(establishingComms())
   const maxAttemps = 5
   for (let i = 1; ; ++i) {
     try {
@@ -121,15 +144,20 @@ export async function initShared(): Promise<Session | undefined> {
       }
       break
     } catch (e) {
-      if (!e.message.startsWith('Communications link') || i >= maxAttemps) {
-        // max number of attemps reached, rethrow error
-        defaultLogger.info(`Max number of attemps reached (${maxAttemps}), unsuccessful connection`)
-        disconnect()
-        ReportFatalError(COMMS_COULD_NOT_BE_ESTABLISHED)
-        throw e
+      if (!e.message.startsWith('Communications link')) {
+        if (i >= maxAttemps) {
+          // max number of attemps reached, rethrow error
+          defaultLogger.info(`Max number of attemps reached (${maxAttemps}), unsuccessful connection`)
+          disconnect()
+          ReportFatalError(COMMS_COULD_NOT_BE_ESTABLISHED)
+          throw e
+        } else {
+          store.dispatch(commsErrorRetrying(i))
+        }
       }
     }
   }
+  store.dispatch(commsEstablished())
   console['groupEnd']()
 
   // initialize profile

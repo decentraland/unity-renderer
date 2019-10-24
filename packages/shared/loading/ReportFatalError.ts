@@ -1,3 +1,4 @@
+import { action } from 'typesafe-actions'
 import {
   ExecutionLifecycleEvent,
   COMMS_COULD_NOT_BE_ESTABLISHED,
@@ -7,6 +8,8 @@ import {
 } from './types'
 
 let aborted = false
+
+declare var global: any
 
 export function bringDownClientAndShowError(event: ExecutionLifecycleEvent) {
   if (aborted) {
@@ -37,6 +40,7 @@ export function bringDownClientAndShowError(event: ExecutionLifecycleEvent) {
 
 export function ReportFatalError(event: ExecutionLifecycleEvent) {
   bringDownClientAndShowError(event)
+  global['globalStore'] && global['globalStore'].dispatch(action(event))
 }
 
 ;(global as any).ReportFatalError = ReportFatalError

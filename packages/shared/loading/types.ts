@@ -7,6 +7,7 @@ export const helpTexts = [
 ]
 
 export const NOT_STARTED = 'Not initialized'
+export const notStarted = () => action(NOT_STARTED)
 export const LOADING_STARTED = 'Loading started'
 export const loadingStarted = () => action(LOADING_STARTED)
 export const AUTH_SUCCESSFUL = 'Authentication successful'
@@ -19,6 +20,11 @@ export const LOADING_SCENES = 'Loading scenes'
 export const loadingScenes = () => action(LOADING_SCENES)
 export const WAITING_FOR_RENDERER = 'Waiting for renderer'
 export const waitingForRenderer = () => action(WAITING_FOR_RENDERER)
+
+export const ESTABLISHING_COMMS = 'Establishing comms'
+export const establishingComms = () => action(ESTABLISHING_COMMS)
+export const COMMS_ESTABLISHED = 'Comms established successfully'
+export const commsEstablished = () => action(COMMS_ESTABLISHED)
 
 export const EXPERIENCE_STARTED = 'Loading finished: Experience started'
 export const experienceStarted = () => action(EXPERIENCE_STARTED)
@@ -41,19 +47,21 @@ export const contentServerDown = () => action(CONTENT_SERVER_DOWN)
 export const FAILED_FETCHING_UNITY = 'Failed to fetch the rendering engine'
 export const failedFetchingUnity = () => action(FAILED_FETCHING_UNITY)
 export const COMMS_ERROR_RETRYING = 'Communications channel error (will retry)'
-export const commsErrorRetrying = () => action(COMMS_ERROR_RETRYING)
+export const commsErrorRetrying = (attempt: number) => action(COMMS_ERROR_RETRYING, attempt)
 export const COMMS_COULD_NOT_BE_ESTABLISHED = 'Communications channel error'
 export const commsCouldNotBeEstablished = () => action(COMMS_COULD_NOT_BE_ESTABLISHED)
 export const MOBILE_NOT_SUPPORTED = 'Mobile is not supported'
 export const mobileNotSupported = () => action(MOBILE_NOT_SUPPORTED)
 
 export const ExecutionLifecycleNotifications = {
+  notStarted,
   loadingStarted,
   loadingScenes,
   notInvited,
   noWebglCouldBeCreated,
   unityClientLoaded,
   authSuccessful,
+  establishingComms,
   waitingForRenderer,
   experienceStarted,
   teleportTriggered,
@@ -73,6 +81,8 @@ export type ExecutionLifecycleEvent =
   | typeof LOADING_STARTED
   | typeof AUTH_SUCCESSFUL
   | typeof NOT_INVITED
+  | typeof ESTABLISHING_COMMS
+  | typeof COMMS_ESTABLISHED
   | typeof NO_WEBGL_COULD_BE_CREATED
   | typeof UNITY_CLIENT_LOADED
   | typeof LOADING_SCENES
@@ -81,6 +91,7 @@ export type ExecutionLifecycleEvent =
   | typeof TELEPORT_TRIGGERED
   | typeof SCENE_ENTERED
   | typeof UNEXPECTED_ERROR
+  | typeof UNEXPECTED_ERROR_LOADING_CATALOG
   | typeof AUTH_ERROR_LOGGED_OUT
   | typeof MOBILE_NOT_SUPPORTED
   | typeof CONTENT_SERVER_DOWN
@@ -88,12 +99,14 @@ export type ExecutionLifecycleEvent =
   | typeof COMMS_ERROR_RETRYING
   | typeof COMMS_COULD_NOT_BE_ESTABLISHED
 
-export const ExecutionLifecycleEventsList = [
+export const ExecutionLifecycleEventsList: ExecutionLifecycleEvent[] = [
   NOT_STARTED,
   LOADING_STARTED,
   AUTH_SUCCESSFUL,
   UNITY_CLIENT_LOADED,
   NOT_INVITED,
+  ESTABLISHING_COMMS,
+  COMMS_ESTABLISHED,
   NO_WEBGL_COULD_BE_CREATED,
   LOADING_SCENES,
   WAITING_FOR_RENDERER,

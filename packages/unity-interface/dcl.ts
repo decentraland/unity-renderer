@@ -46,6 +46,7 @@ import { ensureUiApis } from '../shared/world/uiSceneInitializer'
 import { worldRunningObservable } from '../shared/world/worldState'
 import { queueTrackingEvent } from '../shared/analytics'
 import { getPerformanceInfo } from '../shared/session/getPerformanceInfo'
+import { unityClientLoaded, loadingScenes } from '../shared/loading/types'
 
 const rendererVersion = require('decentraland-renderer')
 window['console'].log('Renderer version: ' + rendererVersion)
@@ -384,6 +385,7 @@ export class UnityParcelScene extends UnityScene<LoadableParcelScene> {
 export async function initializeEngine(_gameInstance: GameInstance) {
   gameInstance = _gameInstance
 
+  global['globalStore'].dispatch(unityClientLoaded())
   setLoadingScreenVisible(true)
 
   unityInterface.DeactivateRendering()
@@ -407,7 +409,7 @@ export async function initializeEngine(_gameInstance: GameInstance) {
     onMessage(type: string, message: any) {
       if (type in browserInterface) {
         // tslint:disable-next-line:semicolon
-        ; (browserInterface as any)[type](message)
+        ;(browserInterface as any)[type](message)
       } else {
         defaultLogger.info(`Unknown message (did you forget to add ${type} to unity-interface/dcl.ts?)`, message)
       }
@@ -416,6 +418,7 @@ export async function initializeEngine(_gameInstance: GameInstance) {
 }
 
 export async function startUnityParcelLoading() {
+  global['globalStore'].dispatch(loadingScenes())
   await enableParcelSceneLoading({
     parcelSceneClass: UnityParcelScene,
     preloadScene: async _land => {

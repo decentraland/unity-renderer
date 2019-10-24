@@ -5,6 +5,7 @@ import { ReportFatalError } from '../shared/loading/ReportFatalError'
 import { defaultLogger } from '../shared/logger'
 import { initializeEngine } from './dcl'
 import { Session } from '../shared/session'
+import { waitingForRenderer } from '../shared/loading/types'
 const queryString = require('query-string')
 
 declare var global: any
@@ -53,6 +54,7 @@ export async function initializeUnity(container: HTMLElement): Promise<Initializ
     _gameInstance = await UnityLoader.instantiate(container, 'unity/Build/unity.json')
   }
 
+  global['globalStore'].dispatch(waitingForRenderer())
   await engineInitialized
 
   return {
@@ -82,13 +84,11 @@ namespace DCL {
   export function MessageFromEngine(type: string, jsonEncodedMessage: string) {
     if (_instancedJS) {
       if (type === 'PerformanceReport') {
-        _instancedJS
-          .then($ => $.onMessage(type, jsonEncodedMessage))                     
-          .catch(e => defaultLogger.error(e.message))
+        _instancedJS.then($ => $.onMessage(type, jsonEncodedMessage)).catch(e => defaultLogger.error(e.message))
         return
       }
       _instancedJS
-        .then($ => $.onMessage(type, JSON.parse(jsonEncodedMessage)))                     
+        .then($ => $.onMessage(type, JSON.parse(jsonEncodedMessage)))
         .catch(e => defaultLogger.error(e.message))
     } else {
       defaultLogger.error('Message received without initializing engine', type, jsonEncodedMessage)
