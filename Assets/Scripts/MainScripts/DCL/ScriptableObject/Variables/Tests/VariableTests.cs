@@ -37,6 +37,8 @@ namespace VariableTests
             variable.Set(value2);
 
             Assert.IsTrue(onChangeWasCalled);
+
+            variable.OnChange -= onChange;
         }
     }
     public class FloatVariableShould : BaseVariableTest<float, FloatVariable>
