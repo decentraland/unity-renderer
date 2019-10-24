@@ -144,16 +144,21 @@ export async function initShared(): Promise<Session | undefined> {
       }
       break
     } catch (e) {
-      if (!e.message.startsWith('Communications link')) {
+      if (e.message.startsWith('Communications link')) {
         if (i >= maxAttemps) {
-          // max number of attemps reached, rethrow error
+          // max number of attemps reached => rethrow error
           defaultLogger.info(`Max number of attemps reached (${maxAttemps}), unsuccessful connection`)
           disconnect()
           ReportFatalError(COMMS_COULD_NOT_BE_ESTABLISHED)
           throw e
         } else {
+          // max number of attempts not reached => continue with loop
           store.dispatch(commsErrorRetrying(i))
         }
+      } else {
+        // not a comms issue per se => rethrow error
+        disconnect()
+        throw e
       }
     }
   }
