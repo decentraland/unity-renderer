@@ -419,9 +419,15 @@ namespace DCL.Controllers
             OnEntityRemoved?.Invoke(entity);
 
             if (removeImmediatelyFromEntitiesList)
+            {
+                // Every entity ends up being removed through here
                 entity.Cleanup();
+                entities.Remove(entity.entityId);
+            }
             else
+            {
                 parcelScenesCleaner.MarkForCleanup(entity);
+            }
         }
 
         void RemoveAllEntities(bool instant = false)
@@ -440,7 +446,7 @@ namespace DCL.Controllers
                         if (instant)
                             rootEntities.Add(iterator.Current.Value);
                         else
-                            parcelScenesCleaner.RemoveEntity(this, iterator.Current.Value);
+                            parcelScenesCleaner.MarkRootEntityForCleanup(this, iterator.Current.Value);
                     }
                 }
             }

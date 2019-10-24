@@ -85,13 +85,15 @@ namespace Tests
 
             TestHelpers.CreateSceneEntity(scene, entityId);
 
+            Assert.IsTrue(scene.entities.ContainsKey(entityId));
+
             var gameObjectReference = scene.entities[entityId].gameObject;
 
             TestHelpers.RemoveSceneEntity(scene, entityId);
 
             yield return null;
 
-            Assert.IsTrue(!scene.entities.ContainsKey(entityId));
+            Assert.IsFalse(scene.entities.ContainsKey(entityId));
 
             bool isDestroyedOrPooled = gameObjectReference == null || !gameObjectReference.activeSelf;
             Assert.IsTrue(isDestroyedOrPooled, "Entity gameobject reference is not getting destroyed nor pooled.");
