@@ -57,12 +57,16 @@ export type Wearable = {
   category: string
   baseUrl: string
   tags: string[]
+  hides?: string[]
+  replaces?: string[]
   representations: BodyShapeRespresentation[]
 }
 
 export type BodyShapeRespresentation = {
   bodyShapes: string[]
   mainFile: string
+  overrideHides?: string[]
+  overrideReplaces?: string[]
   contents: FileAndHash[]
 }
 
