@@ -18,10 +18,11 @@ if (typeof (document as any).hidden !== 'undefined') {
 const timers = new Set<Timer>()
 
 function handleVisibilityChange() {
+  const _timers = [...timers]
   if (isForeground()) {
-    [...timers].forEach($ => $.resume())
+    _timers.forEach($ => $.resume())
   } else {
-    [...timers].forEach($ => $.pause())
+    _timers.forEach($ => $.pause())
   }
 }
 
