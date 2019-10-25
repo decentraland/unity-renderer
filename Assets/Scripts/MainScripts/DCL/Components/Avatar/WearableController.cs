@@ -9,7 +9,7 @@ public class WearableController
     private const string MATERIAL_FILTER_HAIR = "hair";
     private const string MATERIAL_FILTER_SKIN = "skin";
 
-    protected readonly WearableItem wearable;
+    public readonly WearableItem wearable;
     private AssetPromise_GLTF promise;
     private readonly string bodyShapeType;
 
@@ -19,12 +19,22 @@ public class WearableController
     protected GameObject assetContainer => promise?.asset?.container;
     public bool isReady => promise != null && promise.state == AssetPromiseState.FINISHED;
 
+    protected Renderer[] assetRenderers;
+    
     List<Material> materials = null;
 
     public WearableController(WearableItem wearableItem, string bodyShapeType)
     {
         this.wearable = wearableItem;
         this.bodyShapeType = bodyShapeType;
+    }
+    
+    public WearableController(WearableController original)
+    {
+        wearable = original.wearable;
+        promise = original.promise;
+        bodyShapeType = original.bodyShapeType;
+        assetRenderers = original.assetRenderers;
     }
 
     public void Load(Transform parent, Action<WearableController> onSuccess, Action<WearableController> onFail)
@@ -37,7 +47,11 @@ public class WearableController
         promise.settings.forceNewInstance = true;
         promise.settings.initialLocalPosition = Vector3.up * 0.75f;
         promise.settings.visibleFlags = AssetPromise_GLTF.VisibleFlags.INVISIBLE;
-        promise.OnSuccessEvent += (x) => onSuccess.Invoke(this);
+        promise.OnSuccessEvent += (x) =>
+        {
+            assetRenderers = x.container.GetComponentsInChildren<Renderer>();
+            onSuccess.Invoke(this);
+        };
         promise.OnFailEvent += (x) => onFail.Invoke(this);
         promise.settings.parent = parent;
 
@@ -70,6 +84,14 @@ public class WearableController
         {
             promise.ClearEvents();
             AssetPromiseKeeper_GLTF.i.Forget(this.promise);
+        }
+    }
+
+    public void SetAssetRenderersEnabled(bool active)
+    {
+        for (var i = 0; i < assetRenderers.Length; i++)
+        {
+            assetRenderers[i].enabled = active;
         }
     }
 

@@ -136,7 +136,7 @@ namespace DCL
 
         private void OnRequestCompleted(AssetPromise<AssetType> promise)
         {
-            if (RenderingController.i.renderingEnabled)
+            if (RenderingController.i != null && RenderingController.i.renderingEnabled)
             {
                 blockedPromisesQueue.Enqueue(promise);
             }

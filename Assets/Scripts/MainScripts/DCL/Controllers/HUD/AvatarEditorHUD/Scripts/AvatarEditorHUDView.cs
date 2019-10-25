@@ -67,6 +67,7 @@ public class AvatarEditorHUDView : MonoBehaviour
     private void Initialize(AvatarEditorHUDController controller)
     {
         this.controller = controller;
+        ItemToggle.getWearablesReplacedByFunc = this.controller.GetWearablesReplacedBy;
         gameObject.name = VIEW_OBJECT_NAME;
 
         randomizeButton.onClick.AddListener(OnRandomizeButton);
@@ -127,6 +128,10 @@ public class AvatarEditorHUDView : MonoBehaviour
     {
         if (avatarModel?.wearables == null) return;
 
+        using (var iterator = selectorsByCategory.GetEnumerator())
+        {
+            while (iterator.MoveNext()) iterator.Current.Value.Unselect();
+        }
         UpdateSelectedBody(avatarModel);
         UpdateSelectedColors(avatarModel);
         UpdateSelectedWearables(avatarModel);

@@ -196,4 +196,12 @@ public class ItemSelector : MonoBehaviour
         if (string.IsNullOrEmpty(itemID)) return null;
         return itemToggles.ContainsKey(itemID) ? itemToggles[itemID] : null;
     }
+
+    public void Unselect()
+    {
+        if (currentToggle == null) return;
+
+        currentToggle.selected = false;
+        currentToggle = null;
+    }
 }
