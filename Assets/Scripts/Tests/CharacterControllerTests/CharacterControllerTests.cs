@@ -1,9 +1,11 @@
 ﻿using DCL.Helpers;
 using DCL.Models;
 using DCL.Components;
+using DCL.Configuration;
 using Newtonsoft.Json;
 using System.Collections;
 using System.Reflection;
+using System.Linq;
 using UnityEngine;
 using UnityEngine.Assertions;
 using UnityEngine.TestTools;
@@ -51,9 +53,9 @@ namespace Tests
 
             DCLCharacterController.i.Teleport(JsonConvert.SerializeObject(new
             {
-                x = 50f + DCLCharacterPosition.LIMIT,
+                x = 50f + PlayerSettings.WORLD_REPOSITION_MINIMUM_DISTANCE,
                 y = 2f,
-                z = 50f + DCLCharacterPosition.LIMIT
+                z = 50f + PlayerSettings.WORLD_REPOSITION_MINIMUM_DISTANCE
             }));
 
             yield return null;
@@ -61,13 +63,76 @@ namespace Tests
 
             DCLCharacterController.i.Teleport(JsonConvert.SerializeObject(new
             {
-                x = -50f - DCLCharacterPosition.LIMIT,
+                x = -50f - PlayerSettings.WORLD_REPOSITION_MINIMUM_DISTANCE,
                 y = 2f,
-                z = -50f - DCLCharacterPosition.LIMIT
+                z = -50f - PlayerSettings.WORLD_REPOSITION_MINIMUM_DISTANCE
             }));
 
             yield return null;
             Assert.AreEqual(new Vector3(-50f, 2f, -50f), DCLCharacterController.i.transform.position);
+        }
+
+        [UnityTest]
+        public IEnumerator CharacterIsNotParentedOnWorldReposition()
+        {
+            yield return InitScene();
+
+            // We use a shape that represents a static ground and has collisions
+            TestHelpers.InstantiateEntityWithShape(scene, "groundShape", DCL.Models.CLASS_ID.PLANE_SHAPE, Vector3.zero);
+            var shapeEntity = scene.entities["groundShape"];
+
+            // Reposition ground shape to be on the world-reposition-limit
+            TestHelpers.SetEntityTransform(scene, shapeEntity,
+            new DCLTransform.Model
+            {
+                position = new Vector3(PlayerSettings.WORLD_REPOSITION_MINIMUM_DISTANCE, 1f, PlayerSettings.WORLD_REPOSITION_MINIMUM_DISTANCE),
+                rotation = Quaternion.Euler(90f, 0f, 0f),
+                scale = new Vector3(20, 20, 1)
+            });
+
+            // Place character on the ground shape and check if it's detected as ground
+            DCLCharacterController.i.Teleport(JsonConvert.SerializeObject(new
+            {
+                x = PlayerSettings.WORLD_REPOSITION_MINIMUM_DISTANCE - 2f,
+                y = 3f,
+                z = PlayerSettings.WORLD_REPOSITION_MINIMUM_DISTANCE - 2f
+            }));
+
+            // Let the character *fall* onto the ground shape
+            yield return new WaitForSeconds(2f);
+
+            Assert.IsTrue(Reflection_GetField<Transform>(DCLCharacterController.i, "groundTransform") == shapeEntity.meshRootGameObject.transform);
+
+            // Place the character barely passing the limits to trigger the world repositioning
+            DCLCharacterController.i.Teleport(JsonConvert.SerializeObject(new
+            {
+                x = PlayerSettings.WORLD_REPOSITION_MINIMUM_DISTANCE + 1f,
+                y = DCLCharacterController.i.transform.position.y,
+                z = PlayerSettings.WORLD_REPOSITION_MINIMUM_DISTANCE + 1f
+            }));
+
+            yield return null;
+
+            // check if the character got repositioned correctly
+            Assert.AreEqual(new Vector3(1f, DCLCharacterController.i.transform.position.y, 1f), DCLCharacterController.i.transform.position);
+
+            // check it's not parented but still has the same ground
+            Assert.IsTrue(Reflection_GetField<Transform>(DCLCharacterController.i, "groundTransform") == shapeEntity.meshRootGameObject.transform);
+            Assert.IsTrue(DCLCharacterController.i.transform.parent == null);
+        }
+
+        [UnityTest]
+        public IEnumerator CharacterGOCannotBeDeactivated()
+        {
+            yield return InitScene();
+
+            Assert.IsTrue(DCLCharacterController.i.gameObject.activeSelf);
+
+            DCLCharacterController.i.gameObject.SetActive(false);
+
+            yield return null;
+
+            Assert.IsTrue(DCLCharacterController.i.gameObject.activeSelf);
         }
 
         [UnityTest]
@@ -119,7 +184,7 @@ namespace Tests
             }));
             yield return null;
 
-            Assert.IsTrue(Vector3.Distance(DCLCharacterController.i.transform.position,  new Vector3(2f, 3f, 8f)) < 0.1f);
+            Assert.IsTrue(Vector3.Distance(DCLCharacterController.i.transform.position, new Vector3(2f, 3f, 8f)) < 0.1f);
 
             string platformEntityId = "movingPlatform";
             TestHelpers.InstantiateEntityWithShape(scene, platformEntityId, DCL.Models.CLASS_ID.BOX_SHAPE, new Vector3(2f, 1f, 8f));
@@ -145,17 +210,17 @@ namespace Tests
             Vector3 targetPosition = new Vector3(10f, 1f, 8f);
 
             bool checkedParent = false;
-            while(lerpTime < 1f)
+            while (lerpTime < 1f)
             {
                 yield return null;
                 lerpTime += Time.deltaTime * lerpSpeed;
 
-                if(lerpTime > 1f)
+                if (lerpTime > 1f)
                     lerpTime = 1f;
 
                 platformTransform.position = Vector3.Lerp(originalPosition, targetPosition, lerpTime);
 
-                if(!checkedParent && lerpTime >= 0.5f)
+                if (!checkedParent && lerpTime >= 0.5f)
                 {
                     Assert.IsNotNull(DCLCharacterController.i.transform.parent, "The character should be parented to the moving platform");
 
@@ -184,7 +249,7 @@ namespace Tests
             }));
             yield return null;
 
-            Assert.IsTrue(Vector3.Distance(DCLCharacterController.i.transform.position,  new Vector3(5f, 3f, 5f)) < 0.1f);
+            Assert.IsTrue(Vector3.Distance(DCLCharacterController.i.transform.position, new Vector3(5f, 3f, 5f)) < 0.1f);
 
             string platformEntityId = "rotatingPlatform";
             TestHelpers.InstantiateEntityWithShape(scene, platformEntityId, DCL.Models.CLASS_ID.BOX_SHAPE, new Vector3(8f, 1f, 8f));
@@ -210,17 +275,17 @@ namespace Tests
             Quaternion targetRotation = Quaternion.Euler(0, 180f, 0f);
 
             bool checkedParent = false;
-            while(lerpTime < 1f)
+            while (lerpTime < 1f)
             {
                 yield return null;
                 lerpTime += Time.deltaTime * lerpSpeed;
 
-                if(lerpTime > 1f)
+                if (lerpTime > 1f)
                     lerpTime = 1f;
 
                 platformTransform.rotation = Quaternion.Lerp(initialRotation, targetRotation, lerpTime);
 
-                if(!checkedParent && lerpTime >= 0.5f)
+                if (!checkedParent && lerpTime >= 0.5f)
                 {
                     Assert.IsNotNull(DCLCharacterController.i.transform.parent, "The character should be parented to the rotating platform");
 
@@ -257,7 +322,7 @@ namespace Tests
         [UnityTest]
         public IEnumerator CharacterIsReleasedOnPlatformCollisionToggle()
         {
-           yield return CharacterSupportsMovingPlatforms();
+            yield return CharacterSupportsMovingPlatforms();
 
             // Disable shape colliders
             string platformEntityId = "movingPlatform";
@@ -276,7 +341,7 @@ namespace Tests
         [UnityTest]
         public IEnumerator CharacterIsReleasedOnShapeRemoval()
         {
-           yield return CharacterSupportsMovingPlatforms();
+            yield return CharacterSupportsMovingPlatforms();
 
             // remove shape component
             string platformEntityId = "movingPlatform";
@@ -304,7 +369,7 @@ namespace Tests
             }));
             yield return null;
 
-            Assert.IsTrue(Vector3.Distance(DCLCharacterController.i.transform.position,  new Vector3(5f, 3f, 5f)) < 0.1f);
+            Assert.IsTrue(Vector3.Distance(DCLCharacterController.i.transform.position, new Vector3(5f, 3f, 5f)) < 0.1f);
 
             string platformEntityId = "rotatingPlatform";
             TestHelpers.InstantiateEntityWithShape(scene, platformEntityId, DCL.Models.CLASS_ID.BOX_SHAPE, new Vector3(8f, 1f, 8f));
@@ -330,17 +395,17 @@ namespace Tests
             Quaternion targetRotation = Quaternion.Euler(0, 180f, 0f);
 
             bool checkedParent = false;
-            while(lerpTime < 1f)
+            while (lerpTime < 1f)
             {
                 yield return null;
                 lerpTime += Time.deltaTime * lerpSpeed;
 
-                if(lerpTime > 1f)
+                if (lerpTime > 1f)
                     lerpTime = 1f;
 
                 platformTransform.rotation = Quaternion.Lerp(initialRotation, targetRotation, lerpTime);
 
-                if(!checkedParent && lerpTime >= 0.5f)
+                if (!checkedParent && lerpTime >= 0.5f)
                 {
                     Assert.IsNotNull(DCLCharacterController.i.transform.parent, "The character should be parented to the rotating platform");
 
@@ -353,12 +418,12 @@ namespace Tests
             lerpSpeed = 10f;
             initialRotation = platformTransform.rotation;
             targetRotation = Quaternion.Euler(0, 360f, 0f);
-            while(lerpTime < 1f)
+            while (lerpTime < 1f)
             {
                 yield return null;
                 lerpTime += Time.deltaTime * lerpSpeed;
 
-                if(lerpTime > 1f)
+                if (lerpTime > 1f)
                     lerpTime = 1f;
 
                 platformTransform.rotation = Quaternion.Lerp(initialRotation, targetRotation, lerpTime);

@@ -9,9 +9,11 @@
     {
         public static bool DEBUG = true;
     }
+
     public static class PlayerSettings
     {
         public static float POSITION_REPORTING_DELAY = 0.1f; // In seconds
+        public static float WORLD_REPOSITION_MINIMUM_DISTANCE = 100f;
     }
 
     public static class ParcelSettings
