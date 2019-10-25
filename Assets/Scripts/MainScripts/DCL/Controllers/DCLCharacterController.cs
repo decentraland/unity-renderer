@@ -2,6 +2,7 @@ using DCL;
 using DCL.Configuration;
 using DCL.Helpers;
 using UnityEngine;
+using System.Collections;
 
 public class DCLCharacterController : MonoBehaviour
 {
@@ -89,6 +90,7 @@ public class DCLCharacterController : MonoBehaviour
     Quaternion groundLastRotation;
     bool jumpButtonPressed = false;
     bool jumpButtonPressedThisFrame = false;
+    bool reEnablingGameObject = false;
 
     public static System.Action<DCLCharacterPosition> OnCharacterMoved;
     public static System.Action<DCLCharacterPosition> OnPositionSet;
@@ -116,6 +118,25 @@ public class DCLCharacterController : MonoBehaviour
         SceneController.OnDebugModeSet += () => supportsMovingPlatforms = true;
 
         lastPosition = transform.position;
+    }
+
+    // To keep the character always active, just in case
+    void OnDisable()
+    {
+        if (!reEnablingGameObject)
+            SceneController.i.StartCoroutine(ReEnableGameObject()); // gameObject cannot start the routine as it's being deactivated
+    }
+
+    IEnumerator ReEnableGameObject()
+    {
+        reEnablingGameObject = true;
+
+        yield return null;
+
+        gameObject.SetActive(true);
+        ResetGround();
+
+        reEnablingGameObject = false;
     }
 
     void OnDestroy()
@@ -227,7 +248,7 @@ public class DCLCharacterController : MonoBehaviour
         velocity.y += gravity * deltaTime;
 
         bool previouslyGrounded = isGrounded;
-        if(!isJumping || velocity.y <= 0f)
+        if (!isJumping || velocity.y <= 0f)
             CheckGround();
 
         if (isGrounded)
@@ -280,7 +301,7 @@ public class DCLCharacterController : MonoBehaviour
             }
         }
 
-        if (IsOnMovingPlatform() && Vector3.Distance(lastPosition, transform.position) > movingPlatformAllowedPosDelta)
+        if (IsOnMovingPlatform() && !characterPosition.RepositionedWorldLastFrame() && Vector3.Distance(lastPosition, transform.position) > movingPlatformAllowedPosDelta)
         {
             ResetGround();
 
@@ -351,14 +372,14 @@ public class DCLCharacterController : MonoBehaviour
     }
 
     void CheckGround()
-    {        
+    {
         Transform transformHit = CastGroundCheckingRays();
 
-        if(transformHit != null)
+        if (transformHit != null)
         {
-            if(groundTransform == transformHit)
+            if (groundTransform == transformHit)
             {
-                if(supportsMovingPlatforms && transform.parent == null && (transformHit.position != groundLastPosition || transformHit.rotation != groundLastRotation))
+                if (supportsMovingPlatforms && transform.parent == null && !characterPosition.RepositionedWorldLastFrame() && (transformHit.position != groundLastPosition || transformHit.rotation != groundLastRotation))
                 {
                     // By letting unity parenting handle the transformations for us, the UX is smooth.
                     transform.SetParent(groundTransform);
@@ -385,7 +406,7 @@ public class DCLCharacterController : MonoBehaviour
     {
         RaycastHit hitInfo;
         float rayMagnitude = (collider.bounds.extents.y + groundCheckExtraDistance);
-        
+
         Ray ray = new Ray(transform.position, Vector3.down * rayMagnitude);
         if (!CastGroundCheckingRay(ray, Vector3.zero, out hitInfo, rayMagnitude) // center
             && !CastGroundCheckingRay(ray, transform.forward, out hitInfo, rayMagnitude) // forward
@@ -411,8 +432,8 @@ public class DCLCharacterController : MonoBehaviour
 
     public void ResetGround()
     {
-        if(groundTransform == null && transform.parent == null) return;
-        
+        if (groundTransform == null && transform.parent == null) return;
+
         groundTransform = null;
 
         if (transform.parent != null)

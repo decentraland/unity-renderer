@@ -5,7 +5,8 @@
         "UnityGLTFAssembly",
         "Configuration",
         "Utils",
-        "ScriptableObjects"
+        "ScriptableObjects",
+        "DCLTransform"
     ],
     "optionalUnityReferences": [
         "TestAssemblies"

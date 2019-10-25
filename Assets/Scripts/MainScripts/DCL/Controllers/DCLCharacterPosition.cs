@@ -1,15 +1,16 @@
 using UnityEngine;
+using DCL.Configuration;
 using System;
 
 public class DCLCharacterPosition
 {
-    public const float LIMIT = 100.0f;
-
     public Action<DCLCharacterPosition> OnPrecisionAdjust;
 
     private Vector3 worldPositionValue;
     private Vector3 unityPositionValue;
     private Vector3 offset;
+
+    private int lastRepositionFrame = 0;
 
     public Vector3 UnityToWorldPosition(Vector3 pos)
     {
@@ -59,18 +60,19 @@ public class DCLCharacterPosition
     private void CheckAndTeleport()
     {
         bool dirty = false;
+        float minDistanceForReposition = PlayerSettings.WORLD_REPOSITION_MINIMUM_DISTANCE;
 
-        if (Mathf.Abs(unityPositionValue.x) > LIMIT)
+        if (Mathf.Abs(unityPositionValue.x) > minDistanceForReposition)
         {
-            float dist = (int)(unityPositionValue.x / LIMIT) * LIMIT;
+            float dist = (int)(unityPositionValue.x / minDistanceForReposition) * minDistanceForReposition;
             unityPositionValue.x -= dist;
             offset.x += dist;
             dirty = true;
         }
 
-        if (Mathf.Abs(unityPositionValue.z) > LIMIT)
+        if (Mathf.Abs(unityPositionValue.z) > minDistanceForReposition)
         {
-            float dist = (int)(unityPositionValue.z / LIMIT) * LIMIT;
+            float dist = (int)(unityPositionValue.z / minDistanceForReposition) * minDistanceForReposition;
             unityPositionValue.z -= dist;
             offset.z += dist;
             dirty = true;
@@ -80,10 +82,17 @@ public class DCLCharacterPosition
         {
             worldPositionValue = unityPositionValue + offset;
 
+            lastRepositionFrame = Time.frameCount;
+
             OnPrecisionAdjust?.Invoke(this);
 
             CommonScriptableObjects.playerUnityToWorldOffset.Set(offset);
         }
+    }
+
+    public bool RepositionedWorldLastFrame()
+    {
+        return lastRepositionFrame == Time.frameCount - 1;
     }
 
     public override string ToString()
