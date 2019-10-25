@@ -24,7 +24,7 @@ namespace DCL
         Action OnFailCallback;
 
         BodyShapeController bodyShapeController;
-        readonly Dictionary<string, WearableController> wearablesController = new Dictionary<string, WearableController>();
+        protected Dictionary<string, WearableController> wearablesController = new Dictionary<string, WearableController>();
         FacialFeatureController eyesController;
         FacialFeatureController eyebrowsController;
         FacialFeatureController mouthController;
@@ -153,7 +153,9 @@ namespace DCL
             yield return null;
 
             CleanUpUnusedItems();
-            ShowAll();
+            bodyShapeController.SetAssetRenderersEnabled(true);
+            ResolveWearablesVisibility();
+
             OnSuccessCallback?.Invoke();
         }
 
@@ -231,12 +233,55 @@ namespace DCL
             return true;
         }
 
+        public void ResolveWearablesVisibility()
+        {
+            HashSet<string> hiddenCategories = CreateHiddenList();
+
+            using (var iterator = wearablesController.GetEnumerator())
+            {
+                while (iterator.MoveNext())
+                {
+                    var wearableController = iterator.Current.Value;
+                    var wearable = wearableController.wearable;
+                    wearableController.SetAssetRenderersEnabled(!hiddenCategories.Contains(wearable.category));
+                }
+            }
+        }
+
+        private HashSet<string> CreateHiddenList()
+        {
+            HashSet<string> hiddenCategories = new HashSet<string>();
+
+            //Last wearable added has priority over the rest
+            for (int i = model.wearables.Count - 1; i >= 0; i--)
+            {
+                string id = model.wearables[i];
+                if (!wearablesController.ContainsKey(id)) continue;
+
+                var wearable = wearablesController[id].wearable;
+
+                if (hiddenCategories.Contains(wearable.category)) //Skip hidden elements to avoid two elements hiding each other
+                    continue;
+
+                var wearableHidesList = wearable.GetHidesList(bodyShapeController.bodyShapeType);
+                if (wearableHidesList != null)
+                {
+                    hiddenCategories.UnionWith(wearableHidesList);
+                }
+            }
+
+            return hiddenCategories;
+        }
+
         public void ShowAll()
         {
-            Renderer[] renderers = gameObject.GetComponentsInChildren<Renderer>();
-            for (int i = 0; i < renderers.Length; i++)
+            bodyShapeController.SetAssetRenderersEnabled(true);
+            using (var iterator = wearablesController.GetEnumerator())
             {
-                renderers[i].enabled = true;
+                while (iterator.MoveNext())
+                {
+                    iterator.Current.Value.SetAssetRenderersEnabled(true);
+                }
             }
         }
 
@@ -336,6 +381,15 @@ namespace DCL
             eyesController = new FacialFeatureController(ResolveWearable(eyesDefaultId), bodyShapeController.bodyShapeType);
             eyebrowsController = new FacialFeatureController(ResolveWearable(eyebrowsDefaultId), bodyShapeController.bodyShapeType);
             mouthController = new FacialFeatureController(ResolveWearable(mouthDefaultId), bodyShapeController.bodyShapeType);
+        }
+
+        protected void CopyFrom(AvatarRenderer original)
+        {
+            this.wearablesController = original.wearablesController;
+            this.mouthController = original.mouthController;
+            this.bodyShapeController = original.bodyShapeController;
+            this.eyebrowsController = original.eyebrowsController;
+            this.eyesController = original.eyesController;
         }
     }
 }

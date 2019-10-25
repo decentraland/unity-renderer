@@ -16,6 +16,8 @@ public class WearableItem : Item
         public string[] bodyShapes;
         public string mainFile;
         public ContentProvider.MappingPair[] contents;
+        public string[] overrideHides;
+        public string[] overrideReplaces;
     }
 
     public Representation[] representations;
@@ -24,6 +26,8 @@ public class WearableItem : Item
     public string baseUrl;
     public i18n[] i18n;
     public string thumbnail;
+    public string[] hides;
+    public string[] replaces;
 
     public Representation GetRepresentation(string bodyShapeType)
     {
@@ -75,6 +79,26 @@ public class WearableItem : Item
         }
 
         return false;
+    }
+
+    public string[] GetReplacesList(string bodyShapeType)
+    {
+        var representation = GetRepresentation(bodyShapeType);
+
+        if (representation?.overrideReplaces == null || representation.overrideReplaces.Length == 0) 
+            return replaces;
+
+        return representation.overrideReplaces;
+    }
+
+    public string[] GetHidesList(string bodyShapeType)
+    {
+        var representation = GetRepresentation(bodyShapeType);
+
+        if (representation?.overrideHides == null || representation.overrideHides.Length == 0)
+            return hides;
+
+        return representation.overrideHides;
     }
 }
 

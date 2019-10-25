@@ -8,7 +8,7 @@ using Object = UnityEngine.Object;
 public class AvatarEditorHUDController : IDisposable, IHUD
 {
     private AvatarEditorHUDView view;
-    private AvatarEditorHUDModel model { get; } = new AvatarEditorHUDModel();
+    protected AvatarEditorHUDModel model { get; } = new AvatarEditorHUDModel();
 
     private readonly UserProfile userProfile;
     private readonly WearableDictionary catalog;
@@ -138,8 +138,10 @@ public class AvatarEditorHUDController : IDisposable, IHUD
         UpdateAvatarPreview();
     }
 
-    private void OnItemSelected(WearableItem asset)
+    protected void OnItemSelected(WearableItem asset)
     {
+        bool selectorsNeedUpdate = false;
+
         if (asset.category == WearableItem.bodyShapeCategory)
         {
             model.avatarModel.bodyShape = asset.id;
@@ -148,10 +150,26 @@ public class AvatarEditorHUDController : IDisposable, IHUD
         else
         {
             if (model.avatarModel.wearables.Contains(asset.id)) return;
+
+            List<string> toReplace = GetWearablesReplacedBy(asset);
+            int replaceCount = toReplace.Count;
+            for (int i = 0; i < replaceCount; i++)
+            {
+                model.avatarModel.wearables.Remove(toReplace[i]);
+            }
+            selectorsNeedUpdate = toReplace.Count > 0;
+            
             model.avatarModel.wearables.Add(asset.id);
         }
 
-        UpdateAvatarPreview();
+        if (selectorsNeedUpdate)
+        {
+            UpdateAvatarModel();
+        }
+        else
+        {
+            UpdateAvatarPreview();
+        }
     }
 
     private void OnItemDeselected(string assetID)
@@ -202,5 +220,37 @@ public class AvatarEditorHUDController : IDisposable, IHUD
     public void SetConfiguration(HUDConfiguration configuration)
     {
         SetVisibility(configuration.active);
+    }
+
+    public List<string> GetWearablesReplacedBy(WearableItem wearableItem)
+    {
+        List<string> wearablesToReplace = new List<string>();
+
+        HashSet<string> categoriesToReplace = new HashSet<string>(wearableItem.GetReplacesList(model.avatarModel.bodyShape) ?? new string[0]);
+
+        int wearableCount = model.avatarModel.wearables.Count;
+        for (int i = 0; i < wearableCount; i++)
+        {
+            string wearableId = model.avatarModel.wearables[i];
+            var wearable = CatalogController.wearableCatalog.Get(wearableId);
+            if (wearable == null) continue;
+            
+            if (categoriesToReplace.Contains(wearable.category))
+            {
+                wearablesToReplace.Add(wearableId);
+            }
+            else
+            {
+                //For retrocompatibility's sake we check current wearables against new one (compatibility matrix is symmetrical)
+                HashSet<string> replacesList = new HashSet<string>(wearable.GetReplacesList(model.avatarModel.bodyShape) ?? new string[0]);
+                if (replacesList.Contains(wearableItem.category))
+                {
+                    wearablesToReplace.Add(wearableId);
+                }
+            }
+
+        }
+
+        return wearablesToReplace;
     }
 }
