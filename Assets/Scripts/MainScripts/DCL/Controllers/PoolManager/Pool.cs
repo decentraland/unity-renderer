@@ -134,6 +134,12 @@ namespace DCL
 
         public PoolableObject Instantiate()
         {
+            var gameObject = InstantiateAsOriginal();
+            return SetupPoolableObject(gameObject);
+        }
+
+        public GameObject InstantiateAsOriginal()
+        {
             GameObject gameObject = null;
 
             if (instantiator != null)
@@ -141,7 +147,7 @@ namespace DCL
             else
                 gameObject = GameObject.Instantiate(original);
 
-            return SetupPoolableObject(gameObject);
+            return gameObject;
         }
 
         private PoolableObject SetupPoolableObject(GameObject gameObject, bool active = false)

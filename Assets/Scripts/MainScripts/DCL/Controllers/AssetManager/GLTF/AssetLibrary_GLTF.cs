@@ -62,7 +62,7 @@ namespace DCL
 
                 if (PoolManager.i.ContainsPool(clone.id))
                 {
-                    clone.container = PoolManager.i.GetPool(id).Instantiate().gameObject;
+                    clone.container = PoolManager.i.GetPool(id).InstantiateAsOriginal();
                 }
                 else
                 {
