@@ -1,13 +1,8 @@
-import { wait } from '../testHelpers'
 import { expect } from 'chai'
 import { convertMessageToObject, messageToString } from 'shared/ethereum/EthereumService'
 import { toHex } from 'eth-connect'
 
 describe('EthereumService tests', function() {
-  this.timeout(6500)
-
-  wait(2000)
-
   it('calling convertMessageToObject()', async () => {
     const message = `# DCL Signed message
 Attacker: 4
@@ -18,8 +13,6 @@ Timestamp: 1531404397`
     expect(ret).to.be.an('object')
     expect(ret['Defender']).to.equal('387')
   })
-
-  wait(2000)
 
   it('calling messageToString()', async () => {
     const dict = { ['First']: 'one', ['Second']: 'another one', Timestamp: 'DDMMYYYY' }

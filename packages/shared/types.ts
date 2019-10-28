@@ -110,7 +110,7 @@ export type ComponentUpdatedPayload = {
 export type EntityAction = {
   type: EntityActionType
   tag?: string
-  payload: string
+  payload: any
 }
 
 /** THIS INTERFACE CANNOT CHANGE, IT IS USED IN THE UNITY BUILD */
