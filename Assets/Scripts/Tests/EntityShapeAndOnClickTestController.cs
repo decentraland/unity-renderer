@@ -75,26 +75,24 @@ public class EntityShapeAndOnClickTestController : MonoBehaviour
         string entityId = "8";
 
         {
-            scene.EntityComponentCreateOrUpdate(JsonUtility.ToJson(new DCL.Models.EntityComponentCreateMessage
-            {
-                entityId = entityId,
-                name = "animation",
-                classId = (int)DCL.Models.CLASS_ID_COMPONENT.ANIMATOR,
-                json = animJson
-            }), out CleanableYieldInstruction routine);
+            scene.EntityComponentCreateOrUpdate(
+                entityId,
+                "animation",
+                (int)DCL.Models.CLASS_ID_COMPONENT.ANIMATOR,
+                animJson,
+                out CleanableYieldInstruction routine);
         }
 
         entityId = "9";
 
         TestHelpers.CreateSceneEntity(scene, entityId);
         {
-            scene.EntityComponentCreateOrUpdate(JsonUtility.ToJson(new DCL.Models.EntityComponentCreateMessage
-            {
-                entityId = entityId,
-                name = "text",
-                classId = (int)DCL.Models.CLASS_ID_COMPONENT.TEXT_SHAPE,
-                json = animJson
-            }), out CleanableYieldInstruction routine);
+            scene.EntityComponentCreateOrUpdate(
+                entityId,
+                "text",
+                (int)DCL.Models.CLASS_ID_COMPONENT.TEXT_SHAPE,
+                animJson,
+                out CleanableYieldInstruction routine);
         }
 
         var model = new TextShape.Model()

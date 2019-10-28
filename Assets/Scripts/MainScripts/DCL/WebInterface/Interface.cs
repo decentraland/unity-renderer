@@ -665,11 +665,11 @@ namespace DCL.Interface
             };
             WebInterface.SendMessage("SaveUserAvatar", payload);
         }
-        
+
         public static void SendPerformanceReport(string encodedFrameTimesInMS)
         {
             WebInterface.MessageFromEngine("PerformanceReport", encodedFrameTimesInMS);
-            
+
         }
     }
 }

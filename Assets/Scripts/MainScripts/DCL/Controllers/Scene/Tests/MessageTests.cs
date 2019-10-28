@@ -68,11 +68,11 @@ namespace Tests
                     enqueue: false
             );
 
-            sceneController.OnMessageProcessInfoStart += delegate (string id, string method, string payload)
+            sceneController.OnMessageProcessInfoStart += delegate (string id, string method)
             {
                 if (VERBOSE)
                 {
-                    Debug.Log($"Msg Processed: {id} - {method} - {payload}");
+                    Debug.Log($"Msg Processed: {id} - {method} ");
                 }
             };
 
@@ -129,7 +129,7 @@ namespace Tests
 
             int msgId = 0;
 
-            sceneController.OnMessageProcessInfoStart += delegate (string id, string method, string payload)
+            sceneController.OnMessageProcessInfoStart += delegate (string id, string method)
             {
                 if (VERBOSE)
                 {

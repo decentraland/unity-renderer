@@ -37,16 +37,15 @@ public class UIVisualTestsBase : VisualTestsBase
             model = new SharedComponentModel();
 
         // Creation
-        var component = scene.SharedComponentCreate(JsonUtility.ToJson(new DCL.Models.SharedComponentCreateMessage
-        {
-            classId = (int)classId,
-            id = componentId,
-            name = "material"
-        })) as SharedComponentType;
+        var component = scene.SharedComponentCreate(
+            componentId,
+            "material",
+            (int)classId
+        ) as SharedComponentType;
         yield return component.routine;
 
         // "fake" update (triggers 1st ApplyChanges() call)
-        scene.SharedComponentUpdate(JsonUtility.ToJson(new DCL.Models.SharedComponentUpdateMessage
+        scene.SharedComponentUpdate(componentId, JsonUtility.ToJson(new DCL.Models.SharedComponentUpdateMessage
         {
             id = componentId,
             json = JsonUtility.ToJson(new SharedComponentModel())
@@ -54,7 +53,7 @@ public class UIVisualTestsBase : VisualTestsBase
         yield return component.routine;
 
         // "real" update
-        scene.SharedComponentUpdate(JsonUtility.ToJson(new DCL.Models.SharedComponentUpdateMessage
+        scene.SharedComponentUpdate(componentId, JsonUtility.ToJson(new DCL.Models.SharedComponentUpdateMessage
         {
             id = componentId,
             json = JsonUtility.ToJson(model)

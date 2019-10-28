@@ -126,7 +126,7 @@ namespace Tests
 
             // 3. Update component with missing values
             componentJSON = JsonUtility.ToJson(new BoxShape.Model { });
-            scene.SharedComponentUpdate(JsonUtility.ToJson(new DCL.Models.SharedComponentUpdateMessage
+            scene.SharedComponentUpdate(componentId, JsonUtility.ToJson(new DCL.Models.SharedComponentUpdateMessage
             {
                 id = componentId,
                 json = componentJSON
@@ -250,7 +250,7 @@ namespace Tests
             TestHelpers.CreateSceneEntity(scene, entityId);
             var entity = scene.entities[entityId];
 
-            TestHelpers.SetEntityTransform(scene, entity, new DCLTransform.Model { position = new Vector3(8, 1, 8)});
+            TestHelpers.SetEntityTransform(scene, entity, new DCLTransform.Model { position = new Vector3(8, 1, 8) });
 
             yield return null;
 
@@ -328,8 +328,8 @@ namespace Tests
             string entityId = "entityId";
             TestHelpers.CreateSceneEntity(scene, entityId);
             var entity = scene.entities[entityId];
-            
-            TestHelpers.SetEntityTransform(scene, entity, new DCLTransform.Model { position = new Vector3(8, 1, 8)});
+
+            TestHelpers.SetEntityTransform(scene, entity, new DCLTransform.Model { position = new Vector3(8, 1, 8) });
 
             yield return null;
 

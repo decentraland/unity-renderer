@@ -29,7 +29,7 @@ namespace Tests
                 "When the character is inside the scene, the UIScreenSpaceShape should be visible");
 
             // Update canvas visibility value manually
-            screenSpaceShape = scene.SharedComponentUpdate(JsonUtility.ToJson(new SharedComponentUpdateMessage
+            screenSpaceShape = scene.SharedComponentUpdate(screenSpaceShape.id, JsonUtility.ToJson(new SharedComponentUpdateMessage
             {
                 id = screenSpaceShape.id,
                 json = JsonUtility.ToJson(new UIScreenSpace.Model
@@ -45,7 +45,7 @@ namespace Tests
                 "When the UIScreenSpaceShape is explicitly updated as 'invisible', its canvas shouldn't be visible");
 
             // Re-enable visibility
-            screenSpaceShape = scene.SharedComponentUpdate(JsonUtility.ToJson(new SharedComponentUpdateMessage
+            screenSpaceShape = scene.SharedComponentUpdate(screenSpaceShape.id, JsonUtility.ToJson(new SharedComponentUpdateMessage
             {
                 id = screenSpaceShape.id,
                 json = JsonUtility.ToJson(new UIScreenSpace.Model

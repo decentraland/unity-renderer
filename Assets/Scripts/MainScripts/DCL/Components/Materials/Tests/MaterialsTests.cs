@@ -117,7 +117,7 @@ namespace Tests
             ColorUtility.TryParseHtmlString("#42f4aa", out color2);
             ColorUtility.TryParseHtmlString("#601121", out color3);
 
-            scene.SharedComponentUpdate(JsonUtility.ToJson(new DCL.Models.SharedComponentUpdateMessage
+            scene.SharedComponentUpdate(materialID, JsonUtility.ToJson(new DCL.Models.SharedComponentUpdateMessage
             {
                 id = materialID,
                 json = JsonUtility.ToJson(new DCL.Components.PBRMaterial.Model
@@ -199,12 +199,11 @@ namespace Tests
             string thirdEntityID = "3";
 
             TestHelpers.InstantiateEntityWithShape(scene, thirdEntityID, DCL.Models.CLASS_ID.BOX_SHAPE, Vector3.zero);
-            scene.SharedComponentAttach(JsonUtility.ToJson(new DCL.Models.SharedComponentAttachMessage
-            {
-                entityId = thirdEntityID,
-                id = firstMaterialID,
-                name = "material"
-            }));
+            scene.SharedComponentAttach(
+                thirdEntityID,
+                firstMaterialID,
+                "material"
+            );
 
             Assert.IsTrue(scene.entities[thirdEntityID].meshRootGameObject != null,
                 "Every entity with a shape should have the mandatory 'Mesh' object as a child");
@@ -254,12 +253,11 @@ namespace Tests
             string thirdEntityID = "3";
 
             TestHelpers.InstantiateEntityWithShape(scene, thirdEntityID, DCL.Models.CLASS_ID.BOX_SHAPE, Vector3.zero);
-            scene.SharedComponentAttach(JsonUtility.ToJson(new DCL.Models.SharedComponentAttachMessage
-            {
-                entityId = thirdEntityID,
-                id = firstMaterialID,
-                name = "material"
-            }));
+            scene.SharedComponentAttach(
+                thirdEntityID,
+                firstMaterialID,
+                "material"
+            );
 
             Assert.IsTrue(scene.entities[thirdEntityID].meshRootGameObject != null,
                 "Every entity with a shape should have the mandatory 'Mesh' object as a child");
@@ -278,7 +276,7 @@ namespace Tests
             Assert.AreApproximatelyEqual(0.66f, secondRenderer.sharedMaterial.GetFloat("_Metallic"));
 
             // Update material properties
-            scene.SharedComponentUpdate(JsonUtility.ToJson(new DCL.Models.SharedComponentUpdateMessage
+            scene.SharedComponentUpdate(firstMaterialID, JsonUtility.ToJson(new DCL.Models.SharedComponentUpdateMessage
             {
                 id = firstMaterialID,
                 json = JsonUtility.ToJson(new DCL.Components.PBRMaterial.Model
@@ -349,12 +347,11 @@ namespace Tests
 
             // Create 2nd entity and attach same material to it
             TestHelpers.InstantiateEntityWithShape(scene, secondEntityId, DCL.Models.CLASS_ID.BOX_SHAPE, Vector3.zero);
-            scene.SharedComponentAttach(JsonUtility.ToJson(new DCL.Models.SharedComponentAttachMessage
-            {
-                entityId = secondEntityId,
-                id = materialID,
-                name = "material"
-            }));
+            scene.SharedComponentAttach(
+                secondEntityId,
+                materialID,
+                "material"
+            );
 
             Assert.IsTrue(scene.entities[secondEntityId].meshRootGameObject != null,
                 "Every entity with a shape should have the mandatory 'Mesh' object as a child");
@@ -518,7 +515,7 @@ namespace Tests
                 FilterMode.Bilinear);
 
             // Update material
-            scene.SharedComponentUpdate(JsonUtility.ToJson(new DCL.Models.SharedComponentUpdateMessage
+            scene.SharedComponentUpdate(materialID, JsonUtility.ToJson(new DCL.Models.SharedComponentUpdateMessage
             {
                 id = materialID,
                 json = JsonUtility.ToJson(new DCL.Components.BasicMaterial.Model
@@ -561,7 +558,7 @@ namespace Tests
 
             // 3. Update component with missing values
 
-            scene.SharedComponentUpdate(JsonUtility.ToJson(new DCL.Models.SharedComponentUpdateMessage
+            scene.SharedComponentUpdate(basicMaterialComponent.id, JsonUtility.ToJson(new DCL.Models.SharedComponentUpdateMessage
             {
                 id = basicMaterialComponent.id,
                 json = JsonUtility.ToJson(new BasicMaterial.Model { })
@@ -611,7 +608,7 @@ namespace Tests
             Assert.AreEqual(3f, PBRMaterialComponent.model.specularIntensity);
 
             // 3. Update component with missing values
-            scene.SharedComponentUpdate(JsonUtility.ToJson(new DCL.Models.SharedComponentUpdateMessage
+            scene.SharedComponentUpdate(PBRMaterialComponent.id, JsonUtility.ToJson(new DCL.Models.SharedComponentUpdateMessage
             {
                 id = PBRMaterialComponent.id,
                 json = JsonUtility.ToJson(new PBRMaterial.Model { })

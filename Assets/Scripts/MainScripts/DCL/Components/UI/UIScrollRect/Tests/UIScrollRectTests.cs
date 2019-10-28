@@ -176,18 +176,16 @@ namespace Tests
             // Create UIContainerRectShape
             string uiContainerRectShapeId = "uiContainerRectShape";
 
-            UIContainerRect uiContainerRectShape = scene.SharedComponentCreate(JsonUtility.ToJson(
-                new SharedComponentCreateMessage
-                {
-                    classId = (int)CLASS_ID.UI_CONTAINER_RECT,
-                    id = uiContainerRectShapeId,
-                    name = "UIContainerRectShape"
-                })) as UIContainerRect;
+            UIContainerRect uiContainerRectShape = scene.SharedComponentCreate(
+                    uiContainerRectShapeId,
+                    "UIContainerRectShape",
+                    (int)CLASS_ID.UI_CONTAINER_RECT
+                ) as UIContainerRect;
 
             yield return uiContainerRectShape.routine;
 
             // Update UIContainerRectShape properties
-            uiContainerRectShape = scene.SharedComponentUpdate(JsonUtility.ToJson(new SharedComponentUpdateMessage
+            uiContainerRectShape = scene.SharedComponentUpdate(uiContainerRectShapeId, JsonUtility.ToJson(new SharedComponentUpdateMessage
             {
                 id = uiContainerRectShapeId,
                 json = JsonUtility.ToJson(new UIContainerRect.Model
