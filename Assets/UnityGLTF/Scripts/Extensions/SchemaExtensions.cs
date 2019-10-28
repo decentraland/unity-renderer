@@ -150,6 +150,18 @@ namespace UnityGLTF.Extensions
         }
 
         /// <summary>
+        /// Convert gltf Vector3 to unity Vector3
+        /// </summary>
+        /// <param name="gltfVec3">gltf vector3</param>
+        /// <returns>unity vector3</returns>
+        public static Vector3 ToUnityVector3Convert(this Vector3 gltfVec3)
+        {
+            Vector3 coordinateSpaceConversionScale = CoordinateSpaceConversionScale;
+            Vector3 unityVec3 = Vector3.Scale(gltfVec3, coordinateSpaceConversionScale);
+            return unityVec3;
+        }
+
+        /// <summary>
         /// Convert unity quaternion to a gltf quaternion
         /// </summary>
         /// <param name="unityQuat">unity quaternion</param>
