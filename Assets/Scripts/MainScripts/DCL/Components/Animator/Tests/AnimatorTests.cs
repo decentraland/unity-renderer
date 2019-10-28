@@ -197,5 +197,183 @@ namespace Tests
             yield return InitScene();
             yield return TestHelpers.TestEntityComponentDefaultsOnUpdate<DCLAnimator.Model, DCLAnimator>(scene);
         }
+
+        [UnityTest]
+        public IEnumerator UpdateAnimationComponent()
+        {
+            yield return InitScene();
+
+            DecentralandEntity entity = TestHelpers.CreateSceneEntity(scene);
+
+            Assert.IsTrue(entity.gameObject.GetComponentInChildren<UnityGLTF.InstantiatedGLTFObject>() == null,
+                "Since the shape hasn't been updated yet, the 'GLTFScene' child object shouldn't exist");
+
+            TestHelpers.CreateAndSetShape(scene, entity.entityId, DCL.Models.CLASS_ID.GLTF_SHAPE,
+                JsonConvert.SerializeObject(new
+                {
+                    src = Utils.GetTestsAssetsPath() + "/GLB/CesiumMan/CesiumMan.glb"
+                }));
+
+            string clipName = "animation:0";
+            DCLAnimator.Model animatorModel = new DCLAnimator.Model
+            {
+                states = new DCLAnimator.Model.DCLAnimationState[]
+                {
+                    new DCLAnimator.Model.DCLAnimationState
+                    {
+                        name = "clip01",
+                        clip = clipName,
+                        playing = true,
+                        weight = 1,
+                        speed = 1,
+                        looping = false
+                    }
+                }
+            };
+
+            DCLAnimator animator = TestHelpers.EntityComponentCreate<DCLAnimator, DCLAnimator.Model>(scene, entity, animatorModel);
+
+            LoadWrapper_GLTF gltfShape = entity.gameObject.GetComponentInChildren<LoadWrapper_GLTF>();
+            yield return new WaitUntil(() => gltfShape.alreadyLoaded == true);
+
+            Assert.IsTrue(animator.animComponent.isPlaying);
+            Assert.AreEqual(animator.animComponent.clip.name, clipName);
+            Assert.IsFalse(animator.animComponent.clip.wrapMode == WrapMode.Loop);
+
+            yield return null;
+
+            // update component properties
+            animatorModel.states[0].playing = false;
+            animatorModel.states[0].looping = true;
+            yield return TestHelpers.EntityComponentUpdate(animator, animatorModel);
+
+            Assert.IsFalse(animator.animComponent.isPlaying);
+            Assert.IsTrue(animator.animComponent.clip.wrapMode == WrapMode.Loop);
+        }
+
+        [UnityTest]
+        public IEnumerator AnimationStartsAutomaticallyWithNoDCLAnimator()
+        {
+            yield return InitScene();
+
+            // GLTFShape without DCLAnimator
+            DecentralandEntity entity = TestHelpers.CreateSceneEntity(scene);
+
+            Assert.IsTrue(entity.gameObject.GetComponentInChildren<UnityGLTF.InstantiatedGLTFObject>() == null,
+                "Since the shape hasn't been updated yet, the 'GLTFScene' child object shouldn't exist");
+
+            TestHelpers.CreateAndSetShape(scene, entity.entityId, DCL.Models.CLASS_ID.GLTF_SHAPE,
+                JsonConvert.SerializeObject(new
+                {
+                    src = Utils.GetTestsAssetsPath() + "/GLB/CesiumMan/CesiumMan.glb"
+                }));
+
+            LoadWrapper_GLTF gltfShape = entity.gameObject.GetComponentInChildren<LoadWrapper_GLTF>();
+            yield return new WaitUntil(() => gltfShape.alreadyLoaded == true);
+
+            Animation animation = entity.meshRootGameObject.GetComponentInChildren<Animation>();
+
+            Assert.IsTrue(animation != null);
+            Assert.IsTrue(animation.isPlaying);
+
+            // GLTFShape with DCLAnimator
+            DecentralandEntity entity2 = TestHelpers.CreateSceneEntity(scene);
+
+            Assert.IsTrue(entity2.gameObject.GetComponentInChildren<UnityGLTF.InstantiatedGLTFObject>() == null,
+                "Since the shape hasn't been updated yet, the 'GLTFScene' child object shouldn't exist");
+
+            TestHelpers.CreateAndSetShape(scene, entity2.entityId, DCL.Models.CLASS_ID.GLTF_SHAPE,
+                JsonConvert.SerializeObject(new
+                {
+                    src = Utils.GetTestsAssetsPath() + "/GLB/CesiumMan/CesiumMan.glb"
+                }));
+
+            string clipName = "animation:0";
+            DCLAnimator.Model animatorModel = new DCLAnimator.Model
+            {
+                states = new DCLAnimator.Model.DCLAnimationState[]
+                {
+                    new DCLAnimator.Model.DCLAnimationState
+                    {
+                        name = "clip01",
+                        clip = clipName,
+                        playing = false,
+                        weight = 1,
+                        speed = 1,
+                        looping = false
+                    }
+                }
+            };
+
+            DCLAnimator animator = TestHelpers.EntityComponentCreate<DCLAnimator, DCLAnimator.Model>(scene, entity, animatorModel);
+
+            LoadWrapper_GLTF gltfShape2 = entity2.gameObject.GetComponentInChildren<LoadWrapper_GLTF>();
+            yield return new WaitUntil(() => gltfShape2.alreadyLoaded == true);
+
+            Assert.IsTrue(animator.animComponent != null);
+            Assert.AreEqual(animator.animComponent.clip.name, clipName);
+            Assert.IsFalse(animator.animComponent.isPlaying);
+        }
+
+        [UnityTest]
+        public IEnumerator NonSkeletalAnimationsSupport()
+        {
+            yield return InitScene();
+
+            DecentralandEntity entity = TestHelpers.CreateSceneEntity(scene);
+
+            TestHelpers.SetEntityTransform(scene, entity, new Vector3(8, 2, 8), Quaternion.identity, Vector3.one);
+
+            Assert.IsTrue(entity.gameObject.GetComponentInChildren<UnityGLTF.InstantiatedGLTFObject>() == null,
+                "Since the shape hasn't been updated yet, the 'GLTFScene' child object shouldn't exist");
+
+            TestHelpers.CreateAndSetShape(scene, entity.entityId, DCL.Models.CLASS_ID.GLTF_SHAPE,
+                JsonConvert.SerializeObject(new
+                {
+                    src = Utils.GetTestsAssetsPath() + "/GLB/non-skeletal-3-transformations.glb"
+                }));
+
+            string clipName = "All";
+            DCLAnimator.Model animatorModel = new DCLAnimator.Model
+            {
+                states = new DCLAnimator.Model.DCLAnimationState[]
+                {
+                    new DCLAnimator.Model.DCLAnimationState
+                    {
+                        name = "clip01",
+                        clip = clipName,
+                        playing = false,
+                        weight = 1,
+                        speed = 1,
+                        looping = false
+                    }
+                }
+            };
+
+            DCLAnimator animator = TestHelpers.EntityComponentCreate<DCLAnimator, DCLAnimator.Model>(scene, entity, animatorModel);
+
+            LoadWrapper_GLTF gltfShape = entity.gameObject.GetComponentInChildren<LoadWrapper_GLTF>();
+            yield return new WaitUntil(() => gltfShape.alreadyLoaded == true);
+
+            Assert.IsTrue(!animator.animComponent.isPlaying);
+            Assert.AreEqual(animator.animComponent.clip.name, clipName);
+            Assert.IsFalse(animator.animComponent.clip.wrapMode == WrapMode.Loop);
+
+            Transform animatedGameObject = animator.animComponent.transform.GetChild(0);
+
+            Vector3 originalScale = animatedGameObject.transform.localScale;
+            Vector3 originalPos = animatedGameObject.transform.localPosition;
+            Quaternion originalRot = animatedGameObject.transform.localRotation;
+
+            // start animation
+            animatorModel.states[0].playing = true;
+            yield return TestHelpers.EntityComponentUpdate(animator, animatorModel);
+
+            yield return new WaitForSeconds(3f);
+
+            Assert.IsFalse(animatedGameObject.localScale == originalScale);
+            Assert.IsFalse(animatedGameObject.localPosition == originalPos);
+            Assert.IsFalse(animatedGameObject.localRotation == originalRot);
+        }
     }
 }

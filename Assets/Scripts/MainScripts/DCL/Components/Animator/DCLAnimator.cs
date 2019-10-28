@@ -36,10 +36,12 @@ namespace DCL.Components
 
         public Model model = new Model();
 
+        [System.NonSerialized]
+        public Animation animComponent = null;
+        
         Model.DCLAnimationState[] previousState;
         Dictionary<string, AnimationClip> clipNameToClip = new Dictionary<string, AnimationClip>();
         Dictionary<AnimationClip, AnimationState> clipToState = new Dictionary<AnimationClip, AnimationState>();
-        Animation animComponent = null;
 
         private void OnDestroy()
         {
@@ -64,34 +66,25 @@ namespace DCL.Components
 
         private void OnComponentUpdated(DecentralandEntity e)
         {
-            if (entity.meshRootGameObject && entity.meshRootGameObject.GetComponentInChildren<Animation>() != null)
-            {
-                UpdateAnimationState();
-            }
+            UpdateAnimationState();
         }
 
         private void Initialize()
         {
-            if (entity == null || entity.meshRootGameObject == null)
-            {
-                return;
-            }
+            if (entity == null) return;
 
             //NOTE(Brian): fetch all the AnimationClips in Animation component.
             if (animComponent == null)
             {
-                animComponent = entity.meshRootGameObject.GetComponentInChildren<Animation>(true);
+                animComponent = transform.parent.GetComponentInChildren<Animation>(true);
 
-                if (animComponent == null)
-                {
-                    return;
-                }
+                if (animComponent == null) return;
 
                 clipNameToClip.Clear();
                 clipToState.Clear();
                 int layerIndex = 0;
 
-                animComponent.playAutomatically = false;
+                animComponent.playAutomatically = true;
                 animComponent.enabled = true;
                 animComponent.Stop(); //NOTE(Brian): When the GLTF is created by GLTFSceneImporter a frame may be elapsed, 
                                       //putting the component in play state if playAutomatically was true at that point.
@@ -113,14 +106,10 @@ namespace DCL.Components
             Initialize();
 
             if (clipNameToClip.Count == 0 || animComponent == null)
-            {
                 return;
-            }
 
             if (model.states == null || model.states.Length == 0)
-            {
                 return;
-            }
 
             for (int i = 0; i < model.states.Length; i++)
             {
@@ -131,6 +120,7 @@ namespace DCL.Components
                     AnimationState unityState = animComponent[state.clip];
                     unityState.weight = state.weight;
                     unityState.wrapMode = state.looping ? WrapMode.Loop : WrapMode.ClampForever;
+                    unityState.clip.wrapMode = unityState.wrapMode;
                     unityState.speed = state.speed;
 
                     state.clipReference = unityState.clip;
@@ -167,6 +157,7 @@ namespace DCL.Components
             }
 
             animComponent.Stop(state.clip);
+
             //Manually sample the animation. If the reset is not played again the frame 0 wont be applied
             state.clipReference.SampleAnimation(animComponent.gameObject, 0);
         }
