@@ -7,7 +7,7 @@ type GameInstance = {
 
 import { IFuture } from 'fp-future'
 import { EventDispatcher } from 'decentraland-rpc/lib/common/core/EventDispatcher'
-import { Session } from 'shared/session'
+import { Session } from '../shared/session'
 import { gridToWorld } from '../atomicHelpers/parcelScenePositions'
 import { DEBUG, ENGINE_DEBUG_PANEL, playerConfigurations, SCENE_DEBUG_PANEL, EDITOR } from '../config'
 import { Quaternion, ReadOnlyQuaternion, ReadOnlyVector3, Vector3 } from '../decentraland-ecs/src/decentraland/math'
@@ -30,7 +30,17 @@ import {
   IScene,
   LoadableParcelScene,
   MappingsResponse,
-  Notification
+  Notification,
+  CreateEntityPayload,
+  RemoveEntityPayload,
+  UpdateEntityComponentPayload,
+  AttachEntityComponentPayload,
+  ComponentRemovedPayload,
+  SetEntityParentPayload,
+  QueryPayload,
+  ComponentCreatedPayload,
+  ComponentDisposedPayload,
+  ComponentUpdatedPayload
 } from '../shared/types'
 import { ParcelSceneAPI } from '../shared/world/ParcelSceneAPI'
 import {
@@ -44,6 +54,23 @@ import { positionObservable, teleportObservable } from '../shared/world/position
 import { hudWorkerUrl, SceneWorker } from '../shared/world/SceneWorker'
 import { ensureUiApis } from '../shared/world/uiSceneInitializer'
 import { worldRunningObservable } from '../shared/world/worldState'
+import {
+  PB_SendSceneMessage,
+  PB_CreateEntity,
+  PB_RemoveEntity,
+  PB_UpdateEntityComponent,
+  PB_Vector3,
+  PB_AttachEntityComponent,
+  PB_SetEntityParent,
+  PB_Query,
+  PB_RayQuery,
+  PB_Ray,
+  PB_ComponentRemoved,
+  PB_ComponentCreated,
+  PB_ComponentDisposed,
+  PB_ComponentUpdated
+} from '../shared/proto/engineinterface_pb'
+import { Empty } from 'google-protobuf/google/protobuf/empty_pb'
 import { queueTrackingEvent } from '../shared/analytics'
 import { getPerformanceInfo } from '../shared/session/getPerformanceInfo'
 import { unityClientLoaded, loadingScenes } from '../shared/loading/types'
@@ -197,11 +224,8 @@ export const unityInterface = {
   UnloadScene(sceneId: string) {
     gameInstance.SendMessage('SceneController', 'UnloadScene', sceneId)
   },
-  SendSceneMessage(parcelSceneId: string, method: string, payload: string, tag: string = '') {
-    if (unityInterface.debug) {
-      defaultLogger.info(parcelSceneId, method, payload, tag)
-    }
-    gameInstance.SendMessage(`SceneController`, `SendSceneMessage`, `${parcelSceneId}\t${method}\t${payload}\t${tag}`)
+  SendSceneMessage(messages: string) {
+    gameInstance.SendMessage(`SceneController`, `SendSceneMessage`, messages)
   },
   SetSceneDebugPanel() {
     gameInstance.SendMessage('SceneController', 'SetSceneDebugPanel')
@@ -317,6 +341,22 @@ window['unityInterface'] = unityInterface
 
 ////////////////////////////////////////////////////////////////////////////////
 
+// protobuf message instances
+const createEntity: PB_CreateEntity = new PB_CreateEntity()
+const removeEntity: PB_RemoveEntity = new PB_RemoveEntity()
+const updateEntityComponent: PB_UpdateEntityComponent = new PB_UpdateEntityComponent()
+const attachEntity: PB_AttachEntityComponent = new PB_AttachEntityComponent()
+const removeEntityComponent: PB_ComponentRemoved = new PB_ComponentRemoved()
+const setEntityParent: PB_SetEntityParent = new PB_SetEntityParent()
+const query: PB_Query = new PB_Query()
+const rayQuery: PB_RayQuery = new PB_RayQuery()
+const ray: PB_Ray = new PB_Ray()
+const origin: PB_Vector3 = new PB_Vector3()
+const direction: PB_Vector3 = new PB_Vector3()
+const componentCreated: PB_ComponentCreated = new PB_ComponentCreated()
+const componentDisposed: PB_ComponentDisposed = new PB_ComponentDisposed()
+const componentUpdated: PB_ComponentUpdated = new PB_ComponentUpdated()
+
 class UnityScene<T> implements ParcelSceneAPI {
   eventDispatcher = new EventDispatcher()
   worker!: SceneWorker
@@ -328,10 +368,14 @@ class UnityScene<T> implements ParcelSceneAPI {
 
   sendBatch(actions: EntityAction[]): void {
     const sceneId = getParcelSceneID(this)
+    let messages = ''
     for (let i = 0; i < actions.length; i++) {
       const action = actions[i]
-      unityInterface.SendSceneMessage(sceneId, action.type, action.payload, action.tag)
+      messages += this.encodeSceneMessage(sceneId, action.type, action.payload, action.tag)
+      messages += '\n'
     }
+
+    unityInterface.SendSceneMessage(messages)
   }
 
   registerWorker(worker: SceneWorker): void {
@@ -348,6 +392,129 @@ class UnityScene<T> implements ParcelSceneAPI {
 
   emit<T extends IEventNames>(event: T, data: IEvents[T]): void {
     this.eventDispatcher.emit(event, data)
+  }
+
+  encodeSceneMessage(parcelSceneId: string, method: string, payload: any, tag: string = ''): string {
+    if (unityInterface.debug) {
+      defaultLogger.info(parcelSceneId, method, payload, tag)
+    }
+
+    let message: PB_SendSceneMessage = new PB_SendSceneMessage()
+    message.setSceneid(parcelSceneId)
+    message.setTag(tag)
+
+    switch (method) {
+      case 'CreateEntity':
+        message.setCreateentity(this.encodeCreateEntity(payload))
+        break
+      case 'RemoveEntity':
+        message.setRemoveentity(this.encodeRemoveEntity(payload))
+        break
+      case 'UpdateEntityComponent':
+        message.setUpdateentitycomponent(this.encodeUpdateEntityComponent(payload))
+        break
+      case 'AttachEntityComponent':
+        message.setAttachentitycomponent(this.encodeAttachEntityComponent(payload))
+        break
+      case 'ComponentRemoved':
+        message.setComponentremoved(this.encodeComponentRemoved(payload))
+        break
+      case 'SetEntityParent':
+        message.setSetentityparent(this.encodeSetEntityParent(payload))
+        break
+      case 'Query':
+        message.setQuery(this.encodeQuery(payload))
+        break
+      case 'ComponentCreated':
+        message.setComponentcreated(this.encodeComponentCreated(payload))
+        break
+      case 'ComponentDisposed':
+        message.setComponentdisposed(this.encodeComponentDisposed(payload))
+        break
+      case 'ComponentUpdated':
+        message.setComponentupdated(this.encodeComponentUpdated(payload))
+        break
+      case 'InitMessagesFinished':
+        message.setScenestarted(new Empty()) // don't know if this is necessary
+        break
+    }
+
+    let arrayBuffer: Uint8Array = message.serializeBinary()
+    return btoa(String.fromCharCode(...arrayBuffer))
+  }
+
+  encodeCreateEntity(createEntityPayload: CreateEntityPayload): PB_CreateEntity {
+    createEntity.setId(createEntityPayload.id)
+    return createEntity
+  }
+
+  encodeRemoveEntity(removeEntityPayload: RemoveEntityPayload): PB_RemoveEntity {
+    removeEntity.setId(removeEntityPayload.id)
+    return removeEntity
+  }
+
+  encodeUpdateEntityComponent(updateEntityComponentPayload: UpdateEntityComponentPayload): PB_UpdateEntityComponent {
+    updateEntityComponent.setClassid(updateEntityComponentPayload.classId)
+    updateEntityComponent.setEntityid(updateEntityComponentPayload.entityId)
+    updateEntityComponent.setData(updateEntityComponentPayload.json)
+    return updateEntityComponent
+  }
+
+  encodeAttachEntityComponent(attachEntityPayload: AttachEntityComponentPayload): PB_AttachEntityComponent {
+    attachEntity.setEntityid(attachEntityPayload.entityId)
+    attachEntity.setName(attachEntityPayload.name)
+    attachEntity.setId(attachEntityPayload.id)
+    return attachEntity
+  }
+
+  encodeComponentRemoved(removeEntityComponentPayload: ComponentRemovedPayload): PB_ComponentRemoved {
+    removeEntityComponent.setEntityid(removeEntityComponentPayload.entityId)
+    removeEntityComponent.setName(removeEntityComponentPayload.name)
+    return removeEntityComponent
+  }
+
+  encodeSetEntityParent(setEntityParentPayload: SetEntityParentPayload): PB_SetEntityParent {
+    setEntityParent.setEntityid(setEntityParentPayload.entityId)
+    setEntityParent.setParentid(setEntityParentPayload.parentId)
+    return setEntityParent
+  }
+
+  encodeQuery(queryPayload: QueryPayload): PB_Query {
+    origin.setX(queryPayload.payload.ray.origin.x)
+    origin.setY(queryPayload.payload.ray.origin.y)
+    origin.setZ(queryPayload.payload.ray.origin.z)
+    direction.setX(queryPayload.payload.ray.direction.x)
+    direction.setY(queryPayload.payload.ray.direction.y)
+    direction.setZ(queryPayload.payload.ray.direction.z)
+    ray.setOrigin(origin)
+    ray.setDirection(direction)
+    ray.setDistance(queryPayload.payload.ray.distance)
+    rayQuery.setRay(ray)
+    rayQuery.setQueryid(queryPayload.payload.queryId)
+    rayQuery.setQuerytype(queryPayload.payload.queryType)
+    query.setQueryid(queryPayload.queryId)
+    let arrayBuffer: Uint8Array = rayQuery.serializeBinary()
+    let base64: string = btoa(String.fromCharCode(...arrayBuffer))
+    query.setPayload(base64)
+    return query
+  }
+
+  encodeComponentCreated(componentCreatedPayload: ComponentCreatedPayload): PB_ComponentCreated {
+    componentCreated.setId(componentCreatedPayload.id)
+    componentCreated.setClassid(componentCreatedPayload.classId)
+    componentCreated.setName(componentCreatedPayload.name)
+    return componentCreated
+  }
+
+  encodeComponentDisposed(componentDisposedPayload: ComponentDisposedPayload) {
+    componentDisposed.setId(componentDisposedPayload.id)
+    return componentDisposed
+  }
+
+  encodeComponentUpdated(componentUpdatedPayload: ComponentUpdatedPayload): PB_ComponentUpdated {
+    componentUpdated.setId(componentUpdatedPayload.id)
+    componentUpdated.setJson(componentUpdatedPayload.json)
+    return componentUpdated
   }
 }
 

@@ -19,7 +19,8 @@ import { defaultLogger } from 'shared/logger'
 import { customEval, getES5Context } from './sdk/sandbox'
 import { DevToolsAdapter } from './sdk/DevToolsAdapter'
 import { ScriptingTransport, ILogOpts } from 'decentraland-rpc/src/common/json-rpc/types'
-import { QueryType } from 'decentraland-ecs/src'
+import { QueryType, CLASS_ID, Transform } from 'decentraland-ecs/src'
+import { PB_Transform, PB_Vector3, PB_Quaternion } from '../shared/proto/engineinterface_pb'
 
 // tslint:disable-next-line:whitespace
 type IEngineAPI = import('shared/apis/EngineAPI').IEngineAPI
@@ -34,6 +35,11 @@ const blobRE = /^blob:http/
 
 const WEB3_PROVIDER = 'web3-provider'
 const PROVIDER_METHOD = 'getProvider'
+
+const pbTransform: PB_Transform = new PB_Transform()
+const pbPosition: PB_Vector3 = new PB_Vector3()
+const pbRotation: PB_Quaternion = new PB_Quaternion()
+const pbScale: PB_Vector3 = new PB_Vector3()
 
 function resolveMapping(mapping: string | undefined, mappingName: string, baseUrl: string) {
   let url = mappingName
@@ -199,7 +205,7 @@ export default class GamekitScene extends Script {
           that.events.push({
             type: 'CreateEntity',
             tag: entityId,
-            payload: JSON.stringify({ id: entityId } as CreateEntityPayload)
+            payload: { id: entityId } as CreateEntityPayload
           })
         },
 
@@ -207,7 +213,7 @@ export default class GamekitScene extends Script {
           that.events.push({
             type: 'RemoveEntity',
             tag: entityId,
-            payload: JSON.stringify({ id: entityId } as RemoveEntityPayload)
+            payload: { id: entityId } as RemoveEntityPayload
           })
         },
 
@@ -235,12 +241,12 @@ export default class GamekitScene extends Script {
             that.events.push({
               type: 'UpdateEntityComponent',
               tag: entityId + '_' + classId,
-              payload: JSON.stringify({
+              payload: {
                 entityId,
                 classId,
                 name: componentName.replace(componentNameRE, ''),
-                json
-              } as UpdateEntityComponentPayload)
+                json: that.generatePBObject(classId, json)
+              } as UpdateEntityComponentPayload
             })
           }
         },
@@ -251,11 +257,11 @@ export default class GamekitScene extends Script {
             that.events.push({
               type: 'AttachEntityComponent',
               tag: entityId,
-              payload: JSON.stringify({
+              payload: {
                 entityId,
                 name: componentName.replace(componentNameRE, ''),
                 id
-              } as AttachEntityComponentPayload)
+              } as AttachEntityComponentPayload
             })
           }
         },
@@ -266,10 +272,10 @@ export default class GamekitScene extends Script {
             that.events.push({
               type: 'ComponentRemoved',
               tag: entityId,
-              payload: JSON.stringify({
+              payload: {
                 entityId,
                 name: componentName.replace(componentNameRE, '')
-              } as ComponentRemovedPayload)
+              } as ComponentRemovedPayload
             })
           }
         },
@@ -279,10 +285,10 @@ export default class GamekitScene extends Script {
           that.events.push({
             type: 'SetEntityParent',
             tag: entityId,
-            payload: JSON.stringify({
+            payload: {
               entityId,
               parentId
-            } as SetEntityParentPayload)
+            } as SetEntityParentPayload
           })
         },
 
@@ -290,10 +296,10 @@ export default class GamekitScene extends Script {
         query(queryId: QueryType, payload: any) {
           that.events.push({
             type: 'Query',
-            payload: JSON.stringify({
+            payload: {
               queryId,
               payload
-            } as QueryPayload)
+            } as QueryPayload
           })
         },
 
@@ -314,11 +320,11 @@ export default class GamekitScene extends Script {
             that.events.push({
               type: 'ComponentCreated',
               tag: id,
-              payload: JSON.stringify({
+              payload: {
                 id,
                 classId,
                 name: componentName.replace(componentNameRE, '')
-              } as ComponentCreatedPayload)
+              } as ComponentCreatedPayload
             })
           }
         },
@@ -327,7 +333,7 @@ export default class GamekitScene extends Script {
           that.events.push({
             type: 'ComponentDisposed',
             tag: id,
-            payload: JSON.stringify({ id } as ComponentDisposedPayload)
+            payload: { id } as ComponentDisposedPayload
           })
         },
 
@@ -335,10 +341,10 @@ export default class GamekitScene extends Script {
           that.events.push({
             type: 'ComponentUpdated',
             tag: id,
-            payload: JSON.stringify({
+            payload: {
               id,
               json
-            } as ComponentUpdatedPayload)
+            } as ComponentUpdatedPayload
           })
         },
 
@@ -478,5 +484,35 @@ export default class GamekitScene extends Script {
     }
 
     update()
+  }
+
+  private generatePBObject(classId: CLASS_ID, json: string): string {
+    let data: string = json
+
+    if (classId === CLASS_ID.TRANSFORM) {
+      const transform: Transform = JSON.parse(json)
+
+      pbPosition.setX(transform.position.x)
+      pbPosition.setY(transform.position.y)
+      pbPosition.setZ(transform.position.z)
+
+      pbRotation.setX(transform.rotation.x)
+      pbRotation.setY(transform.rotation.y)
+      pbRotation.setZ(transform.rotation.z)
+      pbRotation.setW(transform.rotation.w)
+
+      pbScale.setX(transform.scale.x)
+      pbScale.setY(transform.scale.y)
+      pbScale.setZ(transform.scale.z)
+
+      pbTransform.setPosition(pbPosition)
+      pbTransform.setRotation(pbRotation)
+      pbTransform.setScale(pbScale)
+
+      let arrayBuffer: Uint8Array = pbTransform.serializeBinary()
+      data = btoa(String.fromCharCode(...arrayBuffer))
+    }
+
+    return data
   }
 }
