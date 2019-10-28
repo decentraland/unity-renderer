@@ -61,15 +61,13 @@ namespace Tests
                 volume = volume
             };
 
-            DCLAudioClip audioClip = scene.SharedComponentCreate(JsonUtility.ToJson(
-                new DCL.Models.SharedComponentCreateMessage
-                {
-                    id = audioClipId,
-                    name = "audioClip",
-                    classId = (int)DCL.Models.CLASS_ID.AUDIO_CLIP,
-                })) as DCLAudioClip;
+            DCLAudioClip audioClip = scene.SharedComponentCreate(
+                    audioClipId,
+                    "audioClip",
+                    (int)DCL.Models.CLASS_ID.AUDIO_CLIP
+             ) as DCLAudioClip;
 
-            scene.SharedComponentUpdate(JsonUtility.ToJson(new DCL.Models.SharedComponentUpdateMessage
+            scene.SharedComponentUpdate(audioClipId, JsonUtility.ToJson(new DCL.Models.SharedComponentUpdateMessage
             {
                 id = audioClipId,
                 json = JsonUtility.ToJson(model)
@@ -219,7 +217,7 @@ namespace Tests
             // 3. Update component with missing values
             componentModel = new DCLAudioClip.Model { };
 
-            scene.SharedComponentUpdate(JsonUtility.ToJson(new DCL.Models.SharedComponentUpdateMessage
+            scene.SharedComponentUpdate(audioClip.id, JsonUtility.ToJson(new DCL.Models.SharedComponentUpdateMessage
             {
                 id = audioClip.id,
                 json = JsonUtility.ToJson(componentModel)
@@ -250,7 +248,7 @@ namespace Tests
             DCLAudioSource dclAudioSource = entity.components.Values.FirstOrDefault(x => x is DCLAudioSource) as DCLAudioSource;
             Assert.AreNotEqual(0, dclAudioSource.playTime);
         }
-        
+
         [UnityTest]
         public IEnumerator AudioIsNotLooped()
         {

@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Assertions;
+using DCL.Interface;
 
 namespace DCL
 {
@@ -78,7 +79,7 @@ namespace DCL
         public class QueuedSceneMessage_Scene : QueuedSceneMessage
         {
             public string method;
-            public string payload;
+            public PB_SendSceneMessage payload;
         }
 
         public IMessageHandler handler;

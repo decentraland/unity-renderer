@@ -83,29 +83,24 @@ public class IntegrationTestController : MonoBehaviour
         TestHelpers.CreateAndSetShape(scene, entityId, CLASS_ID.BOX_SHAPE, "{}");
 
         {
-            scene.EntityComponentCreateOrUpdate(JsonConvert.SerializeObject(new EntityComponentCreateMessage
-            {
-                entityId = entityId,
-                name = "transform",
-                classId = (int)CLASS_ID_COMPONENT.TRANSFORM,
-                json =
-                    "{\"tag\":\"transform\",\"position\":{\"x\":0,\"y\":0,\"z\":0},\"rotation\":{\"x\":0,\"y\":0,\"z\":0,\"w\":1},\"scale\":{\"x\":1,\"y\":1,\"z\":1}}"
-            }), out CleanableYieldInstruction routine);
+            scene.EntityComponentCreateOrUpdate(
+                entityId,
+                "transform",
+                (int)CLASS_ID_COMPONENT.TRANSFORM,
+                "{\"tag\":\"transform\",\"position\":{\"x\":0,\"y\":0,\"z\":0},\"rotation\":{\"x\":0,\"y\":0,\"z\":0,\"w\":1},\"scale\":{\"x\":1,\"y\":1,\"z\":1}}"
+            , out CleanableYieldInstruction routine);
         }
 
 
         // 2nd message
         TestHelpers.CreateAndSetShape(scene, entityId, CLASS_ID.BOX_SHAPE, "{}");
-
         {
-            scene.EntityComponentCreateOrUpdate(JsonConvert.SerializeObject(new EntityComponentCreateMessage
-            {
-                entityId = entityId,
-                name = "transform",
-                classId = (int)CLASS_ID_COMPONENT.TRANSFORM,
-                json =
-                    "{\"tag\":\"transform\",\"position\":{\"x\":6,\"y\":0,\"z\":5},\"rotation\":{\"x\":0,\"y\":0.39134957508996265,\"z\":0,\"w\":0.9202420931897769},\"scale\":{\"x\":1,\"y\":1,\"z\":1}}"
-            }), out CleanableYieldInstruction routine);
+            scene.EntityComponentCreateOrUpdate(
+                entityId,
+                "transform",
+                (int)CLASS_ID_COMPONENT.TRANSFORM,
+                "{\"tag\":\"transform\",\"position\":{\"x\":6,\"y\":0,\"z\":5},\"rotation\":{\"x\":0,\"y\":0.39134957508996265,\"z\":0,\"w\":0.9202420931897769},\"scale\":{\"x\":1,\"y\":1,\"z\":1}}"
+            , out CleanableYieldInstruction routine);
         }
 
         TestHelpers.InstantiateEntityWithTextShape(scene, new Vector3(10, 10, 10),

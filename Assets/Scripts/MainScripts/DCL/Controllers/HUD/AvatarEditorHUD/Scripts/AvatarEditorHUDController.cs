@@ -56,7 +56,7 @@ public class AvatarEditorHUDController : IDisposable, IHUD
 
     private void ProcessInventory(string[] newInventory)
     {
-        if (newInventory == null) newInventory = new string [] { };
+        if (newInventory == null) newInventory = new string[] { };
 
         IEnumerable<string> removed = inventory.Where((i) => !newInventory.Contains(i));
         IEnumerable<string> added = newInventory.Where((i) => !inventory.Contains(i));
@@ -120,19 +120,19 @@ public class AvatarEditorHUDController : IDisposable, IHUD
         view.UpdateAvatarPreview(model.avatarModel);
     }
 
-    private void OnSkinColorChanged(Color color)
+    private void OnSkinColorChanged(UnityEngine.Color color)
     {
         model.avatarModel.skinColor = color;
         UpdateAvatarPreview();
     }
 
-    private void OnHairColorChanged(Color color)
+    private void OnHairColorChanged(UnityEngine.Color color)
     {
         model.avatarModel.hairColor = color;
         UpdateAvatarPreview();
     }
 
-    private void OnEyeColorChanged(Color color)
+    private void OnEyeColorChanged(UnityEngine.Color color)
     {
         model.avatarModel.eyeColor = color;
         UpdateAvatarPreview();

@@ -43,7 +43,7 @@ namespace Tests
             Assert.AreEqual(Vector3.zero, uiContainerRectShape.childHookRectTransform.localPosition);
 
             // Update UIContainerRectShape properties
-            uiContainerRectShape = scene.SharedComponentUpdate(JsonUtility.ToJson(new SharedComponentUpdateMessage
+            uiContainerRectShape = scene.SharedComponentUpdate(uiContainerRectShape.id, JsonUtility.ToJson(new SharedComponentUpdateMessage
             {
                 id = uiContainerRectShape.id,
                 json = JsonUtility.ToJson(new UIContainerRect.Model
@@ -101,7 +101,7 @@ namespace Tests
             yield return uiContainerRectShape.routine;
 
             // Update UIContainerRectShape parent
-            scene.SharedComponentUpdate(JsonUtility.ToJson(new SharedComponentUpdateMessage
+            scene.SharedComponentUpdate(uiContainerRectShape.id, JsonUtility.ToJson(new SharedComponentUpdateMessage
             {
                 id = uiContainerRectShape.id,
                 json = JsonUtility.ToJson(new UIContainerRect.Model
@@ -122,7 +122,7 @@ namespace Tests
             yield return uiContainerRectShape2.routine;
 
             // Update UIContainerRectShape parent to the previous container
-            scene.SharedComponentUpdate(JsonUtility.ToJson(new SharedComponentUpdateMessage
+            scene.SharedComponentUpdate(uiContainerRectShape.id, JsonUtility.ToJson(new SharedComponentUpdateMessage
             {
                 id = uiContainerRectShape2.id,
                 json = JsonUtility.ToJson(new UIContainerRect.Model
@@ -182,7 +182,7 @@ namespace Tests
             yield return uiContainerRectShape.routine;
 
             // Update UIContainerRectShape properties
-            uiContainerRectShape = scene.SharedComponentUpdate(JsonUtility.ToJson(new SharedComponentUpdateMessage
+            uiContainerRectShape = scene.SharedComponentUpdate(uiContainerRectShape.id, JsonUtility.ToJson(new SharedComponentUpdateMessage
             {
                 id = uiContainerRectShape.id,
                 json = JsonUtility.ToJson(new UIContainerRect.Model
@@ -226,7 +226,7 @@ namespace Tests
             yield return uiContainerRectShape.routine;
 
             // Update UIContainerRectShape properties
-            uiContainerRectShape = scene.SharedComponentUpdate(JsonUtility.ToJson(new SharedComponentUpdateMessage
+            uiContainerRectShape = scene.SharedComponentUpdate(uiContainerRectShape.id, JsonUtility.ToJson(new SharedComponentUpdateMessage
             {
                 id = uiContainerRectShape.id,
                 json = JsonUtility.ToJson(new UIContainerRect.Model

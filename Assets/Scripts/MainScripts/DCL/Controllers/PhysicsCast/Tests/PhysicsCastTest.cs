@@ -1,20 +1,20 @@
 using DCL.Components;
 using DCL.Helpers;
 using DCL.Models;
-using Newtonsoft.Json;
 using NUnit.Framework;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.TestTools;
 using DCL.Interface;
+using Google.Protobuf;
 
 public class PhysicsCast_Tests : TestsBase
 {
     const int ENTITIES_COUNT = 3;
-    QueryMessage queryMessage = new QueryMessage();
-    Vector3 startPos = new Vector3(5, 5, 15);
+    PB_RayQuery raycastQuery = new PB_RayQuery();
 
+    Vector3 startPos = new Vector3(5, 5, 15);
 
     void InstantiateEntityWithShape(Vector3 pos, Vector3 scale, out DecentralandEntity entity, out BoxShape shape)
     {
@@ -30,23 +30,22 @@ public class PhysicsCast_Tests : TestsBase
 
     private IEnumerator BaseRaycastTest(string queryType)
     {
-        RaycastQuery raycastQuery = new RaycastQuery();
-
         yield return base.InitScene();
 
         DCLCharacterController.i.SetPosition(startPos);
 
-        raycastQuery = new RaycastQuery();
-        raycastQuery.queryId = "123456";
-        raycastQuery.queryType = queryType;
-        raycastQuery.sceneId = scene.sceneData.id;
-        raycastQuery.ray = new DCL.Models.Ray();
-        raycastQuery.ray.direction = Vector3.back;
-        raycastQuery.ray.distance = 1000;
-        raycastQuery.ray.origin = startPos;
-
-        queryMessage.queryId = "raycast";
-        queryMessage.payload = raycastQuery;
+        raycastQuery.QueryId = "123456";
+        raycastQuery.QueryType = queryType;
+        raycastQuery.Ray = new PB_Ray();
+        raycastQuery.Ray.Direction = new PB_Vector3();
+        raycastQuery.Ray.Direction.X = Vector3.back.x;
+        raycastQuery.Ray.Direction.Y = Vector3.back.y;
+        raycastQuery.Ray.Direction.Z = Vector3.back.z;
+        raycastQuery.Ray.Distance = 1000;
+        raycastQuery.Ray.Origin = new PB_Vector3();
+        raycastQuery.Ray.Origin.X = startPos.x;
+        raycastQuery.Ray.Origin.Y = startPos.y;
+        raycastQuery.Ray.Origin.Z = startPos.z;
     }
 
     [UnityTest]
@@ -73,13 +72,13 @@ public class PhysicsCast_Tests : TestsBase
         }
 
         WebInterface.RaycastHitFirstResponse response = new WebInterface.RaycastHitFirstResponse();
-        response.queryType = queryMessage.payload.queryType;
-        response.queryId = queryMessage.payload.queryId;
+        response.queryType = raycastQuery.QueryType;
+        response.queryId = raycastQuery.QueryId;
         response.payload = new WebInterface.RaycastHitEntity();
         response.payload.ray = new WebInterface.RayInfo();
-        response.payload.ray.origin = queryMessage.payload.ray.origin;
-        response.payload.ray.distance = queryMessage.payload.ray.distance;
-        response.payload.ray.direction = queryMessage.payload.ray.direction;
+        response.payload.ray.origin = new Vector3(raycastQuery.Ray.Origin.X, raycastQuery.Ray.Origin.Y, raycastQuery.Ray.Origin.Z);
+        response.payload.ray.distance = raycastQuery.Ray.Distance;
+        response.payload.ray.direction = new Vector3(raycastQuery.Ray.Direction.X, raycastQuery.Ray.Direction.Y, raycastQuery.Ray.Direction.Z);
         response.payload.entity = new WebInterface.HitEntityInfo();
         response.payload.entity.entityId = entities[0].entityId;
 
@@ -94,8 +93,7 @@ public class PhysicsCast_Tests : TestsBase
         yield return TestHelpers.WaitForEventFromEngine(targetEventType, sceneEvent,
             () =>
             {
-                sceneController.ParseQuery(UnityEngine.JsonUtility.ToJson(queryMessage), scene.sceneData.id);
-                //DCL.PhysicsCast.i.Query(raycastQuery);
+                sceneController.ParseQuery("raycast", System.Convert.ToBase64String(raycastQuery.ToByteArray()), scene.sceneData.id);
             },
             (raycastResponse) =>
             {
@@ -154,13 +152,13 @@ public class PhysicsCast_Tests : TestsBase
 
         WebInterface.RaycastHitAllResponse response = new WebInterface.RaycastHitAllResponse();
 
-        response.queryType = queryMessage.payload.queryType;
-        response.queryId = queryMessage.payload.queryId;
+        response.queryType = raycastQuery.QueryType;
+        response.queryId = raycastQuery.QueryId;
         response.payload = new WebInterface.RaycastHitEntities();
         response.payload.ray = new WebInterface.RayInfo();
-        response.payload.ray.origin = queryMessage.payload.ray.origin;
-        response.payload.ray.distance = queryMessage.payload.ray.distance;
-        response.payload.ray.direction = queryMessage.payload.ray.direction;
+        response.payload.ray.origin = new Vector3(raycastQuery.Ray.Origin.X, raycastQuery.Ray.Origin.Y, raycastQuery.Ray.Origin.Z);
+        response.payload.ray.distance = raycastQuery.Ray.Distance;
+        response.payload.ray.direction = new Vector3(raycastQuery.Ray.Direction.X, raycastQuery.Ray.Direction.Y, raycastQuery.Ray.Direction.Z);
         response.payload.entities = new WebInterface.RaycastHitEntity[ENTITIES_COUNT];
 
         for (int i = 0; i < ENTITIES_COUNT; i++)
@@ -182,7 +180,7 @@ public class PhysicsCast_Tests : TestsBase
         yield return TestHelpers.WaitForEventFromEngine(targetEventType, sceneEvent,
             () =>
             {
-                sceneController.ParseQuery(UnityEngine.JsonUtility.ToJson(queryMessage), scene.sceneData.id);
+                sceneController.ParseQuery("raycast", System.Convert.ToBase64String(raycastQuery.ToByteArray()), scene.sceneData.id);
             },
             (raycastResponse) =>
             {
@@ -205,17 +203,25 @@ public class PhysicsCast_Tests : TestsBase
                     raycastResponse.payload.payload.ray.origin == sceneEvent.payload.payload.ray.origin &&
                     raycastResponse.payload.payload.entities.Length == ENTITIES_COUNT)
                 {
-                    eventTriggered = true;
-
                     for (int i = 0; i < raycastResponse.payload.payload.entities.Length; i++)
                     {
-                        if (raycastResponse.payload.payload.entities[i].entity.entityId != sceneEvent.payload.payload.entities[i].entity.entityId ||
-                            raycastResponse.payload.payload.entities[i].didHit != sceneEvent.payload.payload.entities[i].didHit)
+                        bool found = false;
+
+                        for (int j = 0; j < sceneEvent.payload.payload.entities.Length; j++)
                         {
-                            eventTriggered = false;
-                            return false;
+                            if (raycastResponse.payload.payload.entities[i].entity.entityId == sceneEvent.payload.payload.entities[j].entity.entityId)
+                            {
+                                found = raycastResponse.payload.payload.entities[i].didHit;
+                                break;
+                            }
                         }
+
+                        if (!found)
+                            return false;
                     }
+
+                    eventTriggered = true;
+
                     return true;
                 }
 

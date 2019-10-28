@@ -5,6 +5,7 @@ using DCL.Models;
 using System.Collections;
 using UnityEngine;
 using UnityEngine.UI;
+using Color = UnityEngine.Color;
 
 namespace DCL.Components
 {

@@ -6,7 +6,9 @@
         "Configuration",
         "AvatarShape",
         "Utils",
-        "AvatarModel"
+        "AvatarModel",
+        "WebInterface",
+        "DCLTransform"
     ],
     "optionalUnityReferences": [
         "TestAssemblies"

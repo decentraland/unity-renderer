@@ -339,7 +339,7 @@ namespace DCL.Controllers
 
         private CreateEntityMessage tmpCreateEntityMessage = new CreateEntityMessage();
         private const string EMPTY_GO_POOL_NAME = "Empty";
-        public DecentralandEntity CreateEntity(string id, string json)
+        public DecentralandEntity CreateEntity(string id)
         {
             SceneController.i.OnMessageDecodeStart?.Invoke("CreateEntity");
             tmpCreateEntityMessage.id = id;
@@ -473,10 +473,11 @@ namespace DCL.Controllers
 
         private SetEntityParentMessage tmpParentMessage = new SetEntityParentMessage();
 
-        public void SetEntityParent(string json)
+        public void SetEntityParent(string entityId, string parentId)
         {
             SceneController.i.OnMessageDecodeStart?.Invoke("SetEntityParent");
-            tmpParentMessage.FromJSON(json);
+            tmpParentMessage.entityId = entityId;
+            tmpParentMessage.parentId = parentId;
             SceneController.i.OnMessageDecodeEnds?.Invoke("SetEntityParent");
 
             if (tmpParentMessage.entityId == tmpParentMessage.parentId)
@@ -506,10 +507,12 @@ namespace DCL.Controllers
         /**
           * This method is called when we need to attach a disposable component to the entity
           */
-        public void SharedComponentAttach(string json)
+        public void SharedComponentAttach(string entityId, string id, string name)
         {
             SceneController.i.OnMessageDecodeStart?.Invoke("AttachEntityComponent");
-            attachSharedComponentMessage.FromJSON(json);
+            attachSharedComponentMessage.entityId = entityId;
+            attachSharedComponentMessage.id = id;
+            attachSharedComponentMessage.name = name;
             SceneController.i.OnMessageDecodeEnds?.Invoke("AttachEntityComponent");
 
             DecentralandEntity decentralandEntity = GetEntityForUpdate(attachSharedComponentMessage.entityId);
@@ -530,14 +533,16 @@ namespace DCL.Controllers
 
         UUIDCallbackMessage uuidMessage = new UUIDCallbackMessage();
         EntityComponentCreateMessage createEntityComponentMessage = new EntityComponentCreateMessage();
-
-        public BaseComponent EntityComponentCreateOrUpdate(string json, out CleanableYieldInstruction yieldInstruction)
+        public BaseComponent EntityComponentCreateOrUpdate(string entityId, string name, int classIdNum, string data, out CleanableYieldInstruction yieldInstruction)
         {
             yieldInstruction = null;
 
             SceneController.i.OnMessageDecodeStart?.Invoke("UpdateEntityComponent");
 
-            createEntityComponentMessage.FromJSON(json);
+            createEntityComponentMessage.name = name;
+            createEntityComponentMessage.classId = classIdNum;
+            createEntityComponentMessage.entityId = entityId;
+            createEntityComponentMessage.json = data;
 
             SceneController.i.OnMessageDecodeEnds?.Invoke("UpdateEntityComponent");
 
@@ -553,7 +558,7 @@ namespace DCL.Controllers
 
             if (classId == CLASS_ID_COMPONENT.TRANSFORM)
             {
-                JsonUtility.FromJsonOverwrite(createEntityComponentMessage.json, DCLTransform.model);
+                MessageDecoder.DecodeTransform(data, ref DCLTransform.model);
 
                 if (entity.OnTransformChange != null)
                 {
@@ -701,10 +706,12 @@ namespace DCL.Controllers
 
         SharedComponentCreateMessage sharedComponentCreatedMessage = new SharedComponentCreateMessage();
 
-        public BaseDisposable SharedComponentCreate(string json)
+        public BaseDisposable SharedComponentCreate(string id, string name, int classId)
         {
             SceneController.i.OnMessageDecodeStart?.Invoke("ComponentCreated");
-            sharedComponentCreatedMessage.FromJSON(json);
+            sharedComponentCreatedMessage.id = id;
+            sharedComponentCreatedMessage.name = name;
+            sharedComponentCreatedMessage.classId = classId;
             SceneController.i.OnMessageDecodeEnds?.Invoke("ComponentCreated");
 
             BaseDisposable disposableComponent;
@@ -838,7 +845,7 @@ namespace DCL.Controllers
                     }
 
                 default:
-                    Debug.LogError($"Unknown classId {json}");
+                    Debug.LogError($"Unknown classId");
                     break;
             }
 
@@ -853,10 +860,10 @@ namespace DCL.Controllers
 
         SharedComponentDisposeMessage sharedComponentDisposedMessage = new SharedComponentDisposeMessage();
 
-        public void SharedComponentDispose(string json)
+        public void SharedComponentDispose(string id)
         {
             SceneController.i.OnMessageDecodeStart?.Invoke("ComponentDisposed");
-            sharedComponentDisposedMessage.FromJSON(json);
+            sharedComponentDisposedMessage.id = id;
             SceneController.i.OnMessageDecodeEnds?.Invoke("ComponentDisposed");
 
             BaseDisposable disposableComponent;
@@ -874,11 +881,12 @@ namespace DCL.Controllers
 
         EntityComponentRemoveMessage entityComponentRemovedMessage = new EntityComponentRemoveMessage();
 
-        public void EntityComponentRemove(string json)
+        public void EntityComponentRemove(string entityId, string name)
         {
             SceneController.i.OnMessageDecodeStart?.Invoke("ComponentRemoved");
 
-            entityComponentRemovedMessage.FromJSON(json);
+            entityComponentRemovedMessage.entityId = entityId;
+            entityComponentRemovedMessage.name = name;
 
             SceneController.i.OnMessageDecodeEnds?.Invoke("ComponentRemoved");
 
@@ -939,10 +947,10 @@ namespace DCL.Controllers
 
         SharedComponentUpdateMessage sharedComponentUpdatedMessage = new SharedComponentUpdateMessage();
 
-        public BaseDisposable SharedComponentUpdate(string json, out CleanableYieldInstruction yieldInstruction)
+        public BaseDisposable SharedComponentUpdate(string id, string json, out CleanableYieldInstruction yieldInstruction)
         {
             SceneController.i.OnMessageDecodeStart?.Invoke("ComponentUpdated");
-            BaseDisposable newComponent = SharedComponentUpdate(json);
+            BaseDisposable newComponent = SharedComponentUpdate(id, json);
             SceneController.i.OnMessageDecodeEnds?.Invoke("ComponentUpdated");
 
             yieldInstruction = null;
@@ -953,10 +961,11 @@ namespace DCL.Controllers
             return newComponent;
         }
 
-        public BaseDisposable SharedComponentUpdate(string json)
+        public BaseDisposable SharedComponentUpdate(string id, string json)
         {
             SceneController.i.OnMessageDecodeStart?.Invoke("ComponentUpdated");
-            sharedComponentUpdatedMessage.FromJSON(json);
+            sharedComponentUpdatedMessage.json = json;
+            sharedComponentUpdatedMessage.id = id;
             SceneController.i.OnMessageDecodeEnds?.Invoke("ComponentUpdated");
 
             BaseDisposable disposableComponent = null;

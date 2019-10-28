@@ -6,7 +6,7 @@ using NUnit.Framework;
 using System.Collections;
 using UnityEngine;
 using UnityEngine.TestTools;
-using UnityEngine.EventSystems;
+using Color = UnityEngine.Color;
 
 namespace Tests
 {

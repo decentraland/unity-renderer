@@ -40,7 +40,7 @@ public class SceneMessageUtilities
         var queuedMessageSeparatorIndex = queuedMessage.message.IndexOf('\t');
 
         queuedMessage.method = queuedMessage.message.Substring(0, queuedMessageSeparatorIndex);
-        queuedMessage.payload = queuedMessage.message.Substring(queuedMessageSeparatorIndex + 1);
+
         return queuedMessage;
     }
 }

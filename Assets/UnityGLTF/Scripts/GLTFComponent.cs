@@ -14,7 +14,7 @@ namespace UnityGLTF
     {
         public static bool VERBOSE = false;
 
-        public static int maxSimultaneousDownloads = 3;
+        public static int maxSimultaneousDownloads = 10;
         public static float nearestDistance = float.MaxValue;
         public static GLTFComponent nearestGLTFComponent;
 
