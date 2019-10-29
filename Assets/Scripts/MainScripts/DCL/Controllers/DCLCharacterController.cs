@@ -123,7 +123,7 @@ public class DCLCharacterController : MonoBehaviour
     // To keep the character always active, just in case
     void OnDisable()
     {
-        if (!reEnablingGameObject)
+        if (!reEnablingGameObject && SceneController.i != null)
             SceneController.i.StartCoroutine(ReEnableGameObject()); // gameObject cannot start the routine as it's being deactivated
     }
 
