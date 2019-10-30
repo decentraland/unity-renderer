@@ -345,7 +345,8 @@ namespace DCL.Interface
 
         public static void SendMessage(string type)
         {
-            MessageFromEngine(type, string.Empty);
+            // sending an empty JSON object to be compatible with other messages
+            MessageFromEngine(type, "{}");
         }
 
         public static void SendMessage<T>(string type, T message)
