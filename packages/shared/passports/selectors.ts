@@ -43,8 +43,7 @@ export const getExclusiveCatalog = (store: RootPassportState): Wearable[] | null
 
 export const baseCatalogsLoaded = (store: RootPassportState) =>
   store.passports.catalogs &&
-  store.passports.catalogs['base-exclusive'] &&
-  store.passports.catalogs['base-exclusive'].status === 'ok' &&
-  store.passports.catalogs &&
+  store.passports.catalogs['base-avatars'] &&
+  store.passports.catalogs['base-avatars'].status === 'ok' &&
   store.passports.catalogs['base-exclusive'] &&
   store.passports.catalogs['base-exclusive'].status === 'ok'
