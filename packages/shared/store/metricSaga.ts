@@ -1,5 +1,6 @@
 import { takeEvery } from 'redux-saga/effects'
 import { queueTrackingEvent } from '../analytics'
+import { SAVE_AVATAR_SUCCESS, SaveAvatarSuccess } from '../passports/actions'
 import {
   COMMS_ESTABLISHED,
   ESTABLISHING_COMMS,
@@ -58,6 +59,9 @@ export function* metricSaga() {
       queueTrackingEvent('lifecycle event', toTrackingEvent(event, (action as any).payload))
     )
   }
+  yield takeEvery(SAVE_AVATAR_SUCCESS, (action: SaveAvatarSuccess) =>
+    queueTrackingEvent('avatar_edit_success', toAvatarEditSuccess(action.payload))
+  )
 }
 
 function toTrackingEvent(event: ExecutionLifecycleEvent, payload: any) {
@@ -66,4 +70,8 @@ function toTrackingEvent(event: ExecutionLifecycleEvent, payload: any) {
     result += payload
   }
   return result
+}
+
+function toAvatarEditSuccess({ userId, version, profile }: SaveAvatarSuccess['payload']) {
+  return { userId, version, wearables: profile.avatar.wearables }
 }
