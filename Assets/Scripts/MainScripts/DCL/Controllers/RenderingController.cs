@@ -23,14 +23,14 @@ public class RenderingController : MonoBehaviour
 
         renderingEnabled = false;
 
-        OnRenderingStateChanged?.Invoke(renderingEnabled);
-
         DCL.Configuration.ParcelSettings.VISUAL_LOADING_ENABLED = false;
         MessagingBus.renderingIsDisabled = true;
         PointerEventsController.renderingIsDisabled = true;
         InputController.renderingIsDisabled = true;
         GLTFSceneImporter.renderingIsDisabled = true;
         DCLCharacterController.i.SetEnabled(false);
+
+        OnRenderingStateChanged?.Invoke(renderingEnabled);
     }
 
     [ContextMenu("Enable Rendering")]
@@ -41,14 +41,15 @@ public class RenderingController : MonoBehaviour
 
         renderingEnabled = true;
 
-        OnRenderingStateChanged?.Invoke(renderingEnabled);
-
         DCL.Configuration.ParcelSettings.VISUAL_LOADING_ENABLED = true;
         MessagingBus.renderingIsDisabled = false;
         GLTFSceneImporter.renderingIsDisabled = false;
         PointerEventsController.renderingIsDisabled = false;
         InputController.renderingIsDisabled = false;
         DCLCharacterController.i.SetEnabled(true);
+
+        OnRenderingStateChanged?.Invoke(renderingEnabled);
+
         WebInterface.ReportControlEvent(new WebInterface.ActivateRenderingACK());
     }
 }
