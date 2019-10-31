@@ -18,6 +18,11 @@ public/test-scenes/*/bin/*.js
 
 scripts/**/*.js
 scripts/**/*.d.ts
+packages/**/*.js
+packages/**/*.js.map
+test/**/*.js
+test/**/*.js.map
+dist
 
 test/tmp
 test/diff
