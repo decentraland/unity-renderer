@@ -361,7 +361,7 @@ export function* checkInventoryForUpdates() {
     fail: take(INVENTORY_FAILURE)
   })
   if (fetchNewInventory.success) {
-    const newInventory: string[] = yield select(getInventory, userId)
+    const newInventory: string[] = (fetchNewInventory.success as InventorySuccess).payload.inventory
     yield call(compareInventoriesAndTriggerNotification, userId, inventory, newInventory)
   }
 }
