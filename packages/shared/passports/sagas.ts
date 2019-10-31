@@ -243,16 +243,17 @@ export function* handleSaveAvatar(saveAvatar: SaveAvatarRequest) {
     const currentVersion = (yield select(getProfile, userId)).version || 0
     const accessToken = yield select(getAccessToken)
     const url = getServerConfigurations().profile + '/profile/' + userId + '/avatar'
+    const profile = saveAvatar.payload.profile
     const result = yield call(modifyAvatar, {
       url,
       method: 'PUT',
       userId,
       currentVersion,
       accessToken,
-      profile: saveAvatar.payload.profile
+      profile
     })
     const { version } = result
-    yield put(saveAvatarSuccess(userId, version))
+    yield put(saveAvatarSuccess(userId, version, profile))
     yield put(passportRequest(userId))
   } catch (error) {
     yield put(saveAvatarFailure(userId, 'unknown reason'))

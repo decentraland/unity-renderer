@@ -56,7 +56,11 @@ export type NotifyNewInventoryItem = ReturnType<typeof notifyNewInventoryItem>
 
 export const saveAvatarRequest = (profile: { avatar: Avatar; body: string; face: string }, userId?: string) =>
   action(SAVE_AVATAR_REQUEST, { userId, profile })
-export const saveAvatarSuccess = (userId: string, version: number) => action(SAVE_AVATAR_SUCCESS, { userId, version })
+export const saveAvatarSuccess = (
+  userId: string,
+  version: number,
+  profile: { avatar: Avatar; body: string; face: string }
+) => action(SAVE_AVATAR_SUCCESS, { userId, version, profile })
 export const saveAvatarFailure = (userId: string, error: any) => action(SAVE_AVATAR_FAILURE, { userId, error })
 
 export type SaveAvatarRequest = ReturnType<typeof saveAvatarRequest>
