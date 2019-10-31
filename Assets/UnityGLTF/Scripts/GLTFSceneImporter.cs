@@ -1117,8 +1117,6 @@ namespace UnityGLTF
 
         private static void SetTangentMode(AnimationCurve curve, Keyframe[] keyframes, int keyframeIndex, InterpolationType interpolation)
         {
-            if (keyframeIndex >= curve.keys.Length) return;
-
             var key = keyframes[keyframeIndex];
 
             switch (interpolation)
@@ -1137,7 +1135,8 @@ namespace UnityGLTF
                     break;
             }
 
-            // NOTE (Pravs): Khronos GLTFLoader uses curve.MoveKey(keyframeIndex, key) instead but it has problems with same-time keyframes
+            // NOTE (Pravs): Khronos GLTFLoader uses curve.MoveKey(keyframeIndex, key) instead but it has problems with same-time keyframes.
+            // Beware that accessing 'curve.keys.Length' in this method generates a memory build crash with complex animations...
             curve.AddKey(key.time, key.value);
         }
 
