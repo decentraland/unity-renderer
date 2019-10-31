@@ -153,6 +153,8 @@ namespace DCL
             yield return null;
 
             CleanUpUnusedItems();
+
+            yield return null;
             bodyShapeController.SetAssetRenderersEnabled(true);
             ResolveWearablesVisibility();
 
@@ -294,7 +296,7 @@ namespace DCL
             }
         }
 
-        void OnDestroy()
+        protected virtual void OnDestroy()
         {
             ResetAvatar();
         }

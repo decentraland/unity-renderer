@@ -277,6 +277,5 @@ namespace AssetPromiseKeeper_GLTF_Tests
             Assert.IsTrue(library.Contains(asset));
             Assert.AreEqual(1, library.masterAssets.Count);
         }
-
     }
 }

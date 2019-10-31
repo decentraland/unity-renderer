@@ -134,7 +134,14 @@ namespace DCL
                 //             So it keeps being there. As master gltfs can't be in the world.
                 //
                 //             ApplySettings will reposition the newly Get asset to the proper coordinates.
-                asset = library.Get(asset.id);
+                if (settings.forceNewInstance)
+                {
+                    asset = (library as AssetLibrary_GLTF).GetCopyFromOriginal(asset.id);
+                }
+                else
+                {
+                    asset = library.Get(asset.id);
+                }
                 ApplySettings_LoadStart();
             }
         }
