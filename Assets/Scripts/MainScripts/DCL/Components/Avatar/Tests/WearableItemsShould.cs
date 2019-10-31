@@ -22,6 +22,8 @@ namespace AvatarShape_Tests
 
             return toReturn;
         }
+
+        protected override void OnDestroy() { }
     }
 
     class WearableController_Mock : WearableController
@@ -30,10 +32,13 @@ namespace AvatarShape_Tests
         public WearableController_Mock(WearableController original) : base(original) { }
 
         public Renderer[] myAssetRenderers => assetRenderers;
+        public GameObject myAssetContainer => this.assetContainer;
     }
 
     public class WearableItemsShould : TestsBase
     {
+        private const string SUNGLASSES_WEARABLE_ID = "dcl://base-avatars/black_sun_glasses";
+        private const string BANDANA_WEARABLE_ID = "dcl://base-avatars/blue_bandana";
         private AvatarModel avatarModel;
         private WearableDictionary catalog;
         private AvatarShape avatarShape;
@@ -63,29 +68,26 @@ namespace AvatarShape_Tests
         [UnityTest]
         public IEnumerator BeVisibleByDefault()
         {
-            var sunglassesId = "dcl://base-avatars/black_sun_glasses";
-            avatarModel.wearables = new List<string>() { sunglassesId };
+            avatarModel.wearables = new List<string>() { SUNGLASSES_WEARABLE_ID };
 
             yield return avatarShape.ApplyChanges(JsonUtility.ToJson(avatarModel));
 
-            var sunglassesController = new WearableController_Mock(AvatarRenderer_Mock.GetWearableControllers(avatarShape.avatarRenderer)[sunglassesId]);
+            var sunglassesController = new WearableController_Mock(AvatarRenderer_Mock.GetWearableControllers(avatarShape.avatarRenderer)[SUNGLASSES_WEARABLE_ID]);
             Assert.IsTrue(sunglassesController.myAssetRenderers.All(x => x.enabled));
         }
 
         [UnityTest]
         public IEnumerator BeHiddenByGeneralHides()
         {
-            var sunglassesId = "dcl://base-avatars/black_sun_glasses";
-            var sunglasses = catalog.Get(sunglassesId);
-            var bandanaId = "dcl://base-avatars/blue_bandana";
-            var bandana = catalog.Get(bandanaId);
+            var sunglasses = catalog.Get(SUNGLASSES_WEARABLE_ID);
+            var bandana = catalog.Get(BANDANA_WEARABLE_ID);
 
             bandana.hides = new [] { sunglasses.category };
-            avatarModel.wearables = new List<string>() { sunglassesId, bandanaId };
+            avatarModel.wearables = new List<string>() { SUNGLASSES_WEARABLE_ID, BANDANA_WEARABLE_ID };
             yield return avatarShape.ApplyChanges(JsonUtility.ToJson(avatarModel));
 
-            var sunglassesController = new WearableController_Mock(AvatarRenderer_Mock.GetWearableControllers(avatarShape.avatarRenderer)[sunglassesId]);
-            var bandanaController = new WearableController_Mock(AvatarRenderer_Mock.GetWearableControllers(avatarShape.avatarRenderer)[bandanaId]);
+            var sunglassesController = new WearableController_Mock(AvatarRenderer_Mock.GetWearableControllers(avatarShape.avatarRenderer)[SUNGLASSES_WEARABLE_ID]);
+            var bandanaController = new WearableController_Mock(AvatarRenderer_Mock.GetWearableControllers(avatarShape.avatarRenderer)[BANDANA_WEARABLE_ID]);
             Assert.IsTrue(sunglassesController.myAssetRenderers.All(x => !x.enabled));
             Assert.IsTrue(bandanaController.myAssetRenderers.All(x => x.enabled));
         }
@@ -93,17 +95,14 @@ namespace AvatarShape_Tests
         [UnityTest]
         public IEnumerator NotBeHiddenByWrongGeneralHides()
         {
-            var sunglassesId = "dcl://base-avatars/black_sun_glasses";
-            var sunglasses = catalog.Get(sunglassesId);
-            var bandanaId = "dcl://base-avatars/blue_bandana";
-            var bandana = catalog.Get(bandanaId);
+            var bandana = catalog.Get(BANDANA_WEARABLE_ID);
 
             bandana.hides = new [] { "NonExistentCategory" };
-            avatarModel.wearables = new List<string>() { sunglassesId, bandanaId };
+            avatarModel.wearables = new List<string>() { SUNGLASSES_WEARABLE_ID, BANDANA_WEARABLE_ID };
             yield return avatarShape.ApplyChanges(JsonUtility.ToJson(avatarModel));
 
-            var sunglassesController = new WearableController_Mock(AvatarRenderer_Mock.GetWearableControllers(avatarShape.avatarRenderer)[sunglassesId]);
-            var bandanaController = new WearableController_Mock(AvatarRenderer_Mock.GetWearableControllers(avatarShape.avatarRenderer)[bandanaId]);
+            var sunglassesController = new WearableController_Mock(AvatarRenderer_Mock.GetWearableControllers(avatarShape.avatarRenderer)[SUNGLASSES_WEARABLE_ID]);
+            var bandanaController = new WearableController_Mock(AvatarRenderer_Mock.GetWearableControllers(avatarShape.avatarRenderer)[BANDANA_WEARABLE_ID]);
             Assert.IsTrue(sunglassesController.myAssetRenderers.All(x => x.enabled));
             Assert.IsTrue(bandanaController.myAssetRenderers.All(x => x.enabled));
         }
@@ -111,17 +110,15 @@ namespace AvatarShape_Tests
         [UnityTest]
         public IEnumerator BeHiddenByOverrideHides()
         {
-            var sunglassesId = "dcl://base-avatars/black_sun_glasses";
-            var sunglasses = catalog.Get(sunglassesId);
-            var bandanaId = "dcl://base-avatars/blue_bandana";
-            var bandana = catalog.Get(bandanaId);
+            var sunglasses = catalog.Get(SUNGLASSES_WEARABLE_ID);
+            var bandana = catalog.Get(BANDANA_WEARABLE_ID);
 
             bandana.GetRepresentation(avatarModel.bodyShape).overrideHides = new [] { sunglasses.category };
-            avatarModel.wearables = new List<string>() { sunglassesId, bandanaId };
+            avatarModel.wearables = new List<string>() { SUNGLASSES_WEARABLE_ID, BANDANA_WEARABLE_ID };
             yield return avatarShape.ApplyChanges(JsonUtility.ToJson(avatarModel));
 
-            var sunglassesController = new WearableController_Mock(AvatarRenderer_Mock.GetWearableControllers(avatarShape.avatarRenderer)[sunglassesId]);
-            var bandanaController = new WearableController_Mock(AvatarRenderer_Mock.GetWearableControllers(avatarShape.avatarRenderer)[bandanaId]);
+            var sunglassesController = new WearableController_Mock(AvatarRenderer_Mock.GetWearableControllers(avatarShape.avatarRenderer)[SUNGLASSES_WEARABLE_ID]);
+            var bandanaController = new WearableController_Mock(AvatarRenderer_Mock.GetWearableControllers(avatarShape.avatarRenderer)[BANDANA_WEARABLE_ID]);
             Assert.IsTrue(sunglassesController.myAssetRenderers.All(x => !x.enabled));
             Assert.IsTrue(bandanaController.myAssetRenderers.All(x => x.enabled));
         }
@@ -129,19 +126,73 @@ namespace AvatarShape_Tests
         [UnityTest]
         public IEnumerator NotBeHiddenByOverrideHides()
         {
-            var sunglassesId = "dcl://base-avatars/black_sun_glasses";
-            var sunglasses = catalog.Get(sunglassesId);
-            var bandanaId = "dcl://base-avatars/blue_bandana";
-            var bandana = catalog.Get(bandanaId);
+            var sunglasses = catalog.Get(SUNGLASSES_WEARABLE_ID);
+            var bandana = catalog.Get(BANDANA_WEARABLE_ID);
 
             bandana.GetRepresentation("dcl://base-avatars/BaseMale").overrideHides = new [] { sunglasses.category };
-            avatarModel.wearables = new List<string>() { sunglassesId, bandanaId };
+            avatarModel.wearables = new List<string>() { SUNGLASSES_WEARABLE_ID, BANDANA_WEARABLE_ID };
             yield return avatarShape.ApplyChanges(JsonUtility.ToJson(avatarModel));
 
-            var sunglassesController = new WearableController_Mock(AvatarRenderer_Mock.GetWearableControllers(avatarShape.avatarRenderer)[sunglassesId]);
-            var bandanaController = new WearableController_Mock(AvatarRenderer_Mock.GetWearableControllers(avatarShape.avatarRenderer)[bandanaId]);
+            var sunglassesController = GetWearableControlled(SUNGLASSES_WEARABLE_ID);
+            var bandanaController = GetWearableControlled(BANDANA_WEARABLE_ID);
             Assert.IsTrue(sunglassesController.myAssetRenderers.All(x => x.enabled));
             Assert.IsTrue(bandanaController.myAssetRenderers.All(x => x.enabled));
+        }
+
+        [UnityTest]
+        public IEnumerator BeUnequipedProperly()
+        {
+            avatarModel.wearables = new List<string>() { SUNGLASSES_WEARABLE_ID };
+            yield return avatarShape.ApplyChanges(JsonUtility.ToJson(avatarModel));
+
+            avatarModel.wearables = new List<string>() { };
+            yield return avatarShape.ApplyChanges(JsonUtility.ToJson(avatarModel));
+            var wearableControllers = AvatarRenderer_Mock.GetWearableControllers(avatarShape.avatarRenderer);
+
+            Assert.IsFalse(wearableControllers.ContainsKey(SUNGLASSES_WEARABLE_ID));
+        }
+
+        [UnityTest]
+        public IEnumerator BeUnequipedProperlyMultipleTimes()
+        {
+            List<GameObject> containers = new List<GameObject>();
+
+            for (int i = 0; i < 6; i++)
+            {
+                avatarModel.wearables = new List<string>() { SUNGLASSES_WEARABLE_ID };
+                yield return avatarShape.ApplyChanges(JsonUtility.ToJson(avatarModel));
+                containers.Add(GetWearableControlled(SUNGLASSES_WEARABLE_ID)?.myAssetContainer);
+
+                avatarModel.wearables = new List<string>() { };
+                yield return avatarShape.ApplyChanges(JsonUtility.ToJson(avatarModel));
+            }
+
+            Assert.IsTrue(containers.All(x => x == null));
+        }
+
+        [UnityTest]
+        public IEnumerator BeRetrievedWithoutPoolableObject()
+        {
+            List<GameObject> containers = new List<GameObject>();
+
+            avatarModel.wearables = new List<string>() { SUNGLASSES_WEARABLE_ID, BANDANA_WEARABLE_ID };
+            yield return avatarShape.ApplyChanges(JsonUtility.ToJson(avatarModel));
+
+            var sunglassesAssetContainer = GetWearableControlled(SUNGLASSES_WEARABLE_ID)?.myAssetContainer;
+            var bandanaAssetContainer = GetWearableControlled(BANDANA_WEARABLE_ID)?.myAssetContainer;
+            var sunglassesPoolableObject = sunglassesAssetContainer.GetComponentInChildren<PoolableObject>();
+            var bandanaPoolableObject = bandanaAssetContainer.GetComponentInChildren<PoolableObject>();
+            Assert.IsNull(sunglassesPoolableObject);
+            Assert.IsNull(bandanaPoolableObject);
+        }
+
+        private WearableController_Mock GetWearableControlled(string id)
+        {
+            var wearableControllers = AvatarRenderer_Mock.GetWearableControllers(avatarShape.avatarRenderer);
+            if (!wearableControllers.ContainsKey(id))
+                return null;
+
+            return new WearableController_Mock(wearableControllers[id]);
         }
     }
 }
