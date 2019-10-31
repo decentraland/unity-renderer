@@ -993,6 +993,7 @@ GameObject:
   - component: {fileID: 7408043784750511372}
   - component: {fileID: 2784302339898828865}
   - component: {fileID: 9217961843191164369}
+  - component: {fileID: 8563204964453992686}
   m_Layer: 5
   m_Name: BookmarkButton
   m_TagString: Untagged
@@ -1096,13 +1097,25 @@ MonoBehaviour:
     m_PressedTrigger: Pressed
     m_SelectedTrigger: Selected
     m_DisabledTrigger: Disabled
-  m_Interactable: 1
+  m_Interactable: 0
   m_TargetGraphic: {fileID: 2784302339898828865}
   m_OnClick:
     m_PersistentCalls:
       m_Calls: []
     m_TypeName: UnityEngine.UI.Button+ButtonClickedEvent, UnityEngine.UI, Version=1.0.0.0,
       Culture=neutral, PublicKeyToken=null
+--- !u!225 &8563204964453992686
+CanvasGroup:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4285910043050766312}
+  m_Enabled: 1
+  m_Alpha: 0.2
+  m_Interactable: 0
+  m_BlocksRaycasts: 1
+  m_IgnoreParentGroups: 0
 --- !u!1 &4525154057530514719
 GameObject:
   m_ObjectHideFlags: 0
@@ -1705,6 +1718,7 @@ GameObject:
   - component: {fileID: 1521892157688215748}
   - component: {fileID: 1065863209115981485}
   - component: {fileID: 7331797177246822788}
+  - component: {fileID: 4881649985720352001}
   m_Layer: 5
   m_Name: ReportButton
   m_TagString: Untagged
@@ -1808,13 +1822,25 @@ MonoBehaviour:
     m_PressedTrigger: Pressed
     m_SelectedTrigger: Selected
     m_DisabledTrigger: Disabled
-  m_Interactable: 1
+  m_Interactable: 0
   m_TargetGraphic: {fileID: 1065863209115981485}
   m_OnClick:
     m_PersistentCalls:
       m_Calls: []
     m_TypeName: UnityEngine.UI.Button+ButtonClickedEvent, UnityEngine.UI, Version=1.0.0.0,
       Culture=neutral, PublicKeyToken=null
+--- !u!225 &4881649985720352001
+CanvasGroup:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7080230803092101572}
+  m_Enabled: 1
+  m_Alpha: 0.2
+  m_Interactable: 0
+  m_BlocksRaycasts: 1
+  m_IgnoreParentGroups: 0
 --- !u!1 &7809519774151904005
 GameObject:
   m_ObjectHideFlags: 0
@@ -1975,7 +2001,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: fa50800d09f194fb9a8d2b019c176344, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  sensitivity: -0.75
+  sensitivity: -1.5
 --- !u!1 &8295293324485087332
 GameObject:
   m_ObjectHideFlags: 0
@@ -2060,7 +2086,6 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 6627286263927405617}
-  - component: {fileID: 1507992517120144304}
   m_Layer: 5
   m_Name: MinimapOptionsPanel
   m_TagString: Untagged
@@ -2090,31 +2115,3 @@ RectTransform:
   m_AnchoredPosition: {x: 193, y: -136}
   m_SizeDelta: {x: 188, y: 114}
   m_Pivot: {x: 0, y: 1}
---- !u!114 &1507992517120144304
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 9172043143630568996}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: bc25e225a21714473b9b715b8fb34995, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  callback:
-    m_PersistentCalls:
-      m_Calls:
-      - m_Target: {fileID: 9172043143630568996}
-        m_MethodName: SetActive
-        m_Mode: 6
-        m_Arguments:
-          m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: 0
-          m_FloatArgument: 0
-          m_StringArgument: 
-          m_BoolArgument: 0
-        m_CallState: 2
-    m_TypeName: UnityEngine.Events.UnityEvent, UnityEngine.CoreModule, Version=0.0.0.0,
-      Culture=neutral, PublicKeyToken=null

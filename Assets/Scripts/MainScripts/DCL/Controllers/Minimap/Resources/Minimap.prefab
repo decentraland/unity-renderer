@@ -117,7 +117,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0ef622d288be40f0a6bc111fe7b34eec, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  sideCount: 4
+  sideCount: 8
 --- !u!1 &922216676379941323
 GameObject:
   m_ObjectHideFlags: 0
@@ -195,6 +195,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2a51597f0ba055e4ab6f6287b2eee5dd, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  closestZoom: 25
+  farthestZoom: 100
   northLocked: 1
   camera: {fileID: 1789632693432363218}
 --- !u!1 &1624375747953361057
