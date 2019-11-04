@@ -22,12 +22,34 @@ namespace AvatarShape_Tests
 
             return toReturn;
         }
+
+        public static BodyShapeController GetBodyShape(AvatarRenderer renderer)
+        {
+            var avatarRendererMock = new GameObject("Temp").AddComponent<AvatarRenderer_Mock>();
+            avatarRendererMock.CopyFrom(renderer);
+
+            var toReturn = avatarRendererMock.bodyShapeController;
+            Destroy(avatarRendererMock.gameObject);
+
+            return toReturn;
+        }
+
+        protected override void OnDestroy() { }
     }
 
     class WearableController_Mock : WearableController
     {
         public WearableController_Mock(WearableItem wearableItem, string bodyShapeType) : base(wearableItem, bodyShapeType) { }
         public WearableController_Mock(WearableController original) : base(original) { }
+
+        public Renderer[] myAssetRenderers => assetRenderers;
+        public GameObject myAssetContainer => this.assetContainer;
+    }
+
+    class BodyShapeController_Mock : BodyShapeController
+    {
+        public BodyShapeController_Mock(WearableItem original) : base(original) { }
+        public BodyShapeController_Mock(WearableController original) : base(original) { }
 
         public Renderer[] myAssetRenderers => assetRenderers;
         public GameObject myAssetContainer => this.assetContainer;
@@ -172,8 +194,6 @@ namespace AvatarShape_Tests
         [UnityTest]
         public IEnumerator BeRetrievedWithoutPoolableObject()
         {
-            List<GameObject> containers = new List<GameObject>();
-
             avatarModel.wearables = new List<string>() { SUNGLASSES_ID, BLUE_BANDANA_ID };
             yield return avatarShape.ApplyChanges(JsonUtility.ToJson(avatarModel));
 
@@ -185,6 +205,20 @@ namespace AvatarShape_Tests
             Assert.IsNull(bandanaPoolableObject);
         }
 
+        [UnityTest]
+        public IEnumerator HideBodyShapeProperly()
+        {
+            catalog.Get(SUNGLASSES_ID).hides = new [] { WearableLiterals.Misc.HEAD };
+            avatarModel.wearables = new List<string>() { SUNGLASSES_ID, BLUE_BANDANA_ID };
+            yield return avatarShape.ApplyChanges(JsonUtility.ToJson(avatarModel));
+
+            var bodyShapeAssetContainer = GetBodyShapeController()?.myAssetContainer;
+            Assert.IsNotNull(bodyShapeAssetContainer);
+
+            var renderers = bodyShapeAssetContainer.GetComponentsInChildren<Renderer>();
+            Assert.IsTrue(renderers.All(x => !x.enabled));
+        }
+
         private WearableController_Mock GetWearableControlled(string id)
         {
             var wearableControllers = AvatarRenderer_Mock.GetWearableControllers(avatarShape.avatarRenderer);
@@ -192,6 +226,14 @@ namespace AvatarShape_Tests
                 return null;
 
             return new WearableController_Mock(wearableControllers[id]);
+        }
+
+        private BodyShapeController_Mock GetBodyShapeController()
+        {
+            var bodyShapeController = AvatarRenderer_Mock.GetBodyShape(avatarShape.avatarRenderer);
+            if (bodyShapeController == null) return null;
+
+            return new BodyShapeController_Mock(bodyShapeController);
         }
     }
 }

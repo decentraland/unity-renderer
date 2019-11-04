@@ -20,7 +20,7 @@ namespace DCL
         Action OnSuccessCallback;
         Action OnFailCallback;
 
-        BodyShapeController bodyShapeController;
+        protected BodyShapeController bodyShapeController;
         protected Dictionary<string, WearableController> wearablesController = new Dictionary<string, WearableController>();
         FacialFeatureController eyesController;
         FacialFeatureController eyebrowsController;
@@ -153,7 +153,7 @@ namespace DCL
 
             yield return null;
             bodyShapeController.SetAssetRenderersEnabled(true);
-            ResolveWearablesVisibility();
+            ResolveVisibility();
 
             OnSuccessCallback?.Invoke();
         }
@@ -232,9 +232,11 @@ namespace DCL
             return true;
         }
 
-        public void ResolveWearablesVisibility()
+        public void ResolveVisibility()
         {
             HashSet<string> hiddenCategories = CreateHiddenList();
+
+            bodyShapeController.SetAssetRenderersEnabled(!hiddenCategories.Contains(WearableLiterals.Misc.HEAD));
 
             using (var iterator = wearablesController.GetEnumerator())
             {

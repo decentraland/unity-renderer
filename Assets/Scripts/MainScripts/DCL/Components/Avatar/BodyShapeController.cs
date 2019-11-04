@@ -6,6 +6,7 @@ public class BodyShapeController : WearableController
     public string bodyShapeType => wearable.id;
 
     public BodyShapeController(WearableItem wearableItem) : base(wearableItem, wearableItem?.id) { }
+    protected BodyShapeController(WearableController original) : base(original) { }
 
     public Animation PrepareAnimation()
     {
