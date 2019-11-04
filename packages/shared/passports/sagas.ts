@@ -1,5 +1,5 @@
 import { getFromLocalStorage, saveToLocalStorage } from 'atomicHelpers/localStorage'
-import { call, fork, put, race, select, take, takeEvery, takeLatest } from 'redux-saga/effects'
+import { call, fork, put, race, select, take, takeEvery, takeLatest, cancel, ForkEffect } from 'redux-saga/effects'
 import { NotificationType } from 'shared/types'
 import { getServerConfigurations } from '../../config'
 import { getAccessToken, getCurrentUserId, getEmail } from '../auth/selectors'
@@ -16,7 +16,6 @@ import {
   InventoryRequest,
   inventoryRequest,
   inventorySuccess,
-  InventorySuccess,
   INVENTORY_FAILURE,
   INVENTORY_REQUEST,
   INVENTORY_SUCCESS,
@@ -35,7 +34,8 @@ import {
   SaveAvatarRequest,
   saveAvatarSuccess,
   SAVE_AVATAR_REQUEST,
-  setProfileServer
+  setProfileServer,
+  InventorySuccess
 } from './actions'
 import { generateRandomUserProfile } from './generateRandomUserProfile'
 import { baseCatalogsLoaded, getEthereumAddress, getInventory, getProfile, getProfileDownloadServer } from './selectors'
@@ -43,6 +43,10 @@ import { processServerProfile } from './transformations/processServerProfile'
 import { profileToRendererFormat } from './transformations/profileToRendererFormat'
 import { ensureServerFormat } from './transformations/profileToServerFormat'
 import { Avatar, Catalog, Profile, WearableId } from './types'
+import { Action } from 'redux'
+
+const isActionFor = (type: string, userId: string) => (action: any) =>
+  action.type === type && action.payload.userId === userId
 
 /**
  * This saga handles both passports and assets required for the renderer to show the
@@ -64,7 +68,11 @@ export function* passportSaga(): any {
 
   yield takeLatest(ADD_CATALOG, handleAddCatalog)
 
-  yield takeLatest(PASSPORT_REQUEST, handleFetchProfile)
+  yield takeLatestById(
+    PASSPORT_REQUEST,
+    (action: PassportRequestAction) => action.type + action.payload.userId,
+    handleFetchProfile
+  )
   yield takeLatest(PASSPORT_SUCCESS, submitPassportToRenderer)
   yield takeLatest(PASSPORT_RANDOM, handleRandomAsSuccess)
 
@@ -75,6 +83,27 @@ export function* passportSaga(): any {
   yield takeLatest(NOTIFY_NEW_INVENTORY_ITEM, handleNewInventoryItem)
 
   yield fork(queryInventoryEveryMinute)
+}
+
+function takeLatestById<T extends Action>(
+  patternOrChannel: any,
+  keyFunction: (action: T) => string,
+  saga: any,
+  ...args: any
+): ForkEffect<never> {
+  return fork(function*() {
+    let lastTasks = new Map<any, any>()
+    while (true) {
+      const action = yield take(patternOrChannel)
+      const key = keyFunction(action)
+      const task = lastTasks.get(key)
+      if (task) {
+        lastTasks.delete(key)
+        yield cancel(task) // cancel is no-op if the task has already terminated
+      }
+      lastTasks.set(key, yield fork(saga, ...args.concat(action)))
+    }
+  })
 }
 
 export function* initialLoad() {
@@ -104,8 +133,8 @@ export function* handleFetchProfile(action: PassportRequestAction): any {
     if (profile.ethAddress) {
       yield put(inventoryRequest(userId, profile.ethAddress))
       const inventoryResult = yield race({
-        success: take(INVENTORY_SUCCESS),
-        failure: take(INVENTORY_FAILURE)
+        success: take(isActionFor(INVENTORY_SUCCESS, userId)),
+        failure: take(isActionFor(INVENTORY_FAILURE, userId))
       })
       if (inventoryResult.failure) {
         defaultLogger.error(`Unable to fetch inventory for ${userId}:`, inventoryResult.failure)
@@ -115,7 +144,7 @@ export function* handleFetchProfile(action: PassportRequestAction): any {
     } else {
       profile.inventory = []
     }
-    const passport = processServerProfile(userId, profile)
+    const passport = yield call(processServerProfile, userId, profile)
     yield put(passportSuccess(userId, passport))
   } catch (error) {
     const randomizedUserProfile = yield call(generateRandomUserProfile, userId)
