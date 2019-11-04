@@ -48,6 +48,12 @@ import { Action } from 'redux'
 const isActionFor = (type: string, userId: string) => (action: any) =>
   action.type === type && action.payload.userId === userId
 
+const concatenatedActionTypeUserId = (action: { type: string; payload: { userId: string } }) =>
+  action.type + action.payload.userId
+
+const takeLatestByUserId = (patternOrChannel: any, saga: any, ...args: any) =>
+  takeLatestById(patternOrChannel, concatenatedActionTypeUserId, saga, ...args)
+
 /**
  * This saga handles both passports and assets required for the renderer to show the
  * users' inventory and avatar editor.
@@ -68,17 +74,13 @@ export function* passportSaga(): any {
 
   yield takeLatest(ADD_CATALOG, handleAddCatalog)
 
-  yield takeLatestById(
-    PASSPORT_REQUEST,
-    (action: PassportRequestAction) => action.type + action.payload.userId,
-    handleFetchProfile
-  )
-  yield takeLatest(PASSPORT_SUCCESS, submitPassportToRenderer)
-  yield takeLatest(PASSPORT_RANDOM, handleRandomAsSuccess)
+  yield takeLatestByUserId(PASSPORT_REQUEST, handleFetchProfile)
+  yield takeLatestByUserId(PASSPORT_SUCCESS, submitPassportToRenderer)
+  yield takeLatestByUserId(PASSPORT_RANDOM, handleRandomAsSuccess)
 
-  yield takeLatest(SAVE_AVATAR_REQUEST, handleSaveAvatar)
+  yield takeLatestByUserId(SAVE_AVATAR_REQUEST, handleSaveAvatar)
 
-  yield takeLatest(INVENTORY_REQUEST, handleFetchInventory)
+  yield takeLatestByUserId(INVENTORY_REQUEST, handleFetchInventory)
 
   yield takeLatest(NOTIFY_NEW_INVENTORY_ITEM, handleNewInventoryItem)
 
