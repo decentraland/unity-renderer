@@ -2,6 +2,11 @@ using System.Collections.Generic;
 
 public static class WearableLiterals
 {
+    public static class Misc
+    {
+        public const string HEAD = "head";
+    }
+    
     public static class Categories
     {
         public const string BODY_SHAPE = "body_shape";

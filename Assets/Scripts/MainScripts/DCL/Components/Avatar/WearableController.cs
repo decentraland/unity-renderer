@@ -28,8 +28,8 @@ public class WearableController
         this.wearable = wearableItem;
         this.bodyShapeType = bodyShapeType;
     }
-    
-    public WearableController(WearableController original)
+
+    protected WearableController(WearableController original)
     {
         wearable = original.wearable;
         promise = original.promise;
