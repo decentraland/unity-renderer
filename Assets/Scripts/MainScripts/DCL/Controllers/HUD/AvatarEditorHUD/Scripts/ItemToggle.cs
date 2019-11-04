@@ -15,7 +15,9 @@ public class ItemToggle : UIButton, IPointerEnterHandler, IPointerExitHandler
     [SerializeField] private GameObject warningPanel;
 
     private bool selectedValue;
-    public static Func<WearableItem, List<string>> getWearablesReplacedByFunc;
+
+    //Todo change this for a confirmation popup or implement it in a more elegant way
+    public static Func<WearableItem, List<WearableItem>> getEquippedWearablesReplacedByFunc;
 
     public bool selected
     {
@@ -60,11 +62,11 @@ public class ItemToggle : UIButton, IPointerEnterHandler, IPointerExitHandler
 
     public void OnPointerEnter(PointerEventData eventData)
     {
-        List<string> toReplace = getWearablesReplacedByFunc(wearableItem);
+        List<WearableItem> toReplace = getEquippedWearablesReplacedByFunc(wearableItem);
         if (wearableItem == null || toReplace.Count == 0) return;
         if (toReplace.Count == 1)
         {
-            WearableItem w = CatalogController.wearableCatalog.Get(toReplace[0]);
+            WearableItem w = toReplace[0];
             if (w.category == wearableItem.category) return;
         }
 
@@ -79,5 +81,13 @@ public class ItemToggle : UIButton, IPointerEnterHandler, IPointerExitHandler
     private void OnThumbnailReady(Sprite sprite)
     {
         thumbnail.sprite = sprite;
+    }
+
+    private void OnDestroy()
+    {
+        if (wearableItem != null)
+        {
+            ThumbnailsManager.CancelRequest(wearableItem.baseUrl + wearableItem.thumbnail, OnThumbnailReady);
+        }
     }
 }

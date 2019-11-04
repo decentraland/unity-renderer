@@ -1,5 +1,5 @@
 ﻿using System.Collections.Generic;
-using System.Linq;
+using DCL.Helpers;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -74,14 +74,11 @@ public class ColorSelector : MonoBehaviour
 
     private ColorToggle GetColorToggle(Color color)
     {
-        const float tolerance = 0.004f; // roughly 1f / 255f
-
-        for (int i = 0; i < colorToggles.Count; i++)
+        int colorTogglesCount = colorToggles.Count;
+        for (int i = 0; i < colorTogglesCount; i++)
         {
             Color current = colorToggles[i].color;
-            if (Mathf.Abs(current.r - color.r) < tolerance
-                && Mathf.Abs(current.g - color.g) < tolerance
-                && Mathf.Abs(current.b - color.b) < tolerance)
+            if (color.AproxComparison(current))
             {
                 return colorToggles[i];
             }

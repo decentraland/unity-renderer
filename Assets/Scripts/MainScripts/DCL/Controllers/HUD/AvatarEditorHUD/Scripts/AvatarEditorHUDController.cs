@@ -1,198 +1,337 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using DCL.Helpers;
 using DCL.Interface;
 using UnityEngine;
-using Object = UnityEngine.Object;
+using Categories = WearableLiterals.Categories;
 
 public class AvatarEditorHUDController : IDisposable, IHUD
 {
-    private AvatarEditorHUDView view;
-    protected AvatarEditorHUDModel model { get; } = new AvatarEditorHUDModel();
+    protected static readonly string[] categoriesThatMustHaveSelection = { Categories.BODY_SHAPE, Categories.UPPER_BODY, Categories.LOWER_BODY, Categories.FEET, Categories.EYES, Categories.EYEBROWS, Categories.MOUTH };
+    protected static readonly string[] categoriesToRandomize = { Categories.HAIR, Categories.EYES, Categories.EYEBROWS, Categories.MOUTH, Categories.FACIAL, Categories.HAIR, Categories.UPPER_BODY, Categories.LOWER_BODY, Categories.FEET };
 
-    private readonly UserProfile userProfile;
-    private readonly WearableDictionary catalog;
+    private UserProfile userProfile;
+    private WearableDictionary catalog;
+    private readonly Dictionary<string, List<WearableItem>> wearablesByCategory = new Dictionary<string, List<WearableItem>>();
+    protected readonly AvatarEditorHUDModel model = new AvatarEditorHUDModel();
 
-    private string[] inventory = { };
+    private ColorList skinColorList;
+    private ColorList eyeColorList;
+    private ColorList hairColorList;
+
+    protected AvatarEditorHUDView view;
 
     public AvatarEditorHUDController(UserProfile userProfile, WearableDictionary catalog)
     {
         view = AvatarEditorHUDView.Create(this);
-        view.OnItemSelected += OnItemSelected;
-        view.OnItemDeselected += OnItemDeselected;
-        view.OnSkinColorChanged += OnSkinColorChanged;
-        view.OnHairColorChanged += OnHairColorChanged;
-        view.OnEyeColorChanged += OnEyeColorChanged;
+
+        skinColorList = Resources.Load<ColorList>("SkinTone");
+        hairColorList = Resources.Load<ColorList>("HairColor");
+        eyeColorList = Resources.Load<ColorList>("EyeColor");
+        view.SetColors(skinColorList.colors, hairColorList.colors, eyeColorList.colors);
 
         this.catalog = catalog;
-        this.catalog.OnAdded += AddCatalogItem;
-        this.catalog.OnRemoved += RemoveCatalogItem;
         ProcessCatalog(this.catalog);
+        this.catalog.OnAdded += AddWearable;
+        this.catalog.OnRemoved += RemoveWearable;
 
         this.userProfile = userProfile;
-        this.userProfile.OnUpdate += OnUserProfileUpdate;
-        OnUserProfileUpdate(this.userProfile);
-
-        SetVisibility(false);
+        LoadUserProfile(userProfile);
+        this.userProfile.OnUpdate += LoadUserProfile;
     }
 
-    private void ProcessCatalog(WearableDictionary wearableDictionary)
+    private void LoadUserProfile(UserProfile userProfile)
     {
-        using (var iterator = wearableDictionary.GetEnumerator())
+        if (userProfile?.avatar == null || string.IsNullOrEmpty(userProfile.avatar.bodyShape)) return;
+
+        var bodyShape = CatalogController.wearableCatalog.Get(userProfile.avatar.bodyShape);
+        if (bodyShape == null)
         {
-            while (iterator.MoveNext())
-            {
-                AddCatalogItem(iterator.Current.Key, iterator.Current.Value);
-            }
+            return;
         }
-    }
 
-    private void OnUserProfileUpdate(UserProfile profile)
-    {
-        ProcessInventory(profile.inventory);
-        model.avatarModel.CopyFrom(profile.avatar);
-        UpdateAvatarModel();
-    }
+        EquipBodyShape(bodyShape);
+        EquipSkinColor(userProfile.avatar.skinColor);
+        EquipHairColor(userProfile.avatar.hairColor);
+        EquipEyesColor(userProfile.avatar.eyeColor);
 
-    private void ProcessInventory(string[] newInventory)
-    {
-        if (newInventory == null) newInventory = new string[] { };
-
-        IEnumerable<string> removed = inventory.Where((i) => !newInventory.Contains(i));
-        IEnumerable<string> added = newInventory.Where((i) => !inventory.Contains(i));
-
-        using (IEnumerator<string> iterator = removed.GetEnumerator())
+        model.wearables.Clear();
+        view.UnselectAllWearables();
+        int wearablesCount = userProfile.avatar.wearables.Count;
+        for (var i = 0; i < wearablesCount; i++)
         {
-            while (iterator.MoveNext())
+            var wearable = CatalogController.wearableCatalog.Get(userProfile.avatar.wearables[i]);
+            if (wearable == null)
             {
-                if (catalog.TryGetValue(iterator.Current, out WearableItem item))
+                Debug.LogError($"Couldn't find wearable with ID {userProfile.avatar.wearables[i]}");
+                continue;
+            }
+            EquipWearable(wearable);
+        }
+        EnsureWearablesCategoriesNotEmpty();
+
+        view.UpdateAvatarPreview(model.ToAvatarModel());
+    }
+
+    private void EnsureWearablesCategoriesNotEmpty()
+    {
+        var categoriesInUse = model.wearables.Select(x => x.category).ToArray();
+        for (var i = 0; i < categoriesThatMustHaveSelection.Length; i++)
+        {
+            var category = categoriesThatMustHaveSelection[i];
+            if (category != Categories.BODY_SHAPE && !(categoriesInUse.Contains(category)))
+            {
+                WearableItem wearable;
+                var defaultItemId = WearableLiterals.DefaultWearables.GetDefaultWearable(model.bodyShape.id, category);
+                if (defaultItemId != null)
                 {
-                    view.RemoveWearable(item);
+                    wearable = CatalogController.wearableCatalog.Get(defaultItemId);
                 }
                 else
                 {
-                    Debug.LogError($"Item {iterator.Current} does not exist in catalog.");
+                    wearable = wearablesByCategory[category].FirstOrDefault(x => x.SupportsBodyShape(model.bodyShape.id));
+                }
+
+                if (wearable != null)
+                {
+                    EquipWearable(wearable);
                 }
             }
         }
+    }
 
-        using (IEnumerator<string> iterator = added.GetEnumerator())
+    public void WearableClicked(string wearableId)
+    {
+        var wearable = CatalogController.wearableCatalog.Get(wearableId);
+        if (wearable == null) return;
+
+        if (wearable.category == Categories.BODY_SHAPE)
+        {
+            EquipBodyShape(wearable);
+        }
+        else
+        {
+            if (model.wearables.Contains(wearable))
+            {
+                if (!categoriesThatMustHaveSelection.Contains(wearable.category))
+                {
+                    UnequipWearable(wearable);
+                }
+            }
+            else
+            {
+                var sameCategoryEquipped = model.wearables.FirstOrDefault(x => x.category == wearable.category);
+                if (sameCategoryEquipped != null)
+                {
+                    UnequipWearable(sameCategoryEquipped);
+                }
+                EquipWearable(wearable);
+            }
+        }
+        view.UpdateAvatarPreview(model.ToAvatarModel());
+    }
+
+    public void HairColorClicked(Color color)
+    {
+        EquipHairColor(color);
+        view.SelectHairColor(model.hairColor);
+        view.UpdateAvatarPreview(model.ToAvatarModel());
+    }
+
+    public void SkinColorClicked(Color color)
+    {
+        EquipSkinColor(color);
+        view.SelectSkinColor(model.skinColor);
+        view.UpdateAvatarPreview(model.ToAvatarModel());
+    }
+
+    public void EyesColorClicked(Color color)
+    {
+        EquipEyesColor(color);
+        view.SelectEyeColor(model.eyesColor);
+        view.UpdateAvatarPreview(model.ToAvatarModel());
+    }
+
+    private void EquipHairColor(Color color)
+    {
+        if (hairColorList.colors.Any(x => x.AproxComparison(color)))
+        {
+            model.hairColor = color;
+            view.SelectHairColor(model.hairColor);
+        }
+    }
+
+    private void EquipEyesColor(Color color)
+    {
+        if (eyeColorList.colors.Any(x => x.AproxComparison(color)))
+        {
+            model.eyesColor = color;
+            view.SelectEyeColor(model.eyesColor);
+        }
+    }
+
+    private void EquipSkinColor(Color color)
+    {
+        if (skinColorList.colors.Any(x => x.AproxComparison(color)))
+        {
+            model.skinColor = color;
+            view.SelectSkinColor(model.skinColor);
+        }
+    }
+    
+    private void EquipBodyShape(WearableItem bodyShape)
+    {
+        if (bodyShape.category != Categories.BODY_SHAPE )
+        {
+            Debug.LogError($"Item ({bodyShape.id} is not a body shape");
+            return;
+        }
+        if (model.bodyShape == bodyShape) return;
+
+        model.bodyShape = bodyShape;
+        view.UpdateSelectedBody(bodyShape);
+
+        var notSupported = new List<WearableItem>();
+        int wearablesCount = model.wearables.Count;
+        for (var i = 0; i < wearablesCount; i++)
+        {
+            if (!model.wearables[i].SupportsBodyShape(model.bodyShape.id))
+                notSupported.Add(model.wearables[i]);
+        }
+
+        int notSupportedCount = notSupported.Count;
+        for (var i = 0; i < notSupportedCount; i++)
+        {
+            var wearableToBeReplaced = notSupported[i];
+            UnequipWearable(wearableToBeReplaced);
+            var newWearable = wearablesByCategory[wearableToBeReplaced.category].FirstOrDefault(x => x.SupportsBodyShape(model.bodyShape.id));
+            if (newWearable != null)
+            {
+                EquipWearable(newWearable);
+            }
+        }
+    }
+
+    private void EquipWearable(WearableItem wearable)
+    {
+        if (wearablesByCategory[wearable.category].Contains(wearable) && wearable.SupportsBodyShape(model.bodyShape.id) && !model.wearables.Contains(wearable))
+        {
+            var toReplace = GetWearablesReplacedBy(wearable);
+            toReplace.ForEach(UnequipWearable);
+            model.wearables.Add(wearable);
+            view.SelectWearable(wearable);
+        }
+    }
+
+    private void UnequipWearable(WearableItem wearable)
+    {
+        if (model.wearables.Contains(wearable))
+        {
+            model.wearables.Remove(wearable);
+            view.UnselectWearable(wearable);
+        }
+    }
+
+    private void ProcessCatalog(WearableDictionary catalog)
+    {
+        wearablesByCategory.Clear();
+        using (var iterator = catalog.GetEnumerator())
         {
             while (iterator.MoveNext())
             {
-                if (catalog.TryGetValue(iterator.Current, out WearableItem item))
-                {
-                    view.AddWearable(item);
-                }
-                else
-                {
-                    Debug.LogError($"Item {iterator.Current} does not exist in catalog.");
-                }
+                AddWearable(iterator.Current.Key, iterator.Current.Value);
             }
         }
-
-        inventory = newInventory;
     }
 
-    private void AddCatalogItem(string key, WearableItem value)
+    private void AddWearable(string id, WearableItem wearable)
     {
-        if (value.tags.Contains(WearableItem.baseWearableTag))
+        if (!wearable.tags.Contains("base-wearable") && !userProfile.ContainsItem(id))
         {
-            view.AddWearable(value);
+            return;
         }
-    }
 
-    private void RemoveCatalogItem(string key, WearableItem value)
-    {
-        if (value.tags.Contains(WearableItem.baseWearableTag))
+        if (!wearablesByCategory.ContainsKey(wearable.category))
         {
-            view.RemoveWearable(value);
+            wearablesByCategory.Add(wearable.category, new List<WearableItem>());
         }
+        wearablesByCategory[wearable.category].Add(wearable);
+        view.AddWearable(wearable);
     }
 
-    private void UpdateAvatarModel()
+    private void RemoveWearable(string id, WearableItem wearable)
     {
-        view.UpdateAvatarModel(model.avatarModel);
-    }
-
-    private void UpdateAvatarPreview()
-    {
-        view.UpdateAvatarPreview(model.avatarModel);
-    }
-
-    private void OnSkinColorChanged(UnityEngine.Color color)
-    {
-        model.avatarModel.skinColor = color;
-        UpdateAvatarPreview();
-    }
-
-    private void OnHairColorChanged(UnityEngine.Color color)
-    {
-        model.avatarModel.hairColor = color;
-        UpdateAvatarPreview();
-    }
-
-    private void OnEyeColorChanged(UnityEngine.Color color)
-    {
-        model.avatarModel.eyeColor = color;
-        UpdateAvatarPreview();
-    }
-
-    protected void OnItemSelected(WearableItem asset)
-    {
-        bool selectorsNeedUpdate = false;
-
-        if (asset.category == WearableItem.bodyShapeCategory)
+        if (wearablesByCategory.ContainsKey(wearable.category))
         {
-            model.avatarModel.bodyShape = asset.id;
-            view.UpdateSelectedBody(model.avatarModel);
-        }
-        else
-        {
-            if (model.avatarModel.wearables.Contains(asset.id)) return;
-
-            List<string> toReplace = GetWearablesReplacedBy(asset);
-            int replaceCount = toReplace.Count;
-            for (int i = 0; i < replaceCount; i++)
+            if (wearablesByCategory[wearable.category].Remove(wearable))
             {
-                model.avatarModel.wearables.Remove(toReplace[i]);
+                if (wearablesByCategory[wearable.category].Count == 0)
+                {
+                    wearablesByCategory.Remove(wearable.category);
+                }
             }
-            selectorsNeedUpdate = toReplace.Count > 0;
-            
-            model.avatarModel.wearables.Add(asset.id);
         }
+        view.RemoveWearable(wearable);
+    }
 
-        if (selectorsNeedUpdate)
+    public void RandomizeWearables()
+    {
+        EquipHairColor(hairColorList.colors[UnityEngine.Random.Range(0, hairColorList.colors.Count)]);
+        EquipEyesColor(eyeColorList.colors[UnityEngine.Random.Range(0, eyeColorList.colors.Count)]);
+
+        model.wearables.Clear();
+        view.UnselectAllWearables();
+        using (var iterator = wearablesByCategory.GetEnumerator())
         {
-            UpdateAvatarModel();
+            while (iterator.MoveNext())
+            {
+                string category = iterator.Current.Key;
+                if (!categoriesToRandomize.Contains(category))
+                {
+                    continue;
+                }
+
+                var supportedWearables = iterator.Current.Value.Where(x => x.SupportsBodyShape(model.bodyShape.id)).ToArray();
+                if (supportedWearables.Length == 0)
+                {
+                    Debug.LogError($"Couldn't get any wearable for category {category} and bodyshape {model.bodyShape.id}");
+                }
+                var wearable = supportedWearables[UnityEngine.Random.Range(0, supportedWearables.Length - 1)];
+                EquipWearable(wearable);
+            }
         }
-        else
+        view.UpdateAvatarPreview(model.ToAvatarModel());
+    }
+
+    public List<WearableItem> GetWearablesReplacedBy(WearableItem wearableItem)
+    {
+        List<WearableItem> wearablesToReplace = new List<WearableItem>();
+
+        HashSet<string> categoriesToReplace = new HashSet<string>(wearableItem.GetReplacesList(model.bodyShape.id) ?? new string[0]);
+
+        int wearableCount = model.wearables.Count;
+        for (int i = 0; i < wearableCount; i++)
         {
-            UpdateAvatarPreview();
+            var wearable = model.wearables[i];
+            if (wearable == null) continue;
+
+            if (categoriesToReplace.Contains(wearable.category))
+            {
+                wearablesToReplace.Add(wearable);
+            }
+            else
+            {
+                //For retrocompatibility's sake we check current wearables against new one (compatibility matrix is symmetrical)
+                HashSet<string> replacesList = new HashSet<string>(wearable.GetReplacesList(model.bodyShape.id) ?? new string[0]);
+                if (replacesList.Contains(wearableItem.category))
+                {
+                    wearablesToReplace.Add(wearable);
+                }
+            }
         }
-    }
 
-    private void OnItemDeselected(string assetID)
-    {
-        model.avatarModel.wearables.Remove(assetID);
-        UpdateAvatarPreview();
-    }
-
-    public void SaveAvatar(Texture2D faceSnapshot, Texture2D bodySnapshot)
-    {
-        WebInterface.SendSaveAvatar(model.avatarModel, faceSnapshot, bodySnapshot);
-        userProfile.OverrideAvatar(model.avatarModel);
-        userProfile.OverrideTextures(faceSnapshot, bodySnapshot);
-
-        SetVisibility(false);
-    }
-
-    public void DiscardAndClose()
-    {
-        model.avatarModel.CopyFrom(userProfile.avatar);
-        UpdateAvatarModel();
-        UpdateAvatarPreview();
-        SetVisibility(false);
+        return wearablesToReplace;
     }
 
     public void SetVisibility(bool visible)
@@ -202,19 +341,15 @@ public class AvatarEditorHUDController : IDisposable, IHUD
 
     public void Dispose()
     {
-        userProfile.OnUpdate -= OnUserProfileUpdate;
-        catalog.OnAdded -= AddCatalogItem;
-        catalog.OnRemoved -= RemoveCatalogItem;
+        CleanUp();
+    }
 
-        if (view != null)
-        {
-            view.OnItemSelected -= OnItemSelected;
-            view.OnItemDeselected -= OnItemDeselected;
-            view.OnSkinColorChanged -= OnSkinColorChanged;
-            view.OnHairColorChanged -= OnHairColorChanged;
-            view.OnEyeColorChanged -= OnEyeColorChanged;
-            Object.Destroy(view.gameObject);
-        }
+    public void CleanUp()
+    {
+        view?.CleanUp();
+        this.userProfile.OnUpdate -= LoadUserProfile;
+        this.catalog.OnAdded -= AddWearable;
+        this.catalog.OnRemoved -= RemoveWearable;
     }
 
     public void SetConfiguration(HUDConfiguration configuration)
@@ -222,35 +357,18 @@ public class AvatarEditorHUDController : IDisposable, IHUD
         SetVisibility(configuration.active);
     }
 
-    public List<string> GetWearablesReplacedBy(WearableItem wearableItem)
+    public void SaveAvatar(Texture2D faceSnapshot, Texture2D bodySnapshot)
     {
-        List<string> wearablesToReplace = new List<string>();
+        var avatarModel = model.ToAvatarModel();
+        WebInterface.SendSaveAvatar(avatarModel, faceSnapshot, bodySnapshot);
+        userProfile.OverrideAvatar(avatarModel, faceSnapshot, bodySnapshot);
 
-        HashSet<string> categoriesToReplace = new HashSet<string>(wearableItem.GetReplacesList(model.avatarModel.bodyShape) ?? new string[0]);
+        SetVisibility(false);
+    }
 
-        int wearableCount = model.avatarModel.wearables.Count;
-        for (int i = 0; i < wearableCount; i++)
-        {
-            string wearableId = model.avatarModel.wearables[i];
-            var wearable = CatalogController.wearableCatalog.Get(wearableId);
-            if (wearable == null) continue;
-            
-            if (categoriesToReplace.Contains(wearable.category))
-            {
-                wearablesToReplace.Add(wearableId);
-            }
-            else
-            {
-                //For retrocompatibility's sake we check current wearables against new one (compatibility matrix is symmetrical)
-                HashSet<string> replacesList = new HashSet<string>(wearable.GetReplacesList(model.avatarModel.bodyShape) ?? new string[0]);
-                if (replacesList.Contains(wearableItem.category))
-                {
-                    wearablesToReplace.Add(wearableId);
-                }
-            }
-
-        }
-
-        return wearablesToReplace;
+    public void DiscardAndClose()
+    {
+        LoadUserProfile(userProfile);
+        SetVisibility(false);
     }
 }

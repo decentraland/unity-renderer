@@ -60,8 +60,13 @@ public class WearableController
 
     public void SetupDefaultMaterial(Material defaultMaterial, Color skinColor, Color hairColor)
     {
+        if (assetContainer == null) 
+            return;
+
         if (materials == null)
+        {
             materials = AvatarUtils.ReplaceMaterialsWithCopiesOf(assetContainer.transform, defaultMaterial);
+        }
 
         AvatarUtils.SetColorInHierarchy(assetContainer.transform, MATERIAL_FILTER_SKIN, skinColor);
         AvatarUtils.SetColorInHierarchy(assetContainer.transform, MATERIAL_FILTER_HAIR, hairColor);

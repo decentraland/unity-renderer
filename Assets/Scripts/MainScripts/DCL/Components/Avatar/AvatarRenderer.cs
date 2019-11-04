@@ -8,9 +8,6 @@ namespace DCL
 {
     public class AvatarRenderer : MonoBehaviour
     {
-        private const string MALE_BODY_NAME = "dcl://base-avatars/BaseMale";
-        private const string FEMALE_BODY_NAME = "dcl://base-avatars/BaseFemale";
-
         public Material defaultMaterial;
         public Material eyeMaterial;
         public Material eyebrowMaterial;
@@ -183,11 +180,11 @@ namespace DCL
 
             AnimationClip[] animArray = null;
 
-            if (bodyShapeType.Contains(MALE_BODY_NAME))
+            if (bodyShapeType.Contains(WearableLiterals.BodyShapes.MALE))
             {
                 animArray = maleAnims;
             }
-            else if (bodyShapeType.Contains(FEMALE_BODY_NAME))
+            else if (bodyShapeType.Contains(WearableLiterals.BodyShapes.FEMALE))
             {
                 animArray = femaleAnims;
             }
@@ -308,16 +305,16 @@ namespace DCL
 
             switch (wearable.category)
             {
-                case "eyes":
+                case WearableLiterals.Categories.EYES:
                     eyesController = new FacialFeatureController(wearable, bodyShapeController.bodyShapeType);
                     break;
-                case "eyebrows":
+                case WearableLiterals.Categories.EYEBROWS:
                     eyebrowsController = new FacialFeatureController(wearable, bodyShapeController.bodyShapeType);
                     break;
-                case "mouth":
+                case WearableLiterals.Categories.MOUTH:
                     mouthController = new FacialFeatureController(wearable, bodyShapeController.bodyShapeType);
                     break;
-                case "body_shape":
+                case WearableLiterals.Categories.BODY_SHAPE:
                     break;
 
                 default:
@@ -333,10 +330,10 @@ namespace DCL
             var wearable = wearablesController[wearableId];
             switch (wearable.category)
             {
-                case "eyes":
-                case "eyebrows":
-                case "mouth":
-                case "body_shape":
+                case WearableLiterals.Categories.EYES:
+                case WearableLiterals.Categories.EYEBROWS:
+                case WearableLiterals.Categories.MOUTH:
+                case WearableLiterals.Categories.BODY_SHAPE:
                     break;
                 default:
                     wearable.SetupDefaultMaterial(defaultMaterial, model.skinColor, model.hairColor);
@@ -356,32 +353,15 @@ namespace DCL
             return wearable;
         }
 
-        //Temporary solution to handle models without eyes/mouth/eyebrows
-        //Those items should be provided as wearables in the list
         private void SetupDefaultFacialFeatures(string bodyShape)
         {
-            const string BODY_FEMALE = "dcl://base-avatars/BaseFemale";
-            const string BODY_MALE = "dcl://base-avatars/BaseMale";
-
-            string eyesDefaultId = "";
-            string eyebrowsDefaultId = "";
-            string mouthDefaultId = "";
-            switch (bodyShape)
-            {
-                case BODY_FEMALE:
-                    eyesDefaultId = "dcl://base-avatars/f_eyes_00";
-                    eyebrowsDefaultId = "dcl://base-avatars/f_eyebrows_00";
-                    mouthDefaultId = "dcl://base-avatars/f_mouth_00";
-                    break;
-                case BODY_MALE:
-                    eyesDefaultId = "dcl://base-avatars/eyes_00";
-                    eyebrowsDefaultId = "dcl://base-avatars/eyebrows_00";
-                    mouthDefaultId = "dcl://base-avatars/mouth_00";
-                    break;
-            }
-
+            string eyesDefaultId = WearableLiterals.DefaultWearables.GetDefaultWearable(bodyShape, WearableLiterals.Categories.EYES);
             eyesController = new FacialFeatureController(ResolveWearable(eyesDefaultId), bodyShapeController.bodyShapeType);
+
+            string eyebrowsDefaultId = WearableLiterals.DefaultWearables.GetDefaultWearable(bodyShape, WearableLiterals.Categories.EYEBROWS);
             eyebrowsController = new FacialFeatureController(ResolveWearable(eyebrowsDefaultId), bodyShapeController.bodyShapeType);
+
+            string mouthDefaultId = WearableLiterals.DefaultWearables.GetDefaultWearable(bodyShape, WearableLiterals.Categories.MOUTH);
             mouthController = new FacialFeatureController(ResolveWearable(mouthDefaultId), bodyShapeController.bodyShapeType);
         }
 
