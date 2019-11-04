@@ -113,17 +113,7 @@ function bindSceneEvents() {
   unityScene.on('uuidEvent' as any, event => {
     const { type } = event.payload
 
-    if (type === 'gizmoSelected') {
-      evtEmitter.emit('gizmoSelected', {
-        gizmoType: event.payload['gizmoType'],
-        entityId: event.payload['entityId']
-      })
-    } else if (type === 'gizmoDragEnded') {
-      evtEmitter.emit('transform', {
-        entityId: event.payload.entityId,
-        transform: JSON.parse(event.payload.transform)
-      })
-    } else if (type === 'onEntityLoading') {
+    if (type === 'onEntityLoading') {
       loadingEntities.push(event.payload.entityId)
     } else if (type === 'onEntityFinishLoading') {
       let index = loadingEntities.indexOf(event.payload.entityId)
@@ -159,6 +149,19 @@ function bindSceneEvents() {
   unityScene.on('builderSceneUnloaded', e => {
     loadingEntities = []
   })
+  unityScene.on('gizmoEvent', e => {
+    if (e.type === 'gizmoSelected') {
+      evtEmitter.emit('gizmoSelected', {
+        gizmoType: e.gizmoType,
+        entityId: e.entityId !== '' ? e.entityId : null
+      })
+    } else if (e.type === 'gizmoDragEnded') {
+      evtEmitter.emit('transform', {
+        entityId: e.entityId,
+        transform: e.transform
+      })
+    }
+  })
 }
 
 namespace editor {
@@ -190,6 +193,10 @@ namespace editor {
 
   export function selectEntity(entityId: string) {
     unityInterface.SelectBuilderEntity(entityId)
+  }
+
+  export function deselectEntity(entityId: string) {
+    unityInterface.DeselectBuilderEntity(entityId)
   }
 
   export function getDCLCanvas() {
