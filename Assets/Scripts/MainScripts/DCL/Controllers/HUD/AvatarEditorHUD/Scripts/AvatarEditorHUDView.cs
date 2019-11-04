@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
@@ -30,21 +30,12 @@ public class AvatarEditorHUDView : MonoBehaviour
         public ItemSelector selector;
     }
 
-    public event Action<WearableItem> OnItemSelected;
-    public event Action<string> OnItemDeselected;
-    public event Action<Color> OnHairColorChanged;
-    public event Action<Color> OnSkinColorChanged;
-    public event Action<Color> OnEyeColorChanged;
-
     [SerializeField] private Canvas avatarEditorCanvas;
     [SerializeField] private CanvasGroup avatarEditorCanvasGroup;
     [SerializeField] AvatarEditorNavigationInfo[] navigationInfos;
     [SerializeField] AvatarEditorWearableFilter[] wearableGridPairs;
-    [SerializeField] ColorList skinColorList;
     [SerializeField] ColorSelector skinColorSelector;
-    [SerializeField] ColorList eyeColorList;
     [SerializeField] ColorSelector eyeColorSelector;
-    [SerializeField] ColorList hairColorList;
     [SerializeField] ColorSelector hairColorSelector;
     [SerializeField] GameObject characterPreviewPrefab;
     [SerializeField] private PreviewCameraRotation characterPreviewRotation;
@@ -66,8 +57,8 @@ public class AvatarEditorHUDView : MonoBehaviour
 
     private void Initialize(AvatarEditorHUDController controller)
     {
+        ItemToggle.getEquippedWearablesReplacedByFunc = controller.GetWearablesReplacedBy;
         this.controller = controller;
-        ItemToggle.getWearablesReplacedByFunc = this.controller.GetWearablesReplacedBy;
         gameObject.name = VIEW_OBJECT_NAME;
 
         randomizeButton.onClick.AddListener(OnRandomizeButton);
@@ -101,20 +92,13 @@ public class AvatarEditorHUDView : MonoBehaviour
         int nPairs = wearableGridPairs.Length;
         for (int i = 0; i < nPairs; i++)
         {
-            wearableGridPairs[i].selector.OnItemEquipped += (x) => OnItemSelected?.Invoke(x);
-            wearableGridPairs[i].selector.OnItemUnequipped += (x) => OnItemDeselected?.Invoke(x);
-
+            wearableGridPairs[i].selector.OnItemClicked += controller.WearableClicked;
             selectorsByCategory.Add(wearableGridPairs[i].categoryFilter, wearableGridPairs[i].selector);
         }
 
-        skinColorSelector.OnColorChanged += (x) => OnSkinColorChanged?.Invoke(x);
-        skinColorSelector.Populate(skinColorList.colors);
-
-        eyeColorSelector.OnColorChanged += (x) => OnEyeColorChanged?.Invoke(x);
-        eyeColorSelector.Populate(eyeColorList.colors);
-
-        hairColorSelector.OnColorChanged += (x) => OnHairColorChanged?.Invoke(x);
-        hairColorSelector.Populate(hairColorList.colors);
+        skinColorSelector.OnColorChanged += controller.SkinColorClicked;
+        eyeColorSelector.OnColorChanged += controller.EyesColorClicked;
+        hairColorSelector.OnColorChanged += controller.HairColorClicked;
     }
 
     internal static AvatarEditorHUDView Create(AvatarEditorHUDController controller)
@@ -124,22 +108,66 @@ public class AvatarEditorHUDView : MonoBehaviour
         return view;
     }
 
-    internal void UpdateAvatarModel(AvatarModel avatarModel)
+    public void UpdateSelectedBody(WearableItem bodyShape)
     {
-        if (avatarModel?.wearables == null) return;
-
-        using (var iterator = selectorsByCategory.GetEnumerator())
+        for (int i = 0; i < wearableGridPairs.Length; i++)
         {
-            while (iterator.MoveNext()) iterator.Current.Value.Unselect();
+            if (wearableGridPairs[i].categoryFilter == WearableItem.bodyShapeCategory)
+            {
+                wearableGridPairs[i].selector.UnselectAll();
+                wearableGridPairs[i].selector.Select(bodyShape.id);
+            }
+            else
+            {
+                wearableGridPairs[i].selector.SetBodyShape(bodyShape.id);
+            }
         }
-        UpdateSelectedBody(avatarModel);
-        UpdateSelectedColors(avatarModel);
-        UpdateSelectedWearables(avatarModel);
-
-        UpdateAvatarPreview(avatarModel);
     }
 
-    internal void UpdateAvatarPreview(AvatarModel avatarModel)
+    public void SelectWearable(WearableItem wearable)
+    {
+        selectorsByCategory[wearable.category].Select(wearable.id);
+    }
+
+    public void UnselectWearable(WearableItem wearable)
+    {
+        selectorsByCategory[wearable.category].Unselect(wearable.id);
+    }
+
+    public void SelectHairColor(Color hairColor)
+    {
+        hairColorSelector.Select(hairColor);
+    }
+
+    public void SelectSkinColor(Color skinColor)
+    {
+        skinColorSelector.Select(skinColor);
+    }
+
+    public void SelectEyeColor(Color eyesColor)
+    {
+        eyeColorSelector.Select(eyesColor);
+    }
+
+    public void SetColors(List<Color> skinColors, List<Color> hairColors, List<Color> eyeColors)
+    {
+        skinColorSelector.Populate(skinColors);
+        eyeColorSelector.Populate(eyeColors);
+        hairColorSelector.Populate(hairColors);
+    }
+
+    public void UnselectAllWearables()
+    {
+        for (int i = 0; i < wearableGridPairs.Length; i++)
+        {
+            if (wearableGridPairs[i].categoryFilter != WearableItem.bodyShapeCategory)
+            {
+                wearableGridPairs[i].selector.UnselectAll();
+            }
+        }
+    }
+
+    public void UpdateAvatarPreview(AvatarModel avatarModel)
     {
         if (avatarModel?.wearables == null) return;
 
@@ -150,41 +178,6 @@ public class AvatarEditorHUDView : MonoBehaviour
     private void SetLoadingPanel(bool active)
     {
         loadingPanel.SetActive(active);
-    }
-
-    internal void UpdateSelectedBody(AvatarModel avatarModel)
-    {
-        for (int i = 0; i < wearableGridPairs.Length; i++)
-        {
-            if (wearableGridPairs[i].categoryFilter == WearableItem.bodyShapeCategory)
-            {
-                wearableGridPairs[i].selector.Select(avatarModel.bodyShape);
-            }
-            else
-            {
-                wearableGridPairs[i].selector.SetBodyShape(avatarModel.bodyShape);
-            }
-        }
-    }
-
-    internal void UpdateSelectedColors(AvatarModel avatarModel)
-    {
-        skinColorSelector.Select(avatarModel.skinColor);
-        hairColorSelector.Select(avatarModel.hairColor);
-        eyeColorSelector.Select(avatarModel.eyeColor);
-    }
-
-    private void UpdateSelectedWearables(AvatarModel avatarModel)
-    {
-        // If the wearables.Count is cached, the first line inside the loop causes an index out of range exception
-        for (int i = 0; i < avatarModel.wearables.Count; i++)
-        {
-            WearableItem wearableItem = CatalogController.wearableCatalog.Get(avatarModel.wearables[i]);
-            if (wearableItem != null)
-            {
-                selectorsByCategory[wearableItem.category].Select(avatarModel.wearables[i]);
-            }
-        }
     }
 
     public void AddWearable(WearableItem wearableItem)
@@ -216,19 +209,7 @@ public class AvatarEditorHUDView : MonoBehaviour
 
     private void OnRandomizeButton()
     {
-        using (var enumerator = selectorsByCategory.GetEnumerator())
-        {
-            while (enumerator.MoveNext())
-            {
-                if (enumerator.Current.Key != WearableItem.bodyShapeCategory)
-                {
-                    enumerator.Current.Value.SelectRandom();
-                }
-            }
-        }
-
-        hairColorSelector.SelectRandom();
-        eyeColorSelector.SelectRandom();
+        controller.RandomizeWearables();
     }
 
     private void OnDoneButton()
@@ -252,5 +233,10 @@ public class AvatarEditorHUDView : MonoBehaviour
     {
         avatarEditorCanvas.enabled = visible;
         avatarEditorCanvasGroup.blocksRaycasts = visible;
+    }
+
+    public void CleanUp()
+    {
+        Destroy(gameObject);
     }
 }

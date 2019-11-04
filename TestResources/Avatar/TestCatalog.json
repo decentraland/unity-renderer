@@ -7,6 +7,8 @@
           "dcl://base-avatars/BaseFemale"
         ],
         "mainFile": "BaseFemale.glb",
+        "overrideReplaces": [],
+        "overrideHides": [],
         "contents": [
           {
             "file": "Avatar_FemaleSkinBase.png",
@@ -50,7 +52,9 @@
         "text": "Mujer"
       }
     ],
-    "thumbnail": "QmQo9oNMzYTDdcGTixkioFdb4ArrB42ZgrHVGNua36gXpn"
+    "thumbnail": "QmQo9oNMzYTDdcGTixkioFdb4ArrB42ZgrHVGNua36gXpn",
+    "replaces": [],
+    "hides": []
   },
   {
     "id": "dcl://base-avatars/BaseMale",
@@ -60,6 +64,8 @@
           "dcl://base-avatars/BaseMale"
         ],
         "mainFile": "BaseMale.glb",
+        "overrideReplaces": [],
+        "overrideHides": [],
         "contents": [
           {
             "file": "Avatar_MaleSkinBase.png",
@@ -103,58 +109,9 @@
         "text": "Hombre"
       }
     ],
-    "thumbnail": "QmbEoKs839SoKDSHF9tkgc3S6ge777ywU9X85W8K42WePu"
-  },
-  {
-    "id": "dcl://base-avatars/00_EmptyEarring",
-    "representations": [
-      {
-        "bodyShapes": [
-          "dcl://base-avatars/BaseMale"
-        ],
-        "mainFile": "00_EmptyEarring.glb",
-        "contents": [
-          {
-            "file": "00_EmptyEarring.glb",
-            "hash": "QmcUWAmK22stjX15KtpJeD1TcvdDNQC6Wx2eMHuBJJhCFB"
-          }
-        ]
-      },
-      {
-        "bodyShapes": [
-          "dcl://base-avatars/BaseFemale"
-        ],
-        "mainFile": "00_EmptyEarring.glb",
-        "contents": [
-          {
-            "file": "00_EmptyEarring.glb",
-            "hash": "QmcUWAmK22stjX15KtpJeD1TcvdDNQC6Wx2eMHuBJJhCFB"
-          }
-        ]
-      }
-    ],
-    "type": "wearable",
-    "category": "earring",
-    "tags": [
-      "accesories",
-      "male",
-      "man",
-      "female",
-      "woman",
-      "base-wearable"
-    ],
-    "baseUrl": "https://dcl-base-avatars.now.sh/",
-    "i18n": [
-      {
-        "code": "en",
-        "text": "Discard Accessory"
-      },
-      {
-        "code": "es",
-        "text": "Descartar Accesorio"
-      }
-    ],
-    "thumbnail": "QmUA7fineYQ5ES3sXu9GjBaiDcCTYS3oXPBUhgZe1EG4oH"
+    "thumbnail": "QmbEoKs839SoKDSHF9tkgc3S6ge777ywU9X85W8K42WePu",
+    "replaces": [],
+    "hides": []
   },
   {
     "id": "dcl://base-avatars/blue_star_earring",
@@ -164,6 +121,8 @@
           "dcl://base-avatars/BaseFemale"
         ],
         "mainFile": "F_Earrings_BlueStar.glb",
+        "overrideReplaces": [],
+        "overrideHides": [],
         "contents": [
           {
             "file": "AvatarWearables_TX.png",
@@ -195,7 +154,9 @@
         "text": "Aro Azul con Forma de Estrella"
       }
     ],
-    "thumbnail": "QmeGtEgb9XkachCtGJ1PP2XhxFdh946Lfdfcz3XttYWy5n"
+    "thumbnail": "QmeGtEgb9XkachCtGJ1PP2XhxFdh946Lfdfcz3XttYWy5n",
+    "replaces": [],
+    "hides": []
   },
   {
     "id": "dcl://base-avatars/green_feather_earring",
@@ -205,6 +166,8 @@
           "dcl://base-avatars/BaseFemale"
         ],
         "mainFile": "Earring_GreenFeather.glb",
+        "overrideReplaces": [],
+        "overrideHides": [],
         "contents": [
           {
             "file": "AvatarWearables_TX.png",
@@ -236,7 +199,9 @@
         "text": "Aro de Pluma Verde"
       }
     ],
-    "thumbnail": "Qmen8Ag1sybXsF7G6s9cbWgQPQJ6dGbjZxGftdXpxdXuWg"
+    "thumbnail": "Qmen8Ag1sybXsF7G6s9cbWgQPQJ6dGbjZxGftdXpxdXuWg",
+    "replaces": [],
+    "hides": []
   },
   {
     "id": "dcl://base-avatars/square_earring",
@@ -246,6 +211,8 @@
           "dcl://base-avatars/BaseFemale"
         ],
         "mainFile": "Earring_SquareEarring.glb",
+        "overrideReplaces": [],
+        "overrideHides": [],
         "contents": [
           {
             "file": "AvatarWearables_TX.png",
@@ -277,7 +244,9 @@
         "text": "Aro Cuadrado"
       }
     ],
-    "thumbnail": "Qme7v7zUQqaK2KxHLRr9hhdvjM9YMJcPu3khAxLECxtT92"
+    "thumbnail": "Qme7v7zUQqaK2KxHLRr9hhdvjM9YMJcPu3khAxLECxtT92",
+    "replaces": [],
+    "hides": []
   },
   {
     "id": "dcl://base-avatars/pink_gem_earring",
@@ -287,6 +256,8 @@
           "dcl://base-avatars/BaseFemale"
         ],
         "mainFile": "F_Earrings_PInkGem.glb",
+        "overrideReplaces": [],
+        "overrideHides": [],
         "contents": [
           {
             "file": "AvatarWearables_TX.png",
@@ -318,7 +289,9 @@
         "text": "Pendientes de Gema Rosa"
       }
     ],
-    "thumbnail": "Qmej61PRfY4ZtHpwWTQkGKqdVwoNxpTa2aryES5v1kuZWd"
+    "thumbnail": "Qmej61PRfY4ZtHpwWTQkGKqdVwoNxpTa2aryES5v1kuZWd",
+    "replaces": [],
+    "hides": []
   },
   {
     "id": "dcl://base-avatars/f_skull_earring",
@@ -328,6 +301,8 @@
           "dcl://base-avatars/BaseFemale"
         ],
         "mainFile": "F_Earrings_Skull.glb",
+        "overrideReplaces": [],
+        "overrideHides": [],
         "contents": [
           {
             "file": "AvatarWearables_TX.png",
@@ -359,7 +334,9 @@
         "text": "Pendiente de Calavera"
       }
     ],
-    "thumbnail": "QmNiDpusFKEQM9UPQRYY9vnjhsRdqhk9ZF6JSjCRwQND3S"
+    "thumbnail": "QmNiDpusFKEQM9UPQRYY9vnjhsRdqhk9ZF6JSjCRwQND3S",
+    "replaces": [],
+    "hides": []
   },
   {
     "id": "dcl://base-avatars/thunder_02_earring",
@@ -369,6 +346,8 @@
           "dcl://base-avatars/BaseFemale"
         ],
         "mainFile": "F_Earrings_Thunder.glb",
+        "overrideReplaces": [],
+        "overrideHides": [],
         "contents": [
           {
             "file": "AvatarWearables_TX.png",
@@ -400,7 +379,9 @@
         "text": "Pendientes con Forma de Rayos"
       }
     ],
-    "thumbnail": "QmUjaceDvC8tSPT9zzcEgWmP6CJmddyfk5u4DFTMhVufL2"
+    "thumbnail": "QmUjaceDvC8tSPT9zzcEgWmP6CJmddyfk5u4DFTMhVufL2",
+    "replaces": [],
+    "hides": []
   },
   {
     "id": "dcl://base-avatars/punk_piercing",
@@ -410,6 +391,8 @@
           "dcl://base-avatars/BaseMale"
         ],
         "mainFile": "F_Earrings_PunkPiercing.glb",
+        "overrideReplaces": [],
+        "overrideHides": [],
         "contents": [
           {
             "file": "AvatarWearables_TX.png",
@@ -426,6 +409,8 @@
           "dcl://base-avatars/BaseFemale"
         ],
         "mainFile": "F_Earrings_PunkPiercing.glb",
+        "overrideReplaces": [],
+        "overrideHides": [],
         "contents": [
           {
             "file": "AvatarWearables_TX.png",
@@ -459,7 +444,9 @@
         "text": "Piercing Punk"
       }
     ],
-    "thumbnail": "QmSyNq1dtKdGY21NP75hHQ2UmeCdHYwbx2hZVyE9nPbtLi"
+    "thumbnail": "QmSyNq1dtKdGY21NP75hHQ2UmeCdHYwbx2hZVyE9nPbtLi",
+    "replaces": [],
+    "hides": []
   },
   {
     "id": "dcl://base-avatars/golden_earring",
@@ -469,6 +456,8 @@
           "dcl://base-avatars/BaseMale"
         ],
         "mainFile": "RightGoldEarring_01.glb",
+        "overrideReplaces": [],
+        "overrideHides": [],
         "contents": [
           {
             "file": "AvatarWearables_TX.png",
@@ -485,6 +474,8 @@
           "dcl://base-avatars/BaseFemale"
         ],
         "mainFile": "RightGoldEarring_01.glb",
+        "overrideReplaces": [],
+        "overrideHides": [],
         "contents": [
           {
             "file": "AvatarWearables_TX.png",
@@ -518,7 +509,9 @@
         "text": "Aro Dorado"
       }
     ],
-    "thumbnail": "QmXfxp77bePhM2EHcneMCU5RCVk5r41PXQcYepXCfP7VFB"
+    "thumbnail": "QmXfxp77bePhM2EHcneMCU5RCVk5r41PXQcYepXCfP7VFB",
+    "replaces": [],
+    "hides": []
   },
   {
     "id": "dcl://base-avatars/Thunder_earring",
@@ -528,6 +521,8 @@
           "dcl://base-avatars/BaseMale"
         ],
         "mainFile": "F_Earrings_ThunderRight.glb",
+        "overrideReplaces": [],
+        "overrideHides": [],
         "contents": [
           {
             "file": "AvatarWearables_TX.png",
@@ -544,6 +539,8 @@
           "dcl://base-avatars/BaseFemale"
         ],
         "mainFile": "F_Earrings_ThunderRight.glb",
+        "overrideReplaces": [],
+        "overrideHides": [],
         "contents": [
           {
             "file": "AvatarWearables_TX.png",
@@ -577,7 +574,9 @@
         "text": "Aro con Forma de Rayo"
       }
     ],
-    "thumbnail": "QmWz3Kucd25izeexM9VemszMXHRAEEeyPykj61kdzo3DiM"
+    "thumbnail": "QmWz3Kucd25izeexM9VemszMXHRAEEeyPykj61kdzo3DiM",
+    "replaces": [],
+    "hides": []
   },
   {
     "id": "dcl://base-avatars/toruspiercing",
@@ -587,6 +586,8 @@
           "dcl://base-avatars/BaseMale"
         ],
         "mainFile": "TorusPiercing.glb",
+        "overrideReplaces": [],
+        "overrideHides": [],
         "contents": [
           {
             "file": "AvatarWearables_TX.png",
@@ -603,6 +604,8 @@
           "dcl://base-avatars/BaseFemale"
         ],
         "mainFile": "TorusPiercing.glb",
+        "overrideReplaces": [],
+        "overrideHides": [],
         "contents": [
           {
             "file": "AvatarWearables_TX.png",
@@ -636,7 +639,9 @@
         "text": "Torus Piercing"
       }
     ],
-    "thumbnail": "Qma4HiW1UBP1tTudMyBKJJNz3N3XmM5ZCMnCjiGaRmD8Fp"
+    "thumbnail": "Qma4HiW1UBP1tTudMyBKJJNz3N3XmM5ZCMnCjiGaRmD8Fp",
+    "replaces": [],
+    "hides": []
   },
   {
     "id": "dcl://base-avatars/triple_ring",
@@ -646,6 +651,8 @@
           "dcl://base-avatars/BaseMale"
         ],
         "mainFile": "M_Earrings_TripleRing.glb",
+        "overrideReplaces": [],
+        "overrideHides": [],
         "contents": [
           {
             "file": "AvatarWearables_TX.png",
@@ -659,9 +666,11 @@
       },
       {
         "bodyShapes": [
-          "Basefemale"
+          "dcl://base-avatars/Basefemale"
         ],
         "mainFile": "M_Earrings_TripleRing.glb",
+        "overrideReplaces": [],
+        "overrideHides": [],
         "contents": [
           {
             "file": "AvatarWearables_TX.png",
@@ -695,7 +704,9 @@
         "text": "Tres Pendientes"
       }
     ],
-    "thumbnail": "QmVoDbDLdvEAYUn1AFkFv4bvoYPF6z2vEdhVD245aP6dXg"
+    "thumbnail": "QmVoDbDLdvEAYUn1AFkFv4bvoYPF6z2vEdhVD245aP6dXg",
+    "replaces": [],
+    "hides": []
   },
   {
     "id": "dcl://base-avatars/pearls_earring",
@@ -705,6 +716,8 @@
           "dcl://base-avatars/BaseFemale"
         ],
         "mainFile": "F_Earrings_Pearls.glb",
+        "overrideReplaces": [],
+        "overrideHides": [],
         "contents": [
           {
             "file": "AvatarWearables_TX.png",
@@ -736,7 +749,9 @@
         "text": "Pendientes de Perlas"
       }
     ],
-    "thumbnail": "QmQgqjpbmeZdw7o2TjidcQcUyYk7x6mcWJeu4h3QNfokLC"
+    "thumbnail": "QmQgqjpbmeZdw7o2TjidcQcUyYk7x6mcWJeu4h3QNfokLC",
+    "replaces": [],
+    "hides": []
   },
   {
     "id": "dcl://base-avatars/f_eyebrows_00",
@@ -746,6 +761,8 @@
           "dcl://base-avatars/BaseFemale"
         ],
         "mainFile": "F_Eyebrows_00.png",
+        "overrideReplaces": [],
+        "overrideHides": [],
         "contents": [
           {
             "file": "F_Eyebrows_00.png",
@@ -774,7 +791,9 @@
         "text": "f_EyeBrows_00"
       }
     ],
-    "thumbnail": "QmWf7zZJhJoDhN45uJZVXw2bExuarbXnskrepxWdTtDBwW"
+    "thumbnail": "QmWf7zZJhJoDhN45uJZVXw2bExuarbXnskrepxWdTtDBwW",
+    "replaces": [],
+    "hides": []
   },
   {
     "id": "dcl://base-avatars/f_eyebrows_01",
@@ -784,6 +803,8 @@
           "dcl://base-avatars/BaseFemale"
         ],
         "mainFile": "F_Eyebrows_01.png",
+        "overrideReplaces": [],
+        "overrideHides": [],
         "contents": [
           {
             "file": "F_Eyebrows_01.png",
@@ -812,7 +833,9 @@
         "text": "f_EyeBrows_01"
       }
     ],
-    "thumbnail": "QmV2fzgVkpWuMo8W4UWRbBume6u3BoNMdZJRUXYfWfj2pt"
+    "thumbnail": "QmV2fzgVkpWuMo8W4UWRbBume6u3BoNMdZJRUXYfWfj2pt",
+    "replaces": [],
+    "hides": []
   },
   {
     "id": "dcl://base-avatars/f_eyebrows_02",
@@ -822,6 +845,8 @@
           "dcl://base-avatars/BaseFemale"
         ],
         "mainFile": "F_Eyebrows_02.png",
+        "overrideReplaces": [],
+        "overrideHides": [],
         "contents": [
           {
             "file": "F_Eyebrows_02.png",
@@ -850,7 +875,9 @@
         "text": "f_EyeBrows_02"
       }
     ],
-    "thumbnail": "QmQZ8Xb6TTPyo9m9JVDd7NE1P31kWrX5kM2PvR3HiqL2Fd"
+    "thumbnail": "QmQZ8Xb6TTPyo9m9JVDd7NE1P31kWrX5kM2PvR3HiqL2Fd",
+    "replaces": [],
+    "hides": []
   },
   {
     "id": "dcl://base-avatars/f_eyebrows_03",
@@ -860,6 +887,8 @@
           "dcl://base-avatars/BaseFemale"
         ],
         "mainFile": "F_Eyebrows_03.png",
+        "overrideReplaces": [],
+        "overrideHides": [],
         "contents": [
           {
             "file": "F_Eyebrows_03.png",
@@ -888,7 +917,9 @@
         "text": "f_EyeBrows_03"
       }
     ],
-    "thumbnail": "QmeW6fbyeC8pYps1Fv5x1zszZ2WGojm5Mq8u7bG36gFu31"
+    "thumbnail": "QmeW6fbyeC8pYps1Fv5x1zszZ2WGojm5Mq8u7bG36gFu31",
+    "replaces": [],
+    "hides": []
   },
   {
     "id": "dcl://base-avatars/f_eyebrows_04",
@@ -898,6 +929,8 @@
           "dcl://base-avatars/BaseFemale"
         ],
         "mainFile": "F_Eyebrows_04.png",
+        "overrideReplaces": [],
+        "overrideHides": [],
         "contents": [
           {
             "file": "F_Eyebrows_04.png",
@@ -926,7 +959,9 @@
         "text": "f_EyeBrows_04"
       }
     ],
-    "thumbnail": "Qmas4AaiSXPaemCwMDrohbrdFF3YLNCfgUUMitMm9nhmZJ"
+    "thumbnail": "Qmas4AaiSXPaemCwMDrohbrdFF3YLNCfgUUMitMm9nhmZJ",
+    "replaces": [],
+    "hides": []
   },
   {
     "id": "dcl://base-avatars/f_eyebrows_05",
@@ -936,6 +971,8 @@
           "dcl://base-avatars/BaseFemale"
         ],
         "mainFile": "F_Eyebrows_05.png",
+        "overrideReplaces": [],
+        "overrideHides": [],
         "contents": [
           {
             "file": "F_Eyebrows_05.png",
@@ -964,7 +1001,9 @@
         "text": "f_EyeBrows_05"
       }
     ],
-    "thumbnail": "QmQgT6kW3fV8nT8MRg6E4HkRgbSsvEXX9ZwBLiNeRpdC1j"
+    "thumbnail": "QmQgT6kW3fV8nT8MRg6E4HkRgbSsvEXX9ZwBLiNeRpdC1j",
+    "replaces": [],
+    "hides": []
   },
   {
     "id": "dcl://base-avatars/f_eyebrows_06",
@@ -974,6 +1013,8 @@
           "dcl://base-avatars/BaseFemale"
         ],
         "mainFile": "F_Eyebrows_06.png",
+        "overrideReplaces": [],
+        "overrideHides": [],
         "contents": [
           {
             "file": "F_Eyebrows_06.png",
@@ -1002,7 +1043,9 @@
         "text": "f_EyeBrows_06"
       }
     ],
-    "thumbnail": "QmPnWAuuqgRn8aDne1o1XRBUBdNBcZueLVK5m2PANRFWL1"
+    "thumbnail": "QmPnWAuuqgRn8aDne1o1XRBUBdNBcZueLVK5m2PANRFWL1",
+    "replaces": [],
+    "hides": []
   },
   {
     "id": "dcl://base-avatars/f_eyebrows_07",
@@ -1012,6 +1055,8 @@
           "dcl://base-avatars/BaseFemale"
         ],
         "mainFile": "F_Eyebrows_07.png",
+        "overrideReplaces": [],
+        "overrideHides": [],
         "contents": [
           {
             "file": "F_Eyebrows_07.png",
@@ -1040,7 +1085,9 @@
         "text": "f_EyeBrows_07"
       }
     ],
-    "thumbnail": "Qmb1Q5G5e5amN6CE3oRW43QzCf27kAHaDERQtrFAkoowEz"
+    "thumbnail": "Qmb1Q5G5e5amN6CE3oRW43QzCf27kAHaDERQtrFAkoowEz",
+    "replaces": [],
+    "hides": []
   },
   {
     "id": "dcl://base-avatars/eyebrows_00",
@@ -1050,6 +1097,8 @@
           "dcl://base-avatars/BaseMale"
         ],
         "mainFile": "M_EyeBrows_00.png",
+        "overrideReplaces": [],
+        "overrideHides": [],
         "contents": [
           {
             "file": "M_EyeBrows_00.png",
@@ -1078,7 +1127,9 @@
         "text": "EyeBrows_00"
       }
     ],
-    "thumbnail": "QmYmTRhaTHM9W5aEWbrrS9ixLQq7iDCHp18Jbm3xKs3nat"
+    "thumbnail": "QmYmTRhaTHM9W5aEWbrrS9ixLQq7iDCHp18Jbm3xKs3nat",
+    "replaces": [],
+    "hides": []
   },
   {
     "id": "dcl://base-avatars/eyebrows_01",
@@ -1088,6 +1139,8 @@
           "dcl://base-avatars/BaseMale"
         ],
         "mainFile": "M_EyeBrows_01.png",
+        "overrideReplaces": [],
+        "overrideHides": [],
         "contents": [
           {
             "file": "M_EyeBrows_01.png",
@@ -1116,7 +1169,9 @@
         "text": "EyeBrows_01"
       }
     ],
-    "thumbnail": "QmP9Wb8f6ZxseRD7e1T8XcUHbyNuMkk3ZTMQsjoduJAs5C"
+    "thumbnail": "QmP9Wb8f6ZxseRD7e1T8XcUHbyNuMkk3ZTMQsjoduJAs5C",
+    "replaces": [],
+    "hides": []
   },
   {
     "id": "dcl://base-avatars/eyebrows_02",
@@ -1126,6 +1181,8 @@
           "dcl://base-avatars/BaseMale"
         ],
         "mainFile": "M_EyeBrows_02.png",
+        "overrideReplaces": [],
+        "overrideHides": [],
         "contents": [
           {
             "file": "M_EyeBrows_02.png",
@@ -1154,7 +1211,9 @@
         "text": "EyeBrows_02"
       }
     ],
-    "thumbnail": "QmV8Rg6ZhLdKdzvmhFsSNnPpUcBNJcUVYMa3g8MbTUG4zr"
+    "thumbnail": "QmV8Rg6ZhLdKdzvmhFsSNnPpUcBNJcUVYMa3g8MbTUG4zr",
+    "replaces": [],
+    "hides": []
   },
   {
     "id": "dcl://base-avatars/eyebrows_03",
@@ -1164,6 +1223,8 @@
           "dcl://base-avatars/BaseMale"
         ],
         "mainFile": "M_EyeBrows_03.png",
+        "overrideReplaces": [],
+        "overrideHides": [],
         "contents": [
           {
             "file": "M_EyeBrows_03.png",
@@ -1192,7 +1253,9 @@
         "text": "EyeBrows_03"
       }
     ],
-    "thumbnail": "QmU3zbEJu73Dmje6W5NyrTRwwQ6oLHdnfDS1dbL38iGFX5"
+    "thumbnail": "QmU3zbEJu73Dmje6W5NyrTRwwQ6oLHdnfDS1dbL38iGFX5",
+    "replaces": [],
+    "hides": []
   },
   {
     "id": "dcl://base-avatars/eyebrows_04",
@@ -1202,6 +1265,8 @@
           "dcl://base-avatars/BaseMale"
         ],
         "mainFile": "M_EyeBrows_04.png",
+        "overrideReplaces": [],
+        "overrideHides": [],
         "contents": [
           {
             "file": "M_EyeBrows_04.png",
@@ -1230,7 +1295,9 @@
         "text": "EyeBrows_04"
       }
     ],
-    "thumbnail": "QmeyjCMSGXJJ8C4ZeZN5cePhSenn4pEu7RHe7kgUDBJ4Di"
+    "thumbnail": "QmeyjCMSGXJJ8C4ZeZN5cePhSenn4pEu7RHe7kgUDBJ4Di",
+    "replaces": [],
+    "hides": []
   },
   {
     "id": "dcl://base-avatars/eyebrows_05",
@@ -1240,6 +1307,8 @@
           "dcl://base-avatars/BaseMale"
         ],
         "mainFile": "M_EyeBrows_05.png",
+        "overrideReplaces": [],
+        "overrideHides": [],
         "contents": [
           {
             "file": "M_EyeBrows_05.png",
@@ -1268,7 +1337,9 @@
         "text": "EyeBrows_05"
       }
     ],
-    "thumbnail": "QmVssjA1W3zL7WQHEuLfG1W8mj16rAmzeP9QZc74FX92t4"
+    "thumbnail": "QmVssjA1W3zL7WQHEuLfG1W8mj16rAmzeP9QZc74FX92t4",
+    "replaces": [],
+    "hides": []
   },
   {
     "id": "dcl://base-avatars/eyebrows_06",
@@ -1278,6 +1349,8 @@
           "dcl://base-avatars/BaseMale"
         ],
         "mainFile": "M_EyeBrows_06.png",
+        "overrideReplaces": [],
+        "overrideHides": [],
         "contents": [
           {
             "file": "M_EyeBrows_06.png",
@@ -1306,7 +1379,9 @@
         "text": "EyeBrows_06"
       }
     ],
-    "thumbnail": "QmQ32NaNyjCj1wBDfUZbpb2RQMbpVpaTkQ22hX7Ff7qTfh"
+    "thumbnail": "QmQ32NaNyjCj1wBDfUZbpb2RQMbpVpaTkQ22hX7Ff7qTfh",
+    "replaces": [],
+    "hides": []
   },
   {
     "id": "dcl://base-avatars/eyebrows_07",
@@ -1316,6 +1391,8 @@
           "dcl://base-avatars/BaseMale"
         ],
         "mainFile": "M_EyeBrows_07.png",
+        "overrideReplaces": [],
+        "overrideHides": [],
         "contents": [
           {
             "file": "M_EyeBrows_07.png",
@@ -1344,7 +1421,9 @@
         "text": "EyeBrows_07"
       }
     ],
-    "thumbnail": "Qmc6f92JP52CReeFHW28WKfzNPP9iqFMLqtK9MXsiABneU"
+    "thumbnail": "Qmc6f92JP52CReeFHW28WKfzNPP9iqFMLqtK9MXsiABneU",
+    "replaces": [],
+    "hides": []
   },
   {
     "id": "dcl://base-avatars/f_eyes_00",
@@ -1354,6 +1433,8 @@
           "dcl://base-avatars/BaseFemale"
         ],
         "mainFile": "F_Eyes_00.png",
+        "overrideReplaces": [],
+        "overrideHides": [],
         "contents": [
           {
             "file": "F_Eyes_00.png",
@@ -1382,7 +1463,9 @@
         "text": "f_Eyes_00"
       }
     ],
-    "thumbnail": "Qme5gw36VyXLvEQxJmEAY8vp4cQ3z1hoaqzwh8wQV8pBKF"
+    "thumbnail": "Qme5gw36VyXLvEQxJmEAY8vp4cQ3z1hoaqzwh8wQV8pBKF",
+    "replaces": [],
+    "hides": []
   },
   {
     "id": "dcl://base-avatars/f_eyes_01",
@@ -1392,6 +1475,8 @@
           "dcl://base-avatars/BaseFemale"
         ],
         "mainFile": "F_Eyes_01.png",
+        "overrideReplaces": [],
+        "overrideHides": [],
         "contents": [
           {
             "file": "F_Eyes_01.png",
@@ -1424,7 +1509,9 @@
         "text": "f_Eyes_01"
       }
     ],
-    "thumbnail": "QmPGPaujnDyCMESAp1XxxKgKbQgpgXcDvY77hP3hqZJEcu"
+    "thumbnail": "QmPGPaujnDyCMESAp1XxxKgKbQgpgXcDvY77hP3hqZJEcu",
+    "replaces": [],
+    "hides": []
   },
   {
     "id": "dcl://base-avatars/f_eyes_02",
@@ -1434,6 +1521,8 @@
           "dcl://base-avatars/BaseFemale"
         ],
         "mainFile": "F_Eyes_02.png",
+        "overrideReplaces": [],
+        "overrideHides": [],
         "contents": [
           {
             "file": "F_Eyes_02.png",
@@ -1466,7 +1555,9 @@
         "text": "f_Eyes_02"
       }
     ],
-    "thumbnail": "QmdJBnz8YGu3Gh8vejXao1xSCvBnpRBLwTFxVENR1s84mo"
+    "thumbnail": "QmdJBnz8YGu3Gh8vejXao1xSCvBnpRBLwTFxVENR1s84mo",
+    "replaces": [],
+    "hides": []
   },
   {
     "id": "dcl://base-avatars/f_eyes_03",
@@ -1476,6 +1567,8 @@
           "dcl://base-avatars/BaseFemale"
         ],
         "mainFile": "F_Eyes_03.png",
+        "overrideReplaces": [],
+        "overrideHides": [],
         "contents": [
           {
             "file": "F_Eyes_03.png",
@@ -1504,7 +1597,9 @@
         "text": "f_Eyes_03"
       }
     ],
-    "thumbnail": "QmNNaHcj5MTHaU4EbZY25JGoiiS5BnLhhLXWtqySgh9dFY"
+    "thumbnail": "QmNNaHcj5MTHaU4EbZY25JGoiiS5BnLhhLXWtqySgh9dFY",
+    "replaces": [],
+    "hides": []
   },
   {
     "id": "dcl://base-avatars/f_eyes_04",
@@ -1514,6 +1609,8 @@
           "dcl://base-avatars/BaseFemale"
         ],
         "mainFile": "F_Eyes_04.png",
+        "overrideReplaces": [],
+        "overrideHides": [],
         "contents": [
           {
             "file": "F_Eyes_04.png",
@@ -1546,7 +1643,9 @@
         "text": "f_Eyes_04"
       }
     ],
-    "thumbnail": "QmNyzNnjYt6rzaKDj1BwGTWkMxNMoGA1hPSTBvstepfVPk"
+    "thumbnail": "QmNyzNnjYt6rzaKDj1BwGTWkMxNMoGA1hPSTBvstepfVPk",
+    "replaces": [],
+    "hides": []
   },
   {
     "id": "dcl://base-avatars/f_eyes_05",
@@ -1556,6 +1655,8 @@
           "dcl://base-avatars/BaseFemale"
         ],
         "mainFile": "F_Eyes_05.png",
+        "overrideReplaces": [],
+        "overrideHides": [],
         "contents": [
           {
             "file": "F_Eyes_05.png",
@@ -1584,7 +1685,9 @@
         "text": "f_Eyes_05"
       }
     ],
-    "thumbnail": "QmYLehHLMf5hrKaGK5RYxwL7XFgWARmTAEifeMtXQACCAE"
+    "thumbnail": "QmYLehHLMf5hrKaGK5RYxwL7XFgWARmTAEifeMtXQACCAE",
+    "replaces": [],
+    "hides": []
   },
   {
     "id": "dcl://base-avatars/f_eyes_06",
@@ -1594,6 +1697,8 @@
           "dcl://base-avatars/BaseFemale"
         ],
         "mainFile": "F_Eyes_06.png",
+        "overrideReplaces": [],
+        "overrideHides": [],
         "contents": [
           {
             "file": "F_Eyes_06.png",
@@ -1626,7 +1731,9 @@
         "text": "f_Eyes_06"
       }
     ],
-    "thumbnail": "QmVS8NbaMYYoQNmKqckCgg9T1CSgkqpNzkbPbPuttiJ6Tv"
+    "thumbnail": "QmVS8NbaMYYoQNmKqckCgg9T1CSgkqpNzkbPbPuttiJ6Tv",
+    "replaces": [],
+    "hides": []
   },
   {
     "id": "dcl://base-avatars/f_eyes_07",
@@ -1636,6 +1743,8 @@
           "dcl://base-avatars/BaseFemale"
         ],
         "mainFile": "F_Eyes_07.png",
+        "overrideReplaces": [],
+        "overrideHides": [],
         "contents": [
           {
             "file": "F_Eyes_07.png",
@@ -1668,7 +1777,9 @@
         "text": "f_Eyes_07"
       }
     ],
-    "thumbnail": "QmYQK1u4FScHcsixxz3m6tneHFKcWYZXEhME7tYJE3aAmG"
+    "thumbnail": "QmYQK1u4FScHcsixxz3m6tneHFKcWYZXEhME7tYJE3aAmG",
+    "replaces": [],
+    "hides": []
   },
   {
     "id": "dcl://base-avatars/f_eyes_08",
@@ -1678,6 +1789,8 @@
           "dcl://base-avatars/BaseFemale"
         ],
         "mainFile": "F_Eyes_08.png",
+        "overrideReplaces": [],
+        "overrideHides": [],
         "contents": [
           {
             "file": "F_Eyes_08.png",
@@ -1710,7 +1823,9 @@
         "text": "f_Eyes_08"
       }
     ],
-    "thumbnail": "QmT4mPmzDKg76vor3hMyhjt2fL2PpCev2ojWLmGz556Yqz"
+    "thumbnail": "QmT4mPmzDKg76vor3hMyhjt2fL2PpCev2ojWLmGz556Yqz",
+    "replaces": [],
+    "hides": []
   },
   {
     "id": "dcl://base-avatars/f_eyes_09",
@@ -1720,6 +1835,8 @@
           "dcl://base-avatars/BaseFemale"
         ],
         "mainFile": "F_Eyes_09.png",
+        "overrideReplaces": [],
+        "overrideHides": [],
         "contents": [
           {
             "file": "F_Eyes_09.png",
@@ -1752,7 +1869,9 @@
         "text": "f_Eyes_09"
       }
     ],
-    "thumbnail": "QmbtSbpcS2BJqUTuHrDqHnGA3EPYo3vWQ6GfBCb74NaEDm"
+    "thumbnail": "QmbtSbpcS2BJqUTuHrDqHnGA3EPYo3vWQ6GfBCb74NaEDm",
+    "replaces": [],
+    "hides": []
   },
   {
     "id": "dcl://base-avatars/f_eyes_10",
@@ -1762,6 +1881,8 @@
           "dcl://base-avatars/BaseFemale"
         ],
         "mainFile": "F_Eyes_10.png",
+        "overrideReplaces": [],
+        "overrideHides": [],
         "contents": [
           {
             "file": "F_Eyes_10.png",
@@ -1794,7 +1915,9 @@
         "text": "f_Eyes_10"
       }
     ],
-    "thumbnail": "QmPHh7MVzGb1h1NkWgHSehKFPLcaU1iqFHViAjbQESvJBt"
+    "thumbnail": "QmPHh7MVzGb1h1NkWgHSehKFPLcaU1iqFHViAjbQESvJBt",
+    "replaces": [],
+    "hides": []
   },
   {
     "id": "dcl://base-avatars/f_eyes_11",
@@ -1804,6 +1927,8 @@
           "dcl://base-avatars/BaseFemale"
         ],
         "mainFile": "F_Eyes_11.png",
+        "overrideReplaces": [],
+        "overrideHides": [],
         "contents": [
           {
             "file": "F_Eyes_11.png",
@@ -1836,7 +1961,9 @@
         "text": "f_Eyes_11"
       }
     ],
-    "thumbnail": "QmX3ZiecZ1VZaR57yq5zqNDC4JAnkzG7dGHh1kpxnhkKJB"
+    "thumbnail": "QmX3ZiecZ1VZaR57yq5zqNDC4JAnkzG7dGHh1kpxnhkKJB",
+    "replaces": [],
+    "hides": []
   },
   {
     "id": "dcl://base-avatars/eyes_00",
@@ -1846,6 +1973,8 @@
           "dcl://base-avatars/BaseMale"
         ],
         "mainFile": "M_Eyes_00.png",
+        "overrideReplaces": [],
+        "overrideHides": [],
         "contents": [
           {
             "file": "M_Eyes_00.png",
@@ -1874,7 +2003,9 @@
         "text": "Eyes_00"
       }
     ],
-    "thumbnail": "Qmb4sN5eAcJN2WNNVi8Ui4WDh2CX5Wt6m31teaMpPGuUPz"
+    "thumbnail": "Qmb4sN5eAcJN2WNNVi8Ui4WDh2CX5Wt6m31teaMpPGuUPz",
+    "replaces": [],
+    "hides": []
   },
   {
     "id": "dcl://base-avatars/eyes_01",
@@ -1884,6 +2015,8 @@
           "dcl://base-avatars/BaseMale"
         ],
         "mainFile": "M_Eyes_01.png",
+        "overrideReplaces": [],
+        "overrideHides": [],
         "contents": [
           {
             "file": "M_Eyes_01.png",
@@ -1912,7 +2045,9 @@
         "text": "Eyes_01"
       }
     ],
-    "thumbnail": "QmX6m5PzUheR9jHe29nVCeYD1ELRPPPWPWa8aoTfK22Acq"
+    "thumbnail": "QmX6m5PzUheR9jHe29nVCeYD1ELRPPPWPWa8aoTfK22Acq",
+    "replaces": [],
+    "hides": []
   },
   {
     "id": "dcl://base-avatars/eyes_02",
@@ -1922,6 +2057,8 @@
           "dcl://base-avatars/BaseMale"
         ],
         "mainFile": "M_Eyes_02.png",
+        "overrideReplaces": [],
+        "overrideHides": [],
         "contents": [
           {
             "file": "M_Eyes_02.png",
@@ -1954,7 +2091,9 @@
         "text": "Eyes_02"
       }
     ],
-    "thumbnail": "QmNkmTvKSfuMU616o1CH7H94ho3kzdt47nRiazbKShFbq9"
+    "thumbnail": "QmNkmTvKSfuMU616o1CH7H94ho3kzdt47nRiazbKShFbq9",
+    "replaces": [],
+    "hides": []
   },
   {
     "id": "dcl://base-avatars/eyes_03",
@@ -1964,6 +2103,8 @@
           "dcl://base-avatars/BaseMale"
         ],
         "mainFile": "M_Eyes_03.png",
+        "overrideReplaces": [],
+        "overrideHides": [],
         "contents": [
           {
             "file": "M_Eyes_03.png",
@@ -1992,7 +2133,9 @@
         "text": "Eyes_03"
       }
     ],
-    "thumbnail": "QmR9N5DaD3XafNh83mpkLSfSDNsPWZSE5vvuTbfLSNgNqp"
+    "thumbnail": "QmR9N5DaD3XafNh83mpkLSfSDNsPWZSE5vvuTbfLSNgNqp",
+    "replaces": [],
+    "hides": []
   },
   {
     "id": "dcl://base-avatars/eyes_04",
@@ -2002,6 +2145,8 @@
           "dcl://base-avatars/BaseMale"
         ],
         "mainFile": "M_Eyes_04.png",
+        "overrideReplaces": [],
+        "overrideHides": [],
         "contents": [
           {
             "file": "M_Eyes_04.png",
@@ -2034,7 +2179,9 @@
         "text": "Eyes_04"
       }
     ],
-    "thumbnail": "Qmcx127G2PhhvYfAavMVsDbWq2PmvjnGrp7G2trhsq7ypw"
+    "thumbnail": "Qmcx127G2PhhvYfAavMVsDbWq2PmvjnGrp7G2trhsq7ypw",
+    "replaces": [],
+    "hides": []
   },
   {
     "id": "dcl://base-avatars/eyes_05",
@@ -2044,6 +2191,8 @@
           "dcl://base-avatars/BaseMale"
         ],
         "mainFile": "M_Eyes_05.png",
+        "overrideReplaces": [],
+        "overrideHides": [],
         "contents": [
           {
             "file": "M_Eyes_05.png",
@@ -2072,7 +2221,9 @@
         "text": "Eyes_05"
       }
     ],
-    "thumbnail": "QmP3bzVHhZmFfGx9CC5oiUBE48ExoVTZCydG3nwwD9WtKQ"
+    "thumbnail": "QmP3bzVHhZmFfGx9CC5oiUBE48ExoVTZCydG3nwwD9WtKQ",
+    "replaces": [],
+    "hides": []
   },
   {
     "id": "dcl://base-avatars/eyes_06",
@@ -2082,6 +2233,8 @@
           "dcl://base-avatars/BaseMale"
         ],
         "mainFile": "M_Eyes_06.png",
+        "overrideReplaces": [],
+        "overrideHides": [],
         "contents": [
           {
             "file": "M_Eyes_06.png",
@@ -2114,7 +2267,9 @@
         "text": "Eyes_06"
       }
     ],
-    "thumbnail": "QmPfGPNSX4nmgH5bMEnHRjCvpSBSPryMHVS7EqurELMsrm"
+    "thumbnail": "QmPfGPNSX4nmgH5bMEnHRjCvpSBSPryMHVS7EqurELMsrm",
+    "replaces": [],
+    "hides": []
   },
   {
     "id": "dcl://base-avatars/eyes_07",
@@ -2124,6 +2279,8 @@
           "dcl://base-avatars/BaseMale"
         ],
         "mainFile": "M_Eyes_07.png",
+        "overrideReplaces": [],
+        "overrideHides": [],
         "contents": [
           {
             "file": "M_Eyes_07.png",
@@ -2156,7 +2313,9 @@
         "text": "Eyes_07"
       }
     ],
-    "thumbnail": "QmRFWayAqSovd7kHbBHHhVhZQesxDrKJ71TzpHXDFQwQCk"
+    "thumbnail": "QmRFWayAqSovd7kHbBHHhVhZQesxDrKJ71TzpHXDFQwQCk",
+    "replaces": [],
+    "hides": []
   },
   {
     "id": "dcl://base-avatars/eyes_08",
@@ -2166,6 +2325,8 @@
           "dcl://base-avatars/BaseMale"
         ],
         "mainFile": "M_Eyes_08.png",
+        "overrideReplaces": [],
+        "overrideHides": [],
         "contents": [
           {
             "file": "M_Eyes_08.png",
@@ -2198,7 +2359,9 @@
         "text": "Eyes_08"
       }
     ],
-    "thumbnail": "QmZTUfpr24tyvQzz4E6GdmC8z4DPw8w6PVNrQoqH2HoDtg"
+    "thumbnail": "QmZTUfpr24tyvQzz4E6GdmC8z4DPw8w6PVNrQoqH2HoDtg",
+    "replaces": [],
+    "hides": []
   },
   {
     "id": "dcl://base-avatars/eyes_09",
@@ -2208,6 +2371,8 @@
           "dcl://base-avatars/BaseMale"
         ],
         "mainFile": "M_Eyes_09.png",
+        "overrideReplaces": [],
+        "overrideHides": [],
         "contents": [
           {
             "file": "M_Eyes_09.png",
@@ -2236,7 +2401,9 @@
         "text": "Eyes_09"
       }
     ],
-    "thumbnail": "QmZ3KpbP7FfxAfirwWC8hwMKMFauZPTfLhAbueTEUWLwQa"
+    "thumbnail": "QmZ3KpbP7FfxAfirwWC8hwMKMFauZPTfLhAbueTEUWLwQa",
+    "replaces": [],
+    "hides": []
   },
   {
     "id": "dcl://base-avatars/eyes_10",
@@ -2246,6 +2413,8 @@
           "dcl://base-avatars/BaseMale"
         ],
         "mainFile": "M_Eyes_10.png",
+        "overrideReplaces": [],
+        "overrideHides": [],
         "contents": [
           {
             "file": "M_Eyes_10.png",
@@ -2274,7 +2443,9 @@
         "text": "Eyes_10"
       }
     ],
-    "thumbnail": "QmeWrBArU3zzbXTog4vch72YDqPzM5xELeCgStnme77E6S"
+    "thumbnail": "QmeWrBArU3zzbXTog4vch72YDqPzM5xELeCgStnme77E6S",
+    "replaces": [],
+    "hides": []
   },
   {
     "id": "dcl://base-avatars/eyes_11",
@@ -2284,6 +2455,8 @@
           "dcl://base-avatars/BaseMale"
         ],
         "mainFile": "M_Eyes_11.png",
+        "overrideReplaces": [],
+        "overrideHides": [],
         "contents": [
           {
             "file": "M_Eyes_11.png",
@@ -2316,7 +2489,9 @@
         "text": "Eyes_11"
       }
     ],
-    "thumbnail": "QmUkvmjQkec1QquB4gc5jWW4x8x37RL7HAHNjUM4XdYoms"
+    "thumbnail": "QmUkvmjQkec1QquB4gc5jWW4x8x37RL7HAHNjUM4XdYoms",
+    "replaces": [],
+    "hides": []
   },
   {
     "id": "dcl://base-avatars/black_sun_glasses",
@@ -2326,6 +2501,8 @@
           "dcl://base-avatars/BaseMale"
         ],
         "mainFile": "F_Eyewear_BlackSunglasses.glb",
+        "overrideReplaces": [],
+        "overrideHides": [],
         "contents": [
           {
             "file": "AvatarWearables_TX.png",
@@ -2342,6 +2519,8 @@
           "dcl://base-avatars/BaseFemale"
         ],
         "mainFile": "F_Eyewear_BlackSunglasses.glb",
+        "overrideReplaces": [],
+        "overrideHides": [],
         "contents": [
           {
             "file": "AvatarWearables_TX.png",
@@ -2375,7 +2554,9 @@
         "text": "Anteojos Negros"
       }
     ],
-    "thumbnail": "QmdZ1vLFPWnVF7xMFMskA6LSpKfCVxA9JRi4jsYtrCnrya"
+    "thumbnail": "QmdZ1vLFPWnVF7xMFMskA6LSpKfCVxA9JRi4jsYtrCnrya",
+    "replaces": [],
+    "hides": []
   },
   {
     "id": "dcl://base-avatars/cyclope",
@@ -2385,6 +2566,8 @@
           "dcl://base-avatars/BaseMale"
         ],
         "mainFile": "F_Eyewear_Cyclope.glb",
+        "overrideReplaces": [],
+        "overrideHides": [],
         "contents": [
           {
             "file": "AvatarWearables_TX.png",
@@ -2401,6 +2584,8 @@
           "dcl://base-avatars/BaseFemale"
         ],
         "mainFile": "F_Eyewear_Cyclope.glb",
+        "overrideReplaces": [],
+        "overrideHides": [],
         "contents": [
           {
             "file": "AvatarWearables_TX.png",
@@ -2434,7 +2619,9 @@
         "text": "Gafa de Cíclope"
       }
     ],
-    "thumbnail": "QmStaoSsdCyV4g9B6ynUVJZEpBr7sdyV68qwsPgzdUS2AR"
+    "thumbnail": "QmStaoSsdCyV4g9B6ynUVJZEpBr7sdyV68qwsPgzdUS2AR",
+    "replaces": [],
+    "hides": []
   },
   {
     "id": "dcl://base-avatars/f_glasses_cat_style",
@@ -2444,6 +2631,8 @@
           "dcl://base-avatars/BaseFemale"
         ],
         "mainFile": "F_Eyewear_CatStyle.glb",
+        "overrideReplaces": [],
+        "overrideHides": [],
         "contents": [
           {
             "file": "AvatarWearables_TX.png",
@@ -2475,7 +2664,9 @@
         "text": "Gafas de Estilo Gato"
       }
     ],
-    "thumbnail": "QmTz5FqD8PberQpKyFMyR8A47S5NT243s26TBGzmCoUaC9"
+    "thumbnail": "QmTz5FqD8PberQpKyFMyR8A47S5NT243s26TBGzmCoUaC9",
+    "replaces": [],
+    "hides": []
   },
   {
     "id": "dcl://base-avatars/f_glasses_city",
@@ -2485,6 +2676,8 @@
           "dcl://base-avatars/BaseFemale"
         ],
         "mainFile": "F_Eyewear_CitySunglasses.glb",
+        "overrideReplaces": [],
+        "overrideHides": [],
         "contents": [
           {
             "file": "AvatarWearables_TX.png",
@@ -2516,7 +2709,9 @@
         "text": "Gafas de Estilo Urbano"
       }
     ],
-    "thumbnail": "QmXZqxFSMpxifiQR2Nad7NpzttjjY22fTRBRVxktqzHprS"
+    "thumbnail": "QmXZqxFSMpxifiQR2Nad7NpzttjjY22fTRBRVxktqzHprS",
+    "replaces": [],
+    "hides": []
   },
   {
     "id": "dcl://base-avatars/f_glasses_fashion",
@@ -2526,6 +2721,8 @@
           "dcl://base-avatars/BaseFemale"
         ],
         "mainFile": "F_Eyewear_Fashion.glb",
+        "overrideReplaces": [],
+        "overrideHides": [],
         "contents": [
           {
             "file": "AvatarWearables_TX.png",
@@ -2557,7 +2754,9 @@
         "text": "Gafas de Estilo"
       }
     ],
-    "thumbnail": "QmcA5XjwSbKTSREzQ6WtUW3Uqc6A1VpGCvkt9QxhfCsUnB"
+    "thumbnail": "QmcA5XjwSbKTSREzQ6WtUW3Uqc6A1VpGCvkt9QxhfCsUnB",
+    "replaces": [],
+    "hides": []
   },
   {
     "id": "dcl://base-avatars/f_glasses",
@@ -2567,6 +2766,8 @@
           "dcl://base-avatars/BaseFemale"
         ],
         "mainFile": "F_Glasses_01.glb",
+        "overrideReplaces": [],
+        "overrideHides": [],
         "contents": [
           {
             "file": "AvatarWearables_TX.png",
@@ -2598,7 +2799,9 @@
         "text": "Gafas Rojas"
       }
     ],
-    "thumbnail": "QmbEvVLQ6i3mVNqY5JrJX4TUqQG5Q923CzApFp9yRgCoCe"
+    "thumbnail": "QmbEvVLQ6i3mVNqY5JrJX4TUqQG5Q923CzApFp9yRgCoCe",
+    "replaces": [],
+    "hides": []
   },
   {
     "id": "dcl://base-avatars/heart_glasses",
@@ -2608,6 +2811,8 @@
           "dcl://base-avatars/BaseFemale"
         ],
         "mainFile": "F_Eyewear_Heart.glb",
+        "overrideReplaces": [],
+        "overrideHides": [],
         "contents": [
           {
             "file": "AvatarWearables_TX.png",
@@ -2639,7 +2844,9 @@
         "text": "Anteojos con Forma de Corazón"
       }
     ],
-    "thumbnail": "QmX4Duxpi6hZPDjjvaEygKkBcEQKWggb5BrDvezcq1DYN7"
+    "thumbnail": "QmX4Duxpi6hZPDjjvaEygKkBcEQKWggb5BrDvezcq1DYN7",
+    "replaces": [],
+    "hides": []
   },
   {
     "id": "dcl://base-avatars/italian_director",
@@ -2649,6 +2856,8 @@
           "dcl://base-avatars/BaseMale"
         ],
         "mainFile": "F_Eyewear_ItalianDirector.glb",
+        "overrideReplaces": [],
+        "overrideHides": [],
         "contents": [
           {
             "file": "AvatarWearables_TX.png",
@@ -2665,6 +2874,8 @@
           "dcl://base-avatars/BaseFemale"
         ],
         "mainFile": "F_Eyewear_ItalianDirector.glb",
+        "overrideReplaces": [],
+        "overrideHides": [],
         "contents": [
           {
             "file": "AvatarWearables_TX.png",
@@ -2698,7 +2909,9 @@
         "text": "Gafas de Director de Cine Italiano"
       }
     ],
-    "thumbnail": "QmQcayuAR4UDMQoHqg7HCKgruGuaqDbRN1S9zt8ccWYaje"
+    "thumbnail": "QmQcayuAR4UDMQoHqg7HCKgruGuaqDbRN1S9zt8ccWYaje",
+    "replaces": [],
+    "hides": []
   },
   {
     "id": "dcl://base-avatars/aviatorstyle",
@@ -2708,6 +2921,8 @@
           "dcl://base-avatars/BaseMale"
         ],
         "mainFile": "M_Eyewear_AviatorStyle.glb",
+        "overrideReplaces": [],
+        "overrideHides": [],
         "contents": [
           {
             "file": "AvatarWearables_TX.png",
@@ -2739,7 +2954,9 @@
         "text": "Gafas de Aviador"
       }
     ],
-    "thumbnail": "QmTnNj1hRjdPbhQPo7Gg71RPT5FXiw2zLeqwZNYhwnhdhQ"
+    "thumbnail": "QmTnNj1hRjdPbhQPo7Gg71RPT5FXiw2zLeqwZNYhwnhdhQ",
+    "replaces": [],
+    "hides": []
   },
   {
     "id": "dcl://base-avatars/matrix_sunglasses",
@@ -2749,6 +2966,8 @@
           "dcl://base-avatars/BaseMale"
         ],
         "mainFile": "M_Eyewear_MatrixSunGlasses.glb",
+        "overrideReplaces": [],
+        "overrideHides": [],
         "contents": [
           {
             "file": "AvatarWearables_TX.png",
@@ -2765,6 +2984,8 @@
           "dcl://base-avatars/BaseFemale"
         ],
         "mainFile": "M_Eyewear_MatrixSunGlasses.glb",
+        "overrideReplaces": [],
+        "overrideHides": [],
         "contents": [
           {
             "file": "AvatarWearables_TX.png",
@@ -2798,7 +3019,9 @@
         "text": "Gafas de Matrix"
       }
     ],
-    "thumbnail": "QmeXtir64MeetpyaSuRumTLktYrbBXzJBDp2Evdj5Xsk8P"
+    "thumbnail": "QmeXtir64MeetpyaSuRumTLktYrbBXzJBDp2Evdj5Xsk8P",
+    "replaces": [],
+    "hides": []
   },
   {
     "id": "dcl://base-avatars/piratepatch",
@@ -2808,6 +3031,8 @@
           "dcl://base-avatars/BaseMale"
         ],
         "mainFile": "PiratePatch.glb",
+        "overrideReplaces": [],
+        "overrideHides": [],
         "contents": [
           {
             "file": "AvatarWearables_TX.png",
@@ -2824,6 +3049,8 @@
           "dcl://base-avatars/BaseFemale"
         ],
         "mainFile": "PiratePatch.glb",
+        "overrideReplaces": [],
+        "overrideHides": [],
         "contents": [
           {
             "file": "AvatarWearables_TX.png",
@@ -2857,7 +3084,9 @@
         "text": "Parche Pirata"
       }
     ],
-    "thumbnail": "QmRUwHtqrhoVUvyn2sSxcvfUguff8zPQM1Bp4adfMztku1"
+    "thumbnail": "QmRUwHtqrhoVUvyn2sSxcvfUguff8zPQM1Bp4adfMztku1",
+    "replaces": [],
+    "hides": []
   },
   {
     "id": "dcl://base-avatars/retro_sunglasses",
@@ -2867,6 +3096,8 @@
           "dcl://base-avatars/BaseMale"
         ],
         "mainFile": "F_Eyewear_RetroGlasses.glb",
+        "overrideReplaces": [],
+        "overrideHides": [],
         "contents": [
           {
             "file": "AvatarWearables_TX.png",
@@ -2883,6 +3114,8 @@
           "dcl://base-avatars/BaseFemale"
         ],
         "mainFile": "F_Eyewear_RetroGlasses.glb",
+        "overrideReplaces": [],
+        "overrideHides": [],
         "contents": [
           {
             "file": "AvatarWearables_TX.png",
@@ -2916,7 +3149,9 @@
         "text": "Gafas Retro"
       }
     ],
-    "thumbnail": "QmSovNhd9n3M54GXK6K2HUSxZApwSroqxYNP3MEZQdCcKA"
+    "thumbnail": "QmSovNhd9n3M54GXK6K2HUSxZApwSroqxYNP3MEZQdCcKA",
+    "replaces": [],
+    "hides": []
   },
   {
     "id": "dcl://base-avatars/rounded_sun_glasses",
@@ -2926,6 +3161,8 @@
           "dcl://base-avatars/BaseMale"
         ],
         "mainFile": "RoundSunglasses_01.glb",
+        "overrideReplaces": [],
+        "overrideHides": [],
         "contents": [
           {
             "file": "AvatarWearables_TX.png",
@@ -2942,6 +3179,8 @@
           "dcl://base-avatars/BaseFemale"
         ],
         "mainFile": "RoundSunglasses_01.glb",
+        "overrideReplaces": [],
+        "overrideHides": [],
         "contents": [
           {
             "file": "AvatarWearables_TX.png",
@@ -2975,7 +3214,9 @@
         "text": "Gafas de Sol Circulares"
       }
     ],
-    "thumbnail": "QmZ5HCqjQs1nmQfYnaNffzw7pJ4x4UEvnKaeaUGSSkiWnb"
+    "thumbnail": "QmZ5HCqjQs1nmQfYnaNffzw7pJ4x4UEvnKaeaUGSSkiWnb",
+    "replaces": [],
+    "hides": []
   },
   {
     "id": "dcl://base-avatars/thug_life",
@@ -2985,6 +3226,8 @@
           "dcl://base-avatars/BaseMale"
         ],
         "mainFile": "ThugLife_01.glb",
+        "overrideReplaces": [],
+        "overrideHides": [],
         "contents": [
           {
             "file": "AvatarWearables_TX.png",
@@ -3016,44 +3259,9 @@
         "text": "Gafas de fanfarrón"
       }
     ],
-    "thumbnail": "Qmf8EKPF2wjFAMFJXZJ26FR592T7niEHst5R12JzjKAwRb"
-  },
-  {
-    "id": "dcl://base-avatars/00_EmptyFacialHair",
-    "representations": [
-      {
-        "bodyShapes": [
-          "dcl://base-avatars/BaseMale"
-        ],
-        "mainFile": "00_EmptyFacialHair.glb",
-        "contents": [
-          {
-            "file": "00_EmptyFacialHair.glb",
-            "hash": "QmcUWAmK22stjX15KtpJeD1TcvdDNQC6Wx2eMHuBJJhCFB"
-          }
-        ]
-      }
-    ],
-    "type": "wearable",
-    "category": "facial_hair",
-    "tags": [
-      "face",
-      "facial_hair",
-      "man",
-      "base-wearable"
-    ],
-    "baseUrl": "https://dcl-base-avatars.now.sh/",
-    "i18n": [
-      {
-        "code": "en",
-        "text": "Discard"
-      },
-      {
-        "code": "es",
-        "text": "Descartar"
-      }
-    ],
-    "thumbnail": "Qma95DcT2Bkd22gL6DYpYFvFKpzNMMExqUphZEiqcPhDM7"
+    "thumbnail": "Qmf8EKPF2wjFAMFJXZJ26FR592T7niEHst5R12JzjKAwRb",
+    "replaces": [],
+    "hides": []
   },
   {
     "id": "dcl://base-avatars/balbo_beard",
@@ -3063,6 +3271,8 @@
           "dcl://base-avatars/BaseMale"
         ],
         "mainFile": "M_FacialHair_BalbooBeard.glb",
+        "overrideReplaces": [],
+        "overrideHides": [],
         "contents": [
           {
             "file": "AvatarWearables_TX.png",
@@ -3094,7 +3304,9 @@
         "text": "Balbo"
       }
     ],
-    "thumbnail": "QmTcMounmnAnWrSXY2za4f8ZxeStP3WKEm5LNvunC1xnS6"
+    "thumbnail": "QmTcMounmnAnWrSXY2za4f8ZxeStP3WKEm5LNvunC1xnS6",
+    "replaces": [],
+    "hides": []
   },
   {
     "id": "dcl://base-avatars/lincoln_beard",
@@ -3104,6 +3316,8 @@
           "dcl://base-avatars/BaseMale"
         ],
         "mainFile": "M_FacialHair_BeardGoatee.glb",
+        "overrideReplaces": [],
+        "overrideHides": [],
         "contents": [
           {
             "file": "AvatarWearables_TX.png",
@@ -3135,7 +3349,9 @@
         "text": "Barba en Collar "
       }
     ],
-    "thumbnail": "QmQYqgiiasA4BpprThx4r8NCExuxEyf16woHAhp7U1tBGM"
+    "thumbnail": "QmQYqgiiasA4BpprThx4r8NCExuxEyf16woHAhp7U1tBGM",
+    "replaces": [],
+    "hides": []
   },
   {
     "id": "dcl://base-avatars/beard",
@@ -3145,6 +3361,8 @@
           "dcl://base-avatars/BaseMale"
         ],
         "mainFile": "Beard_01.glb",
+        "overrideReplaces": [],
+        "overrideHides": [],
         "contents": [
           {
             "file": "AvatarWearables_TX.png",
@@ -3176,7 +3394,9 @@
         "text": "Barba"
       }
     ],
-    "thumbnail": "QmRiGkR84p6CNXgKuic7iMswsAqb9TeV9gBrMFeRFpnxcm"
+    "thumbnail": "QmRiGkR84p6CNXgKuic7iMswsAqb9TeV9gBrMFeRFpnxcm",
+    "replaces": [],
+    "hides": []
   },
   {
     "id": "dcl://base-avatars/chin_beard",
@@ -3186,6 +3406,8 @@
           "dcl://base-avatars/BaseMale"
         ],
         "mainFile": "M_FacialHair_ChinBeard.glb",
+        "overrideReplaces": [],
+        "overrideHides": [],
         "contents": [
           {
             "file": "AvatarWearables_TX.png",
@@ -3217,7 +3439,9 @@
         "text": "Chiva"
       }
     ],
-    "thumbnail": "QmTteia8jurfjfnnBwoCCFWC953AkW9GLT2NLyYgFM1pfb"
+    "thumbnail": "QmTteia8jurfjfnnBwoCCFWC953AkW9GLT2NLyYgFM1pfb",
+    "replaces": [],
+    "hides": []
   },
   {
     "id": "dcl://base-avatars/french_beard",
@@ -3227,6 +3451,8 @@
           "dcl://base-avatars/BaseMale"
         ],
         "mainFile": "M_FacialHair_FrenchMustache.glb",
+        "overrideReplaces": [],
+        "overrideHides": [],
         "contents": [
           {
             "file": "AvatarWearables_TX.png",
@@ -3258,7 +3484,9 @@
         "text": "Bigote Francés"
       }
     ],
-    "thumbnail": "Qme41zoA4iq2oV9USE9mAgdVSuEJsrxRTQDJE33H3EpoBX"
+    "thumbnail": "Qme41zoA4iq2oV9USE9mAgdVSuEJsrxRTQDJE33H3EpoBX",
+    "replaces": [],
+    "hides": []
   },
   {
     "id": "dcl://base-avatars/full_beard",
@@ -3268,6 +3496,8 @@
           "dcl://base-avatars/BaseMale"
         ],
         "mainFile": "M_FacialHair_FullBeard.glb",
+        "overrideReplaces": [],
+        "overrideHides": [],
         "contents": [
           {
             "file": "AvatarWearables_TX.png",
@@ -3299,7 +3529,9 @@
         "text": "Barba Completa"
       }
     ],
-    "thumbnail": "QmZZQVFuDaFpLwSbbue5wBigKRb58TNcz3Snk2xQCHfKZs"
+    "thumbnail": "QmZZQVFuDaFpLwSbbue5wBigKRb58TNcz3Snk2xQCHfKZs",
+    "replaces": [],
+    "hides": []
   },
   {
     "id": "dcl://base-avatars/goatee_beard",
@@ -3309,6 +3541,8 @@
           "dcl://base-avatars/BaseMale"
         ],
         "mainFile": "M_FacialHair_Goatee.glb",
+        "overrideReplaces": [],
+        "overrideHides": [],
         "contents": [
           {
             "file": "AvatarWearables_TX.png",
@@ -3340,7 +3574,9 @@
         "text": "Goatee"
       }
     ],
-    "thumbnail": "QmVDF3MqXkp9mteAKjjh88oJjcFVzdUUAUPu7ndtRN6xG6"
+    "thumbnail": "QmVDF3MqXkp9mteAKjjh88oJjcFVzdUUAUPu7ndtRN6xG6",
+    "replaces": [],
+    "hides": []
   },
   {
     "id": "dcl://base-avatars/granpa_beard",
@@ -3350,6 +3586,8 @@
           "dcl://base-avatars/BaseMale"
         ],
         "mainFile": "M_FacialHair_GrandPaMustache.glb",
+        "overrideReplaces": [],
+        "overrideHides": [],
         "contents": [
           {
             "file": "AvatarWearables_TX.png",
@@ -3381,7 +3619,9 @@
         "text": "Walrus"
       }
     ],
-    "thumbnail": "QmXwBHH2vptaaBwmpzF4PhRaPYU8ZHMgK9abW7JbjxMmvr"
+    "thumbnail": "QmXwBHH2vptaaBwmpzF4PhRaPYU8ZHMgK9abW7JbjxMmvr",
+    "replaces": [],
+    "hides": []
   },
   {
     "id": "dcl://base-avatars/horseshoe_beard",
@@ -3391,6 +3631,8 @@
           "dcl://base-avatars/BaseMale"
         ],
         "mainFile": "M_FacialHair_LongMustache.glb",
+        "overrideReplaces": [],
+        "overrideHides": [],
         "contents": [
           {
             "file": "AvatarWearables_TX.png",
@@ -3422,7 +3664,9 @@
         "text": "Horseshoe"
       }
     ],
-    "thumbnail": "QmXim7wvUvRHKhdD1HomSj7JzJnu7pKLFkBNDWVfx2RaSh"
+    "thumbnail": "QmXim7wvUvRHKhdD1HomSj7JzJnu7pKLFkBNDWVfx2RaSh",
+    "replaces": [],
+    "hides": []
   },
   {
     "id": "dcl://base-avatars/handlebar",
@@ -3432,6 +3676,8 @@
           "dcl://base-avatars/BaseMale"
         ],
         "mainFile": "Moustache_01.glb",
+        "overrideReplaces": [],
+        "overrideHides": [],
         "contents": [
           {
             "file": "AvatarWearables_TX.png",
@@ -3463,7 +3709,9 @@
         "text": "Bigote Inglés"
       }
     ],
-    "thumbnail": "QmaNwVGJnENHdTKP8EE8oYzGRgBavnkCZqYq9pXN8FA63Y"
+    "thumbnail": "QmaNwVGJnENHdTKP8EE8oYzGRgBavnkCZqYq9pXN8FA63Y",
+    "replaces": [],
+    "hides": []
   },
   {
     "id": "dcl://base-avatars/Mustache_Short_Beard",
@@ -3473,6 +3721,8 @@
           "dcl://base-avatars/BaseMale"
         ],
         "mainFile": "M_FacialHair_MustacheShortBeard.glb",
+        "overrideReplaces": [],
+        "overrideHides": [],
         "contents": [
           {
             "file": "AvatarWearables_TX.png",
@@ -3504,7 +3754,9 @@
         "text": "Ancla"
       }
     ],
-    "thumbnail": "QmQD9nHU3xWjgbmooBamU7KtEdnHSo3HkNRpKu3khyqAA7"
+    "thumbnail": "QmQD9nHU3xWjgbmooBamU7KtEdnHSo3HkNRpKu3khyqAA7",
+    "replaces": [],
+    "hides": []
   },
   {
     "id": "dcl://base-avatars/short_boxed_beard",
@@ -3514,6 +3766,8 @@
           "dcl://base-avatars/BaseMale"
         ],
         "mainFile": "M_FacialHair_MustacheSmallBeard.glb",
+        "overrideReplaces": [],
+        "overrideHides": [],
         "contents": [
           {
             "file": "AvatarWearables_TX.png",
@@ -3545,7 +3799,9 @@
         "text": "Barba Corta con Bigote"
       }
     ],
-    "thumbnail": "QmYDwSQosBTfPjbCa3GE3dhkFHpMjvMYdpLE8JfgVmrnue"
+    "thumbnail": "QmYDwSQosBTfPjbCa3GE3dhkFHpMjvMYdpLE8JfgVmrnue",
+    "replaces": [],
+    "hides": []
   },
   {
     "id": "dcl://base-avatars/old_mustache_beard",
@@ -3555,6 +3811,8 @@
           "dcl://base-avatars/BaseMale"
         ],
         "mainFile": "M_FacialHair_OldMustache.glb",
+        "overrideReplaces": [],
+        "overrideHides": [],
         "contents": [
           {
             "file": "AvatarWearables_TX.png",
@@ -3586,7 +3844,9 @@
         "text": "Chevron"
       }
     ],
-    "thumbnail": "QmVtR6dTc8j8TjNzE92S1LqyXa6d8N1PedYM4qTNWG2wcv"
+    "thumbnail": "QmVtR6dTc8j8TjNzE92S1LqyXa6d8N1PedYM4qTNWG2wcv",
+    "replaces": [],
+    "hides": []
   },
   {
     "id": "dcl://base-avatars/bear_slippers",
@@ -3596,6 +3856,8 @@
           "dcl://base-avatars/BaseMale"
         ],
         "mainFile": "BearSlippers_01.glb",
+        "overrideReplaces": [],
+        "overrideHides": [],
         "contents": [
           {
             "file": "AvatarWearables_TX.png",
@@ -3616,6 +3878,8 @@
           "dcl://base-avatars/BaseFemale"
         ],
         "mainFile": "BearSlippers_01.glb",
+        "overrideReplaces": [],
+        "overrideHides": [],
         "contents": [
           {
             "file": "AvatarWearables_TX.png",
@@ -3653,7 +3917,9 @@
         "text": "Pantuflas de Oso"
       }
     ],
-    "thumbnail": "QmW1RfnBXBL7vMxeZRPJ8DZp88W3CgRUFYpiDU7mDRMEPk"
+    "thumbnail": "QmW1RfnBXBL7vMxeZRPJ8DZp88W3CgRUFYpiDU7mDRMEPk",
+    "replaces": [],
+    "hides": []
   },
   {
     "id": "dcl://base-avatars/citycomfortableshoes",
@@ -3663,6 +3929,8 @@
           "dcl://base-avatars/BaseMale"
         ],
         "mainFile": "CityComfortableShoes.glb",
+        "overrideReplaces": [],
+        "overrideHides": [],
         "contents": [
           {
             "file": "AvatarWearables_TX.png",
@@ -3683,6 +3951,8 @@
           "dcl://base-avatars/BaseFemale"
         ],
         "mainFile": "CityComfortableShoes.glb",
+        "overrideReplaces": [],
+        "overrideHides": [],
         "contents": [
           {
             "file": "AvatarWearables_TX.png",
@@ -3720,7 +3990,9 @@
         "text": "Zapatos cómodos"
       }
     ],
-    "thumbnail": "QmNXhvGjCeyeSasfEKJRkunTuw4G6SBebBSSSa863UheQh"
+    "thumbnail": "QmNXhvGjCeyeSasfEKJRkunTuw4G6SBebBSSSa863UheQh",
+    "replaces": [],
+    "hides": []
   },
   {
     "id": "dcl://base-avatars/classic_shoes",
@@ -3730,6 +4002,8 @@
           "dcl://base-avatars/BaseMale"
         ],
         "mainFile": "M_Feet_ClassicShoes.glb",
+        "overrideReplaces": [],
+        "overrideHides": [],
         "contents": [
           {
             "file": "AvatarWearables_TX.png",
@@ -3750,6 +4024,8 @@
           "dcl://base-avatars/BaseFemale"
         ],
         "mainFile": "M_Feet_ClassicShoes.glb",
+        "overrideReplaces": [],
+        "overrideHides": [],
         "contents": [
           {
             "file": "AvatarWearables_TX.png",
@@ -3787,7 +4063,9 @@
         "text": "Zapatos Clásicos"
       }
     ],
-    "thumbnail": "QmVbc4ZcMzzELVeBnsZGbvrFVtpNNXoFxD7jPx8rDgg94u"
+    "thumbnail": "QmVbc4ZcMzzELVeBnsZGbvrFVtpNNXoFxD7jPx8rDgg94u",
+    "replaces": [],
+    "hides": []
   },
   {
     "id": "dcl://base-avatars/crocs",
@@ -3797,6 +4075,8 @@
           "dcl://base-avatars/BaseMale"
         ],
         "mainFile": "Crocs.glb",
+        "overrideReplaces": [],
+        "overrideHides": [],
         "contents": [
           {
             "file": "AvatarWearables_TX.png",
@@ -3817,6 +4097,8 @@
           "dcl://base-avatars/BaseFemale"
         ],
         "mainFile": "Crocs.glb",
+        "overrideReplaces": [],
+        "overrideHides": [],
         "contents": [
           {
             "file": "AvatarWearables_TX.png",
@@ -3854,7 +4136,9 @@
         "text": "Crocs"
       }
     ],
-    "thumbnail": "QmVrAqvhXZMhwq1bw3xqEAjJ2imANnSTNF32ftamGP48Jt"
+    "thumbnail": "QmVrAqvhXZMhwq1bw3xqEAjJ2imANnSTNF32ftamGP48Jt",
+    "replaces": [],
+    "hides": []
   },
   {
     "id": "dcl://base-avatars/crocsocks",
@@ -3864,6 +4148,8 @@
           "dcl://base-avatars/BaseMale"
         ],
         "mainFile": "CrocsSocks.glb",
+        "overrideReplaces": [],
+        "overrideHides": [],
         "contents": [
           {
             "file": "AvatarWearables_TX.png",
@@ -3880,6 +4166,8 @@
           "dcl://base-avatars/BaseFemale"
         ],
         "mainFile": "CrocsSocks.glb",
+        "overrideReplaces": [],
+        "overrideHides": [],
         "contents": [
           {
             "file": "AvatarWearables_TX.png",
@@ -3913,7 +4201,9 @@
         "text": "Medias Croc"
       }
     ],
-    "thumbnail": "QmWKeVrN2aXreSzfF7QmmfxiGZ5LYVScUbJZjxWmNDaP2z"
+    "thumbnail": "QmWKeVrN2aXreSzfF7QmmfxiGZ5LYVScUbJZjxWmNDaP2z",
+    "replaces": [],
+    "hides": []
   },
   {
     "id": "dcl://base-avatars/Espadrilles",
@@ -3923,6 +4213,8 @@
           "dcl://base-avatars/BaseMale"
         ],
         "mainFile": "M_Feet_Espadrilles.glb",
+        "overrideReplaces": [],
+        "overrideHides": [],
         "contents": [
           {
             "file": "AvatarWearables_TX.png",
@@ -3943,6 +4235,8 @@
           "dcl://base-avatars/BaseFemale"
         ],
         "mainFile": "M_Feet_Espadrilles.glb",
+        "overrideReplaces": [],
+        "overrideHides": [],
         "contents": [
           {
             "file": "AvatarWearables_TX.png",
@@ -3980,7 +4274,9 @@
         "text": "Alpargatas"
       }
     ],
-    "thumbnail": "QmNVoydQ5Q7zHMF51sJKciz2EVQSCqm6rwp2g9Yj3R6URi"
+    "thumbnail": "QmNVoydQ5Q7zHMF51sJKciz2EVQSCqm6rwp2g9Yj3R6URi",
+    "replaces": [],
+    "hides": []
   },
   {
     "id": "dcl://base-avatars/bun_shoes",
@@ -3990,6 +4286,8 @@
           "dcl://base-avatars/BaseFemale"
         ],
         "mainFile": "F_BunShoes_01.glb",
+        "overrideReplaces": [],
+        "overrideHides": [],
         "contents": [
           {
             "file": "AvatarWearables_TX.png",
@@ -4025,7 +4323,9 @@
         "text": "Zapatillas de Lona"
       }
     ],
-    "thumbnail": "QmYbe52pSJHpbbYEd7bH8gPZv8kJtrybnKN91Tmjap5ZU2"
+    "thumbnail": "QmYbe52pSJHpbbYEd7bH8gPZv8kJtrybnKN91Tmjap5ZU2",
+    "replaces": [],
+    "hides": []
   },
   {
     "id": "dcl://base-avatars/comfy_green_sandals",
@@ -4035,6 +4335,8 @@
           "dcl://base-avatars/BaseFemale"
         ],
         "mainFile": "F_Feet_ComfortGreenSandals.glb",
+        "overrideReplaces": [],
+        "overrideHides": [],
         "contents": [
           {
             "file": "AvatarWearables_TX.png",
@@ -4070,7 +4372,9 @@
         "text": "Sandalias Verdes"
       }
     ],
-    "thumbnail": "QmS5g7Kw24goxuDN3WuMsHsEhNP1ghCi4cuMR3aHc39NBV"
+    "thumbnail": "QmS5g7Kw24goxuDN3WuMsHsEhNP1ghCi4cuMR3aHc39NBV",
+    "replaces": [],
+    "hides": []
   },
   {
     "id": "dcl://base-avatars/pink_sleepers",
@@ -4080,6 +4384,8 @@
           "dcl://base-avatars/BaseFemale"
         ],
         "mainFile": "F_Feet_PinkSleepers.glb",
+        "overrideReplaces": [],
+        "overrideHides": [],
         "contents": [
           {
             "file": "AvatarWearables_TX.png",
@@ -4115,7 +4421,9 @@
         "text": "Pantúflas Rosas"
       }
     ],
-    "thumbnail": "QmdxraL5hW8FerNebsp2T7ByjcTrahMqYWiB9QKQ6BSx7x"
+    "thumbnail": "QmdxraL5hW8FerNebsp2T7ByjcTrahMqYWiB9QKQ6BSx7x",
+    "replaces": [],
+    "hides": []
   },
   {
     "id": "dcl://base-avatars/ruby_blue_loafer",
@@ -4125,6 +4433,8 @@
           "dcl://base-avatars/BaseFemale"
         ],
         "mainFile": "F_Feet_RubyBlueSleepers.glb",
+        "overrideReplaces": [],
+        "overrideHides": [],
         "contents": [
           {
             "file": "AvatarWearables_TX.png",
@@ -4160,7 +4470,9 @@
         "text": "Zapatos Holgados Azules"
       }
     ],
-    "thumbnail": "QmVcCxEfdziWtAc8exRFw8N4nGUwshmMQi91P15GqMZbQr"
+    "thumbnail": "QmVcCxEfdziWtAc8exRFw8N4nGUwshmMQi91P15GqMZbQr",
+    "replaces": [],
+    "hides": []
   },
   {
     "id": "dcl://base-avatars/ruby_red_loafer",
@@ -4170,6 +4482,8 @@
           "dcl://base-avatars/BaseFemale"
         ],
         "mainFile": "F_Feet_RubyRedSleepers.glb",
+        "overrideReplaces": [],
+        "overrideHides": [],
         "contents": [
           {
             "file": "AvatarWearables_TX.png",
@@ -4205,7 +4519,9 @@
         "text": "Zapatos Holgados Rojos"
       }
     ],
-    "thumbnail": "QmbMgYVCkxgf7YUvUCDa8cK67PVPAccz4aF1pj6T1jkZ8w"
+    "thumbnail": "QmbMgYVCkxgf7YUvUCDa8cK67PVPAccz4aF1pj6T1jkZ8w",
+    "replaces": [],
+    "hides": []
   },
   {
     "id": "dcl://base-avatars/Moccasin",
@@ -4215,6 +4531,8 @@
           "dcl://base-avatars/BaseFemale"
         ],
         "mainFile": "F_Feet_SchoolShoes.glb",
+        "overrideReplaces": [],
+        "overrideHides": [],
         "contents": [
           {
             "file": "AvatarWearables_TX.png",
@@ -4246,7 +4564,9 @@
         "text": "Mocasines"
       }
     ],
-    "thumbnail": "QmS9KVDeC4aP6igw5teFPFa99bgbBhPTNwSBkavcP2r7ko"
+    "thumbnail": "QmS9KVDeC4aP6igw5teFPFa99bgbBhPTNwSBkavcP2r7ko",
+    "replaces": [],
+    "hides": []
   },
   {
     "id": "dcl://base-avatars/sport_black_shoes",
@@ -4256,6 +4576,8 @@
           "dcl://base-avatars/BaseMale"
         ],
         "mainFile": "F_Feet_SportBlackShoes.glb",
+        "overrideReplaces": [],
+        "overrideHides": [],
         "contents": [
           {
             "file": "AvatarWearables_TX.png",
@@ -4276,6 +4598,8 @@
           "dcl://base-avatars/BaseFemale"
         ],
         "mainFile": "F_Feet_SportBlackShoes.glb",
+        "overrideReplaces": [],
+        "overrideHides": [],
         "contents": [
           {
             "file": "AvatarWearables_TX.png",
@@ -4313,7 +4637,9 @@
         "text": "Zapatos Deportivos Negros"
       }
     ],
-    "thumbnail": "QmYu8p9tXKpBh8RwvxUgYZvp3KK3Q9M98evTBShTiGrCVs"
+    "thumbnail": "QmYu8p9tXKpBh8RwvxUgYZvp3KK3Q9M98evTBShTiGrCVs",
+    "replaces": [],
+    "hides": []
   },
   {
     "id": "dcl://base-avatars/sport_colored_shoes",
@@ -4323,6 +4649,8 @@
           "dcl://base-avatars/BaseFemale"
         ],
         "mainFile": "F_Feet_SportColorShoes.glb",
+        "overrideReplaces": [],
+        "overrideHides": [],
         "contents": [
           {
             "file": "AvatarWearables_TX.png",
@@ -4358,7 +4686,9 @@
         "text": "Zapatos Deportivos Coloreados"
       }
     ],
-    "thumbnail": "QmTwGkfsviTSk4N8L9kgveQ3afFztCPqeDxejMYt2Ac6H6"
+    "thumbnail": "QmTwGkfsviTSk4N8L9kgveQ3afFztCPqeDxejMYt2Ac6H6",
+    "replaces": [],
+    "hides": []
   },
   {
     "id": "dcl://base-avatars/pink_blue_socks",
@@ -4368,6 +4698,8 @@
           "dcl://base-avatars/BaseFemale"
         ],
         "mainFile": "F_Feet_PinkBlueSocks.glb",
+        "overrideReplaces": [],
+        "overrideHides": [],
         "contents": [
           {
             "file": "AvatarWearables_TX.png",
@@ -4399,7 +4731,9 @@
         "text": "Medias Rosadas y Azules"
       }
     ],
-    "thumbnail": "QmYpjks4Dr4nAHQTMwBgatpinfWB5jc6kqNhs4eJAvPr9S"
+    "thumbnail": "QmYpjks4Dr4nAHQTMwBgatpinfWB5jc6kqNhs4eJAvPr9S",
+    "replaces": [],
+    "hides": []
   },
   {
     "id": "dcl://base-avatars/red_sandals",
@@ -4409,6 +4743,8 @@
           "dcl://base-avatars/BaseFemale"
         ],
         "mainFile": "F_Feet_RedSandals.glb",
+        "overrideReplaces": [],
+        "overrideHides": [],
         "contents": [
           {
             "file": "AvatarWearables_TX.png",
@@ -4444,7 +4780,9 @@
         "text": "Sandalias Rojas"
       }
     ],
-    "thumbnail": "QmSggdcHwt3jkyd95mnzLWfK2UKSj1rNHhGXmyMSyS5EUJ"
+    "thumbnail": "QmSggdcHwt3jkyd95mnzLWfK2UKSj1rNHhGXmyMSyS5EUJ",
+    "replaces": [],
+    "hides": []
   },
   {
     "id": "dcl://base-avatars/comfy_sport_sandals",
@@ -4454,6 +4792,8 @@
           "dcl://base-avatars/BaseMale"
         ],
         "mainFile": "M_Feet_ComfortSportSandals.glb",
+        "overrideReplaces": [],
+        "overrideHides": [],
         "contents": [
           {
             "file": "AvatarWearables_TX.png",
@@ -4489,7 +4829,9 @@
         "text": "Sandalias Deportivas"
       }
     ],
-    "thumbnail": "QmYWJ447uAEA6ZD7BdoQTeJhsvU8VqskAxpxXTtN6XyB4K"
+    "thumbnail": "QmYWJ447uAEA6ZD7BdoQTeJhsvU8VqskAxpxXTtN6XyB4K",
+    "replaces": [],
+    "hides": []
   },
   {
     "id": "dcl://base-avatars/m_greenflipflops",
@@ -4499,6 +4841,8 @@
           "dcl://base-avatars/BaseMale"
         ],
         "mainFile": "M_Feet_GreenFlipFlops.glb",
+        "overrideReplaces": [],
+        "overrideHides": [],
         "contents": [
           {
             "file": "AvatarWearables_TX.png",
@@ -4534,7 +4878,9 @@
         "text": "Chancletas Verdes"
       }
     ],
-    "thumbnail": "QmeT9F7gV314xtaB2K6vV8gSSj8EQw83gc3RuJZg4GKPM5"
+    "thumbnail": "QmeT9F7gV314xtaB2K6vV8gSSj8EQw83gc3RuJZg4GKPM5",
+    "replaces": [],
+    "hides": []
   },
   {
     "id": "dcl://base-avatars/m_mountainshoes.glb",
@@ -4544,6 +4890,8 @@
           "dcl://base-avatars/BaseMale"
         ],
         "mainFile": "M_Feet_MountainShoes.glb",
+        "overrideReplaces": [],
+        "overrideHides": [],
         "contents": [
           {
             "file": "AvatarWearables_TX.png",
@@ -4579,7 +4927,9 @@
         "text": "Botas de Montaña"
       }
     ],
-    "thumbnail": "QmdF3Cfc3X8xtRfD7RCSQkR2brNr5RC8gds4hWgzGK9hnd"
+    "thumbnail": "QmdF3Cfc3X8xtRfD7RCSQkR2brNr5RC8gds4hWgzGK9hnd",
+    "replaces": [],
+    "hides": []
   },
   {
     "id": "dcl://base-avatars/m_feet_soccershoes",
@@ -4589,6 +4939,8 @@
           "dcl://base-avatars/BaseMale"
         ],
         "mainFile": "M_Feet_SoccerShoes.glb",
+        "overrideReplaces": [],
+        "overrideHides": [],
         "contents": [
           {
             "file": "AvatarWearables_TX.png",
@@ -4620,7 +4972,9 @@
         "text": "Botines"
       }
     ],
-    "thumbnail": "QmZLEeSuHTes832cRi2z6wTnED1Xeu5Pze1vjyFRjgMQgQ"
+    "thumbnail": "QmZLEeSuHTes832cRi2z6wTnED1Xeu5Pze1vjyFRjgMQgQ",
+    "replaces": [],
+    "hides": []
   },
   {
     "id": "dcl://base-avatars/moccasin",
@@ -4630,6 +4984,8 @@
           "dcl://base-avatars/BaseMale"
         ],
         "mainFile": "M_Feet_Moccasin.glb",
+        "overrideReplaces": [],
+        "overrideHides": [],
         "contents": [
           {
             "file": "AvatarWearables_TX.png",
@@ -4665,7 +5021,9 @@
         "text": "Mocasines"
       }
     ],
-    "thumbnail": "QmP5cPciaXVe4Rz48n22aPXQ8Kpq42SBF9DRvYpnNkmns3"
+    "thumbnail": "QmP5cPciaXVe4Rz48n22aPXQ8Kpq42SBF9DRvYpnNkmns3",
+    "replaces": [],
+    "hides": []
   },
   {
     "id": "dcl://base-avatars/f_m_sandals",
@@ -4675,6 +5033,8 @@
           "dcl://base-avatars/BaseMale"
         ],
         "mainFile": "M_Feet_Sandals.glb",
+        "overrideReplaces": [],
+        "overrideHides": [],
         "contents": [
           {
             "file": "AvatarWearables_TX.png",
@@ -4695,6 +5055,8 @@
           "dcl://base-avatars/BaseFemale"
         ],
         "mainFile": "M_Feet_Sandals.glb",
+        "overrideReplaces": [],
+        "overrideHides": [],
         "contents": [
           {
             "file": "AvatarWearables_TX.png",
@@ -4732,7 +5094,9 @@
         "text": "Sandalias"
       }
     ],
-    "thumbnail": "QmRkAvsEw3hKrB5ecYQ5aEQKYRxyXU5qV5gugr9iprq6he"
+    "thumbnail": "QmRkAvsEw3hKrB5ecYQ5aEQKYRxyXU5qV5gugr9iprq6he",
+    "replaces": [],
+    "hides": []
   },
   {
     "id": "dcl://base-avatars/sneakers",
@@ -4742,6 +5106,8 @@
           "dcl://base-avatars/BaseMale"
         ],
         "mainFile": "Sneakers_01.glb",
+        "overrideReplaces": [],
+        "overrideHides": [],
         "contents": [
           {
             "file": "AvatarWearables_TX.png",
@@ -4762,6 +5128,8 @@
           "dcl://base-avatars/BaseFemale"
         ],
         "mainFile": "Sneakers_01.glb",
+        "overrideReplaces": [],
+        "overrideHides": [],
         "contents": [
           {
             "file": "AvatarWearables_TX.png",
@@ -4799,7 +5167,9 @@
         "text": "Zapatillas"
       }
     ],
-    "thumbnail": "QmXWRP5pXMXeArQTQciFDt8yuVSoTBhCzL3VAdAEpZksnH"
+    "thumbnail": "QmXWRP5pXMXeArQTQciFDt8yuVSoTBhCzL3VAdAEpZksnH",
+    "replaces": [],
+    "hides": []
   },
   {
     "id": "dcl://base-avatars/sport_blue_shoes",
@@ -4809,6 +5179,8 @@
           "dcl://base-avatars/BaseMale"
         ],
         "mainFile": "M_Feet_SportBlueShoes.glb",
+        "overrideReplaces": [],
+        "overrideHides": [],
         "contents": [
           {
             "file": "AvatarWearables_TX.png",
@@ -4829,6 +5201,8 @@
           "dcl://base-avatars/BaseFemale"
         ],
         "mainFile": "M_Feet_SportBlueShoes.glb",
+        "overrideReplaces": [],
+        "overrideHides": [],
         "contents": [
           {
             "file": "AvatarWearables_TX.png",
@@ -4866,7 +5240,9 @@
         "text": "Zapatillas Deportivas Azules"
       }
     ],
-    "thumbnail": "QmQxgP7Cpm4xdGJZd1HWPQgsMKY1nA376AbfzJy7tMbEtL"
+    "thumbnail": "QmQxgP7Cpm4xdGJZd1HWPQgsMKY1nA376AbfzJy7tMbEtL",
+    "replaces": [],
+    "hides": []
   },
   {
     "id": "dcl://base-avatars/hair_anime_01",
@@ -4876,6 +5252,8 @@
           "dcl://base-avatars/BaseFemale"
         ],
         "mainFile": "F_Hair_Anime_01.glb",
+        "overrideReplaces": [],
+        "overrideHides": [],
         "contents": [
           {
             "file": "AvatarWearables_TX.png",
@@ -4907,7 +5285,9 @@
         "text": "Celebridad"
       }
     ],
-    "thumbnail": "QmPksZ9BzNPuSjvyQmMzZrhyEyDKBrtm6TXippVCiCc2Dn"
+    "thumbnail": "QmPksZ9BzNPuSjvyQmMzZrhyEyDKBrtm6TXippVCiCc2Dn",
+    "replaces": [],
+    "hides": []
   },
   {
     "id": "dcl://base-avatars/hair_undere",
@@ -4917,6 +5297,8 @@
           "dcl://base-avatars/BaseFemale"
         ],
         "mainFile": "F_Hair_Anime_03.glb",
+        "overrideReplaces": [],
+        "overrideHides": [],
         "contents": [
           {
             "file": "AvatarWearables_TX.png",
@@ -4948,7 +5330,9 @@
         "text": "Estilo de pelo Undere"
       }
     ],
-    "thumbnail": "QmYBTESZQguKaPDwj2RpKYEiDczTUSqCsiZAB7FCDXpc1P"
+    "thumbnail": "QmYBTESZQguKaPDwj2RpKYEiDczTUSqCsiZAB7FCDXpc1P",
+    "replaces": [],
+    "hides": []
   },
   {
     "id": "dcl://base-avatars/hair_bun",
@@ -4958,6 +5342,8 @@
           "dcl://base-avatars/BaseFemale"
         ],
         "mainFile": "F_Hair_Bun.glb",
+        "overrideReplaces": [],
+        "overrideHides": [],
         "contents": [
           {
             "file": "AvatarWearables_TX.png.001.png",
@@ -4989,7 +5375,9 @@
         "text": "Rodete"
       }
     ],
-    "thumbnail": "QmTxX6AEcCDq9QFeKdGygforKLTXNBpVU8M7U2fSborACa"
+    "thumbnail": "QmTxX6AEcCDq9QFeKdGygforKLTXNBpVU8M7U2fSborACa",
+    "replaces": [],
+    "hides": []
   },
   {
     "id": "dcl://base-avatars/hair_coolshortstyle",
@@ -4999,6 +5387,8 @@
           "dcl://base-avatars/BaseFemale"
         ],
         "mainFile": "F_Hair_CoolShortStyle.glb",
+        "overrideReplaces": [],
+        "overrideHides": [],
         "contents": [
           {
             "file": "AvatarWearables_TX.png",
@@ -5030,7 +5420,9 @@
         "text": "Pelo Corto Moderno"
       }
     ],
-    "thumbnail": "QmRLbMqsxFW3H2PN9hRp6PfdovXM9WoCSYTYkXh71kC44Q"
+    "thumbnail": "QmRLbMqsxFW3H2PN9hRp6PfdovXM9WoCSYTYkXh71kC44Q",
+    "replaces": [],
+    "hides": []
   },
   {
     "id": "dcl://base-avatars/cornrows",
@@ -5040,6 +5432,8 @@
           "dcl://base-avatars/BaseFemale"
         ],
         "mainFile": "F_Hair_Cornrows.glb",
+        "overrideReplaces": [],
+        "overrideHides": [],
         "contents": [
           {
             "file": "AvatarWearables_TX.png.001.png",
@@ -5071,7 +5465,9 @@
         "text": "Trenzas"
       }
     ],
-    "thumbnail": "Qmd2UtiZejTaWn5KPwGQmULzLJg7ingeoyg1AUwoBXaW3X"
+    "thumbnail": "Qmd2UtiZejTaWn5KPwGQmULzLJg7ingeoyg1AUwoBXaW3X",
+    "replaces": [],
+    "hides": []
   },
   {
     "id": "dcl://base-avatars/double_bun",
@@ -5081,6 +5477,8 @@
           "dcl://base-avatars/BaseFemale"
         ],
         "mainFile": "F_Hair_DoubleBun.glb",
+        "overrideReplaces": [],
+        "overrideHides": [],
         "contents": [
           {
             "file": "AvatarWearables_TX.png.001.png",
@@ -5112,7 +5510,9 @@
         "text": "Doble Rodete"
       }
     ],
-    "thumbnail": "QmaR2hPwYkGXBn873anY34k1zJ76YMX59trYNtt6TeVLTB"
+    "thumbnail": "QmaR2hPwYkGXBn873anY34k1zJ76YMX59trYNtt6TeVLTB",
+    "replaces": [],
+    "hides": []
   },
   {
     "id": "dcl://base-avatars/modern_hair",
@@ -5122,6 +5522,8 @@
           "dcl://base-avatars/BaseFemale"
         ],
         "mainFile": "F_Hair_ModernHair.glb",
+        "overrideReplaces": [],
+        "overrideHides": [],
         "contents": [
           {
             "file": "AvatarWearables_TX.png.001.png",
@@ -5153,7 +5555,9 @@
         "text": "Peinado Moderno"
       }
     ],
-    "thumbnail": "QmbRmkXBVaQY9PcyfcqXPYRw4SsdaabCSWiDMxcjBoYUBp"
+    "thumbnail": "QmbRmkXBVaQY9PcyfcqXPYRw4SsdaabCSWiDMxcjBoYUBp",
+    "replaces": [],
+    "hides": []
   },
   {
     "id": "dcl://base-avatars/hair_f_oldie",
@@ -5163,6 +5567,8 @@
           "dcl://base-avatars/BaseFemale"
         ],
         "mainFile": "F_Hair_Oldie_01.glb",
+        "overrideReplaces": [],
+        "overrideHides": [],
         "contents": [
           {
             "file": "AvatarWearables_TX.png",
@@ -5194,7 +5600,9 @@
         "text": "Peloc Corto de Abuela"
       }
     ],
-    "thumbnail": "QmS2dwTqyakQQccvzQAe9bnhSC3W75TsQuDNq4rkPM4LjC"
+    "thumbnail": "QmS2dwTqyakQQccvzQAe9bnhSC3W75TsQuDNq4rkPM4LjC",
+    "replaces": [],
+    "hides": []
   },
   {
     "id": "dcl://base-avatars/hair_f_oldie_02",
@@ -5204,6 +5612,8 @@
           "dcl://base-avatars/BaseFemale"
         ],
         "mainFile": "F_Hair_Oldie_02.glb",
+        "overrideReplaces": [],
+        "overrideHides": [],
         "contents": [
           {
             "file": "AvatarWearables_TX.png",
@@ -5235,7 +5645,9 @@
         "text": "Pelo Corto"
       }
     ],
-    "thumbnail": "QmaHkfMJcwyM1Hg4YXjrjy5otFZpVZoYLKRsGaThNpeLXS"
+    "thumbnail": "QmaHkfMJcwyM1Hg4YXjrjy5otFZpVZoYLKRsGaThNpeLXS",
+    "replaces": [],
+    "hides": []
   },
   {
     "id": "dcl://base-avatars/pompous",
@@ -5245,6 +5657,8 @@
           "dcl://base-avatars/BaseFemale"
         ],
         "mainFile": "F_Hair_PompousHair.glb",
+        "overrideReplaces": [],
+        "overrideHides": [],
         "contents": [
           {
             "file": "AvatarWearables_TX.png.001.png",
@@ -5276,7 +5690,9 @@
         "text": "Pelo Pomposo"
       }
     ],
-    "thumbnail": "QmbAujzXu2gDruCXzCsgdD1hhVKm3D4oRpDM9GhMcPMxnk"
+    "thumbnail": "QmbAujzXu2gDruCXzCsgdD1hhVKm3D4oRpDM9GhMcPMxnk",
+    "replaces": [],
+    "hides": []
   },
   {
     "id": "dcl://base-avatars/pony_tail",
@@ -5286,6 +5702,8 @@
           "dcl://base-avatars/BaseFemale"
         ],
         "mainFile": "F_Hair_PonyTail.glb",
+        "overrideReplaces": [],
+        "overrideHides": [],
         "contents": [
           {
             "file": "AvatarWearables_TX.png.001.png",
@@ -5317,7 +5735,9 @@
         "text": "Cola de caballo"
       }
     ],
-    "thumbnail": "Qmcg3CDzayCCwKqnXkFq2wxPBbtYr5W53Lp3wfDaBHNjCb"
+    "thumbnail": "Qmcg3CDzayCCwKqnXkFq2wxPBbtYr5W53Lp3wfDaBHNjCb",
+    "replaces": [],
+    "hides": []
   },
   {
     "id": "dcl://base-avatars/hair_punk",
@@ -5327,6 +5747,8 @@
           "dcl://base-avatars/BaseFemale"
         ],
         "mainFile": "F_Hair_Punk.glb",
+        "overrideReplaces": [],
+        "overrideHides": [],
         "contents": [
           {
             "file": "AvatarWearables_TX.png",
@@ -5358,7 +5780,9 @@
         "text": "Punk"
       }
     ],
-    "thumbnail": "QmVTWdxMKpFkwnmeJsYQUvWAsSWnBkNAu1cph2VPnyVHD5"
+    "thumbnail": "QmVTWdxMKpFkwnmeJsYQUvWAsSWnBkNAu1cph2VPnyVHD5",
+    "replaces": [],
+    "hides": []
   },
   {
     "id": "dcl://base-avatars/shoulder_bob_hair",
@@ -5368,6 +5792,8 @@
           "dcl://base-avatars/BaseFemale"
         ],
         "mainFile": "F_Hair_ShoulderBobHair.glb",
+        "overrideReplaces": [],
+        "overrideHides": [],
         "contents": [
           {
             "file": "AvatarWearables_TX.png.001.png",
@@ -5399,7 +5825,9 @@
         "text": "Corte Carré"
       }
     ],
-    "thumbnail": "QmddBJtE31vVch92wSGAMrC7wXYRi7zGMH4VKfDeQEzE9A"
+    "thumbnail": "QmddBJtE31vVch92wSGAMrC7wXYRi7zGMH4VKfDeQEzE9A",
+    "replaces": [],
+    "hides": []
   },
   {
     "id": "dcl://base-avatars/curly_hair",
@@ -5409,6 +5837,8 @@
           "dcl://base-avatars/BaseFemale"
         ],
         "mainFile": "F_Hair_ShoulderCurlyHair.glb",
+        "overrideReplaces": [],
+        "overrideHides": [],
         "contents": [
           {
             "file": "AvatarWearables_TX.png.001.png",
@@ -5440,7 +5870,9 @@
         "text": "Pelo Rizado"
       }
     ],
-    "thumbnail": "QmYXjS996goGHErKyA1DuxhsTXWrf4NFUXqj4S8bKRswBM"
+    "thumbnail": "QmYXjS996goGHErKyA1DuxhsTXWrf4NFUXqj4S8bKRswBM",
+    "replaces": [],
+    "hides": []
   },
   {
     "id": "dcl://base-avatars/shoulder_hair",
@@ -5450,6 +5882,8 @@
           "dcl://base-avatars/BaseFemale"
         ],
         "mainFile": "F_Hair_ShoulderHair.glb",
+        "overrideReplaces": [],
+        "overrideHides": [],
         "contents": [
           {
             "file": "AvatarWearables_TX.png.001.png",
@@ -5481,7 +5915,9 @@
         "text": "Pelo al hombro"
       }
     ],
-    "thumbnail": "QmTGoPAWBdRMsksWBaR9sYs4uqRiEiksoxzHo39dk2Pxtm"
+    "thumbnail": "QmTGoPAWBdRMsksWBaR9sYs4uqRiEiksoxzHo39dk2Pxtm",
+    "replaces": [],
+    "hides": []
   },
   {
     "id": "dcl://base-avatars/standard_hair",
@@ -5491,6 +5927,8 @@
           "dcl://base-avatars/BaseFemale"
         ],
         "mainFile": "F_Hair_Standard.glb",
+        "overrideReplaces": [],
+        "overrideHides": [],
         "contents": [
           {
             "file": "AvatarWearables_TX.png.001.png",
@@ -5522,7 +5960,9 @@
         "text": "Peinado Clásico"
       }
     ],
-    "thumbnail": "QmZzSgyzKprxwmuT94cotTitrPZiMa5tPnfRhrSXGMWmxE"
+    "thumbnail": "QmZzSgyzKprxwmuT94cotTitrPZiMa5tPnfRhrSXGMWmxE",
+    "replaces": [],
+    "hides": []
   },
   {
     "id": "dcl://base-avatars/hair_stylish_hair",
@@ -5532,6 +5972,8 @@
           "dcl://base-avatars/BaseFemale"
         ],
         "mainFile": "F_Hair_StylishHair.glb",
+        "overrideReplaces": [],
+        "overrideHides": [],
         "contents": [
           {
             "file": "AvatarWearables_TX.png",
@@ -5563,7 +6005,9 @@
         "text": "Peinado Corto Elegante"
       }
     ],
-    "thumbnail": "QmTUJXt2MbW7UP858qpLePQNWpBrDK3vLeHbTczVpzeHpe"
+    "thumbnail": "QmTUJXt2MbW7UP858qpLePQNWpBrDK3vLeHbTczVpzeHpe",
+    "replaces": [],
+    "hides": []
   },
   {
     "id": "dcl://base-avatars/two_tails",
@@ -5573,6 +6017,8 @@
           "dcl://base-avatars/BaseFemale"
         ],
         "mainFile": "F_Hair_TwoTails.glb",
+        "overrideReplaces": [],
+        "overrideHides": [],
         "contents": [
           {
             "file": "AvatarWearables_TX.png",
@@ -5608,44 +6054,9 @@
         "text": "Dos Trenzas"
       }
     ],
-    "thumbnail": "Qmey72Fk8J7ywW8u1VXLFmej994ki3i4HKCStwYXMu9ML5"
-  },
-  {
-    "id": "dcl://base-avatars/00_bald",
-    "representations": [
-      {
-        "bodyShapes": [
-          "dcl://base-avatars/BaseMale"
-        ],
-        "mainFile": "M_Hair_Bald.glb",
-        "contents": [
-          {
-            "file": "M_Hair_Bald.glb",
-            "hash": "QmcUWAmK22stjX15KtpJeD1TcvdDNQC6Wx2eMHuBJJhCFB"
-          }
-        ]
-      }
-    ],
-    "type": "wearable",
-    "category": "hair",
-    "tags": [
-      "hair",
-      "male",
-      "man",
-      "base-wearable"
-    ],
-    "baseUrl": "https://dcl-base-avatars.now.sh/",
-    "i18n": [
-      {
-        "code": "en",
-        "text": "Bald"
-      },
-      {
-        "code": "es",
-        "text": "Pelado"
-      }
-    ],
-    "thumbnail": "Qma95DcT2Bkd22gL6DYpYFvFKpzNMMExqUphZEiqcPhDM7"
+    "thumbnail": "Qmey72Fk8J7ywW8u1VXLFmej994ki3i4HKCStwYXMu9ML5",
+    "replaces": [],
+    "hides": []
   },
   {
     "id": "dcl://base-avatars/moptop",
@@ -5655,6 +6066,8 @@
           "dcl://base-avatars/BaseMale"
         ],
         "mainFile": "M_Hair_Beatle_01.glb",
+        "overrideReplaces": [],
+        "overrideHides": [],
         "contents": [
           {
             "file": "AvatarWearables_TX.png",
@@ -5686,7 +6099,9 @@
         "text": "Moptop"
       }
     ],
-    "thumbnail": "QmU165fqP5y7jDdeSE7txShU875tjH1rCZa7r5N4JWudF7"
+    "thumbnail": "QmU165fqP5y7jDdeSE7txShU875tjH1rCZa7r5N4JWudF7",
+    "replaces": [],
+    "hides": []
   },
   {
     "id": "dcl://base-avatars/curtained_hair",
@@ -5696,6 +6111,8 @@
           "dcl://base-avatars/BaseMale"
         ],
         "mainFile": "M_Hair_BookStyle.glb",
+        "overrideReplaces": [],
+        "overrideHides": [],
         "contents": [
           {
             "file": "AvatarWearables_TX.png",
@@ -5727,7 +6144,9 @@
         "text": "A Dos Aguas"
       }
     ],
-    "thumbnail": "QmQ5nAtpVM91i1FSkTRTqfGb3de2dnrZdJ9n1XJ8JqKkWS"
+    "thumbnail": "QmQ5nAtpVM91i1FSkTRTqfGb3de2dnrZdJ9n1XJ8JqKkWS",
+    "replaces": [],
+    "hides": []
   },
   {
     "id": "dcl://base-avatars/cool_hair",
@@ -5737,6 +6156,8 @@
           "dcl://base-avatars/BaseMale"
         ],
         "mainFile": "M_Hair_Cool_01.glb",
+        "overrideReplaces": [],
+        "overrideHides": [],
         "contents": [
           {
             "file": "AvatarWearables_TX.png",
@@ -5768,7 +6189,9 @@
         "text": "Peinado con Estilo"
       }
     ],
-    "thumbnail": "QmUewAj3jGfHUjShFsiLgWJFZiBJGqND87HvybS1X9E1fW"
+    "thumbnail": "QmUewAj3jGfHUjShFsiLgWJFZiBJGqND87HvybS1X9E1fW",
+    "replaces": [],
+    "hides": []
   },
   {
     "id": "dcl://base-avatars/keanu_hair",
@@ -5778,6 +6201,8 @@
           "dcl://base-avatars/BaseMale"
         ],
         "mainFile": "M_Hair_Keanu.glb",
+        "overrideReplaces": [],
+        "overrideHides": [],
         "contents": [
           {
             "file": "AvatarWearables_TX.png",
@@ -5809,7 +6234,9 @@
         "text": "Estilo Keanu"
       }
     ],
-    "thumbnail": "QmaRTBsxPhbRk65i9jixJMdAK1vzgvABF1gYgfGUvb5Psm"
+    "thumbnail": "QmaRTBsxPhbRk65i9jixJMdAK1vzgvABF1gYgfGUvb5Psm",
+    "replaces": [],
+    "hides": []
   },
   {
     "id": "dcl://base-avatars/slicked_hair",
@@ -5819,6 +6246,8 @@
           "dcl://base-avatars/BaseMale"
         ],
         "mainFile": "M_Hair_Lamas.glb",
+        "overrideReplaces": [],
+        "overrideHides": [],
         "contents": [
           {
             "file": "AvatarWearables_TX.png",
@@ -5850,7 +6279,9 @@
         "text": "Peinado Engominado"
       }
     ],
-    "thumbnail": "QmYJNzGNTvJEev14Q7FftuEDdfJYj6JpyczkBXqWsiMjeV"
+    "thumbnail": "QmYJNzGNTvJEev14Q7FftuEDdfJYj6JpyczkBXqWsiMjeV",
+    "replaces": [],
+    "hides": []
   },
   {
     "id": "dcl://base-avatars/hair_oldie",
@@ -5860,6 +6291,8 @@
           "dcl://base-avatars/BaseMale"
         ],
         "mainFile": "M_Hair_Oldie_01.glb",
+        "overrideReplaces": [],
+        "overrideHides": [],
         "contents": [
           {
             "file": "AvatarWearables_TX.png",
@@ -5891,7 +6324,9 @@
         "text": "Peinado Antiguo"
       }
     ],
-    "thumbnail": "QmQZyPLidPxTmKqsQUyhNqAsUm8RXf1KR4MwRHWCfuKN3x"
+    "thumbnail": "QmQZyPLidPxTmKqsQUyhNqAsUm8RXf1KR4MwRHWCfuKN3x",
+    "replaces": [],
+    "hides": []
   },
   {
     "id": "dcl://base-avatars/punk",
@@ -5901,6 +6336,8 @@
           "dcl://base-avatars/BaseMale"
         ],
         "mainFile": "M_Hair_Punk_01.glb",
+        "overrideReplaces": [],
+        "overrideHides": [],
         "contents": [
           {
             "file": "AvatarWearables_TX.png",
@@ -5932,7 +6369,9 @@
         "text": "Cresta Punk"
       }
     ],
-    "thumbnail": "QmPxPWeVkuX74XS1jDnCPwbZhf23gjQkXKHrqzu9GF24wq"
+    "thumbnail": "QmPxPWeVkuX74XS1jDnCPwbZhf23gjQkXKHrqzu9GF24wq",
+    "replaces": [],
+    "hides": []
   },
   {
     "id": "dcl://base-avatars/rasta",
@@ -5942,6 +6381,8 @@
           "dcl://base-avatars/BaseMale"
         ],
         "mainFile": "M_Hair_Rasta_01.glb",
+        "overrideReplaces": [],
+        "overrideHides": [],
         "contents": [
           {
             "file": "AvatarWearables_TX.png",
@@ -5973,7 +6414,9 @@
         "text": "Rasta"
       }
     ],
-    "thumbnail": "QmVXHkejvjCAkkh3TvX1ga996ETooYp85UtmXoxpcJEWrb"
+    "thumbnail": "QmVXHkejvjCAkkh3TvX1ga996ETooYp85UtmXoxpcJEWrb",
+    "replaces": [],
+    "hides": []
   },
   {
     "id": "dcl://base-avatars/semi_afro",
@@ -5983,6 +6426,8 @@
           "dcl://base-avatars/BaseMale"
         ],
         "mainFile": "M_Hair_SemiAfro_01.glb",
+        "overrideReplaces": [],
+        "overrideHides": [],
         "contents": [
           {
             "file": "AvatarWearables_TX.png",
@@ -6014,7 +6459,9 @@
         "text": "Pequeño Afro"
       }
     ],
-    "thumbnail": "QmeogciAKz1qN2TQKGEFPZG6d7Gj3UZWKVp9fPH5hVb4c6"
+    "thumbnail": "QmeogciAKz1qN2TQKGEFPZG6d7Gj3UZWKVp9fPH5hVb4c6",
+    "replaces": [],
+    "hides": []
   },
   {
     "id": "dcl://base-avatars/semi_bold",
@@ -6024,6 +6471,8 @@
           "dcl://base-avatars/BaseMale"
         ],
         "mainFile": "M_Hair_SemiBald_01.glb",
+        "overrideReplaces": [],
+        "overrideHides": [],
         "contents": [
           {
             "file": "AvatarWearables_TX.png",
@@ -6055,7 +6504,9 @@
         "text": "Semi Pelado"
       }
     ],
-    "thumbnail": "QmTXEMpWR7FbrRFGY63tqpG9hJoFj7DyPs8dTQTUmTbQpy"
+    "thumbnail": "QmTXEMpWR7FbrRFGY63tqpG9hJoFj7DyPs8dTQTUmTbQpy",
+    "replaces": [],
+    "hides": []
   },
   {
     "id": "dcl://base-avatars/short_hair",
@@ -6065,6 +6516,8 @@
           "dcl://base-avatars/BaseMale"
         ],
         "mainFile": "M_Hair_ShortHair_01.glb",
+        "overrideReplaces": [],
+        "overrideHides": [],
         "contents": [
           {
             "file": "AvatarWearables_TX.png",
@@ -6096,7 +6549,9 @@
         "text": "Pelo Corto"
       }
     ],
-    "thumbnail": "Qmc7rw768C29g35QU4Ar75D8Zd8Zip7desFQzHLwtuZxmN"
+    "thumbnail": "Qmc7rw768C29g35QU4Ar75D8Zd8Zip7desFQzHLwtuZxmN",
+    "replaces": [],
+    "hides": []
   },
   {
     "id": "dcl://base-avatars/casual_hair_01",
@@ -6106,6 +6561,8 @@
           "dcl://base-avatars/BaseMale"
         ],
         "mainFile": "M_Hair_Standard_01.glb",
+        "overrideReplaces": [],
+        "overrideHides": [],
         "contents": [
           {
             "file": "AvatarWearables_TX.png",
@@ -6137,7 +6594,9 @@
         "text": "Corte Casual"
       }
     ],
-    "thumbnail": "QmYWFjBTWggspxmbRqGsodQnMUeuUj2F6EYJoDGN4XzbWw"
+    "thumbnail": "QmYWFjBTWggspxmbRqGsodQnMUeuUj2F6EYJoDGN4XzbWw",
+    "replaces": [],
+    "hides": []
   },
   {
     "id": "dcl://base-avatars/casual_hair_02",
@@ -6147,6 +6606,8 @@
           "dcl://base-avatars/BaseMale"
         ],
         "mainFile": "M_Hair_Standard_02.glb",
+        "overrideReplaces": [],
+        "overrideHides": [],
         "contents": [
           {
             "file": "AvatarWearables_TX.png",
@@ -6178,7 +6639,9 @@
         "text": "Corte a lo Elvis"
       }
     ],
-    "thumbnail": "Qmetn1PXjsvzjyUFzXwvbvKsdT6HDMtKxNkgh8ZoMNvpkC"
+    "thumbnail": "Qmetn1PXjsvzjyUFzXwvbvKsdT6HDMtKxNkgh8ZoMNvpkC",
+    "replaces": [],
+    "hides": []
   },
   {
     "id": "dcl://base-avatars/casual_hair_03",
@@ -6188,6 +6651,8 @@
           "dcl://base-avatars/BaseMale"
         ],
         "mainFile": "M_Hair_Standard_03.glb",
+        "overrideReplaces": [],
+        "overrideHides": [],
         "contents": [
           {
             "file": "AvatarWearables_TX.png",
@@ -6219,7 +6684,9 @@
         "text": "Corte Sencillo"
       }
     ],
-    "thumbnail": "QmY5K8D9FSLxXRrFQYaBSrCZA3SC4gvi4mcZBQNxuDCkAd"
+    "thumbnail": "QmY5K8D9FSLxXRrFQYaBSrCZA3SC4gvi4mcZBQNxuDCkAd",
+    "replaces": [],
+    "hides": []
   },
   {
     "id": "dcl://base-avatars/tall_front_01",
@@ -6229,6 +6696,8 @@
           "dcl://base-avatars/BaseMale"
         ],
         "mainFile": "M_Hair_TallFront_01.glb",
+        "overrideReplaces": [],
+        "overrideHides": [],
         "contents": [
           {
             "file": "AvatarWearables_TX.png",
@@ -6260,7 +6729,9 @@
         "text": "Peinado con Jopo"
       }
     ],
-    "thumbnail": "QmVhfhwYaA5xMBGmxSjPWTouXWbBLt23FjkyFPuSRy7QYz"
+    "thumbnail": "QmVhfhwYaA5xMBGmxSjPWTouXWbBLt23FjkyFPuSRy7QYz",
+    "replaces": [],
+    "hides": []
   },
   {
     "id": "dcl://base-avatars/f_african_leggins",
@@ -6270,6 +6741,8 @@
           "dcl://base-avatars/BaseFemale"
         ],
         "mainFile": "F_lBody_AfricanLeggings.glb",
+        "overrideReplaces": [],
+        "overrideHides": [],
         "contents": [
           {
             "file": "AvatarWearables_TX.png",
@@ -6301,7 +6774,9 @@
         "text": "Leggins Africanos"
       }
     ],
-    "thumbnail": "Qmc4W2ENVei6GML7tbJfHodS929prrSrfYPrZtcSvao2aU"
+    "thumbnail": "Qmc4W2ENVei6GML7tbJfHodS929prrSrfYPrZtcSvao2aU",
+    "replaces": [],
+    "hides": []
   },
   {
     "id": "dcl://base-avatars/f_capris",
@@ -6311,6 +6786,8 @@
           "dcl://base-avatars/BaseFemale"
         ],
         "mainFile": "F_lBody_BrownKneesTrousers.glb",
+        "overrideReplaces": [],
+        "overrideHides": [],
         "contents": [
           {
             "file": "AvatarWearables_TX.png",
@@ -6346,7 +6823,9 @@
         "text": "Capris Marrones"
       }
     ],
-    "thumbnail": "QmRtoZzupmMmaMqcZTHY2dFEaB3duvUymyF5RQyHut6fFU"
+    "thumbnail": "QmRtoZzupmMmaMqcZTHY2dFEaB3duvUymyF5RQyHut6fFU",
+    "replaces": [],
+    "hides": []
   },
   {
     "id": "dcl://base-avatars/f_brown_skirt",
@@ -6356,6 +6835,8 @@
           "dcl://base-avatars/BaseFemale"
         ],
         "mainFile": "F_lBody_BrownSkirtDress.glb",
+        "overrideReplaces": [],
+        "overrideHides": [],
         "contents": [
           {
             "file": "AvatarWearables_TX.png",
@@ -6391,7 +6872,9 @@
         "text": "Falda Marrón"
       }
     ],
-    "thumbnail": "QmbaV3Za1qoaZfvpBWvJbpadysmCW6Wrx3eLdyvJW1KGfG"
+    "thumbnail": "QmbaV3Za1qoaZfvpBWvJbpadysmCW6Wrx3eLdyvJW1KGfG",
+    "replaces": [],
+    "hides": []
   },
   {
     "id": "dcl://base-avatars/f_brown_trousers",
@@ -6401,6 +6884,8 @@
           "dcl://base-avatars/BaseFemale"
         ],
         "mainFile": "F_lBody_BrownTrousers.glb",
+        "overrideReplaces": [],
+        "overrideHides": [],
         "contents": [
           {
             "file": "AvatarWearables_TX.png",
@@ -6432,7 +6917,9 @@
         "text": "Pantalones Marrones Nuevos"
       }
     ],
-    "thumbnail": "QmWJTsabfYvoyTQ2iEdBSA3cHXjKhjXic6Lg447X9MF3c4"
+    "thumbnail": "QmWJTsabfYvoyTQ2iEdBSA3cHXjKhjXic6Lg447X9MF3c4",
+    "replaces": [],
+    "hides": []
   },
   {
     "id": "dcl://base-avatars/f_country_pants",
@@ -6442,6 +6929,8 @@
           "dcl://base-avatars/BaseFemale"
         ],
         "mainFile": "F_lBody_CountryPant.glb",
+        "overrideReplaces": [],
+        "overrideHides": [],
         "contents": [
           {
             "file": "AvatarWearables_TX.png",
@@ -6473,7 +6962,9 @@
         "text": "Pantalones de Música Country"
       }
     ],
-    "thumbnail": "Qmc2EjNvKHKVufifPetjGwdaKrsQQ2JMjSpbiYqrga5xMy"
+    "thumbnail": "Qmc2EjNvKHKVufifPetjGwdaKrsQQ2JMjSpbiYqrga5xMy",
+    "replaces": [],
+    "hides": []
   },
   {
     "id": "dcl://base-avatars/f_diamond_leggings",
@@ -6483,6 +6974,8 @@
           "dcl://base-avatars/BaseFemale"
         ],
         "mainFile": "F_lBody_DiamondLeggings.glb",
+        "overrideReplaces": [],
+        "overrideHides": [],
         "contents": [
           {
             "file": "AvatarWearables_TX.png",
@@ -6514,7 +7007,9 @@
         "text": "Leggings con Estampado de Diamantes"
       }
     ],
-    "thumbnail": "QmPLa3yda98ZqZzwEc6RogJ1inGnzB4gDMJHKqEm969eyK"
+    "thumbnail": "QmPLa3yda98ZqZzwEc6RogJ1inGnzB4gDMJHKqEm969eyK",
+    "replaces": [],
+    "hides": []
   },
   {
     "id": "dcl://base-avatars/distressed_black_Jeans",
@@ -6524,6 +7019,8 @@
           "dcl://base-avatars/BaseFemale"
         ],
         "mainFile": "F_lBody_DistressedBlackJeans.glb",
+        "overrideReplaces": [],
+        "overrideHides": [],
         "contents": [
           {
             "file": "AvatarWearables_TX.png",
@@ -6559,7 +7056,9 @@
         "text": "Jeans Gastados Negros"
       }
     ],
-    "thumbnail": "QmeKZCRUWGWV3ZjfB9e6hhxcEuojiyKHUMv9BypMQjEWPB"
+    "thumbnail": "QmeKZCRUWGWV3ZjfB9e6hhxcEuojiyKHUMv9BypMQjEWPB",
+    "replaces": [],
+    "hides": []
   },
   {
     "id": "dcl://base-avatars/elegant_blue_trousers",
@@ -6569,6 +7068,8 @@
           "dcl://base-avatars/BaseFemale"
         ],
         "mainFile": "F_lBody_ElegantBlueTrousers.glb",
+        "overrideReplaces": [],
+        "overrideHides": [],
         "contents": [
           {
             "file": "AvatarWearables_TX.png",
@@ -6600,7 +7101,9 @@
         "text": "Pantalones Elegantes Azules"
       }
     ],
-    "thumbnail": "QmNmNzupz9qpqWFQUYNU5d4imNMBmRCPrSacdNRC71X1ei"
+    "thumbnail": "QmNmNzupz9qpqWFQUYNU5d4imNMBmRCPrSacdNRC71X1ei",
+    "replaces": [],
+    "hides": []
   },
   {
     "id": "dcl://base-avatars/f_jeans",
@@ -6610,6 +7113,8 @@
           "dcl://base-avatars/BaseFemale"
         ],
         "mainFile": "F_lBody_Jeans_01.glb",
+        "overrideReplaces": [],
+        "overrideHides": [],
         "contents": [
           {
             "file": "AvatarWearables_TX.png",
@@ -6641,7 +7146,9 @@
         "text": "Jeans"
       }
     ],
-    "thumbnail": "QmYMjpmNQ7NMennyfXAgkkgwuT9iATj2zbkad4vU2jjxP3"
+    "thumbnail": "QmYMjpmNQ7NMennyfXAgkkgwuT9iATj2zbkad4vU2jjxP3",
+    "replaces": [],
+    "hides": []
   },
   {
     "id": "dcl://base-avatars/f_red_comfy_pants",
@@ -6651,6 +7158,8 @@
           "dcl://base-avatars/BaseFemale"
         ],
         "mainFile": "F_lBody_RedComfortPants.glb",
+        "overrideReplaces": [],
+        "overrideHides": [],
         "contents": [
           {
             "file": "AvatarWearables_TX.png",
@@ -6686,7 +7195,9 @@
         "text": "Pantalones Cómodos Rojos"
       }
     ],
-    "thumbnail": "QmdpyYqcGu94eZYfv5CCspQMdecmDJ7HhtPxiPzdpUJnza"
+    "thumbnail": "QmdpyYqcGu94eZYfv5CCspQMdecmDJ7HhtPxiPzdpUJnza",
+    "replaces": [],
+    "hides": []
   },
   {
     "id": "dcl://base-avatars/f_red_modern_pants",
@@ -6696,6 +7207,8 @@
           "dcl://base-avatars/BaseFemale"
         ],
         "mainFile": "F_lBody_RedModernPant.glb",
+        "overrideReplaces": [],
+        "overrideHides": [],
         "contents": [
           {
             "file": "AvatarWearables_TX.png",
@@ -6727,7 +7240,9 @@
         "text": "Pantalones Modernos Rojos"
       }
     ],
-    "thumbnail": "QmRDEejvaxqERWvfMTec5YbMw1Kj2XwzKKwKhhHXa6Cgbu"
+    "thumbnail": "QmRDEejvaxqERWvfMTec5YbMw1Kj2XwzKKwKhhHXa6Cgbu",
+    "replaces": [],
+    "hides": []
   },
   {
     "id": "dcl://base-avatars/f_roller_leggings",
@@ -6737,6 +7252,8 @@
           "dcl://base-avatars/BaseFemale"
         ],
         "mainFile": "F_lBody_RollerLeggings.glb",
+        "overrideReplaces": [],
+        "overrideHides": [],
         "contents": [
           {
             "file": "AvatarWearables_TX.png",
@@ -6768,7 +7285,9 @@
         "text": "Roller leggings"
       }
     ],
-    "thumbnail": "QmetLTR7WXRCK7L3DcSyGBsw5gAAUAFHqH4QA8sBWQZYtx"
+    "thumbnail": "QmetLTR7WXRCK7L3DcSyGBsw5gAAUAFHqH4QA8sBWQZYtx",
+    "replaces": [],
+    "hides": []
   },
   {
     "id": "dcl://base-avatars/f_school_skirt",
@@ -6778,6 +7297,8 @@
           "dcl://base-avatars/BaseFemale"
         ],
         "mainFile": "F_lBody_SchoolSkirt.glb",
+        "overrideReplaces": [],
+        "overrideHides": [],
         "contents": [
           {
             "file": "AvatarWearables_TX.png",
@@ -6813,7 +7334,9 @@
         "text": "Falda Escolar"
       }
     ],
-    "thumbnail": "QmTwAHSG1dzA4hZWaJLbnVriY5yQNQJR3Uwnwxcbb8kPh9"
+    "thumbnail": "QmTwAHSG1dzA4hZWaJLbnVriY5yQNQJR3Uwnwxcbb8kPh9",
+    "replaces": [],
+    "hides": []
   },
   {
     "id": "dcl://base-avatars/f_short_blue_jeans",
@@ -6823,6 +7346,8 @@
           "dcl://base-avatars/BaseFemale"
         ],
         "mainFile": "F_lBody_ShortBlueJeans.glb",
+        "overrideReplaces": [],
+        "overrideHides": [],
         "contents": [
           {
             "file": "AvatarWearables_TX.png",
@@ -6858,7 +7383,9 @@
         "text": "Pantalones Cortos de Jean"
       }
     ],
-    "thumbnail": "QmR5vnGNjEiqNEQpgUsQUm5uVmFrXgjbSWay3HpZ8Nqu7v"
+    "thumbnail": "QmR5vnGNjEiqNEQpgUsQUm5uVmFrXgjbSWay3HpZ8Nqu7v",
+    "replaces": [],
+    "hides": []
   },
   {
     "id": "dcl://base-avatars/f_short_colored_leggins",
@@ -6868,6 +7395,8 @@
           "dcl://base-avatars/BaseFemale"
         ],
         "mainFile": "F_lBody_ShortColoredLeggings.glb",
+        "overrideReplaces": [],
+        "overrideHides": [],
         "contents": [
           {
             "file": "AvatarWearables_TX.png",
@@ -6903,7 +7432,9 @@
         "text": "Leggins Cortos de Colores"
       }
     ],
-    "thumbnail": "QmTYqTBz3YcpY9446GyAhpdft5krDDoTLgCpomkUtQFev8"
+    "thumbnail": "QmTYqTBz3YcpY9446GyAhpdft5krDDoTLgCpomkUtQFev8",
+    "replaces": [],
+    "hides": []
   },
   {
     "id": "dcl://base-avatars/f_sport_shorts",
@@ -6913,6 +7444,8 @@
           "dcl://base-avatars/BaseFemale"
         ],
         "mainFile": "F_lBody_SportShorts.glb",
+        "overrideReplaces": [],
+        "overrideHides": [],
         "contents": [
           {
             "file": "AvatarWearables_TX.png",
@@ -6948,7 +7481,9 @@
         "text": "Pantalones Cortos Deportivos"
       }
     ],
-    "thumbnail": "QmX8zVCQaYXagCSz9LUGUMAAHNXoSicaAgNp5qjy9AvDqr"
+    "thumbnail": "QmX8zVCQaYXagCSz9LUGUMAAHNXoSicaAgNp5qjy9AvDqr",
+    "replaces": [],
+    "hides": []
   },
   {
     "id": "dcl://base-avatars/f_stripe_long_skirt",
@@ -6958,6 +7493,8 @@
           "dcl://base-avatars/BaseFemale"
         ],
         "mainFile": "F_lBody_StripeLongSkirt.glb",
+        "overrideReplaces": [],
+        "overrideHides": [],
         "contents": [
           {
             "file": "AvatarWearables_TX.png",
@@ -6993,7 +7530,9 @@
         "text": "Falda Larga a Rayas"
       }
     ],
-    "thumbnail": "QmVLrKMvrf5mSF9bW2K7m1DuUGHU47ooASBKW3nzkSMA8K"
+    "thumbnail": "QmVLrKMvrf5mSF9bW2K7m1DuUGHU47ooASBKW3nzkSMA8K",
+    "replaces": [],
+    "hides": []
   },
   {
     "id": "dcl://base-avatars/f_stripe_white_pants",
@@ -7003,6 +7542,8 @@
           "dcl://base-avatars/BaseFemale"
         ],
         "mainFile": "F_lBody_StripeWhitePant.glb",
+        "overrideReplaces": [],
+        "overrideHides": [],
         "contents": [
           {
             "file": "AvatarWearables_TX.png",
@@ -7034,7 +7575,9 @@
         "text": "Pantalones Blancos con Rayas"
       }
     ],
-    "thumbnail": "Qmc4As7x1y9uRTyPi7g1eLv6no9Sj2Bu1hwEuCv5re3CrR"
+    "thumbnail": "Qmc4As7x1y9uRTyPi7g1eLv6no9Sj2Bu1hwEuCv5re3CrR",
+    "replaces": [],
+    "hides": []
   },
   {
     "id": "dcl://base-avatars/f_yoga_trousers",
@@ -7044,6 +7587,8 @@
           "dcl://base-avatars/BaseFemale"
         ],
         "mainFile": "F_lBody_YogaTrousers.glb",
+        "overrideReplaces": [],
+        "overrideHides": [],
         "contents": [
           {
             "file": "AvatarWearables_TX.png",
@@ -7075,7 +7620,9 @@
         "text": "Pantalones de Yoga"
       }
     ],
-    "thumbnail": "QmP1UcvkYBGKVDdoxBZrRVd6M4CrTcuvsPUxDhEwtTt9hD"
+    "thumbnail": "QmP1UcvkYBGKVDdoxBZrRVd6M4CrTcuvsPUxDhEwtTt9hD",
+    "replaces": [],
+    "hides": []
   },
   {
     "id": "dcl://base-avatars/basketball_shorts",
@@ -7085,6 +7632,8 @@
           "dcl://base-avatars/BaseMale"
         ],
         "mainFile": "M_lBody_BasketballShorts.glb",
+        "overrideReplaces": [],
+        "overrideHides": [],
         "contents": [
           {
             "file": "AvatarWearables_TX.png",
@@ -7120,7 +7669,9 @@
         "text": "Pantalones Cortos de Basket"
       }
     ],
-    "thumbnail": "QmWHgLzb9ihPCnmTqrRNFZnLfbhCCPXPBYZjgmXukZjF5L"
+    "thumbnail": "QmWHgLzb9ihPCnmTqrRNFZnLfbhCCPXPBYZjgmXukZjF5L",
+    "replaces": [],
+    "hides": []
   },
   {
     "id": "dcl://base-avatars/brown_pants_02",
@@ -7130,6 +7681,8 @@
           "dcl://base-avatars/BaseMale"
         ],
         "mainFile": "M_lBody_BrownPants.glb",
+        "overrideReplaces": [],
+        "overrideHides": [],
         "contents": [
           {
             "file": "AvatarWearables_TX.png",
@@ -7161,7 +7714,9 @@
         "text": "Pantalones Marrones"
       }
     ],
-    "thumbnail": "QmSKpoitKYoMHWqvXJGBmtS5ohSsnUeTBWH5D6RwXf5YQV"
+    "thumbnail": "QmSKpoitKYoMHWqvXJGBmtS5ohSsnUeTBWH5D6RwXf5YQV",
+    "replaces": [],
+    "hides": []
   },
   {
     "id": "dcl://base-avatars/cargo_shorts",
@@ -7171,6 +7726,8 @@
           "dcl://base-avatars/BaseMale"
         ],
         "mainFile": "M_lBody_CargoShorts.glb",
+        "overrideReplaces": [],
+        "overrideHides": [],
         "contents": [
           {
             "file": "AvatarWearables_TX.png",
@@ -7206,7 +7763,9 @@
         "text": "Pantalones Estilo Cargo"
       }
     ],
-    "thumbnail": "QmT5PT3Qz2y9mdy3BnMtMsPDHLBtTDeV2o7kynBzqs5JdA"
+    "thumbnail": "QmT5PT3Qz2y9mdy3BnMtMsPDHLBtTDeV2o7kynBzqs5JdA",
+    "replaces": [],
+    "hides": []
   },
   {
     "id": "dcl://base-avatars/comfortablepants",
@@ -7216,6 +7775,8 @@
           "dcl://base-avatars/BaseMale"
         ],
         "mainFile": "M_lBody_ComfortablePants.glb",
+        "overrideReplaces": [],
+        "overrideHides": [],
         "contents": [
           {
             "file": "AvatarWearables_TX.png",
@@ -7251,7 +7812,9 @@
         "text": "Pantalones Cómodos"
       }
     ],
-    "thumbnail": "QmT5fgxVWRp1bFoPBoRwMrA1VHL39RLszZn3UtvMrZ32sG"
+    "thumbnail": "QmT5fgxVWRp1bFoPBoRwMrA1VHL39RLszZn3UtvMrZ32sG",
+    "replaces": [],
+    "hides": []
   },
   {
     "id": "dcl://base-avatars/grey_joggers",
@@ -7261,6 +7824,8 @@
           "dcl://base-avatars/BaseMale"
         ],
         "mainFile": "M_lBody_GreyJoggers.glb",
+        "overrideReplaces": [],
+        "overrideHides": [],
         "contents": [
           {
             "file": "AvatarWearables_TX.png",
@@ -7292,7 +7857,9 @@
         "text": "Pantalones de Chándal"
       }
     ],
-    "thumbnail": "QmSWqcYdV5dvWSg6MCp4YaPB8vpTPUQjdNmVghdH86znTF"
+    "thumbnail": "QmSWqcYdV5dvWSg6MCp4YaPB8vpTPUQjdNmVghdH86znTF",
+    "replaces": [],
+    "hides": []
   },
   {
     "id": "dcl://base-avatars/hip_hop_joggers",
@@ -7302,6 +7869,8 @@
           "dcl://base-avatars/BaseMale"
         ],
         "mainFile": "M_lBody_HipHopJoggers.glb",
+        "overrideReplaces": [],
+        "overrideHides": [],
         "contents": [
           {
             "file": "AvatarWearables_TX.png",
@@ -7333,7 +7902,9 @@
         "text": "Pantalones de Hip Hp"
       }
     ],
-    "thumbnail": "QmNZR5tqNjwFKN3fdfVfn5SvJQ2GycGw679XgjiwFzPT4W"
+    "thumbnail": "QmNZR5tqNjwFKN3fdfVfn5SvJQ2GycGw679XgjiwFzPT4W",
+    "replaces": [],
+    "hides": []
   },
   {
     "id": "dcl://base-avatars/kilt",
@@ -7343,6 +7914,8 @@
           "dcl://base-avatars/BaseMale"
         ],
         "mainFile": "M_lBody_Kilt.glb",
+        "overrideReplaces": [],
+        "overrideHides": [],
         "contents": [
           {
             "file": "AvatarWearables_TX.png",
@@ -7378,7 +7951,9 @@
         "text": "Falda escocesa"
       }
     ],
-    "thumbnail": "QmUpEQD67ACX8iKERbxNLxfre8uSLzm2th4pXEnG8DxKN5"
+    "thumbnail": "QmUpEQD67ACX8iKERbxNLxfre8uSLzm2th4pXEnG8DxKN5",
+    "replaces": [],
+    "hides": []
   },
   {
     "id": "dcl://base-avatars/brown_pants",
@@ -7388,6 +7963,8 @@
           "dcl://base-avatars/BaseMale"
         ],
         "mainFile": "M_lBody_LongPants_01.glb",
+        "overrideReplaces": [],
+        "overrideHides": [],
         "contents": [
           {
             "file": "AvatarWearables_TX.png",
@@ -7423,7 +8000,9 @@
         "text": "Pantalón Marrón"
       }
     ],
-    "thumbnail": "QmYfiy3eC93vpXLN66rtRue4EnHTyeg27KAoqskTKrbsuX"
+    "thumbnail": "QmYfiy3eC93vpXLN66rtRue4EnHTyeg27KAoqskTKrbsuX",
+    "replaces": [],
+    "hides": []
   },
   {
     "id": "dcl://base-avatars/oxford_pants",
@@ -7433,6 +8012,8 @@
           "dcl://base-avatars/BaseMale"
         ],
         "mainFile": "M_lBody_OxfordPants.glb",
+        "overrideReplaces": [],
+        "overrideHides": [],
         "contents": [
           {
             "file": "AvatarWearables_TX.png",
@@ -7464,7 +8045,9 @@
         "text": "Pantalón Oxford"
       }
     ],
-    "thumbnail": "QmWrU6iuCdENNXsU2cYbjbccJ7KJhycy7NBMS43w6ygVf1"
+    "thumbnail": "QmWrU6iuCdENNXsU2cYbjbccJ7KJhycy7NBMS43w6ygVf1",
+    "replaces": [],
+    "hides": []
   },
   {
     "id": "dcl://base-avatars/safari_pants",
@@ -7474,6 +8057,8 @@
           "dcl://base-avatars/BaseMale"
         ],
         "mainFile": "M_lBody_SafariPants_01.glb",
+        "overrideReplaces": [],
+        "overrideHides": [],
         "contents": [
           {
             "file": "AvatarWearables_TX.png",
@@ -7505,7 +8090,9 @@
         "text": "Pantalón de Safari"
       }
     ],
-    "thumbnail": "QmVKKgRLYPjttEtZKZ75iHbarBuxmzpT1pPEjbMaxQFYDm"
+    "thumbnail": "QmVKKgRLYPjttEtZKZ75iHbarBuxmzpT1pPEjbMaxQFYDm",
+    "replaces": [],
+    "hides": []
   },
   {
     "id": "dcl://base-avatars/jean_shorts",
@@ -7515,6 +8102,8 @@
           "dcl://base-avatars/BaseMale"
         ],
         "mainFile": "M_lBody_ShortPants_01.glb",
+        "overrideReplaces": [],
+        "overrideHides": [],
         "contents": [
           {
             "file": "AvatarWearables_TX.png",
@@ -7550,7 +8139,9 @@
         "text": "Pantalón Corto de Jean"
       }
     ],
-    "thumbnail": "QmXyVbRThTcy9iS8UaVGy6g6NsHZto5ksygXxgM9ZjTMF1"
+    "thumbnail": "QmXyVbRThTcy9iS8UaVGy6g6NsHZto5ksygXxgM9ZjTMF1",
+    "replaces": [],
+    "hides": []
   },
   {
     "id": "dcl://base-avatars/soccer_pants",
@@ -7560,6 +8151,8 @@
           "dcl://base-avatars/BaseMale"
         ],
         "mainFile": "M_lBody_SoccerPants.glb",
+        "overrideReplaces": [],
+        "overrideHides": [],
         "contents": [
           {
             "file": "AvatarWearables_TX.png",
@@ -7595,7 +8188,9 @@
         "text": "Pantalón Corto de Fútbol"
       }
     ],
-    "thumbnail": "QmY8mAhs2UU7f62F9zECXmrn26LViaJ6A1eo2iNUmfesdt"
+    "thumbnail": "QmY8mAhs2UU7f62F9zECXmrn26LViaJ6A1eo2iNUmfesdt",
+    "replaces": [],
+    "hides": []
   },
   {
     "id": "dcl://base-avatars/pijama_pants",
@@ -7605,6 +8200,8 @@
           "dcl://base-avatars/BaseMale"
         ],
         "mainFile": "M_lBody_StripePijama_01.glb",
+        "overrideReplaces": [],
+        "overrideHides": [],
         "contents": [
           {
             "file": "AvatarWearables_TX.png",
@@ -7636,7 +8233,9 @@
         "text": "Pantalón de Pijama Rayado"
       }
     ],
-    "thumbnail": "Qma7tcbf8dq1uiuYXZcvceMGv9BHLrKLnVCpqEoFre5SPP"
+    "thumbnail": "Qma7tcbf8dq1uiuYXZcvceMGv9BHLrKLnVCpqEoFre5SPP",
+    "replaces": [],
+    "hides": []
   },
   {
     "id": "dcl://base-avatars/striped_swim_suit",
@@ -7646,6 +8245,8 @@
           "dcl://base-avatars/BaseMale"
         ],
         "mainFile": "M_lBody_StripeSwimSuit.glb",
+        "overrideReplaces": [],
+        "overrideHides": [],
         "contents": [
           {
             "file": "AvatarWearables_TX.png",
@@ -7681,7 +8282,9 @@
         "text": "Traje de baño rayado"
       }
     ],
-    "thumbnail": "QmY91X4FxW6ejnpA1osEwPCPeZrWY2NFfDbKBDPAQX5GBp"
+    "thumbnail": "QmY91X4FxW6ejnpA1osEwPCPeZrWY2NFfDbKBDPAQX5GBp",
+    "replaces": [],
+    "hides": []
   },
   {
     "id": "dcl://base-avatars/swim_short",
@@ -7691,6 +8294,8 @@
           "dcl://base-avatars/BaseMale"
         ],
         "mainFile": "M_lBody_SwimShort.glb",
+        "overrideReplaces": [],
+        "overrideHides": [],
         "contents": [
           {
             "file": "AvatarWearables_TX.png",
@@ -7726,7 +8331,9 @@
         "text": "Traje de baño Corto"
       }
     ],
-    "thumbnail": "QmbCFrY7f2baZnaYPHYP8vbgrGpG8e8LK25Qnh2Psf51tr"
+    "thumbnail": "QmbCFrY7f2baZnaYPHYP8vbgrGpG8e8LK25Qnh2Psf51tr",
+    "replaces": [],
+    "hides": []
   },
   {
     "id": "dcl://base-avatars/trash_jean",
@@ -7736,6 +8343,8 @@
           "dcl://base-avatars/BaseMale"
         ],
         "mainFile": "M_lBody_TrashJeans_01.glb",
+        "overrideReplaces": [],
+        "overrideHides": [],
         "contents": [
           {
             "file": "AvatarWearables_TX.png",
@@ -7771,7 +8380,9 @@
         "text": "Jeans Usados"
       }
     ],
-    "thumbnail": "QmQU66we1cS5ohVS8riUj99oSH6ejmqod7jBSatyWEcnuA"
+    "thumbnail": "QmQU66we1cS5ohVS8riUj99oSH6ejmqod7jBSatyWEcnuA",
+    "replaces": [],
+    "hides": []
   },
   {
     "id": "dcl://base-avatars/f_mouth_00",
@@ -7781,6 +8392,8 @@
           "dcl://base-avatars/BaseFemale"
         ],
         "mainFile": "F_Mouth_00.png",
+        "overrideReplaces": [],
+        "overrideHides": [],
         "contents": [
           {
             "file": "F_Mouth_00.png",
@@ -7809,7 +8422,9 @@
         "text": "f_Mouth_00"
       }
     ],
-    "thumbnail": "QmbEvia7NzapnaWWPkyYzz35aNvb7TKBsJcZfWnTcoZMRE"
+    "thumbnail": "QmbEvia7NzapnaWWPkyYzz35aNvb7TKBsJcZfWnTcoZMRE",
+    "replaces": [],
+    "hides": []
   },
   {
     "id": "dcl://base-avatars/f_mouth_01",
@@ -7819,6 +8434,8 @@
           "dcl://base-avatars/BaseFemale"
         ],
         "mainFile": "F_Mouth_01.png",
+        "overrideReplaces": [],
+        "overrideHides": [],
         "contents": [
           {
             "file": "F_Mouth_01.png",
@@ -7847,7 +8464,9 @@
         "text": "f_Mouth_01"
       }
     ],
-    "thumbnail": "Qmcd9AxqxRcXGU7S9kASh5x7jXqoAnKoK8D1FGHdUPprcx"
+    "thumbnail": "Qmcd9AxqxRcXGU7S9kASh5x7jXqoAnKoK8D1FGHdUPprcx",
+    "replaces": [],
+    "hides": []
   },
   {
     "id": "dcl://base-avatars/f_mouth_02",
@@ -7857,6 +8476,8 @@
           "dcl://base-avatars/BaseFemale"
         ],
         "mainFile": "F_Mouth_02.png",
+        "overrideReplaces": [],
+        "overrideHides": [],
         "contents": [
           {
             "file": "F_Mouth_02.png",
@@ -7885,7 +8506,9 @@
         "text": "f_Mouth_02"
       }
     ],
-    "thumbnail": "QmU1rXTtAhjPZz4xQKwnp8AHGCHAg8ajtHjCRsfXDoomgi"
+    "thumbnail": "QmU1rXTtAhjPZz4xQKwnp8AHGCHAg8ajtHjCRsfXDoomgi",
+    "replaces": [],
+    "hides": []
   },
   {
     "id": "dcl://base-avatars/f_mouth_03",
@@ -7895,6 +8518,8 @@
           "dcl://base-avatars/BaseFemale"
         ],
         "mainFile": "F_Mouth_03.png",
+        "overrideReplaces": [],
+        "overrideHides": [],
         "contents": [
           {
             "file": "F_Mouth_03.png",
@@ -7923,7 +8548,9 @@
         "text": "f_Mouth_03"
       }
     ],
-    "thumbnail": "Qmc9UTEoZpweg4snnysQY8ti6NTcsSsb2RSiJG6d1ZuzUK"
+    "thumbnail": "Qmc9UTEoZpweg4snnysQY8ti6NTcsSsb2RSiJG6d1ZuzUK",
+    "replaces": [],
+    "hides": []
   },
   {
     "id": "dcl://base-avatars/f_mouth_04",
@@ -7933,6 +8560,8 @@
           "dcl://base-avatars/BaseFemale"
         ],
         "mainFile": "F_Mouth_04.png",
+        "overrideReplaces": [],
+        "overrideHides": [],
         "contents": [
           {
             "file": "F_Mouth_04.png",
@@ -7961,7 +8590,9 @@
         "text": "f_Mouth_04"
       }
     ],
-    "thumbnail": "QmbUcY3Myps4RmrNXvBJFAEWw6tCNk7RZXzFDe1YYUfohs"
+    "thumbnail": "QmbUcY3Myps4RmrNXvBJFAEWw6tCNk7RZXzFDe1YYUfohs",
+    "replaces": [],
+    "hides": []
   },
   {
     "id": "dcl://base-avatars/f_mouth_05",
@@ -7971,6 +8602,8 @@
           "dcl://base-avatars/BaseFemale"
         ],
         "mainFile": "F_Mouth_05.png",
+        "overrideReplaces": [],
+        "overrideHides": [],
         "contents": [
           {
             "file": "F_Mouth_05.png",
@@ -8001,7 +8634,9 @@
         "text": "f_Mouth_05"
       }
     ],
-    "thumbnail": "QmaMGqPMtGb3kPzLcm9RYQUFUVpdhrJJVFBDtYryd7i1Sp"
+    "thumbnail": "QmaMGqPMtGb3kPzLcm9RYQUFUVpdhrJJVFBDtYryd7i1Sp",
+    "replaces": [],
+    "hides": []
   },
   {
     "id": "dcl://base-avatars/f_mouth_06",
@@ -8011,6 +8646,8 @@
           "dcl://base-avatars/BaseFemale"
         ],
         "mainFile": "F_Mouth_06.png",
+        "overrideReplaces": [],
+        "overrideHides": [],
         "contents": [
           {
             "file": "F_Mouth_06.png",
@@ -8039,7 +8676,9 @@
         "text": "f_Mouth_06"
       }
     ],
-    "thumbnail": "QmeUcLZJcD1V6i7EqeESmZTvVYEfXVofTt4Moyy4azTQPL"
+    "thumbnail": "QmeUcLZJcD1V6i7EqeESmZTvVYEfXVofTt4Moyy4azTQPL",
+    "replaces": [],
+    "hides": []
   },
   {
     "id": "dcl://base-avatars/f_mouth_07",
@@ -8049,6 +8688,8 @@
           "dcl://base-avatars/BaseFemale"
         ],
         "mainFile": "F_Mouth_07.png",
+        "overrideReplaces": [],
+        "overrideHides": [],
         "contents": [
           {
             "file": "F_Mouth_07.png",
@@ -8077,7 +8718,9 @@
         "text": "f_Mouth_07"
       }
     ],
-    "thumbnail": "QmRQ6f3dP886Bax5ywxgfWsmmPhonLdXKSUqYieTrEToqw"
+    "thumbnail": "QmRQ6f3dP886Bax5ywxgfWsmmPhonLdXKSUqYieTrEToqw",
+    "replaces": [],
+    "hides": []
   },
   {
     "id": "dcl://base-avatars/f_mouth_08",
@@ -8087,6 +8730,8 @@
           "dcl://base-avatars/BaseFemale"
         ],
         "mainFile": "F_Mouth_08.png",
+        "overrideReplaces": [],
+        "overrideHides": [],
         "contents": [
           {
             "file": "F_Mouth_08.png",
@@ -8115,7 +8760,9 @@
         "text": "f_Mouth_08"
       }
     ],
-    "thumbnail": "QmWgfEmq4WWep4PGVQf2sVzPhZFBGbMNtND2ojC1oAC379"
+    "thumbnail": "QmWgfEmq4WWep4PGVQf2sVzPhZFBGbMNtND2ojC1oAC379",
+    "replaces": [],
+    "hides": []
   },
   {
     "id": "dcl://base-avatars/mouth_00",
@@ -8125,6 +8772,8 @@
           "dcl://base-avatars/BaseMale"
         ],
         "mainFile": "M_Mouth_00.png",
+        "overrideReplaces": [],
+        "overrideHides": [],
         "contents": [
           {
             "file": "M_Mouth_00.png",
@@ -8153,7 +8802,9 @@
         "text": "Mouth_00"
       }
     ],
-    "thumbnail": "QmTyFPAEEDDrXfmY8MpLJFUQDCDpwg4EJMArDDLJANmHsr"
+    "thumbnail": "QmTyFPAEEDDrXfmY8MpLJFUQDCDpwg4EJMArDDLJANmHsr",
+    "replaces": [],
+    "hides": []
   },
   {
     "id": "dcl://base-avatars/mouth_01",
@@ -8163,6 +8814,8 @@
           "dcl://base-avatars/BaseMale"
         ],
         "mainFile": "M_Mouth_01.png",
+        "overrideReplaces": [],
+        "overrideHides": [],
         "contents": [
           {
             "file": "M_Mouth_01.png",
@@ -8191,7 +8844,9 @@
         "text": "Mouth_01"
       }
     ],
-    "thumbnail": "QmS24KW6GyKXb32kgrHabAwDRgX4JZsNbWoyyCAdn5aoJr"
+    "thumbnail": "QmS24KW6GyKXb32kgrHabAwDRgX4JZsNbWoyyCAdn5aoJr",
+    "replaces": [],
+    "hides": []
   },
   {
     "id": "dcl://base-avatars/mouth_02",
@@ -8201,6 +8856,8 @@
           "dcl://base-avatars/BaseMale"
         ],
         "mainFile": "M_Mouth_02.png",
+        "overrideReplaces": [],
+        "overrideHides": [],
         "contents": [
           {
             "file": "M_Mouth_02.png",
@@ -8229,7 +8886,9 @@
         "text": "Mouth_02"
       }
     ],
-    "thumbnail": "QmYfm4JMs4WYprDucHjQnN7bKnkZZJoXWvuGVmMbLMfK5v"
+    "thumbnail": "QmYfm4JMs4WYprDucHjQnN7bKnkZZJoXWvuGVmMbLMfK5v",
+    "replaces": [],
+    "hides": []
   },
   {
     "id": "dcl://base-avatars/mouth_03",
@@ -8239,6 +8898,8 @@
           "dcl://base-avatars/BaseMale"
         ],
         "mainFile": "M_Mouth_03.png",
+        "overrideReplaces": [],
+        "overrideHides": [],
         "contents": [
           {
             "file": "M_Mouth_03.png",
@@ -8267,7 +8928,9 @@
         "text": "Mouth_03"
       }
     ],
-    "thumbnail": "QmVXAg1szbKwJnv6xEHfPq389QeKMpWjAXLKQVA8r3KtXF"
+    "thumbnail": "QmVXAg1szbKwJnv6xEHfPq389QeKMpWjAXLKQVA8r3KtXF",
+    "replaces": [],
+    "hides": []
   },
   {
     "id": "dcl://base-avatars/mouth_04",
@@ -8277,6 +8940,8 @@
           "dcl://base-avatars/BaseMale"
         ],
         "mainFile": "M_Mouth_04.png",
+        "overrideReplaces": [],
+        "overrideHides": [],
         "contents": [
           {
             "file": "M_Mouth_04.png",
@@ -8305,7 +8970,9 @@
         "text": "Mouth_04"
       }
     ],
-    "thumbnail": "QmST9uYnYT87XKVjYPAJre4PPiGPvYH6bdmvEb3WND9wNj"
+    "thumbnail": "QmST9uYnYT87XKVjYPAJre4PPiGPvYH6bdmvEb3WND9wNj",
+    "replaces": [],
+    "hides": []
   },
   {
     "id": "dcl://base-avatars/mouth_05",
@@ -8315,6 +8982,8 @@
           "dcl://base-avatars/BaseMale"
         ],
         "mainFile": "M_Mouth_05.png",
+        "overrideReplaces": [],
+        "overrideHides": [],
         "contents": [
           {
             "file": "M_Mouth_05.png",
@@ -8343,7 +9012,9 @@
         "text": "Mouth_05"
       }
     ],
-    "thumbnail": "QmRU6Vco3R5tmHcezXRwERnHWob1zn2YZwRSWjknV53T4L"
+    "thumbnail": "QmRU6Vco3R5tmHcezXRwERnHWob1zn2YZwRSWjknV53T4L",
+    "replaces": [],
+    "hides": []
   },
   {
     "id": "dcl://base-avatars/mouth_06",
@@ -8353,6 +9024,8 @@
           "dcl://base-avatars/BaseMale"
         ],
         "mainFile": "M_Mouth_06.png",
+        "overrideReplaces": [],
+        "overrideHides": [],
         "contents": [
           {
             "file": "M_Mouth_06.png",
@@ -8381,7 +9054,9 @@
         "text": "Mouth_06"
       }
     ],
-    "thumbnail": "QmUMiuooASGNmR2ZfdRoN5EreHsm9MTvfJr6nEr7WjAsM9"
+    "thumbnail": "QmUMiuooASGNmR2ZfdRoN5EreHsm9MTvfJr6nEr7WjAsM9",
+    "replaces": [],
+    "hides": []
   },
   {
     "id": "dcl://base-avatars/mouth_07",
@@ -8391,6 +9066,8 @@
           "dcl://base-avatars/BaseMale"
         ],
         "mainFile": "M_Mouth_07.png",
+        "overrideReplaces": [],
+        "overrideHides": [],
         "contents": [
           {
             "file": "M_Mouth_07.png",
@@ -8419,7 +9096,9 @@
         "text": "Mouth_07"
       }
     ],
-    "thumbnail": "QmSNVsEckjqKhUmADf9eiHyLf1mTdUttemBJsYL8QdDkg7"
+    "thumbnail": "QmSNVsEckjqKhUmADf9eiHyLf1mTdUttemBJsYL8QdDkg7",
+    "replaces": [],
+    "hides": []
   },
   {
     "id": "dcl://base-avatars/blue_bandana",
@@ -8429,6 +9108,8 @@
           "dcl://base-avatars/BaseMale"
         ],
         "mainFile": "BlueBandana.glb",
+        "overrideReplaces": [],
+        "overrideHides": [],
         "contents": [
           {
             "file": "AvatarWearables_TX.png",
@@ -8445,6 +9126,8 @@
           "dcl://base-avatars/BaseFemale"
         ],
         "mainFile": "BlueBandana.glb",
+        "overrideReplaces": [],
+        "overrideHides": [],
         "contents": [
           {
             "file": "AvatarWearables_TX.png",
@@ -8478,7 +9161,13 @@
         "text": "Bandana Azul"
       }
     ],
-    "thumbnail": "QmahWKqgJud9386Vxw53KeViHzELhxsNMjko8ERskR5x1y"
+    "thumbnail": "QmahWKqgJud9386Vxw53KeViHzELhxsNMjko8ERskR5x1y",
+    "replaces": [
+      "mask",
+      "hat",
+      "helmet"
+    ],
+    "hides": []
   },
   {
     "id": "dcl://base-avatars/diamond_colored_tiara",
@@ -8488,6 +9177,8 @@
           "dcl://base-avatars/BaseFemale"
         ],
         "mainFile": "F_Tiara_ColoredDiamond.glb",
+        "overrideReplaces": [],
+        "overrideHides": [],
         "contents": [
           {
             "file": "AvatarWearables_TX.png",
@@ -8519,7 +9210,13 @@
         "text": "Tiara Colorida de Diamantes"
       }
     ],
-    "thumbnail": "QmWy9NM3UsCSYDjrbDEY79LaAVkdQpzyrET2HwzL2grBRu"
+    "thumbnail": "QmWy9NM3UsCSYDjrbDEY79LaAVkdQpzyrET2HwzL2grBRu",
+    "replaces": [
+      "mask",
+      "hat",
+      "helmet"
+    ],
+    "hides": []
   },
   {
     "id": "dcl://base-avatars/green_stone_tiara",
@@ -8529,6 +9226,8 @@
           "dcl://base-avatars/BaseFemale"
         ],
         "mainFile": "F_Tiara_GreenStone.glb",
+        "overrideReplaces": [],
+        "overrideHides": [],
         "contents": [
           {
             "file": "AvatarWearables_TX.png",
@@ -8560,7 +9259,13 @@
         "text": "Tiara con Gema Verde"
       }
     ],
-    "thumbnail": "QmQmxYiXQeWs4hGepMeuU6rdHhx7QEtBWsPkwNb3MHaPvL"
+    "thumbnail": "QmQmxYiXQeWs4hGepMeuU6rdHhx7QEtBWsPkwNb3MHaPvL",
+    "replaces": [
+      "mask",
+      "hat",
+      "helmet"
+    ],
+    "hides": []
   },
   {
     "id": "dcl://base-avatars/laurel_wreath",
@@ -8570,6 +9275,8 @@
           "dcl://base-avatars/BaseFemale"
         ],
         "mainFile": "F_Tiara_LaurelWreath.glb",
+        "overrideReplaces": [],
+        "overrideHides": [],
         "contents": [
           {
             "file": "AvatarWearables_TX.png",
@@ -8601,7 +9308,13 @@
         "text": "Corona de laureles"
       }
     ],
-    "thumbnail": "QmWv8hCX5L1Z1gVDm8qeGLKb5gQLSncmS54L5fumw5hxWV"
+    "thumbnail": "QmWv8hCX5L1Z1gVDm8qeGLKb5gQLSncmS54L5fumw5hxWV",
+    "replaces": [
+      "mask",
+      "hat",
+      "helmet"
+    ],
+    "hides": []
   },
   {
     "id": "dcl://base-avatars/red_bandana",
@@ -8611,6 +9324,8 @@
           "dcl://base-avatars/BaseMale"
         ],
         "mainFile": "RedBandana.glb",
+        "overrideReplaces": [],
+        "overrideHides": [],
         "contents": [
           {
             "file": "AvatarWearables_TX.png",
@@ -8627,6 +9342,8 @@
           "dcl://base-avatars/BaseFemale"
         ],
         "mainFile": "RedBandana.glb",
+        "overrideReplaces": [],
+        "overrideHides": [],
         "contents": [
           {
             "file": "AvatarWearables_TX.png",
@@ -8660,7 +9377,13 @@
         "text": "Bandana Roja"
       }
     ],
-    "thumbnail": "QmVoEgBeCp24ud5TkApArWccxawTcsoxY81vizNMMXGE4p"
+    "thumbnail": "QmVoEgBeCp24ud5TkApArWccxawTcsoxY81vizNMMXGE4p",
+    "replaces": [
+      "mask",
+      "hat",
+      "helmet"
+    ],
+    "hides": []
   },
   {
     "id": "dcl://base-avatars/bee_t_shirt",
@@ -8670,6 +9393,8 @@
           "dcl://base-avatars/BaseFemale"
         ],
         "mainFile": "F_uBody_BeeTShirt.glb",
+        "overrideReplaces": [],
+        "overrideHides": [],
         "contents": [
           {
             "file": "AvatarWearables_TX.png",
@@ -8705,7 +9430,9 @@
         "text": "Remera con Estampado de Abeja"
       }
     ],
-    "thumbnail": "QmZJFQrujoxYX7kbFwJ6xQDJMSwD8tmQXTm6tZy1uFpJfp"
+    "thumbnail": "QmZJFQrujoxYX7kbFwJ6xQDJMSwD8tmQXTm6tZy1uFpJfp",
+    "replaces": [],
+    "hides": []
   },
   {
     "id": "dcl://base-avatars/black_top",
@@ -8715,6 +9442,8 @@
           "dcl://base-avatars/BaseFemale"
         ],
         "mainFile": "F_uBody_BlackTop.glb",
+        "overrideReplaces": [],
+        "overrideHides": [],
         "contents": [
           {
             "file": "AvatarWearables_TX.png",
@@ -8750,7 +9479,9 @@
         "text": "Top Negro"
       }
     ],
-    "thumbnail": "QmfLjjfVvfNnPpEeJS5bwKDLZEwtbuDXajZWpHzciSBU8D"
+    "thumbnail": "QmfLjjfVvfNnPpEeJS5bwKDLZEwtbuDXajZWpHzciSBU8D",
+    "replaces": [],
+    "hides": []
   },
   {
     "id": "dcl://base-avatars/simple_blue_tshirt",
@@ -8760,6 +9491,8 @@
           "dcl://base-avatars/BaseFemale"
         ],
         "mainFile": "F_uBody_BlueBasicTShirt.glb",
+        "overrideReplaces": [],
+        "overrideHides": [],
         "contents": [
           {
             "file": "AvatarWearables_TX.png",
@@ -8795,7 +9528,9 @@
         "text": "Camiseta Azul"
       }
     ],
-    "thumbnail": "QmSEuj7SRe5nLYdbcQXxbaCFGeU7fQrhSVuYcKwHedLThk"
+    "thumbnail": "QmSEuj7SRe5nLYdbcQXxbaCFGeU7fQrhSVuYcKwHedLThk",
+    "replaces": [],
+    "hides": []
   },
   {
     "id": "dcl://base-avatars/f_blue_elegant_shirt",
@@ -8805,6 +9540,8 @@
           "dcl://base-avatars/BaseFemale"
         ],
         "mainFile": "F_uBody_BlueElegantShirt.glb",
+        "overrideReplaces": [],
+        "overrideHides": [],
         "contents": [
           {
             "file": "AvatarWearables_TX.png",
@@ -8840,7 +9577,9 @@
         "text": "Camisa Azul Elegante"
       }
     ],
-    "thumbnail": "QmRqT8pDgCjw3kSUxijP53nxznNEj89KdBq32DX33e6MQF"
+    "thumbnail": "QmRqT8pDgCjw3kSUxijP53nxznNEj89KdBq32DX33e6MQF",
+    "replaces": [],
+    "hides": []
   },
   {
     "id": "dcl://base-avatars/f_blue_jacket",
@@ -8850,6 +9589,8 @@
           "dcl://base-avatars/BaseFemale"
         ],
         "mainFile": "F_uBody_BlueJacket.glb",
+        "overrideReplaces": [],
+        "overrideHides": [],
         "contents": [
           {
             "file": "AvatarWearables_TX.png",
@@ -8885,7 +9626,9 @@
         "text": "Chaqueta Azul"
       }
     ],
-    "thumbnail": "QmZBu4APNb4cUc6LqUPyDZfQq8RLVSog2WpG8VfrezZzEA"
+    "thumbnail": "QmZBu4APNb4cUc6LqUPyDZfQq8RLVSog2WpG8VfrezZzEA",
+    "replaces": [],
+    "hides": []
   },
   {
     "id": "dcl://base-avatars/brown_sleveless_dress",
@@ -8895,6 +9638,8 @@
           "dcl://base-avatars/BaseFemale"
         ],
         "mainFile": "F_uBody_BrownSlevelessDress.glb",
+        "overrideReplaces": [],
+        "overrideHides": [],
         "contents": [
           {
             "file": "AvatarWearables_TX.png",
@@ -8930,7 +9675,9 @@
         "text": "Vestido Marrón Sin Mangas"
       }
     ],
-    "thumbnail": "QmShWNGSsztStJHpzmgHNcxtdwFVN6P8QAEsESKJXF8b45"
+    "thumbnail": "QmShWNGSsztStJHpzmgHNcxtdwFVN6P8QAEsESKJXF8b45",
+    "replaces": [],
+    "hides": []
   },
   {
     "id": "dcl://base-avatars/croupier_shirt",
@@ -8940,6 +9687,8 @@
           "dcl://base-avatars/BaseFemale"
         ],
         "mainFile": "F_uBody_CasinoShirt.glb",
+        "overrideReplaces": [],
+        "overrideHides": [],
         "contents": [
           {
             "file": "AvatarWearables_TX.png",
@@ -8975,7 +9724,9 @@
         "text": "Camisa de croupier"
       }
     ],
-    "thumbnail": "QmcLf7BpuDcH3DxvYVa98hLAJqea3LzTZpGJJfgiUZvhg4"
+    "thumbnail": "QmcLf7BpuDcH3DxvYVa98hLAJqea3LzTZpGJJfgiUZvhg4",
+    "replaces": [],
+    "hides": []
   },
   {
     "id": "dcl://base-avatars/colored_sweater",
@@ -8985,6 +9736,8 @@
           "dcl://base-avatars/BaseFemale"
         ],
         "mainFile": "F_uBody_ColoredPullover.glb",
+        "overrideReplaces": [],
+        "overrideHides": [],
         "contents": [
           {
             "file": "AvatarWearables_TX.png",
@@ -9020,7 +9773,9 @@
         "text": "Sweater de Colores"
       }
     ],
-    "thumbnail": "QmYhGoxpW1w1cvprzot5erNn1XJjADZMRGFYFcPDTgb9Jn"
+    "thumbnail": "QmYhGoxpW1w1cvprzot5erNn1XJjADZMRGFYFcPDTgb9Jn",
+    "replaces": [],
+    "hides": []
   },
   {
     "id": "dcl://base-avatars/elegant_striped_shirt",
@@ -9030,6 +9785,8 @@
           "dcl://base-avatars/BaseFemale"
         ],
         "mainFile": "F_uBody_ElegantStripeShirt.glb",
+        "overrideReplaces": [],
+        "overrideHides": [],
         "contents": [
           {
             "file": "AvatarWearables_TX.png",
@@ -9065,7 +9822,9 @@
         "text": "Remera Elegante a Rayas"
       }
     ],
-    "thumbnail": "QmY5Wb2ToLFUXhcR3zktieqjC3PXVbiV5u6bgcgW7FD4yL"
+    "thumbnail": "QmY5Wb2ToLFUXhcR3zktieqjC3PXVbiV5u6bgcgW7FD4yL",
+    "replaces": [],
+    "hides": []
   },
   {
     "id": "dcl://base-avatars/simple_green_tshirt",
@@ -9075,6 +9834,8 @@
           "dcl://base-avatars/BaseFemale"
         ],
         "mainFile": "F_uBody_GreenBasicTShirt.glb",
+        "overrideReplaces": [],
+        "overrideHides": [],
         "contents": [
           {
             "file": "AvatarWearables_TX.png",
@@ -9110,7 +9871,9 @@
         "text": "Camiseta Verde"
       }
     ],
-    "thumbnail": "QmUmAR9du38GmxARdPuhyEu8csgwWnnXDtgXM2BXwmqZnr"
+    "thumbnail": "QmUmAR9du38GmxARdPuhyEu8csgwWnnXDtgXM2BXwmqZnr",
+    "replaces": [],
+    "hides": []
   },
   {
     "id": "dcl://base-avatars/light_green_shirt",
@@ -9120,6 +9883,8 @@
           "dcl://base-avatars/BaseFemale"
         ],
         "mainFile": "F_uBody_LightGreenShirt.glb",
+        "overrideReplaces": [],
+        "overrideHides": [],
         "contents": [
           {
             "file": "AvatarWearables_TX.png",
@@ -9155,7 +9920,9 @@
         "text": "Camisa Verde Claro"
       }
     ],
-    "thumbnail": "QmfA6cgRuSGAzEf8KGkBSgxeU3TWodFx4xjg3ScvkemZko"
+    "thumbnail": "QmfA6cgRuSGAzEf8KGkBSgxeU3TWodFx4xjg3ScvkemZko",
+    "replaces": [],
+    "hides": []
   },
   {
     "id": "dcl://base-avatars/f_pink_simple_tshirt",
@@ -9165,6 +9932,8 @@
           "dcl://base-avatars/BaseFemale"
         ],
         "mainFile": "F_uBody_PinkBasicTShirt.glb",
+        "overrideReplaces": [],
+        "overrideHides": [],
         "contents": [
           {
             "file": "AvatarWearables_TX.png",
@@ -9200,7 +9969,9 @@
         "text": "Camiseta Rosa Simple"
       }
     ],
-    "thumbnail": "QmZZnC5z4cxcsecrBtAxgBf2mCL1iSzfRnRxUYdh94pn17"
+    "thumbnail": "QmZZnC5z4cxcsecrBtAxgBf2mCL1iSzfRnRxUYdh94pn17",
+    "replaces": [],
+    "hides": []
   },
   {
     "id": "dcl://base-avatars/f_pride_t_shirt",
@@ -9210,6 +9981,8 @@
           "dcl://base-avatars/BaseFemale"
         ],
         "mainFile": "F_uBody_PrideTShirt.glb",
+        "overrideReplaces": [],
+        "overrideHides": [],
         "contents": [
           {
             "file": "AvatarWearables_TX.png",
@@ -9245,7 +10018,9 @@
         "text": "Remera del Orgullo Gay"
       }
     ],
-    "thumbnail": "QmXp9QiDF1v3bYxRbPrk8vE84iSR461CPAdCf9gt1GsQbw"
+    "thumbnail": "QmXp9QiDF1v3bYxRbPrk8vE84iSR461CPAdCf9gt1GsQbw",
+    "replaces": [],
+    "hides": []
   },
   {
     "id": "dcl://base-avatars/f_red_simple_tshirt",
@@ -9255,6 +10030,8 @@
           "dcl://base-avatars/BaseFemale"
         ],
         "mainFile": "F_uBody_RedBasicTShirt.glb",
+        "overrideReplaces": [],
+        "overrideHides": [],
         "contents": [
           {
             "file": "AvatarWearables_TX.png",
@@ -9290,7 +10067,9 @@
         "text": "Camiseta Roja Simple"
       }
     ],
-    "thumbnail": "QmZ28L2a9YKKVakmbkimLGRn5ACw2W5qgduThwH9tjWMm8"
+    "thumbnail": "QmZ28L2a9YKKVakmbkimLGRn5ACw2W5qgduThwH9tjWMm8",
+    "replaces": [],
+    "hides": []
   },
   {
     "id": "dcl://base-avatars/f_red_elegant_jacket",
@@ -9300,6 +10079,8 @@
           "dcl://base-avatars/BaseFemale"
         ],
         "mainFile": "F_uBody_RedElgantJacket.glb",
+        "overrideReplaces": [],
+        "overrideHides": [],
         "contents": [
           {
             "file": "AvatarWearables_TX.png",
@@ -9335,7 +10116,9 @@
         "text": "Chaqueta Elegante Roja"
       }
     ],
-    "thumbnail": "QmZqpgmpPJjJ924R6VAoGawAxYgBhpRiEjBZfCAVbBAqex"
+    "thumbnail": "QmZqpgmpPJjJ924R6VAoGawAxYgBhpRiEjBZfCAVbBAqex",
+    "replaces": [],
+    "hides": []
   },
   {
     "id": "dcl://base-avatars/Red_topcoat",
@@ -9345,6 +10128,8 @@
           "dcl://base-avatars/BaseFemale"
         ],
         "mainFile": "F_uBody_RedJacket.glb",
+        "overrideReplaces": [],
+        "overrideHides": [],
         "contents": [
           {
             "file": "AvatarWearables_TX.png",
@@ -9380,7 +10165,9 @@
         "text": "Top Negro"
       }
     ],
-    "thumbnail": "QmNciypNoX2LMmp3LZMVHGUaCG7dWWWzteH5jxaLwaYV1n"
+    "thumbnail": "QmNciypNoX2LMmp3LZMVHGUaCG7dWWWzteH5jxaLwaYV1n",
+    "replaces": [],
+    "hides": []
   },
   {
     "id": "dcl://base-avatars/roller_outfit",
@@ -9390,6 +10177,8 @@
           "dcl://base-avatars/BaseFemale"
         ],
         "mainFile": "F_uBody_RollerOutfit.glb",
+        "overrideReplaces": [],
+        "overrideHides": [],
         "contents": [
           {
             "file": "AvatarWearables_TX.png",
@@ -9425,7 +10214,9 @@
         "text": "Remera de Roller Skate"
       }
     ],
-    "thumbnail": "QmZRPHTmKujbSsYcPuYpLguwMeRFWipcj45gBs61WbhNwa"
+    "thumbnail": "QmZRPHTmKujbSsYcPuYpLguwMeRFWipcj45gBs61WbhNwa",
+    "replaces": [],
+    "hides": []
   },
   {
     "id": "dcl://base-avatars/school_shirt",
@@ -9435,6 +10226,8 @@
           "dcl://base-avatars/BaseFemale"
         ],
         "mainFile": "F_uBody_SchoolShirt.glb",
+        "overrideReplaces": [],
+        "overrideHides": [],
         "contents": [
           {
             "file": "AvatarWearables_TX.png",
@@ -9470,7 +10263,9 @@
         "text": "Camisa Escolar"
       }
     ],
-    "thumbnail": "QmbqWek1Ek8wD9g1VhoKJZq95mk62Tc8kypHBLGpTLQS91"
+    "thumbnail": "QmbqWek1Ek8wD9g1VhoKJZq95mk62Tc8kypHBLGpTLQS91",
+    "replaces": [],
+    "hides": []
   },
   {
     "id": "dcl://base-avatars/baggy_pullover",
@@ -9480,6 +10275,8 @@
           "dcl://base-avatars/BaseFemale"
         ],
         "mainFile": "F_uBody_SolidPullover.glb",
+        "overrideReplaces": [],
+        "overrideHides": [],
         "contents": [
           {
             "file": "AvatarWearables_TX.png",
@@ -9515,7 +10312,9 @@
         "text": "Suéter de Lana Holgado"
       }
     ],
-    "thumbnail": "QmQeG8bDonxcRKeib5oP3ejZrvy6HaX8d9UDwh7FbsJgjJ"
+    "thumbnail": "QmQeG8bDonxcRKeib5oP3ejZrvy6HaX8d9UDwh7FbsJgjJ",
+    "replaces": [],
+    "hides": []
   },
   {
     "id": "dcl://base-avatars/f_sport_purple_tshirt",
@@ -9525,6 +10324,8 @@
           "dcl://base-avatars/BaseFemale"
         ],
         "mainFile": "F_uBody_SportPurpleTShirt.glb",
+        "overrideReplaces": [],
+        "overrideHides": [],
         "contents": [
           {
             "file": "AvatarWearables_TX.png",
@@ -9560,7 +10361,9 @@
         "text": "Camiseta Deportiva Violeta"
       }
     ],
-    "thumbnail": "QmQFXJGh4MoccifA8nVbe45HtfRxo2PDU37tAq9UHgrnnA"
+    "thumbnail": "QmQFXJGh4MoccifA8nVbe45HtfRxo2PDU37tAq9UHgrnnA",
+    "replaces": [],
+    "hides": []
   },
   {
     "id": "dcl://base-avatars/striped_top",
@@ -9570,6 +10373,8 @@
           "dcl://base-avatars/BaseFemale"
         ],
         "mainFile": "F_uBody_StripeTop.glb",
+        "overrideReplaces": [],
+        "overrideHides": [],
         "contents": [
           {
             "file": "AvatarWearables_TX.png",
@@ -9605,7 +10410,9 @@
         "text": "Top a Rayas"
       }
     ],
-    "thumbnail": "QmWoiL1GL8eXFUiiPhfZgf7Mtd46i6x3FM1oqaXLQ4pZcD"
+    "thumbnail": "QmWoiL1GL8eXFUiiPhfZgf7Mtd46i6x3FM1oqaXLQ4pZcD",
+    "replaces": [],
+    "hides": []
   },
   {
     "id": "dcl://base-avatars/f_sweater",
@@ -9615,6 +10422,8 @@
           "dcl://base-avatars/BaseFemale"
         ],
         "mainFile": "F_uBody_Sweater_01.glb",
+        "overrideReplaces": [],
+        "overrideHides": [],
         "contents": [
           {
             "file": "AvatarWearables_TX.png",
@@ -9650,7 +10459,9 @@
         "text": "Suéter Amarillo"
       }
     ],
-    "thumbnail": "QmcBB9qUtjzmu4qLyqBJ5oAd5dqCw5tgVUwfpG2NYsWESk"
+    "thumbnail": "QmcBB9qUtjzmu4qLyqBJ5oAd5dqCw5tgVUwfpG2NYsWESk",
+    "replaces": [],
+    "hides": []
   },
   {
     "id": "dcl://base-avatars/f_body_swimsuit",
@@ -9660,6 +10471,8 @@
           "dcl://base-avatars/BaseFemale"
         ],
         "mainFile": "F_uBody_Swimsuit_01.glb",
+        "overrideReplaces": [],
+        "overrideHides": [],
         "contents": [
           {
             "file": "AvatarWearables_TX.png",
@@ -9695,7 +10508,9 @@
         "text": "Traje de Baño"
       }
     ],
-    "thumbnail": "QmQ3a3Gim1TcboAgHfrtLD6JfiVfGTciVYnQTwvrYZ3LPM"
+    "thumbnail": "QmQ3a3Gim1TcboAgHfrtLD6JfiVfGTciVYnQTwvrYZ3LPM",
+    "replaces": [],
+    "hides": []
   },
   {
     "id": "dcl://base-avatars/f_white_shirt",
@@ -9705,6 +10520,8 @@
           "dcl://base-avatars/BaseFemale"
         ],
         "mainFile": "F_uBody_WhiteShirt.glb",
+        "overrideReplaces": [],
+        "overrideHides": [],
         "contents": [
           {
             "file": "AvatarWearables_TX.png",
@@ -9740,7 +10557,9 @@
         "text": "Camisa Blanca"
       }
     ],
-    "thumbnail": "QmPyuhk6Y12pQN83KSY3aFYiX7LWZXDTuTpiVQ35BQnDfk"
+    "thumbnail": "QmPyuhk6Y12pQN83KSY3aFYiX7LWZXDTuTpiVQ35BQnDfk",
+    "replaces": [],
+    "hides": []
   },
   {
     "id": "dcl://base-avatars/white_top",
@@ -9750,6 +10569,8 @@
           "dcl://base-avatars/BaseFemale"
         ],
         "mainFile": "F_uBody_WhiteTop.glb",
+        "overrideReplaces": [],
+        "overrideHides": [],
         "contents": [
           {
             "file": "AvatarWearables_TX.png",
@@ -9785,7 +10606,9 @@
         "text": "Top Blanco"
       }
     ],
-    "thumbnail": "QmNYWuCyPqaQ8aW7mSUHRyZtegpZs2oCeYv32Jo93wycrW"
+    "thumbnail": "QmNYWuCyPqaQ8aW7mSUHRyZtegpZs2oCeYv32Jo93wycrW",
+    "replaces": [],
+    "hides": []
   },
   {
     "id": "dcl://base-avatars/f_simple_yellow_tshirt",
@@ -9795,6 +10618,8 @@
           "dcl://base-avatars/BaseFemale"
         ],
         "mainFile": "F_uBody_YellowBasicTShirt.glb",
+        "overrideReplaces": [],
+        "overrideHides": [],
         "contents": [
           {
             "file": "AvatarWearables_TX.png",
@@ -9830,7 +10655,9 @@
         "text": "Camiseta Amarilla"
       }
     ],
-    "thumbnail": "QmNM2n5AcmqBFXSK23GQBJwxddgW3PmDuDf1FfLbe6FoA1"
+    "thumbnail": "QmNM2n5AcmqBFXSK23GQBJwxddgW3PmDuDf1FfLbe6FoA1",
+    "replaces": [],
+    "hides": []
   },
   {
     "id": "dcl://base-avatars/lovely_yellow_shirt",
@@ -9840,6 +10667,8 @@
           "dcl://base-avatars/BaseFemale"
         ],
         "mainFile": "F_uBody_YellowLovelyTShirt.glb",
+        "overrideReplaces": [],
+        "overrideHides": [],
         "contents": [
           {
             "file": "AvatarWearables_TX.png",
@@ -9875,7 +10704,9 @@
         "text": "Adorable Camisa Amarilla"
       }
     ],
-    "thumbnail": "QmTwuuhRrkTGcC91hDD2QjsmbciMwWpdiejqpDEGrVeoV5"
+    "thumbnail": "QmTwuuhRrkTGcC91hDD2QjsmbciMwWpdiejqpDEGrVeoV5",
+    "replaces": [],
+    "hides": []
   },
   {
     "id": "dcl://base-avatars/black_jacket",
@@ -9885,6 +10716,8 @@
           "dcl://base-avatars/BaseMale"
         ],
         "mainFile": "M_uBody_BlackJacket_01.glb",
+        "overrideReplaces": [],
+        "overrideHides": [],
         "contents": [
           {
             "file": "AvatarWearables_TX.png",
@@ -9920,7 +10753,9 @@
         "text": "Chaqueta Negra"
       }
     ],
-    "thumbnail": "QmRnUCD6wQQVmMGHoahYBM1FRXujGGiBGuMUmTGgFqAmFW"
+    "thumbnail": "QmRnUCD6wQQVmMGHoahYBM1FRXujGGiBGuMUmTGgFqAmFW",
+    "replaces": [],
+    "hides": []
   },
   {
     "id": "dcl://base-avatars/blue_tshirt",
@@ -9930,6 +10765,8 @@
           "dcl://base-avatars/BaseMale"
         ],
         "mainFile": "M_uBody_BlueTShirt.glb",
+        "overrideReplaces": [],
+        "overrideHides": [],
         "contents": [
           {
             "file": "AvatarWearables_TX.png",
@@ -9965,7 +10802,9 @@
         "text": "Remera Azul"
       }
     ],
-    "thumbnail": "QmYMLHYbxkGyGzxbPD5po7KqCJUuyYcryrrzDb7cwTFhrU"
+    "thumbnail": "QmYMLHYbxkGyGzxbPD5po7KqCJUuyYcryrrzDb7cwTFhrU",
+    "replaces": [],
+    "hides": []
   },
   {
     "id": "dcl://base-avatars/elegant_sweater",
@@ -9975,6 +10814,8 @@
           "dcl://base-avatars/BaseMale"
         ],
         "mainFile": "M_uBody_ElegantSweater.glb",
+        "overrideReplaces": [],
+        "overrideHides": [],
         "contents": [
           {
             "file": "AvatarWearables_TX.png",
@@ -10010,7 +10851,9 @@
         "text": "Sweater Elegante"
       }
     ],
-    "thumbnail": "QmVvCiaoKHBwRT2HNfj4nxGA9DkU6f4EUSiWTX6XqQCGK7"
+    "thumbnail": "QmVvCiaoKHBwRT2HNfj4nxGA9DkU6f4EUSiWTX6XqQCGK7",
+    "replaces": [],
+    "hides": []
   },
   {
     "id": "dcl://base-avatars/green_square_shirt",
@@ -10020,6 +10863,8 @@
           "dcl://base-avatars/BaseMale"
         ],
         "mainFile": "M_uBody_GreenSquareShirt.glb",
+        "overrideReplaces": [],
+        "overrideHides": [],
         "contents": [
           {
             "file": "AvatarWearables_TX.png",
@@ -10055,7 +10900,9 @@
         "text": "Camisa a Cuadros Verde"
       }
     ],
-    "thumbnail": "QmXjZD3fRpPnVqdnjkHM8jDvcxm1iMaMavDQS6NZ7Ym6Qn"
+    "thumbnail": "QmXjZD3fRpPnVqdnjkHM8jDvcxm1iMaMavDQS6NZ7Ym6Qn",
+    "replaces": [],
+    "hides": []
   },
   {
     "id": "dcl://base-avatars/green_tshirt",
@@ -10065,6 +10912,8 @@
           "dcl://base-avatars/BaseMale"
         ],
         "mainFile": "M_uBody_GreenTShirt.glb",
+        "overrideReplaces": [],
+        "overrideHides": [],
         "contents": [
           {
             "file": "AvatarWearables_TX.png",
@@ -10100,7 +10949,9 @@
         "text": "Remera Verde"
       }
     ],
-    "thumbnail": "Qmayvq1F3tFDoC5dLdpGR6LmKkhzTANjnungxmhGYVBBKw"
+    "thumbnail": "Qmayvq1F3tFDoC5dLdpGR6LmKkhzTANjnungxmhGYVBBKw",
+    "replaces": [],
+    "hides": []
   },
   {
     "id": "dcl://base-avatars/green_hoodie",
@@ -10110,6 +10961,8 @@
           "dcl://base-avatars/BaseMale"
         ],
         "mainFile": "M_uBody_Hoodie_01.glb",
+        "overrideReplaces": [],
+        "overrideHides": [],
         "contents": [
           {
             "file": "AvatarWearables_TX.png",
@@ -10145,7 +10998,9 @@
         "text": "Sudadera Verde con Capucha"
       }
     ],
-    "thumbnail": "QmQUxvePLJ4udd5hqFHBrUUy1DFLPVX8Vp2iuBCxCixnVm"
+    "thumbnail": "QmQUxvePLJ4udd5hqFHBrUUy1DFLPVX8Vp2iuBCxCixnVm",
+    "replaces": [],
+    "hides": []
   },
   {
     "id": "dcl://base-avatars/pride_tshirt",
@@ -10155,6 +11010,8 @@
           "dcl://base-avatars/BaseMale"
         ],
         "mainFile": "M_uBody_PrideTshirt_01.glb",
+        "overrideReplaces": [],
+        "overrideHides": [],
         "contents": [
           {
             "file": "AvatarWearables_TX.png",
@@ -10190,7 +11047,9 @@
         "text": "Remera del Orgullo Gay"
       }
     ],
-    "thumbnail": "QmT2XgK25VVWsn8D75tf45QGEca5uxBrft8UfsLsyMCtjn"
+    "thumbnail": "QmT2XgK25VVWsn8D75tf45QGEca5uxBrft8UfsLsyMCtjn",
+    "replaces": [],
+    "hides": []
   },
   {
     "id": "dcl://base-avatars/puffer_jacket_hoodie",
@@ -10200,6 +11059,8 @@
           "dcl://base-avatars/BaseMale"
         ],
         "mainFile": "M_uBody_PuffJacketHoodie_01.glb",
+        "overrideReplaces": [],
+        "overrideHides": [],
         "contents": [
           {
             "file": "AvatarWearables_TX.png",
@@ -10235,7 +11096,9 @@
         "text": "Chaqueta Mullida con Capucha"
       }
     ],
-    "thumbnail": "QmPDUM6R8wxwZQgr9n41r2ib9jSRA4hbJnz9xE1jXKqMK1"
+    "thumbnail": "QmPDUM6R8wxwZQgr9n41r2ib9jSRA4hbJnz9xE1jXKqMK1",
+    "replaces": [],
+    "hides": []
   },
   {
     "id": "dcl://base-avatars/puffer_jacket",
@@ -10245,6 +11108,8 @@
           "dcl://base-avatars/BaseMale"
         ],
         "mainFile": "M_uBody_PuffJacket_01.glb",
+        "overrideReplaces": [],
+        "overrideHides": [],
         "contents": [
           {
             "file": "AvatarWearables_TX.png",
@@ -10280,7 +11145,9 @@
         "text": "Chaqueta Mullida"
       }
     ],
-    "thumbnail": "QmRAjm9Xf4U1qb3L33t5YeRdMqj2vNh5oKWAwYAGXdyEPQ"
+    "thumbnail": "QmRAjm9Xf4U1qb3L33t5YeRdMqj2vNh5oKWAwYAGXdyEPQ",
+    "replaces": [],
+    "hides": []
   },
   {
     "id": "dcl://base-avatars/red_square_shirt",
@@ -10290,6 +11157,8 @@
           "dcl://base-avatars/BaseMale"
         ],
         "mainFile": "M_uBody_RedSquareShirt.glb",
+        "overrideReplaces": [],
+        "overrideHides": [],
         "contents": [
           {
             "file": "AvatarWearables_TX.png",
@@ -10325,7 +11194,9 @@
         "text": "Camisa a Cuadros roja"
       }
     ],
-    "thumbnail": "QmTgBRu7rfTUAVM9kcjrb9FEed4P7CRax82ckfge24eYwJ"
+    "thumbnail": "QmTgBRu7rfTUAVM9kcjrb9FEed4P7CRax82ckfge24eYwJ",
+    "replaces": [],
+    "hides": []
   },
   {
     "id": "dcl://base-avatars/red_tshirt",
@@ -10335,6 +11206,8 @@
           "dcl://base-avatars/BaseMale"
         ],
         "mainFile": "M_uBody_RedTShirt.glb",
+        "overrideReplaces": [],
+        "overrideHides": [],
         "contents": [
           {
             "file": "AvatarWearables_TX.png",
@@ -10370,7 +11243,9 @@
         "text": "Remera Roja"
       }
     ],
-    "thumbnail": "Qmd2aY5Y1CH3d6cXY4MLHvoVtfJBWtxPmy97q5Wa9sPzjG"
+    "thumbnail": "Qmd2aY5Y1CH3d6cXY4MLHvoVtfJBWtxPmy97q5Wa9sPzjG",
+    "replaces": [],
+    "hides": []
   },
   {
     "id": "dcl://base-avatars/safari_shirt",
@@ -10380,6 +11255,8 @@
           "dcl://base-avatars/BaseMale"
         ],
         "mainFile": "M_uBody_SafaraiShirt_01.glb",
+        "overrideReplaces": [],
+        "overrideHides": [],
         "contents": [
           {
             "file": "AvatarWearables_TX.png",
@@ -10415,7 +11292,9 @@
         "text": "Camisa de Safari"
       }
     ],
-    "thumbnail": "QmavuFXoUKNJMdhWcWsSQyD8bpRVJAHaH8jDgHmHkgzx1H"
+    "thumbnail": "QmavuFXoUKNJMdhWcWsSQyD8bpRVJAHaH8jDgHmHkgzx1H",
+    "replaces": [],
+    "hides": []
   },
   {
     "id": "dcl://base-avatars/sleeveless_punk_shirt",
@@ -10425,6 +11304,8 @@
           "dcl://base-avatars/BaseMale"
         ],
         "mainFile": "M_uBody_SleevelessPunkShirt_01.glb",
+        "overrideReplaces": [],
+        "overrideHides": [],
         "contents": [
           {
             "file": "AvatarWearables_TX.png",
@@ -10460,7 +11341,9 @@
         "text": "Musculosa Punk"
       }
     ],
-    "thumbnail": "QmNR4SSLiWxNBhLorg9VH6NkdxZsQ2dAnhXDyn3mkj4NHf"
+    "thumbnail": "QmNR4SSLiWxNBhLorg9VH6NkdxZsQ2dAnhXDyn3mkj4NHf",
+    "replaces": [],
+    "hides": []
   },
   {
     "id": "dcl://base-avatars/soccer_shirt",
@@ -10470,6 +11353,8 @@
           "dcl://base-avatars/BaseMale"
         ],
         "mainFile": "M_uBody_SoccerTshirt.glb",
+        "overrideReplaces": [],
+        "overrideHides": [],
         "contents": [
           {
             "file": "AvatarWearables_TX.png",
@@ -10505,7 +11390,9 @@
         "text": "Remera de Fútbol"
       }
     ],
-    "thumbnail": "Qmb33D4NrEgodWcoUsghyncxjVfostrkhW23v3SkCwMEtX"
+    "thumbnail": "Qmb33D4NrEgodWcoUsghyncxjVfostrkhW23v3SkCwMEtX",
+    "replaces": [],
+    "hides": []
   },
   {
     "id": "dcl://base-avatars/sport_jacket",
@@ -10515,6 +11402,8 @@
           "dcl://base-avatars/BaseMale"
         ],
         "mainFile": "M_uBody_SportJacket.glb",
+        "overrideReplaces": [],
+        "overrideHides": [],
         "contents": [
           {
             "file": "AvatarWearables_TX.png",
@@ -10550,7 +11439,9 @@
         "text": "Chaqueta Deportiva"
       }
     ],
-    "thumbnail": "Qmdvv3NzARqT8trCvgPu7tW1Htp6PAj3VNRWG9W8e4c5xa"
+    "thumbnail": "Qmdvv3NzARqT8trCvgPu7tW1Htp6PAj3VNRWG9W8e4c5xa",
+    "replaces": [],
+    "hides": []
   },
   {
     "id": "dcl://base-avatars/striped_pijama",
@@ -10560,6 +11451,8 @@
           "dcl://base-avatars/BaseMale"
         ],
         "mainFile": "M_uBody_StripePijama_01.glb",
+        "overrideReplaces": [],
+        "overrideHides": [],
         "contents": [
           {
             "file": "AvatarWearables_TX.png",
@@ -10595,7 +11488,9 @@
         "text": "Remera de Pijama Rayada"
       }
     ],
-    "thumbnail": "QmUJ8TbqKByjr3LkEebxeS2AKkzDBXd4Cq6vaPiEVaZVNy"
+    "thumbnail": "QmUJ8TbqKByjr3LkEebxeS2AKkzDBXd4Cq6vaPiEVaZVNy",
+    "replaces": [],
+    "hides": []
   },
   {
     "id": "dcl://base-avatars/striped_shirt_01",
@@ -10605,6 +11500,8 @@
           "dcl://base-avatars/BaseMale"
         ],
         "mainFile": "M_uBody_StripedShirt_01.glb",
+        "overrideReplaces": [],
+        "overrideHides": [],
         "contents": [
           {
             "file": "AvatarWearables_TX.png",
@@ -10640,7 +11537,9 @@
         "text": "Remera Rayada Verde"
       }
     ],
-    "thumbnail": "QmbjYwVLU5qUuhjnrVYYiWSQCv91odUxaP7hAaSjctZPAm"
+    "thumbnail": "QmbjYwVLU5qUuhjnrVYYiWSQCv91odUxaP7hAaSjctZPAm",
+    "replaces": [],
+    "hides": []
   },
   {
     "id": "dcl://base-avatars/m_sweater",
@@ -10650,6 +11549,8 @@
           "dcl://base-avatars/BaseMale"
         ],
         "mainFile": "M_uBody_Sweater_01.glb",
+        "overrideReplaces": [],
+        "overrideHides": [],
         "contents": [
           {
             "file": "AvatarWearables_TX.png",
@@ -10685,7 +11586,9 @@
         "text": "Suéter Azul y Rojo"
       }
     ],
-    "thumbnail": "QmcBpQ6afDr1ZJSbQ4b9k5VyCpSoAWFXHBUx4qoF2f9HBs"
+    "thumbnail": "QmcBpQ6afDr1ZJSbQ4b9k5VyCpSoAWFXHBUx4qoF2f9HBs",
+    "replaces": [],
+    "hides": []
   },
   {
     "id": "dcl://base-avatars/m_sweater_02",
@@ -10695,6 +11598,8 @@
           "dcl://base-avatars/BaseMale"
         ],
         "mainFile": "M_uBody_Sweater_02.glb",
+        "overrideReplaces": [],
+        "overrideHides": [],
         "contents": [
           {
             "file": "AvatarWearables_TX.png",
@@ -10730,7 +11635,9 @@
         "text": "Suéter de Navidad"
       }
     ],
-    "thumbnail": "QmcX2PysCv6331Lys462bZtCPP535wquiy8MsAmoU7U9bP"
+    "thumbnail": "QmcX2PysCv6331Lys462bZtCPP535wquiy8MsAmoU7U9bP",
+    "replaces": [],
+    "hides": []
   },
   {
     "id": "dcl://base-avatars/turtle_neck_sweater",
@@ -10740,6 +11647,8 @@
           "dcl://base-avatars/BaseMale"
         ],
         "mainFile": "M_uBody_TurtleNeckSweater.glb",
+        "overrideReplaces": [],
+        "overrideHides": [],
         "contents": [
           {
             "file": "AvatarWearables_TX.png",
@@ -10775,7 +11684,9 @@
         "text": "Sweater con Cuello de Tortuga"
       }
     ],
-    "thumbnail": "Qmd9VHYDVR3Tinya33rFhNay9a4YPiFwid2Np8nDtZN4pv"
+    "thumbnail": "Qmd9VHYDVR3Tinya33rFhNay9a4YPiFwid2Np8nDtZN4pv",
+    "replaces": [],
+    "hides": []
   },
   {
     "id": "dcl://base-avatars/yellow_tshirt",
@@ -10785,6 +11696,8 @@
           "dcl://base-avatars/BaseMale"
         ],
         "mainFile": "M_uBody_YellowTShirt.glb",
+        "overrideReplaces": [],
+        "overrideHides": [],
         "contents": [
           {
             "file": "AvatarWearables_TX.png",
@@ -10820,6 +11733,8 @@
         "text": "Remera Amarilla"
       }
     ],
-    "thumbnail": "Qme7Dps7EwMtjLssfAWfuQ8mkofRLfG9NY5TTuTKXJy9Bb"
+    "thumbnail": "Qme7Dps7EwMtjLssfAWfuQ8mkofRLfG9NY5TTuTKXJy9Bb",
+    "replaces": [],
+    "hides": []
   }
 ]

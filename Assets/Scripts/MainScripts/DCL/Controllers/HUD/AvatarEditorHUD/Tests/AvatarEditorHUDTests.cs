@@ -12,8 +12,10 @@ namespace AvatarEditorHUD_Tests
     {
         public AvatarEditorHUDController_Mock(UserProfile userProfile, WearableDictionary catalog) : base(userProfile, catalog) { }
 
-        public void MyOnItemSelected(WearableItem wearableItem) => OnItemSelected(wearableItem);
         public AvatarEditorHUDModel myModel => model;
+        public AvatarEditorHUDView myView => view;
+        public string[] myCategoriesThatMustHaveSelection => categoriesThatMustHaveSelection;
+        public string[] myCategoriesToRandomize => categoriesToRandomize;
     }
 
     public class WearableItemsShould : TestsBase
@@ -23,7 +25,7 @@ namespace AvatarEditorHUD_Tests
         private WearableDictionary catalog;
 
         [UnitySetUp]
-        private IEnumerator SetUp()
+        public IEnumerator SetUp()
         {
             yield return InitScene();
 
@@ -34,7 +36,7 @@ namespace AvatarEditorHUD_Tests
                 email = "mail",
                 avatar = new AvatarModel()
                 {
-                    bodyShape = "dcl://base-avatars/BaseFemale",
+                    bodyShape = WearableLiterals.BodyShapes.FEMALE,
                     wearables = new List<string>()
                         { }
                 }
@@ -44,14 +46,20 @@ namespace AvatarEditorHUD_Tests
             controller = new AvatarEditorHUDController_Mock(userProfile, catalog);
         }
 
+        [TearDown]
+        public void TearDown()
+        {
+            controller.CleanUp();
+        }
+
         [Test]
         public void BeAddedWhenEquiped()
         {
             var sunglassesId = "dcl://base-avatars/black_sun_glasses";
             var sunglasses = catalog.Get(sunglassesId);
 
-            controller.MyOnItemSelected(sunglasses);
-            Assert.IsTrue(controller.myModel.avatarModel.wearables.Contains(sunglassesId));
+            controller.WearableClicked(sunglassesId);
+            Assert.IsTrue(controller.myModel.wearables.Contains(sunglasses));
         }
 
         [Test]
@@ -63,11 +71,11 @@ namespace AvatarEditorHUD_Tests
             var bandana = catalog.Get(bandanaId);
 
             bandana.replaces = new [] { sunglasses.category };
-            controller.MyOnItemSelected(sunglasses);
-            controller.MyOnItemSelected(bandana);
+            controller.WearableClicked(sunglassesId);
+            controller.WearableClicked(bandanaId);
 
-            Assert.IsTrue(controller.myModel.avatarModel.wearables.Contains(bandanaId));
-            Assert.IsFalse(controller.myModel.avatarModel.wearables.Contains(sunglassesId));
+            Assert.IsTrue(controller.myModel.wearables.Contains(bandana));
+            Assert.IsFalse(controller.myModel.wearables.Contains(sunglasses));
         }
 
         [Test]
@@ -79,11 +87,11 @@ namespace AvatarEditorHUD_Tests
             var bandana = catalog.Get(bandanaId);
 
             bandana.replaces = new [] { "NonExistentCategory" };
-            controller.MyOnItemSelected(sunglasses);
-            controller.MyOnItemSelected(bandana);
+            controller.WearableClicked(sunglassesId);
+            controller.WearableClicked(bandanaId);
 
-            Assert.IsTrue(controller.myModel.avatarModel.wearables.Contains(bandanaId));
-            Assert.IsTrue(controller.myModel.avatarModel.wearables.Contains(sunglassesId));
+            Assert.IsTrue(controller.myModel.wearables.Contains(bandana));
+            Assert.IsTrue(controller.myModel.wearables.Contains(sunglasses));
         }
 
         [Test]
@@ -95,11 +103,11 @@ namespace AvatarEditorHUD_Tests
             var bandana = catalog.Get(bandanaId);
 
             bandana.GetRepresentation(userProfile.avatar.bodyShape).overrideReplaces = new [] { sunglasses.category };
-            controller.MyOnItemSelected(sunglasses);
-            controller.MyOnItemSelected(bandana);
+            controller.WearableClicked(sunglassesId);
+            controller.WearableClicked(bandanaId);
 
-            Assert.IsTrue(controller.myModel.avatarModel.wearables.Contains(bandanaId));
-            Assert.IsFalse(controller.myModel.avatarModel.wearables.Contains(sunglassesId));
+            Assert.IsTrue(controller.myModel.wearables.Contains(bandana));
+            Assert.IsFalse(controller.myModel.wearables.Contains(sunglasses));
         }
 
         [Test]
@@ -110,12 +118,12 @@ namespace AvatarEditorHUD_Tests
             var bandanaId = "dcl://base-avatars/blue_bandana";
             var bandana = catalog.Get(bandanaId);
 
-            bandana.GetRepresentation("dcl://base-avatars/BaseMale").overrideReplaces = new [] { sunglasses.category };
-            controller.MyOnItemSelected(sunglasses);
-            controller.MyOnItemSelected(bandana);
+            bandana.GetRepresentation(WearableLiterals.BodyShapes.MALE).overrideReplaces = new [] { sunglasses.category };
+            controller.WearableClicked(sunglassesId);
+            controller.WearableClicked(bandanaId);
 
-            Assert.IsTrue(controller.myModel.avatarModel.wearables.Contains(bandanaId));
-            Assert.IsTrue(controller.myModel.avatarModel.wearables.Contains(sunglassesId));
+            Assert.IsTrue(controller.myModel.wearables.Contains(bandana));
+            Assert.IsTrue(controller.myModel.wearables.Contains(sunglasses));
         }
     }
 }

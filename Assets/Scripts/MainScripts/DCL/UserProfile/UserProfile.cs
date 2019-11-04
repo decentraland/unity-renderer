@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections;
+using System.Linq;
 using System.Runtime.CompilerServices;
-using DCL;
 using UnityEngine;
 using UnityEngine.Networking;
 
@@ -36,6 +36,11 @@ public class UserProfile : ScriptableObject //TODO Move to base variable
         DownloadFaceIfNeeded();
         DownloadBodyIfNeeded();
         OnUpdate?.Invoke(this);
+    }
+
+    public bool ContainsItem(string itemId)
+    {
+        return inventory.Contains(itemId);
     }
 
     internal void UpdateProperties(UserProfileModel newModel)
@@ -119,16 +124,12 @@ public class UserProfile : ScriptableObject //TODO Move to base variable
         OnUpdate?.Invoke(this);
     }
 
-    public void OverrideTextures(Texture2D face, Texture2D body)
-    {
-        faceSnapshotValue = face;
-        bodySnapshotValue = body;
-        OnUpdate?.Invoke(this);
-    }
-
-    public void OverrideAvatar(AvatarModel newModel)
+    public void OverrideAvatar(AvatarModel newModel, Texture2D faceSnapshot, Texture2D bodySnapshot)
     {
         model.avatar.CopyFrom(newModel);
+        faceSnapshotValue = faceSnapshot;
+        bodySnapshotValue = bodySnapshot;
+        OnUpdate?.Invoke(this);
     }
 
     internal static UserProfile ownUserProfile;
@@ -153,7 +154,8 @@ public class UserProfile : ScriptableObject //TODO Move to base variable
     private void CleanUp()
     {
         Application.quitting -= CleanUp;
-        Resources.UnloadAsset(this);
+        if(UnityEditor.AssetDatabase.Contains(this))
+            Resources.UnloadAsset(this);
     }
 #endif
 }

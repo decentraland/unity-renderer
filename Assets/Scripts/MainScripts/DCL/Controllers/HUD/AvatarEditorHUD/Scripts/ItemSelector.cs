@@ -10,24 +10,17 @@ public class ItemSelector : MonoBehaviour
     [SerializeField]
     private RectTransform itemContainer;
 
-    public bool mustHaveSelection;
-
-    public event System.Action<WearableItem> OnItemEquipped;
-
-    public event System.Action<string> OnItemUnequipped;
+    public event System.Action<string> OnItemClicked;
 
     private Dictionary<string, ItemToggle> itemToggles = new Dictionary<string, ItemToggle>();
-    private List<ItemToggle> activeItemToggles = new List<ItemToggle>();
 
-    private ItemToggle currentToggle;
     private string currentBodyShape;
 
     private void Awake()
     {
         Application.quitting += () =>
         {
-            OnItemEquipped = null;
-            OnItemUnequipped = null;
+            OnItemClicked = null;
         };
     }
 
@@ -52,14 +45,7 @@ public class ItemSelector : MonoBehaviour
         itemToggles.Add(item.id, newToggle);
 
         bool active = string.IsNullOrEmpty(currentBodyShape) || item.SupportsBodyShape(currentBodyShape);
-        if (active)
-        {
-            activeItemToggles.Add(newToggle);
-        }
-        else
-        {
-            newToggle.gameObject.SetActive(false);
-        }
+        newToggle.gameObject.SetActive(active);
     }
 
     public void RemoveItemToggle(string itemID)
@@ -69,19 +55,8 @@ public class ItemSelector : MonoBehaviour
         ItemToggle toggle = GetItemToggleByID(itemID);
         if (toggle == null) return;
 
-        bool wasSelected = toggle.selected;
-        activeItemToggles.Remove(toggle);
         itemToggles.Remove(itemID);
         Destroy(toggle);
-
-        if (wasSelected)
-        {
-            OnItemUnequipped?.Invoke(itemID);
-            if (mustHaveSelection)
-            {
-                SelectFirstActive();
-            }
-        }
     }
 
     public void SetBodyShape(string bodyShape)
@@ -94,8 +69,6 @@ public class ItemSelector : MonoBehaviour
 
     private void ShowCompatibleWithBodyShape()
     {
-        activeItemToggles.Clear();
-
         using (Dictionary<string, ItemToggle>.Enumerator iterator = itemToggles.GetEnumerator())
         {
             while (iterator.MoveNext())
@@ -103,105 +76,41 @@ public class ItemSelector : MonoBehaviour
                 ItemToggle current = iterator.Current.Value;
                 bool active = current.wearableItem.SupportsBodyShape(currentBodyShape);
                 current.gameObject.SetActive(active);
-                if (active)
-                {
-                    activeItemToggles.Add(current);
-                }
             }
-        }
-
-        if (currentToggle != null && !currentToggle.wearableItem.SupportsBodyShape(currentBodyShape))
-        {
-            OnItemUnequipped?.Invoke(currentToggle.wearableItem.id);
-            currentToggle.selected = false;
-            currentToggle = null;
-        }
-
-        if (mustHaveSelection && currentToggle == null)
-        {
-            SelectFirstActive();
         }
     }
 
     public void Select(string itemID)
     {
         ItemToggle toggle = GetItemToggleByID(itemID);
-        Select(toggle);
+        toggle.selected = true;
     }
 
-    public void SelectFirstActive()
+    public void Unselect(string itemID)
     {
-        if (activeItemToggles.Count == 0) return;
-
-        ItemToggle toggle = activeItemToggles[0];
-        Select(toggle);
+        ItemToggle toggle = GetItemToggleByID(itemID);
+        toggle.selected = false;
     }
 
-    public void SelectRandom()
+    public void UnselectAll()
     {
-        if (activeItemToggles.Count == 0) return;
-
-        ItemToggle toggle = activeItemToggles[Random.Range(0, activeItemToggles.Count)];
-        Select(toggle);
-    }
-
-    private void Select(ItemToggle itemToggle)
-    {
-        if (itemToggle == null) return;
-        if (currentToggle == itemToggle) return;
-
-        if (currentToggle != null)
+        using (var iterator = itemToggles.GetEnumerator())
         {
-            OnItemUnequipped?.Invoke(currentToggle.wearableItem.id);
-            currentToggle.selected = false;
+            while (iterator.MoveNext())
+            {
+                iterator.Current.Value.selected = false;
+            }
         }
-
-        currentToggle = itemToggle;
-        currentToggle.selected = true;
-        OnItemEquipped?.Invoke(currentToggle.wearableItem);
     }
 
     private void ToggleClicked(ItemToggle toggle)
     {
-        if (toggle == null) return;
-
-        if (toggle == currentToggle)
-        {
-            if (mustHaveSelection) return;
-
-            OnItemUnequipped?.Invoke(currentToggle.wearableItem.id);
-            currentToggle.selected = false;
-            currentToggle = null;
-        }
-        else
-        {
-            if (currentToggle != null)
-            {
-                currentToggle.selected = false;
-                OnItemUnequipped?.Invoke(currentToggle.wearableItem.id);
-            }
-
-            currentToggle = toggle;
-
-            if (currentToggle != null)
-            {
-                currentToggle.selected = true;
-                OnItemEquipped?.Invoke(currentToggle.wearableItem);
-            }
-        }
+        OnItemClicked?.Invoke(toggle.wearableItem.id);
     }
 
     private ItemToggle GetItemToggleByID(string itemID)
     {
         if (string.IsNullOrEmpty(itemID)) return null;
         return itemToggles.ContainsKey(itemID) ? itemToggles[itemID] : null;
-    }
-
-    public void Unselect()
-    {
-        if (currentToggle == null) return;
-
-        currentToggle.selected = false;
-        currentToggle = null;
     }
 }

@@ -49,7 +49,8 @@ public class BaseVariable<T> : ScriptableObject, IEquatable<T>
     private void CleanUp()
     {
         Application.quitting -= CleanUp;
-        Resources.UnloadAsset(this);
+        if(UnityEditor.AssetDatabase.Contains(this)) //It could happen that the base variable has been created in runtime
+            Resources.UnloadAsset(this);
     }
 #endif
 }

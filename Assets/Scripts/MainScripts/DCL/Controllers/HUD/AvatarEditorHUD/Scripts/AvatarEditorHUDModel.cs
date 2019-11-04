@@ -1,7 +1,24 @@
 ﻿using System.Collections.Generic;
-using DCL;
+using System.Linq;
+using UnityEngine;
 
 public class AvatarEditorHUDModel
 {
-    public AvatarModel avatarModel = new AvatarModel();
+    public WearableItem bodyShape;
+    public List<WearableItem> wearables = new List<WearableItem>();
+    public Color hairColor;
+    public Color skinColor;
+    public Color eyesColor;
+
+    public AvatarModel ToAvatarModel()
+    {
+        return new AvatarModel()
+        {
+            bodyShape = bodyShape.id,
+            wearables = wearables.Select(x => x.id).ToList(),
+            hairColor = hairColor,
+            skinColor = skinColor,
+            eyeColor = eyesColor
+        };
+    }
 }
