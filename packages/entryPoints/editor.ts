@@ -168,9 +168,9 @@ namespace editor {
   /**
    * Function executed by builder which is the first function of the entry point
    */
-  export async function initEngine(container: HTMLElement) {
+  export async function initEngine(container: HTMLElement, buildConfigPath: string) {
     try {
-      await initializeUnity(container)
+      await initializeUnity(container, buildConfigPath)
       defaultLogger.log('Engine initialized.')
       initializedEngine.resolve()
     } catch (err) {

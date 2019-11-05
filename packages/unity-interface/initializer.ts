@@ -40,7 +40,10 @@ export type InitializeUnityResult = {
 const engineInitialized = future()
 
 /** Initialize the engine in a container */
-export async function initializeUnity(container: HTMLElement): Promise<InitializeUnityResult> {
+export async function initializeUnity(
+  container: HTMLElement,
+  buildConfigPath: string = 'unity/Build/unity.json'
+): Promise<InitializeUnityResult> {
   const session = await initShared()
   if (!session) {
     throw new Error()
@@ -51,7 +54,7 @@ export async function initializeUnity(container: HTMLElement): Promise<Initializ
   if (qs.ws) {
     _gameInstance = initializeUnityEditor(qs.ws, container)
   } else {
-    _gameInstance = await UnityLoader.instantiate(container, 'unity/Build/unity.json')
+    _gameInstance = UnityLoader.instantiate(container, buildConfigPath)
   }
 
   global['globalStore'].dispatch(waitingForRenderer())
