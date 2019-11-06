@@ -3,10 +3,12 @@ using UnityEngine;
 
 public class MinimapHUDController : IDisposable, IHUD
 {
+    private static bool VERBOSE = false;
+
     private MinimapHUDView view;
 
     private FloatVariable minimapZoom => CommonScriptableObjects.minimapZoom;
-    
+
     public MinimapHUDModel model { get; private set; }
 
     public MinimapHUDController() : this(new MinimapHUDModel()) { }
@@ -15,7 +17,7 @@ public class MinimapHUDController : IDisposable, IHUD
     {
         CommonScriptableObjects.playerCoords.OnChange += OnPlayerCoordsChange;
         minimapZoom.Set(1f);
-        
+
         view = MinimapHUDView.Create(this);
         UpdateData(model);
     }
@@ -68,22 +70,23 @@ public class MinimapHUDController : IDisposable, IHUD
     public void AddBookmark()
     {
         //TODO:
-        Debug.Log("Add bookmark pressed");
+        if (VERBOSE)
+        {
+            Debug.Log("Add bookmark pressed");
+        }
     }
 
     public void ReportScene()
     {
         //TODO:
-        Debug.Log("Report scene pressed");
+        if (VERBOSE)
+        {
+            Debug.Log("Report scene pressed");
+        }
     }
 
-    public void SetConfiguration(HUDConfiguration configuration)
+    public void SetVisibility(bool visible)
     {
-        SetActive(configuration.active);
-    }
-
-    private void SetActive(bool active)
-    {
-        view.SetActive(active);
+        view.SetVisibility(visible);
     }
 }

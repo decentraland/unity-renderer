@@ -55,8 +55,8 @@ public class MinimapHUDView : MonoBehaviour
         optionsPanel.SetActive(!optionsPanel.activeSelf);
     }
 
-    public void SetActive(bool active)
+    public void SetVisibility(bool visible)
     {
-        gameObject.SetActive(active);
+        gameObject.SetActive(visible);
     }
 }
