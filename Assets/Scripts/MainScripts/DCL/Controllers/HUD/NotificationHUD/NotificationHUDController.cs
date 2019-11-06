@@ -23,7 +23,7 @@ public class NotificationHUDController : IDisposable, IHUD
     {
         model.notifications.Remove(notification);
     }
-    
+
     public void SetActive(bool active)
     {
         view.SetActive(active);
@@ -34,8 +34,8 @@ public class NotificationHUDController : IDisposable, IHUD
         view.OnNotificationDismissed -= DismissNotification;
     }
 
-    public void SetConfiguration(HUDConfiguration configuration)
+    public void SetVisibility(bool visible)
     {
-        SetActive(configuration.active);
+        SetActive(visible);
     }
 }

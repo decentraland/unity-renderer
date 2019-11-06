@@ -1,4 +1,4 @@
 ﻿public interface IHUD
 {
-    void SetConfiguration(HUDConfiguration configuration);
+    void SetVisibility(bool visible);
 }

@@ -98,7 +98,6 @@ namespace DCL
         WebSocketServer ws;
         public SceneController sceneController;
         public DCLCharacterController characterController;
-        public HUDController hudController;
 
         [System.NonSerialized]
         public static Queue<DCLWebSocketService.Message> queuedMessages = new Queue<DCLWebSocketService.Message>();
@@ -260,7 +259,7 @@ namespace DCL
                                 RenderingController.i.ActivateRendering();
                                 break;
                             case "ShowNotification":
-                                hudController.ShowNotificationFromJson(msg.payload);
+                                HUDController.i.ShowNotificationFromJson(msg.payload);
                                 break;
                             case "AddWearableToCatalog":
                                 CatalogController.i.AddWearableToCatalog(msg.payload);
@@ -275,19 +274,19 @@ namespace DCL
                                 CatalogController.i.ClearWearableCatalog();
                                 break;
                             case "ShowNewWearablesNotification":
-                                hudController.ShowNewWearablesNotification(msg.payload);
+                                HUDController.i.ShowNewWearablesNotification(msg.payload);
                                 break;
                             case "ConfigureMinimapHUD":
-                                hudController.ConfigureMinimapHUD(msg.payload);
+                                HUDController.i.ConfigureMinimapHUD(msg.payload);
                                 break;
                             case "ConfigureAvatarHUD":
-                                hudController.ConfigureAvatarHUD(msg.payload);
+                                HUDController.i.ConfigureAvatarHUD(msg.payload);
                                 break;
                             case "ConfigureNotificationHUD":
-                                hudController.ConfigureNotificationHUD(msg.payload);
+                                HUDController.i.ConfigureNotificationHUD(msg.payload);
                                 break;
                             case "ConfigureAvatarEditorHUD":
-                                hudController.ConfigureAvatarEditorHUD(msg.payload);
+                                HUDController.i.ConfigureAvatarEditorHUD(msg.payload);
                                 break;
                             default:
                                 Debug.Log("<b><color=#FF0000>WSSController:</color></b> received an unknown message from kernel to renderer: " + msg.type);

@@ -215,6 +215,8 @@ public class AvatarEditorHUDController : IDisposable, IHUD
 
     private void EquipWearable(WearableItem wearable)
     {
+        if (!wearablesByCategory.ContainsKey(wearable.category)) return;
+        
         if (wearablesByCategory[wearable.category].Contains(wearable) && wearable.SupportsBodyShape(model.bodyShape.id) && !model.wearables.Contains(wearable))
         {
             var toReplace = GetWearablesReplacedBy(wearable);
