@@ -275,6 +275,9 @@ export const unityInterface = {
   ConfigureNotificationHUD(configuration: HUDConfiguration) {
     gameInstance.SendMessage('HUDController', 'ConfigureNotificationHUD', JSON.stringify(configuration))
   },
+  ConfigureAvatarEditorHUD(configuration: HUDConfiguration) {
+    gameInstance.SendMessage('HUDController', 'ConfigureAvatarEditorHUD', JSON.stringify(configuration))
+  },
   SelectGizmoBuilder(type: string) {
     this.SendBuilderMessage('SelectGizmo', type)
   },
@@ -337,6 +340,9 @@ export const HUD: Record<string, { configure: (config: HUDConfiguration) => void
   },
   Notification: {
     configure: unityInterface.ConfigureNotificationHUD
+  },
+  AvatarEditor: {
+    configure: unityInterface.ConfigureAvatarEditorHUD
   }
 }
 
