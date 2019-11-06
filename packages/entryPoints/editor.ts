@@ -214,7 +214,7 @@ namespace editor {
     } else if (unityScene) {
       const { worker } = unityScene
       if (action.payload.mappings) {
-        const scene = action.payload.scene
+        const scene = { ...action.payload.scene }
         scene._mappings = action.payload.mappings
         await renewBuilderScene(scene)
       }
