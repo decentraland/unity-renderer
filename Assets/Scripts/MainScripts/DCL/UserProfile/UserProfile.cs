@@ -40,6 +40,9 @@ public class UserProfile : ScriptableObject //TODO Move to base variable
 
     public bool ContainsItem(string itemId)
     {
+        if (inventory == null)
+            return false;
+
         return inventory.Contains(itemId);
     }
 
@@ -154,7 +157,7 @@ public class UserProfile : ScriptableObject //TODO Move to base variable
     private void CleanUp()
     {
         Application.quitting -= CleanUp;
-        if(UnityEditor.AssetDatabase.Contains(this))
+        if (UnityEditor.AssetDatabase.Contains(this))
             Resources.UnloadAsset(this);
     }
 #endif
