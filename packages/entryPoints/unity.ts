@@ -16,7 +16,10 @@ if (!container) throw new Error('cannot find element #gameContainer')
 
 initializeUnity(container)
   .then(async _ => {
-    Object.keys(HUD).forEach($ => HUD[$].configure({ active: true }))
+    HUD.Minimap.configure({ active: true, visible: true })
+    HUD.Avatar.configure({ active: true, visible: true })
+    HUD.Notification.configure({ active: true, visible: true })
+    HUD.AvatarEditor.configure({ active: true, visible: false })
 
     global['globalStore'].dispatch(signalRendererInitialized())
     await startUnityParcelLoading()

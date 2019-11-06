@@ -342,6 +342,7 @@ export type Notification = {
 
 export type HUDConfiguration = {
   active: boolean
+  visible: boolean
 }
 
 export function normalizeContentMappings(
