@@ -1,7 +1,7 @@
 import { getFromLocalStorage, saveToLocalStorage } from 'atomicHelpers/localStorage'
 import { call, fork, put, race, select, take, takeEvery, takeLatest, cancel, ForkEffect } from 'redux-saga/effects'
 import { NotificationType } from 'shared/types'
-import { getServerConfigurations } from '../../config'
+import { getServerConfigurations, ALL_WEARABLES } from '../../config'
 import { getAccessToken, getCurrentUserId, getEmail } from '../auth/selectors'
 import defaultLogger from '../logger'
 import { isInitialized } from '../renderer/selectors'
@@ -38,11 +38,18 @@ import {
   InventorySuccess
 } from './actions'
 import { generateRandomUserProfile } from './generateRandomUserProfile'
-import { baseCatalogsLoaded, getEthereumAddress, getInventory, getProfile, getProfileDownloadServer } from './selectors'
+import {
+  baseCatalogsLoaded,
+  getEthereumAddress,
+  getInventory,
+  getProfile,
+  getProfileDownloadServer,
+  getExclusiveCatalog
+} from './selectors'
 import { processServerProfile } from './transformations/processServerProfile'
 import { profileToRendererFormat } from './transformations/profileToRendererFormat'
 import { ensureServerFormat } from './transformations/profileToServerFormat'
-import { Avatar, Catalog, Profile, WearableId } from './types'
+import { Avatar, Catalog, Profile, WearableId, Wearable } from './types'
 import { Action } from 'redux'
 
 const isActionFor = (type: string, userId: string) => (action: any) =>
@@ -145,6 +152,9 @@ export function* handleFetchProfile(action: PassportRequestAction): any {
       }
     } else {
       profile.inventory = []
+    }
+    if (ALL_WEARABLES) {
+      profile.inventory = (yield select(getExclusiveCatalog)).map((_: Wearable) => _.id)
     }
     const passport = yield call(processServerProfile, userId, profile)
     yield put(passportSuccess(userId, passport))

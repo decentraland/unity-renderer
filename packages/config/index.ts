@@ -185,6 +185,8 @@ function getDefaultTLD() {
   return TLD
 }
 
+export const ALL_WEARABLES = location.search.indexOf('ALL_WEARABLES') !== -1 && getDefaultTLD() !== 'org'
+
 export function getLoginConfigurationForCurrentDomain() {
   let tld: 'org' | 'zone' | 'today' = getDefaultTLD()
   // Use `.zone` auth for any localhost or other edge case
