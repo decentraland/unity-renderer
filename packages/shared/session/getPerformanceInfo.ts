@@ -9,6 +9,7 @@ export function getPerformanceInfo(samples: string) {
   const sorted = entries.sort((a, b) => a - b)
 
   return {
+    idle: document.hidden,
     fps: (1000 * length) / sum,
     avg: sum / length,
     total: sum,
