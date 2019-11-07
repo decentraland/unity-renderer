@@ -100,7 +100,9 @@ namespace DCL
             }
             else
             {
-                bodyShapeController.SetupDefaultMaterial(defaultMaterial, model.skinColor, model.hairColor);
+                //If bodyShape is downloading will call OnWearableLoadingSuccess (and therefore SetupDefaultMaterial) once ready
+                if (bodyShapeController.isReady)
+                    bodyShapeController.SetupDefaultMaterial(defaultMaterial, model.skinColor, model.hairColor);
             }
 
             int wearableCount = model.wearables.Count;
@@ -338,7 +340,9 @@ namespace DCL
                 case WearableLiterals.Categories.BODY_SHAPE:
                     break;
                 default:
-                    wearable.SetupDefaultMaterial(defaultMaterial, model.skinColor, model.hairColor);
+                    //If wearable is downloading will call OnWearableLoadingSuccess(and therefore SetupDefaultMaterial) once ready
+                    if(wearable.isReady)
+                        wearable.SetupDefaultMaterial(defaultMaterial, model.skinColor, model.hairColor);
                     break;
             }
         }
