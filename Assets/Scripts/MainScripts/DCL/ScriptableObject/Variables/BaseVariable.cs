@@ -2,7 +2,27 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class BaseVariable<T> : ScriptableObject, IEquatable<T>
+public abstract class BaseVariable : ScriptableObject
+{
+    #if UNITY_EDITOR
+    protected abstract void RaiseOnChange();
+
+    [UnityEditor.CustomEditor(typeof(BaseVariable), true)]
+    public class BaseVariableEditor : UnityEditor.Editor 
+    {
+        public override void OnInspectorGUI()
+        {
+            DrawDefaultInspector();
+            if (Application.isPlaying && GUILayout.Button("Raise OnChange"))
+            {
+                ((BaseVariable)target).RaiseOnChange();    
+            }
+        }
+    }
+    #endif
+}
+
+public class BaseVariable<T> : BaseVariable, IEquatable<T>
 {
     public delegate void Change(T current, T previous);
 
@@ -37,8 +57,7 @@ public class BaseVariable<T> : ScriptableObject, IEquatable<T>
     }
 
 #if UNITY_EDITOR
-    [ContextMenu("RaiseOnChange")]
-    private void RaiseOnChange() => OnChange.Invoke(value, value);
+    protected sealed override void RaiseOnChange() => OnChange?.Invoke(value, value);
 
     private void OnEnable()
     {
