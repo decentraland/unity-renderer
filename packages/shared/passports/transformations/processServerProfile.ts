@@ -1,4 +1,4 @@
-import { Profile } from '../types'
+import { Profile, WearableId } from '../types'
 import { colorString } from './colorString'
 import { getServerConfigurations } from 'config'
 
@@ -16,6 +16,11 @@ export const deprecatedWearables = [
 ]
 export function dropDeprecatedWearables(wearableId: string): boolean {
   return deprecatedWearables.indexOf(wearableId) === -1
+}
+export function noExclusiveMismatches(inventory: WearableId[]) {
+  return function(wearableId: WearableId) {
+    return wearableId.startsWith('dcl://base-avatars') || inventory.indexOf(wearableId) !== -1
+  }
 }
 export function processServerProfile(userId: string, receivedProfile: any): Profile {
   const name =
@@ -49,7 +54,10 @@ export function processServerProfile(userId: string, receivedProfile: any): Prof
       hairColor: colorString(receivedProfile.avatar.hair.color),
       skinColor: colorString(receivedProfile.avatar.skin.color),
       bodyShape: fixWearableIds(receivedProfile.avatar.bodyShape),
-      wearables: receivedProfile.avatar.wearables.map(fixWearableIds).filter(dropDeprecatedWearables)
+      wearables: receivedProfile.avatar.wearables
+        .map(fixWearableIds)
+        .filter(dropDeprecatedWearables)
+        .filter(noExclusiveMismatches(receivedProfile.inventory || []))
     },
     inventory: receivedProfile.inventory || []
   }
