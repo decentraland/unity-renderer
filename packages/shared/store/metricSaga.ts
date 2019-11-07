@@ -69,7 +69,7 @@ function toTrackingEvent(event: ExecutionLifecycleEvent, payload: any) {
   if (event === COMMS_ERROR_RETRYING) {
     result += payload
   }
-  return result
+  return { stage: result }
 }
 
 function toAvatarEditSuccess({ userId, version, profile }: SaveAvatarSuccess['payload']) {
