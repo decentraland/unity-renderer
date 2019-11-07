@@ -5,8 +5,12 @@ using UnityEngine;
 
 public class CharacterPreviewController : MonoBehaviour
 {
-    private const int SNAPSHOT_WIDTH_RES = 512;
-    private const int SNAPSHOT_HEIGHT_RES = 512;
+    private const int SNAPSHOT_BODY_WIDTH_RES = 512;
+    private const int SNAPSHOT_BODY_HEIGHT_RES = 1024;
+    
+    private const int SNAPSHOT_FACE_WIDTH_RES = 512;
+    private const int SNAPSHOT_FACE_HEIGHT_RES = 512;
+    
     private const int SUPERSAMPLING = 4;
     private const float CAMERA_TRANSITION_TIME = 0.5f;
     private static int CHARACTER_PREVIEW_LAYER => LayerMask.NameToLayer("CharacterPreview");
@@ -86,12 +90,12 @@ public class CharacterPreviewController : MonoBehaviour
         SetFocus(CameraFocus.FaceSnapshot, false);
         avatarAnimator.Reset();
         yield return null;
-        Texture2D face = Snapshot();
+        Texture2D face = Snapshot(SNAPSHOT_FACE_WIDTH_RES, SNAPSHOT_FACE_HEIGHT_RES);
 
         SetFocus(CameraFocus.BodySnapshot, false);
         avatarAnimator.Reset();
         yield return null;
-        Texture2D body = Snapshot();
+        Texture2D body = Snapshot(SNAPSHOT_BODY_WIDTH_RES, SNAPSHOT_BODY_HEIGHT_RES);
 
         SetFocus(CameraFocus.DefaultEditing, false);
 
@@ -99,11 +103,11 @@ public class CharacterPreviewController : MonoBehaviour
         callback?.Invoke(face, body);
     }
 
-    private Texture2D Snapshot()
+    private Texture2D Snapshot(int width, int height)
     {
-        RenderTexture rt = new RenderTexture(SNAPSHOT_WIDTH_RES * SUPERSAMPLING, SNAPSHOT_HEIGHT_RES * SUPERSAMPLING, 32);
+        RenderTexture rt = new RenderTexture(width * SUPERSAMPLING, height * SUPERSAMPLING, 32);
         camera.targetTexture = rt;
-        Texture2D screenShot = new Texture2D(rt.width, rt.height, TextureFormat.RGB24, false);
+        Texture2D screenShot = new Texture2D(rt.width, rt.height, TextureFormat.RGBA32, false);
         camera.Render();
         RenderTexture.active = rt;
         screenShot.ReadPixels(new Rect(0, 0, rt.width, rt.height), 0, 0);
