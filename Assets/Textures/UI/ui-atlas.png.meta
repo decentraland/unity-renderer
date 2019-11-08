@@ -248,6 +248,24 @@ TextureImporter:
   - first:
       213: 6180956022788984771
     second: tiara-icon
+  - first:
+      213: 7595667864703430088
+    second: rounded-corners-box
+  - first:
+      213: 7595667864703430088
+    second: star-icon
+  - first:
+      213: 8545957714173672369
+    second: flap
+  - first:
+      213: -6277619687521969042
+    second: corner-bright
+  - first:
+      213: -584699323942627671
+    second: detail-flap-nft
+  - first:
+      213: 3125745873213897159
+    second: corner-shadow
   externalObjects: {}
   serializedVersion: 10
   mipmaps:
@@ -344,10 +362,10 @@ TextureImporter:
       name: body-icon
       rect:
         serializedVersion: 2
-        x: 0
-        y: 420
-        width: 51
-        height: 92
+        x: 1
+        y: 426
+        width: 44
+        height: 85
       alignment: 0
       pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -365,10 +383,10 @@ TextureImporter:
       name: face-icon
       rect:
         serializedVersion: 2
-        x: 51
-        y: 446
-        width: 72
-        height: 66
+        x: 46
+        y: 451
+        width: 66
+        height: 59
       alignment: 0
       pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -386,10 +404,10 @@ TextureImporter:
       name: hair-icon
       rect:
         serializedVersion: 2
-        x: 124
-        y: 447
-        width: 58
-        height: 65
+        x: 118
+        y: 448
+        width: 54
+        height: 62
       alignment: 0
       pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -407,10 +425,10 @@ TextureImporter:
       name: top-icon
       rect:
         serializedVersion: 2
-        x: 184
-        y: 446
-        width: 81
-        height: 66
+        x: 175
+        y: 454
+        width: 70
+        height: 54
       alignment: 0
       pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -428,10 +446,10 @@ TextureImporter:
       name: bottom-icon
       rect:
         serializedVersion: 2
-        x: 266
-        y: 440
-        width: 57
-        height: 71
+        x: 248
+        y: 446
+        width: 50
+        height: 60
       alignment: 0
       pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -470,10 +488,10 @@ TextureImporter:
       name: shoes-icon
       rect:
         serializedVersion: 2
-        x: 328
-        y: 467
-        width: 79
-        height: 43
+        x: 300
+        y: 471
+        width: 76
+        height: 38
       alignment: 0
       pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -491,10 +509,10 @@ TextureImporter:
       name: accesories-icon
       rect:
         serializedVersion: 2
-        x: 881
-        y: 459
-        width: 79
-        height: 51
+        x: 800
+        y: 462
+        width: 74
+        height: 48
       alignment: 0
       pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -512,9 +530,9 @@ TextureImporter:
       name: eyebrows-icon
       rect:
         serializedVersion: 2
-        x: 327
+        x: 303
         y: 445
-        width: 77
+        width: 72
         height: 18
       alignment: 0
       pivot: {x: 0.5, y: 0.5}
@@ -533,10 +551,10 @@ TextureImporter:
       name: eyes-icon
       rect:
         serializedVersion: 2
-        x: 289
-        y: 381
-        width: 76
-        height: 55
+        x: 291
+        y: 382
+        width: 72
+        height: 54
       alignment: 0
       pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -554,10 +572,10 @@ TextureImporter:
       name: mouth-icon
       rect:
         serializedVersion: 2
-        x: 680
-        y: 466
-        width: 98
-        height: 40
+        x: 611
+        y: 472
+        width: 94
+        height: 39
       alignment: 0
       pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -575,10 +593,10 @@ TextureImporter:
       name: facial-hair-icon
       rect:
         serializedVersion: 2
-        x: 783
-        y: 474
-        width: 96
-        height: 31
+        x: 706
+        y: 481
+        width: 92
+        height: 30
       alignment: 0
       pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -745,11 +763,11 @@ TextureImporter:
         serializedVersion: 2
         x: 81
         y: 417
-        width: 16
+        width: 8
         height: 18
       alignment: 0
       pivot: {x: 0.5, y: 0.5}
-      border: {x: 6, y: 6, z: 6, w: 6}
+      border: {x: 0, y: 8, z: 0, w: 8}
       outline: []
       physicsShape: []
       tessellationDetail: 0
@@ -765,7 +783,7 @@ TextureImporter:
       rect:
         serializedVersion: 2
         x: 920
-        y: 370
+        y: 385
         width: 32
         height: 32
       alignment: 0
@@ -869,10 +887,10 @@ TextureImporter:
       name: earrings-icon
       rect:
         serializedVersion: 2
-        x: 561
-        y: 382
-        width: 37
-        height: 68
+        x: 535
+        y: 414
+        width: 50
+        height: 50
       alignment: 0
       pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -890,10 +908,10 @@ TextureImporter:
       name: mask-icon
       rect:
         serializedVersion: 2
-        x: 410
-        y: 469
-        width: 92
-        height: 40
+        x: 379
+        y: 472
+        width: 90
+        height: 36
       alignment: 0
       pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -911,10 +929,10 @@ TextureImporter:
       name: eyewear-icon
       rect:
         serializedVersion: 2
-        x: 505
-        y: 466
-        width: 87
-        height: 43
+        x: 472
+        y: 484
+        width: 72
+        height: 26
       alignment: 0
       pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -932,10 +950,10 @@ TextureImporter:
       name: hat-icon
       rect:
         serializedVersion: 2
-        x: 593
-        y: 455
-        width: 87
-        height: 52
+        x: 546
+        y: 472
+        width: 64
+        height: 40
       alignment: 0
       pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -1184,7 +1202,7 @@ TextureImporter:
       name: map-compass
       rect:
         serializedVersion: 2
-        x: 256
+        x: 273
         y: 216
         width: 76
         height: 89
@@ -1457,10 +1475,10 @@ TextureImporter:
       name: nft-icon
       rect:
         serializedVersion: 2
-        x: 957
-        y: 391
-        width: 58
-        height: 58
+        x: 958
+        y: 437
+        width: 36
+        height: 36
       alignment: 0
       pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -1478,13 +1496,13 @@ TextureImporter:
       name: item-cell-nft
       rect:
         serializedVersion: 2
-        x: 919
-        y: 420
-        width: 33
-        height: 32
+        x: 918
+        y: 419
+        width: 34
+        height: 35
       alignment: 0
       pivot: {x: 0.5, y: 0.5}
-      border: {x: 15, y: 15, z: 15, w: 15}
+      border: {x: 16, y: 16, z: 16, w: 16}
       outline: []
       physicsShape: []
       tessellationDetail: 0
@@ -1496,34 +1514,13 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: nft-tooltip
-      rect:
-        serializedVersion: 2
-        x: 337
-        y: 216
-        width: 92
-        height: 97
-      alignment: 0
-      pivot: {x: 0.5, y: 0.5}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      outline: []
-      physicsShape: []
-      tessellationDetail: 0
-      bones: []
-      spriteID: 2f1e49a0280594d03afdb0c0525dab06
-      internalID: 6722395430561313780
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
       name: collectible-icon
       rect:
         serializedVersion: 2
-        x: 963
-        y: 453
-        width: 54
-        height: 58
+        x: 876
+        y: 459
+        width: 48
+        height: 52
       alignment: 0
       pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -1625,7 +1622,7 @@ TextureImporter:
       name: zoom-in
       rect:
         serializedVersion: 2
-        x: 220
+        x: 225
         y: 289
         width: 32
         height: 32
@@ -1752,9 +1749,9 @@ TextureImporter:
       rect:
         serializedVersion: 2
         x: 468
-        y: 405
-        width: 89
-        height: 53
+        y: 410
+        width: 62
+        height: 48
       alignment: 0
       pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -1814,10 +1811,10 @@ TextureImporter:
       name: top-head-icon
       rect:
         serializedVersion: 2
-        x: 789
-        y: 363
-        width: 83
-        height: 36
+        x: 555
+        y: 377
+        width: 56
+        height: 24
       alignment: 0
       pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -1835,10 +1832,10 @@ TextureImporter:
       name: helmet-icon
       rect:
         serializedVersion: 2
-        x: 971
-        y: 262
-        width: 52
-        height: 70
+        x: 616
+        y: 358
+        width: 58
+        height: 48
       alignment: 0
       pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -1856,10 +1853,10 @@ TextureImporter:
       name: tiara-icon
       rect:
         serializedVersion: 2
-        x: 958
-        y: 333
-        width: 65
-        height: 55
+        x: 930
+        y: 481
+        width: 74
+        height: 28
       alignment: 0
       pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -1869,6 +1866,132 @@ TextureImporter:
       bones: []
       spriteID: 7619c002baed54891aae334a585f6753
       internalID: 6180956022788984771
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: rounded-corners-box
+      rect:
+        serializedVersion: 2
+        x: 134
+        y: 314
+        width: 44
+        height: 40
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 20, y: 0, z: 20, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 3d7636f4ad61d416bad0901153793e12
+      internalID: 7595667864703430088
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: star-icon
+      rect:
+        serializedVersion: 2
+        x: 365
+        y: 282
+        width: 40
+        height: 40
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: f479b59d45e714c17ab036f86b28a0bc
+      internalID: 7595667864703430088
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: flap
+      rect:
+        serializedVersion: 2
+        x: 693
+        y: 354
+        width: 48
+        height: 34
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 23, y: 17, z: 23, w: 17}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 985f87de212e4433fb5227759f7541f2
+      internalID: 8545957714173672369
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: corner-bright
+      rect:
+        serializedVersion: 2
+        x: 996
+        y: 444
+        width: 6
+        height: 4
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: c74a0f1f2c8194bb5a8a1d7c1b37007a
+      internalID: -6277619687521969042
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: detail-flap-nft
+      rect:
+        serializedVersion: 2
+        x: 962
+        y: 411
+        width: 21
+        height: 21
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: dae7e7867be8f4f688ea63a955e4e554
+      internalID: -584699323942627671
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: corner-shadow
+      rect:
+        serializedVersion: 2
+        x: 996
+        y: 451
+        width: 21
+        height: 20
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: d4a052f9d19504dedae61ed18fb91e85
+      internalID: 3125745873213897159
       vertices: []
       indices: 
       edges: []
