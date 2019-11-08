@@ -1,9 +1,10 @@
 import { fork } from 'redux-saga/effects'
-import { passportSaga } from '../passports/sagas'
-import { authSaga } from '../auth/sagas'
 import { Auth } from '../auth/Auth'
-import { rendererSaga } from '../renderer/sagas'
+import { authSaga } from '../auth/sagas'
+import { loadingSaga } from '../loading/sagas'
+import { passportSaga } from '../passports/sagas'
 import { rootProtocolSaga } from '../protocol/sagas'
+import { rendererSaga } from '../renderer/sagas'
 import { metricSaga } from './metricSaga'
 
 export function createRootSaga(auth: Auth) {
@@ -13,5 +14,6 @@ export function createRootSaga(auth: Auth) {
     yield fork(rendererSaga)
     yield fork(rootProtocolSaga)
     yield fork(metricSaga)
+    yield fork(loadingSaga)
   }
 }

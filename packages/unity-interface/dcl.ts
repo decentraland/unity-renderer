@@ -5,21 +5,48 @@ type GameInstance = {
   SendMessage(object: string, method: string, ...args: (number | string)[]): void
 }
 
-import { IFuture } from 'fp-future'
 import { EventDispatcher } from 'decentraland-rpc/lib/common/core/EventDispatcher'
-import { Session } from '../shared/session'
+import { IFuture } from 'fp-future'
+import { Empty } from 'google-protobuf/google/protobuf/empty_pb'
 import { gridToWorld } from '../atomicHelpers/parcelScenePositions'
-import { DEBUG, ENGINE_DEBUG_PANEL, playerConfigurations, SCENE_DEBUG_PANEL, EDITOR } from '../config'
+import { DEBUG, EDITOR, ENGINE_DEBUG_PANEL, playerConfigurations, SCENE_DEBUG_PANEL } from '../config'
 import { Quaternion, ReadOnlyQuaternion, ReadOnlyVector3, Vector3 } from '../decentraland-ecs/src/decentraland/math'
 import { IEventNames, IEvents, ProfileForRenderer } from '../decentraland-ecs/src/decentraland/Types'
 import { sceneLifeCycleObservable } from '../decentraland-loader/lifecycle/controllers/scene'
+import { queueTrackingEvent } from '../shared/analytics'
 import { DevTools } from '../shared/apis/DevTools'
 import { ParcelIdentity } from '../shared/apis/ParcelIdentity'
 import { chatObservable } from '../shared/comms/chat'
+import { aborted } from '../shared/loading/ReportFatalError'
+import { loadingScenes, teleportTriggered, unityClientLoaded } from '../shared/loading/types'
 import { createLogger, defaultLogger, ILogger } from '../shared/logger'
 import { saveAvatarRequest } from '../shared/passports/actions'
 import { Avatar, Wearable } from '../shared/passports/types'
 import {
+  PB_AttachEntityComponent,
+  PB_ComponentCreated,
+  PB_ComponentDisposed,
+  PB_ComponentRemoved,
+  PB_ComponentUpdated,
+  PB_CreateEntity,
+  PB_Query,
+  PB_Ray,
+  PB_RayQuery,
+  PB_RemoveEntity,
+  PB_SendSceneMessage,
+  PB_SetEntityParent,
+  PB_UpdateEntityComponent,
+  PB_Vector3
+} from '../shared/proto/engineinterface_pb'
+import { Session } from '../shared/session'
+import { getPerformanceInfo } from '../shared/session/getPerformanceInfo'
+import {
+  AttachEntityComponentPayload,
+  ComponentCreatedPayload,
+  ComponentDisposedPayload,
+  ComponentRemovedPayload,
+  ComponentUpdatedPayload,
+  CreateEntityPayload,
   EntityAction,
   EnvironmentData,
   HUDConfiguration,
@@ -31,16 +58,10 @@ import {
   LoadableParcelScene,
   MappingsResponse,
   Notification,
-  CreateEntityPayload,
-  RemoveEntityPayload,
-  UpdateEntityComponentPayload,
-  AttachEntityComponentPayload,
-  ComponentRemovedPayload,
-  SetEntityParentPayload,
   QueryPayload,
-  ComponentCreatedPayload,
-  ComponentDisposedPayload,
-  ComponentUpdatedPayload
+  RemoveEntityPayload,
+  SetEntityParentPayload,
+  UpdateEntityComponentPayload
 } from '../shared/types'
 import { ParcelSceneAPI } from '../shared/world/ParcelSceneAPI'
 import {
@@ -54,27 +75,6 @@ import { positionObservable, teleportObservable } from '../shared/world/position
 import { hudWorkerUrl, SceneWorker } from '../shared/world/SceneWorker'
 import { ensureUiApis } from '../shared/world/uiSceneInitializer'
 import { worldRunningObservable } from '../shared/world/worldState'
-import {
-  PB_SendSceneMessage,
-  PB_CreateEntity,
-  PB_RemoveEntity,
-  PB_UpdateEntityComponent,
-  PB_Vector3,
-  PB_AttachEntityComponent,
-  PB_SetEntityParent,
-  PB_Query,
-  PB_RayQuery,
-  PB_Ray,
-  PB_ComponentRemoved,
-  PB_ComponentCreated,
-  PB_ComponentDisposed,
-  PB_ComponentUpdated
-} from '../shared/proto/engineinterface_pb'
-import { Empty } from 'google-protobuf/google/protobuf/empty_pb'
-import { queueTrackingEvent } from '../shared/analytics'
-import { getPerformanceInfo } from '../shared/session/getPerformanceInfo'
-import { unityClientLoaded, loadingScenes } from '../shared/loading/types'
-import { aborted } from '../shared/loading/ReportFatalError'
 
 const rendererVersion = require('decentraland-renderer')
 window['console'].log('Renderer version: ' + rendererVersion)
@@ -171,6 +171,7 @@ const browserInterface = {
 
 export function setLoadingScreenVisible(shouldShow: boolean) {
   document.getElementById('overlay')!.style.display = shouldShow ? 'block' : 'none'
+  document.getElementById('load-messages-wrapper')!.style.display = shouldShow ? 'block' : 'none'
   document.getElementById('progress-bar')!.style.display = shouldShow ? 'block' : 'none'
 }
 
@@ -739,6 +740,10 @@ export function updateBuilderScene(sceneData: ILand) {
 teleportObservable.add((position: { x: number; y: number }) => {
   // before setting the new position, show loading screen to avoid showing an empty world
   setLoadingScreenVisible(true)
+  if (document.getElementById('overlay')!.style.display === 'none') {
+    const globalStore = global['globalStore']
+    globalStore.dispatch(teleportTriggered())
+  }
 })
 
 worldRunningObservable.add(isRunning => {

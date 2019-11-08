@@ -6,27 +6,30 @@ export const helpTexts = [
   `Decentraland is made up of over 90,000 LANDs, virtual spaces backed by cryptographic tokens. Only landowners determine the content that sits on their LAND.`
 ]
 
-export const NOT_STARTED = 'Not initialized'
+export const ROTATE_HELP_TEXT = 'Set Help Text'
+export const rotateHelpText = () => action(ROTATE_HELP_TEXT)
+
+export const NOT_STARTED = 'Getting things ready...'
 export const notStarted = () => action(NOT_STARTED)
-export const LOADING_STARTED = 'Loading started'
+export const LOADING_STARTED = 'Authenticating user...'
 export const loadingStarted = () => action(LOADING_STARTED)
-export const AUTH_SUCCESSFUL = 'Authentication successful'
+export const AUTH_SUCCESSFUL = 'Authentication successful.'
 export const authSuccessful = () => action(AUTH_SUCCESSFUL)
 export const NOT_INVITED = 'Auth error: not invited'
 export const notInvited = () => action(NOT_INVITED)
-export const UNITY_CLIENT_LOADED = 'Unity client finished loading'
+export const UNITY_CLIENT_LOADED = 'Rendering engine finished loading.'
 export const unityClientLoaded = () => action(UNITY_CLIENT_LOADED)
-export const LOADING_SCENES = 'Loading scenes'
+export const LOADING_SCENES = 'Loading scenes...'
 export const loadingScenes = () => action(LOADING_SCENES)
-export const WAITING_FOR_RENDERER = 'Waiting for renderer'
+export const WAITING_FOR_RENDERER = 'Uploading world information to the rendering engine...'
 export const waitingForRenderer = () => action(WAITING_FOR_RENDERER)
 
-export const ESTABLISHING_COMMS = 'Establishing comms'
+export const ESTABLISHING_COMMS = 'Establishing communication channels...'
 export const establishingComms = () => action(ESTABLISHING_COMMS)
-export const COMMS_ESTABLISHED = 'Comms established successfully'
+export const COMMS_ESTABLISHED = 'Communications established. Loading profile and item catalogs...'
 export const commsEstablished = () => action(COMMS_ESTABLISHED)
 
-export const EXPERIENCE_STARTED = 'Loading finished: Experience started'
+export const EXPERIENCE_STARTED = 'Setup finished: Loading scenes...'
 export const experienceStarted = () => action(EXPERIENCE_STARTED)
 
 export const TELEPORT_TRIGGERED = 'Teleporting...'
