@@ -29,6 +29,10 @@ export function processServerProfile(userId: string, receivedProfile: any): Prof
       Math.random()
         .toFixed(6)
         .substr(2)
+  const wearables = receivedProfile.avatar.wearables
+    .map(fixWearableIds)
+    .filter(dropDeprecatedWearables)
+    .filter(noExclusiveMismatches(receivedProfile.inventory))
   const snapshots = receivedProfile.snapshots ||
     (receivedProfile.avatar && receivedProfile.avatar.snapshots) || {
       face: getServerConfigurations().avatar.snapshotStorage + userId + `/face.png`,
@@ -54,10 +58,7 @@ export function processServerProfile(userId: string, receivedProfile: any): Prof
       hairColor: colorString(receivedProfile.avatar.hair.color),
       skinColor: colorString(receivedProfile.avatar.skin.color),
       bodyShape: fixWearableIds(receivedProfile.avatar.bodyShape),
-      wearables: receivedProfile.avatar.wearables
-        .map(fixWearableIds)
-        .filter(dropDeprecatedWearables)
-        .filter(noExclusiveMismatches(receivedProfile.inventory || []))
+      wearables
     },
     inventory: receivedProfile.inventory || []
   }

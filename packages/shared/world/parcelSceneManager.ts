@@ -1,16 +1,16 @@
+import { worldToGrid } from 'atomicHelpers/parcelScenePositions'
 import { Vector2 } from 'decentraland-ecs/src/decentraland/math'
 import { initParcelSceneWorker } from 'decentraland-loader/lifecycle/manager'
-import { worldToGrid } from 'atomicHelpers/parcelScenePositions'
-
-import { positionObservable, teleportObservable } from './positionThings'
-import { SceneWorker } from './SceneWorker'
-import { LoadableParcelScene, EnvironmentData, ILand, ILandToLoadableParcelScene, InstancedSpawnPoint } from '../types'
 import { ScriptingTransport } from 'decentraland-rpc/lib/common/json-rpc/types'
 import { sceneLifeCycleObservable } from '../../decentraland-loader/lifecycle/controllers/scene'
-import { worldRunningObservable } from './worldState'
 import { queueTrackingEvent } from '../analytics'
+import { globalSignalSceneFail, globalSignalSceneLoad, globalSignalSceneStart } from '../loading/actions'
+import { clearForegroundTimeout, setForegroundTimeout } from '../timers/index'
+import { EnvironmentData, ILand, ILandToLoadableParcelScene, InstancedSpawnPoint, LoadableParcelScene } from '../types'
 import { ParcelSceneAPI } from './ParcelSceneAPI'
-import { setForegroundTimeout, clearForegroundTimeout } from '../timers/index'
+import { positionObservable, teleportObservable } from './positionThings'
+import { SceneWorker } from './SceneWorker'
+import { worldRunningObservable } from './worldState'
 
 export type EnableParcelSceneLoadingOptions = {
   parcelSceneClass: { new (x: EnvironmentData<LoadableParcelScene>): ParcelSceneAPI }
@@ -83,7 +83,7 @@ export async function enableParcelSceneLoading(options: EnableParcelSceneLoading
   ret.on('Scene.shouldStart', async (opts: { sceneId: string }) => {
     const sceneId = opts.sceneId
     const parcelSceneToStart = await ret.getParcelData(sceneId)
-
+    globalSignalSceneLoad(sceneId)
     // create the worker if don't exist
     if (!getSceneWorkerBySceneID(sceneId)) {
       const parcelScene = new options.parcelSceneClass(ILandToLoadableParcelScene(parcelSceneToStart))
@@ -97,6 +97,7 @@ export async function enableParcelSceneLoading(options: EnableParcelSceneLoading
         sceneLifeCycleObservable.remove(observer)
         clearForegroundTimeout(timer)
         ret.notify('Scene.status', sceneStatus)
+        globalSignalSceneStart(sceneId)
       }
     })
 
@@ -109,6 +110,7 @@ export async function enableParcelSceneLoading(options: EnableParcelSceneLoading
       const worker = getSceneWorkerBySceneID(sceneId)
       if (worker && !worker.sceneStarted) {
         sceneLifeCycleObservable.remove(observer)
+        globalSignalSceneFail(sceneId)
         ret.notify('Scene.status', { sceneId, status: 'failed' })
       }
     }, 60000)
@@ -121,6 +123,8 @@ export async function enableParcelSceneLoading(options: EnableParcelSceneLoading
     }
     stopParcelSceneWorker(worker)
     if (options.onUnloadParcelScenes) {
+      const globalStore = (global as any)['globalStore']
+      globalStore.dispatch({ type: 'Unloaded scene', sceneId: opts.sceneId })
       options.onUnloadParcelScenes([await ret.getParcelData(opts.sceneId)])
     }
   })
