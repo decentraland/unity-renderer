@@ -131,10 +131,38 @@
           width: 100%;
         }
       }
+
+      body.dcl-loading #load-messages-wrapper {
+        display: block;
+      }
+      #load-messages-wrapper {
+        display: none;
+        min-width: 100%;
+        z-index: 2000;
+        bottom: 10%;
+        position: fixed;
+        color: white;
+        padding-left: 20%;
+        padding-right: 20%;
+        text-align: center;
+        font-family: -apple-system, system-ui, system-ui, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+        font-size: 1.25em;
+        font-stretch: 125%;
+        font-weight: 400;
+      }
+      #subtext-messages {
+        margin-top: 25px;
+        font-size: 1em;
+        color: #353535;
+      }
     </style>
   </head>
 
   <body class="dcl-loading">
+    <div id="load-messages-wrapper">
+      <div id="load-messages"></div>
+      <div id="subtext-messages"></div>
+    </div>
     <div id="overlay"></div>
     <div id="progress-bar" class="progress ingame">
       <div class="full"></div>
