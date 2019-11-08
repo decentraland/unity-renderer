@@ -195,8 +195,8 @@ namespace editor {
     unityInterface.SelectBuilderEntity(entityId)
   }
 
-  export function deselectEntity(entityId: string) {
-    unityInterface.DeselectBuilderEntity(entityId)
+  export function deselectEntity() {
+    unityInterface.DeselectBuilderEntity()
   }
 
   export function getDCLCanvas() {
