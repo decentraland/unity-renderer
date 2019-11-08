@@ -534,6 +534,8 @@ GameObject:
   - component: {fileID: 3413310143909474847}
   - component: {fileID: 1488483463451176161}
   - component: {fileID: 454143998908276032}
+  - component: {fileID: 2864087751836595116}
+  - component: {fileID: 1641554316879263334}
   m_Layer: 5
   m_Name: SubcategoryToggle
   m_TagString: Untagged
@@ -561,7 +563,7 @@ RectTransform:
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 0, y: 0}
   m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 234, y: 60}
+  m_SizeDelta: {x: 234, y: 48}
   m_Pivot: {x: 0, y: 0.5}
 --- !u!114 &3413310143909474847
 MonoBehaviour:
@@ -625,7 +627,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   targetText: {fileID: 7006005775249712427}
-  onFont: {fileID: 11400000, guid: 0337443d11eee42c3881de4e61e88135, type: 2}
+  onFont: {fileID: 11400000, guid: 26b03903800224f718b64e9afbc91b61, type: 2}
   offFont: {fileID: 11400000, guid: c0f2e4affe3f2438d9042ca1db45764f, type: 2}
 --- !u!114 &454143998908276032
 MonoBehaviour:
@@ -640,5 +642,35 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   targetRectTransform: {fileID: 4408649744171152243}
-  hoverScale: 1.05
+  hoverScale: 1.08
   normalScale: 1
+--- !u!114 &2864087751836595116
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7716882930132283505}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6cfb6394cc153446eacda7327b3db852, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  targetImage: {fileID: 9017252093460605052}
+  onColor: {r: 1, g: 0.1764706, b: 0.33333334, a: 1}
+  offColor: {r: 0, g: 0, b: 0, a: 1}
+--- !u!114 &1641554316879263334
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7716882930132283505}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3e02df3f7c8c94c56b1b3a9c61d9749c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  targetText: {fileID: 7006005775249712427}
+  onColor: {r: 1, g: 0.1764706, b: 0.33333334, a: 1}
+  offColor: {r: 0, g: 0, b: 0, a: 1}
