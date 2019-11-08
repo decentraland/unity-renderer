@@ -88,6 +88,7 @@ export async function initShared(): Promise<Session | undefined> {
     try {
       userId = await auth.getUserId()
       identifyUser(userId)
+      session.auth = auth
     } catch (e) {
       defaultLogger.error(e)
       console['groupEnd']()

@@ -167,6 +167,23 @@
 
   <!-- Begin error messages -->
 
+  <div id="error-newlogin" style="/*display: block !important*/" class="error-container hidden-error">
+    <div class="errormessage">
+      <div class="errortext col">
+        <div class="communicationslink">Another session was detected</div>
+        <div class="givesomedetailof">It seems that the explorer was opened with your account from another device, browser, or tab. Click "Reload" to explore the world in this window.</div>
+        <div class="cta">
+          <button class="retry" onclick="(function() { window.location.reload() })()">Reload</button>
+        </div>
+      </div>
+      <div class="errorimage col">
+        <div class="imagewrapper">
+          <img src="images/robotsmiling.png" />
+        </div>
+      </div>
+    </div>
+  </div>
+
   <div id="error-comms" style="/*display: block !important*/" class="error-container hidden-error">
     <div class="errormessage">
       <div class="errortext col">

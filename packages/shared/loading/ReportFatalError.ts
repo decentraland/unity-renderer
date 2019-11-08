@@ -4,10 +4,11 @@ import {
   COMMS_COULD_NOT_BE_ESTABLISHED,
   NOT_INVITED,
   NO_WEBGL_COULD_BE_CREATED,
-  MOBILE_NOT_SUPPORTED
+  MOBILE_NOT_SUPPORTED,
+  NEW_LOGIN
 } from './types'
 
-let aborted = false
+export let aborted = false
 
 declare var global: any
 
@@ -32,6 +33,8 @@ export function bringDownClientAndShowError(event: ExecutionLifecycleEvent) {
       ? 'notsupported'
       : event === MOBILE_NOT_SUPPORTED
       ? 'nomobile'
+      : event === NEW_LOGIN
+      ? 'newlogin'
       : 'fatal'
 
   document.getElementById('error-' + targetError)!.setAttribute('style', 'display: block !important')
@@ -43,4 +46,4 @@ export function ReportFatalError(event: ExecutionLifecycleEvent) {
   global['globalStore'] && global['globalStore'].dispatch(action(event))
 }
 
-;(global as any).ReportFatalError = ReportFatalError
+global.ReportFatalError = ReportFatalError

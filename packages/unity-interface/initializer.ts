@@ -48,7 +48,7 @@ export async function initializeUnity(
   if (!session) {
     throw new Error()
   }
-  Session.current = session
+  Session.current.resolve(session)
   const qs = queryString.parse(document.location.search)
 
   if (qs.ws) {
