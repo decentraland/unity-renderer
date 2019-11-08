@@ -51,6 +51,7 @@ public class AvatarEditorHUDController : IDisposable, IHUD
             return;
         }
 
+        ProcessCatalog(this.catalog);
         EquipBodyShape(bodyShape);
         EquipSkinColor(userProfile.avatar.skinColor);
         EquipHairColor(userProfile.avatar.hairColor);
@@ -179,10 +180,10 @@ public class AvatarEditorHUDController : IDisposable, IHUD
             view.SelectSkinColor(model.skinColor);
         }
     }
-    
+
     private void EquipBodyShape(WearableItem bodyShape)
     {
-        if (bodyShape.category != Categories.BODY_SHAPE )
+        if (bodyShape.category != Categories.BODY_SHAPE)
         {
             Debug.LogError($"Item ({bodyShape.id} is not a body shape");
             return;
@@ -216,7 +217,7 @@ public class AvatarEditorHUDController : IDisposable, IHUD
     private void EquipWearable(WearableItem wearable)
     {
         if (!wearablesByCategory.ContainsKey(wearable.category)) return;
-        
+
         if (wearablesByCategory[wearable.category].Contains(wearable) && wearable.SupportsBodyShape(model.bodyShape.id) && !model.wearables.Contains(wearable))
         {
             var toReplace = GetWearablesReplacedBy(wearable);
