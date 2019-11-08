@@ -126,6 +126,20 @@ export class WorldInstanceConnection {
     }
   }
 
+  sendInitialMessage(userProfile: UserInformation) {
+    const topic = userProfile.userId!
+
+    const d = new ProfileData()
+    d.setCategory(Category.PROFILE)
+    d.setTime(Date.now())
+    userProfile.version && d.setProfileVersion('' + userProfile.version)
+
+    const r = this.sendTopicIdentityMessage(true, topic, d)
+    if (this.stats) {
+      this.stats.profile.incrementSent(1, r.bytesSize)
+    }
+  }
+
   sendParcelSceneCommsMessage(sceneId: string, message: string) {
     const topic = sceneId
 

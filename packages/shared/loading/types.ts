@@ -52,6 +52,8 @@ export const COMMS_COULD_NOT_BE_ESTABLISHED = 'Communications channel error'
 export const commsCouldNotBeEstablished = () => action(COMMS_COULD_NOT_BE_ESTABLISHED)
 export const MOBILE_NOT_SUPPORTED = 'Mobile is not supported'
 export const mobileNotSupported = () => action(MOBILE_NOT_SUPPORTED)
+export const NEW_LOGIN = 'New login'
+export const newLogin = () => action(NEW_LOGIN)
 
 export const ExecutionLifecycleNotifications = {
   notStarted,
@@ -73,7 +75,8 @@ export const ExecutionLifecycleNotifications = {
   contentServerDown,
   failedFetchingUnity,
   commsErrorRetrying,
-  commsCouldNotBeEstablished
+  commsCouldNotBeEstablished,
+  newLogin
 }
 
 export type ExecutionLifecycleEvent =
@@ -98,6 +101,7 @@ export type ExecutionLifecycleEvent =
   | typeof FAILED_FETCHING_UNITY
   | typeof COMMS_ERROR_RETRYING
   | typeof COMMS_COULD_NOT_BE_ESTABLISHED
+  | typeof NEW_LOGIN
 
 export const ExecutionLifecycleEventsList: ExecutionLifecycleEvent[] = [
   NOT_STARTED,
@@ -120,5 +124,6 @@ export const ExecutionLifecycleEventsList: ExecutionLifecycleEvent[] = [
   FAILED_FETCHING_UNITY,
   COMMS_ERROR_RETRYING,
   MOBILE_NOT_SUPPORTED,
-  COMMS_COULD_NOT_BE_ESTABLISHED
+  COMMS_COULD_NOT_BE_ESTABLISHED,
+  NEW_LOGIN
 ]

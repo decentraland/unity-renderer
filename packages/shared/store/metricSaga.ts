@@ -24,7 +24,8 @@ import {
   COMMS_ERROR_RETRYING,
   COMMS_COULD_NOT_BE_ESTABLISHED,
   MOBILE_NOT_SUPPORTED,
-  NOT_INVITED
+  NOT_INVITED,
+  NEW_LOGIN
 } from '../loading/types'
 
 const trackingEvents: Record<ExecutionLifecycleEvent, string> = {
@@ -40,6 +41,7 @@ const trackingEvents: Record<ExecutionLifecycleEvent, string> = {
   [EXPERIENCE_STARTED]: 'loading_8_finished',
   [TELEPORT_TRIGGERED]: 'teleport_triggered',
   [SCENE_ENTERED]: 'scene_entered',
+  [NEW_LOGIN]: 'new_login',
   // errors
   [UNEXPECTED_ERROR]: 'error_fatal',
   [UNEXPECTED_ERROR_LOADING_CATALOG]: 'error_catalog',
