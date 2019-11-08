@@ -117,8 +117,8 @@ function takeLatestById<T extends Action>(
 
 export function* initialLoad() {
   try {
-    const baseAvatars = yield call(fetchCatalog, 'https://dcl-base-avatars.now.sh/expected.json')
-    const baseExclusive = yield call(fetchCatalog, 'https://dcl-base-exclusive.now.sh/expected.json')
+    const baseAvatars = yield call(fetchCatalog, getServerConfigurations().avatar.catalog)
+    const baseExclusive = yield call(fetchCatalog, getServerConfigurations().avatar.exclusiveCatalog)
     if (!(yield select(isInitialized))) {
       yield take(RENDERER_INITIALIZED)
     }
