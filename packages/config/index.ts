@@ -185,6 +185,13 @@ function getDefaultTLD() {
   return TLD
 }
 
+export function getExclusiveServer() {
+  if (window.location.search.match(/WEARABLE_SERVER=\w+/)) {
+    return window.location.search.match(/WEARABLE_SERVER=(\w+)/)[1]
+  }
+  return 'https://dcl-base-exclusive.now.sh/index.json'
+}
+
 export const ALL_WEARABLES = location.search.indexOf('ALL_WEARABLES') !== -1 && getDefaultTLD() !== 'org'
 
 export function getLoginConfigurationForCurrentDomain() {
@@ -215,7 +222,8 @@ export function getServerConfigurations() {
     avatar: {
       snapshotStorage: `https://avatars-storage.decentraland.${TLDDefault}/`,
       server: `https://avatars-api.decentraland.${TLDDefault === 'zone' ? 'today' : TLDDefault}/`,
-      catalog: 'https://avatar-assets.now.sh',
+      catalog: 'https://dcl-base-avatars.now.sh/index.json',
+      exclusiveCatalog: getExclusiveServer(),
       contents: `https://s3.amazonaws.com/content-service.decentraland.org/`,
       presets: `https://avatars-storage.decentraland.org/mobile-avatars`
     },
