@@ -102,11 +102,6 @@ jobs:
       - store_artifacts:
           path: packages/decentraland-ecs/temp/decentraland-ecs.api.ts
           when: on_fail
-
-      - run:
-          name: Get the hash of Unity source files
-          command: |
-            find Assets -type f \( -exec shasum "$PWD"/{} \; \) | sort > .unitysources-checksum
       - run:
           name: Build deployment dist
           command: |
@@ -126,7 +121,6 @@ jobs:
             - package-lock.json
             - package.json
             - .git
-            - .unitysources-checksum
           key: build-sdk-{{ .Revision }}
 
   build-unity:
