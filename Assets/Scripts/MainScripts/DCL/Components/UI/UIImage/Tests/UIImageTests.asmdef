@@ -1,0 +1,19 @@
+{
+    "name": "UIImageTests",
+    "references": [
+        "MainScripts",
+        "CoroutineHelpers",
+        "Utils"
+    ],
+    "optionalUnityReferences": [
+        "TestAssemblies"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": []
+}

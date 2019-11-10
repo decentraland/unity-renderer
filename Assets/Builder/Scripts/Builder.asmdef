@@ -1,0 +1,22 @@
+{
+    "name": "Builder",
+    "references": [
+        "GUID:e555144732b726c4cba5b0f6337fea75",
+        "GUID:4973650d2444c4561a15d50f24d91cd9",
+        "GUID:b1087c5731ff68448a0a9c625bb7e52d",
+        "GUID:bd51ff2b035ce4ab4be7c38c43c88889",
+        "GUID:3bdb7fe910cce8d4888137cded3ba4a2",
+        "GUID:9a1d7e67f710d724584ebbbd5614bcf1",
+        "GUID:692b6c9fa5079416bb81826fb3806890",
+        "GUID:0e967802b778d404eac1ca5ea340e290"
+    ],
+    "optionalUnityReferences": [],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": []
+}

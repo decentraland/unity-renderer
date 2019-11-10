@@ -1,0 +1,20 @@
+{
+    "name": "SceneBoundariesCheckerTests",
+    "references": [
+        "MainScripts",
+        "Configuration",
+        "DCLTransform",
+        "Utils"
+    ],
+    "optionalUnityReferences": [
+        "TestAssemblies"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": []
+}

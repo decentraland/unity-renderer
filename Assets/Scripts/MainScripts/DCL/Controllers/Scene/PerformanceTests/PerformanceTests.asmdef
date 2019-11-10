@@ -1,0 +1,26 @@
+{
+    "name": "PerformanceTests",
+    "references": [
+        "Unity.PerformanceTesting",
+        "MainScripts",
+        "Configuration",
+        "AvatarShape",
+        "Utils",
+        "AvatarModel",
+        "WebInterface",
+        "DCLTransform"
+    ],
+    "optionalUnityReferences": [
+        "TestAssemblies"
+    ],
+    "includePlatforms": [
+        "Editor"
+    ],
+    "excludePlatforms": [],
+    "allowUnsafeCode": true,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": []
+}

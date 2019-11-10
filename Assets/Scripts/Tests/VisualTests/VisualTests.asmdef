@@ -1,0 +1,20 @@
+{
+    "name": "VisualTests",
+    "references": [
+        "MainScripts",
+        "Configuration",
+        "CoroutineHelpers",
+        "Utils"
+    ],
+    "optionalUnityReferences": [
+        "TestAssemblies"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": []
+}

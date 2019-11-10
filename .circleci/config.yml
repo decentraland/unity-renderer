@@ -124,6 +124,73 @@ jobs:
             - .git
           key: build-sdk-{{ .Revision }}
 
+  build-unity:
+    resource_class: xlarge
+    docker:
+      - image: decentraland/renderer-build
+        environment:
+          - BUILD_TARGET: WebGL
+          - BUILD_PATH: /tmp/project/Builds/unity
+          - BUILD_NAME: unity
+    working_directory: /tmp/project
+    steps:
+      - checkout
+
+      - run:
+          name: "Download unity LFS files"
+          command: |
+            ssh git@github.com git-lfs-authenticate decentraland/explorer.git download
+            git lfs install
+            git lfs fetch --all
+            git lfs checkout -- .
+
+      - run:
+          name: "Extract the license key for Unity"
+          command: |
+            openssl enc -d -aes-256-cbc -md sha256 -in ./.circleci/license.zip-cipher -out ./.circleci/license.zip -k ${CIPHER_KEY}
+            cd / && unzip /tmp/project/.circleci/license.zip
+
+      - run:
+          name: Get the hash of source files
+          command: |
+            find Assets -type f \( -exec shasum "$PWD"/{} \; \) | sort | shasum > .build-checksum
+
+      - restore_cache:
+          name: Restore decentraland-renderer if exists
+          keys:
+            - unitybuild-{{ checksum ".build-checksum" }}
+
+      - run:
+          name: "Build decentraland-renderer"
+          command: |
+            if [[ ! -e ${BUILD_PATH} ]] || [[ ! -n "$(ls -A ${BUILD_PATH})" ]]; then
+                chmod +x /tmp/project/build-ci.sh
+                mkdir -p ${BUILD_PATH}
+                ((cd /tmp/project && ./build-ci.sh) & echo $! > /tmp/project/build.pid &)
+                pid=`cat /tmp/project/build.pid`
+                while [ -e /proc/$pid -a /proc/$pid/exe ]; do
+                    echo "Running Unity Build..."
+                    sleep 60
+                done
+                ls -la ${BUILD_PATH}
+                [ -n "$(ls -A ${BUILD_PATH})" ] # fail job if build folder is empty
+            fi;
+
+      - save_cache:
+          name: Store decentraland-renderer build
+          key: unitybuild-{{ checksum ".build-checksum" }}
+          paths:
+            - /tmp/project/Builds/
+
+      - run:
+          name: Authenticate with registry
+          command: echo "//registry.npmjs.org/:_authToken=${NPMTOKEN}" > /tmp/project/Builds/${BUILD_NAME}/.npmrc
+
+      - run:
+          name: Publish decentraland-renderer package
+          command: |
+            . .circleci/publish.sh
+
   publish-ecs:
     docker:
       - image: circleci/node:10-browsers
@@ -245,12 +312,11 @@ jobs:
           name: Invalidate cloudflare cache .org
           command: curl "$PURGE_CACHE_ORG"
 
-# Ignore branches because CircleCI OR's multiple filters
-# https://discuss.circleci.com/t/workflow-job-with-tag-filter-being-run-for-every-commit/20762/4
 workflows:
   version: 2
   build-deploy:
     jobs:
+      - build-unity
       - build:
           filters:
             branches:
@@ -274,9 +340,6 @@ workflows:
                 - master
                 - staging
                 - release
-
-      # ecs publish jobs (publish as next + latest depending on context branch/tag)
-      # TODO - deploy from release branch + add an additional 'dev' tag to npm replacing 'next' + use 'next' for stg releases
       - hold-ecs:
           type: approval
           requires:

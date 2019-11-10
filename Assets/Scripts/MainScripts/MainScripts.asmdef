@@ -1,0 +1,32 @@
+{
+    "name": "MainScripts",
+    "references": [
+        "UnityGLTFAssembly",
+        "PluginScripts",
+        "WebSocketSharp",
+        "Unity.TextMeshPro",
+        "Utils",
+        "MaterialTransitionController",
+        "Configuration",
+        "ILoader",
+        "CoroutineHelpers",
+        "Cinemachine",
+        "MainAttributes",
+        "DCLTransform",
+        "WebInterface",
+        "ScriptableObjects",
+        "WaitForSecondsCache",
+        "ContentProvider",
+        "LoadersController",
+        "AvatarAssets"
+    ],
+    "optionalUnityReferences": [],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": []
+}

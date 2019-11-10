@@ -1,0 +1,21 @@
+{
+    "name": "UUIDComponentTests",
+    "references": [
+        "MainScripts",
+        "UnityGLTFAssembly",
+        "CoroutineHelpers",
+        "WebInterface",
+        "Utils"
+    ],
+    "optionalUnityReferences": [
+        "TestAssemblies"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": []
+}
