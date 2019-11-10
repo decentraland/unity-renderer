@@ -131,6 +131,7 @@ jobs:
           - BUILD_TARGET: WebGL
           - BUILD_PATH: /tmp/explorer/Builds/unity
           - BUILD_NAME: unity
+      - docker_layer_caching: true
     working_directory: /tmp/explorer
     steps:
       - checkout
