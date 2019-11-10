@@ -1,0 +1,16 @@
+{
+    "name": "InitialSceneReferences",
+    "references": [
+        "GUID:b1087c5731ff68448a0a9c625bb7e52d",
+        "GUID:e555144732b726c4cba5b0f6337fea75"
+    ],
+    "optionalUnityReferences": [],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": []
+}

@@ -1,0 +1,25 @@
+{
+    "name": "AvatarShapeTests",
+    "references": [
+        "MainScripts",
+        "UnityGLTFAssembly",
+        "VisualTests",
+        "Utils",
+        "CoroutineHelpers",
+        "AvatarShape",
+        "AvatarModel",
+        "AvatarAssets",
+        "ScriptableObjects"
+    ],
+    "optionalUnityReferences": [
+        "TestAssemblies"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": []
+}

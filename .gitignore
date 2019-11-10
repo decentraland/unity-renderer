@@ -1,3 +1,6 @@
+# ======= #
+# Node.js #
+# ======= #
 node_modules/
 npm-debug.log
 .DS_Store
@@ -6,11 +9,19 @@ public/systems
 static/systems
 static/loader
 static/lifecycle
-
 .decentraland
-
 **/.decentraland
 
+test/tmp
+test/diff
+test/out
+
+.idea
+coverage
+
+# ================ #
+# Generated scenes #
+# ================ #
 public/test-scenes/*/*.js
 public/hell-map/*/*.js
 public/ecs-scenes/*/*.js
@@ -24,19 +35,61 @@ test/**/*.js
 test/**/*.js.map
 dist
 
-test/tmp
-test/diff
-test/out
-
-.idea
-coverage
-
+# ============== #
+# Local mappings #
+# ============== #
 public/local-ipfs
 
-build.single-debug.json
-
+# ================================== #
+# Do not keep built definition types #
+# ================================== #
 packages/decentraland-ecs/types/dcl/*
-
 packages/decentraland-ecs/artifacts
 packages/decentraland-ecs/package-lock.json
 .tsbuildinfo
+
+# =============== #
+# Unity generated #
+# =============== #
+Temp/
+Library/
+*.cache
+/obj/
+[Bb]uild/
+TestResults/
+Assets/InitTestScene*.unity
+Assets/InitTestScene*.unity.meta
+**/CurrentTestImages/
+
+# ===================================== #
+# Visual Studio / MonoDevelop / Rider   #
+# ===================================== #
+ExportedObj/
+.vs/
+.vscode/
+.idea/
+Assets/Plugins/Editor/JetBrains.meta
+Assets/Plugins/Editor/JetBrains/
+*.svd
+*.userprefs
+*.csproj
+*.pidb
+*.suo
+*.sln
+*.user
+*.unityproj
+*.booproj
+*.tmproj
+*.dwlt
+Assembly-UnityScript.unityProj
+
+# ============ #
+# OS generated #
+# ============ #
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db

@@ -1,0 +1,19 @@
+{
+    "name": "EntityTests",
+    "references": [
+        "MainScripts",
+        "UnityGLTFAssembly",
+        "Configuration",
+        "Utils"
+    ],
+    "optionalUnityReferences": [
+        "TestAssemblies"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": []
+}

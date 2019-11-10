@@ -1,0 +1,19 @@
+{
+    "name": "UIInputTextTests",
+    "references": [
+        "MainScripts",
+        "Unity.TextMeshPro",
+        "WebInterface"
+    ],
+    "optionalUnityReferences": [
+        "TestAssemblies"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": []
+}

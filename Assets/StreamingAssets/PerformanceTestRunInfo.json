@@ -1,0 +1,57 @@
+{
+    "PlayerSystemInfo": {
+        "OperatingSystem": "",
+        "DeviceModel": "",
+        "DeviceName": "",
+        "ProcessorType": "",
+        "ProcessorCount": 0,
+        "GraphicsDeviceName": "",
+        "SystemMemorySize": 0,
+        "XrModel": "",
+        "XrDevice": ""
+    },
+    "EditorVersion": {
+        "FullVersion": "2019.1.8f1 (7938dd008a75)",
+        "DateSeconds": 1560418207,
+        "Branch": "2019.1/staging",
+        "RevisionValue": 7944413
+    },
+    "BuildSettings": {
+        "Platform": "",
+        "BuildTarget": "WebGL",
+        "DevelopmentPlayer": false,
+        "AndroidBuildSystem": "Gradle"
+    },
+    "ScreenSettings": {
+        "ScreenWidth": 0,
+        "ScreenHeight": 0,
+        "ScreenRefreshRate": 0,
+        "Fullscreen": false
+    },
+    "QualitySettings": {
+        "Vsync": 0,
+        "AntiAliasing": 0,
+        "ColorSpace": "",
+        "AnisotropicFiltering": "",
+        "BlendWeights": ""
+    },
+    "PlayerSettings": {
+        "ScriptingBackend": "IL2CPP",
+        "VrSupported": false,
+        "MtRendering": true,
+        "GraphicsJobs": false,
+        "GpuSkinning": true,
+        "GraphicsApi": "OpenGLES3",
+        "Batchmode": "False",
+        "StereoRenderingPath": "MultiPass",
+        "RenderThreadingMode": "MultiThreaded",
+        "AndroidMinimumSdkVersion": "AndroidApiLevel16",
+        "AndroidTargetSdkVersion": "AndroidApiLevelAuto",
+        "EnabledXrTargets": [],
+        "ScriptingRuntimeVersion": ""
+    },
+    "TestSuite": "",
+    "StartTime": 1569865288586.7888,
+    "EndTime": 0.0,
+    "Results": []
+}

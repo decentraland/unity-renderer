@@ -1,0 +1,21 @@
+{
+    "name": "SceneTests",
+    "references": [
+        "MainScripts",
+        "Configuration",
+        "AvatarShape",
+        "Utils",
+        "AvatarModel"
+    ],
+    "optionalUnityReferences": [
+        "TestAssemblies"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": []
+}

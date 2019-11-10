@@ -1,0 +1,19 @@
+{
+    "name": "MainEditor",
+    "references": [
+        "MainScripts",
+        "MainAttributes",
+        "WebGLRetinaTools"
+    ],
+    "optionalUnityReferences": [],
+    "includePlatforms": [
+        "Editor"
+    ],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": []
+}
