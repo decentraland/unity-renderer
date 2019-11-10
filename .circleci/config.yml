@@ -234,6 +234,7 @@ jobs:
           name: Restore the kernel build
           keys:
             - build-{{ .Revision }}
+      - checkout
       - run:
           name: Get the hash of Unity source files
           command: |
