@@ -134,7 +134,6 @@ jobs:
     working_directory: /tmp/explorer
     steps:
       - checkout
-
       - run:
           name: 'Download unity LFS files'
           command: |
@@ -142,23 +141,19 @@ jobs:
             git lfs install
             git lfs fetch --all
             git lfs checkout -- .
-
       - run:
           name: 'Extract the license key for Unity'
           command: |
             openssl enc -d -aes-256-cbc -md sha256 -in ./.circleci/license.zip-cipher -out ./.circleci/license.zip -k ${CIPHER_KEY}
             cd / && unzip /tmp/explorer/.circleci/license.zip
-
       - run:
           name: Get the hash of source files
           command: |
             find Assets -type f \( -exec shasum "$PWD"/{} \; \) | sort > .unitysources-checksum
-
       - restore_cache:
           name: Restore decentraland-renderer if exists
           keys:
             - unitybuild-{{ checksum ".unitysources-checksum" }}
-
       - run:
           name: 'Build decentraland-renderer'
           command: |
@@ -174,17 +169,14 @@ jobs:
                 ls -la ${BUILD_PATH}
                 [ -n "$(ls -A ${BUILD_PATH})" ] # fail job if build folder is empty
             fi;
-
       - save_cache:
           name: Store decentraland-renderer build
           key: unitybuild-{{ checksum ".unitysources-checksum" }}
           paths:
             - /tmp/explorer/Builds/
-
       - run:
           name: Authenticate with registry
           command: echo "//registry.npmjs.org/:_authToken=${NPMTOKEN}" > /tmp/explorer/Builds/${BUILD_NAME}/.npmrc
-
       - run:
           name: Publish decentraland-renderer package
           command: |
@@ -195,6 +187,7 @@ jobs:
       - image: circleci/node:10-browsers
     working_directory: /tmp/explorer
     steps:
+      - checkout
       - restore_cache:
           name: Restore sdk-release files
           keys:
@@ -207,6 +200,10 @@ jobs:
           name: Restore built files
           keys:
             - build-{{ .Revision }}
+      - run:
+          name: Get the hash of Unity source files
+          command: |
+            find Assets -type f \( -exec shasum "$PWD"/{} \; \) | sort > .unitysources-checksum
       - restore_cache:
           name: Restore the Unity build
           keys:
@@ -230,11 +227,11 @@ jobs:
       - image: circleci/node:10-browsers
     working_directory: /tmp/explorer
     steps:
+      - checkout
       - restore_cache:
           name: Restore the kernel build
           keys:
             - build-{{ .Revision }}
-      - checkout
       - run:
           name: Get the hash of Unity source files
           command: |
@@ -267,6 +264,7 @@ jobs:
       - image: circleci/node:10-browsers
     working_directory: /tmp/explorer
     steps:
+      - checkout
       - restore_cache:
           name: Restore the kernel build
           keys:
@@ -303,6 +301,7 @@ jobs:
       - image: circleci/node:10-browsers
     working_directory: /tmp/explorer
     steps:
+      - checkout
       - restore_cache:
           name: Restore the kernel build
           keys:
@@ -340,6 +339,7 @@ jobs:
       - image: circleci/node:10-browsers
     working_directory: /tmp/explorer
     steps:
+      - checkout
       - restore_cache:
           name: Restore the kernel build
           keys:
