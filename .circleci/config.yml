@@ -104,6 +104,18 @@ jobs:
           when: on_fail
 
       - run:
+          name: Get the hash of Unity source files
+          command: |
+            find Assets -type f \( -exec shasum "$PWD"/{} \; \) | sort > .unitysources-checksum
+      - restore_cache:
+          name: Restore the Unity build
+          keys:
+            - unitybuild-{{ checksum ".unitysources-checksum" }}
+      - run:
+          name: Copy the exact renderer for the current working folder into static
+          command: |
+            cp /tmp/project/Builds/unity/*.unityweb static/unity/Build/
+      - run:
           name: Build deployment dist
           command: |
             make build-deploy
@@ -137,15 +149,15 @@ jobs:
       - checkout
 
       - run:
-          name: "Download unity LFS files"
+          name: 'Download unity LFS files'
           command: |
-            ssh git@github.com git-lfs-authenticate decentraland/explorer.git download
+            ssh git@github.com git-lfs-authenticate decentraland/kernel.git download
             git lfs install
             git lfs fetch --all
             git lfs checkout -- .
 
       - run:
-          name: "Extract the license key for Unity"
+          name: 'Extract the license key for Unity'
           command: |
             openssl enc -d -aes-256-cbc -md sha256 -in ./.circleci/license.zip-cipher -out ./.circleci/license.zip -k ${CIPHER_KEY}
             cd / && unzip /tmp/project/.circleci/license.zip
@@ -153,15 +165,15 @@ jobs:
       - run:
           name: Get the hash of source files
           command: |
-            find Assets -type f \( -exec shasum "$PWD"/{} \; \) | sort | shasum > .build-checksum
+            find Assets -type f \( -exec shasum "$PWD"/{} \; \) | sort > .unitysources-checksum
 
       - restore_cache:
           name: Restore decentraland-renderer if exists
           keys:
-            - unitybuild-{{ checksum ".build-checksum" }}
+            - unitybuild-{{ checksum ".unitysources-checksum" }}
 
       - run:
-          name: "Build decentraland-renderer"
+          name: 'Build decentraland-renderer'
           command: |
             if [[ ! -e ${BUILD_PATH} ]] || [[ ! -n "$(ls -A ${BUILD_PATH})" ]]; then
                 chmod +x /tmp/project/build-ci.sh
@@ -178,7 +190,7 @@ jobs:
 
       - save_cache:
           name: Store decentraland-renderer build
-          key: unitybuild-{{ checksum ".build-checksum" }}
+          key: unitybuild-{{ checksum ".unitysources-checksum" }}
           paths:
             - /tmp/project/Builds/
 
@@ -318,6 +330,8 @@ workflows:
     jobs:
       - build-unity
       - build:
+          requires:
+            - build-unity
           filters:
             branches:
               only: /(.*)/
