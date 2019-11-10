@@ -135,6 +135,10 @@ jobs:
     steps:
       - checkout
       - run:
+          name: Get the hash of source files
+          command: |
+            find Assets -type f \( -exec shasum "$PWD"/{} \; \) | sort > .unitysources-checksum
+      - run:
           name: 'Download unity LFS files'
           command: |
             ssh git@github.com git-lfs-authenticate decentraland/kernel.git download
@@ -146,10 +150,6 @@ jobs:
           command: |
             openssl enc -d -aes-256-cbc -md sha256 -in ./.circleci/license.zip-cipher -out ./.circleci/license.zip -k ${CIPHER_KEY}
             cd / && unzip /tmp/explorer/.circleci/license.zip
-      - run:
-          name: Get the hash of source files
-          command: |
-            find Assets -type f \( -exec shasum "$PWD"/{} \; \) | sort > .unitysources-checksum
       - restore_cache:
           name: Restore decentraland-renderer if exists
           keys:
