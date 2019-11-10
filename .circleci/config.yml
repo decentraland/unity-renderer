@@ -240,6 +240,10 @@ jobs:
           name: Restore the kernel build
           keys:
             - build-{{ .Revision }}
+      - run:
+          name: Get the hash of Unity source files
+          command: |
+            find Assets -type f \( -exec shasum "$PWD"/{} \; \) | sort > .unitysources-checksum
       - restore_cache:
           name: Restore the Unity build
           keys:
@@ -272,6 +276,10 @@ jobs:
           name: Restore the kernel build
           keys:
             - build-{{ .Revision }}
+      - run:
+          name: Get the hash of Unity source files
+          command: |
+            find Assets -type f \( -exec shasum "$PWD"/{} \; \) | sort > .unitysources-checksum
       - restore_cache:
           name: Restore the Unity build
           keys:
@@ -304,6 +312,10 @@ jobs:
           name: Restore the kernel build
           keys:
             - build-{{ .Revision }}
+      - run:
+          name: Get the hash of Unity source files
+          command: |
+            find Assets -type f \( -exec shasum "$PWD"/{} \; \) | sort > .unitysources-checksum
       - restore_cache:
           name: Restore the Unity build
           keys:
@@ -337,6 +349,10 @@ jobs:
           name: Restore the kernel build
           keys:
             - build-{{ .Revision }}
+      - run:
+          name: Get the hash of Unity source files
+          command: |
+            find Assets -type f \( -exec shasum "$PWD"/{} \; \) | sort > .unitysources-checksum
       - restore_cache:
           name: Restore the Unity build
           keys:
