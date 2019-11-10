@@ -135,6 +135,15 @@ jobs:
     steps:
       - checkout
       - run:
+          name: 'Install git-lfs'
+          command: |
+            mkdir -p ~/.ssh
+            ssh-keyscan -H github.com >> ~/.ssh/known_hosts
+            curl -s https://packagecloud.io/install/repositories/github/git-lfs/script.deb.sh | sudo bash
+            sudo apt-get update && sudo apt-get install -y git-lfs=2.7.2
+            ssh git@github.com git-lfs-authenticate decentraland/kernel.git download
+            git lfs install
+      - run:
           name: 'Download unity LFS files'
           command: |
             ssh git@github.com git-lfs-authenticate decentraland/kernel.git download
@@ -189,7 +198,16 @@ jobs:
     steps:
       - checkout
       - run:
-          name: 'Download unity LFS files'
+          name: 'Install git-lfs'
+          command: |
+            mkdir -p ~/.ssh
+            ssh-keyscan -H github.com >> ~/.ssh/known_hosts
+            curl -s https://packagecloud.io/install/repositories/github/git-lfs/script.deb.sh | sudo bash
+            sudo apt-get update && sudo apt-get install -y git-lfs=2.7.2
+            ssh git@github.com git-lfs-authenticate decentraland/kernel.git download
+            git lfs install
+      - run:
+          name: 'Download LFS files'
           command: |
             ssh git@github.com git-lfs-authenticate decentraland/kernel.git download
             git lfs install
@@ -236,7 +254,16 @@ jobs:
     steps:
       - checkout
       - run:
-          name: 'Download unity LFS files'
+          name: 'Install git-lfs'
+          command: |
+            mkdir -p ~/.ssh
+            ssh-keyscan -H github.com >> ~/.ssh/known_hosts
+            curl -s https://packagecloud.io/install/repositories/github/git-lfs/script.deb.sh | sudo bash
+            sudo apt-get update && sudo apt-get install -y git-lfs=2.7.2
+            ssh git@github.com git-lfs-authenticate decentraland/kernel.git download
+            git lfs install
+      - run:
+          name: 'Download LFS files'
           command: |
             ssh git@github.com git-lfs-authenticate decentraland/kernel.git download
             git lfs install
@@ -280,7 +307,16 @@ jobs:
     steps:
       - checkout
       - run:
-          name: 'Download unity LFS files'
+          name: 'Install git-lfs'
+          command: |
+            mkdir -p ~/.ssh
+            ssh-keyscan -H github.com >> ~/.ssh/known_hosts
+            curl -s https://packagecloud.io/install/repositories/github/git-lfs/script.deb.sh | sudo bash
+            sudo apt-get update && sudo apt-get install -y git-lfs=2.7.2
+            ssh git@github.com git-lfs-authenticate decentraland/kernel.git download
+            git lfs install
+      - run:
+          name: 'Download LFS files'
           command: |
             ssh git@github.com git-lfs-authenticate decentraland/kernel.git download
             git lfs install
@@ -324,7 +360,16 @@ jobs:
     steps:
       - checkout
       - run:
-          name: 'Download unity LFS files'
+          name: 'Install git-lfs'
+          command: |
+            mkdir -p ~/.ssh
+            ssh-keyscan -H github.com >> ~/.ssh/known_hosts
+            curl -s https://packagecloud.io/install/repositories/github/git-lfs/script.deb.sh | sudo bash
+            sudo apt-get update && sudo apt-get install -y git-lfs=2.7.2
+            ssh git@github.com git-lfs-authenticate decentraland/kernel.git download
+            git lfs install
+      - run:
+          name: 'Download LFS files'
           command: |
             ssh git@github.com git-lfs-authenticate decentraland/kernel.git download
             git lfs install
@@ -369,7 +414,16 @@ jobs:
     steps:
       - checkout
       - run:
-          name: 'Download unity LFS files'
+          name: 'Install git-lfs'
+          command: |
+            mkdir -p ~/.ssh
+            ssh-keyscan -H github.com >> ~/.ssh/known_hosts
+            curl -s https://packagecloud.io/install/repositories/github/git-lfs/script.deb.sh | sudo bash
+            sudo apt-get update && sudo apt-get install -y git-lfs=2.7.2
+            ssh git@github.com git-lfs-authenticate decentraland/kernel.git download
+            git lfs install
+      - run:
+          name: 'Download LFS files'
           command: |
             ssh git@github.com git-lfs-authenticate decentraland/kernel.git download
             git lfs install
