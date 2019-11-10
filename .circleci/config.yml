@@ -135,6 +135,13 @@ jobs:
     steps:
       - checkout
       - run:
+          name: 'Download unity LFS files'
+          command: |
+            ssh git@github.com git-lfs-authenticate decentraland/kernel.git download
+            git lfs install
+            git lfs fetch --all
+            git lfs checkout -- .
+      - run:
           name: Get the hash of source files
           command: |
             find Assets -type f \( -exec shasum "$PWD"/{} \; \) | sort > .unitysources-checksum
@@ -142,13 +149,6 @@ jobs:
           name: Restore decentraland-renderer if exists
           keys:
             - unitybuild-{{ checksum ".unitysources-checksum" }}
-      - run:
-          name: 'Download unity LFS files'
-          command: |
-            ssh git@github.com git-lfs-authenticate decentraland/kernel.git download
-            git lfs install
-            git lfs fetch --all
-            git lfs checkout -- .
       - run:
           name: 'Extract the license key for Unity'
           command: |
@@ -188,6 +188,17 @@ jobs:
     working_directory: /tmp/explorer
     steps:
       - checkout
+      - run:
+          name: 'Download unity LFS files'
+          command: |
+            ssh git@github.com git-lfs-authenticate decentraland/kernel.git download
+            git lfs install
+            git lfs fetch --all
+            git lfs checkout -- .
+      - run:
+          name: Get the hash of Unity source files
+          command: |
+            find Assets -type f \( -exec shasum "$PWD"/{} \; \) | sort > .unitysources-checksum
       - restore_cache:
           name: Restore sdk-release files
           keys:
@@ -200,10 +211,6 @@ jobs:
           name: Restore built files
           keys:
             - build-{{ .Revision }}
-      - run:
-          name: Get the hash of Unity source files
-          command: |
-            find Assets -type f \( -exec shasum "$PWD"/{} \; \) | sort > .unitysources-checksum
       - restore_cache:
           name: Restore the Unity build
           keys:
@@ -228,6 +235,13 @@ jobs:
     working_directory: /tmp/explorer
     steps:
       - checkout
+      - run:
+          name: 'Download unity LFS files'
+          command: |
+            ssh git@github.com git-lfs-authenticate decentraland/kernel.git download
+            git lfs install
+            git lfs fetch --all
+            git lfs checkout -- .
       - run:
           name: Get the hash of Unity source files
           command: |
@@ -266,6 +280,13 @@ jobs:
     steps:
       - checkout
       - run:
+          name: 'Download unity LFS files'
+          command: |
+            ssh git@github.com git-lfs-authenticate decentraland/kernel.git download
+            git lfs install
+            git lfs fetch --all
+            git lfs checkout -- .
+      - run:
           name: Get the hash of Unity source files
           command: |
             find Assets -type f \( -exec shasum "$PWD"/{} \; \) | sort > .unitysources-checksum
@@ -302,6 +323,13 @@ jobs:
     working_directory: /tmp/explorer
     steps:
       - checkout
+      - run:
+          name: 'Download unity LFS files'
+          command: |
+            ssh git@github.com git-lfs-authenticate decentraland/kernel.git download
+            git lfs install
+            git lfs fetch --all
+            git lfs checkout -- .
       - run:
           name: Get the hash of Unity source files
           command: |
@@ -340,6 +368,13 @@ jobs:
     working_directory: /tmp/explorer
     steps:
       - checkout
+      - run:
+          name: 'Download unity LFS files'
+          command: |
+            ssh git@github.com git-lfs-authenticate decentraland/kernel.git download
+            git lfs install
+            git lfs fetch --all
+            git lfs checkout -- .
       - run:
           name: Get the hash of Unity source files
           command: |
