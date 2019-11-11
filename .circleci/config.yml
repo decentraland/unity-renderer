@@ -227,7 +227,7 @@ jobs:
       - run:
           name: Copy the exact renderer for the current working folder into static
           command: |
-            cp /tmp/explorer/Builds/unity/*.unityweb static/unity/Build/
+            cp /tmp/explorer/Builds/unity/Build/*.unityweb static/unity/Build/
       - run:
           name: Set up NPM access tokens
           command: echo "//registry.npmjs.org/:_authToken=${NPM_TOKEN}" > ~/.npmrc
