@@ -1,0 +1,52 @@
+{
+  "publisher": "0x0f5d2fb29fb7d3cfee444a200298f468908cc942",
+  "parcel_id": "-1,27",
+  "parcelPosition": "-1,27",
+  "root_cid": "QmS93tcJLVf8tCvttX6ZcShnkYSmDrb2V418dAb7MexXWoBgoC6tMzUtNAvrZKc5PY3TWRRFCgyKai1iJEduaeKiS",
+  "contents": [
+    {
+      "file": "game.js",
+      "hash": "Qm3GHG3bAZvdf2ibso5QcMCCzXzXC6xpg9XEF8RzQYFCdi9eyWiGvSDnvYpupgvfJxbcHuH33A2QM5Y3SvkXmrzEN2"
+    },
+    {
+      "file": "game.ts",
+      "hash": "Qm4DSBBu553gctw5hSJnfo6UGZ9CtiEZ6A1KFMk315YrSrehtWtxkPh9DPupsBQhenWVBjnEZuYG8FM3arP81k2S3"
+    },
+    {
+      "file": "models/boxanimated.gltf",
+      "hash": "Qm2zPKWzyN19B3CpEyyqXVj3Ezgr5sJgBPjkhXfkrwWEDFgwNAExcGZadTYq6YJmiX8NGHkrSs1wH2t1gMNw2LGput"
+    },
+    {
+      "file": "models/boxanimated0.bin",
+      "hash": "Qm3bawtd4UgKummnjWqfKSkjNLEMN6JFc8QRuiyeSnkpQzsnQBqiCUpQA24CMpnXtLTNS9LBRa2AZ1bzxmsqKqYx6V"
+    },
+    {
+      "file": "models/brainstem.gltf",
+      "hash": "QmYFE6ghStqgY2jsKpaGmbXzR3v8ziUrZA3n8TCJtkpjFn8Szb87qZyZZGFGj9y8oSj4LXChZhKedVVCQvbMi2Y9T"
+    },
+    {
+      "file": "models/brainstem0.bin",
+      "hash": "Qm2oGid4jxAYcMrTsgbBrPP3mqjALDGqStYC6C8qWxpC3Gj3iAu2zuMCvTE4a96KrevCcjpGXdmkq3uCdH1ZeqtCRm"
+    },
+    {
+      "file": "models/cesiumman.gltf",
+      "hash": "Qm3trh2CDA56EtVqvt6fkp6REF3iAy1tQ6oZjFFyYsDWYo3EttWvpXoRYTw9tgJAh5kJ2fLdyznsxAk25G4LT3HqY1"
+    },
+    {
+      "file": "models/cesiumman.jpg",
+      "hash": "Qm2Ec6MUECK2yt5vDhQMoC4d7UMYv31rY6iptXS91x5BZAr4HkwGc7Gjgz32XQ77GDeZx2ZKVuQx5oxmiVUkWeaGnW"
+    },
+    {
+      "file": "models/cesiumman0.bin",
+      "hash": "Qm4MmfTVFteyxy3tWoUTT24HanrmdEu4gU7H8DvFAmX1PUXX1Ur5e4FrVBbi8EWX1gjGk5BHsvudU2RbEV3jLxUSu6"
+    },
+    {
+      "file": "models/shark_anim.gltf",
+      "hash": "Qm4F2RSJqQrXgs1kaSxvHTPjpPrgNoEnhpZ4DmxPaNUp57SVad2sMNPEjUkcF9d4wW3u6MmrNWZBdwDxUMSMddSx3p"
+    },
+    {
+      "file": "scene.json",
+      "hash": "Qm4Rtv49G8JTFbi8feshZEoU8WFJpQJDddF9CxrAxhUm9YWv5fgEGup2cYEFHvBALjumEk7m62D9t64SP7s39t248i"
+    }
+  ]
+}

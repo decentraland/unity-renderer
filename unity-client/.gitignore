@@ -1,0 +1,13 @@
+
+# =============== #
+# Unity generated #
+# =============== #
+Temp/
+Library/
+*.cache
+/obj/
+[Bb]uild/
+TestResults/
+Assets/InitTestScene*.unity
+Assets/InitTestScene*.unity.meta
+**/CurrentTestImages/

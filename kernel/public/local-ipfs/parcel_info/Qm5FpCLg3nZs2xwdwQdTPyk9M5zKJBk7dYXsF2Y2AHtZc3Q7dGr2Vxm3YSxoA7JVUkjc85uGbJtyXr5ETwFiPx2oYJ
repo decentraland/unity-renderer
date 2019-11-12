@@ -1,0 +1,52 @@
+{
+  "publisher": "0x0f5d2fb29fb7d3cfee444a200298f468908cc942",
+  "parcel_id": "-10,30",
+  "parcelPosition": "-10,30",
+  "root_cid": "Qm5FpCLg3nZs2xwdwQdTPyk9M5zKJBk7dYXsF2Y2AHtZc3Q7dGr2Vxm3YSxoA7JVUkjc85uGbJtyXr5ETwFiPx2oYJ",
+  "contents": [
+    {
+      "file": "game.js",
+      "hash": "Qm42guSj8AT43eCodkbKAgqo61wLZv8Sfb2Q5Re1byTHJygRdNf1exVabjurQUfQTU4Wve6SckWqPkCijwakPvkRLv"
+    },
+    {
+      "file": "game.ts",
+      "hash": "Qm4ePmde7oHj8q6TKmjBfKtS42yg6tjeUHJXYTWXxjqrj5zAPL9PnbqSVX1SvkW1ejU72D9CfHdFUhbLLGtjipXSKM"
+    },
+    {
+      "file": "models/theatre_gltf/image_0.png",
+      "hash": "Qm52Dwtdy6sFhuxjdyLmoAVUakdpncp14PLsogtSRDw1qx5j837v2rr4QU8AEk1xeU2cZduqJxaSxkzjmd4Mqju2FB"
+    },
+    {
+      "file": "models/theatre_gltf/minitown_tx.png",
+      "hash": "QmWBQPTFZPLn3hK7fqw6uJAuetTixFMCQFzbffxozqgdWfutUU936aDRAH2Ppc8SQKHABVGGje2NjiSsK85QfS3Hi"
+    },
+    {
+      "file": "models/theatre_gltf/theatre.bin",
+      "hash": "Qm2G1BoDLC8hy1vxGygpbFr88nHLxp1AE1eDZ7eCpZMYcEuPQAuxDGYrQGA8NNbdJEegEQjgZvW3g8RhCRTdXTYrxs"
+    },
+    {
+      "file": "models/theatre_gltf/theatre.gltf",
+      "hash": "Qm5csdQNB5w33CjYYNyrnh8j7XFF4qAwoR3e4R5AN38rEujsh4FyGkAcVuCv9QmWDf2AiJpQGtsrng6HQUucovyiP9"
+    },
+    {
+      "file": "models/theatre.glb",
+      "hash": "Qm5oGC1HuPtg19vhq4sTN9iQMRnFcENghKcuZCTvLhJruh2iNQJ61gJp52y39MoqxdpvxaNoobL5twdTGa4WtPjGtk"
+    },
+    {
+      "file": "models/theatre/image_0.png",
+      "hash": "Qm3nhd4WHSQdZ6YoKc58JuKcnwmHSyf6g32GQpEkjWaxKTKWKEtNq4vHVPYF8mhhzSppoE52hg9n7tLgmSdbq5Cx6v"
+    },
+    {
+      "file": "models/theatre/theatre_01.glb",
+      "hash": "Qm4vykp3vNNN91HPj7QLMt3Avo2WAmBgg4beTnHk6z16DoimF1NJWWanhUH3sPMa3iBi84s4jMXZoGo8x7BuPvEREK"
+    },
+    {
+      "file": "models/theatre/transparent_lights.png",
+      "hash": "Qm5ZM61z2QcQWz62rHsMJ1j7Gz6DfT5iepaWdC2kBqBPjrJUUxNZAnM5VM7bewQ4tPXso9wLWRowgZ1JBKwFjdDkvC"
+    },
+    {
+      "file": "scene.json",
+      "hash": "Qm4oVCjRii3eKh5rGG3AsJvRg5eZNoDvgzarb6ZpkZBmKQwCzo3NkFwoNXTkyQP2qpx9Jb8YGoWbuWYocmmwp657JU"
+    }
+  ]
+}

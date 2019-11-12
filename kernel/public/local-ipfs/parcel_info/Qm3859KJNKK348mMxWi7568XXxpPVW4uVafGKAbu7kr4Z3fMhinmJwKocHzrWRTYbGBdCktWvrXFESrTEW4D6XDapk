@@ -1,0 +1,32 @@
+{
+  "publisher": "0x0f5d2fb29fb7d3cfee444a200298f468908cc942",
+  "parcel_id": "0,1110",
+  "parcelPosition": "0,1110",
+  "root_cid": "Qm3859KJNKK348mMxWi7568XXxpPVW4uVafGKAbu7kr4Z3fMhinmJwKocHzrWRTYbGBdCktWvrXFESrTEW4D6XDapk",
+  "contents": [
+    {
+      "file": "game.js",
+      "hash": "QmRddFcvkSQcZ4Z8Ui2XWreJHZGzDfTgNmK8GCkSYKWXvZ4rAiJKGN8Sg6dS4Rg9gexpwnqtM6MnJjr8ZXc4fdr9k"
+    },
+    {
+      "file": "game.ts",
+      "hash": "Qm3UiFHKnqr9gAWNPUoJwu7wHGPQi4iAUxTpZksvcDYZ9GKUHkXSF2XW1T7uqXYQuc18F1siMLYjevaW3dU2MAGCEC"
+    },
+    {
+      "file": "models/forest/forest texture.png",
+      "hash": "QmrX4xmGdxpFcKjwcZRZuGeiS3wQ2U5DxAmg1cY4WYZSWw7wsQTxeFQSU2MAYgjfdsodsudathiN6kiwZfY4p6Pt3"
+    },
+    {
+      "file": "models/forest/forest_texture.mtl",
+      "hash": "QmnQSGf8F2XJDBihtZZQhtVAmwZ1uksz9EhWzM6uzmr3My8iCmFhqHhGzyMqafJ3khMhPofF79GqYv5dzDpADq7os"
+    },
+    {
+      "file": "models/forest/forest_texture.obj",
+      "hash": "QmK9QBAYd544Bx2974Wt4pjfYSQkkx3Gnzwhv4spG4KYvKwwdYLvs1zhyj4bTNzYwDPXEUnqAwzW2WNwoNvEwoyWC"
+    },
+    {
+      "file": "scene.json",
+      "hash": "Qmn7kmmNfNWpoo6zT6CxzFYUYPDexfwnavTsNwm7SseLy7VfXGMehK8ZjQ3fQ5VuPd5Y3HAUgB6rBVrknyU6gesFa"
+    }
+  ]
+}

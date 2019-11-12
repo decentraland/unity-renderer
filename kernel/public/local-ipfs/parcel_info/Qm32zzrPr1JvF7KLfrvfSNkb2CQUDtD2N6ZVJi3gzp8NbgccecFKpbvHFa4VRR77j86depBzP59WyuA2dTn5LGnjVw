@@ -1,0 +1,16 @@
+{
+  "publisher": "0x0f5d2fb29fb7d3cfee444a200298f468908cc942",
+  "parcel_id": "300,62",
+  "parcelPosition": "300,62",
+  "root_cid": "Qm32zzrPr1JvF7KLfrvfSNkb2CQUDtD2N6ZVJi3gzp8NbgccecFKpbvHFa4VRR77j86depBzP59WyuA2dTn5LGnjVw",
+  "contents": [
+    {
+      "file": "scene.json",
+      "hash": "Qm2aHwuiuCKiaokWChg1RebmAkgUscKazmR68BJ5fCEv3LGDgoZiQ9vs8jUm51xLn4UzaFPwvhw5NcDGpphmb2xKtB"
+    },
+    {
+      "file": "scene.tsx",
+      "hash": "Qm5N85pBe4c2YYe7VeRcfQ5LPZ6Bq8rUZBmCMeziAxx65CgXKenRs5NsQe92nz6DQDc8zsDYiG4DTobCo4SQwsjDMQ"
+    }
+  ]
+}

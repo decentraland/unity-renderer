@@ -1,0 +1,40 @@
+{
+  "publisher": "0x0f5d2fb29fb7d3cfee444a200298f468908cc942",
+  "parcel_id": "8,14",
+  "parcelPosition": "8,14",
+  "root_cid": "Qm538TAA1m9mg13LyoY9Z33UizCGvUkq3Pf3rhJGJT4rMWPHjJSrLL5RCYEEnRW6wf9RFR4MUPpFYTFFdmqN1TNDa9",
+  "contents": [
+    {
+      "file": "game.js",
+      "hash": "Qm4c6m8HE4D5ybmUTnPUab3MYqmTgEk5ZiuU6GLtaRSFcjhs3eJnxRnL2jJxZzAsZQvb1SEG4Y9vPNQ5yvkbE8ccPC"
+    },
+    {
+      "file": "game.ts",
+      "hash": "Qm3fERGDMvhTmEHAxPSHKwtQKmZpfR1nX9ePHH1BoQf4ZzDvy1Af5J9nbARHeZu9AZs4NKHuEfr7S3EB57Y7Sq2GSt"
+    },
+    {
+      "file": "scene.json",
+      "hash": "Qm4xFex2KbSoYYASDmr6JLxjyN51bNtEs3YJ1GqHuBdehF27g1jAGEkt8yUC1ZXx3ekcz4KCSJyq4sDnLmrPB9HXjT"
+    },
+    {
+      "file": "stairs.gltf",
+      "hash": "Qm5SWNfcWycLz2VWiWnxxMsJvehn3PPiJeazWVT7NkDhGHW5NRGNDGyrsg8hbWMps3HDYfK53iS6e2srgp3uAXiG77"
+    },
+    {
+      "file": "test_abc.gltf",
+      "hash": "Qm2zpZtV5z1Pg92G2TXkfMVdE5VMntDAoXENq8kJaPrthg8DxGXv7tMqQ5oAge7rKeVbWb5n7uH8qKDEh41Rk8KGtY"
+    },
+    {
+      "file": "test_abc.mtl",
+      "hash": "Qm65dxUTF5fRdicavgi8Gjt3n3HJcNHp5L4WrkBE1ePNkh7t6FsXChJsA9FiQrm24MUZSjBMMyb928CCECL98ZQxkF"
+    },
+    {
+      "file": "test_abc.obj",
+      "hash": "Qm3j1CkQvoNJdZQ6W5t6P79MS17ahfTCa3QQ2fVBZtA7tQGzbZBFeG5zxwnNqn3Xq4dKtZJf7fS2hQhozFnKRN8tNQ"
+    },
+    {
+      "file": "tsconfig.json",
+      "hash": "Qm5zmqAzyvqv7BpMsJKNn88H64Sksat3uMTrTBsqSwwHxPGxas1kEnph25nkGsvLVPQfScTUKbBGuBYRZbb3XuNfv"
+    }
+  ]
+}
