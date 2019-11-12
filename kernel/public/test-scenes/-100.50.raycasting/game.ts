@@ -114,7 +114,7 @@ class RaycastingSystem implements ISystem {
           }
         }
       }
-    })
+    }, 0)
 
     // For the camera ray, we cast a hit all
     PhysicsCast.instance.hitAll(rayFromCamera, (e) => {
@@ -125,7 +125,7 @@ class RaycastingSystem implements ISystem {
           }
         }
       }
-    })
+    }, 0)
   }
 }
 

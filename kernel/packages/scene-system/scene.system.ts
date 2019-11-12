@@ -160,11 +160,13 @@ export default class GamekitScene extends Script {
       const html = await fetch(url)
 
       if (html.ok) {
-        return html.text()
+        return [bootstrapData.sceneId, await html.text()] as const
       } else {
         throw new Error(`SDK: Error while loading ${url} (${mappingName} -> ${mapping})`)
       }
     }
+
+    throw new Error(`No bootstrap data`)
   }
 
   fireEvent(event: any) {
@@ -182,7 +184,7 @@ export default class GamekitScene extends Script {
     this.devToolsAdapter = new DevToolsAdapter(this.devTools)
 
     try {
-      const source = await this.loadProject()
+      const [sceneId, source] = await this.loadProject()
 
       if (!source) {
         throw new Error('Received empty source.')
@@ -240,7 +242,7 @@ export default class GamekitScene extends Script {
           if (componentNameRE.test(componentName)) {
             that.events.push({
               type: 'UpdateEntityComponent',
-              tag: entityId + '_' + classId,
+              tag: sceneId + '_' + entityId + '_' + classId,
               payload: {
                 entityId,
                 classId,
@@ -293,11 +295,12 @@ export default class GamekitScene extends Script {
         },
 
         /** queries for a specific system with a certain query configuration */
-        query(queryId: QueryType, payload: any) {
+        query(queryType: QueryType, payload: any) {
           that.events.push({
             type: 'Query',
+            tag: sceneId + '_' + payload.queryId,
             payload: {
-              queryId,
+              queryId: queryType,
               payload
             } as QueryPayload
           })

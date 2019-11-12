@@ -37,6 +37,14 @@ namespace DCL
         public bool ignoreGlobalScenes = false;
         public bool msgStepByStep = false;
 
+        public bool deferredMessagesDecoding = false;
+        Queue<string> payloadsToDecode = new Queue<string>();
+        const float MAX_TIME_FOR_DECODE = 0.1f;
+        const float MIN_TIME_FOR_DECODE = 0.001f;
+        float maxTimeForDecode = MAX_TIME_FOR_DECODE;
+        float secsPerThousandMsgs = 0.01f;
+
+
         #region BENCHMARK_EVENTS
 
         //NOTE(Brian): For performance reasons, these events may need to be removed for production.
@@ -58,6 +66,7 @@ namespace DCL
         public event ProcessDelegate OnMessageProcessInfoStart;
         public event ProcessDelegate OnMessageProcessInfoEnds;
 #endif
+        [System.NonSerialized]
         public List<ParcelScene> scenesSortedByDistance = new List<ParcelScene>();
         private Queue<MessagingBus.QueuedSceneMessage_Scene> sceneMessagesPool = new Queue<MessagingBus.QueuedSceneMessage_Scene>();
 
@@ -114,14 +123,14 @@ namespace DCL
 
             ParcelScene.parcelScenesCleaner.Start();
 
-            StartCoroutine(DeferredDecoding());
+            if (deferredMessagesDecoding)
+                StartCoroutine(DeferredDecoding());
         }
 
         void OnDestroy()
         {
             ParcelScene.parcelScenesCleaner.Stop();
         }
-
         private void Update()
         {
             InputController.i.Update();
@@ -438,10 +447,10 @@ namespace DCL
 
         public string SendSceneMessage(string payload)
         {
-            return SendSceneMessage(payload, true);
+            return SendSceneMessage(payload, deferredMessagesDecoding);
         }
 
-        public string SendSceneMessage(string payload, bool enqueue)
+        private string SendSceneMessage(string payload, bool enqueue)
         {
             string[] chunks = payload.Split(new char[] { '\n' }, StringSplitOptions.RemoveEmptyEntries);
             int count = chunks.Length;
@@ -491,11 +500,6 @@ namespace DCL
             return "";
         }
 
-        Queue<string> payloadsToDecode = new Queue<string>();
-        const float MAX_TIME_FOR_DECODE = 0.033f;
-        const float MIN_TIME_FOR_DECODE = 0.008f;
-        float maxTimeForDecode = MAX_TIME_FOR_DECODE;
-        float secsPerThousandMsgs = 0.0075f;
         private IEnumerator DeferredDecoding()
         {
             float lastTimeDecoded = Time.unscaledTime;
@@ -512,7 +516,7 @@ namespace DCL
                     {
                         yield return null;
                         maxTimeForDecode = Mathf.Clamp(MIN_TIME_FOR_DECODE + (float)payloadsToDecode.Count / 1000.0f * secsPerThousandMsgs, MIN_TIME_FOR_DECODE, MAX_TIME_FOR_DECODE);
-                        lastTimeDecoded = Time.unscaledTime;
+                        lastTimeDecoded = Time.realtimeSinceStartup;
                     }
                 }
                 else
@@ -579,6 +583,7 @@ namespace DCL
                 OnMessageProcessInfoStart?.Invoke(sceneId, method);
 #endif
                 OnMessageProcessStart?.Invoke(method);
+
                 switch (method)
                 {
                     case MessagingTypes.ENTITY_CREATE:
