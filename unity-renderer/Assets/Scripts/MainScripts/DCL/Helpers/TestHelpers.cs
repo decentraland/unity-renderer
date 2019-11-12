@@ -455,6 +455,20 @@ namespace DCL.Helpers
             return gltfShape;
         }
 
+        public static BoxShape CreateEntityWithBoxShape(ParcelScene scene, Vector3 pos, Vector3 scale, out DecentralandEntity entity)
+        {
+            BoxShape shape = TestHelpers.InstantiateEntityWithShape<BoxShape, BoxShape.Model>(
+                scene,
+                DCL.Models.CLASS_ID.BOX_SHAPE,
+                Vector3.zero,
+                out entity,
+                new BoxShape.Model() { });
+
+            TestHelpers.SetEntityTransform(scene, entity, pos, Quaternion.identity, scale);
+
+            return shape;
+        }
+
         public static BoxShape CreateEntityWithBoxShape(ParcelScene scene, Vector3 position,
             BoxShape.Model model = null)
         {
@@ -1221,6 +1235,7 @@ namespace DCL.Helpers
         public static SceneController InitializeSceneController(bool usesWebServer = false)
         {
             var sceneController = UnityEngine.Object.FindObjectOfType<SceneController>();
+            sceneController.deferredMessagesDecoding = false;
 
             if (sceneController != null && sceneController.componentFactory == null)
             {
@@ -1297,11 +1312,13 @@ namespace DCL.Helpers
             {
                 OnIterationStart?.Invoke();
 
-                var messageObject = JsonUtility.FromJson<T>(lastMessageFromEnginePayload);
+                if (!string.IsNullOrEmpty(lastMessageFromEnginePayload))
+                {
+                    var messageObject = JsonUtility.FromJson<T>(lastMessageFromEnginePayload);
 
-                if (OnSuccess != null)
-                    return OnSuccess.Invoke(messageObject);
-
+                    if (OnSuccess != null)
+                        return OnSuccess.Invoke(messageObject);
+                }
                 return false;
             }, 2f);
         }

@@ -75,6 +75,8 @@ namespace DCL
             public Type type;
             public string sceneId;
             public string message;
+            public bool isUnreliable;
+            public string unreliableMessageKey;
         }
         public class QueuedSceneMessage_Scene : QueuedSceneMessage
         {
@@ -148,22 +150,20 @@ namespace DCL
 
             if (queueMode == QueueMode.Reliable)
             {
+                message.isUnreliable = false;
                 pendingMessages.AddLast(message);
             }
             else
             {
-                stringBuilder.Clear();
+                message.isUnreliable = true;
 
                 LinkedListNode<MessagingBus.QueuedSceneMessage> node = null;
 
-                stringBuilder.Append(message.tag);
-                stringBuilder.Append(message.sceneId);
+                message.unreliableMessageKey = message.tag;
 
-                string tag = stringBuilder.ToString();
-
-                if (unreliableMessages.ContainsKey(tag))
+                if (unreliableMessages.ContainsKey(message.unreliableMessageKey))
                 {
-                    node = unreliableMessages[tag];
+                    node = unreliableMessages[message.unreliableMessageKey];
 
                     if (node.List != null)
                     {
@@ -176,7 +176,7 @@ namespace DCL
                 if (enqueued)
                 {
                     node = pendingMessages.AddLast(message);
-                    unreliableMessages[tag] = node;
+                    unreliableMessages[message.unreliableMessageKey] = node;
                 }
             }
 
@@ -197,6 +197,12 @@ namespace DCL
             }
         }
 
+        private void RemoveUnreliableMessage(MessagingBus.QueuedSceneMessage message)
+        {
+            if (unreliableMessages.ContainsKey(message.unreliableMessageKey))
+                unreliableMessages.Remove(message.unreliableMessageKey);
+        }
+
         public bool ProcessQueue(float timeBudget, out IEnumerator yieldReturn)
         {
             LinkedList<MessagingBus.QueuedSceneMessage> queue = pendingMessages;
@@ -215,6 +221,9 @@ namespace DCL
 
                 if (queue.First != null)
                     queue.RemoveFirst();
+
+                if (m.isUnreliable)
+                    RemoveUnreliableMessage(m);
 
                 bool shouldLogMessage = VERBOSE;
 

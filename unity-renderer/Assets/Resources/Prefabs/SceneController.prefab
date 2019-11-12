@@ -409,6 +409,7 @@ MonoBehaviour:
   debugSceneCoords: {x: 63, y: -63}
   ignoreGlobalScenes: 0
   msgStepByStep: 0
+  deferredMessagesDecoding: 1
 --- !u!114 &1210811942730548506
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1069,6 +1070,16 @@ PrefabInstance:
     - target: {fileID: 6782600336347656692, guid: 343005e32016c60479b0584c59812b4b,
         type: 3}
       propertyPath: m_Pivot.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6782600336347656692, guid: 343005e32016c60479b0584c59812b4b,
+        type: 3}
+      propertyPath: m_AnchoredPosition.x
+      value: 1028
+      objectReference: {fileID: 0}
+    - target: {fileID: 6782600336347656692, guid: 343005e32016c60479b0584c59812b4b,
+        type: 3}
+      propertyPath: m_AnchoredPosition.y
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 9015994244967614587, guid: 343005e32016c60479b0584c59812b4b,
