@@ -7,6 +7,7 @@ import { lastPlayerPosition, teleportObservable } from '../shared/world/position
 import { HUD, startUnityParcelLoading } from '../unity-interface/dcl'
 import { initializeUnity } from '../unity-interface/initializer'
 import { experienceStarted } from '../shared/loading/types'
+import { OPEN_AVATAR_EDITOR } from '../config/index'
 
 const container = document.getElementById('gameContainer')
 
@@ -19,7 +20,7 @@ initializeUnity(container)
     HUD.Minimap.configure({ active: true, visible: true })
     HUD.Avatar.configure({ active: true, visible: true })
     HUD.Notification.configure({ active: true, visible: true })
-    HUD.AvatarEditor.configure({ active: true, visible: false })
+    HUD.AvatarEditor.configure({ active: true, visible: OPEN_AVATAR_EDITOR })
 
     global['globalStore'].dispatch(signalRendererInitialized())
     await startUnityParcelLoading()
