@@ -210,6 +210,23 @@ jobs:
           paths:
             - kernel/static/unity/Build
 
+  decentraland-renderer:
+    docker:
+      - image: circleci/node:10-browsers
+        environment:
+          - BUILD_PATH: /tmp/explorer/unity-client/Builds/unity
+    working_directory: /tmp/explorer/unity-client
+    steps:
+      - attach_workspace:
+          at: /tmp/explorer
+      - run:
+          name: Set up NPM access tokens
+          command: echo "//registry.npmjs.org/:_authToken=${NPM_TOKEN}" > ~/.npmrc
+          when: on_success
+      - run:
+          name: Publish a new version of decentraland-ecs
+          command: /tmp/explorer/.circleci/publish.sh
+
   publish-ecs:
     docker:
       - image: circleci/node:10-browsers
@@ -357,6 +374,9 @@ workflows:
                 - master
                 - staging
                 - release
+      - decentraland-renderer:
+          requires:
+            - build
 
       # ecs publishing
       - hold-ecs:
