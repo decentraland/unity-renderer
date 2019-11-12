@@ -1,0 +1,24 @@
+{
+  "publisher": "0x0f5d2fb29fb7d3cfee444a200298f468908cc942",
+  "parcel_id": "139,133",
+  "parcelPosition": "139,133",
+  "root_cid": "Qm2SXrYxTXfCse2p4pa1opnD1Q1V8HVENpro5iY21TF5hnPxTQeYvEjF9fCjTas5kMNRBfoHrdXv6hUcvaLZTJusH5",
+  "contents": [
+    {
+      "file": "game.js",
+      "hash": "Qm4UdFh1XF9ZH5R57eNjDbg3o1qmxpjphv7zND4E9fqrHNTuRTNXv9zVq6uvXeTB4zuQTbL6gV1KeVze9sMyPe7Ucb"
+    },
+    {
+      "file": "game.ts",
+      "hash": "Qm5thva7b8ZJZ3B6eMBZd1UBL9tTTtkzoDtXX9BPPATjc3EvUXDrqRD83KGC36FQgkXJRYKnVWoGLUQsZbSqKAd5ZE"
+    },
+    {
+      "file": "models/tree_scene.glb",
+      "hash": "Qm22owjkx8ieHGsvnB4axXHaHrFkPmHHh89kFwHvVDV3aacDKx8W1DDyoXqWjunj2HTUBERJw3miLBYzcmTJgs4Ub7"
+    },
+    {
+      "file": "scene.json",
+      "hash": "Qm54aPaD7iWkfUFuFdauvcDJsVNEoKiFtHgc6xufn5mLyxXwR9nBhJrzD2gDArws2dU2REW4CXTVC1P8L9jmUjmJk7"
+    }
+  ]
+}

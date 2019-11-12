@@ -1,0 +1,40 @@
+{
+  "publisher": "0x0f5d2fb29fb7d3cfee444a200298f468908cc942",
+  "parcel_id": "-1,80",
+  "parcelPosition": "-1,80",
+  "root_cid": "Qm414kLujstTDkKps15TngBE72eiaHjZRN9pGRjV7o6HSfHq494b3bR8n6fKtcB5ukibrJa9twYn3d9MEaV8CcNwrU",
+  "contents": [
+    {
+      "file": "images/minus.png",
+      "hash": "Qm264yLrm6o69g5CfG5tLFPWJJHAgjaBuVyaCmzauRiysChuLUF9hXMajGsdZf2hQZYsTunDPxm7CvE624q2Nu3bSD"
+    },
+    {
+      "file": "images/pause.png",
+      "hash": "Qm2ZxAFEhdyKo4Gnt2JWViChxNti5WMyo9qQgNHr81dN62kx2tTLyXLD8q7JFVGELUC5HrRBs9J7RsSG8Vzh4niKq8"
+    },
+    {
+      "file": "images/play.png",
+      "hash": "Qm5YKJStauC4Cpu6UXrfMJTxDSkuWPahkqm6RcfdNxecmbnAMKT7LJWGYUakyo6uDB4Acw4sSonDTGND1WzwgYzefi"
+    },
+    {
+      "file": "images/plus.png",
+      "hash": "Qm2betLKXSoZKs1z8Eru2S3yXLqWtBp3FXwT7AQozog3GYzsKoRe7vmkVj3V51wYfcDVc6PxMcffzGmcmyKtAEH8mY"
+    },
+    {
+      "file": "scene.json",
+      "hash": "Qm4HD6YgcCXA2bjUXM1dKgikWjZsMJqRGXUij9B7wYcTpTxwdx3droGeKoG5fVSsfPdYTVzyzEEJKte2d4EFejXLSP"
+    },
+    {
+      "file": "scene.tsx",
+      "hash": "Qm2xCndvvdkStc7BjNsQcZqgLzhrQy2BjaTxKw32K7UvzJHS3uNXYME5TEVAUUNR4UqYrHkELPaLRnvAusjDXSTKgF"
+    },
+    {
+      "file": "scene.xml",
+      "hash": "Qm4oGnZfpPRS3oRzZHfYqQ9dZgBCyf9uM1Wn7DrBbUu21R6CXnq8MgxQ4DUVEFqtLQZ7Efe43riPqrjX8umSASi7ug"
+    },
+    {
+      "file": "video/big-buck-bunny.mp4",
+      "hash": "Qm34D6hKM6gmbiWDxHzJwc9hJpkjjVpZiKGKuKu4gNs2wy2HtpF5gHaYH1GveohfiAjjqqcfFnywVFxPHtashbqnfc"
+    }
+  ]
+}

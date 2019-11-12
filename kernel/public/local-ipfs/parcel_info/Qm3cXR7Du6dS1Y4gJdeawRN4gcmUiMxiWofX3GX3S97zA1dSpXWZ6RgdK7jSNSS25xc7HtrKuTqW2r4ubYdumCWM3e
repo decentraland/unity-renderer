@@ -1,0 +1,16 @@
+{
+  "publisher": "0x0f5d2fb29fb7d3cfee444a200298f468908cc942",
+  "parcel_id": "201,90",
+  "parcelPosition": "201,90",
+  "root_cid": "Qm3cXR7Du6dS1Y4gJdeawRN4gcmUiMxiWofX3GX3S97zA1dSpXWZ6RgdK7jSNSS25xc7HtrKuTqW2r4ubYdumCWM3e",
+  "contents": [
+    {
+      "file": "scene.json",
+      "hash": "Qm2VKkkS9YaRJNNc9qqiDAZAofQLsXnF9m8hmPKFxVj64WesiaaA5xETUURfQ1xzqqiQVBQx4tfNVdR9dgUcdwyw8c"
+    },
+    {
+      "file": "scene.tsx",
+      "hash": "Qm64LiaVxJtB6jQUocR6PYHjCxsjgkCBLAjFDKDjyRHZacXwzaHYMMvVtcLFXxZkboSN4VhUwanSqmBukiJPMhj9Lc"
+    }
+  ]
+}

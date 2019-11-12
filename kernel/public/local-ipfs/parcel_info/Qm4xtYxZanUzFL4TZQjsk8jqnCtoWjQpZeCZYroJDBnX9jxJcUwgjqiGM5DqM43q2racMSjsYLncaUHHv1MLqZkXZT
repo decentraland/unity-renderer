@@ -1,0 +1,28 @@
+{
+  "publisher": "0x0f5d2fb29fb7d3cfee444a200298f468908cc942",
+  "parcel_id": "146,135",
+  "parcelPosition": "146,135",
+  "root_cid": "Qm4xtYxZanUzFL4TZQjsk8jqnCtoWjQpZeCZYroJDBnX9jxJcUwgjqiGM5DqM43q2racMSjsYLncaUHHv1MLqZkXZT",
+  "contents": [
+    {
+      "file": "game.js",
+      "hash": "Qm28fS5s97NXTBS78WcKDZticM2dF6YbFjGttZTwuztFG7F1yevNFVmtJZ69uvXfCKBb4T438ihK4pgMEWZQo9ucuu"
+    },
+    {
+      "file": "game.ts",
+      "hash": "Qm4CZY3eA2MeMST5ybthAXk247EohVjZBWCaBqwzU3AoojYuCe9g52CgGqmnz899JyVGEPm7P4LSE7pqbmKWfnJjgd"
+    },
+    {
+      "file": "models/test.bin",
+      "hash": "Qm43tv6JzwnfHcY7cUiKQbuV5x7ST1yU1khU9EEbPg8YMFAW8Meprsb7gXsUtickQjBxitcYcRodNhvp36qbJ3CzHP"
+    },
+    {
+      "file": "models/test.gltf",
+      "hash": "Qm3CBgo6Z7AxZkuWc8m3TC5ny3rJy7XsNvjvLMBbC1DsQfSTjQ7HM3TTfiYyHmc13xCjiVBcTd4kc4oLasYXcSFS3y"
+    },
+    {
+      "file": "scene.json",
+      "hash": "Qm3HbUYgdeU55LfaEhF8oK7YsmK3nQyXHGWK1VVNYCkRaQeDtZLC6P5LekdCYJTLMDsmNxDivTUysrTzPtYQVQmydj"
+    }
+  ]
+}

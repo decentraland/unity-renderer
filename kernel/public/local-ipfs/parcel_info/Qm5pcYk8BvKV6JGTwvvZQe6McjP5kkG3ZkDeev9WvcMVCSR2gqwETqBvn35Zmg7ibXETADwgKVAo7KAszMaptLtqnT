@@ -1,0 +1,36 @@
+{
+  "publisher": "0x0f5d2fb29fb7d3cfee444a200298f468908cc942",
+  "parcel_id": "0,90",
+  "parcelPosition": "0,90",
+  "root_cid": "Qm5pcYk8BvKV6JGTwvvZQe6McjP5kkG3ZkDeev9WvcMVCSR2gqwETqBvn35Zmg7ibXETADwgKVAo7KAszMaptLtqnT",
+  "contents": [
+    {
+      "file": "game.js",
+      "hash": "Qm4uregg7JUF7gB1HUisRb8QMTxPYTQWPC8o6synk8jHDpT74fehSBwfTkT3vrStVVc3JZCvihLRC1noAexCkiifFe"
+    },
+    {
+      "file": "game.ts",
+      "hash": "Qm4XwzhuRkJHAhwdufV7LLSyvGpiLMrRVVFTeUXAEs8pUzwAQvHBLHcVakJZiR7dZgJVtUQCMieCCSoUQH6e94wPcW"
+    },
+    {
+      "file": "models/avatar_idle.glb",
+      "hash": "Qm4wqZUXsGH1eHuxPwip8J5Dhj948fZG7siH7n5TdQsGBBjKGxj9YcCnSEgUSTHV9uqfgNE1zB152rYeW5gsADDHrq"
+    },
+    {
+      "file": "models/shark.gltf",
+      "hash": "Qm2SW24Brmus3XyfvypPptfN2j8pMHuSKCvXEE6pFEw4VtLTPVMNCttmS96kwrfBwNoVyQYQkerKMdZ76Yy6PwmdoW"
+    },
+    {
+      "file": "models/t_underwater.png",
+      "hash": "Qm52WtfNGbLWa3MHVhGbeC2SpBEzJovn5usHc6kDSYa8ywqBkkJq7cfY7MnXkCtXJndQ7Uo5FSL8zznS4eAyss5K8g"
+    },
+    {
+      "file": "scene.json",
+      "hash": "Qm5e9ktD1K2Y9kf6GttbPx7eJmDm3LqhgDGijxtVkLn6mqSkTH7YiUXWQxPyLGGQct1SQSctbTynr3K7FdXpShLmyv"
+    },
+    {
+      "file": "tsconfig.json",
+      "hash": "Qm2nyfXMiqfy8isMQiDYRh6EfXPCUJgpfcqk4LDAw7o8o4jmLSMPnSnyna3wFv8UuzpCB2cCtw9JZW5YZa5svCqZue"
+    }
+  ]
+}

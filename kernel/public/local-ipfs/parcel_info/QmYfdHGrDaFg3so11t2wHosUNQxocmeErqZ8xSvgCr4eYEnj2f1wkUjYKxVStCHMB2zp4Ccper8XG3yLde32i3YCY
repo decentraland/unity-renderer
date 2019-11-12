@@ -1,0 +1,32 @@
+{
+  "publisher": "0x0f5d2fb29fb7d3cfee444a200298f468908cc942",
+  "parcel_id": "0,1010",
+  "parcelPosition": "0,1010",
+  "root_cid": "QmYfdHGrDaFg3so11t2wHosUNQxocmeErqZ8xSvgCr4eYEnj2f1wkUjYKxVStCHMB2zp4Ccper8XG3yLde32i3YCY",
+  "contents": [
+    {
+      "file": "game.js",
+      "hash": "Qm2sySFmXgmPSyeAJqeXiWVjFnQmxBpdUSdbeADQZZB8ixb4YrppUiqb73cgaCtz6QRWugy1PrtjNMqwpRpTxX5hmw"
+    },
+    {
+      "file": "game.ts",
+      "hash": "Qm2qBAYnHo5XB4eipuLVaspirH8KrFaVBrXFm2hP3auVHeAYDEF6haHdhcfJUH1Q6FynMHEACM4LbbzhiduLkXebZE"
+    },
+    {
+      "file": "models/forest/forest_10x10.mtl",
+      "hash": "Qm59dd7Gqp3Vutb4J1eMF8eTZc1yzruGtoBm2WScYmbfMyrBxHAQbcMGifLULsS7JmCxj74rpwVQRKSEe4KAGk43hN"
+    },
+    {
+      "file": "models/forest/forest_10x10.obj",
+      "hash": "Qm3nwAHjsnGu2AidipB2basSFo4jfzY3wJWa7RZgRQvwRPLGMrFU4zAhC2P6NWCUc3nTGfT5tPyyWdjBfJmQutTHhc"
+    },
+    {
+      "file": "scene.json",
+      "hash": "Qm5UXNee7dCe4QGJRa7qzbDMs6joUfy4oaS7Sv1PSKnwmxSYNpaVRnNs4BHo9oLhLSkEtKfjx3aTf39M2xhSDqhZcP"
+    },
+    {
+      "file": "tsconfig.json",
+      "hash": "Qm2AMeWUqoSq6EVAqnSUgj4wiRBkgGsJc4FhD8dzuvtWztCJKm8h6vuPXwPUYEuQAfufCi3uFPJTZspBmsSafnhdnq"
+    }
+  ]
+}

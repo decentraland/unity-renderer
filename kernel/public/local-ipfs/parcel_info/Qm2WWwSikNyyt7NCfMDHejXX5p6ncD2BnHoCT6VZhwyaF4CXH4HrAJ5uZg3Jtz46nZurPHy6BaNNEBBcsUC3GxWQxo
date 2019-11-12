@@ -1,0 +1,28 @@
+{
+  "publisher": "0x0f5d2fb29fb7d3cfee444a200298f468908cc942",
+  "parcel_id": "-100,105",
+  "parcelPosition": "-100,105",
+  "root_cid": "Qm2WWwSikNyyt7NCfMDHejXX5p6ncD2BnHoCT6VZhwyaF4CXH4HrAJ5uZg3Jtz46nZurPHy6BaNNEBBcsUC3GxWQxo",
+  "contents": [
+    {
+      "file": "atlas.png",
+      "hash": "Qm2XawumowFqJQy8QarG8ReinA3DuE1kY7ZAi4hDmisnUhmApWuZ5CnnaaMF7sXXwyFYxBBnS7Sv4dy5FNimkYNL7o"
+    },
+    {
+      "file": "game.js",
+      "hash": "Qm5FPR96h3nekrSutfeb5TiQy1945Nwa5Fk8E5Kq7wAQHCc8v55G7Ya1idVgkZvaS7Rs62ziypdEzWF4GN1tmHD1SY"
+    },
+    {
+      "file": "game.ts",
+      "hash": "Qm2P2q5DyabjBikHsTLtZaEagAXWaurMKN7FURW8z1vy6QpLeeF5bvyXPFsxjHGbxpgURvpwWLboxbS1XbcKkVmQoU"
+    },
+    {
+      "file": "scene.json",
+      "hash": "QmRa7jiyyB5izDuWR72o5xKvkUDVfmZyNCKybNg9r2wa3FSY2NZfwNRVYQsfQddV4Rp7zM2z8nmm2DrKQCB9dmz7T"
+    },
+    {
+      "file": "tsconfig.json",
+      "hash": "Qm2jTeiz5zs4zJFKLtjzmL5WxQtgbW3U6UGSeUGhvgy4Bazotuhi1rUMHhG2QjCodraPTGeJjbE8fWZEqBFs24KDp4"
+    }
+  ]
+}

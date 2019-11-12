@@ -1,0 +1,84 @@
+{
+  "publisher": "0x2bd2895eF3D17d6948FF59Eec03e593DFAd6c03e",
+  "parcel_id": "145,136",
+  "parcelPosition": "145,136",
+  "root_cid": "Qm4zf9AXyN1ZpCxrkAeAubqgYFXHQLdNsepbWkyBjekHsm84FoGQvYHQqkTu2FUrPc14L9mAffBrC6wZhnGsTdJD57",
+  "contents": [
+    {
+      "file": "game.js",
+      "hash": "Qm56D7r9B7UHmMVXt2ipn31Cm1s2PFQ3DBrryotbQzxcWTmKJJm2rBuh2WDJnBkM5JkwW3Bnsh3QEiWx2eNe2P5zhg"
+    },
+    {
+      "file": "game.ts",
+      "hash": "Qm4vJp3Gvm6NmnwhoPV9VP66p3PCffzig7HQ4KmCXoc35EyrzWmCHUB3aRV7mURMcvmfZ5TpmFFC2y7P87Se4R7cwk"
+    },
+    {
+      "file": "models/battlemap_15k.gltf",
+      "hash": "QmzzTpEF7SNuFqdcYQcGYTCe96EHnHeBFMszzdzq7ZcDsZXPi95xTdPG5Momd17LriGbceUGPuUynUdjrijnXxGmc"
+    },
+    {
+      "file": "models/battlemap_15k.gltf.zip",
+      "hash": "Qm5wLVtgj84FQQYGUVgjhtWNCeKYAbi5R2wXMrSdccAugzDzJ1ztJgybSkydextrWNcPvyogiCYH3n65iMHceNk1Hh"
+    },
+    {
+      "file": "models/battlemap.gltf",
+      "hash": "Qm2j462vE3kNV7t7EcF6Co91QDbLW3NkvTV1U6PAFwdYoBtfMzL6Ym6XcPZ7Eejxma6BQjSXQZvrmQw4jrWgpUpMK5"
+    },
+    {
+      "file": "models/coin.gltf",
+      "hash": "Qm38Evmqe8wr7aWBfkAG5gqcQnzBN6GBpib6ho9paqDtzXcZ6HjKcZ3r7jrFYKnEpbtzxoxQvubTgWibHVREXUKppS"
+    },
+    {
+      "file": "models/malakele.gltf",
+      "hash": "Qm5mCEnuX5BDJCE689Zd6BwXJKMGqtNtGQuwnwxbMxcVGwBdJjiMUyzpjahXytbUE3ZsZhhhYYVBHspREji6DmVD5A"
+    },
+    {
+      "file": "models/medal1.gltf",
+      "hash": "Qm2fHfYk5TQAACXUuPk59vL1mj2jvNae5CU4LF3T5uJd2TAvATFq92p83d9Ts45kPYN6VFPMoLQEf3ayxux1wmX8Dr"
+    },
+    {
+      "file": "models/medal2.gltf",
+      "hash": "QmseWrcztStDbfv4vG35EkyAkvKr9t4UzVhyu6s4W1eBP62sUQ3nGVWEip1VdnwusfkXfUZ3CLiEQkpqGbSseZLkH"
+    },
+    {
+      "file": "models/medal3.gltf",
+      "hash": "Qm51Tzc8ZYkEMLaRyi2XGXy3pPmwwKcrhaDWJbgVdwNfuN4i9zyGdV5hivGWEDru8wRTFcRzCZUhXf6bsaqNMvhhni"
+    },
+    {
+      "file": "models/red_notif.gltf",
+      "hash": "Qm5ok6KCsrWXzrGQ8MRhUGerBRu87pSQNT2bmR7JXahBbuiZ5u1KxxcEKyyFtWrLGAox8Si1ikx7soe4eoqQDNURVQ"
+    },
+    {
+      "file": "models/screen.gltf",
+      "hash": "Qmt87Cr4Fiq2aM6jn6Vhfv15c9y4n3pcUkTRnJ1VyEFZ8wK3WFmtFicGN7JksMhMLbfUZDXk542eTMNrCtFDJHRaF"
+    },
+    {
+      "file": "models/t_malakel'e.png",
+      "hash": "Qm5A8rvdXJ43CtfbYgr5kLH1YWHNXfxsXd1oqveF4eSv4iTwehCKgU3vENcPjaqz4mQwmozmxhZ1sa5p6SMjSCvKFb"
+    },
+    {
+      "file": "models/tekagon.gltf",
+      "hash": "Qm8JJp5s7bGn9NNhtEb7VsktntTehc5WQioH4rk6i2QP5jgt7yw6dWWsZ4RcZEhaUimobatbbcbPd9Ev7KhAYpxfJ"
+    },
+    {
+      "file": "models/tenteink.gltf",
+      "hash": "Qm5pdf3FJfct6JtedLCfsfdHFwmrfB74GecqyGUFcXhZCo2PMyVj1eW3xVdUzcfToC6DvuiVj2xJcyoDVYp9ivJNNW"
+    },
+    {
+      "file": "models/trophy1.gltf",
+      "hash": "Qm2d3KQMgvfdPe1i2odnpfxtMpbuEkuEtVaXgSosw9rfbWXdJh8gE6R7m1Vgc9bnwzntwGNm9i3ajZSsC67KzKp7QH"
+    },
+    {
+      "file": "models/trophy2.gltf",
+      "hash": "QmF7rxVd8LS5GitFKQv4EHQBBYqnN1Fhh6hviEPxF3PDHGdGBtoh1ETfXPnmS47LS9igX4v1PeUYWp33EjcUwSWKB"
+    },
+    {
+      "file": "models/trophy3.gltf",
+      "hash": "Qm5F8cbFNoBrZvB4zKjFqDT3zHZaZaPNcfKfiJ5wicMZWU7gfq1R7cf9s7XNVrvEDi4y6J3Abiyc9sYCrgcBXyXiC7"
+    },
+    {
+      "file": "scene.json",
+      "hash": "Qm2CkK4eH7qC4ipTv3q8EDP4xApD7zyKPCEH7JSTzFSBQN5YWM2g9YKznuXB3RainBSz5Mw1BcUEnwRP1bCUhsaNMA"
+    }
+  ]
+}

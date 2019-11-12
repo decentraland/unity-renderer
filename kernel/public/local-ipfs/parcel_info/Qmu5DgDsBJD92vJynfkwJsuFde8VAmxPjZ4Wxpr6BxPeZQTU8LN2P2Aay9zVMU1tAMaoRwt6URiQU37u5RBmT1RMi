@@ -1,0 +1,32 @@
+{
+  "publisher": "0x0f5d2fb29fb7d3cfee444a200298f468908cc942",
+  "parcel_id": "146,130",
+  "parcelPosition": "146,130",
+  "root_cid": "Qmu5DgDsBJD92vJynfkwJsuFde8VAmxPjZ4Wxpr6BxPeZQTU8LN2P2Aay9zVMU1tAMaoRwt6URiQU37u5RBmT1RMi",
+  "contents": [
+    {
+      "file": "cube.ts",
+      "hash": "Qm4b4pTMQ5jNrRBNVUcPgXdCQtMMN6NM7D53DQkuAob7nnGYiXfvHUHax5Gpgc1DnP2wyDZVDV8hYQfS9pTXF4xhfG"
+    },
+    {
+      "file": "game.js",
+      "hash": "Qm2cKD7RZpTjZtLwAeNGmzi1UV2YRhnGBBzi9hBNwDATjev3SptZ5cyo6VAbtt8pLoB7AWUb4HwNw4KhhTbEn16Cpv"
+    },
+    {
+      "file": "game.ts",
+      "hash": "Qm4XQ3X3HuzL7G1TGQ9WVPyHpaXkZXWc5pKm4vVwM3e8uhb1BiYfNDtJQs4AidagnhRvbzrymYMHtbi9Hi5bMS3EEN"
+    },
+    {
+      "file": "rotationcomponent.ts",
+      "hash": "Qm2TP8CSazWVDG2tQijt35bEzEBBqsdyrPUMqoPFCfogDVQMwBhxEwwP4ofpM1Wt8GCW4rD7SJ4VfigZzjoc6Yi3Ac"
+    },
+    {
+      "file": "rotationsystem.ts",
+      "hash": "Qm2z5K1bEb3CpFuR333M5uNxJ6vdKzQWqm1SUvoC2Wb9YxBXMXLFKcsCcFy39tkLmDJbtEwyGY29xTGbRkT9C7Xkqg"
+    },
+    {
+      "file": "scene.json",
+      "hash": "Qm4gnYfCZ7q4whFbUYVGH4CpLV5h63QSGa5MJzV4rq7iS75WGqr4WLi1sPGijQcbbi5jzAMiqkBr2MWGh4LHCDv9fy"
+    }
+  ]
+}

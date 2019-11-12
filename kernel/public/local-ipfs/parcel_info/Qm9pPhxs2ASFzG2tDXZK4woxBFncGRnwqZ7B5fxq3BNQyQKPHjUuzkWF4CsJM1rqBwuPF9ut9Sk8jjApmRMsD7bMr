@@ -1,0 +1,32 @@
+{
+  "publisher": "0x2bd2895eF3D17d6948FF59Eec03e593DFAd6c03e",
+  "parcel_id": "135,129",
+  "parcelPosition": "135,129",
+  "root_cid": "Qm9pPhxs2ASFzG2tDXZK4woxBFncGRnwqZ7B5fxq3BNQyQKPHjUuzkWF4CsJM1rqBwuPF9ut9Sk8jjApmRMsD7bMr",
+  "contents": [
+    {
+      "file": "game.js",
+      "hash": "Qm3Sf5He7bU8iqKy6EYo4cQcE6h8qdHR8zXMJi6FBRmnm1TxLRgjFo6AdMDu1UkB1d85eHKsN51GHLpDroqLHhoWTr"
+    },
+    {
+      "file": "game.ts",
+      "hash": "Qm33YS1KX2TjYZFjiCrajRKxoFSpajsLkYeGR5uYXJAQpsPwtmV5MEJJtXyy27xUe3vo75Q9938TMmTozk3RNVPyqY"
+    },
+    {
+      "file": "models/forest texture.png",
+      "hash": "Qm2mEUTVpTPxsP86Afmh92fpRXgQQ6nthsq2ZBz9M8FvDhn5hfQMYURj5nhKgiUXsbyYEQVus5LRb4sQrpGG19iPjE"
+    },
+    {
+      "file": "models/forest_30-01-19.bin",
+      "hash": "Qm3ZEg9sbs7MTWcwwa8ToAca5hUPLsCa6QRAmHbdQKS7pPb1dWw9SfNTeEzSzd4DwgMa869EhWtU9KmQt6kTiMJD64"
+    },
+    {
+      "file": "models/forest_30-01-19.gltf",
+      "hash": "Qm4WhtNtoVNeFNgM8CcVvYgso1dzYWE9bdeHYHcc243kHbSudCTYWo4tcD1AaU2wuJhFPJdaJ9phT8HWjE4QA9GsXb"
+    },
+    {
+      "file": "scene.json",
+      "hash": "QmdCwQtBmsWBWQhd6CU5ead4NEpBoL4K2fCXLaKB4b7Ysqeq6nntVmf8BRvBvtEUNbGQuBC6fuUF6WpZJExkzfW2i"
+    }
+  ]
+}

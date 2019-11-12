@@ -1,0 +1,12 @@
+{
+  "publisher": "0x0f5d2fb29fb7d3cfee444a200298f468908cc942",
+  "parcel_id": "300,10",
+  "parcelPosition": "300,10",
+  "root_cid": "Qm75KfBYSLBGe59CnB4w78GerDZgEjHhC3VjdsEAut4ptSUvJ7KxgUSurEx58d6YKbxTRS7X1M5xz3GwVdAvZtojg",
+  "contents": [
+    {
+      "file": "scene.json",
+      "hash": "Qm21EuZFFoZ71S5eikmeoHiotNE3bxRsCoJe9y8y2CVs8EcqMemXywJWVqta3SvEmsSNhXy8ufZjdPP9PJ7bm9F9ju"
+    }
+  ]
+}

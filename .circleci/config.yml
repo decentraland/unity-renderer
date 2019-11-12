@@ -1,6 +1,6 @@
 version: 2
 jobs:
-  build:
+  checkout:
     docker:
       - image: circleci/node:10-browsers
         environment:
@@ -9,9 +9,9 @@ jobs:
 
     working_directory: /tmp/explorer
     steps:
-      # Install lfs
+      # install lfs
       - run:
-          name: 'Install git-lfs'
+          name: "Install git-lfs"
           command: |
             mkdir -p ~/.ssh
             ssh-keyscan -H github.com >> ~/.ssh/known_hosts
@@ -19,6 +19,7 @@ jobs:
             sudo apt-get update && sudo apt-get install -y git-lfs=2.7.2
             ssh git@github.com git-lfs-authenticate decentraland/explorer.git download
             git lfs install
+
       # checkout the actual code
       - checkout
 
@@ -28,15 +29,93 @@ jobs:
           keys:
             - gitlfs-{{ .Branch }}
             - gitlfs
-      - shell:
-          name: Pull Git LFS files, retry until done
+      - run:
+          name: "Download LFS files"
           command: |
-            while true; do git reset --hard HEAD && git clean -fd && git lfs pull && break; done
+            git lfs fetch --all
+            git lfs checkout -- .
       - save_cache:
           name: Store large files in cache
           key: gitlfs-{{ .Branch }}
           paths:
             - .git/lfs
+
+      # persist to workspace to use in downstream jobs
+      - persist_to_workspace:
+          root: /tmp/explorer
+          paths:
+            - .git
+            - .circleci
+            - kernel
+            - unity-client
+
+  build-unity:
+    resource_class: xlarge
+    docker:
+      - image: decentraland/renderer-build
+        environment:
+          - BUILD_TARGET: WebGL
+          - BUILD_PATH: /tmp/explorer/unity-client/Builds/unity
+          - BUILD_NAME: unity
+    working_directory: /tmp/explorer/unity-client
+    steps:
+      - attach_workspace:
+          at: /tmp/explorer
+      - run:
+          name: Get the hash of source files
+          command: |
+            find Assets -type f \( -exec shasum "$PWD"/{} \; \) | sort > ../.unitysources-checksum
+      - restore_cache:
+          name: Restore decentraland-renderer if exists
+          keys:
+            - unity-build-{{ checksum "../.unitysources-checksum" }}
+      - run:
+          name: Extract the license key for Unity
+          command: |
+            openssl enc -d -aes-256-cbc -md sha256 -in /tmp/explorer/.circleci/license.zip-cipher -out /tmp/explorer/.circleci/license.zip -k ${CIPHER_KEY}
+            cd / && unzip /tmp/explorer/.circleci/license.zip
+      - run:
+          name: Build decentraland-renderer
+          command: |
+            if [[ ! -e ${BUILD_PATH} ]] || [[ ! -n "$(ls -A ${BUILD_PATH})" ]]; then
+                chmod +x $CIRCLE_WORKING_DIRECTORY/build-ci.sh
+                mkdir -p ${BUILD_PATH}
+                (./build-ci.sh & echo $! > /tmp/explorer/build.pid &)
+                pid=`cat /tmp/explorer/build.pid`
+                while [ -e /proc/$pid -a /proc/$pid/exe ]; do
+                    echo "Running Unity Build..."
+                    sleep 60
+                done
+                ls -la ${BUILD_PATH}
+                [ -n "$(ls -A ${BUILD_PATH})" ] # fail job if build folder is empty
+            fi;
+      - save_cache:
+          name: Store decentraland-renderer build
+          key: unity-build-{{ checksum "../.unitysources-checksum" }}
+          paths:
+            - /tmp/explorer/unity-client/Builds/
+
+      # persist to workspace to use in downstream jobs
+      - persist_to_workspace:
+          root: /tmp/explorer
+          paths:
+            - unity-client/Builds/unity/Build
+
+  build-kernel:
+    docker:
+      - image: circleci/node:10-browsers
+    working_directory: /tmp/explorer/kernel
+    steps:
+      - attach_workspace:
+          at: /tmp/explorer
+      - run:
+          name: Get the hash of source files
+          command: |
+            find packages -type f \( -exec shasum "$PWD"/{} \; \) | sort > ../.kernelsources-checksum
+      - restore_cache:
+          name: Restore built files
+          keys:
+            - kernel-build-{{ checksum "../.kernelsources-checksum" }}
       - restore_cache:
           name: Restoring node_modules
           keys:
@@ -45,7 +124,6 @@ jobs:
           name: Install differences in node_modules
           command: |
             npm i
-            git checkout -- package-lock.json
       - save_cache:
           name: Store node_modules cache
           paths:
@@ -93,10 +171,6 @@ jobs:
             make test-ci
             npx codecov
       - store_artifacts:
-          name: Save screenshots of visual tests
-          path: test/diff
-          when: on_fail
-      - store_artifacts:
           path: packages/decentraland-ecs/api-docs-review/decentraland-ecs.api.ts
           when: on_fail
       - store_artifacts:
@@ -109,130 +183,45 @@ jobs:
       - save_cache:
           name: Save the built files
           paths:
-            - static
-          key: build-{{ .Revision }}
-      - save_cache:
-          name: Save the files required to release an SDK version
+            - static/dist
+            - static/loader
+            - static/systems
+          key: kernel-build-{{ checksum "../.kernelsources-checksum" }}
+      # persist to workspace to use in downstream jobs
+      - persist_to_workspace:
+          root: /tmp/explorer
           paths:
-            - Makefile
-            - packages
-            - scripts
-            - tsconfig.json
-            - package-lock.json
-            - package.json
-            - .git
-          key: build-sdk-{{ .Revision }}
+            - kernel/static
+            - kernel/dist
 
-  build-unity:
-    resource_class: xlarge
-    docker:
-      - image: decentraland/renderer-build
-        environment:
-          - BUILD_TARGET: WebGL
-          - BUILD_PATH: /tmp/explorer/Builds/unity
-          - BUILD_NAME: unity
-    working_directory: /tmp/explorer
-    steps:
-      - checkout
-      - run:
-          name: 'Download unity LFS files'
-          command: |
-            ssh git@github.com git-lfs-authenticate decentraland/explorer.git download
-            git lfs install
-            git lfs fetch --all
-            git lfs checkout -- .
-      - run:
-          name: Get the hash of source files
-          command: |
-            find Assets -type f \( -exec shasum "$PWD"/{} \; \) | sort > .unitysources-checksum
-      - restore_cache:
-          name: Restore decentraland-renderer if exists
-          keys:
-            - unitybuild-{{ checksum ".unitysources-checksum" }}
-      - run:
-          name: 'Extract the license key for Unity'
-          command: |
-            openssl enc -d -aes-256-cbc -md sha256 -in ./.circleci/license.zip-cipher -out ./.circleci/license.zip -k ${CIPHER_KEY}
-            cd / && unzip /tmp/explorer/.circleci/license.zip
-      - run:
-          name: 'Build decentraland-renderer'
-          command: |
-            if [[ ! -e ${BUILD_PATH} ]] || [[ ! -n "$(ls -A ${BUILD_PATH})" ]]; then
-                chmod +x /tmp/explorer/build-ci.sh
-                mkdir -p ${BUILD_PATH}
-                ((cd /tmp/explorer && ./build-ci.sh) & echo $! > /tmp/explorer/build.pid &)
-                pid=`cat /tmp/explorer/build.pid`
-                while [ -e /proc/$pid -a /proc/$pid/exe ]; do
-                    echo "Running Unity Build..."
-                    sleep 60
-                done
-                ls -la ${BUILD_PATH}
-                [ -n "$(ls -A ${BUILD_PATH})" ] # fail job if build folder is empty
-            fi;
-      - save_cache:
-          name: Store decentraland-renderer build
-          key: unitybuild-{{ checksum ".unitysources-checksum" }}
-          paths:
-            - /tmp/explorer/Builds/
-      - run:
-          name: Authenticate with registry
-          command: echo "//registry.npmjs.org/:_authToken=${NPMTOKEN}" > /tmp/explorer/Builds/${BUILD_NAME}/.npmrc
-      - run:
-          name: Publish decentraland-renderer package
-          command: |
-            . .circleci/publish.sh
-
-  publish-ecs:
+  build:
     docker:
       - image: circleci/node:10-browsers
     working_directory: /tmp/explorer
     steps:
-      - checkout
+      - attach_workspace:
+          at: /tmp/explorer
       - run:
-          name: 'Install git-lfs'
+          name: Copy renderer to kernel
           command: |
-            mkdir -p ~/.ssh
-            ssh-keyscan -H github.com >> ~/.ssh/known_hosts
-            curl -s https://packagecloud.io/install/repositories/github/git-lfs/script.deb.sh | sudo bash
-            sudo apt-get update && sudo apt-get install -y git-lfs=2.7.2
-            ssh git@github.com git-lfs-authenticate decentraland/explorer.git download
-            git lfs install
-      - run:
-          name: 'Download LFS files'
-          command: |
-            ssh git@github.com git-lfs-authenticate decentraland/explorer.git download
-            git lfs install
-            git lfs fetch --all
-            git lfs checkout -- .
-      - run:
-          name: Get the hash of Unity source files
-          command: |
-            find Assets -type f \( -exec shasum "$PWD"/{} \; \) | sort > .unitysources-checksum
-      - restore_cache:
-          name: Restore sdk-release files
-          keys:
-            - build-sdk-{{ .Revision }}
-      - restore_cache:
-          name: Restore node_modules
-          keys:
-            - v1-dependencies-{{ checksum "package-lock.json" }}
-      - restore_cache:
-          name: Restore built files
-          keys:
-            - build-{{ .Revision }}
-      - restore_cache:
-          name: Restore the Unity build
-          keys:
-            - unitybuild-{{ checksum ".unitysources-checksum" }}
-      - run:
-          name: Copy the exact renderer for the current working folder into static
-          command: |
-            cp /tmp/explorer/Builds/unity/Build/*.unityweb static/unity/Build/
+            cp /tmp/explorer/unity-client/Builds/unity/Build/*.unityweb /tmp/explorer/kernel/static/unity/Build/
+      # persist to workspace to use in downstream jobs
+      - persist_to_workspace:
+          root: /tmp/explorer
+          paths:
+            - kernel/static/unity/Build
+
+  publish-ecs:
+    docker:
+      - image: circleci/node:10-browsers
+    working_directory: /tmp/explorer/kernel
+    steps:
+      - attach_workspace:
+          at: /tmp/explorer
       - run:
           name: Set up NPM access tokens
           command: echo "//registry.npmjs.org/:_authToken=${NPM_TOKEN}" > ~/.npmrc
           when: on_success
-
       - run:
           name: Publish a new version of decentraland-ecs
           command: make publish
@@ -241,41 +230,11 @@ jobs:
   deploy-on-pr:
     docker:
       - image: circleci/node:10-browsers
-    working_directory: /tmp/explorer
+    working_directory: /tmp/explorer/kernel
     steps:
-      - checkout
-      - run:
-          name: 'Install git-lfs'
-          command: |
-            mkdir -p ~/.ssh
-            ssh-keyscan -H github.com >> ~/.ssh/known_hosts
-            curl -s https://packagecloud.io/install/repositories/github/git-lfs/script.deb.sh | sudo bash
-            sudo apt-get update && sudo apt-get install -y git-lfs=2.7.2
-            ssh git@github.com git-lfs-authenticate decentraland/explorer.git download
-            git lfs install
-      - run:
-          name: 'Download LFS files'
-          command: |
-            ssh git@github.com git-lfs-authenticate decentraland/explorer.git download
-            git lfs install
-            git lfs fetch --all
-            git lfs checkout -- .
-      - run:
-          name: Get the hash of Unity source files
-          command: |
-            find Assets -type f \( -exec shasum "$PWD"/{} \; \) | sort > .unitysources-checksum
-      - restore_cache:
-          name: Restore the kernel build
-          keys:
-            - build-{{ .Revision }}
-      - restore_cache:
-          name: Restore the Unity build
-          keys:
-            - unitybuild-{{ checksum ".unitysources-checksum" }}
-      - run:
-          name: Copy the exact renderer for the current working folder into static
-          command: |
-            cp /tmp/explorer/Builds/unity/Build/*.unityweb static/unity/Build/
+      - attach_workspace:
+          at: /tmp/explorer
+
       - run: sudo apt-get -y -qq install awscli
       - run:
           name: Configure DEV/STG AWS Keys
@@ -294,41 +253,11 @@ jobs:
   deploy-dev:
     docker:
       - image: circleci/node:10-browsers
-    working_directory: /tmp/explorer
+    working_directory: /tmp/explorer/kernel
     steps:
-      - checkout
-      - run:
-          name: 'Install git-lfs'
-          command: |
-            mkdir -p ~/.ssh
-            ssh-keyscan -H github.com >> ~/.ssh/known_hosts
-            curl -s https://packagecloud.io/install/repositories/github/git-lfs/script.deb.sh | sudo bash
-            sudo apt-get update && sudo apt-get install -y git-lfs=2.7.2
-            ssh git@github.com git-lfs-authenticate decentraland/explorer.git download
-            git lfs install
-      - run:
-          name: 'Download LFS files'
-          command: |
-            ssh git@github.com git-lfs-authenticate decentraland/explorer.git download
-            git lfs install
-            git lfs fetch --all
-            git lfs checkout -- .
-      - run:
-          name: Get the hash of Unity source files
-          command: |
-            find Assets -type f \( -exec shasum "$PWD"/{} \; \) | sort > .unitysources-checksum
-      - restore_cache:
-          name: Restore the kernel build
-          keys:
-            - build-{{ .Revision }}
-      - restore_cache:
-          name: Restore the Unity build
-          keys:
-            - unitybuild-{{ checksum ".unitysources-checksum" }}
-      - run:
-          name: Copy the exact renderer for the current working folder into static
-          command: |
-            cp /tmp/explorer/Builds/unity/Build/*.unityweb static/unity/Build/
+      - attach_workspace:
+          at: /tmp/explorer
+
       - run: sudo apt-get -y -qq install awscli
       - run:
           name: Configure DEV/STG AWS Keys
@@ -347,41 +276,10 @@ jobs:
   deploy-stg:
     docker:
       - image: circleci/node:10-browsers
-    working_directory: /tmp/explorer
+    working_directory: /tmp/explorer/kernel
     steps:
-      - checkout
-      - run:
-          name: 'Install git-lfs'
-          command: |
-            mkdir -p ~/.ssh
-            ssh-keyscan -H github.com >> ~/.ssh/known_hosts
-            curl -s https://packagecloud.io/install/repositories/github/git-lfs/script.deb.sh | sudo bash
-            sudo apt-get update && sudo apt-get install -y git-lfs=2.7.2
-            ssh git@github.com git-lfs-authenticate decentraland/explorer.git download
-            git lfs install
-      - run:
-          name: 'Download LFS files'
-          command: |
-            ssh git@github.com git-lfs-authenticate decentraland/explorer.git download
-            git lfs install
-            git lfs fetch --all
-            git lfs checkout -- .
-      - run:
-          name: Get the hash of Unity source files
-          command: |
-            find Assets -type f \( -exec shasum "$PWD"/{} \; \) | sort > .unitysources-checksum
-      - restore_cache:
-          name: Restore the kernel build
-          keys:
-            - build-{{ .Revision }}
-      - restore_cache:
-          name: Restore the Unity build
-          keys:
-            - unitybuild-{{ checksum ".unitysources-checksum" }}
-      - run:
-          name: Copy the exact renderer for the current working folder into static
-          command: |
-            cp /tmp/explorer/Builds/unity/Build/*.unityweb static/unity/Build/
+      - attach_workspace:
+          at: /tmp/explorer
       - run: sudo apt-get -y -qq install awscli
       - run:
           name: Configure DEV/STG AWS Keys
@@ -401,41 +299,10 @@ jobs:
   deploy-prd:
     docker:
       - image: circleci/node:10-browsers
-    working_directory: /tmp/explorer
+    working_directory: /tmp/explorer/kernel
     steps:
-      - checkout
-      - run:
-          name: 'Install git-lfs'
-          command: |
-            mkdir -p ~/.ssh
-            ssh-keyscan -H github.com >> ~/.ssh/known_hosts
-            curl -s https://packagecloud.io/install/repositories/github/git-lfs/script.deb.sh | sudo bash
-            sudo apt-get update && sudo apt-get install -y git-lfs=2.7.2
-            ssh git@github.com git-lfs-authenticate decentraland/explorer.git download
-            git lfs install
-      - run:
-          name: 'Download LFS files'
-          command: |
-            ssh git@github.com git-lfs-authenticate decentraland/explorer.git download
-            git lfs install
-            git lfs fetch --all
-            git lfs checkout -- .
-      - run:
-          name: Get the hash of Unity source files
-          command: |
-            find Assets -type f \( -exec shasum "$PWD"/{} \; \) | sort > .unitysources-checksum
-      - restore_cache:
-          name: Restore the kernel build
-          keys:
-            - build-{{ .Revision }}
-      - restore_cache:
-          name: Restore the Unity build
-          keys:
-            - unitybuild-{{ checksum ".unitysources-checksum" }}
-      - run:
-          name: Copy the exact renderer for the current working folder into static
-          command: |
-            cp /tmp/explorer/Builds/unity/Build/*.unityweb static/unity/Build/
+      - attach_workspace:
+          at: /tmp/explorer
       - run: sudo apt-get -y -qq install awscli
       - run:
           name: Configure PRD AWS Keys
@@ -456,20 +323,30 @@ workflows:
   version: 2
   build-deploy:
     jobs:
-      - build-unity
-      - build
+      - checkout
+
+      - build-unity:
+          requires:
+            - checkout
+      - build-kernel:
+          requires:
+            - checkout
+
+      - build:
+          requires:
+            - build-kernel
+            - build-unity
 
       # explorer master + pr branch jobs (deploy to dev + pr dev)
       - deploy-dev:
           requires:
-            - build-unity
             - build
           filters:
             branches:
               only: master
+
       - deploy-on-pr:
           requires:
-            - build-unity
             - build
           filters:
             branches:
@@ -477,10 +354,11 @@ workflows:
                 - master
                 - staging
                 - release
+
+      # ecs publishing
       - hold-ecs:
           type: approval
           requires:
-            - build-unity
             - build
           filters:
             branches:
@@ -489,8 +367,7 @@ workflows:
               only: /^\d+\.\d+\.\d(.*)/ # npm tag + latest
       - publish-ecs:
           requires:
-            - build # on master we don't hold, but publish to next right after the build is done
-            - build-unity
+            - build
             - hold-ecs # on tags we wait until there's an approval
           filters:
             branches:
@@ -498,10 +375,10 @@ workflows:
             tags:
               only: /^\d+\.\d+\.\d(.*)/ # npm tag + latest
 
+      # standard env deployments
       - deploy-stg:
           requires:
             - build
-            - build-unity
           filters:
             branches:
               only: staging
@@ -509,7 +386,6 @@ workflows:
       - deploy-prd:
           requires:
             - build
-            - build-unity
           filters:
             branches:
               only: release
