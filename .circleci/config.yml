@@ -25,18 +25,17 @@ jobs:
 
       # restore cached lfs
       - restore_cache:
-          name: Restore large files from github's lfs repo
+          name: Restore large files from CircleCI cache
           keys:
-            - gitlfs-{{ .Branch }}
-            - gitlfs
+            - git-lfs-{{ .Branch }}
+            - git-lfs-master
       - run:
-          name: "Download LFS files"
+          name: "Download LFS files from GitHub's LFS Storage"
           command: |
-            git lfs fetch --all
-            git lfs checkout -- .
+            while true; do git reset --hard HEAD && git clean -fd && git lfs pull && break; done
       - save_cache:
           name: Store large files in cache
-          key: gitlfs-{{ .Branch }}
+          key: git-lfs-{{ .Branch }}
           paths:
             - .git/lfs
 
@@ -222,6 +221,10 @@ jobs:
           name: Set up NPM access tokens
           command: echo "//registry.npmjs.org/:_authToken=${NPM_TOKEN}" > ~/.npmrc
           when: on_success
+      - restore_cache:
+          name: Restoring node_modules
+          keys:
+            - v1-dependencies-{{ checksum "package-lock.json" }}
       - run:
           name: Publish a new version of decentraland-ecs
           command: make publish
