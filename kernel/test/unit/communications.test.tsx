@@ -34,12 +34,15 @@ import { BrokerConnection } from 'shared/comms/BrokerConnection'
 import { IBrokerConnection, BrokerMessage } from 'shared/comms/IBrokerConnection'
 import { Observable } from 'decentraland-ecs/src'
 import { TopicIdentityFWMessage } from '../../packages/shared/comms/proto/broker'
+import { onWorldRunning, MORDOR_POSITION } from '../../packages/shared/comms/index'
 
 chai.use(sinonChai)
 
 const expect = chai.expect
 
 let webSocket!: WebSocket
+
+declare const global: any
 
 class MockWebSocket {
   public readyState: SocketReadyState = SocketReadyState.CLOSED
@@ -49,7 +52,7 @@ class MockWebSocket {
   }
 }
 
-describe('Communications', function () {
+describe('Communications', function() {
   describe('CommunicationArea', () => {
     function makePosition(x: number, z: number): Position {
       return [x, 0, z, 0, 0, 0, 0]
@@ -84,7 +87,7 @@ describe('Communications', function () {
 
     before(() => {
       // NOTE: little hack to be able to mock websocket requests
-      ; (window as any)['WebSocket'] = MockWebSocket
+      ;(window as any)['WebSocket'] = MockWebSocket
     })
 
     let connection: BrokerConnection
@@ -116,13 +119,13 @@ describe('Communications', function () {
         ondatachannel: connection.webRtcConn!.ondatachannel
       }
       connection.webRtcConn = mockWebRtc
-        ; (webSocket as any).readyState = SocketReadyState.OPEN
+      ;(webSocket as any).readyState = SocketReadyState.OPEN
 
       webSocket.send = sinon.stub()
     })
 
     after(() => {
-      ; (window as any)['WebSocket'] = ORIGINAL_WEB_SOCKET
+      ;(window as any)['WebSocket'] = ORIGINAL_WEB_SOCKET
     })
 
     describe('coordinator messages', () => {
@@ -181,7 +184,7 @@ describe('Communications', function () {
         connection.commServerAlias = 1
 
         const answer = { sdp: 'answer-sdp', type: 'answer' }
-          ; (connection.webRtcConn!.createAnswer as any).resolves(answer)
+        ;(connection.webRtcConn!.createAnswer as any).resolves(answer)
 
         const offer = { sdp: 'offer-sdp', type: 'offer' }
 
@@ -190,7 +193,7 @@ describe('Communications', function () {
         msg.setFromAlias(1)
         const encoder = new TextEncoder()
         msg.setData(encoder.encode(JSON.stringify(offer)))
-          ; (connection.webRtcConn! as any)['localDescription'] = answer
+        ;(connection.webRtcConn! as any)['localDescription'] = answer
         connection.gotCandidatesFuture.resolve(answer as any)
 
         const event = new MessageEvent('websocket', { data: msg.serializeBinary() })
@@ -523,7 +526,7 @@ describe('Communications', function () {
 
     describe('profile handler', () => {
       beforeEach(() => {
-        (global as any).globalStore = {
+        global.globalStore = {
           getState: () => ({
             passports: {
               userInfo: {
@@ -712,6 +715,22 @@ describe('Communications', function () {
       onPositionUpdate(context, context.currentPosition)
 
       expect(worldConn.updateSubscriptions).to.have.not.been.called
+    })
+  })
+
+  describe('onWorldRunning', () => {
+    it('sends player to mordor', () => {
+      const context = new Context({})
+      context.commRadius = 1
+      context.currentPosition = [20, 20, 20, 20, 20, 20, 20] as Position
+      const connection = new BrokerMock()
+      const worldConn = new WorldInstanceConnection(connection)
+      worldConn.sendParcelUpdateMessage = sinon.stub()
+      context.worldInstanceConnection = worldConn
+
+      onWorldRunning(false, context)
+
+      expect(worldConn.sendParcelUpdateMessage).to.have.been.calledWithExactly(context.currentPosition, MORDOR_POSITION)
     })
   })
 })
