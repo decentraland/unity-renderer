@@ -178,6 +178,7 @@ namespace DCL
                 if (mf != null && mf.sharedMesh != null)
                 {
                     model.bodies--;
+                    model.triangles -= mf.sharedMesh.triangles.Length;
                     isDirty = true;
 
                     if (uniqueMeshes.Contains(mf.sharedMesh))
@@ -227,6 +228,7 @@ namespace DCL
                 if (mf != null && mf.sharedMesh != null)
                 {
                     model.bodies++;
+                    model.triangles += mf.sharedMesh.triangles.Length;
                     isDirty = true;
 
                     if (!uniqueMeshes.Contains(mf.sharedMesh))
@@ -254,10 +256,9 @@ namespace DCL
         public void AddMesh(Mesh mesh)
         {
             model.meshes++;
-            model.triangles += mesh.triangles.Length / 3;
             isDirty = true;
 
-            if (VERBOSE) { Debug.Log("Mesh name = " + mesh.name + " ... tri count = " + (mesh.triangles.Length / 3)); }
+            if (VERBOSE) { Debug.Log("Mesh name = " + mesh.name + " ... tri count = " + (mesh.triangles.Length)); }
 
             ;
         }
@@ -265,7 +266,6 @@ namespace DCL
         public void RemoveMesh(Mesh mesh)
         {
             model.meshes--;
-            model.triangles -= mesh.triangles.Length / 3;
             isDirty = true;
         }
     }
