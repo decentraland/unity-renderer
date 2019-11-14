@@ -22,15 +22,26 @@ namespace DCL.Models
                 set
                 {
                     meshRootGameObjectValue = value;
-                    renderers = meshRootGameObjectValue?.GetComponentsInChildren<Renderer>(true);
+
+                    UpdateRenderersCollection();
                 }
             }
 
             public BaseShape currentShape;
             public Renderer[] renderers;
+            public MeshFilter[] meshFilters;
             public List<Collider> colliders = new List<Collider>();
 
             GameObject meshRootGameObjectValue;
+
+            public void UpdateRenderersCollection()
+            {
+                if (meshRootGameObjectValue != null)
+                {
+                    renderers = meshRootGameObjectValue.GetComponentsInChildren<Renderer>(true);
+                    meshFilters = meshRootGameObjectValue.GetComponentsInChildren<MeshFilter>(true);
+                }
+            }
 
             public void CleanReferences()
             {
@@ -49,13 +60,13 @@ namespace DCL.Models
 
         public Dictionary<CLASS_ID_COMPONENT, BaseComponent> components = new Dictionary<CLASS_ID_COMPONENT, BaseComponent>();
 
-        // HACK: (Zak) will be removed when we separate each 
+        // HACK: (Zak) will be removed when we separate each
         // uuid component as a different class id
         public Dictionary<string, UUIDComponent> uuidComponents = new Dictionary<string, UUIDComponent>();
 
         public GameObject gameObject;
         public string entityId;
-        public MeshesInfo meshesInfo = new MeshesInfo();
+        public MeshesInfo meshesInfo;
         public GameObject meshRootGameObject => meshesInfo.meshRootGameObject;
         public Renderer[] renderers => meshesInfo.renderers;
 
@@ -70,6 +81,12 @@ namespace DCL.Models
         const string MESH_GAMEOBJECT_NAME = "Mesh";
 
         bool isReleased = false;
+
+        public DecentralandEntity()
+        {
+            meshesInfo = new MeshesInfo();
+            OnShapeUpdated += (entity) => meshesInfo.UpdateRenderersCollection();
+        }
 
         private void AddChild(DecentralandEntity entity)
         {
@@ -140,7 +157,7 @@ namespace DCL.Models
             {
                 int childCount = gameObject.transform.childCount;
 
-                // Destroy any other children 
+                // Destroy any other children
                 for (int i = 0; i < childCount; i++)
                 {
                     Utils.SafeDestroy(gameObject.transform.GetChild(i).gameObject);
