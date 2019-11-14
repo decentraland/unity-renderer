@@ -8,6 +8,7 @@ namespace DCL
     public class PointerEventsController : Singleton<PointerEventsController>
     {
         private LayerMask layerMaskTarget;
+        private static int characterControllerLayer => 1 << LayerMask.NameToLayer("CharacterController");
 
         public static bool renderingIsDisabled = true;
         private OnPointerUpComponent pointerUpEvent;
@@ -61,6 +62,9 @@ namespace DCL
                         return;
                 }
 
+                var pointerEventLayer = layerMaskTarget & (~characterControllerLayer); //Ensure characterController is being filtered
+                var globalLayer = ~layerMaskTarget & (~characterControllerLayer); //Ensure characterController is being filtered
+
                 if (evt == InputController.EVENT.BUTTON_DOWN)
                 {
                     Ray ray;
@@ -68,7 +72,7 @@ namespace DCL
                     ray = GetRayFromCamera();
 
                     // Raycast for pointer event components
-                    RaycastResultInfo raycastInfo = raycastHandler.Raycast(ray, charCamera.farClipPlane, layerMaskTarget, null);
+                    RaycastResultInfo raycastInfo = raycastHandler.Raycast(ray, charCamera.farClipPlane, pointerEventLayer, null);
 
                     if (raycastInfo.hitInfo.hit.rigidbody)
                     {
@@ -83,7 +87,7 @@ namespace DCL
                     string sceneId = SceneController.i.GetCurrentScene(DCLCharacterController.i.characterPosition);
 
                     // Raycast for global pointer events
-                    raycastInfo = raycastHandler.Raycast(ray, charCamera.farClipPlane, ~layerMaskTarget, null);
+                    raycastInfo = raycastHandler.Raycast(ray, charCamera.farClipPlane, globalLayer, null);
 
                     if (useRaycast && raycastInfo.hitInfo.isValid)
                     {
@@ -109,7 +113,7 @@ namespace DCL
                     ray = GetRayFromCamera();
 
                     // Raycast for pointer event components
-                    RaycastResultInfo raycastInfo = raycastHandler.Raycast(ray, charCamera.farClipPlane, layerMaskTarget, null);
+                    RaycastResultInfo raycastInfo = raycastHandler.Raycast(ray, charCamera.farClipPlane, pointerEventLayer, null);
 
                     if (pointerUpEvent != null)
                     {
@@ -122,7 +126,7 @@ namespace DCL
                     string sceneId = SceneController.i.GetCurrentScene(DCLCharacterController.i.characterPosition);
 
                     // Raycast for global pointer events
-                    raycastInfo = raycastHandler.Raycast(ray, charCamera.farClipPlane, ~layerMaskTarget, null);
+                    raycastInfo = raycastHandler.Raycast(ray, charCamera.farClipPlane, globalLayer, null);
 
                     if (useRaycast && raycastInfo.hitInfo.isValid)
                     {

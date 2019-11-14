@@ -37,7 +37,7 @@ public class WearableController
         assetRenderers = original.assetRenderers;
     }
 
-    public void Load(Transform parent, Action<WearableController> onSuccess, Action<WearableController> onFail)
+    public void Load(Transform parent, bool visibility, Action<WearableController> onSuccess, Action<WearableController> onFail)
     {
         var representation = wearable.GetRepresentation(bodyShapeType);
         var provider = wearable.GetContentProvider(bodyShapeType);
@@ -54,6 +54,7 @@ public class WearableController
         };
         promise.OnFailEvent += (x) => onFail.Invoke(this);
         promise.settings.parent = parent;
+        promise.settings.visibleFlags = visibility ? AssetPromise_GLTF.VisibleFlags.VISIBLE_WITH_TRANSITION : AssetPromise_GLTF.VisibleFlags.INVISIBLE;
 
         AssetPromiseKeeper_GLTF.i.Keep(promise);
     }

@@ -1,8 +1,8 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
+using AvatarShape_Tests;
 using DCL.Helpers;
 using NUnit.Framework;
-using Tests;
 using UnityEngine;
 using UnityEngine.TestTools;
 
