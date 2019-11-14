@@ -38,18 +38,26 @@ import { initializeUrlPositionObserver } from './world/positionThings'
 import { setWorldContext } from './protocol/actions'
 import { profileToRendererFormat } from './passports/transformations/profileToRendererFormat'
 
+enum AnalyticsAccount {
+  PRD = '1plAT9a2wOOgbPCrTaU8rgGUMzgUTJtU',
+  DEV = 'a4h4BC4dL1v7FhIQKKuPHEdZIiNRDVhc'
+}
+
 // TODO fill with segment keys and integrate identity server
 function initializeAnalytics() {
   const TLD = getTLD()
   switch (TLD) {
     case 'org':
-      return initialize('1plAT9a2wOOgbPCrTaU8rgGUMzgUTJtU')
+      if (window.location.host === 'explorer.decentraland.org') {
+        return initialize(AnalyticsAccount.PRD)
+      }
+      return initialize(AnalyticsAccount.DEV)
     case 'today':
-      return initialize('a4h4BC4dL1v7FhIQKKuPHEdZIiNRDVhc')
+      return initialize(AnalyticsAccount.DEV)
     case 'zone':
-      return initialize('a4h4BC4dL1v7FhIQKKuPHEdZIiNRDVhc')
+      return initialize(AnalyticsAccount.DEV)
     default:
-      return initialize('a4h4BC4dL1v7FhIQKKuPHEdZIiNRDVhc')
+      return initialize(AnalyticsAccount.DEV)
   }
 }
 
@@ -135,11 +143,7 @@ export async function initShared(): Promise<Session | undefined> {
   for (let i = 1; ; ++i) {
     try {
       defaultLogger.info(`Attempt number ${i}...`)
-      const context = await connect(
-        userId,
-        net,
-        auth
-      )
+      const context = await connect(userId, net, auth)
       if (context !== undefined) {
         store.dispatch(setWorldContext(context))
       }
