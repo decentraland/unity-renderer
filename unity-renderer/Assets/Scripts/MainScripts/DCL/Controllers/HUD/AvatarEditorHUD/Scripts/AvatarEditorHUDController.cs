@@ -193,24 +193,16 @@ public class AvatarEditorHUDController : IDisposable, IHUD
         model.bodyShape = bodyShape;
         view.UpdateSelectedBody(bodyShape);
 
-        var notSupported = new List<WearableItem>();
         int wearablesCount = model.wearables.Count;
-        for (var i = 0; i < wearablesCount; i++)
+        for (var i = wearablesCount - 1; i >= 0; i--)
         {
-            if (!model.wearables[i].SupportsBodyShape(model.bodyShape.id))
-                notSupported.Add(model.wearables[i]);
+            UnequipWearable(model.wearables[i]);
         }
 
-        int notSupportedCount = notSupported.Count;
-        for (var i = 0; i < notSupportedCount; i++)
+        var defaultWearables = WearableLiterals.DefaultWearables.GetDefaultWearables(bodyShape.id);
+        for (var i = 0; i < defaultWearables.Length; i++)
         {
-            var wearableToBeReplaced = notSupported[i];
-            UnequipWearable(wearableToBeReplaced);
-            var newWearable = wearablesByCategory[wearableToBeReplaced.category].FirstOrDefault(x => x.SupportsBodyShape(model.bodyShape.id));
-            if (newWearable != null)
-            {
-                EquipWearable(newWearable);
-            }
+            EquipWearable(catalog.Get(defaultWearables[i]));
         }
     }
 
