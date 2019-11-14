@@ -1,4 +1,4 @@
-using DCL.Controllers;
+﻿using DCL.Controllers;
 using DCL.Models;
 using UnityEngine;
 
@@ -30,7 +30,7 @@ namespace DCL.Components
                 entity.meshRootGameObject.transform.localScale = Vector3.one;
                 entity.meshRootGameObject.transform.localRotation = Quaternion.identity;
                 entity.meshesInfo.currentShape = this;
-                
+
                 entity.OnShapeUpdated += UpdateBackgroundColor;
 
                 loadableShape = entity.meshRootGameObject.GetComponent<LoadWrapper_NFT>();
@@ -70,6 +70,14 @@ namespace DCL.Components
 
             loadableShape = entity.meshRootGameObject.GetComponent<LoadWrapper_NFT>();
             loadableShape.loaderController.UpdateBackgroundColor(model.color);
+        }
+
+        public override string ToString()
+        {
+            if (model == null)
+                return base.ToString();
+
+            return $"{componentName} (src = {model.src})";
         }
     }
 }

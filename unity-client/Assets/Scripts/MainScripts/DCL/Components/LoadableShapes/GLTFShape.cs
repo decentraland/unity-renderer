@@ -9,5 +9,20 @@ namespace DCL.Components
         public GLTFShape(ParcelScene scene) : base(scene)
         {
         }
+
+        public override string ToString()
+        {
+            if (scene == null || scene.contentProvider == null || model == null)
+                return base.ToString();
+
+            string fullUrl;
+
+            bool found = scene.contentProvider.TryGetContentsUrl(model.src, out fullUrl);
+
+            if (!found)
+                fullUrl = "Not found!";
+
+            return $"{componentName} (src = {model.src}, full url = {fullUrl}";
+        }
     }
 }
