@@ -10,51 +10,6 @@ using UnityEngine.TestTools;
 
 namespace AvatarShape_Tests
 {
-    class AvatarRenderer_Mock : AvatarRenderer
-    {
-        public static Dictionary<string, WearableController> GetWearableControllers(AvatarRenderer renderer)
-        {
-            var avatarRendererMock = new GameObject("Temp").AddComponent<AvatarRenderer_Mock>();
-            avatarRendererMock.CopyFrom(renderer);
-
-            var toReturn = avatarRendererMock.wearablesController;
-            Destroy(avatarRendererMock.gameObject);
-
-            return toReturn;
-        }
-
-        public static BodyShapeController GetBodyShape(AvatarRenderer renderer)
-        {
-            var avatarRendererMock = new GameObject("Temp").AddComponent<AvatarRenderer_Mock>();
-            avatarRendererMock.CopyFrom(renderer);
-
-            var toReturn = avatarRendererMock.bodyShapeController;
-            Destroy(avatarRendererMock.gameObject);
-
-            return toReturn;
-        }
-
-        protected override void OnDestroy() { } //Override OnDestroy to prevent mock renderer from resetting the Avatar
-    }
-
-    class WearableController_Mock : WearableController
-    {
-        public WearableController_Mock(WearableItem wearableItem, string bodyShapeType) : base(wearableItem, bodyShapeType) { }
-        public WearableController_Mock(WearableController original) : base(original) { }
-
-        public Renderer[] myAssetRenderers => assetRenderers;
-        public GameObject myAssetContainer => this.assetContainer;
-    }
-
-    class BodyShapeController_Mock : BodyShapeController
-    {
-        public BodyShapeController_Mock(WearableItem original) : base(original) { }
-        public BodyShapeController_Mock(WearableController original) : base(original) { }
-
-        public Renderer[] myAssetRenderers => assetRenderers;
-        public GameObject myAssetContainer => this.assetContainer;
-    }
-
     public class WearableItemsShould : TestsBase
     {
         private const string SUNGLASSES_ID = "dcl://base-avatars/black_sun_glasses";
@@ -81,7 +36,7 @@ namespace AvatarShape_Tests
                 }
             };
             catalog = AvatarTestHelpers.CreateTestCatalog();
-            avatarShape = AvatarTestHelpers.CreateAvatar(scene, avatarModel);
+            avatarShape = AvatarTestHelpers.CreateAvatarShape(scene, avatarModel);
 
             yield return new DCL.WaitUntil(() => avatarShape.everythingIsLoaded, 20);
         }
@@ -182,7 +137,7 @@ namespace AvatarShape_Tests
             {
                 avatarModel.wearables = new List<string>() { SUNGLASSES_ID };
                 yield return avatarShape.ApplyChanges(JsonUtility.ToJson(avatarModel));
-                containers.Add(GetWearableController(SUNGLASSES_ID)?.myAssetContainer);
+                containers.Add(AvatarRenderer_Mock.GetWearableController(avatarShape.avatarRenderer, SUNGLASSES_ID)?.myAssetContainer);
 
                 avatarModel.wearables = new List<string>() { };
                 yield return avatarShape.ApplyChanges(JsonUtility.ToJson(avatarModel));
@@ -197,7 +152,7 @@ namespace AvatarShape_Tests
             avatarModel = AvatarTestHelpers.GetTestAvatarModel("test", "TestAvatar.json");
             yield return avatarShape.ApplyChanges(JsonUtility.ToJson(avatarModel));
 
-            var wearableControllers = GetWearableControllers();
+            var wearableControllers = AvatarRenderer_Mock.GetWearableMockControllers(avatarShape.avatarRenderer);
             List<Material> materials = new List<Material>();
             foreach (var wearableControllerMock in wearableControllers.Values)
             {
@@ -223,7 +178,7 @@ namespace AvatarShape_Tests
 
             yield return new DCL.WaitUntil(() => lastUpdateIsDone);
 
-            var wearableControllers = GetWearableControllers();
+            var wearableControllers = AvatarRenderer_Mock.GetWearableMockControllers(avatarShape.avatarRenderer);
             List<Material> materials = new List<Material>();
             foreach (var wearableControllerMock in wearableControllers.Values)
             {
@@ -241,8 +196,8 @@ namespace AvatarShape_Tests
             avatarModel.wearables = new List<string>() { SUNGLASSES_ID, BLUE_BANDANA_ID };
             yield return avatarShape.ApplyChanges(JsonUtility.ToJson(avatarModel));
 
-            var sunglassesAssetContainer = GetWearableController(SUNGLASSES_ID)?.myAssetContainer;
-            var bandanaAssetContainer = GetWearableController(BLUE_BANDANA_ID)?.myAssetContainer;
+            var sunglassesAssetContainer = AvatarRenderer_Mock.GetWearableController(avatarShape.avatarRenderer, SUNGLASSES_ID)?.myAssetContainer;
+            var bandanaAssetContainer = AvatarRenderer_Mock.GetWearableController(avatarShape.avatarRenderer, BLUE_BANDANA_ID)?.myAssetContainer;
             var sunglassesPoolableObject = sunglassesAssetContainer.GetComponentInChildren<PoolableObject>();
             var bandanaPoolableObject = bandanaAssetContainer.GetComponentInChildren<PoolableObject>();
             Assert.IsNull(sunglassesPoolableObject);
@@ -256,30 +211,11 @@ namespace AvatarShape_Tests
             avatarModel.wearables = new List<string>() { SUNGLASSES_ID, BLUE_BANDANA_ID };
             yield return avatarShape.ApplyChanges(JsonUtility.ToJson(avatarModel));
 
-            var bodyShapeAssetContainer = GetBodyShapeController()?.myAssetContainer;
+            var bodyShapeAssetContainer = AvatarRenderer_Mock.GetBodyShapeController(avatarShape.avatarRenderer)?.myAssetContainer;
             Assert.IsNotNull(bodyShapeAssetContainer);
 
             var renderers = bodyShapeAssetContainer.GetComponentsInChildren<Renderer>();
             Assert.IsTrue(renderers.All(x => !x.enabled));
-        }
-
-        private Dictionary<string, WearableController_Mock> GetWearableControllers() => AvatarRenderer_Mock.GetWearableControllers(avatarShape.avatarRenderer).ToDictionary(x => x.Key, x => new WearableController_Mock(x.Value));
-
-        private WearableController_Mock GetWearableController(string id)
-        {
-            var wearableControllers = AvatarRenderer_Mock.GetWearableControllers(avatarShape.avatarRenderer);
-            if (!wearableControllers.ContainsKey(id))
-                return null;
-
-            return new WearableController_Mock(wearableControllers[id]);
-        }
-
-        private BodyShapeController_Mock GetBodyShapeController()
-        {
-            var bodyShapeController = AvatarRenderer_Mock.GetBodyShape(avatarShape.avatarRenderer);
-            if (bodyShapeController == null) return null;
-
-            return new BodyShapeController_Mock(bodyShapeController);
         }
     }
 }
