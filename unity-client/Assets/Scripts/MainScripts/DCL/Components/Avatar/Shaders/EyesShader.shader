@@ -7,6 +7,7 @@ Shader "DCL/Eyes Shader"
 		_EyesTexture("Eyes Texture", 2D) = "white" {}
 		_IrisMask("Iris Mask", 2D) = "white" {}
 		_EyeTint("EyeTint", Color) = (1,0.03688662,0,0)
+		_Cutoff ("Alpha cutoff", Range(0,1)) = 0.5
 		[HideInInspector] _texcoord( "", 2D ) = "white" {}
     }
 
@@ -116,10 +117,9 @@ Shader "DCL/Eyes Shader"
 				float4 lerpResult8 = lerp( tex2DNode3 , ( tex2DNode3 * _EyeTint ) , ( 1.0 - tex2D( _IrisMask, uv_IrisMask ).r ));
 				
 		        float3 Color = lerpResult8.rgb;
-		        float Alpha = tex2DNode3.a;
-		        float AlphaClipThreshold = 0.5;
+		        float Alpha = tex2DNode3.a;		  
          #if _AlphaClip
-                clip(Alpha - AlphaClipThreshold);
+                clip(Alpha - _Cutoff);
         #endif
                 return half4(Color, Alpha);
             }
