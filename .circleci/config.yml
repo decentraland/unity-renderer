@@ -343,19 +343,39 @@ workflows:
   version: 2
   build-deploy:
     jobs:
-      - checkout
+      - checkout:
+          filters:
+            branches:
+              only: /(.*)/
+            tags:
+              only: /^\d+\.\d+\.\d(.*)/ # npm tag + latest
 
       - build-unity:
           requires:
             - checkout
+          filters:
+            branches:
+              only: /(.*)/
+            tags:
+              only: /^\d+\.\d+\.\d(.*)/ # npm tag + latest
       - build-kernel:
           requires:
             - checkout
+          filters:
+            branches:
+              only: /(.*)/
+            tags:
+              only: /^\d+\.\d+\.\d(.*)/ # npm tag + latest
 
       - build:
           requires:
             - build-kernel
             - build-unity
+          filters:
+            branches:
+              only: /(.*)/
+            tags:
+              only: /^\d+\.\d+\.\d(.*)/ # npm tag + latest
 
       # explorer master + pr branch jobs (deploy to dev + pr dev)
       - deploy-dev:
