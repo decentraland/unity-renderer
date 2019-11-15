@@ -153,9 +153,6 @@ export function* handleFetchProfile(action: PassportRequestAction): any {
     } else {
       profile.inventory = []
     }
-    if (ALL_WEARABLES) {
-      profile.inventory = (yield select(getExclusiveCatalog)).map((_: Wearable) => _.id)
-    }
     const passport = yield call(processServerProfile, userId, profile)
     yield put(passportSuccess(userId, passport))
   } catch (error) {
@@ -233,7 +230,11 @@ export function* submitPassportToRenderer(action: PassportSuccessAction): any {
     while (!(yield select(baseCatalogsLoaded))) {
       yield take(CATALOG_LOADED)
     }
-    yield call(sendLoadProfile, action.payload.profile)
+    const profile = { ...action.payload.profile }
+    if (ALL_WEARABLES) {
+      profile.inventory = (yield select(getExclusiveCatalog)).map((_: Wearable) => _.id)
+    }
+    yield call(sendLoadProfile, profile)
   }
 }
 
