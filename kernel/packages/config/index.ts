@@ -188,8 +188,8 @@ function getDefaultTLD() {
 }
 
 export function getExclusiveServer() {
-  if (window.location.search.match(/WEARABLE_SERVER=\w+/)) {
-    return window.location.search.match(/WEARABLE_SERVER=(\w+)/)[1]
+  if (window.location.search.match(/TEST_WEARABLES/)) {
+    return 'https://dcl-exclusive-test.now.sh/index.json'
   }
   return 'https://dcl-base-exclusive.now.sh/index.json'
 }
