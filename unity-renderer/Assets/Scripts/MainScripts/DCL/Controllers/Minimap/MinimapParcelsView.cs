@@ -18,13 +18,20 @@ public class MinimapParcelsView : MonoBehaviour
     private Vector3Variable playerUnityToWorldOffset => CommonScriptableObjects.playerUnityToWorldOffset;
     private MinimapMetadata minimapmetadata => MinimapMetadata.GetMetadata();
 
+    private Vector3Variable.Change unityWorldOffsetDelegate;
+
     public static int _BaseColor = Shader.PropertyToID("_BaseColor");
 
     private void Start()
     {
         SetupIcons();
         playerCoords.OnChange += OnCharacterSetPosition;
-        minimapmetadata.OnChange += MinimapMetadataChange;
+        minimapmetadata.OnTileUpdated += TileUpdated;
+        minimapmetadata.OnTileRemoved += TileRemoved;
+
+        unityWorldOffsetDelegate = (current,  previous) => Recenter();
+        playerUnityToWorldOffset.OnChange += unityWorldOffsetDelegate;
+
         DrawParcels(Vector2Int.zero);
     }
 
@@ -44,6 +51,7 @@ public class MinimapParcelsView : MonoBehaviour
             }
         }
     }
+
     public void OnCharacterSetPosition(Vector2Int newCoords, Vector2Int oldCoords)
     {
         DrawParcels(newCoords);
@@ -58,12 +66,16 @@ public class MinimapParcelsView : MonoBehaviour
             int x = newCoords.x + keyValuePair.Key.Item1;
             int y = newCoords.y + keyValuePair.Key.Item2;
             var tile = minimapmetadata.GetTile(x, y);
-
             keyValuePair.Value.material.SetColor(_BaseColor, tile?.color ?? Color.grey);
         }
     }
 
-    private void MinimapMetadataChange(MinimapMetadata instance)
+    private void TileUpdated((int, int) pos, MinimapMetadata.Tile tile)
+    {
+        DrawParcels(playerCoords.Get());
+    }
+
+    private void TileRemoved((int, int) pos)
     {
         DrawParcels(playerCoords.Get());
     }
@@ -76,6 +88,8 @@ public class MinimapParcelsView : MonoBehaviour
     private void OnDestroy()
     {
         playerCoords.OnChange -= OnCharacterSetPosition;
-        minimapmetadata.OnChange -= MinimapMetadataChange;
+        minimapmetadata.OnTileUpdated -= TileUpdated;
+        minimapmetadata.OnTileRemoved -= TileRemoved;
+        playerUnityToWorldOffset.OnChange -= unityWorldOffsetDelegate;
     }
 }

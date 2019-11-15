@@ -282,6 +282,12 @@ export const unityInterface = {
   ConfigureAvatarEditorHUD(configuration: HUDConfiguration) {
     gameInstance.SendMessage('HUDController', 'ConfigureAvatarEditorHUD', JSON.stringify(configuration))
   },
+  UpdateMinimapSceneInformation(info: { x: number; y: number; name: string; type: number }[]) {
+    gameInstance.SendMessage('HUDController', 'UpdateMinimapSceneInformation', JSON.stringify(info))
+  },
+  UpdateMinimapSceneNames(info: { x: number; y: number; name: string }[]) {
+    gameInstance.SendMessage('HUDController', 'UpdateMinimapSceneNames', JSON.stringify(info))
+  },
   SelectGizmoBuilder(type: string) {
     this.SendBuilderMessage('SelectGizmo', type)
   },
