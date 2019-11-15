@@ -217,5 +217,21 @@ namespace AvatarShape_Tests
             var renderers = bodyShapeAssetContainer.GetComponentsInChildren<Renderer>();
             Assert.IsTrue(renderers.All(x => !x.enabled));
         }
+
+        [UnityTest]
+        public IEnumerator BeHiddenUntilWholeAvatarIsReady()
+        {
+            avatarModel.wearables = new List<string>() { SUNGLASSES_ID, BLUE_BANDANA_ID };
+
+            avatarShape.avatarRenderer.ApplyModel(avatarModel, null, null);
+
+            bool wearableReady = false;
+            var wearableController = AvatarRenderer_Mock.GetWearableController(avatarShape.avatarRenderer, SUNGLASSES_ID);
+            wearableController.myPromise.OnSuccessEvent += gltf => wearableReady = true;
+            yield return new DCL.WaitUntil(() => wearableReady);
+
+            var renderers = wearableController.myPromise.asset.container.GetComponentsInChildren<Renderer>(); 
+            Assert.IsTrue(renderers.All(x => x.enabled == false));
+        }
     }
 }

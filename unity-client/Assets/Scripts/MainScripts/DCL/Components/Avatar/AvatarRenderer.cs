@@ -98,7 +98,7 @@ namespace DCL
 
                 bodyShapeController = new BodyShapeController( ResolveWearable(model.bodyShape));
                 SetupDefaultFacialFeatures(bodyShapeController.bodyShapeType);
-                bodyShapeController.Load(transform, visibility, OnWearableLoadingSuccess, OnWearableLoadingFail);
+                bodyShapeController.Load(transform, OnWearableLoadingSuccess, OnWearableLoadingFail);
             }
             else
             {
@@ -328,7 +328,7 @@ namespace DCL
                 default:
                     var wearableController = new WearableController(ResolveWearable(wearableId), bodyShapeController.id);
                     wearablesController.Add(wearableId, wearableController);
-                    wearableController.Load(transform, visibility, OnWearableLoadingSuccess, OnWearableLoadingFail);
+                    wearableController.Load(transform, OnWearableLoadingSuccess, OnWearableLoadingFail);
                     break;
             }
         }
