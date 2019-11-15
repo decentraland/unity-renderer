@@ -3,7 +3,7 @@ import { call, delay, fork, put, race, select, take, takeEvery, takeLatest } fro
 import { queueTrackingEvent } from '../analytics'
 import { getCurrentUser } from '../comms/peers'
 import { lastPlayerPosition } from '../world/positionThings'
-import { SceneLoadAction, SCENE_FAIL, SCENE_LOAD, SCENE_START } from './actions'
+import { SceneLoad, SCENE_FAIL, SCENE_LOAD, SCENE_START } from './actions'
 import { LoadingState } from './reducer'
 import { EXPERIENCE_STARTED, helpTexts, rotateHelpText, TELEPORT_TRIGGERED } from './types'
 
@@ -18,7 +18,7 @@ export function* loadingSaga() {
   yield takeEvery(SCENE_LOAD, trackLoadTime)
 }
 
-export function* trackLoadTime(action: SceneLoadAction): any {
+export function* trackLoadTime(action: SceneLoad): any {
   const start = new Date().getTime()
   const sceneId = action.payload
   const result = yield race({
