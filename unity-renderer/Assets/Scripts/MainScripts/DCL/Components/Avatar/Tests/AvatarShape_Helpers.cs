@@ -99,7 +99,8 @@ namespace AvatarShape_Tests
         public WearableController_Mock(WearableController original) : base(original) { }
 
         public Renderer[] myAssetRenderers => assetRenderers;
-        public GameObject myAssetContainer => this.assetContainer;
+        public GameObject myAssetContainer => assetContainer;
+        public AssetPromise_GLTF myPromise => promise;
     }
 
     class BodyShapeController_Mock : BodyShapeController

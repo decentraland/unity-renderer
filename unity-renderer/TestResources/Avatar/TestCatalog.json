@@ -12,23 +12,23 @@
         "contents": [
           {
             "file": "Avatar_FemaleSkinBase.png",
-            "hash": "QmVGmsPD6KkjuFiz3C1UES7MQVWdVUeVDzGuUupZLVGgHJ"
+            "hash": "QmXBeMAkB4sUFCMy42tGQ9DQZ1HC8VLZ3r4e7p2GdMRudT"
           },
           {
             "file": "BaseFemale.glb",
-            "hash": "QmbUTiTiq2yFob8ekoqZ1VyhHnAVnj6v4EaL7RZCgPeD4V"
+            "hash": "QmeJR5QExkEmaRpdcWrMykMTaG42JcpcAkDJr6Yr3RaZX2"
           },
           {
             "file": "Brows_00.png",
-            "hash": "QmUisLcARDLsqizgg1ryUEd4JWhxez8ieh7JVjUo7BT8Em"
+            "hash": "QmbZNqzs4vgysPZzZiJ8jQkmqzu2U1qm1FBjYC5fgSJm81"
           },
           {
             "file": "Eyes_00.png",
-            "hash": "QmcGyxo3ctfJ8Y8QBjoP7UvfDYFEyGgSdQ5kPhHwo3Tzkt"
+            "hash": "QmRNHqKFNvpGz5SbdQ2F7Y8eaqjzscaYVeRq5z3MUsTJ28"
           },
           {
-            "file": "Mouth_00.png",
-            "hash": "QmSpExz2AUR3Dd9kAJL6iUbkefxEGXg8GPPdRxc33az6AU"
+            "file": "F_Mouth_00.png",
+            "hash": "QmQMD96mDqKvo9daSkchLrsyrLqWPritQtE6w7tuMpsgkB"
           }
         ]
       }
@@ -3861,15 +3861,15 @@
         "contents": [
           {
             "file": "AvatarWearables_TX.png",
-            "hash": "QmRaHnacT5G7oLYTYGsRWZtLXzXuTNEq7gWAcvXRSxfwEU"
+            "hash": "QmWLrKJFzDCMGXVCef78SDkMHWB94eHP1ZeXfyci3kphTb"
           },
           {
-            "file": "Avatar_MaleSkin.png",
-            "hash": "QmU3omTrtqYBtdHcC2FZjYvyLmVVmBKaaKa52CmBF2bn9U"
+            "file": "Avatar_MaleSkinBase.png",
+            "hash": "QmRxKVwraeAq8NwgJ1TM9VnrG4AaQ7HbATxg7BGAVcUhvH"
           },
           {
             "file": "BearSlippers_01.glb",
-            "hash": "QmZFQB5jwnK4ePqqokqHDrag9FEXwbTNa4kiNuaysyAS9Q"
+            "hash": "QmcgK5FTq2FpxK7YdwMqsSKvc6WikweDaSZozKpwk18Ktp"
           }
         ]
       },
@@ -3883,15 +3883,15 @@
         "contents": [
           {
             "file": "AvatarWearables_TX.png",
-            "hash": "QmRaHnacT5G7oLYTYGsRWZtLXzXuTNEq7gWAcvXRSxfwEU"
+            "hash": "QmWLrKJFzDCMGXVCef78SDkMHWB94eHP1ZeXfyci3kphTb"
           },
           {
-            "file": "Avatar_MaleSkin.png",
-            "hash": "QmU3omTrtqYBtdHcC2FZjYvyLmVVmBKaaKa52CmBF2bn9U"
+            "file": "Avatar_MaleSkinBase.png",
+            "hash": "QmRxKVwraeAq8NwgJ1TM9VnrG4AaQ7HbATxg7BGAVcUhvH"
           },
           {
             "file": "BearSlippers_01.glb",
-            "hash": "QmZFQB5jwnK4ePqqokqHDrag9FEXwbTNa4kiNuaysyAS9Q"
+            "hash": "QmcgK5FTq2FpxK7YdwMqsSKvc6WikweDaSZozKpwk18Ktp"
           }
         ]
       }
@@ -4221,12 +4221,12 @@
             "hash": "QmWLrKJFzDCMGXVCef78SDkMHWB94eHP1ZeXfyci3kphTb"
           },
           {
-            "file": "Avatar_MaleSkin.png",
-            "hash": "Qmf28utefDBX51n6op1camuz9nW6xFHkkZRSNkvRGJThsx"
+            "file": "Avatar_MaleSkinBase.png",
+            "hash": "QmRxKVwraeAq8NwgJ1TM9VnrG4AaQ7HbATxg7BGAVcUhvH"
           },
           {
             "file": "M_Feet_Espadrilles.glb",
-            "hash": "QmRERcffGRci5zonAHVccDq5JKfcNYyFMaZ4EiFATCbVRo"
+            "hash": "QmbWPX7HkaJJPLh6f4GjTPenPvMVkKedEAjYP51G8fxjjH"
           }
         ]
       },
@@ -4243,12 +4243,12 @@
             "hash": "QmWLrKJFzDCMGXVCef78SDkMHWB94eHP1ZeXfyci3kphTb"
           },
           {
-            "file": "Avatar_MaleSkin.png",
-            "hash": "Qmf28utefDBX51n6op1camuz9nW6xFHkkZRSNkvRGJThsx"
+            "file": "Avatar_MaleSkinBase.png",
+            "hash": "QmRxKVwraeAq8NwgJ1TM9VnrG4AaQ7HbATxg7BGAVcUhvH"
           },
           {
             "file": "M_Feet_Espadrilles.glb",
-            "hash": "QmRERcffGRci5zonAHVccDq5JKfcNYyFMaZ4EiFATCbVRo"
+            "hash": "QmbWPX7HkaJJPLh6f4GjTPenPvMVkKedEAjYP51G8fxjjH"
           }
         ]
       }
@@ -4291,15 +4291,15 @@
         "contents": [
           {
             "file": "AvatarWearables_TX.png",
-            "hash": "QmRaHnacT5G7oLYTYGsRWZtLXzXuTNEq7gWAcvXRSxfwEU"
+            "hash": "QmWLrKJFzDCMGXVCef78SDkMHWB94eHP1ZeXfyci3kphTb"
+          },
+          {
+            "file": "Avatar_FemaleSkinBase.png",
+            "hash": "QmXBeMAkB4sUFCMy42tGQ9DQZ1HC8VLZ3r4e7p2GdMRudT"
           },
           {
             "file": "F_BunShoes_01.glb",
-            "hash": "QmTeuWKr5yHFVhigEfWC18jxnCV1XfXCGiXLS6i4mHzK8j"
-          },
-          {
-            "file": "SkinWoman.jpg",
-            "hash": "QmdcU2hPGvHjvfRvZRRfY1rX681PG1ESFAHTPiKNp5njZH"
+            "hash": "QmPzeZk4AsudG7oAULEasHwQYuak1ASB7YkhHWDwQVHd11"
           }
         ]
       }
@@ -4992,12 +4992,12 @@
             "hash": "QmWLrKJFzDCMGXVCef78SDkMHWB94eHP1ZeXfyci3kphTb"
           },
           {
-            "file": "Avatar_MaleSkin.png",
-            "hash": "Qmf28utefDBX51n6op1camuz9nW6xFHkkZRSNkvRGJThsx"
+            "file": "Avatar_MaleSkinBase.png",
+            "hash": "QmRxKVwraeAq8NwgJ1TM9VnrG4AaQ7HbATxg7BGAVcUhvH"
           },
           {
             "file": "M_Feet_Moccasin.glb",
-            "hash": "QmSS8MifZ1va6s9Yo6uypvMnarDQTwYAYHRM2fvC6jLPxk"
+            "hash": "QmNpsP5x3AFdoZN9n4S8bU9TPxgA6iKbJbaKqRk5vBuDLK"
           }
         ]
       }
@@ -5041,12 +5041,12 @@
             "hash": "QmWLrKJFzDCMGXVCef78SDkMHWB94eHP1ZeXfyci3kphTb"
           },
           {
-            "file": "Avatar_MaleSkin.png",
-            "hash": "Qmf28utefDBX51n6op1camuz9nW6xFHkkZRSNkvRGJThsx"
+            "file": "Avatar_MaleSkinBase.png",
+            "hash": "QmRxKVwraeAq8NwgJ1TM9VnrG4AaQ7HbATxg7BGAVcUhvH"
           },
           {
             "file": "M_Feet_Sandals.glb",
-            "hash": "QmTJbLoM8TGoJzkEoN4HL9QvePmW9khaHtRjbnxJHT7qHB"
+            "hash": "QmVEyeWpYLDqnjjY1KDynAeeXyRGkzD8Bx4p2Kokeb2uKq"
           }
         ]
       },
@@ -5063,12 +5063,12 @@
             "hash": "QmWLrKJFzDCMGXVCef78SDkMHWB94eHP1ZeXfyci3kphTb"
           },
           {
-            "file": "Avatar_MaleSkin.png",
-            "hash": "Qmf28utefDBX51n6op1camuz9nW6xFHkkZRSNkvRGJThsx"
+            "file": "Avatar_MaleSkinBase.png",
+            "hash": "QmRxKVwraeAq8NwgJ1TM9VnrG4AaQ7HbATxg7BGAVcUhvH"
           },
           {
             "file": "M_Feet_Sandals.glb",
-            "hash": "QmTJbLoM8TGoJzkEoN4HL9QvePmW9khaHtRjbnxJHT7qHB"
+            "hash": "QmVEyeWpYLDqnjjY1KDynAeeXyRGkzD8Bx4p2Kokeb2uKq"
           }
         ]
       }
@@ -5306,7 +5306,7 @@
           },
           {
             "file": "F_Hair_Anime_03.glb",
-            "hash": "QmRWdYxSnFmosSX6meCEM9XJ8Gd1xDf2Tz13ch1XhT4wbn"
+            "hash": "QmYbQ7QiE2FYCC9ebA6jer7NyaUnnWhqqnQdoRPAUzQdDo"
           }
         ]
       }
@@ -5396,7 +5396,7 @@
           },
           {
             "file": "F_Hair_CoolShortStyle.glb",
-            "hash": "QmduBoSSNhcoMjvgQYV9xVpj7Kfhi9Kib2qR2jG7T4Tp4x"
+            "hash": "QmevgLbBUMm9WJguRtedTxJdKaGCGxfnCqRjcjZ6EQeCD6"
           }
         ]
       }
@@ -6075,7 +6075,7 @@
           },
           {
             "file": "M_Hair_Beatle_01.glb",
-            "hash": "QmZuQPWZXo1SS2P7uHwtZBha4t8QiVppgyDeQ3iyk4yMJR"
+            "hash": "QmbVH6GKuttEWUJaYtb7bprdM6kBUijQTA1N2nNPeMgSDD"
           }
         ]
       }
@@ -8107,15 +8107,15 @@
         "contents": [
           {
             "file": "AvatarWearables_TX.png",
-            "hash": "QmRaHnacT5G7oLYTYGsRWZtLXzXuTNEq7gWAcvXRSxfwEU"
+            "hash": "QmWLrKJFzDCMGXVCef78SDkMHWB94eHP1ZeXfyci3kphTb"
           },
           {
-            "file": "Avatar_MaleSkin.png",
-            "hash": "QmU3omTrtqYBtdHcC2FZjYvyLmVVmBKaaKa52CmBF2bn9U"
+            "file": "Avatar_MaleSkinBase.png",
+            "hash": "QmRxKVwraeAq8NwgJ1TM9VnrG4AaQ7HbATxg7BGAVcUhvH"
           },
           {
             "file": "M_lBody_ShortPants_01.glb",
-            "hash": "QmVkCWsHTN5v7xxHYVqWTFcqgEz3LWNYzGdxL4zDXX83oT"
+            "hash": "QmQKXqiydwPsy1MKTUZS6Xk3hZzTXY4mLupBmu2WExPLUG"
           }
         ]
       }
@@ -8348,15 +8348,15 @@
         "contents": [
           {
             "file": "AvatarWearables_TX.png",
-            "hash": "QmRaHnacT5G7oLYTYGsRWZtLXzXuTNEq7gWAcvXRSxfwEU"
+            "hash": "QmWLrKJFzDCMGXVCef78SDkMHWB94eHP1ZeXfyci3kphTb"
           },
           {
-            "file": "Avatar_MaleSkin.png",
-            "hash": "QmU3omTrtqYBtdHcC2FZjYvyLmVVmBKaaKa52CmBF2bn9U"
+            "file": "Avatar_MaleSkinBase.png",
+            "hash": "QmRxKVwraeAq8NwgJ1TM9VnrG4AaQ7HbATxg7BGAVcUhvH"
           },
           {
             "file": "M_lBody_TrashJeans_01.glb",
-            "hash": "QmNMnCA1fAWVevwM4FiEJ1Ef7ca7Awn7BY6XF49RzGvpqP"
+            "hash": "QmdtXNJWQiK2ye18HXpKwqswgkrQqzdum6TnStBZi7KmfK"
           }
         ]
       }
