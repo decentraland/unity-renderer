@@ -15,19 +15,24 @@ If you are using Windows 10 we recommend you to enable the Linux subsystem and i
 
 ## Running the kernel
 
-First, build the project:
+Make sure you have node v10 or compatible installed, then build the project:
 
-    make build
+    cd kernel
+    make build-essentials
 
 To run and watch a server with the kernel build, run:
 
     make watch
 
+Optionally, you can build the test scenes which are used in `debug` mode:
+
+    make test-scenes
+
 To run the Unity interface:
 
-  1. Download and install Unity 2019.1.14f1 or a later 2019.1 version (note that 2019.2 does not work!)
-  2. Open the Initial Scene
-  3. Run the Initial Scene in the Unity editor!
+1. Download and install Unity 2019.1.14f1 or a later 2019.1 version (note that 2019.2 does not work!)
+2. Open the Initial Scene
+3. Run the Initial Scene in the Unity editor!
 
 To run the client in `debug` mode append the following query parameter to the URL:
 
@@ -103,15 +108,15 @@ Every component declaration should be under the **/packages/decentraland-ecs/src
 
 #### Entity/Non-Shared/Non-Disposable component:
 
--   Make sure the corresponding CLASS_ID_COMPONENT value exists in MainScripts/DCL/Models/Protocol.cs, otherwise add it.
--   Create the component script and prefab in MainScripts/DCL/Components/[Corresponding Folder]/
--   From the Unity editor, update the MainScripts/DCL/Factory/DCLComponentFactory scriptable object adding the new element in the Factory List with the correct CLASS_ID_COMPONENT value and its prefab reference
+- Make sure the corresponding CLASS_ID_COMPONENT value exists in MainScripts/DCL/Models/Protocol.cs, otherwise add it.
+- Create the component script and prefab in MainScripts/DCL/Components/[Corresponding Folder]/
+- From the Unity editor, update the MainScripts/DCL/Factory/DCLComponentFactory scriptable object adding the new element in the Factory List with the correct CLASS_ID_COMPONENT value and its prefab reference
 
 #### Shared/Disposable component:
 
--   Make sure the corresponding CLASS_ID value exists in MainScripts/DCL/Models/Protocol.cs, otherwise add it.
--   Create the component script in MainScripts/DCL/Components/[Corresponding Folder]/
--   Edit the SharedComponentCreate() method in MainScripts/DCL/Controllers/Scene/ParcelScene.cs to make sure it instantiates the new shared component.
+- Make sure the corresponding CLASS_ID value exists in MainScripts/DCL/Models/Protocol.cs, otherwise add it.
+- Create the component script in MainScripts/DCL/Components/[Corresponding Folder]/
+- Edit the SharedComponentCreate() method in MainScripts/DCL/Controllers/Scene/ParcelScene.cs to make sure it instantiates the new shared component.
 
 ### Shaders Scene-Forced PreWarm
 
@@ -127,9 +132,9 @@ We are using [UnityGLTF](https://github.com/KhronosGroup/UnityGLTF) as a Dynamic
 
 1. GLTFComponent.cs has been adapted to:
 
--   Be able to avoid loading on start by default (for remotely-fetched models that need to take some time to download)
--   Have a 'finished loading asset callback' providing the time it took to load the GLTF asset (initially used for measuring loading times)
--   StartCoroutine has been replaced by StartThrowingCoroutine so we catch the invalid GLTF assets gracefully.
+- Be able to avoid loading on start by default (for remotely-fetched models that need to take some time to download)
+- Have a 'finished loading asset callback' providing the time it took to load the GLTF asset (initially used for measuring loading times)
+- StartCoroutine has been replaced by StartThrowingCoroutine so we catch the invalid GLTF assets gracefully.
 
 2. SpecGlossMap.cs and MetalRoughMap.cs were adapted to use "Lightweight Render Pipeline/Simple Lit" and "Lightweight Render Pipeline/Lit" shaders respectively (the original PbrMetallicRoughness and PbrSpecularGlossiness don't work with the Lightweight Render Pipeline)
 
@@ -151,6 +156,7 @@ We are using [UnityGLTF](https://github.com/KhronosGroup/UnityGLTF) as a Dynamic
 The pngs will be named automatically using the `InitVisualTestsScene` parameter.
 
 Example:
+
 ```
 public class VisualTests : VisualTestsBase
 {
@@ -173,8 +179,8 @@ public class VisualTests : VisualTestsBase
 2. call `VisualTestHelpers.GenerateBaselineForTest(IEnumerator)` inside the method, passing the actual test method as parameter.
 3. remember to make the test `[Explicit]` or the test will give false positives
 
-
 Example:
+
 ```
 [UnityTest][Explicit]
 public IEnumerator VisualTestStub_Generate()
@@ -187,22 +193,27 @@ public IEnumerator VisualTestStub_Generate()
 
 1. Build unity WASM with its name as `unity` into the folder `/static`. **It's very important that the folder/build name is `unity`**.
 2. Checkout the file named `static/unity/Build/DCLUnityLoader.js`. Unity deletes anything on this folder as part of the build process and we need that.
+
 ```
 git checkout -- static/unity/Build/DCLUnityLoader.js
 ```
-4. Checkout the modifications in the `static/unity/Build/unity.json` file. Unity deletes our custom changes as part of the build process.	
+
+4. Checkout the modifications in the `static/unity/Build/unity.json` file. Unity deletes our custom changes as part of the build process.
+
 ```
 git checkout -- static/unity/Build/unity.json
 ```
+
 5. Run `make watch`.
 6. Testing how your new build performs:
-  * Open **[http://localhost:8080/?DEBUG_MODE&LOCAL_COMMS&position=-100,100](http://localhost:8080/?DEBUG_MODE&LOCAL_COMMS&position=-100,100)** to go to an area with a high density of test parcels.
-  * Open **[http://localhost:8080/?DEBUG_MODE&LOCAL_COMMS&ENV=org&position=10,0](http://localhost:8080/?DEBUG_MODE&LOCAL_COMMS&ENV=org&position=10,0)** to open an area with real-life deployments (but without communicating with other users).
-  * Open **[http://localhost:8080/?ENV=org&position=0,90](http://localhost:8080/?ENV=org&position=0,90)** to open the explorer near the Decentraland Museum
+
+- Open **[http://localhost:8080/?DEBUG_MODE&LOCAL_COMMS&position=-100,100](http://localhost:8080/?DEBUG_MODE&LOCAL_COMMS&position=-100,100)** to go to an area with a high density of test parcels.
+- Open **[http://localhost:8080/?DEBUG_MODE&LOCAL_COMMS&ENV=org&position=10,0](http://localhost:8080/?DEBUG_MODE&LOCAL_COMMS&ENV=org&position=10,0)** to open an area with real-life deployments (but without communicating with other users).
+- Open **[http://localhost:8080/?ENV=org&position=0,90](http://localhost:8080/?ENV=org&position=0,90)** to open the explorer near the Decentraland Museum
 
 ### Builder Integration
 
-The following layers were created for builder functionality: 
+The following layers were created for builder functionality:
 -Ground: used to facilitate ground raycasting and objects movement-
 -Gizmo: used to identify the gizmos and effects.
 -Selected: used for selected object effects.
