@@ -20,10 +20,10 @@ Material:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: InvalidMesh
+  m_Name: InvalidSubMesh
   m_Shader: {fileID: 4800000, guid: 933532a4fcc9baf4fa0491de14d08ed7, type: 3}
-  m_ShaderKeywords: _EMISSION
-  m_LightmapFlags: 2
+  m_ShaderKeywords: 
+  m_LightmapFlags: 4
   m_EnableInstancingVariants: 0
   m_DoubleSidedGI: 0
   m_CustomRenderQueue: 2050
@@ -109,7 +109,7 @@ Material:
     - _ZOffset2: 1
     - _ZWrite: 1
     m_Colors:
-    - _BaseColor: {r: 1, g: 0.57254905, b: 0.57254905, a: 1}
+    - _BaseColor: {r: 0.9811321, g: 0.26379493, b: 0.26379493, a: 1}
     - _Color: {r: 1, g: 0.57254905, b: 0.57254905, a: 1}
-    - _EmissionColor: {r: 0.04365115, g: 0, b: 0, a: 1}
+    - _EmissionColor: {r: 0.9221513, g: 0, b: 0, a: 1}
     - _SpecColor: {r: 1, g: 1, b: 1, a: 1}
