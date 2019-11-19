@@ -21,7 +21,7 @@ namespace DCL.Controllers
 
             public void ResetMaterials()
             {
-                if(meshesInfo.meshRootGameObject == null) return;
+                if (meshesInfo.meshRootGameObject == null) return;
 
                 for (int i = 0; i < meshesInfo.renderers.Length; i++)
                 {
@@ -40,19 +40,40 @@ namespace DCL.Controllers
 
         const string WIREFRAME_PREFAB_NAME = "Prefabs/WireframeCubeMesh";
         const string INVALID_MESH_MATERIAL_NAME = "Materials/InvalidMesh";
+        const string INVALID_SUBMESH_MATERIAL_NAME = "Materials/InvalidSubMesh";
 
         Material invalidMeshMaterial;
+        Material invalidSubMeshMaterial;
         Dictionary<GameObject, InvalidMeshInfo> invalidMeshesInfo = new Dictionary<GameObject, InvalidMeshInfo>();
+        HashSet<Renderer> invalidSubmeshes = new HashSet<Renderer>();
 
         public SceneBoundariesDebugModeChecker(ParcelScene ownerScene) : base(ownerScene)
         {
             invalidMeshesInfo = new Dictionary<GameObject, InvalidMeshInfo>();
             invalidMeshMaterial = Resources.Load(INVALID_MESH_MATERIAL_NAME) as Material;
+            invalidSubMeshMaterial = Resources.Load(INVALID_SUBMESH_MATERIAL_NAME) as Material;
+        }
+
+        protected override bool AreSubmeshesInsideBoundaries(DecentralandEntity entity)
+        {
+            bool isInsideBoundaries = true;
+
+            for (int i = 0; i < entity.meshesInfo.renderers.Length; i++)
+            {
+                if (!scene.IsInsideSceneBoundaries(entity.meshesInfo.renderers[i].bounds))
+                {
+                    isInsideBoundaries = false;
+
+                    invalidSubmeshes.Add(entity.renderers[i]);
+                }
+            }
+
+            return isInsideBoundaries;
         }
 
         protected override void UpdateEntityMeshesValidState(DecentralandEntity entity, bool isInsideBoundaries, Bounds meshBounds)
         {
-            if(isInsideBoundaries)
+            if (isInsideBoundaries)
                 RemoveInvalidMeshEffect(entity);
             else
                 AddInvalidMeshEffect(entity, meshBounds);
@@ -60,25 +81,31 @@ namespace DCL.Controllers
 
         void RemoveInvalidMeshEffect(DecentralandEntity entity)
         {
-            if(WasEntityInAValidPosition(entity)) return;
+            if (WasEntityInAValidPosition(entity)) return;
 
             PoolableObject shapePoolableObjectBehaviour = entity.meshesInfo.meshRootGameObject.GetComponentInChildren<PoolableObject>();
-            if(shapePoolableObjectBehaviour != null)
+            if (shapePoolableObjectBehaviour != null)
                 shapePoolableObjectBehaviour.OnRelease -= invalidMeshesInfo[entity.gameObject].ResetMaterials;
-                
+
+            for (int i = 0; i < entity.renderers.Length; i++)
+            {
+                if (invalidSubmeshes.Contains(entity.renderers[i]))
+                    invalidSubmeshes.Remove(entity.renderers[i]);
+            }
+
             invalidMeshesInfo[entity.gameObject].ResetMaterials();
         }
 
         void AddInvalidMeshEffect(DecentralandEntity entity, Bounds meshBounds)
         {
-            if(!WasEntityInAValidPosition(entity)) return;
+            if (!WasEntityInAValidPosition(entity)) return;
 
             InvalidMeshInfo invalidMeshInfo = new InvalidMeshInfo(entity.meshesInfo);
 
-            invalidMeshInfo.OnResetMaterials = ()=> { invalidMeshesInfo.Remove(entity.gameObject); };
+            invalidMeshInfo.OnResetMaterials = () => { invalidMeshesInfo.Remove(entity.gameObject); };
 
             PoolableObject shapePoolableObjectBehaviour = entity.meshesInfo.meshRootGameObject.GetComponentInChildren<PoolableObject>();
-            if(shapePoolableObjectBehaviour != null)
+            if (shapePoolableObjectBehaviour != null)
             {
                 shapePoolableObjectBehaviour.OnRelease -= invalidMeshInfo.ResetMaterials;
                 shapePoolableObjectBehaviour.OnRelease += invalidMeshInfo.ResetMaterials;
@@ -91,15 +118,23 @@ namespace DCL.Controllers
                 // Save original materials
                 invalidMeshInfo.originalMaterials.Add(entityRenderers[i], entityRenderers[i].sharedMaterial);
 
-                entityRenderers[i].sharedMaterial = invalidMeshMaterial;
+                if (invalidSubmeshes.Contains(entityRenderers[i]))
+                {
+                    // Wireframe that shows the boundaries to the dev (We don't use the GameObject.Instantiate(prefab, parent)
+                    // overload because we need to set the position and scale before parenting, to deal with scaled objects)
+                    GameObject wireframeObject = GameObject.Instantiate(Resources.Load<GameObject>(WIREFRAME_PREFAB_NAME));
+                    wireframeObject.transform.position = entityRenderers[i].bounds.center;
+                    wireframeObject.transform.localScale = entityRenderers[i].bounds.size * 1.01f;
+                    wireframeObject.transform.SetParent(entity.gameObject.transform);
 
-                // Wireframe that shows the boundaries to the dev (We don't use the GameObject.Instantiate(prefab, parent) 
-                // overload because we need to set the position and scale before parenting, to deal with scaled objects)
-                GameObject wireframeObject = GameObject.Instantiate(Resources.Load<GameObject>(WIREFRAME_PREFAB_NAME));
-                wireframeObject.transform.position = entityRenderers[i].bounds.center;
-                wireframeObject.transform.localScale = entityRenderers[i].bounds.size;
-                wireframeObject.transform.SetParent(entity.gameObject.transform);
-                invalidMeshInfo.wireframeObjects.Add(wireframeObject);
+                    entityRenderers[i].sharedMaterial = invalidSubMeshMaterial;
+
+                    invalidMeshInfo.wireframeObjects.Add(wireframeObject);
+                }
+                else
+                {
+                    entityRenderers[i].sharedMaterial = invalidMeshMaterial;
+                }
             }
 
             invalidMeshesInfo.Add(entity.gameObject, invalidMeshInfo);

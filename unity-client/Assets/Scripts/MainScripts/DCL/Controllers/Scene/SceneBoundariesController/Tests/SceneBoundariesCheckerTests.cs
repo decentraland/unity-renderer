@@ -16,7 +16,7 @@ namespace Tests
         public IEnumerator PShapeIsInvalidatedWhenStartingOutOfBounds()
         {
             yield return InitScene();
-            
+
             string entityId = "1";
             TestHelpers.InstantiateEntityWithShape(scene, entityId, DCL.Models.CLASS_ID.BOX_SHAPE, Vector3.zero);
             yield return null;
@@ -28,7 +28,7 @@ namespace Tests
         public IEnumerator PShapeIsInvalidatedWhenStartingOutOfBoundsDebugMode()
         {
             yield return InitScene(false, true, true, true, true);
-            
+
             string entityId = "1";
             TestHelpers.InstantiateEntityWithShape(scene, entityId, DCL.Models.CLASS_ID.BOX_SHAPE, Vector3.zero);
             yield return null;
@@ -40,7 +40,7 @@ namespace Tests
         public IEnumerator GLTFShapeIsInvalidatedWhenStartingOutOfBounds()
         {
             yield return InitScene();
-            
+
             string entityId = "1";
             TestHelpers.CreateSceneEntity(scene, entityId);
 
@@ -61,7 +61,7 @@ namespace Tests
         public IEnumerator NFTShapeIsInvalidatedWhenStartingOutOfBounds()
         {
             yield return InitScene();
-            
+
             string entityId = "1";
             TestHelpers.CreateSceneEntity(scene, entityId);
 
@@ -75,7 +75,7 @@ namespace Tests
             yield return component.routine;
 
             TestHelpers.SharedComponentAttach(component, scene.entities[entityId]);
-            
+
             var shapeLoader = scene.entities[entityId].gameObject.GetComponentInChildren<LoadWrapper_NFT>(true);
             yield return new WaitUntil(() => shapeLoader.alreadyLoaded);
 
@@ -86,7 +86,7 @@ namespace Tests
         public IEnumerator PShapeIsInvalidatedWhenLeavingBounds()
         {
             yield return InitScene();
-            
+
             string entityId = "1";
             TestHelpers.InstantiateEntityWithShape(scene, entityId, DCL.Models.CLASS_ID.BOX_SHAPE, new Vector3(8, 1, 8));
             yield return null;
@@ -104,7 +104,7 @@ namespace Tests
         public IEnumerator GLTFShapeIsInvalidatedWhenLeavingBounds()
         {
             yield return InitScene();
-            
+
             string entityId = "1";
             TestHelpers.CreateSceneEntity(scene, entityId);
 
@@ -130,7 +130,7 @@ namespace Tests
         public IEnumerator NFTShapeIsInvalidatedWhenLeavingBounds()
         {
             yield return InitScene();
-            
+
             string entityId = "1";
             TestHelpers.CreateSceneEntity(scene, entityId);
 
@@ -144,7 +144,7 @@ namespace Tests
             yield return component.routine;
 
             TestHelpers.SharedComponentAttach(component, scene.entities[entityId]);
-            
+
             var shapeLoader = scene.entities[entityId].gameObject.GetComponentInChildren<LoadWrapper_NFT>(true);
             yield return new WaitUntil(() => shapeLoader.alreadyLoaded);
 
@@ -160,7 +160,7 @@ namespace Tests
         public IEnumerator PShapeIsResetWhenReenteringBounds()
         {
             yield return InitScene();
-            
+
             string entityId = "1";
             TestHelpers.InstantiateEntityWithShape(scene, entityId, DCL.Models.CLASS_ID.BOX_SHAPE, new Vector3(18, 1, 18));
             yield return null;
@@ -178,7 +178,7 @@ namespace Tests
         public IEnumerator GLTFShapeIsResetWhenReenteringBounds()
         {
             yield return InitScene();
-            
+
             string entityId = "1";
             TestHelpers.CreateSceneEntity(scene, entityId);
 
@@ -204,7 +204,7 @@ namespace Tests
         public IEnumerator NFTShapeIsResetWhenReenteringBounds()
         {
             yield return InitScene();
-            
+
             string entityId = "1";
             TestHelpers.CreateSceneEntity(scene, entityId);
 
@@ -218,7 +218,7 @@ namespace Tests
             yield return component.routine;
 
             TestHelpers.SharedComponentAttach(component, scene.entities[entityId]);
-            
+
             var shapeLoader = scene.entities[entityId].gameObject.GetComponentInChildren<LoadWrapper_NFT>(true);
             yield return new WaitUntil(() => shapeLoader.alreadyLoaded);
 
@@ -234,7 +234,7 @@ namespace Tests
         public IEnumerator ChildShapeIsEvaluated()
         {
             yield return InitScene();
-            
+
             string entityId = "1";
             TestHelpers.InstantiateEntityWithShape(scene, entityId, DCL.Models.CLASS_ID.BOX_SHAPE, new Vector3(8, 1, 8));
             yield return null;
@@ -261,7 +261,7 @@ namespace Tests
         public IEnumerator ChildShapeIsEvaluatedOnShapelessParent()
         {
             yield return InitScene();
-            
+
             // create shapeless parent entity
             string entityId = "1";
             TestHelpers.CreateSceneEntity(scene, entityId);
@@ -289,7 +289,7 @@ namespace Tests
         public IEnumerator HeightIsEvaluated()
         {
             yield return InitScene();
-            
+
             string entityId = "1";
             TestHelpers.InstantiateEntityWithShape(scene, entityId, DCL.Models.CLASS_ID.BOX_SHAPE, new Vector3(8, 5, 8));
             yield return null;
@@ -303,27 +303,59 @@ namespace Tests
             Assert.IsTrue(MeshIsInvalid(scene.entities[entityId].meshesInfo));
         }
 
+        [UnityTest]
+        public IEnumerator SubmeshesCheckAllowsIrregularShapes()
+        {
+            // Set up an irregular-shaped ("L" shape) scene
+            yield return InitScene(false, spawnCharController: true, spawnTestScene: false, true, debugMode: true);
+
+            var sceneData = new LoadParcelScenesMessage.UnityParcelScene();
+            sceneData.basePosition = new Vector2Int(0, 0);
+            sceneData.parcels = new Vector2Int[] { sceneData.basePosition, new Vector2Int(1, 0), new Vector2Int(1, -1) };
+
+            scene = sceneController.CreateTestScene(sceneData);
+            yield return new WaitForSeconds(0.01f);
+
+            // Load an irregular-shaped ("L" shape) mesh
+            DecentralandEntity entity = TestHelpers.CreateSceneEntity(scene);
+            TestHelpers.CreateAndSetShape(scene, entity.entityId, DCL.Models.CLASS_ID.GLTF_SHAPE,
+                JsonConvert.SerializeObject(new
+                {
+                    src = Utils.GetTestsAssetsPath() + "/GLB/IrregularShape/irregular.glb"
+                }));
+            yield return null;
+
+            LoadWrapper_GLTF gltfShape = entity.gameObject.GetComponentInChildren<LoadWrapper_GLTF>();
+            yield return new WaitUntil(() => gltfShape.alreadyLoaded);
+
+            // position and rotate mesh
+            TestHelpers.SetEntityTransform(scene, entity, new DCLTransform.Model { position = new Vector3(16, 0, 0), rotation = Quaternion.Euler(0, -90, 0) });
+            yield return null;
+
+            Assert.IsFalse(MeshIsInvalid(entity.meshesInfo));
+        }
+
         bool MeshIsInvalid(DecentralandEntity.MeshesInfo meshesInfo)
         {
-            if(meshesInfo.meshRootGameObject == null) return false; // It's not invalid if there's no mesh
+            if (meshesInfo.meshRootGameObject == null) return false; // It's not invalid if there's no mesh
 
-            if(SceneController.i.isDebugMode)
+            if (SceneController.i.isDebugMode)
             {
                 for (int i = 0; i < meshesInfo.renderers.Length; i++)
                 {
-                    if(meshesInfo.renderers[i].sharedMaterial.name != "InvalidMesh") return false;
+                    if (meshesInfo.renderers[i].sharedMaterial.name != "InvalidMesh") return false;
                 }
             }
             else
             {
                 for (int i = 0; i < meshesInfo.renderers.Length; i++)
                 {
-                    if(meshesInfo.renderers[i].enabled) return false;
+                    if (meshesInfo.renderers[i].enabled) return false;
                 }
 
                 for (int i = 0; i < meshesInfo.colliders.Count; i++)
                 {
-                    if(meshesInfo.colliders[i].enabled) return false;
+                    if (meshesInfo.colliders[i].enabled) return false;
                 }
             }
 
