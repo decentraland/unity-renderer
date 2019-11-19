@@ -367,11 +367,7 @@ namespace DCL.Helpers
 
             Assert.IsNotNull(result, "class-id mismatch!");
 
-            scene.SharedComponentUpdate(uniqueId, JsonUtility.ToJson(new DCL.Models.SharedComponentUpdateMessage
-            {
-                id = uniqueId,
-                json = JsonUtility.ToJson(model)
-            }));
+            scene.SharedComponentUpdate(uniqueId, JsonUtility.ToJson(model));
 
             return result;
         }
