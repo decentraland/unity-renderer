@@ -1,13 +1,13 @@
 ﻿using UnityEngine;
 using DCL.Models;
 using DCL.Components;
+using DCL.Helpers;
 
 namespace DCL.Controllers
 {
     public class SceneBoundariesChecker
     {
         protected ParcelScene scene;
-        private Renderer renderer;
 
         public SceneBoundariesChecker(ParcelScene ownerScene)
         {
@@ -51,7 +51,7 @@ namespace DCL.Controllers
 
         void EvaluateMeshBounds(DecentralandEntity entity)
         {
-            Bounds meshBounds = BuildMergedBounds(entity.meshesInfo);
+            Bounds meshBounds = Utils.BuildMergedBounds(entity.meshesInfo.renderers);
 
             // 1st check (full mesh AABB)
             bool isInsideBoundaries = scene.IsInsideSceneBoundaries(meshBounds);
@@ -101,24 +101,6 @@ namespace DCL.Controllers
                     entity.meshesInfo.colliders[i].enabled = isInsideBoundaries;
                 }
             }
-        }
-
-        // GLTF models may have several child renderers with different positions and different bounds
-        protected virtual Bounds BuildMergedBounds(DecentralandEntity.MeshesInfo meshesInfo)
-        {
-            Bounds bounds = new Bounds();
-
-            for (int i = 0; i < meshesInfo.renderers.Length; i++)
-            {
-                renderer = meshesInfo.renderers[i];
-
-                if (i == 0)
-                    bounds = renderer.bounds;
-                else
-                    bounds.Encapsulate(renderer.bounds);
-            }
-
-            return bounds;
         }
     }
 }
