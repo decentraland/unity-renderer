@@ -345,7 +345,7 @@ namespace DCL.Helpers
             }
         }
 
-        public static bool AproxComparison(this Color color1, Color color2, float tolerance = 0.01f) // tolerance of roughly 1f / 255f 
+        public static bool AproxComparison(this Color color1, Color color2, float tolerance = 0.01f) // tolerance of roughly 1f / 255f
         {
             if (Mathf.Abs(color1.r - color2.r) < tolerance
                 && Mathf.Abs(color1.g - color2.g) < tolerance
@@ -368,6 +368,21 @@ namespace DCL.Helpers
                 string newJson = $"{{ \"value\": {jsonArray}}}";
                 return JsonUtility.FromJson<DummyJsonUtilityFromArray<T>>(newJson).value;
             }
+        }
+
+        public static Bounds BuildMergedBounds(Renderer[] renderers)
+        {
+            Bounds bounds = new Bounds();
+
+            for (int i = 0; i < renderers.Length; i++)
+            {
+                if (i == 0)
+                    bounds = renderers[i].bounds;
+                else
+                    bounds.Encapsulate(renderers[i].bounds);
+            }
+
+            return bounds;
         }
     }
 }
