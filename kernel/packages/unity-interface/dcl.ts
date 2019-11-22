@@ -188,6 +188,50 @@ function ensureTeleportAnimation() {
   )
 }
 
+const CHUNK_SIZE = 500
+
+export function* chunkGenerator(
+  parcelChunkSize: number,
+  info: { name: string; type: number; parcels: { x: number; y: number }[] }[]
+) {
+  if (parcelChunkSize < 1) {
+    throw Error(`parcel chunk size (${parcelChunkSize}) cannot be less than 1`)
+  }
+
+  // flatten scene data into parcels
+  const parcels = info.reduce(
+    (parcels, elem, index) =>
+      parcels.concat(
+        elem.parcels.map(parcel => ({
+          index,
+          name: elem.name,
+          type: elem.type,
+          parcel
+        }))
+      ),
+    [] as { index: number; name: string; type: number; parcel: { x: number; y: number } }[]
+  )
+
+  // split into chunk size + fold into scene
+  while (parcels.length > 0) {
+    const chunk = parcels
+      .splice(0, parcelChunkSize)
+      .reduce((scenes, parcel) => {
+        const scene = scenes.get(parcel.index)
+        if (scene) {
+          scene.parcels.push(parcel.parcel)
+        } else {
+          const newScene = { name: parcel.name, type: parcel.type, parcels: [parcel.parcel] }
+          scenes.set(parcel.index, newScene)
+        }
+        return scenes
+      }, new Map())
+      .values()
+
+    yield [...chunk]
+  }
+}
+
 export const unityInterface = {
   debug: false,
   SetDebug() {
@@ -282,11 +326,12 @@ export const unityInterface = {
   ConfigureAvatarEditorHUD(configuration: HUDConfiguration) {
     gameInstance.SendMessage('HUDController', 'ConfigureAvatarEditorHUD', JSON.stringify(configuration))
   },
-  UpdateMinimapSceneInformation(info: { x: number; y: number; name: string; type: number }[]) {
-    gameInstance.SendMessage('HUDController', 'UpdateMinimapSceneInformation', JSON.stringify(info))
-  },
-  UpdateMinimapSceneNames(info: { x: number; y: number; name: string }[]) {
-    gameInstance.SendMessage('HUDController', 'UpdateMinimapSceneNames', JSON.stringify(info))
+  UpdateMinimapSceneInformation(info: { name: string; type: number; parcels: { x: number; y: number }[] }[]) {
+    const chunks = chunkGenerator(CHUNK_SIZE, info)
+
+    for (const chunk of chunks) {
+      gameInstance.SendMessage('SceneController', 'UpdateMinimapSceneInformation', JSON.stringify(chunk))
+    }
   },
   SelectGizmoBuilder(type: string) {
     this.SendBuilderMessage('SelectGizmo', type)

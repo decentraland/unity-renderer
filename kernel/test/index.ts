@@ -17,6 +17,7 @@ import './unit/comms.test'
 import './unit/communications.test'
 import './unit/passport.saga.test'
 import './unit/positionThings.test'
+import './unit/chunkGenerator.test'
 import './unityIntegration/ecs/math/quaternion.test'
 import './unityIntegration/ecs/math/vector3.test'
 
