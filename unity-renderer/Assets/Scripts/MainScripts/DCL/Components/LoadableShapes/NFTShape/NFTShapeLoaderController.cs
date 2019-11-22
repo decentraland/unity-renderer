@@ -22,7 +22,7 @@ public class NFTShapeLoaderController : MonoBehaviour
         public File[] files;
     }
 
-    public enum NoiseType 
+    public enum NoiseType
     {
         ClassicPerlin,
         PeriodicPerlin,
@@ -56,7 +56,9 @@ public class NFTShapeLoaderController : MonoBehaviour
 
     int BASEMAP_SHADER_PROPERTY = Shader.PropertyToID("_BaseMap");
     int COLOR_SHADER_PROPERTY = Shader.PropertyToID("_BaseColor");
-    
+
+    Texture nftImageTexture;
+
     bool VERBOSE = false;
 
     void Awake()
@@ -75,8 +77,8 @@ public class NFTShapeLoaderController : MonoBehaviour
         UpdateBackgroundColor(backgroundColor);
 
         // Check the src follows the needed format e.g.: 'ethereum://0x06012c8cf97BEaD5deAe237070F9587f8E7A266d/558536'
-        var regexMatches = Regex.Matches(url , "(?<protocol>[^:]+)://(?<registry>[^/]+)(?:/(?<asset>.+))?");
-        if(regexMatches.Count == 0)
+        var regexMatches = Regex.Matches(url, "(?<protocol>[^:]+)://(?<registry>[^/]+)(?:/(?<asset>.+))?");
+        if (regexMatches.Count == 0)
         {
             Debug.LogError($"Couldn't fetch DAR url '{url}' for NFTShape. The accepted format is 'ethereum://ContractAddress/TokenID'");
 
@@ -86,7 +88,7 @@ public class NFTShapeLoaderController : MonoBehaviour
         }
 
         Match match = regexMatches[0];
-        if(match.Groups["protocol"] == null || match.Groups["registry"] == null || match.Groups["asset"] == null)
+        if (match.Groups["protocol"] == null || match.Groups["registry"] == null || match.Groups["asset"] == null)
         {
             Debug.LogError($"Couldn't fetch DAR url '{url}' for NFTShape.");
 
@@ -94,9 +96,9 @@ public class NFTShapeLoaderController : MonoBehaviour
 
             return;
         }
-        
+
         darURLProtocol = match.Groups["protocol"].ToString();
-        if(darURLProtocol != "ethereum")
+        if (darURLProtocol != "ethereum")
         {
             Debug.LogError($"Couldn't fetch DAR url '{url}' for NFTShape. The only protocol currently supported is 'ethereum'");
 
@@ -108,7 +110,7 @@ public class NFTShapeLoaderController : MonoBehaviour
         darURLRegistry = match.Groups["registry"].ToString();
         darURLAsset = match.Groups["asset"].ToString();
 
-        if(VERBOSE)
+        if (VERBOSE)
         {
             Debug.Log("protocol: " + darURLProtocol);
             Debug.Log("registry: " + darURLRegistry);
@@ -144,14 +146,14 @@ public class NFTShapeLoaderController : MonoBehaviour
         }
 
         NFTAssetData currentAssetData = JsonUtility.FromJson<NFTAssetData>(www.downloadHandler.text);
-        if(currentAssetData.files == null)
+        if (currentAssetData.files == null)
         {
             Debug.LogError($"Didn't find any asset image for '{jsonURL}' for the NFTShape.");
 
             yield break;
         }
 
-        if(VERBOSE)
+        if (VERBOSE)
         {
             Debug.Log("NFT fetched JSON: " + www.downloadHandler.text);
 
@@ -168,38 +170,41 @@ public class NFTShapeLoaderController : MonoBehaviour
 
         for (int i = 0; i < currentAssetData.files.Length; i++)
         {
-            if(!currentAssetData.files[i].url.EndsWith(".png")) continue;
+            if (!currentAssetData.files[i].url.EndsWith(".png")) continue;
 
-            if(currentAssetData.files[i].role == "thumbnail")
+            if (currentAssetData.files[i].role == "thumbnail")
                 thumbnailImageURL = currentAssetData.files[i].url;
-            else if(currentAssetData.files[i].role == "preview")
+            else if (currentAssetData.files[i].role == "preview")
                 previewImageURL = currentAssetData.files[i].url;
-            else if(currentAssetData.files[i].role == "dcl-picture-frame-image")
+            else if (currentAssetData.files[i].role == "dcl-picture-frame-image")
                 dclImageURL = currentAssetData.files[i].url;
         }
 
         // We fetch and show the thumbnail image first
-        if(!string.IsNullOrEmpty(thumbnailImageURL))
+        if (!string.IsNullOrEmpty(thumbnailImageURL))
         {
-            yield return Utils.FetchTexture(thumbnailImageURL, (downloadedTex) => {
+            yield return Utils.FetchTexture(thumbnailImageURL, (downloadedTex) =>
+            {
                 SetFrameImage(downloadedTex);
             });
         }
 
         // We fetch the final image
         bool foundDCLImage = false;
-        if(!string.IsNullOrEmpty(dclImageURL))
+        if (!string.IsNullOrEmpty(dclImageURL))
         {
-            yield return Utils.FetchTexture(dclImageURL, (downloadedTex) => {
+            yield return Utils.FetchTexture(dclImageURL, (downloadedTex) =>
+            {
                 foundDCLImage = true;
                 SetFrameImage(downloadedTex, resizeFrameMesh: true);
             });
         }
 
         // We fall back to a common "preview" image if no "dcl image" was found
-        if(!foundDCLImage && !string.IsNullOrEmpty(previewImageURL))
+        if (!foundDCLImage && !string.IsNullOrEmpty(previewImageURL))
         {
-            yield return Utils.FetchTexture(previewImageURL, (downloadedTex) => {
+            yield return Utils.FetchTexture(previewImageURL, (downloadedTex) =>
+            {
                 SetFrameImage(downloadedTex, resizeFrameMesh: true);
             });
         }
@@ -209,18 +214,20 @@ public class NFTShapeLoaderController : MonoBehaviour
 
     void SetFrameImage(Texture newTexture, bool resizeFrameMesh = false)
     {
-        if(newTexture == null) return;
+        if (newTexture == null) return;
+
+        nftImageTexture = newTexture;
 
         meshRenderer.GetPropertyBlock(imageMaterialPropertyBlock, 0);
         imageMaterialPropertyBlock.SetTexture(BASEMAP_SHADER_PROPERTY, newTexture);
         imageMaterialPropertyBlock.SetColor(COLOR_SHADER_PROPERTY, Color.white);
         meshRenderer.SetPropertyBlock(imageMaterialPropertyBlock, 0);
 
-        if(resizeFrameMesh)
+        if (resizeFrameMesh)
         {
-            Vector3 newScale = new Vector3( newTexture.width/NFTDataFetchingSettings.NORMALIZED_DIMENSIONS.x,
-                                            newTexture.height/NFTDataFetchingSettings.NORMALIZED_DIMENSIONS.y, 1f);
-            
+            Vector3 newScale = new Vector3(newTexture.width / NFTDataFetchingSettings.NORMALIZED_DIMENSIONS.x,
+                                            newTexture.height / NFTDataFetchingSettings.NORMALIZED_DIMENSIONS.y, 1f);
+
             meshRenderer.transform.localScale = newScale;
         }
         else
@@ -257,5 +264,13 @@ public class NFTShapeLoaderController : MonoBehaviour
 
         if (noiseIsFractal)
             frameMaterial.EnableKeyword("FRACTAL");
+    }
+
+    void OnDestroy()
+    {
+        if (nftImageTexture != null)
+        {
+            UnityEngine.Object.Destroy(nftImageTexture);
+        }
     }
 }
