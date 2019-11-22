@@ -1,5 +1,7 @@
 import { PlazaNames, RootAtlasState, AtlasState } from './types'
 
+export const EMPTY_PARCEL_NAME = 'Empty parcel'
+
 export function getSceneJsonName(state: RootAtlasState, sceneName: string) {
   return state.atlas.sceneNames[sceneName]
 }
@@ -23,9 +25,9 @@ export function getName(state: RootAtlasState, x: number, y: number): string {
       state.atlas.marketName[key].estate_id &&
       PlazaNames[state.atlas.marketName[key].estate_id]
     ? PlazaNames[state.atlas.marketName[key].estate_id]
-    : 'Empty parcel'
+    : EMPTY_PARCEL_NAME
   if (name === 'interactive-text') {
-    return 'Empty parcel'
+    return EMPTY_PARCEL_NAME
   }
   if (name.startsWith('Road at')) {
     return 'Road'
@@ -45,9 +47,9 @@ export function getNameFromAtlasState(state: AtlasState, x: number, y: number): 
     ? state.marketName[key].name
     : state.marketName[key] && state.marketName[key].estate_id && PlazaNames[state.marketName[key].estate_id]
     ? PlazaNames[state.marketName[key].estate_id]
-    : 'Empty parcel'
+    : EMPTY_PARCEL_NAME
   if (name === 'interactive-text') {
-    return 'Empty parcel'
+    return EMPTY_PARCEL_NAME
   }
   if (name.startsWith('Road at')) {
     return 'Road'

@@ -13,6 +13,13 @@ import {
 } from './actions'
 import { getNameFromAtlasState, getTypeFromAtlasState, shouldLoadSceneJsonName } from './selectors'
 import { AtlasState, FETCH_NAME_FROM_SCENE_JSON, SUCCESS_NAME_FROM_SCENE_JSON } from './types'
+import defaultLogger from '../logger'
+
+declare const window: {
+  unityInterface: {
+    UpdateMinimapSceneInformation: (data: { name: string; type: number; parcels: { x: number; y: number }[] }[]) => void
+  }
+}
 
 export function* atlasSaga(): any {
   yield fork(fetchDistricts)
@@ -30,7 +37,7 @@ function* fetchDistricts() {
     const districts = yield call(() => fetch('https://api.decentraland.org/v1/districts').then(e => e.json()))
     yield put(districtData(districts))
   } catch (e) {
-    console.log(e)
+    defaultLogger.log(e)
   }
 }
 function* fetchTiles() {
@@ -38,7 +45,7 @@ function* fetchTiles() {
     const tiles = yield call(() => fetch('https://api.decentraland.org/v1/tiles').then(e => e.json()))
     yield put(marketData(tiles))
   } catch (e) {
-    console.log(e)
+    defaultLogger.log(e)
   }
 }
 
@@ -67,11 +74,10 @@ async function getNameFromSceneJson(sceneId: string) {
 function* reportOne(action: FetchNameFromSceneJsonSuccess) {
   const atlasState = yield select(state => state.atlas)
   const parcels = action.payload.parcels
-  const unity = (window as any)['unityInterface'] as any
   const [firstX, firstY] = parcels[0].split(',').map(_ => parseInt(_, 10))
   const name = getNameFromAtlasState(atlasState, firstX, firstY)
   const type = getTypeFromAtlasState(atlasState, firstX, firstY)
-  unity.UpdateMinimapSceneInformation([
+  window.unityInterface.UpdateMinimapSceneInformation([
     {
       name,
       type,
@@ -85,9 +91,6 @@ function* reportOne(action: FetchNameFromSceneJsonSuccess) {
 function* reportAll() {
   const atlasState = (yield select(state => state.atlas)) as AtlasState
   const data = atlasState.marketName
-  const unity = (window as any)['unityInterface'] as {
-    UpdateMinimapSceneInformation: (data: { name: string; type: number; parcels: { x: number; y: number }[] }[]) => void
-  }
   const mapByTypeAndName: Record<string, { x: number; y: number }[]> = {}
   const typeAndNameKeys: string[] = []
   const keyToTypeAndName: Record<string, { type: number; name: string }> = {}
@@ -103,7 +106,7 @@ function* reportAll() {
     }
     mapByTypeAndName[key].push({ x: parcel.x, y: parcel.y })
   })
-  unity.UpdateMinimapSceneInformation(
+  window.unityInterface.UpdateMinimapSceneInformation(
     typeAndNameKeys.map(key => ({
       name: keyToTypeAndName[key].name,
       type: keyToTypeAndName[key].type,
