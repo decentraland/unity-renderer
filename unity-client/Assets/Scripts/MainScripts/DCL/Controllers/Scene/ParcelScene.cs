@@ -328,21 +328,28 @@ namespace DCL.Controllers
             if (parcels.Contains(targetCoordinate)) return true;
 
             // We need to check using a threshold from the target point, in order to cover correctly the parcel "border/edge" positions
+            Vector2Int coordinateMin = new Vector2Int();
+            coordinateMin.x = Mathf.FloorToInt((worldPosition.x - ParcelSettings.PARCEL_BOUNDARIES_THRESHOLD) / ParcelSettings.PARCEL_SIZE);
+            coordinateMin.y = Mathf.FloorToInt((worldPosition.z - ParcelSettings.PARCEL_BOUNDARIES_THRESHOLD) / ParcelSettings.PARCEL_SIZE);
 
-            // We check the east-threshold position
-            targetCoordinate.Set(Mathf.FloorToInt((worldPosition.x + ParcelSettings.PARCEL_BOUNDARIES_THRESHOLD) / ParcelSettings.PARCEL_SIZE), noThresholdZCoordinate);
+            Vector2Int coordinateMax = new Vector2Int();
+            coordinateMax.x = Mathf.FloorToInt((worldPosition.x + ParcelSettings.PARCEL_BOUNDARIES_THRESHOLD) / ParcelSettings.PARCEL_SIZE);
+            coordinateMax.y = Mathf.FloorToInt((worldPosition.z + ParcelSettings.PARCEL_BOUNDARIES_THRESHOLD) / ParcelSettings.PARCEL_SIZE);
+
+            // We check the east/north-threshold position
+            targetCoordinate.Set(coordinateMax.x, coordinateMax.y);
             if (parcels.Contains(targetCoordinate)) return true;
 
-            // We check the south-threshold position
-            targetCoordinate.Set(noThresholdXCoordinate, Mathf.FloorToInt((worldPosition.z - ParcelSettings.PARCEL_BOUNDARIES_THRESHOLD) / ParcelSettings.PARCEL_SIZE));
+            // We check the east/south-threshold position
+            targetCoordinate.Set(coordinateMax.x, coordinateMin.y);
             if (parcels.Contains(targetCoordinate)) return true;
 
-            // We check the west-threshold position
-            targetCoordinate.Set(Mathf.FloorToInt((worldPosition.x - ParcelSettings.PARCEL_BOUNDARIES_THRESHOLD) / ParcelSettings.PARCEL_SIZE), noThresholdZCoordinate);
+            // We check the west/north-threshold position
+            targetCoordinate.Set(coordinateMin.x, coordinateMax.y);
             if (parcels.Contains(targetCoordinate)) return true;
 
-            // We check the north-threshold position
-            targetCoordinate.Set(noThresholdXCoordinate, Mathf.FloorToInt((worldPosition.z + ParcelSettings.PARCEL_BOUNDARIES_THRESHOLD) / ParcelSettings.PARCEL_SIZE));
+            // We check the west/south-threshold position
+            targetCoordinate.Set(coordinateMin.x, coordinateMin.y);
             if (parcels.Contains(targetCoordinate)) return true;
 
             return false;
