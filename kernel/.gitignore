@@ -31,6 +31,8 @@ public/test-scenes/*/bin/*.js
 scripts/**/*.js
 scripts/**/*.d.ts
 packages/**/*.js
+# keep js from proto files in vcs
+!packages/**/proto/*.js
 packages/**/*.js.map
 test/**/*.js
 test/**/*.js.map
