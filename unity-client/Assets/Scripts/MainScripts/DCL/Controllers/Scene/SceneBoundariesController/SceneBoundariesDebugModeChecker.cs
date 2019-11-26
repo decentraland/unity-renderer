@@ -140,9 +140,18 @@ namespace DCL.Controllers
             invalidMeshesInfo.Add(entity.gameObject, invalidMeshInfo);
         }
 
-        bool WasEntityInAValidPosition(DecentralandEntity entity)
+        public bool WasEntityInAValidPosition(DecentralandEntity entity)
         {
             return !invalidMeshesInfo.ContainsKey(entity.gameObject);
         }
+
+        public Dictionary<Renderer, Material> GetOriginalMaterials(DecentralandEntity entity)
+        {
+            if (invalidMeshesInfo.ContainsKey(entity.gameObject))
+            {
+                return invalidMeshesInfo[entity.gameObject].originalMaterials;
+            }
+            return null;
+        }        
     }
 }
