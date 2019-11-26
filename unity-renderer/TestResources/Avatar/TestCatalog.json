@@ -11736,5 +11736,4907 @@
     "thumbnail": "Qme7Dps7EwMtjLssfAWfuQ8mkofRLfG9NY5TTuTKXJy9Bb",
     "replaces": [],
     "hides": []
+  },
+  {
+    "id": "dcl://base-exclusive/bird_mask",
+    "representations": [
+      {
+        "bodyShapes": [
+          "dcl://base-avatars/BaseMale"
+        ],
+        "mainFile": "BirdTheater.glb",
+        "overrideReplaces": [],
+        "overrideHides": [],
+        "contents": [
+          {
+            "file": "AvatarWearables_TX.png",
+            "hash": "QmRaHnacT5G7oLYTYGsRWZtLXzXuTNEq7gWAcvXRSxfwEU"
+          },
+          {
+            "file": "BirdTheater.glb",
+            "hash": "QmcF1VdPk6ee88GMpZdbgBSzjKw6ikfxznLVjgX1JnHzR2"
+          },
+          {
+            "file": "bird_mask.png",
+            "hash": "QmPmSLV6SsX6E8ufwfo6R4TujfVxLAQJGQVaMt47jzXxhK"
+          }
+        ]
+      },
+      {
+        "bodyShapes": [
+          "dcl://base-avatars/BaseFemale"
+        ],
+        "mainFile": "BirdTheater.glb",
+        "overrideReplaces": [],
+        "overrideHides": [],
+        "contents": [
+          {
+            "file": "AvatarWearables_TX.png",
+            "hash": "QmRaHnacT5G7oLYTYGsRWZtLXzXuTNEq7gWAcvXRSxfwEU"
+          },
+          {
+            "file": "BirdTheater.glb",
+            "hash": "QmcF1VdPk6ee88GMpZdbgBSzjKw6ikfxznLVjgX1JnHzR2"
+          },
+          {
+            "file": "bird_mask.png",
+            "hash": "QmPmSLV6SsX6E8ufwfo6R4TujfVxLAQJGQVaMt47jzXxhK"
+          }
+        ]
+      }
+    ],
+    "type": "wearable",
+    "category": "mask",
+    "tags": [
+      "accesories",
+      "male",
+      "man",
+      "female",
+      "woman",
+      "exclusive"
+    ],
+    "baseUrl": "https://dcl-base-exclusive.now.sh/",
+    "i18n": [
+      {
+        "code": "en",
+        "text": "Bird Mask"
+      },
+      {
+        "code": "es",
+        "text": "Máscara de Cuervo"
+      }
+    ],
+    "thumbnail": "Qme3daU4ycWsJnzErcX87GXKmv7X4LqXRAHED9y79tzgeo",
+    "replaces": [
+      "eyewear",
+      "tiara",
+      "hat",
+      "helmet"
+    ],
+    "hides": [
+      "earring",
+      "facial_hair"
+    ]
+  },
+  {
+    "id": "dcl://base-exclusive/classic_mask",
+    "representations": [
+      {
+        "bodyShapes": [
+          "dcl://base-avatars/BaseMale"
+        ],
+        "mainFile": "Classic.glb",
+        "overrideReplaces": [],
+        "overrideHides": [],
+        "contents": [
+          {
+            "file": "AvatarWearables_TX.png",
+            "hash": "QmRaHnacT5G7oLYTYGsRWZtLXzXuTNEq7gWAcvXRSxfwEU"
+          },
+          {
+            "file": "Classic.glb",
+            "hash": "QmXtvgLxt18i6LYXhoHGuB1W1mKqjNuPgoGhtKjxfs92xs"
+          },
+          {
+            "file": "classic_mask.png",
+            "hash": "QmbcbFZd7qSMXkfLx1gbKMGS3j6TXBoeRbdESRYNk84GH4"
+          }
+        ]
+      },
+      {
+        "bodyShapes": [
+          "dcl://base-avatars/BaseFemale"
+        ],
+        "mainFile": "Classic.glb",
+        "overrideReplaces": [],
+        "overrideHides": [],
+        "contents": [
+          {
+            "file": "AvatarWearables_TX.png",
+            "hash": "QmRaHnacT5G7oLYTYGsRWZtLXzXuTNEq7gWAcvXRSxfwEU"
+          },
+          {
+            "file": "Classic.glb",
+            "hash": "QmXtvgLxt18i6LYXhoHGuB1W1mKqjNuPgoGhtKjxfs92xs"
+          },
+          {
+            "file": "classic_mask.png",
+            "hash": "QmbcbFZd7qSMXkfLx1gbKMGS3j6TXBoeRbdESRYNk84GH4"
+          }
+        ]
+      }
+    ],
+    "type": "wearable",
+    "category": "mask",
+    "tags": [
+      "accesories",
+      "male",
+      "man",
+      "female",
+      "woman",
+      "exclusive"
+    ],
+    "baseUrl": "https://dcl-base-exclusive.now.sh/",
+    "i18n": [
+      {
+        "code": "en",
+        "text": "Classic Mask"
+      },
+      {
+        "code": "es",
+        "text": "Máscara Clásica"
+      }
+    ],
+    "thumbnail": "QmSBc4zKLNYyjnpWnLkWwEiCXB6xybMtfTYgmNdToKCk81",
+    "replaces": [
+      "eyewear",
+      "tiara",
+      "hat",
+      "helmet"
+    ],
+    "hides": [
+      "earring",
+      "facial_hair"
+    ]
+  },
+  {
+    "id": "dcl://base-exclusive/clown_nose",
+    "representations": [
+      {
+        "bodyShapes": [
+          "dcl://base-avatars/BaseMale"
+        ],
+        "mainFile": "ClownNose.glb",
+        "overrideReplaces": [],
+        "overrideHides": [],
+        "contents": [
+          {
+            "file": "AvatarWearables_TX.png",
+            "hash": "QmRaHnacT5G7oLYTYGsRWZtLXzXuTNEq7gWAcvXRSxfwEU"
+          },
+          {
+            "file": "ClownNose.glb",
+            "hash": "QmPfzA4vjDmJEbYexArbofMrwnAGyp3ddJpwr8ViLrweyx"
+          },
+          {
+            "file": "clown_nose.png",
+            "hash": "QmdF8zZBdy4bB2RzdnLwATqun5wqDtBzLqPozyazE2hCvz"
+          }
+        ]
+      },
+      {
+        "bodyShapes": [
+          "dcl://base-avatars/BaseFemale"
+        ],
+        "mainFile": "ClownNose.glb",
+        "overrideReplaces": [],
+        "overrideHides": [],
+        "contents": [
+          {
+            "file": "AvatarWearables_TX.png",
+            "hash": "QmRaHnacT5G7oLYTYGsRWZtLXzXuTNEq7gWAcvXRSxfwEU"
+          },
+          {
+            "file": "ClownNose.glb",
+            "hash": "QmPfzA4vjDmJEbYexArbofMrwnAGyp3ddJpwr8ViLrweyx"
+          },
+          {
+            "file": "clown_nose.png",
+            "hash": "QmdF8zZBdy4bB2RzdnLwATqun5wqDtBzLqPozyazE2hCvz"
+          }
+        ]
+      }
+    ],
+    "type": "wearable",
+    "category": "mask",
+    "tags": [
+      "accesories",
+      "male",
+      "man",
+      "female",
+      "woman",
+      "exclusive"
+    ],
+    "baseUrl": "https://dcl-base-exclusive.now.sh/",
+    "i18n": [
+      {
+        "code": "en",
+        "text": "Clown Nose"
+      },
+      {
+        "code": "es",
+        "text": "Nariz de Payaso"
+      }
+    ],
+    "thumbnail": "QmNetfCF4mQxd88wR5Qyc3BLaaGsutg4eWadk72ecKpGKt",
+    "replaces": [
+      "eyewear",
+      "tiara",
+      "hat",
+      "helmet"
+    ],
+    "hides": [
+      "earring",
+      "facial_hair"
+    ]
+  },
+  {
+    "id": "dcl://base-exclusive/asian_fox",
+    "representations": [
+      {
+        "bodyShapes": [
+          "dcl://base-avatars/BaseMale"
+        ],
+        "mainFile": "FoxAsian.glb",
+        "overrideReplaces": [],
+        "overrideHides": [],
+        "contents": [
+          {
+            "file": "AvatarWearables_TX.png",
+            "hash": "QmWLrKJFzDCMGXVCef78SDkMHWB94eHP1ZeXfyci3kphTb"
+          },
+          {
+            "file": "FoxAsian.glb",
+            "hash": "QmS1WAbhfkhfyGhanuPVxRW2xW2QigpAE1B8TTiTjNpV2H"
+          },
+          {
+            "file": "asian_fox.png",
+            "hash": "QmVMZHpQcRK8hP9eDPvccGmkcy3NiwVeazRyTdHGzPyF56"
+          }
+        ]
+      },
+      {
+        "bodyShapes": [
+          "dcl://base-avatars/BaseFemale"
+        ],
+        "mainFile": "FoxAsian.glb",
+        "overrideReplaces": [],
+        "overrideHides": [],
+        "contents": [
+          {
+            "file": "AvatarWearables_TX.png",
+            "hash": "QmWLrKJFzDCMGXVCef78SDkMHWB94eHP1ZeXfyci3kphTb"
+          },
+          {
+            "file": "FoxAsian.glb",
+            "hash": "QmS1WAbhfkhfyGhanuPVxRW2xW2QigpAE1B8TTiTjNpV2H"
+          },
+          {
+            "file": "asian_fox.png",
+            "hash": "QmVMZHpQcRK8hP9eDPvccGmkcy3NiwVeazRyTdHGzPyF56"
+          }
+        ]
+      }
+    ],
+    "type": "wearable",
+    "category": "mask",
+    "tags": [
+      "accesories",
+      "male",
+      "man",
+      "female",
+      "woman",
+      "exclusive"
+    ],
+    "baseUrl": "https://dcl-base-exclusive.now.sh/",
+    "i18n": [
+      {
+        "code": "en",
+        "text": "Asian Fox Mask"
+      },
+      {
+        "code": "es",
+        "text": "Máscara de Zorro Asiático"
+      }
+    ],
+    "thumbnail": "QmSmP5GgQQFA28M9euJjm6Byqc2YHPWb66AFgWLqfXDcok",
+    "replaces": [
+      "eyewear",
+      "tiara",
+      "hat",
+      "helmet"
+    ],
+    "hides": [
+      "earring",
+      "facial_hair"
+    ]
+  },
+  {
+    "id": "dcl://base-exclusive/killer_mask",
+    "representations": [
+      {
+        "bodyShapes": [
+          "dcl://base-avatars/BaseMale"
+        ],
+        "mainFile": "Killer.glb",
+        "overrideReplaces": [],
+        "overrideHides": [],
+        "contents": [
+          {
+            "file": "AvatarWearables_TX.png",
+            "hash": "QmRaHnacT5G7oLYTYGsRWZtLXzXuTNEq7gWAcvXRSxfwEU"
+          },
+          {
+            "file": "Killer.glb",
+            "hash": "QmdAdwWyy2ApkJtSBiAmg7dAGigQ3U6WF75gW6VyzxBqTW"
+          },
+          {
+            "file": "killer_mask.png",
+            "hash": "QmYMD83mbyKq4YUmLV5vsS9cpm5CSzDKtRHAtvgPN9jvKa"
+          }
+        ]
+      },
+      {
+        "bodyShapes": [
+          "dcl://base-avatars/BaseFemale"
+        ],
+        "mainFile": "Killer.glb",
+        "overrideReplaces": [],
+        "overrideHides": [],
+        "contents": [
+          {
+            "file": "AvatarWearables_TX.png",
+            "hash": "QmRaHnacT5G7oLYTYGsRWZtLXzXuTNEq7gWAcvXRSxfwEU"
+          },
+          {
+            "file": "Killer.glb",
+            "hash": "QmdAdwWyy2ApkJtSBiAmg7dAGigQ3U6WF75gW6VyzxBqTW"
+          },
+          {
+            "file": "killer_mask.png",
+            "hash": "QmYMD83mbyKq4YUmLV5vsS9cpm5CSzDKtRHAtvgPN9jvKa"
+          }
+        ]
+      }
+    ],
+    "type": "wearable",
+    "category": "mask",
+    "tags": [
+      "accesories",
+      "male",
+      "man",
+      "female",
+      "woman",
+      "exclusive"
+    ],
+    "baseUrl": "https://dcl-base-exclusive.now.sh/",
+    "i18n": [
+      {
+        "code": "en",
+        "text": "Killer Mask"
+      },
+      {
+        "code": "es",
+        "text": "Máscara de Asesino"
+      }
+    ],
+    "thumbnail": "QmPzpgNVenF9ToyHQ9ZPJGCzW7fif3gMdfKkCGAvw7suMF",
+    "replaces": [
+      "eyewear",
+      "tiara",
+      "hat",
+      "helmet"
+    ],
+    "hides": [
+      "earring",
+      "facial_hair"
+    ]
+  },
+  {
+    "id": "dcl://base-exclusive/Serial_killer_mask",
+    "representations": [
+      {
+        "bodyShapes": [
+          "dcl://base-avatars/BaseMale"
+        ],
+        "mainFile": "SerialKiller.glb",
+        "overrideReplaces": [],
+        "overrideHides": [],
+        "contents": [
+          {
+            "file": "AvatarWearables_TX.png",
+            "hash": "QmWLrKJFzDCMGXVCef78SDkMHWB94eHP1ZeXfyci3kphTb"
+          },
+          {
+            "file": "SerialKiller.glb",
+            "hash": "QmQwfvJJu2DfZAHFN41q4y724nrjoz4g9Z4jzqHfnFeeDf"
+          },
+          {
+            "file": "Serial_killer_mask.png",
+            "hash": "QmRTLAnNLYDica9YZWdjxGN4JAo1EtuL3kBNDabVm6vCdB"
+          }
+        ]
+      },
+      {
+        "bodyShapes": [
+          "dcl://base-avatars/BaseFemale"
+        ],
+        "mainFile": "SerialKiller.glb",
+        "overrideReplaces": [],
+        "overrideHides": [],
+        "contents": [
+          {
+            "file": "AvatarWearables_TX.png",
+            "hash": "QmWLrKJFzDCMGXVCef78SDkMHWB94eHP1ZeXfyci3kphTb"
+          },
+          {
+            "file": "SerialKiller.glb",
+            "hash": "QmQwfvJJu2DfZAHFN41q4y724nrjoz4g9Z4jzqHfnFeeDf"
+          },
+          {
+            "file": "Serial_killer_mask.png",
+            "hash": "QmRTLAnNLYDica9YZWdjxGN4JAo1EtuL3kBNDabVm6vCdB"
+          }
+        ]
+      }
+    ],
+    "type": "wearable",
+    "category": "mask",
+    "tags": [
+      "accesories",
+      "male",
+      "man",
+      "female",
+      "woman",
+      "exclusive"
+    ],
+    "baseUrl": "https://dcl-base-exclusive.now.sh/",
+    "i18n": [
+      {
+        "code": "en",
+        "text": "Serial Killer Mask"
+      },
+      {
+        "code": "es",
+        "text": "Máscara de Asesino Serial"
+      }
+    ],
+    "thumbnail": "QmdanmiBaF8A2VizrvUNinZvLNogxXmCavcHMKmUGLBojc",
+    "replaces": [
+      "eyewear",
+      "tiara",
+      "hat",
+      "helmet"
+    ],
+    "hides": [
+      "earring",
+      "facial_hair"
+    ]
+  },
+  {
+    "id": "dcl://base-exclusive/theater_mask",
+    "representations": [
+      {
+        "bodyShapes": [
+          "dcl://base-avatars/BaseMale"
+        ],
+        "mainFile": "TheaterMask.glb",
+        "overrideReplaces": [],
+        "overrideHides": [],
+        "contents": [
+          {
+            "file": "AvatarWearables_TX.png",
+            "hash": "QmWLrKJFzDCMGXVCef78SDkMHWB94eHP1ZeXfyci3kphTb"
+          },
+          {
+            "file": "TheaterMask.glb",
+            "hash": "QmS2Kb5rbS3Fr328nUJxVnzD4uHfqRprtBRpK2i55Sae8P"
+          },
+          {
+            "file": "theater_mask.png",
+            "hash": "QmQMD3yfqhwitq6pF7T3DuNA12qhbLhta8m7nfqoUavzB1"
+          }
+        ]
+      },
+      {
+        "bodyShapes": [
+          "dcl://base-avatars/BaseFemale"
+        ],
+        "mainFile": "TheaterMask.glb",
+        "overrideReplaces": [],
+        "overrideHides": [],
+        "contents": [
+          {
+            "file": "AvatarWearables_TX.png",
+            "hash": "QmWLrKJFzDCMGXVCef78SDkMHWB94eHP1ZeXfyci3kphTb"
+          },
+          {
+            "file": "TheaterMask.glb",
+            "hash": "QmS2Kb5rbS3Fr328nUJxVnzD4uHfqRprtBRpK2i55Sae8P"
+          },
+          {
+            "file": "theater_mask.png",
+            "hash": "QmQMD3yfqhwitq6pF7T3DuNA12qhbLhta8m7nfqoUavzB1"
+          }
+        ]
+      }
+    ],
+    "type": "wearable",
+    "category": "mask",
+    "tags": [
+      "accesories",
+      "male",
+      "man",
+      "female",
+      "woman",
+      "exclusive"
+    ],
+    "baseUrl": "https://dcl-base-exclusive.now.sh/",
+    "i18n": [
+      {
+        "code": "en",
+        "text": "Theater"
+      },
+      {
+        "code": "es",
+        "text": "Máscara de Teatro"
+      }
+    ],
+    "thumbnail": "Qmf33ApErcqMeL4WVekhLavoBxvawc9ngwVYaGvLimifL9",
+    "replaces": [
+      "eyewear",
+      "tiara",
+      "hat",
+      "helmet"
+    ],
+    "hides": [
+      "earring",
+      "facial_hair"
+    ]
+  },
+  {
+    "id": "dcl://base-exclusive/tropical_mask",
+    "representations": [
+      {
+        "bodyShapes": [
+          "dcl://base-avatars/BaseMale"
+        ],
+        "mainFile": "TropicalMask.glb",
+        "overrideReplaces": [],
+        "overrideHides": [],
+        "contents": [
+          {
+            "file": "AvatarWearables_TX.png",
+            "hash": "QmRaHnacT5G7oLYTYGsRWZtLXzXuTNEq7gWAcvXRSxfwEU"
+          },
+          {
+            "file": "TropicalMask.glb",
+            "hash": "QmdLP5xsAUNDqZDZ66sE375UKQNLEeRLb2KNcFxfZNsras"
+          },
+          {
+            "file": "tropical_mask.png",
+            "hash": "QmYBGqjAyGPCCK4EmY43ZnAZbxXh6oVYezpQh5V9RV4t2V"
+          }
+        ]
+      },
+      {
+        "bodyShapes": [
+          "dcl://base-avatars/BaseFemale"
+        ],
+        "mainFile": "TropicalMask.glb",
+        "overrideReplaces": [],
+        "overrideHides": [],
+        "contents": [
+          {
+            "file": "AvatarWearables_TX.png",
+            "hash": "QmRaHnacT5G7oLYTYGsRWZtLXzXuTNEq7gWAcvXRSxfwEU"
+          },
+          {
+            "file": "TropicalMask.glb",
+            "hash": "QmdLP5xsAUNDqZDZ66sE375UKQNLEeRLb2KNcFxfZNsras"
+          },
+          {
+            "file": "tropical_mask.png",
+            "hash": "QmYBGqjAyGPCCK4EmY43ZnAZbxXh6oVYezpQh5V9RV4t2V"
+          }
+        ]
+      }
+    ],
+    "type": "wearable",
+    "category": "mask",
+    "tags": [
+      "accesories",
+      "male",
+      "man",
+      "female",
+      "woman",
+      "exclusive"
+    ],
+    "baseUrl": "https://dcl-base-exclusive.now.sh/",
+    "i18n": [
+      {
+        "code": "en",
+        "text": "Tropical Mask"
+      },
+      {
+        "code": "es",
+        "text": "Máscara Tropical"
+      }
+    ],
+    "thumbnail": "QmQHn3N8Yz7P5PFsHtfyKNzwrEZRFWeBAwFK5B4M1eajEK",
+    "replaces": [
+      "eyewear",
+      "tiara",
+      "hat",
+      "helmet"
+    ],
+    "hides": [
+      "earring",
+      "facial_hair"
+    ]
+  },
+  {
+    "id": "dcl://halloween_2019/bride_of_frankie_earring",
+    "representations": [
+      {
+        "bodyShapes": [
+          "dcl://base-avatars/BaseFemale"
+        ],
+        "mainFile": "F_Earrings_Spider.glb",
+        "overrideReplaces": [],
+        "overrideHides": [],
+        "contents": [
+          {
+            "file": "AvatarWearables_TX.png",
+            "hash": "QmWLrKJFzDCMGXVCef78SDkMHWB94eHP1ZeXfyci3kphTb"
+          },
+          {
+            "file": "F_Earrings_Spider.glb",
+            "hash": "QmYHXAKgu2T1eJoduxHfcU1rfrWawYJhAsHyBvPr9WiNZh"
+          },
+          {
+            "file": "bride_of_frankie_earring.png",
+            "hash": "Qma2pv6rHejFrTQt2gU9rVo4PdFbc8ojQsRUCFYWnTCupC"
+          }
+        ]
+      }
+    ],
+    "type": "wearable",
+    "category": "earring",
+    "tags": [
+      "accesories",
+      "exclusive",
+      "earrings",
+      "halloween",
+      "spider",
+      "exclusive"
+    ],
+    "baseUrl": "https://dcl-base-exclusive.now.sh/",
+    "i18n": [
+      {
+        "code": "en",
+        "text": "Spider Earrings"
+      },
+      {
+        "code": "es",
+        "text": "Pendientes de Araña"
+      }
+    ],
+    "thumbnail": "QmSfe6dHYXAvsbMBTNGWwHtsr2aBoMjUrCW2TeLbCPw4oZ",
+    "replaces": [],
+    "hides": []
+  },
+  {
+    "id": "dcl://halloween_2019/bee_suit_earring",
+    "representations": [
+      {
+        "bodyShapes": [
+          "dcl://base-avatars/BaseFemale"
+        ],
+        "mainFile": "F_Earring_BeeSuit.glb",
+        "overrideReplaces": [],
+        "overrideHides": [],
+        "contents": [
+          {
+            "file": "AvatarWearables_TX.png",
+            "hash": "QmWLrKJFzDCMGXVCef78SDkMHWB94eHP1ZeXfyci3kphTb"
+          },
+          {
+            "file": "F_Earring_BeeSuit.glb",
+            "hash": "QmTGyieAqLDpECUGuNt3sAazw4dq2j3ARpTPncyMMeoJaR"
+          },
+          {
+            "file": "bee_suit_earring.png",
+            "hash": "QmbSfZhc2qCYCQUb2WBngjWpRriEEsfU2iW4BkkEsKcqeY"
+          }
+        ]
+      }
+    ],
+    "type": "wearable",
+    "category": "earring",
+    "tags": [
+      "accesories",
+      "exclusive",
+      "earrings",
+      "halloween",
+      "bee",
+      "exclusive"
+    ],
+    "baseUrl": "https://dcl-base-exclusive.now.sh/",
+    "i18n": [
+      {
+        "code": "en",
+        "text": "Bee Earrings"
+      },
+      {
+        "code": "es",
+        "text": "Pendientes de Abeja"
+      }
+    ],
+    "thumbnail": "QmYf2C2hw5FmJF4iwroGHZyQ3rPAzf2xrGYmdvJZz3BPmR",
+    "replaces": [],
+    "hides": []
+  },
+  {
+    "id": "dcl://halloween_2019/jester_earring",
+    "representations": [
+      {
+        "bodyShapes": [
+          "dcl://base-avatars/BaseFemale"
+        ],
+        "mainFile": "F_Earring_Jester.glb",
+        "overrideReplaces": [],
+        "overrideHides": [],
+        "contents": [
+          {
+            "file": "AvatarWearables_TX.png",
+            "hash": "QmWLrKJFzDCMGXVCef78SDkMHWB94eHP1ZeXfyci3kphTb"
+          },
+          {
+            "file": "F_Earring_Jester.glb",
+            "hash": "QmYvEXtfPWXCWafqLLomhd9PebXgQhdtSkhWjQPZuxdAZs"
+          },
+          {
+            "file": "jester_earring.png",
+            "hash": "QmSaKSyS8nEzhnusrkGoyD9DksZysp9j9UQg7AXqC46tuh"
+          }
+        ]
+      }
+    ],
+    "type": "wearable",
+    "category": "earring",
+    "tags": [
+      "accesories",
+      "exclusive",
+      "earrings",
+      "halloween",
+      "jingle",
+      "jester",
+      "bells",
+      "exclusive"
+    ],
+    "baseUrl": "https://dcl-base-exclusive.now.sh/",
+    "i18n": [
+      {
+        "code": "en",
+        "text": "Jingle Bells Earrings"
+      },
+      {
+        "code": "es",
+        "text": "Pendientes de Cascabel"
+      }
+    ],
+    "thumbnail": "QmaeAAt1pf7ozMABNeRimTvH9Fc4FDE6w13PrBr2WGbf2J",
+    "replaces": [],
+    "hides": []
+  },
+  {
+    "id": "dcl://halloween_2019/spy_suit_eyewear",
+    "representations": [
+      {
+        "bodyShapes": [
+          "dcl://base-avatars/BaseFemale"
+        ],
+        "mainFile": "F_Eyewear_Spy.glb",
+        "overrideReplaces": [],
+        "overrideHides": [],
+        "contents": [
+          {
+            "file": "AvatarWearables_TX.png",
+            "hash": "QmWLrKJFzDCMGXVCef78SDkMHWB94eHP1ZeXfyci3kphTb"
+          },
+          {
+            "file": "F_Eyewear_Spy.glb",
+            "hash": "QmSS7ayoqygJDaab1hxSi6M9GBvyJuaKJmveiQ8RXWgqNp"
+          },
+          {
+            "file": "spy_suit_eyewear.png",
+            "hash": "QmbM5iGtA62N4fNc85UgJtS4SPpFXFZwaUqYnj2uUJSrQg"
+          }
+        ]
+      }
+    ],
+    "type": "wearable",
+    "category": "eyewear",
+    "tags": [
+      "accesories",
+      "exclusive",
+      "earrings",
+      "halloween",
+      "spy",
+      "exclusive"
+    ],
+    "baseUrl": "https://dcl-base-exclusive.now.sh/",
+    "i18n": [
+      {
+        "code": "en",
+        "text": "Spy Suit Eyewear"
+      },
+      {
+        "code": "es",
+        "text": "Anteojos de Espía"
+      }
+    ],
+    "thumbnail": "QmR2gAbsCNLyAHj5XH7nmN7QubQzxFzoHvy2naij3PPTyr",
+    "replaces": [
+      "mask",
+      "helmet"
+    ],
+    "hides": []
+  },
+  {
+    "id": "dcl://halloween_2019/bee_suit_feet",
+    "representations": [
+      {
+        "bodyShapes": [
+          "dcl://base-avatars/BaseFemale"
+        ],
+        "mainFile": "F_Feet_BeeSuit.glb",
+        "overrideReplaces": [],
+        "overrideHides": [],
+        "contents": [
+          {
+            "file": "AvatarWearables_TX.png",
+            "hash": "QmWLrKJFzDCMGXVCef78SDkMHWB94eHP1ZeXfyci3kphTb"
+          },
+          {
+            "file": "Avatar_FemaleSkinBase.png",
+            "hash": "QmXBeMAkB4sUFCMy42tGQ9DQZ1HC8VLZ3r4e7p2GdMRudT"
+          },
+          {
+            "file": "F_Feet_BeeSuit.glb",
+            "hash": "QmbDiQhmeHQeCeohB1BXvWa5NBD19yJHiatgHN6fyxoz8a"
+          },
+          {
+            "file": "bee_suit_feet.png",
+            "hash": "QmYZnRbh882XdBgtabtxomzS5Bctj136Q69vmjQLjBzcc7"
+          }
+        ]
+      }
+    ],
+    "type": "wearable",
+    "category": "feet",
+    "tags": [
+      "accesories",
+      "exclusive",
+      "shoes",
+      "feet",
+      "halloween",
+      "exclusive"
+    ],
+    "baseUrl": "https://dcl-base-exclusive.now.sh/",
+    "i18n": [
+      {
+        "code": "en",
+        "text": "Bee Suit Shoes"
+      },
+      {
+        "code": "es",
+        "text": "Zapatos de Abeja"
+      }
+    ],
+    "thumbnail": "QmWTpghyHtHKWTwbFKTx4ddn7yzEZTmykHZJqFkqkjvzdE",
+    "replaces": [],
+    "hides": []
+  },
+  {
+    "id": "dcl://halloween_2019/bride_of_frankie_feet",
+    "representations": [
+      {
+        "bodyShapes": [
+          "dcl://base-avatars/BaseFemale"
+        ],
+        "mainFile": "F_Feet_BrideOfFrankie.glb",
+        "overrideReplaces": [],
+        "overrideHides": [],
+        "contents": [
+          {
+            "file": "AvatarWearables_TX.png",
+            "hash": "QmWLrKJFzDCMGXVCef78SDkMHWB94eHP1ZeXfyci3kphTb"
+          },
+          {
+            "file": "Avatar_FemaleSkinBase.png",
+            "hash": "QmXBeMAkB4sUFCMy42tGQ9DQZ1HC8VLZ3r4e7p2GdMRudT"
+          },
+          {
+            "file": "F_Feet_BrideOfFrankie.glb",
+            "hash": "QmYi81XdCvpTrpBpeupUtvLu1gAePdcaTvCMToVC4EzgBZ"
+          },
+          {
+            "file": "bride_of_frankie_feet.png",
+            "hash": "QmWUCjwEcuoM7Na5FuDJ4sVspj4EQoopVAx8ncw8R9Luen"
+          }
+        ]
+      }
+    ],
+    "type": "wearable",
+    "category": "feet",
+    "tags": [
+      "accesories",
+      "exclusive",
+      "shoes",
+      "feet",
+      "halloween",
+      "exclusive"
+    ],
+    "baseUrl": "https://dcl-base-exclusive.now.sh/",
+    "i18n": [
+      {
+        "code": "en",
+        "text": "Bride of Frankie Shoes"
+      },
+      {
+        "code": "es",
+        "text": "Zapatos de la  Novia de Frankie"
+      }
+    ],
+    "thumbnail": "QmcVZS5CXEKfK1BkcNkpS3BqqpU2rvhg8asr6F33doT8mb",
+    "replaces": [],
+    "hides": []
+  },
+  {
+    "id": "dcl://halloween_2019/creepy_nurse_feet",
+    "representations": [
+      {
+        "bodyShapes": [
+          "dcl://base-avatars/BaseFemale"
+        ],
+        "mainFile": "F_Feet_CreepyNurse.glb",
+        "overrideReplaces": [],
+        "overrideHides": [],
+        "contents": [
+          {
+            "file": "Avatar_FemaleSkinBase.png",
+            "hash": "QmXBeMAkB4sUFCMy42tGQ9DQZ1HC8VLZ3r4e7p2GdMRudT"
+          },
+          {
+            "file": "Blood.png",
+            "hash": "QmQdvgkQnqUcJkKhGp3XnjNZ7Hs6ps1Zj9a1KV7ftVHGZD"
+          },
+          {
+            "file": "F_Feet_CreepyNurse.glb",
+            "hash": "QmNcsW7fZcF8FmfVXpyv6ERdFAD7e1RBzBtCTFZMmU3FBL"
+          },
+          {
+            "file": "creepy_nurse_feet.png",
+            "hash": "QmQZM6zbzmMiJHqhZf48UMs5TjRCkBNb7aJmcizPwdk6Nt"
+          }
+        ]
+      }
+    ],
+    "type": "wearable",
+    "category": "feet",
+    "tags": [
+      "accesories",
+      "exclusive",
+      "shoes",
+      "feet",
+      "halloween",
+      "exclusive"
+    ],
+    "baseUrl": "https://dcl-base-exclusive.now.sh/",
+    "i18n": [
+      {
+        "code": "en",
+        "text": "Creepy Nurse Shoes"
+      },
+      {
+        "code": "es",
+        "text": "Zapatos de Enfermera Siniestra"
+      }
+    ],
+    "thumbnail": "QmZgsgy6tHbs1c9duqihm9ncGYvd7TyZi8KD6ymsfnDJMC",
+    "replaces": [],
+    "hides": []
+  },
+  {
+    "id": "dcl://halloween_2019/jester_feet",
+    "representations": [
+      {
+        "bodyShapes": [
+          "dcl://base-avatars/BaseFemale"
+        ],
+        "mainFile": "F_Feet_Jester.glb",
+        "overrideReplaces": [],
+        "overrideHides": [],
+        "contents": [
+          {
+            "file": "AvatarWearables_TX.png",
+            "hash": "QmWLrKJFzDCMGXVCef78SDkMHWB94eHP1ZeXfyci3kphTb"
+          },
+          {
+            "file": "Avatar_FemaleSkinBase.png",
+            "hash": "QmXBeMAkB4sUFCMy42tGQ9DQZ1HC8VLZ3r4e7p2GdMRudT"
+          },
+          {
+            "file": "F_Feet_Jester.glb",
+            "hash": "QmRJN9dj6jWq6AWF6z8s9gg2wpKqjMC4wT1uyKd78rrAJi"
+          },
+          {
+            "file": "jester_feet.png",
+            "hash": "QmeeVCZ4aU4sePi28YdxtiRN5n9xAMGxofWoLocWgWcScU"
+          }
+        ]
+      }
+    ],
+    "type": "wearable",
+    "category": "feet",
+    "tags": [
+      "accesories",
+      "exclusive",
+      "shoes",
+      "feet",
+      "halloween",
+      "exclusive"
+    ],
+    "baseUrl": "https://dcl-base-exclusive.now.sh/",
+    "i18n": [
+      {
+        "code": "en",
+        "text": "Jester Shoes"
+      },
+      {
+        "code": "es",
+        "text": "Zapatos de Bufona"
+      }
+    ],
+    "thumbnail": "QmZ6UqN2g9ciS17ak3odr9pS568Q7H1oGHnHyHm5RX2tqX",
+    "replaces": [],
+    "hides": []
+  },
+  {
+    "id": "dcl://halloween_2019/spy_suit_feet",
+    "representations": [
+      {
+        "bodyShapes": [
+          "dcl://base-avatars/BaseFemale"
+        ],
+        "mainFile": "F_Feet_Spy.glb",
+        "overrideReplaces": [],
+        "overrideHides": [],
+        "contents": [
+          {
+            "file": "AvatarWearables_TX.png",
+            "hash": "QmWLrKJFzDCMGXVCef78SDkMHWB94eHP1ZeXfyci3kphTb"
+          },
+          {
+            "file": "Avatar_FemaleSkinBase.png",
+            "hash": "QmXBeMAkB4sUFCMy42tGQ9DQZ1HC8VLZ3r4e7p2GdMRudT"
+          },
+          {
+            "file": "F_Feet_Spy.glb",
+            "hash": "QmT8miu75TAytvduvoUXLFswo7GsfXSYBkA4sJpedwfBMt"
+          },
+          {
+            "file": "spy_suit_feet.png",
+            "hash": "QmYM6crwWK6mYVV7sSaExTv6vdp5zZf2ynmZyGLww8rD96"
+          }
+        ]
+      }
+    ],
+    "type": "wearable",
+    "category": "feet",
+    "tags": [
+      "accesories",
+      "exclusive",
+      "shoes",
+      "feet",
+      "halloween",
+      "exclusive"
+    ],
+    "baseUrl": "https://dcl-base-exclusive.now.sh/",
+    "i18n": [
+      {
+        "code": "en",
+        "text": "Spy Suit Shoes"
+      },
+      {
+        "code": "es",
+        "text": "Zapatos de Espía"
+      }
+    ],
+    "thumbnail": "QmaSacF69ZazS8PjwXH46Xa6WAs2WFj95K1D9agFF75av1",
+    "replaces": [],
+    "hides": []
+  },
+  {
+    "id": "dcl://halloween_2019/witch_feet",
+    "representations": [
+      {
+        "bodyShapes": [
+          "dcl://base-avatars/BaseFemale"
+        ],
+        "mainFile": "F_Feet_Witch.glb",
+        "overrideReplaces": [],
+        "overrideHides": [],
+        "contents": [
+          {
+            "file": "AvatarWearables_TX.png",
+            "hash": "QmWLrKJFzDCMGXVCef78SDkMHWB94eHP1ZeXfyci3kphTb"
+          },
+          {
+            "file": "Avatar_FemaleSkinBase.png",
+            "hash": "QmXBeMAkB4sUFCMy42tGQ9DQZ1HC8VLZ3r4e7p2GdMRudT"
+          },
+          {
+            "file": "F_Feet_Witch.glb",
+            "hash": "Qmc7ch8upqSjQDRhuuQbeN4KQrKh5BhTvFLYy6CEg2924E"
+          },
+          {
+            "file": "witch_feet.png",
+            "hash": "QmfNMrdPKAeSxrYSb7uEmmbYQtrJDdDGdysdDzxg5Khj6C"
+          }
+        ]
+      }
+    ],
+    "type": "wearable",
+    "category": "feet",
+    "tags": [
+      "accesories",
+      "exclusive",
+      "shoes",
+      "feet",
+      "halloween",
+      "exclusive"
+    ],
+    "baseUrl": "https://dcl-base-exclusive.now.sh/",
+    "i18n": [
+      {
+        "code": "en",
+        "text": "Witch Shoes"
+      },
+      {
+        "code": "es",
+        "text": "Zapatos de Bruja"
+      }
+    ],
+    "thumbnail": "QmZvWZPUUgF3svwk7fN94g4srS33cgXALGBxUy1rHaEoea",
+    "replaces": [],
+    "hides": []
+  },
+  {
+    "id": "dcl://halloween_2019/sad_clown_feet",
+    "representations": [
+      {
+        "bodyShapes": [
+          "dcl://base-avatars/BaseMale"
+        ],
+        "mainFile": "M_Feet_Clown.glb",
+        "overrideReplaces": [],
+        "overrideHides": [],
+        "contents": [
+          {
+            "file": "AvatarWearables_TX.png",
+            "hash": "QmWLrKJFzDCMGXVCef78SDkMHWB94eHP1ZeXfyci3kphTb"
+          },
+          {
+            "file": "M_Feet_Clown.glb",
+            "hash": "QmSQjjP22YasSLxBhN2e6GsLHBQ4R3LMxxTHPSxnmNUwPW"
+          },
+          {
+            "file": "sad_clown_feet.png",
+            "hash": "QmSDPigA16JpjwdC6RqfpRoysEzpTGpthoWa64W6uPGP2j"
+          }
+        ]
+      }
+    ],
+    "type": "wearable",
+    "category": "feet",
+    "tags": [
+      "accesories",
+      "exclusive",
+      "shoes",
+      "feet",
+      "halloween",
+      "exclusive"
+    ],
+    "baseUrl": "https://dcl-base-exclusive.now.sh/",
+    "i18n": [
+      {
+        "code": "en",
+        "text": "Sad Clown Shoes"
+      },
+      {
+        "code": "es",
+        "text": "Zapatos de Payaso Triste"
+      }
+    ],
+    "thumbnail": "QmPPj6v7RYedDn7NUchDgZtdUrkPavFdjo3BktJQGYDnyr",
+    "replaces": [],
+    "hides": []
+  },
+  {
+    "id": "dcl://halloween_2019/frankie_feet",
+    "representations": [
+      {
+        "bodyShapes": [
+          "dcl://base-avatars/BaseMale"
+        ],
+        "mainFile": "M_Feet_Frankie.glb",
+        "overrideReplaces": [],
+        "overrideHides": [],
+        "contents": [
+          {
+            "file": "AvatarWearables_TX.png",
+            "hash": "QmWLrKJFzDCMGXVCef78SDkMHWB94eHP1ZeXfyci3kphTb"
+          },
+          {
+            "file": "Avatar_MaleSkinBase.png",
+            "hash": "QmRxKVwraeAq8NwgJ1TM9VnrG4AaQ7HbATxg7BGAVcUhvH"
+          },
+          {
+            "file": "M_Feet_Frankie.glb",
+            "hash": "QmSjxy33ZUoHyQ83M6wxE95qhWVgMDKDFFqpD1CNM89b3k"
+          },
+          {
+            "file": "frankie_feet.png",
+            "hash": "QmbPpeHzf4QubJEGMgUwv5ikjdDz6ErJex3XMiKpfPBH9A"
+          }
+        ]
+      }
+    ],
+    "type": "wearable",
+    "category": "feet",
+    "tags": [
+      "accesories",
+      "exclusive",
+      "shoes",
+      "feet",
+      "halloween",
+      "exclusive"
+    ],
+    "baseUrl": "https://dcl-base-exclusive.now.sh/",
+    "i18n": [
+      {
+        "code": "en",
+        "text": "Frankie Shoes"
+      },
+      {
+        "code": "es",
+        "text": "Zapatos de Frankie"
+      }
+    ],
+    "thumbnail": "QmXDj73FMWHT742ZkKmWmqdoLyzyty6KxbC1dedWE84woL",
+    "replaces": [],
+    "hides": []
+  },
+  {
+    "id": "dcl://halloween_2019/skeleton_suit_feet",
+    "representations": [
+      {
+        "bodyShapes": [
+          "dcl://base-avatars/BaseMale"
+        ],
+        "mainFile": "M_Feet_SkeletonSuit.glb",
+        "overrideReplaces": [],
+        "overrideHides": [],
+        "contents": [
+          {
+            "file": "M_Feet_SkeletonSuit.glb",
+            "hash": "QmbHq6uc1U7oBardCHUB6qUyzzdHyf6GJFzGf7N1eZJfTf"
+          },
+          {
+            "file": "Suits_v2.jpg",
+            "hash": "QmegQy6FDykUwwwqqHdcvXzSB3cs4DGtDvVaWp7gxjJgNv"
+          },
+          {
+            "file": "skeleton_suit_feet.png",
+            "hash": "QmatZYkoq2X1CibUuCkGYm3iMkjEYmtkKTNGoxG8z1TYVW"
+          }
+        ]
+      }
+    ],
+    "type": "wearable",
+    "category": "feet",
+    "tags": [
+      "accesories",
+      "exclusive",
+      "shoes",
+      "feet",
+      "halloween",
+      "exclusive"
+    ],
+    "baseUrl": "https://dcl-base-exclusive.now.sh/",
+    "i18n": [
+      {
+        "code": "en",
+        "text": "Skeleton Suit Feet"
+      },
+      {
+        "code": "es",
+        "text": "Pies de Esqueleto"
+      }
+    ],
+    "thumbnail": "QmQuUNtiwwE1Gfzw7QKDpEJ4V8htnw2dbKHG6yJpe1z9QH",
+    "replaces": [],
+    "hides": []
+  },
+  {
+    "id": "dcl://halloween_2019/vampire_feet",
+    "representations": [
+      {
+        "bodyShapes": [
+          "dcl://base-avatars/BaseMale"
+        ],
+        "mainFile": "M_Feet_Vampire.glb",
+        "overrideReplaces": [],
+        "overrideHides": [],
+        "contents": [
+          {
+            "file": "AvatarWearables_TX.png",
+            "hash": "QmWLrKJFzDCMGXVCef78SDkMHWB94eHP1ZeXfyci3kphTb"
+          },
+          {
+            "file": "M_Feet_Vampire.glb",
+            "hash": "QmQ21g3BkBQq1hwbQmJDp8qDCfMSdr5gNB365WdQ34CM1b"
+          },
+          {
+            "file": "vampire_feet.png",
+            "hash": "QmPBS2XC2NiFUnmeXTPwLN8JCp21rGaZjmK31BYS2cDQaZ"
+          }
+        ]
+      }
+    ],
+    "type": "wearable",
+    "category": "feet",
+    "tags": [
+      "accesories",
+      "exclusive",
+      "shoes",
+      "feet",
+      "halloween",
+      "exclusive"
+    ],
+    "baseUrl": "https://dcl-base-exclusive.now.sh/",
+    "i18n": [
+      {
+        "code": "en",
+        "text": "Vampire Shoes"
+      },
+      {
+        "code": "es",
+        "text": "Zapatos de Vampiro"
+      }
+    ],
+    "thumbnail": "QmfC9k9K7AWKC42GDZ45yqi6grPqyzHdFwhyotppHWq6fC",
+    "replaces": [],
+    "hides": []
+  },
+  {
+    "id": "dcl://halloween_2019/zombie_suit_feet",
+    "representations": [
+      {
+        "bodyShapes": [
+          "dcl://base-avatars/BaseMale"
+        ],
+        "mainFile": "M_Feet_Zombie.glb",
+        "overrideReplaces": [],
+        "overrideHides": [],
+        "contents": [
+          {
+            "file": "AvatarWearables_TX.png",
+            "hash": "QmWLrKJFzDCMGXVCef78SDkMHWB94eHP1ZeXfyci3kphTb"
+          },
+          {
+            "file": "Avatar_MaleSkinBase.png",
+            "hash": "QmRxKVwraeAq8NwgJ1TM9VnrG4AaQ7HbATxg7BGAVcUhvH"
+          },
+          {
+            "file": "M_Feet_Zombie.glb",
+            "hash": "QmSvbScd1WFhfZv9zjFUdrgLsEwQ5w7eXhQHXuo5wytZFu"
+          },
+          {
+            "file": "zombie_suit_feet.png",
+            "hash": "QmdrDRSWjp16WPv9XoNpMTKALX3yAKdAkVafVNsqkTMpCT"
+          }
+        ]
+      }
+    ],
+    "type": "wearable",
+    "category": "feet",
+    "tags": [
+      "accesories",
+      "exclusive",
+      "shoes",
+      "feet",
+      "halloween",
+      "exclusive"
+    ],
+    "baseUrl": "https://dcl-base-exclusive.now.sh/",
+    "i18n": [
+      {
+        "code": "en",
+        "text": "Zombie Boots"
+      },
+      {
+        "code": "es",
+        "text": "Botas de Zombie"
+      }
+    ],
+    "thumbnail": "QmbssPLoy2m7h5bwLYR4tuGfKJUCUByF7mY24B1eie8VMD",
+    "replaces": [],
+    "hides": []
+  },
+  {
+    "id": "dcl://halloween_2019/bride_of_frankie_hair",
+    "representations": [
+      {
+        "bodyShapes": [
+          "dcl://base-avatars/BaseFemale"
+        ],
+        "mainFile": "F_Hair_BrideOfFrankie.glb",
+        "overrideReplaces": [],
+        "overrideHides": [],
+        "contents": [
+          {
+            "file": "AvatarWearables_TX.png",
+            "hash": "QmWLrKJFzDCMGXVCef78SDkMHWB94eHP1ZeXfyci3kphTb"
+          },
+          {
+            "file": "F_Hair_BrideOfFrankie.glb",
+            "hash": "QmUTUQhXmfxcsmUmtDBjnwktLXLHfsxE65JAoMAzeGPMct"
+          },
+          {
+            "file": "bride_of_frankie_hair.png",
+            "hash": "QmXLPuRj768cq1epp8xQbwALSjbLksP1MA6JDHdL7V1DAX"
+          }
+        ]
+      }
+    ],
+    "type": "wearable",
+    "category": "hair",
+    "tags": [
+      "accesories",
+      "exclusive",
+      "hair",
+      "jester",
+      "halloween",
+      "exclusive"
+    ],
+    "baseUrl": "https://dcl-base-exclusive.now.sh/",
+    "i18n": [
+      {
+        "code": "en",
+        "text": "Bride of Frankie Hair"
+      },
+      {
+        "code": "es",
+        "text": "Peinado de la novia de Frankie"
+      }
+    ],
+    "thumbnail": "QmaNDBkHirKnBQgGpR8Jukk88piCjEGgR99eaoADk2A4wV",
+    "replaces": [
+      "hat",
+      "helmet"
+    ],
+    "hides": []
+  },
+  {
+    "id": "dcl://halloween_2019/jester_hair",
+    "representations": [
+      {
+        "bodyShapes": [
+          "dcl://base-avatars/BaseFemale"
+        ],
+        "mainFile": "F_Hair_Jester.glb",
+        "overrideReplaces": [],
+        "overrideHides": [],
+        "contents": [
+          {
+            "file": "AvatarWearables_TX.png",
+            "hash": "QmWLrKJFzDCMGXVCef78SDkMHWB94eHP1ZeXfyci3kphTb"
+          },
+          {
+            "file": "F_Hair_Jester.glb",
+            "hash": "Qme6p3mo1HQdYzbLBhP4PvtDmFpk4WrGBb87HTEnpckCjY"
+          },
+          {
+            "file": "Jester_Hair.png",
+            "hash": "QmfASDqRUna6ZUqkV9aRoBGiEeKwbkZWbxiKmWeFRkuhVD"
+          }
+        ]
+      }
+    ],
+    "type": "wearable",
+    "category": "hair",
+    "tags": [
+      "accesories",
+      "exclusive",
+      "hair",
+      "jester",
+      "halloween",
+      "exclusive"
+    ],
+    "baseUrl": "https://dcl-base-exclusive.now.sh/",
+    "i18n": [
+      {
+        "code": "en",
+        "text": "Jester Hair"
+      },
+      {
+        "code": "es",
+        "text": "Peinado de Bufona"
+      }
+    ],
+    "thumbnail": "QmQdvUYTzVA5uUkyf3wQEpkg9ER2WnkB6v1YmKMeUxNTFk",
+    "replaces": [
+      "hat",
+      "helmet"
+    ],
+    "hides": []
+  },
+  {
+    "id": "dcl://halloween_2019/spy_suit_hair",
+    "representations": [
+      {
+        "bodyShapes": [
+          "dcl://base-avatars/BaseFemale"
+        ],
+        "mainFile": "F_Hair_Spy.glb",
+        "overrideReplaces": [],
+        "overrideHides": [],
+        "contents": [
+          {
+            "file": "AvatarWearables_TX.png",
+            "hash": "QmWLrKJFzDCMGXVCef78SDkMHWB94eHP1ZeXfyci3kphTb"
+          },
+          {
+            "file": "F_Hair_Spy.glb",
+            "hash": "QmPNYGYMi4wRB7EuYwR9WfZ6MyJmJ2uVJ1fhxKuGCAq975"
+          },
+          {
+            "file": "spy_suit_hair.png",
+            "hash": "QmdJPwHr6zrrWVno81Tmk48zcZeF9BkNY3yVvPPTDyU5uR"
+          }
+        ]
+      }
+    ],
+    "type": "wearable",
+    "category": "hair",
+    "tags": [
+      "accesories",
+      "exclusive",
+      "hair",
+      "ponytail",
+      "spy",
+      "halloween",
+      "exclusive"
+    ],
+    "baseUrl": "https://dcl-base-exclusive.now.sh/",
+    "i18n": [
+      {
+        "code": "en",
+        "text": "Pony Tail Hair"
+      },
+      {
+        "code": "es",
+        "text": "Peinado de Cola de Pony"
+      }
+    ],
+    "thumbnail": "QmZG5Kfa67HwocXvWCdooygLQi4irnTw3n2jJQoPY3PT19",
+    "replaces": [
+      "hat",
+      "helmet"
+    ],
+    "hides": []
+  },
+  {
+    "id": "dcl://halloween_2019/vampire_hair",
+    "representations": [
+      {
+        "bodyShapes": [
+          "dcl://base-avatars/BaseMale"
+        ],
+        "mainFile": "M_Hair_Vampire.glb",
+        "overrideReplaces": [],
+        "overrideHides": [],
+        "contents": [
+          {
+            "file": "AvatarWearables_TX.png",
+            "hash": "QmWLrKJFzDCMGXVCef78SDkMHWB94eHP1ZeXfyci3kphTb"
+          },
+          {
+            "file": "M_Hair_Vampire.glb",
+            "hash": "QmcWWozAKB52n6hfPBTQQTAgHJMNH5vCBcEtXZ8hU8z4Ze"
+          },
+          {
+            "file": "vampire_hair.png",
+            "hash": "QmWDCQrH7BBNmVRcnLRG5HUBL9SKdGsGNMqmHBwZwy3NQs"
+          }
+        ]
+      }
+    ],
+    "type": "wearable",
+    "category": "hair",
+    "tags": [
+      "accesories",
+      "exclusive",
+      "hair",
+      "vampiro",
+      "halloween",
+      "exclusive"
+    ],
+    "baseUrl": "https://dcl-base-exclusive.now.sh/",
+    "i18n": [
+      {
+        "code": "en",
+        "text": "Vampire Hair"
+      },
+      {
+        "code": "es",
+        "text": "Peinado de Vampiro"
+      }
+    ],
+    "thumbnail": "QmbNt5CvzVs3fi9xeU2onebtZL1nLkjeBARX9JPM8q9GB1",
+    "replaces": [
+      "hat",
+      "helmet"
+    ],
+    "hides": []
+  },
+  {
+    "id": "dcl://halloween_2019/creepy_nurse_hat",
+    "representations": [
+      {
+        "bodyShapes": [
+          "dcl://base-avatars/BaseFemale"
+        ],
+        "mainFile": "F_Hat_CreepyNurse.glb",
+        "overrideReplaces": [],
+        "overrideHides": [],
+        "contents": [
+          {
+            "file": "AvatarWearables_TX.png",
+            "hash": "QmWLrKJFzDCMGXVCef78SDkMHWB94eHP1ZeXfyci3kphTb"
+          },
+          {
+            "file": "Blood.png",
+            "hash": "QmQdvgkQnqUcJkKhGp3XnjNZ7Hs6ps1Zj9a1KV7ftVHGZD"
+          },
+          {
+            "file": "F_Hat_CreepyNurse.glb",
+            "hash": "QmYX8rQTgBcvkGnm2GTpyiycFtbLHtAifKsH6WRHdVRJY1"
+          },
+          {
+            "file": "creepy_nurse_hat.png",
+            "hash": "QmepbVZGxtXWWdQYDXG9mXD188Mfk6wzu6YFmYLVjkRGbu"
+          }
+        ]
+      }
+    ],
+    "type": "wearable",
+    "category": "hat",
+    "tags": [
+      "accesories",
+      "exclusive",
+      "mexican",
+      "hat",
+      "exclusive"
+    ],
+    "baseUrl": "https://dcl-base-exclusive.now.sh/",
+    "i18n": [
+      {
+        "code": "en",
+        "text": "Creepy Nurse Hat"
+      },
+      {
+        "code": "es",
+        "text": "Sombrero de Enfermera Siniestra"
+      }
+    ],
+    "thumbnail": "QmbDP5FsvjM5TagHbQfwQwmFZY5yjWYUUZ5jTUhvKv8RFF",
+    "replaces": [
+      "helmet",
+      "tiara",
+      "top_head"
+    ],
+    "hides": [
+      "hair"
+    ]
+  },
+  {
+    "id": "dcl://halloween_2019/witch_hat",
+    "representations": [
+      {
+        "bodyShapes": [
+          "dcl://base-avatars/BaseFemale"
+        ],
+        "mainFile": "F_Hat_Witch.glb",
+        "overrideReplaces": [],
+        "overrideHides": [],
+        "contents": [
+          {
+            "file": "AvatarWearables_TX.png",
+            "hash": "QmWLrKJFzDCMGXVCef78SDkMHWB94eHP1ZeXfyci3kphTb"
+          },
+          {
+            "file": "F_Hat_Witch.glb",
+            "hash": "QmUyKAVjfj4u2UDD9tq8WFFqdYnAPcQ9v8akn6kuzhVzPD"
+          },
+          {
+            "file": "witch_hat.png",
+            "hash": "QmZKvDsURVtz7GKjtyFYhwXkf4J9dJ245FizyGg4KqfwAZ"
+          }
+        ]
+      }
+    ],
+    "type": "wearable",
+    "category": "hat",
+    "tags": [
+      "accesories",
+      "exclusive",
+      "halloween",
+      "hat",
+      "exclusive"
+    ],
+    "baseUrl": "https://dcl-base-exclusive.now.sh/",
+    "i18n": [
+      {
+        "code": "en",
+        "text": "Witch Hat"
+      },
+      {
+        "code": "es",
+        "text": "Sombrero de Bruja"
+      }
+    ],
+    "thumbnail": "QmQpx8oSHdBohCPZGBBQndyzG8qsHaL8WUGDnbEpEr3LqB",
+    "replaces": [
+      "helmet",
+      "tiara",
+      "top_head"
+    ],
+    "hides": [
+      "hair"
+    ]
+  },
+  {
+    "id": "dcl://halloween_2019/frankie_hat",
+    "representations": [
+      {
+        "bodyShapes": [
+          "dcl://base-avatars/BaseMale"
+        ],
+        "mainFile": "Hat_Frankie.glb",
+        "overrideReplaces": [],
+        "overrideHides": [],
+        "contents": [
+          {
+            "file": "AvatarWearables_TX.png",
+            "hash": "QmWLrKJFzDCMGXVCef78SDkMHWB94eHP1ZeXfyci3kphTb"
+          },
+          {
+            "file": "Hat_Frankie.glb",
+            "hash": "QmR8HLzwKr63xc4BvLfzJpFDnrUqK77phcch3ME3spjZhm"
+          },
+          {
+            "file": "frankie_hat.png",
+            "hash": "QmesX8N7teAr5beTk7aSkE4o4zHoQ5Hb1X4RueZZN4zLUK"
+          }
+        ]
+      }
+    ],
+    "type": "wearable",
+    "category": "hat",
+    "tags": [
+      "accesories",
+      "exclusive",
+      "hat",
+      "exclusive"
+    ],
+    "baseUrl": "https://dcl-base-exclusive.now.sh/",
+    "i18n": [
+      {
+        "code": "en",
+        "text": "Frankie Hat"
+      },
+      {
+        "code": "es",
+        "text": "Sombrero de Frankie"
+      }
+    ],
+    "thumbnail": "QmYSkVuZCAvdGa2gRXeNsk8G37XhkRgqLk4GwzdaC82UWg",
+    "replaces": [
+      "helmet",
+      "tiara",
+      "top_head"
+    ],
+    "hides": [
+      "hair"
+    ]
+  },
+  {
+    "id": "dcl://halloween_2019/mexican_hat",
+    "representations": [
+      {
+        "bodyShapes": [
+          "dcl://base-avatars/BaseMale"
+        ],
+        "mainFile": "M_Hat_Mexican_01.glb",
+        "overrideReplaces": [],
+        "overrideHides": [],
+        "contents": [
+          {
+            "file": "AvatarWearables_TX.png",
+            "hash": "QmWLrKJFzDCMGXVCef78SDkMHWB94eHP1ZeXfyci3kphTb"
+          },
+          {
+            "file": "F_Hat_Mexican_01.glb",
+            "hash": "QmbLZGCoeMs3pqZ77KLT2mK6aN4J5W32kHPWwN6tAeaiJt"
+          },
+          {
+            "file": "M_Hat_Mexican_01.glb",
+            "hash": "QmeR2k9KX3NQk2qzdmbewi92pYZvppXMXdPXHdiK1nYuvm"
+          },
+          {
+            "file": "mexican_hat.png",
+            "hash": "QmVaFJxiCQWe1GdwTffGtMN7Taadf5jvzjTpCPksJiPjQY"
+          }
+        ]
+      },
+      {
+        "bodyShapes": [
+          "dcl://base-avatars/BaseFemale"
+        ],
+        "mainFile": "F_Hat_Mexican_01.glb",
+        "overrideReplaces": [],
+        "overrideHides": [],
+        "contents": [
+          {
+            "file": "AvatarWearables_TX.png",
+            "hash": "QmWLrKJFzDCMGXVCef78SDkMHWB94eHP1ZeXfyci3kphTb"
+          },
+          {
+            "file": "F_Hat_Mexican_01.glb",
+            "hash": "QmbLZGCoeMs3pqZ77KLT2mK6aN4J5W32kHPWwN6tAeaiJt"
+          },
+          {
+            "file": "M_Hat_Mexican_01.glb",
+            "hash": "QmeR2k9KX3NQk2qzdmbewi92pYZvppXMXdPXHdiK1nYuvm"
+          },
+          {
+            "file": "mexican_hat.png",
+            "hash": "QmVaFJxiCQWe1GdwTffGtMN7Taadf5jvzjTpCPksJiPjQY"
+          }
+        ]
+      }
+    ],
+    "type": "wearable",
+    "category": "hat",
+    "tags": [
+      "accesories",
+      "exclusive",
+      "mexican",
+      "hat",
+      "exclusive"
+    ],
+    "baseUrl": "https://dcl-base-exclusive.now.sh/",
+    "i18n": [
+      {
+        "code": "en",
+        "text": "Mexican Hat"
+      },
+      {
+        "code": "es",
+        "text": "Sombrero Mexicano"
+      }
+    ],
+    "thumbnail": "QmVTsiv2AcyowsZZuo9aoqfdL5VbiZZjeawK1pwbKEjcL8",
+    "replaces": [
+      "helmet",
+      "tiara",
+      "top_head"
+    ],
+    "hides": [
+      "hair"
+    ]
+  },
+  {
+    "id": "dcl://halloween_2019/mariachi_hat",
+    "representations": [
+      {
+        "bodyShapes": [
+          "dcl://base-avatars/BaseMale"
+        ],
+        "mainFile": "M_Hat_Mexican_02.glb",
+        "overrideReplaces": [],
+        "overrideHides": [],
+        "contents": [
+          {
+            "file": "AvatarWearables_TX.png",
+            "hash": "QmWLrKJFzDCMGXVCef78SDkMHWB94eHP1ZeXfyci3kphTb"
+          },
+          {
+            "file": "F_Hat_Mexican_02.glb",
+            "hash": "QmWstFA4xpKJajzj8KgfVbAhkopRPpGP8UzyxSBpCzwy37"
+          },
+          {
+            "file": "M_Hat_Mexican_02.glb",
+            "hash": "QmXzbqGteTPmtgYmdcZWTennF5kSbzAjnp5UirVLUU9ubP"
+          },
+          {
+            "file": "mariachi_hat.png",
+            "hash": "QmVCqftMRorcNMz3zsAPYoaV6yn7CvFn1PrCevLnm8yD9s"
+          }
+        ]
+      },
+      {
+        "bodyShapes": [
+          "dcl://base-avatars/BaseFemale"
+        ],
+        "mainFile": "F_Hat_Mexican_02.glb",
+        "overrideReplaces": [],
+        "overrideHides": [],
+        "contents": [
+          {
+            "file": "AvatarWearables_TX.png",
+            "hash": "QmWLrKJFzDCMGXVCef78SDkMHWB94eHP1ZeXfyci3kphTb"
+          },
+          {
+            "file": "F_Hat_Mexican_02.glb",
+            "hash": "QmWstFA4xpKJajzj8KgfVbAhkopRPpGP8UzyxSBpCzwy37"
+          },
+          {
+            "file": "M_Hat_Mexican_02.glb",
+            "hash": "QmXzbqGteTPmtgYmdcZWTennF5kSbzAjnp5UirVLUU9ubP"
+          },
+          {
+            "file": "mariachi_hat.png",
+            "hash": "QmVCqftMRorcNMz3zsAPYoaV6yn7CvFn1PrCevLnm8yD9s"
+          }
+        ]
+      }
+    ],
+    "type": "wearable",
+    "category": "hat",
+    "tags": [
+      "accesories",
+      "exclusive",
+      "mexican",
+      "hat",
+      "exclusive"
+    ],
+    "baseUrl": "https://dcl-base-exclusive.now.sh/",
+    "i18n": [
+      {
+        "code": "en",
+        "text": "Mariachi Hat"
+      },
+      {
+        "code": "es",
+        "text": "Sombrero Mariachi"
+      }
+    ],
+    "thumbnail": "Qmad3ZzsthdnAWN8EorMb3kZWmgv97zpg3XXh7ewoS2jg7",
+    "replaces": [
+      "helmet",
+      "tiara",
+      "top_head"
+    ],
+    "hides": [
+      "hair"
+    ]
+  },
+  {
+    "id": "dcl://halloween_2019/classic_top_hat",
+    "representations": [
+      {
+        "bodyShapes": [
+          "dcl://base-avatars/BaseMale"
+        ],
+        "mainFile": "M_Hat_TopHat01.glb",
+        "overrideReplaces": [],
+        "overrideHides": [],
+        "contents": [
+          {
+            "file": "AvatarWearables_TX.png",
+            "hash": "QmWLrKJFzDCMGXVCef78SDkMHWB94eHP1ZeXfyci3kphTb"
+          },
+          {
+            "file": "F_Hat_TopHat01.glb",
+            "hash": "QmcfbgcPFSNzMuUNZAnXb6LdYLMuZUBtVHHZEwf9jdshVy"
+          },
+          {
+            "file": "M_Hat_TopHat01.glb",
+            "hash": "QmTuLdfBXYKgVbZW7dLowmo5Zo9qfZ5ZM1CFaNBuYWG7i5"
+          },
+          {
+            "file": "classic_top_hat.png",
+            "hash": "Qme4Woy8LBNMW3ECfKNJJA2CfFGTYRLa7SZtiUSKJpe5ft"
+          }
+        ]
+      },
+      {
+        "bodyShapes": [
+          "dcl://base-avatars/BaseFemale"
+        ],
+        "mainFile": "F_Hat_TopHat01.glb",
+        "overrideReplaces": [],
+        "overrideHides": [],
+        "contents": [
+          {
+            "file": "AvatarWearables_TX.png",
+            "hash": "QmWLrKJFzDCMGXVCef78SDkMHWB94eHP1ZeXfyci3kphTb"
+          },
+          {
+            "file": "F_Hat_TopHat01.glb",
+            "hash": "QmcfbgcPFSNzMuUNZAnXb6LdYLMuZUBtVHHZEwf9jdshVy"
+          },
+          {
+            "file": "M_Hat_TopHat01.glb",
+            "hash": "QmTuLdfBXYKgVbZW7dLowmo5Zo9qfZ5ZM1CFaNBuYWG7i5"
+          },
+          {
+            "file": "classic_top_hat.png",
+            "hash": "Qme4Woy8LBNMW3ECfKNJJA2CfFGTYRLa7SZtiUSKJpe5ft"
+          }
+        ]
+      }
+    ],
+    "type": "wearable",
+    "category": "hat",
+    "tags": [
+      "accesories",
+      "exclusive",
+      "mexican",
+      "hat",
+      "exclusive"
+    ],
+    "baseUrl": "https://dcl-base-exclusive.now.sh/",
+    "i18n": [
+      {
+        "code": "en",
+        "text": "Classic Top Hat"
+      },
+      {
+        "code": "es",
+        "text": "Sombrero de Copa Clásico"
+      }
+    ],
+    "thumbnail": "QmRqxnetDgNTp6avdMxSj769HnE9M6knVu7Pnb9VrEakN4",
+    "replaces": [
+      "helmet",
+      "tiara",
+      "top_head"
+    ],
+    "hides": [
+      "hair"
+    ]
+  },
+  {
+    "id": "dcl://halloween_2019/skeleton_suit_hat",
+    "representations": [
+      {
+        "bodyShapes": [
+          "dcl://base-avatars/BaseMale"
+        ],
+        "mainFile": "M_Hat_SkeletonSuit.glb",
+        "overrideReplaces": [],
+        "overrideHides": [],
+        "contents": [
+          {
+            "file": "AvatarWearables_TX.png",
+            "hash": "QmWLrKJFzDCMGXVCef78SDkMHWB94eHP1ZeXfyci3kphTb"
+          },
+          {
+            "file": "M_Hat_SkeletonSuit.glb",
+            "hash": "QmZG1kmfHRR2BxgsCz2bdCvoJvGL5r2NCvsBPhnqUbKV7R"
+          },
+          {
+            "file": "skeleton_suit_hat.png",
+            "hash": "QmaTNPMyuBxkHch1ECHfoKQ8FWDnKvYMgVsNhPEdEHatot"
+          },
+          {
+            "file": "skullpattern01.jpg",
+            "hash": "QmVQcaFVMaCqsk6NWjhD3jhYp2wvxbBC6j2KJyTWQeXpeE"
+          }
+        ]
+      }
+    ],
+    "type": "wearable",
+    "category": "hat",
+    "tags": [
+      "accesories",
+      "exclusive",
+      "mexican",
+      "hat",
+      "halloween",
+      "exclusive"
+    ],
+    "baseUrl": "https://dcl-base-exclusive.now.sh/",
+    "i18n": [
+      {
+        "code": "en",
+        "text": "Skull Mexican Hat"
+      },
+      {
+        "code": "es",
+        "text": "Sombrero de Calaveras Mexicanas"
+      }
+    ],
+    "thumbnail": "QmVDRndmYv9x1Fzj6R6Uf2EvvS2tb7Ay1QcKzeLVTPNhvc",
+    "replaces": [
+      "helmet",
+      "tiara",
+      "top_head"
+    ],
+    "hides": [
+      "hair"
+    ]
+  },
+  {
+    "id": "dcl://halloween_2019/creepy_pumpkin_helmet",
+    "representations": [
+      {
+        "bodyShapes": [
+          "dcl://base-avatars/BaseMale"
+        ],
+        "mainFile": "Helmet_Pumpkin.glb",
+        "overrideReplaces": [],
+        "overrideHides": [],
+        "contents": [
+          {
+            "file": "AvatarWearables_TX.png",
+            "hash": "QmWLrKJFzDCMGXVCef78SDkMHWB94eHP1ZeXfyci3kphTb"
+          },
+          {
+            "file": "Helmet_Pumpkin.glb",
+            "hash": "QmQttitH7iyZ3wqVYZEjj6M1CmvMSRa9Trx9Zh4LSHB1kD"
+          },
+          {
+            "file": "creepy_pumpkin_helmet.png",
+            "hash": "QmdHamyTJ9dFDgPkcw2XjLvdG1y5d2T28k8JZqxqx1yhQg"
+          }
+        ]
+      },
+      {
+        "bodyShapes": [
+          "dcl://base-avatars/BaseFemale"
+        ],
+        "mainFile": "Helmet_Pumpkin.glb",
+        "overrideReplaces": [],
+        "overrideHides": [],
+        "contents": [
+          {
+            "file": "AvatarWearables_TX.png",
+            "hash": "QmWLrKJFzDCMGXVCef78SDkMHWB94eHP1ZeXfyci3kphTb"
+          },
+          {
+            "file": "Helmet_Pumpkin.glb",
+            "hash": "QmQttitH7iyZ3wqVYZEjj6M1CmvMSRa9Trx9Zh4LSHB1kD"
+          },
+          {
+            "file": "creepy_pumpkin_helmet.png",
+            "hash": "QmdHamyTJ9dFDgPkcw2XjLvdG1y5d2T28k8JZqxqx1yhQg"
+          }
+        ]
+      }
+    ],
+    "type": "wearable",
+    "category": "helmet",
+    "tags": [
+      "accesories",
+      "exclusive",
+      "halloween",
+      "helmet",
+      "exclusive"
+    ],
+    "baseUrl": "https://dcl-base-exclusive.now.sh/",
+    "i18n": [
+      {
+        "code": "en",
+        "text": "Creepy Pumpkin"
+      },
+      {
+        "code": "es",
+        "text": "Pumpkin Siniestro"
+      }
+    ],
+    "thumbnail": "Qmav7Rfxi32mrXT8p4Lch3vfvSL6xPAZNjFAw6E5eRWbcy",
+    "replaces": [
+      "tiara",
+      "hat",
+      "top_head",
+      "mask",
+      "eyewear"
+    ],
+    "hides": [
+      "hair",
+      "earring",
+      "facial_hair"
+    ]
+  },
+  {
+    "id": "dcl://halloween_2019/happy_pumpkin_helmet",
+    "representations": [
+      {
+        "bodyShapes": [
+          "dcl://base-avatars/BaseMale"
+        ],
+        "mainFile": "Helmet_Pumpkin2.glb",
+        "overrideReplaces": [],
+        "overrideHides": [],
+        "contents": [
+          {
+            "file": "AvatarWearables_TX.png",
+            "hash": "QmWLrKJFzDCMGXVCef78SDkMHWB94eHP1ZeXfyci3kphTb"
+          },
+          {
+            "file": "Helmet_Pumpkin2.glb",
+            "hash": "QmNPteYvMBGj1n2uMTbBHzX2dNwDBUCrF9ECgPTS9GybyT"
+          },
+          {
+            "file": "happy_pumpkin_helmet.png",
+            "hash": "Qmf8kPJ46NAfsewvWgX8i6bVXUnScu2L3JbmzSUJ4w3Lht"
+          }
+        ]
+      },
+      {
+        "bodyShapes": [
+          "dcl://base-avatars/BaseFemale"
+        ],
+        "mainFile": "Helmet_Pumpkin2.glb",
+        "overrideReplaces": [],
+        "overrideHides": [],
+        "contents": [
+          {
+            "file": "AvatarWearables_TX.png",
+            "hash": "QmWLrKJFzDCMGXVCef78SDkMHWB94eHP1ZeXfyci3kphTb"
+          },
+          {
+            "file": "Helmet_Pumpkin2.glb",
+            "hash": "QmNPteYvMBGj1n2uMTbBHzX2dNwDBUCrF9ECgPTS9GybyT"
+          },
+          {
+            "file": "happy_pumpkin_helmet.png",
+            "hash": "Qmf8kPJ46NAfsewvWgX8i6bVXUnScu2L3JbmzSUJ4w3Lht"
+          }
+        ]
+      }
+    ],
+    "type": "wearable",
+    "category": "helmet",
+    "tags": [
+      "accesories",
+      "exclusive",
+      "halloween",
+      "helmet",
+      "exclusive"
+    ],
+    "baseUrl": "https://dcl-base-exclusive.now.sh/",
+    "i18n": [
+      {
+        "code": "en",
+        "text": "Happy Pumpkin"
+      },
+      {
+        "code": "es",
+        "text": "Pumpkin Feliz"
+      }
+    ],
+    "thumbnail": "QmUsitVuBFPqk17U2jEDmCLNo9zeo9qKbTwHUbvw1JjkQh",
+    "replaces": [
+      "tiara",
+      "hat",
+      "top_head",
+      "mask",
+      "eyewear"
+    ],
+    "hides": [
+      "hair",
+      "earring",
+      "facial_hair"
+    ]
+  },
+  {
+    "id": "dcl://halloween_2019/undead_pirate_helmet",
+    "representations": [
+      {
+        "bodyShapes": [
+          "dcl://base-avatars/BaseMale"
+        ],
+        "mainFile": "M_Helmet_UndeadPirate.glb",
+        "overrideReplaces": [],
+        "overrideHides": [],
+        "contents": [
+          {
+            "file": "AvatarWearables_TX.png",
+            "hash": "QmWLrKJFzDCMGXVCef78SDkMHWB94eHP1ZeXfyci3kphTb"
+          },
+          {
+            "file": "M_Helmet_UndeadPirate.glb",
+            "hash": "QmcDE2XirAQS8yJi7i4Z17JoENdJGt1ksXNwV43NK16188"
+          },
+          {
+            "file": "undead_pirate_helmet.png",
+            "hash": "Qmf5kLaBsXasw8rfyj9HkcUS9xJbGJ5LjeUdAFMi63YLf4"
+          }
+        ]
+      }
+    ],
+    "type": "wearable",
+    "category": "helmet",
+    "tags": [
+      "accesories",
+      "exclusive",
+      "halloween",
+      "helmet",
+      "undead",
+      "pirate",
+      "exclusive"
+    ],
+    "baseUrl": "https://dcl-base-exclusive.now.sh/",
+    "i18n": [
+      {
+        "code": "en",
+        "text": "Undead Pirate Head"
+      },
+      {
+        "code": "es",
+        "text": "Cabeza de Esqueleto Pirata"
+      }
+    ],
+    "thumbnail": "QmRYJvYgykngBMbd4qGQUyjwpZ8QBPXTdexZJ9wysaxxtF",
+    "replaces": [
+      "tiara",
+      "hat",
+      "top_head",
+      "mask",
+      "eyewear"
+    ],
+    "hides": [
+      "hair",
+      "earring",
+      "facial_hair",
+      "head"
+    ]
+  },
+  {
+    "id": "dcl://halloween_2019/bee_suit_lower_body",
+    "representations": [
+      {
+        "bodyShapes": [
+          "dcl://base-avatars/BaseFemale"
+        ],
+        "mainFile": "F_lBody_BeeSuit.glb",
+        "overrideReplaces": [],
+        "overrideHides": [],
+        "contents": [
+          {
+            "file": "AvatarWearables_TX.png",
+            "hash": "QmWLrKJFzDCMGXVCef78SDkMHWB94eHP1ZeXfyci3kphTb"
+          },
+          {
+            "file": "F_lBody_BeeSuit.glb",
+            "hash": "QmXfLZHfksp6NgisG3sGgMMLNcWZutmM4wJhHJBeHSV39t"
+          },
+          {
+            "file": "bee_suit_lower_body.png",
+            "hash": "Qmc367d61hBXU4SGVUkmgJKXtDa4LEz2FBuiifdVmTWWGZ"
+          }
+        ]
+      }
+    ],
+    "type": "wearable",
+    "category": "lower_body",
+    "tags": [
+      "accesories",
+      "exclusive",
+      "halloween",
+      "pants",
+      "exclusive"
+    ],
+    "baseUrl": "https://dcl-base-exclusive.now.sh/",
+    "i18n": [
+      {
+        "code": "en",
+        "text": "Bee Suit Leggings"
+      },
+      {
+        "code": "es",
+        "text": "Calzas de Traje de Abeja"
+      }
+    ],
+    "thumbnail": "QmY3NRJWuJpmiTQVF624tVzJ2g3gfgBxZHBoCuPraTfpcg",
+    "replaces": [],
+    "hides": []
+  },
+  {
+    "id": "dcl://halloween_2019/bride_of_frankie_lower_body",
+    "representations": [
+      {
+        "bodyShapes": [
+          "dcl://base-avatars/BaseFemale"
+        ],
+        "mainFile": "F_lBody_BrideOfFrankie.glb",
+        "overrideReplaces": [],
+        "overrideHides": [],
+        "contents": [
+          {
+            "file": "AvatarWearables_TX.png",
+            "hash": "QmWLrKJFzDCMGXVCef78SDkMHWB94eHP1ZeXfyci3kphTb"
+          },
+          {
+            "file": "Avatar_FemaleSkinBase.png",
+            "hash": "QmXBeMAkB4sUFCMy42tGQ9DQZ1HC8VLZ3r4e7p2GdMRudT"
+          },
+          {
+            "file": "F_lBody_BrideOfFrankie.glb",
+            "hash": "QmNfsFG6Wso3wsM8xeJvxJ9tx9PKix4Cs2t9wtRpK1uCXa"
+          },
+          {
+            "file": "bride_of_frankie_lower_body.png",
+            "hash": "QmRzXMFUCATcaTrQpAX5cfmWjiNC8HFcECyWyUChCespT8"
+          }
+        ]
+      }
+    ],
+    "type": "wearable",
+    "category": "lower_body",
+    "tags": [
+      "accesories",
+      "exclusive",
+      "halloween",
+      "skirt",
+      "pants",
+      "exclusive"
+    ],
+    "baseUrl": "https://dcl-base-exclusive.now.sh/",
+    "i18n": [
+      {
+        "code": "en",
+        "text": "Bride of Frankie Skirt"
+      },
+      {
+        "code": "es",
+        "text": "Pollera de la novia de Frankie"
+      }
+    ],
+    "thumbnail": "QmfQsEQjbt3oygqiWDXgKCTyrjQfWtk2f4p7WGaAFHoKwM",
+    "replaces": [],
+    "hides": []
+  },
+  {
+    "id": "dcl://halloween_2019/creepy_nurse_lower_body",
+    "representations": [
+      {
+        "bodyShapes": [
+          "dcl://base-avatars/BaseFemale"
+        ],
+        "mainFile": "F_lBody_CreepyNurse.glb",
+        "overrideReplaces": [],
+        "overrideHides": [],
+        "contents": [
+          {
+            "file": "Avatar_FemaleSkinBase.png",
+            "hash": "QmXBeMAkB4sUFCMy42tGQ9DQZ1HC8VLZ3r4e7p2GdMRudT"
+          },
+          {
+            "file": "Blood.png",
+            "hash": "QmQdvgkQnqUcJkKhGp3XnjNZ7Hs6ps1Zj9a1KV7ftVHGZD"
+          },
+          {
+            "file": "F_lBody_CreepyNurse.glb",
+            "hash": "QmYMyWKhRjL6yfsTnCYvsXzv9wjUoaV7Dfg7M4A311q3qr"
+          },
+          {
+            "file": "creepy_nurse_lower_body.png",
+            "hash": "QmRP8KtXSXjNLTehaivsNgZwk5CXRhd2Gc5zAk7pihYusg"
+          }
+        ]
+      }
+    ],
+    "type": "wearable",
+    "category": "lower_body",
+    "tags": [
+      "accesories",
+      "exclusive",
+      "halloween",
+      "skirt",
+      "exclusive"
+    ],
+    "baseUrl": "https://dcl-base-exclusive.now.sh/",
+    "i18n": [
+      {
+        "code": "en",
+        "text": "Creepy Nurse Skirt"
+      },
+      {
+        "code": "es",
+        "text": "Pollera de Enfermera Siniestra"
+      }
+    ],
+    "thumbnail": "QmeWjA4BcHut3W7st1HWdAtDbHD9KbNqAQoinksGkx4Rcs",
+    "replaces": [],
+    "hides": []
+  },
+  {
+    "id": "dcl://halloween_2019/jester_lower_body",
+    "representations": [
+      {
+        "bodyShapes": [
+          "dcl://base-avatars/BaseFemale"
+        ],
+        "mainFile": "F_lBody_Jester.glb",
+        "overrideReplaces": [],
+        "overrideHides": [],
+        "contents": [
+          {
+            "file": "AvatarWearables_TX.png",
+            "hash": "QmWLrKJFzDCMGXVCef78SDkMHWB94eHP1ZeXfyci3kphTb"
+          },
+          {
+            "file": "F_lBody_Jester.glb",
+            "hash": "QmZaKzm2QZzZvbQNtqdb3L7PpRYyLLsug1wXFtgBkqdowd"
+          },
+          {
+            "file": "jester_lower_body.png",
+            "hash": "QmXAmti7F8c1QweoVuCmJExnP7svtQBPPkfgJ5yJqJ9GV8"
+          }
+        ]
+      }
+    ],
+    "type": "wearable",
+    "category": "lower_body",
+    "tags": [
+      "accesories",
+      "exclusive",
+      "halloween",
+      "leggings",
+      "pants",
+      "exclusive"
+    ],
+    "baseUrl": "https://dcl-base-exclusive.now.sh/",
+    "i18n": [
+      {
+        "code": "en",
+        "text": "Jester Leggings"
+      },
+      {
+        "code": "es",
+        "text": "Calzas de Bufona"
+      }
+    ],
+    "thumbnail": "QmWdesG7sbf5nWicx7iKo7EHPMp7S7qzcsiiXK2S83MPGv",
+    "replaces": [],
+    "hides": []
+  },
+  {
+    "id": "dcl://halloween_2019/spy_suit_lower_body",
+    "representations": [
+      {
+        "bodyShapes": [
+          "dcl://base-avatars/BaseFemale"
+        ],
+        "mainFile": "F_lBody_Spy.glb",
+        "overrideReplaces": [],
+        "overrideHides": [],
+        "contents": [
+          {
+            "file": "AvatarWearables_TX.png",
+            "hash": "QmWLrKJFzDCMGXVCef78SDkMHWB94eHP1ZeXfyci3kphTb"
+          },
+          {
+            "file": "F_lBody_Spy.glb",
+            "hash": "QmP1c9iBnaLU16H6mLsPo1VQ8EwfoZUR5Aa6tfU4NzTV58"
+          },
+          {
+            "file": "spy_suit_lower_body.png",
+            "hash": "QmRfkLRrgHdWyqHpvVNxHkY2n1Ud8KhMfTziWwnYEgEMFP"
+          }
+        ]
+      }
+    ],
+    "type": "wearable",
+    "category": "lower_body",
+    "tags": [
+      "accesories",
+      "exclusive",
+      "halloween",
+      "leggings",
+      "pants",
+      "exclusive"
+    ],
+    "baseUrl": "https://dcl-base-exclusive.now.sh/",
+    "i18n": [
+      {
+        "code": "en",
+        "text": "Spy Suit Pants"
+      },
+      {
+        "code": "es",
+        "text": "Pantalones de Espía"
+      }
+    ],
+    "thumbnail": "Qmcn2Do2Qmkoq7L1GMrhyWg5qi8nRkizFQRPM4ri8Sr76H",
+    "replaces": [],
+    "hides": []
+  },
+  {
+    "id": "dcl://halloween_2019/witch_lower_body",
+    "representations": [
+      {
+        "bodyShapes": [
+          "dcl://base-avatars/BaseFemale"
+        ],
+        "mainFile": "F_lBody_Witch.glb",
+        "overrideReplaces": [],
+        "overrideHides": [],
+        "contents": [
+          {
+            "file": "AvatarWearables_TX.png",
+            "hash": "QmWLrKJFzDCMGXVCef78SDkMHWB94eHP1ZeXfyci3kphTb"
+          },
+          {
+            "file": "Avatar_FemaleSkinBase.png",
+            "hash": "QmXBeMAkB4sUFCMy42tGQ9DQZ1HC8VLZ3r4e7p2GdMRudT"
+          },
+          {
+            "file": "F_lBody_Witch.glb",
+            "hash": "QmerLW5xdsyE1jXRqY3RG7ByLHEjrdNq12Jjgi1ttTM5nY"
+          },
+          {
+            "file": "witch_lower_body.png",
+            "hash": "QmTA8rZmScvSPvQjVMB62QYiBvAsBPa99CLwyoVhQZKVzW"
+          }
+        ]
+      }
+    ],
+    "type": "wearable",
+    "category": "lower_body",
+    "tags": [
+      "accesories",
+      "exclusive",
+      "halloween",
+      "skirt",
+      "pants",
+      "exclusive"
+    ],
+    "baseUrl": "https://dcl-base-exclusive.now.sh/",
+    "i18n": [
+      {
+        "code": "en",
+        "text": "Witch Skirt"
+      },
+      {
+        "code": "es",
+        "text": "Pollera de Bruja"
+      }
+    ],
+    "thumbnail": "QmYy7D2aHviz4vyd1uERikt8AXCc5pRUJs5kngz55dMHRy",
+    "replaces": [],
+    "hides": []
+  },
+  {
+    "id": "dcl://halloween_2019/sad_clown_lower_body",
+    "representations": [
+      {
+        "bodyShapes": [
+          "dcl://base-avatars/BaseMale"
+        ],
+        "mainFile": "M_lBody_Clown.glb",
+        "overrideReplaces": [],
+        "overrideHides": [],
+        "contents": [
+          {
+            "file": "AvatarWearables_TX.png",
+            "hash": "QmWLrKJFzDCMGXVCef78SDkMHWB94eHP1ZeXfyci3kphTb"
+          },
+          {
+            "file": "M_lBody_Clown.glb",
+            "hash": "QmWkTq4i63SQNscSzLTCEdop3HBP7vYWkERsNJUtdYxvM1"
+          },
+          {
+            "file": "sad_clown_lower_body.png",
+            "hash": "QmQjTAwpoqh8pA7KtnpNcr3PvDsfxTka3p4xSo256FKecT"
+          }
+        ]
+      }
+    ],
+    "type": "wearable",
+    "category": "lower_body",
+    "tags": [
+      "accesories",
+      "exclusive",
+      "halloween",
+      "leggings",
+      "pants",
+      "exclusive"
+    ],
+    "baseUrl": "https://dcl-base-exclusive.now.sh/",
+    "i18n": [
+      {
+        "code": "en",
+        "text": "Sad Clown Pants"
+      },
+      {
+        "code": "es",
+        "text": "Pantalones de Payaso Triste"
+      }
+    ],
+    "thumbnail": "QmfKft2VdFB2qx9zF5xjAFZ1HAsSZfx5SDns9uKc3SbWUB",
+    "replaces": [],
+    "hides": []
+  },
+  {
+    "id": "dcl://halloween_2019/frankie_lower_body",
+    "representations": [
+      {
+        "bodyShapes": [
+          "dcl://base-avatars/BaseMale"
+        ],
+        "mainFile": "M_lBody_Frankie.glb",
+        "overrideReplaces": [],
+        "overrideHides": [],
+        "contents": [
+          {
+            "file": "AvatarWearables_TX.png",
+            "hash": "QmWLrKJFzDCMGXVCef78SDkMHWB94eHP1ZeXfyci3kphTb"
+          },
+          {
+            "file": "Avatar_MaleSkinBase.png",
+            "hash": "QmRxKVwraeAq8NwgJ1TM9VnrG4AaQ7HbATxg7BGAVcUhvH"
+          },
+          {
+            "file": "M_lBody_Frankie.glb",
+            "hash": "QmXQQ517KtY7CNyF7frPDpTJzc8Cd8nXxz7bHQxjLE2HTU"
+          },
+          {
+            "file": "frankie_lower_body.png",
+            "hash": "QmNb5bLRzF9i6qR9w8P262yhcaP54KQCcH2ncAWdJ3WV9z"
+          }
+        ]
+      }
+    ],
+    "type": "wearable",
+    "category": "lower_body",
+    "tags": [
+      "accesories",
+      "exclusive",
+      "halloween",
+      "leggings",
+      "pants",
+      "exclusive"
+    ],
+    "baseUrl": "https://dcl-base-exclusive.now.sh/",
+    "i18n": [
+      {
+        "code": "en",
+        "text": "Frankie Pants"
+      },
+      {
+        "code": "es",
+        "text": "Pantalones de Frankie"
+      }
+    ],
+    "thumbnail": "QmUpcekgwaCsoYnC6dVAdqUHwrpC6sjawhJ8qS17mWBz5t",
+    "replaces": [],
+    "hides": []
+  },
+  {
+    "id": "dcl://halloween_2019/skeleton_suit_lower_body",
+    "representations": [
+      {
+        "bodyShapes": [
+          "dcl://base-avatars/BaseMale"
+        ],
+        "mainFile": "M_lBody_SkeletonSuit.glb",
+        "overrideReplaces": [],
+        "overrideHides": [],
+        "contents": [
+          {
+            "file": "M_lBody_SkeletonSuit.glb",
+            "hash": "QmV5Ru6rd9ANVJDexwVcTBgfGBVLm25GKsAnXT6WA2Wubf"
+          },
+          {
+            "file": "Suits.jpg",
+            "hash": "QmcZaXDALViPrCWoSSDwNPD5zWpwAZZVL77d86gDobcW1i"
+          },
+          {
+            "file": "skeleton_suit_lower_body.png",
+            "hash": "QmSH2Z2s53PcNqrYdenHKYwsgxRni6819miWgob4nPBbQu"
+          }
+        ]
+      }
+    ],
+    "type": "wearable",
+    "category": "lower_body",
+    "tags": [
+      "accesories",
+      "exclusive",
+      "halloween",
+      "leggings",
+      "pants",
+      "exclusive"
+    ],
+    "baseUrl": "https://dcl-base-exclusive.now.sh/",
+    "i18n": [
+      {
+        "code": "en",
+        "text": "Skeleton Suit Pants"
+      },
+      {
+        "code": "es",
+        "text": "Pantalones de Esqueleto"
+      }
+    ],
+    "thumbnail": "QmXUWuzuA4JDbEwKiEBA4rApDTJSoYGC5GN2RfeBi8oGoM",
+    "replaces": [],
+    "hides": []
+  },
+  {
+    "id": "dcl://halloween_2019/undead_pirate_lower_body",
+    "representations": [
+      {
+        "bodyShapes": [
+          "dcl://base-avatars/BaseMale"
+        ],
+        "mainFile": "M_lBody_UndeadPirate.glb",
+        "overrideReplaces": [],
+        "overrideHides": [],
+        "contents": [
+          {
+            "file": "AvatarWearables_TX.png",
+            "hash": "QmWLrKJFzDCMGXVCef78SDkMHWB94eHP1ZeXfyci3kphTb"
+          },
+          {
+            "file": "M_lBody_UndeadPirate.glb",
+            "hash": "QmRjYdjCzHPiZau6ay1cYt2hUyPfkC2RF7VNvLtqQ3qGMW"
+          },
+          {
+            "file": "undead_pirate_lower_body.png",
+            "hash": "QmekCQhWze746MGpnwurP6PZJe8BRprhAm8T8CC5yGMiUn"
+          }
+        ]
+      }
+    ],
+    "type": "wearable",
+    "category": "lower_body",
+    "tags": [
+      "accesories",
+      "exclusive",
+      "halloween",
+      "undead",
+      "pants",
+      "pirate",
+      "exclusive"
+    ],
+    "baseUrl": "https://dcl-base-exclusive.now.sh/",
+    "i18n": [
+      {
+        "code": "en",
+        "text": "Undead Pirate Pants"
+      },
+      {
+        "code": "es",
+        "text": "Pantalones de Esqueleto Pirata "
+      }
+    ],
+    "thumbnail": "QmWNruTnb57hdmSFQ97djgD1SJX3TQ4ZMZfeNB9Q2s7t8C",
+    "replaces": [],
+    "hides": [
+      "feet"
+    ]
+  },
+  {
+    "id": "dcl://halloween_2019/vampire_lower_body",
+    "representations": [
+      {
+        "bodyShapes": [
+          "dcl://base-avatars/BaseMale"
+        ],
+        "mainFile": "M_lBody_Vampire.glb",
+        "overrideReplaces": [],
+        "overrideHides": [],
+        "contents": [
+          {
+            "file": "AvatarWearables_TX.png",
+            "hash": "QmWLrKJFzDCMGXVCef78SDkMHWB94eHP1ZeXfyci3kphTb"
+          },
+          {
+            "file": "M_lBody_Vampire.glb",
+            "hash": "Qmf9P9kG89NLLRng3ZDV8gc2aZkunQ9L7UNbjAHboE41Bw"
+          },
+          {
+            "file": "vampire_lower_body.png",
+            "hash": "QmVFvk4mMmQ2Q95YiQktNxZxV93amA8MhztQGvh9Tt1HfN"
+          }
+        ]
+      }
+    ],
+    "type": "wearable",
+    "category": "lower_body",
+    "tags": [
+      "accesories",
+      "exclusive",
+      "halloween",
+      "Vampire",
+      "pants",
+      "exclusive"
+    ],
+    "baseUrl": "https://dcl-base-exclusive.now.sh/",
+    "i18n": [
+      {
+        "code": "en",
+        "text": "Vampire Pants"
+      },
+      {
+        "code": "es",
+        "text": "Pantalones de Vampiro"
+      }
+    ],
+    "thumbnail": "QmYKpsDn9zeN7ktBeQMTXb4aS2WAi7YT6yMhRv7b2eKKZX",
+    "replaces": [],
+    "hides": []
+  },
+  {
+    "id": "dcl://halloween_2019/zombie_suit_lower_body",
+    "representations": [
+      {
+        "bodyShapes": [
+          "dcl://base-avatars/BaseMale"
+        ],
+        "mainFile": "M_lBody_Zombie.glb",
+        "overrideReplaces": [],
+        "overrideHides": [],
+        "contents": [
+          {
+            "file": "AvatarWearables_TX.png",
+            "hash": "QmWLrKJFzDCMGXVCef78SDkMHWB94eHP1ZeXfyci3kphTb"
+          },
+          {
+            "file": "Avatar_MaleSkinBase.png",
+            "hash": "QmRxKVwraeAq8NwgJ1TM9VnrG4AaQ7HbATxg7BGAVcUhvH"
+          },
+          {
+            "file": "M_lBody_Zombie.glb",
+            "hash": "QmPM2RsimL4u5vEXHLXaeEYVJAKymS6b9h2NBkcPPvnmFx"
+          },
+          {
+            "file": "zombie_suit_lower_body.png",
+            "hash": "QmcYznDHryFmeHdnYvQWsXtAcNdPyF7iwErH52AESDbf8D"
+          }
+        ]
+      }
+    ],
+    "type": "wearable",
+    "category": "lower_body",
+    "tags": [
+      "accesories",
+      "exclusive",
+      "halloween",
+      "pants",
+      "exclusive"
+    ],
+    "baseUrl": "https://dcl-base-exclusive.now.sh/",
+    "i18n": [
+      {
+        "code": "en",
+        "text": "Zombie Suit Pants"
+      },
+      {
+        "code": "es",
+        "text": "Pantalones de Zombie"
+      }
+    ],
+    "thumbnail": "Qmb5mirPv4KZ3qsLr4fGFzH2oRmKWrRf3eWjtH615kCcZU",
+    "replaces": [],
+    "hides": []
+  },
+  {
+    "id": "dcl://halloween_2019/jester_mask",
+    "representations": [
+      {
+        "bodyShapes": [
+          "dcl://base-avatars/BaseFemale"
+        ],
+        "mainFile": "F_Mask_Jester.glb",
+        "overrideReplaces": [],
+        "overrideHides": [],
+        "contents": [
+          {
+            "file": "AvatarWearables_TX.png",
+            "hash": "QmWLrKJFzDCMGXVCef78SDkMHWB94eHP1ZeXfyci3kphTb"
+          },
+          {
+            "file": "F_Mask_Jester.glb",
+            "hash": "QmXABvGcrLKBg8uDxMXHcMaXXNDgvw1jwVvEarsJWk5P8z"
+          },
+          {
+            "file": "jester_mask.png",
+            "hash": "QmSEn2cVMHLQiWiJJfs3B6T7ZkTEZmt8dG1yfP2H5eJLAw"
+          }
+        ]
+      }
+    ],
+    "type": "wearable",
+    "category": "mask",
+    "tags": [
+      "accesories",
+      "exclusive",
+      "mask",
+      "jester",
+      "exclusive"
+    ],
+    "baseUrl": "https://dcl-base-exclusive.now.sh/",
+    "i18n": [
+      {
+        "code": "en",
+        "text": "Jester Mask"
+      },
+      {
+        "code": "es",
+        "text": "Máscara de Bufona"
+      }
+    ],
+    "thumbnail": "QmaCQuKj9nbAsEWueAbsJDb8gAyT8rPUTWugWnCxeKpiBz",
+    "replaces": [
+      "helmet",
+      "tiara",
+      "hat",
+      "eyewear"
+    ],
+    "hides": [
+      "facial_hair"
+    ]
+  },
+  {
+    "id": "dcl://halloween_2019/cat_mask",
+    "representations": [
+      {
+        "bodyShapes": [
+          "dcl://base-avatars/BaseMale"
+        ],
+        "mainFile": "Mask_Cat.glb",
+        "overrideReplaces": [],
+        "overrideHides": [],
+        "contents": [
+          {
+            "file": "AvatarWearables_TX.png",
+            "hash": "QmWLrKJFzDCMGXVCef78SDkMHWB94eHP1ZeXfyci3kphTb"
+          },
+          {
+            "file": "Mask_Cat.glb",
+            "hash": "QmcRWJp8vfvnNAVzyH3dxAdnUHoAw1zntgtVK6uH71xLNM"
+          },
+          {
+            "file": "cat_mask.png",
+            "hash": "QmW6ddJFwCz4wgRNjfuHd4XSDHJpVG9b3YF9QeX1Rr3MPN"
+          }
+        ]
+      },
+      {
+        "bodyShapes": [
+          "dcl://base-avatars/BaseFemale"
+        ],
+        "mainFile": "Mask_Cat.glb",
+        "overrideReplaces": [],
+        "overrideHides": [],
+        "contents": [
+          {
+            "file": "AvatarWearables_TX.png",
+            "hash": "QmWLrKJFzDCMGXVCef78SDkMHWB94eHP1ZeXfyci3kphTb"
+          },
+          {
+            "file": "Mask_Cat.glb",
+            "hash": "QmcRWJp8vfvnNAVzyH3dxAdnUHoAw1zntgtVK6uH71xLNM"
+          },
+          {
+            "file": "cat_mask.png",
+            "hash": "QmW6ddJFwCz4wgRNjfuHd4XSDHJpVG9b3YF9QeX1Rr3MPN"
+          }
+        ]
+      }
+    ],
+    "type": "wearable",
+    "category": "mask",
+    "tags": [
+      "accesories",
+      "exclusive",
+      "mask",
+      "exclusive"
+    ],
+    "baseUrl": "https://dcl-base-exclusive.now.sh/",
+    "i18n": [
+      {
+        "code": "en",
+        "text": "Cat Mask"
+      },
+      {
+        "code": "es",
+        "text": "Máscara de Gato"
+      }
+    ],
+    "thumbnail": "QmR3X7Vr8QKDiukYer2KHxgG7A7tmTrVz8Y9jKNjMRcFXa",
+    "replaces": [
+      "helmet",
+      "tiara",
+      "hat",
+      "eyewear"
+    ],
+    "hides": [
+      "facial_hair"
+    ]
+  },
+  {
+    "id": "dcl://halloween_2019/sad_clown_mask",
+    "representations": [
+      {
+        "bodyShapes": [
+          "dcl://base-avatars/BaseMale"
+        ],
+        "mainFile": "Mask_Clown.glb",
+        "overrideReplaces": [],
+        "overrideHides": [],
+        "contents": [
+          {
+            "file": "AvatarWearables_TX.png",
+            "hash": "QmWLrKJFzDCMGXVCef78SDkMHWB94eHP1ZeXfyci3kphTb"
+          },
+          {
+            "file": "Mask_Clown.glb",
+            "hash": "QmTNPrXL5Uc2oupzJayKdXjtVVEdgiyauxkJo4vNcMGAfS"
+          },
+          {
+            "file": "sad_clown_mask.png",
+            "hash": "QmdAzEewR6NxR3MhQCVc5iFMs8EmqZtD2VKZhRgLavjK9e"
+          }
+        ]
+      }
+    ],
+    "type": "wearable",
+    "category": "mask",
+    "tags": [
+      "accesories",
+      "exclusive",
+      "mask",
+      "exclusive"
+    ],
+    "baseUrl": "https://dcl-base-exclusive.now.sh/",
+    "i18n": [
+      {
+        "code": "en",
+        "text": "Sad Clown Mask"
+      },
+      {
+        "code": "es",
+        "text": "Máscara de Payaso Triste"
+      }
+    ],
+    "thumbnail": "QmVzVBsF7QsWjToqwsxb6bacvNXUy7xw3EpjiPt9biwkm3",
+    "replaces": [
+      "helmet",
+      "tiara",
+      "hat",
+      "eyewear"
+    ],
+    "hides": [
+      "facial_hair"
+    ]
+  },
+  {
+    "id": "dcl://halloween_2019/muzzle_mask",
+    "representations": [
+      {
+        "bodyShapes": [
+          "dcl://base-avatars/BaseMale"
+        ],
+        "mainFile": "Mask_Muzzle.glb",
+        "overrideReplaces": [],
+        "overrideHides": [],
+        "contents": [
+          {
+            "file": "AvatarWearables_TX.png",
+            "hash": "QmWLrKJFzDCMGXVCef78SDkMHWB94eHP1ZeXfyci3kphTb"
+          },
+          {
+            "file": "Mask_Muzzle.glb",
+            "hash": "QmTHGdspd6n49UcE8wghqfwm9nJFgYxtSVDbWrPxzFtMcy"
+          },
+          {
+            "file": "muzzle_mask.png",
+            "hash": "Qmek2PKe4Sq6P2mLrAUERAuApopkP4TCBAx5wJ5tmGbGQK"
+          }
+        ]
+      },
+      {
+        "bodyShapes": [
+          "dcl://base-avatars/BaseFemale"
+        ],
+        "mainFile": "Mask_Muzzle.glb",
+        "overrideReplaces": [],
+        "overrideHides": [],
+        "contents": [
+          {
+            "file": "AvatarWearables_TX.png",
+            "hash": "QmWLrKJFzDCMGXVCef78SDkMHWB94eHP1ZeXfyci3kphTb"
+          },
+          {
+            "file": "Mask_Muzzle.glb",
+            "hash": "QmTHGdspd6n49UcE8wghqfwm9nJFgYxtSVDbWrPxzFtMcy"
+          },
+          {
+            "file": "muzzle_mask.png",
+            "hash": "Qmek2PKe4Sq6P2mLrAUERAuApopkP4TCBAx5wJ5tmGbGQK"
+          }
+        ]
+      }
+    ],
+    "type": "wearable",
+    "category": "mask",
+    "tags": [
+      "accesories",
+      "exclusive",
+      "mask",
+      "exclusive"
+    ],
+    "baseUrl": "https://dcl-base-exclusive.now.sh/",
+    "i18n": [
+      {
+        "code": "en",
+        "text": "Muzzle Mask"
+      },
+      {
+        "code": "es",
+        "text": "Bozal"
+      }
+    ],
+    "thumbnail": "QmNM4UdV1VzdwQaLEmSwzdozCofCQ4aYr35oYAmiL74sRA",
+    "replaces": [
+      "helmet",
+      "tiara",
+      "hat",
+      "eyewear"
+    ],
+    "hides": [
+      "facial_hair"
+    ]
+  },
+  {
+    "id": "dcl://halloween_2019/funny_skull_mask",
+    "representations": [
+      {
+        "bodyShapes": [
+          "dcl://base-avatars/BaseMale"
+        ],
+        "mainFile": "Mask_Skull.glb",
+        "overrideReplaces": [],
+        "overrideHides": [],
+        "contents": [
+          {
+            "file": "AvatarWearables_TX.png",
+            "hash": "QmWLrKJFzDCMGXVCef78SDkMHWB94eHP1ZeXfyci3kphTb"
+          },
+          {
+            "file": "Mask_Skull.glb",
+            "hash": "QmambJCFtx3Kvy7TQ9jMM37HuHdCkeAp8QSPdvcvq3ENSr"
+          },
+          {
+            "file": "funny_skull_mask.png",
+            "hash": "QmPs9xgE5qECbhhVtV4y1e3xLThaoFXaZ4QKVtgEuTESK2"
+          }
+        ]
+      },
+      {
+        "bodyShapes": [
+          "dcl://base-avatars/BaseFemale"
+        ],
+        "mainFile": "Mask_Skull.glb",
+        "overrideReplaces": [],
+        "overrideHides": [],
+        "contents": [
+          {
+            "file": "AvatarWearables_TX.png",
+            "hash": "QmWLrKJFzDCMGXVCef78SDkMHWB94eHP1ZeXfyci3kphTb"
+          },
+          {
+            "file": "Mask_Skull.glb",
+            "hash": "QmambJCFtx3Kvy7TQ9jMM37HuHdCkeAp8QSPdvcvq3ENSr"
+          },
+          {
+            "file": "funny_skull_mask.png",
+            "hash": "QmPs9xgE5qECbhhVtV4y1e3xLThaoFXaZ4QKVtgEuTESK2"
+          }
+        ]
+      }
+    ],
+    "type": "wearable",
+    "category": "mask",
+    "tags": [
+      "accesories",
+      "exclusive",
+      "mask",
+      "exclusive"
+    ],
+    "baseUrl": "https://dcl-base-exclusive.now.sh/",
+    "i18n": [
+      {
+        "code": "en",
+        "text": "Funny Skull"
+      },
+      {
+        "code": "es",
+        "text": "Calavera Cómica"
+      }
+    ],
+    "thumbnail": "QmRhft6sMnbZB8qz7ZQA2vCwvkbuLKiS7Vf38i2T4xED2W",
+    "replaces": [
+      "helmet",
+      "tiara",
+      "hat",
+      "eyewear"
+    ],
+    "hides": [
+      "facial_hair"
+    ]
+  },
+  {
+    "id": "dcl://halloween_2019/monkey_skull_mask",
+    "representations": [
+      {
+        "bodyShapes": [
+          "dcl://base-avatars/BaseMale"
+        ],
+        "mainFile": "Mask_Skull2.glb",
+        "overrideReplaces": [],
+        "overrideHides": [],
+        "contents": [
+          {
+            "file": "AvatarWearables_TX.png",
+            "hash": "QmWLrKJFzDCMGXVCef78SDkMHWB94eHP1ZeXfyci3kphTb"
+          },
+          {
+            "file": "Mask_Skull2.glb",
+            "hash": "QmQdYNxdWEBg4ANBRBgGUMzREmqNbdxoRqs4PaT4Pk9u8J"
+          },
+          {
+            "file": "monkey_skull_mask.png",
+            "hash": "QmZF1zDDD8bG1xXp67kt2oH4T6vimvQYV5Dmr8ads8eR7T"
+          }
+        ]
+      },
+      {
+        "bodyShapes": [
+          "dcl://base-avatars/BaseFemale"
+        ],
+        "mainFile": "Mask_Skull2.glb",
+        "overrideReplaces": [],
+        "overrideHides": [],
+        "contents": [
+          {
+            "file": "AvatarWearables_TX.png",
+            "hash": "QmWLrKJFzDCMGXVCef78SDkMHWB94eHP1ZeXfyci3kphTb"
+          },
+          {
+            "file": "Mask_Skull2.glb",
+            "hash": "QmQdYNxdWEBg4ANBRBgGUMzREmqNbdxoRqs4PaT4Pk9u8J"
+          },
+          {
+            "file": "monkey_skull_mask.png",
+            "hash": "QmZF1zDDD8bG1xXp67kt2oH4T6vimvQYV5Dmr8ads8eR7T"
+          }
+        ]
+      }
+    ],
+    "type": "wearable",
+    "category": "mask",
+    "tags": [
+      "accesories",
+      "exclusive",
+      "mask",
+      "exclusive"
+    ],
+    "baseUrl": "https://dcl-base-exclusive.now.sh/",
+    "i18n": [
+      {
+        "code": "en",
+        "text": "Monkey Skull"
+      },
+      {
+        "code": "es",
+        "text": "Calavera de Mono"
+      }
+    ],
+    "thumbnail": "QmPdcgiN4UGkz5KY681QQHn5UK91dkJ4pmjwRk9SAAXrb3",
+    "replaces": [
+      "helmet",
+      "tiara",
+      "hat",
+      "eyewear"
+    ],
+    "hides": [
+      "facial_hair"
+    ]
+  },
+  {
+    "id": "dcl://halloween_2019/zombie_suit_mask",
+    "representations": [
+      {
+        "bodyShapes": [
+          "dcl://base-avatars/BaseMale"
+        ],
+        "mainFile": "Mask_Zombie.glb",
+        "overrideReplaces": [],
+        "overrideHides": [],
+        "contents": [
+          {
+            "file": "AvatarWearables_TX.png",
+            "hash": "QmWLrKJFzDCMGXVCef78SDkMHWB94eHP1ZeXfyci3kphTb"
+          },
+          {
+            "file": "Mask_Zombie.glb",
+            "hash": "QmPTtwMZuZrvMMM36Tg7vgRZFoFvneQ6zEq1nwSQPopKsC"
+          },
+          {
+            "file": "zombie_suit_mask.png",
+            "hash": "QmdKs2WAHxdnkwshs3ddfhrhsNTRsPRnGbKAxFPnXnhuhe"
+          }
+        ]
+      }
+    ],
+    "type": "wearable",
+    "category": "mask",
+    "tags": [
+      "accesories",
+      "exclusive",
+      "mask",
+      "exclusive"
+    ],
+    "baseUrl": "https://dcl-base-exclusive.now.sh/",
+    "i18n": [
+      {
+        "code": "en",
+        "text": "Zombie Mask"
+      },
+      {
+        "code": "es",
+        "text": "Máscara de Zombie"
+      }
+    ],
+    "thumbnail": "QmYYZyAZs5L1tBqNjtp3hzxhE7EXcFPrPZWW29Q1NFQ8F5",
+    "replaces": [
+      "helmet",
+      "tiara",
+      "hat",
+      "eyewear"
+    ],
+    "hides": [
+      "facial_hair"
+    ]
+  },
+  {
+    "id": "dcl://halloween_2019/floral_skull_mask",
+    "representations": [
+      {
+        "bodyShapes": [
+          "dcl://base-avatars/BaseMale"
+        ],
+        "mainFile": "Mask_ddm01.glb",
+        "overrideReplaces": [],
+        "overrideHides": [],
+        "contents": [
+          {
+            "file": "Ddm_Mask1-01.png",
+            "hash": "QmR13dEwDYhAudeoYiYLhYmTjuUphikH494fwC3dnRn6r7"
+          },
+          {
+            "file": "Mask_ddm01.glb",
+            "hash": "QmTghQWDmLNwHS1gmhxBeE7so2XR3EHQQdqBNFVHVu2iSw"
+          },
+          {
+            "file": "floral_skull_mask.png",
+            "hash": "QmWFdGaVTHHsyKFfJyCoDhwnFhh8TnKra7sy8AsfQcjUVp"
+          }
+        ]
+      },
+      {
+        "bodyShapes": [
+          "dcl://base-avatars/BaseFemale"
+        ],
+        "mainFile": "Mask_ddm01.glb",
+        "overrideReplaces": [],
+        "overrideHides": [],
+        "contents": [
+          {
+            "file": "Ddm_Mask1-01.png",
+            "hash": "QmR13dEwDYhAudeoYiYLhYmTjuUphikH494fwC3dnRn6r7"
+          },
+          {
+            "file": "Mask_ddm01.glb",
+            "hash": "QmTghQWDmLNwHS1gmhxBeE7so2XR3EHQQdqBNFVHVu2iSw"
+          },
+          {
+            "file": "floral_skull_mask.png",
+            "hash": "QmWFdGaVTHHsyKFfJyCoDhwnFhh8TnKra7sy8AsfQcjUVp"
+          }
+        ]
+      }
+    ],
+    "type": "wearable",
+    "category": "mask",
+    "tags": [
+      "accesories",
+      "exclusive",
+      "mask",
+      "exclusive"
+    ],
+    "baseUrl": "https://dcl-base-exclusive.now.sh/",
+    "i18n": [
+      {
+        "code": "en",
+        "text": "Floral Skull"
+      },
+      {
+        "code": "es",
+        "text": "Calavera Floral"
+      }
+    ],
+    "thumbnail": "QmRXgHRtyqpCUw7ALKa4tTexx8gbupVwZGbRYFjdsL9Sxg",
+    "replaces": [
+      "helmet",
+      "tiara",
+      "hat",
+      "eyewear"
+    ],
+    "hides": [
+      "facial_hair"
+    ]
+  },
+  {
+    "id": "dcl://halloween_2019/lirio_skull_mask",
+    "representations": [
+      {
+        "bodyShapes": [
+          "dcl://base-avatars/BaseMale"
+        ],
+        "mainFile": "Mask_ddm02.glb",
+        "overrideReplaces": [],
+        "overrideHides": [],
+        "contents": [
+          {
+            "file": "Ddm_Mask2-01.png",
+            "hash": "QmfLhAawqLvLUaTkXXuznRYwaWLUS1XVMiYfvxJtYzfFb3"
+          },
+          {
+            "file": "Mask_ddm02.glb",
+            "hash": "Qmf51RgyEhriF53oxWuPFTgpsV2Lw32Y23YPQ2vpjaNqsp"
+          },
+          {
+            "file": "lirio_skull_mask.png",
+            "hash": "QmNbPeJT69TFGAcHuK18UqajsaQDa9VCEEPPYi1VrXEQYs"
+          }
+        ]
+      },
+      {
+        "bodyShapes": [
+          "dcl://base-avatars/BaseFemale"
+        ],
+        "mainFile": "Mask_ddm02.glb",
+        "overrideReplaces": [],
+        "overrideHides": [],
+        "contents": [
+          {
+            "file": "Ddm_Mask2-01.png",
+            "hash": "QmfLhAawqLvLUaTkXXuznRYwaWLUS1XVMiYfvxJtYzfFb3"
+          },
+          {
+            "file": "Mask_ddm02.glb",
+            "hash": "Qmf51RgyEhriF53oxWuPFTgpsV2Lw32Y23YPQ2vpjaNqsp"
+          },
+          {
+            "file": "lirio_skull_mask.png",
+            "hash": "QmNbPeJT69TFGAcHuK18UqajsaQDa9VCEEPPYi1VrXEQYs"
+          }
+        ]
+      }
+    ],
+    "type": "wearable",
+    "category": "mask",
+    "tags": [
+      "accesories",
+      "exclusive",
+      "mask",
+      "exclusive"
+    ],
+    "baseUrl": "https://dcl-base-exclusive.now.sh/",
+    "i18n": [
+      {
+        "code": "en",
+        "text": "Lirio Skull"
+      },
+      {
+        "code": "es",
+        "text": "Calavera de Lirio"
+      }
+    ],
+    "thumbnail": "QmNvxaWjxaZQ1R8dY1HwQ1YULbyhCvuLpa9Vp2wz7b2tLJ",
+    "replaces": [
+      "helmet",
+      "tiara",
+      "hat",
+      "eyewear"
+    ],
+    "hides": [
+      "facial_hair"
+    ]
+  },
+  {
+    "id": "dcl://halloween_2019/trippy_skull_mask",
+    "representations": [
+      {
+        "bodyShapes": [
+          "dcl://base-avatars/BaseMale"
+        ],
+        "mainFile": "Mask_ddm03.glb",
+        "overrideReplaces": [],
+        "overrideHides": [],
+        "contents": [
+          {
+            "file": "Ddm_Mask3-01.png",
+            "hash": "QmS9AXGUcf6V9RggB78mYa7zKF1jrh18n3N48JmZ6SYtHp"
+          },
+          {
+            "file": "Mask_ddm03.glb",
+            "hash": "Qme8Hc86T9sZAYPVd3VyWBUdPEtsYrxqJHg2UKa2GvAGMG"
+          },
+          {
+            "file": "trippy_skull_mask.png",
+            "hash": "QmPjJc8GrASgx74JFAjT59rhzcr48UXM3ExFwPPqzUiRJ1"
+          }
+        ]
+      },
+      {
+        "bodyShapes": [
+          "dcl://base-avatars/BaseFemale"
+        ],
+        "mainFile": "Mask_ddm03.glb",
+        "overrideReplaces": [],
+        "overrideHides": [],
+        "contents": [
+          {
+            "file": "Ddm_Mask3-01.png",
+            "hash": "QmS9AXGUcf6V9RggB78mYa7zKF1jrh18n3N48JmZ6SYtHp"
+          },
+          {
+            "file": "Mask_ddm03.glb",
+            "hash": "Qme8Hc86T9sZAYPVd3VyWBUdPEtsYrxqJHg2UKa2GvAGMG"
+          },
+          {
+            "file": "trippy_skull_mask.png",
+            "hash": "QmPjJc8GrASgx74JFAjT59rhzcr48UXM3ExFwPPqzUiRJ1"
+          }
+        ]
+      }
+    ],
+    "type": "wearable",
+    "category": "mask",
+    "tags": [
+      "accesories",
+      "exclusive",
+      "mask",
+      "exclusive"
+    ],
+    "baseUrl": "https://dcl-base-exclusive.now.sh/",
+    "i18n": [
+      {
+        "code": "en",
+        "text": "Trippy Skull"
+      },
+      {
+        "code": "es",
+        "text": "Calavera de Lirio"
+      }
+    ],
+    "thumbnail": "QmSTaXrFqQSdZoxyNfSuqcgRty6KzEYg16AZEUTjHZQYM2",
+    "replaces": [
+      "helmet",
+      "tiara",
+      "hat",
+      "eyewear"
+    ],
+    "hides": [
+      "facial_hair"
+    ]
+  },
+  {
+    "id": "dcl://halloween_2019/diamond_skull_mask",
+    "representations": [
+      {
+        "bodyShapes": [
+          "dcl://base-avatars/BaseMale"
+        ],
+        "mainFile": "Mask_ddm04V1.glb",
+        "overrideReplaces": [],
+        "overrideHides": [],
+        "contents": [
+          {
+            "file": "Ddm_Mask4-01.png",
+            "hash": "QmPMyY37V8yiqzffJyLfidcAruQZxffcrPVrC9j5dSEm79"
+          },
+          {
+            "file": "Mask_ddm04V1.glb",
+            "hash": "QmNrhQV5xVm4j3pgDamFNEnHPhzZrTbrh4D9URUEYWEn9P"
+          },
+          {
+            "file": "diamond_skull_mask.png",
+            "hash": "QmSgmZ7smbKYPAL18pXHDXMrNT3E4DtbsjeH566Mv7ktys"
+          }
+        ]
+      },
+      {
+        "bodyShapes": [
+          "dcl://base-avatars/BaseFemale"
+        ],
+        "mainFile": "Mask_ddm04V1.glb",
+        "overrideReplaces": [],
+        "overrideHides": [],
+        "contents": [
+          {
+            "file": "Ddm_Mask4-01.png",
+            "hash": "QmPMyY37V8yiqzffJyLfidcAruQZxffcrPVrC9j5dSEm79"
+          },
+          {
+            "file": "Mask_ddm04V1.glb",
+            "hash": "QmNrhQV5xVm4j3pgDamFNEnHPhzZrTbrh4D9URUEYWEn9P"
+          },
+          {
+            "file": "diamond_skull_mask.png",
+            "hash": "QmSgmZ7smbKYPAL18pXHDXMrNT3E4DtbsjeH566Mv7ktys"
+          }
+        ]
+      }
+    ],
+    "type": "wearable",
+    "category": "mask",
+    "tags": [
+      "accesories",
+      "exclusive",
+      "mask",
+      "exclusive"
+    ],
+    "baseUrl": "https://dcl-base-exclusive.now.sh/",
+    "i18n": [
+      {
+        "code": "en",
+        "text": "Diamond Skull"
+      },
+      {
+        "code": "es",
+        "text": "Calavera de Diamante"
+      }
+    ],
+    "thumbnail": "QmTDrHtEm59EtfH4KbiN6gyZ6DCX7VuaDvE67TdLeJLknq",
+    "replaces": [
+      "helmet",
+      "tiara",
+      "hat",
+      "eyewear"
+    ],
+    "hides": [
+      "facial_hair"
+    ]
+  },
+  {
+    "id": "dcl://halloween_2019/rose_skull_mask",
+    "representations": [
+      {
+        "bodyShapes": [
+          "dcl://base-avatars/BaseMale"
+        ],
+        "mainFile": "Mask_ddm04V2.glb",
+        "overrideReplaces": [],
+        "overrideHides": [],
+        "contents": [
+          {
+            "file": "Ddm_Mask4-01.png",
+            "hash": "QmPMyY37V8yiqzffJyLfidcAruQZxffcrPVrC9j5dSEm79"
+          },
+          {
+            "file": "Mask_ddm04V2.glb",
+            "hash": "QmZC5mb1PEQYHPmKmV3ew9tzo5AKZ1mai1BbRZrWWdiqbN"
+          },
+          {
+            "file": "rose_skull_mask.png",
+            "hash": "QmesQKB87HG6D41HSTvDA85CDBnEMsPRw9PPNXnzmwq2Pq"
+          }
+        ]
+      },
+      {
+        "bodyShapes": [
+          "dcl://base-avatars/BaseFemale"
+        ],
+        "mainFile": "Mask_ddm04V2.glb",
+        "overrideReplaces": [],
+        "overrideHides": [],
+        "contents": [
+          {
+            "file": "Ddm_Mask4-01.png",
+            "hash": "QmPMyY37V8yiqzffJyLfidcAruQZxffcrPVrC9j5dSEm79"
+          },
+          {
+            "file": "Mask_ddm04V2.glb",
+            "hash": "QmZC5mb1PEQYHPmKmV3ew9tzo5AKZ1mai1BbRZrWWdiqbN"
+          },
+          {
+            "file": "rose_skull_mask.png",
+            "hash": "QmesQKB87HG6D41HSTvDA85CDBnEMsPRw9PPNXnzmwq2Pq"
+          }
+        ]
+      }
+    ],
+    "type": "wearable",
+    "category": "mask",
+    "tags": [
+      "accesories",
+      "exclusive",
+      "mask",
+      "exclusive"
+    ],
+    "baseUrl": "https://dcl-base-exclusive.now.sh/",
+    "i18n": [
+      {
+        "code": "en",
+        "text": "Rose Skull"
+      },
+      {
+        "code": "es",
+        "text": "Calavera de Rosas"
+      }
+    ],
+    "thumbnail": "QmfWL7gBJFKcXwTjAP4sdyy33yGLxFB1tYwc8dXEEbYy7s",
+    "replaces": [
+      "helmet",
+      "tiara",
+      "hat",
+      "eyewear"
+    ],
+    "hides": [
+      "facial_hair"
+    ]
+  },
+  {
+    "id": "dcl://halloween_2019/star_skull_mask",
+    "representations": [
+      {
+        "bodyShapes": [
+          "dcl://base-avatars/BaseMale"
+        ],
+        "mainFile": "Mask_ddm04V3.glb",
+        "overrideReplaces": [],
+        "overrideHides": [],
+        "contents": [
+          {
+            "file": "Ddm_Mask4-01.png",
+            "hash": "QmPMyY37V8yiqzffJyLfidcAruQZxffcrPVrC9j5dSEm79"
+          },
+          {
+            "file": "Mask_ddm04V3.glb",
+            "hash": "QmSws23sjvwDUemKfZo2QMQwcNP3PHGpZAvNHSYFMUSJdW"
+          },
+          {
+            "file": "star_skull_mask.png",
+            "hash": "QmZgmbmDaZU35j43cerdGvqYoPN4phH3DTJTcwYRhoW5sC"
+          }
+        ]
+      },
+      {
+        "bodyShapes": [
+          "dcl://base-avatars/BaseFemale"
+        ],
+        "mainFile": "Mask_ddm04V3.glb",
+        "overrideReplaces": [],
+        "overrideHides": [],
+        "contents": [
+          {
+            "file": "Ddm_Mask4-01.png",
+            "hash": "QmPMyY37V8yiqzffJyLfidcAruQZxffcrPVrC9j5dSEm79"
+          },
+          {
+            "file": "Mask_ddm04V3.glb",
+            "hash": "QmSws23sjvwDUemKfZo2QMQwcNP3PHGpZAvNHSYFMUSJdW"
+          },
+          {
+            "file": "star_skull_mask.png",
+            "hash": "QmZgmbmDaZU35j43cerdGvqYoPN4phH3DTJTcwYRhoW5sC"
+          }
+        ]
+      }
+    ],
+    "type": "wearable",
+    "category": "mask",
+    "tags": [
+      "accesories",
+      "exclusive",
+      "mask",
+      "exclusive"
+    ],
+    "baseUrl": "https://dcl-base-exclusive.now.sh/",
+    "i18n": [
+      {
+        "code": "en",
+        "text": "Star Skull"
+      },
+      {
+        "code": "es",
+        "text": "Calavera de Estrella"
+      }
+    ],
+    "thumbnail": "QmNacApx1xcx4jL9BqPsJHFdLNSXfggzvWSRhWQFf2WDbW",
+    "replaces": [
+      "helmet",
+      "tiara",
+      "hat",
+      "eyewear"
+    ],
+    "hides": [
+      "facial_hair"
+    ]
+  },
+  {
+    "id": "dcl://halloween_2019/cross_skull_mask",
+    "representations": [
+      {
+        "bodyShapes": [
+          "dcl://base-avatars/BaseMale"
+        ],
+        "mainFile": "Mask_ddm04V4.glb",
+        "overrideReplaces": [],
+        "overrideHides": [],
+        "contents": [
+          {
+            "file": "Ddm_Mask4-01.png",
+            "hash": "QmPMyY37V8yiqzffJyLfidcAruQZxffcrPVrC9j5dSEm79"
+          },
+          {
+            "file": "Mask_ddm04V4.glb",
+            "hash": "QmVbWJ1kQrbLV5pnoQH6rtnbNeSaRkR4xRuZ29w3PKHsh5"
+          },
+          {
+            "file": "cross_skull_mask.png",
+            "hash": "QmRWzc4ZJELHTcQXgitN3tPH3SSRgeb9GYMH78f8RMyJ11"
+          }
+        ]
+      },
+      {
+        "bodyShapes": [
+          "dcl://base-avatars/BaseFemale"
+        ],
+        "mainFile": "Mask_ddm04V4.glb",
+        "overrideReplaces": [],
+        "overrideHides": [],
+        "contents": [
+          {
+            "file": "Ddm_Mask4-01.png",
+            "hash": "QmPMyY37V8yiqzffJyLfidcAruQZxffcrPVrC9j5dSEm79"
+          },
+          {
+            "file": "Mask_ddm04V4.glb",
+            "hash": "QmVbWJ1kQrbLV5pnoQH6rtnbNeSaRkR4xRuZ29w3PKHsh5"
+          },
+          {
+            "file": "cross_skull_mask.png",
+            "hash": "QmRWzc4ZJELHTcQXgitN3tPH3SSRgeb9GYMH78f8RMyJ11"
+          }
+        ]
+      }
+    ],
+    "type": "wearable",
+    "category": "mask",
+    "tags": [
+      "accesories",
+      "exclusive",
+      "mask",
+      "exclusive"
+    ],
+    "baseUrl": "https://dcl-base-exclusive.now.sh/",
+    "i18n": [
+      {
+        "code": "en",
+        "text": "Cross Skull"
+      },
+      {
+        "code": "es",
+        "text": "Calavera de Cruz"
+      }
+    ],
+    "thumbnail": "QmSTyYrpnvCJJoEugwdaRYU2oJ3g7ezXHSDwsRejZitkGw",
+    "replaces": [
+      "helmet",
+      "tiara",
+      "hat",
+      "eyewear"
+    ],
+    "hides": [
+      "facial_hair"
+    ]
+  },
+  {
+    "id": "dcl://halloween_2019/bee_suit_top_head",
+    "representations": [
+      {
+        "bodyShapes": [
+          "dcl://base-avatars/BaseFemale"
+        ],
+        "mainFile": "F_Tophead_BeeSuit.glb",
+        "overrideReplaces": [],
+        "overrideHides": [],
+        "contents": [
+          {
+            "file": "AvatarWearables_TX.png",
+            "hash": "QmWLrKJFzDCMGXVCef78SDkMHWB94eHP1ZeXfyci3kphTb"
+          },
+          {
+            "file": "F_Tophead_BeeSuit.glb",
+            "hash": "QmadP7H6aWxQeNioERBJJXUzqRUp5nAZgHV56xj4bbDQVL"
+          },
+          {
+            "file": "bee_suit_top_head.png",
+            "hash": "QmWyrkN8P6cvFNRbPv79SS76uX498MYHgMtKhEqaRvwzFN"
+          }
+        ]
+      }
+    ],
+    "type": "wearable",
+    "category": "top_head",
+    "tags": [
+      "accesories",
+      "exclusive",
+      "top_head",
+      "halloween",
+      "bee",
+      "exclusive"
+    ],
+    "baseUrl": "https://dcl-base-exclusive.now.sh/",
+    "i18n": [
+      {
+        "code": "en",
+        "text": "Bee Headband"
+      },
+      {
+        "code": "es",
+        "text": "Bincha de Abeja"
+      }
+    ],
+    "thumbnail": "Qmd2sk8BcDTEr3ovsBBsmq6mJcoEWKJSm8rmytsSKLojtJ",
+    "replaces": [
+      "helmet",
+      "hat"
+    ],
+    "hides": []
+  },
+  {
+    "id": "dcl://halloween_2019/bloody_knife_headband_top_head",
+    "representations": [
+      {
+        "bodyShapes": [
+          "dcl://base-avatars/BaseMale"
+        ],
+        "mainFile": "TopHead_Knife.glb",
+        "overrideReplaces": [],
+        "overrideHides": [],
+        "contents": [
+          {
+            "file": "AvatarWearables_TX.png",
+            "hash": "QmWLrKJFzDCMGXVCef78SDkMHWB94eHP1ZeXfyci3kphTb"
+          },
+          {
+            "file": "TopHead_Knife.glb",
+            "hash": "QmYWsSusoQb59yc7sLdfjyLB2paegjhCRtzrbcU6dQjDHD"
+          },
+          {
+            "file": "bloody_knife_headband_top_head.png",
+            "hash": "QmWeN5dBsrx5nMbLyaiAgTmXVX3sVw3QHyKeT8oBFDsXvh"
+          }
+        ]
+      },
+      {
+        "bodyShapes": [
+          "dcl://base-avatars/BaseFemale"
+        ],
+        "mainFile": "TopHead_Knife.glb",
+        "overrideReplaces": [],
+        "overrideHides": [],
+        "contents": [
+          {
+            "file": "AvatarWearables_TX.png",
+            "hash": "QmWLrKJFzDCMGXVCef78SDkMHWB94eHP1ZeXfyci3kphTb"
+          },
+          {
+            "file": "TopHead_Knife.glb",
+            "hash": "QmYWsSusoQb59yc7sLdfjyLB2paegjhCRtzrbcU6dQjDHD"
+          },
+          {
+            "file": "bloody_knife_headband_top_head.png",
+            "hash": "QmWeN5dBsrx5nMbLyaiAgTmXVX3sVw3QHyKeT8oBFDsXvh"
+          }
+        ]
+      }
+    ],
+    "type": "wearable",
+    "category": "top_head",
+    "tags": [
+      "accesories",
+      "exclusive",
+      "top_head",
+      "halloween",
+      "knife",
+      "exclusive"
+    ],
+    "baseUrl": "https://dcl-base-exclusive.now.sh/",
+    "i18n": [
+      {
+        "code": "en",
+        "text": "Bloody Knife"
+      },
+      {
+        "code": "es",
+        "text": "Cuchillo sangriento"
+      }
+    ],
+    "thumbnail": "QmaS59qVqQjPQU4TVZbo2PeVrLXDCAKtvxWXgUcaAVhXMz",
+    "replaces": [
+      "helmet",
+      "hat"
+    ],
+    "hides": []
+  },
+  {
+    "id": "dcl://halloween_2019/machete_headband_top_head",
+    "representations": [
+      {
+        "bodyShapes": [
+          "dcl://base-avatars/BaseMale"
+        ],
+        "mainFile": "TopHead_Machete.glb",
+        "overrideReplaces": [],
+        "overrideHides": [],
+        "contents": [
+          {
+            "file": "AvatarWearables_TX.png",
+            "hash": "QmWLrKJFzDCMGXVCef78SDkMHWB94eHP1ZeXfyci3kphTb"
+          },
+          {
+            "file": "TopHead_Machete.glb",
+            "hash": "QmZsFZW6MKS41vdWDHoncN6bvN1ZZaZoXWLT25hAeusABY"
+          },
+          {
+            "file": "machete_headband_top_head.png",
+            "hash": "QmQZbUknBH9742XUXJ9EFksJbepDtNQwCYqnVMjzhmbTeK"
+          }
+        ]
+      },
+      {
+        "bodyShapes": [
+          "dcl://base-avatars/BaseFemale"
+        ],
+        "mainFile": "TopHead_Machete.glb",
+        "overrideReplaces": [],
+        "overrideHides": [],
+        "contents": [
+          {
+            "file": "AvatarWearables_TX.png",
+            "hash": "QmWLrKJFzDCMGXVCef78SDkMHWB94eHP1ZeXfyci3kphTb"
+          },
+          {
+            "file": "TopHead_Machete.glb",
+            "hash": "QmZsFZW6MKS41vdWDHoncN6bvN1ZZaZoXWLT25hAeusABY"
+          },
+          {
+            "file": "machete_headband_top_head.png",
+            "hash": "QmQZbUknBH9742XUXJ9EFksJbepDtNQwCYqnVMjzhmbTeK"
+          }
+        ]
+      }
+    ],
+    "type": "wearable",
+    "category": "top_head",
+    "tags": [
+      "accesories",
+      "exclusive",
+      "top_head",
+      "halloween",
+      "knife",
+      "machete",
+      "exclusive"
+    ],
+    "baseUrl": "https://dcl-base-exclusive.now.sh/",
+    "i18n": [
+      {
+        "code": "en",
+        "text": "Machete Headband"
+      },
+      {
+        "code": "es",
+        "text": "Bincha de Machete"
+      }
+    ],
+    "thumbnail": "QmaW2fVKb8YVPXCLkgbSrTAZKExf14mao5t3bZNHSSaVf1",
+    "replaces": [
+      "helmet",
+      "hat"
+    ],
+    "hides": []
+  },
+  {
+    "id": "dcl://halloween_2019/bee_suit_upper_body",
+    "representations": [
+      {
+        "bodyShapes": [
+          "dcl://base-avatars/BaseFemale"
+        ],
+        "mainFile": "F_uBody_BeeSuit.glb",
+        "overrideReplaces": [],
+        "overrideHides": [],
+        "contents": [
+          {
+            "file": "AvatarWearables_TX.png",
+            "hash": "QmWLrKJFzDCMGXVCef78SDkMHWB94eHP1ZeXfyci3kphTb"
+          },
+          {
+            "file": "Avatar_FemaleSkinBase.png",
+            "hash": "QmXBeMAkB4sUFCMy42tGQ9DQZ1HC8VLZ3r4e7p2GdMRudT"
+          },
+          {
+            "file": "F_uBody_BeeSuit.glb",
+            "hash": "QmVE9ui6wuWctLkBuuwEhtGSc2xsvxVzvyXcKjTnEVzzuq"
+          },
+          {
+            "file": "bee_suit_upper_body.png",
+            "hash": "QmeNJczr8hFSXcKXz4BYAhuvyBoiTAoeYKe31aGiLnsTDK"
+          }
+        ]
+      }
+    ],
+    "type": "wearable",
+    "category": "upper_body",
+    "tags": [
+      "accesories",
+      "exclusive",
+      "upper_body",
+      "halloween",
+      "bee",
+      "exclusive"
+    ],
+    "baseUrl": "https://dcl-base-exclusive.now.sh/",
+    "i18n": [
+      {
+        "code": "en",
+        "text": "Bee Suit"
+      },
+      {
+        "code": "es",
+        "text": "Traje de Abeja"
+      }
+    ],
+    "thumbnail": "QmdEkKpHVcyzaPy2MJ7BPgRGjKj585TJWMnnqDQH2kcnXT",
+    "replaces": [],
+    "hides": []
+  },
+  {
+    "id": "dcl://halloween_2019/bride_of_frankie_upper_body",
+    "representations": [
+      {
+        "bodyShapes": [
+          "dcl://base-avatars/BaseFemale"
+        ],
+        "mainFile": "F_uBody_BrideOfFrankie.glb",
+        "overrideReplaces": [],
+        "overrideHides": [],
+        "contents": [
+          {
+            "file": "AvatarWearables_TX.png",
+            "hash": "QmWLrKJFzDCMGXVCef78SDkMHWB94eHP1ZeXfyci3kphTb"
+          },
+          {
+            "file": "Avatar_FemaleSkinBase.png",
+            "hash": "QmXBeMAkB4sUFCMy42tGQ9DQZ1HC8VLZ3r4e7p2GdMRudT"
+          },
+          {
+            "file": "F_uBody_BrideOfFrankie.glb",
+            "hash": "QmWUSrezFCw1CwgLWYT4e67MULaouixXkWYzrrySZy6Usf"
+          },
+          {
+            "file": "bride_of_frankie_upper_body.png",
+            "hash": "QmULZJy6VdLX1yTdkb9SrASNwPnHAPPWBVMHf6dY6iQJe2"
+          }
+        ]
+      }
+    ],
+    "type": "wearable",
+    "category": "upper_body",
+    "tags": [
+      "accesories",
+      "exclusive",
+      "upper_body",
+      "halloween",
+      "frankie",
+      "exclusive"
+    ],
+    "baseUrl": "https://dcl-base-exclusive.now.sh/",
+    "i18n": [
+      {
+        "code": "en",
+        "text": "Bride of Frankie Suit"
+      },
+      {
+        "code": "es",
+        "text": "Traje de la novia de Frankie"
+      }
+    ],
+    "thumbnail": "QmP1x3cxYutuoB3m6cH5w6qtefUSRquXaSkczccaDhNQsc",
+    "replaces": [],
+    "hides": []
+  },
+  {
+    "id": "dcl://halloween_2019/creepy_nurse_upper_body",
+    "representations": [
+      {
+        "bodyShapes": [
+          "dcl://base-avatars/BaseFemale"
+        ],
+        "mainFile": "F_uBody_CreepyNurse.glb",
+        "overrideReplaces": [],
+        "overrideHides": [],
+        "contents": [
+          {
+            "file": "Avatar_FemaleSkinBase.png",
+            "hash": "QmXBeMAkB4sUFCMy42tGQ9DQZ1HC8VLZ3r4e7p2GdMRudT"
+          },
+          {
+            "file": "Blood.png",
+            "hash": "QmQdvgkQnqUcJkKhGp3XnjNZ7Hs6ps1Zj9a1KV7ftVHGZD"
+          },
+          {
+            "file": "F_uBody_CreepyNurse.glb",
+            "hash": "Qmf4C1E1qP19F2wzWaepDEi2htjyfqAgvEHV8gBwe9wpto"
+          },
+          {
+            "file": "creepy_nurse_upper_body.png",
+            "hash": "QmU8n9PssqyXiWeNdXSkM2AYBx3Ckb5XbaDbimtspyffsa"
+          }
+        ]
+      }
+    ],
+    "type": "wearable",
+    "category": "upper_body",
+    "tags": [
+      "accesories",
+      "exclusive",
+      "upper_body",
+      "halloween",
+      "nurse",
+      "exclusive"
+    ],
+    "baseUrl": "https://dcl-base-exclusive.now.sh/",
+    "i18n": [
+      {
+        "code": "en",
+        "text": "Creepy Nurse Shirt"
+      },
+      {
+        "code": "es",
+        "text": "Camisa de Enfermera Siniestra"
+      }
+    ],
+    "thumbnail": "QmVDxeeqzJJD3Ki7E5QxSUyT36YCx7tDaeXAQ3aiUu15Vc",
+    "replaces": [],
+    "hides": []
+  },
+  {
+    "id": "dcl://halloween_2019/jester_upper_body",
+    "representations": [
+      {
+        "bodyShapes": [
+          "dcl://base-avatars/BaseFemale"
+        ],
+        "mainFile": "F_uBody_Jester.glb",
+        "overrideReplaces": [],
+        "overrideHides": [],
+        "contents": [
+          {
+            "file": "AvatarWearables_TX.png",
+            "hash": "QmWLrKJFzDCMGXVCef78SDkMHWB94eHP1ZeXfyci3kphTb"
+          },
+          {
+            "file": "Avatar_FemaleSkinBase.png",
+            "hash": "QmXBeMAkB4sUFCMy42tGQ9DQZ1HC8VLZ3r4e7p2GdMRudT"
+          },
+          {
+            "file": "F_uBody_Jester.glb",
+            "hash": "QmVE3TAxQ3yJPqqXENRW6cyoM1QdLcAWDRRpqEvzVCSHJ6"
+          },
+          {
+            "file": "jester_upper_body.png",
+            "hash": "QmSFeHxNZJZAs5QZpjiYdBsnKhbL6traqD3zZd4NYMxQtr"
+          }
+        ]
+      }
+    ],
+    "type": "wearable",
+    "category": "upper_body",
+    "tags": [
+      "accesories",
+      "exclusive",
+      "upper_body",
+      "halloween",
+      "jester",
+      "exclusive"
+    ],
+    "baseUrl": "https://dcl-base-exclusive.now.sh/",
+    "i18n": [
+      {
+        "code": "en",
+        "text": "Jester Suit"
+      },
+      {
+        "code": "es",
+        "text": "Traje de Bufona"
+      }
+    ],
+    "thumbnail": "QmRY6VEcUNhBwqgUxyAL9c6WP1kjiPevtuf2HEv6NQt3uu",
+    "replaces": [],
+    "hides": []
+  },
+  {
+    "id": "dcl://halloween_2019/spy_suit_upper_body",
+    "representations": [
+      {
+        "bodyShapes": [
+          "dcl://base-avatars/BaseFemale"
+        ],
+        "mainFile": "F_uBody_Spy.glb",
+        "overrideReplaces": [],
+        "overrideHides": [],
+        "contents": [
+          {
+            "file": "AvatarWearables_TX.png",
+            "hash": "QmWLrKJFzDCMGXVCef78SDkMHWB94eHP1ZeXfyci3kphTb"
+          },
+          {
+            "file": "F_uBody_Spy.glb",
+            "hash": "QmekDgdZtNAvBmwM1TMjyhdPJqwNt8qDWm5BiXugwaFg1A"
+          },
+          {
+            "file": "spy_suit_upper_body.png",
+            "hash": "QmSCzc5VUBywULrBwUhyD1nQEPW6WbVfvQwcibfnfdDzww"
+          }
+        ]
+      }
+    ],
+    "type": "wearable",
+    "category": "upper_body",
+    "tags": [
+      "accesories",
+      "exclusive",
+      "upper_body",
+      "halloween",
+      "spy",
+      "exclusive"
+    ],
+    "baseUrl": "https://dcl-base-exclusive.now.sh/",
+    "i18n": [
+      {
+        "code": "en",
+        "text": "Spy Suit"
+      },
+      {
+        "code": "es",
+        "text": "Traje de Espía"
+      }
+    ],
+    "thumbnail": "QmWZ1rTKnYPZzC3Rn5448FjruCFW16GvQbTC3qxqj9RDk4",
+    "replaces": [],
+    "hides": []
+  },
+  {
+    "id": "dcl://halloween_2019/witch_upper_body",
+    "representations": [
+      {
+        "bodyShapes": [
+          "dcl://base-avatars/BaseFemale"
+        ],
+        "mainFile": "F_uBody_Witch.glb",
+        "overrideReplaces": [],
+        "overrideHides": [],
+        "contents": [
+          {
+            "file": "AvatarWearables_TX.png",
+            "hash": "QmWLrKJFzDCMGXVCef78SDkMHWB94eHP1ZeXfyci3kphTb"
+          },
+          {
+            "file": "Avatar_FemaleSkinBase.png",
+            "hash": "QmXBeMAkB4sUFCMy42tGQ9DQZ1HC8VLZ3r4e7p2GdMRudT"
+          },
+          {
+            "file": "F_uBody_Witch.glb",
+            "hash": "QmQ4okW5z4UhtT8sKxAAyGsXcRZJHK3hL97UBFdNVXCiCM"
+          },
+          {
+            "file": "witch_upper_body.png",
+            "hash": "QmSGx3ELTXTrgRgJVYByrS7zFf5FnC1KZpu6YU67Bb8Nzh"
+          }
+        ]
+      }
+    ],
+    "type": "wearable",
+    "category": "upper_body",
+    "tags": [
+      "accesories",
+      "exclusive",
+      "upper_body",
+      "halloween",
+      "frankie",
+      "exclusive"
+    ],
+    "baseUrl": "https://dcl-base-exclusive.now.sh/",
+    "i18n": [
+      {
+        "code": "en",
+        "text": "Witch Suit"
+      },
+      {
+        "code": "es",
+        "text": "Traje de Bruja"
+      }
+    ],
+    "thumbnail": "QmcFJ5xyPGPwGwNLttqSZLxkHCRegecZfPrpuG9Bh3c6VJ",
+    "replaces": [],
+    "hides": []
+  },
+  {
+    "id": "dcl://halloween_2019/sad_clown_upper_body",
+    "representations": [
+      {
+        "bodyShapes": [
+          "dcl://base-avatars/BaseMale"
+        ],
+        "mainFile": "M_uBody_Clown.glb",
+        "overrideReplaces": [],
+        "overrideHides": [],
+        "contents": [
+          {
+            "file": "AvatarWearables_TX.png",
+            "hash": "QmWLrKJFzDCMGXVCef78SDkMHWB94eHP1ZeXfyci3kphTb"
+          },
+          {
+            "file": "Avatar_MaleSkinBase.png",
+            "hash": "QmRxKVwraeAq8NwgJ1TM9VnrG4AaQ7HbATxg7BGAVcUhvH"
+          },
+          {
+            "file": "M_uBody_Clown.glb",
+            "hash": "QmUCkpmy48qSZ1NtxaakPcnJDrFtA8fbqBVEYRpVWjDFBF"
+          },
+          {
+            "file": "sad_clown_upper_body.png",
+            "hash": "QmeyKBCvEdPwQVJPd6M8einY9DyEEYNQBKWixdEE5KBgy8"
+          }
+        ]
+      }
+    ],
+    "type": "wearable",
+    "category": "upper_body",
+    "tags": [
+      "accesories",
+      "exclusive",
+      "halloween",
+      "upper_body",
+      "suit",
+      "exclusive"
+    ],
+    "baseUrl": "https://dcl-base-exclusive.now.sh/",
+    "i18n": [
+      {
+        "code": "en",
+        "text": "Sad Clown Suit"
+      },
+      {
+        "code": "es",
+        "text": "Traje de Payaso Triste"
+      }
+    ],
+    "thumbnail": "QmTK397dYkoUTGh5vYY4yXPMqCXDwhEWhJg4CJFCBwCi2v",
+    "replaces": [],
+    "hides": []
+  },
+  {
+    "id": "dcl://halloween_2019/frankie_upper_body",
+    "representations": [
+      {
+        "bodyShapes": [
+          "dcl://base-avatars/BaseMale"
+        ],
+        "mainFile": "M_uBody_Frankie.glb",
+        "overrideReplaces": [],
+        "overrideHides": [],
+        "contents": [
+          {
+            "file": "AvatarWearables_TX.png",
+            "hash": "QmWLrKJFzDCMGXVCef78SDkMHWB94eHP1ZeXfyci3kphTb"
+          },
+          {
+            "file": "Avatar_MaleSkinBase.png",
+            "hash": "QmRxKVwraeAq8NwgJ1TM9VnrG4AaQ7HbATxg7BGAVcUhvH"
+          },
+          {
+            "file": "M_uBody_Frankie.glb",
+            "hash": "QmVLqvGqCskxxagHTwecPFgw2bLWMmrgonCmGgGD6EDKFo"
+          },
+          {
+            "file": "frankie_upper_body.png",
+            "hash": "QmUJ6dmu4ezsr7d6Ee1Aq5GmEVNf5GFKkNjgox48ncHLZC"
+          }
+        ]
+      }
+    ],
+    "type": "wearable",
+    "category": "upper_body",
+    "tags": [
+      "accesories",
+      "exclusive",
+      "halloween",
+      "upper_body",
+      "suit",
+      "exclusive"
+    ],
+    "baseUrl": "https://dcl-base-exclusive.now.sh/",
+    "i18n": [
+      {
+        "code": "en",
+        "text": "Frankie Suit"
+      },
+      {
+        "code": "es",
+        "text": "Traje de Frankie"
+      }
+    ],
+    "thumbnail": "QmRuQMDgDdt24irRR2wGkoNdK4ZYjfcff3AMCiqomzVkvr",
+    "replaces": [],
+    "hides": []
+  },
+  {
+    "id": "dcl://halloween_2019/skeleton_suit_upper_body",
+    "representations": [
+      {
+        "bodyShapes": [
+          "dcl://base-avatars/BaseMale"
+        ],
+        "mainFile": "M_uBody_SkeletonSuit.glb",
+        "overrideReplaces": [],
+        "overrideHides": [],
+        "contents": [
+          {
+            "file": "Avatar_MaleSkinBase.png",
+            "hash": "QmRxKVwraeAq8NwgJ1TM9VnrG4AaQ7HbATxg7BGAVcUhvH"
+          },
+          {
+            "file": "M_uBody_SkeletonSuit.glb",
+            "hash": "QmSwJaVbkKGyHhXU7bvknpv3qLQX9pU4QXBjHKkPhVDA6e"
+          },
+          {
+            "file": "Suits.jpg",
+            "hash": "QmcZaXDALViPrCWoSSDwNPD5zWpwAZZVL77d86gDobcW1i"
+          },
+          {
+            "file": "skeleton_suit_upper_body.png",
+            "hash": "QmZC2aYmMecfrqbYtG83baLwvmoVM63txGyPzbCcFb5s6L"
+          }
+        ]
+      }
+    ],
+    "type": "wearable",
+    "category": "upper_body",
+    "tags": [
+      "accesories",
+      "exclusive",
+      "halloween",
+      "upper_body",
+      "suit",
+      "exclusive"
+    ],
+    "baseUrl": "https://dcl-base-exclusive.now.sh/",
+    "i18n": [
+      {
+        "code": "en",
+        "text": "Skeleton Suit"
+      },
+      {
+        "code": "es",
+        "text": "Traje de Esqueleto"
+      }
+    ],
+    "thumbnail": "Qmapg51qTzCGHgqLA8z6u44Xnox2AymnWLr52ri23d3JeK",
+    "replaces": [],
+    "hides": []
+  },
+  {
+    "id": "dcl://halloween_2019/undead_pirate_upper_body",
+    "representations": [
+      {
+        "bodyShapes": [
+          "dcl://base-avatars/BaseMale"
+        ],
+        "mainFile": "M_uBody_UndeadPirate.glb",
+        "overrideReplaces": [],
+        "overrideHides": [],
+        "contents": [
+          {
+            "file": "AvatarWearables_TX.png",
+            "hash": "QmWLrKJFzDCMGXVCef78SDkMHWB94eHP1ZeXfyci3kphTb"
+          },
+          {
+            "file": "M_uBody_UndeadPirate.glb",
+            "hash": "QmUzK66sKrA4rkhcmKzmB4GbBDv4JmA7kyc72hyecEpq8c"
+          },
+          {
+            "file": "undead_pirate_upper_body.png",
+            "hash": "QmcwffBpvu4Fy9nFczxRmpfgFYkn2zFXf32tY46jbLXKYr"
+          }
+        ]
+      }
+    ],
+    "type": "wearable",
+    "category": "upper_body",
+    "tags": [
+      "accesories",
+      "exclusive",
+      "halloween",
+      "pirate",
+      "undead",
+      "exclusive"
+    ],
+    "baseUrl": "https://dcl-base-exclusive.now.sh/",
+    "i18n": [
+      {
+        "code": "en",
+        "text": "Undead Pirate Torso"
+      },
+      {
+        "code": "es",
+        "text": "Torso de Esqueleto Pirata"
+      }
+    ],
+    "thumbnail": "QmQ1tPWrmdKhJ6sZYUNNE3cSURs6QTXbxUkgryrUmPmz3W",
+    "replaces": [],
+    "hides": []
+  },
+  {
+    "id": "dcl://halloween_2019/vampire_upper_body",
+    "representations": [
+      {
+        "bodyShapes": [
+          "dcl://base-avatars/BaseMale"
+        ],
+        "mainFile": "M_uBody_Vampire.glb",
+        "overrideReplaces": [],
+        "overrideHides": [],
+        "contents": [
+          {
+            "file": "AvatarWearables_TX.png",
+            "hash": "QmWLrKJFzDCMGXVCef78SDkMHWB94eHP1ZeXfyci3kphTb"
+          },
+          {
+            "file": "M_uBody_Vampire.glb",
+            "hash": "QmSRFwg33MC4DygafwHuRkKS2zdyYbU8X53KDC6ry1h1bS"
+          },
+          {
+            "file": "vampire_upper_body.png",
+            "hash": "QmRL1F63kPCzPmaTC2mwqSQxxBenCxffMtdGKQXLrPGGPT"
+          }
+        ]
+      }
+    ],
+    "type": "wearable",
+    "category": "upper_body",
+    "tags": [
+      "accesories",
+      "exclusive",
+      "halloween",
+      "vampiro",
+      "suit",
+      "exclusive"
+    ],
+    "baseUrl": "https://dcl-base-exclusive.now.sh/",
+    "i18n": [
+      {
+        "code": "en",
+        "text": "Vampire Suit"
+      },
+      {
+        "code": "es",
+        "text": "Traje de Vampiro"
+      }
+    ],
+    "thumbnail": "Qmb7JqfnDya9JpK6UivBAoTrW6ftrqhcY9gxY3xE8XnKwj",
+    "replaces": [],
+    "hides": []
+  },
+  {
+    "id": "dcl://halloween_2019/zombie_suit_upper_body",
+    "representations": [
+      {
+        "bodyShapes": [
+          "dcl://base-avatars/BaseMale"
+        ],
+        "mainFile": "M_uBody_Zombie.glb",
+        "overrideReplaces": [],
+        "overrideHides": [],
+        "contents": [
+          {
+            "file": "AvatarWearables_TX.png",
+            "hash": "QmWLrKJFzDCMGXVCef78SDkMHWB94eHP1ZeXfyci3kphTb"
+          },
+          {
+            "file": "Avatar_MaleSkinBase.png",
+            "hash": "QmRxKVwraeAq8NwgJ1TM9VnrG4AaQ7HbATxg7BGAVcUhvH"
+          },
+          {
+            "file": "Blood.png",
+            "hash": "QmQdvgkQnqUcJkKhGp3XnjNZ7Hs6ps1Zj9a1KV7ftVHGZD"
+          },
+          {
+            "file": "M_uBody_Zombie.glb",
+            "hash": "QmNrn8gHqNojSzccyaiS7LH65oZzbUUh1XhCKrrGYAzMQv"
+          },
+          {
+            "file": "zombie_suit_upper_body.png",
+            "hash": "QmXm9dpd7a7Ff3HjyKvsjjY21KfqJKwDb9aC1gGFmR3p66"
+          }
+        ]
+      }
+    ],
+    "type": "wearable",
+    "category": "upper_body",
+    "tags": [
+      "accesories",
+      "exclusive",
+      "halloween",
+      "upper_body",
+      "suit",
+      "exclusive"
+    ],
+    "baseUrl": "https://dcl-base-exclusive.now.sh/",
+    "i18n": [
+      {
+        "code": "en",
+        "text": "Zombie Suit"
+      },
+      {
+        "code": "es",
+        "text": "Traje de Zombie"
+      }
+    ],
+    "thumbnail": "QmT11nZYsEpck2GdKJngivpRRNpViQ72CdrwpLcQyxwyLU",
+    "replaces": [],
+    "hides": []
   }
 ]

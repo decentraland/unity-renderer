@@ -7,6 +7,12 @@ public static class WearableLiterals
     {
         public const string HEAD = "head";
     }
+
+    public static class Tags
+    {
+        public const string BASE_WEARABLE = "base-wearable";
+        public const string EXCLUSIVE = "exclusive";
+    }
     
     public static class Categories
     {

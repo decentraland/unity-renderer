@@ -1,8 +1,9 @@
-using System;
 using System.Collections.Generic;
+using System.Runtime.CompilerServices;
 using UnityEngine;
 using UnityEngine.UI;
 
+[assembly: InternalsVisibleTo("AvatarEditorHUDTests")]
 public class AvatarEditorHUDView : MonoBehaviour
 {
     private const string VIEW_PATH = "AvatarEditorHUD";
@@ -30,24 +31,25 @@ public class AvatarEditorHUDView : MonoBehaviour
         public ItemSelector selector;
     }
 
-    [SerializeField] private Canvas avatarEditorCanvas;
-    [SerializeField] private CanvasGroup avatarEditorCanvasGroup;
-    [SerializeField] AvatarEditorNavigationInfo[] navigationInfos;
-    [SerializeField] AvatarEditorWearableFilter[] wearableGridPairs;
-    [SerializeField] ColorSelector skinColorSelector;
-    [SerializeField] ColorSelector eyeColorSelector;
-    [SerializeField] ColorSelector hairColorSelector;
-    [SerializeField] GameObject characterPreviewPrefab;
-    [SerializeField] private PreviewCameraRotation characterPreviewRotation;
-    [SerializeField] GameObject loadingPanel;
-    [SerializeField] Button randomizeButton;
-    [SerializeField] Button doneButton;
-    [SerializeField] Button exitButton;
+    [SerializeField] internal Canvas avatarEditorCanvas;
+    [SerializeField] internal CanvasGroup avatarEditorCanvasGroup;
+    [SerializeField] internal AvatarEditorNavigationInfo[] navigationInfos;
+    [SerializeField] internal AvatarEditorWearableFilter[] wearableGridPairs;
+    [SerializeField] internal AvatarEditorNavigationInfo collectiblesNavigationInfo;
+    [SerializeField] internal ItemSelector collectiblesItemSelector;
+    [SerializeField] internal ColorSelector skinColorSelector;
+    [SerializeField] internal ColorSelector eyeColorSelector;
+    [SerializeField] internal ColorSelector hairColorSelector;
+    [SerializeField] internal GameObject characterPreviewPrefab;
+    [SerializeField] internal PreviewCameraRotation characterPreviewRotation;
+    [SerializeField] internal GameObject loadingPanel;
+    [SerializeField] internal Button randomizeButton;
+    [SerializeField] internal Button doneButton;
+    [SerializeField] internal Button exitButton;
 
     private CharacterPreviewController characterPreviewController;
     private AvatarEditorHUDController controller;
-    private readonly Dictionary<string, ItemSelector> selectorsByCategory = new Dictionary<string, ItemSelector>();
-    private readonly Dictionary<string, WearableItem> wearables = new Dictionary<string, WearableItem>();
+    internal readonly Dictionary<string, ItemSelector> selectorsByCategory = new Dictionary<string, ItemSelector>();
 
     private void Awake()
     {
@@ -72,19 +74,22 @@ public class AvatarEditorHUDView : MonoBehaviour
     {
         for (int i = 0; i < navigationInfos.Length; i++)
         {
-            AvatarEditorNavigationInfo current = navigationInfos[i];
-
-            current.Initialize();
-            current.toggle.isOn = current.enabledByDefault;
-            current.canvas.enabled = current.enabledByDefault;
-            current.toggle.onValueChanged.AddListener((on) =>
-            {
-                current.canvas.enabled = @on;
-                characterPreviewController.SetFocus(current.focus);
-            });
+            InitializeNavigationInfo(navigationInfos[i]);
         }
+        InitializeNavigationInfo(collectiblesNavigationInfo);
 
         characterPreviewRotation.OnHorizontalRotation += characterPreviewController.Rotate;
+    }
+    private void InitializeNavigationInfo(AvatarEditorNavigationInfo current)
+    {
+        current.Initialize();
+        current.toggle.isOn = current.enabledByDefault;
+        current.canvas.enabled = current.enabledByDefault;
+        current.toggle.onValueChanged.AddListener((on) =>
+        {
+            current.canvas.enabled = @on;
+            characterPreviewController.SetFocus(current.focus);
+        });
     }
 
     private void InitializeWearableChangeEvents()
@@ -95,6 +100,7 @@ public class AvatarEditorHUDView : MonoBehaviour
             wearableGridPairs[i].selector.OnItemClicked += controller.WearableClicked;
             selectorsByCategory.Add(wearableGridPairs[i].categoryFilter, wearableGridPairs[i].selector);
         }
+        collectiblesItemSelector.OnItemClicked += controller.WearableClicked;
 
         skinColorSelector.OnColorChanged += controller.SkinColorClicked;
         eyeColorSelector.OnColorChanged += controller.EyesColorClicked;
@@ -112,7 +118,7 @@ public class AvatarEditorHUDView : MonoBehaviour
     {
         for (int i = 0; i < wearableGridPairs.Length; i++)
         {
-            if (wearableGridPairs[i].categoryFilter == WearableItem.bodyShapeCategory)
+            if (wearableGridPairs[i].categoryFilter == WearableLiterals.Categories.BODY_SHAPE)
             {
                 wearableGridPairs[i].selector.UnselectAll();
                 wearableGridPairs[i].selector.Select(bodyShape.id);
@@ -122,16 +128,19 @@ public class AvatarEditorHUDView : MonoBehaviour
                 wearableGridPairs[i].selector.SetBodyShape(bodyShape.id);
             }
         }
+        collectiblesItemSelector.SetBodyShape(bodyShape.id);
     }
 
     public void SelectWearable(WearableItem wearable)
     {
         selectorsByCategory[wearable.category].Select(wearable.id);
+        collectiblesItemSelector.Select(wearable.id);
     }
 
     public void UnselectWearable(WearableItem wearable)
     {
         selectorsByCategory[wearable.category].Unselect(wearable.id);
+        collectiblesItemSelector.Unselect(wearable.id);
     }
 
     public void SelectHairColor(Color hairColor)
@@ -160,11 +169,12 @@ public class AvatarEditorHUDView : MonoBehaviour
     {
         for (int i = 0; i < wearableGridPairs.Length; i++)
         {
-            if (wearableGridPairs[i].categoryFilter != WearableItem.bodyShapeCategory)
+            if (wearableGridPairs[i].categoryFilter != WearableLiterals.Categories.BODY_SHAPE)
             {
                 wearableGridPairs[i].selector.UnselectAll();
             }
         }
+        collectiblesItemSelector.UnselectAll();
     }
 
     public void UpdateAvatarPreview(AvatarModel avatarModel)
@@ -191,7 +201,10 @@ public class AvatarEditorHUDView : MonoBehaviour
         }
 
         selectorsByCategory[wearableItem.category].AddItemToggle(wearableItem);
-        wearables.Remove(wearableItem.id);
+        if (wearableItem.IsCollectible())
+        {
+            collectiblesItemSelector.AddItemToggle(wearableItem);
+        }
     }
 
     public void RemoveWearable(WearableItem wearableItem)
@@ -205,6 +218,19 @@ public class AvatarEditorHUDView : MonoBehaviour
         }
 
         selectorsByCategory[wearableItem.category].RemoveItemToggle(wearableItem.id);
+        if(wearableItem.IsCollectible())
+            collectiblesItemSelector.RemoveItemToggle(wearableItem.id);
+    }
+
+    public void RemoveAllWearables()
+    {
+        using (var enumerator = selectorsByCategory.GetEnumerator())
+        {
+            while (enumerator.MoveNext())
+            {
+                enumerator.Current.Value.RemoveAllItemToggle();
+            }
+        }
     }
 
     private void OnRandomizeButton()
@@ -237,6 +263,21 @@ public class AvatarEditorHUDView : MonoBehaviour
 
     public void CleanUp()
     {
+        if (wearableGridPairs != null)
+        {
+            int nPairs = wearableGridPairs.Length;
+            for (int i = 0; i < nPairs; i++)
+            {
+                var itemSelector = wearableGridPairs[i].selector;
+                if (itemSelector != null) itemSelector.OnItemClicked -= controller.WearableClicked;
+            }
+        }
+
+        if (collectiblesItemSelector != null) collectiblesItemSelector.OnItemClicked -= controller.WearableClicked;
+        if (skinColorSelector != null) skinColorSelector.OnColorChanged -= controller.SkinColorClicked;
+        if (eyeColorSelector != null) eyeColorSelector.OnColorChanged -= controller.EyesColorClicked;
+        if (hairColorSelector != null) hairColorSelector.OnColorChanged -= controller.HairColorClicked;
+
         Destroy(gameObject);
     }
 }
