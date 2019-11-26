@@ -58,11 +58,27 @@ namespace DCL
             }
         }
 
+        class EntityMetrics
+        {
+            public Dictionary<Material, int> materials = new Dictionary<Material, int>();
+            public Dictionary<Mesh, int> meshes = new Dictionary<Mesh, int>();
+            public int bodies = 0;
+            public int triangles = 0;
+            public int textures = 0;
+
+            override public string ToString()
+            {
+                return string.Format("materials: {0}, meshes: {1}, bodies: {2}, triangles: {3}, textures: {4}",
+                    materials.Count, meshes.Count, bodies, triangles, textures);
+            }
+        }
+
         [SerializeField]
         private Model model;
 
-        private HashSet<Mesh> uniqueMeshes;
-        private HashSet<Material> uniqueMaterials;
+        private Dictionary<DecentralandEntity, EntityMetrics> entitiesMetrics;
+        private Dictionary<Mesh, int> uniqueMeshesRefCount;
+        private Dictionary<Material, int> uniqueMaterialsRefCount;
 
         public bool isDirty { get; private set; }
 
@@ -72,8 +88,9 @@ namespace DCL
         {
             this.scene = sceneOwner;
 
-            uniqueMeshes = new HashSet<Mesh>();
-            uniqueMaterials = new HashSet<Material>();
+            uniqueMeshesRefCount = new Dictionary<Mesh, int>();
+            uniqueMaterialsRefCount = new Dictionary<Material, int>();
+            entitiesMetrics = new Dictionary<DecentralandEntity, EntityMetrics>();
             model = new Model();
 
             if (VERBOSE) { Debug.Log("Start ScenePerformanceLimitsController..."); }
@@ -136,140 +153,242 @@ namespace DCL
 
         void OnEntityAdded(DecentralandEntity e)
         {
-            e.OnShapeUpdated += Entity_OnShapeUpdated;
+            e.OnMeshesInfoUpdated += OnEntityMeshInfoUpdated;
+            e.OnMeshesInfoCleaned += OnEntityMeshInfoCleaned;
             model.entities++;
             isDirty = true;
         }
 
         void OnEntityRemoved(DecentralandEntity e)
         {
-            RemoveGameObject(e.meshRootGameObject);
-            e.OnShapeUpdated -= Entity_OnShapeUpdated;
+            SubstractMetrics(e);
+            e.OnMeshesInfoUpdated -= OnEntityMeshInfoUpdated;
+            e.OnMeshesInfoCleaned -= OnEntityMeshInfoCleaned;
             model.entities--;
             isDirty = true;
         }
 
-        void Entity_OnShapeUpdated(DecentralandEntity e)
+        void OnEntityMeshInfoUpdated(DecentralandEntity entity)
         {
-            AddGameObject(e.meshRootGameObject);
+            AddOrReplaceMetrics(entity);
         }
 
-        void RemoveGameObject(GameObject go)
+        void OnEntityMeshInfoCleaned(DecentralandEntity entity)
         {
-            if (go == null)
+            SubstractMetrics(entity);
+        }
+
+        void AddOrReplaceMetrics(DecentralandEntity entity)
+        {
+            if (entitiesMetrics.ContainsKey(entity))
+            {
+                SubstractMetrics(entity);
+            }
+            AddMetrics(entity);
+
+        }
+
+        void SubstractMetrics(DecentralandEntity entity)
+        {
+            if (!entitiesMetrics.ContainsKey(entity))
             {
                 return;
             }
 
-            //NOTE(Brian): If this proves to be too slow we can spread it with a Coroutine spooler.
-            Renderer[] renderers = go.GetComponentsInChildren<Renderer>();
+            EntityMetrics entityMetrics = entitiesMetrics[entity];
 
-            for (int i = 0; i < renderers.Length; i++)
+            RemoveEntitiesMaterial(entityMetrics);
+            RemoveEntityMeshes(entityMetrics);
+
+            model.materials = uniqueMaterialsRefCount.Count;
+            model.meshes = uniqueMeshesRefCount.Count;
+            model.triangles -= entityMetrics.triangles;
+            model.bodies -= entityMetrics.bodies;
+
+            if (entitiesMetrics.ContainsKey(entity))
             {
-                Renderer r = renderers[i];
-                MeshFilter mf = r.gameObject.GetComponent<MeshFilter>();
-
-                var transitionController = r.gameObject.GetComponentInParent<MaterialTransitionController>();
-                if (transitionController != null && transitionController.placeholder == r.gameObject)
-                {
-                    continue;
-                }
-
-                if (mf != null && mf.sharedMesh != null)
-                {
-                    model.bodies--;
-                    model.triangles -= mf.sharedMesh.triangles.Length / 3;
-                    isDirty = true;
-
-                    if (uniqueMeshes.Contains(mf.sharedMesh))
-                    {
-                        if (VERBOSE) { Debug.Log("Removing mesh... " + go.name); }
-
-                        uniqueMeshes.Remove(mf.sharedMesh);
-                        RemoveMesh(mf.sharedMesh);
-                    }
-                }
-
-                for (int j = 0; j < r.sharedMaterials.Length; j++)
-                {
-                    Material m = r.sharedMaterials[j];
-
-                    if (uniqueMaterials.Contains(m))
-                    {
-                        uniqueMaterials.Remove(m);
-                        model.materials = uniqueMaterials.Count;
-                    }
-                }
+                entitiesMetrics.Remove(entity);
             }
+
+            isDirty = true;
         }
 
-        void AddGameObject(GameObject go)
+        void AddMetrics(DecentralandEntity entity)
         {
-            if (go == null)
+            if (entity.meshRootGameObject == null)
             {
                 return;
             }
 
-            //NOTE(Brian): If this proves to be too slow we can spread it with a Coroutine spooler.
-            Renderer[] renderers = go.GetComponentsInChildren<Renderer>();
-
-            for (int i = 0; i < renderers.Length; i++)
+            // If the mesh is being loaded we should skip the evaluation (it will be triggered again later when the loading finishes)
+            if (entity.meshRootGameObject.GetComponent<MaterialTransitionController>()) // the object's MaterialTransitionController is destroyed when it finishes loading
             {
-                Renderer r = renderers[i];
+                return;
+            }
 
-                var transitionController = r.gameObject.GetComponentInParent<MaterialTransitionController>();
-                if (transitionController != null && transitionController.placeholder == r.gameObject)
-                {
-                    continue;
-                }
+            EntityMetrics entityMetrics = new EntityMetrics();
 
-                MeshFilter mf = r.gameObject.GetComponent<MeshFilter>();
+            int visualMeshRawTriangles = 0;
+
+            //NOTE(Brian): If this proves to be too slow we can spread it with a Coroutine spooler.
+            MeshFilter[] meshFilters = entity.meshesInfo.meshFilters;
+
+            for (int i = 0; i < meshFilters.Length; i++)
+            {
+                MeshFilter mf = meshFilters[i];
 
                 if (mf != null && mf.sharedMesh != null)
                 {
-                    model.bodies++;
-
-                    //The array is a list of triangles that contains indices into the vertex array. The size of the triangle array must always be a multiple of 3. 
-                    //Vertices can be shared by simply indexing into the same vertex.
-                    model.triangles += mf.sharedMesh.triangles.Length / 3;
-                    isDirty = true;
-
-                    if (!uniqueMeshes.Contains(mf.sharedMesh))
+                    visualMeshRawTriangles += mf.sharedMesh.triangles.Length;
+                    AddMesh(entityMetrics, mf.sharedMesh);
+                    if (VERBOSE)
                     {
-                        if (VERBOSE) { Debug.Log("Adding mesh... " + go.name, r.gameObject); }
-
-                        uniqueMeshes.Add(mf.sharedMesh);
-                        AddMesh(mf.sharedMesh);
+                        Debug.Log("SceneMetrics: tris count " + mf.sharedMesh.triangles.Length + " from mesh " + mf.sharedMesh.name + " of entity " + entity.entityId);
+                        Debug.Log("SceneMetrics: mesh " + mf.sharedMesh.name + " of entity " + entity.entityId);
                     }
                 }
+            }
 
-                for (int j = 0; j < r.sharedMaterials.Length; j++)
+            CalculateMaterials(entity, entityMetrics);
+
+            //The array is a list of triangles that contains indices into the vertex array. The size of the triangle array must always be a multiple of 3. 
+            //Vertices can be shared by simply indexing into the same vertex.
+            entityMetrics.triangles = visualMeshRawTriangles / 3;
+            entityMetrics.bodies = entity.meshesInfo.meshFilters.Length;
+
+            model.materials = uniqueMaterialsRefCount.Count;
+            model.meshes = uniqueMeshesRefCount.Count;
+            model.triangles += entityMetrics.triangles;
+            model.bodies += entityMetrics.bodies;
+
+            if (!entitiesMetrics.ContainsKey(entity))
+            {
+                entitiesMetrics.Add(entity, entityMetrics);
+            }
+            else
+            {
+                entitiesMetrics[entity] = entityMetrics;
+            }
+
+            if (VERBOSE) { Debug.Log("SceneMetrics: entity " + entity.entityId + " metrics " + entityMetrics.ToString()); }
+
+            isDirty = true;
+        }
+
+        void CalculateMaterials(DecentralandEntity entity, EntityMetrics entityMetrics)
+        {
+            //get boundaries checker if in debug cause it may have swap meshes materials
+            var debugBoundariesChecker = scene.boundariesChecker as SceneBoundariesDebugModeChecker;
+
+            //can we count materials directly from the mesh renderers?
+            bool isInValidPosition = debugBoundariesChecker == null
+                || (debugBoundariesChecker != null && debugBoundariesChecker.WasEntityInAValidPosition(entity));
+
+            if (isInValidPosition)
+            {
+                for (int i = 0; i < entity.meshesInfo.renderers.Length; i++)
                 {
-                    Material m = r.sharedMaterials[j];
-
-                    if (!uniqueMaterials.Contains(m))
+                    Renderer renderer = entity.meshesInfo.renderers[i];
+                    for (int j = 0; j < renderer.sharedMaterials.Length; j++)
                     {
-                        uniqueMaterials.Add(m);
-                        model.materials = uniqueMaterials.Count;
+                        Material m = renderer.sharedMaterials[j];
+                        AddMaterial(entityMetrics, m);
+                        if (VERBOSE) { Debug.Log("SceneMetrics: material (from renderer) " + m.name + " of entity " + entity.entityId); }
+                    }
+                }
+            }
+            else
+            {
+                var meshOriginalMaterialsDic = debugBoundariesChecker.GetOriginalMaterials(entity);
+                using (var iterator = meshOriginalMaterialsDic.GetEnumerator())
+                {
+                    while (iterator.MoveNext())
+                    {
+                        AddMaterial(entityMetrics, iterator.Current.Value);
+                        if (VERBOSE) { Debug.Log("SceneMetrics: material (from debugBoundariesChecker) " + iterator.Current.Value.name + " of entity " + entity.entityId); }
                     }
                 }
             }
         }
 
-        public void AddMesh(Mesh mesh)
+        void AddMesh(EntityMetrics entityMetrics, Mesh mesh)
         {
-            model.meshes++;
-            isDirty = true;
+            if (!uniqueMeshesRefCount.ContainsKey(mesh))
+            {
+                uniqueMeshesRefCount.Add(mesh, 1);
+            }
+            else
+            {
+                uniqueMeshesRefCount[mesh] += 1;
+            }
 
-            if (VERBOSE) { Debug.Log("Mesh name = " + mesh.name + " ... tri count = " + (mesh.triangles.Length / 3)); }
-
-            ;
+            if (!entityMetrics.meshes.ContainsKey(mesh))
+            {
+                entityMetrics.meshes.Add(mesh, 1);
+            }
+            else
+            {
+                entityMetrics.meshes[mesh] += 1;
+            }
         }
 
-        public void RemoveMesh(Mesh mesh)
+        void RemoveEntityMeshes(EntityMetrics entityMetrics)
         {
-            model.meshes--;
-            isDirty = true;
+            var entityMeshes = entityMetrics.meshes;
+            using (var iterator = entityMeshes.GetEnumerator())
+            {
+                while (iterator.MoveNext())
+                {
+                    if (uniqueMeshesRefCount.ContainsKey(iterator.Current.Key))
+                    {
+                        uniqueMeshesRefCount[iterator.Current.Key] -= iterator.Current.Value;
+                        if (uniqueMeshesRefCount[iterator.Current.Key] <= 0)
+                        {
+                            uniqueMeshesRefCount.Remove(iterator.Current.Key);
+                        }
+                    }
+                }
+            }
+        }
+
+        void AddMaterial(EntityMetrics entityMetrics, Material material)
+        {
+            if (!uniqueMaterialsRefCount.ContainsKey(material))
+            {
+                uniqueMaterialsRefCount.Add(material, 1);
+            }
+            else
+            {
+                uniqueMaterialsRefCount[material] += 1;
+            }
+
+            if (!entityMetrics.materials.ContainsKey(material))
+            {
+                entityMetrics.materials.Add(material, 1);
+            }
+            else
+            {
+                entityMetrics.materials[material] += 1;
+            }
+        }
+
+        void RemoveEntitiesMaterial(EntityMetrics entityMetrics)
+        {
+            var entityMaterials = entityMetrics.materials;
+            using (var iterator = entityMaterials.GetEnumerator())
+            {
+                while (iterator.MoveNext())
+                {
+                    if (uniqueMaterialsRefCount.ContainsKey(iterator.Current.Key))
+                    {
+                        uniqueMaterialsRefCount[iterator.Current.Key] -= iterator.Current.Value;
+                        if (uniqueMaterialsRefCount[iterator.Current.Key] <= 0)
+                        {
+                            uniqueMaterialsRefCount.Remove(iterator.Current.Key);
+                        }
+                    }
+                }
+            }
         }
     }
 }

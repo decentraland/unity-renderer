@@ -13,6 +13,9 @@ namespace DCL.Models
         [Serializable]
         public class MeshesInfo
         {
+            public event Action OnUpdated;
+            public event Action OnCleanup;
+
             public GameObject meshRootGameObject
             {
                 get
@@ -40,15 +43,30 @@ namespace DCL.Models
                 {
                     renderers = meshRootGameObjectValue.GetComponentsInChildren<Renderer>(true);
                     meshFilters = meshRootGameObjectValue.GetComponentsInChildren<MeshFilter>(true);
+                    OnUpdated?.Invoke();
                 }
             }
 
             public void CleanReferences()
             {
-                meshRootGameObject = null;
+                OnCleanup?.Invoke();
+                meshRootGameObjectValue = null;
                 currentShape = null;
                 renderers = null;
                 colliders.Clear();
+            }
+
+            public void UpdateExistingMeshAtIndex(Mesh mesh, uint meshFilterIndex = 0)
+            {
+                if (meshFilters != null && meshFilters.Length > meshFilterIndex)
+                {
+                    meshFilters[meshFilterIndex].sharedMesh = mesh;
+                    OnUpdated?.Invoke();
+                }
+                else
+                {
+                    Debug.LogError($"MeshFilter index {meshFilterIndex} out of bounds - MeshesInfo.UpdateExistingMesh failed");
+                }
             }
         }
 
@@ -74,6 +92,8 @@ namespace DCL.Models
         public System.Action<DecentralandEntity> OnShapeUpdated;
         public System.Action<DecentralandEntity> OnRemoved;
         public System.Action<DCLTransform.Model> OnTransformChange;
+        public System.Action<DecentralandEntity> OnMeshesInfoUpdated;
+        public System.Action<DecentralandEntity> OnMeshesInfoCleaned;
 
         public System.Action<ICleanableEventDispatcher> OnCleanupEvent { get; set; }
         Dictionary<Type, BaseDisposable> sharedComponents = new Dictionary<Type, BaseDisposable>();
@@ -86,6 +106,8 @@ namespace DCL.Models
         {
             meshesInfo = new MeshesInfo();
             OnShapeUpdated += (entity) => meshesInfo.UpdateRenderersCollection();
+            meshesInfo.OnUpdated += () => OnMeshesInfoUpdated?.Invoke(this);
+            meshesInfo.OnCleanup += () => OnMeshesInfoCleaned?.Invoke(this);
         }
 
         private void AddChild(DecentralandEntity entity)
