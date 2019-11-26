@@ -24,6 +24,9 @@ public class AvatarEditorHUDController : IDisposable, IHUD
 
     public AvatarEditorHUDController(UserProfile userProfile, WearableDictionary catalog)
     {
+        this.userProfile = userProfile;
+        this.catalog = catalog;
+
         view = AvatarEditorHUDView.Create(this);
 
         skinColorList = Resources.Load<ColorList>("SkinTone");
@@ -31,12 +34,10 @@ public class AvatarEditorHUDController : IDisposable, IHUD
         eyeColorList = Resources.Load<ColorList>("EyeColor");
         view.SetColors(skinColorList.colors, hairColorList.colors, eyeColorList.colors);
 
-        this.catalog = catalog;
         ProcessCatalog(this.catalog);
         this.catalog.OnAdded += AddWearable;
         this.catalog.OnRemoved += RemoveWearable;
 
-        this.userProfile = userProfile;
         LoadUserProfile(userProfile);
         this.userProfile.OnUpdate += LoadUserProfile;
     }
@@ -231,6 +232,7 @@ public class AvatarEditorHUDController : IDisposable, IHUD
     private void ProcessCatalog(WearableDictionary catalog)
     {
         wearablesByCategory.Clear();
+        view.RemoveAllWearables();
         using (var iterator = catalog.GetEnumerator())
         {
             while (iterator.MoveNext())

@@ -6,10 +6,6 @@ using DCL;
 [System.Serializable]
 public class WearableItem : Item
 {
-    public static string bodyShapeCategory = "body_shape";
-    public static string baseWearableTag = "base-wearable";
-    public static string nftWearableTag = "exclusive";
-    
     [Serializable]
     public class Representation
     {
@@ -85,7 +81,7 @@ public class WearableItem : Item
     {
         var representation = GetRepresentation(bodyShapeType);
 
-        if (representation?.overrideReplaces == null || representation.overrideReplaces.Length == 0) 
+        if (representation?.overrideReplaces == null || representation.overrideReplaces.Length == 0)
             return replaces;
 
         return representation.overrideReplaces;
@@ -99,6 +95,11 @@ public class WearableItem : Item
             return hides;
 
         return representation.overrideHides;
+    }
+
+    public bool IsCollectible()
+    {
+        return !tags.Contains(WearableLiterals.Tags.BASE_WEARABLE);
     }
 }
 
