@@ -12,7 +12,10 @@ export function shouldLoadSceneJsonName(state: RootAtlasState, sceneName: string
 
 export function getType(state: RootAtlasState, x: number, y: number): number {
   const key = `${x},${y}`
-  return (state.atlas.marketName[key] && state.atlas.marketName[key].type) || 9
+  if (!state.atlas.marketName[key] || !state.atlas.marketName[key].type) {
+    return 9
+  }
+  return state.atlas.marketName[key] && state.atlas.marketName[key].type
 }
 
 export function getName(state: RootAtlasState, x: number, y: number): string {
