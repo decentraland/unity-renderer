@@ -117,8 +117,9 @@ function takeLatestById<T extends Action>(
 
 export function* initialLoad() {
   try {
-    const baseAvatars = yield call(fetchCatalog, getServerConfigurations().avatar.catalog)
-    const baseExclusive = yield call(fetchCatalog, getServerConfigurations().avatar.exclusiveCatalog)
+    const catalog = yield call(fetchCatalog, getServerConfigurations().avatar.catalog)
+    const baseAvatars = catalog.filter((_: Wearable) => !_.tags.includes('exclusive'))
+    const baseExclusive = catalog.filter((_: Wearable) => _.tags.includes('exclusive'))
     if (!(yield select(isInitialized))) {
       yield take(RENDERER_INITIALIZED)
     }
