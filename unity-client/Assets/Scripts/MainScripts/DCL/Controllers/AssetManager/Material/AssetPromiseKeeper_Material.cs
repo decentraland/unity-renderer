@@ -1,8 +1,8 @@
-﻿namespace DCL
+namespace DCL
 {
     public class AssetLibrary_Material : AssetLibrary<Asset_Material>
     {
-        public override void Add(Asset_Material asset)
+        public override bool Add(Asset_Material asset)
         {
             throw new System.NotImplementedException();
         }

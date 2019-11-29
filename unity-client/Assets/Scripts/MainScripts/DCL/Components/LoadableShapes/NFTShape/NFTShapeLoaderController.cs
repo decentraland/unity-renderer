@@ -1,11 +1,11 @@
-﻿using UnityEngine;
-using DCL.Helpers;
-using UnityEngine.Networking;
-using System.Collections;
-using System;
-using System.Text.RegularExpressions;
+﻿using DCL.Components;
 using DCL.Configuration;
-using DCL.Components;
+using DCL.Helpers;
+using System;
+using System.Collections;
+using System.Text.RegularExpressions;
+using UnityEngine;
+using UnityEngine.Networking;
 
 public class NFTShapeLoaderController : MonoBehaviour
 {
@@ -136,7 +136,7 @@ public class NFTShapeLoaderController : MonoBehaviour
         UnityWebRequest www = UnityWebRequest.Get(jsonURL);
         yield return www.SendWebRequest();
 
-        if ((int)www.responseCode >= 400)
+        if (!www.WebRequestSucceded())
         {
             OnLoadingAssetFail?.Invoke();
 

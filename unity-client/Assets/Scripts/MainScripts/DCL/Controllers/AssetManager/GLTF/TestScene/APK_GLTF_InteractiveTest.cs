@@ -8,7 +8,6 @@ public class APK_GLTF_InteractiveTest : MonoBehaviour
 {
     ContentProvider_Dummy provider;
     AssetPromiseKeeper_GLTF keeper;
-    AssetLibrary_GLTF library;
 
     List<AssetPromise_GLTF> promiseList = new List<AssetPromise_GLTF>();
 
@@ -17,8 +16,7 @@ public class APK_GLTF_InteractiveTest : MonoBehaviour
         GLTFSceneImporter.budgetPerFrameInMilliseconds = 4;
 
         provider = new ContentProvider_Dummy();
-        library = new AssetLibrary_GLTF();
-        keeper = new AssetPromiseKeeper_GLTF(library);
+        keeper = new AssetPromiseKeeper_GLTF();
     }
 
     void Generate(string url)

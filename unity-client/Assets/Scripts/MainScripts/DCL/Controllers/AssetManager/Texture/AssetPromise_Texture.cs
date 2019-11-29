@@ -4,12 +4,12 @@ namespace DCL
 {
     public class AssetPromise_Texture : AssetPromise<Asset_Texture>
     {
-        protected override void ApplySettings_LoadFinished()
+        protected override void OnAfterLoadOrReuse()
         {
             throw new NotImplementedException();
         }
 
-        protected override void ApplySettings_LoadStart()
+        protected override void OnBeforeLoadOrReuse()
         {
             throw new NotImplementedException();
         }

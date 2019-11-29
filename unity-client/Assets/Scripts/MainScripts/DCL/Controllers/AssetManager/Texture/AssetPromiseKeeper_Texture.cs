@@ -1,8 +1,8 @@
-﻿namespace DCL
+namespace DCL
 {
     public class AssetLibrary_Texture : AssetLibrary<Asset_Texture>
     {
-        public override void Add(Asset_Texture asset)
+        public override bool Add(Asset_Texture asset)
         {
             throw new System.NotImplementedException();
         }

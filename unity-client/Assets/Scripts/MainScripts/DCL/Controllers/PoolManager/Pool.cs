@@ -1,4 +1,4 @@
-﻿using System.Collections;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using DCL.Helpers;
@@ -257,7 +257,8 @@ namespace DCL
 
             OnCleanup?.Invoke(this);
 
-            RenderingController.i.OnRenderingStateChanged -= OnRenderingStateChanged;
+            if (RenderingController.i != null)
+                RenderingController.i.OnRenderingStateChanged -= OnRenderingStateChanged;
         }
 
         public void EnablePoolableObject(PoolableObject poolable)
