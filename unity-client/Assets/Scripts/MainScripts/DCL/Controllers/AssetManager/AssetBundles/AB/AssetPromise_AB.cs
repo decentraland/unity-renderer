@@ -29,8 +29,8 @@ namespace DCL
             { "psd", 4 },
             { "iff", 5 },
             { "mat", 6 },
-            { "anim", 7 },
-            { "gltf", 8 },
+            { "nim", 7 },
+            { "ltf", 8 },
             { "glb", 9 }
         };
 
@@ -135,7 +135,7 @@ namespace DCL
                 assetsToLoad = assets.OrderBy(
                     (x) =>
                     {
-                        string ext = Path.GetExtension(x);//x.Substring(x.Length - 3);
+                        string ext = x.Substring(x.Length - 3);
 
                         if (loadOrderByExtension.ContainsKey(ext))
                             return loadOrderByExtension[ext];
@@ -155,7 +155,7 @@ namespace DCL
                     if (VERBOSE)
                         Debug.Log("loading asset = " + assetName);
 #endif
-                    string ext = Path.GetExtension(assetName);
+                    string ext = assetName.Substring(assetName.Length - 3);
 
                     UnityEngine.Object loadedAsset = assetBundle.LoadAsset(assetName);
 
