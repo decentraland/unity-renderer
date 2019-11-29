@@ -32,7 +32,6 @@ function ensureCommunicationsController() {
     dcl.subscribe('comms')
     dcl.onEvent(event => {
       if (event.type === 'comms') {
-        dcl.log('Receiving comms message ', event.data)
         observer.notifyObservers(event.data as any)
       }
     })
