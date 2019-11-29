@@ -11,7 +11,6 @@ namespace DCL.Components
         public bool alreadyLoaded = false;
 
         public DecentralandEntity entity;
-        public ContentProvider contentProvider;
 
         public abstract void Load(string url, Action<LoadWrapper> OnSuccess, Action<LoadWrapper> OnFail);
         public abstract void Unload();

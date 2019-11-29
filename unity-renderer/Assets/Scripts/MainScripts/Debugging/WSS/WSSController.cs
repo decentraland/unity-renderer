@@ -1,4 +1,5 @@
-﻿using DCL.Interface;
+using DCL.Components;
+using DCL.Interface;
 using System.Collections.Generic;
 using UnityEngine;
 using WebSocketSharp;
@@ -82,7 +83,7 @@ namespace DCL
             CUSTOM,
         }
 
-        public enum ContentSource
+        public enum Environment
         {
             USE_DEFAULT_FROM_URL,
             LOCAL,
@@ -110,12 +111,15 @@ namespace DCL
         public bool openBrowserWhenStart;
 
         [Header("Kernel General Settings")]
-        public BaseUrl baseUrlMode;
+        public bool useCustomContentServer = false;
+        public string customContentServerUrl = "http://localhost:1338/";
 
+        [Space(10)]
+        public BaseUrl baseUrlMode;
         public string baseUrlCustom;
 
         [Space(10)]
-        public ContentSource contentSource;
+        public Environment environment;
 
         public Vector2 startInCoords = new Vector2(-99, 109);
 
@@ -144,6 +148,12 @@ namespace DCL
             ws.AddWebSocketService<DCLWebSocketService>("/dcl");
             ws.Start();
 
+            if (useCustomContentServer)
+            {
+                LoadWrapper_GLTF.useCustomContentServerUrl = true;
+                LoadWrapper_GLTF.customContentServerUrl = customContentServerUrl;
+            }
+
             if (openBrowserWhenStart)
             {
                 string baseUrl = "";
@@ -154,20 +164,20 @@ namespace DCL
                 else
                     baseUrl = "http://localhost:8080/?";
 
-                switch (contentSource)
+                switch (environment)
                 {
-                    case ContentSource.USE_DEFAULT_FROM_URL:
+                    case Environment.USE_DEFAULT_FROM_URL:
                         break;
-                    case ContentSource.LOCAL:
+                    case Environment.LOCAL:
                         debugString = "DEBUG_MODE&";
                         break;
-                    case ContentSource.ZONE:
+                    case Environment.ZONE:
                         debugString = "ENV=zone&";
                         break;
-                    case ContentSource.TODAY:
+                    case Environment.TODAY:
                         debugString = "ENV=today&";
                         break;
-                    case ContentSource.ORG:
+                    case Environment.ORG:
                         debugString = "ENV=org&";
                         break;
                 }

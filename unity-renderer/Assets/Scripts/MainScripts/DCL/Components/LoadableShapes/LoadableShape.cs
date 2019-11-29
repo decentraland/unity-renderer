@@ -113,7 +113,6 @@ namespace DCL.Components
                 loadableShape.entity = entity;
                 loadableShape.useVisualFeedback = Configuration.ParcelSettings.VISUAL_LOADING_ENABLED;
                 loadableShape.initialVisibility = model.visible;
-                loadableShape.contentProvider = scene.contentProvider;
                 loadableShape.Load(model.src, OnLoadCompleted, OnLoadFailed);
 
                 entity.meshesInfo.currentShape = this;
@@ -181,7 +180,7 @@ namespace DCL.Components
             {
                 Debug.LogWarning("WARNING: entity.currentShape == null! this can lead to errors!");
             }
-            
+
             ConfigureColliders(entity);
 
             entity.OnComponentUpdated?.Invoke(loadWrapper);

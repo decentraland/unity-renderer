@@ -121,6 +121,7 @@ export type LoadableParcelScene = {
   parcels: Array<{ x: number; y: number }>
   contents: Array<ContentMapping>
   baseUrl: string
+  baseUrlBundles: string
   land: ILand
 }
 
@@ -191,6 +192,7 @@ export interface ILand {
   scene: IScene
   name: string
   baseUrl: string
+  baseUrlBundles: string
   mappingsResponse: MappingsResponse
 }
 
@@ -387,6 +389,7 @@ export function ILandToLoadableParcelScene(land: ILand): EnvironmentData<Loadabl
           land.scene.scene.parcels.map(parseParcelPosition)) ||
         [],
       baseUrl: land.baseUrl,
+      baseUrlBundles: land.baseUrlBundles,
       contents: mappings,
       land
     }
@@ -415,6 +418,7 @@ export function ILandToLoadableParcelSceneUpdate(land: ILand): EnvironmentData<L
           land.scene.scene.parcels.map(parseParcelPosition)) ||
         [],
       baseUrl: land.baseUrl,
+      baseUrlBundles: land.baseUrlBundles,
       contents: mappings,
       land
     }

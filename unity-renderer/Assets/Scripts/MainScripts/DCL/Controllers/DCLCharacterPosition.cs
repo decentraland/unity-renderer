@@ -14,7 +14,9 @@ public class DCLCharacterPosition
 
     public Vector3 UnityToWorldPosition(Vector3 pos)
     {
+        
         return pos + offset;
+        
     }
 
     public Vector3 WorldToUnityPosition(Vector3 pos)

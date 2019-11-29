@@ -1,4 +1,4 @@
-using DCL;
+﻿using DCL;
 using DCL.Configuration;
 using DCL.Helpers;
 using UnityEngine;
@@ -104,7 +104,7 @@ public class DCLCharacterController : MonoBehaviour
         }
 
         i = this;
-
+        
         CommonScriptableObjects.playerUnityPosition.Set(Vector3.zero);
         CommonScriptableObjects.playerCoords.Set(Vector2Int.zero);
         CommonScriptableObjects.playerUnityEulerAngles.Set(Vector3.zero);
@@ -218,7 +218,10 @@ public class DCLCharacterController : MonoBehaviour
     public void SetEnabled(bool enabled)
     {
         camera.enabled = enabled;
+        //NOTE(Brian): Added this clause to avoid the endless logs related with no having AudioListeners enabled in editor.
+#if !UNITY_EDITOR
         audioListener.enabled = enabled;
+#endif
         this.enabled = enabled;
     }
 

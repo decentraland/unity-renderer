@@ -1,7 +1,8 @@
-﻿using System;
+﻿using DCL;
+using System;
 using System.Collections.Generic;
 using System.Linq;
-using DCL;
+using MappingPair = DCL.ContentServerUtils.MappingPair;
 
 [System.Serializable]
 public class WearableItem : Item
@@ -11,7 +12,7 @@ public class WearableItem : Item
     {
         public string[] bodyShapes;
         public string mainFile;
-        public ContentProvider.MappingPair[] contents;
+        public MappingPair[] contents;
         public string[] overrideHides;
         public string[] overrideReplaces;
     }

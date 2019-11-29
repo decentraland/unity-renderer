@@ -84,6 +84,7 @@ async function getSceneData(scene: IScene & { baseUrl: string }): Promise<ILand>
   return {
     name: 'Editor scene',
     baseUrl: scene.baseUrl,
+    baseUrlBundles: '',
     sceneId: '0, 0',
     scene,
     mappingsResponse: {

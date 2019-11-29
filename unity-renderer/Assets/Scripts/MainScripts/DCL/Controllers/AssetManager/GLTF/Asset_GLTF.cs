@@ -3,9 +3,9 @@ using UnityEngine;
 
 namespace DCL
 {
-    public class Asset_GLTF : Asset
+    public class Asset_GLTF : Asset_WithPoolableContainer
     {
-        public GameObject container;
+        public override GameObject container { get; set; }
         public string name;
         public bool visible = true;
 

@@ -2,6 +2,7 @@
 using DCL.Controllers;
 using DCL.Interface;
 using DCL.Models;
+using Google.Protobuf;
 using Newtonsoft.Json;
 using System;
 using System.Collections;
@@ -13,7 +14,6 @@ using UnityEngine.Assertions;
 using UnityEngine.EventSystems;
 using UnityEngine.SceneManagement;
 using Color = UnityEngine.Color;
-using Google.Protobuf;
 
 namespace DCL.Helpers
 {
@@ -56,8 +56,6 @@ namespace DCL.Helpers
                     GameObject.Instantiate(Resources.Load("Prefabs/CharacterController"));
                 }
             }
-
-            scene.CleanBlockers();
         }
     }
 

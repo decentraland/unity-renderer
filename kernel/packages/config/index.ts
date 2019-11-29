@@ -223,6 +223,7 @@ export function getServerConfigurations() {
     auth: `https://auth.decentraland.${TLDDefault}/api/v1`,
     landApi: `https://api.decentraland.${TLDDefault}/v1`,
     content: `https://content.decentraland.${TLDDefault === 'today' ? 'org' : TLDDefault}`,
+    contentAsBundle: `https://content-as-bundle.decentraland.zone`,
     worldInstanceUrl: `wss://world-comm.decentraland.${TLDDefault}/connect`,
     profile: `https://profile.decentraland.${TLDDefault}/api/v1`,
     wearablesApi: `https://wearable-api.decentraland.org/v1`,

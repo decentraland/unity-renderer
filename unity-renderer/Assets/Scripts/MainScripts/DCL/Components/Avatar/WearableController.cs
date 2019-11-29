@@ -1,6 +1,6 @@
+using DCL;
 using System;
 using System.Collections.Generic;
-using DCL;
 using UnityEngine;
 using Object = UnityEngine.Object;
 
@@ -20,7 +20,7 @@ public class WearableController
     public bool isReady => promise != null && promise.state == AssetPromiseState.FINISHED;
 
     protected Renderer[] assetRenderers;
-    
+
     List<Material> materials = null;
 
     public WearableController(WearableItem wearableItem, string bodyShapeType)
@@ -46,7 +46,7 @@ public class WearableController
 
         promise.settings.forceNewInstance = true;
         promise.settings.initialLocalPosition = Vector3.up * 0.75f;
-        promise.settings.visibleFlags = AssetPromise_GLTF.VisibleFlags.INVISIBLE;
+        promise.settings.visibleFlags = AssetPromiseSettings_Rendering.VisibleFlags.INVISIBLE;
         promise.OnSuccessEvent += (x) =>
         {
             assetRenderers = x.container.GetComponentsInChildren<Renderer>();
@@ -60,7 +60,7 @@ public class WearableController
 
     public void SetupDefaultMaterial(Material defaultMaterial, Color skinColor, Color hairColor)
     {
-        if (assetContainer == null) 
+        if (assetContainer == null)
             return;
 
         if (materials == null)

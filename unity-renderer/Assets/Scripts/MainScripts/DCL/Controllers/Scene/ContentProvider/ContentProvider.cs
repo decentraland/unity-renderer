@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 using System.Linq;
+using MappingPair = DCL.ContentServerUtils.MappingPair;
 
 namespace DCL
 {
@@ -10,14 +11,19 @@ namespace DCL
         public static bool VERBOSE = false;
 
         public string baseUrl;
-        public List<MappingPair> contents;
-        public Dictionary<string, string> fileToHash;
+        public List<MappingPair> contents = new List<MappingPair>();
+        public Dictionary<string, string> fileToHash = new Dictionary<string, string>();
 
-        [System.Serializable]
-        public class MappingPair
+        public override string ToString()
         {
-            public string file;
-            public string hash;
+            string result = $"baseUrl: {baseUrl}\n";
+
+            foreach (var pair in contents)
+            {
+                result += $"file: {pair.file} ... hash: {pair.hash}\n";
+            }
+
+            return result;
         }
 
         public ContentProvider()
