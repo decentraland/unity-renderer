@@ -25,12 +25,10 @@ namespace DCL
         protected override bool AddToLibrary()
         {
             if (!library.Add(asset))
+            {
                 return false;
+            }
 
-            //NOTE(Brian): If the asset did load "in world" add it to library and then Get it immediately
-            //             So it keeps being there. As master gltfs can't be in the world.
-            //
-            //             ApplySettings will reposition the newly Get asset to the proper coordinates.
             if (settings.forceNewInstance)
             {
                 asset = (library as AssetLibrary_AB_GameObject).GetCopyFromOriginal(asset.id);
@@ -58,6 +56,7 @@ namespace DCL
 
         protected override void OnBeforeLoadOrReuse()
         {
+            asset.container.name = "AB: " + hash;
             settings.ApplyBeforeLoad(asset.container.transform);
         }
 
@@ -120,6 +119,19 @@ namespace DCL
 
             yield break;
         }
+
+        protected override Asset_AB_GameObject GetAsset(object id)
+        {
+            if (settings.forceNewInstance)
+            {
+                return ((AssetLibrary_AB_GameObject)library).GetCopyFromOriginal(id);
+            }
+            else
+            {
+                return base.GetAsset(id);
+            }
+        }
+
 
 #if UNITY_EDITOR
         private static void ResetShader(Renderer renderer)

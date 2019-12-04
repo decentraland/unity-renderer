@@ -64,24 +64,22 @@ namespace DCL
 
         public AssetType GetCopyFromOriginal(object id)
         {
-            if (Contains(id))
+            if (!Contains(id))
+                return null;
+
+            AssetType clone = masterAssets[id].Clone() as AssetType;
+
+            if (PoolManager.i.ContainsPool(clone.id))
             {
-                AssetType clone = masterAssets[id].Clone() as AssetType;
-
-                if (PoolManager.i.ContainsPool(clone.id))
-                {
-                    clone.container = PoolManager.i.GetPool(id).InstantiateAsOriginal();
-                }
-                else
-                {
-                    Debug.LogError("Pool was removed and AssetLibrary didn't notice?!");
-                    return null;
-                }
-
-                return clone;
+                clone.container = PoolManager.i.GetPool(id).InstantiateAsOriginal();
+            }
+            else
+            {
+                Debug.LogError("Pool was removed and AssetLibrary didn't notice?!");
+                return null;
             }
 
-            return null;
+            return clone;
         }
 
         public override void Release(AssetType asset)

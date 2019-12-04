@@ -1,4 +1,4 @@
-﻿using DCL;
+using DCL;
 using System.Collections;
 using UnityEngine.Assertions;
 using UnityEngine.TestTools;

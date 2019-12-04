@@ -9,7 +9,7 @@ using UnityEngine.TestTools;
 
 namespace AssetPromiseKeeper_AssetBundle_GameObject_Tests
 {
-    public class AnyAssetPromiseShould : TestsBase_APK<AssetPromiseKeeper_AB_GameObject,
+    public class APK_AB_GameObject_Promise_Should : TestsBase_APK<AssetPromiseKeeper_AB_GameObject,
                                                 AssetPromise_AB_GameObject,
                                                 Asset_AB_GameObject,
                                                 AssetLibrary_AB_GameObject>

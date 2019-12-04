@@ -4,7 +4,7 @@ using DCL.Helpers;
 
 namespace AssetPromiseKeeper_AssetBundle_Tests
 {
-    public class APKShouldWorkWhen_AB :
+    public class APK_AB_ShouldWorkWhen :
         APKWithRefCountedAssetShouldWorkWhen_Base<AssetPromiseKeeper_AB,
                                                 AssetPromise_AB,
                                                 Asset_AB,
