@@ -2,7 +2,6 @@ using UnityEngine;
 
 namespace DCL
 {
-
     public class Asset_AB_GameObject : Asset_WithPoolableContainer
     {
         internal AssetPromise_AB ownerPromise;

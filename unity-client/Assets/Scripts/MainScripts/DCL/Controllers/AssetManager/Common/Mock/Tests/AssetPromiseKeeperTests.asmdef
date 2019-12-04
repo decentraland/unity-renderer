@@ -1,5 +1,5 @@
 {
-    "name": "AssetPromiseKeeperTests",
+    "name": "AssetPromiseKeeper_Basic_Tests",
     "references": [
         "MainScripts",
         "UnityGLTFAssembly",

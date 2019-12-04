@@ -1,4 +1,4 @@
-﻿using DCL.Controllers;
+using DCL.Controllers;
 using DCL.Helpers;
 using DCL.Interface;
 using DCL.Models;
@@ -114,6 +114,7 @@ namespace DCL
 #endif
 
             MessagingControllersManager.i.Initialize(this);
+            MemoryManager.i.Initialize();
 
             // We trigger the Decentraland logic once SceneController has been instanced and is ready to act.
             if (startDecentralandAutomatically)

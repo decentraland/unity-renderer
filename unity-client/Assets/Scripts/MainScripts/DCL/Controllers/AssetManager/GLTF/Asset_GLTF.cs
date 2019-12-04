@@ -1,4 +1,4 @@
-﻿using System.Collections;
+using System.Collections;
 using UnityEngine;
 
 namespace DCL
@@ -36,7 +36,6 @@ namespace DCL
             container.transform.position = Vector3.one * 1000;
         }
 
-
         public void CancelShow()
         {
             if (showCoroutine != null)
@@ -71,7 +70,7 @@ namespace DCL
 
         public IEnumerator ShowCoroutine(System.Action OnFinish)
         {
-            //NOTE(Brian): This fixes seeing the object in the scene 0,0 for a frame
+            // NOTE(Brian): This fixes seeing the object in the scene 0,0 for a frame
             yield return new WaitForSeconds(Random.Range(0, 0.05f));
 
             // NOTE(Brian): This GameObject can be removed by distance after the delay

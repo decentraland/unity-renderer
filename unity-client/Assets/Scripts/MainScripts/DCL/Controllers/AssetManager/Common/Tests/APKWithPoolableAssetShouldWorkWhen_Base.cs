@@ -126,8 +126,6 @@ namespace AssetPromiseKeeper_Tests
         public IEnumerator ForgetIsCalledWhileAssetIsBeingLoaded()
         {
             var prom = CreatePromise();
-            AssetType asset = null;
-            prom.OnSuccessEvent += (x) => { asset = x; };
 
             keeper.Keep(prom);
 
@@ -138,6 +136,9 @@ namespace AssetPromiseKeeper_Tests
             Assert.AreEqual(AssetPromiseState.IDLE_AND_EMPTY, prom.state);
 
             var prom2 = CreatePromise();
+
+            AssetType asset = null;
+            prom2.OnSuccessEvent += (x) => { asset = x; };
 
             keeper.Keep(prom2);
 
