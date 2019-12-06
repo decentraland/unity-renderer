@@ -1,4 +1,4 @@
-﻿using GLTF;
+using GLTF;
 using GLTF.Schema;
 
 using System;
@@ -43,9 +43,9 @@ namespace UnityGLTF
     }
 
     /// <summary>
-	/// Converts gltf animation data to unity
-	/// </summary>
-	public delegate float[] ValuesConvertion(NumericArray data, int frame);
+    /// Converts gltf animation data to unity
+    /// </summary>
+    public delegate float[] ValuesConvertion(NumericArray data, int frame);
 
     public class GLTFSceneImporter : IDisposable
     {
@@ -63,7 +63,7 @@ namespace UnityGLTF
         /// <summary>
         /// Maximum LOD
         /// </summary>
-        public int MaximumLod = 300;
+        public int maximumLod = 300;
 
         /// <summary>
         /// Timeout for certain threading operations
@@ -103,7 +103,7 @@ namespace UnityGLTF
         /// <summary>
         /// Initial state of the meshes
         /// </summary>
-        public bool InitialVisibility { get; set; }
+        public bool initialVisibility { get; set; }
 
         public static bool renderingIsDisabled = false;
         private static float budgetPerFrameInMillisecondsValue = 2f;
@@ -133,6 +133,9 @@ namespace UnityGLTF
 
         static protected float _timeAtLastYield = 0f;
         protected AsyncCoroutineHelper _asyncCoroutineHelper;
+
+        public bool addImagesToPersistentCaching = true;
+        public bool addMaterialsToPersistentCaching = true;
 
         protected GameObject _lastLoadedScene;
         protected readonly GLTFMaterial DefaultMaterial = new GLTFMaterial();
@@ -206,7 +209,7 @@ namespace UnityGLTF
             }
         }
 
-        public GameObject LastLoadedScene
+        public GameObject lastLoadedScene
         {
             get { return _lastLoadedScene; }
         }
@@ -282,7 +285,6 @@ namespace UnityGLTF
 
                 yield return _LoadScene(sceneIndex, showSceneObj);
 
-
                 if (PROFILING_ENABLED)
                 {
                     if (VERBOSE)
@@ -340,7 +342,7 @@ namespace UnityGLTF
                 }
             }
 
-            onLoadComplete?.Invoke(LastLoadedScene, null);
+            onLoadComplete?.Invoke(lastLoadedScene, null);
         }
 
         /// <summary>
@@ -480,7 +482,7 @@ namespace UnityGLTF
             int sourceId = GetTextureSourceId(texture);
             GLTFImage image = _gltfRoot.Images[sourceId];
 
-            if (image.Uri != null)
+            if (image.Uri != null && this.addImagesToPersistentCaching)
             {
                 while (streamingImagesStaticList.Contains(image.Uri))
                 {
@@ -655,9 +657,16 @@ namespace UnityGLTF
                 }
                 else
                 {
-                    yield return _loader.LoadStream(buffer.Uri);
+                    if (PersistentAssetCache.StreamCacheByUri.ContainsKey(buffer.Uri))
+                    {
+                        bufferDataStream = PersistentAssetCache.StreamCacheByUri[buffer.Uri].stream;
+                    }
+                    else
+                    {
+                        yield return _loader.LoadStream(buffer.Uri);
+                        bufferDataStream = _loader.LoadedStream;
+                    }
 
-                    bufferDataStream = _loader.LoadedStream;
                 }
 
                 _assetCache.BufferCache[bufferIndex] = new BufferCacheData
@@ -766,7 +775,11 @@ namespace UnityGLTF
                 }
 
                 Texture2D dstTex = TextureScale.Resize(source, (int)(width * factor), (int)(height * factor));
-                Texture2D.Destroy(source);
+
+                if (Application.isPlaying)
+                    Texture2D.Destroy(source);
+                else
+                    Texture2D.DestroyImmediate(source);
 
                 return dstTex;
             }
@@ -1016,17 +1029,6 @@ namespace UnityGLTF
 
                     case GLTFAnimationChannelPath.weights:
                         // TODO: add support for blend shapes/morph targets
-
-                        // var primitives = channel.Target.Node.Value.Mesh.Value.Primitives;
-                        // var targetCount = primitives[0].Targets.Count;
-                        // for (int primitiveIndex = 0; primitiveIndex < primitives.Count; primitiveIndex++)
-                        // {
-                        // 	for (int targetIndex = 0; targetIndex < targetCount; targetIndex++)
-                        // 	{
-                        //
-                        // 		//clip.SetCurve(primitiveObjPath, typeof(SkinnedMeshRenderer), "blendShape." + targetIndex, curves[targetIndex]);
-                        // 	}
-                        // }
                         break;
 
                     default:
@@ -1540,7 +1542,7 @@ namespace UnityGLTF
             Renderer renderer = primitiveObj.GetComponent<Renderer>();
 
             //// NOTE(Brian): Texture loading
-            if (useMaterialTransition && InitialVisibility)
+            if (useMaterialTransition && initialVisibility)
             {
                 var matController = primitiveObj.AddComponent<MaterialTransitionController>();
                 var coroutine = DownloadAndConstructMaterial(primitive, materialIndex, renderer, matController);
@@ -1609,7 +1611,7 @@ namespace UnityGLTF
                         skinnedMeshRenderer.sharedMesh = curMesh;
                         skinnedMeshRenderer.quality = SkinQuality.Auto;
                         renderer = skinnedMeshRenderer;
-                        renderer.enabled = InitialVisibility;
+                        renderer.enabled = initialVisibility;
 
                         if (HasBones(skin))
                         {
@@ -1620,7 +1622,7 @@ namespace UnityGLTF
                     {
                         meshRenderer = primitiveObj.AddComponent<MeshRenderer>();
                         renderer = meshRenderer;
-                        renderer.enabled = InitialVisibility;
+                        renderer.enabled = initialVisibility;
                     }
 
                     yield return ConstructPrimitiveMaterials(mesh, meshId, i);
@@ -2038,17 +2040,17 @@ namespace UnityGLTF
             {
                 if (!string.IsNullOrEmpty(CustomShaderName))
                 {
-                    mapper = new SpecGlossMap(CustomShaderName, MaximumLod);
+                    mapper = new SpecGlossMap(CustomShaderName, maximumLod);
                 }
                 else
                 {
                     if (cachedSpecGlossMat != null)
                     {
-                        mapper = new SpecGlossMap(new Material(cachedSpecGlossMat), MaximumLod);
+                        mapper = new SpecGlossMap(new Material(cachedSpecGlossMat), maximumLod);
                     }
                     else
                     {
-                        mapper = new SpecGlossMap(MaximumLod);
+                        mapper = new SpecGlossMap(maximumLod);
                         cachedSpecGlossMat = mapper.GetMaterialCopy();
                     }
                 }
@@ -2057,17 +2059,17 @@ namespace UnityGLTF
             {
                 if (!string.IsNullOrEmpty(CustomShaderName))
                 {
-                    mapper = new MetalRoughMap(CustomShaderName, MaximumLod);
+                    mapper = new MetalRoughMap(CustomShaderName, maximumLod);
                 }
                 else
                 {
                     if (cachedMetalRoughMat != null)
                     {
-                        mapper = new MetalRoughMap(new Material(cachedMetalRoughMat), MaximumLod);
+                        mapper = new MetalRoughMap(new Material(cachedMetalRoughMat), maximumLod);
                     }
                     else
                     {
-                        mapper = new MetalRoughMap(MaximumLod);
+                        mapper = new MetalRoughMap(maximumLod);
                         cachedMetalRoughMat = mapper.GetMaterialCopy();
                     }
                 }
@@ -2188,6 +2190,21 @@ namespace UnityGLTF
             for (int i = 0; i < 2; i++)
             {
                 string materialCRC = material[i].ComputeCRC().ToString() + material[i].name;
+
+                if (!addMaterialsToPersistentCaching)
+                {
+                    switch (i)
+                    {
+                        case MATERIAL:
+                            materialWrapper.CachedMaterial = new RefCountedMaterialData(materialCRC, material[i]);
+                            break;
+                        case MATERIAL_WITH_VERTEX_COLORS:
+                            materialWrapper.CachedMaterialWithVertexColor = new RefCountedMaterialData(materialCRC, material[i]);
+                            break;
+                    }
+
+                    continue;
+                }
 
                 //TODO(Brian): Remove old material here if the material won't be used. 
                 //             (We can use Resources.UnloadUnusedAssets too, but I hate to rely on this)
@@ -2315,8 +2332,10 @@ namespace UnityGLTF
                     yield return ConstructImage(image, sourceId, markGpuOnly, isLinear);
                     source = new RefCountedTextureData(image.Uri, _assetCache.ImageCache[sourceId]);
 
-                    if (image.Uri != null)
+                    if (image.Uri != null && addImagesToPersistentCaching)
+                    {
                         PersistentAssetCache.ImageCacheByUri[image.Uri] = source;
+                    }
                 }
 
                 var desiredFilterMode = FilterMode.Bilinear;
@@ -2365,11 +2384,19 @@ namespace UnityGLTF
                 }
                 else
                 {
-                    var unityTexture = Object.Instantiate(source.Texture);
-                    unityTexture.filterMode = desiredFilterMode;
-                    unityTexture.wrapMode = desiredWrapMode;
+                    if (source.Texture.isReadable)
+                    {
+                        var unityTexture = Object.Instantiate(source.Texture);
+                        unityTexture.filterMode = desiredFilterMode;
+                        unityTexture.wrapMode = desiredWrapMode;
 
-                    _assetCache.TextureCache[textureIndex].CachedTexture = new RefCountedTextureData(image.Uri, unityTexture);
+                        _assetCache.TextureCache[textureIndex].CachedTexture = new RefCountedTextureData(image.Uri, unityTexture);
+                    }
+                    else
+                    {
+                        Debug.LogWarning("Skipping instantiation of non-readable texture: " + image.Uri);
+                        _assetCache.TextureCache[textureIndex].CachedTexture = source;
+                    }
                 }
             }
         }

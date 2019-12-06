@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using UnityEngine;
 
 namespace GLTF
 {
@@ -60,7 +61,7 @@ namespace GLTF
         {
             stream.Position = startPosition + 4;     // start after magic number chunk
             GLBHeader header = ParseGLBHeader(stream);
-            uint chunkOffset = (uint)startPosition + 12;   // sizeof(GLBHeader) + magic number
+            uint chunkOffset = 12;   // sizeof(GLBHeader) + magic number
             uint chunkLength = 0;
             for (int i = 0; i < binaryChunkIndex + 2; ++i)
             {
@@ -71,23 +72,21 @@ namespace GLTF
             }
 
             // Load Binary Chunk
-            if (chunkOffset + chunkLength - (uint)startPosition <= header.FileLength)
+            if (chunkOffset + chunkLength > header.FileLength)
+                Debug.LogWarning("GLTFParser: File length does not match chunk header.");
+
+            ChunkFormat chunkType = (ChunkFormat)GetUInt32(stream);
+
+            if (chunkType != ChunkFormat.BIN)
+                Debug.LogWarning("Second chunk must be of type BIN if present");
+
+            return new ChunkInfo
             {
-                ChunkFormat chunkType = (ChunkFormat)GetUInt32(stream);
-                if (chunkType != ChunkFormat.BIN)
-                {
-                    throw new GLTFHeaderInvalidException("Second chunk must be of type BIN if present");
-                }
+                StartPosition = stream.Position - CHUNK_HEADER_SIZE,
+                Length = chunkLength,
+                Type = chunkType
+            };
 
-                return new ChunkInfo
-                {
-                    StartPosition = stream.Position - CHUNK_HEADER_SIZE,
-                    Length = chunkLength,
-                    Type = chunkType
-                };
-            }
-
-            throw new GLTFHeaderInvalidException("File length does not match chunk header.");
         }
 
         public static GLBHeader ParseGLBHeader(Stream stream)

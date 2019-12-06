@@ -11,6 +11,7 @@ namespace UnityGLTF.Cache
     /// </summary>
     public class PersistentAssetCache
     {
+        public static Dictionary<string, RefCountedStreamData> StreamCacheByUri = new Dictionary<string, RefCountedStreamData>();
         public static Dictionary<string, RefCountedTextureData> ImageCacheByUri = new Dictionary<string, RefCountedTextureData>();
         public static Dictionary<string, RefCountedMaterialData> MaterialCacheByCRC = new Dictionary<string, RefCountedMaterialData>();
     }
