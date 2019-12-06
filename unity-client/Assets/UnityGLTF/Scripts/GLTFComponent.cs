@@ -48,7 +48,7 @@ namespace UnityGLTF
                 initialVisibility = value;
                 if (sceneImporter != null)
                 {
-                    sceneImporter.InitialVisibility = value;
+                    sceneImporter.initialVisibility = value;
                 }
             }
         }
@@ -244,13 +244,13 @@ namespace UnityGLTF
 
                     sceneImporter.SceneParent = gameObject.transform;
                     sceneImporter.Collider = Collider;
-                    sceneImporter.MaximumLod = MaximumLod;
+                    sceneImporter.maximumLod = MaximumLod;
                     sceneImporter.Timeout = Timeout;
                     sceneImporter.isMultithreaded = Multithreaded;
                     sceneImporter.useMaterialTransition = UseVisualFeedback;
                     sceneImporter.CustomShaderName = shaderOverride ? shaderOverride.name : null;
                     sceneImporter.LoadingTextureMaterial = LoadingTextureMaterial;
-                    sceneImporter.InitialVisibility = initialVisibility;
+                    sceneImporter.initialVisibility = initialVisibility;
 
                     float time = Time.realtimeSinceStartup;
 

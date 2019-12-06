@@ -1,7 +1,6 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using UnityEngine;
-using MappingPair = DCL.ContentServerUtils.MappingPair;
 
 namespace DCL.Models
 {
@@ -28,7 +27,7 @@ namespace DCL.Models
             public string baseUrl;
             public string baseUrlBundles;
 
-            public List<MappingPair> contents;
+            public List<ContentServerUtils.MappingPair> contents;
 
             public Vector2Int basePosition;
             public Vector2Int[] parcels;

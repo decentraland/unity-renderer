@@ -10,12 +10,13 @@ using UnityEditor;
 using UnityEditor.Experimental.AssetImporters;
 using UnityEngine;
 using UnityGLTF.Loader;
+using UnityGLTF.Cache;
 using Object = UnityEngine.Object;
 // using System.Threading.Tasks;
 
 namespace UnityGLTF
 {
-    [ScriptedImporter(1, new[] { "glb" })]
+    [ScriptedImporter(1, new[] { "glb", "gltf" })]
     public class GLTFImporter : ScriptedImporter
     {
         [SerializeField] private bool _removeEmptyRootObjects = true;
@@ -27,6 +28,38 @@ namespace UnityGLTF
         [SerializeField] private GLTFImporterNormals _importNormals = GLTFImporterNormals.Import;
         [SerializeField] private bool _importMaterials = true;
         [SerializeField] private bool _useJpgTextures = false;
+        public bool _importTextures = true;
+
+        static int delayCallsCount = 0;
+        public static bool finishedImporting { get { return delayCallsCount == 0; } }
+
+        public List<Material> SimplifyMaterials(Renderer[] renderers)
+        {
+            Dictionary<string, Material> matByCrc = new Dictionary<string, Material>();
+            List<Material> materials = new List<Material>();
+
+            foreach (var rend in renderers)
+            {
+                var matList = new List<Material>(1);
+
+                foreach (var mat in rend.sharedMaterials)
+                {
+                    string crc = mat.ComputeCRC() + mat.name;
+
+                    if (!matByCrc.ContainsKey(crc))
+                    {
+                        matByCrc.Add(crc, mat);
+                        materials.Add(mat);
+                    }
+
+                    matList.Add(matByCrc[crc]);
+                }
+
+                rend.sharedMaterials = matList.ToArray();
+            }
+
+            return materials;
+        }
 
         public override void OnImportAsset(AssetImportContext ctx)
         {
@@ -128,124 +161,144 @@ namespace UnityGLTF
 
                 var renderers = gltfScene.GetComponentsInChildren<Renderer>();
 
+                if (animationClips.Count > 0)
+                {
+                    var folderName = Path.GetDirectoryName(ctx.assetPath);
+                    var animationsRoot = string.Concat(folderName, "/", "Animations/");
+                    Directory.CreateDirectory(animationsRoot);
+                    foreach (AnimationClip clip in animationClips)
+                    {
+                        string fileName = clip.name;
+                        foreach (char c in System.IO.Path.GetInvalidFileNameChars())
+                        {
+                            fileName = fileName.Replace(c, '_');
+                        }
+
+                        AssetDatabase.CreateAsset(clip, animationsRoot + fileName + ".anim");
+                        var importer = AssetImporter.GetAtPath(animationsRoot + fileName + ".anim");
+                    }
+                }
+
                 if (_importMaterials)
                 {
+                    var materials = SimplifyMaterials(renderers);
                     // Get materials
-                    var materialNames = new List<string>();
-                    var materialHash = new HashSet<UnityEngine.Material>();
-                    var materials = renderers.SelectMany(r =>
+                    List<string> materialNames = new List<string>();
+
+                    foreach (var mat in materials)
                     {
-                        return r.sharedMaterials.Select(mat =>
+                        var matName = string.IsNullOrEmpty(mat.name) ? mat.shader.name : mat.name;
+                        if (matName == mat.shader.name)
                         {
-                            if (materialHash.Add(mat))
-                            {
-                                var matName = string.IsNullOrEmpty(mat.name) ? mat.shader.name : mat.name;
-                                if (matName == mat.shader.name)
-                                {
-                                    matName = matName.Substring(Mathf.Min(matName.LastIndexOf("/") + 1, matName.Length - 1));
-                                }
-
-                                // Ensure name is unique
-                                matName = string.Format("{0} {1}", sceneName, ObjectNames.NicifyVariableName(matName));
-                                matName = ObjectNames.GetUniqueName(materialNames.ToArray(), matName);
-
-                                mat.name = matName;
-                                materialNames.Add(matName);
-                            }
-
-                            return mat;
-                        });
-                    }).ToArray();
-
-                    // Get textures
-                    var textureNames = new List<string>();
-                    var textureHash = new HashSet<Texture2D>();
-                    var texMaterialMap = new Dictionary<Texture2D, List<TexMaterialMap>>();
-                    var textures = materials.SelectMany(mat =>
-                    {
-                        var shader = mat.shader;
-                        if (!shader)
-                        {
-                            return Enumerable.Empty<Texture2D>();
+                            matName = matName.Substring(Mathf.Min(matName.LastIndexOf("/") + 1, matName.Length - 1));
                         }
 
-                        var matTextures = new List<Texture2D>();
-                        for (var i = 0; i < ShaderUtil.GetPropertyCount(shader); ++i)
+                        // Ensure name is unique
+                        matName = ObjectNames.NicifyVariableName(matName);
+                        matName = ObjectNames.GetUniqueName(materialNames.ToArray(), matName);
+
+                        mat.name = matName;
+                        materialNames.Add(matName);
+                    }
+
+                    Texture2D[] textures = null;
+                    var texMaterialMap = new Dictionary<Texture2D, List<TexMaterialMap>>();
+
+                    if (_importTextures)
+                    {
+                        // Get textures
+                        var textureNames = new List<string>();
+                        var textureHash = new HashSet<Texture2D>();
+                        Texture2D[] cachedTextures = PersistentAssetCache.ImageCacheByUri.Values.Select((x) => { return x.Texture; }).ToArray();
+
+                        textures = materials.SelectMany(mat =>
                         {
-                            if (ShaderUtil.GetPropertyType(shader, i) == ShaderUtil.ShaderPropertyType.TexEnv)
+                            var shader = mat.shader;
+                            if (!shader)
                             {
-                                var propertyName = ShaderUtil.GetPropertyName(shader, i);
-                                var tex = mat.GetTexture(propertyName) as Texture2D;
-                                if (tex)
+                                return Enumerable.Empty<Texture2D>();
+                            }
+
+                            var matTextures = new List<Texture2D>();
+
+                            for (var i = 0; i < ShaderUtil.GetPropertyCount(shader); ++i)
+                            {
+                                if (ShaderUtil.GetPropertyType(shader, i) == ShaderUtil.ShaderPropertyType.TexEnv)
                                 {
-                                    if (textureHash.Add(tex))
+                                    var propertyName = ShaderUtil.GetPropertyName(shader, i);
+                                    var tex = mat.GetTexture(propertyName) as Texture2D;
+
+                                    if (cachedTextures.Contains(tex))
+                                        continue;
+
+                                    if (tex)
                                     {
-                                        var texName = tex.name;
-                                        if (string.IsNullOrEmpty(texName))
+                                        if (textureHash.Add(tex))
                                         {
-                                            if (propertyName.StartsWith("_"))
+                                            var texName = tex.name;
+                                            if (string.IsNullOrEmpty(texName))
                                             {
-                                                texName = propertyName.Substring(Mathf.Min(1, propertyName.Length - 1));
+                                                if (propertyName.StartsWith("_"))
+                                                {
+                                                    texName = propertyName.Substring(Mathf.Min(1, propertyName.Length - 1));
+                                                }
                                             }
+
+                                            // Ensure name is unique
+                                            texName = ObjectNames.NicifyVariableName(texName);
+                                            texName = ObjectNames.GetUniqueName(textureNames.ToArray(), texName);
+
+                                            tex.name = texName;
+                                            textureNames.Add(texName);
+                                            matTextures.Add(tex);
                                         }
 
-                                        // Ensure name is unique
-                                        texName = string.Format("{0} {1}", sceneName, ObjectNames.NicifyVariableName(texName));
-                                        texName = ObjectNames.GetUniqueName(textureNames.ToArray(), texName);
+                                        List<TexMaterialMap> materialMaps;
+                                        if (!texMaterialMap.TryGetValue(tex, out materialMaps))
+                                        {
+                                            materialMaps = new List<TexMaterialMap>();
+                                            texMaterialMap.Add(tex, materialMaps);
+                                        }
 
-                                        tex.name = texName;
-                                        textureNames.Add(texName);
-                                        matTextures.Add(tex);
+                                        materialMaps.Add(new TexMaterialMap(mat, propertyName, propertyName == "_BumpMap"));
                                     }
-
-                                    List<TexMaterialMap> materialMaps;
-                                    if (!texMaterialMap.TryGetValue(tex, out materialMaps))
-                                    {
-                                        materialMaps = new List<TexMaterialMap>();
-                                        texMaterialMap.Add(tex, materialMaps);
-                                    }
-
-                                    materialMaps.Add(new TexMaterialMap(mat, propertyName, propertyName == "_BumpMap"));
                                 }
                             }
-                        }
-                        return matTextures;
-                    }).ToArray();
+                            return matTextures;
+                        }).ToArray();
 
-                    var folderName = Path.GetDirectoryName(ctx.assetPath);
+                        var folderName = Path.GetDirectoryName(ctx.assetPath);
 
-                    // Save textures as separate assets and rewrite refs
-                    // TODO: Support for other texture types
-                    if (textures.Length > 0)
-                    {
-                        var texturesRoot = string.Concat(folderName, "/", "Textures/");
-                        Directory.CreateDirectory(texturesRoot);
-
-                        foreach (var tex in textures)
+                        // Save textures as separate assets and rewrite refs
+                        // TODO: Support for other texture types
+                        if (textures.Length > 0)
                         {
-                            var ext = _useJpgTextures ? ".jpg" : ".png";
-                            var texPath = string.Concat(texturesRoot, tex.name, ext);
-                            File.WriteAllBytes(texPath, _useJpgTextures ? tex.EncodeToJPG() : tex.EncodeToPNG());
+                            var texturesRoot = string.Concat(folderName, "/", "Textures/");
 
-                            AssetDatabase.ImportAsset(texPath);
+                            if (!Directory.Exists(texturesRoot))
+                                Directory.CreateDirectory(texturesRoot);
+
+                            foreach (var tex in textures)
+                            {
+                                var ext = _useJpgTextures ? ".jpg" : ".png";
+                                var texPath = string.Concat(texturesRoot, tex.name, ext);
+
+                                if (!File.Exists(texPath))
+                                {
+                                    File.WriteAllBytes(texPath, _useJpgTextures ? tex.EncodeToJPG() : tex.EncodeToPNG());
+                                    AssetDatabase.ImportAsset(texPath, ImportAssetOptions.ForceSynchronousImport | ImportAssetOptions.ForceUpdate);
+                                }
+                            }
+
+                            AssetDatabase.Refresh(ImportAssetOptions.ForceSynchronousImport | ImportAssetOptions.ForceUpdate | ImportAssetOptions.ImportRecursive);
                         }
                     }
 
-                    if (animationClips.Count > 0)
-                    {
-                        var materialRoot = string.Concat(folderName, "/", "Animations/");
-                        Directory.CreateDirectory(materialRoot);
-
-                        foreach (AnimationClip clip in animationClips)
-                        {
-                            AssetDatabase.CreateAsset(clip, materialRoot + "/" + clip.name + ".anim");
-                            AssetDatabase.SaveAssets();
-                        }
-                    }
 
                     // Save materials as separate assets and rewrite refs
-                    if (materials.Length > 0)
+                    if (materials.Count > 0)
                     {
+                        var folderName = Path.GetDirectoryName(ctx.assetPath);
                         var materialRoot = string.Concat(folderName, "/", "Materials/");
                         Directory.CreateDirectory(materialRoot);
 
@@ -253,6 +306,7 @@ namespace UnityGLTF
                         {
                             var materialPath = string.Concat(materialRoot, mat.name, ".mat");
                             var newMat = mat;
+
                             CopyOrNew(mat, materialPath, m =>
                             {
                                 // Fix references
@@ -266,33 +320,40 @@ namespace UnityGLTF
                                         if (sharedMaterial.name == mat.name)
                                         {
                                             sharedMaterials[i] = m;
+                                            EditorUtility.SetDirty(m);
                                         }
                                     }
+
                                     sharedMaterials = sharedMaterials.Where(sm => sm).ToArray();
                                     r.sharedMaterials = sharedMaterials;
                                 }
                             });
+
                             // Fix textures
                             // HACK: This needs to be a delayed call.
                             // Unity needs a frame to kick off the texture import so we can rewrite the ref
-                            if (textures.Length > 0)
+                            if (textures != null && textures.Length > 0)
                             {
+                                delayCallsCount++;
                                 EditorApplication.delayCall += () =>
                                 {
+                                    delayCallsCount--;
                                     for (var i = 0; i < textures.Length; ++i)
                                     {
                                         var tex = textures[i];
+                                        var materialMaps = texMaterialMap[tex];
                                         var texturesRoot = string.Concat(folderName, "/", "Textures/");
                                         var ext = _useJpgTextures ? ".jpg" : ".png";
                                         var texPath = string.Concat(texturesRoot, tex.name, ext);
 
-                                        // Grab new imported texture
-                                        var materialMaps = texMaterialMap[tex];
-                                        var importer = (TextureImporter)TextureImporter.GetAtPath(texPath);
                                         var importedTex = AssetDatabase.LoadAssetAtPath<Texture2D>(texPath);
+                                        var importer = (TextureImporter)TextureImporter.GetAtPath(texPath);
+
                                         if (importer != null)
                                         {
+                                            importer.isReadable = true;
                                             var isNormalMap = false;
+
                                             foreach (var materialMap in materialMaps)
                                             {
                                                 if (materialMap.Material == mat)
@@ -313,29 +374,43 @@ namespace UnityGLTF
                                                 importer.textureType = TextureImporterType.Default;
                                             }
 
-                                            importer.SaveAndReimport();
                                         }
                                         else
                                         {
                                             Debug.LogWarning(string.Format("GLTFImporter: Unable to import texture at path: {0}", texPath));
                                         }
+
+                                        if (delayCallsCount == 0)
+                                        {
+                                            AssetDatabase.Refresh(ImportAssetOptions.ForceSynchronousImport | ImportAssetOptions.ForceUpdate | ImportAssetOptions.ImportRecursive);
+                                            AssetDatabase.SaveAssets();
+                                        }
                                     }
                                 };
                             }
+
+                            AssetDatabase.Refresh(ImportAssetOptions.ForceSynchronousImport | ImportAssetOptions.ForceUpdate | ImportAssetOptions.ImportRecursive);
+                            AssetDatabase.SaveAssets();
                         }
                     }
-                }
-                else
-                {
-                    var temp = GameObject.CreatePrimitive(PrimitiveType.Plane);
-                    temp.SetActive(false);
-                    var defaultMat = new[] { temp.GetComponent<Renderer>().sharedMaterial };
-                    DestroyImmediate(temp);
-
-                    foreach (var rend in renderers)
+                    else
                     {
-                        rend.sharedMaterials = defaultMat;
+                        var temp = GameObject.CreatePrimitive(PrimitiveType.Plane);
+                        temp.SetActive(false);
+                        var defaultMat = new[] { temp.GetComponent<Renderer>().sharedMaterial };
+                        DestroyImmediate(temp);
+
+                        foreach (var rend in renderers)
+                        {
+                            rend.sharedMaterials = defaultMat;
+                        }
                     }
+
+                    var rootObject = gltfScene.GetComponentInChildren<InstantiatedGLTFObject>();
+
+                    if (rootObject != null)
+                        DestroyImmediate(rootObject);
+
                 }
             }
             catch
@@ -344,7 +419,6 @@ namespace UnityGLTF
                 {
                     DestroyImmediate(gltfScene);
                 }
-
                 throw;
             }
 
@@ -355,7 +429,14 @@ namespace UnityGLTF
             // Add meshes
             foreach (var mesh in meshes)
             {
-                ctx.AddObjectToAsset("mesh " + mesh.name, mesh);
+                try
+                {
+                    ctx.AddObjectToAsset("mesh " + mesh.name, mesh);
+                }
+                catch (System.InvalidOperationException e)
+                {
+                    Debug.LogWarning(e.ToString(), mesh);
+                }
             }
 
             ctx.SetMainObject(gltfScene);
@@ -371,6 +452,7 @@ namespace UnityGLTF
 #endif
         }
 
+        public static System.Action<GLTFRoot> OnGLTFRootIsConstructed;
         private GameObject CreateGLTFScene(string projectFilePath)
         {
             ILoader fileLoader = new FileLoader(Path.GetDirectoryName(projectFilePath));
@@ -378,11 +460,16 @@ namespace UnityGLTF
             {
                 GLTFRoot gLTFRoot;
                 GLTFParser.ParseJson(stream, out gLTFRoot);
+
+                OnGLTFRootIsConstructed?.Invoke(gLTFRoot);
+
                 var loader = new GLTFSceneImporter(gLTFRoot, fileLoader, null, stream);
                 GLTFSceneImporter.budgetPerFrameInMilliseconds = float.MaxValue;
-                loader.InitialVisibility = true;
+                loader.addImagesToPersistentCaching = false;
+                loader.addMaterialsToPersistentCaching = false;
+                loader.initialVisibility = true;
                 loader.useMaterialTransition = false;
-                loader.MaximumLod = _maximumLod;
+                loader.maximumLod = _maximumLod;
                 loader.isMultithreaded = true;
 
                 // HACK: Force the coroutine to run synchronously in the editor
@@ -402,7 +489,7 @@ namespace UnityGLTF
                         }
                     }
                 }
-                return loader.LastLoadedScene;
+                return loader.lastLoadedScene;
             }
         }
 

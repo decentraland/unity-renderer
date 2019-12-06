@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections;
 using System.IO;
 // using System.Threading.Tasks;
@@ -33,7 +33,7 @@ namespace UnityGLTF.Loader
             string pathToLoad = Path.Combine(rootPath, fileToLoad);
             if (!File.Exists(pathToLoad))
             {
-                throw new FileNotFoundException("Buffer file not found", fileToLoad);
+                throw new FileNotFoundException($"Buffer file not found ({pathToLoad})", fileToLoad);
             }
 
             yield return null;
