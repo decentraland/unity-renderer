@@ -28,6 +28,9 @@ public class DCLCharacterController : MonoBehaviour
     public bool initialPositionAlreadySet = false;
 
     [System.NonSerialized]
+    public bool characterAlwaysEnabled = true;
+
+    [System.NonSerialized]
     public CharacterController characterController;
 
     new Rigidbody rigidbody;
@@ -114,7 +117,7 @@ public class DCLCharacterController : MonoBehaviour
     // To keep the character always active, just in case
     void OnDisable()
     {
-        if (!reEnablingGameObject && SceneController.i != null)
+        if (characterAlwaysEnabled && !reEnablingGameObject && SceneController.i != null)
             SceneController.i.StartCoroutine(ReEnableGameObject()); // gameObject cannot start the routine as it's being deactivated
     }
 

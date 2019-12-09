@@ -21,6 +21,7 @@ TagManager:
   - Gizmo
   - Selection
   - Minimap
+  - OnBuilderPointerClick
   - CharacterPreview
   - CharacterController
   - 

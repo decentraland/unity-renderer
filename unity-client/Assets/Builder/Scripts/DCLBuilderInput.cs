@@ -4,22 +4,22 @@ namespace Builder
 {
     public class DCLBuilderInput : MonoBehaviour
     {
-
         const string MouseXAxis = "Mouse X";
         const string MouseYAxis = "Mouse Y";
-        const string MouseWheelAxis = "Mouse ScrollWheel";
+
+        [SerializeField] float mouseWheelThrottle = 0.1f;
 
         public delegate void MouseClickDelegate(int buttonId, Vector3 mousePosition);
         public delegate void MouseDragDelegate(int buttonId, Vector3 mousePosition, float axisX, float axisY);
         public delegate void MouseWheelDelegate(float axisValue);
-        public delegate void KeyboardInputDelegate(KeyCode key);
 
         public static event MouseClickDelegate OnMouseDown;
         public static event MouseClickDelegate OnMouseUp;
         public static event MouseDragDelegate OnMouseDrag;
         public static event MouseWheelDelegate OnMouseWheel;
 
-        private float lastMouseWheelAxisValue = 0;
+        private float lastMouseWheelDelta = 0;
+        private float lastMouseWheelTime = 0;
 
         private void Update()
         {
@@ -27,7 +27,12 @@ namespace Builder
             {
                 if (HasMouseButtonInput(i)) break;
             }
+
             UpdateMouseWheelInput();
+
+#if UNITY_EDITOR
+            EditorKeyDownEvent();
+#endif
         }
 
         private bool HasMouseButtonInput(int button)
@@ -51,14 +56,72 @@ namespace Builder
             return false;
         }
 
-        private void UpdateMouseWheelInput()
+        private void OnMouseWheelInput(int delta)
         {
-            float axisValue = Input.GetAxis(MouseWheelAxis);
-            if (lastMouseWheelAxisValue != axisValue)
+            if (lastMouseWheelDelta == delta)
             {
-                lastMouseWheelAxisValue = axisValue;
-                OnMouseWheel?.Invoke(axisValue);
+                if (Time.unscaledTime - lastMouseWheelTime >= mouseWheelThrottle)
+                {
+                    SetMouseWheelDelta(delta);
+                }
+            }
+            else
+            {
+                SetMouseWheelDelta(delta);
             }
         }
+
+        private void SetMouseWheelDelta(int delta)
+        {
+            OnMouseWheel?.Invoke(delta);
+            lastMouseWheelTime = Time.unscaledTime;
+            lastMouseWheelDelta = delta;
+        }
+
+        private void UpdateMouseWheelInput()
+        {
+            float axisValue = Input.GetAxis("Mouse ScrollWheel");
+            if (axisValue != 0)
+            {
+                OnMouseWheelInput((int)Mathf.Sign(axisValue));
+            }
+        }
+
+#if UNITY_EDITOR
+        GameObject bridgeGameObject;
+
+        private void EditorKeyDownEvent()
+        {
+            if (Input.GetKeyDown(KeyCode.UpArrow))
+            {
+                SendMessageToBridge("OnBuilderKeyDown", "UpArrow");
+            }
+            if (Input.GetKeyDown(KeyCode.DownArrow))
+            {
+                SendMessageToBridge("OnBuilderKeyDown", "DownArrow");
+            }
+            if (Input.GetKeyDown(KeyCode.LeftArrow))
+            {
+                SendMessageToBridge("OnBuilderKeyDown", "LeftArrow");
+            }
+            if (Input.GetKeyDown(KeyCode.RightArrow))
+            {
+                SendMessageToBridge("OnBuilderKeyDown", "RightArrow");
+            }
+        }
+
+        private void SendMessageToBridge(string method, string arg)
+        {
+            if (bridgeGameObject == null)
+            {
+                bridgeGameObject = GameObject.Find("BuilderController");
+            }
+            if (bridgeGameObject != null)
+            {
+                bridgeGameObject.SendMessage(method, arg);
+            }
+        }
+#endif
+
     }
 }

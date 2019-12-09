@@ -5,9 +5,9 @@ namespace DCL
     public class AssetPromise_GLTF : AssetPromise<Asset_GLTF>
     {
         public AssetPromiseSettings_Rendering settings = new AssetPromiseSettings_Rendering();
-        string assetDirectoryPath;
+        protected string assetDirectoryPath;
 
-        ContentProvider provider = null;
+        protected ContentProvider provider = null;
         public string url { get; private set; }
 
         public bool useIdForMockedMappings => SceneController.i == null || SceneController.i.isDebugMode || SceneController.i.isWssDebugMode;

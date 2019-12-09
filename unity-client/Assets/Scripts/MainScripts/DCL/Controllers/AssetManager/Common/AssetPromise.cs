@@ -57,7 +57,7 @@ namespace DCL
             state = AssetPromiseState.WAITING;
         }
 
-        void CallAndClearEvents(bool isSuccess = true)
+        protected void CallAndClearEvents(bool isSuccess = true)
         {
             if (asset == null)
             {

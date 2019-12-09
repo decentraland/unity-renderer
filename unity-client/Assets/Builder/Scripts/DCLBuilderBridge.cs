@@ -1,10 +1,16 @@
 ﻿using UnityEngine;
 using System.Collections;
+using System.Collections.Generic;
 using DCL;
 using DCL.Models;
 using DCL.Controllers;
 using DCL.Interface;
 using DCL.Components;
+using DCL.Helpers;
+using DCL.Configuration;
+using Builder.Gizmos;
+using UnityEngine.Rendering.LWRP;
+using UnityEngine.Rendering;
 
 namespace Builder
 {
@@ -27,13 +33,22 @@ namespace Builder
         public static System.Action<KeyCode> OnSetArrowKeyDown;
         public static event SetGridResolutionDelegate OnSetGridResolution;
         public static System.Action<ParcelScene> OnSceneChanged;
+        public static System.Action<string> OnBuilderSelectEntity;
+        public static System.Action OnBuilderDeselectEntity;
 
         private MouseCatcher mouseCatcher;
         private ParcelScene currentScene;
-        private bool isPreviewMode = false;
+        private CameraController cameraController;
         private Vector3 defaultCharacterPosition;
 
+        private bool isPreviewMode = false;
+        private List<string> outOfBoundariesEntitiesId = new List<string>();
+
         private bool isGameObjectActive = false;
+
+        private EntitiesOutOfBoundariesEventPayload outOfBoundariesEventPayload = new EntitiesOutOfBoundariesEventPayload();
+        private static OnEntityLoadingEvent onGetLoadingEntity = new OnEntityLoadingEvent();
+        private static ReportCameraTargetPosition onReportCameraTarget = new ReportCameraTargetPosition();
 
         [System.Serializable]
         private class MousePayload
@@ -56,6 +71,12 @@ namespace Builder
         };
 
         [System.Serializable]
+        private class EntitiesOutOfBoundariesEventPayload
+        {
+            public string[] entities;
+        };
+
+        [System.Serializable]
         private class SetGridResolutionPayload
         {
             public float position = 0;
@@ -70,12 +91,34 @@ namespace Builder
             public string eventType = "builderSceneStart";
         }
 
-        private static OnEntityLoadingEvent onGetLoadingEntity = new OnEntityLoadingEvent();
+        [System.Serializable]
+        private class ReportCameraTargetPosition
+        {
+            public Vector3 cameraTarget;
+            public string id;
+        }
 
         #region "Messages from Explorer"
 
         public void PreloadFile(string url)
         {
+            if (currentScene != null)
+            {
+                string[] split = url.Split('\t');
+                string hash = split[0];
+                string file = split[1];
+
+                if (!currentScene.contentProvider.fileToHash.ContainsKey(file.ToLower()))
+                {
+                    currentScene.contentProvider.fileToHash.Add(file.ToLower(), hash);
+                }
+
+                if (file.EndsWith(".glb") || file.EndsWith(".gltf"))
+                {
+                    AssetPromise_PrefetchGLTF gltfPromise = new AssetPromise_PrefetchGLTF(currentScene.contentProvider, file);
+                    AssetPromiseKeeper_GLTF.i.Keep(gltfPromise);
+                }
+            }
         }
 
         public void GetMousePosition(string newJson)
@@ -128,6 +171,7 @@ namespace Builder
         {
             OnResetBuilderScene?.Invoke();
             DCLCharacterController.i?.gameObject.SetActive(false);
+            outOfBoundariesEntitiesId.Clear();
 
             if (currentScene)
             {
@@ -148,7 +192,15 @@ namespace Builder
                     float.TryParse(splitPositionStr[0], out x);
                     float.TryParse(splitPositionStr[1], out y);
                     float.TryParse(splitPositionStr[2], out z);
-                    OnSetCameraPosition?.Invoke(new Vector3(x, y, z));
+
+                    if (isPreviewMode)
+                    {
+                        DCLCharacterController.i?.SetPosition(new Vector3(x, y, z));
+                    }
+                    else
+                    {
+                        OnSetCameraPosition?.Invoke(new Vector3(x, y, z));
+                    }
                 }
             }
         }
@@ -164,7 +216,27 @@ namespace Builder
                     float.TryParse(splitRotationStr[0], out yaw);
                     float.TryParse(splitRotationStr[1], out pitch);
 
-                    OnSetCameraRotation?.Invoke(yaw * Mathf.Rad2Deg, pitch * Mathf.Rad2Deg);
+                    if (isPreviewMode)
+                    {
+                        if (DCLCharacterController.i != null)
+                        {
+                            DCLCharacterController.i.transform.rotation = Quaternion.Euler(0f, yaw * Mathf.Rad2Deg, 0f);
+                        }
+                        if (cameraController)
+                        {
+                            var cameraRotation = new CameraController.SetRotationPayload()
+                            {
+                                x = pitch * Mathf.Rad2Deg,
+                                y = 0,
+                                z = 0
+                            };
+                            cameraController.SetRotation(JsonUtility.ToJson(cameraRotation));
+                        }
+                    }
+                    else
+                    {
+                        OnSetCameraRotation?.Invoke(yaw * Mathf.Rad2Deg, pitch * Mathf.Rad2Deg);
+                    }
                 }
             }
         }
@@ -187,7 +259,7 @@ namespace Builder
             }
         }
 
-        public void SetArrowKeyDown(string key)
+        public void OnBuilderKeyDown(string key)
         {
             KeyCode arrowKey;
             if (System.Enum.TryParse(key, false, out arrowKey))
@@ -196,33 +268,37 @@ namespace Builder
             }
         }
 
-        public void UnloadScene(string sceneKey)
+        public void UnloadBuilderScene(string sceneKey)
         {
             SceneController.i?.UnloadScene(sceneKey);
         }
 
-        #endregion
-
-        public static DecentralandEntity GetEntityFromGameObject(GameObject currentSelected)
+        public void SelectEntity(string entityId)
         {
-            LoadWrapper wrapper = currentSelected.GetComponent<LoadWrapper>();
+            OnBuilderSelectEntity?.Invoke(entityId);
+        }
 
-            if (wrapper?.entity != null)
-            {
-                return wrapper.entity;
-            }
-            else
-            {
-                if (currentSelected.transform.parent != null)
-                {
-                    return GetEntityFromGameObject(currentSelected.transform.parent.gameObject);
-                }
+        public void DeselectBuilderEntity()
+        {
+            OnBuilderDeselectEntity?.Invoke();
+        }
 
-                return null;
+        public void GetCameraTargetBuilder(string id)
+        {
+            Vector3 targetPosition;
+            Camera builderCamera = builderRaycast.builderCamera;
+            if (builderRaycast.RaycastToGround(builderCamera.ScreenPointToRay(new Vector3(Screen.width * 0.5f, Screen.height * 0.5f, builderCamera.nearClipPlane)),
+                out targetPosition))
+            {
+                onReportCameraTarget.cameraTarget = targetPosition;
+                onReportCameraTarget.id = id;
+                WebInterface.SendMessage("ReportBuilderCameraTarget", onReportCameraTarget);
             }
         }
 
-        public static ParcelScene GetLoadedScene()
+        #endregion
+
+        private static ParcelScene GetLoadedScene()
         {
             ParcelScene loadedScene = null;
 
@@ -239,6 +315,10 @@ namespace Builder
 
         private void Awake()
         {
+            SetupRendererPipeline();
+
+            cameraController = Object.FindObjectOfType<CameraController>();
+
             mouseCatcher = InitialSceneReferences.i?.mouseCatcher;
             if (mouseCatcher != null)
             {
@@ -248,11 +328,15 @@ namespace Builder
             if (DCLCharacterController.i)
             {
                 defaultCharacterPosition = DCLCharacterController.i.transform.position;
+                DCLCharacterController.i.initialPositionAlreadySet = true;
+                DCLCharacterController.i.characterAlwaysEnabled = false;
                 DCLCharacterController.i.gameObject.SetActive(false);
             }
 
-            //TODO: we need a better way for doing this
-            RemoveNoneBuilderGameObjects();
+            if (cameraController)
+            {
+                cameraController.gameObject.SetActive(false);
+            }
 
             SceneController.i?.fpsPanel.SetActive(false);
             SetCaptureKeyboardInputEnabled(false);
@@ -266,15 +350,18 @@ namespace Builder
 
         private void OnEntityIsAdded(DecentralandEntity entity)
         {
-            var builderEntity = AddBuilderEntityComponent(entity);
-            OnEntityAdded?.Invoke(builderEntity);
+            if (!isPreviewMode)
+            {
+                var builderEntity = AddBuilderEntityComponent(entity);
+                OnEntityAdded?.Invoke(builderEntity);
 
-            entity.OnShapeUpdated += ClearEntityLoadingState;
+                entity.OnShapeUpdated += OnEntityShapeUpdated;
 
-            onGetLoadingEntity.uuid = entity.entityId;
-            onGetLoadingEntity.payload.entityId = entity.entityId;
-            onGetLoadingEntity.payload.type = "onEntityLoading";
-            WebInterface.SendSceneEvent(currentScene.sceneData.id, "uuidEvent", onGetLoadingEntity);
+                onGetLoadingEntity.uuid = entity.entityId;
+                onGetLoadingEntity.payload.entityId = entity.entityId;
+                onGetLoadingEntity.payload.type = "onEntityLoading";
+                WebInterface.SendSceneEvent(currentScene.sceneData.id, "uuidEvent", onGetLoadingEntity);
+            }
         }
 
         private void OnEntityIsRemoved(DecentralandEntity entity)
@@ -286,9 +373,9 @@ namespace Builder
             }
         }
 
-        private void ClearEntityLoadingState(DecentralandEntity entity)
+        private void OnEntityShapeUpdated(DecentralandEntity entity)
         {
-            entity.OnShapeUpdated -= ClearEntityLoadingState;
+            entity.OnShapeUpdated -= OnEntityShapeUpdated;
 
             onGetLoadingEntity.uuid = entity.entityId;
             onGetLoadingEntity.payload.entityId = entity.entityId;
@@ -302,7 +389,11 @@ namespace Builder
             {
                 DCLBuilderObjectSelector.OnDraggingObjectEnd += OnObjectDragEnd;
                 DCLBuilderObjectSelector.OnSelectedObject += OnObjectSelected;
-                DCLBuilderObjectSelector.OnGizmoTransformObjectEnd += OnGizmoTransformObjectEnded;
+                DCLBuilderObjectSelector.OnNoObjectSelected += OnNoObjectSelected;
+                DCLBuilderGizmoManager.OnGizmoTransformObjectEnd += OnGizmoTransformObjectEnded;
+                DCLBuilderEntity.OnEntityShapeUpdated += ProcessEntityBoundaries;
+                DCLBuilderEntity.OnEntityTransformUpdated += ProcessEntityBoundaries;
+                RenderingController.i.OnRenderingStateChanged += OnRenderingStateChanged;
             }
             isGameObjectActive = true;
         }
@@ -312,7 +403,11 @@ namespace Builder
             isGameObjectActive = false;
             DCLBuilderObjectSelector.OnDraggingObjectEnd -= OnObjectDragEnd;
             DCLBuilderObjectSelector.OnSelectedObject -= OnObjectSelected;
-            DCLBuilderObjectSelector.OnGizmoTransformObjectEnd -= OnGizmoTransformObjectEnded;
+            DCLBuilderObjectSelector.OnNoObjectSelected -= OnNoObjectSelected;
+            DCLBuilderGizmoManager.OnGizmoTransformObjectEnd -= OnGizmoTransformObjectEnded;
+            DCLBuilderEntity.OnEntityShapeUpdated -= ProcessEntityBoundaries;
+            DCLBuilderEntity.OnEntityTransformUpdated -= ProcessEntityBoundaries;
+            RenderingController.i.OnRenderingStateChanged -= OnRenderingStateChanged;
         }
 
         private void OnObjectDragEnd(DCLBuilderEntity entity, Vector3 position)
@@ -330,13 +425,18 @@ namespace Builder
             WebInterface.ReportGizmoEvent(entity.rootEntity.scene.sceneData.id, entity.rootEntity.entityId, "gizmoSelected", gizmoType);
         }
 
+        private void OnNoObjectSelected()
+        {
+            WebInterface.ReportGizmoEvent(currentScene.sceneData.id, null, "gizmoSelected", null);
+        }
+
         private void NotifyGizmoEvent(DCLBuilderEntity entity, string gizmoType)
         {
             WebInterface.ReportGizmoEvent(
                 entity.rootEntity.scene.sceneData.id,
-                entity.rootEntity.entityId,
+                entity ? entity.rootEntity.entityId : "",
                 "gizmoDragEnded",
-                gizmoType,
+                gizmoType != null ? gizmoType : DCL.Components.DCLGizmos.Gizmo.NONE,
                 entity.gameObject.transform
             );
         }
@@ -358,25 +458,26 @@ namespace Builder
             {
                 DCLCharacterController.i.SetPosition(defaultCharacterPosition);
                 DCLCharacterController.i.gameObject.SetActive(isPreview);
+                DCLCharacterController.i.ResetGround();
             }
             if (mouseCatcher != null)
             {
                 mouseCatcher.enabled = isPreview;
                 if (!isPreview) mouseCatcher.UnlockCursor();
             }
+            if (cameraController)
+            {
+                cameraController.gameObject.SetActive(isPreviewMode);
+            }
             SetCaptureKeyboardInputEnabled(isPreview);
         }
 
-        private void RemoveNoneBuilderGameObjects()
+        private void OnRenderingStateChanged(bool renderingEnabled)
         {
-            Component go = FindObjectOfType<HUDController>();
-            if (go) Destroy(go.gameObject);
-            go = FindObjectOfType<AvatarHUDView>();
-            if (go) Destroy(go.gameObject);
-            go = FindObjectOfType<MinimapHUDView>();
-            if (go) Destroy(go.gameObject);
-            go = FindObjectOfType<MinimapMetadataController>();
-            if (go && go.transform.parent) Destroy(go.transform.parent.gameObject);
+            if (renderingEnabled)
+            {
+                ParcelSettings.VISUAL_LOADING_ENABLED = false;
+            }
         }
 
         private void SetCaptureKeyboardInputEnabled(bool value)
@@ -399,13 +500,43 @@ namespace Builder
 
         private DCLBuilderEntity AddBuilderEntityComponent(DecentralandEntity entity)
         {
-            DCLBuilderEntity builderComponent = entity.gameObject.GetComponent<DCLBuilderEntity>();
-            if (builderComponent == null)
-            {
-                builderComponent = entity.gameObject.AddComponent<DCLBuilderEntity>();
-            }
+            DCLBuilderEntity builderComponent = Utils.GetOrCreateComponent<DCLBuilderEntity>(entity.gameObject);
             builderComponent.SetEntity(entity);
             return builderComponent;
+        }
+
+        private void ProcessEntityBoundaries(DCLBuilderEntity entity)
+        {
+            string entityId = entity.rootEntity.entityId;
+            int entityIndexInList = outOfBoundariesEntitiesId.IndexOf(entityId);
+
+            bool wasInsideSceneBoundaries = entityIndexInList == -1;
+            bool isInsideSceneBoundaries = entity.IsInsideSceneBoundaries();
+
+            if (wasInsideSceneBoundaries && !isInsideSceneBoundaries)
+            {
+                outOfBoundariesEntitiesId.Add(entityId);
+            }
+            else if (!wasInsideSceneBoundaries && isInsideSceneBoundaries)
+            {
+                outOfBoundariesEntitiesId.RemoveAt(entityIndexInList);
+            }
+
+            outOfBoundariesEventPayload.entities = outOfBoundariesEntitiesId.ToArray();
+            WebInterface.SendSceneEvent<EntitiesOutOfBoundariesEventPayload>(currentScene.sceneData.id, "entitiesOutOfBoundaries", outOfBoundariesEventPayload);
+            currentScene.boundariesChecker?.EvaluateEntityPosition(entity.rootEntity);
+        }
+
+        private void SetupRendererPipeline()
+        {
+            LightweightRenderPipelineAsset lwrpa = ScriptableObject.Instantiate(GraphicsSettings.renderPipelineAsset) as LightweightRenderPipelineAsset;
+
+            if (lwrpa != null)
+            {
+                lwrpa.shadowDepthBias = 3;
+                lwrpa.shadowDistance = 80f;
+                GraphicsSettings.renderPipelineAsset = lwrpa;
+            }
         }
     }
 }

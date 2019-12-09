@@ -99,6 +99,7 @@ namespace DCL
         WebSocketServer ws;
         public SceneController sceneController;
         public DCLCharacterController characterController;
+        private Builder.DCLBuilderBridge builderBridge = null;
         public CameraController cameraController;
 
         [System.NonSerialized]
@@ -275,6 +276,63 @@ namespace DCL
                             case "ShowNotification":
                                 HUDController.i.ShowNotificationFromJson(msg.payload);
                                 break;
+                            case "BuilderReady":
+                                sceneController.BuilderReady();
+                                break;
+                            case "UpdateParcelScenes":
+                                sceneController.UpdateParcelScenes(msg.payload);
+                                break;
+                            case "GetMousePosition":
+                                GetBuilderBridge()?.GetMousePosition(msg.payload);
+                                break;
+                            case "SelectGizmo":
+                                GetBuilderBridge()?.SelectGizmo(msg.payload);
+                                break;
+                            case "ResetObject":
+                                GetBuilderBridge()?.ResetObject();
+                                break;
+                            case "ZoomDelta":
+                                GetBuilderBridge()?.ZoomDelta(msg.payload);
+                                break;
+                            case "SetPlayMode":
+                                GetBuilderBridge()?.SetPlayMode(msg.payload);
+                                break;
+                            case "TakeScreenshot":
+                                GetBuilderBridge()?.TakeScreenshot(msg.payload);
+                                break;
+                            case "ResetBuilderScene":
+                                GetBuilderBridge()?.ResetBuilderScene();
+                                break;
+                            case "SetBuilderCameraPosition":
+                                GetBuilderBridge()?.SetBuilderCameraPosition(msg.payload);
+                                break;
+                            case "SetBuilderCameraRotation":
+                                GetBuilderBridge()?.SetBuilderCameraRotation(msg.payload);
+                                break;
+                            case "ResetBuilderCameraZoom":
+                                GetBuilderBridge()?.ResetBuilderCameraZoom();
+                                break;
+                            case "SetGridResolution":
+                                GetBuilderBridge()?.SetGridResolution(msg.payload);
+                                break;
+                            case "OnBuilderKeyDown":
+                                GetBuilderBridge()?.OnBuilderKeyDown(msg.payload);
+                                break;
+                            case "UnloadBuilderScene":
+                                GetBuilderBridge()?.UnloadBuilderScene(msg.payload);
+                                break;
+                            case "SelectEntity":
+                                GetBuilderBridge()?.SelectEntity(msg.payload);
+                                break;
+                            case "GetCameraTargetBuilder":
+                                GetBuilderBridge()?.GetCameraTargetBuilder(msg.payload);
+                                break;
+                            case "PreloadFile":
+                                GetBuilderBridge()?.PreloadFile(msg.payload);
+                                break;
+                            case "DeselectBuilderEntity":
+                                GetBuilderBridge()?.DeselectBuilderEntity();
+                                break;
                             case "AddWearableToCatalog":
                                 CatalogController.i.AddWearableToCatalog(msg.payload);
                                 break;
@@ -315,6 +373,15 @@ namespace DCL
                 }
             }
 #endif
+        }
+
+        private Builder.DCLBuilderBridge GetBuilderBridge()
+        {
+            if (builderBridge == null)
+            {
+                builderBridge = FindObjectOfType<Builder.DCLBuilderBridge>();
+            }
+            return builderBridge;
         }
     }
 }
