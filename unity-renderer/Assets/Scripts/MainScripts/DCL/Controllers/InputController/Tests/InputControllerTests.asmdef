@@ -1,0 +1,17 @@
+{
+    "name": "InputControllerTests",
+    "references": [
+        "GUID:98bf3bf29030cbf4092d89a7cc28b7fb"
+    ],
+    "optionalUnityReferences": [
+        "TestAssemblies"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": []
+}

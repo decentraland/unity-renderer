@@ -121,6 +121,9 @@ jobs:
           key: unity-build-{{ checksum "../.unitysources-checksum" }}
           paths:
             - /tmp/explorer/unity-client/Builds/
+      - store_artifacts:
+          name: Store logs
+          path: /tmp/buildlog.txt
 
       # persist to workspace to use in downstream jobs
       - persist_to_workspace:

@@ -93,7 +93,7 @@ namespace Tests
 
         Vector3 GetLookAtVector(Billboard.Model model, Transform entityTransform)
         {
-            Vector3 lookAtDir = (DCLCharacterController.i.cameraTransform.position - entityTransform.position);
+            Vector3 lookAtDir = CommonScriptableObjects.cameraPosition - entityTransform.position;
 
             // Note (Zak): This check is here to avoid normalizing twice if not needed
             if (!(model.x && model.y && model.z))

@@ -13,6 +13,7 @@ namespace DCL
         void Update()
         {
 #if UNITY_EDITOR
+            //Browser is changing this automatically
             if (Input.GetKeyDown(KeyCode.Escape))
             {
                 UnlockCursor();

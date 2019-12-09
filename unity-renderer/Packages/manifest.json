@@ -1,11 +1,11 @@
 {
   "dependencies": {
-    "com.unity.test-framework.performance": "1.1.2-preview",
-    "com.unity.cinemachine": "2.3.3",
+    "com.unity.cinemachine": "2.3.4",
     "com.unity.package-manager-ui": "2.1.2",
     "com.unity.performance.profile-analyzer": "0.5.0-preview.1",
     "com.unity.postprocessing": "2.1.7",
     "com.unity.render-pipelines.lightweight": "5.16.1",
+    "com.unity.test-framework.performance": "1.1.2-preview",
     "com.unity.textmeshpro": "2.0.1",
     "com.unity.timeline": "1.0.0",
     "com.unity.xr.legacyinputhelpers": "2.0.2",

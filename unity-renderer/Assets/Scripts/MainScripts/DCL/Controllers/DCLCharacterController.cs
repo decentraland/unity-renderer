@@ -6,23 +6,7 @@ using System.Collections;
 
 public class DCLCharacterController : MonoBehaviour
 {
-    public class TeleportPayload
-    {
-        public float x;
-        public float y;
-        public float z;
-        public Vector3? cameraTarget;
-    }
-
-
     public static DCLCharacterController i { get; private set; }
-
-    [Header("Aiming")]
-    public float aimingHorizontalSpeed = 300f;
-
-    public float aimingVerticalSpeed = 300f;
-    public float aimingVerticalMinimumAngle = -89f;
-    public float aimingVerticalMaximumAngle = 89f;
 
     [Header("Movement")]
     public float minimumYPosition = 1f;
@@ -36,27 +20,6 @@ public class DCLCharacterController : MonoBehaviour
     public float movingPlatformAllowedPosDelta = 0.5f;
 
     public DCLCharacterPosition characterPosition;
-
-    [SerializeField]
-    private new Camera camera;
-
-    [SerializeField]
-    private AudioListener audioListener;
-
-    Transform cameraTransformValue;
-
-    public Transform cameraTransform
-    {
-        get
-        {
-            if (cameraTransformValue == null)
-            {
-                cameraTransformValue = camera.transform;
-            }
-
-            return cameraTransformValue;
-        }
-    }
 
     [Header("Collisions")]
     public LayerMask groundLayers;
@@ -72,14 +35,11 @@ public class DCLCharacterController : MonoBehaviour
 
     float deltaTime = 0.032f;
     float deltaTimeCap = 0.032f; // 32 milliseconds = 30FPS, 16 millisecodns = 60FPS
-    float aimingHorizontalDeltaAngle;
-    float aimingVerticalDeltaAngle;
     float lastUngroundedTime = 0f;
     float lastJumpButtonPressedTime = 0f;
     float lastMovementReportTime;
     Vector3 velocity = Vector3.zero;
     Vector2 aimingInput;
-    Vector2 movementInput;
     bool isSprinting = false;
     bool isJumping = false;
     bool isGrounded = false;
@@ -89,8 +49,20 @@ public class DCLCharacterController : MonoBehaviour
     Vector3 groundLastPosition;
     Quaternion groundLastRotation;
     bool jumpButtonPressed = false;
-    bool jumpButtonPressedThisFrame = false;
     bool reEnablingGameObject = false;
+
+    [Header("InputActions")]
+    public InputAction_Hold jumpAction;
+    public InputAction_Hold sprintAction;
+    public InputAction_Measurable characterXAxis;
+    public InputAction_Measurable characterYAxis;
+
+    private InputAction_Hold.Started jumpStartedDelegate;
+    private InputAction_Hold.Finished jumpFinishedDelegate;
+    private InputAction_Hold.Started sprintStartedDelegate;
+    private InputAction_Hold.Finished sprintFinishedDelegate;
+
+    private Vector3NullableVariable characterForward => CommonScriptableObjects.characterForward;
 
     public static System.Action<DCLCharacterPosition> OnCharacterMoved;
     public static System.Action<DCLCharacterPosition> OnPositionSet;
@@ -104,7 +76,9 @@ public class DCLCharacterController : MonoBehaviour
         }
 
         i = this;
-        
+
+        SuscribeToInput();
+
         CommonScriptableObjects.playerUnityPosition.Set(Vector3.zero);
         CommonScriptableObjects.playerCoords.Set(Vector2Int.zero);
         CommonScriptableObjects.playerUnityEulerAngles.Set(Vector3.zero);
@@ -118,6 +92,23 @@ public class DCLCharacterController : MonoBehaviour
         SceneController.OnDebugModeSet += () => supportsMovingPlatforms = true;
 
         lastPosition = transform.position;
+    }
+
+    private void SuscribeToInput()
+    {
+        jumpStartedDelegate = (action) =>
+        {
+            lastJumpButtonPressedTime = Time.time;
+            jumpButtonPressed = true;
+        };
+        jumpFinishedDelegate = (action) => jumpButtonPressed = false;
+        jumpAction.OnStarted += jumpStartedDelegate;
+        jumpAction.OnFinished += jumpFinishedDelegate;
+        
+        sprintStartedDelegate = (action) => isSprinting = true;
+        sprintFinishedDelegate = (action) => isSprinting = false;
+        sprintAction.OnStarted += sprintStartedDelegate;
+        sprintAction.OnFinished += sprintFinishedDelegate;
     }
 
     // To keep the character always active, just in case
@@ -142,6 +133,10 @@ public class DCLCharacterController : MonoBehaviour
     void OnDestroy()
     {
         characterPosition.OnPrecisionAdjust -= OnPrecisionAdjust;
+        jumpAction.OnStarted -= jumpStartedDelegate;
+        jumpAction.OnFinished -= jumpFinishedDelegate;
+        sprintAction.OnStarted -= sprintStartedDelegate;
+        sprintAction.OnFinished -= sprintFinishedDelegate;
     }
 
     void OnPrecisionAdjust(DCLCharacterPosition charPos)
@@ -176,27 +171,12 @@ public class DCLCharacterController : MonoBehaviour
         lastPosition = transform.position;
     }
 
-    public void SetEulerRotation(Vector3 eulerRotation)
-    {
-        transform.rotation = Quaternion.Euler(0f, eulerRotation.y, 0f);
-        cameraTransform.localRotation = Quaternion.Euler(eulerRotation.x, 0f, 0f);
-    }
-
     public void Teleport(string teleportPayload)
     {
-        var payload = Utils.FromJsonWithNulls<TeleportPayload>(teleportPayload);
+        var payload = Utils.FromJsonWithNulls<Vector3>(teleportPayload);
 
         var newPosition = new Vector3(payload.x, payload.y, payload.z);
         SetPosition(newPosition);
-
-        if (payload.cameraTarget != null)
-        {
-            var lookDir = payload.cameraTarget - newPosition;
-            var eulerRotation = Quaternion.LookRotation(lookDir.Value).eulerAngles;
-            aimingVerticalDeltaAngle = -eulerRotation.x;
-            aimingHorizontalDeltaAngle = eulerRotation.y;
-            SetEulerRotation(eulerRotation);
-        }
 
         if (OnPositionSet != null)
         {
@@ -217,11 +197,6 @@ public class DCLCharacterController : MonoBehaviour
 
     public void SetEnabled(bool enabled)
     {
-        camera.enabled = enabled;
-        //NOTE(Brian): Added this clause to avoid the endless logs related with no having AudioListeners enabled in editor.
-#if !UNITY_EDITOR
-        audioListener.enabled = enabled;
-#endif
         this.enabled = enabled;
     }
 
@@ -267,33 +242,24 @@ public class DCLCharacterController : MonoBehaviour
 
         if (Cursor.lockState == CursorLockMode.Locked)
         {
-            DetectInput();
+            if (characterForward.HasValue())
+            {
+                // Horizontal movement
+                var speed = movementSpeed * (isSprinting ? runningSpeedMultiplier : 1f);
 
-            // Rotation            
-            Vector3 transformRotation = (transform.rotation * Quaternion.Euler(0f, aimingHorizontalDeltaAngle, 0f)).eulerAngles;
-            Vector3 cameraRotation = (cameraTransform.localRotation * Quaternion.Euler(-aimingVerticalDeltaAngle, 0f, 0f)).eulerAngles;
-            Vector3 eulerRotation = new Vector3(cameraRotation.x, transformRotation.y, 0f);
-            SetEulerRotation(eulerRotation);
-            CommonScriptableObjects.playerUnityEulerAngles.Set(eulerRotation);
+                if (characterXAxis.GetValue() > 0f)
+                    velocity += (transform.right * speed);
+                else if (characterXAxis.GetValue() < 0f)
+                    velocity += (-transform.right * speed);
 
-            // Horizontal movement
-            var speed = movementSpeed * (isSprinting ? runningSpeedMultiplier : 1f);
+                if (characterYAxis.GetValue() > 0f)
+                    velocity += (transform.forward * speed);
+                else if (characterYAxis.GetValue() < 0f)
+                    velocity += (-transform.forward * speed);
 
-            if (movementInput.x > 0f)
-                velocity += (transform.right * speed);
-            else if (movementInput.x < 0f)
-                velocity += (-transform.right * speed);
-
-            if (movementInput.y > 0f)
-                velocity += (transform.forward * speed);
-            else if (movementInput.y < 0f)
-                velocity += (-transform.forward * speed);
-        }
-
-        // Jump
-        if (jumpButtonPressedThisFrame)
-        {
-            lastJumpButtonPressedTime = Time.time;
+                transform.forward = characterForward.Get().Value;
+                CommonScriptableObjects.playerUnityEulerAngles.Set(transform.eulerAngles);
+            }
         }
 
         if (jumpButtonPressed && (Time.time - lastJumpButtonPressedTime < 0.15f)) // almost-grounded jump button press allowed time
@@ -332,26 +298,6 @@ public class DCLCharacterController : MonoBehaviour
         isGrounded = false;
 
         velocity.y = jumpForce;
-    }
-
-    void DetectInput()
-    {
-        aimingInput.x = Input.GetAxis("Mouse X");
-        aimingInput.y = Input.GetAxis("Mouse Y");
-
-        aimingHorizontalDeltaAngle = Mathf.Clamp(aimingInput.x, -1, 1) * aimingHorizontalSpeed * deltaTime;
-        aimingVerticalDeltaAngle = Mathf.Clamp(aimingInput.y, -1, 1) * aimingVerticalSpeed * deltaTime;
-
-        // Limit vertical aiming angle
-        aimingVerticalDeltaAngle = Mathf.Clamp(aimingVerticalDeltaAngle, aimingVerticalMinimumAngle, aimingVerticalMaximumAngle);
-
-        isSprinting = Input.GetKey(KeyCode.LeftShift) || Input.GetKeyDown(KeyCode.RightShift);
-
-        movementInput.x = Input.GetAxis("Horizontal");
-        movementInput.y = Input.GetAxis("Vertical");
-
-        jumpButtonPressedThisFrame = Input.GetKeyDown(KeyCode.Space);
-        jumpButtonPressed = Input.GetKey(KeyCode.Space);
     }
 
     void LockCharacterScale()
@@ -453,14 +399,11 @@ public class DCLCharacterController : MonoBehaviour
 
     void ReportMovement()
     {
-        var localRotation = cameraTransform.localRotation.eulerAngles;
-        var rotation = transform.rotation.eulerAngles;
-        var feetY = characterPosition.worldPosition.y - characterController.height / 2;
-        var playerHeight = cameraTransform.position.y - feetY;
-        var compositeRotation = Quaternion.Euler(localRotation.x, rotation.y, localRotation.z);
+        float height = 0.875f;
 
-        var reportPosition = characterPosition.worldPosition;
-        reportPosition.y += cameraTransform.localPosition.y;
+        var reportPosition = characterPosition.worldPosition + (Vector3.up * height);
+        var compositeRotation = Quaternion.LookRotation(transform.forward);
+        var playerHeight =  height + (characterController.height / 2);
 
         //NOTE(Brian): We have to wait for a Teleport before sending the ReportPosition, because if not ReportPosition events will be sent
         //             When the spawn point is being selected / scenes being prepared to be sent and the Kernel gets crazy. 

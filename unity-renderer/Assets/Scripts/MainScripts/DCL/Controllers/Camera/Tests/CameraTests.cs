@@ -1,10 +1,12 @@
 ﻿using System.Collections;
+using Cinemachine;
 using DCL.Helpers;
+using Newtonsoft.Json;
 using NUnit.Framework;
 using UnityEngine;
 using UnityEngine.TestTools;
 
-namespace Camera_Test
+namespace CameraController_Test
 {
     public class CameraControllerShould : TestsBase
     {
@@ -14,156 +16,87 @@ namespace Camera_Test
         public IEnumerator SetUp()
         {
             yield return InitScene(spawnCharController: true);
-            cameraController = Object.FindObjectOfType<CameraController>(); //Camera controller should be in the CharacterController
+            cameraController = GameObject.Instantiate(Resources.Load<GameObject>("Prefabs/CameraController")).GetComponent<CameraController>();
         }
 
         [Test]
-        public void InitializeCameraSetupsCorrectly()
+        public void ReactToCameraChangeAction()
         {
-            Assert.IsTrue(cameraController.cameraSetups.ContainsKey(CameraController.CameraState.FirstPerson));
-            Assert.IsNotNull(cameraController.cameraSetups[CameraController.CameraState.FirstPerson]);
-            Assert.IsTrue(cameraController.cameraSetups[CameraController.CameraState.FirstPerson] is FirstPersonCameraSetup);
+            var currentCamera = cameraController.currentMode;
+            cameraController.cameraChangeAction.RaiseOnTriggered();
 
-            Assert.IsTrue(cameraController.cameraSetups.ContainsKey(CameraController.CameraState.ThirdPerson));
-            Assert.IsNotNull(cameraController.cameraSetups[CameraController.CameraState.ThirdPerson]);
-            Assert.IsTrue(cameraController.cameraSetups[CameraController.CameraState.ThirdPerson] is ThirdPersonCameraSetup);
+            Assert.AreNotEqual(currentCamera, cameraController.currentMode);
         }
 
         [Test]
-        public void ReactToCameraStateChanges()
+        [TestCase(CameraController.CameraMode.FirstPerson)]
+        [TestCase(CameraController.CameraMode.ThirdPerson)]
+        public void LiveCameraIsOn(CameraController.CameraMode cameraMode)
         {
-            var cameraStateSO = cameraController.currentState;
-
-            cameraStateSO.Set(CameraController.CameraState.FirstPerson);
-            Assert.IsTrue(cameraController.currentSetup is FirstPersonCameraSetup);
-
-            cameraStateSO.Set(CameraController.CameraState.ThirdPerson);
-            Assert.IsTrue(cameraController.currentSetup is ThirdPersonCameraSetup);
-        }
-    }
-
-    public class CameraSetupFactoryShould : TestsBase
-    {
-        [Test]
-        public void CreateFirstPersonSetupCorrectly()
-        {
-            var config = ScriptableObject.CreateInstance<FirstPersonCameraConfigSO>();
-            var dummyTransform = new GameObject("_dummyTransform").transform;
-
-            var cameraSetup = (FirstPersonCameraSetup)CameraSetupFactory.CreateCameraSetup(CameraController.CameraState.FirstPerson, dummyTransform, config);
-
-            Assert.AreEqual(config, cameraSetup.configuration);
-            Assert.AreEqual(dummyTransform, cameraSetup.cameraTransform);
-        }
-        
-        [Test]
-        public void CreateThirdPersonSetupCorrectly()
-        {
-            var config = ScriptableObject.CreateInstance<ThirdPersonCameraConfigSO>();
-            var dummyTransform = new GameObject("_dummyTransform").transform;
-
-            var cameraSetup = (ThirdPersonCameraSetup)CameraSetupFactory.CreateCameraSetup(CameraController.CameraState.ThirdPerson, dummyTransform, config);
-
-            Assert.AreEqual(config, cameraSetup.configuration);
-            Assert.AreEqual(dummyTransform, cameraSetup.cameraTransform);
-        }
-    }
-
-    public class FirstPersonCameraShould : TestsBase
-    {
-        private FirstPersonCameraConfigSO config;
-
-        [UnitySetUp]
-        public IEnumerator SetUp()
-        {
-            yield return InitScene();
-            config = ScriptableObject.CreateInstance<FirstPersonCameraConfigSO>();
+            var vCam = cameraController.cachedModeToVirtualCamera[cameraMode];
+            cameraController.SetCameraMode(cameraMode);
+            Assert.IsTrue(vCam.VirtualCameraGameObject.activeSelf);
         }
 
         [Test]
-        public void NotModifyTheTransformWithoutActivation()
+        [TestCase(1, 0, 0)]
+        [TestCase(0, 0, 1)]
+        [TestCase(1, 0, 1)]
+        [TestCase(-1, 0, 0)]
+        [TestCase(0, 0, -1)]
+        [TestCase(-1, 0, -1)]
+        public void ReactToSetRotation(float lookAtX, float lookAtY, float lookAtZ)
         {
-            config.Set(new FirstPersonCameraConfig() { yOffset = 10 });
-            var dummyTransform = new GameObject("_dummyTransform").transform;
-            dummyTransform.position = Vector3.up * 1.5f;
+            var currentVcam = (cameraController.cachedModeToVirtualCamera[cameraController.currentMode] as CinemachineVirtualCamera);
+            var pov = currentVcam.GetCinemachineComponent<CinemachinePOV>();
 
-            var cameraSetup = new FirstPersonCameraSetup(dummyTransform, config);
+            var payload = new CameraController.SetRotationPayload()
+            {
+                x = 0, y = 0, z = 0,
+                cameraTarget = new Vector3(lookAtX, lookAtY, lookAtZ)
+            };
 
-            Assert.AreEqual(Vector3.up * 1.5f, dummyTransform.position);
+            var rotationEuler = Quaternion.LookRotation(payload.cameraTarget.Value).eulerAngles;
+            cameraController.SetRotation(JsonConvert.SerializeObject(payload, Formatting.None,  new JsonSerializerSettings()
+            {
+                ReferenceLoopHandling = ReferenceLoopHandling.Ignore
+            }));
+
+            Assert.AreEqual(pov.m_HorizontalAxis.Value, rotationEuler.y);
+            Assert.AreEqual(pov.m_VerticalAxis.Value, rotationEuler.x);
         }
 
-        [Test]
-        public void ModifyTheTransformOnActivation()
+        [UnityTest]
+        [TestCase(0, 0, 0, ExpectedResult = null)] //ExpectedResult is needed because the method is IEnumerator. The workaround is needed because there's no "UnityTestCase" to use with IEnumerators
+        [TestCase(1, 2, 3, ExpectedResult = null)]
+        [TestCase(3, 3, 3, ExpectedResult = null)]
+        public  IEnumerator UpdateCameraPositionSO(float posX, float posY, float posZ)
         {
-            config.Set(new FirstPersonCameraConfig() { yOffset = 10 });
-            var dummyTransform = new GameObject("_dummyTransform").transform;
+            var currentVcam = (cameraController.cachedModeToVirtualCamera[cameraController.currentMode] as CinemachineVirtualCamera);
 
-            var cameraSetup = new FirstPersonCameraSetup(dummyTransform, config);
-            cameraSetup.Activate();
+            var toFollow = new GameObject("ToFollow");
+            toFollow.transform.position = new Vector3(posX, posY, posZ);
+            currentVcam.Follow = toFollow.transform;
 
-            Assert.AreEqual(config.Get().yOffset, dummyTransform.position.y);
+            yield return null;
+
+            Assert.AreEqual(currentVcam.State.FinalPosition, CommonScriptableObjects.cameraPosition.Get());
         }
 
-        [Test]
-        public void ReactToChangesInConfig()
+        [UnityTest]
+        [TestCase(0, 0, ExpectedResult = null)] //ExpectedResult is needed because the method is IEnumerator. The workaround is needed because there's no "UnityTestCase" to use with IEnumerators
+        [TestCase(90, 90, ExpectedResult = null)]
+        [TestCase(45, 45, ExpectedResult = null)]
+        public IEnumerator UpdateCameraRotationSO(float horizontalAxis, float verticalAxis)
         {
-            config.Set(new FirstPersonCameraConfig() { yOffset = 10 });
-            var dummyTransform = new GameObject("_dummyTransform").transform;
-            var cameraSetup = new FirstPersonCameraSetup(dummyTransform, config);
-            cameraSetup.Activate();
+            var currentVcam = (cameraController.cachedModeToVirtualCamera[cameraController.currentMode] as CinemachineVirtualCamera);
+            var pov = currentVcam.GetCinemachineComponent<CinemachinePOV>();
+            pov.m_HorizontalAxis.Value = horizontalAxis;
+            pov.m_VerticalAxis.Value = verticalAxis;
 
-            config.Set(new FirstPersonCameraConfig() { yOffset = 77 });
+            yield return null;
 
-            Assert.AreEqual(config.Get().yOffset, dummyTransform.position.y);
-        }
-    }
-
-    public class ThirdPersonCameraShould : TestsBase
-    {
-        private ThirdPersonCameraConfigSO config;
-
-        [UnitySetUp]
-        public IEnumerator SetUp()
-        {
-            yield return InitScene();
-            config = ScriptableObject.CreateInstance<ThirdPersonCameraConfigSO>();
-        }
-
-        [Test]
-        public void NotModifyTheTransformWithoutActivation()
-        {
-            config.Set(new ThirdPersonCameraConfig() { offset = Vector3.one * 3 });
-            var dummyTransform = new GameObject("_dummyTransform").transform;
-            dummyTransform.position = Vector3.up * 1.5f;
-
-            var cameraSetup = new ThirdPersonCameraSetup(dummyTransform, config);
-
-            Assert.AreNotEqual(config.Get().offset, dummyTransform.position);
-        }
-
-        [Test]
-        public void ModifyTheTransformOnActivation()
-        {
-            config.Set(new ThirdPersonCameraConfig() { offset = Vector3.one * 3 });
-            var dummyTransform = new GameObject("_dummyTransform").transform;
-
-            var cameraSetup = new ThirdPersonCameraSetup(dummyTransform, config);
-            cameraSetup.Activate();
-
-            Assert.AreEqual(config.Get().offset, dummyTransform.position);
-        }
-
-        [Test]
-        public void ReactToChangesInConfig()
-        {
-            config.Set(new ThirdPersonCameraConfig() { offset = Vector3.one * 3 });
-            var dummyTransform = new GameObject("_dummyTransform").transform;
-            var cameraSetup = new ThirdPersonCameraSetup(dummyTransform, config);
-            cameraSetup.Activate();
-
-            config.Set(new ThirdPersonCameraConfig() { offset = Vector3.one * 6 });
-
-            Assert.AreEqual(config.Get().offset, dummyTransform.position);
+            Assert.AreEqual(currentVcam.State.FinalOrientation * Vector3.forward, CommonScriptableObjects.cameraForward.Get());
         }
     }
 }

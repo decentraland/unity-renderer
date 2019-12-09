@@ -16,6 +16,7 @@ namespace DCL
 
         public Model model = new Model();
         Transform entityTransform;
+        public Vector3Variable cameraPosition => CommonScriptableObjects.cameraPosition;
 
         public override IEnumerator ApplyChanges(string newJson)
         {
@@ -48,7 +49,7 @@ namespace DCL
 
         Vector3 GetLookAtVector()
         {
-            Vector3 lookAtDir = (entityTransform.position - DCLCharacterController.i.cameraTransform.position);
+            Vector3 lookAtDir = (entityTransform.position - cameraPosition);
 
             // Note (Zak): This check is here to avoid normalizing twice if not needed
             if (!(model.x && model.y && model.z))
