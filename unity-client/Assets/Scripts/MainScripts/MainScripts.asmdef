@@ -17,8 +17,8 @@
         "ScriptableObjects",
         "WaitForSecondsCache",
         "ContentProvider",
-        "LoadersController",
-        "AvatarAssets"
+        "AvatarAssets",
+        "InputController"
     ],
     "optionalUnityReferences": [],
     "includePlatforms": [],

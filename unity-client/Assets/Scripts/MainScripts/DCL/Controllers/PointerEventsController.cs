@@ -25,9 +25,9 @@ namespace DCL
         {
             this.isTesting = isTesting;
 
-            InputController.i.AddListener(WebInterface.ACTION_BUTTON.POINTER, OnButtonEvent);
-            InputController.i.AddListener(WebInterface.ACTION_BUTTON.PRIMARY, OnButtonEvent);
-            InputController.i.AddListener(WebInterface.ACTION_BUTTON.SECONDARY, OnButtonEvent);
+            InputController_Legacy.i.AddListener(WebInterface.ACTION_BUTTON.POINTER, OnButtonEvent);
+            InputController_Legacy.i.AddListener(WebInterface.ACTION_BUTTON.PRIMARY, OnButtonEvent);
+            InputController_Legacy.i.AddListener(WebInterface.ACTION_BUTTON.SECONDARY, OnButtonEvent);
 
             RetrieveCameraFromCharacter();
         }
@@ -50,7 +50,7 @@ namespace DCL
             return charCamera.ScreenPointToRay(new Vector3(Screen.width / 2, Screen.height / 2, 0));
         }
 
-        void OnButtonEvent(WebInterface.ACTION_BUTTON buttonId, InputController.EVENT evt, bool useRaycast)
+        void OnButtonEvent(WebInterface.ACTION_BUTTON buttonId, InputController_Legacy.EVENT evt, bool useRaycast)
         {
             if (Cursor.lockState != CursorLockMode.None && !renderingIsDisabled || this.isTesting)
             {
@@ -65,7 +65,7 @@ namespace DCL
                 var pointerEventLayer = layerMaskTarget & (~characterControllerLayer); //Ensure characterController is being filtered
                 var globalLayer = ~layerMaskTarget & (~characterControllerLayer); //Ensure characterController is being filtered
 
-                if (evt == InputController.EVENT.BUTTON_DOWN)
+                if (evt == InputController_Legacy.EVENT.BUTTON_DOWN)
                 {
                     Ray ray;
 
@@ -107,7 +107,7 @@ namespace DCL
                         DCL.Interface.WebInterface.ReportGlobalPointerDownEvent(buttonId, raycastInfo.ray, Vector3.zero, Vector3.zero, 0, sceneId);
                     }
                 }
-                else if (evt == InputController.EVENT.BUTTON_UP)
+                else if (evt == InputController_Legacy.EVENT.BUTTON_UP)
                 {
                     Ray ray;
                     ray = GetRayFromCamera();

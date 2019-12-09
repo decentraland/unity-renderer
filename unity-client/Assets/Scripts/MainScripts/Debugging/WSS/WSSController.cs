@@ -99,6 +99,7 @@ namespace DCL
         WebSocketServer ws;
         public SceneController sceneController;
         public DCLCharacterController characterController;
+        public CameraController cameraController;
 
         [System.NonSerialized]
         public static Queue<DCLWebSocketService.Message> queuedMessages = new Queue<DCLWebSocketService.Message>();
@@ -252,6 +253,9 @@ namespace DCL
                                 break;
                             case "Teleport":
                                 characterController.Teleport(msg.payload);
+                                break;
+                            case "SetRotation":
+                                cameraController.SetRotation(msg.payload);
                                 break;
                             case "Reset":
                                 sceneController.UnloadAllScenesQueued();

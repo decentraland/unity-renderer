@@ -6,36 +6,26 @@ public class PlayerAvatarController : MonoBehaviour
 {
     public AvatarRenderer avatarRenderer;
     private UserProfile userProfile => UserProfile.GetOwnUserProfile();
-    [SerializeField] CameraStateSO cameraState;
 
     private void Awake()
     {
         userProfile.OnUpdate += OnUserProfileOnUpdate;
-        OnCameraStateOnChange(cameraState, cameraState);
-        cameraState.OnChange += OnCameraStateOnChange;
     }
 
-    private void OnCameraStateOnChange(CameraController.CameraState current, CameraController.CameraState previous)
+    private void OnTriggerEnter(Collider other)
     {
-        switch (current)
-        {
-            case CameraController.CameraState.ThirdPerson:
-                avatarRenderer.SetVisibility(true);
-                break;
-            case CameraController.CameraState.FirstPerson:
-            default:
-                avatarRenderer.SetVisibility(false);
-                break;
-        }
+        if(other.CompareTag("MainCamera"))
+            avatarRenderer.SetVisibility(false);
+    }
+
+    private void OnTriggerExit(Collider other)
+    {
+        if(other.CompareTag("MainCamera"))
+            avatarRenderer.SetVisibility(true);
     }
 
     private void OnUserProfileOnUpdate(UserProfile profile)
     {
-        OverrideModel(profile.avatar, null);
-    }
-
-    public void OverrideModel(AvatarModel model, Action onReady)
-    {
-        avatarRenderer.ApplyModel(model, onReady, null);
+        avatarRenderer.ApplyModel(profile.avatar, null, null);
     }
 }

@@ -1,91 +1,156 @@
-﻿using System.Collections.Generic;
-using System.Runtime.CompilerServices;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using Cinemachine;
+using DCL.Helpers;
 using UnityEngine;
 
-[assembly: InternalsVisibleTo("CameraTests")]
 public class CameraController : MonoBehaviour
 {
-    public enum CameraState
+    public enum CameraMode
     {
         FirstPerson,
-        ThirdPerson
+        ThirdPerson,
+    }
+
+    [Serializable]
+    public struct CameraStateToVirtualCamera
+    {
+        public CameraMode cameraMode;
+        public CinemachineVirtualCameraBase virtualCamera;
     }
 
     [SerializeField] internal Transform cameraTransform;
-    [SerializeField] internal CameraStateSO currentState;
-    [SerializeField] internal FirstPersonCameraConfigSO firstPersonConfig;
-    [SerializeField] internal ThirdPersonCameraConfigSO thirdPersonConfig;
 
-    internal BaseVariable<CameraState>.Change cameraStateChangedDelegate;
-    internal Dictionary<CameraState, CameraSetup> cameraSetups;
-    internal CameraSetup currentSetup;
+    [Header("Virtual Cameras")]
+    [SerializeField] internal CameraStateToVirtualCamera[] cameraModes;
+    [SerializeField] internal CinemachineVirtualCameraBase freeLookCamera;
+
+    [Header("InputActions")]
+    [SerializeField] internal InputAction_Trigger cameraChangeAction;
+    [SerializeField] internal InputAction_Hold freeCameraModeAction;
+
+    internal Dictionary<CameraMode, CinemachineVirtualCameraBase> cachedModeToVirtualCamera;
+
+    private Vector3NullableVariable characterForward => CommonScriptableObjects.characterForward;
+    private Vector3Variable cameraForward => CommonScriptableObjects.cameraForward;
+    private Vector3Variable cameraPosition => CommonScriptableObjects.cameraPosition;
+    private Vector3Variable playerUnityToWorldOffset => CommonScriptableObjects.playerUnityToWorldOffset;
+
+    internal InputAction_Hold.Started freeCameraModeStartedDelegate;
+    internal InputAction_Hold.Finished freeCameraModeFinishedDelegate;
+
+    internal CameraMode currentMode = CameraMode.FirstPerson;
 
     private void Awake()
     {
-        InitializeStates();
-        cameraStateChangedDelegate = (newState, oldState) => { SetState(newState); };
+        cachedModeToVirtualCamera =  cameraModes.ToDictionary(x => x.cameraMode, x => x.virtualCamera);
+        using (var iterator = cachedModeToVirtualCamera.GetEnumerator())
+        {
+            while (iterator.MoveNext())
+            {
+                iterator.Current.Value.gameObject.SetActive(false);
+            }
+        }
 
-        SetState(currentState);
-        currentState.OnChange += cameraStateChangedDelegate;
+        freeCameraModeStartedDelegate = (action) => SetFreeCameraModeActive(true);
+        freeCameraModeFinishedDelegate = (action) => SetFreeCameraModeActive(false);
+        freeCameraModeAction.OnStarted += freeCameraModeStartedDelegate;
+        freeCameraModeAction.OnFinished += freeCameraModeFinishedDelegate;
+        cameraChangeAction.OnTriggered += OnCameraChangeAction;
+        playerUnityToWorldOffset.OnChange += PrecisionChanged;
+
+        SetFreeCameraModeActive(false);
+        SetCameraMode(currentMode);
+    }
+
+    private void OnCameraChangeAction(DCLAction_Trigger action)
+    {
+        if (currentMode == CameraMode.FirstPerson)
+            SetCameraMode(CameraMode.ThirdPerson);
+        else
+            SetCameraMode(CameraMode.FirstPerson);
+    }
+
+    internal void SetCameraMode(CameraMode newMode)
+    {
+        cachedModeToVirtualCamera[currentMode].gameObject.SetActive(false);
+        currentMode = newMode;
+        cachedModeToVirtualCamera[currentMode].gameObject.SetActive(true);
+    }
+
+    private void SetFreeCameraModeActive(bool active)
+    {
+        //FreeLookCamera has higher priority, so we dont have to enable/disable the other cameras.
+        freeLookCamera.gameObject.SetActive(active);
+    }
+
+    private void PrecisionChanged(Vector3 newValue, Vector3 oldValue)
+    {
+        transform.position += newValue - oldValue;
+    }
+
+    private void Update()
+    {
+        cameraForward.Set(cameraTransform.forward);
+        cameraPosition.Set(cameraTransform.position);
+
+        if (CinemachineCore.Instance.IsLive(freeLookCamera))
+        {
+            characterForward.Set(null);
+        }
+        else
+        {
+            var xzPlaneForward = Vector3.Scale(cameraTransform.forward, new Vector3(1, 0, 1));
+            switch (currentMode)
+            {
+                case CameraMode.FirstPerson:
+                    characterForward.Set(xzPlaneForward);
+                    break;
+                case CameraMode.ThirdPerson:
+                    if (!characterForward.HasValue())
+                        characterForward.Set(xzPlaneForward);
+                    var lerpedForward = Vector3.Slerp(characterForward.Get().Value, xzPlaneForward, 5 * Time.deltaTime);
+                    characterForward.Set(lerpedForward);
+                    break;
+            }
+        }
+    }
+
+    public void SetRotation(string setRotationPayload)
+    {
+        var payload = Utils.FromJsonWithNulls<SetRotationPayload>(setRotationPayload);
+        var eulerDir = Vector3.zero;
+        if (payload.cameraTarget.HasValue)
+        {
+            var newPos = new Vector3(payload.x, payload.y, payload.z);
+            var cameraTarget = payload.cameraTarget.GetValueOrDefault();
+            var dirToLook = (cameraTarget - newPos);
+            eulerDir = Quaternion.LookRotation(dirToLook).eulerAngles;
+        }
+
+        if (cachedModeToVirtualCamera[currentMode] is CinemachineVirtualCamera vcamera)
+        {
+            var pov = vcamera.GetCinemachineComponent<CinemachinePOV>();
+            pov.m_HorizontalAxis.Value = eulerDir.y;
+            pov.m_VerticalAxis.Value = eulerDir.x;
+        }
     }
 
     private void OnDestroy()
     {
-        currentState.OnChange -= cameraStateChangedDelegate;
+        CommonScriptableObjects.playerUnityToWorldOffset.OnChange -= PrecisionChanged;
+        freeCameraModeAction.OnStarted -= freeCameraModeStartedDelegate;
+        freeCameraModeAction.OnFinished -= freeCameraModeFinishedDelegate;
+        cameraChangeAction.OnTriggered -= OnCameraChangeAction;
     }
 
-    private void InitializeStates()
-    {
-        cameraSetups = new Dictionary<CameraState, CameraSetup>()
-        {
-            { CameraState.FirstPerson, CameraSetupFactory.CreateCameraSetup(CameraState.FirstPerson, cameraTransform, firstPersonConfig) },
-            { CameraState.ThirdPerson, CameraSetupFactory.CreateCameraSetup(CameraState.ThirdPerson, cameraTransform, thirdPersonConfig) },
-        };
-    }
 
-    private void SetState(CameraState newState)
+    public class SetRotationPayload
     {
-        if (cameraSetups.ContainsKey(newState))
-        {
-            SetState(cameraSetups[newState]);
-        }
-    }
-
-    private void SetState(CameraSetup newSetup)
-    {
-        currentSetup?.Deactivate();
-        currentSetup = newSetup;
-        currentSetup?.Activate();
-    }
-
-    //This will likely be moved to the InputController or an equivalent class. It's simple enough to leave it for the PoC 
-    private void Update()
-    {
-        if (Input.GetKeyDown(KeyCode.V))
-        {
-            if (currentState == CameraState.FirstPerson)
-                currentState.Set(CameraState.ThirdPerson);
-            else
-                currentState.Set(CameraState.FirstPerson);
-        }
-    }
-}
-
-public static class CameraSetupFactory
-{
-    public static CameraSetup CreateCameraSetup<T>(CameraController.CameraState cameraState, Transform cameraTransform, T config)
-    {
-        switch (cameraState)
-        {
-            case CameraController.CameraState.FirstPerson:
-                if (config is BaseVariable<FirstPersonCameraConfig> firstPersonConfig)
-                    return new FirstPersonCameraSetup(cameraTransform, firstPersonConfig);
-                break;
-            case CameraController.CameraState.ThirdPerson:
-                if (config is BaseVariable<ThirdPersonCameraConfig> thirdPersonConfig)
-                    return new ThirdPersonCameraSetup(cameraTransform, thirdPersonConfig);
-                break;
-        }
-        return null;
+        public float x;
+        public float y;
+        public float z;
+        public Vector3? cameraTarget;
     }
 }

@@ -20,6 +20,15 @@ public static class CommonScriptableObjects
     private static FloatVariable minimapZoomValue;
     public static FloatVariable minimapZoom => GetOrLoad(ref minimapZoomValue, "ScriptableObjects/MinimapZoom");
 
+    private static Vector3NullableVariable characterForwardValue;
+    public static Vector3NullableVariable characterForward => GetOrLoad(ref characterForwardValue , "ScriptableObjects/CharacterForward");
+
+    private static Vector3Variable cameraForwardValue;
+    public static Vector3Variable cameraForward => GetOrLoad(ref cameraForwardValue , "ScriptableObjects/CameraForward");
+
+    private static Vector3Variable cameraPositionValue;
+    public static Vector3Variable cameraPosition => GetOrLoad(ref cameraPositionValue , "ScriptableObjects/CameraPosition");
+
     private static T GetOrLoad<T>(ref T variable, string path) where T : Object
     {
         if (variable == null)

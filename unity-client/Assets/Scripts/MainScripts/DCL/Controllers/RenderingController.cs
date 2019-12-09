@@ -26,7 +26,7 @@ public class RenderingController : MonoBehaviour
         DCL.Configuration.ParcelSettings.VISUAL_LOADING_ENABLED = false;
         MessagingBus.renderingIsDisabled = true;
         PointerEventsController.renderingIsDisabled = true;
-        InputController.renderingIsDisabled = true;
+        InputController_Legacy.renderingIsDisabled = true;
         GLTFSceneImporter.renderingIsDisabled = true;
 
         AssetPromiseKeeper_GLTF.i.useBlockedPromisesQueue = false;
@@ -51,7 +51,7 @@ public class RenderingController : MonoBehaviour
         MessagingBus.renderingIsDisabled = false;
         GLTFSceneImporter.renderingIsDisabled = false;
         PointerEventsController.renderingIsDisabled = false;
-        InputController.renderingIsDisabled = false;
+        InputController_Legacy.renderingIsDisabled = false;
         DCLCharacterController.i.SetEnabled(true);
 
         AssetPromise_AB.limitTimeBudget = true;

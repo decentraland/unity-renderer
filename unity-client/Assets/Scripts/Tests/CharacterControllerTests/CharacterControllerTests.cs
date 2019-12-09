@@ -1,11 +1,8 @@
 ﻿using DCL.Helpers;
-using DCL.Models;
 using DCL.Components;
 using DCL.Configuration;
 using Newtonsoft.Json;
 using System.Collections;
-using System.Reflection;
-using System.Linq;
 using UnityEngine;
 using UnityEngine.Assertions;
 using UnityEngine.TestTools;
@@ -162,7 +159,7 @@ namespace Tests
             DCLCharacterController.i.gravity = 0f;
 
             var newEulerAngle = 10f;
-            DCLCharacterController.i.GetType().GetField("aimingHorizontalDeltaAngle", BindingFlags.NonPublic | BindingFlags.Instance).SetValue(DCLCharacterController.i, newEulerAngle);
+            CommonScriptableObjects.characterForward.Set(Quaternion.Euler(new Vector3(0, newEulerAngle, 0)) * Vector3.forward);
             Cursor.lockState = CursorLockMode.Locked;
             yield return new WaitForSeconds(0.1f);
 
