@@ -1,11 +1,15 @@
 ﻿using UnityEngine;
 using DCL.Controllers;
 using DCL.Models;
+using Builder.Gizmos;
 
 namespace Builder
 {
     public class DCLBuilderCamera : MonoBehaviour
     {
+
+        public static System.Action<Camera, float> OnCameraZoomChanged;
+
         [Header("References")]
         public Transform pitchPivot;
         public Transform yawPivot;
@@ -27,8 +31,8 @@ namespace Builder
         [Header("Zoom")]
         public float zoomMin = 1f;
         public float zoomMax = 60f;
-        public float zoomSpeed = 5f;
-        public float zoomAmount = 0.5f;
+        public float zoomSpeed = 15f;
+        public float zoomAmount = 5f;
 
         private float pitchCurrent = 0;
         private float pitchTarget = 0;
@@ -60,17 +64,25 @@ namespace Builder
         private void OnDestroy()
         {
             DCLBuilderBridge.OnPreviewModeChanged -= OnPreviewModeChanged;
-
         }
 
         private void Update()
         {
             yawCurrent += (yawTarget - yawCurrent) * Time.deltaTime * rotationSpeed;
+            if (Mathf.Abs(yawTarget - yawCurrent) < 0.04f)
+            {
+                yawCurrent = yawTarget;
+            }
             yawPivot.localRotation = Quaternion.Euler(0, yawCurrent, 0);
 
             pitchCurrent += (pitchTarget - pitchCurrent) * Time.deltaTime * rotationSpeed;
+            if (Mathf.Abs(pitchTarget - pitchCurrent) < 0.04f)
+            {
+                pitchCurrent = pitchTarget;
+            }
             pitchPivot.localRotation = Quaternion.Euler(pitchCurrent, 0, 0);
 
+            float zoomPrev = zoomCurrent;
             zoomCurrent += (zoomTarget - zoomCurrent) * Time.deltaTime * zoomSpeed;
             builderCamera.transform.localPosition = new Vector3(0, 0, zoomCurrent);
 
@@ -80,6 +92,10 @@ namespace Builder
             {
                 panCurrent = panCurrent + panOffset.normalized * sqDist * panSpeed * Time.deltaTime;
                 rootPivot.localPosition = panCurrent;
+            }
+            if (zoomPrev != zoomCurrent)
+            {
+                OnCameraZoomChanged?.Invoke(builderCamera, zoomCurrent);
             }
         }
 
@@ -96,8 +112,8 @@ namespace Builder
                 DCLBuilderBridge.OnResetCameraZoom += OnResetCameraZoom;
                 DCLBuilderObjectSelector.OnDraggingObjectStart += OnDragObjectStart;
                 DCLBuilderObjectSelector.OnDraggingObjectEnd += OnDragObjectEnd;
-                DCLBuilderObjectSelector.OnGizmoTransformObjectStart += OnGizmoTransformObjectStart;
-                DCLBuilderObjectSelector.OnGizmoTransformObjectEnd += OnGizmoTransformObjectEnd;
+                DCLBuilderGizmoManager.OnGizmoTransformObjectStart += OnGizmoTransformObjectStart;
+                DCLBuilderGizmoManager.OnGizmoTransformObjectEnd += OnGizmoTransformObjectEnd;
             }
             isGameObjectActive = true;
         }
@@ -114,8 +130,8 @@ namespace Builder
             DCLBuilderBridge.OnResetCameraZoom -= OnResetCameraZoom;
             DCLBuilderObjectSelector.OnDraggingObjectStart -= OnDragObjectStart;
             DCLBuilderObjectSelector.OnDraggingObjectEnd -= OnDragObjectEnd;
-            DCLBuilderObjectSelector.OnGizmoTransformObjectStart -= OnGizmoTransformObjectStart;
-            DCLBuilderObjectSelector.OnGizmoTransformObjectEnd -= OnGizmoTransformObjectEnd;
+            DCLBuilderGizmoManager.OnGizmoTransformObjectStart -= OnGizmoTransformObjectStart;
+            DCLBuilderGizmoManager.OnGizmoTransformObjectEnd -= OnGizmoTransformObjectEnd;
         }
 
         private void OnMouseDrag(int buttonId, Vector3 mousePosition, float axisX, float axisY)
@@ -217,6 +233,7 @@ namespace Builder
         {
             zoomCurrent = zoomTarget = zoomDefault;
             builderCamera.transform.position.Set(0, 0, zoomCurrent);
+            OnCameraZoomChanged?.Invoke(builderCamera, zoomCurrent);
         }
 
         private bool CanOrbit()
