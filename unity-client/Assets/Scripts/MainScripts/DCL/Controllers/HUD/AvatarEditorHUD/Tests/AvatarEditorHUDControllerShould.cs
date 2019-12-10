@@ -46,10 +46,12 @@ namespace AvatarEditorHUD_Tests
             controller = new AvatarEditorHUDController_Mock(userProfile, catalog);
         }
 
-        [TearDown]
-        public void TearDown()
+        [UnityTearDown]
+        public override IEnumerator TearDown()
         {
             controller.CleanUp();
+            
+            return base.TearDown();
         }
 
         [Test]

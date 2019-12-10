@@ -2,7 +2,8 @@
     "name": "TextShapeTests",
     "references": [
         "MainScripts",
-        "Unity.TextMeshPro"
+        "Unity.TextMeshPro",
+        "TestHelpers"
     ],
     "optionalUnityReferences": [
         "TestAssemblies"
@@ -13,5 +14,6 @@
     "overrideReferences": false,
     "precompiledReferences": [],
     "autoReferenced": true,
-    "defineConstraints": []
+    "defineConstraints": [],
+    "versionDefines": []
 }

@@ -2,7 +2,8 @@
     "name": "TexturesTests",
     "references": [
         "MainScripts",
-        "Utils"
+        "Utils",
+        "TestHelpers"
     ],
     "optionalUnityReferences": [
         "TestAssemblies"

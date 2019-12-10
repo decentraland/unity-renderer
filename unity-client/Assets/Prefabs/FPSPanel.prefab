@@ -106,7 +106,6 @@ GameObject:
   - component: {fileID: 8901170218733160826}
   - component: {fileID: 891051229449626258}
   - component: {fileID: 665022852451238150}
-  - component: {fileID: 7873276452880716638}
   - component: {fileID: 1592760362493093889}
   m_Layer: 0
   m_Name: FPSPanel
@@ -173,25 +172,6 @@ MonoBehaviour:
   m_FillClockwise: 1
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
---- !u!114 &7873276452880716638
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 7216045483097485647}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 814c1e10249f04e7196bcd668deaee9a, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  stats:
-  - 0
-  - 0
-  - 0
-  - 0
-  - 0
-  - 0
 --- !u!114 &1592760362493093889
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -204,14 +184,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e375249fd9cc6f540ba8cd92e248972d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  labels:
-  - {fileID: 1019484676433035784}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  fpsCounter: {fileID: 7873276452880716638}
+  label: {fileID: 0}
 --- !u!1 &7640780781284765754
 GameObject:
   m_ObjectHideFlags: 0

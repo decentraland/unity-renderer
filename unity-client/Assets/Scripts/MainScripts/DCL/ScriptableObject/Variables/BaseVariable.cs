@@ -4,22 +4,22 @@ using UnityEngine;
 
 public abstract class BaseVariable : ScriptableObject
 {
-    #if UNITY_EDITOR
+#if UNITY_EDITOR
     protected abstract void RaiseOnChange();
 
     [UnityEditor.CustomEditor(typeof(BaseVariable), true)]
-    public class BaseVariableEditor : UnityEditor.Editor 
+    public class BaseVariableEditor : UnityEditor.Editor
     {
         public override void OnInspectorGUI()
         {
             DrawDefaultInspector();
             if (Application.isPlaying && GUILayout.Button("Raise OnChange"))
             {
-                ((BaseVariable)target).RaiseOnChange();    
+                ((BaseVariable)target).RaiseOnChange();
             }
         }
     }
-    #endif
+#endif
 }
 
 public class BaseVariable<T> : BaseVariable, IEquatable<T>
@@ -68,7 +68,7 @@ public class BaseVariable<T> : BaseVariable, IEquatable<T>
     private void CleanUp()
     {
         Application.quitting -= CleanUp;
-        if(UnityEditor.AssetDatabase.Contains(this)) //It could happen that the base variable has been created in runtime
+        if (UnityEditor.AssetDatabase.Contains(this)) //It could happen that the base variable has been created in runtime
             Resources.UnloadAsset(this);
     }
 #endif

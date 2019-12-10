@@ -85,17 +85,13 @@ public class VisualTestController : MonoBehaviour
         Color color = new Color(1, 0.7f, 0.7f);
 
         // Update material attached to 2 entities, adding albedoColor
-        scene.SharedComponentUpdate(materialID, JsonUtility.ToJson(new DCL.Models.SharedComponentUpdateMessage
+        scene.SharedComponentUpdate(materialID, JsonUtility.ToJson(new DCL.Components.PBRMaterial.Model
         {
-            id = materialID,
-            json = JsonUtility.ToJson(new DCL.Components.PBRMaterial.Model
-            {
-                albedoTexture = textureUrl,
-                metallic = 1,
-                roughness = 1,
-                alphaTexture = textureUrl,
-                albedoColor = color
-            })
+            albedoTexture = textureUrl,
+            metallic = 1,
+            roughness = 1,
+            alphaTexture = textureUrl,
+            albedoColor = color
         }));
 
         TestHelpers.InstantiateEntityWithShape(scene, "5", DCL.Models.CLASS_ID.BOX_SHAPE, new Vector3(-6, 1, 6));

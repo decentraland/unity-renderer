@@ -1,7 +1,8 @@
 {
     "name": "BaseVariableTests",
     "references": [
-        "GUID:4720e174f2805c74bb7aa94cc8bb5bf8"
+        "GUID:4720e174f2805c74bb7aa94cc8bb5bf8",
+        "GUID:ef84d7ce90ba34f07be26ace428e9bc8"
     ],
     "optionalUnityReferences": [
         "TestAssemblies"

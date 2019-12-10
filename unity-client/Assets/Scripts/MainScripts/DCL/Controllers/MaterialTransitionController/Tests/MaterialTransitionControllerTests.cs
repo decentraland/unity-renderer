@@ -13,33 +13,12 @@ namespace Tests
 {
     public class MaterialTransitionControllerTests : TestsBase
     {
-        ParcelScene scene;
-        SceneController sceneController;
-
-        IEnumerator InitScene()
-        {
-            yield return TestHelpers.UnloadAllUnityScenes();
-
-            sceneController = TestHelpers.InitializeSceneController();
-            var scenesToLoad = (Resources.Load("TestJSON/SceneLoadingTest") as TextAsset).text;
-
-            yield return new WaitForSeconds(.1f);
-
-            sceneController.UnloadAllScenes();
-
-            yield return new WaitForSeconds(.1f);
-
-            sceneController.LoadParcelScenes(scenesToLoad);
-
-            yield return new WaitForAllMessagesProcessed();
-
-            scene = sceneController.loadedScenes["0,0"];
-        }
-
         [UnityTest]
         public IEnumerator MaterialTransitionWithGLTF()
         {
             yield return InitScene();
+            DCL.Configuration.Environment.DEBUG = true;
+            sceneController.SetDebug();
 
             var entity1 = TestHelpers.CreateSceneEntity(scene);
 
@@ -50,10 +29,6 @@ namespace Tests
             Assert.IsTrue(hologramShader != null, "Hologram shader == null??");
 
             DecentralandEntity entity = null;
-
-            // Character controller is needed due to using of mainCamera in GLTFComponent.TestDistance
-            var characterController = (GameObject.Instantiate(Resources.Load("Prefabs/CharacterController") as GameObject)).GetComponent<DCLCharacterController>();
-            characterController.gravity = 0f;
 
             GLTFShape shape = TestHelpers.InstantiateEntityWithShape<GLTFShape, GLTFShape.Model>
             (scene,
@@ -109,7 +84,9 @@ namespace Tests
         [UnityTest]
         public IEnumerator MaterialTransitionWithParametrizableMeshes()
         {
-            yield return InitScene();
+            yield return InitScene(reloadUnityScene: false);
+            DCL.Configuration.Environment.DEBUG = true;
+            sceneController.SetDebug();
 
             var entity1 = TestHelpers.CreateSceneEntity(scene);
 

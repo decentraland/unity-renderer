@@ -3,7 +3,8 @@
     "references": [
         "MainScripts",
         "UnityGLTFAssembly",
-        "Utils"
+        "Utils",
+        "TestHelpers"
     ],
     "optionalUnityReferences": [
         "TestAssemblies"

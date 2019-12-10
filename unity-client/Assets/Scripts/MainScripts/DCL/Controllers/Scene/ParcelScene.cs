@@ -871,6 +871,11 @@ namespace DCL.Controllers
             {
                 newComponent.id = sharedComponentCreatedMessage.id;
                 disposableComponents.Add(sharedComponentCreatedMessage.id, newComponent);
+
+                if (state != State.READY)
+                {
+                    disposableNotReady.Add(id);
+                }
             }
 
             return newComponent;
@@ -1086,9 +1091,8 @@ namespace DCL.Controllers
 
             state = State.WAITING_FOR_COMPONENTS;
             RefreshName();
-            disposableNotReady.Clear();
 
-            if (disposableComponents.Count > 0)
+            if (disposableNotReadyCount > 0)
             {
                 //NOTE(Brian): Here, we have to split the iterations. If not, we will get repeated calls of
                 //             SetSceneReady(), as the disposableNotReady count is 1 and gets to 0
@@ -1098,17 +1102,8 @@ namespace DCL.Controllers
                 {
                     while (iterator.MoveNext())
                     {
-                        disposableNotReady.Add(iterator.Current.Key);
+                        disposableComponents[iterator.Current.Value.id].CallWhenReady(OnDisposableReady);
                     }
-                }
-
-                var listCopy = new List<string>(disposableNotReady);
-
-                int listCopyCount = listCopy.Count;
-
-                for (int i = 0; i < listCopyCount; i++)
-                {
-                    disposableComponents[listCopy[i]].CallWhenReady(OnDisposableReady);
                 }
             }
             else

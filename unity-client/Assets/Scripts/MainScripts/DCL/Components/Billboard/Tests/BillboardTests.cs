@@ -35,12 +35,14 @@ namespace Tests
         {
             yield return InitScene();
 
+            DCLCharacterController.i.PauseGravity();
+
             yield return CreateComponent(x: true, y: true, z: true);
 
             Transform entityTransform = scene.entities[entityId].gameObject.transform;
             Vector3 lookAt = GetLookAtVector(billboard.model, entityTransform);
 
-            Assert.IsTrue(entityTransform.forward == lookAt, "Wrong model data! y should be true.");
+            Assert.IsTrue(entityTransform.forward == lookAt, "billboard entity forward vector should be the same as the calculated one");
 
             var billboardModel = new Billboard.Model()
             {
@@ -51,8 +53,8 @@ namespace Tests
 
             yield return TestHelpers.EntityComponentUpdate<Billboard, Billboard.Model>(billboard, billboardModel);
 
-            lookAt = GetLookAtVector(billboard.model, entityTransform);
-            Assert.IsTrue(entityTransform.forward == lookAt, "Wrong model data! y should be true.");
+            lookAt = GetLookAtVector(billboardModel, entityTransform);
+            Assert.IsTrue(entityTransform.forward == lookAt, "billboard entity forward vector should be the same as the calculated one");
 
             billboardModel = new Billboard.Model()
             {
@@ -63,8 +65,8 @@ namespace Tests
 
             yield return TestHelpers.EntityComponentUpdate<Billboard, Billboard.Model>(billboard, billboardModel);
 
-            lookAt = GetLookAtVector(billboard.model, entityTransform);
-            Assert.IsTrue(entityTransform.forward == lookAt, "Wrong model data! y should be true.");
+            lookAt = GetLookAtVector(billboardModel, entityTransform);
+            Assert.IsTrue(entityTransform.forward == lookAt, "billboard entity forward vector should be the same as the calculated one");
 
             yield return null;
         }
@@ -100,6 +102,8 @@ namespace Tests
             {
                 lookAtDir.Normalize();
 
+                // Note (Zak): Model x,y,z are axis that we want to enable/disable
+                // while lookAtDir x,y,z are the components of the look-at vector
                 if (!model.x || model.z)
                     lookAtDir.y = entityTransform.forward.y;
                 if (!model.y)
@@ -108,7 +112,5 @@ namespace Tests
 
             return lookAtDir.normalized;
         }
-
-
     }
 }

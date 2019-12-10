@@ -2,6 +2,7 @@
 using DCL.Controllers;
 using DCL.Interface;
 using DCL.Models;
+using DCL;
 using Google.Protobuf;
 using Newtonsoft.Json;
 using System;
@@ -28,162 +29,6 @@ namespace DCL.Helpers
     {
     }
 
-    public class VisualTestsBase : TestsBase
-    {
-        protected override IEnumerator InitScene(bool usesWebServer = false, bool spawnCharController = true, bool spawnTestScene = true, bool spawnUIScene = true, bool debugMode = false)
-        {
-            yield return InitUnityScene("MainVisualTest");
-
-            if (debugMode)
-                SceneController.i.SetDebug();
-
-            sceneController = TestHelpers.InitializeSceneController(usesWebServer);
-
-            AssetPromiseKeeper_GLTF.i.Cleanup();
-
-            yield return null;
-
-            if (spawnTestScene)
-            {
-                scene = sceneController.CreateTestScene();
-                yield return null;
-            }
-
-            if (spawnCharController)
-            {
-                if (DCLCharacterController.i == null)
-                {
-                    GameObject.Instantiate(Resources.Load("Prefabs/CharacterController"));
-                }
-            }
-        }
-    }
-
-    public class TestsBase
-    {
-        protected SceneController sceneController;
-        protected ParcelScene scene;
-
-        protected IEnumerator InitUnityScene(string sceneName = null)
-        {
-            yield return TestHelpers.UnloadAllUnityScenes();
-
-            Scene? newScene;
-
-            if (string.IsNullOrEmpty(sceneName))
-            {
-                newScene = SceneManager.CreateScene(TestHelpers.testingSceneName + (TestHelpers.testSceneIteration++));
-                if (newScene.HasValue)
-                {
-                    SceneManager.SetActiveScene(newScene.Value);
-                }
-            }
-            else
-            {
-                yield return SceneManager.LoadSceneAsync(sceneName);
-                SceneManager.SetActiveScene(SceneManager.GetSceneByName(sceneName));
-            }
-        }
-
-        protected virtual IEnumerator InitScene(bool usesWebServer = false, bool spawnCharController = true, bool spawnTestScene = true, bool spawnUIScene = true, bool debugMode = false)
-        {
-            yield return InitUnityScene("MainTest");
-
-            if (debugMode)
-                SceneController.i.SetDebug();
-
-            yield return MemoryManager.i.CleanupPoolsIfNeeded(true);
-
-            sceneController = TestHelpers.InitializeSceneController(usesWebServer);
-
-            yield return new WaitForSeconds(0.01f);
-
-            if (spawnTestScene)
-            {
-                scene = sceneController.CreateTestScene();
-
-                yield return new WaitForSeconds(0.01f);
-            }
-
-            if (spawnCharController)
-            {
-                if (DCLCharacterController.i == null)
-                {
-                    GameObject.Instantiate(Resources.Load("Prefabs/CharacterController"));
-                }
-
-                yield return new WaitForSeconds(0.01f);
-            }
-
-
-            if (spawnUIScene)
-            {
-                string globalSceneId = "global-scene";
-
-                sceneController.CreateUIScene(
-                    JsonConvert.SerializeObject(
-                        new CreateUISceneMessage
-                        {
-                            id = globalSceneId,
-                            baseUrl = "",
-                        })
-                );
-            }
-
-            DCL.PointerEventsController.i.Initialize(isTesting: true);
-
-            yield return new WaitForAllMessagesProcessed();
-        }
-
-        protected IEnumerator WaitForUICanvasUpdate()
-        {
-            yield break;
-        }
-
-        protected Vector2 CalculateAlignedAnchoredPosition(Rect parentRect, Rect elementRect, string vAlign = "center", string hAlign = "center")
-        {
-            Vector2 result = Vector2.zero;
-
-            switch (vAlign)
-            {
-                case "top":
-                    result.y = -elementRect.height / 2;
-                    break;
-                case "bottom":
-                    result.y = -(parentRect.height - elementRect.height / 2);
-                    break;
-                default: // center
-                    result.y = -parentRect.height / 2;
-                    break;
-            }
-
-            switch (hAlign)
-            {
-                case "left":
-                    result.x = elementRect.width / 2;
-                    break;
-                case "right":
-                    result.x = (parentRect.width - elementRect.width / 2);
-                    break;
-                default: // center
-                    result.x = parentRect.width / 2;
-                    break;
-            }
-
-            return result;
-        }
-
-        public static T Reflection_GetStaticField<T>(Type baseType, string fieldName)
-        {
-            return (T)baseType.GetField(fieldName, BindingFlags.NonPublic | BindingFlags.Static).GetValue(null);
-        }
-
-        public static T Reflection_GetField<T>(object instance, string fieldName)
-        {
-            return (T)instance.GetType().GetField(fieldName, BindingFlags.NonPublic | BindingFlags.Instance).GetValue(instance);
-        }
-    }
-
     public static class TestHelpers
     {
         public static int testSceneIteration;
@@ -196,28 +41,6 @@ namespace DCL.Helpers
 
         static int entityCounter = 123;
         static int disposableIdCounter = 123;
-
-        public static DecentralandEntity CreateSceneEntity(ParcelScene scene)
-        {
-            entityCounter++;
-            string id = $"{entityCounter}";
-            return scene.CreateEntity(id);
-        }
-
-        public static void CreateSceneEntity(ParcelScene scene, string id)
-        {
-            scene.CreateEntity(id);
-        }
-
-        public static void RemoveSceneEntity(ParcelScene scene, string id)
-        {
-            scene.RemoveEntity(id);
-        }
-
-        public static void RemoveSceneEntity(ParcelScene scene, DecentralandEntity entity)
-        {
-            scene.RemoveEntity(entity.entityId);
-        }
 
         public static PB_Transform GetPBTransform(Vector3 position, Quaternion rotation, Vector3 scale)
         {
@@ -243,6 +66,28 @@ namespace DCL.Helpers
             DCLTransform.Model transfModel = JsonUtility.FromJson<DCLTransform.Model>(json);
             PB_Transform pbTranf = GetPBTransform(transfModel.position, transfModel.rotation, transfModel.scale);
             return pbTranf;
+        }
+
+        public static DecentralandEntity CreateSceneEntity(ParcelScene scene)
+        {
+            entityCounter++;
+            string id = $"{entityCounter}";
+            return scene.CreateEntity(id);
+        }
+
+        public static DecentralandEntity CreateSceneEntity(ParcelScene scene, string id)
+        {
+            return scene.CreateEntity(id);
+        }
+
+        public static void RemoveSceneEntity(ParcelScene scene, string id)
+        {
+            scene.RemoveEntity(id);
+        }
+
+        public static void RemoveSceneEntity(ParcelScene scene, DecentralandEntity entity)
+        {
+            scene.RemoveEntity(entity.entityId);
         }
 
         public static T EntityComponentCreate<T, K>(ParcelScene scene, DecentralandEntity entity, K model,
@@ -294,18 +139,12 @@ namespace DCL.Helpers
 
         public static void SetEntityParent(ParcelScene scene, DecentralandEntity child, DecentralandEntity parent)
         {
-            scene.SetEntityParent(
-                child.entityId,
-                parent.entityId
-            );
+            scene.SetEntityParent(child.entityId, parent.entityId);
         }
 
         public static void SetEntityParent(ParcelScene scene, string childEntityId, string parentEntityId)
         {
-            scene.SetEntityParent(
-                childEntityId,
-                parentEntityId
-            );
+            scene.SetEntityParent(childEntityId, parentEntityId);
         }
 
         public static DCLTexture CreateDCLTexture(ParcelScene scene,
@@ -335,18 +174,14 @@ namespace DCL.Helpers
                 model = new K();
             }
 
-            component.scene.SharedComponentUpdate(component.id, JsonUtility.ToJson(new DCL.Models.SharedComponentUpdateMessage
-            {
-                id = component.id,
-                json = JsonUtility.ToJson(model)
-            }));
+            component.scene.SharedComponentUpdate(component.id, JsonUtility.ToJson(model));
 
             return component.routine;
         }
 
         public static T SharedComponentCreate<T, K>(ParcelScene scene, CLASS_ID id, K model = null)
-            where T : BaseDisposable
-            where K : class, new()
+    where T : BaseDisposable
+    where K : class, new()
         {
             if (model == null)
             {
@@ -357,11 +192,7 @@ namespace DCL.Helpers
 
             string uniqueId = GetComponentUniqueId(scene, "material", (int)id, "-shared-" + disposableIdCounter);
 
-            T result = scene.SharedComponentCreate(
-                uniqueId,
-                "material",
-                (int)id
-            ) as T;
+            T result = scene.SharedComponentCreate(uniqueId, "material", (int)id) as T;
 
             Assert.IsNotNull(result, "class-id mismatch!");
 
@@ -447,20 +278,6 @@ namespace DCL.Helpers
             entity = CreateSceneEntity(scene);
             GLTFShape gltfShape = AttachGLTFShape(entity, scene, position, model);
             return gltfShape;
-        }
-
-        public static BoxShape CreateEntityWithBoxShape(ParcelScene scene, Vector3 pos, Vector3 scale, out DecentralandEntity entity)
-        {
-            BoxShape shape = TestHelpers.InstantiateEntityWithShape<BoxShape, BoxShape.Model>(
-                scene,
-                DCL.Models.CLASS_ID.BOX_SHAPE,
-                Vector3.zero,
-                out entity,
-                new BoxShape.Model() { });
-
-            TestHelpers.SetEntityTransform(scene, entity, pos, Quaternion.identity, scale);
-
-            return shape;
         }
 
         public static BoxShape CreateEntityWithBoxShape(ParcelScene scene, Vector3 position,
@@ -625,11 +442,9 @@ namespace DCL.Helpers
                 (int)DCL.Models.CLASS_ID.BASIC_MATERIAL
             );
 
-            scene.SharedComponentUpdate(materialComponentID, JsonUtility.ToJson(new DCL.Models.SharedComponentUpdateMessage
-            {
-                id = materialComponentID,
-                json = JsonUtility.ToJson(basicMaterial)
-            }));
+            scene.SharedComponentUpdate(
+                materialComponentID,
+                JsonUtility.ToJson(basicMaterial));
 
             scene.SharedComponentAttach(
                 entityId,
@@ -637,7 +452,6 @@ namespace DCL.Helpers
                 "material"
             );
         }
-
 
         public static void InstantiateEntityWithMaterial(ParcelScene scene, string entityId, Vector3 position,
             PBRMaterial.Model pbrMaterial, string materialComponentID = "a-material")
@@ -650,11 +464,9 @@ namespace DCL.Helpers
                 (int)DCL.Models.CLASS_ID.PBR_MATERIAL
             );
 
-            scene.SharedComponentUpdate(materialComponentID, JsonUtility.ToJson(new DCL.Models.SharedComponentUpdateMessage
-            {
-                id = materialComponentID,
-                json = JsonUtility.ToJson(pbrMaterial)
-            }));
+            scene.SharedComponentUpdate(
+                materialComponentID,
+                JsonUtility.ToJson(pbrMaterial));
 
             scene.SharedComponentAttach(
                 entityId,
@@ -686,11 +498,9 @@ namespace DCL.Helpers
                 (int)classId
             );
 
-            scene.SharedComponentUpdate(componentId, JsonUtility.ToJson(new DCL.Models.SharedComponentUpdateMessage
-            {
-                id = componentId,
-                json = model
-            }));
+            scene.SharedComponentUpdate(
+                componentId,
+                model);
 
             scene.SharedComponentAttach(
                 entityId,
@@ -703,12 +513,7 @@ namespace DCL.Helpers
 
         public static void UpdateShape(ParcelScene scene, string componentId, string model)
         {
-            scene.SharedComponentUpdate(componentId,
-                JsonUtility.ToJson(new DCL.Models.SharedComponentUpdateMessage
-                {
-                    id = componentId,
-                    json = model
-                }));
+            scene.SharedComponentUpdate(componentId, model);
         }
 
         static object GetRandomValueForType(Type t)
@@ -888,11 +693,7 @@ namespace DCL.Helpers
 
             yield return SharedComponentUpdate(component, generatedModel);
 
-            scene.SharedComponentUpdate(component.id, JsonUtility.ToJson(new DCL.Models.SharedComponentUpdateMessage
-            {
-                id = component.id,
-                json = "{}"
-            }));
+            yield return TestHelpers.SharedComponentUpdate(component, new TModel());
 
             yield return component.routine;
 
@@ -956,7 +757,6 @@ namespace DCL.Helpers
             {
                 Assert.IsTrue(renderers[i].enabled);
             }
-
             yield return TestShapeOnPointerEventCollider(entity);
 
             // update visibility with 'false'
@@ -968,7 +768,6 @@ namespace DCL.Helpers
             {
                 Assert.IsFalse(renderers[i].enabled);
             }
-
             yield return TestShapeOnPointerEventCollider(entity);
 
             // update visibility with 'true'
@@ -980,7 +779,6 @@ namespace DCL.Helpers
             {
                 Assert.IsTrue(renderers[i].enabled);
             }
-
             yield return TestShapeOnPointerEventCollider(entity);
         }
 
@@ -1063,7 +861,6 @@ namespace DCL.Helpers
 
             yield return null;
         }
-
 
         public static IEnumerator TestUIClickEventPropagation(string sceneId, string eventUuid, RectTransform uiObject, System.Action<bool> callback)
         {
@@ -1182,7 +979,7 @@ namespace DCL.Helpers
                 callback(eventTriggered);
         }
 
-        // Simulates a mouse click by throwing a ray over a given object and checks 
+        // Simulates a mouse click by throwing a ray over a given object and checks
         // if that object is the first one that the ray pass through
         public static bool TestUIClick(Canvas canvas, RectTransform rectT)
         {
@@ -1200,10 +997,6 @@ namespace DCL.Helpers
 
             List<RaycastResult> results = new List<RaycastResult>();
             EventSystem.current.RaycastAll(pointerEventData, results);
-
-            // Check that there's at least one result
-            if (results == null)
-                return false;
 
             // Check that there's at least one result
             if (results.Count == 0)
@@ -1229,7 +1022,6 @@ namespace DCL.Helpers
         public static SceneController InitializeSceneController(bool usesWebServer = false)
         {
             var sceneController = UnityEngine.Object.FindObjectOfType<SceneController>();
-            sceneController.deferredMessagesDecoding = false;
 
             if (sceneController != null && sceneController.componentFactory == null)
             {
@@ -1306,13 +1098,14 @@ namespace DCL.Helpers
             {
                 OnIterationStart?.Invoke();
 
-                if (!string.IsNullOrEmpty(lastMessageFromEnginePayload))
+                if (!string.IsNullOrEmpty(lastMessageFromEnginePayload) && lastMessageFromEngineType == targetMessageType)
                 {
                     var messageObject = JsonUtility.FromJson<T>(lastMessageFromEnginePayload);
 
                     if (OnSuccess != null)
                         return OnSuccess.Invoke(messageObject);
                 }
+
                 return false;
             }, 2f);
         }

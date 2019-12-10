@@ -3,7 +3,8 @@
     "references": [
         "WebSocketSharp",
         "MainScripts",
-        "WSSController"
+        "WSSController",
+        "TestHelpers"
     ],
     "optionalUnityReferences": [
         "TestAssemblies"

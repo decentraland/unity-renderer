@@ -6,7 +6,8 @@
         "Configuration",
         "Utils",
         "ScriptableObjects",
-        "DCLTransform"
+        "DCLTransform",
+        "TestHelpers"
     ],
     "optionalUnityReferences": [
         "TestAssemblies"
