@@ -29,19 +29,14 @@ namespace DCL
             InputController_Legacy.i.AddListener(WebInterface.ACTION_BUTTON.PRIMARY, OnButtonEvent);
             InputController_Legacy.i.AddListener(WebInterface.ACTION_BUTTON.SECONDARY, OnButtonEvent);
 
-            RetrieveCameraFromCharacter();
+            RetrieveCamera();
         }
 
-        private void RetrieveCameraFromCharacter()
+        private void RetrieveCamera()
         {
             if (charCamera == null)
             {
-                if (DCLCharacterController.i == null)
-                {
-                    return;
-                }
-
-                charCamera = DCLCharacterController.i.GetComponentInChildren<Camera>();
+                charCamera = Camera.main;
             }
         }
 
@@ -56,7 +51,7 @@ namespace DCL
             {
                 if (charCamera == null)
                 {
-                    RetrieveCameraFromCharacter();
+                    RetrieveCamera();
 
                     if (charCamera == null)
                         return;
