@@ -49,7 +49,7 @@ namespace DCL
 
         Vector3 GetLookAtVector()
         {
-            Vector3 lookAtDir = (entityTransform.position - cameraPosition);
+            Vector3 lookAtDir = (cameraPosition - entityTransform.position);
 
             // Note (Zak): This check is here to avoid normalizing twice if not needed
             if (!(model.x && model.y && model.z))

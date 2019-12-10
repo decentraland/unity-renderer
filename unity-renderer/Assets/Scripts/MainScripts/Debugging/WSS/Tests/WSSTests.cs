@@ -9,6 +9,7 @@ using WebSocketSharp;
 
 namespace Tests
 {
+    [Explicit]
     public class WSSTests : TestsBase
     {
         // TODO: Find a way to run this test on Unity Cloud Build, even though it passes locally, it fails on timeout in Unity Cloud Build

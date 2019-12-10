@@ -5,7 +5,8 @@
         "Configuration",
         "AvatarShape",
         "Utils",
-        "AvatarModel"
+        "AvatarModel",
+        "TestHelpers"
     ],
     "optionalUnityReferences": [
         "TestAssemblies"

@@ -117,22 +117,18 @@ namespace Tests
             ColorUtility.TryParseHtmlString("#42f4aa", out color2);
             ColorUtility.TryParseHtmlString("#601121", out color3);
 
-            scene.SharedComponentUpdate(materialID, JsonUtility.ToJson(new DCL.Models.SharedComponentUpdateMessage
+            scene.SharedComponentUpdate(materialID, JsonUtility.ToJson(new DCL.Components.PBRMaterial.Model
             {
-                id = materialID,
-                json = JsonUtility.ToJson(new DCL.Components.PBRMaterial.Model
-                {
-                    albedoTexture = texture.id,
-                    albedoColor = color1,
-                    emissiveColor = color2,
-                    emissiveIntensity = 1,
-                    reflectivityColor = color3,
-                    metallic = 0.37f,
-                    roughness = 0.9f,
-                    microSurface = 0.4f,
-                    specularIntensity = 2f,
-                    transparencyMode = 2,
-                })
+                albedoTexture = texture.id,
+                albedoColor = color1,
+                emissiveColor = color2,
+                emissiveIntensity = 1,
+                reflectivityColor = color3,
+                metallic = 0.37f,
+                roughness = 0.9f,
+                microSurface = 0.4f,
+                specularIntensity = 2f,
+                transparencyMode = 2,
             }));
 
             yield return materialComponent.routine;
@@ -276,13 +272,9 @@ namespace Tests
             Assert.AreApproximatelyEqual(0.66f, secondRenderer.sharedMaterial.GetFloat("_Metallic"));
 
             // Update material properties
-            scene.SharedComponentUpdate(firstMaterialID, JsonUtility.ToJson(new DCL.Models.SharedComponentUpdateMessage
+            scene.SharedComponentUpdate(firstMaterialID, JsonUtility.ToJson(new DCL.Components.PBRMaterial.Model
             {
-                id = firstMaterialID,
-                json = JsonUtility.ToJson(new DCL.Components.PBRMaterial.Model
-                {
-                    metallic = 0.95f
-                })
+                metallic = 0.95f
             }));
 
             yield return (scene.disposableComponents[firstMaterialID] as DCL.Components.PBRMaterial).routine;
@@ -333,7 +325,6 @@ namespace Tests
         {
             yield return InitScene();
 
-
             string firstEntityId = "1";
             string secondEntityId = "2";
             string materialID = "a-material";
@@ -374,10 +365,7 @@ namespace Tests
             }
 
             // Dispose material
-            scene.SharedComponentDispose(JsonUtility.ToJson(new DCL.Models.SharedComponentDisposeMessage
-            {
-                id = materialID
-            }));
+            scene.SharedComponentDispose(materialID);
 
             // Check if material detached correctly
             Assert.IsTrue(firstMeshRenderer.sharedMaterial == null, "MeshRenderer must exist");
@@ -478,7 +466,7 @@ namespace Tests
             Assert.IsFalse(scene.disposableComponents.ContainsKey(materialID));
 
             // Instantiate entity with default PBR Material
-            TestHelpers.InstantiateEntityWithMaterial(scene, entityId, Vector3.zero,
+            TestHelpers.InstantiateEntityWithMaterial(scene, entityId, new Vector3(8, 1, 8),
                 new DCL.Components.BasicMaterial.Model(), materialID);
 
             var meshObject = scene.entities[entityId].meshRootGameObject;
@@ -515,14 +503,10 @@ namespace Tests
                 FilterMode.Bilinear);
 
             // Update material
-            scene.SharedComponentUpdate(materialID, JsonUtility.ToJson(new DCL.Models.SharedComponentUpdateMessage
+            scene.SharedComponentUpdate(materialID, JsonUtility.ToJson(new DCL.Components.BasicMaterial.Model
             {
-                id = materialID,
-                json = JsonUtility.ToJson(new DCL.Components.BasicMaterial.Model
-                {
-                    texture = dclTexture.id,
-                    alphaTest = 0.5f,
-                })
+                texture = dclTexture.id,
+                alphaTest = 0.5f,
             }));
 
             yield return materialComponent.routine;
@@ -558,11 +542,7 @@ namespace Tests
 
             // 3. Update component with missing values
 
-            scene.SharedComponentUpdate(basicMaterialComponent.id, JsonUtility.ToJson(new DCL.Models.SharedComponentUpdateMessage
-            {
-                id = basicMaterialComponent.id,
-                json = JsonUtility.ToJson(new BasicMaterial.Model { })
-            }));
+            scene.SharedComponentUpdate(basicMaterialComponent.id, JsonUtility.ToJson(new BasicMaterial.Model { }));
 
             yield return basicMaterialComponent.routine;
 
@@ -608,11 +588,7 @@ namespace Tests
             Assert.AreEqual(3f, PBRMaterialComponent.model.specularIntensity);
 
             // 3. Update component with missing values
-            scene.SharedComponentUpdate(PBRMaterialComponent.id, JsonUtility.ToJson(new DCL.Models.SharedComponentUpdateMessage
-            {
-                id = PBRMaterialComponent.id,
-                json = JsonUtility.ToJson(new PBRMaterial.Model { })
-            }));
+            scene.SharedComponentUpdate(PBRMaterialComponent.id, JsonUtility.ToJson(new PBRMaterial.Model { }));
 
             yield return PBRMaterialComponent.routine;
 

@@ -6,7 +6,9 @@ using NUnit.Framework;
 using System.Collections;
 using UnityEngine;
 using UnityEngine.TestTools;
-public class LoadableShape_Tests : TestsBase
+using UnityGLTF;
+
+public class LoadableShapesMiscTests : TestsBase
 {
     [UnityTest]
     public IEnumerator OBJShapeUpdate()
@@ -42,8 +44,6 @@ public class LoadableShape_Tests : TestsBase
             "Since the shape has already been updated, the child renderer found shouldn't have the 'AssetLoading' placeholder material");
     }
 
-
-
     [UnityTest]
     public IEnumerator PreExistentShapeUpdate()
     {
@@ -56,13 +56,15 @@ public class LoadableShape_Tests : TestsBase
         Assert.IsTrue(entity.meshRootGameObject == null, "meshGameObject should be null");
 
         // Set its shape as a BOX
-        TestHelpers.CreateAndSetShape(scene, entityId, CLASS_ID.BOX_SHAPE, "{}");
+        var componentId = TestHelpers.CreateAndSetShape(scene, entityId, CLASS_ID.BOX_SHAPE, "{}");
+        yield return scene.GetSharedComponent(componentId).routine;
 
         var meshName = entity.meshRootGameObject.GetComponent<MeshFilter>().mesh.name;
         Assert.AreEqual("DCL Box Instance", meshName);
 
         // Update its shape to a cylinder
         TestHelpers.CreateAndSetShape(scene, entityId, CLASS_ID.CYLINDER_SHAPE, "{}");
+        yield return scene.GetSharedComponent(componentId).routine;
 
         Assert.IsTrue(entity.meshRootGameObject != null, "meshGameObject should not be null");
 
@@ -96,7 +98,8 @@ public class LoadableShape_Tests : TestsBase
             "'GLTFScene' child object with 'InstantiatedGLTF' component should exist if the GLTF was loaded correctly");
 
         // Update its shape to a sphere
-        TestHelpers.CreateAndSetShape(scene, entityId, CLASS_ID.CYLINDER_SHAPE, "{}");
+        TestHelpers.CreateAndSetShape(scene, entityId, CLASS_ID.SPHERE_SHAPE, "{}");
+        yield return scene.GetSharedComponent(componentId).routine;
 
         yield return null;
 
@@ -104,13 +107,10 @@ public class LoadableShape_Tests : TestsBase
 
         meshName = entity.meshRootGameObject.GetComponent<MeshFilter>().mesh.name;
 
-        Assert.AreEqual("DCL Cylinder Instance", meshName);
+        Assert.AreEqual("DCL Sphere Instance", meshName);
+
         Assert.IsTrue(
             scene.entities[entityId].gameObject.GetComponentInChildren<UnityGLTF.InstantiatedGLTFObject>() == null,
             "'GLTFScene' child object with 'InstantiatedGLTF' component shouldn't exist after the shape is updated to a non-GLTF shape");
     }
-
-
-
-
 }

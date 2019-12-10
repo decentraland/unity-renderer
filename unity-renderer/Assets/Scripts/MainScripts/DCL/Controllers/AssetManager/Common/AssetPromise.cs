@@ -12,11 +12,11 @@ namespace DCL
     }
 
     /// <summary>
-    /// AssetPromise is in charge of handling all the logic related to loading the specified AssetType. 
+    /// AssetPromise is in charge of handling all the logic related to loading the specified AssetType.
     /// It also should return the cached asset if applicable.
-    /// 
+    ///
     /// If we need settings related to how the asset should be loaded/handled, we add them here.
-    /// 
+    ///
     /// If we need many ways of loading the same Asset type, we can create different AssetPromise
     /// subclasses to do so. This can be useful to attach the GLTFSceneImporter loading logic for
     /// materials/textures to system.
@@ -166,8 +166,14 @@ namespace DCL
             }
         }
 
-        protected void Cleanup()
+        public void Cleanup()
         {
+            if (state == AssetPromiseState.LOADING)
+            {
+                OnCancelLoading();
+                ClearEvents();
+            }
+
             state = AssetPromiseState.IDLE_AND_EMPTY;
 
             if (asset != null)

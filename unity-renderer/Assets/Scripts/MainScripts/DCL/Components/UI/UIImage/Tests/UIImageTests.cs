@@ -242,10 +242,8 @@ namespace Tests
 
             // --------------------------------------------------------------------------------------
             // We need to cast a ray to check clicked objects
-            Canvas canvas = screenSpaceShape.canvas;
-
-            Assert.IsTrue(TestHelpers.TestUIClick(canvas, uiImage.referencesContainer.childHookRectTransform));
-            Assert.IsFalse(TestHelpers.TestUIClick(canvas, uiImage2.referencesContainer.childHookRectTransform));
+            Assert.IsFalse(TestHelpers.TestUIClick(screenSpaceShape.canvas, uiImage2.referencesContainer.childHookRectTransform));
+            Assert.IsTrue(TestHelpers.TestUIClick(screenSpaceShape.canvas, uiImage.referencesContainer.childHookRectTransform));
         }
 
         [UnityTest]

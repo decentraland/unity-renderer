@@ -17,20 +17,94 @@ namespace Tests
     public class SceneTests : TestsBase
     {
         [UnityTest]
+        public IEnumerator CreateUIScene()
+        {
+            yield return InitScene(reloadUnityScene: false);
+
+            // Position character inside parcel (0,0)
+            TestHelpers.SetCharacterPosition(Vector3.zero);
+
+            string sceneGameObjectNamePrefix = "UI Scene - ";
+            string sceneId = "Test UI Scene";
+            sceneController.CreateUIScene(JsonUtility.ToJson(new CreateUISceneMessage() { id = sceneId }));
+
+            GameObject sceneGo = GameObject.Find(sceneGameObjectNamePrefix + sceneId);
+
+            GlobalScene scene = sceneController.loadedScenes[sceneId] as GlobalScene;
+
+            Assert.IsTrue(scene != null, "Scene isn't a GlobalScene?");
+            Assert.IsTrue(sceneGo != null, "scene game object not found!");
+            Assert.IsTrue(sceneController.loadedScenes[sceneId] != null, "Scene not in loaded dictionary!");
+            Assert.IsTrue(sceneController.loadedScenes[sceneId].unloadWithDistance == false,
+                "Scene will unload when far!");
+
+            Assert.IsTrue(scene.IsInsideSceneBoundaries(new Vector2Int(1000, 1000)),
+                "IsInsideSceneBoundaries() should always return true.");
+            Assert.IsTrue(scene.IsInsideSceneBoundaries(new Vector2Int(-1000, -1000)),
+                "IsInsideSceneBoundaries() should always return true.");
+
+            yield return null;
+
+            // Position character inside parcel (0,0)
+            TestHelpers.SetCharacterPosition(new Vector3(100f, 0f, 100f));
+
+            yield return null;
+
+            sceneGo = GameObject.Find(sceneGameObjectNamePrefix + sceneId);
+
+            Assert.IsTrue(sceneGo != null, "scene game object not found! UIScenes must not be unloaded by distance!");
+            Assert.IsTrue(sceneController.loadedScenes[sceneId] != null,
+                "Scene not in loaded dictionary when far! UIScenes must not be unloaded by distance!");
+
+            TestHelpers.ForceUnloadAllScenes(sceneController);
+            yield return null;
+        }
+
+        [UnityTearDown]
+        public override IEnumerator TearDown()
+        {
+            return null;
+        }
+
+        [UnityTest]
+        public IEnumerator ParcelScene_TrackDisposables_AfterInitDone()
+        {
+            yield return InitScene(reloadUnityScene: false);
+            TestHelpers.CreateEntityWithBoxShape(scene, Vector3.zero, true);
+            TestHelpers.CreateEntityWithBoxShape(scene, Vector3.zero, true);
+            TestHelpers.CreateEntityWithBoxShape(scene, Vector3.zero, true);
+
+            scene.SetInitMessagesDone();
+
+            Assert.AreEqual(0, scene.disposableNotReadyCount);
+        }
+
+        [UnityTest]
+        public IEnumerator ParcelScene_TrackDisposables_Empty()
+        {
+            yield return InitScene(reloadUnityScene: false);
+
+            Assert.AreEqual(0, scene.disposableNotReadyCount);
+        }
+
+        [UnityTest]
         public IEnumerator PerformanceLimitControllerTests()
         {
-            yield return InitScene();
+            yield return InitScene(reloadUnityScene: false);
             DCL.Configuration.Environment.DEBUG = true;
 
             sceneController.SetDebug();
-            yield return new WaitForSeconds(0.1f);
+            yield return null;
 
             var scenesToLoad = (Resources.Load("TestJSON/SceneLoadingTest") as TextAsset).text;
             sceneController.LoadParcelScenes(scenesToLoad);
 
             yield return new WaitForAllMessagesProcessed();
 
-            var scene = sceneController.loadedScenes["0,0"];
+            string loadedSceneID = "0,0";
+            Assert.IsTrue(sceneController.loadedScenes.ContainsKey(loadedSceneID));
+
+            var scene = sceneController.loadedScenes[loadedSceneID];
 
             var coneShape = TestHelpers.SharedComponentCreate<ConeShape, ConeShape.Model>(scene, DCL.Models.CLASS_ID.CONE_SHAPE, new ConeShape.Model()
             {
@@ -124,25 +198,19 @@ namespace Tests
             Assert.AreEqual(textures, inputModel.textures, "Incorrect textures count");
         }
 
-        public IEnumerator InitializeSceneControllerAndRemoveCharacterController()
-        {
-            sceneController = TestHelpers.InitializeSceneController();
-
-            if (DCLCharacterController.i != null)
-            {
-                Object.Destroy(DCLCharacterController.i.gameObject);
-            }
-
-            yield return null;
-        }
-
         [UnityTest]
         public IEnumerator SceneLoading()
         {
-            yield return InitializeSceneControllerAndRemoveCharacterController();
+            yield return InitScene(spawnUIScene: false, reloadUnityScene: false);
+            DCL.Configuration.Environment.DEBUG = true;
+            sceneController.SetDebug();
+
+            sceneController.UnloadAllScenes();
+            yield return null;
+
+            Assert.AreEqual(0, sceneController.loadedScenes.Count);
 
             sceneController.LoadParcelScenes((Resources.Load("TestJSON/SceneLoadingTest") as TextAsset).text);
-
             yield return new WaitForAllMessagesProcessed();
 
             string loadedSceneID = "0,0";
@@ -161,7 +229,8 @@ namespace Tests
             yield return InitScene(usesWebServer: false,
                                    spawnCharController: true,
                                    spawnTestScene: false,
-                                   spawnUIScene: false);
+                                   spawnUIScene: false,
+                                   reloadUnityScene: false);
 
             sceneController.LoadParcelScenes((Resources.Load("TestJSON/SceneLoadingTest") as TextAsset).text);
 
@@ -180,14 +249,16 @@ namespace Tests
             sceneController.UnloadScene(loadedSceneID);
 
             yield return new WaitForAllMessagesProcessed();
-
-            yield return null;
+            yield return new WaitForSeconds(3f);
 
             Assert.IsTrue(sceneController.loadedScenes.ContainsKey(loadedSceneID) == false);
 
             Assert.IsTrue(sceneRootGameObject == null, "Scene root gameobject reference is not getting destroyed.");
 
-            Assert.AreEqual(sceneEntities.Count, 0, "Every entity should be removed");
+            foreach (var entity in sceneEntities)
+            {
+                Assert.IsFalse(entity.Value.gameObject.activeInHierarchy, "Every entity should be disabled after returning to the pool");
+            }
 
             TestHelpers.ForceUnloadAllScenes(sceneController);
 
@@ -197,7 +268,7 @@ namespace Tests
         [UnityTest]
         public IEnumerator SeveralParcelsFromJSON()
         {
-            yield return InitUnityScene("MainTest");
+            yield return InitScene(reloadUnityScene: false);
 
             sceneController = TestHelpers.InitializeSceneController();
 
@@ -224,8 +295,6 @@ namespace Tests
                 referenceCheck.Add(kvp.Value);
             }
 
-            ;
-
             Assert.AreEqual(11, sceneController.loadedScenes.Count);
 
             foreach (var jsonScene in jsonScenes)
@@ -240,8 +309,6 @@ namespace Tests
                 Assert.IsTrue(sceneController.loadedScenes.ContainsValue(reference), "References must be the same");
             }
 
-            ;
-
             TestHelpers.ForceUnloadAllScenes(sceneController);
             yield return null;
         }
@@ -249,50 +316,16 @@ namespace Tests
         [UnityTest]
         public IEnumerator PositionParcels()
         {
-            yield return InitializeSceneControllerAndRemoveCharacterController();
-
-            var jsonMessageToLoad =
-                "{\"id\":\"xxx\",\"basePosition\":{\"x\":0,\"y\":0},\"parcels\":[{\"x\":-1,\"y\":0}, {\"x\":0,\"y\":0}, {\"x\":-1,\"y\":1}],\"baseUrl\":\"http://localhost:9991/local-ipfs/contents/\",\"contents\":[],\"owner\":\"0x0f5d2fb29fb7d3cfee444a200298f468908cc942\"}";
-
+            yield return InitScene(spawnUIScene: false, reloadUnityScene: false);
             DCL.Configuration.Environment.DEBUG = true;
-
-            Assert.AreEqual(sceneController.loadedScenes.Count, 0);
             sceneController.SetDebug();
-            sceneController.LoadParcelScenes(jsonMessageToLoad);
 
-            yield return new WaitForAllMessagesProcessed();
-
-            Assert.AreEqual(sceneController.loadedScenes.Count, 1);
-
-            var theScene = sceneController.loadedScenes["xxx"];
-
-            Assert.AreEqual(theScene.sceneData.parcels.Length, 3);
-            Assert.AreEqual(theScene.transform.childCount, 3);
-
-            Assert.IsTrue(theScene.transform.GetChild(0).localPosition == new Vector3(-ParcelSettings.PARCEL_SIZE / 2,
-                              DCL.Configuration.ParcelSettings.DEBUG_FLOOR_HEIGHT, ParcelSettings.PARCEL_SIZE / 2));
-            Assert.IsTrue(theScene.transform.GetChild(1).localPosition == new Vector3(ParcelSettings.PARCEL_SIZE / 2,
-                              DCL.Configuration.ParcelSettings.DEBUG_FLOOR_HEIGHT, ParcelSettings.PARCEL_SIZE / 2));
-            Assert.IsTrue(theScene.transform.GetChild(2).localPosition == new Vector3(-ParcelSettings.PARCEL_SIZE / 2,
-                              DCL.Configuration.ParcelSettings.DEBUG_FLOOR_HEIGHT,
-                              ParcelSettings.PARCEL_SIZE + ParcelSettings.PARCEL_SIZE / 2));
-
-            TestHelpers.ForceUnloadAllScenes(sceneController);
+            sceneController.UnloadAllScenes();
             yield return null;
-        }
-
-        [UnityTest]
-        public IEnumerator PositionParcels2()
-        {
-            yield return InitializeSceneControllerAndRemoveCharacterController();
-
-            var jsonMessageToLoad =
-                "{\"id\":\"xxx\",\"basePosition\":{\"x\":90,\"y\":90},\"parcels\":[{\"x\":89,\"y\":90}, {\"x\":90,\"y\":90}, {\"x\":89,\"y\":91}],\"baseUrl\":\"http://localhost:9991/local-ipfs/contents/\",\"contents\":[],\"owner\":\"0x0f5d2fb29fb7d3cfee444a200298f468908cc942\"}";
-
-            DCL.Configuration.Environment.DEBUG = true;
 
             Assert.AreEqual(0, sceneController.loadedScenes.Count);
-            sceneController.SetDebug();
+
+            var jsonMessageToLoad = "{\"id\":\"xxx\",\"basePosition\":{\"x\":0,\"y\":0},\"parcels\":[{\"x\":-1,\"y\":0}, {\"x\":0,\"y\":0}, {\"x\":-1,\"y\":1}],\"baseUrl\":\"http://localhost:9991/local-ipfs/contents/\",\"contents\":[],\"owner\":\"0x0f5d2fb29fb7d3cfee444a200298f468908cc942\"}";
             sceneController.LoadParcelScenes(jsonMessageToLoad);
 
             yield return new WaitForAllMessagesProcessed();
@@ -300,6 +333,8 @@ namespace Tests
             Assert.AreEqual(1, sceneController.loadedScenes.Count);
 
             var theScene = sceneController.loadedScenes["xxx"];
+            theScene.CleanBlockers();
+            yield return null;
 
             Assert.AreEqual(3, theScene.sceneData.parcels.Length);
             Assert.AreEqual(3, theScene.transform.childCount);
@@ -316,63 +351,48 @@ namespace Tests
             yield return null;
         }
 
-
         [UnityTest]
-        public IEnumerator CreateUIScene()
+        public IEnumerator PositionParcels2()
         {
-            yield return base.InitScene();
+            yield return InitScene(spawnUIScene: false, reloadUnityScene: false);
+            DCL.Configuration.Environment.DEBUG = true;
+            sceneController.SetDebug();
 
-            // Position character inside parcel (0,0)
-            TestHelpers.SetCharacterPosition(Vector3.zero);
-
-            string sceneId = "Test UI Scene";
-            sceneController.CreateUIScene(JsonUtility.ToJson(new CreateUISceneMessage() { id = sceneId }));
-
-            GameObject sceneGo = GameObject.Find("ui scene:" + sceneId);
-
-            GlobalScene scene = sceneController.loadedScenes[sceneId] as GlobalScene;
-
-            Assert.IsTrue(scene != null, "Scene isn't a GlobalScene?");
-            Assert.IsTrue(sceneGo != null, "scene game object not found!");
-            Assert.IsTrue(sceneController.loadedScenes[sceneId] != null, "Scene not in loaded dictionary!");
-            Assert.IsTrue(sceneController.loadedScenes[sceneId].unloadWithDistance == false,
-                "Scene will unload when far!");
-
-            Assert.IsTrue(scene.IsInsideSceneBoundaries(new Vector2Int(1000, 1000)),
-                "IsInsideSceneBoundaries() should always return true.");
-            Assert.IsTrue(scene.IsInsideSceneBoundaries(new Vector2Int(-1000, -1000)),
-                "IsInsideSceneBoundaries() should always return true.");
-
+            sceneController.UnloadAllScenes();
             yield return null;
 
+            Assert.AreEqual(0, sceneController.loadedScenes.Count);
 
-            // Position character inside parcel (0,0)
-            TestHelpers.SetCharacterPosition(new Vector3(100f, 0f, 100f));
+            var jsonMessageToLoad = "{\"id\":\"xxx\",\"basePosition\":{\"x\":90,\"y\":90},\"parcels\":[{\"x\":89,\"y\":90}, {\"x\":90,\"y\":90}, {\"x\":89,\"y\":91}],\"baseUrl\":\"http://localhost:9991/local-ipfs/contents/\",\"contents\":[],\"owner\":\"0x0f5d2fb29fb7d3cfee444a200298f468908cc942\"}";
+            sceneController.LoadParcelScenes(jsonMessageToLoad);
 
+            yield return new WaitForAllMessagesProcessed();
+
+            Assert.AreEqual(1, sceneController.loadedScenes.Count);
+
+            var theScene = sceneController.loadedScenes["xxx"];
+            theScene.CleanBlockers();
             yield return null;
 
-            sceneGo = GameObject.Find("ui scene:" + sceneId);
+            Assert.AreEqual(3, theScene.sceneData.parcels.Length);
+            Assert.AreEqual(3, theScene.transform.childCount);
 
-            Assert.IsTrue(sceneGo != null, "scene game object not found! UIScenes must not be unloaded by distance!");
-            Assert.IsTrue(sceneController.loadedScenes[sceneId] != null,
-                "Scene not in loaded dictionary when far! UIScenes must not be unloaded by distance!");
+            Assert.IsTrue(theScene.transform.GetChild(0).localPosition == new Vector3(-ParcelSettings.PARCEL_SIZE / 2,
+                              DCL.Configuration.ParcelSettings.DEBUG_FLOOR_HEIGHT, ParcelSettings.PARCEL_SIZE / 2));
+            Assert.IsTrue(theScene.transform.GetChild(1).localPosition == new Vector3(ParcelSettings.PARCEL_SIZE / 2,
+                              DCL.Configuration.ParcelSettings.DEBUG_FLOOR_HEIGHT, ParcelSettings.PARCEL_SIZE / 2));
+            Assert.IsTrue(theScene.transform.GetChild(2).localPosition == new Vector3(-ParcelSettings.PARCEL_SIZE / 2,
+                              DCL.Configuration.ParcelSettings.DEBUG_FLOOR_HEIGHT,
+                              ParcelSettings.PARCEL_SIZE + ParcelSettings.PARCEL_SIZE / 2));
 
             TestHelpers.ForceUnloadAllScenes(sceneController);
             yield return null;
         }
 
         [UnityTest]
-        public IEnumerator ParcelScene_TrackDisposables_Empty()
-        {
-            yield return base.InitScene();
-
-            Assert.AreEqual(0, scene.disposableNotReadyCount);
-        }
-
-        [UnityTest]
         public IEnumerator ParcelScene_TrackDisposables_OneGLTF()
         {
-            yield return base.InitScene();
+            yield return InitScene(reloadUnityScene: false);
             var entity = TestHelpers.CreateSceneEntity(scene);
 
             TestHelpers.AttachGLTFShape(entity, scene, Vector3.zero, new LoadableShape.Model()
@@ -390,7 +410,7 @@ namespace Tests
         [UnityTest]
         public IEnumerator ParcelScene_TrackDisposables_BeforeInitDone()
         {
-            yield return base.InitScene();
+            yield return InitScene(reloadUnityScene: false);
 
             TestHelpers.CreateEntityWithBoxShape(scene, Vector3.zero, true);
             TestHelpers.CreateEntityWithBoxShape(scene, Vector3.zero, true);
@@ -400,22 +420,9 @@ namespace Tests
         }
 
         [UnityTest]
-        public IEnumerator ParcelScene_TrackDisposables_AfterInitDone()
-        {
-            yield return base.InitScene();
-            TestHelpers.CreateEntityWithBoxShape(scene, Vector3.zero, true);
-            TestHelpers.CreateEntityWithBoxShape(scene, Vector3.zero, true);
-            TestHelpers.CreateEntityWithBoxShape(scene, Vector3.zero, true);
-
-            scene.SetInitMessagesDone();
-
-            Assert.AreEqual(0, scene.disposableNotReadyCount);
-        }
-
-        [UnityTest]
         public IEnumerator ParcelScene_TrackDisposables_InstantReadyDisposable()
         {
-            yield return base.InitScene();
+            yield return InitScene(reloadUnityScene: false);
 
             var boxShape = TestHelpers.CreateEntityWithBoxShape(scene, Vector3.zero, true);
             Assert.AreEqual(1, scene.disposableNotReadyCount);

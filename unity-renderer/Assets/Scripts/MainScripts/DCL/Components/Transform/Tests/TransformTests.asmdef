@@ -2,7 +2,8 @@
     "name": "TransformTests",
     "references": [
         "MainScripts",
-        "DCLTransform"
+        "DCLTransform",
+        "TestHelpers"
     ],
     "optionalUnityReferences": [
         "TestAssemblies"

@@ -268,7 +268,7 @@ namespace Tests
         [UnityTest]
         public IEnumerator OnClickComponentInitializesWithGLTFShapeAsynchronously()
         {
-            yield return InitScene();
+            yield return InitScene(reloadUnityScene: false);
 
             string entityId = "1";
             TestHelpers.CreateSceneEntity(scene, entityId);

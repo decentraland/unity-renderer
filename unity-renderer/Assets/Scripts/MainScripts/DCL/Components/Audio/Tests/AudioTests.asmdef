@@ -2,7 +2,8 @@
     "name": "AudioTests",
     "references": [
         "MainScripts",
-        "Utils"
+        "Utils",
+        "TestHelpers"
     ],
     "optionalUnityReferences": [
         "TestAssemblies"

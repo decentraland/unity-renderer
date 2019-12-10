@@ -87,6 +87,11 @@ namespace DCL
         {
             if (messagingControllers.ContainsKey(sceneId))
             {
+                // In case there is any pending message from a scene being unloaded we decrease the count accordingly
+                pendingMessagesCount -= messagingControllers[sceneId].messagingBuses[MessagingBusId.INIT].pendingMessages.Count +
+                                        messagingControllers[sceneId].messagingBuses[MessagingBusId.UI].pendingMessages.Count +
+                                        messagingControllers[sceneId].messagingBuses[MessagingBusId.SYSTEM].pendingMessages.Count;
+
                 DisposeController(messagingControllers[sceneId]);
                 messagingControllers.Remove(sceneId);
             }
@@ -117,7 +122,7 @@ namespace DCL
             // Start processing SYSTEM queue
             if (messagingControllers.ContainsKey(sceneId))
             {
-                // Start processing SYSTEM queue 
+                // Start processing SYSTEM queue
                 MessagingController sceneMessagingController = messagingControllers[sceneId];
                 sceneMessagingController.StartBus(MessagingBusId.SYSTEM);
                 sceneMessagingController.StartBus(MessagingBusId.UI);
@@ -185,15 +190,17 @@ namespace DCL
                     {
                         if (ProcessBus(messagingControllers[currentSceneId], MessagingBusId.INIT, ref prevTimeBudget, out yieldReturn))
                             break;
+
                         if (ProcessBus(messagingControllers[currentSceneId], MessagingBusId.UI, ref prevTimeBudget, out yieldReturn))
                             break;
+
                         if (ProcessBus(messagingControllers[currentSceneId], MessagingBusId.SYSTEM, ref prevTimeBudget, out yieldReturn))
                             break;
                     }
 
                     //-------------------------------------------------------------------------------------------
                     // Rest of the scenes INIT
-                    count = scenesSortedByDistance.Count;   // we need to retrieve list count everytime because it 
+                    count = scenesSortedByDistance.Count;   // we need to retrieve list count everytime because it
                                                             // may change after a yield return
                     bool shouldRestart = false;
                     for (int i = 0; i < count; i++)
@@ -214,7 +221,7 @@ namespace DCL
 
                     //-------------------------------------------------------------------------------------------
                     // Rest of the scenes UI
-                    count = scenesSortedByDistance.Count;   // we need to retrieve list count everytime because it 
+                    count = scenesSortedByDistance.Count;   // we need to retrieve list count everytime because it
                                                             // may change after a yield return
                     for (int i = 0; i < count; i++)
                     {
@@ -242,7 +249,7 @@ namespace DCL
 
                     //-------------------------------------------------------------------------------------------
                     // Rest of the scenes SYSTEM
-                    count = scenesSortedByDistance.Count;   // we need to retrieve list count everytime because it 
+                    count = scenesSortedByDistance.Count;   // we need to retrieve list count everytime because it
                                                             // may change after a yield return
                     for (int i = 0; i < count; i++)
                     {
@@ -291,7 +298,6 @@ namespace DCL
                 {
                     return true;
                 }
-
             }
             else
             {

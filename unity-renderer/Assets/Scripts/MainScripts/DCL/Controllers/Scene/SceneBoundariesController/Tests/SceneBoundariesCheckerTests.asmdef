@@ -4,7 +4,8 @@
         "MainScripts",
         "Configuration",
         "DCLTransform",
-        "Utils"
+        "Utils",
+        "TestHelpers"
     ],
     "optionalUnityReferences": [
         "TestAssemblies"

@@ -67,11 +67,7 @@ namespace Tests
                     (int)DCL.Models.CLASS_ID.AUDIO_CLIP
              ) as DCLAudioClip;
 
-            scene.SharedComponentUpdate(audioClipId, JsonUtility.ToJson(new DCL.Models.SharedComponentUpdateMessage
-            {
-                id = audioClipId,
-                json = JsonUtility.ToJson(model)
-            }));
+            scene.SharedComponentUpdate(audioClipId, JsonUtility.ToJson(model));
 
             yield return audioClip.routine;
 
@@ -154,42 +150,7 @@ namespace Tests
         public IEnumerator AudioComponentMissingValuesGetDefaultedOnUpdate()
         {
             yield return InitScene();
-
-            DecentralandEntity entity = TestHelpers.CreateSceneEntity(scene);
-
-            // 1. Create component with non-default configs
-            DCLAudioSource.Model componentModel = new DCLAudioSource.Model()
-            {
-                audioClipId = "audioClipTest",
-                playing = false,
-                volume = 0.3f,
-                loop = true,
-                pitch = 0.8f
-            };
-
-            DCLAudioSource audioSourceComponent =
-                TestHelpers.EntityComponentCreate<DCLAudioSource, DCLAudioSource.Model>(scene, entity, componentModel);
-
-            // 2. Check configured values
-            Assert.AreEqual(0.3f, audioSourceComponent.model.volume);
-            Assert.AreEqual(0.8f, audioSourceComponent.model.pitch);
-
-            // 3. Update component with missing values
-            componentModel = new DCLAudioSource.Model()
-            {
-                audioClipId = "audioClipTest",
-                playing = false,
-                loop = false
-            };
-
-            scene.EntityComponentUpdate(entity, CLASS_ID_COMPONENT.AUDIO_SOURCE, JsonUtility.ToJson(componentModel));
-
-            // 4. Check changed values
-            Assert.IsFalse(audioSourceComponent.model.loop);
-
-            // 5. Check defaulted values
-            Assert.AreEqual(1f, audioSourceComponent.model.volume);
-            Assert.AreEqual(1f, audioSourceComponent.model.pitch);
+            yield return TestHelpers.TestEntityComponentDefaultsOnUpdate<DCLAudioSource.Model, DCLAudioSource>(scene);
         }
 
         [UnityTest]
@@ -217,11 +178,7 @@ namespace Tests
             // 3. Update component with missing values
             componentModel = new DCLAudioClip.Model { };
 
-            scene.SharedComponentUpdate(audioClip.id, JsonUtility.ToJson(new DCL.Models.SharedComponentUpdateMessage
-            {
-                id = audioClip.id,
-                json = JsonUtility.ToJson(componentModel)
-            }));
+            scene.SharedComponentUpdate(audioClip.id, JsonUtility.ToJson(componentModel));
 
             yield return audioClip.routine;
 

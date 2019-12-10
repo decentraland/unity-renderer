@@ -3,7 +3,8 @@
     "references": [
         "MainScripts",
         "Unity.TextMeshPro",
-        "WebInterface"
+        "WebInterface",
+        "TestHelpers"
     ],
     "optionalUnityReferences": [
         "TestAssemblies"

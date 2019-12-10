@@ -125,12 +125,7 @@ namespace Tests
             Assert.IsTrue(boxShapeComponent.model.withCollisions);
 
             // 3. Update component with missing values
-            componentJSON = JsonUtility.ToJson(new BoxShape.Model { });
-            scene.SharedComponentUpdate(componentId, JsonUtility.ToJson(new DCL.Models.SharedComponentUpdateMessage
-            {
-                id = componentId,
-                json = componentJSON
-            }));
+            scene.SharedComponentUpdate(componentId, JsonUtility.ToJson(new BoxShape.Model { }));
 
             // 4. Check defaulted values
             Assert.IsTrue(boxShapeComponent.model.withCollisions);

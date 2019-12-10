@@ -5,7 +5,8 @@
         "UnityGLTFAssembly",
         "CoroutineHelpers",
         "WebInterface",
-        "Utils"
+        "Utils",
+        "TestHelpers"
     ],
     "optionalUnityReferences": [
         "TestAssemblies"

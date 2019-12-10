@@ -4,7 +4,8 @@
         "MainScripts",
         "UnityGLTFAssembly",
         "DCLTransform",
-        "Utils"
+        "Utils",
+        "TestHelpers"
     ],
     "optionalUnityReferences": [
         "TestAssemblies"

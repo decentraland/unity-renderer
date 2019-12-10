@@ -33,7 +33,7 @@ namespace Tests
             var controller = new MinimapHUDController();
 
             var view = GetViewFromController(controller);
-            Assert.IsEmpty(Reflection_GetField<TextMeshProUGUI>(view, "sceneNameText").text);
+            Assert.AreEqual("Unnamed", Reflection_GetField<TextMeshProUGUI>(view, "sceneNameText").text);
         }
 
         [UnityTest]

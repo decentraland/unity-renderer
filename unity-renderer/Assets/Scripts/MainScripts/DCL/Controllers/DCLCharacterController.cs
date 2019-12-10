@@ -41,6 +41,7 @@ public class DCLCharacterController : MonoBehaviour
     float lastUngroundedTime = 0f;
     float lastJumpButtonPressedTime = 0f;
     float lastMovementReportTime;
+    float originalGravity;
     Vector3 velocity = Vector3.zero;
     Vector2 aimingInput;
     bool isSprinting = false;
@@ -79,9 +80,9 @@ public class DCLCharacterController : MonoBehaviour
         }
 
         i = this;
+        originalGravity = gravity;
 
         SuscribeToInput();
-
         CommonScriptableObjects.playerUnityPosition.Set(Vector3.zero);
         CommonScriptableObjects.playerCoords.Set(Vector2Int.zero);
         CommonScriptableObjects.playerUnityEulerAngles.Set(Vector3.zero);
@@ -107,7 +108,7 @@ public class DCLCharacterController : MonoBehaviour
         jumpFinishedDelegate = (action) => jumpButtonPressed = false;
         jumpAction.OnStarted += jumpStartedDelegate;
         jumpAction.OnFinished += jumpFinishedDelegate;
-        
+
         sprintStartedDelegate = (action) => isSprinting = true;
         sprintFinishedDelegate = (action) => isSprinting = false;
         sprintAction.OnStarted += sprintStartedDelegate;
@@ -406,10 +407,10 @@ public class DCLCharacterController : MonoBehaviour
 
         var reportPosition = characterPosition.worldPosition + (Vector3.up * height);
         var compositeRotation = Quaternion.LookRotation(transform.forward);
-        var playerHeight =  height + (characterController.height / 2);
+        var playerHeight = height + (characterController.height / 2);
 
         //NOTE(Brian): We have to wait for a Teleport before sending the ReportPosition, because if not ReportPosition events will be sent
-        //             When the spawn point is being selected / scenes being prepared to be sent and the Kernel gets crazy. 
+        //             When the spawn point is being selected / scenes being prepared to be sent and the Kernel gets crazy.
 
         //             The race conditions that can arise from not having this flag can result in:
         //                  - Scenes not being sent for loading, making ActivateRenderer never being sent, only in WSS mode.
@@ -418,5 +419,16 @@ public class DCLCharacterController : MonoBehaviour
             DCL.Interface.WebInterface.ReportPosition(reportPosition, compositeRotation, playerHeight);
 
         lastMovementReportTime = DCLTime.realtimeSinceStartup;
+    }
+
+    public void PauseGravity()
+    {
+        gravity = 0f;
+        velocity.y = 0f;
+    }
+
+    public void ResumeGravity()
+    {
+        gravity = originalGravity;
     }
 }

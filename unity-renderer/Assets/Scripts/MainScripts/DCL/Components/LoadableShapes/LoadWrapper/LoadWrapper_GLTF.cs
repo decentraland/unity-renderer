@@ -48,6 +48,8 @@ namespace DCL.Components
 #endif
             Assert.IsFalse(string.IsNullOrEmpty(targetUrl), "url is null!!");
 
+            alreadyLoaded = false;
+
             if (useGltfFallback)
                 LoadAssetBundle(targetUrl, OnSuccess, (x) => LoadGltf(targetUrl, OnSuccess, OnFail));
             else

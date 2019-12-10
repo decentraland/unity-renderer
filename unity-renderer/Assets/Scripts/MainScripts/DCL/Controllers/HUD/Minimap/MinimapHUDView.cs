@@ -20,7 +20,7 @@ public class MinimapHUDView : MonoBehaviour
     [SerializeField] private Button addBookmarkButton;
 
     [SerializeField] private Button reportSceneButton;
-    
+
     [SerializeField] private MinimapZoom minimapZoom;
 
     private MinimapHUDController controller;

@@ -5,10 +5,10 @@ using UnityEngine;
 namespace DCL
 {
     /// <summary>
-    /// The AssetPromiseKeeper is the user entry point interface. 
+    /// The AssetPromiseKeeper is the user entry point interface.
     /// It manages stuff like requesting something that's already being loaded, etc.
-    /// 
-    /// It also handles the special case of a promise that depends on another 
+    ///
+    /// It also handles the special case of a promise that depends on another
     /// to be completed (blocked promise)
     /// </summary>
     /// <typeparam name="AssetType">Asset type to be handled</typeparam>
@@ -280,12 +280,12 @@ namespace DCL
             int waitingPromisesCount = waitingPromises.Count;
             for (int i = 0; i < waitingPromisesCount; i++)
             {
-                waitingPromises[i].Unload();
+                waitingPromises[i].Cleanup();
             }
 
             foreach (var kvp in masterPromiseById)
             {
-                kvp.Value.Unload();
+                kvp.Value.Cleanup();
             }
 
             masterPromiseById.Clear();

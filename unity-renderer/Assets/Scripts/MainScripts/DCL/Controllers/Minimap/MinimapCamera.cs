@@ -25,6 +25,8 @@ public class MinimapCamera : MonoBehaviour
 
     private void Start()
     {
+        SetNormalizedSize(1);
+        OnUnityPositionChange(playerUnityPosition, Vector3.zero);
         playerUnityPosition.OnChange += OnUnityPositionChange;
         playerUnityEulerAngles.OnChange += OnUnityEulerAnglesChange;
     }

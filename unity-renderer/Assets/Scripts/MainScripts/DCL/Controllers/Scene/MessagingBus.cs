@@ -246,7 +246,6 @@ namespace DCL
                                     shouldLogMessage = false;
                                 }
 
-                                Debug.Break();
                                 return true;
                             }
 #endif
