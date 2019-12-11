@@ -14,7 +14,6 @@ namespace SceneBoundariesCheckerTests
     public class SceneBoundariesCheckerTests : TestsBase
     {
         [UnityTest]
-        [Explicit]
         public IEnumerator PShapeIsInvalidatedWhenStartingOutOfBounds()
         {
             yield return InitScene();
@@ -39,7 +38,6 @@ namespace SceneBoundariesCheckerTests
         }
 
         [UnityTest]
-        [Explicit]
         public IEnumerator GLTFShapeIsInvalidatedWhenStartingOutOfBounds()
         {
             yield return InitScene();
@@ -73,7 +71,6 @@ namespace SceneBoundariesCheckerTests
         }
 
         [UnityTest]
-        [Explicit]
         public IEnumerator NFTShapeIsInvalidatedWhenStartingOutOfBounds()
         {
             yield return InitScene();
@@ -111,7 +108,6 @@ namespace SceneBoundariesCheckerTests
         }
 
         [UnityTest]
-        [Explicit]
         public IEnumerator PShapeIsInvalidatedWhenLeavingBounds()
         {
             yield return InitScene();
@@ -144,7 +140,6 @@ namespace SceneBoundariesCheckerTests
         }
 
         [UnityTest]
-        [Explicit]
         public IEnumerator GLTFShapeIsInvalidatedWhenLeavingBounds()
         {
             yield return InitScene();
@@ -183,7 +178,6 @@ namespace SceneBoundariesCheckerTests
         }
 
         [UnityTest]
-        [Explicit]
         public IEnumerator NFTShapeIsInvalidatedWhenLeavingBounds()
         {
             yield return InitScene();
@@ -226,7 +220,6 @@ namespace SceneBoundariesCheckerTests
         }
 
         [UnityTest]
-        [Explicit]
         public IEnumerator PShapeIsResetWhenReenteringBounds()
         {
             yield return InitScene();
@@ -260,7 +253,6 @@ namespace SceneBoundariesCheckerTests
         }
 
         [UnityTest]
-        [Explicit]
         public IEnumerator GLTFShapeIsResetWhenReenteringBounds()
         {
             yield return InitScene();
@@ -299,7 +291,6 @@ namespace SceneBoundariesCheckerTests
         }
 
         [UnityTest]
-        [Explicit]
         public IEnumerator NFTShapeIsResetWhenReenteringBounds()
         {
             yield return InitScene();
@@ -342,7 +333,6 @@ namespace SceneBoundariesCheckerTests
         }
 
         [UnityTest]
-        [Explicit]
         public IEnumerator ChildShapeIsEvaluated()
         {
             yield return InitScene();
@@ -383,7 +373,6 @@ namespace SceneBoundariesCheckerTests
         }
 
         [UnityTest]
-        [Explicit]
         public IEnumerator ChildShapeIsEvaluatedOnShapelessParent()
         {
             yield return InitScene();
@@ -425,7 +414,6 @@ namespace SceneBoundariesCheckerTests
         }
 
         [UnityTest]
-        [Explicit]
         public IEnumerator HeightIsEvaluated()
         {
             yield return InitScene();
