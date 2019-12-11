@@ -331,6 +331,12 @@ namespace DCL.Helpers
                 (int)Mathf.Floor(worldPosition.z / ParcelSettings.PARCEL_SIZE)
             );
         }
+
+        public static string GetTestAssetsPathRaw()
+        {
+            return Application.dataPath + "/../TestResources";
+        }
+
         public static string GetTestsAssetsPath(bool useWebServerPath = false)
         {
             if (useWebServerPath)
@@ -339,7 +345,7 @@ namespace DCL.Helpers
             }
             else
             {
-                var uri = new System.Uri(Application.dataPath + "/../TestResources");
+                var uri = new System.Uri(GetTestAssetsPathRaw());
                 var converted = uri.AbsoluteUri;
                 return converted;
             }

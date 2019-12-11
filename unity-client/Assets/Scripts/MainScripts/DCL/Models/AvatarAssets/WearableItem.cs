@@ -1,4 +1,4 @@
-using DCL;
+﻿using DCL;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -50,16 +50,21 @@ public class WearableItem : Item
 
         if (!cachedContentProviers.ContainsKey(bodyShapeType))
         {
-            var contentProvider = new ContentProvider
-            {
-                baseUrl = baseUrl,
-                contents = representation.contents.ToList()
-            };
+            var contentProvider = CreateContentProvider(baseUrl,representation.contents.ToList());
             contentProvider.BakeHashes();
             cachedContentProviers.Add(bodyShapeType, contentProvider);
         }
 
         return cachedContentProviers[bodyShapeType];
+    }
+
+    protected virtual ContentProvider CreateContentProvider(string baseUrl, List<ContentServerUtils.MappingPair> contents)
+    {
+        return new ContentProvider
+        {
+            baseUrl = baseUrl,
+            contents =  contents
+        };
     }
 
     public bool SupportsBodyShape(string bodyShapeType)

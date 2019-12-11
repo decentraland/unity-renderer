@@ -22,16 +22,19 @@ namespace DCL
 
         private bool visibility = true;
         
-        protected BodyShapeController bodyShapeController;
-        protected Dictionary<string, WearableController> wearablesController = new Dictionary<string, WearableController>();
-        FacialFeatureController eyesController;
-        FacialFeatureController eyebrowsController;
-        FacialFeatureController mouthController;
+        internal BodyShapeController bodyShapeController;
+        internal Dictionary<string, WearableController> wearablesController = new Dictionary<string, WearableController>();
+        internal FacialFeatureController eyesController;
+        internal FacialFeatureController eyebrowsController;
+        internal FacialFeatureController mouthController;
+
+        internal bool isLoading = false;
 
         public void ApplyModel (AvatarModel model, Action onSuccess, Action onFail)
         {
             this.model = model;
             this.OnSuccessCallback = onSuccess;
+            isLoading = false;
             this.OnFailCallback = onFail;
 
             StopAllCoroutines();
@@ -42,6 +45,7 @@ namespace DCL
                 return;
             }
 
+            isLoading = true;
             StartCoroutine(LoadAvatar());
         }
 
@@ -82,6 +86,7 @@ namespace DCL
         {
             if (string.IsNullOrEmpty(model.bodyShape))
             {
+                isLoading = false;
                 this.OnSuccessCallback?.Invoke();
                 yield break;
             }
@@ -158,6 +163,7 @@ namespace DCL
             yield return null;
             ResolveVisibility();
 
+            isLoading = false;
             OnSuccessCallback?.Invoke();
         }
 
@@ -172,6 +178,7 @@ namespace DCL
             StopAllCoroutines();
 
             ResetAvatar();
+            isLoading = false;
             OnFailCallback?.Invoke();
         }
 

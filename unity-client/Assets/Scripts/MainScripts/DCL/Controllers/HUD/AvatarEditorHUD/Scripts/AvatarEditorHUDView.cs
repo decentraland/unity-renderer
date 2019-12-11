@@ -47,7 +47,7 @@ public class AvatarEditorHUDView : MonoBehaviour
     [SerializeField] internal Button doneButton;
     [SerializeField] internal Button exitButton;
 
-    private CharacterPreviewController characterPreviewController;
+    internal CharacterPreviewController characterPreviewController;
     private AvatarEditorHUDController controller;
     internal readonly Dictionary<string, ItemSelector> selectorsByCategory = new Dictionary<string, ItemSelector>();
 

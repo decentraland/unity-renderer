@@ -10,12 +10,24 @@ namespace AvatarEditorHUD_Tests
 {
     public class AvatarEditorHUDController_Mock : AvatarEditorHUDController
     {
-        public AvatarEditorHUDController_Mock(UserProfile userProfile, WearableDictionary catalog) : base(userProfile, catalog) { }
+        public bool bypassUpdateAvatarPreview;
+
+        public AvatarEditorHUDController_Mock(UserProfile userProfile, WearableDictionary catalog, bool bypassUpdateAvatarPreview = true) : base(userProfile, catalog)
+        {
+            this.bypassUpdateAvatarPreview = bypassUpdateAvatarPreview;
+        }
 
         public AvatarEditorHUDModel myModel => model;
         public AvatarEditorHUDView myView => view;
         public string[] myCategoriesThatMustHaveSelection => categoriesThatMustHaveSelection;
         public string[] myCategoriesToRandomize => categoriesToRandomize;
+
+        protected override void UpdateAvatarPreview()
+        {
+            if (bypassUpdateAvatarPreview) return;
+
+            base.UpdateAvatarPreview();
+        }
     }
 
     public class WearableItemsShould : TestsBase
@@ -42,7 +54,7 @@ namespace AvatarEditorHUD_Tests
                 }
             });
 
-            catalog = AvatarTestHelpers.CreateTestCatalog();
+            catalog = AvatarTestHelpers.CreateTestCatalogLocal();
             controller = new AvatarEditorHUDController_Mock(userProfile, catalog);
         }
 

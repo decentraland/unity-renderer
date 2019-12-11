@@ -32,20 +32,20 @@ public class FacialFeatureController
 
         var representation = wearable.GetRepresentation(bodyShapeType);
 
-        string mainTextureUrl = wearable.baseUrl + representation.contents.FirstOrDefault(x => !x.file.ToLower().Contains("_mask.png"))?.hash;
-        string maskUrl = wearable.baseUrl + representation.contents.FirstOrDefault(x => x.file.ToLower().Contains("_mask.png"))?.hash;
+        string mainTextureName = representation.contents.FirstOrDefault(x => !x.file.ToLower().Contains("_mask.png"))?.hash;
+        string maskName = representation.contents.FirstOrDefault(x => x.file.ToLower().Contains("_mask.png"))?.hash;
 
-        if (!string.IsNullOrEmpty(mainTextureUrl))
+        if (!string.IsNullOrEmpty(mainTextureName))
         {
-            yield return Utils.FetchTexture(mainTextureUrl, (tex) =>
+            yield return Utils.FetchTexture(wearable.baseUrl + mainTextureName, (tex) =>
             {
                 mainTexture = tex;
             });
         }
 
-        if (!string.IsNullOrEmpty(maskUrl))
+        if (!string.IsNullOrEmpty(maskName))
         {
-            yield return Utils.FetchTexture(maskUrl, (tex) =>
+            yield return Utils.FetchTexture(wearable.baseUrl + maskName, (tex) =>
             {
                 maskTexture = tex;
             });

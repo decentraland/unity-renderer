@@ -10,7 +10,8 @@
         "AvatarModel",
         "AvatarAssets",
         "ScriptableObjects",
-        "TestHelpers"
+        "TestHelpers",
+        "ContentProvider"
     ],
     "optionalUnityReferences": [
         "TestAssemblies"

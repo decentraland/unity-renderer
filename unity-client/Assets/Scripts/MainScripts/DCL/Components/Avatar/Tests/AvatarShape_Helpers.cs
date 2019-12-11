@@ -12,9 +12,36 @@ namespace AvatarShape_Tests
 {
     public static class AvatarTestHelpers
     {
+        public class WearableItem_Dummy : WearableItem
+        {
+            protected override ContentProvider CreateContentProvider(string baseUrl, List<ContentServerUtils.MappingPair> contents)
+            {
+                return new ContentProvider_Dummy
+                {
+                    baseUrl = baseUrl,
+                    contents = contents
+                };
+            }
+        }
+
+        public static WearableDictionary CreateTestCatalogLocal()
+        {
+            string file = "TestCatalogLocal.json";
+            var catalogJson = File.ReadAllText(Utils.GetTestAssetsPathRaw() + $"/Avatar/{file}"); //Utils.GetTestAssetPath returns an URI not compatible with the really convenient File.ReadAllText
+            var wearables = Newtonsoft.Json.JsonConvert.DeserializeObject<WearableItem_Dummy[]>(catalogJson); // JsonUtility cannot deserialize jsons whose root is an array
+            foreach (var wearableItem in wearables)
+            {
+                wearableItem.baseUrl = Utils.GetTestsAssetsPath() + "/Avatar/Assets/";
+            }
+            CatalogController.wearableCatalog.Clear();
+            CatalogController.wearableCatalog.Add(wearables.Select(x => new KeyValuePair<string, WearableItem>(x.id, x)).ToArray());
+
+            return CatalogController.wearableCatalog;
+        }
+
         public static WearableDictionary CreateTestCatalog(string file = "TestCatalog.json")
         {
-            var catalogJson = File.ReadAllText(Application.dataPath + $"/../TestResources/Avatar/{file}"); //Utils.GetTestAssetPath returns an URI not compatible with the really convenient File.ReadAllText
+            var catalogJson = File.ReadAllText(Utils.GetTestAssetsPathRaw() + $"/Avatar/{file}"); //Utils.GetTestAssetPath returns an URI not compatible with the really convenient File.ReadAllText
             var wearables = Newtonsoft.Json.JsonConvert.DeserializeObject<WearableItem[]>(catalogJson); // JsonUtility cannot deserialize jsons whose root is an array
             CatalogController.wearableCatalog.Clear();
             CatalogController.wearableCatalog.Add(wearables.Select(x => new KeyValuePair<string, WearableItem>(x.id, x)).ToArray());
@@ -40,7 +67,7 @@ namespace AvatarShape_Tests
 
         public static AvatarModel GetTestAvatarModel(string name, string fileName)
         {
-            var avatarjson = File.ReadAllText(Application.dataPath + "/../TestResources/Avatar/" + fileName);
+            var avatarjson = File.ReadAllText(Utils.GetTestAssetsPathRaw() + "/Avatar/" + fileName);
             AvatarModel model = JsonUtility.FromJson<AvatarModel>(avatarjson);
             model.name = name;
             return model;
