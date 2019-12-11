@@ -17,7 +17,7 @@ namespace AvatarEditorHUD_Tests
         [UnitySetUp]
         private IEnumerator SetUp()
         {
-            yield return InitScene();
+            yield return InitScene(false, false, false, false, false);
 
             userProfile = ScriptableObject.CreateInstance<UserProfile>();
             userProfile.UpdateData(new UserProfileModel()
@@ -32,7 +32,7 @@ namespace AvatarEditorHUD_Tests
 
             });
 
-            catalog = AvatarTestHelpers.CreateTestCatalog();
+            catalog = AvatarTestHelpers.CreateTestCatalogLocal();
             controller = new AvatarEditorHUDController_Mock(userProfile, catalog);
         }
 
@@ -132,6 +132,25 @@ namespace AvatarEditorHUD_Tests
             });
 
             Assert.IsTrue(controller.myView.collectiblesItemSelector.itemToggles.ContainsKey(wearableId));
+        }
+
+        [UnityTest]
+        public IEnumerator UpdateAvatarPreview()
+        {
+            controller.bypassUpdateAvatarPreview = false;
+            userProfile.UpdateData(new UserProfileModel()
+            {
+                name = "name",
+                email = "mail",
+                avatar = new AvatarModel()
+                {
+                    bodyShape = WearableLiterals.BodyShapes.MALE,
+                    wearables = new List<string>() { },
+                }
+            });
+
+            yield return new WaitUntil(() => !controller.myView.characterPreviewController.avatarRenderer.isLoading);
+            Assert.AreEqual(WearableLiterals.BodyShapes.MALE, controller.myView.characterPreviewController.avatarRenderer.bodyShapeController.wearable.id);
         }
     }
 }

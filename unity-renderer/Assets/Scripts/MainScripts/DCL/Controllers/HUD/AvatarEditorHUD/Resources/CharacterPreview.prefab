@@ -9,7 +9,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 4315422120597451079}
-  m_Layer: 14
+  m_Layer: 15
   m_Name: FixedTemplates
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -42,7 +42,7 @@ GameObject:
   m_Component:
   - component: {fileID: 7046715577611397773}
   - component: {fileID: 3439299920128862004}
-  m_Layer: 14
+  m_Layer: 15
   m_Name: Canvas
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -99,7 +99,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 2524994584819242542}
-  m_Layer: 14
+  m_Layer: 15
   m_Name: DefaultEditing
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -129,7 +129,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 4189784172409983158}
-  m_Layer: 14
+  m_Layer: 15
   m_Name: RotatingTemplates
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -161,7 +161,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 4122678849617202556}
-  m_Layer: 14
+  m_Layer: 15
   m_Name: BodySnapshot
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -193,7 +193,7 @@ GameObject:
   - component: {fileID: 6765015854197648131}
   - component: {fileID: 5745255516616087807}
   - component: {fileID: 8342739559968764315}
-  m_Layer: 10
+  m_Layer: 15
   m_Name: Ground
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -245,7 +245,7 @@ GameObject:
   m_Component:
   - component: {fileID: 699008548463003348}
   - component: {fileID: 4064226640794097003}
-  m_Layer: 14
+  m_Layer: 15
   m_Name: CharacterPreview
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -297,7 +297,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 7575988263520695659}
-  m_Layer: 14
+  m_Layer: 15
   m_Name: FaceEditing
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -329,7 +329,7 @@ GameObject:
   - component: {fileID: 6705057966129581724}
   - component: {fileID: 2150367651614698250}
   - component: {fileID: 8922715421469685814}
-  m_Layer: 14
+  m_Layer: 15
   m_Name: AvatarRenderer
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -547,7 +547,7 @@ GameObject:
   - component: {fileID: 8411039080786404475}
   - component: {fileID: 6118308163422632673}
   - component: {fileID: 4310166283904593317}
-  m_Layer: 14
+  m_Layer: 15
   m_Name: Background
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -674,7 +674,7 @@ GameObject:
   - component: {fileID: 175265733032387878}
   - component: {fileID: 3666619223202213297}
   - component: {fileID: 7975236858048066674}
-  m_Layer: 14
+  m_Layer: 15
   m_Name: Caption
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -843,7 +843,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 7143330429815360873}
-  m_Layer: 14
+  m_Layer: 15
   m_Name: FaceSnapshot
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -874,7 +874,7 @@ GameObject:
   m_Component:
   - component: {fileID: 5803696546769639807}
   - component: {fileID: 3830021777958501345}
-  m_Layer: 14
+  m_Layer: 15
   m_Name: Camera
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -926,7 +926,7 @@ Camera:
   m_Depth: 0
   m_CullingMask:
     serializedVersion: 2
-    m_Bits: 16384
+    m_Bits: 49152
   m_RenderingPath: -1
   m_TargetTexture: {fileID: 8400000, guid: 90abb7395deceba49b062ba3e24ef86c, type: 2}
   m_TargetDisplay: 0
@@ -949,7 +949,7 @@ GameObject:
   - component: {fileID: 6000848762255042562}
   - component: {fileID: 2409413263857136495}
   - component: {fileID: 4100239242114188421}
-  m_Layer: 14
+  m_Layer: 15
   m_Name: Container
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -1010,7 +1010,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 856552461296544030}
-  m_Layer: 14
+  m_Layer: 15
   m_Name: TransformTemplates
   m_TagString: Untagged
   m_Icon: {fileID: 0}

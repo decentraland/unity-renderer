@@ -1,55 +1,13 @@
 ﻿using DCL;
-using DCL.Controllers;
 using DCL.Helpers;
-using DCL.Models;
 using System.Collections;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
+using AvatarShape_Tests;
 using UnityEngine;
 using UnityEngine.Assertions;
 using UnityEngine.TestTools;
-using UnityGLTF;
 
 namespace Tests
 {
-    public static class AvatarTestHelpers
-    {
-        public static WearableDictionary CreateTestCatalog(string file = "TestCatalog.json")
-        {
-            var catalogJson = File.ReadAllText(Application.dataPath + $"/../TestResources/Avatar/{file}"); //Utils.GetTestAssetPath returns an URI not compatible with the really convenient File.ReadAllText
-            var wearables = Newtonsoft.Json.JsonConvert.DeserializeObject<WearableItem[]>(catalogJson); // JsonUtility cannot deserialize jsons whose root is an array
-            CatalogController.wearableCatalog.Clear();
-            CatalogController.wearableCatalog.Add(wearables.Select(x => new KeyValuePair<string, WearableItem>(x.id, x)).ToArray());
-
-            return CatalogController.wearableCatalog;
-        }
-
-        public static AvatarShape CreateAvatar(ParcelScene scene, string name, string fileName)
-        {
-            var model = GetTestAvatarModel(name, fileName);
-
-            return CreateAvatar(scene, model);
-        }
-
-        public static AvatarShape CreateAvatar(ParcelScene scene, AvatarModel model)
-        {
-            GLTFSceneImporter.budgetPerFrameInMilliseconds = float.MaxValue;
-            DecentralandEntity entity = TestHelpers.CreateSceneEntity(scene);
-            AvatarShape shape = TestHelpers.EntityComponentCreate<AvatarShape, AvatarModel>(scene, entity, model, CLASS_ID_COMPONENT.AVATAR_SHAPE);
-            TestHelpers.SetEntityTransform(scene, entity, new Vector3(0, 0, 0), Quaternion.identity, Vector3.one);
-            return shape;
-        }
-
-        public static AvatarModel GetTestAvatarModel(string name, string fileName)
-        {
-            var avatarjson = File.ReadAllText(Application.dataPath + "/../TestResources/Avatar/" + fileName);
-            AvatarModel model = JsonUtility.FromJson<AvatarModel>(avatarjson);
-            model.name = name;
-            return model;
-        }
-    }
-
     public class AvatarShapeTests : TestsBase
     {
 
@@ -75,7 +33,7 @@ namespace Tests
             yield return InitScene();
 
             AvatarTestHelpers.CreateTestCatalog();
-            AvatarShape avatar = AvatarTestHelpers.CreateAvatar(scene, "Abortit", "TestAvatar.json");
+            AvatarShape avatar = AvatarTestHelpers.CreateAvatarShape(scene, "Abortit", "TestAvatar.json");
 
             yield return new WaitForSeconds(3.0f);
 
@@ -95,7 +53,7 @@ namespace Tests
             yield return InitScene();
 
             AvatarTestHelpers.CreateTestCatalog();
-            AvatarShape avatar = AvatarTestHelpers.CreateAvatar(scene, "Joan Darteis", "TestAvatar.json");
+            AvatarShape avatar = AvatarTestHelpers.CreateAvatarShape(scene, "Joan Darteis", "TestAvatar.json");
             yield return new DCL.WaitUntil(() => avatar.everythingIsLoaded, 20);
 
             AssertMaterialsAreCorrect(avatar.transform);
@@ -107,7 +65,7 @@ namespace Tests
         {
             yield return InitScene();
             AvatarTestHelpers.CreateTestCatalog();
-            AvatarShape avatar = AvatarTestHelpers.CreateAvatar(scene, "Maiqel Yacson", "TestAvatar.json");
+            AvatarShape avatar = AvatarTestHelpers.CreateAvatarShape(scene, "Maiqel Yacson", "TestAvatar.json");
             yield return new DCL.WaitUntil(() => avatar.everythingIsLoaded, 20);
 
             avatar.transform.position = new Vector3(13, 0, 4);
@@ -124,8 +82,8 @@ namespace Tests
 
             //NOTE(Brian): Avatars must be equal to share their meshes.
             AvatarTestHelpers.CreateTestCatalog();
-            AvatarShape avatar = AvatarTestHelpers.CreateAvatar(scene, "Naicholas Keig", "TestAvatar.json");
-            AvatarShape avatar2 = AvatarTestHelpers.CreateAvatar(scene, "Naicholas Keig", "TestAvatar2.json");
+            AvatarShape avatar = AvatarTestHelpers.CreateAvatarShape(scene, "Naicholas Keig", "TestAvatar.json");
+            AvatarShape avatar2 = AvatarTestHelpers.CreateAvatarShape(scene, "Naicholas Keig", "TestAvatar2.json");
 
             avatar.transform.position = new Vector3(-5, 0, 0);
             avatar2.transform.position = new Vector3(5, 0, 0);

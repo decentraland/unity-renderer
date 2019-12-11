@@ -73,7 +73,7 @@ public class AvatarEditorHUDController : IDisposable, IHUD
         }
         EnsureWearablesCategoriesNotEmpty();
 
-        view.UpdateAvatarPreview(model.ToAvatarModel());
+        UpdateAvatarPreview();
     }
 
     private void EnsureWearablesCategoriesNotEmpty()
@@ -131,27 +131,32 @@ public class AvatarEditorHUDController : IDisposable, IHUD
                 EquipWearable(wearable);
             }
         }
-        view.UpdateAvatarPreview(model.ToAvatarModel());
+        UpdateAvatarPreview();
     }
 
     public void HairColorClicked(Color color)
     {
         EquipHairColor(color);
         view.SelectHairColor(model.hairColor);
-        view.UpdateAvatarPreview(model.ToAvatarModel());
+        UpdateAvatarPreview();
     }
 
     public void SkinColorClicked(Color color)
     {
         EquipSkinColor(color);
         view.SelectSkinColor(model.skinColor);
-        view.UpdateAvatarPreview(model.ToAvatarModel());
+        UpdateAvatarPreview();
     }
 
     public void EyesColorClicked(Color color)
     {
         EquipEyesColor(color);
         view.SelectEyeColor(model.eyesColor);
+        UpdateAvatarPreview();
+    }
+
+    protected virtual void UpdateAvatarPreview()
+    {
         view.UpdateAvatarPreview(model.ToAvatarModel());
     }
 
@@ -298,7 +303,7 @@ public class AvatarEditorHUDController : IDisposable, IHUD
                 EquipWearable(wearable);
             }
         }
-        view.UpdateAvatarPreview(model.ToAvatarModel());
+        UpdateAvatarPreview();
     }
 
     public List<WearableItem> GetWearablesReplacedBy(WearableItem wearableItem)
