@@ -1,5 +1,4 @@
-﻿using DCL;
-using DCL.Helpers;
+using DCL;
 using System.Collections;
 using UnityEngine;
 using UnityEngine.Assertions;
@@ -25,7 +24,7 @@ namespace Tests
         [UnityTest]
         public IEnumerator PooledGameObjectDestroyed()
         {
-            yield return InitScene();
+            yield return InitScene(false, false, false, false, false);
 
             PooledObjectInstantiator instantiator = new PooledObjectInstantiator();
 
@@ -56,7 +55,7 @@ namespace Tests
             Assert.AreEqual(0, pool.inactiveCount, "Inactive objects count should be 0");
 
             GameObject.Destroy(po1.gameObject);
-            yield return new WaitForEndOfFrame();
+            yield return null;
 
             Assert.AreEqual(1, pool.objectsCount, "Objects count should be 1");
             Assert.AreEqual(1, pool.activeCount, "Alive objects count should be 1");

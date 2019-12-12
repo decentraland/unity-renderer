@@ -19,13 +19,20 @@ namespace DCL
             if (asset == null || masterAssets.ContainsKey(asset.id))
                 return true;
 
-            masterAssets.Add(asset.id, new RefCountedAsset() { asset = asset } );
+            masterAssets.Add(asset.id, new RefCountedAsset() { asset = asset });
             assetToRefCountedAsset.Add(asset, masterAssets[asset.id]);
             return true;
         }
 
         public override void Cleanup()
         {
+            foreach (var kvp in masterAssets)
+            {
+                kvp.Value.asset.Cleanup();
+            }
+
+            masterAssets.Clear();
+            assetToRefCountedAsset.Clear();
         }
 
         public override bool Contains(object id)
@@ -55,7 +62,7 @@ namespace DCL
             if (!Contains(asset))
                 return;
 
-            var refCountedAsset = assetToRefCountedAsset[asset]; 
+            var refCountedAsset = assetToRefCountedAsset[asset];
             refCountedAsset.referenceCount--;
 
             if (refCountedAsset.referenceCount != 0)

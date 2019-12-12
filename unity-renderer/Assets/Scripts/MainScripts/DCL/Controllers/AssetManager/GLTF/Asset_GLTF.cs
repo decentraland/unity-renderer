@@ -40,8 +40,6 @@ namespace DCL
         {
             if (showCoroutine != null)
                 CoroutineStarter.Stop(showCoroutine);
-
-            container?.SetActive(true);
         }
 
         public void Show(bool useMaterialTransition, System.Action OnFinish)

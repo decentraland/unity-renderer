@@ -59,7 +59,6 @@ namespace DCL
             {
                 assetsByName = null;
                 assetsByExtension = null;
-
                 ownerAssetBundle.Unload(true);
                 ownerAssetBundle = null;
             }

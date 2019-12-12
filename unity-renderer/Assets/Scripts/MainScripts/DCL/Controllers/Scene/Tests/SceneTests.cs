@@ -1,4 +1,4 @@
-﻿using DCL;
+using DCL;
 using DCL.Components;
 using DCL.Configuration;
 using DCL.Controllers;
@@ -19,7 +19,7 @@ namespace Tests
         [UnityTest]
         public IEnumerator CreateUIScene()
         {
-            yield return InitScene(reloadUnityScene: false);
+            yield return InitScene();
 
             // Position character inside parcel (0,0)
             TestHelpers.SetCharacterPosition(Vector3.zero);
@@ -58,12 +58,6 @@ namespace Tests
 
             TestHelpers.ForceUnloadAllScenes(sceneController);
             yield return null;
-        }
-
-        [UnityTearDown]
-        public override IEnumerator TearDown()
-        {
-            return null;
         }
 
         [UnityTest]

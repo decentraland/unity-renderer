@@ -1,9 +1,8 @@
 using DCL;
 using DCL.Helpers;
-using DCL.Models;
-using NUnit.Framework;
 using System.Collections;
 using UnityEngine;
+using UnityEngine.Assertions;
 using UnityEngine.TestTools;
 
 namespace Tests
@@ -39,10 +38,14 @@ namespace Tests
 
             yield return CreateComponent(x: true, y: true, z: true);
 
+            yield return null;
+
             Transform entityTransform = scene.entities[entityId].gameObject.transform;
             Vector3 lookAt = GetLookAtVector(billboard.model, entityTransform);
 
-            Assert.IsTrue(entityTransform.forward == lookAt, "billboard entity forward vector should be the same as the calculated one");
+            Assert.AreApproximatelyEqual(lookAt.x, entityTransform.forward.x, "billboard entity forward vector should be the same as the calculated one");
+            Assert.AreApproximatelyEqual(lookAt.y, entityTransform.forward.y, "billboard entity forward vector should be the same as the calculated one");
+            Assert.AreApproximatelyEqual(lookAt.z, entityTransform.forward.z, "billboard entity forward vector should be the same as the calculated one");
 
             var billboardModel = new Billboard.Model()
             {
@@ -73,8 +76,8 @@ namespace Tests
 
         IEnumerator CreateComponent(bool x, bool y, bool z)
         {
-            TestHelpers.CreateSceneEntity(scene, entityId);
-
+            var entity = TestHelpers.CreateSceneEntity(scene, entityId);
+            TestHelpers.SetEntityTransform(scene, entity, Vector3.one, Quaternion.identity, Vector3.one);
             yield return null;
 
             var billboardModel = new Billboard.Model()

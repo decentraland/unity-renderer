@@ -131,6 +131,5 @@ namespace DCL
                 return base.GetAsset(id);
             }
         }
-
     }
 }

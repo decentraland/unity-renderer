@@ -1,7 +1,7 @@
-using DCL.Components;
+﻿using DCL.Components;
 using DCL.Helpers;
-using UnityEngine;
 using DCL.Interface;
+using UnityEngine;
 
 namespace DCL
 {
@@ -30,6 +30,13 @@ namespace DCL
             InputController_Legacy.i.AddListener(WebInterface.ACTION_BUTTON.SECONDARY, OnButtonEvent);
 
             RetrieveCamera();
+        }
+
+        public void Cleanup()
+        {
+            InputController_Legacy.i.RemoveListener(WebInterface.ACTION_BUTTON.POINTER, OnButtonEvent);
+            InputController_Legacy.i.RemoveListener(WebInterface.ACTION_BUTTON.PRIMARY, OnButtonEvent);
+            InputController_Legacy.i.RemoveListener(WebInterface.ACTION_BUTTON.SECONDARY, OnButtonEvent);
         }
 
         private void RetrieveCamera()

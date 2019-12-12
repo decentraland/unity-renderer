@@ -1,4 +1,4 @@
-﻿using DCL;
+using DCL;
 using DCL.Configuration;
 using DCL.Helpers;
 using UnityEngine;
@@ -113,25 +113,6 @@ public class DCLCharacterController : MonoBehaviour
         sprintFinishedDelegate = (action) => isSprinting = false;
         sprintAction.OnStarted += sprintStartedDelegate;
         sprintAction.OnFinished += sprintFinishedDelegate;
-    }
-
-    // To keep the character always active, just in case
-    void OnDisable()
-    {
-        if (characterAlwaysEnabled && !reEnablingGameObject && SceneController.i != null)
-            SceneController.i.StartCoroutine(ReEnableGameObject()); // gameObject cannot start the routine as it's being deactivated
-    }
-
-    IEnumerator ReEnableGameObject()
-    {
-        reEnablingGameObject = true;
-
-        yield return null;
-
-        gameObject.SetActive(true);
-        ResetGround();
-
-        reEnablingGameObject = false;
     }
 
     void OnDestroy()
