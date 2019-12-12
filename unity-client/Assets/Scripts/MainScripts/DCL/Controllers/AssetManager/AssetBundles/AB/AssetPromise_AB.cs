@@ -18,6 +18,7 @@ namespace DCL
         public static bool limitTimeBudget = false;
         Coroutine loadCoroutine;
         static HashSet<string> failedRequestUrls = new HashSet<string>();
+        UnityWebRequest assetBundleRequest;
 
 
         static Dictionary<string, int> loadOrderByExtension = new Dictionary<string, int>()
@@ -46,6 +47,7 @@ namespace DCL
                 Debug.Log("add to library fail?");
                 return false;
             }
+
             asset = library.Get(asset.id);
             return true;
         }
@@ -94,7 +96,6 @@ namespace DCL
             yield return LoadAssetBundle(baseUrl + hash, OnSuccess, OnFail);
         }
 
-
         IEnumerator LoadAssetBundle(string finalUrl, Action OnSuccess, Action OnFail)
         {
             if (failedRequestUrls.Contains(finalUrl))
@@ -121,13 +122,15 @@ namespace DCL
 
                 if (assetBundle == null)
                 {
-                    Debug.Log("ab == null?");
                     assetBundleRequest.Abort();
                     OnFail?.Invoke();
 
                     failedRequestUrls.Add(finalUrl);
                     yield break;
                 }
+
+                asset.ownerAssetBundle = assetBundle;
+                asset.assetBundleAssetName = assetBundle.name;
 
                 string[] assets = assetBundle.GetAllAssetNames();
                 List<string> assetsToLoad = new List<string>();
@@ -178,9 +181,6 @@ namespace DCL
                         }
                     }
                 }
-
-                asset.ownerAssetBundle = assetBundle;
-                asset.assetBundleAssetName = assetBundle.name;
             }
 
             OnSuccess?.Invoke();

@@ -1,8 +1,7 @@
-﻿using DCL.Components;
+using DCL.Components;
 using DCL.Controllers;
 using DCL.Interface;
 using DCL.Models;
-using DCL;
 using Google.Protobuf;
 using Newtonsoft.Json;
 using System;

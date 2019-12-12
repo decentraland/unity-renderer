@@ -1,5 +1,4 @@
 using DCL;
-using DCL.Helpers;
 using System.Collections;
 using UnityEngine;
 using UnityEngine.Assertions;
@@ -24,13 +23,10 @@ namespace AssetPromiseKeeper_Tests
 
 
         [UnityTearDown]
-        protected IEnumerator TearDown()
+        public override IEnumerator TearDown()
         {
-            PoolManager.i.Cleanup();
             keeper.Cleanup();
-            Caching.ClearCache();
-            Resources.UnloadUnusedAssets();
-            yield break;
+            yield return base.TearDown();
         }
 
 
@@ -203,6 +199,8 @@ namespace AssetPromiseKeeper_Tests
 
             Assert.IsTrue(keeper.library.Contains(asset));
             Assert.AreEqual(1, keeper.library.masterAssets.Count);
+
+            keeper.library.Cleanup();
         }
     }
 }

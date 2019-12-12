@@ -1,14 +1,15 @@
-﻿using DCL;
+using DCL;
 using DCL.Controllers;
-using DCL.Models;
 using DCL.Helpers;
+using DCL.Models;
 using Newtonsoft.Json;
 using System;
 using System.Collections;
 using System.Reflection;
 using UnityEngine;
-using UnityEngine.TestTools;
+using UnityEngine.Assertions;
 using UnityEngine.SceneManagement;
+using UnityEngine.TestTools;
 
 public class TestsBase
 {
@@ -18,7 +19,20 @@ public class TestsBase
     [UnityTearDown]
     public virtual IEnumerator TearDown()
     {
-        AssetPromiseKeeper_GLTF.i.Cleanup();
+        yield return null;
+
+        AssetPromiseKeeper_GLTF.i?.Cleanup();
+        AssetPromiseKeeper_AB_GameObject.i?.Cleanup();
+        AssetPromiseKeeper_AB.i?.Cleanup();
+
+        MemoryManager.i?.CleanupPoolsIfNeeded(true);
+        PoolManager.i?.Cleanup();
+        PointerEventsController.i?.Cleanup();
+        MessagingControllersManager.i?.Stop();
+
+        Caching.ClearCache();
+        Resources.UnloadUnusedAssets();
+
         yield return null;
     }
 
@@ -45,15 +59,10 @@ public class TestsBase
 
     protected virtual IEnumerator InitScene(bool usesWebServer = false, bool spawnCharController = true, bool spawnTestScene = true, bool spawnUIScene = true, bool debugMode = false, bool reloadUnityScene = true)
     {
-        if (SceneController.i == null || reloadUnityScene)
-        {
-            yield return InitUnityScene("MainTest");
-        }
+        yield return InitUnityScene("MainTest");
 
         if (debugMode)
             SceneController.i.SetDebug();
-
-        yield return MemoryManager.i.CleanupPoolsIfNeeded(true);
 
         sceneController = TestHelpers.InitializeSceneController(usesWebServer);
 
@@ -63,7 +72,7 @@ public class TestsBase
         {
             scene = sceneController.CreateTestScene();
 
-            yield return new WaitForSeconds(0.01f);
+            yield return null;
         }
 
         if (spawnCharController)
@@ -73,7 +82,8 @@ public class TestsBase
                 GameObject.Instantiate(Resources.Load("Prefabs/CharacterController"));
             }
 
-            yield return new WaitForSeconds(0.01f);
+            yield return null;
+            Assert.IsTrue(DCLCharacterController.i != null);
         }
 
         var newPos = new Vector3(10, 0, 10);
