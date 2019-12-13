@@ -1,8 +1,7 @@
-﻿using System.Collections;
 using Cinemachine;
-using DCL.Helpers;
 using Newtonsoft.Json;
 using NUnit.Framework;
+using System.Collections;
 using UnityEngine;
 using UnityEngine.TestTools;
 
@@ -52,12 +51,14 @@ namespace CameraController_Test
 
             var payload = new CameraController.SetRotationPayload()
             {
-                x = 0, y = 0, z = 0,
+                x = 0,
+                y = 0,
+                z = 0,
                 cameraTarget = new Vector3(lookAtX, lookAtY, lookAtZ)
             };
 
             var rotationEuler = Quaternion.LookRotation(payload.cameraTarget.Value).eulerAngles;
-            cameraController.SetRotation(JsonConvert.SerializeObject(payload, Formatting.None,  new JsonSerializerSettings()
+            cameraController.SetRotation(JsonConvert.SerializeObject(payload, Formatting.None, new JsonSerializerSettings()
             {
                 ReferenceLoopHandling = ReferenceLoopHandling.Ignore
             }));
@@ -70,7 +71,7 @@ namespace CameraController_Test
         [TestCase(0, 0, 0, ExpectedResult = null)] //ExpectedResult is needed because the method is IEnumerator. The workaround is needed because there's no "UnityTestCase" to use with IEnumerators
         [TestCase(1, 2, 3, ExpectedResult = null)]
         [TestCase(3, 3, 3, ExpectedResult = null)]
-        public  IEnumerator UpdateCameraPositionSO(float posX, float posY, float posZ)
+        public IEnumerator UpdateCameraPositionSO(float posX, float posY, float posZ)
         {
             var currentVcam = (cameraController.cachedModeToVirtualCamera[cameraController.currentMode] as CinemachineVirtualCamera);
 
@@ -97,6 +98,17 @@ namespace CameraController_Test
             yield return null;
 
             Assert.AreEqual(currentVcam.State.FinalOrientation * Vector3.forward, CommonScriptableObjects.cameraForward.Get());
+        }
+
+        [UnityTest]
+        public IEnumerator ActivateAndDeactivateWithKernelRenderingToggleEvents()
+        {
+            RenderingController.i.DeactivateRendering();
+            Assert.IsFalse(cameraController.cameraTransform.gameObject.activeSelf);
+
+            RenderingController.i.ActivateRendering();
+            Assert.IsTrue(cameraController.cameraTransform.gameObject.activeSelf);
+            yield break;
         }
     }
 }
