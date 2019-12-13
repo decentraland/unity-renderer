@@ -1,8 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
 using Cinemachine;
 using DCL.Helpers;
+using System;
+using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
 public class CameraController : MonoBehaviour
@@ -44,7 +44,10 @@ public class CameraController : MonoBehaviour
 
     private void Awake()
     {
-        cachedModeToVirtualCamera =  cameraModes.ToDictionary(x => x.cameraMode, x => x.virtualCamera);
+        RenderingController.i.OnRenderingStateChanged += OnRenderingStateChanged;
+
+        cachedModeToVirtualCamera = cameraModes.ToDictionary(x => x.cameraMode, x => x.virtualCamera);
+
         using (var iterator = cachedModeToVirtualCamera.GetEnumerator())
         {
             while (iterator.MoveNext())
@@ -62,6 +65,11 @@ public class CameraController : MonoBehaviour
 
         SetFreeCameraModeActive(false);
         SetCameraMode(currentMode);
+    }
+
+    private void OnRenderingStateChanged(bool enabled)
+    {
+        cameraTransform.gameObject.SetActive(enabled);
     }
 
     private void OnCameraChangeAction(DCLAction_Trigger action)
@@ -108,8 +116,10 @@ public class CameraController : MonoBehaviour
                     characterForward.Set(xzPlaneForward);
                     break;
                 case CameraMode.ThirdPerson:
+
                     if (!characterForward.HasValue())
                         characterForward.Set(xzPlaneForward);
+
                     var lerpedForward = Vector3.Slerp(characterForward.Get().Value, xzPlaneForward, 5 * Time.deltaTime);
                     characterForward.Set(lerpedForward);
                     break;
@@ -143,6 +153,7 @@ public class CameraController : MonoBehaviour
         freeCameraModeAction.OnStarted -= freeCameraModeStartedDelegate;
         freeCameraModeAction.OnFinished -= freeCameraModeFinishedDelegate;
         cameraChangeAction.OnTriggered -= OnCameraChangeAction;
+        RenderingController.i.OnRenderingStateChanged -= OnRenderingStateChanged;
     }
 
 
