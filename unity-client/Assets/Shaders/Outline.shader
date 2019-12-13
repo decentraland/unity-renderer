@@ -1,5 +1,3 @@
-
- 
 //This shader generates the outline - color is set here
 Shader "Custom/OutlineEffect"
 {
@@ -8,11 +6,9 @@ Shader "Custom/OutlineEffect"
         _MainTex ("Texture", 2D) = "black" {}
         _SceneTex ("Scene Texture", 2D) = "black" {}
     }
+
     SubShader
     {
-        //Blend SrcAlpha OneMinusSrcAlpha
-        //Cull Off ZWrite Off ZTest Always
- 
         Pass
         {
             CGPROGRAM
@@ -61,7 +57,6 @@ Shader "Custom/OutlineEffect"
                         colIntensity += tex2D(_MainTex, i.uvs.xy + thing).r;
                     }
                 }
- 
  
                 half4 outcolor = colIntensity * half4(1,0.2,0,0.3) * 2 + (1 - colIntensity) * tex2D(_SceneTex, float2(i.uvs.x, i.uvs.y));
  
