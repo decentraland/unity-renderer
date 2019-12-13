@@ -26,6 +26,10 @@ Shader "DCL/LWRP/Lit"
         _BumpScale("Scale", Float) = 1.0
         _BumpMap("Normal Map", 2D) = "bump" {}
 
+        //NOTE(Brian): Had to hack this because CopyPropertiesFromMaterial has a bug and removes
+        //             the _MatCap property if isn't present in the source material. There's no way to add it back afterwards.
+        [HideInInspector] _MatCap("ToonShader MatCap Map", 2D) = "bump" {}
+
         _OcclusionStrength("Strength", Range(0.0, 1.0)) = 1.0
         _OcclusionMap("Occlusion", 2D) = "white" {}
 

@@ -12,6 +12,26 @@ insert_final_newline = true
 # Use tabs for indentation (Makefiles require tabs)
 indent_style = tab
 
+[*.shader]
+# Indentation and spacing
+indent_size = 4
+indent_style = space
+tab_width = 4
+
+# New line preferences
+end_of_line = crlf
+insert_final_newline = false
+
+[*.hlsl]
+# Indentation and spacing
+indent_size = 4
+indent_style = space
+tab_width = 4
+
+# New line preferences
+end_of_line = crlf
+insert_final_newline = false
+
 # C# files
 [*.cs]
 

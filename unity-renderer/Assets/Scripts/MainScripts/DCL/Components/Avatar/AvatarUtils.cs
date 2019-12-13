@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -131,14 +131,19 @@ public static class AvatarUtils
             (mat) =>
             {
                 Material copy = new Material(replaceThemWith);
-                if(mat.HasProperty(_BaseMap))
-                    copy.SetTexture(_BaseMap, mat.GetTexture(_BaseMap));
 
-                if(mat.HasProperty(_BaseColor))
-                    copy.SetColor(_BaseColor, mat.GetColor(_BaseColor));
+                Texture _MatCap = null;
 
-                if(mat.HasProperty(_EmissionColor))
-                    copy.SetColor(_EmissionColor, mat.GetColor(_EmissionColor));
+                if (replaceThemWith.HasProperty("_MatCap"))
+                    _MatCap = replaceThemWith.GetTexture("_MatCap");
+
+                //NOTE(Brian): This method has a bug, if the material being copied lacks a property of the source material,
+                //             the source material property will get erased. It can't be added back and even the material inspector crashes.
+                //             Check the comment in Lit.shader.
+                copy.CopyPropertiesFromMaterial(mat);
+
+                if (_MatCap != null)
+                    copy.SetTexture("_MatCap", _MatCap);
 
                 result.Add(copy);
                 return copy;

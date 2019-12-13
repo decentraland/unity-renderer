@@ -1,79 +1,79 @@
 Shader "DCL/FX/Hologram"
 {
-	Properties
+    Properties
     {
-		_Color( "Color", Color ) = ( 1.0, 1.0, 1.0, 1.0 )
-		_RimColor( "Rim Color", Color ) = ( 1.0, 1.0, 1.0, 1.0 )
-		_RimPower( "Rim Power", Range( 0.01, 10.0 )) = 3.0
+        _Color( "Color", Color ) = ( 1.0, 1.0, 1.0, 1.0 )
+        _RimColor( "Rim Color", Color ) = ( 1.0, 1.0, 1.0, 1.0 )
+        _RimPower( "Rim Power", Range( 0.01, 10.0 ) ) = 3.0
 
         _ThrobbScale("Throbbing Scale", float ) = 0.1
 
         [PerRendererData] _CullYPlane ("Cull Y Plane", Float) = 0.5
         _FadeThickness ("Fade Thickness", Float) = 5
         _FadeDirection ("Fade Direction", Float) = 0
-	}
-
+    }
+ 
     SubShader
     {
-		Pass
+        Pass
         {
-			Tags { "RenderType"="Transparent" "Queue"="Transparent" "RenderPipeline"="LightweightPipeline" }
+            Tags { "RenderType"="Transparent" "Queue"="Transparent" "RenderPipeline"="LightweightPipeline" }
 
             Blend SrcAlpha OneMinusSrcAlpha
             ZWrite Off
 
-			CGPROGRAM
+            CGPROGRAM
 			
-			#pragma vertex vert
-			#pragma fragment frag
+            #pragma vertex vert
+            #pragma fragment frag
 			
-			uniform float4 _Color;
+            uniform float4 _Color;
 
-			uniform float4 _RimColor;
-			uniform float _RimPower;
+            uniform float4 _RimColor;
+            uniform float _RimPower;
 			
             uniform float _ThrobbScale;
             uniform float _FadeDirection;
             uniform float _FadeThickness;
             uniform float _CullYPlane;
 			
-			struct vertexInput
+            struct vertexInput
             {
-				float4 vertex : POSITION;			
-				float3 normal : NORMAL;
-			};
+                float4 vertex : POSITION;			
+                float3 normal : NORMAL;
+            };
 
             struct vertexOutput
             {
-				float4 pos : SV_POSITION;
-				float4 posWorld : TEXCOORD0;
-				float3 normalDir : TEXCOORD1;
-			};
+                float4 pos : SV_POSITION;
+                float4 posWorld : TEXCOORD0;
+                float3 normalDir : TEXCOORD1;
+            };
 
-			vertexOutput vert(vertexInput v)
+            vertexOutput vert(vertexInput v)
             {
-				vertexOutput o;
+                vertexOutput o;
 				
-				o.posWorld = mul(unity_ObjectToWorld, v.vertex);
-				o.normalDir = normalize( mul( float4( v.normal, 0.0 ), unity_WorldToObject ).xyz );;
+                o.posWorld = mul(unity_ObjectToWorld, v.vertex);
+                o.normalDir = normalize( mul( float4( v.normal, 0.0 ), unity_WorldToObject ).xyz );;
 				
-				o.pos = UnityObjectToClipPos(v.vertex);
-				return o;
-			}
+                o.pos = UnityObjectToClipPos(v.vertex);
+                return o;
+            }
 
             float GetLambertAttenuation(vertexOutput i)
             {
-				float3 lightDirection = normalize( _WorldSpaceLightPos0.xyz );
+                float3 lightDirection = normalize( _WorldSpaceLightPos0.xyz );
                 return saturate( dot( i.normalDir, lightDirection ) );
             }
 
             float GetRimLighting(vertexOutput i)
             {
-				float3 viewDirection = normalize( _WorldSpaceCameraPos.xyz - i.posWorld.xyz );
-				return pow( 1.0 - saturate( dot( viewDirection, i.normalDir ) ), _RimPower );
+                float3 viewDirection = normalize( _WorldSpaceCameraPos.xyz - i.posWorld.xyz );
+                return pow( 1.0 - saturate( dot( viewDirection, i.normalDir ) ), _RimPower );
             }
 
-			float4 frag(vertexOutput i) : COLOR
+            float4 frag(vertexOutput i) : COLOR
             {
                 float lambertAtten = GetLambertAttenuation(i);
                 float rim = GetRimLighting(i);
@@ -84,7 +84,7 @@ Shader "DCL/FX/Hologram"
                 float finalRimFactor = rim * animatedThrobbing;
                 float3 finalRimColor = _RimColor.rgb * (lambertAtten * finalRimFactor);
 				
-				float4 finalColor = float4( _Color.rgb + finalRimColor, _Color.a + finalRimFactor );
+                float4 finalColor = float4( _Color.rgb + finalRimColor, _Color.a + finalRimFactor );
 
                 // NOTE(Brian): fading code
                 bool insideFadeThreshold;
@@ -107,10 +107,8 @@ Shader "DCL/FX/Hologram"
                 }
 
                 return finalColor;
-			}
-			
-			ENDCG	
-		}		
-	}
-	//FallBack "Specular"
+            }
+        ENDCG	
+        }		
+    }
 }
