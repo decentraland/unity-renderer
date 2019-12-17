@@ -1,3 +1,4 @@
+using DCL;
 using DCL.Components;
 using DCL.Helpers;
 using DCL.Interface;
@@ -7,6 +8,7 @@ using NUnit.Framework;
 using System.Collections;
 using UnityEngine;
 using UnityEngine.TestTools;
+using Cinemachine;
 
 namespace Tests
 {
@@ -713,6 +715,128 @@ namespace Tests
                 });
 
             Assert.IsTrue(eventTriggered);
+        }
+
+        [UnityTest]
+        public IEnumerator OnPointerDownEventWhenEntityIsBehindOther()
+        {
+            yield return InitScene();
+
+            CameraController cameraController = GameObject.FindObjectOfType<CameraController>();
+
+            // Create blocking entity
+            DecentralandEntity blockingEntity;
+            BoxShape blockingShape;
+            InstantiateEntityWithShape(out blockingEntity, out blockingShape);
+            TestHelpers.SetEntityTransform(scene, blockingEntity, new Vector3(3, 3, 3), Quaternion.identity, new Vector3(1, 1, 1));
+            yield return blockingShape.routine;
+
+            // Create target entity for click
+            DecentralandEntity clickTargetEntity;
+            BoxShape clickTargetShape;
+            InstantiateEntityWithShape(out clickTargetEntity, out clickTargetShape);
+            TestHelpers.SetEntityTransform(scene, clickTargetEntity, new Vector3(3, 3, 5), Quaternion.identity, new Vector3(1, 1, 1));
+            yield return clickTargetShape.routine;
+
+            // Set character position and camera rotation
+            DCLCharacterController.i.PauseGravity();
+            DCLCharacterController.i.characterController.enabled = false;
+            DCLCharacterController.i.Teleport(JsonConvert.SerializeObject(new
+            {
+                x = 3f,
+                y = 2f,
+                z = 1f
+            }));
+
+            CinemachineVirtualCamera camMode = cameraController.GetComponentInChildren<CinemachineVirtualCamera>();
+            camMode.Follow = DCLCharacterController.i.transform;
+
+            var cameraRotationPayload = new CameraController.SetRotationPayload()
+            {
+                x = 0, y = 0, z = 0,
+                cameraTarget = new Vector3(0, 0, 1)
+            };
+            cameraController.SetRotation(JsonConvert.SerializeObject(cameraRotationPayload, Formatting.None, new JsonSerializerSettings()
+            {
+                ReferenceLoopHandling = ReferenceLoopHandling.Ignore
+            }));
+
+            yield return null;
+
+            // Create pointer down component and add it to target entity
+            string onPointerId = "pointerevent-1";
+            var OnPointerDownComponentModel = new OnPointerDownComponent.Model()
+            {
+                type = OnPointerDownComponent.NAME,
+                uuid = onPointerId
+            };
+            var component = TestHelpers.EntityComponentCreate<OnPointerDownComponent, OnPointerDownComponent.Model>(scene, clickTargetEntity,
+                OnPointerDownComponentModel, CLASS_ID_COMPONENT.UUID_CALLBACK);
+
+            Assert.IsTrue(component != null);
+
+            string targetEventType = "SceneEvent";
+
+            var onPointerDownEvent = new WebInterface.OnPointerDownEvent();
+            onPointerDownEvent.uuid = onPointerId;
+            onPointerDownEvent.payload = new WebInterface.OnPointerEventPayload();
+            onPointerDownEvent.payload.hit = new WebInterface.OnPointerEventPayload.Hit();
+            onPointerDownEvent.payload.hit.entityId = component.entity.entityId;
+            onPointerDownEvent.payload.hit.meshName = component.name;
+
+            var sceneEvent = new WebInterface.SceneEvent<WebInterface.OnPointerDownEvent>();
+            sceneEvent.sceneId = scene.sceneData.id;
+            sceneEvent.payload = onPointerDownEvent;
+            sceneEvent.eventType = "uuidEvent";
+
+            // Check if target entity is hit behind other entity
+            bool targetEntityHit = false;
+            yield return TestHelpers.WaitForEventFromEngine(targetEventType, sceneEvent,
+                () =>
+                {
+                    DCL.InputController_Legacy.i.RaiseEvent(WebInterface.ACTION_BUTTON.POINTER, DCL.InputController_Legacy.EVENT.BUTTON_DOWN, true);
+                },
+                (pointerEvent) =>
+                {
+                    if (pointerEvent.eventType == "uuidEvent" &&
+                        pointerEvent.payload.uuid == onPointerId &&
+                        pointerEvent.payload.payload.hit.entityId == clickTargetEntity.entityId)
+                    {
+                        targetEntityHit = true;
+                    }
+                    return true;
+                });
+
+            Assert.IsTrue(!targetEntityHit, "Target entity was hit but other entity was blocking it");
+
+            // Move character in front of target entity and rotate camera
+            DCLCharacterController.i.SetPosition(new Vector3(3, 2, 6));
+            cameraRotationPayload.cameraTarget = new Vector3(0, 0, -1);
+            cameraController.SetRotation(JsonConvert.SerializeObject(cameraRotationPayload, Formatting.None, new JsonSerializerSettings()
+            {
+                ReferenceLoopHandling = ReferenceLoopHandling.Ignore
+            }));
+            yield return null;
+
+            // Check if target entity is hit in front of the camera without being blocked
+            targetEntityHit = false;
+            yield return TestHelpers.WaitForEventFromEngine(targetEventType, sceneEvent,
+                () =>
+                {
+                    DCL.InputController_Legacy.i.RaiseEvent(WebInterface.ACTION_BUTTON.POINTER, DCL.InputController_Legacy.EVENT.BUTTON_DOWN, true);
+                },
+                (pointerEvent) =>
+                {
+                    if (pointerEvent.eventType == "uuidEvent" &&
+                        pointerEvent.payload.uuid == onPointerId &&
+                        pointerEvent.payload.payload.hit.entityId == clickTargetEntity.entityId)
+                    {
+                        targetEntityHit = true;
+                    }
+                    return true;
+                });
+
+            Assert.IsTrue(targetEntityHit, "Target entity wasn't hit and no other entity is blocking it");
         }
     }
 }

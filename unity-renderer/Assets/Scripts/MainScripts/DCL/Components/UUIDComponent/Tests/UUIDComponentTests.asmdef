@@ -6,7 +6,9 @@
         "CoroutineHelpers",
         "WebInterface",
         "Utils",
-        "TestHelpers"
+        "TestHelpers",
+        "Cinemachine",
+        "Camera"
     ],
     "optionalUnityReferences": [
         "TestAssemblies"
