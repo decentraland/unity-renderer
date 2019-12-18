@@ -8,7 +8,7 @@
     "name": "author-name",
     "email": ""
   },
-  "main": "bin/game.js",
+  "main": "game.js",
   "tags": [],
   "scene": {
     "parcels": [
