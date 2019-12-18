@@ -75,6 +75,7 @@ import { positionObservable, teleportObservable } from '../shared/world/position
 import { hudWorkerUrl, SceneWorker } from '../shared/world/SceneWorker'
 import { ensureUiApis } from '../shared/world/uiSceneInitializer'
 import { worldRunningObservable } from '../shared/world/worldState'
+import { getEmail } from '../shared/auth/selectors'
 
 const rendererVersion = require('decentraland-renderer')
 window['console'].log('Renderer version: ' + rendererVersion)
@@ -166,6 +167,10 @@ const browserInterface = {
 
   ReportBuilderCameraTarget(data: { id: string; cameraTarget: ReadOnlyVector3 }) {
     futures[data.id].resolve(data.cameraTarget)
+  },
+
+  EditAvatarClicked() {
+    delightedSurvey()
   }
 }
 
@@ -173,6 +178,21 @@ export function setLoadingScreenVisible(shouldShow: boolean) {
   document.getElementById('overlay')!.style.display = shouldShow ? 'block' : 'none'
   document.getElementById('load-messages-wrapper')!.style.display = shouldShow ? 'block' : 'none'
   document.getElementById('progress-bar')!.style.display = shouldShow ? 'block' : 'none'
+}
+
+function delightedSurvey() {
+  const { analytics, delighted, globalStore } = global
+  if (analytics && delighted && globalStore) {
+    const email = getEmail(global.globalStore.getState())
+    const payload = {
+      email: email,
+      properties: {
+        anonymous_id: analytics && analytics.user ? analytics.user().anonymousId() : null
+      }
+    }
+
+    delighted.survey(payload)
+  }
 }
 
 function ensureTeleportAnimation() {
@@ -186,6 +206,7 @@ function ensureTeleportAnimation() {
     'style',
     'background: #151419 url(images/teleport.gif) no-repeat center !important; background-size: 194px 257px !important;'
   )
+  delightedSurvey()
 }
 
 const CHUNK_SIZE = 500
@@ -641,7 +662,7 @@ export async function initializeEngine(_gameInstance: GameInstance) {
     onMessage(type: string, message: any) {
       if (type in browserInterface) {
         // tslint:disable-next-line:semicolon
-        ;(browserInterface as any)[type](message)
+        ; (browserInterface as any)[type](message)
       } else {
         defaultLogger.info(`Unknown message (did you forget to add ${type} to unity-interface/dcl.ts?)`, message)
       }
