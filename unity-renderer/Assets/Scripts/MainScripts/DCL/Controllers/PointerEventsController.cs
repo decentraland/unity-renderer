@@ -167,8 +167,8 @@ namespace DCL
         bool IsBlockingOnClick(RaycastHitInfo targetOnClickHit, RaycastHitInfo potentialBlockerHit)
         {
             return
-                potentialBlockerHit != null // Does a potential blocker hit exist?
-                && targetOnClickHit != null // Was a target entity with a pointer event component hit?
+                potentialBlockerHit.hit.collider != null // Does a potential blocker hit exist?
+                && targetOnClickHit.hit.collider != null // Was a target entity with a pointer event component hit?
                 && potentialBlockerHit.hit.distance <= targetOnClickHit.hit.distance // Is potential blocker nearer than target entity?
                 && !AreCollidersFromSameEntity(potentialBlockerHit, targetOnClickHit); // Does potential blocker belong to other entity rather than target entity?
         }
