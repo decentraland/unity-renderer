@@ -9,7 +9,7 @@ import { EventDispatcher } from 'decentraland-rpc/lib/common/core/EventDispatche
 import { IFuture } from 'fp-future'
 import { Empty } from 'google-protobuf/google/protobuf/empty_pb'
 import { gridToWorld } from '../atomicHelpers/parcelScenePositions'
-import { DEBUG, EDITOR, ENGINE_DEBUG_PANEL, playerConfigurations, SCENE_DEBUG_PANEL } from '../config'
+import { DEBUG, EDITOR, ENGINE_DEBUG_PANEL, playerConfigurations, SCENE_DEBUG_PANEL, SHOW_FPS_COUNTER } from '../config'
 import { Quaternion, ReadOnlyQuaternion, ReadOnlyVector3, Vector3 } from '../decentraland-ecs/src/decentraland/math'
 import { IEventNames, IEvents, ProfileForRenderer } from '../decentraland-ecs/src/decentraland/Types'
 import { sceneLifeCycleObservable } from '../decentraland-loader/lifecycle/controllers/scene'
@@ -299,6 +299,12 @@ export const unityInterface = {
   },
   SetSceneDebugPanel() {
     gameInstance.SendMessage('SceneController', 'SetSceneDebugPanel')
+  },
+  ShowFPSPanel() {
+    gameInstance.SendMessage('SceneController', 'ShowFPSPanel')
+  },
+  HideFPSPanel() {
+    gameInstance.SendMessage('SceneController', 'HideFPSPanel')
   },
   SetEngineDebugPanel() {
     gameInstance.SendMessage('SceneController', 'SetEngineDebugPanel')
@@ -649,6 +655,10 @@ export async function initializeEngine(_gameInstance: GameInstance) {
 
   if (SCENE_DEBUG_PANEL) {
     unityInterface.SetSceneDebugPanel()
+  }
+
+  if (SHOW_FPS_COUNTER) {
+    unityInterface.ShowFPSPanel()
   }
 
   if (ENGINE_DEBUG_PANEL) {
