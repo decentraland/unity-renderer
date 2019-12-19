@@ -209,6 +209,16 @@ namespace DCL
             OnDebugModeSet?.Invoke();
         }
 
+        public void HideFPSPanel()
+        {
+            fpsPanel.SetActive(false);
+        }
+
+        public void ShowFPSPanel()
+        {
+            fpsPanel.SetActive(true);
+        }
+
         public void SetSceneDebugPanel()
         {
             engineDebugPanel.SetActive(false);
