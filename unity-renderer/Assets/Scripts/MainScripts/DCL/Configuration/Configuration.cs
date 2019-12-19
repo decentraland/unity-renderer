@@ -1,4 +1,6 @@
-﻿namespace DCL.Configuration
+﻿using UnityEngine;
+
+namespace DCL.Configuration
 {
     public static class ApplicationSettings
     {
@@ -55,5 +57,12 @@
     {
         public static UnityEngine.Vector2 NORMALIZED_DIMENSIONS = new UnityEngine.Vector2(512f, 512f); // The image dimensions that correspond to Vector3.One scale
         public static string DAR_API_URL = "https://schema.decentraland.org/dar";
+    }
+
+    public static class LayerMasks
+    {
+        public static int characterControllerLayer => 1 << LayerMask.NameToLayer("CharacterController");
+        public static LayerMask physicsCastLayerMask = 1 << LayerMask.NameToLayer("OnPointerEvent");
+        public static LayerMask physicsCastLayerMaskWithoutCharacter = physicsCastLayerMask & (~(characterControllerLayer));
     }
 }

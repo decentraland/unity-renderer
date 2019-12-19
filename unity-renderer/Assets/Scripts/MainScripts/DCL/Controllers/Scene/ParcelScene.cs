@@ -612,14 +612,14 @@ namespace DCL.Controllers
                 {
                     switch (type)
                     {
-                        case OnClickComponent.NAME:
-                            newComponent = Utils.GetOrCreateComponent<OnClickComponent>(entity.gameObject);
+                        case OnClick.NAME:
+                            newComponent = Utils.GetOrCreateComponent<OnClick>(entity.gameObject);
                             break;
-                        case OnPointerDownComponent.NAME:
-                            newComponent = Utils.GetOrCreateComponent<OnPointerDownComponent>(entity.gameObject);
+                        case OnPointerDown.NAME:
+                            newComponent = Utils.GetOrCreateComponent<OnPointerDown>(entity.gameObject);
                             break;
-                        case OnPointerUpComponent.NAME:
-                            newComponent = Utils.GetOrCreateComponent<OnPointerUpComponent>(entity.gameObject);
+                        case OnPointerUp.NAME:
+                            newComponent = Utils.GetOrCreateComponent<OnPointerUp>(entity.gameObject);
                             break;
                     }
 
@@ -956,14 +956,14 @@ namespace DCL.Controllers
                         entity.meshesInfo.currentShape.DetachFrom(entity);
                     }
                     return;
-                case OnClickComponent.NAME:
-                    RemoveUUIDComponentType<OnClickComponent>(entity, componentName);
+                case OnClick.NAME:
+                    RemoveUUIDComponentType<OnClick>(entity, componentName);
                     return;
-                case OnPointerDownComponent.NAME:
-                    RemoveUUIDComponentType<OnPointerDownComponent>(entity, componentName);
+                case OnPointerDown.NAME:
+                    RemoveUUIDComponentType<OnPointerDown>(entity, componentName);
                     return;
-                case OnPointerUpComponent.NAME:
-                    RemoveUUIDComponentType<OnPointerUpComponent>(entity, componentName);
+                case OnPointerUp.NAME:
+                    RemoveUUIDComponentType<OnPointerUp>(entity, componentName);
                     return;
             }
         }
