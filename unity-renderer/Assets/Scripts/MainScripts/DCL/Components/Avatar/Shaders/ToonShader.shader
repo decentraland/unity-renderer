@@ -100,4 +100,6 @@ Shader "DCL/Toon Shader"
 			ENDCG
 		}
 	}
+
+    Fallback "DCL/LWRP/Lit"
 }

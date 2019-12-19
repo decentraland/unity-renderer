@@ -1,4 +1,4 @@
-﻿using UnityEngine;
+using UnityEngine;
 
 public class AvatarAnimatorLegacy : MonoBehaviour
 {
@@ -50,6 +50,8 @@ public class AvatarAnimatorLegacy : MonoBehaviour
     public AnimationCurve runBlendtreeCurve;
     public AnimationCurve idleBlendtreeCurve;
 
+    public bool useDeltaTimeInsteadOfGlobalSpeed = false;
+    public float globalSpeed = 0.05f;
 
     System.Action<BlackBoard> currentState;
 
@@ -114,10 +116,17 @@ public class AvatarAnimatorLegacy : MonoBehaviour
 
     void State_Ground(BlackBoard bb)
     {
-        animation[clips.run].normalizedSpeed = bb.movementSpeed / Time.deltaTime * bb.runSpeedFactor;
-        animation[clips.walk].normalizedSpeed = bb.movementSpeed / Time.deltaTime * bb.walkSpeedFactor;
+        float dt;
 
-        float normalizedSpeed = bb.movementSpeed / Time.deltaTime / MAX_VELOCITY;
+        if (useDeltaTimeInsteadOfGlobalSpeed)
+            dt = Time.deltaTime;
+        else
+            dt = globalSpeed;
+
+        animation[clips.run].normalizedSpeed = bb.movementSpeed / dt * bb.runSpeedFactor;
+        animation[clips.walk].normalizedSpeed = bb.movementSpeed / dt * bb.walkSpeedFactor;
+
+        float normalizedSpeed = bb.movementSpeed / dt / MAX_VELOCITY;
 
         float idleWeight = idleBlendtreeCurve.Evaluate(normalizedSpeed);
         float runWeight = runBlendtreeCurve.Evaluate(normalizedSpeed);
