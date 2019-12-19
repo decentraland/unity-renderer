@@ -787,12 +787,12 @@ namespace DCL.Helpers
 
             Assert.IsTrue(renderers.Length > 0);
 
-            var onClickComponentModel = new OnClickComponent.Model()
+            var onClickComponentModel = new OnClick.Model()
             {
-                type = OnClickComponent.NAME,
+                type = OnClick.NAME,
                 uuid = "onClick"
             };
-            var onClickComponent = TestHelpers.EntityComponentCreate<OnClickComponent, OnClickComponent.Model>(entity.scene, entity, onClickComponentModel, CLASS_ID_COMPONENT.UUID_CALLBACK);
+            var onClickComponent = TestHelpers.EntityComponentCreate<OnClick, OnClick.Model>(entity.scene, entity, onClickComponentModel, CLASS_ID_COMPONENT.UUID_CALLBACK);
             yield return onClickComponent.routine;
 
             Collider onPointerEventCollider;

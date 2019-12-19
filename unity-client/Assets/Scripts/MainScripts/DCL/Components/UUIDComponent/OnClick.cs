@@ -6,7 +6,7 @@ using DCL.Interface;
 
 namespace DCL.Components
 {
-    public class OnClickComponent : OnPointerEventComponent
+    public class OnClick : OnPointerEvent
     {
         public const string NAME = "onClick";
 

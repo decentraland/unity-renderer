@@ -7,15 +7,25 @@ using UnityEngine;
 
 namespace DCL
 {
+    public class UUIDComponent<ModelType> : UUIDComponent where ModelType : UUIDComponent.Model, new()
+    {
+        new public ModelType model
+        {
+            get { return base.model as ModelType; }
+            set { base.model = value; }
+        }
+    }
+
     public class UUIDComponent : BaseComponent
     {
+        [System.Serializable]
         public class Model
         {
             public string type;
             public string uuid;
         }
 
-        public Model model;
+        public Model model = new Model();
 
         public virtual void Setup(ParcelScene scene, DecentralandEntity entity, string uuid, string type)
         {
@@ -30,14 +40,14 @@ namespace DCL
         {
             switch (type)
             {
-                case OnClickComponent.NAME:
-                    SetUpComponent<OnClickComponent>(scene, entity, uuid, type);
+                case OnClick.NAME:
+                    SetUpComponent<OnClick>(scene, entity, uuid, type);
                     return;
-                case OnPointerDownComponent.NAME:
-                    SetUpComponent<OnPointerDownComponent>(scene, entity, uuid, type);
+                case OnPointerDown.NAME:
+                    SetUpComponent<OnPointerDown>(scene, entity, uuid, type);
                     return;
-                case OnPointerUpComponent.NAME:
-                    SetUpComponent<OnPointerUpComponent>(scene, entity, uuid, type);
+                case OnPointerUp.NAME:
+                    SetUpComponent<OnPointerUp>(scene, entity, uuid, type);
                     return;
             }
 
@@ -48,21 +58,21 @@ namespace DCL
         {
             switch (type)
             {
-                case OnClickComponent.NAME:
-                    RemoveComponent<OnClickComponent>(entity);
+                case OnClick.NAME:
+                    RemoveComponent<OnClick>(entity);
                     break;
-                case OnPointerDownComponent.NAME:
-                    RemoveComponent<OnPointerDownComponent>(entity);
+                case OnPointerDown.NAME:
+                    RemoveComponent<OnPointerDown>(entity);
                     break;
-                case OnPointerUpComponent.NAME:
-                    RemoveComponent<OnPointerUpComponent>(entity);
+                case OnPointerUp.NAME:
+                    RemoveComponent<OnPointerUp>(entity);
                     break;
             }
 
             Debug.LogWarning($"Cannot remove UUIDComponent of type '{type}'.");
         }
 
-        private void RemoveComponent<T>(DecentralandEntity entity) where T : UUIDComponent
+        protected virtual void RemoveComponent<T>(DecentralandEntity entity) where T : UUIDComponent
         {
             var currentComponent = entity.gameObject.GetComponent<T>();
 

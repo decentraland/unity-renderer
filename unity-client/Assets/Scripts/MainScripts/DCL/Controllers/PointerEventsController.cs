@@ -1,26 +1,25 @@
 ﻿using DCL.Components;
 using DCL.Helpers;
 using DCL.Interface;
+using System.Collections;
 using UnityEngine;
 
 namespace DCL
 {
     public class PointerEventsController : Singleton<PointerEventsController>
     {
-        private LayerMask layerMaskTarget;
-        private static int characterControllerLayer => 1 << LayerMask.NameToLayer("CharacterController");
-
         public static bool renderingIsDisabled = true;
-        private OnPointerUpComponent pointerUpEvent;
-        private RaycastHitInfo lastPointerDownEventHitInfo;
-        private IRaycastHandler raycastHandler = new RaycastHandler();
-        private Camera charCamera;
-        private bool isTesting = false;
 
-        public PointerEventsController()
-        {
-            layerMaskTarget = 1 << LayerMask.NameToLayer("OnPointerEvent");
-        }
+        public bool enableInteractionHoverFeedback = false;
+
+        bool isTesting = false;
+        RaycastHitInfo lastPointerDownEventHitInfo;
+        OnPointerUp pointerUpEvent;
+        IRaycastHandler raycastHandler = new RaycastHandler();
+        Camera charCamera;
+        OnPointerEvent lastHoveredObject = null;
+        OnPointerEvent newHoveredObject = null;
+        Coroutine hoverInteractiveObjectsRoutine;
 
         public void Initialize(bool isTesting = false)
         {
@@ -31,6 +30,64 @@ namespace DCL
             InputController_Legacy.i.AddListener(WebInterface.ACTION_BUTTON.SECONDARY, OnButtonEvent);
 
             RetrieveCamera();
+
+            StartInteractiveObjectsHoverRoutine();
+        }
+
+        public void StartInteractiveObjectsHoverRoutine()
+        {
+            if (enableInteractionHoverFeedback && hoverInteractiveObjectsRoutine == null)
+                hoverInteractiveObjectsRoutine = SceneController.i.StartCoroutine(HoverInteractiveObjects());
+        }
+
+        IEnumerator HoverInteractiveObjects()
+        {
+            RaycastHit hitInfo;
+
+            while (true)
+            {
+                if (!RenderingController.i.renderingEnabled)
+                {
+                    yield return null;
+                    continue;
+                }
+
+                // We use Physics.Raycast() instead of our raycastHandler.Raycast() as that one is slower, sometimes 2x, because it fetches info we don't need here
+                if (Physics.Raycast(GetRayFromCamera(), out hitInfo, Mathf.Infinity, Configuration.LayerMasks.physicsCastLayerMaskWithoutCharacter))
+                {
+                    newHoveredObject = hitInfo.transform.GetComponentInParent<OnPointerEvent>();
+
+                    if (newHoveredObject != null && newHoveredObject.IsAtHoverDistance(hitInfo.distance))
+                    {
+                        if (newHoveredObject != lastHoveredObject)
+                        {
+                            UnhoverLastHoveredObject();
+
+                            newHoveredObject.SetHoverState(true);
+
+                            lastHoveredObject = newHoveredObject;
+                        }
+                    }
+                    else
+                    {
+                        UnhoverLastHoveredObject();
+                    }
+                }
+                else
+                {
+                    UnhoverLastHoveredObject();
+                }
+
+                yield return null;
+            }
+        }
+
+        void UnhoverLastHoveredObject()
+        {
+            if (lastHoveredObject == null) return;
+
+            lastHoveredObject.SetHoverState(false);
+            lastHoveredObject = null;
         }
 
         public void Cleanup()
@@ -38,9 +95,12 @@ namespace DCL
             InputController_Legacy.i.RemoveListener(WebInterface.ACTION_BUTTON.POINTER, OnButtonEvent);
             InputController_Legacy.i.RemoveListener(WebInterface.ACTION_BUTTON.PRIMARY, OnButtonEvent);
             InputController_Legacy.i.RemoveListener(WebInterface.ACTION_BUTTON.SECONDARY, OnButtonEvent);
+
+            lastHoveredObject = null;
+            newHoveredObject = null;
         }
 
-        private void RetrieveCamera()
+        void RetrieveCamera()
         {
             if (charCamera == null)
             {
@@ -48,7 +108,7 @@ namespace DCL
             }
         }
 
-        private Ray GetRayFromCamera()
+        public Ray GetRayFromCamera()
         {
             return charCamera.ScreenPointToRay(new Vector3(Screen.width / 2, Screen.height / 2, 0));
         }
@@ -65,8 +125,8 @@ namespace DCL
                         return;
                 }
 
-                var pointerEventLayer = layerMaskTarget & (~characterControllerLayer); //Ensure characterController is being filtered
-                var globalLayer = ~layerMaskTarget & (~characterControllerLayer); //Ensure characterController is being filtered
+                var pointerEventLayer = Configuration.LayerMasks.physicsCastLayerMaskWithoutCharacter; //Ensure characterController is being filtered
+                var globalLayer = ~Configuration.LayerMasks.physicsCastLayerMask & (~Configuration.LayerMasks.characterControllerLayer); //Ensure characterController is being filtered
                 RaycastHitInfo raycastGlobalLayerHitInfo;
 
                 if (evt == InputController_Legacy.EVENT.BUTTON_DOWN)
@@ -88,10 +148,10 @@ namespace DCL
                     {
                         GameObject go = raycastInfoPointerEventLayer.hitInfo.hit.rigidbody.gameObject;
 
-                        go.GetComponentInChildren<OnClickComponent>()?.Report(buttonId);
-                        go.GetComponentInChildren<OnPointerDownComponent>()?.Report(buttonId, ray, raycastInfoPointerEventLayer.hitInfo.hit);
+                        go.GetComponentInChildren<OnClick>()?.Report(buttonId);
+                        go.GetComponentInChildren<OnPointerDown>()?.Report(buttonId, ray, raycastInfoPointerEventLayer.hitInfo.hit);
 
-                        pointerUpEvent = go.GetComponentInChildren<OnPointerUpComponent>();
+                        pointerUpEvent = go.GetComponentInChildren<OnPointerUp>();
                         lastPointerDownEventHitInfo = raycastInfoPointerEventLayer.hitInfo;
                     }
 

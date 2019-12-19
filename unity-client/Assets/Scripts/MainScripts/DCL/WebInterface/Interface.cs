@@ -91,6 +91,7 @@ namespace DCL.Interface
             POINTER,
             PRIMARY,
             SECONDARY,
+            UNKNOWN
         }
 
         [System.Serializable]
