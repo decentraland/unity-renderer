@@ -605,6 +605,8 @@ MonoBehaviour:
     m_PreInfinity: 2
     m_PostInfinity: 2
     m_RotationOrder: 4
+  useDeltaTimeInsteadOfGlobalSpeed: 1
+  globalSpeed: 0.06
 --- !u!114 &122622683908687435
 MonoBehaviour:
   m_ObjectHideFlags: 0

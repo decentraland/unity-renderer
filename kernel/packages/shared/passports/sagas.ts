@@ -140,19 +140,25 @@ export function* handleFetchProfile(action: PassportRequestAction): any {
     if (currentId === userId) {
       profile.email = yield select(getEmail)
     }
-    if (profile.ethAddress) {
-      yield put(inventoryRequest(userId, profile.ethAddress))
-      const inventoryResult = yield race({
-        success: take(isActionFor(INVENTORY_SUCCESS, userId)),
-        failure: take(isActionFor(INVENTORY_FAILURE, userId))
-      })
-      if (inventoryResult.failure) {
-        defaultLogger.error(`Unable to fetch inventory for ${userId}:`, inventoryResult.failure)
-      } else {
-        profile.inventory = (inventoryResult.success as InventorySuccess).payload.inventory.map(dropIndexFromExclusives)
-      }
+    if (ALL_WEARABLES) {
+      profile.inventory = (yield select(getExclusiveCatalog)).map((_: Wearable) => _.id)
     } else {
-      profile.inventory = []
+      if (profile.ethAddress) {
+        yield put(inventoryRequest(userId, profile.ethAddress))
+        const inventoryResult = yield race({
+          success: take(isActionFor(INVENTORY_SUCCESS, userId)),
+          failure: take(isActionFor(INVENTORY_FAILURE, userId))
+        })
+        if (inventoryResult.failure) {
+          defaultLogger.error(`Unable to fetch inventory for ${userId}:`, inventoryResult.failure)
+        } else {
+          profile.inventory = (inventoryResult.success as InventorySuccess).payload.inventory.map(
+            dropIndexFromExclusives
+          )
+        }
+      } else {
+        profile.inventory = []
+      }
     }
     const passport = yield call(processServerProfile, userId, profile)
     yield put(passportSuccess(userId, passport))
@@ -232,6 +238,7 @@ export function* submitPassportToRenderer(action: PassportSuccessAction): any {
       yield take(CATALOG_LOADED)
     }
     const profile = { ...action.payload.profile }
+    // FIXIT - need to have this duplicated here, as the inventory won't be used if not - moliva - 17/12/2019
     if (ALL_WEARABLES) {
       profile.inventory = (yield select(getExclusiveCatalog)).map((_: Wearable) => _.id)
     }

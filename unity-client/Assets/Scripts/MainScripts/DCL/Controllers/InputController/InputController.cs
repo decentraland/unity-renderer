@@ -26,7 +26,7 @@ public enum DCLAction_Measurable
 
 public class InputController : MonoBehaviour
 {
-    public static bool ENABLE_THIRD_PERSON_CAMERA = false;
+    public static bool ENABLE_THIRD_PERSON_CAMERA = true;
 
     public InputAction_Trigger[] triggerTimeActions;
     public InputAction_Hold[] holdActions;
