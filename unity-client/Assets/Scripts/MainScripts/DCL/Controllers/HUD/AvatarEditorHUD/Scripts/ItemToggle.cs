@@ -29,7 +29,7 @@ public class ItemToggle : UIButton, IPointerEnterHandler, IPointerExitHandler
         }
     }
 
-    private new void Awake()
+    protected new virtual void Awake()
     {
         base.Awake();
 
@@ -47,7 +47,7 @@ public class ItemToggle : UIButton, IPointerEnterHandler, IPointerExitHandler
         warningPanel.SetActive(false);
     }
 
-    public void Initialize(WearableItem w, bool isSelected)
+    public virtual void Initialize(WearableItem w, bool isSelected)
     {
         wearableItem = w;
         selected = isSelected;

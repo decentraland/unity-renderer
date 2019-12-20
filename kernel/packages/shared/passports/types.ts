@@ -51,6 +51,8 @@ export interface AvatarForRenderer {
   wearables: WearableId[]
 }
 
+export type Collection = { id: string; wearables: Wearable }
+
 export type Wearable = {
   id: WearableId
   type: 'wearable'

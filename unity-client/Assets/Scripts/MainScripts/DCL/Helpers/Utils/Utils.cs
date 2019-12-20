@@ -104,14 +104,14 @@ namespace DCL.Helpers
             t.ForceUpdateRectTransforms();
         }
 
-        public static void InverseTreeTraversal<TComponent>(Action<TComponent> action, Transform startTransform)
+        public static void InverseTransformChildTraversal<TComponent>(Action<TComponent> action, Transform startTransform)
             where TComponent : Component
         {
             Assert.IsTrue(startTransform != null, "startTransform must not be null");
 
             foreach (Transform t in startTransform)
             {
-                InverseTreeTraversal(action, t);
+                InverseTransformChildTraversal(action, t);
             }
 
             var component = startTransform.GetComponent<TComponent>();

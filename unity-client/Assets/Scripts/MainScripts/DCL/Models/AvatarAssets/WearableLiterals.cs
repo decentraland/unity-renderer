@@ -13,7 +13,7 @@ public static class WearableLiterals
         public const string BASE_WEARABLE = "base-wearable";
         public const string EXCLUSIVE = "exclusive";
     }
-    
+
     public static class Categories
     {
         public const string BODY_SHAPE = "body_shape";
@@ -31,6 +31,15 @@ public static class WearableLiterals
     {
         public const string FEMALE = "dcl://base-avatars/BaseFemale";
         public const string MALE = "dcl://base-avatars/BaseMale";
+    }
+
+    public static class ItemRarity
+    {
+        public const string SWANKY = "swanky";
+        public const string EPIC = "epic";
+        public const string LEGENDARY = "legendary";
+        public const string MYTHIC = "mythic";
+        public const string UNIQUE = "unique";
     }
 
     public static class DefaultWearables

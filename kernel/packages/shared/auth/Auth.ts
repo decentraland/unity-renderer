@@ -113,7 +113,6 @@ export class Auth {
     return new Promise((resolve, reject) => {
       this.webAuth.parseHash((err, auth) => {
         if (err) {
-          debugger
           reject(err)
           return
         }

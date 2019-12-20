@@ -197,7 +197,7 @@ export function getExclusiveServer() {
   if (window.location.search.match(/TEST_WEARABLES/)) {
     return 'https://dcl-wearables-dev.now.sh/index.json'
   }
-  return 'https://dcl-wearables.now.sh/index.json'
+  return 'https://wearable-api.decentraland.org/v2/collections'
 }
 
 export const ALL_WEARABLES = location.search.indexOf('ALL_WEARABLES') !== -1 && getDefaultTLD() !== 'org'
@@ -227,7 +227,7 @@ export function getServerConfigurations() {
     contentAsBundle: `https://content-as-bundle.decentraland.zone`,
     worldInstanceUrl: `wss://world-comm.decentraland.${TLDDefault}/connect`,
     profile: `https://profile.decentraland.${TLDDefault}/api/v1`,
-    wearablesApi: `https://wearable-api.decentraland.org/v1`,
+    wearablesApi: `https://wearable-api.decentraland.org/v2`,
     avatar: {
       snapshotStorage: `https://avatars-storage.decentraland.${TLDDefault}/`,
       server: `https://avatars-api.decentraland.${TLDDefault === 'zone' ? 'today' : TLDDefault}/`,

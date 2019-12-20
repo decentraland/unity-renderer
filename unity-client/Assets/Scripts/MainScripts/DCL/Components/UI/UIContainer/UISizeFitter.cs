@@ -157,7 +157,7 @@ public class UISizeFitter : MonoBehaviour
 
     public void RefreshRecursively(Transform startTransform = null)
     {
-        Utils.InverseTreeTraversal<UISizeFitter>(RefreshRecursively_Node, transform);
+        Utils.InverseTransformChildTraversal<UISizeFitter>(RefreshRecursively_Node, transform);
     }
 
 #if UNITY_EDITOR

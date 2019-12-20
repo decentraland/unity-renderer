@@ -12,10 +12,21 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 23300c19748554de6be6160a98d939df, type: 3}
   m_Name: ItemToggleFactory
   m_EditorClassIdentifier: 
-  factoryList:
-  - type: base-wearable
-    prefab: {fileID: 3111115372682583232, guid: da54ec2c2cb194fd28a355c63152233f,
+  baseWearable: {fileID: 3111115372682583232, guid: da54ec2c2cb194fd28a355c63152233f,
+    type: 3}
+  nftList:
+  - rarity: swanky
+    prefab: {fileID: 3325800490922572695, guid: bb9dc3b0ab578493bb5ebb55d2ad088f,
       type: 3}
-  - type: exclusive
-    prefab: {fileID: 3111115372682583232, guid: b5b05a766c2b14c3b93c2ed6d817e3cc,
+  - rarity: epic
+    prefab: {fileID: 3325800490922572695, guid: 1117e61fc6ea87c4f84f3babf7734f2a,
+      type: 3}
+  - rarity: legendary
+    prefab: {fileID: 3325800490922572695, guid: 9c3acdac149f14a44922464d8592ee3f,
+      type: 3}
+  - rarity: mythic
+    prefab: {fileID: 3325800490922572695, guid: a144335e80bbb4dec8552542e58080e8,
+      type: 3}
+  - rarity: unique
+    prefab: {fileID: 3325800490922572695, guid: 2095618ba759b45739751d01ced3888d,
       type: 3}
