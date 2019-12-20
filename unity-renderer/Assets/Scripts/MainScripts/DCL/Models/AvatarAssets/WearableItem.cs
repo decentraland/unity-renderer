@@ -25,6 +25,15 @@ public class WearableItem : Item
     public string[] hides;
     public string[] replaces;
 
+    //This fields are temporary, once Kernel is finished we must move them to wherever they are placed
+    public string rarity;
+    public string description;
+    public int issuedId;
+
+
+    private readonly Dictionary<string, string> cachedI18n = new Dictionary<string, string>();
+
+
     public Representation GetRepresentation(string bodyShapeType)
     {
         if (representations == null) return null;
@@ -104,8 +113,37 @@ public class WearableItem : Item
 
     public bool IsCollectible()
     {
-        return !tags.Contains(WearableLiterals.Tags.BASE_WEARABLE);
+        return !string.IsNullOrEmpty(rarity);
     }
+
+    public string GetName(string langCode = "en")
+    {
+        if (!cachedI18n.ContainsKey(langCode))
+        {
+            cachedI18n.Add(langCode, i18n.FirstOrDefault(x => x.code == langCode)?.text);
+        }
+        return cachedI18n[langCode];
+    }
+
+    public int GetIssuedCountFromRarity(string rarity)
+    {
+        switch (rarity)
+        {
+            case WearableLiterals.ItemRarity.SWANKY:
+                return 5000;
+            case WearableLiterals.ItemRarity.EPIC:
+                return 1000;
+            case WearableLiterals.ItemRarity.LEGENDARY:
+                return 100;
+            case WearableLiterals.ItemRarity.MYTHIC:
+                return 10;
+            case WearableLiterals.ItemRarity.UNIQUE:
+                return 1;
+        }
+
+        return int.MaxValue;
+    }
+
 }
 
 [System.Serializable]

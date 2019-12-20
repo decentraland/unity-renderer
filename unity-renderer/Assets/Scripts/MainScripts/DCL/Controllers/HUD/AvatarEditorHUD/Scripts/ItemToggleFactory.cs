@@ -1,55 +1,61 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using UnityEngine;
 
 public class ItemToggleFactory : ScriptableObject
 {
     [System.Serializable]
-    public class ItemToggleItem
+    public class NftMap
     {
-        public string type;
+        public string rarity;
         public ItemToggle prefab;
     }
 
-    public ItemToggleItem[] factoryList;
+    public ItemToggle baseWearable;
+    public NftMap[] nftList;
 
-    private Dictionary<string, ItemToggleItem> factoryDict;
+    internal Dictionary<string, NftMap> nftDictionary;
 
-    public void EnsueFactoryDictionary()
+    public void EnsureNFTDictionary()
     {
-        if (factoryDict == null)
+        if (nftDictionary == null)
         {
-            factoryDict = new Dictionary<string, ItemToggleItem>();
+            nftDictionary = new Dictionary<string, NftMap>();
 
-            for (int i = 0; i < factoryList.Length; i++)
+            for (int i = 0; i < nftList.Length; i++)
             {
-                ItemToggleItem itemToggleItem = factoryList[i];
+                NftMap nftMap = nftList[i];
 
-                if (!factoryDict.ContainsKey(itemToggleItem.type))
+                if (!nftDictionary.ContainsKey(nftMap.rarity))
                 {
-                    factoryDict.Add(itemToggleItem.type, itemToggleItem);
+                    nftDictionary.Add(nftMap.rarity, nftMap);
                 }
             }
         }
     }
 
-    public ItemToggle CreateItemToggleFromType(string type, Transform parent = null)
+    public ItemToggle CreateBaseWearable(Transform parent = null)
     {
-        EnsueFactoryDictionary();
+        return parent == null ? Instantiate(baseWearable) : Instantiate(baseWearable, parent);
+    }
 
-        if (!factoryDict.ContainsKey(type))
+    public ItemToggle CreateItemToggleFromRarity(string rarity, Transform parent = null)
+    {
+        EnsureNFTDictionary();
+
+        if (!nftDictionary.ContainsKey(rarity))
         {
 #if UNITY_EDITOR
-            Debug.LogError("Notification of type " + type + " can't be instantiated because it does not exist in the factory!");
+            Debug.LogError("Item toggle of rarity " + rarity + " can't be instantiated because it does not exist in the factory!");
 #endif
-            return null;
+            return CreateBaseWearable(parent);
         }
 
-        if (factoryDict[type].prefab == null)
+        if (nftDictionary[rarity].prefab == null)
         {
-            Debug.LogError("Prefab for type " + type + " is null!");
-            return null;
+            Debug.LogError("Prefab for rarity " + rarity + " is null!");
+            return CreateBaseWearable(parent);
         }
 
-        return parent == null ? Instantiate(factoryDict[type].prefab) : Instantiate(factoryDict[type].prefab, parent);
+        return parent == null ? Instantiate(nftDictionary[rarity].prefab) : Instantiate(nftDictionary[rarity].prefab, parent);
     }
 }

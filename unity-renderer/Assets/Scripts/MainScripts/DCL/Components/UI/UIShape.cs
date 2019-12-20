@@ -1,4 +1,4 @@
-﻿using DCL.Controllers;
+using DCL.Controllers;
 using DCL.Helpers;
 using System.Collections;
 using UnityEngine;
@@ -286,7 +286,7 @@ namespace DCL.Components
 
             Assert.IsTrue(rootParent != null, "root parent must never be null");
 
-            Utils.InverseTreeTraversal<UIReferencesContainer>(
+            Utils.InverseTransformChildTraversal<UIReferencesContainer>(
                 (x) =>
                 {
                     if (x.owner != null)
@@ -303,7 +303,7 @@ namespace DCL.Components
 
             Assert.IsTrue(rootParent != null, "root parent must never be null");
 
-            Utils.InverseTreeTraversal<UIReferencesContainer>(
+            Utils.InverseTransformChildTraversal<UIReferencesContainer>(
                 (x) =>
                 {
                     if (x.owner != null)

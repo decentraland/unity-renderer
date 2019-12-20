@@ -49,7 +49,7 @@ import {
 import { processServerProfile } from './transformations/processServerProfile'
 import { profileToRendererFormat } from './transformations/profileToRendererFormat'
 import { ensureServerFormat } from './transformations/profileToServerFormat'
-import { Avatar, Catalog, Profile, WearableId, Wearable } from './types'
+import { Avatar, Catalog, Profile, WearableId, Wearable, Collection } from './types'
 import { Action } from 'redux'
 
 const isActionFor = (type: string, userId: string) => (action: any) =>
@@ -115,9 +115,23 @@ function takeLatestById<T extends Action>(
   })
 }
 
+function overrideBaseUrl(wearable: Wearable) {
+  return { ...wearable, baseUrl: 'https://content.decentraland.org/contents/' }
+}
+
+declare const window: any
+
 export function* initialLoad() {
   try {
-    const catalog = yield call(fetchCatalog, getServerConfigurations().avatar.catalog)
+    let collections: Collection[]
+    if (window.location.search.match(/TEST_WEARABLES/)) {
+      collections = [{ id: 'all', wearables: yield call(fetchCatalog, getServerConfigurations().avatar.catalog) }]
+    } else {
+      collections = yield call(fetchCatalog, getServerConfigurations().avatar.catalog)
+    }
+    const catalog = collections
+      .reduce((flatten, collection) => flatten.concat(collection.wearables), [] as Wearable[])
+      .map(overrideBaseUrl)
     const baseAvatars = catalog.filter((_: Wearable) => !_.tags.includes('exclusive'))
     const baseExclusive = catalog.filter((_: Wearable) => _.tags.includes('exclusive'))
     if (!(yield select(isInitialized))) {
@@ -214,8 +228,6 @@ export async function fetchCatalog(url: string) {
   return request.json()
 }
 
-declare var window: any
-
 export function sendWearablesCatalog(catalog: Catalog) {
   window['unityInterface'].AddWearablesToCatalog(catalog)
 }
@@ -281,11 +293,13 @@ function dropIndexFromExclusives(exclusive: string) {
 }
 
 export async function fetchInventoryItemsByAddress(address: string) {
-  const result = await fetch(getServerConfigurations().wearablesApi + '/address/' + address)
+  const result = await fetch(`${getServerConfigurations().wearablesApi}/addresses/${address}/wearables?fields=id`)
   if (!result.ok) {
     throw new Error('Unable to fetch inventory for address ' + address)
   }
-  return (await result.json()).inventory
+  const inventory: { id: string }[] = await result.json()
+
+  return inventory.map(wearable => wearable.id)
 }
 
 export function* handleSaveAvatar(saveAvatar: SaveAvatarRequest) {

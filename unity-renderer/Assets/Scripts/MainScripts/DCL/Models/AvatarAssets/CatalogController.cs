@@ -1,7 +1,8 @@
-﻿using UnityEngine;
+using UnityEngine;
 
 public class CatalogController : MonoBehaviour
 {
+    public static bool VERBOSE = false;
     public static CatalogController i { get; private set; }
 
     private static ItemDictionary itemCatalogValue;
@@ -42,6 +43,10 @@ public class CatalogController : MonoBehaviour
     public void AddWearableToCatalog(string payload)
     {
         Item item = JsonUtility.FromJson<Item>(payload);
+
+        if (VERBOSE)
+            Debug.Log("add wearable: " + payload);
+
         switch (item.type)
         {
             case "wearable":

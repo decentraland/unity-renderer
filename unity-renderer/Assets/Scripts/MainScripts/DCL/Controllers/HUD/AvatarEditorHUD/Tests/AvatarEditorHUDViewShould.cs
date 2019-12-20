@@ -1,8 +1,7 @@
+using AvatarShape_Tests;
+using NUnit.Framework;
 using System.Collections;
 using System.Collections.Generic;
-using AvatarShape_Tests;
-using DCL.Helpers;
-using NUnit.Framework;
 using UnityEngine;
 using UnityEngine.TestTools;
 
@@ -128,29 +127,78 @@ namespace AvatarEditorHUD_Tests
                     bodyShape = WearableLiterals.BodyShapes.FEMALE,
                     wearables = new List<string>() { },
                 },
-                inventory = new []{ wearableId}
+                inventory = new[] { wearableId }
             });
 
             Assert.IsTrue(controller.myView.collectiblesItemSelector.itemToggles.ContainsKey(wearableId));
         }
 
-        [UnityTest]
-        public IEnumerator UpdateAvatarPreview()
+        [Test]
+        [TestCase(WearableLiterals.ItemRarity.SWANKY)]
+        [TestCase(WearableLiterals.ItemRarity.EPIC)]
+        [TestCase(WearableLiterals.ItemRarity.LEGENDARY)]
+        [TestCase(WearableLiterals.ItemRarity.MYTHIC)]
+        [TestCase(WearableLiterals.ItemRarity.UNIQUE)]
+        public void CreateNFTsButtonsByRarityCorrectly(string rarity)
         {
-            controller.bypassUpdateAvatarPreview = false;
+            WearableItem dummyItem = CreateDummyNFT(rarity);
+
+            var selector = controller.myView.selectorsByCategory[dummyItem.category];
+            var itemToggleObject = selector.itemToggles[dummyItem.id].gameObject;
+
+            var originalName = selector.itemToggleFactory.nftDictionary[rarity].prefab.name;
+
+            Assert.IsTrue(itemToggleObject.name.Contains(originalName)); //Comparing names because PrefabUtility.GetOutermostPrefabInstanceRoot(itemToggleObject) is returning null
+        }
+
+        [Test]
+        public void FillNFTInfoPanelCorrectly()
+        {
+            WearableItem dummyItem = CreateDummyNFT(WearableLiterals.ItemRarity.EPIC);
+
+            var itemToggle = controller.myView.selectorsByCategory[dummyItem.category].itemToggles[dummyItem.id];
+            var nftInfo = (itemToggle as NFTItemToggle)?.nftItemInfo;
+
+            Assert.NotNull(nftInfo);
+            Assert.AreEqual(dummyItem.GetName(), nftInfo.name.text);
+            Assert.AreEqual(dummyItem.description, nftInfo.description.text);
+            Assert.AreEqual($"{dummyItem.issuedId} / {dummyItem.GetIssuedCountFromRarity(dummyItem.rarity)}", nftInfo.minted.text);
+        }
+
+        private WearableItem CreateDummyNFT(string rarity)
+        {
+            var dummyItem = new WearableItem()
+            {
+                id = "dummyItem",
+                rarity = rarity,
+                category = WearableLiterals.Categories.EYES,
+                description = "My Description",
+                issuedId = 1,
+                representations = new[]
+                {
+                    new WearableItem.Representation()
+                    {
+                        bodyShapes = new [] { WearableLiterals.BodyShapes.FEMALE, WearableLiterals.BodyShapes.MALE },
+                    }
+                },
+                tags = new[] { WearableLiterals.Tags.EXCLUSIVE },
+                i18n = new[] { new i18n() { code = "en", text = "Dummy Item" } }
+            };
+
             userProfile.UpdateData(new UserProfileModel()
             {
                 name = "name",
                 email = "mail",
                 avatar = new AvatarModel()
                 {
-                    bodyShape = WearableLiterals.BodyShapes.MALE,
+                    bodyShape = WearableLiterals.BodyShapes.FEMALE,
                     wearables = new List<string>() { },
-                }
+                },
+                inventory = new[] { dummyItem.id }
             });
 
-            yield return new WaitUntil(() => !controller.myView.characterPreviewController.avatarRenderer.isLoading);
-            Assert.AreEqual(WearableLiterals.BodyShapes.MALE, controller.myView.characterPreviewController.avatarRenderer.bodyShapeController.wearable.id);
+            catalog.Add(dummyItem.id, dummyItem);
+            return dummyItem;
         }
     }
 }

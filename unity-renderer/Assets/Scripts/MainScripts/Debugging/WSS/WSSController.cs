@@ -127,7 +127,8 @@ namespace DCL
 
         [Header("Kernel Misc Settings")]
         public bool forceLocalComms = true;
-
+        public bool allWearables = false;
+        public bool testWearables = false;
         public DebugPanel debugPanelMode = DebugPanel.Off;
 
 
@@ -187,6 +188,16 @@ namespace DCL
                 if (forceLocalComms)
                 {
                     debugString += "LOCAL_COMMS&";
+                }
+
+                if (allWearables)
+                {
+                    debugString += "ALL_WEARABLES&";
+                }
+
+                if (testWearables)
+                {
+                    debugString += "TEST_WEARABLES&";
                 }
 
                 string debugPanelString = "";

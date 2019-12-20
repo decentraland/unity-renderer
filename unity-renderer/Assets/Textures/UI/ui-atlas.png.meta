@@ -266,6 +266,45 @@ TextureImporter:
   - first:
       213: 3125745873213897159
     second: corner-shadow
+  - first:
+      213: -7756451348320413104
+    second: card-background
+  - first:
+      213: -2879274212677677957
+    second: info-icon
+  - first:
+      213: -6274688161031198477
+    second: ellipse-category-icon
+  - first:
+      213: 5087082211990138512
+    second: nft-unique-icon
+  - first:
+      213: -3279326157293543812
+    second: unique-corner-shadow
+  - first:
+      213: 6086453836435451973
+    second: unique-thumbnail-bg
+  - first:
+      213: -4882642589432940120
+    second: unique-frame
+  - first:
+      213: 7595667864703430088
+    second: card-description-bg
+  - first:
+      213: 552495557716772814
+    second: male-icon
+  - first:
+      213: 790432268931858052
+    second: female-icon
+  - first:
+      213: 7595667864703430088
+    second: unique-card-background
+  - first:
+      213: -3786048695727623584
+    second: unique-card-description-bg
+  - first:
+      213: 7595667864703430088
+    second: unique-card-shadow
   externalObjects: {}
   serializedVersion: 10
   mipmaps:
@@ -1896,9 +1935,9 @@ TextureImporter:
       rect:
         serializedVersion: 2
         x: 365
-        y: 282
+        y: 283
         width: 40
-        height: 40
+        height: 38
       alignment: 0
       pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -1955,27 +1994,6 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: detail-flap-nft
-      rect:
-        serializedVersion: 2
-        x: 962
-        y: 411
-        width: 21
-        height: 21
-      alignment: 0
-      pivot: {x: 0.5, y: 0.5}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      outline: []
-      physicsShape: []
-      tessellationDetail: 0
-      bones: []
-      spriteID: dae7e7867be8f4f688ea63a955e4e554
-      internalID: -584699323942627671
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
       name: corner-shadow
       rect:
         serializedVersion: 2
@@ -1992,6 +2010,279 @@ TextureImporter:
       bones: []
       spriteID: d4a052f9d19504dedae61ed18fb91e85
       internalID: 3125745873213897159
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: card-background
+      rect:
+        serializedVersion: 2
+        x: 999
+        y: 41
+        width: 22
+        height: 400
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 10, y: 0, z: 10, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 88b1253f0f3a6414eb7656e888060bdb
+      internalID: -7756451348320413104
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: info-icon
+      rect:
+        serializedVersion: 2
+        x: 184
+        y: 327
+        width: 12
+        height: 27
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: b7e8a3bbf018648cd8fb312bb8897d76
+      internalID: -2879274212677677957
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: ellipse-category-icon
+      rect:
+        serializedVersion: 2
+        x: 216
+        y: 17
+        width: 80
+        height: 80
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 65cb18758337c4f02bf3ab2520ee31c3
+      internalID: -6274688161031198477
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: nft-unique-icon
+      rect:
+        serializedVersion: 2
+        x: 963
+        y: 389
+        width: 32
+        height: 33
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 06429482df11946189016fb9cadbafcb
+      internalID: 5087082211990138512
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: unique-corner-shadow
+      rect:
+        serializedVersion: 2
+        x: 895
+        y: 331
+        width: 53
+        height: 51
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 8c6e2a41c8c3c4b1b95d32fc59fc4a09
+      internalID: -3279326157293543812
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: unique-thumbnail-bg
+      rect:
+        serializedVersion: 2
+        x: 887
+        y: 389
+        width: 32
+        height: 26
+      alignment: 9
+      pivot: {x: 0.5000019, y: 0.55742705}
+      border: {x: 15, y: 14, z: 15, w: 11}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 71dcd69b5337b438eb5f3003358c4a3c
+      internalID: 6086453836435451973
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: unique-frame
+      rect:
+        serializedVersion: 2
+        x: 957
+        y: 354
+        width: 38
+        height: 32
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 17, y: 16, z: 17, w: 14}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: b3b74aff559d64310bafa0360dec6dc1
+      internalID: -4882642589432940120
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: card-description-bg
+      rect:
+        serializedVersion: 2
+        x: 982
+        y: 331
+        width: 14
+        height: 20
+      alignment: 9
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 6, y: 8, z: 6, w: 8}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: e264485f679b9477b98034df6b90ec02
+      internalID: 7595667864703430088
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: male-icon
+      rect:
+        serializedVersion: 2
+        x: 956
+        y: 329
+        width: 23
+        height: 23
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 064cf160bcf504238933ab9491dd020e
+      internalID: 552495557716772814
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: female-icon
+      rect:
+        serializedVersion: 2
+        x: 979
+        y: 298
+        width: 17
+        height: 27
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: a4ea839ebd3954a31842c816163cc642
+      internalID: 790432268931858052
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: unique-card-background
+      rect:
+        serializedVersion: 2
+        x: 503
+        y: 301
+        width: 240
+        height: 47
+      alignment: 9
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 22, z: 0, w: 22}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 00b19cf9c3b1c4076a74919988ee1b4f
+      internalID: 7595667864703430088
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: unique-card-description-bg
+      rect:
+        serializedVersion: 2
+        x: 928
+        y: 298
+        width: 49
+        height: 30
+      alignment: 9
+      pivot: {x: 0.49532023, y: 0.7598572}
+      border: {x: 23, y: 22, z: 23, w: 6}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: f9672354a366a4355a41a35264af55c0
+      internalID: -3786048695727623584
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: unique-card-shadow
+      rect:
+        serializedVersion: 2
+        x: 493
+        y: 236
+        width: 68
+        height: 57
+      alignment: 9
+      pivot: {x: 0.5, y: 0.559066}
+      border: {x: 33, y: 31, z: 33, w: 24}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: c05f79850fc35402187fa0d7ae4f4a6d
+      internalID: 7595667864703430088
       vertices: []
       indices: 
       edges: []
