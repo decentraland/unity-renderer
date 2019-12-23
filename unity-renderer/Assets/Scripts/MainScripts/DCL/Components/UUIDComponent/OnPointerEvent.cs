@@ -69,7 +69,7 @@ namespace DCL.Components
                 GameObject hoverCanvasGameObject = Object.Instantiate(Resources.Load("InteractionHoverCanvas"), transform) as GameObject;
                 hoverCanvasController = hoverCanvasGameObject.GetComponent<InteractionHoverCanvasController>();
             }
-            hoverCanvasController.Setup((WebInterface.ACTION_BUTTON)model.button, model.toastText);
+            hoverCanvasController.Setup((WebInterface.ACTION_BUTTON)model.button, model.toastText, entity);
         }
 
         void OnComponentUpdated(DecentralandEntity e)
