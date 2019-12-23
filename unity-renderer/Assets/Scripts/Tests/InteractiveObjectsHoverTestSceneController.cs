@@ -40,8 +40,7 @@ public class InteractiveObjectsHoverTestSceneController : MonoBehaviour
 
         scene.SetInitMessagesDone();
 
-        PointerEventsController.i.enableInteractionHoverFeedback = true;
-        PointerEventsController.i.StartInteractiveObjectsHoverRoutine();
+        OnPointerEvent.enableInteractionHoverFeedback = true;
     }
 
     protected virtual IEnumerator InitScene()

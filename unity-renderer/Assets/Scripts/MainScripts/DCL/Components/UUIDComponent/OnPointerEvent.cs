@@ -8,6 +8,8 @@ namespace DCL.Components
 {
     public class OnPointerEvent : UUIDComponent<OnPointerEvent.Model>
     {
+        public static bool enableInteractionHoverFeedback = false;
+
         [System.Serializable]
         new public class Model : UUIDComponent.Model
         {
@@ -82,6 +84,8 @@ namespace DCL.Components
 
         public void SetHoverState(bool isHovered)
         {
+            if (!enableInteractionHoverFeedback) return;
+
             if (isHovered)
                 hoverCanvasController.UpdateSizeAndPos();
 

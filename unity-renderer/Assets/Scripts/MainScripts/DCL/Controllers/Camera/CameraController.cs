@@ -25,7 +25,7 @@ public class CameraController : MonoBehaviour
     internal CameraStateBase.ModeId currentMode = CameraStateBase.ModeId.FirstPerson;
     public CameraStateBase currentCameraState => cachedModeToVirtualCamera[currentMode];
 
-    private void Awake()
+    private void Start()
     {
         RenderingController.i.OnRenderingStateChanged += OnRenderingStateChanged;
 
