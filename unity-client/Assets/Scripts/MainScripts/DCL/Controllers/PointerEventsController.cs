@@ -9,8 +9,8 @@ namespace DCL
     public class PointerEventsController : Singleton<PointerEventsController>
     {
         public static bool renderingIsDisabled = true;
-
-        public bool enableInteractionHoverFeedback = false;
+        public static System.Action OnPointerHoverStarts;
+        public static System.Action OnPointerHoverEnds;
 
         bool isTesting = false;
         RaycastHitInfo lastPointerDownEventHitInfo;
@@ -31,13 +31,7 @@ namespace DCL
 
             RetrieveCamera();
 
-            StartInteractiveObjectsHoverRoutine();
-        }
-
-        public void StartInteractiveObjectsHoverRoutine()
-        {
-            if (enableInteractionHoverFeedback && hoverInteractiveObjectsRoutine == null)
-                hoverInteractiveObjectsRoutine = SceneController.i.StartCoroutine(HoverInteractiveObjects());
+            hoverInteractiveObjectsRoutine = SceneController.i.StartCoroutine(HoverInteractiveObjects());
         }
 
         IEnumerator HoverInteractiveObjects()
@@ -57,16 +51,21 @@ namespace DCL
                 {
                     newHoveredObject = hitInfo.transform.GetComponentInParent<OnPointerEvent>();
 
-                    if (newHoveredObject != null && newHoveredObject.IsAtHoverDistance(hitInfo.distance))
+                    if (newHoveredObject != null && newHoveredObject.IsAtHoverDistance((DCLCharacterController.i.transform.position - newHoveredObject.transform.position).magnitude))
                     {
                         if (newHoveredObject != lastHoveredObject)
                         {
+                            if (lastHoveredObject == null)
+                                OnPointerHoverStarts?.Invoke();
+
                             UnhoverLastHoveredObject();
 
                             newHoveredObject.SetHoverState(true);
 
                             lastHoveredObject = newHoveredObject;
                         }
+
+                        newHoveredObject = null;
                     }
                     else
                     {
@@ -85,6 +84,8 @@ namespace DCL
         void UnhoverLastHoveredObject()
         {
             if (lastHoveredObject == null) return;
+
+            OnPointerHoverEnds?.Invoke();
 
             lastHoveredObject.SetHoverState(false);
             lastHoveredObject = null;

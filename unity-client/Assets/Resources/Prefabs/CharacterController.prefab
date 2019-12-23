@@ -359,6 +359,7 @@ MonoBehaviour:
     m_PreInfinity: 2
     m_PostInfinity: 2
     m_RotationOrder: 4
+  useDeltaTimeInsteadOfGlobalSpeed: 0
   globalSpeed: 0.05
 --- !u!114 &8727652042400483852
 MonoBehaviour:
@@ -400,7 +401,6 @@ GameObject:
   - component: {fileID: 110551818}
   - component: {fileID: 113901082}
   - component: {fileID: 8548425888172674288}
-  - component: {fileID: 3387454264005512827}
   m_Layer: 15
   m_Name: CharacterController
   m_TagString: Player
@@ -483,18 +483,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   avatarRenderer: {fileID: 8727652042400483852}
---- !u!114 &3387454264005512827
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 6922703132412175462}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 31d8abdc7cc724847a3e405981121e19, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!1 &7570314869756664852
 GameObject:
   m_ObjectHideFlags: 0
