@@ -116,7 +116,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: fdb703c4373e2421ab6fc794a7291837, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  offset: {x: 0, y: 3, z: 0}
+  offset: {x: 0, y: 50, z: 0}
   canvas: {fileID: 4700288523959264737}
   backgroundTransform: {fileID: 6432359610209792728}
   text: {fileID: 5253129788489465426}
