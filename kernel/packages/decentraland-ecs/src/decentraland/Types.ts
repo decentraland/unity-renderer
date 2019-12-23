@@ -327,19 +327,19 @@ export interface IEvents {
 /** @public */
 export type GizmoDragEndEvent = {
   type: 'gizmoDragEnded'
-  transform: {
+  transforms: {
     position: ReadOnlyVector3
     rotation: ReadOnlyQuaternion
     scale: ReadOnlyVector3
-  }
-  entityId: string
+    entityId: string
+  }[]
 }
 
 /** @public */
 export type GizmoSelectedEvent = {
   type: 'gizmoSelected'
   gizmoType: 'MOVE' | 'ROTATE' | 'SCALE' | 'NONE'
-  entityId: string
+  entities: string[]
 }
 
 /** @public */
