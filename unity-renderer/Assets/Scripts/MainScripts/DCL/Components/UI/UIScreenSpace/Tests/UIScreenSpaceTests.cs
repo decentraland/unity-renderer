@@ -1,4 +1,4 @@
-﻿using DCL.Components;
+using DCL.Components;
 using DCL.Helpers;
 using DCL.Models;
 using NUnit.Framework;
@@ -11,6 +11,7 @@ namespace Tests
     public class UIScreenSpaceTests : UITestsBase
     {
         [UnityTest]
+        [Explicit]
         public IEnumerator TestVisibilityUpdate()
         {
             yield return InitScene();
@@ -69,6 +70,7 @@ namespace Tests
         }
 
         [UnityTest]
+        [Explicit]
         public IEnumerator TestScaleWhenCharacterIsElsewhere()
         {
             yield return InitScene();

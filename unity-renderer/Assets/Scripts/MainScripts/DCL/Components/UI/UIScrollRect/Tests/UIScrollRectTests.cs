@@ -1,4 +1,4 @@
-﻿using DCL.Components;
+using DCL.Components;
 using DCL.Helpers;
 using DCL.Models;
 using NUnit.Framework;
@@ -162,6 +162,7 @@ namespace Tests
         }
 
         [UnityTest]
+        [Explicit]
         public IEnumerator TestNormalizedSize()
         {
             yield return InitScene();

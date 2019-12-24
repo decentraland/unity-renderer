@@ -1,19 +1,20 @@
-﻿using DCL;
+using DCL;
 using DCL.Components;
-using Newtonsoft.Json;
-using DCL.Models;
 using DCL.Helpers;
-using UnityEngine;
-using UnityEngine.TestTools;
-using System.Linq;
+using DCL.Models;
+using Newtonsoft.Json;
 using NUnit.Framework;
 using System.Collections;
+using System.Linq;
+using UnityEngine;
+using UnityEngine.TestTools;
 
 namespace SceneBoundariesCheckerTests
 {
     public class SceneBoundariesCheckerTests : TestsBase
     {
         [UnityTest]
+        [Explicit("Blocked until we re-activate scene boundaries with acceptable performance")]
         public IEnumerator PShapeIsInvalidatedWhenStartingOutOfBounds()
         {
             yield return InitScene();
@@ -38,6 +39,7 @@ namespace SceneBoundariesCheckerTests
         }
 
         [UnityTest]
+        [Explicit("Blocked until we re-activate scene boundaries with acceptable performance")]
         public IEnumerator GLTFShapeIsInvalidatedWhenStartingOutOfBounds()
         {
             yield return InitScene();
@@ -71,6 +73,7 @@ namespace SceneBoundariesCheckerTests
         }
 
         [UnityTest]
+        [Explicit("Blocked until we re-activate scene boundaries with acceptable performance")]
         public IEnumerator NFTShapeIsInvalidatedWhenStartingOutOfBounds()
         {
             yield return InitScene();
@@ -108,6 +111,7 @@ namespace SceneBoundariesCheckerTests
         }
 
         [UnityTest]
+        [Explicit("Blocked until we re-activate scene boundaries with acceptable performance")]
         public IEnumerator PShapeIsInvalidatedWhenLeavingBounds()
         {
             yield return InitScene();
@@ -140,6 +144,7 @@ namespace SceneBoundariesCheckerTests
         }
 
         [UnityTest]
+        [Explicit("Blocked until we re-activate scene boundaries with acceptable performance")]
         public IEnumerator GLTFShapeIsInvalidatedWhenLeavingBounds()
         {
             yield return InitScene();
@@ -178,6 +183,7 @@ namespace SceneBoundariesCheckerTests
         }
 
         [UnityTest]
+        [Explicit("Blocked until we re-activate scene boundaries with acceptable performance")]
         public IEnumerator NFTShapeIsInvalidatedWhenLeavingBounds()
         {
             yield return InitScene();
@@ -220,6 +226,7 @@ namespace SceneBoundariesCheckerTests
         }
 
         [UnityTest]
+        [Explicit("Blocked until we re-activate scene boundaries with acceptable performance")]
         public IEnumerator PShapeIsResetWhenReenteringBounds()
         {
             yield return InitScene();
@@ -253,6 +260,7 @@ namespace SceneBoundariesCheckerTests
         }
 
         [UnityTest]
+        [Explicit("Blocked until we re-activate scene boundaries with acceptable performance")]
         public IEnumerator GLTFShapeIsResetWhenReenteringBounds()
         {
             yield return InitScene();
@@ -291,6 +299,7 @@ namespace SceneBoundariesCheckerTests
         }
 
         [UnityTest]
+        [Explicit("Blocked until we re-activate scene boundaries with acceptable performance")]
         public IEnumerator NFTShapeIsResetWhenReenteringBounds()
         {
             yield return InitScene();
@@ -333,6 +342,7 @@ namespace SceneBoundariesCheckerTests
         }
 
         [UnityTest]
+        [Explicit("Blocked until we re-activate scene boundaries with acceptable performance")]
         public IEnumerator ChildShapeIsEvaluated()
         {
             yield return InitScene();
@@ -373,6 +383,7 @@ namespace SceneBoundariesCheckerTests
         }
 
         [UnityTest]
+        [Explicit("Blocked until we re-activate scene boundaries with acceptable performance")]
         public IEnumerator ChildShapeIsEvaluatedOnShapelessParent()
         {
             yield return InitScene();
@@ -414,6 +425,7 @@ namespace SceneBoundariesCheckerTests
         }
 
         [UnityTest]
+        [Explicit("Blocked until we re-activate scene boundaries with acceptable performance")]
         public IEnumerator HeightIsEvaluated()
         {
             yield return InitScene();

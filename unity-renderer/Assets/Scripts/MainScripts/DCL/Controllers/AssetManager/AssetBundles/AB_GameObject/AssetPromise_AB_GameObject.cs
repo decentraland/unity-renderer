@@ -106,7 +106,7 @@ namespace DCL
 
                 GameObject assetBundleModelGO = UnityEngine.Object.Instantiate(goList[i]);
 
-                MaterialCachingHelper.UseCachedMaterials(assetBundleModelGO);
+                yield return MaterialCachingHelper.UseCachedMaterials(assetBundleModelGO);
 
                 assetBundleModelGO.name = subPromise.asset.assetBundleAssetName;
 #if UNITY_EDITOR
@@ -136,11 +136,14 @@ namespace DCL
 #if UNITY_EDITOR
         private static void ResetShader(Renderer renderer)
         {
-            if (renderer.material == null) return;
+            if (renderer.sharedMaterials == null) return;
 
-            for (int i = 0; i < renderer.materials.Length; i++)
+            for (int i = 0; i < renderer.sharedMaterials.Length; i++)
             {
-                renderer.materials[i].shader = Shader.Find(renderer.materials[i].shader.name);
+                if (renderer == null || renderer.sharedMaterials[i] == null)
+                    continue;
+
+                renderer.sharedMaterials[i].shader = Shader.Find(renderer.sharedMaterials[i].shader.name);
             }
         }
 #endif
