@@ -12,6 +12,8 @@ namespace DCL
     public class AssetPromise_AB : AssetPromise_WithUrl<Asset_AB>
     {
         public static bool VERBOSE = false;
+        static int concurrentRequests = 0;
+        bool mustDecrementRequest = false;
 
         static float maxLoadBudgetTime = 0.032f;
         static float currentLoadBudgetTime = 0;
@@ -69,6 +71,9 @@ namespace DCL
             {
                 asset.CancelShow();
             }
+
+            if (mustDecrementRequest)
+                concurrentRequests--;
         }
 
         protected override void OnAfterLoadOrReuse()
@@ -93,7 +98,14 @@ namespace DCL
                 }
             }
 
+            if (concurrentRequests >= 25)
+                yield return new WaitUntil(() => concurrentRequests < 25);
+
+            concurrentRequests++;
+            mustDecrementRequest = true;
             yield return LoadAssetBundle(baseUrl + hash, OnSuccess, OnFail);
+            concurrentRequests--;
+            mustDecrementRequest = false;
         }
 
         IEnumerator LoadAssetBundle(string finalUrl, Action OnSuccess, Action OnFail)

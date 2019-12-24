@@ -1,4 +1,4 @@
-﻿using DCL.Components;
+using DCL.Components;
 using DCL.Configuration;
 using DCL.Helpers;
 using DCL.Models;
@@ -14,6 +14,7 @@ namespace DCL.Controllers
 {
     public class ParcelScene : MonoBehaviour, ICleanable
     {
+        public static bool CHECK_BOUNDARIES_ON_TRANSFORM_UPDATE = false;
         public static bool VERBOSE = false;
         enum State
         {
@@ -388,7 +389,9 @@ namespace DCL.Controllers
             newEntity.scene = this;
 
             newEntity.OnCleanupEvent += po.OnCleanup;
-            newEntity.OnShapeUpdated += boundariesChecker.EvaluateEntityPosition;
+
+            if (CHECK_BOUNDARIES_ON_TRANSFORM_UPDATE || SceneController.i.isDebugMode)
+                newEntity.OnShapeUpdated += boundariesChecker.EvaluateEntityPosition;
 
             entities.Add(tmpCreateEntityMessage.id, newEntity);
 
@@ -588,7 +591,8 @@ namespace DCL.Controllers
                     entity.gameObject.transform.localRotation = DCLTransform.model.rotation;
                     entity.gameObject.transform.localScale = DCLTransform.model.scale;
 
-                    boundariesChecker.EvaluateEntityPosition(entity);
+                    if (CHECK_BOUNDARIES_ON_TRANSFORM_UPDATE || SceneController.i.isDebugMode)
+                        boundariesChecker.EvaluateEntityPosition(entity);
                 }
 
                 return null;
