@@ -1,10 +1,9 @@
-using System;
-using Unity.PerformanceTesting;
-using NUnit.Framework;
-using System.IO;
-using UnityEngine;
 using DCL;
+using NUnit.Framework;
 using System.Collections.Generic;
+using System.IO;
+using Unity.PerformanceTesting;
+using UnityEngine;
 
 namespace MessagingBusTest
 {
@@ -24,7 +23,7 @@ namespace MessagingBusTest
         {
             if (bus == null)
             {
-                bus = new MessagingBus("bus", dummyHandler, 0.1f, 1f);
+                bus = new MessagingBus("bus", dummyHandler, null, 0.1f, 1f);
             }
             if (nextQueueMessage == null)
             {
