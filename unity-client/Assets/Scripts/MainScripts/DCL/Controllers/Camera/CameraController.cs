@@ -62,7 +62,7 @@ public class CameraController : MonoBehaviour
         }
     }
 
-    internal void SetCameraMode(CameraStateBase.ModeId newMode)
+    public void SetCameraMode(CameraStateBase.ModeId newMode)
     {
         currentCameraState.OnUnselect();
         currentMode = newMode;

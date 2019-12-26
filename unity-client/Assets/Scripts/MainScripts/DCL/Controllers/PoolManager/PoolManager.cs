@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using UnityEngine;
 
 namespace DCL
@@ -8,6 +8,7 @@ namespace DCL
     public class PoolManager : Singleton<PoolManager>
     {
         public const int DEFAULT_PREWARM_COUNT = 100;
+        public static bool enablePrewarm = true;
 
         public Dictionary<object, Pool> pools = new Dictionary<object, Pool>();
 
@@ -49,6 +50,9 @@ namespace DCL
                 result.AddToPool(original);
                 return result;
             }
+
+            if (!enablePrewarm)
+                maxPrewarmCount = 0;
 
             Pool pool = new Pool(id.ToString(), maxPrewarmCount);
 

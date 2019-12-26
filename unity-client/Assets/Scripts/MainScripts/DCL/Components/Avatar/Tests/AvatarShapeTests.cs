@@ -1,9 +1,9 @@
-﻿using DCL;
-using DCL.Helpers;
-using System.Collections;
 using AvatarShape_Tests;
+using DCL;
+using DCL.Helpers;
+using NUnit.Framework;
+using System.Collections;
 using UnityEngine;
-using UnityEngine.Assertions;
 using UnityEngine.TestTools;
 
 namespace Tests
@@ -30,12 +30,10 @@ namespace Tests
         [UnityTest]
         public IEnumerator DestroyWhileLoading()
         {
-            yield return InitScene();
-
             AvatarTestHelpers.CreateTestCatalog();
             AvatarShape avatar = AvatarTestHelpers.CreateAvatarShape(scene, "Abortit", "TestAvatar.json");
 
-            yield return new WaitForSeconds(3.0f);
+            yield return new WaitForSeconds(1.0f);
 
             GameObject goEntity = avatar.entity.gameObject;
 
@@ -48,10 +46,10 @@ namespace Tests
         }
 
         [UnityTest]
+        [Category("Explicit")]
+        [Explicit("Test too slow")]
         public IEnumerator MaterialsSetCorrectly()
         {
-            yield return InitScene();
-
             AvatarTestHelpers.CreateTestCatalog();
             AvatarShape avatar = AvatarTestHelpers.CreateAvatarShape(scene, "Joan Darteis", "TestAvatar.json");
             yield return new DCL.WaitUntil(() => avatar.everythingIsLoaded, 20);
@@ -61,9 +59,10 @@ namespace Tests
 
 
         [UnityTest]
+        [Category("Explicit")]
+        [Explicit("Test too slow")]
         public IEnumerator NameBackgroundHasCorrectSize()
         {
-            yield return InitScene();
             AvatarTestHelpers.CreateTestCatalog();
             AvatarShape avatar = AvatarTestHelpers.CreateAvatarShape(scene, "Maiqel Yacson", "TestAvatar.json");
             yield return new DCL.WaitUntil(() => avatar.everythingIsLoaded, 20);
@@ -76,10 +75,10 @@ namespace Tests
         }
 
         [UnityTest]
+        [Category("Explicit")]
+        [Explicit("Test too slow")]
         public IEnumerator WhenTwoAvatarsLoadAtTheSameTimeTheyHaveProperMaterials()
         {
-            yield return InitScene();
-
             //NOTE(Brian): Avatars must be equal to share their meshes.
             AvatarTestHelpers.CreateTestCatalog();
             AvatarShape avatar = AvatarTestHelpers.CreateAvatarShape(scene, "Naicholas Keig", "TestAvatar.json");

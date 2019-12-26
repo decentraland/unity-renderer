@@ -1,4 +1,4 @@
-﻿using DCL.Controllers;
+using DCL.Controllers;
 using DCL.Models;
 using UnityEngine;
 
@@ -32,10 +32,13 @@ namespace DCL.Components
         {
             if (!attachedEntities.Contains(entity)) return;
 
-            // In case the character controller has been parented to this entity's mesh
-            if(entity.meshRootGameObject != null &&  DCLCharacterController.i.transform.parent == entity.meshRootGameObject.transform)
+            if (DCLCharacterController.i != null)
             {
-                DCLCharacterController.i.ResetGround();
+                // In case the character controller has been parented to this entity's mesh
+                if (entity.meshRootGameObject != null && DCLCharacterController.i.transform.parent == entity.meshRootGameObject.transform)
+                {
+                    DCLCharacterController.i.ResetGround();
+                }
             }
 
             // We do this instead of OnDetach += because it is required to run after every OnDetach listener
@@ -68,7 +71,7 @@ namespace DCL.Components
                 }
             }
 
-            if(meshRenderers == null)
+            if (meshRenderers == null)
                 meshRenderers = meshGameObject.GetComponentsInChildren<Renderer>(true);
 
             Collider onPointerEventCollider;

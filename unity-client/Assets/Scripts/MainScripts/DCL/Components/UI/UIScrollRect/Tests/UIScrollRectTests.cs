@@ -13,8 +13,6 @@ namespace Tests
         [UnityTest]
         public IEnumerator TestPropertiesAreAppliedCorrectly()
         {
-            yield return InitScene();
-
             // Create UIScreenSpaceShape
             UIScreenSpace screenSpaceShape =
                 TestHelpers.SharedComponentCreate<UIScreenSpace, UIScreenSpace.Model>(scene,
@@ -83,8 +81,6 @@ namespace Tests
         [UnityTest]
         public IEnumerator TestOnClickEvent()
         {
-            yield return InitScene();
-
             // Create UIScreenSpaceShape
             UIScreenSpace screenSpaceShape =
                 TestHelpers.SharedComponentCreate<UIScreenSpace, UIScreenSpace.Model>(scene,
@@ -138,8 +134,6 @@ namespace Tests
         [UnityTest]
         public IEnumerator TestMissingValuesGetDefaultedOnUpdate()
         {
-            yield return InitScene();
-
             //// Create UIScreenSpaceShape
             UIScreenSpace screenSpaceShape =
                 TestHelpers.SharedComponentCreate<UIScreenSpace, UIScreenSpace.Model>(scene,
@@ -156,8 +150,6 @@ namespace Tests
         [UnityTest]
         public IEnumerator AddedCorrectlyOnInvisibleParent()
         {
-            yield return InitScene();
-
             yield return TestHelpers.TestUIElementAddedCorrectlyOnInvisibleParent<UIScrollRect, UIScrollRect.Model>(scene, CLASS_ID.UI_SLIDER_SHAPE);
         }
 
@@ -165,8 +157,6 @@ namespace Tests
         [Explicit]
         public IEnumerator TestNormalizedSize()
         {
-            yield return InitScene();
-
             // Create UIScreenSpaceShape
             UIScreenSpace screenSpaceShape =
                 TestHelpers.SharedComponentCreate<UIScreenSpace, UIScreenSpace.Model>(scene,

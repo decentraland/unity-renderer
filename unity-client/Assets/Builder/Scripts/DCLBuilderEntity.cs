@@ -1,9 +1,9 @@
-using UnityEngine;
-using System;
-using System.Collections;
-using DCL.Models;
 using DCL.Components;
 using DCL.Helpers;
+using DCL.Models;
+using System;
+using System.Collections;
+using UnityEngine;
 
 namespace Builder
 {

@@ -1,4 +1,4 @@
-﻿using DCL.Components;
+using DCL.Components;
 using DCL.Helpers;
 using DCL.Models;
 using NUnit.Framework;
@@ -24,9 +24,11 @@ public class GLTFImporterTests : TestsBase
     }
 
     [UnityTest]
+    [Explicit("Test takes too long")]
+    [Category("Explicit")]
     public IEnumerator TrevorModelHasProperScaling()
     {
-        yield return InitScene();
+
         InstantiatedGLTFObject trevorModel = null;
         yield return LoadModel("/GLB/Trevor/Trevor.glb", (m) => trevorModel = m);
 
@@ -37,9 +39,11 @@ public class GLTFImporterTests : TestsBase
     }
 
     [UnityTest]
+    [Explicit("Test takes too long")]
+    [Category("Explicit")]
     public IEnumerator TrevorModelHasProperTopology()
     {
-        yield return InitScene();
+
         InstantiatedGLTFObject trevorModel = null;
         yield return LoadModel("/GLB/Trevor/Trevor.glb", (m) => trevorModel = m);
 
@@ -51,9 +55,11 @@ public class GLTFImporterTests : TestsBase
     }
 
     [UnityTest]
+    [Explicit("Test takes too long")]
+    [Category("Explicit")]
     public IEnumerator GLTFWithoutSkeletonIdIsLoadingCorrectly()
     {
-        yield return InitScene();
+
         InstantiatedGLTFObject trevorModel = null;
         yield return LoadModel("/GLB/Avatar/Avatar_Idle.glb", (m) => trevorModel = m);
     }

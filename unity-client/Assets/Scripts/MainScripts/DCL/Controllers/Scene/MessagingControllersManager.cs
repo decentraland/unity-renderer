@@ -45,12 +45,17 @@ namespace DCL
         public void Initialize(IMessageHandler messageHandler)
         {
             throttler = new MessageThrottlingController();
+
             messagingControllers[GLOBAL_MESSAGING_CONTROLLER] = new MessagingController(messageHandler, GLOBAL_MESSAGING_CONTROLLER);
+
+            if (!string.IsNullOrEmpty(GLOBAL_MESSAGING_CONTROLLER))
+                messagingControllers.TryGetValue(GLOBAL_MESSAGING_CONTROLLER, out globalController);
+
+            SceneController.i.OnSortScenes += RefreshScenesState;
+            DCLCharacterController.OnCharacterMoved += OnCharacterMoved;
 
             if (mainCoroutine == null)
             {
-                SceneController.i.OnSortScenes += OnSortScenes;
-                DCLCharacterController.OnCharacterMoved += OnCharacterMoved;
                 mainCoroutine = SceneController.i.StartCoroutine(ProcessMessages());
             }
         }
@@ -63,14 +68,18 @@ namespace DCL
                 messagingControllers.TryGetValue(currentSceneId, out currentSceneController);
         }
 
-        private void OnSortScenes()
+        public void RefreshScenesState()
         {
             List<ParcelScene> scenesSortedByDistance = SceneController.i.scenesSortedByDistance;
 
             int count = scenesSortedByDistance.Count;   // we need to retrieve list count everytime because it
                                                         // may change after a yield return
 
-            string currentSceneId = SceneController.i.GetCurrentScene(DCLCharacterController.i.characterPosition);
+            string currentSceneId = null;
+
+            if (SceneController.i != null && DCLCharacterController.i != null)
+                currentSceneId = SceneController.i.GetCurrentScene(DCLCharacterController.i.characterPosition);
+
             sortedControllers.Clear();
 
             if (!string.IsNullOrEmpty(currentSceneId) && messagingControllers.ContainsKey(currentSceneId))
@@ -95,7 +104,7 @@ namespace DCL
             sortedControllersCount = sortedControllers.Count;
         }
 
-        public void Stop()
+        public void Cleanup()
         {
             if (mainCoroutine != null)
             {
@@ -112,6 +121,9 @@ namespace DCL
                 }
             }
 
+            SceneController.i.OnSortScenes -= RefreshScenesState;
+            DCLCharacterController.OnCharacterMoved -= OnCharacterMoved;
+
             messagingControllers.Clear();
         }
 
@@ -124,18 +136,13 @@ namespace DCL
         public void AddController(IMessageHandler messageHandler, string sceneId, bool isGlobal = false)
         {
             if (!messagingControllers.ContainsKey(sceneId))
-            {
                 messagingControllers[sceneId] = new MessagingController(messageHandler, sceneId);
-            }
 
             if (isGlobal)
                 globalSceneId = sceneId;
 
             if (!string.IsNullOrEmpty(globalSceneId))
                 messagingControllers.TryGetValue(globalSceneId, out uiSceneController);
-
-            if (!string.IsNullOrEmpty(GLOBAL_MESSAGING_CONTROLLER))
-                messagingControllers.TryGetValue(GLOBAL_MESSAGING_CONTROLLER, out globalController);
         }
 
         public void RemoveController(string sceneId)
@@ -208,7 +215,9 @@ namespace DCL
             {
                 prevTimeBudget = INIT_MSG_BUS_BUDGET_MAX;
                 start = Time.unscaledTime;
+
                 bool processedBus = false;
+
                 // When breaking this second loop, we skip a frame
                 while (true)
                 {
@@ -217,6 +226,7 @@ namespace DCL
                     if (uiSceneController != null && uiSceneController.enabled)
                     {
                         processedBus = true;
+
                         if (ProcessBus(uiSceneController.uiBus, ref prevTimeBudget, out yieldReturn))
                             break;
                     }

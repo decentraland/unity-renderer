@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections;
 using System.Linq;
 using System.Runtime.CompilerServices;
@@ -30,11 +30,16 @@ public class UserProfile : ScriptableObject //TODO Move to base variable
     internal Coroutine downloadingFaceCoroutine = null;
     internal Coroutine downloadingBodyCoroutine = null;
 
-    public void UpdateData(UserProfileModel newModel)
+    public void UpdateData(UserProfileModel newModel, bool downloadAssets = true)
     {
         UpdateProperties(newModel);
-        DownloadFaceIfNeeded();
-        DownloadBodyIfNeeded();
+
+        if (!downloadAssets)
+        {
+            DownloadFaceIfNeeded();
+            DownloadBodyIfNeeded();
+        }
+
         OnUpdate?.Invoke(this);
     }
 

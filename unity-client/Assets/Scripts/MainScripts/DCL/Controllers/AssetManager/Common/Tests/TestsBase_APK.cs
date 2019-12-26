@@ -1,7 +1,5 @@
 using DCL;
-using DCL.Helpers;
 using System.Collections;
-using UnityEngine;
 using UnityEngine.TestTools;
 
 namespace AssetPromiseKeeper_Tests
@@ -15,7 +13,7 @@ namespace AssetPromiseKeeper_Tests
         protected APKType keeper;
 
         [UnitySetUp]
-        protected virtual IEnumerator SetUp()
+        protected override IEnumerator SetUp()
         {
             MemoryManager.i.Initialize();
             keeper = new APKType();
@@ -23,13 +21,10 @@ namespace AssetPromiseKeeper_Tests
         }
 
         [UnityTearDown]
-        protected virtual IEnumerator TearDown()
+        protected override IEnumerator TearDown()
         {
-            PoolManager.i.Cleanup();
             keeper.Cleanup();
-            Caching.ClearCache();
-            Resources.UnloadUnusedAssets();
-            yield break;
+            yield return base.TearDown();
         }
     }
 }

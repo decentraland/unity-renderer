@@ -1,7 +1,7 @@
-﻿using UnityEngine;
-using System.Collections.Generic;
-using DCL.Models;
 using DCL.Helpers;
+using DCL.Models;
+using System.Collections.Generic;
+using UnityEngine;
 
 namespace DCL.Controllers
 {
@@ -152,6 +152,6 @@ namespace DCL.Controllers
                 return invalidMeshesInfo[entity.gameObject].originalMaterials;
             }
             return null;
-        }        
+        }
     }
 }

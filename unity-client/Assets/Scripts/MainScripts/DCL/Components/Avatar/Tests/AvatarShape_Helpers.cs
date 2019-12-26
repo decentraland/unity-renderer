@@ -1,10 +1,10 @@
-﻿using System.Collections.Generic;
-using System.IO;
-using System.Linq;
 using DCL;
 using DCL.Controllers;
 using DCL.Helpers;
 using DCL.Models;
+using System.Collections.Generic;
+using System.IO;
+using System.Linq;
 using UnityEngine;
 using UnityGLTF;
 
@@ -26,13 +26,22 @@ namespace AvatarShape_Tests
 
         public static WearableDictionary CreateTestCatalogLocal()
         {
-            string file = "TestCatalogLocal.json";
+            string file = "TestCatalog.json";
             var catalogJson = File.ReadAllText(Utils.GetTestAssetsPathRaw() + $"/Avatar/{file}"); //Utils.GetTestAssetPath returns an URI not compatible with the really convenient File.ReadAllText
             var wearables = Newtonsoft.Json.JsonConvert.DeserializeObject<WearableItem_Dummy[]>(catalogJson); // JsonUtility cannot deserialize jsons whose root is an array
+
             foreach (var wearableItem in wearables)
             {
                 wearableItem.baseUrl = Utils.GetTestsAssetsPath() + "/Avatar/Assets/";
+
+                foreach (var rep in wearableItem.representations)
+                {
+                    rep.contents = rep.contents.Select((x) => { x.hash = x.file; return x; }).ToArray();
+                }
+
+                wearableItem.thumbnail = "";
             }
+
             CatalogController.wearableCatalog.Clear();
             CatalogController.wearableCatalog.Add(wearables.Select(x => new KeyValuePair<string, WearableItem>(x.id, x)).ToArray());
 
@@ -73,11 +82,11 @@ namespace AvatarShape_Tests
             return model;
         }
     }
-    
+
     class AvatarRenderer_Mock : AvatarRenderer
     {
         public static Dictionary<string, WearableController_Mock> GetWearableMockControllers(AvatarRenderer renderer) => GetWearableControllers(renderer).ToDictionary(x => x.Key, x => new WearableController_Mock(x.Value));
-        
+
         public static Dictionary<string, WearableController> GetWearableControllers(AvatarRenderer renderer)
         {
             var avatarRendererMock = new GameObject("Temp").AddComponent<AvatarRenderer_Mock>();

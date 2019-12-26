@@ -1,8 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
 using DCL.Helpers;
 using DCL.Interface;
+using System;
+using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 using Categories = WearableLiterals.Categories;
 
@@ -11,6 +11,7 @@ public class AvatarEditorHUDController : IDisposable, IHUD
     protected static readonly string[] categoriesThatMustHaveSelection = { Categories.BODY_SHAPE, Categories.UPPER_BODY, Categories.LOWER_BODY, Categories.FEET, Categories.EYES, Categories.EYEBROWS, Categories.MOUTH };
     protected static readonly string[] categoriesToRandomize = { Categories.HAIR, Categories.EYES, Categories.EYEBROWS, Categories.MOUTH, Categories.FACIAL, Categories.HAIR, Categories.UPPER_BODY, Categories.LOWER_BODY, Categories.FEET };
 
+    [NonSerialized] public bool bypassUpdateAvatarPreview = false;
     private UserProfile userProfile;
     private WearableDictionary catalog;
     private readonly Dictionary<string, List<WearableItem>> wearablesByCategory = new Dictionary<string, List<WearableItem>>();
@@ -22,10 +23,10 @@ public class AvatarEditorHUDController : IDisposable, IHUD
 
     protected AvatarEditorHUDView view;
 
-    public AvatarEditorHUDController(UserProfile userProfile, WearableDictionary catalog)
+    public AvatarEditorHUDController(UserProfile userProfile, WearableDictionary catalog, bool bypassUpdateAvatarPreview = false)
     {
         this.userProfile = userProfile;
-        this.catalog = catalog;
+        this.bypassUpdateAvatarPreview = bypassUpdateAvatarPreview;
 
         view = AvatarEditorHUDView.Create(this);
 
@@ -34,15 +35,28 @@ public class AvatarEditorHUDController : IDisposable, IHUD
         eyeColorList = Resources.Load<ColorList>("EyeColor");
         view.SetColors(skinColorList.colors, hairColorList.colors, eyeColorList.colors);
 
-        ProcessCatalog(this.catalog);
-        this.catalog.OnAdded += AddWearable;
-        this.catalog.OnRemoved += RemoveWearable;
+        SetCatalog(catalog);
 
         LoadUserProfile(userProfile);
         this.userProfile.OnUpdate += LoadUserProfile;
     }
 
-    private void LoadUserProfile(UserProfile userProfile)
+    public void SetCatalog(WearableDictionary catalog)
+    {
+        if (this.catalog != null)
+        {
+            this.catalog.OnAdded -= AddWearable;
+            this.catalog.OnRemoved -= RemoveWearable;
+        }
+
+        this.catalog = catalog;
+
+        ProcessCatalog(this.catalog);
+        this.catalog.OnAdded += AddWearable;
+        this.catalog.OnRemoved += RemoveWearable;
+    }
+
+    public void LoadUserProfile(UserProfile userProfile)
     {
         if (userProfile?.avatar == null || string.IsNullOrEmpty(userProfile.avatar.bodyShape)) return;
 
@@ -157,7 +171,8 @@ public class AvatarEditorHUDController : IDisposable, IHUD
 
     protected virtual void UpdateAvatarPreview()
     {
-        view.UpdateAvatarPreview(model.ToAvatarModel());
+        if (!bypassUpdateAvatarPreview)
+            view.UpdateAvatarPreview(model.ToAvatarModel());
     }
 
     private void EquipHairColor(Color color)
@@ -234,6 +249,16 @@ public class AvatarEditorHUDController : IDisposable, IHUD
         }
     }
 
+    public void UnequipAllWearables()
+    {
+        foreach (var wearable in model.wearables)
+        {
+            view.UnselectWearable(wearable);
+        }
+
+        model.wearables.Clear();
+    }
+
     private void ProcessCatalog(WearableDictionary catalog)
     {
         wearablesByCategory.Clear();
@@ -258,6 +283,7 @@ public class AvatarEditorHUDController : IDisposable, IHUD
         {
             wearablesByCategory.Add(wearable.category, new List<WearableItem>());
         }
+
         wearablesByCategory[wearable.category].Add(wearable);
         view.AddWearable(wearable);
     }
@@ -348,6 +374,7 @@ public class AvatarEditorHUDController : IDisposable, IHUD
 
     public void CleanUp()
     {
+        UnequipAllWearables();
         view?.CleanUp();
         this.userProfile.OnUpdate -= LoadUserProfile;
         this.catalog.OnAdded -= AddWearable;

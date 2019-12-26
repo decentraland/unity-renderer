@@ -15,8 +15,6 @@ namespace Tests
         [UnityTest]
         public IEnumerator TextureCreateAndLoadTest()
         {
-            yield return InitScene();
-
             DCLTexture dclTexture = TestHelpers.CreateDCLTexture(scene,
                 Utils.GetTestsAssetsPath() + "/Images/avatar.png",
                 DCLTexture.BabylonWrapMode.CLAMP,
@@ -37,18 +35,14 @@ namespace Tests
         [UnityTest]
         public IEnumerator TextureAttachedGetsReplacedOnNewAttachment()
         {
-            yield return InitScene();
-
             yield return TestHelpers.TestAttachedSharedComponentOfSameTypeIsReplaced<DCLTexture.Model, DCLTexture>(
                 scene, CLASS_ID.TEXTURE);
         }
 
-        [UnityTest]
-        public IEnumerator Texture_OnReadyBeforeLoading()
+        [Test]
+        public void Texture_OnReadyBeforeLoading()
         {
-            yield return InitScene();
-
-            DCLTexture dclTexture = TestHelpers.CreateDCLTexture(scene,DCL.Helpers.Utils.GetTestsAssetsPath() + "/Images/avatar.png");
+            DCLTexture dclTexture = TestHelpers.CreateDCLTexture(scene, DCL.Helpers.Utils.GetTestsAssetsPath() + "/Images/avatar.png");
             bool isOnReady = false;
             dclTexture.CallWhenReady((x) => { isOnReady = true; });
 
@@ -58,9 +52,7 @@ namespace Tests
         [UnityTest]
         public IEnumerator Texture_OnReadyWaitLoading()
         {
-            yield return InitScene();
-
-            DCLTexture dclTexture = TestHelpers.CreateDCLTexture(scene,DCL.Helpers.Utils.GetTestsAssetsPath() + "/Images/avatar.png");
+            DCLTexture dclTexture = TestHelpers.CreateDCLTexture(scene, DCL.Helpers.Utils.GetTestsAssetsPath() + "/Images/avatar.png");
             bool isOnReady = false;
             dclTexture.CallWhenReady((x) => { isOnReady = true; });
             yield return dclTexture.routine;
@@ -71,9 +63,7 @@ namespace Tests
         [UnityTest]
         public IEnumerator Texture_OnReadyAfterLoadingInstantlyCalled()
         {
-            yield return InitScene();
-
-            DCLTexture dclTexture = TestHelpers.CreateDCLTexture(scene,DCL.Helpers.Utils.GetTestsAssetsPath() + "/Images/avatar.png");
+            DCLTexture dclTexture = TestHelpers.CreateDCLTexture(scene, DCL.Helpers.Utils.GetTestsAssetsPath() + "/Images/avatar.png");
             yield return dclTexture.routine;
 
             bool isOnReady = false;

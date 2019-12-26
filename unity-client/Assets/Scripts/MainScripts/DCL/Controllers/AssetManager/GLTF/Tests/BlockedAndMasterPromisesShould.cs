@@ -13,8 +13,6 @@ namespace AssetPromiseKeeper_GLTF_Tests
         [UnityTest]
         public IEnumerator SucceedWhenMastersParentIsDestroyed()
         {
-            yield return base.InitScene();
-
             var keeper = new AssetPromiseKeeper_GLTF();
 
             string url = Utils.GetTestsAssetsPath() + "/GLB/Lantern/Lantern.glb";
@@ -63,8 +61,6 @@ namespace AssetPromiseKeeper_GLTF_Tests
         [UnityTest]
         public IEnumerator FailCorrectlyWhenGivenWrongURL()
         {
-            yield return base.InitScene();
-
             var keeper = new AssetPromiseKeeper_GLTF();
 
             //NOTE(Brian): Expect the 404 error

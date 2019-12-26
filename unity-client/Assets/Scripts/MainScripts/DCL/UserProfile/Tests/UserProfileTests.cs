@@ -1,30 +1,22 @@
-﻿using System.Collections;
-using DCL;
-using DCL.Helpers;
 using NUnit.Framework;
 using UnityEditor;
 using UnityEngine;
-using UnityEngine.TestTools;
 
 namespace Tests
 {
     public class UserProfileTests : TestsBase
     {
-        [UnityTest]
-        public IEnumerator UserProfile_Creation()
+        [Test]
+        public void UserProfile_Creation()
         {
-            yield return InitScene();
-
             var userProfile = ScriptableObject.CreateInstance<UserProfile>();
 
             Assert.NotNull(userProfile);
         }
 
-        [UnityTest]
-        public IEnumerator UserProfile_OwnProfile_Retrieval()
+        [Test]
+        public void UserProfile_OwnProfile_Retrieval()
         {
-            yield return InitScene();
-
             var ownUserProfile = UserProfile.GetOwnUserProfile();
 
             Assert.NotNull(ownUserProfile);
@@ -32,10 +24,9 @@ namespace Tests
             Assert.True(AssetDatabase.GetAssetPath(ownUserProfile).Contains("ScriptableObjects/OwnUserProfile"));
         }
 
-        [UnityTest]
-        public IEnumerator UserProfile_Model_UpdateProperties()
+        [Test]
+        public void UserProfile_Model_UpdateProperties()
         {
-            yield return InitScene();
             var userProfile = ScriptableObject.CreateInstance<UserProfile>();
 
             userProfile.UpdateProperties(new UserProfileModel()
@@ -59,10 +50,9 @@ namespace Tests
             };
         }
 
-        [UnityTest]
-        public IEnumerator UserProfile_UpdateData_FromEmpty()
+        [Test]
+        public void UserProfile_UpdateData_FromEmpty()
         {
-            yield return InitScene();
             var userProfile = ScriptableObject.CreateInstance<UserProfile>();
 
             userProfile.UpdateProperties(new UserProfileModel()
@@ -78,10 +68,9 @@ namespace Tests
             Assert.AreEqual("avatarPicURL2", userProfile.model.snapshots.face);
         }
 
-        [UnityTest]
-        public IEnumerator UserProfile_UpdateData_FromFilled()
+        [Test]
+        public void UserProfile_UpdateData_FromFilled()
         {
-            yield return InitScene();
             var userProfile = ScriptableObject.CreateInstance<UserProfile>();
             userProfile.UpdateProperties(new UserProfileModel()
             {

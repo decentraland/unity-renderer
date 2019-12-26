@@ -1,4 +1,4 @@
-﻿using UnityEngine;
+using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
 using DCL;
@@ -524,7 +524,9 @@ namespace Builder
 
             outOfBoundariesEventPayload.entities = outOfBoundariesEntitiesId.ToArray();
             WebInterface.SendSceneEvent<EntitiesOutOfBoundariesEventPayload>(currentScene.sceneData.id, "entitiesOutOfBoundaries", outOfBoundariesEventPayload);
-            currentScene.boundariesChecker?.EvaluateEntityPosition(entity.rootEntity);
+
+            if (currentScene.useBoundariesChecker)
+                currentScene.boundariesChecker.EvaluateEntityPosition(entity.rootEntity);
         }
 
         private void SetupRendererPipeline()

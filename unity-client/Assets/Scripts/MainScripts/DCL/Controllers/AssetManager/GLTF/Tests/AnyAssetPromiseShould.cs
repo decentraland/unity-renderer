@@ -13,8 +13,6 @@ namespace AssetPromiseKeeper_GLTF_Tests
         [UnityTest]
         public IEnumerator BeSetupCorrectlyAfterLoad()
         {
-            yield return base.InitScene();
-
             var keeper = new AssetPromiseKeeper_GLTF();
 
             string url = Utils.GetTestsAssetsPath() + "/GLB/Lantern/Lantern.glb";
@@ -62,7 +60,6 @@ namespace AssetPromiseKeeper_GLTF_Tests
         [UnityTest]
         public IEnumerator ForceNewInstanceIsOff()
         {
-            yield return InitScene();
             var keeper = new AssetPromiseKeeper_GLTF();
 
             string url = Utils.GetTestsAssetsPath() + "/GLB/Lantern/Lantern.glb";
@@ -78,7 +75,6 @@ namespace AssetPromiseKeeper_GLTF_Tests
         [UnityTest]
         public IEnumerator ForceNewInstanceIsOffMultipleTimes()
         {
-            yield return InitScene();
             var keeper = new AssetPromiseKeeper_GLTF();
 
             var poolableComponents = new List<PoolableObject>();
@@ -100,7 +96,6 @@ namespace AssetPromiseKeeper_GLTF_Tests
         [UnityTest]
         public IEnumerator ForceNewInstanceIsOn()
         {
-            yield return InitScene();
             var keeper = new AssetPromiseKeeper_GLTF();
 
             string url = Utils.GetTestsAssetsPath() + "/GLB/Lantern/Lantern.glb";
@@ -117,7 +112,6 @@ namespace AssetPromiseKeeper_GLTF_Tests
         [UnityTest]
         public IEnumerator ForceNewInstanceIsOnMultipleTimes()
         {
-            yield return InitScene();
             var keeper = new AssetPromiseKeeper_GLTF();
 
             var poolableComponents = new List<PoolableObject>();

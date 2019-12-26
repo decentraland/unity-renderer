@@ -9,13 +9,18 @@ using UnityEngine.TestTools;
 
 namespace Tests
 {
+
     public class TextShapeTests : TestsBase
     {
+        [UnitySetUp]
+        protected override IEnumerator SetUp()
+        {
+            yield return SetUp_SceneController();
+        }
+
         [UnityTest]
         public IEnumerator TestCreate()
         {
-            yield return InitScene();
-
             string entityId = "e1";
 
             TestHelpers.CreateSceneEntity(scene, entityId);
@@ -90,25 +95,8 @@ namespace Tests
         }
 
         [UnityTest]
-        public IEnumerator TestTextAlignment()
-        {
-            Assert.AreEqual(TextAlignmentOptions.BottomLeft, TextShape.GetAlignment("bottom", "left"));
-            Assert.AreEqual(TextAlignmentOptions.BottomRight, TextShape.GetAlignment("Bottom", "RIght"));
-            Assert.AreEqual(TextAlignmentOptions.Center, TextShape.GetAlignment("Center", "center"));
-            Assert.AreEqual(TextAlignmentOptions.TopLeft, TextShape.GetAlignment("top", "Left"));
-            Assert.AreEqual(TextAlignmentOptions.TopRight, TextShape.GetAlignment("top", "right"));
-            Assert.AreEqual(TextAlignmentOptions.Top, TextShape.GetAlignment("top", "center"));
-            Assert.AreEqual(TextAlignmentOptions.Right, TextShape.GetAlignment("center", "right"));
-            Assert.AreEqual(TextAlignmentOptions.Bottom, TextShape.GetAlignment("Bottom", "cEnter"));
-            Assert.AreEqual(TextAlignmentOptions.Left, TextShape.GetAlignment("center", "left"));
-            yield return null;
-        }
-
-        [UnityTest]
         public IEnumerator TestMissingValuesGetDefaultedOnUpdate()
         {
-            yield return InitScene();
-
             string entityId = "1";
             TestHelpers.CreateSceneEntity(scene, entityId);
 

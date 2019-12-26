@@ -42,7 +42,7 @@ namespace DCL
         public Dictionary<string, MessagingBus> messagingBuses = new Dictionary<string, MessagingBus>();
         public IMessageHandler messageHandler;
         public string debugTag;
-        public bool enabled = false;
+        public bool enabled = true;
 
         private QueueState currentQueueState
         {
