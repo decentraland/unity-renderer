@@ -1,20 +1,16 @@
-﻿using DCL.Components;
+using DCL.Components;
 using DCL.Helpers;
 using DCL.Models;
 using NUnit.Framework;
-using System.Collections;
 using UnityEngine;
-using UnityEngine.TestTools;
 
 namespace Tests
 {
     public class TransformTests : TestsBase
     {
-        [UnityTest]
-        public IEnumerator TransformUpdate()
+        [Test]
+        public void TransformUpdate()
         {
-            yield return InitScene();
-
             DecentralandEntity entity = TestHelpers.CreateSceneEntity(scene);
 
             Assert.IsTrue(entity != null);
@@ -89,10 +85,10 @@ namespace Tests
             }
         }
 
-        [UnityTest]
-        public IEnumerator TransformationsAreKeptRelativeAfterParenting()
+        [Test]
+        public void TransformationsAreKeptRelativeAfterParenting()
         {
-            yield return InitScene();
+
 
             DecentralandEntity entity = TestHelpers.CreateSceneEntity(scene);
 

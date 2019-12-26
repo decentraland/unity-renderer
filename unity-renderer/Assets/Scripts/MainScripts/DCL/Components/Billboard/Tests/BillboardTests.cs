@@ -16,8 +16,6 @@ namespace Tests
         [UnityTest]
         public IEnumerator AddBillboardComponent()
         {
-            yield return InitScene();
-
             yield return CreateComponent(x: false, y: true, z: false);
 
             Assert.IsFalse(billboard.model.x, "Wrong model data! x should be false.");
@@ -32,8 +30,6 @@ namespace Tests
         [UnityTest]
         public IEnumerator CheckLookAtPlayer()
         {
-            yield return InitScene();
-
             DCLCharacterController.i.PauseGravity();
 
             yield return CreateComponent(x: true, y: true, z: true);

@@ -1,4 +1,4 @@
-﻿using DCL;
+using DCL;
 using DCL.Components;
 using DCL.Helpers;
 using DCL.Models;
@@ -11,11 +11,16 @@ namespace Tests
 {
     public class MaterialsTests : TestsBase
     {
+        [UnitySetUp]
+        protected override IEnumerator SetUp()
+        {
+            yield return SetUp_SceneController(true, false);
+            yield return SetUp_CharacterController();
+        }
+
         [UnityTest]
         public IEnumerator PBRMaterialUpdate()
         {
-            yield return InitScene();
-
             DCLTexture texture =
                 TestHelpers.CreateDCLTexture(scene, Utils.GetTestsAssetsPath() + "/Images/atlas.png");
 
@@ -54,8 +59,6 @@ namespace Tests
         [UnityTest]
         public IEnumerator PBRMaterialPropertiesUpdate()
         {
-            yield return InitScene();
-
             string entityId = "1";
             string materialID = "a-material";
 
@@ -163,8 +166,6 @@ namespace Tests
         [UnityTest]
         public IEnumerator MaterialIsSharedCorrectly()
         {
-            yield return InitScene();
-
             // Create first entity with material
             string firstEntityID = "1";
             string firstMaterialID = "a-material";
@@ -212,13 +213,13 @@ namespace Tests
                 "1st and 2nd entities should have different materials");
             Assert.IsTrue(firstRenderer.sharedMaterial == thirdRenderer.sharedMaterial,
                 "1st and 3rd entities should have the same material");
+
+            yield break;
         }
 
         [UnityTest]
         public IEnumerator MaterialUpdateAffectsCorrectEntities()
         {
-            yield return InitScene();
-
             // Create first entity with material
             string firstEntityID = "1";
             string firstMaterialID = "a-material";
@@ -287,8 +288,6 @@ namespace Tests
         [UnityTest]
         public IEnumerator MaterialDetach()
         {
-            yield return InitScene();
-
             string entityId = "1";
             string materialID = "a-material";
 
@@ -323,8 +322,6 @@ namespace Tests
         [UnityTest]
         public IEnumerator MaterialDisposedGetsDetached()
         {
-            yield return InitScene();
-
             string firstEntityId = "1";
             string secondEntityId = "2";
             string materialID = "a-material";
@@ -376,8 +373,6 @@ namespace Tests
         [UnityTest]
         public IEnumerator BasicMaterialAttachBeforeShape()
         {
-            yield return InitScene();
-
             DecentralandEntity entity = TestHelpers.CreateSceneEntity(scene);
 
             DCLTexture dclTexture = TestHelpers.CreateDCLTexture(
@@ -415,8 +410,6 @@ namespace Tests
         [UnityTest]
         public IEnumerator PBRMaterialAttachBeforeShape()
         {
-            yield return InitScene();
-
             DecentralandEntity entity = TestHelpers.CreateSceneEntity(scene);
 
             DCLTexture dclTexture = TestHelpers.CreateDCLTexture(
@@ -458,8 +451,6 @@ namespace Tests
         [UnityTest]
         public IEnumerator EntityBasicMaterialUpdate()
         {
-            yield return InitScene();
-
             string entityId = "1";
             string materialID = "a-material";
 
@@ -525,8 +516,6 @@ namespace Tests
         [UnityTest]
         public IEnumerator BasicMaterialComponentMissingValuesGetDefaultedOnUpdate()
         {
-            yield return InitScene();
-
             // 1. Create component with non-default configs
             BasicMaterial basicMaterialComponent =
                 TestHelpers.SharedComponentCreate<BasicMaterial, BasicMaterial.Model>(scene, CLASS_ID.BASIC_MATERIAL,
@@ -553,8 +542,6 @@ namespace Tests
         [UnityTest]
         public IEnumerator BasicMaterialAttachedGetsReplacedOnNewAttachment()
         {
-            yield return InitScene();
-
             yield return
                 TestHelpers.TestAttachedSharedComponentOfSameTypeIsReplaced<BasicMaterial.Model, BasicMaterial>(scene,
                     CLASS_ID.BASIC_MATERIAL);
@@ -563,8 +550,6 @@ namespace Tests
         [UnityTest]
         public IEnumerator PBRMaterialComponentMissingValuesGetDefaultedOnUpdate()
         {
-            yield return InitScene();
-
             Color color1;
             ColorUtility.TryParseHtmlString("#808080", out color1);
 
@@ -602,8 +587,6 @@ namespace Tests
         [UnityTest]
         public IEnumerator PBRMaterialAttachedGetsReplacedOnNewAttachment()
         {
-            yield return InitScene();
-
             yield return TestHelpers.TestAttachedSharedComponentOfSameTypeIsReplaced<PBRMaterial.Model, PBRMaterial>(
                 scene, CLASS_ID.PBR_MATERIAL);
         }

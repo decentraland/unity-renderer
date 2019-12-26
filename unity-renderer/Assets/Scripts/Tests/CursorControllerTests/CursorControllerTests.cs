@@ -1,7 +1,6 @@
-﻿using DCL;
-using DCL.Models;
 using DCL.Components;
 using DCL.Helpers;
+using DCL.Models;
 using Newtonsoft.Json;
 using NUnit.Framework;
 using System.Collections;
@@ -12,10 +11,15 @@ namespace Tests
 {
     public class CursorControllerTests : TestsBase
     {
+        protected override IEnumerator SetUp()
+        {
+            sceneInitialized = false;
+            return base.SetUp();
+        }
+
         [UnityTest]
         public IEnumerator OnPointerHoverFeedbackIsDisplayedCorrectly()
         {
-            yield return InitScene();
 
             DecentralandEntity entity;
             BoxShape shape;
@@ -52,7 +56,9 @@ namespace Tests
             // Rotate camera towards the interactive object
             var cameraRotationPayload = new CameraController.SetRotationPayload()
             {
-                x = 45, y = 0, z = 0
+                x = 45,
+                y = 0,
+                z = 0
             };
             cameraController.SetRotation(JsonConvert.SerializeObject(cameraRotationPayload, Formatting.None, new JsonSerializerSettings()
             {
@@ -61,12 +67,14 @@ namespace Tests
 
             yield return null;
 
-            Assert.AreEqual(cursorController.cursorImage.sprite, cursorController.hoverCursor);
+            Assert.AreEqual(cursorController.hoverCursor, cursorController.cursorImage.sprite);
 
             // Rotate the camera away from the interactive object
             cameraRotationPayload = new CameraController.SetRotationPayload()
             {
-                x = 0, y = 0, z = 0,
+                x = 0,
+                y = 0,
+                z = 0,
                 cameraTarget = (DCLCharacterController.i.transform.position - entity.gameObject.transform.position)
             };
             cameraController.SetRotation(JsonConvert.SerializeObject(cameraRotationPayload, Formatting.None, new JsonSerializerSettings()

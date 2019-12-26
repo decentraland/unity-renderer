@@ -1,7 +1,7 @@
 using DCL;
+using NUnit.Framework;
 using System.Collections;
 using UnityEngine;
-using UnityEngine.Assertions;
 using UnityEngine.TestTools;
 
 namespace Tests
@@ -21,11 +21,14 @@ namespace Tests
             }
         }
 
+        protected override IEnumerator SetUp()
+        {
+            yield break;
+        }
+
         [UnityTest]
         public IEnumerator PooledGameObjectDestroyed()
         {
-            yield return InitScene(false, false, false, false, false);
-
             PooledObjectInstantiator instantiator = new PooledObjectInstantiator();
 
             GameObject original = new GameObject("Original");
@@ -62,11 +65,9 @@ namespace Tests
             Assert.AreEqual(0, pool.inactiveCount, "Inactive objects count should be 0");
         }
 
-        [UnityTest]
-        public IEnumerator GetPoolableObject()
+        [Test]
+        public void GetPoolableObject()
         {
-            yield return InitScene();
-
             PooledObjectInstantiator instantiator = new PooledObjectInstantiator();
 
             GameObject original = new GameObject("Original");

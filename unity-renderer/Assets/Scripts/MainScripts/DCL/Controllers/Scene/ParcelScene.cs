@@ -14,7 +14,6 @@ namespace DCL.Controllers
 {
     public class ParcelScene : MonoBehaviour, ICleanable
     {
-        public static bool CHECK_BOUNDARIES_ON_TRANSFORM_UPDATE = false;
         public static bool VERBOSE = false;
         enum State
         {
@@ -40,6 +39,12 @@ namespace DCL.Controllers
         public event System.Action<DecentralandEntity> OnEntityRemoved;
         public ContentProvider contentProvider;
         public int disposableNotReadyCount => disposableNotReady.Count;
+
+        [System.NonSerialized]
+        public bool useBoundariesChecker = false;
+
+        [System.NonSerialized]
+        public bool useBlockers = true;
 
         [System.NonSerialized]
         public bool isTestScene = false;
@@ -76,6 +81,9 @@ namespace DCL.Controllers
                 pool.ForcePrewarm();
             }
 
+            if (DCLCharacterController.i)
+                DCLCharacterController.i.characterPosition.OnPrecisionAdjust += OnPrecisionAdjust;
+
             metricsController = new SceneMetricsController(this);
             metricsController.Enable();
 
@@ -83,10 +91,8 @@ namespace DCL.Controllers
                 boundariesChecker = new SceneBoundariesDebugModeChecker(this);
             else
                 boundariesChecker = new SceneBoundariesChecker(this);
-
-            if (DCLCharacterController.i)
-                DCLCharacterController.i.characterPosition.OnPrecisionAdjust += OnPrecisionAdjust;
         }
+
 
         private void Update()
         {
@@ -140,7 +146,8 @@ namespace DCL.Controllers
                 parcels.Add(sceneData.parcels[i]);
             }
 
-            gameObject.transform.position = DCLCharacterController.i.characterPosition.WorldToUnityPosition(Utils.GridToWorldPosition(data.basePosition.x, data.basePosition.y));
+            if (DCLCharacterController.i != null)
+                gameObject.transform.position = DCLCharacterController.i.characterPosition.WorldToUnityPosition(Utils.GridToWorldPosition(data.basePosition.x, data.basePosition.y));
 
 #if UNITY_EDITOR
             //NOTE(Brian): Don't generate parcel blockers if debugScenes is active and is not the desired scene.
@@ -150,7 +157,11 @@ namespace DCL.Controllers
                 return;
             }
 #endif
-            SetupBlockers(data.parcels);
+            if (useBlockers)
+                SetupBlockers(data.parcels);
+
+            if (isTestScene)
+                SetSceneReady();
         }
 
         public void CleanBlockers()
@@ -390,7 +401,7 @@ namespace DCL.Controllers
 
             newEntity.OnCleanupEvent += po.OnCleanup;
 
-            if (CHECK_BOUNDARIES_ON_TRANSFORM_UPDATE || SceneController.i.isDebugMode)
+            if (useBoundariesChecker || SceneController.i.isDebugMode)
                 newEntity.OnShapeUpdated += boundariesChecker.EvaluateEntityPosition;
 
             entities.Add(tmpCreateEntityMessage.id, newEntity);
@@ -591,7 +602,7 @@ namespace DCL.Controllers
                     entity.gameObject.transform.localRotation = DCLTransform.model.rotation;
                     entity.gameObject.transform.localScale = DCLTransform.model.scale;
 
-                    if (CHECK_BOUNDARIES_ON_TRANSFORM_UPDATE || SceneController.i.isDebugMode)
+                    if (useBoundariesChecker || SceneController.i.isDebugMode)
                         boundariesChecker.EvaluateEntityPosition(entity);
                 }
 
@@ -1130,7 +1141,9 @@ namespace DCL.Controllers
 
             state = State.READY;
 
-            CleanBlockers();
+            if (useBlockers)
+                CleanBlockers();
+
             SceneController.i.SendSceneReady(sceneData.id);
             RefreshName();
         }

@@ -156,7 +156,9 @@ public class DCLCharacterController : MonoBehaviour
 
         CommonScriptableObjects.playerUnityPosition.Set(characterPosition.unityPosition);
         CommonScriptableObjects.playerCoords.Set(Utils.WorldToGridPosition(characterPosition.worldPosition));
-        CommonScriptableObjects.sceneID.Set(SceneController.i.GetCurrentScene(this.characterPosition));
+
+        if (SceneController.i != null)
+            CommonScriptableObjects.sceneID.Set(SceneController.i.GetCurrentScene(this.characterPosition));
 
         if (Moved(lastPosition))
         {

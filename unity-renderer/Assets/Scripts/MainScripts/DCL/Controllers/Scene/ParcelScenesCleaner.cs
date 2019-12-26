@@ -1,4 +1,4 @@
-﻿using DCL.Controllers;
+using DCL.Controllers;
 using DCL.Models;
 using System.Collections;
 using System.Collections.Generic;
@@ -51,6 +51,36 @@ namespace DCL
         public void MarkRootEntityForCleanup(ParcelScene scene, DecentralandEntity entity)
         {
             rootEntitiesMarkedForCleanup.Enqueue(new ParcelEntity(scene, entity));
+        }
+
+        public void ForceCleanup()
+        {
+            ParcelScene scene = null;
+
+            // If we have root entities queued for removal, we call Parcel Scene's RemoveEntity()
+            // so that the child entities end up recursively in the entitiesMarkedForCleanup queue
+            while (rootEntitiesMarkedForCleanup.Count > 0)
+            {
+                // If the next scene is different to the last one
+                // we removed all the entities from the parcel scene
+                if (scene != null && rootEntitiesMarkedForCleanup.Peek().scene != scene)
+                    break;
+
+                ParcelEntity parcelEntity = rootEntitiesMarkedForCleanup.Dequeue();
+
+                scene = parcelEntity.scene;
+                scene.RemoveEntity(parcelEntity.entity.entityId, false);
+            }
+
+            while (entitiesMarkedForCleanup.Count > 0)
+            {
+                DecentralandEntity entity = entitiesMarkedForCleanup.Dequeue();
+                entity.SetParent(null);
+                entity.Cleanup();
+            }
+
+            if (scene != null)
+                GameObject.Destroy(scene.gameObject);
         }
 
         IEnumerator CleanupEntitiesCoroutine()

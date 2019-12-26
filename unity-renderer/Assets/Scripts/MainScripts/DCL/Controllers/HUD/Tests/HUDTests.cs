@@ -1,6 +1,5 @@
-﻿using System.Collections;
-using DCL.Helpers;
 using NUnit.Framework;
+using System.Collections;
 using UnityEngine;
 using UnityEngine.TestTools;
 
@@ -12,7 +11,6 @@ namespace Tests
         public IEnumerator NotCreateHUDsInitially()
         {
             yield return InitScene();
-
             // There must be a hud controller
             HUDController hudController = HUDController.i;
             Assert.IsNotNull(hudController, "There must be a HUDController in the scene");
@@ -34,7 +32,6 @@ namespace Tests
         public IEnumerator CreateHudIfConfigurationIsActive()
         {
             yield return InitScene();
-
             // There must be a hud controller
             HUDController hudController = HUDController.i;
             Assert.IsNotNull(hudController, "There must be a HUDController in the scene");

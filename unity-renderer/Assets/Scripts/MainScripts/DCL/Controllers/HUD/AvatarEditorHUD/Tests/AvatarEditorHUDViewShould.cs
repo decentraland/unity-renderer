@@ -14,10 +14,20 @@ namespace AvatarEditorHUD_Tests
         private WearableDictionary catalog;
 
         [UnitySetUp]
-        private IEnumerator SetUp()
+        protected override IEnumerator SetUp()
         {
-            yield return InitScene(false, false, false, false, false);
+            if (controller == null)
+            {
+                Setup_AvatarEditorHUDController();
+            }
 
+            controller.UnequipAllWearables();
+
+            yield break;
+        }
+
+        private void Setup_AvatarEditorHUDController()
+        {
             userProfile = ScriptableObject.CreateInstance<UserProfile>();
             userProfile.UpdateData(new UserProfileModel()
             {
@@ -29,12 +39,11 @@ namespace AvatarEditorHUD_Tests
                     wearables = new List<string>() { },
                 }
 
-            });
+            }, false);
 
             catalog = AvatarTestHelpers.CreateTestCatalogLocal();
             controller = new AvatarEditorHUDController_Mock(userProfile, catalog);
         }
-
 
         [Test]
         [TestCase("dcl://base-avatars/f_african_leggins", WearableLiterals.BodyShapes.FEMALE)]
@@ -55,7 +64,7 @@ namespace AvatarEditorHUD_Tests
                     wearables = new List<string>() { },
                 }
 
-            });
+            }, false);
             var category = catalog.Get(wearableId).category;
 
             Assert.IsTrue(controller.myView.selectorsByCategory.ContainsKey(category));
@@ -88,7 +97,8 @@ namespace AvatarEditorHUD_Tests
                     wearables = new List<string>() { },
                 }
 
-            });
+            }, false);
+
             var category = catalog.Get(wearableId).category;
 
             Assert.IsTrue(controller.myView.selectorsByCategory.ContainsKey(category));
@@ -128,7 +138,7 @@ namespace AvatarEditorHUD_Tests
                     wearables = new List<string>() { },
                 },
                 inventory = new[] { wearableId }
-            });
+            }, false);
 
             Assert.IsTrue(controller.myView.collectiblesItemSelector.itemToggles.ContainsKey(wearableId));
         }
@@ -195,8 +205,9 @@ namespace AvatarEditorHUD_Tests
                     wearables = new List<string>() { },
                 },
                 inventory = new[] { dummyItem.id }
-            });
+            }, false);
 
+            catalog.Remove(dummyItem.id);
             catalog.Add(dummyItem.id, dummyItem);
             return dummyItem;
         }

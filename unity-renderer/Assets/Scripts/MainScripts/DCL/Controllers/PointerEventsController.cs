@@ -40,7 +40,7 @@ namespace DCL
 
             while (true)
             {
-                if (!RenderingController.i.renderingEnabled)
+                if (!RenderingController.i.renderingEnabled || charCamera == null)
                 {
                     yield return null;
                     continue;

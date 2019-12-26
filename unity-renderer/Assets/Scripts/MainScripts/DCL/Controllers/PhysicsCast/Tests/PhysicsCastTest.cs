@@ -1,14 +1,15 @@
+using DCL;
 using DCL.Components;
 using DCL.Helpers;
+using DCL.Interface;
 using DCL.Models;
+using Google.Protobuf;
 using NUnit.Framework;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 using UnityEngine.TestTools;
-using DCL.Interface;
-using Google.Protobuf;
-using System.Linq;
 
 public class PhysicsCast_Tests : TestsBase
 {
@@ -19,12 +20,12 @@ public class PhysicsCast_Tests : TestsBase
     Vector3 startPos = new Vector3(5, 2, 15);
     bool alreadyInitialized = false;
 
-    protected override IEnumerator InitScene(bool usesWebServer = false, bool spawnCharController = true, bool spawnTestScene = true, bool spawnUIScene = true, bool debugMode = false, bool reloadUnityScene = true)
+    [UnitySetUp]
+    protected override IEnumerator SetUp()
     {
-        if (!alreadyInitialized)
-            yield return base.InitScene(usesWebServer, spawnCharController, spawnTestScene, spawnUIScene, debugMode, reloadUnityScene);
-
-        alreadyInitialized = true;
+        yield return base.SetUp();
+        PointerEventsController.i.Initialize(isTesting: true);
+        scene.useBoundariesChecker = false;
     }
 
     private void ConfigureRaycastQuery(string queryType)
@@ -55,10 +56,10 @@ public class PhysicsCast_Tests : TestsBase
     }
 
     [UnityTest]
+    [Explicit]
+    [Category("Explicit")]
     public IEnumerator HitFirst()
     {
-        yield return InitScene();
-
         ConfigureRaycastQuery("HitFirst");
 
         List<DecentralandEntity> entities = new List<DecentralandEntity>();
@@ -121,10 +122,10 @@ public class PhysicsCast_Tests : TestsBase
     }
 
     [UnityTest]
+    [Explicit]
+    [Category("Explicit")]
     public IEnumerator HitAll()
     {
-        yield return InitScene(reloadUnityScene: false);
-
         ConfigureRaycastQuery("HitAll");
 
         List<DecentralandEntity> entities = new List<DecentralandEntity>();
@@ -212,6 +213,8 @@ public class PhysicsCast_Tests : TestsBase
                 return false;
             });
 
+        yield return null;
+
         Assert.IsTrue(eventTriggered);
     }
 
@@ -264,4 +267,3 @@ public class PhysicsCast_Tests : TestsBase
 
 
 }
-

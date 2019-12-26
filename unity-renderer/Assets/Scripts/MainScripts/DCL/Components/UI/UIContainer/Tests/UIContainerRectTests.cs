@@ -1,7 +1,6 @@
 using DCL.Components;
 using DCL.Helpers;
 using DCL.Models;
-using Newtonsoft.Json;
 using NUnit.Framework;
 using System.Collections;
 using UnityEngine;
@@ -15,8 +14,6 @@ namespace Tests
         [UnityTest]
         public IEnumerator TestPropertiesAreAppliedCorrectly()
         {
-            yield return InitScene();
-
             // Create UIScreenSpaceShape
             UIScreenSpace screenSpaceShape =
                 TestHelpers.SharedComponentCreate<UIScreenSpace, UIScreenSpace.Model>(scene,
@@ -82,8 +79,6 @@ namespace Tests
         [UnityTest]
         public IEnumerator TestParenting()
         {
-            yield return InitScene();
-
             // Create UIScreenSpaceShape
             UIScreenSpace screenSpaceShape =
                 TestHelpers.SharedComponentCreate<UIScreenSpace, UIScreenSpace.Model>(scene,
@@ -130,8 +125,6 @@ namespace Tests
         [UnityTest]
         public IEnumerator TestMissingValuesGetDefaultedOnUpdate()
         {
-            yield return InitScene();
-
             //// Create UIScreenSpaceShape
             UIScreenSpace screenSpaceShape =
                 TestHelpers.SharedComponentCreate<UIScreenSpace, UIScreenSpace.Model>(scene,
@@ -147,16 +140,12 @@ namespace Tests
         [UnityTest]
         public IEnumerator AddedCorrectlyOnInvisibleParent()
         {
-            yield return InitScene();
-
             yield return TestHelpers.TestUIElementAddedCorrectlyOnInvisibleParent<UIContainerRect, UIContainerRect.Model>(scene, CLASS_ID.UI_CONTAINER_RECT);
         }
 
         [UnityTest]
         public IEnumerator TestNormalizedSize()
         {
-            yield return InitScene();
-
             // Create UIScreenSpaceShape
             UIScreenSpace screenSpaceShape =
                 TestHelpers.SharedComponentCreate<UIScreenSpace, UIScreenSpace.Model>(scene,
@@ -193,8 +182,6 @@ namespace Tests
         [UnityTest]
         public IEnumerator TestOnClickEvent()
         {
-            yield return InitScene();
-
             // Create UIScreenSpaceShape
             UIScreenSpace screenSpaceShape =
                 TestHelpers.SharedComponentCreate<UIScreenSpace, UIScreenSpace.Model>(scene,

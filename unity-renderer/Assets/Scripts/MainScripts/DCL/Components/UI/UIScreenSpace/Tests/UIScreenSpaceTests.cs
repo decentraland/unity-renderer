@@ -14,8 +14,6 @@ namespace Tests
         [Explicit]
         public IEnumerator TestVisibilityUpdate()
         {
-            yield return InitScene();
-
             // Create UIScreenSpaceShape
             UIScreenSpace screenSpaceShape =
                 TestHelpers.SharedComponentCreate<UIScreenSpace, UIScreenSpace.Model>(scene,
@@ -73,8 +71,6 @@ namespace Tests
         [Explicit]
         public IEnumerator TestScaleWhenCharacterIsElsewhere()
         {
-            yield return InitScene();
-
             // Position character outside parcel
             TestHelpers.SetCharacterPosition(new Vector3(50f, 3f, 50f));
 
@@ -104,7 +100,6 @@ namespace Tests
         [UnityTest]
         public IEnumerator TestMissingValuesGetDefaultedOnUpdate()
         {
-            yield return InitScene();
             yield return TestHelpers.TestSharedComponentDefaultsOnUpdate<UIScreenSpace.Model, UIScreenSpace>(scene,
                 CLASS_ID.UI_SCREEN_SPACE_SHAPE);
         }
@@ -112,8 +107,6 @@ namespace Tests
         [UnityTest]
         public IEnumerator TestConstrainedPanelMaskAppliesToParcelsUI()
         {
-            yield return InitScene();
-
             yield return null;
 
             // Create UIScreenSpaceShape
@@ -132,8 +125,6 @@ namespace Tests
         [UnityTest]
         public IEnumerator TestConstrainedPanelMaskDoesntApplyToDecentralandUI()
         {
-            yield return InitScene();
-
             scene.isPersistent = true;
 
             yield return null;

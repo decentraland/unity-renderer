@@ -87,8 +87,6 @@ namespace Tests
 
         public IEnumerator CreateAndLoadAudioClip(bool waitForLoading = true)
         {
-            yield return InitScene();
-
             yield return LoadAudioClip(scene,
                 audioClipId: "audioClipTest",
                 url: DCL.Helpers.Utils.GetTestsAssetsPath() + "/Audio/Train.wav",
@@ -149,15 +147,12 @@ namespace Tests
         [UnityTest]
         public IEnumerator AudioComponentMissingValuesGetDefaultedOnUpdate()
         {
-            yield return InitScene();
             yield return TestHelpers.TestEntityComponentDefaultsOnUpdate<DCLAudioSource.Model, DCLAudioSource>(scene);
         }
 
         [UnityTest]
         public IEnumerator AudioClipMissingValuesGetDefaultedOnUpdate()
         {
-            yield return InitScene();
-
             // 1. Create component with non-default configs
             DCLAudioClip.Model componentModel = new DCLAudioClip.Model
             {
@@ -191,8 +186,6 @@ namespace Tests
         [UnityTest]
         public IEnumerator AudioIsLooped()
         {
-            yield return InitScene();
-
             DecentralandEntity entity = TestHelpers.CreateSceneEntity(scene);
             yield return null;
 
@@ -209,8 +202,6 @@ namespace Tests
         [UnityTest]
         public IEnumerator AudioIsNotLooped()
         {
-            yield return InitScene();
-
             DecentralandEntity entity = TestHelpers.CreateSceneEntity(scene);
             yield return null;
 
@@ -227,17 +218,13 @@ namespace Tests
         [UnityTest]
         public IEnumerator AudioClipAttachedGetsReplacedOnNewAttachment()
         {
-            yield return InitScene();
-
             yield return TestHelpers.TestAttachedSharedComponentOfSameTypeIsReplaced<DCLAudioClip.Model, DCLAudioClip>(
                 scene, CLASS_ID.AUDIO_CLIP);
         }
 
-        [UnityTest]
-        public IEnumerator AudioClip_OnReadyBeforeLoading()
+        [Test]
+        public void AudioClip_OnReadyBeforeLoading()
         {
-            yield return InitScene();
-
             DCLAudioClip dclAudioClip = CreateAudioClip(DCL.Helpers.Utils.GetTestsAssetsPath() + "/Audio/short_effect.ogg", true, true, 1);
             bool isOnReady = false;
             dclAudioClip.CallWhenReady((x) => { isOnReady = true; });
@@ -248,8 +235,6 @@ namespace Tests
         [UnityTest]
         public IEnumerator AudioClip_OnReadyWaitLoading()
         {
-            yield return InitScene();
-
             DCLAudioClip dclAudioClip = CreateAudioClip(DCL.Helpers.Utils.GetTestsAssetsPath() + "/Audio/short_effect.ogg", true, true, 1);
             bool isOnReady = false;
             dclAudioClip.CallWhenReady((x) => { isOnReady = true; });
@@ -261,8 +246,6 @@ namespace Tests
         [UnityTest]
         public IEnumerator AudioClip_OnReadyAfterLoadingInstantlyCalled()
         {
-            yield return InitScene();
-
             DCLAudioClip dclAudioClip = CreateAudioClip(DCL.Helpers.Utils.GetTestsAssetsPath() + "/Audio/short_effect.ogg", true, true, 1);
             yield return dclAudioClip.routine;
             bool isOnReady = false;

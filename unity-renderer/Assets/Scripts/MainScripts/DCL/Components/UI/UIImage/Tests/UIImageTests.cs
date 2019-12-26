@@ -1,4 +1,4 @@
-﻿using DCL;
+using DCL;
 using DCL.Components;
 using DCL.Helpers;
 using DCL.Models;
@@ -14,8 +14,6 @@ namespace Tests
         [UnityTest]
         public IEnumerator TestPropertiesAreAppliedCorrectly()
         {
-            yield return InitScene();
-
             // Create UIScreenSpaceShape
             UIScreenSpace screenSpaceShape =
                 TestHelpers.SharedComponentCreate<UIScreenSpace, UIScreenSpace.Model>(scene,
@@ -101,8 +99,6 @@ namespace Tests
         [UnityTest]
         public IEnumerator TestMissingValuesGetDefaultedOnUpdate()
         {
-            yield return InitScene();
-
             UIScreenSpace screenSpaceShape =
                 TestHelpers.SharedComponentCreate<UIScreenSpace, UIScreenSpace.Model>(scene,
                     CLASS_ID.UI_SCREEN_SPACE_SHAPE);
@@ -117,16 +113,12 @@ namespace Tests
         [UnityTest]
         public IEnumerator AddedCorrectlyOnInvisibleParent()
         {
-            yield return InitScene();
-
             yield return TestHelpers.TestUIElementAddedCorrectlyOnInvisibleParent<UIImage, UIImage.Model>(scene, CLASS_ID.UI_IMAGE_SHAPE);
         }
 
         [UnityTest]
         public IEnumerator TestOnclickEvent()
         {
-            yield return InitScene();
-
             UIScreenSpace screenSpaceShape =
                 TestHelpers.SharedComponentCreate<UIScreenSpace, UIScreenSpace.Model>(scene,
                     CLASS_ID.UI_SCREEN_SPACE_SHAPE);
@@ -195,8 +187,6 @@ namespace Tests
         [UnityTest]
         public IEnumerator TestOnClickOnInvisibleShapeEvent()
         {
-            yield return InitScene();
-
             UIScreenSpace screenSpaceShape = TestHelpers.SharedComponentCreate<UIScreenSpace, UIScreenSpace.Model>(scene, CLASS_ID.UI_SCREEN_SPACE_SHAPE);
             yield return screenSpaceShape.routine;
 
@@ -249,8 +239,6 @@ namespace Tests
         [UnityTest]
         public IEnumerator TestOnClickOnTransparentShapeEvent()
         {
-            yield return InitScene();
-
             UIScreenSpace screenSpaceShape = TestHelpers.SharedComponentCreate<UIScreenSpace, UIScreenSpace.Model>(scene, CLASS_ID.UI_SCREEN_SPACE_SHAPE);
             yield return screenSpaceShape.routine;
 
@@ -312,8 +300,6 @@ namespace Tests
         [UnityTest]
         public IEnumerator TestAlignment()
         {
-            yield return InitScene();
-
             // Create UIScreenSpaceShape
             UIScreenSpace screenSpaceShape =
                 TestHelpers.SharedComponentCreate<UIScreenSpace, UIScreenSpace.Model>(scene,

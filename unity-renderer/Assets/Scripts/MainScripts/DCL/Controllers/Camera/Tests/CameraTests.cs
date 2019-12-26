@@ -8,15 +8,6 @@ namespace CameraController_Test
 {
     public class CameraControllerShould : TestsBase
     {
-        private CameraController cameraController;
-
-        [UnitySetUp]
-        public IEnumerator SetUp()
-        {
-            yield return InitScene(spawnCharController: true);
-            cameraController = GameObject.Instantiate(Resources.Load<GameObject>("CameraController")).GetComponent<CameraController>();
-        }
-
         [Test]
         public void ReactToCameraChangeAction()
         {

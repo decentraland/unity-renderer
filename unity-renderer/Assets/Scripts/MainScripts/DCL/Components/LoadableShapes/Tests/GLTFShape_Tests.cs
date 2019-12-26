@@ -1,4 +1,4 @@
-﻿using DCL.Components;
+using DCL.Components;
 using DCL.Helpers;
 using DCL.Models;
 using Newtonsoft.Json;
@@ -10,12 +10,9 @@ using UnityGLTF;
 
 public class GLTFShape_Tests : TestsBase
 {
-
     [UnityTest]
     public IEnumerator ShapeUpdate()
     {
-        yield return InitScene();
-
         string entityId = "1";
         TestHelpers.CreateSceneEntity(scene, entityId);
 
@@ -41,8 +38,6 @@ public class GLTFShape_Tests : TestsBase
     [UnityTest]
     public IEnumerator PreExistentShapeUpdate()
     {
-        yield return InitScene();
-
         string entityId = "1";
         TestHelpers.CreateSceneEntity(scene, entityId);
 
@@ -83,8 +78,6 @@ public class GLTFShape_Tests : TestsBase
     [UnityTest]
     public IEnumerator PreExistentShapeImmediateUpdate()
     {
-        yield return InitScene();
-
         string entityId = "1";
         TestHelpers.CreateSceneEntity(scene, entityId);
 
@@ -114,8 +107,6 @@ public class GLTFShape_Tests : TestsBase
     [UnityTest]
     public IEnumerator AttachedGetsReplacedOnNewAttachment()
     {
-        yield return InitScene();
-
         DecentralandEntity entity = TestHelpers.CreateSceneEntity(scene);
 
         // set first GLTF
@@ -151,10 +142,9 @@ public class GLTFShape_Tests : TestsBase
     // different than the new default value, that's why we are forcing the colliders to be ON on EVERY GLTF until that gets fixed, and that's why this test fails.
     [UnityTest]
     [Explicit]
+    [Category("Explicit")]
     public IEnumerator CollisionProperty()
     {
-        yield return InitScene();
-
         string entityId = "entityId";
         TestHelpers.CreateSceneEntity(scene, entityId);
         var entity = scene.entities[entityId];
@@ -176,10 +166,10 @@ public class GLTFShape_Tests : TestsBase
     }
 
     [UnityTest]
+    [Explicit]
+    [Category("Explicit")]
     public IEnumerator VisibleProperty()
     {
-        yield return InitScene();
-
         string entityId = "entityId";
         TestHelpers.CreateSceneEntity(scene, entityId);
         var entity = scene.entities[entityId];
@@ -201,10 +191,10 @@ public class GLTFShape_Tests : TestsBase
     }
 
 
-    [UnityTest]
-    public IEnumerator OnReadyBeforeLoading()
+    [Test]
+    public void OnReadyBeforeLoading()
     {
-        yield return InitScene();
+
         GLTFShape gltfShape = TestHelpers.CreateEntityWithGLTFShape(scene, Vector3.zero, Utils.GetTestsAssetsPath() + "/GLB/Trevor/Trevor.glb", out DecentralandEntity entity);
 
         bool isOnReady = false;
@@ -216,7 +206,7 @@ public class GLTFShape_Tests : TestsBase
     [UnityTest]
     public IEnumerator OnReadyWaitLoading()
     {
-        yield return InitScene();
+
         GLTFShape gltfShape = TestHelpers.CreateEntityWithGLTFShape(scene, Vector3.zero, Utils.GetTestsAssetsPath() + "/GLB/Trevor/Trevor.glb", out DecentralandEntity entity);
 
         bool isOnReady = false;
@@ -226,10 +216,12 @@ public class GLTFShape_Tests : TestsBase
         Assert.IsTrue(isOnReady);
     }
 
-    [UnityTest]
-    public IEnumerator OnReadyWithoutAttachInstantlyCalled()
+    [Test]
+    [Explicit]
+    [Category("Explicit")]
+    public void OnReadyWithoutAttachInstantlyCalled()
     {
-        yield return InitScene();
+
 
         GLTFShape gltfShape = TestHelpers.SharedComponentCreate<GLTFShape, GLTFShape.Model>(scene, CLASS_ID.GLTF_SHAPE, new LoadableShape.Model()
         {
@@ -245,7 +237,7 @@ public class GLTFShape_Tests : TestsBase
     [UnityTest]
     public IEnumerator OnReadyAfterLoadingInstantlyCalled()
     {
-        yield return InitScene();
+
         GLTFShape gltfShape = TestHelpers.CreateEntityWithGLTFShape(scene, Vector3.zero, Utils.GetTestsAssetsPath() + "/GLB/Trevor/Trevor.glb", out DecentralandEntity entity);
         yield return TestHelpers.WaitForGLTFLoad(entity);
 
@@ -257,7 +249,7 @@ public class GLTFShape_Tests : TestsBase
     [UnityTest]
     public IEnumerator OnDestroyWhileLoading()
     {
-        yield return InitScene();
+
 
         GLTFShape gltfShape = TestHelpers.CreateEntityWithGLTFShape(scene, Vector3.zero, Utils.GetTestsAssetsPath() + "/GLB/Trevor/Trevor.glb", out DecentralandEntity entity);
         GLTFShape gltfShape2 = TestHelpers.CreateEntityWithGLTFShape(scene, Vector3.zero, Utils.GetTestsAssetsPath() + "/GLB/PalmTree_01.glb", out DecentralandEntity entity2);

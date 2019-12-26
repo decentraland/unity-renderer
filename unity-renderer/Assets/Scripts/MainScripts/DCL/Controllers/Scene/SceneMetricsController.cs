@@ -1,4 +1,4 @@
-﻿using DCL.Controllers;
+using DCL.Controllers;
 using DCL.Interface;
 using DCL.Models;
 using System.Collections.Generic;
@@ -283,6 +283,8 @@ namespace DCL
             //can we count materials directly from the mesh renderers?
             bool isInValidPosition = debugBoundariesChecker == null
                 || (debugBoundariesChecker != null && debugBoundariesChecker.WasEntityInAValidPosition(entity));
+
+            isInValidPosition |= !scene.useBoundariesChecker;
 
             if (isInValidPosition)
             {

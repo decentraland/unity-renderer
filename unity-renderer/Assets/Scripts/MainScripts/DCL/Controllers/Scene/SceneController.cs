@@ -76,6 +76,9 @@ namespace DCL
         [System.NonSerialized]
         public bool isWssDebugMode;
 
+        [System.NonSerialized]
+        public bool prewarmSceneMessagesPool = true;
+
         public bool hasPendingMessages => MessagingControllersManager.i.pendingMessagesCount > 0;
 
         public string GlobalSceneId
@@ -94,13 +97,7 @@ namespace DCL
             if (i != null)
             {
                 Utils.SafeDestroy(this);
-
                 return;
-            }
-
-            for (int i = 0; i < 100000; i++)
-            {
-                sceneMessagesPool.Enqueue(new MessagingBus.QueuedSceneMessage_Scene());
             }
 
             i = this;
@@ -137,11 +134,37 @@ namespace DCL
             positionDirty = true;
         }
 
+        void Start()
+        {
+            if (prewarmSceneMessagesPool)
+            {
+                for (int i = 0; i < 100000; i++)
+                {
+                    sceneMessagesPool.Enqueue(new MessagingBus.QueuedSceneMessage_Scene());
+                }
+            }
+        }
+
+        public void Restart()
+        {
+            MessagingControllersManager.i.Cleanup();
+            MessagingControllersManager.i.Initialize(this);
+
+            MemoryManager.i.CleanupPoolsIfNeeded(true);
+            MemoryManager.i.Initialize();
+
+            PointerEventsController.i.Cleanup();
+            PointerEventsController.i.Initialize();
+
+            ParcelScene.parcelScenesCleaner.ForceCleanup();
+        }
+
         void OnDestroy()
         {
             DCLCharacterController.OnCharacterMoved -= SetPositionDirty;
             ParcelScene.parcelScenesCleaner.Stop();
         }
+
         private void Update()
         {
             InputController_Legacy.i.Update();
@@ -742,26 +765,28 @@ namespace DCL
                 data.id = $"(test):{data.basePosition.x},{data.basePosition.y}";
             }
 
+            if (loadedScenes.ContainsKey(data.id))
+            {
+                Debug.LogWarning($"Scene {data.id} is already loaded.");
+                return loadedScenes[data.id];
+            }
+
             var go = new GameObject();
             var newScene = go.AddComponent<ParcelScene>();
-            newScene.SetData(data);
-            newScene.InitializeDebugPlane();
             newScene.ownerController = this;
             newScene.isTestScene = true;
+            newScene.useBlockers = false;
+            newScene.SetData(data);
+
+            if (DCLCharacterController.i != null)
+                newScene.InitializeDebugPlane();
 
             scenesSortedByDistance.Add(newScene);
 
             if (!MessagingControllersManager.i.ContainsController(data.id))
                 MessagingControllersManager.i.AddController(this, data.id);
 
-            if (!loadedScenes.ContainsKey(data.id))
-            {
-                loadedScenes.Add(data.id, newScene);
-            }
-            else
-            {
-                Debug.LogWarning($"Scene {data.id} is already loaded.");
-            }
+            loadedScenes.Add(data.id, newScene);
 
             return newScene;
         }

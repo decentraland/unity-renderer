@@ -1,4 +1,4 @@
-﻿using DCL.Components;
+using DCL.Components;
 using DCL.Helpers;
 using DCL.Models;
 using Newtonsoft.Json;
@@ -6,14 +6,13 @@ using NUnit.Framework;
 using System.Collections;
 using UnityEngine;
 using UnityEngine.TestTools;
-using UnityGLTF;
 
 public class LoadableShapesMiscTests : TestsBase
 {
     [UnityTest]
     public IEnumerator OBJShapeUpdate()
     {
-        yield return InitScene();
+
 
         string entityId = "1";
         TestHelpers.CreateSceneEntity(scene, entityId);
@@ -47,7 +46,7 @@ public class LoadableShapesMiscTests : TestsBase
     [UnityTest]
     public IEnumerator PreExistentShapeUpdate()
     {
-        yield return InitScene();
+
 
         string entityId = "1";
         TestHelpers.CreateSceneEntity(scene, entityId);

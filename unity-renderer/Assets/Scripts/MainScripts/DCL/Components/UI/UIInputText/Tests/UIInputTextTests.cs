@@ -1,7 +1,7 @@
 using DCL.Components;
 using DCL.Helpers;
-using DCL.Models;
 using DCL.Interface;
+using DCL.Models;
 using NUnit.Framework;
 using System.Collections;
 using UnityEngine;
@@ -16,10 +16,9 @@ namespace Tests
         UIInputText textInput;
         Camera mockCamera;
 
+
         public IEnumerator InputTextCreate()
         {
-            yield return InitScene(spawnCharController: false);
-
             ssshape = TestHelpers.SharedComponentCreate<UIScreenSpace, UIScreenSpace.Model>(
                 scene,
                 DCL.Models.CLASS_ID.UI_SCREEN_SPACE_SHAPE);
@@ -125,8 +124,6 @@ namespace Tests
         [UnityTest]
         public IEnumerator AddedCorrectlyOnInvisibleParent()
         {
-            yield return InitScene();
-
             yield return TestHelpers.TestUIElementAddedCorrectlyOnInvisibleParent<UIInputText, UIInputText.Model>(scene, CLASS_ID.UI_INPUT_TEXT_SHAPE);
         }
 

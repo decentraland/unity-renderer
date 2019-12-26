@@ -1,4 +1,4 @@
-﻿using DCL.Helpers;
+using DCL.Helpers;
 using NUnit.Framework;
 using System.Collections;
 using UnityEngine.TestTools;
@@ -14,11 +14,9 @@ namespace Tests
 {
     public class EntityTests : TestsBase
     {
-        [UnityTest]
-        public IEnumerator EntityCreation()
+        [Test]
+        public void EntityCreation()
         {
-            yield return InitScene();
-
             // Create first entity
             string entityId = "1";
 
@@ -41,11 +39,9 @@ namespace Tests
             Assert.AreEqual(entityId, entityObject.entityId);
         }
 
-        [UnityTest]
-        public IEnumerator EntityParenting()
+        [Test]
+        public void EntityParenting()
         {
-            yield return InitScene();
-
             string entityId = "2";
             string parentEntityId = "3";
 
@@ -77,8 +73,6 @@ namespace Tests
         [UnityTest]
         public IEnumerator EntityRemoval()
         {
-            yield return InitScene();
-
             Assert.IsTrue(scene != null);
 
             string entityId = "2";

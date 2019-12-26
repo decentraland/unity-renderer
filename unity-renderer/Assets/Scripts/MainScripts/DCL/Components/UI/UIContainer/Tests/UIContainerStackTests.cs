@@ -1,4 +1,4 @@
-﻿using DCL.Components;
+using DCL.Components;
 using DCL.Helpers;
 using DCL.Models;
 using NUnit.Framework;
@@ -14,8 +14,6 @@ namespace Tests
         [UnityTest]
         public IEnumerator PropertiesAreAppliedCorrectly()
         {
-            yield return InitScene();
-
             // Create UIScreenSpaceShape
             UIScreenSpace screenSpaceShape =
                 TestHelpers.SharedComponentCreate<UIScreenSpace, UIScreenSpace.Model>(scene,
@@ -73,8 +71,6 @@ namespace Tests
         [UnityTest]
         public IEnumerator MissingValuesGetDefaultedOnUpdate()
         {
-            yield return InitScene();
-
             // Create UIScreenSpaceShape
             UIScreenSpace screenSpaceShape =
                 TestHelpers.SharedComponentCreate<UIScreenSpace, UIScreenSpace.Model>(scene,
@@ -88,16 +84,12 @@ namespace Tests
         [UnityTest]
         public IEnumerator AddedCorrectlyOnInvisibleParent()
         {
-            yield return InitScene();
-
             yield return TestHelpers.TestUIElementAddedCorrectlyOnInvisibleParent<UIContainerStack, UIContainerStack.Model>(scene, CLASS_ID.UI_CONTAINER_STACK);
         }
 
         [UnityTest]
         public IEnumerator NormalizedSize()
         {
-            yield return InitScene();
-
             // Create UIScreenSpaceShape
             UIScreenSpace screenSpaceShape =
                 TestHelpers.SharedComponentCreate<UIScreenSpace, UIScreenSpace.Model>(scene,
@@ -131,8 +123,6 @@ namespace Tests
         [UnityTest]
         public IEnumerator TestChildrenAreHandledCorrectly()
         {
-            yield return InitScene();
-
             // Create UIScreenSpaceShape
             UIScreenSpace screenSpaceShape =
                 TestHelpers.SharedComponentCreate<UIScreenSpace, UIScreenSpace.Model>(scene,
@@ -181,8 +171,6 @@ namespace Tests
         [UnityTest]
         public IEnumerator VerticalStackIsAppliedCorrectly()
         {
-            yield return InitScene();
-
             // Create UIScreenSpaceShape
             UIScreenSpace screenSpaceShape =
                 TestHelpers.SharedComponentCreate<UIScreenSpace, UIScreenSpace.Model>(scene,
@@ -266,8 +254,6 @@ namespace Tests
         [UnityTest]
         public IEnumerator HorizontalStackIsAppliedCorrectly()
         {
-            yield return InitScene();
-
             // Create UIScreenSpaceShape
             UIScreenSpace screenSpaceShape =
                 TestHelpers.SharedComponentCreate<UIScreenSpace, UIScreenSpace.Model>(scene,
@@ -352,8 +338,6 @@ namespace Tests
         [UnityTest]
         public IEnumerator AdaptSizeIsAppliedCorrectly()
         {
-            yield return InitScene();
-
             // Create UIScreenSpaceShape
             UIScreenSpace screenSpaceShape =
                 TestHelpers.SharedComponentCreate<UIScreenSpace, UIScreenSpace.Model>(scene,

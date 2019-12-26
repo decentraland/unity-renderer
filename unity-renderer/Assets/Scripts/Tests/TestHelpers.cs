@@ -1024,6 +1024,7 @@ namespace DCL.Helpers
 
             if (sceneController != null && sceneController.componentFactory == null)
             {
+                ForceUnloadAllScenes(sceneController);
                 Utils.SafeDestroy(sceneController);
                 sceneController = null;
             }
@@ -1032,6 +1033,10 @@ namespace DCL.Helpers
             {
                 GameObject GO = GameObject.Instantiate(Resources.Load("Prefabs/SceneController") as GameObject);
                 sceneController = GO.GetComponent<SceneController>();
+            }
+            else
+            {
+                sceneController.Restart();
             }
 
             if (usesWebServer)
@@ -1049,7 +1054,9 @@ namespace DCL.Helpers
             }
 
             Configuration.ParcelSettings.VISUAL_LOADING_ENABLED = false;
+
             sceneController.deferredMessagesDecoding = false;
+            sceneController.prewarmSceneMessagesPool = false;
 
             ForceUnloadAllScenes(sceneController);
 

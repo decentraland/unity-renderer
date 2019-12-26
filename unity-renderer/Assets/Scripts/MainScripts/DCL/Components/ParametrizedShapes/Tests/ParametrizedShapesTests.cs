@@ -10,48 +10,49 @@ namespace Tests
 {
     public class ParametrizedShapesTests : TestsBase
     {
+        [UnitySetUp]
+        protected override IEnumerator SetUp()
+        {
+            yield return SetUp_SceneController();
+        }
+
         [UnityTest]
         public IEnumerator BoxShapeUpdate()
         {
-            yield return InitScene();
-
             string entityId = "1";
             TestHelpers.InstantiateEntityWithShape(scene, entityId, DCL.Models.CLASS_ID.BOX_SHAPE, Vector3.zero);
 
             var meshName = scene.entities[entityId].gameObject.GetComponentInChildren<MeshFilter>().mesh.name;
             Assert.AreEqual("DCL Box Instance", meshName);
+            yield break;
         }
 
         [UnityTest]
         public IEnumerator SphereShapeUpdate()
         {
-            yield return InitScene();
-
             string entityId = "2";
             TestHelpers.InstantiateEntityWithShape(scene, entityId, DCL.Models.CLASS_ID.SPHERE_SHAPE, Vector3.zero);
 
             var meshName = scene.entities[entityId].gameObject.GetComponentInChildren<MeshFilter>().mesh.name;
             Assert.AreEqual("DCL Sphere Instance", meshName);
+            yield break;
         }
 
         [UnityTest]
         public IEnumerator PlaneShapeUpdate()
         {
-            yield return InitScene();
-
             string entityId = "3";
             TestHelpers.InstantiateEntityWithShape(scene, entityId, DCL.Models.CLASS_ID.PLANE_SHAPE, Vector3.zero);
 
             var meshName = scene.entities[entityId].gameObject.GetComponentInChildren<MeshFilter>().mesh.name;
             Assert.AreEqual("DCL Plane Instance", meshName);
+            yield break;
         }
 
 
         [UnityTest]
         public IEnumerator PlaneShapeUpdateWithUVs()
         {
-            yield return InitScene();
-
             float[] uvs = new float[] { 0, 0.75f, 0.25f, 0.75f, 0.25f, 1, 0, 1, 0, 0.75f, 0.25f, 0.75f, 0.25f, 1, 0, 1 };
 
             DecentralandEntity entity;
@@ -79,33 +80,29 @@ namespace Tests
         [UnityTest]
         public IEnumerator CylinderShapeUpdate()
         {
-            yield return InitScene();
-
             string entityId = "5";
             TestHelpers.InstantiateEntityWithShape(scene, entityId, DCL.Models.CLASS_ID.CYLINDER_SHAPE, Vector3.zero);
 
             var meshName = scene.entities[entityId].gameObject.GetComponentInChildren<MeshFilter>().mesh.name;
             Assert.AreEqual("DCL Cylinder Instance", meshName);
+            yield break;
         }
 
         [UnityTest]
         public IEnumerator ConeShapeUpdate()
         {
-            yield return InitScene();
-
             string entityId = "4";
             TestHelpers.InstantiateEntityWithShape(scene, entityId, DCL.Models.CLASS_ID.CONE_SHAPE, Vector3.zero);
 
             var meshName = scene.entities[entityId].gameObject.GetComponentInChildren<MeshFilter>().mesh.name;
 
             Assert.AreEqual("DCL Cone50v0t1b2l2o Instance", meshName);
+            yield break;
         }
 
         [UnityTest]
         public IEnumerator BoxShapeComponentMissingValuesGetDefaultedOnUpdate()
         {
-            yield return InitScene();
-
             string entityId = "1";
             TestHelpers.CreateSceneEntity(scene, entityId);
 
@@ -129,13 +126,12 @@ namespace Tests
 
             // 4. Check defaulted values
             Assert.IsTrue(boxShapeComponent.model.withCollisions);
+            yield break;
         }
 
         [UnityTest]
         public IEnumerator BoxShapeAttachedGetsReplacedOnNewAttachment()
         {
-            yield return InitScene();
-
             yield return TestHelpers.TestAttachedSharedComponentOfSameTypeIsReplaced<BoxShape.Model, BoxShape>(scene,
                 CLASS_ID.BOX_SHAPE);
         }
@@ -143,8 +139,6 @@ namespace Tests
         [UnityTest]
         public IEnumerator SphereShapeComponentMissingValuesGetDefaultedOnUpdate()
         {
-            yield return InitScene();
-
             var component =
                 TestHelpers.SharedComponentCreate<SphereShape, SphereShape.Model>(scene, CLASS_ID.SPHERE_SHAPE);
             yield return component.routine;
@@ -158,8 +152,6 @@ namespace Tests
         [UnityTest]
         public IEnumerator SphereShapeAttachedGetsReplacedOnNewAttachment()
         {
-            yield return InitScene();
-
             yield return TestHelpers.TestAttachedSharedComponentOfSameTypeIsReplaced<SphereShape.Model, SphereShape>(
                 scene, CLASS_ID.SPHERE_SHAPE);
         }
@@ -167,8 +159,6 @@ namespace Tests
         [UnityTest]
         public IEnumerator ConeShapeComponentMissingValuesGetDefaultedOnUpdate()
         {
-            yield return InitScene();
-
             var component = TestHelpers.SharedComponentCreate<ConeShape, ConeShape.Model>(scene, CLASS_ID.CONE_SHAPE);
             yield return component.routine;
 
@@ -181,8 +171,6 @@ namespace Tests
         [UnityTest]
         public IEnumerator ConeShapeAttachedGetsReplacedOnNewAttachment()
         {
-            yield return InitScene();
-
             yield return TestHelpers.TestAttachedSharedComponentOfSameTypeIsReplaced<ConeShape.Model, ConeShape>(scene,
                 CLASS_ID.CONE_SHAPE);
         }
@@ -190,8 +178,6 @@ namespace Tests
         [UnityTest]
         public IEnumerator CylinderShapeComponentMissingValuesGetDefaultedOnUpdate()
         {
-            yield return InitScene();
-
             var component =
                 TestHelpers.SharedComponentCreate<CylinderShape, CylinderShape.Model>(scene, CLASS_ID.CYLINDER_SHAPE);
             yield return component.routine;
@@ -205,8 +191,6 @@ namespace Tests
         [UnityTest]
         public IEnumerator CylinderShapeAttachedGetsReplacedOnNewAttachment()
         {
-            yield return InitScene();
-
             yield return
                 TestHelpers.TestAttachedSharedComponentOfSameTypeIsReplaced<CylinderShape.Model, CylinderShape>(scene,
                     CLASS_ID.CYLINDER_SHAPE);
@@ -216,8 +200,6 @@ namespace Tests
         [Explicit("This test fails due to unknown reason, made explicit to tackle it in the future.")]
         public IEnumerator PlaneShapeComponentMissingValuesGetDefaultedOnUpdate()
         {
-            yield return InitScene();
-
             var component =
                 TestHelpers.SharedComponentCreate<PlaneShape, PlaneShape.Model>(scene, CLASS_ID.PLANE_SHAPE);
             yield return component.routine;
@@ -231,8 +213,6 @@ namespace Tests
         [UnityTest]
         public IEnumerator PlaneShapeAttachedGetsReplacedOnNewAttachment()
         {
-            yield return InitScene();
-
             yield return TestHelpers.TestAttachedSharedComponentOfSameTypeIsReplaced<PlaneShape.Model, PlaneShape>(
                 scene, CLASS_ID.PLANE_SHAPE);
         }
@@ -240,8 +220,6 @@ namespace Tests
         [UnityTest]
         public IEnumerator CollisionProperty()
         {
-            yield return InitScene();
-
             string entityId = "entityId";
             TestHelpers.CreateSceneEntity(scene, entityId);
             var entity = scene.entities[entityId];
@@ -319,8 +297,6 @@ namespace Tests
         [UnityTest]
         public IEnumerator VisibleProperty()
         {
-            yield return InitScene();
-
             string entityId = "entityId";
             TestHelpers.CreateSceneEntity(scene, entityId);
             var entity = scene.entities[entityId];

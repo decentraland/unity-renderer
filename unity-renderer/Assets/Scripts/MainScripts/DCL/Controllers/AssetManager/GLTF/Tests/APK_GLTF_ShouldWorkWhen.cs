@@ -3,6 +3,7 @@ using DCL;
 using DCL.Helpers;
 using System.Collections;
 using UnityEngine.TestTools;
+using UnityGLTF;
 
 namespace AssetPromiseKeeper_GLTF_Tests
 {
@@ -15,8 +16,10 @@ namespace AssetPromiseKeeper_GLTF_Tests
         [UnitySetUp]
         protected override IEnumerator SetUp()
         {
-            yield return InitScene();
+            yield return SetUp_SceneController();
+            yield return SetUp_CharacterController();
             yield return base.SetUp();
+            GLTFSceneImporter.budgetPerFrameInMilliseconds = float.MaxValue;
         }
 
         protected override AssetPromise_GLTF CreatePromise()

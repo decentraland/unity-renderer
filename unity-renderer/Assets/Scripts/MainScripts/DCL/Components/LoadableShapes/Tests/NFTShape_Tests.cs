@@ -1,4 +1,4 @@
-﻿using DCL.Components;
+using DCL.Components;
 using DCL.Helpers;
 using DCL.Models;
 using NUnit.Framework;
@@ -12,7 +12,7 @@ public class NFTShape_Tests : TestsBase
     [UnityTest]
     public IEnumerator ShapeUpdate()
     {
-        yield return InitScene();
+
 
         string entityId = "1";
         TestHelpers.CreateSceneEntity(scene, entityId);
@@ -49,7 +49,7 @@ public class NFTShape_Tests : TestsBase
     [UnityTest]
     public IEnumerator MissingValuesGetDefaultedOnUpdate()
     {
-        yield return InitScene();
+
 
         var component = TestHelpers.SharedComponentCreate<NFTShape, NFTShape.Model>(scene, CLASS_ID.NFT_SHAPE);
         yield return component.routine;
@@ -60,9 +60,11 @@ public class NFTShape_Tests : TestsBase
     }
 
     [UnityTest]
+    [Explicit]
+    [Category("Explicit")]
     public IEnumerator CollisionProperty()
     {
-        yield return InitScene();
+
 
         string entityId = "entityId";
         TestHelpers.CreateSceneEntity(scene, entityId);
@@ -85,10 +87,10 @@ public class NFTShape_Tests : TestsBase
     }
 
     [UnityTest]
+    [Explicit]
+    [Category("Explicit")]
     public IEnumerator VisibleProperty()
     {
-        yield return InitScene();
-
         string entityId = "entityId";
         TestHelpers.CreateSceneEntity(scene, entityId);
         var entity = scene.entities[entityId];

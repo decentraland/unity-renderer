@@ -13,11 +13,28 @@ using UnityEngine.TestTools;
 
 public class TestsBase
 {
+    protected static bool sceneInitialized = false;
     protected SceneController sceneController;
     protected ParcelScene scene;
+    protected CameraController cameraController;
+
+    [UnitySetUp]
+    protected virtual IEnumerator SetUp()
+    {
+        if (!sceneInitialized)
+        {
+            yield return InitUnityScene("MainTest");
+            sceneInitialized = true;
+        }
+
+        SetUp_Camera();
+        yield return SetUp_SceneController();
+        yield return SetUp_CharacterController();
+    }
+
 
     [UnityTearDown]
-    public virtual IEnumerator TearDown()
+    protected virtual IEnumerator TearDown()
     {
         yield return null;
 
@@ -28,7 +45,6 @@ public class TestsBase
         MemoryManager.i?.CleanupPoolsIfNeeded(true);
         PoolManager.i?.Cleanup();
         PointerEventsController.i?.Cleanup();
-        MessagingControllersManager.i?.Stop();
 
         Caching.ClearCache();
         Resources.UnloadUnusedAssets();
@@ -57,33 +73,69 @@ public class TestsBase
         }
     }
 
+    public void SetUp_TestScene()
+    {
+        scene = sceneController.CreateTestScene();
+    }
+
+    public virtual IEnumerator SetUp_CharacterController()
+    {
+        if (DCLCharacterController.i == null)
+        {
+            GameObject.Instantiate(Resources.Load("Prefabs/CharacterController"));
+        }
+
+        yield return null;
+        Assert.IsTrue(DCLCharacterController.i != null);
+        DCLCharacterController.i.characterController.enabled = true;
+    }
+
+    public virtual void SetUp_Camera()
+    {
+        cameraController = GameObject.FindObjectOfType<CameraController>();
+
+        if (cameraController == null)
+            cameraController = GameObject.Instantiate(Resources.Load<GameObject>("CameraController")).GetComponent<CameraController>();
+    }
+
+    public virtual IEnumerator SetUp_SceneController(bool debugMode = false, bool usesWebServer = false, bool spawnTestScene = true)
+    {
+        PoolManager.enablePrewarm = false;
+        sceneController = TestHelpers.InitializeSceneController(usesWebServer);
+
+        if (debugMode)
+            sceneController.SetDebug();
+
+        yield return null;
+
+        if (spawnTestScene)
+            SetUp_TestScene();
+    }
+
+    private void SetUp_UIScene()
+    {
+        string globalSceneId = "global-scene";
+
+        sceneController.CreateUIScene(
+            JsonConvert.SerializeObject(
+                new CreateUISceneMessage
+                {
+                    id = globalSceneId,
+                    baseUrl = "",
+                })
+        );
+    }
+
+
     protected virtual IEnumerator InitScene(bool usesWebServer = false, bool spawnCharController = true, bool spawnTestScene = true, bool spawnUIScene = true, bool debugMode = false, bool reloadUnityScene = true)
     {
         yield return InitUnityScene("MainTest");
 
-        if (debugMode)
-            SceneController.i.SetDebug();
-
-        sceneController = TestHelpers.InitializeSceneController(usesWebServer);
-
-        yield return new WaitForSeconds(0.01f);
-
-        if (spawnTestScene)
-        {
-            scene = sceneController.CreateTestScene();
-
-            yield return null;
-        }
+        yield return SetUp_SceneController(debugMode, usesWebServer, spawnTestScene);
 
         if (spawnCharController)
         {
-            if (DCLCharacterController.i == null)
-            {
-                GameObject.Instantiate(Resources.Load("Prefabs/CharacterController"));
-            }
-
-            yield return null;
-            Assert.IsTrue(DCLCharacterController.i != null);
+            yield return SetUp_CharacterController();
         }
 
         var newPos = new Vector3(10, 0, 10);
@@ -92,22 +144,12 @@ public class TestsBase
 
         if (spawnUIScene)
         {
-            string globalSceneId = "global-scene";
-
-            sceneController.CreateUIScene(
-                JsonConvert.SerializeObject(
-                    new CreateUISceneMessage
-                    {
-                        id = globalSceneId,
-                        baseUrl = "",
-                    })
-            );
+            SetUp_UIScene();
         }
 
-        DCL.PointerEventsController.i.Initialize(isTesting: true);
-
-        yield return new WaitForAllMessagesProcessed();
+        PointerEventsController.i.Initialize(isTesting: true);
     }
+
 
     protected IEnumerator WaitForUICanvasUpdate()
     {

@@ -2,9 +2,9 @@ using DCL.Components;
 using DCL.Configuration;
 using DCL.Helpers;
 using Newtonsoft.Json;
+using NUnit.Framework;
 using System.Collections;
 using UnityEngine;
-using UnityEngine.Assertions;
 using UnityEngine.TestTools;
 
 namespace Tests
@@ -14,8 +14,6 @@ namespace Tests
         [UnityTest]
         public IEnumerator CharacterTeleportReposition()
         {
-            yield return base.InitScene();
-
             DCLCharacterController.i.PauseGravity();
             DCLCharacterController.i.characterController.enabled = false;
             DCLCharacterController.i.Teleport(JsonConvert.SerializeObject(new
@@ -33,8 +31,6 @@ namespace Tests
         [UnityTest]
         public IEnumerator CharacterAdjustPosition()
         {
-            yield return InitScene();
-
             DCLCharacterController.i.ResumeGravity();
             DCLCharacterController.i.characterController.enabled = false;
             DCLCharacterController.i.Teleport(JsonConvert.SerializeObject(new
@@ -69,10 +65,10 @@ namespace Tests
         }
 
         [UnityTest]
+        [Explicit]
+        [Category("Explicit")]
         public IEnumerator CharacterIsNotParentedOnWorldReposition()
         {
-            yield return InitScene();
-
             // We use a shape that represents a static ground and has collisions
             TestHelpers.InstantiateEntityWithShape(scene, "groundShape", DCL.Models.CLASS_ID.PLANE_SHAPE, Vector3.zero);
             var shapeEntity = scene.entities["groundShape"];
@@ -120,8 +116,6 @@ namespace Tests
         [UnityTest]
         public IEnumerator Character_UpdateSOPosition()
         {
-            yield return InitScene();
-
             DCLCharacterController.i.PauseGravity();
             DCLCharacterController.i.characterController.enabled = false;
             DCLCharacterController.i.Teleport(JsonConvert.SerializeObject(new
@@ -134,13 +128,13 @@ namespace Tests
             yield return null;
 
             Assert.AreEqual(new Vector3(50f, 2f, 0f), CommonScriptableObjects.playerUnityPosition);
+            DCLCharacterController.i.ResumeGravity();
+            DCLCharacterController.i.characterController.enabled = true;
         }
 
         [UnityTest]
         public IEnumerator Character_UpdateSORotation()
         {
-            yield return InitScene();
-
             DCLCharacterController.i.PauseGravity();
 
             var newEulerAngle = 10f;
@@ -149,13 +143,12 @@ namespace Tests
             yield return new WaitForSeconds(0.1f);
 
             Assert.AreEqual(DCLCharacterController.i.transform.eulerAngles, CommonScriptableObjects.playerUnityEulerAngles);
+            DCLCharacterController.i.ResumeGravity();
         }
 
         [UnityTest]
         public IEnumerator CharacterSupportsMovingPlatforms()
         {
-            yield return base.InitScene();
-
             DCLCharacterController.i.PauseGravity();
             DCLCharacterController.i.Teleport(JsonConvert.SerializeObject(new
             {
@@ -211,15 +204,13 @@ namespace Tests
 
             // check positions
             Assert.IsTrue(Vector3.Distance(platformTransform.position, targetPosition) < 0.1f);
-            Assert.AreApproximatelyEqual(DCLCharacterController.i.transform.position.x, targetPosition.x, 0.5f);
-            Assert.AreApproximatelyEqual(DCLCharacterController.i.transform.position.z, targetPosition.z, 0.5f);
+            UnityEngine.Assertions.Assert.AreApproximatelyEqual(DCLCharacterController.i.transform.position.x, targetPosition.x, 0.5f);
+            UnityEngine.Assertions.Assert.AreApproximatelyEqual(DCLCharacterController.i.transform.position.z, targetPosition.z, 0.5f);
         }
 
         [UnityTest]
         public IEnumerator CharacterSupportsRotatingPlatforms()
         {
-            yield return base.InitScene();
-
             DCLCharacterController.i.PauseGravity();
             DCLCharacterController.i.Teleport(JsonConvert.SerializeObject(new
             {
@@ -276,8 +267,8 @@ namespace Tests
             // check positions
             Assert.IsTrue(Vector3.Distance(platformTransform.rotation.eulerAngles, targetRotation.eulerAngles) < 0.1f);
 
-            Assert.AreApproximatelyEqual(DCLCharacterController.i.transform.position.x, 11f, 0.5f);
-            Assert.AreApproximatelyEqual(DCLCharacterController.i.transform.position.z, 11f, 0.5f);
+            UnityEngine.Assertions.Assert.AreApproximatelyEqual(DCLCharacterController.i.transform.position.x, 11f, 0.5f);
+            UnityEngine.Assertions.Assert.AreApproximatelyEqual(DCLCharacterController.i.transform.position.z, 11f, 0.5f);
 
             // remove platform and check character parent
             TestHelpers.RemoveSceneEntity(scene, platformEntityId);
@@ -336,10 +327,9 @@ namespace Tests
 
         [UnityTest]
         [NUnit.Framework.Explicit("This test is failing. May be related to the new camera setup, please check MainTest scene")]
+        [Category("Explicit")]
         public IEnumerator CharacterIsReleasedOnFastPlatform()
         {
-            yield return base.InitScene();
-
             DCLCharacterController.i.PauseGravity();
             DCLCharacterController.i.Teleport(JsonConvert.SerializeObject(new
             {

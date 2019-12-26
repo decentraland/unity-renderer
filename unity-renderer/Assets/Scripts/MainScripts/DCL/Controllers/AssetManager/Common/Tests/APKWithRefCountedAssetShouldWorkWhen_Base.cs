@@ -15,7 +15,7 @@ namespace AssetPromiseKeeper_Tests
         protected APKType keeper;
 
         [UnitySetUp]
-        protected IEnumerator SetUp()
+        protected override IEnumerator SetUp()
         {
             keeper = new APKType();
             yield break;
@@ -23,7 +23,7 @@ namespace AssetPromiseKeeper_Tests
 
 
         [UnityTearDown]
-        public override IEnumerator TearDown()
+        protected override IEnumerator TearDown()
         {
             keeper.Cleanup();
             yield return base.TearDown();
