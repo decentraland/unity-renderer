@@ -1,4 +1,4 @@
-﻿using DCL.Controllers;
+using DCL.Controllers;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -35,6 +35,13 @@ namespace DCL
 
         public bool isRunning { get { return mainCoroutine != null; } }
 
+        private List<MessagingController> sortedControllers = new List<MessagingController>();
+        private int sortedControllersCount = 0;
+
+        private MessagingController globalController = null;
+        private MessagingController uiSceneController = null;
+        private MessagingController currentSceneController = null;
+
         public void Initialize(IMessageHandler messageHandler)
         {
             throttler = new MessageThrottlingController();
@@ -42,8 +49,50 @@ namespace DCL
 
             if (mainCoroutine == null)
             {
+                SceneController.i.OnSortScenes += OnSortScenes;
+                DCLCharacterController.OnCharacterMoved += OnCharacterMoved;
                 mainCoroutine = SceneController.i.StartCoroutine(ProcessMessages());
             }
+        }
+
+        private void OnCharacterMoved(DCLCharacterPosition obj)
+        {
+            string currentSceneId = SceneController.i.GetCurrentScene(DCLCharacterController.i.characterPosition);
+
+            if (!string.IsNullOrEmpty(currentSceneId))
+                messagingControllers.TryGetValue(currentSceneId, out currentSceneController);
+        }
+
+        private void OnSortScenes()
+        {
+            List<ParcelScene> scenesSortedByDistance = SceneController.i.scenesSortedByDistance;
+
+            int count = scenesSortedByDistance.Count;   // we need to retrieve list count everytime because it
+                                                        // may change after a yield return
+
+            string currentSceneId = SceneController.i.GetCurrentScene(DCLCharacterController.i.characterPosition);
+            sortedControllers.Clear();
+
+            if (!string.IsNullOrEmpty(currentSceneId) && messagingControllers.ContainsKey(currentSceneId))
+                currentSceneController = messagingControllers[currentSceneId];
+
+            for (int i = 0; i < count; i++)
+            {
+                string controllerId = scenesSortedByDistance[i].sceneData.id;
+
+                if (controllerId != currentSceneId)
+                {
+                    if (!messagingControllers.ContainsKey(controllerId))
+                        continue;
+
+                    if (!messagingControllers[controllerId].enabled)
+                        continue;
+
+                    sortedControllers.Add(messagingControllers[controllerId]);
+                }
+            }
+
+            sortedControllersCount = sortedControllers.Count;
         }
 
         public void Stop()
@@ -81,6 +130,12 @@ namespace DCL
 
             if (isGlobal)
                 globalSceneId = sceneId;
+
+            if (!string.IsNullOrEmpty(globalSceneId))
+                messagingControllers.TryGetValue(globalSceneId, out uiSceneController);
+
+            if (!string.IsNullOrEmpty(GLOBAL_MESSAGING_CONTROLLER))
+                messagingControllers.TryGetValue(GLOBAL_MESSAGING_CONTROLLER, out globalController);
         }
 
         public void RemoveController(string sceneId)
@@ -146,93 +201,91 @@ namespace DCL
         IEnumerator ProcessMessages()
         {
             float prevTimeBudget;
-            int count = 0;
-            List<ParcelScene> scenesSortedByDistance = SceneController.i.scenesSortedByDistance;
             IEnumerator yieldReturn;
             float start;
-            string currentSceneId = "";
 
             while (true)
             {
                 prevTimeBudget = INIT_MSG_BUS_BUDGET_MAX;
                 start = Time.unscaledTime;
-
-                currentSceneId = SceneController.i.GetCurrentScene(DCLCharacterController.i.characterPosition);
-
+                bool processedBus = false;
                 // When breaking this second loop, we skip a frame
                 while (true)
                 {
-                    bool isGlobalSceneAvailable = !string.IsNullOrEmpty(globalSceneId) && messagingControllers.ContainsKey(globalSceneId);
                     //-------------------------------------------------------------------------------------------
                     // Global scene UI
-                    if (isGlobalSceneAvailable)
+                    if (uiSceneController != null && uiSceneController.enabled)
                     {
-                        if (ProcessBus(messagingControllers[globalSceneId], MessagingBusId.UI, ref prevTimeBudget, out yieldReturn))
+                        processedBus = true;
+                        if (ProcessBus(uiSceneController.uiBus, ref prevTimeBudget, out yieldReturn))
                             break;
                     }
 
                     //-------------------------------------------------------------------------------------------
                     // Global Controller INIT
-                    if (ProcessBus(messagingControllers[GLOBAL_MESSAGING_CONTROLLER], MessagingBusId.INIT, ref prevTimeBudget, out yieldReturn))
-                        break;
+                    if (globalController != null && globalController.enabled)
+                    {
+                        processedBus = true;
+                        if (ProcessBus(globalController.initBus, ref prevTimeBudget, out yieldReturn))
+                            break;
+                    }
 
                     //-------------------------------------------------------------------------------------------
                     // Global scene INIT
-                    if (isGlobalSceneAvailable)
+                    if (uiSceneController != null && uiSceneController.enabled)
                     {
-                        if (ProcessBus(messagingControllers[globalSceneId], MessagingBusId.INIT, ref prevTimeBudget, out yieldReturn))
+                        processedBus = true;
+                        if (ProcessBus(uiSceneController.initBus, ref prevTimeBudget, out yieldReturn))
                             break;
                     }
 
                     //-------------------------------------------------------------------------------------------
                     // Current Scene INIT, UI and SYSTEM
-                    if (!string.IsNullOrEmpty(currentSceneId) && messagingControllers.ContainsKey(currentSceneId))
+                    if (currentSceneController != null && currentSceneController.enabled)
                     {
-                        if (ProcessBus(messagingControllers[currentSceneId], MessagingBusId.INIT, ref prevTimeBudget, out yieldReturn))
+                        processedBus = true;
+                        if (ProcessBus(currentSceneController.initBus, ref prevTimeBudget, out yieldReturn))
                             break;
 
-                        if (ProcessBus(messagingControllers[currentSceneId], MessagingBusId.UI, ref prevTimeBudget, out yieldReturn))
+                        if (ProcessBus(currentSceneController.uiBus, ref prevTimeBudget, out yieldReturn))
                             break;
 
-                        if (ProcessBus(messagingControllers[currentSceneId], MessagingBusId.SYSTEM, ref prevTimeBudget, out yieldReturn))
+                        if (ProcessBus(currentSceneController.systemBus, ref prevTimeBudget, out yieldReturn))
                             break;
                     }
 
                     //-------------------------------------------------------------------------------------------
                     // Rest of the scenes INIT
-                    count = scenesSortedByDistance.Count;   // we need to retrieve list count everytime because it
-                                                            // may change after a yield return
                     bool shouldRestart = false;
-                    for (int i = 0; i < count; i++)
+
+                    for (int i = 0; i < sortedControllersCount; i++)
                     {
-                        string controllerId = scenesSortedByDistance[i].sceneData.id;
-                        if (controllerId != currentSceneId && messagingControllers.ContainsKey(controllerId))
+                        MessagingController msgController = sortedControllers[i];
+                        processedBus = true;
+
+                        if (ProcessBus(msgController.initBus, ref prevTimeBudget, out yieldReturn))
                         {
-                            if (ProcessBus(messagingControllers[controllerId], MessagingBusId.INIT, ref prevTimeBudget, out yieldReturn))
-                            {
-                                shouldRestart = true;
-                                break;
-                            }
+                            shouldRestart = true;
+                            break;
                         }
                     }
+
 
                     if (shouldRestart)
                         break;
 
                     //-------------------------------------------------------------------------------------------
                     // Rest of the scenes UI
-                    count = scenesSortedByDistance.Count;   // we need to retrieve list count everytime because it
-                                                            // may change after a yield return
-                    for (int i = 0; i < count; i++)
+
+                    for (int i = 0; i < sortedControllersCount; i++)
                     {
-                        string controllerId = scenesSortedByDistance[i].sceneData.id;
-                        if (controllerId != currentSceneId && messagingControllers.ContainsKey(controllerId))
+                        MessagingController msgController = sortedControllers[i];
+                        processedBus = true;
+
+                        if (ProcessBus(msgController.uiBus, ref prevTimeBudget, out yieldReturn))
                         {
-                            if (ProcessBus(messagingControllers[controllerId], MessagingBusId.UI, ref prevTimeBudget, out yieldReturn))
-                            {
-                                shouldRestart = true;
-                                break;
-                            }
+                            shouldRestart = true;
+                            break;
                         }
                     }
 
@@ -241,30 +294,30 @@ namespace DCL
 
                     //-------------------------------------------------------------------------------------------
                     // Global scene SYSTEM
-                    if (isGlobalSceneAvailable)
+                    if (uiSceneController != null && uiSceneController.enabled)
                     {
-                        if (ProcessBus(messagingControllers[globalSceneId], MessagingBusId.SYSTEM, ref prevTimeBudget, out yieldReturn))
+                        processedBus = true;
+                        if (ProcessBus(uiSceneController.systemBus, ref prevTimeBudget, out yieldReturn))
                             break;
                     }
 
                     //-------------------------------------------------------------------------------------------
                     // Rest of the scenes SYSTEM
-                    count = scenesSortedByDistance.Count;   // we need to retrieve list count everytime because it
-                                                            // may change after a yield return
-                    for (int i = 0; i < count; i++)
+
+                    for (int i = 0; i < sortedControllersCount; i++)
                     {
-                        string controllerId = scenesSortedByDistance[i].sceneData.id;
-                        if (controllerId != currentSceneId && messagingControllers.ContainsKey(controllerId))
+                        MessagingController msgController = sortedControllers[i];
+
+                        processedBus = true;
+
+                        if (ProcessBus(msgController.systemBus, ref prevTimeBudget, out yieldReturn))
                         {
-                            if (ProcessBus(messagingControllers[controllerId], MessagingBusId.SYSTEM, ref prevTimeBudget, out yieldReturn))
-                            {
-                                shouldRestart = true;
-                                break;
-                            }
+                            shouldRestart = true;
+                            break;
                         }
                     }
 
-                    if (shouldRestart || Time.realtimeSinceStartup - start >= GLOBAL_MAX_MSG_BUDGET)
+                    if (shouldRestart || Time.realtimeSinceStartup - start >= GLOBAL_MAX_MSG_BUDGET || !processedBus)
                         break;
                 }
 
@@ -272,13 +325,12 @@ namespace DCL
             }
         }
 
-        bool ProcessBus(MessagingController controller, string busId, ref float prevTimeBudget, out IEnumerator yieldReturn)
+        bool ProcessBus(MessagingBus bus, ref float prevTimeBudget, out IEnumerator yieldReturn)
         {
-            float startTime = DCLTime.realtimeSinceStartup;
-            MessagingBus bus = controller.messagingBuses[busId];
-
             if (bus.isRunning && bus.pendingMessagesCount > 0)
             {
+                float startTime = Time.realtimeSinceStartup;
+
                 yieldReturn = null;
 
                 float timeBudget = prevTimeBudget;
@@ -294,7 +346,16 @@ namespace DCL
                     Debug.Log($"#{bus.processedMessagesCount} ... bus = {finalTag}, id = {bus.id}... timeBudget is zero!!!");
                 }
 
-                if (bus.ProcessQueue(timeBudget, out yieldReturn))
+                bool queueResult = bus.ProcessQueue(timeBudget, out yieldReturn);
+
+                bus.owner?.RefreshEnabledState();
+
+                if (queueResult)
+                    return true;
+
+                prevTimeBudget -= Time.realtimeSinceStartup - startTime;
+
+                if (prevTimeBudget <= 0)
                 {
                     return true;
                 }
@@ -302,13 +363,7 @@ namespace DCL
             else
             {
                 yieldReturn = null;
-            }
-
-            prevTimeBudget -= DCLTime.realtimeSinceStartup - startTime;
-
-            if (prevTimeBudget <= 0)
-            {
-                return true;
+                return false;
             }
 
             return false;

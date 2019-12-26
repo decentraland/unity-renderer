@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -102,6 +102,8 @@ namespace DCL
         public float budgetMin;
         public float budgetMax;
 
+        public MessagingController owner;
+
         Dictionary<string, LinkedListNode<MessagingBus.QueuedSceneMessage>> unreliableMessages = new Dictionary<string, LinkedListNode<MessagingBus.QueuedSceneMessage>>();
         System.Text.StringBuilder stringBuilder = new System.Text.StringBuilder();
         public int unreliableMessagesReplaced = 0;
@@ -117,7 +119,7 @@ namespace DCL
             set => timeBudgetValue = value;
         }
 
-        public MessagingBus(string id, IMessageHandler handler, float budgetMin, float budgetMax)
+        public MessagingBus(string id, IMessageHandler handler, MessagingController owner, float budgetMin, float budgetMax)
         {
             Assert.IsNotNull(handler, "IMessageHandler can't be null!");
             this.handler = handler;
@@ -125,6 +127,7 @@ namespace DCL
             this.id = id;
             this.budgetMin = budgetMin;
             this.budgetMax = budgetMax;
+            this.owner = owner;
         }
 
         public void Start()
@@ -194,6 +197,9 @@ namespace DCL
                 {
                     MessagingControllersManager.i.pendingInitMessagesCount++;
                 }
+
+                if (owner != null)
+                    owner.enabled = true;
             }
         }
 
