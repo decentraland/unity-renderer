@@ -1,4 +1,4 @@
-﻿using DCL;
+using DCL;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -19,7 +19,10 @@ public class WearableItem : Item
     public Representation[] representations;
     public string category;
     public string[] tags;
+
     public string baseUrl;
+    public string baseUrlBundles;
+
     public i18n[] i18n;
     public string thumbnail;
     public string[] hides;
@@ -59,7 +62,7 @@ public class WearableItem : Item
 
         if (!cachedContentProviers.ContainsKey(bodyShapeType))
         {
-            var contentProvider = CreateContentProvider(baseUrl,representation.contents.ToList());
+            var contentProvider = CreateContentProvider(baseUrl, representation.contents.ToList());
             contentProvider.BakeHashes();
             cachedContentProviers.Add(bodyShapeType, contentProvider);
         }
@@ -72,7 +75,7 @@ public class WearableItem : Item
         return new ContentProvider
         {
             baseUrl = baseUrl,
-            contents =  contents
+            contents = contents
         };
     }
 

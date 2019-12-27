@@ -1,4 +1,5 @@
 using DCL;
+using DCL.Components;
 using System;
 using System.Collections.Generic;
 using UnityEngine;
@@ -10,14 +11,14 @@ public class WearableController
     private const string MATERIAL_FILTER_SKIN = "skin";
 
     public readonly WearableItem wearable;
-    protected AssetPromise_GLTF promise;
+    protected RendereableAssetLoadHelper loader;
     private readonly string bodyShapeType;
 
     public string id => wearable.id;
     public string category => wearable.category;
 
-    protected GameObject assetContainer => promise?.asset?.container;
-    public bool isReady => promise != null && promise.state == AssetPromiseState.FINISHED;
+    protected GameObject assetContainer => loader?.loadedAsset;
+    public bool isReady => loader != null && loader.isFinished;
 
     protected Renderer[] assetRenderers;
 
@@ -32,7 +33,7 @@ public class WearableController
     protected WearableController(WearableController original)
     {
         wearable = original.wearable;
-        promise = original.promise;
+        loader = original.loader;
         bodyShapeType = original.bodyShapeType;
         assetRenderers = original.assetRenderers;
     }
@@ -42,20 +43,22 @@ public class WearableController
         var representation = wearable.GetRepresentation(bodyShapeType);
         var provider = wearable.GetContentProvider(bodyShapeType);
 
-        promise = new AssetPromise_GLTF(provider, representation.mainFile);
+        loader = new RendereableAssetLoadHelper(provider, wearable.baseUrlBundles);
 
-        promise.settings.forceNewInstance = true;
-        promise.settings.initialLocalPosition = Vector3.up * 0.75f;
-        promise.settings.visibleFlags = AssetPromiseSettings_Rendering.VisibleFlags.INVISIBLE;
-        promise.OnSuccessEvent += (x) =>
+        loader.settings.forceNewInstance = true;
+        loader.settings.initialLocalPosition = Vector3.up * 0.75f;
+        loader.settings.visibleFlags = AssetPromiseSettings_Rendering.VisibleFlags.INVISIBLE;
+        loader.settings.parent = parent;
+
+        loader.OnSuccessEvent += (x) =>
         {
-            assetRenderers = x.container.GetComponentsInChildren<Renderer>();
+            assetRenderers = x.GetComponentsInChildren<Renderer>();
             onSuccess.Invoke(this);
         };
-        promise.OnFailEvent += (x) => onFail.Invoke(this);
-        promise.settings.parent = parent;
 
-        AssetPromiseKeeper_GLTF.i.Keep(promise);
+        loader.OnFailEvent += () => onFail.Invoke(this);
+
+        loader.Load(representation.mainFile);
     }
 
     public void SetupDefaultMaterial(Material defaultMaterial, Color skinColor, Color hairColor)
@@ -85,10 +88,10 @@ public class WearableController
     public void CleanUp()
     {
         UnloadMaterials();
-        if (promise != null)
+
+        if (loader != null)
         {
-            promise.ClearEvents();
-            AssetPromiseKeeper_GLTF.i.Forget(this.promise);
+            loader.Unload();
         }
     }
 

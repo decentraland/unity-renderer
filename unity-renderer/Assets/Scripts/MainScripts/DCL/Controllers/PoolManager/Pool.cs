@@ -147,6 +147,8 @@ namespace DCL
             else
                 gameObject = GameObject.Instantiate(original);
 
+            gameObject.SetActive(true);
+
             return gameObject;
         }
 

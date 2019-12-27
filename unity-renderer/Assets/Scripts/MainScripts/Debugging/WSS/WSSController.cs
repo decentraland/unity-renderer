@@ -153,8 +153,8 @@ namespace DCL
 
             if (useCustomContentServer)
             {
-                LoadWrapper_GLTF.useCustomContentServerUrl = true;
-                LoadWrapper_GLTF.customContentServerUrl = customContentServerUrl;
+                RendereableAssetLoadHelper.useCustomContentServerUrl = true;
+                RendereableAssetLoadHelper.customContentServerUrl = customContentServerUrl;
             }
 
             if (openBrowserWhenStart)

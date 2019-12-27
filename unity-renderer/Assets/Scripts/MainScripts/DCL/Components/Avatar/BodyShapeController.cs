@@ -10,7 +10,25 @@ public class BodyShapeController : WearableController
 
     public Animation PrepareAnimation()
     {
-        return assetContainer.GetOrCreateComponent<Animation>();
+        Animation createdAnimation = null;
+
+        //NOTE(Brian): Fix to support hierarchy difference between AssetBundle and GLTF wearables.
+        Utils.ForwardTransformChildTraversal<Transform>((x) =>
+        {
+            if (x.name.Contains("Armature"))
+            {
+                createdAnimation = x.parent.gameObject.GetOrCreateComponent<Animation>();
+                return false; //NOTE(Brian): If we return false the traversal is stopped.
+            }
+
+            return true;
+        },
+
+        assetContainer.transform);
+
+        createdAnimation.cullingType = AnimationCullingType.BasedOnRenderers;
+
+        return createdAnimation;
     }
 
     public SkinnedMeshRenderer GetSkinnedMeshRenderer()

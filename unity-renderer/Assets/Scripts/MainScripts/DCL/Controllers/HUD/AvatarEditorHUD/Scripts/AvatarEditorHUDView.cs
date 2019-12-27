@@ -218,7 +218,7 @@ public class AvatarEditorHUDView : MonoBehaviour
         }
 
         selectorsByCategory[wearableItem.category].RemoveItemToggle(wearableItem.id);
-        if(wearableItem.IsCollectible())
+        if (wearableItem.IsCollectible())
             collectiblesItemSelector.RemoveItemToggle(wearableItem.id);
     }
 
@@ -278,6 +278,7 @@ public class AvatarEditorHUDView : MonoBehaviour
         if (eyeColorSelector != null) eyeColorSelector.OnColorChanged -= controller.EyesColorClicked;
         if (hairColorSelector != null) hairColorSelector.OnColorChanged -= controller.HairColorClicked;
 
-        Destroy(gameObject);
+        if (this != null)
+            Destroy(gameObject);
     }
 }
