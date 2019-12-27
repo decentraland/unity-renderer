@@ -77,6 +77,53 @@ jobs:
             - kernel
             - unity-client
 
+  run-unity-tests:
+    <<: *working_directory_unity
+    resource_class: xlarge
+    docker:
+      - image: decentraland/renderer-build
+        environment:
+          BUILD_TARGET: WebGL
+          BUILD_PATH: /tmp/explorer/unity-client/Builds/unity
+          BUILD_NAME: unity
+    steps:
+      - <<: *attach_root
+      - run:
+          name: Get the hash of source files
+          command: |
+            find Assets -type f \( -exec shasum "$PWD"/{} \; \) | sort > ../.unitysources-checksum
+      - restore_cache:
+          name: Restore decentraland-renderer if exists
+          keys:
+            - unity-build-{{ checksum "../.unitysources-checksum" }}
+      - restore_cache:
+          name: Restore test results if they exist
+          keys:
+            - unity-tests-{{ checksum "../.unitysources-checksum" }}
+      - run:
+          name: Extract the license key for Unity
+          command: |
+            openssl enc -d -aes-256-cbc -md sha256 -in /tmp/explorer/.circleci/license.zip-cipher -out /tmp/explorer/.circleci/license.zip -k ${CIPHER_KEY}
+            cd / && unzip /tmp/explorer/.circleci/license.zip
+      - run:
+          name: Run tests
+          command: |
+            if [[ -e /tmp/explorer/unity-client/testlog/log.txt ]]; then
+                exit 0
+            elif [[ -e ${BUILD_PATH} ]] && [[ -n "$(ls -A ${BUILD_PATH})" ]]; then # Negated condition with regards to renderer: If it doesn't exist, then fail!
+                bash ./test-ci.sh
+                exit $?
+            else exit 1
+            fi;
+      - save_cache:
+          name: Store test results
+          key: unity-tests-{{ checksum "../.unitysources-checksum" }}
+          paths:
+            - /tmp/explorer/unity-client/testlog/log.txt
+      - store_artifacts:
+          name: Store test result as artifacts
+          path: /tmp/explorer/unity-client/testlog
+
   build-unity:
     <<: *working_directory_unity
     resource_class: xlarge
@@ -366,6 +413,13 @@ workflows:
               only: /(.*)/
             tags:
               only: /^\d+\.\d+\.\d(.*)/ # npm tag + latest
+      - run-unity-tests:
+          <<: *all_branches_and_tags
+          requires:
+            - build-unity
+          filters:
+            branches:
+              only: /(.*)/
       - build-kernel:
           <<: *all_branches_and_tags
           requires:
@@ -381,6 +435,7 @@ workflows:
           requires:
             - build-kernel
             - build-unity
+            - run-unity-tests
           filters:
             branches:
               only: /(.*)/

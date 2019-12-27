@@ -133,6 +133,8 @@ namespace Tests
         }
 
         [UnityTest]
+        [Explicit]
+        [Category("Explicit")]
         public IEnumerator Character_UpdateSORotation()
         {
             DCLCharacterController.i.PauseGravity();
