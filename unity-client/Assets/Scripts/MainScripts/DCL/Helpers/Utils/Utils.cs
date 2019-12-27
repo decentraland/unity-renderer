@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using DCL.Configuration;
@@ -121,6 +121,26 @@ namespace DCL.Helpers
                 action.Invoke(component);
             }
         }
+
+        public static void ForwardTransformChildTraversal<TComponent>(Func<TComponent, bool> action, Transform startTransform)
+            where TComponent : Component
+        {
+            Assert.IsTrue(startTransform != null, "startTransform must not be null");
+
+            var component = startTransform.GetComponent<TComponent>();
+
+            if (component != null)
+            {
+                if (!action.Invoke(component))
+                    return;
+            }
+
+            foreach (Transform t in startTransform)
+            {
+                ForwardTransformChildTraversal(action, t);
+            }
+        }
+
 
         public static T GetOrCreateComponent<T>(this GameObject gameObject) where T : UnityEngine.Component
         {

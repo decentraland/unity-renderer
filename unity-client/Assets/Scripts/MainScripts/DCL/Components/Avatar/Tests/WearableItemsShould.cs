@@ -253,10 +253,10 @@ namespace AvatarShape_Tests
 
             bool wearableReady = false;
             var wearableController = AvatarRenderer_Mock.GetWearableController(avatarShape.avatarRenderer, SUNGLASSES_ID);
-            wearableController.myPromise.OnSuccessEvent += gltf => wearableReady = true;
+            wearableController.myLoader.OnSuccessEvent += gltf => wearableReady = true;
             yield return new DCL.WaitUntil(() => wearableReady);
 
-            var renderers = wearableController.myPromise.asset.container.GetComponentsInChildren<Renderer>();
+            var renderers = wearableController.myLoader.loadedAsset.GetComponentsInChildren<Renderer>();
             Assert.IsTrue(renderers.All(x => x.enabled == false));
         }
     }

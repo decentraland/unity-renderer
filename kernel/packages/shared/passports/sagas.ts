@@ -116,7 +116,8 @@ function takeLatestById<T extends Action>(
 }
 
 function overrideBaseUrl(wearable: Wearable) {
-  return { ...wearable, baseUrl: 'https://content.decentraland.org/contents/' }
+  return { ...wearable, baseUrl: 'https://content.decentraland.org/contents/'
+  , baseUrlBundles: 'https://content-as-bundle.decentraland.zone/' }
 }
 
 declare const window: any

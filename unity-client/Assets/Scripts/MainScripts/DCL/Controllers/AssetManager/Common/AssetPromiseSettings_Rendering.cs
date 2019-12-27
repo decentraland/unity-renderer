@@ -48,15 +48,12 @@ namespace DCL
 
         public void ApplyAfterLoad(Transform t)
         {
-            if (visibleFlags == VisibleFlags.INVISIBLE)
-            {
-                Renderer[] renderers = t.gameObject.GetComponentsInChildren<Renderer>(true);
+            Renderer[] renderers = t.gameObject.GetComponentsInChildren<Renderer>(true);
 
-                for (int i = 0; i < renderers.Length; i++)
-                {
-                    Renderer renderer = renderers[i];
-                    renderer.enabled = false;
-                }
+            for (int i = 0; i < renderers.Length; i++)
+            {
+                Renderer renderer = renderers[i];
+                renderer.enabled = visibleFlags == VisibleFlags.INVISIBLE ? false : true;
             }
         }
     }

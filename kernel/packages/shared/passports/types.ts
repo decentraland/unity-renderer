@@ -58,6 +58,7 @@ export type Wearable = {
   type: 'wearable'
   category: string
   baseUrl: string
+  baseUrlBundles: string
   tags: string[]
   hides?: string[]
   replaces?: string[]
