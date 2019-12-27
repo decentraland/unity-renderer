@@ -305,6 +305,15 @@ TextureImporter:
   - first:
       213: 7595667864703430088
     second: unique-card-shadow
+  - first:
+      213: 7025982016299592833
+    second: key-binding-bg
+  - first:
+      213: 7595667864703430088
+    second: mouse-icon
+  - first:
+      213: 6488135825053477424
+    second: interactive-icon
   externalObjects: {}
   serializedVersion: 10
   mipmaps:
@@ -323,7 +332,7 @@ TextureImporter:
     externalNormalMap: 0
     heightScale: 0.25
     normalMapFilter: 0
-  isReadable: 0
+  isReadable: 1
   streamingMipmaps: 0
   streamingMipmapsPriority: 0
   grayScaleToAlpha: 0
@@ -345,7 +354,7 @@ TextureImporter:
   compressionQuality: 50
   spriteMode: 2
   spriteExtrude: 1
-  spriteMeshType: 1
+  spriteMeshType: 0
   alignment: 0
   spritePivot: {x: 0.5, y: 0.5}
   spritePixelsToUnits: 100
@@ -401,10 +410,10 @@ TextureImporter:
       name: body-icon
       rect:
         serializedVersion: 2
-        x: 1
-        y: 426
+        x: 0
+        y: 429
         width: 44
-        height: 85
+        height: 82
       alignment: 0
       pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -611,10 +620,10 @@ TextureImporter:
       name: mouth-icon
       rect:
         serializedVersion: 2
-        x: 611
-        y: 472
-        width: 94
-        height: 39
+        x: 612
+        y: 473
+        width: 92
+        height: 38
       alignment: 0
       pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -632,10 +641,10 @@ TextureImporter:
       name: facial-hair-icon
       rect:
         serializedVersion: 2
-        x: 706
-        y: 481
-        width: 92
-        height: 30
+        x: 707
+        y: 483
+        width: 90
+        height: 28
       alignment: 0
       pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -655,7 +664,7 @@ TextureImporter:
         serializedVersion: 2
         x: 0
         y: 291
-        width: 58
+        width: 56
         height: 64
       alignment: 0
       pivot: {x: 0.5, y: 0.5}
@@ -969,9 +978,9 @@ TextureImporter:
       rect:
         serializedVersion: 2
         x: 472
-        y: 484
+        y: 483
         width: 72
-        height: 26
+        height: 28
       alignment: 0
       pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -989,10 +998,10 @@ TextureImporter:
       name: hat-icon
       rect:
         serializedVersion: 2
-        x: 546
-        y: 472
-        width: 64
-        height: 40
+        x: 547
+        y: 473
+        width: 62
+        height: 38
       alignment: 0
       pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -1033,7 +1042,7 @@ TextureImporter:
         serializedVersion: 2
         x: 224
         y: 402
-        width: 62
+        width: 63
         height: 32
       alignment: 0
       pivot: {x: 0.5, y: 0.5}
@@ -1217,34 +1226,13 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: white-gradient
-      rect:
-        serializedVersion: 2
-        x: 78
-        y: 440
-        width: 69
-        height: 4
-      alignment: 0
-      pivot: {x: 0.5, y: 0.5}
-      border: {x: 0, y: 1, z: 0, w: 1}
-      outline: []
-      physicsShape: []
-      tessellationDetail: 0
-      bones: []
-      spriteID: 42c5f9fbfcf8e4200a4cefba1e58dd93
-      internalID: 8420506937080534925
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
       name: map-compass
       rect:
         serializedVersion: 2
         x: 273
-        y: 216
+        y: 217
         width: 76
-        height: 89
+        height: 88
       alignment: 0
       pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -1263,9 +1251,9 @@ TextureImporter:
       rect:
         serializedVersion: 2
         x: 419
-        y: 403
-        width: 45
-        height: 45
+        y: 404
+        width: 44
+        height: 44
       alignment: 0
       pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -1368,9 +1356,9 @@ TextureImporter:
       rect:
         serializedVersion: 2
         x: 439
-        y: 235
-        width: 49
-        height: 97
+        y: 234
+        width: 48
+        height: 98
       alignment: 9
       pivot: {x: 0.57139367, y: 0.5365759}
       border: {x: 26, y: 0, z: 19, w: 0}
@@ -1390,8 +1378,8 @@ TextureImporter:
         serializedVersion: 2
         x: 61
         y: 327
-        width: 4
-        height: 61
+        width: 3
+        height: 60
       alignment: 0
       pivot: {x: 0.5, y: 0.5}
       border: {x: 1, y: 0, z: 1, w: 0}
@@ -1410,9 +1398,9 @@ TextureImporter:
       rect:
         serializedVersion: 2
         x: 69
-        y: 327
-        width: 4
-        height: 61
+        y: 328
+        width: 3
+        height: 60
       alignment: 0
       pivot: {x: 0.5, y: 0.5}
       border: {x: 1, y: 0, z: 1, w: 0}
@@ -1452,9 +1440,9 @@ TextureImporter:
       rect:
         serializedVersion: 2
         x: 387
-        y: 338
-        width: 57
-        height: 61
+        y: 339
+        width: 56
+        height: 60
       alignment: 0
       pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -1494,9 +1482,9 @@ TextureImporter:
       rect:
         serializedVersion: 2
         x: 502
-        y: 361
-        width: 44
-        height: 39
+        y: 362
+        width: 42
+        height: 38
       alignment: 0
       pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -1515,9 +1503,9 @@ TextureImporter:
       rect:
         serializedVersion: 2
         x: 958
-        y: 437
-        width: 36
-        height: 36
+        y: 439
+        width: 34
+        height: 34
       alignment: 0
       pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -1557,9 +1545,9 @@ TextureImporter:
       rect:
         serializedVersion: 2
         x: 876
-        y: 459
+        y: 460
         width: 48
-        height: 52
+        height: 50
       alignment: 0
       pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -1599,9 +1587,9 @@ TextureImporter:
       rect:
         serializedVersion: 2
         x: 65
-        y: 259
+        y: 260
         width: 62
-        height: 57
+        height: 56
       alignment: 0
       pivot: {x: 0.5, y: 0.5}
       border: {x: 29, y: 0, z: 29, w: 0}
@@ -1684,7 +1672,7 @@ TextureImporter:
         serializedVersion: 2
         x: 0
         y: 356
-        width: 57
+        width: 56
         height: 62
       alignment: 0
       pivot: {x: 0.5, y: 0.5}
@@ -1704,9 +1692,9 @@ TextureImporter:
       rect:
         serializedVersion: 2
         x: 224
-        y: 372
+        y: 373
         width: 54
-        height: 23
+        height: 22
       alignment: 0
       pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -1724,10 +1712,10 @@ TextureImporter:
       name: filter-arrow
       rect:
         serializedVersion: 2
-        x: 199
-        y: 426
-        width: 17
-        height: 12
+        x: 200
+        y: 428
+        width: 14
+        height: 10
       alignment: 0
       pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -1808,9 +1796,9 @@ TextureImporter:
       name: search-icon
       rect:
         serializedVersion: 2
-        x: 648
+        x: 647
         y: 411
-        width: 38
+        width: 40
         height: 40
       alignment: 0
       pivot: {x: 0.5, y: 0.5}
@@ -1851,7 +1839,7 @@ TextureImporter:
       rect:
         serializedVersion: 2
         x: 555
-        y: 377
+        y: 376
         width: 56
         height: 24
       alignment: 0
@@ -1998,8 +1986,8 @@ TextureImporter:
       rect:
         serializedVersion: 2
         x: 996
-        y: 451
-        width: 21
+        y: 452
+        width: 20
         height: 20
       alignment: 0
       pivot: {x: 0.5, y: 0.5}
@@ -2084,7 +2072,7 @@ TextureImporter:
         x: 963
         y: 389
         width: 32
-        height: 33
+        height: 32
       alignment: 0
       pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -2103,9 +2091,9 @@ TextureImporter:
       rect:
         serializedVersion: 2
         x: 895
-        y: 331
+        y: 332
         width: 53
-        height: 51
+        height: 50
       alignment: 0
       pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -2145,9 +2133,9 @@ TextureImporter:
       rect:
         serializedVersion: 2
         x: 957
-        y: 354
-        width: 38
-        height: 32
+        y: 356
+        width: 36
+        height: 30
       alignment: 0
       pivot: {x: 0.5, y: 0.5}
       border: {x: 17, y: 16, z: 17, w: 14}
@@ -2186,10 +2174,10 @@ TextureImporter:
       name: male-icon
       rect:
         serializedVersion: 2
-        x: 956
-        y: 329
-        width: 23
-        height: 23
+        x: 745
+        y: 349
+        width: 46
+        height: 42
       alignment: 0
       pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -2207,10 +2195,10 @@ TextureImporter:
       name: female-icon
       rect:
         serializedVersion: 2
-        x: 979
+        x: 747
         y: 298
-        width: 17
-        height: 27
+        width: 32
+        height: 48
       alignment: 0
       pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -2231,7 +2219,7 @@ TextureImporter:
         x: 503
         y: 301
         width: 240
-        height: 47
+        height: 46
       alignment: 9
       pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 22, z: 0, w: 22}
@@ -2273,7 +2261,7 @@ TextureImporter:
         x: 493
         y: 236
         width: 68
-        height: 57
+        height: 56
       alignment: 9
       pivot: {x: 0.5, y: 0.559066}
       border: {x: 33, y: 31, z: 33, w: 24}
@@ -2283,6 +2271,69 @@ TextureImporter:
       bones: []
       spriteID: c05f79850fc35402187fa0d7ae4f4a6d
       internalID: 7595667864703430088
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: key-binding-bg
+      rect:
+        serializedVersion: 2
+        x: 793
+        y: 349
+        width: 46
+        height: 46
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 21, y: 21, z: 21, w: 21}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 74cd8f49f063f4e7ab1d2590390d196b
+      internalID: 7025982016299592833
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: mouse-icon
+      rect:
+        serializedVersion: 2
+        x: 130
+        y: 251
+        width: 26
+        height: 36
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: f3d4e7741febd433c9adbc6bfe68a0a2
+      internalID: 7595667864703430088
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: interactive-icon
+      rect:
+        serializedVersion: 2
+        x: 171
+        y: 251
+        width: 26
+        height: 28
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: cbf8e90346f0e4b50a12187861c1f22e
+      internalID: 6488135825053477424
       vertices: []
       indices: 
       edges: []
