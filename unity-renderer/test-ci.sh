@@ -3,7 +3,7 @@
 set -e
 set -x
 
-echo "Building for $BUILD_TARGET"
+echo "Running tests for $BUILD_TARGET"
 
 export BUILD_PATH=./Builds/$BUILD_NAME/
 mkdir -p $BUILD_PATH
@@ -14,15 +14,12 @@ cd ../..
 
 ${UNITY_EXECUTABLE:-xvfb-run --auto-servernum --server-args='-screen 0 640x480x24' /opt/Unity/Editor/Unity} \
   -projectPath $(pwd) \
-  -quit \
-  -batchmode \
   -buildTarget $BUILD_TARGET \
-  -customBuildTarget $BUILD_TARGET \
-  -customBuildName $BUILD_NAME \
-  -customBuildPath $BUILD_PATH \
-  -customBuildOptions AcceptExternalModificationsToPlayer \
-  -executeMethod BuildCommand.PerformBuild \
-  -logFile /tmp/buildlog.txt
+  -runTests \
+  -testPlatform playmode \
+  -testResults /tmp/explorer/unity-client/testlog/results.xml \
+  -logFile /tmp/explorer/unity-client/testlog/log.txt \
+  -batchmode
 
 UNITY_EXIT_CODE=$?
 
@@ -36,4 +33,4 @@ else
   echo "Unexpected exit code $UNITY_EXIT_CODE";
 fi
 
-exit $UNITY_EXIT_CODE;
+exit $UNITY_EXIT_CODE
