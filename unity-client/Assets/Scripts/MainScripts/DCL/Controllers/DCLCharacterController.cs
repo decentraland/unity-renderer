@@ -18,7 +18,7 @@ public class DCLCharacterController : MonoBehaviour
     public float runningSpeedMultiplier = 2f;
 
     [Tooltip("The maximum movement distance allowed on moving platforms before releasing the character")]
-    public float movingPlatformAllowedPosDelta = 0.5f;
+    public float movingPlatformAllowedPosDelta = 1f;
 
     public DCLCharacterPosition characterPosition;
 
