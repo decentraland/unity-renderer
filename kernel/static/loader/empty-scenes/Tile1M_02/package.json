@@ -1,0 +1,20 @@
+{
+  "name": "1fc4287a-1e50-4b86-a7c3-0da809f16389",
+  "version": "1.0.0",
+  "description": "My new Decentraland project",
+  "scripts": {
+    "start": "dcl start",
+    "build": "build-ecs",
+    "watch": "build-ecs --watch",
+    "deploy:now": "dcl export && now export",
+    "ecs:install": "npm install --save-dev decentraland-ecs@latest",
+    "ecs:install-next": "npm install --save-dev decentraland-ecs@next"
+  },
+  "devDependencies": {
+    "decentraland-ecs": "latest"
+  },
+  "dependencies": {
+    "decentraland-ecs": "latest",
+    "decentraland-builder-scripts": "latest"
+  }
+}
