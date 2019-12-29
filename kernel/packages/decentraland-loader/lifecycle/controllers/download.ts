@@ -6,6 +6,7 @@ import { createLogger } from 'shared/logger'
 
 const emptyScenes = require('./emptyScenes.json')
 
+const NUMBER_EMPTY_PARCELS = 8
 const logger = createLogger('loader')
 const { error } = logger
 
@@ -79,7 +80,10 @@ export class SceneDataDownloadManager {
   }
 
   createFakeILand(sceneId: string, coordinates: string) {
-    const pick = ((coordinates.split(',').reduce((prev, next) => prev + Math.abs(parseInt(next, 10)), 0) % 12) + 1)
+    const pick = (
+      (coordinates.split(',').reduce((prev, next) => prev + Math.abs(parseInt(next, 10)), 0) % NUMBER_EMPTY_PARCELS) +
+      1
+    )
       .toString()
       .padStart(2, '0')
     return {
