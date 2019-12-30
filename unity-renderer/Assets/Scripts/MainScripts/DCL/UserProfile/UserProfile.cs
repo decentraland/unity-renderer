@@ -34,7 +34,7 @@ public class UserProfile : ScriptableObject //TODO Move to base variable
     {
         UpdateProperties(newModel);
 
-        if (!downloadAssets)
+        if (downloadAssets)
         {
             DownloadFaceIfNeeded();
             DownloadBodyIfNeeded();
