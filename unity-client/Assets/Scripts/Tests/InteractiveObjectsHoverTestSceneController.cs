@@ -2,6 +2,7 @@
 using DCL.Models;
 using DCL.Components;
 using DCL.Helpers;
+using DCL.Interface;
 using DCL.Controllers;
 using Newtonsoft.Json;
 using System.Collections;
@@ -9,6 +10,8 @@ using UnityEngine;
 
 public class InteractiveObjectsHoverTestSceneController : MonoBehaviour
 {
+    public WebInterface.ACTION_BUTTON button = WebInterface.ACTION_BUTTON.POINTER;
+
     ParcelScene scene;
 
     IEnumerator Start()
@@ -30,13 +33,13 @@ public class InteractiveObjectsHoverTestSceneController : MonoBehaviour
 
         TestHelpers.SetEntityTransform(scene, entity, new Vector3(8, -1, 8), Quaternion.identity, new Vector3(0.5f, 0.5f, 0.5f));
 
-        string clickUuid = "pointerevent-1";
-        var OnClickComponentModel = new OnClick.Model()
+        var onClickComponentModel = new OnClick.Model()
         {
             type = OnClick.NAME,
-            uuid = clickUuid,
+            uuid = "pointerevent-1",
+            button = this.button.ToString()
         };
-        TestHelpers.EntityComponentCreate<OnClick, OnClick.Model>(scene, entity, OnClickComponentModel, CLASS_ID_COMPONENT.UUID_CALLBACK);
+        var onClickComponent = TestHelpers.EntityComponentCreate<OnClick, OnClick.Model>(scene, entity, onClickComponentModel, CLASS_ID_COMPONENT.UUID_CALLBACK);
 
         scene.SetInitMessagesDone();
 

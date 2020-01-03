@@ -117,7 +117,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: fdb703c4373e2421ab6fc794a7291837, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  offset: {x: 0, y: 50, z: 0}
   canvas: {fileID: 4700288523959264737}
   backgroundTransform: {fileID: 6432359610209792728}
   text: {fileID: 5253129788489465426}
@@ -127,7 +126,7 @@ MonoBehaviour:
     type: 3}
   secondaryActionIconPrefab: {fileID: 883752100616965295, guid: e176613fd203f4bf281c28eb1a281524,
     type: 3}
-  unknownActionIconPrefab: {fileID: 883752100616965295, guid: 7d57e6ad950144884968bd36cfa49478,
+  anyActionIconPrefab: {fileID: 883752100616965295, guid: 7d57e6ad950144884968bd36cfa49478,
     type: 3}
 --- !u!114 &4672070199564005208
 MonoBehaviour:

@@ -1,7 +1,6 @@
 ﻿using DCL.Models;
 using DCL.Components;
 using UnityEngine;
-using DCL.Interface;
 using TMPro;
 
 public class InteractionHoverCanvasController : MonoBehaviour
@@ -12,29 +11,34 @@ public class InteractionHoverCanvasController : MonoBehaviour
     public GameObject pointerActionIconPrefab;
     public GameObject primaryActionIconPrefab;
     public GameObject secondaryActionIconPrefab;
-    public GameObject unknownActionIconPrefab;
+    public GameObject anyActionIconPrefab;
 
+    bool isHovered = false;
     Camera mainCamera;
     GameObject hoverIcon;
     Vector3 meshCenteredPos;
     DecentralandEntity entity;
+
+    const string ACTION_BUTTON_POINTER = "POINTER";
+    const string ACTION_BUTTON_PRIMARY = "PRIMARY";
+    const string ACTION_BUTTON_SECONDARY = "SECONDARY";
 
     void Awake()
     {
         mainCamera = Camera.main;
     }
 
-    public void Setup(WebInterface.ACTION_BUTTON button, string feedbackText, DecentralandEntity entity)
+    public void Setup(string button, string feedbackText, DecentralandEntity entity)
     {
         text.text = feedbackText;
         this.entity = entity;
 
         ConfigureIcon(button);
 
-        Hide();
+        canvas.enabled = enabled && isHovered;
     }
 
-    void ConfigureIcon(WebInterface.ACTION_BUTTON button)
+    void ConfigureIcon(string button)
     {
         // When we allow for custom input key bindings this implementation will change
 
@@ -43,29 +47,28 @@ public class InteractionHoverCanvasController : MonoBehaviour
 
         switch (button)
         {
-            case WebInterface.ACTION_BUTTON.POINTER:
+            case ACTION_BUTTON_POINTER:
                 hoverIcon = Object.Instantiate(pointerActionIconPrefab, backgroundTransform);
                 break;
-            case WebInterface.ACTION_BUTTON.PRIMARY:
+            case ACTION_BUTTON_PRIMARY:
                 hoverIcon = Object.Instantiate(primaryActionIconPrefab, backgroundTransform);
                 break;
-            case WebInterface.ACTION_BUTTON.SECONDARY:
+            case ACTION_BUTTON_SECONDARY:
                 hoverIcon = Object.Instantiate(secondaryActionIconPrefab, backgroundTransform);
                 break;
-            default: // WebInterface.ACTION_BUTTON.UNKNOWN
-                hoverIcon = Object.Instantiate(unknownActionIconPrefab, backgroundTransform);
+            default: // WebInterface.ACTION_BUTTON.ANY
+                hoverIcon = Object.Instantiate(anyActionIconPrefab, backgroundTransform);
                 break;
         }
     }
 
-    public void Show()
+    public void SetHoverState(bool hoverState)
     {
-        canvas.enabled = true;
-    }
+        if (!enabled || hoverState == isHovered) return;
 
-    public void Hide()
-    {
-        canvas.enabled = false;
+        isHovered = hoverState;
+
+        canvas.enabled = isHovered;
     }
 
     // This method will be used when we apply a "loose aim" for the 3rd person camera

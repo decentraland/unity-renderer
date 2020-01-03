@@ -97,7 +97,7 @@ LightmapSettings:
     m_ShowResolutionOverlay: 1
     m_ExportTrainingData: 0
   m_LightingDataAsset: {fileID: 0}
-  m_UseShadowmask: 1
+  m_UseShadowmask: 0
 --- !u!196 &4
 NavMeshSettings:
   serializedVersion: 2
@@ -337,6 +337,8 @@ MonoBehaviour:
   environment: 2
   startInCoords: {x: 64, y: -64}
   forceLocalComms: 1
+  allWearables: 0
+  testWearables: 0
   debugPanelMode: 0
 --- !u!4 &1444882337
 Transform:
@@ -531,15 +533,20 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 326638024485685085, guid: b0965b55b892d438da492708ea09799c,
+        type: 3}
+      propertyPath: m_LocalPosition.z
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 1271431263581989332, guid: b0965b55b892d438da492708ea09799c,
         type: 3}
       propertyPath: m_LocalRotation.y
-      value: 0.000000028602798
+      value: 0.70379287
       objectReference: {fileID: 0}
     - target: {fileID: 1271431263581989332, guid: b0965b55b892d438da492708ea09799c,
         type: 3}
       propertyPath: m_LocalRotation.z
-      value: 0.000000008370031
+      value: -0.017169068
       objectReference: {fileID: 0}
     - target: {fileID: 326638022910643306, guid: b0965b55b892d438da492708ea09799c,
         type: 3}
