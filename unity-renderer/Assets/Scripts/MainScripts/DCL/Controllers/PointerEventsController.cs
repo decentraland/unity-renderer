@@ -6,8 +6,10 @@ using UnityEngine;
 
 namespace DCL
 {
-    public class PointerEventsController : Singleton<PointerEventsController>
+    public class PointerEventsController : MonoBehaviour
     {
+        public static PointerEventsController i { get; private set; }
+
         public static bool renderingIsDisabled = true;
         public static System.Action OnPointerHoverStarts;
         public static System.Action OnPointerHoverEnds;
@@ -19,7 +21,19 @@ namespace DCL
         Camera charCamera;
         OnPointerEvent lastHoveredObject = null;
         OnPointerEvent newHoveredObject = null;
-        Coroutine hoverInteractiveObjectsRoutine;
+        RaycastHit hitInfo;
+
+        void Awake()
+        {
+            if (i != null)
+            {
+                Utils.SafeDestroy(this);
+
+                return;
+            }
+
+            i = this;
+        }
 
         public void Initialize(bool isTesting = false)
         {
@@ -30,54 +44,41 @@ namespace DCL
             InputController_Legacy.i.AddListener(WebInterface.ACTION_BUTTON.SECONDARY, OnButtonEvent);
 
             RetrieveCamera();
-
-            hoverInteractiveObjectsRoutine = SceneController.i.StartCoroutine(HoverInteractiveObjects());
         }
 
-        IEnumerator HoverInteractiveObjects()
+        void Update()
         {
-            RaycastHit hitInfo;
+            if (!RenderingController.i.renderingEnabled || charCamera == null) return;
 
-            while (true)
+            // We use Physics.Raycast() instead of our raycastHandler.Raycast() as that one is slower, sometimes 2x, because it fetches info we don't need here
+            if (Physics.Raycast(GetRayFromCamera(), out hitInfo, Mathf.Infinity, Configuration.LayerMasks.physicsCastLayerMaskWithoutCharacter))
             {
-                if (!RenderingController.i.renderingEnabled || charCamera == null)
+                newHoveredObject = hitInfo.transform.GetComponentInParent<OnPointerEvent>();
+
+                if (newHoveredObject != null && newHoveredObject.IsAtHoverDistance((DCLCharacterController.i.transform.position - newHoveredObject.transform.position).magnitude))
                 {
-                    yield return null;
-                    continue;
-                }
-
-                // We use Physics.Raycast() instead of our raycastHandler.Raycast() as that one is slower, sometimes 2x, because it fetches info we don't need here
-                if (Physics.Raycast(GetRayFromCamera(), out hitInfo, Mathf.Infinity, Configuration.LayerMasks.physicsCastLayerMaskWithoutCharacter))
-                {
-                    newHoveredObject = hitInfo.transform.GetComponentInParent<OnPointerEvent>();
-
-                    if (newHoveredObject != null && newHoveredObject.IsAtHoverDistance((DCLCharacterController.i.transform.position - newHoveredObject.transform.position).magnitude))
+                    if (newHoveredObject != lastHoveredObject)
                     {
-                        if (newHoveredObject != lastHoveredObject)
-                        {
-                            if (lastHoveredObject == null)
-                                OnPointerHoverStarts?.Invoke();
+                        if (lastHoveredObject == null)
+                            OnPointerHoverStarts?.Invoke();
 
-                            UnhoverLastHoveredObject();
-
-                            newHoveredObject.SetHoverState(true);
-
-                            lastHoveredObject = newHoveredObject;
-                        }
-
-                        newHoveredObject = null;
-                    }
-                    else
-                    {
                         UnhoverLastHoveredObject();
+
+                        newHoveredObject.SetHoverState(true);
+
+                        lastHoveredObject = newHoveredObject;
                     }
+
+                    newHoveredObject = null;
                 }
                 else
                 {
                     UnhoverLastHoveredObject();
                 }
-
-                yield return null;
+            }
+            else
+            {
+                UnhoverLastHoveredObject();
             }
         }
 

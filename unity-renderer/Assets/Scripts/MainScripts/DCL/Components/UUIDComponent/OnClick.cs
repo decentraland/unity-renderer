@@ -12,12 +12,9 @@ namespace DCL.Components
 
         public void Report(WebInterface.ACTION_BUTTON buttonId)
         {
-            if (!enabled)
-            {
-                return;
-            }
+            if (!enabled) return;
 
-            if (buttonId == WebInterface.ACTION_BUTTON.POINTER)
+            if (model.button == "ANY" || buttonId.ToString() == model.button)
                 DCL.Interface.WebInterface.ReportOnClickEvent(scene.sceneData.id, model.uuid);
         }
     }

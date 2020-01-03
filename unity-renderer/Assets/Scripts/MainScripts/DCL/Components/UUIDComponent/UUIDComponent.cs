@@ -27,31 +27,26 @@ namespace DCL
 
         public Model model = new Model();
 
-        public virtual void Setup(ParcelScene scene, DecentralandEntity entity, string uuid, string type)
+        public virtual void Setup(ParcelScene scene, DecentralandEntity entity, UUIDComponent.Model model)
         {
         }
 
         public void SetForEntity(ParcelScene scene, DecentralandEntity entity, UUIDComponent.Model model)
         {
-            SetForEntity(scene, entity, model.uuid, model.type);
-        }
-
-        public void SetForEntity(ParcelScene scene, DecentralandEntity entity, string uuid, string type)
-        {
-            switch (type)
+            switch (model.type)
             {
                 case OnClick.NAME:
-                    SetUpComponent<OnClick>(scene, entity, uuid, type);
+                    SetUpComponent<OnClick>(scene, entity, model);
                     return;
                 case OnPointerDown.NAME:
-                    SetUpComponent<OnPointerDown>(scene, entity, uuid, type);
+                    SetUpComponent<OnPointerDown>(scene, entity, model);
                     return;
                 case OnPointerUp.NAME:
-                    SetUpComponent<OnPointerUp>(scene, entity, uuid, type);
+                    SetUpComponent<OnPointerUp>(scene, entity, model);
                     return;
             }
 
-            Debug.LogWarning($"Cannot create UUIDComponent of type '{type}'.");
+            Debug.LogWarning($"Cannot create UUIDComponent of type '{model.type}'.");
         }
 
         public void RemoveFromEntity(DecentralandEntity entity, string type)
@@ -86,12 +81,12 @@ namespace DCL
             }
         }
 
-        private void SetUpComponent<T>(ParcelScene scene, DecentralandEntity entity, string uuid, string type)
+        private void SetUpComponent<T>(ParcelScene scene, DecentralandEntity entity, UUIDComponent.Model model)
             where T : UUIDComponent
         {
             var currentComponent = entity.gameObject.GetOrCreateComponent<T>();
 
-            currentComponent.Setup(scene, entity, uuid, type);
+            currentComponent.Setup(scene, entity, model);
         }
 
         public override IEnumerator ApplyChanges(string newJson)
@@ -100,7 +95,7 @@ namespace DCL
 
             if (!string.IsNullOrEmpty(model.uuid))
             {
-                SetForEntity(scene, entity, model.uuid, model.type);
+                SetForEntity(scene, entity, model);
             }
 
             return null;

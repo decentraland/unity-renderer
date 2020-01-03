@@ -15,12 +15,15 @@ namespace DCL.Components
                 return;
             }
 
-            string meshName = null;
+            if (model.button == "ANY" || buttonId.ToString() == model.button)
+            {
+                string meshName = null;
 
-            if (isHitInfoValid)
-                meshName = GetMeshName(hit.collider);
+                if (isHitInfoValid)
+                    meshName = GetMeshName(hit.collider);
 
-            DCL.Interface.WebInterface.ReportOnPointerUpEvent(buttonId, scene.sceneData.id, model.uuid, entity.entityId, meshName, ray, hit.point, hit.normal, hit.distance, isHitInfoValid);
+                DCL.Interface.WebInterface.ReportOnPointerUpEvent(buttonId, scene.sceneData.id, model.uuid, entity.entityId, meshName, ray, hit.point, hit.normal, hit.distance, isHitInfoValid);
+            }
         }
     }
 }

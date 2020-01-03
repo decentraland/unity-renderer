@@ -570,7 +570,6 @@ namespace DCL.Controllers
             yieldInstruction = null;
 
             SceneController.i.OnMessageDecodeStart?.Invoke("UpdateEntityComponent");
-
             createEntityComponentMessage.name = name;
             createEntityComponentMessage.classId = classIdNum;
             createEntityComponentMessage.entityId = entityId;
@@ -619,7 +618,7 @@ namespace DCL.Controllers
             {
                 string type = "";
 
-                UUIDComponent.Model model = JsonUtility.FromJson<UUIDComponent.Model>(createEntityComponentMessage.json);
+                OnPointerEvent.Model model = JsonUtility.FromJson<OnPointerEvent.Model>(createEntityComponentMessage.json);
 
                 type = model.type;
 
@@ -659,7 +658,7 @@ namespace DCL.Controllers
                 }
                 else
                 {
-                    newComponent = EntityUUIDComponentUpdate(entity, type, createEntityComponentMessage.json);
+                    newComponent = EntityUUIDComponentUpdate(entity, type, model);
                 }
             }
             else
@@ -693,8 +692,7 @@ namespace DCL.Controllers
 
         // HACK: (Zak) will be removed when we separate each
         // uuid component as a different class id
-        public UUIDComponent EntityUUIDComponentUpdate(DecentralandEntity entity, string type,
-            string componentJson)
+        public UUIDComponent EntityUUIDComponentUpdate(DecentralandEntity entity, string type, UUIDComponent.Model model)
         {
             if (entity == null)
             {
@@ -709,8 +707,7 @@ namespace DCL.Controllers
             }
 
             UUIDComponent targetComponent = entity.uuidComponents[type];
-            targetComponent.UpdateFromJSON(componentJson);
-
+            targetComponent.SetForEntity(this, entity, model);
 
             return targetComponent;
         }

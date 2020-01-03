@@ -10,14 +10,14 @@ namespace DCL.Components
 
         public void Report(WebInterface.ACTION_BUTTON buttonId, Ray ray, HitInfo hit)
         {
-            if (!enabled)
+            if (!enabled) return;
+
+            if (model.button == "ANY" || buttonId.ToString() == model.button)
             {
-                return;
+                string meshName = GetMeshName(hit.collider);
+
+                DCL.Interface.WebInterface.ReportOnPointerDownEvent(buttonId, scene.sceneData.id, model.uuid, entity.entityId, meshName, ray, hit.point, hit.normal, hit.distance);
             }
-
-            string meshName = GetMeshName(hit.collider);
-
-            DCL.Interface.WebInterface.ReportOnPointerDownEvent(buttonId, scene.sceneData.id, model.uuid, entity.entityId, meshName, ray, hit.point, hit.normal, hit.distance);
         }
     }
 }

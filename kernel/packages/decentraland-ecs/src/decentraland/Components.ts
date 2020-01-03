@@ -3,6 +3,7 @@ import { Vector3, Quaternion, Matrix, MathTmp, Color3, Color4 } from './math'
 import { AnimationState } from './AnimationState'
 import { newId } from '../ecs/helpers'
 import { IEvents } from './Types'
+import { ActionButton } from './Input'
 
 /** @public */
 export type TranformConstructorArgs = {
@@ -786,6 +787,34 @@ export class OnUUIDEvent<T extends keyof IEvents> extends ObservableComponent {
 
   toJSON() {
     return { uuid: this.uuid, type: this.type }
+  }
+}
+
+/**
+ * @public
+ */
+export class OnPointerUUIDEvent<T extends keyof IEvents> extends OnUUIDEvent<T> {
+  @ObservableComponent.field
+  button: ActionButton = ActionButton.ANY
+
+  @ObservableComponent.field
+  hoverText: string = "Interact"
+
+  @ObservableComponent.field
+  distance: number = 4
+
+  @ObservableComponent.field
+  showFeeback: boolean = true
+
+  toJSON() {
+    return {
+      uuid: this.uuid,
+      type: this.type,
+      button: this.button,
+      hoverText: this.hoverText,
+      distance: this.distance,
+      showFeeback: this.showFeeback
+    }
   }
 }
 

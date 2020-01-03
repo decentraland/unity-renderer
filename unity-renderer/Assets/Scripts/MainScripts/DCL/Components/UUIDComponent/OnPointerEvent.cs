@@ -13,26 +13,25 @@ namespace DCL.Components
         [System.Serializable]
         new public class Model : UUIDComponent.Model
         {
-            public int button = (int)WebInterface.ACTION_BUTTON.UNKNOWN;
-            public string toastText = "Interact";
-            public float interactionDistance = 4f;
+            public string button = WebInterface.ACTION_BUTTON.ANY.ToString();
+            public string hoverText = "Interact";
+            public float distance = 4f;
+            public bool showFeeback = true;
         }
 
         Rigidbody rigidBody;
         OnPointerEventColliders pointerEventColliders;
         InteractionHoverCanvasController hoverCanvasController;
-        bool beingHovered;
 
-        public override void Setup(ParcelScene scene, DecentralandEntity entity, string uuid, string type)
+        public override void Setup(ParcelScene scene, DecentralandEntity entity, UUIDComponent.Model model)
         {
             this.entity = entity;
             this.scene = scene;
 
             if (model == null)
-                model = new OnPointerEvent.Model();
-
-            model.uuid = uuid;
-            model.type = type;
+                this.model = new OnPointerEvent.Model();
+            else
+                this.model = (OnPointerEvent.Model)model;
 
             Initialize();
 
@@ -66,10 +65,12 @@ namespace DCL.Components
 
             if (hoverCanvasController == null)
             {
-                GameObject hoverCanvasGameObject = Object.Instantiate(Resources.Load("InteractionHoverCanvas"), transform) as GameObject;
+                GameObject hoverCanvasGameObject = Object.Instantiate(Resources.Load("InteractionHoverCanvas"), PointerEventsController.i.transform) as GameObject;
                 hoverCanvasController = hoverCanvasGameObject.GetComponent<InteractionHoverCanvasController>();
             }
-            hoverCanvasController.Setup((WebInterface.ACTION_BUTTON)model.button, model.toastText, entity);
+
+            hoverCanvasController.enabled = model.showFeeback;
+            hoverCanvasController.Setup(model.button, model.hoverText, entity);
         }
 
         void OnComponentUpdated(DecentralandEntity e)
@@ -79,33 +80,29 @@ namespace DCL.Components
 
         protected override void RemoveComponent<T>(DecentralandEntity entity)
         {
-            Destroy(hoverCanvasController.gameObject);
+            if (hoverCanvasController != null)
+            {
+                Destroy(hoverCanvasController.gameObject);
+            }
         }
 
-        public void SetHoverState(bool isHovered)
+        public void SetHoverState(bool hoverState)
         {
             if (!enableInteractionHoverFeedback) return;
 
-            if (beingHovered == isHovered) return;
-
-            beingHovered = isHovered;
-
-            if (beingHovered)
-                hoverCanvasController.Show();
-            else
-                hoverCanvasController.Hide();
+            hoverCanvasController.SetHoverState(hoverState);
         }
 
         public bool IsAtHoverDistance(float distance)
         {
-            return distance <= model.interactionDistance;
+            return distance <= model.distance;
         }
 
         void OnDestroy()
         {
             entity.OnShapeUpdated -= OnComponentUpdated;
 
-            if (pointerEventColliders)
+            if (pointerEventColliders != null)
             {
                 pointerEventColliders.refCount--;
 
@@ -114,6 +111,11 @@ namespace DCL.Components
                     Destroy(rigidBody);
                     Destroy(pointerEventColliders);
                 }
+            }
+
+            if (hoverCanvasController != null)
+            {
+                Destroy(hoverCanvasController.gameObject);
             }
         }
     }
