@@ -180,12 +180,16 @@ export class PhysicsCast implements IPhysicsCast {
   }
 
   public handleRaycastHitFirstResponse(response: RaycastResponse<RaycastHitEntity>) {
-    this.queries[response.payload.queryId](response.payload.payload)
-    delete this.queries[response.payload.queryId]
+    if (this.queries[response.payload.queryId]) {
+      this.queries[response.payload.queryId](response.payload.payload)
+      delete this.queries[response.payload.queryId]
+    }
   }
 
   public handleRaycastHitAllResponse(response: RaycastResponse<RaycastHitEntities>) {
-    this.queries[response.payload.queryId](response.payload.payload)
-    delete this.queries[response.payload.queryId]
+    if (this.queries[response.payload.queryId]) {
+      this.queries[response.payload.queryId](response.payload.payload)
+      delete this.queries[response.payload.queryId]
+    }
   }
 }
