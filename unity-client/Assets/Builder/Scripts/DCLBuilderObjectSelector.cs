@@ -1,31 +1,38 @@
 ﻿using UnityEngine;
 using DCL.Controllers;
 using Builder.Gizmos;
+using System.Collections.Generic;
 
 namespace Builder
 {
     public class DCLBuilderObjectSelector : MonoBehaviour
     {
+        const float MAX_SECS_FOR_CLICK = 0.25f;
+
         public DCLBuilderRaycast builderRaycast;
         public DCLBuilderGizmoManager gizmosManager;
 
-        public delegate void DragDelegate(DCLBuilderEntity entity, Vector3 position);
         public delegate void EntitySelectedDelegate(DCLBuilderEntity entity, string gizmoType);
         public delegate void EntityDeselectedDelegate(DCLBuilderEntity entity);
+        public delegate void EntitySelectedListChangedDelegate(Transform selectionParent, List<DCLBuilderEntity> selectedEntities);
 
+        public static event EntitySelectedDelegate OnMarkObjectSelected;
         public static event EntitySelectedDelegate OnSelectedObject;
         public static event EntityDeselectedDelegate OnDeselectedObject;
         public static event System.Action OnNoObjectSelected;
-        public static event DragDelegate OnDraggingObjectStart;
-        public static event DragDelegate OnDraggingObject;
-        public static event DragDelegate OnDraggingObjectEnd;
+        public static event EntitySelectedListChangedDelegate OnSelectedObjectListChanged;
+        public static event System.Action<DCLBuilderEntity, Vector3> OnEntityPressed;
+        public static event System.Action<DCLBuilderGizmoAxis> OnGizmosAxisPressed;
 
-        private DCLBuilderEntity selectedEntity = null;
+        public Transform selectedEntitiesParent { private set; get; }
 
-        private DragInfo dragInfo = new DragInfo();
+        private Dictionary<string, DCLBuilderEntity> entities = new Dictionary<string, DCLBuilderEntity>();
+        private List<DCLBuilderEntity> selectedEntities = new List<DCLBuilderEntity>();
+        private EntityPressedInfo entityEnqueueForDeselectInfo = new EntityPressedInfo();
+        private bool isDirty = false;
+        private bool isSelectionTransformed = false;
+
         private float groundClickTime = 0;
-
-        private float snapFactorPosition = 0;
 
         private bool isGameObjectActive = false;
 
@@ -35,6 +42,7 @@ namespace Builder
         private void Awake()
         {
             DCLBuilderBridge.OnPreviewModeChanged += OnPreviewModeChanged;
+            SelectionParentCreate();
         }
 
         private void OnDestroy()
@@ -47,14 +55,16 @@ namespace Builder
             if (!isGameObjectActive)
             {
                 DCLBuilderInput.OnMouseDown += OnMouseDown;
-                DCLBuilderInput.OnMouseDrag += OnMouseDrag;
                 DCLBuilderInput.OnMouseUp += OnMouseUp;
                 DCLBuilderBridge.OnResetObject += OnResetObject;
+                DCLBuilderBridge.OnEntityAdded += OnEntityAdded;
                 DCLBuilderBridge.OnEntityRemoved += OnEntityRemoved;
-                DCLBuilderBridge.OnSetGridResolution += OnSetGridResolution;
                 DCLBuilderBridge.OnSceneChanged += OnSceneChanged;
                 DCLBuilderBridge.OnBuilderSelectEntity += OnBuilderSelectEntity;
-                DCLBuilderBridge.OnBuilderDeselectEntity += OnBuilderDeselectEntity;
+                DCLBuilderGizmoManager.OnGizmoTransformObject += OnGizmoTransform;
+                DCLBuilderGizmoManager.OnGizmoTransformObjectEnd += OnGizmoTransformEnded;
+                DCLBuilderObjectDragger.OnDraggingObject += OnObjectsDrag;
+                DCLBuilderObjectDragger.OnDraggingObjectEnd += OnObjectsDragEnd;
             }
             isGameObjectActive = true;
         }
@@ -63,135 +73,129 @@ namespace Builder
         {
             isGameObjectActive = false;
             DCLBuilderInput.OnMouseDown -= OnMouseDown;
-            DCLBuilderInput.OnMouseDrag -= OnMouseDrag;
             DCLBuilderInput.OnMouseUp -= OnMouseUp;
             DCLBuilderBridge.OnResetObject -= OnResetObject;
+            DCLBuilderBridge.OnEntityAdded -= OnEntityAdded;
             DCLBuilderBridge.OnEntityRemoved -= OnEntityRemoved;
-            DCLBuilderBridge.OnSetGridResolution -= OnSetGridResolution;
             DCLBuilderBridge.OnSceneChanged -= OnSceneChanged;
             DCLBuilderBridge.OnBuilderSelectEntity -= OnBuilderSelectEntity;
-            DCLBuilderBridge.OnBuilderDeselectEntity -= OnBuilderDeselectEntity;
+            DCLBuilderGizmoManager.OnGizmoTransformObject -= OnGizmoTransform;
+            DCLBuilderGizmoManager.OnGizmoTransformObjectEnd -= OnGizmoTransformEnded;
+            DCLBuilderObjectDragger.OnDraggingObject -= OnObjectsDrag;
+            DCLBuilderObjectDragger.OnDraggingObjectEnd -= OnObjectsDragEnd;
         }
 
         private void Update()
         {
-            if (!gizmosManager.isTransformingObject)
+            if (!isDirty)
             {
-                CheckGizmoHover(Input.mousePosition);
+                return;
+            }
+            isDirty = false;
+            SelectionParentReset();
+            OnSelectedObjectListChanged?.Invoke(selectedEntitiesParent, selectedEntities);
+            if (selectedEntities.Count == 0)
+            {
+                OnNoObjectSelected?.Invoke();
             }
         }
 
         private void OnMouseDown(int buttonId, Vector3 mousePosition)
         {
-            if (buttonId == 0)
+            if (buttonId != 0)
             {
-                RaycastHit hit;
-                if (builderRaycast.Raycast(mousePosition, builderRaycast.defaultMask, out hit, true))
+                return;
+            }
+
+            RaycastHit hit;
+            if (builderRaycast.Raycast(mousePosition, builderRaycast.defaultMask | builderRaycast.gizmoMask, out hit, CompareSelectionHit))
+            {
+                DCLBuilderGizmoAxis gizmosAxis = hit.collider.gameObject.GetComponent<DCLBuilderGizmoAxis>();
+                if (gizmosAxis != null)
                 {
-                    DCLBuilderGizmoAxis gizmosAxis = hit.collider.gameObject.GetComponent<DCLBuilderGizmoAxis>();
-                    if (gizmosAxis != null)
-                    {
-                        gizmosManager.OnBeginDrag(gizmosAxis, selectedEntity);
-                    }
-                    else
-                    {
-                        var builderSelectionCollider = hit.collider.gameObject.GetComponent<DCLBuilderSelectionCollider>();
-                        if (builderSelectionCollider != null)
-                        {
-                            dragInfo.entity = builderSelectionCollider.ownerEntity;
-                        }
-
-                        if (dragInfo.entity != null)
-                        {
-                            if (CanSelect(dragInfo.entity))
-                            {
-                                if (dragInfo.entity != selectedEntity)
-                                {
-                                    Select(dragInfo.entity);
-                                }
-
-                                dragInfo.isDraggingObject = true;
-                                builderRaycast.SetEntityHitPlane(hit.point.y);
-                                dragInfo.hitToEntityOffset = dragInfo.entity.transform.position - hit.point;
-                                OnDraggingObjectStart?.Invoke(dragInfo.entity, dragInfo.entity.transform.position);
-                            }
-                        }
-                    }
-                    groundClickTime = 0;
+                    OnGizmosAxisPressed?.Invoke(gizmosAxis);
                 }
                 else
                 {
-                    groundClickTime = Time.unscaledTime;
+                    var builderSelectionCollider = hit.collider.gameObject.GetComponent<DCLBuilderSelectionCollider>();
+                    DCLBuilderEntity pressedEntity = null;
+
+                    if (builderSelectionCollider != null)
+                    {
+                        pressedEntity = builderSelectionCollider.ownerEntity;
+                    }
+
+                    if (pressedEntity != null && CanSelect(pressedEntity))
+                    {
+                        if (SelectionParentHasChild(pressedEntity.transform))
+                        {
+                            EnqueueEntityForDeselect(pressedEntity, hit.point);
+                        }
+                        else
+                        {
+                            ProcessEntityPressed(pressedEntity, hit.point);
+                        }
+                        OnEntityPressed?.Invoke(pressedEntity, hit.point);
+                    }
                 }
+                groundClickTime = 0;
+            }
+            else
+            {
+                groundClickTime = Time.unscaledTime;
             }
         }
 
         private void OnMouseUp(int buttonId, Vector3 mousePosition)
         {
-            if (buttonId == 0)
+            if (buttonId != 0)
             {
-                if (dragInfo.isDraggingObject && dragInfo.entity != null)
-                {
-                    OnDraggingObjectEnd?.Invoke(dragInfo.entity, dragInfo.entity.transform.position);
-                }
-
-                dragInfo.isDraggingObject = false;
-                dragInfo.entity = null;
-
-                if (gizmosManager.isTransformingObject)
-                {
-                    gizmosManager.OnEndDrag();
-                }
-
-                if (groundClickTime != 0 && (Time.unscaledTime - groundClickTime) < 0.25f)
-                {
-                    if (selectedEntity != null)
-                    {
-                        OnNoObjectSelected?.Invoke();
-                    }
-                    Deselect();
-                }
-                groundClickTime = 0;
+                return;
             }
-        }
-
-        private void OnMouseDrag(int buttonId, Vector3 mousePosition, float axisX, float axisY)
-        {
-            if (buttonId == 0)
+            if (entityEnqueueForDeselectInfo.pressedEntity != null)
             {
-                bool hasMouseMoved = (axisX != 0 || axisY != 0);
-                if (gizmosManager.isTransformingObject)
+                if ((Time.unscaledTime - entityEnqueueForDeselectInfo.pressedTime) < MAX_SECS_FOR_CLICK)
                 {
-                    UpdateGizmoAxis(mousePosition);
-                }
-                else if (dragInfo.isDraggingObject && dragInfo.entity != null && hasMouseMoved)
-                {
-                    DragObject(dragInfo.entity, mousePosition);
+                    ProcessEntityPressed(entityEnqueueForDeselectInfo.pressedEntity, entityEnqueueForDeselectInfo.hitPoint);
                 }
             }
-        }
+            entityEnqueueForDeselectInfo.pressedEntity = null;
 
-        private void OnSetGridResolution(float position, float rotation, float scale)
-        {
-            snapFactorPosition = position;
+            if (groundClickTime != 0 && (Time.unscaledTime - groundClickTime) < MAX_SECS_FOR_CLICK)
+            {
+                if (selectedEntities != null)
+                {
+                    OnNoObjectSelected?.Invoke();
+                }
+            }
+            groundClickTime = 0;
         }
 
         private void OnResetObject()
         {
-            if (selectedEntity != null)
+            for (int i = 0; i < selectedEntities.Count; i++)
             {
-                selectedEntity.transform.localRotation = Quaternion.identity;
+                selectedEntities[i].transform.localRotation = Quaternion.identity;
+            }
+        }
+
+        private void OnEntityAdded(DCLBuilderEntity entity)
+        {
+            if (!entities.ContainsKey(entity.rootEntity.entityId))
+            {
+                entities.Add(entity.rootEntity.entityId, entity);
             }
         }
 
         private void OnEntityRemoved(DCLBuilderEntity entity)
         {
-            if (selectedEntity == entity)
+            if (selectedEntities.Contains(entity))
             {
-                Deselect();
-                dragInfo.isDraggingObject = false;
-                dragInfo.entity = null;
-                OnNoObjectSelected?.Invoke();
+                Deselect(entity);
+            }
+            if (entities.ContainsKey(entity.rootEntity.entityId))
+            {
+                entities.Remove(entity.rootEntity.entityId);
             }
         }
 
@@ -201,24 +205,58 @@ namespace Builder
             currentScene = scene;
         }
 
-        private void OnBuilderSelectEntity(string entityId)
+        private void OnBuilderSelectEntity(string[] entitiesId)
         {
-            if (currentScene && currentScene.entities.ContainsKey(entityId))
+            List<DCLBuilderEntity> entitiesToDeselect = new List<DCLBuilderEntity>(selectedEntities);
+
+            for (int i = 0; i < entitiesId.Length; i++)
             {
-                DCLBuilderEntity entity = currentScene.entities[entityId].gameObject.GetComponent<DCLBuilderEntity>();
-                if (entity && !dragInfo.isDraggingObject && !gizmosManager.isTransformingObject && CanSelect(entity))
+                if (entities.ContainsKey(entitiesId[i]))
                 {
-                    entity.SetOnShapeLoaded(() =>
+                    DCLBuilderEntity entity = entities[entitiesId[i]];
+                    if (!SelectionParentHasChild(entity.transform))
                     {
                         Select(entity);
-                    });
+                    }
+                    else
+                    {
+                        entitiesToDeselect.Remove(entity);
+                    }
                 }
+            }
+
+            for (int i = 0; i < entitiesToDeselect.Count; i++)
+            {
+                Deselect(entitiesToDeselect[i]);
             }
         }
 
-        private void OnBuilderDeselectEntity()
+        private void OnGizmoTransform(string gizmoType)
         {
-            Deselect();
+            isSelectionTransformed = true;
+        }
+
+        private void OnGizmoTransformEnded(string gizmoType)
+        {
+            if (isSelectionTransformed)
+            {
+                SelectionParentReset();
+            }
+            isSelectionTransformed = false;
+        }
+
+        private void OnObjectsDrag()
+        {
+            isSelectionTransformed = true;
+        }
+
+        private void OnObjectsDragEnd()
+        {
+            if (isSelectionTransformed)
+            {
+                SelectionParentReset();
+            }
+            isSelectionTransformed = false;
         }
 
         private bool CanSelect(DCLBuilderEntity entity)
@@ -226,92 +264,210 @@ namespace Builder
             return entity.hasGizmoComponent;
         }
 
+        private void MarkSelected(DCLBuilderEntity entity)
+        {
+            if (entity == null)
+            {
+                return;
+            }
+            OnMarkObjectSelected?.Invoke(entity, gizmosManager.GetSelectedGizmo());
+        }
+
         private void Select(DCLBuilderEntity entity)
         {
-            Deselect();
-            if (entity != null)
+            if (entity == null)
             {
-                selectedEntity = entity;
-                selectedEntity.SetSelectLayer();
-
-                OnSelectedObject?.Invoke(entity, gizmosManager.GetSelectedGizmo());
+                return;
             }
+
+            if (!selectedEntities.Contains(entity))
+            {
+                selectedEntities.Add(entity);
+            }
+            SelectionParentAddEntity(entity);
+            entity.SetSelectLayer();
+
+            OnSelectedObject?.Invoke(entity, gizmosManager.GetSelectedGizmo());
+            isDirty = true;
         }
 
         private void Deselect(DCLBuilderEntity entity)
         {
-            if (selectedEntity == entity)
+            if (entity != null)
             {
+                SelectionParentRemoveEntity(entity);
                 OnDeselectedObject?.Invoke(entity);
-                if (entity != null)
-                {
-                    entity.SetDefaultLayer();
-                }
-                selectedEntity = null;
+                entity.SetDefaultLayer();
             }
+            if (selectedEntities.Contains(entity))
+            {
+                selectedEntities.Remove(entity);
+            }
+            isDirty = true;
         }
 
-        private void Deselect()
+        private void DeselectAll()
         {
-            if (selectedEntity != null)
+            for (int i = selectedEntities.Count - 1; i >= 0; i--)
             {
-                Deselect(selectedEntity);
+                Deselect(selectedEntities[i]);
             }
-        }
-
-        private void DragObject(DCLBuilderEntity entity, Vector3 mousePosition)
-        {
-            Vector3 hitPosition = builderRaycast.RaycastToEntityHitPlane(mousePosition);
-            Vector3 newPosition = hitPosition + dragInfo.hitToEntityOffset;
-            newPosition.y = entity.transform.position.y;
-
-            if (snapFactorPosition > 0)
-            {
-                newPosition.x = newPosition.x - (newPosition.x % snapFactorPosition);
-                newPosition.z = newPosition.z - (newPosition.z % snapFactorPosition);
-            }
-
-            entity.transform.position = newPosition;
-            boundariesChecker?.EvaluateEntityPosition(selectedEntity.rootEntity);
-
-            OnDraggingObject?.Invoke(entity, newPosition);
-        }
-
-        private void UpdateGizmoAxis(Vector3 mousePosition)
-        {
-            Vector3 hit;
-            if (gizmosManager.RaycastHit(builderRaycast.GetMouseRay(mousePosition), out hit))
-            {
-                gizmosManager.OnDrag(hit, mousePosition);
-                boundariesChecker?.EvaluateEntityPosition(selectedEntity.rootEntity);
-            }
-        }
-
-        private void CheckGizmoHover(Vector3 mousePosition)
-        {
-            RaycastHit hit;
-            if (builderRaycast.RaycastToGizmos(mousePosition, out hit))
-            {
-                DCLBuilderGizmoAxis gizmoAxis = hit.collider.gameObject.GetComponent<DCLBuilderGizmoAxis>();
-                gizmosManager.SetAxisHover(gizmoAxis);
-            }
-            else
-            {
-                gizmosManager.SetAxisHover(null);
-            }
+            SelectionParentRemoveAllEntities();
         }
 
         private void OnPreviewModeChanged(bool isPreview)
         {
-            Deselect();
+            DeselectAll();
             gameObject.SetActive(!isPreview);
+            entities.Clear();
         }
 
-        private class DragInfo
+        private void EnqueueEntityForDeselect(DCLBuilderEntity pressedEntity, Vector3 hitPoint)
         {
-            public DCLBuilderEntity entity = null;
-            public bool isDraggingObject = false;
-            public Vector3 hitToEntityOffset = Vector3.zero;
+            entityEnqueueForDeselectInfo.pressedEntity = pressedEntity;
+            entityEnqueueForDeselectInfo.pressedTime = Time.unscaledTime;
+            entityEnqueueForDeselectInfo.hitPoint = hitPoint;
+        }
+
+        private void ProcessEntityPressed(DCLBuilderEntity pressedEntity, Vector3 hitPoint)
+        {
+            if (CanSelect(pressedEntity))
+            {
+                MarkSelected(pressedEntity);
+            }
+        }
+
+        private void SelectionParentCreate()
+        {
+            selectedEntitiesParent = new GameObject("BuilderSelectedEntitiesParent").GetComponent<Transform>();
+        }
+
+        private void SelectionParentReset()
+        {
+            if (selectedEntitiesParent.childCount == 0)
+            {
+                return;
+            }
+
+            Transform entitiyTransform = selectedEntitiesParent.GetChild(0);
+            Vector3 min = entitiyTransform.position;
+            Vector3 max = entitiyTransform.position;
+
+            List<Transform> children = new List<Transform>(selectedEntitiesParent.childCount);
+
+            children.Add(entitiyTransform);
+            SelectionParentRemoveEntity(entitiyTransform);
+
+            for (int i = selectedEntitiesParent.childCount - 1; i >= 0; i--)
+            {
+                entitiyTransform = selectedEntitiesParent.GetChild(i);
+                if (entitiyTransform.position.x < min.x) min.x = entitiyTransform.position.x;
+                if (entitiyTransform.position.y < min.y) min.y = entitiyTransform.position.y;
+                if (entitiyTransform.position.z < min.z) min.z = entitiyTransform.position.z;
+                if (entitiyTransform.position.x > max.x) max.x = entitiyTransform.position.x;
+                if (entitiyTransform.position.y > max.y) max.y = entitiyTransform.position.y;
+                if (entitiyTransform.position.z > max.z) max.z = entitiyTransform.position.z;
+
+                children.Add(entitiyTransform);
+                SelectionParentRemoveEntity(entitiyTransform);
+            }
+
+            selectedEntitiesParent.position = min + (max - min) * 0.5f;
+            selectedEntitiesParent.localScale = Vector3.one;
+            selectedEntitiesParent.rotation = Quaternion.identity;
+
+            for (int i = 0; i < children.Count; i++)
+            {
+                SelectionParentAddEntity(children[i]);
+            }
+        }
+
+        private void SelectionParentAddEntity(DCLBuilderEntity entity)
+        {
+            SelectionParentAddEntity(entity.transform);
+        }
+
+        private void SelectionParentAddEntity(Transform entityTransform)
+        {
+            entityTransform.SetParent(selectedEntitiesParent, true);
+        }
+
+        private void SelectionParentRemoveEntity(DCLBuilderEntity entity)
+        {
+            SelectionParentRemoveEntity(entity.transform);
+        }
+
+        private void SelectionParentRemoveEntity(Transform entityTransform)
+        {
+            entityTransform.SetParent(currentScene.transform, true);
+        }
+
+        private void SelectionParentRemoveAllEntities()
+        {
+            for (int i = selectedEntitiesParent.childCount - 1; i >= 0; i--)
+            {
+                SelectionParentRemoveEntity(selectedEntitiesParent.GetChild(i));
+            }
+        }
+
+        private bool SelectionParentHasChild(Transform transform)
+        {
+            return transform.parent == selectedEntitiesParent;
+        }
+
+        private RaycastHit CompareSelectionHit(RaycastHit[] hits)
+        {
+            RaycastHit closestHit = hits[0];
+            bool isHitASelectedObject = IsEntityHitAndSelected(closestHit);
+
+            if (IsGizmoHit(closestHit)) // Gizmos has always priority
+            {
+                return closestHit;
+            }
+
+            RaycastHit hit;
+            for (int i = 1; i < hits.Length; i++)
+            {
+                hit = hits[i];
+                if (IsGizmoHit(hit)) // Gizmos has always priority
+                {
+                    return hit;
+                }
+
+                if (hit.distance < closestHit.distance)
+                {
+                    isHitASelectedObject = IsEntityHitAndSelected(hit);
+                    closestHit = hit;
+                }
+                else if (hit.distance == closestHit.distance && !isHitASelectedObject)
+                {
+                    isHitASelectedObject = IsEntityHitAndSelected(hit);
+                    closestHit = hit;
+                }
+            }
+            return closestHit;
+        }
+
+        private bool IsGizmoHit(RaycastHit hit)
+        {
+            return hit.collider.gameObject.GetComponent<DCLBuilderGizmoAxis>() != null;
+        }
+
+        private bool IsEntityHitAndSelected(RaycastHit hit)
+        {
+            var collider = hit.collider.gameObject.GetComponent<DCLBuilderSelectionCollider>();
+            if (collider != null)
+            {
+                return SelectionParentHasChild(collider.ownerEntity.transform);
+            }
+            return false;
+        }
+
+        private class EntityPressedInfo
+        {
+            public DCLBuilderEntity pressedEntity;
+            public float pressedTime;
+            public Vector3 hitPoint;
         }
     }
 }

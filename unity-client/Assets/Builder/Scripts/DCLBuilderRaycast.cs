@@ -45,6 +45,19 @@ namespace Builder
             return Physics.Raycast(GetMouseRay(mousePosition), out hitInfo, RAYCAST_MAX_DISTANCE, mask);
         }
 
+        public bool Raycast(Vector3 mousePosition, LayerMask mask, out RaycastHit hitInfo, System.Func<RaycastHit[], RaycastHit> hitComparer)
+        {
+            RaycastHit[] hits;
+            hits = Physics.RaycastAll(GetMouseRay(mousePosition), RAYCAST_MAX_DISTANCE, mask);
+            if (hits.Length > 0)
+            {
+                hitInfo = hitComparer(hits);
+                return true;
+            }
+            hitInfo = new RaycastHit();
+            return false;
+        }
+
         public Ray GetMouseRay(Vector3 mousePosition)
         {
             return builderCamera.ScreenPointToRay(mousePosition);

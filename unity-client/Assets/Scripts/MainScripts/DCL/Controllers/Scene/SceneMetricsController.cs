@@ -58,7 +58,7 @@ namespace DCL
             }
         }
 
-        class EntityMetrics
+        protected class EntityMetrics
         {
             public Dictionary<Material, int> materials = new Dictionary<Material, int>();
             public Dictionary<Mesh, int> meshes = new Dictionary<Mesh, int>();
@@ -74,13 +74,13 @@ namespace DCL
         }
 
         [SerializeField]
-        private Model model;
+        protected Model model;
 
-        private Dictionary<DecentralandEntity, EntityMetrics> entitiesMetrics;
+        protected Dictionary<DecentralandEntity, EntityMetrics> entitiesMetrics;
         private Dictionary<Mesh, int> uniqueMeshesRefCount;
         private Dictionary<Material, int> uniqueMaterialsRefCount;
 
-        public bool isDirty { get; private set; }
+        public bool isDirty { get; protected set; }
 
         public Model GetModel() { return model.Clone(); }
 
@@ -151,7 +151,7 @@ namespace DCL
             }
         }
 
-        void OnEntityAdded(DecentralandEntity e)
+        protected virtual void OnEntityAdded(DecentralandEntity e)
         {
             e.OnMeshesInfoUpdated += OnEntityMeshInfoUpdated;
             e.OnMeshesInfoCleaned += OnEntityMeshInfoCleaned;
@@ -159,7 +159,7 @@ namespace DCL
             isDirty = true;
         }
 
-        void OnEntityRemoved(DecentralandEntity e)
+        protected virtual void OnEntityRemoved(DecentralandEntity e)
         {
             SubstractMetrics(e);
             e.OnMeshesInfoUpdated -= OnEntityMeshInfoUpdated;
@@ -168,17 +168,17 @@ namespace DCL
             isDirty = true;
         }
 
-        void OnEntityMeshInfoUpdated(DecentralandEntity entity)
+        protected virtual void OnEntityMeshInfoUpdated(DecentralandEntity entity)
         {
             AddOrReplaceMetrics(entity);
         }
 
-        void OnEntityMeshInfoCleaned(DecentralandEntity entity)
+        protected virtual void OnEntityMeshInfoCleaned(DecentralandEntity entity)
         {
             SubstractMetrics(entity);
         }
 
-        void AddOrReplaceMetrics(DecentralandEntity entity)
+        protected void AddOrReplaceMetrics(DecentralandEntity entity)
         {
             if (entitiesMetrics.ContainsKey(entity))
             {
@@ -188,7 +188,7 @@ namespace DCL
 
         }
 
-        void SubstractMetrics(DecentralandEntity entity)
+        protected void SubstractMetrics(DecentralandEntity entity)
         {
             if (!entitiesMetrics.ContainsKey(entity))
             {
@@ -213,7 +213,7 @@ namespace DCL
             isDirty = true;
         }
 
-        void AddMetrics(DecentralandEntity entity)
+        protected void AddMetrics(DecentralandEntity entity)
         {
             if (entity.meshRootGameObject == null)
             {
