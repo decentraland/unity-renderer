@@ -92,21 +92,39 @@ namespace Builder
 
         private void EditorKeyDownEvent()
         {
-            if (Input.GetKeyDown(KeyCode.UpArrow))
+            if (Input.GetKey(KeyCode.UpArrow))
             {
                 SendMessageToBridge("OnBuilderKeyDown", "UpArrow");
             }
-            if (Input.GetKeyDown(KeyCode.DownArrow))
+            if (Input.GetKey(KeyCode.DownArrow))
             {
                 SendMessageToBridge("OnBuilderKeyDown", "DownArrow");
             }
-            if (Input.GetKeyDown(KeyCode.LeftArrow))
+            if (Input.GetKey(KeyCode.LeftArrow))
             {
                 SendMessageToBridge("OnBuilderKeyDown", "LeftArrow");
             }
-            if (Input.GetKeyDown(KeyCode.RightArrow))
+            if (Input.GetKey(KeyCode.RightArrow))
             {
                 SendMessageToBridge("OnBuilderKeyDown", "RightArrow");
+            }
+            if (Input.GetKey(KeyCode.LeftShift))
+            {
+                SendMessageToBridge("OnBuilderKeyDown", "LeftShift");
+            }
+
+
+            if (Input.GetKeyDown(KeyCode.W))
+            {
+                SendMessageToBridge("SelectGizmo", DCL.Components.DCLGizmos.Gizmo.MOVE);
+            }
+            if (Input.GetKeyDown(KeyCode.R))
+            {
+                SendMessageToBridge("SelectGizmo", DCL.Components.DCLGizmos.Gizmo.ROTATE);
+            }
+            if (Input.GetKeyDown(KeyCode.S))
+            {
+                SendMessageToBridge("SelectGizmo", DCL.Components.DCLGizmos.Gizmo.SCALE);
             }
         }
 

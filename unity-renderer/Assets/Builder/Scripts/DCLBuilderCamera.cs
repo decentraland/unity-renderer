@@ -105,13 +105,13 @@ namespace Builder
             {
                 DCLBuilderInput.OnMouseDrag += OnMouseDrag;
                 DCLBuilderInput.OnMouseWheel += OnMouseWheel;
-                DCLBuilderBridge.OnSetArrowKeyDown += OnKeyboardButtonHold;
+                DCLBuilderBridge.OnSetKeyDown += OnKeyboardButtonHold;
                 DCLBuilderBridge.OnZoomFromUI += OnZoomFormUI;
                 DCLBuilderBridge.OnSetCameraPosition += OnSetCameraPosition;
                 DCLBuilderBridge.OnSetCameraRotation += OnSetCameraRotation;
                 DCLBuilderBridge.OnResetCameraZoom += OnResetCameraZoom;
-                DCLBuilderObjectSelector.OnDraggingObjectStart += OnDragObjectStart;
-                DCLBuilderObjectSelector.OnDraggingObjectEnd += OnDragObjectEnd;
+                DCLBuilderObjectDragger.OnDraggingObjectStart += OnDragObjectStart;
+                DCLBuilderObjectDragger.OnDraggingObjectEnd += OnDragObjectEnd;
                 DCLBuilderGizmoManager.OnGizmoTransformObjectStart += OnGizmoTransformObjectStart;
                 DCLBuilderGizmoManager.OnGizmoTransformObjectEnd += OnGizmoTransformObjectEnd;
             }
@@ -123,13 +123,13 @@ namespace Builder
             isGameObjectActive = false;
             DCLBuilderInput.OnMouseDrag -= OnMouseDrag;
             DCLBuilderInput.OnMouseWheel -= OnMouseWheel;
-            DCLBuilderBridge.OnSetArrowKeyDown -= OnKeyboardButtonHold;
+            DCLBuilderBridge.OnSetKeyDown -= OnKeyboardButtonHold;
             DCLBuilderBridge.OnZoomFromUI -= OnZoomFormUI;
             DCLBuilderBridge.OnSetCameraPosition -= OnSetCameraPosition;
             DCLBuilderBridge.OnSetCameraRotation -= OnSetCameraRotation;
             DCLBuilderBridge.OnResetCameraZoom -= OnResetCameraZoom;
-            DCLBuilderObjectSelector.OnDraggingObjectStart -= OnDragObjectStart;
-            DCLBuilderObjectSelector.OnDraggingObjectEnd -= OnDragObjectEnd;
+            DCLBuilderObjectDragger.OnDraggingObjectStart -= OnDragObjectStart;
+            DCLBuilderObjectDragger.OnDraggingObjectEnd -= OnDragObjectEnd;
             DCLBuilderGizmoManager.OnGizmoTransformObjectStart -= OnGizmoTransformObjectStart;
             DCLBuilderGizmoManager.OnGizmoTransformObjectEnd -= OnGizmoTransformObjectEnd;
         }
@@ -190,26 +190,26 @@ namespace Builder
             zoomTarget = Mathf.Clamp(zoomTarget + amount, -zoomMax, -zoomMin);
         }
 
-        private void OnDragObjectStart(DCLBuilderEntity entity, Vector3 objectPosition)
+        private void OnDragObjectStart()
         {
             isObjectBeingDrag = true;
         }
 
-        private void OnDragObjectEnd(DCLBuilderEntity entity, Vector3 objectPosition)
+        private void OnDragObjectEnd()
         {
             isObjectBeingDrag = false;
             pitchTarget = pitchCurrent;
             yawTarget = yawCurrent;
         }
 
-        private void OnGizmoTransformObjectStart(DCLBuilderEntity entity, Vector3 objectPosition, string gizmoType)
+        private void OnGizmoTransformObjectStart(string gizmoType)
         {
-            OnDragObjectStart(entity, objectPosition);
+            OnDragObjectStart();
         }
 
-        private void OnGizmoTransformObjectEnd(DCLBuilderEntity entity, Vector3 objectPosition, string gizmoType)
+        private void OnGizmoTransformObjectEnd(string gizmoType)
         {
-            OnDragObjectEnd(entity, objectPosition);
+            OnDragObjectEnd();
         }
 
         private void OnSetCameraPosition(Vector3 position)

@@ -29,6 +29,21 @@ namespace Builder
             }
         }
 
+        public bool hasSmartItemComponent
+        {
+            get
+            {
+                if (rootEntity != null)
+                {
+                    return rootEntity.components.ContainsKey(CLASS_ID_COMPONENT.SMART_ITEM);
+                }
+                else
+                {
+                    return false;
+                }
+            }
+        }
+
         private DCLBuilderSelectionCollider[] meshColliders;
         private Animation[] meshAnimations;
         private Action OnShapeLoaded;
@@ -84,34 +99,38 @@ namespace Builder
 
         public void SetSelectLayer()
         {
-            int selectionLayer = LayerMask.NameToLayer(DCLBuilderRaycast.LAYER_SELECTION);
-            if (rootEntity.meshesInfo != null)
+            if (rootEntity.meshesInfo == null || rootEntity.meshesInfo.renderers == null)
             {
-                Renderer renderer;
-                for (int i = 0; i < rootEntity.meshesInfo.renderers.Length; i++)
+                return;
+            }
+
+            int selectionLayer = LayerMask.NameToLayer(DCLBuilderRaycast.LAYER_SELECTION);
+            Renderer renderer;
+            for (int i = 0; i < rootEntity.meshesInfo.renderers.Length; i++)
+            {
+                renderer = rootEntity.meshesInfo.renderers[i];
+                if (renderer)
                 {
-                    renderer = rootEntity.meshesInfo.renderers[i];
-                    if (renderer)
-                    {
-                        renderer.gameObject.layer = selectionLayer;
-                    }
+                    renderer.gameObject.layer = selectionLayer;
                 }
             }
         }
 
         public void SetDefaultLayer()
         {
-            int selectionLayer = 0;
-            if (rootEntity.meshesInfo != null && rootEntity.meshesInfo.renderers != null)
+            if (rootEntity.meshesInfo == null || rootEntity.meshesInfo.renderers == null)
             {
-                Renderer renderer;
-                for (int i = 0; i < rootEntity.meshesInfo.renderers.Length; i++)
+                return;
+            }
+
+            int selectionLayer = 0;
+            Renderer renderer;
+            for (int i = 0; i < rootEntity.meshesInfo.renderers.Length; i++)
+            {
+                renderer = rootEntity.meshesInfo.renderers[i];
+                if (renderer)
                 {
-                    renderer = rootEntity.meshesInfo.renderers[i];
-                    if (renderer)
-                    {
-                        renderer.gameObject.layer = selectionLayer;
-                    }
+                    renderer.gameObject.layer = selectionLayer;
                 }
             }
         }
@@ -157,10 +176,13 @@ namespace Builder
 
             // We don't want animation to be running on editor
             meshAnimations = GetComponentsInChildren<Animation>();
-            for (int i = 0; i < meshAnimations.Length; i++)
+            if (hasSmartItemComponent)
             {
-                meshAnimations[i].Stop();
-                meshAnimations[i].clip?.SampleAnimation(meshAnimations[i].gameObject, 0);
+                DefaultAnimationStop();
+            }
+            else
+            {
+                DefaultAnimationSample(0);
             }
             ProcessEntityShape(entity);
 
@@ -169,7 +191,10 @@ namespace Builder
             {
                 gameObject.transform.localScale = Vector3.zero;
                 StartCoroutine(ScaleAnimationRoutine(0.3f));
-
+            }
+            else if (isTransformComponentSet)
+            {
+                gameObject.transform.localScale = scaleTarget;
             }
 
             if (OnShapeLoaded != null)
@@ -181,8 +206,9 @@ namespace Builder
 
         private void OnTransformUpdated(DCLTransform.Model transformModel)
         {
-            gameObject.transform.localPosition = transformModel.position;
-            gameObject.transform.localRotation = transformModel.rotation;
+            //NOTE: there is no parenting entities in editor mode so we can set properties in world space
+            gameObject.transform.position = transformModel.position;
+            gameObject.transform.rotation = transformModel.rotation;
 
             if (isScalingAnimation)
             {
@@ -205,27 +231,19 @@ namespace Builder
 
         private void OnPreviewModeChanged(bool isPreview)
         {
-            if (isPreview)
+            if (!hasSmartItemComponent)
             {
-                if (meshAnimations != null)
+                if (isPreview)
                 {
-                    for (int i = 0; i < meshAnimations.Length; i++)
-                    {
-                        meshAnimations[i].Play();
-                    }
+                    DefaultAnimationPlay();
+                }
+                else
+                {
+                    DefaultAnimationSample(0);
                 }
             }
-            else
-            {
-                if (meshAnimations != null)
-                {
-                    for (int i = 0; i < meshAnimations.Length; i++)
-                    {
-                        meshAnimations[i].Stop();
-                        meshAnimations[i].clip?.SampleAnimation(meshAnimations[i].gameObject, 0);
-                    }
-                }
-            }
+
+            SetCollidersActive(!isPreview);
         }
 
         private void ProcessEntityShape(DecentralandEntity entity)
@@ -279,6 +297,54 @@ namespace Builder
                     }
                 }
                 meshColliders = null;
+            }
+        }
+
+        private void SetCollidersActive(bool active)
+        {
+            if (meshColliders != null)
+            {
+                for (int i = 0; i < meshColliders.Length; i++)
+                {
+                    if (meshColliders[i] != null)
+                    {
+                        meshColliders[i].gameObject.SetActive(active);
+                    }
+                }
+            }
+        }
+
+        private void DefaultAnimationStop()
+        {
+            if (meshAnimations != null)
+            {
+                for (int i = 0; i < meshAnimations.Length; i++)
+                {
+                    meshAnimations[i].Stop();
+                }
+            }
+        }
+
+        private void DefaultAnimationSample(float time)
+        {
+            if (meshAnimations != null)
+            {
+                for (int i = 0; i < meshAnimations.Length; i++)
+                {
+                    meshAnimations[i].Stop();
+                    meshAnimations[i].clip?.SampleAnimation(meshAnimations[i].gameObject, time);
+                }
+            }
+        }
+
+        private void DefaultAnimationPlay()
+        {
+            if (meshAnimations != null)
+            {
+                for (int i = 0; i < meshAnimations.Length; i++)
+                {
+                    meshAnimations[i].Play();
+                }
             }
         }
     }
