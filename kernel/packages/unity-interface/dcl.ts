@@ -206,7 +206,6 @@ function ensureTeleportAnimation() {
     'style',
     'background: #151419 url(images/teleport.gif) no-repeat center !important; background-size: 194px 257px !important;'
   )
-  delightedSurvey()
 }
 
 const CHUNK_SIZE = 500
@@ -825,6 +824,7 @@ teleportObservable.add((position: { x: number; y: number }) => {
     const globalStore = global['globalStore']
     globalStore.dispatch(teleportTriggered())
   }
+  delightedSurvey()
 })
 
 worldRunningObservable.add(isRunning => {
