@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using System;
 using DCL.Interface;
+using DCL.Configuration;
 
 namespace DCL
 {
@@ -48,8 +49,8 @@ namespace DCL
         private InputController_Legacy()
         {
             buttonsMap.Add(new BUTTON_MAP() { type = BUTTON_TYPE.MOUSE, buttonNum = 0, buttonId = WebInterface.ACTION_BUTTON.POINTER, useRaycast = true });
-            buttonsMap.Add(new BUTTON_MAP() { type = BUTTON_TYPE.KEYBOARD, buttonNum = (int)KeyCode.E, buttonId = WebInterface.ACTION_BUTTON.PRIMARY, useRaycast = true });
-            buttonsMap.Add(new BUTTON_MAP() { type = BUTTON_TYPE.KEYBOARD, buttonNum = (int)KeyCode.F, buttonId = WebInterface.ACTION_BUTTON.SECONDARY, useRaycast = true });
+            buttonsMap.Add(new BUTTON_MAP() { type = BUTTON_TYPE.KEYBOARD, buttonNum = (int)InputSettings.PrimaryButtonKeyCode, buttonId = WebInterface.ACTION_BUTTON.PRIMARY, useRaycast = true });
+            buttonsMap.Add(new BUTTON_MAP() { type = BUTTON_TYPE.KEYBOARD, buttonNum = (int)InputSettings.SecondaryButtonKeyCode, buttonId = WebInterface.ACTION_BUTTON.SECONDARY, useRaycast = true });
         }
 
         public void AddListener(WebInterface.ACTION_BUTTON buttonId, Action<WebInterface.ACTION_BUTTON, EVENT, bool> callback)
@@ -114,6 +115,23 @@ namespace DCL
                             RaiseEvent(btnMap.buttonId, EVENT.BUTTON_UP, btnMap.useRaycast);
                         break;
                 }
+            }
+        }
+
+        public bool IsPressed(WebInterface.ACTION_BUTTON button)
+        {
+            switch (button)
+            {
+                case WebInterface.ACTION_BUTTON.POINTER:
+                    return Input.GetMouseButton(0);
+                case WebInterface.ACTION_BUTTON.PRIMARY:
+                    return Input.GetKey(InputSettings.PrimaryButtonKeyCode);
+                case WebInterface.ACTION_BUTTON.SECONDARY:
+                    return Input.GetKey(InputSettings.SecondaryButtonKeyCode);
+                default: // ANY
+                    return Input.GetMouseButton(0) ||
+                            Input.GetKey(InputSettings.PrimaryButtonKeyCode) ||
+                            Input.GetKey(InputSettings.SecondaryButtonKeyCode);
             }
         }
     }

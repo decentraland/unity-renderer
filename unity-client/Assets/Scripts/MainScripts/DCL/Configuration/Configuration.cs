@@ -12,6 +12,12 @@ namespace DCL.Configuration
         public static bool DEBUG = true;
     }
 
+    public static class InputSettings
+    {
+        public static KeyCode PrimaryButtonKeyCode = KeyCode.E;
+        public static KeyCode SecondaryButtonKeyCode = KeyCode.F;
+    }
+
     public static class PlayerSettings
     {
         public static float POSITION_REPORTING_DELAY = 0.1f; // In seconds
