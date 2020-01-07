@@ -1,5 +1,6 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
+using TMPro;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
@@ -12,6 +13,8 @@ public class ItemToggle : UIButton, IPointerEnterHandler, IPointerExitHandler
     public Image thumbnail;
     public Image selectionHighlight;
     [SerializeField] private GameObject warningPanel;
+    [SerializeField] internal RectTransform amountContainer;
+    [SerializeField] internal TextMeshProUGUI amountText;
 
     private bool selectedValue;
 
@@ -49,10 +52,12 @@ public class ItemToggle : UIButton, IPointerEnterHandler, IPointerExitHandler
         warningPanel.SetActive(false);
     }
 
-    public virtual void Initialize(WearableItem w, bool isSelected)
+    public virtual void Initialize(WearableItem w, bool isSelected, int amount)
     {
         wearableItem = w;
         selected = isSelected;
+        amountContainer.gameObject.SetActive(amount > 1);
+        amountText.text = $"x{amount.ToString()}";
 
         if (!string.IsNullOrEmpty(w.thumbnail))
         {
@@ -88,7 +93,7 @@ public class ItemToggle : UIButton, IPointerEnterHandler, IPointerExitHandler
         thumbnail.sprite = sprite;
     }
 
-    private void OnDestroy()
+    protected virtual void OnDestroy()
     {
         Application.quitting -= Cleanup;
 

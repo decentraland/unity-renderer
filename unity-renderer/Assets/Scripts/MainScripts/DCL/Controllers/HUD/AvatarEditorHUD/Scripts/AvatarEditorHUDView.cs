@@ -190,7 +190,7 @@ public class AvatarEditorHUDView : MonoBehaviour
         loadingPanel.SetActive(active);
     }
 
-    public void AddWearable(WearableItem wearableItem)
+    public void AddWearable(WearableItem wearableItem, int amount)
     {
         if (wearableItem == null) return;
 
@@ -200,10 +200,10 @@ public class AvatarEditorHUDView : MonoBehaviour
             return;
         }
 
-        selectorsByCategory[wearableItem.category].AddItemToggle(wearableItem);
+        selectorsByCategory[wearableItem.category].AddItemToggle(wearableItem, amount);
         if (wearableItem.IsCollectible())
         {
-            collectiblesItemSelector.AddItemToggle(wearableItem);
+            collectiblesItemSelector.AddItemToggle(wearableItem, amount);
         }
     }
 
@@ -231,6 +231,7 @@ public class AvatarEditorHUDView : MonoBehaviour
                 enumerator.Current.Value.RemoveAllItemToggle();
             }
         }
+        collectiblesItemSelector.RemoveAllItemToggle();
     }
 
     private void OnRandomizeButton()

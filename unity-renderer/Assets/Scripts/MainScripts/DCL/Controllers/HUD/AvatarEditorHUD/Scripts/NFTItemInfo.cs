@@ -102,4 +102,9 @@ public class NFTItemInfo : MonoBehaviour
     {
         thumbnail.sprite = sprite;
     }
+
+    public void CleanUp()
+    {
+        ThumbnailsManager.CancelRequest(currentModel?.thumbnail, UpdateItemThumbnail);
+    }
 }
