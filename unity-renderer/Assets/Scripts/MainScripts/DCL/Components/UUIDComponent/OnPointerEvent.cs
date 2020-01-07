@@ -44,6 +44,21 @@ namespace DCL.Components
             return pointerEventColliders.GetMeshName(collider);
         }
 
+        public WebInterface.ACTION_BUTTON GetActionButton()
+        {
+            switch (model.button)
+            {
+                case "PRIMARY":
+                    return WebInterface.ACTION_BUTTON.PRIMARY;
+                case "SECONDARY":
+                    return WebInterface.ACTION_BUTTON.SECONDARY;
+                case "POINTER":
+                    return WebInterface.ACTION_BUTTON.POINTER;
+                default:
+                    return WebInterface.ACTION_BUTTON.ANY;
+            }
+        }
+
         public void Initialize()
         {
             if (!entity.meshRootGameObject) return;

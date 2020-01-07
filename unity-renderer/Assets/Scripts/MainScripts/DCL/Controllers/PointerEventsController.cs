@@ -19,8 +19,10 @@ namespace DCL
         OnPointerUp pointerUpEvent;
         IRaycastHandler raycastHandler = new RaycastHandler();
         Camera charCamera;
-        OnPointerEvent lastHoveredObject = null;
-        OnPointerEvent newHoveredObject = null;
+        GameObject lastHoveredObject = null;
+        GameObject newHoveredObject = null;
+        OnPointerEvent newHoveredEvent = null;
+        OnPointerEvent[] lastHoveredEvents = null;
         RaycastHit hitInfo;
 
         void Awake()
@@ -53,23 +55,40 @@ namespace DCL
             // We use Physics.Raycast() instead of our raycastHandler.Raycast() as that one is slower, sometimes 2x, because it fetches info we don't need here
             if (Physics.Raycast(GetRayFromCamera(), out hitInfo, Mathf.Infinity, Configuration.LayerMasks.physicsCastLayerMaskWithoutCharacter))
             {
-                newHoveredObject = hitInfo.transform.GetComponentInParent<OnPointerEvent>();
+                newHoveredEvent = hitInfo.transform.GetComponentInParent<OnPointerEvent>();
 
-                if (newHoveredObject != null && newHoveredObject.IsAtHoverDistance((DCLCharacterController.i.transform.position - newHoveredObject.transform.position).magnitude))
+                if (newHoveredEvent != null && newHoveredEvent.IsAtHoverDistance((DCLCharacterController.i.transform.position - newHoveredEvent.transform.position).magnitude))
                 {
+                    newHoveredObject = newHoveredEvent.gameObject;
+
                     if (newHoveredObject != lastHoveredObject)
                     {
-                        if (lastHoveredObject == null)
-                            OnPointerHoverStarts?.Invoke();
-
                         UnhoverLastHoveredObject();
 
-                        newHoveredObject.SetHoverState(true);
-
                         lastHoveredObject = newHoveredObject;
+                        lastHoveredEvents = newHoveredObject.GetComponents<OnPointerEvent>();
+
+                        OnPointerHoverStarts?.Invoke();
+                    }
+
+                    // OnPointerDown/OnClick and OnPointerUp should display their hover feedback at different moments
+                    if (lastHoveredEvents != null && lastHoveredEvents.Length > 0)
+                    {
+                        for (int i = 0; i < lastHoveredEvents.Length; i++)
+                        {
+                            bool eventButtonIsPressed = InputController_Legacy.i.IsPressed(lastHoveredEvents[i].GetActionButton());
+
+                            if (lastHoveredEvents[i] is OnPointerUp && eventButtonIsPressed)
+                                lastHoveredEvents[i].SetHoverState(true);
+                            else if ((lastHoveredEvents[i] is OnPointerDown || lastHoveredEvents[i] is OnClick) && !eventButtonIsPressed)
+                                lastHoveredEvents[i].SetHoverState(true);
+                            else
+                                lastHoveredEvents[i].SetHoverState(false);
+                        }
                     }
 
                     newHoveredObject = null;
+                    newHoveredEvent = null;
                 }
                 else
                 {
@@ -88,7 +107,12 @@ namespace DCL
 
             OnPointerHoverEnds?.Invoke();
 
-            lastHoveredObject.SetHoverState(false);
+            for (int i = 0; i < lastHoveredEvents.Length; i++)
+            {
+                lastHoveredEvents[i].SetHoverState(false);
+            }
+
+            lastHoveredEvents = null;
             lastHoveredObject = null;
         }
 
@@ -100,6 +124,8 @@ namespace DCL
 
             lastHoveredObject = null;
             newHoveredObject = null;
+            newHoveredEvent = null;
+            lastHoveredEvents = null;
         }
 
         void RetrieveCamera()
