@@ -33,8 +33,6 @@ namespace Tests
             AvatarTestHelpers.CreateTestCatalog();
             AvatarShape avatar = AvatarTestHelpers.CreateAvatarShape(scene, "Abortit", "TestAvatar.json");
 
-            yield return new WaitForSeconds(1.0f);
-
             GameObject goEntity = avatar.entity.gameObject;
 
             TestHelpers.RemoveSceneEntity(scene, avatar.entity);

@@ -2,6 +2,7 @@ using AvatarShape_Tests;
 using NUnit.Framework;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 using UnityEngine.TestTools;
 
@@ -173,6 +174,77 @@ namespace AvatarEditorHUD_Tests
             Assert.AreEqual(dummyItem.GetName(), nftInfo.name.text);
             Assert.AreEqual(dummyItem.description, nftInfo.description.text);
             Assert.AreEqual($"{dummyItem.issuedId} / {dummyItem.GetIssuedCountFromRarity(dummyItem.rarity)}", nftInfo.minted.text);
+        }
+
+        [Test]
+        public void NotShowAmmountIfOnlyOneItemIsPossesed()
+        {
+            var wearableId = "dcl://halloween_2019/sad_clown_upper_body";
+            userProfile.UpdateData(new UserProfileModel()
+            {
+                name = "name",
+                email = "mail",
+                avatar = new AvatarModel()
+                {
+                    bodyShape = WearableLiterals.BodyShapes.FEMALE,
+                    wearables = new List<string>() { },
+                },
+                inventory = new[] {wearableId}
+            }, false);
+    
+            Assert.IsFalse(controller.myView.collectiblesItemSelector.itemToggles[wearableId].amountContainer.gameObject.activeSelf);
+        }
+
+        [Test]
+        [TestCase(2)]
+        [TestCase(3)]
+        [TestCase(5)]
+        [TestCase(10)]
+        public void ShowAndUpdateAmount(int amount)
+        {
+            var wearableId = "dcl://halloween_2019/sad_clown_upper_body";
+            userProfile.UpdateData(new UserProfileModel()
+            {
+                name = "name",
+                email = "mail",
+                avatar = new AvatarModel()
+                {
+                    bodyShape = WearableLiterals.BodyShapes.FEMALE,
+                    wearables = new List<string>() { },
+                },
+                inventory = Enumerable.Repeat(wearableId, amount).ToArray()
+            }, false);
+
+            var itemToggle = controller.myView.selectorsByCategory[WearableLiterals.Categories.UPPER_BODY].itemToggles[wearableId]; 
+
+            Assert.IsTrue(itemToggle.amountContainer.gameObject.activeSelf);
+            Assert.AreEqual($"x{amount}", itemToggle.amountText.text);
+        }
+
+        [Test]
+        [TestCase(2)]
+        [TestCase(3)]
+        [TestCase(5)]
+        [TestCase(10)]
+        public void ShowAndUpdateAmountInCollectibleTab(int amount)
+        {
+            var wearableId = "dcl://halloween_2019/sad_clown_upper_body";
+            userProfile.UpdateData(new UserProfileModel()
+            {
+                name = "name",
+                email = "mail",
+                avatar = new AvatarModel()
+                {
+                    bodyShape = WearableLiterals.BodyShapes.FEMALE,
+                    wearables = new List<string>() { },
+                },
+                inventory = Enumerable.Repeat(wearableId, amount).ToArray()
+            }, false);
+
+            var itemToggle = controller.myView.collectiblesItemSelector.itemToggles[wearableId]; 
+
+            Assert.IsTrue(itemToggle.amountContainer.gameObject.activeSelf);
+            Assert.AreEqual($"x{amount}", itemToggle.amountText.text);
         }
 
         private WearableItem CreateDummyNFT(string rarity)

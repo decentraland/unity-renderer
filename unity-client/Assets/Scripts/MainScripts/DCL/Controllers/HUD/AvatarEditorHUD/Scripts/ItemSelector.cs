@@ -26,7 +26,7 @@ public class ItemSelector : MonoBehaviour
         };
     }
 
-    public void AddItemToggle(WearableItem item)
+    public void AddItemToggle(WearableItem item, int amount)
     {
         if (item == null) return;
         if (itemToggles.ContainsKey(item.id)) return;
@@ -42,7 +42,7 @@ public class ItemSelector : MonoBehaviour
             newToggle = itemToggleFactory.CreateBaseWearable(itemContainer);
         }
 
-        newToggle.Initialize(item, false);
+        newToggle.Initialize(item, false, amount);
         newToggle.OnClicked += ToggleClicked;
         itemToggles.Add(item.id, newToggle);
 

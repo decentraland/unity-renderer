@@ -92,5 +92,25 @@ namespace Tests
             Assert.AreEqual("mail2", userProfile.model.email);
             Assert.AreEqual("avatarPicURL2", userProfile.model.snapshots.face);
         }
+
+        [Test]
+        [TestCase(1)]
+        [TestCase(2)]
+        [TestCase(3)]
+        [TestCase(5)]
+        [TestCase(10)]
+        public void UserProfile_GetItemAmount(int amount)
+        {
+            var userProfile = ScriptableObject.CreateInstance<UserProfile>();
+            var model = new UserProfileModel();
+            model.inventory = new string[amount];
+            for (int i = 0; i < amount; i++)
+            {
+                model.inventory[i] = "nft";
+            }
+            userProfile.UpdateData(model);
+
+            Assert.AreEqual(amount, userProfile.GetItemAmount("nft"));
+        }
     }
 }

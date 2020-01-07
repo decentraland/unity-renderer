@@ -1,5 +1,6 @@
-using System;
+﻿using System;
 using System.Collections;
+using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.CompilerServices;
 using UnityEngine;
@@ -15,7 +16,7 @@ public class UserProfile : ScriptableObject //TODO Move to base variable
     public string userName => model.name;
     public string email => model.email;
     public AvatarModel avatar => model.avatar;
-    public string[] inventory => model.inventory;
+    internal Dictionary<string, int> inventory = new Dictionary<string, int>();
 
     private Texture2D faceSnapshotValue = null;
     public Texture2D faceSnapshot => faceSnapshotValue;
@@ -43,12 +44,12 @@ public class UserProfile : ScriptableObject //TODO Move to base variable
         OnUpdate?.Invoke(this);
     }
 
-    public bool ContainsItem(string itemId)
+    public int GetItemAmount(string itemId)
     {
-        if (inventory == null)
-            return false;
+        if (inventory == null || !inventory.ContainsKey(itemId))
+            return 0;
 
-        return inventory.Contains(itemId);
+        return inventory[itemId];
     }
 
     internal void UpdateProperties(UserProfileModel newModel)
@@ -61,6 +62,11 @@ public class UserProfile : ScriptableObject //TODO Move to base variable
         model.avatar.CopyFrom(newModel?.avatar);
         model.snapshots = newModel?.snapshots;
         model.inventory = newModel?.inventory;
+        inventory.Clear();
+        if (model.inventory != null)
+        {
+            inventory = model.inventory.GroupBy(x => x).ToDictionary(x => x.Key, x => x.Count());
+        }
 
         if (model.snapshots == null || model.snapshots.face != currentFace)
         {

@@ -20,9 +20,15 @@ public class NFTItemToggle : ItemToggle
         infoOver.OnExit += infoExitDelegate;
     }
 
-    public override void Initialize(WearableItem w, bool isSelected)
+    public override void Initialize(WearableItem w, bool isSelected, int amount)
     {
-        base.Initialize(w, isSelected);
+        base.Initialize(w, isSelected, amount);
         nftItemInfo.SetModel(NFTItemInfo.Model.FromWearableItem(wearableItem));
+    }
+
+    protected override void OnDestroy()
+    {
+        base.OnDestroy();
+        nftItemInfo.CleanUp();
     }
 }

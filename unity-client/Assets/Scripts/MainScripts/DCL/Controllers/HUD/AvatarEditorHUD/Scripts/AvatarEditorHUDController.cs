@@ -274,7 +274,7 @@ public class AvatarEditorHUDController : IDisposable, IHUD
 
     private void AddWearable(string id, WearableItem wearable)
     {
-        if (!wearable.tags.Contains("base-wearable") && !userProfile.ContainsItem(id))
+        if (!wearable.tags.Contains("base-wearable") && userProfile.GetItemAmount(id) == 0)
         {
             return;
         }
@@ -285,7 +285,7 @@ public class AvatarEditorHUDController : IDisposable, IHUD
         }
 
         wearablesByCategory[wearable.category].Add(wearable);
-        view.AddWearable(wearable);
+        view.AddWearable(wearable, userProfile.GetItemAmount(id));
     }
 
     private void RemoveWearable(string id, WearableItem wearable)
