@@ -29,7 +29,7 @@ namespace Tests
             yield return SetUp_SceneController(debugMode: true, false, false);
             yield return SetUp_CharacterController();
 
-            DCL.Configuration.Environment.DEBUG = true;
+            DCL.Configuration.EnvironmentSettings.DEBUG = true;
 
             sceneController.SetDebug();
             yield return null;

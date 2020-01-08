@@ -14,7 +14,7 @@ namespace Builder.Tests
         public IEnumerator BuilderMeshLoadingIndicatorTest()
         {
             yield return InitScene();
-            DCL.Configuration.Environment.DEBUG = true;
+            DCL.Configuration.EnvironmentSettings.DEBUG = true;
             sceneController.SetDebug();
             yield return new WaitForSeconds(0.1f);
 

@@ -17,7 +17,7 @@ namespace Tests
         public IEnumerator MaterialTransitionWithGLTF()
         {
             yield return InitScene();
-            DCL.Configuration.Environment.DEBUG = true;
+            DCL.Configuration.EnvironmentSettings.DEBUG = true;
             sceneController.SetDebug();
 
             var entity1 = TestHelpers.CreateSceneEntity(scene);
@@ -85,7 +85,7 @@ namespace Tests
         public IEnumerator MaterialTransitionWithParametrizableMeshes()
         {
             yield return InitScene(reloadUnityScene: false);
-            DCL.Configuration.Environment.DEBUG = true;
+            DCL.Configuration.EnvironmentSettings.DEBUG = true;
             sceneController.SetDebug();
 
             var entity1 = TestHelpers.CreateSceneEntity(scene);

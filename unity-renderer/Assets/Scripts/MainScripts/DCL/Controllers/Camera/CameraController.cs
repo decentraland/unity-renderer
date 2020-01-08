@@ -21,7 +21,6 @@ public class CameraController : MonoBehaviour
     private Vector3Variable cameraPosition => CommonScriptableObjects.cameraPosition;
     private Vector3Variable playerUnityToWorldOffset => CommonScriptableObjects.playerUnityToWorldOffset;
 
-
     internal CameraStateBase.ModeId currentMode = CameraStateBase.ModeId.FirstPerson;
     public CameraStateBase currentCameraState => cachedModeToVirtualCamera[currentMode];
 
@@ -109,7 +108,6 @@ public class CameraController : MonoBehaviour
         cameraChangeAction.OnTriggered -= OnCameraChangeAction;
         RenderingController.i.OnRenderingStateChanged -= OnRenderingStateChanged;
     }
-
 
     public class SetRotationPayload
     {

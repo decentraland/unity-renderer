@@ -7,9 +7,10 @@ namespace DCL.Configuration
         public static string version = "0.8";
     }
 
-    public static class Environment
+    public static class EnvironmentSettings
     {
         public static bool DEBUG = true;
+        public static Vector3 MORDOR = new Vector3(1000, 1000, 1000);
     }
 
     public static class InputSettings

@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Linq;
 using DCL.Helpers;
+using DCL.Configuration;
 using UnityEngine;
 
 namespace DCL
@@ -105,6 +106,9 @@ namespace DCL
                     break;
 
                 GameObject assetBundleModelGO = UnityEngine.Object.Instantiate(goList[i]);
+
+                // Hide gameobject until it's been correctly processed, otherwise it flashes at 0,0,0
+                assetBundleModelGO.transform.position = EnvironmentSettings.MORDOR;
 
                 yield return MaterialCachingHelper.UseCachedMaterials(assetBundleModelGO);
 
