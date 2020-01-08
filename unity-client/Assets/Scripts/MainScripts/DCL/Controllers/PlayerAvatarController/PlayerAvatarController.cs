@@ -5,22 +5,26 @@ using UnityEngine;
 public class PlayerAvatarController : MonoBehaviour
 {
     public AvatarRenderer avatarRenderer;
-    private UserProfile userProfile => UserProfile.GetOwnUserProfile();
+
+    UserProfile userProfile => UserProfile.GetOwnUserProfile();
+    bool repositioningWorld => DCLCharacterController.i.characterPosition.RepositionedWorldLastFrame();
 
     private void Awake()
     {
         userProfile.OnUpdate += OnUserProfileOnUpdate;
+
+        avatarRenderer.SetVisibility(false);
     }
 
     private void OnTriggerEnter(Collider other)
     {
-        if(other.CompareTag("MainCamera"))
+        if (!repositioningWorld && other.CompareTag("MainCamera"))
             avatarRenderer.SetVisibility(false);
     }
 
     private void OnTriggerExit(Collider other)
     {
-        if(other.CompareTag("MainCamera"))
+        if (!repositioningWorld && other.CompareTag("MainCamera"))
             avatarRenderer.SetVisibility(true);
     }
 

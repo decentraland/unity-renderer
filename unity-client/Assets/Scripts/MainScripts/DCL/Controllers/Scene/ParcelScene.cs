@@ -5,10 +5,7 @@ using DCL.Models;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Assertions;
-using Environment = DCL.Configuration.Environment;
 using Object = UnityEngine.Object;
-using Random = UnityEngine.Random;
-using System.Collections;
 
 namespace DCL.Controllers
 {
@@ -25,7 +22,6 @@ namespace DCL.Controllers
 
         private const string PARCEL_BLOCKER_PREFAB = "Prefabs/ParcelBlocker";
         private const int ENTITY_POOL_PREWARM_COUNT = 2000;
-        private static Vector3 MORDOR = new Vector3(1000, 1000, 1000);
 
         public Dictionary<string, DecentralandEntity> entities = new Dictionary<string, DecentralandEntity>();
         public Dictionary<string, BaseDisposable> disposableComponents = new Dictionary<string, BaseDisposable>();
@@ -225,7 +221,7 @@ namespace DCL.Controllers
 
         public void InitializeDebugPlane()
         {
-            if (Environment.DEBUG && sceneData.parcels != null)
+            if (EnvironmentSettings.DEBUG && sceneData.parcels != null)
             {
                 int sceneDataParcelsLength = sceneData.parcels.Length;
                 for (int j = 0; j < sceneDataParcelsLength; j++)
@@ -284,7 +280,7 @@ namespace DCL.Controllers
             {
                 if (entities.Count > 0)
                 {
-                    this.gameObject.transform.position = MORDOR;
+                    this.gameObject.transform.position = EnvironmentSettings.MORDOR;
 
                     RemoveAllEntities();
                 }
