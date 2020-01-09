@@ -12,5 +12,5 @@ jobs:
       - name: Comment PR
         uses: thollander/actions-comment-pull-request@master
         with:
-          message: 'This branch can be previewed at [https://explorer.decentraland.zone/branch/${{ github.head_ref }}/index.html](https://explorer.decentraland.zone/branch/${{ github.head_ref }}/index.html)'
+          message: 'This branch can be previewed at [https://explorer.decentraland.zone/branch/${{ github.head_ref }}/index.html](https://explorer.decentraland.zone/branch/${{ github.head_ref }}/index.html?ENV=org)'
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
