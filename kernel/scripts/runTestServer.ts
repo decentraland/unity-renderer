@@ -8,11 +8,11 @@ import path = require('path')
 import fs = require('fs')
 import mkdirp = require('mkdirp')
 import * as BlinkDiff from 'blink-diff'
-import { Role } from '../packages/shared/comms/proto/broker'
+import { Role } from '../packages/shared/comms/v1/proto/broker'
 import titere = require('titere')
 import WebSocket = require('ws')
 import http = require('http')
-import proto = require('../packages/shared/comms/proto/broker')
+import proto = require('../packages/shared/comms/v1/proto/broker')
 
 const url = require('url')
 

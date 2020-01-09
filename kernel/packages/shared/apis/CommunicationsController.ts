@@ -9,7 +9,7 @@ import {
 import { ExposableAPI } from 'shared/apis/ExposableAPI'
 import { EngineAPI } from 'shared/apis/EngineAPI'
 import { ParcelIdentity } from './ParcelIdentity'
-import { PeerInformation } from 'shared/comms/types'
+import { PeerInformation } from 'shared/comms/interface/types'
 
 @registerAPI('CommunicationsController')
 export class CommunicationsController extends ExposableAPI {

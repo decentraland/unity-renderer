@@ -6,7 +6,7 @@ import { defaultLogger } from 'shared/logger'
 
 import { chatObservable, ChatEvent } from './comms/chat'
 import { avatarMessageObservable } from './comms/peers'
-import { AvatarMessageType } from './comms/types'
+import { AvatarMessageType } from './comms/interface/types'
 import { positionObservable } from './world/positionThings'
 
 declare var window: any

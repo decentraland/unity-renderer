@@ -16,7 +16,7 @@ import {
   peerMap,
   removeFromMutedUsers
 } from 'shared/comms/peers'
-import { AvatarMessage, AvatarMessageType } from 'shared/comms/types'
+import { AvatarMessage, AvatarMessageType } from 'shared/comms/interface/types'
 import { IChatCommand, MessageEntry } from 'shared/types'
 import { teleportObservable } from 'shared/world/positionThings'
 

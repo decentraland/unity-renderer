@@ -1,5 +1,5 @@
 import { Observable } from 'decentraland-ecs/src'
-import { UUID, PeerInformation, AvatarMessage, UserInformation, AvatarMessageType, Pose } from './types'
+import { UUID, PeerInformation, AvatarMessage, UserInformation, AvatarMessageType, Pose } from './interface/types'
 import { getFromLocalStorage, saveToLocalStorage } from 'atomicHelpers/localStorage'
 
 export const getUserProfile = () => getFromLocalStorage('dcl-profile') || {}

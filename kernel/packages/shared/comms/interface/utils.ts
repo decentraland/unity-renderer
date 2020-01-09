@@ -6,6 +6,13 @@ export class Parcel {
   constructor(public x: number, public z: number) {}
 }
 
+export function positionHash(p: Position) {
+  const parcel = position2parcel(p)
+  const x = (parcel.x + parcelLimits.maxParcelX) >> 2
+  const z = (parcel.z + parcelLimits.maxParcelZ) >> 2
+  return `${x}:${z}`
+}
+
 export function position2parcel(p: Position): Parcel {
   const parcelSize = parcelLimits.parcelSize
   return new Parcel(Math.trunc(p[0] / parcelSize), Math.trunc(p[2] / parcelSize))
