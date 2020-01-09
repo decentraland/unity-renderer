@@ -13,50 +13,42 @@ import {
   TopicIdentityMessage,
   TopicIdentityFWMessage
 } from './proto/broker'
-import { Position, position2parcel } from './utils'
-import { UserInformation } from './types'
-import { parcelLimits } from 'config'
+import { Position, positionHash } from '../../comms/interface/utils'
+import { UserInformation, Package, ChatMessage, ProfileVersion, BusMessage } from '../../comms/interface/types'
 import { IBrokerConnection, BrokerMessage } from './IBrokerConnection'
-import { Stats } from './debug'
+import { Stats } from '../../comms/debug'
 import { createLogger } from 'shared/logger'
 
-export enum SocketReadyState {
-  CONNECTING,
-  OPEN,
-  CLOSING,
-  CLOSED
-}
-
-import { Reporter } from './PresenceReporter'
+import { Reporter } from '../../comms/PresenceReporter'
+import { WorldInstanceConnection } from '../../comms/interface/index'
 
 class SendResult {
   constructor(public bytesSize: number) {}
 }
 
-export function positionHash(p: Position) {
-  const parcel = position2parcel(p)
-  const x = (parcel.x + parcelLimits.maxParcelX) >> 2
-  const z = (parcel.z + parcelLimits.maxParcelZ) >> 2
-  return `${x}:${z}`
+const NOOP = () => {
+  // do nothing
 }
 
-export class WorldInstanceConnection {
-  public aliases: Record<number, string> = {}
-  public positionHandler: ((fromAlias: string, positionData: PositionData) => void) | null = null
-  public profileHandler: ((fromAlias: string, identity: string, profileData: ProfileData) => void) | null = null
-  public chatHandler: ((fromAlias: string, chatData: ChatData) => void) | null = null
-  // TODO: Once we have the correct class, change ChatData
-  public sceneMessageHandler: ((fromAlias: string, chatData: ChatData) => void) | null = null
-  public ping: number = -1
+export class BrokerWorldInstanceConnection implements WorldInstanceConnection {
+  aliases: Record<number, string> = {}
 
-  public fatalErrorSent = false
+  positionHandler: (fromAlias: string, positionData: Package<Position>) => void = NOOP
+  profileHandler: (fromAlias: string, identity: string, profileData: Package<ProfileVersion>) => void = NOOP
+  chatHandler: (fromAlias: string, chatData: Package<ChatMessage>) => void = NOOP
+  sceneMessageHandler: (fromAlias: string, chatData: Package<BusMessage>) => void = NOOP
 
-  public stats: Stats | null = null
+  ping: number = -1
+
+  fatalErrorSent = false
+
+  _stats: Stats | null = null
+
   private pingInterval: any = null
 
   private logger = createLogger('World: ')
 
-  constructor(public connection: IBrokerConnection) {
+  constructor(private connection: IBrokerConnection) {
     this.pingInterval = setInterval(() => {
       const msg = new PingMessage()
       msg.setType(MessageType.PING)
@@ -72,7 +64,24 @@ export class WorldInstanceConnection {
     this.connection.onMessageObservable.add(this.handleMessage.bind(this))
   }
 
-  sendPositionMessage(p: Position) {
+  printDebugInformation() {
+    this.connection.printDebugInformation()
+  }
+
+  set stats(_stats: Stats) {
+    this._stats = _stats
+    this.connection.stats = _stats
+  }
+
+  get isAuthenticated() {
+    return this.connection.isAuthenticated
+  }
+
+  get isConnected() {
+    return this.connection.isConnected
+  }
+
+  async sendPositionMessage(p: Position) {
     const topic = positionHash(p)
 
     const d = new PositionData()
@@ -87,12 +96,12 @@ export class WorldInstanceConnection {
     d.setRotationW(p[6])
 
     const r = this.sendTopicMessage(false, topic, d)
-    if (this.stats) {
-      this.stats.position.incrementSent(1, r.bytesSize)
+    if (this._stats) {
+      this._stats.position.incrementSent(1, r.bytesSize)
     }
   }
 
-  sendParcelUpdateMessage(current: Position, newPosition: Position) {
+  async sendParcelUpdateMessage(current: Position, newPosition: Position) {
     const topic = positionHash(current)
 
     const d = new PositionData()
@@ -107,12 +116,12 @@ export class WorldInstanceConnection {
     d.setRotationW(newPosition[6])
 
     const r = this.sendTopicMessage(false, topic, d)
-    if (this.stats) {
-      this.stats.position.incrementSent(1, r.bytesSize)
+    if (this._stats) {
+      this._stats.position.incrementSent(1, r.bytesSize)
     }
   }
 
-  sendProfileMessage(p: Position, userProfile: UserInformation) {
+  async sendProfileMessage(p: Position, userProfile: UserInformation) {
     const topic = positionHash(p)
 
     const d = new ProfileData()
@@ -121,12 +130,12 @@ export class WorldInstanceConnection {
     userProfile.version && d.setProfileVersion('' + userProfile.version)
 
     const r = this.sendTopicIdentityMessage(true, topic, d)
-    if (this.stats) {
-      this.stats.profile.incrementSent(1, r.bytesSize)
+    if (this._stats) {
+      this._stats.profile.incrementSent(1, r.bytesSize)
     }
   }
 
-  sendInitialMessage(userProfile: UserInformation) {
+  async sendInitialMessage(userProfile: UserInformation) {
     const topic = userProfile.userId!
 
     const d = new ProfileData()
@@ -135,12 +144,12 @@ export class WorldInstanceConnection {
     userProfile.version && d.setProfileVersion('' + userProfile.version)
 
     const r = this.sendTopicIdentityMessage(true, topic, d)
-    if (this.stats) {
-      this.stats.profile.incrementSent(1, r.bytesSize)
+    if (this._stats) {
+      this._stats.profile.incrementSent(1, r.bytesSize)
     }
   }
 
-  sendParcelSceneCommsMessage(sceneId: string, message: string) {
+  async sendParcelSceneCommsMessage(sceneId: string, message: string) {
     const topic = sceneId
 
     // TODO: create its own class once we get the .proto file
@@ -152,12 +161,12 @@ export class WorldInstanceConnection {
 
     const r = this.sendTopicMessage(true, topic, d)
 
-    if (this.stats) {
-      this.stats.sceneComms.incrementSent(1, r.bytesSize)
+    if (this._stats) {
+      this._stats.sceneComms.incrementSent(1, r.bytesSize)
     }
   }
 
-  sendChatMessage(p: Position, messageId: string, text: string) {
+  async sendChatMessage(p: Position, messageId: string, text: string) {
     const topic = positionHash(p)
 
     const d = new ChatData()
@@ -168,8 +177,8 @@ export class WorldInstanceConnection {
 
     const r = this.sendTopicMessage(true, topic, d)
 
-    if (this.stats) {
-      this.stats.chat.incrementSent(1, r.bytesSize)
+    if (this._stats) {
+      this._stats.chat.incrementSent(1, r.bytesSize)
     }
   }
 
@@ -195,21 +204,21 @@ export class WorldInstanceConnection {
     return this.sendMessage(reliable, message)
   }
 
-  updateSubscriptions(rawTopics: string) {
+  async updateSubscriptions(rawTopics: string[]) {
     if (!this.connection.hasReliableChannel) {
       if (!this.fatalErrorSent) {
         this.fatalErrorSent = true
         throw new Error('trying to send topic subscription message but reliable channel is not ready')
       } else {
-        return
+        return Promise.reject()
       }
     }
-    rawTopics.split(' ').map(_ => Reporter.subscribe(_))
+    rawTopics.map(_ => Reporter.subscribe(_))
     const subscriptionMessage = new SubscriptionMessage()
     subscriptionMessage.setType(MessageType.SUBSCRIPTION)
     subscriptionMessage.setFormat(Format.PLAIN)
     // TODO: use TextDecoder instead of Buffer, it is a native browser API, works faster
-    subscriptionMessage.setTopics(Buffer.from(rawTopics, 'utf8'))
+    subscriptionMessage.setTopics(Buffer.from(rawTopics.join(' '), 'utf8'))
     const bytes = subscriptionMessage.serializeBinary()
     this.connection.sendReliable(bytes)
   }
@@ -234,15 +243,15 @@ export class WorldInstanceConnection {
 
     switch (msgType) {
       case MessageType.UNKNOWN_MESSAGE_TYPE: {
-        if (this.stats) {
-          this.stats.others.incrementRecv(msgSize)
+        if (this._stats) {
+          this._stats.others.incrementRecv(msgSize)
         }
         this.logger.log('unsupported message')
         break
       }
       case MessageType.TOPIC_FW: {
-        if (this.stats) {
-          this.stats.topic.incrementRecv(msgSize)
+        if (this._stats) {
+          this._stats.topic.incrementRecv(msgSize)
         }
         let dataMessage: TopicFWMessage
         try {
@@ -270,35 +279,61 @@ export class WorldInstanceConnection {
           case Category.POSITION: {
             const positionData = PositionData.deserializeBinary(body)
 
-            if (this.stats) {
-              this.stats.dispatchTopicDuration.stop()
-              this.stats.position.incrementRecv(msgSize)
-              this.stats.onPositionMessage(alias, positionData)
+            if (this._stats) {
+              this._stats.dispatchTopicDuration.stop()
+              this._stats.position.incrementRecv(msgSize)
+              this._stats.onPositionMessage(alias, positionData)
             }
 
-            this.positionHandler && this.positionHandler(alias, positionData)
+            this.positionHandler &&
+              this.positionHandler(alias, {
+                type: 'position',
+                time: positionData.getTime(),
+                data: [
+                  positionData.getPositionX(),
+                  positionData.getPositionY(),
+                  positionData.getPositionZ(),
+                  positionData.getRotationX(),
+                  positionData.getRotationY(),
+                  positionData.getRotationZ(),
+                  positionData.getRotationW()
+                ]
+              })
             break
           }
           case Category.CHAT: {
             const chatData = ChatData.deserializeBinary(body)
 
-            if (this.stats) {
-              this.stats.dispatchTopicDuration.stop()
-              this.stats.chat.incrementRecv(msgSize)
+            if (this._stats) {
+              this._stats.dispatchTopicDuration.stop()
+              this._stats.chat.incrementRecv(msgSize)
             }
 
-            this.chatHandler && this.chatHandler(alias, chatData)
+            this.chatHandler &&
+              this.chatHandler(alias, {
+                type: 'chat',
+                time: chatData.getTime(),
+                data: {
+                  id: chatData.getMessageId(),
+                  text: chatData.getText()
+                }
+              })
             break
           }
           case Category.SCENE_MESSAGE: {
             const chatData = ChatData.deserializeBinary(body)
 
-            if (this.stats) {
-              this.stats.dispatchTopicDuration.stop()
-              this.stats.sceneComms.incrementRecv(msgSize)
+            if (this._stats) {
+              this._stats.dispatchTopicDuration.stop()
+              this._stats.sceneComms.incrementRecv(msgSize)
             }
 
-            this.sceneMessageHandler && this.sceneMessageHandler(alias, chatData)
+            this.sceneMessageHandler &&
+              this.sceneMessageHandler(alias, {
+                type: 'chat',
+                time: chatData.getTime(),
+                data: { id: chatData.getMessageId(), text: chatData.getText() }
+              })
             break
           }
           default: {
@@ -309,8 +344,8 @@ export class WorldInstanceConnection {
         break
       }
       case MessageType.TOPIC_IDENTITY_FW: {
-        if (this.stats) {
-          this.stats.topic.incrementRecv(msgSize)
+        if (this._stats) {
+          this._stats.topic.incrementRecv(msgSize)
         }
         let dataMessage: TopicIdentityFWMessage
         try {
@@ -338,11 +373,16 @@ export class WorldInstanceConnection {
         switch (category) {
           case Category.PROFILE: {
             const profileData = ProfileData.deserializeBinary(body)
-            if (this.stats) {
-              this.stats.dispatchTopicDuration.stop()
-              this.stats.profile.incrementRecv(msgSize)
+            if (this._stats) {
+              this._stats.dispatchTopicDuration.stop()
+              this._stats.profile.incrementRecv(msgSize)
             }
-            this.profileHandler && this.profileHandler(alias, userId, profileData)
+            this.profileHandler &&
+              this.profileHandler(alias, userId, {
+                type: 'profile',
+                time: profileData.getTime(),
+                data: { user: userId, version: profileData.getProfileVersion() }
+              })
             break
           }
           default: {
@@ -361,8 +401,8 @@ export class WorldInstanceConnection {
           break
         }
 
-        if (this.stats) {
-          this.stats.ping.incrementRecv(msgSize)
+        if (this._stats) {
+          this._stats.ping.incrementRecv(msgSize)
         }
 
         this.ping = Date.now() - pingMessage.getTime()
@@ -370,8 +410,8 @@ export class WorldInstanceConnection {
         break
       }
       default: {
-        if (this.stats) {
-          this.stats.others.incrementRecv(msgSize)
+        if (this._stats) {
+          this._stats.others.incrementRecv(msgSize)
         }
         this.logger.log('ignoring message with type', msgType)
         break
@@ -381,8 +421,8 @@ export class WorldInstanceConnection {
 
   private sendMessage(reliable: boolean, topicMessage: Message) {
     const bytes = topicMessage.serializeBinary()
-    if (this.stats) {
-      this.stats.topic.incrementSent(1, bytes.length)
+    if (this._stats) {
+      this._stats.topic.incrementSent(1, bytes.length)
     }
     if (reliable) {
       if (!this.connection.hasReliableChannel) {

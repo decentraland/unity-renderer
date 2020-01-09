@@ -17,11 +17,12 @@ import {
   Role,
   Format,
   TopicIdentityMessage
-} from '../../packages/shared/comms/proto/broker'
-import { AuthData } from '../../packages/shared/comms/proto/comms'
-import { PositionData, ProfileData, ChatData, Category } from '../../packages/shared/comms/proto/comms'
-import { Position, CommunicationArea, Parcel, position2parcel } from 'shared/comms/utils'
-import { WorldInstanceConnection, SocketReadyState, positionHash } from 'shared/comms/worldInstanceConnection'
+} from '../../packages/shared/comms/v1/proto/broker'
+import { AuthData } from '../../packages/shared/comms/v1/proto/comms'
+import { PositionData, ProfileData, ChatData, Category } from '../../packages/shared/comms/v1/proto/comms'
+import { Position, CommunicationArea, Parcel, position2parcel } from 'shared/comms/interface/utils'
+import { BrokerWorldInstanceConnection } from 'shared/comms/v1/brokerWorldInstanceConnection'
+import { positionHash } from 'shared/comms/interface/utils'
 import {
   Context,
   processChatMessage,
@@ -30,11 +31,13 @@ import {
   PeerTrackingInfo,
   onPositionUpdate
 } from 'shared/comms'
-import { BrokerConnection } from 'shared/comms/BrokerConnection'
-import { IBrokerConnection, BrokerMessage } from 'shared/comms/IBrokerConnection'
+import { BrokerConnection } from 'shared/comms/v1/BrokerConnection'
+import { IBrokerConnection, BrokerMessage, SocketReadyState } from 'shared/comms/v1/IBrokerConnection'
 import { Observable } from 'decentraland-ecs/src'
-import { TopicIdentityFWMessage } from '../../packages/shared/comms/proto/broker'
+import { TopicIdentityFWMessage } from '../../packages/shared/comms/v1/proto/broker'
 import { onWorldRunning, MORDOR_POSITION } from '../../packages/shared/comms/index'
+import { Package } from 'shared/comms/interface/types'
+import { ChatMessage, ProfileVersion } from '../../packages/shared/comms/interface/types'
 
 chai.use(sinonChai)
 
@@ -91,7 +94,7 @@ describe('Communications', function() {
     })
 
     let connection: BrokerConnection
-    let worldConn: WorldInstanceConnection
+    let worldConn: BrokerWorldInstanceConnection
     let mockWebRtc: any
     let auth: any = {
       getMessageCredentials: async (msg: string) => {
@@ -107,7 +110,7 @@ describe('Communications', function() {
     beforeEach(() => {
       webSocket = null as any
       connection = new BrokerConnection(auth, '')
-      worldConn = new WorldInstanceConnection(connection)
+      worldConn = new BrokerWorldInstanceConnection(connection)
 
       mockWebRtc = {
         addIceCandidate: sinon.stub(),
@@ -302,8 +305,9 @@ describe('Communications', function() {
           worldConn.positionHandler = sinon.stub()
 
           const body = new PositionData()
+          const time = Date.now()
           body.setCategory(Category.POSITION)
-          body.setTime(Date.now())
+          body.setTime(time)
 
           const bodyEncoded = body.serializeBinary()
 
@@ -314,15 +318,21 @@ describe('Communications', function() {
 
           const e = { data: msg.serializeBinary() }
           channel.onmessage(e)
-          expect(worldConn.positionHandler).to.have.been.calledWith('1', body)
+          expect(worldConn.positionHandler).to.have.been.calledWith('1', {
+            type: 'position',
+            time,
+            data: [0, 0, 0, 0, 0, 0, 0]
+          })
         })
 
         it('receive profile data message', () => {
           worldConn.profileHandler = sinon.stub()
 
+          const time = Date.now()
+
           const body = new ProfileData()
           body.setCategory(Category.PROFILE)
-          body.setTime(Date.now())
+          body.setTime(time)
 
           const bodyEncoded = body.serializeBinary()
 
@@ -334,15 +344,20 @@ describe('Communications', function() {
 
           const e = { data: msg.serializeBinary() }
           channel.onmessage(e)
-          expect(worldConn.profileHandler).to.have.been.calledWith('1', 'id', body)
+          expect(worldConn.profileHandler).to.have.been.calledWith('1', 'id', {
+            type: 'profile',
+            time,
+            data: { user: 'id', version: '' }
+          })
         })
 
         it('receive chat data message', () => {
           worldConn.chatHandler = sinon.stub()
 
+          const time = Date.now()
           const body = new ChatData()
           body.setCategory(Category.CHAT)
-          body.setTime(Date.now())
+          body.setTime(time)
 
           const bodyEncoded = body.serializeBinary()
 
@@ -353,7 +368,7 @@ describe('Communications', function() {
 
           const e = { data: msg.serializeBinary() }
           channel.onmessage(e)
-          expect(worldConn.chatHandler).to.have.been.calledWith('1', body)
+          expect(worldConn.chatHandler).to.have.been.calledWith('1', { type: 'chat', time, data: { id: '', text: '' } })
         })
 
         it('receive ping message', () => {
@@ -396,7 +411,7 @@ describe('Communications', function() {
         })
 
         it('topic subscriptions', () => {
-          worldConn.updateSubscriptions('topic1 topic2')
+          worldConn.updateSubscriptions(['topic1', 'topic2'])
           expect(connection.reliableDataChannel!.send).to.have.been.calledWithMatch((bytes: Uint8Array) => {
             const msg = SubscriptionMessage.deserializeBinary(bytes)
             expect(msg.getType()).to.equal(MessageType.SUBSCRIPTION)
@@ -469,9 +484,14 @@ describe('Communications', function() {
   describe('topic handlers', () => {
     it('chat handler', () => {
       const context = new Context({})
-      const chatData = new ChatData()
-      chatData.setText('text')
-      chatData.setMessageId('chat1')
+      const chatData: Package<ChatMessage> = {
+        time: 1,
+        type: 'chat',
+        data: {
+          id: 'chat1',
+          text: 'text'
+        }
+      }
       processChatMessage(context, 'client2', chatData)
 
       expect(context.peerData).to.have.key('client2')
@@ -481,16 +501,11 @@ describe('Communications', function() {
     describe('position handler', () => {
       it('new position', () => {
         const context = new Context({})
-        const positionData = new PositionData()
-
-        positionData.setTime(Date.now())
-        positionData.setPositionX(20)
-        positionData.setPositionY(20)
-        positionData.setPositionZ(20)
-        positionData.setRotationX(20)
-        positionData.setRotationY(20)
-        positionData.setRotationZ(20)
-        positionData.setRotationW(20)
+        const positionData: Package<Position> = {
+          type: 'position',
+          time: Date.now(),
+          data: [20, 20, 20, 20, 20, 20, 20]
+        }
 
         processPositionMessage(context, 'client2', positionData)
 
@@ -505,16 +520,11 @@ describe('Communications', function() {
         info.lastPositionUpdate = Date.now()
         info.position = [20, 20, 20, 20, 20, 20, 20]
         context.peerData.set('client2', info)
-        const positionData = new PositionData()
-
-        positionData.setTime(new Date(2008).getTime())
-        positionData.setPositionX(30)
-        positionData.setPositionY(30)
-        positionData.setPositionZ(30)
-        positionData.setRotationX(30)
-        positionData.setRotationY(30)
-        positionData.setRotationZ(30)
-        positionData.setRotationW(30)
+        const positionData: Package<Position> = {
+          type: 'position',
+          time: new Date(2008).getTime(),
+          data: [30, 30, 30, 30, 30, 30, 30]
+        }
 
         processPositionMessage(context, 'client2', positionData)
 
@@ -544,9 +554,14 @@ describe('Communications', function() {
       it('new profile message', () => {
         const context = new Context({})
 
-        const profileData = new ProfileData()
-        profileData.setTime(Date.now())
-        profileData.setProfileVersion('2')
+        const profileData: Package<ProfileVersion> = {
+          type: 'profile',
+          time: Date.now(),
+          data: {
+            user: 'userId1',
+            version: '2'
+          }
+        }
 
         const info = new PeerTrackingInfo()
         sinon.spy(info, 'loadProfileIfNecessary')
@@ -571,9 +586,11 @@ describe('Communications', function() {
         sinon.spy(info, 'loadProfileIfNecessary')
         context.peerData.set('client2', info)
 
-        const profileData = new ProfileData()
-        profileData.setTime(new Date(2008).getTime())
-        profileData.setProfileVersion('2')
+        const profileData: Package<ProfileVersion> = {
+          type: 'profile',
+          time: new Date(2008).getTime(),
+          data: { user: 'identity2', version: '2' }
+        }
 
         processProfileMessage(context, 'client2', 'identity2', profileData)
 
@@ -687,18 +704,18 @@ describe('Communications', function() {
       context.commRadius = 1
       context.currentPosition = [20, 20, 20, 20, 20, 20, 20] as Position
       const connection = new BrokerMock()
-      const worldConn = new WorldInstanceConnection(connection)
-      worldConn.updateSubscriptions = sinon.stub()
+      const worldConn = new BrokerWorldInstanceConnection(connection)
+      worldConn.updateSubscriptions = sinon.stub().returns(Promise.resolve())
       context.worldInstanceConnection = worldConn
 
       onPositionUpdate(context, [0, 0, 0, 0, 0, 0, 0])
 
-      expect(worldConn.updateSubscriptions).to.have.been.calledWithMatch((rawTopics: string) => {
-        expect(rawTopics.split(' ')).to.have.length(1)
+      expect(worldConn.updateSubscriptions).to.have.been.calledWithMatch((rawTopics: string[]) => {
+        expect(rawTopics).to.have.length(1)
         return true
       })
-      expect(worldConn.updateSubscriptions).to.have.been.calledWithMatch((rawTopics: string) => {
-        expect(rawTopics.split(' ')).to.have.length(1)
+      expect(worldConn.updateSubscriptions).to.have.been.calledWithMatch((rawTopics: string[]) => {
+        expect(rawTopics).to.have.length(1)
         return true
       })
     })
@@ -708,8 +725,8 @@ describe('Communications', function() {
       context.commRadius = 1
       context.currentPosition = [20, 20, 20, 20, 20, 20, 20] as Position
       const connection = new BrokerMock()
-      const worldConn = new WorldInstanceConnection(connection)
-      worldConn.updateSubscriptions = sinon.stub()
+      const worldConn = new BrokerWorldInstanceConnection(connection)
+      worldConn.updateSubscriptions = sinon.stub().returns(Promise.resolve())
       context.worldInstanceConnection = worldConn
 
       onPositionUpdate(context, context.currentPosition)
@@ -724,8 +741,8 @@ describe('Communications', function() {
       context.commRadius = 1
       context.currentPosition = [20, 20, 20, 20, 20, 20, 20] as Position
       const connection = new BrokerMock()
-      const worldConn = new WorldInstanceConnection(connection)
-      worldConn.sendParcelUpdateMessage = sinon.stub()
+      const worldConn = new BrokerWorldInstanceConnection(connection)
+      worldConn.sendParcelUpdateMessage = sinon.stub().returns(Promise.resolve())
       context.worldInstanceConnection = worldConn
 
       onWorldRunning(false, context)

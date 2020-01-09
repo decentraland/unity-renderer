@@ -1,6 +1,6 @@
 import { defaultLogger } from 'shared/logger'
 import { Context } from './index'
-import { PositionData } from './proto/comms'
+import { PositionData } from '../comms/v1/proto/comms'
 
 export class TrackAvgDuration {
   public durationsMs: number[] = []
@@ -137,7 +137,7 @@ export class Stats {
     defaultLogger.info('World instance: ')
 
     const connection = this.context.worldInstanceConnection!
-    connection.connection.printDebugInformation()
+    connection.printDebugInformation()
 
     if (connection.ping >= 0) {
       defaultLogger.info(`  ping: ${connection.ping} ms`)

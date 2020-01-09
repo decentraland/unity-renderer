@@ -11,7 +11,7 @@ import {
   UserMessage,
   UserRemovedMessage,
   UUID
-} from 'shared/comms/types'
+} from 'shared/comms/interface/types'
 import { execute } from './rpc'
 import { ProfileForRenderer } from 'decentraland-ecs/src/decentraland/Types'
 

@@ -1,5 +1,5 @@
 import { saveToLocalStorage } from 'atomicHelpers/localStorage'
-import { commConfigurations, ETHEREUM_NETWORK, getServerConfigurations, parcelLimits, USE_LOCAL_COMMS } from 'config'
+import { commConfigurations, ETHEREUM_NETWORK, getServerConfigurations, parcelLimits, COMMS, DEBUG_LOGIN } from 'config'
 import { CommunicationsController } from 'shared/apis/CommunicationsController'
 import { Auth } from 'shared/auth/Auth'
 import { defaultLogger } from 'shared/logger'
@@ -7,11 +7,11 @@ import { MessageEntry } from 'shared/types'
 import { positionObservable, PositionReport } from 'shared/world/positionThings'
 import 'webrtc-adapter'
 import { PassportAsPromise } from '../passports/PassportAsPromise'
-import { BrokerConnection } from './BrokerConnection'
+import { BrokerConnection } from '../comms/v1/BrokerConnection'
 import { ChatEvent, chatObservable } from './chat'
 import { CliBrokerConnection } from './CliBrokerConnection'
 import { Stats } from './debug'
-import { IBrokerConnection } from './IBrokerConnection'
+import { IBrokerConnection } from '../comms/v1/IBrokerConnection'
 import {
   getCurrentPeer,
   getCurrentUser,
@@ -25,14 +25,22 @@ import {
   removeById,
   setLocalProfile
 } from './peers'
-import { ChatData, PositionData, ProfileData } from './proto/comms'
-import { Pose, UserInformation } from './types'
-import { CommunicationArea, Position, position2parcel, sameParcel, squareDistance } from './utils'
-import { WorldInstanceConnection } from './worldInstanceConnection'
+import { Pose, UserInformation, Package, ChatMessage, ProfileVersion, BusMessage } from './interface/types'
+import { CommunicationArea, Position, position2parcel, sameParcel, squareDistance } from './interface/utils'
+import { BrokerWorldInstanceConnection } from '../comms/v1/brokerWorldInstanceConnection'
 import { profileToRendererFormat } from 'shared/passports/transformations/profileToRendererFormat'
-import { ProfileForRenderer } from 'decentraland-ecs/src'
+import { ProfileForRenderer, uuid } from 'decentraland-ecs/src'
 import { Session } from '../session/index'
 import { worldRunningObservable, isWorldRunning } from '../world/worldState'
+import { WorldInstanceConnection } from './interface/index'
+import { LighthouseWorldInstanceConnection } from './v2/LighthouseWorldInstanceConnection'
+
+const { Peer } = require('decentraland-katalyst-peer')
+
+export type CommsVersion = 'v1' | 'v2'
+export type CommsMode = CommsV1Mode | CommsV2Mode
+export type CommsV1Mode = 'local' | 'remote'
+export type CommsV2Mode = 'p2p' | 'server'
 
 type Timestamp = number
 type PeerAlias = string
@@ -133,13 +141,17 @@ function getParcelSceneSubscriptions(): string[] {
 
 export function sendPublicChatMessage(messageId: string, text: string) {
   if (context && context.currentPosition && context.worldInstanceConnection) {
-    context.worldInstanceConnection.sendChatMessage(context.currentPosition, messageId, text)
+    context.worldInstanceConnection
+      .sendChatMessage(context.currentPosition, messageId, text)
+      .catch(e => defaultLogger.warn(`error while sending message `, e))
   }
 }
 
 export function sendParcelSceneCommsMessage(cid: string, message: string) {
   if (context && context.currentPosition && context.worldInstanceConnection) {
-    context.worldInstanceConnection.sendParcelSceneCommsMessage(cid, message)
+    context.worldInstanceConnection
+      .sendParcelSceneCommsMessage(cid, message)
+      .catch(e => defaultLogger.warn(`error while sending message `, e))
   }
 }
 
@@ -152,9 +164,8 @@ export function unsubscribeParcelSceneToCommsMessages(controller: Communications
 }
 
 // TODO: Change ChatData to the new class once it is added to the .proto
-export function processParcelSceneCommsMessage(context: Context, fromAlias: string, data: ChatData) {
-  const cid = data.getMessageId()
-  const text = data.getText()
+export function processParcelSceneCommsMessage(context: Context, fromAlias: string, message: Package<ChatMessage>) {
+  const { id: cid, text } = message.data
 
   const peer = getPeer(fromAlias)
 
@@ -180,11 +191,10 @@ export function persistCurrentUser(changes: Partial<UserInformation>): Readonly<
   receiveUserData(localProfileUUID, peer.user)
 
   const user = peer.user
-  if (!context) {
-    throw new Error('persistCurrentUser before initialization')
-  }
-  if (user) {
-    context.userInfo = user
+  if (context) {
+    if (user) {
+      context.userInfo = user
+    }
   }
 
   return peer.user
@@ -200,12 +210,12 @@ function ensurePeerTrackingInfo(context: Context, alias: string): PeerTrackingIn
   return peerTrackingInfo
 }
 
-export function processChatMessage(context: Context, fromAlias: string, data: ChatData) {
-  const msgId = data.getMessageId()
+export function processChatMessage(context: Context, fromAlias: string, message: Package<ChatMessage>) {
+  const msgId = message.data.id
 
   const peerTrackingInfo = ensurePeerTrackingInfo(context, fromAlias)
   if (!peerTrackingInfo.receivedPublicChatMessages.has(msgId)) {
-    const text = data.getText()
+    const text = message.data.text
     peerTrackingInfo.receivedPublicChatMessages.add(msgId)
 
     const user = getUser(fromAlias)
@@ -222,15 +232,20 @@ export function processChatMessage(context: Context, fromAlias: string, data: Ch
   }
 }
 
-export function processProfileMessage(context: Context, fromAlias: string, identity: string, data: ProfileData) {
+export function processProfileMessage(
+  context: Context,
+  fromAlias: string,
+  identity: string,
+  message: Package<ProfileVersion>
+) {
   processNewLogin(identity, context, fromAlias)
 
-  const msgTimestamp = data.getTime()
+  const msgTimestamp = message.time
 
   const peerTrackingInfo = ensurePeerTrackingInfo(context, fromAlias)
 
   if (msgTimestamp > peerTrackingInfo.lastProfileUpdate) {
-    const profileVersion = data.getProfileVersion()
+    const profileVersion = message.data.version
 
     peerTrackingInfo.identity = identity
     peerTrackingInfo.loadProfileIfNecessary(profileVersion ? parseInt(profileVersion, 10) : 0)
@@ -241,25 +256,19 @@ export function processProfileMessage(context: Context, fromAlias: string, ident
 }
 
 function processNewLogin(identity: string, context: Context, fromAlias: string) {
-  if (identity === context.userInfo.userId && fromAlias !== getCurrentPeer()!.uuid) {
-    Session.current.then(s => s.disable()).catch(e => defaultLogger.error('error while signing out', e))
+  if (!DEBUG_LOGIN) {
+    if (identity === context.userInfo.userId && fromAlias !== getCurrentPeer()!.uuid) {
+      Session.current.then(s => s.disable()).catch(e => defaultLogger.error('error while signing out', e))
+    }
   }
 }
 
-export function processPositionMessage(context: Context, fromAlias: string, positionData: PositionData) {
-  const msgTimestamp = positionData.getTime()
+export function processPositionMessage(context: Context, fromAlias: string, message: Package<Position>) {
+  const msgTimestamp = message.time
 
   const peerTrackingInfo = ensurePeerTrackingInfo(context, fromAlias)
   if (msgTimestamp > peerTrackingInfo.lastPositionUpdate) {
-    const p = [
-      positionData.getPositionX(),
-      positionData.getPositionY(),
-      positionData.getPositionZ(),
-      positionData.getRotationX(),
-      positionData.getRotationY(),
-      positionData.getRotationZ(),
-      positionData.getRotationW()
-    ] as Position
+    const p = message.data
 
     peerTrackingInfo.position = p
     peerTrackingInfo.lastPositionUpdate = msgTimestamp
@@ -281,7 +290,7 @@ let lastNetworkUpdatePosition = new Date().getTime()
 export function onPositionUpdate(context: Context, p: Position) {
   const worldConnection = context.worldInstanceConnection
 
-  if (!worldConnection || !worldConnection.connection.isAuthenticated) {
+  if (!worldConnection || !worldConnection.isAuthenticated) {
     return
   }
 
@@ -308,7 +317,9 @@ export function onPositionUpdate(context: Context, p: Position) {
 
     currentParcelTopics = rawTopics.join(' ')
     if (context.currentPosition) {
-      worldConnection.sendParcelUpdateMessage(context.currentPosition, p)
+      worldConnection
+        .sendParcelUpdateMessage(context.currentPosition, p)
+        .catch(e => defaultLogger.warn(`error while sending message `, e))
     }
   }
 
@@ -322,7 +333,9 @@ export function onPositionUpdate(context: Context, p: Position) {
     (parcelSceneCommsTopics.length ? ' ' + parcelSceneCommsTopics : '')
 
   if (topics !== previousTopics) {
-    worldConnection.updateSubscriptions(topics)
+    worldConnection
+      .updateSubscriptions(topics.split(' '))
+      .catch(e => defaultLogger.warn(`error while updating subscriptions`, e))
     previousTopics = topics
   }
 
@@ -330,7 +343,7 @@ export function onPositionUpdate(context: Context, p: Position) {
   const now = new Date().getTime()
   if (now - lastNetworkUpdatePosition > 100) {
     lastNetworkUpdatePosition = now
-    worldConnection.sendPositionMessage(p)
+    worldConnection.sendPositionMessage(p).catch(e => defaultLogger.warn(`error while sending message `, e))
   }
 }
 
@@ -407,121 +420,187 @@ function collectInfo(context: Context) {
   }
 }
 
+function parseCommsMode(modeString: string) {
+  const segments = modeString.split(':')
+  return segments as [CommsVersion, CommsMode]
+}
+
 export async function connect(userId: string, network: ETHEREUM_NETWORK, auth: Auth, ethAddress?: string) {
-  setLocalProfile(userId, {
-    ...getUserProfile(),
-    publicKey: ethAddress || null
-  })
-
-  const user = getCurrentUser()
-  if (!user) {
-    return undefined
-  }
-
-  const userInfo = {
-    ...user
-  }
-
-  let commsBroker: IBrokerConnection
-
-  if (USE_LOCAL_COMMS) {
-    let location = document.location.toString()
-    if (location.indexOf('#') > -1) {
-      location = location.substring(0, location.indexOf('#')) // drop fragment identifier
-    }
-    const commsUrl = location.replace(/^http/, 'ws') // change protocol to ws
-
-    const url = new URL(commsUrl)
-    const qs = new URLSearchParams({
-      identity: btoa(userId)
-    })
-    url.search = qs.toString()
-
-    defaultLogger.log('Using WebSocket comms: ' + url.href)
-    commsBroker = new CliBrokerConnection(url.href)
-  } else {
-    const coordinatorURL = getServerConfigurations().worldInstanceUrl
-    const body = `GET:${coordinatorURL}`
-    const credentials = await auth.getMessageCredentials(body)
-
-    const qs = new URLSearchParams({
-      signature: credentials['x-signature'],
-      identity: credentials['x-identity'],
-      timestamp: credentials['x-timestamp'],
-      'access-token': credentials['x-access-token']
+  try {
+    setLocalProfile(userId, {
+      ...getUserProfile(),
+      publicKey: ethAddress || null
     })
 
-    const url = new URL(coordinatorURL)
-    defaultLogger.log('Using Remote comms: ' + url)
-
-    url.search = qs.toString()
-
-    commsBroker = new BrokerConnection(auth, url.toString())
-  }
-
-  const connection = new WorldInstanceConnection(commsBroker)
-
-  await connection.connection.isConnected
-
-  connection.positionHandler = (alias: string, data: PositionData) => {
-    processPositionMessage(context!, alias, data)
-  }
-  connection.profileHandler = (alias: string, identity: string, data: ProfileData) => {
-    processProfileMessage(context!, alias, identity, data)
-  }
-  connection.chatHandler = (alias: string, data: ChatData) => {
-    processChatMessage(context!, alias, data)
-  }
-  connection.sceneMessageHandler = (alias: string, data: ChatData) => {
-    processParcelSceneCommsMessage(context!, alias, data)
-  }
-
-  context = new Context(userInfo, network)
-  context.worldInstanceConnection = connection
-
-  if (commConfigurations.debug) {
-    connection.stats = context.stats
-    commsBroker.stats = context.stats
-  }
-
-  context.profileInterval = setInterval(() => {
-    if (context && context.currentPosition && context.worldInstanceConnection) {
-      context.worldInstanceConnection.sendProfileMessage(context.currentPosition, context.userInfo)
+    const user = getCurrentUser()
+    if (!user) {
+      return undefined
     }
-  }, 1000)
 
-  context.worldRunningObserver = worldRunningObservable.add(isRunning => {
-    onWorldRunning(isRunning)
-  })
-
-  context.positionObserver = positionObservable.add((obj: Readonly<PositionReport>) => {
-    const p = [
-      obj.position.x,
-      obj.position.y - obj.playerHeight,
-      obj.position.z,
-      obj.quaternion.x,
-      obj.quaternion.y,
-      obj.quaternion.z,
-      obj.quaternion.w
-    ] as Position
-
-    if (context && isWorldRunning) {
-      onPositionUpdate(context, p)
+    const userInfo = {
+      ...user
     }
-  })
 
-  window.addEventListener('beforeunload', () => sendToMordor())
+    let connection: WorldInstanceConnection
 
-  context.infoCollecterInterval = setInterval(() => {
-    if (context) {
-      collectInfo(context)
+    const [version, mode] = parseCommsMode(COMMS)
+    switch (version) {
+      case 'v1': {
+        let commsBroker: IBrokerConnection
+
+        switch (mode) {
+          case 'local': {
+            let location = document.location.toString()
+            if (location.indexOf('#') > -1) {
+              location = location.substring(0, location.indexOf('#')) // drop fragment identifier
+            }
+            const commsUrl = location.replace(/^http/, 'ws') // change protocol to ws
+
+            const url = new URL(commsUrl)
+            const qs = new URLSearchParams({
+              identity: btoa(userId)
+            })
+            url.search = qs.toString()
+
+            defaultLogger.log('Using WebSocket comms: ' + url.href)
+            commsBroker = new CliBrokerConnection(url.href)
+            break
+          }
+          case 'remote': {
+            const coordinatorURL = getServerConfigurations().worldInstanceUrl
+            const body = `GET:${coordinatorURL}`
+            const credentials = await auth.getMessageCredentials(body)
+
+            const qs = new URLSearchParams({
+              signature: credentials['x-signature'],
+              identity: credentials['x-identity'],
+              timestamp: credentials['x-timestamp'],
+              'access-token': credentials['x-access-token']
+            })
+
+            const url = new URL(coordinatorURL)
+            defaultLogger.log('Using Remote comms: ' + url)
+
+            url.search = qs.toString()
+
+            commsBroker = new BrokerConnection(auth, url.toString())
+            break
+          }
+          default: {
+            throw new Error(`unrecognized mode for comms v1 "${mode}"`)
+          }
+        }
+
+        const instance = new BrokerWorldInstanceConnection(commsBroker)
+        await instance.isConnected
+
+        connection = instance
+        break
+      }
+      case 'v2': {
+        const { server, p2p } = getServerConfigurations().comms.lighthouse
+
+        let lighthouseUrl
+        switch (mode) {
+          case 'server': {
+            lighthouseUrl = server
+            break
+          }
+          case 'p2p': {
+            lighthouseUrl = p2p
+            break
+          }
+          default: {
+            defaultLogger.warn(`unrecognized mode for comms v2 "${mode}", using default "p2p"`)
+            lighthouseUrl = p2p
+          }
+        }
+
+        defaultLogger.log('Using Remote lighthouse service: ', lighthouseUrl)
+
+        const peer = new Peer(
+          lighthouseUrl,
+          'peer-' + uuid(),
+          () => {
+            // noop
+          },
+          {
+            connectionConfig: {
+              iceServers: commConfigurations.iceServers
+            }
+          }
+        )
+        connection = new LighthouseWorldInstanceConnection(peer)
+        break
+      }
+      default: {
+        throw new Error(`unrecognized comms mode "${COMMS}"`)
+      }
     }
-  }, 100)
 
-  connection.updateSubscriptions(userId)
-  connection.sendInitialMessage(userInfo)
+    connection.positionHandler = (alias: string, data: Package<Position>) => {
+      processPositionMessage(context!, alias, data)
+    }
+    connection.profileHandler = (alias: string, identity: string, data: Package<ProfileVersion>) => {
+      processProfileMessage(context!, alias, identity, data)
+    }
+    connection.chatHandler = (alias: string, data: Package<ChatMessage>) => {
+      processChatMessage(context!, alias, data)
+    }
+    connection.sceneMessageHandler = (alias: string, data: Package<BusMessage>) => {
+      processParcelSceneCommsMessage(context!, alias, data)
+    }
 
-  return context
+    context = new Context(userInfo, network)
+    context.worldInstanceConnection = connection
+
+    if (commConfigurations.debug) {
+      connection.stats = context.stats
+    }
+
+    context.profileInterval = setInterval(() => {
+      if (context && context.currentPosition && context.worldInstanceConnection) {
+        context.worldInstanceConnection
+          .sendProfileMessage(context.currentPosition, context.userInfo)
+          .catch(e => defaultLogger.warn(`error while sending message `, e))
+      }
+    }, 1000)
+
+    context.worldRunningObserver = worldRunningObservable.add(isRunning => {
+      onWorldRunning(isRunning)
+    })
+
+    context.positionObserver = positionObservable.add((obj: Readonly<PositionReport>) => {
+      const p = [
+        obj.position.x,
+        obj.position.y - obj.playerHeight,
+        obj.position.z,
+        obj.quaternion.x,
+        obj.quaternion.y,
+        obj.quaternion.z,
+        obj.quaternion.w
+      ] as Position
+
+      if (context && isWorldRunning) {
+        onPositionUpdate(context, p)
+      }
+    })
+
+    window.addEventListener('beforeunload', () => sendToMordor())
+
+    context.infoCollecterInterval = setInterval(() => {
+      if (context) {
+        collectInfo(context)
+      }
+    }, 100)
+
+    await connection.updateSubscriptions([userId])
+    await connection.sendInitialMessage(userInfo)
+
+    return context
+  } catch (e) {
+    throw new Error('error establishing comms: ' + e.message)
+  }
 }
 
 export function onWorldRunning(isRunning: boolean, _context: Context | null = context) {
@@ -532,7 +611,9 @@ export function onWorldRunning(isRunning: boolean, _context: Context | null = co
 
 export function sendToMordor(_context: Context | null = context) {
   if (_context && _context.worldInstanceConnection && _context.currentPosition) {
-    _context.worldInstanceConnection.sendParcelUpdateMessage(_context.currentPosition, MORDOR_POSITION)
+    _context.worldInstanceConnection
+      .sendParcelUpdateMessage(_context.currentPosition, MORDOR_POSITION)
+      .catch(e => defaultLogger.warn(`error while sending message `, e))
   }
 }
 

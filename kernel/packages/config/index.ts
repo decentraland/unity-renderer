@@ -91,7 +91,15 @@ export const STATIC_WORLD = location.search.indexOf('STATIC_WORLD') !== -1 || !!
 // Development
 export const ENABLE_WEB3 = location.search.indexOf('ENABLE_WEB3') !== -1 || !!(global as any).enableWeb3
 export const ENV_OVERRIDE = location.search.indexOf('ENV') !== -1
+
+// Comms
 export const USE_LOCAL_COMMS = location.search.indexOf('LOCAL_COMMS') !== -1 || PREVIEW
+export const COMMS = USE_LOCAL_COMMS
+  ? 'v1:local'
+  : location.search.indexOf('COMMS') !== -1
+  ? window.location.search.match(/COMMS=(\w+:\w+)/)[1]
+  : 'v1:remote' // by default use v1:remote for now
+
 export const DEBUG =
   location.search.indexOf('DEBUG_MODE') !== -1 ||
   location.search.indexOf('DEBUG_LOG') !== -1 ||
@@ -103,6 +111,7 @@ export const DEBUG_MOBILE = location.search.indexOf('DEBUG_MOBILE') !== -1
 export const DEBUG_MESSAGES = location.search.indexOf('DEBUG_MESSAGES') !== -1
 export const DEBUG_WS_MESSAGES = location.search.indexOf('DEBUG_WS_MESSAGES') !== -1
 export const DEBUG_REDUX = location.search.indexOf('DEBUG_REDUX') !== -1
+export const DEBUG_LOGIN = location.search.indexOf('DEBUG_LOGIN') !== -1
 
 export const DISABLE_AUTH = location.search.indexOf('DISABLE_AUTH') !== -1 || DEBUG
 export const ENGINE_DEBUG_PANEL = location.search.indexOf('ENGINE_DEBUG_PANEL') !== -1
@@ -129,11 +138,6 @@ export namespace commConfigurations {
     },
     {
       urls: 'stun:stun4.l.google.com:19302'
-    },
-    {
-      urls: 'turn:stun.decentraland.org:3478',
-      credential: 'passworddcl',
-      username: 'usernamedcl'
     }
   ]
 }
@@ -226,6 +230,12 @@ export function getServerConfigurations() {
     content: `https://content.decentraland.${TLDDefault === 'today' ? 'org' : TLDDefault}`,
     contentAsBundle: `https://content-as-bundle.decentraland.zone`,
     worldInstanceUrl: `wss://world-comm.decentraland.${TLDDefault}/connect`,
+    comms: {
+      lighthouse: {
+        server: 'https://katalyst-comms-relay.decentraland.zone',
+        p2p: 'https://katalyst-comms-no-relay.decentraland.zone'
+      }
+    },
     profile: `https://profile.decentraland.${TLDDefault}/api/v1`,
     wearablesApi: `https://wearable-api.decentraland.org/v2`,
     avatar: {

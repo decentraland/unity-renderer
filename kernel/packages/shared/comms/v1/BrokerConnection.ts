@@ -12,12 +12,11 @@ import {
 import { Auth } from 'shared/auth/Auth'
 import { AuthData } from './proto/comms'
 import { Message } from 'google-protobuf'
-import { SocketReadyState } from './worldInstanceConnection'
 import { commConfigurations } from 'config'
-import { Stats } from './debug'
-import { IBrokerConnection, BrokerMessage } from './IBrokerConnection'
+import { Stats } from '../../comms/debug'
+import { IBrokerConnection, BrokerMessage, SocketReadyState } from './IBrokerConnection'
 import { ILogger, createLogger } from 'shared/logger'
-import { Observable } from '../../decentraland-ecs/src/ecs/Observable'
+import { Observable } from 'decentraland-ecs/src/ecs/Observable'
 
 export class BrokerConnection implements IBrokerConnection {
   public alias: string | null = null

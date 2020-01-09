@@ -1,9 +1,16 @@
-import { Observable } from '../../decentraland-ecs/src/ecs/Observable'
-import { Stats } from './debug'
+import { Observable } from 'decentraland-ecs/src/ecs/Observable'
+import { Stats } from '../../comms/debug'
 
 export type BrokerMessage = {
   data: Uint8Array
   channel: string
+}
+
+export enum SocketReadyState {
+  CONNECTING,
+  OPEN,
+  CLOSING,
+  CLOSED
 }
 
 export interface IBrokerConnection {

@@ -91,3 +91,21 @@ export type Pose = [number, number, number, number, number, number, number]
 export type PoseInformation = {
   v: Pose
 }
+
+export type Package<T> = {
+  type: 'profile' | 'chat' | 'position'
+  time: number
+  data: T
+}
+
+export type ProfileVersion = {
+  version: string
+  user: string // TODO - to remove with new login flow - moliva - 22/12/2019
+}
+
+export type ChatMessage = {
+  id: string
+  text: string
+}
+
+export type BusMessage = ChatMessage
