@@ -132,7 +132,7 @@ namespace DCL
 
                 AssetBundle assetBundle = DownloadHandlerAssetBundle.GetContent(assetBundleRequest);
 
-                if (assetBundle == null)
+                if (assetBundle == null || asset == null)
                 {
                     assetBundleRequest.Abort();
                     OnFail?.Invoke();
