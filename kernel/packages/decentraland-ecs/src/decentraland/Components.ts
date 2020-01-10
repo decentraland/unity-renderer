@@ -801,7 +801,7 @@ export class OnPointerUUIDEvent<T extends keyof IEvents> extends OnUUIDEvent<T> 
   hoverText: string = "Interact"
 
   @ObservableComponent.field
-  distance: number = 4
+  distance: number = 10
 
   @ObservableComponent.field
   showFeeback: boolean = true

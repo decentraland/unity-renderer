@@ -12,7 +12,7 @@ namespace DCL.Components
         {
             if (!enabled) return;
 
-            if (model.button == "ANY" || buttonId.ToString() == model.button)
+            if (IsAtHoverDistance(hit.distance) && (model.button == "ANY" || buttonId.ToString() == model.button))
             {
                 string meshName = GetMeshName(hit.collider);
 

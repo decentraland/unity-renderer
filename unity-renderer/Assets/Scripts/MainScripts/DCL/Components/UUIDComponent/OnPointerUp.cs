@@ -10,12 +10,9 @@ namespace DCL.Components
 
         public void Report(WebInterface.ACTION_BUTTON buttonId, Ray ray, HitInfo hit, bool isHitInfoValid)
         {
-            if (!enabled)
-            {
-                return;
-            }
+            if (!enabled) return;
 
-            if (model.button == "ANY" || buttonId.ToString() == model.button)
+            if (IsAtHoverDistance(hit.distance) && (model.button == "ANY" || buttonId.ToString() == model.button))
             {
                 string meshName = null;
 
