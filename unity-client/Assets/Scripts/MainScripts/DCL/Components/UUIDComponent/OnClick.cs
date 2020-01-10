@@ -1,8 +1,6 @@
-using DCL.Controllers;
-using DCL.Models;
 using UnityEngine;
 using DCL.Interface;
-
+using DCL.Helpers;
 
 namespace DCL.Components
 {
@@ -10,11 +8,11 @@ namespace DCL.Components
     {
         public const string NAME = "onClick";
 
-        public void Report(WebInterface.ACTION_BUTTON buttonId)
+        public void Report(WebInterface.ACTION_BUTTON buttonId, HitInfo hit)
         {
             if (!enabled) return;
 
-            if (model.button == "ANY" || buttonId.ToString() == model.button)
+            if (IsAtHoverDistance(hit.distance) && (model.button == "ANY" || buttonId.ToString() == model.button))
                 DCL.Interface.WebInterface.ReportOnClickEvent(scene.sceneData.id, model.uuid);
         }
     }

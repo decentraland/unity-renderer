@@ -15,7 +15,7 @@ namespace DCL.Components
         {
             public string button = WebInterface.ACTION_BUTTON.ANY.ToString();
             public string hoverText = "Interact";
-            public float distance = 4f;
+            public float distance = 10f;
             public bool showFeeback = true;
         }
 

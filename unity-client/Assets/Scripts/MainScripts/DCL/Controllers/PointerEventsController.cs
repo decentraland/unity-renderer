@@ -176,7 +176,7 @@ namespace DCL
                     {
                         GameObject go = raycastInfoPointerEventLayer.hitInfo.hit.rigidbody.gameObject;
 
-                        go.GetComponentInChildren<OnClick>()?.Report(buttonId);
+                        go.GetComponentInChildren<OnClick>()?.Report(buttonId, raycastInfoPointerEventLayer.hitInfo.hit);
                         go.GetComponentInChildren<OnPointerDown>()?.Report(buttonId, ray, raycastInfoPointerEventLayer.hitInfo.hit);
 
                         pointerUpEvent = go.GetComponentInChildren<OnPointerUp>();
