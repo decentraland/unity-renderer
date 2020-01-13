@@ -44,7 +44,11 @@ public static class ThumbnailsManager
     {
         UnityWebRequest www = UnityWebRequestTexture.GetTexture(url);
 
-        yield return www.SendWebRequest();
+        www.SendWebRequest();
+        while (!www.isDone)
+        {
+            yield return null;
+        }
 
         Sprite sprite;
         if (!www.isNetworkError && !www.isHttpError)

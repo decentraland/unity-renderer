@@ -123,7 +123,11 @@ public class UserProfile : ScriptableObject //TODO Move to base variable
     {
         UnityWebRequest www = UnityWebRequestTexture.GetTexture(url);
 
-        yield return www.SendWebRequest();
+        www.SendWebRequest();
+        while (!www.isDone)
+        {
+            yield return null;
+        }
 
         if (!www.isNetworkError && !www.isHttpError)
         {
