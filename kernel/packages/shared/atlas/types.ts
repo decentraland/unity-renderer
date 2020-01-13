@@ -1,3 +1,5 @@
+import { Vector2Component } from 'atomicHelpers/landHelpers'
+
 export const UPDATE_MINIMAP_SCENE_NAME = 'Update tile name'
 export const QUERY_NAME_FROM_SCENE_JSON = '[Query] Fetch name from scene.json'
 export const FETCH_NAME_FROM_SCENE_JSON = '[Request] Fetch name from scene.json'
@@ -11,6 +13,8 @@ export type AtlasState = {
   districtName: Record<string, string>
   sceneNames: Record<string, string>
   requestStatus: Record<string, undefined | 'loading' | 'ok' | 'fail'>
+  alreadyReported: Record<string, boolean>
+  lastReportPosition?: Vector2Component
 }
 
 export type RootAtlasState = {
