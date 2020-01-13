@@ -8,6 +8,7 @@ import { chatObservable, ChatEvent } from './comms/chat'
 import { avatarMessageObservable } from './comms/peers'
 import { AvatarMessageType } from './comms/interface/types'
 import { positionObservable } from './world/positionThings'
+import { uuid } from '../decentraland-ecs/src/ecs/helpers'
 
 declare var window: any
 
@@ -15,6 +16,8 @@ export type SegmentEvent = {
   name: string
   data: string
 }
+
+const sessionId = uuid()
 
 const trackingQueue: SegmentEvent[] = []
 let tracking = false
@@ -37,7 +40,7 @@ export function identifyUser(id: string) {
 }
 
 export function queueTrackingEvent(eventName: string, eventData: any) {
-  const data = { ...eventData, time: new Date().toISOString() }
+  const data = { ...eventData, time: new Date().toISOString(), sessionId }
 
   if (DEBUG_ANALYTICS) {
     defaultLogger.info(`Tracking event "${eventName}": `, data)
