@@ -166,7 +166,11 @@ namespace DCL.Helpers
             {
                 using (var webRequest = request)
                 {
-                    yield return webRequest.SendWebRequest();
+                    webRequest.SendWebRequest();
+                    while (!webRequest.isDone)
+                    {
+                        yield return null;
+                    }
 
                     if (!WebRequestSucceded(request))
                     {
