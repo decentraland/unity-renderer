@@ -1,4 +1,5 @@
 import { AnyAction } from 'redux'
+import { REPORTED_SCENES_FOR_MINIMAP } from './actions'
 import {
   AtlasState,
   District,
@@ -15,7 +16,9 @@ const ATLAS_INITIAL_STATE: AtlasState = {
   marketName: {},
   sceneNames: {},
   requestStatus: {},
-  districtName: {}
+  districtName: {},
+  alreadyReported: {},
+  lastReportPosition: undefined
 }
 
 export function atlasReducer(state?: AtlasState, action?: AnyAction) {
@@ -65,6 +68,18 @@ export function atlasReducer(state?: AtlasState, action?: AnyAction) {
         marketName: {
           ...state.marketName,
           ...((action as any) as { payload: MarketData }).payload.data
+        }
+      }
+    case REPORTED_SCENES_FOR_MINIMAP:
+      return {
+        ...state,
+        lastReportPosition: action.payload.reportPosition ? action.payload.reportPosition : state.lastReportPosition,
+        atlasReducer: {
+          ...state.alreadyReported,
+          ...action.payload.parcels.reduce((prev: Record<string, boolean>, next: string) => {
+            prev[next] = true
+            return prev
+          }, {})
         }
       }
     case DISTRICT_DATA:

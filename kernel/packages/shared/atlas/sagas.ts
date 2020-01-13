@@ -1,7 +1,9 @@
-import { call, fork, put, select, takeEvery, takeLatest } from 'redux-saga/effects'
+import { call, fork, put, select, take, takeEvery, takeLatest } from 'redux-saga/effects'
 import { getServer, LifecycleManager } from '../../decentraland-loader/lifecycle/manager'
-import { SceneStart, SCENE_START } from '../loading/actions'
+import { SceneStart, SCENE_START, SCENE_LOAD } from '../loading/actions'
+import defaultLogger from '../logger'
 import { RENDERER_INITIALIZED } from '../renderer/types'
+import { lastPlayerPosition } from '../world/positionThings'
 import {
   districtData,
   fetchNameFromSceneJson,
@@ -9,11 +11,12 @@ import {
   fetchNameFromSceneJsonSuccess,
   FetchNameFromSceneJsonSuccess,
   marketData,
-  QuerySceneName
+  QuerySceneName,
+  reportedScenes
 } from './actions'
 import { getNameFromAtlasState, getTypeFromAtlasState, shouldLoadSceneJsonName } from './selectors'
-import { AtlasState, FETCH_NAME_FROM_SCENE_JSON, SUCCESS_NAME_FROM_SCENE_JSON } from './types'
-import defaultLogger from '../logger'
+import { AtlasState, FETCH_NAME_FROM_SCENE_JSON, MarketEntry, SUCCESS_NAME_FROM_SCENE_JSON, MARKET_DATA } from './types'
+import { parcelLimits } from '../../config'
 
 declare const window: {
   unityInterface: {
@@ -26,9 +29,10 @@ export function* atlasSaga(): any {
   yield fork(fetchTiles)
 
   yield takeEvery(SCENE_START, querySceneName)
+  yield takeEvery(SCENE_LOAD, checkAndReportAround)
   yield takeEvery(FETCH_NAME_FROM_SCENE_JSON, fetchName)
 
-  yield takeLatest(RENDERER_INITIALIZED, reportAll)
+  yield takeLatest(RENDERER_INITIALIZED, reportScenesAround)
   yield takeLatest(SUCCESS_NAME_FROM_SCENE_JSON, reportOne)
 }
 
@@ -72,11 +76,12 @@ async function getNameFromSceneJson(sceneId: string) {
 }
 
 function* reportOne(action: FetchNameFromSceneJsonSuccess) {
-  const atlasState = yield select(state => state.atlas)
+  const atlasState = (yield select(state => state.atlas)) as AtlasState
   const parcels = action.payload.parcels
   const [firstX, firstY] = parcels[0].split(',').map(_ => parseInt(_, 10))
   const name = getNameFromAtlasState(atlasState, firstX, firstY)
   const type = getTypeFromAtlasState(atlasState, firstX, firstY)
+  yield put(reportedScenes(parcels))
   window.unityInterface.UpdateMinimapSceneInformation([
     {
       name,
@@ -88,9 +93,51 @@ function* reportOne(action: FetchNameFromSceneJsonSuccess) {
     }
   ])
 }
-function* reportAll() {
-  const atlasState = (yield select(state => state.atlas)) as AtlasState
+
+export function* checkAndReportAround() {
+  const userPosition = lastPlayerPosition
+  let lastReport = yield select(state => state.atlas.lastReportPosition)
+  const TRIGGER_DISTANCE = 10 * parcelLimits.parcelSize
+  if (
+    Math.abs(userPosition.x - lastReport.x) > TRIGGER_DISTANCE ||
+    Math.abs(userPosition.z - lastReport.y) > TRIGGER_DISTANCE
+  ) {
+    yield call(reportScenesAround)
+  }
+}
+
+export function* reportScenesAround() {
+  const userPosition = lastPlayerPosition
+  let atlasState = (yield select(state => state.atlas)) as AtlasState
+  while (!atlasState.marketName['0,0']) {
+    yield take(MARKET_DATA)
+    atlasState = yield select(state => state.atlas)
+  }
   const data = atlasState.marketName
+  const targets: Record<string, MarketEntry> = {}
+  const MAX_SCENES_AROUND = 15
+  const userX = userPosition.x / parcelLimits.parcelSize
+  const userY = userPosition.z / parcelLimits.parcelSize
+  Object.keys(data).forEach(index => {
+    const parcel = data[index]
+    if (atlasState.alreadyReported[`${parcel.x},${parcel.y}`]) {
+      return
+    }
+    if (Math.abs(parcel.x - userX) > MAX_SCENES_AROUND) {
+      return
+    }
+    if (Math.abs(parcel.y - userY) > MAX_SCENES_AROUND) {
+      return
+    }
+    targets[index] = parcel
+  })
+  yield put(reportedScenes(Object.keys(targets), { x: userPosition.x, y: userPosition.z }))
+  yield call(reportScenes, atlasState, targets)
+}
+
+export function* reportScenes(marketplaceInfo?: AtlasState, selection?: Record<string, MarketEntry>): any {
+  const atlasState = marketplaceInfo ? marketplaceInfo : ((yield select(state => state.atlas)) as AtlasState)
+  const data = selection ? selection : atlasState.marketName
   const mapByTypeAndName: Record<string, { x: number; y: number }[]> = {}
   const typeAndNameKeys: string[] = []
   const keyToTypeAndName: Record<string, { type: number; name: string }> = {}
