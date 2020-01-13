@@ -5,7 +5,8 @@ import {
   ExecutionLifecycleEventsList,
   helpTexts,
   NOT_STARTED,
-  ROTATE_HELP_TEXT
+  ROTATE_HELP_TEXT,
+  TELEPORT_TRIGGERED
 } from './types'
 
 export type LoadingState = {
@@ -31,6 +32,9 @@ export function loadingReducer(state?: LoadingState, action?: AnyAction) {
   }
   if (ExecutionLifecycleEventsList.includes(action.type)) {
     return { ...state, status: action.type }
+  }
+  if (action.type === TELEPORT_TRIGGERED) {
+    return { ...state, helpText: action.payload }
   }
   if (action.type === ROTATE_HELP_TEXT) {
     const newValue = state.helpText + 1

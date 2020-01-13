@@ -12,8 +12,8 @@ const SECONDS = 1000
 export const DELAY_BETWEEN_MESSAGES = 10 * SECONDS
 
 export function* loadingSaga() {
-  yield fork(changeSubtext)
-  yield takeLatest(TELEPORT_TRIGGERED, changeSubtext)
+  yield fork(initialSceneLoading)
+  yield takeLatest(TELEPORT_TRIGGERED, teleportSceneLoading)
 
   yield takeEvery(SCENE_LOAD, trackLoadTime)
 }
@@ -36,34 +36,52 @@ export function* trackLoadTime(action: SceneLoad): any {
   })
 }
 
-export function* changeSubtext() {
+function* refreshTeleport() {
+  while (true) {
+    yield delay(DELAY_BETWEEN_MESSAGES)
+    yield put(rotateHelpText())
+  }
+}
+function* refreshTextInScreen() {
+  while (true) {
+    const status = yield select(state => state.loading)
+    yield call(() => updateTextInScreen(status))
+    yield delay(200)
+  }
+}
+
+export function* waitForSceneLoads() {
+  while (true) {
+    yield race({
+      started: take(SCENE_START),
+      failed: take(SCENE_FAIL)
+    })
+    if (yield select(state => state.loading.pendingScenes === 0)) {
+      break
+    }
+  }
+}
+
+export function* initialSceneLoading() {
   yield race({
-    refresh: call(function*() {
-      while (true) {
-        yield put(rotateHelpText())
-        yield delay(DELAY_BETWEEN_MESSAGES)
-      }
-    }),
-    textInScreen: call(function*() {
-      while (true) {
-        const status = yield select(state => state.loading)
-        yield call(() => updateTextInScreen(status))
-        yield delay(200)
-      }
-    }),
+    refresh: call(refreshTeleport),
+    textInScreen: call(refreshTextInScreen),
     finish: call(function*() {
       yield take(EXPERIENCE_STARTED)
       yield take('Loading scene')
-      while (true) {
-        yield race({
-          started: take(SCENE_START),
-          failed: take(SCENE_FAIL)
-        })
-        if (yield select(state => state.loading.pendingScenes === 0)) {
-          break
-        }
-      }
+      yield call(waitForSceneLoads)
     })
+  })
+}
+
+export function* teleportSceneLoading() {
+  yield race({
+    refresh: call(refreshTeleport),
+    textInScreen: call(function*() {
+      yield delay(2000)
+      yield call(refreshTextInScreen)
+    }),
+    finish: call(waitForSceneLoads)
   })
 }
 
