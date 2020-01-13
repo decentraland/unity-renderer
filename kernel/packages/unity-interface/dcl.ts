@@ -668,7 +668,7 @@ export async function initializeEngine(_gameInstance: GameInstance) {
     onMessage(type: string, message: any) {
       if (type in browserInterface) {
         // tslint:disable-next-line:semicolon
-        ; (browserInterface as any)[type](message)
+        ;(browserInterface as any)[type](message)
       } else {
         defaultLogger.info(`Unknown message (did you forget to add ${type} to unity-interface/dcl.ts?)`, message)
       }
@@ -817,13 +817,11 @@ export function updateBuilderScene(sceneData: ILand) {
   }
 }
 
-teleportObservable.add((position: { x: number; y: number }) => {
+teleportObservable.add((position: { x: number; y: number; text?: string }) => {
   // before setting the new position, show loading screen to avoid showing an empty world
   setLoadingScreenVisible(true)
-  if (document.getElementById('overlay')!.style.display === 'none') {
-    const globalStore = global['globalStore']
-    globalStore.dispatch(teleportTriggered())
-  }
+  const globalStore = global['globalStore']
+  globalStore.dispatch(teleportTriggered(position.text || `Teleporting to ${position.x}, ${position.y}`))
   delightedSurvey()
 })
 

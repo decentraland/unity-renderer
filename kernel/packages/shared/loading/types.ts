@@ -33,7 +33,7 @@ export const EXPERIENCE_STARTED = 'Setup finished: Loading scenes...'
 export const experienceStarted = () => action(EXPERIENCE_STARTED)
 
 export const TELEPORT_TRIGGERED = 'Teleporting...'
-export const teleportTriggered = () => action(TELEPORT_TRIGGERED)
+export const teleportTriggered = (payload: string) => action(TELEPORT_TRIGGERED, payload)
 export const SCENE_ENTERED = 'Entered into a new scene'
 export const sceneEntered = () => action(SCENE_ENTERED)
 export const UNEXPECTED_ERROR = 'Unexpected fatal error'
