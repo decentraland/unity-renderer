@@ -10,7 +10,7 @@ namespace DCL.Configuration
     public static class EnvironmentSettings
     {
         public static bool DEBUG = true;
-        public static Vector3 MORDOR = new Vector3(1000, 1000, 1000);
+        public static readonly Vector3 MORDOR = new Vector3(1000, 1000, 1000);
     }
 
     public static class InputSettings
