@@ -178,6 +178,9 @@ export function setLoadingScreenVisible(shouldShow: boolean) {
   document.getElementById('overlay')!.style.display = shouldShow ? 'block' : 'none'
   document.getElementById('load-messages-wrapper')!.style.display = shouldShow ? 'block' : 'none'
   document.getElementById('progress-bar')!.style.display = shouldShow ? 'block' : 'none'
+  if (!shouldShow) {
+    stopTeleportAnimation()
+  }
 }
 
 function delightedSurvey() {
@@ -206,6 +209,11 @@ function ensureTeleportAnimation() {
     'style',
     'background: #151419 url(images/teleport.gif) no-repeat center !important; background-size: 194px 257px !important;'
   )
+}
+
+function stopTeleportAnimation() {
+  document.getElementById('gameContainer')!.setAttribute('style', 'background: #151419')
+  document.body.setAttribute('style', 'background: #151419')
 }
 
 const CHUNK_SIZE = 500
