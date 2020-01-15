@@ -70,6 +70,42 @@ namespace Tests
             yield return null;
         }
 
+        [UnityTest]
+        public IEnumerator CheckLookAtPlayerWhileTransformMoves()
+        {
+            DCLCharacterController.i.PauseGravity();
+
+            yield return CreateComponent(x: true, y: true, z: true);
+
+            yield return null;
+
+            var entity = scene.entities[entityId];
+            Transform entityTransform = entity.gameObject.transform;
+            Vector3 lookAt = GetLookAtVector(billboard.model, entityTransform);
+
+            Assert.AreApproximatelyEqual(lookAt.x, entityTransform.forward.x, "billboard entity forward vector should be the same as the calculated one");
+            Assert.AreApproximatelyEqual(lookAt.y, entityTransform.forward.y, "billboard entity forward vector should be the same as the calculated one");
+            Assert.AreApproximatelyEqual(lookAt.z, entityTransform.forward.z, "billboard entity forward vector should be the same as the calculated one");
+
+            var billboardModel = new Billboard.Model();
+
+            yield return TestHelpers.EntityComponentUpdate<Billboard, Billboard.Model>(billboard, billboardModel);
+
+            lookAt = GetLookAtVector(billboardModel, entityTransform);
+            Assert.IsTrue(entityTransform.forward == lookAt, "billboard entity forward vector should be the same as the calculated one");
+
+            // We simulate a "system" moving the billboard object
+            Vector3 position = Vector3.one;
+            for (int i = 0; i < 5; i++)
+            {
+                position.y += i;
+                entityTransform.position = position;
+                Assert.IsTrue(entityTransform.forward == lookAt, "billboard entity forward vector should be the same as the calculated one");
+            }
+
+            yield return null;
+        }
+
         IEnumerator CreateComponent(bool x, bool y, bool z)
         {
             var entity = TestHelpers.CreateSceneEntity(scene, entityId);
