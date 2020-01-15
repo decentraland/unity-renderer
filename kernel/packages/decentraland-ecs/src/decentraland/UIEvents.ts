@@ -95,7 +95,7 @@ export class OnChanged extends OnUUIDEvent<'onChange'> {
 export type OnPointerUUIDEventOptions = {
   button?: ActionButton
   hoverText?: string
-  showFeeback?: boolean
+  showFeedback?: boolean
   distance?: number
 }
 
@@ -118,7 +118,7 @@ export class OnClick extends OnPointerUUIDEvent<'onClick'> {
     uuidEventSystem.handlerMap[this.uuid] = this
 
     if (options) {
-      this.showFeeback = !(options.showFeeback === false)
+      this.showFeedback = !(options.showFeedback === false)
 
       if (options.button) {
         this.button = options.button
@@ -154,7 +154,7 @@ export class OnPointerDown extends OnPointerUUIDEvent<'pointerDown'> {
     uuidEventSystem.handlerMap[this.uuid] = this
 
     if (options) {
-      this.showFeeback = !(options.showFeeback === false)
+      this.showFeedback = !(options.showFeedback === false)
 
       if (options.button) {
         this.button = options.button
@@ -190,7 +190,7 @@ export class OnPointerUp extends OnPointerUUIDEvent<'pointerUp'> {
     uuidEventSystem.handlerMap[this.uuid] = this
 
     if (options) {
-      this.showFeeback = !(options.showFeeback === false)
+      this.showFeedback = !(options.showFeedback === false)
 
       if (options.button) {
         this.button = options.button

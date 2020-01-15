@@ -16,7 +16,7 @@ namespace DCL.Components
             public string button = WebInterface.ACTION_BUTTON.ANY.ToString();
             public string hoverText = "Interact";
             public float distance = 10f;
-            public bool showFeeback = true;
+            public bool showFeedback = true;
         }
 
         Rigidbody rigidBody;
@@ -84,7 +84,7 @@ namespace DCL.Components
                 hoverCanvasController = hoverCanvasGameObject.GetComponent<InteractionHoverCanvasController>();
             }
 
-            hoverCanvasController.enabled = model.showFeeback;
+            hoverCanvasController.enabled = model.showFeedback;
             hoverCanvasController.Setup(model.button, model.hoverText, entity);
         }
 
