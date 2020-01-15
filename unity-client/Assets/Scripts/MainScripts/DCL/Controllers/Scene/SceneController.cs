@@ -2,6 +2,7 @@ using DCL.Controllers;
 using DCL.Helpers;
 using DCL.Interface;
 using DCL.Models;
+using DCL.Configuration;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -92,6 +93,17 @@ namespace DCL
         const float SORT_MESSAGE_CONTROLLER_TIME = 0.5f;
         float lastTimeMessageControllerSorted = 0;
 
+        public event Action OnSortScenes;
+
+        bool positionDirty = true;
+        private static readonly int MORDOR_X = (int)EnvironmentSettings.MORDOR.x;
+        private static readonly int MORDOR_Z = (int)EnvironmentSettings.MORDOR.z;
+        private Vector2Int currentGridSceneCoordinate = new Vector2Int(MORDOR_X, MORDOR_Z);
+
+        private string currentSceneId = null;
+
+        private Vector2Int sortAuxiliaryVector = new Vector2Int(MORDOR_X, MORDOR_Z);
+
         void Awake()
         {
             if (i != null)
@@ -126,12 +138,16 @@ namespace DCL
 
             DCLCharacterController.OnCharacterMoved += SetPositionDirty;
         }
-
-        bool positionDirty = true;
-
-        private void SetPositionDirty(DCLCharacterPosition obj)
+        private void SetPositionDirty(DCLCharacterPosition character)
         {
-            positionDirty = true;
+            var currentX = (int)Math.Floor(character.worldPosition.x / ParcelSettings.PARCEL_SIZE);
+            var currentY = (int)Math.Floor(character.worldPosition.z / ParcelSettings.PARCEL_SIZE);
+            positionDirty = currentX != currentGridSceneCoordinate.x || currentY != currentGridSceneCoordinate.y;
+            if (positionDirty)
+            {
+                currentGridSceneCoordinate.x = currentX;
+                currentGridSceneCoordinate.y = currentY;
+            }
         }
 
         void Start()
@@ -176,24 +192,40 @@ namespace DCL
 
         private void PrioritizeMessageControllerList(bool force = false)
         {
-            bool sortTimeout = Time.realtimeSinceStartup - lastTimeMessageControllerSorted >= SORT_MESSAGE_CONTROLLER_TIME;
-            bool positionDirty = this.positionDirty || !RenderingController.i.renderingEnabled;
+            bool forceSort = force || !RenderingController.i.renderingEnabled;
 
-            if (force || (sortTimeout && positionDirty))
+            if (forceSort || positionDirty)
             {
                 positionDirty = false;
                 lastTimeMessageControllerSorted = Time.realtimeSinceStartup;
                 scenesSortedByDistance.Sort(SceneMessagingSortByDistance);
+                ParcelScene currentScene = scenesSortedByDistance.Any()
+                    ? scenesSortedByDistance.First(scene => scene.sceneData != null && !scene.isPersistent)
+                    : null;
+                if (currentScene != null)
+                {
+                    if (currentScene.sceneData != null)
+                    {
+                        currentSceneId = currentScene.sceneData.id;
+                    }
+                }
                 OnSortScenes?.Invoke();
             }
         }
-
-        public event System.Action OnSortScenes;
-
         private int SceneMessagingSortByDistance(ParcelScene sceneA, ParcelScene sceneB)
         {
-            int dist1 = (int)(sceneA.transform.position - DCLCharacterController.i.transform.position).sqrMagnitude;
-            int dist2 = (int)(sceneB.transform.position - DCLCharacterController.i.transform.position).sqrMagnitude;
+            if (sceneA == null || sceneA.transform == null)
+                return int.MinValue;
+            if (sceneB == null || sceneB.transform == null)
+                return int.MaxValue;
+
+            sortAuxiliaryVector.x = (int)sceneA.transform.position.x;
+            sortAuxiliaryVector.y = (int)sceneA.transform.position.z;
+            int dist1 = (sortAuxiliaryVector - currentGridSceneCoordinate).sqrMagnitude;
+
+            sortAuxiliaryVector.x = (int)sceneB.transform.position.x;
+            sortAuxiliaryVector.y = (int)sceneB.transform.position.z;
+            int dist2 = (sortAuxiliaryVector - currentGridSceneCoordinate).sqrMagnitude;
 
             return dist1 - dist2;
         }
@@ -219,10 +251,12 @@ namespace DCL
                 newScene.unloadWithDistance = false;
                 newScene.isPersistent = true;
 
-                LoadParcelScenesMessage.UnityParcelScene data = new LoadParcelScenesMessage.UnityParcelScene();
-                data.id = uiSceneId;
-                data.basePosition = new Vector2Int(0, 0);
-                data.baseUrl = uiScene.baseUrl;
+                LoadParcelScenesMessage.UnityParcelScene data = new LoadParcelScenesMessage.UnityParcelScene
+                {
+                    id = uiSceneId,
+                    basePosition = new Vector2Int(0, 0),
+                    baseUrl = uiScene.baseUrl
+                };
                 newScene.SetData(data);
 
                 loadedScenes.Add(uiSceneId, newScene);
@@ -285,9 +319,16 @@ namespace DCL
 
             return res;
         }
-
-        public string GetCurrentScene(DCLCharacterPosition position)
+        public string GetCurrentScene(DCLCharacterPosition position = null)
         {
+            if (position == null)
+            {
+                position = DCLCharacterController.i.characterPosition;
+            }
+            if (!positionDirty && currentSceneId != null)
+            {
+                return currentSceneId;
+            }
             using (var iterator = loadedScenes.GetEnumerator())
             {
                 while (iterator.MoveNext())
@@ -295,29 +336,8 @@ namespace DCL
                     ParcelScene scene = iterator.Current.Value;
                     if (scene.sceneData.id != globalSceneId)
                     {
-                        if (scene.IsInsideSceneBoundaries(DCLCharacterController.i.characterPosition))
+                        if (scene.IsInsideSceneBoundaries(position))
                             return scene.sceneData.id;
-                    }
-                }
-            }
-
-            return null;
-        }
-
-        ParcelScene GetDecentralandSceneOfGridPosition(Vector2Int gridPosition)
-        {
-            foreach (var estate in loadedScenes)
-            {
-                if (estate.Value.sceneData.basePosition.Equals(gridPosition))
-                {
-                    return estate.Value;
-                }
-
-                foreach (var iteratedParcel in estate.Value.sceneData.parcels)
-                {
-                    if (iteratedParcel == gridPosition)
-                    {
-                        return estate.Value;
                     }
                 }
             }
@@ -553,7 +573,7 @@ namespace DCL
 
         private IEnumerator DeferredDecoding()
         {
-            float lastTimeDecoded = Time.unscaledTime;
+            float lastTimeDecoded = Time.realtimeSinceStartup;
 
             while (true)
             {
