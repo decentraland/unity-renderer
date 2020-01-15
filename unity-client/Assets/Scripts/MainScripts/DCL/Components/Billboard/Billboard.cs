@@ -15,8 +15,10 @@ namespace DCL
         }
 
         public Model model = new Model();
+
         Transform entityTransform;
-        public Vector3Variable cameraPosition => CommonScriptableObjects.cameraPosition;
+        Vector3Variable cameraPosition => CommonScriptableObjects.cameraPosition;
+        Vector3 lastPosition;
 
         public override IEnumerator ApplyChanges(string newJson)
         {
@@ -40,16 +42,23 @@ namespace DCL
             DCLCharacterController.OnCharacterMoved -= OnCharacterMoved;
         }
 
-        public void Update()
+        // This runs on LateUpdate() instead of Update() to be applied AFTER the transform was moved by the transform component
+        public void LateUpdate()
         {
             //NOTE(Brian): This fixes #757 (https://github.com/decentraland/unity-client/issues/757)
             //             We must find a more performant way to handle this, until that time, this is the approach.
+
+            if (transform.position == lastPosition) return;
+
+            lastPosition = transform.position;
+
             ChangeOrientation();
         }
 
         Vector3 GetLookAtVector()
         {
-            Vector3 lookAtDir = (cameraPosition - entityTransform.position);
+            bool hasTextShape = entity.components.ContainsKey(Models.CLASS_ID_COMPONENT.TEXT_SHAPE);
+            Vector3 lookAtDir = hasTextShape ? (entityTransform.position - cameraPosition) : (cameraPosition - entityTransform.position);
 
             // Note (Zak): This check is here to avoid normalizing twice if not needed
             if (!(model.x && model.y && model.z))
