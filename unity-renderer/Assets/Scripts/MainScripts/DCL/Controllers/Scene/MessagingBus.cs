@@ -32,7 +32,6 @@ namespace DCL
         public const string SYSTEM = "SYSTEM";
     }
 
-
     public enum QueueMode
     {
         Reliable,
@@ -197,9 +196,6 @@ namespace DCL
                 {
                     MessagingControllersManager.i.pendingInitMessagesCount++;
                 }
-
-                if (owner != null)
-                    owner.enabled = true;
             }
         }
 
@@ -209,21 +205,20 @@ namespace DCL
                 unreliableMessages.Remove(message.unreliableMessageKey);
         }
 
-        public bool ProcessQueue(float timeBudget, out IEnumerator yieldReturn)
+        public bool ProcessQueue(float timeBudget)
         {
             LinkedList<MessagingBus.QueuedSceneMessage> queue = pendingMessages;
-            yieldReturn = null;
 
             // Note (Zak): This check is to avoid calling DCLDCLTime.realtimeSinceStartup
             // unnecessarily because it's pretty slow in JS
             if (timeBudget == 0 || !isRunning || queue.Count == 0)
                 return false;
 
-            float startTime = DCLTime.realtimeSinceStartup;
+            float startTime = Time.realtimeSinceStartup;
 
-            while (timeBudget != 0 && isRunning && queue.Count > 0 && DCLTime.realtimeSinceStartup - startTime < timeBudget)
+            while (queue.Count > 0 && Time.realtimeSinceStartup - startTime < timeBudget)
             {
-                MessagingBus.QueuedSceneMessage m = queue.First.Value;
+                QueuedSceneMessage m = queue.First.Value;
 
                 if (queue.First != null)
                     queue.RemoveFirst();
@@ -267,8 +262,6 @@ namespace DCL
                         if (msgYieldInstruction != null)
                         {
                             processedMessagesCount++;
-
-                            yieldReturn = msgYieldInstruction;
 
                             msgYieldInstruction = null;
 
