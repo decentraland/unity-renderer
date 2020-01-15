@@ -1,4 +1,4 @@
-using DCL.Controllers;
+﻿using DCL.Controllers;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -208,7 +208,6 @@ namespace DCL
         IEnumerator ProcessMessages()
         {
             float prevTimeBudget;
-            IEnumerator yieldReturn;
             float start;
 
             while (true)
@@ -227,7 +226,7 @@ namespace DCL
                     {
                         processedBus = true;
 
-                        if (ProcessBus(uiSceneController.uiBus, ref prevTimeBudget, out yieldReturn))
+                        if (ProcessBus(uiSceneController.uiBus, ref prevTimeBudget))
                             break;
                     }
 
@@ -236,7 +235,7 @@ namespace DCL
                     if (globalController != null && globalController.enabled)
                     {
                         processedBus = true;
-                        if (ProcessBus(globalController.initBus, ref prevTimeBudget, out yieldReturn))
+                        if (ProcessBus(globalController.initBus, ref prevTimeBudget))
                             break;
                     }
 
@@ -245,7 +244,7 @@ namespace DCL
                     if (uiSceneController != null && uiSceneController.enabled)
                     {
                         processedBus = true;
-                        if (ProcessBus(uiSceneController.initBus, ref prevTimeBudget, out yieldReturn))
+                        if (ProcessBus(uiSceneController.initBus, ref prevTimeBudget))
                             break;
                     }
 
@@ -254,13 +253,13 @@ namespace DCL
                     if (currentSceneController != null && currentSceneController.enabled)
                     {
                         processedBus = true;
-                        if (ProcessBus(currentSceneController.initBus, ref prevTimeBudget, out yieldReturn))
+                        if (ProcessBus(currentSceneController.initBus, ref prevTimeBudget))
                             break;
 
-                        if (ProcessBus(currentSceneController.uiBus, ref prevTimeBudget, out yieldReturn))
+                        if (ProcessBus(currentSceneController.uiBus, ref prevTimeBudget))
                             break;
 
-                        if (ProcessBus(currentSceneController.systemBus, ref prevTimeBudget, out yieldReturn))
+                        if (ProcessBus(currentSceneController.systemBus, ref prevTimeBudget))
                             break;
                     }
 
@@ -273,7 +272,7 @@ namespace DCL
                         MessagingController msgController = sortedControllers[i];
                         processedBus = true;
 
-                        if (ProcessBus(msgController.initBus, ref prevTimeBudget, out yieldReturn))
+                        if (ProcessBus(msgController.initBus, ref prevTimeBudget))
                         {
                             shouldRestart = true;
                             break;
@@ -292,7 +291,7 @@ namespace DCL
                         MessagingController msgController = sortedControllers[i];
                         processedBus = true;
 
-                        if (ProcessBus(msgController.uiBus, ref prevTimeBudget, out yieldReturn))
+                        if (ProcessBus(msgController.uiBus, ref prevTimeBudget))
                         {
                             shouldRestart = true;
                             break;
@@ -307,7 +306,7 @@ namespace DCL
                     if (uiSceneController != null && uiSceneController.enabled)
                     {
                         processedBus = true;
-                        if (ProcessBus(uiSceneController.systemBus, ref prevTimeBudget, out yieldReturn))
+                        if (ProcessBus(uiSceneController.systemBus, ref prevTimeBudget))
                             break;
                     }
 
@@ -320,7 +319,7 @@ namespace DCL
 
                         processedBus = true;
 
-                        if (ProcessBus(msgController.systemBus, ref prevTimeBudget, out yieldReturn))
+                        if (ProcessBus(msgController.systemBus, ref prevTimeBudget))
                         {
                             shouldRestart = true;
                             break;
@@ -335,45 +334,36 @@ namespace DCL
             }
         }
 
-        bool ProcessBus(MessagingBus bus, ref float prevTimeBudget, out IEnumerator yieldReturn)
+        bool ProcessBus(MessagingBus bus, ref float prevTimeBudget)
         {
-            if (bus.isRunning && bus.pendingMessagesCount > 0)
+            if (!bus.isRunning || bus.pendingMessagesCount <= 0)
             {
-                float startTime = Time.realtimeSinceStartup;
-
-                yieldReturn = null;
-
-                float timeBudget = prevTimeBudget;
-
-                if (RenderingController.i.renderingEnabled)
-                    timeBudget = Mathf.Clamp(timeBudget, bus.budgetMin, bus.budgetMax);
-                else
-                    timeBudget = Mathf.Clamp(timeBudget, GLOBAL_MIN_MSG_BUDGET_WHEN_LOADING, GLOBAL_MAX_MSG_BUDGET_WHEN_LOADING);
-
-                if (VERBOSE && timeBudget == 0)
-                {
-                    string finalTag = SceneController.i.TryToGetSceneCoordsID(bus.debugTag);
-                    Debug.Log($"#{bus.processedMessagesCount} ... bus = {finalTag}, id = {bus.id}... timeBudget is zero!!!");
-                }
-
-                bool queueResult = bus.ProcessQueue(timeBudget, out yieldReturn);
-
-                bus.owner?.RefreshEnabledState();
-
-                if (queueResult)
-                    return true;
-
-                prevTimeBudget -= Time.realtimeSinceStartup - startTime;
-
-                if (prevTimeBudget <= 0)
-                {
-                    return true;
-                }
-            }
-            else
-            {
-                yieldReturn = null;
                 return false;
+            }
+
+            float startTime = Time.realtimeSinceStartup;
+
+            float timeBudget = prevTimeBudget;
+
+            if (RenderingController.i.renderingEnabled)
+                timeBudget = Mathf.Clamp(timeBudget, bus.budgetMin, bus.budgetMax);
+            else
+                timeBudget = Mathf.Clamp(timeBudget, GLOBAL_MIN_MSG_BUDGET_WHEN_LOADING, GLOBAL_MAX_MSG_BUDGET_WHEN_LOADING);
+
+            if (VERBOSE && timeBudget == 0)
+            {
+                string finalTag = SceneController.i.TryToGetSceneCoordsID(bus.debugTag);
+                Debug.Log($"#{bus.processedMessagesCount} ... bus = {finalTag}, id = {bus.id}... timeBudget is zero!!!");
+            }
+
+            bus.ProcessQueue(timeBudget, out _);
+            bus.owner?.RefreshEnabledState();
+
+            prevTimeBudget -= Time.realtimeSinceStartup - startTime;
+
+            if (prevTimeBudget <= 0)
+            {
+                return true;
             }
 
             return false;
