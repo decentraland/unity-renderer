@@ -165,13 +165,13 @@ export class Shape extends ObservableComponent {
  * @public
  */
 @DisposableComponent('engine.shape', CLASS_ID.BOX_SHAPE)
-export class BoxShape extends Shape { }
+export class BoxShape extends Shape {}
 
 /**
  * @public
  */
 @DisposableComponent('engine.shape', CLASS_ID.SPHERE_SHAPE)
-export class SphereShape extends Shape { }
+export class SphereShape extends Shape {}
 
 /**
  * @public
@@ -746,7 +746,7 @@ export class OnUUIDEvent<T extends keyof IEvents> extends ObservableComponent {
   static uuidEvent(target: ObservableComponent, propertyKey: string) {
     if (delete (target as any)[propertyKey]) {
       const componentSymbol = propertyKey + '_' + Math.random()
-      ; (target as any)[componentSymbol] = undefined
+      ;(target as any)[componentSymbol] = undefined
 
       Object.defineProperty(target, componentSymbol, {
         ...Object.getOwnPropertyDescriptor(target, componentSymbol),
@@ -754,10 +754,10 @@ export class OnUUIDEvent<T extends keyof IEvents> extends ObservableComponent {
       })
 
       Object.defineProperty(target, propertyKey.toString(), {
-        get: function () {
+        get: function() {
           return this[componentSymbol]
         },
-        set: function (value) {
+        set: function(value) {
           const oldValue = this[componentSymbol]
 
           if (value) {
@@ -798,13 +798,13 @@ export class OnPointerUUIDEvent<T extends keyof IEvents> extends OnUUIDEvent<T> 
   button: ActionButton = ActionButton.ANY
 
   @ObservableComponent.field
-  hoverText: string = "Interact"
+  hoverText: string = 'Interact'
 
   @ObservableComponent.field
   distance: number = 10
 
   @ObservableComponent.field
-  showFeeback: boolean = true
+  showFeedback: boolean = true
 
   toJSON() {
     return {
@@ -813,7 +813,7 @@ export class OnPointerUUIDEvent<T extends keyof IEvents> extends OnUUIDEvent<T> 
       button: this.button,
       hoverText: this.hoverText,
       distance: this.distance,
-      showFeeback: this.showFeeback
+      showFeedback: this.showFeedback
     }
   }
 }
@@ -840,4 +840,4 @@ export class OnAnimationEnd extends OnUUIDEvent<'onAnimationEnd'> {
  * @internal
  */
 @Component('engine.smartItem', CLASS_ID.SMART_ITEM)
-export class SmartItem extends ObservableComponent { }
+export class SmartItem extends ObservableComponent {}
