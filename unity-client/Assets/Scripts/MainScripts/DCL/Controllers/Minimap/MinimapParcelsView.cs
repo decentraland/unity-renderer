@@ -60,13 +60,16 @@ public class MinimapParcelsView : MonoBehaviour
     public void DrawParcels(Vector2Int newCoords)
     {
         Recenter();
-
-        foreach (var keyValuePair in parcelsIcon)
+        for (int i = -sideCount; i <= sideCount; i++)
         {
-            int x = newCoords.x + keyValuePair.Key.Item1;
-            int y = newCoords.y + keyValuePair.Key.Item2;
-            var tile = minimapmetadata.GetTile(x, y);
-            keyValuePair.Value.material.SetColor(_BaseColor, tile?.color ?? Color.grey);
+            for (int j = - sideCount; j <= sideCount; j++)
+            {
+                var tile = minimapmetadata.GetTile(newCoords.x + i, newCoords.y + j);
+                if (parcelsIcon.TryGetValue((i, j), out Renderer icon))
+                {
+                    icon.material.SetColor(_BaseColor, tile?.color ?? Color.grey);
+                }
+            }
         }
     }
 
