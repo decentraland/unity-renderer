@@ -42,6 +42,7 @@ namespace DCL
         public Dictionary<string, MessagingBus> messagingBuses = new Dictionary<string, MessagingBus>();
         public IMessageHandler messageHandler;
         public string debugTag;
+        public bool enabled = true;
 
         private QueueState currentQueueState
         {
@@ -59,9 +60,9 @@ namespace DCL
             this.messageHandler = messageHandler;
 
             //TODO(Brian): This is too hacky, most of the controllers won't be using this system. Refactor this in the future.
-            uiBus = AddMessageBus(MessagingBusId.UI, budgetMin: MessagingControllersManager.MSG_BUS_BUDGET_MIN, budgetMax: MessagingControllersManager.UI_MSG_BUS_BUDGET_MAX);
-            initBus = AddMessageBus(MessagingBusId.INIT, budgetMin: MessagingControllersManager.MSG_BUS_BUDGET_MIN, budgetMax: MessagingControllersManager.INIT_MSG_BUS_BUDGET_MAX);
-            systemBus = AddMessageBus(MessagingBusId.SYSTEM, budgetMin: MessagingControllersManager.MSG_BUS_BUDGET_MIN, budgetMax: MessagingControllersManager.SYSTEM_MSG_BUS_BUDGET_MAX);
+            uiBus = AddMessageBus(MessagingBusId.UI);
+            initBus = AddMessageBus(MessagingBusId.INIT);
+            systemBus = AddMessageBus(MessagingBusId.SYSTEM);
 
             currentQueueState = QueueState.Init;
 
@@ -69,9 +70,9 @@ namespace DCL
             StartBus(MessagingBusId.UI);
         }
 
-        private MessagingBus AddMessageBus(string id, float budgetMin, float budgetMax)
+        private MessagingBus AddMessageBus(string id)
         {
-            var newMessagingBus = new MessagingBus(id, messageHandler, this, budgetMin, budgetMax);
+            var newMessagingBus = new MessagingBus(id, messageHandler, this);
             newMessagingBus.debugTag = debugTag;
 
             messagingBuses.Add(id, newMessagingBus);

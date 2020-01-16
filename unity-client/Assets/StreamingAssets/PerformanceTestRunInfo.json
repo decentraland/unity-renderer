@@ -11,10 +11,10 @@
         "XrDevice": ""
     },
     "EditorVersion": {
-        "FullVersion": "2019.1.8f1 (7938dd008a75)",
-        "DateSeconds": 1560418207,
+        "FullVersion": "2019.1.14f1 (148b5891095a)",
+        "DateSeconds": 1564659201,
         "Branch": "2019.1/staging",
-        "RevisionValue": 7944413
+        "RevisionValue": 1346392
     },
     "BuildSettings": {
         "Platform": "",
@@ -51,7 +51,7 @@
         "ScriptingRuntimeVersion": ""
     },
     "TestSuite": "",
-    "StartTime": 1569865288586.7888,
+    "StartTime": 1579190253685.3716,
     "EndTime": 0.0,
     "Results": []
 }
