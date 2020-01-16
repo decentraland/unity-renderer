@@ -138,11 +138,14 @@ namespace DCL
 
             DCLCharacterController.OnCharacterMoved += SetPositionDirty;
         }
+
         private void SetPositionDirty(DCLCharacterPosition character)
         {
             var currentX = (int)Math.Floor(character.worldPosition.x / ParcelSettings.PARCEL_SIZE);
             var currentY = (int)Math.Floor(character.worldPosition.z / ParcelSettings.PARCEL_SIZE);
+
             positionDirty = currentX != currentGridSceneCoordinate.x || currentY != currentGridSceneCoordinate.y;
+
             if (positionDirty)
             {
                 currentGridSceneCoordinate.x = currentX;
@@ -199,16 +202,16 @@ namespace DCL
                 positionDirty = false;
                 lastTimeMessageControllerSorted = Time.realtimeSinceStartup;
                 scenesSortedByDistance.Sort(SceneMessagingSortByDistance);
+
                 ParcelScene currentScene = scenesSortedByDistance.Any()
                     ? scenesSortedByDistance.First(scene => scene.sceneData != null && !scene.isPersistent)
                     : null;
-                if (currentScene != null)
+
+                if (currentScene != null && currentScene.sceneData != null)
                 {
-                    if (currentScene.sceneData != null)
-                    {
-                        currentSceneId = currentScene.sceneData.id;
-                    }
+                    currentSceneId = currentScene.sceneData.id;
                 }
+
                 OnSortScenes?.Invoke();
             }
         }
@@ -325,15 +328,18 @@ namespace DCL
             {
                 position = DCLCharacterController.i.characterPosition;
             }
+
             if (!positionDirty && currentSceneId != null)
             {
                 return currentSceneId;
             }
+
             using (var iterator = loadedScenes.GetEnumerator())
             {
                 while (iterator.MoveNext())
                 {
                     ParcelScene scene = iterator.Current.Value;
+
                     if (scene.sceneData.id != globalSceneId)
                     {
                         if (scene.IsInsideSceneBoundaries(position))
@@ -359,6 +365,7 @@ namespace DCL
             var sceneToLoad = scene;
 
             OnMessageProcessStart?.Invoke(MessagingTypes.SCENE_LOAD);
+
             if (!loadedScenes.ContainsKey(sceneToLoad.id))
             {
                 var newGameObject = new GameObject("New Scene");
@@ -378,8 +385,6 @@ namespace DCL
 
                 if (!MessagingControllersManager.i.ContainsController(newScene.sceneData.id))
                     MessagingControllersManager.i.AddController(this, newScene.sceneData.id);
-
-                PrioritizeMessageControllerList(force: true);
 
                 if (VERBOSE)
                     Debug.Log($"{Time.frameCount} : Load parcel scene {newScene.sceneData.basePosition}");
@@ -492,9 +497,10 @@ namespace DCL
 
             MessagingControllersManager.i.ForceEnqueueToGlobal(MessagingBusId.INIT, queuedMessage);
 
+            PrioritizeMessageControllerList(force: true);
+
             if (VERBOSE)
                 Debug.Log($"{Time.frameCount} : Load parcel scene queue {decentralandSceneJSON}");
-
         }
 
         public void UpdateParcelScenes(string decentralandSceneJSON)

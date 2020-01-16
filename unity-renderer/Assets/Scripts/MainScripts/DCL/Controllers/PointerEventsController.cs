@@ -1,7 +1,6 @@
-﻿using DCL.Components;
+using DCL.Components;
 using DCL.Helpers;
 using DCL.Interface;
-using System.Collections;
 using UnityEngine;
 
 namespace DCL
@@ -50,7 +49,7 @@ namespace DCL
 
         void Update()
         {
-            if (!RenderingController.i.renderingEnabled || charCamera == null) return;
+            if (RenderingController.i == null || !RenderingController.i.renderingEnabled || charCamera == null) return;
 
             // We use Physics.Raycast() instead of our raycastHandler.Raycast() as that one is slower, sometimes 2x, because it fetches info we don't need here
             if (Physics.Raycast(GetRayFromCamera(), out hitInfo, Mathf.Infinity, Configuration.LayerMasks.physicsCastLayerMaskWithoutCharacter))

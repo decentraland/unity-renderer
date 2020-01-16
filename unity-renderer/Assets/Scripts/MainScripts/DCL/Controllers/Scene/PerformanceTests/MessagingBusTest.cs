@@ -23,7 +23,7 @@ namespace MessagingBusTest
         {
             if (bus == null)
             {
-                bus = new MessagingBus("bus", dummyHandler, null, 0.1f, 1f);
+                bus = new MessagingBus("bus", dummyHandler, null);
             }
             if (nextQueueMessage == null)
             {
@@ -60,7 +60,7 @@ namespace MessagingBusTest
                 Assert.IsTrue(bus.pendingMessagesCount > 1000);
                 while (bus.processedMessagesCount < processed + 1000)
                 {
-                    bus.ProcessQueue(0.1f);
+                    bus.ProcessQueue(0.1f, out _);
                 }
             })
             .SetUp(() =>
@@ -113,8 +113,10 @@ namespace MessagingBusTest
                 message = dataAsJson[i];
                 separator = message.IndexOf(' ');
                 locator = "";
+
                 if (separator != -1)
                     locator = message.Substring(0, separator);
+
                 if (locator == SEND_SCENE_MESSAGE)
                 {
                     raw = message.Substring(separator + 2, message.Length - SEND_SCENE_MESSAGE.Length - SEND_SCENE_UNUSED_CHARS);

@@ -26,7 +26,8 @@ public class CameraController : MonoBehaviour
 
     private void Start()
     {
-        RenderingController.i.OnRenderingStateChanged += OnRenderingStateChanged;
+        if (RenderingController.i != null)
+            RenderingController.i.OnRenderingStateChanged += OnRenderingStateChanged;
 
         cachedModeToVirtualCamera = cameraModes.ToDictionary(x => x.cameraModeId, x => x);
 

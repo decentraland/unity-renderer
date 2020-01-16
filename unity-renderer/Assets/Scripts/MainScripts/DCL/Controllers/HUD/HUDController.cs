@@ -3,25 +3,11 @@ using DCL.SettingsHUD;
 
 public class HUDController : MonoBehaviour
 {
-    private static HUDController instance;
+    public static HUDController i { get; private set; }
 
-    public static HUDController i
+    private void Awake()
     {
-        get
-        {
-            if (instance == null)
-            {
-                instance = FindObjectOfType<HUDController>();
-
-                if (instance == null)
-                {
-                    GameObject instanceContainer = new GameObject("HUDController");
-                    instance = instanceContainer.AddComponent<HUDController>();
-                }
-            }
-
-            return instance;
-        }
+        i = this;
     }
 
     public AvatarHUDController avatarHud { get; private set; }
