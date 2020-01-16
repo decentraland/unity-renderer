@@ -1,5 +1,4 @@
 import {
-  ComponentLike,
   DisposableComponentCreated,
   DisposableComponentRemoved,
   DisposableComponentUpdated,
@@ -227,24 +226,12 @@ export class DecentralandSynchronizationSystem implements ISystem {
     this.dcl.setParent(event.entity.uuid, event.parent ? event.parent.uuid : ROOT_ENTITY_ID)
   }
 
-  private getJsonIfDirty(
-    entityId: string,
-    componentName: string,
-    component: ComponentLike | ObservableComponent
-  ): false | string {
-    if (component instanceof ObservableComponent) {
-      return component.dirty && JSON.stringify(component)
-    } else {
-      const jsonRepresentation = JSON.stringify(component)
-      return jsonRepresentation !== this.cachedComponents[entityId][componentName] && jsonRepresentation
-    }
+  private getJsonIfDirty(entityId: string, componentName: string, component: any): false | string {
+    const jsonRepresentation = JSON.stringify(component)
+    return jsonRepresentation !== this.cachedComponents[entityId][componentName] && jsonRepresentation
   }
 
-  private clearDirty(entityId: string, componentName: string, component: ComponentLike, jsonRepresentation: string) {
-    if (component instanceof ObservableComponent) {
-      component.dirty = false
-    } else {
-      this.cachedComponents[entityId][componentName] = jsonRepresentation
-    }
+  private clearDirty(entityId: string, componentName: string, component: any, jsonRepresentation: string) {
+    this.cachedComponents[entityId][componentName] = jsonRepresentation
   }
 }
