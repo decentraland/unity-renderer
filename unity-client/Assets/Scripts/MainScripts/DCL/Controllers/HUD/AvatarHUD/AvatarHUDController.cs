@@ -8,6 +8,7 @@ public class AvatarHUDController : IHUD
     public bool expanded { get; private set; }
 
     public event System.Action OnEditAvatarPressed;
+    public event System.Action OnSettingsPressed;
 
     public AvatarHUDController(bool visibility = true, bool expanded = false) : this(new AvatarHUDModel(), visibility, expanded) { }
 
@@ -53,6 +54,11 @@ public class AvatarHUDController : IHUD
     public void SignOut()
     {
         DCL.Interface.WebInterface.LogOut();
+    }
+
+    public void ShowSettings()
+    {
+        OnSettingsPressed?.Invoke();
     }
 
     public void SetConfiguration(HUDConfiguration configuration)

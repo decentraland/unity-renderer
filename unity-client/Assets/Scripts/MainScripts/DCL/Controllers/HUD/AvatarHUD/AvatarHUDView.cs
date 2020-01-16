@@ -31,6 +31,9 @@ public class AvatarHUDView : MonoBehaviour
     [SerializeField] private GameObject newWearableNotification;
     [SerializeField] private TextMeshProUGUI newWearableNotificationText;
 
+    [Header("Settings")]
+    [SerializeField] private Button settingsButton;
+
     [Header("Sign Out")]
     [SerializeField] private Button signOutButton;
 
@@ -47,6 +50,9 @@ public class AvatarHUDView : MonoBehaviour
 
         signOutButton.onClick.AddListener(controller.SignOut);
         signOutButton.onClick.AddListener(controller.ToggleExpanded);
+
+        settingsButton.onClick.AddListener(controller.ShowSettings);
+        settingsButton.onClick.AddListener(controller.ToggleExpanded);
     }
 
     internal static AvatarHUDView Create(AvatarHUDController controller)

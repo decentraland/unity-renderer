@@ -1,4 +1,5 @@
 using UnityEngine;
+using DCL.SettingsHUD;
 
 public class HUDController : MonoBehaviour
 {
@@ -27,6 +28,7 @@ public class HUDController : MonoBehaviour
     public NotificationHUDController notificationHud { get; private set; }
     public MinimapHUDController minimapHud { get; private set; }
     public AvatarEditorHUDController avatarEditorHud { get; private set; }
+    public SettingsHUDController settingsHud { get; private set; }
 
     private UserProfile ownUserProfile => UserProfile.GetOwnUserProfile();
     private WearableDictionary wearableCatalog => CatalogController.wearableCatalog;
@@ -34,6 +36,11 @@ public class HUDController : MonoBehaviour
     private void ShowAvatarEditor()
     {
         avatarEditorHud?.SetVisibility(true);
+    }
+
+    private void ShowSettings()
+    {
+        settingsHud?.SetVisibility(true);
     }
 
     private void OwnUserProfileUpdated(UserProfile profile)
@@ -78,6 +85,7 @@ public class HUDController : MonoBehaviour
         {
             avatarHud = new AvatarHUDController();
             avatarHud.OnEditAvatarPressed += ShowAvatarEditor;
+            avatarHud.OnSettingsPressed += ShowSettings;
             ownUserProfile.OnUpdate += OwnUserProfileUpdated;
             OwnUserProfileUpdated(ownUserProfile);
         }
@@ -107,6 +115,17 @@ public class HUDController : MonoBehaviour
         avatarEditorHud?.SetVisibility(configuration.active && configuration.visible);
     }
 
+    public void ConfigureSettingsHUD(string configurationJson)
+    {
+        HUDConfiguration configuration = JsonUtility.FromJson<HUDConfiguration>(configurationJson);
+        if (configuration.active && settingsHud == null)
+        {
+            settingsHud = new SettingsHUDController();
+        }
+
+        settingsHud?.SetVisibility(configuration.active && configuration.visible);
+    }
+
     private void UpdateAvatarHUD()
     {
         avatarHud?.UpdateData(new AvatarHUDModel()
@@ -124,6 +143,7 @@ public class HUDController : MonoBehaviour
         if (avatarHud != null)
         {
             avatarHud.OnEditAvatarPressed -= ShowAvatarEditor;
+            avatarHud.OnSettingsPressed -= ShowSettings;
         }
 
         minimapHud?.Dispose();

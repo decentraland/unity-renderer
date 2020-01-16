@@ -141,12 +141,7 @@ namespace DCL
         {
 #if UNITY_EDITOR
             SceneController.i.isWssDebugMode = true;
-#endif
-        }
 
-        private void OnEnable()
-        {
-#if UNITY_EDITOR
             ws = new WebSocketServer("ws://localhost:5000");
             ws.AddWebSocketService<DCLWebSocketService>("/dcl");
             ws.Start();
@@ -217,11 +212,14 @@ namespace DCL
 #endif
         }
 
-        private void OnDisable()
+        private void OnDestroy()
         {
 #if UNITY_EDITOR
-            ws.Stop();
-            ws = null;
+            if (ws != null)
+            {
+                ws.Stop();
+                ws = null;
+            }
 #endif
         }
 
@@ -376,6 +374,9 @@ namespace DCL
                                 break;
                             case "UpdateMinimapSceneInformation":
                                 MinimapMetadataController.i.UpdateMinimapSceneInformation(msg.payload);
+                                break;
+                            case "ConfigureSettingsHUD":
+                                HUDController.i.ConfigureSettingsHUD(msg.payload);
                                 break;
                             default:
                                 Debug.Log("<b><color=#FF0000>WSSController:</color></b> received an unknown message from kernel to renderer: " + msg.type);

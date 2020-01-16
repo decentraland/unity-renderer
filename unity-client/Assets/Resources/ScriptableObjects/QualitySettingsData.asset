@@ -1,0 +1,46 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: de20c26162ae24092b9bf5d122b2d850, type: 3}
+  m_Name: QualitySettingsData
+  m_EditorClassIdentifier: 
+  defaultPresetIndex: 1
+  settings:
+  - displayName: Basic
+    textureQuality: 1
+    antiAliasing: 1
+    renderScale: 1
+    shadows: 0
+    softShadows: 0
+    shadowResolution: 256
+    cameraDrawDistance: 50
+    bloom: 0
+    colorGrading: 0
+  - displayName: Medium
+    textureQuality: 0
+    antiAliasing: 2
+    renderScale: 1
+    shadows: 1
+    softShadows: 1
+    shadowResolution: 256
+    cameraDrawDistance: 100
+    bloom: 1
+    colorGrading: 1
+  - displayName: High
+    textureQuality: 0
+    antiAliasing: 4
+    renderScale: 1
+    shadows: 1
+    softShadows: 1
+    shadowResolution: 1024
+    cameraDrawDistance: 100
+    bloom: 1
+    colorGrading: 1
