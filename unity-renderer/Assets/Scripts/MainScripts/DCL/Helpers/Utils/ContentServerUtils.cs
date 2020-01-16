@@ -94,7 +94,7 @@ namespace DCL
         public static string GetBundlesAPIUrlBase(ApiEnvironment env)
         {
             string envString = GetEnvString(env);
-            return $"https://content-as-bundle.decentraland.zone/contents/";
+            return $"https://content-assets-as-bundle.decentraland.org/";
         }
     }
 }
