@@ -78,6 +78,7 @@ initializeUnity(container)
   .then(async ret => {
     HUD.Minimap.configure({ active: true, visible: true })
     HUD.Notification.configure({ active: true, visible: true })
+    HUD.Settings.configure({ active: true, visible: false })
 
     const renderable = sceneRenderable()
 

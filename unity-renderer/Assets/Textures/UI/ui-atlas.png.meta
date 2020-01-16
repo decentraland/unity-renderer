@@ -320,6 +320,15 @@ TextureImporter:
   - first:
       213: 7595667864703430088
     second: nft-stroke
+  - first:
+      213: 7595667864703430088
+    second: AvatarHudBg
+  - first:
+      213: 8612796958653499832
+    second: SettingsIcon
+  - first:
+      213: -6477969936320127232
+    second: KeyBindingsBg
   externalObjects: {}
   serializedVersion: 10
   mipmaps:
@@ -2382,6 +2391,69 @@ TextureImporter:
       bones: []
       spriteID: 82543d8e480864ef2bbc9340ff8f7e62
       internalID: 7595667864703430088
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: AvatarHudBg
+      rect:
+        serializedVersion: 2
+        x: 303
+        y: 9
+        width: 30
+        height: 186
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 14, y: 0, z: 13, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: aba359aefa42d45c1b744547a528cccb
+      internalID: 7595667864703430088
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SettingsIcon
+      rect:
+        serializedVersion: 2
+        x: 336
+        y: 136
+        width: 38
+        height: 38
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 274a3932891ea4384b133be57752463e
+      internalID: 8612796958653499832
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: KeyBindingsBg
+      rect:
+        serializedVersion: 2
+        x: 336
+        y: 116
+        width: 14
+        height: 14
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 6, y: 5, z: 6, w: 5}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: f776beeecc994479ab16926fb33aef60
+      internalID: -6477969936320127232
       vertices: []
       indices: 
       edges: []

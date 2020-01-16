@@ -24,5 +24,10 @@ namespace DCL
 
             i = this;
         }
+
+        void OnDestroy()
+        {
+            i = null;
+        }
     }
 }

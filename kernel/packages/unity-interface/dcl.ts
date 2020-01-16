@@ -361,6 +361,9 @@ export const unityInterface = {
   ConfigureAvatarEditorHUD(configuration: HUDConfiguration) {
     gameInstance.SendMessage('HUDController', 'ConfigureAvatarEditorHUD', JSON.stringify(configuration))
   },
+  ConfigureSettingsHUD(configuration: HUDConfiguration) {
+    gameInstance.SendMessage('HUDController', 'ConfigureSettingsHUD', JSON.stringify(configuration))
+  },
   UpdateMinimapSceneInformation(info: { name: string; type: number; parcels: { x: number; y: number }[] }[]) {
     const chunks = chunkGenerator(CHUNK_SIZE, info)
 
@@ -430,6 +433,9 @@ export const HUD: Record<string, { configure: (config: HUDConfiguration) => void
   },
   AvatarEditor: {
     configure: unityInterface.ConfigureAvatarEditorHUD
+  },
+  Settings: {
+    configure: unityInterface.ConfigureSettingsHUD
   }
 }
 
