@@ -5,7 +5,6 @@ import {
   DisposableComponentUpdated,
   getComponentClassId,
   getComponentId,
-  getComponentName,
   isDisposableComponent,
   ObservableComponent
 } from '../ecs/Component'
@@ -17,7 +16,6 @@ import { DecentralandInterface } from './Types'
 
 // This number is defined in the protocol ECS.SetEntityParent.3
 const ROOT_ENTITY_ID = '0'
-const componentNameRE = /^(engine\.)/
 
 export class DecentralandSynchronizationSystem implements ISystem {
   cachedComponents: Record<string, Record<string, string>> = {}
@@ -93,11 +91,10 @@ export class DecentralandSynchronizationSystem implements ISystem {
         const component = entity.components[componentName]
         const classId = getComponentClassId(component)
 
-        if (classId !== null && componentNameRE.test(getComponentName(component))) {
+        if (classId !== null) {
           if (isDisposableComponent(component)) {
             // Send the attach component signal
-            const id = getComponentId(component)
-            this.dcl.attachEntityComponent(entity.uuid, componentName, id)
+            this.dcl.attachEntityComponent(entity.uuid, componentName, getComponentId(component))
           } else {
             const componentJson: string = JSON.stringify(component)
 
@@ -137,9 +134,6 @@ export class DecentralandSynchronizationSystem implements ISystem {
       const entity = this.engine.entities[i]
 
       for (let componentName in entity.components) {
-        if (!componentNameRE.test(componentName)) {
-          continue
-        }
         const component = entity.components[componentName]
         const classId = getComponentClassId(component)
 
@@ -156,11 +150,7 @@ export class DecentralandSynchronizationSystem implements ISystem {
 
     for (let id in this.engine.disposableComponents) {
       const component = this.engine.disposableComponents[id]
-      if (
-        component instanceof ObservableComponent &&
-        component.dirty &&
-        componentNameRE.test(getComponentName(component))
-      ) {
+      if (component instanceof ObservableComponent && component.dirty) {
         this.dcl.componentUpdated(id, JSON.stringify(component))
         component.dirty = false
       }
@@ -173,23 +163,20 @@ export class DecentralandSynchronizationSystem implements ISystem {
    * component that was added and the entity.
    */
   private componentAdded(event: ComponentAdded) {
-    if (!event.entity.isAddedToEngine()) {
-      return
-    }
-    if (componentNameRE.test(event.componentName)) {
-      return
-    }
-    const component = event.entity.components[event.componentName]
-    if (isDisposableComponent(component)) {
-      this.dcl.attachEntityComponent(event.entity.uuid, event.componentName, getComponentId(component))
-    } else if (event.classId !== null) {
-      const componentJson: string = JSON.stringify(component)
+    if (event.entity.isAddedToEngine()) {
+      const component = event.entity.components[event.componentName]
 
-      // Send the updated component
-      this.dcl.updateEntityComponent(event.entity.uuid, event.componentName, event.classId, componentJson)
+      if (isDisposableComponent(component)) {
+        this.dcl.attachEntityComponent(event.entity.uuid, event.componentName, getComponentId(component))
+      } else if (event.classId !== null) {
+        const componentJson: string = JSON.stringify(component)
 
-      // Update the cached copy of the sent component
-      this.cachedComponents[event.entity.uuid][event.componentName] = componentJson
+        // Send the updated component
+        this.dcl.updateEntityComponent(event.entity.uuid, event.componentName, event.classId, componentJson)
+
+        // Update the cached copy of the sent component
+        this.cachedComponents[event.entity.uuid][event.componentName] = componentJson
+      }
     }
   }
 
@@ -197,7 +184,7 @@ export class DecentralandSynchronizationSystem implements ISystem {
    * This method is called when a component is removed from an entity.
    */
   private componentRemoved(event: ComponentRemoved) {
-    if (event.entity.isAddedToEngine() && componentNameRE.test(event.componentName)) {
+    if (event.entity.isAddedToEngine()) {
       this.dcl.removeEntityComponent(event.entity.uuid, event.componentName)
 
       // Remove the cached component so we can send it again when re-adding
@@ -211,9 +198,7 @@ export class DecentralandSynchronizationSystem implements ISystem {
    * created component is fired immediatly after.
    */
   private disposableComponentCreated(event: DisposableComponentCreated) {
-    if (componentNameRE.test(event.componentName)) {
-      this.dcl.componentCreated(event.componentId, event.componentName, event.classId)
-    }
+    this.dcl.componentCreated(event.componentId, event.componentName, event.classId)
   }
 
   /**
@@ -232,9 +217,7 @@ export class DecentralandSynchronizationSystem implements ISystem {
    * it remains attached to some entities?
    */
   private disposableComponentUpdated(event: DisposableComponentUpdated) {
-    if (componentNameRE.test(getComponentName(event.component))) {
-      this.dcl.componentUpdated(event.componentId, JSON.stringify(event.component))
-    }
+    this.dcl.componentUpdated(event.componentId, JSON.stringify(event.component))
   }
 
   /**
