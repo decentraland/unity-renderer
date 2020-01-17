@@ -18,6 +18,7 @@ If you are using Windows 10 we recommend you to enable the Linux subsystem and i
 Make sure you have node v10 or compatible installed, then build the project:
 
     cd kernel
+    npm install
     make build-essentials
 
 To run and watch a server with the kernel build, run:
