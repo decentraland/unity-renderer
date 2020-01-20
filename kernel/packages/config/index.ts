@@ -95,10 +95,10 @@ export const ENV_OVERRIDE = location.search.indexOf('ENV') !== -1
 // Comms
 export const USE_LOCAL_COMMS = location.search.indexOf('LOCAL_COMMS') !== -1 || PREVIEW
 export const COMMS = USE_LOCAL_COMMS
-  ? 'v1:local'
+  ? 'v1-local'
   : location.search.indexOf('COMMS') !== -1
-  ? window.location.search.match(/COMMS=(\w+:\w+)/)[1]
-  : 'v1:remote' // by default use v1:remote for now
+  ? window.location.search.match(/COMMS=(\w+-\w+)/)[1]
+  : 'v1-remote' // by default use v1-remote for now
 
 export const DEBUG =
   location.search.indexOf('DEBUG_MODE') !== -1 ||

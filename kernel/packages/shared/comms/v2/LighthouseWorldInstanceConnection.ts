@@ -4,6 +4,7 @@ import { Package, BusMessage, ChatMessage, ProfileVersion, UserInformation } fro
 import { Position, positionHash } from '../interface/utils'
 import { Peer } from 'decentraland-katalyst-peer'
 import { createLogger } from 'shared/logger'
+import { PeerMessageTypes } from 'decentraland-katalyst-peer/src/messageTypes'
 
 const NOOP = () => {
   // do nothing
@@ -71,31 +72,43 @@ export class LighthouseWorldInstanceConnection implements WorldInstanceConnectio
   async sendProfileMessage(currentPosition: Position, userInfo: UserInformation) {
     const topic = positionHash(currentPosition)
 
-    await this.peer.sendMessage(topic, {
-      type: 'profile',
-      time: Date.now(),
-      data: { version: userInfo.version, user: userInfo.userId }
-    })
+    await this.peer.sendMessage(
+      topic,
+      {
+        type: 'profile',
+        time: Date.now(),
+        data: { version: userInfo.version, user: userInfo.userId }
+      },
+      PeerMessageTypes.unreliable
+    )
   }
 
   async sendPositionMessage(p: Position) {
     const topic = positionHash(p)
 
-    await this.peer.sendMessage(topic, {
-      type: 'position',
-      time: Date.now(),
-      data: [p[0], p[1], p[2], p[3], p[4], p[5], p[6]]
-    })
+    await this.peer.sendMessage(
+      topic,
+      {
+        type: 'position',
+        time: Date.now(),
+        data: [p[0], p[1], p[2], p[3], p[4], p[5], p[6]]
+      },
+      PeerMessageTypes.unreliable
+    )
   }
 
   async sendParcelUpdateMessage(currentPosition: Position, p: Position) {
     const topic = positionHash(currentPosition)
 
-    await this.peer.sendMessage(topic, {
-      type: 'position',
-      time: Date.now(),
-      data: [p[0], p[1], p[2], p[3], p[4], p[5], p[6]]
-    })
+    await this.peer.sendMessage(
+      topic,
+      {
+        type: 'position',
+        time: Date.now(),
+        data: [p[0], p[1], p[2], p[3], p[4], p[5], p[6]]
+      },
+      PeerMessageTypes.unreliable
+    )
   }
 
   async sendParcelSceneCommsMessage(sceneId: string, message: string) {
