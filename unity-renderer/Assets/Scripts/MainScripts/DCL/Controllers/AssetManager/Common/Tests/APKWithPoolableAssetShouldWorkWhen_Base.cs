@@ -46,7 +46,7 @@ namespace AssetPromiseKeeper_Tests
             Assert.IsTrue(prom2 != null);
 
             if (wasLoadingWhenForgotten)
-                Assert.IsTrue(calledFail);
+                Assert.IsFalse(calledFail, "Fail event should NOT be called when forgotten while loading");
 
             Assert.IsTrue(prom2.asset == null, "Asset shouldn't exist after Forget!");
             Assert.IsTrue(container != null, "Container should be pooled!");
@@ -225,8 +225,8 @@ namespace AssetPromiseKeeper_Tests
 
             Assert.IsTrue(prom != null);
             Assert.IsTrue(prom.asset == null);
-            Assert.IsFalse(calledSuccess);
-            Assert.IsTrue(calledFail);
+            Assert.IsFalse(calledSuccess, "Success event should NOT be called when forgetting a promise");
+            Assert.IsFalse(calledFail, "Fail event should NOT be called when forgetting a promise.");
             yield break;
         }
 
