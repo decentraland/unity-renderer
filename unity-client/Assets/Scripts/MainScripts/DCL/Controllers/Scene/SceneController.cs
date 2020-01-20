@@ -40,10 +40,7 @@ namespace DCL
 
         public bool deferredMessagesDecoding = false;
         Queue<string> payloadsToDecode = new Queue<string>();
-        const float MAX_TIME_FOR_DECODE = 0.1f;
-        const float MIN_TIME_FOR_DECODE = 0.001f;
-        float maxTimeForDecode = MAX_TIME_FOR_DECODE;
-        float secsPerThousandMsgs = 0.01f;
+        const float MAX_TIME_FOR_DECODE = 0.005f;
 
 
         #region BENCHMARK_EVENTS
@@ -579,28 +576,25 @@ namespace DCL
 
         private IEnumerator DeferredDecoding()
         {
-            float lastTimeDecoded = Time.realtimeSinceStartup;
+            float start = Time.realtimeSinceStartup;
+            float maxTimeForDecode;
 
             while (true)
             {
+                maxTimeForDecode = RenderingController.i.renderingEnabled ? MAX_TIME_FOR_DECODE : float.MaxValue;
+
                 if (payloadsToDecode.Count > 0)
                 {
                     string payload = payloadsToDecode.Dequeue();
 
                     DecodeAndEnqueue(payload);
 
-                    if (Time.realtimeSinceStartup - lastTimeDecoded >= maxTimeForDecode)
-                    {
-                        yield return null;
-                        maxTimeForDecode = Mathf.Clamp(MIN_TIME_FOR_DECODE + (float)payloadsToDecode.Count / 1000.0f * secsPerThousandMsgs, MIN_TIME_FOR_DECODE, MAX_TIME_FOR_DECODE);
-                        lastTimeDecoded = Time.realtimeSinceStartup;
-                    }
+                    if (Time.realtimeSinceStartup - start < maxTimeForDecode)
+                        continue;
                 }
-                else
-                {
-                    yield return null;
-                    lastTimeDecoded = Time.unscaledTime;
-                }
+
+                yield return null;
+                start = Time.unscaledTime;
             }
         }
 
