@@ -163,6 +163,9 @@ jobs:
                 ls -la ${BUILD_PATH}
                 [ -n "$(ls -A ${BUILD_PATH})" ] # fail job if build folder is empty
             fi;
+            # Apply hot fix to take out old CachedXMLRequest
+            apt-get install bc
+            cd /tmp/explorer/unity-client/Builds/unity/Build && ../../../../.circleci/hotpatch.sh unity.wasm.framework.unityweb
       - save_cache:
           name: Store decentraland-renderer build
           key: unity-build-{{ checksum "../.unitysources-checksum" }}

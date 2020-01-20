@@ -57,11 +57,7 @@ public class GLTFLoadingTestController : MonoBehaviour
         uwr.SetRequestHeader("Content-Type", "application/json");
 
         // Send the request then wait here until it returns
-        uwr.SendWebRequest();
-        while (!uwr.isDone)
-        {
-            yield return null;
-        }
+        yield return uwr.SendWebRequest();
 
         if (uwr.isNetworkError)
         {

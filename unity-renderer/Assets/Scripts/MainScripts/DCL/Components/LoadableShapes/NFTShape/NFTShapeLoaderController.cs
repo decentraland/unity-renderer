@@ -134,11 +134,7 @@ public class NFTShapeLoaderController : MonoBehaviour
         string jsonURL = $"{NFTDataFetchingSettings.DAR_API_URL}/{darURLRegistry}/asset/{darURLAsset}";
 
         UnityWebRequest www = UnityWebRequest.Get(jsonURL);
-        www.SendWebRequest();
-        while (!www.isDone)
-        {
-            yield return null;
-        }
+        yield return www.SendWebRequest();
 
         if (!www.WebRequestSucceded())
         {

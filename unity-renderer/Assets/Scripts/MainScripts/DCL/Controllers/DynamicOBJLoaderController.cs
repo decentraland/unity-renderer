@@ -49,11 +49,7 @@ public class DynamicOBJLoaderController : MonoBehaviour
 
             UnityWebRequest webRequest = UnityWebRequest.Get(OBJUrl);
 
-            webRequest.SendWebRequest();
-            while (!webRequest.isDone)
-            {
-                yield return null;
-            }
+            yield return webRequest.SendWebRequest();
 
             if (webRequest.isNetworkError || webRequest.isHttpError)
             {
