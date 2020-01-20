@@ -59,7 +59,7 @@ namespace AssetPromiseKeeper_Tests
             Assert.IsTrue(prom != null);
             Assert.IsTrue(prom.asset == null);
             Assert.IsFalse(calledSuccess);
-            Assert.IsTrue(calledFail);
+            Assert.IsTrue(!calledFail);
 
             keeper.library.Cleanup();
             yield break;

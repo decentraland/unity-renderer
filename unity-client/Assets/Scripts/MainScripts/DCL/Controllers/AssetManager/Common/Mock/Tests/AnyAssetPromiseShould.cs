@@ -111,7 +111,7 @@ namespace AssetPromiseKeeper_Mock_Tests
             //NOTE(Brian): Test that nothing should happen if called multiple times
             prom.Unload_Test();
 
-            Assert.IsTrue(failCalled, "Fail callback was not called when it should!");
+            Assert.IsTrue(!failCalled, "Fail callback was called when it shouldnt'!");
 
             failCalled = false;
             prom.Unload_Test();
