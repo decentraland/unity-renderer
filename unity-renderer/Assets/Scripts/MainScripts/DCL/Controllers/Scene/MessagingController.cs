@@ -129,7 +129,7 @@ namespace DCL
             QueueMode queueMode = QueueMode.Reliable;
 
             // If current scene is the Global Scene, the bus id should be UI
-            if (scene && scene.sceneData.id == SceneController.i.GlobalSceneId)
+            if (scene && scene.sceneData.id == SceneController.i.globalSceneId)
             {
                 busId = MessagingBusId.UI;
             }

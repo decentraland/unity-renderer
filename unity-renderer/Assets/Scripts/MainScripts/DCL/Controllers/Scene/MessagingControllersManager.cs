@@ -23,7 +23,6 @@ namespace DCL
         private Coroutine mainCoroutine;
 
         public bool hasPendingMessages => pendingMessagesCount > 0;
-        public MessageThrottlingController throttler;
 
         public int pendingMessagesCount;
         public int pendingInitMessagesCount;
@@ -42,8 +41,6 @@ namespace DCL
 
         public void Initialize(IMessageHandler messageHandler)
         {
-            throttler = new MessageThrottlingController();
-
             messagingControllers[GLOBAL_MESSAGING_CONTROLLER] = new MessagingController(messageHandler, GLOBAL_MESSAGING_CONTROLLER);
 
             if (!string.IsNullOrEmpty(GLOBAL_MESSAGING_CONTROLLER))
@@ -60,23 +57,17 @@ namespace DCL
 
         private void OnCharacterMoved(DCLCharacterPosition obj)
         {
-            string currentSceneId = SceneController.i.GetCurrentScene(DCLCharacterController.i.characterPosition);
-
-            if (!string.IsNullOrEmpty(currentSceneId))
-                messagingControllers.TryGetValue(currentSceneId, out currentSceneController);
+            if (!string.IsNullOrEmpty(SceneController.i.currentSceneId))
+                messagingControllers.TryGetValue(SceneController.i.currentSceneId, out currentSceneController);
         }
 
         public void PopulateBusesToBeProcessed()
         {
+            string currentSceneId = SceneController.i.currentSceneId;
             List<ParcelScene> scenesSortedByDistance = SceneController.i.scenesSortedByDistance;
 
             int count = scenesSortedByDistance.Count;   // we need to retrieve list count everytime because it
                                                         // may change after a yield return
-
-            string currentSceneId = null;
-
-            if (SceneController.i != null && DCLCharacterController.i != null)
-                currentSceneId = SceneController.i.GetCurrentScene(DCLCharacterController.i.characterPosition);
 
             sortedControllers.Clear();
 
@@ -189,6 +180,8 @@ namespace DCL
 
             if (!string.IsNullOrEmpty(globalSceneId))
                 messagingControllers.TryGetValue(globalSceneId, out uiSceneController);
+
+            PopulateBusesToBeProcessed();
         }
 
         public void RemoveController(string sceneId)
@@ -235,19 +228,6 @@ namespace DCL
             }
         }
 
-
-        public void UpdateThrottling()
-        {
-            if (pendingInitMessagesCount == 0)
-            {
-                UnityGLTF.GLTFSceneImporter.budgetPerFrameInMilliseconds = Mathf.Clamp(throttler.currentTimeBudget, GLTF_BUDGET_MIN, GLTF_BUDGET_MAX) * 1000f;
-            }
-            else
-            {
-                UnityGLTF.GLTFSceneImporter.budgetPerFrameInMilliseconds = 0;
-            }
-        }
-
         float timeBudgetCounter = MAX_GLOBAL_MSG_BUDGET;
 
         IEnumerator ProcessMessages()
@@ -262,6 +242,15 @@ namespace DCL
 
                     if (ProcessBus(bus))
                         break;
+                }
+
+                if (pendingInitMessagesCount == 0)
+                {
+                    UnityGLTF.GLTFSceneImporter.budgetPerFrameInMilliseconds = Mathf.Clamp(timeBudgetCounter, GLTF_BUDGET_MIN, GLTF_BUDGET_MAX) * 1000f;
+                }
+                else
+                {
+                    UnityGLTF.GLTFSceneImporter.budgetPerFrameInMilliseconds = 0;
                 }
 
                 yield return null;
@@ -301,5 +290,6 @@ namespace DCL
 
             controller.enabled = false;
         }
+
     }
 }
