@@ -34,6 +34,7 @@ import { Session } from '../session/index'
 import { worldRunningObservable, isWorldRunning } from '../world/worldState'
 import { WorldInstanceConnection } from './interface/index'
 import { LighthouseWorldInstanceConnection } from './v2/LighthouseWorldInstanceConnection'
+import { getTLD } from '../../config/index'
 
 const { Peer } = require('decentraland-katalyst-peer')
 
@@ -443,7 +444,7 @@ export async function connect(userId: string, network: ETHEREUM_NETWORK, auth: A
 
     let connection: WorldInstanceConnection
 
-    const [version, mode] = parseCommsMode(COMMS)
+    const [version, mode] = parseCommsMode(getTLD() === 'zone' ? 'v2-p2p' : COMMS)
     switch (version) {
       case 'v1': {
         let commsBroker: IBrokerConnection
