@@ -161,9 +161,7 @@ jobs:
                     sleep 60
                 done
                 ls -la ${BUILD_PATH}
-                if [[ -n "$(ls -A ${BUILD_PATH})" ]]; then
-                    exit 1;
-                fi;
+                [ -n "$(ls -A ${BUILD_PATH})" ];
                 # Apply hot fix to take out old CachedXMLRequest
                 apt-get install bc
                 cd /tmp/explorer/unity-client/Builds/unity/Build && ../../../../.circleci/hotpatch.sh unity.wasm.framework.unityweb
