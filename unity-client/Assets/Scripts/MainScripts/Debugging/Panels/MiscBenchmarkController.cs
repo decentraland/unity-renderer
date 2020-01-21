@@ -106,15 +106,9 @@ namespace DCL
         }
 
         static float budgetMax = 0;
-        bool enableBudgetMax = false;
 
         void Update()
         {
-            MessageThrottlingController globalThrottler = MessagingControllersManager.i.throttler;
-
-            if (globalThrottler != null && globalThrottler.currentTimeBudget < 0.001f)
-                enableBudgetMax = true;
-
             int messagesProcessedLastFrame = lastPendingMessages - MessagingControllersManager.i.pendingMessagesCount;
 
             if (messagesProcessedLastFrame > 0)
@@ -168,22 +162,6 @@ namespace DCL
                 statsPanel.SetCellText(1, (int)Rows.MATERIAL_COUNT, materialCount.ToString());
                 statsPanel.SetCellText(1, (int)Rows.MESHES_COUNT, meshesCount.ToString());
                 statsPanel.SetCellText(1, (int)Rows.GLTF_BEING_LOADED, UnityGLTF.GLTFComponent.downloadingCount.ToString() + " / " + UnityGLTF.GLTFComponent.queueCount.ToString());
-
-                float rate = 0;
-                float budget = 0;
-
-                MessageThrottlingController cpus = MessagingControllersManager.i.throttler;
-
-                if (cpus != null)
-                {
-                    rate = cpus.messagesConsumptionRate;
-                    budget = cpus.currentTimeBudget * 1000f;
-
-                    if (enableBudgetMax)
-                        budgetMax = Mathf.Max(cpus.currentTimeBudget, budgetMax);
-                }
-
-                statsPanel.SetCellText(1, (int)Rows.CPU_SCHEDULER, $"msgs rate: {rate}\nbudget: {budget}ms\nbudget peak: {budgetMax * 1000f}ms");
 
                 string busesLog = "";
                 Dictionary<string, int> pendingMessagesCount = new Dictionary<string, int>();

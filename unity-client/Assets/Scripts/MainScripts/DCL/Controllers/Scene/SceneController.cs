@@ -38,7 +38,7 @@ namespace DCL
         public bool ignoreGlobalScenes = false;
         public bool msgStepByStep = false;
 
-        public bool deferredMessagesDecoding = false;
+        [NonSerialized] public bool deferredMessagesDecoding = false;
         Queue<string> payloadsToDecode = new Queue<string>();
         const float MAX_TIME_FOR_DECODE = 0.005f;
 
@@ -79,27 +79,13 @@ namespace DCL
 
         public bool hasPendingMessages => MessagingControllersManager.i.pendingMessagesCount > 0;
 
-        public string GlobalSceneId
-        {
-            get { return globalSceneId; }
-        }
+        public string globalSceneId { get; private set; }
+        public string currentSceneId { get; private set; }
 
         LoadParcelScenesMessage loadParcelScenesMessage = new LoadParcelScenesMessage();
-        string globalSceneId = "";
-
-        const float SORT_MESSAGE_CONTROLLER_TIME = 0.5f;
-        float lastTimeMessageControllerSorted = 0;
-
-        public event Action OnSortScenes;
 
         bool positionDirty = true;
-        private static readonly int MORDOR_X = (int)EnvironmentSettings.MORDOR.x;
-        private static readonly int MORDOR_Z = (int)EnvironmentSettings.MORDOR.z;
-        private Vector2Int currentGridSceneCoordinate = new Vector2Int(MORDOR_X, MORDOR_Z);
 
-        private string currentSceneId = null;
-
-        private Vector2Int sortAuxiliaryVector = new Vector2Int(MORDOR_X, MORDOR_Z);
 
         void Awake()
         {
@@ -145,10 +131,51 @@ namespace DCL
 
             if (positionDirty)
             {
+                sceneSortDirty = true;
                 currentGridSceneCoordinate.x = currentX;
                 currentGridSceneCoordinate.y = currentY;
             }
         }
+
+        private bool sceneSortDirty = false;
+        public event Action OnSortScenes;
+
+        private static readonly int MORDOR_X = (int)EnvironmentSettings.MORDOR.x;
+        private static readonly int MORDOR_Z = (int)EnvironmentSettings.MORDOR.z;
+        private Vector2Int currentGridSceneCoordinate = new Vector2Int(MORDOR_X, MORDOR_Z);
+        private Vector2Int sortAuxiliaryVector = new Vector2Int(MORDOR_X, MORDOR_Z);
+
+        private void TrySortScenesByDistance(bool forceSort = false)
+        {
+            if (forceSort || sceneSortDirty)
+            {
+                sceneSortDirty = false;
+                scenesSortedByDistance.Sort(SortScenesByDistanceMethod);
+
+                ParcelScene currentScene = scenesSortedByDistance.Any()
+                    ? scenesSortedByDistance.First(scene => scene.sceneData != null && !scene.isPersistent)
+                    : null;
+
+                if (currentScene != null && currentScene.sceneData != null)
+                    currentSceneId = currentScene.sceneData.id;
+
+                CommonScriptableObjects.sceneID.Set(currentSceneId);
+
+                OnSortScenes?.Invoke();
+            }
+        }
+
+        private int SortScenesByDistanceMethod(ParcelScene sceneA, ParcelScene sceneB)
+        {
+            sortAuxiliaryVector = sceneA.sceneData.basePosition - currentGridSceneCoordinate;
+            int dist1 = sortAuxiliaryVector.sqrMagnitude;
+
+            sortAuxiliaryVector = sceneB.sceneData.basePosition - currentGridSceneCoordinate;
+            int dist2 = sortAuxiliaryVector.sqrMagnitude;
+
+            return dist1 - dist2;
+        }
+
 
         void Start()
         {
@@ -184,59 +211,15 @@ namespace DCL
         private void Update()
         {
             InputController_Legacy.i.Update();
-
-            PrioritizeMessageControllerList();
-
-            MessagingControllersManager.i.UpdateThrottling();
+            TrySortScenesByDistance();
         }
 
-        private void PrioritizeMessageControllerList(bool force = false)
-        {
-            bool forceSort = force || !RenderingController.i.renderingEnabled;
-
-            if (forceSort || positionDirty)
-            {
-                positionDirty = false;
-                lastTimeMessageControllerSorted = Time.realtimeSinceStartup;
-                scenesSortedByDistance.Sort(SceneMessagingSortByDistance);
-
-                ParcelScene currentScene = scenesSortedByDistance.Any()
-                    ? scenesSortedByDistance.First(scene => scene.sceneData != null && !scene.isPersistent)
-                    : null;
-
-                if (currentScene != null && currentScene.sceneData != null)
-                {
-                    currentSceneId = currentScene.sceneData.id;
-                }
-
-                OnSortScenes?.Invoke();
-            }
-        }
-        private int SceneMessagingSortByDistance(ParcelScene sceneA, ParcelScene sceneB)
-        {
-            if (sceneA == null || sceneA.transform == null)
-                return int.MinValue;
-            if (sceneB == null || sceneB.transform == null)
-                return int.MaxValue;
-
-            sortAuxiliaryVector.x = (int)sceneA.transform.position.x;
-            sortAuxiliaryVector.y = (int)sceneA.transform.position.z;
-            int dist1 = (sortAuxiliaryVector - currentGridSceneCoordinate).sqrMagnitude;
-
-            sortAuxiliaryVector.x = (int)sceneB.transform.position.x;
-            sortAuxiliaryVector.y = (int)sceneB.transform.position.z;
-            int dist2 = (sortAuxiliaryVector - currentGridSceneCoordinate).sqrMagnitude;
-
-            return dist1 - dist2;
-        }
 
         public void CreateUIScene(string json)
         {
 #if UNITY_EDITOR
             if (debugScenes && ignoreGlobalScenes)
-            {
                 return;
-            }
 #endif
             CreateUISceneMessage uiScene = SafeFromJson<CreateUISceneMessage>(json);
 
@@ -257,6 +240,7 @@ namespace DCL
                     basePosition = new Vector2Int(0, 0),
                     baseUrl = uiScene.baseUrl
                 };
+
                 newScene.SetData(data);
 
                 loadedScenes.Add(uiSceneId, newScene);
@@ -323,6 +307,9 @@ namespace DCL
         {
             if (position == null)
             {
+                if (DCLCharacterController.i == null)
+                    return null;
+
                 position = DCLCharacterController.i.characterPosition;
             }
 
@@ -488,13 +475,16 @@ namespace DCL
         public void LoadParcelScenes(string decentralandSceneJSON)
         {
             var queuedMessage = new MessagingBus.QueuedSceneMessage()
-            { type = MessagingBus.QueuedSceneMessage.Type.LOAD_PARCEL, message = decentralandSceneJSON };
+            {
+                type = MessagingBus.QueuedSceneMessage.Type.LOAD_PARCEL,
+                message = decentralandSceneJSON
+            };
 
             OnMessageWillQueue?.Invoke(MessagingTypes.SCENE_LOAD);
 
             MessagingControllersManager.i.ForceEnqueueToGlobal(MessagingBusId.INIT, queuedMessage);
 
-            PrioritizeMessageControllerList(force: true);
+            TrySortScenesByDistance(forceSort: true);
 
             if (VERBOSE)
                 Debug.Log($"{Time.frameCount} : Load parcel scene queue {decentralandSceneJSON}");
@@ -722,10 +712,10 @@ namespace DCL
         {
             if (scene == null)
             {
-                string sceneId = GetCurrentScene(DCLCharacterController.i.characterPosition);
+                string sceneId = currentSceneId;
 
                 if (!string.IsNullOrEmpty(sceneId) && loadedScenes.ContainsKey(sceneId))
-                    scene = loadedScenes[GetCurrentScene(DCLCharacterController.i.characterPosition)];
+                    scene = loadedScenes[currentSceneId];
                 else
                     return pos;
             }
