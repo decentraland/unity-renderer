@@ -41,7 +41,7 @@ namespace DCL.Components
 
             if (collisionsDirty)
             {
-                CollidersManager.i.ConfigureColliders(entity.meshRootGameObject, model.withCollisions, false, entity);
+                CollidersManager.i.ConfigureColliders(entity.meshRootGameObject, model.withCollisions, false, entity, CalculateCollidersLayer(model));
                 collisionsDirty = false;
             }
 
@@ -110,7 +110,7 @@ namespace DCL.Components
         {
             var newModel = SceneController.i.SafeFromJson<T>(newJson);
             visibilityDirty = newModel.visible != model.visible;
-            collisionsDirty = newModel.withCollisions != model.withCollisions;
+            collisionsDirty = newModel.withCollisions != model.withCollisions || newModel.isPointerBlocker != model.isPointerBlocker;
             bool shouldGenerateMesh = ShouldGenerateNewMesh(newModel);
             model = newModel;
 

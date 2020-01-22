@@ -83,7 +83,7 @@ namespace DCL.Components
             model = SceneController.i.SafeFromJson<LoadWrapperModelType>(newJson);
 
             bool updateVisibility = previousModel.visible != model.visible;
-            bool updateCollisions = previousModel.withCollisions != model.withCollisions;
+            bool updateCollisions = previousModel.withCollisions != model.withCollisions || previousModel.isPointerBlocker != model.isPointerBlocker;
             bool triggerAttachment = !string.IsNullOrEmpty(model.src) && previousModel.src != model.src;
 
             foreach (var entity in attachedEntities)
@@ -139,7 +139,7 @@ namespace DCL.Components
 
         protected virtual void ConfigureColliders(DecentralandEntity entity)
         {
-            CollidersManager.i.ConfigureColliders(entity.meshRootGameObject, model.withCollisions, true, entity);
+            CollidersManager.i.ConfigureColliders(entity.meshRootGameObject, model.withCollisions, true, entity, CalculateCollidersLayer(model));
         }
 
         protected void OnLoadFailed(LoadWrapper loadWrapper)

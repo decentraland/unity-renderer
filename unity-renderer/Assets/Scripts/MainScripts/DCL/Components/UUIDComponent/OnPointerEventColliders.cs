@@ -1,3 +1,4 @@
+using DCL.Configuration;
 using DCL.Helpers;
 using DCL.Models;
 using UnityEngine;
@@ -8,7 +9,6 @@ namespace DCL.Components
 
     public class OnPointerEventColliders : MonoBehaviour
     {
-        public const string COLLIDER_LAYER = "OnPointerEvent";
         public const string COLLIDER_NAME = "OnPointerEventCollider";
 
         [System.NonSerialized] public int refCount;
@@ -44,7 +44,7 @@ namespace DCL.Components
             GameObject go = new GameObject(COLLIDER_NAME);
 
             go.name = COLLIDER_NAME;
-            go.layer = LayerMask.NameToLayer(COLLIDER_LAYER); // to avoid character collisions with onclick collider
+            go.layer = PhysicsLayers.onPointerEventLayer; // to avoid character collisions with onclick collider
 
             var meshCollider = go.AddComponent<MeshCollider>();
             meshCollider.sharedMesh = renderer.GetComponent<MeshFilter>().sharedMesh;

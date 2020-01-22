@@ -24,8 +24,7 @@ TagManager:
   - OnBuilderPointerClick
   - CharacterPreview
   - CharacterController
-  - 
-  - 
+  - CharacterOnly
   - 
   - 
   - 

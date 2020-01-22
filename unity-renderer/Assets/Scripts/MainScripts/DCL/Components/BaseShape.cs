@@ -1,5 +1,6 @@
 using DCL.Controllers;
 using DCL.Models;
+using DCL.Configuration;
 using UnityEngine;
 
 namespace DCL.Components
@@ -10,6 +11,7 @@ namespace DCL.Components
         public class Model
         {
             public bool withCollisions = true;
+            public bool isPointerBlocker = true;
             public bool visible = true;
         }
 
@@ -75,7 +77,6 @@ namespace DCL.Components
                 meshRenderers = meshGameObject.GetComponentsInChildren<Renderer>(true);
 
             Collider onPointerEventCollider;
-            int onClickLayer = LayerMask.NameToLayer(OnPointerEventColliders.COLLIDER_LAYER);
 
             for (var i = 0; i < meshRenderers.Length; i++)
             {
@@ -85,10 +86,22 @@ namespace DCL.Components
                 {
                     onPointerEventCollider = meshRenderers[i].transform.GetChild(0).GetComponent<Collider>();
 
-                    if (onPointerEventCollider != null && onPointerEventCollider.gameObject.layer == onClickLayer)
+                    if (onPointerEventCollider != null && onPointerEventCollider.gameObject.layer == PhysicsLayers.onPointerEventLayer)
                         onPointerEventCollider.enabled = shouldBeVisible;
                 }
             }
+        }
+
+        protected int CalculateCollidersLayer(Model model)
+        {
+            // We can't enable this layer changer logic until we redeploy all the builder and street scenes with the corrected 'withCollision' default in true...
+            /* if (!model.withCollisions && model.isPointerBlocker)
+                return PhysicsLayers.onPointerEventLayer;
+            else */
+            if (model.withCollisions && !model.isPointerBlocker)
+                return PhysicsLayers.characterOnlyLayer;
+
+            return PhysicsLayers.defaultLayer;
         }
     }
 }

@@ -830,6 +830,128 @@ namespace Tests
         }
 
         [UnityTest]
+        public IEnumerator OnPointerDownEventAndPointerBlockerShape()
+        {
+            CameraController cameraController = GameObject.FindObjectOfType<CameraController>();
+            cameraController.SetCameraMode(CameraStateBase.ModeId.FirstPerson);
+            cameraController.currentCameraState.defaultVirtualCamera.Follow = DCLCharacterController.i.transform;
+
+            Assert.IsNotNull(cameraController, "camera is null?");
+
+            // Create blocking entity
+            DecentralandEntity blockingEntity;
+            BoxShape blockingShape;
+            InstantiateEntityWithShape(out blockingEntity, out blockingShape);
+            TestHelpers.SetEntityTransform(scene, blockingEntity, new Vector3(3, 3, 3), Quaternion.identity, new Vector3(1, 1, 1));
+            yield return blockingShape.routine;
+
+            // Create target entity for click
+            DecentralandEntity clickTargetEntity;
+            BoxShape clickTargetShape;
+            InstantiateEntityWithShape(out clickTargetEntity, out clickTargetShape);
+            TestHelpers.SetEntityTransform(scene, clickTargetEntity, new Vector3(3, 3, 5), Quaternion.identity, new Vector3(1, 1, 1));
+            yield return clickTargetShape.routine;
+
+            // Set character position and camera rotation
+            DCLCharacterController.i.PauseGravity();
+            DCLCharacterController.i.characterController.enabled = false;
+            DCLCharacterController.i.Teleport(JsonConvert.SerializeObject(new
+            {
+                x = 3f,
+                y = 2f,
+                z = 1f
+            }));
+
+            var cameraRotationPayload = new CameraController.SetRotationPayload()
+            {
+                x = 0,
+                y = 0,
+                z = 0,
+                cameraTarget = new Vector3(0, 0, 1)
+            };
+            cameraController.SetRotation(JsonConvert.SerializeObject(cameraRotationPayload, Formatting.None, new JsonSerializerSettings()
+            {
+                ReferenceLoopHandling = ReferenceLoopHandling.Ignore
+            }));
+
+            yield return null;
+
+            // Create pointer down component and add it to target entity
+            string onPointerId = "pointerevent-1";
+            var OnPointerDownModel = new OnPointerDown.Model()
+            {
+                type = OnPointerDown.NAME,
+                uuid = onPointerId
+            };
+            var component = TestHelpers.EntityComponentCreate<OnPointerDown, OnPointerDown.Model>(scene, clickTargetEntity,
+                OnPointerDownModel, CLASS_ID_COMPONENT.UUID_CALLBACK);
+
+            Assert.IsTrue(component != null);
+
+            string targetEventType = "SceneEvent";
+
+            var onPointerDownEvent = new WebInterface.OnPointerDownEvent();
+            onPointerDownEvent.uuid = onPointerId;
+            onPointerDownEvent.payload = new WebInterface.OnPointerEventPayload();
+            onPointerDownEvent.payload.hit = new WebInterface.OnPointerEventPayload.Hit();
+            onPointerDownEvent.payload.hit.entityId = component.entity.entityId;
+            onPointerDownEvent.payload.hit.meshName = component.name;
+
+            var sceneEvent = new WebInterface.SceneEvent<WebInterface.OnPointerDownEvent>();
+            sceneEvent.sceneId = scene.sceneData.id;
+            sceneEvent.payload = onPointerDownEvent;
+            sceneEvent.eventType = "uuidEvent";
+
+            // Check the target entity is not hit behind the 'isPointerBlocker' shape
+            bool targetEntityHit = false;
+            yield return TestHelpers.WaitForEventFromEngine(targetEventType, sceneEvent,
+                () =>
+                {
+                    DCL.InputController_Legacy.i.RaiseEvent(WebInterface.ACTION_BUTTON.POINTER, DCL.InputController_Legacy.EVENT.BUTTON_DOWN, true);
+                },
+                (pointerEvent) =>
+                {
+                    if (pointerEvent.eventType == "uuidEvent" &&
+                        pointerEvent.payload.uuid == onPointerId &&
+                        pointerEvent.payload.payload.hit.entityId == clickTargetEntity.entityId)
+                    {
+                        targetEntityHit = true;
+                    }
+                    return true;
+                });
+
+            Assert.IsFalse(targetEntityHit, "Target entity was hit but other entity was blocking it");
+
+            // Toggle 'isPointerBlocker' property
+            yield return TestHelpers.SharedComponentUpdate(blockingShape, new BoxShape.Model
+            {
+                isPointerBlocker = false
+            });
+
+            // Check the target entity is hit behind the 'isPointerBlocker' shape now
+            targetEntityHit = false;
+            yield return TestHelpers.WaitForEventFromEngine(targetEventType, sceneEvent,
+                () =>
+                {
+                    DCL.InputController_Legacy.i.RaiseEvent(WebInterface.ACTION_BUTTON.POINTER, DCL.InputController_Legacy.EVENT.BUTTON_DOWN, true);
+                },
+                (pointerEvent) =>
+                {
+                    if (pointerEvent.eventType == "uuidEvent" &&
+                        pointerEvent.payload.uuid == onPointerId &&
+                        pointerEvent.payload.payload.hit.entityId == clickTargetEntity.entityId)
+                    {
+                        targetEntityHit = true;
+                    }
+                    return true;
+                });
+
+            yield return null;
+
+            Assert.IsTrue(targetEntityHit, "Target entity wasn't hit and no other entity is blocking it");
+        }
+
+        [UnityTest]
         public IEnumerator OnPointerHoverFeedbackIsDisplayedCorrectly()
         {
             DecentralandEntity entity;
