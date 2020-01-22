@@ -2,6 +2,7 @@ using DCL.Components;
 using DCL.Controllers;
 using DCL.Interface;
 using DCL.Models;
+using DCL.Configuration;
 using Google.Protobuf;
 using Newtonsoft.Json;
 using System;
@@ -796,14 +797,13 @@ namespace DCL.Helpers
             yield return onClickComponent.routine;
 
             Collider onPointerEventCollider;
-            int onPointerEventLayer = LayerMask.NameToLayer(OnPointerEventColliders.COLLIDER_LAYER);
             for (int i = 0; i < renderers.Length; i++)
             {
                 Assert.IsTrue(renderers[i].transform.childCount > 0, "OnClick collider should exist as this mesh's child");
 
                 onPointerEventCollider = renderers[i].transform.GetChild(0).GetComponent<Collider>();
                 Assert.IsTrue(onPointerEventCollider != null);
-                Assert.IsTrue(onPointerEventCollider.gameObject.layer == onPointerEventLayer);
+                Assert.IsTrue(onPointerEventCollider.gameObject.layer == PhysicsLayers.onPointerEventLayer);
 
                 // check the onClick collide enabled state is the same as the renderer's state
                 Assert.IsTrue(onPointerEventCollider.enabled == renderers[i].enabled);

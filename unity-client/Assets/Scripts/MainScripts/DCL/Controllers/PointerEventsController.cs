@@ -1,6 +1,7 @@
 using DCL.Components;
 using DCL.Helpers;
 using DCL.Interface;
+using DCL.Configuration;
 using UnityEngine;
 
 namespace DCL
@@ -52,7 +53,7 @@ namespace DCL
             if (RenderingController.i == null || !RenderingController.i.renderingEnabled || charCamera == null) return;
 
             // We use Physics.Raycast() instead of our raycastHandler.Raycast() as that one is slower, sometimes 2x, because it fetches info we don't need here
-            if (Physics.Raycast(GetRayFromCamera(), out hitInfo, Mathf.Infinity, Configuration.LayerMasks.physicsCastLayerMaskWithoutCharacter))
+            if (Physics.Raycast(GetRayFromCamera(), out hitInfo, Mathf.Infinity, PhysicsLayers.physicsCastLayerMaskWithoutCharacter))
             {
                 newHoveredEvent = hitInfo.transform.GetComponentInParent<OnPointerEvent>();
 
@@ -152,8 +153,8 @@ namespace DCL
                         return;
                 }
 
-                var pointerEventLayer = Configuration.LayerMasks.physicsCastLayerMaskWithoutCharacter; //Ensure characterController is being filtered
-                var globalLayer = ~Configuration.LayerMasks.physicsCastLayerMask & (~Configuration.LayerMasks.characterControllerLayer); //Ensure characterController is being filtered
+                var pointerEventLayer = PhysicsLayers.physicsCastLayerMaskWithoutCharacter; //Ensure characterController is being filtered
+                var globalLayer = pointerEventLayer & ~PhysicsLayers.physicsCastLayerMask;
                 RaycastHitInfo raycastGlobalLayerHitInfo;
 
                 if (evt == InputController_Legacy.EVENT.BUTTON_DOWN)

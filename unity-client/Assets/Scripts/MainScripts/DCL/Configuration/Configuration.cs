@@ -66,10 +66,15 @@ namespace DCL.Configuration
         public static string DAR_API_URL = "https://schema.decentraland.org/dar";
     }
 
-    public static class LayerMasks
+    public static class PhysicsLayers
     {
-        public static int characterControllerLayer => 1 << LayerMask.NameToLayer("CharacterController");
-        public static LayerMask physicsCastLayerMask = 1 << LayerMask.NameToLayer("OnPointerEvent");
-        public static LayerMask physicsCastLayerMaskWithoutCharacter = physicsCastLayerMask & (~(characterControllerLayer));
+        public static int defaultLayer = LayerMask.NameToLayer("Default");
+        public static int onPointerEventLayer = LayerMask.NameToLayer("OnPointerEvent");
+        public static int characterLayer = LayerMask.NameToLayer("CharacterController");
+        public static int characterOnlyLayer = LayerMask.NameToLayer("CharacterOnly");
+        public static LayerMask physicsCastLayerMask = 1 << onPointerEventLayer;
+        public static LayerMask physicsCastLayerMaskWithoutCharacter = (physicsCastLayerMask | (1 << defaultLayer))
+                                                                        & ~(1 << characterLayer)
+                                                                        & ~(1 << characterOnlyLayer);
     }
 }

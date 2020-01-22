@@ -6,7 +6,6 @@ import {
   Quaternion,
   GLTFShape,
   log,
-  OnClick,
   OnPointerDown,
   OnPointerUp
 } from 'decentraland-ecs/src'
@@ -65,6 +64,7 @@ const gltfShape3 = new GLTFShape(
   "models/Wall_Stone_Medium/Wall_Stone_Medium.glb"
 );
 gltfShape3.withCollisions = true;
+gltfShape3.isPointerBlocker = false;
 gltfShape3.visible = true;
 mediumStoneWall.addComponentOrReplace(gltfShape3);
 
@@ -79,20 +79,9 @@ const transform5 = new Transform({
 chest.addComponentOrReplace(transform5);
 const gltfShape4 = new GLTFShape("models/Trunk_01/Trunk_01.glb");
 gltfShape4.withCollisions = true;
+gltfShape4.isPointerBlocker = false;
 gltfShape4.visible = true;
 chest.addComponentOrReplace(gltfShape4);
-
-cornerStoneBrickWall.addComponent(
-  new OnClick(() => {
-    log("BIG CORNER STONE WALL ONCLICK HIT!");
-  })
-);
-
-chest.addComponent(
-  new OnClick(() => {
-    log("CHEST ONCLICK HIT!");
-  })
-);
 
 chest.addComponent(
   new OnPointerDown(() => {

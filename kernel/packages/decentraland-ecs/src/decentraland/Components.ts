@@ -155,6 +155,12 @@ export class Shape extends ObservableComponent {
   withCollisions: boolean = true
 
   /**
+   * Set to true to turn on the PointerEvents blocking for the entity.
+   */
+  @ObservableComponent.field
+  isPointerBlocker: boolean = true
+
+  /**
    * Defines if the entity and its children should be rendered
    */
   @ObservableComponent.field

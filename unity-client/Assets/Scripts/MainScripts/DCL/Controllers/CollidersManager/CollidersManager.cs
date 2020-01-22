@@ -1,5 +1,6 @@
 ﻿using DCL.Components;
 using DCL.Models;
+using DCL.Configuration;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -38,8 +39,8 @@ namespace DCL
 
         void AddOrUpdateColliderInfo(Collider collider, ColliderInfo info)
         {
-            // Note (Zak): This could be achieved in one line 
-            // just by doing colliderInfo[collider] = info; 
+            // Note (Zak): This could be achieved in one line
+            // just by doing colliderInfo[collider] = info;
             // but nobody likes it that way... :'(
             if (colliderInfo.ContainsKey(collider))
                 colliderInfo[collider] = info;
@@ -113,15 +114,18 @@ namespace DCL
             ConfigureColliders(entity.meshRootGameObject, hasCollision, filterByColliderName, entity);
         }
 
-        public void ConfigureColliders(GameObject meshGameObject, bool hasCollision, bool filterByColliderName = false, DecentralandEntity entity = null)
+        public void ConfigureColliders(GameObject meshGameObject, bool hasCollision, bool filterByColliderName = false, DecentralandEntity entity = null, int colliderLayer = -1)
         {
             if (meshGameObject == null) return;
 
-            if(entity != null)
+            if (entity != null)
                 entity.meshesInfo.colliders.Clear();
 
+            if (colliderLayer == -1)
+                colliderLayer = DCL.Configuration.PhysicsLayers.defaultLayer;
+
             Collider collider;
-            int onClickLayer = LayerMask.NameToLayer(OnPointerEventColliders.COLLIDER_LAYER); // meshes can have a child collider for the OnClick that should be ignored
+            int onClickLayer = PhysicsLayers.onPointerEventLayer; // meshes can have a child collider for the OnClick that should be ignored
             MeshFilter[] meshFilters = meshGameObject.GetComponentsInChildren<MeshFilter>(true);
 
             for (int i = 0; i < meshFilters.Length; i++)
@@ -138,7 +142,7 @@ namespace DCL
 
                 collider = meshFilters[i].GetComponent<Collider>();
 
-                //HACK(Pravus): Hack to bring back compatibility with old builder scenes that have withCollision = false in the JS code.    
+                //HACK(Pravus): Hack to bring back compatibility with old builder scenes that have withCollision = false in the JS code.
                 //              Remove when we fix this changing the property name or something similar.
                 bool shouldCreateCollider = hasCollision || filterByColliderName;
 
@@ -156,9 +160,10 @@ namespace DCL
 
                 if (collider != null)
                 {
+                    collider.gameObject.layer = colliderLayer;
                     collider.enabled = shouldCreateCollider;
 
-                    if(entity != null)
+                    if (entity != null)
                         entity.meshesInfo.colliders.Add(collider);
                 }
             }
