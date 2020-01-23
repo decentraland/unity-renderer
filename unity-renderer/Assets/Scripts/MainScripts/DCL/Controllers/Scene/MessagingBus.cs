@@ -197,7 +197,10 @@ namespace DCL
                 }
 
                 if (owner != null)
+                {
                     owner.enabled = true;
+                    MessagingControllersManager.i.MarkBusesDirty();
+                }
             }
         }
 
