@@ -35,6 +35,9 @@ import { worldRunningObservable, isWorldRunning } from '../world/worldState'
 import { WorldInstanceConnection } from './interface/index'
 import { LighthouseWorldInstanceConnection } from './v2/LighthouseWorldInstanceConnection'
 import { getTLD } from '../../config/index'
+import * as Long from 'long'
+
+window.Long = Long
 
 const { Peer } = require('decentraland-katalyst-peer')
 
@@ -55,6 +58,8 @@ export const MORDOR_POSITION: Position = [
   0,
   0
 ]
+
+declare var global: any
 
 export class PeerTrackingInfo {
   public position: Position | null = null
@@ -534,9 +539,12 @@ export async function connect(userId: string, network: ETHEREUM_NETWORK, auth: A
           }
         )
 
-        await peer.setLayer('blue')
+        await peer.setLayer('red')
 
         connection = new LighthouseWorldInstanceConnection(peer)
+
+        global.__DEBUG_PEER = peer
+
         break
       }
       default: {
@@ -642,8 +650,6 @@ export function disconnect() {
     }
   }
 }
-
-declare var global: any
 
 global['printCommsInformation'] = function() {
   if (context) {
