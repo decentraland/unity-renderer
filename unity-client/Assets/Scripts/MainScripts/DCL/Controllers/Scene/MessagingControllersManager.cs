@@ -46,8 +46,7 @@ namespace DCL
             if (!string.IsNullOrEmpty(GLOBAL_MESSAGING_CONTROLLER))
                 messagingControllers.TryGetValue(GLOBAL_MESSAGING_CONTROLLER, out globalController);
 
-            SceneController.i.OnSortScenes += PopulateBusesToBeProcessed;
-            DCLCharacterController.OnCharacterMoved += OnCharacterMoved;
+            SceneController.i.OnSortScenes += MarkBusesDirty;
 
             if (mainCoroutine == null)
             {
@@ -55,10 +54,10 @@ namespace DCL
             }
         }
 
-        private void OnCharacterMoved(DCLCharacterPosition obj)
+        bool populateBusesDirty = true;
+        public void MarkBusesDirty()
         {
-            if (!string.IsNullOrEmpty(SceneController.i.currentSceneId))
-                messagingControllers.TryGetValue(SceneController.i.currentSceneId, out currentSceneController);
+            populateBusesDirty = true;
         }
 
         public void PopulateBusesToBeProcessed()
@@ -159,7 +158,6 @@ namespace DCL
             }
 
             SceneController.i.OnSortScenes -= PopulateBusesToBeProcessed;
-            DCLCharacterController.OnCharacterMoved -= OnCharacterMoved;
 
             messagingControllers.Clear();
         }
@@ -234,6 +232,12 @@ namespace DCL
         {
             while (true)
             {
+                if (populateBusesDirty)
+                {
+                    PopulateBusesToBeProcessed();
+                    populateBusesDirty = false;
+                }
+
                 timeBudgetCounter = RenderingController.i.renderingEnabled ? MAX_GLOBAL_MSG_BUDGET : float.MaxValue;
 
                 for (int i = 0; i < busesToProcessCount; ++i)
