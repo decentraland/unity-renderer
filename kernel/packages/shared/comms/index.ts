@@ -257,7 +257,9 @@ export function processProfileMessage(
 }
 
 function processNewLogin(identity: string, context: Context, fromAlias: string) {
-  if (!DEBUG_LOGIN) {
+  // TODO - check this issue - moliva - 23/01/2020
+  const checkTodo = false
+  if (checkTodo && !DEBUG_LOGIN) {
     if (identity === context.userInfo.userId && fromAlias !== getCurrentPeer()!.uuid) {
       Session.current.then(s => s.disable()).catch(e => defaultLogger.error('error while signing out', e))
     }

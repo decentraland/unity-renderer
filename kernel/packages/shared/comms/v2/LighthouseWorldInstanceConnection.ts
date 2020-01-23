@@ -36,6 +36,10 @@ export class LighthouseWorldInstanceConnection implements WorldInstanceConnectio
           this.chatHandler(sender, payload)
           break
         }
+        case 'scene': {
+          this.sceneMessageHandler(sender, payload)
+          break
+        }
         case 'position': {
           this.positionHandler(sender, payload)
           break
@@ -115,7 +119,7 @@ export class LighthouseWorldInstanceConnection implements WorldInstanceConnectio
     const topic = sceneId
 
     await this.peer.sendMessage(topic, {
-      type: 'chat',
+      type: 'scene',
       time: Date.now(),
       data: { id: sceneId, text: message }
     })
