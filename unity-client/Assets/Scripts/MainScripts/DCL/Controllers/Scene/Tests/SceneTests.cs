@@ -315,7 +315,7 @@ namespace Tests
             Assert.AreEqual(1, sceneController.loadedScenes.Count);
 
             var theScene = sceneController.loadedScenes["xxx"];
-            theScene.CleanBlockers();
+            theScene.blockerHandler.CleanBlockers();
             yield return null;
 
             Assert.AreEqual(3, theScene.sceneData.parcels.Length);
@@ -346,7 +346,7 @@ namespace Tests
             Assert.AreEqual(1, sceneController.loadedScenes.Count);
 
             var theScene = sceneController.loadedScenes["xxx"];
-            theScene.CleanBlockers();
+            theScene.blockerHandler.CleanBlockers();
             yield return null;
 
             Assert.AreEqual(3, theScene.sceneData.parcels.Length);

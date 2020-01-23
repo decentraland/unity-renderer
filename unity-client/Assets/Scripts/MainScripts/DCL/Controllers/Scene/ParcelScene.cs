@@ -20,7 +20,6 @@ namespace DCL.Controllers
             READY,
         }
 
-        private const string PARCEL_BLOCKER_PREFAB = "Prefabs/ParcelBlocker";
         private const int ENTITY_POOL_PREWARM_COUNT = 2000;
 
         public Dictionary<string, DecentralandEntity> entities = new Dictionary<string, DecentralandEntity>();
@@ -53,29 +52,19 @@ namespace DCL.Controllers
 
         public static ParcelScenesCleaner parcelScenesCleaner = new ParcelScenesCleaner();
 
-        private readonly List<PoolableObject> blockers = new List<PoolableObject>();
         private readonly List<string> disposableNotReady = new List<string>();
         private bool flaggedToUnload = false;
         private bool isReleased = false;
         private State state = State.NOT_READY;
         public SceneBoundariesChecker boundariesChecker { private set; get; }
 
-        private static GameObject blockerPrefab;
+        public BlockerHandler blockerHandler;
+
 
         public void Awake()
         {
             state = State.NOT_READY;
-
-            if (blockerPrefab == null)
-                blockerPrefab = Resources.Load<GameObject>(PARCEL_BLOCKER_PREFAB);
-
-            // We need to manually create the Pool for empty game objects if it doesn't exist
-            if (!PoolManager.i.ContainsPool(PARCEL_BLOCKER_POOL_NAME))
-            {
-                GameObject go = Instantiate(blockerPrefab);
-                Pool pool = PoolManager.i.AddPool(PARCEL_BLOCKER_POOL_NAME, go);
-                pool.ForcePrewarm();
-            }
+            blockerHandler = new BlockerHandler();
 
             if (DCLCharacterController.i)
                 DCLCharacterController.i.characterPosition.OnPrecisionAdjust += OnPrecisionAdjust;
@@ -154,57 +143,12 @@ namespace DCL.Controllers
             }
 #endif
             if (useBlockers)
-                SetupBlockers(data.parcels);
+                blockerHandler.SetupBlockers(data.parcels, metricsController.GetLimits().sceneHeight, this.transform);
 
             if (isTestScene)
                 SetSceneReady();
         }
 
-        public void CleanBlockers()
-        {
-            int count = blockers.Count;
-
-            for (int i = 0; i < count; i++)
-            {
-                blockers[i].Release();
-            }
-
-            blockers.Clear();
-        }
-
-        const string PARCEL_BLOCKER_POOL_NAME = "ParcelBlocker";
-        Vector3 auxVec = new Vector3();
-
-        private void SetupBlockers(Vector2Int[] parcels)
-        {
-            CleanBlockers();
-
-            int parcelsLength = parcels.Length;
-            for (int i = 0; i < parcelsLength; i++)
-            {
-                Vector2Int pos = parcels[i];
-
-                PoolableObject blocker = PoolManager.i.Get(PARCEL_BLOCKER_POOL_NAME);
-
-                blocker.transform.SetParent(this.transform, false);
-                blocker.transform.position = DCLCharacterController.i.characterPosition.WorldToUnityPosition(Utils.GridToWorldPosition(pos.x, pos.y)) + (Vector3.up * blockerPrefab.transform.localPosition.y) + new Vector3(ParcelSettings.PARCEL_SIZE / 2, 0, ParcelSettings.PARCEL_SIZE / 2);
-
-                float sceneHeight = metricsController.GetLimits().sceneHeight;
-
-                auxVec.x = blocker.transform.position.x;
-                auxVec.y = sceneHeight / 2;
-                auxVec.z = blocker.transform.position.z;
-
-                blocker.transform.position = auxVec;
-
-                auxVec.x = ParcelSettings.PARCEL_SIZE;
-                auxVec.y = sceneHeight;
-                auxVec.z = ParcelSettings.PARCEL_SIZE;
-                blocker.transform.localScale = auxVec;
-
-                blockers.Add(blocker);
-            }
-        }
 
         void OnPrecisionAdjust(DCLCharacterPosition position)
         {
@@ -1135,7 +1079,7 @@ namespace DCL.Controllers
             state = State.READY;
 
             if (useBlockers)
-                CleanBlockers();
+                blockerHandler.CleanBlockers();
 
             SceneController.i.SendSceneReady(sceneData.id);
             RefreshName();
