@@ -343,10 +343,17 @@ namespace DCL
             scene = SafeFromJson<LoadParcelScenesMessage.UnityParcelScene>(decentralandSceneJSON);
             OnMessageDecodeEnds?.Invoke(MessagingTypes.SCENE_LOAD);
 
-            if (scene == null || scene.id == null)
-                return;
+            if (scene == null || scene.id == null) return;
 
             var sceneToLoad = scene;
+
+#if UNITY_EDITOR
+            if (debugScenes && sceneToLoad.basePosition.ToString() != debugSceneCoords.ToString())
+            {
+                SendSceneReady(sceneToLoad.id);
+                return;
+            }
+#endif
 
             OnMessageProcessStart?.Invoke(MessagingTypes.SCENE_LOAD);
 
@@ -557,6 +564,7 @@ namespace DCL
                 queuedMessage = new MessagingBus.QueuedSceneMessage_Scene();
 
             MessageDecoder.DecodeSceneMessage(sceneId, message, messageTag, sendSceneMessage, ref queuedMessage);
+
             EnqueueMessage(queuedMessage);
 
             OnMessageDecodeEnds?.Invoke("Misc");
@@ -622,17 +630,9 @@ namespace DCL
             if (loadedScenes.TryGetValue(sceneId, out scene))
             {
 #if UNITY_EDITOR
-                if (debugScenes)
+                if (debugScenes && scene is GlobalScene && ignoreGlobalScenes)
                 {
-                    if (scene is GlobalScene && ignoreGlobalScenes)
-                    {
-                        return false;
-                    }
-
-                    if (scene.sceneData.basePosition.ToString() != debugSceneCoords.ToString())
-                    {
-                        return false;
-                    }
+                    return false;
                 }
 #endif
                 if (!scene.gameObject.activeInHierarchy)
