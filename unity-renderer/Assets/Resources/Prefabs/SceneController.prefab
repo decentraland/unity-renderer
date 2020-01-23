@@ -407,11 +407,10 @@ MonoBehaviour:
   fpsPanel: {fileID: 7216045482893348587}
   engineDebugPanel: {fileID: 1130915824720432023}
   sceneDebugPanel: {fileID: 6902065697670736161}
-  debugScenes: 1
+  debugScenes: 0
   debugSceneCoords: {x: 63, y: -63}
   ignoreGlobalScenes: 0
   msgStepByStep: 0
-  deferredMessagesDecoding: 1
 --- !u!114 &1210811942730548506
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -866,6 +865,11 @@ PrefabInstance:
       propertyPath: m_IsActive
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 1592760362493093889, guid: 343005e32016c60479b0584c59812b4b,
+        type: 3}
+      propertyPath: label
+      value: 
+      objectReference: {fileID: 1019484676643044780}
     - target: {fileID: 8901170218733160826, guid: 343005e32016c60479b0584c59812b4b,
         type: 3}
       propertyPath: m_LocalPosition.x
@@ -986,11 +990,21 @@ PrefabInstance:
       propertyPath: m_LocalScale.z
       value: 1
       objectReference: {fileID: 0}
-    - target: {fileID: 1592760362493093889, guid: 343005e32016c60479b0584c59812b4b,
+    - target: {fileID: 1019484676433035784, guid: 343005e32016c60479b0584c59812b4b,
         type: 3}
-      propertyPath: label
-      value: 
-      objectReference: {fileID: 1019484676643044780}
+      propertyPath: m_FontData.m_MinSize
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 1019484676433035784, guid: 343005e32016c60479b0584c59812b4b,
+        type: 3}
+      propertyPath: m_FontData.m_Alignment
+      value: 8
+      objectReference: {fileID: 0}
+    - target: {fileID: 1019484676433035784, guid: 343005e32016c60479b0584c59812b4b,
+        type: 3}
+      propertyPath: m_Text
+      value: 25 FPS
+      objectReference: {fileID: 0}
     - target: {fileID: 5978995000903918930, guid: 343005e32016c60479b0584c59812b4b,
         type: 3}
       propertyPath: m_LocalScale.x
@@ -1065,21 +1079,6 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Pivot.y
       value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 1019484676433035784, guid: 343005e32016c60479b0584c59812b4b,
-        type: 3}
-      propertyPath: m_FontData.m_MinSize
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 1019484676433035784, guid: 343005e32016c60479b0584c59812b4b,
-        type: 3}
-      propertyPath: m_FontData.m_Alignment
-      value: 8
-      objectReference: {fileID: 0}
-    - target: {fileID: 1019484676433035784, guid: 343005e32016c60479b0584c59812b4b,
-        type: 3}
-      propertyPath: m_Text
-      value: 25 FPS
       objectReference: {fileID: 0}
     - target: {fileID: 9015994244967614587, guid: 343005e32016c60479b0584c59812b4b,
         type: 3}
