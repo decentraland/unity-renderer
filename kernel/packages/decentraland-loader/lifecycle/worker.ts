@@ -12,6 +12,7 @@ import defaultLogger from 'shared/logger'
 
 const connector = new Adapter(WebWorkerTransport(self as any))
 
+
 let parcelController: ParcelLifeCycleController
 let sceneController: SceneLifeCycleController
 let positionController: PositionLifecycleController

@@ -734,6 +734,7 @@ async function initializeDecentralandUI() {
     name: 'ui',
     baseUrl: location.origin,
     main: hudWorkerUrl,
+    useFPSThrottling: false,
     data: {},
     mappings: []
   })
