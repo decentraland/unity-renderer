@@ -180,6 +180,7 @@ export type EnvironmentData<T> = {
   main: string
   baseUrl: string
   mappings: Array<ContentMapping>
+  useFPSThrottling: boolean
   data: T
 }
 
@@ -377,6 +378,7 @@ export function ILandToLoadableParcelScene(land: ILand): EnvironmentData<Loadabl
     baseUrl: land.baseUrl,
     name: land.scene.name,
     main: land.scene.main,
+    useFPSThrottling: false,
     mappings,
     data: {
       id: land.sceneId,
@@ -406,6 +408,7 @@ export function ILandToLoadableParcelSceneUpdate(land: ILand): EnvironmentData<L
     baseUrl: land.baseUrl,
     name: land.scene.name,
     main: land.scene.main,
+    useFPSThrottling: false,
     mappings,
     data: {
       id: land.sceneId,

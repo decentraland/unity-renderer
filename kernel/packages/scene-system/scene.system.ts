@@ -11,16 +11,18 @@ import {
   ComponentCreatedPayload,
   ComponentDisposedPayload,
   ComponentUpdatedPayload,
-  QueryPayload
+  QueryPayload,
+  LoadableParcelScene
 } from 'shared/types'
-import { DecentralandInterface } from 'decentraland-ecs/src/decentraland/Types'
+import { DecentralandInterface, IEvents } from 'decentraland-ecs/src/decentraland/Types'
 import { defaultLogger } from 'shared/logger'
 
 import { customEval, getES5Context } from './sdk/sandbox'
 import { DevToolsAdapter } from './sdk/DevToolsAdapter'
 import { ScriptingTransport, ILogOpts } from 'decentraland-rpc/src/common/json-rpc/types'
-import { QueryType, CLASS_ID, Transform } from 'decentraland-ecs/src'
+import { QueryType, CLASS_ID, Transform, Vector2 } from 'decentraland-ecs/src'
 import { PB_Transform, PB_Vector3, PB_Quaternion } from '../shared/proto/engineinterface_pb'
+import { worldToGrid } from 'atomicHelpers/parcelScenePositions'
 
 // tslint:disable-next-line:whitespace
 type IEngineAPI = import('shared/apis/EngineAPI').IEngineAPI
@@ -28,8 +30,6 @@ type IEngineAPI = import('shared/apis/EngineAPI').IEngineAPI
 // tslint:disable-next-line:whitespace
 type EnvironmentAPI = import('shared/apis/EnvironmentAPI').EnvironmentAPI
 
-const FPS = 30
-const UPDATE_INTERVAL = 1000 / FPS
 const dataUrlRE = /^data:[^/]+\/[^;]+;base64,/
 const blobRE = /^blob:http/
 
@@ -40,6 +40,7 @@ const pbTransform: PB_Transform = new PB_Transform()
 const pbPosition: PB_Vector3 = new PB_Vector3()
 const pbRotation: PB_Quaternion = new PB_Quaternion()
 const pbScale: PB_Vector3 = new PB_Vector3()
+
 
 function resolveMapping(mapping: string | undefined, mappingName: string, baseUrl: string) {
   let url = mappingName
@@ -75,13 +76,17 @@ export default class GamekitScene extends Script {
   onEventFunctions: Array<(event: any) => void> = []
   events: EntityAction[] = []
 
-  updateInterval = UPDATE_INTERVAL
   devToolsAdapter: DevToolsAdapter | null = null
 
   manualUpdate: boolean = false
 
+  updateInterval: number = 1000 / 30
+
   didStart = false
   provider: any = null
+
+  scenePosition:Vector2 = new Vector2()
+  parcels:Array<{ x: number; y: number }> = []
 
   constructor(transport: ScriptingTransport, opt?: ILogOpts) {
     super(transport, opt)
@@ -160,7 +165,7 @@ export default class GamekitScene extends Script {
       const html = await fetch(url)
 
       if (html.ok) {
-        return [bootstrapData.sceneId, await html.text()] as const
+        return [bootstrapData, await html.text()] as const
       } else {
         throw new Error(`SDK: Error while loading ${url} (${mappingName} -> ${mapping})`)
       }
@@ -179,18 +184,34 @@ export default class GamekitScene extends Script {
     }
   }
 
+  calculateSceneCenter(parcels:Array<{ x: number; y: number }>) : Vector2 {
+    let center:Vector2 = new Vector2()
+    
+    parcels.forEach( (v2) => {
+      center = Vector2.Add(v2, center)
+    } )
+
+    center.x /= parcels.length 
+    center.y /= parcels.length 
+  
+    return center
+  }
+
   async systemDidEnable() {
     this.eventSubscriber = new EventSubscriber(this.engine as any)
     this.devToolsAdapter = new DevToolsAdapter(this.devTools)
 
     try {
-      const [sceneId, source] = await this.loadProject()
+      const [sceneData, source] = await this.loadProject()
 
       if (!source) {
         throw new Error('Received empty source.')
       }
 
       const that = this
+      
+      const fullData = sceneData.data as LoadableParcelScene
+      const sceneId = fullData.id
 
       const dcl: DecentralandInterface = {
         DEBUG: true,
@@ -415,6 +436,14 @@ export default class GamekitScene extends Script {
         })
       })
 
+      if (sceneData.useFPSThrottling === true) {
+        this.parcels = fullData.parcels
+        if (this.parcels !== undefined) {
+          this.scenePosition = this.calculateSceneCenter(this.parcels)
+          this.setupFpsThrottling(dcl)
+        }
+      }
+
       try {
         await customEval((source as any) as string, getES5Context({ dcl }))
 
@@ -437,6 +466,43 @@ export default class GamekitScene extends Script {
     } finally {
       this.didStart = true
     }
+  }
+
+  private setupFpsThrottling(dcl: DecentralandInterface) {
+    dcl.subscribe('positionChanged')
+    dcl.onEvent(event => {
+      if (event.type !== 'positionChanged') {
+        return
+      }
+      
+      const e = event.data as IEvents['positionChanged']
+      const playerPosition = worldToGrid(e.cameraPosition)
+
+      if (playerPosition === undefined || this.scenePosition === undefined) {
+        return
+      }
+
+      const playerPos = playerPosition as Vector2
+      const scenePos = this.scenePosition as Vector2
+      const distanceToPlayer = Vector2.Distance(playerPos, scenePos)
+      
+      let fps:number = 1
+      const insideScene:boolean = this.parcels.some(e => e.x === playerPos.x && e.y === playerPos.y) 
+
+      if (insideScene) {
+        fps = 30
+      } else if (distanceToPlayer <= 2) {
+        //NOTE(Brian): Yes, this could be a formula, but I prefer this pedestrian way as
+        //             its easier to read and tweak (i.e. if we find out its better as some arbitrary curve, etc).
+        fps = 20
+      } else if (distanceToPlayer <= 3) {
+        fps = 10
+      } else if (distanceToPlayer <= 4) {
+        fps = 5
+      }
+
+      this.updateInterval = 1000 / fps
+    })
   }
 
   update(time: number) {
