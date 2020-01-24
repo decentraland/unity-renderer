@@ -92,8 +92,10 @@ export type PoseInformation = {
   v: Pose
 }
 
+export type PackageType = 'profile' | 'chat' | 'position'
+
 export type Package<T> = {
-  type: 'profile' | 'chat' | 'position'
+  type: PackageType
   time: number
   data: T
 }

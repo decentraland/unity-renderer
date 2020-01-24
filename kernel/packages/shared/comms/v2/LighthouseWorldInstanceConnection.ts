@@ -1,16 +1,19 @@
 import { WorldInstanceConnection } from '../interface/index'
 import { Stats } from '../debug'
-import { Package, BusMessage, ChatMessage, ProfileVersion, UserInformation } from '../interface/types'
+import { Package, BusMessage, ChatMessage, ProfileVersion, UserInformation, PackageType } from '../interface/types'
 import { Position, positionHash } from '../interface/utils'
 import { Peer } from 'decentraland-katalyst-peer'
 import { createLogger } from 'shared/logger'
-import { PeerMessageTypes } from 'decentraland-katalyst-peer/src/messageTypes'
+import { PeerMessageTypes, PeerMessageType } from 'decentraland-katalyst-peer/src/messageTypes'
+import { ChatData, CommsMessage, ProfileData, SceneData, PositionData } from './proto/comms_pb'
 
 const NOOP = () => {
   // do nothing
 }
 
 const logger = createLogger('Lighthouse: ')
+
+type MessageData = ChatData | ProfileData | SceneData | PositionData
 
 export class LighthouseWorldInstanceConnection implements WorldInstanceConnection {
   stats: Stats | null = null
@@ -27,25 +30,33 @@ export class LighthouseWorldInstanceConnection implements WorldInstanceConnectio
   constructor(private peer: Peer) {
     logger.info(`connected peer as `, peer.peerId)
     peer.callback = (sender, room, payload) => {
-      switch (payload.type) {
-        case 'profile': {
-          this.profileHandler(sender, payload.data.user, payload)
+      const commsMessage = CommsMessage.deserializeBinary(payload)
+
+      switch (commsMessage.getDataCase()) {
+        case CommsMessage.DataCase.CHAT_DATA:
+          this.chatHandler(sender, createPackage(commsMessage, 'chat', mapToPackageChat(commsMessage.getChatData()!)))
           break
-        }
-        case 'chat': {
-          this.chatHandler(sender, payload)
+        case CommsMessage.DataCase.POSITION_DATA:
+          this.positionHandler(
+            sender,
+            createPackage(commsMessage, 'position', mapToPositionMessage(commsMessage.getPositionData()!))
+          )
           break
-        }
-        case 'scene': {
-          this.sceneMessageHandler(sender, payload)
+        case CommsMessage.DataCase.SCENE_DATA:
+          this.sceneMessageHandler(
+            sender,
+            createPackage(commsMessage, 'chat', mapToPackageScene(commsMessage.getSceneData()!))
+          )
           break
-        }
-        case 'position': {
-          this.positionHandler(sender, payload)
+        case CommsMessage.DataCase.PROFILE_DATA:
+          this.profileHandler(
+            sender,
+            commsMessage.getProfileData()!.getUserId(),
+            createPackage(commsMessage, 'profile', mapToPackageProfile(commsMessage.getProfileData()!))
+          )
           break
-        }
         default: {
-          logger.warn(`message with unknown type received ${payload.type}`)
+          logger.warn(`message with unknown type received ${commsMessage.getDataCase()}`)
           break
         }
       }
@@ -66,73 +77,45 @@ export class LighthouseWorldInstanceConnection implements WorldInstanceConnectio
   async sendInitialMessage(userInfo: Partial<UserInformation>) {
     const topic = userInfo.userId!
 
-    await this.peer.sendMessage(topic, {
-      type: 'profile',
-      time: Date.now(),
-      data: { version: userInfo.version, user: userInfo.userId }
-    })
+    await this.sendProfileData(userInfo, topic)
   }
 
   async sendProfileMessage(currentPosition: Position, userInfo: UserInformation) {
     const topic = positionHash(currentPosition)
 
-    await this.peer.sendMessage(
-      topic,
-      {
-        type: 'profile',
-        time: Date.now(),
-        data: { version: userInfo.version, user: userInfo.userId }
-      },
-      PeerMessageTypes.unreliable
-    )
+    await this.sendProfileData(userInfo, topic)
   }
 
   async sendPositionMessage(p: Position) {
     const topic = positionHash(p)
 
-    await this.peer.sendMessage(
-      topic,
-      {
-        type: 'position',
-        time: Date.now(),
-        data: [p[0], p[1], p[2], p[3], p[4], p[5], p[6]]
-      },
-      PeerMessageTypes.unreliable
-    )
+    await this.sendPositionData(p, topic)
   }
 
   async sendParcelUpdateMessage(currentPosition: Position, p: Position) {
     const topic = positionHash(currentPosition)
 
-    await this.peer.sendMessage(
-      topic,
-      {
-        type: 'position',
-        time: Date.now(),
-        data: [p[0], p[1], p[2], p[3], p[4], p[5], p[6]]
-      },
-      PeerMessageTypes.unreliable
-    )
+    await this.sendPositionData(p, topic)
   }
 
   async sendParcelSceneCommsMessage(sceneId: string, message: string) {
     const topic = sceneId
 
-    await this.peer.sendMessage(topic, {
-      type: 'scene',
-      time: Date.now(),
-      data: { id: sceneId, text: message }
-    })
+    const sceneData = new SceneData()
+    sceneData.setSceneId(sceneId)
+    sceneData.setText(message)
+
+    await this.sendData(topic, sceneData, PeerMessageTypes.reliable)
   }
 
   async sendChatMessage(currentPosition: Position, messageId: string, text: string) {
     const topic = positionHash(currentPosition)
 
-    await this.peer.sendMessage(topic, {
-      type: 'chat',
-      time: Date.now(),
-      data: { id: messageId, text }
-    })
+    const chatMessage = new ChatData()
+    chatMessage.setMessageId(messageId)
+    chatMessage.setText(text)
+
+    await this.sendData(topic, chatMessage, PeerMessageTypes.reliable)
   }
 
   async updateSubscriptions(rooms: string[]) {
@@ -153,4 +136,87 @@ export class LighthouseWorldInstanceConnection implements WorldInstanceConnectio
     })
     return Promise.all([...joining, ...leaving]).then(NOOP)
   }
+
+  private async sendData(topic: string, messageData: MessageData, type: PeerMessageType = PeerMessageTypes.unreliable) {
+    await this.peer.sendMessage(topic, createCommsMessage(messageData).serializeBinary(), type)
+  }
+
+  private async sendPositionData(p: Position, topic: string) {
+    const positionData = createPositionData(p)
+    await this.sendData(topic, positionData)
+  }
+
+  private async sendProfileData(userInfo: UserInformation, topic: string) {
+    const profileData = createProfileData(userInfo)
+    await this.sendData(topic, profileData)
+  }
+}
+
+function createPackage<T>(commsMessage: CommsMessage, type: PackageType, data: T): Package<T> {
+  return {
+    time: commsMessage.getTime(),
+    type,
+    data
+  }
+}
+
+function mapToPositionMessage(positionData: PositionData): Position {
+  return [
+    positionData.getPositionX(),
+    positionData.getPositionY(),
+    positionData.getPositionZ(),
+    positionData.getRotationX(),
+    positionData.getRotationY(),
+    positionData.getRotationZ(),
+    positionData.getRotationW()
+  ]
+}
+
+function mapToPackageChat(chatData: ChatData) {
+  return {
+    id: chatData.getMessageId(),
+    text: chatData.getText()
+  }
+}
+
+function mapToPackageScene(sceneData: SceneData) {
+  return {
+    id: sceneData.getSceneId(),
+    text: sceneData.getText()
+  }
+}
+
+function mapToPackageProfile(profileData: ProfileData) {
+  return { user: profileData.getUserId(), version: profileData.getProfileVersion() }
+}
+
+function createProfileData(userInfo: UserInformation) {
+  const profileData = new ProfileData()
+  profileData.setProfileVersion(userInfo.version ? userInfo.version.toString() : '')
+  profileData.setUserId(userInfo.userId ? userInfo.userId : '')
+  return profileData
+}
+
+function createPositionData(p: Position) {
+  const positionData = new PositionData()
+  positionData.setPositionX(p[0])
+  positionData.setPositionY(p[1])
+  positionData.setPositionZ(p[2])
+  positionData.setRotationX(p[3])
+  positionData.setRotationY(p[4])
+  positionData.setRotationZ(p[5])
+  positionData.setRotationW(p[6])
+  return positionData
+}
+
+function createCommsMessage(data: MessageData) {
+  const commsMessage = new CommsMessage()
+  commsMessage.setTime(Date.now())
+
+  if (data instanceof ChatData) commsMessage.setChatData(data)
+  if (data instanceof SceneData) commsMessage.setSceneData(data)
+  if (data instanceof ProfileData) commsMessage.setProfileData(data)
+  if (data instanceof PositionData) commsMessage.setPositionData(data)
+
+  return commsMessage
 }
