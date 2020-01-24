@@ -1,0 +1,36 @@
+syntax = "proto3";
+
+message CommsMessage {
+    double time = 1;
+    oneof data {
+        PositionData position_data = 2;
+        ProfileData profile_data = 3;
+        ChatData chat_data = 4;
+        SceneData scene_data = 5;
+    }
+}
+
+message PositionData {
+    float position_x = 1;
+    float position_y = 2;
+    float position_z = 3;
+    float rotation_x = 4;
+    float rotation_y = 5;
+    float rotation_z = 6;
+    float rotation_w = 7;
+}
+
+message ProfileData {
+    string profile_version = 1;
+    string user_id = 2;
+}
+
+message ChatData {
+    string message_id = 1;
+    string text = 2;
+}
+
+message SceneData {
+    string scene_id = 1;
+    string text = 2;
+}
