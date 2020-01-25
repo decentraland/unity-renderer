@@ -150,14 +150,26 @@ namespace DCL
             if (forceSort || sceneSortDirty)
             {
                 sceneSortDirty = false;
+
                 scenesSortedByDistance.Sort(SortScenesByDistanceMethod);
 
-                ParcelScene currentScene = scenesSortedByDistance.Any()
-                    ? scenesSortedByDistance.First(scene => scene.sceneData != null && !scene.isPersistent)
-                    : null;
+                using (var iterator = scenesSortedByDistance.GetEnumerator())
+                {
+                    ParcelScene scene;
+                    bool characterIsInsideScene;
 
-                if (currentScene != null && currentScene.sceneData != null)
-                    currentSceneId = currentScene.sceneData.id;
+                    while (iterator.MoveNext())
+                    {
+                        scene = iterator.Current;
+                        characterIsInsideScene = scene.IsInsideSceneBoundaries(DCLCharacterController.i.characterPosition);
+
+                        if (scene.sceneData.id != globalSceneId && characterIsInsideScene)
+                        {
+                            currentSceneId = scene.sceneData.id;
+                            break;
+                        }
+                    }
+                }
 
                 CommonScriptableObjects.sceneID.Set(currentSceneId);
 
@@ -175,7 +187,6 @@ namespace DCL
 
             return dist1 - dist2;
         }
-
 
         void Start()
         {
@@ -213,7 +224,6 @@ namespace DCL
             InputController_Legacy.i.Update();
             TrySortScenesByDistance();
         }
-
 
         public void CreateUIScene(string json)
         {
@@ -352,7 +362,6 @@ namespace DCL
 
             OnMessageProcessEnds?.Invoke(MessagingTypes.SCENE_LOAD);
         }
-
 
         public void UpdateParcelScenesExecute(string decentralandSceneJSON)
         {
