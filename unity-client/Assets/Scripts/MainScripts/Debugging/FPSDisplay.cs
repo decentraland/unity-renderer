@@ -5,6 +5,11 @@ namespace DCL
 {
     public class FPSDisplay : MonoBehaviour
     {
+        private readonly float[] deltas = new float[1000];
+        private int begin = 0;
+        private int end = 0;
+        private float countBetween = 0;
+
         [System.Serializable]
         public struct FPSColor
         {
@@ -33,9 +38,17 @@ namespace DCL
         {
             if (label != null)
             {
-                float fps = 1.0f / Time.smoothDeltaTime;
-                string fpsFormatted = fps.ToString("##.00");
-                string msFormatted = (Time.deltaTime * 1000).ToString("##.00");
+                deltas[end++] = Time.deltaTime;
+                if (end == 1000) end = 0;
+                countBetween += Time.deltaTime;
+                while (countBetween > 1.0f)
+                {
+                    countBetween -= deltas[begin++];
+                    if (begin == 1000) begin = 0;
+                }
+                float fps = end > begin ? end - begin : 1000 + end - begin;
+                string fpsFormatted = fps.ToString("##");
+                string msFormatted = (Time.deltaTime * 1000).ToString("##");
                 string targetText = $"Current {msFormatted} ms (fps: {fpsFormatted})";
 
                 if (label.text != targetText)
