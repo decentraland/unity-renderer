@@ -17,7 +17,7 @@ MonoBehaviour:
   - displayName: Basic
     textureQuality: 1
     antiAliasing: 1
-    renderScale: 1
+    renderScale: 0.8
     shadows: 0
     softShadows: 0
     shadowResolution: 256
@@ -26,21 +26,21 @@ MonoBehaviour:
     colorGrading: 0
   - displayName: Medium
     textureQuality: 0
-    antiAliasing: 2
-    renderScale: 1
+    antiAliasing: 1
+    renderScale: 0.8
     shadows: 1
     softShadows: 1
     shadowResolution: 256
-    cameraDrawDistance: 100
+    cameraDrawDistance: 80
     bloom: 1
     colorGrading: 1
   - displayName: High
     textureQuality: 0
-    antiAliasing: 4
+    antiAliasing: 2
     renderScale: 1
     shadows: 1
     softShadows: 1
-    shadowResolution: 1024
+    shadowResolution: 512
     cameraDrawDistance: 100
     bloom: 1
     colorGrading: 1
