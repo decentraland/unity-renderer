@@ -1,7 +1,7 @@
-﻿using UnityEngine;
-using DCL.Models;
 using DCL.Components;
 using DCL.Helpers;
+using DCL.Models;
+using UnityEngine;
 
 namespace DCL.Controllers
 {
@@ -39,8 +39,10 @@ namespace DCL.Controllers
             }
             else
             {
-                var loadWrapper = entity.meshRootGameObject.GetComponent<LoadWrapper>();
-                if (loadWrapper != null && !loadWrapper.alreadyLoaded) return;
+                var loadWrapper = LoadableShape.GetLoaderForEntity(entity);
+
+                if (loadWrapper != null && !loadWrapper.alreadyLoaded)
+                    return;
             }
 
             EvaluateMeshBounds(entity);

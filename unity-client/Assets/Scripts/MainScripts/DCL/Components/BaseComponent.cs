@@ -1,4 +1,4 @@
-﻿using DCL.Controllers;
+using DCL.Controllers;
 using DCL.Models;
 using System;
 using System.Collections;
@@ -58,7 +58,6 @@ namespace DCL.Components
 
         public void RaiseOnAppliedChanges()
         {
-            entity?.OnComponentUpdated?.Invoke(this);
         }
 
         public void UpdateFromJSON(string json)

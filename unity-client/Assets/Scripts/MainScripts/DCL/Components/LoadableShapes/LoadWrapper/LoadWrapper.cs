@@ -1,10 +1,9 @@
-﻿using DCL.Models;
+using DCL.Models;
 using System;
-using UnityEngine;
 
 namespace DCL.Components
 {
-    public abstract class LoadWrapper : MonoBehaviour
+    public abstract class LoadWrapper
     {
         public bool useVisualFeedback = true;
         public bool initialVisibility = true;

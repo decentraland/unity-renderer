@@ -32,7 +32,8 @@ public class NFTShape_Tests : TestsBase
 
         Assert.IsTrue(entity.meshRootGameObject != null, "entity mesh object should already exist as the NFTShape already initialized");
 
-        var nftShape = entity.meshRootGameObject.GetComponent<LoadWrapper_NFT>();
+        var nftShape = LoadableShape.GetLoaderForEntity(entity) as LoadWrapper_NFT;
+
         var backgroundMaterialPropertyBlock = new MaterialPropertyBlock();
         nftShape.loaderController.meshRenderer.GetPropertyBlock(backgroundMaterialPropertyBlock, 1);
 

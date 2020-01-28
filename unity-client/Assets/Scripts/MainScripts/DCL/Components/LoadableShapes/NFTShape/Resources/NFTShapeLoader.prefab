@@ -22,7 +22,6 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 1183462718381658158}
-  - component: {fileID: 7567609400636264580}
   - component: {fileID: 4146605912774035673}
   m_Layer: 0
   m_Name: NFTShapeLoader
@@ -46,30 +45,6 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &7567609400636264580
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 6745490361802555816}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 387023045d3be4804a5205a654bb3817, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  useVisualFeedback: 1
-  initialVisibility: 1
-  alreadyLoaded: 0
-  entity:
-    scene: {fileID: 0}
-    gameObject: {fileID: 0}
-    entityId: 
-    meshGameObject: {fileID: 0}
-  meshRenderer: {fileID: 6255212408791386867}
-  collider: {fileID: 3357185676661541157}
-  backgroundColor: {r: 0, g: 0, b: 0, a: 0}
-  loaderController: {fileID: 0}
 --- !u!114 &4146605912774035673
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -96,6 +71,26 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 1183462718381658158}
     m_Modifications:
+    - target: {fileID: -927199367670048503, guid: ed10a6d33b22449e9bde8daf89147c69,
+        type: 3}
+      propertyPath: m_Name
+      value: PictureFrame
+      objectReference: {fileID: 0}
+    - target: {fileID: -1504981713932161579, guid: ed10a6d33b22449e9bde8daf89147c69,
+        type: 3}
+      propertyPath: m_Materials.Array.data[0]
+      value: 
+      objectReference: {fileID: 2100000, guid: eae10bddbf29d4322b4eae2bbf752815, type: 2}
+    - target: {fileID: -1504981713932161579, guid: ed10a6d33b22449e9bde8daf89147c69,
+        type: 3}
+      propertyPath: m_Materials.Array.data[1]
+      value: 
+      objectReference: {fileID: 2100000, guid: 0199dbd72f1ca4dcead06e22e186f09a, type: 2}
+    - target: {fileID: -1504981713932161579, guid: ed10a6d33b22449e9bde8daf89147c69,
+        type: 3}
+      propertyPath: m_Materials.Array.data[2]
+      value: 
+      objectReference: {fileID: 2100000, guid: 462bb333b45174218827ed50f919134d, type: 2}
     - target: {fileID: -4216859302048453862, guid: ed10a6d33b22449e9bde8daf89147c69,
         type: 3}
       propertyPath: m_LocalPosition.x
@@ -165,26 +160,6 @@ PrefabInstance:
         type: 3}
       propertyPath: m_LocalScale.z
       value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: -1504981713932161579, guid: ed10a6d33b22449e9bde8daf89147c69,
-        type: 3}
-      propertyPath: m_Materials.Array.data[0]
-      value: 
-      objectReference: {fileID: 2100000, guid: eae10bddbf29d4322b4eae2bbf752815, type: 2}
-    - target: {fileID: -1504981713932161579, guid: ed10a6d33b22449e9bde8daf89147c69,
-        type: 3}
-      propertyPath: m_Materials.Array.data[1]
-      value: 
-      objectReference: {fileID: 2100000, guid: 0199dbd72f1ca4dcead06e22e186f09a, type: 2}
-    - target: {fileID: -1504981713932161579, guid: ed10a6d33b22449e9bde8daf89147c69,
-        type: 3}
-      propertyPath: m_Materials.Array.data[2]
-      value: 
-      objectReference: {fileID: 2100000, guid: 462bb333b45174218827ed50f919134d, type: 2}
-    - target: {fileID: -927199367670048503, guid: ed10a6d33b22449e9bde8daf89147c69,
-        type: 3}
-      propertyPath: m_Name
-      value: PictureFrame
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: ed10a6d33b22449e9bde8daf89147c69, type: 3}

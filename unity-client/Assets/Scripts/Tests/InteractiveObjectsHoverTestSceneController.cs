@@ -1,9 +1,9 @@
-﻿using DCL;
-using DCL.Models;
+using DCL;
 using DCL.Components;
+using DCL.Controllers;
 using DCL.Helpers;
 using DCL.Interface;
-using DCL.Controllers;
+using DCL.Models;
 using Newtonsoft.Json;
 using System.Collections;
 using UnityEngine;
@@ -28,7 +28,7 @@ public class InteractiveObjectsHoverTestSceneController : MonoBehaviour
                 src = DCL.Helpers.Utils.GetTestsAssetsPath() + "/GLB/Lantern/Lantern.glb"
             }));
 
-        LoadWrapper_GLTF gltfShape = entity.gameObject.GetComponentInChildren<LoadWrapper_GLTF>();
+        LoadWrapper_GLTF gltfShape = GLTFShape.GetLoaderForEntity(entity) as LoadWrapper_GLTF;
         yield return new DCL.WaitUntil(() => gltfShape.alreadyLoaded, 7f);
 
         TestHelpers.SetEntityTransform(scene, entity, new Vector3(8, -1, 8), Quaternion.identity, new Vector3(0.5f, 0.5f, 0.5f));

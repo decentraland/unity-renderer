@@ -12,8 +12,6 @@ public class LoadableShapesMiscTests : TestsBase
     [UnityTest]
     public IEnumerator OBJShapeUpdate()
     {
-
-
         string entityId = "1";
         TestHelpers.CreateSceneEntity(scene, entityId);
 
@@ -30,7 +28,7 @@ public class LoadableShapesMiscTests : TestsBase
                 src = Utils.GetTestsAssetsPath() + "/OBJ/teapot.obj"
             }));
 
-        LoadWrapper_OBJ objShape = scene.entities[entityId].gameObject.GetComponentInChildren<LoadWrapper_OBJ>(true);
+        LoadWrapper objShape = LoadableShape.GetLoaderForEntity(scene.entities[entityId]);
         yield return new WaitUntil(() => objShape.alreadyLoaded);
 
         Assert.IsTrue(scene.entities[entityId].meshRootGameObject != null,
@@ -46,8 +44,6 @@ public class LoadableShapesMiscTests : TestsBase
     [UnityTest]
     public IEnumerator PreExistentShapeUpdate()
     {
-
-
         string entityId = "1";
         TestHelpers.CreateSceneEntity(scene, entityId);
         var entity = scene.entities[entityId];
@@ -82,7 +78,7 @@ public class LoadableShapesMiscTests : TestsBase
                 src = Utils.GetTestsAssetsPath() + "/GLB/Lantern/Lantern.glb"
             }));
 
-        LoadWrapper_GLTF gltfShape = scene.entities[entityId].gameObject.GetComponentInChildren<LoadWrapper_GLTF>(true);
+        LoadWrapper gltfShape = GLTFShape.GetLoaderForEntity(scene.entities[entityId]);
         yield return new WaitUntil(() => gltfShape.alreadyLoaded);
 
         Assert.IsTrue(entity.meshesInfo.currentShape != null, "current shape must exist 2");

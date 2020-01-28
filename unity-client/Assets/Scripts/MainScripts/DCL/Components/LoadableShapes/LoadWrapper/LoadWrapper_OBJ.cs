@@ -1,51 +1,54 @@
-﻿using DCL.Helpers;
-using DCL.Models;
+using DCL.Helpers;
+using UnityEngine;
 
 namespace DCL.Components
 {
     public class LoadWrapper_OBJ : LoadWrapper
     {
         DynamicOBJLoaderController objLoaderComponent;
-
-        void Awake()
-        {
-            objLoaderComponent = gameObject.GetOrCreateComponent<DynamicOBJLoaderController>();
-            objLoaderComponent.OnFinishedLoadingAsset += CallOnComponentUpdated;
-        }
+        System.Action<LoadWrapper> OnSuccessEvent;
 
         public override void Unload()
         {
+            objLoaderComponent.OnFinishedLoadingAsset -= SuccessWrapper;
+            Object.Destroy(objLoaderComponent);
             entity.Cleanup();
         }
 
         public override void Load(string src, System.Action<LoadWrapper> OnSuccess, System.Action<LoadWrapper> OnFail)
         {
-            if (!string.IsNullOrEmpty(src))
-            {
-                alreadyLoaded = false;
-                objLoaderComponent.OnFinishedLoadingAsset += () => OnSuccess(this);
-                objLoaderComponent.LoadAsset(src, true);
+            if (string.IsNullOrEmpty(src))
+                return;
 
-                if (objLoaderComponent.loadingPlaceholder == null)
-                {
-                    objLoaderComponent.loadingPlaceholder =
-                        Helpers.Utils.AttachPlaceholderRendererGameObject(gameObject.transform);
-                }
-                else
-                {
-                    objLoaderComponent.loadingPlaceholder.SetActive(true);
-                }
+            if (objLoaderComponent == null)
+                objLoaderComponent = entity.meshRootGameObject.GetOrCreateComponent<DynamicOBJLoaderController>();
+
+            objLoaderComponent.OnFinishedLoadingAsset += SuccessWrapper;
+            OnSuccessEvent = OnSuccess;
+
+            alreadyLoaded = false;
+            objLoaderComponent.LoadAsset(src, true);
+
+            if (objLoaderComponent.loadingPlaceholder == null)
+            {
+                objLoaderComponent.loadingPlaceholder =
+                    Helpers.Utils.AttachPlaceholderRendererGameObject(entity.gameObject.transform);
             }
+            else
+            {
+                objLoaderComponent.loadingPlaceholder.SetActive(true);
+            }
+        }
+
+        void SuccessWrapper()
+        {
+            CallOnComponentUpdated();
+            OnSuccessEvent?.Invoke(this);
         }
 
         void CallOnComponentUpdated()
         {
             alreadyLoaded = true;
-
-            if (entity.OnComponentUpdated != null)
-            {
-                entity.OnComponentUpdated.Invoke(this);
-            }
 
             if (entity.OnShapeUpdated != null)
             {
@@ -55,11 +58,5 @@ namespace DCL.Components
             CollidersManager.i.ConfigureColliders(entity);
         }
 
-        void OnDestroy()
-        {
-            objLoaderComponent.OnFinishedLoadingAsset -= CallOnComponentUpdated;
-
-            Destroy(objLoaderComponent);
-        }
     }
 }

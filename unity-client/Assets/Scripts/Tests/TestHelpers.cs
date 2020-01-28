@@ -1,8 +1,8 @@
 using DCL.Components;
+using DCL.Configuration;
 using DCL.Controllers;
 using DCL.Interface;
 using DCL.Models;
-using DCL.Configuration;
 using Google.Protobuf;
 using Newtonsoft.Json;
 using System;
@@ -1169,7 +1169,7 @@ namespace DCL.Helpers
 
         public static IEnumerator WaitForGLTFLoad(DecentralandEntity entity)
         {
-            LoadWrapper_GLTF wrapper = entity.gameObject.GetComponentInChildren<LoadWrapper_GLTF>(true);
+            LoadWrapper_GLTF wrapper = GLTFShape.GetLoaderForEntity(entity) as LoadWrapper_GLTF;
             return new WaitUntil(() => wrapper.alreadyLoaded);
         }
     }

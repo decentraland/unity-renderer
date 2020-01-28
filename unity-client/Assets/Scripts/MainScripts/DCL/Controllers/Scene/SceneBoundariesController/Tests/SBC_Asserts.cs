@@ -33,7 +33,7 @@ namespace SceneBoundariesCheckerTests
                 {
                     src = Utils.GetTestsAssetsPath() + "/GLB/PalmTree_01.glb"
                 }));
-            LoadWrapper_GLTF gltfShape = entity.gameObject.GetComponentInChildren<LoadWrapper_GLTF>(true);
+            LoadWrapper gltfShape = GLTFShape.GetLoaderForEntity(entity);
             yield return new WaitUntil(() => gltfShape.alreadyLoaded);
 
             Assert.IsTrue(MeshIsInvalid(entity.meshesInfo));
@@ -85,7 +85,7 @@ namespace SceneBoundariesCheckerTests
                 {
                     src = Utils.GetTestsAssetsPath() + "/GLB/PalmTree_01.glb"
                 }));
-            LoadWrapper_GLTF gltfShape = entity.gameObject.GetComponentInChildren<LoadWrapper_GLTF>(true);
+            LoadWrapper gltfShape = GLTFShape.GetLoaderForEntity(entity);
             yield return new WaitUntil(() => gltfShape.alreadyLoaded);
 
             Assert.IsFalse(MeshIsInvalid(entity.meshesInfo));
@@ -213,7 +213,7 @@ namespace SceneBoundariesCheckerTests
                 {
                     src = Utils.GetTestsAssetsPath() + "/GLB/PalmTree_01.glb"
                 }));
-            LoadWrapper_GLTF gltfShape = entity.gameObject.GetComponentInChildren<LoadWrapper_GLTF>(true);
+            LoadWrapper gltfShape = GLTFShape.GetLoaderForEntity(entity);
             yield return new WaitUntil(() => gltfShape.alreadyLoaded);
 
             Assert.IsTrue(MeshIsInvalid(entity.meshesInfo));
