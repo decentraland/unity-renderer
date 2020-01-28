@@ -1,3 +1,4 @@
+using DCL.Configuration;
 using UnityEngine;
 
 namespace DCL
@@ -12,6 +13,8 @@ namespace DCL
         {
             isInstantiated = false;
             container = new GameObject("AB Container");
+            // Hide gameobject until it's been correctly processed, otherwise it flashes at 0,0,0
+            container.transform.position = EnvironmentSettings.MORDOR;
         }
 
         public override void Cleanup()
@@ -28,7 +31,7 @@ namespace DCL
         public void Hide()
         {
             container.transform.parent = null;
-            container.transform.position = Vector3.one * 5000;
+            container.transform.position = EnvironmentSettings.MORDOR;
         }
     }
 }

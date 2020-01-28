@@ -1,4 +1,5 @@
 using DCL.Helpers;
+using System.Collections.Generic;
 using UnityEngine;
 
 namespace DCL
@@ -46,11 +47,15 @@ namespace DCL
             }
         }
 
-        public void ApplyAfterLoad(Transform t)
+        public void ApplyAfterLoad(Transform transform)
         {
-            Renderer[] renderers = t.gameObject.GetComponentsInChildren<Renderer>(true);
+            ApplyAfterLoad(new List<Renderer>(transform.GetComponentsInChildren<Renderer>(true)));
+        }
 
-            for (int i = 0; i < renderers.Length; i++)
+        public void ApplyAfterLoad(List<Renderer> renderers = null)
+        {
+            int renderersCount = renderers.Count;
+            for (int i = 0; i < renderersCount; i++)
             {
                 Renderer renderer = renderers[i];
                 renderer.enabled = visibleFlags == VisibleFlags.INVISIBLE ? false : true;

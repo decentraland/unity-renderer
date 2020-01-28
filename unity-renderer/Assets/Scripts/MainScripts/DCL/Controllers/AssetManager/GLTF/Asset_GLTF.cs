@@ -1,3 +1,4 @@
+using DCL.Configuration;
 using System.Collections;
 using UnityEngine;
 
@@ -33,7 +34,8 @@ namespace DCL
         public void Hide()
         {
             container.transform.parent = null;
-            container.transform.position = Vector3.one * 1000;
+            container.transform.position = EnvironmentSettings.MORDOR;
+            visible = false;
         }
 
         public void CancelShow()
