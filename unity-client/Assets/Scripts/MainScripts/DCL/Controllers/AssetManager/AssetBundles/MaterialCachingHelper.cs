@@ -21,18 +21,28 @@ namespace DCL
             return mat.ComputeCRC() + mat.name;
         }
 
-        public static IEnumerator UseCachedMaterials(GameObject obj)
+        public static IEnumerator UseCachedMaterials(List<Renderer> renderers, bool enableRenderers = true)
         {
-            if (obj == null)
+            if (renderers == null)
+                yield break;
+
+            int renderersCount = renderers.Count;
+
+            if (renderersCount == 0)
                 yield break;
 
             var matList = new List<Material>(1);
 
-            foreach (var rend in obj.GetComponentsInChildren<Renderer>(true))
+            for (int i = 0; i < renderersCount; i++)
             {
+                Renderer r = renderers[i];
+
+                if (!enableRenderers)
+                    r.enabled = false;
+
                 matList.Clear();
 
-                foreach (var mat in rend.sharedMaterials)
+                foreach (var mat in r.sharedMaterials)
                 {
                     float elapsedTime = Time.realtimeSinceStartup;
 
@@ -60,7 +70,7 @@ namespace DCL
                     }
                 }
 
-                rend.sharedMaterials = matList.ToArray();
+                r.sharedMaterials = matList.ToArray();
             }
         }
     }

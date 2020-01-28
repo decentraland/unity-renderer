@@ -26,7 +26,9 @@ namespace DCL
 
         protected override void OnBeforeLoadOrReuse()
         {
+#if UNITY_EDITOR
             asset.container.name = "GLTF: " + url;
+#endif
             settings.ApplyBeforeLoad(asset.container.transform);
         }
 
@@ -79,25 +81,24 @@ namespace DCL
             if (!library.Add(asset))
                 return false;
 
-            if (asset.visible)
-            {
-                //NOTE(Brian): If the asset did load "in world" add it to library and then Get it immediately
-                //             So it keeps being there. As master gltfs can't be in the world.
-                //
-                //             ApplySettings will reposition the newly Get asset to the proper coordinates.
-                if (settings.forceNewInstance)
-                {
-                    asset = (library as AssetLibrary_GLTF).GetCopyFromOriginal(asset.id);
-                }
-                else
-                {
-                    asset = library.Get(asset.id);
-                }
+            if (!asset.visible)
+                return true;
 
-                //NOTE(Brian): Call again this method because we are replacing the asset.
-                OnBeforeLoadOrReuse();
+            //NOTE(Brian): If the asset did load "in world" add it to library and then Get it immediately
+            //             So it keeps being there. As master gltfs can't be in the world.
+            //
+            //             ApplySettings will reposition the newly Get asset to the proper coordinates.
+            if (settings.forceNewInstance)
+            {
+                asset = (library as AssetLibrary_GLTF).GetCopyFromOriginal(asset.id);
+            }
+            else
+            {
+                asset = library.Get(asset.id);
             }
 
+            //NOTE(Brian): Call again this method because we are replacing the asset.
+            OnBeforeLoadOrReuse();
             return true;
         }
 

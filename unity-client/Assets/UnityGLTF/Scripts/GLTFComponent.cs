@@ -1,4 +1,4 @@
-﻿using DCL.Components;
+using DCL.Components;
 using System;
 using System.Collections;
 using System.IO;
@@ -318,6 +318,7 @@ namespace UnityGLTF
                 Debug.Log("couldn't load GLTF because url is empty");
             }
 
+            CoroutineStarter.Stop(loadingRoutine);
             loadingRoutine = null;
             Destroy(loadingPlaceholder);
             Destroy(this);
@@ -385,6 +386,7 @@ namespace UnityGLTF
 
             if (!alreadyLoadedAsset && loadingRoutine != null)
             {
+                CoroutineStarter.Stop(loadingRoutine);
                 OnFail_Internal(null);
                 return;
             }

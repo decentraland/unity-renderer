@@ -4,6 +4,7 @@ using System.Linq;
 using DCL.Helpers;
 using DCL.Configuration;
 using UnityEngine;
+using System.Collections.Generic;
 
 namespace DCL
 {
@@ -12,7 +13,7 @@ namespace DCL
         public AssetPromiseSettings_Rendering settings = new AssetPromiseSettings_Rendering();
         AssetPromise_AB subPromise;
         Coroutine loadingCoroutine;
-
+        List<Renderer> renderers = new List<Renderer>();
 
         public AssetPromise_AB_GameObject(string contentUrl, string hash) : base(contentUrl, hash)
         {
@@ -52,7 +53,7 @@ namespace DCL
 
         protected override void OnAfterLoadOrReuse()
         {
-            settings.ApplyAfterLoad(asset.container.transform);
+            settings.ApplyAfterLoad(renderers);
         }
 
         protected override void OnBeforeLoadOrReuse()
@@ -99,6 +100,7 @@ namespace DCL
         public IEnumerator InstantiateABGameObjects(AssetBundle bundle)
         {
             var goList = subPromise.asset.GetAssetsByExtensions<GameObject>("glb", "ltf");
+            renderers.Clear();
 
             for (int i = 0; i < goList.Count; i++)
             {
@@ -107,10 +109,10 @@ namespace DCL
 
                 GameObject assetBundleModelGO = UnityEngine.Object.Instantiate(goList[i]);
 
-                // Hide gameobject until it's been correctly processed, otherwise it flashes at 0,0,0
-                assetBundleModelGO.transform.position = EnvironmentSettings.MORDOR;
+                renderers.AddRange(assetBundleModelGO.GetComponentsInChildren<Renderer>(true));
 
-                yield return MaterialCachingHelper.UseCachedMaterials(assetBundleModelGO);
+                //NOTE(Brian): Renderers are enabled in settings.ApplyAfterLoad
+                yield return MaterialCachingHelper.UseCachedMaterials(renderers, enableRenderers: false);
 
                 assetBundleModelGO.name = subPromise.asset.assetBundleAssetName;
 #if UNITY_EDITOR
