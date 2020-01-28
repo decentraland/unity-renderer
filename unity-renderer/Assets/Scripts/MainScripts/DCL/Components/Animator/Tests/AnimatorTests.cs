@@ -44,7 +44,7 @@ namespace Tests
             DCLAnimator animator =
                 TestHelpers.EntityComponentCreate<DCLAnimator, DCLAnimator.Model>(scene, entity, animatorModel);
 
-            LoadWrapper_GLTF gltfShape = entity.gameObject.GetComponentInChildren<LoadWrapper_GLTF>();
+            LoadWrapper gltfShape = GLTFShape.GetLoaderForEntity(entity);
             yield return new WaitUntil(() => gltfShape.alreadyLoaded == true);
 
             Assert.IsTrue(entity.gameObject.GetComponentInChildren<Animation>() != null,
@@ -95,7 +95,7 @@ namespace Tests
 
             DCLAnimator animator =
                 TestHelpers.EntityComponentCreate<DCLAnimator, DCLAnimator.Model>(scene, entity, animatorModel);
-            LoadWrapper_GLTF gltfLoader = entity.gameObject.GetComponentInChildren<LoadWrapper_GLTF>();
+            LoadWrapper gltfLoader = GLTFShape.GetLoaderForEntity(entity);
             yield return new WaitUntil(() => gltfLoader.alreadyLoaded);
 
             yield return animator.routine;
@@ -161,7 +161,7 @@ namespace Tests
 
             DCLAnimator animator =
                 TestHelpers.EntityComponentCreate<DCLAnimator, DCLAnimator.Model>(scene, entity, animatorModel);
-            LoadWrapper_GLTF gltfLoader = entity.gameObject.GetComponentInChildren<LoadWrapper_GLTF>();
+            LoadWrapper gltfLoader = GLTFShape.GetLoaderForEntity(entity);
             yield return new WaitUntil(() => gltfLoader.alreadyLoaded);
 
             yield return animator.routine;
@@ -224,7 +224,7 @@ namespace Tests
 
             DCLAnimator animator = TestHelpers.EntityComponentCreate<DCLAnimator, DCLAnimator.Model>(scene, entity, animatorModel);
 
-            LoadWrapper_GLTF gltfShape = entity.gameObject.GetComponentInChildren<LoadWrapper_GLTF>();
+            LoadWrapper gltfShape = GLTFShape.GetLoaderForEntity(entity);
             yield return new WaitUntil(() => gltfShape.alreadyLoaded == true);
 
             Assert.IsTrue(animator.animComponent.isPlaying);
@@ -259,7 +259,7 @@ namespace Tests
                     src = Utils.GetTestsAssetsPath() + "/GLB/CesiumMan/CesiumMan.glb"
                 }));
 
-            LoadWrapper_GLTF gltfShape = entity.gameObject.GetComponentInChildren<LoadWrapper_GLTF>();
+            LoadWrapper gltfShape = GLTFShape.GetLoaderForEntity(entity);
             yield return new WaitUntil(() => gltfShape.alreadyLoaded == true);
 
             Animation animation = entity.meshRootGameObject.GetComponentInChildren<Animation>();
@@ -298,7 +298,7 @@ namespace Tests
 
             DCLAnimator animator = TestHelpers.EntityComponentCreate<DCLAnimator, DCLAnimator.Model>(scene, entity, animatorModel);
 
-            LoadWrapper_GLTF gltfShape2 = entity2.gameObject.GetComponentInChildren<LoadWrapper_GLTF>();
+            LoadWrapper gltfShape2 = GLTFShape.GetLoaderForEntity(entity);
             yield return new WaitUntil(() => gltfShape2.alreadyLoaded == true);
 
             Assert.IsTrue(animator.animComponent != null);
@@ -341,7 +341,7 @@ namespace Tests
 
             DCLAnimator animator = TestHelpers.EntityComponentCreate<DCLAnimator, DCLAnimator.Model>(scene, entity, animatorModel);
 
-            LoadWrapper_GLTF gltfShape = entity.gameObject.GetComponentInChildren<LoadWrapper_GLTF>();
+            LoadWrapper gltfShape = GLTFShape.GetLoaderForEntity(entity);
             yield return new WaitUntil(() => gltfShape.alreadyLoaded == true);
 
             Assert.IsTrue(!animator.animComponent.isPlaying);

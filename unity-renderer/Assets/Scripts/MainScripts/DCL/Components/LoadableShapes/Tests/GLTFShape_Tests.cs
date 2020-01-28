@@ -26,7 +26,7 @@ public class GLTFShape_Tests : TestsBase
                 src = Utils.GetTestsAssetsPath() + "/GLB/Lantern/Lantern.glb"
             }));
 
-        LoadWrapper_GLTF gltfShape = scene.entities[entityId].gameObject.GetComponentInChildren<LoadWrapper_GLTF>(true);
+        LoadWrapper gltfShape = GLTFShape.GetLoaderForEntity(scene.entities[entityId]);
         yield return new WaitUntil(() => gltfShape.alreadyLoaded);
 
         Assert.IsTrue(
@@ -47,7 +47,7 @@ public class GLTFShape_Tests : TestsBase
                 src = Utils.GetTestsAssetsPath() + "/GLB/Lantern/Lantern.glb"
             }));
 
-        LoadWrapper_GLTF gltfShape = scene.entities[entityId].gameObject.GetComponentInChildren<LoadWrapper_GLTF>(true);
+        LoadWrapper gltfShape = GLTFShape.GetLoaderForEntity(scene.entities[entityId]);
         yield return new WaitUntil(() => gltfShape.alreadyLoaded);
 
         {
@@ -63,7 +63,7 @@ public class GLTFShape_Tests : TestsBase
                 src = Utils.GetTestsAssetsPath() + "/GLB/DamagedHelmet/DamagedHelmet.glb"
             }));
 
-        gltfShape = scene.entities[entityId].gameObject.GetComponentInChildren<LoadWrapper_GLTF>(true);
+        gltfShape = GLTFShape.GetLoaderForEntity(scene.entities[entityId]);
         yield return new WaitUntil(() => gltfShape.alreadyLoaded);
 
         {
@@ -87,7 +87,7 @@ public class GLTFShape_Tests : TestsBase
                 src = Utils.GetTestsAssetsPath() + "/GLB/Lantern/Lantern.glb"
             }));
 
-        LoadWrapper_GLTF gltfShape = scene.entities[entityId].gameObject.GetComponentInChildren<LoadWrapper_GLTF>(true);
+        LoadWrapper gltfShape = GLTFShape.GetLoaderForEntity(scene.entities[entityId]);
         yield return new WaitUntil(() => gltfShape.alreadyLoaded);
 
         TestHelpers.UpdateShape(scene, componentId, JsonConvert.SerializeObject(
@@ -96,7 +96,7 @@ public class GLTFShape_Tests : TestsBase
                 src = Utils.GetTestsAssetsPath() + "/GLB/DamagedHelmet/DamagedHelmet.glb"
             }));
 
-        gltfShape = scene.entities[entityId].gameObject.GetComponentInChildren<LoadWrapper_GLTF>(true);
+        gltfShape = GLTFShape.GetLoaderForEntity(scene.entities[entityId]);
         yield return new WaitUntil(() => gltfShape.alreadyLoaded);
 
         Assert.AreEqual(1,
@@ -117,7 +117,7 @@ public class GLTFShape_Tests : TestsBase
             }));
         var gltf1 = scene.GetSharedComponent(gltfId1);
 
-        LoadWrapper_GLTF gltfLoader = entity.gameObject.GetComponentInChildren<LoadWrapper_GLTF>(true);
+        LoadWrapper gltfLoader = GLTFShape.GetLoaderForEntity(entity);
         yield return new WaitUntil(() => gltfLoader.alreadyLoaded);
 
         Assert.AreEqual(gltf1, entity.GetSharedComponent(typeof(BaseShape)));
@@ -129,7 +129,7 @@ public class GLTFShape_Tests : TestsBase
                 src = Utils.GetTestsAssetsPath() + "/GLB/Lantern/Lantern.glb"
             }));
 
-        gltfLoader = entity.gameObject.GetComponentInChildren<LoadWrapper_GLTF>(true);
+        gltfLoader = GLTFShape.GetLoaderForEntity(entity);
         yield return new WaitUntil(() => gltfLoader.alreadyLoaded);
 
         Assert.AreEqual(scene.GetSharedComponent(gltfId2), entity.GetSharedComponent(typeof(BaseShape)));
@@ -159,7 +159,7 @@ public class GLTFShape_Tests : TestsBase
 
         TestHelpers.SharedComponentAttach(shapeComponent, entity);
 
-        var shapeLoader = entity.gameObject.GetComponentInChildren<LoadWrapper_GLTF>(true);
+        var shapeLoader = GLTFShape.GetLoaderForEntity(entity);
         yield return new WaitUntil(() => shapeLoader.alreadyLoaded);
 
         yield return TestHelpers.TestShapeCollision(shapeComponent, shapeModel, entity);
@@ -184,7 +184,7 @@ public class GLTFShape_Tests : TestsBase
 
         TestHelpers.SharedComponentAttach(shapeComponent, entity);
 
-        var shapeLoader = entity.gameObject.GetComponentInChildren<LoadWrapper_GLTF>(true);
+        var shapeLoader = GLTFShape.GetLoaderForEntity(entity);
         yield return new WaitUntil(() => shapeLoader.alreadyLoaded);
 
         yield return TestHelpers.TestShapeVisibility(shapeComponent, shapeModel, entity);

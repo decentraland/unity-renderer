@@ -1,12 +1,6 @@
 using System;
-using System.Collections;
 using UnityEngine;
 using UnityEngine.Assertions;
-using UnityEngine.Networking;
-using System.Linq;
-using DCL.Helpers;
-using System.Collections.Generic;
-using System.Text.RegularExpressions;
 
 namespace DCL.Components
 {
@@ -38,7 +32,7 @@ namespace DCL.Components
             Assert.IsFalse(string.IsNullOrEmpty(targetUrl), "url is null!!");
             loadHelper = new RendereableAssetLoadHelper(this.entity.scene.contentProvider, entity.scene.sceneData.baseUrlBundles);
 
-            loadHelper.settings.parent = transform;
+            loadHelper.settings.parent = entity.meshRootGameObject.transform;
 
             if (initialVisibility == false)
             {
@@ -80,14 +74,6 @@ namespace DCL.Components
         {
             loadHelper.Unload();
             this.entity.OnCleanupEvent -= OnEntityCleanup;
-        }
-
-        public void OnDestroy()
-        {
-            if (Application.isPlaying)
-            {
-                Unload();
-            }
         }
     }
 }

@@ -1,7 +1,5 @@
-﻿using DCL;
 using DCL.Components;
 using DCL.Configuration;
-using DCL.Controllers;
 using DCL.Helpers;
 using DCL.Models;
 using NUnit.Framework;
@@ -37,7 +35,7 @@ namespace Tests
                 out entity,
                 new GLTFShape.Model() { src = DCL.Helpers.Utils.GetTestsAssetsPath() + "/GLB/Lantern/Lantern.glb" });
 
-            LoadWrapper_GLTF gltfShape = entity.gameObject.GetComponentInChildren<LoadWrapper_GLTF>(true);
+            LoadWrapper gltfShape = GLTFShape.GetLoaderForEntity(entity);
             yield return new WaitUntil(() => gltfShape.alreadyLoaded);
 
             float timeout = 0;

@@ -1,5 +1,5 @@
-﻿using UnityEngine;
-using DCL.Helpers;
+﻿using DCL.Helpers;
+using UnityEngine;
 
 namespace DCL.Components
 {
@@ -7,14 +7,14 @@ namespace DCL.Components
     {
         [HideInInspector] public NFTShapeLoaderController loaderController;
 
-        void Awake()
-        {
-            loaderController = GetComponent<NFTShapeLoaderController>();
-            loaderController.OnLoadingAssetSuccess += CallOnComponentUpdated;
-        }
+        public bool withCollisions;
+        public Color backgroundColor;
 
         public override void Unload()
         {
+            loaderController.OnLoadingAssetSuccess -= CallOnComponentUpdated;
+            Object.Destroy(loaderController);
+
             Utils.SafeDestroy(entity.meshRootGameObject);
             entity.meshesInfo.CleanReferences();
         }
@@ -22,6 +22,20 @@ namespace DCL.Components
         public override void Load(string src, System.Action<LoadWrapper> OnSuccess, System.Action<LoadWrapper> OnFail)
         {
             if (string.IsNullOrEmpty(src)) return;
+
+            if (loaderController == null)
+                loaderController = entity.meshRootGameObject.GetComponent<NFTShapeLoaderController>();
+
+            if (loaderController == null)
+            {
+                Debug.LogError("LoadWrapper_NFT >>> loaderController == null!");
+                return;
+            }
+
+            loaderController.collider.enabled = withCollisions;
+            loaderController.backgroundColor = backgroundColor;
+
+            loaderController.OnLoadingAssetSuccess += CallOnComponentUpdated;
 
             loaderController.OnLoadingAssetSuccess += () => OnSuccess(this);
             loaderController.OnLoadingAssetFail += () => OnFail(this);
@@ -33,15 +47,7 @@ namespace DCL.Components
         {
             alreadyLoaded = true;
 
-            entity.OnComponentUpdated?.Invoke(this);
             entity.OnShapeUpdated?.Invoke(entity);
-        }
-
-        void OnDestroy()
-        {
-            loaderController.OnLoadingAssetSuccess -= CallOnComponentUpdated;
-
-            Destroy(loaderController);
         }
     }
 }
