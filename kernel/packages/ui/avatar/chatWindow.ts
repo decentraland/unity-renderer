@@ -20,7 +20,7 @@ declare var dcl: DecentralandInterface
 
 const INITIAL_INPUT_TEXT_COLOR = Color4.Gray()
 const PRIMARY_TEXT_COLOR = Color4.White()
-const COMMAND_COLOR = Color4.FromHexString('#ffd7a9ff')
+const COMMAND_COLOR = Color4.FromHexString('#91ecffff')
 
 // UI creators -------------------
 dcl.subscribe('MESSAGE_RECEIVED')
