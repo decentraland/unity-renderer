@@ -539,7 +539,7 @@ export async function connect(userId: string, network: ETHEREUM_NETWORK, auth: A
           }
         )
 
-        await peer.setLayer('green')
+        await peer.setLayer('white')
 
         connection = new LighthouseWorldInstanceConnection(peer)
 

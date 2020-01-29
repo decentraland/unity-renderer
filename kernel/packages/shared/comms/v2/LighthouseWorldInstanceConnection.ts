@@ -77,25 +77,25 @@ export class LighthouseWorldInstanceConnection implements WorldInstanceConnectio
   async sendInitialMessage(userInfo: Partial<UserInformation>) {
     const topic = userInfo.userId!
 
-    await this.sendProfileData(userInfo, topic)
+    await this.sendProfileData(userInfo, topic, "initialProfile")
   }
 
   async sendProfileMessage(currentPosition: Position, userInfo: UserInformation) {
     const topic = positionHash(currentPosition)
 
-    await this.sendProfileData(userInfo, topic)
+    await this.sendProfileData(userInfo, topic, "profile")
   }
 
   async sendPositionMessage(p: Position) {
     const topic = positionHash(p)
 
-    await this.sendPositionData(p, topic)
+    await this.sendPositionData(p, topic, "position")
   }
 
   async sendParcelUpdateMessage(currentPosition: Position, p: Position) {
     const topic = positionHash(currentPosition)
 
-    await this.sendPositionData(p, topic)
+    await this.sendPositionData(p, topic, "parcelUpdate")
   }
 
   async sendParcelSceneCommsMessage(sceneId: string, message: string) {
@@ -105,7 +105,7 @@ export class LighthouseWorldInstanceConnection implements WorldInstanceConnectio
     sceneData.setSceneId(sceneId)
     sceneData.setText(message)
 
-    await this.sendData(topic, sceneData, PeerMessageTypes.reliable)
+    await this.sendData(topic, sceneData, PeerMessageTypes.reliable("sceneComms"))
   }
 
   async sendChatMessage(currentPosition: Position, messageId: string, text: string) {
@@ -115,7 +115,7 @@ export class LighthouseWorldInstanceConnection implements WorldInstanceConnectio
     chatMessage.setMessageId(messageId)
     chatMessage.setText(text)
 
-    await this.sendData(topic, chatMessage, PeerMessageTypes.reliable)
+    await this.sendData(topic, chatMessage, PeerMessageTypes.reliable("chat"))
   }
 
   async updateSubscriptions(rooms: string[]) {
@@ -137,18 +137,18 @@ export class LighthouseWorldInstanceConnection implements WorldInstanceConnectio
     return Promise.all([...joining, ...leaving]).then(NOOP)
   }
 
-  private async sendData(topic: string, messageData: MessageData, type: PeerMessageType = PeerMessageTypes.unreliable) {
+  private async sendData(topic: string, messageData: MessageData, type: PeerMessageType) {
     await this.peer.sendMessage(topic, createCommsMessage(messageData).serializeBinary(), type)
   }
 
-  private async sendPositionData(p: Position, topic: string) {
+  private async sendPositionData(p: Position, topic: string, typeName: string) {
     const positionData = createPositionData(p)
-    await this.sendData(topic, positionData)
+    await this.sendData(topic, positionData, PeerMessageTypes.unreliable(typeName))
   }
 
-  private async sendProfileData(userInfo: UserInformation, topic: string) {
+  private async sendProfileData(userInfo: UserInformation, topic: string, typeName: string) {
     const profileData = createProfileData(userInfo)
-    await this.sendData(topic, profileData)
+    await this.sendData(topic, profileData, PeerMessageTypes.unreliable(typeName))
   }
 }
 
