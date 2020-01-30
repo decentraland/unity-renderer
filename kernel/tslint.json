@@ -7,6 +7,6 @@
     "no-parameter-reassignment": true
   },
   "linterOptions": {
-    "exclude": ["packages/engine/vendor/**", "test/**", "packages/decentraland-ecs/api-docs-review/decentraland-ecs.api.ts"]
+    "exclude": ["packages/engine/vendor/**", "test/**", "packages/decentraland-ecs/api-docs-review/decentraland-ecs.api.ts", "packages/shared/dao/contracts/*"]
   }
 }

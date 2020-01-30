@@ -1,14 +1,12 @@
 import { disconnect, sendToMordor } from '../comms'
 import { setLoadingScreenVisible } from '../../unity-interface/dcl'
-import { Auth } from 'shared/auth/Auth'
 import { future, IFuture } from 'fp-future'
 import { bringDownClientAndShowError } from '../loading/ReportFatalError'
 import { NEW_LOGIN } from '../loading/types'
+import { removeUserProfile } from '../comms/peers'
 
 export class Session {
   private static _instance: IFuture<Session> = future()
-
-  auth?: Auth
 
   static get current() {
     return Session._instance
@@ -18,7 +16,8 @@ export class Session {
     setLoadingScreenVisible(true)
     sendToMordor()
     disconnect()
-    this.auth && (await this.auth.logout())
+    removeUserProfile()
+    window.location.reload()
   }
 
   disable() {

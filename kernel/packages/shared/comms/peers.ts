@@ -1,8 +1,9 @@
 import { Observable } from 'decentraland-ecs/src'
 import { UUID, PeerInformation, AvatarMessage, UserInformation, AvatarMessageType, Pose } from './interface/types'
-import { getFromLocalStorage, saveToLocalStorage } from 'atomicHelpers/localStorage'
+import { getFromLocalStorage, saveToLocalStorage, removeFromLocalStorage } from 'atomicHelpers/localStorage'
 
 export const getUserProfile = () => getFromLocalStorage('dcl-profile') || {}
+export const removeUserProfile = () => removeFromLocalStorage('dcl-profile')
 export const getBlockedUsers: () => Set<string> = () => new Set(getFromLocalStorage('dcl-blocked-users') || [])
 export const getMutedUsers: () => Set<string> = () => new Set(getFromLocalStorage('dcl-muted-users') || [])
 export const isMuted = (name: string) => getMutedUsers().has(name)

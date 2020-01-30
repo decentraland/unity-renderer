@@ -1,4 +1,5 @@
 import { ProfileForRenderer } from 'decentraland-ecs/src'
+import { AuthIdentity } from '../../crypto/Authenticator'
 
 export enum AvatarMessageType {
   // Networking related messages
@@ -83,6 +84,7 @@ export type UserInformation = {
   status?: string
   pose?: Pose
   profile?: ProfileForRenderer
+  identity?: AuthIdentity
 }
 
 // The order is [X,Y,Z,Qx,Qy,Qz,Qw]

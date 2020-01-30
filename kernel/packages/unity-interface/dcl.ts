@@ -75,7 +75,6 @@ import { positionObservable, teleportObservable } from '../shared/world/position
 import { hudWorkerUrl, SceneWorker } from '../shared/world/SceneWorker'
 import { ensureUiApis } from '../shared/world/uiSceneInitializer'
 import { worldRunningObservable } from '../shared/world/worldState'
-import { getEmail } from '../shared/auth/selectors'
 
 const rendererVersion = require('decentraland-renderer')
 window['console'].log('Renderer version: ' + rendererVersion)
@@ -186,7 +185,7 @@ export function setLoadingScreenVisible(shouldShow: boolean) {
 function delightedSurvey() {
   const { analytics, delighted, globalStore } = global
   if (analytics && delighted && globalStore) {
-    const email = getEmail(global.globalStore.getState())
+    const email = ''
     const payload = {
       email: email,
       properties: {
