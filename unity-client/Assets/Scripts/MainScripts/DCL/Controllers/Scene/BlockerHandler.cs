@@ -51,7 +51,9 @@ namespace DCL.Controllers
             auxScaleVec.y = height;
             auxScaleVec.z = ParcelSettings.PARCEL_SIZE;
 
-            auxPosVec.y = height / 2;
+            auxPosVec.y = (height - 1) / 2;
+
+            float centerOffset = ParcelSettings.PARCEL_SIZE / 2;
 
             for (int i = 0; i < parcelsLength; i++)
             {
@@ -76,10 +78,9 @@ namespace DCL.Controllers
                 PoolableObject blocker = PoolManager.i.Get(PARCEL_BLOCKER_POOL_NAME);
 
                 blocker.transform.SetParent(parent, false);
-                blocker.transform.position = DCLCharacterController.i.characterPosition.WorldToUnityPosition(Utils.GridToWorldPosition(pos.x, pos.y)) + (Vector3.up * blockerPrefab.transform.localPosition.y) + new Vector3(ParcelSettings.PARCEL_SIZE / 2, 0, ParcelSettings.PARCEL_SIZE / 2);
-
-                auxPosVec.x = blocker.transform.position.x;
-                auxPosVec.z = blocker.transform.position.z;
+                blocker.transform.position = DCLCharacterController.i.characterPosition.WorldToUnityPosition(Utils.GridToWorldPosition(pos.x, pos.y));
+                auxPosVec.x = blocker.transform.position.x + centerOffset;
+                auxPosVec.z = blocker.transform.position.z + centerOffset;
 
                 blocker.transform.position = auxPosVec;
                 blocker.transform.localScale = auxScaleVec;
