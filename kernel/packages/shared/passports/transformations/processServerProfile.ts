@@ -41,12 +41,12 @@ export function processServerProfile(userId: string, receivedProfile: any): Prof
   snapshots.face = snapshots.face.replace('|', '%7C')
   snapshots.body = snapshots.body.replace('|', '%7C')
   return {
-    userId: userId,
+    userId,
     email: receivedProfile.email || name.toLowerCase(),
     name: receivedProfile.name || name,
     description: receivedProfile.description || '',
     createdAt: new Date(receivedProfile.createdAt).getTime(),
-    ethAddress: receivedProfile.ethAddress || 'noeth',
+    ethAddress: userId || 'noeth',
     updatedAt:
       typeof receivedProfile.updatedAt === 'string'
         ? new Date(receivedProfile.updatedAt).getTime()

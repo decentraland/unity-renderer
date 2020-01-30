@@ -119,6 +119,7 @@
 
     body.error #progress-bar {
       display: none !important;
+      z-index: 10;
     }
 
     body.error #gameContainer {
@@ -161,7 +162,7 @@
     #load-messages-wrapper {
       display: none;
       min-width: 100%;
-      z-index: 2000;
+      z-index: 8;
       bottom: 10%;
       position: fixed;
       color: white;
@@ -178,6 +179,74 @@
       font-size: 1.0em;
       color: #353535;
     }
+
+    #eth-connect-advice {
+      display: none;
+      background: rgba(0, 0, 0, 1);
+      position: absolute;
+      z-index: 9;
+      top: 0;
+      left:0;
+      width: 100%;
+      height: 100%;
+    }
+    #eth-sign-advice {
+      display: none;
+      background: rgba(0, 0, 0, 1);
+      position: absolute;
+      z-index: 9;
+      top: 0;
+      left:0;
+      width: 100%;
+      height: 100%;
+    }
+    #eth-login {
+      display: none;
+      background: rgba(0, 0, 0, 1);
+      position: absolute;
+      z-index: 9;
+      top: 0;
+      left:0;
+      width: 100%;
+      height: 100%;
+    }
+    .eth-login-popup {
+      background: rgb(90, 90, 90);
+      width: 60%;
+      max-width: 500px;
+
+      position: absolute;
+      left: 50%;
+      top: 50%;
+      transform: translate(-50%, -50%);
+      border-radius: 3px;
+      padding: 25px 20px 10px;
+      box-shadow: 0 0 1rem 0.15rem rgba(255, 255, 255, 0.4);
+
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+    .eth-login-description {
+      color: white;
+      font-family: -apple-system, system-ui, system-ui, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+    }
+    .code {
+      font-family: 'Courier New', Courier, monospace;
+    }
+    .eth-login-confirm-button1 {
+      background: white;
+      color: #eb455a;
+      border: #eb455a solid 3px;
+      font-weight: 600;
+      cursor: pointer;
+      font-size: 1.1rem;
+      border-radius: 10px;
+      line-height: 2rem;
+      width: 80%;
+      margin: 20px 0 0;
+      font-family: -apple-system, system-ui, system-ui, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+    }
   </style>
 </head>
 
@@ -190,6 +259,29 @@
   </div>
   <div id="progress-bar" class="progress ingame">
     <div class="full"></div>
+  </div>
+  <div id="eth-login">
+    <div class="eth-login-popup">
+      <img src="images/progress-logo.png" style="width: 60%; margin-bottom: 20px"></img>
+      <div class="eth-login-description">Click in the button below to login with your Ethereum address.</div>
+      <button id="eth-login-confirm-button" class="eth-login-confirm-button1">Connect wallet</buttonclass="eth-login-description">
+    </div>
+  </div>
+  <div id="eth-connect-advice">
+    <div class="eth-login-popup" style="padding-bottom: 30px">
+      <img src="images/progress-logo.png" style="width: 60%; margin-bottom: 20px"></img>
+      <div class="eth-login-description">Please, follow the instructions provided by your Ethereum wallet provider to complete login.</div>
+      <div class="eth-login-description" style="margin-top: 10px;">To proceed, confirm with <strong>connecting</strong> to your Ethereum wallet extension.</div>
+      <button id="eth-relogin-confirm-button" class="eth-login-confirm-button1">Connect wallet</buttonclass="eth-login-description">
+    </div>
+  </div>
+  <div id="eth-sign-advice">
+    <div class="eth-login-popup" style="padding-bottom: 30px">
+      <img src="images/progress-logo.png" style="width: 60%; margin-bottom: 20px"></img>
+      <div class="eth-login-description">Please, follow the instructions provided by your Ethereum wallet provider to complete login.</div>
+      <div class="eth-login-description" style="margin-top: 10px;">To proceed, confirm <strong>signing</strong> the following message in your wallet extension.</div>
+      <div id="eth-sign-advice-msg" class="eth-login-description code"></div>
+    </div>
   </div>
   <div id="gameContainer"></div>
 

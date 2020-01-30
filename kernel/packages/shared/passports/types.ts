@@ -25,6 +25,10 @@ export interface Avatar {
   hairColor: ColorString
   eyeColor: ColorString
   wearables: WearableId[]
+  snapshots?: {
+    face: string
+    body: string
+  }
 }
 export interface ProfileForRenderer {
   userId: string

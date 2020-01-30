@@ -57,9 +57,10 @@ const trackingEvents: Record<ExecutionLifecycleEvent, string> = {
 
 export function* metricSaga() {
   for (const event of ExecutionLifecycleEventsList) {
-    yield takeEvery(event, action =>
-      queueTrackingEvent('lifecycle event', toTrackingEvent(event, (action as any).payload))
-    )
+    yield takeEvery(event, action => {
+      const _action: any = action
+      queueTrackingEvent('lifecycle event', toTrackingEvent(event, _action.payload))
+    })
   }
   yield takeEvery(SAVE_AVATAR_SUCCESS, (action: SaveAvatarSuccess) =>
     queueTrackingEvent('avatar_edit_success', toAvatarEditSuccess(action.payload))

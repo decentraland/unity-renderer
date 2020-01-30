@@ -1,16 +1,15 @@
 import { expectSaga } from 'redux-saga-test-plan'
 import { call, select } from 'redux-saga/effects'
-import { getAccessToken } from 'shared/auth/selectors'
 import { notifyNewInventoryItem, passportRequest, passportSuccess } from 'shared/passports/actions'
 import {
   compareInventoriesAndTriggerNotification,
   handleFetchProfile,
   profileServerRequest,
-  fetchInventoryItemsByAddress
+  fetchInventoryItemsByAddress,
+  getCurrentUserId
 } from 'shared/passports/sagas'
 import { getProfile, getProfileDownloadServer } from 'shared/passports/selectors'
 import { passportSaga, delay } from '../../packages/shared/passports/sagas'
-import { getCurrentUserId } from '../../packages/shared/auth/selectors'
 import { processServerProfile } from '../../packages/shared/passports/transformations/processServerProfile'
 import { dynamic } from 'redux-saga-test-plan/providers'
 import { expect } from 'chai'
@@ -24,7 +23,7 @@ const delayed = (result: any) =>
     return result
   })
 
-const delayedProfile = delayed(profile)
+const delayedProfile = delayed({ avatars: [profile] })
 
 describe('fetchProfile behavior', () => {
   it('behaves normally', () => {
@@ -32,8 +31,7 @@ describe('fetchProfile behavior', () => {
       .put(passportSuccess('userId', 'passport' as any))
       .provide([
         [select(getProfileDownloadServer), 'server'],
-        [select(getAccessToken), 'access-token'],
-        [call(profileServerRequest, 'server', 'userId', 'access-token'), profile],
+        [call(profileServerRequest, 'server', 'userId'), { avatars: [profile] }],
         [select(getCurrentUserId), 'myid'],
         [call(processServerProfile, 'userId', profile), 'passport']
       ])
@@ -49,8 +47,7 @@ describe('fetchProfile behavior', () => {
       .dispatch(passportRequest('user|1'))
       .provide([
         [select(getProfileDownloadServer), 'server'],
-        [select(getAccessToken), 'access-token'],
-        [call(profileServerRequest, 'server', 'user|1', 'access-token'), delayedProfile],
+        [call(profileServerRequest, 'server', 'user|1'), delayedProfile],
         [select(getCurrentUserId), 'myid'],
         [call(processServerProfile, 'user|1', profile), 'passport']
       ])
@@ -69,11 +66,10 @@ describe('fetchProfile behavior', () => {
       .dispatch(passportRequest('user|2'))
       .provide([
         [select(getProfileDownloadServer), 'server'],
-        [select(getAccessToken), 'access-token'],
-        [call(profileServerRequest, 'server', 'user|1', 'access-token'), delayedProfile],
+        [call(profileServerRequest, 'server', 'user|1'), delayedProfile],
         [select(getCurrentUserId), 'myid'],
         [call(processServerProfile, 'user|1', profile), 'passport1'],
-        [call(profileServerRequest, 'server', 'user|2', 'access-token'), delayedProfile],
+        [call(profileServerRequest, 'server', 'user|2'), delayedProfile],
         [call(processServerProfile, 'user|2', profile), 'passport2']
       ])
       .run()
@@ -90,9 +86,8 @@ describe('fetchProfile behavior', () => {
       .provide([
         [select(getCurrentUserId), 'myid'],
         [select(getProfileDownloadServer), 'server'],
-        [select(getAccessToken), 'access-token'],
-        [call(profileServerRequest, 'server', 'user|1', 'access-token'), delayed(profile1)],
-        [call(profileServerRequest, 'server', 'user|2', 'access-token'), delayed(profile2)],
+        [call(profileServerRequest, 'server', 'user|1'), delayed({ avatars: [profile1] })],
+        [call(profileServerRequest, 'server', 'user|2'), delayed({ avatars: [profile2] })],
         [call(fetchInventoryItemsByAddress, 'eth1'), ['dcl://base-exclusive/wearable1/1']],
         [call(fetchInventoryItemsByAddress, 'eth2'), ['dcl://base-exclusive/wearable2/2']],
         [call(processServerProfile, 'user|1', profile1), 'passport1'],
@@ -119,8 +114,7 @@ describe('fetchProfile behavior', () => {
       .provide([
         [select(getCurrentUserId), 'myid'],
         [select(getProfileDownloadServer), 'server'],
-        [select(getAccessToken), 'access-token'],
-        [call(profileServerRequest, 'server', 'user|1', 'access-token'), delayed(profile1)],
+        [call(profileServerRequest, 'server', 'user|1'), delayed({ avatars: [profile1] })],
         [call(processServerProfile, 'user|1', profile1), 'passport1']
       ])
       .run()

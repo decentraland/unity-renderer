@@ -14,25 +14,21 @@ export function ensureServerFormat(avatar: any, currentVersion: number) {
   ) {
     throw new Error('Invalid Wearables array! Received: ' + JSON.stringify(avatar))
   }
-  if (
-    !avatar.snapshots ||
-    !avatar.snapshots.face ||
-    !avatar.snapshots.body ||
-    !avatar.snapshots.face.startsWith('https') ||
-    !avatar.snapshots.body.startsWith('https')
-  ) {
+  if (!avatar.snapshots || !avatar.snapshots.face || !avatar.snapshots.body) {
     throw new Error('Invalid snapshot data:' + JSON.stringify(avatar.snapshots))
   }
   if (!avatar.bodyShape || !isValidBodyShape(avatar.bodyShape)) {
     throw new Error('Invalid BodyShape! Received: ' + JSON.stringify(avatar))
   }
   return {
-    bodyShape: avatar.bodyShape,
-    snapshots: avatar.snapshots,
-    eyes: { color: eyes },
-    hair: { color: hair },
-    skin: { color: skin },
-    wearables: avatar.wearables,
-    version: currentVersion + 1
+    avatar: {
+      bodyShape: avatar.bodyShape,
+      snapshots: avatar.snapshots,
+      eyes: { color: eyes },
+      hair: { color: hair },
+      skin: { color: skin },
+      wearables: avatar.wearables,
+      version: currentVersion + 1
+    }
   }
 }

@@ -1,9 +1,14 @@
-import { ETHEREUM_NETWORK, getTLD } from '../config'
+import { ethereumConfigurations, ETHEREUM_NETWORK, getTLD, getServerConfigurations } from '../config'
 
 import { getUserAccount, getNetwork } from './ethereum/EthereumService'
 import { awaitWeb3Approval } from './ethereum/provider'
 import { queueTrackingEvent } from './analytics'
 import { defaultLogger } from './logger'
+
+import { WebsocketProvider } from 'web3x/providers'
+import { Address } from 'web3x/address'
+import { Eth } from 'web3x/eth'
+import { Katalyst } from './dao/contracts/Katalyst'
 
 async function getAddress(): Promise<string | undefined> {
   try {
@@ -49,4 +54,31 @@ export async function initWeb3(): Promise<void> {
     defaultLogger.log(`Identifying address ${address}`)
     queueTrackingEvent('Use web3 address', { address })
   }
+}
+
+declare const ethereum: any
+
+export async function fetchKatalystNodes() {
+  const contractAddress = Address.fromString(getServerConfigurations().dao)
+  let eth = Eth.fromCurrentProvider()
+
+  if (!eth) {
+    defaultLogger.info(`user denied account access to metamask, defaulting to infura mainnet node`)
+    eth = new Eth(new WebsocketProvider(ethereumConfigurations[ETHEREUM_NETWORK.MAINNET].wss))
+  } else {
+    await ethereum.enable()
+  }
+
+  const accounts = await eth.getAccounts()
+  defaultLogger.info(`accounts: `, accounts)
+
+  defaultLogger.info(`eth: `, eth)
+  const contract = new Katalyst(eth, contractAddress)
+
+  // @ts-ignore
+  const count = await contract.methods.katalystCount().call()
+  // @ts-ignore
+  const ids = await contract.methods.katalystIds(0).call()
+  // @ts-ignore
+  const url = await contract.methods.katalystById(ids).call()
 }
