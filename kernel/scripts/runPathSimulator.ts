@@ -124,6 +124,10 @@ type Event =
   | 'CreateUIScene'
   | 'ConfigureMinimapHUD'
   | 'ConfigureAvatarHUD'
+  | 'ConfigureAvatarEditorHUD'
+  | 'ConfigureSettingsHUD'
+  | 'UpdateMinimapSceneInformation'
+  | 'SetRotation'
   | 'ConfigureNotificationHUD'
   | 'SendSceneMessage'
   | 'LoadParcelScenes'
@@ -164,6 +168,10 @@ wss.on('connection', function connection(ws, req) {
       case 'ConfigureMinimapHUD':
       case 'ConfigureAvatarHUD':
       case 'ConfigureNotificationHUD':
+      case 'ConfigureAvatarEditorHUD':
+      case 'ConfigureSettingsHUD':
+      case 'UpdateMinimapSceneInformation':
+      case 'SetRotation':
       case 'SendSceneMessage':
       case 'AddWearableToCatalog':
       case 'RemoveWearablesFromCatalog':
