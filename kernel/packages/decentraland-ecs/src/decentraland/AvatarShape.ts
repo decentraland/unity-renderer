@@ -15,6 +15,12 @@ export class AvatarShape extends ObservableComponent {
   name!: string
 
   @ObservableComponent.field
+  expressionTriggerId!: string
+
+  @ObservableComponent.field
+  expressionTriggerTimestamp!: number
+
+  @ObservableComponent.field
   bodyShape!: WearableId
 
   @ObservableComponent.field

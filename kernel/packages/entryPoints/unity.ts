@@ -22,6 +22,7 @@ initializeUnity(container)
     HUD.Notification.configure({ active: true, visible: true })
     HUD.AvatarEditor.configure({ active: true, visible: OPEN_AVATAR_EDITOR })
     HUD.Settings.configure({ active: true, visible: false })
+    HUD.Expressions.configure({ active: true, visible: true })
 
     global['globalStore'].dispatch(signalRendererInitialized())
     await startUnityParcelLoading()

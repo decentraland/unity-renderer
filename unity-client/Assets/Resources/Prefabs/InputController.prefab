@@ -45,6 +45,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   triggerTimeActions:
   - {fileID: 11400000, guid: 6701d7e30ddf77c48accc629429f7e30, type: 2}
+  - {fileID: 11400000, guid: a9a8e6cad9d1cc54db4c26cfb7e91f4c, type: 2}
+  - {fileID: 11400000, guid: 51a7f49ac1922f641b55524fccfb0d0d, type: 2}
+  - {fileID: 11400000, guid: ed74cabe4260e5b4f9a680414e5fa2c2, type: 2}
+  - {fileID: 11400000, guid: 4ca7937ff0102de4cb93d6bfd22d6841, type: 2}
   holdActions:
   - {fileID: 11400000, guid: 8eddef1fc072ec845aeb62f5e1041b52, type: 2}
   - {fileID: 11400000, guid: 0cfb8d150b7d6934d856665cf924d01d, type: 2}

@@ -15,6 +15,7 @@ public class HUDController : MonoBehaviour
     public MinimapHUDController minimapHud { get; private set; }
     public AvatarEditorHUDController avatarEditorHud { get; private set; }
     public SettingsHUDController settingsHud { get; private set; }
+    public ExpressionsHUDController expressionsHud { get; private set; }
 
     private UserProfile ownUserProfile => UserProfile.GetOwnUserProfile();
     private WearableDictionary wearableCatalog => CatalogController.wearableCatalog;
@@ -110,6 +111,25 @@ public class HUDController : MonoBehaviour
         }
 
         settingsHud?.SetVisibility(configuration.active && configuration.visible);
+    }
+
+    public void ConfigureExpressionsHUD(string configurationJson)
+    {
+        if(!UserProfile.ENABLE_EXPRESSIONS)
+            return;
+
+        HUDConfiguration configuration = JsonUtility.FromJson<HUDConfiguration>(configurationJson);
+        if (configuration.active && expressionsHud == null)
+        {
+            expressionsHud = new ExpressionsHUDController();
+        }
+
+        expressionsHud?.SetVisibility(configuration.active && configuration.visible);
+    }
+
+    public void TriggerSelfUserExpression(string id)
+    {
+        expressionsHud?.ExpressionCalled(id);
     }
 
     private void UpdateAvatarHUD()

@@ -298,6 +298,9 @@ message PB_AvatarShape {
   PB_Face eyebrows = 9;
   PB_Face mouth = 10;
   bool useDummyModel = 11;
+
+  string expressionTriggerId = 12;
+  uint64 expressionTriggerTimestamp = 14;
 }
 
 message PB_Wearable {

@@ -8,6 +8,7 @@ import { EngineAPI } from 'shared/apis/EngineAPI'
 import { ExposableAPI } from 'shared/apis/ExposableAPI'
 import { sendPublicChatMessage } from 'shared/comms'
 import { ChatEvent, chatObservable } from 'shared/comms/chat'
+import { AvatarMessage, AvatarMessageType } from 'shared/comms/interface/types'
 import {
   addToMutedUsers,
   avatarMessageObservable,
@@ -16,10 +17,10 @@ import {
   peerMap,
   removeFromMutedUsers
 } from 'shared/comms/peers'
-import { AvatarMessage, AvatarMessageType } from 'shared/comms/interface/types'
 import { POIs } from 'shared/comms/POIs'
 import { IChatCommand, MessageEntry } from 'shared/types'
 import { teleportObservable } from 'shared/world/positionThings'
+import { expressionExplainer, isValidExpression, validExpressions } from './expressionExplainer'
 
 const userPose: { [key: string]: Vector3Component } = {}
 avatarMessageObservable.add((pose: AvatarMessage) => {
@@ -33,7 +34,6 @@ avatarMessageObservable.add((pose: AvatarMessage) => {
 const fpsConfiguration = {
   visible: SHOW_FPS_COUNTER
 }
-
 export interface IChatController {
   /**
    * Send the chat message
@@ -260,6 +260,35 @@ export class ChatController extends ExposableAPI implements IChatController {
         }
       }
     })
+
+    this.addChatCommand(
+      'emote',
+      'Trigger avatar animation named [expression] ("robot", "wave", or "fistpump")',
+      message => {
+        const expression = message
+        if (!isValidExpression(expression)) {
+          return {
+            id: uuid(),
+            isCommand: true,
+            sender: 'Decentraland',
+            message: `Expression ${expression} is not one of ${validExpressions.map(_ => `"${_}"`).join(', ')}`
+          }
+        } else {
+          const id = uuid()
+          const time = new Date().getTime()
+          const chatMessage = `␐${expression} ${time}`
+          sendPublicChatMessage(id, chatMessage)
+          const unityWindow: any = window
+          unityWindow.unityInterface.TriggerSelfUserExpression(expression)
+          return {
+            id: uuid(),
+            isCommand: true,
+            sender: 'Decentraland',
+            message: `You start ${expressionExplainer[expression]}`
+          }
+        }
+      }
+    )
 
     this.addChatCommand('unmute', 'Unmute [username]', message => {
       const username = message

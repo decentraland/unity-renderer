@@ -364,20 +364,23 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 703a54a14152d5746a40188f469a0c8f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  maleAnimations: {fileID: 11400000, guid: 8d41ecfe34eda1c4dbbca4e7067828e1, type: 2}
+  femaleAnimations: {fileID: 11400000, guid: 8cdc64566d182664aa8e7ba44eab8eae, type: 2}
   animation: {fileID: 0}
-  clips:
+  baseClipsIds:
     idle: Idle
     walk: Walk
     run: Run
     jump: Jump
     fall: Fall
-    special: 
   blackboard:
     walkSpeedFactor: 0.5
     runSpeedFactor: 0.25
     movementSpeed: 0
     verticalSpeed: 0
     isGrounded: 1
+    expressionTriggerId: 
+    expressionTriggerTimestamp: 0
   target: {fileID: 6705057966129581724}
   walkBlendtreeCurve:
     serializedVersion: 2
@@ -505,6 +508,8 @@ MonoBehaviour:
     m_PreInfinity: 2
     m_PostInfinity: 2
     m_RotationOrder: 4
+  useDeltaTimeInsteadOfGlobalSpeed: 0
+  globalSpeed: 0.05
 --- !u!114 &8922715421469685814
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -521,18 +526,6 @@ MonoBehaviour:
   eyeMaterial: {fileID: 2100000, guid: fcfa021e0982c0840aaefe7411340f7f, type: 2}
   eyebrowMaterial: {fileID: 2100000, guid: db9e974bee285614b8ea2d8832d1a563, type: 2}
   mouthMaterial: {fileID: 2100000, guid: aa8f029bd537edb44b72b4737ca9b81d, type: 2}
-  maleAnims:
-  - {fileID: 7400000, guid: 4fef0b7f5be12aa48a2e9d8facaaa42b, type: 2}
-  - {fileID: 7400000, guid: c91199fcab8eef54d8045d809d671896, type: 2}
-  - {fileID: 7400000, guid: 916369dcf45c5944e9f2409e0be10181, type: 2}
-  - {fileID: 7400000, guid: b51f09eb09017384a8ff4b3b88b00c00, type: 2}
-  - {fileID: 7400000, guid: cd48d8cde6039fa4fac548ddab2ff277, type: 2}
-  femaleAnims:
-  - {fileID: 7400000, guid: 62d81b2041d701b4381d66d17f7e246e, type: 2}
-  - {fileID: 7400000, guid: db8c33ed0888f7b44af0b2acde9bd2b5, type: 2}
-  - {fileID: 7400000, guid: 1e3081b9c1f466743bc7602362784e93, type: 2}
-  - {fileID: 7400000, guid: ec6a6c2a81a2b984f986fd6cbc8279d3, type: 2}
-  - {fileID: 7400000, guid: 5e5b5c340739da142b767937144ef10b, type: 2}
 --- !u!1 &7113636141788214316
 GameObject:
   m_ObjectHideFlags: 0

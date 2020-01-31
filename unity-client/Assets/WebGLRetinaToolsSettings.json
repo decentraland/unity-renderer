@@ -1,0 +1,15 @@
+{
+    "autoRunAfterBuild": false,
+    "desktopScale": 1.0,
+    "mobileScale": 1.0,
+    "createCopy": false,
+    "copyAppendString": "-fixed",
+    "disableMobileCheck": false,
+    "autoLaunchBrowser": false,
+    "autoLaunchURL": "",
+    "mobileWarningMessage": "",
+    "genericErrorMessage": "",
+    "unhandledExceptionMessage": "",
+    "outOfMemoryMessage": "",
+    "notEnoughMemoryMessage": ""
+}
