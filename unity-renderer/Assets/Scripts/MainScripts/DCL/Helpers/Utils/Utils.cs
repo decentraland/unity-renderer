@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using DCL.Configuration;
 using UnityEngine;
 using UnityEngine.Assertions;
+using UnityEngine.EventSystems;
 using UnityEngine.Networking;
 
 namespace DCL.Helpers
@@ -409,6 +410,20 @@ namespace DCL.Helpers
             }
 
             return bounds;
+        }
+
+        public static void LockCursor()
+        {
+            Cursor.visible = false;
+            Cursor.lockState = CursorLockMode.Locked;
+
+            EventSystem.current.SetSelectedGameObject(null);
+        }
+
+        public static void UnlockCursor()
+        {
+            Cursor.visible = true;
+            Cursor.lockState = CursorLockMode.None;
         }
     }
 }

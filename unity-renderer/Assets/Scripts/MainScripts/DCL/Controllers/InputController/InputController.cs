@@ -1,10 +1,18 @@
 using System;
+using System.Linq;
+using TMPro;
 using UnityEngine;
+using UnityEngine.EventSystems;
 
 public enum DCLAction_Trigger
 {
     //Remember to explicitly assign the value to each entry so we minimize issues with serialization + conflicts
     CameraChange = 100,
+
+    OpenExpressions = 200,
+    Expression_Wave = 201,
+    Expression_FistPump = 202,
+    Expression_Robot = 203,
 }
 
 public enum DCLAction_Hold
@@ -49,7 +57,19 @@ public class InputController : MonoBehaviour
                 case DCLAction_Trigger.CameraChange:
                     //Disable until the fine-tuning is ready
                     if (ENABLE_THIRD_PERSON_CAMERA)
-                        InputProcessor.FromKey(action, KeyCode.V, InputProcessor.Modifier.NeedsPointerLocked);
+                        InputProcessor.FromKey(action, KeyCode.V, modifiers: InputProcessor.Modifier.NeedsPointerLocked | InputProcessor.Modifier.FocusNotInInput);
+                    break;
+                case DCLAction_Trigger.OpenExpressions:
+                    InputProcessor.FromKey(action, KeyCode.B, modifiers: InputProcessor.Modifier.FocusNotInInput);
+                    break;
+                case DCLAction_Trigger.Expression_Wave:
+                    InputProcessor.FromKey(action, KeyCode.Alpha1, modifiers: InputProcessor.Modifier.FocusNotInInput);
+                    break;
+                case DCLAction_Trigger.Expression_FistPump:
+                    InputProcessor.FromKey(action, KeyCode.Alpha2, modifiers: InputProcessor.Modifier.FocusNotInInput);
+                    break;
+                case DCLAction_Trigger.Expression_Robot:
+                    InputProcessor.FromKey(action, KeyCode.Alpha3, modifiers: InputProcessor.Modifier.FocusNotInInput);
                     break;
                 default:
                     throw new ArgumentOutOfRangeException();
@@ -109,12 +129,15 @@ public class InputController : MonoBehaviour
 
 public static class InputProcessor
 {
+    private static readonly KeyCode[] MODIFIER_KEYS = new [] { KeyCode.LeftControl, KeyCode.LeftAlt, KeyCode.LeftShift };
+
     [Flags]
     public enum Modifier
     {
         //Set the values as bit masks
         None = 0b0000000,
         NeedsPointerLocked = 0b0000001,
+        FocusNotInInput = 0b0000010,
     }
 
     public static bool PassModifiers(Modifier modifiers)
@@ -124,12 +147,29 @@ public static class InputProcessor
         if (IsModifierSet(modifiers, Modifier.NeedsPointerLocked) && Cursor.lockState != CursorLockMode.Locked)
             return false;
 
+        if (IsModifierSet(modifiers, Modifier.FocusNotInInput) && FocusIsInInputField())
+            return false;
+
         return true;
     }
 
-    public static void FromKey(InputAction_Trigger action, KeyCode key, Modifier modifiers = Modifier.None)
+    public static void FromKey(InputAction_Trigger action, KeyCode key, KeyCode[] modifierKeys = null, Modifier modifiers = Modifier.None)
     {
         if (!PassModifiers(modifiers)) return;
+
+        for (var i = 0; i < MODIFIER_KEYS.Length; i++)
+        {
+            var keyCode = MODIFIER_KEYS[i];
+            var pressed = Input.GetKey(keyCode);
+            if (modifierKeys == null)
+            {
+                if (pressed) return;
+            }
+            else
+            {
+                if (modifierKeys.Contains(keyCode) != pressed) return;
+            }
+        }
 
         if (Input.GetKeyDown(key)) action.RaiseOnTriggered();
     }
@@ -174,5 +214,14 @@ public static class InputProcessor
         int flagValue = (int)value;
 
         return (flagsValue & flagValue) != 0;
+    }
+
+    public static bool FocusIsInInputField()
+    {
+        if (EventSystem.current.currentSelectedGameObject != null && (EventSystem.current.currentSelectedGameObject.GetComponent<TMP_InputField>() != null || EventSystem.current.currentSelectedGameObject.GetComponent<UnityEngine.UI.InputField>() != null))
+        {
+            return true;
+        }
+        return false;
     }
 }

@@ -6,6 +6,7 @@ export enum AvatarMessageType {
   USER_DATA = 'USER_DATA',
   USER_POSE = 'USER_POSE',
   USER_VISIBLE = 'USER_VISIBLE',
+  USER_EXPRESSION = 'USER_EXPRESSION',
   USER_REMOVED = 'USER_REMOVED',
   SET_LOCAL_UUID = 'SET_LOCAL_UUID',
 
@@ -17,6 +18,13 @@ export enum AvatarMessageType {
 
   ADD_FRIEND = 'ADD_FRIEND',
   SHOW_WINDOW = 'SHOW_WINDOW'
+}
+
+export type ReceiveUserExpressionMessage = {
+  type: AvatarMessageType.USER_EXPRESSION
+  uuid: string
+  expressionId: string
+  timestamp: number
 }
 
 export type ReceiveUserDataMessage = {
@@ -57,6 +65,7 @@ export type AvatarMessage =
   | ReceiveUserDataMessage
   | ReceiveUserPoseMessage
   | ReceiveUserVisibleMessage
+  | ReceiveUserExpressionMessage
   | UserRemovedMessage
   | UserMessage
 
@@ -83,8 +92,14 @@ export type UserInformation = {
   version?: number
   status?: string
   pose?: Pose
+  expression?: AvatarExpression
   profile?: ProfileForRenderer
   identity?: AuthIdentity
+}
+
+export type AvatarExpression = {
+  expressionType?: string
+  expressionTimestamp?: number
 }
 
 // The order is [X,Y,Z,Qx,Qy,Qz,Qw]

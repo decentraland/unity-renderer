@@ -1,0 +1,31 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0273df7e46923e64e9218373070ef8a1, type: 3}
+  m_Name: MaleAnimations
+  m_EditorClassIdentifier: 
+  value:
+  - clip: {fileID: 7400000, guid: cd48d8cde6039fa4fac548ddab2ff277, type: 2}
+    id: Fall
+  - clip: {fileID: 7400000, guid: 4fef0b7f5be12aa48a2e9d8facaaa42b, type: 2}
+    id: Idle
+  - clip: {fileID: 7400000, guid: b51f09eb09017384a8ff4b3b88b00c00, type: 2}
+    id: Jump
+  - clip: {fileID: 7400000, guid: 916369dcf45c5944e9f2409e0be10181, type: 2}
+    id: Run
+  - clip: {fileID: 7400000, guid: c91199fcab8eef54d8045d809d671896, type: 2}
+    id: Walk
+  - clip: {fileID: 7400000, guid: 2dae353875bac8547accac9dc05c2037, type: 2}
+    id: wave
+  - clip: {fileID: 7400000, guid: 514568bea213ab64d8d6252a2444d8c8, type: 2}
+    id: fistpump
+  - clip: {fileID: 7400000, guid: d297abf3869941b41a82f516b9de16d4, type: 2}
+    id: robot

@@ -19,9 +19,18 @@ import {
   receiveUserData,
   receiveUserPose,
   receiveUserVisible,
-  removeById
+  removeById,
+  avatarMessageObservable
 } from './peers'
-import { Pose, UserInformation, Package, ChatMessage, ProfileVersion, BusMessage } from './interface/types'
+import {
+  Pose,
+  UserInformation,
+  Package,
+  ChatMessage,
+  ProfileVersion,
+  BusMessage,
+  AvatarMessageType
+} from './interface/types'
 import { CommunicationArea, Position, position2parcel, sameParcel, squareDistance } from './interface/utils'
 import { BrokerWorldInstanceConnection } from '../comms/v1/brokerWorldInstanceConnection'
 import { profileToRendererFormat } from 'shared/passports/transformations/profileToRendererFormat'
@@ -223,13 +232,24 @@ export function processChatMessage(context: Context, fromAlias: string, message:
     const user = getUser(fromAlias)
     if (user) {
       const displayName = user.profile && user.profile.name
-      const entry: MessageEntry = {
-        id: msgId,
-        sender: displayName || 'unknown',
-        message: text,
-        isCommand: false
+
+      if (text.startsWith('␐')) {
+        const [id, timestamp] = text.split(' ')
+        avatarMessageObservable.notifyObservers({
+          type: AvatarMessageType.USER_EXPRESSION,
+          uuid: fromAlias,
+          expressionId: id.slice(1),
+          timestamp: parseInt(timestamp, 10)
+        })
+      } else {
+        const entry: MessageEntry = {
+          id: msgId,
+          sender: displayName || 'unknown',
+          message: text,
+          isCommand: false
+        }
+        chatObservable.notifyObservers({ type: ChatEvent.MESSAGE_RECEIVED, messageEntry: entry })
       }
-      chatObservable.notifyObservers({ type: ChatEvent.MESSAGE_RECEIVED, messageEntry: entry })
     }
   }
 }

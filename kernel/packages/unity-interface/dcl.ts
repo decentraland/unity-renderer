@@ -5,9 +5,12 @@ type GameInstance = {
   SendMessage(object: string, method: string, ...args: (number | string)[]): void
 }
 
+import { uuid } from 'decentraland-ecs/src'
 import { EventDispatcher } from 'decentraland-rpc/lib/common/core/EventDispatcher'
 import { IFuture } from 'fp-future'
 import { Empty } from 'google-protobuf/google/protobuf/empty_pb'
+import { avatarMessageObservable } from 'shared/comms/peers'
+import { AvatarMessageType } from 'shared/comms/interface/types'
 import { gridToWorld } from '../atomicHelpers/parcelScenePositions'
 import { DEBUG, EDITOR, ENGINE_DEBUG_PANEL, playerConfigurations, SCENE_DEBUG_PANEL, SHOW_FPS_COUNTER } from '../config'
 import { Quaternion, ReadOnlyQuaternion, ReadOnlyVector3, Vector3 } from '../decentraland-ecs/src/decentraland/math'
@@ -75,6 +78,7 @@ import { positionObservable, teleportObservable } from '../shared/world/position
 import { hudWorkerUrl, SceneWorker } from '../shared/world/SceneWorker'
 import { ensureUiApis } from '../shared/world/uiSceneInitializer'
 import { worldRunningObservable } from '../shared/world/worldState'
+import { sendPublicChatMessage } from 'shared/comms'
 
 const rendererVersion = require('decentraland-renderer')
 window['console'].log('Renderer version: ' + rendererVersion)
@@ -130,6 +134,18 @@ const browserInterface = {
 
   PreloadFinished(data: { sceneId: string }) {
     // stub. there is no code about this in unity side yet
+  },
+
+  TriggerExpression(data: { id: string; timestamp: number }) {
+    avatarMessageObservable.notifyObservers({
+      type: AvatarMessageType.USER_EXPRESSION,
+      uuid: uuid(),
+      expressionId: data.id,
+      timestamp: data.timestamp
+    })
+    const id = uuid()
+    const chatMessage = `␐${data.id} ${data.timestamp}`
+    sendPublicChatMessage(id, chatMessage)
   },
 
   LogOut() {
@@ -363,6 +379,12 @@ export const unityInterface = {
   ConfigureSettingsHUD(configuration: HUDConfiguration) {
     gameInstance.SendMessage('HUDController', 'ConfigureSettingsHUD', JSON.stringify(configuration))
   },
+  ConfigureExpressionsHUD(configuration: HUDConfiguration) {
+    gameInstance.SendMessage('HUDController', 'ConfigureExpressionsHUD', JSON.stringify(configuration))
+  },
+  TriggerSelfUserExpression(expressionId: string) {
+    gameInstance.SendMessage('HUDController', 'TriggerSelfUserExpression', expressionId)
+  },
   UpdateMinimapSceneInformation(info: { name: string; type: number; parcels: { x: number; y: number }[] }[]) {
     const chunks = chunkGenerator(CHUNK_SIZE, info)
 
@@ -435,6 +457,9 @@ export const HUD: Record<string, { configure: (config: HUDConfiguration) => void
   },
   Settings: {
     configure: unityInterface.ConfigureSettingsHUD
+  },
+  Expressions: {
+    configure: unityInterface.ConfigureExpressionsHUD
   }
 }
 

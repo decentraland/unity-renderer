@@ -83,6 +83,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 326638023455565217}
+  - component: {fileID: 7086956389026953179}
   m_Layer: 0
   m_Name: Player
   m_TagString: Untagged
@@ -108,6 +109,27 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &7086956389026953179
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 326638023455565216}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: dddb0de8d3464801920d0453d53a1f59, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  waveExpression:
+    inputAction: {fileID: 11400000, guid: 4ca7937ff0102de4cb93d6bfd22d6841, type: 2}
+    id: wave
+  robotExpression:
+    inputAction: {fileID: 11400000, guid: ed74cabe4260e5b4f9a680414e5fa2c2, type: 2}
+    id: robot
+  fistpumpExpression:
+    inputAction: {fileID: 11400000, guid: 51a7f49ac1922f641b55524fccfb0d0d, type: 2}
+    id: fistpump
 --- !u!1 &326638024485685081
 GameObject:
   m_ObjectHideFlags: 0

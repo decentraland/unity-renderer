@@ -11,9 +11,12 @@ public class PlayerAvatarController : MonoBehaviour
 
     private void Awake()
     {
-        userProfile.OnUpdate += OnUserProfileOnUpdate;
-
         avatarRenderer.SetVisibility(false);
+    }
+
+    private void OnEnable()
+    {
+        userProfile.OnUpdate += OnUserProfileOnUpdate;
     }
 
     private void OnTriggerEnter(Collider other)
@@ -31,5 +34,10 @@ public class PlayerAvatarController : MonoBehaviour
     private void OnUserProfileOnUpdate(UserProfile profile)
     {
         avatarRenderer.ApplyModel(profile.avatar, null, null);
+    }
+
+    private void OnDisable()
+    {
+        userProfile.OnUpdate -= OnUserProfileOnUpdate;
     }
 }

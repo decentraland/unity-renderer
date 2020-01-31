@@ -1,39 +1,22 @@
+using System;
 using DCL.Helpers;
 using UnityEngine;
 
 public class BodyShapeController : WearableController
 {
     public string bodyShapeType => wearable.id;
+    private Transform animationTarget;
 
     public BodyShapeController(WearableItem wearableItem) : base(wearableItem, wearableItem?.id) { }
     protected BodyShapeController(WearableController original) : base(original) { }
 
-    public Animation PrepareAnimation()
+    public SkinnedMeshRenderer skinnedMeshRenderer { get; private set; }
+
+    public override void Load(Transform parent, Action<WearableController> onSuccess, Action<WearableController> onFail)
     {
-        Animation createdAnimation = null;
-
-        //NOTE(Brian): Fix to support hierarchy difference between AssetBundle and GLTF wearables.
-        Utils.ForwardTransformChildTraversal<Transform>((x) =>
-        {
-            if (x.name.Contains("Armature"))
-            {
-                createdAnimation = x.parent.gameObject.GetOrCreateComponent<Animation>();
-                return false; //NOTE(Brian): If we return false the traversal is stopped.
-            }
-
-            return true;
-        },
-
-        assetContainer.transform);
-
-        createdAnimation.cullingType = AnimationCullingType.BasedOnRenderers;
-
-        return createdAnimation;
-    }
-
-    public SkinnedMeshRenderer GetSkinnedMeshRenderer()
-    {
-        return assetContainer.GetComponentInChildren<SkinnedMeshRenderer>();
+        animationTarget = parent;
+        skinnedMeshRenderer = null;
+        base.Load(parent, onSuccess, onFail);
     }
 
     public void RemoveUnusedParts()
@@ -87,5 +70,35 @@ public class BodyShapeController : WearableController
                 return mouthMaterial;
             },
             "mouth");
+    }
+
+    private Animation PrepareAnimation()
+    {
+        Animation createdAnimation = null;
+
+        //NOTE(Brian): Fix to support hierarchy difference between AssetBundle and GLTF wearables.
+        Utils.ForwardTransformChildTraversal<Transform>((x) =>
+            {
+                if (x.name.Contains("Armature"))
+                {
+                    createdAnimation = x.parent.gameObject.GetOrCreateComponent<Animation>();
+                    return false; //NOTE(Brian): If we return false the traversal is stopped.
+                }
+
+                return true;
+            },
+            assetContainer.transform);
+
+        createdAnimation.cullingType = AnimationCullingType.BasedOnRenderers;
+        return createdAnimation;
+    }
+
+    protected override void PrepareWearable(GameObject assetContainer)
+    {
+        base.PrepareWearable(assetContainer);
+        skinnedMeshRenderer = assetContainer.GetComponentInChildren<SkinnedMeshRenderer>();
+        var animation = PrepareAnimation();
+        var animator = animationTarget.GetComponent<AvatarAnimatorLegacy>();
+        animator.BindBodyShape(animation, bodyShapeType, animationTarget);
     }
 }
