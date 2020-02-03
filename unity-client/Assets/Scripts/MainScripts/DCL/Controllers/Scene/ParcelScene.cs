@@ -149,7 +149,6 @@ namespace DCL.Controllers
                 SetSceneReady();
         }
 
-
         void OnPrecisionAdjust(DCLCharacterPosition position)
         {
             gameObject.transform.position = position.WorldToUnityPosition(Utils.GridToWorldPosition(sceneData.basePosition.x, sceneData.basePosition.y));

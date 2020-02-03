@@ -40,7 +40,7 @@ namespace DCL
                 return true;
 
             bool timeout = DCLTime.realtimeSinceStartup - pool.lastGetTime >= TIME_TO_POOL_CLEANUP;
-            return timeout && pool.activeCount == 0;
+            return timeout && pool.usedObjectsCount == 0;
         }
 
         public IEnumerator CleanupPoolsIfNeeded(bool forceCleanup = false)

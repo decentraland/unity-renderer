@@ -51,8 +51,8 @@ namespace AssetPromiseKeeper_AssetBundle_GameObject_Tests
 
             Pool pool = PoolManager.i.GetPool(loadedAsset.id);
 
-            Assert.AreEqual(0, pool.inactiveCount, "incorrect inactive objects in pool");
-            Assert.AreEqual(1, pool.activeCount, "incorrect active objects in pool");
+            Assert.AreEqual(0, pool.unusedObjectsCount, "incorrect inactive objects in pool");
+            Assert.AreEqual(1, pool.usedObjectsCount, "incorrect active objects in pool");
             Assert.IsTrue(pool.original != loadedAsset.container, "In pool, the original gameObject must NOT be the loaded asset!");
 
             //NOTE(Brian): If the following asserts fail, check that ApplySettings_LoadStart() is called from AssetPromise_GLTF.AddToLibrary() when the clone is made.
@@ -73,7 +73,7 @@ namespace AssetPromiseKeeper_AssetBundle_GameObject_Tests
             keeper.Keep(prom);
             yield return prom;
 
-            var poolableObjectComponent = prom.asset.container.GetComponentInChildren<PoolableObject>();
+            var poolableObjectComponent = PoolManager.i.GetPoolable(prom.asset.container);
             Assert.IsNotNull(poolableObjectComponent);
         }
 
@@ -88,7 +88,7 @@ namespace AssetPromiseKeeper_AssetBundle_GameObject_Tests
                 prom.settings.forceNewInstance = false;
                 keeper.Keep(prom);
                 yield return prom;
-                poolableComponents.Add(prom.asset.container.GetComponentInChildren<PoolableObject>());
+                poolableComponents.Add(PoolManager.i.GetPoolable(prom.asset.container));
                 keeper.Forget(prom);
             }
 
@@ -103,7 +103,7 @@ namespace AssetPromiseKeeper_AssetBundle_GameObject_Tests
             keeper.Keep(prom);
             yield return prom;
 
-            var poolableObjectComponent = prom.asset.container.GetComponentInChildren<PoolableObject>();
+            var poolableObjectComponent = PoolManager.i.GetPoolable(prom.asset.container);
             Assert.IsNull(poolableObjectComponent);
         }
 
@@ -118,7 +118,7 @@ namespace AssetPromiseKeeper_AssetBundle_GameObject_Tests
                 prom.settings.forceNewInstance = true;
                 keeper.Keep(prom);
                 yield return prom;
-                poolableComponents.Add(prom.asset.container.GetComponentInChildren<PoolableObject>());
+                poolableComponents.Add(PoolManager.i.GetPoolable(prom.asset.container));
                 keeper.Forget(prom);
             }
 

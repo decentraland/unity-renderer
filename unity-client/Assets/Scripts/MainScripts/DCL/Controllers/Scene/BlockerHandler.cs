@@ -76,14 +76,16 @@ namespace DCL.Controllers
                     continue;
 
                 PoolableObject blocker = PoolManager.i.Get(PARCEL_BLOCKER_POOL_NAME);
+                Transform blockerTransform = blocker.gameObject.transform;
 
-                blocker.transform.SetParent(parent, false);
-                blocker.transform.position = DCLCharacterController.i.characterPosition.WorldToUnityPosition(Utils.GridToWorldPosition(pos.x, pos.y));
-                auxPosVec.x = blocker.transform.position.x + centerOffset;
-                auxPosVec.z = blocker.transform.position.z + centerOffset;
+                blockerTransform.SetParent(parent, false);
+                blockerTransform.position = DCLCharacterController.i.characterPosition.WorldToUnityPosition(Utils.GridToWorldPosition(pos.x, pos.y));
 
-                blocker.transform.position = auxPosVec;
-                blocker.transform.localScale = auxScaleVec;
+                auxPosVec.x = blockerTransform.position.x + centerOffset;
+                auxPosVec.z = blockerTransform.position.z + centerOffset;
+
+                blockerTransform.position = auxPosVec;
+                blockerTransform.localScale = auxScaleVec;
 
                 blockers.Add((pos.x, pos.y), blocker);
             }

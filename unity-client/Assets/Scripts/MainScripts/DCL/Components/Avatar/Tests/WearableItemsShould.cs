@@ -220,8 +220,9 @@ namespace AvatarShape_Tests
 
             var sunglassesAssetContainer = AvatarRenderer_Mock.GetWearableController(avatarShape.avatarRenderer, SUNGLASSES_ID)?.myAssetContainer;
             var bandanaAssetContainer = AvatarRenderer_Mock.GetWearableController(avatarShape.avatarRenderer, BLUE_BANDANA_ID)?.myAssetContainer;
-            var sunglassesPoolableObject = sunglassesAssetContainer.GetComponentInChildren<PoolableObject>();
-            var bandanaPoolableObject = bandanaAssetContainer.GetComponentInChildren<PoolableObject>();
+
+            var sunglassesPoolableObject = PoolManager.i.GetPoolable(sunglassesAssetContainer);
+            var bandanaPoolableObject = PoolManager.i.GetPoolable(bandanaAssetContainer);
             Assert.IsNull(sunglassesPoolableObject);
             Assert.IsNull(bandanaPoolableObject);
         }

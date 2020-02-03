@@ -83,7 +83,7 @@ namespace DCL.Controllers
         {
             if (WasEntityInAValidPosition(entity)) return;
 
-            PoolableObject shapePoolableObjectBehaviour = entity.meshesInfo.meshRootGameObject.GetComponentInChildren<PoolableObject>();
+            PoolableObject shapePoolableObjectBehaviour = PoolManager.i.GetPoolable(entity.meshesInfo.meshRootGameObject);
             if (shapePoolableObjectBehaviour != null)
                 shapePoolableObjectBehaviour.OnRelease -= invalidMeshesInfo[entity.gameObject].ResetMaterials;
 
@@ -104,7 +104,7 @@ namespace DCL.Controllers
 
             invalidMeshInfo.OnResetMaterials = () => { invalidMeshesInfo.Remove(entity.gameObject); };
 
-            PoolableObject shapePoolableObjectBehaviour = entity.meshesInfo.meshRootGameObject.GetComponentInChildren<PoolableObject>();
+            PoolableObject shapePoolableObjectBehaviour = PoolManager.i.GetPoolable(entity.meshesInfo.meshRootGameObject);
             if (shapePoolableObjectBehaviour != null)
             {
                 shapePoolableObjectBehaviour.OnRelease -= invalidMeshInfo.ResetMaterials;

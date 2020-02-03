@@ -51,7 +51,7 @@ namespace AssetPromiseKeeper_Tests
             Assert.IsTrue(prom2.asset == null, "Asset shouldn't exist after Forget!");
             Assert.IsTrue(container != null, "Container should be pooled!");
 
-            PoolableObject po = container.GetComponentInChildren<PoolableObject>(true);
+            PoolableObject po = PoolManager.i.GetPoolable(container);
 
             Assert.IsTrue(po.isInsidePool, "Asset should be inside pool!");
         }

@@ -1,4 +1,4 @@
-using DCL.Helpers;
+﻿using DCL.Helpers;
 using UnityEngine;
 
 namespace DCL.Components
