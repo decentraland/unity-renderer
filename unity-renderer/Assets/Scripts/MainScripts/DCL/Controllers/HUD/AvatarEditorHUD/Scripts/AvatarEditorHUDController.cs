@@ -386,7 +386,7 @@ public class AvatarEditorHUDController : IDisposable, IHUD
         SetVisibility(configuration.active);
     }
 
-    public void SaveAvatar(Texture2D faceSnapshot, Texture2D bodySnapshot)
+    public void SaveAvatar(Sprite faceSnapshot, Sprite bodySnapshot)
     {
         var avatarModel = model.ToAvatarModel();
         WebInterface.SendSaveAvatar(avatarModel, faceSnapshot, bodySnapshot);

@@ -329,6 +329,21 @@ TextureImporter:
   - first:
       213: -6477969936320127232
     second: KeyBindingsBg
+  - first:
+      213: 7595667864703430088
+    second: PlayerCardBg
+  - first:
+      213: -8608162042551100979
+    second: CardBlockIcon
+  - first:
+      213: -2874165409394040598
+    second: CardPassportIcon
+  - first:
+      213: 4905071850869960851
+    second: CardCollectiblesIcon
+  - first:
+      213: 287711080521237747
+    second: MainButton
   externalObjects: {}
   serializedVersion: 10
   mipmaps:
@@ -2084,10 +2099,10 @@ TextureImporter:
       name: nft-unique-icon
       rect:
         serializedVersion: 2
-        x: 963
+        x: 959
         y: 389
-        width: 32
-        height: 32
+        width: 36
+        height: 36
       alignment: 0
       pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -2403,9 +2418,9 @@ TextureImporter:
         y: 9
         width: 30
         height: 186
-      alignment: 0
-      pivot: {x: 0.5, y: 0.5}
-      border: {x: 14, y: 0, z: 13, w: 0}
+      alignment: 9
+      pivot: {x: 0.5161245, y: 0.50227547}
+      border: {x: 14, y: 92, z: 13, w: 91}
       outline: []
       physicsShape: []
       tessellationDetail: 0
@@ -2454,6 +2469,111 @@ TextureImporter:
       bones: []
       spriteID: f776beeecc994479ab16926fb33aef60
       internalID: -6477969936320127232
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: PlayerCardBg
+      rect:
+        serializedVersion: 2
+        x: 382
+        y: 8
+        width: 22
+        height: 186
+      alignment: 9
+      pivot: {x: 0.19717407, y: 0.50716364}
+      border: {x: 3, y: 92, z: 16, w: 89}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 64edc452a29914770bc973fdfcf83351
+      internalID: 7595667864703430088
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: CardBlockIcon
+      rect:
+        serializedVersion: 2
+        x: 570
+        y: 253
+        width: 42
+        height: 44
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 813fcacee237142efbc6ebab4a7acc40
+      internalID: -8608162042551100979
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: CardPassportIcon
+      rect:
+        serializedVersion: 2
+        x: 615
+        y: 245
+        width: 35
+        height: 51
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: a3dd84d8c9d2247f4b806b4b82a08bd4
+      internalID: -2874165409394040598
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: CardCollectiblesIcon
+      rect:
+        serializedVersion: 2
+        x: 659
+        y: 248
+        width: 42
+        height: 49
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 706be0252300c406e8ed48c7b884b15a
+      internalID: 4905071850869960851
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: MainButton
+      rect:
+        serializedVersion: 2
+        x: 405
+        y: 13
+        width: 250
+        height: 22
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 121, y: 9, z: 121, w: 10}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 303174f52511e4565be34fed3cfbf7d4
+      internalID: 287711080521237747
       vertices: []
       indices: 
       edges: []

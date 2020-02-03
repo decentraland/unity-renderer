@@ -147,6 +147,11 @@ public class WearableItem : Item
         return int.MaxValue;
     }
 
+    public string ComposeThumbnailUrl()
+    {
+        return baseUrl + thumbnail;
+    }
+
 }
 
 [System.Serializable]

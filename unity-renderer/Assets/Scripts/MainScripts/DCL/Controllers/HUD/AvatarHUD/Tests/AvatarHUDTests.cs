@@ -93,7 +93,7 @@ namespace Tests
         [Test]
         public void AvatarHUD_ModelOverriden()
         {
-            Texture2D sprite = CreateEmptyTexture();
+            Sprite sprite = CreateEmptySprite();
             var controller = new AvatarHUDController(new AvatarHUDModel()
             {
                 name = "name",
@@ -149,38 +149,38 @@ namespace Tests
         [Test]
         public void AvatarHUD_ControllerUpdateData()
         {
-            Texture2D texture = CreateEmptyTexture();
+            Sprite sprite = CreateEmptySprite();
             var controller = new AvatarHUDController();
 
             controller.UpdateData(new AvatarHUDModel()
             {
                 name = "name",
                 mail = "mail",
-                avatarPic = texture
+                avatarPic = sprite
             });
 
             Assert.AreEqual("name", controller.model.name);
             Assert.AreEqual("mail", controller.model.mail);
-            Assert.AreEqual(texture, controller.model.avatarPic);
+            Assert.AreEqual(sprite, controller.model.avatarPic);
         }
 
         [Test]
         public void AvatarHUD_ViewUpdateData()
         {
-            Texture2D texture = CreateEmptyTexture();
+            Sprite sprite = CreateEmptySprite();
             var controller = new AvatarHUDController();
 
             GetViewFromController(controller).UpdateData(new AvatarHUDModel()
             {
                 name = "name",
                 mail = "mail",
-                avatarPic = texture
+                avatarPic = sprite
             });
 
             var view = GetViewFromController(controller);
             Assert.AreEqual("name", Reflection_GetField<TextMeshProUGUI>(view, "nameText").text);
             Assert.AreEqual("mail", Reflection_GetField<TextMeshProUGUI>(view, "mailText").text);
-            Assert.AreEqual(texture, Reflection_GetField<RawImage>(view, "topAvatarPic").texture);
+            Assert.AreEqual(sprite, view.topAvatarPic.sprite);
         }
 
         [Test]
@@ -231,9 +231,9 @@ namespace Tests
             Assert.AreEqual(false, Reflection_GetField<GameObject>(view, "expandedContainer").activeSelf);
         }
 
-        private static Texture2D CreateEmptyTexture()
+        private static Sprite CreateEmptySprite()
         {
-            return new Texture2D(10, 10);
+            return Sprite.Create(new Texture2D(10, 10), new Rect(0, 0, 10, 10), Vector2.zero);
         }
     }
 }

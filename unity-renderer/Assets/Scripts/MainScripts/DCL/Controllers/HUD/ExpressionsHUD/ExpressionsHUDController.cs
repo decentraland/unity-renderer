@@ -11,7 +11,7 @@ public class ExpressionsHUDController : IHUD, IDisposable
     {
         view = ExpressionsHUDView.Create();
         view.Initialize(ExpressionCalled);
-        userProfileUpdateDelegate = profile => view.UpdateAvatarTexture(profile.faceSnapshot); 
+        userProfileUpdateDelegate = profile => view.UpdateAvatarSprite(profile.faceSnapshot); 
         userProfileUpdateDelegate.Invoke(ownUserProfile);
         ownUserProfile.OnUpdate += userProfileUpdateDelegate;
     }

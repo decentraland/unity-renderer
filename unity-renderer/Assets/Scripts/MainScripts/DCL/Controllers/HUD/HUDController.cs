@@ -16,6 +16,7 @@ public class HUDController : MonoBehaviour
     public AvatarEditorHUDController avatarEditorHud { get; private set; }
     public SettingsHUDController settingsHud { get; private set; }
     public ExpressionsHUDController expressionsHud { get; private set; }
+    public PlayerInfoCardHUDController playerInfoCardHudController { get; private set; }
 
     private UserProfile ownUserProfile => UserProfile.GetOwnUserProfile();
     private WearableDictionary wearableCatalog => CatalogController.wearableCatalog;
@@ -132,6 +133,17 @@ public class HUDController : MonoBehaviour
         expressionsHud?.ExpressionCalled(id);
     }
 
+    public void ConfigurePlayerInfoCardHUD(string configurationJson)
+    {
+        HUDConfiguration configuration = JsonUtility.FromJson<HUDConfiguration>(configurationJson);
+        if (configuration.active && playerInfoCardHudController == null)
+        {
+            playerInfoCardHudController = new PlayerInfoCardHUDController();
+        }
+
+        playerInfoCardHudController?.SetVisibility(configuration.active && configuration.visible);
+    }
+
     private void UpdateAvatarHUD()
     {
         avatarHud?.UpdateData(new AvatarHUDModel()
@@ -156,4 +168,24 @@ public class HUDController : MonoBehaviour
         notificationHud?.Dispose();
         avatarEditorHud?.Dispose();
     }
+    
+#if UNITY_EDITOR
+    [ContextMenu("Trigger fake PlayerInfoCard")]
+    public void TriggerFakePlayerInfoCard()
+    {
+        var newModel = ownUserProfile.CloneModel();
+        newModel.name = "FakePassport";
+        newModel.description = "Fake Description for Testing";
+        newModel.inventory = new []
+        {
+            "dcl://halloween_2019/machete_headband_top_head",
+            "dcl://halloween_2019/bee_suit_upper_body",
+            "dcl://halloween_2019/bride_of_frankie_upper_body",
+            "dcl://halloween_2019/creepy_nurse_upper_body",
+        };
+
+        UserProfileController.i.AddUserProfileToCatalog(newModel);
+        Resources.Load<StringVariable>("CurrentPlayerInfoCardName").Set(newModel.name);
+    }
+#endif
 }

@@ -48,6 +48,8 @@ namespace DCL
             RetrieveCamera();
         }
 
+        private IRaycastPointerClickHandler clickHandler;
+
         void Update()
         {
             if (RenderingController.i == null || !RenderingController.i.renderingEnabled || charCamera == null) return;
@@ -55,8 +57,16 @@ namespace DCL
             // We use Physics.Raycast() instead of our raycastHandler.Raycast() as that one is slower, sometimes 2x, because it fetches info we don't need here
             if (Physics.Raycast(GetRayFromCamera(), out hitInfo, Mathf.Infinity, PhysicsLayers.physicsCastLayerMaskWithoutCharacter))
             {
-                newHoveredEvent = hitInfo.transform.GetComponentInParent<OnPointerEvent>();
+                var raycastHandlerTarget = hitInfo.transform.GetComponent<IRaycastPointerHandler>();
+                if (raycastHandlerTarget != null)
+                {
+                    UnhoverLastHoveredObject();
+                    ResolveGenericRaycastHandlers(raycastHandlerTarget);
+                    return;
+                }
 
+                clickHandler = null;
+                newHoveredEvent = hitInfo.transform.GetComponentInParent<OnPointerEvent>();
                 if (newHoveredEvent != null && newHoveredEvent.IsAtHoverDistance((DCLCharacterController.i.transform.position - newHoveredEvent.transform.position).magnitude))
                 {
                     newHoveredObject = newHoveredEvent.gameObject;
@@ -97,7 +107,40 @@ namespace DCL
             }
             else
             {
+                clickHandler = null;
                 UnhoverLastHoveredObject();
+            }
+        }
+
+        private void ResolveGenericRaycastHandlers(IRaycastPointerHandler raycastHandlerTarget)
+        {
+            if (Utils.LockedThisFrame()) return;
+
+            var mouseIsDown = Input.GetMouseButtonDown(0);
+            var mouseIsUp = Input.GetMouseButtonUp(0);
+            if (raycastHandlerTarget is IRaycastPointerDownHandler down)
+            {
+                if (mouseIsDown)
+                    down.OnPointerDown();
+            }
+
+            if (raycastHandlerTarget is IRaycastPointerUpHandler up)
+            {
+                if (mouseIsUp)
+                    up.OnPointerUp();
+            }
+
+            if (raycastHandlerTarget is IRaycastPointerClickHandler click)
+            {
+                if (mouseIsDown)
+                    clickHandler = click;
+
+                if (mouseIsUp)
+                {
+                    if (clickHandler == click)
+                        click.OnPointerClick();
+                    clickHandler = null;
+                }
             }
         }
 
@@ -143,6 +186,8 @@ namespace DCL
 
         void OnButtonEvent(WebInterface.ACTION_BUTTON buttonId, InputController_Legacy.EVENT evt, bool useRaycast)
         {
+            if (Utils.LockedThisFrame()) return;
+
             if (Cursor.lockState != CursorLockMode.None && !renderingIsDisabled || this.isTesting)
             {
                 if (charCamera == null)

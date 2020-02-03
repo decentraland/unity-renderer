@@ -250,7 +250,7 @@ public class AvatarEditorHUDView : MonoBehaviour
         controller.DiscardAndClose();
     }
 
-    private void OnSnapshotsReady(Texture2D face, Texture2D body)
+    private void OnSnapshotsReady(Sprite face, Sprite body)
     {
         doneButton.interactable = true;
         controller.SaveAvatar(face, body);

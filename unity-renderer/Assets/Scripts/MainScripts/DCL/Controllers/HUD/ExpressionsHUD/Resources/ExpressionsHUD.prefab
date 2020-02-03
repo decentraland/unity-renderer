@@ -883,7 +883,7 @@ MonoBehaviour:
   content: {fileID: 3368308072246989936}
   openExpressionsAction: {fileID: 11400000, guid: a9a8e6cad9d1cc54db4c26cfb7e91f4c,
     type: 2}
-  avatarPic: {fileID: 6327989183981743989}
+  avatarPic: {fileID: 8506282310728033477}
 --- !u!1 &3309478375450759555
 GameObject:
   m_ObjectHideFlags: 0
@@ -2511,7 +2511,7 @@ GameObject:
   m_Component:
   - component: {fileID: 8600354861481294617}
   - component: {fileID: 1017138830526259340}
-  - component: {fileID: 6327989183981743989}
+  - component: {fileID: 8506282310728033477}
   m_Layer: 5
   m_Name: AvatarPicture
   m_TagString: Untagged
@@ -2546,7 +2546,7 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 7921236905796779737}
   m_CullTransparentMesh: 0
---- !u!114 &6327989183981743989
+--- !u!114 &8506282310728033477
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -2555,7 +2555,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 7921236905796779737}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: -98529514, guid: f70555f144d8491a825f0804e09c671c, type: 3}
+  m_Script: {fileID: -765806418, guid: f70555f144d8491a825f0804e09c671c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   m_Material: {fileID: 0}
@@ -2566,13 +2566,15 @@ MonoBehaviour:
       m_Calls: []
     m_TypeName: UnityEngine.UI.MaskableGraphic+CullStateChangedEvent, UnityEngine.UI,
       Version=1.0.0.0, Culture=neutral, PublicKeyToken=null
-  m_Texture: {fileID: 0}
-  m_UVRect:
-    serializedVersion: 2
-    x: 0
-    y: 0
-    width: 1
-    height: 1
+  m_Sprite: {fileID: 0}
+  m_Type: 0
+  m_PreserveAspect: 0
+  m_FillCenter: 1
+  m_FillMethod: 4
+  m_FillAmount: 1
+  m_FillClockwise: 1
+  m_FillOrigin: 0
+  m_UseSpriteMesh: 0
 --- !u!1 &8173705416063924011
 GameObject:
   m_ObjectHideFlags: 0
