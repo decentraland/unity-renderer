@@ -309,20 +309,33 @@ export function handleNewInventoryItem() {
   })
 }
 
+export function* ensureRenderer() {
+  while (!(yield select(isInitialized))) {
+    yield take(RENDERER_INITIALIZED)
+  }
+}
+
+export function* ensureBaseCatalogs() {
+  while (!(yield select(baseCatalogsLoaded))) {
+    yield take(CATALOG_LOADED)
+  }
+}
+
 export function* submitPassportToRenderer(action: PassportSuccessAction): any {
+  const profile = { ...action.payload.profile }
   if ((yield select(getCurrentUserId)) === action.payload.userId) {
-    if (!(yield select(isInitialized))) {
-      yield take(RENDERER_INITIALIZED)
-    }
-    while (!(yield select(baseCatalogsLoaded))) {
-      yield take(CATALOG_LOADED)
-    }
-    const profile = { ...action.payload.profile }
+    yield call(ensureRenderer)
+    yield call(ensureBaseCatalogs)
     // FIXIT - need to have this duplicated here, as the inventory won't be used if not - moliva - 17/12/2019
     if (ALL_WEARABLES) {
       profile.inventory = (yield select(getExclusiveCatalog)).map((_: Wearable) => _.id)
     }
     yield call(sendLoadProfile, profile)
+  } else {
+    yield call(ensureRenderer)
+    yield call(ensureBaseCatalogs)
+
+    window['unityInterface'].AddUserProfileToCatalog(profileToRendererFormat(profile))
   }
 }
 

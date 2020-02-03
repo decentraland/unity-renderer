@@ -20,7 +20,7 @@ public class ExpressionsHUDView : MonoBehaviour
     [SerializeField] internal Button hideContentButton;
     [SerializeField] internal RectTransform content;
     [SerializeField] internal InputAction_Trigger openExpressionsAction;
-    [SerializeField] internal RawImage avatarPic;
+    [SerializeField] internal Image avatarPic;
     internal InputAction_Trigger.Triggered openExpressionsDelegate;
 
     public static ExpressionsHUDView Create()
@@ -52,11 +52,11 @@ public class ExpressionsHUDView : MonoBehaviour
         }
     }
 
-    public void UpdateAvatarTexture(Texture2D avatarSprite)
+    public void UpdateAvatarSprite(Sprite avatarSprite)
     {
         if (avatarSprite == null) return;
 
-        avatarPic.texture = avatarSprite;
+        avatarPic.sprite = avatarSprite;
     }
 
     internal void ToggleContent()

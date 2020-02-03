@@ -18,7 +18,7 @@
     },
     "BuildSettings": {
         "Platform": "",
-        "BuildTarget": "WebGL",
+        "BuildTarget": "StandaloneWindows64",
         "DevelopmentPlayer": false,
         "AndroidBuildSystem": "Gradle"
     },
@@ -36,12 +36,12 @@
         "BlendWeights": ""
     },
     "PlayerSettings": {
-        "ScriptingBackend": "IL2CPP",
+        "ScriptingBackend": "Mono2x",
         "VrSupported": false,
         "MtRendering": true,
         "GraphicsJobs": false,
         "GpuSkinning": true,
-        "GraphicsApi": "OpenGLES3",
+        "GraphicsApi": "Direct3D11",
         "Batchmode": "False",
         "StereoRenderingPath": "MultiPass",
         "RenderThreadingMode": "MultiThreaded",
@@ -51,7 +51,7 @@
         "ScriptingRuntimeVersion": ""
     },
     "TestSuite": "",
-    "StartTime": 1579190253685.3716,
+    "StartTime": 1580488873094.6648,
     "EndTime": 0.0,
     "Results": []
 }

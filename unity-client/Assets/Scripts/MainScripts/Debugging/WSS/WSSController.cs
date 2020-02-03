@@ -282,6 +282,15 @@ namespace DCL
                             case "LoadProfile":
                                 UserProfileController.i?.LoadProfile(msg.payload);
                                 break;
+                            case "AddUserProfileToCatalog":
+                                UserProfileController.i.AddUserProfileToCatalog(msg.payload);
+                                break;
+                            case "AddUserProfilesToCatalog":
+                                UserProfileController.i.AddUserProfilesToCatalog(msg.payload);
+                                break;
+                            case "RemoveUserProfilesFromCatalog":
+                                UserProfileController.i.RemoveUserProfilesFromCatalog(msg.payload);
+                                break;
                             case "DeactivateRendering":
                                 RenderingController.i.DeactivateRendering();
                                 break;
@@ -371,6 +380,9 @@ namespace DCL
                                 break;
                             case "ConfigureAvatarEditorHUD":
                                 HUDController.i?.ConfigureAvatarEditorHUD(msg.payload);
+                                break;
+                            case "ConfigurePlayerInfoCardHUD":
+                                HUDController.i.ConfigurePlayerInfoCardHUD(msg.payload);
                                 break;
                             case "ConfigureExpressionsHUD":
                                 HUDController.i.ConfigureExpressionsHUD(msg.payload);

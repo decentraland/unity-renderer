@@ -412,8 +412,12 @@ namespace DCL.Helpers
             return bounds;
         }
 
+        private static int lockedInFrame = -1;
+        public static bool LockedThisFrame() => lockedInFrame == Time.frameCount;
+
         public static void LockCursor()
         {
+            lockedInFrame = Time.frameCount;
             Cursor.visible = false;
             Cursor.lockState = CursorLockMode.Locked;
 

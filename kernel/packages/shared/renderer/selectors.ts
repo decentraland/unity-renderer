@@ -1,5 +1,5 @@
 import { RootRendererState } from './types'
 
 export function isInitialized(state: RootRendererState) {
-  return state.renderer.initialized
+  return state && state.renderer && state.renderer.initialized
 }

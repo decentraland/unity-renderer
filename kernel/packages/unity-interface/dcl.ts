@@ -347,6 +347,9 @@ export const unityInterface = {
   SetBuilderReady() {
     gameInstance.SendMessage('SceneController', 'BuilderReady')
   },
+  AddUserProfileToCatalog(peerProfile: ProfileForRenderer) {
+    gameInstance.SendMessage('SceneController', 'AddUserProfileToCatalog', JSON.stringify(peerProfile))
+  },
   AddWearablesToCatalog(wearables: Wearable[]) {
     for (let wearable of wearables) {
       gameInstance.SendMessage('SceneController', 'AddWearableToCatalog', JSON.stringify(wearable))
@@ -384,6 +387,9 @@ export const unityInterface = {
   },
   TriggerSelfUserExpression(expressionId: string) {
     gameInstance.SendMessage('HUDController', 'TriggerSelfUserExpression', expressionId)
+  },
+  ConfigurePlayerInfoCardHUD(configuration: HUDConfiguration) {
+    gameInstance.SendMessage('HUDController', 'ConfigurePlayerInfoCardHUD', JSON.stringify(configuration))
   },
   UpdateMinimapSceneInformation(info: { name: string; type: number; parcels: { x: number; y: number }[] }[]) {
     const chunks = chunkGenerator(CHUNK_SIZE, info)
@@ -460,6 +466,9 @@ export const HUD: Record<string, { configure: (config: HUDConfiguration) => void
   },
   Expressions: {
     configure: unityInterface.ConfigureExpressionsHUD
+  },
+  PlayerInfoCard: {
+    configure: unityInterface.ConfigurePlayerInfoCardHUD
   }
 }
 

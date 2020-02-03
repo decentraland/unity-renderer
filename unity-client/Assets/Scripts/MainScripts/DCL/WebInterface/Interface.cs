@@ -625,13 +625,13 @@ namespace DCL.Interface
             public AvatarModel avatar;
         }
 
-        public static void SendSaveAvatar(AvatarModel avatar, Texture2D faceSnapshot, Texture2D bodySnapshot)
+        public static void SendSaveAvatar(AvatarModel avatar, Sprite faceSnapshot, Sprite bodySnapshot)
         {
             var payload = new SaveAvatarPayload()
             {
                 avatar = avatar,
-                face = System.Convert.ToBase64String(faceSnapshot.EncodeToPNG()),
-                body = System.Convert.ToBase64String(bodySnapshot.EncodeToPNG())
+                face = System.Convert.ToBase64String(faceSnapshot.texture.EncodeToPNG()),
+                body = System.Convert.ToBase64String(bodySnapshot.texture.EncodeToPNG())
             };
             WebInterface.SendMessage("SaveUserAvatar", payload);
         }

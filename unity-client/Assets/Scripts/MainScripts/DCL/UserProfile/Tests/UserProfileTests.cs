@@ -29,13 +29,13 @@ namespace Tests
         {
             var userProfile = ScriptableObject.CreateInstance<UserProfile>();
 
-            userProfile.UpdateProperties(new UserProfileModel()
+            userProfile.UpdateData(new UserProfileModel()
             {
                 name = "name",
                 email = "mail",
                 avatar = new AvatarModel(),
                 snapshots = CreateSnapshotsWithFaceUrl("avatarPicURL")
-            });
+            }, false);
 
             Assert.AreEqual("name", userProfile.model.name);
             Assert.AreEqual("mail", userProfile.model.email);
@@ -55,13 +55,13 @@ namespace Tests
         {
             var userProfile = ScriptableObject.CreateInstance<UserProfile>();
 
-            userProfile.UpdateProperties(new UserProfileModel()
+            userProfile.UpdateData(new UserProfileModel()
             {
                 name = "name2",
                 email = "mail2",
                 avatar = new AvatarModel(),
                 snapshots = CreateSnapshotsWithFaceUrl("avatarPicURL2")
-            });
+            }, false);
 
             Assert.AreEqual("name2", userProfile.model.name);
             Assert.AreEqual("mail2", userProfile.model.email);
@@ -72,21 +72,21 @@ namespace Tests
         public void UserProfile_UpdateData_FromFilled()
         {
             var userProfile = ScriptableObject.CreateInstance<UserProfile>();
-            userProfile.UpdateProperties(new UserProfileModel()
+            userProfile.UpdateData(new UserProfileModel()
             {
                 name = "name",
                 email = "mail",
                 avatar = new AvatarModel(),
                 snapshots = CreateSnapshotsWithFaceUrl("avatarPicURL")
-            });
+            }, false);
 
-            userProfile.UpdateProperties(new UserProfileModel()
+            userProfile.UpdateData(new UserProfileModel()
             {
                 name = "name2",
                 email = "mail2",
                 avatar = new AvatarModel(),
                 snapshots = CreateSnapshotsWithFaceUrl("avatarPicURL2")
-            });
+            }, false);
 
             Assert.AreEqual("name2", userProfile.model.name);
             Assert.AreEqual("mail2", userProfile.model.email);

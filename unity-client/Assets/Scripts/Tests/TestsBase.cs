@@ -18,6 +18,8 @@ public class TestsBase
     protected ParcelScene scene;
     protected CameraController cameraController;
 
+    protected virtual bool justSceneSetUp => false;
+
     [UnitySetUp]
     protected virtual IEnumerator SetUp()
     {
@@ -26,6 +28,9 @@ public class TestsBase
             yield return InitUnityScene("MainTest");
             sceneInitialized = true;
         }
+
+        if (justSceneSetUp)
+            yield break;
 
         SetUp_Camera();
         yield return SetUp_SceneController();

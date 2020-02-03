@@ -15,7 +15,7 @@ public class AvatarHUDView : MonoBehaviour
     [SerializeField] private GameObject loadingAvatar;
 
     [Header("Minimized UI")]
-    [SerializeField] private RawImage topAvatarPic;
+    [SerializeField] internal Image topAvatarPic;
 
     [SerializeField] private Button toggleExpandButton;
 
@@ -64,8 +64,8 @@ public class AvatarHUDView : MonoBehaviour
 
     internal void UpdateData(AvatarHUDModel model)
     {
-        topAvatarPic.texture = model.avatarPic;
-        loadingAvatar.SetActive(topAvatarPic.texture == null);
+        topAvatarPic.sprite = model.avatarPic;
+        loadingAvatar.SetActive(topAvatarPic.sprite == null);
         nameText.text = model.name;
         mailText.text = model.mail;
         newWearableNotificationText.text = model.newWearables.ToString();
