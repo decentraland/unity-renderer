@@ -231,7 +231,7 @@ export function getServerConfigurations() {
     landApi: `https://api.decentraland.${TLDDefault}/v1`,
     content: AWS
       ? `https://content.decentraland.${TLDDefault === 'today' ? 'org' : TLDDefault}`
-      : `https://bot1-katalyst.decentraland.zone/lambdas/contentv2`,
+      : `https://katalyst-lambdas.decentraland.zone/contentv2`,
     contentUpdate: `https://katalyst-content.decentraland.zone`,
     contentAsBundle: `https://content-assets-as-bundle.decentraland.org`,
     worldInstanceUrl: `wss://world-comm.decentraland.${TLDDefault}/connect`,
