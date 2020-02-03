@@ -539,8 +539,8 @@ export async function connect(userId: string) {
           }
         )
 
-        await peer.setLayer('gold')
         await peer.awaitConnectionEstablished(60000)
+        await peer.setLayer('gold')
 
         connection = new LighthouseWorldInstanceConnection(peer)
 
