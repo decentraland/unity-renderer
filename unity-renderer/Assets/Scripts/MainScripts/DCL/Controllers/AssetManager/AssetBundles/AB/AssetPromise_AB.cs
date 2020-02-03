@@ -12,12 +12,15 @@ namespace DCL
     public class AssetPromise_AB : AssetPromise_WithUrl<Asset_AB>
     {
         public static bool VERBOSE = false;
+
+        public static readonly int MAX_CONCURRENT_REQUESTS = 25;
         static int concurrentRequests = 0;
         bool mustDecrementRequest = false;
 
-        static float maxLoadBudgetTime = 0.032f;
+        static readonly float maxLoadBudgetTime = 0.032f;
         static float currentLoadBudgetTime = 0;
         public static bool limitTimeBudget = false;
+
         Coroutine loadCoroutine;
         static HashSet<string> failedRequestUrls = new HashSet<string>();
         UnityWebRequest assetBundleRequest;
@@ -98,8 +101,8 @@ namespace DCL
                 }
             }
 
-            if (concurrentRequests >= 25)
-                yield return new WaitUntil(() => concurrentRequests < 25);
+            if (concurrentRequests >= MAX_CONCURRENT_REQUESTS)
+                yield return new WaitUntil(() => concurrentRequests < MAX_CONCURRENT_REQUESTS);
 
             concurrentRequests++;
             mustDecrementRequest = true;
