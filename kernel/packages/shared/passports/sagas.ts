@@ -176,7 +176,7 @@ function takeLatestById<T extends Action>(
 function overrideBaseUrl(wearable: Wearable) {
   return {
     ...wearable,
-    baseUrl: getContentUrl() + '/',
+    baseUrl: getContentUrl() + '/contents/',
     baseUrlBundles: 'https://content-assets-as-bundle.decentraland.org/contents/'
   }
 }
