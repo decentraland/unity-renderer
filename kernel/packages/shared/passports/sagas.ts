@@ -55,7 +55,7 @@ import { AuthIdentity, Authenticator, AuthLink } from '../crypto/Authenticator'
 
 const CID = require('cids')
 import { sha3 } from 'web3x/utils'
-import { getDefaultTLD, getContentUrl } from '../../config/index'
+import { getContentUrl } from '../../config/index'
 const multihashing = require('multihashing-async')
 const toBuffer = require('blob-to-buffer')
 
