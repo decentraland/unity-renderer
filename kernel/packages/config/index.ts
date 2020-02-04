@@ -226,7 +226,7 @@ export const ENABLE_EMPTY_SCENES = !DEBUG || knownTLDs.includes(getTLD())
 
 export function getContentUrl() {
   const TLDDefault = getDefaultTLD()
-  const katalystHost = `https://bot1-katalyst.decentraland.${TLDDefault === 'today' ? 'org' : TLDDefault}`
+  const katalystHost = `https://bot2-katalyst.decentraland.${TLDDefault === 'today' ? 'org' : TLDDefault}`
   const lambdasHost = `${katalystHost}/lambdas`
 
   return AWS
@@ -236,7 +236,7 @@ export function getContentUrl() {
 
 export function getServerConfigurations() {
   const TLDDefault = getDefaultTLD()
-  const katalystHost = `https://bot1-katalyst.decentraland.${TLDDefault === 'today' ? 'org' : TLDDefault}`
+  const katalystHost = `https://bot2-katalyst.decentraland.${TLDDefault === 'today' ? 'org' : TLDDefault}`
   const lambdasHost = `${katalystHost}/lambdas`
   return {
     auth: `https://auth.decentraland.${TLDDefault}/api/v1`,
