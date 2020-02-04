@@ -224,6 +224,16 @@ export function getLoginConfigurationForCurrentDomain() {
 
 export const ENABLE_EMPTY_SCENES = !DEBUG || knownTLDs.includes(getTLD())
 
+export function getContentUrl() {
+  const TLDDefault = getDefaultTLD()
+  const katalystHost = `https://bot1-katalyst.decentraland.${TLDDefault === 'today' ? 'org' : TLDDefault}`
+  const lambdasHost = `${katalystHost}/lambdas`
+
+  return AWS
+    ? `https://content.decentraland.${TLDDefault === 'today' ? 'org' : TLDDefault}`
+    : `${lambdasHost}/contentv2`
+}
+
 export function getServerConfigurations() {
   const TLDDefault = getDefaultTLD()
   const katalystHost = `https://bot1-katalyst.decentraland.${TLDDefault === 'today' ? 'org' : TLDDefault}`
@@ -231,9 +241,7 @@ export function getServerConfigurations() {
   return {
     auth: `https://auth.decentraland.${TLDDefault}/api/v1`,
     landApi: `https://api.decentraland.${TLDDefault}/v1`,
-    content: AWS
-      ? `https://content.decentraland.${TLDDefault === 'today' ? 'org' : TLDDefault}`
-      : `${lambdasHost}/contentv2`,
+    content: getContentUrl(),
     contentUpdate: `${katalystHost}/content`,
     contentAsBundle: `https://content-assets-as-bundle.decentraland.org`,
     worldInstanceUrl: `wss://world-comm.decentraland.${TLDDefault}/connect`,
