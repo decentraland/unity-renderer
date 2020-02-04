@@ -55,6 +55,7 @@ import { AuthIdentity, Authenticator, AuthLink } from '../crypto/Authenticator'
 
 const CID = require('cids')
 import { sha3 } from 'web3x/utils'
+import { getDefaultTLD } from '../../config/index'
 const multihashing = require('multihashing-async')
 const toBuffer = require('blob-to-buffer')
 
@@ -173,9 +174,10 @@ function takeLatestById<T extends Action>(
 }
 
 function overrideBaseUrl(wearable: Wearable) {
+  const TLDDefault = getDefaultTLD()
   return {
     ...wearable,
-    baseUrl: 'https://katalyst-lambdas.decentraland.zone/contentv2/contents/',
+    baseUrl: `https://bot1-katalyst.decentraland.${TLDDefault === 'today' ? 'org' : TLDDefault}/lambdas/contentv2`,
     baseUrlBundles: 'https://content-assets-as-bundle.decentraland.org/contents/'
   }
 }
