@@ -1,10 +1,7 @@
-import { future, IFuture } from 'fp-future'
-
-import { ILand, IScene, ParcelInfoResponse } from 'shared/types'
 import { jsonFetch } from 'atomicHelpers/jsonFetch'
+import { future, IFuture } from 'fp-future'
 import { createLogger } from 'shared/logger'
-
-const emptyScenes = require('./emptyScenes.json')
+import { ILand, IScene, ParcelInfoResponse, ContentMapping } from 'shared/types'
 
 const logger = createLogger('loader')
 const { error } = logger
@@ -28,12 +25,22 @@ export class SceneDataDownloadManager {
   positionToSceneId: Map<string, IFuture<string | null>> = new Map()
   sceneIdToLandData: Map<string, IFuture<ILand | null>> = new Map()
   rootIdToLandData: Map<string, IFuture<ILand | null>> = new Map()
+  emptyScenes!: Record<string, ContentMapping[]>
+  emptyScenesPromise?: Promise<Record<string, ContentMapping[]>>
+  emptySceneNames: string[] = []
 
-  constructor(public options: { contentServer: string; contentServerBundles: string }) {
-    // stub
-  }
+  constructor(public options: { contentServer: string; contentServerBundles: string }) {}
 
   async resolveSceneSceneId(pos: string): Promise<string | null> {
+    if (!this.emptyScenesPromise) {
+      this.emptyScenesPromise = jsonFetch(globalThis.location.origin + '/loader/empty-scenes/index.json').then(
+        scenes => {
+          this.emptySceneNames = Object.keys(scenes)
+          this.emptyScenes = scenes
+          return this.emptyScenes
+        }
+      )
+    }
     if (this.positionToSceneId.has(pos)) {
       return this.positionToSceneId.get(pos)!
     }
@@ -79,12 +86,10 @@ export class SceneDataDownloadManager {
   }
 
   createFakeILand(sceneId: string, coordinates: string) {
-    const pick = ((coordinates.split(',').reduce((prev, next) => prev + Math.abs(parseInt(next, 10)), 0) % 12) + 1)
-      .toString()
-      .padStart(2, '0')
+    const sceneName = this.emptySceneNames[Math.floor(Math.random() * this.emptySceneNames.length)]
     return {
       sceneId: sceneId,
-      baseUrl: this.options.contentServer + '/contents/',
+      baseUrl: globalThis.location.origin + '/loader/empty-scenes/contents/',
       baseUrlBundles: this.options.contentServerBundles + '/',
       name: 'Empty parcel',
       scene: {
@@ -92,7 +97,7 @@ export class SceneDataDownloadManager {
         owner: '',
         contact: {},
         name: 'Empty parcel',
-        main: `bin/${pick}.js`,
+        main: `bin/game.js`,
         tags: [],
         scene: { parcels: [coordinates], base: coordinates },
         policy: {},
@@ -100,12 +105,7 @@ export class SceneDataDownloadManager {
       },
       mappingsResponse: {
         parcel_id: coordinates,
-        contents: [
-          {
-            file: 'scene.json',
-            hash: 'QmRcgEd7iCWWqLijV78QDEEFQzTXac2htSP2WYCsV9ZC8N'
-          }
-        ].concat(emptyScenes),
+        contents: this.emptyScenes[sceneName],
         root_cid: sceneId,
         publisher: '0x13371b17ddb77893cd19e10ffa58461396ebcc19'
       }
@@ -125,6 +125,7 @@ export class SceneDataDownloadManager {
       const pos = sceneId.replace('Qm', '').replace(/m0+/, '')
       promisedPos.resolve(sceneId)
       this.positionToSceneId.set(pos, promisedPos)
+      await this.emptyScenesPromise
       const scene = this.createFakeILand(sceneId, pos)
       promised.resolve(scene)
       return promised

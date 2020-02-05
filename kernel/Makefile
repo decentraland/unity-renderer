@@ -59,7 +59,10 @@ static/unity/Build/%.unityweb: package.json package-lock.json
 	@npm install
 	@cp node_modules/decentraland-renderer/*.unityweb static/unity/Build/
 
-build-essentials: $(COMPILED_SUPPORT_JS_FILES) $(DECENTRALAND_ECS_TYPEDEF_FILE) $(BUILD_ECS) $(SCENE_SYSTEM) $(INTERNAL_SCENES) $(DECENTRALAND_LOADER) $(RENDERER_BUILD) generate-mocks ## Build the basic required files for the explorer
+empty-parcels:
+	cd static/loader/empty-scenes && node generate_all.js
+
+build-essentials: $(COMPILED_SUPPORT_JS_FILES) $(DECENTRALAND_ECS_TYPEDEF_FILE) $(BUILD_ECS) $(SCENE_SYSTEM) $(INTERNAL_SCENES) $(DECENTRALAND_LOADER) $(RENDERER_BUILD) empty-parcels generate-mocks ## Build the basic required files for the explorer
 
 # Hellmap scenes
 
