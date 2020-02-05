@@ -535,6 +535,12 @@ export async function connect(userId: string) {
               }
               // if any error occurs
               return identity
+            },
+            parcelGetter: () => {
+              if (context && context.currentPosition) {
+                const parcel = position2parcel(context.currentPosition)
+                return [parcel.x, parcel.z]
+              }
             }
           }
         )
