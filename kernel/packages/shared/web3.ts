@@ -9,6 +9,8 @@ import { Address } from 'web3x/address'
 import { Eth } from 'web3x/eth'
 import { Catalyst } from './dao/contracts/Catalyst'
 import { decentralandConfigurations } from '../config/index'
+import { WebsocketProvider } from 'web3x/providers'
+import { ethereumConfigurations } from 'config'
 
 async function getAddress(): Promise<string | undefined> {
   try {
@@ -58,10 +60,13 @@ export async function initWeb3(): Promise<void> {
 
 export async function fetchCatalystNodes() {
   const contractAddress = Address.fromString(decentralandConfigurations.dao)
-  const eth = Eth.fromCurrentProvider()
+  let eth = Eth.fromCurrentProvider()
 
   if (!eth) {
-    throw new Error('Ethereum provider not set!')
+    const net = await getAppNetwork()
+    const provider = new WebsocketProvider(ethereumConfigurations[net].wss)
+
+    eth = new Eth(provider)
   }
 
   const contract = new Catalyst(eth, contractAddress)
