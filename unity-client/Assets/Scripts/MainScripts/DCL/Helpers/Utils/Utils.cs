@@ -429,5 +429,13 @@ namespace DCL.Helpers
             Cursor.visible = true;
             Cursor.lockState = CursorLockMode.None;
         }
+
+        public static void DestroyAllChild(this Transform transform)
+        {
+            foreach (Transform child in transform)
+            {
+                UnityEngine.Object.Destroy(child.gameObject);
+            }
+        }
     }
 }

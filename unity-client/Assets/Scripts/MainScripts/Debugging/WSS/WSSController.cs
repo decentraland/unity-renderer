@@ -396,6 +396,12 @@ namespace DCL
                             case "TriggerSelfUserExpression":
                                 HUDController.i.TriggerSelfUserExpression(msg.payload);
                                 break;
+                            case "ConfigureAirdroppingHUD":
+                                HUDController.i.ConfigureAirdroppingHUD(msg.payload);
+                                break;
+                            case "AirdroppingRequest":
+                                HUDController.i.AirdroppingRequest(msg.payload);
+                                break;
                             default:
                                 Debug.Log("<b><color=#FF0000>WSSController:</color></b> received an unknown message from kernel to renderer: " + msg.type);
                                 break;

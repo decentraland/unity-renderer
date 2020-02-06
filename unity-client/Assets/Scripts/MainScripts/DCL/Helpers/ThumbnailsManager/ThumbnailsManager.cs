@@ -7,11 +7,24 @@ using UnityEngine.Networking;
 //In the future the AssetManager will do this
 public static class ThumbnailsManager
 {
+    #if UNITY_EDITOR
+    public static bool bypassRequests = false;
+    #endif
+
     static Dictionary<string, Sprite> loadedSprites = new Dictionary<string, Sprite>();
     static Dictionary<string, List<Action<Sprite>>> waitingCallbacks = new Dictionary<string, List<Action<Sprite>>>();
 
+    public static void PreloadThumbnail(string url)
+    {
+        RequestThumbnail(url, null);
+    }
+
     public static void RequestThumbnail(string url, Action<Sprite> callback)
     {
+        #if UNITY_EDITOR
+        if (bypassRequests) return;
+        #endif
+
         if (string.IsNullOrEmpty(url))
             return;
 
@@ -21,15 +34,15 @@ public static class ThumbnailsManager
             return;
         }
 
-        if (waitingCallbacks.ContainsKey(url))
+        if (!waitingCallbacks.ContainsKey(url))
         {
+            waitingCallbacks.Add(url, new List<Action<Sprite>>());
+        }
+
+        if(callback != null)
             waitingCallbacks[url].Add(callback);
-        }
-        else
-        {
-            waitingCallbacks.Add(url, new List<Action<Sprite>>() { callback });
-            CoroutineStarter.Start(Download(url));
-        }
+
+        CoroutineStarter.Start(Download(url));
     }
 
     public static void CancelRequest(string url, Action<Sprite> callback)

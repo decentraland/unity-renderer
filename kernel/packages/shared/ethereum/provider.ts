@@ -20,6 +20,7 @@ export async function awaitWeb3Approval(): Promise<void> {
     providerRequested = true
     // Modern dapp browsers...
     if (window['ethereum']) {
+      window['ethereum'].autoRefreshOnNetworkChange = false
       const element = document.getElementById('eth-login')
       if (element) {
         element.style.display = 'block'

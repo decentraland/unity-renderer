@@ -75,13 +75,18 @@ export async function initializeUnity(
  */
 function preventUnityKeyboardLock() {
   const originalFunction = window.addEventListener
-  window.addEventListener = function (event: any, handler: any, options?: any) {
+  window.addEventListener = function(event: any, handler: any, options?: any) {
     if (['keypress', 'keydown', 'keyup'].includes(event)) {
-      originalFunction.call(window, event, (e) => {
-        if (!document.activeElement || document.activeElement === document.body) {
-          handler(e)
-        }
-      }, options)
+      originalFunction.call(
+        window,
+        event,
+        e => {
+          if (!document.activeElement || document.activeElement === document.body) {
+            handler(e)
+          }
+        },
+        options
+      )
     } else {
       originalFunction.call(window, event, handler, options)
     }
@@ -131,17 +136,17 @@ function initializeUnityEditor(webSocketUrl: string, container: HTMLElement): Un
   container.innerHTML = `<h3>Connecting...</h3>`
   const ws = new WebSocket(webSocketUrl)
 
-  ws.onclose = function (e) {
+  ws.onclose = function(e) {
     defaultLogger.error('WS closed!', e)
     container.innerHTML = `<h3 style='color:red'>Disconnected</h3>`
   }
 
-  ws.onerror = function (e) {
+  ws.onerror = function(e) {
     defaultLogger.error('WS error!', e)
     container.innerHTML = `<h3 style='color:red'>EERRORR</h3>`
   }
 
-  ws.onmessage = function (ev) {
+  ws.onmessage = function(ev) {
     if (DEBUG_MESSAGES) {
       defaultLogger.info('>>>', ev.data)
     }
@@ -171,7 +176,7 @@ function initializeUnityEditor(webSocketUrl: string, container: HTMLElement): Un
     }
   }
 
-  ws.onopen = function () {
+  ws.onopen = function() {
     container.classList.remove('dcl-loading')
     defaultLogger.info('WS open!')
     gameInstance.SendMessage('', 'Reset', '')

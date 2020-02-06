@@ -312,6 +312,12 @@ namespace DCL.Interface
             public long timestamp;
         }
 
+        [System.Serializable]
+        public class UserAcceptedCollectiblesPayload
+        {
+            public string id;
+        }
+
 #if UNITY_WEBGL && !UNITY_EDITOR
     /**
      * This method is called after the first render. It marks the loading of the
@@ -634,6 +640,11 @@ namespace DCL.Interface
                 body = System.Convert.ToBase64String(bodySnapshot.texture.EncodeToPNG())
             };
             WebInterface.SendMessage("SaveUserAvatar", payload);
+        }
+
+        public static void SendUserAcceptedCollectibles(string airdropId)
+        {
+            WebInterface.SendMessage("UserAcceptedCollectibles", new UserAcceptedCollectiblesPayload{ id = airdropId});
         }
 
         public static void SendPerformanceReport(string encodedFrameTimesInMS)

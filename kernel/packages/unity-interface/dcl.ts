@@ -24,6 +24,7 @@ import { aborted } from '../shared/loading/ReportFatalError'
 import { loadingScenes, teleportTriggered, unityClientLoaded } from '../shared/loading/types'
 import { createLogger, defaultLogger, ILogger } from '../shared/logger'
 import { saveAvatarRequest } from '../shared/passports/actions'
+import { airdropObservable } from '../shared/apis/AirdropController'
 import { Avatar, Wearable } from '../shared/passports/types'
 import {
   PB_AttachEntityComponent,
@@ -79,6 +80,7 @@ import { hudWorkerUrl, SceneWorker } from '../shared/world/SceneWorker'
 import { ensureUiApis } from '../shared/world/uiSceneInitializer'
 import { worldRunningObservable } from '../shared/world/worldState'
 import { sendPublicChatMessage } from 'shared/comms'
+import { AirdropInfo } from '../shared/airdrops/interface'
 
 const rendererVersion = require('decentraland-renderer')
 window['console'].log('Renderer version: ' + rendererVersion)
@@ -182,6 +184,10 @@ const browserInterface = {
 
   ReportBuilderCameraTarget(data: { id: string; cameraTarget: ReadOnlyVector3 }) {
     futures[data.id].resolve(data.cameraTarget)
+  },
+
+  UserAcceptedCollectibles(data: { id: string }) {
+    airdropObservable.notifyObservers(data.id)
   },
 
   EditAvatarClicked() {
@@ -391,12 +397,18 @@ export const unityInterface = {
   ConfigurePlayerInfoCardHUD(configuration: HUDConfiguration) {
     gameInstance.SendMessage('HUDController', 'ConfigurePlayerInfoCardHUD', JSON.stringify(configuration))
   },
+  ConfigureAirdroppingHUD(configuration: HUDConfiguration) {
+    gameInstance.SendMessage('HUDController', 'ConfigureAirdroppingHUD', JSON.stringify(configuration))
+  },
   UpdateMinimapSceneInformation(info: { name: string; type: number; parcels: { x: number; y: number }[] }[]) {
     const chunks = chunkGenerator(CHUNK_SIZE, info)
 
     for (const chunk of chunks) {
       gameInstance.SendMessage('SceneController', 'UpdateMinimapSceneInformation', JSON.stringify(chunk))
     }
+  },
+  TriggerAirdropDisplay(data: AirdropInfo) {
+    gameInstance.SendMessage('HUDController', 'AirdroppingRequest', JSON.stringify(data))
   },
   SelectGizmoBuilder(type: string) {
     this.SendBuilderMessage('SelectGizmo', type)
@@ -469,6 +481,9 @@ export const HUD: Record<string, { configure: (config: HUDConfiguration) => void
   },
   PlayerInfoCard: {
     configure: unityInterface.ConfigurePlayerInfoCardHUD
+  },
+  Airdropping: {
+    configure: unityInterface.ConfigureAirdroppingHUD
   }
 }
 
