@@ -3,6 +3,7 @@
     "outDir": "../../dist",
     "baseUrl": "..",
     "strictNullChecks": true,
+    "experimentalDecorators": true,
     "strict": true
   },
   "extends": "../../tsconfig.json"

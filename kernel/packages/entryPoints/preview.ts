@@ -79,6 +79,7 @@ initializeUnity(container)
     HUD.Minimap.configure({ active: true, visible: true })
     HUD.Notification.configure({ active: true, visible: true })
     HUD.Settings.configure({ active: true, visible: false })
+    HUD.Airdropping.configure({ active: true, visible: true })
 
     const renderable = sceneRenderable()
 

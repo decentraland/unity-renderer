@@ -36,7 +36,9 @@ export async function initialize(segmentKey: string): Promise<void> {
 }
 
 export function identifyUser(id: string) {
-  window.analytics.identify(id)
+  if (window.analytics) {
+    window.analytics.identify(id)
+  }
 }
 
 export function queueTrackingEvent(eventName: string, eventData: any) {
