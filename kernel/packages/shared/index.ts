@@ -35,12 +35,14 @@ import { getAppNetwork } from './web3'
 import { initializeUrlPositionObserver } from './world/positionThings'
 import { setWorldContext } from './protocol/actions'
 import { profileToRendererFormat } from './passports/transformations/profileToRendererFormat'
-import { awaitWeb3Approval, providerFuture } from './ethereum/provider'
+import { awaitWeb3Approval, providerFuture, isSessionExpired } from './ethereum/provider'
 import { createIdentity } from 'eth-crypto'
 import { Authenticator, AuthIdentity } from './crypto/Authenticator'
 import { Eth } from 'web3x/eth'
 import { Personal } from 'web3x/personal/personal'
 import { Account } from 'web3x/account'
+import { web3initialized } from './dao/actions'
+import { realmInitialized } from './dao'
 
 enum AnalyticsAccount {
   PRD = '1plAT9a2wOOgbPCrTaU8rgGUMzgUTJtU',
@@ -74,7 +76,7 @@ async function createAuthIdentity() {
   const ephemeral = createIdentity()
 
   const result = await providerFuture
-  const ephemeralLifespanMinutes = 30 * 24 * 60 // 1 month
+  const ephemeralLifespanMinutes = 7 * 24 * 60 // 1 week
 
   let address
   let signer
@@ -143,15 +145,13 @@ export async function initShared(): Promise<Session | undefined> {
     try {
       const userData = getUserProfile()
 
+      await awaitWeb3Approval()
+
       // check that user data is stored & key is not expired
-      if (!userData || !userData.identity || new Date(userData.identity.expiration) < new Date()) {
-        await awaitWeb3Approval()
-
-        net = await getAppNetwork()
-
+      if (isSessionExpired(userData)) {
         identity = await createAuthIdentity()
-
         userId = identity.address
+
         identifyUser(userId)
 
         setLocalProfile(userId, {
@@ -185,10 +185,12 @@ export async function initShared(): Promise<Session | undefined> {
 
   console['group']('connect#ethereum')
 
-  queueTrackingEvent('Use network', { net })
+  net = await getAppNetwork()
 
   // Load contracts from https://contracts.decentraland.org
   await setNetwork(net)
+  queueTrackingEvent('Use network', { net })
+  store.dispatch(web3initialized())
   console['groupEnd']()
 
   initializeUrlPositionObserver()
@@ -197,6 +199,9 @@ export async function initShared(): Promise<Session | undefined> {
   if (STATIC_WORLD) {
     return session
   }
+
+  await realmInitialized()
+  defaultLogger.info(`Using Catalyst configuration: `, globalStore.getState().dao)
 
   // initialize profile
   console['group']('connect#profile')

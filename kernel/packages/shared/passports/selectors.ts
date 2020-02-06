@@ -1,6 +1,7 @@
 import { Profile, RootPassportState, Wearable } from './types'
+import { RootDaoState } from '../dao/types'
 
-export const getProfileDownloadServer = (store: RootPassportState) => store.passports.profileServer
+export const getProfileDownloadServer = (store: RootDaoState) => store.dao.profileServer
 
 export const getProfile = (store: RootPassportState, userId: string): Profile | null =>
   store.passports &&

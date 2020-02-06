@@ -14,6 +14,7 @@ import { processServerProfile } from '../../packages/shared/passports/transforma
 import { dynamic } from 'redux-saga-test-plan/providers'
 import { expect } from 'chai'
 import { inventorySuccess } from '../../packages/shared/passports/actions'
+import { isRealmInitialized } from '../../packages/shared/dao/selectors';
 
 const profile = { data: 'profile' }
 
@@ -46,6 +47,7 @@ describe('fetchProfile behavior', () => {
       .dispatch(passportRequest('user|1'))
       .dispatch(passportRequest('user|1'))
       .provide([
+        [select(isRealmInitialized), true],
         [select(getProfileDownloadServer), 'server'],
         [call(profileServerRequest, 'server', 'user|1'), delayedProfile],
         [select(getCurrentUserId), 'myid'],
@@ -65,6 +67,7 @@ describe('fetchProfile behavior', () => {
       .dispatch(passportRequest('user|2'))
       .dispatch(passportRequest('user|2'))
       .provide([
+        [select(isRealmInitialized), true],
         [select(getProfileDownloadServer), 'server'],
         [call(profileServerRequest, 'server', 'user|1'), delayedProfile],
         [select(getCurrentUserId), 'myid'],
@@ -84,6 +87,7 @@ describe('fetchProfile behavior', () => {
       .dispatch(passportRequest('user|1'))
       .dispatch(passportRequest('user|2'))
       .provide([
+        [select(isRealmInitialized), true],
         [select(getCurrentUserId), 'myid'],
         [select(getProfileDownloadServer), 'server'],
         [call(profileServerRequest, 'server', 'user|1'), delayed({ avatars: [profile1] })],

@@ -1,7 +1,7 @@
 import { getFromLocalStorage, saveToLocalStorage } from 'atomicHelpers/localStorage'
 import { call, fork, put, race, select, take, takeEvery, takeLatest, cancel, ForkEffect } from 'redux-saga/effects'
 import { NotificationType } from 'shared/types'
-import { getServerConfigurations, ALL_WEARABLES } from '../../config'
+import { getServerConfigurations, ALL_WEARABLES, getContentUrl } from '../../config'
 import defaultLogger from '../logger'
 import { isInitialized } from '../renderer/selectors'
 import { RENDERER_INITIALIZED } from '../renderer/types'
@@ -33,7 +33,6 @@ import {
   SaveAvatarRequest,
   saveAvatarSuccess,
   SAVE_AVATAR_REQUEST,
-  setProfileServer,
   InventorySuccess
 } from './actions'
 import { generateRandomUserProfile } from './generateRandomUserProfile'
@@ -55,7 +54,8 @@ import { AuthIdentity, Authenticator, AuthLink } from '../crypto/Authenticator'
 
 const CID = require('cids')
 import { sha3 } from 'web3x/utils'
-import { getContentUrl } from '../../config/index'
+import { CATALYST_REALM_INITIALIZED } from '../dao/actions'
+import { isRealmInitialized, getUpdateProfileServer } from '../dao/selectors'
 const multihashing = require('multihashing-async')
 const toBuffer = require('blob-to-buffer')
 
@@ -134,7 +134,9 @@ const takeLatestByUserId = (patternOrChannel: any, saga: any, ...args: any) =>
  * It's *very* important for the renderer to never receive a passport with items that have not been loaded into the catalog.
  */
 export function* passportSaga(): any {
-  yield put(setProfileServer(getServerConfigurations().profile))
+  if (!(yield select(isRealmInitialized))) {
+    yield take(CATALYST_REALM_INITIALIZED)
+  }
   yield takeEvery(RENDERER_INITIALIZED, initialLoad)
 
   yield takeLatest(ADD_CATALOG, handleAddCatalog)
@@ -177,7 +179,7 @@ function overrideBaseUrl(wearable: Wearable) {
   return {
     ...wearable,
     baseUrl: getContentUrl() + '/contents/',
-    baseUrlBundles: 'https://content-assets-as-bundle.decentraland.org/contents/'
+    baseUrlBundles: getServerConfigurations().contentAsBundle + '/contents/'
   }
 }
 
@@ -378,7 +380,7 @@ export function* handleSaveAvatar(saveAvatar: SaveAvatarRequest) {
   const userId = saveAvatar.payload.userId ? saveAvatar.payload.userId : yield select(getCurrentUserId)
   try {
     const currentVersion = (yield select(getProfile, userId)).version || 0
-    const url = getServerConfigurations().contentUpdate
+    const url: string = yield select(getUpdateProfileServer)
     const profile = saveAvatar.payload.profile
     const result = yield call(modifyAvatar, {
       url,

@@ -1,3 +1,5 @@
+import { getFetchContentServer } from '../shared/dao/selectors'
+const queryString = require('query-string')
 declare var window: any
 
 export const performanceConfigurations = [
@@ -92,13 +94,17 @@ export const STATIC_WORLD = location.search.indexOf('STATIC_WORLD') !== -1 || !!
 export const ENABLE_WEB3 = location.search.indexOf('ENABLE_WEB3') !== -1 || !!(global as any).enableWeb3
 export const ENV_OVERRIDE = location.search.indexOf('ENV') !== -1
 
+const qs = queryString.parse(location.search)
+
 // Comms
 export const USE_LOCAL_COMMS = location.search.indexOf('LOCAL_COMMS') !== -1 || PREVIEW
-export const COMMS = USE_LOCAL_COMMS
-  ? 'v1-local'
-  : location.search.indexOf('COMMS') !== -1
-  ? window.location.search.match(/COMMS=(\w+-\w+)/)[1]
-  : 'v2-p2p' // by default
+export const COMMS = USE_LOCAL_COMMS ? 'v1-local' : qs.COMMS ? qs.COMMS : 'v2-p2p' // by default
+
+export const FETCH_PROFILE_SERVICE = qs.FETCH_PROFILE_SERVICE
+export const UPDATE_CONTENT_SERVICE = qs.UPDATE_CONTENT_SERVICE
+export const FETCH_CONTENT_SERVICE = qs.FETCH_CONTENT_SERVICE
+export const COMMS_SERVICE = qs.COMMS_SERVICE
+export const LAYER = qs.LAYER
 
 export const DEBUG =
   location.search.indexOf('DEBUG_MODE') !== -1 ||
@@ -226,45 +232,22 @@ export const ENABLE_EMPTY_SCENES = !DEBUG || knownTLDs.includes(getTLD())
 
 export function getContentUrl() {
   const TLDDefault = getDefaultTLD()
-  const katalystHost = `https://bot2-katalyst.decentraland.${TLDDefault === 'today' ? 'org' : TLDDefault}`
-  const lambdasHost = `${katalystHost}/lambdas`
 
   return AWS
     ? `https://content.decentraland.${TLDDefault === 'today' ? 'org' : TLDDefault}`
-    : `${lambdasHost}/contentv2`
+    : getFetchContentServer(window.globalStore.getState())
 }
 
 export function getServerConfigurations() {
   const TLDDefault = getDefaultTLD()
-  const katalystHost = `https://bot2-katalyst.decentraland.${TLDDefault === 'today' ? 'org' : TLDDefault}`
-  const lambdasHost = `${katalystHost}/lambdas`
   return {
-    auth: `https://auth.decentraland.${TLDDefault}/api/v1`,
-    landApi: `https://api.decentraland.${TLDDefault}/v1`,
-    content: getContentUrl(),
-    contentUpdate: `${katalystHost}/content`,
     contentAsBundle: `https://content-assets-as-bundle.decentraland.org`,
-    worldInstanceUrl: `wss://world-comm.decentraland.${TLDDefault}/connect`,
-    comms: {
-      lighthouse: {
-        server: `${katalystHost}/comms`,
-        p2p: `${katalystHost}/comms`
-      }
-    },
-    profile: `${lambdasHost}/profile`,
     wearablesApi: `https://wearables-api.decentraland.org/v2`,
     avatar: {
       snapshotStorage: `https://avatars-storage.decentraland.${TLDDefault}/`,
-      server: `https://avatars-api.decentraland.${TLDDefault === 'zone' ? 'today' : TLDDefault}/`,
       catalog: getExclusiveServer(),
-      contents: `https://s3.amazonaws.com/content-service.decentraland.org/`,
       presets: `https://avatars-storage.decentraland.org/mobile-avatars`
-    },
-    dao: TLDDefault === 'zone' ? '0x89550d8fc174b2ca216f2bd1bc20128413a2ab9d' : 'mainnetaddress',
-    darApi:
-      TLDDefault === 'zone' || TLDDefault === 'today'
-        ? 'https://schema-api-v2.now.sh/dar'
-        : 'https://schema.decentraland.org/dar'
+    }
   }
 }
 
@@ -276,8 +259,14 @@ export async function setNetwork(net: ETHEREUM_NETWORK) {
     network = net
     contracts = json[net]
 
+    contracts['CatalystProxy'] =
+      net === ETHEREUM_NETWORK.MAINNET
+        ? '0x4a2f10076101650f40342885b99b6b101d83c486'
+        : '0xadd085f2318e9678bbb18b3e0711328f902b374b'
+
     decentralandConfigurations = {
       contractAddress: contracts.LANDProxy,
+      dao: contracts.CatalystProxy,
       contracts: {
         serviceLocator: contracts.ServiceLocator
       },
@@ -293,6 +282,7 @@ export async function setNetwork(net: ETHEREUM_NETWORK) {
 
     decentralandConfigurations = {
       contractAddress: '',
+      dao: '',
       contracts: {
         serviceLocator: ''
       },
