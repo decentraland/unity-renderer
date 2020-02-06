@@ -5,10 +5,12 @@ import { passportSaga } from '../passports/sagas'
 import { rootProtocolSaga } from '../protocol/sagas'
 import { rendererSaga } from '../renderer/sagas'
 import { metricSaga } from './metricSaga'
+import { daoSaga } from '../dao/sagas'
 
 export function createRootSaga() {
   return function* rootSaga() {
     yield fork(atlasSaga)
+    yield fork(daoSaga)
     yield fork(passportSaga)
     yield fork(rendererSaga)
     yield fork(rootProtocolSaga)

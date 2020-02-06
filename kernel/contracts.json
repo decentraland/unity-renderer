@@ -1,10 +1,10 @@
 {
   "outputPath": "./packages/shared/dao/contracts",
   "contracts": {
-    "Katalyst": {
+    "Catalyst": {
       "source": "etherscan",
-      "net": "ropsten",
-      "address": "0x89550d8fc174b2ca216f2bd1bc20128413a2ab9d"
+      "net": "mainnet",
+      "address": "0xcc054fab08127c19f621ab83ade5962cd10584ec"
     }
   }
 }

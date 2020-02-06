@@ -102,6 +102,7 @@ export type PassportState = {
 export type RootPassportState = {
   passports: PassportState
 }
+
 export const INITIAL_PASSPORTS: PassportState = {
   profileServer: '',
   userInfo: {},

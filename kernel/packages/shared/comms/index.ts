@@ -1,5 +1,5 @@
 import { saveToLocalStorage } from 'atomicHelpers/localStorage'
-import { commConfigurations, getServerConfigurations, parcelLimits, COMMS, DEBUG_LOGIN } from 'config'
+import { commConfigurations, parcelLimits, COMMS, DEBUG_LOGIN } from 'config'
 import { CommunicationsController } from 'shared/apis/CommunicationsController'
 import { defaultLogger } from 'shared/logger'
 import { MessageEntry } from 'shared/types'
@@ -43,6 +43,7 @@ import * as Long from 'long'
 
 import { identity } from '../index'
 import { Authenticator } from '../crypto/Authenticator'
+import { getCommsServer, getLayer } from '../dao/selectors'
 
 declare const window: any
 window.Long = Long
@@ -497,23 +498,7 @@ export async function connect(userId: string) {
         break
       }
       case 'v2': {
-        const { server, p2p } = getServerConfigurations().comms.lighthouse
-
-        let lighthouseUrl
-        switch (mode) {
-          case 'server': {
-            lighthouseUrl = server
-            break
-          }
-          case 'p2p': {
-            lighthouseUrl = p2p
-            break
-          }
-          default: {
-            defaultLogger.warn(`unrecognized mode for comms v2 "${mode}", using default "p2p"`)
-            lighthouseUrl = p2p
-          }
-        }
+        const lighthouseUrl = getCommsServer(window.globalStore.getState())
 
         defaultLogger.log('Using Remote lighthouse service: ', lighthouseUrl)
 
@@ -546,7 +531,7 @@ export async function connect(userId: string) {
         )
 
         await peer.awaitConnectionEstablished(60000)
-        await peer.setLayer('gold')
+        await peer.setLayer(getLayer(window.globalStore.getState()))
 
         connection = new LighthouseWorldInstanceConnection(peer)
 

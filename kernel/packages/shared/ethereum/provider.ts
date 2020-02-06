@@ -4,6 +4,7 @@ import { future } from 'fp-future'
 import { ethereumConfigurations, ETHEREUM_NETWORK } from 'config'
 import { defaultLogger } from 'shared/logger'
 import { Account } from 'web3x/account'
+import { getUserProfile } from 'shared/comms/peers'
 
 declare var window: Window & {
   ethereum: any
@@ -20,40 +21,17 @@ export async function awaitWeb3Approval(): Promise<void> {
     providerRequested = true
     // Modern dapp browsers...
     if (window['ethereum']) {
-      window['ethereum'].autoRefreshOnNetworkChange = false
-      const element = document.getElementById('eth-login')
-      if (element) {
-        element.style.display = 'block'
-        const button = document.getElementById('eth-login-confirm-button')
+      const userData = getUserProfile()
+      if (!isSessionExpired(userData)) {
+        providerFuture.resolve({ successful: true, provider: window.ethereum })
+      } else {
+        window['ethereum'].autoRefreshOnNetworkChange = false
+        const element = document.getElementById('eth-login')
+        if (element) {
+          element.style.display = 'block'
+          const button = document.getElementById('eth-login-confirm-button')
 
-        let response = future()
-
-        button!.onclick = async () => {
-          let result
-          try {
-            // Request account access if needed
-            await window.ethereum.enable()
-
-            result = { successful: true, provider: window.ethereum }
-          } catch (error) {
-            // User denied account access...
-            result = {
-              successful: false,
-              provider: new WebSocketProvider(ethereumConfigurations[ETHEREUM_NETWORK.MAINNET].wss)
-            }
-          }
-          response.resolve(result)
-        }
-
-        let result
-        while (true) {
-          result = await response
-
-          element.style.display = 'none'
-
-          const button = document.getElementById('eth-relogin-confirm-button')
-
-          response = future()
+          let response = future()
 
           button!.onclick = async () => {
             let result
@@ -63,20 +41,48 @@ export async function awaitWeb3Approval(): Promise<void> {
 
               result = { successful: true, provider: window.ethereum }
             } catch (error) {
-              // User denied account access, need to retry...
-              result = { successful: false }
+              // User denied account access...
+              result = {
+                successful: false,
+                provider: new WebSocketProvider(ethereumConfigurations[ETHEREUM_NETWORK.MAINNET].wss)
+              }
             }
             response.resolve(result)
           }
 
-          if (result.successful) {
-            break
-          } else {
-            showEthConnectAdvice(true)
+          let result
+          while (true) {
+            result = await response
+
+            element.style.display = 'none'
+
+            const button = document.getElementById('eth-relogin-confirm-button')
+
+            response = future()
+
+            button!.onclick = async () => {
+              let result
+              try {
+                // Request account access if needed
+                await window.ethereum.enable()
+
+                result = { successful: true, provider: window.ethereum }
+              } catch (error) {
+                // User denied account access, need to retry...
+                result = { successful: false }
+              }
+              response.resolve(result)
+            }
+
+            if (result.successful) {
+              break
+            } else {
+              showEthConnectAdvice(true)
+            }
           }
+          showEthConnectAdvice(false)
+          providerFuture.resolve(result)
         }
-        showEthConnectAdvice(false)
-        providerFuture.resolve(result)
       }
     } else if (window.web3 && window.web3.currentProvider) {
       // legacy providers (don't need for confirmation)
@@ -101,4 +107,8 @@ function showEthConnectAdvice(show: boolean) {
   if (element) {
     element.style.display = show ? 'block' : 'none'
   }
+}
+
+export function isSessionExpired(userData: any) {
+  return !userData || !userData.identity || new Date(userData.identity.expiration) < new Date()
 }
