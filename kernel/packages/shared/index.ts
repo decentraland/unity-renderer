@@ -142,10 +142,10 @@ export async function initShared(): Promise<Session | undefined> {
   let net: ETHEREUM_NETWORK = ETHEREUM_NETWORK.MAINNET
 
   if (WORLD_EXPLORER) {
+    await awaitWeb3Approval()
+
     try {
       const userData = getUserProfile()
-
-      await awaitWeb3Approval()
 
       // check that user data is stored & key is not expired
       if (isSessionExpired(userData)) {
