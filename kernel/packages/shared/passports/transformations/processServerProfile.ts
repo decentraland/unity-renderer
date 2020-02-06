@@ -23,12 +23,7 @@ export function noExclusiveMismatches(inventory: WearableId[]) {
   }
 }
 export function processServerProfile(userId: string, receivedProfile: any): Profile {
-  const name =
-    receivedProfile.name ||
-    'Guest-' +
-      Math.random()
-        .toFixed(6)
-        .substr(2)
+  const name = receivedProfile.name || 'Guest-' + userId.substr(2, 6)
   const wearables = receivedProfile.avatar.wearables
     .map(fixWearableIds)
     .filter(dropDeprecatedWearables)
@@ -42,7 +37,7 @@ export function processServerProfile(userId: string, receivedProfile: any): Prof
   snapshots.body = snapshots.body.replace('|', '%7C')
   return {
     userId,
-    email: receivedProfile.email || name.toLowerCase(),
+    email: receivedProfile.email || '',
     name: receivedProfile.name || name,
     description: receivedProfile.description || '',
     createdAt: new Date(receivedProfile.createdAt).getTime(),
