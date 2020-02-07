@@ -30,7 +30,7 @@ public class ExpressionsHUDView : MonoBehaviour
 
     private void Awake()
     {
-        openExpressionsDelegate = (x) => {ToggleContent();};
+        openExpressionsDelegate = (x) => { if (IsVisible()) ToggleContent(); };
         openExpressionsAction.OnTriggered += openExpressionsDelegate;
         hideContentButton.onClick.AddListener(HideContent);
         showContentButton.onClick.AddListener(ToggleContent);
@@ -86,6 +86,11 @@ public class ExpressionsHUDView : MonoBehaviour
     public void SetVisiblity(bool visible)
     {
         gameObject.SetActive(visible);
+    }
+
+    public bool IsVisible()
+    {
+        return gameObject.activeSelf;
     }
 
     public void CleanUp()
