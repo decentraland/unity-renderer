@@ -7,7 +7,8 @@ public class NotificationModel
         GENERIC,
         SCRIPTING_ERROR,
         COMMS_ERROR,
-        AIRDROPPING
+        AIRDROPPING,
+        GENERIC_WITHOUT_BUTTON
     }
 
     public NotificationType type;
