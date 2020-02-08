@@ -102,7 +102,9 @@ export class Authenticator {
     let expiration = new Date()
     expiration.setMinutes(expiration.getMinutes() + ephemeralMinutesDuration)
 
-    const ephemeralMessage = `Decentraland Login\nEphemeral address: ${ephemeralIdentity.address}\nExpiration: ${expiration}`
+    const ephemeralMessage = `Decentraland Login\nEphemeral address: ${
+      ephemeralIdentity.address
+    }\nExpiration: ${expiration.toISOString()}`
     const firstSignature = await signer(ephemeralMessage)
 
     const authChain: AuthChain = [
