@@ -662,11 +662,11 @@
   font-family: 'SFUIText-Heavy', '-apple-system', Helvetica, Arial, serif;
   font-weight: 800;
   font-style: normal;
-  font-size: 180px;
+  font-size: 120px;
   color: rgba(255, 255, 255, 1);
   text-align: right;
   letter-spacing: 2px;
-  line-height: 92px;
+  line-height: 46px;
 }
 
 #error-notinvited.error-container .errormessage .communicationslink {
