@@ -180,12 +180,16 @@ export async function initShared(): Promise<Session | undefined> {
   }
 
   if (getDefaultTLD() === 'org') {
-    const response = await fetch(`https://s7bdh0k6x3.execute-api.us-east-1.amazonaws.com/default/whitelisted_users?id=${identity.address}`)
-    if (!response.ok) {
+    try {
+      const response = await fetch(`https://s7bdh0k6x3.execute-api.us-east-1.amazonaws.com/default/whitelisted_users?id=${identity.address}`)
+      if (!response.ok) {
+        throw new Error('unauthorized user')
+      }
+    } catch (e) {
       removeUserProfile()
       console['groupEnd']()
       ReportFatalError(AUTH_ERROR_LOGGED_OUT)
-      throw new Error('unauthorized user')
+      throw new Error(AUTH_ERROR_LOGGED_OUT)
     }
   }
 
