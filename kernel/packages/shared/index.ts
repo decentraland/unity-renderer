@@ -239,7 +239,6 @@ export async function initShared(): Promise<Session | undefined> {
     } catch (e) {
       removeUserProfile()
       console['groupEnd']()
-      ReportFatalError(AUTH_ERROR_LOGGED_OUT)
       throw new Error(AUTH_ERROR_LOGGED_OUT)
     }
   }
