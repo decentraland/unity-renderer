@@ -15,6 +15,13 @@ const logger = createLogger('Lighthouse: ')
 
 type MessageData = ChatData | ProfileData | SceneData | PositionData
 
+const commsMessageType: PeerMessageType = {
+  name: 'sceneComms',
+  ttl: 10,
+  expirationTime: 10 * 1000,
+  optimistic: true
+}
+
 export class LighthouseWorldInstanceConnection implements WorldInstanceConnection {
   stats: Stats | null = null
 
@@ -77,25 +84,25 @@ export class LighthouseWorldInstanceConnection implements WorldInstanceConnectio
   async sendInitialMessage(userInfo: Partial<UserInformation>) {
     const topic = userInfo.userId!
 
-    await this.sendProfileData(userInfo, topic, "initialProfile")
+    await this.sendProfileData(userInfo, topic, 'initialProfile')
   }
 
   async sendProfileMessage(currentPosition: Position, userInfo: UserInformation) {
     const topic = positionHash(currentPosition)
 
-    await this.sendProfileData(userInfo, topic, "profile")
+    await this.sendProfileData(userInfo, topic, 'profile')
   }
 
   async sendPositionMessage(p: Position) {
     const topic = positionHash(p)
 
-    await this.sendPositionData(p, topic, "position")
+    await this.sendPositionData(p, topic, 'position')
   }
 
   async sendParcelUpdateMessage(currentPosition: Position, p: Position) {
     const topic = positionHash(currentPosition)
 
-    await this.sendPositionData(p, topic, "parcelUpdate")
+    await this.sendPositionData(p, topic, 'parcelUpdate')
   }
 
   async sendParcelSceneCommsMessage(sceneId: string, message: string) {
@@ -105,7 +112,7 @@ export class LighthouseWorldInstanceConnection implements WorldInstanceConnectio
     sceneData.setSceneId(sceneId)
     sceneData.setText(message)
 
-    await this.sendData(topic, sceneData, PeerMessageTypes.reliable("sceneComms"))
+    await this.sendData(topic, sceneData, commsMessageType)
   }
 
   async sendChatMessage(currentPosition: Position, messageId: string, text: string) {
@@ -115,7 +122,7 @@ export class LighthouseWorldInstanceConnection implements WorldInstanceConnectio
     chatMessage.setMessageId(messageId)
     chatMessage.setText(text)
 
-    await this.sendData(topic, chatMessage, PeerMessageTypes.reliable("chat"))
+    await this.sendData(topic, chatMessage, PeerMessageTypes.reliable('chat'))
   }
 
   async updateSubscriptions(rooms: string[]) {
