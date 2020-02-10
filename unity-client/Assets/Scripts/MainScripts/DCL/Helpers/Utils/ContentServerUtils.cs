@@ -69,32 +69,41 @@ namespace DCL
             return "org";
         }
 
+        public static string customBaseUrl = "";
+
+        public static string GetBaseUrl(ApiEnvironment env)
+        {
+            if (env != ApiEnvironment.NONE)
+            {
+                string envString = GetEnvString(env);
+                return $"https://content.decentraland.{envString}";
+            }
+            else
+            {
+                return customBaseUrl;
+            }
+        }
+
         public static string GetScenesAPIUrl(ApiEnvironment env, int x1, int y1, int width, int height)
         {
-            string envString = GetEnvString(env);
-            string result = $"https://content.decentraland.{envString}/scenes?x1={x1}&x2={x1 + width}&y1={y1}&y2={y1 + height}";
+            string baseUrl = GetBaseUrl(env);
+            string result = $"{baseUrl}/scenes?x1={x1}&x2={x1 + width}&y1={y1}&y2={y1 + height}";
             Debug.Log($"Using scenes API url {result}");
             return result;
         }
 
         public static string GetMappingsAPIUrl(ApiEnvironment env, string cid)
         {
-            string envString = GetEnvString(env);
-            string result = $"https://content.decentraland.{envString}/parcel_info?cids={cid}";
+            string baseUrl = GetBaseUrl(env);
+            string result = $"{baseUrl}/parcel_info?cids={cid}";
             Debug.Log($"Using mappings url {result}");
             return result;
         }
 
         public static string GetContentAPIUrlBase(ApiEnvironment env)
         {
-            string envString = GetEnvString(env);
-            return $"https://content.decentraland.{envString}/contents/";
-        }
-
-        public static string GetBundlesAPIUrlBase(ApiEnvironment env)
-        {
-            string envString = GetEnvString(env);
-            return $"https://content-assets-as-bundle.decentraland.org/";
+            string baseUrl = GetBaseUrl(env);
+            return $"{baseUrl}/contents/";
         }
     }
 }
