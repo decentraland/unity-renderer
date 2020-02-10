@@ -21,6 +21,9 @@ namespace DCL
         internal const string CLI_KEEP_BUNDLES_SYNTAX = "keepBundles";
         internal const string CLI_BUILD_SCENE_SYNTAX = "sceneCid";
         internal const string CLI_BUILD_PARCELS_RANGE_SYNTAX = "parcelsXYWH";
+        internal const string CLI_SET_CUSTOM_BASE_URL = "baseUrl";
+
+        internal const string CLI_SET_CUSTOM_OUTPUT_ROOT_PATH = "output";
 
         internal static string ASSET_BUNDLE_FOLDER_NAME = "AssetBundles";
         internal static string DOWNLOADED_FOLDER_NAME = "_Downloaded";
@@ -59,6 +62,8 @@ namespace DCL
         internal string finalDownloadedPath = "";
         internal string finalDownloadedAssetDbPath = "";
 
+        internal string customContentServerBaseUrl = "";
+
         float startTime;
         string logBuffer;
         int totalAssets;
@@ -67,9 +72,17 @@ namespace DCL
         public AssetBundleBuilder(ContentServerUtils.ApiEnvironment environment = ContentServerUtils.ApiEnvironment.ORG)
         {
             this.environment = environment;
+            finalAssetBundlePath = AssetBundleBuilderConfig.ASSET_BUNDLES_PATH_ROOT + "/";
+            finalDownloadedPath = AssetBundleBuilderConfig.DOWNLOADED_PATH_ROOT + "/";
+            finalDownloadedAssetDbPath = AssetBundleBuilderConfig.DOWNLOADED_ASSET_DB_PATH_ROOT + "/";
         }
 
         public static void ExportSceneToAssetBundles()
+        {
+            ExportSceneToAssetBundles(Environment.GetCommandLineArgs());
+        }
+
+        public static void ExportSceneToAssetBundles(string[] commandLineArgs)
         {
             AssetBundleBuilder builder = new AssetBundleBuilder();
             builder.skipAlreadyBuiltBundles = true;
@@ -77,16 +90,27 @@ namespace DCL
 
             try
             {
-                if (AssetBundleBuilderUtils.ParseOption(AssetBundleBuilderConfig.CLI_VERBOSE, 0, out string[] noargs0))
+                if (AssetBundleBuilderUtils.ParseOption(commandLineArgs, AssetBundleBuilderConfig.CLI_SET_CUSTOM_OUTPUT_ROOT_PATH, 1, out string[] outputPath))
+                {
+                    builder.finalAssetBundlePath = outputPath[0] + "/";
+                }
+
+                if (AssetBundleBuilderUtils.ParseOption(commandLineArgs, AssetBundleBuilderConfig.CLI_SET_CUSTOM_BASE_URL, 1, out string[] customBaseUrl))
+                {
+                    ContentServerUtils.customBaseUrl = customBaseUrl[0];
+                    builder.environment = ContentServerUtils.ApiEnvironment.NONE;
+                }
+
+                if (AssetBundleBuilderUtils.ParseOption(commandLineArgs, AssetBundleBuilderConfig.CLI_VERBOSE, 0, out _))
                     VERBOSE = true;
 
-                if (AssetBundleBuilderUtils.ParseOption(AssetBundleBuilderConfig.CLI_ALWAYS_BUILD_SYNTAX, 0, out string[] noargs))
+                if (AssetBundleBuilderUtils.ParseOption(commandLineArgs, AssetBundleBuilderConfig.CLI_ALWAYS_BUILD_SYNTAX, 0, out _))
                     builder.skipAlreadyBuiltBundles = false;
 
-                if (AssetBundleBuilderUtils.ParseOption(AssetBundleBuilderConfig.CLI_KEEP_BUNDLES_SYNTAX, 0, out string[] noargs2))
+                if (AssetBundleBuilderUtils.ParseOption(commandLineArgs, AssetBundleBuilderConfig.CLI_KEEP_BUNDLES_SYNTAX, 0, out _))
                     builder.deleteDownloadPathAfterFinished = false;
 
-                if (AssetBundleBuilderUtils.ParseOption(AssetBundleBuilderConfig.CLI_BUILD_SCENE_SYNTAX, 1, out string[] sceneCid))
+                if (AssetBundleBuilderUtils.ParseOption(commandLineArgs, AssetBundleBuilderConfig.CLI_BUILD_SCENE_SYNTAX, 1, out string[] sceneCid))
                 {
                     if (sceneCid == null || string.IsNullOrEmpty(sceneCid[0]))
                     {
@@ -97,7 +121,7 @@ namespace DCL
                     return;
                 }
                 else
-                if (AssetBundleBuilderUtils.ParseOption(AssetBundleBuilderConfig.CLI_BUILD_PARCELS_RANGE_SYNTAX, 4, out string[] xywh))
+                if (AssetBundleBuilderUtils.ParseOption(commandLineArgs, AssetBundleBuilderConfig.CLI_BUILD_PARCELS_RANGE_SYNTAX, 4, out string[] xywh))
                 {
                     if (xywh == null)
                     {
@@ -367,6 +391,7 @@ namespace DCL
             }
 
             DependencyMapBuilder.Generate(finalAssetBundlePath, hashLowercaseToHashProper, manifest);
+            logBuffer += $"Generating asset bundles at path: {finalAssetBundlePath}\n";
 
             string[] assetBundles = manifest.GetAllAssetBundles();
 
@@ -610,10 +635,6 @@ namespace DCL
 
         internal void InitializeDirectoryPaths(bool deleteIfExists)
         {
-            finalAssetBundlePath = AssetBundleBuilderConfig.ASSET_BUNDLES_PATH_ROOT + "/";
-            finalDownloadedPath = AssetBundleBuilderConfig.DOWNLOADED_PATH_ROOT + "/";
-            finalDownloadedAssetDbPath = AssetBundleBuilderConfig.DOWNLOADED_ASSET_DB_PATH_ROOT + "/";
-
             AssetBundleBuilderUtils.InitializeDirectory(finalDownloadedPath, deleteIfExists);
             AssetBundleBuilderUtils.InitializeDirectory(finalAssetBundlePath, deleteIfExists);
         }

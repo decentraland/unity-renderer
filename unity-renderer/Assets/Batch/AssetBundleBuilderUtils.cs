@@ -49,6 +49,11 @@ namespace DCL
             return coords;
         }
 
+        internal static bool ParseOption(string[] fullCmdArgs, string optionName, int argsQty, out string[] foundArgs)
+        {
+            return ParseOptionExplicit(fullCmdArgs, optionName, argsQty, out foundArgs);
+        }
+
         internal static bool ParseOption(string optionName, int argsQty, out string[] foundArgs)
         {
             return ParseOptionExplicit(Environment.GetCommandLineArgs(), optionName, argsQty, out foundArgs);
@@ -166,43 +171,17 @@ namespace DCL
             return result;
         }
 
-        internal static Texture2D GetTextureFromAssetBundle(ApiEnvironment environment, string hash)
-        {
-            string url = ContentServerUtils.GetBundlesAPIUrlBase(environment) + hash;
-
-            using (UnityWebRequest assetBundleRequest = UnityWebRequestAssetBundle.GetAssetBundle(url))
-            {
-                var asyncOp = assetBundleRequest.SendWebRequest();
-
-                while (!asyncOp.isDone) { }
-
-                if (assetBundleRequest.isHttpError || assetBundleRequest.isNetworkError)
-                {
-                    Debug.LogWarning("AssetBundle request fail! " + url);
-                    return null;
-                }
-
-                AssetBundle assetBundle = DownloadHandlerAssetBundle.GetContent(assetBundleRequest);
-
-                if (assetBundle != null)
-                {
-                    Texture2D[] txs = assetBundle.LoadAllAssets<Texture2D>();
-                    return txs[0];
-                }
-            }
-
-            return null;
-        }
-
         public static MD5 md5 = new MD5CryptoServiceProvider();
         public static string CidToGuid(string cid)
         {
             byte[] data = md5.ComputeHash(Encoding.UTF8.GetBytes(cid));
             StringBuilder sBuilder = new StringBuilder();
+
             for (int i = 0; i < data.Length; i++)
             {
                 sBuilder.Append(data[i].ToString("x2"));
             }
+
             return sBuilder.ToString();
         }
 
