@@ -1,5 +1,6 @@
 // tslint:disable:prefer-function-over-method
 import { Vector3Component } from 'atomicHelpers/landHelpers'
+import { getFromLocalStorage, saveToLocalStorage } from 'atomicHelpers/localStorage'
 import { uuid } from 'atomicHelpers/math'
 import { parseParcelPosition, worldToGrid } from 'atomicHelpers/parcelScenePositions'
 import { parcelLimits, SHOW_FPS_COUNTER } from 'config'
@@ -34,6 +35,15 @@ avatarMessageObservable.add((pose: AvatarMessage) => {
 const fpsConfiguration = {
   visible: SHOW_FPS_COUNTER
 }
+const CAMPAIGN_PARCEL_SEQUENCE = [
+  { x: 113, y: -7 },
+  { x: 87, y: 18 },
+  { x: 52, y: 2 },
+  { x: 16, y: 83 },
+  { x: -12, y: -39 },
+  { x: 60, y: 115 }
+]
+
 export interface IChatController {
   /**
    * Send the chat message
@@ -164,6 +174,15 @@ export class ChatController extends ExposableAPI implements IChatController {
             x: parseInt('' + x, 10),
             y: parseInt('' + y, 10),
             text: response
+          } as any)
+        } else if (message.trim().toLowerCase() === 'next') {
+          const current = getFromLocalStorage('launch-campaign-status') || 0
+          saveToLocalStorage('launch-campaign-status', current + 1)
+          const { x, y } = CAMPAIGN_PARCEL_SEQUENCE[current % CAMPAIGN_PARCEL_SEQUENCE.length]
+          teleportObservable.notifyObservers({
+            x,
+            y,
+            text: `Teleporting you to the next scene… and more treasures!`
           } as any)
         } else {
           response = 'Could not recognize the coordinates provided. Example usage: /goto 42,42'
