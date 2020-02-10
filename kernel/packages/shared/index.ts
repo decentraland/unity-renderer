@@ -187,7 +187,7 @@ export async function initShared(): Promise<Session | undefined> {
     identity = await createAuthIdentity()
   }
 
-  if (getDefaultTLD() === 'org') {
+  if (WORLD_EXPLORER && getDefaultTLD() === 'org') {
     try {
       const response = await fetch(`https://s7bdh0k6x3.execute-api.us-east-1.amazonaws.com/default/whitelisted_users?id=${identity.address}`)
       if (!response.ok) {
