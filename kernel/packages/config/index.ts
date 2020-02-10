@@ -1,4 +1,3 @@
-import { getFetchContentServer } from '../shared/dao/selectors'
 const queryString = require('query-string')
 declare var window: any
 
@@ -234,9 +233,7 @@ export const ENABLE_EMPTY_SCENES = !DEBUG || knownTLDs.includes(getTLD())
 export function getContentUrl() {
   const TLDDefault = getDefaultTLD()
 
-  return AWS
-    ? `https://content.decentraland.${TLDDefault === 'today' ? 'org' : TLDDefault}`
-    : getFetchContentServer(window.globalStore.getState())
+  return `https://content.decentraland.${TLDDefault === 'today' ? 'org' : TLDDefault}`
 }
 
 export function getServerConfigurations() {
