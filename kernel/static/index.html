@@ -223,7 +223,7 @@
       left: 50%;
       top: 50%;
       transform: translate(-50%, -50%);
-      border-radius: 15px;
+      border-radius: 12px;
       padding: 34px 44px;
       box-shadow: 0 2px 4 rgba(0, 0, 0, 0.5);
 
@@ -261,13 +261,17 @@
       background-color: #FF2D55;
       background-image: linear-gradient(to right, #FF2D55, #FF4974);
       cursor: pointer;
-      border-radius: 10px;
+      border-radius: 6px;
       line-height: 40px;
       width: 214px;
       border: 0;
       text-transform: uppercase;
       font-size: 13px;
       font-family: sfsemibold;
+    }
+    .eth-login-wallet-icon {
+      margin-right: 10px;
+      vertical-align: middle;
     }
   </style>
 </head>
@@ -288,20 +292,22 @@
       <img src="images/decentraland-connect/Isologotipo.png" style="width: 60%; margin-bottom: 20px"></img>
       <div class="eth-login-description">Click in the button below to login with your 
         Ethereum address.</div>
-      <button id="eth-login-confirm-button" class="eth-login-confirm-button1">Connect wallet</buttonclass="eth-login-description">
+      <button id="eth-login-confirm-button" class="eth-login-confirm-button1">
+        <img src="./images/decentraland-connect/walletIcon.png" class="eth-login-wallet-icon"></img>Connect wallet</buttonclass="eth-login-description">
     </div>
   </div>
   <div id="eth-connect-advice">
-    <div class="eth-login-popup" style="padding-bottom: 30px">
+    <div class="eth-login-popup" style="height: 450px">
       <div class="eth-login-welcome">Welcome to</div>
       <img src="images/decentraland-connect/Isologotipo.png" style="width: 60%; margin-bottom: 20px"></img>
       <div class="eth-login-description">Please, follow the instructions provided by your Ethereum wallet provider to complete login.</div>
       <div class="eth-login-description" style="margin-top: 10px;">To proceed, confirm with <strong>connecting</strong> to your Ethereum wallet extension.</div>
-      <button id="eth-relogin-confirm-button" class="eth-login-confirm-button1">Connect wallet</buttonclass="eth-login-description">
+      <button id="eth-relogin-confirm-button" class="eth-login-confirm-button1">
+        <img src="./images/decentraland-connect/walletIcon.png" class="eth-login-wallet-icon"></img>Connect wallet</buttonclass="eth-login-description">
     </div>
   </div>
   <div id="eth-sign-advice">
-    <div class="eth-login-popup" style="padding-bottom: 30px">
+    <div class="eth-login-popup" >
       <div class="eth-login-welcome">Welcome to</div>
       <img src="images/decentraland-connect/Isologotipo.png" style="width: 60%; margin-bottom: 20px"></img>
       <div class="eth-login-description">Please, follow the instructions provided by your Ethereum wallet provider to complete login.</div>
