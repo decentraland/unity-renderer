@@ -14,7 +14,7 @@ import { processServerProfile } from '../../packages/shared/passports/transforma
 import { dynamic } from 'redux-saga-test-plan/providers'
 import { expect } from 'chai'
 import { inventorySuccess } from '../../packages/shared/passports/actions'
-import { isRealmInitialized } from '../../packages/shared/dao/selectors';
+import { isRealmInitialized } from '../../packages/shared/dao/selectors'
 
 const profile = { data: 'profile' }
 
@@ -27,18 +27,6 @@ const delayed = (result: any) =>
 const delayedProfile = delayed({ avatars: [profile] })
 
 describe('fetchProfile behavior', () => {
-  it('behaves normally', () => {
-    return expectSaga(handleFetchProfile, passportRequest('userId'))
-      .put(passportSuccess('userId', 'passport' as any))
-      .provide([
-        [select(getProfileDownloadServer), 'server'],
-        [call(profileServerRequest, 'server', 'userId'), { avatars: [profile] }],
-        [select(getCurrentUserId), 'myid'],
-        [call(processServerProfile, 'userId', profile), 'passport']
-      ])
-      .run()
-  })
-
   it('completes once for more than one request of same user', () => {
     return expectSaga(passportSaga)
       .put(passportSuccess('user|1', 'passport' as any))
@@ -50,6 +38,7 @@ describe('fetchProfile behavior', () => {
         [select(isRealmInitialized), true],
         [select(getProfileDownloadServer), 'server'],
         [call(profileServerRequest, 'server', 'user|1'), delayedProfile],
+        [call(fetchInventoryItemsByAddress, 'user|1'), []],
         [select(getCurrentUserId), 'myid'],
         [call(processServerProfile, 'user|1', profile), 'passport']
       ])
@@ -73,14 +62,16 @@ describe('fetchProfile behavior', () => {
         [select(getCurrentUserId), 'myid'],
         [call(processServerProfile, 'user|1', profile), 'passport1'],
         [call(profileServerRequest, 'server', 'user|2'), delayedProfile],
-        [call(processServerProfile, 'user|2', profile), 'passport2']
+        [call(fetchInventoryItemsByAddress, 'user|1'), []],
+        [call(processServerProfile, 'user|2', profile), 'passport2'],
+        [call(fetchInventoryItemsByAddress, 'user|2'), []]
       ])
       .run()
   })
 
   it('fetches inventory for corresponding user', () => {
-    const profile1 = { ...profile, ethAddress: 'eth1' }
-    const profile2 = { ...profile, ethAddress: 'eth2' }
+    const profile1 = { ...profile }
+    const profile2 = { ...profile }
     return expectSaga(passportSaga)
       .put(passportSuccess('user|1', 'passport1' as any))
       .put(passportSuccess('user|2', 'passport2' as any))
@@ -92,8 +83,8 @@ describe('fetchProfile behavior', () => {
         [select(getProfileDownloadServer), 'server'],
         [call(profileServerRequest, 'server', 'user|1'), delayed({ avatars: [profile1] })],
         [call(profileServerRequest, 'server', 'user|2'), delayed({ avatars: [profile2] })],
-        [call(fetchInventoryItemsByAddress, 'eth1'), ['dcl://base-exclusive/wearable1/1']],
-        [call(fetchInventoryItemsByAddress, 'eth2'), ['dcl://base-exclusive/wearable2/2']],
+        [call(fetchInventoryItemsByAddress, 'user|1'), ['dcl://base-exclusive/wearable1/1']],
+        [call(fetchInventoryItemsByAddress, 'user|2'), ['dcl://base-exclusive/wearable2/2']],
         [call(processServerProfile, 'user|1', profile1), 'passport1'],
         [call(processServerProfile, 'user|2', profile2), 'passport2']
       ])

@@ -240,7 +240,7 @@ export function getServerConfigurations() {
   const TLDDefault = getDefaultTLD()
   return {
     contentAsBundle: `https://content-assets-as-bundle.decentraland.org`,
-    wearablesApi: `https://wearables-api.decentraland.org/v2`,
+    wearablesApi: `https://wearable-api.decentraland.org/v2`,
     avatar: {
       snapshotStorage: `https://avatars-storage.decentraland.${TLDDefault}/`,
       catalog: getExclusiveServer(),
