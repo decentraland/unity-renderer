@@ -35,6 +35,7 @@ avatarMessageObservable.add((pose: AvatarMessage) => {
 const fpsConfiguration = {
   visible: SHOW_FPS_COUNTER
 }
+
 const CAMPAIGN_PARCEL_SEQUENCE = [
   { x: 113, y: -7 },
   { x: 87, y: 18 },
@@ -42,6 +43,10 @@ const CAMPAIGN_PARCEL_SEQUENCE = [
   { x: 16, y: 83 },
   { x: -12, y: -39 },
   { x: 60, y: 115 }
+]
+
+const blacklisted = [
+  'help'
 ]
 
 export interface IChatController {
@@ -345,7 +350,7 @@ export class ChatController extends ExposableAPI implements IChatController {
           `\n\nYou can move with the [WASD] keys and jump with the [SPACE] key.` +
           `\n\nYou can toggle the chat with the [ENTER] key.` +
           `\n\nAvailable commands:\n${Object.keys(this.chatCommands)
-            .filter(name => name !== 'help')
+            .filter(name => !blacklisted.includes(name))
             .map(name => `\t/${name}: ${this.chatCommands[name].description}`)
             .concat('\t/help: Show this list of commands')
             .join('\n')}`
