@@ -713,12 +713,13 @@ export async function initializeEngine(_gameInstance: GameInstance) {
   if (!EDITOR) {
     await initializeDecentralandUI()
   }
+
   return {
     unityInterface,
     onMessage(type: string, message: any) {
       if (type in browserInterface) {
         // tslint:disable-next-line:semicolon
-        ; (browserInterface as any)[type](message)
+        ;(browserInterface as any)[type](message)
       } else {
         defaultLogger.info(`Unknown message (did you forget to add ${type} to unity-interface/dcl.ts?)`, message)
       }
