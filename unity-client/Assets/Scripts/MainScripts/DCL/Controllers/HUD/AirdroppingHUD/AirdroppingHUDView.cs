@@ -11,6 +11,8 @@ public class AirdroppingHUDView : MonoBehaviour
     [SerializeField] internal GenericFactory collectiblesFactory;
     [SerializeField] internal GenericFactory erc20Factory;
 
+    [SerializeField] internal GameObject content;
+
     [Header("Initial Screen")]
     [SerializeField] internal GameObject initialScreen;
     [SerializeField] internal TextMeshProUGUI initialScreenTitle;
@@ -98,6 +100,11 @@ public class AirdroppingHUDView : MonoBehaviour
         summaryItemsContainer.transform.DestroyAllChild();
 
         summaryNoItemsScreen.SetActive(false);
+    }
+
+    public void SetContentActive(bool active)
+    {
+        content.SetActive(active);
     }
 
     public void SetVisibility(bool active)
