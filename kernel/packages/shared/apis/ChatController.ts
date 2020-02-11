@@ -3,6 +3,7 @@ import { Vector3Component } from 'atomicHelpers/landHelpers'
 import { getFromLocalStorage, saveToLocalStorage } from 'atomicHelpers/localStorage'
 import { uuid } from 'atomicHelpers/math'
 import { parseParcelPosition, worldToGrid } from 'atomicHelpers/parcelScenePositions'
+import { data as sampleDrop } from 'shared/airdrops/sampleDrop'
 import { parcelLimits, SHOW_FPS_COUNTER } from 'config'
 import { APIOptions, exposeMethod, registerAPI } from 'decentraland-rpc/lib/host'
 import { EngineAPI } from 'shared/apis/EngineAPI'
@@ -45,9 +46,7 @@ const CAMPAIGN_PARCEL_SEQUENCE = [
   { x: 60, y: 115 }
 ]
 
-const blacklisted = [
-  'help'
-]
+const blacklisted = ['help', 'airdrop']
 
 export interface IChatController {
   /**
@@ -313,6 +312,17 @@ export class ChatController extends ExposableAPI implements IChatController {
         }
       }
     )
+
+    this.addChatCommand('airdrop', 'fake an airdrop', () => {
+      const unityWindow: any = window
+      unityWindow.unityInterface.TriggerAirdropDisplay(sampleDrop)
+      return {
+        id: uuid(),
+        isCommand: true,
+        sender: 'Decentraland',
+        message: 'Faking airdrop...'
+      }
+    })
 
     this.addChatCommand('unmute', 'Unmute [username]', message => {
       const username = message
