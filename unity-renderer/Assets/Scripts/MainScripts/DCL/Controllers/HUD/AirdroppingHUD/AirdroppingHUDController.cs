@@ -100,6 +100,7 @@ public class AirdroppingHUDController : IHUD, IDisposable
         {
             case State.Initial:
                 currentItemShown = 0;
+                view.SetContentActive(true);
                 view.ShowInitialScreen(model.title, model.subtitle);
                 break;
             case State.SingleItem:
@@ -118,7 +119,7 @@ public class AirdroppingHUDController : IHUD, IDisposable
             case State.Hidden:
             default:
                 model = null;
-                view.CleanState();
+                view.SetContentActive(false);
                 break;
         }
     }
