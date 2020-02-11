@@ -1,6 +1,7 @@
 const puppeteer = require('puppeteer')
 
-const position =  process.env.BOT_POSITION ? process.env.BOT_POSITION : "20,20"
+const position = process.env.BOT_POSITION ? process.env.BOT_POSITION : '20,20'
+const dclEnv = process.env.DCL_ENV ? process.env.DCL_ENV : 'zone'
 
 async function main() {
   const browser = await puppeteer.launch()
@@ -12,7 +13,7 @@ async function main() {
     }
   })
 
-  await page.goto(`http://localhost:8080/?position=${position}&ws=ws%3A%2F%2Flocalhost%3A5001%2Floop`, {
+  await page.goto(`http://localhost:8080/?ENV=${dclEnv}&position=${position}&ws=ws%3A%2F%2Flocalhost%3A5001%2Floop`, {
     waitUntil: 'networkidle2'
   })
 
