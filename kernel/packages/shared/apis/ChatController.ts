@@ -1,10 +1,9 @@
 // tslint:disable:prefer-function-over-method
 import { Vector3Component } from 'atomicHelpers/landHelpers'
-import { getFromLocalStorage, saveToLocalStorage } from 'atomicHelpers/localStorage'
 import { uuid } from 'atomicHelpers/math'
 import { parseParcelPosition, worldToGrid } from 'atomicHelpers/parcelScenePositions'
-import { data as sampleDrop } from 'shared/airdrops/sampleDrop'
-import { parcelLimits, SHOW_FPS_COUNTER } from 'config'
+import { SHOW_FPS_COUNTER } from 'config'
+import { sampleDropData } from 'shared/airdrops/sampleDrop'
 import { APIOptions, exposeMethod, registerAPI } from 'decentraland-rpc/lib/host'
 import { EngineAPI } from 'shared/apis/EngineAPI'
 import { ExposableAPI } from 'shared/apis/ExposableAPI'
@@ -19,9 +18,8 @@ import {
   peerMap,
   removeFromMutedUsers
 } from 'shared/comms/peers'
-import { POIs } from 'shared/comms/POIs'
 import { IChatCommand, MessageEntry } from 'shared/types'
-import { teleportObservable } from 'shared/world/positionThings'
+import { TeleportController } from 'shared/world/TeleportController'
 import { expressionExplainer, isValidExpression, validExpressions } from './expressionExplainer'
 
 const userPose: { [key: string]: Vector3Component } = {}
@@ -33,18 +31,10 @@ avatarMessageObservable.add((pose: AvatarMessage) => {
     delete userPose[pose.uuid]
   }
 })
+
 const fpsConfiguration = {
   visible: SHOW_FPS_COUNTER
 }
-
-const CAMPAIGN_PARCEL_SEQUENCE = [
-  { x: 113, y: -7 },
-  { x: 87, y: 18 },
-  { x: 52, y: 2 },
-  { x: 16, y: 83 },
-  { x: -12, y: -39 },
-  { x: 60, y: 115 }
-]
 
 const blacklisted = ['help', 'airdrop']
 
@@ -162,49 +152,17 @@ export class ChatController extends ExposableAPI implements IChatController {
 
       if (!isValid) {
         if (message.trim().toLowerCase() === 'magic') {
-          const target = POIs[Math.floor(Math.random() * POIs.length)]
-          const { x, y } = target
-          response = `Teleporting to "${target.name}" (${x}, ${y})...`
-          teleportObservable.notifyObservers({
-            x: parseInt('' + x, 10),
-            y: parseInt('' + y, 10),
-            text: response
-          } as any)
+          response = TeleportController.goToMagic().message
         } else if (message.trim().toLowerCase() === 'random') {
-          const x = Math.floor(Math.random() * 301) - 150
-          const y = Math.floor(Math.random() * 301) - 150
-          response = `Teleporting to random location (${x}, ${y})...`
-          teleportObservable.notifyObservers({
-            x: parseInt('' + x, 10),
-            y: parseInt('' + y, 10),
-            text: response
-          } as any)
+          response = TeleportController.goToRandom().message
         } else if (message.trim().toLowerCase() === 'next') {
-          const current = getFromLocalStorage('launch-campaign-status') || 0
-          saveToLocalStorage('launch-campaign-status', current + 1)
-          const { x, y } = CAMPAIGN_PARCEL_SEQUENCE[current % CAMPAIGN_PARCEL_SEQUENCE.length]
-          teleportObservable.notifyObservers({
-            x,
-            y,
-            text: `Teleporting you to the next scene… and more treasures!`
-          } as any)
+          response = TeleportController.goToNext().message
         } else {
           response = 'Could not recognize the coordinates provided. Example usage: /goto 42,42'
         }
       } else {
         const { x, y } = coordinates
-
-        if (
-          parcelLimits.minLandCoordinateX <= x &&
-          x <= parcelLimits.maxLandCoordinateX &&
-          parcelLimits.minLandCoordinateY <= y &&
-          y <= parcelLimits.maxLandCoordinateY
-        ) {
-          response = `Teleporting to ${x}, ${y}...`
-          teleportObservable.notifyObservers({ x, y, text: response } as any)
-        } else {
-          response = `Coordinates are outside of the boundaries. Limits are from ${parcelLimits.minLandCoordinateX} to ${parcelLimits.maxLandCoordinateX} for X and ${parcelLimits.minLandCoordinateY} to ${parcelLimits.maxLandCoordinateY} for Y`
-        }
+        response = TeleportController.goTo(x, y).message
       }
 
       return {
@@ -315,7 +273,7 @@ export class ChatController extends ExposableAPI implements IChatController {
 
     this.addChatCommand('airdrop', 'fake an airdrop', () => {
       const unityWindow: any = window
-      unityWindow.unityInterface.TriggerAirdropDisplay(sampleDrop)
+      unityWindow.unityInterface.TriggerAirdropDisplay(sampleDropData)
       return {
         id: uuid(),
         isCommand: true,
