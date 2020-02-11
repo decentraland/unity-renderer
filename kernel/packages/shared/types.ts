@@ -348,6 +348,10 @@ export type HUDConfiguration = {
   visible: boolean
 }
 
+export type WelcomeHUDControllerModel = HUDConfiguration & {
+  hasWallet: boolean
+}
+
 export function normalizeContentMappings(
   mappings: Record<string, string> | Array<ContentMapping>
 ): Array<ContentMapping> {

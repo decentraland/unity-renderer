@@ -146,7 +146,6 @@ namespace DCL
 
             if (pools.ContainsKey(id))
             {
-                Debug.Log("Will remove pool = " + id);
                 pools[id].Cleanup();
                 pools.Remove(id);
             }

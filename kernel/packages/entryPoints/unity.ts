@@ -4,10 +4,10 @@ import { worldToGrid } from '../atomicHelpers/parcelScenePositions'
 import defaultLogger from '../shared/logger'
 import { signalRendererInitialized } from '../shared/renderer/actions'
 import { lastPlayerPosition, teleportObservable } from '../shared/world/positionThings'
-import { HUD, startUnityParcelLoading } from '../unity-interface/dcl'
+import { startUnityParcelLoading, unityInterface, hasWallet } from '../unity-interface/dcl'
 import { initializeUnity } from '../unity-interface/initializer'
 import { experienceStarted } from '../shared/loading/types'
-import { OPEN_AVATAR_EDITOR } from '../config/index'
+import { OPEN_AVATAR_EDITOR, NO_MOTD } from '../config/index'
 
 const container = document.getElementById('gameContainer')
 
@@ -17,24 +17,31 @@ if (!container) throw new Error('cannot find element #gameContainer')
 
 initializeUnity(container)
   .then(async _ => {
-    HUD.Minimap.configure({ active: true, visible: true })
-    HUD.Avatar.configure({ active: true, visible: true })
-    HUD.Notification.configure({ active: true, visible: true })
-    HUD.AvatarEditor.configure({ active: true, visible: OPEN_AVATAR_EDITOR })
-    HUD.Settings.configure({ active: true, visible: false })
-    HUD.Expressions.configure({ active: true, visible: true })
-    HUD.PlayerInfoCard.configure({ active: true, visible: true })
-    HUD.Airdropping.configure({ active: true, visible: true })
+    const i = unityInterface
+    
+    i.ConfigureMinimapHUD({ active: true, visible: true })
+    i.ConfigureAvatarHUD({ active: true, visible: true })
+    i.ConfigureNotificationHUD({ active: true, visible: true })
+    i.ConfigureAvatarEditorHUD({ active: true, visible: OPEN_AVATAR_EDITOR })
+    i.ConfigureSettingsHUD({ active: true, visible: false })
+    i.ConfigureExpressionsHUD({ active: true, visible: true })
+    i.ConfigurePlayerInfoCardHUD({ active: true, visible: true })
+    i.ConfigureAirdroppingHUD({ active: true, visible: true })
 
     global['globalStore'].dispatch(signalRendererInitialized())
     await startUnityParcelLoading()
 
+    if (!NO_MOTD) {
+      i.ConfigureWelcomeHUD({active: true, visible: true, hasWallet: hasWallet})
+    }
+  
     _.instancedJS
       .then($ => {
         teleportObservable.notifyObservers(worldToGrid(lastPlayerPosition))
         global['globalStore'].dispatch(experienceStarted())
       })
       .catch(defaultLogger.error)
+
     document.body.classList.remove('dcl-loading')
     ;(window as any).UnityLoader.Error.handler = (error: any) => {
       console['error'](error)

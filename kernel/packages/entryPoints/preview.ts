@@ -6,7 +6,7 @@ global['preview'] = window['preview'] = true
 global['enableWeb3'] = window['enableWeb3']
 
 import { initializeUnity } from '../unity-interface/initializer'
-import { loadPreviewScene, HUD } from '../unity-interface/dcl'
+import { loadPreviewScene, unityInterface } from '../unity-interface/dcl'
 import { DEBUG_WS_MESSAGES } from '../config'
 import defaultLogger from 'shared/logger'
 import { future, IFuture } from 'fp-future'
@@ -22,7 +22,7 @@ const container = document.getElementById('gameContainer')
 if (!container) throw new Error('cannot find element #gameContainer')
 
 const defaultScene: IFuture<ILand> = future()
-
+ 
 function startPreviewWatcher() {
   // this is set to avoid double loading scenes due queued messages
   let isSceneLoading: boolean = true
@@ -76,10 +76,11 @@ function sceneRenderable() {
 
 initializeUnity(container)
   .then(async ret => {
-    HUD.Minimap.configure({ active: true, visible: true })
-    HUD.Notification.configure({ active: true, visible: true })
-    HUD.Settings.configure({ active: true, visible: false })
-    HUD.Airdropping.configure({ active: true, visible: true })
+    const i = unityInterface
+    i.ConfigureMinimapHUD({ active: true, visible: true })
+    i.ConfigureNotificationHUD({ active: true, visible: true })
+    i.ConfigureSettingsHUD({ active: true, visible: false })
+    i.ConfigureAirdroppingHUD({ active: true, visible: true })
 
     const renderable = sceneRenderable()
 

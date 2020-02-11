@@ -1,4 +1,4 @@
-﻿﻿using UnityEngine;
+using UnityEngine;
 
 #if UNITY_WEBGL && !UNITY_EDITOR
 using System.Runtime.InteropServices;
@@ -660,7 +660,10 @@ namespace DCL.Interface
                 id = expressionID,
                 timestamp = timestamp
             });
-
+        }
+        public static void ReportMotdClicked()
+        {
+            SendMessage("MotdConfirmClicked");
         }
     }
 }

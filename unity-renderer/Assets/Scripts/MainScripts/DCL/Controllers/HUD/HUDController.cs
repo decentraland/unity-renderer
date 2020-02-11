@@ -18,6 +18,7 @@ public class HUDController : MonoBehaviour
     public SettingsHUDController settingsHud { get; private set; }
     public ExpressionsHUDController expressionsHud { get; private set; }
     public PlayerInfoCardHUDController playerInfoCardHudController { get; private set; }
+    public WelcomeHUDController welcomeHudController { get; private set; }
     public AirdroppingHUDController airdroppingHUDController { get; private set; }
 
     private UserProfile ownUserProfile => UserProfile.GetOwnUserProfile();
@@ -143,6 +144,19 @@ public class HUDController : MonoBehaviour
         playerInfoCardHudController?.SetVisibility(configuration.active && configuration.visible);
     }
 
+    public void ConfigureWelcomeHUD(string configurationJson)
+    {
+        WelcomeHUDController.Model configuration = JsonUtility.FromJson<WelcomeHUDController.Model>(configurationJson);
+
+        if (configuration.active && welcomeHudController == null)
+        {
+            welcomeHudController = new WelcomeHUDController();
+            welcomeHudController.Initialize(configuration);
+        }
+
+        welcomeHudController?.SetVisibility(configuration.active && configuration.visible);
+    }
+
     public void ConfigureAirdroppingHUD(string configurationJson)
     {
         HUDConfiguration configuration = JsonUtility.FromJson<HUDConfiguration>(configurationJson);
@@ -174,6 +188,7 @@ public class HUDController : MonoBehaviour
     {
         if (ownUserProfile != null)
             ownUserProfile.OnUpdate -= OwnUserProfileUpdated;
+
         if (avatarHud != null)
         {
             avatarHud.OnEditAvatarPressed -= ShowAvatarEditor;
@@ -183,6 +198,9 @@ public class HUDController : MonoBehaviour
         minimapHud?.Dispose();
         notificationHud?.Dispose();
         avatarEditorHud?.Dispose();
+        expressionsHud?.Dispose();
+        playerInfoCardHudController?.Dispose();
+        welcomeHudController?.Dispose();
     }
 
 #if UNITY_EDITOR

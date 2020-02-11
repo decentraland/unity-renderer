@@ -393,6 +393,9 @@ namespace DCL
                             case "ConfigureExpressionsHUD":
                                 HUDController.i.ConfigureExpressionsHUD(msg.payload);
                                 break;
+                            case "ConfigureWelcomeHUD":
+                                HUDController.i.ConfigureWelcomeHUD(msg.payload);
+                                break;
                             case "UpdateMinimapSceneInformation":
                                 MinimapMetadataController.i?.UpdateMinimapSceneInformation(msg.payload);
                                 break;

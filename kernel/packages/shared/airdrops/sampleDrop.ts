@@ -1,4 +1,4 @@
-export const data = {
+export const sampleDropData = {
   title: "You've found a chest!",
   subtitle: "Click on it to see what's inside!",
   items: [
