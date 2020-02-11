@@ -442,15 +442,14 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Material: {fileID: 0}
-  m_Color: {r: 1, g: 1, b: 1, a: 1}
+  m_Color: {r: 1, g: 0.1764706, b: 0.33333334, a: 1}
   m_RaycastTarget: 0
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
     m_TypeName: UnityEngine.UI.MaskableGraphic+CullStateChangedEvent, UnityEngine.UI,
       Version=1.0.0.0, Culture=neutral, PublicKeyToken=null
-  m_Sprite: {fileID: 7233470533949167480, guid: ad7b2afa9169b4d4ea47e951ff944b2d,
-    type: 3}
+  m_Sprite: {fileID: 0}
   m_Type: 1
   m_PreserveAspect: 0
   m_FillCenter: 1
@@ -469,6 +468,7 @@ GameObject:
   m_Component:
   - component: {fileID: 7040327896023372498}
   - component: {fileID: 5152280341401398489}
+  - component: {fileID: 5231357492818190096}
   m_Layer: 5
   m_Name: Layout
   m_TagString: Untagged
@@ -522,6 +522,21 @@ MonoBehaviour:
   m_ChildControlHeight: 1
   m_ChildScaleWidth: 0
   m_ChildScaleHeight: 0
+--- !u!114 &5231357492818190096
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7595787210800762328}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d30b4ce08e6854094b8461fdea1282aa, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  targetRectTransform: {fileID: 7040327896023372498}
+  hoverScale: 1.03
+  normalScale: 1
 --- !u!1 &7716882930132283505
 GameObject:
   m_ObjectHideFlags: 0
@@ -533,7 +548,6 @@ GameObject:
   - component: {fileID: 6398028760747893445}
   - component: {fileID: 3413310143909474847}
   - component: {fileID: 1488483463451176161}
-  - component: {fileID: 454143998908276032}
   - component: {fileID: 2864087751836595116}
   - component: {fileID: 1641554316879263334}
   m_Layer: 5
@@ -629,21 +643,6 @@ MonoBehaviour:
   targetText: {fileID: 7006005775249712427}
   onFont: {fileID: 11400000, guid: 26b03903800224f718b64e9afbc91b61, type: 2}
   offFont: {fileID: 11400000, guid: c0f2e4affe3f2438d9042ca1db45764f, type: 2}
---- !u!114 &454143998908276032
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 7716882930132283505}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: d30b4ce08e6854094b8461fdea1282aa, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  targetRectTransform: {fileID: 4408649744171152243}
-  hoverScale: 1.08
-  normalScale: 1
 --- !u!114 &2864087751836595116
 MonoBehaviour:
   m_ObjectHideFlags: 0

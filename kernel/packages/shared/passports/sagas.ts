@@ -342,7 +342,7 @@ export function* sendLoadProfile(profile: Profile) {
   while (!(yield select(baseCatalogsLoaded))) {
     yield take(CATALOG_LOADED)
   }
-  window['unityInterface'].LoadProfile(profileToRendererFormat(profile))
+  window['unityInterface'].LoadProfile(profileToRendererFormat(profile, identity))
 }
 
 export function* handleFetchInventory(action: InventoryRequest) {
