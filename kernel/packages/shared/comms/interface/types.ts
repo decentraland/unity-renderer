@@ -1,5 +1,5 @@
 import { ProfileForRenderer } from 'decentraland-ecs/src'
-import { AuthIdentity } from '../../crypto/Authenticator'
+import { AuthIdentity } from 'dcl-crypto'
 
 export enum AvatarMessageType {
   // Networking related messages

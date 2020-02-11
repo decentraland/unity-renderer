@@ -105,6 +105,7 @@
     "body-scroll-lock": "^2.5.10",
     "cids": "^0.7.3",
     "concurrently": "^4.1.0",
+    "dcl-crypto": "^1.7.0",
     "decentraland-auth-protocol": "^0.3.2",
     "decentraland-katalyst-peer": "^0.1.25",
     "decentraland-renderer": "^1.8.4333",

@@ -42,7 +42,7 @@ import { LighthouseWorldInstanceConnection } from './v2/LighthouseWorldInstanceC
 import * as Long from 'long'
 
 import { identity } from '../index'
-import { Authenticator } from '../crypto/Authenticator'
+import { Authenticator } from 'dcl-crypto'
 import { getCommsServer, getLayer } from '../dao/selectors'
 
 declare const window: any
