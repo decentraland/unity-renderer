@@ -319,6 +319,24 @@
 
   <!-- Begin error messages -->
 
+  <div id="error-networkmismatch" style="/*display: block !important*/" class="error-container hidden-error">
+    <div class="errormessage">
+      <div class="errortext col">
+        <div class="communicationslink">A network mismatch was detected</div>
+        <div class="givesomedetailof">We detected that you are entering the <strong id="tld">zone</strong> domain with your Ethereum wallet set to <strong id="web3Net">mainnet</strong>.</div>
+        <div class="givesomedetailof">To continue, please change the Ethereum network in your wallet to <strong id="web3NetGoal">ropsten</strong> and click "Reload".</div>
+        <div class="cta">
+          <button class="retry" onclick="(function() { window.location.reload() })()">Reload</button>
+        </div>
+      </div>
+      <div class="errorimage col">
+        <div class="imagewrapper">
+          <img src="images/robotsmiling.png" />
+        </div>
+      </div>
+    </div>
+  </div>
+
   <div id="error-newlogin" style="/*display: block !important*/" class="error-container hidden-error">
     <div class="errormessage">
       <div class="errortext col">
