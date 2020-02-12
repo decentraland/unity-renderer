@@ -163,6 +163,10 @@ const browserInterface = {
     sendPublicChatMessage(id, chatMessage)
   },
 
+  TermsOfServiceResponse(sceneId: string, accepted: boolean, dontShowAgain: boolean) {
+    // TODO
+  },
+
   MotdConfirmClicked() {
     if (hasWallet) {
       TeleportController.goToNext()
@@ -287,6 +291,9 @@ export function* chunkGenerator(
 
 export const unityInterface = {
   debug: false,
+  SendGenericMessage(object: string, method: string, payload: string) {
+    gameInstance.SendMessage(object, method, payload)
+  },
   SetDebug() {
     gameInstance.SendMessage('SceneController', 'SetDebug')
   },
@@ -406,6 +413,9 @@ export const unityInterface = {
   },
   ConfigureAirdroppingHUD(configuration: HUDConfiguration) {
     gameInstance.SendMessage('HUDController', 'ConfigureAirdroppingHUD', JSON.stringify(configuration))
+  },
+  ConfigureTermsOfServiceHUD(configuration: HUDConfiguration) {
+    gameInstance.SendMessage('HUDController', 'ConfigureTermsOfServiceHUD', JSON.stringify(configuration))
   },
   UpdateMinimapSceneInformation(info: { name: string; type: number; parcels: { x: number; y: number }[] }[]) {
     const chunks = chunkGenerator(CHUNK_SIZE, info)

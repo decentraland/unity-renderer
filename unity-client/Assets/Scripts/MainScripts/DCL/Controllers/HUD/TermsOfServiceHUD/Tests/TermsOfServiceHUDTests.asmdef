@@ -1,0 +1,19 @@
+{
+    "name": "TermsOfServiceHUDTests",
+    "references": [
+        "GUID:ef84d7ce90ba34f07be26ace428e9bc8",
+        "GUID:5d02c64bb7b20a24db543402280f4e74",
+        "GUID:b1087c5731ff68448a0a9c625bb7e52d"
+    ],
+    "optionalUnityReferences": [
+        "TestAssemblies"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": []
+}
