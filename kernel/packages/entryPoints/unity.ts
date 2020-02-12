@@ -27,7 +27,7 @@ initializeUnity(container)
     i.ConfigureExpressionsHUD({ active: true, visible: true })
     i.ConfigurePlayerInfoCardHUD({ active: true, visible: true })
     i.ConfigureAirdroppingHUD({ active: true, visible: true })
-    i.ConfigureTermsOfServiceHUD({ active: true, visible: false })
+    i.ConfigureTermsOfServiceHUD({ active: true, visible: true })
 
     global['globalStore'].dispatch(signalRendererInitialized())
     await startUnityParcelLoading()
