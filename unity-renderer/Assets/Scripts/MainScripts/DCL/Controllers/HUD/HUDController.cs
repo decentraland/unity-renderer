@@ -20,6 +20,7 @@ public class HUDController : MonoBehaviour
     public PlayerInfoCardHUDController playerInfoCardHudController { get; private set; }
     public WelcomeHUDController welcomeHudController { get; private set; }
     public AirdroppingHUDController airdroppingHUDController { get; private set; }
+    public TermsOfServiceHUDController termsOfServiceHUDController { get; private set; }
 
     private UserProfile ownUserProfile => UserProfile.GetOwnUserProfile();
     private WearableDictionary wearableCatalog => CatalogController.wearableCatalog;
@@ -172,6 +173,23 @@ public class HUDController : MonoBehaviour
     {
         var model = JsonUtility.FromJson<AirdroppingHUDController.Model>(payload);
         airdroppingHUDController.AirdroppingRequested(model);
+    }
+
+    public void ConfigureTermsOfServiceHUD(string configurationJson)
+    {
+        HUDConfiguration configuration = JsonUtility.FromJson<HUDConfiguration>(configurationJson);
+        if (configuration.active && termsOfServiceHUDController == null)
+        {
+            termsOfServiceHUDController = new TermsOfServiceHUDController();
+        }
+
+        termsOfServiceHUDController?.SetVisibility(configuration.active && configuration.visible);
+    }
+
+    public void ShowTermsOfServices(string payload)
+    {
+        var model = JsonUtility.FromJson<TermsOfServiceHUDController.Model>(payload);
+        termsOfServiceHUDController?.ShowTermsOfService(model);
     }
 
     private void UpdateAvatarHUD()
