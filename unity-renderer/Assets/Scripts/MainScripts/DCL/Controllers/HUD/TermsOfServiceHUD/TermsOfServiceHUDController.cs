@@ -54,19 +54,19 @@ public class TermsOfServiceHUDController : IHUD, IDisposable
     private void OpenToS()
     {
         if (!string.IsNullOrEmpty(model.tosURL))
-            Application.OpenURL(model.tosURL);
+            WebInterface.OpenURL(model.tosURL);
     }
 
     private void OpenPrivacyPolicy()
     {
         if (!string.IsNullOrEmpty(model.privacyPolicyURL))
-            Application.OpenURL(model.privacyPolicyURL);
+            WebInterface.OpenURL(model.privacyPolicyURL);
     }
 
     private void OpenContactEmail()
     {
         if (!string.IsNullOrEmpty(model.emailContactURL))
-            Application.OpenURL($"mailto:{model.emailContactURL}");
+            WebInterface.OpenURL($"mailto:{model.emailContactURL}");
     }
 
     public void SetVisibility(bool visible)
