@@ -1,7 +1,7 @@
 import { getFromLocalStorage, saveToLocalStorage } from 'atomicHelpers/localStorage'
 import { call, fork, put, race, select, take, takeEvery, takeLatest, cancel, ForkEffect } from 'redux-saga/effects'
 import { NotificationType } from 'shared/types'
-import { getServerConfigurations, ALL_WEARABLES, getContentUrl } from '../../config'
+import { getServerConfigurations, ALL_WEARABLES, getWearablesSafeURL } from '../../config'
 import defaultLogger from '../logger'
 import { isInitialized } from '../renderer/selectors'
 import { RENDERER_INITIALIZED } from '../renderer/types'
@@ -178,8 +178,8 @@ function takeLatestById<T extends Action>(
 function overrideBaseUrl(wearable: Wearable) {
   return {
     ...wearable,
-    baseUrl: getContentUrl() + '/contents/',
-    baseUrlBundles: getServerConfigurations().contentAsBundle + '/contents/'
+    baseUrl: getWearablesSafeURL() + '/contents/',
+    baseUrlBundles: getServerConfigurations().contentAsBundle + '/'
   }
 }
 

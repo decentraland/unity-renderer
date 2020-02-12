@@ -236,10 +236,8 @@ export function getLoginConfigurationForCurrentDomain() {
 
 export const ENABLE_EMPTY_SCENES = !DEBUG || knownTLDs.includes(getTLD())
 
-export function getContentUrl() {
-  const TLDDefault = getDefaultTLD()
-
-  return `https://content.decentraland.${TLDDefault === 'today' ? 'org' : TLDDefault}`
+export function getWearablesSafeURL() {
+  return 'https://content.decentraland.org'
 }
 
 export function getServerConfigurations() {
