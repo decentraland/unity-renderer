@@ -6,6 +6,7 @@ import { Eth } from 'web3x/eth'
 import { Personal } from 'web3x/personal/personal'
 import {
   ETHEREUM_NETWORK,
+  getDefaultTLD,
   getLoginConfigurationForCurrentDomain,
   getTLD,
   PREVIEW,
@@ -13,7 +14,6 @@ import {
   STATIC_WORLD,
   WORLD_EXPLORER
 } from '../config'
-import { getDefaultTLD } from '../config/index'
 import { identifyUser, initialize, queueTrackingEvent } from './analytics'
 import './apis/index'
 import { connect, disconnect, persistCurrentUser } from './comms'
@@ -22,6 +22,7 @@ import { isMobile } from './comms/mobile'
 import { getUserProfile, removeUserProfile, setLocalProfile } from './comms/peers'
 import { realmInitialized } from './dao'
 import { web3initialized } from './dao/actions'
+import { getNetwork } from './ethereum/EthereumService'
 import { awaitWeb3Approval, isSessionExpired, providerFuture } from './ethereum/provider'
 import './events'
 import { ReportFatalError } from './loading/ReportFatalError'
@@ -34,6 +35,7 @@ import {
   establishingComms,
   loadingStarted,
   MOBILE_NOT_SUPPORTED,
+  NETWORK_MISMATCH,
   NEW_LOGIN,
   notStarted
 } from './loading/types'
@@ -44,7 +46,7 @@ import { setWorldContext } from './protocol/actions'
 import { Session } from './session/index'
 import { RootState } from './store/rootTypes'
 import { buildStore } from './store/store'
-import { getAppNetwork } from './web3'
+import { getAppNetwork, getNetworkFromTLD } from './web3'
 import { initializeUrlPositionObserver } from './world/positionThings'
 
 export type ExplorerIdentity = AuthIdentity & {
@@ -129,6 +131,30 @@ async function createAuthIdentity() {
   return identity
 }
 
+async function checkTldVsNetwork() {
+  const web3Network = await getNetwork()
+  const web3Net = web3Network === '1' ? ETHEREUM_NETWORK.MAINNET : ETHEREUM_NETWORK.ROPSTEN
+
+  const tld = getTLD()
+  const tldNet = getNetworkFromTLD()
+
+  if (tld === 'localhost') {
+    // localhost => allow any network
+    return false
+  }
+
+  if (tldNet !== web3Net) {
+    document.getElementById('tld')!.textContent = tld
+    document.getElementById('web3Net')!.textContent = web3Net
+    document.getElementById('web3NetGoal')!.textContent = tldNet
+
+    ReportFatalError(NETWORK_MISMATCH)
+    return true
+  }
+
+  return false
+}
+
 export async function initShared(): Promise<Session | undefined> {
   if (WORLD_EXPLORER) {
     await initializeAnalytics()
@@ -162,6 +188,10 @@ export async function initShared(): Promise<Session | undefined> {
 
   if (WORLD_EXPLORER) {
     await awaitWeb3Approval()
+
+    if (await checkTldVsNetwork()) {
+      return undefined
+    }
 
     try {
       const userData = getUserProfile()

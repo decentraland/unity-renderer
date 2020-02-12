@@ -5,6 +5,7 @@ import { ethereumConfigurations, ETHEREUM_NETWORK } from 'config'
 import { defaultLogger } from 'shared/logger'
 import { Account } from 'web3x/account'
 import { getUserProfile } from 'shared/comms/peers'
+import { getTLD } from '../../config/index'
 
 declare var window: Window & {
   ethereum: any
@@ -44,7 +45,7 @@ export async function awaitWeb3Approval(): Promise<void> {
               // User denied account access...
               result = {
                 successful: false,
-                provider: new WebSocketProvider(ethereumConfigurations[ETHEREUM_NETWORK.MAINNET].wss)
+                provider: createProvider()
               }
             }
             response.resolve(result)
@@ -91,7 +92,7 @@ export async function awaitWeb3Approval(): Promise<void> {
       // otherwise, create a local identity
       providerFuture.resolve({
         successful: false,
-        provider: new WebSocketProvider(ethereumConfigurations[ETHEREUM_NETWORK.MAINNET].wss),
+        provider: createProvider(),
         localIdentity: Account.create()
       })
     }
@@ -100,6 +101,11 @@ export async function awaitWeb3Approval(): Promise<void> {
   providerFuture.then(result => requestManager.setProvider(result.provider)).catch(defaultLogger.error)
 
   return providerFuture
+}
+
+function createProvider() {
+  const network = getTLD() === 'zone' ? ETHEREUM_NETWORK.ROPSTEN : ETHEREUM_NETWORK.MAINNET
+  return new WebSocketProvider(ethereumConfigurations[network].wss)
 }
 
 function showEthConnectAdvice(show: boolean) {

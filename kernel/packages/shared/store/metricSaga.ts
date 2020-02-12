@@ -2,6 +2,7 @@ import { takeEvery } from 'redux-saga/effects'
 import { queueTrackingEvent } from '../analytics'
 import { SAVE_AVATAR_SUCCESS, SaveAvatarSuccess } from '../passports/actions'
 import {
+  NETWORK_MISMATCH,
   COMMS_ESTABLISHED,
   ESTABLISHING_COMMS,
   ExecutionLifecycleEvent,
@@ -43,6 +44,7 @@ const trackingEvents: Record<ExecutionLifecycleEvent, string> = {
   [SCENE_ENTERED]: 'scene_entered',
   [NEW_LOGIN]: 'new_login',
   // errors
+  [NETWORK_MISMATCH]: 'network_mismatch',
   [UNEXPECTED_ERROR]: 'error_fatal',
   [UNEXPECTED_ERROR_LOADING_CATALOG]: 'error_catalog',
   [NO_WEBGL_COULD_BE_CREATED]: 'error_webgl',

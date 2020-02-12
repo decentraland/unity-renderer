@@ -5,7 +5,8 @@ import {
   NOT_INVITED,
   NO_WEBGL_COULD_BE_CREATED,
   MOBILE_NOT_SUPPORTED,
-  NEW_LOGIN
+  NEW_LOGIN,
+  NETWORK_MISMATCH
 } from './types'
 
 export let aborted = false
@@ -35,6 +36,8 @@ export function bringDownClientAndShowError(event: ExecutionLifecycleEvent) {
       ? 'nomobile'
       : event === NEW_LOGIN
       ? 'newlogin'
+      : event === NETWORK_MISMATCH
+      ? 'networkmismatch'
       : 'fatal'
 
   document.getElementById('error-' + targetError)!.setAttribute('style', 'display: block !important')

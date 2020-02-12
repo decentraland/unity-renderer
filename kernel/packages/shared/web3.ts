@@ -31,22 +31,15 @@ export function getNetworkFromTLD(): ETHEREUM_NETWORK | null {
     return ETHEREUM_NETWORK.MAINNET
   }
 
+  // if localhost
   return null
 }
 
 export async function getAppNetwork(): Promise<ETHEREUM_NETWORK> {
   const web3Network = await getNetwork()
   const web3net = web3Network === '1' ? ETHEREUM_NETWORK.MAINNET : ETHEREUM_NETWORK.ROPSTEN
-  // TLD environment have priority
-  const net = getNetworkFromTLD() || web3net
-
-  if (web3net && net !== web3net) {
-    // TODO @fmiras show an HTML error if web3 networks differs from domain network and do not load client at all
-    defaultLogger.error(`Switch to network ${net}`)
-  }
-
-  defaultLogger.info('Using ETH network: ', net)
-  return net
+  defaultLogger.info('Using ETH network: ', web3net)
+  return web3net
 }
 
 export async function initWeb3(): Promise<void> {

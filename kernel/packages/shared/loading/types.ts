@@ -57,6 +57,8 @@ export const MOBILE_NOT_SUPPORTED = 'Mobile is not supported'
 export const mobileNotSupported = () => action(MOBILE_NOT_SUPPORTED)
 export const NEW_LOGIN = 'New login'
 export const newLogin = () => action(NEW_LOGIN)
+export const NETWORK_MISMATCH = 'Network mismatch'
+export const networkMismatch = () => action(NETWORK_MISMATCH)
 
 export const ExecutionLifecycleNotifications = {
   notStarted,
@@ -79,7 +81,8 @@ export const ExecutionLifecycleNotifications = {
   failedFetchingUnity,
   commsErrorRetrying,
   commsCouldNotBeEstablished,
-  newLogin
+  newLogin,
+  networkMismatch
 }
 
 export type ExecutionLifecycleEvent =
@@ -105,6 +108,7 @@ export type ExecutionLifecycleEvent =
   | typeof COMMS_ERROR_RETRYING
   | typeof COMMS_COULD_NOT_BE_ESTABLISHED
   | typeof NEW_LOGIN
+  | typeof NETWORK_MISMATCH
 
 export const ExecutionLifecycleEventsList: ExecutionLifecycleEvent[] = [
   NOT_STARTED,
@@ -128,5 +132,6 @@ export const ExecutionLifecycleEventsList: ExecutionLifecycleEvent[] = [
   COMMS_ERROR_RETRYING,
   MOBILE_NOT_SUPPORTED,
   COMMS_COULD_NOT_BE_ESTABLISHED,
-  NEW_LOGIN
+  NEW_LOGIN,
+  NETWORK_MISMATCH
 ]
