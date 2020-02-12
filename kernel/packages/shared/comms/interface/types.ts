@@ -128,3 +128,19 @@ export type ChatMessage = {
 }
 
 export type BusMessage = ChatMessage
+
+export class IdTakenError extends Error {
+  constructor(message: string) {
+    super(message)
+  }
+}
+export class ConnectionEstablishmentError extends Error {
+  constructor(message: string) {
+    super(message)
+  }
+}
+export class UnknownCommsModeError extends Error {
+  constructor(message: string) {
+    super(message)
+  }
+}
