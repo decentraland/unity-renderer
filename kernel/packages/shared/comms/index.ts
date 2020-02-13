@@ -34,7 +34,7 @@ import {
   IdTakenError,
   UnknownCommsModeError
 } from './interface/types'
-import { CommunicationArea, Position, position2parcel, sameParcel, squareDistance } from './interface/utils'
+import { CommunicationArea, Position, position2parcel, sameParcel, squareDistance, Parcel } from './interface/utils'
 import { BrokerWorldInstanceConnection } from '../comms/v1/brokerWorldInstanceConnection'
 import { profileToRendererFormat } from 'shared/passports/transformations/profileToRendererFormat'
 import { ProfileForRenderer } from 'decentraland-ecs/src'
@@ -46,12 +46,12 @@ import { LighthouseWorldInstanceConnection } from './v2/LighthouseWorldInstanceC
 import { identity } from '../index'
 import { Authenticator } from 'dcl-crypto'
 import { getCommsServer, getRealm } from '../dao/selectors'
-import { Realm } from 'shared/dao/types'
+import { Realm, LayerUserInfo } from 'shared/dao/types'
 import { Store } from 'redux'
 import { RootState } from 'shared/store/rootTypes'
 import { store } from 'shared/store/store'
-import { deepEqual } from 'atomicHelpers/deepEqual'
 import { setCatalystRealmCommsStatus } from 'shared/dao/actions'
+import { observeRealmChange } from 'shared/dao'
 
 export type CommsVersion = 'v1' | 'v2'
 export type CommsMode = CommsV1Mode | CommsV2Mode
@@ -456,14 +456,9 @@ const NOOP = () => {
   // do nothing
 }
 function subscribeToRealmChange(store: Store<RootState>) {
-  let currentRealm: Realm | undefined = getRealm(store.getState())
-  store.subscribe(() => {
-    const previousRealm = currentRealm
-    currentRealm = getRealm(store.getState())
-    if (currentRealm && !deepEqual(previousRealm, currentRealm)) {
-      changeConnectionRealm(currentRealm, getCommsServer(store.getState())).then(NOOP, defaultLogger.error)
-    }
-  })
+  observeRealmChange(store, (previousRealm, currentRealm) =>
+    changeConnectionRealm(currentRealm, getCommsServer(store.getState())).then(NOOP, defaultLogger.error)
+  )
 }
 
 export async function connect(userId: string) {
@@ -661,6 +656,22 @@ export function disconnect() {
       context.worldInstanceConnection.close()
     }
   }
+}
+
+export async function fetchLayerUsersParcels(): Promise<Parcel[]> {
+  const store: Store<RootState> = window.globalStore
+  const realm = getRealm(store.getState())
+  const commsUrl = getCommsServer(store.getState())
+
+  if (realm && realm.layer && commsUrl) {
+    const layerUsersResponse = await fetch(`${commsUrl}/layers/${realm.layer}/users`)
+    if (layerUsersResponse.ok) {
+      const layerUsers: LayerUserInfo[] = await layerUsersResponse.json()
+      return layerUsers.filter(it => it.parcel).map(it => new Parcel(it.parcel![0], it.parcel![1]))
+    }
+  }
+
+  return []
 }
 
 global['printCommsInformation'] = function() {

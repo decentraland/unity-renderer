@@ -17,6 +17,13 @@ export type Candidate = {
   layer: Layer
 }
 
+export type LayerUserInfo = {
+  userId: string
+  peerId: string
+  protocolVersion: number
+  parcel?: [number, number]
+}
+
 export type Realm = {
   domain: string
   catalystName: string

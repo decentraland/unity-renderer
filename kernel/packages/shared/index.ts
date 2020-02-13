@@ -20,7 +20,7 @@ import { connect, disconnect, persistCurrentUser } from './comms'
 import { ConnectionEstablishmentError, IdTakenError } from './comms/interface/types'
 import { isMobile } from './comms/mobile'
 import { getUserProfile, removeUserProfile, setLocalProfile } from './comms/peers'
-import { realmInitialized } from './dao'
+import { realmInitialized, initializeUrlRealmObserver } from './dao'
 import { web3initialized } from './dao/actions'
 import { getNetwork } from './ethereum/EthereumService'
 import { awaitWeb3Approval, isSessionExpired, providerFuture } from './ethereum/provider'
@@ -263,6 +263,7 @@ export async function initShared(): Promise<Session | undefined> {
   console['groupEnd']()
 
   initializeUrlPositionObserver()
+  initializeUrlRealmObserver()
 
   // DCL Servers connections/requests after this
   if (STATIC_WORLD) {
