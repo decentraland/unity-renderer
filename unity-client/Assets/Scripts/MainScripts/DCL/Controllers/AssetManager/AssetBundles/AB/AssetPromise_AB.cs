@@ -13,9 +13,9 @@ namespace DCL
     {
         public static bool VERBOSE = false;
 
-        public static readonly int MAX_CONCURRENT_REQUESTS = 25;
+        public static readonly int MAX_CONCURRENT_REQUESTS = 30;
         static int concurrentRequests = 0;
-        bool mustDecrementRequest = false;
+        bool requestRegistered = false;
 
         static readonly float maxLoadBudgetTime = 0.032f;
         static float currentLoadBudgetTime = 0;
@@ -23,7 +23,6 @@ namespace DCL
 
         Coroutine loadCoroutine;
         static HashSet<string> failedRequestUrls = new HashSet<string>();
-        UnityWebRequest assetBundleRequest;
 
 
         static Dictionary<string, int> loadOrderByExtension = new Dictionary<string, int>()
@@ -75,8 +74,7 @@ namespace DCL
                 asset.CancelShow();
             }
 
-            if (mustDecrementRequest)
-                concurrentRequests--;
+            UnregisterConcurrentRequest();
         }
 
         protected override void OnAfterLoadOrReuse()
@@ -101,14 +99,11 @@ namespace DCL
                 }
             }
 
-            if (concurrentRequests >= MAX_CONCURRENT_REQUESTS)
-                yield return new WaitUntil(() => concurrentRequests < MAX_CONCURRENT_REQUESTS);
+            yield return WaitForConcurrentRequestsSlot();
 
-            concurrentRequests++;
-            mustDecrementRequest = true;
+            RegisterConcurrentRequest();
             yield return LoadAssetBundle(baseUrl + hash, OnSuccess, OnFail);
-            concurrentRequests--;
-            mustDecrementRequest = false;
+            UnregisterConcurrentRequest();
         }
 
         IEnumerator LoadAssetBundle(string finalUrl, Action OnSuccess, Action OnFail)
@@ -204,6 +199,32 @@ namespace DCL
         protected override void OnLoad(Action OnSuccess, Action OnFail)
         {
             loadCoroutine = CoroutineStarter.Start(LoadAssetBundleWithDeps(contentUrl, hash, OnSuccess, OnFail));
+        }
+
+        IEnumerator WaitForConcurrentRequestsSlot()
+        {
+            if (concurrentRequests >= MAX_CONCURRENT_REQUESTS)
+            {
+                yield return new WaitUntil(() => concurrentRequests < MAX_CONCURRENT_REQUESTS);
+            }
+        }
+
+        void RegisterConcurrentRequest()
+        {
+            if (requestRegistered)
+                return;
+
+            concurrentRequests++;
+            requestRegistered = true;
+        }
+
+        void UnregisterConcurrentRequest()
+        {
+            if (!requestRegistered)
+                return;
+
+            concurrentRequests--;
+            requestRegistered = false;
         }
     }
 }
