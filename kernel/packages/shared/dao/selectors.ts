@@ -7,6 +7,12 @@ export const getFetchContentServer = (store: RootDaoState) => store.dao.fetchCon
 
 export const getCommsServer = (store: RootDaoState) => store.dao.commsServer
 
-export const getLayer = (store: RootDaoState) => store.dao.layer
+export const getRealm = (store: RootDaoState) => store.dao.realm
+
+export const getLayer = (store: RootDaoState) => (store.dao.realm ? store.dao.realm.layer : '')
+
+export const getCatalystCandidates = (store: RootDaoState) => store.dao.candidates
 
 export const isRealmInitialized = (store: RootDaoState) => store.dao.initialized
+
+export const getCatalystRealmCommsStatus = (store: RootDaoState) => store.dao.commsStatus

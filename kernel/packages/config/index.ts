@@ -103,7 +103,7 @@ export const FETCH_PROFILE_SERVICE = qs.FETCH_PROFILE_SERVICE
 export const UPDATE_CONTENT_SERVICE = qs.UPDATE_CONTENT_SERVICE
 export const FETCH_CONTENT_SERVICE = qs.FETCH_CONTENT_SERVICE
 export const COMMS_SERVICE = qs.COMMS_SERVICE
-export const LAYER = qs.LAYER
+export const REALM = qs.realm
 
 export const DEBUG =
   location.search.indexOf('DEBUG_MODE') !== -1 ||
