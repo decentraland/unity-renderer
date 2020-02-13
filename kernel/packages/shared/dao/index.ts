@@ -1,11 +1,13 @@
 import defaultLogger from '../logger'
 import future from 'fp-future'
-import { Layer, Realm, Candidate, CatalystLayers } from './types'
+import { Layer, Realm, Candidate, CatalystLayers, RootDaoState } from './types'
 import { RootState } from 'shared/store/rootTypes'
 import { Store } from 'redux'
-import { isRealmInitialized, getCatalystCandidates, getCatalystRealmCommsStatus } from './selectors'
+import { isRealmInitialized, getCatalystCandidates, getCatalystRealmCommsStatus, getRealm } from './selectors'
 import { fetchCatalystNodes } from 'shared/web3'
 import { setCatalystRealm } from './actions'
+import { deepEqual } from 'atomicHelpers/deepEqual'
+const qs: any = require('query-string')
 
 const zip = <T, U>(arr: Array<T>, ...arrs: Array<Array<U>>) => {
   return arr.map((val, i) => arrs.reduce((a, arr) => [...a, arr[i]], [val] as Array<any>)) as Array<[T, U]>
@@ -140,6 +142,10 @@ export function getRealmFromString(realmString: string, candidates: Candidate[])
   }
 }
 
+function realmToString(realm: Realm) {
+  return `${realm.catalystName}-${realm.layer}`
+}
+
 function realmFor(name: string, layer: string, candidates: Candidate[]): Realm | undefined {
   const candidate = candidates.find(it => it.catalystName === name && it.layer.name === layer)
   return candidate
@@ -183,5 +189,31 @@ export async function catalystRealmConnected(): Promise<void> {
         unsubscribe()
       }
     })
+  })
+}
+
+export function observeRealmChange(
+  store: Store<RootDaoState>,
+  onRealmChange: (previousRealm: Realm | undefined, currentRealm: Realm) => any
+) {
+  let currentRealm: Realm | undefined = getRealm(store.getState())
+  store.subscribe(() => {
+    const previousRealm = currentRealm
+    currentRealm = getRealm(store.getState())
+    if (currentRealm && !deepEqual(previousRealm, currentRealm)) {
+      onRealmChange(previousRealm, currentRealm)
+    }
+  })
+}
+
+export function initializeUrlRealmObserver() {
+  const store: Store<RootState> = (window as any)['globalStore']
+  observeRealmChange(store, (previousRealm, currentRealm) => {
+    const q = qs.parse(location.search)
+    const realmString = realmToString(currentRealm)
+
+    q.realm = realmString
+
+    history.replaceState({ realm: realmString }, '', `?${qs.stringify(q)}`)
   })
 }

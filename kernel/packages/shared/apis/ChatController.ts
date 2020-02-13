@@ -159,6 +159,8 @@ export class ChatController extends ExposableAPI implements IChatController {
           response = TeleportController.goToRandom().message
         } else if (message.trim().toLowerCase() === 'next') {
           response = TeleportController.goToNext().message
+        } else if (message.trim().toLowerCase() === 'crowd') {
+          response = TeleportController.goToCrowd().message
         } else {
           response = 'Could not recognize the coordinates provided. Example usage: /goto 42,42'
         }
@@ -175,7 +177,7 @@ export class ChatController extends ExposableAPI implements IChatController {
       }
     })
 
-    this.addChatCommand('gotoRealm', 'Changes communications realms', message => {
+    this.addChatCommand('changerealm', 'Changes communications realms', message => {
       const realmString = message.trim()
       const realm = changeRealm(realmString)
 
