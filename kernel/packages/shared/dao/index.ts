@@ -17,7 +17,8 @@ const score = ({ usersCount, maxUsers = 50 }: Layer) => {
     return -v
   }
   if (usersCount >= maxUsers) {
-    return 0
+    // We prefer empty layers to full layers
+    return -10 * v
   }
 
   const p = 3 / (maxUsers ? maxUsers : 50)
