@@ -82,10 +82,13 @@ namespace DCL
         public string globalSceneId { get; private set; }
         public string currentSceneId { get; private set; }
 
-        LoadParcelScenesMessage loadParcelScenesMessage = new LoadParcelScenesMessage();
+        private bool sceneSortDirty = false;
+        private bool positionDirty = true;
+        private int lastSortFrame = 0;
+        public event Action OnSortScenes;
 
-        bool positionDirty = true;
-
+        private Vector2Int currentGridSceneCoordinate = new Vector2Int(EnvironmentSettings.MORDOR_SCALAR, EnvironmentSettings.MORDOR_SCALAR);
+        private Vector2Int sortAuxiliaryVector = new Vector2Int(EnvironmentSettings.MORDOR_SCALAR, EnvironmentSettings.MORDOR_SCALAR);
 
         void Awake()
         {
@@ -137,44 +140,33 @@ namespace DCL
             }
         }
 
-        private bool sceneSortDirty = false;
-        public event Action OnSortScenes;
 
-        private static readonly int MORDOR_X = (int)EnvironmentSettings.MORDOR.x;
-        private static readonly int MORDOR_Z = (int)EnvironmentSettings.MORDOR.z;
-        private Vector2Int currentGridSceneCoordinate = new Vector2Int(MORDOR_X, MORDOR_Z);
-        private Vector2Int sortAuxiliaryVector = new Vector2Int(MORDOR_X, MORDOR_Z);
 
-        private void TrySortScenesByDistance(bool forceSort = false)
+        private void SortScenesByDistance()
         {
-            if (forceSort || sceneSortDirty)
+            scenesSortedByDistance.Sort(SortScenesByDistanceMethod);
+
+            using (var iterator = scenesSortedByDistance.GetEnumerator())
             {
-                sceneSortDirty = false;
+                ParcelScene scene;
+                bool characterIsInsideScene;
 
-                scenesSortedByDistance.Sort(SortScenesByDistanceMethod);
-
-                using (var iterator = scenesSortedByDistance.GetEnumerator())
+                while (iterator.MoveNext())
                 {
-                    ParcelScene scene;
-                    bool characterIsInsideScene;
+                    scene = iterator.Current;
+                    characterIsInsideScene = scene.IsInsideSceneBoundaries(DCLCharacterController.i.characterPosition);
 
-                    while (iterator.MoveNext())
+                    if (scene.sceneData.id != globalSceneId && characterIsInsideScene)
                     {
-                        scene = iterator.Current;
-                        characterIsInsideScene = scene.IsInsideSceneBoundaries(DCLCharacterController.i.characterPosition);
-
-                        if (scene.sceneData.id != globalSceneId && characterIsInsideScene)
-                        {
-                            currentSceneId = scene.sceneData.id;
-                            break;
-                        }
+                        currentSceneId = scene.sceneData.id;
+                        break;
                     }
                 }
-
-                CommonScriptableObjects.sceneID.Set(currentSceneId);
-
-                OnSortScenes?.Invoke();
             }
+
+            CommonScriptableObjects.sceneID.Set(currentSceneId);
+
+            OnSortScenes?.Invoke();
         }
 
         private int SortScenesByDistanceMethod(ParcelScene sceneA, ParcelScene sceneB)
@@ -222,7 +214,13 @@ namespace DCL
         private void Update()
         {
             InputController_Legacy.i.Update();
-            TrySortScenesByDistance();
+
+            if (lastSortFrame != Time.frameCount || sceneSortDirty)
+            {
+                lastSortFrame = Time.frameCount;
+                sceneSortDirty = false;
+                SortScenesByDistance();
+            }
         }
 
         public void CreateUIScene(string json)
@@ -469,7 +467,7 @@ namespace DCL
 
             MessagingControllersManager.i.ForceEnqueueToGlobal(MessagingBusId.INIT, queuedMessage);
 
-            TrySortScenesByDistance(forceSort: true);
+            sceneSortDirty = true;
 
             if (VERBOSE)
                 Debug.Log($"{Time.frameCount} : Load parcel scene queue {decentralandSceneJSON}");
