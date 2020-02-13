@@ -1,10 +1,11 @@
 import defaultLogger from '../logger'
 import future from 'fp-future'
-import { Layer, Realm, Candidate } from './types'
+import { Layer, Realm, Candidate, CatalystLayers } from './types'
 import { RootState } from 'shared/store/rootTypes'
 import { Store } from 'redux'
-import { isRealmInitialized } from './selectors'
+import { isRealmInitialized, getCatalystCandidates, getCatalystRealmCommsStatus } from './selectors'
 import { fetchCatalystNodes } from 'shared/web3'
+import { setCatalystRealm } from './actions'
 
 const zip = <T, U>(arr: Array<T>, ...arrs: Array<Array<U>>) => {
   return arr.map((val, i) => arrs.reduce((a, arr) => [...a, arr[i]], [val] as Array<any>)) as Array<[T, U]>
@@ -24,7 +25,7 @@ const score = ({ usersCount, maxUsers = 50 }: Layer) => {
   return v + v * Math.cos(p * (usersCount - 1))
 }
 
-function ping(url: string): Promise<{ success: boolean; elapsed?: number; result?: Layer[] }> {
+function ping(url: string): Promise<{ success: boolean; elapsed?: number; result?: CatalystLayers }> {
   const result = future()
 
   new Promise(() => {
@@ -66,36 +67,50 @@ function ping(url: string): Promise<{ success: boolean; elapsed?: number; result
   return result
 }
 
-export async function pickCatalystRealm(): Promise<Realm> {
+export async function fecthCatalystRealms(): Promise<Candidate[]> {
   const nodes = await fetchCatalystNodes()
   if (nodes.length === 0) {
     throw new Error('no nodes are available in the DAO for the current network')
   }
 
-  const results = await Promise.all(nodes.map(node => ping(`${node.domain}/comms/layers`)))
-  if (results.filter($ => $.success).length === 0) {
+  const results = await Promise.all(nodes.map(node => ping(`${node.domain}/comms/status?includeLayers=true`)))
+
+  const successfulResults = results.filter($ => $.success)
+
+  if (successfulResults.length === 0) {
     throw new Error('no node responded')
   }
 
-  const candidates = zip(nodes, results)
-    .reduce(
-      (
-        union: Candidate[],
-        [{ domain }, { elapsed, result, success }]: [
-          { domain: string },
-          { elapsed?: number; success: boolean; result?: Layer[] }
-        ]
-      ) => union.concat(success ? result!.map(layer => ({ domain, elapsed: elapsed!, layer })) : []),
-      new Array<Candidate>()
-    )
-    .map(candidate => ({ ...candidate, score: score(candidate.layer) }))
+  return zip(nodes, successfulResults).reduce(
+    (
+      union: Candidate[],
+      [{ domain }, { elapsed, result, success }]: [
+        { domain: string },
+        { elapsed?: number; success: boolean; result?: CatalystLayers }
+      ]
+    ) =>
+      success
+        ? union.concat(
+            result!.layers.map(layer => ({
+              catalystName: result!.name,
+              domain,
+              elapsed: elapsed!,
+              layer,
+              score: score(layer)
+            }))
+          )
+        : union,
+    new Array<Candidate>()
+  )
+}
 
+export function pickCatalystRealm(candidates: Candidate[]): Realm {
   const sorted = candidates.sort((c1, c2) => {
     const diff = c2.score - c1.score
     return diff === 0 ? c1.elapsed - c2.elapsed : diff
   })
 
-  return { domain: sorted[0].domain, layer: sorted[0].layer.name }
+  return { catalystName: sorted[0].catalystName, domain: sorted[0].domain, layer: sorted[0].layer.name }
 }
 
 export async function realmInitialized(): Promise<void> {
@@ -112,6 +127,59 @@ export async function realmInitialized(): Promise<void> {
       if (initialized) {
         unsubscribe()
         return resolve()
+      }
+    })
+  })
+}
+
+export function getRealmFromString(realmString: string, candidates: Candidate[]) {
+  const parts = realmString.split('-')
+  if (parts.length === 2) {
+    return realmFor(parts[0], parts[1], candidates)
+  }
+}
+
+function realmFor(name: string, layer: string, candidates: Candidate[]): Realm | undefined {
+  const candidate = candidates.find(it => it.catalystName === name && it.layer.name === layer)
+  return candidate
+    ? { catalystName: candidate.catalystName, domain: candidate.domain, layer: candidate.layer.name }
+    : undefined
+}
+
+export function changeRealm(realmString: string) {
+  const store: Store<RootState> = (window as any)['globalStore']
+
+  const candidates = getCatalystCandidates(store.getState())
+
+  const realm = getRealmFromString(realmString, candidates)
+
+  if (realm) {
+    store.dispatch(setCatalystRealm(realm))
+  }
+
+  return realm
+}
+
+export async function catalystRealmConnected(): Promise<void> {
+  const store: Store<RootState> = (window as any)['globalStore']
+
+  const status = getCatalystRealmCommsStatus(store.getState())
+
+  if (status.status === 'connected') {
+    return Promise.resolve()
+  } else if (status.status === 'error') {
+    return Promise.reject('Error connecting to lighthouse')
+  }
+
+  return new Promise((resolve, reject) => {
+    const unsubscribe = store.subscribe(() => {
+      const status = getCatalystRealmCommsStatus(store.getState())
+      if (status.status === 'connected') {
+        resolve()
+        unsubscribe()
+      } else if (status.status === 'error') {
+        reject('Error connecting to lighthouse')
+        unsubscribe()
       }
     })
   })

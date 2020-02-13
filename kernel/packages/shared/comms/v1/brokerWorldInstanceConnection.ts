@@ -20,6 +20,7 @@ import { Stats } from '../../comms/debug'
 import { createLogger } from 'shared/logger'
 
 import { WorldInstanceConnection } from '../../comms/interface/index'
+import { Realm } from 'shared/dao/types'
 
 class SendResult {
   constructor(public bytesSize: number) {}
@@ -201,6 +202,10 @@ export class BrokerWorldInstanceConnection implements WorldInstanceConnection {
     message.setBody(encodedBody)
 
     return this.sendMessage(reliable, message)
+  }
+
+  async changeRealm(realm: Realm, url: string) {
+    return
   }
 
   async updateSubscriptions(rawTopics: string[]) {

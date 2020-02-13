@@ -1,6 +1,7 @@
 import { Position } from './utils'
 import { UserInformation, Package, ChatMessage, ProfileVersion, BusMessage } from './types'
 import { Stats } from '../debug'
+import { Realm } from 'shared/dao/types'
 
 export interface WorldInstanceConnection {
   stats: Stats | null
@@ -27,4 +28,6 @@ export interface WorldInstanceConnection {
   sendChatMessage(currentPosition: Position, messageId: string, text: string): Promise<void>
 
   updateSubscriptions(topics: string[]): Promise<void>
+
+  changeRealm(realm: Realm, url: string): Promise<void>
 }
