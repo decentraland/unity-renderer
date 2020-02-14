@@ -1,6 +1,6 @@
-﻿using DCL.Components;
-using DCL.Models;
+using DCL.Components;
 using DCL.Configuration;
+using DCL.Models;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -54,7 +54,7 @@ namespace DCL
                 colliderInfo.Remove(collider);
         }
 
-        void AddOrUpdateEntityCollider(DecentralandEntity entity, Collider collider)
+        public void AddOrUpdateEntityCollider(DecentralandEntity entity, Collider collider)
         {
             if (!collidersByEntity.ContainsKey(entity))
                 collidersByEntity.Add(entity, new List<Collider>());
@@ -65,9 +65,9 @@ namespace DCL
                 collidersList.Add(collider);
 
             ColliderInfo info = new ColliderInfo();
-            info.entityId = entity.entityId;
-            info.meshName = collider.transform.parent.name;
-            info.sceneId = entity.scene.sceneData.id;
+            info.entity = entity;
+            info.meshName = collider.transform.parent != null ? collider.transform.parent.name : "";
+            info.scene = entity.scene;
             AddOrUpdateColliderInfo(collider, info);
 
             // Note (Zak): avoid adding the event multiple times
@@ -96,7 +96,7 @@ namespace DCL
             RemoveAllEntityColliders((DecentralandEntity)dispatcher);
         }
 
-        public bool GetInfo(Collider collider, out ColliderInfo info)
+        public bool GetColliderInfo(Collider collider, out ColliderInfo info)
         {
             if (colliderInfo.ContainsKey(collider))
             {
@@ -104,7 +104,9 @@ namespace DCL
                 return true;
             }
             else
+            {
                 info = new ColliderInfo();
+            }
 
             return false;
         }
@@ -137,7 +139,7 @@ namespace DCL
                     if (!meshFilters[i].transform.parent.name.ToLower().Contains("_collider")) continue;
 
                     // we remove the Renderer of the '_collider' object, as its true renderer is in another castle
-                    GameObject.Destroy(meshFilters[i].GetComponent<Renderer>());
+                    Object.Destroy(meshFilters[i].GetComponent<Renderer>());
                 }
 
                 collider = meshFilters[i].GetComponent<Collider>();

@@ -1,20 +1,17 @@
+using DCL.Components;
+using DCL.Controllers;
 using UnityEngine;
 
 namespace DCL.Helpers
 {
     public class RaycastHandler : IRaycastHandler
     {
-        public RaycastHandler()
-        {
-        }
-
         private void SetHitInfo(ref HitInfo hitInfo, RaycastHit hit)
         {
             hitInfo.point = SceneController.i.ConvertUnityToScenePosition(hit.point);
             hitInfo.distance = hit.distance;
             hitInfo.normal = hit.normal;
             hitInfo.collider = hit.collider;
-            hitInfo.rigidbody = hit.rigidbody;
         }
 
         private bool Raycast(Ray ray, out HitInfo hitInfo, float distance, LayerMask layerMask)
@@ -25,13 +22,13 @@ namespace DCL.Helpers
             if (Physics.Raycast(ray, out hit, distance, layerMask))
             {
                 SetHitInfo(ref hitInfo, hit);
-
                 return true;
             }
+
             return false;
         }
 
-        public RaycastResultInfo Raycast(Ray ray, float distance, LayerMask layerMaskTarget, string sceneId )
+        public RaycastResultInfo Raycast(Ray ray, float distance, LayerMask layerMaskTarget, ParcelScene scene)
         {
             RaycastResultInfo raycastInfo = new RaycastResultInfo();
 
@@ -40,13 +37,13 @@ namespace DCL.Helpers
 
             if (Raycast(raycastInfo.ray, out raycastInfo.hitInfo.hit, distance, layerMaskTarget))
             {
-                SetRaycastInfoData(ref raycastInfo.hitInfo, sceneId);
+                SetRaycastInfoData(ref raycastInfo.hitInfo, scene);
             }
 
             return raycastInfo;
         }
 
-        public RaycastResultInfoList RaycastAll(Ray ray, float distance, LayerMask layerMaskTarget, string sceneId)
+        public RaycastResultInfoList RaycastAll(Ray ray, float distance, LayerMask layerMaskTarget, ParcelScene scene)
         {
             RaycastResultInfoList raycastInfo = new RaycastResultInfoList();
             raycastInfo.ray = ray;
@@ -63,22 +60,25 @@ namespace DCL.Helpers
                     raycastInfo.hitInfo[i] = new RaycastHitInfo();
                     raycastInfo.hitInfo[i].hit = new HitInfo();
                     SetHitInfo(ref raycastInfo.hitInfo[i].hit, result[i]);
-                    SetRaycastInfoData(ref raycastInfo.hitInfo[i], sceneId);
+                    SetRaycastInfoData(ref raycastInfo.hitInfo[i], scene);
                 }
             }
 
             return raycastInfo;
         }
 
-        private void SetRaycastInfoData(ref RaycastHitInfo hitInfo, string sceneId)
+        private void SetRaycastInfoData(ref RaycastHitInfo hitInfo, ParcelScene scene)
         {
-            if (hitInfo.hit.collider != null && CollidersManager.i.GetInfo(hitInfo.hit.collider, out hitInfo.collider))
-            {
-                if (sceneId != null)
-                    hitInfo.isValid = hitInfo.collider.sceneId == sceneId;
-                else if (sceneId == null && SceneController.i.IsCharacterInsideScene(hitInfo.collider.sceneId))
-                    hitInfo.isValid = true;
-            }
+            if (hitInfo.hit.collider == null)
+                return;
+
+            if (!CollidersManager.i.GetColliderInfo(hitInfo.hit.collider, out ColliderInfo info))
+                return;
+
+            if (scene != null)
+                hitInfo.isValid = info.scene == scene;
+            else if (scene == null && SceneController.i.IsCharacterInsideScene(info.scene))
+                hitInfo.isValid = true;
         }
     }
 }

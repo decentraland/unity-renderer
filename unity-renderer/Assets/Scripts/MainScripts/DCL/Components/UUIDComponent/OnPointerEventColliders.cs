@@ -1,8 +1,8 @@
 using DCL.Configuration;
 using DCL.Helpers;
 using DCL.Models;
-using UnityEngine;
 using System.Collections.Generic;
+using UnityEngine;
 
 namespace DCL.Components
 {
@@ -13,7 +13,7 @@ namespace DCL.Components
 
         [System.NonSerialized] public int refCount;
 
-        GameObject[] pointerEventColliderGameObjects;
+        Collider[] pointerEventColliders;
         Dictionary<Collider, string> colliderNames = new Dictionary<Collider, string>();
 
         public string GetMeshName(Collider collider)
@@ -24,22 +24,26 @@ namespace DCL.Components
             return null;
         }
 
+        private DecentralandEntity ownerEntity;
         public void Initialize(DecentralandEntity entity)
         {
-            if (!entity.meshRootGameObject || entity.meshesInfo.renderers.Length == 0) return;
+            Renderer[] rendererList = entity.meshesInfo.renderers;
 
-            refCount++;
+            if (rendererList.Length == 0) return;
+
+            this.ownerEntity = entity;
 
             DestroyOnPointerEventColliders();
 
-            pointerEventColliderGameObjects = new GameObject[entity.meshesInfo.renderers.Length];
-            for (int i = 0; i < pointerEventColliderGameObjects.Length; i++)
+            pointerEventColliders = new Collider[rendererList.Length];
+
+            for (int i = 0; i < pointerEventColliders.Length; i++)
             {
-                pointerEventColliderGameObjects[i] = CreatePointerEventCollider(entity.meshesInfo.renderers[i]);
+                pointerEventColliders[i] = CreatePointerEventCollider(rendererList[i]);
             }
         }
 
-        GameObject CreatePointerEventCollider(Renderer renderer)
+        Collider CreatePointerEventCollider(Renderer renderer)
         {
             GameObject go = new GameObject(COLLIDER_NAME);
 
@@ -53,13 +57,15 @@ namespace DCL.Components
             if (renderer.transform.parent != null)
                 colliderNames.Add(meshCollider, renderer.transform.parent.name);
 
+            CollidersManager.i.AddOrUpdateEntityCollider(ownerEntity, meshCollider);
+
             // Reset objects position, rotation and scale once it's been parented
             Transform t = go.transform;
 
             t.SetParent(renderer.transform);
             Utils.ResetLocalTRS(t);
 
-            return go;
+            return meshCollider;
         }
 
         void OnDestroy()
@@ -69,14 +75,15 @@ namespace DCL.Components
 
         void DestroyOnPointerEventColliders()
         {
-            if (pointerEventColliderGameObjects == null)
-            {
+            if (pointerEventColliders == null)
                 return;
-            }
 
-            for (int i = 0; i < pointerEventColliderGameObjects.Length; i++)
+            for (int i = 0; i < pointerEventColliders.Length; i++)
             {
-                Destroy(pointerEventColliderGameObjects[i]);
+                Collider collider = pointerEventColliders[i];
+
+                if (collider != null)
+                    Destroy(collider.gameObject);
             }
         }
     }

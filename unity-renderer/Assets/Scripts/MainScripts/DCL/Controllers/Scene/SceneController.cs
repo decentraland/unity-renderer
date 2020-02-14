@@ -233,35 +233,35 @@ namespace DCL
 
             string uiSceneId = uiScene.id;
 
-            if (!loadedScenes.ContainsKey(uiSceneId))
+            if (loadedScenes.ContainsKey(uiSceneId))
+                return;
+
+            var newGameObject = new GameObject("UI Scene - " + uiSceneId);
+
+            var newScene = newGameObject.AddComponent<GlobalScene>();
+            newScene.ownerController = this;
+            newScene.unloadWithDistance = false;
+            newScene.isPersistent = true;
+
+            LoadParcelScenesMessage.UnityParcelScene data = new LoadParcelScenesMessage.UnityParcelScene
             {
-                var newGameObject = new GameObject("UI Scene - " + uiSceneId);
+                id = uiSceneId,
+                basePosition = new Vector2Int(0, 0),
+                baseUrl = uiScene.baseUrl
+            };
 
-                var newScene = newGameObject.AddComponent<GlobalScene>();
-                newScene.ownerController = this;
-                newScene.unloadWithDistance = false;
-                newScene.isPersistent = true;
+            newScene.SetData(data);
 
-                LoadParcelScenesMessage.UnityParcelScene data = new LoadParcelScenesMessage.UnityParcelScene
-                {
-                    id = uiSceneId,
-                    basePosition = new Vector2Int(0, 0),
-                    baseUrl = uiScene.baseUrl
-                };
+            loadedScenes.Add(uiSceneId, newScene);
 
-                newScene.SetData(data);
+            globalSceneId = uiSceneId;
 
-                loadedScenes.Add(uiSceneId, newScene);
+            if (!MessagingControllersManager.i.ContainsController(globalSceneId))
+                MessagingControllersManager.i.AddController(this, globalSceneId, isGlobal: true);
 
-                globalSceneId = uiSceneId;
-
-                if (!MessagingControllersManager.i.ContainsController(globalSceneId))
-                    MessagingControllersManager.i.AddController(this, globalSceneId, isGlobal: true);
-
-                if (VERBOSE)
-                {
-                    Debug.Log($"Creating UI scene {uiSceneId}");
-                }
+            if (VERBOSE)
+            {
+                Debug.Log($"Creating UI scene {uiSceneId}");
             }
         }
 
@@ -297,19 +297,14 @@ namespace DCL
             engineDebugPanel.SetActive(true);
         }
 
-        public bool IsCharacterInsideScene(string sceneId)
+        public bool IsCharacterInsideScene(ParcelScene scene)
         {
-            bool res = false;
+            bool result = false;
 
-            if (loadedScenes.ContainsKey(sceneId))
-            {
-                ParcelScene scene = loadedScenes[sceneId];
+            if (scene.IsInsideSceneBoundaries(DCLCharacterController.i.characterPosition))
+                result = true;
 
-                if (scene.IsInsideSceneBoundaries(DCLCharacterController.i.characterPosition))
-                    res = true;
-            }
-
-            return res;
+            return result;
         }
 
         public void LoadParcelScenesExecute(string decentralandSceneJSON)
@@ -375,6 +370,7 @@ namespace DCL
             var sceneToLoad = scene;
 
             OnMessageProcessStart?.Invoke(MessagingTypes.SCENE_UPDATE);
+
             if (loadedScenes.ContainsKey(sceneToLoad.id))
             {
                 loadedScenes[sceneToLoad.id].SetUpdateData(sceneToLoad);
@@ -420,7 +416,6 @@ namespace DCL
             {
                 return;
             }
-
 
             var scene = loadedScenes[sceneKey];
 
@@ -574,21 +569,15 @@ namespace DCL
 
         private string EnqueueMessage(MessagingBus.QueuedSceneMessage_Scene queuedMessage)
         {
-            string busId = "";
-
-            ParcelScene scene = null;
-
-            if (loadedScenes.ContainsKey(queuedMessage.sceneId))
-                scene = loadedScenes[queuedMessage.sceneId];
+            ParcelScene scene;
+            TryGetScene(queuedMessage.sceneId, out scene);
 
             // If it doesn't exist, create messaging controller for this scene id
             if (!MessagingControllersManager.i.ContainsController(queuedMessage.sceneId))
                 MessagingControllersManager.i.AddController(this, queuedMessage.sceneId);
 
-            busId = MessagingControllersManager.i.Enqueue(scene, queuedMessage);
-
+            string busId = MessagingControllersManager.i.Enqueue(scene, queuedMessage);
             return busId;
-
         }
 
         public bool ProcessMessage(MessagingBus.QueuedSceneMessage_Scene msgObject, out CleanableYieldInstruction yieldInstruction)
@@ -792,6 +781,17 @@ namespace DCL
                 return loadedScenes[id].sceneData.basePosition.ToString();
 
             return id;
+        }
+
+        public bool TryGetScene(string id, out ParcelScene scene)
+        {
+            scene = null;
+
+            if (!loadedScenes.ContainsKey(id))
+                return false;
+
+            scene = loadedScenes[id];
+            return true;
         }
 
         public void BuilderReady()
