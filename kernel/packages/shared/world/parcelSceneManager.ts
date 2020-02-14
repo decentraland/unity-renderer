@@ -114,7 +114,7 @@ export async function enableParcelSceneLoading(options: EnableParcelSceneLoading
         globalSignalSceneFail(sceneId)
         ret.notify('Scene.status', { sceneId, status: 'failed' })
       }
-    }, 60000)
+    }, 90000)
   })
 
   ret.on('Scene.shouldUnload', async (opts: { sceneId: string }) => {
