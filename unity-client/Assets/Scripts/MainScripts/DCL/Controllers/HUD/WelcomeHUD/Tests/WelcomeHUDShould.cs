@@ -17,10 +17,11 @@ namespace Tests
             };
 
             controller.Initialize(model);
-
         }
 
         [Test]
+        [Explicit("Feature disabled in prod")]
+        [Category("Explicit")]
         public void BeCreatedProperly()
         {
             Assert.IsTrue(controller.view != null);
@@ -28,6 +29,8 @@ namespace Tests
 
 
         [Test]
+        [Explicit("Feature disabled in prod")]
+        [Category("Explicit")]
         public void BehaveCorrectlyAfterCloseButtonIsPressed()
         {
             Assert.IsFalse(Utils.isCursorLocked);
@@ -39,6 +42,8 @@ namespace Tests
         }
 
         [Test]
+        [Explicit("Feature disabled in prod")]
+        [Category("Explicit")]
         public void BehaveCorrectlyAfterConfirmButtonIsPressed()
         {
             Assert.IsFalse(Utils.isCursorLocked);
