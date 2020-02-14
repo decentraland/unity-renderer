@@ -84,6 +84,8 @@ public class AirdroppingHUDController : IHUD, IDisposable
                     currentState = totalItems != 0 ? State.Summary : State.Summary_NoItems;
                 break;
             case State.Summary:
+                currentState = State.Finish;
+                break;
             case State.Summary_NoItems:
                 currentState = State.Hidden;
                 break;
