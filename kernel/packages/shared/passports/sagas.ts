@@ -20,7 +20,6 @@ import {
   INVENTORY_SUCCESS,
   notifyNewInventoryItem,
   NOTIFY_NEW_INVENTORY_ITEM,
-  passportRandom,
   PassportRandomAction,
   passportRequest,
   PassportRequestAction,
@@ -211,51 +210,46 @@ export function* initialLoad() {
 export function* handleFetchProfile(action: PassportRequestAction): any {
   const userId = action.payload.userId
   const email = ''
+
+  const currentId = yield select(getCurrentUserId)
+  let profile: any
   try {
     const serverUrl = yield select(getProfileDownloadServer)
     const profiles: { avatars: object[] } = yield call(profileServerRequest, serverUrl, userId)
+
     if (profiles.avatars.length !== 0) {
-      const profile: any = profiles.avatars[0]
-      const currentId = yield select(getCurrentUserId)
-      if (currentId === userId) {
-        profile.email = email
-      }
-      if (ALL_WEARABLES) {
-        profile.inventory = (yield select(getExclusiveCatalog)).map((_: Wearable) => _.id)
-      } else {
-        yield put(inventoryRequest(userId, userId))
-        const inventoryResult = yield race({
-          success: take(isActionFor(INVENTORY_SUCCESS, userId)),
-          failure: take(isActionFor(INVENTORY_FAILURE, userId))
-        })
-        if (inventoryResult.failure) {
-          defaultLogger.error(`Unable to fetch inventory for ${userId}:`, inventoryResult.failure)
-        } else {
-          profile.inventory = (inventoryResult.success as InventorySuccess).payload.inventory.map(
-            dropIndexFromExclusives
-          )
-        }
-      }
-      const passport = yield call(processServerProfile, userId, profile)
-      yield put(passportSuccess(userId, passport))
-    } else {
-      const randomizedUserProfile = yield call(generateRandomUserProfile, userId)
-      const currentId = yield select(getCurrentUserId)
-      if (currentId === userId) {
-        randomizedUserProfile.email = email
-      }
-      yield put(inventorySuccess(userId, randomizedUserProfile.inventory))
-      yield put(passportRandom(userId, randomizedUserProfile))
+      profile = profiles.avatars[0]
     }
   } catch (error) {
-    const randomizedUserProfile = yield call(generateRandomUserProfile, userId)
-    const currentId = yield select(getCurrentUserId)
-    if (currentId === userId) {
-      randomizedUserProfile.email = email
-    }
-    yield put(inventorySuccess(userId, randomizedUserProfile.inventory))
-    yield put(passportRandom(userId, randomizedUserProfile))
+    defaultLogger.warn(`Error requesting profile for ${userId}, `, error)
   }
+
+  if (!profile) {
+    defaultLogger.info(`Profile for ${userId} not found, generating random profile`)
+    profile = yield call(generateRandomUserProfile, userId)
+  }
+
+  if (currentId === userId) {
+    profile.email = email
+  }
+
+  if (ALL_WEARABLES) {
+    profile.inventory = (yield select(getExclusiveCatalog)).map((_: Wearable) => _.id)
+  } else {
+    yield put(inventoryRequest(userId, userId))
+    const inventoryResult = yield race({
+      success: take(isActionFor(INVENTORY_SUCCESS, userId)),
+      failure: take(isActionFor(INVENTORY_FAILURE, userId))
+    })
+    if (inventoryResult.failure) {
+      defaultLogger.error(`Unable to fetch inventory for ${userId}:`, inventoryResult.failure)
+    } else {
+      profile.inventory = (inventoryResult.success as InventorySuccess).payload.inventory.map(dropIndexFromExclusives)
+    }
+  }
+
+  const passport = yield call(processServerProfile, userId, profile)
+  yield put(passportSuccess(userId, passport))
 }
 
 export async function profileServerRequest(serverUrl: string, userId: string) {
