@@ -29,7 +29,6 @@ export function daoReducer(state?: DaoState, action?: AnyAction): DaoState {
       fetchContentServer: '',
       updateContentServer: '',
       commsServer: '',
-      layer: '',
       realm: undefined,
       candidates: [],
       commsStatus: { status: 'initial', connectedPeers: 0 }

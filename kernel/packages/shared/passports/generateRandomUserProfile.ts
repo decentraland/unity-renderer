@@ -1,61 +1,81 @@
-import { getServerConfigurations } from '../../config/index'
 import { Profile } from './types'
-import { colorString } from './transformations/colorString'
-import { fixWearableIds } from './transformations/processServerProfile'
+import { getFetchProfileServer, getFetchContentServer } from 'shared/dao/selectors'
+import { Store } from 'redux'
 
-export const sexes = ['female', 'male']
-export const skins = ['7d5d47', '522c1c', 'cc9b77', 'f2c2a5', 'ffe4c6']
-export const numbers = [
-  '00001',
-  '00002',
-  '00003',
-  '00004',
-  '00005',
-  '00006',
-  '00007',
-  '00008',
-  '00009',
-  '00010',
-  '00011',
-  '00012',
-  '00013',
-  '00014',
-  '00015',
-  '00016'
-]
+declare const window: Window & { globalStore: Store }
 
-export function randomIn(array: any[]) {
-  return array[Math.floor(Math.random() * array.length)]
+function randomBetween(min: number, max: number) {
+  return Math.floor(Math.random() * (max - min + 1) + min)
 }
+
 export async function generateRandomUserProfile(userId: string): Promise<Profile> {
-  const sex = randomIn(sexes)
-  const skin = randomIn(skins)
-  const _number = randomIn(numbers)
-  const baseUrl = `${getServerConfigurations().avatar.presets}/${sex}/${skin}/${_number}`
-  const response = await fetch(`${baseUrl}/avatar.json`)
-  const avatarJson: any = await response.json()
-  const avatarV2 = {
-    bodyShape: fixWearableIds(avatarJson.bodyShape),
-    skinColor: colorString(avatarJson.skin.color),
-    hairColor: colorString(avatarJson.hair.color),
-    eyeColor: colorString(avatarJson.eyes.color),
-    wearables: avatarJson.wearables.map(fixWearableIds)
+  const _number = randomBetween(1, 160)
+  const profileUrl = `${getFetchProfileServer(window.globalStore.getState())}/default${_number}`
+
+  let profile: any | undefined = undefined
+  try {
+    const response = await fetch(profileUrl)
+
+    if (response.ok) {
+      const profiles: { avatars: object[] } = await response.json()
+      if (profiles.avatars.length !== 0) {
+        profile = profiles.avatars[0]
+      }
+    }
+  } catch (e) {
+    // in case something fails keep going and use backup profile
   }
-  const name = 'Guest-' + userId.substr(2, 6)
+
+  if (!profile) {
+    profile = backupProfile(getFetchContentServer(window.globalStore.getState()))
+  }
+
+  profile.name = 'Guest-' + userId.substr(2, 6)
+
+  return profile
+}
+
+function backupProfile(contentServerUrl: string) {
   return {
-    userId,
-    email: '',
-    inventory: [],
-    version: 0,
-    name,
-    ethAddress: 'noeth',
+    name: '',
     description: '',
-    updatedAt: new Date().getDate(),
-    createdAt: new Date().getDate(),
-    avatar: avatarV2,
-    snapshots: {
-      face: `${baseUrl}/face.png`,
-      body: `${baseUrl}/body.png`
+    avatar: {
+      bodyShape: 'dcl://base-avatars/BaseFemale',
+      skin: {
+        color: {
+          r: 0.4901960790157318,
+          g: 0.364705890417099,
+          b: 0.27843138575553894
+        }
+      },
+      hair: {
+        color: {
+          r: 0.5960784554481506,
+          g: 0.37254902720451355,
+          b: 0.21568627655506134
+        }
+      },
+      eyes: {
+        color: {
+          r: 0.37254902720451355,
+          g: 0.2235294133424759,
+          b: 0.19607843458652496
+        }
+      },
+      wearables: [
+        'dcl://base-avatars/f_sweater',
+        'dcl://base-avatars/f_jeans',
+        'dcl://base-avatars/bun_shoes',
+        'dcl://base-avatars/standard_hair',
+        'dcl://base-avatars/f_eyes_00',
+        'dcl://base-avatars/f_eyebrows_00',
+        'dcl://base-avatars/f_mouth_00'
+      ],
+      version: 0,
+      snapshots: {
+        face: `${contentServerUrl}/contents/QmZbyGxDnZ4PaMVX7kpA2NuGTrmnpwTJ8heKKTSCk4GRJL`,
+        body: `${contentServerUrl}/contents/QmaQvcBWg57Eqf5E9R3Ts1ttPKKLhKueqdyhshaLS1tu2g`
+      }
     }
   }
 }
