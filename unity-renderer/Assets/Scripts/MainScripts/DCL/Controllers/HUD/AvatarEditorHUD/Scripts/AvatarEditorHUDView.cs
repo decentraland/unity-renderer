@@ -74,7 +74,7 @@ public class AvatarEditorHUDView : MonoBehaviour
         exitButton.onClick.AddListener(OnExitButton);
         InitializeNavigationEvents();
         InitializeWearableChangeEvents();
-        
+
         web3GoToMarketplaceButton.onClick.RemoveAllListeners();
         noWeb3GoToMarketplaceButton.onClick.RemoveAllListeners();
         web3GoToMarketplaceButton.onClick.AddListener(controller.GoToMarketplace);
@@ -115,9 +115,11 @@ public class AvatarEditorHUDView : MonoBehaviour
         for (int i = 0; i < nPairs; i++)
         {
             wearableGridPairs[i].selector.OnItemClicked += controller.WearableClicked;
+            wearableGridPairs[i].selector.OnSellClicked += controller.SellCollectible;
             selectorsByCategory.Add(wearableGridPairs[i].categoryFilter, wearableGridPairs[i].selector);
         }
         collectiblesItemSelector.OnItemClicked += controller.WearableClicked;
+        collectiblesItemSelector.OnSellClicked += controller.SellCollectible;
 
         skinColorSelector.OnColorChanged += controller.SkinColorClicked;
         eyeColorSelector.OnColorChanged += controller.EyesColorClicked;
@@ -287,11 +289,19 @@ public class AvatarEditorHUDView : MonoBehaviour
             for (int i = 0; i < nPairs; i++)
             {
                 var itemSelector = wearableGridPairs[i].selector;
-                if (itemSelector != null) itemSelector.OnItemClicked -= controller.WearableClicked;
+                if (itemSelector != null)
+                {
+                    itemSelector.OnItemClicked -= controller.WearableClicked;
+                    itemSelector.OnSellClicked -= controller.SellCollectible;
+                }
             }
         }
 
-        if (collectiblesItemSelector != null) collectiblesItemSelector.OnItemClicked -= controller.WearableClicked;
+        if (collectiblesItemSelector != null)
+        {
+            collectiblesItemSelector.OnItemClicked -= controller.WearableClicked;
+            collectiblesItemSelector.OnSellClicked -= controller.SellCollectible;
+        }
         if (skinColorSelector != null) skinColorSelector.OnColorChanged -= controller.SkinColorClicked;
         if (eyeColorSelector != null) eyeColorSelector.OnColorChanged -= controller.EyesColorClicked;
         if (hairColorSelector != null) hairColorSelector.OnColorChanged -= controller.HairColorClicked;

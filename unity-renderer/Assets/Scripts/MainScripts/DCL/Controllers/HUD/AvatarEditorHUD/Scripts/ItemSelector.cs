@@ -13,6 +13,7 @@ public class ItemSelector : MonoBehaviour
     private RectTransform itemContainer;
 
     public event System.Action<string> OnItemClicked;
+    public event System.Action<string> OnSellClicked;
 
     internal Dictionary<string, ItemToggle> itemToggles = new Dictionary<string, ItemToggle>();
 
@@ -44,6 +45,7 @@ public class ItemSelector : MonoBehaviour
 
         newToggle.Initialize(item, false, amount);
         newToggle.OnClicked += ToggleClicked;
+        newToggle.OnSellClicked += SellClicked;
         itemToggles.Add(item.id, newToggle);
 
         bool active = string.IsNullOrEmpty(currentBodyShape) || item.SupportsBodyShape(currentBodyShape);
@@ -120,6 +122,11 @@ public class ItemSelector : MonoBehaviour
     private void ToggleClicked(ItemToggle toggle)
     {
         OnItemClicked?.Invoke(toggle.wearableItem.id);
+    }
+
+    private void SellClicked(ItemToggle toggle)
+    {
+        OnSellClicked?.Invoke(toggle.wearableItem.id);
     }
 
     private ItemToggle GetItemToggleByID(string itemID)

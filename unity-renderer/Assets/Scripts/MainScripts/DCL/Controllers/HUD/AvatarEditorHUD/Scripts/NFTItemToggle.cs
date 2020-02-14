@@ -1,23 +1,26 @@
+using System;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class NFTItemToggle : ItemToggle
 {
     [SerializeField] internal NFTItemInfo nftItemInfo;
-    [SerializeField] private PointerOverDetector infoOver;
+    [SerializeField] internal Button infoButton;
+    [SerializeField] internal Button closeInfoButton;
+    [SerializeField] internal Button sellButton;
 
-    private PointerOverDetector.Enter infoEnterDelegate; 
-    private PointerOverDetector.Exit infoExitDelegate; 
+    private static event Action OnHideAllInfos;
 
     protected override void Awake()
     {
         base.Awake();
 
-        nftItemInfo.SetActive(false);
+        OnHideAllInfos += HideInfo;
 
-        infoEnterDelegate = (x) => nftItemInfo.SetActive(true);
-        infoOver.OnEnter += infoEnterDelegate;
-        infoExitDelegate = (x) => nftItemInfo.SetActive(false);
-        infoOver.OnExit += infoExitDelegate;
+        HideInfo();
+        infoButton.onClick.AddListener(ToggleInfo);
+        closeInfoButton.onClick.AddListener(HideInfo);
+        sellButton.onClick.AddListener(CallOnSellClicked);
     }
 
     public override void Initialize(WearableItem w, bool isSelected, int amount)
@@ -26,9 +29,39 @@ public class NFTItemToggle : ItemToggle
         nftItemInfo.SetModel(NFTItemInfo.Model.FromWearableItem(wearableItem));
     }
 
+    protected override void SetSelection(bool isSelected)
+    {
+        base.SetSelection(isSelected);
+        OnHideAllInfos?.Invoke();
+    }
+
     protected override void OnDestroy()
     {
         base.OnDestroy();
+        OnHideAllInfos -= HideInfo;
         nftItemInfo.CleanUp();
+    }
+
+    private void ShowInfo()
+    {
+        OnHideAllInfos?.Invoke();
+        nftItemInfo.SetActive(true);
+    }
+
+    private void HideInfo()
+    {
+        nftItemInfo.SetActive(false);
+    }
+
+    private void ToggleInfo()
+    {
+        if (nftItemInfo.gameObject.activeSelf)
+        {
+            HideInfo();
+        }
+        else
+        {
+            ShowInfo();
+        }
     }
 }

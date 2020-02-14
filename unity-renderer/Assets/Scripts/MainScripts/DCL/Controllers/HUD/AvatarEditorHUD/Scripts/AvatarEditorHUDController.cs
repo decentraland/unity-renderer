@@ -410,4 +410,9 @@ public class AvatarEditorHUDController : IDisposable, IHUD
     {
         WebInterface.OpenURL("https://market.decentraland.org/browse?section=wearables");
     }
+
+    public void SellCollectible(string collectibleId)
+    {
+        WebInterface.OpenURL("https://market.decentraland.org/account");
+    }
 }

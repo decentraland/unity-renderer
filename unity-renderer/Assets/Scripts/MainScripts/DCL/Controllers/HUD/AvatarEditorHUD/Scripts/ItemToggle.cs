@@ -8,6 +8,8 @@ using UnityEngine.UI;
 public class ItemToggle : UIButton, IPointerEnterHandler, IPointerExitHandler
 {
     public event System.Action<ItemToggle> OnClicked;
+    public event System.Action<ItemToggle> OnSellClicked;
+
     public WearableItem wearableItem { get; private set; }
 
     public Image thumbnail;
@@ -27,10 +29,14 @@ public class ItemToggle : UIButton, IPointerEnterHandler, IPointerExitHandler
         set
         {
             selectedValue = value;
-
-            if (selectionHighlight != null)
-                selectionHighlight.enabled = selectedValue;
+            SetSelection(selectedValue);
         }
+    }
+
+    protected virtual void SetSelection(bool isSelected)
+    {
+        if (selectionHighlight != null)
+            selectionHighlight.enabled = isSelected;
     }
 
     protected new virtual void Awake()
@@ -101,5 +107,10 @@ public class ItemToggle : UIButton, IPointerEnterHandler, IPointerExitHandler
         {
             ThumbnailsManager.CancelRequest(wearableItem.baseUrl + wearableItem.thumbnail, OnThumbnailReady);
         }
+    }
+
+    protected void CallOnSellClicked()
+    {
+        OnSellClicked?.Invoke(this);
     }
 }
