@@ -1,5 +1,5 @@
+using DCL.Controllers;
 using UnityEngine;
-using DCL.Components;
 
 namespace DCL.Helpers
 {
@@ -8,7 +8,6 @@ namespace DCL.Helpers
         public Vector3 point;
         public Vector3 normal;
         public Collider collider;
-        public Rigidbody rigidbody;
         public float distance;
     }
 
@@ -16,7 +15,6 @@ namespace DCL.Helpers
     {
         public bool isValid = false;
         public HitInfo hit;
-        public ColliderInfo collider;
     }
     public class RaycastResultInfo
     {
@@ -32,7 +30,7 @@ namespace DCL.Helpers
 
     public interface IRaycastHandler
     {
-        RaycastResultInfo Raycast(Ray ray, float distance, LayerMask layerMaskTarget, string sceneId);
-        RaycastResultInfoList RaycastAll(Ray ray, float distance, LayerMask layerMaskTarget, string sceneId);
+        RaycastResultInfo Raycast(Ray ray, float distance, LayerMask layerMaskTarget, ParcelScene scene);
+        RaycastResultInfoList RaycastAll(Ray ray, float distance, LayerMask layerMaskTarget, ParcelScene scene);
     }
 }

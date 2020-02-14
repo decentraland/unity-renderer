@@ -1,8 +1,10 @@
+﻿using DCL.Components;
+using DCL.Controllers;
+using DCL.Helpers;
+using DCL.Interface;
+using DCL.Models;
 using System.Collections.Generic;
 using UnityEngine;
-using DCL.Interface;
-using DCL.Helpers;
-using DCL.Models;
 
 namespace DCL
 {
@@ -35,11 +37,16 @@ namespace DCL
         {
             WebInterface.RaycastHitEntity hitEntity;
 
-            RaycastResultInfo raycastInfo = raycastHandler.Raycast(GetUnityRayFromQuery(query), query.ray.distance, ~layerMaskTarget, query.sceneId);
+            ParcelScene scene;
+            SceneController.i.TryGetScene(query.sceneId, out scene);
+
+            RaycastResultInfo raycastInfo = raycastHandler.Raycast(GetUnityRayFromQuery(query), query.ray.distance, ~layerMaskTarget, scene);
             WebInterface.RayInfo rayInfo = GetRayInfoFromQuery(query);
 
             if (raycastInfo != null)
             {
+                CollidersManager.i.GetColliderInfo(raycastInfo.hitInfo.hit.collider, out ColliderInfo colliderInfo);
+
                 hitEntity = new WebInterface.RaycastHitEntity()
                 {
                     didHit = raycastInfo.hitInfo.isValid,
@@ -48,8 +55,8 @@ namespace DCL
                     ray = rayInfo,
                     entity = new WebInterface.HitEntityInfo()
                     {
-                        entityId = raycastInfo.hitInfo.collider.entityId,
-                        meshName = raycastInfo.hitInfo.collider.meshName
+                        entityId = colliderInfo.entity != null ? colliderInfo.entity.entityId : null,
+                        meshName = colliderInfo.meshName
                     }
                 };
             }
@@ -69,7 +76,10 @@ namespace DCL
         {
             WebInterface.RaycastHitEntities raycastHitEntities = new WebInterface.RaycastHitEntities();
 
-            RaycastResultInfoList raycastResults = raycastHandler.RaycastAll(GetUnityRayFromQuery(query), query.ray.distance, ~layerMaskTarget, query.sceneId);
+            ParcelScene scene = null;
+            SceneController.i.TryGetScene(query.sceneId, out scene);
+
+            RaycastResultInfoList raycastResults = raycastHandler.RaycastAll(GetUnityRayFromQuery(query), query.ray.distance, ~layerMaskTarget, scene);
 
             raycastHitEntities.ray = GetRayInfoFromQuery(query);
 
@@ -80,16 +90,19 @@ namespace DCL
 
                 for (int i = 0; i < count; i++)
                 {
-                    if (raycastResults.hitInfo[i].isValid)
+                    var hitInfo = raycastResults.hitInfo[i];
+                    CollidersManager.i.GetColliderInfo(hitInfo.hit.collider, out ColliderInfo colliderInfo);
+
+                    if (hitInfo.isValid)
                     {
                         WebInterface.RaycastHitEntity hitEntity = new WebInterface.RaycastHitEntity();
                         hitEntity.didHit = true;
                         hitEntity.ray = raycastHitEntities.ray;
-                        hitEntity.hitPoint = raycastResults.hitInfo[i].hit.point;
-                        hitEntity.hitNormal = raycastResults.hitInfo[i].hit.normal;
+                        hitEntity.hitPoint = hitInfo.hit.point;
+                        hitEntity.hitNormal = hitInfo.hit.normal;
                         hitEntity.entity = new WebInterface.HitEntityInfo();
-                        hitEntity.entity.entityId = raycastResults.hitInfo[i].collider.entityId;
-                        hitEntity.entity.meshName = raycastResults.hitInfo[i].collider.meshName;
+                        hitEntity.entity.entityId = colliderInfo.entity != null ? colliderInfo.entity.entityId : null;
+                        hitEntity.entity.meshName = colliderInfo.meshName;
                         hitEntityInfoList.Add(hitEntity);
                     }
                 }

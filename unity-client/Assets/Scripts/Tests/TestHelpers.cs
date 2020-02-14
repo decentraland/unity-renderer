@@ -98,27 +98,27 @@ namespace DCL.Helpers
             int componentClassId = classId == CLASS_ID_COMPONENT.NONE
                 ? (int)scene.ownerController.componentFactory.GetIdForType<T>()
                 : (int)classId;
+
             string componentInstanceId = GetComponentUniqueId(scene, typeof(T).Name, componentClassId, entity.entityId);
+
+            string data;
 
             if (classId == CLASS_ID_COMPONENT.TRANSFORM)
             {
                 PB_Transform transf = GetPBTransformFromModelJson(JsonUtility.ToJson(model));
-
-                return scene.EntityComponentCreateOrUpdate(
-                    entity.entityId,
-                    componentInstanceId,
-                    componentClassId,
-                    System.Convert.ToBase64String(transf.ToByteArray())
-                , out CleanableYieldInstruction routine) as T;
-
+                data = System.Convert.ToBase64String(transf.ToByteArray());
             }
             else
-                return scene.EntityComponentCreateOrUpdate(
+            {
+                data = JsonUtility.ToJson(model);
+            }
+
+            return scene.EntityComponentCreateOrUpdate(
                     entity.entityId,
                     componentInstanceId,
                     componentClassId,
-                    JsonUtility.ToJson(model)
-                , out CleanableYieldInstruction routine) as T;
+                    data
+                , out _) as T;
         }
 
         public static Coroutine EntityComponentUpdate<T, K>(T component, K model = null)

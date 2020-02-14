@@ -415,6 +415,7 @@ namespace DCL.Helpers
         private static int lockedInFrame = -1;
         public static bool LockedThisFrame() => lockedInFrame == Time.frameCount;
 
+        //NOTE(Brian): Made as an independent flag because the CI doesn't work well with the Cursor.lockState check.
         public static bool isCursorLocked = false;
 
         public static void LockCursor()

@@ -1,12 +1,12 @@
-using System.Collections.Generic;
-using UnityEngine;
+using DCL.Controllers;
+using DCL.Models;
 
 namespace DCL.Components
 {
     public struct ColliderInfo
     {
-        public string entityId;
-        public string sceneId;
+        public DecentralandEntity entity;
+        public ParcelScene scene;
         public string meshName;
     }
 }

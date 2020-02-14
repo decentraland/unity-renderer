@@ -1,7 +1,7 @@
 using DCL.Controllers;
-using DCL.Models;
 using DCL.Helpers;
 using DCL.Interface;
+using DCL.Models;
 using UnityEngine;
 
 namespace DCL.Components
@@ -19,7 +19,6 @@ namespace DCL.Components
             public bool showFeedback = true;
         }
 
-        Rigidbody rigidBody;
         OnPointerEventColliders pointerEventColliders;
         InteractionHoverCanvasController hoverCanvasController;
 
@@ -63,20 +62,10 @@ namespace DCL.Components
         {
             if (!entity.meshRootGameObject) return;
 
-            // we add a rigidbody to the entity's gameobject to have a
-            // reference to the entity itself on the RaycastHit
-            // so we don't need to search for the parents in order to get
-            // the OnPointerEventComponent reference
-            if (gameObject.GetComponent<Rigidbody>() == null)
-            {
-                rigidBody = gameObject.AddComponent<Rigidbody>();
-                rigidBody.useGravity = false;
-                rigidBody.isKinematic = true;
-            }
-
             // Create OnPointerEventCollider child
             pointerEventColliders = Utils.GetOrCreateComponent<OnPointerEventColliders>(this.gameObject);
             pointerEventColliders.Initialize(entity);
+            pointerEventColliders.refCount++;
 
             if (hoverCanvasController == null)
             {
@@ -108,6 +97,10 @@ namespace DCL.Components
             hoverCanvasController.SetHoverState(hoverState);
         }
 
+        public bool IsAtHoverDistance(Transform other)
+        {
+            return Vector3.Distance(other.position, transform.position) <= model.distance;
+        }
         public bool IsAtHoverDistance(float distance)
         {
             return distance <= model.distance;
@@ -115,7 +108,8 @@ namespace DCL.Components
 
         void OnDestroy()
         {
-            entity.OnShapeUpdated -= OnComponentUpdated;
+            if (entity != null)
+                entity.OnShapeUpdated -= OnComponentUpdated;
 
             if (pointerEventColliders != null)
             {
@@ -123,7 +117,6 @@ namespace DCL.Components
 
                 if (pointerEventColliders.refCount <= 0)
                 {
-                    Destroy(rigidBody);
                     Destroy(pointerEventColliders);
                 }
             }

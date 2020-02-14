@@ -20,7 +20,6 @@ namespace Tests
         [UnityTest]
         public IEnumerator OnPointerHoverFeedbackIsDisplayedCorrectly()
         {
-
             DecentralandEntity entity;
             BoxShape shape;
 
@@ -39,13 +38,16 @@ namespace Tests
                 type = OnPointerDown.NAME,
                 uuid = "pointerevent-1"
             };
+
             var component = TestHelpers.EntityComponentCreate<OnPointerDown, OnPointerDown.Model>(scene, entity,
                 OnPointerDownModel, CLASS_ID_COMPONENT.UUID_CALLBACK);
+
             Assert.IsTrue(component != null);
 
             yield return null;
 
             var cursorController = GameObject.FindObjectOfType<CursorController>();
+
             Assert.AreEqual(cursorController.cursorImage.sprite, cursorController.normalCursor);
 
             DCLCharacterController.i.PauseGravity();
@@ -60,6 +62,7 @@ namespace Tests
                 y = 0,
                 z = 0
             };
+
             cameraController.SetRotation(JsonConvert.SerializeObject(cameraRotationPayload, Formatting.None, new JsonSerializerSettings()
             {
                 ReferenceLoopHandling = ReferenceLoopHandling.Ignore
@@ -77,6 +80,7 @@ namespace Tests
                 z = 0,
                 cameraTarget = (DCLCharacterController.i.transform.position - entity.gameObject.transform.position)
             };
+
             cameraController.SetRotation(JsonConvert.SerializeObject(cameraRotationPayload, Formatting.None, new JsonSerializerSettings()
             {
                 ReferenceLoopHandling = ReferenceLoopHandling.Ignore
