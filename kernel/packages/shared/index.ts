@@ -66,7 +66,7 @@ function initializeAnalytics() {
   const TLD = getTLD()
   switch (TLD) {
     case 'org':
-      if (window.location.host === 'explorer.decentraland.org') {
+      if (window.location.host === 'play.decentraland.org' || window.location.host === 'explorer.decentraland.org') {
         return initialize(AnalyticsAccount.PRD)
       }
       return initialize(AnalyticsAccount.DEV)
