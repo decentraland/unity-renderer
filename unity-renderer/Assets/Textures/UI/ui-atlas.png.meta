@@ -344,6 +344,9 @@ TextureImporter:
   - first:
       213: 287711080521237747
     second: MainButton
+  - first:
+      213: 6438661715621639179
+    second: ChatBg
   externalObjects: {}
   serializedVersion: 10
   mipmaps:
@@ -402,7 +405,7 @@ TextureImporter:
   platformSettings:
   - serializedVersion: 2
     buildTarget: DefaultTexturePlatform
-    maxTextureSize: 1024
+    maxTextureSize: 2048
     resizeAlgorithm: 0
     textureFormat: -1
     textureCompression: 0
@@ -413,7 +416,7 @@ TextureImporter:
     androidETC2FallbackOverride: 0
   - serializedVersion: 2
     buildTarget: Standalone
-    maxTextureSize: 1024
+    maxTextureSize: 2048
     resizeAlgorithm: 0
     textureFormat: -1
     textureCompression: 0
@@ -424,7 +427,7 @@ TextureImporter:
     androidETC2FallbackOverride: 0
   - serializedVersion: 2
     buildTarget: WebGL
-    maxTextureSize: 1024
+    maxTextureSize: 2048
     resizeAlgorithm: 0
     textureFormat: -1
     textureCompression: 0
@@ -903,7 +906,7 @@ TextureImporter:
       rect:
         serializedVersion: 2
         x: 726
-        y: 420
+        y: 446
         width: 33
         height: 32
       alignment: 0
@@ -1154,10 +1157,10 @@ TextureImporter:
       name: sign-out-icon
       rect:
         serializedVersion: 2
-        x: 165
-        y: 403
-        width: 30
-        height: 30
+        x: 164
+        y: 402
+        width: 31
+        height: 31
       alignment: 0
       pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -2574,6 +2577,27 @@ TextureImporter:
       bones: []
       spriteID: 303174f52511e4565be34fed3cfbf7d4
       internalID: 287711080521237747
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: ChatBg
+      rect:
+        serializedVersion: 2
+        x: 726
+        y: 409
+        width: 33
+        height: 32
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 14, y: 13, z: 14, w: 13}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 5635d5ad1f2bc48c8941531cc600207d
+      internalID: 6438661715621639179
       vertices: []
       indices: 
       edges: []
