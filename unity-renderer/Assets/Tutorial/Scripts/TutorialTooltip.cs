@@ -1,61 +1,62 @@
-﻿using UnityEngine;
+using System.Collections;
+using UnityEngine;
 using UnityEngine.EventSystems;
 
-public class TutorialTooltip : MonoBehaviour, IPointerClickHandler
+namespace DCL.Tutorial
 {
-    public float secondsOnScreen = 12f;
-
-    [SerializeField] private AnimationClip showAnimationClip = null;
-    [SerializeField] private AnimationClip hideAnimationClip = null;
-
-    private Animation animator = null;
-    private bool isShowing = false;
-
-    public void Awake()
+    [RequireComponent(typeof(Animator))]
+    public class TutorialTooltip : MonoBehaviour, IPointerClickHandler
     {
-        animator = GetComponent<Animation>();
-        gameObject.SetActive(false);
-        isShowing = false;
-    }
+        private static int VISIBLE = Animator.StringToHash("visible");
+        public float secondsOnScreen = 12f;
 
-    public void Show()
-    {
-        if (isShowing) return;
+        public bool isVisible => animator.GetBool(VISIBLE);
 
-        isShowing = true;
-        gameObject.SetActive(true);
+        [SerializeField] private Animator animator;
 
-        if (animator && showAnimationClip)
+        public void Awake()
         {
-            animator.clip = showAnimationClip;
-            animator.Play();
+            if (animator == null)
+                animator = GetComponent<Animator>();
+
+            gameObject.SetActive(false);
         }
-    }
 
-    public void Hide()
-    {
-        if (!isShowing) return;
-
-        isShowing = false;
-        if (animator && hideAnimationClip)
+        public void Show(bool autoHide = true)
         {
-            animator.clip = hideAnimationClip;
-            animator.Play();
+            if (animator.GetBool(VISIBLE))
+                return;
+
+            gameObject.SetActive(true);
+            animator.SetBool(VISIBLE, true);
+
+            if (autoHide)
+                StartCoroutine(WaitUntilFinished());
         }
-        else
+
+        public IEnumerator WaitUntilFinished()
+        {
+            yield return new WaitForSeconds(secondsOnScreen);
+            Hide();
+        }
+
+        public void Hide()
+        {
+            if (!animator.GetBool(VISIBLE))
+                return;
+
+            animator.SetBool(VISIBLE, false);
+        }
+
+        // Animation event
+        public void OnHideFinished()
         {
             gameObject.SetActive(false);
         }
-    }
 
-    // Animation event
-    public void OnHideFinished()
-    {
-        gameObject.SetActive(false);
-    }
-
-    void IPointerClickHandler.OnPointerClick(PointerEventData eventData)
-    {
-        Hide();
+        void IPointerClickHandler.OnPointerClick(PointerEventData eventData)
+        {
+            Hide();
+        }
     }
 }

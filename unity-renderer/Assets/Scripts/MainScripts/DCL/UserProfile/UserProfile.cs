@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using DCL.Interface;
@@ -15,8 +15,9 @@ public class UserProfile : ScriptableObject //TODO Move to base variable
     public string description => model.description;
     public string email => model.email;
     public bool hasConnectedWeb3 => model.hasConnectedWeb3;
+    public bool hasClaimedName => model.hasClaimedName;
     public AvatarModel avatar => model.avatar;
-    public int tutorialStep => model.tutorialFlagsMask;
+    public int tutorialStep => model.tutorialStep;
     internal Dictionary<string, int> inventory = new Dictionary<string, int>();
 
     public Sprite faceSnapshot { get; private set; }
@@ -45,6 +46,8 @@ public class UserProfile : ScriptableObject //TODO Move to base variable
             return;
         }
 
+        model.tutorialStep = newModel.tutorialStep;
+        model.hasClaimedName = newModel.hasClaimedName;
         model.name = newModel.name;
         model.email = newModel.email;
         model.description = newModel.description;
@@ -119,9 +122,11 @@ public class UserProfile : ScriptableObject //TODO Move to base variable
         return inventory.Keys.ToArray();
     }
 
-    public void SetTutorialFlag(int newTutorialFlagsMask)
+    public void SetTutorialStepId(int newTutorialStep)
     {
-        model.tutorialFlagsMask = newTutorialFlagsMask;
+        model.tutorialStep = newTutorialStep;
+
+        WebInterface.SaveUserTutorialStep(newTutorialStep);
     }
 
     internal static UserProfile ownUserProfile;

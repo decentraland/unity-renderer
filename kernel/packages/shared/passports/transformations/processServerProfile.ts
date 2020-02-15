@@ -39,22 +39,19 @@ export function processServerProfile(userId: string, receivedProfile: any): Prof
     userId,
     email: receivedProfile.email || '',
     name: receivedProfile.name || name,
+    hasClaimedName: !!receivedProfile.name,
     description: receivedProfile.description || '',
-    createdAt: new Date(receivedProfile.createdAt).getTime(),
     ethAddress: userId || 'noeth',
-    updatedAt:
-      typeof receivedProfile.updatedAt === 'string'
-        ? new Date(receivedProfile.updatedAt).getTime()
-        : receivedProfile.updatedAt,
-    snapshots,
     version: receivedProfile.avatar.version || 1,
     avatar: {
       eyeColor: colorString(receivedProfile.avatar.eyes.color),
       hairColor: colorString(receivedProfile.avatar.hair.color),
       skinColor: colorString(receivedProfile.avatar.skin.color),
       bodyShape: fixWearableIds(receivedProfile.avatar.bodyShape),
-      wearables
+      wearables,
+      snapshots
     },
-    inventory: receivedProfile.inventory || []
+    inventory: receivedProfile.inventory || [],
+    tutorialStep: receivedProfile.tutorialStep
   }
 }

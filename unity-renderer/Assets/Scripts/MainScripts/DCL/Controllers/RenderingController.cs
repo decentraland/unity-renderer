@@ -1,8 +1,8 @@
 using DCL;
+using DCL.Helpers;
 using DCL.Interface;
 using UnityEngine;
 using UnityGLTF;
-
 public class RenderingController : MonoBehaviour
 {
     public static RenderingController i { get; private set; }
@@ -11,6 +11,8 @@ public class RenderingController : MonoBehaviour
     {
         i = this;
     }
+
+    public CompositeLock renderingActivatedAckLock = new CompositeLock();
 
     public System.Action<bool> OnRenderingStateChanged;
     public bool renderingEnabled { get; private set; } = true;
@@ -21,6 +23,11 @@ public class RenderingController : MonoBehaviour
         if (!renderingEnabled)
             return;
 
+        DeactivateRendering_Internal();
+    }
+
+    void DeactivateRendering_Internal()
+    {
         renderingEnabled = false;
 
         DCL.Configuration.ParcelSettings.VISUAL_LOADING_ENABLED = false;
@@ -39,12 +46,27 @@ public class RenderingController : MonoBehaviour
         OnRenderingStateChanged?.Invoke(renderingEnabled);
     }
 
+
     [ContextMenu("Enable Rendering")]
     public void ActivateRendering()
     {
         if (renderingEnabled)
             return;
 
+        if (!renderingActivatedAckLock.isUnlocked)
+        {
+            Debug.Log("Rendering sent, waiting for locks...!");
+            renderingActivatedAckLock.OnAllLocksRemoved -= ActivateRendering_Internal;
+            renderingActivatedAckLock.OnAllLocksRemoved += ActivateRendering_Internal;
+            return;
+        }
+
+        ActivateRendering_Internal();
+    }
+
+    private void ActivateRendering_Internal()
+    {
+        renderingActivatedAckLock.OnAllLocksRemoved -= ActivateRendering_Internal;
         renderingEnabled = true;
 
         DCL.Configuration.ParcelSettings.VISUAL_LOADING_ENABLED = true;

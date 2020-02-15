@@ -1,165 +1,204 @@
-using DCL.Controllers;
-using System;
+﻿using DCL.Controllers;
 using System.Collections;
 using System.Collections.Generic;
-using System.Linq;
 using UnityEngine;
 
-public class TutorialController : MonoBehaviour
+namespace DCL.Tutorial
 {
-    public static TutorialController i { private set; get; }
-
-    public const float DEFAULT_STAGE_IDLE_TIME = 20f;
+    public class TutorialController : MonoBehaviour
+    {
+        public static TutorialController i { private set; get; }
 
 #if UNITY_EDITOR
-    [Header("Debugging")]
-    public bool debugRunTutorialOnStart = false;
-    public TutorialStep.Id debugFlagStartingValue;
-    [Space()]
+        [Header("Debugging")]
+        public bool debugRunTutorialOnStart = false;
+        public TutorialStep.Id debugFlagStartingValue;
+        [Space()]
 #endif
 
-    [Header("Stage Controller References")]
-    [SerializeField] List<TutorialStep> steps = new List<TutorialStep>();
+        public const float DEFAULT_STAGE_IDLE_TIME = 20f;
+        public bool isTutorialEnabled { private set; get; } = false;
 
-    public bool isTutorialEnabled { private set; get; } = false;
+        [Header("Stage Controller References")]
+        [SerializeField] List<TutorialStep> steps = new List<TutorialStep>();
+        [SerializeField] GameObject emailPromptHUDGameObject;
 
-    private TutorialStep runningStep = null;
+        TutorialStep runningStep = null;
+        TutorialStep.Id currentTutorialStepId = TutorialStep.Id.NONE;
+        int currentTutorialStepIndex = 0;
+        bool initialized = false;
+        Canvas chatUIScreen = null;
 
+        public void SetTutorialEnabled()
+        {
+            if (RenderingController.i)
+                RenderingController.i.OnRenderingStateChanged += OnRenderingStateChanged;
 
-    private int currentTutorialStep = 0;
-    private bool initialized = false;
-    private Canvas chatUIScreen = null;
+            isTutorialEnabled = true;
 
-    public void SetTutorialEnabled()
-    {
-        if (RenderingController.i)
-            RenderingController.i.OnRenderingStateChanged += OnRenderingStateChanged;
+            AirdroppingHUDController.OnAirdropFinished += TriggerEmailPrompt;
+        }
 
-        isTutorialEnabled = true;
-    }
-
-    private void Awake()
-    {
-        i = this;
-    }
+        private void Awake()
+        {
+            i = this;
+        }
 
 #if UNITY_EDITOR
-    private void Start()
-    {
-        if (!debugRunTutorialOnStart)
-            return;
-
-        isTutorialEnabled = true;
-
-        if (!RenderingController.i)
+        private void Start()
         {
-            OnRenderingStateChanged(true);
-        }
-        else
-        {
-            RenderingController.i.OnRenderingStateChanged += OnRenderingStateChanged;
-        }
-    }
-#endif
+            if (!debugRunTutorialOnStart)
+                return;
 
-    private void OnDestroy()
-    {
-        if (RenderingController.i)
-            RenderingController.i.OnRenderingStateChanged -= OnRenderingStateChanged;
+            isTutorialEnabled = true;
 
-        i = null;
-    }
-
-    private void StartTutorialFromStep(int stepId)
-    {
-        if (!initialized)
-            Initialize();
-
-        if (runningStep != null)
-            return;
-
-        StartCoroutine(ExecuteSteps((TutorialStep.Id)stepId));
-    }
-
-    private IEnumerator ExecuteSteps(TutorialStep.Id startingStep)
-    {
-        int startingStepIndex = 0;
-        for (int i = 0; i < steps.Count; i++)
-        {
-            if (steps[i].stepId == startingStep)
+            if (!RenderingController.i)
             {
-                startingStepIndex = i;
-                break;
+                OnRenderingStateChanged(true);
+            }
+            else
+            {
+                RenderingController.i.OnRenderingStateChanged += OnRenderingStateChanged;
+            }
+        }
+#endif
+
+        private void OnDestroy()
+        {
+            AirdroppingHUDController.OnAirdropFinished -= TriggerEmailPrompt;
+
+            if (RenderingController.i)
+                RenderingController.i.OnRenderingStateChanged -= OnRenderingStateChanged;
+
+            i = null;
+        }
+
+        Coroutine executeStepsCoroutine;
+
+        private void StartTutorialFromStep(TutorialStep.Id stepId)
+        {
+            if (!initialized)
+                Initialize();
+
+            if (runningStep != null)
+            {
+                StopCoroutine(executeStepsCoroutine);
+
+                runningStep.OnStepFinished();
+                Destroy(runningStep.gameObject);
+
+                runningStep = null;
+            }
+
+            executeStepsCoroutine = StartCoroutine(ExecuteSteps(stepId));
+        }
+
+        public void SkipToNextStep()
+        {
+            int nextStepIndex = currentTutorialStepIndex + 1;
+
+            if (nextStepIndex == steps.Count)
+                return;
+
+            StartTutorialFromStep(steps[nextStepIndex].stepId);
+        }
+
+        private IEnumerator ExecuteSteps(TutorialStep.Id startingStep)
+        {
+            int startingStepIndex = GetStepIndexFromTutorialStepId(startingStep);
+
+            for (int i = startingStepIndex; i < steps.Count; i++)
+            {
+                var stepPrefab = steps[i];
+
+                runningStep = Instantiate(stepPrefab).GetComponent<TutorialStep>();
+
+                currentTutorialStepId = runningStep.stepId;
+                currentTutorialStepIndex = i;
+
+                UserProfile.GetOwnUserProfile().SetTutorialStepId((int)currentTutorialStepId);
+
+                runningStep.OnStepStart();
+                yield return runningStep.OnStepExecute();
+                runningStep.OnStepFinished();
+
+                Destroy(runningStep.gameObject);
+            }
+
+            currentTutorialStepId = TutorialStep.Id.FINISHED;
+            UserProfile.GetOwnUserProfile().SetTutorialStepId((int)currentTutorialStepId);
+            runningStep = null;
+        }
+
+        private int GetTutorialStepFromProfile()
+        {
+            return UserProfile.GetOwnUserProfile().tutorialStep;
+        }
+
+        private void OnRenderingStateChanged(bool renderingEnabled)
+        {
+            if (!isTutorialEnabled || !renderingEnabled) return;
+
+            currentTutorialStepId = (TutorialStep.Id)GetTutorialStepFromProfile();
+
+#if UNITY_EDITOR
+            if (debugFlagStartingValue != 0)
+            {
+                currentTutorialStepId = debugFlagStartingValue;
+            }
+#endif
+            if (currentTutorialStepId == TutorialStep.Id.FINISHED)
+                return;
+
+            StartTutorialFromStep(currentTutorialStepId);
+        }
+
+        private void Initialize()
+        {
+            if (initialized)
+                return;
+
+            initialized = true;
+            CacheChatScreen();
+        }
+
+        private void CacheChatScreen()
+        {
+            if (chatUIScreen == null && DCL.SceneController.i)
+            {
+                ParcelScene uiScene = DCL.SceneController.i.loadedScenes[DCL.SceneController.i.globalSceneId];
+                chatUIScreen = uiScene.uiScreenSpace.canvas;
             }
         }
 
-        for (int i = startingStepIndex; i < steps.Count; i++)
+        public void SetChatVisible(bool visible)
         {
-            runningStep = steps[i];
-            currentTutorialStep = (int)runningStep.stepId;
-
-            var stepInstance = Instantiate(runningStep);
-
-            UserProfile.GetOwnUserProfile().SetTutorialFlag(currentTutorialStep);
-
-            stepInstance.OnStepStart();
-            yield return stepInstance.OnStepExecute();
-            stepInstance.OnStepFinished();
-
-            Destroy(stepInstance);
+            if (chatUIScreen != null)
+            {
+                chatUIScreen.enabled = visible;
+            }
         }
 
-        currentTutorialStep = (int)TutorialStep.Id.FINISHED;
-        UserProfile.GetOwnUserProfile().SetTutorialFlag(currentTutorialStep);
-        runningStep = null;
-    }
-
-    private int GetTutorialStepFromProfile()
-    {
-        return UserProfile.GetOwnUserProfile().tutorialStep;
-    }
-
-    private void OnRenderingStateChanged(bool renderingEnabled)
-    {
-        if (!isTutorialEnabled || !renderingEnabled) return;
-
-        currentTutorialStep = GetTutorialStepFromProfile(); // TODO: get flag from user profile
-
-#if UNITY_EDITOR
-        if (debugFlagStartingValue != 0)
+        private int GetStepIndexFromTutorialStepId(TutorialStep.Id step)
         {
-            currentTutorialStep = (int)debugFlagStartingValue;
+            int result = 0;
+            int stepsCount = steps.Count;
+
+            for (int i = 0; i < stepsCount; i++)
+            {
+                if (steps[i].stepId == step)
+                {
+                    result = i;
+                    break;
+                }
+            }
+
+            return result;
         }
-#endif
-        if (currentTutorialStep == (int)TutorialStep.Id.FINISHED)
-            return;
 
-        StartTutorialFromStep(currentTutorialStep);
-    }
-
-    private void Initialize()
-    {
-        if (initialized)
-            return;
-
-        initialized = true;
-        CacheChatScreen();
-    }
-
-    private void CacheChatScreen()
-    {
-        if (chatUIScreen == null && DCL.SceneController.i)
+        void TriggerEmailPrompt()
         {
-            ParcelScene uiScene = DCL.SceneController.i.loadedScenes[DCL.SceneController.i.globalSceneId];
-            chatUIScreen = uiScene.uiScreenSpace.canvas;
-        }
-    }
-
-    public void SetChatVisible(bool visible)
-    {
-        if (chatUIScreen != null)
-        {
-            chatUIScreen.enabled = visible;
+            emailPromptHUDGameObject.SetActive(true);
         }
     }
 }

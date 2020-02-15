@@ -25,7 +25,8 @@ export interface MessageDict {
 
 export type UserData = {
   displayName: string
-  publicKey: string
+  publicKey: string | null
+  hasConnectedWeb3: boolean
   userId: string
 }
 

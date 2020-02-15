@@ -416,6 +416,6 @@ export type ProfileForRenderer = {
   }
   version: number
   hasConnectedWeb3: boolean
-  updatedAt: number
-  createdAt: number
+  updatedAt?: number
+  createdAt?: number
 }

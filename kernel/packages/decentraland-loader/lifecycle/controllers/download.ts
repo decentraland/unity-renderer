@@ -1,6 +1,7 @@
 import { jsonFetch } from 'atomicHelpers/jsonFetch'
 import { future, IFuture } from 'fp-future'
 import { createLogger } from 'shared/logger'
+import { createTutorialILand, isTutorial, TUTORIAL_SCENE_ID } from '../tutorial/tutorial'
 import { ILand, IScene, ParcelInfoResponse, ContentMapping } from 'shared/types'
 
 const logger = createLogger('loader')
@@ -29,7 +30,9 @@ export class SceneDataDownloadManager {
   emptyScenesPromise?: Promise<Record<string, ContentMapping[]>>
   emptySceneNames: string[] = []
 
-  constructor(public options: { contentServer: string; contentServerBundles: string }) {}
+  constructor(public options: { contentServer: string; contentServerBundles: string; tutorialBaseURL: string }) {
+    // stub
+  }
 
   async resolveSceneSceneId(pos: string): Promise<string | null> {
     if (!this.emptyScenesPromise) {
@@ -201,14 +204,45 @@ export class SceneDataDownloadManager {
   }
 
   async getParcelDataBySceneId(sceneId: string): Promise<ILand | null> {
+    if (isTutorial()) {
+      return this.getTutorialParcelDataBySceneId()
+    }
     return this.sceneIdToLandData.get(sceneId)!
   }
 
   async getParcelData(position: string): Promise<ILand | null> {
+    if (isTutorial()) {
+      return this.resolveTutorialScene()
+    }
     const sceneId = await this.resolveSceneSceneId(position)
     if (sceneId === null) {
       return null
     }
     return this.resolveLandData(sceneId)
+  }
+
+  async resolveTutorialScene(): Promise<ILand | null> {
+    if (this.sceneIdToLandData.has(TUTORIAL_SCENE_ID)) {
+      return this.sceneIdToLandData.get(TUTORIAL_SCENE_ID)!
+    }
+    const promised = future<ILand | null>()
+    const tutorialScene = createTutorialILand(this.options.tutorialBaseURL)
+    const contents = {
+      data: [
+        {
+          parcel_id: tutorialScene.mappingsResponse.parcel_id,
+          root_cid: tutorialScene.mappingsResponse.root_cid,
+          scene_cid: ''
+        }
+      ]
+    } as SceneMappingResponse
+    this.setSceneRoots(contents)
+    this.sceneIdToLandData.set(TUTORIAL_SCENE_ID, promised)
+    promised.resolve(tutorialScene)
+    return promised
+  }
+
+  async getTutorialParcelDataBySceneId(): Promise<ILand | null> {
+    return this.sceneIdToLandData.get(TUTORIAL_SCENE_ID)!
   }
 }

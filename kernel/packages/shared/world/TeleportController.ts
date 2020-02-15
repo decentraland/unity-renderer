@@ -1,7 +1,10 @@
 import { teleportObservable } from 'shared/world/positionThings'
 import { getFromLocalStorage, saveToLocalStorage } from 'atomicHelpers/localStorage'
 import { POIs } from 'shared/comms/POIs'
-import { parcelLimits } from 'config'
+import { parcelLimits, tutorialEnabled } from 'config'
+import { getUserProfile } from 'shared/comms/peers'
+import { Profile } from 'shared/passports/types'
+import { tutorialStepId } from 'decentraland-loader/lifecycle/tutorial/tutorial'
 import { fetchLayerUsersParcels } from 'shared/comms'
 import { Parcel } from 'shared/comms/interface/utils'
 import defaultLogger from 'shared/logger'
@@ -35,6 +38,12 @@ export class TeleportController {
   public static stopTeleportAnimation() {
     document.getElementById('gameContainer')!.setAttribute('style', 'background: #151419')
     document.body.setAttribute('style', 'background: #151419')
+
+    const profile = getUserProfile().profile as Profile
+
+    if (!tutorialEnabled() || profile.tutorialStep !== tutorialStepId.INITIAL_SCENE) {
+      (window as any)['unityInterface'].ShowWelcomeNotification()
+    }
   }
 
   public static goToMagic(): { message: string; success: boolean } {

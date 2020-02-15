@@ -319,6 +319,12 @@ namespace DCL.Interface
         }
 
         [System.Serializable]
+        public class TutorialStepPayload
+        {
+            public int tutorialStep;
+        }
+
+        [System.Serializable]
         public class TermsOfServiceResponsePayload
         {
             public string sceneId;
@@ -658,13 +664,17 @@ namespace DCL.Interface
 
         public static void SendUserAcceptedCollectibles(string airdropId)
         {
-            WebInterface.SendMessage("UserAcceptedCollectibles", new UserAcceptedCollectiblesPayload{ id = airdropId});
+            WebInterface.SendMessage("UserAcceptedCollectibles", new UserAcceptedCollectiblesPayload { id = airdropId });
+        }
+
+        public static void SaveUserTutorialStep(int newTutorialStep)
+        {
+            WebInterface.SendMessage("SaveUserTutorialStep", new TutorialStepPayload() { tutorialStep = newTutorialStep });
         }
 
         public static void SendPerformanceReport(string encodedFrameTimesInMS)
         {
             WebInterface.MessageFromEngine("PerformanceReport", encodedFrameTimesInMS);
-
         }
 
         public static void SendTermsOfServiceResponse(string sceneId, bool accepted, bool dontShowAgain)
@@ -694,7 +704,7 @@ namespace DCL.Interface
 
         public static void OpenURL(string url)
         {
-            SendMessage("OpenWebURL", new OpenURLPayload {url = url});
+            SendMessage("OpenWebURL", new OpenURLPayload { url = url });
         }
     }
 }

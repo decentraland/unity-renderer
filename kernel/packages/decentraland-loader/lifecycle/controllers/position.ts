@@ -6,6 +6,7 @@ import { SceneDataDownloadManager } from './download'
 import { worldToGrid, gridToWorld } from '../../../atomicHelpers/parcelScenePositions'
 import { pickWorldSpawnpoint } from 'shared/world/positionThings'
 import { InstancedSpawnPoint } from 'shared/types'
+import { isTutorial, resolveTutorialPosition } from '../tutorial/tutorial'
 
 export class PositionLifecycleController extends EventEmitter {
   private positionSettled: boolean = false
@@ -22,6 +23,14 @@ export class PositionLifecycleController extends EventEmitter {
   }
 
   async reportCurrentPosition(position: Vector2Component, teleported: boolean) {
+    if (isTutorial()) {
+      await this.reportCurrentPositionTutorial(position, teleported)
+    } else {
+      await this.doReportCurrentPosition(position, teleported)
+    }
+  }
+
+  private async doReportCurrentPosition(position: Vector2Component, teleported: boolean) {
     let resolvedPosition = position
     if (teleported) {
       const land = await this.downloadManager.getParcelData(`${position.x},${position.y}`)
@@ -52,6 +61,11 @@ export class PositionLifecycleController extends EventEmitter {
     }
 
     this.checkPositionSettlement()
+  }
+
+  private async reportCurrentPositionTutorial(position: Vector2Component, teleported: boolean) {
+    const tutorialParcelCoords = resolveTutorialPosition(position, teleported)
+    await this.doReportCurrentPosition(tutorialParcelCoords, teleported)
   }
 
   private eqSet(as: Array<any>, bs: Array<any>) {

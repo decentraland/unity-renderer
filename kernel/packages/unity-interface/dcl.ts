@@ -9,22 +9,28 @@ import { uuid } from 'decentraland-ecs/src'
 import { EventDispatcher } from 'decentraland-rpc/lib/common/core/EventDispatcher'
 import { IFuture } from 'fp-future'
 import { Empty } from 'google-protobuf/google/protobuf/empty_pb'
-import { avatarMessageObservable } from 'shared/comms/peers'
+import { sendPublicChatMessage } from 'shared/comms'
 import { AvatarMessageType } from 'shared/comms/interface/types'
+import { avatarMessageObservable, getUserProfile } from 'shared/comms/peers'
+import { providerFuture } from 'shared/ethereum/provider'
+import { TeleportController } from 'shared/world/TeleportController'
 import { gridToWorld } from '../atomicHelpers/parcelScenePositions'
 import {
   DEBUG,
   EDITOR,
   ENGINE_DEBUG_PANEL,
   playerConfigurations,
+  RESET_TUTORIAL,
   SCENE_DEBUG_PANEL,
   SHOW_FPS_COUNTER,
-  TUTORIAL_ENABLED
+  tutorialEnabled
 } from '../config'
 import { Quaternion, ReadOnlyQuaternion, ReadOnlyVector3, Vector3 } from '../decentraland-ecs/src/decentraland/math'
 import { IEventNames, IEvents, ProfileForRenderer } from '../decentraland-ecs/src/decentraland/Types'
 import { sceneLifeCycleObservable } from '../decentraland-loader/lifecycle/controllers/scene'
+import { AirdropInfo } from '../shared/airdrops/interface'
 import { queueTrackingEvent } from '../shared/analytics'
+import { airdropObservable } from '../shared/apis/AirdropController'
 import { DevTools } from '../shared/apis/DevTools'
 import { ParcelIdentity } from '../shared/apis/ParcelIdentity'
 import { chatObservable } from '../shared/comms/chat'
@@ -32,8 +38,7 @@ import { aborted } from '../shared/loading/ReportFatalError'
 import { loadingScenes, teleportTriggered, unityClientLoaded } from '../shared/loading/types'
 import { createLogger, defaultLogger, ILogger } from '../shared/logger'
 import { saveAvatarRequest } from '../shared/passports/actions'
-import { airdropObservable } from '../shared/apis/AirdropController'
-import { Avatar, Wearable } from '../shared/passports/types'
+import { Avatar, Profile, Wearable } from '../shared/passports/types'
 import {
   PB_AttachEntityComponent,
   PB_ComponentCreated,
@@ -88,10 +93,6 @@ import { positionObservable, teleportObservable } from '../shared/world/position
 import { hudWorkerUrl, SceneWorker } from '../shared/world/SceneWorker'
 import { ensureUiApis } from '../shared/world/uiSceneInitializer'
 import { worldRunningObservable } from '../shared/world/worldState'
-import { sendPublicChatMessage } from 'shared/comms'
-import { providerFuture } from 'shared/ethereum/provider'
-import { AirdropInfo } from '../shared/airdrops/interface'
-import { TeleportController } from 'shared/world/TeleportController'
 
 const rendererVersion = require('decentraland-renderer')
 window['console'].log('Renderer version: ' + rendererVersion)
@@ -101,6 +102,8 @@ let isTheFirstLoading = true
 
 export let futures: Record<string, IFuture<any>> = {}
 export let hasWallet: boolean = false
+
+export let unityInterface: any
 
 const positionEvent = {
   position: Vector3.Zero(),
@@ -183,6 +186,11 @@ const browserInterface = {
 
   SaveUserAvatar(data: { face: string; body: string; avatar: Avatar }) {
     global.globalStore.dispatch(saveAvatarRequest(data))
+  },
+
+  SaveUserTutorialStep(data: { tutorialStep: number }) {
+    const profile: Profile = getUserProfile().profile as Profile
+    global.globalStore.dispatch(saveAvatarRequest({ ...profile, tutorialStep: data.tutorialStep }))
   },
 
   ControlEvent({ eventType, payload }: { eventType: string; payload: any }) {
@@ -291,7 +299,7 @@ export function* chunkGenerator(
   }
 }
 
-export const unityInterface = {
+unityInterface = {
   debug: false,
   SendGenericMessage(object: string, method: string, payload: string) {
     gameInstance.SendMessage(object, method, payload)
@@ -404,6 +412,9 @@ export const unityInterface = {
   ConfigureExpressionsHUD(configuration: HUDConfiguration) {
     gameInstance.SendMessage('HUDController', 'ConfigureExpressionsHUD', JSON.stringify(configuration))
   },
+  ShowWelcomeNotification() {
+    gameInstance.SendMessage('HUDController', 'ShowWelcomeNotification')
+  },
   TriggerSelfUserExpression(expressionId: string) {
     gameInstance.SendMessage('HUDController', 'TriggerSelfUserExpression', expressionId)
   },
@@ -411,6 +422,8 @@ export const unityInterface = {
     gameInstance.SendMessage('HUDController', 'ConfigurePlayerInfoCardHUD', JSON.stringify(configuration))
   },
   ConfigureWelcomeHUD(configuration: WelcomeHUDControllerModel) {
+    if (tutorialEnabled()) return
+
     gameInstance.SendMessage('HUDController', 'ConfigureWelcomeHUD', JSON.stringify(configuration))
   },
   ConfigureAirdroppingHUD(configuration: HUDConfiguration) {
@@ -427,6 +440,10 @@ export const unityInterface = {
     }
   },
   SetTutorialEnabled() {
+    if (RESET_TUTORIAL) {
+      browserInterface.SaveUserTutorialStep({ tutorialStep: 0 })
+    }
+
     gameInstance.SendMessage('TutorialController', 'SetTutorialEnabled')
   },
   TriggerAirdropDisplay(data: AirdropInfo) {
@@ -718,7 +735,7 @@ export async function initializeEngine(_gameInstance: GameInstance) {
     unityInterface.SetEngineDebugPanel()
   }
 
-  if (TUTORIAL_ENABLED) {
+  if (tutorialEnabled()) {
     unityInterface.SetTutorialEnabled()
   }
 
