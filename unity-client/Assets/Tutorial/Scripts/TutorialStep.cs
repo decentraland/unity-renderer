@@ -1,59 +1,39 @@
 using System.Collections;
 using UnityEngine;
 
-public class TutorialStep : MonoBehaviour
+namespace DCL.Tutorial
 {
-    public enum Id
+    public class TutorialStep : MonoBehaviour
     {
-        NONE = 0,
-        INITIAL_SCENE = 1,
-        GENESIS_PLAZA = 2,
-        CHAT_AND_AVATAR_EXPRESSIONS = 3,
-        FINISHED = 99,
-    }
-
-    public Id stepId;
-
-    public virtual void OnStepStart()
-    {
-    }
-    public virtual void OnStepFinished()
-    {
-    }
-
-    public virtual IEnumerator OnStepExecute()
-    {
-        yield break;
-    }
-
-    public virtual IEnumerator ShowTooltip(TutorialTooltip tooltip, bool autoHide = true)
-    {
-        if (tooltip != null)
+        public enum Id
         {
-            tooltip.Show();
-
-            if (autoHide)
-            {
-                yield return WaitForSecondsWhenRenderingEnabled(tooltip.secondsOnScreen);
-                tooltip.Hide();
-            }
+            NONE = 0,
+            INITIAL_SCENE = 1,
+            GENESIS_PLAZA = 2,
+            CHAT_AND_AVATAR_EXPRESSIONS = 3,
+            FINISHED = 99,
         }
-    }
 
-    public virtual void HideTooltip(TutorialTooltip tooltip)
-    {
-        tooltip.Hide();
-    }
+        public Id stepId;
 
-    public virtual IEnumerator WaitIdleTime()
-    {
-        yield return WaitForSecondsWhenRenderingEnabled(TutorialController.DEFAULT_STAGE_IDLE_TIME);
-    }
+        public virtual void OnStepStart()
+        {
+        }
+        public virtual void OnStepFinished()
+        {
+        }
 
-    public virtual IEnumerator WaitForSecondsWhenRenderingEnabled(float seconds)
-    {
-        yield return new WaitUntil(() => RenderingController.i.renderingEnabled);
-        yield return new WaitForSeconds(seconds);
-    }
+        public virtual IEnumerator OnStepExecute()
+        {
+            yield break;
+        }
 
+        WaitForSeconds waitForIdleTime = new WaitForSeconds(TutorialController.DEFAULT_STAGE_IDLE_TIME);
+
+        public virtual IEnumerator WaitIdleTime()
+        {
+            yield return waitForIdleTime;
+        }
+
+    }
 }

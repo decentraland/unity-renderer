@@ -198,7 +198,7 @@ namespace DCL
 
                 if (enableTutorial)
                 {
-                    debugString += "TUTORIAL_ENABLED&";
+                    debugString += "TUTORIAL_RESET&";
                 }
 
                 string debugPanelString = "";
@@ -403,7 +403,7 @@ namespace DCL
                                 HUDController.i.ConfigureSettingsHUD(msg.payload);
                                 break;
                             case "SetTutorialEnabled":
-                                TutorialController.i?.SetTutorialEnabled();
+                                DCL.Tutorial.TutorialController.i?.SetTutorialEnabled();
                                 break;
                             case "TriggerSelfUserExpression":
                                 HUDController.i.TriggerSelfUserExpression(msg.payload);
@@ -413,6 +413,9 @@ namespace DCL
                                 break;
                             case "AirdroppingRequest":
                                 HUDController.i.AirdroppingRequest(msg.payload);
+                                break;
+                            case "ShowWelcomeNotification":
+                                HUDController.i.ShowWelcomeNotification();
                                 break;
                             case "ConfigureTermsOfServiceHUD":
                                 HUDController.i.ConfigureTermsOfServiceHUD(msg.payload);

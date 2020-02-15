@@ -27,7 +27,7 @@ export async function generateRandomUserProfile(userId: string): Promise<Profile
   }
 
   if (!profile) {
-    profile = backupProfile(getFetchContentServer(window.globalStore.getState()))
+    profile = backupProfile(getFetchContentServer(window.globalStore.getState()), userId)
   }
 
   profile.name = 'Guest-' + userId.substr(2, 6)
@@ -35,8 +35,14 @@ export async function generateRandomUserProfile(userId: string): Promise<Profile
   return profile
 }
 
-function backupProfile(contentServerUrl: string) {
+function backupProfile(contentServerUrl: string, userId: string) {
   return {
+    userId,
+    email: '',
+    inventory: [],
+    hasClaimedName: false,
+    ethAddress: 'noeth',
+    tutorialStep: 0,
     name: '',
     description: '',
     avatar: {

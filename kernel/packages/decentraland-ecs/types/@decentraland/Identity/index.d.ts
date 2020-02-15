@@ -2,6 +2,7 @@ declare module '@decentraland/Identity' {
   export type UserData = {
     displayName: string
     publicKey: string
+    hasConnectedWeb3: boolean
     userId: string
   }
 

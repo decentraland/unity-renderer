@@ -1,3 +1,5 @@
+import { getUserProfile } from 'shared/comms/peers'
+import { tutorialStepId } from '../decentraland-loader/lifecycle/tutorial/tutorial'
 const queryString = require('query-string')
 declare var window: any
 
@@ -125,7 +127,12 @@ export const DISABLE_AUTH = location.search.indexOf('DISABLE_AUTH') !== -1 || DE
 export const ENGINE_DEBUG_PANEL = location.search.indexOf('ENGINE_DEBUG_PANEL') !== -1
 export const SCENE_DEBUG_PANEL = location.search.indexOf('SCENE_DEBUG_PANEL') !== -1 && !ENGINE_DEBUG_PANEL
 export const SHOW_FPS_COUNTER = location.search.indexOf('SHOW_FPS_COUNTER') !== -1 || DEBUG
-export const TUTORIAL_ENABLED = WORLD_EXPLORER && location.search.indexOf('TUTORIAL_ENABLED') !== -1
+export const RESET_TUTORIAL = location.search.indexOf('RESET_TUTORIAL') !== -1
+export const NO_TUTORIAL = location.search.indexOf('NO_TUTORIAL') !== -1
+
+export function tutorialEnabled() {
+  return !NO_TUTORIAL && WORLD_EXPLORER && (RESET_TUTORIAL || getUserProfile().profile.tutorialStep !== tutorialStepId.FINISHED)
+}
 
 export namespace commConfigurations {
   export const debug = true

@@ -39,6 +39,8 @@ public class AirdroppingHUDController : IHUD, IDisposable
     internal int currentItemShown = -1;
     internal int totalItems => model?.items?.Length ?? 0;
 
+    public static event System.Action OnAirdropFinished = null;
+
     public AirdroppingHUDController()
     {
         view = AirdroppingHUDView.Create();
@@ -116,6 +118,9 @@ public class AirdroppingHUDController : IHUD, IDisposable
                 break;
             case State.Finish:
                 WebInterface.SendUserAcceptedCollectibles(model.id);
+
+                OnAirdropFinished?.Invoke();
+
                 MoveToNextState();
                 break;
             case State.Hidden:
@@ -133,7 +138,7 @@ public class AirdroppingHUDController : IHUD, IDisposable
 
     public void Dispose()
     {
-        if(view != null)
+        if (view != null)
             UnityEngine.Object.Destroy(view.gameObject);
     }
 }
