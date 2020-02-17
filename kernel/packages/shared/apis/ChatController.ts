@@ -21,7 +21,7 @@ import {
 import { IChatCommand, MessageEntry } from 'shared/types'
 import { TeleportController } from 'shared/world/TeleportController'
 import { expressionExplainer, isValidExpression, validExpressions } from './expressionExplainer'
-import { changeRealm, catalystRealmConnected } from 'shared/dao'
+import { changeRealm, catalystRealmConnected, changeToCrowdedRealm } from 'shared/dao'
 import defaultLogger from 'shared/logger'
 
 const userPose: { [key: string]: Vector3Component } = {}
@@ -160,7 +160,11 @@ export class ChatController extends ExposableAPI implements IChatController {
         } else if (message.trim().toLowerCase() === 'next') {
           response = TeleportController.goToNext().message
         } else if (message.trim().toLowerCase() === 'crowd') {
-          response = TeleportController.goToCrowd().message
+          response = `Teleporting to a crowd of people in current realm...`
+
+          TeleportController.goToCrowd().then(({ message, success }) => this.notifyStatusTroughChat(message), () => {
+            // Do nothing. This is handled inside controller
+          })
         } else {
           response = 'Could not recognize the coordinates provided. Example usage: /goto 42,42'
         }
@@ -179,18 +183,48 @@ export class ChatController extends ExposableAPI implements IChatController {
 
     this.addChatCommand('changerealm', 'Changes communications realms', message => {
       const realmString = message.trim()
-      const realm = changeRealm(realmString)
-
       let response = ''
-      if (realm) {
-        response = `Changing to Realm ${realm.catalystName}-${realm.layer}...`
-        // TODO: This status should be shown in the chat window
-        catalystRealmConnected().then(
-          () => defaultLogger.log('Sucessfully connected to realm', realm),
-          () => defaultLogger.log('Error joining realm', realm)
+
+      if (realmString === 'crowd') {
+        response = `Changing to realm that is crowded nearby...`
+
+        changeToCrowdedRealm().then(
+          ([changed, realm]) => {
+            // TODO: This status should be shown in the chat window
+            if (changed) {
+              this.notifyStatusTroughChat(
+                `Found a crowded realm to join. Welcome to the realm ${realm.catalystName}-${realm.layer}!`
+              )
+            } else {
+              this.notifyStatusTroughChat(`Could not join realm. Maybe the realm is full?`)
+            }
+          },
+          e => {
+            this.notifyStatusTroughChat(`Could not join realm. Please join another realm to ensure communications.`)
+            defaultLogger.error(`Error joining realm ${realmString}`, e)
+          }
         )
       } else {
-        response = `Couldn't find realm ${realmString}`
+        const realm = changeRealm(realmString)
+
+        if (realm) {
+          response = `Changing to Realm ${realm.catalystName}-${realm.layer}...`
+          // TODO: This status should be shown in the chat window
+          catalystRealmConnected().then(
+            () =>
+              this.notifyStatusTroughChat(
+                `Changed realm successfuly. Welcome to the realm ${realm.catalystName}-${realm.layer}!`
+              ),
+            e => {
+              this.notifyStatusTroughChat(
+                `Could not join realm. Maybe the realm is full? Please join another realm to ensure communications.`
+              )
+              defaultLogger.error('Error joining crowded realm', e)
+            }
+          )
+        } else {
+          response = `Couldn't find realm ${realmString}`
+        }
       }
 
       return {
@@ -350,6 +384,19 @@ export class ChatController extends ExposableAPI implements IChatController {
             .map(name => `\t/${name}: ${this.chatCommands[name].description}`)
             .concat('\t/help: Show this list of commands')
             .join('\n')}`
+      }
+    })
+  }
+
+  // @internal
+  private notifyStatusTroughChat(status: string) {
+    chatObservable.notifyObservers({
+      type: ChatEvent.MESSAGE_RECEIVED,
+      messageEntry: {
+        id: uuid(),
+        isCommand: true,
+        sender: 'Decentraland',
+        message: status
       }
     })
   }

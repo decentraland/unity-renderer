@@ -2,6 +2,7 @@ export type Layer = {
   name: string
   usersCount: number
   maxUsers: number
+  usersParcels?: [number, number][]
 }
 
 export type CatalystLayers = {

@@ -2,6 +2,7 @@ import { parcelLimits } from 'config'
 
 export type Position = [number, number, number, number, number, number, number]
 
+export type ParcelArray = [number, number]
 export class Parcel {
   constructor(public x: number, public z: number) {}
 }
@@ -70,4 +71,24 @@ export function squareDistance(p1: Position, p2: Position): number {
   const v2 = new V2(p2[0], p2[2])
 
   return v1.minus(v2).squareLenght()
+}
+
+export function gridSquareDistance(parcel1: ParcelArray, parcel2: ParcelArray): number {
+  const xDiff = parcel1[0] - parcel2[0]
+  const zDiff = parcel1[1] - parcel2[1]
+  return xDiff * xDiff + zDiff * zDiff
+}
+
+export function countParcelsCloseTo(origin: ParcelArray, parcels: ParcelArray[], distance: number = 3) {
+  let close = 0
+
+  const squaredDistance = distance * distance
+
+  parcels.forEach(parcel => {
+    if (gridSquareDistance(origin, parcel) <= squaredDistance) {
+      close += 1
+    }
+  })
+
+  return close
 }
