@@ -34,7 +34,7 @@ import {
   IdTakenError,
   UnknownCommsModeError
 } from './interface/types'
-import { CommunicationArea, Position, position2parcel, sameParcel, squareDistance, Parcel } from './interface/utils'
+import { CommunicationArea, Position, position2parcel, sameParcel, squareDistance, ParcelArray } from './interface/utils'
 import { BrokerWorldInstanceConnection } from '../comms/v1/brokerWorldInstanceConnection'
 import { profileToRendererFormat } from 'shared/passports/transformations/profileToRendererFormat'
 import { ProfileForRenderer } from 'decentraland-ecs/src'
@@ -658,7 +658,7 @@ export function disconnect() {
   }
 }
 
-export async function fetchLayerUsersParcels(): Promise<Parcel[]> {
+export async function fetchLayerUsersParcels(): Promise<ParcelArray[]> {
   const store: Store<RootState> = window.globalStore
   const realm = getRealm(store.getState())
   const commsUrl = getCommsServer(store.getState())
@@ -667,7 +667,7 @@ export async function fetchLayerUsersParcels(): Promise<Parcel[]> {
     const layerUsersResponse = await fetch(`${commsUrl}/layers/${realm.layer}/users`)
     if (layerUsersResponse.ok) {
       const layerUsers: LayerUserInfo[] = await layerUsersResponse.json()
-      return layerUsers.filter(it => it.parcel).map(it => new Parcel(it.parcel![0], it.parcel![1]))
+      return layerUsers.filter(it => it.parcel).map(it => it.parcel!)
     }
   }
 

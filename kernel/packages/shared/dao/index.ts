@@ -5,8 +5,11 @@ import { RootState } from 'shared/store/rootTypes'
 import { Store } from 'redux'
 import { isRealmInitialized, getCatalystCandidates, getCatalystRealmCommsStatus, getRealm } from './selectors'
 import { fetchCatalystNodes } from 'shared/web3'
-import { setCatalystRealm } from './actions'
+import { setCatalystRealm, setCatalystCandidates } from './actions'
 import { deepEqual } from 'atomicHelpers/deepEqual'
+import { worldToGrid } from 'atomicHelpers/parcelScenePositions'
+import { lastPlayerPosition } from 'shared/world/positionThings'
+import { countParcelsCloseTo, ParcelArray } from 'shared/comms/interface/utils'
 const qs: any = require('query-string')
 
 const zip = <T, U>(arr: Array<T>, ...arrs: Array<Array<U>>) => {
@@ -36,6 +39,8 @@ function ping(url: string): Promise<{ success: boolean; elapsed?: number; result
 
     let started: Date
 
+    http.timeout = 5000
+
     http.onreadystatechange = () => {
       if (http.readyState === XMLHttpRequest.OPENED) {
         started = new Date()
@@ -56,7 +61,7 @@ function ping(url: string): Promise<{ success: boolean; elapsed?: number; result
       }
     }
 
-    http.open('GET', url, false)
+    http.open('GET', url, true)
 
     try {
       http.send(null)
@@ -76,20 +81,27 @@ export async function fecthCatalystRealms(): Promise<Candidate[]> {
     throw new Error('no nodes are available in the DAO for the current network')
   }
 
+  return fetchCatalystStatuses(nodes)
+}
+
+async function fetchCatalystStatuses(nodes: { domain: string }[]) {
   const results = await Promise.all(nodes.map(node => ping(`${node.domain}/comms/status?includeLayers=true`)))
-
   const successfulResults = results.filter($ => $.success)
-
   if (successfulResults.length === 0) {
     throw new Error('no node responded')
   }
-
   return zip(nodes, successfulResults).reduce(
     (
       union: Candidate[],
       [{ domain }, { elapsed, result, success }]: [
-        { domain: string },
-        { elapsed?: number; success: boolean; result?: CatalystLayers }
+        {
+          domain: string
+        },
+        {
+          elapsed?: number
+          success: boolean
+          result?: CatalystLayers
+        }
       ]
     ) =>
       success
@@ -113,7 +125,7 @@ export function pickCatalystRealm(candidates: Candidate[]): Realm {
     return diff === 0 ? c1.elapsed - c2.elapsed : diff
   })
 
-  return { catalystName: sorted[0].catalystName, domain: sorted[0].domain, layer: sorted[0].layer.name }
+  return candidateToRealm(sorted[0])
 }
 
 export async function realmInitialized(): Promise<void> {
@@ -146,11 +158,13 @@ function realmToString(realm: Realm) {
   return `${realm.catalystName}-${realm.layer}`
 }
 
+function candidateToRealm(candidate: Candidate) {
+  return { catalystName: candidate.catalystName, domain: candidate.domain, layer: candidate.layer.name }
+}
+
 function realmFor(name: string, layer: string, candidates: Candidate[]): Realm | undefined {
   const candidate = candidates.find(it => it.catalystName === name && it.layer.name === layer)
-  return candidate
-    ? { catalystName: candidate.catalystName, domain: candidate.domain, layer: candidate.layer.name }
-    : undefined
+  return candidate ? candidateToRealm(candidate) : undefined
 }
 
 export function changeRealm(realmString: string) {
@@ -165,6 +179,54 @@ export function changeRealm(realmString: string) {
   }
 
   return realm
+}
+
+export async function changeToCrowdedRealm(): Promise<[boolean, Realm]> {
+  const store: Store<RootState> = (window as any)['globalStore']
+
+  const candidates = await fetchCatalystStatuses(Array.from(getCandidateDomains(store)).map(it => ({ domain: it })))
+
+  const currentRealm = getRealm(store.getState())!
+
+  store.dispatch(setCatalystCandidates(candidates))
+
+  const positionAsVector = worldToGrid(lastPlayerPosition)
+  const currentPosition = [positionAsVector.x, positionAsVector.y] as ParcelArray
+
+  type RealmPeople = { realm: Realm; closePeople: number }
+
+  let crowdedRealm: RealmPeople = { realm: currentRealm, closePeople: 0 }
+
+  candidates
+    .filter(it => it.layer.usersParcels && it.layer.usersParcels.length > 0 && it.layer.usersCount < it.layer.maxUsers)
+    .forEach(candidate => {
+      if (candidate.layer.usersParcels) {
+        let closePeople = countParcelsCloseTo(currentPosition, candidate.layer.usersParcels, 4)
+        // If it is the realm of the player, we substract 1 to not count ourselves
+        if (candidate.catalystName === currentRealm.catalystName && candidate.layer.name === currentRealm.layer) {
+          closePeople -= 1
+        }
+
+        if (closePeople > crowdedRealm.closePeople) {
+          crowdedRealm = {
+            realm: candidateToRealm(candidate),
+            closePeople
+          }
+        }
+      }
+    })
+
+  if (!deepEqual(crowdedRealm.realm, currentRealm)) {
+    store.dispatch(setCatalystRealm(crowdedRealm.realm))
+    await catalystRealmConnected()
+    return [true, crowdedRealm.realm]
+  } else {
+    return [false, currentRealm]
+  }
+}
+
+function getCandidateDomains(store: Store<RootDaoState>): Set<string> {
+  return new Set(getCatalystCandidates(store.getState()).map(it => it.domain))
 }
 
 export async function catalystRealmConnected(): Promise<void> {

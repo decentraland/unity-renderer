@@ -156,7 +156,12 @@ export class LighthouseWorldInstanceConnection implements WorldInstanceConnectio
   }
 
   private async sendData(topic: string, messageData: MessageData, type: PeerMessageType) {
-    await this.peer.sendMessage(topic, createCommsMessage(messageData).serializeBinary(), type)
+    if (this.peer.currentRooms.some(it => it.id === topic)) {
+      await this.peer.sendMessage(topic, createCommsMessage(messageData).serializeBinary(), type)
+    } else {
+      // TODO: We may want to queue some messages
+      defaultLogger.warn('Tried to send a message to a topic that the peer is not subscribed to: ' + topic)
+    }
   }
 
   private async sendPositionData(p: Position, topic: string, typeName: string) {
