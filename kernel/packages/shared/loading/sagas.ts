@@ -93,6 +93,8 @@ export function updateTextInScreen(status: LoadingState) {
   const subMessages = document.getElementById('subtext-messages')
   if (subMessages) {
     subMessages.innerText =
-      status.pendingScenes > 0 ? `Loading scenes (${status.pendingScenes} scenes remaining)` : status.status
+      status.pendingScenes > 0
+        ? `Loading scenes (${status.pendingScenes} scene${status.pendingScenes > 0 ? 's' : ''} remaining)`
+        : status.status
   }
 }
