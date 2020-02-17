@@ -10,15 +10,11 @@ namespace DCL
         public static float timeBudgetMax = 0.003f;
         public static float timeBudget = 0;
 
+        public static Dictionary<string, Shader> nameToShader = new Dictionary<string, Shader>();
+
         public static string ComputeCRC(Material mat)
         {
-            //NOTE(Brian): Workaround fix until we solve the CRC issue with our materials.
-            if (mat.name.Contains("Mini Town_MAT"))
-            {
-                return mat.name;
-            }
-
-            return mat.ComputeCRC() + mat.name;
+            return mat.ComputeCRC().ToString();
         }
 
         public static IEnumerator UseCachedMaterials(List<Renderer> renderers, bool enableRenderers = true)
@@ -45,6 +41,16 @@ namespace DCL
                 foreach (var mat in r.sharedMaterials)
                 {
                     float elapsedTime = Time.realtimeSinceStartup;
+                    string shaderName = mat.shader.name;
+
+                    if (nameToShader.ContainsKey(shaderName))
+                    {
+                        mat.shader = nameToShader[shaderName];
+                    }
+                    else
+                    {
+                        nameToShader.Add(shaderName, Shader.Find(shaderName));
+                    }
 
                     string crc = ComputeCRC(mat);
 
@@ -52,7 +58,9 @@ namespace DCL
 
                     if (!PersistentAssetCache.MaterialCacheByCRC.ContainsKey(crc))
                     {
-                        PersistentAssetCache.MaterialCacheByCRC.Add(crc, new RefCountedMaterialData(crc, mat));
+                        //NOTE(Brian): Have to copy material because will be unloaded later.
+                        var materialCopy = new Material(mat);
+                        PersistentAssetCache.MaterialCacheByCRC.Add(crc, new RefCountedMaterialData(crc, materialCopy));
                     }
 
                     refCountedMat = PersistentAssetCache.MaterialCacheByCRC[crc];

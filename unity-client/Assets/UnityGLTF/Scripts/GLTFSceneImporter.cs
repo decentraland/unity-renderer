@@ -731,11 +731,12 @@ namespace UnityGLTF
 
         protected virtual IEnumerator ConstructUnityTexture(byte[] buffer, bool markGpuOnly, bool linear, GLTFImage image, int imageCacheIndex)
         {
-            Texture2D texture = new Texture2D(0, 0, TextureFormat.RGBA32, true, linear);
+            Texture2D texture = new Texture2D(0, 0, TextureFormat.ARGB32, true, linear);
 
             //  NOTE: the second parameter of LoadImage() marks non-readable, but we can't mark it until after we call Apply()
             texture.LoadImage(buffer, markGpuOnly);
             texture = CheckAndReduceTextureSize(texture);
+            texture.Compress(false);
 
             _assetCache.ImageCache[imageCacheIndex] = texture;
 
@@ -2389,6 +2390,7 @@ namespace UnityGLTF
                         var unityTexture = Object.Instantiate(source.Texture);
                         unityTexture.filterMode = desiredFilterMode;
                         unityTexture.wrapMode = desiredWrapMode;
+                        unityTexture.Apply(false, true);
 
                         _assetCache.TextureCache[textureIndex].CachedTexture = new RefCountedTextureData(image.Uri, unityTexture);
                     }
@@ -2439,7 +2441,6 @@ namespace UnityGLTF
                 Vector2 temp = ext.Offset;
                 temp = new Vector2(temp.x, -temp.y);
                 mat.SetTextureOffset(texName, temp);
-
                 mat.SetTextureScale(texName, ext.Scale);
             }
         }

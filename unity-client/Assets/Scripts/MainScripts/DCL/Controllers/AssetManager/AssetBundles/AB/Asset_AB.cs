@@ -20,7 +20,7 @@ namespace DCL
             for (int i1 = 0; i1 < extensions.Length; i1++)
             {
                 string ext = extensions[i1];
-                List<Object> assets = null;
+                List<Object> assets;
 
                 if (assetsByExtension.ContainsKey(ext))
                 {
@@ -43,22 +43,20 @@ namespace DCL
         {
         }
 
-        public override object Clone()
-        {
-            Asset_AB result = this.MemberwiseClone() as Asset_AB;
-            return result;
-        }
+        public override object Clone() => (Asset_AB)MemberwiseClone();
 
         public void CancelShow()
         {
+            Cleanup();
         }
 
         public override void Cleanup()
         {
+            assetsByName = null;
+            assetsByExtension = null;
+
             if (ownerAssetBundle)
             {
-                assetsByName = null;
-                assetsByExtension = null;
                 ownerAssetBundle.Unload(true);
                 ownerAssetBundle = null;
             }

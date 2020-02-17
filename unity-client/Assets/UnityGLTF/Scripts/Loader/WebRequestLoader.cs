@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections;
 using System.IO;
 using UnityEngine;
@@ -81,7 +81,11 @@ namespace UnityGLTF.Loader
                 yield break;
             }
 
-            LoadedStream = new MemoryStream(www.downloadHandler.data, 0, www.downloadHandler.data.Length, true, true);
+            //NOTE(Brian): Caution, www.downloadHandler.data returns a COPY of the data, if accessed twice,
+            //             2 copies will be performed for the entire file (and then discarded by GC, introducing hiccups).
+            //             The correct fix is by using DownloadHandler.ReceiveData. But this is in version > 2019.3.
+            byte[] data = www.downloadHandler.data;
+            LoadedStream = new MemoryStream(data, 0, data.Length, true, true);
         }
     }
 }

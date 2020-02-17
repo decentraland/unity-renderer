@@ -1,4 +1,4 @@
-﻿using DCL.Components;
+using DCL.Components;
 using DCL.Controllers;
 using DCL.Helpers;
 using System;
@@ -132,6 +132,7 @@ namespace DCL
                 {
                     texture.wrapMode = unityWrap;
                     texture.filterMode = unitySamplingMode;
+                    texture.Compress(false);
                     texture.Apply(unitySamplingMode != FilterMode.Point, true);
                 }
             }

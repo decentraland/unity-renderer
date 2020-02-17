@@ -31,9 +31,12 @@ namespace AssetPromiseKeeper_AssetBundle_GameObject_Tests
             prom.OnSuccessEvent +=
                 (x) =>
                 {
+                    Debug.Log("Success is called");
                     loadedAsset = x;
                 }
             ;
+
+            prom.OnFailEvent += (x) => { Debug.Log("Fail is called"); };
 
             Vector3 initialPos = Vector3.one;
             Quaternion initialRot = Quaternion.LookRotation(Vector3.right, Vector3.up);

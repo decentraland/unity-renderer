@@ -106,6 +106,8 @@ namespace DCL
             UnregisterConcurrentRequest();
         }
 
+        UnityWebRequest assetBundleRequest;
+
         IEnumerator LoadAssetBundle(string finalUrl, Action OnSuccess, Action OnFail)
         {
             if (failedRequestUrls.Contains(finalUrl))
@@ -114,7 +116,7 @@ namespace DCL
                 yield break;
             }
 
-            using (UnityWebRequest assetBundleRequest = UnityWebRequestAssetBundle.GetAssetBundle(finalUrl))
+            using (assetBundleRequest = UnityWebRequestAssetBundle.GetAssetBundle(finalUrl))
             {
                 yield return assetBundleRequest.SendWebRequest();
 
