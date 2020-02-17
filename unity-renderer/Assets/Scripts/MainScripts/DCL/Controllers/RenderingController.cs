@@ -26,6 +26,7 @@ public class RenderingController : MonoBehaviour
         DeactivateRendering_Internal();
     }
 
+
     void DeactivateRendering_Internal()
     {
         renderingEnabled = false;

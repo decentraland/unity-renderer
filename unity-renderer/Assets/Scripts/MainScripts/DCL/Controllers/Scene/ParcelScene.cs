@@ -1,4 +1,4 @@
-using DCL.Components;
+﻿using DCL.Components;
 using DCL.Configuration;
 using DCL.Helpers;
 using DCL.Models;
@@ -32,6 +32,8 @@ namespace DCL.Controllers
 
         public event System.Action<DecentralandEntity> OnEntityAdded;
         public event System.Action<DecentralandEntity> OnEntityRemoved;
+        public event System.Action<ParcelScene> OnSceneReady;
+
         public ContentProvider contentProvider;
         public int disposableNotReadyCount => disposableNotReady.Count;
 
@@ -54,7 +56,7 @@ namespace DCL.Controllers
 
         private readonly List<string> disposableNotReady = new List<string>();
         private bool isReleased = false;
-
+        public bool isReady => state == State.READY;
         private State state = State.NOT_READY;
         public SceneBoundariesChecker boundariesChecker { private set; get; }
 
@@ -134,11 +136,6 @@ namespace DCL.Controllers
 
             if (DCLCharacterController.i != null)
                 gameObject.transform.position = DCLCharacterController.i.characterPosition.WorldToUnityPosition(Utils.GridToWorldPosition(data.basePosition.x, data.basePosition.y));
-
-            if (data.id == SceneController.i.currentSceneId)
-            {
-                RenderingController.i.renderingActivatedAckLock.AddLock(this);
-            }
 
 #if UNITY_EDITOR
             //NOTE(Brian): Don't generate parcel blockers if debugScenes is active and is not the desired scene.
@@ -1080,24 +1077,20 @@ namespace DCL.Controllers
         private void SetSceneReady()
         {
             if (state == State.READY)
-            {
                 return;
-            }
 
             if (VERBOSE)
-            {
                 Debug.Log($"{sceneData.basePosition} Scene Ready!");
-            }
 
             state = State.READY;
 
             if (useBlockers)
                 blockerHandler.CleanBlockers();
 
-            RenderingController.i.renderingActivatedAckLock.RemoveLock(this);
-
             SceneController.i.SendSceneReady(sceneData.id);
             RefreshName();
+
+            OnSceneReady?.Invoke(this);
         }
 
 #if UNITY_EDITOR

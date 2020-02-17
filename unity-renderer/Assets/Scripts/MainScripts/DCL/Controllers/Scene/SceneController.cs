@@ -85,6 +85,7 @@ namespace DCL
         private bool sceneSortDirty = false;
         private bool positionDirty = true;
         private int lastSortFrame = 0;
+
         public event Action OnSortScenes;
 
         private Vector2Int currentGridSceneCoordinate = new Vector2Int(EnvironmentSettings.MORDOR_SCALAR, EnvironmentSettings.MORDOR_SCALAR);
@@ -140,8 +141,6 @@ namespace DCL
             }
         }
 
-
-
         private void SortScenesByDistance()
         {
             scenesSortedByDistance.Sort(SortScenesByDistanceMethod);
@@ -161,6 +160,14 @@ namespace DCL
                         currentSceneId = scene.sceneData.id;
                         break;
                     }
+                }
+            }
+
+            if (!string.IsNullOrEmpty(currentSceneId))
+            {
+                if (TryGetScene(currentSceneId, out ParcelScene scene) && scene.isReady)
+                {
+                    RenderingController.i.renderingActivatedAckLock.RemoveLock(this);
                 }
             }
 
@@ -189,6 +196,24 @@ namespace DCL
                     sceneMessagesPool.Enqueue(new MessagingBus.QueuedSceneMessage_Scene());
                 }
             }
+
+            RenderingController.i.OnRenderingStateChanged += OnRenderingStateChange;
+        }
+
+        private void OnRenderingStateChange(bool enabled)
+        {
+            if (!enabled)
+            {
+                RenderingController.i.renderingActivatedAckLock.AddLock(this);
+            }
+        }
+
+        private void OnSceneReady(ParcelScene scene)
+        {
+            if (scene.sceneData.id == currentSceneId)
+            {
+                RenderingController.i.renderingActivatedAckLock.RemoveLock(this);
+            }
         }
 
         public void Restart()
@@ -207,6 +232,7 @@ namespace DCL
 
         void OnDestroy()
         {
+            RenderingController.i.OnRenderingStateChanged -= OnRenderingStateChange;
             DCLCharacterController.OnCharacterMoved -= SetPositionDirty;
             ParcelScene.parcelScenesCleaner.Stop();
         }
@@ -348,6 +374,8 @@ namespace DCL
 
                 if (!MessagingControllersManager.i.ContainsController(newScene.sceneData.id))
                     MessagingControllersManager.i.AddController(this, newScene.sceneData.id);
+
+                newScene.OnSceneReady += OnSceneReady;
 
                 if (VERBOSE)
                     Debug.Log($"{Time.frameCount} : Load parcel scene {newScene.sceneData.basePosition}");

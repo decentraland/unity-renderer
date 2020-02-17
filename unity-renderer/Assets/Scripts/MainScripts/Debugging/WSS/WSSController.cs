@@ -1,4 +1,4 @@
-using DCL.Components;
+﻿using DCL.Components;
 using DCL.Interface;
 using System.Collections.Generic;
 using UnityEngine;
@@ -198,7 +198,7 @@ namespace DCL
 
                 if (enableTutorial)
                 {
-                    debugString += "TUTORIAL_RESET&";
+                    debugString += "RESET_TUTORIAL&";
                 }
 
                 string debugPanelString = "";

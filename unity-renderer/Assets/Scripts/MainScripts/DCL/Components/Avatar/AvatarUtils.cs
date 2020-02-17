@@ -12,7 +12,7 @@ public static class AvatarUtils
     public static int _IrisMask = Shader.PropertyToID("_IrisMask");
 
     /// <summary>
-    /// Hack to deactivate unused body parts, so they don't z-fight. 
+    /// Hack to deactivate unused body parts, so they don't z-fight.
     /// Solve this removing them from the GLB later.
     /// </summary>
     public static void RemoveUnusedBodyParts_Hack(GameObject baseBody)
@@ -52,6 +52,9 @@ public static class AvatarUtils
             for (int i1 = 0; i1 < sharedMats.Length; i1++)
             {
                 Material m = sharedMats[i1];
+
+                if (m == null) continue;
+
                 string materialName = m.name.ToLower();
 
                 if (string.IsNullOrEmpty(materialsContainingThisName) || materialName.Contains(materialsContainingThisName.ToLower()))
@@ -93,7 +96,7 @@ public static class AvatarUtils
     }
 
     /// <summary>
-    /// This will search all the transform hierachy for all renderers, 
+    /// This will search all the transform hierachy for all renderers,
     /// and replace all of its materials containing the specified name by the new one.
     /// </summary>
     /// <param name="transformRoot">Transform where to start the traversal</param>
@@ -114,7 +117,7 @@ public static class AvatarUtils
 
 
     /// <summary>
-    /// This will search all the transform hierachy for all renderers, 
+    /// This will search all the transform hierachy for all renderers,
     /// and replace all of its materials containing the specified name by the new one.
     /// </summary>
     /// <param name="transformRoot">Transform where to start the traversal</param>
