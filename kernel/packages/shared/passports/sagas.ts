@@ -226,7 +226,7 @@ export function* handleFetchProfile(action: PassportRequestAction): any {
   }
 
   const userInfo = getUserProfile()
-  if (!profile && userInfo && userInfo.userId && currentId === userInfo.userId) {
+  if (!profile && userInfo && userInfo.userId && currentId === userInfo.userId && userInfo.profile) {
     defaultLogger.info(`Recover profile from local storage`)
     profile = yield call(
       ensureServerFormat,
