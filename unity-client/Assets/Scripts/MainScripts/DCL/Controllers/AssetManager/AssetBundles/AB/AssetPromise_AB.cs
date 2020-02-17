@@ -24,6 +24,8 @@ namespace DCL
         Coroutine loadCoroutine;
         static HashSet<string> failedRequestUrls = new HashSet<string>();
 
+        List<AssetPromise_AB> dependencyPromises = new List<AssetPromise_AB>();
+        UnityWebRequest assetBundleRequest = null;
 
         static Dictionary<string, int> loadOrderByExtension = new Dictionary<string, int>()
         {
@@ -69,6 +71,20 @@ namespace DCL
                 loadCoroutine = null;
             }
 
+            if (assetBundleRequest != null && !assetBundleRequest.isDone)
+            {
+                assetBundleRequest.Abort();
+                assetBundleRequest.Dispose();
+                assetBundleRequest = null;
+            }
+
+            for (int i = 0; i < dependencyPromises.Count; i++)
+            {
+                dependencyPromises[i].Unload();
+            }
+
+            dependencyPromises.Clear();
+
             if (asset != null)
             {
                 asset.CancelShow();
@@ -87,15 +103,23 @@ namespace DCL
 
         protected IEnumerator LoadAssetBundleWithDeps(string baseUrl, string hash, Action OnSuccess, Action OnFail)
         {
-            yield return DependencyMapLoadHelper.GetDepMap(baseUrl, hash);
+            if (!DependencyMapLoadHelper.dependenciesMap.ContainsKey(hash))
+                CoroutineStarter.Start(DependencyMapLoadHelper.GetDepMap(baseUrl, hash));
+
+            yield return DependencyMapLoadHelper.WaitUntilDepMapIsResolved(hash);
 
             if (DependencyMapLoadHelper.dependenciesMap.ContainsKey(hash))
             {
-                foreach (string dep in DependencyMapLoadHelper.dependenciesMap[hash])
+                using (var it = DependencyMapLoadHelper.dependenciesMap[hash].GetEnumerator())
                 {
-                    var promise = new AssetPromise_AB(baseUrl, dep);
-                    AssetPromiseKeeper_AB.i.Keep(promise);
-                    yield return promise;
+                    while (it.MoveNext())
+                    {
+                        var dep = it.Current;
+                        var promise = new AssetPromise_AB(baseUrl, dep);
+                        AssetPromiseKeeper_AB.i.Keep(promise);
+                        dependencyPromises.Add(promise);
+                        yield return promise;
+                    }
                 }
             }
 
@@ -106,8 +130,6 @@ namespace DCL
             UnregisterConcurrentRequest();
         }
 
-        UnityWebRequest assetBundleRequest;
-
         IEnumerator LoadAssetBundle(string finalUrl, Action OnSuccess, Action OnFail)
         {
             if (failedRequestUrls.Contains(finalUrl))
@@ -116,81 +138,91 @@ namespace DCL
                 yield break;
             }
 
-            using (assetBundleRequest = UnityWebRequestAssetBundle.GetAssetBundle(finalUrl))
+            assetBundleRequest = UnityWebRequestAssetBundle.GetAssetBundle(finalUrl);
+
+            yield return assetBundleRequest.SendWebRequest();
+
+            //NOTE(Brian): For some reason, another coroutine iteration can be triggered after Cleanup().
+            //             So assetBundleRequest can be null here.
+            if (assetBundleRequest == null)
+                yield break;
+
+            if (!assetBundleRequest.WebRequestSucceded())
             {
-                yield return assetBundleRequest.SendWebRequest();
+                Debug.Log($"request failed? {assetBundleRequest.error} ... {finalUrl}");
+                failedRequestUrls.Add(finalUrl);
+                assetBundleRequest.Abort();
+                assetBundleRequest = null;
+                OnFail?.Invoke();
+                yield break;
+            }
 
-                if (!assetBundleRequest.WebRequestSucceded())
+            AssetBundle assetBundle = DownloadHandlerAssetBundle.GetContent(assetBundleRequest);
+
+            if (assetBundle == null || asset == null)
+            {
+                assetBundleRequest.Abort();
+                assetBundleRequest = null;
+                OnFail?.Invoke();
+
+                failedRequestUrls.Add(finalUrl);
+                yield break;
+            }
+
+            asset.ownerAssetBundle = assetBundle;
+            asset.assetBundleAssetName = assetBundle.name;
+
+            string[] assets = assetBundle.GetAllAssetNames();
+            List<string> assetsToLoad = new List<string>();
+
+            assetsToLoad = assets.OrderBy(
+                (x) =>
                 {
-                    Debug.Log($"request failed? {assetBundleRequest.error} ... {finalUrl}");
-                    assetBundleRequest.Abort();
-                    OnFail?.Invoke();
+                    string ext = x.Substring(x.Length - 3);
 
-                    failedRequestUrls.Add(finalUrl);
+                    if (loadOrderByExtension.ContainsKey(ext))
+                        return loadOrderByExtension[ext];
+                    else
+                        return 99;
+                }).ToList();
+
+
+            foreach (string assetName in assetsToLoad)
+            {
+                //NOTE(Brian): For some reason, another coroutine iteration can be triggered after Cleanup().
+                //             To handle this case we exit using this.
+                if (loadCoroutine == null)
                     yield break;
-                }
 
-                AssetBundle assetBundle = DownloadHandlerAssetBundle.GetContent(assetBundleRequest);
+                if (asset == null)
+                    break;
 
-                if (assetBundle == null || asset == null)
-                {
-                    assetBundleRequest.Abort();
-                    OnFail?.Invoke();
-
-                    failedRequestUrls.Add(finalUrl);
-                    yield break;
-                }
-
-                asset.ownerAssetBundle = assetBundle;
-                asset.assetBundleAssetName = assetBundle.name;
-
-                string[] assets = assetBundle.GetAllAssetNames();
-                List<string> assetsToLoad = new List<string>();
-
-                assetsToLoad = assets.OrderBy(
-                    (x) =>
-                    {
-                        string ext = x.Substring(x.Length - 3);
-
-                        if (loadOrderByExtension.ContainsKey(ext))
-                            return loadOrderByExtension[ext];
-                        else
-                            return 99;
-                    }).ToList();
-
-
-                foreach (string assetName in assetsToLoad)
-                {
-                    if (asset == null)
-                        break;
-
-                    float time = Time.realtimeSinceStartup;
+                float time = Time.realtimeSinceStartup;
 
 #if UNITY_EDITOR
-                    if (VERBOSE)
-                        Debug.Log("loading asset = " + assetName);
+                if (VERBOSE)
+                    Debug.Log("loading asset = " + assetName);
 #endif
-                    string ext = assetName.Substring(assetName.Length - 3);
+                string ext = assetName.Substring(assetName.Length - 3);
 
-                    UnityEngine.Object loadedAsset = assetBundle.LoadAsset(assetName);
+                UnityEngine.Object loadedAsset = assetBundle.LoadAsset(assetName);
 
-                    if (!asset.assetsByName.ContainsKey(assetName))
-                        asset.assetsByName.Add(assetName, loadedAsset);
+                if (!asset.assetsByName.ContainsKey(assetName))
+                    asset.assetsByName.Add(assetName, loadedAsset);
 
-                    if (!asset.assetsByExtension.ContainsKey(ext))
-                        asset.assetsByExtension.Add(ext, new List<UnityEngine.Object>());
+                if (!asset.assetsByExtension.ContainsKey(ext))
+                    asset.assetsByExtension.Add(ext, new List<UnityEngine.Object>());
 
-                    asset.assetsByExtension[ext].Add(loadedAsset);
+                asset.assetsByExtension[ext].Add(loadedAsset);
 
-                    if (limitTimeBudget)
+                if (limitTimeBudget)
+                {
+                    currentLoadBudgetTime += Time.realtimeSinceStartup - time;
+
+                    if (currentLoadBudgetTime > maxLoadBudgetTime)
                     {
-                        currentLoadBudgetTime += Time.realtimeSinceStartup - time;
-
-                        if (currentLoadBudgetTime > maxLoadBudgetTime)
-                        {
-                            currentLoadBudgetTime = 0;
-                            yield return null;
-                        }
+                        currentLoadBudgetTime = 0;
+                        yield return null;
                     }
                 }
             }

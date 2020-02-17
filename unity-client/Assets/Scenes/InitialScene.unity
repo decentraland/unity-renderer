@@ -429,7 +429,7 @@ MonoBehaviour:
   baseUrlCustom: 
   environment: 4
   startInCoords: {x: 0, y: 0}
-  forceLocalComms: 1
+  forceLocalComms: 0
   allWearables: 0
   testWearables: 0
   enableTutorial: 0

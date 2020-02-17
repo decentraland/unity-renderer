@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections;
 using System.Linq;
 using DCL.Helpers;
@@ -66,7 +66,15 @@ namespace DCL
 
         protected override void OnCancelLoading()
         {
-            CoroutineStarter.Stop(loadingCoroutine);
+            if (loadingCoroutine != null)
+            {
+                CoroutineStarter.Stop(loadingCoroutine);
+                loadingCoroutine = null;
+            }
+
+            if (asset != null)
+                GameObject.Destroy(asset.container);
+
             AssetPromiseKeeper_AB.i.Forget(subPromise);
         }
 
@@ -106,11 +114,13 @@ namespace DCL
 
             for (int i = 0; i < goList.Count; i++)
             {
+                if (loadingCoroutine == null)
+                    break;
+
                 if (asset.container == null)
                     break;
 
                 GameObject assetBundleModelGO = UnityEngine.Object.Instantiate(goList[i]);
-
                 renderers.AddRange(assetBundleModelGO.GetComponentsInChildren<Renderer>(true));
 
                 //NOTE(Brian): Renderers are enabled in settings.ApplyAfterLoad

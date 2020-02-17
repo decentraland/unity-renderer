@@ -43,7 +43,8 @@ public class WelcomeHUDController : IHUD, System.IDisposable
 
     public void Dispose()
     {
-        Object.Destroy(view.gameObject);
+        if (view != null)
+            Object.Destroy(view.gameObject);
     }
 
     public void SetVisibility(bool visible)
