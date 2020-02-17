@@ -131,7 +131,11 @@ export const RESET_TUTORIAL = location.search.indexOf('RESET_TUTORIAL') !== -1
 export const NO_TUTORIAL = location.search.indexOf('NO_TUTORIAL') !== -1
 
 export function tutorialEnabled() {
-  return !NO_TUTORIAL && WORLD_EXPLORER && (RESET_TUTORIAL || getUserProfile().profile.tutorialStep !== tutorialStepId.FINISHED)
+  return (
+    !NO_TUTORIAL &&
+    WORLD_EXPLORER &&
+    (RESET_TUTORIAL || getUserProfile().profile.tutorialStep !== tutorialStepId.FINISHED)
+  )
 }
 
 export namespace commConfigurations {
