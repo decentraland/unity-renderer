@@ -225,9 +225,9 @@ export function* handleFetchProfile(action: PassportRequestAction): any {
     defaultLogger.warn(`Error requesting profile for ${userId}, `, error)
   }
 
-  if (!profile) {
+  const userInfo = getUserProfile()
+  if (!profile && userInfo && userInfo.userId && currentId === userInfo.userId) {
     defaultLogger.info(`Recover profile from local storage`)
-    const userInfo = getUserProfile()
     profile = yield call(
       ensureServerFormat,
       { ...userInfo.profile, avatar: { ...userInfo.profile.avatar, snapshots: userInfo.profile.snapshots } },
