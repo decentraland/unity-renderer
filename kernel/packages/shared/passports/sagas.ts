@@ -158,7 +158,7 @@ function takeLatestById<T extends Action>(
   keyFunction: (action: T) => string,
   saga: any,
   ...args: any
-): ForkEffect<never> {
+): ForkEffect {
   return fork(function*() {
     let lastTasks = new Map<any, any>()
     while (true) {
@@ -467,14 +467,18 @@ export async function modifyAvatar(params: {
 }) {
   const { url, currentVersion, profile, identity } = params
   const { avatar } = profile
+
   const newAvatar = { ...avatar }
+
   let files: ContentFile[] = []
+
   const snapshots = avatar.snapshots || (profile as any).snapshots
   if (snapshots) {
-    if (snapshots.face.startsWith('data') && snapshots.body.startsWith('data')) {
+    if (snapshots.face && snapshots.face.startsWith('data') && snapshots.body && snapshots.body.startsWith('data')) {
       // replace base64 snapshots with their respective hashes
       const faceFile: ContentFile = await makeContentFile('./face.png', base64ToBlob(snapshots.face))
       const bodyFile: ContentFile = await makeContentFile('./body.png', base64ToBlob(snapshots.body))
+
       const faceFileHash: string = await calculateBufferHash(faceFile.content)
       const bodyFileHash: string = await calculateBufferHash(bodyFile.content)
       newAvatar.snapshots = {
@@ -490,6 +494,7 @@ export async function modifyAvatar(params: {
     }
   }
   const newProfile = ensureServerFormat({ ...profile, avatar: newAvatar }, currentVersion)
+
   const [data] = await buildDeployData(
     [identity.address],
     {
@@ -662,7 +667,7 @@ export function* compareInventoriesAndTriggerNotification(
   saveToDb = saveToLocalStorage
 ) {
   if (areInventoriesDifferent(oldInventory, newInventory)) {
-    const oldItemsDict = oldInventory.reduce(
+    const oldItemsDict = oldInventory.reduce<Record<WearableId, boolean>>(
       (cumm: Record<WearableId, boolean>, id: string) => ({ ...cumm, [id]: true }),
       {}
     )

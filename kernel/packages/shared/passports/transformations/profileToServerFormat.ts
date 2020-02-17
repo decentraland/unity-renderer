@@ -1,6 +1,7 @@
 import { analizeColorPart, stripAlpha } from './analizeColorPart'
 import { isValidBodyShape } from './isValidBodyShape'
 import { Profile } from '../types'
+
 export function ensureServerFormat(profile: Profile, currentVersion: number): any {
   const { avatar } = profile
   const eyes = stripAlpha(analizeColorPart(avatar, 'eyeColor', 'eyes'))

@@ -1,4 +1,5 @@
 ﻿using System;
+using DCL.Interface;
 using UnityEngine;
 
 public class MinimapHUDController : IDisposable, IHUD
@@ -8,6 +9,7 @@ public class MinimapHUDController : IDisposable, IHUD
     private MinimapHUDView view;
 
     private FloatVariable minimapZoom => CommonScriptableObjects.minimapZoom;
+    private StringVariable currentSceneId => CommonScriptableObjects.sceneID;
 
     public MinimapHUDModel model { get; private set; }
 
@@ -78,11 +80,7 @@ public class MinimapHUDController : IDisposable, IHUD
 
     public void ReportScene()
     {
-        //TODO:
-        if (VERBOSE)
-        {
-            Debug.Log("Report scene pressed");
-        }
+        WebInterface.SendReportScene(currentSceneId);
     }
 
     public void SetVisibility(bool visible)

@@ -1,4 +1,6 @@
-﻿[System.Serializable]
+﻿using System.Collections.Generic;
+
+[System.Serializable]
 public class UserProfileModel
 {
     [System.Serializable]
@@ -8,6 +10,7 @@ public class UserProfileModel
         public string body;
     }
 
+    public string userId;
     public string name;
     public string email;
     public string description;
@@ -17,8 +20,12 @@ public class UserProfileModel
     public AvatarModel avatar;
     public string[] inventory;
     public Snapshots snapshots = new Snapshots();
-    public int tutorialStep;
-    public bool hasConnectedWeb3 = true;
-    public bool hasClaimedName = false;
     public UserProfileModel Clone() => (UserProfileModel)MemberwiseClone();
+
+    public bool hasConnectedWeb3 = true;
+
+    public int tutorialFlagsMask;
+    public List<string> blocked;
+    public int tutorialStep;
+    public bool hasClaimedName = false;
 }

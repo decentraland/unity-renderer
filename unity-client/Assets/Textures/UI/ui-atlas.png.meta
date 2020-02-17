@@ -345,6 +345,15 @@ TextureImporter:
       213: 287711080521237747
     second: MainButton
   - first:
+      213: 975731064881912476
+    second: BlockUser
+  - first:
+      213: -1116206129954847289
+    second: EmailMessage
+  - first:
+      213: 5392484295003101810
+    second: SecondaryButton
+  - first:
       213: 6438661715621639179
     second: ChatBg
   externalObjects: {}
@@ -2582,22 +2591,64 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: ChatBg
+      name: BlockUser
       rect:
         serializedVersion: 2
-        x: 726
-        y: 409
-        width: 33
-        height: 32
+        x: 412
+        y: 52
+        width: 150
+        height: 150
       alignment: 0
       pivot: {x: 0.5, y: 0.5}
-      border: {x: 14, y: 13, z: 14, w: 13}
+      border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 5635d5ad1f2bc48c8941531cc600207d
-      internalID: 6438661715621639179
+      spriteID: 443e574999cf5409683e9fb88a126dc8
+      internalID: 975731064881912476
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: EmailMessage
+      rect:
+        serializedVersion: 2
+        x: 723
+        y: 32
+        width: 269
+        height: 194
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: cf8b8450552dc423299bb93b6f9bb2ff
+      internalID: -1116206129954847289
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: SecondaryButton
+      rect:
+        serializedVersion: 2
+        x: 410
+        y: 206
+        width: 250
+        height: 22
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 120, y: 8, z: 120, w: 8}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 57e80e4a8a6eb4588a55c3f164a4d70b
+      internalID: 5392484295003101810
       vertices: []
       indices: 
       edges: []

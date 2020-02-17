@@ -12,7 +12,7 @@ public class PlayerInfoCardHUDViewShould : TestsBase
     {
         yield return base.SetUp();
         view = PlayerInfoCardHUDView.CreateView();
-        view.Initialize(null);
+        view.Initialize(null, null, null, null);
         CreateMockWearableByRarity(WearableLiterals.ItemRarity.EPIC);
         CreateMockWearableByRarity(WearableLiterals.ItemRarity.LEGENDARY);
         CreateMockWearableByRarity(WearableLiterals.ItemRarity.MYTHIC);
@@ -46,11 +46,21 @@ public class PlayerInfoCardHUDViewShould : TestsBase
     public void InitializeProperly()
     {
         bool hideCardButtonWasPressed = false;
+        bool reportButtonWasPressed = false;
+        bool blockButtonWasPressed = false;
+        bool unblockButtonWasPressed = false;
 
-        view.Initialize(() => hideCardButtonWasPressed = true);
+
+        view.Initialize(() => hideCardButtonWasPressed = true, () => reportButtonWasPressed = true, () => blockButtonWasPressed = true, () => unblockButtonWasPressed = true);
         view.hideCardButton.onClick.Invoke();
+        view.reportPlayerButton.onClick.Invoke();
+        view.blockPlayerButton.onClick.Invoke();
+        view.unblockPlayerButton.onClick.Invoke();
 
         Assert.IsTrue(hideCardButtonWasPressed);
+        Assert.IsTrue(reportButtonWasPressed);
+        Assert.IsTrue(blockButtonWasPressed);
+        Assert.IsTrue(unblockButtonWasPressed);
         Assert.IsTrue(GetTabMapping(PlayerInfoCardHUDView.Tabs.Passport).container.activeSelf);
         Assert.IsFalse(GetTabMapping(PlayerInfoCardHUDView.Tabs.Trade).container.activeSelf);
         Assert.IsFalse(GetTabMapping(PlayerInfoCardHUDView.Tabs.Block).container.activeSelf);
@@ -113,7 +123,7 @@ public class PlayerInfoCardHUDViewShould : TestsBase
         {
             id = rarity,
             rarity = rarity,
-            tags = new string[]{},
+            tags = new string[] { },
             category = WearableLiterals.Categories.UPPER_BODY
         };
         CatalogController.wearableCatalog.Add(rarity, wearable);

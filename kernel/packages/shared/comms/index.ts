@@ -52,6 +52,7 @@ import { RootState } from 'shared/store/rootTypes'
 import { store } from 'shared/store/store'
 import { setCatalystRealmCommsStatus } from 'shared/dao/actions'
 import { observeRealmChange } from 'shared/dao'
+import { getProfile } from 'shared/passports/selectors'
 
 export type CommsVersion = 'v1' | 'v2'
 export type CommsMode = CommsV1Mode | CommsV2Mode
@@ -235,6 +236,7 @@ function ensurePeerTrackingInfo(context: Context, alias: string): PeerTrackingIn
 
 export function processChatMessage(context: Context, fromAlias: string, message: Package<ChatMessage>) {
   const msgId = message.data.id
+  const profile = getProfile(global.globalStore.getState(), identity.address)
 
   const peerTrackingInfo = ensurePeerTrackingInfo(context, fromAlias)
   if (!peerTrackingInfo.receivedPublicChatMessages.has(msgId)) {
@@ -260,7 +262,9 @@ export function processChatMessage(context: Context, fromAlias: string, message:
           message: text,
           isCommand: false
         }
-        chatObservable.notifyObservers({ type: ChatEvent.MESSAGE_RECEIVED, messageEntry: entry })
+        if (profile && user.userId && profile.blocked && !profile.blocked.includes(user.userId)) {
+          chatObservable.notifyObservers({ type: ChatEvent.MESSAGE_RECEIVED, messageEntry: entry })
+        }
       }
     }
   }

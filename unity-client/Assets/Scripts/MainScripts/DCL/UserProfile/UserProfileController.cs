@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using UnityEngine;
 
 public class UserProfileController : MonoBehaviour
@@ -18,7 +18,7 @@ public class UserProfileController : MonoBehaviour
             return userProfilesCatalogValue;
         }
     }
-    
+
     [NonSerialized] public UserProfile ownUserProfile;
 
     public void Awake()

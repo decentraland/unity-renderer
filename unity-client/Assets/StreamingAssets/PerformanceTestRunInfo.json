@@ -18,7 +18,7 @@
     },
     "BuildSettings": {
         "Platform": "",
-        "BuildTarget": "StandaloneWindows64",
+        "BuildTarget": "StandaloneOSX",
         "DevelopmentPlayer": false,
         "AndroidBuildSystem": "Gradle"
     },
@@ -41,7 +41,7 @@
         "MtRendering": true,
         "GraphicsJobs": false,
         "GpuSkinning": true,
-        "GraphicsApi": "Direct3D11",
+        "GraphicsApi": "Metal",
         "Batchmode": "False",
         "StereoRenderingPath": "MultiPass",
         "RenderThreadingMode": "MultiThreaded",
@@ -51,7 +51,7 @@
         "ScriptingRuntimeVersion": ""
     },
     "TestSuite": "",
-    "StartTime": 1580488873094.6648,
+    "StartTime": 1581446799311.939,
     "EndTime": 0.0,
     "Results": []
 }
