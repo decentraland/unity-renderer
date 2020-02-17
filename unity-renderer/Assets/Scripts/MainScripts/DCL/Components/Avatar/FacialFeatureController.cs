@@ -1,6 +1,6 @@
+using DCL.Helpers;
 using System.Collections;
 using System.Linq;
-using DCL.Helpers;
 using UnityEngine;
 
 public class FacialFeatureController
@@ -13,7 +13,6 @@ public class FacialFeatureController
     Texture mainTexture = null;
     Texture maskTexture = null;
     bool texturesRetreived = false;
-    Coroutine coroutine;
 
     public FacialFeatureController(WearableItem wearableItem, string bodyShapeType)
     {
@@ -39,6 +38,7 @@ public class FacialFeatureController
         {
             yield return Utils.FetchTexture(wearable.baseUrl + mainTextureName, (tex) =>
             {
+                tex.Compress(false);
                 mainTexture = tex;
             });
         }
@@ -47,6 +47,7 @@ public class FacialFeatureController
         {
             yield return Utils.FetchTexture(wearable.baseUrl + maskName, (tex) =>
             {
+                tex.Compress(false);
                 maskTexture = tex;
             });
         }
