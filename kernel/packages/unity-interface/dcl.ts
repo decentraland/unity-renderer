@@ -9,10 +9,12 @@ import { uuid } from 'decentraland-ecs/src'
 import { EventDispatcher } from 'decentraland-rpc/lib/common/core/EventDispatcher'
 import { IFuture } from 'fp-future'
 import { Empty } from 'google-protobuf/google/protobuf/empty_pb'
+import { identity } from 'shared'
 import { sendPublicChatMessage } from 'shared/comms'
 import { AvatarMessageType } from 'shared/comms/interface/types'
 import { avatarMessageObservable, getUserProfile } from 'shared/comms/peers'
 import { providerFuture } from 'shared/ethereum/provider'
+import { getProfile } from 'shared/passports/selectors'
 import { TeleportController } from 'shared/world/TeleportController'
 import { gridToWorld } from '../atomicHelpers/parcelScenePositions'
 import {
@@ -227,6 +229,44 @@ const browserInterface = {
 
   EditAvatarClicked() {
     delightedSurvey()
+  },
+
+  ReportScene(sceneId: string) {
+    browserInterface.OpenWebURL({ url: `https://decentralandofficial.typeform.com/to/KzaUxh?sceneId=${sceneId}` })
+  },
+
+  ReportPlayer(username: string) {
+    browserInterface.OpenWebURL({ url: `https://decentralandofficial.typeform.com/to/owLkla?username=${username}` })
+  },
+
+  BlockPlayer(data: { userId: string }) {
+    const profile = getProfile(global.globalStore.getState(), identity.address)
+
+    if (profile) {
+      let blocked: string[] = [data.userId]
+
+      if (profile.blocked) {
+        for (let blockedUser of profile.blocked) {
+          if (blockedUser === data.userId) {
+            return
+          }
+        }
+
+        // Merge the existing array and any previously blocked users
+        blocked = [...profile.blocked, ...blocked]
+      }
+
+      global.globalStore.dispatch(saveAvatarRequest({ ...profile, blocked }))
+    }
+  },
+
+  UnblockPlayer(data: { userId: string }) {
+    const profile = getProfile(global.globalStore.getState(), identity.address)
+
+    if (profile) {
+      const blocked = profile.blocked ? profile.blocked.filter(id => id !== data.userId) : []
+      global.globalStore.dispatch(saveAvatarRequest({ ...profile, blocked }))
+    }
   }
 }
 

@@ -11,9 +11,11 @@ public class UserProfile : ScriptableObject //TODO Move to base variable
 
     public event Action<UserProfile> OnUpdate;
 
+    public string userId => model.userId;
     public string userName => model.name;
     public string description => model.description;
     public string email => model.email;
+    public List<string> blocked => model.blocked;
     public bool hasConnectedWeb3 => model.hasConnectedWeb3;
     public bool hasClaimedName => model.hasClaimedName;
     public AvatarModel avatar => model.avatar;
@@ -46,6 +48,7 @@ public class UserProfile : ScriptableObject //TODO Move to base variable
             return;
         }
 
+        model.userId = newModel.userId;
         model.tutorialStep = newModel.tutorialStep;
         model.hasClaimedName = newModel.hasClaimedName;
         model.name = newModel.name;
@@ -55,6 +58,7 @@ public class UserProfile : ScriptableObject //TODO Move to base variable
         model.snapshots = newModel.snapshots;
         model.hasConnectedWeb3 = newModel.hasConnectedWeb3;
         model.inventory = newModel.inventory;
+        model.blocked = newModel.blocked;
         if (model.inventory != null)
         {
             inventory = model.inventory.GroupBy(x => x).ToDictionary(x => x.Key, x => x.Count());

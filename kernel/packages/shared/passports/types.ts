@@ -11,6 +11,7 @@ export interface Profile {
   avatar: Avatar
   ethAddress: string | undefined
   inventory: WearableId[]
+  blocked: string[]
   version: number
   tutorialStep: number
 }
@@ -26,6 +27,7 @@ export interface Avatar {
     body: string
   }
 }
+
 export interface ProfileForRenderer {
   userId: string
   name: string
