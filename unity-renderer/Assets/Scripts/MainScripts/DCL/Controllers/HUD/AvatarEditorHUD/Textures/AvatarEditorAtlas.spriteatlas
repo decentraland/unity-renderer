@@ -31,7 +31,7 @@ SpriteAtlas:
     variantMultiplier: 1
     packables:
     - {fileID: 102900000, guid: 935ddd9b29b3345009bfa22069bace25, type: 3}
-    totalSpriteSurfaceArea: 504334
+    totalSpriteSurfaceArea: 519685
     bindAsDefault: 1
   m_MasterAtlas: {fileID: 0}
   m_PackedSprites:
@@ -68,6 +68,7 @@ SpriteAtlas:
   - {fileID: 21300000, guid: 9d8cc2b547e50472faaa6e363e8ead79, type: 3}
   - {fileID: 21300000, guid: 2dc807c5b399c4301b1732ad95786f55, type: 3}
   - {fileID: 21300000, guid: 5b33230699d78421cbbc60c3c954c9fc, type: 3}
+  - {fileID: 21300000, guid: cba60936154164c1990ac2b1443eff09, type: 3}
   - {fileID: 21300000, guid: 81f10556854034d878b316ad751b7f71, type: 3}
   - {fileID: 21300000, guid: 946f30660ef2f4261b313ca749c4127c, type: 3}
   - {fileID: 21300000, guid: c1bf499699a424df88aa013bd2f32b68, type: 3}
@@ -134,6 +135,7 @@ SpriteAtlas:
   - Spinner
   - FemaleIcon
   - MainButton
+  - SellButton
   - FavSet
   - HairIcon
   - ShoesIcon
