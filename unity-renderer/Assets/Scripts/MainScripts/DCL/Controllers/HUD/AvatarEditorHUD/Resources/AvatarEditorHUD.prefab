@@ -3359,7 +3359,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_Material: {fileID: 0}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
-  m_RaycastTarget: 0
+  m_RaycastTarget: 1
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
@@ -10388,7 +10388,7 @@ PrefabInstance:
     - target: {fileID: 5176895287733378623, guid: 7d2f70c1de2924a44bbd79ddad5f3d1b,
         type: 3}
       propertyPath: m_Value
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 1885194522706077625, guid: 7d2f70c1de2924a44bbd79ddad5f3d1b,
         type: 3}
@@ -10580,7 +10580,7 @@ PrefabInstance:
     - target: {fileID: 5176895287733378623, guid: 7d2f70c1de2924a44bbd79ddad5f3d1b,
         type: 3}
       propertyPath: m_Value
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 1885194522706077625, guid: 7d2f70c1de2924a44bbd79ddad5f3d1b,
         type: 3}
@@ -10782,7 +10782,7 @@ PrefabInstance:
     - target: {fileID: 5176895287733378623, guid: 7d2f70c1de2924a44bbd79ddad5f3d1b,
         type: 3}
       propertyPath: m_Value
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 5176895287733378623, guid: 7d2f70c1de2924a44bbd79ddad5f3d1b,
         type: 3}
@@ -11930,7 +11930,7 @@ PrefabInstance:
     - target: {fileID: 5176895287733378623, guid: 7d2f70c1de2924a44bbd79ddad5f3d1b,
         type: 3}
       propertyPath: m_Value
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 1885194522706077625, guid: 7d2f70c1de2924a44bbd79ddad5f3d1b,
         type: 3}
@@ -14638,7 +14638,7 @@ PrefabInstance:
     - target: {fileID: 5176895287733378623, guid: 7d2f70c1de2924a44bbd79ddad5f3d1b,
         type: 3}
       propertyPath: m_Value
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 1885194522706077625, guid: 7d2f70c1de2924a44bbd79ddad5f3d1b,
         type: 3}
