@@ -186,8 +186,9 @@ const browserInterface = {
     Session.current.then(s => s.logout()).catch(e => defaultLogger.error('error while logging out', e))
   },
 
-  SaveUserAvatar(data: { face: string; body: string; avatar: Avatar }) {
-    global.globalStore.dispatch(saveAvatarRequest(data))
+  SaveUserAvatar({ face, body, avatar }: { face: string; body: string; avatar: Avatar }) {
+    const profile: Profile = getUserProfile().profile as Profile
+    global.globalStore.dispatch(saveAvatarRequest({ ...profile, avatar: { ...avatar, snapshots: { face, body } } }))
   },
 
   SaveUserTutorialStep(data: { tutorialStep: number }) {
@@ -792,7 +793,7 @@ export async function initializeEngine(_gameInstance: GameInstance) {
     onMessage(type: string, message: any) {
       if (type in browserInterface) {
         // tslint:disable-next-line:semicolon
-        ; (browserInterface as any)[type](message)
+        ;(browserInterface as any)[type](message)
       } else {
         defaultLogger.info(`Unknown message (did you forget to add ${type} to unity-interface/dcl.ts?)`, message)
       }

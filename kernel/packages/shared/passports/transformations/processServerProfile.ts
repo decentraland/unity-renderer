@@ -1,6 +1,5 @@
 import { Profile, WearableId } from '../types'
 import { colorString } from './colorString'
-import { getServerConfigurations } from 'config'
 
 export function fixWearableIds(wearableId: string) {
   return wearableId.replace('/male_body', '/BaseMale').replace('/female_body', '/BaseFemale')
@@ -28,13 +27,7 @@ export function processServerProfile(userId: string, receivedProfile: any): Prof
     .map(fixWearableIds)
     .filter(dropDeprecatedWearables)
     .filter(noExclusiveMismatches(receivedProfile.inventory))
-  const snapshots = receivedProfile.snapshots ||
-    (receivedProfile.avatar && receivedProfile.avatar.snapshots) || {
-      face: getServerConfigurations().avatar.snapshotStorage + userId + `/face.png`,
-      body: getServerConfigurations().avatar.snapshotStorage + userId + `/body.png`
-    }
-  snapshots.face = snapshots.face.replace('|', '%7C')
-  snapshots.body = snapshots.body.replace('|', '%7C')
+  const snapshots = receivedProfile.avatar ? receivedProfile.avatar.snapshots : {}
   return {
     userId,
     email: receivedProfile.email || '',

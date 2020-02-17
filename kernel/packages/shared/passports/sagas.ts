@@ -55,6 +55,7 @@ const CID = require('cids')
 import { sha3 } from 'web3x/utils'
 import { CATALYST_REALM_INITIALIZED } from '../dao/actions'
 import { isRealmInitialized, getUpdateProfileServer } from '../dao/selectors'
+import { getUserProfile } from '../comms/peers'
 const multihashing = require('multihashing-async')
 const toBuffer = require('blob-to-buffer')
 
@@ -225,6 +226,16 @@ export function* handleFetchProfile(action: PassportRequestAction): any {
   }
 
   if (!profile) {
+    defaultLogger.info(`Recover profile from local storage`)
+    const userInfo = getUserProfile()
+    profile = yield call(
+      ensureServerFormat,
+      { ...userInfo.profile, avatar: { ...userInfo.profile.avatar, snapshots: userInfo.profile.snapshots } },
+      userInfo.version || 0
+    )
+  }
+
+  if (!profile) {
     defaultLogger.info(`Profile for ${userId} not found, generating random profile`)
     profile = yield call(generateRandomUserProfile, userId)
   }
@@ -373,18 +384,21 @@ export function* handleSaveAvatar(saveAvatar: SaveAvatarRequest) {
     const url: string = yield select(getUpdateProfileServer)
     const profile = { ...savedProfile, ...saveAvatar.payload.profile }
 
-    const result = yield call(modifyAvatar, {
-      url,
-      userId,
-      currentVersion,
-      identity,
-      profile
-    })
+    // only update profile if wallet is connected
+    if (identity.hasConnectedWeb3) {
+      const result = yield call(modifyAvatar, {
+        url,
+        userId,
+        currentVersion,
+        identity,
+        profile
+      })
 
-    const { creationTimestamp: version } = result
+      const { creationTimestamp: version } = result
 
-    yield put(saveAvatarSuccess(userId, version, profile))
-    yield put(passportRequest(userId))
+      yield put(saveAvatarSuccess(userId, version, profile))
+      yield put(passportRequest(userId))
+    }
   } catch (error) {
     yield put(saveAvatarFailure(userId, 'unknown reason'))
   }
@@ -472,23 +486,24 @@ export async function modifyAvatar(params: {
 
   const snapshots = avatar.snapshots || (profile as any).snapshots
   if (snapshots) {
-    if (snapshots.face && snapshots.face.startsWith('data') && snapshots.body && snapshots.body.startsWith('data')) {
+    if (snapshots.face.includes('://') && snapshots.body.includes('://')) {
+      newAvatar.snapshots = {
+        face: snapshots.face.split('/').pop()!,
+        body: snapshots.body.split('/').pop()!
+      }
+    } else {
       // replace base64 snapshots with their respective hashes
       const faceFile: ContentFile = await makeContentFile('./face.png', base64ToBlob(snapshots.face))
       const bodyFile: ContentFile = await makeContentFile('./body.png', base64ToBlob(snapshots.body))
 
       const faceFileHash: string = await calculateBufferHash(faceFile.content)
       const bodyFileHash: string = await calculateBufferHash(bodyFile.content)
+
       newAvatar.snapshots = {
         face: faceFileHash,
         body: bodyFileHash
       }
       files = [faceFile, bodyFile]
-    } else {
-      newAvatar.snapshots = {
-        face: snapshots.face.split('/').pop()!,
-        body: snapshots.body.split('/').pop()!
-      }
     }
   }
   const newProfile = ensureServerFormat({ ...profile, avatar: newAvatar }, currentVersion)
