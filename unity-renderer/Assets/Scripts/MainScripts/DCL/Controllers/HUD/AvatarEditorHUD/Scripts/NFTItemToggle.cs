@@ -37,9 +37,8 @@ public class NFTItemToggle : ItemToggle
 
     protected override void OnDestroy()
     {
-        base.OnDestroy();
         OnHideAllInfos -= HideInfo;
-        nftItemInfo.CleanUp();
+        base.OnDestroy();
     }
 
     private void ShowInfo()

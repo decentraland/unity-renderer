@@ -67,11 +67,11 @@ public class NFTItemInfo : MonoBehaviour
         if (currentModel != null && newModel.Equals(currentModel))
             return;
 
-        ThumbnailsManager.CancelRequest(currentModel?.thumbnail, UpdateItemThumbnail);
+        ForgetThumbnail();
+
         currentModel = newModel;
 
         name.text = currentModel.name;
-        ThumbnailsManager.RequestThumbnail(currentModel.thumbnail, UpdateItemThumbnail);
 
         foreach (var icon in icons)
         {
@@ -91,6 +91,9 @@ public class NFTItemInfo : MonoBehaviour
             rt.ForceUpdateRectTransforms();
             LayoutRebuilder.ForceRebuildLayoutImmediate(rt);
         }, transform);
+
+        if(gameObject.activeInHierarchy)
+            GetThumbnail();
     }
 
     public void SetActive(bool active)
@@ -103,8 +106,25 @@ public class NFTItemInfo : MonoBehaviour
         thumbnail.sprite = sprite;
     }
 
-    public void CleanUp()
+    private void GetThumbnail()
     {
-        ThumbnailsManager.CancelRequest(currentModel?.thumbnail, UpdateItemThumbnail);
+        if(currentModel != null)
+            ThumbnailsManager.GetThumbnail(currentModel.thumbnail, UpdateItemThumbnail);
+    }
+    
+    private void ForgetThumbnail()
+    {
+        if(currentModel != null)
+            ThumbnailsManager.ForgetThumbnail(currentModel.thumbnail, UpdateItemThumbnail);
+    }
+
+    private void OnEnable()
+    {
+        GetThumbnail();
+    }
+
+    private void OnDisable()
+    {
+        ForgetThumbnail();
     }
 }

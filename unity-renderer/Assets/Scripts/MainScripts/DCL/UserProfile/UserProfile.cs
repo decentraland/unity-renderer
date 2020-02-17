@@ -32,11 +32,8 @@ public class UserProfile : ScriptableObject //TODO Move to base variable
 
     public void UpdateData(UserProfileModel newModel, bool downloadAssets = true)
     {
-        if (model?.snapshots?.face != null)
-            ThumbnailsManager.CancelRequest(model.snapshots.face, OnFaceSnapshotReady);
-
-        if (model?.snapshots?.body != null)
-            ThumbnailsManager.CancelRequest(model.snapshots.body, OnBodySnapshotReady);
+        ForgetThumbnail(model?.snapshots?.face, OnFaceSnapshotReady);
+        ForgetThumbnail(model?.snapshots?.body, OnBodySnapshotReady);
 
         inventory.Clear();
         faceSnapshot = null;
@@ -66,10 +63,8 @@ public class UserProfile : ScriptableObject //TODO Move to base variable
 
         if (downloadAssets && model.snapshots != null)
         {
-            if (model.snapshots.face != null)
-                ThumbnailsManager.RequestThumbnail(model.snapshots.face, OnFaceSnapshotReady);
-            if (model.snapshots.body != null)
-                ThumbnailsManager.RequestThumbnail(model.snapshots.body, OnBodySnapshotReady);
+            GetThumbnail(model.snapshots.face, OnFaceSnapshotReady);
+            GetThumbnail(model.snapshots.body, OnBodySnapshotReady);
         }
 
         OnUpdate?.Invoke(this);
@@ -99,11 +94,8 @@ public class UserProfile : ScriptableObject //TODO Move to base variable
     {
         if (model?.snapshots != null)
         {
-            if (model.snapshots.face != null)
-                ThumbnailsManager.CancelRequest(model.snapshots.face, OnFaceSnapshotReady);
-
-            if (model.snapshots.body != null)
-                ThumbnailsManager.CancelRequest(model.snapshots.body, OnBodySnapshotReady);
+            ForgetThumbnail(model.snapshots.face, OnFaceSnapshotReady);
+            ForgetThumbnail(model.snapshots.body, OnBodySnapshotReady);
         }
 
         model.avatar.CopyFrom(newModel);
@@ -161,4 +153,18 @@ public class UserProfile : ScriptableObject //TODO Move to base variable
             Resources.UnloadAsset(this);
     }
 #endif
+
+    private void GetThumbnail(string url, Action<Sprite> callback)
+    {
+        if (string.IsNullOrEmpty(url))
+            return;
+        ThumbnailsManager.GetThumbnail(url, callback);
+    }
+
+    private void ForgetThumbnail(string url, Action<Sprite> callback)
+    {
+        if (string.IsNullOrEmpty(url))
+            return;
+        ThumbnailsManager.ForgetThumbnail(url, callback);
+    }
 }

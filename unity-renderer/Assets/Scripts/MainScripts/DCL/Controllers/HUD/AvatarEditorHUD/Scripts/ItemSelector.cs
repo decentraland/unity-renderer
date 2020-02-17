@@ -1,5 +1,4 @@
-﻿using System.Collections.Generic;
-using System.Linq;
+using System.Collections.Generic;
 using System.Runtime.CompilerServices;
 using UnityEngine;
 
@@ -65,13 +64,16 @@ public class ItemSelector : MonoBehaviour
 
     public void RemoveAllItemToggle()
     {
-        var gameObjects = itemToggles.Values.Select(x => x.gameObject).ToArray();
-        itemToggles.Clear();
-        for (var i = gameObjects.Length - 1; i >= 0; i--)
+        using (var it = itemToggles.GetEnumerator())
         {
-            Destroy(gameObjects[i]);
+            while (it.MoveNext())
+            {
+                Destroy(it.Current.Value.gameObject);
+            }
         }
-    } 
+
+        itemToggles.Clear();
+    }
 
     public void SetBodyShape(string bodyShape)
     {
@@ -97,14 +99,14 @@ public class ItemSelector : MonoBehaviour
     public void Select(string itemID)
     {
         ItemToggle toggle = GetItemToggleByID(itemID);
-        if(toggle != null)
+        if (toggle != null)
             toggle.selected = true;
     }
 
     public void Unselect(string itemID)
     {
         ItemToggle toggle = GetItemToggleByID(itemID);
-        if(toggle != null)
+        if (toggle != null)
             toggle.selected = false;
     }
 
