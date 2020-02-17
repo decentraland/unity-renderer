@@ -212,6 +212,10 @@ jobs:
             make lint
             npm outdated --depth 0 || true
       - run:
+          name: Set env
+          command: |
+            echo 'export const buildNumber = '$CIRCLE_BUILD_NUM > /tmp/explorer/kernel/packages/shared/meta/env.ts
+      - run:
           name: Build decentraland-ecs
           command: |
             make build-essentials

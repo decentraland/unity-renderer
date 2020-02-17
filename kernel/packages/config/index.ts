@@ -252,6 +252,9 @@ export function getServerConfigurations() {
   return {
     contentAsBundle: `https://content-assets-as-bundle.decentraland.org`,
     wearablesApi: `https://wearable-api.decentraland.org/v2`,
+    explorerConfiguration: `http://explorer-config.decentraland.${
+      TLDDefault === 'today' ? 'org' : TLDDefault
+    }.s3.amazonaws.com/configuration.json`,
     avatar: {
       snapshotStorage: `https://avatars-storage.decentraland.${TLDDefault}/`,
       catalog: getExclusiveServer(),
