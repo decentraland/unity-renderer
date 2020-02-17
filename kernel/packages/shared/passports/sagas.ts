@@ -195,8 +195,8 @@ export function* initialLoad() {
     const catalog = collections
       .reduce((flatten, collection) => flatten.concat(collection.wearables), [] as Wearable[])
       .map(overrideBaseUrl)
-    const baseAvatars = catalog.filter((_: Wearable) => !_.tags.includes('exclusive'))
-    const baseExclusive = catalog.filter((_: Wearable) => _.tags.includes('exclusive'))
+    const baseAvatars = catalog.filter((_: Wearable) => _.tags && !_.tags.includes('exclusive'))
+    const baseExclusive = catalog.filter((_: Wearable) => _.tags && _.tags.includes('exclusive'))
     if (!(yield select(isInitialized))) {
       yield take(RENDERER_INITIALIZED)
     }
