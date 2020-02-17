@@ -905,6 +905,7 @@ namespace DCL.Controllers
             if (component != null)
             {
                 Utils.SafeDestroy(component);
+                entity.uuidComponents.Remove(type);
             }
         }
 
