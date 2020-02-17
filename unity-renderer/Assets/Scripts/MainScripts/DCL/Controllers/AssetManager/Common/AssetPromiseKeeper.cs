@@ -1,4 +1,4 @@
-﻿using System.Collections;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -129,8 +129,8 @@ namespace DCL
                 }
             }
 
-            CleanPromise(promise);
             promise.Unload();
+            CleanPromise(promise);
 
             return promise;
         }
