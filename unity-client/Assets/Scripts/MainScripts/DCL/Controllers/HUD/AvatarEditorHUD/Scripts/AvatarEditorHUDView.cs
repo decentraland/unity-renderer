@@ -97,14 +97,17 @@ public class AvatarEditorHUDView : MonoBehaviour
 
         characterPreviewRotation.OnHorizontalRotation += characterPreviewController.Rotate;
     }
+
     private void InitializeNavigationInfo(AvatarEditorNavigationInfo current)
     {
         current.Initialize();
+
         current.toggle.isOn = current.enabledByDefault;
-        current.canvas.enabled = current.enabledByDefault;
+
+        current.canvas.gameObject.SetActive(current.enabledByDefault);
         current.toggle.onValueChanged.AddListener((on) =>
         {
-            current.canvas.enabled = @on;
+            current.canvas.gameObject.SetActive(@on);
             characterPreviewController.SetFocus(current.focus);
         });
     }
