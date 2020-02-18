@@ -180,6 +180,7 @@ export class LighthouseWorldInstanceConnection implements WorldInstanceConnectio
   private initializePeer() {
     this.statusHandler({ status: 'connecting', connectedPeers: this.connectedPeersCount() })
     this.peer = this.createPeer()
+    this.peer.logLevel = 'WARN'
     global.__DEBUG_PEER = this.peer
     return this.peer
   }

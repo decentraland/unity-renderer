@@ -254,6 +254,7 @@ export async function catalystRealmConnected(): Promise<void> {
         unsubscribe()
       } else if (status.status === 'error' || status.status === 'realm-full') {
         reject(status.status)
+        unsubscribe()
       }
     })
   })
