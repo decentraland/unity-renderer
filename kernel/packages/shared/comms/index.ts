@@ -53,6 +53,7 @@ import { store } from 'shared/store/store'
 import { setCatalystRealmCommsStatus } from 'shared/dao/actions'
 import { observeRealmChange } from 'shared/dao'
 import { getProfile } from 'shared/passports/selectors'
+import { Profile } from 'shared/passports/types'
 
 export type CommsVersion = 'v1' | 'v2'
 export type CommsMode = CommsV1Mode | CommsV2Mode
@@ -262,12 +263,16 @@ export function processChatMessage(context: Context, fromAlias: string, message:
           message: text,
           isCommand: false
         }
-        if (profile && user.userId && profile.blocked && !profile.blocked.includes(user.userId)) {
+        if (profile && user.userId && !isBlocked(profile, user.userId)) {
           chatObservable.notifyObservers({ type: ChatEvent.MESSAGE_RECEIVED, messageEntry: entry })
         }
       }
     }
   }
+}
+
+function isBlocked(profile: Profile, userId: string): boolean {
+  return profile.blocked && profile.blocked.includes(userId)
 }
 
 export function processProfileMessage(
