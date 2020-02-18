@@ -57,7 +57,9 @@ export class TeleportController {
 
       const currentParcel = worldToGrid(lastPlayerPosition)
 
-      usersParcels = usersParcels.filter(it => currentParcel.x !== it[0] && currentParcel.y !== it[1])
+      usersParcels = usersParcels.filter(
+        it => isInsideParcelLimits(it[0], it[1]) && currentParcel.x !== it[0] && currentParcel.y !== it[1]
+      )
 
       if (usersParcels.length > 0) {
         // Sorting from most close users
@@ -71,7 +73,10 @@ export class TeleportController {
           `Found a parcel with ${closeUsers} user(s) nearby: ${target[0]},${target[1]}. Teleporting...`
         )
       } else {
-        return { message: 'There seems to be no users in other parcels at the current realm. Could not teleport.', success: false }
+        return {
+          message: 'There seems to be no users in other parcels at the current realm. Could not teleport.',
+          success: false
+        }
       }
     } catch (e) {
       defaultLogger.error('Error while trying to teleport to crowd', e)
@@ -99,13 +104,7 @@ export class TeleportController {
   public static goTo(x: number, y: number, teleportMessage?: string): { message: string; success: boolean } {
     const tpMessage: string = teleportMessage ? teleportMessage : `Teleporting to ${x}, ${y}...`
 
-    const insideCoords =
-      x > parcelLimits.minLandCoordinateX &&
-      x <= parcelLimits.maxLandCoordinateX &&
-      y > parcelLimits.minLandCoordinateY &&
-      y <= parcelLimits.maxLandCoordinateY
-
-    if (insideCoords) {
+    if (isInsideParcelLimits(x, y)) {
       teleportObservable.notifyObservers({
         x: x,
         y: y,
@@ -120,4 +119,13 @@ export class TeleportController {
       return { message: errorMessage, success: false }
     }
   }
+}
+
+function isInsideParcelLimits(x: number, y: number) {
+  return (
+    x > parcelLimits.minLandCoordinateX &&
+    x <= parcelLimits.maxLandCoordinateX &&
+    y > parcelLimits.minLandCoordinateY &&
+    y <= parcelLimits.maxLandCoordinateY
+  )
 }
