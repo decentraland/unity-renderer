@@ -23,9 +23,9 @@ MonoBehaviour:
     id: Run
   - clip: {fileID: 7400000, guid: c91199fcab8eef54d8045d809d671896, type: 2}
     id: Walk
-  - clip: {fileID: 7400000, guid: 2dae353875bac8547accac9dc05c2037, type: 2}
+  - clip: {fileID: 7400000, guid: 5c74b911f7b8dd4439007b10d3321304, type: 2}
     id: wave
-  - clip: {fileID: 7400000, guid: 514568bea213ab64d8d6252a2444d8c8, type: 2}
+  - clip: {fileID: 7400000, guid: 56ec5d1dfc9e9ee4eacb6dac46499ddd, type: 2}
     id: fistpump
-  - clip: {fileID: 7400000, guid: d297abf3869941b41a82f516b9de16d4, type: 2}
+  - clip: {fileID: 7400000, guid: f45ea28ca4b4286449c5f6197d2b949e, type: 2}
     id: robot
