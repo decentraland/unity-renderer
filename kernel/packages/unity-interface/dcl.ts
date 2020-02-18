@@ -178,7 +178,7 @@ const browserInterface = {
     if (hasWallet) {
       TeleportController.goToNext()
     } else {
-      window.open('https://docs.decentraland.org/blockchain-integration/ethereum-essentials/', '_blank')
+      window.open('https://docs.decentraland.org/get-a-wallet/', '_blank')
     }
   },
 
