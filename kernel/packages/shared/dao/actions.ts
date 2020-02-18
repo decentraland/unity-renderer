@@ -27,3 +27,7 @@ export type CatalystNodeInitialized = ReturnType<typeof catalystRealmInitialized
 export const SET_CATALYST_REALM_COMMS_STATUS = 'Set Catalyst Realm Comms Status'
 export const setCatalystRealmCommsStatus = (status: CommsStatus) => action(SET_CATALYST_REALM_COMMS_STATUS, status)
 export type SetCatalystRealmCommsStatus = ReturnType<typeof setCatalystRealmCommsStatus>
+
+export const MARK_CATALYST_REALM_FULL = 'Mark Catalyst Realm Full'
+export const markCatalystRealmFull = (realm: Realm) => action(MARK_CATALYST_REALM_FULL, realm)
+export type MarkCatalystRealmFull = ReturnType<typeof markCatalystRealmFull>

@@ -120,10 +120,16 @@ async function fetchCatalystStatuses(nodes: { domain: string }[]) {
 }
 
 export function pickCatalystRealm(candidates: Candidate[]): Realm {
-  const sorted = candidates.sort((c1, c2) => {
-    const diff = c2.score - c1.score
-    return diff === 0 ? c1.elapsed - c2.elapsed : diff
-  })
+  const sorted = candidates
+    .filter(it => it.layer.usersCount < it.layer.maxUsers)
+    .sort((c1, c2) => {
+      const diff = c2.score - c1.score
+      return diff === 0 ? c1.elapsed - c2.elapsed : diff
+    })
+
+  if (sorted.length === 0 && candidates.length > 0) {
+    throw new Error('No available realm found!')
+  }
 
   return candidateToRealm(sorted[0])
 }
@@ -236,8 +242,8 @@ export async function catalystRealmConnected(): Promise<void> {
 
   if (status.status === 'connected') {
     return Promise.resolve()
-  } else if (status.status === 'error') {
-    return Promise.reject('Error connecting to lighthouse')
+  } else if (status.status === 'error' || status.status === 'realm-full') {
+    return Promise.reject(status.status)
   }
 
   return new Promise((resolve, reject) => {
@@ -246,9 +252,8 @@ export async function catalystRealmConnected(): Promise<void> {
       if (status.status === 'connected') {
         resolve()
         unsubscribe()
-      } else if (status.status === 'error') {
-        reject('Error connecting to lighthouse')
-        unsubscribe()
+      } else if (status.status === 'error' || status.status === 'realm-full') {
+        reject(status.status)
       }
     })
   })

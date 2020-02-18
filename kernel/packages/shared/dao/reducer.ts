@@ -3,7 +3,8 @@ import {
   SET_CATALYST_REALM,
   INIT_CATALYST_REALM,
   SET_CATALYST_CANDIDATES,
-  SET_CATALYST_REALM_COMMS_STATUS
+  SET_CATALYST_REALM_COMMS_STATUS,
+  MARK_CATALYST_REALM_FULL
 } from './actions'
 import { DaoState, Candidate, Realm } from './types'
 import {
@@ -61,6 +62,17 @@ export function daoReducer(state?: DaoState, action?: AnyAction): DaoState {
       return {
         ...state,
         commsStatus: action.payload ? action.payload : { status: 'initial', connectedPeers: 0 }
+      }
+    case MARK_CATALYST_REALM_FULL:
+      return {
+        ...state,
+        candidates: state.candidates.map(it => {
+          if (it.catalystName === action.payload.catalystName && it.layer.name === action.payload.layer) {
+            return { ...it, layer: { ...it.layer, usersCount: it.layer.maxUsers } }
+          } else {
+            return it
+          }
+        })
       }
     default:
       return state

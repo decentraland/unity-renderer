@@ -30,4 +30,6 @@ export interface WorldInstanceConnection {
   updateSubscriptions(topics: string[]): Promise<void>
 
   changeRealm(realm: Realm, url: string): Promise<void>
+
+  connectPeer(): Promise<void>
 }
