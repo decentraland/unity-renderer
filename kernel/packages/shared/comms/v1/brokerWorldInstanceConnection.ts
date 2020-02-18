@@ -64,6 +64,10 @@ export class BrokerWorldInstanceConnection implements WorldInstanceConnection {
     this.connection.onMessageObservable.add(this.handleMessage.bind(this))
   }
 
+  async connectPeer() {
+    return
+  }
+
   printDebugInformation() {
     this.connection.printDebugInformation()
   }
