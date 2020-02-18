@@ -6,7 +6,6 @@ import { Eth } from 'web3x/eth'
 import { Personal } from 'web3x/personal/personal'
 import {
   ETHEREUM_NETWORK,
-  getDefaultTLD,
   getLoginConfigurationForCurrentDomain,
   getTLD,
   PREVIEW,
@@ -20,7 +19,7 @@ import { connect, disconnect, persistCurrentUser } from './comms'
 import { ConnectionEstablishmentError, IdTakenError } from './comms/interface/types'
 import { isMobile } from './comms/mobile'
 import { getUserProfile, removeUserProfile, setLocalProfile } from './comms/peers'
-import { realmInitialized, initializeUrlRealmObserver } from './dao'
+import { initializeUrlRealmObserver, realmInitialized } from './dao'
 import { web3initialized } from './dao/actions'
 import { getNetwork } from './ethereum/EthereumService'
 import { awaitWeb3Approval, isSessionExpired, providerFuture } from './ethereum/provider'
@@ -46,7 +45,7 @@ import { setWorldContext } from './protocol/actions'
 import { Session } from './session/index'
 import { RootState } from './store/rootTypes'
 import { buildStore } from './store/store'
-import { getAppNetwork, getNetworkFromTLD } from './web3'
+import { getAppNetwork, getNetworkFromTLD, hasClaimedName } from './web3'
 import { initializeUrlPositionObserver } from './world/positionThings'
 
 export type ExplorerIdentity = AuthIdentity & {
@@ -228,21 +227,6 @@ export async function initShared(): Promise<Session | undefined> {
     identity = await createAuthIdentity()
   }
 
-  if (WORLD_EXPLORER && getDefaultTLD() === 'org') {
-    try {
-      const response = await fetch(
-        `https://s7bdh0k6x3.execute-api.us-east-1.amazonaws.com/default/whitelisted_users?id=${identity.address}`
-      )
-      if (!response.ok) {
-        throw new Error('unauthorized user')
-      }
-    } catch (e) {
-      removeUserProfile()
-      console['groupEnd']()
-      throw new Error(AUTH_ERROR_LOGGED_OUT)
-    }
-  }
-
   defaultLogger.log(`User ${userId} logged in`)
   store.dispatch(authSuccessful())
 
@@ -259,6 +243,18 @@ export async function initShared(): Promise<Session | undefined> {
   }
 
   store.dispatch(web3initialized())
+  if (WORLD_EXPLORER && getTLD() === 'org') {
+    try {
+      if (!(await hasClaimedName(userId))) {
+        throw new Error('unauthorized user')
+      }
+    } catch (e) {
+      removeUserProfile()
+      console['groupEnd']()
+      throw new Error(AUTH_ERROR_LOGGED_OUT)
+    }
+  }
+
   console['groupEnd']()
 
   initializeUrlPositionObserver()

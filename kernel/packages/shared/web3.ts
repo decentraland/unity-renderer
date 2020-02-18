@@ -1,16 +1,15 @@
-import { ETHEREUM_NETWORK, getTLD } from '../config'
-
-import { getUserAccount, getNetwork } from './ethereum/EthereumService'
-import { awaitWeb3Approval } from './ethereum/provider'
-import { queueTrackingEvent } from './analytics'
-import { defaultLogger } from './logger'
-
+import { ethereumConfigurations } from 'config'
 import { Address } from 'web3x/address'
 import { Eth } from 'web3x/eth'
-import { Catalyst } from './dao/contracts/Catalyst'
-import { decentralandConfigurations } from '../config/index'
 import { WebsocketProvider } from 'web3x/providers'
-import { ethereumConfigurations } from 'config'
+import { ETHEREUM_NETWORK, getTLD } from '../config'
+import { decentralandConfigurations } from '../config/index'
+import { queueTrackingEvent } from './analytics'
+import { Catalyst } from './dao/contracts/Catalyst'
+import { ERC721 } from './dao/contracts/ERC721'
+import { getNetwork, getUserAccount } from './ethereum/EthereumService'
+import { awaitWeb3Approval } from './ethereum/provider'
+import { defaultLogger } from './logger'
 
 async function getAddress(): Promise<string | undefined> {
   try {
@@ -48,6 +47,25 @@ export async function initWeb3(): Promise<void> {
   if (address) {
     defaultLogger.log(`Identifying address ${address}`)
     queueTrackingEvent('Use web3 address', { address })
+  }
+}
+
+export async function hasClaimedName(address: string) {
+  const dclNameContract = Address.fromString(decentralandConfigurations.DCLRegistrar)
+  let eth = Eth.fromCurrentProvider()
+
+  if (!eth) {
+    const net = await getAppNetwork()
+    const provider = new WebsocketProvider(ethereumConfigurations[net].wss)
+
+    eth = new Eth(provider)
+  }
+  const contract = new ERC721(eth, dclNameContract)
+  const balance = (await contract.methods.balanceOf(Address.fromString(address)).call()) as any
+  if ((typeof balance === 'number' && balance > 0) || (typeof balance === 'string' && parseInt(balance, 10) > 0)) {
+    return true
+  } else {
+    return false
   }
 }
 

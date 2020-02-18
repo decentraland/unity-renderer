@@ -281,8 +281,10 @@ export async function setNetwork(net: ETHEREUM_NETWORK) {
         : '0xadd085f2318e9678bbb18b3e0711328f902b374b'
 
     decentralandConfigurations = {
+      ...contracts,
       contractAddress: contracts.LANDProxy,
       dao: contracts.CatalystProxy,
+      ens: contracts.CatalystProxy,
       contracts: {
         serviceLocator: contracts.ServiceLocator
       },
