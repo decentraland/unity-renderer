@@ -15,8 +15,8 @@ namespace DCL
 
         AvatarModel model;
 
-        public event Action OnSuccessCallback;
-        public event Action OnFailCallback;
+        public event Action OnSuccessEvent;
+        public event Action OnFailEvent;
 
         internal BodyShapeController bodyShapeController;
         internal Dictionary<string, WearableController> wearablesController = new Dictionary<string, WearableController>();
@@ -38,16 +38,24 @@ namespace DCL
         public void ApplyModel(AvatarModel model, Action onSuccess, Action onFail)
         {
             this.model = model;
-            this.OnSuccessCallback = onSuccess;
+
+            Action onSuccessWrapper = null;
+            Action onFailWrapper = null;
+
+            onSuccessWrapper = () => { onSuccess?.Invoke(); this.OnSuccessEvent -= onSuccessWrapper; };
+            onFailWrapper = () => { onFail?.Invoke(); this.OnFailEvent -= onFailWrapper; };
+
+            this.OnSuccessEvent += onSuccessWrapper;
+            this.OnFailEvent += onFailWrapper;
+
             isLoading = false;
-            this.OnFailCallback = onFail;
 
             StopLoadingCoroutines();
 
             if (this.model == null)
             {
                 ResetAvatar();
-                this.OnSuccessCallback?.Invoke();
+                this.OnSuccessEvent?.Invoke();
                 return;
             }
 
@@ -111,7 +119,7 @@ namespace DCL
             if (string.IsNullOrEmpty(model.bodyShape))
             {
                 isLoading = false;
-                this.OnSuccessCallback?.Invoke();
+                this.OnSuccessEvent?.Invoke();
                 yield break;
             }
 
@@ -195,7 +203,7 @@ namespace DCL
             yield return null;
             ResolveVisibility();
 
-            OnSuccessCallback?.Invoke();
+            OnSuccessEvent?.Invoke();
         }
 
         void OnWearableLoadingSuccess(WearableController wearableController)
@@ -210,7 +218,7 @@ namespace DCL
 
             ResetAvatar();
             isLoading = false;
-            OnFailCallback?.Invoke();
+            OnFailEvent?.Invoke();
         }
 
         private void SetWearableBones()
