@@ -1,4 +1,3 @@
-﻿using System;
 using DCL;
 using UnityEngine;
 
@@ -11,9 +10,19 @@ public class PlayerAvatarController : MonoBehaviour
 
     private void Awake()
     {
-        avatarRenderer.SetVisibility(false);
+        //NOTE(Brian): We must wait for loading to finish before deactivating the renderer, or the GLTF Loader won't finish.
+        avatarRenderer.OnSuccessCallback -= Init;
+        avatarRenderer.OnFailCallback -= Init;
+        avatarRenderer.OnSuccessCallback += Init;
+        avatarRenderer.OnFailCallback += Init;
     }
 
+    private void Init()
+    {
+        avatarRenderer.SetVisibility(false);
+        avatarRenderer.OnSuccessCallback -= Init;
+        avatarRenderer.OnFailCallback -= Init;
+    }
     private void OnEnable()
     {
         userProfile.OnUpdate += OnUserProfileOnUpdate;

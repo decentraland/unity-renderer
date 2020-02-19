@@ -15,8 +15,8 @@ namespace DCL
 
         AvatarModel model;
 
-        Action OnSuccessCallback;
-        Action OnFailCallback;
+        public event Action OnSuccessCallback;
+        public event Action OnFailCallback;
 
         internal BodyShapeController bodyShapeController;
         internal Dictionary<string, WearableController> wearablesController = new Dictionary<string, WearableController>();
@@ -35,7 +35,7 @@ namespace DCL
             animator = GetComponent<AvatarAnimatorLegacy>();
         }
 
-        public void ApplyModel (AvatarModel model, Action onSuccess, Action onFail)
+        public void ApplyModel(AvatarModel model, Action onSuccess, Action onFail)
         {
             this.model = model;
             this.OnSuccessCallback = onSuccess;
@@ -213,7 +213,7 @@ namespace DCL
             OnFailCallback?.Invoke();
         }
 
-       private void SetWearableBones()
+        private void SetWearableBones()
         {
             //NOTE(Brian): Set bones/rootBone of all wearables to be the same of the baseBody,
             //             so all of them are animated together.
