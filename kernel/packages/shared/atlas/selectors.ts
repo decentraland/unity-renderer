@@ -39,7 +39,7 @@ export function getName(state: RootAtlasState, x: number, y: number): string {
 }
 export function getTypeFromAtlasState(state: AtlasState, x: number, y: number): number {
   const key = `${x},${y}`
-  return state.marketName[key].type
+  return state.marketName[key] ? state.marketName[key].type : 0
 }
 
 export function getNameFromAtlasState(state: AtlasState, x: number, y: number): string {

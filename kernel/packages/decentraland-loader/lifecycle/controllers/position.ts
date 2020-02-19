@@ -12,6 +12,7 @@ export class PositionLifecycleController extends EventEmitter {
   private positionSettled: boolean = false
   private currentlySightedScenes: string[] = []
   private currentSpawnpoint?: InstancedSpawnPoint
+  private currentPosition: Vector2Component | null = null
 
   constructor(
     private downloadManager: SceneDataDownloadManager,
@@ -31,7 +32,13 @@ export class PositionLifecycleController extends EventEmitter {
   }
 
   private async doReportCurrentPosition(position: Vector2Component, teleported: boolean) {
+    if (this.currentPosition && this.currentPosition.x === position.x && this.currentPosition.y === position.y) {
+      return
+    }
+
     let resolvedPosition = position
+    this.currentPosition = resolvedPosition
+
     if (teleported) {
       const land = await this.downloadManager.getParcelData(`${position.x},${position.y}`)
       if (land) {
@@ -49,7 +56,6 @@ export class PositionLifecycleController extends EventEmitter {
 
     if (parcels) {
       const newlySightedScenes = await this.sceneController.reportSightedParcels(parcels.sighted, parcels.lostSight)
-
       if (!this.eqSet(this.currentlySightedScenes, newlySightedScenes.sighted)) {
         this.currentlySightedScenes = newlySightedScenes.sighted
       }
