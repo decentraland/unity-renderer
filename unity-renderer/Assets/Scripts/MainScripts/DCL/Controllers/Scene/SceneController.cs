@@ -197,7 +197,8 @@ namespace DCL
                 }
             }
 
-            RenderingController.i.OnRenderingStateChanged += OnRenderingStateChange;
+            if (!debugScenes)
+                RenderingController.i.OnRenderingStateChanged += OnRenderingStateChange;
         }
 
         private void OnRenderingStateChange(bool enabled)
