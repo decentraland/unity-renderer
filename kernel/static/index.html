@@ -217,7 +217,7 @@
       background-image: linear-gradient(to bottom right, #F4F4F4, #ffffff); 
       width: 60%;
       max-width: 470px;
-      height: 346px;
+      height: 446px;
 
       position: absolute;
       left: 50%;
@@ -267,10 +267,32 @@
       border: 0;
       text-transform: uppercase;
       font-size: 13px;
-      font-family: sfsemibold;
+      font-family: sfsemibold, "Helvetica Neue", Arial, sans-serif;
+    }
+    .eth-login-confirm-button1:disabled {
+      background-color: #F6DBE2;
+      background-image: none;
     }
     .eth-login-wallet-icon {
       margin-right: 10px;
+      vertical-align: middle;
+    }
+    .eth-login-tos {
+      margin-bottom: 50px;
+      text-align: center;
+    }
+    .eth-login-tos-label {
+      font-size: 12px;
+      font-family: sfregular, "Helvetica Neue", Arial, sans-serif;
+      color: black;
+    }
+    .eth-login-tos-label > a:any-link {
+      color: #FF2E56;
+      font-family: sfsemibold, "Helvetica Neue", Arial, sans-serif;
+    }
+    .eth-login-tos-agree {
+      width: 20px;
+      height: 20px;
       vertical-align: middle;
     }
   </style>
@@ -290,9 +312,9 @@
     <div class="eth-login-popup">
       <div class="eth-login-welcome">Welcome to</div>
       <img src="images/decentraland-connect/Isologotipo.png" style="width: 60%; margin-bottom: 20px"></img>
-      <div class="eth-login-description">Click in the button below to login with your 
-        Ethereum address.</div>
-      <button id="eth-login-confirm-button" class="eth-login-confirm-button1">
+      <div class="eth-login-description">The virtual world where you can build and explorer 3D creations, play games and socialize.</div>
+      <div class="eth-login-tos"><input type="checkbox" id="agree-check" class="eth-login-tos-agree" onchange="document.getElementById('eth-login-confirm-button').disabled = !this.checked;"><label for="agree-check" class="eth-login-tos-label">I'm of legal age and I have read and agree to the <a href="https://decentraland.org/terms" target="_blank">Terms of Service</a> and <a href="https://decentraland.org/privacy" target="_blank">Privacy Policy</a></label></div>
+      <button id="eth-login-confirm-button" class="eth-login-confirm-button1" disabled>
         <img src="./images/decentraland-connect/walletIcon.png" class="eth-login-wallet-icon"></img>Connect wallet</buttonclass="eth-login-description">
     </div>
   </div>
