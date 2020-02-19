@@ -187,8 +187,9 @@ namespace DCL
                 }).ToList();
 
 
-            foreach (string assetName in assetsToLoad)
+            for (int i = 0; i < assetsToLoad.Count; i++)
             {
+                string assetName = assetsToLoad[i];
                 //NOTE(Brian): For some reason, another coroutine iteration can be triggered after Cleanup().
                 //             To handle this case we exit using this.
                 if (loadCoroutine == null)

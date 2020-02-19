@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections;
 using System.Linq;
 using DCL.Helpers;
@@ -124,12 +124,9 @@ namespace DCL
                 renderers.AddRange(assetBundleModelGO.GetComponentsInChildren<Renderer>(true));
 
                 //NOTE(Brian): Renderers are enabled in settings.ApplyAfterLoad
-                yield return MaterialCachingHelper.UseCachedMaterials(renderers, enableRenderers: false);
+                yield return MaterialCachingHelper.Process(renderers, enableRenderers: false, settings.cachingFlags);
 
                 assetBundleModelGO.name = subPromise.asset.assetBundleAssetName;
-#if UNITY_EDITOR
-                assetBundleModelGO.GetComponentsInChildren<Renderer>().ToList().ForEach(ResetShader);
-#endif
                 assetBundleModelGO.transform.parent = asset.container.transform;
                 assetBundleModelGO.transform.ResetLocalTRS();
                 yield return null;
@@ -152,21 +149,5 @@ namespace DCL
                 return base.GetAsset(id);
             }
         }
-
-
-#if UNITY_EDITOR
-        private static void ResetShader(Renderer renderer)
-        {
-            if (renderer.sharedMaterials == null) return;
-
-            for (int i = 0; i < renderer.sharedMaterials.Length; i++)
-            {
-                if (renderer == null || renderer.sharedMaterials[i] == null)
-                    continue;
-
-                renderer.sharedMaterials[i].shader = Shader.Find(renderer.sharedMaterials[i].shader.name);
-            }
-        }
-#endif
     }
 }
