@@ -17,6 +17,8 @@ public class RenderingController : MonoBehaviour
     public System.Action<bool> OnRenderingStateChanged;
     public bool renderingEnabled { get; private set; } = true;
 
+    bool activatedRenderingBefore = false;
+
     [ContextMenu("Disable Rendering")]
     public void DeactivateRendering()
     {
@@ -25,7 +27,6 @@ public class RenderingController : MonoBehaviour
 
         DeactivateRendering_Internal();
     }
-
 
     void DeactivateRendering_Internal()
     {
@@ -69,6 +70,13 @@ public class RenderingController : MonoBehaviour
     {
         renderingActivatedAckLock.OnAllLocksRemoved -= ActivateRendering_Internal;
         renderingEnabled = true;
+
+        if(!activatedRenderingBefore)
+        {
+            Utils.UnlockCursor();
+
+            activatedRenderingBefore = true;
+        }
 
         DCL.Configuration.ParcelSettings.VISUAL_LOADING_ENABLED = true;
         MessagingBus.renderingIsDisabled = false;
