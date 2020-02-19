@@ -57,9 +57,6 @@ public class AvatarAnimatorLegacy : MonoBehaviour
     public AnimationCurve runBlendtreeCurve;
     public AnimationCurve idleBlendtreeCurve;
 
-    public bool useDeltaTimeInsteadOfGlobalSpeed = false;
-    public float globalSpeed = 0.05f;
-
     internal System.Action<BlackBoard> currentState;
 
     Vector3 lastPosition;
@@ -120,16 +117,9 @@ public class AvatarAnimatorLegacy : MonoBehaviour
         }
     }
 
-
-
     void State_Ground(BlackBoard bb)
     {
-        float dt;
-
-        if (useDeltaTimeInsteadOfGlobalSpeed)
-            dt = Time.deltaTime;
-        else
-            dt = globalSpeed;
+        float dt = Time.deltaTime;
 
         animation[baseClipsIds.run].normalizedSpeed = bb.movementSpeed / dt * bb.runSpeedFactor;
         animation[baseClipsIds.walk].normalizedSpeed = bb.movementSpeed / dt * bb.walkSpeedFactor;
