@@ -15,6 +15,15 @@ namespace DCL.Tutorial
         }
 
         public Id stepId;
+        public float timeBetweenTooltips = 10f;
+
+        WaitForSeconds waitForIdleTime = null;
+        WaitUntil waitForRendererEnabled = new WaitUntil(() => RenderingController.i.renderingEnabled);
+
+        void Awake()
+        {
+            waitForIdleTime = new WaitForSeconds(timeBetweenTooltips);
+        }
 
         public virtual void OnStepStart()
         {
@@ -28,11 +37,13 @@ namespace DCL.Tutorial
             yield break;
         }
 
-        WaitForSeconds waitForIdleTime = new WaitForSeconds(TutorialController.DEFAULT_STAGE_IDLE_TIME);
-
         public virtual IEnumerator WaitIdleTime()
         {
-            yield return waitForIdleTime;
+            if (waitForIdleTime != null)
+            {
+                yield return waitForIdleTime;
+            }
+            yield return waitForRendererEnabled;
         }
 
     }

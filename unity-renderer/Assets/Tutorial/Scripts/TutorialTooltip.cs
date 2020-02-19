@@ -22,7 +22,7 @@ namespace DCL.Tutorial
             gameObject.SetActive(false);
         }
 
-        public void Show(bool autoHide = true)
+        public void Show(bool autoHide)
         {
             if (animator.GetBool(VISIBLE))
                 return;
@@ -32,6 +32,15 @@ namespace DCL.Tutorial
 
             if (autoHide)
                 StartCoroutine(WaitUntilFinished());
+        }
+
+        public IEnumerator ShowAndHideRoutine()
+        {
+            if (animator.GetBool(VISIBLE))
+                yield break;
+
+            Show(false);
+            yield return WaitUntilFinished();
         }
 
         public IEnumerator WaitUntilFinished()

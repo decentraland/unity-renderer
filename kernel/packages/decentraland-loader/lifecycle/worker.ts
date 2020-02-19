@@ -42,9 +42,9 @@ let downloadManager: SceneDataDownloadManager
       secureRadius: number
       emptyScenes: boolean
       tutorialBaseURL: string
-      tutorialEnabled: boolean
+      tutorialSceneEnabled: boolean
     }) => {
-      setTutorialEnabled(options.tutorialEnabled)
+      setTutorialEnabled(options.tutorialSceneEnabled)
 
       downloadManager = new SceneDataDownloadManager({
         contentServer: options.contentServer,

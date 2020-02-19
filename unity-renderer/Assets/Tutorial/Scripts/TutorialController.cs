@@ -13,10 +13,8 @@ namespace DCL.Tutorial
         [Header("Debugging")]
         public bool debugRunTutorialOnStart = false;
         public TutorialStep.Id debugFlagStartingValue;
-        [Space()]
 #endif
 
-        public const float DEFAULT_STAGE_IDLE_TIME = 20f;
         public bool isTutorialEnabled { private set; get; } = false;
 
         [Header("Stage Controller References")]
@@ -147,7 +145,7 @@ namespace DCL.Tutorial
                 currentTutorialStepId = debugFlagStartingValue;
             }
 #endif
-            if (currentTutorialStepId == TutorialStep.Id.FINISHED)
+            if (currentTutorialStepId == TutorialStep.Id.FINISHED || runningStep != null)
                 return;
 
             StartTutorialFromStep(currentTutorialStepId);

@@ -138,6 +138,10 @@ export function tutorialEnabled() {
   )
 }
 
+export function tutorialSceneEnabled() {
+  return tutorialEnabled() && (RESET_TUTORIAL || getUserProfile().profile.tutorialStep === tutorialStepId.INITIAL_SCENE)
+}
+
 export namespace commConfigurations {
   export const debug = true
   export const commRadius = 4

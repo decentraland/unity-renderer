@@ -2054,6 +2054,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   stepId: 1
+  timeBetweenTooltips: 10
   welcomeTooltip: {fileID: 942974508925597400}
   controlsTooltip: {fileID: 4985169814092812148}
   cameraTooltip: {fileID: 4574287604332835822}
