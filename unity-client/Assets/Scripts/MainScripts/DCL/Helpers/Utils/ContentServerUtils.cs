@@ -86,6 +86,9 @@ namespace DCL
 
         public static string GetScenesAPIUrl(ApiEnvironment env, int x1, int y1, int width, int height)
         {
+            width = Mathf.Max(0, width - 1);
+            height = Mathf.Max(0, height - 1);
+
             string baseUrl = GetBaseUrl(env);
             string result = $"{baseUrl}/scenes?x1={x1}&x2={x1 + width}&y1={y1}&y2={y1 + height}";
             Debug.Log($"Using scenes API url {result}");

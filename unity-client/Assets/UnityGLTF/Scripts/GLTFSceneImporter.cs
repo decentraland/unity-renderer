@@ -1,4 +1,4 @@
-using GLTF;
+﻿using GLTF;
 using GLTF.Schema;
 
 using System;
@@ -736,8 +736,11 @@ namespace UnityGLTF
             //  NOTE: the second parameter of LoadImage() marks non-readable, but we can't mark it until after we call Apply()
             texture.LoadImage(buffer, markGpuOnly);
             texture = CheckAndReduceTextureSize(texture);
-            texture.Compress(false);
 
+#if !UNITY_EDITOR
+            //NOTE(Brian): This breaks importing in editor mode
+            texture.Compress(false);
+#endif
             _assetCache.ImageCache[imageCacheIndex] = texture;
 
             if (ShouldYieldOnTimeout())
@@ -2390,8 +2393,11 @@ namespace UnityGLTF
                         var unityTexture = Object.Instantiate(source.Texture);
                         unityTexture.filterMode = desiredFilterMode;
                         unityTexture.wrapMode = desiredWrapMode;
-                        unityTexture.Apply(false, true);
 
+#if !UNITY_EDITOR
+                        // NOTE(Brian): This breaks importing in edit mode, so only enable it for runtime.
+                        unityTexture.Apply(false, true);
+#endif
                         _assetCache.TextureCache[textureIndex].CachedTexture = new RefCountedTextureData(image.Uri, unityTexture);
                     }
                     else
