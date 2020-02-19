@@ -228,8 +228,8 @@ MonoBehaviour:
     jump: Jump
     fall: Fall
   blackboard:
-    walkSpeedFactor: 0.5
-    runSpeedFactor: 0.25
+    walkSpeedFactor: 0.3
+    runSpeedFactor: 0.15
     movementSpeed: 0
     verticalSpeed: 0
     isGrounded: 1
@@ -362,8 +362,6 @@ MonoBehaviour:
     m_PreInfinity: 2
     m_PostInfinity: 2
     m_RotationOrder: 4
-  useDeltaTimeInsteadOfGlobalSpeed: 0
-  globalSpeed: 0.05
 --- !u!114 &8727652042400483852
 MonoBehaviour:
   m_ObjectHideFlags: 0
