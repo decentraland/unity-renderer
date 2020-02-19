@@ -98,7 +98,7 @@ namespace DCL
 
         public bool GetColliderInfo(Collider collider, out ColliderInfo info)
         {
-            if (colliderInfo.ContainsKey(collider))
+            if (collider != null && colliderInfo.ContainsKey(collider))
             {
                 info = colliderInfo[collider];
                 return true;
