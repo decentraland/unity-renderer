@@ -86,7 +86,7 @@ GameObject:
   - component: {fileID: 7910369970784231229}
   - component: {fileID: 6793099593168565602}
   m_Layer: 5
-  m_Name: RobotDanceKey
+  m_Name: DanceKey
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -872,11 +872,11 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   buttonToExpressionMap:
   - expressionId: wave
-    button: {fileID: 7429565090657569286}
-  - expressionId: fistpump
-    button: {fileID: 234398039322459571}
-  - expressionId: robot
     button: {fileID: 6959363111349760724}
+  - expressionId: fistpump
+    button: {fileID: 7429565090657569286}
+  - expressionId: robot
+    button: {fileID: 234398039322459571}
   showContentButton: {fileID: 3828354362020330558}
   hideContentButton: {fileID: 7369359897116190397}
   content: {fileID: 3368308072246989936}
@@ -896,7 +896,7 @@ GameObject:
   - component: {fileID: 234398039322459571}
   - component: {fileID: 4884999025973778337}
   m_Layer: 5
-  m_Name: RobotDanceButton
+  m_Name: DanceButton
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -2155,7 +2155,7 @@ GameObject:
   - component: {fileID: 8323384529793804283}
   - component: {fileID: 2429295493253578998}
   m_Layer: 5
-  m_Name: RobotDanceLabel
+  m_Name: DanceLabel
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -2208,7 +2208,7 @@ MonoBehaviour:
       m_Calls: []
     m_TypeName: UnityEngine.UI.MaskableGraphic+CullStateChangedEvent, UnityEngine.UI,
       Version=1.0.0.0, Culture=neutral, PublicKeyToken=null
-  m_text: Robot Dance
+  m_text: Dance
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 26b03903800224f718b64e9afbc91b61, type: 2}
   m_sharedMaterial: {fileID: -6892909264025736228, guid: 26b03903800224f718b64e9afbc91b61,
@@ -2278,10 +2278,10 @@ MonoBehaviour:
   m_margin: {x: 0, y: 0, z: 0, w: 0}
   m_textInfo:
     textComponent: {fileID: 2429295493253578998}
-    characterCount: 11
+    characterCount: 5
     spriteCount: 0
-    spaceCount: 1
-    wordCount: 2
+    spaceCount: 0
+    wordCount: 1
     linkCount: 0
     lineCount: 1
     pageCount: 1
