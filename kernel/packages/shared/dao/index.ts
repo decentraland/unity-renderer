@@ -26,9 +26,11 @@ const score = ({ usersCount, maxUsers = 50 }: Layer) => {
     return -10 * v
   }
 
-  const p = 3 / (maxUsers ? maxUsers : 50)
+  const phase = - Math.PI / 1.8
 
-  return v + v * Math.cos(p * (usersCount - 1))
+  const period = Math.PI / (0.67 * (maxUsers ? maxUsers : 50))
+
+  return v + v * Math.cos(phase + period * (usersCount))
 }
 
 function ping(url: string): Promise<{ success: boolean; elapsed?: number; result?: CatalystLayers }> {
