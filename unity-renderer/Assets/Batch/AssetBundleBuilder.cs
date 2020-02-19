@@ -496,7 +496,7 @@ namespace DCL
 
             foreach (var sceneCid in sceneCidsList)
             {
-                MappingsAPIData parcelInfoApiData = AssetBundleBuilderUtils.GetSceneMappingsData(environment, sceneCidsList[0]);
+                MappingsAPIData parcelInfoApiData = AssetBundleBuilderUtils.GetSceneMappingsData(environment, sceneCid);
                 rawContents.AddRange(parcelInfoApiData.data[0].content.contents);
             }
 
@@ -530,8 +530,8 @@ namespace DCL
 
             if (File.Exists(realOutputPath))
             {
-                string outputPath = finalDownloadedAssetDbPath + textureMappingPair.hash + "/" + textureMappingPair.hash + fileExt;
-                t2d = AssetDatabase.LoadAssetAtPath<Texture2D>(outputPath);
+                string assetDBOutputPath = finalDownloadedAssetDbPath + textureMappingPair.hash + "/" + textureMappingPair.hash + fileExt;
+                t2d = AssetDatabase.LoadAssetAtPath<Texture2D>(assetDBOutputPath);
             }
 
             if (t2d != null)
