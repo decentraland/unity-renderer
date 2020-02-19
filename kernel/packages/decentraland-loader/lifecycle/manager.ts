@@ -9,10 +9,9 @@ import { resolveUrl } from 'atomicHelpers/parseUrl'
 import { error } from 'util'
 import { ILand } from 'shared/types'
 
-import { DEBUG, parcelLimits, getServerConfigurations, ENABLE_EMPTY_SCENES } from '../../config'
+import { DEBUG, parcelLimits, getServerConfigurations, ENABLE_EMPTY_SCENES, tutorialSceneEnabled } from '../../config'
 import { getFetchContentServer } from '../../shared/dao/selectors'
 import { Store } from 'redux'
-import { tutorialEnabled } from '../../config/index'
 
 /*
  * The worker is set up on the first require of this file
@@ -68,7 +67,7 @@ export async function initParcelSceneWorker() {
     secureRadius: parcelLimits.secureRadius,
     emptyScenes: ENABLE_EMPTY_SCENES && !(globalThis as any)['isRunningTests'],
     tutorialBaseURL: getTutorialBaseURL(),
-    tutorialEnabled: tutorialEnabled()
+    tutorialSceneEnabled: tutorialSceneEnabled()
   })
 
   return server

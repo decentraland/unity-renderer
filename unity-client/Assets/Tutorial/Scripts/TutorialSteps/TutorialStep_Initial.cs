@@ -26,6 +26,7 @@ namespace DCL.Tutorial
         {
             base.OnStepStart();
 
+            HUDController.i?.avatarHud.SetVisibility(false);
             HUDController.i?.minimapHud.SetVisibility(false);
             HUDController.i?.expressionsHud.SetVisibility(false);
             TutorialController.i.SetChatVisible(false);
@@ -63,7 +64,7 @@ namespace DCL.Tutorial
 
         public override IEnumerator OnStepExecute()
         {
-            welcomeTooltip.Show();
+            yield return welcomeTooltip.ShowAndHideRoutine();
 
             yield return new WaitUntil(() => claimNamePanelClosed);
             yield return WaitForSecondsCache.Get(3);
@@ -84,11 +85,11 @@ namespace DCL.Tutorial
             controlsTooltip.Hide();
 
             yield return WaitForSecondsCache.Get(3);
-            cameraTooltip.Show();
+            yield return cameraTooltip.ShowAndHideRoutine();
             yield return WaitIdleTime();
 
             HUDController.i?.minimapHud.SetVisibility(true);
-            minimapTooltip.Show();
+            yield return minimapTooltip.ShowAndHideRoutine();
 
 #if UNITY_EDITOR
             if (TutorialController.i.debugRunTutorialOnStart)

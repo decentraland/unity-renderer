@@ -2547,6 +2547,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   stepId: 3
+  timeBetweenTooltips: 10
   chatTooltip: {fileID: 942974508925597400}
   avatarExpressionTooltip: {fileID: 4574287604332835822}
   gotoCommandTooltip: {fileID: 5271660113205801817}

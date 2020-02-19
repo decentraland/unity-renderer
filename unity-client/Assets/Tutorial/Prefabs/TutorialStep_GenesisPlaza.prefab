@@ -14,7 +14,7 @@ GameObject:
   - component: {fileID: 2020326952397162912}
   - component: {fileID: 3317283446745478288}
   m_Layer: 5
-  m_Name: GenesisPlazaTutorialStage
+  m_Name: TutorialStep_GenesisPlaza
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -112,3 +112,4 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   stepId: 2
+  timeBetweenTooltips: 10

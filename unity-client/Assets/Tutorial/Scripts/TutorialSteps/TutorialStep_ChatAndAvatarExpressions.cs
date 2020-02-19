@@ -26,23 +26,23 @@ namespace DCL.Tutorial
 
             TutorialController.i?.SetChatVisible(true);
 
-            chatTooltip.Show();
+            yield return chatTooltip.ShowAndHideRoutine();
             yield return WaitIdleTime();
 
             HUDController.i?.expressionsHud.SetVisibility(true);
 
-            avatarExpressionTooltip.Show();
+            yield return avatarExpressionTooltip.ShowAndHideRoutine();
             yield return WaitIdleTime();
 
-            gotoCommandTooltip.Show();
+            yield return gotoCommandTooltip.ShowAndHideRoutine();
             yield return WaitIdleTime();
 
             HUDController.i?.avatarHud.SetVisibility(true);
 
-            avatarHUDTooltip.Show();
+            yield return avatarHUDTooltip.ShowAndHideRoutine();
             yield return WaitIdleTime();
 
-            dailyRewardTooltip.Show();
+            yield return dailyRewardTooltip.ShowAndHideRoutine();
             yield return WaitIdleTime();
         }
     }
