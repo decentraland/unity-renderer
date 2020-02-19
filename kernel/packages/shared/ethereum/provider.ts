@@ -1,11 +1,13 @@
 import { WebSocketProvider, RequestManager } from 'eth-connect'
-import { future } from 'fp-future'
+import { future, IFuture } from 'fp-future'
 
 import { ethereumConfigurations, ETHEREUM_NETWORK } from 'config'
 import { defaultLogger } from 'shared/logger'
 import { Account } from 'web3x/account'
 import { getUserProfile } from 'shared/comms/peers'
 import { getTLD } from '../../config/index'
+import { removeUserProfile } from '../comms/peers'
+import { Eth } from 'web3x/eth'
 
 declare var window: Window & {
   ethereum: any
@@ -17,16 +19,48 @@ export const requestManager = new RequestManager(null)
 
 let providerRequested = false
 
+function processLoginAttempt(response: IFuture<{ successful: boolean; provider: any }>) {
+  return async () => {
+    let result
+    try {
+      // Request account access if needed
+      const accounts: string[] | undefined = await window.ethereum.enable()
+
+      if (accounts && accounts.length > 0) {
+        result = { successful: true, provider: window.ethereum }
+      } else {
+        // whether accounts is undefined or empty array => provider not enabled
+        result = {
+          successful: false,
+          provider: createProvider()
+        }
+      }
+    } catch (error) {
+      // User denied account access...
+      result = {
+        successful: false,
+        provider: createProvider()
+      }
+    }
+    response.resolve(result)
+  }
+}
+
 export async function awaitWeb3Approval(): Promise<void> {
   if (!providerRequested) {
     providerRequested = true
     // Modern dapp browsers...
     if (window['ethereum']) {
-      const userData = getUserProfile()
+      await removeSessionIfNotValid()
+
+      // TODO - look for user id matching account - moliva - 18/02/2020
+      let userData = getUserProfile()
+
       if (!isSessionExpired(userData)) {
         providerFuture.resolve({ successful: true, provider: window.ethereum })
       } else {
         window['ethereum'].autoRefreshOnNetworkChange = false
+
         const element = document.getElementById('eth-login')
         if (element) {
           element.style.display = 'block'
@@ -34,22 +68,7 @@ export async function awaitWeb3Approval(): Promise<void> {
 
           let response = future()
 
-          button!.onclick = async () => {
-            let result
-            try {
-              // Request account access if needed
-              await window.ethereum.enable()
-
-              result = { successful: true, provider: window.ethereum }
-            } catch (error) {
-              // User denied account access...
-              result = {
-                successful: false,
-                provider: createProvider()
-              }
-            }
-            response.resolve(result)
-          }
+          button!.onclick = processLoginAttempt(response)
 
           let result
           while (true) {
@@ -61,19 +80,7 @@ export async function awaitWeb3Approval(): Promise<void> {
 
             response = future()
 
-            button!.onclick = async () => {
-              let result
-              try {
-                // Request account access if needed
-                await window.ethereum.enable()
-
-                result = { successful: true, provider: window.ethereum }
-              } catch (error) {
-                // User denied account access, need to retry...
-                result = { successful: false }
-              }
-              response.resolve(result)
-            }
+            button!.onclick = processLoginAttempt(response)
 
             if (result.successful) {
               break
@@ -85,7 +92,11 @@ export async function awaitWeb3Approval(): Promise<void> {
           providerFuture.resolve(result)
         }
       }
+
+      registerProviderChanges()
     } else if (window.web3 && window.web3.currentProvider) {
+      await removeSessionIfNotValid()
+
       // legacy providers (don't need for confirmation)
       providerFuture.resolve({ successful: true, provider: window.web3.currentProvider })
     } else {
@@ -103,6 +114,31 @@ export async function awaitWeb3Approval(): Promise<void> {
   return providerFuture
 }
 
+/**
+ * Remove local session if persisted account does not match with one or ephemeral key is expired
+ */
+async function removeSessionIfNotValid() {
+  const account = await getUserAccount()
+
+  // TODO - look for user id matching account - moliva - 18/02/2020
+  let userData = getUserProfile()
+
+  if ((userData && userData.userId !== account) || isSessionExpired(userData)) {
+    removeUserProfile()
+  }
+}
+
+/**
+ * Register to any change in the configuration of the wallet to reload the app and avoid wallet changes in-game.
+ */
+function registerProviderChanges() {
+  if (window.ethereum && typeof window.ethereum.on === 'function') {
+    window.ethereum.on('accountsChanged', (accounts: string[]) => location.reload())
+    window.ethereum.on('networkChanged', (networkId: string) => location.reload())
+    window.ethereum.on('close', (code: number, reason: string) => location.reload())
+  }
+}
+
 function createProvider() {
   const network = getTLD() === 'zone' ? ETHEREUM_NETWORK.ROPSTEN : ETHEREUM_NETWORK.MAINNET
   return new WebSocketProvider(ethereumConfigurations[network].wss)
@@ -117,4 +153,19 @@ function showEthConnectAdvice(show: boolean) {
 
 export function isSessionExpired(userData: any) {
   return !userData || !userData.identity || new Date(userData.identity.expiration) < new Date()
+}
+
+export async function getUserAccount(): Promise<string | undefined> {
+  try {
+    const eth = Eth.fromCurrentProvider()!
+    const accounts = await eth.getAccounts()
+
+    if (!accounts || accounts.length === 0) {
+      return undefined
+    }
+
+    return accounts[0].toJSON().toLocaleLowerCase()
+  } catch (error) {
+    throw new Error(`Could not access eth_accounts: "${error.message}"`)
+  }
 }
