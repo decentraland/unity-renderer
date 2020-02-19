@@ -23,7 +23,7 @@ function CachedXMLHttpRequest() {
               "'" +
                 cache.requestURL +
                 "' downloaded successfully (" +
-                xhr.response.byteLength +
+                (xhr.response && xhr.response.byteLength) +
                 " bytes) " +
                 (err
                   ? "but not stored in indexedDB cache due to error."
