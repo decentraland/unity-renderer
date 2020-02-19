@@ -120,11 +120,30 @@ async function fetchCatalystStatuses(nodes: { domain: string }[]) {
 }
 
 export function pickCatalystRealm(candidates: Candidate[]): Realm {
+  const usersByDomain: Record<string, number> = {}
+
+  candidates.forEach(it => {
+    if (!usersByDomain[it.domain]) {
+      usersByDomain[it.domain] = 0
+    }
+
+    usersByDomain[it.domain] += it.layer.usersCount
+  })
+
   const sorted = candidates
     .filter(it => it.layer.usersCount < it.layer.maxUsers)
     .sort((c1, c2) => {
-      const diff = c2.score - c1.score
-      return diff === 0 ? c1.elapsed - c2.elapsed : diff
+      const elapsedDiff = c1.elapsed - c2.elapsed
+      const usersDiff = usersByDomain[c1.domain] - usersByDomain[c2.domain]
+      const scoreDiff = c2.score - c1.score
+
+      return Math.abs(elapsedDiff) > 1500
+        ? elapsedDiff // If the latency difference is greater than 1500, we consider that as the main factor
+        : scoreDiff !== 0
+        ? scoreDiff // If there's score difference, we consider that
+        : usersDiff !== 0
+        ? usersDiff // If the score is the same (as when they are empty)
+        : elapsedDiff // If the candidates have the same score by users, we consider the latency again
     })
 
   if (sorted.length === 0 && candidates.length > 0) {
@@ -190,11 +209,9 @@ export function changeRealm(realmString: string) {
 export async function changeToCrowdedRealm(): Promise<[boolean, Realm]> {
   const store: Store<RootState> = (window as any)['globalStore']
 
-  const candidates = await fetchCatalystStatuses(Array.from(getCandidateDomains(store)).map(it => ({ domain: it })))
+  const candidates = await refreshCandidatesStatuses()
 
   const currentRealm = getRealm(store.getState())!
-
-  store.dispatch(setCatalystCandidates(candidates))
 
   const positionAsVector = worldToGrid(lastPlayerPosition)
   const currentPosition = [positionAsVector.x, positionAsVector.y] as ParcelArray
@@ -229,6 +246,16 @@ export async function changeToCrowdedRealm(): Promise<[boolean, Realm]> {
   } else {
     return [false, currentRealm]
   }
+}
+
+export async function refreshCandidatesStatuses() {
+  const store: Store<RootState> = (window as any)['globalStore']
+
+  const candidates = await fetchCatalystStatuses(Array.from(getCandidateDomains(store)).map(it => ({ domain: it })))
+
+  store.dispatch(setCatalystCandidates(candidates))
+
+  return candidates
 }
 
 function getCandidateDomains(store: Store<RootDaoState>): Set<string> {
