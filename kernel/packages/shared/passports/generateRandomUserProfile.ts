@@ -1,6 +1,7 @@
 import { Profile } from './types'
 import { getFetchProfileServer, getFetchContentServer } from 'shared/dao/selectors'
 import { Store } from 'redux'
+import { tutorialStepId } from 'decentraland-loader/lifecycle/tutorial/tutorial'
 
 declare const window: Window & { globalStore: Store }
 
@@ -31,6 +32,7 @@ export async function generateRandomUserProfile(userId: string): Promise<Profile
   }
 
   profile.name = 'Guest-' + userId.substr(2, 6)
+  profile.tutorialStep = tutorialStepId.INITIAL_SCENE
 
   return profile
 }
@@ -42,7 +44,7 @@ function backupProfile(contentServerUrl: string, userId: string) {
     inventory: [],
     hasClaimedName: false,
     ethAddress: 'noeth',
-    tutorialStep: 0,
+    tutorialStep: tutorialStepId.INITIAL_SCENE,
     name: '',
     description: '',
     avatar: {
