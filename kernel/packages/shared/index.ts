@@ -47,6 +47,8 @@ import { RootState } from './store/rootTypes'
 import { buildStore } from './store/store'
 import { getAppNetwork, getNetworkFromTLD, hasClaimedName } from './web3'
 import { initializeUrlPositionObserver } from './world/positionThings'
+import { saveAvatarRequest } from './passports/actions'
+import { ethereumConfigurations } from 'config'
 
 export type ExplorerIdentity = AuthIdentity & {
   address: string
@@ -274,7 +276,18 @@ export async function initShared(): Promise<Session | undefined> {
   // initialize profile
   console['group']('connect#profile')
   if (!PREVIEW) {
-    const profile = await PassportAsPromise(userId)
+    let profile = await PassportAsPromise(userId)
+    if (!profile.hasClaimedName) {
+      const names = await fetchOwnedENS(ethereumConfigurations[net].names, userId)
+
+      // patch profile to readd missing name
+      profile = { ...profile, name: names[0], hasClaimedName: true, version: (profile.version || 0) + 1 }
+
+      if (names && names.length > 0) {
+        defaultLogger.info(`Found missing claimed name '${names[0]}' for profile ${userId}, consolidating profile... `)
+        store.dispatch(saveAvatarRequest(profile))
+      }
+    }
     persistCurrentUser({
       version: profile.version,
       profile: profileToRendererFormat(profile, identity)
@@ -332,5 +345,50 @@ function showEthSignAdvice(show: boolean) {
   const element = document.getElementById('eth-sign-advice')
   if (element) {
     element.style.display = show ? 'block' : 'none'
+  }
+}
+
+const query = `
+  query GetNameByBeneficiary($beneficiary: String) {
+    nfts(where: { owner: $beneficiary, category: ens }) {
+      ens {
+        labelHash
+        beneficiary
+        caller
+        subdomain
+        createdAt
+      }
+    }
+  }`
+
+const opts = (ethAddress: string) => ({
+  method: 'POST',
+  headers: { 'Content-Type': 'application/json' },
+  body: JSON.stringify({ query, variables: { beneficiary: ethAddress.toLowerCase() } })
+})
+
+export async function fetchOwnedENS(theGraphBaseUrl: string, ethAddress: string): Promise<string[]> {
+  const totalAttempts = 5
+  for (let attempt = 0; attempt < totalAttempts; attempt++) {
+    try {
+      const response = await fetch(theGraphBaseUrl, opts(ethAddress))
+      if (response.ok) {
+        const jsonResponse: GraphResponse = await response.json()
+        return jsonResponse.data.nfts.map(nft => nft.ens.subdomain)
+      }
+    } catch (error) {
+      defaultLogger.warn(`Could not retrieve ENS for address ${ethAddress}. Try ${attempt} of ${totalAttempts}.`, error)
+    }
+  }
+  return []
+}
+
+type GraphResponse = {
+  data: {
+    nfts: {
+      ens: {
+        subdomain: string
+      }
+    }[]
   }
 }

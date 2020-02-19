@@ -319,12 +319,14 @@ export namespace ethereumConfigurations {
   export const mainnet = {
     wss: 'wss://mainnet.infura.io/ws/v3/074a68d50a7c4e6cb46aec204a50cbf0',
     http: 'https://mainnet.infura.io/v3/074a68d50a7c4e6cb46aec204a50cbf0/',
-    etherscan: 'https://etherscan.io'
+    etherscan: 'https://etherscan.io',
+    names: 'https://api.thegraph.com/subgraphs/name/decentraland/marketplace'
   }
   export const ropsten = {
     wss: 'wss://ropsten.infura.io/ws/v3/074a68d50a7c4e6cb46aec204a50cbf0',
     http: 'https://ropsten.infura.io/v3/074a68d50a7c4e6cb46aec204a50cbf0/',
-    etherscan: 'https://ropsten.etherscan.io'
+    etherscan: 'https://ropsten.etherscan.io',
+    names: 'https://api.thegraph.com/subgraphs/name/decentraland/marketplace-ropsten'
   }
 }
 
