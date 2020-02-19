@@ -15,7 +15,7 @@ async function main() {
     }
   })
 
-  await page.goto(`${host}/?position=${position}&ws=ws%3A%2F%2Flocalhost%3A5001%2Floop`, {
+  await page.goto(`${host}/?position=${position}&ws=ws%3A%2F%2Flocalhost%3A5001%2Floop&NO_TUTORIAL`, {
     waitUntil: 'networkidle2'
   })
 
