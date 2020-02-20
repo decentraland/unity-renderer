@@ -146,7 +146,8 @@
 }
 
 #error-comms.error-container .errormessage .col.errorimage .imagewrapper {
-  max-width: 212px;
+  width: 212px;
+  height: 331px;
 }
 
 #error-comms.error-container .errormessage .col {
@@ -159,7 +160,7 @@
 
 #error-comms.errormessage .errorimage img {
   width: 212px;
-  height: 388px;
+  height: 331px;
 }
 
 /**
@@ -188,11 +189,13 @@
 }
 
 #error-newlogin.error-container .errormessage .col.errorimage .imagewrapper {
-  max-width: 163px;
+  width: 212px;
+  height: 331px;
 }
 
 #error-newlogin.error-container .errormessage .errorimage img {
-  height: 260px;
+  width: 212px;
+  height: 331px;
 }
 
 #error-newlogin.error-container .errormessage .col.errorimage {
@@ -311,11 +314,13 @@
 }
 
 #error-networkmismatch.error-container .errormessage .col.errorimage .imagewrapper {
-  max-width: 163px;
+  width: 212px;
+  height: 331px;
 }
 
 #error-networkmismatch.error-container .errormessage .errorimage img {
-  height: 260px;
+  width: 212px;
+  height: 331px;
 }
 
 #error-networkmismatch.error-container .errormessage .col.errorimage {
@@ -433,11 +438,13 @@
 }
 
 #error-fatal.error-container .errormessage .col.errorimage .imagewrapper {
-  max-width: 163px;
+  width: 212px;
+  height: 331px;
 }
 
 #error-fatal.error-container .errormessage .errorimage img {
-  height: 260px;
+  width: 212px;
+  height: 331px;
 }
 
 #error-fatal.error-container .errormessage .col.errorimage {
@@ -735,13 +742,14 @@
 }
 
 #error-notsupported.error-container .errormessage .col.errorimage {
-  max-width: 292px;
+  width: 212px;
+  height: 331px;
   padding-bottom: 90px;
 }
 
 #error-notsupported.error-container .errormessage .errorimage img {
-  width: 292px;
-  height: 313px;
+  width: 212px;
+  height: 331px;
 }
 
 #error-notsupported.error-container .errormessage div {
@@ -885,14 +893,15 @@
 }
 
 #error-nomobile-mobile.error-container .errormessage .col.errorimage {
-  max-width: 186px;
+  width: 212px;
+  height: 331px;
   padding-bottom: 20px;
   margin: auto;
 }
 
 #error-nomobile-mobile.error-container .errormessage .errorimage img {
-  width: 186px;
-  height: 200px;
+  width: 212px;
+  height: 331px;
 }
 
 #error-nomobile-mobile.error-container .errormessage div {
@@ -1252,8 +1261,8 @@
   -webkit-font-smoothing: antialiased;
   background-color: rgba(255, 255, 255, 0);
   top: 181px;
-  height: 256px;
-  width: 239px;
+  width: 212px;
+  height: 331px;
   position: absolute;
   margin: 0;
   left: 68px;
