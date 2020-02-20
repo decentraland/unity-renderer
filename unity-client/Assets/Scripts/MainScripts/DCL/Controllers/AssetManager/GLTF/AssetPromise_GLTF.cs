@@ -27,7 +27,7 @@ namespace DCL
         protected override void OnBeforeLoadOrReuse()
         {
 #if UNITY_EDITOR
-            asset.container.name = "GLTF: " + url;
+            asset.container.name = "GLTF: " + GetId();
 #endif
             settings.ApplyBeforeLoad(asset.container.transform);
         }
@@ -104,9 +104,9 @@ namespace DCL
 
         private string ComputeId(ContentProvider provider, string url)
         {
-            if (provider.contents != null && !useIdForMockedMappings)
+            if (provider.contents != null)
             {
-                if (provider.TryGetContentsUrl_Raw(url, out string finalUrl))
+                if (provider.TryGetContentsUrl_Raw(assetDirectoryPath + url, out string finalUrl))
                 {
                     return finalUrl;
                 }
