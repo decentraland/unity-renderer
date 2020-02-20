@@ -1,4 +1,5 @@
-using DCL;
+﻿using DCL;
+using DCL.Controllers;
 using DCL.Helpers;
 using DCL.Interface;
 using UnityEngine;
@@ -56,7 +57,6 @@ public class RenderingController : MonoBehaviour
 
         if (!renderingActivatedAckLock.isUnlocked)
         {
-            Debug.Log("Rendering sent, waiting for locks...!");
             renderingActivatedAckLock.OnAllLocksRemoved -= ActivateRendering_Internal;
             renderingActivatedAckLock.OnAllLocksRemoved += ActivateRendering_Internal;
             return;
@@ -73,7 +73,6 @@ public class RenderingController : MonoBehaviour
         if (!activatedRenderingBefore)
         {
             Utils.UnlockCursor();
-
             activatedRenderingBefore = true;
         }
 
@@ -91,6 +90,9 @@ public class RenderingController : MonoBehaviour
         AssetPromiseKeeper_AB_GameObject.i.useBlockedPromisesQueue = true;
 
         OnRenderingStateChanged?.Invoke(renderingEnabled);
+
+        MemoryManager.i.CleanupPoolsIfNeeded(true);
+        ParcelScene.parcelScenesCleaner.ForceCleanup();
 
         WebInterface.ReportControlEvent(new WebInterface.ActivateRenderingACK());
     }
