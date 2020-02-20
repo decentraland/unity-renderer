@@ -1,4 +1,4 @@
-﻿using DCL.Helpers;
+using DCL.Helpers;
 using System.Collections.Generic;
 using UnityEngine;
 using System.Linq;
@@ -114,11 +114,12 @@ namespace DCL
             url = url.ToLower();
             result = url;
 
+#if UNITY_EDITOR
             if (HasTestSchema(url))
             {
                 return true;
             }
-
+#endif
             if (fileToHash != null)
             {
                 if (!fileToHash.ContainsKey(url))
