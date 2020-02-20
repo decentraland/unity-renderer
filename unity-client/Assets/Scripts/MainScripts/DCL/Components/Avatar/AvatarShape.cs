@@ -1,4 +1,4 @@
-﻿using DCL.Components;
+using DCL.Components;
 using System.Collections;
 using UnityEngine;
 
@@ -20,10 +20,13 @@ namespace DCL
 
         public bool everythingIsLoaded;
 
-        void Start()
+        void Awake()
         {
             currentPlayerInfoCardName = Resources.Load<StringVariable>(CURRENT_PLAYER_NAME);
-            SetMinimapRepresentationActive(false);
+
+            if (string.IsNullOrEmpty(currentSerialization))
+                SetMinimapRepresentationActive(false);
+
             clickProxy.OnClick += PlayerClicked;
         }
 
