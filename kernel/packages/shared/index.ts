@@ -18,7 +18,7 @@ import './apis/index'
 import { connect, disconnect, persistCurrentUser } from './comms'
 import { ConnectionEstablishmentError, IdTakenError } from './comms/interface/types'
 import { isMobile } from './comms/mobile'
-import { getUserProfile, removeUserProfile, setLocalProfile } from './comms/peers'
+import { getUserProfile, setLocalProfile } from './comms/peers'
 import { initializeUrlRealmObserver, realmInitialized } from './dao'
 import { web3initialized } from './dao/actions'
 import { getNetwork } from './ethereum/EthereumService'
@@ -45,7 +45,7 @@ import { setWorldContext } from './protocol/actions'
 import { Session } from './session/index'
 import { RootState } from './store/rootTypes'
 import { buildStore } from './store/store'
-import { getAppNetwork, getNetworkFromTLD, hasClaimedName } from './web3'
+import { getAppNetwork, getNetworkFromTLD } from './web3'
 import { initializeUrlPositionObserver } from './world/positionThings'
 import { saveAvatarRequest } from './passports/actions'
 import { ethereumConfigurations } from 'config'
@@ -247,17 +247,6 @@ export async function initShared(): Promise<Session | undefined> {
   }
 
   store.dispatch(web3initialized())
-  if (WORLD_EXPLORER && getTLD() === 'org') {
-    try {
-      if (!(await hasClaimedName(userId))) {
-        throw new Error('unauthorized user')
-      }
-    } catch (e) {
-      removeUserProfile()
-      console['groupEnd']()
-      throw new Error(AUTH_ERROR_LOGGED_OUT)
-    }
-  }
 
   console['groupEnd']()
 
