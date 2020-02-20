@@ -17,7 +17,6 @@ import { execute } from './rpc'
 
 export const avatarMessageObservable = new Observable<AvatarMessage>()
 
-declare var dcl: { updateEntityComponent: any }
 const avatarMap = new Map<string, AvatarEntity>()
 
 export class AvatarEntity extends Entity {
@@ -45,7 +44,7 @@ export class AvatarEntity extends Entity {
     if (profile) {
       const { avatar } = profile
 
-      const shape = new AvatarShape()
+      const shape = this.avatarShape
       shape.id = profile.userId
       shape.name = profile.name
 
@@ -54,10 +53,8 @@ export class AvatarEntity extends Entity {
       shape.skinColor = avatar.skinColor
       shape.hairColor = avatar.hairColor
       shape.eyeColor = avatar.eyeColor
-      shape.expressionTriggerId = user.expression ? user.expression.expressionType || 'idle' : 'idle'
+      shape.expressionTriggerId = user.expression ? user.expression.expressionType || 'Idle' : 'Idle'
       shape.expressionTriggerTimestamp = user.expression ? user.expression.expressionTimestamp || 0 : 0
-
-      this.addComponentOrReplace((this.avatarShape = shape))
     }
     this.setVisible(true)
   }
@@ -80,13 +77,12 @@ export class AvatarEntity extends Entity {
     if (userData.profile) {
       this.loadProfile(userData)
     }
-  }
+  } 
 
   setExpression(id: string, timestamp: number): void {
     const shape = this.avatarShape
     shape.expressionTriggerId = id
     shape.expressionTriggerTimestamp = timestamp
-    dcl.updateEntityComponent(this.uuid, 'engine.avatarShape', 56, JSON.stringify(this.avatarShape.data))
   }
 
   setPose(pose: Pose): void {
