@@ -10,19 +10,18 @@ public class WelcomeHUDController : IHUD, System.IDisposable
         public bool hasWallet; //TODO(Brian): Use WEB3 param in userProfile
     }
 
-    const bool ENABLED = false; // TODO: Remove when MOTD has been confirmed for the launch
-
     internal WelcomeHUDView view;
     internal Model model;
 
+    public System.Action OnConfirmed;
+    public System.Action OnDismissed;
+
     public void Initialize(Model model)
     {
-        if (!ENABLED) return;
-
         this.model = model;
 
         view = WelcomeHUDView.CreateView(model.hasWallet);
-        view.Initialize(OnConfirmPressed, Close);
+        view.Initialize(OnConfirmPressed, OnClosePressed);
 
         Utils.UnlockCursor();
     }
@@ -35,10 +34,22 @@ public class WelcomeHUDController : IHUD, System.IDisposable
 
     void OnConfirmPressed()
     {
-        if (model != null)
-            WebInterface.ReportMotdClicked();
-
         Close();
+        if (model != null)
+        {
+            OnConfirmed?.Invoke();
+            WebInterface.ReportMotdClicked();
+        }
+        else
+        {
+            OnDismissed?.Invoke();
+        }
+    }
+
+    void OnClosePressed()
+    {
+        Close();
+        OnDismissed?.Invoke();
     }
 
     public void Dispose()
@@ -49,8 +60,14 @@ public class WelcomeHUDController : IHUD, System.IDisposable
 
     public void SetVisibility(bool visible)
     {
-        if (!ENABLED) return;
-
         view.gameObject.SetActive(visible);
+        if (visible)
+        {
+            Utils.UnlockCursor();
+        }
+        else
+        {
+            Utils.LockCursor();
+        }
     }
 }

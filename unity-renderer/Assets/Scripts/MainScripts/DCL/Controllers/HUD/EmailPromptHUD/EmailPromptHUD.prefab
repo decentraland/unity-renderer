@@ -927,6 +927,7 @@ MonoBehaviour:
   inputField: {fileID: 4985210244339914906}
   cryptoUserMessage: {fileID: 6118217295391630347}
   nonCryptoUserMessage: {fileID: 6366243840366973910}
+  sendButton: {fileID: 4809985602784591396}
 --- !u!1 &4073756698442913839
 GameObject:
   m_ObjectHideFlags: 0
@@ -2105,29 +2106,7 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 1443982011315502396}
   m_OnClick:
     m_PersistentCalls:
-      m_Calls:
-      - m_Target: {fileID: 2871122417710248123}
-        m_MethodName: SaveEmail
-        m_Mode: 1
-        m_Arguments:
-          m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: 0
-          m_FloatArgument: 0
-          m_StringArgument: 
-          m_BoolArgument: 0
-        m_CallState: 2
-      - m_Target: {fileID: 2449586574400869084}
-        m_MethodName: SetActive
-        m_Mode: 6
-        m_Arguments:
-          m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: 0
-          m_FloatArgument: 0
-          m_StringArgument: 
-          m_BoolArgument: 0
-        m_CallState: 2
+      m_Calls: []
     m_TypeName: UnityEngine.UI.Button+ButtonClickedEvent, UnityEngine.UI, Version=1.0.0.0,
       Culture=neutral, PublicKeyToken=null
 --- !u!114 &4280037014402588622

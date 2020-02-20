@@ -268,6 +268,17 @@ const browserInterface = {
       const blocked = profile.blocked ? profile.blocked.filter(id => id !== data.userId) : []
       global.globalStore.dispatch(saveAvatarRequest({ ...profile, blocked }))
     }
+  },
+
+  ReportUserEmail(data: { userEmail: string }) {
+    const profile = getUserProfile().profile
+    if (profile) {
+      if (hasWallet) {
+        window.analytics.identify(profile.userId, { email: data.userEmail })
+      } else {
+        window.analytics.identify({ email: data.userEmail })
+      }
+    }
   }
 }
 
@@ -467,8 +478,6 @@ unityInterface = {
     gameInstance.SendMessage('HUDController', 'ConfigurePlayerInfoCardHUD', JSON.stringify(configuration))
   },
   ConfigureWelcomeHUD(configuration: WelcomeHUDControllerModel) {
-    if (tutorialEnabled()) return
-
     gameInstance.SendMessage('HUDController', 'ConfigureWelcomeHUD', JSON.stringify(configuration))
   },
   ConfigureAirdroppingHUD(configuration: HUDConfiguration) {

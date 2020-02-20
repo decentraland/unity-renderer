@@ -1,11 +1,14 @@
 ﻿using UnityEngine;
+using UnityEngine.UI;
 using TMPro;
+using DCL.Interface;
 
 public class EmailPromptHUDController : MonoBehaviour
 {
     public TMP_InputField inputField;
     public GameObject cryptoUserMessage;
     public GameObject nonCryptoUserMessage;
+    public Button sendButton;
 
     void Awake()
     {
@@ -13,10 +16,19 @@ public class EmailPromptHUDController : MonoBehaviour
 
         cryptoUserMessage.SetActive(hasWallet);
         nonCryptoUserMessage.SetActive(!hasWallet);
+
+        sendButton.interactable = false;
+        sendButton.onClick.AddListener(SaveEmail);
+
+        inputField.onValueChanged.AddListener(value =>
+        {
+            sendButton.interactable = !string.IsNullOrEmpty(value);
+        });
     }
 
     public void SaveEmail()
     {
-        // TODO AFTER HAVING THE REWARD ON TUTORIAL
+        gameObject.SetActive(false);
+        WebInterface.SendUserEmail(inputField.text);
     }
 }
