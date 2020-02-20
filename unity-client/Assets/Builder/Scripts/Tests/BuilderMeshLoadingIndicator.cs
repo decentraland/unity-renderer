@@ -16,19 +16,11 @@ namespace Builder.Tests
             yield return InitScene();
             DCL.Configuration.EnvironmentSettings.DEBUG = true;
             sceneController.SetDebug();
-            yield return new WaitForSeconds(0.1f);
 
-            sceneController.UnloadAllScenes();
-            var scenesToLoad = (Resources.Load("TestJSON/SceneLoadingTest") as TextAsset).text;
-            sceneController.LoadParcelScenes(scenesToLoad);
-
-            yield return new WaitForAllMessagesProcessed();
             yield return SceneManager.LoadSceneAsync("BuilderScene", LoadSceneMode.Additive);
 
             var builderBridge = Object.FindObjectOfType<Builder.DCLBuilderBridge>();
             builderBridge.ResetBuilderScene();
-
-            var scene = sceneController.loadedScenes["0,0"];
 
             var objectEntity = TestHelpers.CreateSceneEntity(scene);
             var objectShape = TestHelpers.AttachGLTFShape(objectEntity, scene, new Vector3(8, 1, 8), new LoadableShape.Model()

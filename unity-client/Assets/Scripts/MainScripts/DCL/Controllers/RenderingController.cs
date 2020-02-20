@@ -16,8 +16,7 @@ public class RenderingController : MonoBehaviour
 
     public System.Action<bool> OnRenderingStateChanged;
     public bool renderingEnabled { get; private set; } = true;
-
-    bool activatedRenderingBefore = false;
+    public bool activatedRenderingBefore { get; private set; } = false;
 
     [ContextMenu("Disable Rendering")]
     public void DeactivateRendering()
@@ -71,7 +70,7 @@ public class RenderingController : MonoBehaviour
         renderingActivatedAckLock.OnAllLocksRemoved -= ActivateRendering_Internal;
         renderingEnabled = true;
 
-        if(!activatedRenderingBefore)
+        if (!activatedRenderingBefore)
         {
             Utils.UnlockCursor();
 
