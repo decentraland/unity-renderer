@@ -194,7 +194,7 @@ namespace DCL.Tutorial
             return result;
         }
 
-        void TriggerEmailPrompt()
+        public void TriggerEmailPrompt()
         {
             emailPromptHUDGameObject.SetActive(true);
         }

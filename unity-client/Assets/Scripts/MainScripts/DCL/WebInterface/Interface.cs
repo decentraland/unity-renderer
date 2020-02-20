@@ -350,6 +350,12 @@ namespace DCL.Interface
             public string url;
         }
 
+        [System.Serializable]
+        public class SendUserEmailPayload
+        {
+            public string userEmail;
+        }
+
 #if UNITY_WEBGL && !UNITY_EDITOR
     /**
      * This method is called after the first render. It marks the loading of the
@@ -742,6 +748,14 @@ namespace DCL.Interface
             SendMessage("UnblockPlayer", new SendUnblockPlayerPayload()
             {
                 userId = userId
+            });
+        }
+
+        public static void SendUserEmail(string email)
+        {
+            SendMessage("ReportUserEmail", new SendUserEmailPayload()
+            {
+                userEmail = email
             });
         }
     }

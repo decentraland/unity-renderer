@@ -1,7 +1,7 @@
 import { ReportFatalError } from 'shared/loading/ReportFatalError'
 import { NOT_INVITED, AUTH_ERROR_LOGGED_OUT, FAILED_FETCHING_UNITY } from 'shared/loading/types'
 import { worldToGrid } from '../atomicHelpers/parcelScenePositions'
-import { NO_MOTD, OPEN_AVATAR_EDITOR } from '../config/index'
+import { NO_MOTD, OPEN_AVATAR_EDITOR, tutorialEnabled } from '../config/index'
 import { experienceStarted } from '../shared/loading/types'
 import defaultLogger from '../shared/logger'
 import { signalRendererInitialized } from '../shared/renderer/actions'
@@ -33,7 +33,7 @@ initializeUnity(container)
     await startUnityParcelLoading()
 
     if (!NO_MOTD) {
-      i.ConfigureWelcomeHUD({ active: true, visible: true, hasWallet: hasWallet })
+      i.ConfigureWelcomeHUD({ active: tutorialEnabled(), visible: !tutorialEnabled(), hasWallet: hasWallet })
     }
 
     _.instancedJS
