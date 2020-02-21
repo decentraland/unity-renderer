@@ -34,7 +34,6 @@ public class DCLCharacterController : MonoBehaviour
     [System.NonSerialized]
     public CharacterController characterController;
 
-    new Rigidbody rigidbody;
     new Collider collider;
 
     float deltaTime = 0.032f;
@@ -44,10 +43,11 @@ public class DCLCharacterController : MonoBehaviour
     float lastMovementReportTime;
     float originalGravity;
     Vector3 velocity = Vector3.zero;
-    Vector2 aimingInput;
+
     bool isSprinting = false;
     bool isJumping = false;
     public bool isGrounded { get; private set; }
+    public bool isOnMovingPlatform { get; private set; }
 
     bool supportsMovingPlatforms = true;
     Transform groundTransform;
@@ -55,7 +55,6 @@ public class DCLCharacterController : MonoBehaviour
     Vector3 groundLastPosition;
     Quaternion groundLastRotation;
     bool jumpButtonPressed = false;
-    bool reEnablingGameObject = false;
 
     [Header("InputActions")]
     public InputAction_Hold jumpAction;
@@ -78,6 +77,8 @@ public class DCLCharacterController : MonoBehaviour
     private Vector3Variable cameraForward => CommonScriptableObjects.cameraForward;
     private Vector3Variable cameraRight => CommonScriptableObjects.cameraRight;
 
+    [System.NonSerialized] public float movingPlatformSpeed;
+
     void Awake()
     {
         if (i != null)
@@ -96,13 +97,13 @@ public class DCLCharacterController : MonoBehaviour
 
         characterPosition = new DCLCharacterPosition();
         characterController = GetComponent<CharacterController>();
-        rigidbody = GetComponent<Rigidbody>();
         collider = GetComponent<Collider>();
 
         characterPosition.OnPrecisionAdjust += OnPrecisionAdjust;
         SceneController.OnDebugModeSet += () => supportsMovingPlatforms = true;
 
         lastPosition = transform.position;
+        transform.parent = null;
     }
 
     private void SuscribeToInput()
@@ -224,18 +225,15 @@ public class DCLCharacterController : MonoBehaviour
             return characterPosition.worldPosition != previousPosition;
     }
 
-    void Update()
+    void LateUpdate()
     {
         deltaTime = Mathf.Min(deltaTimeCap, Time.deltaTime);
 
         if (transform.position.y < minimumYPosition)
         {
             SetPosition(characterPosition.worldPosition);
-
             return;
         }
-
-        LockCharacterScale();
 
         velocity.x = 0f;
         velocity.z = 0f;
@@ -249,7 +247,6 @@ public class DCLCharacterController : MonoBehaviour
         if (isGrounded)
         {
             isJumping = false;
-
             velocity.y = gravity * deltaTime; // to avoid accumulating gravity in velocity.y while grounded
         }
         else if (previouslyGrounded && !isJumping)
@@ -257,50 +254,52 @@ public class DCLCharacterController : MonoBehaviour
             lastUngroundedTime = Time.time;
         }
 
-        if (Cursor.lockState == CursorLockMode.Locked)
+        if (Cursor.lockState == CursorLockMode.Locked && characterForward.HasValue())
         {
-            if (characterForward.HasValue())
-            {
-                // Horizontal movement
-                var speed = movementSpeed * (isSprinting ? runningSpeedMultiplier : 1f);
+            // Horizontal movement
+            var speed = movementSpeed * (isSprinting ? runningSpeedMultiplier : 1f);
 
-                transform.forward = characterForward.Get().Value;
+            transform.forward = characterForward.Get().Value;
 
-                var xzPlaneForward = Vector3.Scale(cameraForward.Get(), new Vector3(1, 0, 1));
-                var xzPlaneRight = Vector3.Scale(cameraRight.Get(), new Vector3(1, 0, 1));
+            var xzPlaneForward = Vector3.Scale(cameraForward.Get(), new Vector3(1, 0, 1));
+            var xzPlaneRight = Vector3.Scale(cameraRight.Get(), new Vector3(1, 0, 1));
 
-                Vector3 forwardTarget = Vector3.zero;
+            Vector3 forwardTarget = Vector3.zero;
 
-                if (characterYAxis.GetValue() > 0)
-                    forwardTarget += xzPlaneForward;
-                if (characterYAxis.GetValue() < 0)
-                    forwardTarget -= xzPlaneForward;
+            if (characterYAxis.GetValue() > 0)
+                forwardTarget += xzPlaneForward;
+            if (characterYAxis.GetValue() < 0)
+                forwardTarget -= xzPlaneForward;
 
-                if (characterXAxis.GetValue() > 0)
-                    forwardTarget += xzPlaneRight;
-                if (characterXAxis.GetValue() < 0)
-                    forwardTarget -= xzPlaneRight;
+            if (characterXAxis.GetValue() > 0)
+                forwardTarget += xzPlaneRight;
+            if (characterXAxis.GetValue() < 0)
+                forwardTarget -= xzPlaneRight;
 
-                forwardTarget.Normalize();
+            forwardTarget.Normalize();
 
-                velocity += forwardTarget * speed;
+            velocity += forwardTarget * speed;
 
-                CommonScriptableObjects.playerUnityEulerAngles.Set(transform.eulerAngles);
-            }
+            CommonScriptableObjects.playerUnityEulerAngles.Set(transform.eulerAngles);
         }
 
-        if (jumpButtonPressed && (Time.time - lastJumpButtonPressedTime < 0.15f)) // almost-grounded jump button press allowed time
+        bool jumpButtonPressedWithGraceTime = jumpButtonPressed && (Time.time - lastJumpButtonPressedTime < 0.15f);
+
+        if (jumpButtonPressedWithGraceTime) // almost-grounded jump button press allowed time
         {
-            if (isGrounded || (Time.time - lastUngroundedTime) < 0.1f) // just-left-ground jump allowed time
+            bool justLeftGround = (Time.time - lastUngroundedTime) < 0.1f;
+
+            if (isGrounded || justLeftGround) // just-left-ground jump allowed time
             {
                 Jump();
             }
         }
 
-        if (IsOnMovingPlatform() && !characterPosition.RepositionedWorldLastFrame() && Vector3.Distance(lastPosition, transform.position) > movingPlatformAllowedPosDelta)
+        bool movingPlatformMovedTooMuch = Vector3.Distance(lastPosition, transform.position) > movingPlatformAllowedPosDelta;
+
+        if (isOnMovingPlatform && !characterPosition.RepositionedWorldLastFrame() && movingPlatformMovedTooMuch)
         {
             ResetGround();
-
             // As the character has already been moved faster-than-we-want, we reposition it
             characterController.transform.position = lastPosition;
         }
@@ -312,69 +311,79 @@ public class DCLCharacterController : MonoBehaviour
         {
             ReportMovement();
         }
+
+        if (isOnMovingPlatform)
+        {
+            lastLocalGroundPosition = groundTransform.InverseTransformPoint(transform.position);
+        }
     }
 
     void Jump()
     {
-        if (isJumping)
-        {
-            return;
-        }
+        if (isJumping) return;
 
         isJumping = true;
         isGrounded = false;
 
+        ResetGround();
+
         velocity.y = jumpForce;
     }
 
-    void LockCharacterScale()
+    public void ResetGround()
     {
-        // To keep the character always at global scale 1
-        if (transform.lossyScale == Vector3.one) return;
-
-        Transform parentTransform = null;
-        if (transform.parent != null)
-        {
-            parentTransform = transform.parent;
-            transform.SetParent(null);
-        }
-
-        transform.localScale = Vector3.one;
-
-        if (parentTransform != null)
-        {
-            transform.SetParent(parentTransform);
-        }
+        isOnMovingPlatform = false;
+        groundTransform = null;
+        movingPlatformSpeed = 0;
     }
 
+    Vector3 lastLocalGroundPosition;
     void CheckGround()
     {
+        if (groundTransform == null)
+            ResetGround();
+
+        if (isOnMovingPlatform)
+        {
+            //NOTE(Brian): This should move the character with the moving platform
+            Vector3 newGroundWorldPos = groundTransform.TransformPoint(lastLocalGroundPosition);
+            movingPlatformSpeed = Vector3.Distance(newGroundWorldPos, transform.position);
+            transform.position = newGroundWorldPos;
+        }
+
         Transform transformHit = CastGroundCheckingRays();
 
         if (transformHit != null)
         {
             if (groundTransform == transformHit)
             {
-                if (supportsMovingPlatforms && transform.parent == null && !characterPosition.RepositionedWorldLastFrame() && (transformHit.position != groundLastPosition || transformHit.rotation != groundLastRotation))
+                bool groundHasMoved = (transformHit.position != groundLastPosition || transformHit.rotation != groundLastRotation);
+
+                if (supportsMovingPlatforms
+                    && !characterPosition.RepositionedWorldLastFrame()
+                    && groundHasMoved)
                 {
-                    // By letting unity parenting handle the transformations for us, the UX is smooth.
-                    transform.SetParent(groundTransform);
+                    isOnMovingPlatform = true;
+                    lastLocalGroundPosition = groundTransform.InverseTransformPoint(transform.position);
                 }
             }
             else
             {
                 groundTransform = transformHit;
             }
-
-            groundLastPosition = groundTransform.position;
-            groundLastRotation = groundTransform.rotation;
         }
         else
         {
             ResetGround();
         }
 
-        isGrounded = groundTransform != null;
+        if (groundTransform != null)
+        {
+            groundLastPosition = groundTransform.position;
+            groundLastRotation = groundTransform.rotation;
+        }
+
+        isGrounded = groundTransform != null && groundTransform.gameObject.activeInHierarchy;
     }
 
     // We secuentially cast rays in 4 directions (only if the previous one didn't hit anything)
@@ -404,24 +413,6 @@ public class DCLCharacterController : MonoBehaviour
         Debug.DrawRay(ray.origin, ray.direction, Color.red);
 #endif
         return Physics.Raycast(ray, out hitInfo, rayMagnitude, groundLayers);
-    }
-
-    public void ResetGround()
-    {
-        if (groundTransform == null && transform.parent == null) return;
-
-        groundTransform = null;
-
-        if (transform.parent != null)
-        {
-            transform.SetParent(null);
-            velocity = Vector3.zero;
-        }
-    }
-
-    bool IsOnMovingPlatform()
-    {
-        return isGrounded && transform.parent != null && transform.parent == groundTransform;
     }
 
     void ReportMovement()

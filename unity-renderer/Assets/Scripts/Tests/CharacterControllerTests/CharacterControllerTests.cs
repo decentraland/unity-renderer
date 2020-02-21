@@ -177,7 +177,7 @@ namespace Tests
             // Let the character *fall* onto the platform
             yield return new WaitForSeconds(2f);
 
-            Assert.IsNull(DCLCharacterController.i.transform.parent, "The character should parent itself with a platform only if it moves/rotates");
+            Assert.IsFalse(DCLCharacterController.i.isOnMovingPlatform, "isOnMovingPlatform should be true only if the platform moves/rotates");
 
             // Lerp the platform's position
             float lerpTime = 0f;
@@ -198,8 +198,7 @@ namespace Tests
 
                 if (!checkedParent && lerpTime >= 0.5f)
                 {
-                    Assert.IsNotNull(DCLCharacterController.i.transform.parent, "The character should be parented to the moving platform");
-
+                    Assert.IsTrue(DCLCharacterController.i.isOnMovingPlatform, "isOnMovingPlatform should be true when the platform moves/rotates");
                     checkedParent = true;
                 }
             }
@@ -239,7 +238,7 @@ namespace Tests
             // Let the character *fall* onto the platform
             yield return new WaitForSeconds(2f);
 
-            Assert.IsNull(DCLCharacterController.i.transform.parent, "The character should parent itself with a platform only if it moves/rotates");
+            Assert.IsFalse(DCLCharacterController.i.isOnMovingPlatform, "isOnMovingPlatform should be true only if the platform moves/rotates");
 
             // Lerp the platform's rotation
             float lerpTime = 0f;
@@ -260,7 +259,7 @@ namespace Tests
 
                 if (!checkedParent && lerpTime >= 0.5f)
                 {
-                    Assert.IsNotNull(DCLCharacterController.i.transform.parent, "The character should be parented to the rotating platform");
+                    Assert.IsTrue(DCLCharacterController.i.isOnMovingPlatform, "isOnMovingPlatform should be true when the platform moves/rotates");
 
                     checkedParent = true;
                 }
@@ -276,7 +275,7 @@ namespace Tests
             TestHelpers.RemoveSceneEntity(scene, platformEntityId);
             yield return null;
 
-            Assert.IsNull(DCLCharacterController.i.transform.parent, "The character shouldn't be parented as there's no platform anymore");
+            Assert.IsFalse(DCLCharacterController.i.isOnMovingPlatform, "isOnMovingPlatform should be false as there's no platform anymore");
         }
 
         [UnityTest]
@@ -324,7 +323,7 @@ namespace Tests
             yield return null;
             yield return null;
 
-            Assert.IsNull(DCLCharacterController.i.transform.parent, "The character shouldn't be parented as the shape colliders were disabled");
+            Assert.IsFalse(DCLCharacterController.i.isOnMovingPlatform, "isOnMovingPlatform should be false when the shape colliders are disabled");
         }
 
         [UnityTest]
@@ -358,7 +357,7 @@ namespace Tests
             // Let the character *fall* onto the platform
             yield return new WaitForSeconds(2f);
 
-            Assert.IsNull(DCLCharacterController.i.transform.parent, "The character should parent itself with a platform only if it moves/rotates");
+            Assert.IsFalse(DCLCharacterController.i.isOnMovingPlatform, "isOnMovingPlatform should be true only if the platform moves/rotates");
 
             // Lerp the platform's rotation
             float lerpTime = 0f;
@@ -366,7 +365,7 @@ namespace Tests
             Quaternion initialRotation = Quaternion.identity;
             Quaternion targetRotation = Quaternion.Euler(0, 180f, 0f);
 
-            bool checkedParent = false;
+            bool checkedIsOnMovingTransform = false;
             while (lerpTime < 1f)
             {
                 yield return null;
@@ -377,11 +376,10 @@ namespace Tests
 
                 platformTransform.rotation = Quaternion.Lerp(initialRotation, targetRotation, lerpTime);
 
-                if (!checkedParent && lerpTime >= 0.5f)
+                if (!checkedIsOnMovingTransform && lerpTime >= 0.5f)
                 {
-                    Assert.IsNotNull(DCLCharacterController.i.transform.parent, "The character should be parented to the rotating platform");
-
-                    checkedParent = true;
+                    Assert.IsTrue(DCLCharacterController.i.isOnMovingPlatform);
+                    checkedIsOnMovingTransform = true;
                 }
             }
 
@@ -401,7 +399,7 @@ namespace Tests
                 platformTransform.rotation = Quaternion.Lerp(initialRotation, targetRotation, lerpTime);
             }
 
-            Assert.IsNull(DCLCharacterController.i.transform.parent, "The character shouldn't be parented anymore");
+            Assert.IsTrue(DCLCharacterController.i.isOnMovingPlatform);
         }
     }
 }

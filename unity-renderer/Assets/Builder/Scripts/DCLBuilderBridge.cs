@@ -1,4 +1,4 @@
-﻿using UnityEngine;
+using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
 using DCL;
@@ -486,25 +486,23 @@ namespace Builder
         {
             isPreviewMode = isPreview;
             OnPreviewModeChanged?.Invoke(isPreview);
+
             if (DCLCharacterController.i)
             {
                 DCLCharacterController.i.SetPosition(defaultCharacterPosition);
                 DCLCharacterController.i.gameObject.SetActive(isPreview);
                 DCLCharacterController.i.ResetGround();
             }
+
             if (mouseCatcher != null)
             {
                 mouseCatcher.enabled = isPreview;
                 if (!isPreview) mouseCatcher.UnlockCursor();
             }
-            if (cameraController)
-            {
-                cameraController.gameObject.SetActive(isPreviewMode);
-            }
-            if (cursorController)
-            {
-                cursorController.gameObject.SetActive(isPreviewMode);
-            }
+
+            cameraController?.gameObject.SetActive(isPreviewMode);
+            cursorController?.gameObject.SetActive(isPreviewMode);
+
             SetCaptureKeyboardInputEnabled(isPreview);
         }
 
