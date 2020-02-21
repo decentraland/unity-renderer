@@ -49,6 +49,7 @@ import { getAppNetwork, getNetworkFromTLD } from './web3'
 import { initializeUrlPositionObserver } from './world/positionThings'
 import { saveAvatarRequest } from './passports/actions'
 import { ethereumConfigurations } from 'config'
+import { tutorialStepId } from 'decentraland-loader/lifecycle/tutorial/tutorial'
 
 export type ExplorerIdentity = AuthIdentity & {
   address: string
@@ -281,7 +282,9 @@ export async function initShared(): Promise<Session | undefined> {
       }
     }
 
-    const localTutorialStep = getUserProfile().profile.tutorialStep
+    const localTutorialStep = getUserProfile().profile
+      ? getUserProfile().profile.tutorialStep
+      : tutorialStepId.INITIAL_SCENE
 
     if (localTutorialStep !== profile.tutorialStep) {
       let finalTutorialStep = Math.max(localTutorialStep, profile.tutorialStep)
