@@ -3,7 +3,7 @@ import future from 'fp-future'
 import { Layer, Realm, Candidate, CatalystLayers, RootDaoState } from './types'
 import { RootState } from 'shared/store/rootTypes'
 import { Store } from 'redux'
-import { isRealmInitialized, getCatalystCandidates, getCatalystRealmCommsStatus, getRealm } from './selectors'
+import { isRealmInitialized, getCatalystRealmCommsStatus, getRealm, getAllCatalystCandidates } from './selectors'
 import { fetchCatalystNodes } from 'shared/web3'
 import { setCatalystRealm, setCatalystCandidates } from './actions'
 import { deepEqual } from 'atomicHelpers/deepEqual'
@@ -26,11 +26,11 @@ const score = ({ usersCount, maxUsers = 50 }: Layer) => {
     return -10 * v
   }
 
-  const phase = - Math.PI / 1.8
+  const phase = -Math.PI / 1.8
 
   const period = Math.PI / (0.67 * (maxUsers ? maxUsers : 50))
 
-  return v + v * Math.cos(phase + period * (usersCount))
+  return v + v * Math.cos(phase + period * usersCount)
 }
 
 function ping(url: string): Promise<{ success: boolean; elapsed?: number; result?: CatalystLayers }> {
@@ -93,7 +93,7 @@ export async function fecthCatalystRealms(): Promise<Candidate[]> {
   return fetchCatalystStatuses(nodes)
 }
 
-async function fetchCatalystStatuses(nodes: { domain: string }[]) {
+export async function fetchCatalystStatuses(nodes: { domain: string }[]) {
   const results = await Promise.all(nodes.map(node => ping(`${node.domain}/comms/status?includeLayers=true`)))
 
   return zip(nodes, results).reduce(
@@ -201,7 +201,7 @@ function realmFor(name: string, layer: string, candidates: Candidate[]): Realm |
 export function changeRealm(realmString: string) {
   const store: Store<RootState> = (window as any)['globalStore']
 
-  const candidates = getCatalystCandidates(store.getState())
+  const candidates = getAllCatalystCandidates(store.getState())
 
   const realm = getRealmFromString(realmString, candidates)
 
@@ -265,7 +265,7 @@ export async function refreshCandidatesStatuses() {
 }
 
 function getCandidateDomains(store: Store<RootDaoState>): Set<string> {
-  return new Set(getCatalystCandidates(store.getState()).map(it => it.domain))
+  return new Set(getAllCatalystCandidates(store.getState()).map(it => it.domain))
 }
 
 export async function catalystRealmConnected(): Promise<void> {
