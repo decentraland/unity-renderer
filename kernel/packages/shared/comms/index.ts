@@ -52,7 +52,7 @@ import { LighthouseWorldInstanceConnection } from './v2/LighthouseWorldInstanceC
 
 import { identity } from '../index'
 import { Authenticator } from 'dcl-crypto'
-import { getCommsServer, getRealm, getCatalystCandidates } from '../dao/selectors'
+import { getCommsServer, getRealm, getAllCatalystCandidates } from '../dao/selectors'
 import { Realm, LayerUserInfo } from 'shared/dao/types'
 import { Store } from 'redux'
 import { RootState } from 'shared/store/rootTypes'
@@ -658,7 +658,7 @@ function handleFullLayer() {
     store.dispatch(markCatalystRealmFull(realm))
   }
 
-  const candidates = getCatalystCandidates(store.getState())
+  const candidates = getAllCatalystCandidates(store.getState())
 
   const otherRealm = pickCatalystRealm(candidates)
 

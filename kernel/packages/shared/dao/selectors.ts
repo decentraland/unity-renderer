@@ -12,6 +12,9 @@ export const getRealm = (store: RootDaoState) => store.dao.realm
 export const getLayer = (store: RootDaoState) => (store.dao.realm ? store.dao.realm.layer : '')
 
 export const getCatalystCandidates = (store: RootDaoState) => store.dao.candidates
+export const getAddedCatalystCandidates = (store: RootDaoState) => store.dao.addedCandidates
+
+export const getAllCatalystCandidates = (store: RootDaoState) => getAddedCatalystCandidates(store).concat(getCatalystCandidates(store))
 
 export const isRealmInitialized = (store: RootDaoState) => store.dao.initialized
 

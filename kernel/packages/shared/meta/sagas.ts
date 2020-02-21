@@ -3,29 +3,34 @@ import { getServerConfigurations } from '../../config/index'
 import { metaConfigurationInitialized } from './actions'
 import defaultLogger from '../logger'
 import { buildNumber } from './env'
-
-export type MetaConfiguration = {
-  explorer: {
-    minBuildNumber: number
-  }
-}
+import { MetaConfiguration } from './types'
 
 const DEFAULT_META_CONFIGURATION: MetaConfiguration = {
   explorer: {
     minBuildNumber: 0
+  },
+  servers: {
+    added: [],
+    denied: [],
+    contentWhitelist: []
   }
 }
 
 export function* metaSaga(): any {
-  const config: MetaConfiguration = yield call(fetchMetaConfiguration)
+  const config: Partial<MetaConfiguration> = yield call(fetchMetaConfiguration)
 
   yield put(metaConfigurationInitialized(config))
   yield call(checkExplorerVersion, config)
 }
 
-function checkExplorerVersion(config: MetaConfiguration) {
+function checkExplorerVersion(config: Partial<MetaConfiguration>) {
   const currentBuildNumber = buildNumber
   defaultLogger.info(`Current build number: `, currentBuildNumber)
+
+  if (!config || !config.explorer || !config.explorer.minBuildNumber) {
+    return
+  }
+
   if (currentBuildNumber < config.explorer.minBuildNumber) {
     // force client to reload from server
     window.location.reload(true)
