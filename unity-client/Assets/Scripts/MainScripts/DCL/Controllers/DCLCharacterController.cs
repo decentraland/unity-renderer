@@ -127,8 +127,7 @@ public class DCLCharacterController : MonoBehaviour
     void OnDisable()
     {
         if (!RenderingController.i.activatedRenderingBefore) return;
-
-        SceneController.i.StartCoroutine(ReActivateCharacter());
+        CoroutineStarter.Start(ReActivateCharacter());
     }
 
     IEnumerator ReActivateCharacter()
