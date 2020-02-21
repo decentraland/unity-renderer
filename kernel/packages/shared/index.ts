@@ -268,6 +268,7 @@ export async function initShared(): Promise<Session | undefined> {
   console['group']('connect#profile')
   if (!PREVIEW) {
     let profile = await PassportAsPromise(userId)
+    let profileDirty: boolean = false
     if (!profile.hasClaimedName) {
       const names = await fetchOwnedENS(ethereumConfigurations[net].names, userId)
 
@@ -276,9 +277,22 @@ export async function initShared(): Promise<Session | undefined> {
 
       if (names && names.length > 0) {
         defaultLogger.info(`Found missing claimed name '${names[0]}' for profile ${userId}, consolidating profile... `)
-        store.dispatch(saveAvatarRequest(profile))
+        profileDirty = true
       }
     }
+
+    const localTutorialStep = getUserProfile().profile.tutorialStep
+
+    if (localTutorialStep !== profile.tutorialStep) {
+      let finalTutorialStep = Math.max(localTutorialStep, profile.tutorialStep)
+      profile = { ...profile, tutorialStep: finalTutorialStep }
+      profileDirty = true
+    }
+
+    if (profileDirty) {
+      store.dispatch(saveAvatarRequest(profile))
+    }
+
     persistCurrentUser({
       version: profile.version,
       profile: profileToRendererFormat(profile, identity)
