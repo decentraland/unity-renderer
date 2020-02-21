@@ -38,7 +38,6 @@ public class CharacterPreviewController : MonoBehaviour
 
     private void Awake()
     {
-        RenderingController.i.renderingActivatedAckLock.AddLock(this);
         cameraFocusLookUp = new System.Collections.Generic.Dictionary<CameraFocus, Transform>()
         {
             { CameraFocus.DefaultEditing, defaultEditingTemplate },
@@ -50,7 +49,7 @@ public class CharacterPreviewController : MonoBehaviour
 
     public void UpdateModel(AvatarModel newModel, Action onDone)
     {
-        StartCoroutine(UpdateModelRoutine(newModel, onDone));
+        CoroutineStarter.Start(UpdateModelRoutine(newModel, onDone));
     }
 
     private IEnumerator UpdateModelRoutine(AvatarModel newModel, Action onDone)
@@ -66,7 +65,6 @@ public class CharacterPreviewController : MonoBehaviour
         }
 
         onDone?.Invoke();
-        RenderingController.i.renderingActivatedAckLock.RemoveLock(this);
     }
 
     private void SetLayerRecursively(GameObject gameObject, int layer)
