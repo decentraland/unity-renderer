@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using UnityEngine;
 
 public class AvatarAnimatorLegacy : MonoBehaviour
@@ -79,7 +79,7 @@ public class AvatarAnimatorLegacy : MonoBehaviour
 
     void UpdateInterface()
     {
-        Vector3 velocityTargetPosition = (isOwnPlayer ? DCLCharacterController.i.transform.localPosition : target.position);
+        Vector3 velocityTargetPosition = target.position;
         Vector3 flattenedVelocity = velocityTargetPosition - lastPosition;
 
         //NOTE(Brian): Vertical speed
@@ -88,7 +88,10 @@ public class AvatarAnimatorLegacy : MonoBehaviour
 
         flattenedVelocity.y = 0;
 
-        blackboard.movementSpeed = flattenedVelocity.magnitude;
+        if (isOwnPlayer)
+            blackboard.movementSpeed = flattenedVelocity.magnitude - DCLCharacterController.i.movingPlatformSpeed;
+        else
+            blackboard.movementSpeed = flattenedVelocity.magnitude;
 
         Vector3 rayOffset = Vector3.up * RAY_OFFSET_LENGTH;
         //NOTE(Brian): isGrounded?

@@ -1,6 +1,6 @@
+using DCL.Configuration;
 using DCL.Controllers;
 using DCL.Models;
-using DCL.Configuration;
 using UnityEngine;
 
 namespace DCL.Components
@@ -33,15 +33,6 @@ namespace DCL.Components
         public override void DetachFrom(DecentralandEntity entity, System.Type overridenAttachedType = null)
         {
             if (!attachedEntities.Contains(entity)) return;
-
-            if (DCLCharacterController.i != null)
-            {
-                // In case the character controller has been parented to this entity's mesh
-                if (entity.meshRootGameObject != null && DCLCharacterController.i.transform.parent == entity.meshRootGameObject.transform)
-                {
-                    DCLCharacterController.i.ResetGround();
-                }
-            }
 
             // We do this instead of OnDetach += because it is required to run after every OnDetach listener
             entity.meshesInfo.currentShape = null;
