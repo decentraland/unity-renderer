@@ -12,22 +12,24 @@ public class PlayerAvatarController : MonoBehaviour
     private bool enableCameraCheck = false;
     private Camera mainCamera;
 
-    private void Awake()
+    private void Start()
     {
         //NOTE(Brian): We must wait for loading to finish before deactivating the renderer, or the GLTF Loader won't finish.
-        avatarRenderer.OnSuccessEvent -= Init;
-        avatarRenderer.OnFailEvent -= Init;
-        avatarRenderer.OnSuccessEvent += Init;
-        avatarRenderer.OnFailEvent += Init;
+        avatarRenderer.OnSuccessEvent -= OnAvatarRendererReady;
+        avatarRenderer.OnFailEvent -= OnAvatarRendererReady;
+        avatarRenderer.OnSuccessEvent += OnAvatarRendererReady;
+        avatarRenderer.OnFailEvent += OnAvatarRendererReady;
+        RenderingController.i.renderingActivatedAckLock.AddLock(this);
 
         mainCamera = Camera.main;
     }
 
-    private void Init()
+    private void OnAvatarRendererReady()
     {
         enableCameraCheck = true;
-        avatarRenderer.OnSuccessEvent -= Init;
-        avatarRenderer.OnFailEvent -= Init;
+        RenderingController.i.renderingActivatedAckLock.RemoveLock(this);
+        avatarRenderer.OnSuccessEvent -= OnAvatarRendererReady;
+        avatarRenderer.OnFailEvent -= OnAvatarRendererReady;
     }
 
     private void Update()

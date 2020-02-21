@@ -6,7 +6,8 @@
         "GUID:1a483cdd86db6e641ad77c7046dd035f",
         "GUID:ef84d7ce90ba34f07be26ace428e9bc8",
         "GUID:98bf3bf29030cbf4092d89a7cc28b7fb",
-        "GUID:4307f53044263cf4b835bd812fc161a4"
+        "GUID:4307f53044263cf4b835bd812fc161a4",
+        "GUID:b1087c5731ff68448a0a9c625bb7e52d"
     ],
     "optionalUnityReferences": [
         "TestAssemblies"

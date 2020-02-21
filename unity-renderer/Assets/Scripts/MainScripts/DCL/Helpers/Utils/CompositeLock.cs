@@ -40,5 +40,12 @@ namespace DCL.Helpers
             if (lockCounter == 0)
                 OnAllLocksRemoved?.Invoke();
         }
+
+        public void RemoveAllLocks()
+        {
+            lockCounter = 0;
+            lockIds.Clear();
+            OnAllLocksRemoved?.Invoke();
+        }
     }
 }
