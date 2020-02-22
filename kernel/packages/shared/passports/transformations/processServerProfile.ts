@@ -29,6 +29,9 @@ export function processServerProfile(userId: string, receivedProfile: any): Prof
     .filter(dropDeprecatedWearables)
     .filter(noExclusiveMismatches(receivedProfile.inventory))
   const snapshots = receivedProfile.avatar ? receivedProfile.avatar.snapshots : {}
+  const eyeColor = flattenColorIfNecessary(receivedProfile.avatar.eyes.color)
+  const hairColor = flattenColorIfNecessary(receivedProfile.avatar.hair.color)
+  const skinColor = flattenColorIfNecessary(receivedProfile.avatar.skin.color)
   return {
     userId,
     email: receivedProfile.email || '',
@@ -38,9 +41,9 @@ export function processServerProfile(userId: string, receivedProfile: any): Prof
     ethAddress: userId || 'noeth',
     version: receivedProfile.avatar.version || 1,
     avatar: {
-      eyeColor: colorString(receivedProfile.avatar.eyes.color),
-      hairColor: colorString(receivedProfile.avatar.hair.color),
-      skinColor: colorString(receivedProfile.avatar.skin.color),
+      eyeColor: colorString(eyeColor),
+      hairColor: colorString(hairColor),
+      skinColor: colorString(skinColor),
       bodyShape: fixWearableIds(receivedProfile.avatar.bodyShape),
       wearables,
       snapshots
@@ -49,4 +52,13 @@ export function processServerProfile(userId: string, receivedProfile: any): Prof
     blocked: receivedProfile.blocked,
     tutorialStep: receivedProfile.tutorialStep || tutorialStepId.INITIAL_SCENE
   }
+}
+
+/**
+ * Flattens the object with a color field to avoid having two nested color fields when profile comess messed from server.
+ *
+ * @param objectWithColor object to flatten if need be
+ */
+function flattenColorIfNecessary(objectWithColor: any) {
+  return objectWithColor.color ? objectWithColor.color : objectWithColor
 }

@@ -187,12 +187,11 @@ const browserInterface = {
     Session.current.then(s => s.logout()).catch(e => defaultLogger.error('error while logging out', e))
   },
 
-  SaveUserAvatar({ face, body, avatar }: { face: string; body: string; avatar: Avatar }) {
+  SaveUserAvatar(changes: { face: string; body: string; avatar: Avatar }) {
+    const { face, body, avatar } = changes
     const profile: Profile = getUserProfile().profile as Profile
-    profile.avatar = avatar
-    profile.avatar.snapshots.face = face
-    profile.avatar.snapshots.body = body
-    global.globalStore.dispatch(saveAvatarRequest(profile))
+    const updated = { ...profile, avatar: { ...avatar, snapshots: { face, body } } }
+    global.globalStore.dispatch(saveAvatarRequest(updated))
   },
 
   SaveUserTutorialStep(data: { tutorialStep: number }) {

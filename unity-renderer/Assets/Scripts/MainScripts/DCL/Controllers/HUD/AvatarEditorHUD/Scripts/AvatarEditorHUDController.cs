@@ -181,29 +181,35 @@ public class AvatarEditorHUDController : IDisposable, IHUD
 
     private void EquipHairColor(Color color)
     {
-        if (hairColorList.colors.Any(x => x.AproxComparison(color)))
+        var colorToSet = color;
+        if (!hairColorList.colors.Any(x => x.AproxComparison(colorToSet)))
         {
-            model.hairColor = color;
-            view.SelectHairColor(model.hairColor);
+            colorToSet = hairColorList.colors[hairColorList.defaultColor];
         }
+        model.hairColor = colorToSet;
+        view.SelectHairColor(model.hairColor);
     }
 
     private void EquipEyesColor(Color color)
     {
-        if (eyeColorList.colors.Any(x => x.AproxComparison(color)))
+        var colorToSet = color;
+        if (!eyeColorList.colors.Any(x => x.AproxComparison(color)))
         {
-            model.eyesColor = color;
-            view.SelectEyeColor(model.eyesColor);
+            colorToSet = eyeColorList.colors[eyeColorList.defaultColor];
         }
+        model.eyesColor = colorToSet;
+        view.SelectEyeColor(model.eyesColor);
     }
 
     private void EquipSkinColor(Color color)
     {
-        if (skinColorList.colors.Any(x => x.AproxComparison(color)))
+        var colorToSet = color;
+        if (!skinColorList.colors.Any(x => x.AproxComparison(colorToSet)))
         {
-            model.skinColor = color;
-            view.SelectSkinColor(model.skinColor);
+            colorToSet = skinColorList.colors[skinColorList.defaultColor];
         }
+        model.skinColor = colorToSet;
+        view.SelectSkinColor(model.skinColor);
     }
 
     private void EquipBodyShape(WearableItem bodyShape)
