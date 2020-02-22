@@ -1,9 +1,16 @@
 import { registerAPI, exposeMethod } from 'decentraland-rpc/lib/host'
 import { ExposableAPI } from './ExposableAPI'
 import { EnvironmentData } from 'shared/types'
-import { Realm } from '../dao/types'
 import { Store } from 'redux'
 import { RootState } from 'shared/store/rootTypes'
+import { getRealm } from 'shared/dao/selectors'
+
+type EnvironmentRealm = {
+  domain: string
+  layer: string
+  serverName: string
+  displayName: string
+}
 
 declare const window: any
 
@@ -22,8 +29,19 @@ export class EnvironmentAPI extends ExposableAPI {
    * Returns the current connected realm
    */
   @exposeMethod
-  async getCurrentRealm(): Promise<Realm | undefined> {
+  async getCurrentRealm(): Promise<EnvironmentRealm | undefined> {
     const store: Store<RootState> = window['globalStore']
-    return store.getState().dao.realm
+    const realm = getRealm(store.getState())
+
+    if (!realm) {
+      return undefined
+    }
+    const { domain, layer, catalystName: serverName } = realm
+    return {
+      domain,
+      layer,
+      serverName,
+      displayName: `${serverName}-${layer}`
+    }
   }
 }

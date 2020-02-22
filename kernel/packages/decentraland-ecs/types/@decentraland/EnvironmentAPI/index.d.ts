@@ -1,8 +1,9 @@
 declare module '@decentraland/EnvironmentAPI' {
-  export type Realm = {
+  type Realm = {
     domain: string
-    catalystName: string
     layer: string
+    serverName: string
+    displayName: string
   }
   /**
    * Returns the current connected realm
