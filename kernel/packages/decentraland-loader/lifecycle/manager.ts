@@ -10,7 +10,7 @@ import { error } from 'util'
 import { ILand } from 'shared/types'
 
 import { DEBUG, parcelLimits, getServerConfigurations, ENABLE_EMPTY_SCENES, tutorialSceneEnabled } from '../../config'
-import { getFetchContentServer } from '../../shared/dao/selectors'
+import { getFetchContentServer, getFetchMetaContentServer } from '../../shared/dao/selectors'
 import { Store } from 'redux'
 
 /*
@@ -62,6 +62,9 @@ export async function initParcelSceneWorker() {
     contentServer: DEBUG
       ? resolveUrl(document.location.origin, '/local-ipfs')
       : getFetchContentServer(window.globalStore.getState()),
+    metaContentServer: DEBUG
+      ? resolveUrl(document.location.origin, '/local-ipfs')
+      : getFetchMetaContentServer(window.globalStore.getState()),
     contentServerBundles: DEBUG ? '' : getServerConfigurations().contentAsBundle,
     lineOfSightRadius: parcelLimits.visibleRadius,
     secureRadius: parcelLimits.secureRadius,

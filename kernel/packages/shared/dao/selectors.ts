@@ -4,6 +4,7 @@ export const getFetchProfileServer = (store: RootDaoState) => store.dao.profileS
 export const getUpdateProfileServer = (store: RootDaoState) => store.dao.updateContentServer
 
 export const getFetchContentServer = (store: RootDaoState) => store.dao.fetchContentServer
+export const getFetchMetaContentServer = (store: RootDaoState) => store.dao.fetchMetaContentServer
 
 export const getCommsServer = (store: RootDaoState) => store.dao.commsServer
 
