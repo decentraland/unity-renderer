@@ -9,7 +9,7 @@ import {
   SET_CONTENT_WHITELIST
 } from './actions'
 import { DaoState, Candidate, Realm } from './types'
-import { FETCH_PROFILE_SERVICE, FETCH_CONTENT_SERVICE, UPDATE_CONTENT_SERVICE, COMMS_SERVICE } from '../../config/index'
+import { FETCH_PROFILE_SERVICE, FETCH_CONTENT_SERVICE, UPDATE_CONTENT_SERVICE, COMMS_SERVICE, FETCH_META_CONTENT_SERVICE } from '../../config/index'
 
 export function daoReducer(state?: DaoState, action?: AnyAction): DaoState {
   if (!state) {
@@ -17,6 +17,7 @@ export function daoReducer(state?: DaoState, action?: AnyAction): DaoState {
       initialized: false,
       profileServer: '',
       fetchContentServer: '',
+      fetchMetaContentServer: '',
       updateContentServer: '',
       commsServer: '',
       realm: undefined,
@@ -91,6 +92,7 @@ function realmProperties(realm: Realm, configOverride: boolean = true): Partial<
   return {
     profileServer: FETCH_PROFILE_SERVICE && configOverride ? FETCH_PROFILE_SERVICE : domain + '/lambdas/profile',
     fetchContentServer: FETCH_CONTENT_SERVICE && configOverride ? FETCH_CONTENT_SERVICE : domain + '/lambdas/contentv2',
+    fetchMetaContentServer: FETCH_META_CONTENT_SERVICE && configOverride ? FETCH_META_CONTENT_SERVICE : domain + '/lambdas/contentv2',
     updateContentServer: UPDATE_CONTENT_SERVICE && configOverride ? UPDATE_CONTENT_SERVICE : domain + '/content',
     commsServer: COMMS_SERVICE && configOverride ? COMMS_SERVICE : domain + '/comms',
     realm

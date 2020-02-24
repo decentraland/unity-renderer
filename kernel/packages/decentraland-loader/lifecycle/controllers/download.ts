@@ -30,7 +30,14 @@ export class SceneDataDownloadManager {
   emptyScenesPromise?: Promise<Record<string, ContentMapping[]>>
   emptySceneNames: string[] = []
 
-  constructor(public options: { contentServer: string; contentServerBundles: string; tutorialBaseURL: string }) {
+  constructor(
+    public options: {
+      contentServer: string
+      metaContentServer: string
+      contentServerBundles: string
+      tutorialBaseURL: string
+    }
+  ) {
     // stub
   }
 
@@ -53,10 +60,10 @@ export class SceneDataDownloadManager {
 
     try {
       const responseContent = await fetch(
-        this.options.contentServer + `/scenes?x1=${nw[0]}&x2=${nw[0]}&y1=${nw[1]}&y2=${nw[1]}`
+        this.options.metaContentServer + `/scenes?x1=${nw[0]}&x2=${nw[0]}&y1=${nw[1]}&y2=${nw[1]}`
       )
       if (!responseContent.ok) {
-        error(`Error in ${this.options.contentServer}/scenes response!`, responseContent)
+        error(`Error in ${this.options.metaContentServer}/scenes response!`, responseContent)
         promised.resolve(null)
         return null
       } else {
@@ -134,10 +141,10 @@ export class SceneDataDownloadManager {
       return promised
     }
 
-    const actualResponse = await fetch(this.options.contentServer + `/parcel_info?cids=${sceneId}`)
+    const actualResponse = await fetch(this.options.metaContentServer + `/parcel_info?cids=${sceneId}`)
     if (!actualResponse.ok) {
-      error(`Error in ${this.options.contentServer}/parcel_info response!`, actualResponse)
-      const ret = new Error(`Error in ${this.options.contentServer}/parcel_info response!`)
+      error(`Error in ${this.options.metaContentServer}/parcel_info response!`, actualResponse)
+      const ret = new Error(`Error in ${this.options.metaContentServer}/parcel_info response!`)
       promised.reject(ret)
       throw ret
     }
