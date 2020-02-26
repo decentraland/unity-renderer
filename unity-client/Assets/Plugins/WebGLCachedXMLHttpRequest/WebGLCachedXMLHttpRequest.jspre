@@ -292,19 +292,4 @@ if (Module.CachedXMLHttpRequestDisable !== true) {
     if (typeof DecompressAndLoadFile == "function")
       DecompressAndLoadFile = CachedXMLHttpRequest.wrap(DecompressAndLoadFile);
   }
-  Object.defineProperty(Module, "asmLibraryArg", {
-    get: function() {
-      return Module.realAsmLibraryArg;
-    },
-    set: function(value) {
-      if (
-        typeof value == "object" &&
-        typeof value._JS_WebRequest_Create == "function"
-      )
-        value._JS_WebRequest_Create = CachedXMLHttpRequest.wrap(
-          value._JS_WebRequest_Create
-        );
-      Module.realAsmLibraryArg = value;
-    }
-  });
 }
