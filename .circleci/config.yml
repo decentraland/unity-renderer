@@ -414,7 +414,7 @@ workflows:
       - build-unity:
           <<: *all_branches_and_tags
           requires:
-            - checkout
+            - run-unity-tests
           filters:
             branches:
               only: /(.*)/
@@ -423,7 +423,7 @@ workflows:
       - run-unity-tests:
           <<: *all_branches_and_tags
           requires:
-            - build-unity
+            - checkout
           filters:
             branches:
               only: /(.*)/
@@ -442,7 +442,6 @@ workflows:
           requires:
             - build-kernel
             - build-unity
-            - run-unity-tests
           filters:
             branches:
               only: /(.*)/
