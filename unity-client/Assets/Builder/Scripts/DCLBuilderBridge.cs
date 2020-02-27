@@ -96,7 +96,7 @@ namespace Builder
 
                 if (file.EndsWith(".glb") || file.EndsWith(".gltf"))
                 {
-                    AssetPromise_PrefetchGLTF gltfPromise = new AssetPromise_PrefetchGLTF(currentScene.contentProvider, file);
+                    AssetPromise_PrefetchGLTF gltfPromise = new AssetPromise_PrefetchGLTF(currentScene.contentProvider, file, hash);
                     AssetPromiseKeeper_GLTF.i.Keep(gltfPromise);
                 }
             }
