@@ -33,7 +33,7 @@ initializeUnity(container)
     await startUnityParcelLoading()
 
     if (!NO_MOTD) {
-      i.ConfigureWelcomeHUD({ active: true, visible: !tutorialEnabled(), hasWallet: hasWallet })
+      i.ConfigureWelcomeHUD({ active: false, visible: !tutorialEnabled(), hasWallet: hasWallet })
     }
 
     _.instancedJS

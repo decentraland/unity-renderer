@@ -6,6 +6,8 @@ namespace DCL.Tutorial
 {
     public class TutorialStep_ChatAndAvatarExpressions : TutorialStep
     {
+        const bool ENABLE_DAILY_REWARD_TOOLTIP = false;
+
         [SerializeField] TutorialTooltip chatTooltip = null;
         [SerializeField] TutorialTooltip avatarExpressionTooltip = null;
         [SerializeField] TutorialTooltip gotoCommandTooltip = null;
@@ -67,23 +69,22 @@ namespace DCL.Tutorial
             yield return avatarHUDTooltip.ShowAndHideRoutine();
             yield return WaitIdleTime();
 
-            yield return dailyRewardTooltip.ShowAndHideRoutine();
-            yield return WaitIdleTime();
+            if (ENABLE_DAILY_REWARD_TOOLTIP)
+            {
+                yield return dailyRewardTooltip.ShowAndHideRoutine();
+                yield return WaitIdleTime();
+            }
 
-            bool hasWelcomeHudPop = false;
+            isWelcomeHudVisible = false;
             if (HUDController.i != null && HUDController.i.welcomeHudController != null)
             {
                 isWelcomeHudVisible = true;
-                hasWelcomeHudPop = true;
                 HUDController.i.welcomeHudController.SetVisibility(true);
             }
             yield return new WaitUntil(() => !isWelcomeHudVisible);
 
-            if (hasWelcomeHudPop)
-            {
-                Utils.UnlockCursor();
-                TutorialController.i.TriggerEmailPrompt();
-            }
+            Utils.UnlockCursor();
+            TutorialController.i.TriggerEmailPrompt();
         }
 
         private void OnWelcomePopupConfirm()
