@@ -1,10 +1,8 @@
-﻿using UnityEngine;
-
 namespace DCL
 {
     public class AssetPromise_PrefetchGLTF : AssetPromise_GLTF
     {
-        public AssetPromise_PrefetchGLTF(ContentProvider provider, string url) : base(provider, url)
+        public AssetPromise_PrefetchGLTF(ContentProvider provider, string url, string hash) : base(provider, url, hash)
         {
             settings.visibleFlags = AssetPromiseSettings_Rendering.VisibleFlags.INVISIBLE;
         }
