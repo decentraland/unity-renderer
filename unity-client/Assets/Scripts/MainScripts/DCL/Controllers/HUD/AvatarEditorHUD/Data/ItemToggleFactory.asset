@@ -30,3 +30,9 @@ MonoBehaviour:
   - rarity: unique
     prefab: {fileID: 3325800490922572695, guid: 2095618ba759b45739751d01ced3888d,
       type: 3}
+  - rarity: common
+    prefab: {fileID: 3325800490922572695, guid: 9930bc17814974b24aeb99a0f8cd7a4a,
+      type: 3}
+  - rarity: uncommon
+    prefab: {fileID: 8129212123492513521, guid: 2cef17b757f7e4c158e4a659da7d61c2,
+      type: 3}
