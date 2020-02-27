@@ -1,4 +1,4 @@
-﻿using GLTF;
+using GLTF;
 using GLTF.Schema;
 
 using System;
@@ -1674,6 +1674,8 @@ namespace UnityGLTF
 
             Material material = materialCacheData.GetContents(primitive.Attributes.ContainsKey(SemanticProperties.COLOR_0));
 
+            DCL.Helpers.SRPBatchingHelper.OptimizeMaterial(renderer, material);
+
             if (matController != null)
             {
                 matController.OnDidFinishLoading(material);
@@ -2193,7 +2195,7 @@ namespace UnityGLTF
 
             for (int i = 0; i < 2; i++)
             {
-                string materialCRC = material[i].ComputeCRC().ToString() + material[i].name;
+                string materialCRC = material[i].ComputeCRC().ToString();
 
                 if (!addMaterialsToPersistentCaching)
                 {

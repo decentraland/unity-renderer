@@ -1,4 +1,4 @@
-using System;
+using UnityEngine;
 
 namespace UnityGLTF.Cache
 {
@@ -15,7 +15,8 @@ namespace UnityGLTF.Cache
         {
             if (_isDisposed)
             {
-                throw new InvalidOperationException("Cannot inscrease the ref count on disposed cache data.");
+                Debug.LogError("Cannot inscrease the ref count on disposed cache data.");
+                return;
             }
 
             lock (_refCountLock)
@@ -30,14 +31,16 @@ namespace UnityGLTF.Cache
         {
             if (_isDisposed)
             {
-                throw new InvalidOperationException("Cannot decrease the ref count on disposed cache data.");
+                Debug.LogError("Cannot decrease the ref count on disposed cache data.");
+                return;
             }
 
             lock (_refCountLock)
             {
                 if (_refCount <= 0)
                 {
-                    throw new InvalidOperationException("Cannot decrease the cache data ref count below zero.");
+                    Debug.LogError("Cannot decrease the cache data ref count below zero. Name = " + this.ToString());
+                    return;
                 }
 
                 _refCount--;

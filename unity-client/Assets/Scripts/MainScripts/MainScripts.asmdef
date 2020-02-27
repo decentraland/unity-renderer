@@ -19,7 +19,9 @@
         "ContentProvider",
         "AvatarAssets",
         "InputController",
-        "GenericPointers"
+        "GenericPointers",
+        "MaterialCachingHelper",
+        "SRPBatchingHelper"
     ],
     "optionalUnityReferences": [],
     "includePlatforms": [],

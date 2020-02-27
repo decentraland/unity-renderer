@@ -27,6 +27,7 @@ namespace UnityGLTF
             public bool? useVisualFeedback;
             public bool? initialVisibility;
             public Shader shaderOverride;
+            public bool addMaterialsToPersistentCaching;
             public WebRequestLoader.WebRequestLoaderEventAction OnWebRequestStartEvent;
         }
 
@@ -34,6 +35,7 @@ namespace UnityGLTF
         public bool Multithreaded = false;
         public bool UseStream = false;
         public bool UseVisualFeedback = true;
+        private bool addMaterialsToPersistentCaching = true;
 
         public int MaximumLod = 300;
         public int Timeout = 8;
@@ -139,6 +141,8 @@ namespace UnityGLTF
             {
                 OnWebRequestStartEvent = settings.OnWebRequestStartEvent;
             }
+
+            this.addMaterialsToPersistentCaching = settings.addMaterialsToPersistentCaching;
         }
 
         private void OnFail_Internal(Exception obj)
@@ -251,6 +255,7 @@ namespace UnityGLTF
                     sceneImporter.CustomShaderName = shaderOverride ? shaderOverride.name : null;
                     sceneImporter.LoadingTextureMaterial = LoadingTextureMaterial;
                     sceneImporter.initialVisibility = initialVisibility;
+                    sceneImporter.addMaterialsToPersistentCaching = addMaterialsToPersistentCaching;
 
                     float time = Time.realtimeSinceStartup;
 

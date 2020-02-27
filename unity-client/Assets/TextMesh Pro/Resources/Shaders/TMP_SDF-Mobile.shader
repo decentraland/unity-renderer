@@ -88,9 +88,11 @@ SubShader {
 		#pragma multi_compile __ UNITY_UI_ALPHACLIP
 
 		#include "UnityCG.cginc"
-		#include "UnityUI.cginc"
-		#include "TMPro_Properties.cginc"
 
+		#include "UnityUI.cginc"
+CBUFFER_START(UnityPerMaterial)
+		#include "TMPro_Properties.cginc"
+CBUFFER_END
 		struct vertex_t {
 			float4	vertex			: POSITION;
 			float3	normal			: NORMAL;

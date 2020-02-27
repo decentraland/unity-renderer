@@ -17,7 +17,7 @@ Shader "DCL/FX/Hologram"
     {
         Pass
         {
-            Tags { "RenderType"="Transparent" "Queue"="Transparent" "RenderPipeline"="LightweightPipeline" }
+            Tags { "RenderType"="Transparent" "Queue"="Transparent+500" "RenderPipeline"="LightweightPipeline" }
 
             Blend SrcAlpha OneMinusSrcAlpha
             ZWrite Off
@@ -26,16 +26,18 @@ Shader "DCL/FX/Hologram"
 			
             #pragma vertex vert
             #pragma fragment frag
-			
-            uniform float4 _Color;
 
-            uniform float4 _RimColor;
-            uniform float _RimPower;
+            CBUFFER_START(UnityPerMaterial)
+                float4 _Color;
+
+                float4 _RimColor;
+                float _RimPower;
 			
-            uniform float _ThrobbScale;
-            uniform float _FadeDirection;
-            uniform float _FadeThickness;
-            uniform float _CullYPlane;
+                float _ThrobbScale;
+                float _FadeDirection;
+                float _FadeThickness;
+                float _CullYPlane;
+            CBUFFER_END
 			
             struct vertexInput
             {

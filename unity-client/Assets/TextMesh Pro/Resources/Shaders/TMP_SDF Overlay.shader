@@ -123,7 +123,13 @@ SubShader {
 
 		#include "UnityCG.cginc"
 		#include "UnityUI.cginc"
+        CBUFFER_START(UnityPerMaterial)
+		// Used by Unity internally to handle Texture Tiling and Offset.
 		#include "TMPro_Properties.cginc"
+		// Used by Unity internally to handle Texture Tiling and Offset.
+		float4 _FaceTex_ST;
+		float4 _OutlineTex_ST;
+        CBUFFER_END
 		#include "TMPro.cginc"
 
 		struct vertex_t {
@@ -150,9 +156,6 @@ SubShader {
 			float4 textures			: TEXCOORD5;
 		};
 
-		// Used by Unity internally to handle Texture Tiling and Offset.
-		float4 _FaceTex_ST;
-		float4 _OutlineTex_ST;
 
 		pixel_t VertShader(vertex_t input)
 		{
