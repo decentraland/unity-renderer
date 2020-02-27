@@ -1,11 +1,11 @@
-﻿using System.Collections;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using UnityEngine;
 using UnityGLTF.Cache;
 
-namespace DCL
+namespace DCL.Helpers
 {
     public static class MaterialCachingHelper
     {
@@ -69,7 +69,8 @@ namespace DCL
 
                     if ((cachingFlags & Mode.CACHE_MATERIALS) != 0)
                     {
-                        string hash = ComputeHash(mat);
+                        int crc = mat.ComputeCRC();
+                        string hash = crc.ToString();
 
                         RefCountedMaterialData refCountedMat;
 
@@ -87,11 +88,7 @@ namespace DCL
                             else
                                 materialCopy.SetFloat("_Surface", 0);
 #endif
-
-                            if (materialCopy.IsKeywordEnabled("_ALPHABLEND_ON"))
-                                materialCopy.renderQueue = (int)UnityEngine.Rendering.RenderQueue.Transparent;
-                            else
-                                materialCopy.renderQueue = (int)UnityEngine.Rendering.RenderQueue.Geometry;
+                            SRPBatchingHelper.OptimizeMaterial(r, materialCopy);
 
                             PersistentAssetCache.MaterialCacheByCRC.Add(hash, new RefCountedMaterialData(hash, materialCopy));
                         }

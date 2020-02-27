@@ -69,9 +69,11 @@ Shader "DCL/FX/Triplanar"
         	#include "Packages/com.unity.render-pipelines.core/ShaderLibrary/UnityInstancing.hlsl"
         	#include "Packages/com.unity.render-pipelines.lightweight/ShaderLibrary/ShaderGraphFunctions.hlsl"
 
-			sampler2D _TopAlbedo;
-			sampler2D _TriplanarAlbedo;
-			float _CoverageFalloff;
+            CBUFFER_START(UnityPerMaterial)
+			    sampler2D _TopAlbedo;
+			    sampler2D _TriplanarAlbedo;
+			    float _CoverageFalloff;
+            CBUFFER_END
 
             struct GraphVertexInput
             {

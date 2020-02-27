@@ -1,4 +1,4 @@
-﻿using DCL.Controllers;
+using DCL.Controllers;
 using DCL.Helpers;
 using DCL.Models;
 using System.Collections;
@@ -65,6 +65,7 @@ namespace DCL.Components
                 material.mainTexture = null;
             }
 
+            material.EnableKeyword("_ALPHATEST_ON");
             material.SetInt("_ZWrite", 1);
             material.SetFloat(_AlphaClip, 1);
             material.SetFloat("_Cutoff", model.alphaTest);
@@ -108,6 +109,7 @@ namespace DCL.Components
                     matTransition.PopulateLoadingMaterialWithFinalMaterial();
                 }
 
+                SRPBatchingHelper.OptimizeMaterial(meshRenderer, material);
                 meshRenderer.sharedMaterial = material;
             }
         }

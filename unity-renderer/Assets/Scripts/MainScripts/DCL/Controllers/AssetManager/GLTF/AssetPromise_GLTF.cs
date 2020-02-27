@@ -1,3 +1,4 @@
+using DCL.Helpers;
 using UnityGLTF;
 
 namespace DCL
@@ -53,7 +54,8 @@ namespace DCL
             {
                 useVisualFeedback = settings.visibleFlags == AssetPromiseSettings_Rendering.VisibleFlags.VISIBLE_WITH_TRANSITION,
                 initialVisibility = settings.visibleFlags != AssetPromiseSettings_Rendering.VisibleFlags.INVISIBLE,
-                shaderOverride = settings.shaderOverride
+                shaderOverride = settings.shaderOverride,
+                addMaterialsToPersistentCaching = (settings.cachingFlags & MaterialCachingHelper.Mode.CACHE_MATERIALS) != 0
             };
 
             tmpSettings.OnWebRequestStartEvent += ParseGLTFWebRequestedFile;

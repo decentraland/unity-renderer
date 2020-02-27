@@ -1,16 +1,21 @@
-﻿using UnityEngine;
+using UnityEngine;
 
 namespace UnityGLTF.Cache
 {
     public class RefCountedMaterialData : RefCountedBase
     {
         public Material material;
-        private string crc;
+        public string crc;
 
         public RefCountedMaterialData(string crc, Material material)
         {
             this.material = material;
             this.crc = crc;
+        }
+
+        public override string ToString()
+        {
+            return "ref counted material. name = " + material.name + " ... crc = " + crc;
         }
 
         protected override void OnDestroyCachedData()
