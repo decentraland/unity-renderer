@@ -30,3 +30,8 @@ MonoBehaviour:
   - key: unique
     prefab: {fileID: 8059322503478537989, guid: a1e60226447fce34f99da0beb7d9bdfe,
       type: 3}
+  - key: common
+    prefab: {fileID: 3837966214887225115, guid: bf839fb20509e47e8bbf1813e520f2e0,
+      type: 3}
+  - key: uncommon
+    prefab: {fileID: 603902549804205089, guid: 7b98f01c8f7174d979b08a76c96755a9, type: 3}
