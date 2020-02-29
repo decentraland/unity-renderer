@@ -9,7 +9,13 @@ import {
   SET_CONTENT_WHITELIST
 } from './actions'
 import { DaoState, Candidate, Realm } from './types'
-import { FETCH_PROFILE_SERVICE, FETCH_CONTENT_SERVICE, UPDATE_CONTENT_SERVICE, COMMS_SERVICE, FETCH_META_CONTENT_SERVICE } from '../../config/index'
+import {
+  FETCH_PROFILE_SERVICE,
+  FETCH_CONTENT_SERVICE,
+  UPDATE_CONTENT_SERVICE,
+  COMMS_SERVICE,
+  FETCH_META_CONTENT_SERVICE
+} from '../../config/index'
 
 export function daoReducer(state?: DaoState, action?: AnyAction): DaoState {
   if (!state) {
@@ -92,7 +98,8 @@ function realmProperties(realm: Realm, configOverride: boolean = true): Partial<
   return {
     profileServer: FETCH_PROFILE_SERVICE && configOverride ? FETCH_PROFILE_SERVICE : domain + '/lambdas/profile',
     fetchContentServer: FETCH_CONTENT_SERVICE && configOverride ? FETCH_CONTENT_SERVICE : domain + '/lambdas/contentv2',
-    fetchMetaContentServer: FETCH_META_CONTENT_SERVICE && configOverride ? FETCH_META_CONTENT_SERVICE : domain + '/lambdas/contentv2',
+    fetchMetaContentServer:
+      FETCH_META_CONTENT_SERVICE && configOverride ? FETCH_META_CONTENT_SERVICE : domain + '/lambdas/contentv2',
     updateContentServer: UPDATE_CONTENT_SERVICE && configOverride ? UPDATE_CONTENT_SERVICE : domain + '/content',
     commsServer: COMMS_SERVICE && configOverride ? COMMS_SERVICE : domain + '/comms',
     realm
@@ -102,6 +109,10 @@ function realmProperties(realm: Realm, configOverride: boolean = true): Partial<
 function ensureContentWhitelist(state: Partial<DaoState>, contentWhitelist: Candidate[]): Partial<DaoState> {
   // if current realm is in whitelist => return current state
   if (state.realm && contentWhitelist.some(candidate => candidate.domain === state.realm!.domain)) {
+    return state
+  }
+
+  if (contentWhitelist.length === 0) {
     return state
   }
 
@@ -116,6 +127,10 @@ function ensureContentWhitelist(state: Partial<DaoState>, contentWhitelist: Cand
 function ensureProfileDao(state: Partial<DaoState>, daoCandidates: Candidate[]) {
   // if current realm is in dao => return current state
   if (state.realm && daoCandidates.some(candidate => candidate.domain === state.realm!.domain)) {
+    return state
+  }
+
+  if (daoCandidates.length === 0) {
     return state
   }
 

@@ -34,6 +34,9 @@ packages/build-ecs/%.js: packages/build-ecs/%.ts packages/build-ecs/tsconfig.jso
 static/loader/lifecycle/worker.js: packages/decentraland-loader/**/*.ts
 	@$(COMPILER) targets/engine/loader.json
 
+static/default-profile/contents:
+	@node ./static/default-profile/download_all.js
+
 static/systems/scene.system.js: $(DECENTRALAND_ECS_TYPEDEF_FILE) packages/scene-system/scene.system.ts
 	@$(COMPILER) targets/engine/scene-system.json
 
@@ -101,7 +104,7 @@ static/dist/%.js: build-essentials packages/entryPoints/%.ts
 # Release
 
 DIST_ENTRYPOINTS := static/dist/editor.js static/dist/unity.js static/dist/preview.js
-DIST_STATIC_FILES := static/export.html static/preview.html static/fonts static/images static/models static/unity
+DIST_STATIC_FILES := static/export.html static/preview.html static/fonts static/images static/models static/unity static/default-profile/contents
 DIST_PACKAGE_JSON := packages/decentraland-ecs/package.json
 
 build-deploy: $(DIST_ENTRYPOINTS) $(DIST_STATIC_FILES) $(SCENE_SYSTEM) $(INTERNAL_SCENES) ## Build all the entrypoints needed for a deployment

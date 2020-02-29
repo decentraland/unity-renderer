@@ -13,6 +13,8 @@ import { DEBUG, parcelLimits, getServerConfigurations, ENABLE_EMPTY_SCENES, tuto
 import { getFetchContentServer, getFetchMetaContentServer } from '../../shared/dao/selectors'
 import { Store } from 'redux'
 
+import { getTutorialBaseURL } from 'shared/location'
+
 /*
  * The worker is set up on the first require of this file
  */
@@ -74,15 +76,4 @@ export async function initParcelSceneWorker() {
   })
 
   return server
-}
-
-function getTutorialBaseURL() {
-  let pathName = location.pathname.split('/')
-  if (pathName[pathName.length - 1].includes('.')) {
-    pathName.pop()
-  }
-
-  const basePath = origin + pathName.join('/')
-  if (basePath.endsWith('/')) return basePath.slice(0, -1)
-  return basePath
 }

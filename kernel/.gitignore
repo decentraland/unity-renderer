@@ -9,6 +9,7 @@ static/dist
 public/systems
 static/systems
 static/loader
+static/default-profile/contents
 static/lifecycle
 .decentraland
 **/.decentraland

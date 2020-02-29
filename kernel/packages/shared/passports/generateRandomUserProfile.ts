@@ -37,7 +37,7 @@ export async function generateRandomUserProfile(userId: string): Promise<Profile
   return profile
 }
 
-function backupProfile(contentServerUrl: string, userId: string) {
+export function backupProfile(contentServerUrl: string, userId: string) {
   return {
     userId,
     email: '',
