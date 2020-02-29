@@ -257,7 +257,6 @@ export function* handleFetchProfile(action: PassportRequestAction): any {
     }
   } else {
     const baseUrl = yield call(getTutorialBaseURL)
-    defaultLogger.info(`server#2: `, baseUrl)
     profile = yield call(backupProfile, baseUrl + '/default-profile/snapshots', userId)
   }
 
