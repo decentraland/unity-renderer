@@ -414,6 +414,7 @@ workflows:
           <<: *all_branches_and_tags
           requires:
             - run-unity-tests
+            - checkout
           filters:
             branches:
               only: /(.*)/
