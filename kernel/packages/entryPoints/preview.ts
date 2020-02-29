@@ -13,6 +13,7 @@ import { future, IFuture } from 'fp-future'
 import { ILand } from 'shared/types'
 import { pickWorldSpawnpoint } from 'shared/world/positionThings'
 import { sceneLifeCycleObservable } from 'decentraland-loader/lifecycle/controllers/scene'
+import { signalRendererInitialized } from 'shared/renderer/actions'
 
 // Remove the 'dcl-loading' class, used until JS loads.
 document.body.classList.remove('dcl-loading')
@@ -22,7 +23,7 @@ const container = document.getElementById('gameContainer')
 if (!container) throw new Error('cannot find element #gameContainer')
 
 const defaultScene: IFuture<ILand> = future()
- 
+
 function startPreviewWatcher() {
   // this is set to avoid double loading scenes due queued messages
   let isSceneLoading: boolean = true
@@ -81,6 +82,8 @@ initializeUnity(container)
     i.ConfigureNotificationHUD({ active: true, visible: true })
     i.ConfigureSettingsHUD({ active: true, visible: false })
     i.ConfigureAirdroppingHUD({ active: true, visible: true })
+
+    global['globalStore'].dispatch(signalRendererInitialized())
 
     const renderable = sceneRenderable()
 

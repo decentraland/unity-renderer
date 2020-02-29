@@ -56,6 +56,9 @@ import { sha3 } from 'web3x/utils'
 import { CATALYST_REALM_INITIALIZED } from '../dao/actions'
 import { isRealmInitialized, getUpdateProfileServer } from '../dao/selectors'
 import { getUserProfile } from '../comms/peers'
+import { WORLD_EXPLORER } from '../../config/index'
+import { backupProfile } from 'shared/passports/generateRandomUserProfile'
+import { getTutorialBaseURL } from '../location'
 const multihashing = require('multihashing-async')
 const toBuffer = require('blob-to-buffer')
 
@@ -186,25 +189,37 @@ function overrideBaseUrl(wearable: Wearable) {
 declare const window: any
 
 export function* initialLoad() {
-  try {
-    let collections: Collection[]
-    if (window.location.search.match(/TEST_WEARABLES/)) {
-      collections = [{ id: 'all', wearables: yield call(fetchCatalog, getServerConfigurations().avatar.catalog) }]
-    } else {
-      collections = yield call(fetchCatalog, getServerConfigurations().avatar.catalog)
+  if (WORLD_EXPLORER) {
+    try {
+      let collections: Collection[]
+      if (window.location.search.match(/TEST_WEARABLES/)) {
+        collections = [{ id: 'all', wearables: yield call(fetchCatalog, getServerConfigurations().avatar.catalog) }]
+      } else {
+        collections = yield call(fetchCatalog, getServerConfigurations().avatar.catalog)
+      }
+      const catalog = collections
+        .reduce((flatten, collection) => flatten.concat(collection.wearables), [] as Wearable[])
+        .map(overrideBaseUrl)
+      const baseAvatars = catalog.filter((_: Wearable) => _.tags && !_.tags.includes('exclusive'))
+      const baseExclusive = catalog.filter((_: Wearable) => _.tags && _.tags.includes('exclusive'))
+      if (!(yield select(isInitialized))) {
+        yield take(RENDERER_INITIALIZED)
+      }
+      yield put(addCatalog('base-avatars', baseAvatars))
+      yield put(addCatalog('base-exclusive', baseExclusive))
+    } catch (error) {
+      defaultLogger.error('[FATAL]: Could not load catalog!', error)
     }
-    const catalog = collections
-      .reduce((flatten, collection) => flatten.concat(collection.wearables), [] as Wearable[])
-      .map(overrideBaseUrl)
-    const baseAvatars = catalog.filter((_: Wearable) => _.tags && !_.tags.includes('exclusive'))
-    const baseExclusive = catalog.filter((_: Wearable) => _.tags && _.tags.includes('exclusive'))
-    if (!(yield select(isInitialized))) {
-      yield take(RENDERER_INITIALIZED)
+  } else {
+    let baseCatalog = []
+    try {
+      const response = yield fetch(getTutorialBaseURL() + '/default-profile/basecatalog.json')
+      baseCatalog = yield response.json()
+    } catch (e) {
+      defaultLogger.warn(`Could not load base catalog`)
     }
-    yield put(addCatalog('base-avatars', baseAvatars))
-    yield put(addCatalog('base-exclusive', baseExclusive))
-  } catch (error) {
-    defaultLogger.error('[FATAL]: Could not load catalog!', error)
+    yield put(addCatalog('base-avatars', baseCatalog))
+    yield put(addCatalog('base-exclusive', []))
   }
 }
 
@@ -214,37 +229,43 @@ export function* handleFetchProfile(action: PassportRequestAction): any {
 
   const currentId = yield select(getCurrentUserId)
   let profile: any
-  try {
-    const serverUrl = yield select(getProfileDownloadServer)
-    const profiles: { avatars: object[] } = yield call(profileServerRequest, serverUrl, userId)
+  if (WORLD_EXPLORER) {
+    try {
+      const serverUrl = yield select(getProfileDownloadServer)
+      const profiles: { avatars: object[] } = yield call(profileServerRequest, serverUrl, userId)
 
-    if (profiles.avatars.length !== 0) {
-      profile = profiles.avatars[0]
+      if (profiles.avatars.length !== 0) {
+        profile = profiles.avatars[0]
+      }
+    } catch (error) {
+      defaultLogger.warn(`Error requesting profile for ${userId}, `, error)
     }
-  } catch (error) {
-    defaultLogger.warn(`Error requesting profile for ${userId}, `, error)
-  }
 
-  const userInfo = getUserProfile()
-  if (!profile && userInfo && userInfo.userId && userId === userInfo.userId && userInfo.profile) {
-    defaultLogger.info(`Recover profile from local storage`)
-    profile = yield call(
-      ensureServerFormat,
-      { ...userInfo.profile, avatar: { ...userInfo.profile.avatar, snapshots: userInfo.profile.snapshots } },
-      userInfo.version || 0
-    )
-  }
+    const userInfo = getUserProfile()
+    if (!profile && userInfo && userInfo.userId && userId === userInfo.userId && userInfo.profile) {
+      defaultLogger.info(`Recover profile from local storage`)
+      profile = yield call(
+        ensureServerFormat,
+        { ...userInfo.profile, avatar: { ...userInfo.profile.avatar, snapshots: userInfo.profile.snapshots } },
+        userInfo.version || 0
+      )
+    }
 
-  if (!profile) {
-    defaultLogger.info(`Profile for ${userId} not found, generating random profile`)
-    profile = yield call(generateRandomUserProfile, userId)
+    if (!profile) {
+      defaultLogger.info(`Profile for ${userId} not found, generating random profile`)
+      profile = yield call(generateRandomUserProfile, userId)
+    }
+  } else {
+    const baseUrl = yield call(getTutorialBaseURL)
+    defaultLogger.info(`server#2: `, baseUrl)
+    profile = yield call(backupProfile, baseUrl + '/default-profile/snapshots', userId)
   }
 
   if (currentId === userId) {
     profile.email = email
   }
 
-  if (!ALL_WEARABLES) {
+  if (!ALL_WEARABLES && WORLD_EXPLORER) {
     yield put(inventoryRequest(userId, userId))
     const inventoryResult = yield race({
       success: take(isActionFor(INVENTORY_SUCCESS, userId)),
@@ -366,6 +387,9 @@ function dropIndexFromExclusives(exclusive: string) {
 }
 
 export async function fetchInventoryItemsByAddress(address: string) {
+  if (!WORLD_EXPLORER) {
+    return []
+  }
   const result = await fetch(`${getServerConfigurations().wearablesApi}/addresses/${address}/wearables?fields=id`)
   if (!result.ok) {
     throw new Error('Unable to fetch inventory for address ' + address)

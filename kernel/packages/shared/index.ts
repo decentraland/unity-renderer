@@ -168,9 +168,7 @@ export async function initShared(): Promise<Session | undefined> {
   })
   window.globalStore = globalStore = store
 
-  if (WORLD_EXPLORER) {
-    startSagas()
-  }
+  startSagas()
 
   if (isMobile()) {
     ReportFatalError(MOBILE_NOT_SUPPORTED)
@@ -228,8 +226,13 @@ export async function initShared(): Promise<Session | undefined> {
     }
   } else {
     defaultLogger.log(`Using test user.`)
-    userId = '0x0000000000000000000000000000000000000000'
     identity = await createAuthIdentity()
+    userId = identity.address
+
+    setLocalProfile(userId, {
+      userId,
+      identity
+    })
   }
 
   defaultLogger.log(`User ${userId} logged in`)
@@ -254,22 +257,17 @@ export async function initShared(): Promise<Session | undefined> {
   initializeUrlPositionObserver()
   initializeUrlRealmObserver()
 
-  // DCL Servers connections/requests after this
-  if (STATIC_WORLD) {
-    return session
-  }
-
-  if (WORLD_EXPLORER) {
-    await realmInitialized()
-  }
+  await realmInitialized()
 
   defaultLogger.info(`Using Catalyst configuration: `, globalStore.getState().dao)
 
   // initialize profile
   console['group']('connect#profile')
+  let profile = await PassportAsPromise(userId)
+
   if (!PREVIEW) {
-    let profile = await PassportAsPromise(userId)
     let profileDirty: boolean = false
+
     if (!profile.hasClaimedName) {
       const names = await fetchOwnedENS(ethereumConfigurations[net].names, userId)
 
@@ -295,13 +293,18 @@ export async function initShared(): Promise<Session | undefined> {
     if (profileDirty) {
       store.dispatch(saveAvatarRequest(profile))
     }
-
-    persistCurrentUser({
-      version: profile.version,
-      profile: profileToRendererFormat(profile, identity)
-    })
   }
+
+  persistCurrentUser({
+    version: profile.version,
+    profile: profileToRendererFormat(profile, identity)
+  })
   console['groupEnd']()
+
+  // DCL Servers connections/requests after this
+  if (STATIC_WORLD) {
+    return session
+  }
 
   console['group']('connect#comms')
   store.dispatch(establishingComms())

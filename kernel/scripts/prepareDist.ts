@@ -102,6 +102,7 @@ async function prepareDecentralandECS(folder: string) {
   await validatePackage(folder)
   copyFile(require.resolve('dcl-amd'), path.resolve(root, `${folder}/artifacts/amd.js`))
   copyFile(path.resolve(root, `packages/build-ecs/index.js`), path.resolve(root, `${folder}/artifacts/build-ecs.js`))
+  await fs.copy(path.resolve(root, `static/default-profile`), path.resolve(root, `${folder}/artifacts/default-profile`))
   await injectDependencies(folder, ['typescript', 'uglify-js'], false)
 }
 
