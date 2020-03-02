@@ -234,7 +234,7 @@ const browserInterface = {
   },
 
   UserAcceptedCollectibles(data: { id: string }) {
-    airdropObservable.notifyObservers(data.id)
+    // airdropObservable.notifyObservers(data.id)
   },
 
   EditAvatarClicked() {
@@ -510,7 +510,7 @@ unityInterface = {
     gameInstance.SendMessage('TutorialController', 'SetTutorialEnabled')
   },
   TriggerAirdropDisplay(data: AirdropInfo) {
-    gameInstance.SendMessage('HUDController', 'AirdroppingRequest', JSON.stringify(data))
+    // gameInstance.SendMessage('HUDController', 'AirdroppingRequest', JSON.stringify(data))
   },
   SelectGizmoBuilder(type: string) {
     this.SendBuilderMessage('SelectGizmo', type)
