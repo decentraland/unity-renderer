@@ -32,7 +32,6 @@ import { IEventNames, IEvents, ProfileForRenderer } from '../decentraland-ecs/sr
 import { sceneLifeCycleObservable } from '../decentraland-loader/lifecycle/controllers/scene'
 import { AirdropInfo } from '../shared/airdrops/interface'
 import { queueTrackingEvent } from '../shared/analytics'
-import { airdropObservable } from '../shared/apis/AirdropController'
 import { DevTools } from '../shared/apis/DevTools'
 import { ParcelIdentity } from '../shared/apis/ParcelIdentity'
 import { chatObservable } from '../shared/comms/chat'
