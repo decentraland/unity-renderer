@@ -234,7 +234,8 @@ const browserInterface = {
   },
 
   UserAcceptedCollectibles(data: { id: string }) {
-    // airdropObservable.notifyObservers(data.id)
+    // Here, we should have "airdropObservable.notifyObservers(data.id)".
+    // It's disabled because of security reasons.
   },
 
   EditAvatarClicked() {
@@ -510,7 +511,7 @@ unityInterface = {
     gameInstance.SendMessage('TutorialController', 'SetTutorialEnabled')
   },
   TriggerAirdropDisplay(data: AirdropInfo) {
-    // gameInstance.SendMessage('HUDController', 'AirdroppingRequest', JSON.stringify(data))
+    // Disabled for security reasons
   },
   SelectGizmoBuilder(type: string) {
     this.SendBuilderMessage('SelectGizmo', type)
