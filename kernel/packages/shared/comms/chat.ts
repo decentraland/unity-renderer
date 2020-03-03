@@ -12,7 +12,7 @@ export const chatObservable = new Observable<{
   messageEntry: MessageEntry
 }>()
 
-export function notifyStatusTroughChat(status: string) {
+export function notifyStatusThroughChat(status: string) {
   chatObservable.notifyObservers({
     type: ChatEvent.MESSAGE_RECEIVED,
     messageEntry: {

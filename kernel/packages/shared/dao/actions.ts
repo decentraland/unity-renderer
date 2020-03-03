@@ -39,3 +39,7 @@ export type SetCatalystRealmCommsStatus = ReturnType<typeof setCatalystRealmComm
 export const MARK_CATALYST_REALM_FULL = 'Mark Catalyst Realm Full'
 export const markCatalystRealmFull = (realm: Realm) => action(MARK_CATALYST_REALM_FULL, realm)
 export type MarkCatalystRealmFull = ReturnType<typeof markCatalystRealmFull>
+
+export const MARK_CATALYST_REALM_CONNECTION_ERROR = 'Mark Catalyst Realm Connection Error'
+export const markCatalystRealmConnectionError = (realm: Realm) => action(MARK_CATALYST_REALM_CONNECTION_ERROR, realm)
+export type MarkCatalystRealmConnectionError = ReturnType<typeof markCatalystRealmConnectionError>

@@ -10,6 +10,7 @@ import { ERC721 } from './dao/contracts/ERC721'
 import { getNetwork, getUserAccount } from './ethereum/EthereumService'
 import { awaitWeb3Approval } from './ethereum/provider'
 import { defaultLogger } from './logger'
+import { CatalystNode } from './types'
 
 async function getAddress(): Promise<string | undefined> {
   try {
@@ -69,7 +70,7 @@ export async function hasClaimedName(address: string) {
   }
 }
 
-export async function fetchCatalystNodes() {
+export async function fetchCatalystNodes(): Promise<CatalystNode[]> {
   const contractAddress = Address.fromString(decentralandConfigurations.dao)
   let eth = Eth.fromCurrentProvider()
 

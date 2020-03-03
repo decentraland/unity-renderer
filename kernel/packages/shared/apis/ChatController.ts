@@ -8,7 +8,7 @@ import { APIOptions, exposeMethod, registerAPI } from 'decentraland-rpc/lib/host
 import { EngineAPI } from 'shared/apis/EngineAPI'
 import { ExposableAPI } from 'shared/apis/ExposableAPI'
 import { sendPublicChatMessage } from 'shared/comms'
-import { ChatEvent, chatObservable, notifyStatusTroughChat } from 'shared/comms/chat'
+import { ChatEvent, chatObservable, notifyStatusThroughChat } from 'shared/comms/chat'
 import { AvatarMessage, AvatarMessageType } from 'shared/comms/interface/types'
 import {
   addToMutedUsers,
@@ -162,7 +162,7 @@ export class ChatController extends ExposableAPI implements IChatController {
         } else if (message.trim().toLowerCase() === 'crowd') {
           response = `Teleporting to a crowd of people in current realm...`
 
-          TeleportController.goToCrowd().then(({ message, success }) => notifyStatusTroughChat(message), () => {
+          TeleportController.goToCrowd().then(({ message, success }) => notifyStatusThroughChat(message), () => {
             // Do nothing. This is handled inside controller
           })
         } else {
@@ -191,16 +191,16 @@ export class ChatController extends ExposableAPI implements IChatController {
         changeToCrowdedRealm().then(
           ([changed, realm]) => {
             if (changed) {
-              notifyStatusTroughChat(
+              notifyStatusThroughChat(
                 `Found a crowded realm to join. Welcome to the realm ${realm.catalystName}-${realm.layer}!`
               )
             } else {
-              notifyStatusTroughChat(`Already on most crowded realm for location. Nothing changed.`)
+              notifyStatusThroughChat(`Already on most crowded realm for location. Nothing changed.`)
             }
           },
           e => {
             const cause = e === 'realm-full' ? ' The requested realm is full.' : ''
-            notifyStatusTroughChat("Could not join realm." + cause)
+            notifyStatusThroughChat("Could not join realm." + cause)
             defaultLogger.error(`Error joining crowded realm ${realmString}`, e)
           }
         )
@@ -212,12 +212,12 @@ export class ChatController extends ExposableAPI implements IChatController {
           // TODO: This status should be shown in the chat window
           catalystRealmConnected().then(
             () =>
-              notifyStatusTroughChat(
+              notifyStatusThroughChat(
                 `Changed realm successfuly. Welcome to the realm ${realm.catalystName}-${realm.layer}!`
               ),
             e => {
               const cause = e === 'realm-full' ? ' The requested realm is full.' : ''
-              notifyStatusTroughChat(
+              notifyStatusThroughChat(
                 "Could not join realm." + cause
               )
               defaultLogger.error('Error joining realm', e)

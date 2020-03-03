@@ -6,7 +6,7 @@ import { MessageEntry } from 'shared/types'
 import { positionObservable, PositionReport } from 'shared/world/positionThings'
 import 'webrtc-adapter'
 import { PassportAsPromise } from '../passports/PassportAsPromise'
-import { ChatEvent, chatObservable, notifyStatusTroughChat } from './chat'
+import { ChatEvent, chatObservable, notifyStatusThroughChat } from './chat'
 import { CliBrokerConnection } from './CliBrokerConnection'
 import { Stats } from './debug'
 import { IBrokerConnection } from '../comms/v1/IBrokerConnection'
@@ -57,7 +57,12 @@ import { Realm, LayerUserInfo } from 'shared/dao/types'
 import { Store } from 'redux'
 import { RootState } from 'shared/store/rootTypes'
 import { store } from 'shared/store/store'
-import { setCatalystRealmCommsStatus, setCatalystRealm, markCatalystRealmFull } from 'shared/dao/actions'
+import {
+  setCatalystRealmCommsStatus,
+  setCatalystRealm,
+  markCatalystRealmFull,
+  markCatalystRealmConnectionError
+} from 'shared/dao/actions'
 import { observeRealmChange, pickCatalystRealm, changeToCrowdedRealm } from 'shared/dao'
 import { getProfile } from 'shared/passports/selectors'
 import { Profile } from 'shared/passports/types'
@@ -600,8 +605,15 @@ export async function connect(userId: string) {
           peerConfig,
           status => {
             store.dispatch(setCatalystRealmCommsStatus(status))
-            if (status.status === 'realm-full') {
-              handleFullLayer()
+            switch (status.status) {
+              case 'realm-full': {
+                handleFullLayer()
+                break
+              }
+              case 'reconnection-error': {
+                handleReconnectionError()
+                break
+              }
             }
           }
         )
@@ -691,6 +703,31 @@ export async function connect(userId: string) {
   }
 }
 
+function realmString(realm: Realm) {
+  return realm.catalystName + '-' + realm.layer
+}
+
+function handleReconnectionError() {
+  const store: Store<RootState> = window.globalStore
+  const realm = getRealm(store.getState())
+
+  if (realm) {
+    store.dispatch(markCatalystRealmConnectionError(realm))
+  }
+
+  const candidates = getAllCatalystCandidates(store.getState())
+
+  const otherRealm = pickCatalystRealm(candidates)
+
+  const notificationMessage = realm
+    ? `Lost connection to ${realmString(realm)}, joining realm ${realmString(otherRealm)} instead`
+    : `Joining realm ${realmString(otherRealm)}`
+
+  notifyStatusThroughChat(notificationMessage)
+
+  store.dispatch(setCatalystRealm(otherRealm))
+}
+
 function handleFullLayer() {
   const store: Store<RootState> = window.globalStore
   const realm = getRealm(store.getState())
@@ -703,7 +740,7 @@ function handleFullLayer() {
 
   const otherRealm = pickCatalystRealm(candidates)
 
-  notifyStatusTroughChat(
+  notifyStatusThroughChat(
     `Joining realm ${otherRealm.catalystName}-${otherRealm.layer} since the previously requested was full`
   )
 
