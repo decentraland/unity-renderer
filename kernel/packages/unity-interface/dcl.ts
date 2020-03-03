@@ -30,6 +30,7 @@ import {
 import { Quaternion, ReadOnlyQuaternion, ReadOnlyVector3, Vector3 } from '../decentraland-ecs/src/decentraland/math'
 import { IEventNames, IEvents, ProfileForRenderer } from '../decentraland-ecs/src/decentraland/Types'
 import { sceneLifeCycleObservable } from '../decentraland-loader/lifecycle/controllers/scene'
+import { tutorialStepId } from '../decentraland-loader/lifecycle/tutorial/tutorial'
 import { AirdropInfo } from '../shared/airdrops/interface'
 import { queueTrackingEvent } from '../shared/analytics'
 import { DevTools } from '../shared/apis/DevTools'
@@ -202,6 +203,10 @@ const browserInterface = {
       version: profile.version,
       profile: profileToRendererFormat(profile, identity)
     })
+
+    if (data.tutorialStep === tutorialStepId.FINISHED) {
+      delightedSurvey()
+    }
   },
 
   ControlEvent({ eventType, payload }: { eventType: string; payload: any }) {
@@ -302,12 +307,14 @@ export function setLoadingScreenVisible(shouldShow: boolean) {
 }
 
 function delightedSurvey() {
-  const { analytics, delighted, globalStore } = global
-  if (!isTheFirstLoading && analytics && delighted && globalStore) {
-    const email = ''
+  const { analytics, delighted } = global
+  const profile = getUserProfile().profile as Profile | null
+  if (!isTheFirstLoading && analytics && delighted && profile) {
     const payload = {
-      email: email,
+      email: profile.email || (profile.ethAddress + '@dcl.gg'),
+      name: profile.name || 'Guest',
       properties: {
+        ethAddress: profile.ethAddress,
         anonymous_id: analytics && analytics.user ? analytics.user().anonymousId() : null
       }
     }
@@ -811,7 +818,7 @@ export async function initializeEngine(_gameInstance: GameInstance) {
     onMessage(type: string, message: any) {
       if (type in browserInterface) {
         // tslint:disable-next-line:semicolon
-        ;(browserInterface as any)[type](message)
+        ; (browserInterface as any)[type](message)
       } else {
         defaultLogger.info(`Unknown message (did you forget to add ${type} to unity-interface/dcl.ts?)`, message)
       }
@@ -969,7 +976,6 @@ teleportObservable.add((position: { x: number; y: number; text?: string }) => {
   setLoadingScreenVisible(true)
   const globalStore = global['globalStore']
   globalStore.dispatch(teleportTriggered(position.text || `Teleporting to ${position.x}, ${position.y}`))
-  delightedSurvey()
 })
 
 worldRunningObservable.add(isRunning => {
