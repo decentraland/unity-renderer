@@ -295,7 +295,7 @@ export function setLoadingScreenVisible(shouldShow: boolean) {
   document.getElementById('overlay')!.style.display = shouldShow ? 'block' : 'none'
   document.getElementById('load-messages-wrapper')!.style.display = shouldShow ? 'block' : 'none'
   document.getElementById('progress-bar')!.style.display = shouldShow ? 'block' : 'none'
-  if (!shouldShow) {
+  if (!shouldShow && !EDITOR) {
     isTheFirstLoading = false
     TeleportController.stopTeleportAnimation()
   }
