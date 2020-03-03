@@ -319,7 +319,6 @@ namespace Builder
         {
             DeselectAll();
             gameObject.SetActive(!isPreview);
-            entities.Clear();
         }
 
         private void EnqueueEntityForDeselect(DCLBuilderEntity pressedEntity, Vector3 hitPoint)
