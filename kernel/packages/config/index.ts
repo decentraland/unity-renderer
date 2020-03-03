@@ -187,8 +187,7 @@ export const loginConfig = {
   zone: {
     domain: 'dcl-test.auth0.com',
     client_id: 'lTUEMnFpYb0aiUKeIRPbh7pBxKM6sccx'
-  },
-  audience: 'decentraland.org'
+  }
 }
 
 // take address from http://contracts.decentraland.org/addresses.json
@@ -239,20 +238,6 @@ export function getExclusiveServer() {
 }
 
 export const ALL_WEARABLES = location.search.indexOf('ALL_WEARABLES') !== -1 && getDefaultTLD() !== 'org'
-
-export function getLoginConfigurationForCurrentDomain() {
-  let tld: 'org' | 'zone' | 'today' = getDefaultTLD()
-  // Use `.zone` auth for any localhost or other edge case
-  if ((tld as any) !== 'org' && (tld as any) !== 'zone' && (tld as any) !== 'today') {
-    tld = 'zone'
-  }
-  return {
-    clientId: loginConfig[tld].client_id,
-    domain: loginConfig[tld].domain,
-    redirectUri: window.location.origin + '/' + (ENV_OVERRIDE ? '?ENV=' + getTLD() : ''),
-    audience: loginConfig.audience
-  }
-}
 
 export const ENABLE_EMPTY_SCENES = !DEBUG || knownTLDs.includes(getTLD())
 
