@@ -355,6 +355,9 @@ namespace DCL
 
         void AddMaterial(EntityMetrics entityMetrics, Material material)
         {
+            if (material == null)
+                return;
+
             if (!uniqueMaterialsRefCount.ContainsKey(material))
             {
                 uniqueMaterialsRefCount.Add(material, 1);

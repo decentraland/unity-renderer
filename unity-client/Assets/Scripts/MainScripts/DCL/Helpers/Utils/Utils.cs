@@ -203,15 +203,15 @@ namespace DCL.Helpers
                 {
                     if (OnSuccess != null)
                     {
+                        bool supported = true;
+#if UNITY_EDITOR
+                        supported = audioType != AudioType.MPEG;
+#endif
                         AudioClip ac = null;
-                        try //In Editor we cannot decode MPEG and it's interrupting the flow
-                        {
+
+                        if (supported)
                             ac = DownloadHandlerAudioClip.GetContent(request);
-                        }
-                        catch (Exception e)
-                        {
-                            Debug.LogError(e);
-                        }
+
                         OnSuccess.Invoke(ac);
                     }
                 };
@@ -225,7 +225,9 @@ namespace DCL.Helpers
                     }
                 };
 
-            yield return FetchAsset(url, UnityWebRequestMultimedia.GetAudioClip(url, audioType), OnSuccessInternal,
+            var req = UnityWebRequestMultimedia.GetAudioClip(url, audioType);
+
+            yield return FetchAsset(url, req, OnSuccessInternal,
                 OnFailInternal);
         }
 
