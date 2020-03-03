@@ -193,6 +193,14 @@ export class LighthouseWorldInstanceConnection implements WorldInstanceConnectio
   }
 
   private createPeer(): PeerType {
+    if (this.peerConfig.statusHandler) {
+      logger.warn(`Overriding peer config status handler from client!`)
+    }
+    this.peerConfig.statusHandler = (status: string) => {
+      if (status === 'reconnection-error') {
+        this.statusHandler({ status, connectedPeers: this.connectedPeersCount() })
+      }
+    }
     return new Peer(this.lighthouseUrl, this.peerId, this.peerCallback, this.peerConfig)
   }
 

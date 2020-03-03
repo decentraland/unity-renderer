@@ -5,6 +5,11 @@ export type Layer = {
   usersParcels?: [number, number][]
 }
 
+export enum ServerConnectionStatus {
+  OK,
+  UNREACHABLE
+}
+
 export type CatalystLayers = {
   name: string
   layers: Layer[]
@@ -16,6 +21,7 @@ export type Candidate = {
   elapsed: number
   score: number
   layer: Layer
+  status: ServerConnectionStatus
 }
 
 export type LayerUserInfo = {
@@ -49,9 +55,15 @@ export type RootDaoState = {
   dao: DaoState
 }
 
-export type CommsState = 'initial' | 'connecting' | 'connected' | 'error' | 'realm-full'
+export type CommsState = 'initial' | 'connecting' | 'connected' | 'error' | 'realm-full' | 'reconnection-error'
 
 export type CommsStatus = {
   status: CommsState
   connectedPeers: number
+}
+
+export type PingResult = {
+  elapsed?: number
+  status?: ServerConnectionStatus
+  result?: CatalystLayers
 }

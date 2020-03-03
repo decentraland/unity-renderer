@@ -1,6 +1,6 @@
 import defaultLogger from '../logger'
 import future from 'fp-future'
-import { Layer, Realm, Candidate, CatalystLayers, RootDaoState } from './types'
+import { Layer, Realm, Candidate, RootDaoState, ServerConnectionStatus, PingResult } from './types'
 import { RootState } from 'shared/store/rootTypes'
 import { Store } from 'redux'
 import { isRealmInitialized, getCatalystRealmCommsStatus, getRealm, getAllCatalystCandidates } from './selectors'
@@ -10,6 +10,7 @@ import { deepEqual } from 'atomicHelpers/deepEqual'
 import { worldToGrid } from 'atomicHelpers/parcelScenePositions'
 import { lastPlayerPosition } from 'shared/world/positionThings'
 import { countParcelsCloseTo, ParcelArray } from 'shared/comms/interface/utils'
+import { CatalystNode } from '../types'
 const qs: any = require('query-string')
 
 const zip = <T, U>(arr: Array<T>, ...arrs: Array<Array<U>>) => {
@@ -33,8 +34,8 @@ const score = ({ usersCount, maxUsers = 50 }: Layer) => {
   return v + v * Math.cos(phase + period * usersCount)
 }
 
-function ping(url: string): Promise<{ success: boolean; elapsed?: number; result?: CatalystLayers }> {
-  const result = future()
+function ping(url: string): Promise<PingResult> {
+  const result = future<PingResult>()
 
   new Promise(() => {
     const http = new XMLHttpRequest()
@@ -52,20 +53,18 @@ function ping(url: string): Promise<{ success: boolean; elapsed?: number; result
           const ended = new Date().getTime()
           if (http.status !== 200) {
             result.resolve({
-              success: false
+              status: ServerConnectionStatus.UNREACHABLE
             })
           } else {
             result.resolve({
-              success: true,
+              status: ServerConnectionStatus.OK,
               elapsed: ended - started.getTime(),
-              result: JSON.parse(http.responseText) as Layer[]
+              result: JSON.parse(http.responseText)
             })
           }
         } catch (e) {
           defaultLogger.error('Error fetching status of Catalyst server', e)
-          result.resolve({
-            success: false
-          })
+          result.resolve({})
         }
       }
     }
@@ -76,7 +75,7 @@ function ping(url: string): Promise<{ success: boolean; elapsed?: number; result
       http.send(null)
     } catch (exception) {
       result.resolve({
-        success: false
+        status: ServerConnectionStatus.UNREACHABLE
       })
     }
   }).catch(defaultLogger.error)
@@ -85,7 +84,7 @@ function ping(url: string): Promise<{ success: boolean; elapsed?: number; result
 }
 
 export async function fecthCatalystRealms(): Promise<Candidate[]> {
-  const nodes = await fetchCatalystNodes()
+  const nodes: CatalystNode[] = await fetchCatalystNodes()
   if (nodes.length === 0) {
     throw new Error('no nodes are available in the DAO for the current network')
   }
@@ -94,27 +93,18 @@ export async function fecthCatalystRealms(): Promise<Candidate[]> {
 }
 
 export async function fetchCatalystStatuses(nodes: { domain: string }[]) {
-  const results = await Promise.all(nodes.map(node => ping(`${node.domain}/comms/status?includeLayers=true`)))
+  const results: PingResult[] = await Promise.all(
+    nodes.map(node => ping(`${node.domain}/comms/status?includeLayers=true`))
+  )
 
   return zip(nodes, results).reduce(
-    (
-      union: Candidate[],
-      [{ domain }, { elapsed, result, success }]: [
-        {
-          domain: string
-        },
-        {
-          elapsed?: number
-          success: boolean
-          result?: CatalystLayers
-        }
-      ]
-    ) =>
-      success
+    (union: Candidate[], [{ domain }, { elapsed, result, status }]: [CatalystNode, PingResult]) =>
+      status === ServerConnectionStatus.OK
         ? union.concat(
             result!.layers.map(layer => ({
               catalystName: result!.name,
               domain,
+              status,
               elapsed: elapsed!,
               layer,
               score: score(layer)
@@ -137,7 +127,7 @@ export function pickCatalystRealm(candidates: Candidate[]): Realm {
   })
 
   const sorted = candidates
-    .filter(it => it.layer.usersCount < it.layer.maxUsers)
+    .filter(it => it.status === ServerConnectionStatus.OK && it.layer.usersCount < it.layer.maxUsers)
     .sort((c1, c2) => {
       const elapsedDiff = c1.elapsed - c2.elapsed
       const usersDiff = usersByDomain[c1.domain] - usersByDomain[c2.domain]

@@ -434,3 +434,7 @@ export function ILandToLoadableParcelSceneUpdate(land: ILand): EnvironmentData<L
 
   return ret
 }
+
+export type CatalystNode = {
+  domain: string
+}
