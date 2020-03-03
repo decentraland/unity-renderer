@@ -7,13 +7,7 @@ import { DEBUG_REDUX } from '../../config'
 
 export let store: Store<RootState>
 
-export const buildStore = (config: {
-  ephemeralKeyTTL: number
-  clientId: string
-  domain: string
-  redirectUri: string
-  audience: string
-}) => {
+export const buildStore = () => {
   const sagaMiddleware = createSagaMiddleware()
   const composeEnhancers = (DEBUG_REDUX && (window as any).__REDUX_DEVTOOLS_EXTENSION_COMPOSE__) || compose
   store = createStore(reducers, composeEnhancers(applyMiddleware(sagaMiddleware)))
