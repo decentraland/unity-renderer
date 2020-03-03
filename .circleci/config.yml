@@ -410,45 +410,29 @@ workflows:
       - checkout:
           <<: *all_branches_and_tags
 
+      - run-unity-tests:
+          <<: *all_branches_and_tags
+          requires:
+            - checkout
       - build-unity:
           <<: *all_branches_and_tags
           requires:
             - run-unity-tests
             - checkout
-          filters:
-            branches:
-              only: /(.*)/
-            tags:
-              only: /^\d+\.\d+\.\d(.*)/ # npm tag + latest
-      - run-unity-tests:
-          <<: *all_branches_and_tags
-          requires:
-            - checkout
-          filters:
-            branches:
-              only: /(.*)/
+
       - build-kernel:
           <<: *all_branches_and_tags
           requires:
             - checkout
-          filters:
-            branches:
-              only: /(.*)/
-            tags:
-              only: /^\d+\.\d+\.\d(.*)/ # npm tag + latest
 
       - package:
           <<: *all_branches_and_tags
           requires:
             - build-kernel
             - build-unity
-          filters:
-            branches:
-              only: /(.*)/
-            tags:
-              only: /^\d+\.\d+\.\d(.*)/ # npm tag + latest
 
       - publish-renderer:
+          <<: *all_branches_and_tags
           requires:
             - package
 
