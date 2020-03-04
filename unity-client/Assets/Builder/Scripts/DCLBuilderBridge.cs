@@ -309,6 +309,8 @@ namespace Builder
 
         private void Awake()
         {
+            // NOTE: we need to set the quality settings before renderer pipeline is copy and modified
+            SetupQualitySettings();
             SetupRendererPipeline();
 
             cameraController = Object.FindObjectOfType<CameraController>();
@@ -586,6 +588,23 @@ namespace Builder
                 lwrpa.shadowDistance = 80f;
                 GraphicsSettings.renderPipelineAsset = lwrpa;
             }
+        }
+
+        private void SetupQualitySettings()
+        {
+            DCL.SettingsHUD.QualitySettings settings = new DCL.SettingsHUD.QualitySettings()
+            {
+                textureQuality = DCL.SettingsHUD.QualitySettings.TextureQuality.FullRes,
+                antiAliasing = UnityEngine.Rendering.LWRP.MsaaQuality._2x,
+                renderScale = 1,
+                shadows = true,
+                softShadows = true,
+                shadowResolution = UnityEngine.Rendering.LWRP.ShadowResolution._256,
+                cameraDrawDistance = 100,
+                bloom = true,
+                colorGrading = true
+            };
+            Settings.i.ApplyQualitySettings(settings);
         }
     }
 }
