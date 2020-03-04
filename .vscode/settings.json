@@ -1,16 +1,11 @@
 {
   "typescript.tsdk": "node_modules/typescript/lib",
-  "files.exclude": {
-  },
   "prettier.ignorePath": ".prettierignore",
-  "editor.tabSize": 2
+  "editor.tabSize": 2,
   "files.exclude": {
     "**/*.js": {
       "when": "$(basename).ts"
     },
-    "packages/metaverse-api/*.js": {
-      "when": "$(basename).ts"
-    }
     "**/*.*.meta": true,
     "**/*.3DS": true,
     "**/*.3ds": true,
@@ -62,7 +57,7 @@
     "*.csproj": true,
     "*.sln": true,
     ".cache": true,
-    ".editorconfig": true
+    ".editorconfig": true,
     "Build/": true,
     "Library/": true,
     "Obj/": true,
@@ -72,7 +67,7 @@
     "build/": true,
     "library/": true,
     "obj/": true,
-    "temp/": true,
+    "temp/": true
   },
   "files.associations": {
     "*.jslib": "javascript",
