@@ -159,6 +159,7 @@ namespace DCL
 
             for (int i = 0; i < lastHoveredEventList.Length; i++)
             {
+                if (lastHoveredEventList[i] == null) continue;
                 lastHoveredEventList[i].SetHoverState(false);
             }
 
