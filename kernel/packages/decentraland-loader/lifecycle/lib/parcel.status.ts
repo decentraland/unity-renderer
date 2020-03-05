@@ -5,6 +5,8 @@ export class ParcelLifeCycleStatus {
   y: number
   xy: string
 
+  private status: 'in sight' | 'oos'
+
   constructor(coord: string) {
     const { x, y } = parseParcelPosition(coord)
     this.x = x
@@ -12,8 +14,6 @@ export class ParcelLifeCycleStatus {
     this.xy = coord
     this.status = 'oos'
   }
-
-  private status: 'in sight' | 'oos'
 
   isOutOfSight() {
     return this.status === 'oos'

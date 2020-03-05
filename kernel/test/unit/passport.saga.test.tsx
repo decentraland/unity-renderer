@@ -1,19 +1,19 @@
 import { expectSaga } from 'redux-saga-test-plan'
 import { call, select } from 'redux-saga/effects'
-import { notifyNewInventoryItem, passportRequest, passportSuccess } from 'shared/passports/actions'
+import { notifyNewInventoryItem, profileRequest, profileSuccess } from 'shared/profiles/actions'
 import {
   compareInventoriesAndTriggerNotification,
   handleFetchProfile,
   profileServerRequest,
   fetchInventoryItemsByAddress,
   getCurrentUserId
-} from 'shared/passports/sagas'
-import { getProfile, getProfileDownloadServer } from 'shared/passports/selectors'
-import { passportSaga, delay } from '../../packages/shared/passports/sagas'
-import { processServerProfile } from '../../packages/shared/passports/transformations/processServerProfile'
+} from 'shared/profiles/sagas'
+import { getProfile, getProfileDownloadServer } from 'shared/profiles/selectors'
+import { profileSaga, delay } from '../../packages/shared/profiles/sagas'
+import { processServerProfile } from '../../packages/shared/profiles/transformations/processServerProfile'
 import { dynamic } from 'redux-saga-test-plan/providers'
 import { expect } from 'chai'
-import { inventorySuccess } from '../../packages/shared/passports/actions'
+import { inventorySuccess } from '../../packages/shared/profiles/actions'
 import { isRealmInitialized } from '../../packages/shared/dao/selectors'
 
 const profile = { data: 'profile' }
@@ -28,12 +28,12 @@ const delayedProfile = delayed({ avatars: [profile] })
 
 describe('fetchProfile behavior', () => {
   it('completes once for more than one request of same user', () => {
-    return expectSaga(passportSaga)
-      .put(passportSuccess('user|1', 'passport' as any))
-      .not.put(passportSuccess('user|1', 'passport' as any))
-      .dispatch(passportRequest('user|1'))
-      .dispatch(passportRequest('user|1'))
-      .dispatch(passportRequest('user|1'))
+    return expectSaga(profileSaga)
+      .put(profileSuccess('user|1', 'passport' as any))
+      .not.put(profileSuccess('user|1', 'passport' as any))
+      .dispatch(profileRequest('user|1'))
+      .dispatch(profileRequest('user|1'))
+      .dispatch(profileRequest('user|1'))
       .provide([
         [select(isRealmInitialized), true],
         [select(getProfileDownloadServer), 'server'],
@@ -46,15 +46,15 @@ describe('fetchProfile behavior', () => {
   })
 
   it('runs one request for each user', () => {
-    return expectSaga(passportSaga)
-      .put(passportSuccess('user|1', 'passport1' as any))
-      .put(passportSuccess('user|2', 'passport2' as any))
-      .not.put(passportSuccess('user|1', 'passport1' as any))
-      .not.put(passportSuccess('user|2', 'passport2' as any))
-      .dispatch(passportRequest('user|1'))
-      .dispatch(passportRequest('user|1'))
-      .dispatch(passportRequest('user|2'))
-      .dispatch(passportRequest('user|2'))
+    return expectSaga(profileSaga)
+      .put(profileSuccess('user|1', 'passport1' as any))
+      .put(profileSuccess('user|2', 'passport2' as any))
+      .not.put(profileSuccess('user|1', 'passport1' as any))
+      .not.put(profileSuccess('user|2', 'passport2' as any))
+      .dispatch(profileRequest('user|1'))
+      .dispatch(profileRequest('user|1'))
+      .dispatch(profileRequest('user|2'))
+      .dispatch(profileRequest('user|2'))
       .provide([
         [select(isRealmInitialized), true],
         [select(getProfileDownloadServer), 'server'],
@@ -72,11 +72,11 @@ describe('fetchProfile behavior', () => {
   it('fetches inventory for corresponding user', () => {
     const profile1 = { ...profile }
     const profile2 = { ...profile }
-    return expectSaga(passportSaga)
-      .put(passportSuccess('user|1', 'passport1' as any))
-      .put(passportSuccess('user|2', 'passport2' as any))
-      .dispatch(passportRequest('user|1'))
-      .dispatch(passportRequest('user|2'))
+    return expectSaga(profileSaga)
+      .put(profileSuccess('user|1', 'passport1' as any))
+      .put(profileSuccess('user|2', 'passport2' as any))
+      .dispatch(profileRequest('user|1'))
+      .dispatch(profileRequest('user|2'))
       .provide([
         [select(isRealmInitialized), true],
         [select(getCurrentUserId), 'myid'],
@@ -102,8 +102,8 @@ describe('fetchProfile behavior', () => {
 
   it('ignores inventory for another user', () => {
     const profile1 = { ...profile, ethAddress: 'eth1' }
-    return expectSaga(handleFetchProfile, passportRequest('user|1'))
-      .put(passportSuccess('user|1', 'passport1' as any))
+    return expectSaga(handleFetchProfile, profileRequest('user|1'))
+      .put(profileSuccess('user|1', 'passport1' as any))
       .dispatch(inventorySuccess('user|2', ['dcl://base-exclusive/wearable2/2']))
       .dispatch(inventorySuccess('user|1', ['dcl://base-exclusive/wearable1/1']))
       .provide([

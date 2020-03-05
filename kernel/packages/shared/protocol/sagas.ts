@@ -1,19 +1,19 @@
 import { put, select, takeLatest } from 'redux-saga/effects'
 import { Context } from '../comms'
 import { defaultLogger } from '../logger'
-import { SaveAvatarSuccess, SAVE_AVATAR_SUCCESS } from '../passports/actions'
+import { SaveProfileSuccess, SAVE_PROFILE_SUCCESS } from '../profiles/actions'
 import { announceProfile, AnnounceProfileAction, ANNOUNCE_PROFILE } from './actions'
 import { getCommsContext } from './selectors'
 
 export function* rootProtocolSaga() {
   // Forwarding effects
-  yield takeLatest(SAVE_AVATAR_SUCCESS, announceNewAvatar)
+  yield takeLatest(SAVE_PROFILE_SUCCESS, announceNewAvatar)
 
   // Handling of local actions
   yield takeLatest(ANNOUNCE_PROFILE, handleAnnounceProfile)
 }
 
-export function* announceNewAvatar(action: SaveAvatarSuccess) {
+export function* announceNewAvatar(action: SaveProfileSuccess) {
   yield put(announceProfile(action.payload.userId, action.payload.version))
 }
 

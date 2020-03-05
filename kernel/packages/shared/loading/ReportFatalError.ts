@@ -8,10 +8,11 @@ import {
   NEW_LOGIN,
   NETWORK_MISMATCH
 } from './types'
+import { StoreContainer } from 'shared/store/rootTypes'
+
+declare const globalThis: StoreContainer
 
 export let aborted = false
-
-declare var global: any
 
 export function bringDownClientAndShowError(event: ExecutionLifecycleEvent) {
   if (aborted) {
@@ -46,7 +47,5 @@ export function bringDownClientAndShowError(event: ExecutionLifecycleEvent) {
 
 export function ReportFatalError(event: ExecutionLifecycleEvent) {
   bringDownClientAndShowError(event)
-  global['globalStore'] && global['globalStore'].dispatch(action(event))
+  globalThis.globalStore && globalThis.globalStore.dispatch(action(event))
 }
-
-global.ReportFatalError = ReportFatalError

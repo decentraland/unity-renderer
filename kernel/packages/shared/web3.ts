@@ -10,7 +10,7 @@ import { ERC721 } from './dao/contracts/ERC721'
 import { getNetwork, getUserAccount } from './ethereum/EthereumService'
 import { awaitWeb3Approval } from './ethereum/provider'
 import { defaultLogger } from './logger'
-import { CatalystNode } from './types'
+import { CatalystNode, GraphResponse } from './types'
 
 async function getAddress(): Promise<string | undefined> {
   try {
@@ -103,4 +103,39 @@ export async function fetchCatalystNodes(): Promise<CatalystNode[]> {
   }
 
   return nodes
+}
+
+const query = `
+  query GetNameByBeneficiary($beneficiary: String) {
+    nfts(where: { owner: $beneficiary, category: ens }) {
+      ens {
+        labelHash
+        beneficiary
+        caller
+        subdomain
+        createdAt
+      }
+    }
+  }`
+
+const opts = (ethAddress: string) => ({
+  method: 'POST',
+  headers: { 'Content-Type': 'application/json' },
+  body: JSON.stringify({ query, variables: { beneficiary: ethAddress.toLowerCase() } })
+})
+
+export async function fetchOwnedENS(theGraphBaseUrl: string, ethAddress: string): Promise<string[]> {
+  const totalAttempts = 5
+  for (let attempt = 0; attempt < totalAttempts; attempt++) {
+    try {
+      const response = await fetch(theGraphBaseUrl, opts(ethAddress))
+      if (response.ok) {
+        const jsonResponse: GraphResponse = await response.json()
+        return jsonResponse.data.nfts.map(nft => nft.ens.subdomain)
+      }
+    } catch (error) {
+      defaultLogger.warn(`Could not retrieve ENS for address ${ethAddress}. Try ${attempt} of ${totalAttempts}.`, error)
+    }
+  }
+  return []
 }
