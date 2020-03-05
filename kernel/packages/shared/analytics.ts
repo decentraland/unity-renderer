@@ -1,4 +1,4 @@
-import { DEBUG_ANALYTICS } from 'config'
+import { DEBUG_ANALYTICS, getTLD } from 'config'
 
 import { worldToGrid } from 'atomicHelpers/parcelScenePositions'
 import { Vector2, ReadOnlyVector3, Vector3 } from 'decentraland-ecs/src'
@@ -9,8 +9,9 @@ import { avatarMessageObservable } from './comms/peers'
 import { AvatarMessageType } from './comms/interface/types'
 import { positionObservable } from './world/positionThings'
 import { uuid } from '../decentraland-ecs/src/ecs/helpers'
+import { AnalyticsContainer } from './types'
 
-declare var window: any
+declare const window: Window & AnalyticsContainer
 
 export type SegmentEvent = {
   name: string
@@ -21,6 +22,32 @@ const sessionId = uuid()
 
 const trackingQueue: SegmentEvent[] = []
 let tracking = false
+
+enum AnalyticsAccount {
+  PRD = '1plAT9a2wOOgbPCrTaU8rgGUMzgUTJtU',
+  DEV = 'a4h4BC4dL1v7FhIQKKuPHEdZIiNRDVhc'
+}
+
+// TODO fill with segment keys and integrate identity server
+export function initializeAnalytics() {
+  const TLD = getTLD()
+  switch (TLD) {
+    case 'org':
+      if (
+        globalThis.location.host === 'play.decentraland.org' ||
+        globalThis.location.host === 'explorer.decentraland.org'
+      ) {
+        return initialize(AnalyticsAccount.PRD)
+      }
+      return initialize(AnalyticsAccount.DEV)
+    case 'today':
+      return initialize(AnalyticsAccount.DEV)
+    case 'zone':
+      return initialize(AnalyticsAccount.DEV)
+    default:
+      return initialize(AnalyticsAccount.DEV)
+  }
+}
 
 export async function initialize(segmentKey: string): Promise<void> {
   hookObservables()

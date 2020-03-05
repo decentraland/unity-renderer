@@ -3,7 +3,7 @@ import { getFromLocalStorage, saveToLocalStorage } from 'atomicHelpers/localStor
 import { POIs } from 'shared/comms/POIs'
 import { parcelLimits, tutorialEnabled } from 'config'
 import { getUserProfile } from 'shared/comms/peers'
-import { Profile } from 'shared/passports/types'
+import { Profile } from 'shared/profiles/types'
 import { tutorialStepId } from 'decentraland-loader/lifecycle/tutorial/tutorial'
 import { fetchLayerUsersParcels } from 'shared/comms'
 import { ParcelArray, countParcelsCloseTo } from 'shared/comms/interface/utils'

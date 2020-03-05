@@ -21,8 +21,6 @@ System intentions:
     * Selector: `getProfile` with the other user's ID
 
 Implementation effects:
-- Needs to set the current profile download server
-    * Dispatch: `setProfileServer(url: string)` from `actions.ts`
 - Validate that the catalog has been sent to the renderer before sending a user's profile
     * See: `sendLoadCatalog` in `sagas.ts` (if not present, check after every `CatalogAction` if it can now send the profile)
 - Global lock: Before loading the whole catalog, no user profile requests are allowed

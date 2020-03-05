@@ -1,5 +1,5 @@
 import { expect } from 'chai'
-import { processServerProfile } from 'shared/passports/transformations/processServerProfile'
+import { processServerProfile } from 'shared/profiles/transformations/processServerProfile'
 
 describe('legacy spec conversion', () => {
   it('works with a sample case', () => {

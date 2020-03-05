@@ -1,7 +1,6 @@
 import { AnyAction } from 'redux'
-import { PassportState, INITIAL_PASSPORTS } from './types'
+import { ProfileState, INITIAL_PROFILES } from './types'
 import {
-  SET_PROFILE_SERVER,
   ADD_CATALOG,
   AddCatalogAction,
   CATALOG_LOADED,
@@ -11,11 +10,15 @@ import {
   INVENTORY_FAILURE,
   InventoryRequest,
   InventoryFailure,
-  INVENTORY_REQUEST
+  INVENTORY_REQUEST,
+  PROFILE_SUCCESS,
+  PROFILE_FAILURE,
+  PROFILE_REQUEST
 } from './actions'
-export function passportsReducer(state?: PassportState, action?: AnyAction): PassportState {
+
+export function profileReducer(state?: ProfileState, action?: AnyAction): ProfileState {
   if (!state) {
-    return INITIAL_PASSPORTS
+    return INITIAL_PROFILES
   }
   if (!action) {
     return state
@@ -81,17 +84,12 @@ export function passportsReducer(state?: PassportState, action?: AnyAction): Pas
           }
         }
       }
-    case SET_PROFILE_SERVER:
-      return {
-        ...state,
-        profileServer: action.payload.url
-      }
-    case '[Request] Passport fetch':
+    case PROFILE_REQUEST:
       return {
         ...state,
         userInfo: { ...state.userInfo, [action.payload.userId]: { status: 'loading' } }
       }
-    case '[Success] Passport fetch':
+    case PROFILE_SUCCESS:
       return {
         ...state,
         userInfo: {
@@ -99,7 +97,7 @@ export function passportsReducer(state?: PassportState, action?: AnyAction): Pas
           [action.payload.userId]: { data: action.payload.profile, status: 'ok' }
         }
       }
-    case '[Failure] Passport fetch':
+    case PROFILE_FAILURE:
       return {
         ...state,
         userInfo: {

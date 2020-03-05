@@ -1,5 +1,5 @@
 import { getFromLocalStorage, saveToLocalStorage } from 'atomicHelpers/localStorage'
-import { call, fork, put, race, select, take, takeEvery, takeLatest, cancel, ForkEffect } from 'redux-saga/effects'
+import { call, fork, put, race, select, take, takeEvery, takeLatest } from 'redux-saga/effects'
 import { NotificationType } from 'shared/types'
 import { getServerConfigurations, ALL_WEARABLES, getWearablesSafeURL } from '../../config'
 import defaultLogger from '../logger'
@@ -20,19 +20,19 @@ import {
   INVENTORY_SUCCESS,
   notifyNewInventoryItem,
   NOTIFY_NEW_INVENTORY_ITEM,
-  PassportRandomAction,
-  passportRequest,
-  PassportRequestAction,
-  passportSuccess,
-  PassportSuccessAction,
-  PASSPORT_RANDOM,
-  PASSPORT_REQUEST,
-  PASSPORT_SUCCESS,
-  saveAvatarFailure,
-  SaveAvatarRequest,
-  saveAvatarSuccess,
-  SAVE_AVATAR_REQUEST,
-  InventorySuccess
+  InventorySuccess,
+  PROFILE_REQUEST,
+  PROFILE_SUCCESS,
+  PROFILE_RANDOM,
+  SAVE_PROFILE_REQUEST,
+  ProfileRequestAction,
+  profileSuccess,
+  ProfileRandomAction,
+  ProfileSuccessAction,
+  SaveProfileRequest,
+  saveProfileSuccess,
+  profileRequest,
+  saveProfileFailure
 } from './actions'
 import { generateRandomUserProfile } from './generateRandomUserProfile'
 import {
@@ -46,70 +46,39 @@ import {
 import { processServerProfile } from './transformations/processServerProfile'
 import { profileToRendererFormat } from './transformations/profileToRendererFormat'
 import { ensureServerFormat } from './transformations/profileToServerFormat'
-import { Catalog, Profile, WearableId, Wearable, Collection } from './types'
-import { Action } from 'redux'
+import {
+  Catalog,
+  Profile,
+  WearableId,
+  Wearable,
+  Collection,
+  Entity,
+  EntityField,
+  ControllerEntity,
+  ControllerEntityContent,
+  EntityType,
+  Pointer,
+  ContentFile,
+  ENTITY_FILE_NAME,
+  DeployData
+} from './types'
 import { identity, ExplorerIdentity } from '../index'
-import { Authenticator, AuthLink } from 'dcl-crypto'
-
-const CID = require('cids')
+import { Authenticator, AuthLink, Timestamp, ContentFileHash } from 'dcl-crypto'
 import { sha3 } from 'web3x/utils'
 import { CATALYST_REALM_INITIALIZED } from '../dao/actions'
 import { isRealmInitialized, getUpdateProfileServer } from '../dao/selectors'
 import { getUserProfile } from '../comms/peers'
 import { WORLD_EXPLORER } from '../../config/index'
-import { backupProfile } from 'shared/passports/generateRandomUserProfile'
+import { backupProfile } from 'shared/profiles/generateRandomUserProfile'
 import { getTutorialBaseURL } from '../location'
+import { takeLatestById } from './utils/takeLatestById'
+import { UnityInterfaceContainer } from 'unity-interface/dcl'
+
+const CID = require('cids')
 const multihashing = require('multihashing-async')
 const toBuffer = require('blob-to-buffer')
 
-export type Timestamp = number
-export type Pointer = string
-export type ContentFileHash = string
-export type ContentFile = {
-  name: string
-  content: Buffer
-}
-export type DeployData = {
-  entityId: string
-  ethAddress?: string
-  signature?: string
-  authChain: AuthLink[]
-  files: ContentFile[]
-}
-export type ControllerEntity = {
-  id: string
-  type: string
-  pointers: string[]
-  timestamp: number
-  content?: ControllerEntityContent[]
-  metadata?: any
-}
-export type ControllerEntityContent = {
-  file: string
-  hash: string
-}
-export enum EntityType {
-  SCENE = 'scene',
-  WEARABLE = 'wearable',
-  PROFILE = 'profile'
-}
-export type EntityId = ContentFileHash
-export enum EntityField {
-  CONTENT = 'content',
-  POINTERS = 'pointers',
-  METADATA = 'metadata'
-}
-export const ENTITY_FILE_NAME = 'entity.json'
-export class Entity {
-  constructor(
-    public readonly id: EntityId,
-    public readonly type: EntityType,
-    public readonly pointers: Pointer[],
-    public readonly timestamp: Timestamp,
-    public readonly content?: Map<string, ContentFileHash>,
-    public readonly metadata?: any
-  ) {}
-}
+declare const globalThis: Window & UnityInterfaceContainer
 
 export const getCurrentUserId = () => identity.address
 
@@ -136,7 +105,7 @@ const takeLatestByUserId = (patternOrChannel: any, saga: any, ...args: any) =>
  *
  * It's *very* important for the renderer to never receive a passport with items that have not been loaded into the catalog.
  */
-export function* passportSaga(): any {
+export function* profileSaga(): any {
   if (!(yield select(isRealmInitialized))) {
     yield take(CATALYST_REALM_INITIALIZED)
   }
@@ -144,38 +113,17 @@ export function* passportSaga(): any {
 
   yield takeLatest(ADD_CATALOG, handleAddCatalog)
 
-  yield takeLatestByUserId(PASSPORT_REQUEST, handleFetchProfile)
-  yield takeLatestByUserId(PASSPORT_SUCCESS, submitPassportToRenderer)
-  yield takeLatestByUserId(PASSPORT_RANDOM, handleRandomAsSuccess)
+  yield takeLatestByUserId(PROFILE_REQUEST, handleFetchProfile)
+  yield takeLatestByUserId(PROFILE_SUCCESS, submitProfileToRenderer)
+  yield takeLatestByUserId(PROFILE_RANDOM, handleRandomAsSuccess)
 
-  yield takeLatestByUserId(SAVE_AVATAR_REQUEST, handleSaveAvatar)
+  yield takeLatestByUserId(SAVE_PROFILE_REQUEST, handleSaveAvatar)
 
   yield takeLatestByUserId(INVENTORY_REQUEST, handleFetchInventory)
 
   yield takeLatest(NOTIFY_NEW_INVENTORY_ITEM, handleNewInventoryItem)
 
   yield fork(queryInventoryEveryMinute)
-}
-
-function takeLatestById<T extends Action>(
-  patternOrChannel: any,
-  keyFunction: (action: T) => string,
-  saga: any,
-  ...args: any
-): ForkEffect {
-  return fork(function*() {
-    let lastTasks = new Map<any, any>()
-    while (true) {
-      const action = yield take(patternOrChannel)
-      const key = keyFunction(action)
-      const task = lastTasks.get(key)
-      if (task) {
-        lastTasks.delete(key)
-        yield cancel(task) // cancel is no-op if the task has already terminated
-      }
-      lastTasks.set(key, yield fork(saga, ...args.concat(action)))
-    }
-  })
 }
 
 function overrideBaseUrl(wearable: Wearable) {
@@ -186,13 +134,11 @@ function overrideBaseUrl(wearable: Wearable) {
   }
 }
 
-declare const window: any
-
 export function* initialLoad() {
   if (WORLD_EXPLORER) {
     try {
       let collections: Collection[]
-      if (window.location.search.match(/TEST_WEARABLES/)) {
+      if (globalThis.location.search.match(/TEST_WEARABLES/)) {
         collections = [{ id: 'all', wearables: yield call(fetchCatalog, getServerConfigurations().avatar.catalog) }]
       } else {
         collections = yield call(fetchCatalog, getServerConfigurations().avatar.catalog)
@@ -223,7 +169,7 @@ export function* initialLoad() {
   }
 }
 
-export function* handleFetchProfile(action: PassportRequestAction): any {
+export function* handleFetchProfile(action: ProfileRequestAction): any {
   const userId = action.payload.userId
   const email = ''
 
@@ -278,7 +224,7 @@ export function* handleFetchProfile(action: PassportRequestAction): any {
   }
 
   const passport = yield call(processServerProfile, userId, profile)
-  yield put(passportSuccess(userId, passport))
+  yield put(profileSuccess(userId, passport))
 }
 
 export async function profileServerRequest(serverUrl: string, userId: string) {
@@ -293,9 +239,9 @@ export async function profileServerRequest(serverUrl: string, userId: string) {
   }
 }
 
-export function* handleRandomAsSuccess(action: PassportRandomAction): any {
+export function* handleRandomAsSuccess(action: ProfileRandomAction): any {
   // TODO (eordano, 16/Sep/2019): See if there's another way around people expecting PASSPORT_SUCCESS
-  yield put(passportSuccess(action.payload.userId, action.payload.profile))
+  yield put(profileSuccess(action.payload.userId, action.payload.profile))
 }
 
 export function* handleAddCatalog(action: AddCatalogAction): any {
@@ -319,11 +265,11 @@ export async function fetchCatalog(url: string) {
 }
 
 export function sendWearablesCatalog(catalog: Catalog) {
-  window['unityInterface'].AddWearablesToCatalog(catalog)
+  globalThis.unityInterface.AddWearablesToCatalog(catalog)
 }
 
 export function handleNewInventoryItem() {
-  window['unityInterface'].ShowNotification({
+  globalThis.unityInterface.ShowNotification({
     type: NotificationType.GENERIC,
     message: 'You received an exclusive wearable NFT mask! Check it out in the avatar editor.',
     buttonMessage: 'OK',
@@ -343,7 +289,7 @@ export function* ensureBaseCatalogs() {
   }
 }
 
-export function* submitPassportToRenderer(action: PassportSuccessAction): any {
+export function* submitProfileToRenderer(action: ProfileSuccessAction): any {
   const profile = { ...action.payload.profile }
   if ((yield select(getCurrentUserId)) === action.payload.userId) {
     yield call(ensureRenderer)
@@ -357,7 +303,7 @@ export function* submitPassportToRenderer(action: PassportSuccessAction): any {
     yield call(ensureRenderer)
     yield call(ensureBaseCatalogs)
 
-    window['unityInterface'].AddUserProfileToCatalog(profileToRendererFormat(profile))
+    globalThis.unityInterface.AddUserProfileToCatalog(profileToRendererFormat(profile))
   }
 }
 
@@ -365,7 +311,7 @@ export function* sendLoadProfile(profile: Profile) {
   while (!(yield select(baseCatalogsLoaded))) {
     yield take(CATALOG_LOADED)
   }
-  window['unityInterface'].LoadProfile(profileToRendererFormat(profile, identity))
+  globalThis.unityInterface.LoadProfile(profileToRendererFormat(profile, identity))
 }
 
 export function* handleFetchInventory(action: InventoryRequest) {
@@ -398,7 +344,7 @@ export async function fetchInventoryItemsByAddress(address: string) {
   return inventory.map(wearable => wearable.id)
 }
 
-export function* handleSaveAvatar(saveAvatar: SaveAvatarRequest) {
+export function* handleSaveAvatar(saveAvatar: SaveProfileRequest) {
   const userId = saveAvatar.payload.userId ? saveAvatar.payload.userId : yield select(getCurrentUserId)
 
   try {
@@ -419,11 +365,11 @@ export function* handleSaveAvatar(saveAvatar: SaveAvatarRequest) {
 
       const { creationTimestamp: version } = result
 
-      yield put(saveAvatarSuccess(userId, version, profile))
-      yield put(passportRequest(userId))
+      yield put(saveProfileSuccess(userId, version, profile))
+      yield put(profileRequest(userId))
     }
   } catch (error) {
-    yield put(saveAvatarFailure(userId, 'unknown reason'))
+    yield put(saveProfileFailure(userId, 'unknown reason'))
   }
 }
 
@@ -639,7 +585,7 @@ function convertModelToFormData(model: any, form: FormData = new FormData(), nam
 
 export function base64ToBlob(base64: string): Blob {
   const sliceSize = 1024
-  const byteChars = window.atob(base64)
+  const byteChars = globalThis.atob(base64)
   const byteArrays = []
   let len = byteChars.length
 

@@ -1,7 +1,7 @@
 import { fork } from 'redux-saga/effects'
 import { atlasSaga } from '../atlas/sagas'
 import { loadingSaga } from '../loading/sagas'
-import { passportSaga } from '../passports/sagas'
+import { profileSaga } from '../profiles/sagas'
 import { rootProtocolSaga } from '../protocol/sagas'
 import { rendererSaga } from '../renderer/sagas'
 import { metricSaga } from './metricSaga'
@@ -13,7 +13,7 @@ export function createRootSaga() {
     yield fork(metaSaga)
     yield fork(atlasSaga)
     yield fork(daoSaga)
-    yield fork(passportSaga)
+    yield fork(profileSaga)
     yield fork(rendererSaga)
     yield fork(rootProtocolSaga)
     yield fork(metricSaga)

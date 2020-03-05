@@ -5,7 +5,7 @@ import { defaultLogger } from 'shared/logger'
 import { MessageEntry } from 'shared/types'
 import { positionObservable, PositionReport } from 'shared/world/positionThings'
 import 'webrtc-adapter'
-import { PassportAsPromise } from '../passports/PassportAsPromise'
+import { ProfileAsPromise } from '../profiles/ProfileAsPromise'
 import { ChatEvent, chatObservable, notifyStatusThroughChat } from './chat'
 import { CliBrokerConnection } from './CliBrokerConnection'
 import { Stats } from './debug'
@@ -43,7 +43,7 @@ import {
   ParcelArray
 } from './interface/utils'
 import { BrokerWorldInstanceConnection } from '../comms/v1/brokerWorldInstanceConnection'
-import { profileToRendererFormat } from 'shared/passports/transformations/profileToRendererFormat'
+import { profileToRendererFormat } from 'shared/profiles/transformations/profileToRendererFormat'
 import { ProfileForRenderer } from 'decentraland-ecs/src'
 import { worldRunningObservable, isWorldRunning } from '../world/worldState'
 import { WorldInstanceConnection } from './interface/index'
@@ -55,7 +55,7 @@ import { Authenticator } from 'dcl-crypto'
 import { getCommsServer, getRealm, getAllCatalystCandidates } from '../dao/selectors'
 import { Realm, LayerUserInfo } from 'shared/dao/types'
 import { Store } from 'redux'
-import { RootState } from 'shared/store/rootTypes'
+import { RootState, StoreContainer } from 'shared/store/rootTypes'
 import { store } from 'shared/store/store'
 import {
   setCatalystRealmCommsStatus,
@@ -64,8 +64,9 @@ import {
   markCatalystRealmConnectionError
 } from 'shared/dao/actions'
 import { observeRealmChange, pickCatalystRealm, changeToCrowdedRealm } from 'shared/dao'
-import { getProfile } from 'shared/passports/selectors'
-import { Profile } from 'shared/passports/types'
+import { getProfile } from 'shared/profiles/selectors'
+import { Profile } from 'shared/profiles/types'
+import { realmToString } from '../dao/utils/realmToString'
 
 export type CommsVersion = 'v1' | 'v2'
 export type CommsMode = CommsV1Mode | CommsV2Mode
@@ -85,8 +86,11 @@ export const MORDOR_POSITION: Position = [
   0
 ]
 
-declare var global: any
-declare const window: any
+type CommsContainer = {
+  printCommsInformation: () => void
+}
+
+declare const globalThis: StoreContainer & CommsContainer
 
 export class PeerTrackingInfo {
   public position: Position | null = null
@@ -111,7 +115,7 @@ export class PeerTrackingInfo {
         }
       }
       this.profilePromise = {
-        promise: PassportAsPromise(this.identity, profileVersion)
+        promise: ProfileAsPromise(this.identity, profileVersion)
           .then(profile => {
             const forRenderer = profileToRendererFormat(profile)
             this.lastProfileUpdate = new Date().getTime()
@@ -260,7 +264,7 @@ function ensurePeerTrackingInfo(context: Context, alias: string): PeerTrackingIn
 
 export function processChatMessage(context: Context, fromAlias: string, message: Package<ChatMessage>) {
   const msgId = message.data.id
-  const profile = getProfile(global.globalStore.getState(), identity.address)
+  const profile = getProfile(globalThis.globalStore.getState(), identity.address)
 
   const peerTrackingInfo = ensurePeerTrackingInfo(context, fromAlias)
   if (!peerTrackingInfo.receivedPublicChatMessages.has(msgId)) {
@@ -571,7 +575,7 @@ export async function connect(userId: string) {
         break
       }
       case 'v2': {
-        const store: Store<RootState> = window.globalStore
+        const store: Store<RootState> = globalThis.globalStore
         const lighthouseUrl = getCommsServer(store.getState())
         const realm = getRealm(store.getState())
 
@@ -703,12 +707,8 @@ export async function connect(userId: string) {
   }
 }
 
-function realmString(realm: Realm) {
-  return realm.catalystName + '-' + realm.layer
-}
-
 function handleReconnectionError() {
-  const store: Store<RootState> = window.globalStore
+  const store: Store<RootState> = globalThis.globalStore
   const realm = getRealm(store.getState())
 
   if (realm) {
@@ -720,8 +720,8 @@ function handleReconnectionError() {
   const otherRealm = pickCatalystRealm(candidates)
 
   const notificationMessage = realm
-    ? `Lost connection to ${realmString(realm)}, joining realm ${realmString(otherRealm)} instead`
-    : `Joining realm ${realmString(otherRealm)}`
+    ? `Lost connection to ${realmToString(realm)}, joining realm ${realmToString(otherRealm)} instead`
+    : `Joining realm ${realmToString(otherRealm)}`
 
   notifyStatusThroughChat(notificationMessage)
 
@@ -729,7 +729,7 @@ function handleReconnectionError() {
 }
 
 function handleFullLayer() {
-  const store: Store<RootState> = window.globalStore
+  const store: Store<RootState> = globalThis.globalStore
   const realm = getRealm(store.getState())
 
   if (realm) {
@@ -784,7 +784,7 @@ export function disconnect() {
 }
 
 export async function fetchLayerUsersParcels(): Promise<ParcelArray[]> {
-  const store: Store<RootState> = window.globalStore
+  const store: Store<RootState> = globalThis.globalStore
   const realm = getRealm(store.getState())
   const commsUrl = getCommsServer(store.getState())
 
@@ -799,7 +799,7 @@ export async function fetchLayerUsersParcels(): Promise<ParcelArray[]> {
   return []
 }
 
-global['printCommsInformation'] = function() {
+globalThis.printCommsInformation = function() {
   if (context) {
     defaultLogger.log('Communication topics: ' + previousTopics)
     context.stats.printDebugInformation()

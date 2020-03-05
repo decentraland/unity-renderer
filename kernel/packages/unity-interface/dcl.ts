@@ -1,10 +1,3 @@
-declare var window: any
-declare var global: any
-
-type GameInstance = {
-  SendMessage(object: string, method: string, ...args: (number | string)[]): void
-}
-
 import { uuid } from 'decentraland-ecs/src'
 import { EventDispatcher } from 'decentraland-rpc/lib/common/core/EventDispatcher'
 import { IFuture } from 'fp-future'
@@ -14,7 +7,7 @@ import { sendPublicChatMessage, persistCurrentUser } from 'shared/comms'
 import { AvatarMessageType } from 'shared/comms/interface/types'
 import { avatarMessageObservable, getUserProfile } from 'shared/comms/peers'
 import { providerFuture } from 'shared/ethereum/provider'
-import { getProfile } from 'shared/passports/selectors'
+import { getProfile } from 'shared/profiles/selectors'
 import { TeleportController } from 'shared/world/TeleportController'
 import { gridToWorld } from '../atomicHelpers/parcelScenePositions'
 import {
@@ -30,17 +23,17 @@ import {
 import { Quaternion, ReadOnlyQuaternion, ReadOnlyVector3, Vector3 } from '../decentraland-ecs/src/decentraland/math'
 import { IEventNames, IEvents, ProfileForRenderer } from '../decentraland-ecs/src/decentraland/Types'
 import { sceneLifeCycleObservable } from '../decentraland-loader/lifecycle/controllers/scene'
-import { tutorialStepId } from '../decentraland-loader/lifecycle/tutorial/tutorial'
-import { AirdropInfo } from '../shared/airdrops/interface'
-import { queueTrackingEvent } from '../shared/analytics'
-import { DevTools } from '../shared/apis/DevTools'
-import { ParcelIdentity } from '../shared/apis/ParcelIdentity'
-import { chatObservable } from '../shared/comms/chat'
-import { aborted } from '../shared/loading/ReportFatalError'
-import { loadingScenes, teleportTriggered, unityClientLoaded } from '../shared/loading/types'
-import { createLogger, defaultLogger, ILogger } from '../shared/logger'
-import { saveAvatarRequest } from '../shared/passports/actions'
-import { Avatar, Profile, Wearable } from '../shared/passports/types'
+import { tutorialStepId } from 'decentraland-loader/lifecycle/tutorial/tutorial'
+import { AirdropInfo } from 'shared/airdrops/interface'
+import { queueTrackingEvent } from 'shared/analytics'
+import { DevTools } from 'shared/apis/DevTools'
+import { ParcelIdentity } from 'shared/apis/ParcelIdentity'
+import { chatObservable } from 'shared/comms/chat'
+import { aborted } from 'shared/loading/ReportFatalError'
+import { loadingScenes, teleportTriggered, unityClientLoaded } from 'shared/loading/types'
+import { createLogger, defaultLogger, ILogger } from 'shared/logger'
+import { saveProfileRequest } from 'shared/profiles/actions'
+import { Avatar, Profile, Wearable } from 'shared/profiles/types'
 import {
   PB_AttachEntityComponent,
   PB_ComponentCreated,
@@ -57,8 +50,8 @@ import {
   PB_UpdateEntityComponent,
   PB_Vector3
 } from '../shared/proto/engineinterface_pb'
-import { Session } from '../shared/session'
-import { getPerformanceInfo } from '../shared/session/getPerformanceInfo'
+import { Session } from 'shared/session'
+import { getPerformanceInfo } from 'shared/session/getPerformanceInfo'
 import {
   AttachEntityComponentPayload,
   ComponentCreatedPayload,
@@ -82,20 +75,28 @@ import {
   SetEntityParentPayload,
   UpdateEntityComponentPayload,
   WelcomeHUDControllerModel
-} from '../shared/types'
-import { ParcelSceneAPI } from '../shared/world/ParcelSceneAPI'
+} from 'shared/types'
+import { ParcelSceneAPI } from 'shared/world/ParcelSceneAPI'
 import {
   enableParcelSceneLoading,
   getParcelSceneID,
   getSceneWorkerBySceneID,
   loadParcelScene,
   stopParcelSceneWorker
-} from '../shared/world/parcelSceneManager'
-import { positionObservable, teleportObservable } from '../shared/world/positionThings'
-import { hudWorkerUrl, SceneWorker } from '../shared/world/SceneWorker'
-import { ensureUiApis } from '../shared/world/uiSceneInitializer'
-import { worldRunningObservable } from '../shared/world/worldState'
-import { profileToRendererFormat } from 'shared/passports/transformations/profileToRendererFormat'
+} from 'shared/world/parcelSceneManager'
+import { positionObservable, teleportObservable } from 'shared/world/positionThings'
+import { hudWorkerUrl, SceneWorker } from 'shared/world/SceneWorker'
+import { ensureUiApis } from 'shared/world/uiSceneInitializer'
+import { worldRunningObservable } from 'shared/world/worldState'
+import { profileToRendererFormat } from 'shared/profiles/transformations/profileToRendererFormat'
+import { StoreContainer } from 'shared/store/rootTypes'
+
+declare const globalThis: UnityInterfaceContainer &
+  StoreContainer & { analytics: any; delighted: any } & { messages: (e: any) => void }
+
+type GameInstance = {
+  SendMessage(object: string, method: string, ...args: (number | string)[]): void
+}
 
 const rendererVersion = require('decentraland-renderer')
 window['console'].log('Renderer version: ' + rendererVersion)
@@ -191,13 +192,13 @@ const browserInterface = {
     const { face, body, avatar } = changes
     const profile: Profile = getUserProfile().profile as Profile
     const updated = { ...profile, avatar: { ...avatar, snapshots: { face, body } } }
-    global.globalStore.dispatch(saveAvatarRequest(updated))
+    globalThis.globalStore.dispatch(saveProfileRequest(updated))
   },
 
   SaveUserTutorialStep(data: { tutorialStep: number }) {
     const profile: Profile = getUserProfile().profile as Profile
     profile.tutorialStep = data.tutorialStep
-    global.globalStore.dispatch(saveAvatarRequest(profile))
+    globalThis.globalStore.dispatch(saveProfileRequest(profile))
 
     persistCurrentUser({
       version: profile.version,
@@ -255,7 +256,7 @@ const browserInterface = {
   },
 
   BlockPlayer(data: { userId: string }) {
-    const profile = getProfile(global.globalStore.getState(), identity.address)
+    const profile = getProfile(globalThis.globalStore.getState(), identity.address)
 
     if (profile) {
       let blocked: string[] = [data.userId]
@@ -271,16 +272,16 @@ const browserInterface = {
         blocked = [...profile.blocked, ...blocked]
       }
 
-      global.globalStore.dispatch(saveAvatarRequest({ ...profile, blocked }))
+      globalThis.globalStore.dispatch(saveProfileRequest({ ...profile, blocked }))
     }
   },
 
   UnblockPlayer(data: { userId: string }) {
-    const profile = getProfile(global.globalStore.getState(), identity.address)
+    const profile = getProfile(globalThis.globalStore.getState(), identity.address)
 
     if (profile) {
       const blocked = profile.blocked ? profile.blocked.filter(id => id !== data.userId) : []
-      global.globalStore.dispatch(saveAvatarRequest({ ...profile, blocked }))
+      globalThis.globalStore.dispatch(saveProfileRequest({ ...profile, blocked }))
     }
   },
 
@@ -307,11 +308,11 @@ export function setLoadingScreenVisible(shouldShow: boolean) {
 }
 
 function delightedSurvey() {
-  const { analytics, delighted } = global
+  const { analytics, delighted } = globalThis
   const profile = getUserProfile().profile as Profile | null
   if (!isTheFirstLoading && analytics && delighted && profile) {
     const payload = {
-      email: profile.email || (profile.ethAddress + '@dcl.gg'),
+      email: profile.email || profile.ethAddress + '@dcl.gg',
       name: profile.name || 'Guest',
       properties: {
         ethAddress: profile.ethAddress,
@@ -569,7 +570,11 @@ unityInterface = {
   }
 }
 
-window['unityInterface'] = unityInterface
+globalThis.unityInterface = unityInterface
+
+export type UnityInterfaceContainer = {
+  unityInterface: typeof unityInterface
+}
 
 ////////////////////////////////////////////////////////////////////////////////
 
@@ -784,7 +789,7 @@ export class UnityParcelScene extends UnityScene<LoadableParcelScene> {
 export async function initializeEngine(_gameInstance: GameInstance) {
   gameInstance = _gameInstance
 
-  global['globalStore'].dispatch(unityClientLoaded())
+  globalThis.globalStore.dispatch(unityClientLoaded())
   setLoadingScreenVisible(true)
 
   unityInterface.DeactivateRendering()
@@ -818,7 +823,7 @@ export async function initializeEngine(_gameInstance: GameInstance) {
     onMessage(type: string, message: any) {
       if (type in browserInterface) {
         // tslint:disable-next-line:semicolon
-        ; (browserInterface as any)[type](message)
+        ;(browserInterface as any)[type](message)
       } else {
         defaultLogger.info(`Unknown message (did you forget to add ${type} to unity-interface/dcl.ts?)`, message)
       }
@@ -830,7 +835,7 @@ export async function startUnityParcelLoading() {
   const p = await providerFuture
   hasWallet = p.successful
 
-  global['globalStore'].dispatch(loadingScenes())
+  globalThis.globalStore.dispatch(loadingScenes())
   await enableParcelSceneLoading({
     parcelSceneClass: UnityParcelScene,
     preloadScene: async _land => {
@@ -974,7 +979,7 @@ export function updateBuilderScene(sceneData: ILand) {
 teleportObservable.add((position: { x: number; y: number; text?: string }) => {
   // before setting the new position, show loading screen to avoid showing an empty world
   setLoadingScreenVisible(true)
-  const globalStore = global['globalStore']
+  const globalStore = globalThis.globalStore
   globalStore.dispatch(teleportTriggered(position.text || `Teleporting to ${position.x}, ${position.y}`))
 })
 
@@ -984,7 +989,7 @@ worldRunningObservable.add(isRunning => {
   }
 })
 
-window['messages'] = (e: any) => chatObservable.notifyObservers(e)
+globalThis.messages = (e: any) => chatObservable.notifyObservers(e)
 
 document.addEventListener('pointerlockchange', e => {
   if (!document.pointerLockElement) {

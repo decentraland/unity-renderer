@@ -1,11 +1,14 @@
 import { AtlasState } from '../atlas/types'
-import { PassportState } from '../passports/types'
+import { ProfileState } from '../profiles/types'
 import { DaoState } from '../dao/types'
 import { MetaState } from '../meta/types'
+import { Store } from 'redux'
 
 export type RootState = {
   atlas: AtlasState
-  passports: PassportState
+  profiles: ProfileState
   dao: DaoState
   meta: MetaState
 }
+
+export type StoreContainer = { globalStore: Store<RootState> }

@@ -1,11 +1,13 @@
-import { RootState } from '../store/rootTypes'
+import { RootState, StoreContainer } from '../store/rootTypes'
 import { Store } from 'redux'
 import { getProfile } from './selectors'
-import { passportRequest } from './actions'
+import { profileRequest } from './actions'
 import { Profile } from './types'
 
-export function PassportAsPromise(userId: string, version?: number): Promise<Profile> {
-  const store: Store<RootState> = (window as any)['globalStore']
+declare const globalThis: StoreContainer
+
+export function ProfileAsPromise(userId: string, version?: number): Promise<Profile> {
+  const store: Store<RootState> = globalThis.globalStore
 
   const existingProfile = getProfile(store.getState(), userId)
   if (existingProfile && (!version || existingProfile.version >= version)) {
@@ -20,6 +22,6 @@ export function PassportAsPromise(userId: string, version?: number): Promise<Pro
       }
       // TODO (eordano, 16/Sep/2019): Timeout or catch errors
     })
-    store.dispatch(passportRequest(userId))
+    store.dispatch(profileRequest(userId))
   })
 }

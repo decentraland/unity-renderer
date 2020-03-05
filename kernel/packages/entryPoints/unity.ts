@@ -1,17 +1,17 @@
 import { ReportFatalError } from 'shared/loading/ReportFatalError'
-import { NOT_INVITED, AUTH_ERROR_LOGGED_OUT, FAILED_FETCHING_UNITY } from 'shared/loading/types'
+import { experienceStarted, NOT_INVITED, AUTH_ERROR_LOGGED_OUT, FAILED_FETCHING_UNITY } from 'shared/loading/types'
 import { worldToGrid } from '../atomicHelpers/parcelScenePositions'
 import { NO_MOTD, OPEN_AVATAR_EDITOR, tutorialEnabled } from '../config/index'
-import { experienceStarted } from '../shared/loading/types'
-import defaultLogger from '../shared/logger'
-import { signalRendererInitialized } from '../shared/renderer/actions'
-import { lastPlayerPosition, teleportObservable } from '../shared/world/positionThings'
+import defaultLogger from 'shared/logger'
+import { signalRendererInitialized } from 'shared/renderer/actions'
+import { lastPlayerPosition, teleportObservable } from 'shared/world/positionThings'
+import { StoreContainer } from 'shared/store/rootTypes'
 import { hasWallet, startUnityParcelLoading, unityInterface } from '../unity-interface/dcl'
 import { initializeUnity } from '../unity-interface/initializer'
 
 const container = document.getElementById('gameContainer')
 
-declare var global: any
+declare const globalThis: { UnityLoader: any } & StoreContainer
 
 if (!container) throw new Error('cannot find element #gameContainer')
 
@@ -29,22 +29,23 @@ initializeUnity(container)
     i.ConfigureAirdroppingHUD({ active: true, visible: true })
     i.ConfigureTermsOfServiceHUD({ active: true, visible: true })
 
-    global['globalStore'].dispatch(signalRendererInitialized())
+    globalThis.globalStore.dispatch(signalRendererInitialized())
+
     await startUnityParcelLoading()
 
     if (!NO_MOTD) {
-      i.ConfigureWelcomeHUD({ active: false, visible: !tutorialEnabled(), hasWallet: hasWallet })
+      i.ConfigureWelcomeHUD({ active: false, visible: !tutorialEnabled(), hasWallet })
     }
 
     _.instancedJS
-      .then($ => {
+      .then(() => {
         teleportObservable.notifyObservers(worldToGrid(lastPlayerPosition))
-        global['globalStore'].dispatch(experienceStarted())
+        globalThis.globalStore.dispatch(experienceStarted())
       })
       .catch(defaultLogger.error)
 
     document.body.classList.remove('dcl-loading')
-    ;(window as any).UnityLoader.Error.handler = (error: any) => {
+    globalThis.UnityLoader.Error.handler = (error: any) => {
       console['error'](error)
       ReportFatalError(error.message)
     }
@@ -54,8 +55,7 @@ initializeUnity(container)
     if (err.message === AUTH_ERROR_LOGGED_OUT || err.message === NOT_INVITED) {
       ReportFatalError(NOT_INVITED)
     } else {
-      console['error']('Error loading Unity')
-      console['error'](err)
+      console['error']('Error loading Unity', err)
       ReportFatalError(FAILED_FETCHING_UNITY)
     }
   })

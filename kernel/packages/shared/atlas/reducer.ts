@@ -11,6 +11,7 @@ import {
   SUCCESS_NAME_FROM_SCENE_JSON
 } from './types'
 import { zip } from './zip'
+import { PayloadAction } from 'typesafe-actions'
 
 const ATLAS_INITIAL_STATE: AtlasState = {
   marketName: {},
@@ -63,11 +64,12 @@ export function atlasReducer(state?: AtlasState, action?: AnyAction) {
         }
       }
     case MARKET_DATA:
+      const marketAction = action as PayloadAction<typeof MARKET_DATA, MarketData>
       return {
         ...state,
         marketName: {
           ...state.marketName,
-          ...((action as any) as { payload: MarketData }).payload.data
+          ...marketAction.payload.data
         }
       }
     case REPORTED_SCENES_FOR_MINIMAP:
@@ -87,7 +89,7 @@ export function atlasReducer(state?: AtlasState, action?: AnyAction) {
         ...state,
         districtName: {
           ...state.districtName,
-          ...zip((action as any).payload.data, (t: District) => [t.id, t.name])
+          ...zip(action.payload.data, (t: District) => [t.id, t.name])
         }
       }
   }
