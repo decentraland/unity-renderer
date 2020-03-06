@@ -403,6 +403,8 @@ namespace DCL.Helpers
 
             for (int i = 0; i < renderers.Length; i++)
             {
+                if (renderers[i] == null) continue;
+
                 if (i == 0)
                     bounds = renderers[i].bounds;
                 else

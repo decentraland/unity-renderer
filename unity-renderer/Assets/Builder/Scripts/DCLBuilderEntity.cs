@@ -70,8 +70,9 @@ namespace Builder
             DCLBuilderBridge.OnPreviewModeChanged -= OnPreviewModeChanged;
             DCLBuilderBridge.OnPreviewModeChanged += OnPreviewModeChanged;
 
-            //builder evaluate boundries by itself
-            entity.OnShapeUpdated -= entity.scene.boundariesChecker.EvaluateEntityPosition;
+            //builder evaluate boundaries by itself
+            if (DCL.SceneController.i.useBoundariesChecker)
+                entity.OnShapeUpdated -= DCL.SceneController.i.boundariesChecker.EvaluateEntityPosition;
 
             gameObject.transform.localScale = Vector3.zero;
 
