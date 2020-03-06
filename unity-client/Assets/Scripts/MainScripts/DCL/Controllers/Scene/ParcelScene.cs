@@ -20,6 +20,7 @@ namespace DCL.Controllers
             READY,
         }
 
+        public static ParcelScenesCleaner parcelScenesCleaner = new ParcelScenesCleaner();
         private const int ENTITY_POOL_PREWARM_COUNT = 2000;
 
         public Dictionary<string, DecentralandEntity> entities = new Dictionary<string, DecentralandEntity>();
@@ -38,9 +39,6 @@ namespace DCL.Controllers
         public int disposableNotReadyCount => disposableNotReady.Count;
 
         [System.NonSerialized]
-        public bool useBoundariesChecker = false;
-
-        [System.NonSerialized]
         public bool useBlockers = true;
 
         [System.NonSerialized]
@@ -52,16 +50,12 @@ namespace DCL.Controllers
         [System.NonSerialized]
         public bool unloadWithDistance = true;
 
-        public static ParcelScenesCleaner parcelScenesCleaner = new ParcelScenesCleaner();
-
-        private readonly List<string> disposableNotReady = new List<string>();
-        private bool isReleased = false;
-        public bool isReady => state == State.READY;
-        private State state = State.NOT_READY;
-        public SceneBoundariesChecker boundariesChecker { private set; get; }
-
         public BlockerHandler blockerHandler;
+        public bool isReady => state == State.READY;
 
+        readonly List<string> disposableNotReady = new List<string>();
+        bool isReleased = false;
+        State state = State.NOT_READY;
 
         public void Awake()
         {
@@ -74,11 +68,6 @@ namespace DCL.Controllers
 
             metricsController = new SceneMetricsController(this);
             metricsController.Enable();
-
-            if (SceneController.i.isDebugMode)
-                boundariesChecker = new SceneBoundariesDebugModeChecker(this);
-            else
-                boundariesChecker = new SceneBoundariesChecker(this);
         }
 
         void OnDisable()
@@ -348,8 +337,8 @@ namespace DCL.Controllers
 
             newEntity.OnCleanupEvent += po.OnCleanup;
 
-            if (useBoundariesChecker || SceneController.i.isDebugMode)
-                newEntity.OnShapeUpdated += boundariesChecker.EvaluateEntityPosition;
+            if (SceneController.i.useBoundariesChecker)
+                newEntity.OnShapeUpdated += SceneController.i.boundariesChecker.AddEntityToBeChecked;
 
             entities.Add(tmpCreateEntityMessage.id, newEntity);
 
@@ -375,8 +364,15 @@ namespace DCL.Controllers
                     CleanUpEntityRecursively(entity, removeImmediatelyFromEntitiesList);
                 }
 
+                if (SceneController.i.useBoundariesChecker)
+                {
+                    entity.OnShapeUpdated -= SceneController.i.boundariesChecker.AddEntityToBeChecked;
+                    SceneController.i.boundariesChecker.RemoveEntityToBeChecked(entity);
+                }
+
                 entities.Remove(tmpRemoveEntityMessage.id);
             }
+
 #if UNITY_EDITOR || DEVELOPMENT_BUILD
             else
             {
@@ -384,8 +380,6 @@ namespace DCL.Controllers
             }
 #endif
         }
-
-
 
         void CleanUpEntityRecursively(DecentralandEntity entity, bool removeImmediatelyFromEntitiesList)
         {
@@ -551,8 +545,7 @@ namespace DCL.Controllers
                     entity.gameObject.transform.localRotation = DCLTransform.model.rotation;
                     entity.gameObject.transform.localScale = DCLTransform.model.scale;
 
-                    if (useBoundariesChecker || SceneController.i.isDebugMode)
-                        boundariesChecker.EvaluateEntityPosition(entity);
+                    SceneController.i.boundariesChecker?.AddEntityToBeChecked(entity);
                 }
 
                 return null;

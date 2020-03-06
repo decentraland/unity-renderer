@@ -11,6 +11,8 @@ namespace SceneBoundariesCheckerTests
         {
             yield return SetUp_SceneController(debugMode: true);
             yield return SetUp_CharacterController();
+
+            sceneController.boundariesChecker.timeBetweenChecks = 0f;
         }
 
         [UnityTest]

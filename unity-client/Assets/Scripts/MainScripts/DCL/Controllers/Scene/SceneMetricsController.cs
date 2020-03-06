@@ -251,7 +251,7 @@ namespace DCL
 
             CalculateMaterials(entity, entityMetrics);
 
-            //The array is a list of triangles that contains indices into the vertex array. The size of the triangle array must always be a multiple of 3. 
+            //The array is a list of triangles that contains indices into the vertex array. The size of the triangle array must always be a multiple of 3.
             //Vertices can be shared by simply indexing into the same vertex.
             entityMetrics.triangles = visualMeshRawTriangles / 3;
             entityMetrics.bodies = entity.meshesInfo.meshFilters.Length;
@@ -278,13 +278,13 @@ namespace DCL
         void CalculateMaterials(DecentralandEntity entity, EntityMetrics entityMetrics)
         {
             //get boundaries checker if in debug cause it may have swap meshes materials
-            var debugBoundariesChecker = scene.boundariesChecker as SceneBoundariesDebugModeChecker;
+            var debugBoundariesChecker = SceneController.i.boundariesChecker as SceneBoundariesDebugModeChecker;
 
             //can we count materials directly from the mesh renderers?
             bool isInValidPosition = debugBoundariesChecker == null
                 || (debugBoundariesChecker != null && debugBoundariesChecker.WasEntityInAValidPosition(entity));
 
-            isInValidPosition |= !scene.useBoundariesChecker;
+            isInValidPosition |= !SceneController.i.useBoundariesChecker;
 
             if (isInValidPosition)
             {

@@ -559,7 +559,7 @@ namespace Builder
                 outOfBoundariesEntitiesId.RemoveAt(entityIndexInList);
             }
 
-            currentScene.boundariesChecker?.EvaluateEntityPosition(entity.rootEntity);
+            DCL.SceneController.i.boundariesChecker?.EvaluateEntityPosition(entity.rootEntity);
         }
 
         private void SendOutOfBoundariesEntities()
@@ -573,7 +573,7 @@ namespace Builder
             {
                 for (int i = 0; i < selectedEntities.Count; i++)
                 {
-                    currentScene.boundariesChecker?.EvaluateEntityPosition(selectedEntities[i].rootEntity);
+                    DCL.SceneController.i.boundariesChecker?.EvaluateEntityPosition(selectedEntities[i].rootEntity);
                 }
             }
         }

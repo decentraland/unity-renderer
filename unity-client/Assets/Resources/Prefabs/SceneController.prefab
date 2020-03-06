@@ -404,6 +404,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   startDecentralandAutomatically: 1
   componentFactory: {fileID: 11400000, guid: 6710053fa2d5d5446b6a599e0e003053, type: 2}
+  sceneBoundariesCheckerPrefab: {fileID: 4444655837246710264, guid: 966ccdeb260c94ce69f0ff64ade25129,
+    type: 3}
+  sceneBoundariesCheckerDebugPrefab: {fileID: 1580757657795077986, guid: f18692bb286e942c286be04ad102fbdd,
+    type: 3}
   fpsPanel: {fileID: 7216045482893348587}
   engineDebugPanel: {fileID: 1130915824720432023}
   sceneDebugPanel: {fileID: 6902065697670736161}

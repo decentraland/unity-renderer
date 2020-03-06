@@ -24,6 +24,7 @@ namespace DCL
 
         public bool hasPendingMessages => pendingMessagesCount > 0;
 
+        public float timeBudgetCounter = MAX_GLOBAL_MSG_BUDGET;
         public int pendingMessagesCount;
         public int pendingInitMessagesCount;
         public long processedInitMessagesCount;
@@ -225,8 +226,6 @@ namespace DCL
                 sceneMessagingController.StopBus(MessagingBusId.INIT);
             }
         }
-
-        float timeBudgetCounter = MAX_GLOBAL_MSG_BUDGET;
 
         IEnumerator ProcessMessages()
         {

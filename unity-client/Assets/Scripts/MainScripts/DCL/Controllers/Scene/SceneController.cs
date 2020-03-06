@@ -77,10 +77,14 @@ namespace DCL
         [System.NonSerialized]
         public bool prewarmSceneMessagesPool = true;
 
+        [System.NonSerialized]
+        public bool useBoundariesChecker = true;
+
         public bool hasPendingMessages => MessagingControllersManager.i.pendingMessagesCount > 0;
 
         public string globalSceneId { get; private set; }
         public string currentSceneId { get; private set; }
+        public SceneBoundariesChecker boundariesChecker { get; private set; }
 
         private bool sceneSortDirty = false;
         private bool positionDirty = true;
@@ -109,6 +113,8 @@ namespace DCL
             Debug.unityLogger.logEnabled = false;
 #endif
 
+            InitializeSceneBoundariesChecker();
+
             MessagingControllersManager.i.Initialize(this);
             MemoryManager.i.Initialize();
 
@@ -124,6 +130,24 @@ namespace DCL
                 StartCoroutine(DeferredDecoding());
 
             DCLCharacterController.OnCharacterMoved += SetPositionDirty;
+        }
+
+        void InitializeSceneBoundariesChecker()
+        {
+            if (!useBoundariesChecker) return;
+
+            if (boundariesChecker != null)
+                boundariesChecker.Stop();
+
+            if (isDebugMode)
+            {
+                boundariesChecker = new SceneBoundariesDebugModeChecker();
+                boundariesChecker.timeBetweenChecks = 0f;
+            }
+            else
+            {
+                boundariesChecker = new SceneBoundariesChecker();
+            }
         }
 
         private void SetPositionDirty(DCLCharacterPosition character)
@@ -298,6 +322,8 @@ namespace DCL
 
             isDebugMode = true;
             fpsPanel.SetActive(true);
+
+            InitializeSceneBoundariesChecker();
 
             OnDebugModeSet?.Invoke();
         }

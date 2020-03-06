@@ -1,4 +1,4 @@
-import { Entity, BoxShape, engine, Vector3, Transform, Component, ISystem, Shape, GLTFShape, Animator, AnimationState, OnClick, NFTShape} from 'decentraland-ecs/src'
+import { Entity, BoxShape, engine, Vector3, Transform, Component, ISystem, Shape, GLTFShape, Animator, AnimationState, OnClick, NFTShape, Scalar} from 'decentraland-ecs/src'
 
 @Component('Movement')
 export class PathMovement {
@@ -193,3 +193,104 @@ npcVisibilityTrigger.addComponent(
   })
 )
 engine.addEntity(npcVisibilityTrigger)
+
+// Dynamically scaled platform
+@Component('ObjectScaling')
+export class ObjectScaling {
+  speed: number = 1
+  initialScale: number = 1
+  targetScale: number = 2
+  lerpTime: number = 0
+  scalingUp: boolean = true
+
+  constructor(initialScale: number, targetScale: number, speed: number) {
+    this.speed = speed
+    this.initialScale = initialScale
+    this.targetScale = targetScale
+  }
+}
+let scalingCubes = engine.getComponentGroup(ObjectScaling)
+
+export class ObjectScalingSystem implements ISystem {
+  update(dt: number) {
+    for (let cubeEntity of scalingCubes.entities) {
+      let scalingComponent = cubeEntity.getComponent(ObjectScaling)
+
+      let transform = cubeEntity.getComponent(Transform)
+
+      if (scalingComponent.speed == 0 || scalingComponent.initialScale == scalingComponent.targetScale) continue
+
+      scalingComponent.lerpTime += dt * scalingComponent.speed
+
+      let reachedDestination = scalingComponent.lerpTime >= 1
+      if (reachedDestination) {
+        scalingComponent.lerpTime = 1
+      }
+
+      let currentScale = Scalar.Lerp(
+        scalingComponent.initialScale,
+        scalingComponent.targetScale,
+        scalingComponent.lerpTime
+      )
+      transform.scale = transform.scale.normalize().scale(currentScale)
+
+      if (reachedDestination) {
+        // Invert target and initial scale when reached destination
+        scalingComponent.lerpTime = 0
+        let targetScale = scalingComponent.targetScale
+        scalingComponent.targetScale = scalingComponent.initialScale
+        scalingComponent.initialScale = targetScale
+      }
+    }
+  }
+}
+let scalingSystem = new ObjectScalingSystem()
+engine.addSystem(scalingSystem)
+
+let scalingCubeEntity = new Entity()
+engine.addEntity(scalingCubeEntity)
+scalingCubeEntity.addComponentOrReplace(new BoxShape())
+scalingCubeEntity.addComponentOrReplace(
+  new Transform({
+    position: new Vector3(8, 1, 15),
+    scale: new Vector3(2, 2, 2)
+  })
+)
+scalingCubeEntity.addComponentOrReplace(new ObjectScaling(2, 4, 1))
+
+// Rotating platform
+@Component('ObjectRotation')
+export class ObjectRotation {
+  speed: number = 1
+  rotationAxis: Vector3
+
+  constructor(speed: number, axis: Vector3) {
+    this.speed = speed
+    this.rotationAxis = axis
+  }
+}
+let rotatingCubes = engine.getComponentGroup(ObjectRotation)
+
+export class ObjectRotationSystem implements ISystem {
+  update(dt: number) {
+    for (let cubeEntity of rotatingCubes.entities) {
+      let rotationComponent = cubeEntity.getComponent(ObjectRotation)
+
+      let transform = cubeEntity.getComponent(Transform)
+      transform.rotate(rotationComponent.rotationAxis, rotationComponent.speed * dt)
+    }
+  }
+}
+let rotationSystem = new ObjectRotationSystem()
+engine.addSystem(rotationSystem)
+
+let rotatingPlatformEntity = new Entity()
+rotatingPlatformEntity.addComponentOrReplace(new BoxShape())
+rotatingPlatformEntity.addComponentOrReplace(
+  new Transform({
+    position: new Vector3(2, 1, 2),
+    scale: new Vector3(5, 0.25, 1.5)
+  })
+)
+rotatingPlatformEntity.addComponentOrReplace(new ObjectRotation(10, new Vector3(0, 1, 0)))
+engine.addEntity(rotatingPlatformEntity)
