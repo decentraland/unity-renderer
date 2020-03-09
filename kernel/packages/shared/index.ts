@@ -40,6 +40,7 @@ import { initializeUrlPositionObserver } from './world/positionThings'
 import { saveProfileRequest } from './profiles/actions'
 import { ethereumConfigurations } from 'config'
 import { tutorialStepId } from 'decentraland-loader/lifecycle/tutorial/tutorial'
+import { ENABLE_WEB3 } from '../config/index'
 
 declare const globalThis: any
 
@@ -76,11 +77,15 @@ export async function initShared(): Promise<Session | undefined> {
 
   let net: ETHEREUM_NETWORK = ETHEREUM_NETWORK.MAINNET
 
-  if (WORLD_EXPLORER) {
+  if (ENABLE_WEB3) {
     await awaitWeb3Approval()
 
-    if (await checkTldVsNetwork()) {
+    if (WORLD_EXPLORER && (await checkTldVsNetwork())) {
       return undefined
+    }
+
+    if (PREVIEW && ETHEREUM_NETWORK.MAINNET === (await getNetworkValue())) {
+      showNetworkWarning()
     }
 
     try {
@@ -258,7 +263,7 @@ async function createAuthIdentity() {
   let signer
   let hasConnectedWeb3 = false
 
-  if (WORLD_EXPLORER) {
+  if (ENABLE_WEB3) {
     const result = await providerFuture
     if (result.successful) {
       const eth = Eth.fromCurrentProvider()!
@@ -298,9 +303,14 @@ async function createAuthIdentity() {
   return identity
 }
 
-async function checkTldVsNetwork() {
+async function getNetworkValue() {
   const web3Network = await getNetwork()
   const web3Net = web3Network === '1' ? ETHEREUM_NETWORK.MAINNET : ETHEREUM_NETWORK.ROPSTEN
+  return web3Net
+}
+
+async function checkTldVsNetwork() {
+  const web3Net = await getNetworkValue()
 
   const tld = getTLD()
   const tldNet = getNetworkFromTLD()
@@ -320,4 +330,11 @@ async function checkTldVsNetwork() {
   }
 
   return false
+}
+
+function showNetworkWarning() {
+  const element = document.getElementById('network-warning')
+  if (element) {
+    element.style.display = 'block'
+  }
 }

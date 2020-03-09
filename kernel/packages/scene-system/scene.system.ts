@@ -41,7 +41,6 @@ const pbPosition: PB_Vector3 = new PB_Vector3()
 const pbRotation: PB_Quaternion = new PB_Quaternion()
 const pbScale: PB_Vector3 = new PB_Vector3()
 
-
 function resolveMapping(mapping: string | undefined, mappingName: string, baseUrl: string) {
   let url = mappingName
 
@@ -85,8 +84,8 @@ export default class GamekitScene extends Script {
   didStart = false
   provider: any = null
 
-  scenePosition:Vector2 = new Vector2()
-  parcels:Array<{ x: number; y: number }> = []
+  scenePosition: Vector2 = new Vector2()
+  parcels: Array<{ x: number; y: number }> = []
 
   constructor(transport: ScriptingTransport, opt?: ILogOpts) {
     super(transport, opt)
@@ -184,16 +183,16 @@ export default class GamekitScene extends Script {
     }
   }
 
-  calculateSceneCenter(parcels:Array<{ x: number; y: number }>) : Vector2 {
-    let center:Vector2 = new Vector2()
-    
-    parcels.forEach( (v2) => {
-      center = Vector2.Add(v2, center)
-    } )
+  calculateSceneCenter(parcels: Array<{ x: number; y: number }>): Vector2 {
+    let center: Vector2 = new Vector2()
 
-    center.x /= parcels.length 
-    center.y /= parcels.length 
-  
+    parcels.forEach(v2 => {
+      center = Vector2.Add(v2, center)
+    })
+
+    center.x /= parcels.length
+    center.y /= parcels.length
+
     return center
   }
 
@@ -209,7 +208,7 @@ export default class GamekitScene extends Script {
       }
 
       const that = this
-      
+
       const fullData = sceneData.data as LoadableParcelScene
       const sceneId = fullData.id
 
@@ -474,7 +473,7 @@ export default class GamekitScene extends Script {
       if (event.type !== 'positionChanged') {
         return
       }
-      
+
       const e = event.data as IEvents['positionChanged']
       const playerPosition = worldToGrid(e.cameraPosition)
 
@@ -485,9 +484,9 @@ export default class GamekitScene extends Script {
       const playerPos = playerPosition as Vector2
       const scenePos = this.scenePosition as Vector2
       const distanceToPlayer = Vector2.Distance(playerPos, scenePos)
-      
-      let fps:number = 1
-      const insideScene:boolean = this.parcels.some(e => e.x === playerPos.x && e.y === playerPos.y) 
+
+      let fps: number = 1
+      const insideScene: boolean = this.parcels.some(e => e.x === playerPos.x && e.y === playerPos.y)
 
       if (insideScene) {
         fps = 30

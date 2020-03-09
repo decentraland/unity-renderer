@@ -107,8 +107,6 @@ let isTheFirstLoading = true
 export let futures: Record<string, IFuture<any>> = {}
 export let hasWallet: boolean = false
 
-export let unityInterface: any
-
 const positionEvent = {
   position: Vector3.Zero(),
   quaternion: Quaternion.Identity,
@@ -372,7 +370,7 @@ export function* chunkGenerator(
   }
 }
 
-unityInterface = {
+export const unityInterface = {
   debug: false,
   SendGenericMessage(object: string, method: string, payload: string) {
     gameInstance.SendMessage(object, method, payload)
