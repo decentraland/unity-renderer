@@ -130,6 +130,7 @@ namespace DCL
             poolable.pool = this;
             poolable.gameObject = gameObject;
             PoolManager.i.poolables.Add(gameObject, poolable);
+            PoolManager.i.poolableValues.Add(poolable);
 
             if (!active)
             {
@@ -205,6 +206,7 @@ namespace DCL
             poolable.node = null;
 
             PoolManager.i.poolables.Remove(poolable.gameObject);
+            PoolManager.i.poolableValues.Remove(poolable);
 #if UNITY_EDITOR
             RefreshName();
 #endif
@@ -217,12 +219,14 @@ namespace DCL
             while (unusedObjects.Count > 0)
             {
                 PoolManager.i.poolables.Remove(unusedObjects.First.Value.gameObject);
+                PoolManager.i.poolableValues.Remove(unusedObjects.First.Value);
                 unusedObjects.RemoveFirst();
             }
 
             while (usedObjects.Count > 0)
             {
                 PoolManager.i.poolables.Remove(usedObjects.First.Value.gameObject);
+                PoolManager.i.poolableValues.Remove(usedObjects.First.Value);
                 usedObjects.RemoveFirst();
             }
 

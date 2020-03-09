@@ -17,7 +17,7 @@ namespace DCL
             var builder = new AssetBundleBuilder();
             builder.environment = ContentServerUtils.ApiEnvironment.ORG;
             builder.skipAlreadyBuiltBundles = false;
-            var zoneArray = AssetBundleBuilderUtils.GetCenteredZoneArray(new Vector2Int(13, 75), new Vector2Int(2, 2));
+            var zoneArray = Utils.GetCenteredZoneArray(new Vector2Int(13, 75), new Vector2Int(2, 2));
             builder.DumpArea(zoneArray);
         }
 
@@ -61,7 +61,7 @@ namespace DCL
         {
             var builder = new AssetBundleBuilder();
             builder.skipAlreadyBuiltBundles = true;
-            var zoneArray = AssetBundleBuilderUtils.GetCenteredZoneArray(new Vector2Int(0, 0), new Vector2Int(30, 30));
+            var zoneArray = Utils.GetCenteredZoneArray(new Vector2Int(0, 0), new Vector2Int(30, 30));
             builder.DumpArea(zoneArray);
         }
 

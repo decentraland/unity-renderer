@@ -8,7 +8,7 @@ namespace DCL
 {
     public class ParcelScenesCleaner
     {
-        const float MAX_TIME_BUDGET = 0.0025f;
+        const float MAX_TIME_BUDGET = 0.01f;
         private struct ParcelEntity
         {
             public ParcelScene scene;
@@ -39,20 +39,20 @@ namespace DCL
 
         public void MarkForCleanup(DecentralandEntity entity)
         {
-            if (!entity.markedForCleanup)
-            {
-                entity.markedForCleanup = true;
+            if (entity.markedForCleanup)
+                return;
 
-                if (entity.gameObject != null)
-                    entity.gameObject.SetActive(false);
+            entity.markedForCleanup = true;
+
+            if (entity.gameObject != null)
+                entity.gameObject.SetActive(false);
 
 #if UNITY_EDITOR
-                if (entity.gameObject != null)
-                    entity.gameObject.name += "-MARKED-FOR-CLEANUP";
+            if (entity.gameObject != null)
+                entity.gameObject.name += "-MARKED-FOR-CLEANUP";
 #endif
 
-                entitiesMarkedForCleanup.Enqueue(entity);
-            }
+            entitiesMarkedForCleanup.Enqueue(entity);
         }
 
         // When removing all entities from a scene, we need to separate the root entities, as stated in ParcelScene,
@@ -90,8 +90,6 @@ namespace DCL
 
             if (scene != null)
                 GameObject.Destroy(scene.gameObject);
-
-            PoolManager.i.CleanPoolableReferences();
         }
 
         IEnumerator CleanupEntitiesCoroutine()
@@ -137,8 +135,6 @@ namespace DCL
 
                 if (scene != null)
                     GameObject.Destroy(scene.gameObject);
-
-                PoolManager.i.CleanPoolableReferences();
 
                 yield return null;
             }
