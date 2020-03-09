@@ -46,6 +46,7 @@ namespace DCL
         {
             OnPreFinishEvent = null;
             CallAndClearEvents(false);
+            state = AssetPromiseState.IDLE_AND_EMPTY;
         }
 
         internal void SetWaitingState()

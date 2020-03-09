@@ -45,15 +45,28 @@ namespace DCL.Components
         AssetPromise_AB_GameObject abPromise;
 
 #if UNITY_EDITOR
-        public void DebugLoadCount()
+        public override string ToString()
         {
             float loadTime = Mathf.Min(loadFinishTime, Time.realtimeSinceStartup) - loadStartTime;
 
+            string result = "not loading";
+
             if (gltfPromise != null)
-                Debug.Log($"promise state = {gltfPromise.state} ({loadTime} load time)... waiting promises = {AssetPromiseKeeper_GLTF.i.waitingPromisesCount}");
+            {
+                result = $"promise state = {gltfPromise.state} ({loadTime} load time)... waiting promises = {AssetPromiseKeeper_GLTF.i.waitingPromisesCount}";
+
+                if (gltfPromise.state == AssetPromiseState.WAITING)
+                {
+                    result += $"\nmaster promise state... is blocked... {AssetPromiseKeeper_GLTF.i.GetMasterState(gltfPromise)}";
+                }
+            }
 
             if (abPromise != null)
-                Debug.Log($"promise state = {abPromise.state} ({loadTime} load time)... waiting promises = {AssetPromiseKeeper_AB.i.waitingPromisesCount}");
+            {
+                result = $"promise state = {abPromise.state} ({loadTime} load time)... waiting promises = {AssetPromiseKeeper_AB.i.waitingPromisesCount}";
+            }
+
+            return result;
         }
 
         float loadStartTime = 0;

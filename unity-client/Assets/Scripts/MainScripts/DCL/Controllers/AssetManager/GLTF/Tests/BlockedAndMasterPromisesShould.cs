@@ -93,6 +93,8 @@ namespace AssetPromiseKeeper_GLTF_Tests
             Assert.AreEqual(3, keeper.waitingPromisesCount);
 
             yield return prom;
+            yield return prom2;
+            yield return prom3;
 
             Assert.AreNotEqual(AssetPromiseState.FINISHED, prom.state);
             Assert.AreNotEqual(AssetPromiseState.FINISHED, prom2.state);
