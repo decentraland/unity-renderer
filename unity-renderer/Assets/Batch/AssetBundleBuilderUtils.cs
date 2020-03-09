@@ -19,36 +19,6 @@ namespace DCL
 
     public static class AssetBundleBuilderUtils
     {
-        public static List<Vector2Int> GetBottomLeftZoneArray(Vector2Int bottomLeftAnchor, Vector2Int size)
-        {
-            List<Vector2Int> coords = new List<Vector2Int>();
-
-            for (int x = bottomLeftAnchor.x; x < bottomLeftAnchor.x + size.x; x++)
-            {
-                for (int y = bottomLeftAnchor.y; y < bottomLeftAnchor.y + size.y; y++)
-                {
-                    coords.Add(new Vector2Int(x, y));
-                }
-            }
-
-            return coords;
-        }
-
-        public static List<Vector2Int> GetCenteredZoneArray(Vector2Int center, Vector2Int size)
-        {
-            List<Vector2Int> coords = new List<Vector2Int>();
-
-            for (int x = center.x - size.x; x < center.x + size.x; x++)
-            {
-                for (int y = center.y - size.y; y < center.y + size.y; y++)
-                {
-                    coords.Add(new Vector2Int(x, y));
-                }
-            }
-
-            return coords;
-        }
-
         internal static bool ParseOption(string[] fullCmdArgs, string optionName, int argsQty, out string[] foundArgs)
         {
             return ParseOptionExplicit(fullCmdArgs, optionName, argsQty, out foundArgs);

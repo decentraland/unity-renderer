@@ -7,7 +7,7 @@ namespace DCL.Controllers
 {
     public class BlockerHandler
     {
-        private readonly Dictionary<(int, int), PoolableObject> blockers = new Dictionary<(int, int), PoolableObject>();
+        private List<PoolableObject> blockers = new List<PoolableObject>();
 
         private static GameObject blockerPrefab;
         const string PARCEL_BLOCKER_POOL_NAME = "ParcelBlocker";
@@ -41,11 +41,9 @@ namespace DCL.Controllers
         }
 
 
-        public void SetupBlockers(Vector2Int[] parcels, float height, Transform parent)
+        public void SetupBlockers(HashSet<Vector2Int> parcels, float height, Transform parent)
         {
             CleanBlockers();
-
-            int parcelsLength = parcels.Length;
 
             auxScaleVec.x = ParcelSettings.PARCEL_SIZE;
             auxScaleVec.y = height;
@@ -55,53 +53,57 @@ namespace DCL.Controllers
 
             float centerOffset = ParcelSettings.PARCEL_SIZE / 2;
 
-            for (int i = 0; i < parcelsLength; i++)
+            using (var it = parcels.GetEnumerator())
             {
-                Vector2Int pos = parcels[i];
-
-                bool isSurrounded = true;
-
-                for (int i1 = 0; i1 < aroundOffsets.Length; i1++)
+                while (it.MoveNext())
                 {
-                    Vector2Int o = aroundOffsets[i1];
+                    Vector2Int pos = it.Current;
 
-                    if (!blockers.ContainsKey((pos.x + o.x, pos.y + o.y)))
+                    bool isSurrounded = true;
+
+                    for (int i1 = 0; i1 < aroundOffsets.Length; i1++)
                     {
-                        isSurrounded = false;
-                        break;
+                        Vector2Int o = aroundOffsets[i1];
+
+                        if (!parcels.Contains(new Vector2Int(pos.x + o.x, pos.y + o.y)))
+                        {
+                            isSurrounded = false;
+                            break;
+                        }
                     }
+
+                    if (isSurrounded)
+                        continue;
+
+                    PoolableObject blockerPoolable = PoolManager.i.Get(PARCEL_BLOCKER_POOL_NAME);
+                    Transform blockerTransform = blockerPoolable.gameObject.transform;
+
+                    blockerTransform.SetParent(parent, false);
+
+                    if (DCLCharacterController.i != null)
+                        blockerTransform.position = DCLCharacterController.i.characterPosition.WorldToUnityPosition(Utils.GridToWorldPosition(pos.x, pos.y));
+                    else
+                        blockerTransform.position = Utils.GridToWorldPosition(pos.x, pos.y);
+
+                    auxPosVec.x = blockerTransform.position.x + centerOffset;
+                    auxPosVec.z = blockerTransform.position.z + centerOffset;
+
+                    blockerTransform.position = auxPosVec;
+                    blockerTransform.localScale = auxScaleVec;
+
+                    blockers.Add(blockerPoolable);
                 }
-
-                if (isSurrounded)
-                    continue;
-
-                PoolableObject blocker = PoolManager.i.Get(PARCEL_BLOCKER_POOL_NAME);
-                Transform blockerTransform = blocker.gameObject.transform;
-
-                blockerTransform.SetParent(parent, false);
-                blockerTransform.position = DCLCharacterController.i.characterPosition.WorldToUnityPosition(Utils.GridToWorldPosition(pos.x, pos.y));
-
-                auxPosVec.x = blockerTransform.position.x + centerOffset;
-                auxPosVec.z = blockerTransform.position.z + centerOffset;
-
-                blockerTransform.position = auxPosVec;
-                blockerTransform.localScale = auxScaleVec;
-
-                blockers.Add((pos.x, pos.y), blocker);
             }
         }
 
         public void CleanBlockers()
         {
-            using (var it = blockers.GetEnumerator())
+            for (int i = 0; i < blockers.Count; i++)
             {
-                while (it.MoveNext())
-                {
-                    it.Current.Value.Release();
-                }
+                blockers[i].Release();
             }
 
-            blockers.Clear();
+            blockers = new List<PoolableObject>();
         }
     }
 }
