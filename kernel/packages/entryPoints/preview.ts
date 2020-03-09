@@ -1,19 +1,20 @@
-// tslint:disable:no-console
-declare var global: any
-declare var window: any
+declare const global: any & StoreContainer
+declare const window: any
 
-global['preview'] = window['preview'] = true
-global['enableWeb3'] = window['enableWeb3']
+// IMPORTANT! This should be execd before loading 'config' module to ensure that init values are successfully loaded
+global.preview = window.preview = true
+global.enableWeb3 = window.enableWeb3
 
-import { initializeUnity } from '../unity-interface/initializer'
-import { loadPreviewScene, unityInterface } from '../unity-interface/dcl'
-import { DEBUG_WS_MESSAGES } from '../config'
+import { initializeUnity } from 'unity-interface/initializer'
+import { loadPreviewScene, unityInterface } from 'unity-interface/dcl'
+import { DEBUG_WS_MESSAGES } from 'config'
 import defaultLogger from 'shared/logger'
-import { future, IFuture } from 'fp-future'
 import { ILand } from 'shared/types'
 import { pickWorldSpawnpoint } from 'shared/world/positionThings'
-import { sceneLifeCycleObservable } from 'decentraland-loader/lifecycle/controllers/scene'
 import { signalRendererInitialized } from 'shared/renderer/actions'
+import { StoreContainer } from 'shared/store/rootTypes'
+import { future, IFuture } from 'fp-future'
+import { sceneLifeCycleObservable } from 'decentraland-loader/lifecycle/controllers/scene'
 
 // Remove the 'dcl-loading' class, used until JS loads.
 document.body.classList.remove('dcl-loading')
@@ -36,22 +37,22 @@ function startPreviewWatcher() {
       })
       .catch(err => {
         isSceneLoading = false
-        console.error('Error loading scene')
-        console.error(err)
+        defaultLogger.error('Error loading scene', err)
+        defaultScene.reject(err)
       })
   }
 
   loadScene()
 
-  global['handleServerMessage'] = function(message: any) {
+  global.handleServerMessage = function(message: any) {
     if (message.type === 'update') {
       if (DEBUG_WS_MESSAGES) {
-        console.log('Message received: ', message)
+        defaultLogger.info('Message received: ', message)
       }
       // if a scene is currently loading we do not trigger another load
       if (isSceneLoading) {
         if (DEBUG_WS_MESSAGES) {
-          console.log('Ignoring message, scene still loading...')
+          defaultLogger.trace('Ignoring message, scene still loading...')
         }
         return
       }
@@ -83,7 +84,7 @@ initializeUnity(container)
     i.ConfigureSettingsHUD({ active: true, visible: false })
     i.ConfigureAirdroppingHUD({ active: true, visible: true })
 
-    global['globalStore'].dispatch(signalRendererInitialized())
+    global.globalStore.dispatch(signalRendererInitialized())
 
     const renderable = sceneRenderable()
 

@@ -1,3 +1,9 @@
+declare const globalThis: { UnityLoader: any } & StoreContainer
+declare const global: any
+
+// IMPORTANT! This should be execd before loading 'config' module to ensure that init values are successfully loaded
+global.enableWeb3 = true
+
 import { ReportFatalError } from 'shared/loading/ReportFatalError'
 import { experienceStarted, NOT_INVITED, AUTH_ERROR_LOGGED_OUT, FAILED_FETCHING_UNITY } from 'shared/loading/types'
 import { worldToGrid } from '../atomicHelpers/parcelScenePositions'
@@ -10,8 +16,6 @@ import { hasWallet, startUnityParcelLoading, unityInterface } from '../unity-int
 import { initializeUnity } from '../unity-interface/initializer'
 
 const container = document.getElementById('gameContainer')
-
-declare const globalThis: { UnityLoader: any } & StoreContainer
 
 if (!container) throw new Error('cannot find element #gameContainer')
 

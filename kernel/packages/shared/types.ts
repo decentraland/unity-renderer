@@ -340,8 +340,8 @@ export type Notification = {
   message: string
   buttonMessage: string
   timer: number // in seconds
-  scene: string
-  externalCallbackID: string
+  scene?: string
+  externalCallbackID?: string
 }
 
 export type HUDConfiguration = {
