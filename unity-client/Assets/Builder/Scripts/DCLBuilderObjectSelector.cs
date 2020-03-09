@@ -7,7 +7,7 @@ namespace Builder
 {
     public class DCLBuilderObjectSelector : MonoBehaviour
     {
-        const float MAX_SECS_FOR_CLICK = 0.25f;
+        const float DRAGGING_THRESHOLD_TIME = 0.25f;
 
         public DCLBuilderRaycast builderRaycast;
         public DCLBuilderGizmoManager gizmosManager;
@@ -28,7 +28,7 @@ namespace Builder
 
         private Dictionary<string, DCLBuilderEntity> entities = new Dictionary<string, DCLBuilderEntity>();
         private List<DCLBuilderEntity> selectedEntities = new List<DCLBuilderEntity>();
-        private EntityPressedInfo entityEnqueueForDeselectInfo = new EntityPressedInfo();
+        private EntityPressedInfo lastPressedEntityInfo = new EntityPressedInfo();
         private bool isDirty = false;
         private bool isSelectionTransformed = false;
 
@@ -127,14 +127,7 @@ namespace Builder
 
                     if (pressedEntity != null && CanSelect(pressedEntity))
                     {
-                        if (SelectionParentHasChild(pressedEntity.transform))
-                        {
-                            EnqueueEntityForDeselect(pressedEntity, hit.point);
-                        }
-                        else
-                        {
-                            ProcessEntityPressed(pressedEntity, hit.point);
-                        }
+                        SetLastPressedEntity(pressedEntity, hit.point);
                         OnEntityPressed?.Invoke(pressedEntity, hit.point);
                     }
                 }
@@ -152,16 +145,18 @@ namespace Builder
             {
                 return;
             }
-            if (entityEnqueueForDeselectInfo.pressedEntity != null)
+            if (lastPressedEntityInfo.pressedEntity != null)
             {
-                if ((Time.unscaledTime - entityEnqueueForDeselectInfo.pressedTime) < MAX_SECS_FOR_CLICK)
+                // NOTE: we only process entity as selected if we are not considering that user was holding mouse button to rotate the camera
+                if ((Time.unscaledTime - lastPressedEntityInfo.pressedTime) < DRAGGING_THRESHOLD_TIME)
                 {
-                    ProcessEntityPressed(entityEnqueueForDeselectInfo.pressedEntity, entityEnqueueForDeselectInfo.hitPoint);
+                    ProcessEntityPressed(lastPressedEntityInfo.pressedEntity, lastPressedEntityInfo.hitPoint);
                 }
             }
-            entityEnqueueForDeselectInfo.pressedEntity = null;
+            lastPressedEntityInfo.pressedEntity = null;
 
-            if (groundClickTime != 0 && (Time.unscaledTime - groundClickTime) < MAX_SECS_FOR_CLICK)
+            // NOTE: deselect all entities if the user click on the ground and it wasn't holding the mouse left button
+            if (groundClickTime != 0 && (Time.unscaledTime - groundClickTime) < DRAGGING_THRESHOLD_TIME)
             {
                 if (selectedEntities != null)
                 {
@@ -321,11 +316,11 @@ namespace Builder
             gameObject.SetActive(!isPreview);
         }
 
-        private void EnqueueEntityForDeselect(DCLBuilderEntity pressedEntity, Vector3 hitPoint)
+        private void SetLastPressedEntity(DCLBuilderEntity pressedEntity, Vector3 hitPoint)
         {
-            entityEnqueueForDeselectInfo.pressedEntity = pressedEntity;
-            entityEnqueueForDeselectInfo.pressedTime = Time.unscaledTime;
-            entityEnqueueForDeselectInfo.hitPoint = hitPoint;
+            lastPressedEntityInfo.pressedEntity = pressedEntity;
+            lastPressedEntityInfo.pressedTime = Time.unscaledTime;
+            lastPressedEntityInfo.hitPoint = hitPoint;
         }
 
         private void ProcessEntityPressed(DCLBuilderEntity pressedEntity, Vector3 hitPoint)
