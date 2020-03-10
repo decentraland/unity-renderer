@@ -13,7 +13,7 @@ export function profileToRendererFormat(profile: Profile, identity?: ExplorerIde
   return {
     ...profileDefaults,
     ...profile,
-    snapshots,
+    snapshots: snapshots ?? profile.snapshots,
     hasConnectedWeb3: identity ? identity.hasConnectedWeb3 : false,
     avatar: {
       ...rendererAvatar,

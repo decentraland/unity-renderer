@@ -307,11 +307,12 @@ export function* submitProfileToRenderer(action: ProfileSuccessAction): any {
   }
 }
 
-export function* sendLoadProfile(profile: Profile) {
+function* sendLoadProfile(profile: Profile) {
   while (!(yield select(baseCatalogsLoaded))) {
     yield take(CATALOG_LOADED)
   }
-  globalThis.unityInterface.LoadProfile(profileToRendererFormat(profile, identity))
+  const rendererFormat = profileToRendererFormat(profile, identity)
+  globalThis.unityInterface.LoadProfile(rendererFormat)
 }
 
 export function* handleFetchInventory(action: InventoryRequest) {
