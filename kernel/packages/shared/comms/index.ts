@@ -592,12 +592,10 @@ export async function connect(userId: string) {
             // if any error occurs
             return identity
           },
-          logLevel: 'NONE',
-          positionConfig: {
-            selfPosition: () => {
-              if (context && context.currentPosition) {
-                return context.currentPosition.slice(0, 3)
-              }
+          parcelGetter: () => {
+            if (context && context.currentPosition) {
+              const parcel = position2parcel(context.currentPosition)
+              return [parcel.x, parcel.z]
             }
           }
         }
