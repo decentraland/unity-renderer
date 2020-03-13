@@ -1114,16 +1114,7 @@ namespace DCL.Controllers
 
                             foreach (var entity in component.attachedEntities)
                             {
-                                var loader = LoadableShape.GetLoaderForEntity(entity);
-
-                                string loadInfo = "No loader";
-
-                                if (loader != null)
-                                {
-                                    loadInfo = loader.ToString();
-                                }
-
-                                Debug.Log($"This shape is attached to {entity.entityId} entity. Click here for highlight it.\nLoading info: {loadInfo}", entity.gameObject);
+                                Debug.Log($"This shape is attached to {entity.entityId} entity. Click here for highlight it.", entity.gameObject);
                             }
                         }
                         else

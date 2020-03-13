@@ -10,6 +10,14 @@ namespace DCL.Components
         static readonly bool VERBOSE = false;
         RendereableAssetLoadHelper loadHelper;
 
+#if UNITY_EDITOR
+        [ContextMenu("Debug Load Count")]
+        public void DebugLoadCount()
+        {
+            loadHelper?.DebugLoadCount();
+        }
+#endif
+
         public override void Load(string targetUrl, Action<LoadWrapper> OnSuccess, Action<LoadWrapper> OnFail)
         {
             if (loadHelper != null)
@@ -66,11 +74,6 @@ namespace DCL.Components
         {
             loadHelper.Unload();
             this.entity.OnCleanupEvent -= OnEntityCleanup;
-        }
-
-        public override string ToString()
-        {
-            return $"LoadWrapper_GLTF ... {loadHelper.ToString()}";
         }
     }
 }

@@ -1,4 +1,4 @@
-using DCL;
+﻿using DCL;
 using System.Collections;
 using UnityEngine;
 using UnityEngine.Assertions;
@@ -116,8 +116,6 @@ namespace AssetPromiseKeeper_Mock_Tests
             keeper.Forget(prom);
 
             yield return prom;
-            yield return prom2;
-            yield return prom3;
 
             Assert.AreEqual(AssetPromiseState.FINISHED, prom.state);
             Assert.AreEqual(AssetPromiseState.FINISHED, prom2.state);
@@ -166,9 +164,7 @@ namespace AssetPromiseKeeper_Mock_Tests
 
             Assert.AreEqual(3, keeper.waitingPromisesCount);
 
-            yield return prom;
-            yield return prom2;
-            yield return prom3;
+            yield return new WaitForSeconds(prom.loadTime);
 
             Assert.AreEqual(AssetPromiseState.FINISHED, prom.state);
             Assert.AreEqual(AssetPromiseState.FINISHED, prom2.state);
