@@ -180,6 +180,10 @@ export class LighthouseWorldInstanceConnection implements WorldInstanceConnectio
   private initializePeer() {
     this.statusHandler({ status: 'connecting', connectedPeers: this.connectedPeersCount() })
     this.peer = this.createPeer()
+    // @ts-ignore
+    this.peer.log = () => {
+      // DO NOTHING
+    }
     global.__DEBUG_PEER = this.peer
     return this.peer
   }
@@ -197,7 +201,6 @@ export class LighthouseWorldInstanceConnection implements WorldInstanceConnectio
         this.statusHandler({ status, connectedPeers: this.connectedPeersCount() })
       }
     }
-
     return new Peer(this.lighthouseUrl, this.peerId, this.peerCallback, this.peerConfig)
   }
 
@@ -213,9 +216,10 @@ export class LighthouseWorldInstanceConnection implements WorldInstanceConnectio
           this.chatHandler(sender, createPackage(commsMessage, 'chat', mapToPackageChat(commsMessage.getChatData()!)))
           break
         case CommsMessage.DataCase.POSITION_DATA:
-          const positionMessage = mapToPositionMessage(commsMessage.getPositionData()!)
-          this.peer.setPeerPosition(sender, positionMessage.slice(0, 3))
-          this.positionHandler(sender, createPackage(commsMessage, 'position', positionMessage))
+          this.positionHandler(
+            sender,
+            createPackage(commsMessage, 'position', mapToPositionMessage(commsMessage.getPositionData()!))
+          )
           break
         case CommsMessage.DataCase.SCENE_DATA:
           this.sceneMessageHandler(
