@@ -99,6 +99,9 @@ export async function fetchCatalystNodes(): Promise<CatalystNode[]> {
       node.domain = 'https://' + node.domain
     }
 
+    // trim url in case it starts/ends with a blank
+    node.domain = node.domain.trim()
+
     nodes.push(node)
   }
 
