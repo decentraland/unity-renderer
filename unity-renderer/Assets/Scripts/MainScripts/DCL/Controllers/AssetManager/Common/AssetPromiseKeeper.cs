@@ -1,9 +1,13 @@
-using System.Collections;
+﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
 namespace DCL
 {
+    public class AssetPromiseKeeper
+    {
+        public static float PROCESS_PROMISES_TIME_BUDGET = 0.006f;
+    }
     /// <summary>
     /// The AssetPromiseKeeper is the user entry point interface.
     /// It manages stuff like requesting something that's already being loaded, etc.
@@ -19,8 +23,6 @@ namespace DCL
         where AssetLibraryType : AssetLibrary<AssetType>, new()
         where AssetPromiseType : AssetPromise<AssetType>
     {
-        const float PROCESS_PROMISES_TIME_BUDGET = 0.0025f;
-
         private static AssetPromiseKeeper<AssetType, AssetLibraryType, AssetPromiseType> instance;
         public static AssetPromiseKeeper<AssetType, AssetLibraryType, AssetPromiseType> i
         {
@@ -51,7 +53,29 @@ namespace DCL
         //NOTE(Brian): Master promise id -> blocked promises HashSet
         Dictionary<object, HashSet<AssetPromiseType>> masterToBlockedPromises = new Dictionary<object, HashSet<AssetPromiseType>>(100);
 
+        public bool useTimeBudget = true;
+        float startTime;
 
+        public bool IsBlocked(AssetPromiseType promise)
+        {
+            return blockedPromises.Contains(promise);
+        }
+
+        public string GetMasterState(AssetPromiseType promise)
+        {
+            object promiseId = promise.GetId();
+
+            if (!masterToBlockedPromises.ContainsKey(promiseId))
+                return "Master not found";
+
+            if (!masterToBlockedPromises[promiseId].Contains(promise))
+                return "Promise is not blocked???";
+
+            if (!masterPromiseById.ContainsKey(promiseId))
+                return "not registered as master?";
+
+            return $"master state = {masterPromiseById[promiseId].state}";
+        }
 
         public AssetPromiseKeeper(AssetLibraryType library)
         {
@@ -135,116 +159,149 @@ namespace DCL
             return promise;
         }
 
-        Queue<AssetPromise<AssetType>> blockedPromisesQueue = new Queue<AssetPromise<AssetType>>();
-        public bool useBlockedPromisesQueue = false;
+        Queue<AssetPromiseType> toResolveBlockedPromisesQueue = new Queue<AssetPromiseType>();
 
-        private void OnRequestCompleted(AssetPromise<AssetType> promise)
+        private void OnRequestCompleted(AssetPromise<AssetType> loadedPromise)
         {
-            if (useBlockedPromisesQueue)
+            object id = loadedPromise.GetId();
+
+            if (!masterToBlockedPromises.ContainsKey(id) || !masterPromiseById.ContainsKey(id))
             {
-                blockedPromisesQueue.Enqueue(promise);
+                CleanPromise(loadedPromise);
+                return;
             }
-            else
-            {
-                ProcessBlockedPromises(promise);
-                CleanPromise(promise);
-            }
+
+            toResolveBlockedPromisesQueue.Enqueue(loadedPromise as AssetPromiseType);
         }
 
         IEnumerator ProcessBlockedPromisesQueue()
         {
-            float start = Time.unscaledTime;
+            startTime = Time.unscaledTime;
+
             while (true)
             {
-                while (blockedPromisesQueue.Count > 0)
+                if (toResolveBlockedPromisesQueue.Count <= 0)
                 {
-                    AssetPromise<AssetType> promise = blockedPromisesQueue.Dequeue();
-
-                    ProcessBlockedPromises(promise);
-                    CleanPromise(promise);
-
-                    if (Time.realtimeSinceStartup - start >= PROCESS_PROMISES_TIME_BUDGET)
-                    {
-                        yield return null;
-                        start = Time.unscaledTime;
-                    }
+                    yield return null;
+                    continue;
                 }
-                yield return null;
 
-                start = Time.unscaledTime;
+                AssetPromiseType promise = toResolveBlockedPromisesQueue.Dequeue();
+                yield return ProcessBlockedPromisesDeferred(promise);
+                CleanPromise(promise);
+
+                var enumerator = SkipFrameIfOverBudget();
+
+                if (enumerator != null)
+                    yield return enumerator;
             }
         }
-
-        private void ProcessBlockedPromises(AssetPromise<AssetType> loadedPromise)
+        private IEnumerator ProcessBlockedPromisesDeferred(AssetPromiseType loadedPromise)
         {
             object loadedPromiseId = loadedPromise.GetId();
 
             if (!masterToBlockedPromises.ContainsKey(loadedPromiseId))
-                return;
+                yield break;
 
             if (!masterPromiseById.ContainsKey(loadedPromiseId))
-                return;
+                yield break;
 
             if (masterPromiseById[loadedPromiseId] != loadedPromise)
-                return;
+            {
+                Debug.LogWarning($"Unexpected issue: masterPromiseById promise isn't the same as loaded promise? id: {loadedPromiseId} (can be harmless)");
+                yield break;
+            }
 
-            if (loadedPromise.state != AssetPromiseState.FINISHED)
-                ForgetBlockedPromises(loadedPromiseId);
-            else
-                LoadBlockedPromises(loadedPromiseId);
+            //NOTE(Brian): We have to keep checking to support the case in which
+            //             new promises are enqueued while this promise ID is being
+            //             resolved.
+            while (masterToBlockedPromises.ContainsKey(loadedPromiseId) &&
+                   masterToBlockedPromises[loadedPromiseId].Count > 0)
+            {
+                List<AssetPromiseType> blockedPromises = GetBlockedPromisesToLoadForId(loadedPromiseId);
+
+                var enumerator = SkipFrameIfOverBudget();
+
+                if (enumerator != null)
+                    yield return enumerator;
+
+                CleanPromise(loadedPromise);
+
+                if (loadedPromise.state != AssetPromiseState.FINISHED)
+                    yield return ForceFailPromiseList(blockedPromises);
+                else
+                    yield return LoadPromisesList(blockedPromises);
+
+                enumerator = SkipFrameIfOverBudget();
+
+                if (enumerator != null)
+                    yield return enumerator;
+            }
 
             if (masterToBlockedPromises.ContainsKey(loadedPromiseId))
                 masterToBlockedPromises.Remove(loadedPromiseId);
         }
 
-        private void ForgetBlockedPromises(object loadedPromiseId)
+
+        private IEnumerator SkipFrameIfOverBudget()
         {
-            List<AssetPromiseType> blockedPromisesToForget = new List<AssetPromiseType>();
-
-            using (var iterator = masterToBlockedPromises[loadedPromiseId].GetEnumerator())
+            if (useTimeBudget && Time.realtimeSinceStartup - startTime >= AssetPromiseKeeper.PROCESS_PROMISES_TIME_BUDGET)
             {
-                while (iterator.MoveNext())
-                {
-                    var blockedPromise = iterator.Current;
-                    blockedPromisesToForget.Add(blockedPromise);
-                }
-            }
-
-            int blockedPromisesToForgetCount = blockedPromisesToForget.Count;
-
-            for (int i = 0; i < blockedPromisesToForgetCount; i++)
-            {
-                var promise = blockedPromisesToForget[i];
-                promise.ForceFail();
-                Forget(promise);
+                yield return null;
+                startTime = Time.unscaledTime;
             }
         }
-
-        private void LoadBlockedPromises(object loadedPromiseId)
+        private List<AssetPromiseType> GetBlockedPromisesToLoadForId(object masterPromiseId)
         {
-            List<AssetPromiseType> blockedPromisesToLoad = new List<AssetPromiseType>();
+            var blockedPromisesToLoadAux = new List<AssetPromiseType>();
 
-            using (var iterator = masterToBlockedPromises[loadedPromiseId].GetEnumerator())
+            using (var iterator = masterToBlockedPromises[masterPromiseId].GetEnumerator())
             {
                 while (iterator.MoveNext())
                 {
                     var blockedPromise = iterator.Current;
 
-                    if (blockedPromise.state == AssetPromiseState.WAITING)
-                        blockedPromisesToLoad.Add(blockedPromise);
-
+                    blockedPromisesToLoadAux.Add(blockedPromise);
                     blockedPromises.Remove(blockedPromise);
                 }
             }
 
-            int blockedPromisesToLoadCount = blockedPromisesToLoad.Count;
+            return blockedPromisesToLoadAux;
+        }
 
-            for (int i = 0; i < blockedPromisesToLoadCount; i++)
+        private IEnumerator ForceFailPromiseList(List<AssetPromiseType> promises)
+        {
+            int promisesCount = promises.Count;
+
+            for (int i = 0; i < promisesCount; i++)
             {
-                AssetPromiseType promise = blockedPromisesToLoad[i];
+                var promise = promises[i];
+                promise.ForceFail();
+                Forget(promise);
+                CleanPromise(promise);
+
+                IEnumerator enumerator = SkipFrameIfOverBudget();
+
+                if (enumerator != null)
+                    yield return enumerator;
+            }
+        }
+
+        private IEnumerator LoadPromisesList(List<AssetPromiseType> promises)
+        {
+            int promisesCount = promises.Count;
+
+            for (int i = 0; i < promisesCount; i++)
+            {
+                AssetPromiseType promise = promises[i];
                 promise.library = library;
-                promise.OnPreFinishEvent += CleanPromise;
+                CleanPromise(promise);
                 promise.Load();
+
+                var enumerator = SkipFrameIfOverBudget();
+
+                if (enumerator != null)
+                    yield return enumerator;
             }
         }
 
@@ -274,10 +331,11 @@ namespace DCL
 
         public void Cleanup()
         {
-            blockedPromises.Clear();
-            masterToBlockedPromises.Clear();
+            blockedPromises = new List<AssetPromiseType>();
+            masterToBlockedPromises = new Dictionary<object, HashSet<AssetPromiseType>>();
 
             int waitingPromisesCount = waitingPromises.Count;
+
             for (int i = 0; i < waitingPromisesCount; i++)
             {
                 waitingPromises[i].Cleanup();
@@ -288,8 +346,8 @@ namespace DCL
                 kvp.Value.Cleanup();
             }
 
-            masterPromiseById.Clear();
-            waitingPromises.Clear();
+            masterPromiseById = new Dictionary<object, AssetPromiseType>();
+            waitingPromises = new List<AssetPromiseType>();
             library.Cleanup();
         }
 

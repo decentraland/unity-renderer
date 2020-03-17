@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections;
 using System.Linq;
 using DCL.Helpers;
@@ -76,6 +76,15 @@ namespace DCL
                 GameObject.Destroy(asset.container);
 
             AssetPromiseKeeper_AB.i.Forget(subPromise);
+        }
+
+
+        public override string ToString()
+        {
+            if (subPromise != null)
+                return $"{subPromise.ToString()} ... AB_GameObject state = {state}";
+            else
+                return $"subPromise == null? state = {state}";
         }
 
         public IEnumerator LoadingCoroutine(Action OnSuccess, Action OnFail)
