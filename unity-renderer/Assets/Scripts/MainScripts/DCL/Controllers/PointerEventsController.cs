@@ -62,8 +62,7 @@ namespace DCL
                 return;
             }
 
-            var raycastHandlerTarget = hitInfo.transform.GetComponent<IRaycastPointerHandler>();
-
+            var raycastHandlerTarget = hitInfo.collider.GetComponent<IRaycastPointerHandler>();
             if (raycastHandlerTarget != null)
             {
                 ResolveGenericRaycastHandlers(raycastHandlerTarget);
@@ -72,13 +71,11 @@ namespace DCL
             }
 
             if (!CollidersManager.i.GetColliderInfo(hitInfo.collider, out ColliderInfo info))
-            {
-                UnhoverLastHoveredObject();
-                return;
-            }
+                newHoveredEvent = hitInfo.collider.GetComponentInChildren<OnPointerEvent>();
+            else
+                newHoveredEvent = info.entity.gameObject.GetComponentInChildren<OnPointerEvent>();
 
             clickHandler = null;
-            newHoveredEvent = info.entity.gameObject.GetComponentInChildren<OnPointerEvent>();
 
             if (newHoveredEvent == null || !newHoveredEvent.IsAtHoverDistance(DCLCharacterController.i.transform))
             {
@@ -291,14 +288,15 @@ namespace DCL
             {
                 Collider collider = raycastInfoPointerEventLayer.hitInfo.hit.collider;
 
+                GameObject hitGameObject;
                 if (CollidersManager.i.GetColliderInfo(collider, out ColliderInfo info))
-                {
-                    var go = info.entity.gameObject;
+                    hitGameObject = info.entity.gameObject;
+                else
+                    hitGameObject = collider.gameObject;
 
-                    go.GetComponentInChildren<OnClick>()?.Report(buttonId, raycastInfoPointerEventLayer.hitInfo.hit);
-                    go.GetComponentInChildren<OnPointerDown>()?.Report(buttonId, ray, raycastInfoPointerEventLayer.hitInfo.hit);
-                    pointerUpEvent = go.GetComponentInChildren<OnPointerUp>();
-                }
+                hitGameObject.GetComponentInChildren<OnClick>()?.Report(buttonId, raycastInfoPointerEventLayer.hitInfo.hit);
+                hitGameObject.GetComponentInChildren<OnPointerDown>()?.Report(buttonId, ray, raycastInfoPointerEventLayer.hitInfo.hit);
+                pointerUpEvent = hitGameObject.GetComponentInChildren<OnPointerUp>();
 
                 lastPointerDownEventHitInfo = raycastInfoPointerEventLayer.hitInfo;
             }

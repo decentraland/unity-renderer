@@ -1,4 +1,6 @@
 using DCL.Components;
+using DCL.Controllers;
+using DCL.Interface;
 using System.Collections;
 using UnityEngine;
 
@@ -12,7 +14,7 @@ namespace DCL
         public AvatarRenderer avatarRenderer;
         public AvatarMovementController avatarMovementController;
         [SerializeField] internal GameObject minimapRepresentation;
-        [SerializeField] private RaycastPointerClickProxy clickProxy;
+        [SerializeField] private AvatarOnPointerDown onPointerDown;
         private StringVariable currentPlayerInfoCardName;
 
         private string currentSerialization = "";
@@ -27,7 +29,17 @@ namespace DCL
             if (string.IsNullOrEmpty(currentSerialization))
                 SetMinimapRepresentationActive(false);
 
-            clickProxy.OnClick += PlayerClicked;
+            onPointerDown.OnPointerDownReport += PlayerClicked;
+        }
+
+        void Start()
+        {
+            onPointerDown.Setup(scene, entity, new OnPointerDown.Model()
+            {
+                type = OnPointerDown.NAME,
+                button = WebInterface.ACTION_BUTTON.POINTER.ToString(),
+                hoverText = "view profile"
+            });
         }
 
         private void PlayerClicked()
@@ -37,7 +49,7 @@ namespace DCL
 
         void OnDestroy()
         {
-            clickProxy.OnClick -= PlayerClicked;
+            onPointerDown.OnPointerDownReport -= PlayerClicked;
             if (entity != null)
                 entity.OnTransformChange = null;
         }
@@ -47,7 +59,6 @@ namespace DCL
             //NOTE(Brian): Horrible fix to the double ApplyChanges call, as its breaking the needed logic.
             if (newJson == "{}")
                 yield break;
-
 
             if (entity != null && entity.OnTransformChange == null)
             {

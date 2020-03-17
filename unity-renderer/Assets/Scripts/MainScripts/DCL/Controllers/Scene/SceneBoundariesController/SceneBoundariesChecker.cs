@@ -151,6 +151,8 @@ namespace DCL.Controllers
 
         protected virtual void UpdateEntityMeshesValidState(DecentralandEntity entity, bool isInsideBoundaries, Bounds meshBounds)
         {
+            if (entity.meshesInfo.renderers[0] == null) return;
+
             if (isInsideBoundaries != entity.meshesInfo.renderers[0].enabled && entity.meshesInfo.currentShape.IsVisible())
             {
                 for (int i = 0; i < entity.meshesInfo.renderers.Length; i++)

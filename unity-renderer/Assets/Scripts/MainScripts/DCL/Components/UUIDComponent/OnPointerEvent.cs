@@ -60,8 +60,6 @@ namespace DCL.Components
 
         public void Initialize()
         {
-            if (!entity.meshRootGameObject) return;
-
             // Create OnPointerEventCollider child
             pointerEventColliders = Utils.GetOrCreateComponent<OnPointerEventColliders>(this.gameObject);
             pointerEventColliders.Initialize(entity);
@@ -92,7 +90,7 @@ namespace DCL.Components
 
         public void SetHoverState(bool hoverState)
         {
-            if (!enableInteractionHoverFeedback) return;
+            if (!enableInteractionHoverFeedback || !enabled) return;
 
             hoverCanvasController.SetHoverState(hoverState);
         }
