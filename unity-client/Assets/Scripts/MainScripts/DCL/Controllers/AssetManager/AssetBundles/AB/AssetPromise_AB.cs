@@ -1,4 +1,4 @@
-using DCL.Helpers;
+﻿using DCL.Helpers;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -130,6 +130,28 @@ namespace DCL
             UnregisterConcurrentRequest();
         }
 
+        public override string ToString()
+        {
+            string result = $"AB request state... loadCoroutine = {loadCoroutine} ... state = {state}\n";
+
+            if (assetBundleRequest != null)
+                result += $"url = {assetBundleRequest.url} ... code = {assetBundleRequest.responseCode} ... progress = {assetBundleRequest.downloadProgress}\n";
+            else
+                result += $"null request for url: {contentUrl + hash}\n";
+
+
+            if (dependencyPromises != null && dependencyPromises.Count > 0)
+            {
+                result += "dependencies:\n";
+                foreach (var p in dependencyPromises)
+                {
+                    result += p.ToString() + "\n";
+                }
+            }
+
+            return result;
+        }
+
         IEnumerator LoadAssetBundle(string finalUrl, Action OnSuccess, Action OnFail)
         {
             if (failedRequestUrls.Contains(finalUrl))
@@ -145,11 +167,13 @@ namespace DCL
             //NOTE(Brian): For some reason, another coroutine iteration can be triggered after Cleanup().
             //             So assetBundleRequest can be null here.
             if (assetBundleRequest == null)
+            {
                 yield break;
+            }
 
             if (!assetBundleRequest.WebRequestSucceded())
             {
-                Debug.Log($"request failed? {assetBundleRequest.error} ... {finalUrl}");
+                Debug.Log($"Request failed? {assetBundleRequest.error} ... {finalUrl}");
                 failedRequestUrls.Add(finalUrl);
                 assetBundleRequest.Abort();
                 assetBundleRequest = null;
@@ -158,6 +182,7 @@ namespace DCL
             }
 
             AssetBundle assetBundle = DownloadHandlerAssetBundle.GetContent(assetBundleRequest);
+
 
             if (assetBundle == null || asset == null)
             {
@@ -193,8 +218,9 @@ namespace DCL
                 //NOTE(Brian): For some reason, another coroutine iteration can be triggered after Cleanup().
                 //             To handle this case we exit using this.
                 if (loadCoroutine == null)
+                {
                     yield break;
-
+                }
                 if (asset == null)
                     break;
 

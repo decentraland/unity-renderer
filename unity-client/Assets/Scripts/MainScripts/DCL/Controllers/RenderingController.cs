@@ -1,4 +1,4 @@
-﻿using DCL;
+using DCL;
 using DCL.Controllers;
 using DCL.Helpers;
 using DCL.Interface;
@@ -38,9 +38,9 @@ public class RenderingController : MonoBehaviour
         InputController_Legacy.renderingIsDisabled = true;
         GLTFSceneImporter.renderingIsDisabled = true;
 
-        AssetPromiseKeeper_GLTF.i.useBlockedPromisesQueue = false;
-        AssetPromiseKeeper_AB.i.useBlockedPromisesQueue = false;
-        AssetPromiseKeeper_AB_GameObject.i.useBlockedPromisesQueue = false;
+        AssetPromiseKeeper_GLTF.i.useTimeBudget = false;
+        AssetPromiseKeeper_AB.i.useTimeBudget = false;
+        AssetPromiseKeeper_AB_GameObject.i.useTimeBudget = false;
         AssetPromise_AB.limitTimeBudget = false;
 
         DCLCharacterController.i.SetEnabled(false);
@@ -85,9 +85,9 @@ public class RenderingController : MonoBehaviour
 
         AssetPromise_AB.limitTimeBudget = true;
 
-        AssetPromiseKeeper_GLTF.i.useBlockedPromisesQueue = true;
-        AssetPromiseKeeper_AB.i.useBlockedPromisesQueue = true;
-        AssetPromiseKeeper_AB_GameObject.i.useBlockedPromisesQueue = true;
+        AssetPromiseKeeper_GLTF.i.useTimeBudget = true;
+        AssetPromiseKeeper_AB.i.useTimeBudget = true;
+        AssetPromiseKeeper_AB_GameObject.i.useTimeBudget = true;
 
         OnRenderingStateChanged?.Invoke(renderingEnabled);
 
