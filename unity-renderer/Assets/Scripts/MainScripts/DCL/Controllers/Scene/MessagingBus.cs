@@ -92,7 +92,7 @@ namespace DCL
         public int pendingMessagesCount;
         public long processedMessagesCount { get; set; }
 
-        public static bool renderingIsDisabled = false;
+        private static bool renderingIsDisabled => !CommonScriptableObjects.rendererState.Get();
         private float timeBudgetValue;
 
         public CleanableYieldInstruction msgYieldInstruction;

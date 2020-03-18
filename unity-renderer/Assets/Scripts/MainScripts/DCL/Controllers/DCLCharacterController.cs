@@ -104,6 +104,9 @@ public class DCLCharacterController : MonoBehaviour
 
         lastPosition = transform.position;
         transform.parent = null;
+
+        CommonScriptableObjects.rendererState.OnChange += OnRenderingStateChanged;
+        OnRenderingStateChanged(CommonScriptableObjects.rendererState.Get(), false);
     }
 
     private void SuscribeToInput()
@@ -130,6 +133,7 @@ public class DCLCharacterController : MonoBehaviour
         jumpAction.OnFinished -= jumpFinishedDelegate;
         sprintAction.OnStarted -= sprintStartedDelegate;
         sprintAction.OnFinished -= sprintFinishedDelegate;
+        CommonScriptableObjects.rendererState.OnChange -= OnRenderingStateChanged;
     }
 
     void OnPrecisionAdjust(DCLCharacterPosition charPos)
@@ -427,5 +431,10 @@ public class DCLCharacterController : MonoBehaviour
     public void ResumeGravity()
     {
         gravity = originalGravity;
+    }
+
+    void OnRenderingStateChanged(bool isEnable, bool prevState)
+    {
+        SetEnabled(isEnable);
     }
 }

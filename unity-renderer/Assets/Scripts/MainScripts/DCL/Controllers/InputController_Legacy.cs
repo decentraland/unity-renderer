@@ -9,7 +9,7 @@ namespace DCL
 
     public class InputController_Legacy
     {
-        public static bool renderingIsDisabled = true;
+        private static bool renderingIsDisabled => CommonScriptableObjects.rendererState.Get();
         private static InputController_Legacy instance = null;
 
         public static InputController_Legacy i

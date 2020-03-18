@@ -19,7 +19,7 @@ namespace DCL
 
         static readonly float maxLoadBudgetTime = 0.032f;
         static float currentLoadBudgetTime = 0;
-        public static bool limitTimeBudget = false;
+        public static bool limitTimeBudget { get { return CommonScriptableObjects.rendererState.Get(); } }
 
         Coroutine loadCoroutine;
         static HashSet<string> failedRequestUrls = new HashSet<string>();

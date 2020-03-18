@@ -15,6 +15,17 @@ namespace DCL
             CoroutineStarter.Start(AutoCleanup());
         }
 
+        public MemoryManager()
+        {
+            CommonScriptableObjects.rendererState.OnChange += (isEnable, prevState) =>
+            {
+                if (isEnable)
+                {
+                    MemoryManager.i.CleanupPoolsIfNeeded(true);
+                }
+            };
+        }
+
         // TODO: here we'll define cleanup criteria
         bool NeedsMemoryCleanup()
         {

@@ -55,7 +55,7 @@ namespace DCL
                 return;
             }
 
-            bool renderingEnabled = RenderingController.i != null && RenderingController.i.renderingEnabled;
+            bool renderingEnabled = CommonScriptableObjects.rendererState.Get();
 
             if (!renderingEnabled || !useMaterialTransition)
             {

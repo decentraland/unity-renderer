@@ -35,6 +35,7 @@ public class TestsBase
         SetUp_Camera();
         yield return SetUp_SceneController();
         yield return SetUp_CharacterController();
+        SetUp_Renderer();
     }
 
 
@@ -129,6 +130,11 @@ public class TestsBase
                     baseUrl = "",
                 })
         );
+    }
+
+    public virtual void SetUp_Renderer()
+    {
+        CommonScriptableObjects.rendererState.Set(true);
     }
 
 
