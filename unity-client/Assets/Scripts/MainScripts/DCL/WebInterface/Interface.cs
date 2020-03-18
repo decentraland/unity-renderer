@@ -356,6 +356,13 @@ namespace DCL.Interface
             public string userEmail;
         }
 
+        [System.Serializable]
+        public class RequestScenesInfoAroundParcelPayload
+        {
+            public Vector2 parcel;
+            public int scenesAround;
+        }
+
 #if UNITY_WEBGL && !UNITY_EDITOR
     /**
      * This method is called after the first render. It marks the loading of the
@@ -756,6 +763,15 @@ namespace DCL.Interface
             SendMessage("ReportUserEmail", new SendUserEmailPayload()
             {
                 userEmail = email
+            });
+        }
+
+        public static void RequestScenesInfoAroundParcel(Vector2 parcel, int maxScenesArea)
+        {
+            SendMessage("RequestScenesInfoInArea", new RequestScenesInfoAroundParcelPayload()
+            {
+                parcel = parcel,
+                scenesAround = maxScenesArea
             });
         }
     }

@@ -9,6 +9,7 @@ import { avatarMessageObservable, getUserProfile } from 'shared/comms/peers'
 import { providerFuture } from 'shared/ethereum/provider'
 import { getProfile } from 'shared/profiles/selectors'
 import { TeleportController } from 'shared/world/TeleportController'
+import { reportScenesAroundParcel } from 'shared/atlas/actions'
 import { gridToWorld } from '../atomicHelpers/parcelScenePositions'
 import {
   DEBUG,
@@ -21,7 +22,7 @@ import {
   tutorialEnabled
 } from '../config'
 import { Quaternion, ReadOnlyQuaternion, ReadOnlyVector3, Vector3 } from '../decentraland-ecs/src/decentraland/math'
-import { IEventNames, IEvents, ProfileForRenderer } from '../decentraland-ecs/src/decentraland/Types'
+import { IEventNames, IEvents, ProfileForRenderer, MinimapSceneInfo } from '../decentraland-ecs/src/decentraland/Types'
 import { sceneLifeCycleObservable } from '../decentraland-loader/lifecycle/controllers/scene'
 import { tutorialStepId } from 'decentraland-loader/lifecycle/tutorial/tutorial'
 import { AirdropInfo } from 'shared/airdrops/interface'
@@ -292,6 +293,10 @@ const browserInterface = {
         window.analytics.identify({ email: data.userEmail })
       }
     }
+  },
+
+  RequestScenesInfoInArea(data: { parcel: { x: number; y: number }; scenesAround: number }) {
+    globalThis.globalStore.dispatch(reportScenesAroundParcel(data.parcel, data.scenesAround))
   }
 }
 
@@ -328,10 +333,7 @@ function delightedSurvey() {
 
 const CHUNK_SIZE = 500
 
-export function* chunkGenerator(
-  parcelChunkSize: number,
-  info: { name: string; type: number; parcels: { x: number; y: number }[] }[]
-) {
+export function* chunkGenerator(parcelChunkSize: number, info: MinimapSceneInfo[]) {
   if (parcelChunkSize < 1) {
     throw Error(`parcel chunk size (${parcelChunkSize}) cannot be less than 1`)
   }
@@ -501,7 +503,7 @@ export const unityInterface = {
   ConfigureTermsOfServiceHUD(configuration: HUDConfiguration) {
     gameInstance.SendMessage('HUDController', 'ConfigureTermsOfServiceHUD', JSON.stringify(configuration))
   },
-  UpdateMinimapSceneInformation(info: { name: string; type: number; parcels: { x: number; y: number }[] }[]) {
+  UpdateMinimapSceneInformation(info: MinimapSceneInfo[]) {
     const chunks = chunkGenerator(CHUNK_SIZE, info)
 
     for (const chunk of chunks) {
