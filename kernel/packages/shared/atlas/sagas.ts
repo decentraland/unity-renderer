@@ -12,11 +12,20 @@ import {
   FetchNameFromSceneJsonSuccess,
   marketData,
   QuerySceneName,
-  reportedScenes
+  reportedScenes,
+  ReportScenesAroundParcel
 } from './actions'
 import { getNameFromAtlasState, getTypeFromAtlasState, shouldLoadSceneJsonName } from './selectors'
-import { AtlasState, FETCH_NAME_FROM_SCENE_JSON, MarketEntry, SUCCESS_NAME_FROM_SCENE_JSON, MARKET_DATA } from './types'
+import {
+  AtlasState,
+  FETCH_NAME_FROM_SCENE_JSON,
+  MarketEntry,
+  SUCCESS_NAME_FROM_SCENE_JSON,
+  MARKET_DATA,
+  REPORT_SCENES_AROUND_PARCEL
+} from './types'
 import { parcelLimits } from '../../config'
+import { Vector2Component } from 'atomicHelpers/landHelpers'
 
 declare const window: {
   unityInterface: {
@@ -34,6 +43,8 @@ export function* atlasSaga(): any {
 
   yield takeLatest(RENDERER_INITIALIZED, reportScenesAround)
   yield takeLatest(SUCCESS_NAME_FROM_SCENE_JSON, reportOne)
+
+  yield takeLatest(REPORT_SCENES_AROUND_PARCEL, reportScenesAroundParcel)
 }
 
 function* fetchDistricts() {
@@ -107,32 +118,51 @@ export function* checkAndReportAround() {
 }
 
 export function* reportScenesAround() {
-  const userPosition = lastPlayerPosition
   let atlasState = (yield select(state => state.atlas)) as AtlasState
   while (!atlasState.marketName['0,0']) {
     yield take(MARKET_DATA)
     atlasState = yield select(state => state.atlas)
   }
-  const data = atlasState.marketName
-  const targets: Record<string, MarketEntry> = {}
+
+  const userPosition = lastPlayerPosition
   const MAX_SCENES_AROUND = 15
   const userX = userPosition.x / parcelLimits.parcelSize
   const userY = userPosition.z / parcelLimits.parcelSize
+  const targets = getScenesAround({ x: userX, y: userY }, MAX_SCENES_AROUND, atlasState)
+
+  yield put(reportedScenes(Object.keys(targets), { x: userPosition.x, y: userPosition.z }))
+  yield call(reportScenes, atlasState, targets)
+}
+
+export function* reportScenesAroundParcel(action: ReportScenesAroundParcel) {
+  let atlasState = (yield select(state => state.atlas)) as AtlasState
+  while (!atlasState.marketName['0,0']) {
+    yield take(MARKET_DATA)
+    atlasState = yield select(state => state.atlas)
+  }
+
+  const targets = getScenesAround(action.payload.parcelCoord, action.payload.scenesAround, atlasState)
+  yield call(reportScenes, atlasState, targets)
+}
+
+function getScenesAround(parcelCoords: Vector2Component, maxScenesAround: number, atlasState: AtlasState) {
+  const data = atlasState.marketName
+  const targets: Record<string, MarketEntry> = {}
+
   Object.keys(data).forEach(index => {
     const parcel = data[index]
     if (atlasState.alreadyReported[`${parcel.x},${parcel.y}`]) {
       return
     }
-    if (Math.abs(parcel.x - userX) > MAX_SCENES_AROUND) {
+    if (Math.abs(parcel.x - parcelCoords.x) > maxScenesAround) {
       return
     }
-    if (Math.abs(parcel.y - userY) > MAX_SCENES_AROUND) {
+    if (Math.abs(parcel.y - parcelCoords.y) > maxScenesAround) {
       return
     }
     targets[index] = parcel
   })
-  yield put(reportedScenes(Object.keys(targets), { x: userPosition.x, y: userPosition.z }))
-  yield call(reportScenes, atlasState, targets)
+  return targets
 }
 
 export function* reportScenes(marketplaceInfo?: AtlasState, selection?: Record<string, MarketEntry>): any {

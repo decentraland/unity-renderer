@@ -7,6 +7,7 @@ export const SUCCESS_NAME_FROM_SCENE_JSON = '[Success] Fetch name from scene.jso
 export const FAILURE_NAME_FROM_SCENE_JSON = '[Failure] Fetch name from scene.json'
 export const DISTRICT_DATA = '[Info] District data downloaded'
 export const MARKET_DATA = '[Info] Market data downloaded'
+export const REPORT_SCENES_AROUND_PARCEL = 'Report scenes around parcel'
 
 export type AtlasState = {
   marketName: Record<string, MarketEntry>

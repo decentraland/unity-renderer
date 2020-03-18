@@ -7,7 +7,8 @@ import {
   MarketData,
   MARKET_DATA,
   QUERY_NAME_FROM_SCENE_JSON,
-  SUCCESS_NAME_FROM_SCENE_JSON
+  SUCCESS_NAME_FROM_SCENE_JSON,
+  REPORT_SCENES_AROUND_PARCEL
 } from './types'
 import { Vector2Component } from '../../atomicHelpers/landHelpers'
 
@@ -28,3 +29,7 @@ export type MarketDataAction = ReturnType<typeof marketData>
 export const REPORTED_SCENES_FOR_MINIMAP = 'Reporting scenes for minimap'
 export const reportedScenes = (parcels: string[], reportPosition?: Vector2Component) =>
   action(REPORTED_SCENES_FOR_MINIMAP, { parcels, reportPosition })
+
+export const reportScenesAroundParcel = (parcelCoord: { x: number; y: number }, scenesAround: number) =>
+  action(REPORT_SCENES_AROUND_PARCEL, { parcelCoord, scenesAround })
+export type ReportScenesAroundParcel = ReturnType<typeof reportScenesAroundParcel>
