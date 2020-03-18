@@ -237,7 +237,7 @@ namespace DCL
                     populateBusesDirty = false;
                 }
 
-                timeBudgetCounter = RenderingController.i.renderingEnabled ? MAX_GLOBAL_MSG_BUDGET : float.MaxValue;
+                timeBudgetCounter = CommonScriptableObjects.rendererState.Get() ? MAX_GLOBAL_MSG_BUDGET : float.MaxValue;
 
                 for (int i = 0; i < busesToProcessCount; ++i)
                 {

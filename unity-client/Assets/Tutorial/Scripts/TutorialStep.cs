@@ -18,7 +18,7 @@ namespace DCL.Tutorial
         public float timeBetweenTooltips = 10f;
 
         WaitForSeconds waitForIdleTime = null;
-        WaitUntil waitForRendererEnabled = new WaitUntil(() => RenderingController.i.renderingEnabled);
+        WaitUntil waitForRendererEnabled = new WaitUntil(() => CommonScriptableObjects.rendererState.Get());
 
         void Awake()
         {

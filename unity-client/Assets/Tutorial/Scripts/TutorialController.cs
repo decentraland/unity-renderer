@@ -29,8 +29,7 @@ namespace DCL.Tutorial
 
         public void SetTutorialEnabled()
         {
-            if (RenderingController.i)
-                RenderingController.i.OnRenderingStateChanged += OnRenderingStateChanged;
+            CommonScriptableObjects.rendererState.OnChange += OnRenderingStateChanged;
 
             isTutorialEnabled = true;
 
@@ -50,23 +49,14 @@ namespace DCL.Tutorial
 
             isTutorialEnabled = true;
 
-            if (!RenderingController.i)
-            {
-                OnRenderingStateChanged(true);
-            }
-            else
-            {
-                RenderingController.i.OnRenderingStateChanged += OnRenderingStateChanged;
-            }
+            CommonScriptableObjects.rendererState.OnChange += OnRenderingStateChanged;
         }
 #endif
 
         private void OnDestroy()
         {
             AirdroppingHUDController.OnAirdropFinished -= TriggerEmailPrompt;
-
-            if (RenderingController.i)
-                RenderingController.i.OnRenderingStateChanged -= OnRenderingStateChanged;
+            CommonScriptableObjects.rendererState.OnChange -= OnRenderingStateChanged;
 
             i = null;
         }
@@ -133,7 +123,7 @@ namespace DCL.Tutorial
             return UserProfile.GetOwnUserProfile().tutorialStep;
         }
 
-        private void OnRenderingStateChanged(bool renderingEnabled)
+        private void OnRenderingStateChanged(bool renderingEnabled, bool prevState)
         {
             if (!isTutorialEnabled || !renderingEnabled) return;
 

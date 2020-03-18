@@ -53,7 +53,7 @@ namespace DCL
         //NOTE(Brian): Master promise id -> blocked promises HashSet
         Dictionary<object, HashSet<AssetPromiseType>> masterToBlockedPromises = new Dictionary<object, HashSet<AssetPromiseType>>(100);
 
-        public bool useTimeBudget = true;
+        public bool useTimeBudget { get { return CommonScriptableObjects.rendererState.Get(); } }
         float startTime;
 
         public bool IsBlocked(AssetPromiseType promise)

@@ -98,6 +98,7 @@ namespace DCL
         static bool VERBOSE = false;
         WebSocketServer ws;
         public SceneController sceneController;
+        public RenderingController renderingController;
         public DCLCharacterController characterController;
         private Builder.DCLBuilderBridge builderBridge = null;
         public CameraController cameraController;
@@ -298,10 +299,10 @@ namespace DCL
                                 UserProfileController.i.RemoveUserProfilesFromCatalog(msg.payload);
                                 break;
                             case "DeactivateRendering":
-                                RenderingController.i.DeactivateRendering();
+                                renderingController.DeactivateRendering();
                                 break;
                             case "ActivateRendering":
-                                RenderingController.i.ActivateRendering();
+                                renderingController.ActivateRendering();
                                 break;
                             case "ShowNotification":
                                 HUDController.i.ShowNotificationFromJson(msg.payload);

@@ -35,6 +35,9 @@ public static class CommonScriptableObjects
     private static BooleanVariable playerInfoCardVisibleStateValue;
     public static BooleanVariable playerInfoCardVisibleState => GetOrLoad(ref playerInfoCardVisibleStateValue, "ScriptableObjects/PlayerInfoCardVisibleState");
 
+    public static RendererState rendererState => GetOrLoad(ref rendererStateValue, "ScriptableObjects/RendererState");
+    private static RendererState rendererStateValue;
+
     private static T GetOrLoad<T>(ref T variable, string path) where T : Object
     {
         if (variable == null)

@@ -105,7 +105,7 @@ namespace UnityGLTF
         /// </summary>
         public bool initialVisibility { get; set; }
 
-        public static bool renderingIsDisabled = false;
+        private static bool renderingIsDisabled => !CommonScriptableObjects.rendererState.Get();
         private static float budgetPerFrameInMillisecondsValue = 2f;
         public static float budgetPerFrameInMilliseconds
         {

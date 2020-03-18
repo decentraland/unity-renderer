@@ -19,7 +19,7 @@ public class PlayerAvatarController : MonoBehaviour
         avatarRenderer.OnFailEvent -= OnAvatarRendererReady;
         avatarRenderer.OnSuccessEvent += OnAvatarRendererReady;
         avatarRenderer.OnFailEvent += OnAvatarRendererReady;
-        RenderingController.i.renderingActivatedAckLock.AddLock(this);
+        CommonScriptableObjects.rendererState.AddLock(this);
 
         mainCamera = Camera.main;
     }
@@ -27,7 +27,7 @@ public class PlayerAvatarController : MonoBehaviour
     private void OnAvatarRendererReady()
     {
         enableCameraCheck = true;
-        RenderingController.i.renderingActivatedAckLock.RemoveLock(this);
+        CommonScriptableObjects.rendererState.RemoveLock(this);
         avatarRenderer.OnSuccessEvent -= OnAvatarRendererReady;
         avatarRenderer.OnFailEvent -= OnAvatarRendererReady;
     }

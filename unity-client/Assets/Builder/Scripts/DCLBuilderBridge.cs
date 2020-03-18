@@ -399,7 +399,7 @@ namespace Builder
                 DCLBuilderGizmoManager.OnGizmoTransformObject += OnGizmoTransformObject;
                 DCLBuilderEntity.OnEntityShapeUpdated += ProcessEntityBoundaries;
                 DCLBuilderEntity.OnEntityTransformUpdated += ProcessEntityBoundaries;
-                RenderingController.i.OnRenderingStateChanged += OnRenderingStateChanged;
+                CommonScriptableObjects.rendererState.OnChange += OnRenderingStateChanged;
             }
             isGameObjectActive = true;
         }
@@ -416,7 +416,7 @@ namespace Builder
             DCLBuilderGizmoManager.OnGizmoTransformObject -= OnGizmoTransformObject;
             DCLBuilderEntity.OnEntityShapeUpdated -= ProcessEntityBoundaries;
             DCLBuilderEntity.OnEntityTransformUpdated -= ProcessEntityBoundaries;
-            RenderingController.i.OnRenderingStateChanged -= OnRenderingStateChanged;
+            CommonScriptableObjects.rendererState.OnChange -= OnRenderingStateChanged;
         }
 
         private void OnObjectDragEnd()
@@ -508,7 +508,7 @@ namespace Builder
             SetCaptureKeyboardInputEnabled(isPreview);
         }
 
-        private void OnRenderingStateChanged(bool renderingEnabled)
+        private void OnRenderingStateChanged(bool renderingEnabled, bool prevState)
         {
             if (renderingEnabled)
             {

@@ -9,7 +9,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: bdae4528345114a1fa069b0a59dc53c7, type: 3}
-  m_Name: PlayerInfoCardVisibleState
+  m_Script: {fileID: 11500000, guid: 2a1e42dc786e0412e81e0d1b19e01199, type: 3}
+  m_Name: RendererState
   m_EditorClassIdentifier: 
-  value: 0
+  value: 1

@@ -62,19 +62,11 @@ namespace DCL
         {
             EnsureContainer();
 
-            if (RenderingController.i != null)
-            {
-                initializing = !RenderingController.i.renderingEnabled;
+            initializing = !CommonScriptableObjects.rendererState.Get();
+            CommonScriptableObjects.rendererState.OnChange += OnRenderingStateChanged;
 
-                if (RenderingController.i != null)
-                    RenderingController.i.OnRenderingStateChanged += OnRenderingStateChanged;
-            }
-            else
-            {
-                initializing = false;
-            }
         }
-        void OnRenderingStateChanged(bool renderingEnabled)
+        void OnRenderingStateChanged(bool renderingEnabled, bool prevState)
         {
             initializing = !renderingEnabled;
         }
@@ -236,8 +228,7 @@ namespace DCL
                 RemovePool(idsToRemove[i]);
             }
 
-            if (RenderingController.i != null)
-                RenderingController.i.OnRenderingStateChanged -= OnRenderingStateChanged;
+            CommonScriptableObjects.rendererState.OnChange -= OnRenderingStateChanged;
         }
 
         public void ReleaseAllFromPool(object id)
