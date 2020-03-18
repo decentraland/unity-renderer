@@ -67,6 +67,7 @@ import { observeRealmChange, pickCatalystRealm, changeToCrowdedRealm } from 'sha
 import { getProfile } from 'shared/profiles/selectors'
 import { Profile } from 'shared/profiles/types'
 import { realmToString } from '../dao/utils/realmToString'
+import { queueTrackingEvent } from 'shared/analytics'
 
 export type CommsVersion = 'v1' | 'v2'
 export type CommsMode = CommsV1Mode | CommsV2Mode
@@ -149,6 +150,7 @@ export class Context {
   positionObserver: any
   worldRunningObserver: any
   infoCollecterInterval?: NodeJS.Timer
+  analyticsInterval?: NodeJS.Timer
 
   timeToChangeRealm: number = Date.now() + commConfigurations.autoChangeRealmInterval
 
@@ -472,7 +474,7 @@ function collectInfo(context: Context) {
   checkAutochangeRealm(visiblePeers, context, now)
 
   if (context.stats) {
-    context.stats.visiblePeersCount = visiblePeers.length
+    context.stats.visiblePeerIds = visiblePeers.map(it => it.alias)
     context.stats.trackingPeersCount = context.peerData.size
     context.stats.collectInfoDuration.stop()
   }
@@ -670,6 +672,21 @@ export async function connect(userId: string) {
       }
     }, 1000)
 
+    if (commConfigurations.sendAnalytics) {
+      context.analyticsInterval = setInterval(() => {
+        const connectionAnalytics = connection.analyticsData()
+        // We slice the ids in order to reduce the potential event size. Eventually, we should slice all comms ids
+        connectionAnalytics.trackedPeers = context?.peerData.keys()
+          ? [...context?.peerData.keys()].map(it => it.slice(-6))
+          : []
+        connectionAnalytics.visiblePeers = context?.stats.visiblePeerIds.map(it => it.slice(-6))
+
+        if (connectionAnalytics) {
+          queueTrackingEvent('Comms status', connectionAnalytics)
+        }
+      }, 30000)
+    }
+
     context.worldRunningObserver = worldRunningObservable.add(isRunning => {
       onWorldRunning(isRunning)
     })
@@ -772,6 +789,9 @@ export function disconnect() {
     }
     if (context.infoCollecterInterval) {
       clearInterval(context.infoCollecterInterval)
+    }
+    if (context.analyticsInterval) {
+      clearInterval(context.analyticsInterval)
     }
     if (context.positionObserver) {
       positionObservable.remove(context.positionObserver)

@@ -17,6 +17,7 @@ export interface WorldInstanceConnection {
   // TODO - review metrics API - moliva - 19/12/2019
   readonly ping: number
   printDebugInformation(): void
+  analyticsData(): Record<string, any>
 
   close(): void
 
