@@ -103,7 +103,7 @@ export class Stats {
   public webRtcSession = new PkgStats()
   public collectInfoDuration = new TrackAvgDuration()
   public dispatchTopicDuration = new TrackAvgDuration()
-  public visiblePeersCount = 0
+  public visiblePeerIds: string[] = []
   public trackingPeersCount = 0
 
   private reportInterval: any
@@ -132,7 +132,7 @@ export class Stats {
     defaultLogger.info(`------- ${new Date()}: `)
     reportDuration('collectInfo', this.collectInfoDuration)
     reportDuration('dispatchTopic', this.dispatchTopicDuration)
-    defaultLogger.info(`tracking peers: ${this.trackingPeersCount}, visible peers: ${this.visiblePeersCount}`)
+    defaultLogger.info(`tracking peers: ${this.trackingPeersCount}, visible peers: ${this.visiblePeerIds.length}`)
 
     defaultLogger.info('World instance: ')
 

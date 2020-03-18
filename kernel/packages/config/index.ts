@@ -149,6 +149,8 @@ export namespace commConfigurations {
   export const debug = true
   export const commRadius = 4
 
+  export const sendAnalytics = true
+
   export const peerTtlMs = 60000
 
   export const maxVisiblePeers = qs.MAX_VISIBLE_PEERS ? parseInt(qs.MAX_VISIBLE_PEERS, 10) : 25

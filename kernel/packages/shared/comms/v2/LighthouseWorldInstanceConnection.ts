@@ -95,6 +95,17 @@ export class LighthouseWorldInstanceConnection implements WorldInstanceConnectio
     return this.cleanUpPeer()
   }
 
+  analyticsData() {
+    // For now, these are private. Next version of peer library will make them public
+    return {
+      // We slice the id in order to reduce the potential event size. Eventually, we should slice all comms ids
+      // @ts-ignore
+      connectedPeers: this.peer.fullyConnectedPeerIds().map(it => it.slice(-6)),
+      // @ts-ignore
+      stats: this.peer.stats
+    }
+  }
+
   async sendInitialMessage(userInfo: Partial<UserInformation>) {
     const topic = userInfo.userId!
 
