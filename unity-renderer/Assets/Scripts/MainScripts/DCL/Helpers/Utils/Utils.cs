@@ -352,6 +352,13 @@ namespace DCL.Helpers
                 (int)Mathf.Floor(worldPosition.z / ParcelSettings.PARCEL_SIZE)
             );
         }
+        public static Vector2 WorldToGridPositionUnclamped(Vector3 worldPosition)
+        {
+            return new Vector2(
+                worldPosition.x / ParcelSettings.PARCEL_SIZE,
+                worldPosition.z / ParcelSettings.PARCEL_SIZE
+            );
+        }
 
         public static string GetTestAssetsPathRaw()
         {
@@ -473,6 +480,19 @@ namespace DCL.Helpers
             }
 
             return coords;
+        }
+
+        public static void DrawRectGizmo(Rect rect, Color color, float duration)
+        {
+            Vector3 tl2 = new Vector3(rect.xMin, rect.yMax, 0);
+            Vector3 bl2 = new Vector3(rect.xMin, rect.yMin, 0);
+            Vector3 tr2 = new Vector3(rect.xMax, rect.yMax, 0);
+            Vector3 br2 = new Vector3(rect.xMax, rect.yMin, 0);
+
+            Debug.DrawLine(tl2, bl2, color, duration);
+            Debug.DrawLine(tl2, tr2, color, duration);
+            Debug.DrawLine(bl2, br2, color, duration);
+            Debug.DrawLine(tr2, br2, color, duration);
         }
     }
 }
