@@ -175,7 +175,7 @@ public class HUDController : MonoBehaviour
     {
         string notificationText = $"Welcome, {UserProfile.GetOwnUserProfile().userName}!";
         Vector2Int currentCoords = CommonScriptableObjects.playerCoords.Get();
-        string parcelName = MinimapMetadata.GetMetadata().GetTile(currentCoords.x, currentCoords.y)?.name;
+        string parcelName = MinimapMetadata.GetMetadata().GetSceneInfo(currentCoords.x, currentCoords.y)?.name;
 
         if (!string.IsNullOrEmpty(parcelName))
         {

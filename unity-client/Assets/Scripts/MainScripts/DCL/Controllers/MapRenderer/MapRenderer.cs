@@ -1,4 +1,5 @@
 using DCL.Helpers;
+using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -16,6 +17,8 @@ namespace DCL
         public MapAtlas atlas;
 
         public Image playerPositionIcon;
+        public HashSet<MinimapMetadata.MinimapSceneInfo> scenesOfInterest = new HashSet<MinimapMetadata.MinimapSceneInfo>();
+        public Dictionary<MinimapMetadata.MinimapSceneInfo, GameObject> scenesOfInterestMarkers = new Dictionary<MinimapMetadata.MinimapSceneInfo, GameObject>();
 
         private void Awake()
         {
@@ -24,14 +27,21 @@ namespace DCL
 
         void Start()
         {
+            MinimapMetadata.GetMetadata().OnSceneInfoUpdated += MapRenderer_OnSceneInfoUpdated;
             playerWorldPosition.OnChange += OnCharacterMove;
             playerRotation.OnChange += OnCharacterRotate;
+        }
+
+        private void MapRenderer_OnSceneInfoUpdated(MinimapMetadata.MinimapSceneInfo sceneInfo)
+        {
+            //TODO(Brian): Add markers.
         }
 
         public void OnDestroy()
         {
             playerWorldPosition.OnChange -= OnCharacterMove;
             playerRotation.OnChange -= OnCharacterRotate;
+            MinimapMetadata.GetMetadata().OnSceneInfoUpdated -= MapRenderer_OnSceneInfoUpdated;
         }
 
         private void OnCharacterMove(Vector3 current, Vector3 previous)
@@ -75,8 +85,6 @@ namespace DCL
             var gridPosition = this.playerGridPosition;
             playerPositionIcon.transform.localPosition = MapUtils.GetTileToLocalPosition(gridPosition.x, gridPosition.y);
             playerPositionIcon.transform.rotation = playerAngle;
-
-            //TODO(Brian): Update POI icons, avatar icons, etc.
         }
 
         public Vector3 GetViewportCenter()
