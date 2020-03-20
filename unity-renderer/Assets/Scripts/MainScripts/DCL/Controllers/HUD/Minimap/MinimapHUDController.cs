@@ -32,7 +32,7 @@ public class MinimapHUDController : IDisposable, IHUD
     private void OnPlayerCoordsChange(Vector2Int current, Vector2Int previous)
     {
         UpdatePlayerPosition(current);
-        UpdateSceneName(MinimapMetadata.GetMetadata().GetTile(current.x, current.y)?.name);
+        UpdateSceneName(MinimapMetadata.GetMetadata().GetSceneInfo(current.x, current.y)?.name);
     }
 
     public void UpdateData(MinimapHUDModel model)
