@@ -96,6 +96,13 @@ inline void InitializeStandardLitSurfaceData(float2 uv, out SurfaceData outSurfa
 
     outSurfaceData.smoothness = specGloss.a;
     outSurfaceData.normalTS = SampleNormal(uv, TEXTURE2D_ARGS(_BumpMap, sampler_BumpMap), _BumpScale);
+
+    if (outSurfaceData.normalTS.x > -.004 && outSurfaceData.normalTS.x < .004)
+        outSurfaceData.normalTS.x = 0;
+
+    if (outSurfaceData.normalTS.y > -.004 && outSurfaceData.normalTS.y < .004)
+        outSurfaceData.normalTS.y = 0;
+
     outSurfaceData.occlusion = SampleOcclusion(uv);
     outSurfaceData.emission = SampleEmission(uv, _EmissionColor.rgb, TEXTURE2D_ARGS(_EmissionMap, sampler_EmissionMap));
 }
