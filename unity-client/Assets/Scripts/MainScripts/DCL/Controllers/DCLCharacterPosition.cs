@@ -1,6 +1,6 @@
-using UnityEngine;
 using DCL.Configuration;
 using System;
+using UnityEngine;
 
 public class DCLCharacterPosition
 {
@@ -14,9 +14,9 @@ public class DCLCharacterPosition
 
     public Vector3 UnityToWorldPosition(Vector3 pos)
     {
-        
+
         return pos + offset;
-        
+
     }
 
     public Vector3 WorldToUnityPosition(Vector3 pos)
@@ -57,6 +57,7 @@ public class DCLCharacterPosition
     public DCLCharacterPosition()
     {
         CommonScriptableObjects.playerUnityToWorldOffset.Set(Vector3.zero);
+        CommonScriptableObjects.playerWorldPosition.Set(Vector3.zero);
     }
 
     private void CheckAndTeleport()
@@ -88,6 +89,7 @@ public class DCLCharacterPosition
 
             OnPrecisionAdjust?.Invoke(this);
 
+            CommonScriptableObjects.playerWorldPosition.Set(worldPositionValue);
             CommonScriptableObjects.playerUnityToWorldOffset.Set(offset);
         }
     }
