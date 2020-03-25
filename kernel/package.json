@@ -117,7 +117,6 @@
     "reselect": "^4.0.0",
     "typesafe-actions": "^4.4.2",
     "web3x": "^4.0.6",
-    "webrtc-adapter": "^6.4.8",
     "ws": "^7.0.0"
   }
 }
