@@ -157,6 +157,8 @@ export async function requirePayment(toAddress: string, amount: number, currency
       const supportedTokens: Record<string, string> = {} // a TODO: getNetworkConfigurations(network).paymentTokens
 
       if (currency in supportedTokens === false) {
+        // tslint:disable:no-console
+        console.warn(`WARNING! Using a non-supported coin. Skipping operation! Please use one of the next coins 'ETH'`)
         return false
       }
 
