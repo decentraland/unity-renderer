@@ -146,7 +146,10 @@ export class SceneLifeCycleController extends EventEmitter {
           }
         }
       } catch (e) {
-        this.futureOfPositionToSceneId.get(position)!.reject(e)
+        const future = this.futureOfPositionToSceneId.get(position)!
+        // do not cache result if it was not successful
+        this.futureOfPositionToSceneId.delete(position)
+        future.reject(e)
       }
       return this.futureOfPositionToSceneId.get(position)!
     } else {

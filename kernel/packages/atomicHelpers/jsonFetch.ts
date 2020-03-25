@@ -18,6 +18,8 @@ export async function jsonFetch(url: string): Promise<any> {
   fetch(url).then(
     async $ => {
       if (!$.ok) {
+        // do not cache in case of error fetching
+        requestCache.delete(url)
         futureCache.reject(new Error('Response not ok - ' + url))
       } else {
         try {
