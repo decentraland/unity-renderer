@@ -293,7 +293,9 @@ public class DCLCharacterController : MonoBehaviour
             characterController.transform.position = lastPosition;
         }
 
-        characterController.Move(velocity * deltaTime);
+        if (characterController.enabled)
+            characterController.Move(velocity * deltaTime);
+
         SetPosition(characterPosition.UnityToWorldPosition(transform.position));
 
         if ((DCLTime.realtimeSinceStartup - lastMovementReportTime) > PlayerSettings.POSITION_REPORTING_DELAY)
