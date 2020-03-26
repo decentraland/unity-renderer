@@ -181,7 +181,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: -101.61}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 0, y: 0}
+  m_AnchoredPosition: {x: -1000, y: -1000}
   m_SizeDelta: {x: 100, y: 100}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &1744163396224065109
@@ -273,6 +273,7 @@ MonoBehaviour:
   viewport: {fileID: 0}
   container: {fileID: 7164109601661372131}
   chunksParent: {fileID: 8867674413542430455}
+  overlayLayerGameobject: {fileID: 3620416516788639812}
   mapChunkPrefab: {fileID: 7275614131455466647, guid: 1b2b2c80782c4a641bd3e9a0e6a94806,
     type: 3}
 --- !u!1 &8867674413542430455
@@ -307,6 +308,6 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 0, y: 0}
+  m_AnchoredPosition: {x: -510, y: -510}
+  m_SizeDelta: {x: 7130, y: 7130}
   m_Pivot: {x: 0, y: 0}

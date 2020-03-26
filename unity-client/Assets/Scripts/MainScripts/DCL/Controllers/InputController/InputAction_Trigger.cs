@@ -16,7 +16,7 @@ public class InputAction_Trigger : ScriptableObject
         return triggeredInFrame == Time.frameCount;
     }
 
-    internal void RaiseOnTriggered()
+    public void RaiseOnTriggered()
     {
         triggeredInFrame = Time.frameCount;
         OnTriggered?.Invoke(dclAction);
