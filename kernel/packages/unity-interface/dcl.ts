@@ -205,7 +205,7 @@ const browserInterface = {
     })
 
     if (data.tutorialStep === tutorialStepId.FINISHED) {
-      delightedSurvey()
+      // we used to call delightedSurvey() here
     }
   },
 
@@ -243,7 +243,7 @@ const browserInterface = {
   },
 
   EditAvatarClicked() {
-    delightedSurvey()
+    // We used to call delightedSurvey() here
   },
 
   ReportScene(sceneId: string) {
@@ -310,10 +310,17 @@ export function setLoadingScreenVisible(shouldShow: boolean) {
   }
 }
 
-function delightedSurvey() {
+export function delightedSurvey() {
+  // tslint:disable-next-line:strict-type-predicates
+  if (typeof globalThis === 'undefined' || typeof globalThis !== 'object') {
+    return
+  }
   const { analytics, delighted } = globalThis
+  if (!analytics || !delighted) {
+    return
+  }
   const profile = getUserProfile().profile as Profile | null
-  if (!isTheFirstLoading && analytics && delighted && profile) {
+  if (!isTheFirstLoading && profile) {
     const payload = {
       email: profile.email || profile.ethAddress + '@dcl.gg',
       name: profile.name || 'Guest',
