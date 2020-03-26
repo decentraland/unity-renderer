@@ -9,6 +9,8 @@ namespace DCL
         public RectTransform viewport;
         public GameObject container;
         public GameObject chunksParent;
+        public GameObject overlayLayerGameobject;
+
         Dictionary<Vector2Int, MapChunk> chunks = new Dictionary<Vector2Int, MapChunk>();
 
         public GameObject mapChunkPrefab;
@@ -37,7 +39,7 @@ namespace DCL
         }
 
         [ContextMenu("Force Update Culling")]
-        private void UpdateCulling()
+        public void UpdateCulling()
         {
             using (var it = chunks.GetEnumerator())
             {

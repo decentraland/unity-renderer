@@ -177,4 +177,9 @@ public class TestsBase
         return (T)instance.GetType().GetField(fieldName, BindingFlags.NonPublic | BindingFlags.Instance).GetValue(instance);
     }
 
+    public static void Reflection_SetField<T>(object instance, string fieldName, T newValue)
+    {
+        instance.GetType().GetField(fieldName, BindingFlags.NonPublic | BindingFlags.Instance).SetValue(instance, newValue);
+    }
+
 }
