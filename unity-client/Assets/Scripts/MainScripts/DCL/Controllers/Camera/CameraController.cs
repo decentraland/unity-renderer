@@ -89,6 +89,11 @@ public class CameraController : MonoBehaviour
         currentCameraState?.OnSetRotation(payload);
     }
 
+    public void SetRotation(float x, float y, float z, Vector3? cameraTarget = null)
+    {
+        currentCameraState?.OnSetRotation(new SetRotationPayload() { x = x, y = y, z = z, cameraTarget = cameraTarget });
+    }
+
     public Vector3 GetRotation()
     {
         if (currentCameraState != null)
@@ -110,6 +115,7 @@ public class CameraController : MonoBehaviour
         CommonScriptableObjects.rendererState.OnChange -= OnRenderingStateChanged;
     }
 
+    [System.Serializable]
     public class SetRotationPayload
     {
         public float x;

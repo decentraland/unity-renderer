@@ -1,15 +1,15 @@
+using DCL.Configuration;
+using DCL.Interface;
+using System;
 using System.Collections.Generic;
 using UnityEngine;
-using System;
-using DCL.Interface;
-using DCL.Configuration;
 
 namespace DCL
 {
 
     public class InputController_Legacy
     {
-        private static bool renderingIsDisabled => CommonScriptableObjects.rendererState.Get();
+        private static bool renderingEnabled => CommonScriptableObjects.rendererState.Get();
         private static InputController_Legacy instance = null;
 
         public static InputController_Legacy i
@@ -91,7 +91,7 @@ namespace DCL
 
         public void Update()
         {
-            if (renderingIsDisabled)
+            if (!renderingEnabled)
                 return;
 
             int count = buttonsMap.Count;
