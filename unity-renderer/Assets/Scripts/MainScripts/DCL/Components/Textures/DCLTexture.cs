@@ -116,8 +116,12 @@ namespace DCL
                 else
                 {
                     string contentsUrl = string.Empty;
+                    bool isExternalURL = model.src.Contains("http://") || model.src.Contains("https://");
 
-                    scene.contentProvider.TryGetContentsUrl(model.src, out contentsUrl);
+                    if (isExternalURL)
+                        contentsUrl = model.src;
+                    else
+                        scene.contentProvider.TryGetContentsUrl(model.src, out contentsUrl);
 
                     if (!string.IsNullOrEmpty(contentsUrl))
                     {
