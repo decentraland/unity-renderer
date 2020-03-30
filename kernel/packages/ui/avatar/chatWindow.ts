@@ -7,7 +7,6 @@ import {
   UIText,
   UIContainerStack,
   UIContainerRect,
-  UIShape,
   UIScrollRect
 } from 'decentraland-ecs/src/decentraland/UIShapes'
 
@@ -20,7 +19,8 @@ declare var dcl: DecentralandInterface
 
 const INITIAL_INPUT_TEXT_COLOR = Color4.White()
 const PRIMARY_TEXT_COLOR = Color4.White()
-const COMMAND_COLOR = Color4.FromHexString('#80ffe5ff')
+const COMMAND_COLOR = '#80ffe5ff'
+const MAX_LOGGED_MESSAGES = 50
 
 // UI creators -------------------
 dcl.subscribe('MESSAGE_RECEIVED')
@@ -33,27 +33,18 @@ dcl.onEvent(event => {
   }
 })
 
-function createLogMessage(parent: UIShape, props: { sender: string; message: string; isCommand?: boolean }) {
-  const { sender, message, isCommand } = props
-  const color = isCommand ? COMMAND_COLOR : PRIMARY_TEXT_COLOR
+function updateMessagesLog() {
+  messagesLogText.value = ''
+  for (let i = 0; i < internalState.messages.length; i++) {
+    const currentMessage = internalState.messages[i];
+    const color = currentMessage.isCommand ? COMMAND_COLOR : 'white'
 
-  const messageText = new UIText(parent)
-  messageText.color = color
-  messageText.value = `<b>${sender}:</b> ${message}`
-  messageText.fontSize = 14
-  messageText.vAlign = 'top'
-  messageText.hAlign = 'left'
-  messageText.vTextAlign = 'top'
-  messageText.hTextAlign = 'left'
-  messageText.width = '350px'//330
-  messageText.adaptWidth = false
-  messageText.adaptHeight = true
-  messageText.textWrapping = true
-  messageText.outlineColor = Color4.Black()
+    messagesLogText.value += `<color=${color}><b>${currentMessage.sender}:</b> ${currentMessage.message}</color>\n`
+  }
 
   messagesLogScrollContainer.valueY = 0
 
-  return { component: messageText }
+  return { component: messagesLogText }
 }
 
 // -------------------------------
@@ -91,7 +82,7 @@ messagesLogScrollContainer.vAlign = 'top'
 messagesLogScrollContainer.hAlign = 'left'
 messagesLogScrollContainer.width = '100%'
 messagesLogScrollContainer.height = '90%'
-messagesLogScrollContainer.positionY = '-8px'//6
+messagesLogScrollContainer.positionY = '-8px'
 messagesLogScrollContainer.positionX = -5
 messagesLogScrollContainer.valueY = 1
 messagesLogScrollContainer.isVertical = false
@@ -102,8 +93,8 @@ const messagesLogStackContainer = new UIContainerStack(messagesLogScrollContaine
 messagesLogStackContainer.name = 'messages-log-stack-container'
 messagesLogStackContainer.vAlign = 'bottom'
 messagesLogStackContainer.hAlign = 'center'
-messagesLogStackContainer.width = '100%'//100
-messagesLogStackContainer.height = '100%'//90
+messagesLogStackContainer.width = '100%'
+messagesLogStackContainer.height = '100%'
 messagesLogStackContainer.spacing = 5//inter message
 messagesLogStackContainer.positionX = 4//position about the box
 
@@ -112,8 +103,8 @@ textInputContainer.color = Color4.Clear()
 textInputContainer.name = 'input-text-container'
 textInputContainer.vAlign = 'bottom'
 textInputContainer.hAlign = 'left'
-textInputContainer.width = '100%'//90
-textInputContainer.height = '16%'//20
+textInputContainer.width = '100%'
+textInputContainer.height = '16%'
 
 const textInput = new UIInputText(textInputContainer)
 textInput.name = 'input-text'
@@ -123,8 +114,8 @@ textInput.background = Color4.Clear()
 textInput.focusedBackground = Color4.Clear()
 textInput.placeholder = 'Press enter and start talking...'
 textInput.fontSize = 14
-textInput.width = '90%'//90
-textInput.height = '16%'//18
+textInput.width = '90%'
+textInput.height = '16%'
 textInput.thickness = 0
 textInput.vAlign = 'center'
 textInput.hAlign = 'center'
@@ -139,6 +130,20 @@ textInput.onBlur = new OnBlur(onInputBlur)
 textInput.onTextSubmit = new OnTextSubmit(onInputSubmit)
 
 setMaximized(isMaximized)
+
+const messagesLogText = new UIText(messagesLogStackContainer)
+messagesLogText.name = 'logged-message'
+messagesLogText.color = PRIMARY_TEXT_COLOR
+messagesLogText.fontSize = 14
+messagesLogText.vAlign = 'top'
+messagesLogText.hAlign = 'left'
+messagesLogText.vTextAlign = 'top'
+messagesLogText.hTextAlign = 'left'
+messagesLogText.width = '350px'
+messagesLogText.adaptWidth = false
+messagesLogText.adaptHeight = true
+messagesLogText.textWrapping = true
+messagesLogText.outlineColor = Color4.Black()
 
 const instructionsMessage = {
   id: '',
@@ -198,6 +203,12 @@ async function sendMsg(messageToSend: string) {
 }
 
 function addMessage(messageEntry: MessageEntry): void {
+  if(internalState.messages.length > MAX_LOGGED_MESSAGES) {
+    // remove oldest message
+    internalState.messages.shift()
+  }
+
   internalState.messages.push(messageEntry)
-  createLogMessage(messagesLogStackContainer, messageEntry)
+
+  updateMessagesLog()
 }
