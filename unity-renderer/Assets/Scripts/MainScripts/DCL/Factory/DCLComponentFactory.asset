@@ -37,3 +37,6 @@ MonoBehaviour:
   - classId: 204
     prefab: {fileID: 1348368182293133044, guid: bd4c8d98548cd4ffcaadfc1ae2ed1124,
       type: 3}
+  - classId: 202
+    prefab: {fileID: 3913270564964572706, guid: 14e009e5761a74e8fa3fcfc49d32d71c,
+      type: 3}
