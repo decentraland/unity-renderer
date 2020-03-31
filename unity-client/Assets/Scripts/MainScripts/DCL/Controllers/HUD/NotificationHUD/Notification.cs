@@ -52,7 +52,7 @@ public class Notification : MonoBehaviour
 
         if (!string.IsNullOrEmpty(notificationModel.scene))
         {
-            string sceneID = CommonScriptableObjects.sceneID;
+            string sceneID = CommonScriptableObjects.sceneID ?? string.Empty;
             CurrentSceneUpdated(sceneID, string.Empty);
         }
 
