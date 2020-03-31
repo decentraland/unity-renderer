@@ -167,6 +167,7 @@ namespace DCL
 
         private void SortScenesByDistance()
         {
+            currentSceneId = null;
             scenesSortedByDistance.Sort(SortScenesByDistanceMethod);
 
             using (var iterator = scenesSortedByDistance.GetEnumerator())

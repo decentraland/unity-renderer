@@ -30,21 +30,22 @@ namespace DCL.Components
 
         private void Start()
         {
-            CommonScriptableObjects.playerCoords.OnChange += OnPlayerCoordsChanged;
+            CommonScriptableObjects.sceneID.OnChange += OnSceneChanged;
             CommonScriptableObjects.rendererState.OnChange += OnRendererStateChanged;
         }
 
         private void OnDestroy()
         {
-            CommonScriptableObjects.playerCoords.OnChange -= OnPlayerCoordsChanged;
+            CommonScriptableObjects.sceneID.OnChange -= OnSceneChanged;
             CommonScriptableObjects.rendererState.OnChange -= OnRendererStateChanged;
             StopStreaming();
         }
 
-        private bool AreCoordsInsideComponentScene(Vector2Int coords)
+        private bool IsPlayerInSameSceneAsComponent(string currentSceneId)
         {
             if (scene == null) return false;
-            return scene.parcels.Contains(coords);
+            if (string.IsNullOrEmpty(currentSceneId)) return false;
+            return scene.sceneData.id == currentSceneId;
         }
 
         private void UpdatePlayingState(bool forceStateUpdate)
@@ -54,7 +55,7 @@ namespace DCL.Components
                 return;
             }
 
-            bool canPlayStream = AreCoordsInsideComponentScene(CommonScriptableObjects.playerCoords.Get()) && CommonScriptableObjects.rendererState.Get();
+            bool canPlayStream = IsPlayerInSameSceneAsComponent(CommonScriptableObjects.sceneID) && CommonScriptableObjects.rendererState;
 
             bool shouldStopStream = (isPlaying && !model.playing) || (isPlaying && !canPlayStream);
             bool shouldStartStream = !isPlaying && canPlayStream && model.playing;
@@ -78,7 +79,7 @@ namespace DCL.Components
             }
         }
 
-        private void OnPlayerCoordsChanged(Vector2Int coords, Vector2Int prevCoords)
+        private void OnSceneChanged(string sceneId, string prevSceneId)
         {
             UpdatePlayingState(false);
         }

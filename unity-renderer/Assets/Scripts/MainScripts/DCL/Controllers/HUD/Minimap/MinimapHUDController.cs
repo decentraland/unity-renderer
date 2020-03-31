@@ -80,7 +80,8 @@ public class MinimapHUDController : IDisposable, IHUD
 
     public void ReportScene()
     {
-        WebInterface.SendReportScene(currentSceneId);
+        if (!string.IsNullOrEmpty(currentSceneId))
+            WebInterface.SendReportScene(currentSceneId);
     }
 
     public void SetVisibility(bool visible)
