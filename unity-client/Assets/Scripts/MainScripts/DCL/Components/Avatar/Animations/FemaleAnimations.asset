@@ -29,3 +29,5 @@ MonoBehaviour:
     id: fistpump
   - clip: {fileID: 7400000, guid: 2f2047d4c8513bf419cd0d03692ddfa4, type: 2}
     id: robot
+  - clip: {fileID: 7400000, guid: c77bc5c02a2e048fcb89ea929cd40b01, type: 2}
+    id: raiseHand

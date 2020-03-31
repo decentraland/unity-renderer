@@ -15,6 +15,7 @@ public enum DCLAction_Trigger
     Expression_Wave = 201,
     Expression_FistPump = 202,
     Expression_Robot = 203,
+    Expression_RaiseHand = 204,
 }
 
 public enum DCLAction_Hold
@@ -76,6 +77,9 @@ public class InputController : MonoBehaviour
                     break;
                 case DCLAction_Trigger.Expression_Robot:
                     InputProcessor.FromKey(action, KeyCode.Alpha3, modifiers: InputProcessor.Modifier.FocusNotInInput);
+                    break;
+                case DCLAction_Trigger.Expression_RaiseHand:
+                    InputProcessor.FromKey(action, KeyCode.Alpha4, modifiers: InputProcessor.Modifier.FocusNotInInput);
                     break;
                 default:
                     throw new ArgumentOutOfRangeException();
