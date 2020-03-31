@@ -19,6 +19,9 @@ namespace DCL
         Transform mapRendererMinimapParent;
         Vector3 atlasOriginalPosition;
 
+        // TODO: Remove this bool once we finish the feature
+        bool enabledInProduction = false;
+
         void Start()
         {
             closeButton.onClick.AddListener(() => { ToggleNavMap(); });
@@ -33,6 +36,10 @@ namespace DCL
         void ToggleNavMap()
         {
             if (MapRenderer.i == null) return;
+
+#if !UNITY_EDITOR
+            if(!enabledInProduction) return;
+#endif
 
             scrollRect.StopMovement();
             scrollRect.gameObject.SetActive(!scrollRect.gameObject.activeSelf);
