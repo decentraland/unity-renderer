@@ -59,7 +59,13 @@ public class MinimapMetadata : ScriptableObject
         for (int i = 0; i < parcelsCount; i++)
         {
             if (sceneInfoMap.ContainsKey(sceneInfo.parcels[i]))
-                return;
+            {
+                //NOTE(Brian): I intended at first to just return; here. But turns out kernel is sending
+                //             overlapping coordinates, sending first gigantic 'Estate' and 'Roads' scenes to
+                //             send the proper scenes later. This will be fixed when we implement the content v3 data
+                //             plumbing.
+                sceneInfoMap.Remove(sceneInfo.parcels[i]);
+            }
 
             sceneInfoMap.Add(sceneInfo.parcels[i], sceneInfo);
         }

@@ -427,4 +427,5 @@ export type MinimapSceneInfo = {
   name: string
   type: number
   parcels: { x: number; y: number }[]
+  isPOI: boolean
 }

@@ -19,7 +19,7 @@ const ATLAS_INITIAL_STATE: AtlasState = {
   requestStatus: {},
   districtName: {},
   alreadyReported: {},
-  lastReportPosition: undefined
+  lastReportPosition: { x: -9999, y: -9999 }
 }
 
 export function atlasReducer(state?: AtlasState, action?: AnyAction) {

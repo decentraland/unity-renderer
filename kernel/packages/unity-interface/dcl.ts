@@ -386,10 +386,11 @@ export function* chunkGenerator(parcelChunkSize: number, info: MinimapSceneInfo[
           index,
           name: elem.name,
           type: elem.type,
+          isPOI: elem.isPOI,
           parcel
         }))
       ),
-    [] as { index: number; name: string; type: number; parcel: { x: number; y: number } }[]
+    [] as { index: number; name: string; type: number; isPOI: boolean; parcel: { x: number; y: number } }[]
   )
 
   // split into chunk size + fold into scene
@@ -401,7 +402,7 @@ export function* chunkGenerator(parcelChunkSize: number, info: MinimapSceneInfo[
         if (scene) {
           scene.parcels.push(parcel.parcel)
         } else {
-          const newScene = { name: parcel.name, type: parcel.type, parcels: [parcel.parcel] }
+          const newScene = { name: parcel.name, type: parcel.type, isPOI: parcel.isPOI, parcels: [parcel.parcel] }
           scenes.set(parcel.index, newScene)
         }
         return scenes
@@ -547,7 +548,8 @@ export const unityInterface = {
     const chunks = chunkGenerator(CHUNK_SIZE, info)
 
     for (const chunk of chunks) {
-      gameInstance.SendMessage('SceneController', 'UpdateMinimapSceneInformation', JSON.stringify(chunk))
+      let jsonChunk = JSON.stringify(chunk)
+      gameInstance.SendMessage('SceneController', 'UpdateMinimapSceneInformation', jsonChunk)
     }
   },
   SetTutorialEnabled() {
