@@ -26,10 +26,12 @@ import {
 } from './types'
 import { parcelLimits } from '../../config'
 import { Vector2Component } from 'atomicHelpers/landHelpers'
+import { CAMPAIGN_PARCEL_SEQUENCE } from 'shared/world/TeleportController'
+import { MinimapSceneInfo } from 'decentraland-ecs/src/decentraland/Types'
 
 declare const window: {
   unityInterface: {
-    UpdateMinimapSceneInformation: (data: { name: string; type: number; parcels: { x: number; y: number }[] }[]) => void
+    UpdateMinimapSceneInformation: (data: MinimapSceneInfo[]) => void
   }
 }
 
@@ -93,14 +95,27 @@ function* reportOne(action: FetchNameFromSceneJsonSuccess) {
   const name = getNameFromAtlasState(atlasState, firstX, firstY)
   const type = getTypeFromAtlasState(atlasState, firstX, firstY)
   yield put(reportedScenes(parcels))
+
+  let isPOI: boolean = false
+
+  let parcelsAsV2: { x: number; y: number }[] = parcels.map(p => {
+    const [x, y] = p.split(',').map(_ => parseInt(_, 10))
+    return { x, y }
+  })
+
+  // TODO(Brian): we will refactor this in the info plumbing PR
+  parcelsAsV2.forEach(p => {
+    CAMPAIGN_PARCEL_SEQUENCE.forEach(p2 => {
+      if (p.x === p2.x && p.y === p2.y) isPOI = true
+    })
+  })
+
   window.unityInterface.UpdateMinimapSceneInformation([
     {
       name,
       type,
-      parcels: parcels.map(p => {
-        const [x, y] = p.split(',').map(_ => parseInt(_, 10))
-        return { x, y }
-      })
+      parcels: parcelsAsV2,
+      isPOI: isPOI
     }
   ])
 }
@@ -168,26 +183,44 @@ function getScenesAround(parcelCoords: Vector2Component, maxScenesAround: number
 export function* reportScenes(marketplaceInfo?: AtlasState, selection?: Record<string, MarketEntry>): any {
   const atlasState = marketplaceInfo ? marketplaceInfo : ((yield select(state => state.atlas)) as AtlasState)
   const data = selection ? selection : atlasState.marketName
-  const mapByTypeAndName: Record<string, { x: number; y: number }[]> = {}
-  const typeAndNameKeys: string[] = []
+
+  const keyToParcels: Record<string, { x: number; y: number }[]> = {}
   const keyToTypeAndName: Record<string, { type: number; name: string }> = {}
+  const keyToPOI: Record<string, boolean> = {}
+
+  const typeAndNameKeys: string[] = []
+
   Object.keys(data).forEach(index => {
     const parcel = data[index]
     const name = getNameFromAtlasState(atlasState, parcel.x, parcel.y)
     const type = getTypeFromAtlasState(atlasState, parcel.x, parcel.y)
     const key = `${type}_${name}`
-    if (!mapByTypeAndName[key]) {
-      mapByTypeAndName[key] = []
+    if (!keyToParcels[key]) {
+      keyToParcels[key] = []
       typeAndNameKeys.push(key)
       keyToTypeAndName[key] = { type, name }
     }
-    mapByTypeAndName[key].push({ x: parcel.x, y: parcel.y })
+    keyToParcels[key].push({ x: parcel.x, y: parcel.y })
+
+    // TODO(Brian): we will refactor this in the info plumbing PR
+    if (keyToPOI[key] === false) {
+      CAMPAIGN_PARCEL_SEQUENCE.forEach(element => {
+        if (element.x === parcel.x && element.y === parcel.y) {
+          keyToPOI[key] = true
+        }
+      })
+    }
   })
+
   window.unityInterface.UpdateMinimapSceneInformation(
-    typeAndNameKeys.map(key => ({
-      name: keyToTypeAndName[key].name,
-      type: keyToTypeAndName[key].type,
-      parcels: mapByTypeAndName[key]
-    }))
+    typeAndNameKeys.map(
+      key =>
+        ({
+          name: keyToTypeAndName[key].name,
+          type: keyToTypeAndName[key].type,
+          parcels: keyToParcels[key],
+          isPOI: keyToPOI[key]
+        } as MinimapSceneInfo)
+    )
   )
 }

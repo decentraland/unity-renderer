@@ -1,4 +1,4 @@
-﻿using DCL.Helpers;
+using DCL.Helpers;
 using UnityEngine;
 
 public class MinimapMetadataController : MonoBehaviour
