@@ -212,6 +212,10 @@ const browserInterface = {
     }
   },
 
+  GoTo(data: { x: number; y: number }) {
+    TeleportController.goTo(data.x, data.y)
+  },
+
   LogOut() {
     Session.current.then(s => s.logout()).catch(e => defaultLogger.error('error while logging out', e))
   },

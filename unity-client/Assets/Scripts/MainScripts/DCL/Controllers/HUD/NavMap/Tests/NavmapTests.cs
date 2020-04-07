@@ -2,14 +2,15 @@ using NUnit.Framework;
 using System.Collections;
 using TMPro;
 using UnityEngine;
-using UnityEngine.UI;
 using UnityEngine.TestTools;
+using UnityEngine.UI;
 
 namespace Tests
 {
     public class NavmapTests : TestsBase
     {
         DCL.NavmapView navmapView;
+        protected override bool justSceneSetUp => true;
 
         [UnitySetUp]
         protected override IEnumerator SetUp()

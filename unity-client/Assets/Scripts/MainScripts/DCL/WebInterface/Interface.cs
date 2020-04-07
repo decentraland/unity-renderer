@@ -246,6 +246,14 @@ namespace DCL.Interface
             public string encodedTexture;
         };
 
+        [System.Serializable]
+        public class GotoEvent
+        {
+            public int x;
+            public int y;
+        };
+
+
         //-----------------------------------------------------
         // Raycast
         [System.Serializable]
@@ -430,6 +438,7 @@ namespace DCL.Interface
         private static OnGlobalPointerEventPayload onGlobalPointerEventPayload = new OnGlobalPointerEventPayload();
         private static OnGlobalPointerEvent onGlobalPointerEvent = new OnGlobalPointerEvent();
         private static AudioStreamingPayload onAudioStreamingEvent = new AudioStreamingPayload();
+        private static GotoEvent gotoEvent = new GotoEvent();
 
         public static void SendSceneEvent<T>(string sceneId, string eventType, T payload)
         {
@@ -790,6 +799,12 @@ namespace DCL.Interface
             onAudioStreamingEvent.play = play;
             onAudioStreamingEvent.volume = volume;
             SendMessage("SetAudioStream", onAudioStreamingEvent);
+        }
+        public static void GoTo(int x, int y)
+        {
+            gotoEvent.x = x;
+            gotoEvent.y = y;
+            SendMessage("GoTo", gotoEvent);
         }
     }
 }
