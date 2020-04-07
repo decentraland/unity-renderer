@@ -146,7 +146,7 @@ function emitFile(fileName: string, services: ts.LanguageService) {
 
     ensureDirectoriesExist(dirname(o.name))
 
-    fs.writeFileSync(o.name, WATCH || PRODUCTION ? ret : compiled.code, 'utf8')
+    fs.writeFileSync(o.name, WATCH || !PRODUCTION ? ret : compiled.code, 'utf8')
 
     if (WATCH) {
       console.log('\nThe compiler is watching file changes...\n')
