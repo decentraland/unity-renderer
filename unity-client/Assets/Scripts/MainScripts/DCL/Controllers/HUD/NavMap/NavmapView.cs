@@ -7,7 +7,9 @@ namespace DCL
 {
     public class NavmapView : MonoBehaviour
     {
+        [Header("References")]
         [SerializeField] InputAction_Trigger toggleNavMapAction;
+        [SerializeField] InputAction_Trigger selectParcelAction;
         [SerializeField] Button closeButton;
         [SerializeField] ScrollRect scrollRect;
         [SerializeField] Transform scrollRectContentTransform;
@@ -16,26 +18,32 @@ namespace DCL
         [SerializeField] internal NavmapToastView toastView;
 
         InputAction_Trigger.Triggered toggleNavMapDelegate;
-
+        InputAction_Trigger.Triggered selectParcelDelegate;
         RectTransform minimapViewport;
         Transform mapRendererMinimapParent;
         Vector3 atlasOriginalPosition;
+        MinimapMetadata mapMetadata;
+        bool cursorLockedBeforeOpening = true;
 
-        public bool isToggledOn => scrollRect.gameObject.activeSelf;
-
-        // TODO: Remove this bool once we finish the feature
-        bool enabledInProduction = false;
+        public static bool isOpen
+        {
+            private set;
+            get;
+        } = false;
 
         void Start()
         {
+            mapMetadata = MinimapMetadata.GetMetadata();
+
             closeButton.onClick.AddListener(() => { ToggleNavMap(); });
-            scrollRect.onValueChanged.AddListener((x) => { if (scrollRect.gameObject.activeSelf) MapRenderer.i.atlas.UpdateCulling(); });
+            scrollRect.onValueChanged.AddListener((x) => { if (isOpen) MapRenderer.i.atlas.UpdateCulling(); });
 
             toggleNavMapDelegate = (x) => { ToggleNavMap(); };
             toggleNavMapAction.OnTriggered += toggleNavMapDelegate;
+            MapRenderer.OnParcelClicked += OnParcelClicked;
+            toastView.OnGotoClicked += ToggleNavMap;
 
             MinimapHUDView.OnUpdateData += UpdateCurrentSceneData;
-            CommonScriptableObjects.playerCoords.OnChange += PlayerCoords_OnChange;
 
             toastView.gameObject.SetActive(false);
             scrollRect.gameObject.SetActive(false);
@@ -43,30 +51,25 @@ namespace DCL
 
         private void OnDestroy()
         {
+            toastView.OnGotoClicked -= ToggleNavMap;
             MinimapHUDView.OnUpdateData -= UpdateCurrentSceneData;
-            CommonScriptableObjects.playerCoords.OnChange -= PlayerCoords_OnChange;
-        }
-
-        private void PlayerCoords_OnChange(Vector2Int current, Vector2Int previous)
-        {
-            //TODO(Brian): Populate toast on clicked scene instead of current scene.
-            toastView.Populate(current, MinimapMetadata.GetMetadata().GetSceneInfo(current.x, current.y));
         }
 
         internal void ToggleNavMap()
         {
             if (MapRenderer.i == null) return;
 
-#if !UNITY_EDITOR
-            if(!enabledInProduction) return;
-#endif
-
             scrollRect.StopMovement();
-            scrollRect.gameObject.SetActive(!scrollRect.gameObject.activeSelf);
 
-            if (scrollRect.gameObject.activeSelf)
+            isOpen = !isOpen;
+            scrollRect.gameObject.SetActive(isOpen);
+            MapRenderer.i.parcelHighlightEnabled = isOpen;
+
+            if (isOpen)
             {
-                Utils.UnlockCursor();
+                cursorLockedBeforeOpening = Utils.isCursorLocked;
+                if (cursorLockedBeforeOpening)
+                    Utils.UnlockCursor();
 
                 minimapViewport = MapRenderer.i.atlas.viewport;
                 mapRendererMinimapParent = MapRenderer.i.transform.parent;
@@ -78,7 +81,7 @@ namespace DCL
 
                 scrollRect.content = MapRenderer.i.atlas.chunksParent.transform as RectTransform;
 
-                // Reposition de player icon parent to scroll everything together
+                // Reparent the player icon parent to scroll everything together
                 MapRenderer.i.atlas.overlayLayerGameobject.transform.SetParent(scrollRect.content);
 
                 // Center map
@@ -86,13 +89,15 @@ namespace DCL
             }
             else
             {
-                Utils.LockCursor();
+                if (cursorLockedBeforeOpening)
+                    Utils.LockCursor();
 
                 MapRenderer.i.atlas.viewport = minimapViewport;
                 MapRenderer.i.transform.SetParent(mapRendererMinimapParent);
                 MapRenderer.i.atlas.chunksParent.transform.localPosition = atlasOriginalPosition;
                 MapRenderer.i.atlas.UpdateCulling();
 
+                // Restore the player icon to its original parent
                 MapRenderer.i.atlas.overlayLayerGameobject.transform.SetParent(MapRenderer.i.atlas.chunksParent.transform.parent);
                 (MapRenderer.i.atlas.overlayLayerGameobject.transform as RectTransform).anchoredPosition = Vector2.zero;
 
@@ -104,6 +109,11 @@ namespace DCL
         {
             currentSceneNameText.text = string.IsNullOrEmpty(model.sceneName) ? "Unnamed" : model.sceneName;
             currentSceneCoordsText.text = model.playerPosition;
+        }
+
+        void OnParcelClicked(int mouseTileX, int mouseTileY)
+        {
+            toastView.Populate(new Vector2Int(mouseTileX, mouseTileY), MinimapMetadata.GetMetadata().GetSceneInfo(mouseTileX, mouseTileY));
         }
     }
 }

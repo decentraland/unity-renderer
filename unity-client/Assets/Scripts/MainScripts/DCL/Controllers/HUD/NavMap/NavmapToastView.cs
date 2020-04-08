@@ -18,6 +18,8 @@ namespace DCL
         [SerializeField] internal Button goToButton;
         [SerializeField] internal Button closeButton;
 
+        public System.Action OnGotoClicked;
+
         Vector2Int location;
 
         private void Awake()
@@ -28,38 +30,37 @@ namespace DCL
 
         public void Populate(Vector2Int coordinates, MinimapMetadata.MinimapSceneInfo sceneInfo)
         {
-            if (sceneInfo == null)
-            {
-                gameObject.SetActive(false);
-                return;
-            }
-
-            sceneOwnerText.gameObject.SetActive(!string.IsNullOrEmpty(sceneInfo.owner));
-            sceneDescriptionText.gameObject.SetActive(!string.IsNullOrEmpty(sceneInfo.description));
-            scenePreviewImage.gameObject.SetActive(!string.IsNullOrEmpty(sceneInfo.previewImageUrl));
-            sceneLocationText.text = $"{coordinates.x}, {coordinates.y}";
-
-            sceneTitleText.text = sceneInfo.name;
-            sceneOwnerText.text = $"Created by: {sceneInfo.owner}";
-            sceneDescriptionText.text = sceneInfo.description;
-
-            location = coordinates;
+            bool sceneInfoExists = sceneInfo != null;
 
             gameObject.SetActive(true);
+            location = coordinates;
 
-            if (currentImageUrl == sceneInfo.previewImageUrl)
-                return;
+            sceneLocationText.text = $"{coordinates.x}, {coordinates.y}";
 
-            if (currentImage != null)
-                Destroy(currentImage);
+            sceneOwnerText.transform.parent.gameObject.SetActive(sceneInfoExists && !string.IsNullOrEmpty(sceneInfo.owner));
+            sceneDescriptionText.transform.parent.gameObject.SetActive(sceneInfoExists && !string.IsNullOrEmpty(sceneInfo.description));
+            sceneTitleText.transform.parent.gameObject.SetActive(sceneInfoExists && !string.IsNullOrEmpty(sceneInfo.name));
+            scenePreviewImage.gameObject.SetActive(sceneInfoExists && !string.IsNullOrEmpty(sceneInfo.previewImageUrl));
 
-            if (downloadCoroutine != null)
-                CoroutineStarter.Stop(downloadCoroutine);
+            if (sceneInfoExists)
+            {
+                sceneTitleText.text = sceneInfo.name;
+                sceneOwnerText.text = $"Created by: {sceneInfo.owner}";
+                sceneDescriptionText.text = sceneInfo.description;
 
-            if (!string.IsNullOrEmpty(sceneInfo.previewImageUrl))
-                downloadCoroutine = CoroutineStarter.Start(Download(sceneInfo.previewImageUrl));
+                if (currentImageUrl == sceneInfo.previewImageUrl) return;
 
-            currentImageUrl = sceneInfo.previewImageUrl;
+                if (currentImage != null)
+                    Destroy(currentImage);
+
+                if (downloadCoroutine != null)
+                    CoroutineStarter.Stop(downloadCoroutine);
+
+                if (sceneInfoExists && !string.IsNullOrEmpty(sceneInfo.previewImageUrl))
+                    downloadCoroutine = CoroutineStarter.Start(Download(sceneInfo.previewImageUrl));
+
+                currentImageUrl = sceneInfoExists ? sceneInfo.previewImageUrl : "";
+            }
         }
 
         private void OnCloseClick()
@@ -69,8 +70,11 @@ namespace DCL
 
         private void OnGotoClick()
         {
+            OnGotoClicked?.Invoke();
+
             WebInterface.GoTo(location.x, location.y);
 
+            OnCloseClick();
         }
 
         string currentImageUrl;

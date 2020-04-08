@@ -7,8 +7,9 @@ namespace DCL
 {
     public class MapChunk : MonoBehaviour
     {
-        static bool VERBOSE = false;
+        private bool VERBOSE = false;
         const string MAP_API_BASE = "https://api.decentraland.org/v1/map.png";
+
         public RawImage targetImage;
 
         [System.NonSerialized]
