@@ -16,29 +16,13 @@ namespace Tests
         protected override IEnumerator SetUp()
         {
             yield return base.SetUp();
+            yield return null;
+
             var navmapView = GameObject.FindObjectOfType<NavmapView>();
             navmapToastView = navmapView.toastView;
 
-            if (!navmapView.isToggledOn)
+            if (!NavmapView.isOpen)
                 navmapView.ToggleNavMap();
-        }
-
-        [Test]
-        public void CloseOnNull()
-        {
-            var dummyScene = new MinimapMetadata.MinimapSceneInfo()
-            {
-                parcels = new List<Vector2Int> { new Vector2Int(0, 0) }
-            };
-
-            MinimapMetadata.GetMetadata().Clear();
-            MinimapMetadata.GetMetadata().AddSceneInfo(dummyScene);
-
-            navmapToastView.Populate(new Vector2Int(0, 0), dummyScene);
-            Assert.IsTrue(navmapToastView.gameObject.activeSelf);
-
-            navmapToastView.Populate(new Vector2Int(0, 0), null);
-            Assert.IsFalse(navmapToastView.gameObject.activeSelf);
         }
 
         [Test]
@@ -80,11 +64,13 @@ namespace Tests
             navmapToastView.Populate(new Vector2Int(10, 11), sceneInfo);
             Assert.IsTrue(navmapToastView.gameObject.activeSelf);
 
+            Assert.IsTrue(navmapToastView.sceneLocationText.transform.parent.gameObject.activeInHierarchy);
             Assert.AreEqual("10, 11", navmapToastView.sceneLocationText.text);
 
-            Assert.IsTrue(navmapToastView.sceneTitleText.gameObject.activeInHierarchy);
-            Assert.IsFalse(navmapToastView.sceneOwnerText.gameObject.activeInHierarchy);
-            Assert.IsFalse(navmapToastView.sceneDescriptionText.gameObject.activeInHierarchy);
+            Assert.IsTrue(navmapToastView.sceneTitleText.transform.parent.gameObject.activeInHierarchy);
+            Assert.IsFalse(navmapToastView.sceneOwnerText.transform.parent.gameObject.activeInHierarchy);
+            Assert.IsFalse(navmapToastView.sceneDescriptionText.transform.parent.gameObject.activeInHierarchy);
+            Assert.IsFalse(navmapToastView.scenePreviewImage.gameObject.activeInHierarchy);
         }
 
         [Test]
