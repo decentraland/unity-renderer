@@ -132,11 +132,13 @@ export const SCENE_DEBUG_PANEL = location.search.indexOf('SCENE_DEBUG_PANEL') !=
 export const SHOW_FPS_COUNTER = location.search.indexOf('SHOW_FPS_COUNTER') !== -1 || DEBUG
 export const RESET_TUTORIAL = location.search.indexOf('RESET_TUTORIAL') !== -1
 export const NO_TUTORIAL = location.search.indexOf('NO_TUTORIAL') !== -1
+export const HAS_INITIAL_POSITION_MARK = location.search.indexOf('position') !== -1
 
 export function tutorialEnabled() {
   return (
     !NO_TUTORIAL &&
     WORLD_EXPLORER &&
+    !HAS_INITIAL_POSITION_MARK &&
     (RESET_TUTORIAL || getUserProfile().profile.tutorialStep !== tutorialStepId.FINISHED)
   )
 }
