@@ -47,6 +47,7 @@ namespace DCL
             toastView.OnGotoClicked += ToggleNavMap;
 
             MinimapHUDView.OnUpdateData += UpdateCurrentSceneData;
+            MinimapHUDView.OnOpenNavmapClicked += ToggleNavMap;
 
             toastView.gameObject.SetActive(false);
             scrollRect.gameObject.SetActive(false);
@@ -56,6 +57,7 @@ namespace DCL
         {
             toastView.OnGotoClicked -= ToggleNavMap;
             MinimapHUDView.OnUpdateData -= UpdateCurrentSceneData;
+            MinimapHUDView.OnOpenNavmapClicked -= ToggleNavMap;
         }
 
         internal void ToggleNavMap()
