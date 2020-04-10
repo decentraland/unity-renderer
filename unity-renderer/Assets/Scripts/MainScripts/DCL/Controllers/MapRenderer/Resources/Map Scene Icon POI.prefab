@@ -20,13 +20,24 @@ PrefabInstance:
     - target: {fileID: 7675226109946346179, guid: a3d29f660ee80ca4890e504f724cc8c1,
         type: 3}
       propertyPath: m_fontSizeMax
-      value: 10
+      value: 14
       objectReference: {fileID: 0}
     - target: {fileID: 7675226109946346179, guid: a3d29f660ee80ca4890e504f724cc8c1,
         type: 3}
       propertyPath: m_fontSize
-      value: 10
+      value: 14
       objectReference: {fileID: 0}
+    - target: {fileID: 7675226109946346179, guid: a3d29f660ee80ca4890e504f724cc8c1,
+        type: 3}
+      propertyPath: m_fontAsset
+      value: 
+      objectReference: {fileID: 11400000, guid: 26b03903800224f718b64e9afbc91b61,
+        type: 2}
+    - target: {fileID: 7675226109946346179, guid: a3d29f660ee80ca4890e504f724cc8c1,
+        type: 3}
+      propertyPath: m_sharedMaterial
+      value: 
+      objectReference: {fileID: 2100000, guid: cbef7abfd5b4443bf9d5c298a464b5a6, type: 2}
     - target: {fileID: 2495922858077533457, guid: a3d29f660ee80ca4890e504f724cc8c1,
         type: 3}
       propertyPath: m_Padding.m_Top
@@ -185,12 +196,12 @@ PrefabInstance:
     - target: {fileID: 4589313639104732314, guid: a3d29f660ee80ca4890e504f724cc8c1,
         type: 3}
       propertyPath: m_SizeDelta.x
-      value: 16
+      value: 18
       objectReference: {fileID: 0}
     - target: {fileID: 4589313639104732314, guid: a3d29f660ee80ca4890e504f724cc8c1,
         type: 3}
       propertyPath: m_SizeDelta.y
-      value: 16
+      value: 18
       objectReference: {fileID: 0}
     - target: {fileID: 4589313639104732314, guid: a3d29f660ee80ca4890e504f724cc8c1,
         type: 3}

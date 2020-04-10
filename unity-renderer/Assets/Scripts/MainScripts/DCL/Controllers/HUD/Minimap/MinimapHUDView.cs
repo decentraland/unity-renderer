@@ -21,8 +21,10 @@ public class MinimapHUDView : MonoBehaviour
     [Header("Map Renderer")]
     public RectTransform mapRenderContainer;
     public RectTransform mapViewport;
+    [SerializeField] private Button openNavmapButton;
 
     public static System.Action<MinimapHUDModel> OnUpdateData;
+    public static System.Action OnOpenNavmapClicked;
 
     private void Initialize(MinimapHUDController controller)
     {
@@ -32,6 +34,7 @@ public class MinimapHUDView : MonoBehaviour
         optionsButton.onClick.AddListener(controller.ToggleOptions);
         addBookmarkButton.onClick.AddListener(controller.AddBookmark);
         reportSceneButton.onClick.AddListener(controller.ReportScene);
+        openNavmapButton.onClick.AddListener(() => { OnOpenNavmapClicked?.Invoke(); });
 
         var renderer = MapRenderer.i;
 
