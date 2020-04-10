@@ -4,13 +4,15 @@
         "GUID:e555144732b726c4cba5b0f6337fea75",
         "GUID:cc6bfabbfe87b7949aa248893f89ce37",
         "GUID:760a1d365aad58044916992b072cf2a6",
-        "GUID:b1087c5731ff68448a0a9c625bb7e52d"
+        "GUID:b1087c5731ff68448a0a9c625bb7e52d",
+        "GUID:ef84d7ce90ba34f07be26ace428e9bc8"
     ],
     "optionalUnityReferences": [
         "TestAssemblies"
     ],
     "includePlatforms": [
         "Android",
+        "Editor",
         "iOS",
         "LinuxStandalone32",
         "LinuxStandalone64",

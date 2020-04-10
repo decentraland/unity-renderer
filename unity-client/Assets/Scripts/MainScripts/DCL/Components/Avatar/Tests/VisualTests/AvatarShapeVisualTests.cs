@@ -1,4 +1,5 @@
-﻿using DCL;
+using AvatarShape_Tests;
+using DCL;
 using DCL.Helpers;
 using System.Collections;
 using UnityEngine;
@@ -24,7 +25,7 @@ namespace Tests
             yield return VisualTestHelpers.InitVisualTestsScene("AvatarShape_A");
 
             AvatarTestHelpers.CreateTestCatalog();
-            AvatarShape avatar = AvatarTestHelpers.CreateAvatar(scene, "Avatar #1", "TestAvatar.json");
+            AvatarShape avatar = AvatarTestHelpers.CreateAvatarShape(scene, "Avatar #1", "TestAvatar.json");
 
             Vector3 camPos = new Vector3(-0.75f, 2.0f, 2.25f);
             Vector3 camTarget = avatar.transform.position + Vector3.up * 2.0f;
@@ -54,7 +55,7 @@ namespace Tests
             yield return VisualTestHelpers.InitVisualTestsScene("AvatarShape_B");
 
             AvatarTestHelpers.CreateTestCatalog();
-            AvatarShape avatar = AvatarTestHelpers.CreateAvatar(scene, "Avatar #2", "TestAvatar2.json");
+            AvatarShape avatar = AvatarTestHelpers.CreateAvatarShape(scene, "Avatar #2", "TestAvatar2.json");
 
             Vector3 camPos = new Vector3(-0.75f, 2.0f, 2.25f);
             Vector3 camTarget = avatar.transform.position + Vector3.up * 2.0f;
