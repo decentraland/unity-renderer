@@ -91,7 +91,7 @@ export function pickWorldSpawnpoint(land: ILand): InstancedSpawnPoint {
 
   const spawnpoint = pick || { position: { x: 0, y: 0, z: 0 } }
 
-  const baseParcel = land.scene.scene.base
+  const baseParcel = land.sceneJsonData.scene.base
   const [bx, by] = baseParcel.split(',')
 
   const basePosition = new Vector3()
@@ -107,15 +107,15 @@ export function pickWorldSpawnpoint(land: ILand): InstancedSpawnPoint {
 }
 
 function pickSpawnpoint(land: ILand): InstancedSpawnPoint | undefined {
-  if (!land.scene || !land.scene.spawnPoints || land.scene.spawnPoints.length === 0) {
+  if (!land.sceneJsonData || !land.sceneJsonData.spawnPoints || land.sceneJsonData.spawnPoints.length === 0) {
     return undefined
   }
 
   // 1 - default spawn points
-  const defaults = land.scene.spawnPoints.filter($ => $.default)
+  const defaults = land.sceneJsonData.spawnPoints.filter($ => $.default)
 
   // 2 - if no default spawn points => all existing spawn points
-  const eligiblePoints = defaults.length === 0 ? land.scene.spawnPoints : defaults
+  const eligiblePoints = defaults.length === 0 ? land.sceneJsonData.spawnPoints : defaults
 
   // 3 - pick randomly between spawn points
   const { position, cameraTarget } = eligiblePoints[Math.floor(Math.random() * eligiblePoints.length)]
@@ -147,12 +147,12 @@ function computeComponentValue(x: number | number[]) {
 
 export function getLandBase(land: ILand): { x: number; y: number } {
   if (
-    land.scene &&
-    land.scene.scene &&
-    land.scene.scene.base &&
-    typeof (land.scene.scene.base as string | void) === 'string'
+    land.sceneJsonData &&
+    land.sceneJsonData.scene &&
+    land.sceneJsonData.scene.base &&
+    typeof (land.sceneJsonData.scene.base as string | void) === 'string'
   ) {
-    return parseParcelPosition(land.scene.scene.base)
+    return parseParcelPosition(land.sceneJsonData.scene.base)
   } else {
     return parseParcelPosition(land.mappingsResponse.parcel_id)
   }

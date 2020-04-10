@@ -1,4 +1,4 @@
-import { ILand } from 'shared/types'
+import { ILand, SceneJsonData, MappingsResponse } from 'shared/types'
 import { Vector2Component } from 'atomicHelpers/landHelpers'
 
 const tutorialSceneContents = require('./tutorialSceneContents.json')
@@ -42,10 +42,10 @@ export function createTutorialILand(baseLocation: string): ILand {
   return {
     sceneId: TUTORIAL_SCENE_ID,
     baseUrl: baseLocation + '/loader/tutorial-scene/',
-    name: 'Tutorial Scene',
     baseUrlBundles: '',
-    scene: {
-      name: 'Tutorial Scene',
+    sceneJsonData: {
+      display: { title: 'Tutorial Scene' },
+      owner: '',
       main: 'bin/game.js',
       scene: { parcels: getSceneParcelsCoords(), base: coordinates },
       communications: { commServerUrl: '' },
@@ -59,13 +59,13 @@ export function createTutorialILand(baseLocation: string): ILand {
           }
         }
       ]
-    },
+    } as SceneJsonData,
     mappingsResponse: {
       parcel_id: coordinates,
       contents: tutorialSceneContents,
       root_cid: TUTORIAL_SCENE_ID,
       publisher: '0x13371b17ddb77893cd19e10ffa58461396ebcc19'
-    }
+    } as MappingsResponse
   }
 }
 

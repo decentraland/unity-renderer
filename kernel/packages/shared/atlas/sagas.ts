@@ -1,33 +1,39 @@
-import { call, fork, put, select, take, takeEvery, takeLatest } from 'redux-saga/effects'
+import { Vector2Component } from 'atomicHelpers/landHelpers'
+import { MinimapSceneInfo } from 'decentraland-ecs/src/decentraland/Types'
+import { call, fork, put, select, take, takeEvery, race, takeLatest } from 'redux-saga/effects'
+import { parcelLimits } from '../../config'
 import { getServer, LifecycleManager } from '../../decentraland-loader/lifecycle/manager'
-import { SceneStart, SCENE_START, SCENE_LOAD } from '../loading/actions'
+import { getOwnerNameFromJsonData, getSceneDescriptionFromJsonData } from '../../shared/selectors'
 import defaultLogger from '../logger'
-import { RENDERER_INITIALIZED } from '../renderer/types'
 import { lastPlayerPosition } from '../world/positionThings'
 import {
   districtData,
-  fetchNameFromSceneJson,
-  fetchNameFromSceneJsonFailure,
-  fetchNameFromSceneJsonSuccess,
-  FetchNameFromSceneJsonSuccess,
+  fetchDataFromSceneJsonFailure,
+  fetchDataFromSceneJsonSuccess,
   marketData,
-  QuerySceneName,
+  querySceneData,
+  QuerySceneData,
+  ReportScenesAroundParcel,
   reportedScenes,
-  ReportScenesAroundParcel
-} from './actions'
-import { getNameFromAtlasState, getTypeFromAtlasState, shouldLoadSceneJsonName } from './selectors'
-import {
-  AtlasState,
-  FETCH_NAME_FROM_SCENE_JSON,
-  MarketEntry,
-  SUCCESS_NAME_FROM_SCENE_JSON,
+  QUERY_DATA_FROM_SCENE_JSON,
+  REPORT_SCENES_AROUND_PARCEL,
   MARKET_DATA,
-  REPORT_SCENES_AROUND_PARCEL
-} from './types'
-import { parcelLimits } from '../../config'
-import { Vector2Component } from 'atomicHelpers/landHelpers'
-import { CAMPAIGN_PARCEL_SEQUENCE } from 'shared/world/TeleportController'
-import { MinimapSceneInfo } from 'decentraland-ecs/src/decentraland/Types'
+  SUCCESS_DATA_FROM_SCENE_JSON,
+  FAILURE_DATA_FROM_SCENE_JSON,
+  reportScenesAroundParcel,
+  reportLastPosition,
+  initializePoiTiles,
+  INITIALIZE_POI_TILES
+} from './actions'
+import { shouldLoadSceneJsonData, isMarketDataInitialized, getPoiTiles } from './selectors'
+import { AtlasState, RootAtlasState } from './types'
+import { getTilesRectFromCenter } from '../getTilesRectFromCenter'
+import { ILand } from 'shared/types'
+import { SCENE_LOAD } from 'shared/loading/actions'
+import { worldToGrid } from '../../atomicHelpers/parcelScenePositions'
+import { PARCEL_LOADING_STARTED } from 'shared/renderer/types'
+import { getPois } from '../meta/selectors'
+import { META_CONFIGURATION_INITIALIZED } from '../meta/actions'
 
 declare const window: {
   unityInterface: {
@@ -39,14 +45,13 @@ export function* atlasSaga(): any {
   yield fork(fetchDistricts)
   yield fork(fetchTiles)
 
-  yield takeEvery(SCENE_START, querySceneName)
   yield takeEvery(SCENE_LOAD, checkAndReportAround)
-  yield takeEvery(FETCH_NAME_FROM_SCENE_JSON, fetchName)
 
-  yield takeLatest(RENDERER_INITIALIZED, reportScenesAround)
-  yield takeLatest(SUCCESS_NAME_FROM_SCENE_JSON, reportOne)
+  yield takeLatest(META_CONFIGURATION_INITIALIZED, initializePois)
+  yield takeLatest(PARCEL_LOADING_STARTED, reportPois)
 
-  yield takeLatest(REPORT_SCENES_AROUND_PARCEL, reportScenesAroundParcel)
+  yield takeEvery(QUERY_DATA_FROM_SCENE_JSON, querySceneDataAction)
+  yield takeLatest(REPORT_SCENES_AROUND_PARCEL, reportScenesAroundParcelAction)
 }
 
 function* fetchDistricts() {
@@ -57,6 +62,7 @@ function* fetchDistricts() {
     defaultLogger.log(e)
   }
 }
+
 function* fetchTiles() {
   try {
     const tiles = yield call(() => fetch('https://api.decentraland.org/v1/tiles').then(e => e.json()))
@@ -66,161 +72,135 @@ function* fetchTiles() {
   }
 }
 
-function* querySceneName(action: QuerySceneName) {
-  if (yield select(shouldLoadSceneJsonName, action.payload) !== undefined) {
-    yield put(fetchNameFromSceneJson(action.payload))
-  }
-}
-
-function* fetchName(action: SceneStart) {
+function* querySceneDataAction(action: QuerySceneData) {
+  const sceneIds = action.payload
   try {
-    const { name, parcels } = yield call(() => getNameFromSceneJson(action.payload))
-    yield put(fetchNameFromSceneJsonSuccess(action.payload, name, parcels))
+    const lands: ILand[] = yield call(fetchSceneJson, sceneIds)
+    yield put(fetchDataFromSceneJsonSuccess(sceneIds, lands))
   } catch (e) {
-    yield put(fetchNameFromSceneJsonFailure(action.payload, e))
+    yield put(fetchDataFromSceneJsonFailure(sceneIds, e))
   }
 }
 
-async function getNameFromSceneJson(sceneId: string) {
+async function fetchSceneJson(sceneIds: string[]) {
   const server: LifecycleManager = getServer()
-
-  const land = (await server.getParcelData(sceneId)) as any
-  return { name: land.scene.display.title, parcels: land.scene.scene.parcels }
+  const lands = await Promise.all(sceneIds.map(sceneId => server.getParcelData(sceneId)))
+  return lands
 }
 
-function* reportOne(action: FetchNameFromSceneJsonSuccess) {
-  const atlasState = (yield select(state => state.atlas)) as AtlasState
-  const parcels = action.payload.parcels
-  const [firstX, firstY] = parcels[0].split(',').map(_ => parseInt(_, 10))
-  const name = getNameFromAtlasState(atlasState, firstX, firstY)
-  const type = getTypeFromAtlasState(atlasState, firstX, firstY)
-  yield put(reportedScenes(parcels))
-
-  let isPOI: boolean = false
-
-  let parcelsAsV2: { x: number; y: number }[] = parcels.map(p => {
-    const [x, y] = p.split(',').map(_ => parseInt(_, 10))
-    return { x, y }
-  })
-
-  // TODO(Brian): we will refactor this in the info plumbing PR
-  parcelsAsV2.forEach(p => {
-    CAMPAIGN_PARCEL_SEQUENCE.forEach(p2 => {
-      if (p.x === p2.x && p.y === p2.y) isPOI = true
-    })
-  })
-
-  window.unityInterface.UpdateMinimapSceneInformation([
-    {
-      name,
-      type,
-      parcels: parcelsAsV2,
-      isPOI: isPOI
-    }
-  ])
+async function fetchSceneIds(tiles: string[]) {
+  const server: LifecycleManager = getServer()
+  const promises = server.getSceneIds(tiles)
+  return Promise.all(promises)
 }
 
-export function* checkAndReportAround() {
+const TRIGGER_DISTANCE = 10 * parcelLimits.parcelSize
+const MAX_SCENES_AROUND = 15
+
+function* checkAndReportAround() {
   const userPosition = lastPlayerPosition
-  let lastReport = yield select(state => state.atlas.lastReportPosition)
-  const TRIGGER_DISTANCE = 10 * parcelLimits.parcelSize
+  const lastReport: Vector2Component | undefined = yield select(state => state.atlas.lastReportPosition)
+
   if (
+    !lastReport ||
     Math.abs(userPosition.x - lastReport.x) > TRIGGER_DISTANCE ||
     Math.abs(userPosition.z - lastReport.y) > TRIGGER_DISTANCE
   ) {
-    yield call(reportScenesAround)
+    const gridPosition = worldToGrid(userPosition)
+
+    yield put(reportScenesAroundParcel(gridPosition, MAX_SCENES_AROUND))
+    yield put(reportLastPosition({ x: userPosition.x, y: userPosition.z }))
   }
 }
 
-export function* reportScenesAround() {
-  let atlasState = (yield select(state => state.atlas)) as AtlasState
-  while (!atlasState.marketName['0,0']) {
+function* waitForPoiTilesInitialization() {
+  while (!(yield select((state: RootAtlasState) => state.atlas.hasPois))) {
+    yield take(INITIALIZE_POI_TILES)
+  }
+}
+
+function* reportPois() {
+  yield call(waitForPoiTilesInitialization)
+
+  const pois: string[] = yield select(getPoiTiles)
+
+  yield call(reportScenesFromTiles, pois)
+}
+
+function* reportScenesAroundParcelAction(action: ReportScenesAroundParcel) {
+  const tilesAround = getTilesRectFromCenter(action.payload.parcelCoord, MAX_SCENES_AROUND)
+  yield call(reportScenesFromTiles, tilesAround)
+}
+
+function* initializePois() {
+  const pois: Vector2Component[] = yield select(getPois)
+  const poiTiles = pois.map(position => `${position.x},${position.y}`)
+  yield put(initializePoiTiles(poiTiles))
+}
+
+function* reportScenesFromTiles(tiles: string[]) {
+  while (!(yield select(isMarketDataInitialized))) {
     yield take(MARKET_DATA)
-    atlasState = yield select(state => state.atlas)
   }
 
-  const userPosition = lastPlayerPosition
-  const MAX_SCENES_AROUND = 15
-  const userX = userPosition.x / parcelLimits.parcelSize
-  const userY = userPosition.z / parcelLimits.parcelSize
-  const targets = getScenesAround({ x: userX, y: userY }, MAX_SCENES_AROUND, atlasState)
+  const result: (string | null)[] = yield call(fetchSceneIds, tiles)
 
-  yield put(reportedScenes(Object.keys(targets), { x: userPosition.x, y: userPosition.z }))
-  yield call(reportScenes, atlasState, targets)
-}
+  // filter non null & distinct
+  const sceneIds = result.filter((e, i) => e !== null && result.indexOf(e) === i) as string[]
 
-export function* reportScenesAroundParcel(action: ReportScenesAroundParcel) {
-  let atlasState = (yield select(state => state.atlas)) as AtlasState
-  while (!atlasState.marketName['0,0']) {
-    yield take(MARKET_DATA)
-    atlasState = yield select(state => state.atlas)
-  }
+  yield put(querySceneData(sceneIds))
 
-  const targets = getScenesAround(action.payload.parcelCoord, action.payload.scenesAround, atlasState)
-  yield call(reportScenes, atlasState, targets)
-}
-
-function getScenesAround(parcelCoords: Vector2Component, maxScenesAround: number, atlasState: AtlasState) {
-  const data = atlasState.marketName
-  const targets: Record<string, MarketEntry> = {}
-
-  Object.keys(data).forEach(index => {
-    const parcel = data[index]
-    if (atlasState.alreadyReported[`${parcel.x},${parcel.y}`]) {
-      return
-    }
-    if (Math.abs(parcel.x - parcelCoords.x) > maxScenesAround) {
-      return
-    }
-    if (Math.abs(parcel.y - parcelCoords.y) > maxScenesAround) {
-      return
-    }
-    targets[index] = parcel
-  })
-  return targets
-}
-
-export function* reportScenes(marketplaceInfo?: AtlasState, selection?: Record<string, MarketEntry>): any {
-  const atlasState = marketplaceInfo ? marketplaceInfo : ((yield select(state => state.atlas)) as AtlasState)
-  const data = selection ? selection : atlasState.marketName
-
-  const keyToParcels: Record<string, { x: number; y: number }[]> = {}
-  const keyToTypeAndName: Record<string, { type: number; name: string }> = {}
-  const keyToPOI: Record<string, boolean> = {}
-
-  const typeAndNameKeys: string[] = []
-
-  Object.keys(data).forEach(index => {
-    const parcel = data[index]
-    const name = getNameFromAtlasState(atlasState, parcel.x, parcel.y)
-    const type = getTypeFromAtlasState(atlasState, parcel.x, parcel.y)
-    const key = `${type}_${name}`
-    if (!keyToParcels[key]) {
-      keyToParcels[key] = []
-      typeAndNameKeys.push(key)
-      keyToTypeAndName[key] = { type, name }
-    }
-    keyToParcels[key].push({ x: parcel.x, y: parcel.y })
-
-    // TODO(Brian): we will refactor this in the info plumbing PR
-    if (keyToPOI[key] === false) {
-      CAMPAIGN_PARCEL_SEQUENCE.forEach(element => {
-        if (element.x === parcel.x && element.y === parcel.y) {
-          keyToPOI[key] = true
-        }
+  for (const id of sceneIds) {
+    const shouldFetch = yield select(shouldLoadSceneJsonData, id)
+    if (shouldFetch) {
+      yield race({
+        success: take(SUCCESS_DATA_FROM_SCENE_JSON),
+        failure: take(FAILURE_DATA_FROM_SCENE_JSON)
       })
     }
-  })
+  }
 
-  window.unityInterface.UpdateMinimapSceneInformation(
-    typeAndNameKeys.map(
-      key =>
-        ({
-          name: keyToTypeAndName[key].name,
-          type: keyToTypeAndName[key].type,
-          parcels: keyToParcels[key],
-          isPOI: keyToPOI[key]
-        } as MinimapSceneInfo)
-    )
-  )
+  yield call(reportScenes, sceneIds)
+  yield put(reportedScenes(tiles))
+}
+
+function* reportScenes(sceneIds: string[]): any {
+  yield call(waitForPoiTilesInitialization)
+  const pois = yield select(getPoiTiles)
+
+  const atlas: AtlasState = yield select(state => state.atlas)
+
+  const scenes = sceneIds.map(sceneId => atlas.idToScene[sceneId])
+
+  const minimapSceneInfoResult: MinimapSceneInfo[] = []
+
+  scenes
+    .filter(scene => !scene.alreadyReported)
+    .forEach(scene => {
+      const parcels: Vector2Component[] = []
+      let isPOI: boolean = false
+
+      scene.sceneJsonData?.scene.parcels.forEach(parcel => {
+        let xyStr = parcel.split(',')
+        let xy: Vector2Component = { x: parseInt(xyStr[0], 10), y: parseInt(xyStr[1], 10) }
+
+        if (pois.includes(parcel)) {
+          isPOI = true
+        }
+
+        parcels.push(xy)
+      })
+
+      minimapSceneInfoResult.push({
+        owner: getOwnerNameFromJsonData(scene.sceneJsonData),
+        description: getSceneDescriptionFromJsonData(scene.sceneJsonData),
+        previewImageUrl: scene.sceneJsonData?.display?.navmapThumbnail,
+        name: scene.name,
+        type: scene.type,
+        parcels,
+        isPOI
+      })
+    })
+
+  window.unityInterface.UpdateMinimapSceneInformation(minimapSceneInfoResult)
 }

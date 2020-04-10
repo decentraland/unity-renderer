@@ -113,8 +113,7 @@ function realmProperties(realm: Realm, configOverride: boolean = true): Partial<
   return {
     profileServer: FETCH_PROFILE_SERVICE && configOverride ? FETCH_PROFILE_SERVICE : domain + '/lambdas/profile',
     fetchContentServer: FETCH_CONTENT_SERVICE && configOverride ? FETCH_CONTENT_SERVICE : domain + '/lambdas/contentv2',
-    fetchMetaContentServer:
-      FETCH_META_CONTENT_SERVICE && configOverride ? FETCH_META_CONTENT_SERVICE : domain + '/lambdas/contentv2',
+    fetchMetaContentServer: FETCH_META_CONTENT_SERVICE && configOverride ? FETCH_META_CONTENT_SERVICE : domain,
     updateContentServer: UPDATE_CONTENT_SERVICE && configOverride ? UPDATE_CONTENT_SERVICE : domain + '/content',
     commsServer: COMMS_SERVICE && configOverride ? COMMS_SERVICE : domain + '/comms',
     realm

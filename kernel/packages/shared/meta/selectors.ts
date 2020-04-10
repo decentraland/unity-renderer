@@ -1,4 +1,5 @@
 import { RootMetaState } from './types'
+import { Vector2Component } from 'atomicHelpers/landHelpers'
 
 export const getAddedServers = (store: RootMetaState): string[] => {
   const { config } = store.meta
@@ -21,3 +22,5 @@ export const getContentWhitelist = (store: RootMetaState): string[] => {
 }
 
 export const isMetaConfigurationInitiazed = (store: RootMetaState): boolean => store.meta.initialized
+
+export const getPois = (store: RootMetaState): Vector2Component[] => store.meta.config.world?.pois || []

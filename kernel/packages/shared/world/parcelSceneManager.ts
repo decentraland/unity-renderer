@@ -6,11 +6,12 @@ import { sceneLifeCycleObservable } from '../../decentraland-loader/lifecycle/co
 import { queueTrackingEvent } from '../analytics'
 import { globalSignalSceneFail, globalSignalSceneLoad, globalSignalSceneStart } from '../loading/actions'
 import { clearForegroundTimeout, setForegroundTimeout } from '../timers/index'
-import { EnvironmentData, ILand, ILandToLoadableParcelScene, InstancedSpawnPoint, LoadableParcelScene } from '../types'
+import { EnvironmentData, ILand, InstancedSpawnPoint, LoadableParcelScene } from '../types'
 import { ParcelSceneAPI } from './ParcelSceneAPI'
 import { positionObservable, teleportObservable } from './positionThings'
 import { SceneWorker } from './SceneWorker'
 import { worldRunningObservable } from './worldState'
+import { ILandToLoadableParcelScene } from 'shared/selectors'
 
 export type EnableParcelSceneLoadingOptions = {
   parcelSceneClass: { new (x: EnvironmentData<LoadableParcelScene>): ParcelSceneAPI }

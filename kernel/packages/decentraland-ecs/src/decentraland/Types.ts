@@ -425,6 +425,9 @@ export type ProfileForRenderer = {
  */
 export type MinimapSceneInfo = {
   name: string
+  owner: string
+  description: string
+  previewImageUrl: string | undefined
   type: number
   parcels: { x: number; y: number }[]
   isPOI: boolean

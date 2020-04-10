@@ -5,6 +5,8 @@ export const getUpdateProfileServer = (store: RootDaoState) => store.dao.updateC
 
 export const getFetchContentServer = (store: RootDaoState) => store.dao.fetchContentServer
 export const getFetchMetaContentServer = (store: RootDaoState) => store.dao.fetchMetaContentServer
+export const getFetchMetaContentService = (store: RootDaoState) =>
+  store.dao.fetchMetaContentServer + '/lambdas/contentv2'
 
 export const getCommsServer = (store: RootDaoState) => store.dao.commsServer
 
@@ -15,7 +17,8 @@ export const getLayer = (store: RootDaoState) => (store.dao.realm ? store.dao.re
 export const getCatalystCandidates = (store: RootDaoState) => store.dao.candidates
 export const getAddedCatalystCandidates = (store: RootDaoState) => store.dao.addedCandidates
 
-export const getAllCatalystCandidates = (store: RootDaoState) => getAddedCatalystCandidates(store).concat(getCatalystCandidates(store))
+export const getAllCatalystCandidates = (store: RootDaoState) =>
+  getAddedCatalystCandidates(store).concat(getCatalystCandidates(store))
 
 export const isRealmInitialized = (store: RootDaoState) => store.dao.initialized
 
