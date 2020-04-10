@@ -41,7 +41,7 @@ namespace DCL
             closeButton.onClick.AddListener(() => { ToggleNavMap(); });
             scrollRect.onValueChanged.AddListener((x) => { if (isOpen) MapRenderer.i.atlas.UpdateCulling(); });
 
-            toggleNavMapDelegate = (x) => { ToggleNavMap(); };
+            toggleNavMapDelegate = (x) => { if (!Input.GetKeyDown(KeyCode.Escape) || isOpen) ToggleNavMap(); };
             toggleNavMapAction.OnTriggered += toggleNavMapDelegate;
             MapRenderer.OnParcelClicked += OnParcelClicked;
             toastView.OnGotoClicked += ToggleNavMap;
