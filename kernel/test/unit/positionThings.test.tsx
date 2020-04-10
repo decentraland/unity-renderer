@@ -5,7 +5,7 @@ import { gridToWorld } from '../../packages/atomicHelpers/parcelScenePositions'
 describe('pickWorldSpawnPoint unit tests', function() {
   it('picks a spawn point from the defined ones when no default', () => {
     const land: any = {
-      scene: {
+      sceneJsonData: {
         scene: {
           base: '10,10'
         },
@@ -29,7 +29,7 @@ describe('pickWorldSpawnPoint unit tests', function() {
 
   it('picks a spawn point from the default ones when existing', () => {
     const land: any = {
-      scene: {
+      sceneJsonData: {
         scene: {
           base: '10,10'
         },
@@ -60,7 +60,7 @@ describe('pickWorldSpawnPoint unit tests', function() {
 
   it('spawn point with components in range', () => {
     const land: any = {
-      scene: {
+      sceneJsonData: {
         scene: {
           base: '10,10'
         },
@@ -82,7 +82,7 @@ describe('pickWorldSpawnPoint unit tests', function() {
 
   it('sets spawn point to base parcel position when none defined', () => {
     const land: any = {
-      scene: {
+      sceneJsonData: {
         scene: {
           base: '10,10'
         }

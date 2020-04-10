@@ -2,13 +2,13 @@
 // This doesn't execute on the main thread, so it's a "server" in terms of decentraland-rpc
 
 import { WebWorkerTransport } from 'decentraland-rpc'
-import { Adapter } from './lib/adapter'
-import { ParcelLifeCycleController } from './controllers/parcel'
-import { SceneLifeCycleController, SceneLifeCycleStatusReport } from './controllers/scene'
-import { PositionLifecycleController } from './controllers/position'
-import { SceneDataDownloadManager } from './controllers/download'
-import { ILand, InstancedSpawnPoint } from 'shared/types'
 import defaultLogger from 'shared/logger'
+import { ILand, InstancedSpawnPoint } from 'shared/types'
+import { SceneDataDownloadManager, TileIdPair } from './controllers/download'
+import { ParcelLifeCycleController } from './controllers/parcel'
+import { PositionLifecycleController } from './controllers/position'
+import { SceneLifeCycleController, SceneLifeCycleStatusReport } from './controllers/scene'
+import { Adapter } from './lib/adapter'
 import { setTutorialEnabled } from './tutorial/tutorial'
 
 const connector = new Adapter(WebWorkerTransport(self as any))
@@ -38,6 +38,7 @@ let downloadManager: SceneDataDownloadManager
     (options: {
       contentServer: string
       metaContentServer: string
+      metaContentService: string
       contentServerBundles: string
       lineOfSightRadius: number
       secureRadius: number
@@ -50,6 +51,7 @@ let downloadManager: SceneDataDownloadManager
       downloadManager = new SceneDataDownloadManager({
         contentServer: options.contentServer,
         metaContentServer: options.metaContentServer,
+        metaContentService: options.metaContentService,
         contentServerBundles: options.contentServerBundles,
         tutorialBaseURL: options.tutorialBaseURL
       })
@@ -88,11 +90,22 @@ let downloadManager: SceneDataDownloadManager
         })
       })
 
-      connector.on('Scene.dataRequest', async (data: { sceneId: string }) =>
+      connector.on('Scene.dataRequest', async (data: { sceneId: string }) => {
         connector.notify('Scene.dataResponse', {
           data: (await downloadManager.getParcelDataBySceneId(data.sceneId)) as ILand
         })
-      )
+      })
+
+      connector.on('Scene.idRequest', async (data: { sceneIds: string[] }) => {
+        const scenes: TileIdPair[] = await downloadManager.resolveSceneSceneIds(data.sceneIds)
+
+        for (const scene of scenes) {
+          connector.notify('Scene.idResponse', {
+            position: scene[0],
+            data: scene[1]
+          })
+        }
+      })
 
       connector.on('Scene.prefetchDone', (opt: { sceneId: string }) => {
         sceneController.reportDataLoaded(opt.sceneId)

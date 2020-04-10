@@ -2,9 +2,11 @@ import { jsonFetch } from 'atomicHelpers/jsonFetch'
 import { future, IFuture } from 'fp-future'
 import { createLogger } from 'shared/logger'
 import { createTutorialILand, isTutorial, TUTORIAL_SCENE_ID } from '../tutorial/tutorial'
-import { ILand, IScene, ParcelInfoResponse, ContentMapping } from 'shared/types'
+import { ILand, SceneJsonData, ParcelInfoResponse, ContentMapping } from 'shared/types'
+import { CatalystClient } from 'dcl-catalyst-client'
+import { EntityType } from 'dcl-catalyst-commons'
 
-const logger = createLogger('loader')
+const logger = createLogger('loader: ')
 const { error } = logger
 
 export type DeployedScene = {
@@ -22,6 +24,8 @@ function getSceneIdFromSceneMappingResponse(scene: DeployedScene) {
   return scene.root_cid
 }
 
+export type TileIdPair = [ string, string | null ]
+
 export class SceneDataDownloadManager {
   positionToSceneId: Map<string, IFuture<string | null>> = new Map()
   sceneIdToLandData: Map<string, IFuture<ILand | null>> = new Map()
@@ -30,15 +34,91 @@ export class SceneDataDownloadManager {
   emptyScenesPromise?: Promise<Record<string, ContentMapping[]>>
   emptySceneNames: string[] = []
 
+  catalyst: CatalystClient
+
   constructor(
     public options: {
       contentServer: string
       metaContentServer: string
+      metaContentService: string
       contentServerBundles: string
       tutorialBaseURL: string
     }
   ) {
-    // stub
+    this.catalyst = new CatalystClient(options.metaContentServer, 'EXPLORER')
+  }
+
+  async resolveSceneSceneIds(tiles: string[]): Promise<TileIdPair[]> {
+    const futures: Promise<TileIdPair>[] = []
+
+    const missingTiles: string[] = []
+
+    for (const tile of tiles) {
+      let promise: IFuture<string | null>
+
+      if (this.positionToSceneId.has(tile)) {
+        promise = this.positionToSceneId.get(tile)!
+      } else {
+        promise = future<string | null>()
+        this.positionToSceneId.set(tile, promise)
+        missingTiles.push(tile)
+      }
+
+      futures.push(promise.then(id => ([tile, id])))
+    }
+
+    if (missingTiles.length > 0) {
+      const scenes = await this.catalyst.fetchEntitiesByPointers(EntityType.SCENE, missingTiles)
+
+      // resolve promises
+      for (const scene of scenes) {
+        for (const tile of scene.pointers) {
+          if (this.positionToSceneId.has(tile)) {
+            const promise = this.positionToSceneId.get(tile)
+            promise!.resolve(scene.id)
+          } else {
+            // if we get back a pointer/tile that was not pending => create the future and resolve
+            const promise = future<string | null>()
+            promise.resolve(scene.id)
+            this.positionToSceneId.set(tile, promise)
+          }
+        }
+
+        const sceneId = scene.id
+        const baseUrl = this.options.contentServer + '/contents/'
+        const baseUrlBundles = this.options.contentServerBundles + '/'
+
+        const content = { contents: scene.content ?? [], parcel_id: scene.metadata?.base, root_cid: scene.id }
+
+        const data: ILand = {
+          sceneId,
+          baseUrl,
+          baseUrlBundles,
+          sceneJsonData: scene.metadata,
+          mappingsResponse: content
+        }
+
+        const pendingSceneData = this.sceneIdToLandData.get(sceneId) || future<ILand | null>()
+
+        if (pendingSceneData.isPending) {
+          pendingSceneData.resolve(data)
+        }
+
+        if (!this.sceneIdToLandData.has(sceneId)) {
+          this.sceneIdToLandData.set(sceneId, pendingSceneData)
+        }
+      }
+
+      // missing tiles will correspond to empty parcels
+      for (const tile of missingTiles) {
+        const promise = this.positionToSceneId.get(tile)
+        if (promise?.isPending) {
+          promise?.resolve(null)
+        }
+      }
+    }
+
+    return Promise.all(futures)
   }
 
   async resolveSceneSceneId(pos: string): Promise<string | null> {
@@ -51,19 +131,21 @@ export class SceneDataDownloadManager {
         }
       )
     }
+
     if (this.positionToSceneId.has(pos)) {
       return this.positionToSceneId.get(pos)!
     }
+
     const promised = future<string | null>()
     this.positionToSceneId.set(pos, promised)
     const nw = pos.split(',').map($ => parseInt($, 10))
 
     try {
       const responseContent = await fetch(
-        this.options.metaContentServer + `/scenes?x1=${nw[0]}&x2=${nw[0]}&y1=${nw[1]}&y2=${nw[1]}`
+        this.options.metaContentService + `/scenes?x1=${nw[0]}&x2=${nw[0]}&y1=${nw[1]}&y2=${nw[1]}`
       )
       if (!responseContent.ok) {
-        error(`Error in ${this.options.metaContentServer}/scenes response!`, responseContent)
+        error(`Error in ${this.options.metaContentService}/scenes response!`, responseContent)
         promised.resolve(null)
         return null
       } else {
@@ -95,18 +177,17 @@ export class SceneDataDownloadManager {
     }
   }
 
-  createFakeILand(sceneId: string, coordinates: string) {
+  createFakeILand(sceneId: string, coordinates: string): ILand {
     const sceneName = this.emptySceneNames[Math.floor(Math.random() * this.emptySceneNames.length)]
+
     return {
       sceneId: sceneId,
       baseUrl: globalThis.location.origin + '/loader/empty-scenes/contents/',
       baseUrlBundles: this.options.contentServerBundles + '/',
-      name: 'Empty parcel',
-      scene: {
+      sceneJsonData: {
         display: { title: 'Empty parcel' },
+        contact: { name: 'Decentraland' },
         owner: '',
-        contact: {},
-        name: 'Empty parcel',
         main: `bin/game.js`,
         tags: [],
         scene: { parcels: [coordinates], base: coordinates },
@@ -115,9 +196,8 @@ export class SceneDataDownloadManager {
       },
       mappingsResponse: {
         parcel_id: coordinates,
-        contents: this.emptyScenes[sceneName],
         root_cid: sceneId,
-        publisher: '0x13371b17ddb77893cd19e10ffa58461396ebcc19'
+        contents: this.emptyScenes[sceneName]
       }
     }
   }
@@ -141,10 +221,10 @@ export class SceneDataDownloadManager {
       return promised
     }
 
-    const actualResponse = await fetch(this.options.metaContentServer + `/parcel_info?cids=${sceneId}`)
+    const actualResponse = await fetch(this.options.metaContentService + `/parcel_info?cids=${sceneId}`)
     if (!actualResponse.ok) {
-      error(`Error in ${this.options.metaContentServer}/parcel_info response!`, actualResponse)
-      const ret = new Error(`Error in ${this.options.metaContentServer}/parcel_info response!`)
+      error(`Error in ${this.options.metaContentService}/parcel_info response!`, actualResponse)
+      const ret = new Error(`Error in ${this.options.metaContentService}/parcel_info response!`)
       promised.reject(ret)
       throw ret
     }
@@ -152,16 +232,17 @@ export class SceneDataDownloadManager {
     if (!promised.isPending) {
       return promised
     }
-    const content = mappings.data[0]
-    if (!content || !content.content || !content.content.contents) {
-      logger.info(`Resolved ${sceneId} to null -- no contents`, content)
+    const parcelInfoResponse = mappings.data[0]
+    if (!parcelInfoResponse || !parcelInfoResponse.content || !parcelInfoResponse.content.contents) {
+      logger.info(`Resolved ${sceneId} to null -- no contents`, parcelInfoResponse)
       promised.resolve(null)
       return null
     }
-    const sceneJsonMapping = content.content.contents.find($ => $.file === 'scene.json')
+
+    const sceneJsonMapping = parcelInfoResponse.content.contents.find($ => $.file === 'scene.json')
 
     if (!sceneJsonMapping) {
-      logger.info(`Resolved ${sceneId} to null -- no sceneJsonMapping`)
+      logger.info(`Resolved ${sceneId} to null -- no scene.json`)
       promised.resolve(null)
       return null
     }
@@ -169,7 +250,7 @@ export class SceneDataDownloadManager {
     const baseUrl = this.options.contentServer + '/contents/'
     const baseUrlBundles = this.options.contentServerBundles + '/'
 
-    const scene = (await jsonFetch(baseUrl + sceneJsonMapping.hash)) as IScene
+    const scene = (await jsonFetch(baseUrl + sceneJsonMapping.hash)) as SceneJsonData
 
     if (!promised.isPending) {
       return promised
@@ -179,9 +260,8 @@ export class SceneDataDownloadManager {
       sceneId,
       baseUrl,
       baseUrlBundles,
-      name: scene.name,
-      scene,
-      mappingsResponse: content.content
+      sceneJsonData: scene,
+      mappingsResponse: parcelInfoResponse.content
     }
 
     const pendingSceneData = this.sceneIdToLandData.get(sceneId) || future<ILand | null>()

@@ -1,9 +1,10 @@
-import { call, put } from 'redux-saga/effects'
+import { call, put, select, take } from 'redux-saga/effects'
 import { getServerConfigurations } from '../../config/index'
-import { metaConfigurationInitialized } from './actions'
+import { metaConfigurationInitialized, META_CONFIGURATION_INITIALIZED } from './actions'
 import defaultLogger from '../logger'
 import { buildNumber } from './env'
 import { MetaConfiguration } from './types'
+import { isMetaConfigurationInitiazed } from './selectors'
 
 const DEFAULT_META_CONFIGURATION: MetaConfiguration = {
   explorer: {
@@ -13,6 +14,9 @@ const DEFAULT_META_CONFIGURATION: MetaConfiguration = {
     added: [],
     denied: [],
     contentWhitelist: []
+  },
+  world: {
+    pois: []
   }
 }
 
@@ -47,5 +51,11 @@ async function fetchMetaConfiguration() {
       `Error while fetching meta configuration from '${explorerConfigurationEndpoint}' using default config`
     )
     return DEFAULT_META_CONFIGURATION
+  }
+}
+
+export function* waitForMetaConfigurationInitialization() {
+  if (!(yield select(isMetaConfigurationInitiazed))) {
+    yield take(META_CONFIGURATION_INITIALIZED)
   }
 }

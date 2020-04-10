@@ -6,24 +6,22 @@ import {
   setAddedCatalystCandidates,
   setContentWhitelist
 } from './actions'
-import { call, put, takeEvery, take, select } from 'redux-saga/effects'
+import { call, put, takeEvery, select } from 'redux-saga/effects'
 import { pickCatalystRealm, fecthCatalystRealms, fetchCatalystStatuses } from './index'
 import { Realm, Candidate } from './types'
-import { META_CONFIGURATION_INITIALIZED } from '../meta/actions'
-import { getAddedServers, isMetaConfigurationInitiazed, getContentWhitelist } from '../meta/selectors'
+import { getAddedServers, getContentWhitelist } from '../meta/selectors'
 import { getRealmFromString } from '.'
 import { REALM } from 'config'
 import { getAllCatalystCandidates } from './selectors'
 import { WORLD_EXPLORER } from '../../config/index'
+import { waitForMetaConfigurationInitialization } from '../meta/sagas'
 
 export function* daoSaga(): any {
   yield takeEvery(WEB3_INITIALIZED, loadCatalystRealms)
 }
 
 function* loadCatalystRealms() {
-  if (!(yield select(isMetaConfigurationInitiazed))) {
-    yield take(META_CONFIGURATION_INITIALIZED)
-  }
+  yield call(waitForMetaConfigurationInitialization)
 
   if (WORLD_EXPLORER) {
     const candidates: Candidate[] = yield call(fecthCatalystRealms)

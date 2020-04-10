@@ -44,7 +44,10 @@ export class PositionLifecycleController extends EventEmitter {
       if (land) {
         const spawnPoint = pickWorldSpawnpoint(land)
         resolvedPosition = worldToGrid(spawnPoint.position)
-        this.queueTrackingEvent('Scene Spawn', { parcel: land.scene.scene.base, spawnpoint: spawnPoint.position })
+        this.queueTrackingEvent('Scene Spawn', {
+          parcel: land.sceneJsonData.scene.base,
+          spawnpoint: spawnPoint.position
+        })
 
         this.currentSpawnpoint = spawnPoint
       } else {

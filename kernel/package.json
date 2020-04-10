@@ -97,6 +97,7 @@
     "blob-to-buffer": "^1.2.8",
     "body-scroll-lock": "^2.5.10",
     "cids": "^0.7.3",
+    "dcl-catalyst-client": "^1.2.5",
     "dcl-crypto": "^1.7.0",
     "decentraland-katalyst-peer": "^0.1.36",
     "decentraland-renderer": "^1.8.15009",

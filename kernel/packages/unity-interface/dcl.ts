@@ -64,10 +64,8 @@ import {
   EnvironmentData,
   HUDConfiguration,
   ILand,
-  ILandToLoadableParcelScene,
-  ILandToLoadableParcelSceneUpdate,
   InstancedSpawnPoint,
-  IScene,
+  SceneJsonData,
   LoadableParcelScene,
   MappingsResponse,
   Notification,
@@ -91,6 +89,7 @@ import { ensureUiApis } from 'shared/world/uiSceneInitializer'
 import { worldRunningObservable } from 'shared/world/worldState'
 import { profileToRendererFormat } from 'shared/profiles/transformations/profileToRendererFormat'
 import { StoreContainer } from 'shared/store/rootTypes'
+import { ILandToLoadableParcelScene, ILandToLoadableParcelSceneUpdate } from 'shared/selectors'
 
 declare const globalThis: UnityInterfaceContainer &
   StoreContainer & { analytics: any; delighted: any } & { messages: (e: any) => void }
@@ -375,47 +374,7 @@ export function delightedSurvey() {
   }
 }
 
-const CHUNK_SIZE = 500
-
-export function* chunkGenerator(parcelChunkSize: number, info: MinimapSceneInfo[]) {
-  if (parcelChunkSize < 1) {
-    throw Error(`parcel chunk size (${parcelChunkSize}) cannot be less than 1`)
-  }
-
-  // flatten scene data into parcels
-  const parcels = info.reduce(
-    (parcels, elem, index) =>
-      parcels.concat(
-        elem.parcels.map(parcel => ({
-          index,
-          name: elem.name,
-          type: elem.type,
-          isPOI: elem.isPOI,
-          parcel
-        }))
-      ),
-    [] as { index: number; name: string; type: number; isPOI: boolean; parcel: { x: number; y: number } }[]
-  )
-
-  // split into chunk size + fold into scene
-  while (parcels.length > 0) {
-    const chunk = parcels
-      .splice(0, parcelChunkSize)
-      .reduce((scenes, parcel) => {
-        const scene = scenes.get(parcel.index)
-        if (scene) {
-          scene.parcels.push(parcel.parcel)
-        } else {
-          const newScene = { name: parcel.name, type: parcel.type, isPOI: parcel.isPOI, parcels: [parcel.parcel] }
-          scenes.set(parcel.index, newScene)
-        }
-        return scenes
-      }, new Map())
-      .values()
-
-    yield [...chunk]
-  }
-}
+const CHUNK_SIZE = 100
 
 export const unityInterface = {
   debug: false,
@@ -549,11 +508,9 @@ export const unityInterface = {
     gameInstance.SendMessage('HUDController', 'ConfigureTermsOfServiceHUD', JSON.stringify(configuration))
   },
   UpdateMinimapSceneInformation(info: MinimapSceneInfo[]) {
-    const chunks = chunkGenerator(CHUNK_SIZE, info)
-
-    for (const chunk of chunks) {
-      let jsonChunk = JSON.stringify(chunk)
-      gameInstance.SendMessage('SceneController', 'UpdateMinimapSceneInformation', jsonChunk)
+    for (let i = 0; i < info.length; i += CHUNK_SIZE) {
+      const chunk = info.slice(i, i + CHUNK_SIZE)
+      gameInstance.SendMessage('SceneController', 'UpdateMinimapSceneInformation', JSON.stringify(chunk))
     }
   },
   SetTutorialEnabled() {
@@ -955,16 +912,15 @@ export async function loadPreviewScene() {
     // we load the scene to get the metadata
     // about rhe bounds and position of the scene
     // TODO(fmiras): Validate scene according to https://github.com/decentraland/proposals/blob/master/dsp/0020.mediawiki
-    const scene = (await result.json()) as IScene
+    const scene = (await result.json()) as SceneJsonData
     const mappingsFetch = await fetch('/mappings')
     const mappingsResponse = (await mappingsFetch.json()) as MappingsResponse
 
     let defaultScene: ILand = {
-      name: scene.name,
       sceneId: 'previewScene',
       baseUrl: location.toString().replace(/\?[^\n]+/g, ''),
       baseUrlBundles: '',
-      scene,
+      sceneJsonData: scene,
       mappingsResponse: mappingsResponse
     }
 

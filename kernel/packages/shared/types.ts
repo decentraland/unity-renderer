@@ -1,4 +1,3 @@
-import { parseParcelPosition } from 'atomicHelpers/parcelScenePositions'
 import { Vector3Component } from '../atomicHelpers/landHelpers'
 import { QueryType } from 'decentraland-ecs/src/decentraland/PhysicsCast'
 
@@ -6,7 +5,6 @@ export { Avatar, Profile, ColorString, WearableId, Wearable } from './profiles/t
 
 export type MappingsResponse = {
   parcel_id: string
-  publisher: string
   root_cid: string
   contents: Array<ContentMapping>
 }
@@ -146,7 +144,7 @@ export const TextureWrapping = {
   MIRROR: 2
 }
 
-export type IBillboardModes = 0 | 1 | 2 | 3 | 4 | 5 | 6 | 7
+export type BillboardModes = 0 | 1 | 2 | 3 | 4 | 5 | 6 | 7
 
 export const TransparencyModes = {
   OPAQUE: 0,
@@ -155,24 +153,56 @@ export const TransparencyModes = {
   ALPHATESTANDBLEND: 3
 }
 
-export type ITransparencyModes = 0 | 1 | 2 | 3
+export type TransparencyModes = 0 | 1 | 2 | 3
 
-export interface ISceneCommunications {
+export type SceneCommunications = {
   commServerUrl: string | null
 }
 
+export type SceneDisplay = {
+  title?: string
+  favicon?: string
+  description?: string
+  navmapThumbnail?: string
+}
+
+export type SceneParcels = {
+  base: string // base parcel
+  parcels: string[]
+}
+
+export type SceneContact = {
+  name?: string
+  email?: string
+  im?: string
+  url?: string
+}
+
+export type ScenePolicy = {
+  contentRating?: string
+  fly?: boolean
+  voiceEnabled?: boolean
+  blacklist?: string[]
+  teleportPosition?: string
+}
+
+export type SceneSource = {
+  origin?: string
+  projectId?: string
+}
+
 /// https://github.com/decentraland/proposals/blob/master/dsp/0020.mediawiki
-export interface IScene {
-  assets?: Record<any, string>
+export type SceneJsonData = {
+  display?: SceneDisplay
+  owner?: string
+  contact?: SceneContact
   main: string
-  name: string
-  communications: ISceneCommunications | null
-  scene: {
-    base: string
-    parcels: string[]
-  }
-  spawnPoints?: SpawnPoint[]
-  _mappings?: Record<string, string>
+  tags?: string[]
+  scene: SceneParcels
+  communications?: SceneCommunications
+  policy?: ScenePolicy
+  source?: SceneSource
+  spawnPoints?: SceneSpawnPoint[]
 }
 
 export type EnvironmentData<T> = {
@@ -191,14 +221,13 @@ export interface ILand {
    * In the future will change to the sceneCID
    */
   sceneId: string
-  scene: IScene
-  name: string
+  sceneJsonData: SceneJsonData
   baseUrl: string
   baseUrlBundles: string
   mappingsResponse: MappingsResponse
 }
 
-export type SpawnPoint = {
+export type SceneSpawnPoint = {
   name?: string
   position: {
     x: number | number[]
@@ -351,88 +380,6 @@ export type HUDConfiguration = {
 
 export type WelcomeHUDControllerModel = HUDConfiguration & {
   hasWallet: boolean
-}
-
-export function normalizeContentMappings(
-  mappings: Record<string, string> | Array<ContentMapping>
-): Array<ContentMapping> {
-  const ret: Array<ContentMapping> = []
-
-  if (typeof mappings.length === 'number' || mappings instanceof Array) {
-    ret.push(...(mappings as any))
-  } else {
-    for (let key in mappings) {
-      const file = key.toLowerCase()
-
-      ret.push({ file, hash: mappings[key] })
-    }
-  }
-
-  return ret
-}
-
-export function ILandToLoadableParcelScene(land: ILand): EnvironmentData<LoadableParcelScene> {
-  const mappings: ContentMapping[] = normalizeContentMappings(land.mappingsResponse.contents)
-  const sceneJsons = land.mappingsResponse.contents.filter(land => land.file === 'scene.json')
-  if (!sceneJsons.length) {
-    throw new Error('Invalid scene mapping: no scene.json')
-  }
-
-  const ret: EnvironmentData<LoadableParcelScene> = {
-    sceneId: land.sceneId,
-    baseUrl: land.baseUrl,
-    name: land.scene.name,
-    main: land.scene.main,
-    useFPSThrottling: false,
-    mappings,
-    data: {
-      id: land.sceneId,
-      basePosition: parseParcelPosition(land.scene.scene.base),
-      name: land.scene.name || 'Unnamed',
-      parcels:
-        (land.scene &&
-          land.scene.scene &&
-          land.scene.scene.parcels &&
-          land.scene.scene.parcels.map(parseParcelPosition)) ||
-        [],
-      baseUrl: land.baseUrl,
-      baseUrlBundles: land.baseUrlBundles,
-      contents: mappings,
-      land
-    }
-  }
-
-  return ret
-}
-
-export function ILandToLoadableParcelSceneUpdate(land: ILand): EnvironmentData<LoadableParcelScene> {
-  const mappings: ContentMapping[] = normalizeContentMappings(land.mappingsResponse.contents)
-
-  const ret: EnvironmentData<LoadableParcelScene> = {
-    sceneId: land.sceneId,
-    baseUrl: land.baseUrl,
-    name: land.scene.name,
-    main: land.scene.main,
-    useFPSThrottling: false,
-    mappings,
-    data: {
-      id: land.sceneId,
-      basePosition: parseParcelPosition('0,0'),
-      name: land.scene.name || 'Unnamed',
-      parcels:
-        (land.scene &&
-          land.scene.scene &&
-          land.scene.scene.parcels &&
-          land.scene.scene.parcels.map(parseParcelPosition)) ||
-        [],
-      baseUrl: land.baseUrl,
-      baseUrlBundles: land.baseUrlBundles,
-      contents: mappings,
-      land
-    }
-  }
-
-  return ret
 }
 
 export type CatalystNode = {

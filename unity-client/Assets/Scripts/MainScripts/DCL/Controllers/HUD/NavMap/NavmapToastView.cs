@@ -17,10 +17,14 @@ namespace DCL
 
         [SerializeField] internal Button goToButton;
         [SerializeField] internal Button closeButton;
+        Vector2Int location;
 
         public System.Action OnGotoClicked;
 
-        Vector2Int location;
+        public bool isOpen
+        {
+            get { return gameObject.activeInHierarchy; }
+        }
 
         private void Awake()
         {
@@ -63,7 +67,7 @@ namespace DCL
             }
         }
 
-        private void OnCloseClick()
+        public void OnCloseClick()
         {
             gameObject.SetActive(false);
         }
