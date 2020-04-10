@@ -5,13 +5,19 @@
         "GUID:cc6bfabbfe87b7949aa248893f89ce37",
         "GUID:760a1d365aad58044916992b072cf2a6",
         "GUID:b1087c5731ff68448a0a9c625bb7e52d",
-        "GUID:ef84d7ce90ba34f07be26ace428e9bc8"
+        "GUID:ef84d7ce90ba34f07be26ace428e9bc8",
+        "GUID:e65144cdbd5b744238fa03c40df6cd71",
+        "GUID:9f4484ae8136fa349ab34f69cdc240ff",
+        "GUID:9fad297e585ef204c9c2c497d77099f0",
+        "GUID:43315b150e1df4592868fc0fe58b3429",
+        "GUID:7ac9f9c835ec1084ab35e3f9b176cf1e"
     ],
     "optionalUnityReferences": [
         "TestAssemblies"
     ],
     "includePlatforms": [
         "Android",
+        "Editor",
         "iOS",
         "LinuxStandalone32",
         "LinuxStandalone64",
