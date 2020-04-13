@@ -12,10 +12,10 @@ namespace DCL
         [SerializeField] InputAction_Trigger toggleNavMapAction;
         [SerializeField] InputAction_Trigger selectParcelAction;
         [SerializeField] Button closeButton;
-        [SerializeField] ScrollRect scrollRect;
+        [SerializeField] internal ScrollRect scrollRect;
         [SerializeField] Transform scrollRectContentTransform;
-        [SerializeField] TextMeshProUGUI currentSceneNameText;
-        [SerializeField] TextMeshProUGUI currentSceneCoordsText;
+        [SerializeField] internal TextMeshProUGUI currentSceneNameText;
+        [SerializeField] internal TextMeshProUGUI currentSceneCoordsText;
         [SerializeField] internal NavmapToastView toastView;
 
         InputAction_Trigger.Triggered toggleNavMapDelegate;
