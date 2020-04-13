@@ -1,4 +1,4 @@
-using DCL.Components;
+﻿using DCL.Components;
 using DCL.Configuration;
 using DCL.Helpers;
 using Newtonsoft.Json;
@@ -26,6 +26,8 @@ namespace Tests
             yield return null;
 
             Assert.AreEqual(new Vector3(10f, 2f, 10f), DCLCharacterController.i.transform.position);
+            DCLCharacterController.i.characterController.enabled = true;
+            DCLCharacterController.i.ResumeGravity();
         }
 
         [UnityTest]
