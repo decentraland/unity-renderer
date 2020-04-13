@@ -1,8 +1,6 @@
-﻿using DCL;
-using DCL.Models;
 using DCL.Components;
 using DCL.Helpers;
-using Newtonsoft.Json;
+using DCL.Models;
 using NUnit.Framework;
 using System.Collections;
 using UnityEngine;
@@ -12,6 +10,8 @@ public class UIContainerRectVisualTests : UIVisualTestsBase
 {
     [UnityTest]
     [Explicit]
+    [VisualTest]
+    [Category("Visual Tests")]
     public IEnumerator UIContainerRectVisualTests_Generate()
     {
         yield return VisualTestHelpers.GenerateBaselineForTest(UIContainerRectTest1());
@@ -19,6 +19,7 @@ public class UIContainerRectVisualTests : UIVisualTestsBase
 
     [UnityTest]
     [VisualTest]
+    [Category("Visual Tests")]
     public IEnumerator UIContainerRectTest1()
     {
         yield return InitUIVisualTestScene("UIContainerRectTest");
