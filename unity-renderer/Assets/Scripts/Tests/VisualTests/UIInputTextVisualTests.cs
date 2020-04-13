@@ -1,8 +1,6 @@
-﻿using DCL;
-using DCL.Models;
 using DCL.Components;
 using DCL.Helpers;
-using Newtonsoft.Json;
+using DCL.Models;
 using NUnit.Framework;
 using System.Collections;
 using UnityEngine;
@@ -12,6 +10,8 @@ public class UIInputTextVisualTests : UIVisualTestsBase
 {
     [UnityTest]
     [Explicit]
+    [VisualTest]
+    [Category("Visual Tests")]
     public IEnumerator UIInputTextVisualTests_Generate()
     {
         yield return VisualTestHelpers.GenerateBaselineForTest(UIInputTextTest1());
@@ -19,6 +19,7 @@ public class UIInputTextVisualTests : UIVisualTestsBase
 
     [UnityTest]
     [VisualTest]
+    [Category("Visual Tests")]
     public IEnumerator UIInputTextTest1()
     {
         yield return InitUIVisualTestScene("UIInputTextTest");
