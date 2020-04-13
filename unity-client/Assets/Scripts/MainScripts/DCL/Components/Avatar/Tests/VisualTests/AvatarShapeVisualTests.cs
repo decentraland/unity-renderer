@@ -1,6 +1,7 @@
 using AvatarShape_Tests;
 using DCL;
 using DCL.Helpers;
+using NUnit.Framework;
 using System.Collections;
 using UnityEngine;
 using UnityEngine.TestTools;
@@ -13,12 +14,15 @@ namespace Tests
         [UnityTest]
         [VisualTest]
         [NUnit.Framework.Explicit]
+        [Category("Visual Tests")]
         public IEnumerator AvatarShapeVisualTest_Generate()
         {
             yield return VisualTestHelpers.GenerateBaselineForTest(AvatarShapeVisualTest1());
         }
 
         [UnityTest]
+        [VisualTest]
+        [Category("Visual Tests")]
         public IEnumerator AvatarShapeVisualTest1()
         {
             yield return InitScene();
@@ -43,12 +47,14 @@ namespace Tests
         [UnityTest]
         [VisualTest]
         [NUnit.Framework.Explicit]
+        [Category("Visual Tests")]
         public IEnumerator AvatarShapeVisualTest2_Generate()
         {
             yield return VisualTestHelpers.GenerateBaselineForTest(AvatarShapeVisualTest2());
         }
 
         [UnityTest]
+        [Category("Visual Tests")]
         public IEnumerator AvatarShapeVisualTest2()
         {
             yield return InitScene();

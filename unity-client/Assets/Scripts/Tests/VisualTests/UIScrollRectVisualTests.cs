@@ -1,8 +1,6 @@
-﻿using DCL;
-using DCL.Models;
 using DCL.Components;
 using DCL.Helpers;
-using Newtonsoft.Json;
+using DCL.Models;
 using NUnit.Framework;
 using System.Collections;
 using UnityEngine;
@@ -11,7 +9,9 @@ using UnityEngine.TestTools;
 public class UIScrollRectVisualTests : UIVisualTestsBase
 {
     [UnityTest]
+    [VisualTest]
     [Explicit]
+    [Category("Visual Tests")]
     public IEnumerator UIScrollRectVisualTests_Generate()
     {
         yield return VisualTestHelpers.GenerateBaselineForTest(UIScrollRectTest1());
@@ -19,6 +19,7 @@ public class UIScrollRectVisualTests : UIVisualTestsBase
 
     [UnityTest]
     [VisualTest]
+    [Category("Visual Tests")]
     public IEnumerator UIScrollRectTest1()
     {
         yield return InitUIVisualTestScene("UIScrollRectTest");
