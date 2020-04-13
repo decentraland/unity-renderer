@@ -6,20 +6,27 @@ set -x
 echo "Running tests for $BUILD_TARGET"
 
 export BUILD_PATH=./Builds/$BUILD_NAME/
+export PROJECT_PATH=/tmp/explorer/unity-client/testlog
+export LOG_PATH=$PROJECT_PATH/testlog
+
 mkdir -p $BUILD_PATH
 
 cd $BUILD_PATH
 export BUILD_PATH=$PWD
 cd ../..
 
-${UNITY_EXECUTABLE:-xvfb-run --auto-servernum --server-args='-screen 0 640x480x24' /opt/Unity/Editor/Unity} \
+${UNITY_EXECUTABLE:-xvfb-run --auto-servernum --server-args='-screen 0 1280x720x24' /opt/Unity/Editor/Unity} \
   -projectPath $(pwd) \
   -buildTarget $BUILD_TARGET \
   -runTests \
   -testPlatform playmode \
-  -testResults /tmp/explorer/unity-client/testlog/results.xml \
-  -logFile /tmp/explorer/unity-client/testlog/log.txt \
+  -testResults $PROJECT_PATH/results.xml \
+  -logFile $PROJECT_PATH/log.txt \
+  -screen-height 720 \
+  -screen-width 1280 \
   -batchmode
+
+cp $PROJECT_PATH/TestResources/VisualTests/CurrentTestImages/*.png $LOG_PATH
 
 UNITY_EXIT_CODE=$?
 
