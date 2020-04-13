@@ -1,4 +1,4 @@
-﻿using DCL.Configuration;
+using DCL.Configuration;
 using System.Collections;
 using System.IO;
 using UnityEngine;
@@ -123,6 +123,7 @@ namespace DCL.Helpers
             yield return null;
 
             RenderTexture renderTexture = new RenderTexture(width, height, 24);
+            camera.aspect = width / height;
             camera.targetTexture = renderTexture;
             camera.Render();
 
