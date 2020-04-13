@@ -97,7 +97,7 @@ LightmapSettings:
     m_ShowResolutionOverlay: 1
     m_ExportTrainingData: 0
   m_LightingDataAsset: {fileID: 0}
-  m_UseShadowmask: 1
+  m_UseShadowmask: 0
 --- !u!196 &4
 NavMeshSettings:
   serializedVersion: 2
@@ -554,7 +554,7 @@ MonoBehaviour:
   renderingController: {fileID: 322303339}
   characterController: {fileID: 1989862556}
   cameraController: {fileID: 1608366483}
-  openBrowserWhenStart: 0
+  openBrowserWhenStart: 1
   useCustomContentServer: 0
   customContentServerUrl: http://localhost:1338/
   baseUrlMode: 0

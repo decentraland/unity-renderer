@@ -142,7 +142,7 @@ MonoBehaviour:
   m_text: S
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 26b03903800224f718b64e9afbc91b61, type: 2}
-  m_sharedMaterial: {fileID: 2100000, guid: cbef7abfd5b4443bf9d5c298a464b5a6, type: 2}
+  m_sharedMaterial: {fileID: 2100000, guid: 7dfa1f6019e8840a797a48955651317e, type: 2}
   m_fontSharedMaterials: []
   m_fontMaterial: {fileID: 0}
   m_fontMaterials: []
@@ -299,7 +299,7 @@ MonoBehaviour:
   m_text: N
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 26b03903800224f718b64e9afbc91b61, type: 2}
-  m_sharedMaterial: {fileID: 2100000, guid: cbef7abfd5b4443bf9d5c298a464b5a6, type: 2}
+  m_sharedMaterial: {fileID: 2100000, guid: 7dfa1f6019e8840a797a48955651317e, type: 2}
   m_fontSharedMaterials: []
   m_fontMaterial: {fileID: 0}
   m_fontMaterials: []
@@ -1040,7 +1040,7 @@ GameObject:
   - component: {fileID: 3023597793975970436}
   - component: {fileID: 5812203094123044863}
   m_Layer: 5
-  m_Name: N
+  m_Name: Key
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -1096,8 +1096,7 @@ MonoBehaviour:
   m_text: M
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 131598e906f4d4a048cfa339caa74472, type: 2}
-  m_sharedMaterial: {fileID: -2930943361234166642, guid: 131598e906f4d4a048cfa339caa74472,
-    type: 2}
+  m_sharedMaterial: {fileID: 2100000, guid: 8f0c7039aba8d420aad6241bf1b80584, type: 2}
   m_fontSharedMaterials: []
   m_fontMaterial: {fileID: 0}
   m_fontMaterials: []
@@ -1254,7 +1253,7 @@ MonoBehaviour:
   m_text: W
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 26b03903800224f718b64e9afbc91b61, type: 2}
-  m_sharedMaterial: {fileID: 2100000, guid: cbef7abfd5b4443bf9d5c298a464b5a6, type: 2}
+  m_sharedMaterial: {fileID: 2100000, guid: 7dfa1f6019e8840a797a48955651317e, type: 2}
   m_fontSharedMaterials: []
   m_fontMaterial: {fileID: 0}
   m_fontMaterials: []
@@ -1725,6 +1724,7 @@ GameObject:
   - component: {fileID: 8540544952857596789}
   - component: {fileID: 8278114066472325544}
   - component: {fileID: 2859839270417482854}
+  - component: {fileID: 269540385008896160}
   m_Layer: 5
   m_Name: MinimapHUD
   m_TagString: Untagged
@@ -1834,6 +1834,14 @@ MonoBehaviour:
   mapRenderContainer: {fileID: 1347496358759656025}
   mapViewport: {fileID: 7368721439090438775}
   openNavmapButton: {fileID: 5098086527300088398}
+--- !u!222 &269540385008896160
+CanvasRenderer:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4525154057530514719}
+  m_CullTransparentMesh: 0
 --- !u!1 &4665053653492846095
 GameObject:
   m_ObjectHideFlags: 0
@@ -2901,7 +2909,7 @@ MonoBehaviour:
   m_text: E
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 26b03903800224f718b64e9afbc91b61, type: 2}
-  m_sharedMaterial: {fileID: 2100000, guid: cbef7abfd5b4443bf9d5c298a464b5a6, type: 2}
+  m_sharedMaterial: {fileID: 2100000, guid: 7dfa1f6019e8840a797a48955651317e, type: 2}
   m_fontSharedMaterials: []
   m_fontMaterial: {fileID: 0}
   m_fontMaterials: []
