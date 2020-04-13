@@ -122,8 +122,7 @@ jobs:
             - /tmp/explorer/unity-client/TestResources/VisualTests/CurrentTestImages/*.png
       - store_artifacts:
           name: Store test result as artifacts
-          paths: 
-            - /tmp/explorer/unity-client/testlog
+          path:
             - /tmp/explorer/unity-client/TestResources/VisualTests/CurrentTestImages
 
   build-unity:
