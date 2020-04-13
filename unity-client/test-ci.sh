@@ -6,7 +6,7 @@ set -x
 echo "Running tests for $BUILD_TARGET"
 
 export BUILD_PATH=./Builds/$BUILD_NAME/
-export PROJECT_PATH=/tmp/explorer/unity-client/testlog
+export PROJECT_PATH=/tmp/explorer/unity-client
 export LOG_PATH=$PROJECT_PATH/testlog
 
 mkdir -p $BUILD_PATH
@@ -20,10 +20,8 @@ ${UNITY_EXECUTABLE:-xvfb-run --auto-servernum --server-args='-screen 0 1024x768x
   -buildTarget $BUILD_TARGET \
   -runTests \
   -testPlatform playmode \
-  -testResults $PROJECT_PATH/results.xml \
-  -logFile $PROJECT_PATH/log.txt \
-  -screen-height 720 \
-  -screen-width 1280 \
+  -testResults $LOG_PATH/results.xml \
+  -logFile $LOG_PATH/log.txt \
   -batchmode
 
 echo "Copying visual tests results"
