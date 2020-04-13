@@ -25,10 +25,9 @@ namespace DCL
         Vector3 atlasOriginalPosition;
         MinimapMetadata mapMetadata;
         bool cursorLockedBeforeOpening = true;
-        Vector2Int lastParcelClicked = new Vector2Int();
 
         // TODO: remove this bool and its usage once the feature is ready to be shippped.
-        bool enableInProduction = false;
+        bool enableInProduction = true;
 
         public static bool isOpen
         {
@@ -41,14 +40,21 @@ namespace DCL
             mapMetadata = MinimapMetadata.GetMetadata();
 
             closeButton.onClick.AddListener(() => { ToggleNavMap(); });
-            scrollRect.onValueChanged.AddListener((x) => { if (isOpen) MapRenderer.i.atlas.UpdateCulling(); });
+            scrollRect.onValueChanged.AddListener((x) =>
+            {
+                if (!isOpen) return;
+
+                MapRenderer.i.atlas.UpdateCulling();
+                toastView.OnCloseClick();
+            });
 
             toggleNavMapDelegate = (x) => { if (!Input.GetKeyDown(KeyCode.Escape) || isOpen) ToggleNavMap(); };
             toggleNavMapAction.OnTriggered += toggleNavMapDelegate;
             toastView.OnGotoClicked += ToggleNavMap;
 
-            MapRenderer.OnParcelClicked += (x, y) => OnParcelClicked(x, y);
-            mapMetadata.OnSceneInfoUpdated += OnMapMetadataInfoUpdated;
+            MapRenderer.OnParcelClicked += TriggerToast;
+            MapRenderer.OnParcelHold += TriggerToast;
+            MapRenderer.OnParcelHoldCancel += () => { toastView.OnCloseClick(); };
 
             MinimapHUDView.OnUpdateData += UpdateCurrentSceneData;
             MinimapHUDView.OnOpenNavmapClicked += ToggleNavMap;
@@ -61,8 +67,9 @@ namespace DCL
         {
             toastView.OnGotoClicked -= ToggleNavMap;
             MinimapHUDView.OnUpdateData -= UpdateCurrentSceneData;
-            mapMetadata.OnSceneInfoUpdated -= OnMapMetadataInfoUpdated;
             MinimapHUDView.OnOpenNavmapClicked -= ToggleNavMap;
+            MapRenderer.OnParcelClicked -= TriggerToast;
+            MapRenderer.OnParcelHold -= TriggerToast;
         }
 
         internal void ToggleNavMap()
@@ -127,19 +134,13 @@ namespace DCL
             currentSceneCoordsText.text = model.playerPosition;
         }
 
-        void OnParcelClicked(int mouseTileX, int mouseTileY, bool requestSceneInfoIfMissing = true)
+        void TriggerToast(int cursorTileX, int cursorTileY)
         {
-            var sceneInfo = mapMetadata.GetSceneInfo(mouseTileX, mouseTileY);
-            if (requestSceneInfoIfMissing && sceneInfo == null)
-                WebInterface.RequestScenesInfoAroundParcel(new Vector2(mouseTileX, mouseTileY), 1);
+            var sceneInfo = mapMetadata.GetSceneInfo(cursorTileX, cursorTileY);
+            if (sceneInfo == null)
+                WebInterface.RequestScenesInfoAroundParcel(new Vector2(cursorTileX, cursorTileY), 1);
 
-            toastView.Populate(new Vector2Int(mouseTileX, mouseTileY), sceneInfo);
-            lastParcelClicked.Set(mouseTileX, mouseTileY);
-        }
-
-        void OnMapMetadataInfoUpdated(MinimapMetadata.MinimapSceneInfo sceneInfo)
-        {
-            if (toastView.isOpen) OnParcelClicked(lastParcelClicked.x, lastParcelClicked.y, false);
+            toastView.Populate(new Vector2Int(cursorTileX, cursorTileY), sceneInfo);
         }
     }
 }
