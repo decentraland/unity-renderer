@@ -1,8 +1,7 @@
-﻿using DCL;
-using DCL.Models;
+using DCL;
 using DCL.Components;
 using DCL.Helpers;
-using Newtonsoft.Json;
+using DCL.Models;
 using NUnit.Framework;
 using System.Collections;
 using UnityEngine;
@@ -12,6 +11,8 @@ public class UIContainerStackVisualTests : UIVisualTestsBase
 {
     [UnityTest]
     [Explicit]
+    [VisualTest]
+    [Category("Visual Tests")]
     public IEnumerator UIContainerStackVisualTests_Generate()
     {
         yield return VisualTestHelpers.GenerateBaselineForTest(UIContainerStackTest1());
@@ -19,6 +20,7 @@ public class UIContainerStackVisualTests : UIVisualTestsBase
 
     [UnityTest]
     [VisualTest]
+    [Category("Visual Tests")]
     public IEnumerator UIContainerStackTest1()
     {
         yield return InitUIVisualTestScene("UIContainerStackTest");
