@@ -119,9 +119,12 @@ jobs:
           key: unity-tests-{{ checksum "../.unitysources-checksum" }}
           paths:
             - /tmp/explorer/unity-client/testlog/log.txt
+            - /tmp/explorer/unity-client/TestResources/VisualTests/CurrentTestImages/*.png
       - store_artifacts:
           name: Store test result as artifacts
-          path: /tmp/explorer/unity-client/testlog
+          paths: 
+            - /tmp/explorer/unity-client/testlog
+            - /tmp/explorer/unity-client/TestResources/VisualTests/CurrentTestImages
 
   build-unity:
     <<: *working_directory_unity

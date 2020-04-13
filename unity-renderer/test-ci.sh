@@ -24,9 +24,6 @@ ${UNITY_EXECUTABLE:-xvfb-run --auto-servernum --server-args='-screen 0 1024x768x
   -logFile $LOG_PATH/log.txt \
   -batchmode
 
-echo "Copying visual tests results"
-cp -v $PROJECT_PATH/TestResources/VisualTests/CurrentTestImages/*.png $LOG_PATH
-
 UNITY_EXIT_CODE=$?
 
 if [ $UNITY_EXIT_CODE -eq 0 ]; then
