@@ -23,6 +23,7 @@ namespace Tests
         [UnityTest]
         [VisualTest]
         [Category("Visual Tests")]
+        [NUnit.Framework.Explicit]
         public IEnumerator AvatarShapeVisualTest1()
         {
             yield return InitScene();
