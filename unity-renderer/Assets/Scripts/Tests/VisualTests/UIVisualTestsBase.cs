@@ -8,6 +8,11 @@ public class UIVisualTestsBase : VisualTestsBase
 {
     protected string screenSpaceId;
 
+    protected override IEnumerator SetUp()
+    {
+        yield break;
+    }
+
     protected IEnumerator InitUIVisualTestScene(string testName)
     {
         yield return InitScene();

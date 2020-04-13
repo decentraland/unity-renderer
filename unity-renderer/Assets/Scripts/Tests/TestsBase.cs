@@ -52,6 +52,12 @@ public class TestsBase
         PoolManager.i?.Cleanup();
         PointerEventsController.i?.Cleanup();
 
+        if (DCLCharacterController.i != null)
+        {
+            DCLCharacterController.i.ResumeGravity();
+            DCLCharacterController.i.enabled = true;
+        }
+
         Caching.ClearCache();
         Resources.UnloadUnusedAssets();
 

@@ -9,7 +9,7 @@ namespace Tests
         protected override IEnumerator SetUp()
         {
             yield return base.SetUp();
-            DCLCharacterController.i.gravity = 0f;
+            DCLCharacterController.i.PauseGravity();
             TestHelpers.SetCharacterPosition(new Vector3(8f, 0f, 8f));
         }
 

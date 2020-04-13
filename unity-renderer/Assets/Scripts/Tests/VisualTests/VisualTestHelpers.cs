@@ -29,7 +29,7 @@ namespace DCL.Helpers
             currentTestName = testName;
             snapshotIndex = 0;
 
-            DCLCharacterController.i.gravity = 0f;
+            DCLCharacterController.i.PauseGravity();
             DCLCharacterController.i.enabled = false;
 
             // Position character inside parcel (0,0)
@@ -123,7 +123,6 @@ namespace DCL.Helpers
             yield return null;
 
             RenderTexture renderTexture = new RenderTexture(width, height, 24);
-            camera.aspect = width / height;
             camera.targetTexture = renderTexture;
             camera.Render();
 
