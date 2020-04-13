@@ -23,6 +23,7 @@ namespace Tests
         [UnityTest]
         [VisualTest]
         [Category("Visual Tests")]
+        [Category("Explicit")]
         [NUnit.Framework.Explicit]
         public IEnumerator AvatarShapeVisualTest1()
         {
@@ -49,6 +50,7 @@ namespace Tests
         [VisualTest]
         [NUnit.Framework.Explicit]
         [Category("Visual Tests")]
+        [Category("Explicit")]
         public IEnumerator AvatarShapeVisualTest2_Generate()
         {
             yield return VisualTestHelpers.GenerateBaselineForTest(AvatarShapeVisualTest2());
