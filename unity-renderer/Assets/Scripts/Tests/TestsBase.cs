@@ -56,6 +56,7 @@ public class TestsBase
         {
             DCLCharacterController.i.ResumeGravity();
             DCLCharacterController.i.enabled = true;
+            DCLCharacterController.i.characterController.enabled = true;
         }
 
         Caching.ClearCache();
