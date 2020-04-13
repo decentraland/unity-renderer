@@ -2,6 +2,7 @@ using DCL.Helpers;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
+using UnityEngine.EventSystems;
 using TMPro;
 
 namespace DCL
@@ -13,17 +14,25 @@ namespace DCL
         const int TOP_BORDER_PARCELS = 31;
         const int BOTTOM_BORDER_PARCELS = 25;
         const int WORLDMAP_WIDTH_IN_PARCELS = 300;
+        private int NAVMAP_CHUNK_LAYER;
 
         public static MapRenderer i { get; private set; }
 
         [SerializeField] private float parcelHightlightScale = 1.25f;
+        [SerializeField] private float parcelHoldTimeInSeconds = 1f;
+        [SerializeField] private Button ParcelHighlightButton;
         private float parcelSizeInMap;
         private Vector3Variable playerWorldPosition => CommonScriptableObjects.playerWorldPosition;
         private Vector3Variable playerRotation => CommonScriptableObjects.cameraForward;
         private Vector3[] mapWorldspaceCorners = new Vector3[4];
         private Vector3 worldCoordsOriginInMap;
+        private Vector3 lastCursorMapCoords;
+        private float parcelHoldCountdown;
+        private List<RaycastResult> uiRaycastResults = new List<RaycastResult>();
+        private PointerEventData uiRaycastPointerEventData = new PointerEventData(EventSystem.current);
 
-        [HideInInspector] public Vector3 mouseMapCoords;
+        [HideInInspector] public Vector3 cursorMapCoords;
+        [HideInInspector] public bool showCursorCoords = true;
         public Vector3 playerGridPosition => Utils.WorldToGridPositionUnclamped(playerWorldPosition.Get());
         public MapAtlas atlas;
         public RawImage parcelHighlightImage;
@@ -55,15 +64,25 @@ namespace DCL
         }
 
         public static System.Action<int, int> OnParcelClicked;
+        public static System.Action<int, int> OnParcelHold;
+        public static System.Action OnParcelHoldCancel;
 
         private void Awake()
         {
             i = this;
+
+            NAVMAP_CHUNK_LAYER = LayerMask.NameToLayer("NavmapChunk");
+
             MinimapMetadata.GetMetadata().OnSceneInfoUpdated += MapRenderer_OnSceneInfoUpdated;
+
+            ParcelHighlightButton.onClick.AddListener(() => { ClickMousePositionParcel(); });
+
             playerWorldPosition.OnChange += OnCharacterMove;
             playerRotation.OnChange += OnCharacterRotate;
 
             parcelHighlightImage.rectTransform.localScale = new Vector3(parcelHightlightScale, parcelHightlightScale, 1f);
+
+            parcelHoldCountdown = parcelHoldTimeInSeconds;
         }
 
         void Update()
@@ -76,23 +95,37 @@ namespace DCL
             centeredReferenceParcel.GetWorldCorners(mapWorldspaceCorners);
             worldCoordsOriginInMap = mapWorldspaceCorners[0];
 
-            UpdateMouseMapCoords();
+            UpdateCursorMapCoords();
 
             UpdateParcelHighlight();
+
+            UpdateParcelHold();
+
+            lastCursorMapCoords = cursorMapCoords;
         }
 
-        void UpdateMouseMapCoords()
+        void UpdateCursorMapCoords()
         {
-            mouseMapCoords = Input.mousePosition - worldCoordsOriginInMap;
-            mouseMapCoords = mouseMapCoords / parcelSizeInMap;
+            if (!IsCursorOverMapChunk()) return;
 
-            mouseMapCoords.x = (int)Mathf.Floor(mouseMapCoords.x);
-            mouseMapCoords.y = (int)Mathf.Floor(mouseMapCoords.y);
+            cursorMapCoords = Input.mousePosition - worldCoordsOriginInMap;
+            cursorMapCoords = cursorMapCoords / parcelSizeInMap;
+
+            cursorMapCoords.x = (int)Mathf.Floor(cursorMapCoords.x);
+            cursorMapCoords.y = (int)Mathf.Floor(cursorMapCoords.y);
+        }
+
+        bool IsCursorOverMapChunk()
+        {
+            uiRaycastPointerEventData.position = Input.mousePosition;
+            EventSystem.current.RaycastAll(uiRaycastPointerEventData, uiRaycastResults);
+
+            return uiRaycastResults.Count > 0 && uiRaycastResults[0].gameObject.layer == NAVMAP_CHUNK_LAYER;
         }
 
         void UpdateParcelHighlight()
         {
-            if (!CoordinatesAreInsideTheWorld((int)mouseMapCoords.x, (int)mouseMapCoords.y))
+            if (!CoordinatesAreInsideTheWorld((int)cursorMapCoords.x, (int)cursorMapCoords.y))
             {
                 if (parcelHighlightImage.gameObject.activeSelf)
                     parcelHighlightImage.gameObject.SetActive(false);
@@ -103,12 +136,34 @@ namespace DCL
             if (!parcelHighlightImage.gameObject.activeSelf)
                 parcelHighlightImage.gameObject.SetActive(true);
 
-            parcelHighlightImage.transform.position = worldCoordsOriginInMap + mouseMapCoords * parcelSizeInMap + new Vector3(parcelSizeInMap, parcelSizeInMap, 0f) / 2;
-            highlightedParcelText.text = $"{mouseMapCoords.x}, {mouseMapCoords.y}";
+            parcelHighlightImage.transform.position = worldCoordsOriginInMap + cursorMapCoords * parcelSizeInMap + new Vector3(parcelSizeInMap, parcelSizeInMap, 0f) / 2;
+            highlightedParcelText.text = showCursorCoords ? $"{cursorMapCoords.x}, {cursorMapCoords.y}" : string.Empty;
 
             // ----------------------------------------------------
             // TODO: Use sceneInfo to highlight whole scene parcels and populate scenes hover info on navmap once we can access all the scenes info
-            // var sceneInfo = mapMetadata.GetSceneInfo(mouseMapCoords.x, mouseMapCoords.y);
+            // var sceneInfo = mapMetadata.GetSceneInfo(cursorMapCoords.x, cursorMapCoords.y);
+        }
+
+        void UpdateParcelHold()
+        {
+            if (cursorMapCoords == lastCursorMapCoords)
+            {
+                if (parcelHoldCountdown <= 0f) return;
+
+                parcelHoldCountdown -= Time.deltaTime;
+
+                if (parcelHoldCountdown <= 0)
+                {
+                    parcelHoldCountdown = 0f;
+                    highlightedParcelText.text = string.Empty;
+                    OnParcelHold?.Invoke((int)cursorMapCoords.x, (int)cursorMapCoords.y);
+                }
+            }
+            else
+            {
+                parcelHoldCountdown = parcelHoldTimeInSeconds;
+                OnParcelHoldCancel?.Invoke();
+            }
         }
 
         bool CoordinatesAreInsideTheWorld(int xCoord, int yCoord)
@@ -203,7 +258,8 @@ namespace DCL
         // Called by the parcelhighlight image button
         public void ClickMousePositionParcel()
         {
-            OnParcelClicked?.Invoke((int)mouseMapCoords.x, (int)mouseMapCoords.y);
+            highlightedParcelText.text = string.Empty;
+            OnParcelClicked?.Invoke((int)cursorMapCoords.x, (int)cursorMapCoords.y);
         }
     }
 }

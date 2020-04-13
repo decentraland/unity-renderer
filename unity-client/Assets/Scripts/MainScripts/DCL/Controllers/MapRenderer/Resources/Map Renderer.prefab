@@ -248,7 +248,10 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   parcelHightlightScale: 1.25
-  mouseMapCoords: {x: 0, y: 0, z: 0}
+  parcelHoldTimeInSeconds: 1
+  ParcelHighlightButton: {fileID: 3511145948971381255}
+  cursorMapCoords: {x: 0, y: 0, z: 0}
+  showCursorCoords: 1
   atlas: {fileID: 8867674412829076673}
   parcelHighlightImage: {fileID: 5226131346438990493}
   highlightedParcelText: {fileID: 7940259258301411768}
@@ -481,18 +484,7 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 5226131346438990493}
   m_OnClick:
     m_PersistentCalls:
-      m_Calls:
-      - m_Target: {fileID: 7929854281947399184}
-        m_MethodName: ClickMousePositionParcel
-        m_Mode: 1
-        m_Arguments:
-          m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: 0
-          m_FloatArgument: 0
-          m_StringArgument: 
-          m_BoolArgument: 0
-        m_CallState: 2
+      m_Calls: []
     m_TypeName: UnityEngine.UI.Button+ButtonClickedEvent, UnityEngine.UI, Version=1.0.0.0,
       Culture=neutral, PublicKeyToken=null
 --- !u!1 &7164109601661372131
@@ -592,7 +584,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_Material: {fileID: 0}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
-  m_RaycastTarget: 1
+  m_RaycastTarget: 0
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []

@@ -13,11 +13,14 @@ namespace DCL
         [SerializeField] internal TextMeshProUGUI sceneOwnerText;
         [SerializeField] internal TextMeshProUGUI sceneLocationText;
         [SerializeField] internal TextMeshProUGUI sceneDescriptionText;
+        [SerializeField] internal RectTransform toastContainer;
         [SerializeField] internal Image scenePreviewImage;
 
         [SerializeField] internal Button goToButton;
         [SerializeField] internal Button closeButton;
         Vector2Int location;
+        RectTransform rectTransform;
+        MinimapMetadata minimapMetadata;
 
         public System.Action OnGotoClicked;
 
@@ -28,16 +31,30 @@ namespace DCL
 
         private void Awake()
         {
+            minimapMetadata = MinimapMetadata.GetMetadata();
+            rectTransform = transform as RectTransform;
+
             goToButton.onClick.AddListener(OnGotoClick);
             closeButton.onClick.AddListener(OnCloseClick);
+
+            minimapMetadata.OnSceneInfoUpdated += OnMapMetadataInfoUpdated;
+        }
+
+        private void OnDestroy()
+        {
+            minimapMetadata.OnSceneInfoUpdated -= OnMapMetadataInfoUpdated;
         }
 
         public void Populate(Vector2Int coordinates, MinimapMetadata.MinimapSceneInfo sceneInfo)
         {
             bool sceneInfoExists = sceneInfo != null;
 
+            MapRenderer.i.showCursorCoords = false;
+
             gameObject.SetActive(true);
             location = coordinates;
+
+            PositionToast(coordinates);
 
             sceneLocationText.text = $"{coordinates.x}, {coordinates.y}";
 
@@ -67,8 +84,46 @@ namespace DCL
             }
         }
 
+        public void OnMapMetadataInfoUpdated(MinimapMetadata.MinimapSceneInfo sceneInfo)
+        {
+            if (!isOpen) return;
+
+            bool updatedCurrentLocationInfo = false;
+            foreach (Vector2Int parcel in sceneInfo.parcels)
+            {
+                if (parcel == location)
+                {
+                    updatedCurrentLocationInfo = true;
+                    break;
+                }
+            }
+
+            if (updatedCurrentLocationInfo)
+                Populate(location, sceneInfo);
+        }
+
+        void PositionToast(Vector2Int coordinates)
+        {
+            // position the toast over the parcel parcelHighlightImage so that we can easily check with LOCAL pos info where it is on the screen
+            toastContainer.position = MapRenderer.i.parcelHighlightImage.transform.position;
+
+            bool useBottom = toastContainer.localPosition.y > 0;
+
+            bool shouldOffsetHorizontally = Mathf.Abs(toastContainer.localPosition.x) > rectTransform.rect.width / 4;
+            bool useLeft = false;
+
+            if (shouldOffsetHorizontally)
+                useLeft = toastContainer.localPosition.x > 0;
+
+            // By setting the pivot accordingly BEFORE we position the toast, we can have it always visible in an easier way
+            toastContainer.pivot = new Vector2(shouldOffsetHorizontally ? (useLeft ? 1 : 0) : 0.5f, useBottom ? 1 : 0);
+            toastContainer.position = MapRenderer.i.parcelHighlightImage.transform.position;
+
+        }
+
         public void OnCloseClick()
         {
+            MapRenderer.i.showCursorCoords = true;
             gameObject.SetActive(false);
         }
 
