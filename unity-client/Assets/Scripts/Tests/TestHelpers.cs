@@ -1013,11 +1013,7 @@ namespace DCL.Helpers
             for (int i = SceneManager.sceneCount - 1; i >= 0; i--)
             {
                 var scene = SceneManager.GetSceneAt(i);
-
-                if (scene.name.Contains(testingSceneName))
-                {
-                    yield return SceneManager.UnloadSceneAsync(scene);
-                }
+                yield return SceneManager.UnloadSceneAsync(scene);
             }
         }
 

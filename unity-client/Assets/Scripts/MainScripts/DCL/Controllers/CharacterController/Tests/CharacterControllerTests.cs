@@ -45,7 +45,7 @@ namespace Tests
             DCLCharacterController.i.Teleport(JsonUtility.ToJson(position));
             yield return null;
 
-            Assert.IsTrue(Vector3.Distance(DCLCharacterController.i.transform.position, position) < 0.1f);
+            Assert.IsTrue(Vector3.Distance(DCLCharacterController.i.characterPosition.worldPosition, position) < 0.1f);
         }
 
         public IEnumerator WaitUntilGrounded()
