@@ -100,6 +100,7 @@ public class TestsBase
 
         yield return null;
         Assert.IsTrue(DCLCharacterController.i != null);
+        DCLCharacterController.i.gameObject.SetActive(true);
         DCLCharacterController.i.characterController.enabled = true;
     }
 

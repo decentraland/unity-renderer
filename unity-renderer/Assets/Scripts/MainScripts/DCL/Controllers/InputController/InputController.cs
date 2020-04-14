@@ -153,8 +153,6 @@ public static class InputProcessor
 
     public static bool PassModifiers(Modifier modifiers)
     {
-        bool result = true;
-
         if (IsModifierSet(modifiers, Modifier.NeedsPointerLocked) && Cursor.lockState != CursorLockMode.Locked)
             return false;
 
