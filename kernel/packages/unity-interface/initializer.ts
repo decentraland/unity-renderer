@@ -61,6 +61,8 @@ export async function initializeUnity(
 
   global['globalStore'].dispatch(waitingForRenderer())
   await engineInitialized
+  // Expose the "kernel" interface as a global object to allow easier inspection  
+  global['browserInterface'] = _gameInstance
 
   return {
     engine: _gameInstance,
