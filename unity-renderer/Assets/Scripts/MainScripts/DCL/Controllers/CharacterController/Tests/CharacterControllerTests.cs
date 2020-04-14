@@ -31,7 +31,7 @@ namespace Tests
 
             DCLCharacterController.i.Teleport(JsonUtility.ToJson(position));
 
-            UnityEngine.Assertions.Assert.AreApproximatelyEqual(0, Vector3.Distance(DCLCharacterController.i.characterPosition.worldPosition, position), 0.5f);
+            UnityEngine.Assertions.Assert.AreApproximatelyEqual(0, Vector3.Distance(DCLCharacterController.i.characterPosition.worldPosition, position), 2.0f);
 
             yield return null;
         }
