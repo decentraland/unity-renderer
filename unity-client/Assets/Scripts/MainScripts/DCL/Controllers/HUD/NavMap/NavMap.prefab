@@ -68,7 +68,7 @@ MonoBehaviour:
   m_text: 'Created by: Pepito'
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 26b03903800224f718b64e9afbc91b61, type: 2}
-  m_sharedMaterial: {fileID: 2100000, guid: cbe62851a9f374bb9903a58154b47a77, type: 2}
+  m_sharedMaterial: {fileID: 0}
   m_fontSharedMaterials: []
   m_fontMaterial: {fileID: 0}
   m_fontMaterials: []
@@ -466,7 +466,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 6165737416504808421}
-  - component: {fileID: 1040854978026124918}
+  - component: {fileID: 3015429049257244579}
   - component: {fileID: 2770247627674603290}
   - component: {fileID: 4285233376699115026}
   m_Layer: 5
@@ -503,7 +503,7 @@ RectTransform:
   m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 10, y: 10}
   m_Pivot: {x: 0.5, y: 0.5}
---- !u!114 &1040854978026124918
+--- !u!114 &3015429049257244579
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -512,7 +512,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 790868519033249328}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 1367256648, guid: f70555f144d8491a825f0804e09c671c, type: 3}
+  m_Script: {fileID: 11500000, guid: 5751752d0d2d5410b948ae3a364300c1, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   m_Content: {fileID: 4562892339457273614}
@@ -528,8 +528,8 @@ MonoBehaviour:
   m_VerticalScrollbar: {fileID: 6342360483252844007}
   m_HorizontalScrollbarVisibility: 1
   m_VerticalScrollbarVisibility: 1
-  m_HorizontalScrollbarSpacing: -3
-  m_VerticalScrollbarSpacing: -3
+  m_HorizontalScrollbarSpacing: 0
+  m_VerticalScrollbarSpacing: 0
   m_OnValueChanged:
     m_PersistentCalls:
       m_Calls: []
@@ -640,7 +640,7 @@ MonoBehaviour:
   m_text: jump in
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 26b03903800224f718b64e9afbc91b61, type: 2}
-  m_sharedMaterial: {fileID: 2100000, guid: cbe62851a9f374bb9903a58154b47a77, type: 2}
+  m_sharedMaterial: {fileID: 0}
   m_fontSharedMaterials: []
   m_fontMaterial: {fileID: 0}
   m_fontMaterials: []
@@ -2245,7 +2245,7 @@ MonoBehaviour:
   m_text: 99,99
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 26b03903800224f718b64e9afbc91b61, type: 2}
-  m_sharedMaterial: {fileID: 2100000, guid: cbe62851a9f374bb9903a58154b47a77, type: 2}
+  m_sharedMaterial: {fileID: 0}
   m_fontSharedMaterials: []
   m_fontMaterial: {fileID: 0}
   m_fontMaterials: []
@@ -3217,7 +3217,7 @@ MonoBehaviour:
   m_text: Scene Title
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 26b03903800224f718b64e9afbc91b61, type: 2}
-  m_sharedMaterial: {fileID: 2100000, guid: cbe62851a9f374bb9903a58154b47a77, type: 2}
+  m_sharedMaterial: {fileID: 0}
   m_fontSharedMaterials: []
   m_fontMaterial: {fileID: 0}
   m_fontMaterials: []
@@ -4570,7 +4570,7 @@ MonoBehaviour:
   toggleNavMapAction: {fileID: 11400000, guid: fc656e28ef52546e6a82e7ae7f5570b5, type: 2}
   selectParcelAction: {fileID: 0}
   closeButton: {fileID: 6221079439394858850}
-  scrollRect: {fileID: 1040854978026124918}
+  scrollRect: {fileID: 3015429049257244579}
   scrollRectContentTransform: {fileID: 4562892339457273614}
   currentSceneNameText: {fileID: 2053008226568235632}
   currentSceneCoordsText: {fileID: 596729946110516120}
@@ -4643,7 +4643,7 @@ MonoBehaviour:
   m_text: This scene is fantastic because I say so.
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 26b03903800224f718b64e9afbc91b61, type: 2}
-  m_sharedMaterial: {fileID: 2100000, guid: cbe62851a9f374bb9903a58154b47a77, type: 2}
+  m_sharedMaterial: {fileID: 0}
   m_fontSharedMaterials: []
   m_fontMaterial: {fileID: 0}
   m_fontMaterials: []
