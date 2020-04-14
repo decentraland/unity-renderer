@@ -14,20 +14,7 @@ namespace Tests
         [UnityTest]
         public IEnumerator CharacterTeleportReposition()
         {
-            DCLCharacterController.i.PauseGravity();
-            DCLCharacterController.i.characterController.enabled = false;
-            DCLCharacterController.i.Teleport(JsonConvert.SerializeObject(new
-            {
-                x = 10f,
-                y = 2f,
-                z = 10f
-            }));
-
-            yield return null;
-
-            Assert.AreEqual(new Vector3(10f, 2f, 10f), DCLCharacterController.i.transform.position);
-            DCLCharacterController.i.characterController.enabled = true;
-            DCLCharacterController.i.ResumeGravity();
+            yield return InitCharacterPosition(10, 2, 10);
         }
 
         public IEnumerator InitCharacterPosition(float x, float y, float z, bool pauseGravity = true)
@@ -43,9 +30,10 @@ namespace Tests
                 DCLCharacterController.i.ResumeGravity();
 
             DCLCharacterController.i.Teleport(JsonUtility.ToJson(position));
+
             yield return null;
 
-            Assert.IsTrue(Vector3.Distance(DCLCharacterController.i.characterPosition.worldPosition, position) < 0.1f);
+            UnityEngine.Assertions.Assert.AreApproximatelyEqual(0, Vector3.Distance(DCLCharacterController.i.characterPosition.worldPosition, position), 0.5f);
         }
 
         public IEnumerator WaitUntilGrounded()
@@ -65,9 +53,7 @@ namespace Tests
                 z = 0f
             };
 
-            yield return InitCharacterPosition(originalCharacterPosition, false);
-
-            DCLCharacterController.i.characterController.enabled = false;
+            yield return InitCharacterPosition(originalCharacterPosition, true);
 
             var pos2 = new Vector3
             {
@@ -76,8 +62,8 @@ namespace Tests
                 z = 50f + PlayerSettings.WORLD_REPOSITION_MINIMUM_DISTANCE
             };
 
-            yield return InitCharacterPosition(pos2, false);
-            Assert.AreEqual(new Vector3(50f, 2f, 50f), DCLCharacterController.i.transform.position);
+            yield return InitCharacterPosition(pos2, true);
+            UnityEngine.Assertions.Assert.AreApproximatelyEqual(0, Vector3.Distance(new Vector3(50f, 2f, 50f), DCLCharacterController.i.transform.position), 0.5f);
 
             var pos3 = new Vector3
             {
@@ -86,7 +72,7 @@ namespace Tests
                 z = -50f - PlayerSettings.WORLD_REPOSITION_MINIMUM_DISTANCE
             };
 
-            yield return InitCharacterPosition(pos3, false);
+            yield return InitCharacterPosition(pos3, true);
             Assert.AreEqual(new Vector3(-50f, 2f, -50f), DCLCharacterController.i.transform.position);
         }
 
@@ -141,20 +127,8 @@ namespace Tests
         [UnityTest]
         public IEnumerator Character_UpdateSOPosition()
         {
-            DCLCharacterController.i.PauseGravity();
-            DCLCharacterController.i.characterController.enabled = false;
-            DCLCharacterController.i.Teleport(JsonConvert.SerializeObject(new
-            {
-                x = 50f,
-                y = 2f,
-                z = 0f
-            }));
-
-            yield return null;
-
+            yield return InitCharacterPosition(50, 2, 0);
             Assert.AreEqual(new Vector3(50f, 2f, 0f), CommonScriptableObjects.playerUnityPosition);
-            DCLCharacterController.i.ResumeGravity();
-            DCLCharacterController.i.characterController.enabled = true;
         }
 
         [UnityTest]
