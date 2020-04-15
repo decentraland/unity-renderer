@@ -10,7 +10,6 @@ namespace DCL
     {
         [Header("References")]
         [SerializeField] InputAction_Trigger toggleNavMapAction;
-        [SerializeField] InputAction_Trigger selectParcelAction;
         [SerializeField] Button closeButton;
         [SerializeField] internal ScrollRect scrollRect;
         [SerializeField] Transform scrollRectContentTransform;
