@@ -1,7 +1,6 @@
 using System;
 using System.Reflection;
 using UnityEditor;
-using UnityEngine;
 
 
 //NOTE(Brian): Code adapted from this answer https://answers.unity.com/questions/956123/add-and-select-game-view-resolution.html
@@ -12,7 +11,6 @@ public static class GameViewUtils
 
     static GameViewUtils()
     {
-        // gameViewSizesInstance  = ScriptableSingleton<GameViewSizes>.instance;
         var sizesType = typeof(Editor).Assembly.GetType("UnityEditor.GameViewSizes");
         var singleType = typeof(ScriptableSingleton<>).MakeGenericType(sizesType);
         var instanceProp = singleType.GetProperty("instance");
@@ -37,12 +35,6 @@ public static class GameViewUtils
         var gvWnd = EditorWindow.GetWindow(gvWndType);
 
         selectedSizeIndexProp.SetValue(gvWnd, index, null);
-    }
-
-    [MenuItem("Test/SizeDimensionsQuery")]
-    public static void SizeDimensionsQueryTest()
-    {
-        Debug.Log(SizeExists(GameViewSizeGroupType.Standalone, 123, 456));
     }
 
     public static int AddOrGetCustomSize(GameViewSizeType viewSizeType, GameViewSizeGroupType sizeGroupType, int width, int height, string text)
@@ -77,20 +69,16 @@ public static class GameViewUtils
 
     public static int FindSize(GameViewSizeGroupType sizeGroupType, string text)
     {
-        // GameViewSizes group = gameViewSizesInstance.GetGroup(sizeGroupType);
-        // string[] texts = group.GetDisplayTexts();
-        // for loop...
-
         var group = GetGroup(sizeGroupType);
         var getDisplayTexts = group.GetType().GetMethod("GetDisplayTexts");
         var displayTexts = getDisplayTexts.Invoke(group, null) as string[];
         for (int i = 0; i < displayTexts.Length; i++)
         {
             string display = displayTexts[i];
+
             // the text we get is "Name (W:H)" if the size has a name, or just "W:H" e.g. 16:9
             // so if we're querying a custom size text we substring to only get the name
             // You could see the outputs by just logging
-            // Debug.Log(display);
             int pren = display.IndexOf('(');
 
             if (pren != -1)
@@ -109,12 +97,7 @@ public static class GameViewUtils
 
     public static int FindSize(GameViewSizeGroupType sizeGroupType, int width, int height)
     {
-        // goal:
-        // GameViewSizes group = gameViewSizesInstance.GetGroup(sizeGroupType);
-        // int sizesCount = group.GetBuiltinCount() + group.GetCustomCount();
-        // iterate through the sizes via group.GetGameViewSize(int index)
-
-        var group = GetGroup(sizeGroupType);
+        object group = GetGroup(sizeGroupType);
         var groupType = group.GetType();
         var getBuiltinCount = groupType.GetMethod("GetBuiltinCount");
         var getCustomCount = groupType.GetMethod("GetCustomCount");
@@ -124,15 +107,18 @@ public static class GameViewUtils
         var widthProp = gvsType.GetProperty("width");
         var heightProp = gvsType.GetProperty("height");
         var indexValue = new object[1];
+
         for (int i = 0; i < sizesCount; i++)
         {
             indexValue[0] = i;
             var size = getGameViewSize.Invoke(group, indexValue);
             int sizeWidth = (int)widthProp.GetValue(size, null);
             int sizeHeight = (int)heightProp.GetValue(size, null);
+
             if (sizeWidth == width && sizeHeight == height)
                 return i;
         }
+
         return -1;
     }
 
@@ -144,6 +130,7 @@ public static class GameViewUtils
     public static GameViewSizeGroupType GetCurrentGroupType()
     {
         var getCurrentGroupTypeProp = gameViewSizesInstance.GetType().GetProperty("currentGroupType");
+
         return (GameViewSizeGroupType)(int)getCurrentGroupTypeProp.GetValue(gameViewSizesInstance, null);
     }
 }
