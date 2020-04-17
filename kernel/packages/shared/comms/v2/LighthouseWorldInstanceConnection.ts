@@ -4,7 +4,8 @@ import { Package, BusMessage, ChatMessage, ProfileVersion, UserInformation, Pack
 import { Position, positionHash } from '../interface/utils'
 import defaultLogger, { createLogger } from 'shared/logger'
 import { PeerMessageTypes, PeerMessageType } from 'decentraland-katalyst-peer/src/messageTypes'
-import { Peer as PeerType, PacketCallback } from 'decentraland-katalyst-peer/src/Peer'
+import { Peer as PeerType } from 'decentraland-katalyst-peer/src/Peer'
+import { PacketCallback } from 'decentraland-katalyst-peer/src/types'
 import { ChatData, CommsMessage, ProfileData, SceneData, PositionData } from './proto/comms_pb'
 import { Realm, CommsStatus } from 'shared/dao/types'
 
@@ -12,7 +13,7 @@ import * as Long from 'long'
 declare const window: any
 window.Long = Long
 
-const { Peer } = require('decentraland-katalyst-peer')
+const { Peer, buildCatalystPeerStatsData } = require('decentraland-katalyst-peer')
 
 const NOOP = () => {
   // do nothing
@@ -96,13 +97,8 @@ export class LighthouseWorldInstanceConnection implements WorldInstanceConnectio
   }
 
   analyticsData() {
-    // For now, these are private. Next version of peer library will make them public
     return {
-      // We slice the id in order to reduce the potential event size. Eventually, we should slice all comms ids
-      // @ts-ignore
-      connectedPeers: this.peer.fullyConnectedPeerIds().map(it => it.slice(-6)),
-      // @ts-ignore
-      stats: this.peer.stats
+      stats: buildCatalystPeerStatsData(this.peer)
     }
   }
 
