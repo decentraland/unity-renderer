@@ -1,9 +1,7 @@
 using NUnit.Framework;
 using System.Collections;
-using TMPro;
 using UnityEngine;
 using UnityEngine.TestTools;
-using UnityEngine.UI;
 
 namespace Tests
 {
@@ -43,13 +41,13 @@ namespace Tests
 
             yield return null;
 
-            Assert.IsTrue(Reflection_GetField<ScrollRect>(navmapView, "scrollRect").gameObject.activeSelf);
+            Assert.IsTrue(navmapView.scrollRect.gameObject.activeSelf);
 
             action.RaiseOnTriggered();
 
             yield return null;
 
-            Assert.IsFalse(Reflection_GetField<ScrollRect>(navmapView, "scrollRect").gameObject.activeSelf);
+            Assert.IsFalse(navmapView.scrollRect.gameObject.activeSelf);
         }
 
         [UnityTest]
@@ -62,7 +60,7 @@ namespace Tests
 
             yield return null;
 
-            Assert.AreEqual(sceneName, Reflection_GetField<TextMeshProUGUI>(navmapView, "currentSceneNameText").text);
+            Assert.AreEqual(sceneName, navmapView.currentSceneNameText.text);
         }
 
         [UnityTest]
@@ -76,7 +74,7 @@ namespace Tests
 
             yield return null;
 
-            Assert.AreEqual(coordString, Reflection_GetField<TextMeshProUGUI>(navmapView, "currentSceneCoordsText").text);
+            Assert.AreEqual(coordString, navmapView.currentSceneCoordsText.text);
         }
 
         [UnityTest]
@@ -90,7 +88,7 @@ namespace Tests
 
             yield return null;
 
-            Assert.AreEqual(coordString, Reflection_GetField<TextMeshProUGUI>(navmapView, "currentSceneCoordsText").text);
+            Assert.AreEqual(coordString, navmapView.currentSceneCoordsText.text);
         }
     }
 }

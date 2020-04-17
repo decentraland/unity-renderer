@@ -4,7 +4,8 @@
         "MainScripts",
         "CoroutineHelpers",
         "Utils",
-        "TestHelpers"
+        "TestHelpers",
+        "VisualTests"
     ],
     "optionalUnityReferences": [
         "TestAssemblies"

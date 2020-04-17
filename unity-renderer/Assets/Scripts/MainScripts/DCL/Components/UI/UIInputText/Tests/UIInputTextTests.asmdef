@@ -4,7 +4,8 @@
         "MainScripts",
         "Unity.TextMeshPro",
         "WebInterface",
-        "TestHelpers"
+        "TestHelpers",
+        "VisualTests"
     ],
     "optionalUnityReferences": [
         "TestAssemblies"

@@ -14,53 +14,65 @@ namespace Tests
         [UnityTest]
         public IEnumerator CharacterTeleportReposition()
         {
-            DCLCharacterController.i.PauseGravity();
-            DCLCharacterController.i.characterController.enabled = false;
-            DCLCharacterController.i.Teleport(JsonConvert.SerializeObject(new
-            {
-                x = 10f,
-                y = 2f,
-                z = 10f
-            }));
+            yield return InitCharacterPosition(10, 2, 10);
+        }
+
+        public IEnumerator InitCharacterPosition(float x, float y, float z, bool pauseGravity = true)
+        {
+            yield return InitCharacterPosition(new Vector3(x, y, z), pauseGravity);
+        }
+
+        public IEnumerator InitCharacterPosition(Vector3 position, bool pauseGravity = true)
+        {
+            if (pauseGravity)
+                DCLCharacterController.i.PauseGravity();
+            else
+                DCLCharacterController.i.ResumeGravity();
+
+            DCLCharacterController.i.Teleport(JsonUtility.ToJson(position));
+
+            UnityEngine.Assertions.Assert.AreApproximatelyEqual(0, Vector3.Distance(DCLCharacterController.i.characterPosition.worldPosition, position), 2.0f);
 
             yield return null;
+        }
 
-            Assert.AreEqual(new Vector3(10f, 2f, 10f), DCLCharacterController.i.transform.position);
+        public IEnumerator WaitUntilGrounded()
+        {
+            // Let the character *fall* onto the ground shape
+            yield return new WaitUntil(() => DCLCharacterController.i.isGrounded);
+            yield return null;
         }
 
         [UnityTest]
         public IEnumerator CharacterAdjustPosition()
         {
-            DCLCharacterController.i.ResumeGravity();
-            DCLCharacterController.i.characterController.enabled = false;
-            DCLCharacterController.i.Teleport(JsonConvert.SerializeObject(new
+            Vector3 originalCharacterPosition = new Vector3
             {
                 x = 50f,
                 y = 2f,
                 z = 0f
-            }));
+            };
 
-            yield return null;
-            Assert.AreEqual(new Vector3(50f, 2f, 0f), DCLCharacterController.i.transform.position);
+            yield return InitCharacterPosition(originalCharacterPosition, true);
 
-            DCLCharacterController.i.Teleport(JsonConvert.SerializeObject(new
+            var pos2 = new Vector3
             {
                 x = 50f + PlayerSettings.WORLD_REPOSITION_MINIMUM_DISTANCE,
                 y = 2f,
                 z = 50f + PlayerSettings.WORLD_REPOSITION_MINIMUM_DISTANCE
-            }));
+            };
 
-            yield return null;
-            Assert.AreEqual(new Vector3(50f, 2f, 50f), DCLCharacterController.i.transform.position);
+            yield return InitCharacterPosition(pos2, true);
+            UnityEngine.Assertions.Assert.AreApproximatelyEqual(0, Vector3.Distance(new Vector3(50f, 2f, 50f), DCLCharacterController.i.transform.position), 0.5f);
 
-            DCLCharacterController.i.Teleport(JsonConvert.SerializeObject(new
+            var pos3 = new Vector3
             {
                 x = -50f - PlayerSettings.WORLD_REPOSITION_MINIMUM_DISTANCE,
                 y = 2f,
                 z = -50f - PlayerSettings.WORLD_REPOSITION_MINIMUM_DISTANCE
-            }));
+            };
 
-            yield return null;
+            yield return InitCharacterPosition(pos3, true);
             Assert.AreEqual(new Vector3(-50f, 2f, -50f), DCLCharacterController.i.transform.position);
         }
 
@@ -90,10 +102,9 @@ namespace Tests
                 z = PlayerSettings.WORLD_REPOSITION_MINIMUM_DISTANCE - 2f
             }));
 
-            // Let the character *fall* onto the ground shape
-            yield return new WaitForSeconds(2f);
+            yield return WaitUntilGrounded();
 
-            Assert.IsTrue(Reflection_GetField<Transform>(DCLCharacterController.i, "groundTransform") == shapeEntity.meshRootGameObject.transform);
+            Assert.IsTrue(DCLCharacterController.i.groundTransform == shapeEntity.meshRootGameObject.transform);
 
             // Place the character barely passing the limits to trigger the world repositioning
             DCLCharacterController.i.Teleport(JsonConvert.SerializeObject(new
@@ -109,27 +120,15 @@ namespace Tests
             Assert.AreEqual(new Vector3(1f, DCLCharacterController.i.transform.position.y, 1f), DCLCharacterController.i.transform.position);
 
             // check it's not parented but still has the same ground
-            Assert.IsTrue(Reflection_GetField<Transform>(DCLCharacterController.i, "groundTransform") == shapeEntity.meshRootGameObject.transform);
+            Assert.IsTrue(DCLCharacterController.i.groundTransform == shapeEntity.meshRootGameObject.transform);
             Assert.IsTrue(DCLCharacterController.i.transform.parent == null);
         }
 
         [UnityTest]
         public IEnumerator Character_UpdateSOPosition()
         {
-            DCLCharacterController.i.PauseGravity();
-            DCLCharacterController.i.characterController.enabled = false;
-            DCLCharacterController.i.Teleport(JsonConvert.SerializeObject(new
-            {
-                x = 50f,
-                y = 2f,
-                z = 0f
-            }));
-
-            yield return null;
-
+            yield return InitCharacterPosition(50, 2, 0);
             Assert.AreEqual(new Vector3(50f, 2f, 0f), CommonScriptableObjects.playerUnityPosition);
-            DCLCharacterController.i.ResumeGravity();
-            DCLCharacterController.i.characterController.enabled = true;
         }
 
         [UnityTest]
@@ -151,16 +150,14 @@ namespace Tests
         [UnityTest]
         public IEnumerator CharacterSupportsMovingPlatforms()
         {
-            DCLCharacterController.i.PauseGravity();
-            DCLCharacterController.i.Teleport(JsonConvert.SerializeObject(new
+            Vector3 originalCharacterPosition = new Vector3
             {
                 x = 2f,
                 y = 3f,
                 z = 8f
-            }));
-            yield return null;
+            };
 
-            Assert.IsTrue(Vector3.Distance(DCLCharacterController.i.transform.position, new Vector3(2f, 3f, 8f)) < 0.1f);
+            yield return InitCharacterPosition(originalCharacterPosition);
 
             string platformEntityId = "movingPlatform";
             TestHelpers.InstantiateEntityWithShape(scene, platformEntityId, DCL.Models.CLASS_ID.BOX_SHAPE, new Vector3(2f, 1f, 8f));
@@ -174,8 +171,7 @@ namespace Tests
             // enable character gravity
             DCLCharacterController.i.ResumeGravity();
 
-            // Let the character *fall* onto the platform
-            yield return new WaitForSeconds(2f);
+            yield return WaitUntilGrounded();
 
             Assert.IsFalse(DCLCharacterController.i.isOnMovingPlatform, "isOnMovingPlatform should be true only if the platform moves/rotates");
 
@@ -186,6 +182,7 @@ namespace Tests
             Vector3 targetPosition = new Vector3(10f, 1f, 8f);
 
             bool checkedParent = false;
+
             while (lerpTime < 1f)
             {
                 yield return null;
@@ -196,6 +193,8 @@ namespace Tests
 
                 platformTransform.position = Vector3.Lerp(originalPosition, targetPosition, lerpTime);
 
+                DCLCharacterController.i.LateUpdate();
+
                 if (!checkedParent && lerpTime >= 0.5f)
                 {
                     Assert.IsTrue(DCLCharacterController.i.isOnMovingPlatform, "isOnMovingPlatform should be true when the platform moves/rotates");
@@ -205,23 +204,25 @@ namespace Tests
 
             // check positions
             Assert.IsTrue(Vector3.Distance(platformTransform.position, targetPosition) < 0.1f);
-            UnityEngine.Assertions.Assert.AreApproximatelyEqual(DCLCharacterController.i.transform.position.x, targetPosition.x, 0.5f);
-            UnityEngine.Assertions.Assert.AreApproximatelyEqual(DCLCharacterController.i.transform.position.z, targetPosition.z, 0.5f);
+
+            float dist1 = Vector3.Distance(originalCharacterPosition, DCLCharacterController.i.transform.position);
+            float dist2 = Vector3.Distance(originalPosition, targetPosition);
+
+            UnityEngine.Assertions.Assert.AreApproximatelyEqual(dist1, dist2, 0.5f);
         }
+
 
         [UnityTest]
         public IEnumerator CharacterSupportsRotatingPlatforms()
         {
-            DCLCharacterController.i.PauseGravity();
-            DCLCharacterController.i.Teleport(JsonConvert.SerializeObject(new
+            Vector3 originalCharacterPosition = new Vector3
             {
                 x = 5f,
                 y = 3f,
                 z = 5f
-            }));
-            yield return null;
+            };
 
-            Assert.IsTrue(Vector3.Distance(DCLCharacterController.i.transform.position, new Vector3(5f, 3f, 5f)) < 0.1f);
+            yield return InitCharacterPosition(originalCharacterPosition);
 
             string platformEntityId = "rotatingPlatform";
             TestHelpers.InstantiateEntityWithShape(scene, platformEntityId, DCL.Models.CLASS_ID.BOX_SHAPE, new Vector3(8f, 1f, 8f));
@@ -235,8 +236,7 @@ namespace Tests
             // enable character gravity
             DCLCharacterController.i.ResumeGravity();
 
-            // Let the character *fall* onto the platform
-            yield return new WaitForSeconds(2f);
+            yield return WaitUntilGrounded();
 
             Assert.IsFalse(DCLCharacterController.i.isOnMovingPlatform, "isOnMovingPlatform should be true only if the platform moves/rotates");
 
@@ -331,16 +331,8 @@ namespace Tests
         [Category("Explicit")]
         public IEnumerator CharacterIsReleasedOnFastPlatform()
         {
-            DCLCharacterController.i.PauseGravity();
-            DCLCharacterController.i.Teleport(JsonConvert.SerializeObject(new
-            {
-                x = 5f,
-                y = 3f,
-                z = 5f
-            }));
-            yield return null;
-
-            Assert.IsTrue(Vector3.Distance(DCLCharacterController.i.transform.position, new Vector3(5f, 3f, 5f)) < 0.1f);
+            Vector3 initialCharacterPosition = new Vector3(5, 3, 5);
+            yield return InitCharacterPosition(initialCharacterPosition);
 
             string platformEntityId = "rotatingPlatform";
             TestHelpers.InstantiateEntityWithShape(scene, platformEntityId, DCL.Models.CLASS_ID.BOX_SHAPE, new Vector3(8f, 1f, 8f));
@@ -354,8 +346,7 @@ namespace Tests
             // enable character gravity
             DCLCharacterController.i.ResumeGravity();
 
-            // Let the character *fall* onto the platform
-            yield return new WaitForSeconds(2f);
+            yield return WaitUntilGrounded();
 
             Assert.IsFalse(DCLCharacterController.i.isOnMovingPlatform, "isOnMovingPlatform should be true only if the platform moves/rotates");
 

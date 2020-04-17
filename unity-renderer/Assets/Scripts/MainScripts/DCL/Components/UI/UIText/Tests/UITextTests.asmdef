@@ -3,7 +3,8 @@
     "references": [
         "MainScripts",
         "Unity.TextMeshPro",
-        "TestHelpers"
+        "TestHelpers",
+        "VisualTests"
     ],
     "optionalUnityReferences": [
         "TestAssemblies"

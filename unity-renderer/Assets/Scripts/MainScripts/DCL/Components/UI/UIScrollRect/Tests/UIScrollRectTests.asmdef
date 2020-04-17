@@ -2,7 +2,8 @@
     "name": "UIScrollRectTests",
     "references": [
         "MainScripts",
-        "TestHelpers"
+        "TestHelpers",
+        "VisualTests"
     ],
     "optionalUnityReferences": [
         "TestAssemblies"

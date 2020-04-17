@@ -1,4 +1,4 @@
-﻿using DCL.Components;
+using DCL.Components;
 using DCL.Helpers;
 using DCL.Models;
 using System.Collections;
@@ -7,6 +7,11 @@ using UnityEngine;
 public class UIVisualTestsBase : VisualTestsBase
 {
     protected string screenSpaceId;
+
+    protected override IEnumerator SetUp()
+    {
+        yield break;
+    }
 
     protected IEnumerator InitUIVisualTestScene(string testName)
     {
@@ -27,6 +32,9 @@ public class UIVisualTestsBase : VisualTestsBase
 
         // The camera should only render UI to decrease conflict chance with future ground changes, etc.
         VisualTestController.i.camera.cullingMask = 1 << LayerMask.NameToLayer("UI");
+
+        int id = GameViewUtils.AddOrGetCustomSize(GameViewUtils.GameViewSizeType.FixedResolution, UnityEditor.GameViewSizeGroupType.Standalone, 1280, 720, "Test Resolution");
+        GameViewUtils.SetSize(id);
     }
 
     protected IEnumerator CreateUIComponent<SharedComponentType, SharedComponentModel>(CLASS_ID classId, SharedComponentModel model, string componentId)

@@ -1,19 +1,19 @@
-﻿using System.Collections;
+using Cinemachine;
+using DCL.SettingsHUD;
+using NUnit.Framework;
+using System.Collections;
 using UnityEngine;
-using UnityEngine.TestTools;
 using UnityEngine.Rendering;
 using UnityEngine.Rendering.LWRP;
 using UnityEngine.Rendering.PostProcessing;
-using NUnit.Framework;
-using Cinemachine;
-using DCL.SettingsHUD;
-
+using UnityEngine.TestTools;
 using QualitySettings = DCL.SettingsHUD.QualitySettings;
 
 namespace Tests
 {
     public class GeneralSettingsShould : TestsBase
     {
+        QualitySettings initQualitySettings;
         QualitySettings testQualitySettings;
         GeneralSettings testGeneralSettings;
 
@@ -46,6 +46,7 @@ namespace Tests
                 sfxVolume = 0
             };
 
+            initQualitySettings = DCL.Settings.i.qualitySettings;
             DCL.Settings.i.ApplyQualitySettings(testQualitySettings);
             DCL.Settings.i.ApplyGeneralSettings(testGeneralSettings);
 
@@ -56,6 +57,12 @@ namespace Tests
         {
             yield return InitUnityScene("InitialScene");
             GameObject.DestroyImmediate(DCL.WSSController.i.gameObject);
+        }
+
+        protected override IEnumerator TearDown()
+        {
+            yield return base.TearDown();
+            DCL.Settings.i.ApplyQualitySettings(initQualitySettings);
         }
 
         [UnityTest]
