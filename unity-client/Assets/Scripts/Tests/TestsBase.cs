@@ -52,6 +52,13 @@ public class TestsBase
         PoolManager.i?.Cleanup();
         PointerEventsController.i?.Cleanup();
 
+        if (DCLCharacterController.i != null)
+        {
+            DCLCharacterController.i.ResumeGravity();
+            DCLCharacterController.i.enabled = true;
+            DCLCharacterController.i.characterController.enabled = true;
+        }
+
         Caching.ClearCache();
         Resources.UnloadUnusedAssets();
 
@@ -93,6 +100,7 @@ public class TestsBase
 
         yield return null;
         Assert.IsTrue(DCLCharacterController.i != null);
+        DCLCharacterController.i.gameObject.SetActive(true);
         DCLCharacterController.i.characterController.enabled = true;
     }
 

@@ -2,7 +2,9 @@
     "name": "UIContainerRectTests",
     "references": [
         "MainScripts",
-        "TestHelpers"
+        "TestHelpers",
+        "VisualTests",
+        "Utils"
     ],
     "optionalUnityReferences": [
         "TestAssemblies"

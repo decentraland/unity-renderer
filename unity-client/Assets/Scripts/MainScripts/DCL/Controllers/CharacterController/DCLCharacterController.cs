@@ -50,7 +50,7 @@ public class DCLCharacterController : MonoBehaviour
     public bool isOnMovingPlatform { get; private set; }
 
     bool supportsMovingPlatforms = true;
-    Transform groundTransform;
+    internal Transform groundTransform;
     Vector3 lastPosition;
     Vector3 groundLastPosition;
     Quaternion groundLastRotation;
@@ -214,7 +214,7 @@ public class DCLCharacterController : MonoBehaviour
             return characterPosition.worldPosition != previousPosition;
     }
 
-    void LateUpdate()
+    internal void LateUpdate()
     {
         deltaTime = Mathf.Min(deltaTimeCap, Time.deltaTime);
 

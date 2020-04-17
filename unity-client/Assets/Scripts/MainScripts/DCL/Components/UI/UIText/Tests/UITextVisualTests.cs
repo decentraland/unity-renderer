@@ -1,4 +1,4 @@
-﻿using DCL.Components;
+using DCL.Components;
 using DCL.Helpers;
 using DCL.Models;
 using NUnit.Framework;
@@ -10,6 +10,7 @@ public class UITextVisualTests : UIVisualTestsBase
 {
     [UnityTest]
     [Explicit]
+    [Category("Visual Tests")]
     public IEnumerator UITextVisualTests_Generate()
     {
         yield return VisualTestHelpers.GenerateBaselineForTest(UITextTest1());
@@ -17,6 +18,7 @@ public class UITextVisualTests : UIVisualTestsBase
 
     [UnityTest]
     [VisualTest]
+    [Category("Visual Tests")]
     public IEnumerator UITextTest1()
     {
         yield return InitUIVisualTestScene("UITextTest");

@@ -1,4 +1,4 @@
-﻿using DCL.Configuration;
+using DCL.Configuration;
 using System.Collections;
 using System.IO;
 using UnityEngine;
@@ -29,7 +29,7 @@ namespace DCL.Helpers
             currentTestName = testName;
             snapshotIndex = 0;
 
-            DCLCharacterController.i.gravity = 0f;
+            DCLCharacterController.i.PauseGravity();
             DCLCharacterController.i.enabled = false;
 
             // Position character inside parcel (0,0)
