@@ -99,7 +99,7 @@
     "cids": "^0.7.3",
     "dcl-catalyst-client": "^1.2.5",
     "dcl-crypto": "^1.7.0",
-    "decentraland-katalyst-peer": "^0.1.36",
+    "decentraland-katalyst-peer": "0.2.9",
     "decentraland-renderer": "^1.8.15009",
     "decentraland-rpc": "^3.1.8",
     "devtools-protocol": "0.0.615714",
