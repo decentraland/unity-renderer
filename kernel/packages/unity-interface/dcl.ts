@@ -91,7 +91,7 @@ import { profileToRendererFormat } from 'shared/profiles/transformations/profile
 import { StoreContainer } from 'shared/store/rootTypes'
 import { ILandToLoadableParcelScene, ILandToLoadableParcelSceneUpdate } from 'shared/selectors'
 
-declare const globalThis: UnityInterfaceContainer &
+declare const globalThis: UnityInterfaceContainer & BrowserInterfaceContainer &
   StoreContainer & { analytics: any; delighted: any } & { messages: (e: any) => void }
 
 type GameInstance = {
@@ -334,6 +334,10 @@ const browserInterface = {
   SetAudioStream(data: { url: string; play: boolean; volume: number }) {
     setAudioStream(data.url, data.play, data.volume).catch(err => defaultLogger.log(err))
   }
+}
+globalThis.browserInterface = browserInterface
+type BrowserInterfaceContainer = {
+  browserInterface: typeof browserInterface
 }
 
 export function setLoadingScreenVisible(shouldShow: boolean) {

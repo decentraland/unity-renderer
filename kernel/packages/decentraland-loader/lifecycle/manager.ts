@@ -84,10 +84,11 @@ let server: LifecycleManager
 
 export const getServer = () => server
 
-declare const window: Window & { globalStore: Store }
+declare const window: Window & { globalStore: Store; workerManager: any }
 
 export async function initParcelSceneWorker() {
   server = new LifecycleManager(WebWorkerTransport(worker))
+  window.workerManager = server
 
   server.enable()
 
