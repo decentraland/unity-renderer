@@ -23,6 +23,8 @@ export type EnableParcelSceneLoadingOptions = {
 }
 
 export const loadedSceneWorkers = new Map<string, SceneWorker>()
+declare var window: any
+window['sceneWorkers'] = loadedSceneWorkers
 
 /**
  * Retrieve the Scene based on it's ID, usually RootCID
