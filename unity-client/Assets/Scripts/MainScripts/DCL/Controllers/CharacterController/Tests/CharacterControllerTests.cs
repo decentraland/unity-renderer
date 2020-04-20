@@ -208,7 +208,7 @@ namespace Tests
             float dist1 = Vector3.Distance(originalCharacterPosition, DCLCharacterController.i.transform.position);
             float dist2 = Vector3.Distance(originalPosition, targetPosition);
 
-            UnityEngine.Assertions.Assert.AreApproximatelyEqual(dist1, dist2, 0.5f);
+            UnityEngine.Assertions.Assert.AreApproximatelyEqual(dist1, dist2, 1f);
         }
 
 
