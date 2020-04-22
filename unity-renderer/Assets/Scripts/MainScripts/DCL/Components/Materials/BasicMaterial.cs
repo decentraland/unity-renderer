@@ -106,7 +106,7 @@ namespace DCL.Components
                 if (matTransition != null && matTransition.canSwitchMaterial)
                 {
                     matTransition.finalMaterials = new Material[] { material };
-                    matTransition.PopulateLoadingMaterialWithFinalMaterial();
+                    matTransition.PopulateTargetRendererWithMaterial(matTransition.finalMaterials);
                 }
 
                 SRPBatchingHelper.OptimizeMaterial(meshRenderer, material);
