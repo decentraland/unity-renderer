@@ -77,7 +77,7 @@ namespace DCL
 
             clickHandler = null;
 
-            if (newHoveredEvent == null || !newHoveredEvent.IsAtHoverDistance(DCLCharacterController.i.transform))
+            if (newHoveredEvent == null || !newHoveredEvent.IsVisible() || !newHoveredEvent.IsAtHoverDistance(DCLCharacterController.i.transform))
             {
                 UnhoverLastHoveredObject();
                 return;

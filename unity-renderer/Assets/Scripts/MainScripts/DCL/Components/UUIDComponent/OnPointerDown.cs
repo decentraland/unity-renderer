@@ -10,7 +10,7 @@ namespace DCL.Components
 
         public virtual void Report(WebInterface.ACTION_BUTTON buttonId, Ray ray, HitInfo hit)
         {
-            if (!enabled) return;
+            if (!enabled || !IsVisible()) return;
 
             if (ShouldReportEvent(buttonId, hit))
             {
@@ -22,7 +22,7 @@ namespace DCL.Components
 
         protected bool ShouldReportEvent(WebInterface.ACTION_BUTTON buttonId, HitInfo hit)
         {
-            return IsAtHoverDistance(hit.distance) && (model.button == "ANY" || buttonId.ToString() == model.button);
+            return IsVisible() && IsAtHoverDistance(hit.distance) && (model.button == "ANY" || buttonId.ToString() == model.button);
         }
     }
 }

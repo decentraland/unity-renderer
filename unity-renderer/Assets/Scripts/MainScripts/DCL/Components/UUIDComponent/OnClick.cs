@@ -10,7 +10,7 @@ namespace DCL.Components
 
         public void Report(WebInterface.ACTION_BUTTON buttonId, HitInfo hit)
         {
-            if (!enabled) return;
+            if (!enabled || !IsVisible()) return;
 
             if (IsAtHoverDistance(hit.distance) && (model.button == "ANY" || buttonId.ToString() == model.button))
                 DCL.Interface.WebInterface.ReportOnClickEvent(scene.sceneData.id, model.uuid);
