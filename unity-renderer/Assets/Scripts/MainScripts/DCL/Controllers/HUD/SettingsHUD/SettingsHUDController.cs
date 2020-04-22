@@ -1,4 +1,4 @@
-﻿namespace DCL.SettingsHUD
+namespace DCL.SettingsHUD
 {
     public class SettingsHUDController : IHUD
     {
@@ -12,6 +12,10 @@
         public void SetVisibility(bool visible)
         {
             view.SetVisibility(visible);
+        }
+
+        public void Dispose()
+        {
         }
     }
 }

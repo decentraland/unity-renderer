@@ -1,0 +1,54 @@
+using NUnit.Framework;
+using System.Collections;
+using UnityEngine;
+public class ChatEntryShould : TestsBase
+{
+    ChatEntry entry;
+    Canvas canvas;
+    protected override IEnumerator SetUp()
+    {
+        var canvasgo = new GameObject("canvas");
+        canvas = canvasgo.AddComponent<Canvas>();
+        (canvas.transform as RectTransform).sizeDelta = new Vector2(500, 500);
+        var go = Object.Instantiate(Resources.Load("Chat Entry"), canvas.transform, false) as GameObject;
+        entry = go.GetComponent<ChatEntry>();
+        yield break;
+    }
+
+
+    protected override IEnumerator TearDown()
+    {
+        Object.Destroy(entry.gameObject);
+        Object.Destroy(canvas.gameObject);
+        yield break;
+    }
+
+    [Test]
+    public void BePopulatedCorrectly()
+    {
+        var message = new ChatController.ChatMessage()
+        {
+            messageType = ChatController.ChatMessageType.PUBLIC,
+            sender = "user-test",
+            recipient = "",
+            timestamp = 0,
+            body = "test message",
+        };
+
+        entry.Populate(message);
+
+        Assert.AreEqual(entry.worldMessageColor, entry.body.color);
+        Assert.AreEqual("<b>user-test:</b>", entry.username.text);
+        Assert.AreEqual("<b>user-test:</b> test message", entry.body.text);
+
+        message.messageType = ChatController.ChatMessageType.PRIVATE;
+        entry.Populate(message);
+        Assert.AreEqual(entry.privateMessageColor, entry.body.color);
+
+        message.messageType = ChatController.ChatMessageType.SYSTEM;
+        entry.Populate(message);
+        Assert.AreEqual(entry.systemColor, entry.body.color);
+
+        entry.Populate(null);
+    }
+}

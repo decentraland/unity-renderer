@@ -1,6 +1,4 @@
-using System;
-
-public class NotificationHUDController : IDisposable, IHUD
+public class NotificationHUDController : IHUD
 {
     public NotificationHUDView view { get; private set; }
     public NotificationHUDModel model { get; private set; }

@@ -1,8 +1,7 @@
-﻿using System;
 using DCL.Interface;
-using UnityEngine;
+using System;
 
-public class TermsOfServiceHUDController : IHUD, IDisposable
+public class TermsOfServiceHUDController : IHUD
 {
     [Serializable]
     public class Model
@@ -24,6 +23,7 @@ public class TermsOfServiceHUDController : IHUD, IDisposable
         view = TermsOfServiceHUDView.CreateView();
         view.Initialize(SendAgreed, SendDeclined, OpenToS, OpenPrivacyPolicy, OpenContactEmail);
     }
+
 
     public void ShowTermsOfService(Model model)
     {

@@ -11,12 +11,7 @@ namespace Tests
         {
             yield return base.SetUp();
             controller = new WelcomeHUDController();
-            var model = new WelcomeHUDController.Model()
-            {
-                hasWallet = true
-            };
-
-            controller.Initialize(model);
+            controller.Initialize(hasWallet: true);
         }
 
         [Test]

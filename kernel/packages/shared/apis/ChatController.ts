@@ -4,11 +4,7 @@ import { uuid } from 'atomicHelpers/math'
 import { parseParcelPosition, worldToGrid } from 'atomicHelpers/parcelScenePositions'
 import { SHOW_FPS_COUNTER } from 'config'
 import { sampleDropData } from 'shared/airdrops/sampleDrop'
-import { APIOptions, exposeMethod, registerAPI } from 'decentraland-rpc/lib/host'
-import { EngineAPI } from 'shared/apis/EngineAPI'
-import { ExposableAPI } from 'shared/apis/ExposableAPI'
-import { sendPublicChatMessage } from 'shared/comms'
-import { ChatEvent, chatObservable, notifyStatusThroughChat } from 'shared/comms/chat'
+import { notifyStatusThroughChat, chatObservable, ChatEventType } from 'shared/comms/chat'
 import { AvatarMessage, AvatarMessageType } from 'shared/comms/interface/types'
 import {
   addToMutedUsers,
@@ -16,13 +12,23 @@ import {
   findPeerByName,
   getCurrentUser,
   peerMap,
-  removeFromMutedUsers
+  removeFromMutedUsers,
+  getUserProfile
 } from 'shared/comms/peers'
-import { IChatCommand, MessageEntry } from 'shared/types'
+import { IChatCommand, MessageEntry, ChatMessageType } from 'shared/types'
 import { TeleportController } from 'shared/world/TeleportController'
 import { expressionExplainer, isValidExpression, validExpressions } from './expressionExplainer'
 import { changeRealm, catalystRealmConnected, changeToCrowdedRealm } from 'shared/dao'
 import defaultLogger from 'shared/logger'
+import { registerAPI, APIOptions, exposeMethod } from 'decentraland-rpc/lib/host'
+import { ExposableAPI } from './ExposableAPI'
+import { StoreContainer } from '../store/rootTypes'
+import { sendMessage } from 'shared/chat/actions'
+import { EngineAPI } from './EngineAPI'
+import { sendPublicChatMessage } from 'shared/comms'
+import { USE_NEW_CHAT } from '../../config/index'
+
+declare const globalThis: StoreContainer & { unityInterface: { TriggerSelfUserExpression: any } }
 
 const userPose: { [key: string]: Vector3Component } = {}
 avatarMessageObservable.add((pose: AvatarMessage) => {
@@ -45,11 +51,17 @@ export interface IChatController {
    * Send the chat message
    * @param messageEntry
    */
-  send(message: string): Promise<MessageEntry>
+  send(message: string): Promise<MessageEntry | null>
+
   /**
    * Return list of chat commands
    */
   getChatCommands(): Promise<{ [key: string]: IChatCommand }>
+
+  /**
+   * Determines whether this chat should be enabled or not
+   */
+  isEnabled(): Promise<boolean>
 }
 
 @registerAPI('ChatController')
@@ -63,7 +75,7 @@ export class ChatController extends ExposableAPI implements IChatController {
     const engineAPI = options.getAPIInstance(EngineAPI)
 
     chatObservable.add((event: any) => {
-      if (event.type === ChatEvent.MESSAGE_RECEIVED || event.type === ChatEvent.MESSAGE_SENT) {
+      if (event.type === ChatEventType.MESSAGE_RECEIVED || event.type === ChatEventType.MESSAGE_SENT) {
         const { type, ...data } = event
         engineAPI.sendSubscriptionEvent(event.type, data)
       }
@@ -71,8 +83,13 @@ export class ChatController extends ExposableAPI implements IChatController {
   }
 
   @exposeMethod
-  async send(message: string): Promise<MessageEntry> {
-    let entry
+  async isEnabled(): Promise<boolean> {
+    return !USE_NEW_CHAT
+  }
+
+  @exposeMethod
+  async send(message: string): Promise<MessageEntry | null> {
+    let entry: MessageEntry | null = null
 
     // Check if message is a command
     if (message[0] === '/') {
@@ -84,7 +101,8 @@ export class ChatController extends ExposableAPI implements IChatController {
           id: uuid(),
           isCommand: true,
           sender: 'Decentraland',
-          message: `That command doesn’t exist. Type /help for a full list of commands.`
+          message: `That command doesn’t exist. Type /help for a full list of commands.`,
+          timestamp: Date.now()
         }
       }
     } else {
@@ -95,6 +113,7 @@ export class ChatController extends ExposableAPI implements IChatController {
       const newEntry = (entry = {
         id: uuid(),
         isCommand: false,
+        timestamp: Date.now(),
         sender: currentUser.profile.name || currentUser.userId || 'unknown',
         message
       })
@@ -162,9 +181,12 @@ export class ChatController extends ExposableAPI implements IChatController {
         } else if (message.trim().toLowerCase() === 'crowd') {
           response = `Teleporting to a crowd of people in current realm...`
 
-          TeleportController.goToCrowd().then(({ message, success }) => notifyStatusThroughChat(message), () => {
-            // Do nothing. This is handled inside controller
-          })
+          TeleportController.goToCrowd().then(
+            ({ message, success }) => notifyStatusThroughChat(message),
+            () => {
+              // Do nothing. This is handled inside controller
+            }
+          )
         } else {
           response = 'Could not recognize the coordinates provided. Example usage: /goto 42,42'
         }
@@ -175,8 +197,9 @@ export class ChatController extends ExposableAPI implements IChatController {
 
       return {
         id: uuid(),
-        isCommand: true,
         sender: 'Decentraland',
+        isCommand: true,
+        timestamp: Date.now(),
         message: response
       }
     })
@@ -200,7 +223,7 @@ export class ChatController extends ExposableAPI implements IChatController {
           },
           e => {
             const cause = e === 'realm-full' ? ' The requested realm is full.' : ''
-            notifyStatusThroughChat("Could not join realm." + cause)
+            notifyStatusThroughChat('Could not join realm.' + cause)
             defaultLogger.error(`Error joining crowded realm ${realmString}`, e)
           }
         )
@@ -217,9 +240,7 @@ export class ChatController extends ExposableAPI implements IChatController {
               ),
             e => {
               const cause = e === 'realm-full' ? ' The requested realm is full.' : ''
-              notifyStatusThroughChat(
-                "Could not join realm." + cause
-              )
+              notifyStatusThroughChat('Could not join realm.' + cause)
               defaultLogger.error('Error joining realm', e)
             }
           )
@@ -230,8 +251,9 @@ export class ChatController extends ExposableAPI implements IChatController {
 
       return {
         id: uuid(),
-        isCommand: true,
         sender: 'Decentraland',
+        isCommand: true,
+        timestamp: Date.now(),
         message: response
       }
     })
@@ -248,10 +270,12 @@ export class ChatController extends ExposableAPI implements IChatController {
           return `  ${value.user!.profile!.name}: ${pos.x}, ${pos.y}`
         })
         .join('\n')
+
       return {
         id: uuid(),
-        isCommand: true,
         sender: 'Decentraland',
+        isCommand: true,
+        timestamp: Date.now(),
         message: strings ? `Players around you:\n${strings}` : 'No other players are near to your location'
       }
     })
@@ -260,10 +284,12 @@ export class ChatController extends ExposableAPI implements IChatController {
       fpsConfiguration.visible = !fpsConfiguration.visible
       const unityWindow: any = window
       fpsConfiguration.visible ? unityWindow.unityInterface.ShowFPSPanel() : unityWindow.unityInterface.HideFPSPanel()
+
       return {
         id: uuid(),
-        isCommand: true,
         sender: 'Decentraland',
+        isCommand: true,
+        timestamp: Date.now(),
         message: 'Toggling FPS counter'
       }
     })
@@ -274,8 +300,9 @@ export class ChatController extends ExposableAPI implements IChatController {
       if (!currentUser.profile) throw new Error('profileNotInitialized')
       return {
         id: uuid(),
-        isCommand: true,
         sender: 'Decentraland',
+        isCommand: true,
+        timestamp: Date.now(),
         message: `Your Display Name is ${currentUser.profile.name}.`
       }
     })
@@ -289,17 +316,30 @@ export class ChatController extends ExposableAPI implements IChatController {
       if (user && user.userId) {
         // Cannot mute yourself
         if (username === currentUser.userId) {
-          return { id: uuid(), isCommand: true, sender: 'Decentraland', message: `You cannot mute yourself.` }
+          return {
+            id: uuid(),
+            sender: 'Decentraland',
+            isCommand: true,
+            timestamp: Date.now(),
+            message: `You cannot mute yourself.`
+          }
         }
 
         addToMutedUsers(user.userId)
 
-        return { id: uuid(), isCommand: true, sender: 'Decentraland', message: `You muted user ${username}.` }
+        return {
+          id: uuid(),
+          sender: 'Decentraland',
+          isCommand: true,
+          timestamp: Date.now(),
+          message: `You muted user ${username}.`
+        }
       } else {
         return {
           id: uuid(),
-          isCommand: true,
           sender: 'Decentraland',
+          isCommand: true,
+          timestamp: Date.now(),
           message: `User not found ${JSON.stringify(username)}.`
         }
       }
@@ -308,28 +348,37 @@ export class ChatController extends ExposableAPI implements IChatController {
     this.addChatCommand(
       'emote',
       'Trigger avatar animation named [expression] ("robot", "wave", or "fistpump")',
-      message => {
-        const expression = message
+      expression => {
         if (!isValidExpression(expression)) {
           return {
             id: uuid(),
-            isCommand: true,
             sender: 'Decentraland',
+            isCommand: true,
+            timestamp: Date.now(),
             message: `Expression ${expression} is not one of ${validExpressions.map(_ => `"${_}"`).join(', ')}`
           }
-        } else {
-          const id = uuid()
-          const time = new Date().getTime()
-          const chatMessage = `␐${expression} ${time}`
-          sendPublicChatMessage(id, chatMessage)
-          const unityWindow: any = window
-          unityWindow.unityInterface.TriggerSelfUserExpression(expression)
-          return {
-            id: uuid(),
-            isCommand: true,
-            sender: 'Decentraland',
-            message: `You start ${expressionExplainer[expression]}`
-          }
+        }
+
+        const time = Date.now()
+
+        globalThis.globalStore.dispatch(
+          sendMessage({
+            messageId: uuid(),
+            body: `␐${expression} ${time}`,
+            messageType: ChatMessageType.PUBLIC,
+            sender: getUserProfile().identity.address,
+            timestamp: Date.now()
+          })
+        )
+
+        globalThis.unityInterface.TriggerSelfUserExpression(expression)
+
+        return {
+          id: uuid(),
+          sender: 'Decentraland',
+          isCommand: true,
+          timestamp: Date.now(),
+          message: `You start ${expressionExplainer[expression]}`
         }
       }
     )
@@ -339,8 +388,9 @@ export class ChatController extends ExposableAPI implements IChatController {
       unityWindow.unityInterface.TriggerAirdropDisplay(sampleDropData)
       return {
         id: uuid(),
-        isCommand: true,
         sender: 'Decentraland',
+        isCommand: true,
+        timestamp: Date.now(),
         message: 'Faking airdrop...'
       }
     })
@@ -355,17 +405,30 @@ export class ChatController extends ExposableAPI implements IChatController {
       if (user && user.userId) {
         // Cannot unmute or mute yourself
         if (username === currentUser.userId) {
-          return { id: uuid(), isCommand: true, sender: 'Decentraland', message: `You cannot mute or unmute yourself.` }
+          return {
+            id: uuid(),
+            sender: 'Decentraland',
+            isCommand: true,
+            timestamp: Date.now(),
+            message: `You cannot mute or unmute yourself.`
+          }
         }
 
         removeFromMutedUsers(user.userId)
 
-        return { id: uuid(), isCommand: true, sender: 'Decentraland', message: `You unmuted user ${username}.` }
+        return {
+          id: uuid(),
+          sender: 'Decentraland',
+          isCommand: true,
+          timestamp: Date.now(),
+          message: `You unmuted user ${username}.`
+        }
       } else {
         return {
           id: uuid(),
-          isCommand: true,
           sender: 'Decentraland',
+          isCommand: true,
+          timestamp: Date.now(),
           message: `User not found ${JSON.stringify(username)}.`
         }
       }
@@ -374,8 +437,9 @@ export class ChatController extends ExposableAPI implements IChatController {
     this.addChatCommand('help', 'Show a list of commands', message => {
       return {
         id: uuid(),
-        isCommand: true,
         sender: 'Decentraland',
+        isCommand: true,
+        timestamp: Date.now(),
         message:
           `Click on the screen to lock the cursor, later you can unlock it with the [ESC] key.` +
           `\n\nYou can move with the [WASD] keys and jump with the [SPACE] key.` +

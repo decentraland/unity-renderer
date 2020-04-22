@@ -24,10 +24,10 @@ namespace DCL.Tutorial
             {
                 HUDController.i.avatarHud.SetVisibility(false);
                 HUDController.i.expressionsHud.SetVisibility(false);
-                if (HUDController.i.welcomeHudController != null)
+                if (HUDController.i.messageOfTheDayHud != null)
                 {
-                    HUDController.i.welcomeHudController.OnConfirmed += OnWelcomePopupConfirm;
-                    HUDController.i.welcomeHudController.OnDismissed += OnWelcomePopupDismiss;
+                    HUDController.i.messageOfTheDayHud.OnConfirmed += OnWelcomePopupConfirm;
+                    HUDController.i.messageOfTheDayHud.OnDismissed += OnWelcomePopupDismiss;
                 }
             }
 
@@ -39,10 +39,10 @@ namespace DCL.Tutorial
             base.OnStepFinished();
             if (HUDController.i != null)
             {
-                if (HUDController.i.welcomeHudController != null)
+                if (HUDController.i.messageOfTheDayHud != null)
                 {
-                    HUDController.i.welcomeHudController.OnConfirmed -= OnWelcomePopupConfirm;
-                    HUDController.i.welcomeHudController.OnDismissed -= OnWelcomePopupDismiss;
+                    HUDController.i.messageOfTheDayHud.OnConfirmed -= OnWelcomePopupConfirm;
+                    HUDController.i.messageOfTheDayHud.OnDismissed -= OnWelcomePopupDismiss;
                 }
             }
         }
@@ -76,10 +76,10 @@ namespace DCL.Tutorial
             }
 
             isWelcomeHudVisible = false;
-            if (HUDController.i != null && HUDController.i.welcomeHudController != null)
+            if (HUDController.i != null && HUDController.i.messageOfTheDayHud != null)
             {
                 isWelcomeHudVisible = true;
-                HUDController.i.welcomeHudController.SetVisibility(true);
+                HUDController.i.messageOfTheDayHud.SetVisibility(true);
             }
             yield return new WaitUntil(() => !isWelcomeHudVisible);
 

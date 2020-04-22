@@ -9,10 +9,6 @@ namespace AvatarEditorHUD_Tests
 {
     public class AvatarEditorHUDController_Mock : AvatarEditorHUDController
     {
-        public AvatarEditorHUDController_Mock(UserProfile userProfile, WearableDictionary catalog, bool bypassUpdateAvatarPreview = true) : base(userProfile, catalog, bypassUpdateAvatarPreview)
-        {
-        }
-
         public AvatarEditorHUDModel myModel => model;
         public AvatarEditorHUDView myView => view;
         public string[] myCategoriesThatMustHaveSelection => categoriesThatMustHaveSelection;
@@ -42,7 +38,8 @@ namespace AvatarEditorHUD_Tests
             }, false);
 
             catalog = AvatarTestHelpers.CreateTestCatalogLocal();
-            controller = new AvatarEditorHUDController_Mock(userProfile, catalog);
+            controller = new AvatarEditorHUDController_Mock();
+            controller.Initialize(userProfile, catalog);
             yield break;
         }
 

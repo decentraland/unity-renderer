@@ -305,7 +305,7 @@ jobs:
           command: echo "//registry.npmjs.org/:_authToken=${NPM_TOKEN}" > ~/.npmrc
           when: on_success
       - run:
-          name: Publish a new version of decentraland-ecs
+          name: Publish a new version of decentraland-renderer
           command: /tmp/explorer/.circleci/publish.sh
 
   publish-ecs:

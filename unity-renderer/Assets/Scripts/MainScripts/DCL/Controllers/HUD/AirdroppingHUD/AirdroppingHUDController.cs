@@ -1,7 +1,7 @@
-﻿using System;
 using DCL.Interface;
+using System;
 
-public class AirdroppingHUDController : IHUD, IDisposable
+public class AirdroppingHUDController : IHUD
 {
 
     [Serializable]

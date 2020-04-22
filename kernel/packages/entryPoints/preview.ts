@@ -9,7 +9,7 @@ import { initializeUnity } from 'unity-interface/initializer'
 import { loadPreviewScene, unityInterface } from 'unity-interface/dcl'
 import { DEBUG_WS_MESSAGES } from 'config'
 import defaultLogger from 'shared/logger'
-import { ILand } from 'shared/types'
+import { ILand, HUDElementID } from 'shared/types'
 import { pickWorldSpawnpoint } from 'shared/world/positionThings'
 import { signalRendererInitialized } from 'shared/renderer/actions'
 import { StoreContainer } from 'shared/store/rootTypes'
@@ -79,10 +79,10 @@ function sceneRenderable() {
 initializeUnity(container)
   .then(async ret => {
     const i = unityInterface
-    i.ConfigureMinimapHUD({ active: true, visible: true })
-    i.ConfigureNotificationHUD({ active: true, visible: true })
-    i.ConfigureSettingsHUD({ active: true, visible: false })
-    i.ConfigureAirdroppingHUD({ active: true, visible: true })
+    i.ConfigureHUDElement( HUDElementID.MINIMAP, { active: true, visible: true })
+    i.ConfigureHUDElement( HUDElementID.NOTIFICATION, { active: true, visible: true })
+    i.ConfigureHUDElement( HUDElementID.SETTINGS, { active: true, visible: true })
+    i.ConfigureHUDElement( HUDElementID.AIRDROPPING, { active: true, visible: true })
 
     global.globalStore.dispatch(signalRendererInitialized())
 

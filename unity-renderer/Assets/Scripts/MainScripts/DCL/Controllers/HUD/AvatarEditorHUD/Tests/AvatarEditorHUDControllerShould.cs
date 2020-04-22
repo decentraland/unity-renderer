@@ -43,7 +43,8 @@ namespace AvatarEditorHUD_Tests
                 }, false);
 
                 catalog = AvatarTestHelpers.CreateTestCatalogLocal();
-                controller = new AvatarEditorHUDController_Mock(userProfile, catalog);
+                controller = new AvatarEditorHUDController_Mock();
+                controller.Initialize(userProfile, catalog);
             }
             else
             {
@@ -146,7 +147,8 @@ namespace AvatarEditorHUD_Tests
                 }
             }, false);
 
-            controller = new AvatarEditorHUDController_Mock(userProfile, catalog);
+            controller = new AvatarEditorHUDController_Mock();
+            controller.Initialize(userProfile, catalog);
 
             AssertAvatarModelAgainstAvatarEditorHUDModel(userProfile.avatar, controller.myModel);
         }

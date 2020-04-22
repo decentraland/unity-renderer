@@ -2,25 +2,18 @@ using DCL.Helpers;
 using DCL.Interface;
 using UnityEngine;
 
-public class WelcomeHUDController : IHUD, System.IDisposable
+public class WelcomeHUDController : IHUD
 {
-    [System.Serializable]
-    public class Model : HUDConfiguration
-    {
-        public bool hasWallet; //TODO(Brian): Use WEB3 param in userProfile
-    }
-
     internal WelcomeHUDView view;
-    internal Model model;
 
     public System.Action OnConfirmed;
     public System.Action OnDismissed;
 
-    public void Initialize(Model model)
+    bool hasWallet;
+    public void Initialize(bool hasWallet)
     {
-        this.model = model;
-
-        view = WelcomeHUDView.CreateView(model.hasWallet);
+        this.hasWallet = hasWallet;
+        view = WelcomeHUDView.CreateView(hasWallet);
         view.Initialize(OnConfirmPressed, OnClosePressed);
 
         Utils.UnlockCursor();
@@ -35,7 +28,8 @@ public class WelcomeHUDController : IHUD, System.IDisposable
     void OnConfirmPressed()
     {
         Close();
-        if (model != null)
+
+        if (hasWallet)
         {
             OnConfirmed?.Invoke();
             WebInterface.ReportMotdClicked();

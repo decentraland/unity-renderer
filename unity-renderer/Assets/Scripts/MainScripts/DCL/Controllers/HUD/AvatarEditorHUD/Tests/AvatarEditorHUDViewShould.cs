@@ -43,7 +43,8 @@ namespace AvatarEditorHUD_Tests
             }, false);
 
             catalog = AvatarTestHelpers.CreateTestCatalogLocal();
-            controller = new AvatarEditorHUDController_Mock(userProfile, catalog);
+            controller = new AvatarEditorHUDController_Mock();
+            controller.Initialize(userProfile, catalog);
         }
 
         [Test]
@@ -189,9 +190,9 @@ namespace AvatarEditorHUD_Tests
                     bodyShape = WearableLiterals.BodyShapes.FEMALE,
                     wearables = new List<string>() { },
                 },
-                inventory = new[] {wearableId}
+                inventory = new[] { wearableId }
             }, false);
-    
+
             Assert.IsFalse(controller.myView.collectiblesItemSelector.itemToggles[wearableId].amountContainer.gameObject.activeSelf);
         }
 
@@ -215,7 +216,7 @@ namespace AvatarEditorHUD_Tests
                 inventory = Enumerable.Repeat(wearableId, amount).ToArray()
             }, false);
 
-            var itemToggle = controller.myView.selectorsByCategory[WearableLiterals.Categories.UPPER_BODY].itemToggles[wearableId]; 
+            var itemToggle = controller.myView.selectorsByCategory[WearableLiterals.Categories.UPPER_BODY].itemToggles[wearableId];
 
             Assert.IsTrue(itemToggle.amountContainer.gameObject.activeSelf);
             Assert.AreEqual($"x{amount}", itemToggle.amountText.text);
@@ -241,7 +242,7 @@ namespace AvatarEditorHUD_Tests
                 inventory = Enumerable.Repeat(wearableId, amount).ToArray()
             }, false);
 
-            var itemToggle = controller.myView.collectiblesItemSelector.itemToggles[wearableId]; 
+            var itemToggle = controller.myView.collectiblesItemSelector.itemToggles[wearableId];
 
             Assert.IsTrue(itemToggle.amountContainer.gameObject.activeSelf);
             Assert.AreEqual($"x{amount}", itemToggle.amountText.text);
