@@ -21,7 +21,8 @@
         "InputController",
         "GenericPointers",
         "MaterialCachingHelper",
-        "SRPBatchingHelper"
+        "SRPBatchingHelper",
+        "MouseCatcher"
     ],
     "optionalUnityReferences": [],
     "includePlatforms": [],

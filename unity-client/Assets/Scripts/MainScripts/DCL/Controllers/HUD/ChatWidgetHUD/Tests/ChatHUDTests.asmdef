@@ -1,0 +1,21 @@
+{
+    "name": "ChatHUDTests",
+    "references": [
+        "GUID:b1087c5731ff68448a0a9c625bb7e52d",
+        "GUID:6c83ec3e64bad1743a40f7646cd964a4",
+        "GUID:6055be8ebefd69e48b49212b09b47b2f",
+        "GUID:ef84d7ce90ba34f07be26ace428e9bc8",
+        "GUID:eb95615676ca6984687c5ae7774d6309"
+    ],
+    "optionalUnityReferences": [
+        "TestAssemblies"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": []
+}

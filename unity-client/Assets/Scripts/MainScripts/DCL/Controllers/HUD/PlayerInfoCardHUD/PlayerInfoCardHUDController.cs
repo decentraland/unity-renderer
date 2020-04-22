@@ -1,8 +1,7 @@
-﻿using System;
 using DCL.Interface;
 using UnityEngine;
 
-public class PlayerInfoCardHUDController : IHUD, IDisposable
+public class PlayerInfoCardHUDController : IHUD
 {
     internal const string CURRENT_PLAYER_NAME = "CurrentPlayerInfoCardName";
 

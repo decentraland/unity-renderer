@@ -150,6 +150,12 @@ namespace DCL.Interface
         {
         }
 
+        [System.Serializable]
+        public class SendChatMessageEvent
+        {
+            public ChatController.ChatMessage message;
+        }
+
 
         [System.Serializable]
         public class OnPointerEventPayload
@@ -439,6 +445,7 @@ namespace DCL.Interface
         private static OnGlobalPointerEvent onGlobalPointerEvent = new OnGlobalPointerEvent();
         private static AudioStreamingPayload onAudioStreamingEvent = new AudioStreamingPayload();
         private static GotoEvent gotoEvent = new GotoEvent();
+        private static SendChatMessageEvent sendChatMessageEvent = new SendChatMessageEvent();
 
         public static void SendSceneEvent<T>(string sceneId, string eventType, T payload)
         {
@@ -805,6 +812,12 @@ namespace DCL.Interface
             gotoEvent.x = x;
             gotoEvent.y = y;
             SendMessage("GoTo", gotoEvent);
+        }
+
+        public static void SendChatMessage(ChatController.ChatMessage message)
+        {
+            sendChatMessageEvent.message = message;
+            SendMessage("SendChatMessage", sendChatMessageEvent);
         }
     }
 }

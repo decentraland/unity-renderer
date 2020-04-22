@@ -1,8 +1,7 @@
 using DCL.Interface;
-using System;
 using UnityEngine;
 
-public class MinimapHUDController : IDisposable, IHUD
+public class MinimapHUDController : IHUD
 {
     private static bool VERBOSE = false;
 

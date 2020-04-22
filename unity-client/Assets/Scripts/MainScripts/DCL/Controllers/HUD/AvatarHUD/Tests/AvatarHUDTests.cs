@@ -27,6 +27,7 @@ namespace Tests
         public void AvatarHUD_VisibilityDefaulted()
         {
             var controller = new AvatarHUDController();
+            controller.Initialize();
 
             Assert.AreEqual(true, controller.visibility);
             Assert.AreEqual(true, GetViewFromController(controller).gameObject.activeSelf);
@@ -35,7 +36,8 @@ namespace Tests
         [Test]
         public void AvatarHUD_VisibilityOverridenTrue()
         {
-            var controller = new AvatarHUDController(visibility: true);
+            var controller = new AvatarHUDController();
+            controller.Initialize(visibility: true);
 
             Assert.AreEqual(true, controller.visibility);
             Assert.AreEqual(true, GetViewFromController(controller).gameObject.activeSelf);
@@ -44,7 +46,8 @@ namespace Tests
         [Test]
         public void AvatarHUD_VisibilityOverridenFalse()
         {
-            var controller = new AvatarHUDController(visibility: false);
+            var controller = new AvatarHUDController();
+            controller.Initialize(visibility: false);
 
             Assert.AreEqual(false, controller.visibility);
             Assert.AreEqual(false, GetViewFromController(controller).gameObject.activeSelf);
@@ -54,6 +57,7 @@ namespace Tests
         public void AvatarHUD_ExpandedDefaulted()
         {
             var controller = new AvatarHUDController();
+            controller.Initialize();
 
             Assert.AreEqual(false, controller.expanded);
             var view = GetViewFromController(controller);
@@ -63,7 +67,8 @@ namespace Tests
         [Test]
         public void AvatarHUD_ExpandedOverridenTrue()
         {
-            var controller = new AvatarHUDController(expanded: true);
+            var controller = new AvatarHUDController();
+            controller.Initialize(expanded: true);
 
             Assert.AreEqual(true, controller.expanded);
             var view = GetViewFromController(controller);
@@ -73,7 +78,8 @@ namespace Tests
         [Test]
         public void AvatarHUD_ExpandedOverridenFalse()
         {
-            var controller = new AvatarHUDController(expanded: false);
+            var controller = new AvatarHUDController();
+            controller.Initialize(expanded: false);
 
             Assert.AreEqual(false, controller.expanded);
             var view = GetViewFromController(controller);
@@ -84,6 +90,7 @@ namespace Tests
         public void AvatarHUD_ModelDefaulted()
         {
             var controller = new AvatarHUDController();
+            controller.Initialize();
 
             Assert.AreEqual("", controller.model.name);
             Assert.AreEqual("", controller.model.mail);
@@ -94,7 +101,9 @@ namespace Tests
         public void AvatarHUD_ModelOverriden()
         {
             Sprite sprite = CreateEmptySprite();
-            var controller = new AvatarHUDController(new AvatarHUDModel()
+            var controller = new AvatarHUDController();
+
+            controller.Initialize(new AvatarHUDModel()
             {
                 name = "name",
                 mail = "mail",
@@ -109,7 +118,8 @@ namespace Tests
         [Test]
         public void AvatarHUD_ControllerSetVisibilityTrue()
         {
-            var controller = new AvatarHUDController(false);
+            var controller = new AvatarHUDController();
+            controller.Initialize(false);
 
             controller.SetVisibility(true);
 
@@ -120,6 +130,7 @@ namespace Tests
         public void AvatarHUD_ControllerSetVisibilityFalse()
         {
             var controller = new AvatarHUDController();
+            controller.Initialize();
 
             controller.SetVisibility(false);
 
@@ -129,7 +140,8 @@ namespace Tests
         [Test]
         public void AvatarHUD_ViewSetVisibilityTrue()
         {
-            var controller = new AvatarHUDController(false);
+            var controller = new AvatarHUDController();
+            controller.Initialize(false);
 
             GetViewFromController(controller).SetVisibility(true);
 
@@ -140,6 +152,7 @@ namespace Tests
         public void AvatarHUD_ViewSetVisibilityFalse()
         {
             var controller = new AvatarHUDController();
+            controller.Initialize();
 
             GetViewFromController(controller).SetVisibility(false);
 
@@ -151,6 +164,7 @@ namespace Tests
         {
             Sprite sprite = CreateEmptySprite();
             var controller = new AvatarHUDController();
+            controller.Initialize();
 
             controller.UpdateData(new AvatarHUDModel()
             {
@@ -169,6 +183,7 @@ namespace Tests
         {
             Sprite sprite = CreateEmptySprite();
             var controller = new AvatarHUDController();
+            controller.Initialize();
 
             GetViewFromController(controller).UpdateData(new AvatarHUDModel()
             {
@@ -186,7 +201,8 @@ namespace Tests
         [Test]
         public void AvatarHUD_ExpandToggleFromFalse()
         {
-            var controller = new AvatarHUDController(expanded: false);
+            var controller = new AvatarHUDController();
+            controller.Initialize(expanded: false);
 
             var view = GetViewFromController(controller);
             Reflection_GetField<Button>(view, "toggleExpandButton").onClick.Invoke();
@@ -198,7 +214,8 @@ namespace Tests
         [Test]
         public void AvatarHUD_ExpandToggleFromTrue()
         {
-            var controller = new AvatarHUDController(expanded: true);
+            var controller = new AvatarHUDController();
+            controller.Initialize(expanded: true);
 
             var view = GetViewFromController(controller);
             Reflection_GetField<Button>(view, "toggleExpandButton").onClick.Invoke();
@@ -210,7 +227,8 @@ namespace Tests
         [Test]
         public void AvatarHUD_ExpandToggleFromTrueWhenEditAvatarIsClicked()
         {
-            var controller = new AvatarHUDController(expanded: true);
+            var controller = new AvatarHUDController();
+            controller.Initialize(expanded: true);
 
             var view = GetViewFromController(controller);
             Reflection_GetField<Button>(view, "editAvatarButton").onClick.Invoke();
@@ -222,7 +240,8 @@ namespace Tests
         [Test]
         public void AvatarHUD_ExpandToggleFromTrueWhenLogOutIsClicked()
         {
-            var controller = new AvatarHUDController(expanded: true);
+            var controller = new AvatarHUDController();
+            controller.Initialize(expanded: true);
 
             var view = GetViewFromController(controller);
             Reflection_GetField<Button>(view, "signOutButton").onClick.Invoke();

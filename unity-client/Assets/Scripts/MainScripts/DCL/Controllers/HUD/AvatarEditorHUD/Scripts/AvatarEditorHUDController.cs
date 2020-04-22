@@ -6,7 +6,7 @@ using System.Linq;
 using UnityEngine;
 using Categories = WearableLiterals.Categories;
 
-public class AvatarEditorHUDController : IDisposable, IHUD
+public class AvatarEditorHUDController : IHUD
 {
     protected static readonly string[] categoriesThatMustHaveSelection = { Categories.BODY_SHAPE, Categories.UPPER_BODY, Categories.LOWER_BODY, Categories.FEET, Categories.EYES, Categories.EYEBROWS, Categories.MOUTH };
     protected static readonly string[] categoriesToRandomize = { Categories.HAIR, Categories.EYES, Categories.EYEBROWS, Categories.MOUTH, Categories.FACIAL, Categories.HAIR, Categories.UPPER_BODY, Categories.LOWER_BODY, Categories.FEET };
@@ -25,7 +25,8 @@ public class AvatarEditorHUDController : IDisposable, IHUD
 
     public Action<bool> OnVisibilityChanged;
 
-    public AvatarEditorHUDController(UserProfile userProfile, WearableDictionary catalog, bool bypassUpdateAvatarPreview = false)
+    public AvatarEditorHUDController() { }
+    public void Initialize(UserProfile userProfile, WearableDictionary catalog, bool bypassUpdateAvatarPreview = false)
     {
         this.userProfile = userProfile;
         this.bypassUpdateAvatarPreview = bypassUpdateAvatarPreview;
@@ -67,7 +68,7 @@ public class AvatarEditorHUDController : IDisposable, IHUD
         {
             return;
         }
-    
+
         view.SetIsWeb3(userProfile.hasConnectedWeb3);
 
         ProcessCatalog(this.catalog);
@@ -414,7 +415,7 @@ public class AvatarEditorHUDController : IDisposable, IHUD
 
     public void GoToMarketplace()
     {
-        if(userProfile.hasConnectedWeb3)
+        if (userProfile.hasConnectedWeb3)
             WebInterface.OpenURL("https://market.decentraland.org/browse?section=wearables");
         else
             WebInterface.OpenURL("https://docs.decentraland.org/get-a-wallet");

@@ -1,0 +1,24 @@
+{
+    "name": "WorldChatWindowHUDTests",
+    "references": [
+        "GUID:ef84d7ce90ba34f07be26ace428e9bc8",
+        "GUID:bfcb62efe121edb4cb291924b28114eb",
+        "GUID:b1087c5731ff68448a0a9c625bb7e52d",
+        "GUID:eb95615676ca6984687c5ae7774d6309",
+        "GUID:858f845923fcab3448cf8b66614b41a1",
+        "GUID:6c83ec3e64bad1743a40f7646cd964a4",
+        "GUID:4973650d2444c4561a15d50f24d91cd9",
+        "GUID:6055be8ebefd69e48b49212b09b47b2f"
+    ],
+    "optionalUnityReferences": [
+        "TestAssemblies"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": []
+}

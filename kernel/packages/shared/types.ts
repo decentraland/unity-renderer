@@ -30,9 +30,11 @@ export type UserData = {
 
 export type MessageEntry = {
   id: string
-  sender: string
+  isCommand: boolean
+  sender: string | undefined
+  recipient?: string | undefined
   message: string
-  isCommand?: boolean
+  timestamp: number
 }
 
 export interface IChatCommand {
@@ -373,6 +375,22 @@ export type Notification = {
   externalCallbackID?: string
 }
 
+export enum HUDElementID {
+  NONE = 0,
+  MINIMAP = 1,
+  AVATAR = 2,
+  NOTIFICATION = 3,
+  AVATAR_EDITOR = 4,
+  SETTINGS = 5,
+  EXPRESSIONS = 6,
+  PLAYER_INFO_CARD = 7,
+  AIRDROPPING = 8,
+  TERMS_OF_SERVICE = 9,
+  WORLD_CHAT_WINDOW = 10,
+  TASKBAR = 11,
+  MESSAGE_OF_THE_DAY = 12
+}
+
 export type HUDConfiguration = {
   active: boolean
   visible: boolean
@@ -397,3 +415,19 @@ export type GraphResponse = {
 }
 
 export type AnalyticsContainer = { analytics: SegmentAnalytics.AnalyticsJS }
+
+export enum ChatMessageType {
+  NONE,
+  PUBLIC,
+  PRIVATE,
+  SYSTEM
+}
+
+export type ChatMessage = {
+  messageId: string
+  messageType: ChatMessageType
+  sender?: string | undefined
+  recipient?: string | undefined
+  timestamp: number
+  body: string
+}

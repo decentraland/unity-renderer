@@ -1,5 +1,3 @@
-using UnityEngine;
-
 public class AvatarHUDController : IHUD
 {
     private AvatarHUDView view;
@@ -10,9 +8,12 @@ public class AvatarHUDController : IHUD
     public event System.Action OnEditAvatarPressed;
     public event System.Action OnSettingsPressed;
 
-    public AvatarHUDController(bool visibility = true, bool expanded = false) : this(new AvatarHUDModel(), visibility, expanded) { }
+    public void Initialize(bool visibility = true, bool expanded = false)
+    {
+        Initialize(new AvatarHUDModel(), visibility, expanded);
+    }
 
-    public AvatarHUDController(AvatarHUDModel model, bool visibility = true, bool expanded = false)
+    public void Initialize(AvatarHUDModel model, bool visibility = true, bool expanded = false)
     {
         view = AvatarHUDView.Create(this);
         UpdateData(model);
@@ -75,5 +76,9 @@ public class AvatarHUDController : IHUD
     {
         model.newWearables = wearableCount;
         view.UpdateData(model);
+    }
+
+    public void Dispose()
+    {
     }
 }

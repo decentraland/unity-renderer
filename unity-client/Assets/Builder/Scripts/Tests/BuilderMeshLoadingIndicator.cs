@@ -1,56 +1,53 @@
-﻿using System.Collections;
+using DCL.Components;
+using DCL.Helpers;
+using NUnit.Framework;
+using System.Collections;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.TestTools;
-using DCL.Helpers;
-using DCL.Components;
-using NUnit.Framework;
 
-namespace Builder.Tests
+public class BuilderMeshLoadingIndicator : TestsBase
 {
-    public class BuilderMeshLoadingIndicator : TestsBase
+    [UnityTest]
+    public IEnumerator BuilderMeshLoadingIndicatorTest()
     {
-        [UnityTest]
-        public IEnumerator BuilderMeshLoadingIndicatorTest()
+        yield return InitScene();
+        DCL.Configuration.EnvironmentSettings.DEBUG = true;
+        sceneController.SetDebug();
+
+        yield return SceneManager.LoadSceneAsync("BuilderScene", LoadSceneMode.Additive);
+
+        var builderBridge = Object.FindObjectOfType<Builder.DCLBuilderBridge>();
+        builderBridge.ResetBuilderScene();
+
+        var objectEntity = TestHelpers.CreateSceneEntity(scene);
+        var objectShape = TestHelpers.AttachGLTFShape(objectEntity, scene, new Vector3(8, 1, 8), new LoadableShape.Model()
         {
-            yield return InitScene();
-            DCL.Configuration.EnvironmentSettings.DEBUG = true;
-            sceneController.SetDebug();
+            src = DCL.Helpers.Utils.GetTestsAssetsPath() + "/GLB/Lantern/Lantern.glb"
+        });
 
-            yield return SceneManager.LoadSceneAsync("BuilderScene", LoadSceneMode.Additive);
+        CheckActiveIndicatorsAmount(expectedAmount: 1);
 
-            var builderBridge = Object.FindObjectOfType<Builder.DCLBuilderBridge>();
-            builderBridge.ResetBuilderScene();
+        yield return TestHelpers.WaitForGLTFLoad(objectEntity);
 
-            var objectEntity = TestHelpers.CreateSceneEntity(scene);
-            var objectShape = TestHelpers.AttachGLTFShape(objectEntity, scene, new Vector3(8, 1, 8), new LoadableShape.Model()
-            {
-                src = DCL.Helpers.Utils.GetTestsAssetsPath() + "/GLB/Lantern/Lantern.glb"
-            });
+        CheckActiveIndicatorsAmount(expectedAmount: 0);
 
-            CheckActiveIndicatorsAmount(expectedAmount: 1);
+        sceneController.UnloadAllScenes();
+        yield return null;
+    }
 
-            yield return TestHelpers.WaitForGLTFLoad(objectEntity);
-
-            CheckActiveIndicatorsAmount(expectedAmount: 0);
-
-            sceneController.UnloadAllScenes();
-            yield return null;
-        }
-
-        void CheckActiveIndicatorsAmount(int expectedAmount)
+    void CheckActiveIndicatorsAmount(int expectedAmount)
+    {
+        Builder.MeshLoadIndicator.DCLBuilderMeshLoadIndicator[] indicators = Object.FindObjectsOfType<Builder.MeshLoadIndicator.DCLBuilderMeshLoadIndicator>();
+        int activeIndicators = 0;
+        for (int i = 0; i < indicators.Length; i++)
         {
-            Builder.MeshLoadIndicator.DCLBuilderMeshLoadIndicator[] indicators = Object.FindObjectsOfType<Builder.MeshLoadIndicator.DCLBuilderMeshLoadIndicator>();
-            int activeIndicators = 0;
-            for (int i = 0; i < indicators.Length; i++)
+            if (indicators[i].gameObject.activeInHierarchy)
             {
-                if (indicators[i].gameObject.activeInHierarchy)
-                {
-                    activeIndicators++;
-                }
+                activeIndicators++;
             }
-
-            Assert.AreEqual(expectedAmount, activeIndicators, $"Expected {expectedAmount} active loading indicator");
         }
+
+        Assert.AreEqual(expectedAmount, activeIndicators, $"Expected {expectedAmount} active loading indicator");
     }
 }

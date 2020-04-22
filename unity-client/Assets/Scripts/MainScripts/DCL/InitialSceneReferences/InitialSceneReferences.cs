@@ -1,5 +1,5 @@
-﻿using UnityEngine;
 using DCL.Helpers;
+using UnityEngine;
 
 namespace DCL
 {

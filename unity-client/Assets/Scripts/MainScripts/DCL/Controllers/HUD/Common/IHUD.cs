@@ -1,4 +1,6 @@
-﻿public interface IHUD
+using System;
+
+public interface IHUD : IDisposable
 {
     void SetVisibility(bool visible);
 }
