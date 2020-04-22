@@ -155,5 +155,66 @@ namespace Tests
 
             DCLCharacterController.i.ResumeGravity();
         }
+
+        [UnityTest]
+        public IEnumerator FeedbackIsNotDisplayedOnParent()
+        {
+            var cursorController = GameObject.FindObjectOfType<CursorController>();
+
+            Assert.IsNotNull(cameraController, "camera is null?");
+
+            // Create parent entity
+            DecentralandEntity blockingEntity;
+            BoxShape blockingShape = TestHelpers.InstantiateEntityWithShape<BoxShape, BoxShape.Model>(
+                scene,
+                DCL.Models.CLASS_ID.BOX_SHAPE,
+                Vector3.zero,
+                out blockingEntity,
+                new BoxShape.Model() { });
+            TestHelpers.SetEntityTransform(scene, blockingEntity, new Vector3(3, 3, 3), Quaternion.identity, new Vector3(1, 1, 1));
+            yield return blockingShape.routine;
+
+            // Create target entity for click
+            DecentralandEntity clickTargetEntity;
+            BoxShape clickTargetShape = TestHelpers.InstantiateEntityWithShape<BoxShape, BoxShape.Model>(
+                scene,
+                DCL.Models.CLASS_ID.BOX_SHAPE,
+                Vector3.zero,
+                out clickTargetEntity,
+                new BoxShape.Model() { });
+            TestHelpers.SetEntityTransform(scene, clickTargetEntity, new Vector3(0, 0, 5), Quaternion.identity, new Vector3(1, 1, 1));
+            yield return clickTargetShape.routine;
+
+            // Enparent target entity as a child of the blocking entity
+            TestHelpers.SetEntityParent(scene, clickTargetEntity, blockingEntity);
+
+            // Set character position and camera rotation
+            DCLCharacterController.i.SetPosition(new Vector3(3, 2, 1));
+            yield return null;
+
+            // Create pointer down component and add it to target entity
+            string onPointerId = "pointerevent-1";
+            var OnPointerDownModel = new OnPointerDown.Model()
+            {
+                type = OnPointerDown.NAME,
+                uuid = onPointerId
+            };
+            var component = TestHelpers.EntityComponentCreate<OnPointerDown, OnPointerDown.Model>(scene, clickTargetEntity,
+                OnPointerDownModel, CLASS_ID_COMPONENT.UUID_CALLBACK);
+
+            Assert.IsTrue(component != null);
+
+            // Check if target entity is triggered by looking at the parent entity
+            Assert.AreEqual(cursorController.cursorImage.sprite, cursorController.normalCursor);
+
+            // Move character in front of target entity and rotate camera
+            DCLCharacterController.i.SetPosition(new Vector3(3, 2, 12));
+            cameraController.SetRotation(0, 0, 0, new Vector3(0, 0, -1));
+
+            yield return null;
+
+            // Check if target entity is triggered when looked at directly
+            Assert.AreEqual(cursorController.cursorImage.sprite, cursorController.hoverCursor);
+        }
     }
 }
