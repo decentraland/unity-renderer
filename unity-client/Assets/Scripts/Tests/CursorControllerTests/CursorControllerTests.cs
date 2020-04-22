@@ -48,6 +48,7 @@ namespace Tests
 
             var cursorController = GameObject.FindObjectOfType<CursorController>();
 
+            // Check cursor shows normal sprite
             Assert.AreEqual(cursorController.cursorImage.sprite, cursorController.normalCursor);
 
             DCLCharacterController.i.PauseGravity();
@@ -70,7 +71,8 @@ namespace Tests
 
             yield return null;
 
-            Assert.AreEqual(cursorController.hoverCursor, cursorController.cursorImage.sprite);
+            // Check cursor shows hover sprite
+            Assert.AreEqual(cursorController.cursorImage.sprite, cursorController.hoverCursor);
 
             // Rotate the camera away from the interactive object
             cameraRotationPayload = new CameraController.SetRotationPayload()
@@ -88,6 +90,67 @@ namespace Tests
 
             yield return null;
 
+            // Check cursor shows normal sprite
+            Assert.AreEqual(cursorController.cursorImage.sprite, cursorController.normalCursor);
+
+            DCLCharacterController.i.ResumeGravity();
+        }
+
+        [UnityTest]
+        public IEnumerator OnPointerHoverFeedbackNotDisplayedOnInvisibles()
+        {
+            DecentralandEntity entity;
+            BoxShape shape;
+
+            shape = TestHelpers.InstantiateEntityWithShape<BoxShape, BoxShape.Model>(
+                scene,
+                DCL.Models.CLASS_ID.BOX_SHAPE,
+                Vector3.zero,
+                out entity,
+                new BoxShape.Model() { });
+
+            TestHelpers.SetEntityTransform(scene, entity, new Vector3(8, 2, 10), Quaternion.identity, new Vector3(3, 3, 3));
+            yield return shape.routine;
+
+            var OnPointerDownModel = new OnPointerDown.Model()
+            {
+                type = OnPointerDown.NAME,
+                uuid = "pointerevent-1"
+            };
+
+            var component = TestHelpers.EntityComponentCreate<OnPointerDown, OnPointerDown.Model>(scene, entity,
+                OnPointerDownModel, CLASS_ID_COMPONENT.UUID_CALLBACK);
+
+            Assert.IsTrue(component != null);
+
+            yield return null;
+
+            var cursorController = GameObject.FindObjectOfType<CursorController>();
+
+            // Check cursor shows normal sprite
+            Assert.AreEqual(cursorController.cursorImage.sprite, cursorController.normalCursor);
+
+            DCLCharacterController.i.PauseGravity();
+            DCLCharacterController.i.SetPosition(new Vector3(8, 1, 7f));
+
+            // Rotate camera towards the interactive object
+            cameraController.SetRotation(45, 0, 0);
+
+            yield return null;
+
+            // Check cursor shows hover sprite
+            Assert.AreEqual(cursorController.cursorImage.sprite, cursorController.hoverCursor);
+
+            // Make shape invisible
+            TestHelpers.UpdateShape(scene, shape.id, JsonConvert.SerializeObject(
+            new
+            {
+                visible = false
+            }));
+
+            yield return null;
+
+            // Check cursor shows normal sprite
             Assert.AreEqual(cursorController.cursorImage.sprite, cursorController.normalCursor);
 
             DCLCharacterController.i.ResumeGravity();

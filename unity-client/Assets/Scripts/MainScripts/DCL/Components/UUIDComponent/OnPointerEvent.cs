@@ -19,7 +19,12 @@ namespace DCL.Components
             public bool showFeedback = true;
         }
 
-        OnPointerEventColliders pointerEventColliders;
+        public OnPointerEventColliders pointerEventColliders
+        {
+            get;
+            private set;
+        }
+
         InteractionHoverCanvasController hoverCanvasController;
 
         public override void Setup(ParcelScene scene, DecentralandEntity entity, UUIDComponent.Model model)
@@ -73,6 +78,16 @@ namespace DCL.Components
 
             hoverCanvasController.enabled = model.showFeedback;
             hoverCanvasController.Setup(model.button, model.hoverText, entity);
+        }
+
+        public bool IsVisible()
+        {
+            bool isVisible = false;
+
+            if (entity.meshesInfo != null && entity.meshesInfo.renderers.Length > 0)
+                isVisible = entity.meshesInfo.renderers[0].enabled;
+
+            return isVisible;
         }
 
         void OnComponentUpdated(DecentralandEntity e)
