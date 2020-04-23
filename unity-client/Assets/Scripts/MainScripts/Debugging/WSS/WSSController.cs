@@ -1,4 +1,4 @@
-using DCL.Components;
+﻿using DCL.Components;
 using DCL.Interface;
 using System.Collections.Generic;
 using UnityEngine;
@@ -213,7 +213,7 @@ namespace DCL
                 }
 
                 Application.OpenURL(
-                    $"{baseUrl}{debugString}{debugPanelString}position={startInCoords.x}%2C{startInCoords.y}&ws=ws%3A%2F%2Flocalhost%3A5000%2Fdcl&USE_NEW_CHAT");
+                    $"{baseUrl}{debugString}{debugPanelString}position={startInCoords.x}%2C{startInCoords.y}&ws=ws%3A%2F%2Flocalhost%3A5000%2Fdcl");
             }
 #endif
         }

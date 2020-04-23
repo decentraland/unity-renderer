@@ -203,6 +203,7 @@ public class MaterialTransitionController : MonoBehaviour
 
                     if (currentCullYPlane <= lowerYRendererBounds + 0.1f)
                     {
+                        // We don't update the culling value in the final material to avoid affecting the already-loaded meshes
                         PopulateTargetRendererWithMaterial(finalMaterials);
 
                         DestroyPlaceholder();
