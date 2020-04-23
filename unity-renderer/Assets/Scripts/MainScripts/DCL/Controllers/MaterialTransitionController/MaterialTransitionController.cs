@@ -60,7 +60,7 @@ public class MaterialTransitionController : MonoBehaviour
     public bool materialReady { get; private set; }
     public bool canSwitchMaterial { get { return materialReady && state != State.FINISHED; } }
 
-    public void PopulateTargetRendererWithMaterial(Material[] newMaterials)
+    public void PopulateTargetRendererWithMaterial(Material[] newMaterials, bool updateCulling = false)
     {
         if (newMaterials == null) return;
 
@@ -72,7 +72,9 @@ public class MaterialTransitionController : MonoBehaviour
             material.SetColor(ShaderId_LoadingColor, Color.clear);
             material.SetFloat(ShaderId_FadeDirection, 0);
             material.SetFloat(ShaderId_FadeThickness, fadeThickness);
-            material.SetFloat(ShaderId_CullYPlane, currentCullYPlane);
+
+            if (updateCulling)
+                material.SetFloat(ShaderId_CullYPlane, currentCullYPlane);
         }
 
         targetRenderer.sharedMaterials = newMaterials;
@@ -183,7 +185,7 @@ public class MaterialTransitionController : MonoBehaviour
                         targetRendererValue.enabled = true;
 
                         PrepareCullingFXMaterials();
-                        PopulateTargetRendererWithMaterial(cullingFXMaterials);
+                        PopulateTargetRendererWithMaterial(cullingFXMaterials, true);
 
                         state = State.SHOWING_LOADED;
                     }
