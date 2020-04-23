@@ -1,6 +1,6 @@
 import { takeEvery, put } from 'redux-saga/effects'
 import { UnityInterfaceContainer } from '../../unity-interface/dcl'
-import { MESSAGE_RECEIVED, MessageReceived, messageReceived, SEND_MESSAGE, SendMessage, sendMessage } from './actions'
+import { MESSAGE_RECEIVED, MessageReceived, messageReceived, SEND_MESSAGE, SendMessage } from './actions'
 import { uuid } from 'atomicHelpers/math'
 import { ChatMessageType, ChatMessage } from 'shared/types'
 import { EXPERIENCE_STARTED } from 'shared/loading/types'
@@ -11,7 +11,6 @@ import {
   getCurrentUser,
   peerMap,
   findPeerByName,
-  getUserProfile,
   removeFromMutedUsers,
   avatarMessageObservable
 } from 'shared/comms/peers'
@@ -365,15 +364,7 @@ function initChatCommands() {
 
       const time = Date.now()
 
-      globalThis.globalStore.dispatch(
-        sendMessage({
-          messageId: uuid(),
-          messageType: ChatMessageType.PUBLIC,
-          sender: getUserProfile().identity.address,
-          timestamp: Date.now(),
-          body: `␐${expression} ${time}`
-        })
-      )
+      sendPublicChatMessage(uuid(), `␐${expression} ${time}`)
 
       globalThis.unityInterface.TriggerSelfUserExpression(expression)
 

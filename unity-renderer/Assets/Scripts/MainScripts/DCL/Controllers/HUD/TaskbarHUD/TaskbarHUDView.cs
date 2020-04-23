@@ -64,7 +64,7 @@ public class TaskbarHUDView : MonoBehaviour
 
     private void Update()
     {
-        if (Input.GetKey(KeyCode.Return))
+        if (Input.GetKeyDown(KeyCode.Return))
         {
             controller.OnPressReturn();
         }

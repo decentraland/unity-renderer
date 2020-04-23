@@ -3,7 +3,7 @@ import { EventDispatcher } from 'decentraland-rpc/lib/common/core/EventDispatche
 import { IFuture } from 'fp-future'
 import { Empty } from 'google-protobuf/google/protobuf/empty_pb'
 import { identity } from 'shared'
-import { persistCurrentUser } from 'shared/comms'
+import { persistCurrentUser, sendPublicChatMessage } from 'shared/comms'
 import { AvatarMessageType } from 'shared/comms/interface/types'
 import { avatarMessageObservable, getUserProfile } from 'shared/comms/peers'
 import { providerFuture } from 'shared/ethereum/provider'
@@ -73,8 +73,7 @@ import {
   SetEntityParentPayload,
   UpdateEntityComponentPayload,
   ChatMessage,
-  HUDElementID,
-  ChatMessageType
+  HUDElementID
 } from 'shared/types'
 import { ParcelSceneAPI } from 'shared/world/ParcelSceneAPI'
 import {
@@ -93,8 +92,9 @@ import { StoreContainer } from 'shared/store/rootTypes'
 import { ILandToLoadableParcelScene, ILandToLoadableParcelSceneUpdate } from 'shared/selectors'
 import { sendMessage } from 'shared/chat/actions'
 
-declare const globalThis: UnityInterfaceContainer & BrowserInterfaceContainer &
-  StoreContainer & { analytics: any; delighted: any } & { messages: (e: any) => void }
+declare const globalThis: UnityInterfaceContainer &
+  BrowserInterfaceContainer &
+  StoreContainer & { analytics: any; delighted: any }
 
 type GameInstance = {
   SendMessage(object: string, method: string, ...args: (number | string)[]): void
@@ -199,15 +199,7 @@ const browserInterface = {
     const messageId = uuid()
     const body = `␐${data.id} ${data.timestamp}`
 
-    globalThis.globalStore.dispatch(
-      sendMessage({
-        messageId,
-        body,
-        messageType: ChatMessageType.PUBLIC,
-        sender: getUserProfile().identity.address,
-        timestamp: Date.now()
-      })
-    )
+    sendPublicChatMessage(messageId, body)
   },
 
   TermsOfServiceResponse(sceneId: string, accepted: boolean, dontShowAgain: boolean) {

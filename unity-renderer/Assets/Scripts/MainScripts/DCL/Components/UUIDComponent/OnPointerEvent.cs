@@ -82,9 +82,12 @@ namespace DCL.Components
 
         public bool IsVisible()
         {
+            if (entity == null)
+                return false;
+
             bool isVisible = false;
 
-            if (entity.meshesInfo != null && entity.meshesInfo.renderers.Length > 0)
+            if (entity.meshesInfo != null && entity.meshesInfo.renderers != null && entity.meshesInfo.renderers.Length > 0)
                 isVisible = entity.meshesInfo.renderers[0].enabled;
 
             return isVisible;
