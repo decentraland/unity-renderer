@@ -25,11 +25,16 @@ DECENTRALAND_LOADER := static/loader/lifecycle/worker.js
 INTERNAL_SCENES := static/systems/decentraland-ui.scene.js
 BUILD_ECS := packages/build-ecs/index.js
 
-scripts/%.js: $(SOURCE_SUPPORT_TS_FILES) scripts/tsconfig.json
-	npx tsc --build scripts/tsconfig.json
+config-contracts:
+	@echo 'Updating contracts...'
+	@node ./scripts/updateContracts.js
+	@echo 'Contracts updated!'
+
+scripts/%.js: $(SOURCE_SUPPORT_TS_FILES) scripts/tsconfig.json config-contracts
+	@npx tsc --build scripts/tsconfig.json
 
 packages/build-ecs/%.js: packages/build-ecs/%.ts packages/build-ecs/tsconfig.json
-	npx tsc --build packages/build-ecs/tsconfig.json
+	@npx tsc --build packages/build-ecs/tsconfig.json
 
 static/loader/lifecycle/worker.js: packages/decentraland-loader/**/*.ts
 	@$(COMPILER) targets/engine/loader.json
@@ -244,7 +249,7 @@ clean: ## Clean all generated files
 
 # Makefile
 
-.PHONY: help docs clean watch watch-builder watch-cli lint lint-fix generate-images test-ci test-docker update build-essentials build-deploy build-release update-renderer
+.PHONY: help docs clean watch watch-builder watch-cli lint lint-fix generate-images test-ci test-docker update build-essentials build-deploy build-release update-renderer config-contracts
 .DEFAULT_GOAL := help
 help:
 	@grep -E '^[a-zA-Z_-]+:.*?## .*$$' $(MAKEFILE_LIST) | sort | awk 'BEGIN {FS = ":.*?## "}; {printf "\033[36m%-20s\033[0m %s\n", $$1, $$2}'

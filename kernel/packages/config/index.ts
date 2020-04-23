@@ -1,5 +1,6 @@
 import { getUserProfile } from 'shared/comms/peers'
 import { tutorialStepId } from '../decentraland-loader/lifecycle/tutorial/tutorial'
+import { contracts as contractInfo } from './contracts'
 const queryString = require('query-string')
 declare var window: any
 
@@ -268,8 +269,7 @@ export function getServerConfigurations() {
 
 export async function setNetwork(net: ETHEREUM_NETWORK) {
   try {
-    const response = await fetch('https://contracts.decentraland.org/addresses.json')
-    const json = await response.json()
+    const json = contractInfo
 
     network = net
     contracts = json[net]
