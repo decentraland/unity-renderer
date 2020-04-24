@@ -268,8 +268,8 @@ namespace Tests
             // check positions
             Assert.IsTrue(Vector3.Distance(platformTransform.rotation.eulerAngles, targetRotation.eulerAngles) < 0.1f);
 
-            UnityEngine.Assertions.Assert.AreApproximatelyEqual(DCLCharacterController.i.transform.position.x, 11f, 0.5f);
-            UnityEngine.Assertions.Assert.AreApproximatelyEqual(DCLCharacterController.i.transform.position.z, 11f, 0.5f);
+            UnityEngine.Assertions.Assert.AreApproximatelyEqual(DCLCharacterController.i.transform.position.x, 11f, 1f);
+            UnityEngine.Assertions.Assert.AreApproximatelyEqual(DCLCharacterController.i.transform.position.z, 11f, 1f);
 
             // remove platform and check character parent
             TestHelpers.RemoveSceneEntity(scene, platformEntityId);

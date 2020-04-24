@@ -87,7 +87,9 @@ namespace DCL.Components
 
             bool isVisible = false;
 
-            if (entity.meshesInfo != null && entity.meshesInfo.renderers != null && entity.meshesInfo.renderers.Length > 0)
+            if (this is AvatarOnPointerDown)
+                isVisible = true;
+            else if (entity.meshesInfo != null && entity.meshesInfo.renderers != null && entity.meshesInfo.renderers.Length > 0)
                 isVisible = entity.meshesInfo.renderers[0].enabled;
 
             return isVisible;

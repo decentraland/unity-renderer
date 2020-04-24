@@ -118,7 +118,7 @@ namespace DCL
 
         private bool EventObjectCanBeHovered(OnPointerEvent targetEvent, ColliderInfo colliderInfo)
         {
-            return newHoveredEvent != null && newHoveredEvent.IsVisible() && AreSameEntity(newHoveredEvent, colliderInfo) && newHoveredEvent.IsAtHoverDistance(DCLCharacterController.i.transform);
+            return newHoveredEvent != null && newHoveredEvent.IsAtHoverDistance(DCLCharacterController.i.transform) && (IsAvatarPointerEvent(newHoveredEvent) || (newHoveredEvent.IsVisible() && AreSameEntity(newHoveredEvent, colliderInfo)));
         }
 
         private void ResolveGenericRaycastHandlers(IRaycastPointerHandler raycastHandlerTarget)
@@ -304,7 +304,7 @@ namespace DCL
                     onClick.Report(buttonId, raycastInfoPointerEventLayer.hitInfo.hit);
 
                 OnPointerDown onPointerDown = hitGameObject.GetComponentInChildren<OnPointerDown>();
-                if (AreSameEntity(onPointerDown, info))
+                if (IsAvatarPointerEvent(onPointerDown) || AreSameEntity(onPointerDown, info))
                     onPointerDown.Report(buttonId, ray, raycastInfoPointerEventLayer.hitInfo.hit);
 
                 pointerUpEvent = hitGameObject.GetComponentInChildren<OnPointerUp>();
@@ -335,6 +335,11 @@ namespace DCL
             {
                 WebInterface.ReportGlobalPointerDownEvent(buttonId, raycastInfoGlobalLayer.ray, Vector3.zero, Vector3.zero, 0, sceneId);
             }
+        }
+
+        bool IsAvatarPointerEvent(OnPointerEvent targetPointerEvent)
+        {
+            return targetPointerEvent != null && targetPointerEvent is AvatarOnPointerDown;
         }
 
         bool AreSameEntity(OnPointerEvent pointerEvent, ColliderInfo colliderInfo)
