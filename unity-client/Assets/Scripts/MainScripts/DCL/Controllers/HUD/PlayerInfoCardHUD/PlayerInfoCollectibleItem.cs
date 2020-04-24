@@ -9,27 +9,30 @@ public class PlayerInfoCollectibleItem : MonoBehaviour
 
     public void Initialize(WearableItem collectible)
     {
-        if(collectible != null)
+        if (collectible != null)
             ForgetThumbnail(collectible.ComposeThumbnailUrl());
 
         this.collectible = collectible;
         if (this.collectible == null) return;
 
-        if(gameObject.activeInHierarchy)
+        if (gameObject.activeInHierarchy)
             GetThumbnail(this.collectible.ComposeThumbnailUrl());
     }
 
     private void OnEnable()
     {
+        if (collectible == null) return;
+
         var url = collectible.ComposeThumbnailUrl();
-        if (string.IsNullOrEmpty(url))
-            return;
+
+        if (string.IsNullOrEmpty(url)) return;
+
         GetThumbnail(collectible.ComposeThumbnailUrl());
     }
 
     private void OnDisable()
     {
-        if(collectible != null)
+        if (collectible != null)
             ForgetThumbnail(collectible.ComposeThumbnailUrl());
     }
 
@@ -42,7 +45,7 @@ public class PlayerInfoCollectibleItem : MonoBehaviour
     {
         ThumbnailsManager.ForgetThumbnail(url, OnThumbnailReady);
     }
-    
+
     private void OnThumbnailReady(Sprite sprite)
     {
         thumbnail.sprite = sprite;
