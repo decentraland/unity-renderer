@@ -91,7 +91,7 @@ jobs:
       - run:
           name: Get the hash of source files
           command: |
-            find Assets -type f \( -exec shasum "$PWD"/{} \; \) | sort > ../.unitysources-checksum
+            find Assets -type f \( -not -path '*Plugins*' \) \( -iname \*.cs -o -iname \*.meta -o -iname \*.xml -o -iname \*.shader -o -iname \*.prefab -o -iname \*.yml -o -iname \*.mat -o -iname \*.json -o -iname \*.js -o -iname \*.jspre  -o -iname \*.jslib  -o -iname \*.hlsl  -o -iname \*.asmdef  -o -iname \*.csproj  \) \( -exec md5sum "$PWD"/{} \; \) | sort > ../.unitysources-checksum
       - restore_cache:
           name: Restore decentraland-renderer if exists
           keys:
@@ -137,7 +137,7 @@ jobs:
       - run:
           name: Get the hash of source files
           command: |
-            find Assets -type f \( -exec shasum "$PWD"/{} \; \) | sort > ../.unitysources-checksum
+            find Assets -type f \( -not -path '*Plugins*' \) \( -iname \*.cs -o -iname \*.meta -o -iname \*.xml -o -iname \*.shader -o -iname \*.prefab -o -iname \*.yml -o -iname \*.mat -o -iname \*.json -o -iname \*.js -o -iname \*.jspre  -o -iname \*.jslib  -o -iname \*.hlsl  -o -iname \*.asmdef  -o -iname \*.csproj  \) \( -exec md5sum "$PWD"/{} \; \) | sort > ../.unitysources-checksum
       - restore_cache:
           name: Restore decentraland-renderer if exists
           keys:
@@ -187,7 +187,7 @@ jobs:
       - run:
           name: Get the hash of source files
           command: |
-            find packages -type f \( -exec shasum "$PWD"/{} \; \) | sort > ../.kernelsources-checksum
+            find packages -type f \( -iname \*.ts -o -iname \*.tsx -o -iname \*.json -o -iname \*.proto -o -iname \*.sh \) \( -exec md5sum "$PWD"/{} \; \) | sort > ../.kernelsources-checksum
       - restore_cache:
           name: Restore built files
           keys:
@@ -220,7 +220,7 @@ jobs:
             make build-essentials
             mkdir -p scene-cache
             cd scene-cache && find . -name '*.js' | xargs -I{} cp -f -t ../public/ --parents {}; cd ..
-            find public -name *.ts | xargs shasum packages/decentraland-ecs/dist/index.d.ts static/systems/scene.system.js | sort > .compiled-scene-checksum
+            find public -name *.ts | xargs md5sum packages/decentraland-ecs/dist/index.d.ts static/systems/scene.system.js | sort > .compiled-scene-checksum
       - restore_cache:
           name: Restore cached test scenes, part I
           keys:
