@@ -135,7 +135,7 @@ namespace DCL.Models
         public System.Action<DecentralandEntity> OnMeshesInfoCleaned;
 
         public System.Action<ICleanableEventDispatcher> OnCleanupEvent { get; set; }
-        Dictionary<Type, BaseDisposable> sharedComponents = new Dictionary<Type, BaseDisposable>();
+        Dictionary<System.Type, BaseDisposable> sharedComponents = new Dictionary<System.Type, BaseDisposable>();
 
         const string MESH_GAMEOBJECT_NAME = "Mesh";
 
@@ -228,7 +228,7 @@ namespace DCL.Models
             isReleased = true;
         }
 
-        public void AddSharedComponent(Type componentType, BaseDisposable component)
+        public void AddSharedComponent(System.Type componentType, BaseDisposable component)
         {
             if (component == null)
             {
@@ -240,7 +240,7 @@ namespace DCL.Models
             sharedComponents.Add(componentType, component);
         }
 
-        public void RemoveSharedComponent(Type targetType, bool triggerDettaching = true)
+        public void RemoveSharedComponent(System.Type targetType, bool triggerDettaching = true)
         {
             BaseDisposable component;
             if (sharedComponents.TryGetValue(targetType, out component) && component != null)
@@ -254,7 +254,7 @@ namespace DCL.Models
             }
         }
 
-        public BaseDisposable GetSharedComponent(Type targetType)
+        public BaseDisposable GetSharedComponent(System.Type targetType)
         {
             BaseDisposable component;
             sharedComponents.TryGetValue(targetType, out component);

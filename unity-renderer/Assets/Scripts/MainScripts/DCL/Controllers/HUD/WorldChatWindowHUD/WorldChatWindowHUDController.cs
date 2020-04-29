@@ -2,6 +2,7 @@
 using DCL;
 using DCL.Interface;
 using System.Collections;
+using System.Linq;
 using UnityEngine;
 
 public class WorldChatWindowHUDController : IHUD
@@ -9,16 +10,15 @@ public class WorldChatWindowHUDController : IHUD
     private ChatHUDController chatHudController;
     public WorldChatWindowHUDView view;
 
-    private string userName;
-
     private IChatController chatController;
     private IMouseCatcher mouseCatcher;
 
     internal bool resetInputFieldOnSubmit = true;
+    private int invalidSubmitLastFrame = 0;
 
     public void Initialize(IChatController chatController, IMouseCatcher mouseCatcher)
     {
-        view = WorldChatWindowHUDView.Create();
+        view = WorldChatWindowHUDView.Create(OnEnablePrivateTab, OnEnableWorldTab);
 
         chatHudController = new ChatHUDController();
         chatHudController.Initialize(view.chatHudView, SendChatMessage);
@@ -28,8 +28,8 @@ public class WorldChatWindowHUDController : IHUD
 
         if (chatController != null)
         {
-            chatController.OnAddMessage -= view.chatHudView.controller.AddChatMessage;
-            chatController.OnAddMessage += view.chatHudView.controller.AddChatMessage;
+            chatController.OnAddMessage -= OnAddMessage;
+            chatController.OnAddMessage += OnAddMessage;
         }
 
         if (mouseCatcher != null)
@@ -37,22 +37,17 @@ public class WorldChatWindowHUDController : IHUD
             mouseCatcher.OnMouseLock += view.ActivatePreview;
         }
 
-        userName = "NO_USER";
-
-        var profileUserName = UserProfile.GetOwnUserProfile().userName;
-
-        if (!string.IsNullOrEmpty(profileUserName))
-            userName = profileUserName;
-
         if (chatController != null)
-            chatHudController.view.RepopulateAllChatMessages(chatController.GetEntries());
+        {
+            view.worldFilterButton.onClick.Invoke();
+        }
 
         view.chatHudView.ForceUpdateLayout();
     }
     public void Dispose()
     {
         if (chatController != null)
-            chatController.OnAddMessage -= view.chatHudView.controller.AddChatMessage;
+            chatController.OnAddMessage -= OnAddMessage;
 
         if (mouseCatcher != null)
         {
@@ -62,7 +57,33 @@ public class WorldChatWindowHUDController : IHUD
         Object.Destroy(view);
     }
 
-    int invalidSubmitLastFrame = 0;
+    void OnEnableWorldTab()
+    {
+        view.chatHudView.CleanAllEntries();
+
+        var result = chatController.GetEntries();
+
+        foreach (var v in result)
+        {
+            OnAddMessage(v);
+        }
+    }
+
+    void OnEnablePrivateTab()
+    {
+        view.chatHudView.CleanAllEntries();
+        var result = chatController.GetEntries().Where((x) => x.messageType == ChatMessage.Type.PRIVATE).ToList();
+
+        foreach (var v in result)
+        {
+            OnAddMessage(v);
+        }
+    }
+
+    void OnAddMessage(ChatMessage message)
+    {
+        view.chatHudView.controller.AddChatMessage(ChatHUDController.ChatMessageToChatEntry(message));
+    }
 
     //NOTE(Brian): Send chat responsibilities must be on the chatHud containing window like this one, this way we ensure
     //             it can be reused by the private messaging windows down the road.
@@ -86,10 +107,11 @@ public class WorldChatWindowHUDController : IHUD
             view.chatHudView.ResetInputField();
             view.chatHudView.FocusInputField();
         }
-        var data = new ChatController.ChatMessage()
+
+        var data = new ChatMessage()
         {
             body = msgBody,
-            sender = userName,
+            sender = UserProfile.GetOwnUserProfile().userId,
         };
 
         WebInterface.SendChatMessage(data);

@@ -1,4 +1,4 @@
-﻿using DCL.Components;
+using DCL.Components;
 using DCL.Interface;
 using System.Collections.Generic;
 using UnityEngine;
@@ -130,6 +130,7 @@ namespace DCL
         public bool allWearables = false;
         public bool testWearables = false;
         public bool enableTutorial = false;
+        public bool useNewChat = true;
         public DebugPanel debugPanelMode = DebugPanel.Off;
 
 
@@ -199,6 +200,11 @@ namespace DCL
                 if (enableTutorial)
                 {
                     debugString += "RESET_TUTORIAL&";
+                }
+
+                if (useNewChat)
+                {
+                    debugString += "USE_NEW_CHAT&";
                 }
 
                 string debugPanelString = "";

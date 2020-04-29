@@ -34,7 +34,9 @@ public class UserProfileController : MonoBehaviour
             return;
         }
 
-        ownUserProfile.UpdateData(JsonUtility.FromJson<UserProfileModel>(payload));
+        var model = JsonUtility.FromJson<UserProfileModel>(payload);
+        ownUserProfile.UpdateData(model);
+        userProfilesCatalog.Add(model.userId, ownUserProfile);
     }
 
     public void AddUserProfileToCatalog(string payload)
@@ -56,7 +58,7 @@ public class UserProfileController : MonoBehaviour
     {
         var userProfile = ScriptableObject.CreateInstance<UserProfile>();
         userProfile.UpdateData(model);
-        userProfilesCatalog.Add(model.name, userProfile);
+        userProfilesCatalog.Add(model.userId, userProfile);
     }
 
     public void RemoveUserProfilesFromCatalog(string payload)
@@ -72,11 +74,11 @@ public class UserProfileController : MonoBehaviour
     {
         if (userProfile == null) return;
 
-        userProfilesCatalog.Remove(userProfile.userName);
+        userProfilesCatalog.Remove(userProfile.userId);
         Destroy(userProfile);
     }
 
-    public void ClearWearableCatalog()
+    public void ClearProfilesCatalog()
     {
         userProfilesCatalog?.Clear();
     }

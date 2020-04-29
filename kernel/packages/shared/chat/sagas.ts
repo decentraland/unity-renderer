@@ -126,7 +126,7 @@ function* handleSendMessage(action: SendMessage) {
       messageType: ChatMessageType.PUBLIC,
       messageId: uuid(),
       timestamp: Date.now(),
-      sender: currentUser.profile.name || currentUser.userId || 'unknown',
+      sender: currentUser.userId || currentUser.profile.name || 'unknown',
       body: message
     }
 

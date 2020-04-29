@@ -1,3 +1,4 @@
+using DCL.Interface;
 using NUnit.Framework;
 using System.Collections;
 using UnityEngine;
@@ -26,13 +27,12 @@ public class ChatEntryShould : TestsBase
     [Test]
     public void BePopulatedCorrectly()
     {
-        var message = new ChatController.ChatMessage()
+        var message = new ChatEntry.Model()
         {
-            messageType = ChatController.ChatMessageType.PUBLIC,
-            sender = "user-test",
-            recipient = "",
-            timestamp = 0,
-            body = "test message",
+            messageType = ChatMessage.Type.PUBLIC,
+            senderName = "user-test",
+            recipientName = "",
+            bodyText = "test message",
         };
 
         entry.Populate(message);
@@ -41,14 +41,12 @@ public class ChatEntryShould : TestsBase
         Assert.AreEqual("<b>user-test:</b>", entry.username.text);
         Assert.AreEqual("<b>user-test:</b> test message", entry.body.text);
 
-        message.messageType = ChatController.ChatMessageType.PRIVATE;
+        message.messageType = ChatMessage.Type.PRIVATE;
         entry.Populate(message);
         Assert.AreEqual(entry.privateMessageColor, entry.body.color);
 
-        message.messageType = ChatController.ChatMessageType.SYSTEM;
+        message.messageType = ChatMessage.Type.SYSTEM;
         entry.Populate(message);
         Assert.AreEqual(entry.systemColor, entry.body.color);
-
-        entry.Populate(null);
     }
 }

@@ -2,6 +2,7 @@ using DCL.Helpers;
 using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
+using UnityEngine.Assertions;
 using UnityEngine.Events;
 using UnityEngine.UI;
 
@@ -115,6 +116,8 @@ public class PlayerInfoCardHUDView : MonoBehaviour
 
     public void SetUserProfile(UserProfile userProfile)
     {
+        Assert.IsTrue(userProfile != null, "userProfile can't be null");
+
         currentUserProfile = userProfile;
         name.text = currentUserProfile.userName;
         description.text = currentUserProfile.description;

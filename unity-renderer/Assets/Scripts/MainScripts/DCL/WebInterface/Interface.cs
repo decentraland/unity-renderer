@@ -153,7 +153,7 @@ namespace DCL.Interface
         [System.Serializable]
         public class SendChatMessageEvent
         {
-            public ChatController.ChatMessage message;
+            public ChatMessage message;
         }
 
 
@@ -814,7 +814,7 @@ namespace DCL.Interface
             SendMessage("GoTo", gotoEvent);
         }
 
-        public static void SendChatMessage(ChatController.ChatMessage message)
+        public static void SendChatMessage(ChatMessage message)
         {
             sendChatMessageEvent.message = message;
             SendMessage("SendChatMessage", sendChatMessageEvent);
