@@ -156,7 +156,7 @@ namespace DCL.Components
         public RectTransform childHookRectTransform;
 
         public Model model = new Model();
-        protected UIShape parentUIComponent;
+        public UIShape parentUIComponent { get; protected set; }
 
         public UIShape(ParcelScene scene) : base(scene)
         {

@@ -54,6 +54,10 @@ namespace DCL.Components
         const string BASIC_MATERIAL_NAME = "BasicShapeMaterial";
         const string PBR_MATERIAL_NAME = "ShapeMaterial";
 
+        DCLTexture albedoDCLTexture = null;
+        DCLTexture emissiveDCLTexture = null;
+        DCLTexture bumpDCLTexture = null;
+
         public PBRMaterial(ParcelScene scene) : base(scene)
         {
             model = new Model();
@@ -105,48 +109,14 @@ namespace DCL.Components
                 material.SetFloat("_SpecularHighlights", model.specularIntensity * model.directIntensity);
 
                 // FETCH AND LOAD EMISSIVE TEXTURE
-                if (!string.IsNullOrEmpty(model.emissiveTexture))
-                {
-                    scene.StartCoroutine(DCLTexture.FetchFromComponent(scene, model.emissiveTexture,
-                        (fetchedEmissiveTexture) =>
-                        {
-                            material.SetTexture("_EmissionMap", fetchedEmissiveTexture);
-                        }));
-                }
-                else
-                {
-                    material.SetTexture("_EmissionMap", null);
-                }
+                SetMaterialTexture("_EmissionMap", model.emissiveTexture, emissiveDCLTexture);
             }
 
             SetupTransparencyMode();
 
             // FETCH AND LOAD TEXTURES
-            if (!string.IsNullOrEmpty(model.albedoTexture))
-            {
-                scene.StartCoroutine(DCLTexture.FetchFromComponent(scene, model.albedoTexture,
-                    (fetchedAlbedoTexture) =>
-                    {
-                        material.SetTexture("_BaseMap", fetchedAlbedoTexture);
-                    }));
-            }
-            else
-            {
-                material.SetTexture("_BaseMap", null);
-            }
-
-            if (!string.IsNullOrEmpty(model.bumpTexture))
-            {
-                scene.StartCoroutine(DCLTexture.FetchFromComponent(scene, model.bumpTexture,
-                    (fetchedBumpTexture) =>
-                    {
-                        material.SetTexture("_BumpMap", fetchedBumpTexture);
-                    }));
-            }
-            else
-            {
-                material.SetTexture("_BumpMap", null);
-            }
+            SetMaterialTexture("_BaseMap", model.albedoTexture, albedoDCLTexture);
+            SetMaterialTexture("_BumpMap", model.bumpTexture, bumpDCLTexture);
 
             return null;
         }
@@ -294,8 +264,51 @@ namespace DCL.Components
             }
         }
 
+        void SetMaterialTexture(string materialPropertyName, string textureComponentId, DCLTexture cachedDCLTexture)
+        {
+            if (!string.IsNullOrEmpty(textureComponentId))
+            {
+                if (!AreSameTextureComponent(cachedDCLTexture, textureComponentId))
+                {
+                    scene.StartCoroutine(DCLTexture.FetchTextureComponent(scene, textureComponentId,
+                        (fetchedDCLTexture) =>
+                        {
+                            material.SetTexture(materialPropertyName, fetchedDCLTexture.texture);
+                            SwitchTextureComponent(cachedDCLTexture, fetchedDCLTexture);
+                        }));
+                }
+            }
+            else
+            {
+                material.SetTexture(materialPropertyName, null);
+                cachedDCLTexture?.DetachFrom(this);
+                cachedDCLTexture = null;
+            }
+        }
+
+        bool AreSameTextureComponent(DCLTexture dclTexture, string textureId)
+        {
+            if (dclTexture == null) return false;
+            return dclTexture.id == textureId;
+        }
+
+        void SwitchTextureComponent(DCLTexture cachedTexture, DCLTexture newTexture)
+        {
+            cachedTexture?.DetachFrom(this);
+            cachedTexture = newTexture;
+            cachedTexture.AttachTo(this);
+        }
+
         public override void Dispose()
         {
+            albedoDCLTexture?.DetachFrom(this);
+            emissiveDCLTexture?.DetachFrom(this);
+            bumpDCLTexture?.DetachFrom(this);
+
+            albedoDCLTexture = null;
+            emissiveDCLTexture = null;
+            bumpDCLTexture = null;
+
             if (material != null)
             {
                 GameObject.Destroy(material);
