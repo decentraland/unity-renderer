@@ -1,9 +1,8 @@
-using DCL;
+﻿using DCL;
 using DCL.Controllers;
 using DCL.Helpers;
 using DCL.Models;
 using Newtonsoft.Json;
-using System;
 using System.Collections;
 using System.Reflection;
 using UnityEngine;
@@ -175,7 +174,7 @@ public class TestsBase
         yield break;
     }
 
-    public static T Reflection_GetStaticField<T>(Type baseType, string fieldName)
+    public static T Reflection_GetStaticField<T>(System.Type baseType, string fieldName)
     {
         return (T)baseType.GetField(fieldName, BindingFlags.NonPublic | BindingFlags.Static).GetValue(null);
     }

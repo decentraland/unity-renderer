@@ -516,7 +516,7 @@ namespace DCL.Helpers
             scene.SharedComponentUpdate(componentId, model);
         }
 
-        static object GetRandomValueForType(Type t)
+        static object GetRandomValueForType(System.Type t)
         {
             if (t == typeof(float))
             {
@@ -642,7 +642,7 @@ namespace DCL.Helpers
                 yield return component.routine;
             }
 
-            Type componentType = typeof(TComponent);
+            System.Type componentType = typeof(TComponent);
 
             if (component is BaseShape)
             {

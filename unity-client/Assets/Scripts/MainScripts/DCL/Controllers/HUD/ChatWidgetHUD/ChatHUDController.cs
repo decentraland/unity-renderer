@@ -1,10 +1,8 @@
 
+using DCL.Interface;
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using UnityEngine.Events;
-using ChatMessage = ChatController.ChatMessage;
-using ChatMessageType = ChatController.ChatMessageType;
 public class ChatHUDController : IDisposable
 {
     public const int MAX_CHAT_ENTRIES = 100;
@@ -27,22 +25,15 @@ public class ChatHUDController : IDisposable
         this.view.Initialize(this, onSendMessage);
     }
 
-    public void AddChatMessage(ChatMessage message)
+    public void AddChatMessage(ChatEntry.Model chatEntryModel)
     {
-        view.AddEntry(message);
+        view.AddEntry(chatEntryModel);
 
         if (view.entries.Count > MAX_CHAT_ENTRIES)
         {
             UnityEngine.Object.Destroy(view.entries[0].gameObject);
             view.entries.Remove(view.entries[0]);
         }
-    }
-
-    public void FilterByType(ChatMessageType type)
-    {
-        var result = ChatController.i.entries.Where((x) => x.messageType == type).ToList();
-        result = TrimAndSortChatMessages(result);
-        view.RepopulateAllChatMessages(result);
     }
 
     public List<ChatMessage> TrimAndSortChatMessages(List<ChatMessage> messages)
@@ -63,5 +54,45 @@ public class ChatHUDController : IDisposable
     public void Dispose()
     {
         UnityEngine.Object.Destroy(this.view.gameObject);
+    }
+
+    public static ChatEntry.Model ChatMessageToChatEntry(ChatMessage message)
+    {
+        ChatEntry.Model model = new ChatEntry.Model();
+
+        var ownProfile = UserProfile.GetOwnUserProfile();
+
+        model.messageType = message.messageType;
+        model.bodyText = message.body;
+
+        if (message.recipient != null)
+        {
+            var recipientProfile = UserProfileController.userProfilesCatalog.Get(message.recipient);
+            model.recipientName = recipientProfile != null ? recipientProfile.userName : message.recipient;
+        }
+
+        if (message.sender != null)
+        {
+            var senderProfile = UserProfileController.userProfilesCatalog.Get(message.sender);
+            model.senderName = senderProfile != null ? senderProfile.userName : message.sender;
+        }
+
+        if (model.messageType == ChatMessage.Type.PRIVATE)
+        {
+            if (message.recipient == ownProfile.userId)
+            {
+                model.subType = ChatEntry.Model.SubType.PRIVATE_FROM;
+            }
+            else if (message.sender == ownProfile.userId)
+            {
+                model.subType = ChatEntry.Model.SubType.PRIVATE_TO;
+            }
+            else
+            {
+                model.subType = ChatEntry.Model.SubType.NONE;
+            }
+        }
+
+        return model;
     }
 }

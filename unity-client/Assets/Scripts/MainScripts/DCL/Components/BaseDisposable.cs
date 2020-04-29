@@ -43,14 +43,14 @@ namespace DCL.Components
         }
 
 
-        public virtual void AttachTo(DecentralandEntity entity, Type overridenAttachedType = null)
+        public virtual void AttachTo(DecentralandEntity entity, System.Type overridenAttachedType = null)
         {
             if (attachedEntities.Contains(entity))
             {
                 return;
             }
 
-            Type thisType = overridenAttachedType != null ? overridenAttachedType : GetType();
+            System.Type thisType = overridenAttachedType != null ? overridenAttachedType : GetType();
             entity.AddSharedComponent(thisType, this);
 
             attachedEntities.Add(entity);
@@ -65,13 +65,13 @@ namespace DCL.Components
             DetachFrom(entity);
         }
 
-        public virtual void DetachFrom(DecentralandEntity entity, Type overridenAttachedType = null)
+        public virtual void DetachFrom(DecentralandEntity entity, System.Type overridenAttachedType = null)
         {
             if (!attachedEntities.Contains(entity)) return;
 
             entity.OnRemoved -= OnEntityRemoved;
 
-            Type thisType = overridenAttachedType != null ? overridenAttachedType : GetType();
+            System.Type thisType = overridenAttachedType != null ? overridenAttachedType : GetType();
             entity.RemoveSharedComponent(thisType, false);
 
             attachedEntities.Remove(entity);

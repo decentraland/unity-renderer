@@ -1,6 +1,6 @@
+using NUnit.Framework;
 using System.Collections;
 using System.Linq;
-using NUnit.Framework;
 
 public class PlayerInfoCardHUDViewShould : TestsBase
 {
@@ -21,6 +21,7 @@ public class PlayerInfoCardHUDViewShould : TestsBase
 
         UserProfileController.i.AddUserProfileToCatalog(new UserProfileModel()
         {
+            userId = "userId",
             name = "username",
             description = "description",
             email = "email",
@@ -33,7 +34,7 @@ public class PlayerInfoCardHUDViewShould : TestsBase
                 WearableLiterals.ItemRarity.UNIQUE,
             }
         });
-        userProfile = UserProfileController.userProfilesCatalog.Get("username");
+        userProfile = UserProfileController.userProfilesCatalog.Get("userId");
     }
 
     [Test]
