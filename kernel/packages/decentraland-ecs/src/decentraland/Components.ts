@@ -1,4 +1,4 @@
-import { Component, ObservableComponent, DisposableComponent } from '../ecs/Component'
+import { Component, ObservableComponent, DisposableComponent, getComponentId } from '../ecs/Component'
 import { Vector3, Quaternion, Matrix, MathTmp, Color3, Color4 } from './math'
 import { AnimationState } from './AnimationState'
 import { newId } from '../ecs/helpers'
@@ -54,6 +54,9 @@ export enum CLASS_ID {
   /** @deprecated */
   SOUND = 67,
   TEXTURE = 68,
+
+  VIDEO_CLIP = 70,
+  VIDEO_TEXTURE = 71,
 
   AUDIO_CLIP = 200,
   AUDIO_SOURCE = 201,
@@ -661,7 +664,7 @@ export class Material extends ObservableComponent {
    * Texture applied as material.
    */
   @ObservableComponent.component
-  albedoTexture?: Texture
+  albedoTexture?: Texture | VideoTexture
 
   /**
    * Texture applied as opacity. Default: the same texture used in albedoTexture.
@@ -719,7 +722,7 @@ export class BasicMaterial extends ObservableComponent {
    * The source of the texture image.
    */
   @ObservableComponent.component
-  texture?: Texture
+  texture?: Texture | VideoTexture
 
   /**
    * A number between 0 and 1.
@@ -848,3 +851,72 @@ export class OnAnimationEnd extends OnUUIDEvent<'onAnimationEnd'> {
  */
 @Component('engine.smartItem', CLASS_ID.SMART_ITEM)
 export class SmartItem extends ObservableComponent {}
+
+/**
+ * @public
+ */
+@DisposableComponent('engine.VideoClip', CLASS_ID.VIDEO_CLIP)
+export class VideoClip extends ObservableComponent {
+  @ObservableComponent.readonly
+  readonly url: string
+
+  constructor(url: string) {
+    super()
+    this.url = url
+  }
+}
+
+/**
+ * @public
+ */
+@DisposableComponent('engine.VideoTexture', CLASS_ID.VIDEO_TEXTURE)
+export class VideoTexture extends ObservableComponent {
+  @ObservableComponent.readonly
+  readonly videoClipId: string
+
+  /**
+   * Enables crisper images based on the provided sampling mode.
+   * | Value | Type      |
+   * |-------|-----------|
+   * |     1 | NEAREST   |
+   * |     2 | BILINEAR  |
+   * |     3 | TRILINEAR |
+   */
+  @ObservableComponent.readonly
+  readonly samplingMode!: number
+
+  /**
+   * Enables texture wrapping for this material.
+   * | Value | Type      |
+   * |-------|-----------|
+   * |     1 | CLAMP     |
+   * |     2 | WRAP      |
+   * |     3 | MIRROR    |
+   */
+  @ObservableComponent.readonly
+  readonly wrap!: number
+
+  @ObservableComponent.field
+  volume: number = 1
+
+  /**
+   * Is this VideoTexture playing?
+   */
+  @ObservableComponent.field
+  playing: boolean = false
+
+  constructor(videoClip: VideoClip, opts?: Partial<Pick<VideoTexture, 'samplingMode' | 'wrap'>>) {
+    super()
+    if (!(videoClip instanceof VideoClip)) {
+      throw new Error(`Trying to create VideoTexture(VideoClip) with an invalid VideoClip`)
+    }
+    this.videoClipId = getComponentId(videoClip as any)
+
+    if (opts) {
+      for (let i in opts) {
+        const that = this as any
+        that[i as 'samplingMode' | 'wrap'] = (opts as any)[i]
+      }
+    }
+  }
+}

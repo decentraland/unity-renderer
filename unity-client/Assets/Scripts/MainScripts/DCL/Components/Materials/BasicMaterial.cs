@@ -21,6 +21,8 @@ namespace DCL.Components
         public Model model = new Model();
         public Material material;
 
+        private DCLTexture dclTexture = null;
+
         private static readonly int _BaseMap = Shader.PropertyToID("_BaseMap");
         private static readonly int _AlphaClip = Shader.PropertyToID("_AlphaClip");
 
@@ -55,14 +57,22 @@ namespace DCL.Components
 
             if (!string.IsNullOrEmpty(model.texture))
             {
-                yield return DCLTexture.FetchFromComponent(scene, model.texture, (downloadedTexture) =>
+                if (dclTexture == null || (dclTexture != null && dclTexture.id != model.texture))
                 {
-                    material.SetTexture(_BaseMap, downloadedTexture);
-                });
+                    yield return DCLTexture.FetchTextureComponent(scene, model.texture, (downloadedTexture) =>
+                    {
+                        dclTexture?.DetachFrom(this);
+                        material.SetTexture(_BaseMap, downloadedTexture.texture);
+                        dclTexture = downloadedTexture;
+                        dclTexture.AttachTo(this);
+                    });
+                }
             }
             else
             {
                 material.mainTexture = null;
+                dclTexture?.DetachFrom(this);
+                dclTexture = null;
             }
 
             material.EnableKeyword("_ALPHATEST_ON");
@@ -141,6 +151,9 @@ namespace DCL.Components
 
         public override void Dispose()
         {
+            dclTexture?.DetachFrom(this);
+            dclTexture = null;
+
             if (material != null)
             {
                 GameObject.Destroy(material);

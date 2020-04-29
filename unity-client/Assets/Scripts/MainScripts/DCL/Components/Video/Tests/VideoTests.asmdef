@@ -1,0 +1,11 @@
+﻿{
+	"name": "VideoTests",
+	    "references": [
+        "MainScripts",
+        "Utils",
+        "TestHelpers"
+    ],
+    "optionalUnityReferences": [
+        "TestAssemblies"
+    ]
+}

@@ -50,6 +50,9 @@ namespace DCL.Models
 
         TEXTURE = 68,
 
+        VIDEO_CLIP = 70,
+        VIDEO_TEXTURE = 71,
+
         AUDIO_CLIP = 200
     }
 

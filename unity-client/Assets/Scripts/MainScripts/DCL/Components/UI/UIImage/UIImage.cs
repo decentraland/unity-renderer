@@ -26,6 +26,8 @@ namespace DCL.Components
 
         public override string referencesContainerPrefabName => "UIImage";
 
+        DCLTexture dclTexture = null;
+
         public UIImage(ParcelScene scene) : base(scene)
         {
         }
@@ -46,23 +48,31 @@ namespace DCL.Components
             // Fetch texture
             if (!string.IsNullOrEmpty(model.source))
             {
-                if (fetchRoutine != null)
+                if (dclTexture == null || (dclTexture != null && dclTexture.id != model.source))
                 {
-                    scene.StopCoroutine(fetchRoutine);
-                    fetchRoutine = null;
+                    if (fetchRoutine != null)
+                    {
+                        scene.StopCoroutine(fetchRoutine);
+                        fetchRoutine = null;
+                    }
+
+                    IEnumerator fetchIEnum = DCLTexture.FetchTextureComponent(scene, model.source, (downloadedTexture) =>
+                    {
+                        referencesContainer.image.texture = downloadedTexture.texture;
+                        fetchRoutine = null;
+                        dclTexture?.DetachFrom(this);
+                        dclTexture = downloadedTexture;
+                        dclTexture.AttachTo(this);
+                    });
+
+                    fetchRoutine = scene.StartCoroutine(fetchIEnum);
                 }
-
-                IEnumerator fetchIEnum = DCLTexture.FetchFromComponent(scene, model.source, (downloadedTexture) =>
-                {
-                    referencesContainer.image.texture = downloadedTexture;
-                    fetchRoutine = null;
-                });
-
-                fetchRoutine = scene.StartCoroutine(fetchIEnum);
             }
             else
             {
                 referencesContainer.image.texture = null;
+                dclTexture?.DetachFrom(this);
+                dclTexture = null;
             }
 
             referencesContainer.image.enabled = model.visible;
@@ -102,6 +112,9 @@ namespace DCL.Components
 
         public override void Dispose()
         {
+            dclTexture?.DetachFrom(this);
+            dclTexture = null;
+
             Utils.SafeDestroy(referencesContainer.gameObject);
 
             base.Dispose();

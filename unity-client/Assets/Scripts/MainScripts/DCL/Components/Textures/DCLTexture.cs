@@ -25,7 +25,7 @@ namespace DCL
             MIRROR
         }
 
-        Model model;
+        protected Model model;
 
         public TextureWrapMode unityWrap;
         public FilterMode unitySamplingMode;
@@ -36,6 +36,15 @@ namespace DCL
 
         public static IEnumerator FetchFromComponent(ParcelScene scene, string componentId,
             System.Action<Texture2D> OnFinish)
+        {
+            yield return FetchTextureComponent(scene, componentId, (dclTexture) =>
+            {
+                OnFinish?.Invoke(dclTexture.texture);
+            });
+        }
+
+        public static IEnumerator FetchTextureComponent(ParcelScene scene, string componentId,
+            System.Action<DCLTexture> OnFinish)
         {
             if (!scene.disposableComponents.ContainsKey(componentId))
             {
@@ -62,7 +71,7 @@ namespace DCL
                     {
                         if (OnFinish != null)
                         {
-                            OnFinish.Invoke(textureComponent.texture);
+                            OnFinish.Invoke(textureComponent);
                         }
 
                         yield break;
@@ -71,7 +80,7 @@ namespace DCL
             }
             else if (OnFinish != null)
             {
-                OnFinish.Invoke(textureComponent.texture);
+                OnFinish.Invoke(textureComponent);
             }
         }
 
@@ -141,6 +150,13 @@ namespace DCL
                 }
             }
         }
+
+        public virtual void AttachTo(PBRMaterial material) { }
+        public virtual void AttachTo(BasicMaterial material) { }
+        public virtual void AttachTo(UIImage image) { }
+        public virtual void DetachFrom(PBRMaterial material) { }
+        public virtual void DetachFrom(BasicMaterial material) { }
+        public virtual void DetachFrom(UIImage image) { }
 
         public override void Dispose()
         {
