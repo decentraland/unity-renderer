@@ -4,7 +4,8 @@ using UnityEngine.TestTools;
 using DCL.SettingsHUD;
 using UnityEngine.Rendering.LWRP;
 
-using QualitySettings = DCL.SettingsHUD.QualitySettings;
+using QualitySettings = DCL.SettingsData.QualitySettings;
+using GeneralSettings = DCL.SettingsData.GeneralSettings;
 
 namespace Tests
 {

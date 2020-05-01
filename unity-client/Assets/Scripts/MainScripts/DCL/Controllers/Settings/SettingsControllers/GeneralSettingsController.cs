@@ -1,7 +1,7 @@
 ﻿using Cinemachine;
 using UnityEngine;
 
-namespace DCL.SettingsHUD
+namespace DCL.SettingsController
 {
     public class GeneralSettingsController : MonoBehaviour
     {
@@ -26,7 +26,7 @@ namespace DCL.SettingsHUD
             Settings.i.OnGeneralSettingsChanged -= ApplyGeneralSettings;
         }
 
-        void ApplyGeneralSettings(GeneralSettings settings)
+        void ApplyGeneralSettings(DCL.SettingsData.GeneralSettings settings)
         {
             thirdPersonCamera.m_XAxis.m_AccelTime = settings.mouseSensitivity;
             thirdPersonCamera.m_YAxis.m_AccelTime = settings.mouseSensitivity;

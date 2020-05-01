@@ -8,23 +8,23 @@ namespace DCL
         const string QUALITY_SETTINGS_KEY = "Settings.Quality";
         const string GENERAL_SETTINGS_KEY = "Settings.General";
 
-        public event Action<SettingsHUD.QualitySettings> OnQualitySettingsChanged;
-        public event Action<SettingsHUD.GeneralSettings> OnGeneralSettingsChanged;
+        public event Action<SettingsData.QualitySettings> OnQualitySettingsChanged;
+        public event Action<SettingsData.GeneralSettings> OnGeneralSettingsChanged;
 
-        public SettingsHUD.QualitySettings qualitySettings { get { return currentQualitySettings; } }
-        public SettingsHUD.QualitySettingsData qualitySettingsPresets { get { return qualitySettingsPreset; } }
-        public SettingsHUD.GeneralSettings generalSettings { get { return currentGeneralSettings; } }
+        public SettingsData.QualitySettings qualitySettings { get { return currentQualitySettings; } }
+        public SettingsData.QualitySettingsData qualitySettingsPresets { get { return qualitySettingsPreset; } }
+        public SettingsData.GeneralSettings generalSettings { get { return currentGeneralSettings; } }
 
-        private static SettingsHUD.QualitySettingsData qualitySettingsPreset = null;
+        private static SettingsData.QualitySettingsData qualitySettingsPreset = null;
 
-        private SettingsHUD.QualitySettings currentQualitySettings;
-        private SettingsHUD.GeneralSettings currentGeneralSettings;
+        private SettingsData.QualitySettings currentQualitySettings;
+        private SettingsData.GeneralSettings currentGeneralSettings;
 
         public Settings()
         {
             if (qualitySettingsPreset == null)
             {
-                qualitySettingsPreset = Resources.Load<SettingsHUD.QualitySettingsData>("ScriptableObjects/QualitySettingsData");
+                qualitySettingsPreset = Resources.Load<SettingsData.QualitySettingsData>("ScriptableObjects/QualitySettingsData");
             }
             LoadQualitySettings();
             LoadGeneralSettings();
@@ -37,7 +37,7 @@ namespace DCL
             {
                 try
                 {
-                    currentQualitySettings = JsonUtility.FromJson<SettingsHUD.QualitySettings>(PlayerPrefs.GetString(QUALITY_SETTINGS_KEY));
+                    currentQualitySettings = JsonUtility.FromJson<SettingsData.QualitySettings>(PlayerPrefs.GetString(QUALITY_SETTINGS_KEY));
                     isQualitySettingsSet = true;
                 }
                 catch (Exception e)
@@ -58,7 +58,7 @@ namespace DCL
             {
                 try
                 {
-                    currentGeneralSettings = JsonUtility.FromJson<SettingsHUD.GeneralSettings>(PlayerPrefs.GetString(GENERAL_SETTINGS_KEY));
+                    currentGeneralSettings = JsonUtility.FromJson<SettingsData.GeneralSettings>(PlayerPrefs.GetString(GENERAL_SETTINGS_KEY));
                     isGeneralSettingsSet = true;
                 }
                 catch (Exception e)
@@ -68,7 +68,7 @@ namespace DCL
             }
             if (!isGeneralSettingsSet)
             {
-                currentGeneralSettings = new SettingsHUD.GeneralSettings()
+                currentGeneralSettings = new SettingsData.GeneralSettings()
                 {
                     sfxVolume = 1,
                     mouseSensitivity = 0.2f
@@ -84,13 +84,13 @@ namespace DCL
             }
         }
 
-        public void ApplyQualitySettings(SettingsHUD.QualitySettings settings)
+        public void ApplyQualitySettings(SettingsData.QualitySettings settings)
         {
             currentQualitySettings = settings;
             OnQualitySettingsChanged?.Invoke(settings);
         }
 
-        public void ApplyGeneralSettings(SettingsHUD.GeneralSettings settings)
+        public void ApplyGeneralSettings(SettingsData.GeneralSettings settings)
         {
             currentGeneralSettings = settings;
             OnGeneralSettingsChanged?.Invoke(settings);
@@ -105,7 +105,7 @@ namespace DCL
     }
 }
 
-namespace DCL.SettingsHUD
+namespace DCL.SettingsData
 {
     [Serializable]
     public struct GeneralSettings

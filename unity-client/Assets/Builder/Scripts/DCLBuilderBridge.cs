@@ -592,9 +592,9 @@ namespace Builder
 
         private void SetupQualitySettings()
         {
-            DCL.SettingsHUD.QualitySettings settings = new DCL.SettingsHUD.QualitySettings()
+            DCL.SettingsData.QualitySettings settings = new DCL.SettingsData.QualitySettings()
             {
-                textureQuality = DCL.SettingsHUD.QualitySettings.TextureQuality.FullRes,
+                textureQuality = DCL.SettingsData.QualitySettings.TextureQuality.FullRes,
                 antiAliasing = UnityEngine.Rendering.LWRP.MsaaQuality._2x,
                 renderScale = 1,
                 shadows = true,
