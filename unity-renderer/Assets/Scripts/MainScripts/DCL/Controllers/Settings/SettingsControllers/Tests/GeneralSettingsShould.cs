@@ -1,5 +1,4 @@
 using Cinemachine;
-using DCL.SettingsHUD;
 using NUnit.Framework;
 using System.Collections;
 using UnityEngine;
@@ -7,7 +6,11 @@ using UnityEngine.Rendering;
 using UnityEngine.Rendering.LWRP;
 using UnityEngine.Rendering.PostProcessing;
 using UnityEngine.TestTools;
-using QualitySettings = DCL.SettingsHUD.QualitySettings;
+
+using QualitySettings = DCL.SettingsData.QualitySettings;
+using GeneralSettings = DCL.SettingsData.GeneralSettings;
+using GeneralSettingsController = DCL.SettingsController.GeneralSettingsController;
+using QualitySettingsController = DCL.SettingsController.QualitySettingsController;
 
 namespace Tests
 {

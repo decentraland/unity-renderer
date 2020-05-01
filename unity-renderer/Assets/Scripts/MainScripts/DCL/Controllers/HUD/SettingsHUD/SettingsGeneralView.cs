@@ -27,11 +27,11 @@ namespace DCL.SettingsHUD
         public TextMeshProUGUI renderingScaleValueLabel = null;
         public TextMeshProUGUI drawDistanceValueLabel = null;
 
-        private DCL.SettingsHUD.QualitySettings currentQualitySetting;
-        private DCL.SettingsHUD.GeneralSettings currentGeneralSetting;
+        private DCL.SettingsData.QualitySettings currentQualitySetting;
+        private DCL.SettingsData.GeneralSettings currentGeneralSetting;
 
-        private DCL.SettingsHUD.QualitySettings tempQualitySetting;
-        private DCL.SettingsHUD.GeneralSettings tempGeneralSetting;
+        private DCL.SettingsData.QualitySettings tempQualitySetting;
+        private DCL.SettingsData.GeneralSettings tempGeneralSetting;
 
         private bool shouldSetAsCustom = false;
         private bool isDirty = false;
@@ -40,7 +40,7 @@ namespace DCL.SettingsHUD
         {
             qualityPresetSpinBox.onValueChanged.AddListener(value =>
             {
-                DCL.SettingsHUD.QualitySettings preset = Settings.i.qualitySettingsPresets[value];
+                DCL.SettingsData.QualitySettings preset = Settings.i.qualitySettingsPresets[value];
                 tempQualitySetting = preset;
                 UpdateQualitySettings();
                 shouldSetAsCustom = false;
@@ -48,7 +48,7 @@ namespace DCL.SettingsHUD
 
             textureResSpinBox.onValueChanged.AddListener(value =>
             {
-                tempQualitySetting.textureQuality = (DCL.SettingsHUD.QualitySettings.TextureQuality)value;
+                tempQualitySetting.textureQuality = (DCL.SettingsData.QualitySettings.TextureQuality)value;
                 shouldSetAsCustom = true;
                 isDirty = true;
             });
@@ -165,13 +165,13 @@ namespace DCL.SettingsHUD
             }
         }
 
-        void SetupQualityPreset(DCL.SettingsHUD.QualitySettings savedSetting)
+        void SetupQualityPreset(DCL.SettingsData.QualitySettings savedSetting)
         {
             List<string> presetNames = new List<string>();
             int presetIndex = 0;
             bool presetIndexFound = false;
 
-            DCL.SettingsHUD.QualitySettings preset;
+            DCL.SettingsData.QualitySettings preset;
             for (int i = 0; i < Settings.i.qualitySettingsPresets.Length; i++)
             {
                 preset = Settings.i.qualitySettingsPresets[i];

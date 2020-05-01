@@ -1,7 +1,7 @@
 ﻿using UnityEngine;
 using System;
 
-namespace DCL.SettingsHUD
+namespace DCL.SettingsData
 {
     [CreateAssetMenu(fileName = "QualitySettings", menuName = "QualitySettings")]
     public class QualitySettingsData : ScriptableObject

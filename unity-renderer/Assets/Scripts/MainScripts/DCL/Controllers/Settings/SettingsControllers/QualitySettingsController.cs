@@ -7,7 +7,7 @@ using Cinemachine;
 
 using UnitySettings = UnityEngine.QualitySettings;
 
-namespace DCL.SettingsHUD
+namespace DCL.SettingsController
 {
     public class QualitySettingsController : MonoBehaviour
     {
@@ -47,7 +47,7 @@ namespace DCL.SettingsHUD
             Settings.i.OnQualitySettingsChanged -= ApplyQualitySettings;
         }
 
-        void ApplyQualitySettings(QualitySettings qualitySettings)
+        void ApplyQualitySettings(SettingsData.QualitySettings qualitySettings)
         {
             UnitySettings.masterTextureLimit = (int)qualitySettings.textureQuality;
 
