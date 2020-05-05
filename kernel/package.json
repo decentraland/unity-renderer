@@ -116,6 +116,7 @@
     "redux": "^4.0.4",
     "redux-saga": "^1.0.5",
     "reselect": "^4.0.0",
+    "sha3": "^2.1.2",
     "typesafe-actions": "^4.4.2",
     "web3x": "^4.0.6",
     "ws": "^7.0.0"
