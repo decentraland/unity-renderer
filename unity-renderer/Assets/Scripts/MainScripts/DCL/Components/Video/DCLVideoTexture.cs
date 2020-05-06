@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections;
+﻿using System.Collections;
 using System.Collections.Generic;
 using DCL.Controllers;
 using DCL.Models;
@@ -73,6 +72,7 @@ namespace DCL.Components
                 texturePlayerUpdateRoutine = CoroutineStarter.Start(VideoTextureUpdate());
                 CommonScriptableObjects.playerCoords.OnChange += OnPlayerCoordsChanged;
                 scene.OnEntityRemoved += OnEntityRemoved;
+                Settings.i.OnGeneralSettingsChanged += OnSettingsChanged;
             }
 
             // NOTE: create texture for testing cause real texture will only be created on web platform
@@ -100,7 +100,7 @@ namespace DCL.Components
                 if (baseVolume != model.volume)
                 {
                     baseVolume = model.volume;
-                    texturePlayer.SetVolume(baseVolume * distanceVolumeModifier);
+                    UpdateVolume();
                 }
             }
         }
@@ -179,7 +179,7 @@ namespace DCL.Components
         {
             if (texturePlayer != null)
             {
-                texturePlayer.SetVolume(baseVolume * distanceVolumeModifier * AudioListener.volume);
+                texturePlayer.SetVolume(baseVolume * distanceVolumeModifier * Settings.i.generalSettings.sfxVolume);
             }
         }
 
@@ -271,8 +271,14 @@ namespace DCL.Components
             isPlayStateDirty = true;
         }
 
+        void OnSettingsChanged(SettingsData.GeneralSettings settings)
+        {
+            UpdateVolume();
+        }
+
         public override void Dispose()
         {
+            Settings.i.OnGeneralSettingsChanged -= OnSettingsChanged;
             CommonScriptableObjects.playerCoords.OnChange -= OnPlayerCoordsChanged;
             if (scene != null) scene.OnEntityRemoved -= OnEntityRemoved;
             if (texturePlayerUpdateRoutine != null)

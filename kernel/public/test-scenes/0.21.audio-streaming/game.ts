@@ -4,7 +4,7 @@ const cube = new Entity()
 cube.addComponent(new BoxShape())
 cube.addComponent(new Transform({ position: new Vector3(8, 1, 8) }))
 
-const audioStream = new AudioStream('http://retransmisorasenelpais.cienradios.com.ar:8000/la100.aac')
+const audioStream = new AudioStream('https://radiotopfm2.turadioonline.xyz/stream')
 audioStream.playing = false
 cube.addComponent(audioStream)
 
