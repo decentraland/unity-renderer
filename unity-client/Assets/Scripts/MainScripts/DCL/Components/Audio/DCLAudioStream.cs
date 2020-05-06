@@ -1,5 +1,4 @@
 ﻿using System.Collections;
-using UnityEngine;
 
 namespace DCL.Components
 {
@@ -15,6 +14,7 @@ namespace DCL.Components
 
         public Model model;
         private bool isPlaying = false;
+        private float settingsVolume = 0;
 
         public override IEnumerator ApplyChanges(string newJson)
         {
@@ -22,6 +22,7 @@ namespace DCL.Components
             model = SceneController.i.SafeFromJson<Model>(newJson);
 
             bool forceUpdate = prevModel.volume != model.volume;
+            settingsVolume = Settings.i.generalSettings.sfxVolume;
 
             UpdatePlayingState(forceUpdate);
 
@@ -32,12 +33,14 @@ namespace DCL.Components
         {
             CommonScriptableObjects.sceneID.OnChange += OnSceneChanged;
             CommonScriptableObjects.rendererState.OnChange += OnRendererStateChanged;
+            Settings.i.OnGeneralSettingsChanged += OnSettingsChanged;
         }
 
         private void OnDestroy()
         {
             CommonScriptableObjects.sceneID.OnChange -= OnSceneChanged;
             CommonScriptableObjects.rendererState.OnChange -= OnRendererStateChanged;
+            Settings.i.OnGeneralSettingsChanged -= OnSettingsChanged;
             StopStreaming();
         }
 
@@ -92,16 +95,25 @@ namespace DCL.Components
             }
         }
 
+        private void OnSettingsChanged(SettingsData.GeneralSettings settings)
+        {
+            if (settingsVolume != settings.sfxVolume)
+            {
+                settingsVolume = settings.sfxVolume;
+                UpdatePlayingState(true);
+            }
+        }
+
         private void StopStreaming()
         {
             isPlaying = false;
-            Interface.WebInterface.SendAudioStreamEvent(model.url, false, model.volume * AudioListener.volume);
+            Interface.WebInterface.SendAudioStreamEvent(model.url, false, model.volume * settingsVolume);
         }
 
         private void StartStreaming()
         {
             isPlaying = true;
-            Interface.WebInterface.SendAudioStreamEvent(model.url, true, model.volume * AudioListener.volume);
+            Interface.WebInterface.SendAudioStreamEvent(model.url, true, model.volume * settingsVolume);
         }
     }
 }

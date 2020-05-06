@@ -22,7 +22,8 @@
         "GenericPointers",
         "MaterialCachingHelper",
         "SRPBatchingHelper",
-        "MouseCatcher"
+        "MouseCatcher",
+        "Settings"
     ],
     "optionalUnityReferences": [],
     "includePlatforms": [],
