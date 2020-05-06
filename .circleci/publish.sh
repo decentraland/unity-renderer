@@ -21,7 +21,7 @@ function publish() {
     echo 'module.exports = "'${BUILD_VERSIONING}'";' > index.js
 
     # Delete unnecessary files from the build
-    rm game.js index.html Build/UnityLoader.js Build/unity.json
+    rm -f game.js index.html Build/UnityLoader.js Build/unity.json
     # Move all `.unityweb` files into the root build folder
     mv Build/* .
     # Publish on npm
