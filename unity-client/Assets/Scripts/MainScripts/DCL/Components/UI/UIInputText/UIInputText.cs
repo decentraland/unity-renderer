@@ -60,14 +60,13 @@ namespace DCL.Components
             inputField.onSubmit.AddListener(OnSubmit);
             inputField.onValueChanged.AddListener(OnChanged);
 
-            DCL.Components.TextShape.ApplyModelChanges(tmpText, model.textModel);
+            yield return DCL.Components.TextShape.ApplyModelChanges(scene, tmpText, model.textModel);
 
             inputField.text = model.placeholder;
             inputField.textComponent.color = new Color(model.placeholderColor.r, model.placeholderColor.g,
                 model.placeholderColor.b, model.placeholderColor.a);
             referencesContainer.bgImage.color = new Color(model.focusedBackground.r, model.focusedBackground.g,
                 model.focusedBackground.b, model.focusedBackground.a);
-            return null;
         }
 
         public void OnFocus(string call)

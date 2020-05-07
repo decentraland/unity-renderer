@@ -1,4 +1,5 @@
 using System.Collections;
+using DCL.Controllers;
 using TMPro;
 using UnityEngine;
 
@@ -19,6 +20,7 @@ namespace DCL.Components
             public float fontSize = 100f;
             public bool fontAutoSize = false;
             public string fontWeight = "normal";
+            public string font;
 
             [Header("Text box properties")]
             public string hTextAlign = "bottom";
@@ -72,12 +74,16 @@ namespace DCL.Components
             rectTransform.offsetMin = Vector2.zero;
             rectTransform.offsetMax = Vector2.zero;
 
-            ApplyModelChanges(text, model);
-            yield return null;
+            yield return ApplyModelChanges(scene, text, model);
         }
 
-        public static void ApplyModelChanges(TMP_Text text, Model model)
+        public static IEnumerator ApplyModelChanges(ParcelScene scene, TMP_Text text, Model model)
         {
+            if (!string.IsNullOrEmpty(model.font))
+            {
+                yield return DCLFont.SetFontFromComponent(scene, model.font, text);
+            }
+
             text.text = model.value;
 
             text.color = new Color(model.color.r, model.color.g, model.color.b, model.color.a);

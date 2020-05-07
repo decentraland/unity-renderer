@@ -843,6 +843,12 @@ namespace DCL.Controllers
                         break;
                     }
 
+                case CLASS_ID.FONT:
+                    {
+                        newComponent = new DCLFont(this);
+                        break;
+                    }
+
                 default:
                     Debug.LogError($"Unknown classId");
                     break;

@@ -38,6 +38,7 @@ export enum CLASS_ID {
   BILLBOARD = 32,
 
   ANIMATION = 33,
+  FONT = 34,
 
   UI_FULLSCREEN_SHAPE = 40, // internal fullscreen scenes
   UI_BUTTON_SHAPE = 41,
@@ -458,6 +459,26 @@ export class OBJShape extends Shape {
 /**
  * @public
  */
+@DisposableComponent('engine.font', CLASS_ID.FONT)
+export class Font extends ObservableComponent {
+  @ObservableComponent.readonly
+  readonly src!: string
+
+  public constructor(src: string = '') {
+    super()
+    this.src = src
+  }
+}
+
+export enum Fonts {
+  SanFrancisco = 'builtin:SF-UI-Text-Regular SDF',
+  SanFrancisco_Heavy = 'builtin:SF-UI-Text-Heavy SDF',
+  SanFrancisco_Semibold = 'builtin:SF-UI-Text-Semibold SDF'
+}
+
+/**
+ * @public
+ */
 @Component('engine.text', CLASS_ID.TEXT_SHAPE)
 export class TextShape extends Shape {
   @ObservableComponent.field
@@ -474,6 +495,9 @@ export class TextShape extends Shape {
 
   @ObservableComponent.field
   fontWeight: string = 'normal'
+
+  @ObservableComponent.component
+  font?: Font
 
   @ObservableComponent.field
   opacity: number = 1.0
