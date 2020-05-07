@@ -36,10 +36,9 @@ namespace DCL.Components
                 model.textModel = SceneController.i.SafeFromJson<TextShape.Model>(newJson);
             }
 
-            TextShape.ApplyModelChanges(referencesContainer.text, model.textModel);
+            yield return TextShape.ApplyModelChanges(scene, referencesContainer.text, model.textModel);
 
             RefreshAll();
-            return null;
         }
 
         public override void RefreshDCLLayout(bool refreshSize = true, bool refreshAlignmentAndPosition = true)

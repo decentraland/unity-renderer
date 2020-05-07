@@ -1,5 +1,5 @@
 import { ObservableComponent, DisposableComponent, getComponentId } from '../ecs/Component'
-import { CLASS_ID, OnUUIDEvent, Texture } from './Components'
+import { CLASS_ID, OnUUIDEvent, Texture, Font } from './Components'
 import { Color4 } from './math'
 import { OnTextSubmit, OnBlur, OnChanged, OnClick, OnFocus } from './UIEvents'
 /**
@@ -215,6 +215,9 @@ export class UIText extends UIShape {
   @ObservableComponent.field
   fontWeight: string = 'normal'
 
+  @ObservableComponent.component
+  font?: Font
+
   @ObservableComponent.field
   value: string = ''
 
@@ -286,6 +289,9 @@ export class UIInputText extends UIShape {
 
   @ObservableComponent.field
   fontWeight: string = 'normal'
+
+  @ObservableComponent.component
+  font?: Font
 
   @ObservableComponent.field
   value: string = ''
