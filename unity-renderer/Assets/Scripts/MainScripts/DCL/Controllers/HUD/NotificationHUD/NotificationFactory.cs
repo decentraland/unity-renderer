@@ -1,28 +1,38 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using UnityEngine;
 
 public class NotificationFactory : ScriptableObject
 {
-    [System.Serializable]
-    public class NotificationFactoryItem
+    public enum Type
     {
-        public NotificationModel.NotificationType type;
+        GENERIC,
+        SCRIPTING_ERROR,
+        COMMS_ERROR,
+        AIRDROPPING,
+        GENERIC_WITHOUT_BUTTON,
+        CUSTOM
+    }
+
+    [System.Serializable]
+    public class Item
+    {
+        public Type type;
         public Notification prefab;
     }
 
-    public NotificationFactoryItem[] factoryList;
+    public Item[] factoryList;
 
-    private Dictionary<NotificationModel.NotificationType, NotificationFactoryItem> factoryDict;
+    private Dictionary<Type, Item> factoryDict;
 
     public void EnsueFactoryDictionary()
     {
         if (factoryDict == null)
         {
-            factoryDict = new Dictionary<NotificationModel.NotificationType, NotificationFactoryItem>();
+            factoryDict = new Dictionary<Type, Item>();
 
             for (int i = 0; i < factoryList.Length; i++)
             {
-                NotificationFactoryItem item = factoryList[i];
+                Item item = factoryList[i];
 
                 if (!factoryDict.ContainsKey(item.type))
                 {
@@ -32,7 +42,7 @@ public class NotificationFactory : ScriptableObject
         }
     }
 
-    public Notification CreateNotificationFromType(NotificationModel.NotificationType type, Transform parent = null)
+    public Notification CreateNotificationFromType(Type type, Transform parent = null)
     {
         EnsueFactoryDictionary();
 

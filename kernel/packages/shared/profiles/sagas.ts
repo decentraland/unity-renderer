@@ -32,7 +32,8 @@ import {
   SaveProfileRequest,
   saveProfileSuccess,
   profileRequest,
-  saveProfileFailure
+  saveProfileFailure,
+  addedProfileToCatalog
 } from './actions'
 import { generateRandomUserProfile } from './generateRandomUserProfile'
 import {
@@ -63,7 +64,7 @@ import {
   DeployData
 } from './types'
 import { identity, ExplorerIdentity } from '../index'
-import { Authenticator, AuthLink, Timestamp, ContentFileHash } from 'dcl-crypto'
+import { Authenticator, AuthLink } from 'dcl-crypto'
 import { sha3 } from 'web3x/utils'
 import { CATALYST_REALM_INITIALIZED } from '../dao/actions'
 import { isRealmInitialized, getUpdateProfileServer } from '../dao/selectors'
@@ -73,6 +74,9 @@ import { backupProfile } from 'shared/profiles/generateRandomUserProfile'
 import { getTutorialBaseURL } from '../location'
 import { takeLatestById } from './utils/takeLatestById'
 import { UnityInterfaceContainer } from 'unity-interface/dcl'
+
+type Timestamp = number
+type ContentFileHash = string
 
 const CID = require('cids')
 const multihashing = require('multihashing-async')
@@ -175,6 +179,7 @@ export function* handleFetchProfile(action: ProfileRequestAction): any {
 
   const currentId = yield select(getCurrentUserId)
   let profile: any
+  let hasConnectedWeb3 = false
   if (WORLD_EXPLORER) {
     try {
       const serverUrl = yield select(getProfileDownloadServer)
@@ -182,6 +187,7 @@ export function* handleFetchProfile(action: ProfileRequestAction): any {
 
       if (profiles.avatars.length !== 0) {
         profile = profiles.avatars[0]
+        hasConnectedWeb3 = true
       }
     } catch (error) {
       defaultLogger.warn(`Error requesting profile for ${userId}, `, error)
@@ -224,7 +230,7 @@ export function* handleFetchProfile(action: ProfileRequestAction): any {
   }
 
   const passport = yield call(processServerProfile, userId, profile)
-  yield put(profileSuccess(userId, passport))
+  yield put(profileSuccess(userId, passport, hasConnectedWeb3))
 }
 
 export async function profileServerRequest(serverUrl: string, userId: string) {
@@ -303,7 +309,11 @@ export function* submitProfileToRenderer(action: ProfileSuccessAction): any {
     yield call(ensureRenderer)
     yield call(ensureBaseCatalogs)
 
-    globalThis.unityInterface.AddUserProfileToCatalog(profileToRendererFormat(profile))
+    const forRenderer = profileToRendererFormat(profile)
+
+    globalThis.unityInterface.AddUserProfileToCatalog(forRenderer)
+
+    yield put(addedProfileToCatalog(action.payload.userId, forRenderer))
   }
 }
 

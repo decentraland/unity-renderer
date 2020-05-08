@@ -1,5 +1,6 @@
 import { action } from 'typesafe-actions'
 import { Profile, Wearable, Catalog, WearableId } from './types'
+import { ProfileForRenderer } from '../../decentraland-ecs/src/decentraland/Types'
 
 // Profile fetching
 
@@ -9,7 +10,8 @@ export const PROFILE_FAILURE = '[Failure] Profile fetch'
 export const PROFILE_RANDOM = '[?] Profile randomized'
 
 export const profileRequest = (userId: string) => action(PROFILE_REQUEST, { userId })
-export const profileSuccess = (userId: string, profile: Profile) => action(PROFILE_SUCCESS, { userId, profile })
+export const profileSuccess = (userId: string, profile: Profile, hasConnectedWeb3: boolean = false) =>
+  action(PROFILE_SUCCESS, { userId, profile, hasConnectedWeb3 })
 export const profileFailure = (userId: string, error: any) => action(PROFILE_FAILURE, { userId, error })
 export const profileRandom = (userId: string, profile: Profile) => action(PROFILE_RANDOM, { userId, profile })
 
@@ -68,3 +70,8 @@ export type InventoryFailure = ReturnType<typeof inventoryFailure>
 export const NOTIFY_NEW_INVENTORY_ITEM = '[Inventory] New inventory item'
 export const notifyNewInventoryItem = () => action(NOTIFY_NEW_INVENTORY_ITEM)
 export type NotifyNewInventoryItem = ReturnType<typeof notifyNewInventoryItem>
+
+export const ADDED_PROFILE_TO_CATALOG = '[Success] Added profile to catalog'
+export const addedProfileToCatalog = (userId: string, profile: ProfileForRenderer) =>
+  action(ADDED_PROFILE_TO_CATALOG, { userId, profile })
+export type AddedProfileToCatalog = ReturnType<typeof addedProfileToCatalog>

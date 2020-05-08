@@ -33,6 +33,7 @@ initializeUnity(container)
     i.ConfigureHUDElement(HUDElementID.TERMS_OF_SERVICE, { active: true, visible: true })
     i.ConfigureHUDElement(HUDElementID.TASKBAR, { active: USE_NEW_CHAT, visible: USE_NEW_CHAT })
     i.ConfigureHUDElement(HUDElementID.WORLD_CHAT_WINDOW, { active: USE_NEW_CHAT, visible: false })
+    i.ConfigureHUDElement(HUDElementID.FRIENDS, { active: USE_NEW_CHAT, visible: false })
 
     globalThis.globalStore.dispatch(signalRendererInitialized())
 

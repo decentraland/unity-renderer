@@ -36,6 +36,14 @@ public class PlayerInfoCardHUDView : MonoBehaviour
     [SerializeField] internal Image blockedAvatarOverlay;
     [SerializeField] internal TextMeshProUGUI name;
 
+    [SerializeField]
+    [Header("Friends")]
+    internal Button requestSentButton;
+    [SerializeField]
+    internal Button addFriendButton;
+    [SerializeField]
+    internal GameObject alreadyFriendsContainer;
+
     [Header("Passport")]
     [SerializeField]
     internal TextMeshProUGUI description;
@@ -43,6 +51,8 @@ public class PlayerInfoCardHUDView : MonoBehaviour
     [Header("Trade")]
     [SerializeField]
     private RectTransform wearablesContainer;
+    [SerializeField]
+    private GameObject emptyCollectiblesImage;
 
     [Header("Block")]
     [SerializeField]
@@ -60,7 +70,12 @@ public class PlayerInfoCardHUDView : MonoBehaviour
         return Instantiate(Resources.Load<GameObject>(PREFAB_PATH)).GetComponent<PlayerInfoCardHUDView>();
     }
 
-    public void Initialize(UnityAction cardClosedCallback, UnityAction reportPlayerCallback, UnityAction blockPlayerCallback, UnityAction unblockPlayerCallback)
+    public void Initialize(UnityAction cardClosedCallback,
+        UnityAction reportPlayerCallback,
+        UnityAction blockPlayerCallback,
+        UnityAction unblockPlayerCallback,
+        UnityAction addFriendCallback,
+        UnityAction cancelInvitation)
     {
         hideCardButton.onClick.RemoveAllListeners();
         hideCardButton.onClick.AddListener(cardClosedCallback);
@@ -73,6 +88,14 @@ public class PlayerInfoCardHUDView : MonoBehaviour
 
         unblockPlayerButton.onClick.RemoveAllListeners();
         unblockPlayerButton.onClick.AddListener(unblockPlayerCallback);
+
+        addFriendButton.gameObject.SetActive(true);
+        addFriendButton.onClick.RemoveAllListeners();
+        addFriendButton.onClick.AddListener(addFriendCallback);
+
+        requestSentButton.gameObject.SetActive(true);
+        requestSentButton.onClick.RemoveAllListeners();
+        requestSentButton.onClick.AddListener(cancelInvitation);
 
         for (int index = 0; index < tabsMapping.Length; index++)
         {
@@ -89,6 +112,16 @@ public class PlayerInfoCardHUDView : MonoBehaviour
                 break;
             }
         }
+
+        FriendsController.i.OnUpdateFriendship += OnFriendStatusUpdated;
+    }
+
+    private void OnFriendStatusUpdated(string userId, FriendsController.FriendshipAction action)
+    {
+        if (currentUserProfile == null)
+            return;
+
+        UpdateFriendButton();
     }
 
     public void SetCardActive(bool active)
@@ -137,7 +170,51 @@ public class PlayerInfoCardHUDView : MonoBehaviour
             playerInfoCollectible.Initialize(collectible);
         }
 
+        emptyCollectiblesImage.SetActive(collectiblesIds.Length == 0);
+
         SetIsBlocked(IsBlocked(userProfile.userId));
+
+        UpdateFriendButton();
+    }
+
+    private void UpdateFriendButton()
+    {
+        if (FriendsController.i == null)
+        {
+            addFriendButton.gameObject.SetActive(false);
+            alreadyFriendsContainer.gameObject.SetActive(false);
+            requestSentButton.gameObject.SetActive(false);
+            return;
+        }
+
+        if (currentUserProfile == null)
+            return;
+
+        var status = FriendsController.i.GetUserStatus(currentUserProfile.userId);
+
+        switch (status.friendshipStatus)
+        {
+            case FriendsController.FriendshipStatus.NONE:
+                addFriendButton.gameObject.SetActive(true);
+                alreadyFriendsContainer.gameObject.SetActive(false);
+                requestSentButton.gameObject.SetActive(false);
+                break;
+            case FriendsController.FriendshipStatus.FRIEND:
+                addFriendButton.gameObject.SetActive(false);
+                alreadyFriendsContainer.gameObject.SetActive(true);
+                requestSentButton.gameObject.SetActive(false);
+                break;
+            case FriendsController.FriendshipStatus.REQUESTED_FROM:
+                addFriendButton.gameObject.SetActive(true);
+                alreadyFriendsContainer.gameObject.SetActive(false);
+                requestSentButton.gameObject.SetActive(false);
+                break;
+            case FriendsController.FriendshipStatus.REQUESTED_TO:
+                addFriendButton.gameObject.SetActive(false);
+                alreadyFriendsContainer.gameObject.SetActive(false);
+                requestSentButton.gameObject.SetActive(true);
+                break;
+        }
     }
 
     public void SetIsBlocked(bool isBlocked)

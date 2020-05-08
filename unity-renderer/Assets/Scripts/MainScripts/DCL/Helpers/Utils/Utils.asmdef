@@ -2,7 +2,8 @@
     "name": "Utils",
     "references": [
         "Unity.TextMeshPro",
-        "Configuration"
+        "Configuration",
+        "CoroutineHelpers"
     ],
     "optionalUnityReferences": [],
     "includePlatforms": [],

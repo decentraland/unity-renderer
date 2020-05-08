@@ -51,6 +51,12 @@ public class TaskbarHUDView : MonoBehaviour
         chatButton.onClick.AddListener(onToggle);
     }
 
+    internal void OnAddFriendsWindow(UnityAction onToggle)
+    {
+        friendsButton.gameObject.SetActive(true);
+        friendsButton.onClick.AddListener(onToggle);
+    }
+
     public void SetVisibility(bool visible)
     {
         gameObject.SetActive(visible);

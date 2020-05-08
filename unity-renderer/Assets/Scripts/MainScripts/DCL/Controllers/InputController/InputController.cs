@@ -10,6 +10,7 @@ public enum DCLAction_Trigger
     CameraChange = 100,
 
     ToggleNavMap = 110,
+    ToggleFriends = 120,
 
     OpenExpressions = 200,
     Expression_Wave = 201,
@@ -66,6 +67,9 @@ public class InputController : MonoBehaviour
                     InputProcessor.FromKey(action, KeyCode.M, modifiers: InputProcessor.Modifier.FocusNotInInput);
                     InputProcessor.FromKey(action, KeyCode.Tab, modifiers: InputProcessor.Modifier.FocusNotInInput);
                     InputProcessor.FromKey(action, KeyCode.Escape, modifiers: InputProcessor.Modifier.FocusNotInInput);
+                    break;
+                case DCLAction_Trigger.ToggleFriends:
+                    InputProcessor.FromKey(action, KeyCode.L, modifiers: InputProcessor.Modifier.FocusNotInInput);
                     break;
                 case DCLAction_Trigger.OpenExpressions:
                     InputProcessor.FromKey(action, KeyCode.B, modifiers: InputProcessor.Modifier.FocusNotInInput);

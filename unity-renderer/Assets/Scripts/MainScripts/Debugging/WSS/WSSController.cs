@@ -310,7 +310,7 @@ namespace DCL
                                 renderingController.ActivateRendering();
                                 break;
                             case "ShowNotification":
-                                HUDController.i.ShowNotificationFromJson(msg.payload);
+                                NotificationsController.i.ShowNotificationFromJson(msg.payload);
                                 break;
                             case "BuilderReady":
                                 sceneController.BuilderReady();
@@ -384,6 +384,18 @@ namespace DCL
                             case "ConfigureHUDElement":
                                 HUDController.i?.ConfigureHUDElement(msg.payload);
                                 break;
+                            case "InitializeFriends":
+                                FriendsController.i?.InitializeFriends(msg.payload);
+                                break;
+                            case "UpdateFriendshipStatus":
+                                FriendsController.i?.UpdateFriendshipStatus(msg.payload);
+                                break;
+                            case "UpdateUserStatus":
+                                FriendsController.i?.UpdateUserStatus(msg.payload);
+                                break;
+                            case "FriendNotFound":
+                                FriendsController.i?.FriendNotFound(msg.payload);
+                                break;
                             case "AddMessageToChatWindow":
                                 ChatController.i?.AddMessageToChatWindow(msg.payload);
                                 break;
@@ -400,7 +412,7 @@ namespace DCL
                                 HUDController.i.AirdroppingRequest(msg.payload);
                                 break;
                             case "ShowWelcomeNotification":
-                                HUDController.i.ShowWelcomeNotification();
+                                NotificationsController.i.ShowWelcomeNotification();
                                 break;
                             case "ShowTermsOfServices":
                                 HUDController.i.ShowTermsOfServices(msg.payload);
