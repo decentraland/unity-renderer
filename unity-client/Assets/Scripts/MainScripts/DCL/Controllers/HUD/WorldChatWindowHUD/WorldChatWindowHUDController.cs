@@ -1,9 +1,11 @@
 
 using DCL;
+
 using DCL.Interface;
 using System.Collections;
 using System.Linq;
 using UnityEngine;
+using UnityEngine.EventSystems;
 
 public class WorldChatWindowHUDController : IHUD
 {
@@ -135,13 +137,29 @@ public class WorldChatWindowHUDController : IHUD
 
     public bool OnPressReturn()
     {
-        if (view.chatHudView.inputField.isFocused || (Time.frameCount - invalidSubmitLastFrame) < 2)
+        if (EventSystem.current.currentSelectedGameObject != null &&
+            EventSystem.current.currentSelectedGameObject.GetComponent<TMPro.TMP_InputField>() != null)
             return false;
 
+        if ((Time.frameCount - invalidSubmitLastFrame) < 2)
+            return false;
+
+        ForceFocus();
+        return true;
+    }
+
+
+    public void ForceFocus(string setInputText = null)
+    {
         SetVisibility(true);
         view.chatHudView.FocusInputField();
         view.DeactivatePreview();
         InitialSceneReferences.i.mouseCatcher.UnlockCursor();
-        return true;
+
+        if (!string.IsNullOrEmpty(setInputText))
+        {
+            view.chatHudView.inputField.text = setInputText;
+            view.chatHudView.inputField.caretPosition = setInputText.Length;
+        }
     }
 }

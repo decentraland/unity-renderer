@@ -11,6 +11,27 @@ export const getProfile = (store: RootProfileState, userId: string): Profile | n
     ? (store.profiles.userInfo[userId].data as Profile)
     : null
 
+export const hasConnectedWeb3 = (store: RootProfileState, userId: string): boolean =>
+  store.profiles &&
+  store.profiles.userInfo &&
+  store.profiles.userInfo[userId] &&
+  store.profiles.userInfo[userId].status === 'ok'
+    ? !!store.profiles.userInfo[userId].hasConnectedWeb3
+    : false
+
+export const findProfileByName = (store: RootProfileState, userName: string): Profile | null =>
+  store.profiles && store.profiles.userInfo
+    ? Object.values(store.profiles.userInfo)
+        .filter(user => user.status === 'ok')
+        .find(user => user.data.name === userName)?.data
+    : null
+
+export const isAddedToCatalog = (store: RootProfileState, userId: string): boolean =>
+  store.profiles &&
+    store.profiles.userInfo &&
+    store.profiles.userInfo[userId] &&
+    store.profiles.userInfo[userId].status === 'ok' ? !!store.profiles.userInfo[userId].addedToCatalog : false
+
 export const getEthereumAddress = (store: RootProfileState, userId: string): string | undefined =>
   store.profiles &&
   store.profiles.userInfo &&

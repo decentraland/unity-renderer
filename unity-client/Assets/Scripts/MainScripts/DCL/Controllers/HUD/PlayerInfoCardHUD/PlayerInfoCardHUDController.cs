@@ -14,12 +14,39 @@ public class PlayerInfoCardHUDController : IHUD
     public PlayerInfoCardHUDController()
     {
         view = PlayerInfoCardHUDView.CreateView();
-        view.Initialize(() => { currentPlayerId.Set(null); }, ReportPlayer, BlockPlayer, UnblockPlayer);
+        view.Initialize(() => { currentPlayerId.Set(null); }, ReportPlayer, BlockPlayer, UnblockPlayer, AddPlayerAsFriend, CancelInvitation);
         currentPlayerId = Resources.Load<StringVariable>(CURRENT_PLAYER_ID);
         currentPlayerId.OnChange += OnCurrentPlayerIdChanged;
         OnCurrentPlayerIdChanged(currentPlayerId, null);
     }
 
+    private void AddPlayerAsFriend()
+    {
+        // Add fake action to avoid waiting for kernel
+        UserProfileController.i.AddUserProfileToCatalog(new UserProfileModel()
+        {
+            userId = currentPlayerId,
+            name = currentPlayerId
+        });
+        FriendsController.i.UpdateFriendshipStatus(new FriendsController.FriendshipUpdateStatusMessage()
+        {
+            userId = currentPlayerId,
+            action = FriendsController.FriendshipAction.REQUESTED_TO
+        });
+
+        WebInterface.UpdateFriendshipStatus(new FriendsController.FriendshipUpdateStatusMessage() { userId = currentPlayerId, action = FriendsController.FriendshipAction.REQUESTED_TO });
+    }
+    private void CancelInvitation()
+    {
+        // Add fake action to avoid waiting for kernel
+        FriendsController.i.UpdateFriendshipStatus(new FriendsController.FriendshipUpdateStatusMessage()
+        {
+            userId = currentPlayerId,
+            action = FriendsController.FriendshipAction.CANCELLED
+        });
+
+        WebInterface.UpdateFriendshipStatus(new FriendsController.FriendshipUpdateStatusMessage() { userId = currentPlayerId, action = FriendsController.FriendshipAction.CANCELLED });
+    }
 
     internal void OnCurrentPlayerIdChanged(string current, string previous)
     {

@@ -1,4 +1,3 @@
-﻿using System;
 using UnityEngine;
 
 public class NotificationHUDView : MonoBehaviour
@@ -8,9 +7,7 @@ public class NotificationHUDView : MonoBehaviour
     [SerializeField]
     private RectTransform notificationPanel;
 
-    public event System.Action<NotificationModel> OnNotificationDismissed;
-
-    private Canvas notificationCanvas;
+    public event System.Action<Notification> OnNotificationDismissedEvent;
 
     private const string VIEW_PATH = "NotificationHUD";
     private const string VIEW_OBJECT_NAME = "_NotificationHUD";
@@ -27,19 +24,40 @@ public class NotificationHUDView : MonoBehaviour
         gameObject.name = VIEW_OBJECT_NAME;
     }
 
-    public void ShowNotification(NotificationModel notificationModel)
+    public void ShowNotification(Notification notification, Notification.Model model = null)
     {
-        if (notificationModel == null) return;
+        if (notification == null)
+            return;
 
-        Notification notification = notificationFactory.CreateNotificationFromType(notificationModel.type, notificationPanel);
-        notification.OnNotificationDismissed += DismissNotification;
-        notification.Initialize(notificationModel);
+        notification.OnNotificationDismissed += OnNotificationDismissed;
+
+        if (model != null)
+            notification.Initialize(model);
     }
 
-    private void DismissNotification(Notification n)
+    public Notification ShowNotification(Notification.Model notificationModel)
     {
-        OnNotificationDismissed?.Invoke(n.notificationModel);
-        Destroy(n.gameObject);
+        if (notificationModel == null)
+            return null;
+
+        Notification notification = notificationFactory.CreateNotificationFromType(notificationModel.type, notificationPanel);
+        notificationModel.destroyOnFinish = true;
+        ShowNotification(notification, notificationModel);
+        return notification;
+    }
+
+    private void OnNotificationDismissed(Notification notification)
+    {
+        OnNotificationDismissedEvent?.Invoke(notification);
+
+        if (notification.model.destroyOnFinish)
+        {
+            Destroy(notification.gameObject);
+        }
+        else
+        {
+            notification.gameObject.SetActive(false);
+        }
     }
 
     public void SetActive(bool active)

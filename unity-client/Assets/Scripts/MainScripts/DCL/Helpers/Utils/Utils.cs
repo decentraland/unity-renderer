@@ -6,6 +6,7 @@ using UnityEngine;
 using UnityEngine.Assertions;
 using UnityEngine.EventSystems;
 using UnityEngine.Networking;
+using UnityEngine.UI;
 
 namespace DCL.Helpers
 {
@@ -104,6 +105,29 @@ namespace DCL.Helpers
             t.sizeDelta = Vector2.one * 100;
             t.ForceUpdateRectTransforms();
         }
+
+        public static void ForceUpdateLayout(this RectTransform rt)
+        {
+            if (!rt.gameObject.activeInHierarchy)
+                return;
+
+            CoroutineStarter.Start(ForceUpdateLayoutRoutine(rt));
+        }
+
+        private static IEnumerator ForceUpdateLayoutRoutine(RectTransform rt)
+        {
+            yield return null;
+
+            Utils.InverseTransformChildTraversal<RectTransform>(
+            (x) =>
+            {
+                LayoutRebuilder.ForceRebuildLayoutImmediate(x);
+            },
+            rt);
+
+            LayoutRebuilder.ForceRebuildLayoutImmediate(rt);
+        }
+
 
         public static void InverseTransformChildTraversal<TComponent>(Action<TComponent> action, Transform startTransform)
             where TComponent : Component
@@ -494,5 +518,17 @@ namespace DCL.Helpers
             Debug.DrawLine(bl2, br2, color, duration);
             Debug.DrawLine(tr2, br2, color, duration);
         }
+
+        public static string ToUpperFirst(this string value)
+        {
+            if (!string.IsNullOrEmpty(value))
+            {
+                var capital = char.ToUpper(value[0]);
+                value = capital + value.Substring(1);
+            }
+
+            return value;
+        }
+
     }
 }

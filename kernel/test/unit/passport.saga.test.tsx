@@ -29,8 +29,8 @@ const delayedProfile = delayed({ avatars: [profile] })
 describe('fetchProfile behavior', () => {
   it('completes once for more than one request of same user', () => {
     return expectSaga(profileSaga)
-      .put(profileSuccess('user|1', 'passport' as any))
-      .not.put(profileSuccess('user|1', 'passport' as any))
+      .put(profileSuccess('user|1', 'passport' as any, true))
+      .not.put(profileSuccess('user|1', 'passport' as any, true))
       .dispatch(profileRequest('user|1'))
       .dispatch(profileRequest('user|1'))
       .dispatch(profileRequest('user|1'))
@@ -47,8 +47,8 @@ describe('fetchProfile behavior', () => {
 
   it('runs one request for each user', () => {
     return expectSaga(profileSaga)
-      .put(profileSuccess('user|1', 'passport1' as any))
-      .put(profileSuccess('user|2', 'passport2' as any))
+      .put(profileSuccess('user|1', 'passport1' as any, true))
+      .put(profileSuccess('user|2', 'passport2' as any, true))
       .not.put(profileSuccess('user|1', 'passport1' as any))
       .not.put(profileSuccess('user|2', 'passport2' as any))
       .dispatch(profileRequest('user|1'))
@@ -73,8 +73,8 @@ describe('fetchProfile behavior', () => {
     const profile1 = { ...profile }
     const profile2 = { ...profile }
     return expectSaga(profileSaga)
-      .put(profileSuccess('user|1', 'passport1' as any))
-      .put(profileSuccess('user|2', 'passport2' as any))
+      .put(profileSuccess('user|1', 'passport1' as any, true))
+      .put(profileSuccess('user|2', 'passport2' as any, true))
       .dispatch(profileRequest('user|1'))
       .dispatch(profileRequest('user|2'))
       .provide([
@@ -103,7 +103,7 @@ describe('fetchProfile behavior', () => {
   it('ignores inventory for another user', () => {
     const profile1 = { ...profile, ethAddress: 'eth1' }
     return expectSaga(handleFetchProfile, profileRequest('user|1'))
-      .put(profileSuccess('user|1', 'passport1' as any))
+      .put(profileSuccess('user|1', 'passport1' as any, true))
       .dispatch(inventorySuccess('user|2', ['dcl://base-exclusive/wearable2/2']))
       .dispatch(inventorySuccess('user|1', ['dcl://base-exclusive/wearable1/1']))
       .provide([

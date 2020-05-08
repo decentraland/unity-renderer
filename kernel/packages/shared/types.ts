@@ -1,4 +1,4 @@
-import { Vector3Component } from '../atomicHelpers/landHelpers'
+import { Vector3Component, Vector2Component } from '../atomicHelpers/landHelpers'
 import { QueryType } from 'decentraland-ecs/src/decentraland/PhysicsCast'
 
 export { Avatar, Profile, ColorString, WearableId, Wearable } from './profiles/types'
@@ -388,7 +388,8 @@ export enum HUDElementID {
   TERMS_OF_SERVICE = 9,
   WORLD_CHAT_WINDOW = 10,
   TASKBAR = 11,
-  MESSAGE_OF_THE_DAY = 12
+  MESSAGE_OF_THE_DAY = 12,
+  FRIENDS = 13
 }
 
 export type HUDConfiguration = {
@@ -430,4 +431,44 @@ export type ChatMessage = {
   recipient?: string | undefined
   timestamp: number
   body: string
+}
+
+export type FriendsInitializationMessage = {
+  currentFriends: string[]
+  requestedTo: string[]
+  requestedFrom: string[]
+}
+
+export enum FriendshipAction {
+  NONE,
+  APPROVED,
+  REJECTED,
+  CANCELED,
+  REQUESTED_FROM,
+  REQUESTED_TO,
+  DELETED
+}
+
+export type FriendshipUpdateStatusMessage = {
+  userId: string
+  action: FriendshipAction
+}
+
+export enum PresenceStatus {
+  NONE,
+  OFFLINE,
+  ONLINE,
+  UNAVAILABLE
+}
+
+type Realm = {
+  layer: string
+  serverName: string
+}
+
+export type UpdateUserStatusMessage = {
+  userId: string
+  realm: Realm | undefined
+  position: Vector2Component | undefined
+  presence: PresenceStatus
 }

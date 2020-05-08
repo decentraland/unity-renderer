@@ -7,7 +7,7 @@ import { persistCurrentUser, sendPublicChatMessage } from 'shared/comms'
 import { AvatarMessageType } from 'shared/comms/interface/types'
 import { avatarMessageObservable, getUserProfile } from 'shared/comms/peers'
 import { providerFuture } from 'shared/ethereum/provider'
-import { getProfile } from 'shared/profiles/selectors'
+import { getProfile, hasConnectedWeb3 } from 'shared/profiles/selectors'
 import { TeleportController } from 'shared/world/TeleportController'
 import { reportScenesAroundParcel } from 'shared/atlas/actions'
 import { gridToWorld } from '../atomicHelpers/parcelScenePositions'
@@ -19,7 +19,8 @@ import {
   RESET_TUTORIAL,
   SCENE_DEBUG_PANEL,
   SHOW_FPS_COUNTER,
-  tutorialEnabled
+  tutorialEnabled,
+  getServerConfigurations
 } from '../config'
 import { Quaternion, ReadOnlyQuaternion, ReadOnlyVector3, Vector3 } from '../decentraland-ecs/src/decentraland/math'
 import { IEventNames, IEvents, ProfileForRenderer, MinimapSceneInfo } from '../decentraland-ecs/src/decentraland/Types'
@@ -73,7 +74,11 @@ import {
   SetEntityParentPayload,
   UpdateEntityComponentPayload,
   ChatMessage,
-  HUDElementID
+  HUDElementID,
+  FriendsInitializationMessage,
+  FriendshipUpdateStatusMessage,
+  UpdateUserStatusMessage,
+  FriendshipAction
 } from 'shared/types'
 import { ParcelSceneAPI } from 'shared/world/ParcelSceneAPI'
 import {
@@ -90,7 +95,8 @@ import { worldRunningObservable } from 'shared/world/worldState'
 import { profileToRendererFormat } from 'shared/profiles/transformations/profileToRendererFormat'
 import { StoreContainer } from 'shared/store/rootTypes'
 import { ILandToLoadableParcelScene, ILandToLoadableParcelSceneUpdate } from 'shared/selectors'
-import { sendMessage } from 'shared/chat/actions'
+import { sendMessage, updateUserData, updateFriendship } from 'shared/chat/actions'
+import { ProfileAsPromise } from '../shared/profiles/ProfileAsPromise'
 
 declare const globalThis: UnityInterfaceContainer &
   BrowserInterfaceContainer &
@@ -340,11 +346,77 @@ const browserInterface = {
 
   SendChatMessage(data: { message: ChatMessage }) {
     globalThis.globalStore.dispatch(sendMessage(data.message))
+  },
+  async UpdateFriendshipStatus(message: FriendshipUpdateStatusMessage) {
+    let { userId, action } = message
+
+    // TODO - fix this hack: search should come from another message and method should only exec correct updates (userId, action) - moliva - 01/05/2020
+    let found = false
+    if (action === FriendshipAction.REQUESTED_TO) {
+      await ProfileAsPromise(userId) // ensure profile
+      found = hasConnectedWeb3(globalThis.globalStore.getState(), userId)
+    }
+
+    if (!found) {
+      // if user profile was not found on server -> no connected web3, check if it's a claimed name
+      const address = await fetchOwner(userId)
+      if (address) {
+        // if an address was found for the name -> set as user id & add that instead
+        userId = address
+        found = true
+      }
+    }
+
+    if (action === FriendshipAction.REQUESTED_TO && !found) {
+      // if we still haven't the user by now (meaning the user has never logged and doesn't have a profile in the dao, or the user id is for a non wallet user or name is not correct) -> fail
+      // tslint:disable-next-line
+      unityInterface.FriendNotFound(userId)
+      return
+    }
+
+    globalThis.globalStore.dispatch(updateUserData(userId.toLowerCase(), toSocialId(userId)))
+    globalThis.globalStore.dispatch(updateFriendship(action, userId.toLowerCase(), false))
   }
 }
-globalThis.browserInterface = browserInterface
+globalThis.browserInterface2 = browserInterface
 type BrowserInterfaceContainer = {
-  browserInterface: typeof browserInterface
+  browserInterface2: typeof browserInterface
+}
+
+async function fetchOwner(name: string) {
+  const query = `
+    query GetOwner($name: String!) {
+      nfts(first: 1, where: { searchText: $name }) {
+        owner{
+          address
+        }
+      }
+    }`
+
+  const variables = { name: name.toLowerCase() }
+
+  try {
+    const resp = await queryGraph(query, variables)
+    return resp.data.nfts.length === 1 ? (resp.data.nfts[0].owner.address as string) : null
+  } catch (error) {
+    defaultLogger.error(`Error querying graph`, error)
+    throw error
+  }
+}
+
+async function queryGraph(query: string, variables: any) {
+  const url = 'https://api.thegraph.com/subgraphs/name/decentraland/marketplace'
+  const opts = {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ query, variables })
+  }
+  const res = await fetch(url, opts)
+  return res.json()
+}
+
+function toSocialId(userId: string) {
+  return `@${userId.toLowerCase()}:${getServerConfigurations().synapseHost}`
 }
 
 export function setLoadingScreenVisible(shouldShow: boolean) {
@@ -513,6 +585,18 @@ export const unityInterface = {
   },
   AddMessageToChatWindow(message: ChatMessage) {
     gameInstance.SendMessage('SceneController', 'AddMessageToChatWindow', JSON.stringify(message))
+  },
+  InitializeFriends(initializationMessage: FriendsInitializationMessage) {
+    gameInstance.SendMessage('SceneController', 'InitializeFriends', JSON.stringify(initializationMessage))
+  },
+  UpdateFriendshipStatus(updateMessage: FriendshipUpdateStatusMessage) {
+    gameInstance.SendMessage('SceneController', 'UpdateFriendshipStatus', JSON.stringify(updateMessage))
+  },
+  UpdateUserStatus(status: UpdateUserStatusMessage) {
+    gameInstance.SendMessage('SceneController', 'UpdateUserStatus', JSON.stringify(status))
+  },
+  FriendNotFound(queryString: string) {
+    gameInstance.SendMessage('SceneController', 'FriendNotFound', JSON.stringify(queryString))
   },
 
   // *********************************************************************************

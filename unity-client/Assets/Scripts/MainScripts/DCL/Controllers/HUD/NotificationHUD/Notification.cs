@@ -1,15 +1,26 @@
-using System;
 using System.Collections;
-using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
-using UnityEngine.Serialization;
 using UnityEngine.UI;
 
 public class Notification : MonoBehaviour
 {
+    public class Model
+    {
+        public NotificationFactory.Type type;
+        public string message;
+        public string buttonMessage;
+        public float timer;
+        public string scene;
+        public System.Action callback;
+        public string externalCallbackID;
+
+        public string groupID;
+        public bool destroyOnFinish = false;
+    }
+
     [SerializeField]
-    private TextMeshProUGUI messageLabel;
+    internal TextMeshProUGUI messageLabel;
 
     [SerializeField]
     private Button actionButton;
@@ -17,56 +28,75 @@ public class Notification : MonoBehaviour
     [SerializeField]
     private TextMeshProUGUI actionButtonLabel;
 
-    public NotificationModel notificationModel { get; private set; }
+    public Notification.Model model { get; private set; } = new Model();
 
     public event System.Action<Notification> OnNotificationDismissed;
 
+    Coroutine timerCoroutine;
+
     private void OnEnable()
     {
-        actionButton.onClick.AddListener(Dismiss);
+        if (actionButton != null)
+            actionButton.onClick.AddListener(Dismiss);
     }
 
     private void OnDisable()
     {
-        actionButton.onClick.RemoveAllListeners();
+        if (actionButton != null)
+            actionButton.onClick.RemoveAllListeners();
+
+        StopTimer();
     }
 
-    public void Initialize(NotificationModel model)
+    private void OnDestroy()
     {
-        notificationModel = model;
+        StopTimer();
+    }
 
-        if (!string.IsNullOrEmpty(notificationModel.message))
+
+    public void Initialize(Notification.Model model)
+    {
+        gameObject.SetActive(true);
+        this.model = model;
+
+        Debug.Log("Notification Initialize... destroy on finish: " + model.destroyOnFinish);
+
+        if (!string.IsNullOrEmpty(this.model.message))
         {
-            messageLabel.text = notificationModel.message;
+            messageLabel.text = this.model.message;
         }
 
-        if (!string.IsNullOrEmpty(notificationModel.buttonMessage))
+        if (!string.IsNullOrEmpty(this.model.buttonMessage))
         {
-            actionButtonLabel.text = notificationModel.buttonMessage;
+            actionButtonLabel.text = this.model.buttonMessage;
         }
 
-        if (notificationModel.timer > 0)
+        if (this.model.timer > 0)
         {
-            StartCoroutine(TimerCoroutine(notificationModel.timer));
+            StopTimer();
+            timerCoroutine = CoroutineStarter.Start(TimerCoroutine(this.model.timer));
         }
 
-        if (!string.IsNullOrEmpty(notificationModel.scene))
+        if (!string.IsNullOrEmpty(this.model.scene))
         {
             string sceneID = CommonScriptableObjects.sceneID ?? string.Empty;
             CurrentSceneUpdated(sceneID, string.Empty);
         }
 
-        if (notificationModel.callback != null)
+        if (actionButton != null)
         {
-            actionButton.onClick.AddListener(notificationModel.callback.Invoke);
-        }
-
-        if (!string.IsNullOrEmpty(notificationModel.externalCallbackID))
-        {
-            actionButton.onClick.AddListener(() =>
+            if (this.model.callback != null)
             {
-                // TODO: send message to kernel with callbackID
-            });
+                actionButton.onClick.AddListener(this.model.callback.Invoke);
+            }
+
+            if (!string.IsNullOrEmpty(this.model.externalCallbackID))
+            {
+                actionButton.onClick.AddListener(() =>
+                {
+                    // TODO: send message to kernel with callbackID
+                });
+            }
         }
     }
 
@@ -78,15 +108,26 @@ public class Notification : MonoBehaviour
 
     private void CurrentSceneUpdated(string current, string previous)
     {
-        if (string.CompareOrdinal(current, notificationModel.scene) != 0)
+        if (string.CompareOrdinal(current, model.scene) != 0)
         {
             Dismiss();
         }
     }
 
-    private void Dismiss()
+    public void Dismiss()
     {
-        StopAllCoroutines();
-        OnNotificationDismissed?.Invoke(this);
+        StopTimer();
+
+        if (this != null)
+            OnNotificationDismissed?.Invoke(this);
+    }
+
+    private void StopTimer()
+    {
+        if (timerCoroutine != null)
+        {
+            CoroutineStarter.Stop(timerCoroutine);
+            timerCoroutine = null;
+        }
     }
 }

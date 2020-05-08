@@ -77,5 +77,6 @@ namespace DCL.Configuration
         public static LayerMask physicsCastLayerMaskWithoutCharacter = (physicsCastLayerMask | (1 << defaultLayer))
                                                                         & ~(1 << characterLayer)
                                                                         & ~(1 << characterOnlyLayer);
+        public static int friendsHUDPlayerMenu = LayerMask.NameToLayer("FriendsHUDPlayerMenu");
     }
 }
