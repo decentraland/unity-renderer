@@ -30,7 +30,7 @@ import { isAddedToCatalog } from 'shared/profiles/selectors'
 
 declare const globalThis: StoreContainer & { sendPrivateMessage: (userId: string, message: string) => void }
 
-const DEBUG = true
+const DEBUG = false
 
 const logger = createLogger('chat: ')
 
