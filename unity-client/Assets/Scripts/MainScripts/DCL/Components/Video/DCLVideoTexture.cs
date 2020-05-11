@@ -162,7 +162,7 @@ namespace DCL.Components
 
             if (isVisible)
             {
-                const float maxDistanceBlockForSound = 2;
+                const float maxDistanceBlockForSound = 6;
                 float sqrParcelDistance = DCL.Configuration.ParcelSettings.PARCEL_SIZE * DCL.Configuration.ParcelSettings.PARCEL_SIZE * 2.25f;
                 distanceVolumeModifier = 1 - Mathf.Clamp01(Mathf.FloorToInt(minDistance / sqrParcelDistance) / maxDistanceBlockForSound);
             }
