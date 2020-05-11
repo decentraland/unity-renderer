@@ -94,6 +94,16 @@ namespace DCL.Components.Video.Plugin
                 case VideoState.PLAYING:
                     if (shouldBePlaying && visible)
                     {
+                        int width = WebVideoPlayerGetWidth(videoPlayerId);
+                        int height = WebVideoPlayerGetHeight(videoPlayerId);
+                        if (texture.width != width || texture.height != height)
+                        {
+                            if (texture.Resize(width, height))
+                            {
+                                texture.Apply();
+                                textureNativePtr = texture.GetNativeTexturePtr();
+                            }
+                        }
                         WebVideoPlayerTextureUpdate(videoPlayerId, textureNativePtr, isWebGL1);
                     }
                     break;
