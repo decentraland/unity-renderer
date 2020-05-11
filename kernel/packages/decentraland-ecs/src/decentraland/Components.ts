@@ -473,7 +473,8 @@ export class Font extends ObservableComponent {
 export enum Fonts {
   SanFrancisco = 'builtin:SF-UI-Text-Regular SDF',
   SanFrancisco_Heavy = 'builtin:SF-UI-Text-Heavy SDF',
-  SanFrancisco_Semibold = 'builtin:SF-UI-Text-Semibold SDF'
+  SanFrancisco_Semibold = 'builtin:SF-UI-Text-Semibold SDF',
+  LiberationSans = 'builtin:LiberationSans SDF'
 }
 
 /**
