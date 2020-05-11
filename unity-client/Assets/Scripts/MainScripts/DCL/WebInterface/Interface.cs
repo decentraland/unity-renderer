@@ -775,7 +775,7 @@ namespace DCL.Interface
             });
         }
 
-        public static void SendUnlockPlayer(string userId)
+        public static void SendUnblockPlayer(string userId)
         {
             SendMessage("UnblockPlayer", new SendUnblockPlayerPayload()
             {

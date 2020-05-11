@@ -100,7 +100,7 @@ public class FriendsHUDController : IHUD
         model.status = newStatus.presence;
         model.coords = newStatus.position;
 
-        if(newStatus.realm != null)
+        if (newStatus.realm != null)
             model.realm = $"{newStatus.realm.serverName.ToUpperFirst()} {newStatus.realm.layer.ToUpperFirst()}";
         else
             model.realm = string.Empty;
@@ -196,7 +196,10 @@ public class FriendsHUDController : IHUD
 
     private void Entry_OnBlock(FriendEntryBase entry)
     {
-        WebInterface.SendBlockPlayer(entry.userId);
+        if (entry.model.blocked)
+            WebInterface.SendBlockPlayer(entry.userId);
+        else
+            WebInterface.SendUnblockPlayer(entry.userId);
     }
 
     private void Entry_OnJumpIn(FriendEntry entry)
