@@ -62,6 +62,7 @@ export type EntityActionType =
   | 'ComponentUpdated'
   | 'Query'
   | 'InitMessagesFinished'
+  | 'OpenExternalUrl'
 
 export type QueryPayload = { queryId: string; payload: RayQuery }
 
@@ -389,7 +390,8 @@ export enum HUDElementID {
   WORLD_CHAT_WINDOW = 10,
   TASKBAR = 11,
   MESSAGE_OF_THE_DAY = 12,
-  FRIENDS = 13
+  FRIENDS = 13,
+  OPEN_EXTERNAL_URL_PROMPT = 14
 }
 
 export type HUDConfiguration = {

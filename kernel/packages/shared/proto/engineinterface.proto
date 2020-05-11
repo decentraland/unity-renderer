@@ -183,6 +183,7 @@ message PB_SendSceneMessage {
         PB_ComponentUpdated componentUpdated = 11;
         PB_Query query = 12;
         google.protobuf.Empty sceneStarted = 13;
+        PB_OpenExternalUrl openExternalUrl = 14;
     }
 }
 
@@ -713,4 +714,8 @@ message PB_UITextShape {
   float paddingRight = 31;
   float paddingBottom = 32;
   float paddingLeft = 33;
+}
+
+message PB_OpenExternalUrl {
+    string url = 1;
 }

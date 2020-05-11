@@ -24,6 +24,9 @@ export type DecentralandInterface = {
   /** error function */
   error(message: string, data?: any): void
 
+  /** open external url */
+  openExternalUrl(url: string): void
+
   // LIFECYCLE
 
   /** update tick */

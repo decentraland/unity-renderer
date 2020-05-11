@@ -91,6 +91,7 @@ namespace DCL
         private int lastSortFrame = 0;
 
         public event Action OnSortScenes;
+        public event Action<ParcelScene, string> OnOpenExternalUrlRequest;
 
         private Vector2Int currentGridSceneCoordinate = new Vector2Int(EnvironmentSettings.MORDOR_SCALAR, EnvironmentSettings.MORDOR_SCALAR);
         private Vector2Int sortAuxiliaryVector = new Vector2Int(EnvironmentSettings.MORDOR_SCALAR, EnvironmentSettings.MORDOR_SCALAR);
@@ -707,6 +708,9 @@ namespace DCL
                         break;
                     case MessagingTypes.QUERY:
                         ParseQuery(payload.Query.QueryId, payload.Query.Payload, scene.sceneData.id);
+                        break;
+                    case MessagingTypes.OPEN_EXTERNAL_URL:
+                        OnOpenExternalUrlRequest?.Invoke(scene, payload.OpenExternalUrl.Url);
                         break;
                     default:
                         Debug.LogError($"Unknown method {method}");

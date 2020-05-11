@@ -83,6 +83,7 @@ initializeUnity(container)
     i.ConfigureHUDElement( HUDElementID.NOTIFICATION, { active: true, visible: false })
     i.ConfigureHUDElement( HUDElementID.SETTINGS, { active: true, visible: false })
     i.ConfigureHUDElement( HUDElementID.AIRDROPPING, { active: true, visible: true })
+    i.ConfigureHUDElement(HUDElementID.OPEN_EXTERNAL_URL_PROMPT, { active: true, visible: true })
 
     global.globalStore.dispatch(signalRendererInitialized())
 

@@ -49,7 +49,8 @@ import {
   PB_SendSceneMessage,
   PB_SetEntityParent,
   PB_UpdateEntityComponent,
-  PB_Vector3
+  PB_Vector3,
+  PB_OpenExternalUrl
 } from '../shared/proto/engineinterface_pb'
 import { Session } from 'shared/session'
 import { getPerformanceInfo } from 'shared/session/getPerformanceInfo'
@@ -678,6 +679,7 @@ const direction: PB_Vector3 = new PB_Vector3()
 const componentCreated: PB_ComponentCreated = new PB_ComponentCreated()
 const componentDisposed: PB_ComponentDisposed = new PB_ComponentDisposed()
 const componentUpdated: PB_ComponentUpdated = new PB_ComponentUpdated()
+const openExternalUrl: PB_OpenExternalUrl = new PB_OpenExternalUrl()
 
 class UnityScene<T> implements ParcelSceneAPI {
   eventDispatcher = new EventDispatcher()
@@ -759,6 +761,9 @@ class UnityScene<T> implements ParcelSceneAPI {
       case 'InitMessagesFinished':
         message.setScenestarted(new Empty()) // don't know if this is necessary
         break
+      case 'OpenExternalUrl':
+        message.setOpenexternalurl(this.encodeOpenExternalUrl(payload))
+        break
     }
 
     let arrayBuffer: Uint8Array = message.serializeBinary()
@@ -837,6 +842,11 @@ class UnityScene<T> implements ParcelSceneAPI {
     componentUpdated.setId(componentUpdatedPayload.id)
     componentUpdated.setJson(componentUpdatedPayload.json)
     return componentUpdated
+  }
+
+  encodeOpenExternalUrl(url: any): PB_OpenExternalUrl {
+    openExternalUrl.setUrl(url)
+    return openExternalUrl
   }
 }
 
