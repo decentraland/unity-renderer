@@ -102,7 +102,7 @@ namespace Tests
             yield return null;
 
             float timeout = 0;
-            while (timeout < 10)
+            while (timeout < 15)
             {
                 timeout += Time.deltaTime;
 
@@ -128,7 +128,7 @@ namespace Tests
                 yield return null;
             }
 
-            Assert.Less(timeout, 10.1f, "Timeout! MaterialTransitionController never appeared?");
+            Assert.Less(timeout, 15.1f, "Timeout! MaterialTransitionController never appeared?");
 
             yield return null;
         }

@@ -287,6 +287,8 @@ namespace Tests
             string platformEntityId = "movingPlatform";
             TestHelpers.RemoveSceneEntity(scene, platformEntityId);
             yield return null;
+            yield return null;
+            yield return null;
 
             Assert.IsNull(DCLCharacterController.i.transform.parent, "The character shouldn't be parented as there's no platform anymore");
         }

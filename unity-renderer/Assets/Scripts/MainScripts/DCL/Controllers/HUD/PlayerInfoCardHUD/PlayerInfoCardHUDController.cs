@@ -90,7 +90,7 @@ public class PlayerInfoCardHUDController : IHUD
         if (!ownUserProfile.blocked.Contains(currentUserProfile.userId)) return;
         ownUserProfile.blocked.Remove(currentUserProfile.userId);
         view.SetIsBlocked(false);
-        WebInterface.SendUnlockPlayer(currentUserProfile.userId);
+        WebInterface.SendUnblockPlayer(currentUserProfile.userId);
     }
 
     private void ReportPlayer()
