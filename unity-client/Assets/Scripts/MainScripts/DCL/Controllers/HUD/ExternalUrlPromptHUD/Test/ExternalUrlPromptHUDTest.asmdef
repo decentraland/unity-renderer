@@ -1,0 +1,19 @@
+{
+    "name": "ExternalUrlPromptHUDTest",
+    "references": [
+        "GUID:ef84d7ce90ba34f07be26ace428e9bc8",
+        "GUID:3f42100c70ff7406d940b118c8c53db4",
+        "GUID:e555144732b726c4cba5b0f6337fea75"
+    ],
+    "optionalUnityReferences": [
+        "TestAssemblies"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": []
+}
