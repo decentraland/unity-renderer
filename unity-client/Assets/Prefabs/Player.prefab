@@ -133,6 +133,15 @@ MonoBehaviour:
   raiseHandExpression:
     inputAction: {fileID: 11400000, guid: 3cb1c12de0cbd4dc2a6fde577ed28151, type: 2}
     id: raiseHand
+  clapExpression:
+    inputAction: {fileID: 11400000, guid: 084674dc6d216411e9b3abd7832994d6, type: 2}
+    id: clap
+  throwMoneyExpression:
+    inputAction: {fileID: 11400000, guid: e5071e75b2b514d83a3b86c3d202f8df, type: 2}
+    id: money
+  sendKissExpression:
+    inputAction: {fileID: 11400000, guid: f6b5c5a34be494aa69bb57ea0b658d72, type: 2}
+    id: kiss
 --- !u!1 &326638024485685081
 GameObject:
   m_ObjectHideFlags: 0
@@ -297,17 +306,6 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
-    - target: {fileID: 5175052615018462647, guid: ac14ae4eed4f6284ab80fc0881bc3f70,
-        type: 3}
-      propertyPath: triggerTimeActions.Array.size
-      value: 8
-      objectReference: {fileID: 0}
-    - target: {fileID: 5175052615018462647, guid: ac14ae4eed4f6284ab80fc0881bc3f70,
-        type: 3}
-      propertyPath: triggerTimeActions.Array.data[7]
-      value: 
-      objectReference: {fileID: 11400000, guid: dad35a55c12b3d74997c6f47a472fa84,
-        type: 2}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: ac14ae4eed4f6284ab80fc0881bc3f70, type: 3}
 --- !u!4 &4852920391666169109 stripped
