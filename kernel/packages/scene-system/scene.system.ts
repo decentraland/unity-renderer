@@ -14,7 +14,7 @@ import {
   QueryPayload,
   LoadableParcelScene
 } from 'shared/types'
-import { DecentralandInterface, IEvents, InputEventResult } from 'decentraland-ecs/src/decentraland/Types'
+import { DecentralandInterface, IEvents } from 'decentraland-ecs/src/decentraland/Types'
 import { defaultLogger } from 'shared/logger'
 
 import { customEval, getES5Context } from './sdk/sandbox'
@@ -233,7 +233,7 @@ export default class GamekitScene extends Script {
               payload: url
             })
           } else {
-            this.error('openExternalUrl cant only be used inside a pointerEvent')
+            this.error('openExternalUrl can only be used inside a pointerEvent')
           }
         },
 
@@ -605,10 +605,7 @@ export default class GamekitScene extends Script {
   private isPointerEvent(event: any): boolean {
     switch (event.type) {
       case 'uuidEvent':
-        if (event.data.payload as InputEventResult) {
-          return true
-        }
-        break
+        return event.data.payload.buttonId !== undefined
     }
     return false
   }
