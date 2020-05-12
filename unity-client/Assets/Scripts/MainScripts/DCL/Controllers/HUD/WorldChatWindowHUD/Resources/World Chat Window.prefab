@@ -1052,6 +1052,7 @@ MonoBehaviour:
   worldFilterButton: {fileID: 2884296052892011786}
   pmFilterButton: {fileID: 3805095587391845107}
   closeButton: {fileID: 4184198625477665569}
+  inputField: {fileID: 6629872777101926334}
   chatHudView: {fileID: 3847869198944684466}
   group: {fileID: 6037274476719757411}
 --- !u!225 &6037274476719757411
@@ -1414,5 +1415,17 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: c3b34a804476c5243872ffafcab770d3, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!114 &6629872777101926334 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 6940267282881019307, guid: 486cb7198dd7515498189de8c605a1a3,
+    type: 3}
+  m_PrefabInstance: {fileID: 4346750413489447445}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2da0c512f12947e489f739169773d7ca, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 

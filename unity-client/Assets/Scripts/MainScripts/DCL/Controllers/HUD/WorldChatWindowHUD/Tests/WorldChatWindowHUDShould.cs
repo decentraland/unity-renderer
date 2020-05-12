@@ -5,6 +5,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine.TestTools;
+using UnityEngine;
 
 class ChatController_Mock : IChatController
 {
@@ -19,6 +20,17 @@ class ChatController_Mock : IChatController
     {
         entries.Add(chatMessage);
         OnAddMessage?.Invoke(chatMessage);
+    }
+
+    public void AddMessageToChatWindow(string jsonMessage)
+    {
+        ChatMessage message = JsonUtility.FromJson<ChatMessage>(jsonMessage);
+
+        if (message == null)
+            return;
+
+        entries.Add(message);
+        OnAddMessage?.Invoke(message);
     }
 }
 class MouseCatcher_Mock : IMouseCatcher
@@ -235,7 +247,6 @@ public class WorldChatWindowHUDShould : TestsBase
         controller.resetInputFieldOnSubmit = false;
         controller.SendChatMessage("test message");
         Assert.IsTrue(messageWasSent);
-        Assert.AreEqual("", controller.view.chatHudView.inputField.text);
         WebInterface.OnMessageFromEngine -= messageCallback;
         yield break;
     }
@@ -247,5 +258,72 @@ public class WorldChatWindowHUDShould : TestsBase
         Assert.AreEqual(true, controller.view.gameObject.activeSelf);
         controller.view.closeButton.onClick.Invoke();
         Assert.AreEqual(false, controller.view.gameObject.activeSelf);
+    }
+
+    [UnityTest]
+    public IEnumerator KeepWhisperCommandAfterUsage()
+    {
+        string baseCommand = "/whisper testUser ";
+
+        controller.resetInputFieldOnSubmit = false;
+
+        controller.view.chatHudView.inputField.text = baseCommand + "testMessage";
+        yield return null;
+
+        controller.view.chatHudView.inputField.onSubmit.Invoke(controller.view.chatHudView.inputField.text);
+
+        yield return null;
+
+        Assert.AreEqual(baseCommand, controller.view.chatHudView.inputField.text);
+
+        baseCommand = "/w testUser ";
+
+        controller.view.chatHudView.inputField.text = baseCommand + "testMessage";
+        yield return null;
+
+        controller.view.chatHudView.inputField.onSubmit.Invoke(controller.view.chatHudView.inputField.text);
+
+        yield return null;
+
+        Assert.AreEqual(baseCommand, controller.view.chatHudView.inputField.text);
+        yield break;
+    }
+
+    [UnityTest]
+    public IEnumerator WhisperLastPrivateMessageSenderOnReply()
+    {
+        UserProfile ownProfile = UserProfile.GetOwnUserProfile();
+
+        var model = new UserProfileModel()
+        {
+            userId = "testUserId",
+            name = "testUserName",
+        };
+
+        UserProfileController.i.AddUserProfileToCatalog(model);
+
+        var msg = new ChatMessage()
+        {
+            body = "test message",
+            sender = model.userId,
+            recipient = ownProfile.userId,
+            messageType = ChatMessage.Type.PRIVATE
+        };
+
+        yield return null;
+
+        chatController.AddMessageToChatWindow(JsonUtility.ToJson(msg));
+
+        yield return null;
+
+        Assert.AreEqual(controller.lastPrivateMessageReceivedSender, model.name);
+
+        controller.view.chatHudView.inputField.text = "/r ";
+
+        Assert.AreEqual($"/w {model.name} ", controller.view.chatHudView.inputField.text);
+
+        yield return null;
+
+        yield break;
     }
 }
