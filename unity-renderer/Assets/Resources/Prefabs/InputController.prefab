@@ -51,6 +51,10 @@ MonoBehaviour:
   - {fileID: 11400000, guid: 4ca7937ff0102de4cb93d6bfd22d6841, type: 2}
   - {fileID: 11400000, guid: fc656e28ef52546e6a82e7ae7f5570b5, type: 2}
   - {fileID: 11400000, guid: 3cb1c12de0cbd4dc2a6fde577ed28151, type: 2}
+  - {fileID: 11400000, guid: dad35a55c12b3d74997c6f47a472fa84, type: 2}
+  - {fileID: 11400000, guid: 084674dc6d216411e9b3abd7832994d6, type: 2}
+  - {fileID: 11400000, guid: e5071e75b2b514d83a3b86c3d202f8df, type: 2}
+  - {fileID: 11400000, guid: f6b5c5a34be494aa69bb57ea0b658d72, type: 2}
   holdActions:
   - {fileID: 11400000, guid: 8eddef1fc072ec845aeb62f5e1041b52, type: 2}
   - {fileID: 11400000, guid: 0cfb8d150b7d6934d856665cf924d01d, type: 2}

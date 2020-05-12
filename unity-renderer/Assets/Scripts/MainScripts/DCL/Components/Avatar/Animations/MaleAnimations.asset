@@ -31,3 +31,9 @@ MonoBehaviour:
     id: robot
   - clip: {fileID: 7400000, guid: e936971cbb5b74a22b2ced2c8185dd8d, type: 2}
     id: raiseHand
+  - clip: {fileID: 7400000, guid: 49d9b4849d6d849f4a75d0df1257548e, type: 2}
+    id: clap
+  - clip: {fileID: 7400000, guid: b58e9d14f849d4a0495e2f69ebcb53ce, type: 2}
+    id: money
+  - clip: {fileID: 7400000, guid: f62348884a81444b391ee2b6be68bd05, type: 2}
+    id: kiss
