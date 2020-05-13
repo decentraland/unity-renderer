@@ -14,6 +14,7 @@ GameObject:
   - component: {fileID: 7336000302445337154}
   - component: {fileID: 1072996126000492067}
   - component: {fileID: -808164953336239873}
+  - component: {fileID: -2281352007695473291}
   m_Layer: 5
   m_Name: Chat Entry
   m_TagString: Untagged
@@ -129,11 +130,26 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 615ed236a52062f49a259cf7d86e52e1, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  timeToFade: 10
+  fadeDuration: 5
   username: {fileID: 4711086080818900299}
   body: {fileID: 8068759164719752186}
   worldMessageColor: {r: 1, g: 1, b: 1, a: 1}
   privateMessageColor: {r: 0.38431373, g: 1, b: 0.40784314, a: 1}
   systemColor: {r: 0.4669811, g: 1, b: 0.9846577, a: 1}
+  group: {fileID: -2281352007695473291}
+--- !u!225 &-2281352007695473291
+CanvasGroup:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2387707094095225561}
+  m_Enabled: 1
+  m_Alpha: 1
+  m_Interactable: 1
+  m_BlocksRaycasts: 1
+  m_IgnoreParentGroups: 1
 --- !u!1 &4764336508582838174
 GameObject:
   m_ObjectHideFlags: 0

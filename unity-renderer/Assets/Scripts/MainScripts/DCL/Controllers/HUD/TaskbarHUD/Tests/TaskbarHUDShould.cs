@@ -32,7 +32,7 @@ public class TaskbarHUDShould : TestsBase
     }
 
     [UnityTest]
-    public IEnumerator ToggleWindowsProperly()
+    public IEnumerator ToggleChatPreviewProperly()
     {
         WorldChatWindowHUDController chatWindowController = new WorldChatWindowHUDController();
         chatWindowController.Initialize(null, null);
@@ -41,11 +41,11 @@ public class TaskbarHUDShould : TestsBase
 
         view.chatButton.onClick.Invoke();
 
-        Assert.IsFalse(chatWindowController.view.gameObject.activeSelf);
+        Assert.IsTrue(chatWindowController.view.isInPreview);
 
         view.chatButton.onClick.Invoke();
 
-        Assert.IsTrue(chatWindowController.view.gameObject.activeSelf);
+        Assert.IsFalse(chatWindowController.view.isInPreview);
         yield break;
     }
 }

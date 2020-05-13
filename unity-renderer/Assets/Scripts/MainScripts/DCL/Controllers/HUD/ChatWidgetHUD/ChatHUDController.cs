@@ -64,6 +64,7 @@ public class ChatHUDController : IDisposable
 
         model.messageType = message.messageType;
         model.bodyText = message.body;
+        model.timestamp = message.timestamp;
 
         if (message.recipient != null)
         {

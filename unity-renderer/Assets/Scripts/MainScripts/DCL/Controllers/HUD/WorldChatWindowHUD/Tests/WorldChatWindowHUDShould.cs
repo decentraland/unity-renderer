@@ -4,8 +4,8 @@ using NUnit.Framework;
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using UnityEngine.TestTools;
 using UnityEngine;
+using UnityEngine.TestTools;
 
 class ChatController_Mock : IChatController
 {
@@ -87,81 +87,6 @@ public class WorldChatWindowHUDShould : TestsBase
         yield break;
     }
 
-    [Test]
-    public void TabsWorkCorrectly()
-    {
-
-        var messages = new ChatMessage[]
-        {
-            new ChatMessage()
-            {
-                messageType = ChatMessage.Type.PUBLIC,
-                body = "test message 1",
-                sender = ownProfileModel.userId,
-                recipient = testProfileModel.userId
-            },
-            new ChatMessage()
-            {
-                messageType = ChatMessage.Type.PUBLIC,
-                body = "test message 2",
-                sender = ownProfileModel.userId,
-                recipient = testProfileModel.userId
-            },
-            new ChatMessage()
-            {
-                messageType = ChatMessage.Type.PRIVATE,
-                body = "test message 3",
-                sender = ownProfileModel.userId,
-                recipient = testProfileModel.userId
-            },
-            new ChatMessage()
-            {
-                messageType = ChatMessage.Type.PRIVATE,
-                body = "test message 4",
-                sender = ownProfileModel.userId,
-                recipient = testProfileModel.userId
-            },
-        };
-
-        foreach (var msg in messages)
-        {
-            chatController.RaiseAddMessage(msg);
-        }
-
-        var expectedBodyMessages = new string[]
-        {
-            "<b>NO_USER:</b> test message 1",
-            "<b>NO_USER:</b> test message 2",
-            "<b>[To TEST_USER]:</b> test message 3",
-            "<b>[To TEST_USER]:</b> test message 4"
-        };
-
-        Assert.AreEqual(4, controller.view.chatHudView.entries.Count);
-
-        for (int i = 0; i < controller.view.chatHudView.entries.Count; i++)
-        {
-            ChatEntry entry = controller.view.chatHudView.entries[i];
-            Assert.AreEqual(expectedBodyMessages[i], entry.body.text);
-        }
-
-        controller.view.pmFilterButton.onClick.Invoke();
-
-        expectedBodyMessages = new string[]
-        {
-            "<b>[To TEST_USER]:</b> test message 3",
-            "<b>[To TEST_USER]:</b> test message 4"
-        };
-
-        Assert.AreEqual(2, controller.view.chatHudView.entries.Count);
-
-        for (int i = 0; i < controller.view.chatHudView.entries.Count; i++)
-        {
-            ChatEntry entry = controller.view.chatHudView.entries[i];
-            Assert.AreEqual(expectedBodyMessages[i], entry.body.text);
-        }
-
-        controller.view.worldFilterButton.onClick.Invoke();
-    }
 
     [Test]
     public void HandlePrivateMessagesProperly()
@@ -218,7 +143,7 @@ public class WorldChatWindowHUDShould : TestsBase
 
         var chatEntryModel = ChatHUDController.ChatMessageToChatEntry(chatMessage);
 
-        Assert.AreEqual(entry.message, chatEntryModel);
+        Assert.AreEqual(entry.model, chatEntryModel);
     }
 
     [Test]
@@ -248,6 +173,9 @@ public class WorldChatWindowHUDShould : TestsBase
         controller.SendChatMessage("test message");
         Assert.IsTrue(messageWasSent);
         WebInterface.OnMessageFromEngine -= messageCallback;
+        yield return null;
+        yield return null;
+        yield return null;
         yield break;
     }
 
