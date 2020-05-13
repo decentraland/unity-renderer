@@ -27,6 +27,7 @@ public class HUDController : MonoBehaviour
     public TermsOfServiceHUDController termsOfServiceHud => GetHUDElement(HUDElementID.TERMS_OF_SERVICE) as TermsOfServiceHUDController;
     public TaskbarHUDController taskbarHud => GetHUDElement(HUDElementID.TASKBAR) as TaskbarHUDController;
     public WorldChatWindowHUDController worldChatWindowHud => GetHUDElement(HUDElementID.WORLD_CHAT_WINDOW) as WorldChatWindowHUDController;
+    public PrivateChatWindowHUDController privateChatWindowHud => GetHUDElement(HUDElementID.PRIVATE_CHAT_WINDOW) as PrivateChatWindowHUDController;
     public FriendsHUDController friendsHud => GetHUDElement(HUDElementID.FRIENDS) as FriendsHUDController;
 
     public Dictionary<HUDElementID, IHUD> hudElements { get; private set; } = new Dictionary<HUDElementID, IHUD>();
@@ -66,7 +67,8 @@ public class HUDController : MonoBehaviour
         MESSAGE_OF_THE_DAY = 12,
         FRIENDS = 13,
         OPEN_EXTERNAL_URL_PROMPT = 14,
-        COUNT = 15
+        PRIVATE_CHAT_WINDOW = 15,
+        COUNT = 16
     }
 
     [System.Serializable]
@@ -141,7 +143,11 @@ public class HUDController : MonoBehaviour
             case HUDElementID.WORLD_CHAT_WINDOW:
                 CreateHudElement<WorldChatWindowHUDController>(configuration, hudElementId);
                 worldChatWindowHud?.Initialize(ChatController.i, DCL.InitialSceneReferences.i?.mouseCatcher);
-                taskbarHud?.AddChatWindow(worldChatWindowHud);
+                taskbarHud?.AddWorldChatWindow(worldChatWindowHud);
+
+                CreateHudElement<PrivateChatWindowHUDController>(configuration, HUDElementID.PRIVATE_CHAT_WINDOW);
+                privateChatWindowHud?.Initialize(ChatController.i);
+                taskbarHud?.AddPrivateChatWindow(privateChatWindowHud);
                 break;
             case HUDElementID.FRIENDS:
                 CreateHudElement<FriendsHUDController>(configuration, hudElementId);
@@ -169,9 +175,11 @@ public class HUDController : MonoBehaviour
         GetHUDElement(hudElementId)?.SetVisibility(configuration.active && configuration.visible);
     }
 
-    private void FriendsHud_OnPressWhisper(string userName)
+    private void FriendsHud_OnPressWhisper(string targetUserId)
     {
-        worldChatWindowHud.ForceFocus($"/w {userName} ");
+        privateChatWindowHud.Configure(targetUserId);
+        privateChatWindowHud.SetVisibility(true);
+        privateChatWindowHud.ForceFocus();
     }
 
     public void CreateHudElement<T>(HUDConfiguration config, HUDElementID id)

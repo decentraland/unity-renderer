@@ -4,6 +4,7 @@ public class TaskbarHUDController : IHUD
 {
     internal TaskbarHUDView view;
     public WorldChatWindowHUDController worldChatWindowHud;
+    public PrivateChatWindowHUDController privateChatWindowHud;
     public FriendsHUDController friendsHud;
     public bool alreadyToggledOnForFirstTime { get; private set; } = false;
 
@@ -12,7 +13,7 @@ public class TaskbarHUDController : IHUD
         view = TaskbarHUDView.Create(this);
     }
 
-    public void AddChatWindow(WorldChatWindowHUDController controller)
+    public void AddWorldChatWindow(WorldChatWindowHUDController controller)
     {
         if (controller == null || controller.view == null)
         {
@@ -26,8 +27,27 @@ public class TaskbarHUDController : IHUD
         controller.view.transform.SetParent(view.windowContainer, false);
 
         worldChatWindowHud = controller;
+
         view.OnAddChatWindow(ToggleChatWindow);
         worldChatWindowHud.view.DeactivatePreview();
+    }
+
+    public void AddPrivateChatWindow(PrivateChatWindowHUDController controller)
+    {
+        if (controller == null || controller.view == null)
+        {
+            Debug.LogWarning("AddPrivateChatWindow >>> Private Chat Window doesn't exist yet!");
+            return;
+        }
+
+        if (controller.view.transform.parent == view.windowContainer)
+            return;
+
+        controller.view.transform.SetParent(view.windowContainer, false);
+
+        privateChatWindowHud = controller;
+
+        //Note(Pravus): We don't notify the view about this new window here because it is not toggled from a taskbar icon until we get a private conversation.
     }
 
     public void AddFriendsWindow(FriendsHUDController controller)
@@ -53,6 +73,11 @@ public class TaskbarHUDController : IHUD
             worldChatWindowHud.view.DeactivatePreview();
         else
             worldChatWindowHud.view.ActivatePreview();
+    }
+
+    private void TogglePrivateChatWindow()
+    {
+        privateChatWindowHud.view.Toggle();
     }
 
     private void ToggleFriendsWindow()

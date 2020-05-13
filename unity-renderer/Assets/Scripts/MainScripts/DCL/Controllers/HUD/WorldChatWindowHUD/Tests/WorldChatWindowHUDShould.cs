@@ -7,7 +7,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.TestTools;
 
-class ChatController_Mock : IChatController
+public class ChatController_Mock : IChatController
 {
     public event Action<ChatMessage> OnAddMessage;
     List<ChatMessage> entries = new List<ChatMessage>();
@@ -33,7 +33,8 @@ class ChatController_Mock : IChatController
         OnAddMessage?.Invoke(message);
     }
 }
-class MouseCatcher_Mock : IMouseCatcher
+
+public class MouseCatcher_Mock : IMouseCatcher
 {
     public event Action OnMouseUnlock;
     public event Action OnMouseLock;

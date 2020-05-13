@@ -195,7 +195,7 @@ namespace Tests
 
                 DCLCharacterController.i.LateUpdate();
 
-                if (!checkedParent && lerpTime >= 0.5f)
+                if (!checkedParent && lerpTime >= 0.25f)
                 {
                     Assert.IsTrue(DCLCharacterController.i.isOnMovingPlatform, "isOnMovingPlatform should be true when the platform moves/rotates");
                     checkedParent = true;
