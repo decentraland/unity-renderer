@@ -148,6 +148,7 @@ namespace DCL.Interface
         [System.Serializable]
         public class OnClickEventPayload
         {
+            public ACTION_BUTTON buttonId = ACTION_BUTTON.POINTER;
         }
 
         [System.Serializable]
