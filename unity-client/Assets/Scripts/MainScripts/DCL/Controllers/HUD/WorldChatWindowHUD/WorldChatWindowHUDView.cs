@@ -1,18 +1,14 @@
+using System.Collections;
+using System.Text.RegularExpressions;
 using UnityEngine;
-using UnityEngine.Events;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
-using TMPro;
-using System.Text.RegularExpressions;
-using System.Collections;
 
 public class WorldChatWindowHUDView : MonoBehaviour, IPointerClickHandler
 {
     const string VIEW_PATH = "World Chat Window";
-    static int ANIM_PROPERTY_SELECTED = Animator.StringToHash("Selected");
 
     public Button worldFilterButton;
-    public Button pmFilterButton;
     public Button closeButton;
 
     public ChatHUDView chatHudView;
@@ -23,17 +19,10 @@ public class WorldChatWindowHUDView : MonoBehaviour, IPointerClickHandler
     Regex whisperRegex = new Regex(@"(?i)^\/(whisper|w) (\S*) ");
     Match whisperRegexMatch;
 
-    TabMode tabMode = TabMode.WORLD;
-    enum TabMode
-    {
-        WORLD,
-        PRIVATE
-    }
-
-    public static WorldChatWindowHUDView Create(UnityAction onPrivateMessages, UnityAction onWorldMessages)
+    public static WorldChatWindowHUDView Create()
     {
         var view = Instantiate(Resources.Load<GameObject>(VIEW_PATH)).GetComponent<WorldChatWindowHUDView>();
-        view.Initialize(onPrivateMessages, onWorldMessages);
+        view.Initialize();
         return view;
     }
 
@@ -43,42 +32,9 @@ public class WorldChatWindowHUDView : MonoBehaviour, IPointerClickHandler
         chatHudView.inputField.onValueChanged.AddListener(OnTextInputValueChanged);
     }
 
-    void OnEnable()
-    {
-        UpdateTabAnimators();
-    }
-
-    void UpdateTabAnimators()
-    {
-        switch (tabMode)
-        {
-            case TabMode.WORLD:
-                pmFilterButton.animator.SetBool(ANIM_PROPERTY_SELECTED, false);
-                worldFilterButton.animator.SetBool(ANIM_PROPERTY_SELECTED, true);
-                break;
-            case TabMode.PRIVATE:
-                pmFilterButton.animator.SetBool(ANIM_PROPERTY_SELECTED, true);
-                worldFilterButton.animator.SetBool(ANIM_PROPERTY_SELECTED, false);
-                break;
-        }
-    }
-
-    private void Initialize(UnityAction onPrivateMessages, UnityAction onWorldMessages)
+    private void Initialize()
     {
         this.closeButton.onClick.AddListener(Toggle);
-        this.pmFilterButton.onClick.AddListener(() =>
-           {
-               onPrivateMessages.Invoke();
-               tabMode = TabMode.PRIVATE;
-               UpdateTabAnimators();
-           });
-
-        this.worldFilterButton.onClick.AddListener(() =>
-           {
-               onWorldMessages.Invoke();
-               tabMode = TabMode.WORLD;
-               UpdateTabAnimators();
-           });
     }
 
     public bool isInPreview { get; private set; }
@@ -87,18 +43,22 @@ public class WorldChatWindowHUDView : MonoBehaviour, IPointerClickHandler
     {
         group.alpha = 1;
         isInPreview = false;
+        chatHudView.SetFadeoutMode(false);
     }
 
     public void ActivatePreview()
     {
         group.alpha = 0;
         isInPreview = true;
+        chatHudView.SetFadeoutMode(true);
     }
 
     public void Toggle()
     {
         if (gameObject.activeSelf)
+        {
             gameObject.SetActive(false);
+        }
         else
         {
             gameObject.SetActive(true);

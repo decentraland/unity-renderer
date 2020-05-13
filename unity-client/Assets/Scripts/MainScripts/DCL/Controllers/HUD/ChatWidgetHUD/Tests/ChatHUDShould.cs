@@ -52,7 +52,7 @@ public class ChatHUDShould : TestsBase
         }
 
         Assert.AreEqual(ChatHUDController.MAX_CHAT_ENTRIES, controller.view.entries.Count);
-        Assert.AreEqual("test5", controller.view.entries[0].message.bodyText);
+        Assert.AreEqual("test5", controller.view.entries[0].model.bodyText);
     }
 
     [Test]
@@ -68,7 +68,7 @@ public class ChatHUDShould : TestsBase
         controller.AddChatMessage(msg);
 
         Assert.AreEqual(1, controller.view.entries.Count);
-        Assert.AreEqual(msg, controller.view.entries[0].message);
+        Assert.AreEqual(msg, controller.view.entries[0].model);
 
         controller.view.CleanAllEntries();
 

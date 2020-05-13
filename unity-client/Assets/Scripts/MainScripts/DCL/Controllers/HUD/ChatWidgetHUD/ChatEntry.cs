@@ -1,4 +1,5 @@
 using DCL.Interface;
+using System;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
@@ -19,20 +20,25 @@ public class ChatEntry : MonoBehaviour
         public string senderName;
         public string recipientName;
         public SubType subType;
+
+        public ulong timestamp;
     }
+
+    [SerializeField] internal float timeToFade = 10;
+    [SerializeField] internal float fadeDuration = 5;
 
     [SerializeField] internal TextMeshProUGUI username;
     [SerializeField] internal TextMeshProUGUI body;
 
-    public Color worldMessageColor = Color.white;
-    public Color privateMessageColor = Color.white;
-    public Color systemColor = Color.white;
+    [SerializeField] internal Color worldMessageColor = Color.white;
+    [SerializeField] internal Color privateMessageColor = Color.white;
+    [SerializeField] internal Color systemColor = Color.white;
 
-    public Model message;
+    public Model model { get; private set; }
 
     public void Populate(Model chatEntryModel)
     {
-        this.message = chatEntryModel;
+        this.model = chatEntryModel;
 
         string userString = GetDefaultSenderString(chatEntryModel.senderName);
 
@@ -66,6 +72,39 @@ public class ChatEntry : MonoBehaviour
 
         LayoutRebuilder.ForceRebuildLayoutImmediate(body.transform as RectTransform);
         LayoutRebuilder.ForceRebuildLayoutImmediate(username.transform as RectTransform);
+
+        if (this.enabled)
+            group.alpha = 0;
+    }
+
+    [SerializeField] CanvasGroup group;
+
+    public void SetFadeout(bool enabled)
+    {
+        if (!enabled)
+        {
+            group.alpha = 1;
+            this.enabled = false;
+            return;
+        }
+
+        this.enabled = true;
+    }
+
+    private void Update()
+    {
+        double fadeTime = (double)(model.timestamp / 1000.0) + timeToFade;
+        double currentTime = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds() / 1000.0;
+
+        if (currentTime > fadeTime)
+        {
+            double timeSinceFadeTime = currentTime - fadeTime;
+            group.alpha = Mathf.Clamp01(1 - (float)(timeSinceFadeTime / fadeDuration));
+        }
+        else
+        {
+            group.alpha += (1 - group.alpha) * 0.05f;
+        }
     }
 
     string RemoveTabs(string text)

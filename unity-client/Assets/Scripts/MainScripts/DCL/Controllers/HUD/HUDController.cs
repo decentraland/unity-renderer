@@ -152,7 +152,6 @@ public class HUDController : MonoBehaviour
                 break;
             case HUDElementID.TASKBAR:
                 CreateHudElement<TaskbarHUDController>(configuration, hudElementId);
-                // ConfigureTaskbar();
                 break;
             case HUDElementID.MESSAGE_OF_THE_DAY:
                 CreateHudElement<WelcomeHUDController>(configuration, hudElementId);
