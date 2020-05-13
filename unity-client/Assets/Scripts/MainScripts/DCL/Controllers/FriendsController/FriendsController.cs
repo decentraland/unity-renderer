@@ -20,6 +20,7 @@ public class FriendsController : MonoBehaviour, IFriendsController
         i = this;
     }
 
+    public bool initialized = false;
     public Dictionary<string, UserStatus> friends = new Dictionary<string, UserStatus>();
 
     [System.Serializable]
@@ -105,6 +106,8 @@ public class FriendsController : MonoBehaviour, IFriendsController
 
     public void InitializeFriends(string json)
     {
+        initialized = true;
+
         FriendshipInitializationMessage msg = JsonUtility.FromJson<FriendshipInitializationMessage>(json);
         HashSet<string> processedIds = new HashSet<string>();
 
