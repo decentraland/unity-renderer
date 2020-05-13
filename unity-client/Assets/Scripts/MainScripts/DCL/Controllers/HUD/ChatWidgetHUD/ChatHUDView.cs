@@ -15,6 +15,8 @@ public class ChatHUDView : MonoBehaviour
     public ChatHUDController controller;
     [NonSerialized] public List<ChatEntry> entries = new List<ChatEntry>();
 
+    private UnityAction<string> onSendMessageAction;
+
     public static ChatHUDView Create()
     {
         var view = Instantiate(Resources.Load<GameObject>(VIEW_PATH)).GetComponent<ChatHUDView>();
@@ -25,7 +27,17 @@ public class ChatHUDView : MonoBehaviour
     public void Initialize(ChatHUDController controller, UnityAction<string> onSendMessage)
     {
         this.controller = controller;
-        inputField.onSubmit.AddListener(onSendMessage);
+        onSendMessageAction = onSendMessage;
+        inputField.onSubmit.AddListener(OnInputFieldSubmit);
+    }
+
+    private void OnInputFieldSubmit(string message)
+    {
+        // A TMP_InputField is automatically marked as 'wasCanceled' when the ESC key is pressed
+        if (inputField.wasCanceled)
+            message = "";
+
+        onSendMessageAction(message);
     }
 
     public void ResetInputField()

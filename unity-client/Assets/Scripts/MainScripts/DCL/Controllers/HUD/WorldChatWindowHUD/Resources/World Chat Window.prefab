@@ -1237,6 +1237,11 @@ PrefabInstance:
       propertyPath: m_Name
       value: Chat Widget
       objectReference: {fileID: 0}
+    - target: {fileID: 1398511019163901991, guid: 486cb7198dd7515498189de8c605a1a3,
+        type: 3}
+      propertyPath: m_SizeDelta.y
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 30438154621426255, guid: 486cb7198dd7515498189de8c605a1a3,
         type: 3}
       propertyPath: m_LocalPosition.x
@@ -1387,9 +1392,9 @@ PrefabInstance:
       propertyPath: m_Colors.m_PressedColor.b
       value: 0.9245283
       objectReference: {fileID: 0}
-    - target: {fileID: 1398511019163901991, guid: 486cb7198dd7515498189de8c605a1a3,
+    - target: {fileID: 6940267282881019307, guid: 486cb7198dd7515498189de8c605a1a3,
         type: 3}
-      propertyPath: m_SizeDelta.y
+      propertyPath: m_RestoreOriginalTextOnEscape
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 388698245028910683, guid: 486cb7198dd7515498189de8c605a1a3,
