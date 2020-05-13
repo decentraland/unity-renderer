@@ -145,9 +145,13 @@ public class HUDController : MonoBehaviour
                 break;
             case HUDElementID.FRIENDS:
                 CreateHudElement<FriendsHUDController>(configuration, hudElementId);
-                friendsHud?.Initialize(FriendsController.i, UserProfile.GetOwnUserProfile());
-                friendsHud.OnPressWhisper -= FriendsHud_OnPressWhisper;
-                friendsHud.OnPressWhisper += FriendsHud_OnPressWhisper;
+
+                if (friendsHud != null)
+                {
+                    friendsHud.Initialize(FriendsController.i, UserProfile.GetOwnUserProfile());
+                    friendsHud.OnPressWhisper -= FriendsHud_OnPressWhisper;
+                    friendsHud.OnPressWhisper += FriendsHud_OnPressWhisper;
+                }
                 taskbarHud?.AddFriendsWindow(friendsHud);
                 break;
             case HUDElementID.TASKBAR:

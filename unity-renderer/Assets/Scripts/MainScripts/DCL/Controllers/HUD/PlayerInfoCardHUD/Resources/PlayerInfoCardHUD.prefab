@@ -4781,6 +4781,7 @@ MonoBehaviour:
   avatarPicture: {fileID: 741949897801864843}
   blockedAvatarOverlay: {fileID: 4774460956804247699}
   name: {fileID: 2054052089419740692}
+  friendStatusContainer: {fileID: 7024342098701633596}
   requestSentButton: {fileID: 5054134865732717975}
   addFriendButton: {fileID: 5797851377976502623}
   alreadyFriendsContainer: {fileID: 2947251650259212353}

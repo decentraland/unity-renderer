@@ -36,8 +36,10 @@ public class PlayerInfoCardHUDView : MonoBehaviour
     [SerializeField] internal Image blockedAvatarOverlay;
     [SerializeField] internal TextMeshProUGUI name;
 
-    [SerializeField]
     [Header("Friends")]
+    [SerializeField]
+    internal GameObject friendStatusContainer;
+    [SerializeField]
     internal Button requestSentButton;
     [SerializeField]
     internal Button addFriendButton;
@@ -150,6 +152,8 @@ public class PlayerInfoCardHUDView : MonoBehaviour
     public void SetUserProfile(UserProfile userProfile)
     {
         Assert.IsTrue(userProfile != null, "userProfile can't be null");
+
+        friendStatusContainer.SetActive(FriendsController.i.initialized);
 
         currentUserProfile = userProfile;
         name.text = currentUserProfile.userName;
