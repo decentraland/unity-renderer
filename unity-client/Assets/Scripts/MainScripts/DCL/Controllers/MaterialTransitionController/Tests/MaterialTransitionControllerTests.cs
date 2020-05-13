@@ -101,10 +101,14 @@ namespace Tests
 
             yield return null;
 
-            float timeout = 0;
-            while (timeout < 15)
+            float timeout = 0f;
+            float maxTime = 20f;
+            while (timeout < maxTime)
             {
                 timeout += Time.deltaTime;
+
+                if (timeout > maxTime)
+                    timeout = maxTime;
 
                 if (entity.meshRootGameObject != null)
                 {
@@ -128,7 +132,7 @@ namespace Tests
                 yield return null;
             }
 
-            Assert.Less(timeout, 15.1f, "Timeout! MaterialTransitionController never appeared?");
+            Assert.Less(timeout, maxTime + 0.1f, "Timeout! MaterialTransitionController never appeared?");
 
             yield return null;
         }
