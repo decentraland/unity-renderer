@@ -75,4 +75,18 @@ public class ChatHUDShould : TestsBase
         Assert.AreEqual(0, controller.view.entries.Count);
 
     }
+
+    [Test]
+    public void CancelMessageSubmitionByEscapeKey()
+    {
+        string testMessage = "test message";
+
+        controller.view.FocusInputField();
+        controller.view.inputField.text = testMessage;
+        controller.view.inputField.ProcessEvent(new UnityEngine.Event { keyCode = UnityEngine.KeyCode.Escape });
+        controller.view.inputField.onSubmit.Invoke(testMessage);
+
+        Assert.AreEqual("", lastMsgSent);
+        Assert.AreEqual(testMessage, controller.view.inputField.text);
+    }
 }

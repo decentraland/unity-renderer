@@ -70,6 +70,9 @@ public class ChatEntry : MonoBehaviour
 
     string RemoveTabs(string text)
     {
+        if (string.IsNullOrEmpty(text))
+            return "";
+
         //NOTE(Brian): ContentSizeFitter doesn't fare well with tabs, so i'm replacing these
         //             with spaces.
         return text.Replace("\t", "    ");
