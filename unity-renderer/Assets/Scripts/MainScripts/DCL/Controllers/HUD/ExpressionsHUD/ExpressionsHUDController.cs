@@ -13,6 +13,7 @@ public class ExpressionsHUDController : IHUD
         userProfileUpdateDelegate = profile => view.UpdateAvatarSprite(profile.faceSnapshot);
         userProfileUpdateDelegate.Invoke(ownUserProfile);
         ownUserProfile.OnUpdate += userProfileUpdateDelegate;
+        ownUserProfile.OnAvatarExpressionSet += OnAvatarExpressionSet;
     }
 
     public void SetVisibility(bool visible)
@@ -23,11 +24,20 @@ public class ExpressionsHUDController : IHUD
     public void Dispose()
     {
         ownUserProfile.OnUpdate -= userProfileUpdateDelegate;
+        ownUserProfile.OnAvatarExpressionSet -= OnAvatarExpressionSet;
         view.CleanUp();
     }
 
     public void ExpressionCalled(string id)
     {
         UserProfile.GetOwnUserProfile().SetAvatarExpression(id);
+    }
+
+    private void OnAvatarExpressionSet(string id)
+    {
+        if (view.IsContentVisible())
+        {
+            view.HideContent();
+        }
     }
 }
