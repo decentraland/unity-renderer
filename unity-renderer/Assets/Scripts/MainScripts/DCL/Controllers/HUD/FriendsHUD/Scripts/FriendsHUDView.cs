@@ -19,10 +19,12 @@ public class FriendsHUDView : MonoBehaviour
     internal GameObject currentNotification = null;
     public float notificationsDuration = 3f;
 
-    public static FriendsHUDView Create()
+    FriendsHUDController controller;
+
+    public static FriendsHUDView Create(FriendsHUDController controller)
     {
         var view = Instantiate(Resources.Load<GameObject>(VIEW_PATH)).GetComponent<FriendsHUDView>();
-        view.Initialize();
+        view.Initialize(controller);
         return view;
     }
 
@@ -34,8 +36,9 @@ public class FriendsHUDView : MonoBehaviour
         return result;
     }
 
-    private void Initialize()
+    private void Initialize(FriendsHUDController controller)
     {
+        this.controller = controller;
         friendsList.Initialize(this);
         friendRequestsList.Initialize(this);
 
@@ -60,6 +63,83 @@ public class FriendsHUDView : MonoBehaviour
 
     public void Toggle()
     {
-        gameObject.SetActive(!gameObject.activeSelf);
+        this.controller.SetVisibility(!gameObject.activeSelf);
     }
+
+#if UNITY_EDITOR
+    [ContextMenu("AddFakeRequestReceived")]
+    public void AddFakeRequestReceived()
+    {
+        string id1 = Random.Range(0, 1000000).ToString();
+        UserProfileController.i.AddUserProfileToCatalog(new UserProfileModel()
+        {
+            userId = id1,
+            name = "Pravus-" + id1
+        });
+
+        FriendsController.i.UpdateFriendshipStatus(new FriendsController.FriendshipUpdateStatusMessage()
+        {
+            userId = id1,
+            action = FriendsController.FriendshipAction.REQUESTED_FROM
+        });
+    }
+
+    [ContextMenu("AddFakeRequestSent")]
+    public void AddFakeRequestSent()
+    {
+        string id1 = Random.Range(0, 1000000).ToString();
+
+        UserProfileController.i.AddUserProfileToCatalog(new UserProfileModel()
+        {
+            userId = id1,
+            name = "Brian-" + id1
+        });
+
+        FriendsController.i.UpdateFriendshipStatus(new FriendsController.FriendshipUpdateStatusMessage()
+        {
+            userId = id1,
+            action = FriendsController.FriendshipAction.REQUESTED_TO
+        });
+    }
+
+    [ContextMenu("AddFakeOnlineFriend")]
+    public void AddFakeOnlineFriend()
+    {
+        string id1 = Random.Range(0, 1000000).ToString();
+
+        UserProfileController.i.AddUserProfileToCatalog(new UserProfileModel()
+        {
+            userId = id1,
+            name = "Brian-" + id1
+        });
+
+        FriendsController.i.UpdateFriendshipStatus(new FriendsController.FriendshipUpdateStatusMessage()
+        {
+            userId = id1,
+            action = FriendsController.FriendshipAction.APPROVED
+        });
+
+        FriendsController.i.UpdateUserStatus(new FriendsController.UserStatus() { userId = id1, presence = FriendsController.PresenceStatus.ONLINE });
+    }
+
+    [ContextMenu("AddFakeOfflineFriend")]
+    public void AddFakeOfflineFriend()
+    {
+        string id1 = Random.Range(0, 1000000).ToString();
+
+        UserProfileController.i.AddUserProfileToCatalog(new UserProfileModel()
+        {
+            userId = id1,
+            name = "Pravus-" + id1
+        });
+
+        FriendsController.i.UpdateFriendshipStatus(new FriendsController.FriendshipUpdateStatusMessage()
+        {
+            userId = id1,
+            action = FriendsController.FriendshipAction.APPROVED
+        });
+
+        FriendsController.i.UpdateUserStatus(new FriendsController.UserStatus() { userId = id1, presence = FriendsController.PresenceStatus.OFFLINE });
+    }
+#endif
 }

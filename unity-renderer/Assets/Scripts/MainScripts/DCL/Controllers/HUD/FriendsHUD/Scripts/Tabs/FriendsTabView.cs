@@ -1,5 +1,3 @@
-using UnityEngine;
-
 public class FriendsTabView : FriendsTabViewBase
 {
     public EntryList onlineFriendsList = new EntryList();
@@ -71,45 +69,5 @@ public class FriendsTabView : FriendsTabViewBase
             RemoveEntry(entry.userId);
             OnDeleteConfirmation?.Invoke(entry as FriendEntry);
         });
-    }
-
-    [ContextMenu("AddFakeOnlineFriend")]
-    public void AddFakeOnlineFriend()
-    {
-        string id1 = Random.Range(0, 1000000).ToString();
-
-        UserProfileController.i.AddUserProfileToCatalog(new UserProfileModel()
-        {
-            userId = id1,
-            name = "Brian-" + id1
-        });
-
-        FriendsController.i.UpdateFriendshipStatus(new FriendsController.FriendshipUpdateStatusMessage()
-        {
-            userId = id1,
-            action = FriendsController.FriendshipAction.APPROVED
-        });
-
-        FriendsController.i.UpdateUserStatus(new FriendsController.UserStatus() { userId = id1, presence = FriendsController.PresenceStatus.ONLINE });
-    }
-
-    [ContextMenu("AddFakeOfflineFriend")]
-    public void AddFakeOfflineFriend()
-    {
-        string id1 = Random.Range(0, 1000000).ToString();
-
-        UserProfileController.i.AddUserProfileToCatalog(new UserProfileModel()
-        {
-            userId = id1,
-            name = "Pravus-" + id1
-        });
-
-        FriendsController.i.UpdateFriendshipStatus(new FriendsController.FriendshipUpdateStatusMessage()
-        {
-            userId = id1,
-            action = FriendsController.FriendshipAction.APPROVED
-        });
-
-        FriendsController.i.UpdateUserStatus(new FriendsController.UserStatus() { userId = id1, presence = FriendsController.PresenceStatus.OFFLINE });
     }
 }

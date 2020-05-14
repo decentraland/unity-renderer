@@ -12,13 +12,29 @@ class FriendsController_Mock : IFriendsController
     public event Action<string, FriendsController.UserStatus> OnUpdateUserStatus;
     public event Action<string> OnFriendNotFound;
 
+    Dictionary<string, FriendsController.UserStatus> friends = new Dictionary<string, FriendsController.UserStatus>();
+
+    public int friendCount => friends.Count;
+
     public Dictionary<string, FriendsController.UserStatus> GetFriends()
     {
-        return null;
+        return friends;
     }
 
     public void RaiseUpdateFriendship(string id, FriendsController.FriendshipAction action)
     {
+        if (action == FriendsController.FriendshipAction.NONE)
+        {
+            if (friends.ContainsKey(id))
+                friends.Remove(id);
+        }
+
+        if (action == FriendsController.FriendshipAction.APPROVED)
+        {
+            if (!friends.ContainsKey(id))
+                friends.Add(id, new FriendsController.UserStatus());
+        }
+
         OnUpdateFriendship?.Invoke(id, action);
     }
 
@@ -226,7 +242,51 @@ public class FriendsHUDControllerShould : TestsBase
     {
     }
 
-    FriendEntry AddFriendThruFriendsController(string id)
+    NotificationBadge GetBadge(string path)
+    {
+        GameObject prefab = Resources.Load(path) as GameObject;
+        Assert.IsTrue(prefab != null);
+        GameObject go = UnityEngine.Object.Instantiate(prefab);
+        Assert.IsTrue(go != null);
+
+        var noti = go.GetComponent<NotificationBadge>();
+        noti.Initialize();
+
+        return noti;
+    }
+
+    [Test]
+    public void TaskbarNotificationBadgeHasCorrectValue()
+    {
+        PlayerPrefs.SetInt(FriendsHUDController.PLAYER_PREFS_SEEN_FRIEND_COUNT, 0);
+
+        var friendsRequestBadge = GetBadge("NotificationBadge_FriendsRequestTab");
+        var friendsTaskbarBadge = GetBadge("NotificationBadge_FriendsButton");
+
+        controller.SetVisibility(false);
+
+        AddFriendThruFriendsController("friend-1");
+        AddFriendThruFriendsController("friend-2");
+        AddFriendThruFriendsController("friend-3");
+        AddFriendThruFriendsController("friend-4");
+        AddFriendThruFriendsController("friend-5", FriendsController.FriendshipAction.REQUESTED_FROM);
+
+        Assert.AreEqual(1, friendsRequestBadge.finalValue);
+        Assert.AreEqual(5, friendsTaskbarBadge.finalValue);
+
+        controller.SetVisibility(true);
+
+        Assert.AreEqual(1, friendsRequestBadge.finalValue);
+        Assert.AreEqual(1, friendsTaskbarBadge.finalValue);
+
+        AddFriendThruFriendsController("friend-5", FriendsController.FriendshipAction.APPROVED);
+        AddFriendThruFriendsController("friend-6", FriendsController.FriendshipAction.REQUESTED_FROM);
+
+        Assert.AreEqual(1, friendsRequestBadge.finalValue);
+        Assert.AreEqual(1, friendsTaskbarBadge.finalValue);
+    }
+
+    FriendEntry AddFriendThruFriendsController(string id, FriendsController.FriendshipAction action = FriendsController.FriendshipAction.APPROVED)
     {
         UserProfileModel model = new UserProfileModel()
         {
@@ -235,7 +295,7 @@ public class FriendsHUDControllerShould : TestsBase
         };
 
         UserProfileController.i.AddUserProfileToCatalog(model);
-        friendsController.RaiseUpdateFriendship(id, FriendsController.FriendshipAction.APPROVED);
+        friendsController.RaiseUpdateFriendship(id, action);
         return view.friendsList.GetEntry(id) as FriendEntry;
     }
 }

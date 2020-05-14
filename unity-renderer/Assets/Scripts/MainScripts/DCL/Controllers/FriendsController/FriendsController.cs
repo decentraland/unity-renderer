@@ -4,6 +4,7 @@ using UnityEngine;
 
 public interface IFriendsController
 {
+    int friendCount { get; }
     Dictionary<string, FriendsController.UserStatus> GetFriends();
 
     event System.Action<string, FriendsController.FriendshipAction> OnUpdateFriendship;
@@ -14,6 +15,8 @@ public class FriendsController : MonoBehaviour, IFriendsController
 {
     public static bool VERBOSE = true;
     public static FriendsController i { get; private set; }
+
+    public int friendCount => friends.Count;
 
     void Awake()
     {
@@ -133,6 +136,7 @@ public class FriendsController : MonoBehaviour, IFriendsController
         }
 
         Queue<string> newFriends = new Queue<string>();
+
         foreach (var kvp in friends)
         {
             if (!processedIds.Contains(kvp.Key))
@@ -140,6 +144,7 @@ public class FriendsController : MonoBehaviour, IFriendsController
                 newFriends.Enqueue(kvp.Key);
             }
         }
+
         while (newFriends.Count > 0)
         {
             UpdateFriendshipStatus(new FriendshipUpdateStatusMessage() { action = FriendshipAction.NONE, userId = newFriends.Dequeue() });
@@ -214,5 +219,4 @@ public class FriendsController : MonoBehaviour, IFriendsController
         FriendshipUpdateStatusMessage msg = JsonUtility.FromJson<FriendshipUpdateStatusMessage>(json);
         UpdateFriendshipStatus(msg);
     }
-
 }

@@ -169,39 +169,4 @@ public class FriendRequestsTabView : FriendsTabViewBase
             OnCancelConfirmation?.Invoke(requestEntry as FriendRequestEntry);
         });
     }
-
-    [ContextMenu("AddFakeRequestReceived")]
-    public void AddFakeRequestReceived()
-    {
-        string id1 = Random.Range(0, 1000000).ToString();
-        UserProfileController.i.AddUserProfileToCatalog(new UserProfileModel()
-        {
-            userId = id1,
-            name = "Pravus-" + id1
-        });
-
-        FriendsController.i.UpdateFriendshipStatus(new FriendsController.FriendshipUpdateStatusMessage()
-        {
-            userId = id1,
-            action = FriendsController.FriendshipAction.REQUESTED_FROM
-        });
-    }
-
-    [ContextMenu("AddFakeRequestSent")]
-    public void AddFakeRequestSent()
-    {
-        string id1 = Random.Range(0, 1000000).ToString();
-
-        UserProfileController.i.AddUserProfileToCatalog(new UserProfileModel()
-        {
-            userId = id1,
-            name = "Brian-" + id1
-        });
-
-        FriendsController.i.UpdateFriendshipStatus(new FriendsController.FriendshipUpdateStatusMessage()
-        {
-            userId = id1,
-            action = FriendsController.FriendshipAction.REQUESTED_TO
-        });
-    }
 }
