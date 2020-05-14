@@ -1,34 +1,65 @@
+using System.Collections.Generic;
 using UnityEngine;
 
 public class NotificationBadge : MonoBehaviour
 {
-    [SerializeField] private FloatVariable notificationVariable;
+    [Tooltip("The value shown on this badge is the sum of the notification variables")]
+    [SerializeField] private List<FloatVariable> notificationVariables;
     [SerializeField] private TMPro.TextMeshProUGUI notificationText;
     [SerializeField] private GameObject notificationContainer;
 
+    public int finalValue { get; private set; }
     private void Start()
     {
-        if (notificationVariable == null)
+        Initialize();
+    }
+
+    public void Initialize()
+    {
+        if (notificationVariables == null || notificationVariables.Count == 0)
             return;
 
-        notificationVariable.OnChange += NotificationVariable_OnChange;
-        NotificationVariable_OnChange(notificationVariable.Get(), notificationVariable.Get());
+        foreach (var notiVariable in notificationVariables)
+        {
+            notiVariable.OnChange += NotificationVariable_OnChange;
+            NotificationVariable_OnChange(notiVariable.Get(), notiVariable.Get());
+        }
     }
 
     private void OnDestroy()
     {
-        if (notificationVariable == null)
+        if (notificationVariables == null || notificationVariables.Count == 0)
             return;
 
-        notificationVariable.OnChange -= NotificationVariable_OnChange;
+        foreach (var notiVariable in notificationVariables)
+        {
+            notiVariable.OnChange -= NotificationVariable_OnChange;
+        }
     }
 
     private void NotificationVariable_OnChange(float current, float previous)
     {
-        if (current > 0)
+        int finalValue = 0;
+
+        foreach (var notiVariable in notificationVariables)
+        {
+            finalValue += (int)notiVariable.Get();
+        }
+
+        this.finalValue = finalValue;
+
+        if (finalValue > 0)
         {
             notificationContainer.SetActive(true);
-            notificationText.text = ((int)current).ToString();
+
+            if (finalValue < 99)
+            {
+                notificationText.text = finalValue.ToString();
+            }
+            else
+            {
+                notificationText.text = "99+";
+            }
         }
         else
         {
