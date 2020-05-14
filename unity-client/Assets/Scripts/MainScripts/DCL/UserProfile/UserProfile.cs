@@ -11,6 +11,7 @@ public class UserProfile : ScriptableObject //TODO Move to base variable
 
     public event Action<UserProfile> OnUpdate;
     public event Action<Sprite> OnFaceSnapshotReadyEvent;
+    public event Action<string> OnAvatarExpressionSet;
 
     public string userId => model.userId;
     public string userName => model.name;
@@ -113,6 +114,7 @@ public class UserProfile : ScriptableObject //TODO Move to base variable
         avatar.expressionTriggerTimestamp = timestamp;
         WebInterface.SendExpression(id, timestamp);
         OnUpdate?.Invoke(this);
+        OnAvatarExpressionSet?.Invoke(id);
     }
 
     public string[] GetInventoryItemsIds()
