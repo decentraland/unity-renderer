@@ -24,7 +24,7 @@ namespace DCL.Components.Video.Plugin
 
 #if UNITY_WEBGL && !UNITY_EDITOR
     [DllImport("__Internal")]
-    private static extern void WebVideoPlayerCreate(string id, string url);
+    private static extern void WebVideoPlayerCreate(string id, string url, bool useHls);
     [DllImport("__Internal")]
     private static extern void WebVideoPlayerRemove(string id);
     [DllImport("__Internal")]
@@ -48,7 +48,7 @@ namespace DCL.Components.Video.Plugin
     [DllImport("__Internal")]
     private static extern string WebVideoPlayerGetError(string id);
 #else
-        private static void WebVideoPlayerCreate(string id, string url) { }
+        private static void WebVideoPlayerCreate(string id, string url, bool useHls) { }
         private static void WebVideoPlayerRemove(string id) { }
         private static void WebVideoPlayerTextureUpdate(string id, IntPtr texturePtr, bool isWebGL1) { }
         private static void WebVideoPlayerPlay(string id) { }
@@ -62,11 +62,11 @@ namespace DCL.Components.Video.Plugin
         private static string WebVideoPlayerGetError(string id) { return "WebVideoPlayer: Platform not supported"; }
 #endif
 
-        public WebVideoPlayer(string id, string url)
+        public WebVideoPlayer(string id, string url, bool useHls)
         {
             videoPlayerId = id;
 
-            WebVideoPlayerCreate(id, url);
+            WebVideoPlayerCreate(id, url, useHls);
         }
 
         public void UpdateWebVideoTexture()
@@ -104,7 +104,10 @@ namespace DCL.Components.Video.Plugin
                                 textureNativePtr = texture.GetNativeTexturePtr();
                             }
                         }
-                        WebVideoPlayerTextureUpdate(videoPlayerId, textureNativePtr, isWebGL1);
+                        if (texture.width > 0 && texture.height > 0)
+                        {
+                            WebVideoPlayerTextureUpdate(videoPlayerId, textureNativePtr, isWebGL1);
+                        }
                     }
                     break;
             }

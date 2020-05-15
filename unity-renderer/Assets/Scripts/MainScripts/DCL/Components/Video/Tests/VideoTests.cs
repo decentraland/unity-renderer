@@ -200,7 +200,7 @@ namespace Tests
 
         static DCLVideoTexture CreateDCLVideoTexture(ParcelScene scn, string url)
         {
-            return CreateDCLVideoTexture(scn, CreateDCLVideoClip(scn, url));
+            return CreateDCLVideoTexture(scn, CreateDCLVideoClip(scn, "http://" + url));
         }
     }
 }
