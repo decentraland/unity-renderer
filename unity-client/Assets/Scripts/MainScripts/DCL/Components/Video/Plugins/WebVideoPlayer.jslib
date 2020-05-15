@@ -1,8 +1,7 @@
 var WebVideoPlayer = {
   $videos: {},
-  $hls: null,
 
-  WebVideoPlayerCreate: function (videoId, url) {
+  WebVideoPlayerCreate: function (videoId, url, useHls) {
     const videoState = {
       NONE: 0,
       ERROR: 1,
@@ -12,7 +11,7 @@ var WebVideoPlayer = {
       BUFFERING: 5,
     };
 
-    var str = Pointer_stringify(url);
+    const videoUrl = Pointer_stringify(url);
     const vid = document.createElement("video");
     vid.autoplay = false;
 
@@ -22,9 +21,14 @@ var WebVideoPlayer = {
       error: "",
     };
 
-    hls = new Hls();
-    hls.loadSource(str);
-    hls.attachMedia(vid);
+    if (useHls) {
+      const hls = new Hls();
+      hls.loadSource(videoUrl);
+      hls.attachMedia(vid);
+      videoData["hlsInstance"] = hls;
+    } else {
+      vid.src = videoUrl;
+    }
 
     vid.oncanplay = function () {
       videoData.state = videoState.READY;
@@ -58,11 +62,13 @@ var WebVideoPlayer = {
 
   WebVideoPlayerRemove: function (videoId) {
     const id = Pointer_stringify(videoId);
-    videos[id].video.srt = "";
+    videos[id].video.src = "";
     videos[id].video.load();
     videos[id].video = null;
+    if (videos[id].hlsInstance !== undefined) {
+      delete videos[id].hlsInstance;
+    }
     delete videos[id];
-    delete hls;
   },
 
   WebVideoPlayerTextureUpdate: function (videoId, texturePtr, isWebGL1) {
@@ -148,6 +154,5 @@ var WebVideoPlayer = {
     return buffer;
   },
 };
-autoAddDeps(WebVideoPlayer, "$hls");
 autoAddDeps(WebVideoPlayer, "$videos");
 mergeInto(LibraryManager.library, WebVideoPlayer);

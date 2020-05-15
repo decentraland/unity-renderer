@@ -68,7 +68,7 @@ namespace DCL.Components
                     Debug.LogError("Wrong video clip type when playing VideoTexture!!");
                     yield break;
                 }
-                texturePlayer = new WebVideoPlayer(id, dclVideoClip.model.url);
+                texturePlayer = new WebVideoPlayer(id, dclVideoClip.GetUrl(), dclVideoClip.isStream);
                 texturePlayerUpdateRoutine = CoroutineStarter.Start(VideoTextureUpdate());
                 CommonScriptableObjects.playerCoords.OnChange += OnPlayerCoordsChanged;
                 scene.OnEntityRemoved += OnEntityRemoved;
