@@ -106,12 +106,24 @@ namespace DCL.Helpers
             t.ForceUpdateRectTransforms();
         }
 
-        public static void ForceUpdateLayout(this RectTransform rt)
+        public static void ForceUpdateLayout(this RectTransform rt, bool delayed = true)
         {
             if (!rt.gameObject.activeInHierarchy)
                 return;
 
-            CoroutineStarter.Start(ForceUpdateLayoutRoutine(rt));
+            if (delayed)
+                CoroutineStarter.Start(ForceUpdateLayoutRoutine(rt));
+            else
+            {
+                Utils.InverseTransformChildTraversal<RectTransform>(
+                (x) =>
+                {
+                    LayoutRebuilder.ForceRebuildLayoutImmediate(x);
+                },
+                rt);
+
+                LayoutRebuilder.ForceRebuildLayoutImmediate(rt);
+            }
         }
 
         private static IEnumerator ForceUpdateLayoutRoutine(RectTransform rt)

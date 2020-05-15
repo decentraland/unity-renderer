@@ -1,6 +1,6 @@
-﻿using UnityEngine;
-using UnityEngine.UI;
 using TMPro;
+using UnityEngine;
+using UnityEngine.UI;
 
 public class PrivateChatWindowHUDView : MonoBehaviour
 {
@@ -42,7 +42,6 @@ public class PrivateChatWindowHUDView : MonoBehaviour
         else
         {
             gameObject.SetActive(true);
-            chatHudView.ForceUpdateLayout();
         }
     }
 }

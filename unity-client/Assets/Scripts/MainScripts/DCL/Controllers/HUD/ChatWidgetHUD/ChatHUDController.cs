@@ -1,7 +1,6 @@
 
 using DCL.Interface;
 using System;
-using System.Collections.Generic;
 using UnityEngine.Events;
 public class ChatHUDController : IDisposable
 {
@@ -34,21 +33,6 @@ public class ChatHUDController : IDisposable
             UnityEngine.Object.Destroy(view.entries[0].gameObject);
             view.entries.Remove(view.entries[0]);
         }
-    }
-
-    public List<ChatMessage> TrimAndSortChatMessages(List<ChatMessage> messages)
-    {
-        var result = messages;
-
-        result.Sort((x, y) => { return x.timestamp > y.timestamp ? 1 : -1; });
-
-        if (result.Count > MAX_CHAT_ENTRIES)
-        {
-            int entriesToRemove = (result.Count - MAX_CHAT_ENTRIES);
-            result.RemoveRange(0, entriesToRemove);
-        }
-
-        return result;
     }
 
     public void Dispose()

@@ -1,9 +1,6 @@
-﻿using DCL;
 using DCL.Interface;
 using NUnit.Framework;
-using System;
 using System.Collections;
-using System.Collections.Generic;
 using UnityEngine.TestTools;
 
 public class PrivateChatWindowHUDShould : TestsBase

@@ -19,9 +19,9 @@ public class ChatEntry : MonoBehaviour
         public string bodyText;
         public string senderName;
         public string recipientName;
-        public SubType subType;
-
         public ulong timestamp;
+
+        public SubType subType;
     }
 
     [SerializeField] internal float timeToFade = 10;
