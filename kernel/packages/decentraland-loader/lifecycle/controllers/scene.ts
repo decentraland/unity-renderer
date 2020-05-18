@@ -28,7 +28,8 @@ export class SceneLifeCycleController extends EventEmitter {
 
   contains(status: SceneLifeCycleStatus, position: Vector2Component) {
     return (
-      status.sceneDescription && status.sceneDescription.sceneJsonData.scene.parcels.includes(`${position.x},${position.y}`)
+      status.sceneDescription &&
+      status.sceneDescription.sceneJsonData.scene.parcels.includes(`${position.x},${position.y}`)
     )
   }
 
@@ -61,7 +62,7 @@ export class SceneLifeCycleController extends EventEmitter {
   }
 
   async fetchSceneIds(positions: string[]): Promise<string[]> {
-    const sceneIds = await Promise.all(positions.map(position => this.requestSceneId(position)))
+    const sceneIds = await this.requestSceneIds(positions)
 
     return sceneIds.filter($ => !!$).filter(this.distinct) as string[]
   }
@@ -119,43 +120,40 @@ export class SceneLifeCycleController extends EventEmitter {
     this.emit('Scene status', { sceneId, status })
   }
 
-  async requestSceneId(position: string): Promise<string | undefined> {
-    if (this._positionToSceneId.has(position)) {
-      return this._positionToSceneId.get(position)!
-    }
-    if (!this.futureOfPositionToSceneId.has(position)) {
-      this.futureOfPositionToSceneId.set(position, future<string | undefined>())
-      try {
-        const land = await this.downloadManager.getParcelData(position)
+  async requestSceneIds(tiles: string[]): Promise<(string | undefined)[]> {
+    const futures: Promise<string | undefined>[] = []
 
-        if (!land) {
-          this.futureOfPositionToSceneId
-            .get(position)!
-            .resolve(this.enabledEmpty ? ('Qm' + position + 'm').padEnd(46, '0') : undefined)
-          return this.futureOfPositionToSceneId.get(position)!
-        }
+    const missingTiles: string[] = []
 
-        for (const pos of land.sceneJsonData.scene.parcels) {
-          if (!this._positionToSceneId.has(pos)) {
-            this._positionToSceneId.set(pos, land.sceneId)
-          }
+    for (const tile of tiles) {
+      let promise: IFuture<string | undefined>
 
-          const futurePosition = this.futureOfPositionToSceneId.get(pos)
-          if (futurePosition && futurePosition.isPending) {
-            futurePosition.resolve(land.sceneId)
-          }
-        }
-      } catch (e) {
-        const future = this.futureOfPositionToSceneId.get(position)!
-        // do not cache result if it was not successful
-        this.futureOfPositionToSceneId.delete(position)
-        future.reject(e)
+      if (this._positionToSceneId.has(tile)) {
+        promise = this.futureOfPositionToSceneId.get(tile)!
+      } else {
+        promise = future()
+
+        this.futureOfPositionToSceneId.set(tile, promise)
+        missingTiles.push(tile)
       }
-      return this.futureOfPositionToSceneId.get(position)!
-    } else {
-      const sceneId = await this.futureOfPositionToSceneId.get(position)!
-      this._positionToSceneId.set(position, sceneId)
-      return sceneId
+
+      futures.push(promise)
     }
+
+    if (missingTiles.length > 0) {
+      const pairs = await this.downloadManager.resolveSceneSceneIds(missingTiles)
+
+      for (const [tile, sceneId] of pairs) {
+        let result = sceneId ??
+          // empty scene!
+          (this.enabledEmpty ? ('Qm' + tile + 'm').padEnd(46, '0') : undefined)
+
+        this.futureOfPositionToSceneId.get(tile)!.resolve(result)
+
+        this._positionToSceneId.set(tile, result)
+      }
+    }
+
+    return Promise.all(futures)
   }
 }
