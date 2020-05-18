@@ -184,7 +184,8 @@ const browserInterface = {
   },
 
   OpenWebURL(data: { url: string }) {
-    window.open(data.url, '_blank')
+    const newWindow: any = window.open(data.url, '_blank', 'noopener,noreferrer')
+    if (newWindow != null) newWindow.opener = null
   },
 
   PerformanceReport(samples: string) {
