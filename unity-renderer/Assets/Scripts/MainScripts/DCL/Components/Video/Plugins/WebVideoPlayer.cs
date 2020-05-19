@@ -47,6 +47,12 @@ namespace DCL.Components.Video.Plugin
     private static extern int WebVideoPlayerGetState(string id);
     [DllImport("__Internal")]
     private static extern string WebVideoPlayerGetError(string id);
+    [DllImport("__Internal")]
+    private static extern void WebVideoPlayerSetTime(string id, float second);    
+    [DllImport("__Internal")]
+    private static extern void WebVideoPlayerSetPlaybackRate(string id, float playbackRate);   
+    [DllImport("__Internal")]
+    private static extern void WebVideoPlayerSetLoop(string id, bool loop);         
 #else
         private static void WebVideoPlayerCreate(string id, string url, bool useHls) { }
         private static void WebVideoPlayerRemove(string id) { }
@@ -60,6 +66,9 @@ namespace DCL.Components.Video.Plugin
         private static float WebVideoPlayerGetDuration(string id) { return 0; }
         private static int WebVideoPlayerGetState(string id) { return (int)VideoState.ERROR; }
         private static string WebVideoPlayerGetError(string id) { return "WebVideoPlayer: Platform not supported"; }
+        private static void WebVideoPlayerSetTime(string id, float second) { }
+        private static void WebVideoPlayerSetPlaybackRate(string id, float playbackRate) { }
+        private static void WebVideoPlayerSetLoop(string id, bool loop) { }
 #endif
 
         public WebVideoPlayer(string id, string url, bool useHls)
@@ -76,13 +85,13 @@ namespace DCL.Components.Video.Plugin
                 return;
             }
 
-            switch ((VideoState)WebVideoPlayerGetState(videoPlayerId))
+            switch (WebVideoPlayerGetState(videoPlayerId))
             {
-                case VideoState.ERROR:
+                case (int)VideoState.ERROR:
                     Debug.LogError(WebVideoPlayerGetError(videoPlayerId));
                     isError = true;
                     break;
-                case VideoState.READY:
+                case (int)VideoState.READY:
                     if (!initialized)
                     {
                         initialized = true;
@@ -91,7 +100,7 @@ namespace DCL.Components.Video.Plugin
                         OnTextureReady?.Invoke(texture);
                     }
                     break;
-                case VideoState.PLAYING:
+                case (int)VideoState.PLAYING:
                     if (shouldBePlaying && visible)
                     {
                         int width = WebVideoPlayerGetWidth(videoPlayerId);
@@ -140,8 +149,33 @@ namespace DCL.Components.Video.Plugin
         {
             if (isError)
                 return;
+
             WebVideoPlayerVolume(videoPlayerId, volume);
             this.volume = volume;
+        }
+
+        public void SetTime(float timeSecs)
+        {
+            if (isError)
+                return;
+
+            WebVideoPlayerSetTime(videoPlayerId, timeSecs);
+        }
+
+        public void SetLoop(bool loop)
+        {
+            if (isError)
+                return;
+
+            WebVideoPlayerSetLoop(videoPlayerId, loop);
+        }
+
+        public void SetPlaybackRate(float playbackRate)
+        {
+            if (isError)
+                return;
+
+            WebVideoPlayerSetPlaybackRate(videoPlayerId, playbackRate);
         }
 
         public float GetTime()
