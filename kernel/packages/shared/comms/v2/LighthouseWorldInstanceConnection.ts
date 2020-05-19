@@ -8,6 +8,7 @@ import { Peer as PeerType } from 'decentraland-katalyst-peer/src/Peer'
 import { PacketCallback } from 'decentraland-katalyst-peer/src/types'
 import { ChatData, CommsMessage, ProfileData, SceneData, PositionData } from './proto/comms_pb'
 import { Realm, CommsStatus } from 'shared/dao/types'
+import { compareVersions } from 'atomicHelpers/semverCompare'
 
 import * as Long from 'long'
 declare const window: any
@@ -205,7 +206,10 @@ export class LighthouseWorldInstanceConnection implements WorldInstanceConnectio
       }
     }
 
-    return new Peer(this.lighthouseUrl, this.peerId, this.peerCallback, this.peerConfig)
+    // We require a version greater than 0.1 to not send an ID
+    const idToUse = compareVersions('0.1', this.realm.lighthouseVersion) === -1 ? undefined : this.peerId
+
+    return new Peer(this.lighthouseUrl, idToUse, this.peerCallback, this.peerConfig)
   }
 
   private async cleanUpPeer() {

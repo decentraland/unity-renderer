@@ -54,7 +54,14 @@ function* loadCatalystRealms() {
     yield put(setCatalystCandidates([]))
     yield put(setAddedCatalystCandidates([]))
     yield put(setContentWhitelist([]))
-    yield put(initCatalystRealm({ domain: window.location.origin, catalystName: 'localhost', layer: 'stub' }))
+    yield put(
+      initCatalystRealm({
+        domain: window.location.origin,
+        catalystName: 'localhost',
+        layer: 'stub',
+        lighthouseVersion: '0.1'
+      })
+    )
   }
 
   yield put(catalystRealmInitialized())

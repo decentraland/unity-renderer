@@ -105,7 +105,8 @@ export async function fetchCatalystStatuses(nodes: { domain: string }[]) {
               status,
               elapsed: elapsed!,
               layer,
-              score: score(layer)
+              score: score(layer),
+              lighthouseVersion: result!.version
             }))
           )
         : union,
@@ -174,7 +175,12 @@ export function getRealmFromString(realmString: string, candidates: Candidate[])
 }
 
 function candidateToRealm(candidate: Candidate) {
-  return { catalystName: candidate.catalystName, domain: candidate.domain, layer: candidate.layer.name }
+  return {
+    catalystName: candidate.catalystName,
+    domain: candidate.domain,
+    layer: candidate.layer.name,
+    lighthouseVersion: candidate.lighthouseVersion
+  }
 }
 
 function realmFor(name: string, layer: string, candidates: Candidate[]): Realm | undefined {
