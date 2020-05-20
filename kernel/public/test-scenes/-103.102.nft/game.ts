@@ -19,3 +19,13 @@ entity2.addComponent(
   })
 )
 engine.addEntity(entity2)
+
+const entity3 = new Entity()
+const shapeComponent3 = new NFTShape('ethereum://0xb932a70a57673d89f4acffbe830e8ed7f75fb9e0/9184', Color3.Blue())
+entity3.addComponent(shapeComponent3)
+entity3.addComponent(
+  new Transform({
+    position: new Vector3(7, 1.5, 4)
+  })
+)
+engine.addEntity(entity3)
