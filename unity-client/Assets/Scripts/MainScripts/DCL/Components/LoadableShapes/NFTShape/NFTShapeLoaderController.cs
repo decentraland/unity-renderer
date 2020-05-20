@@ -57,7 +57,7 @@ public class NFTShapeLoaderController : MonoBehaviour
     int BASEMAP_SHADER_PROPERTY = Shader.PropertyToID("_BaseMap");
     int COLOR_SHADER_PROPERTY = Shader.PropertyToID("_BaseColor");
 
-    Texture nftImageTexture;
+    DCL.IWrappedTextureAsset nftAsset;
 
     bool VERBOSE = false;
 
@@ -181,9 +181,9 @@ public class NFTShapeLoaderController : MonoBehaviour
         // We fetch and show the thumbnail image first
         if (!string.IsNullOrEmpty(thumbnailImageURL))
         {
-            yield return Utils.FetchTexture(thumbnailImageURL, (downloadedTex) =>
+            yield return Utils.FetchWrappedTextureAsset(thumbnailImageURL, (downloadedAsset) =>
             {
-                SetFrameImage(downloadedTex);
+                SetFrameImage(downloadedAsset);
             });
         }
 
@@ -191,40 +191,47 @@ public class NFTShapeLoaderController : MonoBehaviour
         bool foundDCLImage = false;
         if (!string.IsNullOrEmpty(dclImageURL))
         {
-            yield return Utils.FetchTexture(dclImageURL, (downloadedTex) =>
+            yield return Utils.FetchWrappedTextureAsset(dclImageURL, (downloadedAsset) =>
             {
+                // Dispose thumbnail
+                if (nftAsset != null) nftAsset.Dispose();
                 foundDCLImage = true;
-                SetFrameImage(downloadedTex, resizeFrameMesh: true);
+                SetFrameImage(downloadedAsset, resizeFrameMesh: true);
             });
         }
 
         // We fall back to a common "preview" image if no "dcl image" was found
         if (!foundDCLImage && !string.IsNullOrEmpty(previewImageURL))
         {
-            yield return Utils.FetchTexture(previewImageURL, (downloadedTex) =>
+            yield return Utils.FetchWrappedTextureAsset(previewImageURL, (downloadedAsset) =>
             {
-                SetFrameImage(downloadedTex, resizeFrameMesh: true);
+                // Dispose thumbnail
+                if (nftAsset != null) nftAsset.Dispose();
+                SetFrameImage(downloadedAsset, resizeFrameMesh: true);
             });
         }
 
         OnLoadingAssetSuccess?.Invoke();
     }
 
-    void SetFrameImage(Texture newTexture, bool resizeFrameMesh = false)
+    void SetFrameImage(DCL.IWrappedTextureAsset newAsset, bool resizeFrameMesh = false)
     {
-        if (newTexture == null) return;
+        if (newAsset == null) return;
 
-        nftImageTexture = newTexture;
+        nftAsset = newAsset;
 
-        meshRenderer.GetPropertyBlock(imageMaterialPropertyBlock, 0);
-        imageMaterialPropertyBlock.SetTexture(BASEMAP_SHADER_PROPERTY, newTexture);
-        imageMaterialPropertyBlock.SetColor(COLOR_SHADER_PROPERTY, Color.white);
-        meshRenderer.SetPropertyBlock(imageMaterialPropertyBlock, 0);
+        var gifAsset = nftAsset as DCL.WrappedGif;
+        if (gifAsset != null)
+        {
+            gifAsset.SetUpdateTextureCallback(UpdateTexture);
+        }
+
+        UpdateTexture(nftAsset.texture);
 
         if (resizeFrameMesh)
         {
-            Vector3 newScale = new Vector3(newTexture.width / NFTDataFetchingSettings.NORMALIZED_DIMENSIONS.x,
-                                            newTexture.height / NFTDataFetchingSettings.NORMALIZED_DIMENSIONS.y, 1f);
+            Vector3 newScale = new Vector3(newAsset.width / NFTDataFetchingSettings.NORMALIZED_DIMENSIONS.x,
+                                            newAsset.height / NFTDataFetchingSettings.NORMALIZED_DIMENSIONS.y, 1f);
 
             meshRenderer.transform.localScale = newScale;
         }
@@ -232,6 +239,14 @@ public class NFTShapeLoaderController : MonoBehaviour
         {
             meshRenderer.transform.localScale = Vector3.one;
         }
+    }
+
+    void UpdateTexture(Texture2D texture)
+    {
+        meshRenderer.GetPropertyBlock(imageMaterialPropertyBlock, 0);
+        imageMaterialPropertyBlock.SetTexture(BASEMAP_SHADER_PROPERTY, texture);
+        imageMaterialPropertyBlock.SetColor(COLOR_SHADER_PROPERTY, Color.white);
+        meshRenderer.SetPropertyBlock(imageMaterialPropertyBlock, 0);
     }
 
     void InitializePerlinNoise()
@@ -266,9 +281,9 @@ public class NFTShapeLoaderController : MonoBehaviour
 
     void OnDestroy()
     {
-        if (nftImageTexture != null)
+        if (nftAsset != null)
         {
-            UnityEngine.Object.Destroy(nftImageTexture);
+            nftAsset.Dispose();
         }
     }
 }

@@ -1,10 +1,8 @@
 {
-    "name": "Utils",
+    "name": "Gif",
     "references": [
-        "Unity.TextMeshPro",
-        "Configuration",
-        "CoroutineHelpers",
-        "WrappedTextureAsset"
+        "GUID:4efd4f6072cb64982ab90a7168745f82",
+        "GUID:3f4c1b4f55716479ea104c4254afe172"
     ],
     "optionalUnityReferences": [],
     "includePlatforms": [],
