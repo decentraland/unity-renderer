@@ -1,0 +1,1 @@
+Taken from https://github.com/menduz/mzcore (MIT)

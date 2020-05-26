@@ -1,0 +1,46 @@
+[
+  {
+    "name": "Delete lib folder",
+    "kind": "RM",
+    "path": "./lib"
+  },
+  {
+    "name": "Delete out folder",
+    "kind": "RM",
+    "path": "./test/out"
+  },
+  {
+    "name": "Scripting host & common files",
+    "kind": "TSC",
+    "config": "./src/tsconfig.json"
+  },
+  {
+    "name": "Scripting client files",
+    "kind": "TSC",
+    "config": "./src/client/tsconfig.json"
+  },
+  {
+    "name": "WS Server",
+    "kind": "TSC",
+    "config": "./test/server/tsconfig.json"
+  },
+  {
+    "name": "Compile test web workers",
+    "kind": "Webpack",
+    "file": "./test/fixtures/*.ts",
+    "target": "webworker"
+  },
+  {
+    "name": "Compile test files",
+    "kind": "Webpack",
+    "file": "./test/fixtures/**/*.test.ts",
+    "target": "webworker"
+  },
+  {
+    "name": "Compile tests web workers",
+    "kind": "Webpack",
+    "file": "./test/scenarios/index.ts",
+    "target": "web",
+    "coverage": true
+  }
+]

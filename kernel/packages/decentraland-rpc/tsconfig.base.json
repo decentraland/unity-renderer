@@ -1,0 +1,31 @@
+{
+  "compilerOptions": {
+    "module": "esnext",
+    "target": "es2017",
+    "emitDecoratorMetadata": true,
+    "experimentalDecorators": true,
+    "sourceMap": false,
+    "inlineSourceMap": true,
+    "inlineSources": true,
+    "moduleResolution": "node",
+    "declaration": true,
+    "strictFunctionTypes": true,
+    "forceConsistentCasingInFileNames": true,
+    "noUnusedLocals": true,
+    "alwaysStrict": true,
+    "allowSyntheticDefaultImports": false,
+    "allowUnreachableCode": false,
+    "allowUnusedLabels": false,
+    "newLine": "LF",
+    "stripInternal": true,
+    "strict": true,
+    "removeComments": true,
+    "pretty": true,
+    "plugins": [
+      {
+        "name": "tslint-language-service"
+      }
+    ]
+  },
+  "exclude": ["node_modules"]
+}

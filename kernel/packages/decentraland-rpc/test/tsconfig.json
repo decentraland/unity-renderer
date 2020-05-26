@@ -1,0 +1,14 @@
+{
+  "compilerOptions": {
+    "target": "es2017",
+    "outDir": "out",
+    "declaration": false,
+    "lib": ["es2017", "dom"],
+    "baseUrl": ".",
+    "paths": {
+      "src": ["../lib"]
+    }
+  },
+  "exclude": ["../src"],
+  "extends": "../tsconfig.base.json"
+}
