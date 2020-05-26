@@ -1,0 +1,21 @@
+{
+  "compilerOptions": {
+    "target": "es5",
+    "diagnostics": false,
+    "inlineSourceMap": false,
+    "inlineSources": false,
+    "sourceMap": true,
+    "moduleResolution": "classic",
+    "stripInternal": true,
+    "pretty": true,
+    "forceConsistentCasingInFileNames": true,
+    "allowSyntheticDefaultImports": true,
+    "experimentalDecorators": true,
+    "emitDecoratorMetadata": true,
+    "noUnusedLocals": true,
+    "lib": ["es5"],
+    "outFile": "dist/amd.js",
+    "baseUrl": "."
+  },
+  "exclude": ["node_modules", "dist"]
+}

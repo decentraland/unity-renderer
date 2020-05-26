@@ -1,0 +1,14 @@
+{
+  "compilerOptions": {
+    "target": "es2015",
+    "module": "commonjs",
+    "declaration": false,
+    "sourceMap": false,
+    "lib": [
+      "es2015",
+      "es2015.promise",
+      "dom"
+    ]
+  },
+  "extends": "../tsconfig.base.json"
+}
