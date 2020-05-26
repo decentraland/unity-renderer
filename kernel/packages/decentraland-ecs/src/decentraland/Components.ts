@@ -379,9 +379,9 @@ export class Texture extends ObservableComponent {
    * Enables texture wrapping for this material.
    * | Value | Type      |
    * |-------|-----------|
-   * |     1 | CLAMP     |
-   * |     2 | WRAP      |
-   * |     3 | MIRROR    |
+   * |     0 | CLAMP     |
+   * |     1 | WRAP      |
+   * |     2 | MIRROR    |
    */
   @ObservableComponent.readonly
   readonly wrap!: number
