@@ -15,7 +15,7 @@ MonoBehaviour:
   baseWearable: {fileID: 3111115372682583232, guid: da54ec2c2cb194fd28a355c63152233f,
     type: 3}
   nftList:
-  - rarity: swanky
+  - rarity: rare
     prefab: {fileID: 3325800490922572695, guid: bb9dc3b0ab578493bb5ebb55d2ad088f,
       type: 3}
   - rarity: epic

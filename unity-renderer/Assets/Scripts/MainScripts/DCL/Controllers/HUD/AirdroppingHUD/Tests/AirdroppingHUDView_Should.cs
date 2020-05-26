@@ -47,7 +47,7 @@ public class AirdroppingHUDView_Should : TestsBase
         view.ShowItemScreen(new AirdroppingHUDController.ItemModel()
         {
             name = "item",
-            rarity = "swanky",
+            rarity = "rare",
             subtitle = "subtitle",
             type = "collectible",
             thumbnailURL = "url"
@@ -65,12 +65,12 @@ public class AirdroppingHUDView_Should : TestsBase
     [Test]
     public void ShowSummaryScreenProperly()
     {
-        view.ShowSummaryScreen(new []
+        view.ShowSummaryScreen(new[]
         {
             new AirdroppingHUDController.ItemModel()
             {
                 name = "item",
-                rarity = "swanky",
+                rarity = "rare",
                 subtitle = "subtitle",
                 type = "collectible",
                 thumbnailURL = "url"
@@ -78,7 +78,7 @@ public class AirdroppingHUDView_Should : TestsBase
             new AirdroppingHUDController.ItemModel()
             {
                 name = "item2",
-                rarity = "swanky",
+                rarity = "rare",
                 subtitle = "subtitle2",
                 type = "collectible",
                 thumbnailURL = "url"

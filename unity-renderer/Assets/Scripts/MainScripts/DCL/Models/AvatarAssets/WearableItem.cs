@@ -132,7 +132,7 @@ public class WearableItem : Item
     {
         switch (rarity)
         {
-            case WearableLiterals.ItemRarity.SWANKY:
+            case WearableLiterals.ItemRarity.RARE:
                 return 5000;
             case WearableLiterals.ItemRarity.EPIC:
                 return 1000;

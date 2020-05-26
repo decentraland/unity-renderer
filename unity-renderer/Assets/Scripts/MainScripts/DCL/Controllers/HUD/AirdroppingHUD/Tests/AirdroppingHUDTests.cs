@@ -19,12 +19,12 @@ public class AirdroppingHUDController_Should : TestsBase
             id = "id",
             title = "title",
             subtitle = "subtitle",
-            items = new []
+            items = new[]
             {
                 new AirdroppingHUDController.ItemModel()
                 {
                     name = "itemName1",
-                    rarity = "swanky",
+                    rarity = "rare",
                     subtitle = "itemSubtitle",
                     type = "collectible",
                     thumbnailURL = "theUrl"
@@ -32,7 +32,7 @@ public class AirdroppingHUDController_Should : TestsBase
                 new AirdroppingHUDController.ItemModel()
                 {
                     name = "itemName2",
-                    rarity = "swanky",
+                    rarity = "rare",
                     subtitle = "itemSubtitle",
                     type = "collectible",
                     thumbnailURL = "theUrl"

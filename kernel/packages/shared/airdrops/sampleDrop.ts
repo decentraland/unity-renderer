@@ -5,7 +5,7 @@ export const sampleDropData = {
     {
       name: 'Neo Glasses',
       thumbnailURL: 'https://content.decentraland.org/contents/QmbcbFZd7qSMXkfLx1gbKMGS3j6TXBoeRbdESRYNk84GH4',
-      rarity: 'swanky',
+      rarity: 'rare',
       type: 'collectible'
     },
     {

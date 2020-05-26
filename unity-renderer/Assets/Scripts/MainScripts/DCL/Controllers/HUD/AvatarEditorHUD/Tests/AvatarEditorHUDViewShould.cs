@@ -146,7 +146,7 @@ namespace AvatarEditorHUD_Tests
         }
 
         [Test]
-        [TestCase(WearableLiterals.ItemRarity.SWANKY)]
+        [TestCase(WearableLiterals.ItemRarity.RARE)]
         [TestCase(WearableLiterals.ItemRarity.EPIC)]
         [TestCase(WearableLiterals.ItemRarity.LEGENDARY)]
         [TestCase(WearableLiterals.ItemRarity.MYTHIC)]

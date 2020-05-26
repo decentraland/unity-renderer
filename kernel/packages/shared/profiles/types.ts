@@ -1,5 +1,6 @@
 import { ReadOnlyColor4 } from 'decentraland-ecs/src'
 import { AuthLink } from 'dcl-crypto'
+import { RarityEnum } from '../airdrops/interface'
 
 export type Catalog = Wearable[]
 
@@ -67,6 +68,7 @@ export type Wearable = {
   tags: string[]
   hides?: string[]
   replaces?: string[]
+  rarity: RarityEnum
   representations: BodyShapeRespresentation[]
 }
 
