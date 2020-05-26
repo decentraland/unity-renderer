@@ -35,7 +35,7 @@ public static class WearableLiterals
 
     public static class ItemRarity
     {
-        public const string SWANKY = "swanky";
+        public const string RARE = "rare";
         public const string EPIC = "epic";
         public const string LEGENDARY = "legendary";
         public const string MYTHIC = "mythic";

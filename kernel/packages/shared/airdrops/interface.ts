@@ -8,7 +8,7 @@ export type AirdropInfo = {
   id: string
 } & AirdropInput
 
-export type RarityEnum = 'swanky' | 'rare' | 'mystic' | 'legendary' | 'unique'
+export type RarityEnum = 'common' | 'uncommon' | 'rare' | 'epic' | 'mythic' | 'legendary' | 'unique'
 
 export type AirdropItem = {
   name: string

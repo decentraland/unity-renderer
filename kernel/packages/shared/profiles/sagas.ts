@@ -74,6 +74,7 @@ import { backupProfile } from 'shared/profiles/generateRandomUserProfile'
 import { getTutorialBaseURL } from '../location'
 import { takeLatestById } from './utils/takeLatestById'
 import { UnityInterfaceContainer } from 'unity-interface/dcl'
+import { RarityEnum } from '../airdrops/interface'
 
 type Timestamp = number
 type ContentFileHash = string
@@ -138,6 +139,16 @@ function overrideBaseUrl(wearable: Wearable) {
   }
 }
 
+function overrideSwankyRarity(wearable: Wearable) {
+  if (wearable.rarity as any === 'swanky') {
+    return {
+      ...wearable,
+      rarity: 'rare' as RarityEnum
+    }
+  }
+  return wearable
+}
+
 export function* initialLoad() {
   if (WORLD_EXPLORER) {
     try {
@@ -150,6 +161,8 @@ export function* initialLoad() {
       const catalog = collections
         .reduce((flatten, collection) => flatten.concat(collection.wearables), [] as Wearable[])
         .map(overrideBaseUrl)
+        // TODO - remove once all swankies are removed from service! - moliva - 22/05/2020
+        .map(overrideSwankyRarity)
       const baseAvatars = catalog.filter((_: Wearable) => _.tags && !_.tags.includes('exclusive'))
       const baseExclusive = catalog.filter((_: Wearable) => _.tags && _.tags.includes('exclusive'))
       if (!(yield select(isInitialized))) {

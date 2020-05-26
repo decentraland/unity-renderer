@@ -24,7 +24,7 @@ MonoBehaviour:
   - key: mythic
     prefab: {fileID: 8059322503478537989, guid: 344486b510747364f9765a2461c915c2,
       type: 3}
-  - key: swanky
+  - key: rare
     prefab: {fileID: 8059322503478537989, guid: 2e0dd06b78c636c4785c836c5c7c5d3f,
       type: 3}
   - key: unique
