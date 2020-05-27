@@ -27,6 +27,10 @@ var WebVideoPlayer = {
       const hls = new Hls();
       hls.loadSource(videoUrl);
       hls.attachMedia(vid);
+      hls.on(Hls.Events.ERROR, function () {
+        videoData.state = videoState.ERROR;
+        videoData.error = "Hls error";
+      });
       videoData["hlsInstance"] = hls;
     } else {
       vid.src = videoUrl;

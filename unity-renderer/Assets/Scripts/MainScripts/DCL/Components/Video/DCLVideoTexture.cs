@@ -91,6 +91,16 @@ namespace DCL.Components
                 {
                     yield return null;
                 }
+
+                if (texturePlayer.isError)
+                {
+                    if (texturePlayerUpdateRoutine != null)
+                    {
+                        CoroutineStarter.Stop(texturePlayerUpdateRoutine);
+                        texturePlayerUpdateRoutine = null;
+                    }
+                    yield break;
+                }
                 texture = texturePlayer.texture;
                 isPlayStateDirty = true;
             }
