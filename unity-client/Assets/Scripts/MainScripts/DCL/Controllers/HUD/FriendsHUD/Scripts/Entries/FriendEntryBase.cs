@@ -7,10 +7,12 @@ public class FriendEntryBase : MonoBehaviour, IPointerEnterHandler, IPointerExit
 {
     public class Model
     {
-        public FriendsController.PresenceStatus status;
+        public PresenceStatus status;
         public string userName;
         public Vector2 coords;
         public string realm;
+        public string realmServerName;
+        public string realmLayerName;
         public Sprite avatarImage;
         public bool blocked;
 
@@ -43,13 +45,13 @@ public class FriendEntryBase : MonoBehaviour, IPointerEnterHandler, IPointerExit
         menuButton.onClick.AddListener(() => OnMenuToggle?.Invoke(this));
     }
 
-    public virtual void OnPointerEnter(PointerEventData eventData)
+    public void OnPointerEnter(PointerEventData eventData)
     {
         backgroundImage.sprite = hoveredBackgroundSprite;
         menuButton.gameObject.SetActive(true);
     }
 
-    public virtual void OnPointerExit(PointerEventData eventData)
+    public void OnPointerExit(PointerEventData eventData)
     {
         backgroundImage.sprite = unhoveredBackgroundSprite;
         menuButton.gameObject.SetActive(false);

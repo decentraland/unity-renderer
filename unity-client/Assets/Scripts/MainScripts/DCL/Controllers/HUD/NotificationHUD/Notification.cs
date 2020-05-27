@@ -34,6 +34,8 @@ public class Notification : MonoBehaviour
 
     Coroutine timerCoroutine;
 
+    ShowHideAnimator showHideAnimator;
+
     private void OnEnable()
     {
         if (actionButton != null)
@@ -46,17 +48,33 @@ public class Notification : MonoBehaviour
             actionButton.onClick.RemoveAllListeners();
 
         StopTimer();
+
+        if (showHideAnimator != null)
+            showHideAnimator.OnWillFinishHide -= DismissInternal;
     }
 
     private void OnDestroy()
     {
+        if (showHideAnimator != null)
+            showHideAnimator.OnWillFinishHide -= DismissInternal;
+
         StopTimer();
     }
 
 
-    public void Initialize(Notification.Model model)
+    public void Show(Notification.Model model)
     {
         gameObject.SetActive(true);
+
+        if (showHideAnimator == null)
+            showHideAnimator = GetComponent<ShowHideAnimator>();
+
+        if (showHideAnimator != null)
+        {
+            showHideAnimator.OnWillFinishHide -= DismissInternal;
+            showHideAnimator.Show();
+        }
+
         this.model = model;
 
         Debug.Log("Notification Initialize... destroy on finish: " + model.destroyOnFinish);
@@ -118,8 +136,35 @@ public class Notification : MonoBehaviour
     {
         StopTimer();
 
+        if (showHideAnimator != null)
+        {
+            showHideAnimator.OnWillFinishHide -= DismissInternal;
+            showHideAnimator.OnWillFinishHide += DismissInternal;
+            showHideAnimator.Hide();
+        }
+        else
+        {
+            DismissInternal();
+        }
+
         if (this != null)
+        {
             OnNotificationDismissed?.Invoke(this);
+        }
+    }
+
+    private void DismissInternal(ShowHideAnimator animator = null)
+    {
+        if (this == null)
+            return;
+
+        if (showHideAnimator != null)
+            showHideAnimator.OnWillFinishHide -= DismissInternal;
+
+        if (model.destroyOnFinish)
+            Destroy(gameObject);
+        else
+            gameObject.SetActive(false);
     }
 
     private void StopTimer()

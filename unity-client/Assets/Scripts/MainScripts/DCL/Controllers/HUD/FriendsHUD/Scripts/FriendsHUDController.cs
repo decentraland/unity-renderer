@@ -15,7 +15,6 @@ public class FriendsHUDController : IHUD
 
     IFriendsController friendsController;
     public event System.Action<string> OnPressWhisper;
-    InputAction_Trigger toggleTrigger;
 
     UserProfile ownUserProfile;
 
@@ -38,7 +37,6 @@ public class FriendsHUDController : IHUD
         view.friendRequestsList.contextMenuPanel.OnBlock += Entry_OnBlock;
         view.friendRequestsList.contextMenuPanel.OnPassport += Entry_OnPassport;
 
-        view.friendsList.OnJumpIn += Entry_OnJumpIn;
         view.friendsList.OnWhisper += Entry_OnWhisper;
         view.friendsList.contextMenuPanel.OnBlock += Entry_OnBlock;
         view.friendsList.contextMenuPanel.OnPassport += Entry_OnPassport;
@@ -46,14 +44,31 @@ public class FriendsHUDController : IHUD
 
         view.friendsList.OnDeleteConfirmation += Entry_OnDelete;
 
-        toggleTrigger = Resources.Load<InputAction_Trigger>("ToggleFriends");
-        toggleTrigger.OnTriggered += OnHotkeyPress;
-
         if (ownUserProfile != null)
         {
             this.ownUserProfile = ownUserProfile;
             ownUserProfile.OnUpdate += OnUserProfileUpdate;
         }
+
+        if (friendsController != null)
+        {
+            if (friendsController.isInitialized)
+            {
+                view.HideSpinner();
+            }
+            else
+            {
+                view.ShowSpinner();
+                friendsController.OnInitialized -= FriendsController_OnInitialized;
+                friendsController.OnInitialized += FriendsController_OnInitialized;
+            }
+        }
+    }
+
+    private void FriendsController_OnInitialized()
+    {
+        friendsController.OnInitialized -= FriendsController_OnInitialized;
+        view.HideSpinner();
     }
 
     private void OnUserProfileUpdate(UserProfile profile)
@@ -76,17 +91,9 @@ public class FriendsHUDController : IHUD
         }
     }
 
-    private void OnHotkeyPress(DCLAction_Trigger action)
-    {
-        if (action != DCLAction_Trigger.ToggleFriends)
-            return;
-
-        SetVisibility(!view.gameObject.activeSelf);
-    }
-
     private void Entry_OnRequestSent(string userId)
     {
-        WebInterface.UpdateFriendshipStatus(new FriendsController.FriendshipUpdateStatusMessage() { userId = userId, action = FriendsController.FriendshipAction.REQUESTED_TO });
+        WebInterface.UpdateFriendshipStatus(new FriendsController.FriendshipUpdateStatusMessage() { userId = userId, action = FriendshipAction.REQUESTED_TO });
     }
 
     private void OnUpdateUserStatus(string userId, FriendsController.UserStatus newStatus)
@@ -102,9 +109,17 @@ public class FriendsHUDController : IHUD
         model.coords = newStatus.position;
 
         if (newStatus.realm != null)
+        {
             model.realm = $"{newStatus.realm.serverName.ToUpperFirst()} {newStatus.realm.layer.ToUpperFirst()}";
+            model.realmServerName = newStatus.realm.serverName;
+            model.realmLayerName = newStatus.realm.layer;
+        }
         else
+        {
             model.realm = string.Empty;
+            model.realmServerName = string.Empty;
+            model.realmLayerName = string.Empty;
+        }
 
         view.friendsList.UpdateEntry(userId, model);
         view.friendRequestsList.UpdateEntry(userId, model);
@@ -115,7 +130,7 @@ public class FriendsHUDController : IHUD
         view.friendRequestsList.DisplayFriendUserNotFound();
     }
 
-    private void OnUpdateFriendship(string userId, FriendsController.FriendshipAction friendshipAction)
+    private void OnUpdateFriendship(string userId, FriendshipAction friendshipAction)
     {
         var userProfile = UserProfileController.userProfilesCatalog.Get(userId);
 
@@ -143,30 +158,30 @@ public class FriendsHUDController : IHUD
 
         switch (friendshipAction)
         {
-            case FriendsController.FriendshipAction.NONE:
+            case FriendshipAction.NONE:
                 userProfile.OnFaceSnapshotReadyEvent -= friendEntryModel.OnSpriteUpdate;
                 view.friendRequestsList.RemoveEntry(userId);
                 view.friendsList.RemoveEntry(userId);
                 break;
-            case FriendsController.FriendshipAction.APPROVED:
+            case FriendshipAction.APPROVED:
                 view.friendRequestsList.RemoveEntry(userId);
                 view.friendsList.CreateOrUpdateEntry(userId, friendEntryModel);
                 break;
-            case FriendsController.FriendshipAction.REJECTED:
+            case FriendshipAction.REJECTED:
                 userProfile.OnFaceSnapshotReadyEvent -= friendEntryModel.OnSpriteUpdate;
                 view.friendRequestsList.RemoveEntry(userId);
                 break;
-            case FriendsController.FriendshipAction.CANCELLED:
+            case FriendshipAction.CANCELLED:
                 userProfile.OnFaceSnapshotReadyEvent -= friendEntryModel.OnSpriteUpdate;
                 view.friendRequestsList.RemoveEntry(userId);
                 break;
-            case FriendsController.FriendshipAction.REQUESTED_FROM:
+            case FriendshipAction.REQUESTED_FROM:
                 view.friendRequestsList.CreateOrUpdateEntry(userId, friendEntryModel, true);
                 break;
-            case FriendsController.FriendshipAction.REQUESTED_TO:
+            case FriendshipAction.REQUESTED_TO:
                 view.friendRequestsList.CreateOrUpdateEntry(userId, friendEntryModel, false);
                 break;
-            case FriendsController.FriendshipAction.DELETED:
+            case FriendshipAction.DELETED:
                 userProfile.OnFaceSnapshotReadyEvent -= friendEntryModel.OnSpriteUpdate;
                 view.friendRequestsList.RemoveEntry(userId);
                 view.friendsList.RemoveEntry(userId);
@@ -234,17 +249,12 @@ public class FriendsHUDController : IHUD
             WebInterface.SendUnblockPlayer(entry.userId);
     }
 
-    private void Entry_OnJumpIn(FriendEntry entry)
-    {
-        WebInterface.GoTo((int)entry.model.coords.x, (int)entry.model.coords.y);
-    }
-
     private void Entry_OnDelete(FriendEntryBase entry)
     {
         WebInterface.UpdateFriendshipStatus(
             new FriendsController.FriendshipUpdateStatusMessage()
             {
-                action = FriendsController.FriendshipAction.DELETED,
+                action = FriendshipAction.DELETED,
                 userId = entry.userId
             });
     }
@@ -254,7 +264,7 @@ public class FriendsHUDController : IHUD
         WebInterface.UpdateFriendshipStatus(
             new FriendsController.FriendshipUpdateStatusMessage()
             {
-                action = FriendsController.FriendshipAction.REJECTED,
+                action = FriendshipAction.REJECTED,
                 userId = entry.userId
             });
     }
@@ -264,7 +274,7 @@ public class FriendsHUDController : IHUD
         WebInterface.UpdateFriendshipStatus(
             new FriendsController.FriendshipUpdateStatusMessage()
             {
-                action = FriendsController.FriendshipAction.CANCELLED,
+                action = FriendshipAction.CANCELLED,
                 userId = entry.userId
             });
     }
@@ -274,7 +284,7 @@ public class FriendsHUDController : IHUD
         WebInterface.UpdateFriendshipStatus(
             new FriendsController.FriendshipUpdateStatusMessage()
             {
-                action = FriendsController.FriendshipAction.APPROVED,
+                action = FriendshipAction.APPROVED,
                 userId = entry.userId
             });
     }
@@ -283,11 +293,10 @@ public class FriendsHUDController : IHUD
     {
         if (this.friendsController != null)
         {
+            this.friendsController.OnInitialized -= FriendsController_OnInitialized;
             this.friendsController.OnUpdateFriendship -= OnUpdateFriendship;
             this.friendsController.OnUpdateUserStatus -= OnUpdateUserStatus;
         }
-
-        toggleTrigger.OnTriggered -= OnHotkeyPress;
 
         if (view != null)
         {
@@ -305,7 +314,9 @@ public class FriendsHUDController : IHUD
         if (visible)
         {
             UpdateNotificationsCounter();
+
+            if (view.friendsButton.interactable)
+                view.friendsButton.onClick.Invoke();
         }
     }
-
 }

@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Reflection;
 using UnityEngine;
+using UnityEngine.Assertions;
 
 public class HUDController : MonoBehaviour
 {
@@ -16,18 +17,40 @@ public class HUDController : MonoBehaviour
     }
 
     public AvatarHUDController avatarHud => GetHUDElement(HUDElementID.AVATAR) as AvatarHUDController;
-    public NotificationHUDController notificationHud => GetHUDElement(HUDElementID.NOTIFICATION) as NotificationHUDController;
+
+    public NotificationHUDController notificationHud =>
+        GetHUDElement(HUDElementID.NOTIFICATION) as NotificationHUDController;
+
     public MinimapHUDController minimapHud => GetHUDElement(HUDElementID.MINIMAP) as MinimapHUDController;
-    public AvatarEditorHUDController avatarEditorHud => GetHUDElement(HUDElementID.AVATAR_EDITOR) as AvatarEditorHUDController;
+
+    public AvatarEditorHUDController avatarEditorHud =>
+        GetHUDElement(HUDElementID.AVATAR_EDITOR) as AvatarEditorHUDController;
+
     public SettingsHUDController settingsHud => GetHUDElement(HUDElementID.SETTINGS) as SettingsHUDController;
-    public ExpressionsHUDController expressionsHud => GetHUDElement(HUDElementID.EXPRESSIONS) as ExpressionsHUDController;
-    public PlayerInfoCardHUDController playerInfoCardHud => GetHUDElement(HUDElementID.PLAYER_INFO_CARD) as PlayerInfoCardHUDController;
-    public WelcomeHUDController messageOfTheDayHud => GetHUDElement(HUDElementID.MESSAGE_OF_THE_DAY) as WelcomeHUDController;
-    public AirdroppingHUDController airdroppingHud => GetHUDElement(HUDElementID.AIRDROPPING) as AirdroppingHUDController;
-    public TermsOfServiceHUDController termsOfServiceHud => GetHUDElement(HUDElementID.TERMS_OF_SERVICE) as TermsOfServiceHUDController;
+
+    public ExpressionsHUDController expressionsHud =>
+        GetHUDElement(HUDElementID.EXPRESSIONS) as ExpressionsHUDController;
+
+    public PlayerInfoCardHUDController playerInfoCardHud =>
+        GetHUDElement(HUDElementID.PLAYER_INFO_CARD) as PlayerInfoCardHUDController;
+
+    public WelcomeHUDController messageOfTheDayHud =>
+        GetHUDElement(HUDElementID.MESSAGE_OF_THE_DAY) as WelcomeHUDController;
+
+    public AirdroppingHUDController airdroppingHud =>
+        GetHUDElement(HUDElementID.AIRDROPPING) as AirdroppingHUDController;
+
+    public TermsOfServiceHUDController termsOfServiceHud =>
+        GetHUDElement(HUDElementID.TERMS_OF_SERVICE) as TermsOfServiceHUDController;
+
     public TaskbarHUDController taskbarHud => GetHUDElement(HUDElementID.TASKBAR) as TaskbarHUDController;
-    public WorldChatWindowHUDController worldChatWindowHud => GetHUDElement(HUDElementID.WORLD_CHAT_WINDOW) as WorldChatWindowHUDController;
-    public PrivateChatWindowHUDController privateChatWindowHud => GetHUDElement(HUDElementID.PRIVATE_CHAT_WINDOW) as PrivateChatWindowHUDController;
+
+    public WorldChatWindowHUDController worldChatWindowHud =>
+        GetHUDElement(HUDElementID.WORLD_CHAT_WINDOW) as WorldChatWindowHUDController;
+
+    public PrivateChatWindowHUDController privateChatWindowHud =>
+        GetHUDElement(HUDElementID.PRIVATE_CHAT_WINDOW) as PrivateChatWindowHUDController;
+
     public FriendsHUDController friendsHud => GetHUDElement(HUDElementID.FRIENDS) as FriendsHUDController;
 
     public Dictionary<HUDElementID, IHUD> hudElements { get; private set; } = new Dictionary<HUDElementID, IHUD>();
@@ -116,6 +139,7 @@ public class HUDController : MonoBehaviour
                     ownUserProfile.OnUpdate += OwnUserProfileUpdated;
                     OwnUserProfileUpdated(ownUserProfile);
                 }
+
                 break;
             case HUDElementID.NOTIFICATION:
                 CreateHudElement<NotificationHUDController>(configuration, hudElementId);
@@ -142,26 +166,49 @@ public class HUDController : MonoBehaviour
                 break;
             case HUDElementID.WORLD_CHAT_WINDOW:
                 CreateHudElement<WorldChatWindowHUDController>(configuration, hudElementId);
-                worldChatWindowHud?.Initialize(ChatController.i, DCL.InitialSceneReferences.i?.mouseCatcher);
-                taskbarHud?.AddWorldChatWindow(worldChatWindowHud);
+                if (worldChatWindowHud != null)
+                {
+                    worldChatWindowHud.Initialize(ChatController.i, DCL.InitialSceneReferences.i?.mouseCatcher);
+                    worldChatWindowHud.OnPressPrivateMessage -= OpenPrivateChatWindow;
+                    worldChatWindowHud.OnPressPrivateMessage += OpenPrivateChatWindow;
+                    worldChatWindowHud.view.OnDeactivatePreview -= View_OnDeactivatePreview;
+                    worldChatWindowHud.view.OnDeactivatePreview += View_OnDeactivatePreview;
 
-                CreateHudElement<PrivateChatWindowHUDController>(configuration, HUDElementID.PRIVATE_CHAT_WINDOW);
-                privateChatWindowHud?.Initialize(ChatController.i);
-                taskbarHud?.AddPrivateChatWindow(privateChatWindowHud);
+                    taskbarHud?.AddWorldChatWindow(worldChatWindowHud);
+                }
+
                 break;
             case HUDElementID.FRIENDS:
                 CreateHudElement<FriendsHUDController>(configuration, hudElementId);
-
                 if (friendsHud != null)
                 {
                     friendsHud.Initialize(FriendsController.i, UserProfile.GetOwnUserProfile());
-                    friendsHud.OnPressWhisper -= FriendsHud_OnPressWhisper;
-                    friendsHud.OnPressWhisper += FriendsHud_OnPressWhisper;
+                    friendsHud.OnPressWhisper -= OpenPrivateChatWindow;
+                    friendsHud.OnPressWhisper += OpenPrivateChatWindow;
+
+                    taskbarHud?.AddFriendsWindow(friendsHud);
                 }
-                taskbarHud?.AddFriendsWindow(friendsHud);
+
+                CreateHudElement<PrivateChatWindowHUDController>(configuration, HUDElementID.PRIVATE_CHAT_WINDOW);
+                if (privateChatWindowHud != null)
+                {
+                    privateChatWindowHud.Initialize(ChatController.i);
+                    privateChatWindowHud.OnPressBack -= PrivateChatWindowHud_OnPressBack;
+                    privateChatWindowHud.OnPressBack += PrivateChatWindowHud_OnPressBack;
+
+                    taskbarHud?.AddPrivateChatWindow(privateChatWindowHud);
+                }
                 break;
             case HUDElementID.TASKBAR:
                 CreateHudElement<TaskbarHUDController>(configuration, hudElementId);
+                if (taskbarHud != null)
+                {
+                    taskbarHud.Initialize(DCL.InitialSceneReferences.i?.mouseCatcher, ChatController.i,
+                        FriendsController.i);
+                    taskbarHud.OnAnyTaskbarButtonClicked -= TaskbarHud_onAnyTaskbarButtonClicked;
+                    taskbarHud.OnAnyTaskbarButtonClicked += TaskbarHud_onAnyTaskbarButtonClicked;
+                }
+
                 break;
             case HUDElementID.MESSAGE_OF_THE_DAY:
                 CreateHudElement<WelcomeHUDController>(configuration, hudElementId);
@@ -172,14 +219,30 @@ public class HUDController : MonoBehaviour
                 break;
         }
 
-        GetHUDElement(hudElementId)?.SetVisibility(configuration.active && configuration.visible);
+        var hudElement = GetHUDElement(hudElementId);
+
+        if (hudElement != null)
+            hudElement.SetVisibility(configuration.active && configuration.visible);
     }
 
-    private void FriendsHud_OnPressWhisper(string targetUserId)
+    private void OpenPrivateChatWindow(string targetUserId)
     {
-        privateChatWindowHud.Configure(targetUserId);
-        privateChatWindowHud.SetVisibility(true);
-        privateChatWindowHud.ForceFocus();
+        taskbarHud?.OpenPrivateChatTo(targetUserId);
+    }
+
+    private void View_OnDeactivatePreview()
+    {
+        playerInfoCardHud?.CloseCard();
+    }
+
+    private void PrivateChatWindowHud_OnPressBack()
+    {
+        taskbarHud?.OpenFriendsWindow();
+    }
+
+    private void TaskbarHud_onAnyTaskbarButtonClicked()
+    {
+        playerInfoCardHud?.CloseCard();
     }
 
     public void CreateHudElement<T>(HUDConfiguration config, HUDElementID id)
@@ -242,6 +305,21 @@ public class HUDController : MonoBehaviour
             avatarHud.OnSettingsPressed -= ShowSettings;
         }
 
+        if (worldChatWindowHud != null)
+        {
+            worldChatWindowHud.OnPressPrivateMessage -= OpenPrivateChatWindow;
+            worldChatWindowHud.view.OnDeactivatePreview -= View_OnDeactivatePreview;
+        }
+
+        if (privateChatWindowHud != null)
+            privateChatWindowHud.OnPressBack -= PrivateChatWindowHud_OnPressBack;
+
+        if (friendsHud != null)
+            friendsHud.OnPressWhisper -= OpenPrivateChatWindow;
+
+        if (taskbarHud != null)
+            taskbarHud.OnAnyTaskbarButtonClicked -= TaskbarHud_onAnyTaskbarButtonClicked;
+
         foreach (var kvp in hudElements)
         {
             kvp.Value?.Dispose();
@@ -263,6 +341,7 @@ public class HUDController : MonoBehaviour
         var newModel = ownUserProfile.CloneModel();
         newModel.name = "FakePassport";
         newModel.description = "Fake Description for Testing";
+        newModel.userId = "test-id";
         newModel.inventory = new[]
         {
             "dcl://halloween_2019/machete_headband_top_head",
@@ -272,7 +351,7 @@ public class HUDController : MonoBehaviour
         };
 
         UserProfileController.i.AddUserProfileToCatalog(newModel);
-        Resources.Load<StringVariable>("CurrentPlayerInfoCardName").Set(newModel.name);
+        Resources.Load<StringVariable>("CurrentPlayerInfoCardId").Set(newModel.userId);
     }
 #endif
 }

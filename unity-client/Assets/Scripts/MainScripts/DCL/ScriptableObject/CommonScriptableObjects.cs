@@ -53,6 +53,12 @@ public static class CommonScriptableObjects
     public static RendererState rendererState => GetOrLoad(ref rendererStateValue, "ScriptableObjects/RendererState");
     private static RendererState rendererStateValue;
 
+    private static ReadMessagesDictionary lastReadChatMessagesDictionary;
+    public static ReadMessagesDictionary lastReadChatMessages => GetOrLoad(ref lastReadChatMessagesDictionary, "ScriptableObjects/LastReadChatMessages");
+
+    private static LongVariable lastReadChatMessagesValue;
+    public static LongVariable lastReadWorldChatMessages => GetOrLoad(ref lastReadChatMessagesValue, "ScriptableObjects/LastReadWorldChatMessages");
+
     internal static T GetOrLoad<T>(ref T variable, string path) where T : Object
     {
         if (variable == null)

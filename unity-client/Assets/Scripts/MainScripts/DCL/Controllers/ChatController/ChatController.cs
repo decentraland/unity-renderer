@@ -5,17 +5,22 @@ using UnityEngine;
 
 public interface IChatController
 {
+    double initTime { get; }
     event Action<ChatMessage> OnAddMessage;
     List<ChatMessage> GetEntries();
+
+    void AddMessageToChatWindow(string jsonMessage);
 }
 
 public class ChatController : MonoBehaviour, IChatController
 {
     public static ChatController i { get; private set; }
+    public double initTime { get; private set; }
 
     public void Awake()
     {
         i = this;
+        initTime = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds() / 1000.0;
     }
 
     [NonSerialized] public List<ChatMessage> entries = new List<ChatMessage>();

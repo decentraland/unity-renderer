@@ -22,7 +22,7 @@ export type SetContentWhitelist = ReturnType<typeof setContentWhitelist>
 
 export const INIT_CATALYST_REALM = 'Init Catalyst realm'
 export const initCatalystRealm = (realm: Realm) => action(INIT_CATALYST_REALM, realm)
-export type initCatalystRealm = ReturnType<typeof initCatalystRealm>
+export type InitCatalystRealm = ReturnType<typeof initCatalystRealm>
 
 export const SET_CATALYST_REALM = 'Set Catalyst realm'
 export const setCatalystRealm = (realm: Realm) => action(SET_CATALYST_REALM, realm)

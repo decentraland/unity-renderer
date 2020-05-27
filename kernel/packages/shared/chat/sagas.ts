@@ -39,6 +39,7 @@ import { AUTH_SUCCESSFUL } from '../loading/types'
 import { findProfileByName } from '../profiles/selectors'
 import { isRealmInitialized } from 'shared/dao/selectors'
 import { CATALYST_REALM_INITIALIZED } from 'shared/dao/actions'
+import { isFriend } from './selectors'
 
 declare const globalThis: UnityInterfaceContainer & StoreContainer
 
@@ -422,6 +423,17 @@ function initChatCommands() {
         sender: 'Decentraland',
         timestamp: Date.now(),
         body: `Cannot find user ${userName}`
+      }
+    }
+
+    const _isFriend: ReturnType<typeof isFriend> = isFriend(globalThis.globalStore.getState(), user.userId)
+    if (!_isFriend) {
+      return {
+        messageId: uuid(),
+        messageType: ChatMessageType.SYSTEM,
+        sender: 'Decentraland',
+        timestamp: Date.now(),
+        body: `Trying to send a message to a non friend ${userName}`
       }
     }
 

@@ -5,7 +5,7 @@ using UnityEngine.UI;
 public class FriendsHUDView : MonoBehaviour
 {
     public const string NOTIFICATIONS_ID = "Friends";
-    static int ANIM_PROPERTY_SELECTED = Animator.StringToHash("Selected");
+    static readonly int ANIM_PROPERTY_SELECTED = Animator.StringToHash("Selected");
 
     const string VIEW_PATH = "FriendsHUD";
 
@@ -14,12 +14,13 @@ public class FriendsHUDView : MonoBehaviour
     public Button friendRequestsButton;
     public FriendsTabView friendsList;
     public FriendRequestsTabView friendRequestsList;
+    public GameObject spinner;
 
-    internal Coroutine currentNotificationRoutine = null;
-    internal GameObject currentNotification = null;
     public float notificationsDuration = 3f;
 
     FriendsHUDController controller;
+
+    public event System.Action OnClose;
 
     public static FriendsHUDView Create(FriendsHUDController controller)
     {
@@ -36,13 +37,37 @@ public class FriendsHUDView : MonoBehaviour
         return result;
     }
 
+    public void ShowSpinner()
+    {
+        spinner.gameObject.SetActive(true);
+
+        friendsList.gameObject.SetActive(false);
+        friendRequestsList.gameObject.SetActive(false);
+
+        friendsButton.interactable = false;
+        friendRequestsButton.interactable = false;
+    }
+
+    public void HideSpinner()
+    {
+        spinner.gameObject.SetActive(false);
+
+        friendsList.gameObject.SetActive(true);
+        friendRequestsList.gameObject.SetActive(false);
+
+        friendsButton.interactable = true;
+        friendsButton.onClick.Invoke();
+
+        friendRequestsButton.interactable = true;
+    }
+
     private void Initialize(FriendsHUDController controller)
     {
         this.controller = controller;
         friendsList.Initialize(this);
         friendRequestsList.Initialize(this);
 
-        closeButton.onClick.AddListener(Toggle);
+        closeButton.onClick.AddListener(OnCloseButtonPressed);
 
         friendsButton.onClick.AddListener(() =>
         {
@@ -59,11 +84,15 @@ public class FriendsHUDView : MonoBehaviour
             friendsList.gameObject.SetActive(false);
             friendRequestsList.gameObject.SetActive(true);
         });
+
+        if (friendsButton.interactable)
+            friendsButton.onClick.Invoke();
     }
 
-    public void Toggle()
+    public void OnCloseButtonPressed()
     {
-        this.controller.SetVisibility(!gameObject.activeSelf);
+        controller.SetVisibility(false);
+        OnClose?.Invoke();
     }
 
 #if UNITY_EDITOR
@@ -80,7 +109,7 @@ public class FriendsHUDView : MonoBehaviour
         FriendsController.i.UpdateFriendshipStatus(new FriendsController.FriendshipUpdateStatusMessage()
         {
             userId = id1,
-            action = FriendsController.FriendshipAction.REQUESTED_FROM
+            action = FriendshipAction.REQUESTED_FROM
         });
     }
 
@@ -98,7 +127,31 @@ public class FriendsHUDView : MonoBehaviour
         FriendsController.i.UpdateFriendshipStatus(new FriendsController.FriendshipUpdateStatusMessage()
         {
             userId = id1,
-            action = FriendsController.FriendshipAction.REQUESTED_TO
+            action = FriendshipAction.REQUESTED_TO
+        });
+    }
+
+    [ContextMenu("AddFakeRequestSentAccepted")]
+    public void AddFakeRequestSentAccepted()
+    {
+        string id1 = Random.Range(0, 1000000).ToString();
+
+        UserProfileController.i.AddUserProfileToCatalog(new UserProfileModel()
+        {
+            userId = id1,
+            name = "Brian-" + id1
+        });
+
+        FriendsController.i.UpdateFriendshipStatus(new FriendsController.FriendshipUpdateStatusMessage()
+        {
+            userId = id1,
+            action = FriendshipAction.REQUESTED_TO
+        });
+
+        FriendsController.i.UpdateFriendshipStatus(new FriendsController.FriendshipUpdateStatusMessage()
+        {
+            userId = id1,
+            action = FriendshipAction.APPROVED
         });
     }
 
@@ -116,10 +169,11 @@ public class FriendsHUDView : MonoBehaviour
         FriendsController.i.UpdateFriendshipStatus(new FriendsController.FriendshipUpdateStatusMessage()
         {
             userId = id1,
-            action = FriendsController.FriendshipAction.APPROVED
+            action = FriendshipAction.APPROVED
         });
 
-        FriendsController.i.UpdateUserStatus(new FriendsController.UserStatus() { userId = id1, presence = FriendsController.PresenceStatus.ONLINE });
+        FriendsController.i.UpdateUserStatus(new FriendsController.UserStatus()
+            {userId = id1, presence = PresenceStatus.ONLINE});
     }
 
     [ContextMenu("AddFakeOfflineFriend")]
@@ -136,10 +190,11 @@ public class FriendsHUDView : MonoBehaviour
         FriendsController.i.UpdateFriendshipStatus(new FriendsController.FriendshipUpdateStatusMessage()
         {
             userId = id1,
-            action = FriendsController.FriendshipAction.APPROVED
+            action = FriendshipAction.APPROVED
         });
 
-        FriendsController.i.UpdateUserStatus(new FriendsController.UserStatus() { userId = id1, presence = FriendsController.PresenceStatus.OFFLINE });
+        FriendsController.i.UpdateUserStatus(new FriendsController.UserStatus()
+            {userId = id1, presence = PresenceStatus.OFFLINE});
     }
 #endif
 }

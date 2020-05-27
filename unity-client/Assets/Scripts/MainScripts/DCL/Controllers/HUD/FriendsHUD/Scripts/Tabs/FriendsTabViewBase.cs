@@ -9,6 +9,13 @@ using UnityEngine.EventSystems;
 public class FriendsTabViewBase : MonoBehaviour, IPointerDownHandler
 {
     [System.Serializable]
+    public class LastFriendTimestampModel
+    {
+        public string userId;
+        public ulong lastMessageTimestamp;
+    }
+
+    [System.Serializable]
     public class EntryList
     {
         public string toggleTextPrefix;
@@ -16,6 +23,9 @@ public class FriendsTabViewBase : MonoBehaviour, IPointerDownHandler
         public TextMeshProUGUI toggleText;
         public Transform container;
         private Dictionary<string, FriendEntryBase> entries = new Dictionary<string, FriendEntryBase>();
+
+        // This list store each friendId with the greatest timestamp from his related messages
+        private List<LastFriendTimestampModel> latestTimestampsOrdered = new List<LastFriendTimestampModel>();
 
         public int Count()
         {
@@ -33,6 +43,7 @@ public class FriendsTabViewBase : MonoBehaviour, IPointerDownHandler
             entry.transform.localScale = Vector3.one;
 
             UpdateToggle();
+            ReorderingFriendEntries();
         }
 
         public FriendEntryBase Remove(string userId)
@@ -53,6 +64,48 @@ public class FriendsTabViewBase : MonoBehaviour, IPointerDownHandler
         {
             toggleText.text = $"{toggleTextPrefix} ({Count()})";
             toggleButton.SetActive(Count() != 0);
+        }
+
+        public void AddOrUpdateLastTimestamp(LastFriendTimestampModel timestamp, bool reorderFriendEntries = true)
+        {
+            if (timestamp == null)
+                return;
+
+            LastFriendTimestampModel existingTimestamp = latestTimestampsOrdered.FirstOrDefault(t => t.userId == timestamp.userId);
+            if (existingTimestamp == null)
+            {
+                latestTimestampsOrdered.Add(timestamp);
+            }
+            else if (timestamp.lastMessageTimestamp > existingTimestamp.lastMessageTimestamp)
+            {
+                existingTimestamp.lastMessageTimestamp = timestamp.lastMessageTimestamp;
+            }
+
+            if (reorderFriendEntries)
+            {
+                latestTimestampsOrdered = latestTimestampsOrdered.OrderByDescending(f => f.lastMessageTimestamp).ToList();
+                ReorderingFriendEntries();
+            }
+        }
+
+        public LastFriendTimestampModel RemoveLastTimestamp(string userId)
+        {
+            LastFriendTimestampModel timestampToRemove = latestTimestampsOrdered.FirstOrDefault(t => t.userId == userId);
+            if (timestampToRemove == null)
+                return null;
+
+            latestTimestampsOrdered.Remove(timestampToRemove);
+
+            return timestampToRemove;
+        }
+
+        private void ReorderingFriendEntries()
+        {
+            foreach (var item in latestTimestampsOrdered)
+            {
+                if (entries.ContainsKey(item.userId))
+                    entries[item.userId].transform.SetAsLastSibling();
+            }
         }
     }
 
@@ -112,6 +165,14 @@ public class FriendsTabViewBase : MonoBehaviour, IPointerDownHandler
         contextMenuPanel.OnReport += OnPressReportButton;
     }
 
+    public virtual void OnDestroy()
+    {
+        contextMenuPanel.OnBlock -= OnPressBlockButton;
+        contextMenuPanel.OnDelete -= OnPressDeleteButton;
+        contextMenuPanel.OnPassport -= OnPressPassportButton;
+        contextMenuPanel.OnReport -= OnPressReportButton;
+    }
+
     protected virtual void OnPressReportButton(FriendEntryBase obj)
     {
     }
@@ -140,13 +201,12 @@ public class FriendsTabViewBase : MonoBehaviour, IPointerDownHandler
     {
         if (entries.ContainsKey(userId)) return false;
 
-        if (emptyListImage.activeSelf)
-            emptyListImage.SetActive(false);
-
         var entry = Instantiate(entryPrefab).GetComponent<FriendEntryBase>();
         entries.Add(userId, entry);
 
         entry.OnMenuToggle += (x) => { contextMenuPanel.Toggle(entry); };
+
+        UpdateEmptyListObjects();
 
         return true;
     }
@@ -173,24 +233,14 @@ public class FriendsTabViewBase : MonoBehaviour, IPointerDownHandler
         UnityEngine.Object.Destroy(entry.gameObject);
         entries.Remove(userId);
 
-        if (entries.Count == 0)
-            emptyListImage.SetActive(true);
-
-        UpdateToggleTexts();
+        UpdateEmptyListObjects();
 
         rectTransform.ForceUpdateLayout();
         return true;
     }
 
-    protected virtual void UpdateToggleTexts()
+    protected virtual void UpdateEmptyListObjects()
     {
-        if (entries.Count == 0)
-        {
-            emptyListImage.SetActive(true);
-        }
-        else
-        {
-            emptyListImage.SetActive(false);
-        }
+        emptyListImage.SetActive(entries.Count == 0);
     }
 }

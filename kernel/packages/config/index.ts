@@ -95,7 +95,7 @@ export const STATIC_WORLD = location.search.indexOf('STATIC_WORLD') !== -1 || !!
 // Development
 export const ENABLE_WEB3 = location.search.indexOf('ENABLE_WEB3') !== -1 || !!(global as any).enableWeb3
 export const ENV_OVERRIDE = location.search.indexOf('ENV') !== -1
-export const USE_NEW_CHAT = location.search.indexOf('USE_NEW_CHAT') !== -1
+export const USE_NEW_CHAT = location.search.indexOf('USE_OLD_CHAT') === -1
 
 const qs = queryString.parse(location.search)
 
@@ -253,15 +253,16 @@ export function getWearablesSafeURL() {
 
 export function getServerConfigurations() {
   const TLDDefault = getDefaultTLD()
-  const synapseHost = `matrix.decentraland.${TLDDefault === 'today' ? 'org' : TLDDefault}`
+
+  const synapseUrl = TLDDefault === 'zone' ? `https://matrix.decentraland.zone` : `https://decentraland.modular.im`
+
   return {
     contentAsBundle: `https://content-assets-as-bundle.decentraland.org`,
     wearablesApi: `https://wearable-api.decentraland.org/v2`,
     explorerConfiguration: `https://explorer-config.decentraland.${
       TLDDefault === 'today' ? 'org' : TLDDefault
     }/configuration.json`,
-    synapseHost,
-    synapseUrl: `https://${synapseHost}`,
+    synapseUrl,
     avatar: {
       snapshotStorage: `https://avatars-storage.decentraland.${TLDDefault}/`,
       catalog: getExclusiveServer(),

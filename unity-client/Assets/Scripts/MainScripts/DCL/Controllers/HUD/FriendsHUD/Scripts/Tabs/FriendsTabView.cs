@@ -1,11 +1,13 @@
+using DCL.Interface;
+
 public class FriendsTabView : FriendsTabViewBase
 {
     public EntryList onlineFriendsList = new EntryList();
     public EntryList offlineFriendsList = new EntryList();
-
-    public event System.Action<FriendEntry> OnJumpIn;
     public event System.Action<FriendEntry> OnWhisper;
     public event System.Action<FriendEntry> OnDeleteConfirmation;
+
+    private string lastProcessedFriend;
 
     public override void Initialize(FriendsHUDView owner)
     {
@@ -13,6 +15,20 @@ public class FriendsTabView : FriendsTabViewBase
 
         onlineFriendsList.toggleTextPrefix = "ONLINE";
         offlineFriendsList.toggleTextPrefix = "OFFLINE";
+
+        if (ChatController.i != null)
+        {
+            ChatController.i.OnAddMessage -= ChatController_OnAddMessage;
+            ChatController.i.OnAddMessage += ChatController_OnAddMessage;
+        }
+    }
+
+    public override void OnDestroy()
+    {
+        base.OnDestroy();
+
+        if (ChatController.i != null)
+            ChatController.i.OnAddMessage -= ChatController_OnAddMessage;
     }
 
     public override bool CreateEntry(string userId)
@@ -21,7 +37,6 @@ public class FriendsTabView : FriendsTabViewBase
 
         var entry = GetEntry(userId) as FriendEntry;
 
-        entry.OnJumpInClick += (x) => OnJumpIn?.Invoke(x);
         entry.OnWhisperClick += (x) => OnWhisper?.Invoke(x);
 
         return true;
@@ -34,6 +49,8 @@ public class FriendsTabView : FriendsTabViewBase
 
         offlineFriendsList.Remove(userId);
         onlineFriendsList.Remove(userId);
+        offlineFriendsList.RemoveLastTimestamp(userId);
+        onlineFriendsList.RemoveLastTimestamp(userId);
         return true;
     }
 
@@ -44,16 +61,21 @@ public class FriendsTabView : FriendsTabViewBase
 
         var entry = entries[userId];
 
-        if (model.status == FriendsController.PresenceStatus.ONLINE)
+        if (model.status == PresenceStatus.ONLINE)
         {
             offlineFriendsList.Remove(userId);
             onlineFriendsList.Add(userId, entry);
-        }
 
-        if (model.status == FriendsController.PresenceStatus.OFFLINE)
+            var removedTimestamp = offlineFriendsList.RemoveLastTimestamp(userId);
+            onlineFriendsList.AddOrUpdateLastTimestamp(removedTimestamp);
+        }
+        else
         {
             onlineFriendsList.Remove(userId);
             offlineFriendsList.Add(userId, entry);
+
+            var removedTimestamp = onlineFriendsList.RemoveLastTimestamp(userId);
+            offlineFriendsList.AddOrUpdateLastTimestamp(removedTimestamp);
         }
 
         return true;
@@ -69,5 +91,44 @@ public class FriendsTabView : FriendsTabViewBase
             RemoveEntry(entry.userId);
             OnDeleteConfirmation?.Invoke(entry as FriendEntry);
         });
+    }
+
+    private void ChatController_OnAddMessage(ChatMessage message)
+    {
+        if (message.messageType != ChatMessage.Type.PRIVATE)
+            return;
+
+        FriendEntryBase friend = GetEntry(message.sender != UserProfile.GetOwnUserProfile().userId
+            ? message.sender
+            : message.recipient);
+
+        if (friend == null)
+            return;
+
+        bool reorderFriendEntries = false;
+
+        if (friend.userId != lastProcessedFriend)
+        {
+            lastProcessedFriend = friend.userId;
+            reorderFriendEntries = true;
+        }
+
+        LastFriendTimestampModel timestampToUpdate = new LastFriendTimestampModel
+        {
+            userId = friend.userId,
+            lastMessageTimestamp = message.timestamp
+        };
+
+        // Each time a private message is received (or sent by the player), we sort the online and offline lists by timestamp
+        if (friend.model.status == PresenceStatus.ONLINE)
+        {
+            onlineFriendsList.AddOrUpdateLastTimestamp(timestampToUpdate, reorderFriendEntries);
+        }
+        else
+        {
+            offlineFriendsList.AddOrUpdateLastTimestamp(timestampToUpdate, reorderFriendEntries);
+        }
+
+        lastProcessedFriend = friend.userId;
     }
 }

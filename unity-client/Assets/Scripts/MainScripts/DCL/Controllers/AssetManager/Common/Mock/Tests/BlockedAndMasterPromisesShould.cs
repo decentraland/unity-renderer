@@ -1,6 +1,7 @@
-﻿using DCL;
+using DCL;
 using System.Collections;
 using System.Collections.Generic;
+using UnityEngine;
 using UnityEngine.Assertions;
 using UnityEngine.TestTools;
 
@@ -11,6 +12,8 @@ namespace AssetPromiseKeeper_Mock_Tests
         [UnityTest]
         public IEnumerator ResolveCorrectlyIfKeepIsCalledWhenBlockedPromisesAreBeingProcessed()
         {
+            Time.maximumDeltaTime = 0.016f;
+
             var library = new AssetLibrary_Mock();
             var keeper = new AssetPromiseKeeper_Mock(library);
 

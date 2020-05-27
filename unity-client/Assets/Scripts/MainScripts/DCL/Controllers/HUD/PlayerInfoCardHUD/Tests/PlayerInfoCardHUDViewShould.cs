@@ -12,7 +12,7 @@ public class PlayerInfoCardHUDViewShould : TestsBase
     {
         yield return base.SetUp();
         view = PlayerInfoCardHUDView.CreateView();
-        view.Initialize(null, null, null, null, null, null);
+        view.Initialize(null, null, null, null, null, null, null, null);
         CreateMockWearableByRarity(WearableLiterals.ItemRarity.EPIC);
         CreateMockWearableByRarity(WearableLiterals.ItemRarity.LEGENDARY);
         CreateMockWearableByRarity(WearableLiterals.ItemRarity.MYTHIC);
@@ -52,15 +52,18 @@ public class PlayerInfoCardHUDViewShould : TestsBase
         bool unblockButtonWasPressed = false;
         bool addFriendWasPressed = false;
         bool cancelWasPressed = false;
+        bool acceptRequestWasPressed = false;
+        bool rejectRequestWasPressed = false;
 
-
-        view.Initialize(() => hideCardButtonWasPressed = true, () => reportButtonWasPressed = true, () => blockButtonWasPressed = true, () => unblockButtonWasPressed = true, () => addFriendWasPressed = true, () => cancelWasPressed = true);
+        view.Initialize(() => hideCardButtonWasPressed = true, () => reportButtonWasPressed = true, () => blockButtonWasPressed = true, () => unblockButtonWasPressed = true, () => addFriendWasPressed = true, () => cancelWasPressed = true, () => acceptRequestWasPressed = true, () => rejectRequestWasPressed = true);
         view.hideCardButton.onClick.Invoke();
         view.reportPlayerButton.onClick.Invoke();
         view.blockPlayerButton.onClick.Invoke();
         view.unblockPlayerButton.onClick.Invoke();
         view.addFriendButton.onClick.Invoke();
         view.requestSentButton.onClick.Invoke();
+        view.acceptRequestButton.onClick.Invoke();
+        view.rejectRequestButton.onClick.Invoke();
 
         Assert.IsTrue(hideCardButtonWasPressed);
         Assert.IsTrue(reportButtonWasPressed);
@@ -68,6 +71,8 @@ public class PlayerInfoCardHUDViewShould : TestsBase
         Assert.IsTrue(unblockButtonWasPressed);
         Assert.IsTrue(addFriendWasPressed);
         Assert.IsTrue(cancelWasPressed);
+        Assert.IsTrue(acceptRequestWasPressed);
+        Assert.IsTrue(rejectRequestWasPressed);
         Assert.IsTrue(GetTabMapping(PlayerInfoCardHUDView.Tabs.Passport).container.activeSelf);
         Assert.IsFalse(GetTabMapping(PlayerInfoCardHUDView.Tabs.Trade).container.activeSelf);
         Assert.IsFalse(GetTabMapping(PlayerInfoCardHUDView.Tabs.Block).container.activeSelf);

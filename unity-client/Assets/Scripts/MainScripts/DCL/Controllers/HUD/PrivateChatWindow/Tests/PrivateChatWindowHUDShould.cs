@@ -1,4 +1,4 @@
-using DCL.Interface;
+﻿using DCL.Interface;
 using NUnit.Framework;
 using System.Collections;
 using UnityEngine.TestTools;
@@ -87,7 +87,7 @@ public class PrivateChatWindowHUDShould : TestsBase
 
         WebInterface.OnMessageFromEngine += messageCallback;
         controller.resetInputFieldOnSubmit = false;
-        controller.SendChatMessage("test message");
+        controller.SendChatMessage(new ChatMessage() { body = "test message", recipient = "testUser" });
         Assert.IsTrue(messageWasSent);
         Assert.AreEqual("", controller.view.chatHudView.inputField.text);
         WebInterface.OnMessageFromEngine -= messageCallback;
@@ -146,11 +146,44 @@ public class PrivateChatWindowHUDShould : TestsBase
     }
 
     [Test]
-    public void CloseWhenButtonPressed()
+    public void CloseOnCloseButtonPressed()
     {
         controller.SetVisibility(true);
         Assert.AreEqual(true, controller.view.gameObject.activeSelf);
-        controller.view.closeButton.onClick.Invoke();
+        controller.view.minimizeButton.onClick.Invoke();
         Assert.AreEqual(false, controller.view.gameObject.activeSelf);
+    }
+
+    [Test]
+    public void CloseOnBackButtonPressed()
+    {
+        controller.SetVisibility(true);
+        Assert.AreEqual(true, controller.view.gameObject.activeSelf);
+        bool pressedBack = false;
+        controller.view.OnPressBack += () => { pressedBack = true; };
+        controller.view.backButton.onClick.Invoke();
+        Assert.IsTrue(pressedBack);
+    }
+
+    [UnityTest]
+    public IEnumerator OpenFriendsHUDOnBackButtonPressed()
+    {
+        // Initialize friends HUD
+        NotificationsController.i.Initialize(new NotificationHUDController());
+
+        var friendsHUDController = new FriendsHUDController();
+        friendsHUDController.Initialize(new FriendsController_Mock(), UserProfile.GetOwnUserProfile());
+
+        Assert.IsTrue(view != null, "Friends hud view is null?");
+        Assert.IsTrue(controller != null, "Friends hud controller is null?");
+
+        // initialie private chat
+        controller.SetVisibility(true);
+        Assert.AreEqual(true, controller.view.gameObject.activeSelf);
+
+        controller.view.backButton.onClick.Invoke();
+        yield return null;
+
+        Assert.AreEqual(true, friendsHUDController.view.gameObject.activeSelf);
     }
 }

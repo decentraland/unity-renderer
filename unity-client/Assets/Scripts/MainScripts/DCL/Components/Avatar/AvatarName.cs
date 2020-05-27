@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
@@ -14,6 +14,8 @@ public class AvatarName : MonoBehaviour
     public Vector3 offset;
     Canvas canvas;
     Camera mainCamera;
+
+    Vector2 res;
 
     public void SetName(string name)
     {
@@ -51,12 +53,19 @@ public class AvatarName : MonoBehaviour
         }
     }
 
+
+
     void LateUpdate()
     {
         if (string.IsNullOrEmpty(nameText.text))
             return;
 
         RefreshTextPosition();
+
+        if (Screen.width != res.x || Screen.height != res.y)
+            nameText.SetAllDirty();
+
+        res = new Vector2(Screen.width, Screen.height);
     }
 
     private void RefreshTextPosition()

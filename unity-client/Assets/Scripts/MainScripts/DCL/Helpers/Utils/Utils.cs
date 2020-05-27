@@ -144,7 +144,7 @@ namespace DCL.Helpers
         public static void InverseTransformChildTraversal<TComponent>(Action<TComponent> action, Transform startTransform)
             where TComponent : Component
         {
-            Assert.IsTrue(startTransform != null, "startTransform must not be null");
+            if (startTransform == null) return;
 
             foreach (Transform t in startTransform)
             {
