@@ -323,6 +323,7 @@ export function* submitProfileToRenderer(action: ProfileSuccessAction): any {
     yield call(ensureBaseCatalogs)
 
     const forRenderer = profileToRendererFormat(profile)
+    forRenderer.hasConnectedWeb3 = action.payload.hasConnectedWeb3
 
     globalThis.unityInterface.AddUserProfileToCatalog(forRenderer)
 

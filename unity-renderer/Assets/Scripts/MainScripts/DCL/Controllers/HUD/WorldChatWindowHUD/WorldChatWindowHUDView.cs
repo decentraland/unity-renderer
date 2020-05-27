@@ -1,23 +1,27 @@
 using System.Collections;
-using System.Text.RegularExpressions;
+using DCL.Interface;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
+using UnityEngine.Events;
 
 public class WorldChatWindowHUDView : MonoBehaviour, IPointerClickHandler
 {
     const string VIEW_PATH = "World Chat Window";
 
-    public Button worldFilterButton;
     public Button closeButton;
 
     public ChatHUDView chatHudView;
 
     public CanvasGroup group;
     public WorldChatWindowHUDController controller;
+    public bool isInPreview { get; private set; }
 
-    Regex whisperRegex = new Regex(@"(?i)^\/(whisper|w) (\S*) ");
-    Match whisperRegexMatch;
+    public event UnityAction OnDeactivatePreview;
+    public event UnityAction OnClose;
+    public UnityAction<ChatMessage> OnSendMessage;
+
+    ChatMessage lastWhisperMessageSent;
 
     public static WorldChatWindowHUDView Create()
     {
@@ -28,42 +32,36 @@ public class WorldChatWindowHUDView : MonoBehaviour, IPointerClickHandler
 
     void Awake()
     {
-        chatHudView.inputField.onSubmit.AddListener(OnTextInputSubmit);
+        chatHudView.OnSendMessage += ChatHUDView_OnSendMessage;
         chatHudView.inputField.onValueChanged.AddListener(OnTextInputValueChanged);
     }
 
     private void Initialize()
     {
-        this.closeButton.onClick.AddListener(Toggle);
+        this.closeButton.onClick.AddListener(OnCloseButtonPressed);
     }
 
-    public bool isInPreview { get; private set; }
+    public void OnCloseButtonPressed()
+    {
+        controller.SetVisibility(false);
+        OnClose?.Invoke();
+    }
 
     public void DeactivatePreview()
     {
+        chatHudView.scrollRect.enabled = true;
         group.alpha = 1;
         isInPreview = false;
         chatHudView.SetFadeoutMode(false);
+        OnDeactivatePreview?.Invoke();
     }
 
     public void ActivatePreview()
     {
+        chatHudView.scrollRect.enabled = false;
         group.alpha = 0;
         isInPreview = true;
         chatHudView.SetFadeoutMode(true);
-    }
-
-    public void Toggle()
-    {
-        if (gameObject.activeSelf)
-        {
-            gameObject.SetActive(false);
-        }
-        else
-        {
-            gameObject.SetActive(true);
-            DeactivatePreview();
-        }
     }
 
     public void OnPointerClick(PointerEventData eventData)
@@ -76,18 +74,23 @@ public class WorldChatWindowHUDView : MonoBehaviour, IPointerClickHandler
         if (!string.IsNullOrEmpty(controller.lastPrivateMessageReceivedSender) && text == "/r ")
         {
             chatHudView.inputField.text = $"/w {controller.lastPrivateMessageReceivedSender} ";
-            chatHudView.inputField.caretPosition = chatHudView.inputField.text.Length - 1;
+            chatHudView.inputField.caretPosition = chatHudView.inputField.text.Length;
         }
     }
 
-    public void OnTextInputSubmit(string text)
+    public void ChatHUDView_OnSendMessage(ChatMessage message)
     {
-        text = GetLastWhisperCommand(text);
+        if (message.messageType == ChatMessage.Type.PRIVATE && !string.IsNullOrEmpty(message.body))
+            lastWhisperMessageSent = message;
+        else
+            lastWhisperMessageSent = null;
 
-        if (!string.IsNullOrEmpty(text))
-        {
-            StartCoroutine(WaitAndUpdateInputText(text));
-        }
+        if (lastWhisperMessageSent != null)
+            StartCoroutine(WaitAndUpdateInputText($"/w {lastWhisperMessageSent.recipient} "));
+        else
+            StartCoroutine(WaitAndUpdateInputText(string.Empty));
+
+        OnSendMessage?.Invoke(message);
     }
 
     IEnumerator WaitAndUpdateInputText(string newText)
@@ -95,17 +98,6 @@ public class WorldChatWindowHUDView : MonoBehaviour, IPointerClickHandler
         yield return null;
 
         chatHudView.inputField.text = newText;
-        chatHudView.inputField.caretPosition = newText.Length - 1;
-    }
-
-    public string GetLastWhisperCommand(string inputString)
-    {
-        whisperRegexMatch = whisperRegex.Match(inputString);
-        if (whisperRegexMatch.Success)
-        {
-            return whisperRegexMatch.Value;
-        }
-
-        return string.Empty;
+        chatHudView.inputField.caretPosition = newText.Length;
     }
 }

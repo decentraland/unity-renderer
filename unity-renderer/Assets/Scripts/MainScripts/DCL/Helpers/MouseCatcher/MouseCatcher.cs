@@ -9,12 +9,16 @@ namespace DCL
     {
         event System.Action OnMouseUnlock;
         event System.Action OnMouseLock;
+        bool isLocked { get; }
     }
 
     public class MouseCatcher : MonoBehaviour, IMouseCatcher, IPointerDownHandler
     {
+        public bool isLocked => Utils.isCursorLocked;
         public event System.Action OnMouseUnlock;
         public event System.Action OnMouseLock;
+        public event System.Action OnMouseDown;
+
         //Default OnPointerEvent
         public LayerMask OnPointerDownTarget = 1 << 9;
 
@@ -44,6 +48,7 @@ namespace DCL
 
         public void OnPointerDown(PointerEventData eventData)
         {
+            OnMouseDown?.Invoke();
             LockCursor();
         }
     }

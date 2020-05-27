@@ -2,52 +2,8 @@ using DCL.Interface;
 using NUnit.Framework;
 using System;
 using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.TestTools;
-
-class FriendsController_Mock : IFriendsController
-{
-    public event Action<string, FriendsController.FriendshipAction> OnUpdateFriendship;
-    public event Action<string, FriendsController.UserStatus> OnUpdateUserStatus;
-    public event Action<string> OnFriendNotFound;
-
-    Dictionary<string, FriendsController.UserStatus> friends = new Dictionary<string, FriendsController.UserStatus>();
-
-    public int friendCount => friends.Count;
-
-    public Dictionary<string, FriendsController.UserStatus> GetFriends()
-    {
-        return friends;
-    }
-
-    public void RaiseUpdateFriendship(string id, FriendsController.FriendshipAction action)
-    {
-        if (action == FriendsController.FriendshipAction.NONE)
-        {
-            if (friends.ContainsKey(id))
-                friends.Remove(id);
-        }
-
-        if (action == FriendsController.FriendshipAction.APPROVED)
-        {
-            if (!friends.ContainsKey(id))
-                friends.Add(id, new FriendsController.UserStatus());
-        }
-
-        OnUpdateFriendship?.Invoke(id, action);
-    }
-
-    public void RaiseUpdateUserStatus(string id, FriendsController.UserStatus userStatus)
-    {
-        OnUpdateUserStatus?.Invoke(id, userStatus);
-    }
-
-    public void RaiseOnFriendNotFound(string id)
-    {
-        OnFriendNotFound?.Invoke(id);
-    }
-}
 
 public class FriendsHUDControllerShould : TestsBase
 {
@@ -81,35 +37,10 @@ public class FriendsHUDControllerShould : TestsBase
     }
 
     [Test]
-    public void ReactCorrectlyToJumpInClick()
-    {
-        var id = "test-id-1";
-        var entry = AddFriendThruFriendsController(id);
-
-        bool jumpInCalled = false;
-
-        System.Action<string, string> callback = (name, payload) =>
-         {
-             if (name == "GoTo")
-             {
-                 jumpInCalled = true;
-             }
-         };
-
-        WebInterface.OnMessageFromEngine += callback;
-
-        entry.jumpInButton.onClick.Invoke();
-
-        WebInterface.OnMessageFromEngine -= callback;
-
-        Assert.IsTrue(jumpInCalled);
-    }
-
-    [Test]
     public void ReactCorrectlyToWhisperClick()
     {
         var id = "test-id-1";
-        var entry = AddFriendThruFriendsController(id);
+        var entry = TestHelpers_Friends.FakeAddFriend(friendsController, view, id);
 
         bool pressedWhisper = false;
         controller.OnPressWhisper += (x) => { pressedWhisper = x == id; };
@@ -121,7 +52,7 @@ public class FriendsHUDControllerShould : TestsBase
     public void ReactCorrectlyToReportClick()
     {
         var id = "test-id-1";
-        var entry = AddFriendThruFriendsController(id);
+        var entry = TestHelpers_Friends.FakeAddFriend(friendsController, view, id);
 
         bool reportPlayerSent = false;
 
@@ -152,7 +83,7 @@ public class FriendsHUDControllerShould : TestsBase
     public void ReactCorrectlyToPassportClick()
     {
         var id = "test-id-1";
-        var entry = AddFriendThruFriendsController(id);
+        var entry = TestHelpers_Friends.FakeAddFriend(friendsController, view, id);
 
         var currentPlayerId = Resources.Load<StringVariable>(FriendsHUDController.CURRENT_PLAYER_ID);
 
@@ -179,7 +110,7 @@ public class FriendsHUDControllerShould : TestsBase
         Action<string, string> callback = (name, payload) =>
         {
             var msg = JsonUtility.FromJson<FriendsController.FriendshipUpdateStatusMessage>(payload);
-            if (msg.action == FriendsController.FriendshipAction.REQUESTED_TO &&
+            if (msg.action == FriendshipAction.REQUESTED_TO &&
                  msg.userId == id)
             {
                 messageSent = true;
@@ -201,10 +132,10 @@ public class FriendsHUDControllerShould : TestsBase
     public void ReactCorrectlyToFriendApproved()
     {
         var id = "test-id-1";
-        var entry = AddFriendThruFriendsController(id);
+        var entry = TestHelpers_Friends.FakeAddFriend(friendsController, view, id);
         Assert.IsNotNull(entry);
 
-        friendsController.RaiseUpdateFriendship(id, FriendsController.FriendshipAction.DELETED);
+        friendsController.RaiseUpdateFriendship(id, FriendshipAction.DELETED);
         entry = controller.view.friendsList.GetEntry(id) as FriendEntry;
         Assert.IsNull(entry);
     }
@@ -213,11 +144,11 @@ public class FriendsHUDControllerShould : TestsBase
     public void ReactCorrectlyToFriendRejected()
     {
         var id = "test-id-1";
-        var fentry = AddFriendThruFriendsController(id);
+        var fentry = TestHelpers_Friends.FakeAddFriend(friendsController, view, id);
         Assert.IsNotNull(fentry);
 
-        friendsController.RaiseUpdateFriendship(id, FriendsController.FriendshipAction.REQUESTED_FROM);
-        friendsController.RaiseUpdateFriendship(id, FriendsController.FriendshipAction.REJECTED);
+        friendsController.RaiseUpdateFriendship(id, FriendshipAction.REQUESTED_FROM);
+        friendsController.RaiseUpdateFriendship(id, FriendshipAction.REJECTED);
 
         var entry = controller.view.friendRequestsList.GetEntry(id);
         Assert.IsNull(entry);
@@ -227,19 +158,14 @@ public class FriendsHUDControllerShould : TestsBase
     public void ReactCorrectlyToFriendCancelled()
     {
         var id = "test-id-1";
-        AddFriendThruFriendsController(id);
+        TestHelpers_Friends.FakeAddFriend(friendsController, view, id);
 
-        friendsController.RaiseUpdateFriendship(id, FriendsController.FriendshipAction.REQUESTED_TO);
+        friendsController.RaiseUpdateFriendship(id, FriendshipAction.REQUESTED_TO);
         var entry = controller.view.friendRequestsList.GetEntry(id);
         Assert.IsNotNull(entry);
-        friendsController.RaiseUpdateFriendship(id, FriendsController.FriendshipAction.CANCELLED);
+        friendsController.RaiseUpdateFriendship(id, FriendshipAction.CANCELLED);
         entry = controller.view.friendRequestsList.GetEntry(id);
         Assert.IsNull(entry);
-    }
-
-    [Test]
-    public void UpdateUserStatusCorrectly()
-    {
     }
 
     NotificationBadge GetBadge(string path)
@@ -265,11 +191,11 @@ public class FriendsHUDControllerShould : TestsBase
 
         controller.SetVisibility(false);
 
-        AddFriendThruFriendsController("friend-1");
-        AddFriendThruFriendsController("friend-2");
-        AddFriendThruFriendsController("friend-3");
-        AddFriendThruFriendsController("friend-4");
-        AddFriendThruFriendsController("friend-5", FriendsController.FriendshipAction.REQUESTED_FROM);
+        TestHelpers_Friends.FakeAddFriend(friendsController, view, "friend-1");
+        TestHelpers_Friends.FakeAddFriend(friendsController, view, "friend-2");
+        TestHelpers_Friends.FakeAddFriend(friendsController, view, "friend-3");
+        TestHelpers_Friends.FakeAddFriend(friendsController, view, "friend-4");
+        TestHelpers_Friends.FakeAddFriend(friendsController, view, "friend-5", FriendshipAction.REQUESTED_FROM);
 
         Assert.AreEqual(1, friendsRequestBadge.finalValue);
         Assert.AreEqual(5, friendsTaskbarBadge.finalValue);
@@ -279,23 +205,10 @@ public class FriendsHUDControllerShould : TestsBase
         Assert.AreEqual(1, friendsRequestBadge.finalValue);
         Assert.AreEqual(1, friendsTaskbarBadge.finalValue);
 
-        AddFriendThruFriendsController("friend-5", FriendsController.FriendshipAction.APPROVED);
-        AddFriendThruFriendsController("friend-6", FriendsController.FriendshipAction.REQUESTED_FROM);
+        TestHelpers_Friends.FakeAddFriend(friendsController, view, "friend-5", FriendshipAction.APPROVED);
+        TestHelpers_Friends.FakeAddFriend(friendsController, view, "friend-6", FriendshipAction.REQUESTED_FROM);
 
         Assert.AreEqual(1, friendsRequestBadge.finalValue);
         Assert.AreEqual(1, friendsTaskbarBadge.finalValue);
-    }
-
-    FriendEntry AddFriendThruFriendsController(string id, FriendsController.FriendshipAction action = FriendsController.FriendshipAction.APPROVED)
-    {
-        UserProfileModel model = new UserProfileModel()
-        {
-            userId = id,
-            name = id,
-        };
-
-        UserProfileController.i.AddUserProfileToCatalog(model);
-        friendsController.RaiseUpdateFriendship(id, action);
-        return view.friendsList.GetEntry(id) as FriendEntry;
     }
 }

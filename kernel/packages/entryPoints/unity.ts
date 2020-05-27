@@ -15,6 +15,8 @@ import { StoreContainer } from 'shared/store/rootTypes'
 import { startUnityParcelLoading, unityInterface } from '../unity-interface/dcl'
 import { initializeUnity } from '../unity-interface/initializer'
 import { HUDElementID } from 'shared/types'
+import { identity } from 'shared'
+
 const container = document.getElementById('gameContainer')
 
 if (!container) throw new Error('cannot find element #gameContainer')
@@ -33,7 +35,7 @@ initializeUnity(container)
     i.ConfigureHUDElement(HUDElementID.TERMS_OF_SERVICE, { active: true, visible: true })
     i.ConfigureHUDElement(HUDElementID.TASKBAR, { active: USE_NEW_CHAT, visible: USE_NEW_CHAT })
     i.ConfigureHUDElement(HUDElementID.WORLD_CHAT_WINDOW, { active: USE_NEW_CHAT, visible: true })
-    i.ConfigureHUDElement(HUDElementID.FRIENDS, { active: USE_NEW_CHAT, visible: false })
+    i.ConfigureHUDElement(HUDElementID.FRIENDS, { active: USE_NEW_CHAT && identity.hasConnectedWeb3, visible: false })
     i.ConfigureHUDElement(HUDElementID.OPEN_EXTERNAL_URL_PROMPT, { active: true, visible: true })
 
     globalThis.globalStore.dispatch(signalRendererInitialized())

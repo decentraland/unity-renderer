@@ -61,6 +61,17 @@ public class UserProfileController : MonoBehaviour
         userProfilesCatalog.Add(model.userId, userProfile);
     }
 
+    public static UserProfile GetProfileByName(string targetUserName)
+    {
+        foreach (var userProfile in userProfilesCatalogValue)
+        {
+            if (userProfile.Value.userName.ToLower() == targetUserName.ToLower())
+                return userProfile.Value;
+        }
+
+        return null;
+    }
+
     public void RemoveUserProfilesFromCatalog(string payload)
     {
         string[] usernames = JsonUtility.FromJson<string[]>(payload);

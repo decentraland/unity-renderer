@@ -7,6 +7,11 @@ import { worldToGrid, gridToWorld } from '../../../atomicHelpers/parcelScenePosi
 import { pickWorldSpawnpoint } from 'shared/world/positionThings'
 import { InstancedSpawnPoint } from 'shared/types'
 import { isTutorial, resolveTutorialPosition } from '../tutorial/tutorial'
+import { createLogger } from 'shared/logger'
+
+const DEBUG = false
+
+const logger = createLogger('position: ')
 
 export class PositionLifecycleController extends EventEmitter {
   private positionSettled: boolean = false
@@ -32,7 +37,12 @@ export class PositionLifecycleController extends EventEmitter {
   }
 
   private async doReportCurrentPosition(position: Vector2Component, teleported: boolean) {
-    if (this.currentPosition && this.currentPosition.x === position.x && this.currentPosition.y === position.y) {
+    if (
+      this.currentPosition &&
+      this.currentPosition.x === position.x &&
+      this.currentPosition.y === position.y &&
+      !teleported
+    ) {
       return
     }
 
@@ -87,6 +97,8 @@ export class PositionLifecycleController extends EventEmitter {
     if (!this.positionSettled) {
       const settling = this.currentlySightedScenes.every($ => this.sceneController.isRenderable($))
 
+      DEBUG &&
+        logger.info(`remaining-scenes`, this.currentlySightedScenes.filter($ => !this.sceneController.isRenderable($)))
       if (settling) {
         this.positionSettled = settling
         this.emit('Settled Position', this.currentSpawnpoint)

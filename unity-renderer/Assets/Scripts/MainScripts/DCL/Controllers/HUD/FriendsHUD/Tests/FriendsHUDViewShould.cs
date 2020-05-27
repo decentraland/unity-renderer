@@ -1,4 +1,4 @@
-﻿using NUnit.Framework;
+using NUnit.Framework;
 using System.Collections;
 using UnityEngine.TestTools;
 
@@ -48,8 +48,8 @@ public class FriendsHUDViewShould : TestsBase
         string id1 = "userId-1";
         string id2 = "userId-2";
 
-        var entry1 = CreateFriendEntry(id1, "Pravus", FriendsController.PresenceStatus.ONLINE);
-        var entry2 = CreateFriendEntry(id2, "Brian", FriendsController.PresenceStatus.OFFLINE);
+        var entry1 = CreateFriendEntry(id1, "Pravus", PresenceStatus.ONLINE);
+        var entry2 = CreateFriendEntry(id2, "Brian", PresenceStatus.OFFLINE);
 
         Assert.IsNotNull(entry1);
         Assert.AreEqual(entry1.model.userName, entry1.playerNameText.text);
@@ -60,7 +60,7 @@ public class FriendsHUDViewShould : TestsBase
         Assert.AreEqual(controller.view.friendsList.offlineFriendsList.container, entry2.transform.parent);
 
         var model2 = entry2.model;
-        model2.status = FriendsController.PresenceStatus.ONLINE;
+        model2.status = PresenceStatus.ONLINE;
         controller.view.friendsList.CreateOrUpdateEntry(id2, model2);
 
         Assert.AreEqual(controller.view.friendsList.onlineFriendsList.container, entry2.transform.parent);
@@ -105,11 +105,11 @@ public class FriendsHUDViewShould : TestsBase
     [Test]
     public void CountProperlyStatus()
     {
-        CreateFriendEntry("user1", "Armando Barreda", FriendsController.PresenceStatus.ONLINE);
-        CreateFriendEntry("user2", "Guillermo Andino", FriendsController.PresenceStatus.ONLINE);
+        CreateFriendEntry("user1", "Armando Barreda", PresenceStatus.ONLINE);
+        CreateFriendEntry("user2", "Guillermo Andino", PresenceStatus.ONLINE);
 
-        CreateFriendEntry("user3", "Wanda Nara", FriendsController.PresenceStatus.OFFLINE);
-        CreateFriendEntry("user4", "Mirtha Legrand", FriendsController.PresenceStatus.OFFLINE);
+        CreateFriendEntry("user3", "Wanda Nara", PresenceStatus.OFFLINE);
+        CreateFriendEntry("user4", "Mirtha Legrand", PresenceStatus.OFFLINE);
 
         Assert.AreEqual(2, view.friendsList.onlineFriendsList.Count());
         Assert.AreEqual(2, view.friendsList.offlineFriendsList.Count());
@@ -213,7 +213,7 @@ public class FriendsHUDViewShould : TestsBase
         Assert.IsNotNull(view.friendRequestsList.GetEntry(entry2.userId));
     }
 
-    FriendEntry CreateFriendEntry(string id, string name, FriendsController.PresenceStatus status = FriendsController.PresenceStatus.ONLINE)
+    FriendEntry CreateFriendEntry(string id, string name, PresenceStatus status = PresenceStatus.ONLINE)
     {
         var model1 = new FriendEntry.Model()
         {

@@ -16,9 +16,9 @@ public class ChatHUDShould : TestsBase
         yield break;
     }
 
-    string lastMsgSent;
+    ChatMessage lastMsgSent;
 
-    void OnSendMessage(string msg)
+    void OnSendMessage(ChatMessage msg)
     {
         lastMsgSent = msg;
     }
@@ -33,7 +33,7 @@ public class ChatHUDShould : TestsBase
     public void SubmitMessageProperly()
     {
         controller.view.inputField.onSubmit.Invoke("test message");
-        Assert.AreEqual("test message", lastMsgSent);
+        Assert.AreEqual("test message", lastMsgSent.body);
     }
 
     [Test]
@@ -86,7 +86,7 @@ public class ChatHUDShould : TestsBase
         controller.view.inputField.ProcessEvent(new UnityEngine.Event { keyCode = UnityEngine.KeyCode.Escape });
         controller.view.inputField.onSubmit.Invoke(testMessage);
 
-        Assert.AreEqual("", lastMsgSent);
+        Assert.AreEqual("", lastMsgSent.body);
         Assert.AreEqual(testMessage, controller.view.inputField.text);
     }
 }

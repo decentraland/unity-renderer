@@ -11,6 +11,8 @@ public enum DCLAction_Trigger
 
     ToggleNavMap = 110,
     ToggleFriends = 120,
+    CloseWindow = 121,
+    ToggleWorldChat = 122,
 
     OpenExpressions = 200,
     Expression_Wave = 201,
@@ -64,7 +66,9 @@ public class InputController : MonoBehaviour
                 case DCLAction_Trigger.CameraChange:
                     //Disable until the fine-tuning is ready
                     if (ENABLE_THIRD_PERSON_CAMERA)
-                        InputProcessor.FromKey(action, KeyCode.V, modifiers: InputProcessor.Modifier.NeedsPointerLocked | InputProcessor.Modifier.FocusNotInInput);
+                        InputProcessor.FromKey(action, KeyCode.V,
+                            modifiers: InputProcessor.Modifier.NeedsPointerLocked |
+                                       InputProcessor.Modifier.FocusNotInInput);
                     break;
                 case DCLAction_Trigger.ToggleNavMap:
                     InputProcessor.FromKey(action, KeyCode.M, modifiers: InputProcessor.Modifier.FocusNotInInput);
@@ -73,6 +77,12 @@ public class InputController : MonoBehaviour
                     break;
                 case DCLAction_Trigger.ToggleFriends:
                     InputProcessor.FromKey(action, KeyCode.L, modifiers: InputProcessor.Modifier.FocusNotInInput);
+                    break;
+                case DCLAction_Trigger.ToggleWorldChat:
+                    InputProcessor.FromKey(action, KeyCode.Return, modifiers: InputProcessor.Modifier.None);
+                    break;
+                case DCLAction_Trigger.CloseWindow:
+                    InputProcessor.FromKey(action, KeyCode.Escape, modifiers: InputProcessor.Modifier.None);
                     break;
                 case DCLAction_Trigger.OpenExpressions:
                     InputProcessor.FromKey(action, KeyCode.B, modifiers: InputProcessor.Modifier.FocusNotInInput);
@@ -157,7 +167,7 @@ public class InputController : MonoBehaviour
 
 public static class InputProcessor
 {
-    private static readonly KeyCode[] MODIFIER_KEYS = new[] { KeyCode.LeftControl, KeyCode.LeftAlt, KeyCode.LeftShift };
+    private static readonly KeyCode[] MODIFIER_KEYS = new[] {KeyCode.LeftControl, KeyCode.LeftAlt, KeyCode.LeftShift};
 
     [Flags]
     public enum Modifier
@@ -179,7 +189,8 @@ public static class InputProcessor
         return true;
     }
 
-    public static void FromKey(InputAction_Trigger action, KeyCode key, KeyCode[] modifierKeys = null, Modifier modifiers = Modifier.None)
+    public static void FromKey(InputAction_Trigger action, KeyCode key, KeyCode[] modifierKeys = null,
+        Modifier modifiers = Modifier.None)
     {
         if (!PassModifiers(modifiers)) return;
 
@@ -200,7 +211,8 @@ public static class InputProcessor
         if (Input.GetKeyDown(key)) action.RaiseOnTriggered();
     }
 
-    public static void FromMouseButton(InputAction_Trigger action, int mouseButtonIdx, Modifier modifiers = Modifier.None)
+    public static void FromMouseButton(InputAction_Trigger action, int mouseButtonIdx,
+        Modifier modifiers = Modifier.None)
     {
         if (!PassModifiers(modifiers)) return;
 
@@ -236,18 +248,21 @@ public static class InputProcessor
 
     public static bool IsModifierSet(Modifier modifiers, Modifier value)
     {
-        int flagsValue = (int)modifiers;
-        int flagValue = (int)value;
+        int flagsValue = (int) modifiers;
+        int flagValue = (int) value;
 
         return (flagsValue & flagValue) != 0;
     }
 
     public static bool FocusIsInInputField()
     {
-        if (EventSystem.current.currentSelectedGameObject != null && (EventSystem.current.currentSelectedGameObject.GetComponent<TMP_InputField>() != null || EventSystem.current.currentSelectedGameObject.GetComponent<UnityEngine.UI.InputField>() != null))
+        if (EventSystem.current.currentSelectedGameObject != null &&
+            (EventSystem.current.currentSelectedGameObject.GetComponent<TMP_InputField>() != null ||
+             EventSystem.current.currentSelectedGameObject.GetComponent<UnityEngine.UI.InputField>() != null))
         {
             return true;
         }
+
         return false;
     }
 }

@@ -75,8 +75,9 @@ public static class ThumbnailsManager
         if (!www.isNetworkError && !www.isHttpError)
         {
             var texture = ((DownloadHandlerTexture)www.downloadHandler).texture;
+            texture.filterMode = FilterMode.Trilinear;
             texture.Compress(false);
-            texture.Apply(false, true);
+            texture.Apply(true, true);
             sprite = Sprite.Create(texture, new Rect(0, 0, texture.width, texture.height), Vector2.zero);
             AddOrUpdateSprite(url, sprite);
         }

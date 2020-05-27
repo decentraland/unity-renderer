@@ -21,6 +21,7 @@ public class NotificationBadge : MonoBehaviour
 
         foreach (var notiVariable in notificationVariables)
         {
+            notiVariable.OnChange -= NotificationVariable_OnChange;
             notiVariable.OnChange += NotificationVariable_OnChange;
             NotificationVariable_OnChange(notiVariable.Get(), notiVariable.Get());
         }

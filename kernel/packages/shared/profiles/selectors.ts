@@ -23,7 +23,7 @@ export const findProfileByName = (store: RootProfileState, userName: string): Pr
   store.profiles && store.profiles.userInfo
     ? Object.values(store.profiles.userInfo)
         .filter(user => user.status === 'ok')
-        .find(user => user.data.name === userName)?.data
+        .find(user => user.data.name?.toLowerCase() === userName.toLowerCase())?.data
     : null
 
 export const isAddedToCatalog = (store: RootProfileState, userId: string): boolean =>

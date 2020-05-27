@@ -1,47 +1,8 @@
-using DCL;
 using DCL.Interface;
 using NUnit.Framework;
-using System;
 using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.TestTools;
-
-public class ChatController_Mock : IChatController
-{
-    public event Action<ChatMessage> OnAddMessage;
-    List<ChatMessage> entries = new List<ChatMessage>();
-    public List<ChatMessage> GetEntries()
-    {
-        return entries;
-    }
-
-    public void RaiseAddMessage(ChatMessage chatMessage)
-    {
-        entries.Add(chatMessage);
-        OnAddMessage?.Invoke(chatMessage);
-    }
-
-    public void AddMessageToChatWindow(string jsonMessage)
-    {
-        ChatMessage message = JsonUtility.FromJson<ChatMessage>(jsonMessage);
-
-        if (message == null)
-            return;
-
-        entries.Add(message);
-        OnAddMessage?.Invoke(message);
-    }
-}
-
-public class MouseCatcher_Mock : IMouseCatcher
-{
-    public event Action OnMouseUnlock;
-    public event Action OnMouseLock;
-
-    public void RaiseMouseUnlock() { OnMouseUnlock?.Invoke(); }
-    public void RaiseMouseLock() { OnMouseLock?.Invoke(); }
-}
 
 public class WorldChatWindowHUDShould : TestsBase
 {
@@ -106,8 +67,8 @@ public class WorldChatWindowHUDShould : TestsBase
 
         ChatEntry entry = controller.view.chatHudView.entries[0];
 
-        Assert.AreEqual("<b>[To TEST_USER]:</b>", entry.username.text);
-        Assert.AreEqual("<b>[To TEST_USER]:</b> test message", entry.body.text);
+        Assert.AreEqual("<b>To TEST_USER:</b>", entry.username.text);
+        Assert.AreEqual("<b>To TEST_USER:</b> test message", entry.body.text);
 
         var receivedPM = new ChatMessage()
         {
@@ -121,8 +82,8 @@ public class WorldChatWindowHUDShould : TestsBase
 
         ChatEntry entry2 = controller.view.chatHudView.entries[1];
 
-        Assert.AreEqual("<b>[From TEST_USER]:</b>", entry2.username.text);
-        Assert.AreEqual("<b>[From TEST_USER]:</b> test message", entry2.body.text);
+        Assert.AreEqual("<b>From TEST_USER:</b>", entry2.username.text);
+        Assert.AreEqual("<b>From TEST_USER:</b> test message", entry2.body.text);
     }
 
 
@@ -171,7 +132,7 @@ public class WorldChatWindowHUDShould : TestsBase
 
         WebInterface.OnMessageFromEngine += messageCallback;
         controller.resetInputFieldOnSubmit = false;
-        controller.SendChatMessage("test message");
+        controller.SendChatMessage(new ChatMessage() { body = "test message" });
         Assert.IsTrue(messageWasSent);
         WebInterface.OnMessageFromEngine -= messageCallback;
         yield return null;
@@ -192,7 +153,7 @@ public class WorldChatWindowHUDShould : TestsBase
     [UnityTest]
     public IEnumerator KeepWhisperCommandAfterUsage()
     {
-        string baseCommand = "/whisper testUser ";
+        string baseCommand = "/w testUser ";
 
         controller.resetInputFieldOnSubmit = false;
 

@@ -42,8 +42,14 @@ public class ChatEntryShould : TestsBase
         Assert.AreEqual("<b>user-test:</b> test message", entry.body.text);
 
         message.messageType = ChatMessage.Type.PRIVATE;
+        message.subType = ChatEntry.Model.SubType.PRIVATE_TO;
+
         entry.Populate(message);
-        Assert.AreEqual(entry.privateMessageColor, entry.body.color);
+        Assert.AreEqual(entry.privateToMessageColor, entry.username.color);
+
+        message.subType = ChatEntry.Model.SubType.PRIVATE_FROM;
+        entry.Populate(message);
+        Assert.AreEqual(entry.privateFromMessageColor, entry.username.color);
 
         message.messageType = ChatMessage.Type.SYSTEM;
         entry.Populate(message);

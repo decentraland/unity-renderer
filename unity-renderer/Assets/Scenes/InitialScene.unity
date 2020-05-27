@@ -1253,7 +1253,7 @@ MonoBehaviour:
   allWearables: 0
   testWearables: 0
   enableTutorial: 0
-  useNewChat: 1
+  useNewChat: 0
   debugPanelMode: 0
 --- !u!4 &1444882337
 Transform:

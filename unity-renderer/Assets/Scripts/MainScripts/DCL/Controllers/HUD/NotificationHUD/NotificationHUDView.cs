@@ -32,7 +32,7 @@ public class NotificationHUDView : MonoBehaviour
         notification.OnNotificationDismissed += OnNotificationDismissed;
 
         if (model != null)
-            notification.Initialize(model);
+            notification.Show(model);
     }
 
     public Notification ShowNotification(Notification.Model notificationModel)
@@ -49,15 +49,6 @@ public class NotificationHUDView : MonoBehaviour
     private void OnNotificationDismissed(Notification notification)
     {
         OnNotificationDismissedEvent?.Invoke(notification);
-
-        if (notification.model.destroyOnFinish)
-        {
-            Destroy(notification.gameObject);
-        }
-        else
-        {
-            notification.gameObject.SetActive(false);
-        }
     }
 
     public void SetActive(bool active)
