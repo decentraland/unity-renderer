@@ -32,7 +32,7 @@ const score = ({ usersCount, maxUsers = 50 }: Layer) => {
   return v + v * Math.cos(phase + period * usersCount)
 }
 
-function ping(url: string): Promise<PingResult> {
+export function ping(url: string, timeoutMs: number = 5000): Promise<PingResult> {
   const result = future<PingResult>()
 
   new Promise(() => {
@@ -40,7 +40,7 @@ function ping(url: string): Promise<PingResult> {
 
     let started: Date
 
-    http.timeout = 5000
+    http.timeout = timeoutMs
 
     http.onreadystatechange = () => {
       if (http.readyState === XMLHttpRequest.OPENED) {
