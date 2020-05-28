@@ -5,9 +5,10 @@ import {
   Conversation,
   PresenceType,
   CurrentUserStatus,
-  UnknownUsersError
+  UnknownUsersError,
+  UserPosition
 } from 'dcl-social-client'
-import { SocialAPI } from 'dcl-social-client/dist/SocialAPI'
+import { SocialAPI, Realm as SocialRealm } from 'dcl-social-client/dist'
 import { Authenticator } from 'dcl-crypto'
 import { takeEvery, put, select, call, take, delay } from 'redux-saga/effects'
 import {
@@ -34,10 +35,10 @@ import { worldToGrid } from '../../atomicHelpers/parcelScenePositions'
 import { ensureRenderer } from '../profiles/sagas'
 import { ADDED_PROFILE_TO_CATALOG } from '../profiles/actions'
 import { isAddedToCatalog, getProfile } from 'shared/profiles/selectors'
-import { Vector3Component } from '../../atomicHelpers/landHelpers'
 import { INIT_CATALYST_REALM, SET_CATALYST_REALM, SetCatalystRealm, InitCatalystRealm } from '../dao/actions'
 import { deepEqual } from '../../atomicHelpers/deepEqual'
 import { DEBUG_PM } from 'config'
+import { Vector3Component } from 'atomicHelpers/landHelpers'
 
 declare const globalThis: StoreContainer
 
@@ -51,6 +52,8 @@ const receivedMessages: Record<string, number> = {}
 const MESSAGE_LIFESPAN_MILLIS = 1000
 
 const SEND_STATUS_INTERVAL_MILLIS = 5000
+type PresenceMemoization = { realm: SocialRealm | undefined, position: UserPosition | undefined}
+const presenceMap: Record<string, PresenceMemoization | undefined> = {}
 
 export function* initializePrivateMessaging(synapseUrl: string, identity: ExplorerIdentity) {
   const { address: ethAddress } = identity
@@ -281,8 +284,22 @@ function sendUpdateUserStatus(id: string, status: CurrentUserStatus) {
   const domain = globalThis.globalStore.getState().chat.privateMessaging.client?.getDomain()
   let matches = id.match(new RegExp(`@(\\w.+):${domain}`, 'i'))
 
+  const userId = matches !== null ? matches[1] : id
+
+  if (presence === PresenceStatus.ONLINE) {
+    if (!status.realm && !status.position) {
+      const lastPresence = presenceMap[userId]
+
+      DEBUG && logger.info(`online status with no realm & position, using from map`, userId, lastPresence)
+      status.realm = lastPresence?.realm
+      status.position = lastPresence?.position
+    } else {
+      presenceMap[userId] = { realm: status.realm, position: status.position }
+    }
+  }
+
   const updateMessage = {
-    userId: matches !== null ? matches[1] : id,
+    userId,
     realm: status.realm,
     position: status.position,
     presence
