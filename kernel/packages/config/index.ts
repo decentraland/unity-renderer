@@ -124,6 +124,7 @@ export const DEBUG_MESSAGES = location.search.indexOf('DEBUG_MESSAGES') !== -1
 export const DEBUG_WS_MESSAGES = location.search.indexOf('DEBUG_WS_MESSAGES') !== -1
 export const DEBUG_REDUX = location.search.indexOf('DEBUG_REDUX') !== -1
 export const DEBUG_LOGIN = location.search.indexOf('DEBUG_LOGIN') !== -1
+export const DEBUG_PM = location.search.indexOf('DEBUG_PM') !== -1
 
 export const AWS = location.search.indexOf('AWS') !== -1
 export const NO_MOTD = location.search.indexOf('NO_MOTD') !== -1
