@@ -37,10 +37,11 @@ import { isAddedToCatalog, getProfile } from 'shared/profiles/selectors'
 import { Vector3Component } from '../../atomicHelpers/landHelpers'
 import { INIT_CATALYST_REALM, SET_CATALYST_REALM, SetCatalystRealm, InitCatalystRealm } from '../dao/actions'
 import { deepEqual } from '../../atomicHelpers/deepEqual'
+import { DEBUG_PM } from 'config'
 
 declare const globalThis: StoreContainer
 
-const DEBUG = false
+const DEBUG = DEBUG_PM
 
 const logger = createLogger('chat: ')
 
@@ -272,8 +273,10 @@ function initializeReceivedMessagesCleanUp() {
 }
 
 function sendUpdateUserStatus(id: string, status: CurrentUserStatus) {
+  DEBUG && logger.info(`sendUpdateUserStatus`, id, status)
+  // treat 'unavailable' status as 'online'
   const presence: PresenceStatus =
-    status.presence === PresenceType.ONLINE ? PresenceStatus.ONLINE : PresenceStatus.OFFLINE
+    status.presence === PresenceType.OFFLINE ? PresenceStatus.OFFLINE : PresenceStatus.ONLINE
 
   const domain = globalThis.globalStore.getState().chat.privateMessaging.client?.getDomain()
   let matches = id.match(new RegExp(`@(\\w.+):${domain}`, 'i'))
