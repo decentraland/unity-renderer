@@ -101,6 +101,12 @@ public class WorldChatWindowHUDController : IHUD
         bool isValidMessage = !string.IsNullOrEmpty(message.body) && !string.IsNullOrWhiteSpace(message.body);
         bool isPrivateMessage = message.messageType == ChatMessage.Type.PRIVATE;
 
+        if (!isValidMessage || resetInputFieldOnSubmit)
+        {
+            view.chatHudView.ResetInputField();
+            view.chatHudView.FocusInputField();
+        }
+
         if (!isValidMessage)
         {
             EventSystem.current.SetSelectedGameObject(null);
@@ -113,12 +119,6 @@ public class WorldChatWindowHUDController : IHUD
             }
 
             return;
-        }
-
-        if (resetInputFieldOnSubmit)
-        {
-            view.chatHudView.ResetInputField();
-            view.chatHudView.FocusInputField();
         }
 
         if (isPrivateMessage)
