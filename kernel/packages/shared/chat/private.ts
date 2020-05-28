@@ -40,7 +40,7 @@ import { deepEqual } from '../../atomicHelpers/deepEqual'
 
 declare const globalThis: StoreContainer
 
-const DEBUG = true
+const DEBUG = false
 
 const logger = createLogger('chat: ')
 
