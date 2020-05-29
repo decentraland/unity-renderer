@@ -10,7 +10,7 @@ import {
   InitCatalystRealm,
   SetCatalystRealm
 } from './actions'
-import { call, put, takeEvery, select } from 'redux-saga/effects'
+import { call, put, takeEvery, select, fork } from 'redux-saga/effects'
 import { WORLD_EXPLORER, REALM } from 'config'
 import { waitForMetaConfigurationInitialization } from '../meta/sagas'
 import { Candidate, Realm, ServerConnectionStatus } from './types'
@@ -35,17 +35,12 @@ function* loadCatalystRealms() {
     const loadedRealm = getFromLocalStorage(CACHE_KEY)
 
     let realm: Realm
-    if (loadedRealm && (yield validRealm(loadedRealm))) {
+    if (loadedRealm && (yield checkValidRealm(loadedRealm))) {
+      yield fork(initializeCatalystCandidates)
+
       realm = loadedRealm
     } else {
-      const candidates: Candidate[] = yield call(fecthCatalystRealms)
-
-      yield put(setCatalystCandidates(candidates))
-
-      const added: string[] = yield select(getAddedServers)
-      const addedCandidates: Candidate[] = yield call(fetchCatalystStatuses, added.map(url => ({ domain: url })))
-
-      yield put(setAddedCatalystCandidates(addedCandidates))
+      yield call(initializeCatalystCandidates)
 
       const allCandidates: Candidate[] = yield select(getAllCatalystCandidates)
 
@@ -88,7 +83,18 @@ function getConfiguredRealm(candidates: Candidate[]) {
   }
 }
 
-async function validRealm(realm: Realm) {
+function* initializeCatalystCandidates() {
+  const candidates: Candidate[] = yield call(fecthCatalystRealms)
+
+  yield put(setCatalystCandidates(candidates))
+
+  const added: string[] = yield select(getAddedServers)
+  const addedCandidates: Candidate[] = yield call(fetchCatalystStatuses, added.map(url => ({ domain: url })))
+
+  yield put(setAddedCatalystCandidates(addedCandidates))
+}
+
+async function checkValidRealm(realm: Realm) {
   return (
     realm.domain &&
     realm.catalystName &&
