@@ -47,6 +47,8 @@ export class LighthouseWorldInstanceConnection implements WorldInstanceConnectio
 
   private peer: PeerType
 
+  private rooms: string[] = []
+
   constructor(
     private peerId: string,
     private realm: Realm,
@@ -75,9 +77,7 @@ export class LighthouseWorldInstanceConnection implements WorldInstanceConnectio
 
   public async changeRealm(realm: Realm, url: string) {
     this.statusHandler({ status: 'connecting', connectedPeers: this.connectedPeersCount() })
-    let rooms: string[] = []
     if (this.peer) {
-      rooms = this.peer.currentRooms.map(it => it.id)
       await this.cleanUpPeer()
     }
 
@@ -86,7 +86,7 @@ export class LighthouseWorldInstanceConnection implements WorldInstanceConnectio
 
     this.initializePeer()
     await this.connectPeer()
-    await this.updateSubscriptions(rooms)
+    await this.syncRoomsWithPeer()
   }
 
   printDebugInformation() {
@@ -148,8 +148,13 @@ export class LighthouseWorldInstanceConnection implements WorldInstanceConnectio
   }
 
   async updateSubscriptions(rooms: string[]) {
+    this.rooms = rooms
+    await this.syncRoomsWithPeer()
+  }
+
+  private async syncRoomsWithPeer() {
     const currentRooms = this.peer.currentRooms
-    const joining = rooms.map(room => {
+    const joining = this.rooms.map(room => {
       if (!currentRooms.some(current => current.id === room)) {
         return this.peer.joinRoom(room)
       } else {
@@ -157,7 +162,7 @@ export class LighthouseWorldInstanceConnection implements WorldInstanceConnectio
       }
     })
     const leaving = currentRooms.map(current => {
-      if (!rooms.some(room => current.id === room)) {
+      if (!this.rooms.some(room => current.id === room)) {
         return this.peer.leaveRoom(current.id)
       } else {
         return Promise.resolve()
