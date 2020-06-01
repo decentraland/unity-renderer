@@ -22,6 +22,7 @@ public class WorldChatWindowHUDView : MonoBehaviour, IPointerClickHandler
     public UnityAction<ChatMessage> OnSendMessage;
 
     ChatMessage lastWhisperMessageSent;
+    string lastInputText = string.Empty;
 
     public static WorldChatWindowHUDView Create()
     {
@@ -71,6 +72,12 @@ public class WorldChatWindowHUDView : MonoBehaviour, IPointerClickHandler
 
     public void OnTextInputValueChanged(string text)
     {
+        if (isInPreview)
+            chatHudView.inputField.text = lastInputText;
+        else
+            lastInputText = chatHudView.inputField.text;
+        
+
         if (!string.IsNullOrEmpty(controller.lastPrivateMessageReceivedSender) && text == "/r ")
         {
             chatHudView.inputField.text = $"/w {controller.lastPrivateMessageReceivedSender} ";

@@ -337,6 +337,7 @@ public class TaskbarHUDController : IHUD
 
         view.chatButton.SetToggleState(true);
         view.chatButton.SetToggleState(false, false);
+        worldChatWindowHud.view.chatHudView.ResetInputField();
         worldChatWindowHud.view.ActivatePreview();
     }
 
