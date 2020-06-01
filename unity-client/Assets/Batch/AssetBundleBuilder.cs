@@ -415,7 +415,7 @@ namespace DCL
 
             startTime = Time.realtimeSinceStartup;
 
-            InitializeDirectoryPaths(false);
+            InitializeDirectoryPaths(true);
             PopulateLowercaseMappings(rawContents);
 
             float timer = Time.realtimeSinceStartup;
