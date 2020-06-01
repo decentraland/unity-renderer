@@ -47,7 +47,7 @@ public class FriendsController : MonoBehaviour, IFriendsController
     public static bool VERBOSE = false;
     public static FriendsController i { get; private set; }
 
-    public int friendCount => friends.Count;
+    public int friendCount => friends.Count(f => f.Value.friendshipStatus == FriendshipStatus.FRIEND);
 
     void Awake()
     {
