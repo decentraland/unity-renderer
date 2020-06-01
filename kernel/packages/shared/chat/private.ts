@@ -60,7 +60,7 @@ export function* initializePrivateMessaging(synapseUrl: string, identity: Explor
   let timestamp
 
   try {
-    const response = yield fetch('http://worldtimeapi.org/api/timezone/Etc/UTC')
+    const response = yield fetch('https://worldtimeapi.org/api/timezone/Etc/UTC')
     const { datetime } = yield response.json()
     timestamp = new Date(datetime).getTime()
   } catch (e) {
