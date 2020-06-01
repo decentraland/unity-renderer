@@ -52,12 +52,21 @@ const receivedMessages: Record<string, number> = {}
 const MESSAGE_LIFESPAN_MILLIS = 1000
 
 const SEND_STATUS_INTERVAL_MILLIS = 5000
-type PresenceMemoization = { realm: SocialRealm | undefined, position: UserPosition | undefined}
+type PresenceMemoization = { realm: SocialRealm | undefined, position: UserPosition | undefined }
 const presenceMap: Record<string, PresenceMemoization | undefined> = {}
 
 export function* initializePrivateMessaging(synapseUrl: string, identity: ExplorerIdentity) {
   const { address: ethAddress } = identity
-  const timestamp = Date.now()
+  let timestamp
+
+  try {
+    const response = yield fetch('http://worldtimeapi.org/api/timezone/Etc/UTC')
+    const { datetime } = yield response.json()
+    timestamp = new Date(datetime).getTime()
+  } catch (e) {
+    logger.warn(`Failed to fetch global time. Will fall back to local time`)
+    timestamp = Date.now()
+  }
 
   const messageToSign = `${timestamp}`
 
