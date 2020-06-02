@@ -8,7 +8,11 @@ import {
   INIT_CATALYST_REALM,
   SET_CATALYST_REALM,
   InitCatalystRealm,
-  SetCatalystRealm
+  SetCatalystRealm,
+  SET_CATALYST_CANDIDATES,
+  SET_ADDED_CATALYST_CANDIDATES,
+  SetCatalystCandidates,
+  SetAddedCatalystCandidates
 } from './actions'
 import { call, put, takeEvery, select, fork } from 'redux-saga/effects'
 import { WORLD_EXPLORER, REALM } from 'config'
@@ -21,37 +25,57 @@ import { saveToLocalStorage, getFromLocalStorage } from '../../atomicHelpers/loc
 import { ping } from './index'
 
 const CACHE_KEY = 'realm'
+const CATALYST_CANDIDATES_KEY = CACHE_KEY + '-' + SET_CATALYST_CANDIDATES
 
 export function* daoSaga(): any {
   yield takeEvery(WEB3_INITIALIZED, loadCatalystRealms)
 
   yield takeEvery([INIT_CATALYST_REALM, SET_CATALYST_REALM], cacheCatalystRealm)
+  yield takeEvery([SET_CATALYST_CANDIDATES, SET_ADDED_CATALYST_CANDIDATES], cacheCatalystCandidates)
 }
 
+/**
+ * This method will try to load the candidates as well as the selected realm.
+ *
+ * The strategy to select the realm in terms of priority is:
+ * 1- Realm configured in the URL and cached candidate for that realm (uses cache, forks async candidadte initialization)
+ * 2- Realm configured in the URL but no corresponding cached candidate (implies sync candidate initialization)
+ * 3- Last cached realm (uses cache, forks async candidadte initialization)
+ * 4- Best pick from candidate scan (implies sync candidate initialization)
+ */
 function* loadCatalystRealms() {
   yield call(waitForMetaConfigurationInitialization)
 
   if (WORLD_EXPLORER) {
-    const loadedRealm = getFromLocalStorage(CACHE_KEY)
+    const cachedRealm: Realm | undefined = getFromLocalStorage(CACHE_KEY)
 
-    let realm: Realm
-    if (loadedRealm && (yield checkValidRealm(loadedRealm))) {
-      yield fork(initializeCatalystCandidates)
+    let realm: Realm | undefined
 
-      realm = loadedRealm
-    } else {
+    // check for cached realms if any
+    if (cachedRealm) {
+      const cachedCandidates: Candidate[] = getFromLocalStorage(CATALYST_CANDIDATES_KEY) ?? []
+
+      let configuredRealm: Realm
+      if (REALM) {
+        // if a realm is configured, then try to initialize it from cached candidates
+        configuredRealm = yield call(getConfiguredRealm, cachedCandidates)
+      } else {
+        // in case there are no cached candidates or the realm was not configured in the URL -> use last cached realm
+        configuredRealm = cachedRealm
+      }
+
+      if (configuredRealm && (yield checkValidRealm(configuredRealm))) {
+        realm = configuredRealm
+
+        yield fork(initializeCatalystCandidates)
+      }
+    }
+
+    // if no realm was selected, then do the whole initialization dance
+    if (!realm) {
       yield call(initializeCatalystCandidates)
 
       const allCandidates: Candidate[] = yield select(getAllCatalystCandidates)
-
-      const whitelist: string[] = yield select(getContentWhitelist)
-      let whitelistedCandidates = allCandidates.filter(candidate => whitelist.includes(candidate.domain))
-      if (whitelistedCandidates.length === 0) {
-        // if intersection is empty (no whitelisted or not in our candidate set) => whitelist all candidates
-        whitelistedCandidates = allCandidates
-      }
-
-      yield put(setContentWhitelist(whitelistedCandidates))
 
       realm = yield call(getConfiguredRealm, allCandidates)
       if (!realm) {
@@ -59,7 +83,7 @@ function* loadCatalystRealms() {
       }
     }
 
-    yield put(initCatalystRealm(realm))
+    yield put(initCatalystRealm(realm!))
   } else {
     yield put(setCatalystCandidates([]))
     yield put(setAddedCatalystCandidates([]))
@@ -92,6 +116,17 @@ function* initializeCatalystCandidates() {
   const addedCandidates: Candidate[] = yield call(fetchCatalystStatuses, added.map(url => ({ domain: url })))
 
   yield put(setAddedCatalystCandidates(addedCandidates))
+
+  const allCandidates: Candidate[] = yield select(getAllCatalystCandidates)
+
+  const whitelist: string[] = yield select(getContentWhitelist)
+  let whitelistedCandidates = allCandidates.filter(candidate => whitelist.includes(candidate.domain))
+  if (whitelistedCandidates.length === 0) {
+    // if intersection is empty (no whitelisted or not in our candidate set) => whitelist all candidates
+    whitelistedCandidates = allCandidates
+  }
+
+  yield put(setContentWhitelist(whitelistedCandidates))
 }
 
 async function checkValidRealm(realm: Realm) {
@@ -105,4 +140,10 @@ async function checkValidRealm(realm: Realm) {
 
 function* cacheCatalystRealm(action: InitCatalystRealm & SetCatalystRealm) {
   saveToLocalStorage(CACHE_KEY, action.payload)
+}
+
+function* cacheCatalystCandidates(action: SetCatalystCandidates & SetAddedCatalystCandidates) {
+  const allCandidates = yield select(getAllCatalystCandidates)
+
+  saveToLocalStorage(CATALYST_CANDIDATES_KEY, allCandidates)
 }
