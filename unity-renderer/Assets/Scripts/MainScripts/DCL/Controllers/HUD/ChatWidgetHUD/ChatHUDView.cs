@@ -23,6 +23,7 @@ public class ChatHUDView : MonoBehaviour
     public GameObject messageHoverPanel;
     public TextMeshProUGUI messageHoverText;
     [NonSerialized] public List<ChatEntry> entries = new List<ChatEntry>();
+    [NonSerialized] public List<DateSeparatorEntry> dateSeparators = new List<DateSeparatorEntry>();
 
     ChatMessage currentMessage = new ChatMessage();
     Regex whisperRegex = new Regex(@"(?i)^\/(whisper|w) (\S+)( *)(.*)");
@@ -175,5 +176,12 @@ public class ChatHUDView : MonoBehaviour
         }
 
         entries.Clear();
+
+        foreach (DateSeparatorEntry separator in dateSeparators)
+        {
+            Destroy(separator.gameObject);
+        }
+
+        dateSeparators.Clear();
     }
 }
