@@ -60,7 +60,7 @@ public class PrivateChatWindowHUDController : IHUD
 
         view.ConfigureTitle(conversationUserName);
         view.ConfigureProfilePicture(newConversationUserProfile.faceSnapshot);
-        view.ConfigureJumpInButton(newConversationUserProfile.userId);
+        view.ConfigureUserId(newConversationUserProfile.userId);
 
         view.chatHudView.CleanAllEntries();
 
@@ -123,10 +123,10 @@ public class PrivateChatWindowHUDController : IHUD
 
         view.chatHudView.controller.AddChatMessage(ChatHUDController.ChatMessageToChatEntry(message));
 
-        if (view.chatHudView.inputField.isFocused)
+        if (view.userId == conversationUserId)
         {
-            // The messages from 'conversationUserId' are marked as read if the player was already focused on the input field of the private chat
-            MarkUserChatMessagesAsRead(conversationUserId);
+            // The messages from 'conversationUserId' are marked as read if his private chat window is currently open
+            MarkUserChatMessagesAsRead(conversationUserId, (long) message.timestamp);
         }
     }
 
@@ -141,10 +141,14 @@ public class PrivateChatWindowHUDController : IHUD
         view.chatHudView.FocusInputField();
     }
 
-    private void MarkUserChatMessagesAsRead(string userId)
+    private void MarkUserChatMessagesAsRead(string userId, long? timestamp = null)
     {
+        long timeMark = System.DateTimeOffset.UtcNow.ToUnixTimeMilliseconds();
+        if (timestamp != null && timestamp.Value > timeMark)
+            timeMark = timestamp.Value;
+
         CommonScriptableObjects.lastReadChatMessages.Remove(userId);
-        CommonScriptableObjects.lastReadChatMessages.Add(userId, System.DateTimeOffset.UtcNow.ToUnixTimeMilliseconds());
+        CommonScriptableObjects.lastReadChatMessages.Add(userId, timeMark);
         SaveLatestReadChatMessagesStatus();
     }
 
