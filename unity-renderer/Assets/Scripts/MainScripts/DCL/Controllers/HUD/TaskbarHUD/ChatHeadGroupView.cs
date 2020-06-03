@@ -125,6 +125,16 @@ public class ChatHeadGroupView : MonoBehaviour
         return chatHead;
     }
 
+    internal void ClearChatHeads()
+    {
+        var chatHeadsToRemove = chatHeads.ToArray();
+
+        for (int i = 0; i < chatHeadsToRemove.Length; i++)
+        {
+            RemoveChatHead(chatHeadsToRemove[i]);
+        }
+    }
+
     internal void RemoveChatHead(string userId)
     {
         RemoveChatHead(chatHeads.FirstOrDefault(x => x.profile.userId == userId));
