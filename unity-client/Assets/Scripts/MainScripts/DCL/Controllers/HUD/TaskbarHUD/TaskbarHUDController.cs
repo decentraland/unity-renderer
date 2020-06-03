@@ -3,6 +3,7 @@ using DCL.Helpers;
 using DCL.Interface;
 using System.Linq;
 using UnityEngine;
+using UnityEngine.EventSystems;
 
 public class TaskbarHUDController : IHUD
 {
@@ -85,19 +86,17 @@ public class TaskbarHUDController : IHUD
 
     private void ToggleFriendsTrigger_OnTriggered(DCLAction_Trigger action)
     {
-        Utils.UnlockCursor();
-        view.windowContainerAnimator.Show();
-        view.friendsButton.SetToggleState(!view.friendsButton.toggledOn);
+        OnFriendsToggleInputPress();
     }
 
     private void ToggleWorldChatTrigger_OnTriggered(DCLAction_Trigger action)
     {
-        OnPressReturn();
+        OnWorldChatToggleInputPress();
     }
 
     private void CloseWindowTrigger_OnTriggered(DCLAction_Trigger action)
     {
-        OnPressEsc();
+        OnCloseWindowToggleInputPress();
     }
 
     private void View_OnChatToggleOn()
@@ -311,12 +310,13 @@ public class TaskbarHUDController : IHUD
         view.SetVisibility(visible);
     }
 
-    public void OnPressReturn()
+    public void OnWorldChatToggleInputPress()
     {
-        bool isPrivateChatWindowOpen = privateChatWindowHud != null && privateChatWindowHud.view.gameObject.activeSelf;
-        bool isFriendRequestsWindowOpen = friendsHud != null &&  friendsHud.view.friendRequestsList.gameObject.activeSelf;
+        bool anyInputFieldIsSelected = EventSystem.current != null &&
+            EventSystem.current.currentSelectedGameObject != null &&
+            EventSystem.current.currentSelectedGameObject.GetComponent<TMPro.TMP_InputField>() != null;
 
-        if (isPrivateChatWindowOpen || isFriendRequestsWindowOpen)
+        if (anyInputFieldIsSelected)
             return;
 
         worldChatWindowHud.OnPressReturn();
@@ -330,7 +330,7 @@ public class TaskbarHUDController : IHUD
         }
     }
 
-    public void OnPressEsc()
+    public void OnCloseWindowToggleInputPress()
     {
         if (mouseCatcher.isLocked)
             return;
@@ -339,6 +339,21 @@ public class TaskbarHUDController : IHUD
         view.chatButton.SetToggleState(false, false);
         worldChatWindowHud.view.chatHudView.ResetInputField();
         worldChatWindowHud.view.ActivatePreview();
+    }
+
+    private void OnFriendsToggleInputPress()
+    {
+        bool anyInputFieldDifferentThanWorlChat = EventSystem.current != null &&
+            EventSystem.current.currentSelectedGameObject != null &&
+            EventSystem.current.currentSelectedGameObject.GetComponent<TMPro.TMP_InputField>() != null &&
+            (!worldChatWindowHud.view.chatHudView.inputField.isFocused || !worldChatWindowHud.view.isInPreview);
+
+        if (anyInputFieldDifferentThanWorlChat)
+            return;
+
+        Utils.UnlockCursor();
+        view.windowContainerAnimator.Show();
+        view.friendsButton.SetToggleState(!view.friendsButton.toggledOn);
     }
 
     void OnAddMessage(ChatMessage message)
