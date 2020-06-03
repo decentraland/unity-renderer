@@ -1,7 +1,9 @@
 {
     "name": "InputController",
     "references": [
-        "GUID:6055be8ebefd69e48b49212b09b47b2f"
+        "GUID:6055be8ebefd69e48b49212b09b47b2f",
+        "GUID:b1087c5731ff68448a0a9c625bb7e52d",
+        "GUID:4720e174f2805c74bb7aa94cc8bb5bf8"
     ],
     "optionalUnityReferences": [],
     "includePlatforms": [],

@@ -15,6 +15,8 @@ namespace DCL
     public class MouseCatcher : MonoBehaviour, IMouseCatcher, IPointerDownHandler
     {
         public bool isLocked => Utils.isCursorLocked;
+        bool renderingEnabled => CommonScriptableObjects.rendererState.Get();
+
         public event System.Action OnMouseUnlock;
         public event System.Action OnMouseLock;
         public event System.Action OnMouseDown;
@@ -35,6 +37,8 @@ namespace DCL
 
         public void LockCursor()
         {
+            if (!renderingEnabled) return;
+
             Utils.LockCursor();
             OnMouseLock?.Invoke();
         }

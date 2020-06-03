@@ -13,8 +13,12 @@ public class WelcomeHUDView : MonoBehaviour
     [SerializeField] internal TextMeshProUGUI bodyText;
     [SerializeField] internal TextMeshProUGUI buttonText;
 
-    [SerializeField] internal Button confirmButton;
-    [SerializeField] internal Button closeButton;
+    [SerializeField] internal Button_OnPointerDown confirmButton;
+    [SerializeField] internal Button_OnPointerDown closeButton;
+
+    UnityAction OnConfirmButtonPressed;
+    UnityAction OnCloseButtonPressed;
+
     public static WelcomeHUDView CreateView(bool hasWallet)
     {
         GameObject prefab;
@@ -29,10 +33,16 @@ public class WelcomeHUDView : MonoBehaviour
 
     public void Initialize(UnityAction OnConfirm, UnityAction OnClose)
     {
-        confirmButton.onClick.RemoveAllListeners();
-        confirmButton.onClick.AddListener(OnConfirm);
+        OnConfirmButtonPressed = OnConfirm;
+        OnCloseButtonPressed = OnClose;
 
-        closeButton.onClick.RemoveAllListeners();
-        closeButton.onClick.AddListener(OnClose);
+        confirmButton.onPointerDown += OnConfirmButtonPressed;
+        closeButton.onPointerDown += OnCloseButtonPressed;
+    }
+
+    public void CleanUp()
+    {
+        confirmButton.onPointerDown -= OnConfirmButtonPressed;
+        closeButton.onPointerDown -= OnCloseButtonPressed;
     }
 }

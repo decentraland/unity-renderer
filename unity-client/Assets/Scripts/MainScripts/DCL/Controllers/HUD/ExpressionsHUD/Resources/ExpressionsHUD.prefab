@@ -1243,9 +1243,9 @@ GameObject:
   - component: {fileID: 5966592239257548843}
   - component: {fileID: 3285796799011211050}
   - component: {fileID: 2242368926649155648}
-  - component: {fileID: 7369359897116190397}
   - component: {fileID: 3978620096624981023}
   - component: {fileID: 6193619628318424528}
+  - component: {fileID: 7609492662271127952}
   m_Layer: 5
   m_Name: CloseButton
   m_TagString: Untagged
@@ -1310,51 +1310,6 @@ MonoBehaviour:
   m_FillClockwise: 1
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
---- !u!114 &7369359897116190397
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1993209732132389962}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 1392445389, guid: f70555f144d8491a825f0804e09c671c, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  m_Navigation:
-    m_Mode: 3
-    m_SelectOnUp: {fileID: 0}
-    m_SelectOnDown: {fileID: 0}
-    m_SelectOnLeft: {fileID: 0}
-    m_SelectOnRight: {fileID: 0}
-  m_Transition: 1
-  m_Colors:
-    m_NormalColor: {r: 1, g: 1, b: 1, a: 1}
-    m_HighlightedColor: {r: 0.9150943, g: 0.9150943, b: 0.9150943, a: 1}
-    m_PressedColor: {r: 0.764151, g: 0.764151, b: 0.764151, a: 1}
-    m_SelectedColor: {r: 0.9607843, g: 0.9607843, b: 0.9607843, a: 1}
-    m_DisabledColor: {r: 0.78431374, g: 0.78431374, b: 0.78431374, a: 0.5019608}
-    m_ColorMultiplier: 1
-    m_FadeDuration: 0.1
-  m_SpriteState:
-    m_HighlightedSprite: {fileID: 0}
-    m_PressedSprite: {fileID: 0}
-    m_SelectedSprite: {fileID: 0}
-    m_DisabledSprite: {fileID: 0}
-  m_AnimationTriggers:
-    m_NormalTrigger: Normal
-    m_HighlightedTrigger: Highlighted
-    m_PressedTrigger: Pressed
-    m_SelectedTrigger: Selected
-    m_DisabledTrigger: Disabled
-  m_Interactable: 1
-  m_TargetGraphic: {fileID: 3688565800849031565}
-  m_OnClick:
-    m_PersistentCalls:
-      m_Calls: []
-    m_TypeName: UnityEngine.UI.Button+ButtonClickedEvent, UnityEngine.UI, Version=1.0.0.0,
-      Culture=neutral, PublicKeyToken=null
 --- !u!114 &3978620096624981023
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1390,6 +1345,51 @@ MonoBehaviour:
   targetRectTransform: {fileID: 5966592239257548843}
   hoverScale: 1.05
   normalScale: 1
+--- !u!114 &7609492662271127952
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1993209732132389962}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 028f6aecab96a43f096fdbbc8a753ead, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_Navigation:
+    m_Mode: 3
+    m_SelectOnUp: {fileID: 0}
+    m_SelectOnDown: {fileID: 0}
+    m_SelectOnLeft: {fileID: 0}
+    m_SelectOnRight: {fileID: 0}
+  m_Transition: 1
+  m_Colors:
+    m_NormalColor: {r: 1, g: 1, b: 1, a: 1}
+    m_HighlightedColor: {r: 0.9607843, g: 0.9607843, b: 0.9607843, a: 1}
+    m_PressedColor: {r: 0.78431374, g: 0.78431374, b: 0.78431374, a: 1}
+    m_SelectedColor: {r: 0.9607843, g: 0.9607843, b: 0.9607843, a: 1}
+    m_DisabledColor: {r: 0.78431374, g: 0.78431374, b: 0.78431374, a: 0.5019608}
+    m_ColorMultiplier: 1
+    m_FadeDuration: 0.1
+  m_SpriteState:
+    m_HighlightedSprite: {fileID: 0}
+    m_PressedSprite: {fileID: 0}
+    m_SelectedSprite: {fileID: 0}
+    m_DisabledSprite: {fileID: 0}
+  m_AnimationTriggers:
+    m_NormalTrigger: Normal
+    m_HighlightedTrigger: Highlighted
+    m_PressedTrigger: Pressed
+    m_SelectedTrigger: Selected
+    m_DisabledTrigger: Disabled
+  m_Interactable: 1
+  m_TargetGraphic: {fileID: 3688565800849031565}
+  m_OnClick:
+    m_PersistentCalls:
+      m_Calls: []
+    m_TypeName: UnityEngine.UI.Button+ButtonClickedEvent, UnityEngine.UI, Version=1.0.0.0,
+      Culture=neutral, PublicKeyToken=null
 --- !u!1 &2513147558662610264
 GameObject:
   m_ObjectHideFlags: 0
@@ -1654,23 +1654,23 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   buttonToExpressionMap:
   - expressionId: wave
-    button: {fileID: 6959363111349760724}
+    button: {fileID: 8899024452345124865}
   - expressionId: fistpump
-    button: {fileID: 7429565090657569286}
+    button: {fileID: 6920979846287350269}
   - expressionId: robot
-    button: {fileID: 234398039322459571}
+    button: {fileID: 7079493532869316107}
   - expressionId: raiseHand
-    button: {fileID: 4287247481211862919}
+    button: {fileID: 8496611908133421776}
   - expressionId: clap
-    button: {fileID: 373236788406191674}
+    button: {fileID: 7767993376052004405}
   - expressionId: money
-    button: {fileID: 3217893231158219506}
+    button: {fileID: 25081012869704405}
   - expressionId: kiss
-    button: {fileID: 3694800106491159368}
+    button: {fileID: 6836242333474179246}
   showContentButton: {fileID: 3828354362020330558}
   hideContentButtons:
-  - {fileID: 7369359897116190397}
-  - {fileID: 8860739718997956172}
+  - {fileID: 5791184483059670900}
+  - {fileID: 7609492662271127952}
   content: {fileID: 3368308072246989936}
   openExpressionsAction: {fileID: 11400000, guid: a9a8e6cad9d1cc54db4c26cfb7e91f4c,
     type: 2}
@@ -1693,7 +1693,7 @@ GameObject:
   m_Component:
   - component: {fileID: 6480631354274678046}
   - component: {fileID: 4568952583338752013}
-  - component: {fileID: 234398039322459571}
+  - component: {fileID: 7079493532869316107}
   - component: {fileID: 4884999025973778337}
   m_Layer: 5
   m_Name: DanceButton
@@ -1733,7 +1733,7 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 3309478375450759555}
   m_CullTransparentMesh: 0
---- !u!114 &234398039322459571
+--- !u!114 &7079493532869316107
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -1742,7 +1742,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 3309478375450759555}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 1392445389, guid: f70555f144d8491a825f0804e09c671c, type: 3}
+  m_Script: {fileID: 11500000, guid: 028f6aecab96a43f096fdbbc8a753ead, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   m_Navigation:
@@ -2326,7 +2326,7 @@ GameObject:
   m_Component:
   - component: {fileID: 4950410367805398983}
   - component: {fileID: 26786792254107118}
-  - component: {fileID: 7429565090657569286}
+  - component: {fileID: 6920979846287350269}
   - component: {fileID: 7748480536203718372}
   m_Layer: 5
   m_Name: FistPumpButton
@@ -2366,7 +2366,7 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 3976618281351183969}
   m_CullTransparentMesh: 0
---- !u!114 &7429565090657569286
+--- !u!114 &6920979846287350269
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -2375,7 +2375,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 3976618281351183969}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 1392445389, guid: f70555f144d8491a825f0804e09c671c, type: 3}
+  m_Script: {fileID: 11500000, guid: 028f6aecab96a43f096fdbbc8a753ead, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   m_Navigation:
@@ -2440,7 +2440,7 @@ GameObject:
   m_Component:
   - component: {fileID: 7892502618935349957}
   - component: {fileID: 663222235591802679}
-  - component: {fileID: 3217893231158219506}
+  - component: {fileID: 25081012869704405}
   - component: {fileID: 1163595592883164786}
   m_Layer: 5
   m_Name: ThrowMoney
@@ -2480,7 +2480,7 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 4305308132892508061}
   m_CullTransparentMesh: 0
---- !u!114 &3217893231158219506
+--- !u!114 &25081012869704405
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -2489,7 +2489,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 4305308132892508061}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 1392445389, guid: f70555f144d8491a825f0804e09c671c, type: 3}
+  m_Script: {fileID: 11500000, guid: 028f6aecab96a43f096fdbbc8a753ead, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   m_Navigation:
@@ -2628,7 +2628,7 @@ GameObject:
   m_Component:
   - component: {fileID: 6380930832859347887}
   - component: {fileID: 1104267520085762724}
-  - component: {fileID: 6959363111349760724}
+  - component: {fileID: 8899024452345124865}
   - component: {fileID: 3292822135945279988}
   m_Layer: 5
   m_Name: WaveHandButton
@@ -2668,7 +2668,7 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 4493361109717490464}
   m_CullTransparentMesh: 0
---- !u!114 &6959363111349760724
+--- !u!114 &8899024452345124865
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -2677,7 +2677,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 4493361109717490464}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 1392445389, guid: f70555f144d8491a825f0804e09c671c, type: 3}
+  m_Script: {fileID: 11500000, guid: 028f6aecab96a43f096fdbbc8a753ead, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   m_Navigation:
@@ -3753,7 +3753,7 @@ GameObject:
   m_Component:
   - component: {fileID: 6587213980418622947}
   - component: {fileID: 6259155763869372812}
-  - component: {fileID: 3694800106491159368}
+  - component: {fileID: 6836242333474179246}
   - component: {fileID: 5079774866683632801}
   m_Layer: 5
   m_Name: Send Kiss
@@ -3793,7 +3793,7 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 6408490469187445268}
   m_CullTransparentMesh: 0
---- !u!114 &3694800106491159368
+--- !u!114 &6836242333474179246
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -3802,7 +3802,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 6408490469187445268}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 1392445389, guid: f70555f144d8491a825f0804e09c671c, type: 3}
+  m_Script: {fileID: 11500000, guid: 028f6aecab96a43f096fdbbc8a753ead, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   m_Navigation:
@@ -4174,7 +4174,7 @@ GameObject:
   - component: {fileID: 3368308072246989936}
   - component: {fileID: 150641883612503191}
   - component: {fileID: 2027896990520358233}
-  - component: {fileID: 8860739718997956172}
+  - component: {fileID: 5791184483059670900}
   m_Layer: 5
   m_Name: Content
   m_TagString: Untagged
@@ -4248,7 +4248,7 @@ MonoBehaviour:
   m_FillClockwise: 1
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
---- !u!114 &8860739718997956172
+--- !u!114 &5791184483059670900
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -4257,7 +4257,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 7040428932665199747}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 1392445389, guid: f70555f144d8491a825f0804e09c671c, type: 3}
+  m_Script: {fileID: 11500000, guid: 028f6aecab96a43f096fdbbc8a753ead, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   m_Navigation:
@@ -4461,7 +4461,7 @@ GameObject:
   m_Component:
   - component: {fileID: 3189298678517278681}
   - component: {fileID: 6516097776908433022}
-  - component: {fileID: 4287247481211862919}
+  - component: {fileID: 8496611908133421776}
   - component: {fileID: 4118555837419026667}
   m_Layer: 5
   m_Name: RaiseHandButton
@@ -4501,7 +4501,7 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 7180080547580295838}
   m_CullTransparentMesh: 0
---- !u!114 &4287247481211862919
+--- !u!114 &8496611908133421776
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -4510,7 +4510,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 7180080547580295838}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 1392445389, guid: f70555f144d8491a825f0804e09c671c, type: 3}
+  m_Script: {fileID: 11500000, guid: 028f6aecab96a43f096fdbbc8a753ead, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   m_Navigation:
@@ -4915,7 +4915,7 @@ GameObject:
   m_Component:
   - component: {fileID: 8902071888976354546}
   - component: {fileID: 4327657274195754415}
-  - component: {fileID: 373236788406191674}
+  - component: {fileID: 7767993376052004405}
   - component: {fileID: 7286959071320628324}
   m_Layer: 5
   m_Name: Clap
@@ -4955,7 +4955,7 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 8192546585518253487}
   m_CullTransparentMesh: 0
---- !u!114 &373236788406191674
+--- !u!114 &7767993376052004405
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -4964,7 +4964,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 8192546585518253487}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 1392445389, guid: f70555f144d8491a825f0804e09c671c, type: 3}
+  m_Script: {fileID: 11500000, guid: 028f6aecab96a43f096fdbbc8a753ead, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   m_Navigation:
