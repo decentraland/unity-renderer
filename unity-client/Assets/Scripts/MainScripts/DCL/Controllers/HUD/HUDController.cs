@@ -1,9 +1,6 @@
 using DCL.SettingsHUD;
-using System;
 using System.Collections.Generic;
-using System.Reflection;
 using UnityEngine;
-using UnityEngine.Assertions;
 
 public class HUDController : MonoBehaviour
 {
@@ -165,48 +162,79 @@ public class HUDController : MonoBehaviour
                 CreateHudElement<TermsOfServiceHUDController>(configuration, hudElementId);
                 break;
             case HUDElementID.WORLD_CHAT_WINDOW:
-                CreateHudElement<WorldChatWindowHUDController>(configuration, hudElementId);
-                if (worldChatWindowHud != null)
+                if (worldChatWindowHud == null)
                 {
-                    worldChatWindowHud.Initialize(ChatController.i, DCL.InitialSceneReferences.i?.mouseCatcher);
-                    worldChatWindowHud.OnPressPrivateMessage -= OpenPrivateChatWindow;
-                    worldChatWindowHud.OnPressPrivateMessage += OpenPrivateChatWindow;
-                    worldChatWindowHud.view.OnDeactivatePreview -= View_OnDeactivatePreview;
-                    worldChatWindowHud.view.OnDeactivatePreview += View_OnDeactivatePreview;
+                    CreateHudElement<WorldChatWindowHUDController>(configuration, hudElementId);
 
-                    taskbarHud?.AddWorldChatWindow(worldChatWindowHud);
+                    if (worldChatWindowHud != null)
+                    {
+                        worldChatWindowHud.Initialize(ChatController.i, DCL.InitialSceneReferences.i?.mouseCatcher);
+                        worldChatWindowHud.OnPressPrivateMessage -= OpenPrivateChatWindow;
+                        worldChatWindowHud.OnPressPrivateMessage += OpenPrivateChatWindow;
+                        worldChatWindowHud.view.OnDeactivatePreview -= View_OnDeactivatePreview;
+                        worldChatWindowHud.view.OnDeactivatePreview += View_OnDeactivatePreview;
+
+                        taskbarHud?.AddWorldChatWindow(worldChatWindowHud);
+                    }
+                }
+                else
+                {
+                    UpdateHudElement<WorldChatWindowHUDController>(configuration, hudElementId);
                 }
 
                 break;
             case HUDElementID.FRIENDS:
-                CreateHudElement<FriendsHUDController>(configuration, hudElementId);
-                if (friendsHud != null)
+                if (friendsHud == null)
                 {
-                    friendsHud.Initialize(FriendsController.i, UserProfile.GetOwnUserProfile());
-                    friendsHud.OnPressWhisper -= OpenPrivateChatWindow;
-                    friendsHud.OnPressWhisper += OpenPrivateChatWindow;
+                    CreateHudElement<FriendsHUDController>(configuration, hudElementId);
 
-                    taskbarHud?.AddFriendsWindow(friendsHud);
+                    if (friendsHud != null)
+                    {
+                        friendsHud.Initialize(FriendsController.i, UserProfile.GetOwnUserProfile());
+                        friendsHud.OnPressWhisper -= OpenPrivateChatWindow;
+                        friendsHud.OnPressWhisper += OpenPrivateChatWindow;
+
+                        taskbarHud?.AddFriendsWindow(friendsHud);
+                    }
+                }
+                else
+                {
+                    UpdateHudElement<FriendsHUDController>(configuration, hudElementId);
+
+                    if (!configuration.active)
+                        taskbarHud?.DisableFriendsWindow();
                 }
 
-                CreateHudElement<PrivateChatWindowHUDController>(configuration, HUDElementID.PRIVATE_CHAT_WINDOW);
-                if (privateChatWindowHud != null)
+                if (privateChatWindowHud == null)
                 {
-                    privateChatWindowHud.Initialize(ChatController.i);
-                    privateChatWindowHud.OnPressBack -= PrivateChatWindowHud_OnPressBack;
-                    privateChatWindowHud.OnPressBack += PrivateChatWindowHud_OnPressBack;
+                    CreateHudElement<PrivateChatWindowHUDController>(configuration, HUDElementID.PRIVATE_CHAT_WINDOW);
 
-                    taskbarHud?.AddPrivateChatWindow(privateChatWindowHud);
+                    if (privateChatWindowHud != null)
+                    {
+                        privateChatWindowHud.Initialize(ChatController.i);
+                        privateChatWindowHud.OnPressBack -= PrivateChatWindowHud_OnPressBack;
+                        privateChatWindowHud.OnPressBack += PrivateChatWindowHud_OnPressBack;
+
+                        taskbarHud?.AddPrivateChatWindow(privateChatWindowHud);
+                    }
                 }
                 break;
             case HUDElementID.TASKBAR:
-                CreateHudElement<TaskbarHUDController>(configuration, hudElementId);
-                if (taskbarHud != null)
+                if (taskbarHud == null)
                 {
-                    taskbarHud.Initialize(DCL.InitialSceneReferences.i?.mouseCatcher, ChatController.i,
-                        FriendsController.i);
-                    taskbarHud.OnAnyTaskbarButtonClicked -= TaskbarHud_onAnyTaskbarButtonClicked;
-                    taskbarHud.OnAnyTaskbarButtonClicked += TaskbarHud_onAnyTaskbarButtonClicked;
+                    CreateHudElement<TaskbarHUDController>(configuration, hudElementId);
+
+                    if (taskbarHud != null)
+                    {
+                        taskbarHud.Initialize(DCL.InitialSceneReferences.i?.mouseCatcher, ChatController.i,
+                            FriendsController.i);
+                        taskbarHud.OnAnyTaskbarButtonClicked -= TaskbarHud_onAnyTaskbarButtonClicked;
+                        taskbarHud.OnAnyTaskbarButtonClicked += TaskbarHud_onAnyTaskbarButtonClicked;
+                    }
+                }
+                else
+                {
+                    UpdateHudElement<TaskbarHUDController>(configuration, hudElementId);
                 }
 
                 break;
@@ -257,6 +285,17 @@ public class HUDController : MonoBehaviour
             if (VERBOSE)
                 Debug.Log($"Adding {id} .. type {hudElements[id].GetType().Name}");
         }
+    }
+
+    public void UpdateHudElement<T>(HUDConfiguration config, HUDElementID id)
+    where T : IHUD, new()
+    {
+        if (!hudElements.ContainsKey(id)) return;
+
+        if (VERBOSE)
+            Debug.Log($"Updating {id}, type {hudElements[id].GetType().Name}, active: {config.active} visible: {config.visible}");
+
+        hudElements[id].SetVisibility(config.visible);
     }
 
     public void ShowNewWearablesNotification(string wearableCountString)

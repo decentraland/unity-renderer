@@ -584,7 +584,7 @@ function* handleUpdateFriendship({ payload, meta }: UpdateFriendship) {
 
 function showErrorNotification(message: string) {
   unityInterface.ShowNotification({
-    type: NotificationType.COMMS_ERROR,
+    type: NotificationType.GENERIC,
     message,
     buttonMessage: 'OK',
     timer: 5
