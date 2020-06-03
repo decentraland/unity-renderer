@@ -2408,6 +2408,12 @@ PrefabInstance:
       propertyPath: m_Colors.m_PressedColor.b
       value: 0.9245283
       objectReference: {fileID: 0}
+    - target: {fileID: 7119915250741664993, guid: 486cb7198dd7515498189de8c605a1a3,
+        type: 3}
+      propertyPath: m_fontAsset
+      value: 
+      objectReference: {fileID: 11400000, guid: 26b03903800224f718b64e9afbc91b61,
+        type: 2}
     - target: {fileID: 3367677355629128977, guid: 486cb7198dd7515498189de8c605a1a3,
         type: 3}
       propertyPath: m_Colors.m_FadeDuration
@@ -2746,11 +2752,6 @@ PrefabInstance:
       propertyPath: m_IsActive
       value: 0
       objectReference: {fileID: 0}
-    - target: {fileID: 8178496445658369467, guid: 368e32a4fe02c184c853ee674afdc420,
-        type: 3}
-      propertyPath: m_IsActive
-      value: 0
-      objectReference: {fileID: 0}
     - target: {fileID: 5312804592723535042, guid: 368e32a4fe02c184c853ee674afdc420,
         type: 3}
       propertyPath: m_LocalPosition.x
@@ -2856,6 +2857,11 @@ PrefabInstance:
       propertyPath: m_Pivot.y
       value: 0.5
       objectReference: {fileID: 0}
+    - target: {fileID: 8178496445658369467, guid: 368e32a4fe02c184c853ee674afdc420,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 294455615345848604, guid: 368e32a4fe02c184c853ee674afdc420,
         type: 3}
       propertyPath: m_Color.r
@@ -2876,6 +2882,16 @@ PrefabInstance:
       propertyPath: m_Enabled
       value: 1
       objectReference: {fileID: 0}
+    - target: {fileID: 101901147944420372, guid: 368e32a4fe02c184c853ee674afdc420,
+        type: 3}
+      propertyPath: m_SizeDelta.y
+      value: 14
+      objectReference: {fileID: 0}
+    - target: {fileID: 101901147944420372, guid: 368e32a4fe02c184c853ee674afdc420,
+        type: 3}
+      propertyPath: m_SizeDelta.x
+      value: 60
+      objectReference: {fileID: 0}
     - target: {fileID: 8653254356276938616, guid: 368e32a4fe02c184c853ee674afdc420,
         type: 3}
       propertyPath: m_AnchoredPosition.x
@@ -2890,16 +2906,6 @@ PrefabInstance:
         type: 3}
       propertyPath: m_AnchoredPosition.y
       value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 101901147944420372, guid: 368e32a4fe02c184c853ee674afdc420,
-        type: 3}
-      propertyPath: m_SizeDelta.y
-      value: 14
-      objectReference: {fileID: 0}
-    - target: {fileID: 101901147944420372, guid: 368e32a4fe02c184c853ee674afdc420,
-        type: 3}
-      propertyPath: m_SizeDelta.x
-      value: 60
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 368e32a4fe02c184c853ee674afdc420, type: 3}
