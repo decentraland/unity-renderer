@@ -131,8 +131,9 @@ MonoBehaviour:
       Version=1.0.0.0, Culture=neutral, PublicKeyToken=null
   m_text: 
   m_isRightToLeft: 0
-  m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
-  m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
+  m_fontAsset: {fileID: 11400000, guid: 26b03903800224f718b64e9afbc91b61, type: 2}
+  m_sharedMaterial: {fileID: -6892909264025736228, guid: 26b03903800224f718b64e9afbc91b61,
+    type: 2}
   m_fontSharedMaterials: []
   m_fontMaterial: {fileID: 0}
   m_fontMaterials: []
@@ -304,7 +305,7 @@ MonoBehaviour:
       m_Calls: []
     m_TypeName: UnityEngine.UI.MaskableGraphic+CullStateChangedEvent, UnityEngine.UI,
       Version=1.0.0.0, Culture=neutral, PublicKeyToken=null
-  m_Sprite: {fileID: 10907, guid: 0000000000000000f000000000000000, type: 0}
+  m_Sprite: {fileID: 21300000, guid: cd958ac803911481ea50edce80f46f1c, type: 3}
   m_Type: 1
   m_PreserveAspect: 0
   m_FillCenter: 1
@@ -419,6 +420,7 @@ MonoBehaviour:
   minimapRepresentation: {fileID: 7598803346502927653}
   onPointerDown: {fileID: 3865137627712764486}
   model:
+    id: 
     name: 
     bodyShape: 
     skinColor: {r: 0, g: 0, b: 0, a: 0}
@@ -740,7 +742,6 @@ GameObject:
   m_Component:
   - component: {fileID: 1246322601458952529}
   - component: {fileID: 3802347106778656604}
-  - component: {fileID: 4102542249429487371}
   m_Layer: 13
   m_Name: MinimapRepresentation
   m_TagString: Untagged
@@ -811,18 +812,3 @@ SpriteRenderer:
   m_WasSpriteAssigned: 1
   m_MaskInteraction: 0
   m_SpriteSortPoint: 0
---- !u!114 &4102542249429487371
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 7598803346502927653}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: d3b93ce7379444f468ecfc07e127ec0e, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  scaleFactor: {fileID: 11400000, guid: 3f90ae595450342aea3f5a9e64f24ec5, type: 2}
-  minScale: 2
-  maxScale: 8
