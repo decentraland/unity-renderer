@@ -15,7 +15,7 @@ import {
   SetAddedCatalystCandidates
 } from './actions'
 import { call, put, takeEvery, select, fork } from 'redux-saga/effects'
-import { WORLD_EXPLORER, REALM } from 'config'
+import { WORLD_EXPLORER, REALM, getDefaultTLD } from 'config'
 import { waitForMetaConfigurationInitialization } from '../meta/sagas'
 import { Candidate, Realm, ServerConnectionStatus } from './types'
 import { fecthCatalystRealms, fetchCatalystStatuses, pickCatalystRealm, getRealmFromString } from '.'
@@ -26,6 +26,7 @@ import { ping } from './index'
 
 const CACHE_KEY = 'realm'
 const CATALYST_CANDIDATES_KEY = CACHE_KEY + '-' + SET_CATALYST_CANDIDATES
+const CACHE_TLD_KEY = 'tld'
 
 export function* daoSaga(): any {
   yield takeEvery(WEB3_INITIALIZED, loadCatalystRealms)
@@ -48,11 +49,12 @@ function* loadCatalystRealms() {
 
   if (WORLD_EXPLORER) {
     const cachedRealm: Realm | undefined = getFromLocalStorage(CACHE_KEY)
+    const cachedTld: string | undefined = getFromLocalStorage(CACHE_TLD_KEY)
 
     let realm: Realm | undefined
 
     // check for cached realms if any
-    if (cachedRealm) {
+    if (cachedRealm && cachedTld === getDefaultTLD()) {
       const cachedCandidates: Candidate[] = getFromLocalStorage(CATALYST_CANDIDATES_KEY) ?? []
 
       let configuredRealm: Realm
@@ -82,6 +84,8 @@ function* loadCatalystRealms() {
         realm = yield call(pickCatalystRealm, allCandidates)
       }
     }
+
+    saveToLocalStorage(CACHE_TLD_KEY, getDefaultTLD())
 
     yield put(initCatalystRealm(realm!))
   } else {
