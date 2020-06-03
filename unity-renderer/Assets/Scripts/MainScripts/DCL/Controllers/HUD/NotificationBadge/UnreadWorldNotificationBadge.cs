@@ -75,6 +75,7 @@ public class UnreadWorldNotificationBadge : MonoBehaviour
         // The player reads the latest messages of [userId]
         currentTimestampReading = current;
         currentUnreadMessages = 0;
+        UpdateUnreadMessages();
     }
 
     private void UpdateUnreadMessages()

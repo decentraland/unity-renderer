@@ -22,6 +22,8 @@ public class PrivateChatWindowHUDView : MonoBehaviour
     public event System.Action OnClose;
     public UnityAction<ChatMessage> OnSendMessage;
 
+    public string userId { get; internal set; }
+
     void Awake()
     {
         chatHudView.OnSendMessage += ChatHUDView_OnSendMessage;
@@ -79,8 +81,9 @@ public class PrivateChatWindowHUDView : MonoBehaviour
         profilePictureImage.sprite = sprite;
     }
 
-    public void ConfigureJumpInButton(string userId)
+    public void ConfigureUserId(string userId)
     {
+        this.userId = userId;
         jumpInButton.Initialize(FriendsController.i, userId);
     }
 }
