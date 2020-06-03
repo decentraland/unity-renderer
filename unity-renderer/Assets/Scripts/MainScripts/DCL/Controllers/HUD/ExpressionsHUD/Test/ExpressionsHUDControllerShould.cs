@@ -63,7 +63,7 @@ namespace ExpressionsHUD_Test
             ExpressionsHUDView.ExpressionClicked callback = (x) => expressionCalled = x;
             view.Initialize(callback);
 
-            view.buttonToExpressionMap[0].button.onClick.Invoke();
+            view.buttonToExpressionMap[0].button.OnPointerDown(null);
 
             Assert.AreEqual(view.buttonToExpressionMap[0].expressionId, expressionCalled);
         }

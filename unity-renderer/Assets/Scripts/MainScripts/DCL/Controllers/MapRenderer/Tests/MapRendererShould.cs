@@ -74,11 +74,11 @@ namespace Tests
         public IEnumerator PerformCullingAsIntended()
         {
             CommonScriptableObjects.playerWorldPosition.Set(new Vector3(0, 0));
-            Assert.AreEqual("1111111111111111111111110011111001111111111111111", GetChunkStatesAsString());
+            Assert.AreEqual("1111111111111111111111110111111111111111111111111", GetChunkStatesAsString());
             CommonScriptableObjects.playerWorldPosition.Set(new Vector3(1000, 0, 1000));
             Assert.AreEqual("1111111111111111111111111111111100111110011111111", GetChunkStatesAsString());
             CommonScriptableObjects.playerWorldPosition.Set(new Vector3(-1000, 0, -1000));
-            Assert.AreEqual("1111111111111111001111100111111111111111111111111", GetChunkStatesAsString());
+            Assert.AreEqual("1111111100111110011111111111111111111111111111111", GetChunkStatesAsString());
             yield return null;
         }
 

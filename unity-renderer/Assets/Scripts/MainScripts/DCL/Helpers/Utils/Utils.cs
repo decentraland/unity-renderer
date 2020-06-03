@@ -482,6 +482,8 @@ namespace DCL.Helpers
 
         public static void LockCursor()
         {
+            if (isCursorLocked) return;
+
             isCursorLocked = true;
             lockedInFrame = Time.frameCount;
             Cursor.visible = false;
@@ -492,9 +494,13 @@ namespace DCL.Helpers
 
         public static void UnlockCursor()
         {
+            if (!isCursorLocked) return;
+
             isCursorLocked = false;
             Cursor.visible = true;
             Cursor.lockState = CursorLockMode.None;
+
+            EventSystem.current.SetSelectedGameObject(null);
         }
 
         public static void DestroyAllChild(this Transform transform)

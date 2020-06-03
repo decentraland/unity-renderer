@@ -83,6 +83,9 @@ public class TestsBase
             yield return SceneManager.LoadSceneAsync(sceneName);
             SceneManager.SetActiveScene(SceneManager.GetSceneByName(sceneName));
         }
+
+        yield return null;
+        CommonScriptableObjects.rendererState.Set(true);
     }
 
     public void SetUp_TestScene()

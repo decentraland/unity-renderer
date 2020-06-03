@@ -12,6 +12,7 @@ public class RenderingController : MonoBehaviour
     {
         CommonScriptableObjects.rendererState.OnLockAdded += AddLock;
         CommonScriptableObjects.rendererState.OnLockRemoved += RemoveLock;
+        CommonScriptableObjects.rendererState.Set(false);
     }
 
     void OnDestroy()
@@ -34,7 +35,6 @@ public class RenderingController : MonoBehaviour
         DCL.Configuration.ParcelSettings.VISUAL_LOADING_ENABLED = false;
         CommonScriptableObjects.rendererState.Set(false);
     }
-
 
     [ContextMenu("Enable Rendering")]
     public void ActivateRendering()

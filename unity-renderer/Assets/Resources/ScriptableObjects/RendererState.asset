@@ -12,4 +12,4 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2a1e42dc786e0412e81e0d1b19e01199, type: 3}
   m_Name: RendererState
   m_EditorClassIdentifier: 
-  value: 1
+  value: 0
