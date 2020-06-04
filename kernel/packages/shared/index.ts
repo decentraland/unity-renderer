@@ -41,6 +41,9 @@ import { saveProfileRequest } from './profiles/actions'
 import { ethereumConfigurations } from 'config'
 import { tutorialStepId } from 'decentraland-loader/lifecycle/tutorial/tutorial'
 import { ENABLE_WEB3 } from '../config/index'
+import future, { IFuture } from 'fp-future'
+import { RootState } from './store/rootTypes'
+import { AnyAction, Store } from 'redux'
 
 declare const globalThis: any
 
@@ -51,11 +54,7 @@ export type ExplorerIdentity = AuthIdentity & {
 
 export let identity: ExplorerIdentity
 
-export async function initShared(): Promise<Session | undefined> {
-  if (WORLD_EXPLORER) {
-    await initializeAnalytics()
-  }
-
+function initEssentials(): [Session | undefined, Store<RootState, AnyAction>] {
   const { store, startSagas } = buildStore()
   globalThis.globalStore = store
 
@@ -63,188 +62,216 @@ export async function initShared(): Promise<Session | undefined> {
 
   if (isMobile()) {
     ReportFatalError(MOBILE_NOT_SUPPORTED)
-    return undefined
+    return [undefined, store]
   }
 
   store.dispatch(notStarted())
 
   const session = new Session()
 
-  let userId: string
-
   console['group']('connect#login')
   store.dispatch(loadingStarted())
 
+  return [session, store]
+}
+
+export type InitFutures = {
+  essentials: IFuture<Session | undefined>
+  all: IFuture<void>
+}
+
+export function initShared(): InitFutures {
+  const futures: InitFutures = { essentials: future(), all: future() }
+  const [session, store] = initEssentials()
+
+  const userData = getUserProfile()
+
+  if (!isSessionExpired(userData)) {
+    futures.essentials.resolve(session)
+  }
+
   let net: ETHEREUM_NETWORK = ETHEREUM_NETWORK.MAINNET
-
-  if (ENABLE_WEB3) {
-    await awaitWeb3Approval()
-
-    if (WORLD_EXPLORER && (await checkTldVsNetwork())) {
-      return undefined
+  let userId: string
+  ;(async function() {
+    if (WORLD_EXPLORER) {
+      await initializeAnalytics()
     }
 
-    if (PREVIEW && ETHEREUM_NETWORK.MAINNET === (await getNetworkValue())) {
-      showNetworkWarning()
-    }
+    if (ENABLE_WEB3) {
+      await awaitWeb3Approval()
 
-    try {
-      const userData = getUserProfile()
-
-      // check that user data is stored & key is not expired
-      if (isSessionExpired(userData)) {
-        identity = await createAuthIdentity()
-        userId = identity.address
-
-        setLocalProfile(userId, {
-          userId,
-          identity
-        })
-      } else {
-        identity = userData.identity
-        userId = userData.identity.address
-
-        setLocalProfile(userId, {
-          userId,
-          identity
-        })
+      if (WORLD_EXPLORER && (await checkTldVsNetwork())) {
+        throw new Error('Network mismatch')
       }
-    } catch (e) {
-      defaultLogger.error(e)
-      console['groupEnd']()
-      ReportFatalError(AUTH_ERROR_LOGGED_OUT)
-      throw e
+
+      if (PREVIEW && ETHEREUM_NETWORK.MAINNET === (await getNetworkValue())) {
+        showNetworkWarning()
+      }
+
+      try {
+        // check that user data is stored & key is not expired
+        if (isSessionExpired(userData)) {
+          identity = await createAuthIdentity()
+          userId = identity.address
+
+          setLocalProfile(userId, {
+            userId,
+            identity
+          })
+        } else {
+          identity = userData.identity
+          userId = userData.identity.address
+
+          setLocalProfile(userId, {
+            userId,
+            identity
+          })
+        }
+      } catch (e) {
+        defaultLogger.error(e)
+        console['groupEnd']()
+        ReportFatalError(AUTH_ERROR_LOGGED_OUT)
+        throw e
+      }
+
+      if (identity.hasConnectedWeb3) {
+        identifyUser(userId)
+      }
+    } else {
+      defaultLogger.log(`Using test user.`)
+      identity = await createAuthIdentity()
+      userId = identity.address
+
+      setLocalProfile(userId, {
+        userId,
+        identity
+      })
     }
 
-    if (identity.hasConnectedWeb3) {
-      identifyUser(userId)
+    defaultLogger.log(`User ${userId} logged in`)
+    store.dispatch(authSuccessful())
+
+    if (futures.essentials.isPending) {
+      futures.essentials.resolve(session)
     }
-  } else {
-    defaultLogger.log(`Using test user.`)
-    identity = await createAuthIdentity()
-    userId = identity.address
 
-    setLocalProfile(userId, {
-      userId,
-      identity
-    })
-  }
+    console['groupEnd']()
 
-  defaultLogger.log(`User ${userId} logged in`)
-  store.dispatch(authSuccessful())
+    console['group']('connect#ethereum')
 
-  console['groupEnd']()
+    if (WORLD_EXPLORER) {
+      net = await getAppNetwork()
 
-  console['group']('connect#ethereum')
+      // Load contracts from https://contracts.decentraland.org
+      await setNetwork(net)
+      queueTrackingEvent('Use network', { net })
+    }
 
-  if (WORLD_EXPLORER) {
-    net = await getAppNetwork()
+    store.dispatch(web3initialized())
 
-    // Load contracts from https://contracts.decentraland.org
-    await setNetwork(net)
-    queueTrackingEvent('Use network', { net })
-  }
+    console['groupEnd']()
 
-  store.dispatch(web3initialized())
+    initializeUrlPositionObserver()
+    initializeUrlRealmObserver()
 
-  console['groupEnd']()
+    await realmInitialized()
 
-  initializeUrlPositionObserver()
-  initializeUrlRealmObserver()
+    defaultLogger.info(`Using Catalyst configuration: `, store.getState().dao)
 
-  await realmInitialized()
+    // initialize profile
+    console['group']('connect#profile')
+    let profile = await ProfileAsPromise(userId)
 
-  defaultLogger.info(`Using Catalyst configuration: `, store.getState().dao)
+    if (!PREVIEW) {
+      let profileDirty: boolean = false
 
-  // initialize profile
-  console['group']('connect#profile')
-  let profile = await ProfileAsPromise(userId)
+      if (!profile.hasClaimedName) {
+        const names = await fetchOwnedENS(ethereumConfigurations[net].names, userId)
 
-  if (!PREVIEW) {
-    let profileDirty: boolean = false
+        // patch profile to readd missing name
+        profile = { ...profile, name: names[0], hasClaimedName: true, version: (profile.version || 0) + 1 }
 
-    if (!profile.hasClaimedName) {
-      const names = await fetchOwnedENS(ethereumConfigurations[net].names, userId)
+        if (names && names.length > 0) {
+          defaultLogger.info(
+            `Found missing claimed name '${names[0]}' for profile ${userId}, consolidating profile... `
+          )
+          profileDirty = true
+        }
+      }
 
-      // patch profile to readd missing name
-      profile = { ...profile, name: names[0], hasClaimedName: true, version: (profile.version || 0) + 1 }
+      const localTutorialStep = getUserProfile().profile
+        ? getUserProfile().profile.tutorialStep
+        : tutorialStepId.INITIAL_SCENE
 
-      if (names && names.length > 0) {
-        defaultLogger.info(`Found missing claimed name '${names[0]}' for profile ${userId}, consolidating profile... `)
+      if (localTutorialStep !== profile.tutorialStep) {
+        let finalTutorialStep = Math.max(localTutorialStep, profile.tutorialStep)
+        profile = { ...profile, tutorialStep: finalTutorialStep }
         profileDirty = true
       }
-    }
 
-    const localTutorialStep = getUserProfile().profile
-      ? getUserProfile().profile.tutorialStep
-      : tutorialStepId.INITIAL_SCENE
-
-    if (localTutorialStep !== profile.tutorialStep) {
-      let finalTutorialStep = Math.max(localTutorialStep, profile.tutorialStep)
-      profile = { ...profile, tutorialStep: finalTutorialStep }
-      profileDirty = true
-    }
-
-    if (profileDirty) {
-      store.dispatch(saveProfileRequest(profile))
-    }
-  }
-
-  persistCurrentUser({
-    version: profile.version,
-    profile: profileToRendererFormat(profile, identity)
-  })
-  console['groupEnd']()
-
-  // DCL Servers connections/requests after this
-  if (STATIC_WORLD) {
-    return session
-  }
-
-  console['group']('connect#comms')
-  store.dispatch(establishingComms())
-  const maxAttemps = 5
-  for (let i = 1; ; ++i) {
-    try {
-      defaultLogger.info(`Attempt number ${i}...`)
-      const context = await connect(identity.address)
-      if (context !== undefined) {
-        store.dispatch(setWorldContext(context))
+      if (profileDirty) {
+        store.dispatch(saveProfileRequest(profile))
       }
+    }
 
-      showEthSignAdvice(false)
+    persistCurrentUser({
+      version: profile.version,
+      profile: profileToRendererFormat(profile, identity)
+    })
+    console['groupEnd']()
 
-      break
-    } catch (e) {
-      if (e instanceof IdTakenError) {
-        disconnect()
-        ReportFatalError(NEW_LOGIN)
-        throw e
-      } else if (e instanceof ConnectionEstablishmentError) {
-        if (i >= maxAttemps) {
-          // max number of attemps reached => rethrow error
-          defaultLogger.info(`Max number of attemps reached (${maxAttemps}), unsuccessful connection`)
+    // DCL Servers connections/requests after this
+    if (STATIC_WORLD) {
+      return
+    }
+
+    console['group']('connect#comms')
+    store.dispatch(establishingComms())
+    const maxAttemps = 5
+    for (let i = 1; ; ++i) {
+      try {
+        defaultLogger.info(`Attempt number ${i}...`)
+        const context = await connect(identity.address)
+        if (context !== undefined) {
+          store.dispatch(setWorldContext(context))
+        }
+
+        showEthSignAdvice(false)
+
+        break
+      } catch (e) {
+        if (e instanceof IdTakenError) {
+          disconnect()
+          ReportFatalError(NEW_LOGIN)
+          throw e
+        } else if (e instanceof ConnectionEstablishmentError) {
+          if (i >= maxAttemps) {
+            // max number of attemps reached => rethrow error
+            defaultLogger.info(`Max number of attemps reached (${maxAttemps}), unsuccessful connection`)
+            disconnect()
+            showEthSignAdvice(false)
+            ReportFatalError(COMMS_COULD_NOT_BE_ESTABLISHED)
+            throw e
+          } else {
+            // max number of attempts not reached => continue with loop
+            store.dispatch(commsErrorRetrying(i))
+          }
+        } else {
+          // not a comms issue per se => rethrow error
+          defaultLogger.error(`error while trying to establish communications `, e)
           disconnect()
           showEthSignAdvice(false)
-          ReportFatalError(COMMS_COULD_NOT_BE_ESTABLISHED)
           throw e
-        } else {
-          // max number of attempts not reached => continue with loop
-          store.dispatch(commsErrorRetrying(i))
         }
-      } else {
-        // not a comms issue per se => rethrow error
-        defaultLogger.error(`error while trying to establish communications `, e)
-        disconnect()
-        showEthSignAdvice(false)
-        throw e
       }
     }
-  }
-  store.dispatch(commsEstablished())
-  console['groupEnd']()
+    store.dispatch(commsEstablished())
+    console['groupEnd']()
 
-  return session
+    return
+  })().then(futures.all.resolve, futures.all.reject)
+
+  return futures
 }
 
 function showEthSignAdvice(show: boolean) {
