@@ -44,7 +44,10 @@ export async function initializeUnity(
   container: HTMLElement,
   buildConfigPath: string = 'unity/Build/unity.json'
 ): Promise<InitializeUnityResult> {
-  const session = await initShared()
+  const { essentials, all } = initShared()
+
+  const session = await essentials
+
   if (!session) {
     throw new Error()
   }
@@ -60,6 +63,7 @@ export async function initializeUnity(
   }
 
   global['globalStore'].dispatch(waitingForRenderer())
+  await all
   await engineInitialized
 
   return {
