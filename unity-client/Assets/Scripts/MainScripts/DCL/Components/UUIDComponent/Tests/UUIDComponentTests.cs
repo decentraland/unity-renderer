@@ -1101,12 +1101,12 @@ namespace Tests
 
             yield return null;
 
-            var hoverCanvasController = PointerEventsController.i.GetComponentInChildren<InteractionHoverCanvasController>();
+            var hoverCanvasController = PointerEventsController.i.interactionHoverCanvasController;
             Assert.IsNotNull(hoverCanvasController);
             Assert.IsTrue(hoverCanvasController.canvas.enabled);
 
             // Check default properties
-            Assert.AreEqual(hoverCanvasController.GetComponentInChildren<Image>().name, "AnyButtonHoverIcon(Clone)");
+            Assert.AreEqual("AnyButtonHoverIcon", hoverCanvasController.GetCurrentHoverIcon().name);
             Assert.AreEqual("Interact", hoverCanvasController.text.text);
             yield return null;
 
@@ -1119,7 +1119,7 @@ namespace Tests
 
             yield return null;
 
-            Assert.AreEqual(hoverCanvasController.GetComponentInChildren<Image>().name, "PrimaryButtonHoverIcon(Clone)");
+            Assert.AreEqual("PrimaryButtonHoverIcon", hoverCanvasController.GetCurrentHoverIcon().name);
             Assert.AreEqual("Click!", hoverCanvasController.text.text);
 
             DCLCharacterController.i.ResumeGravity();

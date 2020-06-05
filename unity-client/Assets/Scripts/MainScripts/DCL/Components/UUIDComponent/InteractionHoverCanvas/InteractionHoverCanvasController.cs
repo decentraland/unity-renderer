@@ -2,16 +2,14 @@
 using DCL.Components;
 using UnityEngine;
 using TMPro;
+using System.Collections.Generic;
 
 public class InteractionHoverCanvasController : MonoBehaviour
 {
     public Canvas canvas;
     public RectTransform backgroundTransform;
     public TextMeshProUGUI text;
-    public GameObject pointerActionIconPrefab;
-    public GameObject primaryActionIconPrefab;
-    public GameObject secondaryActionIconPrefab;
-    public GameObject anyActionIconPrefab;
+    public GameObject[] icons;
 
     bool isHovered = false;
     Camera mainCamera;
@@ -40,26 +38,25 @@ public class InteractionHoverCanvasController : MonoBehaviour
 
     void ConfigureIcon(string button)
     {
-        // When we allow for custom input key bindings this implementation will change
-
-        if (hoverIcon != null)
-            Destroy(hoverIcon);
+        hoverIcon?.SetActive(false);
 
         switch (button)
         {
             case ACTION_BUTTON_POINTER:
-                hoverIcon = Object.Instantiate(pointerActionIconPrefab, backgroundTransform);
+                hoverIcon = icons[0];
                 break;
             case ACTION_BUTTON_PRIMARY:
-                hoverIcon = Object.Instantiate(primaryActionIconPrefab, backgroundTransform);
+                hoverIcon = icons[1];
                 break;
             case ACTION_BUTTON_SECONDARY:
-                hoverIcon = Object.Instantiate(secondaryActionIconPrefab, backgroundTransform);
+                hoverIcon = icons[2];
                 break;
-            default: // WebInterface.ACTION_BUTTON.ANY
-                hoverIcon = Object.Instantiate(anyActionIconPrefab, backgroundTransform);
+            default: // ANY
+                hoverIcon = icons[3];
                 break;
         }
+
+        hoverIcon.SetActive(true);
     }
 
     public void SetHoverState(bool hoverState)
@@ -69,6 +66,11 @@ public class InteractionHoverCanvasController : MonoBehaviour
         isHovered = hoverState;
 
         canvas.enabled = isHovered;
+    }
+
+    public GameObject GetCurrentHoverIcon()
+    {
+        return hoverIcon;
     }
 
     // This method will be used when we apply a "loose aim" for the 3rd person camera

@@ -10,6 +10,8 @@ namespace DCL
     {
         public static PointerEventsController i { get; private set; }
 
+        public InteractionHoverCanvasController interactionHoverCanvasController;
+
         private static bool renderingIsDisabled => !CommonScriptableObjects.rendererState.Get();
         public static System.Action OnPointerHoverStarts;
         public static System.Action OnPointerHoverEnds;
