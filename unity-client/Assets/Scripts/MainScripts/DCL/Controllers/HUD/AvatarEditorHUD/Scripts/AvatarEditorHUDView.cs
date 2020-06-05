@@ -9,6 +9,8 @@ public class AvatarEditorHUDView : MonoBehaviour
     private const string VIEW_PATH = "AvatarEditorHUD";
     private const string VIEW_OBJECT_NAME = "_AvatarEditorHUD";
 
+    public bool isOpen { get; private set; }
+
     [System.Serializable]
     public class AvatarEditorNavigationInfo
     {
@@ -61,6 +63,7 @@ public class AvatarEditorHUDView : MonoBehaviour
     {
         characterPreviewController = GameObject.Instantiate(characterPreviewPrefab).GetComponent<CharacterPreviewController>();
         characterPreviewController.name = "_CharacterPreviewController";
+        isOpen = false;
     }
 
     private void Initialize(AvatarEditorHUDController controller)
@@ -285,6 +288,7 @@ public class AvatarEditorHUDView : MonoBehaviour
         characterPreviewController.camera.enabled = visible;
         avatarEditorCanvas.enabled = visible;
         avatarEditorCanvasGroup.blocksRaycasts = visible;
+        isOpen = visible;
     }
 
     public void CleanUp()

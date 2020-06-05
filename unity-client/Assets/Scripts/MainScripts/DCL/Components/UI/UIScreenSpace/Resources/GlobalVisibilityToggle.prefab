@@ -86,6 +86,8 @@ GameObject:
   - component: {fileID: 4882806996671526068}
   - component: {fileID: 6243705284311328350}
   - component: {fileID: 7684739790689001994}
+  - component: {fileID: 1418314910809936053}
+  - component: {fileID: 593616027407602394}
   m_Layer: 0
   m_Name: GlobalVisibilityToggle
   m_TagString: Untagged
@@ -192,3 +194,27 @@ MonoBehaviour:
   targetRectTransform: {fileID: 8689686555936430114}
   hoverScale: 1.03
   normalScale: 1
+--- !u!225 &1418314910809936053
+CanvasGroup:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6925787000762619552}
+  m_Enabled: 1
+  m_Alpha: 1
+  m_Interactable: 1
+  m_BlocksRaycasts: 1
+  m_IgnoreParentGroups: 0
+--- !u!114 &593616027407602394
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6925787000762619552}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 30cedd7c5f8c0064e98640b29b2156a5, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 

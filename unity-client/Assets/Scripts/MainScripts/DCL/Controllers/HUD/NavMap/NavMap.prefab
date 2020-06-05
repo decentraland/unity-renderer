@@ -923,7 +923,7 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 4654740177256172370}
   m_HandleRect: {fileID: 6473396510046919356}
   m_Direction: 0
-  m_Value: 0
+  m_Value: 1
   m_Size: 1
   m_NumberOfSteps: 0
   m_OnValueChanged:
@@ -4469,6 +4469,8 @@ GameObject:
   - component: {fileID: 5430154721472367846}
   - component: {fileID: 5188948955112179522}
   - component: {fileID: 1049831892811583427}
+  - component: {fileID: 3578851569800893368}
+  - component: {fileID: 5654764282637459734}
   m_Layer: 5
   m_Name: NavMap
   m_TagString: Untagged
@@ -4575,6 +4577,30 @@ MonoBehaviour:
   currentSceneNameText: {fileID: 2053008226568235632}
   currentSceneCoordsText: {fileID: 596729946110516120}
   toastView: {fileID: 4118697293185831752}
+--- !u!225 &3578851569800893368
+CanvasGroup:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7061832710791367598}
+  m_Enabled: 1
+  m_Alpha: 1
+  m_Interactable: 1
+  m_BlocksRaycasts: 1
+  m_IgnoreParentGroups: 0
+--- !u!114 &5654764282637459734
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7061832710791367598}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 30cedd7c5f8c0064e98640b29b2156a5, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &7114582188778708617
 GameObject:
   m_ObjectHideFlags: 0

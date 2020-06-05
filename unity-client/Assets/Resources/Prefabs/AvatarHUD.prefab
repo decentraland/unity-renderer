@@ -1653,6 +1653,8 @@ GameObject:
   - component: {fileID: 8540544952857596789}
   - component: {fileID: 8278114066472325544}
   - component: {fileID: 121064693768921797}
+  - component: {fileID: 5103067147336230822}
+  - component: {fileID: 7185147057440504892}
   m_Layer: 5
   m_Name: AvatarHUD
   m_TagString: Untagged
@@ -1765,6 +1767,30 @@ MonoBehaviour:
   settingsButton: {fileID: 6359075905450045981}
   signOutButton: {fileID: 2439665739510493948}
   faqButton: {fileID: 5960867254960926024}
+--- !u!225 &5103067147336230822
+CanvasGroup:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4525154057530514719}
+  m_Enabled: 1
+  m_Alpha: 1
+  m_Interactable: 1
+  m_BlocksRaycasts: 1
+  m_IgnoreParentGroups: 0
+--- !u!114 &7185147057440504892
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4525154057530514719}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 30cedd7c5f8c0064e98640b29b2156a5, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &4852893339115194699
 GameObject:
   m_ObjectHideFlags: 0

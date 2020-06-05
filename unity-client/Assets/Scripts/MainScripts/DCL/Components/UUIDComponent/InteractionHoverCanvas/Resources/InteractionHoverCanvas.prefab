@@ -57,6 +57,8 @@ GameObject:
   - component: {fileID: 4700288523959264737}
   - component: {fileID: 4594205623192029240}
   - component: {fileID: 4672070199564005208}
+  - component: {fileID: 2899092455466172858}
+  - component: {fileID: 911676943310760441}
   m_Layer: 5
   m_Name: InteractionHoverCanvas
   m_TagString: Untagged
@@ -150,6 +152,30 @@ MonoBehaviour:
   m_FallbackScreenDPI: 96
   m_DefaultSpriteDPI: 96
   m_DynamicPixelsPerUnit: 1
+--- !u!225 &2899092455466172858
+CanvasGroup:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6724603896333122190}
+  m_Enabled: 1
+  m_Alpha: 1
+  m_Interactable: 1
+  m_BlocksRaycasts: 1
+  m_IgnoreParentGroups: 0
+--- !u!114 &911676943310760441
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6724603896333122190}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 30cedd7c5f8c0064e98640b29b2156a5, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &8532994694993499898
 GameObject:
   m_ObjectHideFlags: 0

@@ -103,12 +103,14 @@ namespace DCL
                 switch (btnMap.type)
                 {
                     case BUTTON_TYPE.MOUSE:
+                        if (CommonScriptableObjects.allUIHidden.Get()) break;
                         if (Input.GetMouseButtonDown(btnMap.buttonNum))
                             RaiseEvent(btnMap.buttonId, EVENT.BUTTON_DOWN, btnMap.useRaycast);
                         else if (Input.GetMouseButtonUp(btnMap.buttonNum))
                             RaiseEvent(btnMap.buttonId, EVENT.BUTTON_UP, btnMap.useRaycast);
                         break;
                     case BUTTON_TYPE.KEYBOARD:
+                        if (CommonScriptableObjects.allUIHidden.Get()) break;
                         if (Input.GetKeyDown((KeyCode)btnMap.buttonNum))
                             RaiseEvent(btnMap.buttonId, EVENT.BUTTON_DOWN, btnMap.useRaycast);
                         else if (Input.GetKeyUp((KeyCode)btnMap.buttonNum))
