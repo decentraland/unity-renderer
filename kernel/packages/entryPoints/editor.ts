@@ -36,9 +36,9 @@ let builderSceneLoaded: IFuture<boolean> = future()
  * Function executed by builder
  * It creates the builder scene, binds the scene events and stubs the content mappings
  */
-async function createBuilderScene(scene: SceneJsonData, baseUrl: string) {
+async function createBuilderScene(scene: SceneJsonData, baseUrl: string, mappings: any) {
   const isFirstRun = unityScene === undefined
-  const sceneData = await getSceneData(scene, baseUrl, [])
+  const sceneData = await getSceneData(scene, baseUrl, mappings)
   unityScene = loadBuilderScene(sceneData)
   bindSceneEvents()
 
@@ -61,7 +61,7 @@ async function createBuilderScene(scene: SceneJsonData, baseUrl: string) {
   evtEmitter.emit('ready', {})
 }
 
-async function renewBuilderScene(scene: SceneJsonData, mappings:any) {
+async function renewBuilderScene(scene: SceneJsonData, mappings: any) {
   if (unityScene) {
     const sceneData = await getSceneData(scene, unityScene.data.baseUrl, mappings)
     updateBuilderScene(sceneData)
@@ -72,7 +72,7 @@ async function renewBuilderScene(scene: SceneJsonData, mappings:any) {
  * It fakes the content mappings for being used at the Builder without
  * content server plus loads and creates the scene worker
  */
-async function getSceneData(scene: SceneJsonData, baseUrl: string, mappings:any): Promise<ILand> {
+async function getSceneData(scene: SceneJsonData, baseUrl: string, mappings: any): Promise<ILand> {
   const id = getBaseCoords(scene)
   const contents = normalizeContentMappings(mappings || [])
 
@@ -180,7 +180,7 @@ namespace editor {
   export async function handleMessage(message: any) {
     if (message.type === 'update') {
       await initializedEngine
-      await createBuilderScene(message.payload.scene, message.payload.scene.baseUrl)
+      await createBuilderScene(message.payload.scene, message.payload.scene.baseUrl, message.payload.scene._mappings)
     }
   }
 
