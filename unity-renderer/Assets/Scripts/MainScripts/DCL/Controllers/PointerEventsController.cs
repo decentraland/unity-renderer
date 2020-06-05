@@ -157,7 +157,11 @@ namespace DCL
 
         void UnhoverLastHoveredObject()
         {
-            if (lastHoveredObject == null) return;
+            if (lastHoveredObject == null)
+            {
+                interactionHoverCanvasController.SetHoverState(false);
+                return;
+            }
 
             OnPointerHoverEnds?.Invoke();
 
