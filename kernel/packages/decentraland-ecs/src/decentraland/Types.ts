@@ -27,6 +27,9 @@ export type DecentralandInterface = {
   /** open external url */
   openExternalUrl(url: string): void
 
+  /** open nft info dialog */
+  openNFTDialog(assetContractAddress: string, tokenId: string, comment: string | null): void
+
   // LIFECYCLE
 
   /** update tick */

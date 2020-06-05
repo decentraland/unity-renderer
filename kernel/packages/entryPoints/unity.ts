@@ -37,6 +37,7 @@ initializeUnity(container)
     i.ConfigureHUDElement(HUDElementID.WORLD_CHAT_WINDOW, { active: USE_NEW_CHAT, visible: true })
     i.ConfigureHUDElement(HUDElementID.FRIENDS, { active: USE_NEW_CHAT && identity.hasConnectedWeb3, visible: false })
     i.ConfigureHUDElement(HUDElementID.OPEN_EXTERNAL_URL_PROMPT, { active: true, visible: true })
+    i.ConfigureHUDElement(HUDElementID.NFT_INFO_DIALOG, { active: true, visible: false })
 
     globalThis.globalStore.dispatch(signalRendererInitialized())
 

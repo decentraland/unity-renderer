@@ -184,6 +184,7 @@ message PB_SendSceneMessage {
         PB_Query query = 12;
         google.protobuf.Empty sceneStarted = 13;
         PB_OpenExternalUrl openExternalUrl = 14;
+        PB_OpenNFTDialog openNFTDialog = 15;
     }
 }
 
@@ -718,4 +719,10 @@ message PB_UITextShape {
 
 message PB_OpenExternalUrl {
     string url = 1;
+}
+
+message PB_OpenNFTDialog {
+    string assetContractAddress = 1;
+    string tokenId = 2;
+    string comment = 3;
 }

@@ -1,4 +1,13 @@
-import { NFTShape, Entity, engine, Transform, Vector3, Color3 } from 'decentraland-ecs/src'
+import {
+  NFTShape,
+  Entity,
+  engine,
+  Transform,
+  Vector3,
+  Color3,
+  OnPointerDown,
+  openNFTDialog
+} from 'decentraland-ecs/src'
 
 const entity = new Entity()
 const shapeComponent = new NFTShape('ethereum://0x06012c8cf97BEaD5deAe237070F9587f8E7A266d/558536')
@@ -6,6 +15,11 @@ entity.addComponent(shapeComponent)
 entity.addComponent(
   new Transform({
     position: new Vector3(3, 1.5, 4)
+  })
+)
+entity.addComponent(
+  new OnPointerDown(() => {
+    openNFTDialog('ethereum://0x06012c8cf97BEaD5deAe237070F9587f8E7A266d/558536', 'A cat like Shibu')
   })
 )
 engine.addEntity(entity)
@@ -18,6 +32,11 @@ entity2.addComponent(
     position: new Vector3(5, 1.5, 4)
   })
 )
+entity2.addComponent(
+  new OnPointerDown(() => {
+    openNFTDialog('ethereum://0x06012c8cf97BEaD5deAe237070F9587f8E7A266d/558536')
+  })
+)
 engine.addEntity(entity2)
 
 const entity3 = new Entity()
@@ -26,6 +45,11 @@ entity3.addComponent(shapeComponent3)
 entity3.addComponent(
   new Transform({
     position: new Vector3(7, 1.5, 4)
+  })
+)
+entity3.addComponent(
+  new OnPointerDown(() => {
+    openNFTDialog('ethereum://0xb932a70a57673d89f4acffbe830e8ed7f75fb9e0/9184', 'Donald on sale!')
   })
 )
 engine.addEntity(entity3)

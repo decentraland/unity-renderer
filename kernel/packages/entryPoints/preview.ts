@@ -84,6 +84,7 @@ initializeUnity(container)
     i.ConfigureHUDElement( HUDElementID.SETTINGS, { active: true, visible: false })
     i.ConfigureHUDElement( HUDElementID.AIRDROPPING, { active: true, visible: true })
     i.ConfigureHUDElement(HUDElementID.OPEN_EXTERNAL_URL_PROMPT, { active: true, visible: true })
+    i.ConfigureHUDElement(HUDElementID.NFT_INFO_DIALOG, { active: true, visible: false })
 
     global.globalStore.dispatch(signalRendererInitialized())
 
