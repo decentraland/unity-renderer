@@ -46,14 +46,14 @@ namespace DCL
 
             toggleNavMapDelegate = (x) => { if (!Input.GetKeyDown(KeyCode.Escape) || isOpen) ToggleNavMap(); };
             toggleNavMapAction.OnTriggered += toggleNavMapDelegate;
-            toastView.OnGotoClicked += ToggleNavMap;
+            toastView.OnGotoClicked += () => ToggleNavMap(true);
 
             MapRenderer.OnParcelClicked += TriggerToast;
             MapRenderer.OnParcelHold += TriggerToast;
             MapRenderer.OnParcelHoldCancel += () => { toastView.OnCloseClick(); };
 
             MinimapHUDView.OnUpdateData += UpdateCurrentSceneData;
-            MinimapHUDView.OnOpenNavmapClicked += ToggleNavMap;
+            MinimapHUDView.OnOpenNavmapClicked += () => ToggleNavMap();
 
             toastView.gameObject.SetActive(false);
             scrollRect.gameObject.SetActive(false);
@@ -61,14 +61,12 @@ namespace DCL
 
         private void OnDestroy()
         {
-            toastView.OnGotoClicked -= ToggleNavMap;
             MinimapHUDView.OnUpdateData -= UpdateCurrentSceneData;
-            MinimapHUDView.OnOpenNavmapClicked -= ToggleNavMap;
             MapRenderer.OnParcelClicked -= TriggerToast;
             MapRenderer.OnParcelHold -= TriggerToast;
         }
 
-        internal void ToggleNavMap()
+        internal void ToggleNavMap(bool ignoreCursorLock = false)
         {
             if (MapRenderer.i == null) return;
 
@@ -81,7 +79,7 @@ namespace DCL
             if (isOpen)
             {
                 cursorLockedBeforeOpening = Utils.isCursorLocked;
-                if (cursorLockedBeforeOpening)
+                if (!ignoreCursorLock && cursorLockedBeforeOpening)
                     Utils.UnlockCursor();
 
                 minimapViewport = MapRenderer.i.atlas.viewport;
@@ -102,7 +100,7 @@ namespace DCL
             }
             else
             {
-                if (cursorLockedBeforeOpening)
+                if (!ignoreCursorLock && cursorLockedBeforeOpening)
                     Utils.LockCursor();
 
                 toastView.OnCloseClick();
