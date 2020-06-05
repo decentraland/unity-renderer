@@ -1,3 +1,16 @@
-﻿{
-	"name": "HUDCommon"
+{
+    "name": "HUDCommon",
+    "references": [
+        "GUID:98bf3bf29030cbf4092d89a7cc28b7fb",
+        "GUID:4720e174f2805c74bb7aa94cc8bb5bf8"
+    ],
+    "optionalUnityReferences": [],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": []
 }

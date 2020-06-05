@@ -1,4 +1,4 @@
-﻿using DCL.Configuration;
+using DCL.Configuration;
 using DCL.Controllers;
 using DCL.Helpers;
 using DCL.Models;
@@ -13,22 +13,7 @@ namespace DCL.Components
     {
         static bool VERBOSE = false;
 
-        const string GLOBAL_VISIBILITY_TOGGLE_PATH = "GlobalVisibilityToggle";
         public Canvas canvas;
-
-        private static bool globalVisibilityToggleValue = true;
-        private static bool globalVisibilityToggle
-        {
-            get => globalVisibilityToggleValue;
-            set
-            {
-                globalVisibilityToggleValue = value;
-                OnUIGlobalVisibilityToggleChanged.Invoke();
-            }
-        }
-
-        private static Action OnUIGlobalVisibilityToggleChanged = () => { };
-        private static Toggle toggle;
 
         private DCLCharacterPosition currentCharacterPosition;
         private CanvasGroup canvasGroup;
@@ -40,7 +25,7 @@ namespace DCL.Components
             //Only no-dcl scenes are listening the the global visibility event
             if (!scene.isPersistent)
             {
-                OnUIGlobalVisibilityToggleChanged += UpdateCanvasVisibility;
+                CommonScriptableObjects.allUIHidden.OnChange += AllUIHidden_OnChange;
             }
         }
 
@@ -76,7 +61,7 @@ namespace DCL.Components
         public override void Dispose()
         {
             DCLCharacterController.OnCharacterMoved -= OnCharacterMoved;
-            OnUIGlobalVisibilityToggleChanged -= UpdateCanvasVisibility;
+            CommonScriptableObjects.allUIHidden.OnChange -= AllUIHidden_OnChange;
 
             if (childHookRectTransform != null)
             {
@@ -99,27 +84,19 @@ namespace DCL.Components
             }
         }
 
+        private void AllUIHidden_OnChange(bool current, bool previous)
+        {
+            UpdateCanvasVisibility();
+        }
+
         private void UpdateCanvasVisibility()
         {
             if (canvas != null && scene != null)
             {
                 bool isInsideSceneBounds = scene.IsInsideSceneBoundaries(Utils.WorldToGridPosition(currentCharacterPosition.worldPosition));
-                bool shouldBeVisible = scene.isPersistent || (model.visible && isInsideSceneBounds && globalVisibilityToggle);
+                bool shouldBeVisible = scene.isPersistent || (model.visible && isInsideSceneBounds && !CommonScriptableObjects.allUIHidden.Get());
                 canvasGroup.alpha = shouldBeVisible ? 1f : 0f;
                 canvasGroup.blocksRaycasts = shouldBeVisible;
-            }
-
-            UpdateToggleVisibility();
-        }
-
-        private void UpdateToggleVisibility()
-        {
-            if (toggle != null)
-            {
-                if (scene.isPersistent)
-                    toggle.gameObject.SetActive(false);
-                else
-                    toggle.gameObject.SetActive(toggle.gameObject.activeSelf || scene.IsInsideSceneBoundaries(Utils.WorldToGridPosition(currentCharacterPosition.worldPosition)));
             }
         }
 
@@ -193,38 +170,10 @@ namespace DCL.Components
                 Debug.Log("Finished canvas initialization in " + id);
             }
 
-            //Only for the DCL UI scene
-            if (scene.isPersistent)
-            {
-                CreateGlobalVisibilityToggle();
-            }
-            else
+            if (!scene.isPersistent)
             {
                 UpdateCanvasVisibility();
             }
-        }
-
-
-        private void CreateGlobalVisibilityToggle()
-        {
-            GameObject toggleGameObject = UnityEngine.Object.Instantiate(Resources.Load(GLOBAL_VISIBILITY_TOGGLE_PATH), childHookRectTransform) as GameObject;
-            if (toggleGameObject == null)
-            {
-                Debug.Log("Cannot find Global Visibility Toggle");
-                return;
-            }
-
-            toggle = toggleGameObject.GetComponent<Toggle>();
-            if (toggle == null)
-            {
-                Debug.Log("Global Visibility Toggle contains no toggle");
-                return;
-            }
-
-            toggle.onValueChanged.AddListener((x) => globalVisibilityToggle = x);
-            toggle.isOn = true;
-
-            toggle.gameObject.SetActive(false);
         }
     }
 }

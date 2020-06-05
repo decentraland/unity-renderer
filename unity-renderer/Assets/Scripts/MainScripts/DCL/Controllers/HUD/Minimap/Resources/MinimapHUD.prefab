@@ -1715,6 +1715,8 @@ GameObject:
   - component: {fileID: 8278114066472325544}
   - component: {fileID: 2859839270417482854}
   - component: {fileID: 269540385008896160}
+  - component: {fileID: 2940456320096999484}
+  - component: {fileID: 5339787396754724817}
   m_Layer: 5
   m_Name: MinimapHUD
   m_TagString: Untagged
@@ -1832,6 +1834,30 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 4525154057530514719}
   m_CullTransparentMesh: 0
+--- !u!225 &2940456320096999484
+CanvasGroup:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4525154057530514719}
+  m_Enabled: 1
+  m_Alpha: 1
+  m_Interactable: 1
+  m_BlocksRaycasts: 1
+  m_IgnoreParentGroups: 0
+--- !u!114 &5339787396754724817
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4525154057530514719}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 30cedd7c5f8c0064e98640b29b2156a5, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &4665053653492846095
 GameObject:
   m_ObjectHideFlags: 0

@@ -21,7 +21,7 @@ public class AvatarEditorHUDController : IHUD
     private ColorList eyeColorList;
     private ColorList hairColorList;
 
-    protected AvatarEditorHUDView view;
+    public AvatarEditorHUDView view;
 
     public Action<bool> OnVisibilityChanged;
 

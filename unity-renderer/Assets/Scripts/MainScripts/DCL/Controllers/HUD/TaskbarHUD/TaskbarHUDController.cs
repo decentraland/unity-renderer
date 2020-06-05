@@ -350,12 +350,12 @@ public class TaskbarHUDController : IHUD
 
     private void OnFriendsToggleInputPress()
     {
-        bool anyInputFieldDifferentThanWorlChat = EventSystem.current != null &&
+        bool anyInputFieldIsSelected = EventSystem.current != null &&
             EventSystem.current.currentSelectedGameObject != null &&
             EventSystem.current.currentSelectedGameObject.GetComponent<TMPro.TMP_InputField>() != null &&
             (!worldChatWindowHud.view.chatHudView.inputField.isFocused || !worldChatWindowHud.view.isInPreview);
 
-        if (anyInputFieldDifferentThanWorlChat)
+        if (anyInputFieldIsSelected)
             return;
 
         Utils.UnlockCursor();
