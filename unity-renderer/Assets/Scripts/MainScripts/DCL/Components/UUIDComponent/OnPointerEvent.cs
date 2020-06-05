@@ -71,13 +71,7 @@ namespace DCL.Components
             pointerEventColliders.refCount++;
 
             if (hoverCanvasController == null)
-            {
-                GameObject hoverCanvasGameObject = Object.Instantiate(Resources.Load("InteractionHoverCanvas"), PointerEventsController.i.transform) as GameObject;
-                hoverCanvasController = hoverCanvasGameObject.GetComponent<InteractionHoverCanvasController>();
-            }
-
-            hoverCanvasController.enabled = model.showFeedback;
-            hoverCanvasController.Setup(model.button, model.hoverText, entity);
+                hoverCanvasController = PointerEventsController.i.interactionHoverCanvasController;
         }
 
         public bool IsVisible()
@@ -100,19 +94,18 @@ namespace DCL.Components
             Initialize();
         }
 
-        protected override void RemoveComponent<T>(DecentralandEntity entity)
-        {
-            if (hoverCanvasController != null)
-            {
-                Destroy(hoverCanvasController.gameObject);
-            }
-        }
-
         public void SetHoverState(bool hoverState)
         {
             if (!enableInteractionHoverFeedback || !enabled) return;
 
-            hoverCanvasController.SetHoverState(hoverState);
+            hoverCanvasController.enabled = model.showFeedback;
+            if (model.showFeedback)
+            {
+                if (hoverState)
+                    hoverCanvasController.Setup(model.button, model.hoverText, entity);
+
+                hoverCanvasController.SetHoverState(hoverState);
+            }
         }
 
         public bool IsAtHoverDistance(Transform other)
@@ -137,11 +130,6 @@ namespace DCL.Components
                 {
                     Destroy(pointerEventColliders);
                 }
-            }
-
-            if (hoverCanvasController != null)
-            {
-                Destroy(hoverCanvasController.gameObject);
             }
         }
     }

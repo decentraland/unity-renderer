@@ -49,7 +49,7 @@ public class ExpressionsHUDView : MonoBehaviour
 
     internal void Initialize(ExpressionClicked clickedDelegate)
     {
-        HideContent();
+        content.gameObject.SetActive(false);
 
         foreach (var buttonToExpression in buttonToExpressionMap)
         {
