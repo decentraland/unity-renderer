@@ -8,7 +8,7 @@ import { EventEmitter } from 'events'
 import future, { IFuture } from 'fp-future'
 
 import { loadedSceneWorkers } from '../shared/world/parcelSceneManager'
-import { SceneJsonData, ILand } from '../shared/types'
+import { SceneJsonData, ILand, HUDElementID } from '../shared/types'
 import { normalizeContentMappings } from '../shared/selectors'
 import { SceneWorker } from '../shared/world/SceneWorker'
 import { initializeUnity } from '../unity-interface/initializer'
@@ -169,6 +169,8 @@ namespace editor {
     try {
       await initializeUnity(container, buildConfigPath)
       defaultLogger.log('Engine initialized.')
+      unityInterface.ConfigureHUDElement(HUDElementID.NFT_INFO_DIALOG, { active: true, visible: false })
+
       initializedEngine.resolve()
     } catch (err) {
       defaultLogger.error('Error loading Unity', err)

@@ -76,3 +76,24 @@ export function openExternalURL(url: string) {
     console.error('ERROR: openExternalURL dcl is undefined')
   }
 }
+
+/**
+ * Popup NFT info dialog
+ * @param scr 'ethereum://contractAddress/tokenID'
+ * @param comment optional. add a comment.
+ */
+export function openNFTDialog(scr: string, comment: string | null = null) {
+  if (typeof dcl !== 'undefined') {
+    const regex = /ethereum:\/\/(.+)\/(.+)/
+    const matches = scr.match(regex)
+
+    if (!matches || matches.length < 3) {
+      return
+    }
+
+    dcl.openNFTDialog(matches[1], matches[2], comment)
+  } else {
+    // tslint:disable-next-line:no-console
+    console.error('ERROR: openNFTDialog dcl is undefined')
+  }
+}

@@ -109,7 +109,8 @@ public class HUDController : MonoBehaviour
         FRIENDS = 13,
         OPEN_EXTERNAL_URL_PROMPT = 14,
         PRIVATE_CHAT_WINDOW = 15,
-        COUNT = 16
+        NFT_INFO_DIALOG = 16,
+        COUNT = 17
     }
 
     [System.Serializable]
@@ -265,6 +266,9 @@ public class HUDController : MonoBehaviour
                 break;
             case HUDElementID.OPEN_EXTERNAL_URL_PROMPT:
                 CreateHudElement<ExternalUrlPromptHUDController>(configuration, hudElementId);
+                break;
+            case HUDElementID.NFT_INFO_DIALOG:
+                CreateHudElement<NFTPromptHUDController>(configuration, hudElementId);
                 break;
         }
 

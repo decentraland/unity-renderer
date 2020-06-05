@@ -12,7 +12,8 @@ import {
   ComponentDisposedPayload,
   ComponentUpdatedPayload,
   QueryPayload,
-  LoadableParcelScene
+  LoadableParcelScene,
+  OpenNFTDialogPayload
 } from 'shared/types'
 import { DecentralandInterface, IEvents } from 'decentraland-ecs/src/decentraland/Types'
 import { defaultLogger } from 'shared/logger'
@@ -234,6 +235,22 @@ export default class GamekitScene extends Script {
             })
           } else {
             this.error('openExternalUrl can only be used inside a pointerEvent')
+          }
+        },
+
+        openNFTDialog(assetContractAddress: string, tokenId: string, comment: string | null) {
+          if (that.allowOpenExternalUrl) {
+            that.events.push({
+              type: 'OpenNFTDialog',
+              tag: '',
+              payload: {
+                assetContractAddress,
+                tokenId,
+                comment
+              } as OpenNFTDialogPayload
+            })
+          } else {
+            this.error('openNFTDialog can only be used inside a pointerEvent')
           }
         },
 
