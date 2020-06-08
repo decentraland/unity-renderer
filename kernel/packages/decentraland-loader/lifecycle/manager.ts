@@ -102,7 +102,7 @@ export async function initParcelSceneWorker() {
     metaContentService: DEBUG
       ? resolveUrl(document.location.origin, '/local-ipfs')
       : getFetchMetaContentService(window.globalStore.getState()),
-    contentServerBundles: DEBUG ? '' : getServerConfigurations().contentAsBundle,
+    contentServerBundles: DEBUG ? '' : getServerConfigurations().contentAsBundle + '/',
     lineOfSightRadius: parcelLimits.visibleRadius,
     secureRadius: parcelLimits.secureRadius,
     emptyScenes: ENABLE_EMPTY_SCENES && !(globalThis as any)['isRunningTests'],

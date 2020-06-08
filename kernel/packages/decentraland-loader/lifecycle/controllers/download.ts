@@ -91,7 +91,7 @@ export class SceneDataDownloadManager {
 
         const sceneId = scene.id
         const baseUrl = this.options.contentServer + '/contents/'
-        const baseUrlBundles = this.options.contentServerBundles + '/'
+        const baseUrlBundles = this.options.contentServerBundles
 
         const content = { contents: scene.content ?? [], parcel_id: scene.metadata?.base, root_cid: scene.id }
 
@@ -149,7 +149,7 @@ export class SceneDataDownloadManager {
     return {
       sceneId: sceneId,
       baseUrl: globalThis.location.origin + '/loader/empty-scenes/contents/',
-      baseUrlBundles: this.options.contentServerBundles + '/',
+      baseUrlBundles: this.options.contentServerBundles,
       sceneJsonData: {
         display: { title: 'Empty parcel' },
         contact: { name: 'Decentraland' },

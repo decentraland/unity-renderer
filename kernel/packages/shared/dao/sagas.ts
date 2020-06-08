@@ -18,11 +18,10 @@ import { call, put, takeEvery, select, fork } from 'redux-saga/effects'
 import { WORLD_EXPLORER, REALM, getDefaultTLD } from 'config'
 import { waitForMetaConfigurationInitialization } from '../meta/sagas'
 import { Candidate, Realm, ServerConnectionStatus } from './types'
-import { fecthCatalystRealms, fetchCatalystStatuses, pickCatalystRealm, getRealmFromString } from '.'
+import { fecthCatalystRealms, fetchCatalystStatuses, pickCatalystRealm, getRealmFromString, ping, commsStatusUrl } from '.'
 import { getAddedServers, getContentWhitelist } from 'shared/meta/selectors'
 import { getAllCatalystCandidates } from './selectors'
 import { saveToLocalStorage, getFromLocalStorage } from '../../atomicHelpers/localStorage'
-import { ping } from './index'
 
 const CACHE_KEY = 'realm'
 const CATALYST_CANDIDATES_KEY = CACHE_KEY + '-' + SET_CATALYST_CANDIDATES
@@ -138,7 +137,7 @@ async function checkValidRealm(realm: Realm) {
     realm.domain &&
     realm.catalystName &&
     realm.layer &&
-    (await ping(`${realm.domain}/comms/status`)).status === ServerConnectionStatus.OK
+    (await ping(commsStatusUrl(realm.domain))).status === ServerConnectionStatus.OK
   )
 }
 

@@ -224,22 +224,8 @@ function checkDiff(imageAPath: string, imageBPath: string, threshold: number, di
     })
   )
 
-  function getAllParcelIdsBetween(coords: { x1: string; x2: string; y1: string; y2: string }) {
-    const result = []
-    try {
-      const x1 = parseInt(coords.x1, 10)
-      const x2 = parseInt(coords.x2, 10)
-      const y1 = parseInt(coords.y1, 10)
-      const y2 = parseInt(coords.y2, 10)
-      for (let i = x1; i <= x2; i++) {
-        for (let j = y1; j <= y2; j++) {
-          result.push(`${i},${j}`)
-        }
-      }
-      return result
-    } catch (e) {
-      throw new TypeError('')
-    }
+  function getAllParcelIdsBetween(coords: { pointer: string[] }) {
+    return Array.isArray(coords.pointer) ? coords.pointer : [coords.pointer] // if a single value is given, we should wrap it in an array
   }
 
   function readAllJsonFiles(filenames: string[]) {
@@ -263,15 +249,38 @@ function checkDiff(imageAPath: string, imageBPath: string, threshold: number, di
       coords.map(coord => resolve(__dirname, path.join('..', 'public', 'local-ipfs', 'scene_mapping', coord)))
     )
     const length = coords.length
-    const result = []
+    const parcelData = []
     for (let i = 0; i < length; i++) {
       if (!fileData[i]) continue
-      result.push(fileData[i])
+      parcelData.push(fileData[i])
     }
-    return res.json({ data: result })
+    const cids = parcelData.map(p => p.root_cid)
+    const sceneData: any[] = await readAllJsonFiles(
+      cids.map(_ => resolve(__dirname, path.join('..', 'public', 'local-ipfs', 'parcel_info', _)))
+    )
+    const result = await Promise.all(
+      sceneData.map(async data => {
+        const sceneJsonHash = data.contents.filter($ => $.file === 'scene.json')[0].hash
+        const download: any[] = await readAllJsonFiles([
+          resolve(__dirname, path.join('..', 'public', 'local-ipfs', 'contents', sceneJsonHash))
+        ])
+        const metadata = download[0]
+        return {
+          id: data.root_cid,
+          type: 'scene',
+          timestamp: Date.now(),
+          pointers: metadata.scene.parcels,
+          content: data.contents,
+          metadata
+        }
+      })
+    )
+    const response = res.json(result)
+    return response
   }
   app.use('/scenes', sceneEndpoint)
   app.use('/local-ipfs/scenes', sceneEndpoint)
+  app.use('/local-ipfs/content/entities/scene', sceneEndpoint)
 
   const parcelInfoEndpoint = async (req, res) => {
     const cids = req.query.cids.split(',') as string[]
