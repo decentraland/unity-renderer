@@ -90,10 +90,16 @@ export async function fecthCatalystRealms(): Promise<Candidate[]> {
   return fetchCatalystStatuses(nodes)
 }
 
+export function commsStatusUrl(domain: string, includeLayers: boolean = false) {
+  let url = `${domain}/comms/status`
+  if (includeLayers) {
+    url += `?includeLayers=true`
+  }
+  return url
+}
+
 export async function fetchCatalystStatuses(nodes: { domain: string }[]) {
-  const results: PingResult[] = await Promise.all(
-    nodes.map(node => ping(`${node.domain}/comms/status?includeLayers=true`))
-  )
+  const results: PingResult[] = await Promise.all(nodes.map(node => ping(commsStatusUrl(node.domain, true))))
 
   return zip(nodes, results).reduce(
     (union: Candidate[], [{ domain }, { elapsed, result, status }]: [CatalystNode, PingResult]) =>

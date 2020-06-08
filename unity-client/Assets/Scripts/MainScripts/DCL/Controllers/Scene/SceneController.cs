@@ -235,7 +235,7 @@ namespace DCL
 
         private void OnRenderingStateChange(bool enabled, bool prevState)
         {
-            if (!enabled)
+            if (!enabled && !string.IsNullOrEmpty(currentSceneId))
             {
                 CommonScriptableObjects.rendererState.AddLock(this);
             }
