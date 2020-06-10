@@ -1,3 +1,4 @@
+using System;
 using DCL.Interface;
 using TMPro;
 using UnityEngine;
@@ -20,6 +21,8 @@ public class JumpInButton : MonoBehaviour
     internal string currentRealmServerName;
     internal string currentRealmLayerName;
     internal PresenceStatus currentPresenceStatus;
+
+    public event Action OnClick;
 
     /// <summary>
     /// Prepares the JumpIn button for listening to a specific user.
@@ -100,6 +103,7 @@ public class JumpInButton : MonoBehaviour
 
     private void JumpIn()
     {
+        OnClick?.Invoke();
         WebInterface.JumpIn((int)currentCoords.x, (int)currentCoords.y, currentRealmServerName, currentRealmLayerName);
     }
 }

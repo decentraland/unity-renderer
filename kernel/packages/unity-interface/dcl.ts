@@ -100,7 +100,7 @@ import { StoreContainer } from 'shared/store/rootTypes'
 import { ILandToLoadableParcelScene, ILandToLoadableParcelSceneUpdate } from 'shared/selectors'
 import { sendMessage, updateUserData, updateFriendship } from 'shared/chat/actions'
 import { ProfileAsPromise } from 'shared/profiles/ProfileAsPromise'
-import { changeRealm, catalystRealmConnected } from '../shared/dao/index'
+import { changeRealm, catalystRealmConnected, candidatesFetched } from '../shared/dao/index'
 import { notifyStatusThroughChat } from 'shared/comms/chat'
 
 declare const globalThis: UnityInterfaceContainer &
@@ -384,21 +384,29 @@ const browserInterface = {
     globalThis.globalStore.dispatch(updateFriendship(action, userId.toLowerCase(), false))
   },
 
-  JumpIn(data: WorldPosition) {
+  async JumpIn(data: WorldPosition) {
     const {
       gridPosition: { x, y },
       realm: { serverName, layer }
     } = data
 
     const realmString = serverName + '-' + layer
-    const realm = changeRealm(realmString)
 
-    notifyStatusThroughChat(`Changing to realm ${realmString}`)
+    notifyStatusThroughChat(`Jumping to ${realmString} at ${x},${y}...`)
+
+    const future = candidatesFetched()
+    if (future.isPending) {
+      notifyStatusThroughChat(`Waiting while realms are initialized, this may take a while...`)
+    }
+
+    await future
+
+    const realm = changeRealm(realmString)
 
     if (realm) {
       catalystRealmConnected().then(
         () => {
-          TeleportController.goTo(x, y, `Jumping to ${x},${y} in realm ${realm.catalystName}-${realm.layer}!`)
+          TeleportController.goTo(x, y, `Jumped to ${x},${y} in realm ${realmString}!`)
         },
         e => {
           const cause = e === 'realm-full' ? ' The requested realm is full.' : ''
@@ -504,6 +512,7 @@ const CHUNK_SIZE = 100
 
 export const unityInterface = {
   debug: false,
+
   SendGenericMessage(object: string, method: string, payload: string) {
     gameInstance.SendMessage(object, method, payload)
   },
