@@ -7,6 +7,8 @@
         public string owner;
         public long numSales;
         public string thumbnailUrl;
+        public string previewImageUrl;
+        public string originalImageUrl;
         public string assetLink;
         public string marketLink;
         public string lastSaleDate;
