@@ -1,0 +1,29 @@
+{
+  "display": {
+    "title": "NFT Frames",
+    "favicon": "favicon_asset"
+  },
+  "contact": {
+    "name": "",
+    "email": ""
+  },
+  "owner": "",
+  "scene": {
+    "parcels": [
+      "-103,103"
+    ],
+    "base": "-103,103"
+  },
+  "communications": {
+    "type": "webrtc",
+    "signalling": "https://signalling-01.decentraland.org"
+  },
+  "policy": {
+    "contentRating": "E",
+    "fly": true,
+    "voiceEnabled": true,
+    "blacklist": []
+  },
+  "main": "game.js",
+  "tags": []
+}

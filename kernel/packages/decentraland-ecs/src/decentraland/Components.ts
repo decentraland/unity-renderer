@@ -337,6 +337,37 @@ export class GLTFShape extends Shape {
   }
 }
 
+export enum PictureFrameStyle {
+  Classic = 0,
+  Baroque_Ornament,
+  Diamond_Ornament,
+  Minimal_Wide,
+  Minimal_Grey,
+  Blocky,
+  Gold_Edges,
+  Gold_Carved,
+  Gold_Wide,
+  Gold_Rounded,
+  Metal_Medium,
+  Metal_Wide,
+  Metal_Slim,
+  Metal_Rounded,
+  Pins,
+  Minimal_Black,
+  Minimal_White,
+  Tape,
+  Wood_Slim,
+  Wood_Wide,
+  Wood_Twigs,
+  Canvas
+}
+
+/** @public */
+export type NFTShapeConstructorArgs = {
+  color?: Color3
+  style?: PictureFrameStyle
+}
+
 /**
  * @public
  */
@@ -345,14 +376,32 @@ export class NFTShape extends Shape {
   @Shape.readonly
   readonly src!: string
 
+  @Shape.readonly
+  readonly style!: PictureFrameStyle
+
   @ObservableComponent.field
   color: Color3
 
-  // Light purple as the default background color
-  constructor(src: string, color: Color3 = new Color3(0.6404918, 0.611472, 0.8584906)) {
+  constructor(src: string)
+  constructor(src: string, color: Color3) // for backwards compatibility
+  constructor(src: string, args: NFTShapeConstructorArgs)
+  constructor(src: string, args: any = {}) {
     super()
     this.src = src
+
+    let color = new Color3(0.6404918, 0.611472, 0.8584906)
+    let style = PictureFrameStyle.Classic
+
+    // check if args is color (backwards compatibility)
+    if (args instanceof Color3) {
+      color = args
+    } else if (args != null) {
+      if (args.color) color = args.color
+      if (args.style) style = args.style
+    }
+
     this.color = color
+    this.style = style
   }
 }
 
