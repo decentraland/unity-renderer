@@ -21,5 +21,6 @@ export const getAllCatalystCandidates = (store: RootDaoState) =>
   getAddedCatalystCandidates(store).concat(getCatalystCandidates(store))
 
 export const isRealmInitialized = (store: RootDaoState) => store.dao.initialized
+export const areCandidatesFetched = (store: RootDaoState) => store.dao.candidatesFetched
 
 export const getCatalystRealmCommsStatus = (store: RootDaoState) => store.dao.commsStatus
