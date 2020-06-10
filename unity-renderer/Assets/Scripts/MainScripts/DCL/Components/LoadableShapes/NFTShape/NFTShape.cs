@@ -11,6 +11,7 @@ namespace DCL.Components
         public new class Model : LoadableShape.Model
         {
             public Color color = new Color(0.6404918f, 0.611472f, 0.8584906f); // "light purple" default, same as in explorer
+            public int style = 0;
         }
 
         public override string componentName => "NFT Shape";
@@ -30,7 +31,7 @@ namespace DCL.Components
                 return;
             }
 
-            entity.meshesInfo.meshRootGameObject = Object.Instantiate(Resources.Load("NFTShapeLoader")) as GameObject;
+            entity.meshesInfo.meshRootGameObject = NFTShapeFactory.InstantiateLoaderController(model.style);
             entity.meshesInfo.currentShape = this;
 
             entity.meshRootGameObject.name = componentName + " mesh";

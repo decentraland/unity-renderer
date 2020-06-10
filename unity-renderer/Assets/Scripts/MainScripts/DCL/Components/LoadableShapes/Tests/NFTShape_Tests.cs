@@ -34,17 +34,15 @@ public class NFTShape_Tests : TestsBase
 
         var nftShape = LoadableShape.GetLoaderForEntity(entity) as LoadWrapper_NFT;
 
-        var backgroundMaterialPropertyBlock = new MaterialPropertyBlock();
-        nftShape.loaderController.meshRenderer.GetPropertyBlock(backgroundMaterialPropertyBlock, 1);
+        var backgroundMaterial = nftShape.loaderController.meshRenderer.materials[1];
 
-        Assert.IsTrue(backgroundMaterialPropertyBlock.GetColor("_BaseColor") == new Color(0.6404918f, 0.611472f, 0.8584906f), "The NFT frame background color should be the default one");
+        Assert.IsTrue(backgroundMaterial.GetColor("_BaseColor") == new Color(0.6404918f, 0.611472f, 0.8584906f), "The NFT frame background color should be the default one");
 
         // Update color and check if it changed
         componentModel.color = Color.yellow;
         yield return TestHelpers.SharedComponentUpdate(component, componentModel);
 
-        nftShape.loaderController.meshRenderer.GetPropertyBlock(backgroundMaterialPropertyBlock, 1);
-        Assert.AreEqual(Color.yellow, backgroundMaterialPropertyBlock.GetColor("_BaseColor"), "The NFT frame background color should be yellow");
+        Assert.AreEqual(Color.yellow, backgroundMaterial.GetColor("_BaseColor"), "The NFT frame background color should be yellow");
     }
 
     [UnityTest]
