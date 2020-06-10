@@ -316,6 +316,8 @@ namespace Builder
             cameraController = Object.FindObjectOfType<CameraController>();
             cursorController = Object.FindObjectOfType<CursorController>();
             mouseCatcher = InitialSceneReferences.i?.mouseCatcher;
+            var playerAvatarController = Object.FindObjectOfType<PlayerAvatarController>();
+
             if (mouseCatcher != null)
             {
                 mouseCatcher.enabled = false;
@@ -336,6 +338,12 @@ namespace Builder
             if (cursorController)
             {
                 cursorController.gameObject.SetActive(false);
+            }
+
+            // NOTE: no third person camera in builder yet, so avoid rendering being locked waiting for avatar.
+            if (playerAvatarController)
+            {
+                CommonScriptableObjects.rendererState.RemoveLock(playerAvatarController);
             }
 
             SceneController.i?.fpsPanel.SetActive(false);
