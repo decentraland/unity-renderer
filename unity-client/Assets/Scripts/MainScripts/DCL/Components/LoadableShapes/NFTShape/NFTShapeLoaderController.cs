@@ -1,6 +1,7 @@
 ﻿using DCL.Components;
 using DCL.Configuration;
 using DCL.Helpers;
+using DCL.Helpers.NFT;
 using System;
 using System.Collections;
 using System.Text.RegularExpressions;
@@ -9,19 +10,6 @@ using UnityEngine.Networking;
 
 public class NFTShapeLoaderController : MonoBehaviour
 {
-    [Serializable]
-    public class NFTAssetData
-    {
-        [Serializable]
-        public class File
-        {
-            public string url;
-            public string role;
-        }
-
-        public File[] files;
-    }
-
     public enum NoiseType
     {
         ClassicPerlin,
@@ -131,52 +119,21 @@ public class NFTShapeLoaderController : MonoBehaviour
 
     IEnumerator FetchNFTImage()
     {
-        string jsonURL = $"{NFTDataFetchingSettings.DAR_API_URL}/{darURLRegistry}/asset/{darURLAsset}";
-
-        UnityWebRequest www = UnityWebRequest.Get(jsonURL);
-        yield return www.SendWebRequest();
-
-        if (!www.WebRequestSucceded())
-        {
-            OnLoadingAssetFail?.Invoke();
-
-            Debug.LogError($"{www.responseCode} - {www.url}", gameObject);
-
-            yield break;
-        }
-
-        NFTAssetData currentAssetData = JsonUtility.FromJson<NFTAssetData>(www.downloadHandler.text);
-        if (currentAssetData.files == null)
-        {
-            Debug.LogError($"Didn't find any asset image for '{jsonURL}' for the NFTShape.");
-
-            yield break;
-        }
-
-        if (VERBOSE)
-        {
-            Debug.Log("NFT fetched JSON: " + www.downloadHandler.text);
-
-            Debug.Log("NFT Assets Found: ");
-            for (int i = 0; i < currentAssetData.files.Length; i++)
-            {
-                Debug.Log("file url: " + currentAssetData.files[i]?.url);
-            }
-        }
-
         string thumbnailImageURL = null;
-        string dclImageURL = null;
         string previewImageURL = null;
+        string originalImageURL = null;
 
-        for (int i = 0; i < currentAssetData.files.Length; i++)
-        {
-            if (currentAssetData.files[i].role == "thumbnail")
-                thumbnailImageURL = currentAssetData.files[i].url;
-            else if (currentAssetData.files[i].role == "preview")
-                previewImageURL = currentAssetData.files[i].url;
-            else if (currentAssetData.files[i].role == "dcl-picture-frame-image")
-                dclImageURL = currentAssetData.files[i].url;
-        }
+        yield return NFTHelper.FetchNFTInfo(darURLRegistry, darURLAsset,
+            (nftInfo) =>
+            {
+                thumbnailImageURL = nftInfo.thumbnailUrl;
+                previewImageURL = nftInfo.previewImageUrl;
+                originalImageURL = nftInfo.originalImageUrl;
+            },
+            (error) =>
+            {
+                Debug.LogError($"Didn't find any asset image for '{darURLRegistry}/{darURLAsset}' for the NFTShape.\n{error}");
+            });
 
         // We fetch and show the thumbnail image first
         if (!string.IsNullOrEmpty(thumbnailImageURL))
@@ -189,9 +146,9 @@ public class NFTShapeLoaderController : MonoBehaviour
 
         // We fetch the final image
         bool foundDCLImage = false;
-        if (!string.IsNullOrEmpty(dclImageURL))
+        if (!string.IsNullOrEmpty(previewImageURL))
         {
-            yield return Utils.FetchWrappedTextureAsset(dclImageURL, (downloadedAsset) =>
+            yield return Utils.FetchWrappedTextureAsset(previewImageURL, (downloadedAsset) =>
             {
                 // Dispose thumbnail
                 if (nftAsset != null) nftAsset.Dispose();
@@ -201,9 +158,9 @@ public class NFTShapeLoaderController : MonoBehaviour
         }
 
         // We fall back to a common "preview" image if no "dcl image" was found
-        if (!foundDCLImage && !string.IsNullOrEmpty(previewImageURL))
+        if (!foundDCLImage && !string.IsNullOrEmpty(originalImageURL))
         {
-            yield return Utils.FetchWrappedTextureAsset(previewImageURL, (downloadedAsset) =>
+            yield return Utils.FetchWrappedTextureAsset(originalImageURL, (downloadedAsset) =>
             {
                 // Dispose thumbnail
                 if (nftAsset != null) nftAsset.Dispose();

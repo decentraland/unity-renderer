@@ -4,8 +4,8 @@ using TMPro;
 using DCL;
 using DCL.Helpers;
 using DCL.Helpers.NFT;
-using System.Linq;
 using DCL.Interface;
+using System.Collections;
 
 public class NFTPromptHUDView : MonoBehaviour
 {
@@ -184,29 +184,49 @@ public class NFTPromptHUDView : MonoBehaviour
         buttonCancel.gameObject.SetActive(true);
         buttonOpenMarket.gameObject.SetActive(true);
 
-        if (!string.IsNullOrEmpty(info.thumbnailUrl))
-        {
-            spinnerNftImage.SetActive(true);
-            fetchNFTImageRoutine = StartCoroutine(Utils.FetchWrappedTextureAsset(info.thumbnailUrl, (asset) =>
+        fetchNFTImageRoutine = StartCoroutine(FetchNFTImage(info));
+    }
+
+    private IEnumerator FetchNFTImage(NFTInfo nftInfo)
+    {
+        spinnerNftImage.SetActive(true);
+
+        IWrappedTextureAsset nftImageAsset = null;
+        yield return Utils.FetchWrappedTextureAsset(nftInfo.thumbnailUrl,
+            (asset) =>
             {
-                imageAsset = asset;
-                imageNft.texture = asset.texture;
+                nftImageAsset = asset;
+            });
 
-                var gifAsset = asset as WrappedGif;
-                if (gifAsset != null)
+        if (nftImageAsset == null)
+        {
+            yield return Utils.FetchWrappedTextureAsset(nftInfo.originalImageUrl,
+                (asset) =>
                 {
-                    gifAsset.SetUpdateTextureCallback((texture) =>
-                    {
-                        imageNft.texture = texture;
-                    });
-                }
-                SetNFTImageSize(asset.texture);
-                if (!backgroundColorSet) SetSmartBackgroundColor(asset.texture);
-
-                imageNft.gameObject.SetActive(true);
-                spinnerNftImage.SetActive(false);
-            }));
+                    nftImageAsset = asset;
+                });
         }
+
+        if (nftImageAsset != null)
+        {
+            imageAsset = nftImageAsset;
+            imageNft.texture = nftImageAsset.texture;
+
+            var gifAsset = nftImageAsset as WrappedGif;
+            if (gifAsset != null)
+            {
+                gifAsset.SetUpdateTextureCallback((texture) =>
+                {
+                    imageNft.texture = texture;
+                });
+            }
+            SetNFTImageSize(nftImageAsset.texture);
+            if (!backgroundColorSet) SetSmartBackgroundColor(nftImageAsset.texture);
+
+            imageNft.gameObject.SetActive(true);
+            spinnerNftImage.SetActive(false);
+        }
+
     }
 
     private void SetNFTImageSize(Texture2D texture)
