@@ -192,7 +192,7 @@ public class NFTPromptHUDView : MonoBehaviour
         spinnerNftImage.SetActive(true);
 
         IWrappedTextureAsset nftImageAsset = null;
-        yield return Utils.FetchWrappedTextureAsset(nftInfo.thumbnailUrl,
+        yield return Utils.FetchWrappedTextureAsset(nftInfo.previewImageUrl,
             (asset) =>
             {
                 nftImageAsset = asset;
