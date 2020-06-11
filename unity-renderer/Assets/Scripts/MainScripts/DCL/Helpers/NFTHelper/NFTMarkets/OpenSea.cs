@@ -1,33 +1,41 @@
 ﻿using System;
 using System.Collections;
+using System.Collections.Generic;
 using System.Linq;
-using UnityEngine.Networking;
+using DCL.Helpers.NFT.Markets.OpenSea_Internal;
 
 namespace DCL.Helpers.NFT.Markets
 {
-    public class OpenSea : INFTMarket
+    internal class OpenSea : INFTMarket
     {
-        const string API_URL_SINGLE_ASSET = "https://api.opensea.io/api/v1/asset/{0}/{1}/";
-
         MarketInfo openSeaMarketInfo = new MarketInfo() { name = "OpenSea" };
+        OpenSeaRequestController requestController = new OpenSeaRequestController();
+        Dictionary<string, NFTInfo> cachedResponses = new Dictionary<string, NFTInfo>();
 
         IEnumerator INFTMarket.FetchNFTInfo(string assetContractAddress, string tokenId, Action<NFTInfo> onSuccess, Action<string> onError)
         {
-            string url = string.Format(API_URL_SINGLE_ASSET, assetContractAddress, tokenId);
-            using (UnityWebRequest request = UnityWebRequest.Get(url))
+            string nftId = $"{assetContractAddress}/{tokenId}";
+            if (cachedResponses.ContainsKey(nftId))
             {
-                yield return request.SendWebRequest();
-
-                if (!request.isNetworkError && !request.isHttpError)
-                {
-                    AssetResponse response = Utils.FromJsonWithNulls<AssetResponse>(request.downloadHandler.text);
-                    onSuccess?.Invoke(ResponseToNFTInfo(response));
-                }
-                else
-                {
-                    onError?.Invoke($"{openSeaMarketInfo.name} error fetching {assetContractAddress}/{tokenId} {request.error}");
-                }
+                onSuccess?.Invoke(cachedResponses[nftId]);
+                yield break;
             }
+
+            OpenSeaRequest request = requestController.AddRequest(assetContractAddress, tokenId);
+            yield return request.OnResolved(
+                (assetResponse) =>
+                {
+                    NFTInfo nftInfo = ResponseToNFTInfo(assetResponse);
+                    if (!cachedResponses.ContainsKey(nftId))
+                    {
+                        cachedResponses.Add(nftId, nftInfo);
+                    }
+                    onSuccess?.Invoke(nftInfo);
+                },
+                (error) =>
+                {
+                    onError?.Invoke($"{openSeaMarketInfo.name} error fetching {assetContractAddress}/{tokenId} {error}");
+                });
         }
 
         private NFTInfo ResponseToNFTInfo(AssetResponse response)
@@ -72,7 +80,7 @@ namespace DCL.Helpers.NFT.Markets
                 ret.backgroundColor = backgroundColor;
             }
 
-            OrderInfo sellOrder = GetSellOrder(response.orders, response.owner.address);
+            OrderInfo sellOrder = GetSellOrder(response.sell_orders, response.owner.address);
             if (sellOrder != null)
             {
                 ret.currentPrice = PriceToFloatingPointString(sellOrder.current_price, sellOrder.payment_token_contract);
@@ -85,13 +93,13 @@ namespace DCL.Helpers.NFT.Markets
             return ret;
         }
 
-        private string PriceToFloatingPointString(AssetSaleInfo saleInfo)
+        private string PriceToFloatingPointString(OpenSea_Internal.AssetSaleInfo saleInfo)
         {
             if (saleInfo.payment_token == null) return null;
             return PriceToFloatingPointString(saleInfo.total_price, saleInfo.payment_token);
         }
 
-        private string PriceToFloatingPointString(string price, PaymentTokenInfo tokenInfo)
+        private string PriceToFloatingPointString(string price, OpenSea_Internal.PaymentTokenInfo tokenInfo)
         {
             string priceString = price;
             if (price.Contains('.'))
@@ -111,6 +119,9 @@ namespace DCL.Helpers.NFT.Markets
 
         private OrderInfo GetSellOrder(OrderInfo[] orders, string nftOwner)
         {
+            if (orders == null)
+                return null;
+
             OrderInfo ret = null;
             for (int i = 0; i < orders.Length; i++)
             {
@@ -121,90 +132,6 @@ namespace DCL.Helpers.NFT.Markets
                 }
             }
             return ret;
-        }
-
-        [Serializable]
-        class AssetResponse
-        {
-            public string token_id;
-            public long? num_sales = null;
-            public string background_color;
-            public string image_url;
-            public string image_preview_url;
-            public string image_thumbnail_url;
-            public string image_original_url;
-            public string name;
-            public string description;
-            public string external_link;
-            public AssetContract asset_contract = null;
-            public AccountInfo owner = null;
-            public string permalink;
-            public AssetSaleInfo last_sale = null;
-            public OrderInfo[] orders = null;
-        }
-
-        [Serializable]
-        class AssetContract
-        {
-            public string address;
-            public string asset_contract_type;
-            public string created_date;
-            public string name;
-            public string nft_version;
-            public long? owner = null;
-            public string schema_name;
-            public string symbol;
-            public long? total_supply = null;
-            public string description;
-            public string external_link;
-            public string image_url;
-        }
-
-        [Serializable]
-        class AccountInfo
-        {
-            public string profile_img_url;
-            public string address;
-        }
-
-        [Serializable]
-        class AssetSaleInfo
-        {
-            public string event_type;
-            public string event_timestamp;
-            public string total_price;
-            public PaymentTokenInfo payment_token = null;
-            public TransactionInfo transaction = null;
-        }
-
-        [Serializable]
-        class PaymentTokenInfo
-        {
-            public long id;
-            public string symbol;
-            public string address;
-            public string image_url;
-            public string name;
-            public int decimals;
-            public string eth_price;
-            public string usd_price;
-        }
-
-        [Serializable]
-        class TransactionInfo
-        {
-            public long id;
-            public AccountInfo from_account;
-            public AccountInfo to_account;
-            public string transaction_hash;
-        }
-
-        [Serializable]
-        class OrderInfo
-        {
-            public AccountInfo maker;
-            public string current_price;
-            public PaymentTokenInfo payment_token_contract;
         }
     }
 }
