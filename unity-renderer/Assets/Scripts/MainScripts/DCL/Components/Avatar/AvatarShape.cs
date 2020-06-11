@@ -21,6 +21,9 @@ namespace DCL
 
         public bool everythingIsLoaded;
 
+        private Vector3? lastAvatarPosition = null;
+        private MinimapMetadata.MinimapUserInfo avatarUserInfo = new MinimapMetadata.MinimapUserInfo();
+
         void Awake()
         {
             currentPlayerInfoCardId = Resources.Load<StringVariable>(CURRENT_PLAYER_ID);
@@ -50,7 +53,11 @@ namespace DCL
         {
             onPointerDown.OnPointerDownReport -= PlayerClicked;
             if (entity != null)
+            {
                 entity.OnTransformChange = null;
+                avatarUserInfo.userId = model.id;
+                MinimapMetadataController.i?.UpdateMinimapUserInformation(avatarUserInfo, true);
+            }
         }
 
         public override IEnumerator ApplyChanges(string newJson)
@@ -62,6 +69,7 @@ namespace DCL
             if (entity != null && entity.OnTransformChange == null)
             {
                 entity.OnTransformChange += avatarMovementController.OnTransformChanged;
+                entity.OnTransformChange += OnEntityTransformChanged;
             }
 
             if (currentSerialization == newJson)
@@ -83,6 +91,11 @@ namespace DCL
             avatarName.SetName(model.name);
             SetMinimapRepresentationActive(true);
             everythingIsLoaded = true;
+
+            avatarUserInfo.userId = model.id;
+            avatarUserInfo.userName = model.name;
+            avatarUserInfo.worldPosition = lastAvatarPosition != null ? lastAvatarPosition.Value : minimapRepresentation.transform.position;
+            UpdateAvatarIconInMinimap(avatarUserInfo);
         }
 
         void SetMinimapRepresentationActive(bool active)
@@ -91,6 +104,26 @@ namespace DCL
                 return;
 
             minimapRepresentation.SetActive(active);
+        }
+
+        private void OnEntityTransformChanged(DCLTransform.Model updatedModel)
+        {
+            lastAvatarPosition = updatedModel.position;
+
+            avatarUserInfo.userId = model.id;
+            avatarUserInfo.userName = model.name;
+            avatarUserInfo.worldPosition = updatedModel.position;
+            UpdateAvatarIconInMinimap(avatarUserInfo);
+        }
+
+        private void UpdateAvatarIconInMinimap(MinimapMetadata.MinimapUserInfo userInfo)
+        {
+            MinimapMetadataController.i?.UpdateMinimapUserInformation(new MinimapMetadata.MinimapUserInfo
+            {
+                userId = userInfo.userId,
+                userName = userInfo.userName,
+                worldPosition = userInfo.worldPosition
+            });
         }
     }
 }
