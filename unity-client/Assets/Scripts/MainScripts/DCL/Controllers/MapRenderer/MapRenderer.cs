@@ -14,6 +14,7 @@ namespace DCL
         const int TOP_BORDER_PARCELS = 31;
         const int BOTTOM_BORDER_PARCELS = 25;
         const int WORLDMAP_WIDTH_IN_PARCELS = 300;
+        const string MINIMAP_USER_ICONS_POOL_NAME = "MinimapUserIcons";
         private int NAVMAP_CHUNK_LAYER;
 
         public static MapRenderer i { get; private set; }
@@ -45,9 +46,13 @@ namespace DCL
         public RectTransform centeredReferenceParcel;
 
         public MapSceneIcon scenesOfInterestIconPrefab;
+        public MapSceneIcon userIconPrefab;
 
         private HashSet<MinimapMetadata.MinimapSceneInfo> scenesOfInterest = new HashSet<MinimapMetadata.MinimapSceneInfo>();
         private Dictionary<MinimapMetadata.MinimapSceneInfo, GameObject> scenesOfInterestMarkers = new Dictionary<MinimapMetadata.MinimapSceneInfo, GameObject>();
+        private Dictionary<string, MinimapMetadata.MinimapUserInfo> usersInfo = new Dictionary<string, MinimapMetadata.MinimapUserInfo>();
+        private Dictionary<string, PoolableObject> usersInfoMarkers = new Dictionary<string, PoolableObject>();
+        private Pool usersInfoPool;
 
         private bool parcelHighlightEnabledValue = false;
         public bool parcelHighlightEnabled
@@ -74,6 +79,8 @@ namespace DCL
             NAVMAP_CHUNK_LAYER = LayerMask.NameToLayer("NavmapChunk");
 
             MinimapMetadata.GetMetadata().OnSceneInfoUpdated += MapRenderer_OnSceneInfoUpdated;
+            MinimapMetadata.GetMetadata().OnUserInfoUpdated += MapRenderer_OnUserInfoUpdated;
+            MinimapMetadata.GetMetadata().OnUserInfoRemoved += MapRenderer_OnUserInfoRemoved;
 
             ParcelHighlightButton.onClick.AddListener(() => { ClickMousePositionParcel(); });
 
@@ -195,9 +202,57 @@ namespace DCL
             (go.transform as RectTransform).anchoredPosition = MapUtils.GetTileToLocalPosition(centerTile.x, centerTile.y);
 
             MapSceneIcon icon = go.GetComponent<MapSceneIcon>();
-            icon.title.text = sceneInfo.name;
+            if (icon.title != null)
+                icon.title.text = sceneInfo.name;
 
             scenesOfInterestMarkers.Add(sceneInfo, go);
+        }
+
+        private void MapRenderer_OnUserInfoUpdated(MinimapMetadata.MinimapUserInfo userInfo)
+        {
+            if (usersInfo.TryGetValue(userInfo.userId, out MinimapMetadata.MinimapUserInfo existingUserInfo))
+            {
+                existingUserInfo = userInfo;
+
+                if (usersInfoMarkers.TryGetValue(userInfo.userId, out PoolableObject go))
+                    ConfigureUserIcon(go.gameObject, userInfo.worldPosition, userInfo.userName);
+            }
+            else
+            {
+                usersInfo.Add(userInfo.userId, userInfo);
+
+                if (!PoolManager.i.ContainsPool(MINIMAP_USER_ICONS_POOL_NAME))
+                    usersInfoPool = PoolManager.i.AddPool(MINIMAP_USER_ICONS_POOL_NAME, Instantiate(userIconPrefab.gameObject, overlayContainer.transform));
+
+                PoolableObject newUserIcon = usersInfoPool.Get();
+                newUserIcon.gameObject.name = string.Format("UserIcon-{0}", userInfo.userName);
+                newUserIcon.gameObject.transform.parent = overlayContainer.transform;
+                newUserIcon.gameObject.transform.localScale = Vector3.one;
+                ConfigureUserIcon(newUserIcon.gameObject, userInfo.worldPosition, userInfo.userName);
+
+                usersInfoMarkers.Add(userInfo.userId, newUserIcon);
+            }
+        }
+
+        private void MapRenderer_OnUserInfoRemoved(string userId)
+        {
+            if (!usersInfo.Remove(userId))
+                return;
+
+            if (usersInfoMarkers.TryGetValue(userId, out PoolableObject go))
+            {
+                usersInfoPool.Release(go);
+                usersInfoMarkers.Remove(userId);
+            }
+        }
+
+        private void ConfigureUserIcon(GameObject iconGO, Vector3 pos, string name)
+        {
+            var gridPosition = Utils.WorldToGridPositionUnclamped(pos);
+            iconGO.transform.localPosition = MapUtils.GetTileToLocalPosition(gridPosition.x, gridPosition.y);
+            MapSceneIcon icon = iconGO.GetComponent<MapSceneIcon>();
+            if (icon.title != null)
+                icon.title.text = name;
         }
 
         public void OnDestroy()
@@ -205,6 +260,8 @@ namespace DCL
             playerWorldPosition.OnChange -= OnCharacterMove;
             playerRotation.OnChange -= OnCharacterRotate;
             MinimapMetadata.GetMetadata().OnSceneInfoUpdated -= MapRenderer_OnSceneInfoUpdated;
+            MinimapMetadata.GetMetadata().OnUserInfoUpdated -= MapRenderer_OnUserInfoUpdated;
+            MinimapMetadata.GetMetadata().OnUserInfoRemoved -= MapRenderer_OnUserInfoRemoved;
         }
 
         private void OnCharacterMove(Vector3 current, Vector3 previous)

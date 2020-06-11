@@ -21,4 +21,20 @@ public class MinimapMetadataController : MonoBehaviour
             minimapMetadata.AddSceneInfo(sceneInfo);
         }
     }
+
+    /// <summary>
+    /// Updates the information of an user in the minimap.
+    /// </summary>
+    /// <param name="userInfo">User info model</param>
+    /// <param name="isRemoved">True for remove the user info</param>
+    public void UpdateMinimapUserInformation(MinimapMetadata.MinimapUserInfo userInfo, bool isRemoved = false)
+    {
+        if (string.IsNullOrEmpty(userInfo.userId))
+            return;
+
+        if (!isRemoved)
+            minimapMetadata.AddOrUpdateUserInfo(userInfo);
+        else
+            minimapMetadata.RemoveUserInfo(userInfo.userId);
+    }
 }

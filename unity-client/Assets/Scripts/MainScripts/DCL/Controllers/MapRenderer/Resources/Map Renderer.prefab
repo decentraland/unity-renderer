@@ -260,6 +260,8 @@ MonoBehaviour:
   centeredReferenceParcel: {fileID: 1025416073224921776}
   scenesOfInterestIconPrefab: {fileID: 4461918297282884638, guid: f7b91bf31609c8a43b5dbc0ae70e47ab,
     type: 3}
+  userIconPrefab: {fileID: 3915973121112947369, guid: de55552ad87874a44aefe9d124170fe8,
+    type: 3}
 --- !u!1 &3620416516788639812
 GameObject:
   m_ObjectHideFlags: 0

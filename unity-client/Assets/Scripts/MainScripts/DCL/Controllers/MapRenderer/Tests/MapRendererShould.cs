@@ -27,31 +27,6 @@ namespace Tests
         }
 
         [UnityTest]
-        public IEnumerator PositionPlayerIconAsIntended()
-        {
-            RectTransform rt = MapRenderer.i.playerPositionIcon.transform as RectTransform;
-            CommonScriptableObjects.playerWorldPosition.Set(new Vector3(0, 0));
-            Assert.AreApproximatelyEqual(3000, rt.anchoredPosition.x);
-            Assert.AreApproximatelyEqual(3000, rt.anchoredPosition.y);
-
-            CommonScriptableObjects.playerWorldPosition.Set(new Vector3(500, 0, 500));
-            Assert.AreApproximatelyEqual(3625, rt.anchoredPosition.x);
-            Assert.AreApproximatelyEqual(3625, rt.anchoredPosition.y);
-
-            CommonScriptableObjects.playerWorldPosition.Set(new Vector3(-500, 0, -500));
-            Assert.AreApproximatelyEqual(2375, rt.anchoredPosition.x);
-            Assert.AreApproximatelyEqual(2375, rt.anchoredPosition.y);
-
-            CommonScriptableObjects.cameraForward.Set(new Vector3(0, 0, 1));
-            Assert.AreApproximatelyEqual(0, rt.eulerAngles.z);
-            CommonScriptableObjects.cameraForward.Set(new Vector3(0, 0, -1));
-            Assert.AreApproximatelyEqual(180, rt.eulerAngles.z);
-            CommonScriptableObjects.cameraForward.Set(new Vector3(0.5f, 0, 0.5f));
-            Assert.AreApproximatelyEqual(315, rt.eulerAngles.z);
-            yield return null;
-        }
-
-        [UnityTest]
         public IEnumerator CenterAsIntended()
         {
             Transform atlasContainerTransform = MapRenderer.i.atlas.container.transform;
@@ -113,6 +88,46 @@ namespace Tests
             Assert.AreEqual(1, icons.Length, "Only 1 icon is marked as POI, but 2 icons were spawned");
             Assert.AreEqual(sceneInfo.name, icons[0].title.text);
             Assert.AreEqual(new Vector3(3010, 3010, 0), icons[0].transform.localPosition);
+
+            yield return null;
+        }
+
+        [UnityTest]
+        public IEnumerator DisplayAndUpdateUserIconProperly()
+        {
+            Vector3 initialPosition = new Vector3(100, 0, 50);
+            Vector3 modifiedPosition = new Vector3(150, 0, -30);
+
+            var userInfo = new MinimapMetadata.MinimapUserInfo();
+            userInfo.userId = "testuser";
+            userInfo.worldPosition = initialPosition;
+
+            // Create an user icon
+            MinimapMetadata.GetMetadata().AddOrUpdateUserInfo(userInfo);
+
+            MapSceneIcon[] icons = MapRenderer.i.GetComponentsInChildren<MapSceneIcon>();
+
+            Assert.AreEqual(1, icons.Length, "There should be only 1 user icon");
+            Vector2 iconGridPosition = DCL.Helpers.Utils.WorldToGridPositionUnclamped(initialPosition);
+            Assert.AreEqual(DCL.Helpers.MapUtils.GetTileToLocalPosition(iconGridPosition.x, iconGridPosition.y), icons[0].transform.localPosition);
+
+            // Modifify the position of the user icon
+            userInfo.worldPosition = modifiedPosition;
+
+            MinimapMetadata.GetMetadata().AddOrUpdateUserInfo(userInfo);
+
+            icons = MapRenderer.i.GetComponentsInChildren<MapSceneIcon>();
+
+            Assert.AreEqual(1, icons.Length, "There should still be the same user icon");
+            iconGridPosition = DCL.Helpers.Utils.WorldToGridPositionUnclamped(modifiedPosition);
+            Assert.AreEqual(DCL.Helpers.MapUtils.GetTileToLocalPosition(iconGridPosition.x, iconGridPosition.y), icons[0].transform.localPosition);
+
+            // Remove the user icon
+            MinimapMetadata.GetMetadata().RemoveUserInfo(userInfo.userId);
+
+            icons = MapRenderer.i.GetComponentsInChildren<MapSceneIcon>();
+
+            Assert.AreEqual(0, icons.Length, "There should not be any user icon");
 
             yield return null;
         }
