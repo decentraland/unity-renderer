@@ -70,7 +70,7 @@ namespace DCL.Helpers.NFT.Markets.OpenSea_Internal
     class OpenSeaRequestGroup : IDisposable
     {
         const string API_URL_ASSETS = "https://api.opensea.io/api/v1/assets?";
-        const float URL_PARAMS_MAX_LENGTH = 1854; // maxUrl(2048) - apiUrl(37) - longestPossibleRequest (78 tokenId + 42 contractAddress + 37 urlParams)
+        const float URL_PARAMS_MAX_LENGTH = 1085; // maxUrl(1279) - apiUrl(37) - longestPossibleRequest (78 tokenId + 42 contractAddress + 37 urlParams)
         const int REQUEST_RETRIES = 3;
 
         public bool isOpen { private set; get; }
@@ -228,7 +228,7 @@ namespace DCL.Helpers.NFT.Markets.OpenSea_Internal
             if (assetResponse == null)
             {
                 error = $"asset {assetContractAddress}/{tokenId} not found in api response";
-                if (OpenSeaRequestController.VERBOSE) Debug.Log($"Request: not found {JsonUtility.ToJson(response)}");
+                if (OpenSeaRequestController.VERBOSE) Debug.Log($"Request: for {assetContractAddress}/{tokenId} not found {JsonUtility.ToJson(response)}");
             }
             resolved = true;
         }
