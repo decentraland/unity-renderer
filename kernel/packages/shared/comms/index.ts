@@ -319,7 +319,7 @@ function isBlocked(profile: Profile, userId: string): boolean {
 export function processProfileMessage(
   context: Context,
   fromAlias: string,
-  identity: string,
+  peerIdentity: string,
   message: Package<ProfileVersion>
 ) {
   const msgTimestamp = message.time
@@ -327,14 +327,38 @@ export function processProfileMessage(
   const peerTrackingInfo = ensurePeerTrackingInfo(context, fromAlias)
 
   if (msgTimestamp > peerTrackingInfo.lastProfileUpdate) {
-    const profileVersion = message.data.version
-
-    peerTrackingInfo.identity = identity
-    peerTrackingInfo.loadProfileIfNecessary(profileVersion ? parseInt(profileVersion, 10) : 0)
-
     peerTrackingInfo.lastProfileUpdate = msgTimestamp
+    peerTrackingInfo.identity = peerIdentity
     peerTrackingInfo.lastUpdate = Date.now()
+
+    if (ensureTrackingUniqueAndLatest(context, fromAlias, peerIdentity, msgTimestamp)) {
+      const profileVersion = message.data.version
+      peerTrackingInfo.loadProfileIfNecessary(profileVersion ? parseInt(profileVersion, 10) : 0)
+    }
   }
+}
+
+/**
+ * Ensures that there is only one peer tracking info for this identity.
+ * Returns true if this is the latest update and the one that remains
+ */
+function ensureTrackingUniqueAndLatest(context: Context, fromAlias: string, peerIdentity: string, thisUpdateTimestamp: Timestamp) {
+  let currentLastProfileAlias = fromAlias
+  let currentLastProfileUpdate = thisUpdateTimestamp
+
+  context.peerData.forEach((info, key) => {
+    if (info.identity === peerIdentity) {
+      if (info.lastProfileUpdate < currentLastProfileUpdate) {
+        removePeer(context, key)
+      } else if (info.lastProfileUpdate > currentLastProfileUpdate) {
+        removePeer(context, currentLastProfileAlias)
+        currentLastProfileAlias = key
+        currentLastProfileUpdate = info.lastProfileUpdate
+      }
+    }
+  })
+
+  return currentLastProfileAlias === fromAlias
 }
 
 export function processPositionMessage(context: Context, fromAlias: string, message: Package<Position>) {
@@ -440,6 +464,12 @@ function collectInfo(context: Context) {
     if (msSinceLastUpdate > commConfigurations.peerTtlMs) {
       removePeer(context, peerAlias)
 
+      continue
+    }
+
+    if (trackingInfo.identity === identity.address) {
+      // If we are tracking a peer that is ourselves, we remove it
+      removePeer(context, peerAlias)
       continue
     }
 
