@@ -395,7 +395,8 @@ export enum HUDElementID {
   MESSAGE_OF_THE_DAY = 12,
   FRIENDS = 13,
   OPEN_EXTERNAL_URL_PROMPT = 14,
-  NFT_INFO_DIALOG = 16
+  NFT_INFO_DIALOG = 16,
+  TELEPORT_DIALOG = 17
 }
 
 export type HUDConfiguration = {

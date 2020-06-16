@@ -824,6 +824,16 @@ namespace DCL.Interface
             SendMessage("GoTo", gotoEvent);
         }
 
+        public static void GoToCrowd()
+        {
+            SendMessage("GoToCrowd");
+        }
+
+        public static void GoToMagic()
+        {
+            SendMessage("GoToMagic");
+        }
+
         public static void JumpIn(int x, int y, string serverName, string layerName)
         {
             jumpInPayload.realm.serverName = serverName;

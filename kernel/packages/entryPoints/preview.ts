@@ -79,12 +79,13 @@ function sceneRenderable() {
 initializeUnity(container)
   .then(async ret => {
     const i = unityInterface
-    i.ConfigureHUDElement( HUDElementID.MINIMAP, { active: true, visible: true })
-    i.ConfigureHUDElement( HUDElementID.NOTIFICATION, { active: true, visible: false })
-    i.ConfigureHUDElement( HUDElementID.SETTINGS, { active: true, visible: false })
-    i.ConfigureHUDElement( HUDElementID.AIRDROPPING, { active: true, visible: true })
+    i.ConfigureHUDElement(HUDElementID.MINIMAP, { active: true, visible: true })
+    i.ConfigureHUDElement(HUDElementID.NOTIFICATION, { active: true, visible: false })
+    i.ConfigureHUDElement(HUDElementID.SETTINGS, { active: true, visible: false })
+    i.ConfigureHUDElement(HUDElementID.AIRDROPPING, { active: true, visible: true })
     i.ConfigureHUDElement(HUDElementID.OPEN_EXTERNAL_URL_PROMPT, { active: true, visible: true })
     i.ConfigureHUDElement(HUDElementID.NFT_INFO_DIALOG, { active: true, visible: false })
+    i.ConfigureHUDElement(HUDElementID.TELEPORT_DIALOG, { active: true, visible: false })
 
     global.globalStore.dispatch(signalRendererInitialized())
 
