@@ -1,0 +1,19 @@
+{
+    "name": "TeleportPromptHUDTest",
+    "references": [
+        "GUID:ef84d7ce90ba34f07be26ace428e9bc8",
+        "GUID:c4447d6e4315b45618cad98697304322",
+        "GUID:555c1f3c6d18648df910b7a1de75b424"
+    ],
+    "optionalUnityReferences": [
+        "TestAssemblies"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": []
+}
