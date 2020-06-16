@@ -1,14 +1,18 @@
-
 using DCL.Interface;
 using System;
+using UnityEngine;
 using UnityEngine.Events;
+
 public class ChatHUDController : IDisposable
 {
     public const int MAX_CHAT_ENTRIES = 100;
+    internal const string CURRENT_PLAYER_ID = "CurrentPlayerInfoCardId";
 
     public ChatHUDView view;
 
     public event UnityAction<string> OnPressPrivateMessage;
+
+    private InputAction_Trigger closeWindowTrigger;
 
     public void Initialize(ChatHUDView view = null, UnityAction<ChatMessage> onSendMessage = null)
     {
@@ -18,11 +22,62 @@ public class ChatHUDController : IDisposable
 
         this.view.OnPressPrivateMessage -= View_OnPressPrivateMessage;
         this.view.OnPressPrivateMessage += View_OnPressPrivateMessage;
+
+        if (this.view.contextMenu != null)
+        {
+            this.view.contextMenu.OnShowMenu -= ContextMenu_OnShowMenu;
+            this.view.contextMenu.OnShowMenu += ContextMenu_OnShowMenu;
+
+            this.view.contextMenu.OnPassport -= ContextMenu_OnPassport;
+            this.view.contextMenu.OnPassport += ContextMenu_OnPassport;
+
+            this.view.contextMenu.OnBlock -= ContextMenu_OnBlock;
+            this.view.contextMenu.OnBlock += ContextMenu_OnBlock;
+
+            this.view.contextMenu.OnReport -= ContextMenu_OnReport;
+            this.view.contextMenu.OnReport += ContextMenu_OnReport;
+        }
+
+        closeWindowTrigger = Resources.Load<InputAction_Trigger>("CloseWindow");
+        closeWindowTrigger.OnTriggered -= OnCloseButtonPressed;
+        closeWindowTrigger.OnTriggered += OnCloseButtonPressed;
     }
 
     void View_OnPressPrivateMessage(string friendUserId)
     {
         OnPressPrivateMessage?.Invoke(friendUserId);
+    }
+
+    private void ContextMenu_OnShowMenu()
+    {
+        view.OnMessageCancelHover();
+    }
+
+    private void ContextMenu_OnPassport(string userId)
+    {
+        var currentPlayerId = Resources.Load<StringVariable>(CURRENT_PLAYER_ID);
+        currentPlayerId.Set(userId);
+    }
+
+    private void ContextMenu_OnBlock(string userId, bool blockUser)
+    {
+        if (blockUser)
+            WebInterface.SendBlockPlayer(userId);
+        else
+            WebInterface.SendUnblockPlayer(userId);
+    }
+
+    private void ContextMenu_OnReport(string userId)
+    {
+        WebInterface.SendReportPlayer(userId);
+    }
+
+    private void OnCloseButtonPressed(DCLAction_Trigger action)
+    {
+        if (view.contextMenu != null)
+        {
+            view.contextMenu.Hide();
+        }
     }
 
     public void AddChatMessage(ChatEntry.Model chatEntryModel, bool setScrollPositionToBottom = false)
@@ -39,7 +94,15 @@ public class ChatHUDController : IDisposable
     public void Dispose()
     {
         view.OnPressPrivateMessage -= View_OnPressPrivateMessage;
-        UnityEngine.Object.Destroy(this.view.gameObject);
+        if (view.contextMenu != null)
+        {
+            view.contextMenu.OnShowMenu -= ContextMenu_OnShowMenu;
+            view.contextMenu.OnPassport -= ContextMenu_OnPassport;
+            view.contextMenu.OnBlock -= ContextMenu_OnBlock;
+            view.contextMenu.OnReport -= ContextMenu_OnReport;
+        }
+        closeWindowTrigger.OnTriggered -= OnCloseButtonPressed;
+        UnityEngine.Object.Destroy(view.gameObject);
     }
 
     public static ChatEntry.Model ChatMessageToChatEntry(ChatMessage message)
@@ -62,6 +125,7 @@ public class ChatHUDController : IDisposable
         {
             var senderProfile = UserProfileController.userProfilesCatalog.Get(message.sender);
             model.senderName = senderProfile != null ? senderProfile.userName : message.sender;
+            model.senderId = message.sender;
         }
 
         if (model.messageType == ChatMessage.Type.PRIVATE)

@@ -275,7 +275,7 @@ export function processChatMessage(context: Context, fromAlias: string, message:
 
     const user = getUser(fromAlias)
     if (user) {
-      const displayName = user.profile && user.profile.name
+      const displayName = user.profile && user.profile.userId
 
       if (text.startsWith('␐')) {
         const [id, timestamp] = text.split(' ')

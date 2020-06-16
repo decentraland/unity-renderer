@@ -20,6 +20,7 @@ public class ChatEntry : MonoBehaviour, IPointerClickHandler, IPointerEnterHandl
 
         public ChatMessage.Type messageType;
         public string bodyText;
+        public string senderId;
         public string senderName;
         public string recipientName;
         public string otherUserId;
@@ -55,9 +56,12 @@ public class ChatEntry : MonoBehaviour, IPointerClickHandler, IPointerEnterHandl
     float hoverPanelTimer = 0;
 
     public RectTransform hoverPanelPositionReference;
+    public RectTransform contextMenuPositionReference;
+
     public Model model { get; private set; }
 
     public event UnityAction<string> OnPress;
+    public event UnityAction<ChatEntry> OnPressRightButton;
     public event UnityAction<ChatEntry> OnTriggerHover;
     public event UnityAction OnCancelHover;
 
@@ -132,9 +136,20 @@ public class ChatEntry : MonoBehaviour, IPointerClickHandler, IPointerEnterHandl
 
     public void OnPointerClick(PointerEventData pointerEventData)
     {
-        if (model.messageType != ChatMessage.Type.PRIVATE) return;
+        if (pointerEventData.button == PointerEventData.InputButton.Left)
+        {
+            if (model.messageType != ChatMessage.Type.PRIVATE) return;
 
-        OnPress?.Invoke(model.otherUserId);
+            OnPress?.Invoke(model.otherUserId);
+        }
+        else if (pointerEventData.button == PointerEventData.InputButton.Right)
+        {
+            if ((model.messageType != ChatMessage.Type.PUBLIC && model.messageType != ChatMessage.Type.PRIVATE) ||
+                model.senderId == UserProfile.GetOwnUserProfile().userId)
+                return;
+
+            OnPressRightButton?.Invoke(this);
+        }
     }
 
     public void OnPointerEnter(PointerEventData pointerEventData)
