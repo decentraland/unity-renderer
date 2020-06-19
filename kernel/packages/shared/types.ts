@@ -396,7 +396,8 @@ export enum HUDElementID {
   FRIENDS = 13,
   OPEN_EXTERNAL_URL_PROMPT = 14,
   NFT_INFO_DIALOG = 16,
-  TELEPORT_DIALOG = 17
+  TELEPORT_DIALOG = 17,
+  CONTROLS_HUD = 18
 }
 
 export type HUDConfiguration = {

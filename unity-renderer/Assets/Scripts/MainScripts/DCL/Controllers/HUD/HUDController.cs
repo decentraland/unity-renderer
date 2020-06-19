@@ -60,6 +60,8 @@ public class HUDController : MonoBehaviour
 
     public TeleportPromptHUDController teleportHud => GetHUDElement(HUDElementID.TELEPORT_DIALOG) as TeleportPromptHUDController;
 
+    public ControlsHUDController controlsHud => GetHUDElement(HUDElementID.CONTROLS_HUD) as ControlsHUDController;
+
     public Dictionary<HUDElementID, IHUD> hudElements { get; private set; } = new Dictionary<HUDElementID, IHUD>();
 
     private UserProfile ownUserProfile => UserProfile.GetOwnUserProfile();
@@ -73,6 +75,11 @@ public class HUDController : MonoBehaviour
     private void ShowSettings()
     {
         settingsHud?.SetVisibility(true);
+    }
+
+    private void ShowControls()
+    {
+        controlsHud?.SetVisibility(true);
     }
 
     private void ToggleUIVisibility_OnTriggered(DCLAction_Trigger action)
@@ -113,7 +120,8 @@ public class HUDController : MonoBehaviour
         PRIVATE_CHAT_WINDOW = 15,
         NFT_INFO_DIALOG = 16,
         TELEPORT_DIALOG = 17,
-        COUNT = 18
+        CONTROLS_HUD = 18,
+        COUNT = 19
     }
 
     [System.Serializable]
@@ -158,6 +166,7 @@ public class HUDController : MonoBehaviour
                     avatarHud.Initialize();
                     avatarHud.OnEditAvatarPressed += ShowAvatarEditor;
                     avatarHud.OnSettingsPressed += ShowSettings;
+                    avatarHud.OnControlsPressed += ShowControls;
                     ownUserProfile.OnUpdate += OwnUserProfileUpdated;
                     OwnUserProfileUpdated(ownUserProfile);
                 }
@@ -276,6 +285,9 @@ public class HUDController : MonoBehaviour
             case HUDElementID.TELEPORT_DIALOG:
                 CreateHudElement<TeleportPromptHUDController>(configuration, hudElementId);
                 break;
+            case HUDElementID.CONTROLS_HUD:
+                CreateHudElement<ControlsHUDController>(configuration, hudElementId);
+                break;
         }
 
         var hudElement = GetHUDElement(hudElementId);
@@ -380,6 +392,7 @@ public class HUDController : MonoBehaviour
         {
             avatarHud.OnEditAvatarPressed -= ShowAvatarEditor;
             avatarHud.OnSettingsPressed -= ShowSettings;
+            avatarHud.OnControlsPressed -= ShowControls;
         }
 
         if (worldChatWindowHud != null)

@@ -7,6 +7,7 @@ public class AvatarHUDController : IHUD
 
     public event System.Action OnEditAvatarPressed;
     public event System.Action OnSettingsPressed;
+    public event System.Action OnControlsPressed;
 
     public void Initialize(bool visibility = true, bool expanded = false)
     {
@@ -60,6 +61,11 @@ public class AvatarHUDController : IHUD
     public void ShowSettings()
     {
         OnSettingsPressed?.Invoke();
+    }
+
+    public void ShowControls()
+    {
+        OnControlsPressed?.Invoke();
     }
 
     public void SetConfiguration(HUDConfiguration configuration)

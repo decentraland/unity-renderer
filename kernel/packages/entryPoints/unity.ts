@@ -39,6 +39,7 @@ initializeUnity(container)
     i.ConfigureHUDElement(HUDElementID.OPEN_EXTERNAL_URL_PROMPT, { active: true, visible: true })
     i.ConfigureHUDElement(HUDElementID.NFT_INFO_DIALOG, { active: true, visible: false })
     i.ConfigureHUDElement(HUDElementID.TELEPORT_DIALOG, { active: true, visible: false })
+    i.ConfigureHUDElement(HUDElementID.CONTROLS_HUD, { active: true, visible: false })
 
     globalThis.globalStore.dispatch(signalRendererInitialized())
 

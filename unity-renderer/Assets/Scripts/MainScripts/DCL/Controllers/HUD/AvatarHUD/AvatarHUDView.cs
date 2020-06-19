@@ -24,7 +24,6 @@ public class AvatarHUDView : MonoBehaviour
     [SerializeField] private GameObject expandedContainer;
 
     [SerializeField] private TextMeshProUGUI nameText;
-    [SerializeField] private TextMeshProUGUI mailText;
 
     [Header("Edit Avatar")]
     [SerializeField] private Button editAvatarButton;
@@ -34,6 +33,9 @@ public class AvatarHUDView : MonoBehaviour
 
     [Header("Settings")]
     [SerializeField] private Button settingsButton;
+
+    [Header("Controls")]
+    [SerializeField] private Button controlsButton;
 
     [Header("Sign Out")]
     [SerializeField] private Button signOutButton;
@@ -58,6 +60,9 @@ public class AvatarHUDView : MonoBehaviour
         settingsButton.onClick.AddListener(controller.ShowSettings);
         settingsButton.onClick.AddListener(controller.ToggleExpanded);
 
+        controlsButton.onClick.AddListener(controller.ShowControls);
+        controlsButton.onClick.AddListener(controller.ToggleExpanded);
+
         faqButton.onClick.AddListener(() =>
         {
             WebInterface.OpenURL("https://docs.decentraland.org/decentraland/faq/");
@@ -76,7 +81,6 @@ public class AvatarHUDView : MonoBehaviour
         topAvatarPic.sprite = model.avatarPic;
         loadingAvatar.SetActive(topAvatarPic.sprite == null);
         nameText.text = model.name;
-        mailText.text = model.mail;
         newWearableNotificationText.text = model.newWearables.ToString();
         newWearableNotification.SetActive(model.newWearables != 0);
     }
