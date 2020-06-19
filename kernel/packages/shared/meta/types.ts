@@ -12,6 +12,7 @@ export type MetaConfiguration = {
   world: {
     pois: Vector2Component[]
   }
+  comms: CommsConfig
 }
 
 export type MetaState = {
@@ -21,4 +22,9 @@ export type MetaState = {
 
 export type RootMetaState = {
   meta: MetaState
+}
+
+export type CommsConfig = {
+  targetConnections?: number
+  maxConnections?: number
 }

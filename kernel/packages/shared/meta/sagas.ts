@@ -17,6 +17,10 @@ const DEFAULT_META_CONFIGURATION: MetaConfiguration = {
   },
   world: {
     pois: []
+  },
+  comms: {
+    targetConnections: 4,
+    maxConnections: 6
   }
 }
 
