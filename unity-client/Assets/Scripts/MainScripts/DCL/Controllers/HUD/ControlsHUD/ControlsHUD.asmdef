@@ -1,0 +1,17 @@
+{
+    "name": "ControlsHUD",
+    "references": [
+        "GUID:555c1f3c6d18648df910b7a1de75b424",
+        "GUID:98bf3bf29030cbf4092d89a7cc28b7fb",
+        "GUID:b1087c5731ff68448a0a9c625bb7e52d"
+    ],
+    "optionalUnityReferences": [],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": []
+}

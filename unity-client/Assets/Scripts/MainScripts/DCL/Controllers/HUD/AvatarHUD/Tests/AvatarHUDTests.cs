@@ -188,13 +188,11 @@ namespace Tests
             GetViewFromController(controller).UpdateData(new AvatarHUDModel()
             {
                 name = "name",
-                mail = "mail",
                 avatarPic = sprite
             });
 
             var view = GetViewFromController(controller);
             Assert.AreEqual("name", Reflection_GetField<TextMeshProUGUI>(view, "nameText").text);
-            Assert.AreEqual("mail", Reflection_GetField<TextMeshProUGUI>(view, "mailText").text);
             Assert.AreEqual(sprite, view.topAvatarPic.sprite);
         }
 
