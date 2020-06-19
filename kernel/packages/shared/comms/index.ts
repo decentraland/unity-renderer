@@ -69,6 +69,7 @@ import { realmToString } from '../dao/utils/realmToString'
 import { queueTrackingEvent } from 'shared/analytics'
 import { messageReceived } from '../chat/actions'
 import { arrayEquals } from 'atomicHelpers/arrayEquals'
+import { getCommsConfig } from 'shared/meta/selectors'
 
 export type CommsVersion = 'v1' | 'v2'
 export type CommsMode = CommsV1Mode | CommsV2Mode
@@ -638,6 +639,7 @@ export async function connect(userId: string) {
         const store: Store<RootState> = globalThis.globalStore
         const lighthouseUrl = getCommsServer(store.getState())
         const realm = getRealm(store.getState())
+        const commsConfig = getCommsConfig(store.getState())
 
         const peerConfig = {
           connectionConfig: {
@@ -653,6 +655,8 @@ export async function connect(userId: string) {
             return identity
           },
           logLevel: 'NONE',
+          targetConnections: commsConfig.targetConnections ?? 4,
+          maxConnections: commsConfig.maxConnections ?? 6,
           positionConfig: {
             selfPosition: () => {
               if (context && context.currentPosition) {
