@@ -140,13 +140,14 @@ namespace DCL.Components
                 childHookRectTransform = constrainedPanel.GetComponent<RectTransform>();
                 childHookRectTransform.SetParent(canvas.transform);
                 childHookRectTransform.ResetLocalTRS();
-                childHookRectTransform.anchorMin = Vector2.zero;
-                childHookRectTransform.anchorMax = Vector2.one;
-                childHookRectTransform.sizeDelta = Vector2.zero;
 
-                // We scale the panel downwards to release the viewport's top 10%
+                float canvasHeight = canvasScaler.referenceResolution.y;
+
+                childHookRectTransform.anchorMin = Vector2.zero;
+                childHookRectTransform.anchorMax = new Vector2(1, 0);
                 childHookRectTransform.pivot = new Vector2(0.5f, 0f);
-                childHookRectTransform.localScale = new Vector3(1f, 1f - (UISettings.RESERVED_CANVAS_TOP_PERCENTAGE / 100), 1f);
+                // We scale the panel downwards to release the viewport's top 10%
+                childHookRectTransform.sizeDelta = new Vector2(0, canvasHeight - (canvasHeight * UISettings.RESERVED_CANVAS_TOP_PERCENTAGE / 100));
             }
 
             // Canvas group
