@@ -32,9 +32,9 @@ namespace DCL
         internal static string DOWNLOADED_PATH_ROOT = Application.dataPath + "/" + DOWNLOADED_FOLDER_NAME;
         internal static string ASSET_BUNDLES_PATH_ROOT = Application.dataPath + "/../" + ASSET_BUNDLE_FOLDER_NAME;
 
-        internal static string[] bufferExtensions = { ".bin" };
-        internal static string[] gltfExtensions = { ".glb", ".gltf" };
-        internal static string[] textureExtensions = { ".jpg", ".png", ".jpeg", ".tga", ".gif", ".bmp", ".psd", ".tiff", ".iff" };
+        internal static string[] bufferExtensions = {".bin"};
+        internal static string[] gltfExtensions = {".glb", ".gltf"};
+        internal static string[] textureExtensions = {".jpg", ".png", ".jpeg", ".tga", ".gif", ".bmp", ".psd", ".tiff", ".iff"};
     }
 
     public class AssetBundleBuilder
@@ -51,12 +51,14 @@ namespace DCL
 
         private const int ASSET_REQUEST_RETRY_COUNT = 5;
 
+        private const string MAIN_SHADER_AB_NAME = "MainShader_Delete_Me";
+
         public Dictionary<string, string> hashLowercaseToHashProper = new Dictionary<string, string>();
 
         internal ContentServerUtils.ApiEnvironment environment = ContentServerUtils.ApiEnvironment.ORG;
 
-        internal bool deleteDownloadPathAfterFinished = true;
-        internal bool skipAlreadyBuiltBundles = true;
+        internal bool deleteDownloadPathAfterFinished = false;
+        internal bool skipAlreadyBuiltBundles = false;
 
         internal string finalAssetBundlePath = "";
         internal string finalDownloadedPath = "";
@@ -120,8 +122,7 @@ namespace DCL
                     builder.DumpScene(sceneCid[0]);
                     return;
                 }
-                else
-                if (AssetBundleBuilderUtils.ParseOption(commandLineArgs, AssetBundleBuilderConfig.CLI_BUILD_PARCELS_RANGE_SYNTAX, 4, out string[] xywh))
+                else if (AssetBundleBuilderUtils.ParseOption(commandLineArgs, AssetBundleBuilderConfig.CLI_BUILD_PARCELS_RANGE_SYNTAX, 4, out string[] xywh))
                 {
                     if (xywh == null)
                     {
@@ -181,7 +182,7 @@ namespace DCL
             Debug.Log(log);
 
             CleanupWorkingFolders();
-            AssetBundleBuilderUtils.Exit((int)errorCode);
+            AssetBundleBuilderUtils.Exit((int) errorCode);
         }
 
 
@@ -259,6 +260,15 @@ namespace DCL
             {
                 AssetBundleBuilderUtils.MarkForAssetBundleBuild(kvp.Key, kvp.Value);
             }
+
+            //NOTE(Brian): We tag the main shader, so all the asset bundles don't contain repeated shader assets.
+            //             This way we save the big Shader.Parse and gpu compiling performance overhead and make
+            //             the bundles a bit lighter.
+
+            //             This shader bundle doesn't need to be really used, as we are going to use the 
+            //             embedded one, so we are going to delete it after the generation ended.
+            var mainShader = Shader.Find("DCL/LWRP/Lit");
+            AssetBundleBuilderUtils.MarkForAssetBundleBuild(mainShader, MAIN_SHADER_AB_NAME);
         }
 
 
@@ -390,7 +400,7 @@ namespace DCL
                 return false;
             }
 
-            DependencyMapBuilder.Generate(finalAssetBundlePath, hashLowercaseToHashProper, manifest);
+            DependencyMapBuilder.Generate(finalAssetBundlePath, hashLowercaseToHashProper, manifest, MAIN_SHADER_AB_NAME);
             logBuffer += $"Generating asset bundles at path: {finalAssetBundlePath}\n";
 
             string[] assetBundles = manifest.GetAllAssetBundles();
@@ -509,7 +519,6 @@ namespace DCL
         }
 
 
-
         internal void PopulateLowercaseMappings(MappingPair[] rawContents)
         {
             //NOTE(Brian): Prepare gltfs gathering its dependencies first and filling the importer's static cache.
@@ -589,14 +598,15 @@ namespace DCL
             {
                 req = UnityWebRequest.Get(finalUrl);
                 req.SendWebRequest();
-                while (req.isDone == false) { }
+                while (req.isDone == false)
+                {
+                }
 
                 retryCount--;
 
                 if (retryCount == 0)
                     return null;
-            }
-            while (!req.WebRequestSucceded());
+            } while (!req.WebRequestSucceded());
 
             if (VERBOSE)
             {
@@ -630,7 +640,7 @@ namespace DCL
 
         internal void DumpScene(string cid, Action<ErrorCodes> OnFinish = null)
         {
-            ConvertScenesToAssetBundles(new List<string> { cid }, OnFinish);
+            ConvertScenesToAssetBundles(new List<string> {cid}, OnFinish);
         }
 
         internal void InitializeDirectoryPaths(bool deleteIfExists)

@@ -39,14 +39,16 @@ namespace Tests
 
             Assert.AreEqual("name", userProfile.model.name);
             Assert.AreEqual("mail", userProfile.model.email);
-            Assert.AreEqual("avatarPicURL", userProfile.model.snapshots.face);
+            Assert.AreEqual("avatarPicURL", userProfile.model.snapshots.face256);
         }
 
         private static UserProfileModel.Snapshots CreateSnapshotsWithFaceUrl(string faceUrl)
         {
             return new UserProfileModel.Snapshots()
             {
-                face = faceUrl
+                face = faceUrl,
+                face128 = faceUrl,
+                face256 = faceUrl
             };
         }
 
@@ -65,7 +67,7 @@ namespace Tests
 
             Assert.AreEqual("name2", userProfile.model.name);
             Assert.AreEqual("mail2", userProfile.model.email);
-            Assert.AreEqual("avatarPicURL2", userProfile.model.snapshots.face);
+            Assert.AreEqual("avatarPicURL2", userProfile.model.snapshots.face256);
         }
 
         [Test]
@@ -90,7 +92,7 @@ namespace Tests
 
             Assert.AreEqual("name2", userProfile.model.name);
             Assert.AreEqual("mail2", userProfile.model.email);
-            Assert.AreEqual("avatarPicURL2", userProfile.model.snapshots.face);
+            Assert.AreEqual("avatarPicURL2", userProfile.model.snapshots.face256);
         }
 
         [Test]

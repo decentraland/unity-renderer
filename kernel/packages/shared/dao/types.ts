@@ -48,6 +48,7 @@ export type DaoState = {
   fetchMetaContentServer: string
   updateContentServer: string
   commsServer: string
+  resizeService: string
   realm: Realm | undefined
   candidates: Candidate[]
   contentWhitelist: Candidate[]

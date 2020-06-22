@@ -242,10 +242,10 @@ const browserInterface = {
     Session.current.then(s => s.logout()).catch(e => defaultLogger.error('error while logging out', e))
   },
 
-  SaveUserAvatar(changes: { face: string; body: string; avatar: Avatar }) {
-    const { face, body, avatar } = changes
+  SaveUserAvatar(changes: { face: string; face128: string, face256: string, body: string; avatar: Avatar }) {
+    const { face, face128, face256, body, avatar } = changes
     const profile: Profile = getUserProfile().profile as Profile
-    const updated = { ...profile, avatar: { ...avatar, snapshots: { face, body } } }
+    const updated = { ...profile, avatar: { ...avatar, snapshots: { face, face128, face256, body } } }
     globalThis.globalStore.dispatch(saveProfileRequest(updated))
   },
 

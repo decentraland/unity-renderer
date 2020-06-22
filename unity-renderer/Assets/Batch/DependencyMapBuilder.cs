@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -5,6 +6,7 @@ using System.Runtime.CompilerServices;
 using UnityEngine;
 
 [assembly: InternalsVisibleTo("AssetBundleBuilderEditorTests")]
+
 namespace DCL
 {
     public static class DependencyMapBuilder
@@ -19,7 +21,7 @@ namespace DCL
         /// This dumps .depmap files
         /// </summary>
         /// <param name="manifest"></param>
-        public static void Generate(string path, Dictionary<string, string> hashLowercaseToHashProper, AssetBundleManifest manifest)
+        public static void Generate(string path, Dictionary<string, string> hashLowercaseToHashProper, AssetBundleManifest manifest, string exceptions = null)
         {
             string[] assetBundles = manifest.GetAllAssetBundles();
 
@@ -33,13 +35,14 @@ namespace DCL
 
                 if (deps.Length > 0)
                 {
+                    deps = deps.Where(s => s != exceptions).ToArray();
+
                     depMap.dependencies = deps.Select((x) =>
                     {
                         if (hashLowercaseToHashProper.ContainsKey(x))
                             return hashLowercaseToHashProper[x];
                         else
                             return x;
-
                     }).ToArray();
                 }
 

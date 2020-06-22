@@ -154,7 +154,6 @@ namespace DCL
             {
                 var texture = ((DownloadHandlerTexture)www.downloadHandler).texture;
                 texture.Compress(false);
-                texture.Apply(false, true);
                 sprite = Sprite.Create(texture, new Rect(0, 0, texture.width, texture.height), Vector2.zero);
             }
             else

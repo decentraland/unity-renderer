@@ -11,11 +11,17 @@ public class CharacterPreviewController : MonoBehaviour
     private const int SNAPSHOT_FACE_WIDTH_RES = 512;
     private const int SNAPSHOT_FACE_HEIGHT_RES = 512;
 
-    private const int SUPERSAMPLING = 4;
+    private const int SNAPSHOT_FACE_256_WIDTH_RES = 256;
+    private const int SNAPSHOT_FACE_256_HEIGHT_RES = 256;
+
+    private const int SNAPSHOT_FACE_128_WIDTH_RES = 128;
+    private const int SNAPSHOT_FACE_128_HEIGHT_RES = 128;
+
+    private const int SUPERSAMPLING = 1;
     private const float CAMERA_TRANSITION_TIME = 0.5f;
     private static int CHARACTER_PREVIEW_LAYER => LayerMask.NameToLayer("CharacterPreview");
 
-    public delegate void OnSnapshotsReady(Sprite face, Sprite body);
+    public delegate void OnSnapshotsReady(Sprite face, Sprite face128, Sprite face256, Sprite body);
 
     public enum CameraFocus
     {
@@ -91,6 +97,8 @@ public class CharacterPreviewController : MonoBehaviour
         avatarAnimator.Reset();
         yield return null;
         Sprite face = Snapshot(SNAPSHOT_FACE_WIDTH_RES, SNAPSHOT_FACE_HEIGHT_RES);
+        Sprite face128 = Snapshot(SNAPSHOT_FACE_128_WIDTH_RES, SNAPSHOT_FACE_128_HEIGHT_RES);
+        Sprite face256 = Snapshot(SNAPSHOT_FACE_256_WIDTH_RES, SNAPSHOT_FACE_256_HEIGHT_RES);
 
         SetFocus(CameraFocus.BodySnapshot, false);
         avatarAnimator.Reset();
@@ -100,7 +108,7 @@ public class CharacterPreviewController : MonoBehaviour
         SetFocus(CameraFocus.DefaultEditing, false);
 
         camera.targetTexture = current;
-        callback?.Invoke(face, body);
+        callback?.Invoke(face, face128, face256, body);
     }
 
     private Sprite Snapshot(int width, int height)

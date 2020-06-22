@@ -44,6 +44,7 @@ import { ENABLE_WEB3 } from '../config/index'
 import future, { IFuture } from 'fp-future'
 import { RootState } from './store/rootTypes'
 import { AnyAction, Store } from 'redux'
+import { getResizeService } from './dao/selectors'
 
 declare const globalThis: any
 
@@ -197,6 +198,12 @@ export function initShared(): InitFutures {
           )
           profileDirty = true
         }
+      }
+
+      const resizeServiceUrl = getResizeService(globalThis.globalStore.getState())
+      if (profile.avatar.snapshots?.face128?.startsWith(resizeServiceUrl) || profile.avatar.snapshots?.face256?.startsWith(resizeServiceUrl)) {
+        // setting dirty profile, as at least one of the face images are taken from a local blob
+        profileDirty = true
       }
 
       const localTutorialStep = getUserProfile().profile

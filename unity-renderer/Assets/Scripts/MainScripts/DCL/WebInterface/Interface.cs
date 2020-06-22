@@ -706,16 +706,20 @@ namespace DCL.Interface
         public class SaveAvatarPayload
         {
             public string face;
+            public string face128;
+            public string face256;
             public string body;
             public AvatarModel avatar;
         }
 
-        public static void SendSaveAvatar(AvatarModel avatar, Sprite faceSnapshot, Sprite bodySnapshot)
+        public static void SendSaveAvatar(AvatarModel avatar, Sprite faceSnapshot, Sprite face128Snapshot, Sprite face256Snapshot, Sprite bodySnapshot)
         {
             var payload = new SaveAvatarPayload()
             {
                 avatar = avatar,
                 face = System.Convert.ToBase64String(faceSnapshot.texture.EncodeToPNG()),
+                face128 = System.Convert.ToBase64String(face128Snapshot.texture.EncodeToPNG()),
+                face256 = System.Convert.ToBase64String(face256Snapshot.texture.EncodeToPNG()),
                 body = System.Convert.ToBase64String(bodySnapshot.texture.EncodeToPNG())
             };
             SendMessage("SaveUserAvatar", payload);

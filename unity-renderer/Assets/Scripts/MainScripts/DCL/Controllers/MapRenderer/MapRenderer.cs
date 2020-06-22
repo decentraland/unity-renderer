@@ -14,7 +14,8 @@ namespace DCL
         const int TOP_BORDER_PARCELS = 31;
         const int BOTTOM_BORDER_PARCELS = 25;
         const int WORLDMAP_WIDTH_IN_PARCELS = 300;
-        const string MINIMAP_USER_ICONS_POOL_NAME = "MinimapUserIcons";
+        const string MINIMAP_USER_ICONS_POOL_NAME = "MinimapUserIconsPool";
+        const int MINIMAP_USER_ICONS_MAX_PREWARM = 30;
         private int NAVMAP_CHUNK_LAYER;
 
         public static MapRenderer i { get; private set; }
@@ -75,6 +76,17 @@ namespace DCL
         private void Awake()
         {
             i = this;
+
+            usersInfoPool = PoolManager.i.GetPool(MINIMAP_USER_ICONS_POOL_NAME);
+            if (usersInfoPool == null)
+            {
+                usersInfoPool = PoolManager.i.AddPool(
+                    MINIMAP_USER_ICONS_POOL_NAME,
+                    Instantiate(userIconPrefab.gameObject, overlayContainer.transform),
+                    maxPrewarmCount: MINIMAP_USER_ICONS_MAX_PREWARM,
+                    isPersistent: true);
+                usersInfoPool.ForcePrewarm();
+            }
 
             NAVMAP_CHUNK_LAYER = LayerMask.NameToLayer("NavmapChunk");
 
@@ -220,9 +232,6 @@ namespace DCL
             else
             {
                 usersInfo.Add(userInfo.userId, userInfo);
-
-                if (!PoolManager.i.ContainsPool(MINIMAP_USER_ICONS_POOL_NAME))
-                    usersInfoPool = PoolManager.i.AddPool(MINIMAP_USER_ICONS_POOL_NAME, Instantiate(userIconPrefab.gameObject, overlayContainer.transform));
 
                 PoolableObject newUserIcon = usersInfoPool.Get();
                 newUserIcon.gameObject.name = string.Format("UserIcon-{0}", userInfo.userName);
