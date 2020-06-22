@@ -204,7 +204,7 @@ public class NFTPromptHUDView : MonoBehaviour
                 (asset) =>
                 {
                     nftImageAsset = asset;
-                });
+                }, WrappedTextureMaxSize._256);
         }
 
         if (nftImageAsset != null)

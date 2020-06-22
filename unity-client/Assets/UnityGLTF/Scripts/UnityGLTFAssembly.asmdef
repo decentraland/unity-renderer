@@ -6,7 +6,8 @@
         "ILoader",
         "Utils",
         "SRPBatchingHelper",
-        "ScriptableObjects"
+        "ScriptableObjects",
+        "TextureHelpers"
     ],
     "optionalUnityReferences": [],
     "includePlatforms": [],
