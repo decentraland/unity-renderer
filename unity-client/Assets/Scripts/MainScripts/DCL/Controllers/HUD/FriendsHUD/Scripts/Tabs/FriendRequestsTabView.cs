@@ -22,9 +22,9 @@ public class FriendRequestsTabView : FriendsTabViewBase
     public event System.Action<FriendRequestEntry> OnFriendRequestApproved;
     public event System.Action<string> OnFriendRequestSent;
 
-    public override void Initialize(FriendsHUDView owner)
+    public override void Initialize(FriendsHUDView owner, int preinstantiatedEntries)
     {
-        base.Initialize(owner);
+        base.Initialize(owner, preinstantiatedEntries);
 
         receivedRequestsList.toggleTextPrefix = "RECEIVED";
         sentRequestsList.toggleTextPrefix = "SENT";

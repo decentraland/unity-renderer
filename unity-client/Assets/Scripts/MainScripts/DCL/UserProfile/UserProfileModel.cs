@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 
 [System.Serializable]
 public class UserProfileModel
@@ -7,6 +7,8 @@ public class UserProfileModel
     public class Snapshots
     {
         public string face;
+        public string face128;
+        public string face256;
         public string body;
     }
 

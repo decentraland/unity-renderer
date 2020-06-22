@@ -16,6 +16,8 @@ export interface Profile {
   blocked: string[]
   snapshots?: {
     face: string
+    face256: string
+    face128: string
     body: string
   }
   version: number
@@ -30,6 +32,8 @@ export interface Avatar {
   wearables: WearableId[]
   snapshots: {
     face: string
+    face256: string
+    face128: string
     body: string
   }
 }

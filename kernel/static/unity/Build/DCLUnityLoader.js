@@ -5899,20 +5899,10 @@ var UnityLoader = UnityLoader || {
                   r(o.result.url) &&
                   (o.result.responseHeaders['Last-Modified'] || o.result.responseHeaders.ETag)
                 ) {
-                  var a = new XMLHttpRequest()
-                  a.open('HEAD', o.result.url),
-                    (a.onload = function () {
-                      ; (o.revalidated = ['Last-Modified', 'ETag'].every(function (e) {
-                        return !o.result.responseHeaders[e] || o.result.responseHeaders[e] == a.getResponseHeader(e)
-                      })),
-                        o.revalidated
-                          ? ((o.result.revalidated = o.result.accessed),
-                            l.execute(s.name, 'put', [o.result]),
-                            n.dispatchEvent(new Event('load')),
-                            e("'" + o.result.url + "' successfully revalidated and served from the indexedDB cache"))
-                          : n.send.apply(n, i)
-                    }),
-                    a.send()
+                  o.result.revalidated = o.result.accessed
+                  l.execute(s.name, 'put', [o.result])
+                  n.dispatchEvent(new Event('load'))
+                  e("'" + o.result.url + "' successfully revalidated and served from the indexedDB cache")
                 } else
                   o.result.responseHeaders['Last-Modified']
                     ? (n.setRequestHeader('If-Modified-Since', o.result.responseHeaders['Last-Modified']),

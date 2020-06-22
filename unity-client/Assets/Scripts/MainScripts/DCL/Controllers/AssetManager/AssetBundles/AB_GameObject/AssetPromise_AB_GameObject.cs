@@ -13,7 +13,6 @@ namespace DCL
         public AssetPromiseSettings_Rendering settings = new AssetPromiseSettings_Rendering();
         AssetPromise_AB subPromise;
         Coroutine loadingCoroutine;
-        List<Renderer> renderers = new List<Renderer>();
 
         public AssetPromise_AB_GameObject(string contentUrl, string hash) : base(contentUrl, hash)
         {
@@ -53,7 +52,7 @@ namespace DCL
 
         protected override void OnAfterLoadOrReuse()
         {
-            settings.ApplyAfterLoad(renderers);
+            settings.ApplyAfterLoad(asset.container.transform);
         }
 
         protected override void OnBeforeLoadOrReuse()
@@ -119,7 +118,6 @@ namespace DCL
         public IEnumerator InstantiateABGameObjects()
         {
             var goList = subPromise.asset.GetAssetsByExtensions<GameObject>("glb", "ltf");
-            renderers.Clear();
 
             for (int i = 0; i < goList.Count; i++)
             {
@@ -129,29 +127,29 @@ namespace DCL
                 if (asset.container == null)
                     break;
 
-                GameObject assetBundleModelGO = UnityEngine.Object.Instantiate(goList[i]);
-                renderers.AddRange(assetBundleModelGO.GetComponentsInChildren<Renderer>(true));
+                GameObject assetBundleModelGO = UnityEngine.Object.Instantiate(goList[i], asset.container.transform);
+                var list = new List<Renderer>(assetBundleModelGO.GetComponentsInChildren<Renderer>(true));
 
                 //NOTE(Brian): Renderers are enabled in settings.ApplyAfterLoad
-                yield return MaterialCachingHelper.Process(renderers, enableRenderers: false, settings.cachingFlags);
+                yield return MaterialCachingHelper.Process(list, enableRenderers: false, settings.cachingFlags);
 
+#if UNITY_EDITOR
                 assetBundleModelGO.name = subPromise.asset.assetBundleAssetName;
-                assetBundleModelGO.transform.parent = asset.container.transform;
+#endif
+                //assetBundleModelGO.transform.SetParent(asset.container.transform, false);
                 assetBundleModelGO.transform.ResetLocalTRS();
                 yield return null;
             }
 
             if (subPromise.asset.ownerAssetBundle != null)
                 subPromise.asset.ownerAssetBundle.Unload(false);
-
-            yield break;
         }
 
         protected override Asset_AB_GameObject GetAsset(object id)
         {
             if (settings.forceNewInstance)
             {
-                return ((AssetLibrary_AB_GameObject)library).GetCopyFromOriginal(id);
+                return ((AssetLibrary_AB_GameObject) library).GetCopyFromOriginal(id);
             }
             else
             {

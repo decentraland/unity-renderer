@@ -9,7 +9,6 @@ namespace DCL
         public AssetBundle ownerAssetBundle;
         public string assetBundleAssetName;
 
-        public Dictionary<string, Object> assetsByName = new Dictionary<string, Object>();
         public Dictionary<string, List<Object>> assetsByExtension = new Dictionary<string, List<Object>>();
 
         public List<T> GetAssetsByExtensions<T>(params string[] extensions)
@@ -32,10 +31,11 @@ namespace DCL
                         Object go = assets[i];
 
                         if (go is T)
-                            goList.Add((T)go);
+                            goList.Add((T) go);
                     }
                 }
             }
+
             return goList;
         }
 
@@ -43,7 +43,7 @@ namespace DCL
         {
         }
 
-        public override object Clone() => (Asset_AB)MemberwiseClone();
+        public override object Clone() => (Asset_AB) MemberwiseClone();
 
         public void CancelShow()
         {
@@ -52,7 +52,6 @@ namespace DCL
 
         public override void Cleanup()
         {
-            assetsByName = null;
             assetsByExtension = null;
 
             if (ownerAssetBundle)

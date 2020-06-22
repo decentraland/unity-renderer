@@ -34,6 +34,7 @@ import { worldToGrid } from '../../atomicHelpers/parcelScenePositions'
 import { PARCEL_LOADING_STARTED } from 'shared/renderer/types'
 import { getPois } from '../meta/selectors'
 import { META_CONFIGURATION_INITIALIZED } from '../meta/actions'
+import { retrieve, store } from 'shared/cache'
 
 declare const window: {
   unityInterface: {
@@ -41,9 +42,24 @@ declare const window: {
   }
 }
 
+const districts = {
+  id: 'districts',
+  url: 'https://api.decentraland.org/v1/districts',
+  build: districtData
+}
+
+const tiles = {
+  id: 'tiles',
+  url: 'https://api.decentraland.org/v1/tiles',
+  build: marketData
+}
+
+type MarketplaceConfig = typeof districts | typeof tiles
+
+type CachedMarketplaceTiles = { version: string; data: string }
+
 export function* atlasSaga(): any {
-  yield fork(fetchDistricts)
-  yield fork(fetchTiles)
+  yield fork(loadMarketplace, tiles)
 
   yield takeEvery(SCENE_LOAD, checkAndReportAround)
 
@@ -54,21 +70,37 @@ export function* atlasSaga(): any {
   yield takeLatest(REPORT_SCENES_AROUND_PARCEL, reportScenesAroundParcelAction)
 }
 
-function* fetchDistricts() {
+function* loadMarketplace(config: MarketplaceConfig) {
   try {
-    const districts = yield call(() => fetch('https://api.decentraland.org/v1/districts').then(e => e.json()))
-    yield put(districtData(districts))
-  } catch (e) {
-    defaultLogger.log(e)
-  }
-}
+    const cachedKey = `market-${config.id}`
 
-function* fetchTiles() {
-  try {
-    const tiles = yield call(() => fetch('https://api.decentraland.org/v1/tiles').then(e => e.json()))
-    yield put(marketData(tiles))
+    const cached: CachedMarketplaceTiles | undefined = yield retrieve(cachedKey)
+
+    let data
+    if (cached) {
+      const currentEtag = yield call(() => fetch(config.url, { method: 'HEAD' }).then((e) => e.headers.get('etag')))
+
+      if (cached.version === currentEtag) {
+        data = cached.data
+      }
+    }
+
+    if (!data) {
+      // no cached data or cached does not correspond
+      const response: Response = yield call(() => fetch(config.url))
+      const etag = response.headers.get('etag')
+
+      data = yield call(() => response.json())
+
+      if (etag) {
+        // if we get an etag from the response => cache both etag & data
+        yield store(cachedKey, { version: etag, data })
+      }
+    }
+
+    yield put(config.build(data))
   } catch (e) {
-    defaultLogger.log(e)
+    defaultLogger.error(e)
   }
 }
 
@@ -84,7 +116,7 @@ function* querySceneDataAction(action: QuerySceneData) {
 
 async function fetchSceneJson(sceneIds: string[]) {
   const server: LifecycleManager = getServer()
-  const lands = await Promise.all(sceneIds.map(sceneId => server.getParcelData(sceneId)))
+  const lands = await Promise.all(sceneIds.map((sceneId) => server.getParcelData(sceneId)))
   return lands
 }
 
@@ -99,7 +131,7 @@ const MAX_SCENES_AROUND = 15
 
 function* checkAndReportAround() {
   const userPosition = lastPlayerPosition
-  const lastReport: Vector2Component | undefined = yield select(state => state.atlas.lastReportPosition)
+  const lastReport: Vector2Component | undefined = yield select((state) => state.atlas.lastReportPosition)
 
   if (
     !lastReport ||
@@ -134,16 +166,18 @@ function* reportScenesAroundParcelAction(action: ReportScenesAroundParcel) {
 
 function* initializePois() {
   const pois: Vector2Component[] = yield select(getPois)
-  const poiTiles = pois.map(position => `${position.x},${position.y}`)
+  const poiTiles = pois.map((position) => `${position.x},${position.y}`)
   yield put(initializePoiTiles(poiTiles))
 }
+
+type stringOrNull = string | null
 
 function* reportScenesFromTiles(tiles: string[]) {
   while (!(yield select(isMarketDataInitialized))) {
     yield take(MARKET_DATA)
   }
 
-  const result: (string | null)[] = yield call(fetchSceneIds, tiles)
+  const result: stringOrNull[] = yield call(fetchSceneIds, tiles)
 
   // filter non null & distinct
   const sceneIds = result.filter((e, i) => e !== null && result.indexOf(e) === i) as string[]
@@ -168,19 +202,19 @@ function* reportScenes(sceneIds: string[]): any {
   yield call(waitForPoiTilesInitialization)
   const pois = yield select(getPoiTiles)
 
-  const atlas: AtlasState = yield select(state => state.atlas)
+  const atlas: AtlasState = yield select((state) => state.atlas)
 
-  const scenes = sceneIds.map(sceneId => atlas.idToScene[sceneId])
+  const scenes = sceneIds.map((sceneId) => atlas.idToScene[sceneId])
 
   const minimapSceneInfoResult: MinimapSceneInfo[] = []
 
   scenes
-    .filter(scene => !scene.alreadyReported)
-    .forEach(scene => {
+    .filter((scene) => !scene.alreadyReported)
+    .forEach((scene) => {
       const parcels: Vector2Component[] = []
       let isPOI: boolean = false
 
-      scene.sceneJsonData?.scene.parcels.forEach(parcel => {
+      scene.sceneJsonData?.scene.parcels.forEach((parcel) => {
         let xyStr = parcel.split(',')
         let xy: Vector2Component = { x: parseInt(xyStr[0], 10), y: parseInt(xyStr[1], 10) }
 

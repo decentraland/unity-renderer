@@ -46,6 +46,8 @@ namespace DCL.Components
 
         public override IEnumerator ApplyChanges(string newJson)
         {
+            yield return new WaitUntil(() => CommonScriptableObjects.rendererState.Get());
+
             model = SceneController.i.SafeFromJson<Model>(newJson);
 
             unitySamplingMode = model.samplingMode;
@@ -71,6 +73,7 @@ namespace DCL.Components
                     Debug.LogError("Wrong video clip type when playing VideoTexture!!");
                     yield break;
                 }
+
                 texturePlayer = new WebVideoPlayer(id, dclVideoClip.GetUrl(), dclVideoClip.isStream);
                 texturePlayerUpdateRoutine = CoroutineStarter.Start(VideoTextureUpdate());
                 CommonScriptableObjects.playerCoords.OnChange += OnPlayerCoordsChanged;
@@ -99,16 +102,24 @@ namespace DCL.Components
                         CoroutineStarter.Stop(texturePlayerUpdateRoutine);
                         texturePlayerUpdateRoutine = null;
                     }
+
                     yield break;
                 }
+
                 texture = texturePlayer.texture;
                 isPlayStateDirty = true;
             }
 
             if (texturePlayer != null)
             {
-                if (texturePlayer.playing && !model.playing) texturePlayer.Pause();
-                else if (model.playing) texturePlayer.Play();
+                if (texturePlayer.playing && !model.playing)
+                {
+                    texturePlayer.Pause();
+                }
+                else if (model.playing)
+                {
+                    texturePlayer.Play();
+                }
 
                 if (baseVolume != model.volume)
                 {
@@ -121,6 +132,7 @@ namespace DCL.Components
                     texturePlayer.SetTime(model.seek);
                     model.seek = -1;
                 }
+
                 texturePlayer.SetPlaybackRate(model.playbackRate);
                 texturePlayer.SetLoop(model.loop);
             }
@@ -148,10 +160,12 @@ namespace DCL.Components
                     CalculateVideoVolumeAndPlayStatus();
                     isPlayStateDirty = false;
                 }
+
                 if (texturePlayer != null && !isTest)
                 {
                     texturePlayer.UpdateWebVideoTexture();
                 }
+
                 yield return null;
             }
         }
@@ -318,6 +332,7 @@ namespace DCL.Components
             {
                 UnityEngine.Object.Destroy(texture);
             }
+
             texture = null;
             base.Dispose();
         }
@@ -365,6 +380,7 @@ namespace DCL.Components
                         }
                     }
                 }
+
                 return dist;
             }
 
@@ -383,6 +399,7 @@ namespace DCL.Components
                         }
                     }
                 }
+
                 return false;
             }
 
@@ -422,6 +439,7 @@ namespace DCL.Components
                 {
                     return false;
                 }
+
                 return IsParentVisible(parent);
             }
 

@@ -108,6 +108,7 @@ export const UPDATE_CONTENT_SERVICE = qs.UPDATE_CONTENT_SERVICE
 export const FETCH_CONTENT_SERVICE = qs.FETCH_CONTENT_SERVICE
 export const FETCH_META_CONTENT_SERVICE = qs.FETCH_META_CONTENT_SERVICE
 export const COMMS_SERVICE = qs.COMMS_SERVICE
+export const RESIZE_SERVICE = qs.RESIZE_SERVICE
 export const REALM = qs.realm
 
 export const AUTO_CHANGE_REALM = location.search.indexOf('AUTO_CHANGE_REALM') !== -1
@@ -125,6 +126,8 @@ export const DEBUG_WS_MESSAGES = location.search.indexOf('DEBUG_WS_MESSAGES') !=
 export const DEBUG_REDUX = location.search.indexOf('DEBUG_REDUX') !== -1
 export const DEBUG_LOGIN = location.search.indexOf('DEBUG_LOGIN') !== -1
 export const DEBUG_PM = location.search.indexOf('DEBUG_PM') !== -1
+
+export const INIT_PRE_LOAD = location.search.indexOf('INIT_PRE_LOAD') !== -1
 
 export const AWS = location.search.indexOf('AWS') !== -1
 export const NO_MOTD = location.search.indexOf('NO_MOTD') !== -1
@@ -254,16 +257,16 @@ export function getWearablesSafeURL() {
 
 export function getServerConfigurations() {
   const TLDDefault = getDefaultTLD()
+  const notToday = TLDDefault === 'today' ? 'org' : TLDDefault
 
   const synapseUrl = TLDDefault === 'zone' ? `https://matrix.decentraland.zone` : `https://decentraland.modular.im`
 
   return {
     contentAsBundle: `https://content-assets-as-bundle.decentraland.org`,
     wearablesApi: `https://wearable-api.decentraland.org/v2`,
-    explorerConfiguration: `https://explorer-config.decentraland.${
-      TLDDefault === 'today' ? 'org' : TLDDefault
-    }/configuration.json`,
+    explorerConfiguration: `https://explorer-config.decentraland.${notToday}/configuration.json`,
     synapseUrl,
+    fallbackResizeServiceUrl: `https://peer.decentraland.${notToday}/lambdas/images`,
     avatar: {
       snapshotStorage: `https://avatars-storage.decentraland.${TLDDefault}/`,
       catalog: getExclusiveServer(),

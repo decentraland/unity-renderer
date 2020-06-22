@@ -19,6 +19,7 @@ namespace DCL
         public object id;
         public GameObject original;
         public GameObject container;
+        public bool persistent;
 
         public System.Action<Pool> OnCleanup;
 
@@ -287,7 +288,7 @@ namespace DCL
         private void RefreshName()
         {
             if (this.container != null)
-                this.container.name = $"in: {unusedObjectsCount} out: {usedObjectsCount} id: {id}";
+                this.container.name = $"in: {unusedObjectsCount} out: {usedObjectsCount} id: {id} persistent: {persistent}";
         }
 #endif
         public static bool FindPoolInGameObject(GameObject gameObject, out Pool pool)

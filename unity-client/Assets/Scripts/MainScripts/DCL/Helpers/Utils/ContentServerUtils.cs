@@ -74,14 +74,9 @@ namespace DCL
         public static string GetBaseUrl(ApiEnvironment env)
         {
             if (env != ApiEnvironment.NONE)
-            {
-                string envString = GetEnvString(env);
-                return $"https://content.decentraland.{envString}";
-            }
-            else
-            {
-                return customBaseUrl;
-            }
+                return "https://peer.decentraland.org/lambdas/contentv2";
+
+            return customBaseUrl;
         }
 
         public static string GetScenesAPIUrl(ApiEnvironment env, int x1, int y1, int width, int height)

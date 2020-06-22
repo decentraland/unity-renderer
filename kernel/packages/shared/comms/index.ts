@@ -119,7 +119,7 @@ export class PeerTrackingInfo {
       }
       this.profilePromise = {
         promise: ProfileAsPromise(this.identity, profileVersion)
-          .then(profile => {
+          .then((profile) => {
             const forRenderer = profileToRendererFormat(profile)
             this.lastProfileUpdate = new Date().getTime()
             const userInfo = this.userInfo || {}
@@ -128,7 +128,7 @@ export class PeerTrackingInfo {
             this.userInfo = userInfo
             return forRenderer
           })
-          .catch(error => {
+          .catch((error) => {
             defaultLogger.error('Error fetching profile!', error)
           }),
         version: profileVersion
@@ -174,7 +174,7 @@ const scenesSubscribedToCommsEvents = new Set<CommunicationsController>()
 function getParcelSceneSubscriptions(): string[] {
   let ids: string[] = []
 
-  scenesSubscribedToCommsEvents.forEach($ => {
+  scenesSubscribedToCommsEvents.forEach(($) => {
     ids.push($.cid)
   })
 
@@ -185,7 +185,7 @@ export function sendPublicChatMessage(messageId: string, text: string) {
   if (context && context.currentPosition && context.worldInstanceConnection) {
     context.worldInstanceConnection
       .sendChatMessage(context.currentPosition, messageId, text)
-      .catch(e => defaultLogger.warn(`error while sending message `, e))
+      .catch((e) => defaultLogger.warn(`error while sending message `, e))
   }
 }
 
@@ -193,7 +193,7 @@ export function sendParcelSceneCommsMessage(cid: string, message: string) {
   if (context && context.currentPosition && context.worldInstanceConnection) {
     context.worldInstanceConnection
       .sendParcelSceneCommsMessage(cid, message)
-      .catch(e => defaultLogger.warn(`error while sending message `, e))
+      .catch((e) => defaultLogger.warn(`error while sending message `, e))
   }
 }
 
@@ -226,7 +226,7 @@ export function processParcelSceneCommsMessage(context: Context, fromAlias: stri
   const peer = getPeer(fromAlias)
 
   if (peer) {
-    scenesSubscribedToCommsEvents.forEach($ => {
+    scenesSubscribedToCommsEvents.forEach(($) => {
       if ($.cid === cid) {
         $.receiveCommsMessage(text, peer)
       }
@@ -426,7 +426,7 @@ export function onPositionUpdate(context: Context, p: Position) {
     if (context.currentPosition && !context.positionUpdatesPaused) {
       worldConnection
         .sendParcelUpdateMessage(context.currentPosition, p)
-        .catch(e => defaultLogger.warn(`error while sending message `, e))
+        .catch((e) => defaultLogger.warn(`error while sending message `, e))
     }
   }
 
@@ -442,7 +442,7 @@ export function onPositionUpdate(context: Context, p: Position) {
   if (topics !== previousTopics) {
     worldConnection
       .updateSubscriptions(topics.split(' '))
-      .catch(e => defaultLogger.warn(`error while updating subscriptions`, e))
+      .catch((e) => defaultLogger.warn(`error while updating subscriptions`, e))
     previousTopics = topics
   }
 
@@ -459,7 +459,7 @@ export function onPositionUpdate(context: Context, p: Position) {
   if (elapsed > 100 && !context.positionUpdatesPaused) {
     lastPositionSent = p
     lastNetworkUpdatePosition = now
-    worldConnection.sendPositionMessage(p).catch(e => defaultLogger.warn(`error while sending message `, e))
+    worldConnection.sendPositionMessage(p).catch((e) => defaultLogger.warn(`error while sending message `, e))
   }
 }
 
@@ -533,7 +533,7 @@ function collectInfo(context: Context) {
   checkAutochangeRealm(visiblePeers, context, now)
 
   if (context.stats) {
-    context.stats.visiblePeerIds = visiblePeers.map(it => it.alias)
+    context.stats.visiblePeerIds = visiblePeers.map((it) => it.alias)
     context.stats.trackingPeersCount = context.peerData.size
     context.stats.collectInfoDuration.stop()
   }
@@ -554,7 +554,7 @@ function checkAutochangeRealm(visiblePeers: ProcessingPeerInfo[], context: Conte
             defaultLogger.log('No crowded realm found')
           }
         },
-        error => defaultLogger.warn('Error trying to change realm', error)
+        (error) => defaultLogger.warn('Error trying to change realm', error)
       )
     }
   }
@@ -673,7 +673,7 @@ export async function connect(userId: string) {
           realm!,
           lighthouseUrl,
           peerConfig,
-          status => {
+          (status) => {
             store.dispatch(setCatalystRealmCommsStatus(status))
             switch (status.status) {
               case 'realm-full': {
@@ -700,8 +700,36 @@ export async function connect(userId: string) {
     context = new Context(userInfo)
     context.worldInstanceConnection = connection
 
+    if (isWorldRunning()) {
+      await startCommunications(context)
+    } else {
+      let observer = worldRunningObservable.add((isRunning) => {
+        if (isRunning) {
+          startCommunications(context!).catch((e) => defaultLogger.log('Error starting communications!', e))
+          worldRunningObservable.remove(observer)
+        }
+      })
+    }
+
+    return context
+  } catch (e) {
+    defaultLogger.error(e)
+    if (e.message && e.message.includes('is taken')) {
+      throw new IdTakenError(e.message)
+    } else {
+      throw new ConnectionEstablishmentError(e.message)
+    }
+  }
+}
+
+export async function startCommunications(context: Context) {
+  const connection = context.worldInstanceConnection!
+
+  try {
     try {
-      await connection.connectPeer()
+      if (connection instanceof LighthouseWorldInstanceConnection) {
+        await connection.connectPeer()
+      }
     } catch (e) {
       // Do nothing if layer is full. This will be handled by status handler
       if (!(e.responseJson && e.responseJson.status === 'layer_is_full')) {
@@ -710,16 +738,16 @@ export async function connect(userId: string) {
     }
 
     connection.positionHandler = (alias: string, data: Package<Position>) => {
-      processPositionMessage(context!, alias, data)
+      processPositionMessage(context, alias, data)
     }
     connection.profileHandler = (alias: string, identity: string, data: Package<ProfileVersion>) => {
-      processProfileMessage(context!, alias, identity, data)
+      processProfileMessage(context, alias, identity, data)
     }
     connection.chatHandler = (alias: string, data: Package<ChatMessage>) => {
-      processChatMessage(context!, alias, data)
+      processChatMessage(context, alias, data)
     }
     connection.sceneMessageHandler = (alias: string, data: Package<BusMessage>) => {
-      processParcelSceneCommsMessage(context!, alias, data)
+      processParcelSceneCommsMessage(context, alias, data)
     }
 
     if (commConfigurations.debug) {
@@ -730,7 +758,7 @@ export async function connect(userId: string) {
       if (context && context.currentPosition && context.worldInstanceConnection) {
         context.worldInstanceConnection
           .sendProfileMessage(context.currentPosition, context.userInfo)
-          .catch(e => defaultLogger.warn(`error while sending message `, e))
+          .catch((e) => defaultLogger.warn(`error while sending message `, e))
       }
     }, 1000)
 
@@ -739,9 +767,9 @@ export async function connect(userId: string) {
         const connectionAnalytics = connection.analyticsData()
         // We slice the ids in order to reduce the potential event size. Eventually, we should slice all comms ids
         connectionAnalytics.trackedPeers = context?.peerData.keys()
-          ? [...context?.peerData.keys()].map(it => it.slice(-6))
+          ? [...context?.peerData.keys()].map((it) => it.slice(-6))
           : []
-        connectionAnalytics.visiblePeers = context?.stats.visiblePeerIds.map(it => it.slice(-6))
+        connectionAnalytics.visiblePeers = context?.stats.visiblePeerIds.map((it) => it.slice(-6))
 
         if (connectionAnalytics) {
           queueTrackingEvent('Comms Status v2', connectionAnalytics)
@@ -749,7 +777,7 @@ export async function connect(userId: string) {
       }, 30000)
     }
 
-    context.worldRunningObserver = worldRunningObservable.add(isRunning => {
+    context.worldRunningObserver = worldRunningObservable.add((isRunning) => {
       onWorldRunning(isRunning)
     })
 
@@ -776,15 +804,8 @@ export async function connect(userId: string) {
         collectInfo(context)
       }
     }, 100)
-
-    return context
   } catch (e) {
-    defaultLogger.error(e)
-    if (e.message && e.message.includes('is taken')) {
-      throw new IdTakenError(e.message)
-    } else {
-      throw new ConnectionEstablishmentError(e.message)
-    }
+    throw new ConnectionEstablishmentError(e.message)
   }
 }
 
@@ -835,7 +856,7 @@ export function onWorldRunning(isRunning: boolean, _context: Context | null = co
 }
 
 export function sendToMordor(_context: Context | null = context) {
-  sendToMordorAsync().catch(e => defaultLogger.warn(`error while sending message `, e))
+  sendToMordorAsync().catch((e) => defaultLogger.warn(`error while sending message `, e))
 }
 
 async function sendToMordorAsync(_context: Context | null = context) {
@@ -876,14 +897,14 @@ export async function fetchLayerUsersParcels(): Promise<ParcelArray[]> {
     const layerUsersResponse = await fetch(`${commsUrl}/layers/${realm.layer}/users`)
     if (layerUsersResponse.ok) {
       const layerUsers: LayerUserInfo[] = await layerUsersResponse.json()
-      return layerUsers.filter(it => it.parcel).map(it => it.parcel!)
+      return layerUsers.filter((it) => it.parcel).map((it) => it.parcel!)
     }
   }
 
   return []
 }
 
-globalThis.printCommsInformation = function() {
+globalThis.printCommsInformation = function () {
   if (context) {
     defaultLogger.log('Communication topics: ' + previousTopics)
     context.stats.printDebugInformation()
