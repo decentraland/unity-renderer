@@ -173,7 +173,7 @@ public class NFTShapeLoaderController : MonoBehaviour
                 // Dispose thumbnail
                 if (nftAsset != null) nftAsset.Dispose();
                 SetFrameImage(downloadedAsset, resizeFrameMesh: true);
-            });
+            }, DCL.WrappedTextureMaxSize._256);
         }
 
         OnLoadingAssetSuccess?.Invoke();

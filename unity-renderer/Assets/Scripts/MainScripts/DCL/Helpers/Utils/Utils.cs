@@ -280,7 +280,8 @@ namespace DCL.Helpers
             yield return FetchAsset(textureURL, UnityWebRequestTexture.GetTexture(textureURL), OnSuccessInternal);
         }
 
-        public static IEnumerator FetchWrappedTextureAsset(string url, Action<IWrappedTextureAsset> OnSuccess)
+        public static IEnumerator FetchWrappedTextureAsset(string url, Action<IWrappedTextureAsset> OnSuccess,
+            WrappedTextureMaxSize maxTextureSize = WrappedTextureMaxSize.DONT_RESIZE)
         {
             string contentType = null;
             byte[] bytes = null;
@@ -293,7 +294,7 @@ namespace DCL.Helpers
 
             if (contentType != null && bytes != null)
             {
-                yield return WrappedTextureAssetFactory.Create(contentType, bytes, OnSuccess);
+                yield return WrappedTextureAssetFactory.Create(contentType, bytes, maxTextureSize, OnSuccess);
             }
         }
 

@@ -778,7 +778,7 @@ namespace UnityGLTF
                     factor = (float)MAX_TEXTURE_SIZE / height;
                 }
 
-                Texture2D dstTex = TextureScale.Resize(source, (int)(width * factor), (int)(height * factor));
+                Texture2D dstTex = TextureHelpers.Resize(source, (int)(width * factor), (int)(height * factor));
 
                 if (Application.isPlaying)
                     Texture2D.Destroy(source);

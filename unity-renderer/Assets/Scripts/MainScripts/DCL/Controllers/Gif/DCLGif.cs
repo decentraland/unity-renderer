@@ -96,6 +96,17 @@ namespace DCL.Controllers.Gif
             }
         }
 
+        public void SetMaxTextureSize(int size)
+        {
+            if (!isLoaded)
+                return;
+
+            for (int i = 0; i < gifTextures.Count; i++)
+            {
+                TextureHelpers.EnsureTexture2DMaxSize(ref gifTextures[i].m_texture2d, size);
+            }
+        }
+
         private void OnGifLoaded(List<UniGif.GifTexture> gifTextureList, int loopCount, int width, int height)
         {
             if (gifTextureList == null)
