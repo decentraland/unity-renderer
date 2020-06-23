@@ -1,6 +1,5 @@
 import './EngineAPI'
 import './UserIdentity'
-import './ChatController'
 import './ParcelIdentity'
 import './EnvironmentAPI'
 import './EthereumController'
