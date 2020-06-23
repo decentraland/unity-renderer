@@ -116,7 +116,6 @@ public class FriendsController : MonoBehaviour, IFriendsController
     public void InitializeFriends(string json)
     {
         isInitialized = true;
-        OnInitialized?.Invoke();
 
         FriendshipInitializationMessage msg = JsonUtility.FromJson<FriendshipInitializationMessage>(json);
         HashSet<string> processedIds = new HashSet<string>();
@@ -168,6 +167,8 @@ public class FriendsController : MonoBehaviour, IFriendsController
             if (friends.ContainsKey(userId))
                 friends.Remove(userId);
         }
+
+        OnInitialized?.Invoke();
     }
 
     public void UpdateUserStatus(UserStatus newUserStatus)
