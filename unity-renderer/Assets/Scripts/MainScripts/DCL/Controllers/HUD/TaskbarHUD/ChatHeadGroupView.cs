@@ -17,6 +17,7 @@ public class ChatHeadGroupView : MonoBehaviour
 
     private IChatController chatController;
     private IFriendsController friendsController;
+    private ulong rendererStateTimeMark;
 
     public void Initialize(IChatController chatController, IFriendsController friendsController)
     {
@@ -30,6 +31,7 @@ public class ChatHeadGroupView : MonoBehaviour
         {
             friendsController.OnUpdateFriendship += FriendsController_OnUpdateFriendship;
             friendsController.OnUpdateUserStatus += FriendsController_OnUpdateUserStatus;
+            friendsController.OnInitialized += FriendsController_OnInitialized;
         }
 
         CommonScriptableObjects.rendererState.OnChange -= RendererState_OnChange;
@@ -51,14 +53,17 @@ public class ChatHeadGroupView : MonoBehaviour
             updatedChatHead.SetOnlineStatus(userStatus.presence == PresenceStatus.ONLINE);
     }
 
+    private void FriendsController_OnInitialized()
+    {
+        // Load the chat heads from local storage just after FriendsController has been initialized
+        LoadLatestOpenChats();
+        friendsController.OnInitialized -= FriendsController_OnInitialized;
+    }
+
     private void RendererState_OnChange(bool current, bool previous)
     {
-        if (current)
-        {
-            // Load the chat heads from local storage just after RendererState is true (this will happen only one time)
-            LoadLatestOpenChats();
-            CommonScriptableObjects.rendererState.OnChange -= RendererState_OnChange;
-        }
+        rendererStateTimeMark = (ulong)System.DateTimeOffset.UtcNow.ToUnixTimeMilliseconds();
+        CommonScriptableObjects.rendererState.OnChange -= RendererState_OnChange;
     }
 
     private void OnDestroy()
@@ -70,6 +75,7 @@ public class ChatHeadGroupView : MonoBehaviour
         {
             friendsController.OnUpdateFriendship -= FriendsController_OnUpdateFriendship;
             friendsController.OnUpdateUserStatus -= FriendsController_OnUpdateUserStatus;
+            friendsController.OnInitialized -= FriendsController_OnInitialized;
         }
 
         CommonScriptableObjects.rendererState.OnChange -= RendererState_OnChange;
@@ -77,7 +83,9 @@ public class ChatHeadGroupView : MonoBehaviour
 
     private void ChatController_OnAddMessage(DCL.Interface.ChatMessage obj)
     {
-        if (!CommonScriptableObjects.rendererState.Get() || obj.messageType != DCL.Interface.ChatMessage.Type.PRIVATE)
+        if (!CommonScriptableObjects.rendererState.Get() ||
+            obj.messageType != DCL.Interface.ChatMessage.Type.PRIVATE ||
+            obj.timestamp < rendererStateTimeMark)
             return;
 
         var ownProfile = UserProfile.GetOwnUserProfile();
