@@ -431,9 +431,11 @@ workflows:
             - build-unity
 
       - publish-renderer:
-          <<: *all_branches_and_tags
           requires:
             - package
+          filters:
+            branches:
+              only: /(.*)/ # run on all branches, but no tags
 
       # ecs publishing
       - hold-ecs:
