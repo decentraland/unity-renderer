@@ -29,7 +29,7 @@ import { catalystRealmConnected, changeRealm, changeToCrowdedRealm } from 'share
 import { addToMutedUsers } from '../comms/peers'
 import { isValidExpression, expressionExplainer, validExpressions } from 'shared/apis/expressionExplainer'
 import { StoreContainer } from '../store/rootTypes'
-import { SHOW_FPS_COUNTER, getServerConfigurations, USE_NEW_CHAT, INIT_PRE_LOAD } from 'config'
+import { SHOW_FPS_COUNTER, getServerConfigurations, INIT_PRE_LOAD } from 'config'
 import { Vector3Component } from 'atomicHelpers/landHelpers'
 import { AvatarMessage, AvatarMessageType } from 'shared/comms/interface/types'
 import { sampleDropData } from 'shared/airdrops/sampleDrop'
@@ -81,7 +81,7 @@ export function* chatSaga(): any {
 }
 
 function* handleAuthSuccessful() {
-  if (identity.hasConnectedWeb3 && USE_NEW_CHAT) {
+  if (identity.hasConnectedWeb3) {
     yield call(ensureRealmInitialized)
 
     if (!INIT_PRE_LOAD) {

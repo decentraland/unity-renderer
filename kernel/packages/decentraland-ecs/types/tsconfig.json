@@ -17,7 +17,6 @@
     "types": [
       "env",
       "dcl",
-      "@decentraland/ChatController",
       "@decentraland/EthereumController",
       "@decentraland/SocialController",
       "@decentraland/Identity",

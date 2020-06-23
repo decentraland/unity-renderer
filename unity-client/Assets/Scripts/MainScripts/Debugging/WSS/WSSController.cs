@@ -200,11 +200,6 @@ namespace DCL
                     debugString += "RESET_TUTORIAL&";
                 }
 
-                if (useNewChat)
-                {
-                    debugString += "USE_NEW_CHAT&";
-                }
-
                 string debugPanelString = "";
 
                 if (debugPanelMode == DebugPanel.Engine)

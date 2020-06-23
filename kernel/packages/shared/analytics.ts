@@ -4,7 +4,6 @@ import { worldToGrid } from 'atomicHelpers/parcelScenePositions'
 import { Vector2, ReadOnlyVector3, Vector3 } from 'decentraland-ecs/src'
 import { defaultLogger } from 'shared/logger'
 
-import { chatObservable, ChatEventType } from './comms/chat'
 import { avatarMessageObservable } from './comms/peers'
 import { AvatarMessageType } from './comms/interface/types'
 import { positionObservable } from './world/positionThings'
@@ -106,18 +105,6 @@ function track({ name, data }: SegmentEvent) {
 }
 
 function hookObservables() {
-  // TODO - remove when new chat is enabled - moliva - 20/04/2020
-  chatObservable.add(event => {
-    if (event.type === ChatEventType.MESSAGE_RECEIVED) {
-      queueTrackingEvent('Chat message received', { length: event.messageEntry.message.length })
-    } else if (event.type === ChatEventType.MESSAGE_SENT) {
-      queueTrackingEvent('Send chat message', {
-        messageId: event.messageEntry.id,
-        length: event.messageEntry.message.length
-      })
-    }
-  })
-
   avatarMessageObservable.add(({ type, ...data }) => {
     if (type === AvatarMessageType.USER_VISIBLE || type === AvatarMessageType.USER_POSE) {
       return
