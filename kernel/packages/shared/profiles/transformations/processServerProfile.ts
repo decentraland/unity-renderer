@@ -1,6 +1,5 @@
 import { Profile, WearableId } from '../types'
 import { colorString } from './colorString'
-import { tutorialStepId } from 'decentraland-loader/lifecycle/tutorial/tutorial'
 
 export function fixWearableIds(wearableId: string) {
   return wearableId.replace('/male_body', '/BaseMale').replace('/female_body', '/BaseFemale')
@@ -50,7 +49,7 @@ export function processServerProfile(userId: string, receivedProfile: any): Prof
     },
     inventory: receivedProfile.inventory || [],
     blocked: receivedProfile.blocked,
-    tutorialStep: receivedProfile.tutorialStep || tutorialStepId.INITIAL_SCENE
+    tutorialStep: receivedProfile.tutorialStep || 0
   }
 }
 

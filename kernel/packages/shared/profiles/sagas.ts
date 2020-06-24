@@ -72,7 +72,7 @@ import { isRealmInitialized, getUpdateProfileServer, getResizeService } from '..
 import { getUserProfile } from '../comms/peers'
 import { WORLD_EXPLORER } from '../../config/index'
 import { backupProfile } from 'shared/profiles/generateRandomUserProfile'
-import { getTutorialBaseURL } from '../location'
+import { getResourcesURL } from '../location'
 import { takeLatestById } from './utils/takeLatestById'
 import { UnityInterfaceContainer } from 'unity-interface/dcl'
 import { RarityEnum } from '../airdrops/interface'
@@ -198,7 +198,7 @@ export function* initialLoad() {
   } else {
     let baseCatalog = []
     try {
-      const response = yield fetch(getTutorialBaseURL() + '/default-profile/basecatalog.json')
+      const response = yield fetch(getResourcesURL() + '/default-profile/basecatalog.json')
       baseCatalog = yield response.json()
     } catch (e) {
       defaultLogger.warn(`Could not load base catalog`)
@@ -243,7 +243,7 @@ export function* handleFetchProfile(action: ProfileRequestAction): any {
       profile = yield call(generateRandomUserProfile, userId)
     }
   } else {
-    const baseUrl = yield call(getTutorialBaseURL)
+    const baseUrl = yield call(getResourcesURL)
     profile = yield call(backupProfile, baseUrl + '/default-profile/snapshots', userId)
   }
 

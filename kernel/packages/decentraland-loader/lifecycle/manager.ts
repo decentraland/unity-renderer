@@ -8,11 +8,10 @@ import { WebWorkerTransport } from 'decentraland-rpc/lib/common/transports/WebWo
 import { resolveUrl } from 'atomicHelpers/parseUrl'
 import { ILand } from 'shared/types'
 
-import { DEBUG, parcelLimits, getServerConfigurations, ENABLE_EMPTY_SCENES, tutorialSceneEnabled } from '../../config'
+import { DEBUG, parcelLimits, getServerConfigurations, ENABLE_EMPTY_SCENES } from '../../config'
 import { getFetchContentServer, getFetchMetaContentServer, getFetchMetaContentService } from 'shared/dao/selectors'
 import { Store } from 'redux'
 
-import { getTutorialBaseURL } from 'shared/location'
 import defaultLogger from 'shared/logger'
 
 /*
@@ -105,9 +104,7 @@ export async function initParcelSceneWorker() {
     contentServerBundles: DEBUG ? '' : getServerConfigurations().contentAsBundle + '/',
     lineOfSightRadius: parcelLimits.visibleRadius,
     secureRadius: parcelLimits.secureRadius,
-    emptyScenes: ENABLE_EMPTY_SCENES && !(globalThis as any)['isRunningTests'],
-    tutorialBaseURL: getTutorialBaseURL(),
-    tutorialSceneEnabled: tutorialSceneEnabled()
+    emptyScenes: ENABLE_EMPTY_SCENES && !(globalThis as any)['isRunningTests']
   })
 
   return server

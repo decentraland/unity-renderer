@@ -39,7 +39,6 @@ import { getAppNetwork, getNetworkFromTLD, fetchOwnedENS } from './web3'
 import { initializeUrlPositionObserver } from './world/positionThings'
 import { saveProfileRequest } from './profiles/actions'
 import { ethereumConfigurations } from 'config'
-import { tutorialStepId } from 'decentraland-loader/lifecycle/tutorial/tutorial'
 import { ENABLE_WEB3 } from '../config/index'
 import future, { IFuture } from 'fp-future'
 import { RootState } from './store/rootTypes'
@@ -208,7 +207,7 @@ export function initShared(): InitFutures {
 
       const localTutorialStep = getUserProfile().profile
         ? getUserProfile().profile.tutorialStep
-        : tutorialStepId.INITIAL_SCENE
+        : 0
 
       if (localTutorialStep !== profile.tutorialStep) {
         let finalTutorialStep = Math.max(localTutorialStep, profile.tutorialStep)
