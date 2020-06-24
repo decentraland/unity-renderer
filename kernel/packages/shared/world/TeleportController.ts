@@ -1,10 +1,7 @@
 import { teleportObservable, lastPlayerPosition } from 'shared/world/positionThings'
 import { getFromLocalStorage, saveToLocalStorage } from 'atomicHelpers/localStorage'
 import { POIs } from 'shared/comms/POIs'
-import { parcelLimits, tutorialEnabled } from 'config'
-import { getUserProfile } from 'shared/comms/peers'
-import { Profile } from 'shared/profiles/types'
-import { tutorialStepId } from 'decentraland-loader/lifecycle/tutorial/tutorial'
+import { parcelLimits } from 'config'
 import { fetchLayerUsersParcels } from 'shared/comms'
 import { ParcelArray, countParcelsCloseTo } from 'shared/comms/interface/utils'
 import { worldToGrid } from 'atomicHelpers/parcelScenePositions'
@@ -78,12 +75,7 @@ export class TeleportController {
   public static stopTeleportAnimation() {
     document.getElementById('gameContainer')!.setAttribute('style', 'background: #151419')
     document.body.setAttribute('style', 'background: #151419')
-
-    const profile = getUserProfile().profile as Profile
-
-    if (!tutorialEnabled() || profile.tutorialStep !== tutorialStepId.INITIAL_SCENE) {
-      (window as any)['unityInterface'].ShowWelcomeNotification()
-    }
+    ;(window as any)['unityInterface'].ShowWelcomeNotification()
   }
 
   public static goToMagic(): { message: string; success: boolean } {
@@ -100,13 +92,13 @@ export class TeleportController {
       const currentParcel = worldToGrid(lastPlayerPosition)
 
       usersParcels = usersParcels.filter(
-        it => isInsideParcelLimits(it[0], it[1]) && currentParcel.x !== it[0] && currentParcel.y !== it[1]
+        (it) => isInsideParcelLimits(it[0], it[1]) && currentParcel.x !== it[0] && currentParcel.y !== it[1]
       )
 
       if (usersParcels.length > 0) {
         // Sorting from most close users
         const [target, closeUsers] = usersParcels
-          .map(it => [it, countParcelsCloseTo(it, usersParcels)] as [ParcelArray, number])
+          .map((it) => [it, countParcelsCloseTo(it, usersParcels)] as [ParcelArray, number])
           .sort(([_, score1], [__, score2]) => score2 - score1)[0]
 
         return TeleportController.goTo(

@@ -1,4 +1,4 @@
-export function getTutorialBaseURL() {
+export function getResourcesURL() {
   let pathName = location.pathname.split('/')
   if (pathName[pathName.length - 1].includes('.')) {
     pathName.pop()

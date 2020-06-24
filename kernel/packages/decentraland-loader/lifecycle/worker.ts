@@ -9,7 +9,6 @@ import { ParcelLifeCycleController } from './controllers/parcel'
 import { PositionLifecycleController } from './controllers/position'
 import { SceneLifeCycleController, SceneLifeCycleStatusReport } from './controllers/scene'
 import { Adapter } from './lib/adapter'
-import { setTutorialEnabled } from './tutorial/tutorial'
 
 const connector = new Adapter(WebWorkerTransport(self as any))
 
@@ -43,17 +42,12 @@ let downloadManager: SceneDataDownloadManager
       lineOfSightRadius: number
       secureRadius: number
       emptyScenes: boolean
-      tutorialBaseURL: string
-      tutorialSceneEnabled: boolean
     }) => {
-      setTutorialEnabled(options.tutorialSceneEnabled)
-
       downloadManager = new SceneDataDownloadManager({
         contentServer: options.contentServer,
         metaContentServer: options.metaContentServer,
         metaContentService: options.metaContentService,
-        contentServerBundles: options.contentServerBundles,
-        tutorialBaseURL: options.tutorialBaseURL
+        contentServerBundles: options.contentServerBundles
       })
       parcelController = new ParcelLifeCycleController({
         lineOfSightRadius: options.lineOfSightRadius,

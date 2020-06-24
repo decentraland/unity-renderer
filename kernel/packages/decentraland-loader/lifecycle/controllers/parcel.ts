@@ -4,7 +4,6 @@ import { Vector2Component } from 'atomicHelpers/landHelpers'
 
 import { parcelsInScope, ParcelConfigurationOptions } from '../lib/scope'
 import { ParcelLifeCycleStatus } from '../lib/parcel.status'
-import { isTutorial } from '../tutorial/tutorial'
 
 export type ParcelSightSeeingReport = {
   sighted: string[]
@@ -34,21 +33,10 @@ export class ParcelLifeCycleController extends EventEmitter {
       return undefined
     }
 
-    if (isTutorial()) {
-      return this.doReportCurrentPosition(position, { ...this.config, lineOfSightRadius: 0 })
-    } else {
-      return this.doReportCurrentPosition(position, this.config)
-    }
-  }
-
-  doReportCurrentPosition(
-    position: Vector2Component,
-    config: ParcelConfigurationOptions
-  ): ParcelSightSeeingReport | undefined {
     this.currentPosition = position
 
     this.isTargetPlaced = true
-    const sightedParcels = parcelsInScope(config.lineOfSightRadius, position)
+    const sightedParcels = parcelsInScope(this.config.lineOfSightRadius, position)
     const sightedParcelsSet = new Set<string>()
 
     const newlySightedParcels = sightedParcels.filter(parcel => {
@@ -56,7 +44,7 @@ export class ParcelLifeCycleController extends EventEmitter {
       return this.parcelSighted(parcel)
     })
 
-    const secureParcels = new Set(parcelsInScope(config.lineOfSightRadius + config.secureRadius, position))
+    const secureParcels = new Set(parcelsInScope(this.config.lineOfSightRadius + this.config.secureRadius, position))
 
     const currentlyPlusNewlySightedParcels = [...this.currentlySightedParcels] // this.currentlySightedParcels from t - 1 + newSightedParcels (added on this#parcelSighted)
 

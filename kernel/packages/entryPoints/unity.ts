@@ -7,7 +7,7 @@ global.enableWeb3 = true
 import { ReportFatalError } from 'shared/loading/ReportFatalError'
 import { experienceStarted, NOT_INVITED, AUTH_ERROR_LOGGED_OUT, FAILED_FETCHING_UNITY } from 'shared/loading/types'
 import { worldToGrid } from '../atomicHelpers/parcelScenePositions'
-import { NO_MOTD, tutorialEnabled, OPEN_AVATAR_EDITOR, DEBUG_PM } from '../config/index'
+import { NO_MOTD, OPEN_AVATAR_EDITOR, DEBUG_PM } from '../config/index'
 import defaultLogger, { createLogger } from 'shared/logger'
 import { signalRendererInitialized, signalParcelLoadingStarted } from 'shared/renderer/actions'
 import { lastPlayerPosition, teleportObservable } from 'shared/world/positionThings'
@@ -60,7 +60,7 @@ initializeUnity(container)
     globalThis.globalStore.dispatch(signalParcelLoadingStarted())
 
     if (!NO_MOTD) {
-      i.ConfigureHUDElement(HUDElementID.MESSAGE_OF_THE_DAY, { active: false, visible: !tutorialEnabled() })
+      i.ConfigureHUDElement(HUDElementID.MESSAGE_OF_THE_DAY, { active: false, visible: true })
     }
 
     _.instancedJS
