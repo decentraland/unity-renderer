@@ -189,6 +189,7 @@ npm-link: build-essentials static/dist/preview.js static/dist/editor.js ## Run `
 	ln -sf $(CWD)/static/images packages/decentraland-ecs/artifacts/images
 	ln -sf $(CWD)/static/models packages/decentraland-ecs/artifacts/models
 	ln -sf $(CWD)/static/unity packages/decentraland-ecs/artifacts/unity
+	ln -sf $(CWD)/static/default-profile packages/decentraland-ecs/artifacts/default-profile
 	ln -sf $(CWD)/static/unity-preview.html packages/decentraland-ecs/artifacts/unity-preview.html
 	cd packages/decentraland-ecs; npm link
 
