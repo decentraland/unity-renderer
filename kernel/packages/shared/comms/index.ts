@@ -651,7 +651,10 @@ export async function connect(userId: string) {
               if (context && context.currentPosition) {
                 return context.currentPosition.slice(0, 3)
               }
-            }
+            },
+            maxConnectionDistance: 4,
+            nearbyPeersDistance: 5,
+            disconnectDistance: 5
           }
         }
 
