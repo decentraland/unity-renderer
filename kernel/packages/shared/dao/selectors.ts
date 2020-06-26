@@ -1,4 +1,5 @@
 import { RootDaoState } from './types'
+import { getServerConfigurations } from 'config'
 
 export const getFetchProfileServer = (store: RootDaoState) => store.dao.profileServer
 export const getUpdateProfileServer = (store: RootDaoState) => store.dao.updateContentServer
@@ -25,3 +26,6 @@ export const isRealmInitialized = (store: RootDaoState) => store.dao.initialized
 export const areCandidatesFetched = (store: RootDaoState) => store.dao.candidatesFetched
 
 export const getCatalystRealmCommsStatus = (store: RootDaoState) => store.dao.commsStatus
+
+export const isResizeServiceUrl = (store: RootDaoState, url: string | undefined) =>
+  url?.startsWith(getResizeService(store)) || url?.startsWith(getServerConfigurations().fallbackResizeServiceUrl)

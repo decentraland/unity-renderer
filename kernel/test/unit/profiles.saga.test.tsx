@@ -1,5 +1,6 @@
 import { expectSaga } from 'redux-saga-test-plan'
 import { call, select } from 'redux-saga/effects'
+import * as matchers from 'redux-saga-test-plan/matchers'
 import { notifyNewInventoryItem, profileRequest, profileSuccess } from 'shared/profiles/actions'
 import {
   compareInventoriesAndTriggerNotification,
@@ -13,8 +14,9 @@ import { profileSaga, delay } from '../../packages/shared/profiles/sagas'
 import { processServerProfile } from '../../packages/shared/profiles/transformations/processServerProfile'
 import { dynamic } from 'redux-saga-test-plan/providers'
 import { expect } from 'chai'
-import { inventorySuccess } from '../../packages/shared/profiles/actions'
-import { isRealmInitialized } from '../../packages/shared/dao/selectors'
+import { inventorySuccess, PROFILE_SUCCESS } from '../../packages/shared/profiles/actions'
+import { isRealmInitialized, getResizeService } from '../../packages/shared/dao/selectors'
+import { getServerConfigurations } from 'config'
 
 const profile = { data: 'profile' }
 
@@ -89,7 +91,7 @@ describe('fetchProfile behavior', () => {
         [call(processServerProfile, 'user|2', profile2), 'passport2']
       ])
       .run()
-      .then(result => {
+      .then((result) => {
         const inventory1 = (profile1 as any).inventory
         expect(inventory1).to.have.length(1)
         expect(inventory1[0]).to.equal('dcl://base-exclusive/wearable1')
@@ -113,10 +115,92 @@ describe('fetchProfile behavior', () => {
         [call(processServerProfile, 'user|1', profile1), 'passport1']
       ])
       .run()
-      .then(result => {
+      .then((result) => {
         const inventory1 = (profile1 as any).inventory
         expect(inventory1).to.have.length(1)
         expect(inventory1[0]).to.equal('dcl://base-exclusive/wearable1')
+      })
+  })
+
+  it('generates scaled face snapshots', () => {
+    const profileWithNoSnapshots = { avatar: { snapshots: { face: 'http://fake.url/contents/facehash' } } }
+    const profile1 = { ...profileWithNoSnapshots, ethAddress: 'eth1' }
+    return expectSaga(handleFetchProfile, profileRequest('user|1'))
+      .dispatch(inventorySuccess('user|1', []))
+      .provide([
+        [select(getCurrentUserId), 'myid'],
+        [select(getProfileDownloadServer), 'server'],
+        [select(getResizeService), 'http://fake/resizeurl'],
+        [matchers.call.fn(fetch), dynamic(() => ({ ok: true }))],
+        [call(profileServerRequest, 'server', 'user|1'), delayed({ avatars: [profile1] })],
+        [call(processServerProfile, 'user|1', profile1), dynamic((effect) => effect.args[1])]
+      ])
+      .run()
+      .then((result) => {
+        const putEffects = result.effects.put
+        const lastPut = putEffects[putEffects.length - 1].payload.action
+        expect(lastPut.type).to.eq(PROFILE_SUCCESS)
+
+        const { face, face128, face256 } = lastPut.payload.profile.avatar.snapshots
+        expect(face).to.eq('http://fake.url/contents/facehash')
+        expect(face128).to.eq('http://fake/resizeurl/facehash/128')
+        expect(face256).to.eq('http://fake/resizeurl/facehash/256')
+      })
+  })
+
+  it('detects and fixes corrupted scaled snapshots', () => {
+    const profileWithCorruptedSnapshots = {
+      avatar: { snapshots: { face: 'http://fake.url/contents/facehash', face128: '128', face256: '256' } }
+    }
+    const profile1 = { ...profileWithCorruptedSnapshots, ethAddress: 'eth1' }
+    return expectSaga(handleFetchProfile, profileRequest('user|1'))
+      .dispatch(inventorySuccess('user|1', []))
+      .provide([
+        [select(getCurrentUserId), 'myid'],
+        [select(getProfileDownloadServer), 'server'],
+        [select(getResizeService), 'http://fake/resizeurl'],
+        [matchers.call.fn(fetch), dynamic(() => ({ ok: true }))],
+        [call(profileServerRequest, 'server', 'user|1'), delayed({ avatars: [profile1] })],
+        [call(processServerProfile, 'user|1', profile1), dynamic((effect) => effect.args[1])]
+      ])
+      .run()
+      .then((result) => {
+        const putEffects = result.effects.put
+        const lastPut = putEffects[putEffects.length - 1].payload.action
+        expect(lastPut.type).to.eq(PROFILE_SUCCESS)
+
+        const { face, face128, face256 } = lastPut.payload.profile.avatar.snapshots
+        expect(face).to.eq('http://fake.url/contents/facehash')
+        expect(face128).to.eq('http://fake/resizeurl/facehash/128')
+        expect(face256).to.eq('http://fake/resizeurl/facehash/256')
+      })
+  })
+
+  it('falls back when resize not working in current server', () => {
+    const profileWithCorruptedSnapshots = {
+      avatar: { snapshots: { face: 'http://fake.url/contents/facehash' } }
+    }
+    const profile1 = { ...profileWithCorruptedSnapshots, ethAddress: 'eth1' }
+    return expectSaga(handleFetchProfile, profileRequest('user|1'))
+      .dispatch(inventorySuccess('user|1', []))
+      .provide([
+        [select(getCurrentUserId), 'myid'],
+        [select(getProfileDownloadServer), 'server'],
+        [select(getResizeService), 'http://fake/resizeurl'],
+        [matchers.call.fn(fetch), dynamic((call) => ({ ok: !call.args[0].startsWith('http://fake/resizeurl') }))],
+        [call(profileServerRequest, 'server', 'user|1'), delayed({ avatars: [profile1] })],
+        [call(processServerProfile, 'user|1', profile1), dynamic((effect) => effect.args[1])]
+      ])
+      .run()
+      .then((result) => {
+        const putEffects = result.effects.put
+        const lastPut = putEffects[putEffects.length - 1].payload.action
+        expect(lastPut.type).to.eq(PROFILE_SUCCESS)
+
+        const { face, face128, face256 } = lastPut.payload.profile.avatar.snapshots
+        expect(face).to.eq('http://fake.url/contents/facehash')
+        expect(face128).to.eq(`${getServerConfigurations().fallbackResizeServiceUrl}/facehash/128`)
+        expect(face256).to.eq(`${getServerConfigurations().fallbackResizeServiceUrl}/facehash/256`)
       })
   })
 })
