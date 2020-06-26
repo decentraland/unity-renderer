@@ -6,6 +6,7 @@ namespace DCL.Components
 {
     public class AvatarOnPointerDown : OnPointerDown
     {
+        new public Collider collider;
         public event System.Action OnPointerDownReport;
 
         void Awake()

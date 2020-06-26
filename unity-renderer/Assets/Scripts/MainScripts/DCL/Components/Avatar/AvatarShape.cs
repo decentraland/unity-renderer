@@ -92,6 +92,8 @@ namespace DCL
             SetMinimapRepresentationActive(true);
             everythingIsLoaded = true;
 
+            onPointerDown.collider.enabled = true;
+
             avatarUserInfo.userId = model.id;
             avatarUserInfo.userName = model.name;
             avatarUserInfo.worldPosition = lastAvatarPosition != null ? lastAvatarPosition.Value : minimapRepresentation.transform.position;
