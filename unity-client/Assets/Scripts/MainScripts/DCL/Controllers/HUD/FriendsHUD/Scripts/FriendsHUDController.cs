@@ -230,32 +230,32 @@ public class FriendsHUDController : IHUD
         OnPressWhisper?.Invoke(entry.userId);
     }
 
-    private void Entry_OnReport(FriendEntryBase entry)
+    private void Entry_OnReport(string userId)
     {
-        WebInterface.SendReportPlayer(entry.userId);
+        WebInterface.SendReportPlayer(userId);
     }
 
-    private void Entry_OnPassport(FriendEntryBase entry)
+    private void Entry_OnPassport(string userId)
     {
         var currentPlayerId = Resources.Load<StringVariable>(CURRENT_PLAYER_ID);
-        currentPlayerId.Set(entry.userId);
+        currentPlayerId.Set(userId);
     }
 
-    private void Entry_OnBlock(FriendEntryBase entry)
+    private void Entry_OnBlock(string userId, bool blockUser)
     {
-        if (entry.model.blocked)
-            WebInterface.SendBlockPlayer(entry.userId);
+        if (blockUser)
+            WebInterface.SendBlockPlayer(userId);
         else
-            WebInterface.SendUnblockPlayer(entry.userId);
+            WebInterface.SendUnblockPlayer(userId);
     }
 
-    private void Entry_OnDelete(FriendEntryBase entry)
+    private void Entry_OnDelete(string userId)
     {
         WebInterface.UpdateFriendshipStatus(
             new FriendsController.FriendshipUpdateStatusMessage()
             {
                 action = FriendshipAction.DELETED,
-                userId = entry.userId
+                userId = userId
             });
     }
 

@@ -70,7 +70,6 @@ public class FriendsHUDControllerShould : TestsBase
         entry.menuButton.onClick.Invoke();
 
         Assert.IsTrue(controller.view.friendsList.contextMenuPanel.gameObject.activeSelf);
-        Assert.AreEqual(entry, controller.view.friendsList.contextMenuPanel.targetEntry);
 
         controller.view.friendsList.contextMenuPanel.reportButton.onClick.Invoke();
 
