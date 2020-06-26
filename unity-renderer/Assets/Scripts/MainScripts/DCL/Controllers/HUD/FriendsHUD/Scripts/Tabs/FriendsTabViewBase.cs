@@ -117,7 +117,7 @@ public class FriendsTabViewBase : MonoBehaviour, IPointerDownHandler
     protected RectTransform rectTransform;
     protected FriendsHUDView owner;
 
-    public FriendsHUD_ContextMenu contextMenuPanel;
+    public UserContextMenu contextMenuPanel;
     public FriendsHUD_DialogBox confirmationDialog;
 
     protected Dictionary<string, FriendEntryBase> entries = new Dictionary<string, FriendEntryBase>();
@@ -188,22 +188,26 @@ public class FriendsTabViewBase : MonoBehaviour, IPointerDownHandler
         contextMenuPanel.OnReport -= OnPressReportButton;
     }
 
-    protected virtual void OnPressReportButton(FriendEntryBase obj)
+    protected virtual void OnPressReportButton(string userId)
     {
     }
 
-    protected virtual void OnPressPassportButton(FriendEntryBase obj)
+    protected virtual void OnPressPassportButton(string userId)
     {
     }
 
-    protected virtual void OnPressDeleteButton(FriendEntryBase obj)
+    protected virtual void OnPressDeleteButton(string userId)
     {
     }
 
-    protected virtual void OnPressBlockButton(FriendEntryBase entry)
+    protected virtual void OnPressBlockButton(string userId, bool blockUser)
     {
-        entry.model.blocked = !entry.model.blocked;
-        entry.Populate(entry.model);
+        FriendEntryBase friendEntryToBlock = GetEntry(userId);
+        if (friendEntryToBlock != null)
+        {
+            friendEntryToBlock.model.blocked = blockUser;
+            friendEntryToBlock.Populate(friendEntryToBlock.model);
+        }
     }
 
     public virtual void CreateOrUpdateEntry(string userId, FriendEntryBase.Model model)
@@ -221,7 +225,13 @@ public class FriendsTabViewBase : MonoBehaviour, IPointerDownHandler
         var entry = newFriendEntry.gameObject.GetComponent<FriendEntryBase>();
         entries.Add(userId, entry);
 
-        entry.OnMenuToggle += (x) => { contextMenuPanel.Toggle(entry); };
+        entry.OnMenuToggle += (x) =>
+        {
+            bool isBlocked = UserProfile.GetOwnUserProfile().blocked.Contains(userId);
+            contextMenuPanel.Initialize(userId, string.Empty, isBlocked);
+            contextMenuPanel.transform.position = entry.menuPositionReference.position;
+            contextMenuPanel.Show();
+        };
 
         UpdateEmptyListObjects();
 

@@ -138,7 +138,6 @@ public class FriendsHUDViewShould : TestsBase
 
         Assert.IsTrue(onMenuToggleCalled);
         Assert.IsTrue(view.friendsList.contextMenuPanel.gameObject.activeSelf);
-        Assert.AreEqual(entry, view.friendsList.contextMenuPanel.targetEntry);
     }
 
     [Test]

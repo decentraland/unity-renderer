@@ -366,7 +366,7 @@ GameObject:
   - component: {fileID: 1477505211059433124}
   - component: {fileID: 8724119288001091597}
   - component: {fileID: 4875217099626589154}
-  - component: {fileID: 7093510303057191574}
+  - component: {fileID: 4366711961484996688}
   m_Layer: 19
   m_Name: PlayerContextMenuPanel
   m_TagString: Untagged
@@ -394,9 +394,9 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: -310, y: -10}
+  m_AnchoredPosition: {x: -373, y: -159.23997}
   m_SizeDelta: {x: 140, y: 164}
-  m_Pivot: {x: 0.5, y: 1}
+  m_Pivot: {x: 0.05, y: 0.09}
 --- !u!222 &1477505211059433124
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -459,7 +459,7 @@ MonoBehaviour:
   m_ChildControlHeight: 0
   m_ChildScaleWidth: 0
   m_ChildScaleHeight: 0
---- !u!114 &7093510303057191574
+--- !u!114 &4366711961484996688
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -468,14 +468,15 @@ MonoBehaviour:
   m_GameObject: {fileID: 2954293574582867020}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 5796ffbdefae06f4ba10fafb876f9681, type: 3}
+  m_Script: {fileID: 11500000, guid: 3ca92589a6cb2ca4d84cbafdcced1755, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  userName: {fileID: 0}
   passportButton: {fileID: 2231115598086967799}
   blockButton: {fileID: 5650817640051282846}
-  blockButtonText: {fileID: 2583684662727995992}
   reportButton: {fileID: 1559932843573383888}
   deleteButton: {fileID: 7891863203188872527}
+  blockText: {fileID: 2583684662727995992}
 --- !u!1 &4733887283956242434
 GameObject:
   m_ObjectHideFlags: 0

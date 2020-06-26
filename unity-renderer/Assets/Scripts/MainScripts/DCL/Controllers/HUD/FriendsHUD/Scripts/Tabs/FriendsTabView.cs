@@ -1,11 +1,12 @@
 using DCL.Interface;
+using JetBrains.Annotations;
 
 public class FriendsTabView : FriendsTabViewBase
 {
     public EntryList onlineFriendsList = new EntryList();
     public EntryList offlineFriendsList = new EntryList();
     public event System.Action<FriendEntry> OnWhisper;
-    public event System.Action<FriendEntry> OnDeleteConfirmation;
+    public event System.Action<string> OnDeleteConfirmation;
 
     private string lastProcessedFriend;
 
@@ -82,16 +83,20 @@ public class FriendsTabView : FriendsTabViewBase
         return true;
     }
 
-    protected override void OnPressDeleteButton(FriendEntryBase entry)
+    protected override void OnPressDeleteButton(string userId)
     {
-        if (entry == null) return;
+        if (string.IsNullOrEmpty(userId)) return;
 
-        confirmationDialog.SetText($"Are you sure you want to delete {entry.model.userName} as a friend?");
-        confirmationDialog.Show(() =>
+        FriendEntryBase friendEntryToDelete = GetEntry(userId);
+        if (friendEntryToDelete != null)
         {
-            RemoveEntry(entry.userId);
-            OnDeleteConfirmation?.Invoke(entry as FriendEntry);
-        });
+            confirmationDialog.SetText($"Are you sure you want to delete {friendEntryToDelete.model.userName} as a friend?");
+            confirmationDialog.Show(() =>
+            {
+                RemoveEntry(userId);
+                OnDeleteConfirmation?.Invoke(userId);
+            });
+        }
     }
 
     private void ChatController_OnAddMessage(ChatMessage message)

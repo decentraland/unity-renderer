@@ -15,6 +15,7 @@ public class UserContextMenu : MonoBehaviour
     public Button passportButton;
     public Button blockButton;
     public Button reportButton;
+    public Button deleteButton;
     public TextMeshProUGUI blockText;
 
     public bool isVisible => gameObject.activeSelf;
@@ -23,6 +24,7 @@ public class UserContextMenu : MonoBehaviour
     public event System.Action<string> OnPassport;
     public event System.Action<string> OnReport;
     public event System.Action<string, bool> OnBlock;
+    public event System.Action<string> OnDelete;
 
     private RectTransform rectTransform;
     private string userId;
@@ -35,6 +37,8 @@ public class UserContextMenu : MonoBehaviour
         passportButton.onClick.AddListener(OnPassportButtonPressed);
         blockButton.onClick.AddListener(OnBlockUserButtonPressed);
         reportButton.onClick.AddListener(OnReportUserButtonPressed);
+        if (deleteButton != null)
+            deleteButton.onClick.AddListener(OnDeleteUserButtonPressed);
     }
 
     private void Update()
@@ -47,6 +51,8 @@ public class UserContextMenu : MonoBehaviour
         passportButton.onClick.RemoveListener(OnPassportButtonPressed);
         blockButton.onClick.RemoveListener(OnBlockUserButtonPressed);
         reportButton.onClick.RemoveListener(OnReportUserButtonPressed);
+        if (deleteButton != null)
+            deleteButton.onClick.RemoveListener(OnDeleteUserButtonPressed);
     }
 
     /// <summary>
@@ -58,7 +64,8 @@ public class UserContextMenu : MonoBehaviour
     {
         this.userId = userId;
         this.isBlocked = isBlocked;
-        this.userName.text = userName;
+        if (this.userName != null)
+            this.userName.text = userName;
         UpdateBlockButton();
     }
 
@@ -89,6 +96,12 @@ public class UserContextMenu : MonoBehaviour
     private void OnReportUserButtonPressed()
     {
         OnReport?.Invoke(userId);
+        Hide();
+    }
+
+    private void OnDeleteUserButtonPressed()
+    {
+        OnDelete?.Invoke(userId);
         Hide();
     }
 
