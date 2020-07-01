@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using UnityEngine;
 
@@ -24,7 +25,7 @@ namespace DCL
             DECODE_MS,
             QUEUED_COUNT,
             RATIO,
-            RATIO_TIMES_MS,
+            TOTAL_TIME,
             PROCESSED_COUNT,
         }
 
@@ -57,7 +58,7 @@ namespace DCL
         const string COLUMN_QUEUED_COUNT_TEXT = "Queued";
         const string COLUMN_PROCESSED_COUNT_TEXT = "Processed";
         const string COLUMN_RATIO_TEXT = "Ratio";
-        const string COLUMN_RATIO_TIMES_MS_TEXT = "% x ms";
+        const string COLUMN_RATIO_TIMES_MS_TEXT = "Total Time";
 
         const string ROW_TOTAL_TEXT = "Total";
 
@@ -87,7 +88,10 @@ namespace DCL
         List<Rows> rowsList;
         Dictionary<string, Rows> stringToRow;
 
-        public float messagesTotalTime { get { return logicTotalTime + decodeTotalTime; } }
+        public float messagesTotalTime
+        {
+            get { return logicTotalTime + decodeTotalTime; }
+        }
 
         private float logicTotalTime;
         private float decodeTotalTime;
@@ -108,31 +112,31 @@ namespace DCL
             statsPanel.SetCellText(0, 0, "");
 
             //NOTE(Brian): Column stuff (top horizontal header)
-            statsPanel.SetCellText((int)Columns.LOGIC_MS, 0, COLUMN_LOGIC_MS_TEXT);
-            statsPanel.SetCellText((int)Columns.DECODE_MS, 0, COLUMN_DECODE_MS_TEXT);
-            statsPanel.SetCellText((int)Columns.QUEUED_COUNT, 0, COLUMN_QUEUED_COUNT_TEXT);
-            statsPanel.SetCellText((int)Columns.RATIO, 0, COLUMN_RATIO_TEXT);
-            statsPanel.SetCellText((int)Columns.RATIO_TIMES_MS, 0, COLUMN_RATIO_TIMES_MS_TEXT);
+            statsPanel.SetCellText((int) Columns.LOGIC_MS, 0, COLUMN_LOGIC_MS_TEXT);
+            statsPanel.SetCellText((int) Columns.DECODE_MS, 0, COLUMN_DECODE_MS_TEXT);
+            statsPanel.SetCellText((int) Columns.QUEUED_COUNT, 0, COLUMN_QUEUED_COUNT_TEXT);
+            statsPanel.SetCellText((int) Columns.RATIO, 0, COLUMN_RATIO_TEXT);
+            statsPanel.SetCellText((int) Columns.TOTAL_TIME, 0, COLUMN_RATIO_TIMES_MS_TEXT);
 
             //NOTE(Brian): Row stuff (left vertical header)
-            statsPanel.SetCellText(0, (int)Rows.TOTAL, ROW_TOTAL_TEXT);
-            statsPanel.SetCellText(0, (int)Rows.BREAK_0, "");
-            statsPanel.SetCellText(0, (int)Rows.SCENE_LOAD, ROW_SCENE_LOAD_TEXT);
-            statsPanel.SetCellText(0, (int)Rows.SCENE_DESTROY, ROW_SCENE_DESTROY_TEXT);
-            statsPanel.SetCellText(0, (int)Rows.BREAK_1, "");
-            statsPanel.SetCellText(0, (int)Rows.ENTITY_CREATE, ROW_ENTITY_CREATE_TEXT);
-            statsPanel.SetCellText(0, (int)Rows.ENTITY_DESTROY, ROW_ENTITY_DESTROY_TEXT);
-            statsPanel.SetCellText(0, (int)Rows.ENTITY_REPARENT, ROW_ENTITY_REPARENT_TEXT);
-            statsPanel.SetCellText(0, (int)Rows.BREAK_2, "");
-            statsPanel.SetCellText(0, (int)Rows.ENTITY_COMPONENT_CREATE, ROW_ENTITY_COMPONENT_CREATE_TEXT);
-            statsPanel.SetCellText(0, (int)Rows.ENTITY_COMPONENT_DESTROY, ROW_ENTITY_COMPONENT_DESTROY_TEXT);
-            statsPanel.SetCellText(0, (int)Rows.BREAK_3, "");
-            statsPanel.SetCellText(0, (int)Rows.SHARED_COMPONENT_CREATE, ROW_SHARED_COMPONENT_CREATE_TEXT);
-            statsPanel.SetCellText(0, (int)Rows.SHARED_COMPONENT_ATTACH, ROW_SHARED_COMPONENT_ATTACH_TEXT);
-            statsPanel.SetCellText(0, (int)Rows.SHARED_COMPONENT_DISPOSE, ROW_SHARED_COMPONENT_DISPOSE_TEXT);
-            statsPanel.SetCellText(0, (int)Rows.SHARED_COMPONENT_UPDATE, ROW_SHARED_COMPONENT_UPDATE_TEXT);
-            statsPanel.SetCellText(0, (int)Rows.BREAK_4, "");
-            statsPanel.SetCellText(0, (int)Rows.MISC, ROW_MISC_TEXT);
+            statsPanel.SetCellText(0, (int) Rows.TOTAL, ROW_TOTAL_TEXT);
+            statsPanel.SetCellText(0, (int) Rows.BREAK_0, "");
+            statsPanel.SetCellText(0, (int) Rows.SCENE_LOAD, ROW_SCENE_LOAD_TEXT);
+            statsPanel.SetCellText(0, (int) Rows.SCENE_DESTROY, ROW_SCENE_DESTROY_TEXT);
+            statsPanel.SetCellText(0, (int) Rows.BREAK_1, "");
+            statsPanel.SetCellText(0, (int) Rows.ENTITY_CREATE, ROW_ENTITY_CREATE_TEXT);
+            statsPanel.SetCellText(0, (int) Rows.ENTITY_DESTROY, ROW_ENTITY_DESTROY_TEXT);
+            statsPanel.SetCellText(0, (int) Rows.ENTITY_REPARENT, ROW_ENTITY_REPARENT_TEXT);
+            statsPanel.SetCellText(0, (int) Rows.BREAK_2, "");
+            statsPanel.SetCellText(0, (int) Rows.ENTITY_COMPONENT_CREATE, ROW_ENTITY_COMPONENT_CREATE_TEXT);
+            statsPanel.SetCellText(0, (int) Rows.ENTITY_COMPONENT_DESTROY, ROW_ENTITY_COMPONENT_DESTROY_TEXT);
+            statsPanel.SetCellText(0, (int) Rows.BREAK_3, "");
+            statsPanel.SetCellText(0, (int) Rows.SHARED_COMPONENT_CREATE, ROW_SHARED_COMPONENT_CREATE_TEXT);
+            statsPanel.SetCellText(0, (int) Rows.SHARED_COMPONENT_ATTACH, ROW_SHARED_COMPONENT_ATTACH_TEXT);
+            statsPanel.SetCellText(0, (int) Rows.SHARED_COMPONENT_DISPOSE, ROW_SHARED_COMPONENT_DISPOSE_TEXT);
+            statsPanel.SetCellText(0, (int) Rows.SHARED_COMPONENT_UPDATE, ROW_SHARED_COMPONENT_UPDATE_TEXT);
+            statsPanel.SetCellText(0, (int) Rows.BREAK_4, "");
+            statsPanel.SetCellText(0, (int) Rows.MISC, ROW_MISC_TEXT);
 
             stringToRow = new Dictionary<string, Rows>();
 
@@ -228,8 +232,8 @@ namespace DCL
                     }
                 }
 
-                statsPanel.SetCellText((int)Columns.LOGIC_MS, (int)Rows.TOTAL, logicTotalTime.ToString("N3") + "ms");
-                statsPanel.SetCellText((int)Columns.DECODE_MS, (int)Rows.TOTAL, decodeTotalTime.ToString("N3") + "ms");
+                statsPanel.SetCellText((int) Columns.LOGIC_MS, (int) Rows.TOTAL, logicTotalTime.ToString("N3", CultureInfo.InvariantCulture) + "ms");
+                statsPanel.SetCellText((int) Columns.DECODE_MS, (int) Rows.TOTAL, decodeTotalTime.ToString("N3", CultureInfo.InvariantCulture) + "ms");
                 yield return WaitForSecondsCache.Get(0.5f);
             }
         }
@@ -289,13 +293,15 @@ namespace DCL
             float total = statsTracker[(Columns.PROCESSED_COUNT, Rows.TOTAL)];
             float finalRatio = current / total * 100;
 
-            statsPanel.SetCellText((int)Columns.RATIO, (int)stringToRow[s], finalRatio.ToString("N1") + "%");
+            statsPanel.SetCellText((int) Columns.RATIO, (int) stringToRow[s], finalRatio.ToString("N1", CultureInfo.InvariantCulture) + "%");
 
-            //NOTE(Brian): Process ratio times ms
-            float finalMs = (statsTracker[(Columns.LOGIC_MS, stringToRow[s])] +
-                             statsTracker[(Columns.DECODE_MS, stringToRow[s])]);
-            float finalRatioTimesMs = (finalMs / total) * finalRatio;
-            statsPanel.SetCellText((int)Columns.RATIO_TIMES_MS, (int)stringToRow[s], finalRatioTimesMs.ToString("N2"));
+            //NOTE(Brian): Process total time
+            float totalSecs = statsTracker[(Columns.LOGIC_MS, stringToRow[s])] +
+                              statsTracker[(Columns.DECODE_MS, stringToRow[s])];
+
+            totalSecs /= 1000;
+
+            statsPanel.SetCellText((int) Columns.TOTAL_TIME, (int) stringToRow[s], totalSecs.ToString("N2", CultureInfo.InvariantCulture) + "secs");
 
             float dt = DCLTime.realtimeSinceStartup - processTimeTracker[stringToRow[s]];
 
@@ -306,7 +312,7 @@ namespace DCL
                 statsTracker[(Columns.LOGIC_MS, stringToRow[s])] += dt * 1000;
 
                 //NOTE(Brian): I substract decode from logic because <check last comment>
-                int processedCount = (int)statsTracker[(Columns.PROCESSED_COUNT, stringToRow[s])];
+                int processedCount = (int) statsTracker[(Columns.PROCESSED_COUNT, stringToRow[s])];
                 float avg = statsTracker[(Columns.LOGIC_MS, stringToRow[s])] -
                             statsTracker[(Columns.DECODE_MS, stringToRow[s])];
 
@@ -315,7 +321,7 @@ namespace DCL
                     avg /= processedCount;
                 }
 
-                statsPanel.SetCellText((int)Columns.LOGIC_MS, (int)stringToRow[s], avg.ToString("N3") + "ms");
+                statsPanel.SetCellText((int) Columns.LOGIC_MS, (int) stringToRow[s], avg.ToString("N3", CultureInfo.InvariantCulture) + "ms");
                 msgBeingProcessed = string.Empty;
                 return;
             }
@@ -338,12 +344,12 @@ namespace DCL
         void SumTrackedValue(Columns x, Rows y, int delta)
         {
             statsTracker[(x, y)] += delta;
-            statsPanel.SetCellText((int)x, (int)y, statsTracker[(x, y)].ToString());
+            statsPanel.SetCellText((int) x, (int) y, statsTracker[(x, y)].ToString(CultureInfo.InvariantCulture));
         }
 
         void AvgTrackedValue(Columns x, Rows y, float ms)
         {
-            int processedCount = (int)statsTracker[(Columns.PROCESSED_COUNT, y)];
+            int processedCount = (int) statsTracker[(Columns.PROCESSED_COUNT, y)];
             float result = 0;
 
             if (processedCount > 0)
@@ -355,12 +361,12 @@ namespace DCL
             {
                 //NOTE(Brian): If we aren't tracking TOTAL for this particular row, we use the overall msgs total
                 //             for computing the avg. This is currently used by misc row.
-                processedCount = (int)statsTracker[(Columns.PROCESSED_COUNT, Rows.TOTAL)];
+                processedCount = (int) statsTracker[(Columns.PROCESSED_COUNT, Rows.TOTAL)];
                 statsTracker[(x, y)] += ms;
                 result = statsTracker[(x, y)] / (processedCount > 0 ? processedCount : 1.0f);
             }
 
-            statsPanel.SetCellText((int)x, (int)y, result.ToString("N3") + "ms");
+            statsPanel.SetCellText((int) x, (int) y, result.ToString("N3", CultureInfo.InvariantCulture) + "ms");
         }
 
         private void OnMessageWillDequeue(string obj)

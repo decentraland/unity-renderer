@@ -4,6 +4,9 @@ using UnityEngine;
 
 public class RenderingController : MonoBehaviour
 {
+    public static float firstActivationTime { get; private set; }
+    private bool firstActivationTimeHasBeenSet = false;
+
     public CompositeLock renderingActivatedAckLock = new CompositeLock();
 
     private bool activatedRenderingBefore { get; set; } = false;
@@ -41,6 +44,12 @@ public class RenderingController : MonoBehaviour
     {
         if (CommonScriptableObjects.rendererState.Get())
             return;
+
+        if (!firstActivationTimeHasBeenSet)
+        {
+            firstActivationTime = Time.realtimeSinceStartup;
+            firstActivationTimeHasBeenSet = true;
+        }
 
         if (!renderingActivatedAckLock.isUnlocked)
         {
