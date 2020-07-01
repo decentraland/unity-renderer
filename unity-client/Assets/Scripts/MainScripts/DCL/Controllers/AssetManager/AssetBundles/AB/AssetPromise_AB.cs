@@ -1,4 +1,4 @@
-﻿using DCL.Helpers;
+using DCL.Helpers;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -17,6 +17,9 @@ namespace DCL
         public static int MAX_CONCURRENT_REQUESTS = 30;
         static int concurrentRequests = 0;
         bool requestRegistered = false;
+
+        public static int downloadingCount => concurrentRequests;
+        public static int queueCount => AssetPromiseKeeper_AB.i.waitingPromisesCount;
 
         static readonly float maxLoadBudgetTime = 0.032f;
         static float currentLoadBudgetTime = 0;

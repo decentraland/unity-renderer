@@ -6,9 +6,8 @@ namespace DCL
     public class StatsPanelToggler : MonoBehaviour
     {
         const string SHORTCUT_TEXT =
-            "P = Toggle Panel | R = Reset Profile Data | O = Toggle All Profiling | I = Toggle Deep Msg Profiling";
+            "P = Toggle Panel | R = Reset Profile Data | I = Toggle Deep Msg Profiling";
 
-        bool allProfilingEnabled;
         bool deepProfilingEnabled;
         Text text;
 
@@ -18,28 +17,19 @@ namespace DCL
         void Start()
         {
             text = GetComponent<Text>();
-            allProfilingEnabled = false;
-            deepProfilingEnabled = false;
+            deepProfilingEnabled = true;
 
-            if (allProfilingEnabled)
-                EnableProfiling();
-            else
-                DisableProfiling();
-
+            EnableProfiling();
             RefreshShortcutText();
         }
 
         void Update()
         {
-            UpdateAllProfilingInput();
             UpdateDeepProfilingInput();
 
-            if (allProfilingEnabled)
+            if (Input.GetKeyUp(KeyCode.P))
             {
-                if (Input.GetKeyUp(KeyCode.P))
-                {
-                    TogglePanel();
-                }
+                TogglePanel();
             }
         }
 
@@ -56,25 +46,6 @@ namespace DCL
                 else
                 {
                     DisableDeepProfiling();
-                }
-
-                RefreshShortcutText();
-            }
-        }
-
-        private void UpdateAllProfilingInput()
-        {
-            if (Input.GetKeyUp(KeyCode.O))
-            {
-                allProfilingEnabled = !allProfilingEnabled;
-
-                if (allProfilingEnabled)
-                {
-                    EnableProfiling();
-                }
-                else
-                {
-                    DisableProfiling();
                 }
 
                 RefreshShortcutText();
@@ -118,32 +89,15 @@ namespace DCL
             }
         }
 
-        private void DisableProfiling()
-        {
-            DisableDeepProfiling();
-            miscController.StopProfiling();
-            miscController.gameObject.SetActive(false);
-
-            text.text = "";
-        }
-
         void RefreshShortcutText()
         {
-            if (allProfilingEnabled)
+            if (deepProfilingEnabled)
             {
-                if (deepProfilingEnabled)
-                {
-                    text.text = $"[Deep Message Profiling Enabled]\n{SHORTCUT_TEXT}";
-                }
-                else
-                {
-                    text.text = $"[Profiling Enabled]\n{SHORTCUT_TEXT}";
-                }
+                text.text = $"[Deep Message Profiling Enabled]\n{SHORTCUT_TEXT}";
+                return;
             }
-            else
-            {
-                text.text = "";
-            }
+
+            text.text = $"[Profiling Enabled]\n{SHORTCUT_TEXT}";
         }
     }
 }
