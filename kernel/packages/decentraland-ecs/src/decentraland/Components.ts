@@ -417,9 +417,9 @@ export class Texture extends ObservableComponent {
    * Enables crisper images based on the provided sampling mode.
    * | Value | Type      |
    * |-------|-----------|
-   * |     1 | NEAREST   |
-   * |     2 | BILINEAR  |
-   * |     3 | TRILINEAR |
+   * |     0 | NEAREST   |
+   * |     1 | BILINEAR  |
+   * |     2 | TRILINEAR |
    */
   @ObservableComponent.readonly
   readonly samplingMode!: number

@@ -170,19 +170,19 @@ namespace DCL
             var eyeCoroutine = CoroutineStarter.Start(eyesController?.FetchTextures((mainTexture, maskTexture) =>
             {
                 eyesReady = true;
-                bodyShapeController.SetupEyes(eyeMaterial, mainTexture, maskTexture, model.eyeColor);
+                bodyShapeController?.SetupEyes(eyeMaterial, mainTexture, maskTexture, model.eyeColor);
             }));
 
             var eyebrowCoroutine = CoroutineStarter.Start(eyebrowsController?.FetchTextures((mainTexture, maskTexture) =>
             {
                 eyebrowsReady = true;
-                bodyShapeController.SetupEyebrows(eyebrowMaterial, mainTexture, model.hairColor);
+                bodyShapeController?.SetupEyebrows(eyebrowMaterial, mainTexture, model.hairColor);
             }));
 
             var mouthCoroutine = CoroutineStarter.Start(mouthController?.FetchTextures((mainTexture, maskTexture) =>
             {
                 mouthReady = true;
-                bodyShapeController.SetupMouth(mouthMaterial, mainTexture, model.skinColor);
+                bodyShapeController?.SetupMouth(mouthMaterial, mainTexture, model.skinColor);
             }));
 
             faceCoroutines.Add(eyeCoroutine);

@@ -1,7 +1,8 @@
 {
     "name": "ThumbnailsManager",
     "references": [
-        "GUID:760a1d365aad58044916992b072cf2a6"
+        "GUID:760a1d365aad58044916992b072cf2a6",
+        "GUID:e555144732b726c4cba5b0f6337fea75"
     ],
     "optionalUnityReferences": [],
     "includePlatforms": [],

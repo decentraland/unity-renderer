@@ -20,7 +20,7 @@ namespace DCL
             if (asset == null || masterAssets.ContainsKey(asset.id))
                 return true;
 
-            masterAssets.Add(asset.id, new RefCountedAsset() {asset = asset});
+            masterAssets.Add(asset.id, new RefCountedAsset() { asset = asset });
             assetToRefCountedAsset.Add(asset, masterAssets[asset.id]);
 
             return true;
@@ -71,7 +71,7 @@ namespace DCL
             var refCountedAsset = assetToRefCountedAsset[asset];
             refCountedAsset.referenceCount--;
 
-            if (refCountedAsset.referenceCount != 0)
+            if (refCountedAsset.referenceCount > 0)
                 return;
 
             asset.Cleanup();

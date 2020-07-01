@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Networking;
+using DCL;
 
 //In the future the AssetManager will do this
 public static class ThumbnailsManager
@@ -15,6 +16,7 @@ public static class ThumbnailsManager
     static Dictionary<string, int> spritesUses = new Dictionary<string, int>();
     static Dictionary<string, Sprite> loadedSprites = new Dictionary<string, Sprite>();
     static Dictionary<string, List<Action<Sprite>>> waitingCallbacks = new Dictionary<string, List<Action<Sprite>>>();
+    static Dictionary<string, AssetPromise_Texture> texturePromises = new Dictionary<string, AssetPromise_Texture>();
 
     public static void PreloadThumbnail(string url)
     {
@@ -62,30 +64,42 @@ public static class ThumbnailsManager
                 downloadingCoroutines.Remove(url);
             }
         }
+
+        if (texturePromises.ContainsKey(url))
+        {
+            AssetPromiseKeeper_Texture.i.Forget(texturePromises[url]);
+            texturePromises.Remove(url);
+        }
+
         DecreaseUses(url);
     }
 
     private static IEnumerator Download(string url)
     {
-        UnityWebRequest www = UnityWebRequestTexture.GetTexture(url);
+        Sprite sprite = null;
 
-        yield return www.SendWebRequest();
-
-        Sprite sprite;
-        if (!www.isNetworkError && !www.isHttpError)
+        if (texturePromises.ContainsKey(url))
         {
-            var texture = ((DownloadHandlerTexture)www.downloadHandler).texture;
-            texture.filterMode = FilterMode.Trilinear;
-            texture.Compress(false);
-            sprite = Sprite.Create(texture, new Rect(0, 0, texture.width, texture.height), Vector2.zero);
+            AssetPromiseKeeper_Texture.i.Forget(texturePromises[url]);
+            texturePromises.Remove(url);
+        }
+
+        texturePromises[url] = new AssetPromise_Texture(url);
+        texturePromises[url].OnSuccessEvent += (x) =>
+        {
+            sprite = Sprite.Create(x.texture, new Rect(0, 0, x.texture.width, x.texture.height), Vector2.zero);
             AddOrUpdateSprite(url, sprite);
-        }
-        else
+        };
+
+        texturePromises[url].OnFailEvent += (x) =>
         {
-            Debug.Log($"Error downloading: {url} {www.error}");
-            // No point on making a fancy error because this will be replaced by AssetManager. By now let's use null as fallback value.
+            Debug.Log($"Error downloading: {url}");
+
             sprite = null;
-        }
+        };
+
+        AssetPromiseKeeper_Texture.i.Keep(texturePromises[url]);
+        yield return texturePromises[url];
 
         downloadingCoroutines.Remove(url);
 
