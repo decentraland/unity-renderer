@@ -24,13 +24,36 @@ var WebVideoPlayer = {
     };
 
     if (useHls) {
-      const hls = new Hls();
-      hls.loadSource(videoUrl);
-      hls.attachMedia(vid);
-      hls.on(Hls.Events.ERROR, function () {
-        videoData.state = videoState.ERROR;
-        videoData.error = "Hls error";
+      var hlsConfig = {
+        maxBufferLength: 60
+      };
+      const hls = new Hls(hlsConfig);
+      hls.on(Hls.Events.MEDIA_ATTACHED, function () {
+        hls.loadSource(videoUrl);
       });
+      hls.on(Hls.Events.MEDIA_DETACHED, function () {
+        hls.stopLoad();
+      });
+      hls.on(Hls.Events.ERROR, function (event, data) {
+        if (data.fatal) {
+          switch (data.type) {
+            case Hls.ErrorTypes.NETWORK_ERROR:
+              console.log("fatal network error encountered, try to recover");
+              hls.startLoad();
+              break;
+            case Hls.ErrorTypes.MEDIA_ERROR:
+              console.log("fatal media error encountered, try to recover");
+              hls.recoverMediaError();
+              break;
+            default:
+              videoData.state = videoState.ERROR;
+              videoData.error = "Hls error";
+              break;
+          }
+        }
+      });
+      videoData.state = videoState.READY;
+
       videoData["hlsInstance"] = hls;
     } else {
       vid.src = videoUrl;
@@ -112,7 +135,11 @@ var WebVideoPlayer = {
   WebVideoPlayerPlay: function (videoId) {
     try {
       const videoData = videos[Pointer_stringify(videoId)];
+      if (videoData.hlsInstance !== undefined) {
+        videoData.hlsInstance.attachMedia(videoData.video);
+      }
       videoData.video.play();
+
     } catch (err) {
       // Exception!
     }
@@ -120,6 +147,9 @@ var WebVideoPlayer = {
 
   WebVideoPlayerPause: function (videoId) {
     const videoData = videos[Pointer_stringify(videoId)];
+    if (videoData.hlsInstance !== undefined) {
+      videoData.hlsInstance.detachMedia(videoData.video);
+    }
     videoData.video.pause();
   },
 

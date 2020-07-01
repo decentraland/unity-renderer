@@ -1,4 +1,4 @@
-﻿using DCL.Helpers;
+using DCL.Helpers;
 using System.Collections;
 using UnityEngine;
 
@@ -33,6 +33,8 @@ namespace DCL.Components
 
         public override IEnumerator ApplyChanges(string newJson)
         {
+            yield return new WaitUntil(() => CommonScriptableObjects.rendererState.Get());
+
             audioSource = gameObject.GetOrCreateComponent<AudioSource>();
             model = SceneController.i.SafeFromJson<Model>(newJson);
 

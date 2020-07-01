@@ -1,4 +1,4 @@
-﻿using System.Collections;
+using System.Collections;
 using System.Collections.Generic;
 using DCL.Controllers;
 using DCL.Models;
@@ -344,6 +344,9 @@ namespace DCL.Components
 
         private void OnEntityDetachedMaterial(DecentralandEntity entity)
         {
+            if (texturePlayer != null)
+                texturePlayer.Pause();
+
             entity.OnShapeUpdated -= OnEntityShapeUpdated;
         }
 
