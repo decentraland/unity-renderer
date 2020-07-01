@@ -23,6 +23,8 @@ namespace AvatarEditorHUD_Tests
         [UnitySetUp]
         protected override IEnumerator SetUp()
         {
+            yield return base.SetUp();
+
             if (controller == null)
             {
                 skinColorList = Resources.Load<ColorList>("SkinTone");
@@ -62,8 +64,6 @@ namespace AvatarEditorHUD_Tests
 
                 controller.LoadUserProfile(userProfile);
             }
-
-            yield break;
         }
 
         [UnityTearDown]

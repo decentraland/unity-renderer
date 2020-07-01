@@ -25,7 +25,7 @@ public class CoroutineStarter : MonoBehaviour
 
     public static void Stop(Coroutine coroutine)
     {
-        if(instanceValue != null)
+        if (instanceValue != null && coroutine != null)
             instance.StopCoroutine(coroutine);
     }
 
