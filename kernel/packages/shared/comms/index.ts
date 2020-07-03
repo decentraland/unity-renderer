@@ -70,6 +70,7 @@ import { queueTrackingEvent } from 'shared/analytics'
 import { messageReceived } from '../chat/actions'
 import { arrayEquals } from 'atomicHelpers/arrayEquals'
 import { getCommsConfig } from 'shared/meta/selectors'
+import { ensureMetaConfigurationInitialized } from 'shared/meta/index'
 
 export type CommsVersion = 'v1' | 'v2'
 export type CommsMode = CommsV1Mode | CommsV2Mode
@@ -625,12 +626,13 @@ export async function connect(userId: string) {
         break
       }
       case 'v2': {
+        await ensureMetaConfigurationInitialized()
         const store: Store<RootState> = globalThis.globalStore
         const lighthouseUrl = getCommsServer(store.getState())
         const realm = getRealm(store.getState())
         const commsConfig = getCommsConfig(store.getState())
 
-        const peerConfig = {
+        const peerConfig: any = {
           connectionConfig: {
             iceServers: commConfigurations.iceServers
           },
@@ -655,6 +657,13 @@ export async function connect(userId: string) {
             maxConnectionDistance: 4,
             nearbyPeersDistance: 5,
             disconnectDistance: 5
+          }
+        }
+
+        if (!commsConfig.relaySuspensionDisabled) {
+          peerConfig.relaySuspensionConfig = {
+            relaySuspensionInterval: commsConfig.relaySuspensionInterval ?? 750,
+            relaySuspensionDuration: commsConfig.relaySuspensionDuration ?? 5000
           }
         }
 
