@@ -32,9 +32,9 @@ namespace DCL
         internal static string DOWNLOADED_PATH_ROOT = Application.dataPath + "/" + DOWNLOADED_FOLDER_NAME;
         internal static string ASSET_BUNDLES_PATH_ROOT = Application.dataPath + "/../" + ASSET_BUNDLE_FOLDER_NAME;
 
-        internal static string[] bufferExtensions = {".bin"};
-        internal static string[] gltfExtensions = {".glb", ".gltf"};
-        internal static string[] textureExtensions = {".jpg", ".png", ".jpeg", ".tga", ".gif", ".bmp", ".psd", ".tiff", ".iff"};
+        internal static string[] bufferExtensions = { ".bin" };
+        internal static string[] gltfExtensions = { ".glb", ".gltf" };
+        internal static string[] textureExtensions = { ".jpg", ".png", ".jpeg", ".tga", ".gif", ".bmp", ".psd", ".tiff", ".iff" };
     }
 
     public class AssetBundleBuilder
@@ -182,7 +182,7 @@ namespace DCL
             Debug.Log(log);
 
             CleanupWorkingFolders();
-            AssetBundleBuilderUtils.Exit((int) errorCode);
+            AssetBundleBuilderUtils.Exit((int)errorCode);
         }
 
 
@@ -415,6 +415,11 @@ namespace DCL
                 logBuffer += $"#{i} Generated asset bundle name: {assetBundles[i]}\n";
             }
 
+            FileInfo file = new FileInfo(finalAssetBundlePath);
+            DriveInfo info = new DriveInfo(file.Directory.Root.FullName);
+
+            logBuffer += $"\nFree disk space after conv: {info.AvailableFreeSpace}";
+
             return true;
         }
 
@@ -424,6 +429,11 @@ namespace DCL
                 OnFinish = CleanAndExit;
 
             startTime = Time.realtimeSinceStartup;
+
+            FileInfo file = new FileInfo(finalAssetBundlePath);
+            DriveInfo info = new DriveInfo(file.Directory.Root.FullName);
+
+            Debug.Log($"Conversion start... free space in disk: {info.AvailableFreeSpace}");
 
             InitializeDirectoryPaths(true);
             PopulateLowercaseMappings(rawContents);
@@ -640,7 +650,7 @@ namespace DCL
 
         internal void DumpScene(string cid, Action<ErrorCodes> OnFinish = null)
         {
-            ConvertScenesToAssetBundles(new List<string> {cid}, OnFinish);
+            ConvertScenesToAssetBundles(new List<string> { cid }, OnFinish);
         }
 
         internal void InitializeDirectoryPaths(bool deleteIfExists)
