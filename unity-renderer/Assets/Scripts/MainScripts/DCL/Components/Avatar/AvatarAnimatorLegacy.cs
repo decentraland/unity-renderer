@@ -235,7 +235,11 @@ public class AvatarAnimatorLegacy : MonoBehaviour
         {
             var animationToId = currentAnimations.Get()[i];
             if (this.animation.GetClip(animationToId.id) == null)
+            {
+                // animationToId.id and animationToId.clip.name must be the same or we get big performance drop here
+                // Already coordinated with art team to have the animations with the correct ids
                 this.animation.AddClip(animationToId.clip, animationToId.id);
+            }
         }
 
         SetIdleFrame();
