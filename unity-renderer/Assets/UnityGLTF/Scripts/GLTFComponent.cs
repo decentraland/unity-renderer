@@ -19,6 +19,8 @@ namespace UnityGLTF
         public static GLTFComponent nearestGLTFComponent;
 
         public static int downloadingCount;
+        public static event Action OnDownloadingProgressUpdate;
+
         public static int totalDownloadedCount;
         public static int queueCount;
 
@@ -172,6 +174,7 @@ namespace UnityGLTF
         private void IncrementDownloadCount()
         {
             downloadingCount++;
+            OnDownloadingProgressUpdate?.Invoke();
 
             if (VERBOSE)
             {
@@ -184,6 +187,7 @@ namespace UnityGLTF
             if (!alreadyDecrementedRefCount && state != State.NONE && state != State.QUEUED)
             {
                 downloadingCount--;
+                OnDownloadingProgressUpdate?.Invoke();
                 alreadyDecrementedRefCount = true;
                 if (VERBOSE)
                 {

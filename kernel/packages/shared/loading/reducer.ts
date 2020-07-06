@@ -1,5 +1,5 @@
 import { AnyAction } from 'redux'
-import { SCENE_FAIL, SCENE_LOAD, SCENE_START } from './actions'
+import { SCENE_FAIL, SCENE_LOAD, SCENE_START, UPDATE_STATUS_MESSAGE } from './actions'
 import {
   ExecutionLifecycleEvent,
   ExecutionLifecycleEventsList,
@@ -13,10 +13,11 @@ export type LoadingState = {
   status: ExecutionLifecycleEvent
   helpText: number
   pendingScenes: number
+  message: string
 }
 export function loadingReducer(state?: LoadingState, action?: AnyAction) {
   if (!state) {
-    return { status: NOT_STARTED, helpText: 0, pendingScenes: 0 }
+    return { status: NOT_STARTED, helpText: 0, pendingScenes: 0, message: '' }
   }
   if (!action) {
     return state
@@ -39,6 +40,9 @@ export function loadingReducer(state?: LoadingState, action?: AnyAction) {
   if (action.type === ROTATE_HELP_TEXT) {
     const newValue = state.helpText + 1
     return { ...state, helpText: newValue >= helpTexts.length ? 0 : newValue }
+  }
+  if (action.type === UPDATE_STATUS_MESSAGE) {
+    return { ...state, message: action.payload }
   }
   return state
 }

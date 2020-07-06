@@ -859,5 +859,10 @@ namespace DCL.Interface
         {
             SendMessage("UpdateFriendshipStatus", message);
         }
+
+        public static void ScenesLoadingFeedback(string message)
+        {
+            MessageFromEngine("ScenesLoadingFeedback", '\"' + message + '\"');
+        }
     }
 }
