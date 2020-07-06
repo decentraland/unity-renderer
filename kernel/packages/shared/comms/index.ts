@@ -3,7 +3,7 @@ import { commConfigurations, parcelLimits, COMMS, AUTO_CHANGE_REALM } from 'conf
 import { CommunicationsController } from 'shared/apis/CommunicationsController'
 import { defaultLogger } from 'shared/logger'
 import { ChatMessage as InternalChatMessage, ChatMessageType } from 'shared/types'
-import { positionObservable, PositionReport } from 'shared/world/positionThings'
+import { positionObservable, PositionReport, lastPlayerPosition } from 'shared/world/positionThings'
 import { ProfileAsPromise } from '../profiles/ProfileAsPromise'
 import { notifyStatusThroughChat } from './chat'
 import { CliBrokerConnection } from './CliBrokerConnection'
@@ -43,7 +43,7 @@ import {
 } from './interface/utils'
 import { BrokerWorldInstanceConnection } from '../comms/v1/brokerWorldInstanceConnection'
 import { profileToRendererFormat } from 'shared/profiles/transformations/profileToRendererFormat'
-import { ProfileForRenderer } from 'decentraland-ecs/src'
+import { ProfileForRenderer, uuid } from 'decentraland-ecs/src'
 import { worldRunningObservable, isWorldRunning } from '../world/worldState'
 import { WorldInstanceConnection } from './interface/index'
 
@@ -92,6 +92,11 @@ export const MORDOR_POSITION: Position = [
 
 type CommsContainer = {
   printCommsInformation: () => void
+  bots: {
+    create: () => string
+    list: () => string[]
+    remove: (id: string) => boolean
+  }
 }
 
 declare const globalThis: StoreContainer & CommsContainer
@@ -910,4 +915,46 @@ globalThis.printCommsInformation = function () {
     defaultLogger.log('Communication topics: ' + previousTopics)
     context.stats.printDebugInformation()
   }
+}
+
+type Bot = { id: string; handle: any }
+const bots: Bot[] = []
+
+globalThis.bots = {
+  create: () => {
+    const id = uuid()
+    processProfileMessage(context!, id, id, {
+      type: 'profile',
+      time: Date.now(),
+      data: {
+        version: '1',
+        user: id
+      }
+    })
+    const position = { ...lastPlayerPosition }
+    const handle = setInterval(() => {
+      processPositionMessage(context!, id, {
+        type: 'position',
+        time: Date.now(),
+        data: [position.x, position.y, position.z, 0, 0, 0, 0]
+      })
+    }, 1000)
+    bots.push({ id, handle })
+    return id
+  },
+  remove: (id: string | undefined) => {
+    let bot
+    if (id) {
+      bot = bots.find((bot) => bot.id === id)
+    } else {
+      bot = bots.length > 0 ? bots[0] : undefined
+    }
+    if (bot) {
+      clearInterval(bot.handle)
+      bots.splice(bots.indexOf(bot), 1)
+      return true
+    }
+    return false
+  },
+  list: () => bots.map((bot) => bot.id)
 }

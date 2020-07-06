@@ -110,6 +110,8 @@ export const REALM = qs.realm
 
 export const AUTO_CHANGE_REALM = location.search.indexOf('AUTO_CHANGE_REALM') !== -1
 
+export const LOS = qs.LOS
+
 export const DEBUG =
   location.search.indexOf('DEBUG_MODE') !== -1 ||
   location.search.indexOf('DEBUG_LOG') !== -1 ||

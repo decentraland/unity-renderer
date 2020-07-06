@@ -21,7 +21,6 @@ namespace DCL.Controllers
         }
 
         public static ParcelScenesCleaner parcelScenesCleaner = new ParcelScenesCleaner();
-        private const int ENTITY_POOL_PREWARM_COUNT = 2000;
 
         public Dictionary<string, DecentralandEntity> entities = new Dictionary<string, DecentralandEntity>();
         public Dictionary<string, BaseDisposable> disposableComponents = new Dictionary<string, BaseDisposable>();
@@ -339,11 +338,10 @@ namespace DCL.Controllers
             var newEntity = new DecentralandEntity();
             newEntity.entityId = tmpCreateEntityMessage.id;
 
-            // We need to manually create the Pool for empty game objects if it doesn't exist
             if (!PoolManager.i.ContainsPool(EMPTY_GO_POOL_NAME))
             {
                 GameObject go = new GameObject();
-                Pool pool = PoolManager.i.AddPool(EMPTY_GO_POOL_NAME, go, maxPrewarmCount: ENTITY_POOL_PREWARM_COUNT);
+                Pool pool = PoolManager.i.AddPool(EMPTY_GO_POOL_NAME, go, maxPrewarmCount: 2000, isPersistent: true);
                 pool.ForcePrewarm();
             }
 

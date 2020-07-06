@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using DCL.Helpers;
 using System.Collections;
 using System.Collections.Generic;
@@ -14,7 +14,10 @@ public static class DependencyMapLoadHelper
     static bool VERBOSE = false;
 
     private const string PERSISTENT_CACHE_KEY = "DepMapCache";
+    private const float MIN_TIME_BETWEEN_SAVING_PERSISTENT_CACHE = 300.0f;
+
     private static bool persistentCacheLoaded = false;
+    private static float lastTimeSavedPersistentCache = 0;
 
     public static Dictionary<string, List<string>> dependenciesMap = new Dictionary<string, List<string>>();
 
@@ -77,14 +80,19 @@ public static class DependencyMapLoadHelper
 
             dependenciesMap.Add(hash, new List<string>(map.dependencies));
 
-            SavePersistentCache();
-
             downloadingDepmap.Remove(hash);
+
+            if (DCLTime.realtimeSinceStartup - lastTimeSavedPersistentCache >= MIN_TIME_BETWEEN_SAVING_PERSISTENT_CACHE)
+            {
+                SavePersistentCache();
+            }
         }
     }
 
     private static void SavePersistentCache()
     {
+        lastTimeSavedPersistentCache = DCLTime.realtimeSinceStartup;
+
         //NOTE(Brian): Use JsonConvert because unity JsonUtility doesn't support dictionaries
         string cacheJson = JsonConvert.SerializeObject(dependenciesMap);
         PlayerPrefs.SetString(PERSISTENT_CACHE_KEY, cacheJson);
@@ -95,6 +103,7 @@ public static class DependencyMapLoadHelper
         if (persistentCacheLoaded) return;
 
         persistentCacheLoaded = true;
+        CommonScriptableObjects.rendererState.OnChange += RendererState_OnChange;
 
         string depMapCache = PlayerPrefs.GetString(PERSISTENT_CACHE_KEY, String.Empty);
 
@@ -102,5 +111,15 @@ public static class DependencyMapLoadHelper
         {
             dependenciesMap = JsonConvert.DeserializeObject<Dictionary<string, List<string>>>(depMapCache);
         }
+    }
+
+    private static void RendererState_OnChange(bool current, bool previous)
+    {
+        if (persistentCacheLoaded)
+        {
+            // Once the persistent cache has been loaded the first time, it will go being saved each time the RendererState be changed
+            SavePersistentCache();
+        }
+
     }
 }
