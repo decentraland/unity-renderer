@@ -92,6 +92,7 @@ namespace DCL
 
         public event Action OnSortScenes;
         public event Action<ParcelScene, string> OnOpenExternalUrlRequest;
+        public event Action<ParcelScene> OnNewSceneAdded;
 
         public delegate void OnOpenNFTDialogDelegate(string assetContractAddress, string tokenId, string comment);
         public event OnOpenNFTDialogDelegate OnOpenNFTDialogRequest;
@@ -312,6 +313,7 @@ namespace DCL
             newScene.SetData(data);
 
             loadedScenes.Add(uiSceneId, newScene);
+            OnNewSceneAdded?.Invoke(newScene);
 
             globalSceneId = uiSceneId;
 
@@ -404,6 +406,7 @@ namespace DCL
 
                 newScene.ownerController = this;
                 loadedScenes.Add(sceneToLoad.id, newScene);
+                OnNewSceneAdded?.Invoke(newScene);
 
                 scenesSortedByDistance.Add(newScene);
 
@@ -452,6 +455,7 @@ namespace DCL
 
                 newScene.ownerController = this;
                 loadedScenes.Add(sceneToLoad.id, newScene);
+                OnNewSceneAdded?.Invoke(newScene);
 
             }
 
@@ -831,6 +835,7 @@ namespace DCL
                 MessagingControllersManager.i.AddController(this, data.id);
 
             loadedScenes.Add(data.id, newScene);
+            OnNewSceneAdded?.Invoke(newScene);
 
             return newScene;
         }

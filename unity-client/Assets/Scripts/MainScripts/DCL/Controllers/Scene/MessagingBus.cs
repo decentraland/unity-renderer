@@ -191,8 +191,6 @@ namespace DCL
                     SceneController.i?.OnMessageWillQueue?.Invoke(sm.method);
                 }
 
-                MessagingControllersManager.i.pendingMessagesCount++;
-
                 if (id == MessagingBusId.INIT)
                 {
                     MessagingControllersManager.i.pendingInitMessagesCount++;
@@ -264,8 +262,6 @@ namespace DCL
                             processedMessagesCount++;
 
                             msgYieldInstruction = null;
-
-                            return true;
                         }
 
                         break;
@@ -302,7 +298,6 @@ namespace DCL
         public void OnMessageProcessed()
         {
             processedMessagesCount++;
-            MessagingControllersManager.i.pendingMessagesCount--;
 
             if (id == MessagingBusId.INIT)
             {
@@ -313,6 +308,7 @@ namespace DCL
 
         private LinkedListNode<QueuedSceneMessage> AddReliableMessage(QueuedSceneMessage message)
         {
+            MessagingControllersManager.i.pendingMessagesCount++;
             pendingMessagesCount++;
             return pendingMessages.AddLast(message);
         }
@@ -323,6 +319,7 @@ namespace DCL
             {
                 pendingMessages.RemoveFirst();
                 pendingMessagesCount--;
+                MessagingControllersManager.i.pendingMessagesCount--;
             }
         }
         private void RemoveUnreliableMessage(MessagingBus.QueuedSceneMessage message)
