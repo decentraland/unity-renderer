@@ -17,7 +17,7 @@ Shader "DCL/FX/Hologram"
     {
         Pass
         {
-            Tags { "RenderType"="Transparent" "Queue"="Transparent+500" "RenderPipeline"="LightweightPipeline" }
+            Tags { "RenderType"="Transparent" "Queue"="Transparent+500" "RenderPipeline"="UniversalPipeline" }
 
             Blend SrcAlpha OneMinusSrcAlpha
             ZWrite Off

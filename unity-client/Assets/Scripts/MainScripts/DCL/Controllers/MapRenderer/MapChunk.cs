@@ -1,3 +1,4 @@
+using System;
 using DCL.Helpers;
 using System.Collections;
 using UnityEngine;
@@ -12,14 +13,10 @@ namespace DCL
 
         public RawImage targetImage;
 
-        [System.NonSerialized]
-        public Vector2Int center;
-        [System.NonSerialized]
-        public Vector2Int size;
-        [System.NonSerialized]
-        public int tileSize;
-        [System.NonSerialized]
-        public MapAtlas owner;
+        [System.NonSerialized] public Vector2Int center;
+        [System.NonSerialized] public Vector2Int size;
+        [System.NonSerialized] public int tileSize;
+        [System.NonSerialized] public MapAtlas owner;
         protected RectTransform rt;
         protected bool isLoadingOrLoaded = false;
 
@@ -48,6 +45,8 @@ namespace DCL
             targetImage.texture = result;
             targetImage.SetNativeSize();
             targetImage.color = Color.white;
+
+            loadCoroutine = null;
         }
 
         public void UpdateCulling()
@@ -90,7 +89,18 @@ namespace DCL
             targetImage.enabled = visible;
 
             if (!isLoadingOrLoaded && visible)
-                CoroutineStarter.Start(LoadChunkImage());
+                loadCoroutine = CoroutineStarter.Start(LoadChunkImage());
+        }
+
+        private Coroutine loadCoroutine;
+
+        private void OnDestroy()
+        {
+            if (loadCoroutine != null)
+            {
+                CoroutineStarter.Stop(loadCoroutine);
+                loadCoroutine = null;
+            }
         }
     }
 }

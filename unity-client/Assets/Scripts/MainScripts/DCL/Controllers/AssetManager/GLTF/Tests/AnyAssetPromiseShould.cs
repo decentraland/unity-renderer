@@ -21,11 +21,8 @@ namespace AssetPromiseKeeper_GLTF_Tests
 
 
             prom.OnSuccessEvent +=
-                (x) =>
-                {
-                    loadedAsset = x;
-                }
-            ;
+                (x) => { loadedAsset = x; }
+                ;
 
             Vector3 initialPos = Vector3.one;
             Quaternion initialRot = Quaternion.LookRotation(Vector3.right, Vector3.up);
@@ -55,6 +52,7 @@ namespace AssetPromiseKeeper_GLTF_Tests
             Assert.IsTrue(loadedAsset != null);
             Assert.IsTrue(keeper.library.Contains(loadedAsset));
             Assert.AreEqual(1, keeper.library.masterAssets.Count);
+            keeper.Cleanup();
         }
 
         [UnityTest]
@@ -70,6 +68,7 @@ namespace AssetPromiseKeeper_GLTF_Tests
 
             var poolableObjectComponent = PoolManager.i.GetPoolable(prom.asset.container);
             Assert.IsNotNull(poolableObjectComponent);
+            keeper.Cleanup();
         }
 
         [UnityTest]
@@ -91,6 +90,7 @@ namespace AssetPromiseKeeper_GLTF_Tests
             }
 
             Assert.IsTrue(poolableComponents.TrueForAll(x => x != null));
+            keeper.Cleanup();
         }
 
         [UnityTest]
@@ -107,6 +107,11 @@ namespace AssetPromiseKeeper_GLTF_Tests
 
             var poolableObjectComponent = PoolManager.i.GetPoolable(prom.asset.container);
             Assert.IsNull(poolableObjectComponent);
+
+            if (prom.asset.container != null)
+                Object.Destroy(prom.asset.container);
+
+            keeper.Cleanup();
         }
 
         [UnityTest]
@@ -129,6 +134,8 @@ namespace AssetPromiseKeeper_GLTF_Tests
             }
 
             Assert.IsTrue(poolableComponents.TrueForAll(x => x == null));
+
+            keeper.Cleanup();
         }
     }
 }

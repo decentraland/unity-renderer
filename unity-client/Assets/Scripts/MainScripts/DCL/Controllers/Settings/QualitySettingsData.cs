@@ -1,4 +1,4 @@
-﻿using UnityEngine;
+using UnityEngine;
 using System;
 
 namespace DCL.SettingsData
@@ -30,7 +30,7 @@ namespace DCL.SettingsData
         public TextureQuality textureQuality;
 
         [Tooltip("Controls the global anti aliasing setting")]
-        public UnityEngine.Rendering.LWRP.MsaaQuality antiAliasing;
+        public UnityEngine.Rendering.Universal.MsaaQuality antiAliasing;
 
         [Tooltip("Scales the camera render target allowing the game to render at a resolution different than native resolution. UI is always rendered at native resolution")]
         [Range(0.5f, 1)]
@@ -43,7 +43,7 @@ namespace DCL.SettingsData
         public bool softShadows;
 
         [Tooltip("Resolution of the main light shadowmap texture")]
-        public UnityEngine.Rendering.LWRP.ShadowResolution shadowResolution;
+        public UnityEngine.Rendering.Universal.ShadowResolution shadowResolution;
 
         [Tooltip("Camera Far")]
         [Range(40, 100)]

@@ -32,7 +32,8 @@ public static class TestHelpers_Chat
             body = message,
             sender = sender,
             recipient = recipient,
-            messageType = ChatMessage.Type.PRIVATE
+            messageType = ChatMessage.Type.PRIVATE,
+            timestamp = 1000
         };
 
         controller.AddMessageToChatWindow(JsonUtility.ToJson(msg));

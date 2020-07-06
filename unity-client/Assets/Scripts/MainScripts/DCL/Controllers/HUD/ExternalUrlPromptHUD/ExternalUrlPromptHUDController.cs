@@ -32,6 +32,9 @@ public class ExternalUrlPromptHUDController : IHUD
             SceneController.i.OnOpenExternalUrlRequest -= ProcessOpenUrlRequest;
 
         trustedDomains.Clear();
+
+        if (view != null)
+            UnityEngine.Object.Destroy(view.gameObject);
     }
 
     internal void ProcessOpenUrlRequest(ParcelScene scene, string url)
@@ -54,6 +57,7 @@ public class ExternalUrlPromptHUDController : IHUD
                         {
                             trustedDomains.Add(scene.sceneData.id, new HashSet<string>());
                         }
+
                         trustedDomains[scene.sceneData.id].Add(uri.Host);
                         OpenUrl(url);
                         break;

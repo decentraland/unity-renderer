@@ -14,7 +14,9 @@ namespace DCL.Components
             public float height = 1f; // Plane
         }
 
-        public PlaneShape(ParcelScene scene) : base(scene) { }
+        public PlaneShape(ParcelScene scene) : base(scene)
+        {
+        }
 
         public override Mesh GenerateGeometry()
         {

@@ -1,20 +1,24 @@
 {
     "name": "ParametrizedShapesTests",
     "references": [
-        "MainScripts",
-        "Utils",
-        "DCLTransform",
-        "TestHelpers"
-    ],
-    "optionalUnityReferences": [
-        "TestAssemblies"
+        "GUID:e555144732b726c4cba5b0f6337fea75",
+        "GUID:b1087c5731ff68448a0a9c625bb7e52d",
+        "GUID:79fb625d53334bc4c95a29a6b7b148ae",
+        "GUID:ef84d7ce90ba34f07be26ace428e9bc8",
+        "GUID:27619889b8ba8c24980f49ee34dbb44a",
+        "GUID:0acc523941302664db1f4e527237feb3"
     ],
     "includePlatforms": [],
     "excludePlatforms": [],
     "allowUnsafeCode": false,
-    "overrideReferences": false,
-    "precompiledReferences": [],
-    "autoReferenced": true,
-    "defineConstraints": [],
-    "versionDefines": []
+    "overrideReferences": true,
+    "precompiledReferences": [
+        "nunit.framework.dll"
+    ],
+    "autoReferenced": false,
+    "defineConstraints": [
+        "UNITY_INCLUDE_TESTS"
+    ],
+    "versionDefines": [],
+    "noEngineReferences": false
 }

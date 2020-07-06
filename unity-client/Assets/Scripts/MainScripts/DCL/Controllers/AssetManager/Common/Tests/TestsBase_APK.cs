@@ -24,7 +24,7 @@ namespace AssetPromiseKeeper_Tests
         protected override IEnumerator TearDown()
         {
             keeper.Cleanup();
-            yield return base.TearDown();
+            yield return TearDown_Memory();
         }
     }
 }

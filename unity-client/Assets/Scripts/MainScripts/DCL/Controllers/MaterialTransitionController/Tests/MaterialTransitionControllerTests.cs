@@ -12,15 +12,16 @@ namespace Tests
     public class MaterialTransitionControllerTests : TestsBase
     {
         [UnityTest]
+        [Category("Explicit")]
+        [Explicit("Test is too slow")]
         public IEnumerator MaterialTransitionWithGLTF()
         {
-            yield return InitScene();
-            DCL.Configuration.EnvironmentSettings.DEBUG = true;
-            sceneController.SetDebug();
-
             var entity1 = TestHelpers.CreateSceneEntity(scene);
 
             ParcelSettings.VISUAL_LOADING_ENABLED = true;
+
+            var prevLoadingType = RendereableAssetLoadHelper.loadingType;
+            RendereableAssetLoadHelper.loadingType = RendereableAssetLoadHelper.LoadingType.GLTF_ONLY;
 
             Shader hologramShader = Shader.Find("DCL/FX/Hologram");
 
@@ -33,7 +34,7 @@ namespace Tests
                 DCL.Models.CLASS_ID.GLTF_SHAPE,
                 Vector3.zero,
                 out entity,
-                new GLTFShape.Model() { src = DCL.Helpers.Utils.GetTestsAssetsPath() + "/GLB/Lantern/Lantern.glb" });
+                new GLTFShape.Model() {src = DCL.Helpers.Utils.GetTestsAssetsPath() + "/GLB/Lantern/Lantern.glb"});
 
             LoadWrapper gltfShape = GLTFShape.GetLoaderForEntity(entity);
             yield return new WaitUntil(() => gltfShape.alreadyLoaded);
@@ -76,17 +77,15 @@ namespace Tests
 
             Assert.Less(timeout, 10.1f, "Timeout! MaterialTransitionController never appeared?");
 
+            RendereableAssetLoadHelper.loadingType = prevLoadingType;
+
             yield return null;
         }
 
         [UnityTest]
-        [NUnit.Framework.Explicit("This test started failing on the CI out of the blue. Will be re-enabled after implementing a solution dealing with high delta times")]
-        [Category("Explicit")]
         public IEnumerator MaterialTransitionWithParametrizableMeshes()
         {
-            yield return InitScene(reloadUnityScene: false);
             DCL.Configuration.EnvironmentSettings.DEBUG = true;
-            sceneController.SetDebug();
 
             var entity1 = TestHelpers.CreateSceneEntity(scene);
 

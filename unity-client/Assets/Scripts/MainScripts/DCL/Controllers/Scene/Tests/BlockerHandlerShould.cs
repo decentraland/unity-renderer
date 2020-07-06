@@ -23,6 +23,8 @@ namespace Tests
             Assert.AreEqual(36, go.transform.childCount, "Blockers count is unexpected. Remember that blockers only should spawn surrounding the scene, not inside. The spawning code might be broken.");
 
             blockerHandler.CleanBlockers();
+
+            UnityEngine.Object.Destroy(go);
             yield break;
         }
 
@@ -38,6 +40,7 @@ namespace Tests
             yield return null;
 
             Assert.AreEqual(0, go.transform.childCount, "Blockers couldn't be released properly!");
+            UnityEngine.Object.Destroy(go);
         }
     }
 }

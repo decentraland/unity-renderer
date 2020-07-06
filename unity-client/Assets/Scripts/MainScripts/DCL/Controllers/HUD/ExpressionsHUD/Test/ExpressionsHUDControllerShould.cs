@@ -15,8 +15,14 @@ namespace ExpressionsHUD_Test
             controller = new ExpressionsHUDController();
         }
 
+        [UnityTearDown]
+        protected override IEnumerator TearDown()
+        {
+            controller.Dispose();
+            yield return base.TearDown();
+        }
+
         [Test]
-        [Explicit("Expressions are disabled")]
         public void CreateView()
         {
             Assert.NotNull(controller.view);
@@ -24,7 +30,6 @@ namespace ExpressionsHUD_Test
         }
 
         [Test]
-        [Explicit("Expressions are disabled")]
         public void UpdateOwnUserProfileWhenExpressionIsCalled()
         {
             controller.ExpressionCalled("wave");
@@ -46,8 +51,13 @@ namespace ExpressionsHUD_Test
             view = controller.view;
         }
 
+        protected override IEnumerator TearDown()
+        {
+            controller.Dispose();
+            yield return base.TearDown();
+        }
+
         [Test]
-        [Explicit("Expressions are disabled")]
         public void BeInitializedProperly()
         {
             view.content.gameObject.SetActive(true);
@@ -56,7 +66,6 @@ namespace ExpressionsHUD_Test
         }
 
         [Test]
-        [Explicit("Expressions are disabled")]
         public void RegisterButtonsCallbackProperly()
         {
             string expressionCalled = null;
@@ -69,7 +78,6 @@ namespace ExpressionsHUD_Test
         }
 
         [Test]
-        [Explicit("Expressions are disabled")]
         public void ToggleContentProperly()
         {
             var currentActive = view.content.gameObject.activeSelf;
@@ -86,7 +94,6 @@ namespace ExpressionsHUD_Test
         }
 
         [Test]
-        [Explicit("Expressions are disabled")]
         public void ReactToOpenExpressionsInputAction()
         {
             var inputAction = view.openExpressionsAction;

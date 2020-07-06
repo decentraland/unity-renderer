@@ -13,18 +13,26 @@ namespace UnityGLTF.Cache
         private bool refVertexColorMat = false;
         private bool refMat = false;
 
-        public Material GetContents(bool useVertexColors)
+        public Material GetContents(bool useVertexColors, bool increaseRefCount = true)
         {
             if (useVertexColors)
             {
-                refVertexColorMat = true;
-                CachedMaterialWithVertexColor.IncreaseRefCount();
+                if (increaseRefCount)
+                {
+                    refVertexColorMat = true;
+                    CachedMaterialWithVertexColor.IncreaseRefCount();
+                }
+
                 return CachedMaterialWithVertexColor.material;
             }
             else
             {
-                refMat = true;
-                CachedMaterial.IncreaseRefCount();
+                if (increaseRefCount)
+                {
+                    refMat = true;
+                    CachedMaterial.IncreaseRefCount();
+                }
+
                 return CachedMaterial.material;
             }
         }
@@ -34,10 +42,10 @@ namespace UnityGLTF.Cache
         /// </summary>
         public void Unload()
         {
-            if (refVertexColorMat)
+            if (refMat)
                 CachedMaterial?.DecreaseRefCount();
 
-            if (refMat)
+            if (refVertexColorMat)
                 CachedMaterialWithVertexColor?.DecreaseRefCount();
         }
     }

@@ -1,9 +1,8 @@
 {
     "name": "UnityGLTFEditorAssembly",
     "references": [
-        "UnityGLTFAssembly"
+        "GUID:54b09a4a10c111e46a817873fcea53fe"
     ],
-    "optionalUnityReferences": [],
     "includePlatforms": [
         "Editor"
     ],
@@ -12,5 +11,7 @@
     "overrideReferences": false,
     "precompiledReferences": [],
     "autoReferenced": true,
-    "defineConstraints": []
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
 }

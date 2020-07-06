@@ -20,6 +20,12 @@ public class PlayerInfoCardHUDControllerShould : TestsBase
         });
     }
 
+    protected override IEnumerator TearDown()
+    {
+        controller.Dispose();
+        yield return base.TearDown();
+    }
+
     [Test]
     public void CreateTheView()
     {

@@ -11,10 +11,12 @@ namespace Tests
 {
     public class CursorControllerTests : TestsBase
     {
+        protected override bool enableSceneIntegrityChecker => false;
+
         protected override IEnumerator SetUp()
         {
+            yield return base.SetUp();
             sceneInitialized = false;
-            return base.SetUp();
         }
 
         [UnityTest]
@@ -143,10 +145,10 @@ namespace Tests
 
             // Make shape invisible
             TestHelpers.UpdateShape(scene, shape.id, JsonConvert.SerializeObject(
-            new
-            {
-                visible = false
-            }));
+                new
+                {
+                    visible = false
+                }));
 
             yield return null;
 
@@ -157,8 +159,6 @@ namespace Tests
         }
 
         [UnityTest]
-        [NUnit.Framework.Explicit("This test started failing on the CI out of the blue. Will be re-enabled after implementing a solution dealing with high delta times")]
-        [Category("Explicit")]
         public IEnumerator FeedbackIsNotDisplayedOnParent()
         {
             var cursorController = GameObject.FindObjectOfType<CursorController>();

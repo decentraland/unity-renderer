@@ -114,7 +114,8 @@ public class PrivateChatWindowHUDController : IHUD
         if (chatController != null)
             chatController.OnAddMessage -= OnAddMessage;
 
-        UnityEngine.Object.Destroy(view);
+        if (view != null)
+            UnityEngine.Object.Destroy(view.gameObject);
     }
 
     void OnAddMessage(ChatMessage message)

@@ -81,7 +81,7 @@ jobs:
     <<: *working_directory_unity
     resource_class: xlarge
     docker:
-      - image: decentraland/renderer-build
+      - image: decentraland/renderer-build:2019.4
         environment:
           BUILD_TARGET: WebGL
           BUILD_PATH: /tmp/explorer/unity-client/Builds/unity
@@ -101,17 +101,13 @@ jobs:
           keys:
             - unity-tests-{{ checksum "../.unitysources-checksum" }}
       - run:
-          name: Extract the license key for Unity
-          command: |
-            openssl enc -d -aes-256-cbc -md sha256 -in /tmp/explorer/.circleci/license.zip-cipher -out /tmp/explorer/.circleci/license.zip -k ${CIPHER_KEY}
-            cd / && unzip /tmp/explorer/.circleci/license.zip
-      - run:
           name: Run tests
           command: |
             if [[ -e /tmp/explorer/unity-client/testlog/log.txt ]]; then
                 exit 0
             else
-                bash ./test-ci.sh
+                bash before-ci.sh
+                bash test-ci.sh
                 exit $?
             fi;
       - save_cache:
@@ -127,7 +123,7 @@ jobs:
     <<: *working_directory_unity
     resource_class: xlarge
     docker:
-      - image: decentraland/renderer-build
+      - image: decentraland/renderer-build:2019.4
         environment:
           BUILD_TARGET: WebGL
           BUILD_PATH: /tmp/explorer/unity-client/Builds/unity
@@ -143,16 +139,11 @@ jobs:
           keys:
             - unity-build-{{ checksum "../.unitysources-checksum" }}
       - run:
-          name: Extract the license key for Unity
-          command: |
-            openssl enc -d -aes-256-cbc -md sha256 -in /tmp/explorer/.circleci/license.zip-cipher -out /tmp/explorer/.circleci/license.zip -k ${CIPHER_KEY}
-            cd / && unzip /tmp/explorer/.circleci/license.zip
-      - run:
           name: Build decentraland-renderer
           command: |
             if [[ ! -e ${BUILD_PATH} ]] || [[ ! -n "$(ls -A ${BUILD_PATH})" ]]; then
-                chmod +x $CIRCLE_WORKING_DIRECTORY/build-ci.sh
                 mkdir -p ${BUILD_PATH}
+                bash before-ci.sh
                 (./build-ci.sh & echo $! > /tmp/explorer/build.pid &)
                 pid=`cat /tmp/explorer/build.pid`
                 while [ -e /proc/$pid -a /proc/$pid/exe ]; do

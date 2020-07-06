@@ -14,12 +14,10 @@ namespace UnityGLTF
         /// and the data gets cleaned up when the ref counts goes to 0.
         /// </summary>
         private RefCountedCacheData cachedData;
+
         public RefCountedCacheData CachedData
         {
-            get
-            {
-                return cachedData;
-            }
+            get { return cachedData; }
 
             set
             {

@@ -14,6 +14,12 @@ namespace Tests
             controller = new TeleportPromptHUDController();
         }
 
+        protected override IEnumerator TearDown()
+        {
+            controller.Dispose();
+            yield return base.TearDown();
+        }
+
         [UnityTest]
         public IEnumerator CreateView()
         {

@@ -4,24 +4,34 @@ using DCL.Helpers;
 using DCL.Models;
 using Newtonsoft.Json;
 using System.Collections;
+using System.Collections.Generic;
+using System.Configuration;
+using System.Linq;
 using System.Reflection;
+using NUnit.Framework;
 using UnityEngine;
-using UnityEngine.Assertions;
 using UnityEngine.SceneManagement;
 using UnityEngine.TestTools;
+using Assert = UnityEngine.Assertions.Assert;
 
 public class TestsBase
 {
-    protected static bool sceneInitialized = false;
+    private const bool DEBUG_PAUSE_ON_INTEGRITY_FAIL = false;
+
+    protected Component[] startingSceneComponents = null;
+    protected bool sceneInitialized = false;
     protected SceneController sceneController;
     protected ParcelScene scene;
     protected CameraController cameraController;
 
     protected virtual bool justSceneSetUp => false;
+    protected virtual bool enableSceneIntegrityChecker => true;
 
     [UnitySetUp]
     protected virtual IEnumerator SetUp()
     {
+        DCL.Configuration.EnvironmentSettings.RUNNING_TESTS = true;
+
         if (!sceneInitialized)
         {
             yield return InitUnityScene("MainTest");
@@ -29,11 +39,19 @@ public class TestsBase
         }
 
         if (justSceneSetUp)
+        {
+            yield return SetUp_SceneIntegrityChecker();
+            SetUp_Renderer();
             yield break;
+        }
 
         SetUp_Camera();
+
         yield return SetUp_SceneController();
         yield return SetUp_CharacterController();
+
+        yield return SetUp_SceneIntegrityChecker();
+
         SetUp_Renderer();
     }
 
@@ -43,25 +61,47 @@ public class TestsBase
     {
         yield return null;
 
-        AssetPromiseKeeper_GLTF.i?.Cleanup();
-        AssetPromiseKeeper_AB_GameObject.i?.Cleanup();
-        AssetPromiseKeeper_AB.i?.Cleanup();
+        TestHelpers.ForceUnloadAllScenes(SceneController.i);
 
-        MemoryManager.i?.CleanupPoolsIfNeeded(true);
-        PoolManager.i?.Cleanup();
-        PointerEventsController.i?.Cleanup();
+        if (PointerEventsController.i != null)
+            PointerEventsController.i.Cleanup();
 
         if (DCLCharacterController.i != null)
         {
             DCLCharacterController.i.ResumeGravity();
             DCLCharacterController.i.enabled = true;
-            DCLCharacterController.i.characterController.enabled = true;
+
+            if (DCLCharacterController.i.characterController != null)
+                DCLCharacterController.i.characterController.enabled = true;
         }
+
+        yield return TearDown_Memory();
+
+        if (MapRenderer.i != null)
+            MapRenderer.i.Cleanup();
+
+        yield return TearDown_SceneIntegrityChecker();
+    }
+
+    protected void TearDown_PromiseKeepers()
+    {
+        AssetPromiseKeeper_GLTF.i?.Cleanup();
+        AssetPromiseKeeper_AB_GameObject.i?.Cleanup();
+        AssetPromiseKeeper_AB.i?.Cleanup();
+    }
+
+    protected IEnumerator TearDown_Memory()
+    {
+        TearDown_PromiseKeepers();
+
+        if (MemoryManager.i != null)
+            yield return MemoryManager.i.CleanupPoolsIfNeeded(true);
+
+        if (PoolManager.i != null)
+            PoolManager.i.Cleanup();
 
         Caching.ClearCache();
         Resources.UnloadUnusedAssets();
-
-        yield return null;
     }
 
     protected IEnumerator InitUnityScene(string sceneName = null)
@@ -83,9 +123,6 @@ public class TestsBase
             yield return SceneManager.LoadSceneAsync(sceneName);
             SceneManager.SetActiveScene(SceneManager.GetSceneByName(sceneName));
         }
-
-        yield return null;
-        CommonScriptableObjects.rendererState.Set(true);
     }
 
     public void SetUp_TestScene()
@@ -179,12 +216,12 @@ public class TestsBase
 
     public static T Reflection_GetStaticField<T>(System.Type baseType, string fieldName)
     {
-        return (T)baseType.GetField(fieldName, BindingFlags.NonPublic | BindingFlags.Static).GetValue(null);
+        return (T) baseType.GetField(fieldName, BindingFlags.NonPublic | BindingFlags.Static).GetValue(null);
     }
 
     public static T Reflection_GetField<T>(object instance, string fieldName)
     {
-        return (T)instance.GetType().GetField(fieldName, BindingFlags.NonPublic | BindingFlags.Instance).GetValue(instance);
+        return (T) instance.GetType().GetField(fieldName, BindingFlags.NonPublic | BindingFlags.Instance).GetValue(instance);
     }
 
     public static void Reflection_SetField<T>(object instance, string fieldName, T newValue)
@@ -192,4 +229,70 @@ public class TestsBase
         instance.GetType().GetField(fieldName, BindingFlags.NonPublic | BindingFlags.Instance).SetValue(instance, newValue);
     }
 
+    protected IEnumerator SetUp_SceneIntegrityChecker()
+    {
+        if (!enableSceneIntegrityChecker)
+            yield break;
+
+        //NOTE(Brian): to make it run faster in CI
+        if (Application.isBatchMode)
+            yield break;
+
+        yield return null;
+        startingSceneComponents = Object.FindObjectsOfType<Component>();
+    }
+
+    protected IEnumerator TearDown_SceneIntegrityChecker()
+    {
+        if (!enableSceneIntegrityChecker)
+            yield break;
+
+        //NOTE(Brian): to make it run faster in CI
+        if (Application.isBatchMode)
+            yield break;
+
+        if (startingSceneComponents == null)
+        {
+            Debug.LogError("SceneIntegrityChecker fail. TearDown called without SetUp or SetUp_SceneIntegrityChecker?");
+            yield break;
+        }
+
+        //NOTE(Brian): If any Destroy() calls are pending, this will flush them.
+        yield return null;
+
+        Component[] objects = Object.FindObjectsOfType<Component>();
+
+        List<Component> newObjects = new List<Component>();
+
+        foreach (var o in objects)
+        {
+            if (o.ToString().Contains("MainCamera"))
+                continue;
+
+            if (!startingSceneComponents.Contains(o))
+            {
+                newObjects.Add(o);
+            }
+        }
+
+        if (newObjects.Count > 0)
+        {
+            Debug.LogError("Dangling components detected!. Look your TearDown code, you missed to destroy objects after the tests?.");
+
+            //NOTE(Brian): Can't use asserts here because Unity Editor hangs for some reason.
+            foreach (var o in newObjects)
+            {
+                if (DEBUG_PAUSE_ON_INTEGRITY_FAIL && !Application.isBatchMode)
+                    Debug.LogError($"Component - {o} (Click to highlight)", o.gameObject);
+                else
+                    Debug.LogError($"Component - {o}", o.gameObject);
+            }
+
+            if (DEBUG_PAUSE_ON_INTEGRITY_FAIL && !Application.isBatchMode)
+            {
+                Debug.Break();
+                yield return null;
+            }
+        }
+    }
 }

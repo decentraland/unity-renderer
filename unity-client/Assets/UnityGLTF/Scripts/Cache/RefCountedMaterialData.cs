@@ -20,6 +20,7 @@ namespace UnityGLTF.Cache
 
         protected override void OnDestroyCachedData()
         {
+            Debug.Log($"On Destroy -- {ToString()}");
             if (!string.IsNullOrEmpty(crc) && PersistentAssetCache.MaterialCacheByCRC.ContainsKey(crc))
                 PersistentAssetCache.MaterialCacheByCRC.Remove(crc);
 

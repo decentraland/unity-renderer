@@ -1,20 +1,24 @@
 {
     "name": "WSSTests",
     "references": [
-        "WebSocketSharp",
-        "MainScripts",
-        "WSSController",
-        "TestHelpers"
-    ],
-    "optionalUnityReferences": [
-        "TestAssemblies"
+        "GUID:7deefc26eb4ef824586f2f51caa3b0e7",
+        "GUID:e555144732b726c4cba5b0f6337fea75",
+        "GUID:1cd9f56ea305aae458297148eecef98c",
+        "GUID:ef84d7ce90ba34f07be26ace428e9bc8",
+        "GUID:27619889b8ba8c24980f49ee34dbb44a",
+        "GUID:0acc523941302664db1f4e527237feb3"
     ],
     "includePlatforms": [],
     "excludePlatforms": [],
     "allowUnsafeCode": false,
-    "overrideReferences": false,
-    "precompiledReferences": [],
-    "autoReferenced": true,
-    "defineConstraints": [],
-    "versionDefines": []
+    "overrideReferences": true,
+    "precompiledReferences": [
+        "nunit.framework.dll"
+    ],
+    "autoReferenced": false,
+    "defineConstraints": [
+        "UNITY_INCLUDE_TESTS"
+    ],
+    "versionDefines": [],
+    "noEngineReferences": false
 }

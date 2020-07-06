@@ -98,6 +98,6 @@ public class AirdroppingHUDController_Should : TestsBase
     {
         ThumbnailsManager.bypassRequests = false;
         controller.Dispose();
-        return base.TearDown();
+        yield return base.TearDown();
     }
 }

@@ -75,7 +75,7 @@ public class PlayerInfoCardHUDController : IHUD
             userId = currentPlayerId,
             action = FriendshipAction.CANCELLED
         });
-        
+
         WebInterface.UpdateFriendshipStatus(new FriendsController.FriendshipUpdateStatusMessage()
         {
             userId = currentPlayerId, action = FriendshipAction.CANCELLED
@@ -186,5 +186,8 @@ public class PlayerInfoCardHUDController : IHUD
 
         if (toggleWorldChatTrigger != null)
             toggleWorldChatTrigger.OnTriggered -= OnCloseButtonPressed;
+
+        if (view != null)
+            UnityEngine.Object.Destroy(view.gameObject);
     }
 }

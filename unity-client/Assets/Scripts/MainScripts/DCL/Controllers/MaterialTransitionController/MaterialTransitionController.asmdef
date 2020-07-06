@@ -1,15 +1,16 @@
 {
     "name": "MaterialTransitionController",
     "references": [
-        "Utils",
-        "Configuration"
+        "GUID:b1087c5731ff68448a0a9c625bb7e52d",
+        "GUID:cc6bfabbfe87b7949aa248893f89ce37"
     ],
-    "optionalUnityReferences": [],
     "includePlatforms": [],
     "excludePlatforms": [],
     "allowUnsafeCode": false,
     "overrideReferences": false,
     "precompiledReferences": [],
     "autoReferenced": true,
-    "defineConstraints": []
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
 }

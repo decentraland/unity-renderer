@@ -6,7 +6,6 @@ using UnityEngine;
 
 namespace DCL
 {
-
     public class InputController_Legacy
     {
         private static bool renderingEnabled => CommonScriptableObjects.rendererState.Get();
@@ -48,9 +47,9 @@ namespace DCL
 
         private InputController_Legacy()
         {
-            buttonsMap.Add(new BUTTON_MAP() { type = BUTTON_TYPE.MOUSE, buttonNum = 0, buttonId = WebInterface.ACTION_BUTTON.POINTER, useRaycast = true });
-            buttonsMap.Add(new BUTTON_MAP() { type = BUTTON_TYPE.KEYBOARD, buttonNum = (int)InputSettings.PrimaryButtonKeyCode, buttonId = WebInterface.ACTION_BUTTON.PRIMARY, useRaycast = true });
-            buttonsMap.Add(new BUTTON_MAP() { type = BUTTON_TYPE.KEYBOARD, buttonNum = (int)InputSettings.SecondaryButtonKeyCode, buttonId = WebInterface.ACTION_BUTTON.SECONDARY, useRaycast = true });
+            buttonsMap.Add(new BUTTON_MAP() {type = BUTTON_TYPE.MOUSE, buttonNum = 0, buttonId = WebInterface.ACTION_BUTTON.POINTER, useRaycast = true});
+            buttonsMap.Add(new BUTTON_MAP() {type = BUTTON_TYPE.KEYBOARD, buttonNum = (int) InputSettings.PrimaryButtonKeyCode, buttonId = WebInterface.ACTION_BUTTON.PRIMARY, useRaycast = true});
+            buttonsMap.Add(new BUTTON_MAP() {type = BUTTON_TYPE.KEYBOARD, buttonNum = (int) InputSettings.SecondaryButtonKeyCode, buttonId = WebInterface.ACTION_BUTTON.SECONDARY, useRaycast = true});
         }
 
         public void AddListener(WebInterface.ACTION_BUTTON buttonId, Action<WebInterface.ACTION_BUTTON, EVENT, bool> callback)
@@ -79,13 +78,15 @@ namespace DCL
         // Note (Zak): it is public for testing purposes only
         public void RaiseEvent(WebInterface.ACTION_BUTTON buttonId, EVENT evt, bool useRaycast)
         {
-            if (listeners.ContainsKey(buttonId))
-            {
-                List<Action<WebInterface.ACTION_BUTTON, EVENT, bool>> callbacks = listeners[buttonId];
-                int count = callbacks.Count;
+            if (!listeners.ContainsKey(buttonId))
+                return;
 
-                for (int i = 0; i < count; i++)
-                    callbacks[i].Invoke(buttonId, evt, useRaycast);
+            List<Action<WebInterface.ACTION_BUTTON, EVENT, bool>> callbacks = listeners[buttonId];
+            int count = callbacks.Count;
+
+            for (int i = 0; i < count; i++)
+            {
+                callbacks[i].Invoke(buttonId, evt, useRaycast);
             }
         }
 
@@ -111,9 +112,9 @@ namespace DCL
                         break;
                     case BUTTON_TYPE.KEYBOARD:
                         if (CommonScriptableObjects.allUIHidden.Get()) break;
-                        if (Input.GetKeyDown((KeyCode)btnMap.buttonNum))
+                        if (Input.GetKeyDown((KeyCode) btnMap.buttonNum))
                             RaiseEvent(btnMap.buttonId, EVENT.BUTTON_DOWN, btnMap.useRaycast);
-                        else if (Input.GetKeyUp((KeyCode)btnMap.buttonNum))
+                        else if (Input.GetKeyUp((KeyCode) btnMap.buttonNum))
                             RaiseEvent(btnMap.buttonId, EVENT.BUTTON_UP, btnMap.useRaycast);
                         break;
                 }
@@ -132,8 +133,8 @@ namespace DCL
                     return Input.GetKey(InputSettings.SecondaryButtonKeyCode);
                 default: // ANY
                     return Input.GetMouseButton(0) ||
-                            Input.GetKey(InputSettings.PrimaryButtonKeyCode) ||
-                            Input.GetKey(InputSettings.SecondaryButtonKeyCode);
+                           Input.GetKey(InputSettings.PrimaryButtonKeyCode) ||
+                           Input.GetKey(InputSettings.SecondaryButtonKeyCode);
             }
         }
     }

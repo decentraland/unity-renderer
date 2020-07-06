@@ -10,7 +10,7 @@ public class UITextVisualTests : UIVisualTestsBase
 {
     [UnityTest]
     [Explicit]
-    [Category("Visual Tests")]
+    [Category("Explicit")]
     public IEnumerator UITextVisualTests_Generate()
     {
         yield return VisualTestHelpers.GenerateBaselineForTest(UITextTest1());

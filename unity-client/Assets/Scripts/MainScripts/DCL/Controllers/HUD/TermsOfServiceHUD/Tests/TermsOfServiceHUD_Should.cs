@@ -17,6 +17,12 @@ public class TermsOfServiceHUD_Should : TestsBase
         view = controller.view;
     }
 
+    protected override IEnumerator TearDown()
+    {
+        controller.Dispose();
+        yield return base.TearDown();
+    }
+
     [Test]
     public void SetTheViewVisibleWhenModelNotNull()
     {
@@ -60,7 +66,7 @@ public class TermsOfServiceHUD_Should : TestsBase
     [Test]
     public void ShowAdultWarningProperly()
     {
-        controller.ShowTermsOfService(new TermsOfServiceHUDController.Model() { adultContent = true });
+        controller.ShowTermsOfService(new TermsOfServiceHUDController.Model() {adultContent = true});
 
         Assert.IsTrue(view.adultContent.activeSelf);
     }
@@ -68,7 +74,7 @@ public class TermsOfServiceHUD_Should : TestsBase
     [Test]
     public void HideAdultWarningProperly()
     {
-        controller.ShowTermsOfService(new TermsOfServiceHUDController.Model() { adultContent = false });
+        controller.ShowTermsOfService(new TermsOfServiceHUDController.Model() {adultContent = false});
 
         Assert.IsFalse(view.adultContent.activeSelf);
     }
@@ -76,7 +82,7 @@ public class TermsOfServiceHUD_Should : TestsBase
     [Test]
     public void ShowGamlingWarningProperly()
     {
-        controller.ShowTermsOfService(new TermsOfServiceHUDController.Model() { gamblingContent = true });
+        controller.ShowTermsOfService(new TermsOfServiceHUDController.Model() {gamblingContent = true});
 
         Assert.IsTrue(view.gamblingContent.activeSelf);
     }
@@ -84,7 +90,7 @@ public class TermsOfServiceHUD_Should : TestsBase
     [Test]
     public void HideGamlingWarningProperly()
     {
-        controller.ShowTermsOfService(new TermsOfServiceHUDController.Model() { gamblingContent = false });
+        controller.ShowTermsOfService(new TermsOfServiceHUDController.Model() {gamblingContent = false});
 
         Assert.IsFalse(view.gamblingContent.activeSelf);
     }

@@ -41,12 +41,18 @@ public class WorldChatWindowHUDShould : TestsBase
         controller = new WorldChatWindowHUDController();
         chatController = new ChatController_Mock();
         mouseCatcher = new MouseCatcher_Mock();
+
         controller.Initialize(chatController, mouseCatcher);
         this.view = controller.view;
+
         Assert.IsTrue(view != null, "World chat hud view is null?");
         Assert.IsTrue(controller != null, "World chat hud controller is null?");
+    }
 
-        yield break;
+    protected override IEnumerator TearDown()
+    {
+        controller.Dispose();
+        yield return base.TearDown();
     }
 
 
@@ -132,7 +138,7 @@ public class WorldChatWindowHUDShould : TestsBase
 
         WebInterface.OnMessageFromEngine += messageCallback;
         controller.resetInputFieldOnSubmit = false;
-        controller.SendChatMessage(new ChatMessage() { body = "test message" });
+        controller.SendChatMessage(new ChatMessage() {body = "test message"});
         Assert.IsTrue(messageWasSent);
         WebInterface.OnMessageFromEngine -= messageCallback;
         yield return null;

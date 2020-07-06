@@ -184,7 +184,7 @@ public class TaskbarHUDController : IHUD
 
     public void OpenPrivateChatTo(string userId)
     {
-        var button = view.chatHeadsGroup.AddChatHead(userId, (ulong)System.DateTimeOffset.UtcNow.ToUnixTimeMilliseconds());
+        var button = view.chatHeadsGroup.AddChatHead(userId, (ulong) System.DateTimeOffset.UtcNow.ToUnixTimeMilliseconds());
         button.toggleButton.onClick.Invoke();
     }
 
@@ -258,10 +258,7 @@ public class TaskbarHUDController : IHUD
                 worldChatWindowHud.MarkWorldChatMessagesAsRead();
         };
 
-        friendsHud.view.friendsList.OnDeleteConfirmation += (userIdToRemove) =>
-        {
-            view.chatHeadsGroup.RemoveChatHead(userIdToRemove);
-        };
+        friendsHud.view.friendsList.OnDeleteConfirmation += (userIdToRemove) => { view.chatHeadsGroup.RemoveChatHead(userIdToRemove); };
     }
 
     public void DisableFriendsWindow()
@@ -320,8 +317,8 @@ public class TaskbarHUDController : IHUD
     public void OnWorldChatToggleInputPress()
     {
         bool anyInputFieldIsSelected = EventSystem.current != null &&
-            EventSystem.current.currentSelectedGameObject != null &&
-            EventSystem.current.currentSelectedGameObject.GetComponent<TMPro.TMP_InputField>() != null;
+                                       EventSystem.current.currentSelectedGameObject != null &&
+                                       EventSystem.current.currentSelectedGameObject.GetComponent<TMPro.TMP_InputField>() != null;
 
         if (anyInputFieldIsSelected)
             return;
@@ -351,9 +348,9 @@ public class TaskbarHUDController : IHUD
     private void OnFriendsToggleInputPress()
     {
         bool anyInputFieldIsSelected = EventSystem.current != null &&
-            EventSystem.current.currentSelectedGameObject != null &&
-            EventSystem.current.currentSelectedGameObject.GetComponent<TMPro.TMP_InputField>() != null &&
-            (!worldChatWindowHud.view.chatHudView.inputField.isFocused || !worldChatWindowHud.view.isInPreview);
+                                       EventSystem.current.currentSelectedGameObject != null &&
+                                       EventSystem.current.currentSelectedGameObject.GetComponent<TMPro.TMP_InputField>() != null &&
+                                       (!worldChatWindowHud.view.chatHudView.inputField.isFocused || !worldChatWindowHud.view.isInPreview);
 
         if (anyInputFieldIsSelected)
             return;
@@ -366,7 +363,7 @@ public class TaskbarHUDController : IHUD
     void OnAddMessage(ChatMessage message)
     {
         if (!AnyWindowsDifferentThanChatIsOpen() && message.messageType == ChatMessage.Type.PUBLIC)
-            worldChatWindowHud.MarkWorldChatMessagesAsRead((long)message.timestamp);
+            worldChatWindowHud.MarkWorldChatMessagesAsRead((long) message.timestamp);
     }
 
     private bool AnyWindowsDifferentThanChatIsOpen()

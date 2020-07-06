@@ -6,7 +6,6 @@
         "GUID:cc6bfabbfe87b7949aa248893f89ce37",
         "GUID:4973650d2444c4561a15d50f24d91cd9"
     ],
-    "optionalUnityReferences": [],
     "includePlatforms": [],
     "excludePlatforms": [],
     "allowUnsafeCode": false,
@@ -14,5 +13,6 @@
     "precompiledReferences": [],
     "autoReferenced": true,
     "defineConstraints": [],
-    "versionDefines": []
+    "versionDefines": [],
+    "noEngineReferences": false
 }

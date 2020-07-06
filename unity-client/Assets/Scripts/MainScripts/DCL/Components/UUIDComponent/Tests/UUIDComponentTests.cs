@@ -14,6 +14,8 @@ namespace Tests
 {
     public class UUIDComponentTests : TestsBase
     {
+        protected override bool enableSceneIntegrityChecker => false;
+
         [UnitySetUp]
         protected override IEnumerator SetUp()
         {
@@ -542,10 +544,7 @@ namespace Tests
             bool eventTriggered = false;
 
             yield return TestHelpers.WaitForEventFromEngine(targetEventType, sceneEvent,
-            () =>
-                {
-                    DCL.InputController_Legacy.i.RaiseEvent(WebInterface.ACTION_BUTTON.POINTER, DCL.InputController_Legacy.EVENT.BUTTON_DOWN, true);
-                },
+                () => { InputController_Legacy.i.RaiseEvent(WebInterface.ACTION_BUTTON.POINTER, DCL.InputController_Legacy.EVENT.BUTTON_DOWN, true); },
                 (pointerEvent) =>
                 {
                     if (pointerEvent.eventType == sceneEvent.eventType && pointerEvent.payload.uuid == sceneEvent.payload.uuid)
@@ -600,10 +599,7 @@ namespace Tests
             bool eventTriggered = false;
 
             yield return TestHelpers.WaitForEventFromEngine(targetEventType, sceneEvent,
-                () =>
-                {
-                    DCL.InputController_Legacy.i.RaiseEvent(WebInterface.ACTION_BUTTON.POINTER, DCL.InputController_Legacy.EVENT.BUTTON_DOWN, true);
-                },
+                () => { DCL.InputController_Legacy.i.RaiseEvent(WebInterface.ACTION_BUTTON.POINTER, DCL.InputController_Legacy.EVENT.BUTTON_DOWN, true); },
                 (pointerEvent) =>
                 {
                     //Debug.Log($"triggered? \npointerEvent {JsonUtility.ToJson(pointerEvent, true)}\nsceneEvent {JsonUtility.ToJson(sceneEvent, true)}");
@@ -615,6 +611,7 @@ namespace Tests
                         eventTriggered = true;
                         return true;
                     }
+
                     return false;
                 });
 
@@ -663,10 +660,7 @@ namespace Tests
             DCL.InputController_Legacy.i.RaiseEvent(WebInterface.ACTION_BUTTON.POINTER, DCL.InputController_Legacy.EVENT.BUTTON_DOWN, true);
 
             yield return TestHelpers.WaitForEventFromEngine(targetEventType, sceneEvent,
-                () =>
-                {
-                    DCL.InputController_Legacy.i.RaiseEvent(WebInterface.ACTION_BUTTON.POINTER, DCL.InputController_Legacy.EVENT.BUTTON_UP, true);
-                },
+                () => { DCL.InputController_Legacy.i.RaiseEvent(WebInterface.ACTION_BUTTON.POINTER, DCL.InputController_Legacy.EVENT.BUTTON_UP, true); },
                 (pointerEvent) =>
                 {
                     if (pointerEvent.eventType == sceneEvent.eventType &&
@@ -676,6 +670,7 @@ namespace Tests
                         eventTriggered = true;
                         return true;
                     }
+
                     return false;
                 });
 
@@ -724,10 +719,7 @@ namespace Tests
             DCL.InputController_Legacy.i.RaiseEvent(WebInterface.ACTION_BUTTON.POINTER, DCL.InputController_Legacy.EVENT.BUTTON_DOWN, true);
 
             yield return TestHelpers.WaitForEventFromEngine(targetEventType, sceneEvent,
-                () =>
-                {
-                    DCL.InputController_Legacy.i.RaiseEvent(WebInterface.ACTION_BUTTON.POINTER, DCL.InputController_Legacy.EVENT.BUTTON_UP, true);
-                },
+                () => { DCL.InputController_Legacy.i.RaiseEvent(WebInterface.ACTION_BUTTON.POINTER, DCL.InputController_Legacy.EVENT.BUTTON_UP, true); },
                 (pointerEvent) =>
                 {
                     if (pointerEvent.eventType == sceneEvent.eventType &&
@@ -737,6 +729,7 @@ namespace Tests
                         eventTriggered = true;
                         return true;
                     }
+
                     return false;
                 });
 
@@ -744,18 +737,15 @@ namespace Tests
 
             // turn shape invisible
             TestHelpers.UpdateShape(scene, shape.id, JsonConvert.SerializeObject(
-            new
-            {
-                visible = false
-            }));
+                new
+                {
+                    visible = false
+                }));
 
             DCL.InputController_Legacy.i.RaiseEvent(WebInterface.ACTION_BUTTON.POINTER, DCL.InputController_Legacy.EVENT.BUTTON_DOWN, true);
             eventTriggered = false;
             yield return TestHelpers.WaitForEventFromEngine(targetEventType, sceneEvent,
-                () =>
-                {
-                    DCL.InputController_Legacy.i.RaiseEvent(WebInterface.ACTION_BUTTON.POINTER, DCL.InputController_Legacy.EVENT.BUTTON_UP, true);
-                },
+                () => { DCL.InputController_Legacy.i.RaiseEvent(WebInterface.ACTION_BUTTON.POINTER, DCL.InputController_Legacy.EVENT.BUTTON_UP, true); },
                 (pointerEvent) =>
                 {
                     if (pointerEvent.eventType == sceneEvent.eventType &&
@@ -765,6 +755,7 @@ namespace Tests
                         eventTriggered = true;
                         return true;
                     }
+
                     return false;
                 });
 
@@ -824,10 +815,7 @@ namespace Tests
             // Check if target entity is hit behind other entity
             bool targetEntityHit = false;
             yield return TestHelpers.WaitForEventFromEngine(targetEventType, sceneEvent,
-                () =>
-                {
-                    DCL.InputController_Legacy.i.RaiseEvent(WebInterface.ACTION_BUTTON.POINTER, DCL.InputController_Legacy.EVENT.BUTTON_DOWN, true);
-                },
+                () => { DCL.InputController_Legacy.i.RaiseEvent(WebInterface.ACTION_BUTTON.POINTER, DCL.InputController_Legacy.EVENT.BUTTON_DOWN, true); },
                 (pointerEvent) =>
                 {
                     if (pointerEvent.eventType == "uuidEvent" &&
@@ -836,6 +824,7 @@ namespace Tests
                     {
                         targetEntityHit = true;
                     }
+
                     return true;
                 });
 
@@ -851,10 +840,7 @@ namespace Tests
             // Check if target entity is hit in front of the camera without being blocked
             targetEntityHit = false;
             yield return TestHelpers.WaitForEventFromEngine(targetEventType, sceneEvent,
-                () =>
-                {
-                    DCL.InputController_Legacy.i.RaiseEvent(WebInterface.ACTION_BUTTON.POINTER, DCL.InputController_Legacy.EVENT.BUTTON_DOWN, true);
-                },
+                () => { DCL.InputController_Legacy.i.RaiseEvent(WebInterface.ACTION_BUTTON.POINTER, DCL.InputController_Legacy.EVENT.BUTTON_DOWN, true); },
                 (pointerEvent) =>
                 {
                     if (pointerEvent.eventType == "uuidEvent" &&
@@ -863,6 +849,7 @@ namespace Tests
                     {
                         targetEntityHit = true;
                     }
+
                     return true;
                 });
 
@@ -930,10 +917,7 @@ namespace Tests
             // Check the target entity is not hit behind the 'isPointerBlocker' shape
             bool targetEntityHit = false;
             yield return TestHelpers.WaitForEventFromEngine(targetEventType, sceneEvent,
-                () =>
-                {
-                    DCL.InputController_Legacy.i.RaiseEvent(WebInterface.ACTION_BUTTON.POINTER, DCL.InputController_Legacy.EVENT.BUTTON_DOWN, true);
-                },
+                () => { DCL.InputController_Legacy.i.RaiseEvent(WebInterface.ACTION_BUTTON.POINTER, DCL.InputController_Legacy.EVENT.BUTTON_DOWN, true); },
                 (pointerEvent) =>
                 {
                     if (pointerEvent.eventType == "uuidEvent" &&
@@ -942,6 +926,7 @@ namespace Tests
                     {
                         targetEntityHit = true;
                     }
+
                     return true;
                 });
 
@@ -956,10 +941,7 @@ namespace Tests
             // Check the target entity is hit behind the 'isPointerBlocker' shape now
             targetEntityHit = false;
             yield return TestHelpers.WaitForEventFromEngine(targetEventType, sceneEvent,
-                () =>
-                {
-                    DCL.InputController_Legacy.i.RaiseEvent(WebInterface.ACTION_BUTTON.POINTER, DCL.InputController_Legacy.EVENT.BUTTON_DOWN, true);
-                },
+                () => { DCL.InputController_Legacy.i.RaiseEvent(WebInterface.ACTION_BUTTON.POINTER, DCL.InputController_Legacy.EVENT.BUTTON_DOWN, true); },
                 (pointerEvent) =>
                 {
                     if (pointerEvent.eventType == "uuidEvent" &&
@@ -968,6 +950,7 @@ namespace Tests
                     {
                         targetEntityHit = true;
                     }
+
                     return true;
                 });
 
@@ -1027,10 +1010,7 @@ namespace Tests
             // Check if target entity is triggered by hitting the parent entity
             bool targetEntityHit = false;
             yield return TestHelpers.WaitForEventFromEngine(targetEventType, sceneEvent,
-                () =>
-                {
-                    DCL.InputController_Legacy.i.RaiseEvent(WebInterface.ACTION_BUTTON.POINTER, DCL.InputController_Legacy.EVENT.BUTTON_DOWN, true);
-                },
+                () => { DCL.InputController_Legacy.i.RaiseEvent(WebInterface.ACTION_BUTTON.POINTER, DCL.InputController_Legacy.EVENT.BUTTON_DOWN, true); },
                 (pointerEvent) =>
                 {
                     if (pointerEvent.eventType == "uuidEvent" &&
@@ -1039,6 +1019,7 @@ namespace Tests
                     {
                         targetEntityHit = true;
                     }
+
                     return true;
                 });
 
@@ -1053,10 +1034,7 @@ namespace Tests
             // Check if target entity is triggered when hit directly
             targetEntityHit = false;
             yield return TestHelpers.WaitForEventFromEngine(targetEventType, sceneEvent,
-                () =>
-                {
-                    DCL.InputController_Legacy.i.RaiseEvent(WebInterface.ACTION_BUTTON.POINTER, DCL.InputController_Legacy.EVENT.BUTTON_DOWN, true);
-                },
+                () => { DCL.InputController_Legacy.i.RaiseEvent(WebInterface.ACTION_BUTTON.POINTER, DCL.InputController_Legacy.EVENT.BUTTON_DOWN, true); },
                 (pointerEvent) =>
                 {
                     if (pointerEvent.eventType == "uuidEvent" &&
@@ -1065,6 +1043,7 @@ namespace Tests
                     {
                         targetEntityHit = true;
                     }
+
                     return true;
                 });
 
@@ -1168,6 +1147,8 @@ namespace Tests
             yield return null;
 
             Assert.IsFalse(hoverCanvas.enabled);
+
+            Object.Destroy(component);
 
             DCLCharacterController.i.ResumeGravity();
         }

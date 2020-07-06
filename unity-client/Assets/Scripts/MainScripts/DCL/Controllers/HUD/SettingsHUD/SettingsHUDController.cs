@@ -16,6 +16,8 @@ namespace DCL.SettingsHUD
 
         public void Dispose()
         {
+            if (view != null)
+                UnityEngine.Object.Destroy(view.gameObject);
         }
     }
 }

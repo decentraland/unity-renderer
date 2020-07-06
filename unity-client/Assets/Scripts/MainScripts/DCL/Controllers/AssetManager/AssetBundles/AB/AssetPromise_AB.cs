@@ -170,8 +170,12 @@ namespace DCL
                 yield break;
             }
 
+#if UNITY_EDITOR
             assetBundleRequest = UnityWebRequestAssetBundle.GetAssetBundle(finalUrl, Hash128.Compute(hash));
-
+#else
+            //NOTE(Brian): Disable in build because using the asset bundle caching uses IDB.
+            assetBundleRequest = UnityWebRequestAssetBundle.GetAssetBundle(finalUrl);
+#endif
             var asyncOp = assetBundleRequest.SendWebRequest();
 
             while (!asyncOp.isDone)

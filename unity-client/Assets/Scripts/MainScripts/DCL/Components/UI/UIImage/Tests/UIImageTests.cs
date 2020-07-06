@@ -117,7 +117,7 @@ namespace Tests
         }
 
         [UnityTest]
-        public IEnumerator TestOnclickEvent()
+        public IEnumerator TestOnClickEvent()
         {
             UIScreenSpace screenSpaceShape =
                 TestHelpers.SharedComponentCreate<UIScreenSpace, UIScreenSpace.Model>(scene,
@@ -149,7 +149,7 @@ namespace Tests
             yield return TestHelpers.TestUIClickEventPropagation(
                 scene.sceneData.id,
                 uiImageOnClickEventId,
-                (RectTransform)uiImage.referencesContainer.image.transform,
+                (RectTransform) uiImage.referencesContainer.image.transform,
                 (bool res) =>
                 {
                     // Check image object clicking triggers the correct event
@@ -174,7 +174,7 @@ namespace Tests
             yield return TestHelpers.TestUIClickEventPropagation(
                 scene.sceneData.id,
                 uiImageOnClickEventId,
-                (RectTransform)uiContainer.referencesContainer.image.transform,
+                (RectTransform) uiContainer.referencesContainer.image.transform,
                 (bool res) =>
                 {
                     // Check image object clicking doesn't trigger event
@@ -182,6 +182,11 @@ namespace Tests
                 });
 
             Assert.IsFalse(eventResult);
+
+            yield return null;
+            yield return null;
+            yield return null;
+            yield return null;
         }
 
         [UnityTest]

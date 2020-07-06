@@ -7,6 +7,7 @@ namespace Tests
 {
     public class NavmapTests : TestsBase
     {
+        private MinimapHUDController controller;
         DCL.NavmapView navmapView;
         protected override bool justSceneSetUp => true;
 
@@ -15,7 +16,14 @@ namespace Tests
         {
             yield return base.SetUp();
 
-            navmapView = GameObject.FindObjectOfType<DCL.NavmapView>();
+            controller = new MinimapHUDController();
+            navmapView = Object.FindObjectOfType<DCL.NavmapView>();
+        }
+
+        protected override IEnumerator TearDown()
+        {
+            controller.Dispose();
+            yield return base.TearDown();
         }
 
         [UnityTest]
@@ -55,7 +63,6 @@ namespace Tests
         {
             const string sceneName = "SCENE_NAME";
 
-            var controller = new MinimapHUDController();
             controller.UpdateSceneName(sceneName);
 
             yield return null;
@@ -67,9 +74,8 @@ namespace Tests
         public IEnumerator SetPlayerCoordinatesVector2()
         {
             Vector2 coords = new Vector2(Random.Range(-150, 150), Random.Range(-150, 150));
-            string coordString = string.Format("{0},{1}", coords.x, coords.y);
+            string coordString = $"{coords.x},{coords.y}";
 
-            var controller = new MinimapHUDController();
             controller.UpdatePlayerPosition(coords);
 
             yield return null;
@@ -81,9 +87,8 @@ namespace Tests
         public IEnumerator SetPlayerCoordinatesString()
         {
             Vector2 coords = new Vector2(Random.Range(-150, 150), Random.Range(-150, 150));
-            string coordString = string.Format("{0},{1}", coords.x, coords.y);
+            string coordString = $"{coords.x},{coords.y}";
 
-            var controller = new MinimapHUDController();
             controller.UpdatePlayerPosition(coordString);
 
             yield return null;

@@ -10,9 +10,9 @@ using UnityEngine.TestTools;
 public class UIImageVisualTests : UIVisualTestsBase
 {
     [UnityTest]
-    [Explicit]
     [VisualTest]
-    [Category("Visual Tests")]
+    [Explicit]
+    [Category("Explicit")]
     public IEnumerator UIImageVisualTests_Generate()
     {
         yield return VisualTestHelpers.GenerateBaselineForTest(UIImageTest1());

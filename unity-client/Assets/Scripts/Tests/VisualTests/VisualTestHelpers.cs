@@ -24,20 +24,6 @@ namespace DCL.Helpers
             generateBaseline = false;
         }
 
-        public static IEnumerator InitVisualTestsScene(string testName)
-        {
-            currentTestName = testName;
-            snapshotIndex = 0;
-
-            DCLCharacterController.i.PauseGravity();
-            DCLCharacterController.i.enabled = false;
-
-            // Position character inside parcel (0,0)
-            TestHelpers.SetCharacterPosition(new Vector3(0, 2f, 0f));
-
-            yield return new WaitForSeconds(2.0f);
-        }
-
         /// <summary>
         /// This coroutine will take a visual test snapshot positioning the camera from shotPosition and pointing at shotTarget.
         /// Used in tandem with GenerateBaselineForTest(), TakeSnapshot will also generate the baseline test images.
@@ -107,7 +93,7 @@ namespace DCL.Helpers
             }
 
             var previousQualityLevel = QualitySettings.GetQualityLevel();
-            QualitySettings.SetQualityLevel((int)QualityLevel.Good, true);
+            QualitySettings.SetQualityLevel((int) QualityLevel.Good, true);
 
             string finalPath = snapshotPath + snapshotName;
 

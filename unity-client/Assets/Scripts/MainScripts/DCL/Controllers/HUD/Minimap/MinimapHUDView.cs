@@ -5,21 +5,20 @@ using UnityEngine.UI;
 
 public class MinimapHUDView : MonoBehaviour
 {
-    private const string VIEW_PATH = "MinimapHUD";
-    private const string VIEW_OBJECT_NAME = "_MinimapHUD";
+    public const string VIEW_PATH = "MinimapHUD";
+    public const string VIEW_OBJECT_NAME = "_MinimapHUD";
 
-    [Header("Information")]
-    [SerializeField] private TextMeshProUGUI sceneNameText;
+    [Header("Information")] [SerializeField]
+    private TextMeshProUGUI sceneNameText;
+
     [SerializeField] private TextMeshProUGUI playerPositionText;
 
-    [Header("Options")]
-    [SerializeField] private Button optionsButton;
+    [Header("Options")] [SerializeField] private Button optionsButton;
     [SerializeField] private GameObject optionsPanel;
     [SerializeField] private Button addBookmarkButton;
     [SerializeField] private Button reportSceneButton;
 
-    [Header("Map Renderer")]
-    public RectTransform mapRenderContainer;
+    [Header("Map Renderer")] public RectTransform mapRenderContainer;
     public RectTransform mapViewport;
     [SerializeField] private Button openNavmapButton;
 

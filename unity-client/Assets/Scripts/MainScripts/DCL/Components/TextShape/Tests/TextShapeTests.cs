@@ -9,13 +9,14 @@ using UnityEngine.TestTools;
 
 namespace Tests
 {
-
     public class TextShapeTests : TestsBase
     {
         [UnitySetUp]
         protected override IEnumerator SetUp()
         {
             yield return SetUp_SceneController();
+            yield return null;
+            yield return SetUp_SceneIntegrityChecker();
         }
 
         [UnityTest]

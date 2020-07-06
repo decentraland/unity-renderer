@@ -67,7 +67,8 @@ public class WorldChatWindowHUDController : IHUD
 
         view.OnSendMessage -= SendChatMessage;
 
-        Object.Destroy(view);
+        if (view != null)
+            Object.Destroy(view.gameObject);
     }
 
     bool IsOldPrivateMessage(ChatMessage message)

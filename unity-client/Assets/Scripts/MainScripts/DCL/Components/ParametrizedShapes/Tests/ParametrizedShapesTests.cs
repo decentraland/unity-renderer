@@ -10,12 +10,6 @@ namespace Tests
 {
     public class ParametrizedShapesTests : TestsBase
     {
-        [UnitySetUp]
-        protected override IEnumerator SetUp()
-        {
-            yield return SetUp_SceneController();
-        }
-
         [UnityTest]
         public IEnumerator BoxShapeUpdate()
         {
@@ -53,7 +47,7 @@ namespace Tests
         [UnityTest]
         public IEnumerator PlaneShapeUpdateWithUVs()
         {
-            float[] uvs = new float[] { 0, 0.75f, 0.25f, 0.75f, 0.25f, 1, 0, 1, 0, 0.75f, 0.25f, 0.75f, 0.25f, 1, 0, 1 };
+            float[] uvs = new float[] {0, 0.75f, 0.25f, 0.75f, 0.25f, 1, 0, 1, 0, 0.75f, 0.25f, 0.75f, 0.25f, 1, 0, 1};
 
             DecentralandEntity entity;
 
@@ -116,7 +110,7 @@ namespace Tests
                 componentJSON
             );
 
-            BoxShape boxShapeComponent = (BoxShape)scene.GetSharedComponent(componentId);
+            BoxShape boxShapeComponent = (BoxShape) scene.GetSharedComponent(componentId);
 
             // 2. Check configured values
             Assert.IsTrue(boxShapeComponent.model.withCollisions);
@@ -196,8 +190,8 @@ namespace Tests
                     CLASS_ID.CYLINDER_SHAPE);
         }
 
+
         [UnityTest]
-        [Explicit("This test fails due to unknown reason, made explicit to tackle it in the future.")]
         public IEnumerator PlaneShapeComponentMissingValuesGetDefaultedOnUpdate()
         {
             var component =
@@ -224,7 +218,7 @@ namespace Tests
             TestHelpers.CreateSceneEntity(scene, entityId);
             var entity = scene.entities[entityId];
 
-            TestHelpers.SetEntityTransform(scene, entity, new DCLTransform.Model { position = new Vector3(8, 1, 8) });
+            TestHelpers.SetEntityTransform(scene, entity, new DCLTransform.Model {position = new Vector3(8, 1, 8)});
 
             yield return null;
 
@@ -301,7 +295,7 @@ namespace Tests
             TestHelpers.CreateSceneEntity(scene, entityId);
             var entity = scene.entities[entityId];
 
-            TestHelpers.SetEntityTransform(scene, entity, new DCLTransform.Model { position = new Vector3(8, 1, 8) });
+            TestHelpers.SetEntityTransform(scene, entity, new DCLTransform.Model {position = new Vector3(8, 1, 8)});
 
             yield return null;
 

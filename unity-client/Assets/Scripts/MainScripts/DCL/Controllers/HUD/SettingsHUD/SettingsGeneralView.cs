@@ -55,7 +55,7 @@ namespace DCL.SettingsHUD
 
             shadowResSpinBox.onValueChanged.AddListener(value =>
             {
-                tempQualitySetting.shadowResolution = (UnityEngine.Rendering.LWRP.ShadowResolution)(256 << value);
+                tempQualitySetting.shadowResolution = (UnityEngine.Rendering.Universal.ShadowResolution)(256 << value);
                 shouldSetAsCustom = true;
                 isDirty = true;
             });
@@ -108,7 +108,7 @@ namespace DCL.SettingsHUD
             antiAliasingSlider.onValueChanged.AddListener(value =>
             {
                 int antiAliasingValue = 1 << (int)value;
-                tempQualitySetting.antiAliasing = (UnityEngine.Rendering.LWRP.MsaaQuality)antiAliasingValue;
+                tempQualitySetting.antiAliasing = (UnityEngine.Rendering.Universal.MsaaQuality)antiAliasingValue;
                 if (value == 0)
                 {
                     antiAliasingValueLabel.text = TEXT_OFF;
@@ -206,7 +206,7 @@ namespace DCL.SettingsHUD
             shadowToggle.isOn = tempQualitySetting.shadows;
             bloomToggle.isOn = tempQualitySetting.bloom;
             mouseSensitivitySlider.value = tempGeneralSetting.mouseSensitivity;
-            antiAliasingSlider.value = tempQualitySetting.antiAliasing == UnityEngine.Rendering.LWRP.MsaaQuality.Disabled ? 0 : ((int)currentQualitySetting.antiAliasing >> 2) + 1;
+            antiAliasingSlider.value = tempQualitySetting.antiAliasing == UnityEngine.Rendering.Universal.MsaaQuality.Disabled ? 0 : ((int)currentQualitySetting.antiAliasing >> 2) + 1;
             renderingScaleSlider.value = tempQualitySetting.renderScale;
             drawDistanceSlider.value = tempQualitySetting.cameraDrawDistance;
         }

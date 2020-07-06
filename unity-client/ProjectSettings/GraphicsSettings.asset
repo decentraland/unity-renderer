@@ -32,8 +32,7 @@ GraphicsSettings:
   - {fileID: 16000, guid: 0000000000000000f000000000000000, type: 0}
   - {fileID: 17000, guid: 0000000000000000f000000000000000, type: 0}
   - {fileID: 16001, guid: 0000000000000000f000000000000000, type: 0}
-  m_PreloadedShaders:
-  - {fileID: 20000000, guid: 3c2159956b3013a4fbc45b22e27c56de, type: 2}
+  m_PreloadedShaders: []
   m_SpritesDefaultMaterial: {fileID: 10754, guid: 0000000000000000f000000000000000,
     type: 0}
   m_CustomRenderPipeline: {fileID: 11400000, guid: 4ef42bb6871b2e545b8c1a77a3bca1fb,

@@ -26,7 +26,7 @@ namespace AssetPromiseKeeper_Tests
         protected override IEnumerator TearDown()
         {
             keeper.Cleanup();
-            yield return base.TearDown();
+            yield break;
         }
 
 
@@ -40,16 +40,10 @@ namespace AssetPromiseKeeper_Tests
             bool calledFail = false;
 
             prom.OnSuccessEvent +=
-                (x) =>
-                {
-                    calledSuccess = true;
-                };
+                (x) => { calledSuccess = true; };
 
             prom.OnFailEvent +=
-                (x) =>
-                {
-                    calledFail = true;
-                };
+                (x) => { calledFail = true; };
 
             keeper.Keep(prom);
             keeper.Forget(prom);
@@ -72,10 +66,7 @@ namespace AssetPromiseKeeper_Tests
             AssetType loadedAsset = null;
 
             prom.OnSuccessEvent +=
-                (x) =>
-                {
-                    loadedAsset = x;
-                };
+                (x) => { loadedAsset = x; };
 
             keeper.Keep(prom);
             yield return prom;
@@ -86,7 +77,6 @@ namespace AssetPromiseKeeper_Tests
 
             Assert.IsTrue(prom.asset == null);
             keeper.library.Cleanup();
-
         }
 
 
@@ -124,7 +114,6 @@ namespace AssetPromiseKeeper_Tests
             Assert.IsTrue(!keeper.library.Contains(loadedAsset.id));
             Assert.AreEqual(0, keeper.library.masterAssets.Count);
             keeper.library.Cleanup();
-
         }
 
         [UnityTest]

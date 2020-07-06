@@ -8,6 +8,8 @@ namespace CameraController_Test
 {
     public class CameraControllerShould : TestsBase
     {
+        protected override bool enableSceneIntegrityChecker => false;
+
         [Test]
         public void ReactToCameraChangeAction()
         {

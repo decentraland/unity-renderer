@@ -18,7 +18,7 @@ Shader "DCL/Toon Shader"
 	
 	Subshader
 	{
-		Tags { "RenderPipeline"="LightweightPipeline" }
+		Tags { "RenderPipeline"="UniversalPipeline" }
 		Blend [_SrcBlend][_DstBlend]
 		ZWrite [_ZWrite]
 		Cull [_Cull]

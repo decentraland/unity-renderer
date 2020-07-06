@@ -48,6 +48,9 @@ namespace Builder
 
         private void OnDestroy()
         {
+            Destroy(outlineCanvas.gameObject);
+            Destroy(outlineRawImage.gameObject);
+            Destroy(outlineCamera.gameObject);
             DCLBuilderBridge.OnPreviewModeChanged -= OnPreviewModeChanged;
         }
 
