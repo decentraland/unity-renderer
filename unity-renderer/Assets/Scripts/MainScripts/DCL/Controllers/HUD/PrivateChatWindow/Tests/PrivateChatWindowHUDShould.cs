@@ -46,8 +46,12 @@ public class PrivateChatWindowHUDShould : TestsBase
         this.view = controller.view;
         Assert.IsTrue(view != null, "World chat hud view is null?");
         Assert.IsTrue(controller != null, "World chat hud controller is null?");
+    }
 
-        yield break;
+    protected override IEnumerator TearDown()
+    {
+        controller.Dispose();
+        yield return base.TearDown();
     }
 
     [Test]
@@ -87,7 +91,7 @@ public class PrivateChatWindowHUDShould : TestsBase
 
         WebInterface.OnMessageFromEngine += messageCallback;
         controller.resetInputFieldOnSubmit = false;
-        controller.SendChatMessage(new ChatMessage() { body = "test message", recipient = "testUser" });
+        controller.SendChatMessage(new ChatMessage() {body = "test message", recipient = "testUser"});
         Assert.IsTrue(messageWasSent);
         Assert.AreEqual("", controller.view.chatHudView.inputField.text);
         WebInterface.OnMessageFromEngine -= messageCallback;
@@ -171,19 +175,22 @@ public class PrivateChatWindowHUDShould : TestsBase
         // Initialize friends HUD
         NotificationsController.i.Initialize(new NotificationHUDController());
 
-        var friendsHUDController = new FriendsHUDController();
-        friendsHUDController.Initialize(new FriendsController_Mock(), UserProfile.GetOwnUserProfile());
+        var friendsHudController = new FriendsHUDController();
+        friendsHudController.Initialize(new FriendsController_Mock(), UserProfile.GetOwnUserProfile());
 
         Assert.IsTrue(view != null, "Friends hud view is null?");
         Assert.IsTrue(controller != null, "Friends hud controller is null?");
 
-        // initialie private chat
+        // initialize private chat
         controller.SetVisibility(true);
         Assert.AreEqual(true, controller.view.gameObject.activeSelf);
 
         controller.view.backButton.onClick.Invoke();
         yield return null;
 
-        Assert.AreEqual(true, friendsHUDController.view.gameObject.activeSelf);
+        Assert.AreEqual(true, friendsHudController.view.gameObject.activeSelf);
+
+        friendsHudController.Dispose();
+        NotificationsController.i.Dispose();
     }
 }

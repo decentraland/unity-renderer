@@ -1,0 +1,12 @@
+build-unity:
+  stage: build
+  environment:
+    BUILD_TARGET: WebGL
+    BUILD_PATH: /builds/dcl/explorer/unity-client/Builds/unity/Build
+    BUILD_NAME: unity
+  steps:
+    - mkdir -p $BUILD_PATH
+    - cd unity-client
+    - ./before-ci.sh
+    - ./test-ci.sh
+    - ./build-ci.sh

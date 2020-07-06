@@ -10,7 +10,6 @@
     "optionalUnityReferences": [],
     "includePlatforms": [],
     "excludePlatforms": [
-        "LinuxStandalone32"
     ],
     "allowUnsafeCode": false,
     "overrideReferences": false,

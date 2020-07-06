@@ -8,23 +8,25 @@ namespace Tests
 {
     public class MinimapHUDTests : TestsBase
     {
+        private MinimapHUDController controller;
+
         [UnitySetUp]
         protected override IEnumerator SetUp()
         {
-            yield break;
+            yield return base.SetUp();
+            controller = new MinimapHUDController();
         }
 
-        private static MinimapHUDView GetViewFromController(MinimapHUDController controller)
+        protected override IEnumerator TearDown()
         {
-            return Reflection_GetField<MinimapHUDView>(controller, "view");
+            controller.Dispose();
+            yield return base.TearDown();
         }
 
         [Test]
         public void MinimapHUD_Creation()
         {
-
-            var controller = new MinimapHUDController();
-            var containerName = Reflection_GetStaticField<string>(typeof(MinimapHUDView), "VIEW_OBJECT_NAME");
+            var containerName = MinimapHUDView.VIEW_OBJECT_NAME;
             var viewContainer = GameObject.Find(containerName);
 
             Assert.NotNull(viewContainer);
@@ -34,20 +36,14 @@ namespace Tests
         [Test]
         public void MinimapHUD_DefaultSceneName()
         {
-
-            var controller = new MinimapHUDController();
-
-            var view = GetViewFromController(controller);
+            var view = controller.view;
             Assert.AreEqual("Unnamed", Reflection_GetField<TextMeshProUGUI>(view, "sceneNameText").text);
         }
 
         [Test]
         public void MinimapHUD_DefaultPlayerCoordinates()
         {
-
-            var controller = new MinimapHUDController();
-
-            var view = GetViewFromController(controller);
+            var view = controller.view;
             Assert.IsEmpty(Reflection_GetField<TextMeshProUGUI>(view, "playerPositionText").text);
         }
 
@@ -56,10 +52,8 @@ namespace Tests
         {
             const string sceneName = "SCENE_NAME";
 
-
-            var controller = new MinimapHUDController();
             controller.UpdateSceneName(sceneName);
-            var view = GetViewFromController(controller);
+            var view = controller.view;
             Assert.AreEqual(sceneName, Reflection_GetField<TextMeshProUGUI>(view, "sceneNameText").text);
         }
 
@@ -69,11 +63,8 @@ namespace Tests
             Vector2 coords = new Vector2(Random.Range(-150, 150), Random.Range(-150, 150));
             string coordString = string.Format("{0},{1}", coords.x, coords.y);
 
-
-            var controller = new MinimapHUDController();
             controller.UpdatePlayerPosition(coords);
-            var view = GetViewFromController(controller);
-            Assert.AreEqual(coordString, Reflection_GetField<TextMeshProUGUI>(view, "playerPositionText").text);
+            Assert.AreEqual(coordString, Reflection_GetField<TextMeshProUGUI>(this.controller.view, "playerPositionText").text);
         }
 
         [Test]
@@ -82,18 +73,13 @@ namespace Tests
             Vector2 coords = new Vector2(Random.Range(-150, 150), Random.Range(-150, 150));
             string coordString = string.Format("{0},{1}", coords.x, coords.y);
 
-
-            var controller = new MinimapHUDController();
             controller.UpdatePlayerPosition(coordString);
-            var view = GetViewFromController(controller);
-            Assert.AreEqual(coordString, Reflection_GetField<TextMeshProUGUI>(view, "playerPositionText").text);
+            Assert.AreEqual(coordString, Reflection_GetField<TextMeshProUGUI>(this.controller.view, "playerPositionText").text);
         }
 
         [Test]
         public void MinimapHUD_OptionsPanel()
         {
-
-            var controller = new MinimapHUDController();
             Assert.IsNotNull(controller);
         }
     }

@@ -12,9 +12,15 @@ public class NotificationsController : MonoBehaviour
     }
 
     NotificationHUDController controller;
+
     public void Initialize(NotificationHUDController controller)
     {
         this.controller = controller;
+    }
+
+    public void Dispose()
+    {
+        controller.Dispose();
     }
 
     public void ShowNotificationFromJson(string notificationJson)
@@ -25,17 +31,17 @@ public class NotificationsController : MonoBehaviour
 
     public void ShowNotification(Notification.Model notification)
     {
-        controller.ShowNotification(notification);
+        controller?.ShowNotification(notification);
     }
 
     public void ShowNotification(Notification notification)
     {
-        controller.ShowNotification(notification);
+        controller?.ShowNotification(notification);
     }
 
     public void DismissAllNotifications(string groupID)
     {
-        controller.DismissAllNotifications(groupID);
+        controller?.DismissAllNotifications(groupID);
     }
 
     public void ShowWelcomeNotification()
@@ -60,5 +66,4 @@ public class NotificationsController : MonoBehaviour
 
         controller.ShowNotification(model);
     }
-
 }

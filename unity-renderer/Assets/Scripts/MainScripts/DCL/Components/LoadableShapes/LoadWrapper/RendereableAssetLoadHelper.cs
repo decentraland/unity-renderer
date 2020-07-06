@@ -100,7 +100,6 @@ namespace DCL.Components
                     LoadGltf(targetUrl, OnSuccessEvent, OnFailEvent);
                     break;
             }
-
         }
 
         public void Unload()

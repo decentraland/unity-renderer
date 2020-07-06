@@ -54,11 +54,13 @@ namespace Tests
                     height = new UIValue(100),
                     width = new UIValue(100),
                     onClick = "UUIDFakeEventId"
-
                 });
 
             yield return textInput.routine;
             yield return null;
+
+            if (mockCamera != null)
+                Object.Destroy(mockCamera.gameObject);
         }
 
         [UnityTest]
@@ -91,10 +93,7 @@ namespace Tests
                     inputField.ActivateInputField();
                     inputField.Select();
                 },
-                () =>
-                {
-                    eventTriggered = true;
-                });
+                () => { eventTriggered = true; });
 
             yield return null;
 

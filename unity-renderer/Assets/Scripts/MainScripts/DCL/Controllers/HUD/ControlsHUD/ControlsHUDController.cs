@@ -28,6 +28,7 @@ public class ControlsHUDController : IHUD
             {
                 Utils.LockCursor();
             }
+
             view.showHideAnimator.Hide();
         }
         else if (!IsVisible() && visible)
@@ -43,7 +44,7 @@ public class ControlsHUDController : IHUD
     {
         if (view)
         {
-            Object.Destroy(view);
+            Object.Destroy(view.gameObject);
         }
     }
 

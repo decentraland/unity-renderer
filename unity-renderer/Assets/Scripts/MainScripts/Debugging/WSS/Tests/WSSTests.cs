@@ -11,9 +11,16 @@ namespace Tests
     [Explicit]
     public class WSSTests : TestsBase
     {
-        // TODO: Find a way to run this test on Unity Cloud Build, even though it passes locally, it fails on timeout in Unity Cloud Build
-        // A UnityTest behaves like a coroutine in Play Mode. In Edit Mode you can use
-        // `yield return null;` to skip a frame.
+        protected override IEnumerator SetUp()
+        {
+            yield break;
+        }
+
+        protected override IEnumerator TearDown()
+        {
+            yield break;
+        }
+
         [UnityTest]
         public IEnumerator BasicConnectionTest()
         {
@@ -96,6 +103,8 @@ namespace Tests
                     "Expected loadedScene found but was null!!!");
             }
 
+
+            UnityEngine.Object.Destroy(wssControllerGO);
             // Use the Assert class to test conditions.
             // Use yield to skip a frame.
             yield return null;

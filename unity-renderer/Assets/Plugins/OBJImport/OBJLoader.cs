@@ -466,7 +466,7 @@ public class OBJLoader
             {
                 if (materialCache == null)
                 {
-                    processedMaterials[i] = new Material(Shader.Find("Lightweight Render Pipeline/Simple Lit"));
+                    processedMaterials[i] = new Material(Shader.Find("Universal Render Pipeline/Simple Lit"));
                 }
                 else
                 {
@@ -474,7 +474,7 @@ public class OBJLoader
 
                     if (mfn == null)
                     {
-                        processedMaterials[i] = new Material(Shader.Find("Lightweight Render Pipeline/Simple Lit"));
+                        processedMaterials[i] = new Material(Shader.Find("Universal Render Pipeline/Simple Lit"));
                     }
                     else
                     {

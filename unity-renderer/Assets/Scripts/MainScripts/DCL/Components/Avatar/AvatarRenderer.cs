@@ -13,6 +13,10 @@ namespace DCL
         public Material eyebrowMaterial;
         public Material mouthMaterial;
 
+        private Material eyeMaterialCopy;
+        private Material eyebrowMaterialCopy;
+        private Material mouthMaterialCopy;
+
         AvatarModel model;
 
         public event Action OnSuccessEvent;
@@ -42,8 +46,16 @@ namespace DCL
             Action onSuccessWrapper = null;
             Action onFailWrapper = null;
 
-            onSuccessWrapper = () => { onSuccess?.Invoke(); this.OnSuccessEvent -= onSuccessWrapper; };
-            onFailWrapper = () => { onFail?.Invoke(); this.OnFailEvent -= onFailWrapper; };
+            onSuccessWrapper = () =>
+            {
+                onSuccess?.Invoke();
+                this.OnSuccessEvent -= onSuccessWrapper;
+            };
+            onFailWrapper = () =>
+            {
+                onFail?.Invoke();
+                this.OnFailEvent -= onFailWrapper;
+            };
 
             this.OnSuccessEvent += onSuccessWrapper;
             this.OnFailEvent += onFailWrapper;
@@ -82,6 +94,10 @@ namespace DCL
 
         public void ResetAvatar()
         {
+            Destroy(eyebrowMaterialCopy);
+            Destroy(eyeMaterialCopy);
+            Destroy(mouthMaterialCopy);
+
             bodyShapeController?.CleanUp();
             bodyShapeController = null;
 
@@ -167,22 +183,26 @@ namespace DCL
             bool eyebrowsReady = false;
             bool mouthReady = false;
 
+            eyeMaterialCopy = new Material(eyeMaterial);
+            mouthMaterialCopy = new Material(mouthMaterial);
+            eyebrowMaterialCopy = new Material(eyebrowMaterial);
+
             var eyeCoroutine = CoroutineStarter.Start(eyesController?.FetchTextures((mainTexture, maskTexture) =>
             {
                 eyesReady = true;
-                bodyShapeController?.SetupEyes(eyeMaterial, mainTexture, maskTexture, model.eyeColor);
+                bodyShapeController.SetupEyes(eyeMaterialCopy, mainTexture, maskTexture, model.eyeColor);
             }));
 
             var eyebrowCoroutine = CoroutineStarter.Start(eyebrowsController?.FetchTextures((mainTexture, maskTexture) =>
             {
                 eyebrowsReady = true;
-                bodyShapeController?.SetupEyebrows(eyebrowMaterial, mainTexture, model.hairColor);
+                bodyShapeController.SetupEyebrows(eyebrowMaterialCopy, mainTexture, model.hairColor);
             }));
 
             var mouthCoroutine = CoroutineStarter.Start(mouthController?.FetchTextures((mainTexture, maskTexture) =>
             {
                 mouthReady = true;
-                bodyShapeController?.SetupMouth(mouthMaterial, mainTexture, model.skinColor);
+                bodyShapeController.SetupMouth(mouthMaterialCopy, mainTexture, model.skinColor);
             }));
 
             faceCoroutines.Add(eyeCoroutine);

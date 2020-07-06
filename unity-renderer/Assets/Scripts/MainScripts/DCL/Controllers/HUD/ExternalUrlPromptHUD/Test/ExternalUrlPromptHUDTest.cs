@@ -6,13 +6,18 @@ namespace Tests
 {
     public class ExternalUrlPromptHUDShould : TestsBase
     {
-
         private ExternalUrlPromptHUDController controller;
 
         protected override IEnumerator SetUp()
         {
             yield return base.SetUp();
             controller = new ExternalUrlPromptHUDController();
+        }
+
+        protected override IEnumerator TearDown()
+        {
+            controller.Dispose();
+            yield return base.TearDown();
         }
 
         [UnityTest]
@@ -58,7 +63,7 @@ namespace Tests
             controller.view.continueButton.onClick.Invoke();
             Assert.True(!controller.view.content.activeInHierarchy, "ExternalUrlPromptHUD content should NOT be visible");
             Assert.True(controller.trustedDomains.ContainsKey(scene.sceneData.id)
-                && controller.trustedDomains[scene.sceneData.id].Contains("decentraland.org"),
+                        && controller.trustedDomains[scene.sceneData.id].Contains("decentraland.org"),
                 "domain not set as trusted");
 
             controller.ProcessOpenUrlRequest(scene, "https://decentraland.org/press");

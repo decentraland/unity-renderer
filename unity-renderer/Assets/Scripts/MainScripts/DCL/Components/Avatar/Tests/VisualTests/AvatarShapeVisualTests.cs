@@ -14,7 +14,7 @@ namespace Tests
         [UnityTest]
         [VisualTest]
         [NUnit.Framework.Explicit]
-        [Category("Visual Tests")]
+        [Category("Explicit")]
         public IEnumerator AvatarShapeVisualTest_Generate()
         {
             yield return VisualTestHelpers.GenerateBaselineForTest(AvatarShapeVisualTest1());
@@ -22,13 +22,11 @@ namespace Tests
 
         [UnityTest]
         [VisualTest]
-        [Category("Visual Tests")]
         [Category("Explicit")]
         [NUnit.Framework.Explicit]
         public IEnumerator AvatarShapeVisualTest1()
         {
-            yield return InitScene();
-            yield return VisualTestHelpers.InitVisualTestsScene("AvatarShape_A");
+            yield return InitVisualTestsScene("AvatarShape_A");
 
             AvatarTestHelpers.CreateTestCatalog();
             AvatarShape avatar = AvatarTestHelpers.CreateAvatarShape(scene, "Avatar #1", "TestAvatar.json");
@@ -49,7 +47,6 @@ namespace Tests
         [UnityTest]
         [VisualTest]
         [NUnit.Framework.Explicit]
-        [Category("Visual Tests")]
         [Category("Explicit")]
         public IEnumerator AvatarShapeVisualTest2_Generate()
         {
@@ -58,13 +55,11 @@ namespace Tests
 
         [UnityTest]
         [VisualTest]
-        [Category("Visual Tests")]
         [Category("Explicit")]
         [NUnit.Framework.Explicit]
         public IEnumerator AvatarShapeVisualTest2()
         {
-            yield return InitScene();
-            yield return VisualTestHelpers.InitVisualTestsScene("AvatarShape_B");
+            yield return InitVisualTestsScene("AvatarShape_B");
 
             AvatarTestHelpers.CreateTestCatalog();
             AvatarShape avatar = AvatarTestHelpers.CreateAvatarShape(scene, "Avatar #2", "TestAvatar2.json");

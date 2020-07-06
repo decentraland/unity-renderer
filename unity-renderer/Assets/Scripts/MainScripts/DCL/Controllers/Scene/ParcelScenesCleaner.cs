@@ -9,6 +9,7 @@ namespace DCL
     public class ParcelScenesCleaner
     {
         const float MAX_TIME_BUDGET = 0.01f;
+
         private struct ParcelEntity
         {
             public ParcelScene scene;
@@ -89,7 +90,7 @@ namespace DCL
             }
 
             if (scene != null)
-                GameObject.Destroy(scene.gameObject);
+                Object.Destroy(scene.gameObject);
         }
 
         IEnumerator CleanupEntitiesCoroutine()
@@ -138,7 +139,6 @@ namespace DCL
 
                 yield return null;
             }
-
         }
     }
 }

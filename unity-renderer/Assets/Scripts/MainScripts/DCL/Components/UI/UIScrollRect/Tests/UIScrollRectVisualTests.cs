@@ -11,7 +11,7 @@ public class UIScrollRectVisualTests : UIVisualTestsBase
     [UnityTest]
     [VisualTest]
     [Explicit]
-    [Category("Visual Tests")]
+    [Category("Explicit")]
     public IEnumerator UIScrollRectVisualTests_Generate()
     {
         yield return VisualTestHelpers.GenerateBaselineForTest(UIScrollRectTest1());

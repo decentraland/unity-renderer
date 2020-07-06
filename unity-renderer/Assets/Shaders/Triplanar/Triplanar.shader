@@ -11,7 +11,7 @@ Shader "DCL/FX/Triplanar"
     SubShader
     {
 		
-        Tags { "RenderPipeline"="LightweightPipeline" "RenderType"="Opaque" "Queue"="Geometry" }
+        Tags { "RenderPipeline"="UniversalPipeline" "RenderType"="Opaque" "Queue"="Geometry" }
 
 		Cull Back
 		HLSLINCLUDE
@@ -21,7 +21,7 @@ Shader "DCL/FX/Triplanar"
         Pass
         {
 			
-        	Tags { "LightMode"="LightweightForward" }
+        	Tags { "LightMode"="UniversalForward" }
 
         	Name "Base"
 			Blend One Zero
@@ -63,11 +63,11 @@ Shader "DCL/FX/Triplanar"
         	
 
 
-        	#include "Packages/com.unity.render-pipelines.lightweight/ShaderLibrary/Core.hlsl"
-        	#include "Packages/com.unity.render-pipelines.lightweight/ShaderLibrary/Lighting.hlsl"
+        	#include "Packages/com.unity.render-pipelines.universal/ShaderLibrary/Core.hlsl"
+        	#include "Packages/com.unity.render-pipelines.universal/ShaderLibrary/Lighting.hlsl"
         	#include "Packages/com.unity.render-pipelines.core/ShaderLibrary/Color.hlsl"
         	#include "Packages/com.unity.render-pipelines.core/ShaderLibrary/UnityInstancing.hlsl"
-        	#include "Packages/com.unity.render-pipelines.lightweight/ShaderLibrary/ShaderGraphFunctions.hlsl"
+        	#include "Packages/com.unity.render-pipelines.universal/ShaderLibrary/ShaderGraphFunctions.hlsl"
 
             CBUFFER_START(UnityPerMaterial)
 			    sampler2D _TopAlbedo;

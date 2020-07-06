@@ -1,15 +1,14 @@
-using UnityEngine;
+using Builder.Gizmos;
+using DCL;
+using DCL.Components;
+using DCL.Configuration;
+using DCL.Controllers;
+using DCL.Helpers;
+using DCL.Interface;
+using DCL.Models;
 using System.Collections;
 using System.Collections.Generic;
-using DCL;
-using DCL.Models;
-using DCL.Controllers;
-using DCL.Interface;
-using DCL.Components;
-using DCL.Helpers;
-using DCL.Configuration;
-using Builder.Gizmos;
-using UnityEngine.Rendering.LWRP;
+using UnityEngine;
 using UnityEngine.Rendering;
 
 namespace Builder
@@ -588,7 +587,7 @@ namespace Builder
 
         private void SetupRendererPipeline()
         {
-            LightweightRenderPipelineAsset lwrpa = ScriptableObject.Instantiate(GraphicsSettings.renderPipelineAsset) as LightweightRenderPipelineAsset;
+            UnityEngine.Rendering.Universal.UniversalRenderPipelineAsset lwrpa = ScriptableObject.Instantiate(GraphicsSettings.renderPipelineAsset) as UnityEngine.Rendering.Universal.UniversalRenderPipelineAsset;
 
             if (lwrpa != null)
             {
@@ -603,11 +602,11 @@ namespace Builder
             DCL.SettingsData.QualitySettings settings = new DCL.SettingsData.QualitySettings()
             {
                 textureQuality = DCL.SettingsData.QualitySettings.TextureQuality.FullRes,
-                antiAliasing = UnityEngine.Rendering.LWRP.MsaaQuality._2x,
+                antiAliasing = UnityEngine.Rendering.Universal.MsaaQuality._2x,
                 renderScale = 1,
                 shadows = true,
                 softShadows = true,
-                shadowResolution = UnityEngine.Rendering.LWRP.ShadowResolution._256,
+                shadowResolution = UnityEngine.Rendering.Universal.ShadowResolution._256,
                 cameraDrawDistance = 100,
                 bloom = true,
                 colorGrading = true

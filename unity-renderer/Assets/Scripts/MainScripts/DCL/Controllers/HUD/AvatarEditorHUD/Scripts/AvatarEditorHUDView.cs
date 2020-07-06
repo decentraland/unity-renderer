@@ -4,6 +4,7 @@ using UnityEngine;
 using UnityEngine.UI;
 
 [assembly: InternalsVisibleTo("AvatarEditorHUDTests")]
+
 public class AvatarEditorHUDView : MonoBehaviour
 {
     private const string VIEW_PATH = "AvatarEditorHUD";
@@ -49,20 +50,25 @@ public class AvatarEditorHUDView : MonoBehaviour
     [SerializeField] internal Button doneButton;
     [SerializeField] internal Button exitButton;
 
-    [Header("Collectibles")]
-    [SerializeField] internal GameObject web3Container;
+    [Header("Collectibles")] [SerializeField]
+    internal GameObject web3Container;
+
     [SerializeField] internal Button web3GoToMarketplaceButton;
     [SerializeField] internal GameObject noWeb3Container;
     [SerializeField] internal Button noWeb3GoToMarketplaceButton;
 
-    internal CharacterPreviewController characterPreviewController;
+    internal static CharacterPreviewController characterPreviewController;
     private AvatarEditorHUDController controller;
     internal readonly Dictionary<string, ItemSelector> selectorsByCategory = new Dictionary<string, ItemSelector>();
 
     private void Awake()
     {
-        characterPreviewController = GameObject.Instantiate(characterPreviewPrefab).GetComponent<CharacterPreviewController>();
-        characterPreviewController.name = "_CharacterPreviewController";
+        if (characterPreviewController == null)
+        {
+            characterPreviewController = GameObject.Instantiate(characterPreviewPrefab).GetComponent<CharacterPreviewController>();
+            characterPreviewController.name = "_CharacterPreviewController";
+        }
+
         isOpen = false;
     }
 
@@ -98,6 +104,7 @@ public class AvatarEditorHUDView : MonoBehaviour
         {
             InitializeNavigationInfo(navigationInfos[i]);
         }
+
         InitializeNavigationInfo(collectiblesNavigationInfo);
 
         characterPreviewRotation.OnHorizontalRotation += characterPreviewController.Rotate;
@@ -126,6 +133,7 @@ public class AvatarEditorHUDView : MonoBehaviour
             wearableGridPairs[i].selector.OnSellClicked += controller.SellCollectible;
             selectorsByCategory.Add(wearableGridPairs[i].categoryFilter, wearableGridPairs[i].selector);
         }
+
         collectiblesItemSelector.OnItemClicked += controller.WearableClicked;
         collectiblesItemSelector.OnSellClicked += controller.SellCollectible;
 
@@ -155,6 +163,7 @@ public class AvatarEditorHUDView : MonoBehaviour
                 wearableGridPairs[i].selector.SetBodyShape(bodyShape.id);
             }
         }
+
         collectiblesItemSelector.SetBodyShape(bodyShape.id);
     }
 
@@ -201,6 +210,7 @@ public class AvatarEditorHUDView : MonoBehaviour
                 wearableGridPairs[i].selector.UnselectAll();
             }
         }
+
         collectiblesItemSelector.UnselectAll();
     }
 
@@ -258,6 +268,7 @@ public class AvatarEditorHUDView : MonoBehaviour
                 enumerator.Current.Value.RemoveAllItemToggle();
             }
         }
+
         collectiblesItemSelector.RemoveAllItemToggle();
     }
 
@@ -312,11 +323,18 @@ public class AvatarEditorHUDView : MonoBehaviour
             collectiblesItemSelector.OnItemClicked -= controller.WearableClicked;
             collectiblesItemSelector.OnSellClicked -= controller.SellCollectible;
         }
+
         if (skinColorSelector != null) skinColorSelector.OnColorChanged -= controller.SkinColorClicked;
         if (eyeColorSelector != null) eyeColorSelector.OnColorChanged -= controller.EyesColorClicked;
         if (hairColorSelector != null) hairColorSelector.OnColorChanged -= controller.HairColorClicked;
 
         if (this != null)
             Destroy(gameObject);
+
+        if (characterPreviewController != null)
+        {
+            Destroy(characterPreviewController.gameObject);
+            characterPreviewController = null;
+        }
     }
 }

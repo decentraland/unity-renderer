@@ -25,7 +25,12 @@ public class ExpressionsHUDController : IHUD
     {
         ownUserProfile.OnUpdate -= userProfileUpdateDelegate;
         ownUserProfile.OnAvatarExpressionSet -= OnAvatarExpressionSet;
-        view.CleanUp();
+
+        if (view != null)
+        {
+            view.CleanUp();
+            UnityEngine.Object.Destroy(view.gameObject);
+        }
     }
 
     public void ExpressionCalled(string id)

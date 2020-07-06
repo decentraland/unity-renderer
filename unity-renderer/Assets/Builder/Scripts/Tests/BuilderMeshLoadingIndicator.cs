@@ -8,12 +8,12 @@ using UnityEngine.TestTools;
 
 public class BuilderMeshLoadingIndicator : TestsBase
 {
+    protected override bool justSceneSetUp => true;
+
     [UnityTest]
     public IEnumerator BuilderMeshLoadingIndicatorTest()
     {
-        yield return InitScene();
-        DCL.Configuration.EnvironmentSettings.DEBUG = true;
-        sceneController.SetDebug();
+        yield return SetUp_SceneController();
 
         yield return SceneManager.LoadSceneAsync("BuilderScene", LoadSceneMode.Additive);
 
@@ -32,14 +32,15 @@ public class BuilderMeshLoadingIndicator : TestsBase
 
         CheckActiveIndicatorsAmount(expectedAmount: 0);
 
-        sceneController.UnloadAllScenes();
-        yield return null;
+        yield return SceneManager.UnloadSceneAsync("BuilderScene");
     }
 
     void CheckActiveIndicatorsAmount(int expectedAmount)
     {
-        Builder.MeshLoadIndicator.DCLBuilderMeshLoadIndicator[] indicators = Object.FindObjectsOfType<Builder.MeshLoadIndicator.DCLBuilderMeshLoadIndicator>();
+        var indicators = Object.FindObjectsOfType<Builder.MeshLoadIndicator.DCLBuilderMeshLoadIndicator>();
+
         int activeIndicators = 0;
+
         for (int i = 0; i < indicators.Length; i++)
         {
             if (indicators[i].gameObject.activeInHierarchy)

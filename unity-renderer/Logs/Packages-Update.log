@@ -83,3 +83,25 @@ The following packages were added:
   com.unity.modules.vr@1.0.0
   com.unity.modules.wind@1.0.0
   com.unity.modules.xr@1.0.0
+
+=== Fri Jun 19 16:46:22 2020
+
+Packages were changed.
+Update Mode: updateDependencies
+
+The following packages were added:
+  com.unity.2d.sprite@1.0.0
+  com.unity.2d.tilemap@1.0.0
+  com.unity.ide.rider@1.1.4
+  com.unity.ide.vscode@1.2.0
+  com.unity.modules.androidjni@1.0.0
+  com.unity.test-framework@1.1.14
+  com.unity.ugui@1.0.0
+The following packages were updated:
+  com.unity.postprocessing from version 2.1.7 to 2.2.2
+  com.unity.render-pipelines.lightweight from version 5.16.1 to 7.3.1
+  com.unity.test-framework.performance from version 1.1.2-preview to 1.2.3-preview
+  com.unity.timeline from version 1.0.0 to 1.2.6
+  com.unity.xr.legacyinputhelpers from version 2.0.2 to 2.1.4
+The following packages were removed:
+  com.unity.package-manager-ui@2.1.2

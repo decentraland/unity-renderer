@@ -86,5 +86,7 @@ public class AvatarHUDController : IHUD
 
     public void Dispose()
     {
+        if (view != null)
+            UnityEngine.Object.Destroy(view.gameObject);
     }
 }

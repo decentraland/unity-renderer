@@ -10,7 +10,10 @@ public class NotificationHUDController : IHUD
 
     public NotificationHUDView view { get; private set; }
     public Model model { get; private set; }
-    public NotificationHUDController() : this(new Model()) { }
+
+    public NotificationHUDController() : this(new Model())
+    {
+    }
 
     public NotificationHUDController(Model model)
     {
@@ -68,6 +71,11 @@ public class NotificationHUDController : IHUD
 
     public void Dispose()
     {
+        if (view != null)
+        {
+            UnityEngine.Object.Destroy(view.gameObject);
+        }
+
         view.OnNotificationDismissedEvent -= OnNotificationDismissed;
     }
 

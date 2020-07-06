@@ -13,7 +13,9 @@ namespace Builder
         public DCLBuilderGizmoManager gizmosManager;
 
         public delegate void EntitySelectedDelegate(DCLBuilderEntity entity, string gizmoType);
+
         public delegate void EntityDeselectedDelegate(DCLBuilderEntity entity);
+
         public delegate void EntitySelectedListChangedDelegate(Transform selectionParent, List<DCLBuilderEntity> selectedEntities);
 
         public static event EntitySelectedDelegate OnMarkObjectSelected;
@@ -47,6 +49,9 @@ namespace Builder
 
         private void OnDestroy()
         {
+            if (selectedEntitiesParent != null)
+                Destroy(selectedEntitiesParent.gameObject);
+
             DCLBuilderBridge.OnPreviewModeChanged -= OnPreviewModeChanged;
         }
 
@@ -66,6 +71,7 @@ namespace Builder
                 DCLBuilderObjectDragger.OnDraggingObject += OnObjectsDrag;
                 DCLBuilderObjectDragger.OnDraggingObjectEnd += OnObjectsDragEnd;
             }
+
             isGameObjectActive = true;
         }
 
@@ -91,6 +97,7 @@ namespace Builder
             {
                 return;
             }
+
             isDirty = false;
             SelectionParentReset();
             OnSelectedObjectListChanged?.Invoke(selectedEntitiesParent, selectedEntities);
@@ -131,6 +138,7 @@ namespace Builder
                         OnEntityPressed?.Invoke(pressedEntity, hit.point);
                     }
                 }
+
                 groundClickTime = 0;
             }
             else
@@ -145,6 +153,7 @@ namespace Builder
             {
                 return;
             }
+
             if (lastPressedEntityInfo.pressedEntity != null)
             {
                 // NOTE: we only process entity as selected if we are not considering that user was holding mouse button to rotate the camera
@@ -153,6 +162,7 @@ namespace Builder
                     ProcessEntityPressed(lastPressedEntityInfo.pressedEntity, lastPressedEntityInfo.hitPoint);
                 }
             }
+
             lastPressedEntityInfo.pressedEntity = null;
 
             // NOTE: deselect all entities if the user click on the ground and it wasn't holding the mouse left button
@@ -163,6 +173,7 @@ namespace Builder
                     OnNoObjectSelected?.Invoke();
                 }
             }
+
             groundClickTime = 0;
         }
 
@@ -188,6 +199,7 @@ namespace Builder
             {
                 Deselect(entity);
             }
+
             if (entities.ContainsKey(entity.rootEntity.entityId))
             {
                 entities.Remove(entity.rootEntity.entityId);
@@ -237,6 +249,7 @@ namespace Builder
             {
                 SelectionParentReset();
             }
+
             isSelectionTransformed = false;
         }
 
@@ -251,6 +264,7 @@ namespace Builder
             {
                 SelectionParentReset();
             }
+
             isSelectionTransformed = false;
         }
 
@@ -265,6 +279,7 @@ namespace Builder
             {
                 return;
             }
+
             OnMarkObjectSelected?.Invoke(entity, gizmosManager.GetSelectedGizmo());
         }
 
@@ -279,6 +294,7 @@ namespace Builder
             {
                 selectedEntities.Add(entity);
             }
+
             SelectionParentAddEntity(entity);
             entity.SetSelectLayer();
 
@@ -294,10 +310,12 @@ namespace Builder
                 OnDeselectedObject?.Invoke(entity);
                 entity.SetDefaultLayer();
             }
+
             if (selectedEntities.Contains(entity))
             {
                 selectedEntities.Remove(entity);
             }
+
             isDirty = true;
         }
 
@@ -307,6 +325,7 @@ namespace Builder
             {
                 Deselect(selectedEntities[i]);
             }
+
             SelectionParentRemoveAllEntities();
         }
 
@@ -439,6 +458,7 @@ namespace Builder
                     closestHit = hit;
                 }
             }
+
             return closestHit;
         }
 
@@ -454,6 +474,7 @@ namespace Builder
             {
                 return SelectionParentHasChild(collider.ownerEntity.transform);
             }
+
             return false;
         }
 

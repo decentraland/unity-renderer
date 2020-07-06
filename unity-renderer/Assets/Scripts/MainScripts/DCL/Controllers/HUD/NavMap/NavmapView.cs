@@ -8,8 +8,9 @@ namespace DCL
 {
     public class NavmapView : MonoBehaviour
     {
-        [Header("References")]
-        [SerializeField] InputAction_Trigger toggleNavMapAction;
+        [Header("References")] [SerializeField]
+        InputAction_Trigger toggleNavMapAction;
+
         [SerializeField] Button closeButton;
         [SerializeField] internal ScrollRect scrollRect;
         [SerializeField] Transform scrollRectContentTransform;
@@ -25,17 +26,17 @@ namespace DCL
         MinimapMetadata mapMetadata;
         bool cursorLockedBeforeOpening = true;
 
-        public static bool isOpen
-        {
-            private set;
-            get;
-        } = false;
+        public static bool isOpen { private set; get; } = false;
 
         void Start()
         {
             mapMetadata = MinimapMetadata.GetMetadata();
 
-            closeButton.onClick.AddListener(() => { ToggleNavMap(); Utils.UnlockCursor(); });
+            closeButton.onClick.AddListener(() =>
+            {
+                ToggleNavMap();
+                Utils.UnlockCursor();
+            });
             scrollRect.onValueChanged.AddListener((x) =>
             {
                 if (!isOpen) return;
@@ -44,7 +45,11 @@ namespace DCL
                 toastView.OnCloseClick();
             });
 
-            toggleNavMapDelegate = (x) => { if (!Input.GetKeyDown(KeyCode.Escape) || isOpen) ToggleNavMap(); };
+            toggleNavMapDelegate = (x) =>
+            {
+                if (!Input.GetKeyDown(KeyCode.Escape) || isOpen) ToggleNavMap();
+            };
+
             toggleNavMapAction.OnTriggered += toggleNavMapDelegate;
             toastView.OnGotoClicked += () => ToggleNavMap(true);
 
@@ -55,6 +60,11 @@ namespace DCL
             MinimapHUDView.OnUpdateData += UpdateCurrentSceneData;
             MinimapHUDView.OnOpenNavmapClicked += () => ToggleNavMap();
 
+            Initialize();
+        }
+
+        public void Initialize()
+        {
             toastView.gameObject.SetActive(false);
             scrollRect.gameObject.SetActive(false);
         }

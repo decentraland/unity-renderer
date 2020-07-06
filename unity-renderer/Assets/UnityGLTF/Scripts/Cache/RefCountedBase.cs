@@ -4,12 +4,16 @@ namespace UnityGLTF.Cache
 {
     public abstract class RefCountedBase
     {
+        private static bool VERBOSE = false;
         private bool _isDisposed = false;
 
         private int _refCount = 0;
         private readonly object _refCountLock = new object();
 
-        public int RefCount { get { return _refCount; } }
+        public int RefCount
+        {
+            get { return _refCount; }
+        }
 
         public void IncreaseRefCount()
         {
@@ -22,6 +26,9 @@ namespace UnityGLTF.Cache
             lock (_refCountLock)
             {
                 _refCount++;
+
+                if (VERBOSE)
+                    Debug.Log($"Increasing ref count {_refCount} -- {ToString()} ... {GetHashCode()}");
             }
 
             OnIncreaseRefCount();
@@ -39,11 +46,14 @@ namespace UnityGLTF.Cache
             {
                 if (_refCount <= 0)
                 {
-                    Debug.LogError("Cannot decrease the cache data ref count below zero. Name = " + this.ToString());
+                    Debug.LogError($"Cannot decrease the cache data ref count below zero. Name = {ToString()} ... {GetHashCode()}");
                     return;
                 }
 
                 _refCount--;
+
+                if (VERBOSE)
+                    Debug.Log($"Decreasing ref count {_refCount} ... {ToString()} ... {GetHashCode()}");
             }
 
             OnDecreaseRefCount();
@@ -69,6 +79,7 @@ namespace UnityGLTF.Cache
         protected virtual void OnIncreaseRefCount()
         {
         }
+
         protected virtual void OnDecreaseRefCount()
         {
         }

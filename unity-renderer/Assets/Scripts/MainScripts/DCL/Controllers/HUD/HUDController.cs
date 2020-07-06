@@ -85,9 +85,9 @@ public class HUDController : MonoBehaviour
     private void ToggleUIVisibility_OnTriggered(DCLAction_Trigger action)
     {
         bool anyInputFieldIsSelected = EventSystem.current != null &&
-            EventSystem.current.currentSelectedGameObject != null &&
-            EventSystem.current.currentSelectedGameObject.GetComponent<TMPro.TMP_InputField>() != null &&
-            (!worldChatWindowHud.view.chatHudView.inputField.isFocused || !worldChatWindowHud.view.isInPreview);
+                                       EventSystem.current.currentSelectedGameObject != null &&
+                                       EventSystem.current.currentSelectedGameObject.GetComponent<TMPro.TMP_InputField>() != null &&
+                                       (!worldChatWindowHud.view.chatHudView.inputField.isFocused || !worldChatWindowHud.view.isInPreview);
 
         if (anyInputFieldIsSelected || settingsHud.view.isOpen || avatarEditorHud.view.isOpen || DCL.NavmapView.isOpen)
             return;
@@ -252,6 +252,7 @@ public class HUDController : MonoBehaviour
                         taskbarHud?.AddPrivateChatWindow(privateChatWindowHud);
                     }
                 }
+
                 break;
             case HUDElementID.TASKBAR:
                 if (taskbarHud == null)
@@ -331,7 +332,7 @@ public class HUDController : MonoBehaviour
     }
 
     public void UpdateHudElement<T>(HUDConfiguration config, HUDElementID id)
-    where T : IHUD, new()
+        where T : IHUD, new()
     {
         if (!hudElements.ContainsKey(id)) return;
 
@@ -383,6 +384,11 @@ public class HUDController : MonoBehaviour
 
     private void OnDestroy()
     {
+        Cleanup();
+    }
+
+    public void Cleanup()
+    {
         toggleUIVisibilityTrigger.OnTriggered -= ToggleUIVisibility_OnTriggered;
 
         if (ownUserProfile != null)
@@ -414,6 +420,8 @@ public class HUDController : MonoBehaviour
         {
             kvp.Value?.Dispose();
         }
+
+        hudElements.Clear();
     }
 
     public IHUD GetHUDElement(HUDElementID id)

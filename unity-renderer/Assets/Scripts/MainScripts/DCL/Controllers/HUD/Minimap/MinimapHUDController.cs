@@ -5,14 +5,16 @@ public class MinimapHUDController : IHUD
 {
     private static bool VERBOSE = false;
 
-    private MinimapHUDView view;
+    public MinimapHUDView view;
 
     private FloatVariable minimapZoom => CommonScriptableObjects.minimapZoom;
     private StringVariable currentSceneId => CommonScriptableObjects.sceneID;
 
     public MinimapHUDModel model { get; private set; } = new MinimapHUDModel();
 
-    public MinimapHUDController() : this(new MinimapHUDModel()) { }
+    public MinimapHUDController() : this(new MinimapHUDModel())
+    {
+    }
 
     public MinimapHUDController(MinimapHUDModel model)
     {
@@ -25,6 +27,9 @@ public class MinimapHUDController : IHUD
 
     public void Dispose()
     {
+        if (view != null)
+            UnityEngine.Object.Destroy(view.gameObject);
+
         CommonScriptableObjects.playerCoords.OnChange -= OnPlayerCoordsChange;
     }
 

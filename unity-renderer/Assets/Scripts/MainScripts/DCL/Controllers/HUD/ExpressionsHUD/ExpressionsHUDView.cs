@@ -21,24 +21,26 @@ public class ExpressionsHUDView : MonoBehaviour
     [SerializeField] internal RectTransform content;
     [SerializeField] internal InputAction_Trigger openExpressionsAction;
     [SerializeField] internal Image avatarPic;
-    internal InputAction_Trigger.Triggered openExpressionsDelegate;
 
     public static ExpressionsHUDView Create()
     {
         return Instantiate(Resources.Load<GameObject>(PATH)).GetComponent<ExpressionsHUDView>();
     }
 
+    void OnOpenExpressions(DCLAction_Trigger trigger)
+    {
+        if (!IsVisible())
+            return;
+
+        if (Input.GetKeyDown(KeyCode.Escape) && !IsContentVisible())
+            return;
+
+        ToggleContent();
+    }
+
     private void Awake()
     {
-        openExpressionsDelegate = (x) =>
-        {
-            if (!IsVisible())
-                return;
-            if (Input.GetKeyDown(KeyCode.Escape) && !IsContentVisible())
-                return;
-            ToggleContent();
-        };
-        openExpressionsAction.OnTriggered += openExpressionsDelegate;
+        openExpressionsAction.OnTriggered += OnOpenExpressions;
         showContentButton.onClick.AddListener(ToggleContent);
 
         for (int i = 0; i < hideContentButtons.Length; i++)
@@ -103,9 +105,14 @@ public class ExpressionsHUDView : MonoBehaviour
         return gameObject.activeSelf;
     }
 
+    public void OnDestroy()
+    {
+        CleanUp();
+    }
+
     public void CleanUp()
     {
-        openExpressionsAction.OnTriggered -= openExpressionsDelegate;
+        openExpressionsAction.OnTriggered -= OnOpenExpressions;
 
         for (int i = 0; i < hideContentButtons.Length; i++)
         {

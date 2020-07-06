@@ -6,6 +6,8 @@ namespace SceneBoundariesCheckerTests
 {
     public class SceneBoundariesCheckerTests_DebugMode : TestsBase
     {
+        protected override bool enableSceneIntegrityChecker => false;
+
         [UnitySetUp]
         protected override IEnumerator SetUp()
         {
@@ -48,6 +50,7 @@ namespace SceneBoundariesCheckerTests
             yield return SBC_Asserts.PShapeIsInvalidatedWhenLeavingBounds(scene);
             sceneController.isDebugMode = false;
         }
+
         [UnityTest]
         public IEnumerator GLTFShapeIsInvalidatedWhenLeavingBoundsDebugMode()
         {
@@ -55,6 +58,7 @@ namespace SceneBoundariesCheckerTests
             yield return SBC_Asserts.GLTFShapeIsInvalidatedWhenLeavingBounds(scene);
             sceneController.isDebugMode = false;
         }
+
         [UnityTest]
         [Explicit("Test taking too long")]
         [Category("Explicit")]
@@ -64,6 +68,7 @@ namespace SceneBoundariesCheckerTests
             yield return SBC_Asserts.NFTShapeIsInvalidatedWhenLeavingBounds(scene);
             sceneController.isDebugMode = false;
         }
+
         [UnityTest]
         public IEnumerator PShapeIsResetWhenReenteringBoundsDebugMode()
         {
@@ -96,6 +101,7 @@ namespace SceneBoundariesCheckerTests
 
             yield return SBC_Asserts.ChildShapeIsEvaluatedOnShapelessParent(scene);
         }
+
         [UnityTest]
         public IEnumerator HeightIsEvaluatedDebugMode()
         {
@@ -111,7 +117,5 @@ namespace SceneBoundariesCheckerTests
             yield return SBC_Asserts.GLTFShapeIsResetWhenReenteringBounds(scene);
             sceneController.isDebugMode = false;
         }
-
-
     }
 }

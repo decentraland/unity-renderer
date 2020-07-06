@@ -14,17 +14,25 @@ namespace AvatarEditorHUD_Tests
         private AvatarEditorHUDController_Mock controller;
         private WearableDictionary catalog;
 
+        protected override bool justSceneSetUp => true;
+
         [UnitySetUp]
         protected override IEnumerator SetUp()
         {
-            if (controller == null)
-            {
-                Setup_AvatarEditorHUDController();
-            }
+            yield return base.SetUp();
+
+            yield return base.SetUp_CharacterController();
+
+            Setup_AvatarEditorHUDController();
 
             controller.UnequipAllWearables();
+            controller.SetVisibility(true);
+        }
 
-            yield break;
+        protected override IEnumerator TearDown()
+        {
+            controller.Dispose();
+            yield return base.TearDown();
         }
 
         private void Setup_AvatarEditorHUDController()
@@ -39,7 +47,6 @@ namespace AvatarEditorHUD_Tests
                     bodyShape = WearableLiterals.BodyShapes.FEMALE,
                     wearables = new List<string>() { },
                 }
-
             }, false);
 
             catalog = AvatarTestHelpers.CreateTestCatalogLocal();
@@ -65,7 +72,6 @@ namespace AvatarEditorHUD_Tests
                     bodyShape = bodyShape,
                     wearables = new List<string>() { },
                 }
-
             }, false);
             var category = catalog.Get(wearableId).category;
 
@@ -98,7 +104,6 @@ namespace AvatarEditorHUD_Tests
                     bodyShape = bodyShape,
                     wearables = new List<string>() { },
                 }
-
             }, false);
 
             var category = catalog.Get(wearableId).category;
@@ -139,7 +144,7 @@ namespace AvatarEditorHUD_Tests
                     bodyShape = WearableLiterals.BodyShapes.FEMALE,
                     wearables = new List<string>() { },
                 },
-                inventory = new[] { wearableId }
+                inventory = new[] {wearableId}
             }, false);
 
             Assert.IsTrue(controller.myView.collectiblesItemSelector.itemToggles.ContainsKey(wearableId));
@@ -190,7 +195,7 @@ namespace AvatarEditorHUD_Tests
                     bodyShape = WearableLiterals.BodyShapes.FEMALE,
                     wearables = new List<string>() { },
                 },
-                inventory = new[] { wearableId }
+                inventory = new[] {wearableId}
             }, false);
 
             Assert.IsFalse(controller.myView.collectiblesItemSelector.itemToggles[wearableId].amountContainer.gameObject.activeSelf);
@@ -261,11 +266,11 @@ namespace AvatarEditorHUD_Tests
                 {
                     new WearableItem.Representation()
                     {
-                        bodyShapes = new [] { WearableLiterals.BodyShapes.FEMALE, WearableLiterals.BodyShapes.MALE },
+                        bodyShapes = new[] {WearableLiterals.BodyShapes.FEMALE, WearableLiterals.BodyShapes.MALE},
                     }
                 },
-                tags = new[] { WearableLiterals.Tags.EXCLUSIVE },
-                i18n = new[] { new i18n() { code = "en", text = "Dummy Item" } }
+                tags = new[] {WearableLiterals.Tags.EXCLUSIVE},
+                i18n = new[] {new i18n() {code = "en", text = "Dummy Item"}}
             };
 
             userProfile.UpdateData(new UserProfileModel()
@@ -277,7 +282,7 @@ namespace AvatarEditorHUD_Tests
                     bodyShape = WearableLiterals.BodyShapes.FEMALE,
                     wearables = new List<string>() { },
                 },
-                inventory = new[] { dummyItem.id }
+                inventory = new[] {dummyItem.id}
             }, false);
 
             catalog.Remove(dummyItem.id);

@@ -11,8 +11,10 @@ public class PlayerInfoCardHUDViewShould : TestsBase
     protected override IEnumerator SetUp()
     {
         yield return base.SetUp();
+
         view = PlayerInfoCardHUDView.CreateView();
         view.Initialize(null, null, null, null, null, null, null, null);
+
         CreateMockWearableByRarity(WearableLiterals.ItemRarity.EPIC);
         CreateMockWearableByRarity(WearableLiterals.ItemRarity.LEGENDARY);
         CreateMockWearableByRarity(WearableLiterals.ItemRarity.MYTHIC);
@@ -34,7 +36,14 @@ public class PlayerInfoCardHUDViewShould : TestsBase
                 WearableLiterals.ItemRarity.UNIQUE,
             }
         });
+
         userProfile = UserProfileController.userProfilesCatalog.Get("userId");
+    }
+
+    protected override IEnumerator TearDown()
+    {
+        UnityEngine.Object.Destroy(view.gameObject);
+        yield return base.TearDown();
     }
 
     [Test]

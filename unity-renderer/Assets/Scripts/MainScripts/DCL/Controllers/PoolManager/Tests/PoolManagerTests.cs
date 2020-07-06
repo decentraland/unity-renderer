@@ -21,11 +21,6 @@ namespace Tests
             }
         }
 
-        protected override IEnumerator SetUp()
-        {
-            yield break;
-        }
-
         [UnityTest]
         public IEnumerator PooledGameObjectDestroyed()
         {

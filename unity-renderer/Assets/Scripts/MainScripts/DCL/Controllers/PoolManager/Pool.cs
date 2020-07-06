@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using DCL.Helpers;
+using UnityEngine.Assertions;
 
 namespace DCL
 {
@@ -29,11 +30,7 @@ namespace DCL
         private readonly LinkedList<PoolableObject> usedObjects = new LinkedList<PoolableObject>();
         private int maxPrewarmCount = 0;
 
-        public float lastGetTime
-        {
-            get;
-            private set;
-        }
+        public float lastGetTime { get; private set; }
 
         public int objectsCount => unusedObjectsCount + usedObjectsCount;
 
@@ -110,6 +107,8 @@ namespace DCL
 
         public GameObject InstantiateAsOriginal()
         {
+            Assert.IsTrue(original != null, "Original should never be null here");
+
             GameObject gameObject = null;
 
             if (instantiator != null)

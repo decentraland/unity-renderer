@@ -47,11 +47,11 @@ namespace DCL
 
         private bool NeedsCleanup(Pool pool, bool forceCleanup = false)
         {
-            if (pool.persistent)
-                return false;
-
             if (forceCleanup)
                 return true;
+
+            if (pool.persistent)
+                return false;
 
             bool timeout = DCLTime.realtimeSinceStartup - pool.lastGetTime >= TIME_TO_POOL_CLEANUP;
             return timeout && pool.usedObjectsCount == 0;

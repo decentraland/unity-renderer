@@ -70,7 +70,7 @@ public class TeleportPromptHUDController : IHUD
     {
         if (view)
         {
-            UnityEngine.Object.Destroy(view);
+            UnityEngine.Object.Destroy(view.gameObject);
         }
     }
 
@@ -115,6 +115,7 @@ public class TeleportPromptHUDController : IHUD
                 {
                     WebInterface.GoTo(x, y);
                 }
+
                 break;
         }
     }

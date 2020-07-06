@@ -6,6 +6,7 @@ import { defaultLogger } from '../shared/logger'
 import { initializeEngine } from './dcl'
 import { Session } from '../shared/session'
 import { waitingForRenderer } from '../shared/loading/types'
+import { USE_UNITY_INDEXED_DB_CACHE } from '../shared/meta/types'
 const queryString = require('query-string')
 
 declare var global: any
@@ -53,6 +54,8 @@ export async function initializeUnity(
   }
   Session.current.resolve(session)
   const qs = queryString.parse(document.location.search)
+  
+  ;(window as any).USE_UNITY_INDEXED_DB_CACHE = USE_UNITY_INDEXED_DB_CACHE
 
   preventUnityKeyboardLock()
 
