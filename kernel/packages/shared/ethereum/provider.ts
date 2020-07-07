@@ -19,102 +19,88 @@ export const requestManager = new RequestManager(null)
 
 let providerRequested = false
 
-function processLoginAttempt(response: IFuture<{ successful: boolean; provider: any; localIdentity?: Account }>) {
+function processLoginAttempt(response: IFuture<{ successful: boolean; provider: any }>) {
   return async () => {
-    // TODO - look for user id matching account - moliva - 18/02/2020
-    let userData = getUserProfile()
+    let result
+    try {
+      // Request account access if needed
+      const accounts: string[] | undefined = await window.ethereum.enable()
 
-    // Modern dapp browsers...
-    if (window['ethereum']) {
-      if (!isSessionExpired(userData)) {
-        response.resolve({ successful: true, provider: window.ethereum })
+      if (accounts && accounts.length > 0) {
+        result = { successful: true, provider: window.ethereum }
       } else {
-        showEthConnectAdvice(false)
-        let result
-        try {
-          // Request account access if needed
-          const accounts: string[] | undefined = await window.ethereum.enable()
-
-          if (accounts && accounts.length > 0) {
-            result = { successful: true, provider: window.ethereum }
-          } else {
-            // whether accounts is undefined or empty array => provider not enabled
-            result = {
-              successful: false,
-              provider: createProvider()
-            }
-          }
-        } catch (error) {
-          // User denied account access...
-          result = {
-            successful: false,
-            provider: createProvider()
-          }
+        // whether accounts is undefined or empty array => provider not enabled
+        result = {
+          successful: false,
+          provider: createProvider()
         }
-        response.resolve(result)
       }
-    } else if (window.web3 && window.web3.currentProvider) {
-      await removeSessionIfNotValid()
-
-      // legacy providers (don't need for confirmation)
-      response.resolve({ successful: true, provider: window.web3.currentProvider })
-    } else {
-      // otherwise, create a local identity
-      response.resolve({
+    } catch (error) {
+      // User denied account access...
+      result = {
         successful: false,
-        provider: createProvider(),
-        localIdentity: Account.create()
-      })
+        provider: createProvider()
+      }
     }
+    response.resolve(result)
   }
 }
 
 export async function awaitWeb3Approval(): Promise<void> {
   if (!providerRequested) {
     providerRequested = true
+    // Modern dapp browsers...
+    if (window['ethereum']) {
+      await removeSessionIfNotValid()
 
-    const element = document.getElementById('eth-login')
-    if (element) {
-      element.style.display = 'block'
+      // TODO - look for user id matching account - moliva - 18/02/2020
+      let userData = getUserProfile()
 
-      if (window['ethereum']) {
-        await removeSessionIfNotValid()
+      if (!isSessionExpired(userData)) {
+        providerFuture.resolve({ successful: true, provider: window.ethereum })
+      } else {
         window['ethereum'].autoRefreshOnNetworkChange = false
-      }
 
-      const button = document.getElementById('eth-login-confirm-button')
+        const element = document.getElementById('eth-login')
+        if (element) {
+          element.style.display = 'block'
+          const button = document.getElementById('eth-login-confirm-button')
 
-      let response = future()
+          let response = future()
 
-      button!.onclick = processLoginAttempt(response)
+          button!.onclick = processLoginAttempt(response)
 
-      let result
-      while (true) {
-        result = await response
+          let result
+          while (true) {
+            result = await response
 
-        element.style.display = 'none'
+            element.style.display = 'none'
 
-        const button = document.getElementById('eth-relogin-confirm-button')
+            const button = document.getElementById('eth-relogin-confirm-button')
 
-        response = future()
+            response = future()
 
-        button!.onclick = processLoginAttempt(response)
+            button!.onclick = processLoginAttempt(response)
 
-        if (result.successful) {
-          break
-        } else {
-          showEthConnectAdvice(true)
+            if (result.successful) {
+              break
+            } else {
+              showEthConnectAdvice(true)
+            }
+          }
+          showEthConnectAdvice(false)
+          providerFuture.resolve(result)
         }
       }
 
-      // después post check
-      if (window['ethereum']) {
-        registerProviderChanges()
-      }
+      registerProviderChanges()
+    } else if (window.web3 && window.web3.currentProvider) {
+      await removeSessionIfNotValid()
 
-      providerFuture.resolve(result)
+      // legacy providers (don't need for confirmation)
+      providerFuture.resolve({ successful: true, provider: window.web3.currentProvider })
     } else {
-      // otherwise, login element not found (preview, builder)
+      // otherwise, create a local identity
       providerFuture.resolve({
         successful: false,
         provider: createProvider(),
@@ -123,7 +109,7 @@ export async function awaitWeb3Approval(): Promise<void> {
     }
   }
 
-  providerFuture.then((result) => requestManager.setProvider(result.provider)).catch(defaultLogger.error)
+  providerFuture.then(result => requestManager.setProvider(result.provider)).catch(defaultLogger.error)
 
   return providerFuture
 }

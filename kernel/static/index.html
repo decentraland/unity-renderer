@@ -14,12 +14,6 @@
       height: 100%;
       overflow: hidden;
       touch-action: none;
-
-      background: #74A4D5;
-      background-image: url(images/decentraland-connect/background.png);
-      background-size: 115%;
-      background-repeat: no-repeat;
-      background-position: right -90px bottom 25px;
     }
 
     #gameContainer {
@@ -36,21 +30,8 @@
 
     #gameContainer.loaded,
     body {
-      background: #090909 url(images/decentraland-connect/DecentralandIsologotipo.png) no-repeat 50% 5% !important;
-      background-size: 170px 32px !important;
-    }
-    @media screen and (min-height: 500px) {
-      body {
-        background: #090909 url(images/decentraland-connect/DecentralandIsologotipo.png) no-repeat 50% 5% !important;
-        background-size: 170px 32px !important;
-      }
-    }
-    @media screen and (min-height: 800px) {
-      #gameContainer.loaded,
-      body {
-        background: #090909 url(images/decentraland-connect/DecentralandIsologotipo.png) no-repeat 50% 25% !important;
-        background-size: 170px 32px !important;
-      }
+      background: #090909 url(images/progress-logo.png) no-repeat center !important;
+      background-size: 309px 58px !important;
     }
 
     * {
@@ -75,7 +56,7 @@
     }
 
     #overlay {
-      display: block;
+      display: none;
       width: 100%;
       height: 100%;
       top: 0;
@@ -83,14 +64,6 @@
       right: 0;
       bottom: 0;
       z-index: 2;
-
-      background: #74A4D5;
-      background-image: url(images/decentraland-connect/background.png);
-      background-size: 115%;
-      background-repeat: no-repeat;
-      background-position: right -90px bottom 25px;
-
-      opacity: 0.15;
     }
 
     .progress {
@@ -104,8 +77,6 @@
       border-width: thick;
       border-left: none;
       border-right: none;
-      border-top: 3px solid #090909;
-      border-bottom: 3px solid #090909;
       text-align: center;
       border-color: #090909;
       background: #090909;
@@ -117,12 +88,12 @@
       width: 0%;
       height: 100%;
       display: inline-flex;
-      background: linear-gradient(270deg, #FC9965 4.62%, #FF5273 58.77%, #DE3959 100%);
+      background-color: #eb455a;
       animation: progress_30 10s forwards;
     }
 
     .progress.loaded {
-      z-index: 9;
+      z-index: 1;
     }
 
     .progress.loaded .full {
@@ -190,78 +161,38 @@
     }
     #load-messages-wrapper {
       display: none;
-      z-index: 8;
-
-      position: fixed;
-      top: 80px;
-
       min-width: 100%;
-      padding-left: 0;
-      padding-right: 0;
-
+      z-index: 8;
+      bottom: 10%;
+      position: fixed;
       color: white;
+      padding-left: 20%;
+      padding-right: 20%;
       text-align: center;
       font-family: -apple-system, system-ui, system-ui, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
       font-size: 1.25em;
       font-stretch: 125%;
       font-weight: 400;
     }
-    @media screen and (min-height: 500px) {
-      #load-messages-wrapper {
-        top: 20%;
-
-        padding-left: 20%;
-        padding-right: 20%;
-      }
-    }
-    @media screen and (min-height: 800px) {
-      #load-messages-wrapper {
-        top: 40%;
-
-        padding-left: 10%;
-        padding-right: 10%;
-      }
-    }
-    #load-images {
-      max-width: 306px;
-      max-height: 234px;
-    }
-    .load-images-wrapper {
-      height: 234px;
-      margin-bottom: 40px;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-    }
     #subtext-messages {
-      bottom: 40px;
-      left: 0;
-      position: fixed;
-
-      min-width: 100%;
-      padding-left: 20%;
-      padding-right: 20%;
-
-      text-align: center;
-
+      margin-top: 25px;
       font-size: 1.0em;
-      color: #7D8385;
+      color: #353535;
     }
 
     #eth-connect-advice {
       display: none;
+      background: rgba(0, 0, 0, 1);
+      position: absolute;
+      z-index: 9;
+      top: 0;
+      left:0;
+      width: 100%;
+      height: 100%;
     }
     #eth-sign-advice {
       display: none;
-    }
-    .login {
-      background:#74A4D5;
-      background-image: url(images/decentraland-connect/background.png);
-      background-size: 100%;
-      background-repeat: no-repeat;
-      background-position: left 50% bottom 33px;
-
+      background: rgba(0, 0, 0, 1);
       position: absolute;
       z-index: 9;
       top: 0;
@@ -270,25 +201,31 @@
       height: 100%;
     }
     #eth-login {
-      display: block;
+      display: none;
+      background: rgba(0, 0, 0, 1);
+      background-image: url(images/decentraland-connect/background.png);
+      background-size: cover;
+      position: absolute;
+      z-index: 9;
+      top: 0;
+      left:0;
+      width: 100%;
+      height: 100%;
     }
     .eth-login-popup {
-      width: 70%;
-      max-width: 650px;
+      background-color: white; 
+      background-image: linear-gradient(to bottom right, #F4F4F4, #ffffff); 
+      width: 60%;
+      max-width: 470px;
       height: 446px;
 
       position: absolute;
       left: 50%;
-      top: 40px;
-      transform: translate(-50%, 0);
+      top: 50%;
+      transform: translate(-50%, -50%);
+      border-radius: 12px;
       padding: 34px 44px;
-
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-    }
-    #eth-login-confirmation-wrapper {
-      width: 100%;
+      box-shadow: 0 2px 4 rgba(0, 0, 0, 0.5);
 
       display: flex;
       flex-direction: column;
@@ -303,15 +240,15 @@
       src: url(images/decentraland-connect/SF-UI-Text-Semibold.otf);
     }
     .eth-login-description {
-      color: white;
-      margin-top: 50px;
-      margin-bottom: 50px;
+      color: black;
+      margin-top: 68px;
+      margin-bottom: 60px;
       text-align: center;
       font-size: 16px;
       font-family: sfregular, "Helvetica Neue", Arial, sans-serif;
     }
     .eth-login-welcome {
-      color: white;
+      color: black;
       font-family: sfregular, "Helvetica Neue", Arial, sans-serif;
       font-size: 16px;
       margin-bottom: 2px;
@@ -321,28 +258,20 @@
     }
     .eth-login-confirm-button1 {
       color: white;
+      background-color: #FF2D55;
+      background-image: linear-gradient(to right, #FF2D55, #FF4974);
       cursor: pointer;
-
-      background-color: #FF5273;
-      box-shadow: 0px 3.66316px 0px #E12F4F;
-
+      border-radius: 6px;
       line-height: 40px;
       width: 214px;
-
       border: 0;
-      border-radius: 8px;
-
       text-transform: uppercase;
       font-size: 13px;
       font-family: sfsemibold, "Helvetica Neue", Arial, sans-serif;
     }
     .eth-login-confirm-button1:disabled {
-      color: #B6C6D7;
-      background-color: #A08DB8;
-      box-shadow: 0px 3.66316px 0px #907CA8;
-    }
-    .eth-login-logo {
-      width: 262px;
+      background-color: #F6DBE2;
+      background-image: none;
     }
     .eth-login-wallet-icon {
       margin-right: 10px;
@@ -351,132 +280,22 @@
       vertical-align: middle;
     }
     .eth-login-tos {
-      max-width: 310px;
       margin-bottom: 50px;
       text-align: center;
     }
     .eth-login-tos-label {
-      font-size: 13px;
+      font-size: 12px;
       font-family: sfregular, "Helvetica Neue", Arial, sans-serif;
-      color: white;
+      color: black;
     }
     .eth-login-tos-label > a:any-link {
-      color: white;
+      color: #FF2E56;
       font-family: sfsemibold, "Helvetica Neue", Arial, sans-serif;
     }
     .eth-login-tos-agree {
       width: 20px;
       height: 20px;
       vertical-align: middle;
-    }
-
-    .nav-bar {
-      background-color: rgba(0, 0, 0, 0.1);
-      height: 40px;
-      display: flex;
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 100%;
-      z-index: 3;
-    }
-    .nav-bar-content {
-      position: absolute;
-      right: 50px;
-      height: 100%;
-      display: flex;
-      width: fit-content;
-
-      align-items: center;
-      vertical-align: middle;
-    }
-    @media screen and (min-width: 1200px) {
-      .nav-bar-content {
-        right: 285px;
-      }
-    }
-    .nav-text {
-      color: white;
-      font-family: sfregular, "Helvetica Neue", Arial, sans-serif;
-    }
-    .nav-discord {
-      width: fit-content;
-
-      vertical-align: middle;
-      margin: 6px 0 8px 10px;
-
-      border: 1px solid rgba(255, 255, 255, 0.6);
-      padding: 4px 12.15px;
-
-      box-sizing: border-box;
-      border-radius: 6px;
-      text-decoration: none;
-    }
-    .nav-discord-img {
-      width: 14px;
-      vertical-align: middle;
-    }
-    .nav-discord-text {
-      margin-left: 2px;
-      font-size: 9px;
-    }
-    .nav-need-support {
-      width: fit-content;
-      font-size: 11px;
-    }
-
-    .footer-bar {
-      background: #1C191F; 
-      height: 33px;
-      display: flex;
-      position: fixed;
-      bottom: 0;
-      left: 0;
-      width: 100%;
-      z-index: 3;
-    }
-    .footer-bar-content {
-      position: absolute;
-      right: 50px;
-      height: 100%;
-      display: flex;
-      width: fit-content;
-
-      align-items: center;
-      vertical-align: middle;
-    }
-    @media screen and (min-width: 1200px) {
-      .footer-bar-content {
-        right: 285px;
-      }
-    }
-    .footer-link {
-      margin-left: 34px;
-    }
-    .footer-text {
-      margin-left: 45px;
-      vertical-align: middle;
-      color: #736E7D;
-      font-family: sfregular, "Helvetica Neue", Arial, sans-serif;
-    }
-    .footer-icon {
-      max-height: 18px;
-    }
-    .loader {
-      --thickness: 5px;
-      --diameter: 35px;
-
-      border: var(--thickness) solid #f3f3f3;
-      border-top: var(--thickness) solid #FF5273;
-      border-radius: 50%;
-      width: var(--diameter);
-      height: var(--diameter);
-      animation: spin 1.24s linear infinite;
-    }
-
-    @keyframes spin {
-      0% { transform: rotate(0deg); }
-      100% { transform: rotate(360deg); }
     }
   </style>
 </head>
@@ -486,7 +305,6 @@
     <source src="tone4.mp3">
   </audio>
   <div id="load-messages-wrapper">
-    <div class="load-images-wrapper"><img id="load-images"></img></div>
     <div id="load-messages"></div>
     <div id="subtext-messages"></div>
   </div>
@@ -495,87 +313,39 @@
   <div id="progress-bar" class="progress ingame">
     <div class="full"></div>
   </div>
-  <div id="eth-login" class="login">
-    <nav class="nav-bar">
-      <div class="nav-bar-content">
-        <div class="nav-text nav-need-support"><span>Need support?</span></div>
-        <a class="nav-discord" href="https://dcl.gg/discord" target="about:blank"><img class="nav-discord-img" src="images/decentraland-connect/Discord.png"></img> <span class="nav-text nav-discord-text">JOIN OUR DISCORD</span></a>
-      </div>
-    </nav>
+  <div id="eth-login">
     <div class="eth-login-popup">
-      <img class="eth-login-logo" src="images/decentraland-connect/Isologotipo.png"></img>
-      <div class="eth-login-description">Inmerse yourself into the Ethereum blockchain based virtual game world created and owned by its users.</div>
-      <div id="eth-login-confirmation-spinner" class="loader" style="display: none;"></div>
-      <div id="eth-login-confirmation-wrapper">
-        <div class="eth-login-tos">
-          <input type="checkbox" id="agree-check" class="eth-login-tos-agree" onchange="document.getElementById('eth-login-confirm-button').disabled = !this.checked;"></input>
-          <label for="agree-check" class="eth-login-tos-label">I am of legal age and I have read and agree to the <a href="https://decentraland.org/terms" target="_blank">Terms of Service</a> and <a href="https://decentraland.org/privacy" target="_blank">Privacy Policy</a></label>
-        </div>
-        <button id="eth-login-confirm-button" class="eth-login-confirm-button1" disabled>Start Exploring</button>
-      </div>
+      <div class="eth-login-welcome">Welcome to</div>
+      <img src="images/decentraland-connect/Isologotipo.png" style="width: 60%; margin-bottom: 20px"></img>
+      <div class="eth-login-description">The virtual world where you can build and explore 3D creations, play games or simply hang out with friends.</div>
+      <div class="eth-login-tos"><input type="checkbox" id="agree-check" class="eth-login-tos-agree" onchange="document.getElementById('eth-login-confirm-button').disabled = !this.checked;"><label for="agree-check" class="eth-login-tos-label">I am of legal age and I have read and agree to the <a href="https://decentraland.org/terms" target="_blank">Terms of Service</a> and <a href="https://decentraland.org/privacy" target="_blank">Privacy Policy</a></label></div>
+      <button id="eth-login-confirm-button" class="eth-login-confirm-button1" disabled>
+        <img src="./images/decentraland-connect/walletIcon.png" class="eth-login-wallet-icon"></img>Connect wallet</buttonclass="eth-login-description">
     </div>
-    <footer class="footer-bar">
-      <div class="footer-bar-content">
-        <a class="footer-link" href="https://dcl.gg/discord" target="about:blank"><img class="footer-icon" src="images/decentraland-connect/footer/Discord.png"></img></a>
-        <a class="footer-link" href="https://www.reddit.com/r/decentraland/" target="about:blank"><img class="footer-icon" src="images/decentraland-connect/footer/Reddit.png"></img></a>
-        <a class="footer-link" href="http://github.com/decentraland" target="about:blank"><img class="footer-icon" src="images/decentraland-connect/footer/Git.png"></img></a>
-        <a class="footer-link" href="https://twitter.com/decentraland" target="about:blank"><img class="footer-icon" src="images/decentraland-connect/footer/Twitter.png"></img></a>
-        <span class="footer-text">© 2020 Decentraland</span>
-      </div>
-    </footer>
   </div>
-  <div id="eth-connect-advice" class="login">
-    <nav class="nav-bar">
-      <div class="nav-bar-content">
-        <div class="nav-text nav-need-support"><span>Need support?</span></div>
-        <a class="nav-discord" href="https://dcl.gg/discord" target="about:blank"><img class="nav-discord-img" src="images/decentraland-connect/Discord.png"></img> <span class="nav-text nav-discord-text">JOIN OUR DISCORD</span></a>
-      </div>
-    </nav>
+  <div id="eth-connect-advice">
     <div class="eth-login-popup" style="height: 450px">
-      <img class="eth-login-logo" src="images/decentraland-connect/Isologotipo.png"></img>
+      <div class="eth-login-welcome">Welcome to</div>
+      <img src="images/decentraland-connect/Isologotipo.png" style="width: 60%; margin-bottom: 20px"></img>
       <div class="eth-login-description">Please, follow the instructions provided by your Ethereum wallet provider to complete login.<br></br>To proceed, <strong>login</strong> into your wallet and confirm with <strong>connecting</strong> to your Ethereum wallet extension.</div>
       <button id="eth-relogin-confirm-button" class="eth-login-confirm-button1">
         <img src="./images/decentraland-connect/walletIcon.png" class="eth-login-wallet-icon"></img>Connect wallet</buttonclass="eth-login-description">
     </div>
-    <footer class="footer-bar">
-      <div class="footer-bar-content">
-        <a class="footer-link" href="https://dcl.gg/discord" target="about:blank"><img class="footer-icon" src="images/decentraland-connect/footer/Discord.png"></img></a>
-        <a class="footer-link" href="https://www.reddit.com/r/decentraland/" target="about:blank"><img class="footer-icon" src="images/decentraland-connect/footer/Reddit.png"></img></a>
-        <a class="footer-link" href="http://github.com/decentraland" target="about:blank"><img class="footer-icon" src="images/decentraland-connect/footer/Git.png"></img></a>
-        <a class="footer-link" href="https://twitter.com/decentraland" target="about:blank"><img class="footer-icon" src="images/decentraland-connect/footer/Twitter.png"></img></a>
-        <span class="footer-text">© 2020 Decentraland</span>
-      </div>
-    </footer>
   </div>
-  <div id="eth-sign-advice" class="login">
-    <nav class="nav-bar">
-      <div class="nav-bar-content">
-        <div class="nav-text nav-need-support"><span>Need support?</span></div>
-        <a class="nav-discord" href="https://dcl.gg/discord" target="about:blank"><img class="nav-discord-img" src="images/decentraland-connect/Discord.png"></img> <span class="nav-text nav-discord-text">JOIN OUR DISCORD</span></a>
-      </div>
-    </nav>
+  <div id="eth-sign-advice">
     <div class="eth-login-popup" >
-      <img class="eth-login-logo" src="images/decentraland-connect/Isologotipo.png"></img>
+      <div class="eth-login-welcome">Welcome to</div>
+      <img src="images/decentraland-connect/Isologotipo.png" style="width: 60%; margin-bottom: 20px"></img>
       <div class="eth-login-description">Please, follow the instructions provided by your Ethereum wallet provider to complete login.</div>
       <div class="eth-login-description" style="margin-top: 10px;">To proceed, confirm <strong>signing</strong> the following message in your wallet extension.</div>
       <div id="eth-sign-advice-msg" class="eth-login-description code"></div>
     </div>
-    <footer class="footer-bar">
-      <div class="footer-bar-content">
-        <a class="footer-link" href="https://dcl.gg/discord" target="about:blank"><img class="footer-icon" src="images/decentraland-connect/footer/Discord.png"></img></a>
-        <a class="footer-link" href="https://www.reddit.com/r/decentraland/" target="about:blank"><img class="footer-icon" src="images/decentraland-connect/footer/Reddit.png"></img></a>
-        <a class="footer-link" href="http://github.com/decentraland" target="about:blank"><img class="footer-icon" src="images/decentraland-connect/footer/Git.png"></img></a>
-        <a class="footer-link" href="https://twitter.com/decentraland" target="about:blank"><img class="footer-icon" src="images/decentraland-connect/footer/Twitter.png"></img></a>
-        <span class="footer-text">© 2020 Decentraland</span>
-      </div>
-    </footer>
   </div>
   <div id="gameContainer"></div>
 
   <!-- Begin error messages -->
 
   <div id="error-networkmismatch" style="/*display: block !important*/" class="error-container hidden-error">
-    <div class="error-background"></div>
     <div class="errormessage">
       <div class="errortext col">
         <div class="communicationslink">A network mismatch was detected</div>
@@ -587,14 +357,13 @@
       </div>
       <div class="errorimage col">
         <div class="imagewrapper">
-          <img class="error-image" src="images/robots/robotsmiling.png" />
+          <img class="error-image" src="images/robotsmiling.png" />
         </div>
       </div>
     </div>
   </div>
 
   <div id="error-newlogin" style="/*display: block !important*/" class="error-container hidden-error">
-    <div class="error-background"></div>
     <div class="errormessage">
       <div class="errortext col">
         <div class="communicationslink">Another session was detected</div>
@@ -606,14 +375,13 @@
       </div>
       <div class="errorimage col">
         <div class="imagewrapper">
-          <img class="error-image" src="images/robots/robotsmiling.png" />
+          <img class="error-image" src="images/robotsmiling.png" />
         </div>
       </div>
     </div>
   </div>
 
   <div id="error-comms" style="/*display: block !important*/" class="error-container hidden-error">
-    <div class="error-background"></div>
     <div class="errormessage">
       <div class="errortext col">
         <div class="error">Error</div>
@@ -630,14 +398,13 @@
       </div>
       <div class="errorimage col">
         <div class="imagewrapper">
-          <img class="error-image" src="images/robots/error-robotdead.png" />
+          <img class="error-image" src="images/error-robotdead.png" />
         </div>
       </div>
     </div>
   </div>
 
   <div id="error-fatal" style="/*display: block !important*/" class="error-container hidden-error">
-    <div class="error-background"></div>
     <div class="errormessage">
       <div class="errortext col">
         <div class="error">Error</div>
@@ -656,14 +423,13 @@
       </div>
       <div class="errorimage col">
         <div class="imagewrapper">
-          <img class="error-image" src="images/robots/error-robotdown.png" />
+          <img class="error-image" src="images/error-robotdown.png" />
         </div>
       </div>
     </div>
   </div>
 
   <div id="error-notinvited" style="/*display: block !important*/" class="error-container hidden-error">
-    <div class="error-background"></div>
     <div class="errormessage">
       <div class="errortext col">
         <div class="error">Oops...</div>
@@ -671,13 +437,12 @@
         <div class="givesomedetailof">Your account is not in the beta testing group. Only users with a claimed name have access right now. <br /><br />Stay tuned! Genesis City opens its doors on February 20th.</div>
       </div>
       <div class="errorimage col">
-        <img class="error-image" src="images/robots/error-robotmobile.png" />
+        <img class="error-image" src="images/error-robotmobile.png" />
       </div>
     </div>
   </div>
 
   <div id="error-notsupported" style="/*display: block !important*/" class="error-container hidden-error">
-    <div class="error-background"></div>
     <div class="errormessage">
       <div class="errortext col">
         <div class="error">Error</div>
@@ -685,20 +450,19 @@
         <div class="givesomedetailof">The Explorer only works on Chrome or Firefox for Windows, Linux and macOS.</div>
       </div>
       <div class="errorimage col">
-        <img class="error-image" src="images/robots/error-robotmobile.png" />
+        <img class="error-image" src="images/error-robotmobile.png" />
       </div>
     </div>
   </div>
 
   <div id="error-nomobile" style="/*display: block !important*/" class="hidden-error">
-    <div class="error-background"></div>
     <div class="iphone8916">
       <div class="div1" style="width: 375px; height: 100%; position:relative; margin:auto;">
         <div class="cta">
           <div class="signup" onclick="(function() { window.location.href='https://decentraland.org'; })()">Learn more
             about decentraland</div>
         </div>
-        <img class="robotmobilebrowsererror" src="images/robots/error-robotmobile.png" />
+        <img class="robotmobilebrowsererror" src="images/error-robotmobile.png" />
         <div class="error">Error</div>
         <div class="theclientisonlya">The client is only available on desktop right now.</div>
       </div>
@@ -725,7 +489,7 @@
             </div>
           </div>
           <div class="errorimage col">
-            <img src="images/robots/error-robotmobile.png" />
+            <img src="images/error-robotmobile.png" />
           </div>
         </div>
       </div>
