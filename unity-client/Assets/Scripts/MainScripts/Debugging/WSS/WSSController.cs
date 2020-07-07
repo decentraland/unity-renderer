@@ -413,6 +413,9 @@ namespace DCL
                             case "RequestTeleport":
                                 HUDController.i.RequestTeleport(msg.payload);
                                 break;
+                            case "SetDisableAssetBundles":
+                                SceneController.i.SetDisableAssetBundles();
+                                break;
                             default:
                                 Debug.Log(
                                     "<b><color=#FF0000>WSSController:</color></b> received an unknown message from kernel to renderer: " +
