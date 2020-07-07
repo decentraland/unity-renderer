@@ -7,6 +7,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using DCL.Components;
 using UnityEngine;
 using UnityEngine.Serialization;
 
@@ -366,6 +367,11 @@ namespace DCL
         {
             sceneDebugPanel.SetActive(false);
             engineDebugPanel.SetActive(true);
+        }
+
+        public void SetDisableAssetBundles()
+        {
+            RendereableAssetLoadHelper.loadingType = RendereableAssetLoadHelper.LoadingType.GLTF_ONLY;
         }
 
         public bool IsCharacterInsideScene(ParcelScene scene)
