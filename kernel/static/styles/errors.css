@@ -2,12 +2,33 @@
  * General
  */
 
+.error-image {
+  max-height: 330px;
+  width: auto;
+  height: auto;
+}
+
+.error-background {
+  position: fixed;
+  width: 100vw;
+  height: 100vh;
+
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+
+  background-color: black;
+  z-index: -1;
+  opacity: 1;
+}
+
 .error-container {
   width: 800px;
   position: absolute;
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
+  z-index: 20;
 }
 
 #error-comms.error-container .errormessage {
@@ -141,26 +162,12 @@
   display: flex;
 }
 
-#error-comms.error-container .errormessage .col.errorimage {
-  padding-bottom: 90px;
-}
-
-#error-comms.error-container .errormessage .col.errorimage .imagewrapper {
-  width: 212px;
-  height: 331px;
-}
-
 #error-comms.error-container .errormessage .col {
   justify-content: flex-end;
 }
 
 #error-comms.errormessage .errortext {
   padding-right: 30px;
-}
-
-#error-comms.errormessage .errorimage img {
-  width: 212px;
-  height: 331px;
 }
 
 /**
@@ -186,20 +193,6 @@
 
 #error-newlogin.error-container .errormessage .errortext {
   padding-right: 30px;
-}
-
-#error-newlogin.error-container .errormessage .col.errorimage .imagewrapper {
-  width: 212px;
-  height: 331px;
-}
-
-#error-newlogin.error-container .errormessage .errorimage img {
-  width: 212px;
-  height: 331px;
-}
-
-#error-newlogin.error-container .errormessage .col.errorimage {
-  padding-bottom: 90px;
 }
 
 #error-newlogin.error-container .errormessage div {
@@ -313,20 +306,6 @@
   padding-right: 30px;
 }
 
-#error-networkmismatch.error-container .errormessage .col.errorimage .imagewrapper {
-  width: 212px;
-  height: 331px;
-}
-
-#error-networkmismatch.error-container .errormessage .errorimage img {
-  width: 212px;
-  height: 331px;
-}
-
-#error-networkmismatch.error-container .errormessage .col.errorimage {
-  padding-bottom: 90px;
-}
-
 #error-networkmismatch.error-container .errormessage div {
   display: inline-block;
 }
@@ -435,20 +414,6 @@
 
 #error-fatal.error-container .errormessage .errortext {
   padding-right: 30px;
-}
-
-#error-fatal.error-container .errormessage .col.errorimage .imagewrapper {
-  width: 212px;
-  height: 331px;
-}
-
-#error-fatal.error-container .errormessage .errorimage img {
-  width: 212px;
-  height: 331px;
-}
-
-#error-fatal.error-container .errormessage .col.errorimage {
-  padding-bottom: 90px;
 }
 
 #error-fatal.error-container .errormessage div {
@@ -576,7 +541,7 @@
   display: flex;
   flex-direction: row;
   flex-wrap: wrap;
-  justify-content: space-between;
+  justify-content: start;
 }
 
 #error-notinvited.error-container .errormessage .col {
@@ -584,21 +549,11 @@
   flex-direction: column;
   flex-basis: 100%;
   justify-content: center;
-  flex: 1;
+  flex: 0;
 }
 
 #error-notinvited.error-container .errormessage .errortext {
   padding-right: 30px;
-}
-
-#error-notinvited.error-container .errormessage .col.errorimage {
-  max-width: 292px;
-  padding-bottom: 90px;
-}
-
-#error-notinvited.error-container .errormessage .errorimage img {
-  width: 292px;
-  height: 313px;
 }
 
 #error-notinvited.error-container .errormessage div {
@@ -741,17 +696,6 @@
   padding-right: 30px;
 }
 
-#error-notsupported.error-container .errormessage .col.errorimage {
-  width: 212px;
-  height: 331px;
-  padding-bottom: 90px;
-}
-
-#error-notsupported.error-container .errormessage .errorimage img {
-  width: 212px;
-  height: 331px;
-}
-
 #error-notsupported.error-container .errormessage div {
   display: inline-block;
 }
@@ -890,18 +834,6 @@
 
 #error-nomobile-mobile.error-container .errormessage .errortext {
   padding-right: 30px;
-}
-
-#error-nomobile-mobile.error-container .errormessage .col.errorimage {
-  width: 212px;
-  height: 331px;
-  padding-bottom: 20px;
-  margin: auto;
-}
-
-#error-nomobile-mobile.error-container .errormessage .errorimage img {
-  width: 212px;
-  height: 331px;
 }
 
 #error-nomobile-mobile.error-container .errormessage div {
