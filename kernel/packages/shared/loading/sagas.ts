@@ -5,8 +5,7 @@ import { getCurrentUser } from '../comms/peers'
 import { lastPlayerPosition } from '../world/positionThings'
 import { SceneLoad, SCENE_FAIL, SCENE_LOAD, SCENE_START } from './actions'
 import { LoadingState } from './reducer'
-import { EXPERIENCE_STARTED, loadingTips, rotateHelpText, TELEPORT_TRIGGERED } from './types'
-import { future, IFuture } from 'fp-future'
+import { EXPERIENCE_STARTED, helpTexts, rotateHelpText, TELEPORT_TRIGGERED } from './types'
 
 const SECONDS = 1000
 
@@ -63,18 +62,6 @@ export function* waitForSceneLoads() {
   }
 }
 
-function hideLoadingTips() {
-  const messages = document.getElementById('load-messages')
-  const images = document.getElementById('load-images') as HTMLImageElement | null
-
-  if (messages) {
-    messages.style.cssText = 'display: none;'
-  }
-  if (images) {
-    images.style.cssText = 'display: none;'
-  }
-}
-
 export function* initialSceneLoading() {
   yield race({
     refresh: call(refreshTeleport),
@@ -83,7 +70,6 @@ export function* initialSceneLoading() {
       yield take(EXPERIENCE_STARTED)
       yield take('Loading scene')
       yield call(waitForSceneLoads)
-      yield call(hideLoadingTips)
     })
   })
 }
@@ -100,25 +86,10 @@ export function* teleportSceneLoading() {
   })
 }
 
-const loadingImagesCache: Record<string, IFuture<string>> = {}
-
-export async function updateTextInScreen(status: LoadingState) {
+export function updateTextInScreen(status: LoadingState) {
   const messages = document.getElementById('load-messages')
-  const images = document.getElementById('load-images') as HTMLImageElement | null
-  if (messages && images) {
-    const loadingTip = loadingTips[status.helpText]
-    messages.innerText = loadingTip.text
-
-    if (!loadingImagesCache[loadingTip.image]) {
-      const promise = (loadingImagesCache[loadingTip.image] = future())
-      const response = await fetch(loadingTip.image)
-      const blob = await response.blob()
-      const url = URL.createObjectURL(blob)
-      promise.resolve(url)
-    }
-
-    const url = await loadingImagesCache[loadingTip.image]
-    images.src = url
+  if (messages) {
+    messages.innerText = helpTexts[status.helpText]
   }
   const subMessages = document.getElementById('subtext-messages')
   if (subMessages) {
