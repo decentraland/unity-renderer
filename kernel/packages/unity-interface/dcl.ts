@@ -17,7 +17,8 @@ import {
   ENGINE_DEBUG_PANEL,
   playerConfigurations,
   SCENE_DEBUG_PANEL,
-  SHOW_FPS_COUNTER
+  SHOW_FPS_COUNTER,
+  NO_ASSET_BUNDLES
 } from '../config'
 import { Quaternion, ReadOnlyQuaternion, ReadOnlyVector3, Vector3 } from '../decentraland-ecs/src/decentraland/math'
 import { IEventNames, IEvents, ProfileForRenderer, MinimapSceneInfo } from '../decentraland-ecs/src/decentraland/Types'
@@ -576,6 +577,9 @@ export const unityInterface = {
   SetEngineDebugPanel() {
     gameInstance.SendMessage('SceneController', 'SetEngineDebugPanel')
   },
+  SetDisableAssetBundles() {
+    gameInstance.SendMessage('SceneController', 'SetDisableAssetBundles')
+  },
   ActivateRendering() {
     gameInstance.SendMessage('SceneController', 'ActivateRendering')
   },
@@ -962,6 +966,10 @@ export async function initializeEngine(_gameInstance: GameInstance) {
 
   if (SCENE_DEBUG_PANEL) {
     unityInterface.SetSceneDebugPanel()
+  }
+
+  if (NO_ASSET_BUNDLES) {
+    unityInterface.SetDisableAssetBundles()
   }
 
   if (SHOW_FPS_COUNTER) {
