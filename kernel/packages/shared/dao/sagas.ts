@@ -141,11 +141,11 @@ async function checkValidRealm(realm: Realm) {
   )
 }
 
-function* cacheCatalystRealm(action: InitCatalystRealm & SetCatalystRealm) {
+function* cacheCatalystRealm(action: InitCatalystRealm | SetCatalystRealm) {
   saveToLocalStorage(CACHE_KEY, action.payload)
 }
 
-function* cacheCatalystCandidates(action: SetCatalystCandidates & SetAddedCatalystCandidates) {
+function* cacheCatalystCandidates(action: SetCatalystCandidates | SetAddedCatalystCandidates) {
   const allCandidates = yield select(getAllCatalystCandidates)
 
   saveToLocalStorage(CATALYST_CANDIDATES_KEY, allCandidates)
