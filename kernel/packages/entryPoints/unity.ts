@@ -26,7 +26,7 @@ const logger = createLogger('unity.ts: ')
 
 const start = Date.now()
 
-const observer = worldRunningObservable.add(isRunning => {
+const observer = worldRunningObservable.add((isRunning) => {
   if (isRunning) {
     worldRunningObservable.remove(observer)
     DEBUG_PM && logger.info(`initial load: `, Date.now() - start)
@@ -34,7 +34,7 @@ const observer = worldRunningObservable.add(isRunning => {
 })
 
 initializeUnity(container)
-  .then(async _ => {
+  .then(async (_) => {
     const i = unityInterface
     i.ConfigureHUDElement(HUDElementID.MINIMAP, { active: true, visible: true })
     i.ConfigureHUDElement(HUDElementID.AVATAR, { active: true, visible: true })
@@ -76,7 +76,7 @@ initializeUnity(container)
       ReportFatalError(error.message)
     }
   })
-  .catch(err => {
+  .catch((err) => {
     document.body.classList.remove('dcl-loading')
     if (err.message === AUTH_ERROR_LOGGED_OUT || err.message === NOT_INVITED) {
       ReportFatalError(NOT_INVITED)
