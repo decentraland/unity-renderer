@@ -1,3 +1,7 @@
+#if UNITY_WEBGL && !UNITY_EDITOR
+#define WEB_PLATFORM
+#endif
+
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -479,30 +483,70 @@ namespace DCL.Helpers
         public static bool LockedThisFrame() => lockedInFrame == Time.frameCount;
 
         //NOTE(Brian): Made as an independent flag because the CI doesn't work well with the Cursor.lockState check.
-        public static bool isCursorLocked = false;
+        public static bool isCursorLocked { get; private set; } = false;
+
+#if WEB_PLATFORM
+        private static bool requestedUnlock = false;
+        private static bool requestedLock = false;
+#endif
 
         public static void LockCursor()
         {
-            if (isCursorLocked) return;
-
+#if WEB_PLATFORM
+            if (isCursorLocked)
+            {
+                return;
+            }
+            if (requestedUnlock || requestedLock)
+            {
+                return;
+            }
+            requestedLock = true;
+#else
             isCursorLocked = true;
-            lockedInFrame = Time.frameCount;
             Cursor.visible = false;
+#endif
             Cursor.lockState = CursorLockMode.Locked;
+            lockedInFrame = Time.frameCount;
 
             EventSystem.current.SetSelectedGameObject(null);
         }
 
         public static void UnlockCursor()
         {
-            if (!isCursorLocked) return;
-
+#if WEB_PLATFORM
+            if (!isCursorLocked)
+            {
+                return;
+            }
+            if (requestedUnlock || requestedLock)
+            {
+                return;
+            }
+            requestedUnlock = true;
+#else
             isCursorLocked = false;
             Cursor.visible = true;
+#endif
             Cursor.lockState = CursorLockMode.None;
 
             EventSystem.current.SetSelectedGameObject(null);
         }
+
+#if WEB_PLATFORM
+        // NOTE: This should come from browser's pointerlockchange callback
+        public static void BrowserSetCursorState(bool locked)
+        {
+            if (!locked && !requestedUnlock)
+            {
+                Cursor.lockState = CursorLockMode.None;
+            }
+            isCursorLocked = locked;
+            Cursor.visible = !locked;
+            requestedUnlock = false;
+            requestedLock = false;
+        }
+#endif
 
         public static void DestroyAllChild(this Transform transform)
         {

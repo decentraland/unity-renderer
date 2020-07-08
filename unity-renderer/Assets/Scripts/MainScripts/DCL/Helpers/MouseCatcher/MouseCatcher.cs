@@ -1,3 +1,7 @@
+#if UNITY_WEBGL && !UNITY_EDITOR
+#define WEB_PLATFORM
+#endif
+
 using UnityEngine;
 using UnityEngine.EventSystems;
 using System.Collections.Generic;
@@ -40,14 +44,17 @@ namespace DCL
             if (!renderingEnabled) return;
 
             Utils.LockCursor();
+#if !WEB_PLATFORM            
             OnMouseLock?.Invoke();
+#endif
         }
 
-        //Externally called by the browser
         public void UnlockCursor()
         {
             Utils.UnlockCursor();
+#if !WEB_PLATFORM            
             OnMouseUnlock?.Invoke();
+#endif
         }
 
         public void OnPointerDown(PointerEventData eventData)
@@ -55,5 +62,23 @@ namespace DCL
             OnMouseDown?.Invoke();
             LockCursor();
         }
+
+#if WEB_PLATFORM
+        //Externally -ONLY- called by the browser
+        public void UnlockCursorBrowser(int val)
+        {
+            bool lockPointer = val != 0;
+            Utils.BrowserSetCursorState(lockPointer);
+            if (lockPointer)
+            {
+                OnMouseLock?.Invoke();
+            }
+            else
+            {
+                OnMouseUnlock?.Invoke();
+            }
+        }
+#endif
+
     }
 }
