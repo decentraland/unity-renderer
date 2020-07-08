@@ -587,7 +587,10 @@ export const unityInterface = {
     gameInstance.SendMessage('SceneController', 'DeactivateRendering')
   },
   UnlockCursor() {
-    gameInstance.SendMessage('MouseCatcher', 'UnlockCursor')
+    this.SetCursorState(false)
+  },
+  SetCursorState(locked: boolean) {
+    gameInstance.SendMessage('MouseCatcher', 'UnlockCursorBrowser', locked ? 1 : 0)
   },
   SetBuilderReady() {
     gameInstance.SendMessage('SceneController', 'BuilderReady')
@@ -1153,8 +1156,14 @@ worldRunningObservable.add(isRunning => {
   }
 })
 
-document.addEventListener('pointerlockchange', e => {
-  if (!document.pointerLockElement) {
-    unityInterface.UnlockCursor()
+document.addEventListener('pointerlockchange', pointerLockChange, false)
+
+let isPointerLocked: boolean = false
+function pointerLockChange() {
+  const doc: any = document
+  const isLocked = (doc.pointerLockElement || doc.mozPointerLockElement || doc.webkitPointerLockElement) != null
+  if (isPointerLocked !== isLocked) {
+    unityInterface.SetCursorState(isLocked)
   }
-})
+  isPointerLocked = isLocked
+}
