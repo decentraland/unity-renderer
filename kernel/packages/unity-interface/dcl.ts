@@ -18,8 +18,9 @@ import {
   playerConfigurations,
   SCENE_DEBUG_PANEL,
   SHOW_FPS_COUNTER,
+  ethereumConfigurations,
   NO_ASSET_BUNDLES
-} from '../config'
+} from 'config'
 import { Quaternion, ReadOnlyQuaternion, ReadOnlyVector3, Vector3 } from '../decentraland-ecs/src/decentraland/math'
 import { IEventNames, IEvents, ProfileForRenderer, MinimapSceneInfo } from '../decentraland-ecs/src/decentraland/Types'
 import { sceneLifeCycleObservable } from '../decentraland-loader/lifecycle/controllers/scene'
@@ -98,8 +99,9 @@ import { StoreContainer } from 'shared/store/rootTypes'
 import { ILandToLoadableParcelScene, ILandToLoadableParcelSceneUpdate } from 'shared/selectors'
 import { sendMessage, updateUserData, updateFriendship } from 'shared/chat/actions'
 import { ProfileAsPromise } from 'shared/profiles/ProfileAsPromise'
-import { changeRealm, catalystRealmConnected, candidatesFetched } from '../shared/dao/index'
+import { changeRealm, catalystRealmConnected, candidatesFetched } from 'shared/dao'
 import { notifyStatusThroughChat } from 'shared/comms/chat'
+import { getAppNetwork, fetchOwner } from 'shared/web3'
 import { updateStatusMessage } from 'shared/loading/actions'
 
 declare const globalThis: UnityInterfaceContainer &
@@ -234,14 +236,14 @@ const browserInterface = {
   },
 
   GoToCrowd() {
-    TeleportController.goToCrowd().catch(e => defaultLogger.error('error goToCrowd', e))
+    TeleportController.goToCrowd().catch((e) => defaultLogger.error('error goToCrowd', e))
   },
 
   LogOut() {
-    Session.current.then(s => s.logout()).catch(e => defaultLogger.error('error while logging out', e))
+    Session.current.then((s) => s.logout()).catch((e) => defaultLogger.error('error while logging out', e))
   },
 
-  SaveUserAvatar(changes: { face: string; face128: string, face256: string, body: string; avatar: Avatar }) {
+  SaveUserAvatar(changes: { face: string; face128: string; face256: string; body: string; avatar: Avatar }) {
     const { face, face128, face256, body, avatar } = changes
     const profile: Profile = getUserProfile().profile as Profile
     const updated = { ...profile, avatar: { ...avatar, snapshots: { face, face128, face256, body } } }
@@ -329,7 +331,7 @@ const browserInterface = {
     const profile = getProfile(globalThis.globalStore.getState(), identity.address)
 
     if (profile) {
-      const blocked = profile.blocked ? profile.blocked.filter(id => id !== data.userId) : []
+      const blocked = profile.blocked ? profile.blocked.filter((id) => id !== data.userId) : []
       globalThis.globalStore.dispatch(saveProfileRequest({ ...profile, blocked }))
     }
   },
@@ -350,7 +352,7 @@ const browserInterface = {
   },
 
   SetAudioStream(data: { url: string; play: boolean; volume: number }) {
-    setAudioStream(data.url, data.play, data.volume).catch(err => defaultLogger.log(err))
+    setAudioStream(data.url, data.play, data.volume).catch((err) => defaultLogger.log(err))
   },
 
   SendChatMessage(data: { message: ChatMessage }) {
@@ -368,7 +370,8 @@ const browserInterface = {
 
     if (!found) {
       // if user profile was not found on server -> no connected web3, check if it's a claimed name
-      const address = await fetchOwner(userId)
+      const net = await getAppNetwork()
+      const address = await fetchOwner(ethereumConfigurations[net].names, userId)
       if (address) {
         // if an address was found for the name -> set as user id & add that instead
         userId = address
@@ -411,7 +414,7 @@ const browserInterface = {
         () => {
           TeleportController.goTo(x, y, `Jumped to ${x},${y} in realm ${realmString}!`)
         },
-        e => {
+        (e) => {
           const cause = e === 'realm-full' ? ' The requested realm is full.' : ''
           notifyStatusThroughChat('Could not join realm.' + cause)
 
@@ -432,38 +435,6 @@ type BrowserInterfaceContainer = {
   browserInterface2: typeof browserInterface
 }
 
-async function fetchOwner(name: string) {
-  const query = `
-    query GetOwner($name: String!) {
-      nfts(first: 1, where: { searchText: $name }) {
-        owner{
-          address
-        }
-      }
-    }`
-
-  const variables = { name: name.toLowerCase() }
-
-  try {
-    const resp = await queryGraph(query, variables)
-    return resp.data.nfts.length === 1 ? (resp.data.nfts[0].owner.address as string) : null
-  } catch (error) {
-    defaultLogger.error(`Error querying graph`, error)
-    throw error
-  }
-}
-
-async function queryGraph(query: string, variables: any) {
-  const url = 'https://api.thegraph.com/subgraphs/name/decentraland/marketplace'
-  const opts = {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ query, variables })
-  }
-  const res = await fetch(url, opts)
-  return res.json()
-}
-
 function toSocialId(userId: string) {
   const domain = globalThis.globalStore.getState().chat.privateMessaging.client?.getDomain()
   return `@${userId.toLowerCase()}:${domain}`
@@ -476,7 +447,9 @@ export function setLoadingScreenVisible(shouldShow: boolean) {
   const loadingAudio = document.getElementById('loading-audio') as HTMLMediaElement
 
   if (shouldShow) {
-    loadingAudio?.play().catch(e => {/*Ignored. If this fails is not critical*/})
+    loadingAudio?.play().catch((e) => {
+      /*Ignored. If this fails is not critical*/
+    })
   } else {
     loadingAudio?.pause()
   }
@@ -936,14 +909,14 @@ export class UnityParcelScene extends UnityScene<LoadableParcelScene> {
     gridToWorld(this.data.data.basePosition.x, this.data.data.basePosition.y, worker.position)
 
     this.worker.system
-      .then(system => {
+      .then((system) => {
         system.getAPIInstance(DevTools).logger = this.logger
 
         const parcelIdentity = system.getAPIInstance(ParcelIdentity)
         parcelIdentity.land = this.data.data.land
         parcelIdentity.cid = getParcelSceneID(worker.parcelScene)
       })
-      .catch(e => this.logger.error('Error initializing system', e))
+      .catch((e) => this.logger.error('Error initializing system', e))
   }
 }
 
@@ -1007,27 +980,27 @@ export async function startUnityParcelLoading() {
   globalThis.globalStore.dispatch(loadingScenes())
   await enableParcelSceneLoading({
     parcelSceneClass: UnityParcelScene,
-    preloadScene: async _land => {
+    preloadScene: async (_land) => {
       // TODO:
       // 1) implement preload call
       // 2) await for preload message or timeout
       // 3) return
     },
-    onLoadParcelScenes: lands => {
+    onLoadParcelScenes: (lands) => {
       unityInterface.LoadParcelScenes(
-        lands.map($ => {
+        lands.map(($) => {
           const x = Object.assign({}, ILandToLoadableParcelScene($).data)
           delete x.land
           return x
         })
       )
     },
-    onUnloadParcelScenes: lands => {
-      lands.forEach($ => {
+    onUnloadParcelScenes: (lands) => {
+      lands.forEach(($) => {
         unityInterface.UnloadScene($.sceneId)
       })
     },
-    onPositionSettled: spawnPoint => {
+    onPositionSettled: (spawnPoint) => {
       if (!aborted) {
         unityInterface.Teleport(spawnPoint)
         unityInterface.ActivateRendering()
@@ -1150,7 +1123,7 @@ teleportObservable.add((position: { x: number; y: number; text?: string }) => {
   globalThis.globalStore.dispatch(teleportTriggered(position.text || `Teleporting to ${position.x}, ${position.y}`))
 })
 
-worldRunningObservable.add(isRunning => {
+worldRunningObservable.add((isRunning) => {
   if (isRunning) {
     setLoadingScreenVisible(false)
   }

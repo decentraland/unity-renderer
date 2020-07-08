@@ -8,7 +8,6 @@ import { identifyUser, queueTrackingEvent, initializeAnalytics } from './analyti
 import './apis/index'
 import { connect, disconnect, persistCurrentUser } from './comms'
 import { ConnectionEstablishmentError, IdTakenError } from './comms/interface/types'
-import { isMobile } from './comms/mobile'
 import { getUserProfile, setLocalProfile } from './comms/peers'
 import { initializeUrlRealmObserver, realmInitialized } from './dao'
 import { web3initialized } from './dao/actions'
@@ -24,10 +23,10 @@ import {
   COMMS_COULD_NOT_BE_ESTABLISHED,
   establishingComms,
   loadingStarted,
-  MOBILE_NOT_SUPPORTED,
   NETWORK_MISMATCH,
   NEW_LOGIN,
-  notStarted
+  notStarted,
+  MOBILE_NOT_SUPPORTED
 } from './loading/types'
 import { defaultLogger } from './logger'
 import { ProfileAsPromise } from './profiles/ProfileAsPromise'
@@ -44,6 +43,7 @@ import future, { IFuture } from 'fp-future'
 import { RootState } from './store/rootTypes'
 import { AnyAction, Store } from 'redux'
 import { isResizeServiceUrl } from './dao/selectors'
+import { isMobile } from 'shared/comms/mobile'
 
 declare const globalThis: any
 
@@ -61,6 +61,10 @@ function initEssentials(): [Session | undefined, Store<RootState, AnyAction>] {
   startSagas()
 
   if (isMobile()) {
+    const element = document.getElementById('eth-login')
+    if (element) {
+      element.style.display = 'none'
+    }
     ReportFatalError(MOBILE_NOT_SUPPORTED)
     return [undefined, store]
   }
@@ -314,6 +318,7 @@ async function createAuthIdentity() {
             }
           }
         }
+        showEthSignAdvice(false)
         return result
       }
       hasConnectedWeb3 = true
