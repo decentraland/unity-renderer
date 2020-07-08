@@ -15,7 +15,11 @@ If you are using Windows 10 we recommend you to enable the Linux subsystem and i
 
 ## Running the kernel
 
-Make sure you have node v10 or compatible installed, then build the project:
+Make sure you have the following dependencies:  
+- Node v10 or compatible installed 
+- yarn installed globally via `npm install yarn -g` 
+
+Build the project:
 
     cd kernel
     npm install
