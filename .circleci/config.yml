@@ -91,7 +91,7 @@ jobs:
       - run:
           name: Get the hash of source files
           command: |
-            find Assets -type f \( -not -path '*Plugins*' \) \( -iname \*.cs -o -iname \*.meta -o -iname \*.xml -o -iname \*.shader -o -iname \*.prefab -o -iname \*.yml -o -iname \*.mat -o -iname \*.json -o -iname \*.js -o -iname \*.jspre  -o -iname \*.jslib  -o -iname \*.hlsl  -o -iname \*.asmdef  -o -iname \*.csproj  \) \( -exec md5sum "$PWD"/{} \; \) | sort > ../.unitysources-checksum
+            find Assets -type f \( -not -path '*Plugins*' \) \( -iname \*.unity -o -iname \*.cs -o -iname \*.meta -o -iname \*.xml -o -iname \*.shader -o -iname \*.prefab -o -iname \*.yml -o -iname \*.mat -o -iname \*.json -o -iname \*.js -o -iname \*.jspre  -o -iname \*.jslib  -o -iname \*.hlsl  -o -iname \*.asmdef  -o -iname \*.csproj  \) \( -exec md5sum "$PWD"/{} \; \) | sort > ../.unitysources-checksum
       - restore_cache:
           name: Restore decentraland-renderer if exists
           keys:
@@ -133,7 +133,7 @@ jobs:
       - run:
           name: Get the hash of source files
           command: |
-            find Assets -type f \( -iname \*.cs -o -iname \*.fbx -o -iname \*.meta -o -iname \*.xml -o -iname \*.shader -o -iname \*.prefab -o -iname \*.yml -o -iname \*.mat -o -iname \*.json -o -iname \*.js -o -iname \*.jspre  -o -iname \*.jslib  -o -iname \*.hlsl  -o -iname \*.asmdef  -o -iname \*.csproj  \) \( -exec md5sum "$PWD"/{} \; \) | sort > ../.unitysources-checksum
+            find Assets -type f \( -iname \*.unity -o -iname \*.cs -o -iname \*.fbx -o -iname \*.meta -o -iname \*.xml -o -iname \*.shader -o -iname \*.prefab -o -iname \*.yml -o -iname \*.mat -o -iname \*.json -o -iname \*.js -o -iname \*.jspre  -o -iname \*.jslib  -o -iname \*.hlsl  -o -iname \*.asmdef  -o -iname \*.csproj  \) \( -exec md5sum "$PWD"/{} \; \) | sort > ../.unitysources-checksum
       - restore_cache:
           name: Restore decentraland-renderer if exists
           keys:
