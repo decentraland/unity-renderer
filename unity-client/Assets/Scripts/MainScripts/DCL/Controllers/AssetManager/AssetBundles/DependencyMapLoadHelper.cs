@@ -13,7 +13,7 @@ public static class DependencyMapLoadHelper
 {
     static bool VERBOSE = false;
 
-    private const string PERSISTENT_CACHE_KEY = "DepMapCache";
+    private const string PERSISTENT_CACHE_KEY = "DepMapCache_V2";
     private const float MIN_TIME_BETWEEN_SAVING_PERSISTENT_CACHE = 300.0f;
 
     private static bool persistentCacheLoaded = false;
@@ -120,6 +120,5 @@ public static class DependencyMapLoadHelper
             // Once the persistent cache has been loaded the first time, it will go being saved each time the RendererState be changed
             SavePersistentCache();
         }
-
     }
 }
