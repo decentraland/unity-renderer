@@ -39,6 +39,7 @@ import { INIT_CATALYST_REALM, SET_CATALYST_REALM, SetCatalystRealm, InitCatalyst
 import { deepEqual } from '../../atomicHelpers/deepEqual'
 import { DEBUG_PM } from 'config'
 import { Vector3Component } from 'atomicHelpers/landHelpers'
+import { notifyFriendOnlineStatusThroughChat } from 'shared/comms/chat'
 
 declare const globalThis: StoreContainer
 
@@ -316,6 +317,7 @@ function sendUpdateUserStatus(id: string, status: CurrentUserStatus) {
 
   DEBUG && logger.info(`unityInterface.UpdateUserPresence`, updateMessage)
   unityInterface.UpdateUserPresence(updateMessage)
+  notifyFriendOnlineStatusThroughChat(updateMessage)
 }
 
 function updateUserStatus(client: SocialAPI, ...socialIds: string[]) {
