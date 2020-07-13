@@ -5600,6 +5600,8 @@ var UnityLoader = UnityLoader || {
       onProgress: UnityLoader.Progress.handler,
       compatibilityCheck: UnityLoader.compatibilityCheck,
       Module: {
+        CachedXMLHttpRequestDisable:true,
+        CachedXMLHttpRequestSilent:true,
         deinitializers: [],
         intervals: {},
         setInterval: function (e, t) {

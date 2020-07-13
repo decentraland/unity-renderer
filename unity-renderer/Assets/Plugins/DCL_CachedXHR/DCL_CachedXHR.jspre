@@ -1,7 +1,5 @@
-function CachedXMLHttpRequest() {
-  var self = this, xhr = new CachedXMLHttpRequest.XMLHttpRequest(), cache = {};
-
-  Module.CachedXMLHttpRequestSilent = true
+function DCL_CachedXHR() {
+  var self = this, xhr = new DCL_CachedXHR.XMLHttpRequest(), cache = {};
   
   function send() {
 
@@ -20,9 +18,8 @@ function CachedXMLHttpRequest() {
       
         meta.size = xhr.response.byteLength;
       
-        CachedXMLHttpRequest.cache.put(cache.requestURL, meta, xhr.response, function (err) {
-      
-          CachedXMLHttpRequest.log("'" + cache.requestURL + "' downloaded successfully (" + xhr.response.byteLength + " bytes) " +
+        DCL_CachedXHR.cache.put(cache.requestURL, meta, xhr.response, function (err) {
+          DCL_CachedXHR.log("'" + cache.requestURL + "' downloaded successfully (" + xhr.response.byteLength + " bytes) " +
             (err ? "but not stored in indexedDB cache due to error: " + err.message : "and stored in indexedDB cache."));
       
           if (onload)
@@ -33,7 +30,7 @@ function CachedXMLHttpRequest() {
       
         if (xhr.status == 304) {
           cache.override = true;
-          CachedXMLHttpRequest.log("'" + cache.requestURL + "' served from indexedDB cache (" + cache.response.byteLength + " bytes).");
+          DCL_CachedXHR.log("'" + cache.requestURL + "' served from indexedDB cache (" + cache.response.byteLength + " bytes).");
         }
       
         if (onload)
@@ -45,15 +42,17 @@ function CachedXMLHttpRequest() {
   }
 
   function loadComplete() {
-    CachedXMLHttpRequest.log("'" + cache.requestURL + "' served from indexedDB cache (" + cache.response.byteLength + " bytes).");
+    DCL_CachedXHR.log("'" + cache.requestURL + "' served from indexedDB cache (" + cache.response.byteLength + " bytes).");
     if (xhr.onload)
       xhr.onload();
   }
 
   function revalidateCrossOriginRequest(meta, self, sendArguments) {
-    var headXHR = new CachedXMLHttpRequest.XMLHttpRequest();
+    var headXHR = new DCL_CachedXHR.XMLHttpRequest();
     var onerror = xhr.onerror;
+
     headXHR.open("HEAD", meta.requestURL, cache.async);
+
     headXHR.onload = function() {
       cache.override = meta.lastModified ? meta.lastModified == headXHR.getResponseHeader("Last-Modified") : meta.eTag && meta.eTag == getETag(headXHR);
       if (!cache.override)
@@ -69,7 +68,7 @@ function CachedXMLHttpRequest() {
   }
 
   Object.defineProperty(self, "open", { value: function (method, url, async) {
-    cache = { method: method, requestURL: CachedXMLHttpRequest.cache.requestURL(url), async: async };
+    cache = { method: method, requestURL: DCL_CachedXHR.cache.requestURL(url), async: async };
     return xhr.open.apply(xhr, arguments);
   }});
 
@@ -80,21 +79,28 @@ function CachedXMLHttpRequest() {
 
   Object.defineProperty(self, "send", { value: function (data) {
     var sendArguments = arguments;
+    
     var absoluteUrlMatch = cache.requestURL.match("^https?:\/\/[^\/]+\/");
-    
-    if (!cache.enabled || !absoluteUrlMatch || cache.customHeaders || data || cache.method != "GET" || !cache.async || xhr.responseType != "arraybuffer")
+
+    if (DCL_CachedXHR.cache.enabled == false) {
       return xhr.send.apply(xhr, sendArguments);
-    
-    CachedXMLHttpRequest.cache.get(cache.requestURL, function (err, result) {
-      if (err || !result || !result.meta || result.meta.responseType != xhr.responseType)
+    }
+
+    if (!absoluteUrlMatch || cache.customHeaders || data || cache.method != "GET" || !cache.async || xhr.responseType != "arraybuffer") {
+      return xhr.send.apply(xhr, sendArguments);
+    }
+
+    DCL_CachedXHR.cache.get(cache.requestURL, function (err, result) {
+      if (err || !result || !result.meta || result.meta.responseType != xhr.responseType) {
         return send.apply(self, sendArguments);
+      }
     
       cache.status = 200;
       cache.statusText = "OK";
       cache.response = result.response;
       cache.responseURL = result.meta.responseURL;
 
-      if (CachedXMLHttpRequest.checkBlacklist(Module.CachedXMLHttpRequestRevalidateBlacklist, cache.requestURL)) {
+      if (DCL_CachedXHR.checkBlacklist(Module.CachedXMLHttpRequestRevalidateBlacklist, cache.requestURL)) {
         cache.override = true;
         return loadComplete();
       }
@@ -124,14 +130,13 @@ function CachedXMLHttpRequest() {
 
 }
 
-CachedXMLHttpRequest.XMLHttpRequest = window.XMLHttpRequest;
+DCL_CachedXHR.XMLHttpRequest = window.XMLHttpRequest;
 
-CachedXMLHttpRequest.log = function (message) {
-  if (Module.CachedXMLHttpRequestSilent !== true)
-    console.log("[DCL-CachedXMLHttpRequest] " + message);
+DCL_CachedXHR.log = function (message) {
+  console.log("[DCL_CachedXHR] " + message);
 };
 
-CachedXMLHttpRequest.checkBlacklist = function(list, url) {
+DCL_CachedXHR.checkBlacklist = function(list, url) {
   list = list || [];
   list = Array.isArray(list) ? list : [list];
   for (var i = 0; i < list.length; i++) {
@@ -142,10 +147,10 @@ CachedXMLHttpRequest.checkBlacklist = function(list, url) {
   return false;
 };
 
-CachedXMLHttpRequest.cache = {
+DCL_CachedXHR.cache = {
 
-  enabled: window.indexedDB == null, // NOTE(Brian): disable chrome IndexedDB only
-  database: "CachedXMLHttpRequest",
+  enabled: window.indexedDB == null,
+  database: "DCL_CachedXHR",
   version: 1,
   store: "cache",
   indexedDB: window.indexedDB || window.mozIndexedDB || window.webkitIndexedDB || window.msIndexedDB,
@@ -171,12 +176,12 @@ CachedXMLHttpRequest.cache = {
   },
   init: function () {
     var self = this;
-    console.log("[DCL-CachedXMLHttpRequest] Initializing plugin... waiting for config...");
+    DCL_CachedXHR.log("Initializing plugin... waiting for config...");
   
     var idb_enabled_future = window.USE_UNITY_INDEXED_DB_CACHE;
 
     if ( idb_enabled_future == null ) {
-      console.log("[DCL-CachedXMLHttpRequest] future is null :(");
+      DCL_CachedXHR.log("future is null :(");
       self.openDB();
       return;
     }
@@ -184,14 +189,14 @@ CachedXMLHttpRequest.cache = {
     idb_enabled_future.then(
       function(is_enabled) { 
         is_enabled &= window.indexedDB == null; // NOTE(Brian): if config comes as false, disable in chrome only
-        
+        self.enabled = is_enabled;
+
         if (window.indexedDB == null) {
-          console.log("[DCL-CachedXMLHttpRequest] Non-chrome detected!. IndexedDB is " + !!is_enabled);
+          DCL_CachedXHR.log("Non-chrome detected!. IndexedDB is " + !!DCL_CachedXHR.cache.enabled);
         } else {
-          console.log("[DCL-CachedXMLHttpRequest] We are in chrome. IndexedDB is " + !!is_enabled);
+          DCL_CachedXHR.log("We are in chrome. IndexedDB is " + !!DCL_CachedXHR.cache.enabled);
         }
 
-        self.enabled = is_enabled;
         self.openDB();
       })
   },
@@ -199,14 +204,14 @@ CachedXMLHttpRequest.cache = {
   openDB: function() {
     var self = this;
     onError = function(e) {
-      CachedXMLHttpRequest.log("can not open indexedDB database: " + e.message);
+      DCL_CachedXHR.log("can not open indexedDB database: " + e.message);
       self.indexedDB = null;
       self.processQueue();
       if (e.preventDefault) e.preventDefault();
     };
 
     if (!self.indexedDB)
-      return CachedXMLHttpRequest.log("indexedDB is not available");
+      return DCL_CachedXHR.log("indexedDB is not available");
 
     var openDB;
 
@@ -239,13 +244,11 @@ CachedXMLHttpRequest.cache = {
   },
   put: function (requestURL, meta, response, callback) {
 
-    if (CachedXMLHttpRequest.checkBlacklist(Module.CachedXMLHttpRequestBlacklist, requestURL))
+    if (DCL_CachedXHR.checkBlacklist(Module.CachedXMLHttpRequestBlacklist, requestURL))
       return callback(new Error("requestURL was on the cache blacklist"));
 
     var self = this;
 
-    if (!self.enabled)
-      return callback(null);
     if (!self.indexedDB)
       return callback(new Error("indexedDB is not available"));
     if (!self.db)
@@ -261,13 +264,11 @@ CachedXMLHttpRequest.cache = {
   
 
   get: function (requestURL, callback) {
-    if (CachedXMLHttpRequest.checkBlacklist(Module.CachedXMLHttpRequestBlacklist, requestURL))
+    if (DCL_CachedXHR.checkBlacklist(Module.CachedXMLHttpRequestBlacklist, requestURL))
       return callback(new Error("requestURL was on the cache blacklist"));
 
     var self = this;
 
-    if (!self.enabled)
-      return;
     if (!self.indexedDB)
       return callback(new Error("indexedDB is not available"));
     if (!self.db)
@@ -277,22 +278,15 @@ CachedXMLHttpRequest.cache = {
     getDB.onerror = function (e) { e.preventDefault(); callback(new Error("failed to get request from indexedDB cache")); };
     getDB.onsuccess = function (e) { callback(null, e.target.result); };
   }
-
-
 };
 
-CachedXMLHttpRequest.cache.init();
+DCL_CachedXHR.cache.init();
 
-CachedXMLHttpRequest.wrap = function (func) {
+DCL_CachedXHR.wrap = function (func) {
   return function () {
 
     var realXMLHttpRequest = XMLHttpRequest, result;
-    window.XMLHttpRequest = CachedXMLHttpRequest;
-
-    //NOTE(Brian): We always enable indexedDB for wrapped functions, as Unity modules
-    //             don't seem to cache properly with browser's disk cache.
-    var prevEnabled = CachedXMLHttpRequest.cache.enabled;
-    CachedXMLHttpRequest.cache.enabled = true;
+    window.XMLHttpRequest = DCL_CachedXHR;
 
     try {
       result = func.apply(this, arguments);
@@ -302,17 +296,15 @@ CachedXMLHttpRequest.wrap = function (func) {
     }
 
     window.XMLHttpRequest = realXMLHttpRequest;
-    CachedXMLHttpRequest.cache.enabled = prevEnabled;
-
     return result;
   };
 };
 
-if (Module.CachedXMLHttpRequestDisable !== true) {
-  if (Module.CachedXMLHttpRequestLoader === true) {
-    if (typeof LoadCompressedFile == "function")
-      LoadCompressedFile = CachedXMLHttpRequest.wrap(LoadCompressedFile);
-    if (typeof DecompressAndLoadFile == "function")
-      DecompressAndLoadFile = CachedXMLHttpRequest.wrap(DecompressAndLoadFile);
-  }
-}
+Object.defineProperty(Module, "asmLibraryArg", {
+  get: function () { return Module.realAsmLibraryArg; }, 
+  set: function (value) {
+    if (typeof value == "object" && typeof value._JS_WebRequest_Create == "function")
+      value._JS_WebRequest_Create = DCL_CachedXHR.wrap(value._JS_WebRequest_Create);
+    Module.realAsmLibraryArg = value;
+  },
+});
