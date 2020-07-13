@@ -150,11 +150,6 @@ jobs:
                     echo "Running Unity Build..."
                     sleep 60
                 done
-                ls -la ${BUILD_PATH}
-                [ -n "$(ls -A ${BUILD_PATH})" ];
-                # Apply hot fix to take out old CachedXMLRequest
-                apt-get install bc
-                cd /tmp/explorer/unity-client/Builds/unity/Build && ../../../../.circleci/hotpatch.sh unity.wasm.framework.unityweb
             fi;
       - save_cache:
           name: Store decentraland-renderer build
