@@ -59,7 +59,8 @@ namespace DCL.Components
 
         public override void Dispose()
         {
-            Utils.SafeDestroy(referencesContainer.gameObject);
+            if (referencesContainer != null)
+                Utils.SafeDestroy(referencesContainer.gameObject);
 
             base.Dispose();
         }

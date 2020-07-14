@@ -119,9 +119,10 @@ namespace DCL.Components
         public override void Dispose()
         {
             dclTexture?.DetachFrom(this);
-            dclTexture = null;
+            dclTexture?.Dispose();
 
-            Utils.SafeDestroy(referencesContainer.gameObject);
+            if (referencesContainer != null)
+                Utils.SafeDestroy(referencesContainer.gameObject);
 
             base.Dispose();
         }

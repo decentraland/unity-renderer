@@ -22,8 +22,21 @@ namespace DCL
             }
         }
 
+        private struct ParcelDisposableComponent
+        {
+            public ParcelScene scene;
+            public string componentId;
+
+            public ParcelDisposableComponent(ParcelScene scene, string componentId)
+            {
+                this.scene = scene;
+                this.componentId = componentId;
+            }
+        }
+
         Queue<DecentralandEntity> entitiesMarkedForCleanup = new Queue<DecentralandEntity>();
         Queue<ParcelEntity> rootEntitiesMarkedForCleanup = new Queue<ParcelEntity>();
+        Queue<ParcelDisposableComponent> disposableComponentsMarkedForCleanup = new Queue<ParcelDisposableComponent>();
 
         Coroutine removeEntitiesCoroutine;
 
@@ -63,9 +76,20 @@ namespace DCL
             rootEntitiesMarkedForCleanup.Enqueue(new ParcelEntity(scene, entity));
         }
 
+        public void MarkDisposableComponentForCleanup(ParcelScene scene, string componentId)
+        {
+            disposableComponentsMarkedForCleanup.Enqueue(new ParcelDisposableComponent(scene, componentId));
+        }
+
         public void ForceCleanup()
         {
             ParcelScene scene = null;
+
+            while (disposableComponentsMarkedForCleanup.Count > 0)
+            {
+                ParcelDisposableComponent parcelDisposableComponent = disposableComponentsMarkedForCleanup.Dequeue();
+                parcelDisposableComponent.scene.SharedComponentDispose(parcelDisposableComponent.componentId);
+            }
 
             // If we have root entities queued for removal, we call Parcel Scene's RemoveEntity()
             // so that the child entities end up recursively in the entitiesMarkedForCleanup queue
@@ -99,6 +123,18 @@ namespace DCL
             {
                 float lastTime = Time.unscaledTime;
                 ParcelScene scene = null;
+
+                while (disposableComponentsMarkedForCleanup.Count > 0)
+                {
+                    ParcelDisposableComponent parcelDisposableComponent = disposableComponentsMarkedForCleanup.Dequeue();
+                    parcelDisposableComponent.scene.SharedComponentDispose(parcelDisposableComponent.componentId);
+
+                    if (DCLTime.realtimeSinceStartup - lastTime >= MAX_TIME_BUDGET)
+                    {
+                        yield return null;
+                        lastTime = Time.unscaledTime;
+                    }
+                }
 
                 // If we have root entities queued for removal, we call Parcel Scene's RemoveEntity()
                 // so that the child entities end up recursively in the entitiesMarkedForCleanup queue

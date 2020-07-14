@@ -173,7 +173,7 @@ namespace DCL
             {
                 AssetPromiseKeeper_Texture.i.Forget(texturePromise);
                 texturePromise = null;
-                texture = null;
+                Utils.SafeDestroy(texture);
             }
 
             base.Dispose();
