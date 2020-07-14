@@ -19,6 +19,14 @@ public class LoadingFeedbackController : MonoBehaviour
 
     private List<SceneLoadingStatus> loadedScenes;
 
+    private int currentComponentsLoading = 0;
+    private int loadingComponentsPercentage = 0;
+    private int maxLoadingComponentsRef = 0;
+
+    private int totalActiveDownloads = 0;
+    private int downloadingAssetsPercentage = 0;
+    private int maxDownloadingAssetsRef = 0;
+
     private void Start()
     {
         loadedScenes = new List<SceneLoadingStatus>();
@@ -92,22 +100,18 @@ public class LoadingFeedbackController : MonoBehaviour
         string loadingText = string.Empty;
         string secondLoadingText = string.Empty;
 
-        int currentComponentsLoading = loadedScenes.Sum(x => x.componentsLoading);
+        currentComponentsLoading = loadedScenes.Sum(x => x.componentsLoading);
         if (currentComponentsLoading > 0)
         {
-            loadingText = string.Format(
-                "Loading scenes ({0} component{1} left...)",
-                currentComponentsLoading,
-                currentComponentsLoading > 1 ? "s" : string.Empty);
+            loadingComponentsPercentage = GetLoadingComponentsPercentage(currentComponentsLoading);
+            loadingText = string.Format("Loading scenes {0}%", loadingComponentsPercentage);
         }
 
-        int totalActiveDownloads = AssetPromiseKeeper_GLTF.i.waitingPromisesCount + AssetPromiseKeeper_AB.i.waitingPromisesCount;
+        totalActiveDownloads = AssetPromiseKeeper_GLTF.i.waitingPromisesCount + AssetPromiseKeeper_AB.i.waitingPromisesCount;
         if (totalActiveDownloads > 0)
         {
-            secondLoadingText = string.Format(
-                "Downloading assets ({0} asset{1} left...)",
-                totalActiveDownloads,
-                totalActiveDownloads > 1 ? "s" : string.Empty);
+            downloadingAssetsPercentage = GetDownloadingAssetsPercentage(totalActiveDownloads);
+            secondLoadingText = string.Format("Downloading UI Atlas, 3D models, textures and sounds {0}%", downloadingAssetsPercentage);
 
             if (!string.IsNullOrEmpty(loadingText))
             {
@@ -121,11 +125,35 @@ public class LoadingFeedbackController : MonoBehaviour
             WebInterface.ScenesLoadingFeedback(loadingText);
     }
 
+    private int GetLoadingComponentsPercentage(int currentComponentsLoading)
+    {
+        if (currentComponentsLoading > maxLoadingComponentsRef)
+        {
+            maxLoadingComponentsRef = currentComponentsLoading;
+            return 0;
+        }
+
+        return Mathf.FloorToInt(100f - (currentComponentsLoading * 100f / maxLoadingComponentsRef));
+    }
+
+    private int GetDownloadingAssetsPercentage(int totalActiveDownloads)
+    {
+        if (totalActiveDownloads > maxDownloadingAssetsRef)
+        {
+            maxDownloadingAssetsRef = totalActiveDownloads;
+            return 0;
+        }
+
+        return Mathf.FloorToInt(100f - (totalActiveDownloads * 100f / maxDownloadingAssetsRef));
+    }
+
     private void RendererState_OnChange(bool current, bool previous)
     {
         if (!current)
             return;
 
         loadedScenes.Clear();
+        maxLoadingComponentsRef = 0;
+        maxDownloadingAssetsRef = 0;
     }
 }
