@@ -1,4 +1,4 @@
-﻿using DCL.Controllers;
+using DCL.Controllers;
 using DCL.Helpers;
 using DCL.Models;
 using System.Collections;
@@ -45,6 +45,8 @@ namespace DCL.Components
 
         public override IEnumerator ApplyChanges(string newJson)
         {
+            RectTransform parentRecTransform = referencesContainer.GetComponentInParent<RectTransform>();
+
             // Fetch texture
             if (!string.IsNullOrEmpty(model.source))
             {
@@ -63,6 +65,8 @@ namespace DCL.Components
                         dclTexture?.DetachFrom(this);
                         dclTexture = downloadedTexture;
                         dclTexture.AttachTo(this);
+
+                        ConfigureUVRect(parentRecTransform);
                     });
 
                     fetchRoutine = scene.StartCoroutine(fetchIEnum);
@@ -78,27 +82,7 @@ namespace DCL.Components
             referencesContainer.image.enabled = model.visible;
             referencesContainer.image.color = Color.white;
 
-            RectTransform parentRecTransform = referencesContainer.GetComponentInParent<RectTransform>();
-
-            if (referencesContainer.image.texture != null)
-            {
-                // Configure uv rect
-                Vector2 normalizedSourceCoordinates = new Vector2(
-                    model.sourceLeft / referencesContainer.image.texture.width,
-                    -model.sourceTop / referencesContainer.image.texture.height);
-
-
-                Vector2 normalizedSourceSize = new Vector2(
-                    model.sourceWidth * (model.sizeInPixels ? 1f : parentRecTransform.rect.width) /
-                    referencesContainer.image.texture.width,
-                    model.sourceHeight * (model.sizeInPixels ? 1f : parentRecTransform.rect.height) /
-                    referencesContainer.image.texture.height);
-
-                referencesContainer.image.uvRect = new Rect(normalizedSourceCoordinates.x,
-                    normalizedSourceCoordinates.y + (1 - normalizedSourceSize.y),
-                    normalizedSourceSize.x,
-                    normalizedSourceSize.y);
-            }
+            ConfigureUVRect(parentRecTransform);
 
             // Apply padding
             referencesContainer.paddingLayoutGroup.padding.bottom = Mathf.RoundToInt(model.paddingBottom);
@@ -108,6 +92,28 @@ namespace DCL.Components
 
             LayoutRebuilder.ForceRebuildLayoutImmediate(parentRecTransform);
             return null;
+        }
+
+        private void ConfigureUVRect(RectTransform parentRecTransform)
+        {
+            if (referencesContainer.image.texture == null)
+                return;
+
+            // Configure uv rect
+            Vector2 normalizedSourceCoordinates = new Vector2(
+                model.sourceLeft / referencesContainer.image.texture.width,
+                -model.sourceTop / referencesContainer.image.texture.height);
+
+            Vector2 normalizedSourceSize = new Vector2(
+                model.sourceWidth * (model.sizeInPixels ? 1f : parentRecTransform.rect.width) /
+                referencesContainer.image.texture.width,
+                model.sourceHeight * (model.sizeInPixels ? 1f : parentRecTransform.rect.height) /
+                referencesContainer.image.texture.height);
+
+            referencesContainer.image.uvRect = new Rect(normalizedSourceCoordinates.x,
+                normalizedSourceCoordinates.y + (1 - normalizedSourceSize.y),
+                normalizedSourceSize.x,
+                normalizedSourceSize.y);
         }
 
         public override void Dispose()
