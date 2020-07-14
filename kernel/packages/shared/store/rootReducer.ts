@@ -7,6 +7,7 @@ import { atlasReducer } from '../atlas/reducer'
 import { daoReducer } from '../dao/reducer'
 import { metaReducer } from '../meta/reducer'
 import { chatReducer } from '../chat/reducer'
+import { commsReducer } from '../comms/reducer'
 
 export const reducers = combineReducers({
   atlas: atlasReducer,
@@ -16,5 +17,6 @@ export const reducers = combineReducers({
   renderer: rendererReducer,
   protocol: protocolReducer,
   dao: daoReducer,
+  comms: commsReducer,
   meta: metaReducer
 })

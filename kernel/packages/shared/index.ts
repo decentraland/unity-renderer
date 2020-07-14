@@ -19,7 +19,6 @@ import {
   authSuccessful,
   AUTH_ERROR_LOGGED_OUT,
   commsErrorRetrying,
-  commsEstablished,
   COMMS_COULD_NOT_BE_ESTABLISHED,
   establishingComms,
   loadingStarted,
@@ -44,6 +43,7 @@ import { RootState } from './store/rootTypes'
 import { AnyAction, Store } from 'redux'
 import { isResizeServiceUrl } from './dao/selectors'
 import { isMobile } from 'shared/comms/mobile'
+import { Profile } from './profiles/types'
 
 declare const globalThis: any
 
@@ -220,7 +220,7 @@ export function initShared(): InitFutures {
       }
 
       if (profileDirty) {
-        store.dispatch(saveProfileRequest(profile))
+        scheduleProfileUpdate(profile)
       }
     }
 
@@ -275,7 +275,6 @@ export function initShared(): InitFutures {
         }
       }
     }
-    store.dispatch(commsEstablished())
     console['groupEnd']()
 
     return
@@ -375,4 +374,23 @@ function showNetworkWarning() {
   if (element) {
     element.style.display = 'block'
   }
+}
+
+/**
+ * Schedule profile update post login (i.e. comms authenticated & established).
+ *
+ * @param profile Updated profile
+ */
+function scheduleProfileUpdate(profile: Profile) {
+  new Promise(() => {
+    const store: Store<RootState> = globalThis.globalStore
+
+    const unsubscribe = store.subscribe(() => {
+      const initialized = store.getState().comms.initialized
+      if (initialized) {
+        unsubscribe()
+        store.dispatch(saveProfileRequest(profile))
+      }
+    })
+  }).catch((e) => defaultLogger.error(`error while updating profile`, e))
 }
