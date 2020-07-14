@@ -154,15 +154,15 @@ export class LighthouseWorldInstanceConnection implements WorldInstanceConnectio
 
   private async syncRoomsWithPeer() {
     const currentRooms = this.peer.currentRooms
-    const joining = this.rooms.map(room => {
-      if (!currentRooms.some(current => current.id === room)) {
+    const joining = this.rooms.map((room) => {
+      if (!currentRooms.some((current) => current.id === room)) {
         return this.peer.joinRoom(room)
       } else {
         return Promise.resolve()
       }
     })
-    const leaving = currentRooms.map(current => {
-      if (!this.rooms.some(room => current.id === room)) {
+    const leaving = currentRooms.map((current) => {
+      if (!this.rooms.some((room) => current.id === room)) {
         return this.peer.leaveRoom(current.id)
       } else {
         return Promise.resolve()
@@ -172,7 +172,7 @@ export class LighthouseWorldInstanceConnection implements WorldInstanceConnectio
   }
 
   private async sendData(topic: string, messageData: MessageData, type: PeerMessageType) {
-    if (this.peer.currentRooms.some(it => it.id === topic)) {
+    if (this.peer.currentRooms.some((it) => it.id === topic)) {
       await this.peer.sendMessage(topic, createCommsMessage(messageData).serializeBinary(), type)
     } else {
       // TODO: We may want to queue some messages

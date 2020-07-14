@@ -44,7 +44,7 @@ import {
 import { BrokerWorldInstanceConnection } from '../comms/v1/brokerWorldInstanceConnection'
 import { profileToRendererFormat } from 'shared/profiles/transformations/profileToRendererFormat'
 import { ProfileForRenderer, uuid } from 'decentraland-ecs/src'
-import { worldRunningObservable, isWorldRunning } from '../world/worldState'
+import { worldRunningObservable, isWorldRunning, onNextWorldRunning } from '../world/worldState'
 import { WorldInstanceConnection } from './interface/index'
 
 import { LighthouseWorldInstanceConnection } from './v2/LighthouseWorldInstanceConnection'
@@ -71,6 +71,8 @@ import { messageReceived } from '../chat/actions'
 import { arrayEquals } from 'atomicHelpers/arrayEquals'
 import { getCommsConfig } from 'shared/meta/selectors'
 import { ensureMetaConfigurationInitialized } from 'shared/meta/index'
+import { ReportFatalError } from 'shared/loading/ReportFatalError'
+import { NEW_LOGIN, UNEXPECTED_ERROR, commsEstablished } from 'shared/loading/types'
 
 export type CommsVersion = 'v1' | 'v2'
 export type CommsMode = CommsV1Mode | CommsV2Mode
@@ -626,6 +628,7 @@ export async function connect(userId: string) {
 
         const instance = new BrokerWorldInstanceConnection(commsBroker)
         await instance.isConnected
+        store.dispatch(commsEstablished())
 
         connection = instance
         break
@@ -709,10 +712,18 @@ export async function connect(userId: string) {
     if (isWorldRunning()) {
       await startCommunications(context)
     } else {
-      let observer = worldRunningObservable.add((isRunning) => {
-        if (isRunning) {
-          startCommunications(context!).catch((e) => defaultLogger.log('Error starting communications!', e))
-          worldRunningObservable.remove(observer)
+      onNextWorldRunning(async () => {
+        try {
+          await startCommunications(context!)
+        } catch (e) {
+          disconnect()
+          if (e instanceof IdTakenError) {
+            ReportFatalError(NEW_LOGIN)
+          } else {
+            // not a comms issue per se => rethrow error
+            defaultLogger.error(`error while trying to establish communications `, e)
+            ReportFatalError(UNEXPECTED_ERROR)
+          }
         }
       })
     }
@@ -720,8 +731,8 @@ export async function connect(userId: string) {
     return context
   } catch (e) {
     defaultLogger.error(e)
-    if (e.message && e.message.includes('is taken')) {
-      throw new IdTakenError(e.message)
+    if (e instanceof IdTakenError) {
+      throw e
     } else {
       throw new ConnectionEstablishmentError(e.message)
     }
@@ -735,6 +746,7 @@ export async function startCommunications(context: Context) {
     try {
       if (connection instanceof LighthouseWorldInstanceConnection) {
         await connection.connectPeer()
+        store.dispatch(commsEstablished())
       }
     } catch (e) {
       // Do nothing if layer is full. This will be handled by status handler
@@ -811,7 +823,11 @@ export async function startCommunications(context: Context) {
       }
     }, 100)
   } catch (e) {
-    throw new ConnectionEstablishmentError(e.message)
+    if (e.message && e.message.includes('is taken')) {
+      throw new IdTakenError(e.message)
+    } else {
+      throw new ConnectionEstablishmentError(e.message)
+    }
   }
 }
 

@@ -21,12 +21,16 @@ export async function ensureWorldRunning() {
     return result
   }
 
+  onNextWorldRunning(() => result.resolve())
+
+  return result
+}
+
+export function onNextWorldRunning(callback: Function) {
   const observer = worldRunningObservable.add((isRunning) => {
     if (isRunning) {
       worldRunningObservable.remove(observer)
-      result.resolve()
+      callback()
     }
   })
-
-  return result
 }
