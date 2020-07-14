@@ -115,8 +115,11 @@ namespace DCL.Components
 
         public override void Dispose()
         {
-            referencesContainer.scrollRect.onValueChanged.RemoveAllListeners();
-            Utils.SafeDestroy(referencesContainer.gameObject);
+            if (referencesContainer != null)
+            {
+                referencesContainer.scrollRect.onValueChanged.RemoveAllListeners();
+                Utils.SafeDestroy(referencesContainer.gameObject);
+            }
 
             base.Dispose();
         }

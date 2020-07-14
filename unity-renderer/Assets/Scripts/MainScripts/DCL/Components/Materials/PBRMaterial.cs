@@ -187,7 +187,6 @@ namespace DCL.Components
                 if (material != null)
                 {
                     UnityEngine.Object.Destroy(material);
-                    Resources.UnloadUnusedAssets();
                 }
 
                 material = new Material(Utils.EnsureResourcesMaterial(MATERIAL_RESOURCES_PATH + name));
@@ -305,13 +304,13 @@ namespace DCL.Components
             emissiveDCLTexture?.DetachFrom(this);
             bumpDCLTexture?.DetachFrom(this);
 
-            albedoDCLTexture = null;
-            emissiveDCLTexture = null;
-            bumpDCLTexture = null;
+            albedoDCLTexture?.Dispose();
+            emissiveDCLTexture?.Dispose();
+            bumpDCLTexture?.Dispose();
 
             if (material != null)
             {
-                GameObject.Destroy(material);
+                Utils.SafeDestroy(material);
             }
 
             base.Dispose();

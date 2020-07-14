@@ -88,7 +88,6 @@ namespace DCL.Components
             if (audioClip != null && loadingState != LoadState.IDLE)
             {
                 audioClip.UnloadAudioData();
-                Resources.UnloadUnusedAssets();
                 audioClip = null;
                 loadingState = LoadState.IDLE;
             }
@@ -113,6 +112,12 @@ namespace DCL.Components
             }
 
             yield return null;
+        }
+
+        public override void Dispose()
+        {
+            Utils.SafeDestroy(audioClip);
+            base.Dispose();
         }
     }
 }

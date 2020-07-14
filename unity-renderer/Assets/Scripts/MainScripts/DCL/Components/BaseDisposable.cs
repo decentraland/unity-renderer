@@ -1,4 +1,4 @@
-﻿using DCL.Models;
+using DCL.Models;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -94,7 +94,6 @@ namespace DCL.Components
         public virtual void Dispose()
         {
             DetachFromEveryEntity();
-            Resources.UnloadUnusedAssets(); //NOTE(Brian): This will ensure assets are freed correctly.
         }
 
         public abstract IEnumerator ApplyChanges(string newJson);

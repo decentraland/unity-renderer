@@ -88,12 +88,5 @@ namespace DCL.Components
                 error = true;
             }
         }
-
-        public override void Dispose()
-        {
-            if (fontAsset != null)
-                Object.Destroy(fontAsset);
-            base.Dispose();
-        }
     }
 }

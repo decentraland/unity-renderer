@@ -4,6 +4,7 @@ using DCL.Controllers;
 using DCL.Models;
 using UnityEngine;
 using DCL.Components.Video.Plugin;
+using DCL.Helpers;
 
 namespace DCL.Components
 {
@@ -328,12 +329,7 @@ namespace DCL.Components
                 texturePlayer = null;
             }
 
-            if (isTest && texture != null)
-            {
-                UnityEngine.Object.Destroy(texture);
-            }
-
-            texture = null;
+            Utils.SafeDestroy(texture);
             base.Dispose();
         }
 
