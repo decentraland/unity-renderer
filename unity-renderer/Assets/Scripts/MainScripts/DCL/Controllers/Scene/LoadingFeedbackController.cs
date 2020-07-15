@@ -111,7 +111,7 @@ public class LoadingFeedbackController : MonoBehaviour
         if (totalActiveDownloads > 0)
         {
             downloadingAssetsPercentage = GetDownloadingAssetsPercentage(totalActiveDownloads);
-            secondLoadingText = string.Format("Downloading UI Atlas, 3D models, textures and sounds {0}%", downloadingAssetsPercentage);
+            secondLoadingText = string.Format("Downloading images, 3D models, and sounds {0}%", downloadingAssetsPercentage);
 
             if (!string.IsNullOrEmpty(loadingText))
             {
