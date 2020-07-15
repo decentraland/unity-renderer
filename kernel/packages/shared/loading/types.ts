@@ -54,11 +54,14 @@ export const establishingComms = () => action(ESTABLISHING_COMMS)
 export const COMMS_ESTABLISHED = 'Communications established. Loading profile and item catalogs...'
 export const commsEstablished = () => action(COMMS_ESTABLISHED)
 
-export const EXPERIENCE_STARTED = 'Loading scenes...'
+// ** TODO - trailing whitespace to workaround id -> label issue - moliva - 15/07/2020
+export const EXPERIENCE_STARTED = 'Loading scenes... '
 export const experienceStarted = () => action(EXPERIENCE_STARTED)
 
-export const TELEPORT_TRIGGERED = 'Loading scenes...'
+// ** TODO - trailing whitespaces to workaround id -> label issue - moliva - 15/07/2020
+export const TELEPORT_TRIGGERED = 'Loading scenes...  '
 export const teleportTriggered = (payload: string) => action(TELEPORT_TRIGGERED, payload)
+
 export const SCENE_ENTERED = 'Entered into a new scene'
 export const sceneEntered = () => action(SCENE_ENTERED)
 export const UNEXPECTED_ERROR = 'Unexpected fatal error'
