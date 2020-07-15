@@ -22,10 +22,12 @@ public class LoadingFeedbackController : MonoBehaviour
     private int currentComponentsLoading = 0;
     private int loadingComponentsPercentage = 0;
     private int maxLoadingComponentsRef = 0;
+    private int maxLoadingCalculatedPercentage = 0;
 
     private int totalActiveDownloads = 0;
     private int downloadingAssetsPercentage = 0;
     private int maxDownloadingAssetsRef = 0;
+    private int maxDownloadingCalculatedPercentage = 0;
 
     private void Start()
     {
@@ -128,23 +130,25 @@ public class LoadingFeedbackController : MonoBehaviour
     private int GetLoadingComponentsPercentage(int currentComponentsLoading)
     {
         if (currentComponentsLoading > maxLoadingComponentsRef)
-        {
             maxLoadingComponentsRef = currentComponentsLoading;
-            return 0;
-        }
 
-        return Mathf.FloorToInt(100f - (currentComponentsLoading * 100f / maxLoadingComponentsRef));
+        int result = Mathf.FloorToInt(100f - (currentComponentsLoading * 100f / maxLoadingComponentsRef));
+        if (result > maxLoadingCalculatedPercentage)
+            maxLoadingCalculatedPercentage = result;
+
+        return maxLoadingCalculatedPercentage;
     }
 
     private int GetDownloadingAssetsPercentage(int totalActiveDownloads)
     {
         if (totalActiveDownloads > maxDownloadingAssetsRef)
-        {
             maxDownloadingAssetsRef = totalActiveDownloads;
-            return 0;
-        }
 
-        return Mathf.FloorToInt(100f - (totalActiveDownloads * 100f / maxDownloadingAssetsRef));
+        int result = Mathf.FloorToInt(100f - (totalActiveDownloads * 100f / maxDownloadingAssetsRef));
+        if (result > maxDownloadingCalculatedPercentage)
+            maxDownloadingCalculatedPercentage = result;
+
+        return maxDownloadingCalculatedPercentage;
     }
 
     private void RendererState_OnChange(bool current, bool previous)
@@ -154,6 +158,8 @@ public class LoadingFeedbackController : MonoBehaviour
 
         loadedScenes.Clear();
         maxLoadingComponentsRef = 0;
+        maxLoadingCalculatedPercentage = 0;
         maxDownloadingAssetsRef = 0;
+        maxDownloadingCalculatedPercentage = 0;
     }
 }
