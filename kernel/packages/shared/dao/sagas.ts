@@ -15,7 +15,7 @@ import {
   SetAddedCatalystCandidates
 } from './actions'
 import { call, put, takeEvery, select, fork } from 'redux-saga/effects'
-import { WORLD_EXPLORER, REALM, getDefaultTLD } from 'config'
+import { WORLD_EXPLORER, REALM, getDefaultTLD, PIN_CATALYST } from 'config'
 import { waitForMetaConfigurationInitialization } from '../meta/sagas'
 import { Candidate, Realm, ServerConnectionStatus } from './types'
 import { fecthCatalystRealms, fetchCatalystStatuses, pickCatalystRealm, getRealmFromString, ping, commsStatusUrl } from '.'
@@ -53,7 +53,7 @@ function* loadCatalystRealms() {
     let realm: Realm | undefined
 
     // check for cached realms if any
-    if (cachedRealm && cachedTld === getDefaultTLD()) {
+    if (cachedRealm && cachedTld === getDefaultTLD() && (!PIN_CATALYST || cachedRealm.domain === PIN_CATALYST)) {
       const cachedCandidates: Candidate[] = getFromLocalStorage(CATALYST_CANDIDATES_KEY) ?? []
 
       let configuredRealm: Realm

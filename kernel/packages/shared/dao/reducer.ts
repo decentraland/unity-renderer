@@ -16,7 +16,8 @@ import {
   UPDATE_CONTENT_SERVICE,
   COMMS_SERVICE,
   FETCH_META_CONTENT_SERVICE,
-  RESIZE_SERVICE
+  RESIZE_SERVICE,
+  PIN_CATALYST
 } from 'config'
 
 export function daoReducer(state?: DaoState, action?: AnyAction): DaoState {
@@ -127,6 +128,11 @@ function realmProperties(realm: Realm, configOverride: boolean = true): Partial<
 }
 
 function ensureContentWhitelist(state: Partial<DaoState>, contentWhitelist: Candidate[]): Partial<DaoState> {
+  // if a catalyst is pinned => avoid any override
+  if (PIN_CATALYST) {
+    return state
+  }
+
   // if current realm is in whitelist => return current state
   if (state.realm && contentWhitelist.some((candidate) => candidate.domain === state.realm!.domain)) {
     return state
@@ -145,6 +151,11 @@ function ensureContentWhitelist(state: Partial<DaoState>, contentWhitelist: Cand
 }
 
 function ensureProfileDao(state: Partial<DaoState>, daoCandidates: Candidate[]) {
+  // if a catalyst is pinned => avoid any override
+  if (PIN_CATALYST) {
+    return state
+  }
+
   // if current realm is in dao => return current state
   if (state.realm && daoCandidates.some((candidate) => candidate.domain === state.realm!.domain)) {
     return state
