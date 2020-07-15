@@ -138,6 +138,8 @@ export const SHOW_FPS_COUNTER = location.search.indexOf('SHOW_FPS_COUNTER') !== 
 export const HAS_INITIAL_POSITION_MARK = location.search.indexOf('position') !== -1
 export const NO_ASSET_BUNDLES = location.search.indexOf('NO_ASSET_BUNDLES') !== -1
 
+export const PIN_CATALYST = qs.PIN_CATALYST
+
 export namespace commConfigurations {
   export const debug = true
   export const commRadius = 4
@@ -251,11 +253,11 @@ export function getServerConfigurations() {
     wearablesApi: `https://wearable-api.decentraland.org/v2`,
     explorerConfiguration: `https://explorer-config.decentraland.${notToday}/configuration.json`,
     synapseUrl,
-    fallbackResizeServiceUrl: `https://peer.decentraland.${notToday}/lambdas/images`,
+    fallbackResizeServiceUrl: `${PIN_CATALYST ?? 'https://peer.decentraland.' + notToday}/lambdas/images`,
     avatar: {
-      snapshotStorage: `https://avatars-storage.decentraland.${TLDDefault}/`,
+      snapshotStorage: `https://avatars-storage.decentraland.${TLDDefault}/`, // ** TODO - unused, remove - moliva - 03/07/2020
       catalog: getExclusiveServer(),
-      presets: `https://avatars-storage.decentraland.org/mobile-avatars`
+      presets: `https://avatars-storage.decentraland.org/mobile-avatars` // ** TODO - unused, remove - moliva - 03/07/2020
     }
   }
 }

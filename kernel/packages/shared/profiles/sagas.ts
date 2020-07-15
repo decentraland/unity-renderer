@@ -1,7 +1,7 @@
 import { getFromLocalStorage, saveToLocalStorage } from 'atomicHelpers/localStorage'
 import { call, fork, put, race, select, take, takeEvery, takeLatest } from 'redux-saga/effects'
 import { NotificationType } from 'shared/types'
-import { getServerConfigurations, ALL_WEARABLES, getWearablesSafeURL } from '../../config'
+import { getServerConfigurations, ALL_WEARABLES, getWearablesSafeURL, PIN_CATALYST } from 'config'
 import defaultLogger from '../logger'
 import { isInitialized } from '../renderer/selectors'
 import { RENDERER_INITIALIZED } from '../renderer/types'
@@ -138,7 +138,7 @@ function overrideBaseUrl(wearable: Wearable) {
   return {
     ...wearable,
     baseUrl: getWearablesSafeURL() + '/contents/',
-    baseUrlBundles: getServerConfigurations().contentAsBundle + '/'
+    baseUrlBundles: PIN_CATALYST ? '' : getServerConfigurations().contentAsBundle + '/'
   }
 }
 
