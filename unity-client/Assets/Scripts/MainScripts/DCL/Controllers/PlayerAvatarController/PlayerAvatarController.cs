@@ -1,4 +1,4 @@
-using System.Runtime.CompilerServices;
+﻿using System.Runtime.CompilerServices;
 using DCL;
 using UnityEngine;
 
@@ -50,6 +50,12 @@ public class PlayerAvatarController : MonoBehaviour
     private void OnEnable()
     {
         userProfile.OnUpdate += OnUserProfileOnUpdate;
+        userProfile.OnAvatarExpressionSet += OnAvatarExpression;
+    }
+
+    private void OnAvatarExpression(string id, long timestamp)
+    {
+        avatarRenderer.UpdateExpressions(id, timestamp);
     }
 
     private void OnUserProfileOnUpdate(UserProfile profile)
@@ -60,5 +66,6 @@ public class PlayerAvatarController : MonoBehaviour
     private void OnDisable()
     {
         userProfile.OnUpdate -= OnUserProfileOnUpdate;
+        userProfile.OnAvatarExpressionSet -= OnAvatarExpression;
     }
 }

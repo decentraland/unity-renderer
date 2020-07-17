@@ -14,6 +14,7 @@ public class AvatarName : MonoBehaviour
     public Vector3 offset;
     Canvas canvas;
     Camera mainCamera;
+    RectTransform canvasRect;
 
     Vector2 res;
 
@@ -40,8 +41,8 @@ public class AvatarName : MonoBehaviour
 
     private void Awake()
     {
-        mainCamera = Camera.main;
         canvas = GetComponentInParent<Canvas>();
+        canvasRect = (RectTransform)canvas.transform;
         layoutGroupRTs = new List<RectTransform>();
 
         LayoutGroup[] groups = transform.GetComponentsInChildren<LayoutGroup>();
@@ -53,7 +54,11 @@ public class AvatarName : MonoBehaviour
         }
     }
 
-
+    void OnEnable()
+    {
+        // We initialize mainCamera here because the main camera may change while the gameobject is disabled
+        mainCamera = Camera.main;
+    }
 
     void LateUpdate()
     {
@@ -70,9 +75,7 @@ public class AvatarName : MonoBehaviour
 
     private void RefreshTextPosition()
     {
-        Transform t = sourceTransform;
-
-        Vector3 screenPoint = mainCamera == null ? Vector3.zero : mainCamera.WorldToViewportPoint(t.position + offset);
+        Vector3 screenPoint = mainCamera == null ? Vector3.zero : mainCamera.WorldToViewportPoint(sourceTransform.position + offset);
         uiContainer.alpha = 1.0f + (1.0f - (screenPoint.z / NAME_VANISHING_POINT_DISTANCE));
 
         if (screenPoint.z > 0)
@@ -82,7 +85,6 @@ public class AvatarName : MonoBehaviour
                 uiContainer.gameObject.SetActive(true);
             }
 
-            RectTransform canvasRect = (RectTransform)canvas.transform;
             float width = canvasRect.rect.width;
             float height = canvasRect.rect.height;
             screenPoint.Scale(new Vector3(width, height, 0));

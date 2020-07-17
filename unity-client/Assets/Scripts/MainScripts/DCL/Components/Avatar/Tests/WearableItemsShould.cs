@@ -48,7 +48,7 @@ namespace AvatarShape_Tests
         [Category("Explicit")]
         public IEnumerator BeVisibleByDefault()
         {
-            avatarModel.wearables = new List<string>() { SUNGLASSES_ID };
+            avatarModel.wearables = new List<string>() {SUNGLASSES_ID};
 
             yield return avatarShape.ApplyChanges(JsonUtility.ToJson(avatarModel));
 
@@ -64,8 +64,8 @@ namespace AvatarShape_Tests
             var sunglasses = catalog.Get(SUNGLASSES_ID);
             var bandana = catalog.Get(BLUE_BANDANA_ID);
 
-            bandana.hides = new[] { sunglasses.category };
-            avatarModel.wearables = new List<string>() { SUNGLASSES_ID, BLUE_BANDANA_ID };
+            bandana.hides = new[] {sunglasses.category};
+            avatarModel.wearables = new List<string>() {SUNGLASSES_ID, BLUE_BANDANA_ID};
             yield return avatarShape.ApplyChanges(JsonUtility.ToJson(avatarModel));
 
             var sunglassesController = new WearableController_Mock(AvatarRenderer_Mock.GetWearableControllers(avatarShape.avatarRenderer)[SUNGLASSES_ID]);
@@ -81,8 +81,8 @@ namespace AvatarShape_Tests
         {
             var bandana = catalog.Get(BLUE_BANDANA_ID);
 
-            bandana.hides = new[] { "NonExistentCategory" };
-            avatarModel.wearables = new List<string>() { SUNGLASSES_ID, BLUE_BANDANA_ID };
+            bandana.hides = new[] {"NonExistentCategory"};
+            avatarModel.wearables = new List<string>() {SUNGLASSES_ID, BLUE_BANDANA_ID};
             yield return avatarShape.ApplyChanges(JsonUtility.ToJson(avatarModel));
 
             var sunglassesController = new WearableController_Mock(AvatarRenderer_Mock.GetWearableControllers(avatarShape.avatarRenderer)[SUNGLASSES_ID]);
@@ -99,8 +99,8 @@ namespace AvatarShape_Tests
             var sunglasses = catalog.Get(SUNGLASSES_ID);
             var bandana = catalog.Get(BLUE_BANDANA_ID);
 
-            bandana.GetRepresentation(avatarModel.bodyShape).overrideHides = new[] { sunglasses.category };
-            avatarModel.wearables = new List<string>() { SUNGLASSES_ID, BLUE_BANDANA_ID };
+            bandana.GetRepresentation(avatarModel.bodyShape).overrideHides = new[] {sunglasses.category};
+            avatarModel.wearables = new List<string>() {SUNGLASSES_ID, BLUE_BANDANA_ID};
             yield return avatarShape.ApplyChanges(JsonUtility.ToJson(avatarModel));
 
             var sunglassesController = new WearableController_Mock(AvatarRenderer_Mock.GetWearableControllers(avatarShape.avatarRenderer)[SUNGLASSES_ID]);
@@ -117,8 +117,8 @@ namespace AvatarShape_Tests
             var sunglasses = catalog.Get(SUNGLASSES_ID);
             var bandana = catalog.Get(BLUE_BANDANA_ID);
 
-            bandana.GetRepresentation(WearableLiterals.BodyShapes.MALE).overrideHides = new[] { sunglasses.category };
-            avatarModel.wearables = new List<string>() { SUNGLASSES_ID, BLUE_BANDANA_ID };
+            bandana.GetRepresentation(WearableLiterals.BodyShapes.MALE).overrideHides = new[] {sunglasses.category};
+            avatarModel.wearables = new List<string>() {SUNGLASSES_ID, BLUE_BANDANA_ID};
             yield return avatarShape.ApplyChanges(JsonUtility.ToJson(avatarModel));
 
             var sunglassesController = new WearableController_Mock(AvatarRenderer_Mock.GetWearableControllers(avatarShape.avatarRenderer)[SUNGLASSES_ID]);
@@ -132,7 +132,7 @@ namespace AvatarShape_Tests
         [Category("Explicit")]
         public IEnumerator BeUnequipedProperly()
         {
-            avatarModel.wearables = new List<string>() { SUNGLASSES_ID };
+            avatarModel.wearables = new List<string>() {SUNGLASSES_ID};
             yield return avatarShape.ApplyChanges(JsonUtility.ToJson(avatarModel));
 
             avatarModel.wearables = new List<string>() { };
@@ -151,7 +151,7 @@ namespace AvatarShape_Tests
 
             for (int i = 0; i < 6; i++)
             {
-                avatarModel.wearables = new List<string>() { SUNGLASSES_ID };
+                avatarModel.wearables = new List<string>() {SUNGLASSES_ID};
                 yield return avatarShape.ApplyChanges(JsonUtility.ToJson(avatarModel));
                 containers.Add(AvatarRenderer_Mock.GetWearableController(avatarShape.avatarRenderer, SUNGLASSES_ID)?.myAssetContainer);
 
@@ -207,6 +207,7 @@ namespace AvatarShape_Tests
 
                 materials.AddRange(wearableControllerMock.myAssetContainer.GetComponentsInChildren<Renderer>().SelectMany(x => x.materials).ToList());
             }
+
             Assert.IsTrue(materials.All(x => x.shader.name == "DCL/Toon Shader"));
         }
 
@@ -215,7 +216,7 @@ namespace AvatarShape_Tests
         [Category("Explicit")]
         public IEnumerator BeRetrievedWithoutPoolableObject()
         {
-            avatarModel.wearables = new List<string>() { SUNGLASSES_ID, BLUE_BANDANA_ID };
+            avatarModel.wearables = new List<string>() {SUNGLASSES_ID, BLUE_BANDANA_ID};
             yield return avatarShape.ApplyChanges(JsonUtility.ToJson(avatarModel));
 
             var sunglassesAssetContainer = AvatarRenderer_Mock.GetWearableController(avatarShape.avatarRenderer, SUNGLASSES_ID)?.myAssetContainer;
@@ -232,8 +233,8 @@ namespace AvatarShape_Tests
         [Category("Explicit")]
         public IEnumerator HideBodyShapeProperly()
         {
-            catalog.Get(SUNGLASSES_ID).hides = new[] { WearableLiterals.Misc.HEAD };
-            avatarModel.wearables = new List<string>() { SUNGLASSES_ID, BLUE_BANDANA_ID };
+            catalog.Get(SUNGLASSES_ID).hides = new[] {WearableLiterals.Misc.HEAD};
+            avatarModel.wearables = new List<string>() {SUNGLASSES_ID, BLUE_BANDANA_ID};
             yield return avatarShape.ApplyChanges(JsonUtility.ToJson(avatarModel));
 
             var bodyShapeAssetContainer = AvatarRenderer_Mock.GetBodyShapeController(avatarShape.avatarRenderer)?.myAssetContainer;
@@ -248,10 +249,10 @@ namespace AvatarShape_Tests
         [Category("Explicit")]
         public IEnumerator BeHiddenUntilWholeAvatarIsReady()
         {
-            avatarShape.avatarRenderer.ResetAvatar();
+            avatarShape.avatarRenderer.CleanupAvatar();
             yield return null; //NOTE(Brian): Must wait a frame in order to all gameObjects finishes destroying.
 
-            avatarModel.wearables = new List<string>() { SUNGLASSES_ID, BLUE_BANDANA_ID };
+            avatarModel.wearables = new List<string>() {SUNGLASSES_ID, BLUE_BANDANA_ID};
             avatarShape.avatarRenderer.ApplyModel(avatarModel, null, null);
 
             while (avatarShape.avatarRenderer.isLoading)
@@ -268,9 +269,6 @@ namespace AvatarShape_Tests
             Renderer[] renderers = avatarShape.avatarRenderer.GetComponentsInChildren<Renderer>(true);
             foreach (var r in renderers)
             {
-                if (r.gameObject == avatarShape.minimapRepresentation)
-                    continue;
-
                 if (r.enabled)
                 {
                     if (shouldBeEnabled)

@@ -1,7 +1,8 @@
 using System;
+using DCL.Components;
 using UnityEngine;
 
-public class AvatarAnimatorLegacy : MonoBehaviour
+public class AvatarAnimatorLegacy : MonoBehaviour, IPoolLifecycleHandler
 {
     const float IDLE_TRANSITION_TIME = 0.15f;
     const float STRAFE_TRANSITION_TIME = 0.25f;
@@ -62,10 +63,21 @@ public class AvatarAnimatorLegacy : MonoBehaviour
     AvatarAnimationsVariable currentAnimations;
     bool isOwnPlayer = false;
 
-    void Start()
+    public void Start()
     {
-        isOwnPlayer = DCLCharacterController.i.transform == transform.parent;
+        OnPoolGet();
+    }
+
+    public void OnPoolGet()
+    {
+        if (DCLCharacterController.i != null)
+            isOwnPlayer = DCLCharacterController.i.transform == transform.parent;
+
         currentState = State_Init;
+    }
+
+    public void OnPoolRelease()
+    {
     }
 
     void Update()
@@ -96,9 +108,9 @@ public class AvatarAnimatorLegacy : MonoBehaviour
         Vector3 rayOffset = Vector3.up * RAY_OFFSET_LENGTH;
         //NOTE(Brian): isGrounded?
         blackboard.isGrounded = Physics.Raycast(target.transform.position + rayOffset,
-                                                Vector3.down,
-                                                RAY_OFFSET_LENGTH - ELEVATION_OFFSET,
-                                                DCLCharacterController.i.groundLayers);
+            Vector3.down,
+            RAY_OFFSET_LENGTH - ELEVATION_OFFSET,
+            DCLCharacterController.i.groundLayers);
 
 #if UNITY_EDITOR
         Debug.DrawRay(target.transform.position + rayOffset, Vector3.down * (RAY_OFFSET_LENGTH - ELEVATION_OFFSET), blackboard.isGrounded ? Color.green : Color.red);
@@ -184,12 +196,16 @@ public class AvatarAnimatorLegacy : MonoBehaviour
                 currentState = State_Air;
             else
                 currentState = State_Ground;
+
             Update();
         }
     }
 
     public void SetExpressionValues(string expressionTriggerId, long expressionTriggerTimestamp)
     {
+        if (animation == null)
+            return;
+
         var mustTriggerAnimation = !string.IsNullOrEmpty(expressionTriggerId) && blackboard.expressionTriggerTimestamp != expressionTriggerTimestamp;
 
         blackboard.expressionTriggerId = expressionTriggerId;
@@ -201,6 +217,7 @@ public class AvatarAnimatorLegacy : MonoBehaviour
             {
                 animation.Stop(expressionTriggerId);
             }
+
             currentState = State_Expression;
             Update();
         }
@@ -208,6 +225,8 @@ public class AvatarAnimatorLegacy : MonoBehaviour
 
     public void Reset()
     {
+        if (animation == null) return;
+
         //It will set the animation to the first frame, but due to the nature of the script and its Update. It wont stop the animation from playing
         animation.Stop();
     }

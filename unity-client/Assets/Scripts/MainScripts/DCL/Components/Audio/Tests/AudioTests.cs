@@ -14,7 +14,6 @@ namespace Tests
     {
         public IEnumerator CreateAudioSource(ParcelScene scene, string entityId, string audioClipId, bool playing, bool loop = true)
         {
-            Debug.Log("Creating/updating audio source...");
             var audioSourceModel = new DCLAudioSource.Model()
             {
                 audioClipId = audioClipId,
@@ -62,10 +61,10 @@ namespace Tests
             };
 
             DCLAudioClip audioClip = scene.SharedComponentCreate(
-                    audioClipId,
-                    "audioClip",
-                    (int)DCL.Models.CLASS_ID.AUDIO_CLIP
-             ) as DCLAudioClip;
+                audioClipId,
+                "audioClip",
+                (int) DCL.Models.CLASS_ID.AUDIO_CLIP
+            ) as DCLAudioClip;
 
             scene.SharedComponentUpdate(audioClipId, JsonUtility.ToJson(model));
 

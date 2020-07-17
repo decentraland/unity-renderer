@@ -16,7 +16,8 @@ namespace DCL.Controllers
         Vector3 auxPosVec = new Vector3();
         Vector3 auxScaleVec = new Vector3();
 
-        private static Vector2Int[] aroundOffsets = {
+        private static Vector2Int[] aroundOffsets =
+        {
             new Vector2Int(1, 0),
             new Vector2Int(-1, 0),
             new Vector2Int(0, 1),
@@ -24,7 +25,8 @@ namespace DCL.Controllers
             new Vector2Int(1, 1),
             new Vector2Int(-1, -1),
             new Vector2Int(1, -1),
-            new Vector2Int(-1, 1) };
+            new Vector2Int(-1, 1)
+        };
 
         public BlockerHandler()
         {
@@ -36,6 +38,7 @@ namespace DCL.Controllers
             {
                 GameObject go = Object.Instantiate(blockerPrefab);
                 Pool pool = PoolManager.i.AddPool(PARCEL_BLOCKER_POOL_NAME, go);
+                pool.persistent = true;
                 pool.ForcePrewarm();
             }
         }

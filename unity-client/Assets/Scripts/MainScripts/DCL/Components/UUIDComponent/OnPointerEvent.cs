@@ -29,6 +29,8 @@ namespace DCL.Components
 
         public override void Setup(ParcelScene scene, DecentralandEntity entity, UUIDComponent.Model model)
         {
+            if (entity == null) return;
+
             this.entity = entity;
             this.scene = scene;
 
@@ -110,7 +112,7 @@ namespace DCL.Components
 
         public bool IsAtHoverDistance(Transform other)
         {
-            return Vector3.Distance(other.position, transform.position) <= model.distance;
+            return model != null && other != null && Vector3.Distance(other.position, transform.position) <= model.distance;
         }
         public bool IsAtHoverDistance(float distance)
         {

@@ -68,20 +68,17 @@ namespace DCL
         private Queue<MessagingBus.QueuedSceneMessage_Scene> sceneMessagesPool = new Queue<MessagingBus.QueuedSceneMessage_Scene>();
 
         [System.NonSerialized] public bool isDebugMode;
-
         [System.NonSerialized] public bool isWssDebugMode;
-
         [System.NonSerialized] public bool prewarmSceneMessagesPool = true;
-
         [System.NonSerialized] public bool useBoundariesChecker = true;
 
         [System.NonSerialized] public bool prewarmEntitiesPool = true;
-
 
         public bool hasPendingMessages => MessagingControllersManager.i.pendingMessagesCount > 0;
 
         public string globalSceneId { get; private set; }
         public string currentSceneId { get; private set; }
+
         public SceneBoundariesChecker boundariesChecker { get; private set; }
 
         private bool sceneSortDirty = false;
@@ -223,6 +220,20 @@ namespace DCL
             return dist1 - dist2;
         }
 
+        public const string EMPTY_GO_POOL_NAME = "Empty";
+
+        public void EnsureEntityPool()
+        {
+            if (PoolManager.i.ContainsPool(EMPTY_GO_POOL_NAME))
+                return;
+
+            GameObject go = new GameObject();
+            Pool pool = PoolManager.i.AddPool(EMPTY_GO_POOL_NAME, go, maxPrewarmCount: 2000, isPersistent: true);
+
+            if (prewarmEntitiesPool)
+                pool.ForcePrewarm();
+        }
+
         void Start()
         {
             if (prewarmSceneMessagesPool)
@@ -234,7 +245,11 @@ namespace DCL
             }
 
             if (prewarmEntitiesPool)
-                PoolManager.i.AddPool("Empty", new GameObject(), maxPrewarmCount: 2000, isPersistent: true).ForcePrewarm();
+            {
+                EnsureEntityPool();
+            }
+
+            componentFactory.PrewarmPools();
 
             if (!debugScenes)
             {

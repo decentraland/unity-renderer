@@ -1,4 +1,5 @@
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
 [System.Serializable]
@@ -13,6 +14,19 @@ public class AvatarModel
     public List<string> wearables = new List<string>();
     public string expressionTriggerId = null;
     public long expressionTriggerTimestamp = -1;
+
+    public bool Equals(AvatarModel other)
+    {
+        bool wearablesAreEqual = wearables.All(other.wearables.Contains) && wearables.Count == other.wearables.Count;
+
+        return id == other.id &&
+               name == other.name &&
+               bodyShape == other.bodyShape &&
+               skinColor == other.skinColor &&
+               hairColor == other.hairColor &&
+               eyeColor == other.eyeColor &&
+               wearablesAreEqual;
+    }
 
     public void CopyFrom(AvatarModel other)
     {

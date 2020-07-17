@@ -39,6 +39,7 @@ namespace AvatarEditorHUD_Tests
             catalog = AvatarTestHelpers.CreateTestCatalogLocal();
             controller = new AvatarEditorHUDController_Mock();
             controller.Initialize(userProfile, catalog);
+            controller.SetVisibility(true);
 
             userProfile.UpdateData(new UserProfileModel()
             {
@@ -50,9 +51,6 @@ namespace AvatarEditorHUD_Tests
                     wearables = new List<string>() { },
                 }
             }, false);
-
-            controller.LoadUserProfile(userProfile);
-            controller.SetVisibility(true);
         }
 
         [UnityTearDown]

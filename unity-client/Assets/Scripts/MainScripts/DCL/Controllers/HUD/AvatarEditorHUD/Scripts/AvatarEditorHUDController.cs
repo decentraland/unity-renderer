@@ -86,6 +86,7 @@ public class AvatarEditorHUDController : IHUD
             return;
 
         var bodyShape = CatalogController.wearableCatalog.Get(userProfile.avatar.bodyShape);
+
         if (bodyShape == null)
         {
             return;
@@ -101,7 +102,9 @@ public class AvatarEditorHUDController : IHUD
 
         model.wearables.Clear();
         view.UnselectAllWearables();
+
         int wearablesCount = userProfile.avatar.wearables.Count;
+
         for (var i = 0; i < wearablesCount; i++)
         {
             var wearable = CatalogController.wearableCatalog.Get(userProfile.avatar.wearables[i]);
@@ -250,7 +253,8 @@ public class AvatarEditorHUDController : IHUD
             return;
         }
 
-        if (model.bodyShape == bodyShape) return;
+        if (model.bodyShape == bodyShape)
+            return;
 
         model.bodyShape = bodyShape;
         view.UpdateSelectedBody(bodyShape);

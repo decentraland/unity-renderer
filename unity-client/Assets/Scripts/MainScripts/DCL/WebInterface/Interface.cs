@@ -61,13 +61,17 @@ namespace DCL.Interface
                 public string sceneId;
             }
 
-            public SceneReady(string sceneId) : base("SceneReady", new Payload() { sceneId = sceneId }) { }
+            public SceneReady(string sceneId) : base("SceneReady", new Payload() {sceneId = sceneId})
+            {
+            }
         }
 
         [System.Serializable]
         public class ActivateRenderingACK : ControlEvent<object>
         {
-            public ActivateRenderingACK() : base("ActivateRenderingACK", null) { }
+            public ActivateRenderingACK() : base("ActivateRenderingACK", null)
+            {
+            }
         }
 
         [System.Serializable]
@@ -401,8 +405,9 @@ namespace DCL.Interface
     [DllImport("__Internal")] public static extern void StartDecentraland();
     [DllImport("__Internal")] public static extern void MessageFromEngine(string type, string message);
 #else
-        public static void StartDecentraland() =>
-            Debug.Log("StartDecentraland called");
+        public static void StartDecentraland()
+        {
+        }
 
         public static void MessageFromEngine(string type, string message)
         {
@@ -540,7 +545,7 @@ namespace DCL.Interface
 
         public static void ReportGlobalPointerDownEvent(ACTION_BUTTON buttonId, Ray ray, Vector3 point, Vector3 normal, float distance, string sceneId, string entityId = null, string meshName = null, bool isHitInfoValid = false)
         {
-            SetPointerEventPayload((OnPointerEventPayload)onGlobalPointerEventPayload, buttonId, entityId, meshName, ray, point, normal, distance, isHitInfoValid);
+            SetPointerEventPayload((OnPointerEventPayload) onGlobalPointerEventPayload, buttonId, entityId, meshName, ray, point, normal, distance, isHitInfoValid);
             onGlobalPointerEventPayload.type = OnGlobalPointerEventPayload.InputEventType.DOWN;
 
             onGlobalPointerEvent.payload = onGlobalPointerEventPayload;
@@ -550,7 +555,7 @@ namespace DCL.Interface
 
         public static void ReportGlobalPointerUpEvent(ACTION_BUTTON buttonId, Ray ray, Vector3 point, Vector3 normal, float distance, string sceneId, string entityId = null, string meshName = null, bool isHitInfoValid = false)
         {
-            SetPointerEventPayload((OnPointerEventPayload)onGlobalPointerEventPayload, buttonId, entityId, meshName, ray, point, normal, distance, isHitInfoValid);
+            SetPointerEventPayload((OnPointerEventPayload) onGlobalPointerEventPayload, buttonId, entityId, meshName, ray, point, normal, distance, isHitInfoValid);
             onGlobalPointerEventPayload.type = OnGlobalPointerEventPayload.InputEventType.UP;
 
             onGlobalPointerEvent.payload = onGlobalPointerEventPayload;
@@ -727,12 +732,12 @@ namespace DCL.Interface
 
         public static void SendUserAcceptedCollectibles(string airdropId)
         {
-            SendMessage("UserAcceptedCollectibles", new UserAcceptedCollectiblesPayload { id = airdropId });
+            SendMessage("UserAcceptedCollectibles", new UserAcceptedCollectiblesPayload {id = airdropId});
         }
 
         public static void SaveUserTutorialStep(int newTutorialStep)
         {
-            SendMessage("SaveUserTutorialStep", new TutorialStepPayload() { tutorialStep = newTutorialStep });
+            SendMessage("SaveUserTutorialStep", new TutorialStepPayload() {tutorialStep = newTutorialStep});
         }
 
         public static void SendPerformanceReport(string encodedFrameTimesInMS)
@@ -767,7 +772,7 @@ namespace DCL.Interface
 
         public static void OpenURL(string url)
         {
-            SendMessage("OpenWebURL", new OpenURLPayload { url = url });
+            SendMessage("OpenWebURL", new OpenURLPayload {url = url});
         }
 
         public static void SendReportScene(string sceneID)

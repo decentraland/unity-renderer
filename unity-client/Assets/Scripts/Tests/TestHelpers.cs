@@ -1005,7 +1005,6 @@ namespace DCL.Helpers
                 return false;
             }
 
-            Debug.Log("results[0] = " + results[0].gameObject.name);
             // Check that the clicked object is the one on the front
             return results[0].gameObject == rectT.gameObject;
         }

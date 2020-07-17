@@ -54,7 +54,7 @@ namespace DCL
             if (pool.persistent)
                 return false;
 
-            bool timeout = DCLTime.realtimeSinceStartup - pool.lastGetTime >= TIME_TO_POOL_CLEANUP;
+            bool timeout = Time.unscaledTime - pool.lastGetTime >= TIME_TO_POOL_CLEANUP;
             return timeout && pool.usedObjectsCount == 0;
         }
 

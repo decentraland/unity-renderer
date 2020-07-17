@@ -3,6 +3,7 @@ using DCL.Components;
 using DCL.Helpers;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 using Object = UnityEngine.Object;
 
@@ -13,7 +14,7 @@ public class WearableController
 
     public readonly WearableItem wearable;
     protected RendereableAssetLoadHelper loader;
-    private readonly string bodyShapeType;
+    private readonly string bodyShapeId;
 
     public string id => wearable.id;
     public string category => wearable.category;
@@ -25,32 +26,42 @@ public class WearableController
 
     List<Material> materials = null;
 
-    private bool bonesRetargeted = false;
+    public bool boneRetargetingDirty = false;
 
-    public WearableController(WearableItem wearableItem, string bodyShapeType)
+    protected HashSet<string> hiddenList;
+
+    public WearableController(WearableItem wearableItem, string bodyShapeId)
     {
         this.wearable = wearableItem;
-        this.bodyShapeType = bodyShapeType;
+        this.bodyShapeId = bodyShapeId;
+    }
+
+    public void SetHiddenList(HashSet<string> hiddenList)
+    {
+        this.hiddenList = hiddenList;
     }
 
     protected WearableController(WearableController original)
     {
         wearable = original.wearable;
         loader = original.loader;
-        bodyShapeType = original.bodyShapeType;
+        bodyShapeId = original.bodyShapeId;
         assetRenderers = original.assetRenderers;
     }
 
     public virtual void Load(Transform parent, Action<WearableController> onSuccess, Action<WearableController> onFail)
     {
-        bonesRetargeted = false;
+        if (isReady)
+            return;
 
-        var representation = wearable.GetRepresentation(bodyShapeType);
-        var provider = wearable.GetContentProvider(bodyShapeType);
+        boneRetargetingDirty = true;
+
+        var representation = wearable.GetRepresentation(bodyShapeId);
+        var provider = wearable.GetContentProvider(bodyShapeId);
 
         loader = new RendereableAssetLoadHelper(provider, wearable.baseUrlBundles);
 
-        loader.settings.forceNewInstance = true;
+        loader.settings.forceNewInstance = false;
         loader.settings.initialLocalPosition = Vector3.up * 0.75f;
         loader.settings.cachingFlags = MaterialCachingHelper.Mode.CACHE_SHADERS;
         loader.settings.visibleFlags = AssetPromiseSettings_Rendering.VisibleFlags.INVISIBLE;
@@ -59,6 +70,7 @@ public class WearableController
         loader.OnSuccessEvent += (x) =>
         {
             PrepareWearable(x);
+            UpdateVisibility();
             onSuccess.Invoke(this);
         };
 
@@ -67,6 +79,8 @@ public class WearableController
         loader.Load(representation.mainFile);
     }
 
+    Dictionary<Renderer, Material[]> originalMaterials = new Dictionary<Renderer, Material[]>();
+
     public void SetupDefaultMaterial(Material defaultMaterial, Color skinColor, Color hairColor)
     {
         if (assetContainer == null)
@@ -74,6 +88,7 @@ public class WearableController
 
         if (materials == null)
         {
+            StoreOriginalMaterials();
             materials = AvatarUtils.ReplaceMaterialsWithCopiesOf(assetContainer.transform, defaultMaterial);
         }
 
@@ -81,22 +96,48 @@ public class WearableController
         AvatarUtils.SetColorInHierarchy(assetContainer.transform, MATERIAL_FILTER_HAIR, hairColor);
     }
 
+    private void StoreOriginalMaterials()
+    {
+        Renderer[] renderers = assetContainer.transform.GetComponentsInChildren<Renderer>();
+
+        for (int i = 0; i < renderers.Length; i++)
+        {
+            if (originalMaterials.ContainsKey(renderers[i]))
+                continue;
+
+            originalMaterials.Add(renderers[i], renderers[i].sharedMaterials.ToArray());
+        }
+    }
+
+    private void RestoreOriginalMaterials()
+    {
+        foreach (var kvp in originalMaterials)
+        {
+            kvp.Key.materials = kvp.Value;
+        }
+
+        originalMaterials.Clear();
+    }
+
     public void SetAnimatorBones(SkinnedMeshRenderer skinnedMeshRenderer)
     {
-        if (bonesRetargeted) return;
+        if (!boneRetargetingDirty) return;
 
         SkinnedMeshRenderer[] skinnedRenderers = assetContainer.GetComponentsInChildren<SkinnedMeshRenderer>();
-        for (int i1 = 0; i1 < skinnedRenderers.Length; i1++)
+
+        for (int i = 0; i < skinnedRenderers.Length; i++)
         {
-            skinnedRenderers[i1].rootBone = skinnedMeshRenderer.rootBone;
-            skinnedRenderers[i1].bones = skinnedMeshRenderer.bones;
+            skinnedRenderers[i].rootBone = skinnedMeshRenderer.rootBone;
+            skinnedRenderers[i].bones = skinnedMeshRenderer.bones;
         }
-        bonesRetargeted = true;
+
+        boneRetargetingDirty = false;
     }
 
     public void CleanUp()
     {
         UnloadMaterials();
+        RestoreOriginalMaterials();
 
         if (loader != null)
         {
@@ -126,5 +167,10 @@ public class WearableController
     protected virtual void PrepareWearable(GameObject assetContainer)
     {
         assetRenderers = assetContainer.GetComponentsInChildren<Renderer>();
+    }
+
+    public virtual void UpdateVisibility()
+    {
+        SetAssetRenderersEnabled(!hiddenList.Contains(wearable.category));
     }
 }

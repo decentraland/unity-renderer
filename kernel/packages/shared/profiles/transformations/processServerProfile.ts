@@ -1,5 +1,6 @@
 import { Profile, WearableId } from '../types'
 import { colorString } from './colorString'
+import { ALL_WEARABLES } from 'config'
 
 export function fixWearableIds(wearableId: string) {
   return wearableId.replace('/male_body', '/BaseMale').replace('/female_body', '/BaseFemale')
@@ -17,7 +18,10 @@ export function dropDeprecatedWearables(wearableId: string): boolean {
   return deprecatedWearables.indexOf(wearableId) === -1
 }
 export function noExclusiveMismatches(inventory: WearableId[]) {
-  return function(wearableId: WearableId) {
+  return function (wearableId: WearableId) {
+    if (ALL_WEARABLES) {
+      return true
+    }
     return wearableId.startsWith('dcl://base-avatars') || inventory.indexOf(wearableId) !== -1
   }
 }

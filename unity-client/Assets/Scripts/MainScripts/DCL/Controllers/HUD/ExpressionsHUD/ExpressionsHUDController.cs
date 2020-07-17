@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 
 public class ExpressionsHUDController : IHUD
 {
@@ -38,7 +38,7 @@ public class ExpressionsHUDController : IHUD
         UserProfile.GetOwnUserProfile().SetAvatarExpression(id);
     }
 
-    private void OnAvatarExpressionSet(string id)
+    private void OnAvatarExpressionSet(string id, long timestamp)
     {
         if (view.IsContentVisible())
         {
