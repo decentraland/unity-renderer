@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class BodyShapeController : WearableController
 {
-    public string bodyShapeType => wearable.id;
+    public string bodyShapeId => wearable.id;
     private Transform animationTarget;
 
     public BodyShapeController(WearableItem wearableItem) : base(wearableItem, wearableItem?.id)
@@ -95,10 +95,16 @@ public class BodyShapeController : WearableController
 
     protected override void PrepareWearable(GameObject assetContainer)
     {
-        base.PrepareWearable(assetContainer);
+        assetRenderers = assetContainer.GetComponentsInChildren<Renderer>();
+
         skinnedMeshRenderer = assetContainer.GetComponentInChildren<SkinnedMeshRenderer>();
         var animation = PrepareAnimation();
         var animator = animationTarget.GetComponent<AvatarAnimatorLegacy>();
-        animator.BindBodyShape(animation, bodyShapeType, animationTarget);
+        animator.BindBodyShape(animation, bodyShapeId, animationTarget);
+    }
+
+    public override void UpdateVisibility()
+    {
+        SetAssetRenderersEnabled(!hiddenList.Contains(WearableLiterals.Misc.HEAD));
     }
 }

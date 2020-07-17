@@ -1,6 +1,9 @@
+using System;
 using DCL.Components;
 using DCL.Interface;
 using System.Collections;
+using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
 namespace DCL
@@ -12,7 +15,6 @@ namespace DCL
         public AvatarName avatarName;
         public AvatarRenderer avatarRenderer;
         public AvatarMovementController avatarMovementController;
-        [SerializeField] internal GameObject minimapRepresentation;
         [SerializeField] private AvatarOnPointerDown onPointerDown;
         private StringVariable currentPlayerInfoCardId;
 
@@ -23,25 +25,11 @@ namespace DCL
 
         private Vector3? lastAvatarPosition = null;
         private MinimapMetadata.MinimapUserInfo avatarUserInfo = new MinimapMetadata.MinimapUserInfo();
+        bool initializedPosition = false;
 
-        void Awake()
+        private void Start()
         {
-            currentPlayerInfoCardId = Resources.Load<StringVariable>(CURRENT_PLAYER_ID);
-
-            if (string.IsNullOrEmpty(currentSerialization))
-                SetMinimapRepresentationActive(false);
-
-            onPointerDown.OnPointerDownReport += PlayerClicked;
-        }
-
-        void Start()
-        {
-            onPointerDown.Setup(scene, entity, new OnPointerDown.Model()
-            {
-                type = OnPointerDown.NAME,
-                button = WebInterface.ACTION_BUTTON.POINTER.ToString(),
-                hoverText = "view profile"
-            });
+            OnPoolGet();
         }
 
         private void PlayerClicked()
@@ -49,15 +37,12 @@ namespace DCL
             currentPlayerInfoCardId.Set(model?.id);
         }
 
-        void OnDestroy()
+        public void OnDestroy()
         {
-            onPointerDown.OnPointerDownReport -= PlayerClicked;
-            if (entity != null)
-            {
-                entity.OnTransformChange = null;
-                avatarUserInfo.userId = model.id;
-                MinimapMetadataController.i?.UpdateMinimapUserInformation(avatarUserInfo, true);
-            }
+            Cleanup();
+
+            if (poolableObject != null && poolableObject.isInsidePool)
+                poolableObject.pool.RemoveFromPool(poolableObject);
         }
 
         public override IEnumerator ApplyChanges(string newJson)
@@ -65,12 +50,6 @@ namespace DCL
             //NOTE(Brian): Horrible fix to the double ApplyChanges call, as its breaking the needed logic.
             if (newJson == "{}")
                 yield break;
-
-            if (entity != null && entity.OnTransformChange == null)
-            {
-                entity.OnTransformChange += avatarMovementController.OnTransformChanged;
-                entity.OnTransformChange += OnEntityTransformChanged;
-            }
 
             if (currentSerialization == newJson)
                 yield break;
@@ -88,25 +67,53 @@ namespace DCL
 
             yield return new WaitUntil(() => avatarDone || avatarFailed);
 
-            avatarName.SetName(model.name);
-            SetMinimapRepresentationActive(true);
-            everythingIsLoaded = true;
+            onPointerDown.Setup(scene, entity, new OnPointerDown.Model()
+            {
+                type = OnPointerDown.NAME,
+                button = WebInterface.ACTION_BUTTON.POINTER.ToString(),
+                hoverText = "view profile"
+            });
 
-            onPointerDown.collider.enabled = true;
+            DCLCharacterController.i.characterPosition.OnPrecisionAdjust -= PrecisionAdjust;
+            DCLCharacterController.i.characterPosition.OnPrecisionAdjust += PrecisionAdjust;
+
+            entity.OnTransformChange -= avatarMovementController.OnTransformChanged;
+            entity.OnTransformChange += avatarMovementController.OnTransformChanged;
+
+            entity.OnTransformChange -= OnEntityTransformChanged;
+            entity.OnTransformChange += OnEntityTransformChanged;
+
+            onPointerDown.OnPointerDownReport -= PlayerClicked;
+            onPointerDown.OnPointerDownReport += PlayerClicked;
+
+            // To deal with the cases in which the entity transform was configured before the AvatarShape
+            if (!initializedPosition && entity.components.ContainsKey(DCL.Models.CLASS_ID_COMPONENT.TRANSFORM))
+            {
+                initializedPosition = true;
+
+                avatarMovementController.MoveTo(
+                    entity.gameObject.transform.localPosition - Vector3.up * DCLCharacterController.i.characterController.height / 2,
+                    entity.gameObject.transform.localRotation, true);
+            }
 
             avatarUserInfo.userId = model.id;
             avatarUserInfo.userName = model.name;
-            avatarUserInfo.worldPosition = lastAvatarPosition != null ? lastAvatarPosition.Value : minimapRepresentation.transform.position;
+            avatarUserInfo.worldPosition = lastAvatarPosition != null ? lastAvatarPosition.Value : entity.gameObject.transform.position;
+            MinimapMetadataController.i?.UpdateMinimapUserInformation(avatarUserInfo);
+
+            avatarName.SetName(model.name);
+
+            everythingIsLoaded = true;
+
+            onPointerDown.collider.enabled = true;
+        }
+
+        private void PrecisionAdjust(DCLCharacterPosition obj)
+        {
+            avatarUserInfo.worldPosition = entity.gameObject.transform.position;
             MinimapMetadataController.i?.UpdateMinimapUserInformation(avatarUserInfo);
         }
 
-        void SetMinimapRepresentationActive(bool active)
-        {
-            if (minimapRepresentation == null)
-                return;
-
-            minimapRepresentation.SetActive(active);
-        }
 
         private void OnEntityTransformChanged(DCLTransform.Model updatedModel)
         {
@@ -116,6 +123,45 @@ namespace DCL
             avatarUserInfo.userName = model.name;
             avatarUserInfo.worldPosition = updatedModel.position;
             MinimapMetadataController.i?.UpdateMinimapUserInformation(avatarUserInfo);
+        }
+
+        public override void OnPoolGet()
+        {
+            base.OnPoolGet();
+
+            currentPlayerInfoCardId = Resources.Load<StringVariable>(CURRENT_PLAYER_ID);
+
+            everythingIsLoaded = false;
+            initializedPosition = false;
+            currentSerialization = "";
+            model = new AvatarModel();
+            lastAvatarPosition = null;
+            avatarUserInfo = new MinimapMetadata.MinimapUserInfo();
+            avatarName.SetName(String.Empty);
+        }
+
+        public override void Cleanup()
+        {
+            base.Cleanup();
+
+            avatarRenderer.CleanupAvatar();
+
+            if (poolableObject != null)
+            {
+                poolableObject.OnRelease -= Cleanup;
+            }
+
+            onPointerDown.OnPointerDownReport -= PlayerClicked;
+            DCLCharacterController.i.characterPosition.OnPrecisionAdjust -= PrecisionAdjust;
+
+            if (entity != null)
+            {
+                entity.OnTransformChange = null;
+                entity = null;
+            }
+
+            avatarUserInfo.userId = model.id;
+            MinimapMetadataController.i?.UpdateMinimapUserInformation(avatarUserInfo, true);
         }
     }
 }

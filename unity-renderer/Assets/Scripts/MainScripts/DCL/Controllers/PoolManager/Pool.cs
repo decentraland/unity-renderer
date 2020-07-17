@@ -20,7 +20,16 @@ namespace DCL
         public object id;
         public GameObject original;
         public GameObject container;
-        public bool persistent;
+
+        public bool persistent = false;
+
+        /// <summary>
+        /// If this is set to true, all Unity components in the poolable gameObject implementing ILifecycleHandler
+        /// will be registered and called when necessary.
+        ///
+        /// The interface call responsibility lies in the PoolableObject class.
+        /// </summary>
+        public bool useLifecycleHandlers = false;
 
         public System.Action<Pool> OnCleanup;
 
@@ -28,6 +37,7 @@ namespace DCL
 
         private readonly LinkedList<PoolableObject> unusedObjects = new LinkedList<PoolableObject>();
         private readonly LinkedList<PoolableObject> usedObjects = new LinkedList<PoolableObject>();
+
         private int maxPrewarmCount = 0;
 
         public float lastGetTime { get; private set; }
@@ -57,8 +67,13 @@ namespace DCL
 
         public void ForcePrewarm()
         {
-            for (int i = 0; i < maxPrewarmCount; i++)
+            if (maxPrewarmCount <= objectsCount)
+                return;
+
+            for (int i = 0; i < Mathf.Max(0, maxPrewarmCount - objectsCount); i++)
+            {
                 Instantiate();
+            }
         }
 
         public PoolableObject Get()
@@ -82,7 +97,7 @@ namespace DCL
             PoolableObject poolable = Extract();
 
             EnablePoolableObject(poolable);
-
+            poolable.OnPoolGet();
             return poolable;
         }
 
@@ -126,9 +141,7 @@ namespace DCL
             if (PoolManager.i.poolables.ContainsKey(gameObject))
                 return PoolManager.i.GetPoolable(gameObject);
 
-            PoolableObject poolable = new PoolableObject();
-            poolable.pool = this;
-            poolable.gameObject = gameObject;
+            PoolableObject poolable = new PoolableObject(this, gameObject);
             PoolManager.i.poolables.Add(gameObject, poolable);
             PoolManager.i.poolableValues.Add(poolable);
 
@@ -202,8 +215,13 @@ namespace DCL
 
         public void RemoveFromPool(PoolableObject poolable)
         {
-            poolable.node.List.Remove(poolable);
-            poolable.node = null;
+            if (poolable.node != null)
+            {
+                if (poolable.node.List != null)
+                    poolable.node.List.Remove(poolable);
+
+                poolable.node = null;
+            }
 
             PoolManager.i.poolables.Remove(poolable.gameObject);
             PoolManager.i.poolableValues.Remove(poolable);

@@ -1,4 +1,5 @@
-﻿using DCL.Components;
+﻿using System;
+using DCL.Components;
 using DCL.Models;
 using System.Collections.Generic;
 using UnityEngine;
@@ -12,13 +13,16 @@ namespace DCL
         {
             public CLASS_ID_COMPONENT classId;
             public BaseComponent prefab;
+
+            [Header("Pool Options")] public bool usePool;
+            public int prewarmCount;
         }
 
         public Item[] factoryList;
 
         Dictionary<CLASS_ID_COMPONENT, Item> factoryDict;
 
-        public void EnsueFactoryDictionary()
+        public void EnsureFactoryDictionary()
         {
             if (factoryDict == null)
             {
@@ -51,9 +55,50 @@ namespace DCL
             return CLASS_ID_COMPONENT.NONE;
         }
 
-        public ItemType CreateItemFromId<ItemType>(CLASS_ID_COMPONENT id)
+        public void PrewarmPools()
         {
-            EnsueFactoryDictionary();
+            for (int i = 0; i < factoryList.Length; i++)
+            {
+                Item item = factoryList[i];
+
+                if (item.usePool)
+                {
+                    EnsurePoolForItem(item);
+                    GetPoolForItem(item).ForcePrewarm();
+                }
+            }
+        }
+
+        private Pool GetPoolForItem(Item item)
+        {
+            return PoolManager.i.GetPool(GetIdForPool(item));
+        }
+
+        private object GetIdForPool(Item item)
+        {
+#if UNITY_EDITOR
+            return item.classId.ToString() + "_POOL";
+#else
+            return item.classId;
+#endif
+        }
+
+        private void EnsurePoolForItem(Item item)
+        {
+            Pool pool = GetPoolForItem(item);
+
+            if (pool != null)
+                return;
+
+            GameObject original = Instantiate(item.prefab.gameObject);
+            pool = PoolManager.i.AddPool(GetIdForPool(item), original, maxPrewarmCount: item.prewarmCount, isPersistent: true);
+            pool.useLifecycleHandlers = true;
+        }
+
+        public ItemType CreateItemFromId<ItemType>(CLASS_ID_COMPONENT id)
+            where ItemType : BaseComponent
+        {
+            EnsureFactoryDictionary();
 
             if (!factoryDict.ContainsKey(id))
             {
@@ -63,13 +108,32 @@ namespace DCL
                 return default(ItemType);
             }
 
-            if (factoryDict[id].prefab == null)
+            var factoryItem = factoryDict[id];
+
+            if (factoryItem.prefab == null)
             {
                 Debug.LogError("Prefab for class " + id + " is null!");
                 return default(ItemType);
             }
 
-            return Instantiate(factoryDict[id].prefab).GetComponent<ItemType>();
+            GameObject instancedGo;
+            PoolableObject poolableObject = null;
+
+            if (factoryItem.usePool)
+            {
+                EnsurePoolForItem(factoryItem);
+                poolableObject = GetPoolForItem(factoryItem).Get();
+                instancedGo = poolableObject.gameObject;
+            }
+            else
+            {
+                instancedGo = Instantiate(factoryItem.prefab.gameObject);
+            }
+
+            ItemType item = instancedGo.GetComponent<ItemType>();
+            item.poolableObject = poolableObject;
+
+            return item;
         }
     }
 }

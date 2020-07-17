@@ -93,7 +93,7 @@ namespace AvatarShape_Tests
             var avatarRendererMock = new GameObject("Temp").AddComponent<AvatarRenderer_Mock>();
             avatarRendererMock.CopyFrom(renderer);
 
-            var toReturn = avatarRendererMock.wearablesController;
+            var toReturn = avatarRendererMock.wearableControllers;
             Destroy(avatarRendererMock.gameObject);
 
             return toReturn;
@@ -132,7 +132,7 @@ namespace AvatarShape_Tests
 
     class WearableController_Mock : WearableController
     {
-        public WearableController_Mock(WearableItem wearableItem, string bodyShapeType) : base(wearableItem, bodyShapeType) { }
+        public WearableController_Mock(WearableItem wearableItem, string bodyShapeId) : base(wearableItem, bodyShapeId) { }
         public WearableController_Mock(WearableController original) : base(original) { }
 
         public Renderer[] myAssetRenderers => assetRenderers;

@@ -16,7 +16,10 @@ namespace DCL
 
         public IComponent owner;
 
-        public bool isRoutineRunning { get { return routine != null; } }
+        public bool isRoutineRunning
+        {
+            get { return routine != null; }
+        }
 
 #if UNITY_EDITOR
         bool applyChangesRunning = false;
@@ -28,35 +31,48 @@ namespace DCL
             yieldInstruction = new WaitForComponentUpdate(owner);
         }
 
-
-
         public void ApplyChangesIfModified(string newSerialization)
         {
             HandleUpdate(newSerialization);
         }
 
-
         protected void HandleUpdate(string newSerialization)
         {
-            if (newSerialization != oldSerialization)
+            if (newSerialization == oldSerialization) return;
+
+            queue.Enqueue(newSerialization);
+
+            if (!isRoutineRunning)
             {
-                queue.Enqueue(newSerialization);
+                var enumerator = HandleUpdateCoroutines();
 
-                if (!isRoutineRunning)
+                if (enumerator != null)
                 {
-                    var enumerator = HandleUpdateCoroutines();
-
-                    if (enumerator != null)
-                    {
-                        routine = owner.GetCoroutineOwner().StartCoroutine(enumerator);
-                    }
+                    routine = CoroutineStarter.Start(enumerator);
                 }
-
-                oldSerialization = newSerialization;
             }
+
+            oldSerialization = newSerialization;
         }
 
+        public void Stop()
+        {
+            if (routine != null)
+                CoroutineStarter.Stop(routine);
 
+            routine = null;
+#if UNITY_EDITOR
+            applyChangesRunning = false;
+#endif
+        }
+
+        public void Cleanup()
+        {
+            Stop();
+
+            oldSerialization = null;
+            queue.Clear();
+        }
 
         protected IEnumerator HandleUpdateCoroutines()
         {
@@ -84,6 +100,7 @@ namespace DCL
             Assert.IsFalse(applyChangesRunning, "ApplyChanges routine was interrupted when it shouldn't!");
             applyChangesRunning = true;
 #endif
+
             var enumerator = owner.ApplyChanges(newJson);
 
             if (enumerator != null)
@@ -95,24 +112,5 @@ namespace DCL
 #endif
             owner.RaiseOnAppliedChanges();
         }
-
-        public void HandleUpdate_Legacy(string newSerialization)
-        {
-            if (newSerialization != oldSerialization)
-            {
-                if (isRoutineRunning)
-                    owner.GetCoroutineOwner().StopCoroutine(routine);
-
-                var enumerator = ApplyChangesWrapper(newSerialization);
-
-                if (enumerator != null)
-                {
-                    routine = owner.GetCoroutineOwner().StartCoroutine(enumerator);
-                }
-
-                oldSerialization = newSerialization;
-            }
-        }
     }
-
 }

@@ -1,3 +1,4 @@
+using System;
 using Builder.Gizmos;
 using DCL;
 using DCL.Components;
@@ -10,6 +11,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Rendering;
+using Object = UnityEngine.Object;
 
 namespace Builder
 {
@@ -155,6 +157,7 @@ namespace Builder
             {
                 StopCoroutine(screenshotCoroutine);
             }
+
             screenshotCoroutine = StartCoroutine(TakeScreenshotRoutine(id));
         }
 
@@ -170,6 +173,7 @@ namespace Builder
                 currentScene.OnEntityAdded -= OnEntityIsAdded;
                 currentScene.OnEntityRemoved -= OnEntityIsRemoved;
             }
+
             SetCurrentScene();
         }
 
@@ -216,6 +220,7 @@ namespace Builder
                         {
                             DCLCharacterController.i.transform.rotation = Quaternion.Euler(0f, yaw * Mathf.Rad2Deg, 0f);
                         }
+
                         if (cameraController)
                         {
                             var cameraRotation = new CameraController.SetRotationPayload()
@@ -303,6 +308,7 @@ namespace Builder
                     loadedScene = iterator.Current.Value;
                 }
             }
+
             return loadedScene;
         }
 
@@ -334,6 +340,7 @@ namespace Builder
             {
                 cameraController.gameObject.SetActive(false);
             }
+
             if (cursorController)
             {
                 cursorController.gameObject.SetActive(false);
@@ -366,20 +373,21 @@ namespace Builder
 
         private void OnEntityIsAdded(DecentralandEntity entity)
         {
-            if (!isPreviewMode)
-            {
-                var builderEntity = AddBuilderEntityComponent(entity);
-                OnEntityAdded?.Invoke(builderEntity);
+            if (isPreviewMode)
+                return;
 
-                entity.OnShapeUpdated += OnEntityShapeUpdated;
+            var builderEntity = AddBuilderEntityComponent(entity);
+            OnEntityAdded?.Invoke(builderEntity);
 
-                builderWebInterface.SendEntityStartLoad(entity);
-            }
+            entity.OnShapeUpdated += OnEntityShapeUpdated;
+
+            builderWebInterface.SendEntityStartLoad(entity);
         }
 
         private void OnEntityIsRemoved(DecentralandEntity entity)
         {
             var builderEntity = entity.gameObject.GetComponent<DCLBuilderEntity>();
+
             if (builderEntity != null)
             {
                 OnEntityRemoved?.Invoke(builderEntity);
@@ -408,6 +416,7 @@ namespace Builder
                 DCLBuilderEntity.OnEntityTransformUpdated += ProcessEntityBoundaries;
                 CommonScriptableObjects.rendererState.OnChange += OnRenderingStateChanged;
             }
+
             isGameObjectActive = true;
         }
 
@@ -432,6 +441,7 @@ namespace Builder
             {
                 NotifyGizmosTransformEvent(selectedEntities, DCLGizmos.Gizmo.NONE);
             }
+
             entitiesMoved = false;
         }
 
@@ -447,6 +457,7 @@ namespace Builder
             {
                 NotifyGizmosTransformEvent(selectedEntities, gizmoType);
             }
+
             entitiesMoved = false;
         }
 
@@ -533,6 +544,7 @@ namespace Builder
         private void SetCurrentScene()
         {
             currentScene = GetLoadedScene();
+
             if (currentScene)
             {
                 currentScene.OnEntityAdded += OnEntityIsAdded;
@@ -541,6 +553,16 @@ namespace Builder
                 OnSceneChanged?.Invoke(currentScene);
             }
         }
+
+        private void OnDestroy()
+        {
+            if (currentScene)
+            {
+                currentScene.OnEntityAdded -= OnEntityIsAdded;
+                currentScene.OnEntityRemoved -= OnEntityIsRemoved;
+            }
+        }
+
 
         private DCLBuilderEntity AddBuilderEntityComponent(DecentralandEntity entity)
         {

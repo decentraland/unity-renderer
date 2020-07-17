@@ -18,10 +18,7 @@ namespace DCL.Models
 
             public GameObject meshRootGameObject
             {
-                get
-                {
-                    return meshRootGameObjectValue;
-                }
+                get { return meshRootGameObjectValue; }
                 set
                 {
                     meshRootGameObjectValue = value;
@@ -39,6 +36,7 @@ namespace DCL.Models
             Vector3 lastBoundsCalculationScale;
             Quaternion lastBoundsCalculationRotation;
             Bounds mergedBoundsValue;
+
             public Bounds mergedBounds
             {
                 get
@@ -54,10 +52,7 @@ namespace DCL.Models
 
                     return mergedBoundsValue;
                 }
-                set
-                {
-                    mergedBoundsValue = value;
-                }
+                set { mergedBoundsValue = value; }
             }
 
             GameObject meshRootGameObjectValue;
@@ -198,15 +193,30 @@ namespace DCL.Models
             }
         }
 
+        public void ResetRelease()
+        {
+            isReleased = false;
+        }
+
         public void Cleanup()
         {
-            // Dont't do anything if this object was already released
+            // Don't do anything if this object was already released
             if (isReleased) return;
 
             OnRemoved?.Invoke(this);
 
             // This will release the poolable objects of the mesh and the entity
             OnCleanupEvent?.Invoke(this);
+
+            foreach (var kvp in components)
+            {
+                if (kvp.Value == null || kvp.Value.poolableObject == null)
+                    continue;
+
+                kvp.Value.poolableObject.Release();
+            }
+
+            components.Clear();
 
             if (meshesInfo.meshRootGameObject)
             {
@@ -223,8 +233,12 @@ namespace DCL.Models
                 {
                     Utils.SafeDestroy(gameObject.transform.GetChild(i).gameObject);
                 }
+
+                //NOTE(Brian): This will prevent any component from storing/querying invalid gameObject references.
+                gameObject = null;
             }
 
+            OnTransformChange = null;
             isReleased = true;
         }
 

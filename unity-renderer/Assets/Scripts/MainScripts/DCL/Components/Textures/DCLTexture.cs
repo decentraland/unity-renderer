@@ -39,10 +39,7 @@ namespace DCL
         public static IEnumerator FetchFromComponent(ParcelScene scene, string componentId,
             System.Action<Texture2D> OnFinish)
         {
-            yield return FetchTextureComponent(scene, componentId, (dclTexture) =>
-            {
-                OnFinish?.Invoke(dclTexture.texture);
-            });
+            yield return FetchTextureComponent(scene, componentId, (dclTexture) => { OnFinish?.Invoke(dclTexture.texture); });
         }
 
         public static IEnumerator FetchTextureComponent(ParcelScene scene, string componentId,
@@ -51,7 +48,6 @@ namespace DCL
             if (!scene.disposableComponents.ContainsKey(componentId))
             {
                 Debug.Log($"couldn't fetch texture, the DCLTexture component with id {componentId} doesn't exist");
-
                 yield break;
             }
 
@@ -59,7 +55,6 @@ namespace DCL
             if (textureComponent == null)
             {
                 Debug.Log($"couldn't fetch texture, the shared component with id {componentId} is NOT a DCLTexture");
-
                 yield break;
             }
 
@@ -160,12 +155,29 @@ namespace DCL
             }
         }
 
-        public virtual void AttachTo(PBRMaterial material) { }
-        public virtual void AttachTo(BasicMaterial material) { }
-        public virtual void AttachTo(UIImage image) { }
-        public virtual void DetachFrom(PBRMaterial material) { }
-        public virtual void DetachFrom(BasicMaterial material) { }
-        public virtual void DetachFrom(UIImage image) { }
+        public virtual void AttachTo(PBRMaterial material)
+        {
+        }
+
+        public virtual void AttachTo(BasicMaterial material)
+        {
+        }
+
+        public virtual void AttachTo(UIImage image)
+        {
+        }
+
+        public virtual void DetachFrom(PBRMaterial material)
+        {
+        }
+
+        public virtual void DetachFrom(BasicMaterial material)
+        {
+        }
+
+        public virtual void DetachFrom(UIImage image)
+        {
+        }
 
         public override void Dispose()
         {

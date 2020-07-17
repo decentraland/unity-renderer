@@ -4,7 +4,7 @@ using UnityEngine;
 namespace DCL
 {
     [RequireComponent(typeof(AvatarShape))]
-    public class AvatarMovementController : MonoBehaviour
+    public class AvatarMovementController : MonoBehaviour, IPoolLifecycleHandler
     {
         const float SPEED_SLOW = 2.0f;
         const float SPEED_FAST = 4.0f;
@@ -26,13 +26,9 @@ namespace DCL
 
         Transform avatarTransformValue;
 
-        bool isInitialPosition = true;
         Vector3 currentPosition
         {
-            get
-            {
-                return currentWorldPosition;
-            }
+            get { return currentWorldPosition; }
 
             set
             {
@@ -42,6 +38,7 @@ namespace DCL
         }
 
         Vector3 currentWorldPosition = Vector3.zero;
+
         Quaternion currentRotation
         {
             get { return avatarTransform.rotation; }
@@ -53,16 +50,15 @@ namespace DCL
 
         float movementSpeed = SPEED_SLOW;
 
-        private void Start()
+        public void OnPoolGet()
         {
-            //HACK: this hack will be removed when we add a TransformLerped component
-            //This fixes the edge case on initialization when Transform component is called before AvatarShape
-            //and hack in ParcelScene.EntityComponentCreate wont work
-            MoveTo(
-                avatarTransform.localPosition - Vector3.up * DCLCharacterController.i.characterController.height / 2, // To fix the "always flying" avatars bug, We report the chara's centered position but the body hast its pivot at its feet
-                avatarTransform.transform.localRotation);
         }
 
+        public void OnPoolRelease()
+        {
+            avatarTransformValue = null;
+            currentWorldPosition = Vector3.zero;
+        }
 
         void OnEnable()
         {
@@ -83,19 +79,17 @@ namespace DCL
 
         public void OnTransformChanged(DCLTransform.Model model)
         {
-            MoveTo(	
-                model.position - Vector3.up * DCLCharacterController.i.characterController.height / 2, // To fix the "always flying" avatars bug, We report the chara's centered position but the body hast its pivot at its feet	
+            MoveTo(
+                model.position - Vector3.up * DCLCharacterController.i.characterController.height / 2, // To fix the "always flying" avatars bug, We report the chara's centered position but the body hast its pivot at its feet
                 model.rotation);
         }
 
-        public void MoveTo(Vector3 position, Quaternion rotation)
+        public void MoveTo(Vector3 position, Quaternion rotation, bool immediate = false)
         {
-            // Edge case on first initialization
-            if (isInitialPosition)
+            if (immediate)
             {
                 currentPosition = position;
                 avatarTransform.rotation = rotation;
-                isInitialPosition = false;
             }
 
             Vector3 flatEulerRotation = rotation.eulerAngles;
@@ -146,7 +140,7 @@ namespace DCL
             flattenedDiff.y = 0;
 
             //NOTE(Brian): Avoid Unity error when computing look rotation for 0 magnitude vectors.
-            //             Note that this isn't the same as the previous distance check because this 
+            //             Note that this isn't the same as the previous distance check because this
             //             is computed with a flattened vector.
             if (flattenedDiff != Vector3.zero)
             {
@@ -155,7 +149,7 @@ namespace DCL
             }
 
             Vector3 direction = (targetPosition - currentPosition).normalized;
-            Vector3 delta = direction * movementSpeed * deltaTime;
+            Vector3 delta = direction * (movementSpeed * deltaTime);
 
             //NOTE(Brian): We need a separate value for Y movement because the gravity has to be lerped faster.
             delta.y = direction.y * SPEED_GRAVITY * deltaTime;
@@ -171,6 +165,8 @@ namespace DCL
 
         void Update()
         {
+            if (avatarTransformValue == null) return;
+
             UpdateLerp(Time.deltaTime);
         }
     }

@@ -14,8 +14,6 @@ namespace DCL.Components
         void UpdateFromJSON(string json);
         IEnumerator ApplyChanges(string newJson);
         void RaiseOnAppliedChanges();
-
-        MonoBehaviour GetCoroutineOwner();
         ComponentUpdateHandler CreateUpdateHandler();
     }
 
@@ -26,6 +24,7 @@ namespace DCL.Components
     public class WaitForComponentUpdate : CleanableYieldInstruction
     {
         public IComponent component;
+
         public WaitForComponentUpdate(IComponent component)
         {
             this.component = component;
@@ -33,26 +32,25 @@ namespace DCL.Components
 
         public override bool keepWaiting
         {
-            get
-            {
-                return component.isRoutineRunning;
-            }
+            get { return component.isRoutineRunning; }
         }
+
         public override void Cleanup()
         {
             component.Cleanup();
         }
     }
 
-    public abstract class BaseComponent : MonoBehaviour, IComponent
+    public abstract class BaseComponent : MonoBehaviour, IComponent, IPoolLifecycleHandler
     {
-        ComponentUpdateHandler updateHandler;
+        protected ComponentUpdateHandler updateHandler;
         public WaitForComponentUpdate yieldInstruction => updateHandler.yieldInstruction;
         public Coroutine routine => updateHandler.routine;
         public bool isRoutineRunning => updateHandler.isRoutineRunning;
 
         [NonSerialized] public ParcelScene scene;
         [NonSerialized] public DecentralandEntity entity;
+        [NonSerialized] public PoolableObject poolableObject;
 
         public string componentName => "BaseComponent";
 
@@ -75,22 +73,25 @@ namespace DCL.Components
 
         public abstract IEnumerator ApplyChanges(string newJson);
 
-        public MonoBehaviour GetCoroutineOwner()
-        {
-            return this;
-        }
-
         public virtual ComponentUpdateHandler CreateUpdateHandler()
         {
             return new ComponentUpdateHandler(this);
         }
 
-        public void Cleanup()
+        public virtual void Cleanup()
         {
-            if (isRoutineRunning)
-            {
-                GetCoroutineOwner().StopCoroutine(routine);
-            }
+            updateHandler.Cleanup();
+        }
+
+        public virtual void OnPoolRelease()
+        {
+            Cleanup();
+        }
+
+        public virtual void OnPoolGet()
+        {
+            if (updateHandler == null)
+                updateHandler = CreateUpdateHandler();
         }
     }
 }

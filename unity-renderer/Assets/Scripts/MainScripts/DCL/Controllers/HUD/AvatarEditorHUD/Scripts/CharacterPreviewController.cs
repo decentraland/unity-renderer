@@ -20,6 +20,7 @@ public class CharacterPreviewController : MonoBehaviour
     private const int SUPERSAMPLING = 1;
     private const float CAMERA_TRANSITION_TIME = 0.5f;
     private static int CHARACTER_PREVIEW_LAYER => LayerMask.NameToLayer("CharacterPreview");
+    private static int CHARACTER_DEFAULT_LAYER => LayerMask.NameToLayer("Default");
 
     public delegate void OnSnapshotsReady(Sprite face, Sprite face128, Sprite face256, Sprite body);
 
@@ -42,30 +43,41 @@ public class CharacterPreviewController : MonoBehaviour
     public Transform faceSnapshotTemplate;
     public Transform bodySnapshotTemplate;
 
+    private Coroutine updateModelRoutine;
+
     private void Awake()
     {
         cameraFocusLookUp = new System.Collections.Generic.Dictionary<CameraFocus, Transform>()
         {
-            { CameraFocus.DefaultEditing, defaultEditingTemplate },
-            { CameraFocus.FaceEditing, faceEditingTemplate },
-            { CameraFocus.FaceSnapshot, faceSnapshotTemplate },
-            { CameraFocus.BodySnapshot, bodySnapshotTemplate },
+            {CameraFocus.DefaultEditing, defaultEditingTemplate},
+            {CameraFocus.FaceEditing, faceEditingTemplate},
+            {CameraFocus.FaceSnapshot, faceSnapshotTemplate},
+            {CameraFocus.BodySnapshot, bodySnapshotTemplate},
         };
     }
 
     public void UpdateModel(AvatarModel newModel, Action onDone)
     {
-        CoroutineStarter.Start(UpdateModelRoutine(newModel, onDone));
+        updateModelRoutine = CoroutineStarter.Start(UpdateModelRoutine(newModel, onDone));
+    }
+
+    private void OnDestroy()
+    {
+        CoroutineStarter.Stop(updateModelRoutine);
     }
 
     private IEnumerator UpdateModelRoutine(AvatarModel newModel, Action onDone)
     {
         bool avatarDone = false;
         bool avatarFailed = false;
+
+        ResetRenderersLayer();
+
         avatarRenderer.ApplyModel(newModel, () => avatarDone = true, () => avatarFailed = true);
+
         yield return new DCL.WaitUntil(() => avatarDone || avatarFailed);
 
-        if (avatarDone)
+        if (avatarDone && avatarRenderer != null)
         {
             SetLayerRecursively(avatarRenderer.gameObject, CHARACTER_PREVIEW_LAYER);
         }
@@ -80,6 +92,11 @@ public class CharacterPreviewController : MonoBehaviour
         {
             SetLayerRecursively(child.gameObject, layer);
         }
+    }
+
+    public void ResetRenderersLayer()
+    {
+        SetLayerRecursively(avatarRenderer.gameObject, CHARACTER_DEFAULT_LAYER);
     }
 
     public void TakeSnapshots(OnSnapshotsReady callback)

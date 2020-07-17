@@ -27,7 +27,7 @@ public static class AvatarUtils
                 r.transform.parent.name.ToLower().Contains("feet")
                 || r.transform.parent.name.ToLower().Contains("lbody")
                 || r.transform.parent.name.ToLower().Contains("ubody")
-                )
+            )
             {
                 r.gameObject.SetActive(false);
             }
@@ -39,8 +39,8 @@ public static class AvatarUtils
     /// This means each material will be replaced with the function return value.
     /// </summary>
     public static void MapSharedMaterialsRecursively(Transform transformRoot,
-                                                     Func<Material, Material> mapFunction,
-                                                     string materialsContainingThisName = null)
+        Func<Material, Material> mapFunction,
+        string materialsContainingThisName = null)
     {
         Renderer[] renderers = transformRoot.GetComponentsInChildren<Renderer>();
 
@@ -77,9 +77,9 @@ public static class AvatarUtils
     /// <param name="materialsContainingThisName">name to filter in materials</param>
     /// <param name="colorToChange">color to change in the renderers</param>
     public static void SetColorInHierarchy(Transform transformRoot,
-                                           string materialsContainingThisName,
-                                           Color colorToChange,
-                                           string shaderId = "_BaseColor")
+        string materialsContainingThisName,
+        Color colorToChange,
+        string shaderId = "_BaseColor")
     {
         Renderer[] renderers = transformRoot.GetComponentsInChildren<Renderer>();
 
@@ -103,15 +103,12 @@ public static class AvatarUtils
     /// <param name="replaceThemWith">material to replace them</param>
     /// <param name="materialsContainingThisName">name to filter in materials</param>
     public static void ReplaceMaterialsWithName(Transform transformRoot,
-                                                Material replaceThemWith,
-                                                string materialsContainingThisName = null)
+        Material replaceThemWith,
+        string materialsContainingThisName = null)
     {
         MapSharedMaterialsRecursively(
             transformRoot,
-            (mat) =>
-            {
-                return replaceThemWith;
-            },
+            (mat) => { return replaceThemWith; },
             materialsContainingThisName);
     }
 
@@ -124,8 +121,8 @@ public static class AvatarUtils
     /// <param name="replaceThemWith">material to replace them</param>
     /// <param name="materialsContainingThisName">name to filter in materials</param>
     public static List<Material> ReplaceMaterialsWithCopiesOf(Transform transformRoot,
-                                                    Material replaceThemWith,
-                                                    string materialsContainingThisName = null)
+        Material replaceThemWith,
+        string materialsContainingThisName = null)
     {
         List<Material> result = new List<Material>();
 

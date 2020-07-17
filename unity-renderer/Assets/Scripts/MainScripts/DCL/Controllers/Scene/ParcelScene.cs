@@ -55,6 +55,7 @@ namespace DCL.Controllers
         bool isReleased = false;
 
         State stateValue = State.NOT_READY;
+
         public State state
         {
             get { return stateValue; }
@@ -64,6 +65,8 @@ namespace DCL.Controllers
                 OnStateRefreshed?.Invoke(this);
             }
         }
+
+        private CreateEntityMessage tmpCreateEntityMessage = new CreateEntityMessage();
 
         public void Awake()
         {
@@ -318,9 +321,6 @@ namespace DCL.Controllers
             return false;
         }
 
-        private CreateEntityMessage tmpCreateEntityMessage = new CreateEntityMessage();
-        private const string EMPTY_GO_POOL_NAME = "Empty";
-
         public DecentralandEntity CreateEntity(string id)
         {
             SceneController.i.OnMessageDecodeStart?.Invoke("CreateEntity");
@@ -335,16 +335,12 @@ namespace DCL.Controllers
             var newEntity = new DecentralandEntity();
             newEntity.entityId = tmpCreateEntityMessage.id;
 
-            if (!PoolManager.i.ContainsPool(EMPTY_GO_POOL_NAME))
-            {
-                GameObject go = new GameObject();
-                Pool pool = PoolManager.i.AddPool(EMPTY_GO_POOL_NAME, go, maxPrewarmCount: 2000, isPersistent: true);
-                pool.ForcePrewarm();
-            }
+            SceneController.i.EnsureEntityPool();
 
             // As we know that the pool already exists, we just get one gameobject from it
-            PoolableObject po = PoolManager.i.Get(EMPTY_GO_POOL_NAME);
+            PoolableObject po = PoolManager.i.Get(SceneController.EMPTY_GO_POOL_NAME);
             newEntity.gameObject = po.gameObject;
+
             newEntity.gameObject.name = "ENTITY_" + tmpCreateEntityMessage.id;
             newEntity.gameObject.transform.SetParent(gameObject.transform, false);
             newEntity.gameObject.SetActive(true);
@@ -549,6 +545,9 @@ namespace DCL.Controllers
             if (classId == CLASS_ID_COMPONENT.TRANSFORM)
             {
                 MessageDecoder.DecodeTransform(data, ref DCLTransform.model);
+
+                if (!entity.components.ContainsKey(classId))
+                    entity.components.Add(classId, null);
 
                 if (entity.OnTransformChange != null)
                 {

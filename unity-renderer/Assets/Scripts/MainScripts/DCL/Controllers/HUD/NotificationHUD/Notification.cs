@@ -19,14 +19,11 @@ public class Notification : MonoBehaviour
         public bool destroyOnFinish = false;
     }
 
-    [SerializeField]
-    internal TextMeshProUGUI messageLabel;
+    [SerializeField] internal TextMeshProUGUI messageLabel;
 
-    [SerializeField]
-    private Button actionButton;
+    [SerializeField] private Button actionButton;
 
-    [SerializeField]
-    private TextMeshProUGUI actionButtonLabel;
+    [SerializeField] private TextMeshProUGUI actionButtonLabel;
 
     public Notification.Model model { get; private set; } = new Model();
 
@@ -76,8 +73,6 @@ public class Notification : MonoBehaviour
         }
 
         this.model = model;
-
-        Debug.Log("Notification Initialize... destroy on finish: " + model.destroyOnFinish);
 
         if (!string.IsNullOrEmpty(this.model.message))
         {

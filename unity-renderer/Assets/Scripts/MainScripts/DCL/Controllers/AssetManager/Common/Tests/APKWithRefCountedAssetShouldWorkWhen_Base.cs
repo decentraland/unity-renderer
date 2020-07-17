@@ -88,11 +88,7 @@ namespace AssetPromiseKeeper_Tests
 
 
             prom.OnSuccessEvent +=
-                (x) =>
-                {
-                    Debug.Log("success!");
-                    loadedAsset = x;
-                };
+                (x) => { loadedAsset = x; };
 
             keeper.Keep(prom);
 
@@ -101,7 +97,6 @@ namespace AssetPromiseKeeper_Tests
             yield return prom;
 
             Assert.IsTrue(loadedAsset != null);
-            //Assert.IsTrue(loadedAsset.isLoaded);
             Assert.IsTrue(keeper.library.Contains(loadedAsset));
             Assert.AreEqual(1, keeper.library.masterAssets.Count);
 
