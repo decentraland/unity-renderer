@@ -37,10 +37,9 @@ namespace DCL
         };
 
         private double totalHiccupCount;
-        private double hiccupsPerMinute;
-        private double hiccupsPerMinuteMax;
+        private double hiccupsRatio;
+        private double hiccupsRatioMax;
 
-        private double fastFramesCount;
         private double totalFramesCount;
 
         private double avgHiccupPeak;
@@ -54,14 +53,17 @@ namespace DCL
 
             float dt = Time.unscaledDeltaTime;
 
+            totalFramesCount++;
+
             if (dt > HICCUP_THRESHOLD)
             {
                 totalHiccupCount++;
                 avgHiccupPeak += dt;
             }
 
-            hiccupsPerMinute = totalHiccupCount / (Time.realtimeSinceStartup / 60.0f);
-            hiccupsPerMinuteMax = Math.Max(hiccupsPerMinuteMax, hiccupsPerMinute);
+            float hiccupFrameScale = Mathf.Min(1000.0f, (float) totalFramesCount);
+            hiccupsRatio = (totalHiccupCount / totalFramesCount) * hiccupFrameScale;
+            hiccupsRatioMax = Math.Max(hiccupsRatioMax, hiccupsRatio);
 
             deltas[end++] = dt;
             if (end == 1000) end = 0;
@@ -74,25 +76,19 @@ namespace DCL
             }
 
             float fps = end > begin ? end - begin : 1000 + end - begin;
-
-            if (dt < 0.033f)
-            {
-                fastFramesCount++;
-            }
-
-            totalFramesCount++;
+            double fastFramesCount = totalFramesCount - totalHiccupCount;
 
             string fpsFormatted = fps.ToString("##");
             string msFormatted = (dt * 1000).ToString("##");
 
-            string hpsMaxFormatted = hiccupsPerMinuteMax.ToString("##.00", NumberFormatInfo.InvariantInfo);
+            string hiccupRateFormatted = hiccupsRatio.ToString("##.00", NumberFormatInfo.InvariantInfo);
             string fps30percentileFormatted = ((fastFramesCount / totalFramesCount) * 100).ToString("##");
             string avgHiccupPeakFormatted = ((avgHiccupPeak / totalHiccupCount) * 1000).ToString("##");
 
             string targetText = string.Empty;
 
             targetText += $"Avg hiccup ms: {avgHiccupPeakFormatted} ms\n";
-            targetText += $"Max hiccup count p/m: {hpsMaxFormatted}\n";
+            targetText += $"Hiccup rate: {hiccupRateFormatted} per {hiccupFrameScale} frames\n";
             targetText += $"30 fps percentile: {fps30percentileFormatted}%\n";
             targetText += $"Current {msFormatted} ms (fps: {fpsFormatted})";
 
