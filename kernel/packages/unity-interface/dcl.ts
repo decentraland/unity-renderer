@@ -426,8 +426,9 @@ const browserInterface = {
     }
   },
 
-  ScenesLoadingFeedback(message: string) {
-    globalThis.globalStore.dispatch(updateStatusMessage(message))
+  ScenesLoadingFeedback(data: { message: string; loadPercentage: number }) {
+    const { message, loadPercentage } = data
+    globalThis.globalStore.dispatch(updateStatusMessage(message, loadPercentage))
   }
 }
 globalThis.browserInterface2 = browserInterface

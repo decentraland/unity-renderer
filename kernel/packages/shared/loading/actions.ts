@@ -27,5 +27,6 @@ export function globalSignalSceneFail(sceneId: string) {
 }
 
 export const UPDATE_STATUS_MESSAGE = 'Update status message'
-export const updateStatusMessage = (message: string) => action(UPDATE_STATUS_MESSAGE, message)
+export const updateStatusMessage = (message: string, loadPercentage: number) =>
+  action(UPDATE_STATUS_MESSAGE, { message, loadPercentage })
 export type UpdateStatusMessage = ReturnType<typeof updateStatusMessage>
