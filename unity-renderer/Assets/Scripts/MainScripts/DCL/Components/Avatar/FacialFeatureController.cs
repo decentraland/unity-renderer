@@ -6,34 +6,77 @@ using DCL;
 
 public class FacialFeatureController
 {
-    public delegate void TexturesFetched(Texture texture, Texture mask);
+    public string id => wearable.id;
+    public string category => wearable.category;
+
+    public bool isReady { get; private set; }
 
     private string bodyShapeType;
-    WearableItem wearable;
+    public WearableItem wearable;
 
     Texture mainTexture = null;
     Texture maskTexture = null;
-    bool texturesRetreived = false;
     AssetPromise_Texture mainTexturePromise = null;
     AssetPromise_Texture maskTexturePromise = null;
-    TexturesFetched onTextureFetchedCallback;
 
-    public FacialFeatureController(WearableItem wearableItem, string bodyShapeType)
+    private Color color;
+    private BodyShapeController bodyShape;
+    private Material baseMaterial;
+    private Material baseMaterialCopy;
+
+    public FacialFeatureController(WearableItem wearableItem, string bodyShapeType, Material baseMaterial)
     {
+        isReady = false;
+        this.baseMaterial = baseMaterial;
         this.wearable = wearableItem;
         this.bodyShapeType = bodyShapeType;
-        texturesRetreived = false;
     }
 
-    public IEnumerator FetchTextures(TexturesFetched onTextureFetched)
+    public void Load(BodyShapeController loadedBody, Color color)
     {
-        onTextureFetchedCallback = onTextureFetched;
+        this.color = color;
 
-        if (texturesRetreived)
+        if (isReady)
         {
-            onTextureFetchedCallback?.Invoke(mainTexture, maskTexture);
-            yield break;
+            PrepareWearable();
+            return;
         }
+
+        this.bodyShape = loadedBody;
+        CoroutineStarter.Start(FetchTextures(PrepareWearable));
+    }
+
+    void PrepareWearable()
+    {
+        if (baseMaterialCopy == null)
+            baseMaterialCopy = new Material(baseMaterial);
+
+        switch (wearable.category)
+        {
+            case WearableLiterals.Categories.EYES:
+                bodyShape.SetupEyes(baseMaterialCopy, mainTexture, maskTexture, color);
+                break;
+            case WearableLiterals.Categories.EYEBROWS:
+                bodyShape.SetupEyebrows(baseMaterialCopy, mainTexture, color);
+                break;
+            case WearableLiterals.Categories.MOUTH:
+                bodyShape.SetupMouth(baseMaterialCopy, mainTexture, color);
+                break;
+        }
+
+        isReady = true;
+    }
+
+    public IEnumerator FetchTextures(System.Action OnComplete)
+    {
+        if (mainTexturePromise != null)
+            AssetPromiseKeeper_Texture.i.Forget(mainTexturePromise);
+
+        if (maskTexturePromise != null)
+            AssetPromiseKeeper_Texture.i.Forget(maskTexturePromise);
+
+        mainTexture = null;
+        maskTexture = null;
 
         var representation = wearable.GetRepresentation(bodyShapeType);
 
@@ -42,40 +85,38 @@ public class FacialFeatureController
 
         if (!string.IsNullOrEmpty(mainTextureName))
         {
-            if (mainTexturePromise != null)
-                AssetPromiseKeeper_Texture.i.Forget(mainTexturePromise);
-
             mainTexturePromise = new AssetPromise_Texture(wearable.baseUrl + mainTextureName);
             mainTexturePromise.OnSuccessEvent += (x) => mainTexture = x.texture;
             mainTexturePromise.OnFailEvent += (x) => mainTexture = null;
 
             AssetPromiseKeeper_Texture.i.Keep(mainTexturePromise);
-            yield return mainTexturePromise;
         }
 
         if (!string.IsNullOrEmpty(maskName))
         {
-            if (maskTexturePromise != null)
-                AssetPromiseKeeper_Texture.i.Forget(maskTexturePromise);
-
             maskTexturePromise = new AssetPromise_Texture(wearable.baseUrl + maskName);
             maskTexturePromise.OnSuccessEvent += (x) => maskTexture = x.texture;
             maskTexturePromise.OnFailEvent += (x) => maskTexture = null;
 
             AssetPromiseKeeper_Texture.i.Keep(maskTexturePromise);
-            yield return maskTexturePromise;
         }
 
-        texturesRetreived = true;
-        onTextureFetchedCallback?.Invoke(mainTexture, maskTexture);
+        yield return mainTexturePromise;
+        yield return maskTexturePromise;
+
+        OnComplete?.Invoke();
     }
 
-    void OnDestroy()
+    public void CleanUp()
     {
         if (mainTexturePromise != null)
             AssetPromiseKeeper_Texture.i.Forget(mainTexturePromise);
 
         if (maskTexturePromise != null)
             AssetPromiseKeeper_Texture.i.Forget(maskTexturePromise);
+
+        Object.Destroy(baseMaterialCopy);
+
+        isReady = false;
     }
 }

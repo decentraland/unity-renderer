@@ -38,13 +38,16 @@ namespace DCL
 
             yield return Utils.FetchTexture(url, (x) => result = x);
 
-            result.filterMode = FilterMode.Trilinear;
-            result.wrapMode = TextureWrapMode.Clamp;
-            result.anisoLevel = 16;
+            if (result != null)
+            {
+                result.filterMode = FilterMode.Trilinear;
+                result.wrapMode = TextureWrapMode.Clamp;
+                result.anisoLevel = 16;
 
-            targetImage.texture = result;
-            targetImage.SetNativeSize();
-            targetImage.color = Color.white;
+                targetImage.texture = result;
+                targetImage.SetNativeSize();
+                targetImage.color = Color.white;
+            }
 
             loadCoroutine = null;
         }

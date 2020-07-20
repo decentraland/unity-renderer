@@ -70,7 +70,6 @@ namespace DCL
                     }
                     else
                     {
-                        Debug.Log($"Texture AssetPromise {url} cancelled while downloading asset!");
                         OnFail?.Invoke();
                     }
                 }, (errorMessage) => OnFail?.Invoke());
@@ -111,7 +110,7 @@ namespace DCL
 
         string ConstructId(string textureUrl, TextureWrapMode textureWrapMode, FilterMode textureFilterMode)
         {
-            return ((int)textureWrapMode).ToString() + ((int)textureFilterMode).ToString() + textureUrl;
+            return ((int) textureWrapMode).ToString() + ((int) textureFilterMode).ToString() + textureUrl;
         }
 
         internal override object GetId()

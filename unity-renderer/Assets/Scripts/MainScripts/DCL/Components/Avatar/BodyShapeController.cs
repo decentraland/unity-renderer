@@ -35,8 +35,8 @@ public class BodyShapeController : WearableController
             (mat) =>
             {
                 material.SetTexture(AvatarUtils._EyesTexture, texture);
+                material.SetTexture(AvatarUtils._IrisMask, mask);
                 material.SetColor(AvatarUtils._EyeTint, color);
-
                 return material;
             },
             "eyes");
@@ -66,13 +66,12 @@ public class BodyShapeController : WearableController
 
                 //NOTE(Brian): This isn't an error, we must also apply skin color to this mat
                 material.SetColor(AvatarUtils._BaseColor, color);
-
                 return material;
             },
             "mouth");
     }
 
-    private Animation PrepareAnimation()
+    private Animation PrepareAnimation(GameObject container)
     {
         Animation createdAnimation = null;
 
@@ -87,7 +86,7 @@ public class BodyShapeController : WearableController
 
                 return true;
             },
-            assetContainer.transform);
+            container.transform);
 
         createdAnimation.cullingType = AnimationCullingType.BasedOnRenderers;
         return createdAnimation;
@@ -95,10 +94,9 @@ public class BodyShapeController : WearableController
 
     protected override void PrepareWearable(GameObject assetContainer)
     {
-        assetRenderers = assetContainer.GetComponentsInChildren<Renderer>();
-
         skinnedMeshRenderer = assetContainer.GetComponentInChildren<SkinnedMeshRenderer>();
-        var animation = PrepareAnimation();
+
+        var animation = PrepareAnimation(assetContainer);
         var animator = animationTarget.GetComponent<AvatarAnimatorLegacy>();
         animator.BindBodyShape(animation, bodyShapeId, animationTarget);
     }

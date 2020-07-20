@@ -69,8 +69,9 @@ public class WearableController
 
         loader.OnSuccessEvent += (x) =>
         {
-            PrepareWearable(x);
+            assetRenderers = x.GetComponentsInChildren<Renderer>();
             UpdateVisibility();
+            PrepareWearable(x);
             onSuccess.Invoke(this);
         };
 
@@ -166,7 +167,6 @@ public class WearableController
 
     protected virtual void PrepareWearable(GameObject assetContainer)
     {
-        assetRenderers = assetContainer.GetComponentsInChildren<Renderer>();
     }
 
     public virtual void UpdateVisibility()
