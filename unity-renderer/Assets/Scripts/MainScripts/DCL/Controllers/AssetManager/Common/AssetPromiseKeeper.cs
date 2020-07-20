@@ -42,7 +42,7 @@ namespace DCL
         public AssetLibraryType library;
 
         //NOTE(Brian): All waiting promises. Only used for cleanup and to keep count.
-        List<AssetPromiseType> waitingPromises = new List<AssetPromiseType>(100);
+        HashSet<AssetPromiseType> waitingPromises = new HashSet<AssetPromiseType>();
         public int waitingPromisesCount => waitingPromises.Count;
 
 
@@ -50,7 +50,7 @@ namespace DCL
         Dictionary<object, AssetPromiseType> masterPromiseById = new Dictionary<object, AssetPromiseType>(100);
 
         //NOTE(Brian): List of promises waiting for assets that are currently being loaded by another promise.
-        List<AssetPromiseType> blockedPromises = new List<AssetPromiseType>(100);
+        HashSet<AssetPromiseType> blockedPromises = new HashSet<AssetPromiseType>();
 
         //NOTE(Brian): Master promise id -> blocked promises HashSet
         Dictionary<object, HashSet<AssetPromiseType>> masterToBlockedPromises = new Dictionary<object, HashSet<AssetPromiseType>>(100);
@@ -226,7 +226,7 @@ namespace DCL
             while (masterToBlockedPromises.ContainsKey(loadedPromiseId) &&
                    masterToBlockedPromises[loadedPromiseId].Count > 0)
             {
-                List<AssetPromiseType> blockedPromises = GetBlockedPromisesToLoadForId(loadedPromiseId);
+                List<AssetPromiseType> promisesToLoadForId = GetBlockedPromisesToLoadForId(loadedPromiseId);
 
                 var enumerator = SkipFrameIfOverBudget();
 
@@ -236,9 +236,9 @@ namespace DCL
                 CleanPromise(loadedPromise);
 
                 if (loadedPromise.state != AssetPromiseState.FINISHED)
-                    yield return ForceFailPromiseList(blockedPromises);
+                    yield return ForceFailPromiseList(promisesToLoadForId);
                 else
-                    yield return LoadPromisesList(blockedPromises);
+                    yield return LoadPromisesList(promisesToLoadForId);
 
                 enumerator = SkipFrameIfOverBudget();
 
@@ -333,7 +333,6 @@ namespace DCL
                 }
             }
 
-
             if (masterPromiseById.ContainsKey(id) && masterPromiseById[id] == promise)
             {
                 masterPromiseById.Remove(id);
@@ -348,14 +347,13 @@ namespace DCL
 
         public void Cleanup()
         {
-            blockedPromises = new List<AssetPromiseType>();
+            blockedPromises = new HashSet<AssetPromiseType>();
             masterToBlockedPromises = new Dictionary<object, HashSet<AssetPromiseType>>();
 
-            int waitingPromisesCount = waitingPromises.Count;
-
-            for (int i = 0; i < waitingPromisesCount; i++)
+            using (var e = waitingPromises.GetEnumerator())
             {
-                waitingPromises[i].Cleanup();
+                while (e.MoveNext())
+                    e.Current?.Cleanup();
             }
 
             foreach (var kvp in masterPromiseById)
@@ -364,7 +362,7 @@ namespace DCL
             }
 
             masterPromiseById = new Dictionary<object, AssetPromiseType>();
-            waitingPromises = new List<AssetPromiseType>();
+            waitingPromises = new HashSet<AssetPromiseType>();
             library.Cleanup();
         }
 
