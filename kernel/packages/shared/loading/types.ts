@@ -163,3 +163,11 @@ export const ExecutionLifecycleEventsList: ExecutionLifecycleEvent[] = [
   NEW_LOGIN,
   NETWORK_MISMATCH
 ]
+
+export const SUBSYSTEMS_EVENTS = [
+  NOT_STARTED,
+  LOADING_STARTED,
+  AUTH_SUCCESSFUL,
+  UNITY_CLIENT_LOADED,
+  WAITING_FOR_RENDERER
+]

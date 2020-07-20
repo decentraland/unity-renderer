@@ -1,12 +1,14 @@
 import { AnyAction } from 'redux'
 import { SCENE_FAIL, SCENE_LOAD, SCENE_START, UPDATE_STATUS_MESSAGE } from './actions'
 import {
+  EXPERIENCE_STARTED,
   ExecutionLifecycleEvent,
   ExecutionLifecycleEventsList,
   loadingTips,
   NOT_STARTED,
   ROTATE_HELP_TEXT,
-  TELEPORT_TRIGGERED
+  TELEPORT_TRIGGERED,
+  SUBSYSTEMS_EVENTS
 } from './types'
 
 export type LoadingState = {
@@ -14,10 +16,22 @@ export type LoadingState = {
   helpText: number
   pendingScenes: number
   message: string
+  subsystemsLoad: number
+  loadPercentage: number
+  initialLoad: boolean
 }
+
 export function loadingReducer(state?: LoadingState, action?: AnyAction) {
   if (!state) {
-    return { status: NOT_STARTED, helpText: 0, pendingScenes: 0, message: '' }
+    return {
+      status: NOT_STARTED,
+      helpText: 0,
+      pendingScenes: 0,
+      message: '',
+      loadPercentage: 0,
+      subsystemsLoad: 0,
+      initialLoad: true
+    }
   }
   if (!action) {
     return state
@@ -32,7 +46,14 @@ export function loadingReducer(state?: LoadingState, action?: AnyAction) {
     return { ...state, pendingScenes: state.pendingScenes - 1 }
   }
   if (ExecutionLifecycleEventsList.includes(action.type)) {
-    return { ...state, status: action.type }
+    const newState = { ...state, status: action.type }
+    if (SUBSYSTEMS_EVENTS.includes(action.type)) {
+      newState.subsystemsLoad = state.subsystemsLoad + 100 / SUBSYSTEMS_EVENTS.length
+    }
+    if (EXPERIENCE_STARTED === action.type) {
+      newState.initialLoad = false
+    }
+    return newState
   }
   if (action.type === TELEPORT_TRIGGERED) {
     return { ...state, helpText: action.payload }
@@ -42,7 +63,7 @@ export function loadingReducer(state?: LoadingState, action?: AnyAction) {
     return { ...state, helpText: newValue >= loadingTips.length ? 0 : newValue }
   }
   if (action.type === UPDATE_STATUS_MESSAGE) {
-    return { ...state, message: action.payload }
+    return { ...state, message: action.payload.message, loadPercentage: action.payload.loadPercentage }
   }
   return state
 }

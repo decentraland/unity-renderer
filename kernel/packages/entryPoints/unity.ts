@@ -16,7 +16,7 @@ import { startUnityParcelLoading, unityInterface } from '../unity-interface/dcl'
 import { initializeUnity } from '../unity-interface/initializer'
 import { HUDElementID } from 'shared/types'
 import { identity } from 'shared'
-import { worldRunningObservable } from 'shared/world/worldState'
+import { worldRunningObservable, onNextWorldRunning } from 'shared/world/worldState'
 
 const container = document.getElementById('gameContainer')
 
@@ -55,6 +55,8 @@ initializeUnity(container)
 
     globalThis.globalStore.dispatch(signalRendererInitialized())
 
+    onNextWorldRunning(() => globalThis.globalStore.dispatch(experienceStarted()))
+
     await startUnityParcelLoading()
 
     globalThis.globalStore.dispatch(signalParcelLoadingStarted())
@@ -66,7 +68,6 @@ initializeUnity(container)
     _.instancedJS
       .then(() => {
         teleportObservable.notifyObservers(worldToGrid(lastPlayerPosition))
-        globalThis.globalStore.dispatch(experienceStarted())
       })
       .catch(defaultLogger.error)
 

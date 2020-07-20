@@ -118,19 +118,20 @@
       height: 100%;
       display: inline-flex;
       background: linear-gradient(270deg, #FC9965 4.62%, #FF5273 58.77%, #DE3959 100%);
-      animation: progress_30 10s forwards;
     }
 
     .progress.loaded {
       z-index: 9;
     }
 
-    .progress.loaded .full {
-      animation: progress_50 5s forwards;
+    .progress.ingame .full {
+      animation: none;
     }
 
-    .progress.ingame .full {
-      animation: progress_100 60s forwards;
+    #progress-bar-inner {
+      width: 0%;
+      transition: width 0.2s;
+      animation: none;
     }
 
     .hidden-error {
@@ -176,15 +177,6 @@
       }
     }
 
-    @keyframes progress_100 {
-      from {
-        width: 0%;
-      }
-
-      to {
-        width: 100%;
-      }
-    }
     body.dcl-loading #load-messages-wrapper {
       display: block;
     }
@@ -493,7 +485,7 @@
   <div id="overlay">
   </div>
   <div id="progress-bar" class="progress ingame">
-    <div class="full"></div>
+    <div id="progress-bar-inner" class="full"></div>
   </div>
   <div id="eth-login" class="login">
     <nav class="nav-bar">

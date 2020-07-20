@@ -81,9 +81,8 @@ export function* initialSceneLoading() {
     textInScreen: call(refreshTextInScreen),
     finish: call(function* () {
       yield take(EXPERIENCE_STARTED)
-      yield take('Loading scene')
-      yield call(waitForSceneLoads)
       yield call(hideLoadingTips)
+      yield call(cleanSubTextInScreen)
     })
   })
 }
@@ -121,17 +120,23 @@ export async function updateTextInScreen(status: LoadingState) {
     images.src = url
   }
   const subMessages = document.getElementById('subtext-messages')
-  if (subMessages) {
-    subMessages.innerText =
-      status.pendingScenes > 0
-        ? status.message || "Loading scenes..."
-        : status.status
+  const progressBar = document.getElementById('progress-bar-inner')
+  if (subMessages && progressBar) {
+    subMessages.innerText = status.pendingScenes > 0 ? status.message || 'Loading scenes...' : status.status
+    const actualPercentage = Math.floor(
+      Math.min(status.initialLoad ? (status.loadPercentage + status.subsystemsLoad) / 2 : status.loadPercentage, 100)
+    )
+    progressBar.style.cssText = `width: ${actualPercentage}%`
   }
 }
 
 function cleanSubTextInScreen() {
   const subMessages = document.getElementById('subtext-messages')
   if (subMessages) {
-    subMessages.innerText = "Loading scenes..."
+    subMessages.innerText = 'Loading scenes...'
+  }
+  const progressBar = document.getElementById('progress-bar-inner')
+  if (progressBar) {
+    progressBar.style.cssText = `width: 0%`
   }
 }
