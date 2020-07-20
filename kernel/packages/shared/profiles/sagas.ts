@@ -545,15 +545,17 @@ export async function calculateBufferHash(buffer: Buffer): Promise<string> {
   return new CID(0, 'dag-pb', hash).toBaseEncodedString()
 }
 
-async function buildSnapshotContent(selector: string, value: string): Promise<[string, ContentFile?]> {
+async function buildSnapshotContent(selector: string, value: string): Promise<[string, string, ContentFile?]> {
   let hash: string
   let contentFile: ContentFile | undefined
+
+  const name = `./${selector}.png`
 
   if (isResizeServiceUrl(globalThis.globalStore.getState(), value)) {
     // value is coming in a resize service url => generate image & upload content
     const blob = await fetch(value).then((r) => r.blob())
 
-    contentFile = await makeContentFile(`./${selector}.png`, blob)
+    contentFile = await makeContentFile(name, blob)
     hash = await calculateBufferHash(contentFile.content)
   } else if (value.includes('://')) {
     // value is already a URL => use existing hash
@@ -562,10 +564,11 @@ async function buildSnapshotContent(selector: string, value: string): Promise<[s
     // value is coming in base 64 => convert to blob & upload content
     const blob = base64ToBlob(value)
 
-    contentFile = await makeContentFile(`./${selector}.png`, blob)
+    contentFile = await makeContentFile(name, blob)
     hash = await calculateBufferHash(contentFile.content)
   }
-  return [hash, contentFile]
+
+  return [name, hash, contentFile]
 }
 
 export async function modifyAvatar(params: {
@@ -583,12 +586,14 @@ export async function modifyAvatar(params: {
   let files: ContentFile[] = []
 
   const snapshots = avatar.snapshots || (profile as any).snapshots
+  const content = new Map()
   if (snapshots) {
     const newSnapshots: Record<string, string> = {}
     for (const [selector, value] of Object.entries(snapshots)) {
-      const [hash, contentFile] = await buildSnapshotContent(selector, value as any)
+      const [name, hash, contentFile] = await buildSnapshotContent(selector, value as any)
 
       newSnapshots[selector] = hash
+      content.set(name, hash)
       contentFile && files.push(contentFile)
     }
     newAvatar.snapshots = newSnapshots as Avatar['snapshots']
@@ -600,7 +605,8 @@ export async function modifyAvatar(params: {
     {
       avatars: [newProfile]
     },
-    files
+    files,
+    content
   )
   return deploy(url, data)
 }
@@ -625,11 +631,9 @@ export async function buildDeployData(
   pointers: Pointer[],
   metadata: any,
   files: ContentFile[] = [],
+  content: Map<string, string>,
   afterEntity?: ControllerEntity
 ): Promise<[DeployData, ControllerEntity]> {
-  const hashes: Map<ContentFileHash, ContentFile> = await calculateHashes(files)
-  const content: Map<string, string> = new Map(Array.from(hashes.entries()).map(([hash, file]) => [file.name, hash]))
-
   const [entity, entityFile] = await buildControllerEntityAndFile(
     EntityType.PROFILE,
     pointers,
@@ -655,7 +659,7 @@ export async function hashAndSignMessage(message: string): Promise<AuthLink[]> {
 }
 
 export function createEthereumMessageHash(msg: string) {
-  let msgWithPrefix: string = `\x19Ethereum Signed Message:\n${msg.length}${msg}`
+  const msgWithPrefix: string = `\x19Ethereum Signed Message:\n${msg.length}${msg}`
   return sha3(msgWithPrefix)
 }
 
