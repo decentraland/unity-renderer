@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using DCL;
 using TMPro;
 using UnityEngine;
 using UnityEngine.EventSystems;
@@ -21,7 +22,8 @@ public class ItemToggle : UIButton, IPointerEnterHandler, IPointerExitHandler
     private bool selectedValue;
 
     private string loadedThumbnailURL;
-    
+    private AssetPromise_Texture loadedThumbnailPromise;
+
     //Todo change this for a confirmation popup or implement it in a more elegant way
     public static Func<WearableItem, List<WearableItem>> getEquippedWearablesReplacedByFunc;
 
@@ -44,7 +46,7 @@ public class ItemToggle : UIButton, IPointerEnterHandler, IPointerExitHandler
     protected new virtual void Awake()
     {
         base.Awake();
-
+        thumbnail.sprite = null;
         warningPanel.SetActive(false);
     }
 
@@ -56,13 +58,12 @@ public class ItemToggle : UIButton, IPointerEnterHandler, IPointerExitHandler
 
     public virtual void Initialize(WearableItem w, bool isSelected, int amount)
     {
-        ForgetThumbnail();
         wearableItem = w;
         selected = isSelected;
         amountContainer.gameObject.SetActive(amount > 1);
         amountText.text = $"x{amount.ToString()}";
 
-        if(gameObject.activeInHierarchy)
+        if (gameObject.activeInHierarchy)
             GetThumbnail();
     }
 
@@ -84,9 +85,12 @@ public class ItemToggle : UIButton, IPointerEnterHandler, IPointerExitHandler
         warningPanel.SetActive(false);
     }
 
-    private void OnThumbnailReady(Sprite sprite)
+    private void OnThumbnailReady(Asset_Texture texture)
     {
-        thumbnail.sprite = sprite;
+        if (thumbnail.sprite != null)
+            Destroy(thumbnail.sprite);
+
+        thumbnail.sprite = ThumbnailsManager.CreateSpriteFromTexture(texture.texture);
     }
 
     private void OnEnable()
@@ -99,7 +103,7 @@ public class ItemToggle : UIButton, IPointerEnterHandler, IPointerExitHandler
         ForgetThumbnail();
     }
 
-    protected  virtual void OnDestroy()
+    protected virtual void OnDestroy()
     {
         OnClicked = null;
     }
@@ -108,24 +112,28 @@ public class ItemToggle : UIButton, IPointerEnterHandler, IPointerExitHandler
     {
         OnSellClicked?.Invoke(this);
     }
-    
+
     private void GetThumbnail()
     {
         var url = wearableItem?.ComposeThumbnailUrl();
 
-        ForgetThumbnail();
+        if (url == loadedThumbnailURL)
+            return;
 
-        if (wearableItem != null && !string.IsNullOrEmpty(url))
-        {
-            loadedThumbnailURL = url;
-            ThumbnailsManager.GetThumbnail(url, OnThumbnailReady);
-        }
+        if (wearableItem == null || string.IsNullOrEmpty(url))
+            return;
+
+        string newLoadedThumbnailURL = url;
+        var newLoadedThumbnailPromise = ThumbnailsManager.GetThumbnail(url, OnThumbnailReady);
+        ThumbnailsManager.ForgetThumbnail(loadedThumbnailPromise);
+        loadedThumbnailPromise = newLoadedThumbnailPromise;
+        loadedThumbnailURL = newLoadedThumbnailURL;
     }
-    
+
     private void ForgetThumbnail()
     {
-        if(!string.IsNullOrEmpty(loadedThumbnailURL))
-            ThumbnailsManager.ForgetThumbnail(loadedThumbnailURL, OnThumbnailReady);
+        ThumbnailsManager.ForgetThumbnail(loadedThumbnailPromise);
         loadedThumbnailURL = null;
+        loadedThumbnailPromise = null;
     }
 }

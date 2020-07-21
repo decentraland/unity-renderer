@@ -2,6 +2,7 @@ using DCL.Helpers;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using DCL;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
@@ -27,11 +28,11 @@ public class NFTItemInfo : MonoBehaviour
         public bool Equals(Model other)
         {
             return name == other.name
-                && thumbnail == other.thumbnail
-                && iconIds.SequenceEqual(other.iconIds)
-                && description == other.description
-                && issuedId == other.issuedId
-                && issuedTotal == other.issuedTotal;
+                   && thumbnail == other.thumbnail
+                   && iconIds.SequenceEqual(other.iconIds)
+                   && description == other.description
+                   && issuedId == other.issuedId
+                   && issuedTotal == other.issuedTotal;
         }
 
         public static Model FromWearableItem(WearableItem wearable)
@@ -58,6 +59,7 @@ public class NFTItemInfo : MonoBehaviour
     [SerializeField] internal TextMeshProUGUI minted;
 
     private Model currentModel;
+    private AssetPromise_Texture thumbnailPromise;
 
     public void SetModel(Model newModel)
     {
@@ -66,8 +68,6 @@ public class NFTItemInfo : MonoBehaviour
 
         if (currentModel != null && newModel.Equals(currentModel))
             return;
-
-        ForgetThumbnail();
 
         currentModel = newModel;
 
@@ -92,7 +92,7 @@ public class NFTItemInfo : MonoBehaviour
             LayoutRebuilder.ForceRebuildLayoutImmediate(rt);
         }, transform);
 
-        if(gameObject.activeInHierarchy)
+        if (gameObject.activeInHierarchy)
             GetThumbnail();
     }
 
@@ -101,21 +101,31 @@ public class NFTItemInfo : MonoBehaviour
         gameObject.SetActive(active);
     }
 
-    private void UpdateItemThumbnail(Sprite sprite)
+    private void UpdateItemThumbnail(Asset_Texture texture)
     {
-        thumbnail.sprite = sprite;
+        if (thumbnail.sprite != null)
+        {
+            Destroy(thumbnail.sprite);
+        }
+
+        thumbnail.sprite = ThumbnailsManager.CreateSpriteFromTexture(texture.texture);
     }
 
     private void GetThumbnail()
     {
-        if(currentModel != null)
-            ThumbnailsManager.GetThumbnail(currentModel.thumbnail, UpdateItemThumbnail);
+        if (currentModel == null)
+            return;
+
+        //NOTE(Brian): Get before forget to prevent referenceCount == 0 and asset unload
+        var newThumbnailPromise = ThumbnailsManager.GetThumbnail(currentModel.thumbnail, UpdateItemThumbnail);
+        ThumbnailsManager.ForgetThumbnail(thumbnailPromise);
+        thumbnailPromise = newThumbnailPromise;
     }
-    
+
     private void ForgetThumbnail()
     {
-        if(currentModel != null)
-            ThumbnailsManager.ForgetThumbnail(currentModel.thumbnail, UpdateItemThumbnail);
+        ThumbnailsManager.ForgetThumbnail(thumbnailPromise);
+        thumbnailPromise = null;
     }
 
     private void OnEnable()

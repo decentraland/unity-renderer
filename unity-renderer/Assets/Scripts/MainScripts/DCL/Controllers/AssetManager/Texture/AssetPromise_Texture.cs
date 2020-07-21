@@ -90,7 +90,11 @@ namespace DCL
                     asset.id = idWithDefaultTexSettings;
                     asset.ConfigureTexture(DEFAULT_WRAP_MODE, DEFAULT_FILTER_MODE, false);
 
-                    library.Add(asset);
+                    if (!library.Add(asset))
+                    {
+                        Debug.Log("add to library fail?");
+                        return false;
+                    }
                 }
 
                 // By always using library.Get() for the default tex we have stored, we increase its references counter,
@@ -98,14 +102,20 @@ namespace DCL
                 var defaultTexAsset = library.Get(idWithDefaultTexSettings);
                 asset = defaultTexAsset.Clone() as Asset_Texture;
                 asset.dependencyAsset = defaultTexAsset;
-
-                asset.CopyTextureFrom(defaultTexAsset.texture);
+                asset.texture = TextureHelpers.CopyTexture(defaultTexAsset.texture);
             }
 
             asset.id = idWithTexSettings;
             asset.ConfigureTexture(wrapMode, filterMode);
 
-            return library.Add(asset);
+            if (!library.Add(asset))
+            {
+                Debug.Log("add to library fail?");
+                return false;
+            }
+
+            asset = library.Get(asset.id);
+            return true;
         }
 
         string ConstructId(string textureUrl, TextureWrapMode textureWrapMode, FilterMode textureFilterMode)

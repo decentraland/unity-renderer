@@ -17,13 +17,14 @@ public static class TextureHelpers
         if (texture.height > texture.width)
         {
             h = maxTextureSize;
-            w = (int)((texture.width / (float)texture.height) * h);
+            w = (int) ((texture.width / (float) texture.height) * h);
         }
         else
         {
             w = maxTextureSize;
-            h = (int)((texture.height / (float)texture.width) * w);
+            h = (int) ((texture.height / (float) texture.width) * w);
         }
+
         var newTexture = Resize(texture, w, h);
         var oldTexture = texture;
         texture = newTexture;
@@ -48,5 +49,12 @@ public static class TextureHelpers
         RenderTexture.active = null;
 
         return nTex;
+    }
+
+    public static Texture2D CopyTexture(Texture2D sourceTexture)
+    {
+        Texture2D texture = new Texture2D(sourceTexture.width, sourceTexture.height, sourceTexture.format, false);
+        Graphics.CopyTexture(sourceTexture, texture);
+        return texture;
     }
 }

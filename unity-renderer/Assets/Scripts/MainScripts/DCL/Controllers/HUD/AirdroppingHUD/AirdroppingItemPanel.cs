@@ -1,3 +1,4 @@
+using DCL;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
@@ -8,47 +9,55 @@ public class AirdroppingItemPanel : MonoBehaviour
     [SerializeField] internal TextMeshProUGUI subtitle;
     [SerializeField] internal Image thumbnail;
 
-    private string currentThumbnail;
+    private string currentThumbnailUrl;
+    private AssetPromise_Texture currentThumbnailPromise;
 
     public void SetData(string name, string subtitle, string thumbnailURL)
     {
-        if (currentThumbnail != null)
-            ThumbnailsManager.ForgetThumbnail(currentThumbnail, ThumbnailReady);
-
         this.name.text = name;
         this.name.gameObject.SetActive(!string.IsNullOrEmpty(this.name.text));
 
         this.subtitle.text = subtitle;
         this.subtitle.gameObject.SetActive(!string.IsNullOrEmpty(this.subtitle.text));
 
-        currentThumbnail = thumbnailURL;
+        currentThumbnailUrl = thumbnailURL;
+
         if (gameObject.activeInHierarchy)
             GetThumbnail();
     }
 
     private void OnEnable()
     {
-        if (currentThumbnail != null)
-        {
-            GetThumbnail();
-        }
+        GetThumbnail();
     }
 
     private void OnDisable()
     {
-        if (currentThumbnail != null)
-        {
-            ThumbnailsManager.ForgetThumbnail(currentThumbnail, ThumbnailReady);
-        }
+        ForgetThumbnail();
     }
 
-    public void ThumbnailReady(Sprite sprite)
+    public void ThumbnailReady(Asset_Texture texture)
     {
-        thumbnail.sprite = sprite;
+        if (thumbnail.sprite != null)
+            Destroy(thumbnail.sprite);
+
+        thumbnail.sprite = ThumbnailsManager.CreateSpriteFromTexture(texture.texture);
     }
-    
+
     private void GetThumbnail()
     {
-        ThumbnailsManager.GetThumbnail(currentThumbnail, ThumbnailReady);
+        var newCurrentThumbnailPromise = ThumbnailsManager.GetThumbnail(currentThumbnailUrl, ThumbnailReady);
+        ThumbnailsManager.ForgetThumbnail(currentThumbnailPromise);
+        currentThumbnailPromise = newCurrentThumbnailPromise;
+    }
+
+    private void ForgetThumbnail()
+    {
+        if (currentThumbnailPromise == null)
+            return;
+
+        ThumbnailsManager.ForgetThumbnail(currentThumbnailPromise);
+        ThumbnailReady(null);
+        currentThumbnailPromise = null;
     }
 }
