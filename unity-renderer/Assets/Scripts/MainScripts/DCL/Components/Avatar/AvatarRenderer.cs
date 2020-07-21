@@ -176,7 +176,6 @@ namespace DCL
             if (bodyShapeController == null)
             {
                 HideAll();
-
                 bodyShapeController = new BodyShapeController(ResolveWearable(model.bodyShape));
                 SetupDefaultFacialFeatures(bodyShapeController.bodyShapeId);
             }
@@ -222,24 +221,24 @@ namespace DCL
 
                 wearable.SetHiddenList(hiddenList);
 
-                if (wearable.isReady)
-                {
-                    wearable.UpdateVisibility();
-                    continue;
-                }
-
                 wearable.Load(transform, OnWearableLoadingSuccess, OnWearableLoadingFail);
             }
 
             yield return new WaitUntil(AreWearablesReady);
-
-            bodyShapeController.RemoveUnusedParts();
 
             eyesController.Load(bodyShapeController, model.eyeColor);
             eyebrowsController.Load(bodyShapeController, model.hairColor);
             mouthController.Load(bodyShapeController, model.skinColor);
 
             yield return new WaitUntil(IsFaceReady);
+
+            bodyShapeController.RemoveUnusedParts();
+            bodyShapeController.UpdateVisibility();
+
+            foreach (var kvp in wearableControllers)
+            {
+                kvp.Value.UpdateVisibility();
+            }
 
             isLoading = false;
 
