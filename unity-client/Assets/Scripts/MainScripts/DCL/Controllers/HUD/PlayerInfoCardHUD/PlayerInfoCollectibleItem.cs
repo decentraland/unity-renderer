@@ -1,3 +1,4 @@
+using DCL;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -6,48 +7,50 @@ public class PlayerInfoCollectibleItem : MonoBehaviour
     [SerializeField] private Image thumbnail;
 
     internal WearableItem collectible;
+    private AssetPromise_Texture thumbnailPromise;
 
     public void Initialize(WearableItem collectible)
     {
-        if (collectible != null)
-            ForgetThumbnail(collectible.ComposeThumbnailUrl());
-
         this.collectible = collectible;
+
         if (this.collectible == null) return;
 
         if (gameObject.activeInHierarchy)
-            GetThumbnail(this.collectible.ComposeThumbnailUrl());
+            GetThumbnail();
     }
 
     private void OnEnable()
     {
         if (collectible == null) return;
 
-        var url = collectible.ComposeThumbnailUrl();
-
-        if (string.IsNullOrEmpty(url)) return;
-
-        GetThumbnail(collectible.ComposeThumbnailUrl());
+        GetThumbnail();
     }
 
     private void OnDisable()
     {
         if (collectible != null)
-            ForgetThumbnail(collectible.ComposeThumbnailUrl());
+            ForgetThumbnail();
     }
 
-    private void GetThumbnail(string url)
+    private void GetThumbnail()
     {
-        ThumbnailsManager.GetThumbnail(url, OnThumbnailReady);
+        string url = collectible.ComposeThumbnailUrl();
+        //NOTE(Brian): Get before forget to prevent referenceCount == 0 and asset unload
+        var newThumbnailPromise = ThumbnailsManager.GetThumbnail(url, OnThumbnailReady);
+        ForgetThumbnail();
+        thumbnailPromise = newThumbnailPromise;
     }
 
-    private void ForgetThumbnail(string url)
+    private void ForgetThumbnail()
     {
-        ThumbnailsManager.ForgetThumbnail(url, OnThumbnailReady);
+        ThumbnailsManager.ForgetThumbnail(thumbnailPromise);
     }
 
-    private void OnThumbnailReady(Sprite sprite)
+    private void OnThumbnailReady(Asset_Texture texture)
     {
-        thumbnail.sprite = sprite;
+        if (thumbnail.sprite != null)
+            Destroy(thumbnail.sprite);
+
+        thumbnail.sprite = ThumbnailsManager.CreateSpriteFromTexture(texture.texture);
     }
 }
