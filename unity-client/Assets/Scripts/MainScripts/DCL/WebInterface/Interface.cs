@@ -356,6 +356,14 @@ namespace DCL.Interface
         }
 
         [System.Serializable]
+        public class PerformanceHiccupPayload
+        {
+            public int hiccupsInThousandFrames;
+            public float hiccupsTime;
+            public float totalTime;
+        }
+
+        [System.Serializable]
         public class TermsOfServiceResponsePayload
         {
             public string sceneId;
@@ -750,6 +758,15 @@ namespace DCL.Interface
         public static void SendPerformanceReport(string encodedFrameTimesInMS)
         {
             MessageFromEngine("PerformanceReport", encodedFrameTimesInMS);
+        }
+        public static void SendPerformanceHiccupReport(int hiccupsInThousandFrames, float hiccupsTime, float totalTime)
+        {
+            SendMessage("PerformanceHiccupReport", new PerformanceHiccupPayload()
+            {
+                hiccupsInThousandFrames = hiccupsInThousandFrames,
+                hiccupsTime = hiccupsTime,
+                totalTime = totalTime
+            });
         }
 
         public static void SendTermsOfServiceResponse(string sceneId, bool accepted, bool dontShowAgain)
