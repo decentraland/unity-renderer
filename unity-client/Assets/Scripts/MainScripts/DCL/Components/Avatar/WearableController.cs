@@ -70,7 +70,6 @@ public class WearableController
         loader.OnSuccessEvent += (x) =>
         {
             assetRenderers = x.GetComponentsInChildren<Renderer>();
-            UpdateVisibility();
             PrepareWearable(x);
             onSuccess.Invoke(this);
         };
