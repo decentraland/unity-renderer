@@ -429,14 +429,6 @@ namespace DCL
             }
         }
 
-        private void OnDisable()
-        {
-            if (isLoading)
-            {
-                CleanupAvatar();
-            }
-        }
-
         protected virtual void OnDestroy()
         {
             CleanupAvatar();
