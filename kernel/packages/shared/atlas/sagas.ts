@@ -160,7 +160,7 @@ function* reportPois() {
 }
 
 function* reportScenesAroundParcelAction(action: ReportScenesAroundParcel) {
-  const tilesAround = getTilesRectFromCenter(action.payload.parcelCoord, MAX_SCENES_AROUND)
+  const tilesAround = getTilesRectFromCenter(action.payload.parcelCoord, action.payload.scenesAround)
   yield call(reportScenesFromTiles, tilesAround)
 }
 
