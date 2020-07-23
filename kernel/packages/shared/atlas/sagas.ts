@@ -23,7 +23,10 @@ import {
   reportScenesAroundParcel,
   reportLastPosition,
   initializePoiTiles,
-  INITIALIZE_POI_TILES
+  INITIALIZE_POI_TILES,
+  ReportScenesFromTile,
+  reportScenesFromTiles,
+  REPORT_SCENES_FROM_TILES
 } from './actions'
 import { shouldLoadSceneJsonData, isMarketDataInitialized, getPoiTiles } from './selectors'
 import { AtlasState, RootAtlasState } from './types'
@@ -68,6 +71,7 @@ export function* atlasSaga(): any {
 
   yield takeEvery(QUERY_DATA_FROM_SCENE_JSON, querySceneDataAction)
   yield takeLatest(REPORT_SCENES_AROUND_PARCEL, reportScenesAroundParcelAction)
+  yield takeEvery(REPORT_SCENES_FROM_TILES, reportScenesFromTilesAction)
 }
 
 function* loadMarketplace(config: MarketplaceConfig) {
@@ -156,12 +160,12 @@ function* reportPois() {
 
   const pois: string[] = yield select(getPoiTiles)
 
-  yield call(reportScenesFromTiles, pois)
+  yield put(reportScenesFromTiles(pois))
 }
 
 function* reportScenesAroundParcelAction(action: ReportScenesAroundParcel) {
   const tilesAround = getTilesRectFromCenter(action.payload.parcelCoord, action.payload.scenesAround)
-  yield call(reportScenesFromTiles, tilesAround)
+  yield put(reportScenesFromTiles(tilesAround))
 }
 
 function* initializePois() {
@@ -172,11 +176,12 @@ function* initializePois() {
 
 type stringOrNull = string | null
 
-function* reportScenesFromTiles(tiles: string[]) {
+function* reportScenesFromTilesAction(action: ReportScenesFromTile) {
   while (!(yield select(isMarketDataInitialized))) {
     yield take(MARKET_DATA)
   }
 
+  const tiles = action.payload.tiles
   const result: stringOrNull[] = yield call(fetchSceneIds, tiles)
 
   // filter non null & distinct
