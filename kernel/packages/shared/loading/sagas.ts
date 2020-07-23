@@ -106,7 +106,9 @@ export async function updateTextInScreen(status: LoadingState) {
   const images = document.getElementById('load-images') as HTMLImageElement | null
   if (messages && images) {
     const loadingTip = loadingTips[status.helpText]
-    messages.innerText = loadingTip.text
+    if (messages.innerText !== loadingTip.text) {
+      messages.innerText = loadingTip.text
+    }
 
     if (!loadingImagesCache[loadingTip.image]) {
       const promise = (loadingImagesCache[loadingTip.image] = future())
@@ -117,16 +119,24 @@ export async function updateTextInScreen(status: LoadingState) {
     }
 
     const url = await loadingImagesCache[loadingTip.image]
-    images.src = url
+    if (url !== images.src) {
+      images.src = url
+    }
   }
   const subMessages = document.getElementById('subtext-messages')
   const progressBar = document.getElementById('progress-bar-inner')
   if (subMessages && progressBar) {
-    subMessages.innerText = status.pendingScenes > 0 ? status.message || 'Loading scenes...' : status.status
+    const newMessage = status.pendingScenes > 0 ? status.message || 'Loading scenes...' : status.status
+    if (newMessage !== subMessages.innerText) {
+      subMessages.innerText = newMessage
+    }
     const actualPercentage = Math.floor(
       Math.min(status.initialLoad ? (status.loadPercentage + status.subsystemsLoad) / 2 : status.loadPercentage, 100)
     )
-    progressBar.style.cssText = `width: ${actualPercentage}%`
+    const newCss = `width: ${actualPercentage}%`
+    if (newCss !== progressBar.style.cssText) {
+      progressBar.style.cssText = newCss
+    }
   }
 }
 
