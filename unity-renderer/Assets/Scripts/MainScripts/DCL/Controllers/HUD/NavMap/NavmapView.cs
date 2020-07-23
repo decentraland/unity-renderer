@@ -138,7 +138,7 @@ namespace DCL
         {
             var sceneInfo = mapMetadata.GetSceneInfo(cursorTileX, cursorTileY);
             if (sceneInfo == null)
-                WebInterface.RequestScenesInfoAroundParcel(new Vector2(cursorTileX, cursorTileY), 1);
+                WebInterface.RequestScenesInfoAroundParcel(new Vector2(cursorTileX, cursorTileY), 15);
 
             toastView.Populate(new Vector2Int(cursorTileX, cursorTileY), sceneInfo);
         }
