@@ -29,6 +29,10 @@ export const reportScenesAroundParcel = (parcelCoord: { x: number; y: number }, 
   action(REPORT_SCENES_AROUND_PARCEL, { parcelCoord, scenesAround: rectSizeAround })
 export type ReportScenesAroundParcel = ReturnType<typeof reportScenesAroundParcel>
 
+export const REPORT_SCENES_FROM_TILES = 'Report scenes from tile'
+export const reportScenesFromTiles = (tiles: string[]) => action(REPORT_SCENES_FROM_TILES, { tiles })
+export type ReportScenesFromTile = ReturnType<typeof reportScenesFromTiles>
+
 export const REPORTED_SCENES_FOR_MINIMAP = 'Reporting scenes for minimap'
 export const reportedScenes = (parcels: string[]) => action(REPORTED_SCENES_FOR_MINIMAP, { parcels })
 export type ReportedScenes = ReturnType<typeof reportedScenes>
