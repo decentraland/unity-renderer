@@ -19,7 +19,7 @@ public class WearableController
     public string id => wearable.id;
     public string category => wearable.category;
 
-    protected GameObject assetContainer => loader?.loadedAsset;
+    public GameObject assetContainer => loader?.loadedAsset;
     public bool isReady => loader != null && loader.isFinished;
 
     protected Renderer[] assetRenderers;

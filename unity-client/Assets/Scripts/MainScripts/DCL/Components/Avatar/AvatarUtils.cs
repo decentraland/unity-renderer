@@ -13,29 +13,6 @@ public static class AvatarUtils
     public static int _IrisMask = Shader.PropertyToID("_IrisMask");
 
     /// <summary>
-    /// Hack to deactivate unused body parts, so they don't z-fight.
-    /// Solve this removing them from the GLB later.
-    /// </summary>
-    public static void RemoveUnusedBodyParts_Hack(GameObject baseBody)
-    {
-        SkinnedMeshRenderer[] renderers = baseBody.GetComponentsInChildren<SkinnedMeshRenderer>();
-
-        for (int i = 0; i < renderers.Length; i++)
-        {
-            SkinnedMeshRenderer r = renderers[i];
-
-            if (
-                r.transform.parent.name.ToLower().Contains("feet")
-                || r.transform.parent.name.ToLower().Contains("lbody")
-                || r.transform.parent.name.ToLower().Contains("ubody")
-            )
-            {
-                r.gameObject.SetActive(false);
-            }
-        }
-    }
-
-    /// <summary>
     /// This will search all the transform hierachy for sharedMaterials filtered by name, and call a map function on them.
     /// This means each material will be replaced with the function return value.
     /// </summary>
