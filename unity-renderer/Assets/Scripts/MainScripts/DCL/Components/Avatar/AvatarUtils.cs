@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using DCL.Helpers;
 using UnityEngine;
 
 public static class AvatarUtils
@@ -144,6 +145,11 @@ public static class AvatarUtils
 
                 if (_MatCap != null)
                     copy.SetTexture("_MatCap", _MatCap);
+
+                int zWrite = (int) copy.GetFloat(ShaderUtils._ZWrite);
+
+                if (zWrite == 0)
+                    copy.renderQueue = (int) UnityEngine.Rendering.RenderQueue.Transparent;
 
                 result.Add(copy);
                 return copy;

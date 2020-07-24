@@ -39,6 +39,7 @@ namespace DCL.Helpers
     public static class SRPBatchingHelper
     {
         static Dictionary<int, int> crcToQueue = new Dictionary<int, int>();
+
         public static void OptimizeMaterial(Renderer renderer, Material material)
         {
             //NOTE(Brian): Just enable these keywords so the SRP batcher batches more stuff.
@@ -47,25 +48,29 @@ namespace DCL.Helpers
 
             material.enableInstancing = true;
 
+            int zWrite = (int) material.GetFloat(ShaderUtils._ZWrite);
+
+            //NOTE(Brian): for transparent meshes skip further variant optimization.
+            //             Transparency needs clip space z sorting to be displayed correctly.
+            if (zWrite == 0)
+            {
+                material.renderQueue = (int) UnityEngine.Rendering.RenderQueue.Transparent;
+                return;
+            }
+
+            int cullMode = (int) material.GetFloat(ShaderUtils._Cull);
+
             int baseQueue;
 
-            int cullMode = (int)material.GetFloat(ShaderUtils._Cull);
-            int zWrite = (int)material.GetFloat(ShaderUtils._ZWrite);
-
-            if (zWrite == 0)
-                baseQueue = (int)UnityEngine.Rendering.RenderQueue.Transparent;
-            else if (material.renderQueue == (int)UnityEngine.Rendering.RenderQueue.AlphaTest)
-                baseQueue = (int)UnityEngine.Rendering.RenderQueue.AlphaTest;
+            if (material.renderQueue == (int) UnityEngine.Rendering.RenderQueue.AlphaTest)
+                baseQueue = (int) UnityEngine.Rendering.RenderQueue.AlphaTest;
             else
-                baseQueue = (int)UnityEngine.Rendering.RenderQueue.Geometry;
+                baseQueue = (int) UnityEngine.Rendering.RenderQueue.Geometry;
 
-            if (baseQueue != (int)UnityEngine.Rendering.RenderQueue.Transparent)
-            {
-                material.DisableKeyword("_ENVIRONMENTREFLECTIONS_OFF");
-                material.DisableKeyword("_SPECULARHIGHLIGHTS_OFF");
-                material.SetFloat(ShaderUtils._SpecularHighlights, 1);
-                material.SetFloat(ShaderUtils._EnvironmentReflections, 1);
-            }
+            material.DisableKeyword("_ENVIRONMENTREFLECTIONS_OFF");
+            material.DisableKeyword("_SPECULARHIGHLIGHTS_OFF");
+            material.SetFloat(ShaderUtils._SpecularHighlights, 1);
+            material.SetFloat(ShaderUtils._EnvironmentReflections, 1);
 
             //NOTE(Brian): This guarantees grouping calls by same shader keywords. Needed to take advantage of SRP batching.
             string appendedKeywords = string.Join("", material.shaderKeywords);
