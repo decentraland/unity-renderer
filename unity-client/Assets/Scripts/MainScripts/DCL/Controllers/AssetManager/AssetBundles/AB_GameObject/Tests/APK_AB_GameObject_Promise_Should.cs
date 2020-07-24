@@ -10,9 +10,9 @@ using UnityEngine.TestTools;
 namespace AssetPromiseKeeper_AssetBundle_GameObject_Tests
 {
     public class APK_AB_GameObject_Promise_Should : TestsBase_APK<AssetPromiseKeeper_AB_GameObject,
-                                                AssetPromise_AB_GameObject,
-                                                Asset_AB_GameObject,
-                                                AssetLibrary_AB_GameObject>
+        AssetPromise_AB_GameObject,
+        Asset_AB_GameObject,
+        AssetLibrary_AB_GameObject>
     {
         protected AssetPromise_AB_GameObject CreatePromise(string hash = null)
         {
@@ -21,6 +21,7 @@ namespace AssetPromiseKeeper_AssetBundle_GameObject_Tests
             var prom = new AssetPromise_AB_GameObject(contentUrl, hash);
             return prom;
         }
+
 
         [UnityTest]
         public IEnumerator BeSetupCorrectlyAfterLoad()
@@ -34,7 +35,7 @@ namespace AssetPromiseKeeper_AssetBundle_GameObject_Tests
                     Debug.Log("Success is called");
                     loadedAsset = x;
                 }
-            ;
+                ;
 
             prom.OnFailEvent += (x) => { Debug.Log("Fail is called"); };
 
@@ -126,6 +127,21 @@ namespace AssetPromiseKeeper_AssetBundle_GameObject_Tests
             }
 
             Assert.IsTrue(poolableComponents.TrueForAll(x => x == null));
+        }
+
+
+        [UnityTest]
+        public IEnumerator FailCorrectlyWhenLoadingABWithoutGameObjects()
+        {
+            var prom = CreatePromise("Broken_paladin_AB");
+
+            bool failed = false;
+            prom.OnFailEvent += (x) => { failed = true; };
+            keeper.Keep(prom);
+
+            yield return prom;
+
+            Assert.IsTrue(failed == true, "The broken paladin AssetBundle contains no GameObjects and should fail!");
         }
     }
 }

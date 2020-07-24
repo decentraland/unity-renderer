@@ -293,6 +293,7 @@ namespace DCL
                 if (VERBOSE)
                     Debug.Log("loading asset = " + assetName);
 #endif
+
                 UnityEngine.Object loadedAsset = assetBundle.LoadAsset(assetName);
 
                 if (loadedAsset is Material loadedMaterial)

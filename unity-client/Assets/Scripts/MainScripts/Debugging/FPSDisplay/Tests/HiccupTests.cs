@@ -34,6 +34,7 @@ namespace FPSDisplayTests
             {
                 counter.AddDeltaTime(tenMillis);
             }
+
             counter.AddDeltaTime(LinealBufferHiccupCounter.HICCUP_THRESHOLD_IN_SECONDS + 0.01f);
 
             Assert.AreEqual(counter.HiccupsCountInBuffer, 1);
@@ -77,6 +78,7 @@ namespace FPSDisplayTests
                 float value = Random.Range(0.001f, 1f);
                 counter.AddDeltaTime(value);
             }
+
             for (int i = 0; i < 1000; i++)
             {
                 float value = Random.Range(0.001f, 1f);
@@ -86,10 +88,11 @@ namespace FPSDisplayTests
                     hiccupCount += 1;
                     hiccups += value;
                 }
+
                 counter.AddDeltaTime(value);
             }
 
-            const float eps = 0.001f;
+            const float eps = 0.0012f;
             Assert.LessOrEqual(Mathf.Abs(counter.HiccupsSum - hiccups), eps);
             Assert.AreEqual(counter.HiccupsCountInBuffer, hiccupCount);
             Assert.LessOrEqual(Mathf.Abs(counter.GetTotalSeconds() - totalTime), eps);
