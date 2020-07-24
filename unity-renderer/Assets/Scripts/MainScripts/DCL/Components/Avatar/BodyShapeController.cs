@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using DCL.Helpers;
 using UnityEngine;
 
@@ -24,9 +25,31 @@ public class BodyShapeController : WearableController
         base.Load(parent, onSuccess, onFail);
     }
 
-    public void RemoveUnusedParts()
+    public void RemoveUnusedParts(HashSet<string> usedCategories)
     {
-        AvatarUtils.RemoveUnusedBodyParts_Hack(assetContainer.gameObject);
+        bool lowerBodyActive = false;
+        bool upperBodyActive = false;
+        bool feetActive = false;
+
+        foreach (var category in usedCategories)
+        {
+            switch (category)
+            {
+                case WearableLiterals.Categories.LOWER_BODY:
+                    lowerBodyActive = true;
+                    break;
+                case WearableLiterals.Categories.UPPER_BODY:
+                    upperBodyActive = true;
+                    break;
+                case WearableLiterals.Categories.FEET:
+                    feetActive = true;
+                    break;
+            }
+        }
+
+        lowerBodyRenderer.gameObject.SetActive(lowerBodyActive);
+        upperBodyRenderer.gameObject.SetActive(upperBodyActive);
+        feetRenderer.gameObject.SetActive(feetActive);
     }
 
     public void SetupEyes(Material material, Texture texture, Texture mask, Color color)
@@ -99,7 +122,25 @@ public class BodyShapeController : WearableController
         var animation = PrepareAnimation(assetContainer);
         var animator = animationTarget.GetComponent<AvatarAnimatorLegacy>();
         animator.BindBodyShape(animation, bodyShapeId, animationTarget);
+
+        var allRenderers = assetContainer.GetComponentsInChildren<SkinnedMeshRenderer>(true);
+
+        foreach (var r in allRenderers)
+        {
+            string parentName = r.transform.parent.name.ToLower();
+
+            if (parentName.Contains("ubody"))
+                upperBodyRenderer = r;
+            else if (parentName.Contains("lbody"))
+                lowerBodyRenderer = r;
+            else if (parentName.Contains("feet"))
+                feetRenderer = r;
+        }
     }
+
+    public SkinnedMeshRenderer feetRenderer { get; private set; }
+    public SkinnedMeshRenderer upperBodyRenderer { get; private set; }
+    public SkinnedMeshRenderer lowerBodyRenderer { get; private set; }
 
     public override void UpdateVisibility()
     {
