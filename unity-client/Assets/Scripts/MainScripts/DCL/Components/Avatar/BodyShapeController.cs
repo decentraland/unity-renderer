@@ -48,8 +48,13 @@ public class BodyShapeController : WearableController
         }
 
         lowerBodyRenderer.gameObject.SetActive(lowerBodyActive);
+        lowerBodyRenderer.enabled = lowerBodyActive;
+
         upperBodyRenderer.gameObject.SetActive(upperBodyActive);
+        upperBodyRenderer.enabled = upperBodyActive;
+
         feetRenderer.gameObject.SetActive(feetActive);
+        feetRenderer.enabled = feetActive;
     }
 
     public void SetupEyes(Material material, Texture texture, Texture mask, Color color)
@@ -145,5 +150,8 @@ public class BodyShapeController : WearableController
     public override void UpdateVisibility()
     {
         SetAssetRenderersEnabled(!hiddenList.Contains(WearableLiterals.Misc.HEAD));
+        feetRenderer.enabled = !hiddenList.Contains(WearableLiterals.Categories.FEET);
+        upperBodyRenderer.enabled = !hiddenList.Contains(WearableLiterals.Categories.UPPER_BODY);
+        lowerBodyRenderer.enabled = !hiddenList.Contains(WearableLiterals.Categories.LOWER_BODY);
     }
 }

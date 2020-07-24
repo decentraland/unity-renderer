@@ -111,6 +111,10 @@ namespace DCL
 
             wearableControllers.Clear();
             model = null;
+            hiddenList.Clear();
+            isLoading = false;
+            OnFailEvent = null;
+            OnSuccessEvent = null;
         }
 
         void CleanUpUnusedItems()
@@ -262,6 +266,7 @@ namespace DCL
             yield return new WaitUntil(IsFaceReady);
 
             bodyShapeController.RemoveUnusedParts(usedCategories);
+
             bodyShapeController.UpdateVisibility();
 
             foreach (var kvp in wearableControllers)
