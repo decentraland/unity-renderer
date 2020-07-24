@@ -25,7 +25,7 @@ var WebVideoPlayer = {
 
     if (useHls) {
       var hlsConfig = {
-        maxBufferLength: 60
+        maxBufferLength: 60,
       };
       const hls = new Hls(hlsConfig);
       hls.on(Hls.Events.MEDIA_ATTACHED, function () {
@@ -95,6 +95,10 @@ var WebVideoPlayer = {
 
   WebVideoPlayerRemove: function (videoId) {
     const id = Pointer_stringify(videoId);
+    if (!videos.hasOwnProperty(id)) {
+      console.warn("video: trying to remove undefined video of id " + id);
+      return;
+    }
     videos[id].video.src = "";
     videos[id].video.load();
     videos[id].video = null;
@@ -139,7 +143,6 @@ var WebVideoPlayer = {
         videoData.hlsInstance.attachMedia(videoData.video);
       }
       videoData.video.play();
-
     } catch (err) {
       // Exception!
     }
