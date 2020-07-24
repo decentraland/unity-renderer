@@ -75,7 +75,8 @@ namespace DCL.Components
                     yield break;
                 }
 
-                texturePlayer = new WebVideoPlayer(id, dclVideoClip.GetUrl(), dclVideoClip.isStream);
+                string videoId = (!string.IsNullOrEmpty(scene.sceneData.id)) ? scene.sceneData.id + id : scene.GetHashCode().ToString() + id;
+                texturePlayer = new WebVideoPlayer(videoId, dclVideoClip.GetUrl(), dclVideoClip.isStream);
                 texturePlayerUpdateRoutine = CoroutineStarter.Start(VideoTextureUpdate());
                 CommonScriptableObjects.playerCoords.OnChange += OnPlayerCoordsChanged;
                 scene.OnEntityRemoved += OnEntityRemoved;
