@@ -42,6 +42,7 @@ import { CATALYST_REALM_INITIALIZED } from 'shared/dao/actions'
 import { isFriend } from './selectors'
 import { ensureRenderer } from '../profiles/sagas'
 import { ensureWorldRunning } from 'shared/world/worldState'
+import { fetchHotScenes } from 'shared/social/hotScenes'
 
 declare const globalThis: UnityInterfaceContainer & StoreContainer
 
@@ -52,7 +53,7 @@ interface IChatCommand {
 }
 
 const chatCommands: { [key: string]: IChatCommand } = {}
-const blacklisted = ['help', 'airdrop']
+const excludeList = ['help', 'airdrop', 'feelinglonely']
 const fpsConfiguration = {
   visible: SHOW_FPS_COUNTER
 }
@@ -539,10 +540,39 @@ function initChatCommands() {
         `\n\nYou can move with the [WASD] keys and jump with the [SPACE] key.` +
         `\n\nYou can toggle the chat with the [ENTER] key.` +
         `\n\nAvailable commands:\n${Object.keys(chatCommands)
-          .filter((name) => !blacklisted.includes(name))
+          .filter((name) => !excludeList.includes(name))
           .map((name) => `\t/${name}: ${chatCommands[name].description}`)
           .concat('\t/help: Show this list of commands')
           .join('\n')}`
+    }
+  })
+
+  addChatCommand('feelinglonely', 'Show a list of crowded scenes', (message) => {
+    fetchHotScenes().then(
+      ($) => {
+        let body = ''
+        $.slice(0, 5).forEach((sceneInfo) => {
+          const count = sceneInfo.realmsInfo.reduce((a, b) => a + b.usersCount, 0)
+          body += `${count} ${count > 1 ? 'users' : 'user'} @ ${
+            sceneInfo.name.length < 20 ? sceneInfo.name : sceneInfo.name.substring(0, 20) + '...'
+          } ${sceneInfo.baseCoord} ${sceneInfo.realmsInfo.reduce(
+            (a, b) => a + `\n\t realm: ${b.realm.serverName}-${b.realm.layerName} users: ${b.usersCount}`,
+            ''
+          )}\n`
+        })
+        notifyStatusThroughChat(body)
+      },
+      (e) => {
+        defaultLogger.log(e)
+        notifyStatusThroughChat('Error looking for other players')
+      }
+    )
+    return {
+      messageId: uuid(),
+      messageType: ChatMessageType.SYSTEM,
+      sender: 'Decentraland',
+      timestamp: Date.now(),
+      body: 'Looking for other players...'
     }
   })
 }
