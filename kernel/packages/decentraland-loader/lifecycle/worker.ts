@@ -2,8 +2,10 @@
 // This doesn't execute on the main thread, so it's a "server" in terms of decentraland-rpc
 
 import { WebWorkerTransport } from 'decentraland-rpc'
+
 import defaultLogger from 'shared/logger'
 import { ILand, InstancedSpawnPoint } from 'shared/types'
+
 import { SceneDataDownloadManager, TileIdPair } from './controllers/download'
 import { ParcelLifeCycleController } from './controllers/parcel'
 import { PositionLifecycleController } from './controllers/position'
@@ -68,18 +70,18 @@ let downloadManager: SceneDataDownloadManager
         connector.notify('Event.track', event)
       )
 
-      sceneController.on('Start scene', sceneId => {
+      sceneController.on('Start scene', (sceneId) => {
         connector.notify('Scene.shouldStart', { sceneId })
       })
-      sceneController.on('Preload scene', sceneId => {
+      sceneController.on('Preload scene', (sceneId) => {
         connector.notify('Scene.shouldPrefetch', { sceneId })
       })
-      sceneController.on('Unload scene', sceneId => {
+      sceneController.on('Unload scene', (sceneId) => {
         connector.notify('Scene.shouldUnload', { sceneId })
       })
 
       connector.on('User.setPosition', (opt: { position: { x: number; y: number }; teleported: boolean }) => {
-        positionController.reportCurrentPosition(opt.position, opt.teleported).catch(e => {
+        positionController.reportCurrentPosition(opt.position, opt.teleported).catch((e) => {
           defaultLogger.error(`error while resolving new scenes around`, e)
         })
       })

@@ -1,4 +1,6 @@
-import { ExplorerIdentity } from 'shared'
+import { takeEvery, put, select, call, take, delay } from 'redux-saga/effects'
+
+import { Authenticator } from 'dcl-crypto'
 import {
   SocialClient,
   FriendshipRequest,
@@ -6,40 +8,52 @@ import {
   PresenceType,
   CurrentUserStatus,
   UnknownUsersError,
-  UserPosition
+  UserPosition,
+  SocialAPI,
+  Realm as SocialRealm
 } from 'dcl-social-client'
-import { SocialAPI, Realm as SocialRealm } from 'dcl-social-client/dist'
-import { Authenticator } from 'dcl-crypto'
-import { takeEvery, put, select, call, take, delay } from 'redux-saga/effects'
+
+import { DEBUG_PM, INIT_PRE_LOAD, getServerConfigurations } from 'config'
+import { unityInterface } from 'unity-interface/dcl'
+
+import { Vector3Component } from 'atomicHelpers/landHelpers'
+import { worldToGrid } from 'atomicHelpers/parcelScenePositions'
+import { deepEqual } from 'atomicHelpers/deepEqual'
+
+import { createLogger } from 'shared/logger'
+import { ProfileAsPromise } from 'shared/profiles/ProfileAsPromise'
 import {
-  SEND_PRIVATE_MESSAGE,
-  SendPrivateMessage,
+  ChatMessage,
+  NotificationType,
+  ChatMessageType,
+  FriendshipAction,
+  PresenceStatus,
+  HUDElementID
+} from 'shared/types'
+import { StoreContainer } from 'shared/store/rootTypes'
+import { getRealm } from 'shared/dao/selectors'
+import { Realm } from 'shared/dao/types'
+import { lastPlayerPosition, positionObservable } from 'shared/world/positionThings'
+import { ensureRenderer } from 'shared/profiles/sagas'
+import { ADDED_PROFILE_TO_CATALOG } from 'shared/profiles/actions'
+import { isAddedToCatalog, getProfile } from 'shared/profiles/selectors'
+import { INIT_CATALYST_REALM, SET_CATALYST_REALM, SetCatalystRealm, InitCatalystRealm } from 'shared/dao/actions'
+import { notifyFriendOnlineStatusThroughChat } from 'shared/comms/chat'
+import { ExplorerIdentity } from 'shared/session/types'
+import { SocialData, FriendsState } from 'shared/friends/types'
+import { getClient, findByUserId, getPrivateMessaging } from 'shared/friends/selectors'
+import { USER_AUTHENTIFIED } from 'shared/session/actions'
+import { getCurrentIdentity } from 'shared/session/selectors'
+import { SEND_PRIVATE_MESSAGE, SendPrivateMessage } from 'shared/chat/actions'
+import {
   updateFriendship,
   UPDATE_FRIENDSHIP,
   UpdateFriendship,
   updatePrivateMessagingState,
   updateUserData
-} from './actions'
-import { getClient, findByUserId, getPrivateMessaging } from './selectors'
-import { createLogger } from '../logger'
-import { ProfileAsPromise } from '../profiles/ProfileAsPromise'
-import { unityInterface } from 'unity-interface/dcl'
-import { ChatMessageType, FriendshipAction, PresenceStatus } from 'shared/types'
-import { SocialData, ChatState } from './types'
-import { StoreContainer } from '../store/rootTypes'
-import { ChatMessage, NotificationType } from '../types'
-import { getRealm } from 'shared/dao/selectors'
-import { Realm } from 'shared/dao/types'
-import { lastPlayerPosition, positionObservable } from '../world/positionThings'
-import { worldToGrid } from '../../atomicHelpers/parcelScenePositions'
-import { ensureRenderer } from '../profiles/sagas'
-import { ADDED_PROFILE_TO_CATALOG } from '../profiles/actions'
-import { isAddedToCatalog, getProfile } from 'shared/profiles/selectors'
-import { INIT_CATALYST_REALM, SET_CATALYST_REALM, SetCatalystRealm, InitCatalystRealm } from '../dao/actions'
-import { deepEqual } from '../../atomicHelpers/deepEqual'
-import { DEBUG_PM } from 'config'
-import { Vector3Component } from 'atomicHelpers/landHelpers'
-import { notifyFriendOnlineStatusThroughChat } from 'shared/comms/chat'
+} from 'shared/friends/actions'
+import { ensureWorldRunning } from 'shared/world/worldState'
+import { ensureRealmInitialized } from 'shared/dao/sagas'
 
 declare const globalThis: StoreContainer
 
@@ -53,15 +67,54 @@ const receivedMessages: Record<string, number> = {}
 const MESSAGE_LIFESPAN_MILLIS = 1000
 
 const SEND_STATUS_INTERVAL_MILLIS = 5000
-type PresenceMemoization = { realm: SocialRealm | undefined, position: UserPosition | undefined }
+type PresenceMemoization = { realm: SocialRealm | undefined; position: UserPosition | undefined }
 const presenceMap: Record<string, PresenceMemoization | undefined> = {}
 
-export function* initializePrivateMessaging(synapseUrl: string, identity: ExplorerIdentity) {
+const CLOCK_SERVICE_URL = 'https://worldtimeapi.org/api/timezone/Etc/UTC'
+
+export function* friendsSaga() {
+  yield takeEvery(USER_AUTHENTIFIED, initializeSaga)
+}
+
+function* initializeSaga() {
+  const identity = yield select(getCurrentIdentity)
+
+  if (identity.hasConnectedWeb3) {
+    yield call(ensureRealmInitialized)
+
+    if (!INIT_PRE_LOAD) {
+      // wait until initial load finishes and world is running
+      yield ensureWorldRunning()
+    }
+
+    const identity = yield select(getCurrentIdentity)
+    try {
+      yield call(initializePrivateMessaging, getServerConfigurations().synapseUrl, identity)
+    } catch (e) {
+      logger.error(`error initializing private messaging`, e)
+
+      yield call(ensureRenderer)
+
+      unityInterface.ConfigureHUDElement(HUDElementID.FRIENDS, { active: false, visible: false })
+
+      yield ensureWorldRunning()
+
+      unityInterface.ShowNotification({
+        type: NotificationType.GENERIC,
+        message: 'There was an error initializing friends and private messages',
+        buttonMessage: 'OK',
+        timer: 7
+      })
+    }
+  }
+}
+
+function* initializePrivateMessaging(synapseUrl: string, identity: ExplorerIdentity) {
   const { address: ethAddress } = identity
   let timestamp
 
   try {
-    const response = yield fetch('https://worldtimeapi.org/api/timezone/Etc/UTC')
+    const response = yield fetch(CLOCK_SERVICE_URL)
     const { datetime } = yield response.json()
     timestamp = new Date(datetime).getTime()
   } catch (e) {
@@ -90,14 +143,14 @@ export function* initializePrivateMessaging(synapseUrl: string, identity: Explor
       const cursor = await client.getCursorOnLastMessage(conversation.id, { initialSize: INITIAL_CHAT_SIZE })
       const messages = cursor.getMessages()
 
-      const friend = friendsSocial.find(friend => friend.conversationId === conversation.id)
+      const friend = friendsSocial.find((friend) => friend.conversationId === conversation.id)
 
       if (!friend) {
         logger.warn(`friend not found for conversation`, conversation.id)
         return
       }
 
-      messages.forEach(message => {
+      messages.forEach((message) => {
         const chatMessage = {
           messageId: message.id,
           messageType: ChatMessageType.PRIVATE,
@@ -126,8 +179,8 @@ export function* initializePrivateMessaging(synapseUrl: string, identity: Explor
       receivedMessages[message.id] = Date.now()
     }
 
-    const { socialInfo } = globalThis.globalStore.getState().chat.privateMessaging
-    const friend = Object.values(socialInfo).find(friend => friend.conversationId === conversation.id)
+    const { socialInfo } = globalThis.globalStore.getState().friends
+    const friend = Object.values(socialInfo).find((friend) => friend.conversationId === conversation.id)
 
     if (!friend) {
       logger.warn(`friend not found for conversation`, conversation.id)
@@ -172,21 +225,21 @@ export function* initializePrivateMessaging(synapseUrl: string, identity: Explor
     globalThis.globalStore.dispatch(updateFriendship(action, userId, true))
   }
 
-  client.onFriendshipRequest(socialId =>
+  client.onFriendshipRequest((socialId) =>
     handleIncomingFriendshipUpdateStatus(FriendshipAction.REQUESTED_FROM, socialId)
   )
-  client.onFriendshipRequestCancellation(socialId =>
+  client.onFriendshipRequestCancellation((socialId) =>
     handleIncomingFriendshipUpdateStatus(FriendshipAction.CANCELED, socialId)
   )
 
-  client.onFriendshipRequestApproval(async socialId => {
+  client.onFriendshipRequestApproval(async (socialId) => {
     await handleIncomingFriendshipUpdateStatus(FriendshipAction.APPROVED, socialId)
     updateUserStatus(client, socialId)
   })
 
-  client.onFriendshipDeletion(socialId => handleIncomingFriendshipUpdateStatus(FriendshipAction.DELETED, socialId))
+  client.onFriendshipDeletion((socialId) => handleIncomingFriendshipUpdateStatus(FriendshipAction.DELETED, socialId))
 
-  client.onFriendshipRequestRejection(socialId =>
+  client.onFriendshipRequestRejection((socialId) =>
     handleIncomingFriendshipUpdateStatus(FriendshipAction.REJECTED, socialId)
   )
 
@@ -205,7 +258,7 @@ function* initializeFriends(client: SocialAPI) {
   DEBUG && logger.info(`friends`, friends)
 
   const friendsSocial: SocialData[] = yield Promise.all(
-    toSocialData(friends).map(async friend => {
+    toSocialData(friends).map(async (friend) => {
       const conversation = await client.createDirectConversation(friend.socialId)
       return { ...friend, conversationId: conversation.id }
     })
@@ -216,11 +269,11 @@ function* initializeFriends(client: SocialAPI) {
   DEBUG && logger.info(`friendRequests`, friendRequests)
 
   // filter my requests to others
-  const toFriendRequests = friendRequests.filter(request => request.from === ownId).map(request => request.to)
+  const toFriendRequests = friendRequests.filter((request) => request.from === ownId).map((request) => request.to)
   const toFriendRequestsSocial = toSocialData(toFriendRequests)
 
   // filter other requests to me
-  const fromFriendRequests = friendRequests.filter(request => request.to === ownId).map(request => request.from)
+  const fromFriendRequests = friendRequests.filter((request) => request.to === ownId).map((request) => request.from)
   const fromFriendRequestsSocial = toSocialData(fromFriendRequests)
 
   const socialInfo: Record<string, SocialData> = [
@@ -235,9 +288,9 @@ function* initializeFriends(client: SocialAPI) {
     {}
   )
 
-  const friendIds = friendsSocial.map($ => $.userId)
-  const requestedFromIds = fromFriendRequestsSocial.map($ => $.userId)
-  const requestedToIds = toFriendRequestsSocial.map($ => $.userId)
+  const friendIds = friendsSocial.map(($) => $.userId)
+  const requestedFromIds = fromFriendRequestsSocial.map(($) => $.userId)
+  const requestedToIds = toFriendRequestsSocial.map(($) => $.userId)
 
   yield put(
     updatePrivateMessagingState({
@@ -253,9 +306,9 @@ function* initializeFriends(client: SocialAPI) {
 
   yield call(ensureRenderer)
 
-  const profileIds = Object.values(socialInfo).map(socialData => socialData.userId)
+  const profileIds = Object.values(socialInfo).map((socialData) => socialData.userId)
 
-  const profiles = yield Promise.all(profileIds.map(userId => ProfileAsPromise(userId)))
+  const profiles = yield Promise.all(profileIds.map((userId) => ProfileAsPromise(userId)))
   DEBUG && logger.info(`profiles`, profiles)
 
   for (const userId of profileIds) {
@@ -291,7 +344,7 @@ function sendUpdateUserStatus(id: string, status: CurrentUserStatus) {
   const presence: PresenceStatus =
     status.presence === PresenceType.OFFLINE ? PresenceStatus.OFFLINE : PresenceStatus.ONLINE
 
-  const domain = globalThis.globalStore.getState().chat.privateMessaging.client?.getDomain()
+  const domain = globalThis.globalStore.getState().friends.client?.getDomain()
   let matches = id.match(new RegExp(`@(\\w.+):${domain}`, 'i'))
 
   const userId = matches !== null ? matches[1] : id
@@ -332,7 +385,7 @@ function updateUserStatus(client: SocialAPI, ...socialIds: string[]) {
 function* initializeStatusUpdateInterval(client: SocialAPI) {
   const domain = client.getDomain()
 
-  const friends = globalThis.globalStore.getState().chat.privateMessaging.friends.map(x => {
+  const friends = globalThis.globalStore.getState().friends.friends.map((x) => {
     return `@${x}:${domain}`
   })
 
@@ -340,7 +393,7 @@ function* initializeStatusUpdateInterval(client: SocialAPI) {
 
   client.onStatusChange((socialId, status) => {
     DEBUG && logger.info(`client.onStatusChange`, socialId, status)
-    const user: SocialData | undefined = globalThis.globalStore.getState().chat.privateMessaging.socialInfo[socialId]
+    const user: SocialData | undefined = globalThis.globalStore.getState().friends.socialInfo[socialId]
 
     if (!user) {
       logger.error(`user not found for status change with social id`, socialId)
@@ -350,7 +403,7 @@ function* initializeStatusUpdateInterval(client: SocialAPI) {
     sendUpdateUserStatus(user.userId, status)
   })
 
-  type StatusReport = { worldPosition: Vector3Component, realm: Realm | undefined, timestamp: number }
+  type StatusReport = { worldPosition: Vector3Component; realm: Realm | undefined; timestamp: number }
 
   let lastStatus: StatusReport | undefined = undefined
 
@@ -386,7 +439,7 @@ function* initializeStatusUpdateInterval(client: SocialAPI) {
       presence: PresenceType.ONLINE
     }
     DEBUG && logger.info(`sending update status`, updateStatus)
-    client.setStatus(updateStatus).catch(e => logger.error(`error while setting status`, e))
+    client.setStatus(updateStatus).catch((e) => logger.error(`error while setting status`, e))
 
     lastStatus = status
   }
@@ -469,7 +522,7 @@ function* handleUpdateFriendship({ payload, meta }: UpdateFriendship) {
 
     const state: ReturnType<typeof getPrivateMessaging> = yield select(getPrivateMessaging)
 
-    let newState: ChatState['privateMessaging'] | undefined
+    let newState: FriendsState | undefined
 
     const socialData: SocialData | undefined = yield select(findByUserId, userId)
     if (socialData) {
@@ -644,7 +697,7 @@ function* handleOutgoingUpdateFriendshipStatus(update: UpdateFriendship['payload
 
 function toSocialData(socialIds: string[]) {
   return socialIds
-    .map(socialId => ({
+    .map((socialId) => ({
       userId: parseUserId(socialId),
       socialId
     }))

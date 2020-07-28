@@ -49,7 +49,6 @@ import { WorldInstanceConnection } from './interface/index'
 
 import { LighthouseWorldInstanceConnection } from './v2/LighthouseWorldInstanceConnection'
 
-import { identity } from '../index'
 import { Authenticator } from 'dcl-crypto'
 import { getCommsServer, getRealm, getAllCatalystCandidates } from '../dao/selectors'
 import { Realm, LayerUserInfo } from 'shared/dao/types'
@@ -73,6 +72,7 @@ import { getCommsConfig } from 'shared/meta/selectors'
 import { ensureMetaConfigurationInitialized } from 'shared/meta/index'
 import { ReportFatalError } from 'shared/loading/ReportFatalError'
 import { NEW_LOGIN, UNEXPECTED_ERROR, commsEstablished } from 'shared/loading/types'
+import { getIdentity } from 'shared/session'
 
 export type CommsVersion = 'v1' | 'v2'
 export type CommsMode = CommsV1Mode | CommsV2Mode
@@ -276,7 +276,7 @@ function ensurePeerTrackingInfo(context: Context, alias: string): PeerTrackingIn
 
 export function processChatMessage(context: Context, fromAlias: string, message: Package<ChatMessage>) {
   const msgId = message.data.id
-  const profile = getProfile(globalThis.globalStore.getState(), identity.address)
+  const profile = getProfile(globalThis.globalStore.getState(), getIdentity().address)
 
   const peerTrackingInfo = ensurePeerTrackingInfo(context, fromAlias)
   if (!peerTrackingInfo.receivedPublicChatMessages.has(msgId)) {
@@ -481,7 +481,7 @@ function collectInfo(context: Context) {
       continue
     }
 
-    if (trackingInfo.identity === identity.address) {
+    if (trackingInfo.identity === getIdentity().address) {
       // If we are tracking a peer that is ourselves, we remove it
       removePeer(context, peerAlias)
       continue
@@ -646,12 +646,12 @@ export async function connect(userId: string) {
           },
           authHandler: async (msg: string) => {
             try {
-              return Authenticator.signPayload(identity, msg)
+              return Authenticator.signPayload(getIdentity(), msg)
             } catch (e) {
               defaultLogger.info(`error while trying to sign message from lighthouse '${msg}'`)
             }
             // if any error occurs
-            return identity
+            return getIdentity()
           },
           logLevel: 'NONE',
           targetConnections: commsConfig.targetConnections ?? 4,
@@ -678,7 +678,7 @@ export async function connect(userId: string) {
         defaultLogger.log('Using Remote lighthouse service: ', lighthouseUrl)
 
         connection = new LighthouseWorldInstanceConnection(
-          identity.address,
+          getIdentity().address,
           realm!,
           lighthouseUrl,
           peerConfig,

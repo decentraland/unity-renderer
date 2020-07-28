@@ -1,10 +1,21 @@
-import { getFromLocalStorage, saveToLocalStorage } from 'atomicHelpers/localStorage'
+import { Store } from 'redux'
 import { call, fork, put, race, select, take, takeEvery, takeLatest } from 'redux-saga/effects'
+
+import { getFromLocalStorage, saveToLocalStorage } from 'atomicHelpers/localStorage'
+
+import {
+  getServerConfigurations,
+  ALL_WEARABLES,
+  getWearablesSafeURL,
+  PIN_CATALYST,
+  PREVIEW,
+  ethereumConfigurations
+} from 'config'
+
 import { NotificationType } from 'shared/types'
-import { getServerConfigurations, ALL_WEARABLES, getWearablesSafeURL, PIN_CATALYST } from 'config'
-import defaultLogger from '../logger'
-import { isInitialized } from '../renderer/selectors'
-import { RENDERER_INITIALIZED } from '../renderer/types'
+import defaultLogger from 'shared/logger'
+import { isInitialized } from 'shared/renderer/selectors'
+import { RENDERER_INITIALIZED } from 'shared/renderer/types'
 import {
   addCatalog,
   AddCatalogAction,
@@ -33,7 +44,8 @@ import {
   saveProfileSuccess,
   profileRequest,
   saveProfileFailure,
-  addedProfileToCatalog
+  addedProfileToCatalog,
+  saveProfileRequest
 } from './actions'
 import { generateRandomUserProfile } from './generateRandomUserProfile'
 import {
@@ -64,11 +76,10 @@ import {
   DeployData,
   Avatar
 } from './types'
-import { identity, ExplorerIdentity } from '../index'
+import { ExplorerIdentity } from 'shared/session/types'
 import { Authenticator, AuthLink } from 'dcl-crypto'
 import { sha3 } from 'web3x/utils'
-import { CATALYST_REALM_INITIALIZED } from '../dao/actions'
-import { isRealmInitialized, getUpdateProfileServer, getResizeService, isResizeServiceUrl } from '../dao/selectors'
+import { getUpdateProfileServer, getResizeService, isResizeServiceUrl } from '../dao/selectors'
 import { getUserProfile } from '../comms/peers'
 import { WORLD_EXPLORER } from '../../config/index'
 import { backupProfile } from 'shared/profiles/generateRandomUserProfile'
@@ -78,6 +89,13 @@ import { UnityInterfaceContainer } from 'unity-interface/dcl'
 import { RarityEnum } from '../airdrops/interface'
 import { StoreContainer } from '../store/rootTypes'
 import { retrieve, store } from 'shared/cache'
+import { getCurrentUserId, getCurrentIdentity, getCurrentNetwork } from 'shared/session/selectors'
+import { USER_AUTHENTIFIED } from 'shared/session/actions'
+import { ProfileAsPromise } from './ProfileAsPromise'
+import { fetchOwnedENS } from 'shared/web3'
+import { RootState } from 'shared/store/rootTypes'
+import { persistCurrentUser } from 'shared/comms'
+import { ensureRealmInitialized } from 'shared/dao/sagas'
 
 type Timestamp = number
 type ContentFileHash = string
@@ -87,8 +105,6 @@ const multihashing = require('multihashing-async')
 const toBuffer = require('blob-to-buffer')
 
 declare const globalThis: Window & UnityInterfaceContainer & StoreContainer
-
-export const getCurrentUserId = () => identity.address
 
 const isActionFor = (type: string, userId: string) => (action: any) =>
   action.type === type && action.payload.userId === userId
@@ -114,9 +130,8 @@ const takeLatestByUserId = (patternOrChannel: any, saga: any, ...args: any) =>
  * It's *very* important for the renderer to never receive a passport with items that have not been loaded into the catalog.
  */
 export function* profileSaga(): any {
-  if (!(yield select(isRealmInitialized))) {
-    yield take(CATALYST_REALM_INITIALIZED)
-  }
+  yield takeEvery(USER_AUTHENTIFIED, initialProfileLoad)
+
   yield takeEvery(RENDERER_INITIALIZED, initialLoad)
 
   yield takeLatest(ADD_CATALOG, handleAddCatalog)
@@ -132,6 +147,79 @@ export function* profileSaga(): any {
   yield takeLatest(NOTIFY_NEW_INVENTORY_ITEM, handleNewInventoryItem)
 
   yield fork(queryInventoryEveryMinute)
+}
+
+function* initialProfileLoad() {
+  yield call(ensureRealmInitialized)
+
+  // initialize profile
+  console['group']('connect#profile')
+  const userId = yield select(getCurrentUserId)
+  let profile = yield ProfileAsPromise(userId)
+
+  if (!PREVIEW) {
+    let profileDirty: boolean = false
+
+    if (!profile.hasClaimedName) {
+      const net: keyof typeof ethereumConfigurations = yield select(getCurrentNetwork)
+      const names = yield fetchOwnedENS(ethereumConfigurations[net].names, userId)
+
+      // patch profile to readd missing name
+      profile = { ...profile, name: names[0], hasClaimedName: true, version: (profile.version || 0) + 1 }
+
+      if (names && names.length > 0) {
+        defaultLogger.info(`Found missing claimed name '${names[0]}' for profile ${userId}, consolidating profile... `)
+        profileDirty = true
+      }
+    }
+
+    const isFace128Resized = yield select(isResizeServiceUrl, profile.avatar.snapshots?.face128)
+    const isFace256Resized = yield select(isResizeServiceUrl, profile.avatar.snapshots?.face256)
+
+    if (isFace128Resized || isFace256Resized) {
+      // setting dirty profile, as at least one of the face images are taken from a local blob
+      profileDirty = true
+    }
+
+    const localTutorialStep = getUserProfile().profile ? getUserProfile().profile.tutorialStep : 0
+
+    if (localTutorialStep !== profile.tutorialStep) {
+      let finalTutorialStep = Math.max(localTutorialStep, profile.tutorialStep)
+      profile = { ...profile, tutorialStep: finalTutorialStep }
+      profileDirty = true
+    }
+
+    if (profileDirty) {
+      scheduleProfileUpdate(profile)
+    }
+  }
+
+  const identity = yield select(getCurrentIdentity)
+
+  persistCurrentUser({
+    version: profile.version,
+    profile: profileToRendererFormat(profile, identity)
+  })
+  console['groupEnd']()
+}
+
+/**
+ * Schedule profile update post login (i.e. comms authenticated & established).
+ *
+ * @param profile Updated profile
+ */
+function scheduleProfileUpdate(profile: Profile) {
+  new Promise(() => {
+    const store: Store<RootState> = globalThis.globalStore
+
+    const unsubscribe = store.subscribe(() => {
+      const initialized = store.getState().comms.initialized
+      if (initialized) {
+        unsubscribe()
+        store.dispatch(saveProfileRequest(profile))
+      }
+    })
+  }).catch((e) => defaultLogger.error(`error while updating profile`, e))
 }
 
 function overrideBaseUrl(wearable: Wearable) {
@@ -153,6 +241,8 @@ function overrideSwankyRarity(wearable: Wearable) {
 }
 
 export function* initialLoad() {
+  yield call(ensureRealmInitialized)
+
   if (WORLD_EXPLORER) {
     try {
       const catalogUrl = getServerConfigurations().avatar.catalog
@@ -419,6 +509,7 @@ function* sendLoadProfile(profile: Profile) {
   while (!(yield select(baseCatalogsLoaded))) {
     yield take(CATALOG_LOADED)
   }
+  const identity = yield select(getCurrentIdentity)
   const rendererFormat = profileToRendererFormat(profile, identity)
   globalThis.unityInterface.LoadProfile(rendererFormat)
 }
@@ -458,6 +549,8 @@ export function* handleSaveAvatar(saveAvatar: SaveProfileRequest) {
     const currentVersion = savedProfile.version || 0
     const url: string = yield select(getUpdateProfileServer)
     const profile = { ...savedProfile, ...saveAvatar.payload.profile }
+
+    const identity = yield select(getCurrentIdentity)
 
     // only update profile if wallet is connected
     if (identity.hasConnectedWeb3) {
@@ -601,6 +694,7 @@ export async function modifyAvatar(params: {
   const newProfile = ensureServerFormat({ ...profile, avatar: newAvatar }, currentVersion)
 
   const [data] = await buildDeployData(
+    identity,
     [identity.address],
     {
       avatars: [newProfile]
@@ -628,6 +722,7 @@ export function makeContentFile(path: string, content: string | Blob): Promise<C
 }
 
 export async function buildDeployData(
+  identity: ExplorerIdentity,
   pointers: Pointer[],
   metadata: any,
   files: ContentFile[] = [],
@@ -642,7 +737,7 @@ export async function buildDeployData(
     metadata
   )
 
-  const body = await hashAndSignMessage(entity.id)
+  const body = await hashAndSignMessage(identity, entity.id)
   const deployData: DeployData = {
     entityId: entity.id,
     // Every position in the body ethAddress every position in the authLink is an slavon.
@@ -654,7 +749,7 @@ export async function buildDeployData(
   return [deployData, entity]
 }
 
-export async function hashAndSignMessage(message: string): Promise<AuthLink[]> {
+export async function hashAndSignMessage(identity: ExplorerIdentity, message: string): Promise<AuthLink[]> {
   return Authenticator.signPayload(identity, message)
 }
 

@@ -1,9 +1,8 @@
-import { COMMS_ESTABLISHED } from '../loading/types'
 import { AnyAction } from 'redux'
 
-export type CommsState = {
-  initialized: boolean
-}
+import { COMMS_ESTABLISHED } from 'shared/loading/types'
+
+import { CommsState } from './types'
 
 const INITIAL_COMMS = {
   initialized: false

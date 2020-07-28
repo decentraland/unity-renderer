@@ -12,16 +12,25 @@ import {
   SET_CATALYST_CANDIDATES,
   SET_ADDED_CATALYST_CANDIDATES,
   SetCatalystCandidates,
-  SetAddedCatalystCandidates
+  SetAddedCatalystCandidates,
+  CATALYST_REALM_INITIALIZED
 } from './actions'
-import { call, put, takeEvery, select, fork } from 'redux-saga/effects'
+import { call, put, takeEvery, select, fork, take } from 'redux-saga/effects'
 import { WORLD_EXPLORER, REALM, getDefaultTLD, PIN_CATALYST } from 'config'
 import { waitForMetaConfigurationInitialization } from '../meta/sagas'
 import { Candidate, Realm, ServerConnectionStatus } from './types'
-import { fecthCatalystRealms, fetchCatalystStatuses, pickCatalystRealm, getRealmFromString, ping, commsStatusUrl } from '.'
+import {
+  fecthCatalystRealms,
+  fetchCatalystStatuses,
+  pickCatalystRealm,
+  getRealmFromString,
+  ping,
+  commsStatusUrl
+} from '.'
 import { getAddedServers, getContentWhitelist } from 'shared/meta/selectors'
-import { getAllCatalystCandidates } from './selectors'
+import { getAllCatalystCandidates, isRealmInitialized } from './selectors'
 import { saveToLocalStorage, getFromLocalStorage } from '../../atomicHelpers/localStorage'
+import defaultLogger from '../logger'
 
 const CACHE_KEY = 'realm'
 const CATALYST_CANDIDATES_KEY = CACHE_KEY + '-' + SET_CATALYST_CANDIDATES
@@ -102,6 +111,8 @@ function* loadCatalystRealms() {
   }
 
   yield put(catalystRealmInitialized())
+
+  defaultLogger.info(`Using Catalyst configuration: `, yield select((state) => state.dao))
 }
 
 function getConfiguredRealm(candidates: Candidate[]) {
@@ -116,14 +127,17 @@ function* initializeCatalystCandidates() {
   yield put(setCatalystCandidates(candidates))
 
   const added: string[] = yield select(getAddedServers)
-  const addedCandidates: Candidate[] = yield call(fetchCatalystStatuses, added.map(url => ({ domain: url })))
+  const addedCandidates: Candidate[] = yield call(
+    fetchCatalystStatuses,
+    added.map((url) => ({ domain: url }))
+  )
 
   yield put(setAddedCatalystCandidates(addedCandidates))
 
   const allCandidates: Candidate[] = yield select(getAllCatalystCandidates)
 
   const whitelist: string[] = yield select(getContentWhitelist)
-  let whitelistedCandidates = allCandidates.filter(candidate => whitelist.includes(candidate.domain))
+  let whitelistedCandidates = allCandidates.filter((candidate) => whitelist.includes(candidate.domain))
   if (whitelistedCandidates.length === 0) {
     // if intersection is empty (no whitelisted or not in our candidate set) => whitelist all candidates
     whitelistedCandidates = allCandidates
@@ -149,4 +163,10 @@ function* cacheCatalystCandidates(action: SetCatalystCandidates | SetAddedCataly
   const allCandidates = yield select(getAllCatalystCandidates)
 
   saveToLocalStorage(CATALYST_CANDIDATES_KEY, allCandidates)
+}
+
+export function* ensureRealmInitialized() {
+  while (!(yield select(isRealmInitialized))) {
+    yield take(CATALYST_REALM_INITIALIZED)
+  }
 }

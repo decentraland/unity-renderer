@@ -6,9 +6,9 @@ import {
   compareInventoriesAndTriggerNotification,
   handleFetchProfile,
   profileServerRequest,
-  fetchInventoryItemsByAddress,
-  getCurrentUserId
+  fetchInventoryItemsByAddress
 } from 'shared/profiles/sagas'
+import { getCurrentUserId } from 'shared/session/selectors'
 import { getProfile, getProfileDownloadServer } from 'shared/profiles/selectors'
 import { profileSaga, delay } from '../../packages/shared/profiles/sagas'
 import { processServerProfile } from '../../packages/shared/profiles/transformations/processServerProfile'

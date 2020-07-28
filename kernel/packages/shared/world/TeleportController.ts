@@ -1,11 +1,19 @@
-import { teleportObservable, lastPlayerPosition } from 'shared/world/positionThings'
-import { getFromLocalStorage, saveToLocalStorage } from 'atomicHelpers/localStorage'
-import { POIs } from 'shared/comms/POIs'
 import { parcelLimits } from 'config'
+
+import { teleportObservable, lastPlayerPosition } from 'shared/world/positionThings'
+import { POIs } from 'shared/comms/POIs'
 import { fetchLayerUsersParcels } from 'shared/comms'
 import { ParcelArray, countParcelsCloseTo } from 'shared/comms/interface/utils'
-import { worldToGrid } from 'atomicHelpers/parcelScenePositions'
 import defaultLogger from 'shared/logger'
+import { ensureUnityInterface } from 'shared/renderer'
+
+import { getFromLocalStorage, saveToLocalStorage } from 'atomicHelpers/localStorage'
+import { worldToGrid } from 'atomicHelpers/parcelScenePositions'
+
+import { StoreContainer } from '../store/rootTypes'
+import { WORLD_EXPLORER } from '../../config/index'
+
+declare const globalThis: StoreContainer
 
 export const CAMPAIGN_PARCEL_SEQUENCE = [
   { x: -3, y: -33 },
@@ -75,7 +83,11 @@ export class TeleportController {
   public static stopTeleportAnimation() {
     document.getElementById('gameContainer')!.setAttribute('style', 'background: #151419')
     document.body.setAttribute('style', 'background: #151419')
-    ;(window as any)['unityInterface'].ShowWelcomeNotification()
+    if (WORLD_EXPLORER) {
+      ensureUnityInterface()
+        .then((unity) => unity.ShowWelcomeNotification())
+        .catch(defaultLogger.error)
+    }
   }
 
   public static goToMagic(): { message: string; success: boolean } {
