@@ -2,7 +2,8 @@ import { Vector2Component } from 'atomicHelpers/landHelpers'
 import { MinimapSceneInfo } from 'decentraland-ecs/src/decentraland/Types'
 import { call, fork, put, select, take, takeEvery, race, takeLatest } from 'redux-saga/effects'
 import { parcelLimits } from '../../config'
-import { getServer, LifecycleManager } from '../../decentraland-loader/lifecycle/manager'
+import { fetchSceneJson } from '../../decentraland-loader/lifecycle/utils/fetchSceneJson'
+import { fetchSceneIds } from '../../decentraland-loader/lifecycle/utils/fetchSceneIds'
 import { getOwnerNameFromJsonData, getSceneDescriptionFromJsonData } from '../../shared/selectors'
 import defaultLogger from '../logger'
 import { lastPlayerPosition } from '../world/positionThings'
@@ -116,18 +117,6 @@ function* querySceneDataAction(action: QuerySceneData) {
   } catch (e) {
     yield put(fetchDataFromSceneJsonFailure(sceneIds, e))
   }
-}
-
-async function fetchSceneJson(sceneIds: string[]) {
-  const server: LifecycleManager = getServer()
-  const lands = await Promise.all(sceneIds.map((sceneId) => server.getParcelData(sceneId)))
-  return lands
-}
-
-async function fetchSceneIds(tiles: string[]) {
-  const server: LifecycleManager = getServer()
-  const promises = server.getSceneIds(tiles)
-  return Promise.all(promises)
 }
 
 const TRIGGER_DISTANCE = 10 * parcelLimits.parcelSize
