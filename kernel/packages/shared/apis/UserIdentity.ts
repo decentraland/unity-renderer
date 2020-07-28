@@ -1,8 +1,10 @@
 import { registerAPI, exposeMethod } from 'decentraland-rpc/lib/host'
-import { ExposableAPI } from './ExposableAPI'
+
 import { UserData } from 'shared/types'
 import { getCurrentUser } from 'shared/comms/peers'
-import { identity } from 'shared'
+import { getIdentity } from 'shared/session'
+
+import { ExposableAPI } from './ExposableAPI'
 
 export interface IUserIdentity {
   /**
@@ -20,6 +22,7 @@ export interface IUserIdentity {
 export class UserIdentity extends ExposableAPI implements IUserIdentity {
   @exposeMethod
   async getUserPublicKey(): Promise<string | null> {
+    const identity = getIdentity()
     const user = getCurrentUser()
     if (!user || !user.userId) return null
 
@@ -28,6 +31,7 @@ export class UserIdentity extends ExposableAPI implements IUserIdentity {
 
   @exposeMethod
   async getUserData(): Promise<UserData | null> {
+    const identity = getIdentity()
     const user = getCurrentUser()
 
     if (!user || !user.profile || !user.userId) return null

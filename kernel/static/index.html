@@ -471,6 +471,11 @@
       100% { transform: rotate(360deg); }
     }
   </style>
+  <script>
+    function checkTos() {
+      document.getElementById('eth-login-confirm-button').disabled = !document.getElementById('agree-check').checked;
+    }
+  </script>
 </head>
 
 <body class="dcl-loading">
@@ -497,10 +502,10 @@
     <div class="eth-login-popup">
       <img class="eth-login-logo" src="images/decentraland-connect/Isologotipo.png"></img>
       <div class="eth-login-description">Enter the first virtual world fully owned by its users.</div>
-      <div id="eth-login-confirmation-spinner" class="loader" style="display: none;"></div>
-      <div id="eth-login-confirmation-wrapper">
+      <div id="eth-login-confirmation-spinner" class="loader" style="display: block;"></div>
+      <div id="eth-login-confirmation-wrapper" style="display: none;">
         <div class="eth-login-tos">
-          <input type="checkbox" id="agree-check" class="eth-login-tos-agree" onchange="document.getElementById('eth-login-confirm-button').disabled = !this.checked;"></input>
+          <input type="checkbox" id="agree-check" class="eth-login-tos-agree" onchange="checkTos()"></input>
           <label for="agree-check" class="eth-login-tos-label">I am of legal age and I have read and agree to the <a href="https://decentraland.org/terms" target="_blank">Terms of Service</a> and <a href="https://decentraland.org/privacy" target="_blank">Privacy Policy</a></label>
         </div>
         <button id="eth-login-confirm-button" class="eth-login-confirm-button1" disabled>Start Exploring</button>

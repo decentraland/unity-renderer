@@ -25,7 +25,10 @@ export const contracts = {
     'ExclusiveMasksCollection': '0x30ae57840b0e9b8ea55334083d53d80b2cfe80e0',
     'DCLRegistrar': '0xeb6f5d94d79f0750781cc962908b161b95192f53',
     'DCLController': '0xd4e92f6ea18412dbae8b2d2b69e498a2d1064fa2',
-    'Catalyst': '0xadd085f2318e9678bbb18b3e0711328f902b374b'
+    'Catalyst': '0xadd085f2318e9678bbb18b3e0711328f902b374b',
+    'BuyAdapter': '0xee9cc0eccb4b10444c2d50f5dc0d67bf3417b975',
+    'AdapterFeeCollector': '0x5DC888024cB599CfDdb9E6483ED6bAe1fA9e9D18',
+    'AdapterConverter': '0x2782eb28Dcb1eF4E7632273cd4e347e130Ce4646'
   },
   'mainnet': {
     'MANAToken': '0x0f5d2fb29fb7d3cfee444a200298f468908cc942',
@@ -67,7 +70,10 @@ export const contracts = {
     'DCLLaunchCollection': '0xd35147be6401dcb20811f2104c33de8e97ed6818',
     'DCGCollection': '0x3163d2cfee3183f9874e2869942cc62649eeb004',
     'StaySafeCollection': '0x201c3af8c471e5842428b74d1e7c0249adda2a92',
-    'StaySafeDonation': '0x56505a0313ba2b4bc0be23dbb7eb71b7885fca9e'
+    'StaySafeDonation': '0x56505a0313ba2b4bc0be23dbb7eb71b7885fca9e',
+    'ClaimWearableForFree': '0x8dd61d1a67bce13a87e20a76c6f164c388a726d6',
+    'Moonshot2020Collection': '0x6a99abebb48819d2abe92c5e4dc4f48dc09a3ee8',
+    'DAOAgent': '0x9A6ebE7E2a7722F8200d0ffB63a1F6406A0d7dce'
   },
   'kovan': {
     'MANAToken': '0x230fc362413d9e862326c2c7084610a5a2fdf78a',

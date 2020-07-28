@@ -1,10 +1,12 @@
-import { MessageEntry, ChatMessageType, PresenceStatus, UpdateUserStatusMessage } from 'shared/types'
 import { uuid } from 'atomicHelpers/math'
+
+import { MessageEntry, ChatMessageType, PresenceStatus, UpdateUserStatusMessage } from 'shared/types'
 import { StoreContainer } from '../store/rootTypes'
-import { messageReceived } from '../chat/actions'
+import { messageReceived } from 'shared/chat/actions'
 import { getProfile } from 'shared/profiles/selectors'
 
 declare const globalThis: StoreContainer
+
 let friendStatus: Record<string, PresenceStatus> = {}
 
 export enum ChatEventType {

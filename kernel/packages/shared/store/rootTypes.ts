@@ -1,19 +1,23 @@
-import { AtlasState } from '../atlas/types'
-import { ProfileState } from '../profiles/types'
-import { DaoState } from '../dao/types'
-import { MetaState } from '../meta/types'
-import { ChatState } from '../chat/types'
-import { CommsState } from '../comms/reducer'
-
 import { Store } from 'redux'
 
-export type RootState = {
-  atlas: AtlasState
-  profiles: ProfileState
-  dao: DaoState
-  meta: MetaState
-  chat: ChatState
-  comms: CommsState
-}
+import { RootAtlasState } from 'shared/atlas/types'
+import { RootProfileState } from 'shared/profiles/types'
+import { RootDaoState } from 'shared/dao/types'
+import { RootMetaState } from 'shared/meta/types'
+import { RootChatState } from 'shared/chat/types'
+import { RootCommsState } from 'shared/comms/types'
+import { RootSessionState } from 'shared/session/types'
+import { RootFriendsState } from 'shared/friends/types'
+import { RootRendererState } from 'shared/renderer/types'
+
+export type RootState = RootAtlasState &
+  RootProfileState &
+  RootDaoState &
+  RootMetaState &
+  RootChatState &
+  RootCommsState &
+  RootSessionState &
+  RootFriendsState &
+  RootRendererState
 
 export type StoreContainer = { globalStore: Store<RootState> }

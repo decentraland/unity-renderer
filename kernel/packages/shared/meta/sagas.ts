@@ -1,5 +1,5 @@
 import { call, put, select, take } from 'redux-saga/effects'
-import { getServerConfigurations } from '../../config/index'
+import { getServerConfigurations } from 'config'
 import { metaConfigurationInitialized, META_CONFIGURATION_INITIALIZED } from './actions'
 import defaultLogger from '../logger'
 import { buildNumber } from './env'
@@ -44,7 +44,10 @@ function checkIndexedDB(config: Partial<MetaConfiguration>) {
     return
   }
 
-  defaultLogger.info(`Unity IndexedDB meta config loaded. Configured remotely as: `, config.explorer.useUnityIndexedDbCache)
+  defaultLogger.info(
+    `Unity IndexedDB meta config loaded. Configured remotely as: `,
+    config.explorer.useUnityIndexedDbCache
+  )
   USE_UNITY_INDEXED_DB_CACHE.resolve(config.explorer.useUnityIndexedDbCache)
 }
 

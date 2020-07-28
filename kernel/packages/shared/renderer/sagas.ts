@@ -1,22 +1,197 @@
-import { call, fork, put } from 'redux-saga/effects'
-import { signalRendererInitialized } from './actions'
+import { call, put, take, takeEvery } from 'redux-saga/effects'
+
+import { DEBUG_MESSAGES } from 'config'
+import { initializeEngine } from 'unity-interface/dcl'
+
+import { waitingForRenderer, UNEXPECTED_ERROR } from 'shared/loading/types'
+import { createLogger } from 'shared/logger'
+import { ReportFatalError } from 'shared/loading/ReportFatalError'
+import { StoreContainer } from 'shared/store/rootTypes'
+
+import { UnityLoaderType, UnityGame } from './types'
+import {
+  INITIALIZE_RENDERER,
+  InitializeRenderer,
+  engineStarted,
+  ENGINE_STARTED,
+  messageFromEngine,
+  MessageFromEngineAction,
+  MESSAGE_FROM_ENGINE,
+  rendererEnabled
+} from './actions'
+
+const queryString = require('query-string')
+
+declare const globalThis: StoreContainer
+declare const UnityLoader: UnityLoaderType
+declare const global: any
+
+const DEBUG = false
+const logger = createLogger('renderer: ')
+
+let _gameInstance: UnityGame | null = null
 
 export function* rendererSaga() {
-  yield fork(awaitRendererInitialSignal)
+  let _instancedJS: ReturnType<typeof initializeEngine> | null = null
+  yield takeEvery(MESSAGE_FROM_ENGINE, (action: MessageFromEngineAction) =>
+    handleMessageFromEngine(_instancedJS, action)
+  )
+
+  const action: InitializeRenderer = yield take(INITIALIZE_RENDERER)
+  const _gameInstance = yield call(initializeRenderer, action)
+
+  yield take(ENGINE_STARTED)
+  _instancedJS = yield call(wrapEngineInstance, _gameInstance)
 }
 
-export function* awaitRendererInitialSignal(): any {
-  yield call(waitForRenderer)
-  yield put(signalRendererInitialized())
+function* initializeRenderer(action: InitializeRenderer) {
+  const { container, buildConfigPath } = action.payload
+
+  const qs = queryString.parse(document.location.search)
+
+  preventUnityKeyboardLock()
+
+  if (qs.ws) {
+    _gameInstance = initializeUnityEditor(qs.ws, container)
+  } else {
+    _gameInstance = UnityLoader.instantiate(container, buildConfigPath)
+  }
+
+  yield put(waitingForRenderer())
+
+  return _gameInstance
 }
 
-export async function waitForRenderer() {
-  return new Promise(resolve => {
-    const interval = setInterval(() => {
-      if ((window as any)['unityInterface'] && (window as any)['unityInterface'].SendMessage) {
-        clearInterval(interval)
-        resolve()
+function* wrapEngineInstance(_gameInstance: UnityGame) {
+  if (!_gameInstance) {
+    throw new Error('There is no UnityGame')
+  }
+
+  const _instancedJS: ReturnType<typeof initializeEngine> = initializeEngine(_gameInstance)
+
+  _instancedJS
+    .then(($) => {
+      // Expose the "kernel" interface as a global object to allow easier inspection
+      global['browserInterface'] = $
+      globalThis.globalStore.dispatch(rendererEnabled(_instancedJS))
+    })
+    .catch((error) => {
+      logger.error(error)
+      ReportFatalError(UNEXPECTED_ERROR)
+    })
+
+  return _instancedJS
+}
+
+function* handleMessageFromEngine(
+  _instancedJS: ReturnType<typeof initializeEngine> | null,
+  action: MessageFromEngineAction
+) {
+  const { type, jsonEncodedMessage } = action.payload
+  DEBUG && logger.info(`handleMessageFromEngine`, action.payload)
+  if (_instancedJS) {
+    if (type === 'PerformanceReport') {
+      _instancedJS.then(($) => $.onMessage(type, jsonEncodedMessage)).catch((e) => logger.error(e.message))
+      return
+    }
+    _instancedJS.then(($) => $.onMessage(type, JSON.parse(jsonEncodedMessage))).catch((e) => logger.error(e.message))
+  } else {
+    logger.error('Message received without initializing engine', type, jsonEncodedMessage)
+  }
+}
+
+namespace DCL {
+  // This function get's called by the engine
+  export function EngineStarted() {
+    globalThis.globalStore.dispatch(engineStarted())
+  }
+
+  export function MessageFromEngine(type: string, jsonEncodedMessage: string) {
+    globalThis.globalStore.dispatch(messageFromEngine(type, jsonEncodedMessage))
+  }
+}
+
+// The namespace DCL is exposed to global because the unity template uses it to
+// send the messages
+global['DCL'] = DCL
+
+/** This connects the local game to a native client via WebSocket */
+function initializeUnityEditor(webSocketUrl: string, container: HTMLElement): UnityGame {
+  logger.info(`Connecting WS to ${webSocketUrl}`)
+  container.innerHTML = `<h3>Connecting...</h3>`
+  const ws = new WebSocket(webSocketUrl)
+
+  ws.onclose = function (e) {
+    logger.error('WS closed!', e)
+    container.innerHTML = `<h3 style='color:red'>Disconnected</h3>`
+  }
+
+  ws.onerror = function (e) {
+    logger.error('WS error!', e)
+    container.innerHTML = `<h3 style='color:red'>EERRORR</h3>`
+  }
+
+  ws.onmessage = function (ev) {
+    if (DEBUG_MESSAGES) {
+      logger.info('>>>', ev.data)
+    }
+
+    try {
+      const m = JSON.parse(ev.data)
+      if (m.type && m.payload) {
+        globalThis.globalStore.dispatch(messageFromEngine(m.type, m.payload))
+      } else {
+        logger.error('Unexpected message: ', m)
       }
-    }, 1000)
-  })
+    } catch (e) {
+      logger.error(e)
+    }
+  }
+
+  const gameInstance: UnityGame = {
+    SendMessage(_obj, type, payload) {
+      if (ws.readyState === ws.OPEN) {
+        const msg = JSON.stringify({ type, payload })
+        ws.send(msg)
+      }
+    },
+    SetFullscreen() {
+      // stub
+    }
+  }
+
+  ws.onopen = function () {
+    container.classList.remove('dcl-loading')
+    logger.info('WS open!')
+    gameInstance.SendMessage('', 'Reset', '')
+    container.innerHTML = `<h3  style='color:green'>Connected</h3>`
+    DCL.EngineStarted()
+  }
+
+  return gameInstance
+}
+
+/**
+ * Prevent unity from locking the keyboard when there is an
+ * active element (like delighted textarea)
+ */
+function preventUnityKeyboardLock() {
+  const originalFunction = window.addEventListener
+  window.addEventListener = function (event: any, handler: any, options?: any) {
+    if (['keypress', 'keydown', 'keyup'].includes(event)) {
+      originalFunction.call(
+        window,
+        event,
+        (e) => {
+          if (!document.activeElement || document.activeElement === document.body) {
+            handler(e)
+          }
+        },
+        options
+      )
+    } else {
+      originalFunction.call(window, event, handler, options)
+    }
+    return true
+  }
 }

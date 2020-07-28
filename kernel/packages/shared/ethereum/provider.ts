@@ -17,111 +17,145 @@ declare var window: Window & {
 export const providerFuture = future()
 export const requestManager = new RequestManager(null)
 
+export const loginCompleted = future<void>()
+;(window as any).loginCompleted = loginCompleted
+
 let providerRequested = false
 
-function processLoginAttempt(response: IFuture<{ successful: boolean; provider: any; localIdentity?: Account }>) {
+type LoginData = { successful: boolean; provider: any; localIdentity?: Account }
+
+function processLoginAttempt(response: IFuture<LoginData>, backgroundLogin: IFuture<LoginData>) {
   return async () => {
+    if (!backgroundLogin.isPending) {
+      backgroundLogin
+        .then((result) => response.resolve(result))
+        .catch((e) => defaultLogger.error('could not resolve login', e))
+      return
+    }
+
     // TODO - look for user id matching account - moliva - 18/02/2020
     let userData = getUserProfile()
 
     // Modern dapp browsers...
-    if (window['ethereum']) {
-      if (!isSessionExpired(userData)) {
-        response.resolve({ successful: true, provider: window.ethereum })
-      } else {
-        showEthConnectAdvice(false)
-        let result
-        try {
-          // Request account access if needed
-          const accounts: string[] | undefined = await window.ethereum.enable()
+    if (window['ethereum'] && isSessionExpired(userData)) {
+      showEthConnectAdvice(false)
 
-          if (accounts && accounts.length > 0) {
-            result = { successful: true, provider: window.ethereum }
-          } else {
-            // whether accounts is undefined or empty array => provider not enabled
-            result = {
-              successful: false,
-              provider: createProvider()
-            }
-          }
-        } catch (error) {
-          // User denied account access...
+      let result
+      try {
+        // Request account access if needed
+        const accounts: string[] | undefined = await window.ethereum.enable()
+
+        if (accounts && accounts.length > 0) {
+          result = { successful: true, provider: window.ethereum }
+        } else {
+          // whether accounts is undefined or empty array => provider not enabled
           result = {
             successful: false,
             provider: createProvider()
           }
         }
-        response.resolve(result)
+      } catch (error) {
+        // User denied account access...
+        result = {
+          successful: false,
+          provider: createProvider()
+        }
       }
-    } else if (window.web3 && window.web3.currentProvider) {
-      await removeSessionIfNotValid()
-
-      // legacy providers (don't need for confirmation)
-      response.resolve({ successful: true, provider: window.web3.currentProvider })
+      backgroundLogin.resolve(result)
+      response.resolve(result)
     } else {
-      // otherwise, create a local identity
-      response.resolve({
-        successful: false,
-        provider: createProvider(),
-        localIdentity: Account.create()
-      })
+      defaultLogger.error('invalid login state!')
     }
   }
 }
 
-export async function awaitWeb3Approval(): Promise<void> {
+function processLoginBackground() {
+  const response = future()
+
+  const userData = getUserProfile()
+  if (window['ethereum']) {
+    if (!isSessionExpired(userData)) {
+      response.resolve({ successful: true, provider: window.ethereum })
+    }
+  } else if (window.web3 && window.web3.currentProvider) {
+    removeSessionIfNotValid()
+      .then(() => {
+        // legacy providers (don't need for confirmation)
+        response.resolve({ successful: true, provider: window.web3.currentProvider })
+      })
+      .catch((e) => response.reject(e))
+  } else {
+    // otherwise, create a local identity
+    response.resolve({
+      successful: false,
+      provider: createProvider(),
+      localIdentity: Account.create()
+    })
+  }
+
+  return response
+}
+
+export function awaitWeb3Approval(): Promise<void> {
   if (!providerRequested) {
     providerRequested = true
 
-    const element = document.getElementById('eth-login')
-    if (element) {
-      if (window['ethereum']) {
-        await removeSessionIfNotValid()
-        window['ethereum'].autoRefreshOnNetworkChange = false
-      }
+    new Promise(async () => {
+      const element = document.getElementById('eth-login')
+      if (element) {
+        element.style.display = 'block'
 
-      const button = document.getElementById('eth-login-confirm-button')
-
-      let response = future()
-
-      button!.onclick = processLoginAttempt(response)
-
-      let result
-      while (true) {
-        result = await response
-
-        element.style.display = 'none'
-
-        const button = document.getElementById('eth-relogin-confirm-button')
-
-        response = future()
-
-        button!.onclick = processLoginAttempt(response)
-
-        // if the user signed properly or doesn't have a wallet => move on with login
-        if (result.successful || !window['ethereum']) {
-          break
-        } else {
-          showEthConnectAdvice(true)
+        if (window['ethereum']) {
+          await removeSessionIfNotValid()
+          window['ethereum'].autoRefreshOnNetworkChange = false
         }
+
+        const background = processLoginBackground()
+        background.then((result) => providerFuture.resolve(result)).catch((e) => providerFuture.reject(e))
+
+        const button = document.getElementById('eth-login-confirm-button')
+
+        let response = future()
+
+        button!.onclick = processLoginAttempt(response, background)
+
+        let result
+        while (true) {
+          result = await response
+
+          element.style.display = 'none'
+
+          const button = document.getElementById('eth-relogin-confirm-button')
+
+          response = future()
+
+          button!.onclick = processLoginAttempt(response, background)
+
+          // if the user signed properly or doesn't have a wallet => move on with login
+          if (result.successful || !window['ethereum']) {
+            break
+          } else {
+            showEthConnectAdvice(true)
+          }
+        }
+
+        showEthConnectAdvice(false)
+
+        // post check
+        if (window['ethereum']) {
+          registerProviderChanges()
+        }
+      } else {
+        // otherwise, login element not found (preview, builder)
+        providerFuture.resolve({
+          successful: false,
+          provider: createProvider(),
+          localIdentity: Account.create()
+        })
       }
 
-      showEthConnectAdvice(false)
-
-      // después post check
-      if (window['ethereum']) {
-        registerProviderChanges()
-      }
-
-      providerFuture.resolve(result)
-    } else {
-      // otherwise, login element not found (preview, builder)
-      providerFuture.resolve({
-        successful: false,
-        provider: createProvider(),
-        localIdentity: Account.create()
-      })
-    }
+      loginCompleted.resolve()
+    }).catch((e) => defaultLogger.error('error in login process', e))
   }
 
   providerFuture.then((result) => requestManager.setProvider(result.provider)).catch(defaultLogger.error)

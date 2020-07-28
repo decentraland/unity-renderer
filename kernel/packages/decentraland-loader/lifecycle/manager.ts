@@ -2,18 +2,20 @@
 // to communicate with the Lifecycle worker, so it's a "Server" in terms of decentraland-rpc
 
 import future, { IFuture } from 'fp-future'
+
 import { TransportBasedServer } from 'decentraland-rpc/lib/host/TransportBasedServer'
 import { WebWorkerTransport } from 'decentraland-rpc/lib/common/transports/WebWorker'
 
 import { resolveUrl } from 'atomicHelpers/parseUrl'
-import { ILand } from 'shared/types'
 
 import { DEBUG, parcelLimits, getServerConfigurations, ENABLE_EMPTY_SCENES, LOS, PIN_CATALYST } from 'config'
 
+import { ILand } from 'shared/types'
 import { getFetchContentServer, getFetchMetaContentServer, getFetchMetaContentService } from 'shared/dao/selectors'
-import { Store } from 'redux'
-
 import defaultLogger from 'shared/logger'
+import { StoreContainer } from 'shared/store/rootTypes'
+
+declare const globalThis: StoreContainer & { workerManager: LifecycleManager }
 
 /*
  * The worker is set up on the first require of this file
@@ -84,24 +86,20 @@ let server: LifecycleManager
 
 export const getServer = () => server
 
-declare const window: Window & { globalStore: Store; workerManager: any }
-
 export async function initParcelSceneWorker() {
   server = new LifecycleManager(WebWorkerTransport(worker))
-  window.workerManager = server
+
+  globalThis.workerManager = server
 
   server.enable()
 
+  const state = globalThis.globalStore.getState()
+  const localServer = resolveUrl(document.location.origin, '/local-ipfs')
+
   server.notify('Lifecycle.initialize', {
-    contentServer: DEBUG
-      ? resolveUrl(document.location.origin, '/local-ipfs')
-      : getFetchContentServer(window.globalStore.getState()),
-    metaContentServer: DEBUG
-      ? resolveUrl(document.location.origin, '/local-ipfs')
-      : getFetchMetaContentServer(window.globalStore.getState()),
-    metaContentService: DEBUG
-      ? resolveUrl(document.location.origin, '/local-ipfs')
-      : getFetchMetaContentService(window.globalStore.getState()),
+    contentServer: DEBUG ? localServer : getFetchContentServer(state),
+    metaContentServer: DEBUG ? localServer : getFetchMetaContentServer(state),
+    metaContentService: DEBUG ? localServer : getFetchMetaContentService(state),
     contentServerBundles: DEBUG || PIN_CATALYST ? '' : getServerConfigurations().contentAsBundle + '/',
     lineOfSightRadius: LOS ? Number.parseInt(LOS, 10) : parcelLimits.visibleRadius,
     secureRadius: parcelLimits.secureRadius,
