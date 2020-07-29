@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections;
 using System.Linq;
 using DCL.Helpers;
@@ -89,7 +89,7 @@ namespace DCL
 
         public IEnumerator LoadingCoroutine(Action OnSuccess, Action OnFail)
         {
-            subPromise = new AssetPromise_AB(contentUrl, hash);
+            subPromise = new AssetPromise_AB(contentUrl, hash, asset.container.transform);
             bool success = false;
             subPromise.OnSuccessEvent += (x) => success = true;
             asset.ownerPromise = subPromise;
@@ -163,7 +163,7 @@ namespace DCL
         {
             if (settings.forceNewInstance)
             {
-                return ((AssetLibrary_AB_GameObject) library).GetCopyFromOriginal(id);
+                return ((AssetLibrary_AB_GameObject)library).GetCopyFromOriginal(id);
             }
             else
             {

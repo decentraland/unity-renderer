@@ -2,9 +2,6 @@ using DCL.Helpers;
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Text.RegularExpressions;
 using UnityEngine;
 using UnityEngine.Networking;
 
@@ -12,9 +9,7 @@ namespace DCL
 {
     public class AssetPromise_AB : AssetPromise_WithUrl<Asset_AB>
     {
-        public static bool VERBOSE = false;
-
-        public static int MAX_CONCURRENT_REQUESTS = 30;
+        public static int MAX_CONCURRENT_REQUESTS => CommonScriptableObjects.rendererState.Get() ? 30 : 256;
 
         public static int concurrentRequests = 0;
         public static event Action OnDownloadingProgressUpdate;
@@ -24,35 +19,19 @@ namespace DCL
         public static int downloadingCount => concurrentRequests;
         public static int queueCount => AssetPromiseKeeper_AB.i.waitingPromisesCount;
 
-        static readonly float maxLoadBudgetTime = 0.032f;
-        static float currentLoadBudgetTime = 0;
-
-        public static bool limitTimeBudget => CommonScriptableObjects.rendererState.Get();
-
         Coroutine loadCoroutine;
         static HashSet<string> failedRequestUrls = new HashSet<string>();
 
         List<AssetPromise_AB> dependencyPromises = new List<AssetPromise_AB>();
         UnityWebRequest assetBundleRequest = null;
 
-        static Dictionary<string, int> loadOrderByExtension = new Dictionary<string, int>()
-        {
-            {"png", 0},
-            {"jpg", 1},
-            {"peg", 2},
-            {"bmp", 3},
-            {"psd", 4},
-            {"iff", 5},
-            {"mat", 6},
-            {"nim", 7},
-            {"ltf", 8},
-            {"glb", 9}
-        };
+        public static AssetBundlesLoader assetBundlesLoader = new AssetBundlesLoader();
+        private Transform containerTransform;
 
-        private IOrderedEnumerable<string> assetsToLoad;
-
-        public AssetPromise_AB(string contentUrl, string hash) : base(contentUrl, hash)
+        public AssetPromise_AB(string contentUrl, string hash, Transform containerTransform = null) : base(contentUrl, hash)
         {
+            this.containerTransform = containerTransform;
+            assetBundlesLoader.Start();
         }
 
         protected override bool AddToLibrary()
@@ -105,8 +84,29 @@ namespace DCL
         {
         }
 
+        private UnityWebRequestAsyncOperation asyncOp;
+
         protected IEnumerator LoadAssetBundleWithDeps(string baseUrl, string hash, Action OnSuccess, Action OnFail)
         {
+            string finalUrl = baseUrl + hash;
+
+            if (failedRequestUrls.Contains(finalUrl))
+            {
+                OnFail?.Invoke();
+                yield break;
+            }
+
+            yield return WaitForConcurrentRequestsSlot();
+
+            RegisterConcurrentRequest();
+#if UNITY_EDITOR
+            assetBundleRequest = UnityWebRequestAssetBundle.GetAssetBundle(finalUrl, Hash128.Compute(hash));
+#else
+            //NOTE(Brian): Disable in build because using the asset bundle caching uses IDB.
+            assetBundleRequest = UnityWebRequestAssetBundle.GetAssetBundle(finalUrl);
+#endif
+            asyncOp = assetBundleRequest.SendWebRequest();
+
             if (!DependencyMapLoadHelper.dependenciesMap.ContainsKey(hash))
                 CoroutineStarter.Start(DependencyMapLoadHelper.GetDepMap(baseUrl, hash));
 
@@ -119,64 +119,12 @@ namespace DCL
                     while (it.MoveNext())
                     {
                         var dep = it.Current;
-                        var promise = new AssetPromise_AB(baseUrl, dep);
+                        var promise = new AssetPromise_AB(baseUrl, dep, containerTransform);
                         AssetPromiseKeeper_AB.i.Keep(promise);
                         dependencyPromises.Add(promise);
                     }
                 }
-
-                foreach (var promise in dependencyPromises)
-                {
-                    yield return promise;
-                }
             }
-
-            yield return WaitForConcurrentRequestsSlot();
-
-            RegisterConcurrentRequest();
-            yield return LoadAssetBundle(baseUrl + hash, OnSuccess, OnFail);
-            UnregisterConcurrentRequest();
-        }
-
-        public override string ToString()
-        {
-            string result = $"AB request... loadCoroutine = {loadCoroutine} ... state = {state}\n";
-
-            if (assetBundleRequest != null)
-                result += $"url = {assetBundleRequest.url} ... code = {assetBundleRequest.responseCode} ... progress = {assetBundleRequest.downloadProgress}\n";
-            else
-                result += $"null request for url: {contentUrl + hash}\n";
-
-
-            if (dependencyPromises != null && dependencyPromises.Count > 0)
-            {
-                result += "Dependencies:\n\n";
-                foreach (var p in dependencyPromises)
-                {
-                    result += p.ToString() + "\n\n";
-                }
-            }
-
-            result += "Concurrent requests = " + concurrentRequests;
-
-            return result;
-        }
-
-        IEnumerator LoadAssetBundle(string finalUrl, Action OnSuccess, Action OnFail)
-        {
-            if (failedRequestUrls.Contains(finalUrl))
-            {
-                OnFail?.Invoke();
-                yield break;
-            }
-
-#if UNITY_EDITOR
-            assetBundleRequest = UnityWebRequestAssetBundle.GetAssetBundle(finalUrl, Hash128.Compute(hash));
-#else
-            //NOTE(Brian): Disable in build because using the asset bundle caching uses IDB.
-            assetBundleRequest = UnityWebRequestAssetBundle.GetAssetBundle(finalUrl);
-#endif
-            var asyncOp = assetBundleRequest.SendWebRequest();
 
             while (!asyncOp.isDone)
             {
@@ -201,6 +149,13 @@ namespace DCL
                 yield break;
             }
 
+            UnregisterConcurrentRequest();
+
+            foreach (var promise in dependencyPromises)
+            {
+                yield return promise;
+            }
+
             AssetBundle assetBundle = DownloadHandlerAssetBundle.GetContent(assetBundleRequest);
 
             if (assetBundle == null || asset == null)
@@ -216,102 +171,31 @@ namespace DCL
             asset.ownerAssetBundle = assetBundle;
             asset.assetBundleAssetName = assetBundle.name;
 
-            List<UnityEngine.Object> loadedAssetsList = new List<UnityEngine.Object>();
-
-            yield return LoadAssetsInOrder(assetBundle, loadedAssetsList);
-
-            if (loadCoroutine == null)
-            {
-                OnFail?.Invoke();
-                yield break;
-            }
-
-            foreach (var loadedAsset in loadedAssetsList)
-            {
-                string ext = "any";
-
-                if (loadedAsset is Texture)
-                {
-                    ext = "png";
-                }
-                else if (loadedAsset is Material)
-                {
-                    ext = "mat";
-                }
-                else if (loadedAsset is Animation || loadedAsset is AnimationClip)
-                {
-                    ext = "nim";
-                }
-                else if (loadedAsset is GameObject)
-                {
-                    ext = "glb";
-                }
-
-                if (!asset.assetsByExtension.ContainsKey(ext))
-                    asset.assetsByExtension.Add(ext, new List<UnityEngine.Object>());
-
-                asset.assetsByExtension[ext].Add(loadedAsset);
-            }
-
-            OnSuccess?.Invoke();
+            assetBundlesLoader.MarkAssetBundleForLoad(asset, assetBundle, containerTransform, OnSuccess);
         }
 
-
-        private IEnumerator LoadAssetsInOrder(AssetBundle assetBundle, List<UnityEngine.Object> loadedAssetByName)
+        public override string ToString()
         {
-            string[] assets = assetBundle.GetAllAssetNames();
+            string result = $"AB request... loadCoroutine = {loadCoroutine} ... state = {state}\n";
 
-            assetsToLoad = assets.OrderBy(
-                (x) =>
-                {
-                    string ext = x.Substring(x.Length - 3);
+            if (assetBundleRequest != null)
+                result += $"url = {assetBundleRequest.url} ... code = {assetBundleRequest.responseCode} ... progress = {assetBundleRequest.downloadProgress}\n";
+            else
+                result += $"null request for url: {contentUrl + hash}\n";
 
-                    if (loadOrderByExtension.ContainsKey(ext))
-                        return loadOrderByExtension[ext];
-                    else
-                        return 99;
-                });
 
-            foreach (string assetName in assetsToLoad)
+            if (dependencyPromises != null && dependencyPromises.Count > 0)
             {
-                //NOTE(Brian): For some reason, another coroutine iteration can be triggered after Cleanup().
-                //             To handle this case we exit using this.
-                if (loadCoroutine == null)
+                result += "Dependencies:\n\n";
+                foreach (var p in dependencyPromises)
                 {
-                    yield break;
-                }
-
-                if (asset == null)
-                    break;
-
-                float time = 0;
-
-                if (limitTimeBudget)
-                    time = Time.realtimeSinceStartup;
-
-#if UNITY_EDITOR
-                if (VERBOSE)
-                    Debug.Log("loading asset = " + assetName);
-#endif
-
-                UnityEngine.Object loadedAsset = assetBundle.LoadAsset(assetName);
-
-                if (loadedAsset is Material loadedMaterial)
-                    loadedMaterial.shader = null;
-
-                loadedAssetByName.Add(loadedAsset);
-
-                if (!limitTimeBudget)
-                    continue;
-
-                currentLoadBudgetTime += Time.realtimeSinceStartup - time;
-
-                if (currentLoadBudgetTime > maxLoadBudgetTime)
-                {
-                    currentLoadBudgetTime = 0;
-                    yield return null;
+                    result += p.ToString() + "\n\n";
                 }
             }
+
+            result += "Concurrent requests = " + concurrentRequests;
+
+            return result;
         }
 
         protected override void OnLoad(Action OnSuccess, Action OnFail)

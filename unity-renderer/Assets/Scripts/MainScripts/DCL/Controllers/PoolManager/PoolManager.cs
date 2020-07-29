@@ -71,6 +71,11 @@ namespace DCL
 
         public Pool AddPool(object id, GameObject original, IPooledObjectInstantiator instantiator = null, int maxPrewarmCount = DEFAULT_PREWARM_COUNT, bool isPersistent = false)
         {
+            Pool existingPool = GetPool(id);
+
+            if (existingPool != null && !existingPool.IsValid())
+                RemovePool(id);
+
             if (ContainsPool(id))
             {
                 if (Pool.FindPoolInGameObject(original, out Pool poolAlreadyExists))

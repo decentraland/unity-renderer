@@ -321,6 +321,11 @@ namespace DCL
             return false;
         }
 
+        public bool IsValid()
+        {
+            return original != null;
+        }
+
 #if UNITY_EDITOR
         // In production it will always be false
         private bool isQuitting = false;
