@@ -54,8 +54,6 @@ function* initializeTos() {
 }
 
 function* login() {
-  console['group']('connect#login')
-
   let userId: string
   let identity: ExplorerIdentity
 
@@ -93,7 +91,6 @@ function* login() {
       }
     } catch (e) {
       logger.error(e)
-      console['groupEnd']()
       ReportFatalError(AUTH_ERROR_LOGGED_OUT)
       throw e
     }
@@ -116,10 +113,6 @@ function* login() {
 
   logger.log(`User ${userId} logged in`)
 
-  console['groupEnd']()
-
-  console['group']('connect#ethereum')
-
   let net: ETHEREUM_NETWORK = ETHEREUM_NETWORK.MAINNET
   if (WORLD_EXPLORER) {
     net = yield getAppNetwork()
@@ -133,8 +126,6 @@ function* login() {
 
   yield loginCompleted
   yield put(loginCompletedAction())
-
-  console['groupEnd']()
 }
 
 async function checkTldVsNetwork() {

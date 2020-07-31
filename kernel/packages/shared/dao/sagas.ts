@@ -13,7 +13,9 @@ import {
   SET_ADDED_CATALYST_CANDIDATES,
   SetCatalystCandidates,
   SetAddedCatalystCandidates,
-  CATALYST_REALM_INITIALIZED
+  CATALYST_REALM_INITIALIZED,
+  catalystRealmsScanSuccess,
+  catalystRealmsScanRequested
 } from './actions'
 import { call, put, takeEvery, select, fork, take } from 'redux-saga/effects'
 import { WORLD_EXPLORER, REALM, getDefaultTLD, PIN_CATALYST } from 'config'
@@ -85,12 +87,7 @@ function* loadCatalystRealms() {
     if (!realm) {
       yield call(initializeCatalystCandidates)
 
-      const allCandidates: Candidate[] = yield select(getAllCatalystCandidates)
-
-      realm = yield call(getConfiguredRealm, allCandidates)
-      if (!realm) {
-        realm = yield call(pickCatalystRealm, allCandidates)
-      }
+      realm = yield call(selectRealm)
     }
 
     saveToLocalStorage(CACHE_TLD_KEY, getDefaultTLD())
@@ -115,6 +112,16 @@ function* loadCatalystRealms() {
   defaultLogger.info(`Using Catalyst configuration: `, yield select((state) => state.dao))
 }
 
+export function* selectRealm() {
+  const allCandidates: Candidate[] = yield select(getAllCatalystCandidates)
+
+  let realm = yield call(getConfiguredRealm, allCandidates)
+  if (!realm) {
+    realm = yield call(pickCatalystRealm, allCandidates)
+  }
+  return realm
+}
+
 function getConfiguredRealm(candidates: Candidate[]) {
   if (REALM) {
     return getRealmFromString(REALM, candidates)
@@ -122,6 +129,7 @@ function getConfiguredRealm(candidates: Candidate[]) {
 }
 
 function* initializeCatalystCandidates() {
+  yield put(catalystRealmsScanRequested())
   const candidates: Candidate[] = yield call(fecthCatalystRealms)
 
   yield put(setCatalystCandidates(candidates))
@@ -144,6 +152,7 @@ function* initializeCatalystCandidates() {
   }
 
   yield put(setContentWhitelist(whitelistedCandidates))
+  yield put(catalystRealmsScanSuccess())
 }
 
 async function checkValidRealm(realm: Realm) {
