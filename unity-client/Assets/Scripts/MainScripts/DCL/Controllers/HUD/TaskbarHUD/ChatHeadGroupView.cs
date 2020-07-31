@@ -18,6 +18,7 @@ public class ChatHeadGroupView : MonoBehaviour
     private IChatController chatController;
     private IFriendsController friendsController;
     private ulong rendererStateTimeMark;
+    private RectTransform contentParentRT;
 
     public void Initialize(IChatController chatController, IFriendsController friendsController)
     {
@@ -36,6 +37,19 @@ public class ChatHeadGroupView : MonoBehaviour
 
         CommonScriptableObjects.rendererState.OnChange -= RendererState_OnChange;
         CommonScriptableObjects.rendererState.OnChange += RendererState_OnChange;
+    }
+
+    private void Start()
+    {
+        contentParentRT = container.parent as RectTransform;
+        gameObject.SetActive(false);
+    }
+
+    private void Update()
+    {
+        // NOTE: Update is only enabled when SetParentContainerAsDirty is called 
+        DCL.Helpers.Utils.ForceUpdateLayout(contentParentRT, delayed: true);
+        this.enabled = false;
     }
 
     private void FriendsController_OnUpdateFriendship(string id, FriendshipAction action)
@@ -126,7 +140,7 @@ public class ChatHeadGroupView : MonoBehaviour
         }
     }
 
-    internal ChatHeadButton AddChatHead(string userId, ulong timestamp, bool saveStatusInStorage = true)
+    internal ChatHeadButton AddChatHead(string userId, ulong timestamp, bool saveStatusInStorage = true, bool forceLayoutUpdate = true)
     {
         var existingHead = chatHeads.FirstOrDefault(x => x.profile.userId == userId);
 
@@ -146,6 +160,11 @@ public class ChatHeadGroupView : MonoBehaviour
             }
 
             return existingHead;
+        }
+
+        if (!gameObject.activeSelf)
+        {
+            gameObject.SetActive(true);
         }
 
         GameObject prefab = Resources.Load(CHAT_HEAD_PATH) as GameObject;
@@ -180,7 +199,12 @@ public class ChatHeadGroupView : MonoBehaviour
         if (chatHeads.Count > MAX_GROUP_SIZE)
         {
             var lastChatHead = chatHeads[chatHeads.Count - 1];
-            RemoveChatHead(lastChatHead, saveStatusInStorage);
+            RemoveChatHead(lastChatHead, saveStatusInStorage, forceLayoutUpdate: false);
+        }
+
+        if (forceLayoutUpdate)
+        {
+            SetParentContainerAsDirty();
         }
 
         return chatHead;
@@ -192,16 +216,17 @@ public class ChatHeadGroupView : MonoBehaviour
 
         for (int i = 0; i < chatHeadsToRemove.Length; i++)
         {
-            RemoveChatHead(chatHeadsToRemove[i]);
+            RemoveChatHead(chatHeadsToRemove[i], forceLayoutUpdate: false);
         }
+        SetParentContainerAsDirty();
     }
 
-    internal void RemoveChatHead(string userId)
+    internal void RemoveChatHead(string userId, bool forceLayoutUpdate = true)
     {
-        RemoveChatHead(chatHeads.FirstOrDefault(x => x.profile.userId == userId));
+        RemoveChatHead(chatHeads.FirstOrDefault(x => x.profile.userId == userId), true, forceLayoutUpdate);
     }
 
-    internal void RemoveChatHead(ChatHeadButton chatHead, bool saveStatusInStorage = true)
+    internal void RemoveChatHead(ChatHeadButton chatHead, bool saveStatusInStorage = true, bool forceLayoutUpdate = true)
     {
         if (chatHead == null)
             return;
@@ -216,7 +241,7 @@ public class ChatHeadGroupView : MonoBehaviour
         }
         else
         {
-            Destroy(chatHead.gameObject);
+            DestroyChatHead(chatHead.gameObject, forceLayoutUpdate);
         }
 
         chatHeads.Remove(chatHead);
@@ -232,7 +257,7 @@ public class ChatHeadGroupView : MonoBehaviour
     private void Animator_OnWillFinishHide(ShowHideAnimator animator)
     {
         animator.OnWillFinishHide -= Animator_OnWillFinishHide;
-        Destroy(animator.gameObject);
+        DestroyChatHead(animator.gameObject, true);
     }
 
     private void SaveLatestOpenChats()
@@ -253,8 +278,28 @@ public class ChatHeadGroupView : MonoBehaviour
                     continue;
 
                 CommonScriptableObjects.latestOpenChats.Add(item);
-                AddChatHead(item.userId, item.lastTimestamp, false);
+                AddChatHead(item.userId, item.lastTimestamp, false, forceLayoutUpdate: false);
             }
+            SetParentContainerAsDirty();
         }
+    }
+
+    private void DestroyChatHead(GameObject chatHeadGO, bool forceLayoutUpdate)
+    {
+        Destroy(chatHeadGO);
+
+        if (container.childCount <= 1)
+        {
+            gameObject.SetActive(false);
+        }
+        else if (forceLayoutUpdate)
+        {
+            SetParentContainerAsDirty();
+        }
+    }
+
+    private void SetParentContainerAsDirty()
+    {
+        this.enabled = true;
     }
 }
