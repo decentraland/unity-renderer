@@ -153,7 +153,6 @@ function* initialProfileLoad() {
   yield call(ensureRealmInitialized)
 
   // initialize profile
-  console['group']('connect#profile')
   const userId = yield select(getCurrentUserId)
   let profile = yield ProfileAsPromise(userId)
 
@@ -200,7 +199,6 @@ function* initialProfileLoad() {
     version: profile.version,
     profile: profileToRendererFormat(profile, identity)
   })
-  console['groupEnd']()
 }
 
 /**

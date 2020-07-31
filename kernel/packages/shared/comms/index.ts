@@ -53,7 +53,7 @@ import { Authenticator } from 'dcl-crypto'
 import { getCommsServer, getRealm, getAllCatalystCandidates } from '../dao/selectors'
 import { Realm, LayerUserInfo } from 'shared/dao/types'
 import { Store } from 'redux'
-import { RootState, StoreContainer } from 'shared/store/rootTypes'
+import { RootState } from 'shared/store/rootTypes'
 import { store } from 'shared/store/store'
 import {
   setCatalystRealmCommsStatus,
@@ -71,8 +71,15 @@ import { arrayEquals } from 'atomicHelpers/arrayEquals'
 import { getCommsConfig } from 'shared/meta/selectors'
 import { ensureMetaConfigurationInitialized } from 'shared/meta/index'
 import { ReportFatalError } from 'shared/loading/ReportFatalError'
-import { NEW_LOGIN, UNEXPECTED_ERROR, commsEstablished } from 'shared/loading/types'
+import {
+  NEW_LOGIN,
+  UNEXPECTED_ERROR,
+  commsEstablished,
+  COMMS_COULD_NOT_BE_ESTABLISHED,
+  commsErrorRetrying
+} from 'shared/loading/types'
 import { getIdentity } from 'shared/session'
+import { createLogger } from '../logger'
 
 export type CommsVersion = 'v1' | 'v2'
 export type CommsMode = CommsV1Mode | CommsV2Mode
@@ -101,7 +108,9 @@ type CommsContainer = {
   }
 }
 
-declare const globalThis: StoreContainer & CommsContainer
+declare const globalThis: CommsContainer
+
+const logger = createLogger('comms: ')
 
 export class PeerTrackingInfo {
   public position: Position | null = null
@@ -276,7 +285,7 @@ function ensurePeerTrackingInfo(context: Context, alias: string): PeerTrackingIn
 
 export function processChatMessage(context: Context, fromAlias: string, message: Package<ChatMessage>) {
   const msgId = message.data.id
-  const profile = getProfile(globalThis.globalStore.getState(), getIdentity().address)
+  const profile = getProfile(store.getState(), getIdentity().address)
 
   const peerTrackingInfo = ensurePeerTrackingInfo(context, fromAlias)
   if (!peerTrackingInfo.receivedPublicChatMessages.has(msgId)) {
@@ -304,7 +313,7 @@ export function processChatMessage(context: Context, fromAlias: string, message:
             body: text,
             timestamp: message.time
           }
-          globalThis.globalStore.dispatch(messageReceived(messageEntry))
+          store.dispatch(messageReceived(messageEntry))
         }
       }
     }
@@ -635,7 +644,6 @@ export async function connect(userId: string) {
       }
       case 'v2': {
         await ensureMetaConfigurationInitialized()
-        const store: Store<RootState> = globalThis.globalStore
         const lighthouseUrl = getCommsServer(store.getState())
         const realm = getRealm(store.getState())
         const commsConfig = getCommsConfig(store.getState())
@@ -740,8 +748,42 @@ export async function connect(userId: string) {
 }
 
 export async function startCommunications(context: Context) {
-  const connection = context.worldInstanceConnection!
+  const maxAttemps = 5
+  for (let i = 1; ; ++i) {
+    try {
+      logger.info(`Attempt number ${i}...`)
+      await doStartCommunications(context)
 
+      break
+    } catch (e) {
+      if (e instanceof IdTakenError) {
+        disconnect()
+        ReportFatalError(NEW_LOGIN)
+        throw e
+      } else if (e instanceof ConnectionEstablishmentError) {
+        if (i >= maxAttemps) {
+          // max number of attemps reached => rethrow error
+          logger.info(`Max number of attemps reached (${maxAttemps}), unsuccessful connection`)
+          disconnect()
+          ReportFatalError(COMMS_COULD_NOT_BE_ESTABLISHED)
+          throw e
+        } else {
+          // max number of attempts not reached => continue with loop
+          store.dispatch(commsErrorRetrying(i))
+        }
+      } else {
+        // not a comms issue per se => rethrow error
+        logger.error(`error while trying to establish communications `, e)
+        disconnect()
+        const realm = getRealm(store.getState())
+        store.dispatch(markCatalystRealmConnectionError(realm!))
+      }
+    }
+  }
+}
+
+async function doStartCommunications(context: Context) {
+  const connection = context.worldInstanceConnection!
   try {
     try {
       if (connection instanceof LighthouseWorldInstanceConnection) {
@@ -832,7 +874,6 @@ export async function startCommunications(context: Context) {
 }
 
 function handleReconnectionError() {
-  const store: Store<RootState> = globalThis.globalStore
   const realm = getRealm(store.getState())
 
   if (realm) {
@@ -853,7 +894,6 @@ function handleReconnectionError() {
 }
 
 function handleFullLayer() {
-  const store: Store<RootState> = globalThis.globalStore
   const realm = getRealm(store.getState())
 
   if (realm) {
@@ -911,7 +951,6 @@ export function disconnect() {
 }
 
 export async function fetchLayerUsersParcels(): Promise<ParcelArray[]> {
-  const store: Store<RootState> = globalThis.globalStore
   const realm = getRealm(store.getState())
   const commsUrl = getCommsServer(store.getState())
 

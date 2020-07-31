@@ -43,3 +43,11 @@ export type MarkCatalystRealmFull = ReturnType<typeof markCatalystRealmFull>
 export const MARK_CATALYST_REALM_CONNECTION_ERROR = 'Mark Catalyst Realm Connection Error'
 export const markCatalystRealmConnectionError = (realm: Realm) => action(MARK_CATALYST_REALM_CONNECTION_ERROR, realm)
 export type MarkCatalystRealmConnectionError = ReturnType<typeof markCatalystRealmConnectionError>
+
+export const CATALYST_REALMS_SCAN_REQUESTED = '[Request] Catalyst Realms scan'
+export const catalystRealmsScanRequested = () => action(CATALYST_REALMS_SCAN_REQUESTED)
+export type CatalystRealmsScanRequested = ReturnType<typeof catalystRealmsScanRequested>
+
+export const CATALYST_REALMS_SCAN_SUCCESS = '[Success] Catalyst Realms scan'
+export const catalystRealmsScanSuccess = () => action(CATALYST_REALMS_SCAN_SUCCESS)
+export type CatalystRealmsScanSuccess = ReturnType<typeof catalystRealmsScanSuccess>

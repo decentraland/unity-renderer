@@ -1,22 +1,26 @@
-import { put, takeEvery, select, call } from 'redux-saga/effects'
+import { put, takeEvery, select, call, takeLatest } from 'redux-saga/effects'
 
 import { STATIC_WORLD } from 'config'
 
-import { createLogger } from 'shared/logger'
-import { establishingComms, NEW_LOGIN, COMMS_COULD_NOT_BE_ESTABLISHED, commsErrorRetrying } from 'shared/loading/types'
+import { establishingComms } from 'shared/loading/types'
 import { USER_AUTHENTIFIED } from 'shared/session/actions'
 import { getCurrentIdentity } from 'shared/session/selectors'
 import { setWorldContext } from 'shared/protocol/actions'
-import { ReportFatalError } from 'shared/loading/ReportFatalError'
-import { ensureRealmInitialized } from 'shared/dao/sagas'
+import { ensureRealmInitialized, selectRealm } from 'shared/dao/sagas'
+import { getRealm } from 'shared/dao/selectors'
+import { CATALYST_REALMS_SCAN_SUCCESS, setCatalystRealm } from 'shared/dao/actions'
+import { Realm } from 'shared/dao/types'
+import { realmToString } from 'shared/dao/utils/realmToString'
+import { createLogger } from 'shared/logger'
 
-import { connect, disconnect } from '.'
-import { IdTakenError, ConnectionEstablishmentError } from './interface/types'
+import { connect } from '.'
 
+const DEBUG = false
 const logger = createLogger('comms: ')
 
 export function* commsSaga() {
   yield takeEvery(USER_AUTHENTIFIED, establishCommunications)
+  yield takeLatest(CATALYST_REALMS_SCAN_SUCCESS, changeRealm)
 }
 
 function* establishCommunications() {
@@ -28,41 +32,31 @@ function* establishCommunications() {
 
   const identity = yield select(getCurrentIdentity)
 
-  console['group']('connect#comms')
   yield put(establishingComms())
-  const maxAttemps = 5
-  for (let i = 1; ; ++i) {
-    try {
-      logger.info(`Attempt number ${i}...`)
-      const context = yield connect(identity.address)
-      if (context !== undefined) {
-        yield put(setWorldContext(context))
-      }
-
-      break
-    } catch (e) {
-      if (e instanceof IdTakenError) {
-        disconnect()
-        ReportFatalError(NEW_LOGIN)
-        throw e
-      } else if (e instanceof ConnectionEstablishmentError) {
-        if (i >= maxAttemps) {
-          // max number of attemps reached => rethrow error
-          logger.info(`Max number of attemps reached (${maxAttemps}), unsuccessful connection`)
-          disconnect()
-          ReportFatalError(COMMS_COULD_NOT_BE_ESTABLISHED)
-          throw e
-        } else {
-          // max number of attempts not reached => continue with loop
-          yield put(commsErrorRetrying(i))
-        }
-      } else {
-        // not a comms issue per se => rethrow error
-        logger.error(`error while trying to establish communications `, e)
-        disconnect()
-        throw e
-      }
-    }
+  const context = yield connect(identity.address)
+  if (context !== undefined) {
+    yield put(setWorldContext(context))
   }
-  console['groupEnd']()
+}
+
+function* changeRealm() {
+  const currentRealm: ReturnType<typeof getRealm> = yield select(getRealm)
+  if (!currentRealm) {
+    DEBUG && logger.info(`No realm set, wait for actual DAO initialization`)
+    // if not realm is set => wait for actual dao initialization
+    return
+  }
+
+  const otherRealm = yield call(selectRealm)
+
+  if (!sameRealm(currentRealm, otherRealm)) {
+    logger.info(`Changing realm from ${realmToString(currentRealm)} to ${realmToString(otherRealm)}`)
+    yield put(setCatalystRealm(otherRealm))
+  } else {
+    DEBUG && logger.info(`Realm already set ${realmToString(currentRealm)}`)
+  }
+}
+
+function sameRealm(realm1: Realm, realm2: Realm) {
+  return realm1.catalystName === realm2.catalystName && realm1.layer === realm2.layer
 }
