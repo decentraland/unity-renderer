@@ -142,20 +142,20 @@ public class TaskbarHUDView : MonoBehaviour
     {
         if (chatHeadsGroup != null)
         {
-            chatHeadsGroup.OnHeadToggleOn += OnWindowToggleOn;
-            chatHeadsGroup.OnHeadToggleOff += OnWindowToggleOff;
+            chatHeadsGroup.OnHeadToggleOn -= OnWindowToggleOn;
+            chatHeadsGroup.OnHeadToggleOff -= OnWindowToggleOff;
         }
 
         if (chatButton != null)
         {
-            chatButton.OnToggleOn += OnWindowToggleOn;
-            chatButton.OnToggleOff += OnWindowToggleOff;
+            chatButton.OnToggleOn -= OnWindowToggleOn;
+            chatButton.OnToggleOff -= OnWindowToggleOff;
         }
 
         if (friendsButton != null)
         {
-            friendsButton.OnToggleOn += OnWindowToggleOn;
-            friendsButton.OnToggleOff += OnWindowToggleOff;
+            friendsButton.OnToggleOn -= OnWindowToggleOn;
+            friendsButton.OnToggleOff -= OnWindowToggleOff;
         }
     }
 }
