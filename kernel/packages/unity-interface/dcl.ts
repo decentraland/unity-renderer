@@ -81,6 +81,7 @@ import { changeRealm, catalystRealmConnected, candidatesFetched } from 'shared/d
 import { notifyStatusThroughChat } from 'shared/comms/chat'
 import { getAppNetwork, fetchOwner } from 'shared/web3'
 import { updateStatusMessage } from 'shared/loading/actions'
+import { reportHotScenes, HotSceneInfo } from 'shared/social/hotScenes'
 
 import { uuid } from 'decentraland-ecs/src'
 import { Quaternion, ReadOnlyQuaternion, ReadOnlyVector3, Vector3 } from 'decentraland-ecs/src/decentraland/math'
@@ -440,6 +441,10 @@ const browserInterface = {
   ScenesLoadingFeedback(data: { message: string; loadPercentage: number }) {
     const { message, loadPercentage } = data
     globalThis.globalStore.dispatch(updateStatusMessage(message, loadPercentage))
+  },
+
+  FetchHotScenes() {
+    reportHotScenes().catch((e) => defaultLogger.error('FetchHotScenes error', e))
   }
 }
 globalThis.browserInterface2 = browserInterface
@@ -643,6 +648,18 @@ export const unityInterface = {
   },
   RequestTeleport(teleportData: {}) {
     gameInstance.SendMessage('HUDController', 'RequestTeleport', JSON.stringify(teleportData))
+  },
+  UpdateHotScenesList(info: HotSceneInfo[]) {
+    const chunks = []
+
+    while (info.length) {
+      chunks.push(info.splice(0, CHUNK_SIZE))
+    }
+
+    for (let i = 0; i < chunks.length; i++) {
+      const payload = { chunkIndex: i, chunksCount: chunks.length, scenesInfo: chunks[i] }
+      gameInstance.SendMessage('SceneController', 'UpdateHotScenesList', JSON.stringify(payload))
+    }
   },
 
   // *********************************************************************************
