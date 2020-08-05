@@ -39,7 +39,12 @@ public class PlayerAvatarController : MonoBehaviour
             return;
 
         if (mainCamera == null)
-            return;
+        {
+            mainCamera = Camera.main;
+
+            if (mainCamera == null)
+                return;
+        }
 
         bool shouldBeVisible = Vector3.Distance(mainCamera.transform.position, transform.position) > cameraDistanceToDeactivate;
 
