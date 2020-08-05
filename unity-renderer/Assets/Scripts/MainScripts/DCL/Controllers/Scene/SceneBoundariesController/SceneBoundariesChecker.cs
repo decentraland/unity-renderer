@@ -8,8 +8,7 @@ namespace DCL.Controllers
 {
     public class SceneBoundariesChecker
     {
-        [System.NonSerialized]
-        public float timeBetweenChecks = 1f;
+        [System.NonSerialized] public float timeBetweenChecks = 1f;
 
         HashSet<DecentralandEntity> entitiesToCheck = new HashSet<DecentralandEntity>();
         HashSet<DecentralandEntity> checkedEntities = new HashSet<DecentralandEntity>();
@@ -157,7 +156,8 @@ namespace DCL.Controllers
             {
                 for (int i = 0; i < entity.meshesInfo.renderers.Length; i++)
                 {
-                    entity.meshesInfo.renderers[i].enabled = isInsideBoundaries;
+                    if (entity.meshesInfo.renderers[i] != null)
+                        entity.meshesInfo.renderers[i].enabled = isInsideBoundaries;
                 }
             }
         }
@@ -169,7 +169,8 @@ namespace DCL.Controllers
             {
                 for (int i = 0; i < collidersCount; i++)
                 {
-                    entity.meshesInfo.colliders[i].enabled = isInsideBoundaries;
+                    if (entity.meshesInfo.colliders[i] != null)
+                        entity.meshesInfo.colliders[i].enabled = isInsideBoundaries;
                 }
             }
         }
