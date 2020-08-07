@@ -112,9 +112,11 @@ function emitFile(fileName: string, services: ts.LanguageService) {
   const ecsPackageAMD = loadArtifact(process.env.AMD_PATH || 'decentraland-ecs/artifacts/amd.js')
 
   output.outputFiles.forEach(o => {
-    console.log(`> Emitting ${o.name.replace(ts.sys.getCurrentDirectory(), '')}`)
+    const fileName = o.name.replace(ts.sys.getCurrentDirectory(), '')
+    console.log(`> Emitting ${fileName}`)
 
-    let generatedCode: string = PRODUCTION ? o.text : `eval(${JSON.stringify(o.text)});`
+    const sourceUrl = `\n//# sourceURL=dcl://${fileName}`
+    let generatedCode: string = PRODUCTION ? o.text : `eval(${JSON.stringify(o.text + sourceUrl)});`
 
     let ret =
       `/*! decentraland-ecs@${ecsVersion} */;\n${ecsPackageECS};\n` +
