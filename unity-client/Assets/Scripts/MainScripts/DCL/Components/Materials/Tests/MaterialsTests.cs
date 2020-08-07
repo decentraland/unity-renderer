@@ -196,8 +196,7 @@ namespace Tests
             TestHelpers.InstantiateEntityWithShape(scene, thirdEntityID, DCL.Models.CLASS_ID.BOX_SHAPE, Vector3.zero);
             scene.SharedComponentAttach(
                 thirdEntityID,
-                firstMaterialID,
-                "material"
+                firstMaterialID
             );
 
             Assert.IsTrue(scene.entities[thirdEntityID].meshRootGameObject != null,
@@ -250,8 +249,7 @@ namespace Tests
             TestHelpers.InstantiateEntityWithShape(scene, thirdEntityID, DCL.Models.CLASS_ID.BOX_SHAPE, Vector3.zero);
             scene.SharedComponentAttach(
                 thirdEntityID,
-                firstMaterialID,
-                "material"
+                firstMaterialID
             );
 
             Assert.IsTrue(scene.entities[thirdEntityID].meshRootGameObject != null,
@@ -335,8 +333,7 @@ namespace Tests
             TestHelpers.InstantiateEntityWithShape(scene, secondEntityId, DCL.Models.CLASS_ID.BOX_SHAPE, Vector3.zero);
             scene.SharedComponentAttach(
                 secondEntityId,
-                materialID,
-                "material"
+                materialID
             );
 
             Assert.IsTrue(scene.entities[secondEntityId].meshRootGameObject != null,

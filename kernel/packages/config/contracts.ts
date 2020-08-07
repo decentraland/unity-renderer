@@ -26,13 +26,15 @@ export const contracts = {
     'DCLRegistrar': '0xeb6f5d94d79f0750781cc962908b161b95192f53',
     'DCLController': '0xd4e92f6ea18412dbae8b2d2b69e498a2d1064fa2',
     'Catalyst': '0xadd085f2318e9678bbb18b3e0711328f902b374b',
-    'BuyAdapter': '0xee9cc0eccb4b10444c2d50f5dc0d67bf3417b975',
+    'BuyAdapter': '0xd1e4e2880ff56cd0d5c68da9bed58bfbf0150948',
     'AdapterFeeCollector': '0x5DC888024cB599CfDdb9E6483ED6bAe1fA9e9D18',
-    'AdapterConverter': '0x2782eb28Dcb1eF4E7632273cd4e347e130Ce4646'
+    'AdapterConverter': '0x2782eb28Dcb1eF4E7632273cd4e347e130Ce4646',
+    'POIAllowlist': '0x5DC4a5C214f2161F0D5595a6dDd9352409aE3Ab4',
+    'NAMEDenylist': '0x20c6f1e86eba703a14414a0cbc1b55c89dba7a0f'
   },
   'mainnet': {
     'MANAToken': '0x0f5d2fb29fb7d3cfee444a200298f468908cc942',
-    'LANDRegistry': '0x58db323feb872eee56fba1f3b425879fbc9a54b6',
+    'LANDRegistry': '0xa57e126b341b18c262ad25b86bb4f65b5e2ade45',
     'LANDProxy': '0xf87e31492faf9a91b02ee0deaad50d51d56d5d4d',
     'TerraformReserve': '0xcca95e580bbbd04851ebfb85f77fd46c9b91f11c',
     'ReturnVesting': '0x79c1fdaba012b9a094c495a86ce5c6199cf86368',
@@ -46,7 +48,7 @@ export const contracts = {
     'RCNToken': '0xf970b8e36e23f7fc3fd752eea86f8be8d83375a6',
     'KyberOracle': '0x2aaf69a2df2828b55fa4a5e30ee8c3c7cd9e5d5b',
     'DecentralandInvite': '0xf886313f213c198458eba7ae9329525e64eb763a',
-    'EstateRegistry': '0x55fd705b431f95c8e09fcf85a245377568cc2c6e',
+    'EstateRegistry': '0x1784ef41af86e97f8d28afe95b573a24aeda966e',
     'EstateProxy': '0x959e104e1a4db6317fa58f8295f586e1a978c297',
     'LANDAuction': '0x54b7a124b44054da3692dbc56b116a35c6a3e561',
     'MANABurner': '0xadfeb1de7876fcabeaf87df5a6c566b70f970018',
@@ -73,7 +75,18 @@ export const contracts = {
     'StaySafeDonation': '0x56505a0313ba2b4bc0be23dbb7eb71b7885fca9e',
     'ClaimWearableForFree': '0x8dd61d1a67bce13a87e20a76c6f164c388a726d6',
     'Moonshot2020Collection': '0x6a99abebb48819d2abe92c5e4dc4f48dc09a3ee8',
-    'DAOAgent': '0x9A6ebE7E2a7722F8200d0ffB63a1F6406A0d7dce'
+    'DAOAgent': '0x9A6ebE7E2a7722F8200d0ffB63a1F6406A0d7dce',
+    'LANDMiniMeToken': '0x20dfe381ca71ade2582094cf569a8cb020af5ab1',
+    'EstateMiniMeToken': '0x8568f23f343694650370fe5e254b55bfb704a6c7',
+    'BuyAdapter': '0xf4fbd84193f9aaf9779dedbb415a806933eb1c95',
+    'AdapterFeeCollector': '0x0d58aaae9f0c4d020486f534363f3fca7a6aecb6',
+    'AdapterConverter': '0x2859581da59bd4e16a866dd06b461b76d8e489a4',
+    'DappcraftMoonminerCollection': '0x1e1d4e6262787c8a8783a37fee698bd42aa42bec',
+    'DGSummer2020Collection': '0xbf53c33235cbfc22cef5a61a83484b86342679c5',
+    'PMOuttathisworldCollection': '0x75a3752579dc2d63ca229eebbe3537fbabf85a12',
+    'DgtbleHeadspaceCollection': '0x574f64ac2e7215cba9752b85fc73030f35166bc0',
+    'WonderzoneMeteorchaserCollection': '0x34ed0aa248f60f54dd32fbc9883d6137a491f4f3',
+    'BurningStore': '0x0822d44c2e2f96d4cccad80610134861802b2cca'
   },
   'kovan': {
     'MANAToken': '0x230fc362413d9e862326c2c7084610a5a2fdf78a',

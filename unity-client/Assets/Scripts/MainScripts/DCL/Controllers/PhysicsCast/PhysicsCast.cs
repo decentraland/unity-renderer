@@ -1,9 +1,9 @@
-﻿using DCL.Components;
-using DCL.Controllers;
-using DCL.Helpers;
+﻿using DCL.Helpers;
 using DCL.Interface;
 using DCL.Models;
 using System.Collections.Generic;
+using DCL.Components;
+using DCL.Controllers;
 using UnityEngine;
 
 namespace DCL
@@ -22,12 +22,12 @@ namespace DCL
 
         public void Query(RaycastQuery query)
         {
-            switch (query.queryType)
+            switch (query.raycastType)
             {
-                case "HitFirst":
+                case RaycastType.HIT_FIRST:
                     HitFirst(query);
                     break;
-                case "HitAll":
+                case RaycastType.HIT_ALL:
                     HitAll(query);
                     break;
             }
@@ -37,8 +37,7 @@ namespace DCL
         {
             WebInterface.RaycastHitEntity hitEntity;
 
-            ParcelScene scene;
-            SceneController.i.TryGetScene(query.sceneId, out scene);
+            SceneController.i.TryGetScene(query.sceneId, out ParcelScene scene);
 
             RaycastResultInfo raycastInfo = raycastHandler.Raycast(GetUnityRayFromQuery(query), query.ray.distance, ~layerMaskTarget, scene);
             WebInterface.RayInfo rayInfo = GetRayInfoFromQuery(query);
@@ -69,7 +68,7 @@ namespace DCL
                 };
             }
 
-            WebInterface.ReportRaycastHitFirstResult(query.sceneId, query.queryId, query.queryType, hitEntity);
+            WebInterface.ReportRaycastHitFirstResult(query.sceneId, query.id, query.raycastType, hitEntity);
         }
 
         private void HitAll(RaycastQuery query)
@@ -113,17 +112,15 @@ namespace DCL
                 raycastHitEntities.entities = hitEntityInfoList.ToArray();
             }
 
-            WebInterface.ReportRaycastHitAllResult(query.sceneId, query.queryId, query.queryType, raycastHitEntities);
+            WebInterface.ReportRaycastHitAllResult(query.sceneId, query.id, query.raycastType, raycastHitEntities);
         }
 
         private void HitFirstAvatar(RaycastQuery query)
         {
-
         }
 
         private void HitAllAvatars(RaycastQuery query)
         {
-
         }
 
         private UnityEngine.Ray GetUnityRayFromQuery(RaycastQuery query)

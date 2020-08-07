@@ -29,7 +29,10 @@ namespace DCL
         public int pendingInitMessagesCount;
         public long processedInitMessagesCount;
 
-        public bool isRunning { get { return mainCoroutine != null; } }
+        public bool isRunning
+        {
+            get { return mainCoroutine != null; }
+        }
 
         private List<MessagingController> sortedControllers = new List<MessagingController>();
         private List<MessagingBus> busesToProcess = new List<MessagingBus>();
@@ -56,6 +59,7 @@ namespace DCL
         }
 
         bool populateBusesDirty = true;
+
         public void MarkBusesDirty()
         {
             populateBusesDirty = true;
@@ -66,8 +70,8 @@ namespace DCL
             string currentSceneId = SceneController.i.currentSceneId;
             List<ParcelScene> scenesSortedByDistance = SceneController.i.scenesSortedByDistance;
 
-            int count = scenesSortedByDistance.Count;   // we need to retrieve list count everytime because it
-                                                        // may change after a yield return
+            int count = scenesSortedByDistance.Count; // we need to retrieve list count everytime because it
+            // may change after a yield return
 
             sortedControllers.Clear();
 
@@ -188,9 +192,9 @@ namespace DCL
             if (messagingControllers.ContainsKey(sceneId))
             {
                 // In case there is any pending message from a scene being unloaded we decrease the count accordingly
-                pendingMessagesCount -= messagingControllers[sceneId].messagingBuses[MessagingBusId.INIT].pendingMessagesCount +
-                                        messagingControllers[sceneId].messagingBuses[MessagingBusId.UI].pendingMessagesCount +
-                                        messagingControllers[sceneId].messagingBuses[MessagingBusId.SYSTEM].pendingMessagesCount;
+                pendingMessagesCount -= messagingControllers[sceneId].messagingBuses[MessagingBusType.INIT].pendingMessagesCount +
+                                        messagingControllers[sceneId].messagingBuses[MessagingBusType.UI].pendingMessagesCount +
+                                        messagingControllers[sceneId].messagingBuses[MessagingBusType.SYSTEM].pendingMessagesCount;
 
                 DisposeController(messagingControllers[sceneId]);
                 messagingControllers.Remove(sceneId);
@@ -203,13 +207,12 @@ namespace DCL
             controller.Dispose();
         }
 
-        public string Enqueue(ParcelScene scene, MessagingBus.QueuedSceneMessage_Scene queuedMessage)
+        public void Enqueue(ParcelScene scene, MessagingBus.QueuedSceneMessage_Scene queuedMessage)
         {
-            messagingControllers[queuedMessage.sceneId].Enqueue(scene, queuedMessage, out string busId);
-            return busId;
+            messagingControllers[queuedMessage.sceneId].Enqueue(scene, queuedMessage, out MessagingBusType busId);
         }
 
-        public void ForceEnqueueToGlobal(string busId, MessagingBus.QueuedSceneMessage queuedMessage)
+        public void ForceEnqueueToGlobal(MessagingBusType busId, MessagingBus.QueuedSceneMessage queuedMessage)
         {
             messagingControllers[GLOBAL_MESSAGING_CONTROLLER].ForceEnqueue(busId, queuedMessage);
         }
@@ -221,9 +224,9 @@ namespace DCL
             {
                 // Start processing SYSTEM queue
                 MessagingController sceneMessagingController = messagingControllers[sceneId];
-                sceneMessagingController.StartBus(MessagingBusId.SYSTEM);
-                sceneMessagingController.StartBus(MessagingBusId.UI);
-                sceneMessagingController.StopBus(MessagingBusId.INIT);
+                sceneMessagingController.StartBus(MessagingBusType.SYSTEM);
+                sceneMessagingController.StartBus(MessagingBusType.UI);
+                sceneMessagingController.StopBus(MessagingBusType.INIT);
             }
         }
 
@@ -293,6 +296,5 @@ namespace DCL
 
             controller.enabled = false;
         }
-
     }
 }

@@ -1,3 +1,4 @@
+using System.Net;
 using UnityEngine;
 using DCL.Interface;
 using DCL.Models;
@@ -85,16 +86,57 @@ namespace DCL
             return true;
         }
 
-        public static MessagingBus.QueuedSceneMessage_Scene DecodeSceneMessage(string sceneId, string method, string tag, PB_SendSceneMessage sendSceneMessage, ref MessagingBus.QueuedSceneMessage_Scene queuedMessage)
+        public static void DecodeSceneMessage(string sceneId, string method, string tag, PB_SendSceneMessage sendSceneMessage, ref MessagingBus.QueuedSceneMessage_Scene queuedMessage)
         {
             queuedMessage.type = MessagingBus.QueuedSceneMessage.Type.SCENE_MESSAGE;
             queuedMessage.sceneId = sceneId;
             queuedMessage.method = method;
             queuedMessage.tag = tag;
 
-            queuedMessage.payload = sendSceneMessage;
-
-            return queuedMessage;
+            switch (method)
+            {
+                case MessagingTypes.INIT_DONE:
+                    queuedMessage.payload = new Protocol.SceneReady();
+                    break;
+                case MessagingTypes.QUERY:
+                    QueryMessage query = new QueryMessage();
+                    DecodeQueryMessage(sendSceneMessage.Query.QueryId, sendSceneMessage.Query.Payload, ref query);
+                    queuedMessage.payload = query;
+                    break;
+                case MessagingTypes.ENTITY_CREATE:
+                    queuedMessage.payload = Protocol.CreateEntity.FromPB(sendSceneMessage.CreateEntity);
+                    break;
+                case MessagingTypes.ENTITY_DESTROY:
+                    queuedMessage.payload = Protocol.RemoveEntity.FromPB(sendSceneMessage.RemoveEntity);
+                    break;
+                case MessagingTypes.ENTITY_REPARENT:
+                    queuedMessage.payload = Protocol.SetEntityParent.FromPB(sendSceneMessage.SetEntityParent);
+                    break;
+                case MessagingTypes.SHARED_COMPONENT_CREATE:
+                    queuedMessage.payload = Protocol.SharedComponentCreate.FromPB(sendSceneMessage.ComponentCreated);
+                    break;
+                case MessagingTypes.SHARED_COMPONENT_ATTACH:
+                    queuedMessage.payload = Protocol.SharedComponentAttach.FromPB(sendSceneMessage.AttachEntityComponent);
+                    break;
+                case MessagingTypes.SHARED_COMPONENT_UPDATE:
+                    queuedMessage.payload = Protocol.SharedComponentUpdate.FromPB(sendSceneMessage.ComponentUpdated);
+                    break;
+                case MessagingTypes.SHARED_COMPONENT_DISPOSE:
+                    queuedMessage.payload = Protocol.SharedComponentDispose.FromPB(sendSceneMessage.ComponentDisposed);
+                    break;
+                case MessagingTypes.ENTITY_COMPONENT_CREATE_OR_UPDATE:
+                    queuedMessage.payload = Protocol.EntityComponentCreateOrUpdate.FromPB(sendSceneMessage.UpdateEntityComponent);
+                    break;
+                case MessagingTypes.ENTITY_COMPONENT_DESTROY:
+                    queuedMessage.payload = Protocol.EntityComponentDestroy.FromPB(sendSceneMessage.ComponentRemoved);
+                    break;
+                case MessagingTypes.OPEN_NFT_DIALOG:
+                    queuedMessage.payload = Protocol.OpenNftDialog.FromPB(sendSceneMessage.OpenNFTDialog);
+                    break;
+                case MessagingTypes.OPEN_EXTERNAL_URL:
+                    queuedMessage.payload = Protocol.OpenExternalUrl.FromPB(sendSceneMessage.OpenExternalUrl);
+                    break;
+            }
         }
 
         public static void DecodeTransform(string payload, ref DCLTransform.Model model)
@@ -107,7 +149,7 @@ namespace DCL
             DCL.Interface.PB_Transform pbTransform = DCL.Interface.PB_Transform.Parser.ParseFrom(bytes);
             model.position = new Vector3(pbTransform.Position.X, pbTransform.Position.Y, pbTransform.Position.Z);
             model.scale = new Vector3(pbTransform.Scale.X, pbTransform.Scale.Y, pbTransform.Scale.Z);
-            model.rotation = new Quaternion((float)pbTransform.Rotation.X, (float)pbTransform.Rotation.Y, (float)pbTransform.Rotation.Z, (float)pbTransform.Rotation.W);
+            model.rotation = new Quaternion((float) pbTransform.Rotation.X, (float) pbTransform.Rotation.Y, (float) pbTransform.Rotation.Z, (float) pbTransform.Rotation.W);
         }
 
         public static void DecodeQueryMessage(string queryId, string payload, ref QueryMessage query)
@@ -119,11 +161,11 @@ namespace DCL
             byte[] bytes = System.Convert.FromBase64String(payload);
             PB_RayQuery pbRayQuery = PB_RayQuery.Parser.ParseFrom(bytes);
 
-            query.queryId = queryId;
+            query.queryType = queryId;
             query.payload = new RaycastQuery();
-            query.payload.queryId = pbRayQuery.QueryId;
-            query.payload.queryType = pbRayQuery.QueryType;
-            query.payload.ray = new Models.Ray();
+            query.payload.id = pbRayQuery.QueryId;
+            query.payload.raycastType = Protocol.RaycastLiteralToType(pbRayQuery.QueryType);
+            query.payload.ray = new DCL.Models.Ray();
             query.payload.ray.direction = new Vector3(pbRayQuery.Ray.Direction.X, pbRayQuery.Ray.Direction.Y, pbRayQuery.Ray.Direction.Z);
             query.payload.ray.distance = pbRayQuery.Ray.Distance;
             query.payload.ray.origin = new Vector3(pbRayQuery.Ray.Origin.X, pbRayQuery.Ray.Origin.Y, pbRayQuery.Ray.Origin.Z);
