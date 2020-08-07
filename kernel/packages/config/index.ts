@@ -14,7 +14,7 @@ export const NETWORK_HZ = 10
 
 export namespace interactionLimits {
   /**
-   * click distance, this is the lenght of the ray/lens
+   * click distance, this is the length of the ray/lens
    */
   export const clickDistance = 10
 }
@@ -121,6 +121,7 @@ export const DEBUG =
 export const DEBUG_ANALYTICS = location.search.indexOf('DEBUG_ANALYTICS') !== -1
 export const DEBUG_MOBILE = location.search.indexOf('DEBUG_MOBILE') !== -1
 export const DEBUG_MESSAGES = location.search.indexOf('DEBUG_MESSAGES') !== -1
+export const DEBUG_MESSAGES_QUEUE_PERF = location.search.indexOf('DEBUG_MESSAGES_QUEUE_PERF') !== -1
 export const DEBUG_WS_MESSAGES = location.search.indexOf('DEBUG_WS_MESSAGES') !== -1
 export const DEBUG_REDUX = location.search.indexOf('DEBUG_REDUX') !== -1
 export const DEBUG_LOGIN = location.search.indexOf('DEBUG_LOGIN') !== -1
@@ -137,6 +138,8 @@ export const SCENE_DEBUG_PANEL = location.search.indexOf('SCENE_DEBUG_PANEL') !=
 export const SHOW_FPS_COUNTER = location.search.indexOf('SHOW_FPS_COUNTER') !== -1 || DEBUG
 export const HAS_INITIAL_POSITION_MARK = location.search.indexOf('position') !== -1
 export const NO_ASSET_BUNDLES = location.search.indexOf('NO_ASSET_BUNDLES') !== -1
+export const WSS_ENABLED = qs.ws !== undefined
+export const FORCE_SEND_MESSAGE = location.search.indexOf('FORCE_SEND_MESSAGE') !== -1
 
 export const PIN_CATALYST = qs.PIN_CATALYST
 

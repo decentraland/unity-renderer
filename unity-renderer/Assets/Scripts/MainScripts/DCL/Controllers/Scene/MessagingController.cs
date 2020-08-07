@@ -3,6 +3,7 @@ using DCL.Models;
 using System;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Profiling;
 
 namespace DCL
 {
@@ -14,10 +15,7 @@ namespace DCL
 
         public override bool keepWaiting
         {
-            get
-            {
-                return false;
-            }
+            get { return false; }
         }
     }
 
@@ -33,22 +31,19 @@ namespace DCL
     public class MessagingController : IDisposable
     {
         const char SEPARATOR = '_';
+
         public enum QueueState
         {
             Init,
             Systems,
         }
 
-        public Dictionary<string, MessagingBus> messagingBuses = new Dictionary<string, MessagingBus>();
+        public Dictionary<MessagingBusType, MessagingBus> messagingBuses = new Dictionary<MessagingBusType, MessagingBus>();
         public IMessageHandler messageHandler;
         public string debugTag;
         public bool enabled = true;
 
-        private QueueState currentQueueState
-        {
-            get;
-            set;
-        }
+        private QueueState currentQueueState;
 
         public readonly MessagingBus initBus;
         public readonly MessagingBus systemBus;
@@ -60,38 +55,38 @@ namespace DCL
             this.messageHandler = messageHandler;
 
             //TODO(Brian): This is too hacky, most of the controllers won't be using this system. Refactor this in the future.
-            uiBus = AddMessageBus(MessagingBusId.UI);
-            initBus = AddMessageBus(MessagingBusId.INIT);
-            systemBus = AddMessageBus(MessagingBusId.SYSTEM);
+            uiBus = AddMessageBus(MessagingBusType.UI);
+            initBus = AddMessageBus(MessagingBusType.INIT);
+            systemBus = AddMessageBus(MessagingBusType.SYSTEM);
 
             currentQueueState = QueueState.Init;
 
-            StartBus(MessagingBusId.INIT);
-            StartBus(MessagingBusId.UI);
+            StartBus(MessagingBusType.INIT);
+            StartBus(MessagingBusType.UI);
         }
 
-        private MessagingBus AddMessageBus(string id)
+        private MessagingBus AddMessageBus(MessagingBusType type)
         {
-            var newMessagingBus = new MessagingBus(id, messageHandler, this);
+            var newMessagingBus = new MessagingBus(type, messageHandler, this);
             newMessagingBus.debugTag = debugTag;
 
-            messagingBuses.Add(id, newMessagingBus);
+            messagingBuses.Add(type, newMessagingBus);
             return newMessagingBus;
         }
 
-        public void StartBus(string busId)
+        public void StartBus(MessagingBusType busType)
         {
-            if (messagingBuses.ContainsKey(busId))
+            if (messagingBuses.ContainsKey(busType))
             {
-                messagingBuses[busId].Start();
+                messagingBuses[busType].Start();
             }
         }
 
-        public void StopBus(string busId)
+        public void StopBus(MessagingBusType busType)
         {
-            if (messagingBuses.ContainsKey(busId))
+            if (messagingBuses.ContainsKey(busType))
             {
-                messagingBuses[busId].Stop();
+                messagingBuses[busType].Stop();
             }
         }
 
@@ -117,60 +112,61 @@ namespace DCL
             }
         }
 
-        public void ForceEnqueue(string busId, MessagingBus.QueuedSceneMessage queuedMessage)
+        public void ForceEnqueue(MessagingBusType busType, MessagingBus.QueuedSceneMessage queuedMessage)
         {
-            messagingBuses[busId].Enqueue(queuedMessage);
+            messagingBuses[busType].Enqueue(queuedMessage);
         }
 
-        public void Enqueue(ParcelScene scene, MessagingBus.QueuedSceneMessage_Scene queuedMessage, out string busId)
+        public void Enqueue(ParcelScene scene, MessagingBus.QueuedSceneMessage_Scene queuedMessage, out MessagingBusType busType)
         {
-            busId = "";
+            busType = MessagingBusType.NONE;
 
             QueueMode queueMode = QueueMode.Reliable;
 
             // If current scene is the Global Scene, the bus id should be UI
-            if (scene && scene.sceneData.id == SceneController.i.globalSceneId)
-            {
-                busId = MessagingBusId.UI;
-            }
-            else if (currentQueueState == MessagingController.QueueState.Init)
-            {
-                busId = MessagingBusId.INIT;
-            }
+            if (scene && scene is GlobalScene)
+                busType = MessagingBusType.UI;
+            else if (currentQueueState == QueueState.Init)
+                busType = MessagingBusType.INIT;
             else
-            {
-                busId = MessagingBusId.SYSTEM;
-            }
+                busType = MessagingBusType.SYSTEM;
 
-            // Check if the message type is an UpdateEntityComponent 
-            if (queuedMessage.method == MessagingTypes.ENTITY_COMPONENT_CREATE_OR_UPDATE)
+            // Check if the message type is an EntityComponentCreateOrUpdate 
+            if (queuedMessage.payload is Protocol.EntityComponentCreateOrUpdate)
             {
-                int classId = 0;
-
                 // We need to extract the entityId and the classId from the tag.
                 // The tag format is "entityId_classId", i.e: "E1_2". 
-                GetEntityIdAndClassIdFromTag(queuedMessage.tag, out classId);
+                GetEntityIdAndClassIdFromTag(queuedMessage.tag, out int classId);
 
                 // If it is a transform update, the queue mode is Lossy
-                if (classId == (int)CLASS_ID_COMPONENT.TRANSFORM)
-                {
+                if (classId == (int) CLASS_ID_COMPONENT.TRANSFORM)
                     queueMode = QueueMode.Lossy;
-                }
             }
-            else if (queuedMessage.method == MessagingTypes.QUERY)
+            else if (queuedMessage.payload is Protocol.QueryPayload)
             {
-                busId = MessagingBusId.UI;
+                busType = MessagingBusType.UI;
                 queueMode = QueueMode.Lossy;
             }
-            else if (queuedMessage.method == MessagingTypes.INIT_DONE)
+            else if (queuedMessage.payload is Protocol.SceneReady)
             {
                 // When a INIT DONE message is enqueued, the next messages should be 
                 // enqueued in SYSTEM message bus, but we don't process them until 
                 // scene started has been processed
-                currentQueueState = MessagingController.QueueState.Systems;
+                currentQueueState = QueueState.Systems;
             }
 
-            messagingBuses[busId].Enqueue(queuedMessage, queueMode);
+            switch (busType)
+            {
+                case MessagingBusType.INIT:
+                    initBus.Enqueue(queuedMessage, queueMode);
+                    break;
+                case MessagingBusType.SYSTEM:
+                    systemBus.Enqueue(queuedMessage, queueMode);
+                    break;
+                case MessagingBusType.UI:
+                    uiBus.Enqueue(queuedMessage, queueMode);
+                    break;
+            }
         }
 
         private void GetEntityIdAndClassIdFromTag(string tag, out int classId)

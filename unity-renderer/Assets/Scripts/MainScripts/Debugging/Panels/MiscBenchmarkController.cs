@@ -182,25 +182,27 @@ namespace DCL
                             while (iterator.MoveNext())
                             {
                                 //access to pair using iterator.Current
-                                string key = iterator.Current.Key;
+                                MessagingBusType key = iterator.Current.Key;
                                 MessagingBus bus = controllersIter.Current.Value.messagingBuses[key];
 
-                                if (!pendingMessagesCount.ContainsKey(key))
-                                    pendingMessagesCount[key] = 0;
+                                string keyString = key.ToString();
 
-                                if (!messagesReplaced.ContainsKey(key))
-                                    messagesReplaced[key] = 0;
+                                if (!pendingMessagesCount.ContainsKey(keyString))
+                                    pendingMessagesCount[keyString] = 0;
 
-                                pendingMessagesCount[key] += bus.pendingMessagesCount;
-                                messagesReplaced[key] += bus.unreliableMessagesReplaced;
+                                if (!messagesReplaced.ContainsKey(keyString))
+                                    messagesReplaced[keyString] = 0;
+
+                                pendingMessagesCount[keyString] += bus.pendingMessagesCount;
+                                messagesReplaced[keyString] += bus.unreliableMessagesReplaced;
                             }
                         }
                     }
                 }
 
-                busesLog += $"{MessagingBusId.UI} bus: {pendingMessagesCount[MessagingBusId.UI]} replaced: {messagesReplaced[MessagingBusId.UI]}\n";
-                busesLog += $"{MessagingBusId.INIT} bus: {pendingMessagesCount[MessagingBusId.INIT]} replaced: {messagesReplaced[MessagingBusId.INIT]}\n";
-                busesLog += $"{MessagingBusId.SYSTEM} bus: {pendingMessagesCount[MessagingBusId.SYSTEM]} replaced: {messagesReplaced[MessagingBusId.SYSTEM]}\n";
+                busesLog += $"{MessagingBusType.UI.ToString()} bus: {pendingMessagesCount[MessagingBusType.UI.ToString()]} replaced: {messagesReplaced[MessagingBusType.UI.ToString()]}\n";
+                busesLog += $"{MessagingBusType.INIT.ToString()} bus: {pendingMessagesCount[MessagingBusType.INIT.ToString()]} replaced: {messagesReplaced[MessagingBusType.INIT.ToString()]}\n";
+                busesLog += $"{MessagingBusType.SYSTEM.ToString()} bus: {pendingMessagesCount[MessagingBusType.SYSTEM.ToString()]} replaced: {messagesReplaced[MessagingBusType.SYSTEM.ToString()]}\n";
 
                 statsPanel.SetCellText(1, (int) Rows.MESSAGE_BUSES, busesLog);
 

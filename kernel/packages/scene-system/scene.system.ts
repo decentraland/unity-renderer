@@ -60,6 +60,28 @@ function resolveMapping(mapping: string | undefined, mappingName: string, baseUr
   return (baseUrl.endsWith('/') ? baseUrl : baseUrl + '/') + url
 }
 
+//NOTE(Brian): The idea is to map all string ids used by this scene to ints
+//             so we avoid sending/processing big ids like "xxxxx-xxxxx-xxxxx-xxxxx" 
+//             that are used by i.e. raycasting queries.
+let idToNumberStore: Record<string, number> = {}
+let numberToIdStore: Record<number, string> = {}
+let idToNumberStoreCounter: number = 0
+
+function addIdToStorage(id: string, idAsNumber: number) {
+  idToNumberStore[id] = idAsNumber
+  numberToIdStore[idAsNumber] = id
+}
+
+function getIdAsNumber(id: string): number {
+  if (idToNumberStore[id] === undefined) {
+    idToNumberStoreCounter++
+    addIdToStorage(id, idToNumberStoreCounter)
+    return idToNumberStoreCounter
+  } else {
+    return idToNumberStore[id]
+  }
+}
+
 const componentNameRE = /^(engine\.)/
 
 export default class GamekitScene extends Script {
@@ -162,7 +184,7 @@ export default class GamekitScene extends Script {
 
     if (bootstrapData && bootstrapData.main) {
       const mappingName = bootstrapData.main
-      const mapping = bootstrapData.mappings.find($ => $.file === mappingName)
+      const mapping = bootstrapData.mappings.find(($) => $.file === mappingName)
       const url = resolveMapping(mapping && mapping.hash, mappingName, bootstrapData.baseUrl)
       const html = await fetch(url)
 
@@ -193,7 +215,7 @@ export default class GamekitScene extends Script {
   calculateSceneCenter(parcels: Array<{ x: number; y: number }>): Vector2 {
     let center: Vector2 = new Vector2()
 
-    parcels.forEach(v2 => {
+    parcels.forEach((v2) => {
       center = Vector2.Add(v2, center)
     })
 
@@ -261,7 +283,6 @@ export default class GamekitScene extends Script {
           }
           that.events.push({
             type: 'CreateEntity',
-            tag: entityId,
             payload: { id: entityId } as CreateEntityPayload
           })
         },
@@ -269,7 +290,6 @@ export default class GamekitScene extends Script {
         removeEntity(entityId: string) {
           that.events.push({
             type: 'RemoveEntity',
-            tag: entityId,
             payload: { id: entityId } as RemoveEntityPayload
           })
         },
@@ -351,6 +371,7 @@ export default class GamekitScene extends Script {
 
         /** queries for a specific system with a certain query configuration */
         query(queryType: QueryType, payload: any) {
+          payload.queryId = getIdAsNumber(payload.queryId).toString()
           that.events.push({
             type: 'Query',
             tag: sceneId + '_' + payload.queryId,
@@ -363,7 +384,13 @@ export default class GamekitScene extends Script {
 
         /** subscribe to specific events, events will be handled by the onEvent function */
         subscribe(eventName: string): void {
-          that.eventSubscriber.on(eventName, event => {
+          that.eventSubscriber.on(eventName, (event) => {
+            if (eventName === 'raycastResponse') {
+              let idAsNumber = parseInt(event.data.queryId)
+              if (numberToIdStore[idAsNumber]) {
+                event.data.queryId = numberToIdStore[idAsNumber].toString()
+              }
+            }
             that.fireEvent({ type: eventName, data: event.data })
           })
         },
@@ -406,7 +433,7 @@ export default class GamekitScene extends Script {
           })
         },
 
-        loadModule: async _moduleName => {
+        loadModule: async (_moduleName) => {
           const moduleToLoad = _moduleName.replace(/^@decentraland\//, '')
           let methods: string[] = []
 
@@ -427,7 +454,7 @@ export default class GamekitScene extends Script {
 
           return {
             rpcHandle: moduleToLoad,
-            methods: methods.map(name => ({ name }))
+            methods: methods.map((name) => ({ name }))
           }
         },
         callRpc: async (rpcHandle: string, methodName: string, args: any[]) => {
@@ -451,7 +478,7 @@ export default class GamekitScene extends Script {
 
       {
         const monkeyPatchDcl: any = dcl
-        monkeyPatchDcl.updateEntity = function() {
+        monkeyPatchDcl.updateEntity = function () {
           throw new Error('The scene is using an outdated version of decentraland-ecs, please upgrade to >5.0.0')
         }
       }
@@ -461,7 +488,7 @@ export default class GamekitScene extends Script {
           this.startLoop()
         }
 
-        this.onStartFunctions.forEach($ => {
+        this.onStartFunctions.forEach(($) => {
           try {
             $()
           } catch (e) {
@@ -504,7 +531,7 @@ export default class GamekitScene extends Script {
 
   private setupFpsThrottling(dcl: DecentralandInterface) {
     dcl.subscribe('positionChanged')
-    dcl.onEvent(event => {
+    dcl.onEvent((event) => {
       if (event.type !== 'positionChanged') {
         return
       }
@@ -521,7 +548,7 @@ export default class GamekitScene extends Script {
       const distanceToPlayer = Vector2.Distance(playerPos, scenePos)
 
       let fps: number = 1
-      const insideScene: boolean = this.parcels.some(e => e.x === playerPos.x && e.y === playerPos.y)
+      const insideScene: boolean = this.parcels.some((e) => e.x === playerPos.x && e.y === playerPos.y)
 
       if (insideScene) {
         fps = 30

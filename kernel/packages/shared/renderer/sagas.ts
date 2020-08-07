@@ -71,8 +71,6 @@ function* wrapEngineInstance(_gameInstance: UnityGame) {
 
   _instancedJS
     .then(($) => {
-      // Expose the "kernel" interface as a global object to allow easier inspection
-      global['browserInterface'] = $
       globalThis.globalStore.dispatch(rendererEnabled(_instancedJS))
     })
     .catch((error) => {
@@ -94,6 +92,7 @@ function* handleMessageFromEngine(
       _instancedJS.then(($) => $.onMessage(type, jsonEncodedMessage)).catch((e) => logger.error(e.message))
       return
     }
+
     _instancedJS.then(($) => $.onMessage(type, JSON.parse(jsonEncodedMessage))).catch((e) => logger.error(e.message))
   } else {
     logger.error('Message received without initializing engine', type, jsonEncodedMessage)
