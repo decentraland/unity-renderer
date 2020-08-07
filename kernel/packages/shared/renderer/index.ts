@@ -3,7 +3,7 @@ import { Store } from 'redux'
 import { RootState, StoreContainer } from 'shared/store/rootTypes'
 
 import { isInitialized } from './selectors'
-import { UnityInterface } from 'unity-interface/dcl'
+import { UnityInterface } from "unity-interface/UnityInterface"
 
 declare const globalThis: StoreContainer
 

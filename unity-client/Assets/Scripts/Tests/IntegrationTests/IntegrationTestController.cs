@@ -52,9 +52,9 @@ public class IntegrationTestController : MonoBehaviour
                 entityId,
                 "CreateEntity",
                 JsonConvert.SerializeObject(
-                    new CreateEntityMessage
+                    new Protocol.CreateEntity()
                     {
-                        id = entityId
+                        entityId = entityId
                     }))
         );
 
@@ -83,10 +83,9 @@ public class IntegrationTestController : MonoBehaviour
         {
             scene.EntityComponentCreateOrUpdate(
                 entityId,
-                "transform",
-                (int)CLASS_ID_COMPONENT.TRANSFORM,
+                CLASS_ID_COMPONENT.TRANSFORM,
                 "{\"tag\":\"transform\",\"position\":{\"x\":0,\"y\":0,\"z\":0},\"rotation\":{\"x\":0,\"y\":0,\"z\":0,\"w\":1},\"scale\":{\"x\":1,\"y\":1,\"z\":1}}"
-            , out CleanableYieldInstruction routine);
+                , out CleanableYieldInstruction routine);
         }
 
 
@@ -95,14 +94,13 @@ public class IntegrationTestController : MonoBehaviour
         {
             scene.EntityComponentCreateOrUpdate(
                 entityId,
-                "transform",
-                (int)CLASS_ID_COMPONENT.TRANSFORM,
+                CLASS_ID_COMPONENT.TRANSFORM,
                 "{\"tag\":\"transform\",\"position\":{\"x\":6,\"y\":0,\"z\":5},\"rotation\":{\"x\":0,\"y\":0.39134957508996265,\"z\":0,\"w\":0.9202420931897769},\"scale\":{\"x\":1,\"y\":1,\"z\":1}}"
-            , out CleanableYieldInstruction routine);
+                , out CleanableYieldInstruction routine);
         }
 
         TestHelpers.InstantiateEntityWithTextShape(scene, new Vector3(10, 10, 10),
-            new TextShape.Model() { value = "Hello World!!!" });
+            new TextShape.Model() {value = "Hello World!!!"});
     }
 
     public IEnumerator Verify()

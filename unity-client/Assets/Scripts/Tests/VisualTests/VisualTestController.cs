@@ -78,8 +78,7 @@ public class VisualTestController : MonoBehaviour
 
         scene.SharedComponentAttach(
             entityId,
-            materialID,
-            "material"
+            materialID
         );
 
         Color color = new Color(1, 0.7f, 0.7f);

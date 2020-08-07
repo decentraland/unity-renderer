@@ -7,7 +7,6 @@ using UnityEngine;
 
 namespace MessagingBusTest
 {
-
     public class MainMessagingBusTest
     {
         private const string SEND_SCENE_MESSAGE = "SceneController.SendSceneMessage";
@@ -16,15 +15,19 @@ namespace MessagingBusTest
         protected LinkedList<MessagingBus.QueuedSceneMessage_Scene> queuedMessages = new LinkedList<MessagingBus.QueuedSceneMessage_Scene>();
         protected string dataSource = "../TestResources/SceneMessages/SceneMessagesDump.RealData.txt";
         protected IMessageHandler dummyHandler = new DummyMessageHandler();
+
         protected IEnumerator<MessagingBus.QueuedSceneMessage_Scene> nextQueueMessage;
-        protected MessagingBus bus;
+
+        // protected MessagingBus bus;
+        protected MessagingController controller;
 
         public void SetupTests()
         {
-            if (bus == null)
+            if (controller == null)
             {
-                bus = new MessagingBus("bus", dummyHandler, null);
+                controller = new MessagingController(dummyHandler);
             }
+
             if (nextQueueMessage == null)
             {
                 SetupDataFile();
@@ -36,52 +39,53 @@ namespace MessagingBusTest
         public void MeasureTimeToEnqueueThousandMessages()
         {
             Measure.Method(() =>
-            {
-                for (var i = 0; i < 1000; i++)
                 {
-                    EnqueueNextMessage();
-                }
-            })
-            .SetUp(() => SetupTests())
-            .WarmupCount(3)
-            .MeasurementCount(10)
-            .IterationsPerMeasurement(10)
-            .GC()
-            .Run();
+                    for (var i = 0; i < 1000; i++)
+                    {
+                        EnqueueNextMessage();
+                    }
+                })
+                .SetUp(() => SetupTests())
+                .WarmupCount(3)
+                .MeasurementCount(10)
+                .IterationsPerMeasurement(10)
+                .GC()
+                .Run();
         }
 
         [Test, Performance]
         public void MeasureTimeToProcessThousandMessages()
         {
-            bus.Start();
+            controller.StartBus(MessagingBusType.INIT);
+
             Measure.Method(() =>
-            {
-                var processed = bus.processedMessagesCount;
-                Assert.IsTrue(bus.pendingMessagesCount > 1000);
-                while (bus.processedMessagesCount < processed + 1000)
                 {
-                    bus.ProcessQueue(0.1f, out _);
-                }
-            })
-            .SetUp(() =>
-            {
-                SetupTests();
-                for (var i = 0; i < 1001; i++)
+                    var processed = controller.initBus.processedMessagesCount;
+                    Assert.IsTrue(controller.initBus.pendingMessagesCount > 1000);
+                    while (controller.initBus.processedMessagesCount < processed + 1000)
+                    {
+                        controller.initBus.ProcessQueue(0.1f, out _);
+                    }
+                })
+                .SetUp(() =>
                 {
-                    EnqueueNextMessage();
-                }
-            })
-            .WarmupCount(3)
-            .MeasurementCount(10)
-            .IterationsPerMeasurement(10)
-            .GC()
-            .Run();
+                    SetupTests();
+                    for (var i = 0; i < 1001; i++)
+                    {
+                        EnqueueNextMessage();
+                    }
+                })
+                .WarmupCount(3)
+                .MeasurementCount(10)
+                .IterationsPerMeasurement(10)
+                .GC()
+                .Run();
         }
 
         private void EnqueueNextMessage()
         {
             var queuedMessage = GetNextSceneMessage();
-            bus.Enqueue(queuedMessage);
+            controller.Enqueue(null, queuedMessage, out _);
         }
 
         private string SceneMessagesPath()
@@ -95,6 +99,7 @@ namespace MessagingBusTest
             {
                 throw new InvalidDataException("The file " + SceneMessagesPath() + " doesn't exist!");
             }
+
             var source = new StreamReader(SceneMessagesPath());
             var fileContents = source.ReadToEnd();
             source.Close();
@@ -134,8 +139,10 @@ namespace MessagingBusTest
                 {
                     nextQueueMessage = queuedMessages.GetEnumerator();
                 }
+
                 currentMessage = nextQueueMessage.Current;
             }
+
             return currentMessage;
         }
 
@@ -148,7 +155,6 @@ namespace MessagingBusTest
 
             return SceneMessageUtilities.DecodeSceneMessage(sceneId, message, tag);
         }
-
     }
 
     internal class DummyMessageHandler : IMessageHandler
@@ -175,5 +181,4 @@ namespace MessagingBusTest
         {
         }
     }
-
 }

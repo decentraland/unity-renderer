@@ -14,7 +14,6 @@ import {
 } from 'dcl-social-client'
 
 import { DEBUG_PM, INIT_PRE_LOAD, getServerConfigurations } from 'config'
-import { unityInterface } from 'unity-interface/dcl'
 
 import { Vector3Component } from 'atomicHelpers/landHelpers'
 import { worldToGrid } from 'atomicHelpers/parcelScenePositions'
@@ -54,6 +53,7 @@ import {
 } from 'shared/friends/actions'
 import { ensureWorldRunning } from 'shared/world/worldState'
 import { ensureRealmInitialized } from 'shared/dao/sagas'
+import { unityInterface } from 'unity-interface/UnityInterface'
 
 declare const globalThis: StoreContainer
 

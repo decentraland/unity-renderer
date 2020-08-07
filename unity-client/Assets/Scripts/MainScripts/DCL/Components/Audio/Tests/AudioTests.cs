@@ -62,8 +62,7 @@ namespace Tests
 
             DCLAudioClip audioClip = scene.SharedComponentCreate(
                 audioClipId,
-                "audioClip",
-                (int) DCL.Models.CLASS_ID.AUDIO_CLIP
+                (int) CLASS_ID.AUDIO_CLIP
             ) as DCLAudioClip;
 
             scene.SharedComponentUpdate(audioClipId, JsonUtility.ToJson(model));
