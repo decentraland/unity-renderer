@@ -127,8 +127,7 @@ namespace DCL
 
                 asset.container = null;
 
-                if (subPromise.asset.ownerAssetBundle != null)
-                    subPromise.asset.ownerAssetBundle.Unload(false);
+                AssetPromiseKeeper_AB.i.Forget(subPromise);
 
                 yield break;
             }
@@ -154,9 +153,6 @@ namespace DCL
                 assetBundleModelGO.transform.ResetLocalTRS();
                 yield return null;
             }
-
-            if (subPromise.asset.ownerAssetBundle != null)
-                subPromise.asset.ownerAssetBundle.Unload(false);
         }
 
         protected override Asset_AB_GameObject GetAsset(object id)
