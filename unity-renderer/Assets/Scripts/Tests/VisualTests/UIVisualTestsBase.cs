@@ -50,7 +50,6 @@ public class UIVisualTestsBase : VisualTestsBase
         // Creation
         var component = scene.SharedComponentCreate(
             componentId,
-            "material",
             (int) classId
         ) as SharedComponentType;
         yield return component.routine;

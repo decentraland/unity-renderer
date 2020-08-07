@@ -16,6 +16,7 @@ namespace DCL.Helpers
         public bool isValid = false;
         public HitInfo hit;
     }
+
     public class RaycastResultInfo
     {
         public RaycastHitInfo hitInfo;

@@ -2,6 +2,7 @@ using Unity.PerformanceTesting;
 using NUnit.Framework;
 using DCL;
 using DCL.Interface;
+using DCL.Models;
 
 namespace MessaginPerformanceTests
 {
@@ -9,7 +10,6 @@ namespace MessaginPerformanceTests
     {
         public void SetupTests()
         {
-
         }
 
         [Test, Performance]
@@ -23,18 +23,18 @@ namespace MessaginPerformanceTests
             PB_SendSceneMessage sendSceneMessage;
 
             Measure.Method(() =>
-            {
-                for (var i = 0; i < count; i++)
                 {
-                    MessageDecoder.DecodePayloadChunk(messages[i], out sceneId, out message, out tag, out sendSceneMessage);
-                }
-            })
-            .SetUp(() => SetupTests())
-            .WarmupCount(3)
-            .MeasurementCount(10)
-            .IterationsPerMeasurement(10)
-            .GC()
-            .Run();
+                    for (var i = 0; i < count; i++)
+                    {
+                        MessageDecoder.DecodePayloadChunk(messages[i], out sceneId, out message, out tag, out sendSceneMessage);
+                    }
+                })
+                .SetUp(() => SetupTests())
+                .WarmupCount(3)
+                .MeasurementCount(10)
+                .IterationsPerMeasurement(10)
+                .GC()
+                .Run();
         }
 
         [Test, Performance]
@@ -45,18 +45,18 @@ namespace MessaginPerformanceTests
             DCL.Components.DCLTransform.Model transformModel = new DCL.Components.DCLTransform.Model();
 
             Measure.Method(() =>
-            {
-                for (var i = 0; i < count; i++)
                 {
-                    MessageDecoder.DecodeTransform(messages[i], ref transformModel);
-                }
-            })
-            .SetUp(() => SetupTests())
-            .WarmupCount(3)
-            .MeasurementCount(10)
-            .IterationsPerMeasurement(10)
-            .GC()
-            .Run();
+                    for (var i = 0; i < count; i++)
+                    {
+                        MessageDecoder.DecodeTransform(messages[i], ref transformModel);
+                    }
+                })
+                .SetUp(() => SetupTests())
+                .WarmupCount(3)
+                .MeasurementCount(10)
+                .IterationsPerMeasurement(10)
+                .GC()
+                .Run();
         }
 
         [Test, Performance]
@@ -64,21 +64,21 @@ namespace MessaginPerformanceTests
         {
             string[] messages = GetMessagesFromFile(MessageDecoder.QUERY_FILENAME);
             int count = messages.Length;
-            DCL.Models.QueryMessage queryMessage = new DCL.Models.QueryMessage();
+            QueryMessage queryMessage = new QueryMessage();
 
             Measure.Method(() =>
-            {
-                for (var i = 0; i < count; i++)
                 {
-                    MessageDecoder.DecodeQueryMessage("raycast", messages[i], ref queryMessage);
-                }
-            })
-            .SetUp(() => SetupTests())
-            .WarmupCount(3)
-            .MeasurementCount(10)
-            .IterationsPerMeasurement(10)
-            .GC()
-            .Run();
+                    for (var i = 0; i < count; i++)
+                    {
+                        MessageDecoder.DecodeQueryMessage("raycast", messages[i], ref queryMessage);
+                    }
+                })
+                .SetUp(() => SetupTests())
+                .WarmupCount(3)
+                .MeasurementCount(10)
+                .IterationsPerMeasurement(10)
+                .GC()
+                .Run();
         }
 
         public string[] GetMessagesFromFile(string filename)
@@ -86,8 +86,7 @@ namespace MessaginPerformanceTests
             string fullFilename = System.IO.Path.Combine(MessageDecoder.DUMP_PATH, filename);
             string text = System.IO.File.ReadAllText(fullFilename);
 
-            return text.Split(new char[] { '\n' }, System.StringSplitOptions.RemoveEmptyEntries);
+            return text.Split(new char[] {'\n'}, System.StringSplitOptions.RemoveEmptyEntries);
         }
-
     }
 }
