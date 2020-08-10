@@ -1,7 +1,9 @@
 export async function retry<T>(
   operation: () => Promise<T>,
   attempts: number = 5,
-  onEachFailure: (e: any) => void = (e) => {}
+  onEachFailure: (e: any) => void = (e) => {
+    // Nothing
+  }
 ): Promise<T> {
   let error: any = undefined
   let attempt = 0
