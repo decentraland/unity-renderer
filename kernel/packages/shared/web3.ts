@@ -11,6 +11,7 @@ import { getNetwork, getUserAccount } from './ethereum/EthereumService'
 import { awaitWeb3Approval } from './ethereum/provider'
 import { defaultLogger } from './logger'
 import { CatalystNode, GraphResponse } from './types'
+import { retry } from '../atomicHelpers/retry'
 
 async function getAddress(): Promise<string | undefined> {
   try {
@@ -83,12 +84,12 @@ export async function fetchCatalystNodes(): Promise<CatalystNode[]> {
 
   const contract = new Catalyst(eth, contractAddress)
 
-  const count = Number.parseInt(await contract.methods.catalystCount().call(), 10)
+  const count = Number.parseInt(await retry(() => contract.methods.catalystCount().call()), 10)
 
   const nodes = []
   for (let i = 0; i < count; ++i) {
-    const ids = await contract.methods.catalystIds(i).call()
-    const node = await contract.methods.catalystById(ids).call()
+    const ids = await retry(() => contract.methods.catalystIds(i).call())
+    const node = await retry(() => contract.methods.catalystById(ids).call())
 
     if (node.domain.startsWith('http://')) {
       defaultLogger.warn(`Catalyst node domain using http protocol, skipping ${node.domain}`)

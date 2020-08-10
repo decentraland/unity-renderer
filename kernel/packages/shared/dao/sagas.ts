@@ -33,6 +33,8 @@ import { getAddedServers, getContentWhitelist } from 'shared/meta/selectors'
 import { getAllCatalystCandidates, isRealmInitialized } from './selectors'
 import { saveToLocalStorage, getFromLocalStorage } from '../../atomicHelpers/localStorage'
 import defaultLogger from '../logger'
+import { ReportFatalError } from 'shared/loading/ReportFatalError'
+import { CATALYST_COULD_NOT_LOAD } from 'shared/loading/types'
 
 const CACHE_KEY = 'realm'
 const CATALYST_CANDIDATES_KEY = CACHE_KEY + '-' + SET_CATALYST_CANDIDATES
@@ -85,7 +87,12 @@ function* loadCatalystRealms() {
 
     // if no realm was selected, then do the whole initialization dance
     if (!realm) {
-      yield call(initializeCatalystCandidates)
+      try {
+        yield call(initializeCatalystCandidates)
+      } catch (e) {
+        ReportFatalError(CATALYST_COULD_NOT_LOAD)
+        throw e
+      }
 
       realm = yield call(selectRealm)
     }
