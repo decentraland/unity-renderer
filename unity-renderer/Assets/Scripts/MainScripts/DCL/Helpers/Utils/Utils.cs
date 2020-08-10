@@ -120,11 +120,8 @@ namespace DCL.Helpers
             else
             {
                 Utils.InverseTransformChildTraversal<RectTransform>(
-                (x) =>
-                {
-                    LayoutRebuilder.ForceRebuildLayoutImmediate(x);
-                },
-                rt);
+                    (x) => { LayoutRebuilder.ForceRebuildLayoutImmediate(x); },
+                    rt);
 
                 LayoutRebuilder.ForceRebuildLayoutImmediate(rt);
             }
@@ -135,11 +132,8 @@ namespace DCL.Helpers
             yield return null;
 
             Utils.InverseTransformChildTraversal<RectTransform>(
-            (x) =>
-            {
-                LayoutRebuilder.ForceRebuildLayoutImmediate(x);
-            },
-            rt);
+                (x) => { LayoutRebuilder.ForceRebuildLayoutImmediate(x); },
+                rt);
 
             LayoutRebuilder.ForceRebuildLayoutImmediate(rt);
         }
@@ -406,10 +400,11 @@ namespace DCL.Helpers
         public static Vector2Int WorldToGridPosition(Vector3 worldPosition)
         {
             return new Vector2Int(
-                (int)Mathf.Floor(worldPosition.x / ParcelSettings.PARCEL_SIZE),
-                (int)Mathf.Floor(worldPosition.z / ParcelSettings.PARCEL_SIZE)
+                (int) Mathf.Floor(worldPosition.x / ParcelSettings.PARCEL_SIZE),
+                (int) Mathf.Floor(worldPosition.z / ParcelSettings.PARCEL_SIZE)
             );
         }
+
         public static Vector2 WorldToGridPositionUnclamped(Vector3 worldPosition)
         {
             return new Vector2(
@@ -445,6 +440,7 @@ namespace DCL.Helpers
             {
                 return true;
             }
+
             return false;
         }
 
@@ -609,6 +605,5 @@ namespace DCL.Helpers
 
             return value;
         }
-
     }
 }

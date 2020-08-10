@@ -117,8 +117,7 @@ namespace DCL.Helpers
 
             return scene.EntityComponentCreateOrUpdate(
                 entity.entityId,
-                componentInstanceId,
-                componentClassId,
+                (CLASS_ID_COMPONENT) componentClassId,
                 data
                 , out _) as T;
         }
@@ -194,7 +193,7 @@ namespace DCL.Helpers
 
             string uniqueId = GetComponentUniqueId(scene, "material", (int) id, "-shared-" + disposableIdCounter);
 
-            T result = scene.SharedComponentCreate(uniqueId, "material", (int) id) as T;
+            T result = scene.SharedComponentCreate(uniqueId, (int) id) as T;
 
             Assert.IsNotNull(result, "class-id mismatch!");
 
@@ -207,8 +206,7 @@ namespace DCL.Helpers
         {
             entity.scene.SharedComponentAttach(
                 entity.entityId,
-                component.id,
-                component.componentName
+                component.id
             );
         }
 
@@ -227,8 +225,7 @@ namespace DCL.Helpers
             PB_Transform pB_Transform = GetPBTransform(position, rotation, scale);
             scene.EntityComponentCreateOrUpdate(
                 entity.entityId,
-                "",
-                (int) CLASS_ID_COMPONENT.TRANSFORM,
+                CLASS_ID_COMPONENT.TRANSFORM,
                 System.Convert.ToBase64String(pB_Transform.ToByteArray())
                 , out CleanableYieldInstruction routine);
         }
@@ -440,7 +437,6 @@ namespace DCL.Helpers
 
             scene.SharedComponentCreate(
                 materialComponentID,
-                "material",
                 (int) DCL.Models.CLASS_ID.BASIC_MATERIAL
             );
 
@@ -450,8 +446,7 @@ namespace DCL.Helpers
 
             scene.SharedComponentAttach(
                 entityId,
-                materialComponentID,
-                "material"
+                materialComponentID
             );
         }
 
@@ -462,8 +457,7 @@ namespace DCL.Helpers
 
             scene.SharedComponentCreate(
                 materialComponentID,
-                "material",
-                (int) DCL.Models.CLASS_ID.PBR_MATERIAL
+                (int) CLASS_ID.PBR_MATERIAL
             );
 
             scene.SharedComponentUpdate(
@@ -472,8 +466,7 @@ namespace DCL.Helpers
 
             scene.SharedComponentAttach(
                 entityId,
-                materialComponentID,
-                "material"
+                materialComponentID
             );
         }
 
@@ -496,7 +489,6 @@ namespace DCL.Helpers
 
             scene.SharedComponentCreate(
                 componentId,
-                "shape",
                 (int) classId
             );
 
@@ -506,8 +498,7 @@ namespace DCL.Helpers
 
             scene.SharedComponentAttach(
                 entityId,
-                componentId,
-                "shape"
+                componentId
             );
 
             return componentId;

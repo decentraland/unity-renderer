@@ -1,8 +1,8 @@
 import { registerAPI, exposeMethod } from 'decentraland-rpc/lib/host'
 import { ExposableAPI } from './ExposableAPI'
-import { unityInterface } from 'unity-interface/dcl'
 import { StoreContainer } from 'shared/store/rootTypes'
 import defaultLogger from 'shared/logger'
+import { unityInterface } from 'unity-interface/UnityInterface'
 
 declare const globalThis: StoreContainer
 

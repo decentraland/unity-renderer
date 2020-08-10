@@ -65,7 +65,7 @@ namespace DCL
         public event ProcessDelegate OnMessageProcessInfoEnds;
 #endif
         [System.NonSerialized] public List<ParcelScene> scenesSortedByDistance = new List<ParcelScene>();
-        private Queue<MessagingBus.QueuedSceneMessage_Scene> sceneMessagesPool = new Queue<MessagingBus.QueuedSceneMessage_Scene>();
+        public Queue<MessagingBus.QueuedSceneMessage_Scene> sceneMessagesPool = new Queue<MessagingBus.QueuedSceneMessage_Scene>();
 
         [System.NonSerialized] public bool isDebugMode;
         [System.NonSerialized] public bool isWssDebugMode;
@@ -95,6 +95,8 @@ namespace DCL
 
         private Vector2Int currentGridSceneCoordinate = new Vector2Int(EnvironmentSettings.MORDOR_SCALAR, EnvironmentSettings.MORDOR_SCALAR);
         private Vector2Int sortAuxiliaryVector = new Vector2Int(EnvironmentSettings.MORDOR_SCALAR, EnvironmentSettings.MORDOR_SCALAR);
+
+        private EntryPoint_World worldEntryPoint;
 
         void Awake()
         {
@@ -131,7 +133,12 @@ namespace DCL
                 StartCoroutine(DeferredDecoding());
 
             DCLCharacterController.OnCharacterMoved += SetPositionDirty;
+
+#if !UNITY_EDITOR
+            worldEntryPoint = new EntryPoint_World(this);
+#endif
         }
+
 
         void InitializeSceneBoundariesChecker()
         {
@@ -397,12 +404,7 @@ namespace DCL
 
         public bool IsCharacterInsideScene(ParcelScene scene)
         {
-            bool result = false;
-
-            if (scene.IsInsideSceneBoundaries(DCLCharacterController.i.characterPosition))
-                result = true;
-
-            return result;
+            return scene.IsInsideSceneBoundaries(DCLCharacterController.i.characterPosition);
         }
 
         public void LoadParcelScenesExecute(string decentralandSceneJSON)
@@ -503,7 +505,7 @@ namespace DCL
 
             OnMessageWillQueue?.Invoke(MessagingTypes.SCENE_DESTROY);
 
-            MessagingControllersManager.i.ForceEnqueueToGlobal(MessagingBusId.INIT, queuedMessage);
+            MessagingControllersManager.i.ForceEnqueueToGlobal(MessagingBusType.INIT, queuedMessage);
 
             if (MessagingControllersManager.i.ContainsController(sceneKey))
                 MessagingControllersManager.i.RemoveController(sceneKey);
@@ -561,7 +563,7 @@ namespace DCL
 
             OnMessageWillQueue?.Invoke(MessagingTypes.SCENE_LOAD);
 
-            MessagingControllersManager.i.ForceEnqueueToGlobal(MessagingBusId.INIT, queuedMessage);
+            MessagingControllersManager.i.ForceEnqueueToGlobal(MessagingBusType.INIT, queuedMessage);
 
             sceneSortDirty = true;
 
@@ -576,7 +578,7 @@ namespace DCL
 
             OnMessageWillQueue?.Invoke(MessagingTypes.SCENE_UPDATE);
 
-            MessagingControllersManager.i.ForceEnqueueToGlobal(MessagingBusId.INIT, queuedMessage);
+            MessagingControllersManager.i.ForceEnqueueToGlobal(MessagingBusType.INIT, queuedMessage);
         }
 
         public void UnloadAllScenesQueued()
@@ -585,7 +587,7 @@ namespace DCL
 
             OnMessageWillQueue?.Invoke(MessagingTypes.SCENE_DESTROY);
 
-            MessagingControllersManager.i.ForceEnqueueToGlobal(MessagingBusId.INIT, queuedMessage);
+            MessagingControllersManager.i.ForceEnqueueToGlobal(MessagingBusType.INIT, queuedMessage);
         }
 
         public string SendSceneMessage(string payload)
@@ -637,7 +639,7 @@ namespace DCL
 
             MessageDecoder.DecodeSceneMessage(sceneId, message, messageTag, sendSceneMessage, ref queuedMessage);
 
-            EnqueueMessage(queuedMessage);
+            EnqueueSceneMessage(queuedMessage);
 
             OnMessageDecodeEnds?.Invoke("Misc");
 
@@ -668,25 +670,21 @@ namespace DCL
             }
         }
 
-        private string EnqueueMessage(MessagingBus.QueuedSceneMessage_Scene queuedMessage)
+        public void EnqueueSceneMessage(MessagingBus.QueuedSceneMessage_Scene queuedMessage)
         {
-            ParcelScene scene;
-            TryGetScene(queuedMessage.sceneId, out scene);
+            TryGetScene(queuedMessage.sceneId, out ParcelScene scene);
 
             // If it doesn't exist, create messaging controller for this scene id
             if (!MessagingControllersManager.i.ContainsController(queuedMessage.sceneId))
                 MessagingControllersManager.i.AddController(this, queuedMessage.sceneId);
 
-            string busId = MessagingControllersManager.i.Enqueue(scene, queuedMessage);
-            return busId;
+            MessagingControllersManager.i.Enqueue(scene, queuedMessage);
         }
 
         public bool ProcessMessage(MessagingBus.QueuedSceneMessage_Scene msgObject, out CleanableYieldInstruction yieldInstruction)
         {
             string sceneId = msgObject.sceneId;
-            string tag = msgObject.tag;
             string method = msgObject.method;
-            DCL.Interface.PB_SendSceneMessage payload = msgObject.payload;
 
             yieldInstruction = null;
 
@@ -714,48 +712,100 @@ namespace DCL
                 switch (method)
                 {
                     case MessagingTypes.ENTITY_CREATE:
-                        scene.CreateEntity(tag);
+                    {
+                        if (msgObject.payload is Protocol.CreateEntity payload)
+                            scene.CreateEntity(payload.entityId);
+
                         break;
+                    }
                     case MessagingTypes.ENTITY_REPARENT:
-                        scene.SetEntityParent(payload.SetEntityParent.EntityId, payload.SetEntityParent.ParentId);
-                        break;
+                    {
+                        if (msgObject.payload is Protocol.SetEntityParent payload)
+                            scene.SetEntityParent(payload.entityId, payload.parentId);
 
-                    //NOTE(Brian): EntityComponent messages
+                        break;
+                    }
+
                     case MessagingTypes.ENTITY_COMPONENT_CREATE_OR_UPDATE:
-                        scene.EntityComponentCreateOrUpdate(payload.UpdateEntityComponent.EntityId, payload.UpdateEntityComponent.Name, payload.UpdateEntityComponent.ClassId, payload.UpdateEntityComponent.Data, out yieldInstruction);
-                        break;
-                    case MessagingTypes.ENTITY_COMPONENT_DESTROY:
-                        scene.EntityComponentRemove(payload.ComponentRemoved.EntityId, payload.ComponentRemoved.Name);
-                        break;
+                    {
+                        if (msgObject.payload is Protocol.EntityComponentCreateOrUpdate payload)
+                            scene.EntityComponentCreateOrUpdate(payload.entityId, (CLASS_ID_COMPONENT) payload.classId, payload.json, out yieldInstruction);
 
-                    //NOTE(Brian): SharedComponent messages
+                        break;
+                    }
+
+                    case MessagingTypes.ENTITY_COMPONENT_DESTROY:
+                    {
+                        if (msgObject.payload is Protocol.EntityComponentDestroy payload)
+                            scene.EntityComponentRemove(payload.entityId, payload.name);
+
+                        break;
+                    }
+
                     case MessagingTypes.SHARED_COMPONENT_ATTACH:
-                        scene.SharedComponentAttach(payload.AttachEntityComponent.EntityId, payload.AttachEntityComponent.Id, payload.AttachEntityComponent.Name);
+                    {
+                        if (msgObject.payload is Protocol.SharedComponentAttach payload)
+                            scene.SharedComponentAttach(payload.entityId, payload.id);
+
                         break;
+                    }
+
                     case MessagingTypes.SHARED_COMPONENT_CREATE:
-                        scene.SharedComponentCreate(payload.ComponentCreated.Id, payload.ComponentCreated.Name, payload.ComponentCreated.Classid);
+                    {
+                        if (msgObject.payload is Protocol.SharedComponentCreate payload)
+                            scene.SharedComponentCreate(payload.id, payload.classId);
+
                         break;
+                    }
+
                     case MessagingTypes.SHARED_COMPONENT_DISPOSE:
-                        scene.SharedComponentDispose(payload.ComponentDisposed.Id);
+                    {
+                        if (msgObject.payload is Protocol.SharedComponentDispose payload)
+                            scene.SharedComponentDispose(payload.id);
                         break;
+                    }
+
                     case MessagingTypes.SHARED_COMPONENT_UPDATE:
-                        scene.SharedComponentUpdate(payload.ComponentUpdated.Id, payload.ComponentUpdated.Json, out yieldInstruction);
+                    {
+                        if (msgObject.payload is Protocol.SharedComponentUpdate payload)
+                            scene.SharedComponentUpdate(payload.componentId, payload.json, out yieldInstruction);
                         break;
+                    }
+
                     case MessagingTypes.ENTITY_DESTROY:
-                        scene.RemoveEntity(tag);
+                    {
+                        if (msgObject.payload is Protocol.RemoveEntity payload)
+                            scene.RemoveEntity(payload.entityId);
                         break;
+                    }
+
                     case MessagingTypes.INIT_DONE:
+                    {
                         scene.SetInitMessagesDone();
                         break;
+                    }
+
                     case MessagingTypes.QUERY:
-                        ParseQuery(payload.Query.QueryId, payload.Query.Payload, scene.sceneData.id);
+                    {
+                        if (msgObject.payload is QueryMessage queryMessage)
+                            ParseQuery(queryMessage.payload, scene.sceneData.id);
                         break;
+                    }
+
                     case MessagingTypes.OPEN_EXTERNAL_URL:
-                        OnOpenExternalUrlRequest?.Invoke(scene, payload.OpenExternalUrl.Url);
+                    {
+                        if (msgObject.payload is Protocol.OpenExternalUrl payload)
+                            OnOpenExternalUrlRequest?.Invoke(scene, payload.url);
                         break;
+                    }
+
                     case MessagingTypes.OPEN_NFT_DIALOG:
-                        OnOpenNFTDialogRequest?.Invoke(payload.OpenNFTDialog.AssetContractAddress, payload.OpenNFTDialog.TokenId, payload.OpenNFTDialog.Comment);
+                    {
+                        if (msgObject.payload is Protocol.OpenNftDialog payload)
+                            OnOpenNFTDialogRequest?.Invoke(payload.contactAddress, payload.tokenId, payload.comment);
                         break;
+                    }
+
                     default:
                         Debug.LogError($"Unknown method {method}");
                         return true;
@@ -796,24 +846,18 @@ namespace DCL
             return worldPosition - Utils.GridToWorldPosition(scene.sceneData.basePosition.x, scene.sceneData.basePosition.y);
         }
 
-        public void ParseQuery(string queryId, string payload, string sceneId)
+        public void ParseQuery(object payload, string sceneId)
         {
-            QueryMessage query = new QueryMessage();
-
-            MessageDecoder.DecodeQueryMessage(queryId, payload, ref query);
-
             ParcelScene scene = loadedScenes[sceneId];
 
-            Vector3 worldOrigin = query.payload.ray.origin + Utils.GridToWorldPosition(scene.sceneData.basePosition.x, scene.sceneData.basePosition.y);
-            query.payload.ray.unityOrigin = DCLCharacterController.i.characterPosition.WorldToUnityPosition(worldOrigin);
+            if (!(payload is RaycastQuery raycastQuery))
+                return;
 
-            switch (query.queryId)
-            {
-                case "raycast":
-                    query.payload.sceneId = sceneId;
-                    PhysicsCast.i.Query(query.payload);
-                    break;
-            }
+            Vector3 worldOrigin = raycastQuery.ray.origin + Utils.GridToWorldPosition(scene.sceneData.basePosition.x, scene.sceneData.basePosition.y);
+
+            raycastQuery.ray.unityOrigin = DCLCharacterController.i.characterPosition.WorldToUnityPosition(worldOrigin);
+            raycastQuery.sceneId = sceneId;
+            PhysicsCast.i.Query(raycastQuery);
         }
 
         public T SafeFromJson<T>(string data)

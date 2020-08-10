@@ -17,7 +17,11 @@ namespace DCL
         private void OnPoolRemoved(Pool pool)
         {
             pool.OnCleanup -= OnPoolRemoved;
-            masterAssets.Remove(pool.id);
+            if (masterAssets.ContainsKey(pool.id))
+            {
+                masterAssets[pool.id].Cleanup();
+                masterAssets.Remove(pool.id);
+            }
         }
 
         public override bool Add(AssetType asset)
