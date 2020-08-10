@@ -26,7 +26,8 @@ import {
   COMMS_COULD_NOT_BE_ESTABLISHED,
   MOBILE_NOT_SUPPORTED,
   NOT_INVITED,
-  NEW_LOGIN
+  NEW_LOGIN,
+  CATALYST_COULD_NOT_LOAD
 } from '../loading/types'
 
 const trackingEvents: Record<ExecutionLifecycleEvent, string> = {
@@ -53,13 +54,14 @@ const trackingEvents: Record<ExecutionLifecycleEvent, string> = {
   [FAILED_FETCHING_UNITY]: 'error_fetchengine',
   [COMMS_ERROR_RETRYING]: 'error_comms_',
   [COMMS_COULD_NOT_BE_ESTABLISHED]: 'error_comms_failed',
+  [CATALYST_COULD_NOT_LOAD]: 'error_catalyst_loading',
   [MOBILE_NOT_SUPPORTED]: 'unsupported_mobile',
   [NOT_INVITED]: 'error_not_invited'
 }
 
 export function* metricSaga() {
   for (const event of ExecutionLifecycleEventsList) {
-    yield takeEvery(event, action => {
+    yield takeEvery(event, (action) => {
       const _action: any = action
       queueTrackingEvent('lifecycle event', toTrackingEvent(event, _action.payload))
     })

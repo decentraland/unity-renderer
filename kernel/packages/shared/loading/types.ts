@@ -81,6 +81,8 @@ export const COMMS_ERROR_RETRYING = 'Communications channel error (will retry)'
 export const commsErrorRetrying = (attempt: number) => action(COMMS_ERROR_RETRYING, attempt)
 export const COMMS_COULD_NOT_BE_ESTABLISHED = 'Communications channel error'
 export const commsCouldNotBeEstablished = () => action(COMMS_COULD_NOT_BE_ESTABLISHED)
+export const CATALYST_COULD_NOT_LOAD = 'Catalysts Contract could not be queried'
+export const catalystCouldNotLoad = () => action(CATALYST_COULD_NOT_LOAD)
 export const MOBILE_NOT_SUPPORTED = 'Mobile is not supported'
 export const mobileNotSupported = () => action(MOBILE_NOT_SUPPORTED)
 export const NEW_LOGIN = 'New login'
@@ -109,6 +111,7 @@ export const ExecutionLifecycleNotifications = {
   failedFetchingUnity,
   commsErrorRetrying,
   commsCouldNotBeEstablished,
+  catalystCouldNotLoad,
   newLogin,
   networkMismatch
 }
@@ -135,6 +138,7 @@ export type ExecutionLifecycleEvent =
   | typeof FAILED_FETCHING_UNITY
   | typeof COMMS_ERROR_RETRYING
   | typeof COMMS_COULD_NOT_BE_ESTABLISHED
+  | typeof CATALYST_COULD_NOT_LOAD
   | typeof NEW_LOGIN
   | typeof NETWORK_MISMATCH
 
@@ -160,6 +164,7 @@ export const ExecutionLifecycleEventsList: ExecutionLifecycleEvent[] = [
   COMMS_ERROR_RETRYING,
   MOBILE_NOT_SUPPORTED,
   COMMS_COULD_NOT_BE_ESTABLISHED,
+  CATALYST_COULD_NOT_LOAD,
   NEW_LOGIN,
   NETWORK_MISMATCH
 ]
