@@ -86,7 +86,10 @@ export const contracts = {
     'PMOuttathisworldCollection': '0x75a3752579dc2d63ca229eebbe3537fbabf85a12',
     'DgtbleHeadspaceCollection': '0x574f64ac2e7215cba9752b85fc73030f35166bc0',
     'WonderzoneMeteorchaserCollection': '0x34ed0aa248f60f54dd32fbc9883d6137a491f4f3',
-    'BurningStore': '0x0822d44c2e2f96d4cccad80610134861802b2cca'
+    'BurningStore': '0x0822d44c2e2f96d4cccad80610134861802b2cca',
+    'BaseList': '0x21b6EFf834d7cc8c12A5Ec924939aa521F0FE83F',
+    'POIAllowListProxy': '0x0ef15a1c7a49429a36cb46d4da8c53119242b54e',
+    'NameDenyListProxy': '0x0c4c90a4f29872a2e9ef4c4be3d419792bca9a36'
   },
   'kovan': {
     'MANAToken': '0x230fc362413d9e862326c2c7084610a5a2fdf78a',
