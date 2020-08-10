@@ -6,22 +6,11 @@ using UnityEngine;
 
 namespace DCL
 {
-    public class CollidersManager
+    public class CollidersManager : Singleton<CollidersManager>
     {
         private Dictionary<Collider, ColliderInfo> colliderInfo = new Dictionary<Collider, ColliderInfo>();
         private Dictionary<DecentralandEntity, List<Collider>> collidersByEntity = new Dictionary<DecentralandEntity, List<Collider>>();
         private static CollidersManager instance = null;
-
-        public static CollidersManager i
-        {
-            get
-            {
-                if (instance == null)
-                    instance = new CollidersManager();
-
-                return instance;
-            }
-        }
 
         public static void Release()
         {
@@ -93,7 +82,7 @@ namespace DCL
         {
             dispatcher.OnCleanupEvent -= OnEntityCleanUpEvent;
 
-            RemoveAllEntityColliders((DecentralandEntity)dispatcher);
+            RemoveAllEntityColliders((DecentralandEntity) dispatcher);
         }
 
         public bool GetColliderInfo(Collider collider, out ColliderInfo info)
@@ -154,7 +143,7 @@ namespace DCL
                         collider = meshFilters[i].gameObject.AddComponent<MeshCollider>();
 
                     if (collider is MeshCollider)
-                        ((MeshCollider)collider).sharedMesh = meshFilters[i].sharedMesh;
+                        ((MeshCollider) collider).sharedMesh = meshFilters[i].sharedMesh;
 
                     if (entity != null)
                         AddOrUpdateEntityCollider(entity, collider);
