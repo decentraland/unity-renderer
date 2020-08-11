@@ -1,16 +1,18 @@
 import { gridToWorld } from '../atomicHelpers/parcelScenePositions'
 import { DevTools } from 'shared/apis/DevTools'
 import { ParcelIdentity } from 'shared/apis/ParcelIdentity'
-import { createLogger } from 'shared/logger'
+import { createLogger, createDummyLogger } from 'shared/logger'
 import { EnvironmentData, LoadableParcelScene } from 'shared/types'
 import { getParcelSceneID } from 'shared/world/parcelSceneManager'
 import { SceneWorker } from 'shared/world/SceneWorker'
 import { UnityScene } from './UnityScene'
+import { DEBUG } from 'config'
 
 export class UnityParcelScene extends UnityScene<LoadableParcelScene> {
   constructor(public data: EnvironmentData<LoadableParcelScene>) {
     super(data)
-    this.logger = createLogger(data.data.basePosition.x + ',' + data.data.basePosition.y + ': ')
+    let loggerPrefix = data.data.basePosition.x + ',' + data.data.basePosition.y + ': '
+    this.logger = DEBUG === true ? createLogger(loggerPrefix) : createDummyLogger()
   }
 
   registerWorker(worker: SceneWorker): void {
