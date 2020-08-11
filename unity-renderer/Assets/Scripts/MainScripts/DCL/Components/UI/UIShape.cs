@@ -217,7 +217,7 @@ namespace DCL.Components
 
         public virtual void RefreshAll()
         {
-            RefreshDCLLayoutRecursively();
+            RefreshDCLLayoutRecursively(refreshAlignmentAndPosition: false);
             FixMaxStretchRecursively();
             RefreshDCLLayoutRecursively_Internal(refreshSize: false, refreshAlignmentAndPosition: true);
         }
@@ -262,7 +262,19 @@ namespace DCL.Components
 
             referencesContainer.layoutElement.ignoreLayout = false;
             ConfigureAlignment(referencesContainer.layoutGroup);
-            LayoutRebuilder.ForceRebuildLayoutImmediate(referencesContainer.layoutGroup.transform as RectTransform);
+
+            // NOTE(Santi): It seems to be very much cheaper to execute these 4 instructions in an independet way than
+            //              execute directly the function 'LayoutRebuilder.ForceRebuildLayoutImmediate(referencesContainer.layoutGroup.transform as RectTransform)',
+            //              that theorically already contains these 4 instructions.
+            HorizontalLayoutGroup[] layoutGroups = referencesContainer.layoutGroup.GetComponentsInChildren<HorizontalLayoutGroup>();
+            for (int i = 0; i < layoutGroups.Length; i++)
+            {
+                layoutGroups[i].CalculateLayoutInputHorizontal();
+                layoutGroups[i].CalculateLayoutInputVertical();
+                layoutGroups[i].SetLayoutHorizontal();
+                layoutGroups[i].SetLayoutVertical();
+            }
+
             referencesContainer.layoutElement.ignoreLayout = true;
 
             // Reposition
