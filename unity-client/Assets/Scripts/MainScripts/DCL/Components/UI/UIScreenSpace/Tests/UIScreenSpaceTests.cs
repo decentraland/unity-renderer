@@ -14,6 +14,7 @@ namespace Tests
         [Explicit]
         public IEnumerator TestVisibilityUpdate()
         {
+            scene.isPersistent = false;
             // Create UIScreenSpaceShape
             UIScreenSpace screenSpaceShape =
                 TestHelpers.SharedComponentCreate<UIScreenSpace, UIScreenSpace.Model>(scene,
@@ -107,6 +108,7 @@ namespace Tests
         [UnityTest]
         public IEnumerator TestConstrainedPanelMaskAppliesToParcelsUI()
         {
+            scene.isPersistent = false;
             yield return null;
 
             // Create UIScreenSpaceShape

@@ -92,7 +92,7 @@ namespace FPSDisplayTests
                 counter.AddDeltaTime(value);
             }
 
-            const float eps = 0.0012f;
+            const float eps = 0.002f;
             Assert.LessOrEqual(Mathf.Abs(counter.HiccupsSum - hiccups), eps);
             Assert.AreEqual(counter.HiccupsCountInBuffer, hiccupCount);
             Assert.LessOrEqual(Mathf.Abs(counter.GetTotalSeconds() - totalTime), eps);
