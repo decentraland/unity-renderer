@@ -15,6 +15,7 @@ public enum DCLAction_Trigger
     ToggleWorldChat = 122,
     ToggleUIVisibility = 123,
     ToggleControlsHud = 124,
+    ToggleSettings = 125,
 
     OpenExpressions = 200,
     Expression_Wave = 201,
@@ -184,7 +185,7 @@ public class InputController : MonoBehaviour
 
 public static class InputProcessor
 {
-    private static readonly KeyCode[] MODIFIER_KEYS = new[] { KeyCode.LeftControl, KeyCode.LeftAlt, KeyCode.LeftShift };
+    private static readonly KeyCode[] MODIFIER_KEYS = new[] {KeyCode.LeftControl, KeyCode.LeftAlt, KeyCode.LeftShift};
 
     [Flags]
     public enum Modifier
@@ -265,8 +266,8 @@ public static class InputProcessor
 
     public static bool IsModifierSet(Modifier modifiers, Modifier value)
     {
-        int flagsValue = (int)modifiers;
-        int flagValue = (int)value;
+        int flagsValue = (int) modifiers;
+        int flagValue = (int) value;
 
         return (flagsValue & flagValue) != 0;
     }

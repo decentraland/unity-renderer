@@ -14,26 +14,40 @@ namespace DCL.SettingsData
             get { return settings[i]; }
         }
 
-        public int Length { get { return settings.Length; } }
-        public QualitySettings defaultPreset { get { return settings[defaultPresetIndex]; } }
-        public int defaultIndex { get { return defaultPresetIndex; } }
+        public int Length
+        {
+            get { return settings.Length; }
+        }
+
+        public QualitySettings defaultPreset
+        {
+            get { return settings[defaultPresetIndex]; }
+        }
+
+        public int defaultIndex
+        {
+            get { return defaultPresetIndex; }
+        }
     }
 
     [Serializable]
     public struct QualitySettings
     {
-        public enum TextureQuality { FullRes = 0, HalfRes, QuarterRes, EighthRes }
+        public enum BaseResolution
+        {
+            BaseRes_720,
+            BaseRes_1080,
+            BaseRes_Unlimited
+        }
 
         public string displayName;
 
-        [Tooltip("Base texture level")]
-        public TextureQuality textureQuality;
+        [Tooltip("Base resolution level")] public BaseResolution baseResolution;
 
         [Tooltip("Controls the global anti aliasing setting")]
         public UnityEngine.Rendering.Universal.MsaaQuality antiAliasing;
 
-        [Tooltip("Scales the camera render target allowing the game to render at a resolution different than native resolution. UI is always rendered at native resolution")]
-        [Range(0.5f, 1)]
+        [Tooltip("Scales the camera render target allowing the game to render at a resolution different than native resolution. UI is always rendered at native resolution")] [Range(0.5f, 1)]
         public float renderScale;
 
         [Tooltip("If enabled the main light can be a shadow casting light")]
@@ -45,19 +59,17 @@ namespace DCL.SettingsData
         [Tooltip("Resolution of the main light shadowmap texture")]
         public UnityEngine.Rendering.Universal.ShadowResolution shadowResolution;
 
-        [Tooltip("Camera Far")]
-        [Range(40, 100)]
+        [Tooltip("Camera Far")] [Range(40, 100)]
         public float cameraDrawDistance;
 
-        [Tooltip("Enable bloom post process")]
-        public bool bloom;
+        [Tooltip("Enable bloom post process")] public bool bloom;
 
         [Tooltip("Enable color grading post process")]
         public bool colorGrading;
 
         public bool Equals(QualitySettings otherSetting)
         {
-            if (textureQuality != otherSetting.textureQuality) return false;
+            if (baseResolution != otherSetting.baseResolution) return false;
             if (antiAliasing != otherSetting.antiAliasing) return false;
             if (renderScale != otherSetting.renderScale) return false;
             if (shadows != otherSetting.shadows) return false;

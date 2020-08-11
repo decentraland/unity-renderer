@@ -34,7 +34,7 @@ namespace Tests
 
             testQualitySettings = new QualitySettings()
             {
-                textureQuality = QualitySettings.TextureQuality.HalfRes,
+                baseResolution = QualitySettings.BaseResolution.BaseRes_720,
                 antiAliasing = MsaaQuality._4x,
                 renderScale = 0.1f,
                 shadows = false,
@@ -55,12 +55,6 @@ namespace Tests
             DCL.Settings.i.ApplyQualitySettings(testQualitySettings);
             DCL.Settings.i.ApplyGeneralSettings(testGeneralSettings);
         }
-
-        // public IEnumerator InitScene()
-        // {
-        //     yield return InitUnityScene("InitialScene");
-        //     Object.DestroyImmediate(DCL.WSSController.i.gameObject);
-        // }
 
         protected override IEnumerator TearDown()
         {

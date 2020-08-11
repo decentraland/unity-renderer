@@ -99,7 +99,10 @@ function* handleMessageFromEngine(
   }
 }
 
-namespace DCL {
+export namespace DCL {
+  // This exposes JSEvents emscripten's object
+  export let JSEvents: any
+
   // This function get's called by the engine
   export function EngineStarted() {
     globalThis.globalStore.dispatch(engineStarted())
@@ -113,6 +116,7 @@ namespace DCL {
 // The namespace DCL is exposed to global because the unity template uses it to
 // send the messages
 global['DCL'] = DCL
+;(window as any)['DCL'] = DCL
 
 /** This connects the local game to a native client via WebSocket */
 function initializeUnityEditor(webSocketUrl: string, container: HTMLElement): UnityGame {
