@@ -178,8 +178,6 @@ namespace DCL
             if (DCLCharacterController.i == null)
                 return;
 
-            bool firstSort = string.IsNullOrEmpty(currentSceneId);
-
             currentSceneId = null;
             scenesSortedByDistance.Sort(SortScenesByDistanceMethod);
 
@@ -200,10 +198,6 @@ namespace DCL
                     if (scene.sceneData.id != globalSceneId && characterIsInsideScene)
                     {
                         currentSceneId = scene.sceneData.id;
-
-                        if (firstSort)
-                            CommonScriptableObjects.rendererState.AddLock(this);
-
                         break;
                     }
                 }
@@ -312,7 +306,7 @@ namespace DCL
         {
             InputController_Legacy.i.Update();
 
-            if (lastSortFrame != Time.frameCount && sceneSortDirty)
+            if (lastSortFrame != Time.frameCount || sceneSortDirty)
             {
                 lastSortFrame = Time.frameCount;
                 sceneSortDirty = false;
