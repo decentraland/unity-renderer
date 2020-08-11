@@ -11,7 +11,7 @@ namespace DCL.SettingsHUD
         public const string TEXT_OFF = "OFF";
 
         public SpinBoxPresetted qualityPresetSpinBox = null;
-        public SpinBoxPresetted textureResSpinBox = null;
+        public SpinBoxPresetted baseResSpinBox = null;
         public SpinBoxPresetted shadowResSpinBox = null;
         public Toggle soundToggle = null;
         public Toggle colorGradingToggle = null;
@@ -46,9 +46,9 @@ namespace DCL.SettingsHUD
                 shouldSetAsCustom = false;
             });
 
-            textureResSpinBox.onValueChanged.AddListener(value =>
+            baseResSpinBox.onValueChanged.AddListener(value =>
             {
-                tempQualitySetting.textureQuality = (DCL.SettingsData.QualitySettings.TextureQuality)value;
+                tempQualitySetting.baseResolution = (DCL.SettingsData.QualitySettings.BaseResolution)value;
                 shouldSetAsCustom = true;
                 isDirty = true;
             });
@@ -198,7 +198,7 @@ namespace DCL.SettingsHUD
 
         void UpdateQualitySettings()
         {
-            textureResSpinBox.value = (int)tempQualitySetting.textureQuality;
+            baseResSpinBox.value = (int)tempQualitySetting.baseResolution;
             shadowResSpinBox.value = (int)Mathf.Log((int)tempQualitySetting.shadowResolution, 2) - 8;
             soundToggle.isOn = tempGeneralSetting.sfxVolume > 0 ? true : false;
             colorGradingToggle.isOn = tempQualitySetting.colorGrading;

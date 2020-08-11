@@ -1,8 +1,10 @@
 using Cinemachine;
 using System.Reflection;
+using DCL.Interface;
 using UnityEngine;
 using UnityEngine.Rendering;
 using UnityEngine.Rendering.Universal;
+using QualitySettings = DCL.SettingsData.QualitySettings;
 using UnitySettings = UnityEngine.QualitySettings;
 
 namespace DCL.SettingsController
@@ -21,7 +23,7 @@ namespace DCL.SettingsController
         public CinemachineFreeLook thirdPersonCamera = null;
         public CinemachineVirtualCamera firstPersonCamera = null;
 
-        void Awake()
+        void Start()
         {
             if (lightweightRenderPipelineAsset == null)
             {
@@ -46,9 +48,20 @@ namespace DCL.SettingsController
             Settings.i.OnQualitySettingsChanged -= ApplyQualitySettings;
         }
 
-        void ApplyQualitySettings(SettingsData.QualitySettings qualitySettings)
+        void ApplyQualitySettings(QualitySettings qualitySettings)
         {
-            UnitySettings.masterTextureLimit = (int) qualitySettings.textureQuality;
+            switch (qualitySettings.baseResolution)
+            {
+                case QualitySettings.BaseResolution.BaseRes_720:
+                    WebInterface.SetBaseResolution(720);
+                    break;
+                case QualitySettings.BaseResolution.BaseRes_1080:
+                    WebInterface.SetBaseResolution(1080);
+                    break;
+                case QualitySettings.BaseResolution.BaseRes_Unlimited:
+                    WebInterface.SetBaseResolution(9999);
+                    break;
+            }
 
             if (lightweightRenderPipelineAsset)
             {
@@ -78,6 +91,7 @@ namespace DCL.SettingsController
                 {
                     bloom.active = qualitySettings.bloom;
                 }
+
                 Tonemapping toneMapping;
                 if (postProcessVolume.profile.TryGet<Tonemapping>(out toneMapping))
                 {

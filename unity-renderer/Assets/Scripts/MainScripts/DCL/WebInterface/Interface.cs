@@ -268,6 +268,12 @@ namespace DCL.Interface
             public int y;
         };
 
+        [System.Serializable]
+        public class BaseResolution
+        {
+            public int baseResolution;
+        };
+
 
         //-----------------------------------------------------
         // Raycast
@@ -479,6 +485,7 @@ namespace DCL.Interface
         private static JumpInPayload jumpInPayload = new JumpInPayload();
         private static GotoEvent gotoEvent = new GotoEvent();
         private static SendChatMessageEvent sendChatMessageEvent = new SendChatMessageEvent();
+        private static BaseResolution baseResEvent = new BaseResolution();
 
         public static void SendSceneEvent<T>(string sceneId, string eventType, T payload)
         {
@@ -902,6 +909,12 @@ namespace DCL.Interface
         public static void FetchHotScenes()
         {
             SendMessage("FetchHotScenes");
+        }
+
+        public static void SetBaseResolution(int resolution)
+        {
+            baseResEvent.baseResolution = resolution;
+            SendMessage("SetBaseResolution", baseResEvent);
         }
     }
 }

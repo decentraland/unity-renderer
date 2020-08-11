@@ -20,7 +20,7 @@ namespace Tests
 
             testQualitySettings = new QualitySettings()
             {
-                textureQuality = QualitySettings.TextureQuality.HalfRes,
+                baseResolution = QualitySettings.BaseResolution.BaseRes_1080,
                 antiAliasing = UnityEngine.Rendering.Universal.MsaaQuality._4x,
                 renderScale = 0.1f,
                 shadows = false,
@@ -61,7 +61,7 @@ namespace Tests
         {
             SettingsGeneralView generalContent = controller.view.GetComponentInChildren<SettingsGeneralView>();
             Assert.IsTrue(generalContent.qualityPresetSpinBox.label == SettingsGeneralView.TEXT_QUALITY_CUSTOM, "qualityPresetSpinBox missmatch");
-            Assert.IsTrue(generalContent.textureResSpinBox.value == 1, "textureResSpinBox missmatch");
+            Assert.IsTrue(generalContent.baseResSpinBox.value == 1, "textureResSpinBox missmatch");
             Assert.IsTrue(generalContent.shadowResSpinBox.label == "512", "shadowResSpinBox missmatch");
             Assert.IsTrue(generalContent.soundToggle.isOn == false, "soundToggle missmatch");
             Assert.IsTrue(generalContent.colorGradingToggle.isOn == true, "colorGradingToggle missmatch");

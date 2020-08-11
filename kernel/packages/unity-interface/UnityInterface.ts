@@ -17,18 +17,96 @@ import {
 } from 'shared/types'
 import { nativeMsgBridge } from './nativeMessagesBridge'
 import { HotSceneInfo } from 'shared/social/hotScenes'
+import { defaultLogger } from 'shared/logger'
 
 const MINIMAP_CHUNK_SIZE = 100
 
+let _gameInstance: any = null
+let originalFillMouseEventData: any
+
+function fillMouseEventDataWrapper(eventStruct: any, e: any, target: any) {
+  let widthRatio = _gameInstance.Module.canvas.widthNative / (window.innerWidth * devicePixelRatio)
+  let heightRatio = _gameInstance.Module.canvas.heightNative / (window.innerHeight * devicePixelRatio)
+
+  let eWrapper: any = {
+    clientX: e.clientX * widthRatio,
+    clientY: e.clientY * heightRatio,
+    screenX: e.screenX,
+    screenY: e.screenY,
+    ctrlKey: e.ctrlKey,
+    shiftKey: e.shiftKey,
+    altKey: e.altKey,
+    metaKey: e.metaKey,
+    button: e.button,
+    buttons: e.buttons,
+    movementX: e['movementX'] || e['mozMovementX'] || e['webkitMovementX'],
+    movementY: e['movementY'] || e['mozMovementY'] || e['webkitMovementY'],
+    type: e.type
+  }
+
+  originalFillMouseEventData(eventStruct, eWrapper, target)
+}
+
+export let targetHeight: number = 1080
+
+function resizeCanvas(module: any) {
+  if (targetHeight > 2000) {
+    targetHeight = window.innerHeight * devicePixelRatio
+  }
+
+  let desiredHeight = targetHeight
+
+  let ratio = desiredHeight / module.canvas.height
+  module.setCanvasSize(module.canvas.width * ratio, module.canvas.height * ratio)
+}
+
 export class UnityInterface {
   public debug: boolean = false
-  private gameInstance: any
+  public gameInstance: any
+  public Module: any
+
+  public SetTargetHeight(height: number): void {
+    if (targetHeight === height) {
+      return
+    }
+
+    if (!this.gameInstance.Module) {
+
+      defaultLogger.log(
+        `Can't change base resolution height to ${height}! Are you running explorer in unity editor or native?`
+      )
+      return
+    }
+
+    targetHeight = height
+    window.dispatchEvent(new Event('resize'))
+  }
 
   public Init(gameInstance: any): void {
     if (!WSS_ENABLED) {
       nativeMsgBridge.initNativeMessages(gameInstance)
     }
+
     this.gameInstance = gameInstance
+    this.Module = this.gameInstance.Module
+    _gameInstance = gameInstance
+
+    if (this.Module !== undefined) {
+      window.addEventListener('resize', this.resizeCanvasDelayed)
+      this.resizeCanvasDelayed(null)
+      this.waitForFillMouseEventData()
+    }
+  }
+
+  public waitForFillMouseEventData() {
+    let DCL = (window as any)['DCL']
+
+    if (DCL.JSEvents !== undefined) {
+      originalFillMouseEventData = DCL.JSEvents.fillMouseEventData
+      DCL.JSEvents.fillMouseEventData = fillMouseEventDataWrapper
+    } else {
+      setTimeout(this.waitForFillMouseEventData, 100)
+    }
   }
 
   public SendGenericMessage(object: string, method: string, payload: string) {
@@ -292,6 +370,12 @@ export class UnityInterface {
 
   public OnBuilderKeyDown(key: string) {
     this.SendBuilderMessage('OnBuilderKeyDown', key)
+  }
+
+  private resizeCanvasDelayed(ev: UIEvent | null) {
+    window.setTimeout(() => {
+      resizeCanvas(_gameInstance.Module)
+    }, 100)
   }
 }
 

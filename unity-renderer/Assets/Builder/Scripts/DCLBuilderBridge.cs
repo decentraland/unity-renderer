@@ -623,7 +623,7 @@ namespace Builder
         {
             DCL.SettingsData.QualitySettings settings = new DCL.SettingsData.QualitySettings()
             {
-                textureQuality = DCL.SettingsData.QualitySettings.TextureQuality.FullRes,
+                baseResolution = DCL.SettingsData.QualitySettings.BaseResolution.BaseRes_1080,
                 antiAliasing = UnityEngine.Rendering.Universal.MsaaQuality._2x,
                 renderScale = 1,
                 shadows = true,
