@@ -38,11 +38,11 @@ export const NOT_STARTED = 'Getting things ready...'
 export const notStarted = () => action(NOT_STARTED)
 export const LOADING_STARTED = 'Authenticating user...'
 export const loadingStarted = () => action(LOADING_STARTED)
-export const AUTH_SUCCESSFUL = 'Authentication successful.'
+export const AUTH_SUCCESSFUL = 'Authentication successful. Loading the experience...'
 export const authSuccessful = () => action(AUTH_SUCCESSFUL)
 export const NOT_INVITED = 'Auth error: not invited'
 export const notInvited = () => action(NOT_INVITED)
-export const UNITY_CLIENT_LOADED = 'Rendering engine finished loading.'
+export const UNITY_CLIENT_LOADED = 'Rendering engine finished loading! Setting up scene system...'
 export const unityClientLoaded = () => action(UNITY_CLIENT_LOADED)
 export const LOADING_SCENES = 'Loading scenes...'
 export const loadingScenes = () => action(LOADING_SCENES)
