@@ -79,9 +79,6 @@ public class RenderingController : MonoBehaviour
 
     private void AddLock(object id)
     {
-        if (CommonScriptableObjects.rendererState.Get())
-            return;
-
         renderingActivatedAckLock.AddLock(id);
     }
 
