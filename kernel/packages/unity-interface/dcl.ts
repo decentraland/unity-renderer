@@ -1,12 +1,5 @@
 import { TeleportController } from 'shared/world/TeleportController'
-import {
-  DEBUG,
-  EDITOR,
-  ENGINE_DEBUG_PANEL,
-  SCENE_DEBUG_PANEL,
-  SHOW_FPS_COUNTER,
-  NO_ASSET_BUNDLES
-} from 'config'
+import { DEBUG, EDITOR, ENGINE_DEBUG_PANEL, SCENE_DEBUG_PANEL, SHOW_FPS_COUNTER, NO_ASSET_BUNDLES } from 'config'
 import { aborted } from 'shared/loading/ReportFatalError'
 import { loadingScenes, teleportTriggered } from 'shared/loading/types'
 import { defaultLogger } from 'shared/logger'
@@ -50,7 +43,7 @@ export let isTheFirstLoading = true
 
 export function setLoadingScreenVisible(shouldShow: boolean) {
   document.getElementById('overlay')!.style.display = shouldShow ? 'block' : 'none'
-  document.getElementById('load-messages-wrapper')!.style.display = shouldShow ? 'block' : 'none'
+  document.getElementById('load-messages-wrapper')!.style.display = shouldShow ? 'flex' : 'none'
   document.getElementById('progress-bar')!.style.display = shouldShow ? 'block' : 'none'
   const loadingAudio = document.getElementById('loading-audio') as HTMLMediaElement
 
