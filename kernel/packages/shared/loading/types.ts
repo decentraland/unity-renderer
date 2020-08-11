@@ -38,6 +38,8 @@ export const NOT_STARTED = 'Getting things ready...'
 export const notStarted = () => action(NOT_STARTED)
 export const LOADING_STARTED = 'Authenticating user...'
 export const loadingStarted = () => action(LOADING_STARTED)
+export const AWAITING_USER_SIGNATURE = 'Awaiting your signature...'
+export const awaitingUserSignature = () => action(AWAITING_USER_SIGNATURE)
 export const AUTH_SUCCESSFUL = 'Authentication successful. Loading the experience...'
 export const authSuccessful = () => action(AUTH_SUCCESSFUL)
 export const NOT_INVITED = 'Auth error: not invited'
@@ -141,10 +143,12 @@ export type ExecutionLifecycleEvent =
   | typeof CATALYST_COULD_NOT_LOAD
   | typeof NEW_LOGIN
   | typeof NETWORK_MISMATCH
+  | typeof AWAITING_USER_SIGNATURE
 
 export const ExecutionLifecycleEventsList: ExecutionLifecycleEvent[] = [
   NOT_STARTED,
   LOADING_STARTED,
+  AWAITING_USER_SIGNATURE,
   AUTH_SUCCESSFUL,
   UNITY_CLIENT_LOADED,
   NOT_INVITED,

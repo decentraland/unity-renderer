@@ -27,13 +27,15 @@ import {
   MOBILE_NOT_SUPPORTED,
   NOT_INVITED,
   NEW_LOGIN,
-  CATALYST_COULD_NOT_LOAD
+  CATALYST_COULD_NOT_LOAD,
+  AWAITING_USER_SIGNATURE
 } from '../loading/types'
 
 const trackingEvents: Record<ExecutionLifecycleEvent, string> = {
   // lifecycle events
   [NOT_STARTED]: 'session_start',
   [LOADING_STARTED]: 'loading_1_start',
+  [AWAITING_USER_SIGNATURE]: 'loading_1_1_awaiting_user_signature',
   [AUTH_SUCCESSFUL]: 'loading_2_authOK',
   [ESTABLISHING_COMMS]: 'loading_3_init_comms',
   [COMMS_ESTABLISHED]: 'loading_4_comms_established',

@@ -176,10 +176,13 @@
     }
 
     body.dcl-loading #load-messages-wrapper {
-      display: block;
+      display: flex;
     }
     #load-messages-wrapper {
       display: none;
+      justify-content: center;
+      align-items: center;
+      flex-direction: column;
       z-index: 8;
 
       position: fixed;
@@ -191,11 +194,14 @@
 
       color: white;
       text-align: center;
-      font-family: -apple-system, system-ui, system-ui, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
       font-size: 1.25em;
-      font-stretch: 125%;
-      font-weight: 400;
+      font-family: sfsemibold, "Helvetica Neue", Arial, sans-serif;
     }
+
+    #load-messages-wrapper div {
+        max-width: 820px;
+    }
+
     @media screen and (min-height: 500px) {
       #load-messages-wrapper {
         top: 20%;
@@ -206,12 +212,22 @@
     }
     @media screen and (min-height: 800px) {
       #load-messages-wrapper {
-        top: 40%;
+        top: 35%;
 
         padding-left: 10%;
         padding-right: 10%;
       }
     }
+
+    @media screen and (min-height: 1000px) {
+      #load-messages-wrapper {
+        top: 38%;
+
+        padding-left: 10%;
+        padding-right: 10%;
+      }
+    }
+
     #load-images {
       max-width: 306px;
       max-height: 234px;
@@ -224,7 +240,7 @@
       align-items: center;
       justify-content: center;
     }
-    #subtext-messages {
+    #subtext-messages-container {
       bottom: 40px;
       left: 0;
       position: fixed;
@@ -237,6 +253,20 @@
 
       font-size: 1.0em;
       color: #7D8385;
+    }
+
+    #subtext-messages-container div {
+      margin: auto;
+    }
+
+    div#check-wallet-prompt {
+      width: 395px;
+      text-align: center;
+      background: #43474B;
+      border-radius: 100px;
+      color: white;
+      padding: 14px;
+      margin-bottom: 10px;
     }
 
     #eth-connect-advice {
@@ -531,7 +561,10 @@
   <body class="dcl-loading">
     <div id="load-messages-wrapper">
       <div id="load-messages"></div>
-      <div id="subtext-messages"></div>
+      <div id="subtext-messages-container">
+        <div id="check-wallet-prompt" style="display: none;">Please check your wallet (i.e MetaMask) and look for the Signature Request.</div>
+        <div id="subtext-messages"></div>
+      </div>
     </div>
     <div id="overlay"></div>
     <div id="progress-bar" class="progress ingame">
