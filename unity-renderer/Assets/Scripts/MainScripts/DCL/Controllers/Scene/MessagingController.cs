@@ -19,7 +19,13 @@ namespace DCL
         }
     }
 
-    public interface IMessageHandler
+    public interface IMessageQueueHandler
+    {
+        void EnqueueSceneMessage(MessagingBus.QueuedSceneMessage_Scene message);
+        Queue<MessagingBus.QueuedSceneMessage_Scene> sceneMessagesPool { get; }
+    }
+
+    public interface IMessageProcessHandler
     {
         bool ProcessMessage(MessagingBus.QueuedSceneMessage_Scene msgObject, out CleanableYieldInstruction yieldInstruction);
         void LoadParcelScenesExecute(string decentralandSceneJSON);
@@ -39,7 +45,7 @@ namespace DCL
         }
 
         public Dictionary<MessagingBusType, MessagingBus> messagingBuses = new Dictionary<MessagingBusType, MessagingBus>();
-        public IMessageHandler messageHandler;
+        public IMessageProcessHandler messageHandler;
         public string debugTag;
         public bool enabled = true;
 
@@ -49,7 +55,7 @@ namespace DCL
         public readonly MessagingBus systemBus;
         public readonly MessagingBus uiBus;
 
-        public MessagingController(IMessageHandler messageHandler, string debugTag = null)
+        public MessagingController(IMessageProcessHandler messageHandler, string debugTag = null)
         {
             this.debugTag = debugTag;
             this.messageHandler = messageHandler;

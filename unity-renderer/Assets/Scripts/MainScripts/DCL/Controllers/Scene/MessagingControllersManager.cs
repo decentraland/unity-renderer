@@ -43,7 +43,7 @@ namespace DCL
         private MessagingController uiSceneController = null;
         private MessagingController currentSceneController = null;
 
-        public void Initialize(IMessageHandler messageHandler)
+        public void Initialize(IMessageProcessHandler messageHandler)
         {
             messagingControllers[GLOBAL_MESSAGING_CONTROLLER] = new MessagingController(messageHandler, GLOBAL_MESSAGING_CONTROLLER);
 
@@ -173,7 +173,7 @@ namespace DCL
             return messagingControllers.ContainsKey(sceneId);
         }
 
-        public void AddController(IMessageHandler messageHandler, string sceneId, bool isGlobal = false)
+        public void AddController(IMessageProcessHandler messageHandler, string sceneId, bool isGlobal = false)
         {
             if (!messagingControllers.ContainsKey(sceneId))
                 messagingControllers[sceneId] = new MessagingController(messageHandler, sceneId);

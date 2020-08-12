@@ -30,6 +30,15 @@ void EMSCRIPTEN_KEEPALIVE call_ ## NAME_PARAM(char* a, char* b) {\
 	cb_ ## NAME_PARAM(a, b);\
 }\
 
+#define EXTERNAL_CALLBACK_VSSS(NAME_PARAM)\
+callback_vsss cb_ ## NAME_PARAM;\
+void SetCallback_ ## NAME_PARAM(callback_vsss NAME_PARAM) {\
+cb_ ## NAME_PARAM = NAME_PARAM;\
+}\
+void EMSCRIPTEN_KEEPALIVE call_ ## NAME_PARAM(char* a, char* b, char* c) {\
+	cb_ ## NAME_PARAM(a, b, c);\
+}\
+
 #define EXTERNAL_CALLBACK_VIS(NAME_PARAM)\
 callback_vis cb_ ## NAME_PARAM;\
 void SetCallback_ ## NAME_PARAM(callback_vis NAME_PARAM) {\
@@ -62,6 +71,6 @@ EXTERNAL_CALLBACK_VIS(SharedComponentCreate)
 EXTERNAL_CALLBACK_VSS(SharedComponentAttach)
 EXTERNAL_CALLBACK_VSS(SharedComponentUpdate)
 EXTERNAL_CALLBACK_VS(SharedComponentDispose)
-EXTERNAL_CALLBACK_VSS(OpenNftDialog)
+EXTERNAL_CALLBACK_VSSS(OpenNftDialog)
 EXTERNAL_CALLBACK_VS(OpenExternalUrl)
 EXTERNAL_CALLBACK_QUERY(Query)
