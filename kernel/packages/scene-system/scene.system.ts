@@ -24,6 +24,8 @@ import { ScriptingTransport, ILogOpts } from 'decentraland-rpc/src/common/json-r
 import { QueryType, CLASS_ID, Transform, Vector2 } from 'decentraland-ecs/src'
 import { PB_Transform, PB_Vector3, PB_Quaternion } from '../shared/proto/engineinterface_pb'
 import { worldToGrid } from 'atomicHelpers/parcelScenePositions'
+import { sleep } from 'atomicHelpers/sleep'
+import future, { IFuture } from 'fp-future'
 
 // tslint:disable-next-line:whitespace
 type IEngineAPI = import('shared/apis/EngineAPI').IEngineAPI
@@ -61,7 +63,7 @@ function resolveMapping(mapping: string | undefined, mappingName: string, baseUr
 }
 
 //NOTE(Brian): The idea is to map all string ids used by this scene to ints
-//             so we avoid sending/processing big ids like "xxxxx-xxxxx-xxxxx-xxxxx" 
+//             so we avoid sending/processing big ids like "xxxxx-xxxxx-xxxxx-xxxxx"
 //             that are used by i.e. raycasting queries.
 let idToNumberStore: Record<string, number> = {}
 let numberToIdStore: Record<number, string> = {}
@@ -240,6 +242,8 @@ export default class GamekitScene extends Script {
 
       const fullData = sceneData.data as LoadableParcelScene
       const sceneId = fullData.id
+
+      let loadingModules: Record<string, IFuture<void>> = {}
 
       const dcl: DecentralandInterface = {
         DEBUG: true,
@@ -434,27 +438,33 @@ export default class GamekitScene extends Script {
         },
 
         loadModule: async (_moduleName) => {
-          const moduleToLoad = _moduleName.replace(/^@decentraland\//, '')
-          let methods: string[] = []
+          loadingModules[_moduleName] = future()
 
-          if (moduleToLoad === WEB3_PROVIDER) {
-            methods.push(PROVIDER_METHOD)
-            this.provider = await this.getEthereumProvider()
-          } else {
-            const proxy = (await this.loadAPIs([moduleToLoad]))[moduleToLoad]
+          try {
+            const moduleToLoad = _moduleName.replace(/^@decentraland\//, '')
+            let methods: string[] = []
 
-            try {
-              methods = await proxy._getExposedMethods()
-            } catch (e) {
-              throw Object.assign(new Error(`Error getting the methods of ${moduleToLoad}: ` + e.message), {
-                original: e
-              })
+            if (moduleToLoad === WEB3_PROVIDER) {
+              methods.push(PROVIDER_METHOD)
+              this.provider = await this.getEthereumProvider()
+            } else {
+              const proxy = (await this.loadAPIs([moduleToLoad]))[moduleToLoad]
+
+              try {
+                methods = await proxy._getExposedMethods()
+              } catch (e) {
+                throw Object.assign(new Error(`Error getting the methods of ${moduleToLoad}: ` + e.message), {
+                  original: e
+                })
+              }
             }
-          }
 
-          return {
-            rpcHandle: moduleToLoad,
-            methods: methods.map((name) => ({ name }))
+            return {
+              rpcHandle: moduleToLoad,
+              methods: methods.map((name) => ({ name }))
+            }
+          } finally {
+            loadingModules[_moduleName].resolve()
           }
         },
         callRpc: async (rpcHandle: string, methodName: string, args: any[]) => {
@@ -507,6 +517,22 @@ export default class GamekitScene extends Script {
 
       try {
         await customEval((source as any) as string, getES5Context({ dcl }))
+
+        let modulesNotLoaded: string[] = []
+
+        const timeout = sleep(10000).then(() => {
+          modulesNotLoaded = Object.keys(loadingModules).filter((it) => loadingModules[it].isPending)
+        })
+
+        await Promise.race([Promise.all(Object.values(loadingModules)), timeout])
+
+        if (modulesNotLoaded.length > 0) {
+          defaultLogger.warn(
+            `Timed out loading modules!. The scene ${sceneId} may not work correctly. Modules not loaded: ${modulesNotLoaded}`
+          )
+        }
+
+        loadingModules = {}
 
         this.events.push(this.initMessagesFinished())
 

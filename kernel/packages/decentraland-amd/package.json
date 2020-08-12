@@ -1,11 +1,10 @@
 {
   "name": "dcl-amd",
-  "version": "1.0.5",
+  "version": "1.0.6",
   "description": "",
   "main": "dist/amd.js",
   "scripts": {
-    "build": "make build",
-    "prepublish": "make build test"
+    "build": "make build"
   },
   "keywords": [],
   "author": "",
