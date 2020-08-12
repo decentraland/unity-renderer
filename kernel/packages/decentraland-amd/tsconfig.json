@@ -15,7 +15,8 @@
     "noUnusedLocals": true,
     "lib": ["es5"],
     "outFile": "dist/amd.js",
-    "baseUrl": "."
+    "baseUrl": ".",
+    "typeRoots": ["./*"]
   },
   "exclude": ["node_modules", "dist"]
 }
