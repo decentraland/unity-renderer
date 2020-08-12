@@ -75,7 +75,7 @@ namespace DCL
             public object payload; //PB_SendSceneMessage
         }
 
-        public IMessageHandler handler;
+        public IMessageProcessHandler handler;
 
         public LinkedList<QueuedSceneMessage> pendingMessages = new LinkedList<QueuedSceneMessage>();
         public bool hasPendingMessages => pendingMessagesCount > 0;
@@ -108,7 +108,7 @@ namespace DCL
         private SceneController sceneController;
         private MessagingControllersManager manager;
 
-        public MessagingBus(MessagingBusType type, IMessageHandler handler, MessagingController owner)
+        public MessagingBus(MessagingBusType type, IMessageProcessHandler handler, MessagingController owner)
         {
             Assert.IsNotNull(handler, "IMessageHandler can't be null!");
             this.handler = handler;

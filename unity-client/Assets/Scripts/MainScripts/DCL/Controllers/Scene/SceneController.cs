@@ -8,12 +8,13 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using DCL.Components;
+using Newtonsoft.Json;
 using UnityEngine;
 using UnityEngine.Serialization;
 
 namespace DCL
 {
-    public class SceneController : MonoBehaviour, IMessageHandler
+    public class SceneController : MonoBehaviour, IMessageProcessHandler, IMessageQueueHandler
     {
         public static SceneController i { get; private set; }
 
@@ -65,7 +66,7 @@ namespace DCL
         public event ProcessDelegate OnMessageProcessInfoEnds;
 #endif
         [System.NonSerialized] public List<ParcelScene> scenesSortedByDistance = new List<ParcelScene>();
-        public Queue<MessagingBus.QueuedSceneMessage_Scene> sceneMessagesPool = new Queue<MessagingBus.QueuedSceneMessage_Scene>();
+        public Queue<MessagingBus.QueuedSceneMessage_Scene> sceneMessagesPool { get; } = new Queue<MessagingBus.QueuedSceneMessage_Scene>();
 
         [System.NonSerialized] public bool isDebugMode;
         [System.NonSerialized] public bool isWssDebugMode;
@@ -112,7 +113,6 @@ namespace DCL
 
 #if !UNITY_EDITOR
             Debug.Log("DCL Unity Build Version: " + DCL.Configuration.ApplicationSettings.version);
-
             Debug.unityLogger.logEnabled = false;
 #endif
 
@@ -664,15 +664,15 @@ namespace DCL
             }
         }
 
-        public void EnqueueSceneMessage(MessagingBus.QueuedSceneMessage_Scene queuedMessage)
+        public void EnqueueSceneMessage(MessagingBus.QueuedSceneMessage_Scene message)
         {
-            TryGetScene(queuedMessage.sceneId, out ParcelScene scene);
+            TryGetScene(message.sceneId, out ParcelScene scene);
 
             // If it doesn't exist, create messaging controller for this scene id
-            if (!MessagingControllersManager.i.ContainsController(queuedMessage.sceneId))
-                MessagingControllersManager.i.AddController(this, queuedMessage.sceneId);
+            if (!MessagingControllersManager.i.ContainsController(message.sceneId))
+                MessagingControllersManager.i.AddController(this, message.sceneId);
 
-            MessagingControllersManager.i.Enqueue(scene, queuedMessage);
+            MessagingControllersManager.i.Enqueue(scene, message);
         }
 
         public bool ProcessMessage(MessagingBus.QueuedSceneMessage_Scene msgObject, out CleanableYieldInstruction yieldInstruction)
