@@ -146,6 +146,13 @@ namespace DCL
                 //NOTE(Brian): Renderers are enabled in settings.ApplyAfterLoad
                 yield return MaterialCachingHelper.Process(list, enableRenderers: false, settings.cachingFlags);
 
+                var animators = assetBundleModelGO.GetComponentsInChildren<Animation>(true);
+
+                for (int animIndex = 0; animIndex < animators.Length; animIndex++)
+                {
+                    animators[animIndex].cullingType = AnimationCullingType.BasedOnRenderers;
+                }
+
 #if UNITY_EDITOR
                 assetBundleModelGO.name = subPromise.asset.assetBundleAssetName;
 #endif
@@ -159,7 +166,7 @@ namespace DCL
         {
             if (settings.forceNewInstance)
             {
-                return ((AssetLibrary_AB_GameObject)library).GetCopyFromOriginal(id);
+                return ((AssetLibrary_AB_GameObject) library).GetCopyFromOriginal(id);
             }
             else
             {

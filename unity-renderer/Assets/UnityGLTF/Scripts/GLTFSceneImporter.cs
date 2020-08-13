@@ -1248,6 +1248,7 @@ namespace UnityGLTF
                 // NOTE (Pravs): Khronos GLTFLoader sets the animationComponent as 'enabled = false' but we don't do that so that we can find the component when needed.
                 Animation animation = sceneObj.AddComponent<Animation>();
                 animation.playAutomatically = true;
+                animation.cullingType = AnimationCullingType.BasedOnRenderers;
 
                 for (int i = 0; i < _gltfRoot.Animations.Count; ++i)
                 {
