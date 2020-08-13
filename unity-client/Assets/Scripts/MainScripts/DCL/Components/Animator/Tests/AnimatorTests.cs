@@ -100,6 +100,8 @@ namespace Tests
 
             yield return animator.routine;
 
+            animator.animComponent.cullingType = AnimationCullingType.AlwaysAnimate;
+
             yield return new WaitForSeconds(1.5f);
 
             Animation animation = entity.gameObject.GetComponentInChildren<Animation>();
@@ -166,9 +168,12 @@ namespace Tests
 
             yield return animator.routine;
 
+            animator.animComponent.cullingType = AnimationCullingType.AlwaysAnimate;
+
             yield return new WaitForSeconds(1.5f);
 
             Animation animation = entity.gameObject.GetComponentInChildren<Animation>();
+
             foreach (AnimationState animState in animation)
             {
                 Assert.AreNotEqual(0f, animState.time);
@@ -343,6 +348,8 @@ namespace Tests
 
             LoadWrapper gltfShape = GLTFShape.GetLoaderForEntity(entity);
             yield return new WaitUntil(() => gltfShape.alreadyLoaded == true);
+
+            animator.animComponent.cullingType = AnimationCullingType.AlwaysAnimate;
 
             Assert.IsTrue(!animator.animComponent.isPlaying);
             Assert.AreEqual(animator.animComponent.clip.name, clipName);
