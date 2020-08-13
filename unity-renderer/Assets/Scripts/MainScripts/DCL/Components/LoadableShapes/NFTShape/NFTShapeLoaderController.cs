@@ -28,13 +28,15 @@ public class NFTShapeLoaderController : MonoBehaviour
     public event System.Action OnLoadingAssetSuccess;
     public event System.Action OnLoadingAssetFail;
 
-    [Header("Material Indexes")]
-    [SerializeField] int materialIndex_Background = -1;
+    [Header("Material Indexes")] [SerializeField]
+    int materialIndex_Background = -1;
+
     [SerializeField] int materialIndex_NFTImage = -1;
     [SerializeField] int materialIndex_Frame = -1;
 
-    [Header("Noise Shader")]
-    [SerializeField] NoiseType noiseType = NoiseType.Simplex;
+    [Header("Noise Shader")] [SerializeField]
+    NoiseType noiseType = NoiseType.Simplex;
+
     [SerializeField] bool noiseIs3D = false;
     [SerializeField] bool noiseIsFractal = false;
 
@@ -148,6 +150,7 @@ public class NFTShapeLoaderController : MonoBehaviour
                 OnLoadingAssetFail?.Invoke();
             });
 
+        yield return new WaitUntil(() => (CommonScriptableObjects.playerUnityPosition - transform.position).sqrMagnitude < 900f);
 
         // We the "preview" 256px image
         bool foundDCLImage = false;
@@ -160,7 +163,7 @@ public class NFTShapeLoaderController : MonoBehaviour
             });
         }
 
-        // We fall back to the nft original image which can have a really big size
+        //We fall back to the nft original image which can have a really big size
         if (!foundDCLImage && !string.IsNullOrEmpty(originalImageURL))
         {
             yield return Utils.FetchWrappedTextureAsset(originalImageURL, (downloadedAsset) =>
@@ -198,7 +201,7 @@ public class NFTShapeLoaderController : MonoBehaviour
         if (resizeFrameMesh)
         {
             Vector3 newScale = new Vector3(newAsset.width / NFTDataFetchingSettings.NORMALIZED_DIMENSIONS.x,
-                                            newAsset.height / NFTDataFetchingSettings.NORMALIZED_DIMENSIONS.y, 1f);
+                newAsset.height / NFTDataFetchingSettings.NORMALIZED_DIMENSIONS.y, 1f);
 
             meshRenderer.transform.localScale = newScale;
         }
