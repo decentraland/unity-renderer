@@ -248,6 +248,9 @@ update-renderer: ## Update the renderer to the latest version
 	@rm -f static/unity/Build/*.unityweb
 	@npm install decentraland-renderer@latest
 
+fetchSceneContents: scripts/fetchSceneContents.js
+	@node ./scripts/fetchSceneContents.js
+
 clean: ## Clean all generated files
 	@$(COMPILER) targets/clean.json
 
