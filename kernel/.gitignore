@@ -22,13 +22,14 @@ test/out
 .idea
 coverage
 
-# ================ #
-# Generated scenes #
-# ================ #
+# ============================= #
+# Generated / Downloaded scenes #
+# ============================= #
 public/test-scenes/*/*.js
 public/hell-map/*/*.js
 public/ecs-scenes/*/*.js
 public/test-scenes/*/bin/*.js
+public/downloaded-scenes
 
 scripts/**/*.js
 scripts/**/*.d.ts
