@@ -1,5 +1,5 @@
 import { EventDispatcher } from 'decentraland-rpc/lib/common/core/EventDispatcher'
-import { WSS_ENABLED, FORCE_SEND_MESSAGE, DEBUG_MESSAGES_QUEUE_PERF, DEBUG } from 'config'
+import { WSS_ENABLED, FORCE_SEND_MESSAGE, DEBUG_MESSAGES_QUEUE_PERF, DEBUG_SCENE_LOG } from 'config'
 import { IEventNames, IEvents } from '../decentraland-ecs/src/decentraland/Types'
 import { createLogger, ILogger, createDummyLogger } from 'shared/logger'
 import { EntityAction, EnvironmentData } from 'shared/types'
@@ -23,7 +23,7 @@ export class UnityScene<T> implements ParcelSceneAPI {
   initFinished: boolean = false
 
   constructor(public data: EnvironmentData<T>) {
-    this.logger = DEBUG === true ? createLogger(getParcelSceneID(this) + ': ') : createDummyLogger()
+    this.logger = DEBUG_SCENE_LOG === true ? createLogger(getParcelSceneID(this) + ': ') : createDummyLogger()
   }
 
   sendBatch(actions: EntityAction[]): void {
