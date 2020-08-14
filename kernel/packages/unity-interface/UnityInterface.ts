@@ -225,7 +225,7 @@ export class UnityInterface {
   }
 
   public ShowNewWearablesNotification(wearableNumber: number) {
-    this.gameInstance.SendMessage('HUDController', 'ShowNewWearablesNotification', wearableNumber.toString())
+    // disabled
   }
 
   public ShowNotification(notification: Notification) {
