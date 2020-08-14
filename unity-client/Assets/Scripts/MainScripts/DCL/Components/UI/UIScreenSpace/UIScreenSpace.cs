@@ -134,6 +134,8 @@ namespace DCL.Components
             }
             else
             {
+                canvas.sortingOrder = -1;
+
                 // "Constrained" panel mask (to avoid rendering parcels UI on the viewport's top 10%)
                 GameObject constrainedPanel = new GameObject("ConstrainedPanel");
                 constrainedPanel.AddComponent<RectMask2D>();
