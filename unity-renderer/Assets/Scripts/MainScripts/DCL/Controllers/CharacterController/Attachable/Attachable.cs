@@ -20,7 +20,7 @@ public abstract class Attachable : MonoBehaviour
     protected virtual void Setup() { }
     protected virtual void Cleanup() { }
 
-    protected void Awake()
+    private void Awake()
     {
         // Setup
         Setup();
@@ -44,7 +44,7 @@ public abstract class Attachable : MonoBehaviour
         entities.Remove(entity.gameObject.GetInstanceID());
     }
 
-    protected void OnDestroy()
+    private void OnDestroy()
     {
         // Stop listening to changes
         CommonScriptableObjects.playerWorldPosition.OnChange -= OnPlayerPositionChange;

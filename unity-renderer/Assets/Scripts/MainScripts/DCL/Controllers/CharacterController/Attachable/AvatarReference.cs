@@ -3,22 +3,12 @@ using DCL.Models;
 using DCL.Controllers;
 using System.Collections.Generic;
 
-public class AvatarReference : MonoBehaviour
+public class AvatarReference : Attachable
 {         
 
-    public static AvatarReference i { get; private set; }    
-    // From Gameobject instance id to its entity representation
-    private readonly Dictionary<int, DecentralandEntity> entities = new Dictionary<int, DecentralandEntity>();
+    public static AvatarReference i { get; private set; }        
 
-    public void AttachEntity(DecentralandEntity entity)
-    {        
-        int instanceId = entity.gameObject.GetInstanceID();
-        entities.Add(instanceId, entity);
-        entity.gameObject.transform.SetParent(transform, false);
-        entity.OnRemoved += OnEntityRemoval;        
-    }
-
-    private void Awake()
+    protected override void Setup()
     {
         // Singleton setup
         if (i != null)
@@ -27,29 +17,7 @@ public class AvatarReference : MonoBehaviour
             return;
         }
 
-        i = this;
-        
-        // Listen to changes on the player position
-        CommonScriptableObjects.playerWorldPosition.OnChange += OnPlayerPositionChange;        
-    }        
-
-    private void OnPlayerPositionChange(Vector3 newPosition, Vector3 prev)
-    {
-        // When the position changes, perform boundaries check for all attached entities
-        foreach (Transform child in transform) {
-            int childId = child.gameObject.GetInstanceID();
-            DecentralandEntity entity = entities[childId];
-            DCL.SceneController.i.boundariesChecker.AddEntityToBeChecked(entity);        
-        }        
-    }         
-
-    private void OnEntityRemoval(DecentralandEntity entity)
-    {
-        entities.Remove(entity.gameObject.GetInstanceID());
+        i = this;                
     }
 
-    private void OnDestroy()
-    {        
-        CommonScriptableObjects.playerWorldPosition.OnChange -= OnPlayerPositionChange;
-    }
 }
