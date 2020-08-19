@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+using DCL.Helpers;
+using UnityEngine;
 using UnityEngine.UI;
 
 
@@ -21,6 +22,6 @@ public class FriendsListToggleButton : MonoBehaviour
     {
         containerRectTransform.gameObject.SetActive(!containerRectTransform.gameObject.activeSelf);
         toggleButtonIcon.localScale = new Vector3(toggleButtonIcon.localScale.x, -toggleButtonIcon.localScale.y, 1f);
-        LayoutRebuilder.ForceRebuildLayoutImmediate(containerRectTransform);
+        Utils.ForceRebuildLayoutImmediate(containerRectTransform);
     }
 }

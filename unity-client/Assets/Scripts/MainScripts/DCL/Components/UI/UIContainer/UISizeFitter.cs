@@ -139,8 +139,6 @@ public class UISizeFitter : MonoBehaviour
         {
             children[i].SetParent(transform, true);
         }
-
-        rt.ForceUpdateRectTransforms();
     }
 
     void RefreshRecursively_Node(UISizeFitter fitter)
@@ -151,7 +149,7 @@ public class UISizeFitter : MonoBehaviour
 
         if (p != null)
         {
-            LayoutRebuilder.ForceRebuildLayoutImmediate(p.transform as RectTransform);
+            Utils.ForceRebuildLayoutImmediate(p.transform as RectTransform);
         }
     }
 

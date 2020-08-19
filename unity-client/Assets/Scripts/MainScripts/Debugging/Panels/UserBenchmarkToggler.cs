@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+using DCL.Helpers;
+using UnityEngine;
 using UnityEngine.UI;
 
 namespace DCL
@@ -27,7 +28,7 @@ namespace DCL
         private void TogglePanel()
         {
             userBenchmarkController.gameObject.SetActive(!userBenchmarkController.gameObject.activeSelf);
-            LayoutRebuilder.ForceRebuildLayoutImmediate(transform.parent.GetComponent<RectTransform>());
+            Utils.ForceRebuildLayoutImmediate(transform.parent.GetComponent<RectTransform>());
         }
     }
 }
