@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+using DCL.Helpers;
+using UnityEngine;
 using UnityEngine.UI;
 
 namespace DCL
@@ -60,7 +61,7 @@ namespace DCL
             }
 
             miscController.gameObject.SetActive(!miscController.gameObject.activeSelf);
-            LayoutRebuilder.ForceRebuildLayoutImmediate(transform.parent.GetComponent<RectTransform>());
+            Utils.ForceRebuildLayoutImmediate(transform.parent.GetComponent<RectTransform>());
         }
 
         private void EnableDeepProfiling()

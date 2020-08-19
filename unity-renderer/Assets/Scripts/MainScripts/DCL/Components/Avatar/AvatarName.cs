@@ -1,7 +1,6 @@
-using System.Collections.Generic;
+using DCL.Helpers;
 using TMPro;
 using UnityEngine;
-using UnityEngine.UI;
 
 public class AvatarName : MonoBehaviour
 {
@@ -10,7 +9,6 @@ public class AvatarName : MonoBehaviour
     public CanvasGroup uiContainer;
     public Transform sourceTransform;
     public TextMeshProUGUI nameText;
-    public List<RectTransform> layoutGroupRTs;
     public Vector3 offset;
     Canvas canvas;
     Camera mainCamera;
@@ -29,12 +27,7 @@ public class AvatarName : MonoBehaviour
         if (nameText.text != name)
         {
             nameText.text = name;
-
-            for (int i = 0; i < layoutGroupRTs.Count; i++)
-            {
-                LayoutRebuilder.ForceRebuildLayoutImmediate(layoutGroupRTs[i]);
-            }
-
+            Utils.ForceRebuildLayoutImmediate(canvasRect);
             RefreshTextPosition();
         }
     }
@@ -43,15 +36,6 @@ public class AvatarName : MonoBehaviour
     {
         canvas = GetComponentInParent<Canvas>();
         canvasRect = (RectTransform)canvas.transform;
-        layoutGroupRTs = new List<RectTransform>();
-
-        LayoutGroup[] groups = transform.GetComponentsInChildren<LayoutGroup>();
-
-        for (int i = 0; i < groups.Length; i++)
-        {
-            LayoutGroup group = groups[i];
-            layoutGroupRTs.Add(group.transform as RectTransform);
-        }
     }
 
     void OnEnable()
