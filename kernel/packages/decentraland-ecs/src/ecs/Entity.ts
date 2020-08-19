@@ -283,11 +283,12 @@ export class Entity implements IEntity {
   setParent(_parent: IEntity | Attachable | null): IEntity {
     let newParent: IEntity | null
 
-    if (_parent && 'getEntity' in _parent) {
+    // Check if parent is of type Attachable
+    if (_parent && 'getEntityRepresentation' in _parent) {
       if (!this.engine) {
         throw new Error(`In order to set an attachable as parent, you first need to add the entity to the engine.`)
       }
-      newParent = _parent.getEntity(this.engine)
+      newParent = _parent.getEntityRepresentation(this.engine)
     } else {
       newParent = !_parent && this.engine ? this.engine.rootEntity : _parent
     }
@@ -319,11 +320,11 @@ export class Entity implements IEntity {
     if (newParent !== null && newParent.uuid !== '0') {
       if (!newParent.isAddedToEngine() && this.isAddedToEngine()) {
         // tslint:disable-next-line:semicolon
-        ; (this.engine as IEngine).removeEntity(this)
+        (this.engine as IEngine).removeEntity(this)
       }
       if (newParent.isAddedToEngine() && !this.isAddedToEngine()) {
         // tslint:disable-next-line:semicolon
-        ; ((newParent as Entity).engine as IEngine).addEntity(this)
+        ((newParent as Entity).engine as IEngine).addEntity(this)
       }
     }
 
