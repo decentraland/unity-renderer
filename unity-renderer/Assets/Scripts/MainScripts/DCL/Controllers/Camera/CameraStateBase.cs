@@ -1,17 +1,12 @@
 using Cinemachine;
 using UnityEngine;
 public class CameraStateBase : MonoBehaviour
-{
-    public enum ModeId
-    {
-        FirstPerson,
-        ThirdPerson,
-    }
+{    
 
     public CinemachineVirtualCameraBase defaultVirtualCamera;
 
     protected Transform cameraTransform;
-    public ModeId cameraModeId;
+    public CameraMode.ModeId cameraModeId;
 
     public virtual void Init(Transform cameraTransform)
     {
