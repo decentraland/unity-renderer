@@ -3,10 +3,9 @@ using DCL.Models;
 using DCL.Controllers;
 using System.Collections.Generic;
 
-public class AvatarReference : MonoBehaviour
+public abstract class Attachable : MonoBehaviour
 {         
-
-    public static AvatarReference i { get; private set; }    
+    
     // From Gameobject instance id to its entity representation
     private readonly Dictionary<int, DecentralandEntity> entities = new Dictionary<int, DecentralandEntity>();
 
@@ -15,21 +14,17 @@ public class AvatarReference : MonoBehaviour
         int instanceId = entity.gameObject.GetInstanceID();
         entities.Add(instanceId, entity);
         entity.gameObject.transform.SetParent(transform, false);
-        entity.OnRemoved += OnEntityRemoval;
-        Debug.Log("Attaching to avatar");
+        entity.OnRemoved += OnEntityRemoval;        
     }
 
-    private void Awake()
-    {
-        // Singleton setup
-        if (i != null)
-        {
-            Destroy(gameObject);
-            return;
-        }
+    protected virtual void Setup() { }
+    protected virtual void Cleanup() { }
 
-        i = this;
-        
+    protected void Awake()
+    {
+        // Setup
+        Setup();
+
         // Listen to changes on the player position
         CommonScriptableObjects.playerWorldPosition.OnChange += OnPlayerPositionChange;        
     }        
@@ -49,8 +44,12 @@ public class AvatarReference : MonoBehaviour
         entities.Remove(entity.gameObject.GetInstanceID());
     }
 
-    private void OnDestroy()
-    {        
+    protected void OnDestroy()
+    {
+        // Stop listening to changes
         CommonScriptableObjects.playerWorldPosition.OnChange -= OnPlayerPositionChange;
+
+        // Clean up
+        Cleanup();
     }
 }

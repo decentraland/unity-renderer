@@ -22,9 +22,7 @@ export interface ISystem {
  */
 export interface IEngine {
   rootEntity: IEntity
-  // @internal
   readonly playerEntity: IEntity
-  // @internal
   readonly avatarEntity: IEntity
   readonly entities: Readonly<Record<string, IEntity>>
 

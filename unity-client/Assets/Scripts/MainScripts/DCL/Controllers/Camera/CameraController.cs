@@ -15,7 +15,7 @@ public class CameraController : MonoBehaviour
     [SerializeField] internal InputAction_Trigger cameraChangeAction;
 
     internal Dictionary<CameraMode.ModeId, CameraStateBase> cachedModeToVirtualCamera;
-    
+
     private Vector3Variable cameraForward => CommonScriptableObjects.cameraForward;
     private Vector3Variable cameraRight => CommonScriptableObjects.cameraRight;
     private Vector3Variable cameraPosition => CommonScriptableObjects.cameraPosition;

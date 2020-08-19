@@ -27,9 +27,7 @@ type SystemEntry = { system: ISystem; priority: number }
 export class Engine implements IEngine {
   readonly eventManager: EventManager = new EventManager()
   readonly rootEntity: IEntity
-  // @internal
   readonly playerEntity: IEntity
-  // @internal
   readonly avatarEntity: IEntity
 
   // @internal
@@ -75,8 +73,8 @@ export class Engine implements IEngine {
       return entity
     }
 
-    entity.eventManager = this.eventManager
-      ; (entity as Entity).engine = this
+    entity.eventManager = this.eventManager;
+    (entity as Entity).engine = this
 
     this._entities[entity.uuid] = entity
 
