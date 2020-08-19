@@ -65,6 +65,9 @@ public static class CommonScriptableObjects
     private static LatestOpenChatsList latestOpenChatsValue;
     public static LatestOpenChatsList latestOpenChats => GetOrLoad(ref latestOpenChatsValue, "ScriptableObjects/LatestOpenChats");
 
+    private static CameraMode cameraModeValue;
+    public static CameraMode cameraMode => GetOrLoad(ref cameraModeValue, "ScriptableObjects/CameraMode");
+
     internal static T GetOrLoad<T>(ref T variable, string path) where T : Object
     {
         if (variable == null)

@@ -473,6 +473,20 @@ namespace DCL.Controllers
                 return;
             }
 
+            if (me != null && parentId == "1")
+            {
+                me.SetParent(null);
+                PlayerReference.i.AttachEntity(me);
+                return;
+            }
+
+            if (me != null && parentId == "2")
+            {
+                me.SetParent(null);
+                AvatarReference.i.AttachEntity(me);
+                return;
+            }
+
             DecentralandEntity myParent = GetEntityForUpdate(parentId);
 
             if (me != null && myParent != null)

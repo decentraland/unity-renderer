@@ -67,7 +67,7 @@ function resolveMapping(mapping: string | undefined, mappingName: string, baseUr
 //             that are used by i.e. raycasting queries.
 let idToNumberStore: Record<string, number> = {}
 let numberToIdStore: Record<number, string> = {}
-let idToNumberStoreCounter: number = 0
+let idToNumberStoreCounter: number = 10 // Starting in 10, to leave room for special cases (such as the root entity)
 
 function addIdToStorage(id: string, idAsNumber: number) {
   idToNumberStore[id] = idAsNumber
