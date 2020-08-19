@@ -290,7 +290,7 @@ export class Entity implements IEntity {
       }
       newParent = _parent.getEntityRepresentation(this.engine)
     } else {
-      newParent = !_parent && this.engine ? this.engine.rootEntity : _parent
+      newParent = !_parent && this.engine ? this.engine.rootEntity : (_parent as IEntity | null)
     }
     let currentParent = this.getParent()
 
