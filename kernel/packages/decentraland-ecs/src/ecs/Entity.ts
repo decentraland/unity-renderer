@@ -325,7 +325,7 @@ export class Entity implements IEntity {
       }
       if (newParent.isAddedToEngine() && !this.isAddedToEngine()) {
         // tslint:disable-next-line:semicolon
-        ((newParent as Entity).engine as IEngine).addEntity(this)
+        (newParent as Entity).engine!.addEntity(this)
       }
     }
 
