@@ -321,7 +321,7 @@ export class Entity implements IEntity {
     if (newParent !== null && newParent.uuid !== '0') {
       if (!newParent.isAddedToEngine() && this.isAddedToEngine()) {
         // tslint:disable-next-line:semicolon
-        (this.engine as IEngine).removeEntity(this)
+        this.engine!.removeEntity(this)
       }
       if (newParent.isAddedToEngine() && !this.isAddedToEngine()) {
         // tslint:disable-next-line:semicolon
