@@ -34,7 +34,7 @@ public class PlayerReference : Attachable
 
     private void UpdateForward(Vector3 newFordward, Vector3 prev)
     {       
-        transform.forward = newFordward;
+        transform.forward = newForward;
     }   
 
     private void OnCameraModeChange(CameraMode.ModeId newMode, CameraMode.ModeId prev)
