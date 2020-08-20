@@ -473,14 +473,14 @@ namespace DCL.Controllers
                 return;
             }
 
-            if (me != null && parentId == "1")
+            if (me != null && parentId == "PlayerEntity")
             {
                 me.SetParent(null);
                 PlayerReference.i.AttachEntity(me);
                 return;
             }
 
-            if (me != null && parentId == "2")
+            if (me != null && parentId == "AvatarEntity")
             {
                 me.SetParent(null);
                 AvatarReference.i.AttachEntity(me);
