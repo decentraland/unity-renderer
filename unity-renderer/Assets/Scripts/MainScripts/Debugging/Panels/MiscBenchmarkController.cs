@@ -113,7 +113,7 @@ namespace DCL
 
         void Update()
         {
-            int messagesProcessedLastFrame = lastPendingMessages - MessagingControllersManager.i.pendingMessagesCount;
+            int messagesProcessedLastFrame = lastPendingMessages - Environment.i.messagingControllersManager.pendingMessagesCount;
 
             if (messagesProcessedLastFrame > 0)
             {
@@ -122,7 +122,7 @@ namespace DCL
                 statsPanel.SetCellText(1, (int) Rows.MESSAGES_PER_SECOND_REAL, (mps / sampleCount).ToString(CultureInfo.InvariantCulture));
             }
 
-            lastPendingMessages = MessagingControllersManager.i.pendingMessagesCount;
+            lastPendingMessages = Environment.i.messagingControllersManager.pendingMessagesCount;
         }
 
 
@@ -173,7 +173,7 @@ namespace DCL
                 Dictionary<string, int> pendingMessagesCount = new Dictionary<string, int>();
                 Dictionary<string, int> messagesReplaced = new Dictionary<string, int>();
 
-                using (var controllersIter = MessagingControllersManager.i.messagingControllers.GetEnumerator())
+                using (var controllersIter = Environment.i.messagingControllersManager.messagingControllers.GetEnumerator())
                 {
                     while (controllersIter.MoveNext())
                     {

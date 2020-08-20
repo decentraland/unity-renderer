@@ -106,7 +106,6 @@ namespace DCL
         }
 
         private SceneController sceneController;
-        private MessagingControllersManager manager;
 
         public MessagingBus(MessagingBusType type, IMessageProcessHandler handler, MessagingController owner)
         {
@@ -117,7 +116,6 @@ namespace DCL
             this.owner = owner;
             this.pendingMessagesCount = 0;
             sceneController = SceneController.i;
-            manager = MessagingControllersManager.i;
         }
 
         public void Start()
@@ -183,13 +181,13 @@ namespace DCL
 
                 if (type == MessagingBusType.INIT)
                 {
-                    manager.pendingInitMessagesCount++;
+                    Environment.i.messagingControllersManager.pendingInitMessagesCount++;
                 }
 
                 if (owner != null)
                 {
                     owner.enabled = true;
-                    manager.MarkBusesDirty();
+                    Environment.i.messagingControllersManager.MarkBusesDirty();
                 }
             }
         }
@@ -293,14 +291,14 @@ namespace DCL
 
             if (type == MessagingBusType.INIT)
             {
-                manager.pendingInitMessagesCount--;
-                manager.processedInitMessagesCount++;
+                Environment.i.messagingControllersManager.pendingInitMessagesCount--;
+                Environment.i.messagingControllersManager.processedInitMessagesCount++;
             }
         }
 
         private LinkedListNode<QueuedSceneMessage> AddReliableMessage(QueuedSceneMessage message)
         {
-            manager.pendingMessagesCount++;
+            Environment.i.messagingControllersManager.pendingMessagesCount++;
             pendingMessagesCount++;
             return pendingMessages.AddLast(message);
         }
@@ -311,7 +309,7 @@ namespace DCL
             {
                 pendingMessages.RemoveFirst();
                 pendingMessagesCount--;
-                MessagingControllersManager.i.pendingMessagesCount--;
+                Environment.i.messagingControllersManager.pendingMessagesCount--;
             }
         }
 
