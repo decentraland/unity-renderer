@@ -1,6 +1,5 @@
 using UnityEngine;
 using DCL.Models;
-using DCL.Controllers;
 using System.Collections.Generic;
 
 public abstract class Attachable : MonoBehaviour

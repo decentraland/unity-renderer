@@ -32,7 +32,7 @@ public class PlayerReference : Attachable
         CommonScriptableObjects.cameraForward.OnChange -= UpdateForward;
     }
 
-    private void UpdateForward(Vector3 newFordward, Vector3 prev)
+    private void UpdateForward(Vector3 newForward, Vector3 prev)
     {       
         transform.forward = newForward;
     }   
