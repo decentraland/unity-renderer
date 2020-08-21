@@ -9,7 +9,8 @@ import {
   getWearablesSafeURL,
   PIN_CATALYST,
   PREVIEW,
-  ethereumConfigurations
+  ethereumConfigurations,
+  RESET_TUTORIAL
 } from 'config'
 
 import { NotificationType } from 'shared/types'
@@ -185,6 +186,11 @@ function* initialProfileLoad() {
     if (localTutorialStep !== profile.tutorialStep) {
       let finalTutorialStep = Math.max(localTutorialStep, profile.tutorialStep)
       profile = { ...profile, tutorialStep: finalTutorialStep }
+      profileDirty = true
+    }
+
+    if (RESET_TUTORIAL) {
+      profile = { ...profile, tutorialStep: 0 }
       profileDirty = true
     }
 
@@ -489,6 +495,9 @@ export function* submitProfileToRenderer(action: ProfileSuccessAction): any {
     if (ALL_WEARABLES) {
       profile.inventory = (yield select(getExclusiveCatalog)).map((_: Wearable) => _.id)
     }
+
+    globalThis.unityInterface.ConfigureEmailPrompt(profile.tutorialStep)
+
     yield call(sendLoadProfile, profile)
   } else {
     yield call(ensureRenderer)
