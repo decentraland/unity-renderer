@@ -5,7 +5,7 @@ using UnityEngine;
 
 namespace DCL
 {
-    public class MessagingControllersManager : Singleton<MessagingControllersManager>
+    public class MessagingControllersManager
     {
         public static bool VERBOSE = false;
 
@@ -185,6 +185,12 @@ namespace DCL
                 messagingControllers.TryGetValue(globalSceneId, out uiSceneController);
 
             PopulateBusesToBeProcessed();
+        }
+
+        public void AddControllerIfNotExists(IMessageProcessHandler messageHandler, string sceneId, bool isGlobal = false)
+        {
+            if (!ContainsController(sceneId))
+                AddController(messageHandler, sceneId, isGlobal);
         }
 
         public void RemoveController(string sceneId)
