@@ -648,18 +648,18 @@ export default class GamekitScene extends Script {
     if (classId === CLASS_ID.TRANSFORM) {
       const transform: Transform = JSON.parse(json)
 
-      pbPosition.setX(transform.position.x)
-      pbPosition.setY(transform.position.y)
-      pbPosition.setZ(transform.position.z)
+      pbPosition.setX(Math.fround(transform.position.x))
+      pbPosition.setY(Math.fround(transform.position.y))
+      pbPosition.setZ(Math.fround(transform.position.z))
 
       pbRotation.setX(transform.rotation.x)
       pbRotation.setY(transform.rotation.y)
       pbRotation.setZ(transform.rotation.z)
       pbRotation.setW(transform.rotation.w)
 
-      pbScale.setX(transform.scale.x)
-      pbScale.setY(transform.scale.y)
-      pbScale.setZ(transform.scale.z)
+      pbScale.setX(Math.fround(transform.scale.x))
+      pbScale.setY(Math.fround(transform.scale.y))
+      pbScale.setZ(Math.fround(transform.scale.z))
 
       pbTransform.setPosition(pbPosition)
       pbTransform.setRotation(pbRotation)
