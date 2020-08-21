@@ -10,7 +10,8 @@ import {
   PIN_CATALYST,
   PREVIEW,
   ethereumConfigurations,
-  RESET_TUTORIAL
+  RESET_TUTORIAL,
+  DEBUG
 } from 'config'
 
 import { NotificationType } from 'shared/types'
@@ -496,7 +497,9 @@ export function* submitProfileToRenderer(action: ProfileSuccessAction): any {
       profile.inventory = (yield select(getExclusiveCatalog)).map((_: Wearable) => _.id)
     }
 
-    globalThis.unityInterface.ConfigureEmailPrompt(profile.tutorialStep)
+    if (!DEBUG) {
+      globalThis.unityInterface.ConfigureEmailPrompt(profile.tutorialStep)
+    }
 
     yield call(sendLoadProfile, profile)
   } else {
