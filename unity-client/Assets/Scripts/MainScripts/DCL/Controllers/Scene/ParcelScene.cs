@@ -466,32 +466,32 @@ namespace DCL.Controllers
 
             DecentralandEntity me = GetEntityForUpdate(entityId);
 
-            if (me != null && parentId == "0")
+            if (me != null)
             {
-                me.SetParent(null);
-                me.gameObject.transform.SetParent(gameObject.transform, false);
-                return;
-            }
+                if (parentId == "0")
+                {
+                    me.SetParent(null);
+                    me.gameObject.transform.SetParent(gameObject.transform, false);
+                }
+                else if (parentId == "PlayerEntity")
+                {
+                    me.SetParent(null);
+                    PlayerReference.i.AttachEntity(me);
+                }
+                else if (parentId == "AvatarEntity")
+                {
+                    me.SetParent(null);
+                    AvatarReference.i.AttachEntity(me);
+                }
+                else
+                {
+                    DecentralandEntity myParent = GetEntityForUpdate(parentId);
 
-            if (me != null && parentId == "PlayerEntity")
-            {
-                me.SetParent(null);
-                PlayerReference.i.AttachEntity(me);
-                return;
-            }
-
-            if (me != null && parentId == "AvatarEntity")
-            {
-                me.SetParent(null);
-                AvatarReference.i.AttachEntity(me);
-                return;
-            }
-
-            DecentralandEntity myParent = GetEntityForUpdate(parentId);
-
-            if (me != null && myParent != null)
-            {
-                me.SetParent(myParent);
+                    if (myParent != null)
+                    {
+                        me.SetParent(myParent);
+                    }
+                }
             }
         }
 
