@@ -67,6 +67,8 @@ public class WearableController
         loader.settings.visibleFlags = AssetPromiseSettings_Rendering.VisibleFlags.INVISIBLE;
         loader.settings.parent = parent;
 
+        assetRenderers = null;
+
         loader.OnSuccessEvent += (x) =>
         {
             assetRenderers = x.GetComponentsInChildren<Renderer>();
@@ -113,7 +115,8 @@ public class WearableController
     {
         foreach (var kvp in originalMaterials)
         {
-            kvp.Key.materials = kvp.Value;
+            if (kvp.Key != null)
+                kvp.Key.materials = kvp.Value;
         }
 
         originalMaterials.Clear();
@@ -138,6 +141,7 @@ public class WearableController
     {
         UnloadMaterials();
         RestoreOriginalMaterials();
+        assetRenderers = null;
 
         if (loader != null)
         {
@@ -149,7 +153,8 @@ public class WearableController
     {
         for (var i = 0; i < assetRenderers.Length; i++)
         {
-            assetRenderers[i].enabled = active;
+            if (assetRenderers[i] != null)
+                assetRenderers[i].enabled = active;
         }
     }
 
