@@ -33,7 +33,7 @@ namespace DCL.Controllers
                     {
                         while (iterator.MoveNext())
                         {
-                            if (MessagingControllersManager.i.timeBudgetCounter <= 0f) break;
+                            if (Environment.i.messagingControllersManager.timeBudgetCounter <= 0f) break;
 
                             float startTime = Time.realtimeSinceStartup;
 
@@ -41,7 +41,7 @@ namespace DCL.Controllers
                             checkedEntities.Add(iterator.Current);
 
                             float finishTime = Time.realtimeSinceStartup;
-                            MessagingControllersManager.i.timeBudgetCounter -= (finishTime - startTime);
+                            Environment.i.messagingControllersManager.timeBudgetCounter -= (finishTime - startTime);
                         }
                     }
 
