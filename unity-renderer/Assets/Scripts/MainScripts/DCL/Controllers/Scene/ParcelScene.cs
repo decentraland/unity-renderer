@@ -468,12 +468,7 @@ namespace DCL.Controllers
 
             if (me != null)
             {
-                if (parentId == "0")
-                {
-                    me.SetParent(null);
-                    me.gameObject.transform.SetParent(gameObject.transform, false);
-                }
-                else if (parentId == "PlayerEntityReference")
+                if (parentId == "PlayerEntityReference")
                 {
                     me.SetParent(DCLCharacterController.i.playerReference);
                     DCL.SceneController.i.boundariesChecker.AddPersistent(me);
@@ -489,12 +484,22 @@ namespace DCL.Controllers
                     {
                         DCL.SceneController.i.boundariesChecker.RemoveEntityToBeChecked(me);
                     }
-                    DecentralandEntity myParent = GetEntityForUpdate(parentId);
 
-                    if (myParent != null)
+                    if (parentId == "0")
                     {
-                        me.SetParent(myParent);
+                        me.SetParent(null);
+                        me.gameObject.transform.SetParent(gameObject.transform, false);
                     }
+                    else
+                    {
+                        DecentralandEntity myParent = GetEntityForUpdate(parentId);
+
+                        if (myParent != null)
+                        {
+                            me.SetParent(myParent);
+                        }
+                    }
+                        
                 }
             }
         }
