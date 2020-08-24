@@ -437,8 +437,8 @@ MonoBehaviour:
       renderers: []
       meshFilters: []
       colliders: []
-  avatarPositionGameObject: {fileID: 0}
-  playerGameObject: {fileID: 0}
+  avatarPositionGameObject: {fileID: 4323503760844960451}
+  playerGameObject: {fileID: 6614764432315271185}
   characterYAxis: {fileID: 11400000, guid: d1bc201cd2f5a1d4b8f721ccc29d2c0f, type: 2}
   characterXAxis: {fileID: 11400000, guid: 44c3c5f07adca334696adae7b81c1869, type: 2}
 --- !u!143 &113901082
