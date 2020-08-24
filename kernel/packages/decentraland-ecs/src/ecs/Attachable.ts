@@ -6,8 +6,8 @@ import { IEntity, IEngine } from "./IEntity"
  */
 export abstract class Attachable {
 
-  /** Used to attach entities to the avatar */
-  static readonly AVATAR: Attachable = { getEntityRepresentation: (engine: IEngine) => engine.avatarEntity }
+  /** Used to attach entities to the avatar. Entities will follow the avatar when it moves */
+  static readonly AVATAR_POSITION: Attachable = { getEntityRepresentation: (engine: IEngine) => engine.avatarEntity }
   /** Used to attach entities to the avatar, but when the camera is in first person mode, the attached entities rotate with the camera */
   static readonly PLAYER: Attachable = { getEntityRepresentation: (engine: IEngine) => engine.playerEntity }
 
