@@ -473,18 +473,23 @@ namespace DCL.Controllers
                     me.SetParent(null);
                     me.gameObject.transform.SetParent(gameObject.transform, false);
                 }
-                else if (parentId == "PlayerEntity")
+                else if (parentId == "PlayerEntityReference")
                 {
-                    me.SetParent(null);
-                    PlayerReference.i.AttachEntity(me);
+                    me.SetParent(DCLCharacterController.i.playerReference);
+                    DCL.SceneController.i.boundariesChecker.AddPersistent(me);
                 }
-                else if (parentId == "AvatarEntity")
+                else if (parentId == "AvatarPositionEntityReference")
                 {
-                    me.SetParent(null);
-                    AvatarReference.i.AttachEntity(me);
+                    me.SetParent(DCLCharacterController.i.avatarPositionReference);
+                    DCL.SceneController.i.boundariesChecker.AddPersistent(me);                    
                 }
                 else
                 {
+                    if (me.parent == DCLCharacterController.i.playerReference || me.parent == DCLCharacterController.i.avatarPositionReference)
+                    {
+                        DCL.SceneController.i.boundariesChecker.RemoveEntityToBeChecked(me);
+                    }
+
                     DecentralandEntity myParent = GetEntityForUpdate(parentId);
 
                     if (myParent != null)

@@ -59,10 +59,10 @@ export class Engine implements IEngine {
     this.eventManager.addListener(ComponentRemoved, this, this.componentRemovedHandler)
     this.rootEntity = rootEntity
     this.playerEntity = new Entity();
-    (this.playerEntity as any).uuid = 'PlayerEntity'
+    (this.playerEntity as any).uuid = 'PlayerEntityReference'
     this.addEntity(this.playerEntity)
     this.avatarEntity = new Entity();
-    (this.avatarEntity as any).uuid = 'AvatarEntity'
+    (this.avatarEntity as any).uuid = 'AvatarPositionEntityReference'
     this.addEntity(this.avatarEntity)
   }
 

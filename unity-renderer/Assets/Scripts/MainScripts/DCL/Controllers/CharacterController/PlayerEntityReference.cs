@@ -1,24 +1,10 @@
 using UnityEngine;
-using DCL.Models;
-using DCL.Controllers;
-using System.Collections.Generic;
 
-public class PlayerReference : Attachable
-{         
+public class PlayerEntityReference : MonoBehaviour
+{             
 
-    public static PlayerReference i { get; private set; }        
-
-    protected override void Setup()
-    {
-        // Singleton setup
-        if (i != null)
-        {
-            Destroy(gameObject);
-            return;
-        }
-
-        i = this;
-
+    private void Awake()
+    {        
         // Listen to changes on the camera mode
         CommonScriptableObjects.cameraMode.OnChange += OnCameraModeChange;
         
@@ -26,7 +12,7 @@ public class PlayerReference : Attachable
         OnCameraModeChange(CommonScriptableObjects.cameraMode, CommonScriptableObjects.cameraMode);
     }
 
-    protected override void Cleanup()
+    private void Destroy()
     {
         CommonScriptableObjects.cameraMode.OnChange -= OnCameraModeChange;
         CommonScriptableObjects.cameraForward.OnChange -= UpdateForward;
