@@ -20,19 +20,22 @@ namespace DCL
             public AssetBundle assetBundle;
             public Transform containerTransform;
             public Action onSuccess;
+            public Action onFail;
 
-            public AssetBundleInfo(Asset_AB asset, AssetBundle assetBundle, Transform containerTransform, Action onSuccess)
+            public AssetBundleInfo(Asset_AB asset, AssetBundle assetBundle, Transform containerTransform, Action onSuccess, Action onFail)
             {
                 this.asset = asset;
                 this.assetBundle = assetBundle;
                 this.containerTransform = containerTransform;
                 this.onSuccess = onSuccess;
+                this.onFail = onFail;
             }
         }
 
         private Coroutine assetBundlesLoadingCoroutine;
         private Queue<AssetBundleInfo> highPriorityLoadQueue = new Queue<AssetBundleInfo>();
         private Queue<AssetBundleInfo> lowPriorityLoadQueue = new Queue<AssetBundleInfo>();
+
         private Dictionary<string, int> loadOrderByExtension = new Dictionary<string, int>()
         {
             {"png", 0},
@@ -46,6 +49,7 @@ namespace DCL
             {"ltf", 8},
             {"glb", 9}
         };
+
         private List<UnityEngine.Object> loadedAssetsByName = new List<UnityEngine.Object>();
         private float currentLoadBudgetTime = 0;
         private AssetBundleInfo assetBundleInfoToLoad;
@@ -71,11 +75,11 @@ namespace DCL
             lowPriorityLoadQueue.Clear();
         }
 
-        public void MarkAssetBundleForLoad(Asset_AB asset, AssetBundle assetBundle, Transform containerTransform, Action onSuccess)
+        public void MarkAssetBundleForLoad(Asset_AB asset, AssetBundle assetBundle, Transform containerTransform, Action onSuccess, Action onFail)
         {
             CheckForReprioritizeAwaitingAssets();
 
-            AssetBundleInfo assetBundleToLoad = new AssetBundleInfo(asset, assetBundle, containerTransform, onSuccess);
+            AssetBundleInfo assetBundleToLoad = new AssetBundleInfo(asset, assetBundle, containerTransform, onSuccess, onFail);
 
             float distanceFromPlayer = GetDistanceFromPlayer(containerTransform);
             if (distanceFromPlayer <= MAX_SQR_DISTANCE_FOR_QUICK_LOADING)
@@ -122,6 +126,12 @@ namespace DCL
 
         private IEnumerator LoadAssetBundle(AssetBundleInfo assetBundleInfo)
         {
+            if (assetBundleInfo.assetBundle == null)
+            {
+                assetBundleInfo.onFail?.Invoke();
+                yield break;
+            }
+
             AssetBundleRequest abRequest = assetBundleInfo.assetBundle.LoadAllAssetsAsync();
 
             while (!abRequest.isDone)
@@ -200,9 +210,7 @@ namespace DCL
 
         private float GetDistanceFromPlayer(Transform containerTransform)
         {
-            return (containerTransform != null && limitTimeBudget) ?
-                Vector3.SqrMagnitude(containerTransform.position - CommonScriptableObjects.playerUnityPosition.Get()) :
-                0f;
+            return (containerTransform != null && limitTimeBudget) ? Vector3.SqrMagnitude(containerTransform.position - CommonScriptableObjects.playerUnityPosition.Get()) : 0f;
         }
     }
 }
