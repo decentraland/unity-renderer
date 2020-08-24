@@ -489,7 +489,6 @@ namespace DCL.Controllers
                     {
                         DCL.SceneController.i.boundariesChecker.RemoveEntityToBeChecked(me);
                     }
-
                     DecentralandEntity myParent = GetEntityForUpdate(parentId);
 
                     if (myParent != null)
