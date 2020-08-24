@@ -12,7 +12,7 @@ public class PlayerEntityReference : MonoBehaviour
         OnCameraModeChange(CommonScriptableObjects.cameraMode, CommonScriptableObjects.cameraMode);
     }
 
-    private void Destroy()
+    private void OnDestroy()
     {
         CommonScriptableObjects.cameraMode.OnChange -= OnCameraModeChange;
         CommonScriptableObjects.cameraForward.OnChange -= UpdateForward;
