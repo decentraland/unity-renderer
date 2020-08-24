@@ -23,7 +23,7 @@ material.metallic = 0.2
 material.roughness = 1.0
 followAvatar.addComponent(material)
 engine.addEntity(followAvatar)
-followAvatar.setParent(Attachable.AVATAR)
+followAvatar.setParent(Attachable.AVATAR_POSITION)
 
 
 
