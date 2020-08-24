@@ -71,7 +71,6 @@ export class UnityInterface {
     }
 
     if (!this.gameInstance.Module) {
-
       defaultLogger.log(
         `Can't change base resolution height to ${height}! Are you running explorer in unity editor or native?`
       )
@@ -298,6 +297,14 @@ export class UnityInterface {
       const payload = { chunkIndex: i, chunksCount: chunks.length, scenesInfo: chunks[i] }
       this.gameInstance.SendMessage('SceneController', 'UpdateHotScenesList', JSON.stringify(payload))
     }
+  }
+
+  public ConfigureEmailPrompt(tutorialStep: number) {
+    const emailCompletedFlag = 128
+    this.ConfigureHUDElement(HUDElementID.EMAIL_PROMPT, {
+      active: (tutorialStep & emailCompletedFlag) === 0,
+      visible: false
+    })
   }
 
   // *********************************************************************************
