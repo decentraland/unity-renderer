@@ -36,6 +36,9 @@ import { unityInterface } from './UnityInterface'
 import { IFuture } from 'fp-future'
 import { reportHotScenes } from 'shared/social/hotScenes'
 
+import { GIFProcessor } from 'gif-processor/processor'
+declare const DCL: any
+
 declare const globalThis: StoreContainer
 export let futures: Record<string, IFuture<any>> = {}
 
@@ -337,6 +340,14 @@ export class BrowserInterface {
 
   public SetBaseResolution(data: { baseResolution: number }) {
     unityInterface.SetTargetHeight(data.baseResolution)
+  }
+
+  async RequestGIFProcessor(data: { imageSource: string; id: string; isWebGL1: boolean }) {
+    if (!DCL.gifProcessor) {
+      DCL.gifProcessor = new GIFProcessor(unityInterface.gameInstance, unityInterface, data.isWebGL1)
+    }
+
+    DCL.gifProcessor.ProcessGIF(data)
   }
 }
 

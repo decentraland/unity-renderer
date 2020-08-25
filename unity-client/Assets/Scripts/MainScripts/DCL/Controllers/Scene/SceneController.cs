@@ -63,7 +63,7 @@ namespace DCL
             ParcelScene.parcelScenesCleaner.Start();
 
             if (deferredMessagesDecoding) // We should be able to delete this code
-                StartCoroutine(DeferredDecoding()); // 
+                StartCoroutine(DeferredDecoding()); //
 
             DCLCharacterController.OnCharacterMoved += SetPositionDirty;
 
@@ -975,6 +975,7 @@ namespace DCL
         private Vector2Int sortAuxiliaryVector = new Vector2Int(EnvironmentSettings.MORDOR_SCALAR, EnvironmentSettings.MORDOR_SCALAR);
 
 
+
         public const string EMPTY_GO_POOL_NAME = "Empty";
 
 
@@ -982,7 +983,6 @@ namespace DCL
         {
             RendereableAssetLoadHelper.loadingType = RendereableAssetLoadHelper.LoadingType.GLTF_ONLY;
         }
-
 
         public void BuilderReady()
         {

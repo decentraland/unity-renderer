@@ -20,26 +20,6 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 4858604598026192846}
     m_Modifications:
-    - target: {fileID: -927199367670048503, guid: ed10a6d33b22449e9bde8daf89147c69,
-        type: 3}
-      propertyPath: m_Name
-      value: Classic
-      objectReference: {fileID: 0}
-    - target: {fileID: -1504981713932161579, guid: ed10a6d33b22449e9bde8daf89147c69,
-        type: 3}
-      propertyPath: m_Materials.Array.data[0]
-      value: 
-      objectReference: {fileID: 2100000, guid: c36d793a3caa440359e539786d62a233, type: 2}
-    - target: {fileID: -1504981713932161579, guid: ed10a6d33b22449e9bde8daf89147c69,
-        type: 3}
-      propertyPath: m_Materials.Array.data[1]
-      value: 
-      objectReference: {fileID: 2100000, guid: 37175175efbdb4f2687c47624fa71874, type: 2}
-    - target: {fileID: -1504981713932161579, guid: ed10a6d33b22449e9bde8daf89147c69,
-        type: 3}
-      propertyPath: m_Materials.Array.data[2]
-      value: 
-      objectReference: {fileID: 2100000, guid: 462bb333b45174218827ed50f919134d, type: 2}
     - target: {fileID: -4216859302048453862, guid: ed10a6d33b22449e9bde8daf89147c69,
         type: 3}
       propertyPath: m_LocalPosition.x
@@ -68,12 +48,12 @@ PrefabInstance:
     - target: {fileID: -4216859302048453862, guid: ed10a6d33b22449e9bde8daf89147c69,
         type: 3}
       propertyPath: m_LocalRotation.z
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: -4216859302048453862, guid: ed10a6d33b22449e9bde8daf89147c69,
         type: 3}
       propertyPath: m_LocalRotation.w
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: -4216859302048453862, guid: ed10a6d33b22449e9bde8daf89147c69,
         type: 3}
@@ -93,7 +73,7 @@ PrefabInstance:
     - target: {fileID: -4216859302048453862, guid: ed10a6d33b22449e9bde8daf89147c69,
         type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
-      value: 180
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: -4216859302048453862, guid: ed10a6d33b22449e9bde8daf89147c69,
         type: 3}
@@ -109,6 +89,26 @@ PrefabInstance:
         type: 3}
       propertyPath: m_LocalScale.z
       value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: -1504981713932161579, guid: ed10a6d33b22449e9bde8daf89147c69,
+        type: 3}
+      propertyPath: m_Materials.Array.data[0]
+      value: 
+      objectReference: {fileID: 2100000, guid: c36d793a3caa440359e539786d62a233, type: 2}
+    - target: {fileID: -1504981713932161579, guid: ed10a6d33b22449e9bde8daf89147c69,
+        type: 3}
+      propertyPath: m_Materials.Array.data[1]
+      value: 
+      objectReference: {fileID: 2100000, guid: 37175175efbdb4f2687c47624fa71874, type: 2}
+    - target: {fileID: -1504981713932161579, guid: ed10a6d33b22449e9bde8daf89147c69,
+        type: 3}
+      propertyPath: m_Materials.Array.data[2]
+      value: 
+      objectReference: {fileID: 2100000, guid: 462bb333b45174218827ed50f919134d, type: 2}
+    - target: {fileID: -927199367670048503, guid: ed10a6d33b22449e9bde8daf89147c69,
+        type: 3}
+      propertyPath: m_Name
+      value: Classic
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: ed10a6d33b22449e9bde8daf89147c69, type: 3}
@@ -131,11 +131,6 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 0}
     m_Modifications:
-    - target: {fileID: 6745490361802555816, guid: fd29dbb6c443041429f61480d858f979,
-        type: 3}
-      propertyPath: m_Name
-      value: NFTShapeLoader_Classic
-      objectReference: {fileID: 0}
     - target: {fileID: 1183462718381658158, guid: fd29dbb6c443041429f61480d858f979,
         type: 3}
       propertyPath: m_LocalPosition.x
@@ -215,6 +210,16 @@ PrefabInstance:
         type: 3}
       propertyPath: materialIndex_Frame
       value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 4928165005819847581, guid: fd29dbb6c443041429f61480d858f979,
+        type: 3}
+      propertyPath: m_RootOrder
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 6745490361802555816, guid: fd29dbb6c443041429f61480d858f979,
+        type: 3}
+      propertyPath: m_Name
+      value: NFTShapeLoader_Classic
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: fd29dbb6c443041429f61480d858f979, type: 3}

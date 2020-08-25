@@ -17,13 +17,15 @@ namespace DCL
         FilterMode filterMode;
         Coroutine loadCoroutine;
         bool storeDefaultTextureInAdvance = false;
+        bool storeTexAsNonReadable = false;
 
-        public AssetPromise_Texture(string textureUrl, TextureWrapMode textureWrapMode = DEFAULT_WRAP_MODE, FilterMode textureFilterMode = DEFAULT_FILTER_MODE, bool storeDefaultTextureInAdvance = false)
+        public AssetPromise_Texture(string textureUrl, TextureWrapMode textureWrapMode = DEFAULT_WRAP_MODE, FilterMode textureFilterMode = DEFAULT_FILTER_MODE, bool storeDefaultTextureInAdvance = false, bool storeTexAsNonReadable = true)
         {
             url = textureUrl;
             wrapMode = textureWrapMode;
             filterMode = textureFilterMode;
             this.storeDefaultTextureInAdvance = storeDefaultTextureInAdvance;
+            this.storeTexAsNonReadable = storeTexAsNonReadable;
             idWithDefaultTexSettings = ConstructId(url, DEFAULT_WRAP_MODE, DEFAULT_FILTER_MODE);
             idWithTexSettings = UsesDefaultWrapAndFilterMode() ? idWithDefaultTexSettings : ConstructId(url, wrapMode, filterMode);
         }
@@ -106,7 +108,7 @@ namespace DCL
             }
 
             asset.id = idWithTexSettings;
-            asset.ConfigureTexture(wrapMode, filterMode);
+            asset.ConfigureTexture(wrapMode, filterMode, storeTexAsNonReadable);
 
             if (!library.Add(asset))
             {
@@ -120,10 +122,10 @@ namespace DCL
 
         string ConstructId(string textureUrl, TextureWrapMode textureWrapMode, FilterMode textureFilterMode)
         {
-            return ((int) textureWrapMode).ToString() + ((int) textureFilterMode).ToString() + textureUrl;
+            return ((int)textureWrapMode).ToString() + ((int)textureFilterMode).ToString() + textureUrl;
         }
 
-        internal override object GetId()
+        public override object GetId()
         {
             // We only use the id-with-settings when storing/reading from the library
             return idWithDefaultTexSettings;

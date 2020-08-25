@@ -1,11 +1,20 @@
+using System;
 using UnityEngine;
 using UnityEngine.Experimental.Rendering;
+using Object = UnityEngine.Object;
 
 namespace DCL
 {
-    public class Asset_Texture : Asset
+    public interface ITexture : IDisposable
     {
-        public Texture2D texture;
+        Texture2D texture { get; }
+        int width { get; }
+        int height { get; }
+    }
+
+    public class Asset_Texture : Asset, ITexture
+    {
+        public Texture2D texture { get; set; }
         public Asset_Texture dependencyAsset; // to store the default tex asset and release it accordingly
 
         public event System.Action OnCleanup;
@@ -25,5 +34,13 @@ namespace DCL
             OnCleanup?.Invoke();
             Object.Destroy(texture);
         }
+
+        public void Dispose()
+        {
+            Cleanup();
+        }
+
+        public int width => texture.width;
+        public int height => texture.height;
     }
 }

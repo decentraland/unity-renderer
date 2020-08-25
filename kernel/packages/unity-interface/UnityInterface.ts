@@ -299,6 +299,14 @@ export class UnityInterface {
     }
   }
 
+  public SendGIFPointers(id: string, width: number, height: number, pointers: number[], frameDelays: number[]) {
+    this.gameInstance.SendMessage(
+      'SceneController',
+      'UpdateGIFPointers',
+      JSON.stringify({ id, width, height, pointers, frameDelays })
+    )
+  }
+
   public ConfigureEmailPrompt(tutorialStep: number) {
     const emailCompletedFlag = 128
     this.ConfigureHUDElement(HUDElementID.EMAIL_PROMPT, {
