@@ -471,18 +471,18 @@ namespace DCL.Controllers
                 if (parentId == "PlayerEntityReference")
                 {
                     me.SetParent(DCLCharacterController.i.playerReference);
-                    DCL.SceneController.i.boundariesChecker.AddPersistent(me);
+                    SceneController.i.boundariesChecker.AddPersistent(me);
                 }
                 else if (parentId == "AvatarPositionEntityReference")
                 {
                     me.SetParent(DCLCharacterController.i.avatarPositionReference);
-                    DCL.SceneController.i.boundariesChecker.AddPersistent(me);                    
+                    SceneController.i.boundariesChecker.AddPersistent(me);
                 }
                 else
                 {
                     if (me.parent == DCLCharacterController.i.playerReference || me.parent == DCLCharacterController.i.avatarPositionReference)
                     {
-                        DCL.SceneController.i.boundariesChecker.RemoveEntityToBeChecked(me);
+                        SceneController.i.boundariesChecker.RemoveEntityToBeChecked(me);
                     }
 
                     if (parentId == "0")
