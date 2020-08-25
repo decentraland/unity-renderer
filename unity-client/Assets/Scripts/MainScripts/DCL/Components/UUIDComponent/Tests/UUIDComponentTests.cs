@@ -28,7 +28,7 @@ namespace Tests
             DCLCharacterController.i.characterController.enabled = false;
 
             cameraController.SetRotation(0, 0, 0, new Vector3(0, 0, 1));
-            cameraController.SetCameraMode(CameraStateBase.ModeId.FirstPerson);
+            cameraController.SetCameraMode(CameraMode.ModeId.FirstPerson);
         }
 
         void InstantiateEntityWithShape(out DecentralandEntity entity, out BoxShape shape)
