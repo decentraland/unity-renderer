@@ -27,6 +27,8 @@ type SystemEntry = { system: ISystem; priority: number }
 export class Engine implements IEngine {
   readonly eventManager: EventManager = new EventManager()
   readonly rootEntity: IEntity
+  readonly playerEntity: IEntity
+  readonly avatarEntity: IEntity
 
   // @internal
   readonly systems: SystemEntry[] = []
@@ -56,6 +58,12 @@ export class Engine implements IEngine {
     this.eventManager.addListener(ComponentAdded, this, this.componentAddedHandler)
     this.eventManager.addListener(ComponentRemoved, this, this.componentRemovedHandler)
     this.rootEntity = rootEntity
+    this.playerEntity = new Entity();
+    (this.playerEntity as any).uuid = 'PlayerEntityReference'
+    this.addEntity(this.playerEntity)
+    this.avatarEntity = new Entity();
+    (this.avatarEntity as any).uuid = 'AvatarPositionEntityReference'
+    this.addEntity(this.avatarEntity)
   }
 
   addEntity(entity: IEntity): IEntity {
@@ -65,8 +73,8 @@ export class Engine implements IEngine {
       return entity
     }
 
-    entity.eventManager = this.eventManager
-    ;(entity as Entity).engine = this
+    entity.eventManager = this.eventManager;
+    (entity as Entity).engine = this
 
     this._entities[entity.uuid] = entity
 

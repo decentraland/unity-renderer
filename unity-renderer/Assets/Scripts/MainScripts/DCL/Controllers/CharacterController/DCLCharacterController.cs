@@ -67,6 +67,13 @@ public class DCLCharacterController : MonoBehaviour
     public static System.Action<DCLCharacterPosition> OnCharacterMoved;
     public static System.Action<DCLCharacterPosition> OnPositionSet;
 
+
+    // Will allow the game objects to be set, and create the DecentralandEntity manually during the Awake 
+    [HideInInspector] public DCL.Models.DecentralandEntity avatarPositionReference;
+    [HideInInspector] public DCL.Models.DecentralandEntity playerReference;
+    [SerializeField] private GameObject avatarPositionGameObject;
+    [SerializeField] private GameObject playerGameObject;
+
     [SerializeField] private InputAction_Measurable characterYAxis;
     [SerializeField] private InputAction_Measurable characterXAxis;
     private Vector3Variable cameraForward => CommonScriptableObjects.cameraForward;
@@ -103,6 +110,13 @@ public class DCLCharacterController : MonoBehaviour
 
         CommonScriptableObjects.rendererState.OnChange += OnRenderingStateChanged;
         OnRenderingStateChanged(CommonScriptableObjects.rendererState.Get(), false);
+
+        if (avatarPositionGameObject == null || playerGameObject == null)
+        {
+            throw new System.Exception("Both the avatar position and player game objects must be set.");
+        }
+        avatarPositionReference = new DCL.Models.DecentralandEntity { gameObject = avatarPositionGameObject };
+        playerReference = new DCL.Models.DecentralandEntity { gameObject = playerGameObject };
     }
 
     private void SuscribeToInput()

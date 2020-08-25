@@ -1,5 +1,6 @@
 import { ComponentLike, ComponentConstructor } from './Component'
 import { EventConstructor, EventManager } from './EventManager'
+import { Attachable } from './Attachable'
 
 /**
  * @public
@@ -21,6 +22,8 @@ export interface ISystem {
  */
 export interface IEngine {
   rootEntity: IEntity
+  readonly playerEntity: IEntity
+  readonly avatarEntity: IEntity
   readonly entities: Readonly<Record<string, IEntity>>
 
   addEntity(entity: IEntity): void
@@ -41,7 +44,7 @@ export interface IEntity {
 
   isAddedToEngine(): boolean
   getParent(): IEntity | null
-  setParent(e: IEntity): void
+  setParent(e: IEntity | Attachable | null): void
 
   getComponent<T = any>(component: string): T
   getComponent<T>(component: ComponentConstructor<T>): T
@@ -55,7 +58,7 @@ export interface IEntity {
   getComponentOrNull<T>(component: ComponentConstructor<T>): T | null
   getComponentOrNull<T>(component: ComponentConstructor<T> | string): T | null
 
-  getComponentOrCreate<T>(component: ComponentConstructor<T> & { new (): T }): T
+  getComponentOrCreate<T>(component: ComponentConstructor<T> & { new(): T }): T
 
   /**
    * Adds a component. If the component already exist, it throws an Error.

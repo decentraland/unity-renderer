@@ -2,6 +2,7 @@ import { getComponentName, ComponentConstructor, getComponentClassId, ComponentL
 import { IEngine, IEntity, ComponentAdded, ComponentRemoved, ParentChanged } from './IEntity'
 import { EventManager } from './EventManager'
 import { newId, log } from './helpers'
+import { Attachable } from './Attachable'
 
 // tslint:disable:no-use-before-declare
 
@@ -154,7 +155,7 @@ export class Entity implements IEntity {
    * Gets a component, if it doesn't exist, it creates the component and returns it.
    * @param component - component class
    */
-  getComponentOrCreate<T>(component: ComponentConstructor<T> & { new (): T }): T {
+  getComponentOrCreate<T>(component: ComponentConstructor<T> & { new(): T }): T {
     if (typeof (component as any) !== 'function') {
       throw new Error('Entity#getOrCreate(component): component is not a class')
     }
@@ -279,8 +280,19 @@ export class Entity implements IEntity {
   /**
    * Sets the parent entity
    */
-  setParent(_parent: IEntity | null): IEntity {
-    let newParent = !_parent && this.engine ? this.engine.rootEntity : _parent
+  setParent(_parent: IEntity | Attachable | null): IEntity {
+    let newParent: IEntity | null
+
+    // Check if parent is of type Attachable
+    if (_parent && 'getEntityRepresentation' in _parent) {
+      if (!this.engine) {
+        throw new Error(`In order to set an attachable as parent, you first need to add the entity to the engine.`)
+      }
+      newParent = _parent.getEntityRepresentation(this.engine)
+    } else {
+      // @ts-ignore
+      newParent = !_parent && this.engine ? this.engine.rootEntity : _parent
+    }
     let currentParent = this.getParent()
 
     if (newParent === this) {
@@ -293,7 +305,7 @@ export class Entity implements IEntity {
       return this
     }
 
-    const circularAncestor = this.getCircularAncestor(newParent as Entity)
+    const circularAncestor = this.getCircularAncestor(newParent)
 
     if (circularAncestor) {
       throw new Error(
@@ -305,14 +317,15 @@ export class Entity implements IEntity {
       delete currentParent.children[this.uuid]
     }
 
+    // Make sure that the parent and child are both on the engine, or off the engine, together
     if (newParent !== null && newParent.uuid !== '0') {
       if (!newParent.isAddedToEngine() && this.isAddedToEngine()) {
         // tslint:disable-next-line:semicolon
-        ;(this.engine as IEngine).removeEntity(this)
+        this.engine!.removeEntity(this)
       }
       if (newParent.isAddedToEngine() && !this.isAddedToEngine()) {
         // tslint:disable-next-line:semicolon
-        ;((newParent as Entity).engine as IEngine).addEntity(this)
+        (newParent as Entity).engine!.addEntity(this)
       }
     }
 
@@ -320,7 +333,7 @@ export class Entity implements IEntity {
     this.registerAsChild()
 
     if (this.eventManager && this.engine) {
-      this.eventManager.fireEvent(new ParentChanged(this as IEntity, newParent))
+      this.eventManager.fireEvent(new ParentChanged(this, newParent))
     }
 
     return this
@@ -337,7 +350,7 @@ export class Entity implements IEntity {
     return this.name || this.uuid
   }
 
-  private getCircularAncestor(ent: Entity): string | null {
+  private getCircularAncestor(ent: IEntity | null): string | null {
     const root = this.engine ? this.engine.rootEntity : null
     let e: IEntity | null = ent
 

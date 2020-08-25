@@ -13,16 +13,16 @@ namespace CameraController_Test
         [Test]
         public void ReactToCameraChangeAction()
         {
-            var currentCamera = cameraController.currentMode;
+            var currentCamera = CommonScriptableObjects.cameraMode.Get();
             cameraController.cameraChangeAction.RaiseOnTriggered();
 
-            Assert.AreNotEqual(currentCamera, cameraController.currentMode);
+            Assert.AreNotEqual(currentCamera, CommonScriptableObjects.cameraMode.Get());
         }
 
         [Test]
-        [TestCase(CameraStateBase.ModeId.FirstPerson)]
-        [TestCase(CameraStateBase.ModeId.ThirdPerson)]
-        public void LiveCameraIsOn(CameraStateBase.ModeId cameraMode)
+        [TestCase(CameraMode.ModeId.FirstPerson)]
+        [TestCase(CameraMode.ModeId.ThirdPerson)]
+        public void LiveCameraIsOn(CameraMode.ModeId cameraMode)
         {
             cameraController.SetCameraMode(cameraMode);
             Assert.IsTrue(cameraController.currentCameraState.defaultVirtualCamera.gameObject.activeInHierarchy);
