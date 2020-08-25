@@ -12,7 +12,7 @@ namespace DCL
             asset.container.name = "GLTF: " + url;
         }
 
-        internal override object GetId()
+        public override object GetId()
         {
             return base.GetId();
         }

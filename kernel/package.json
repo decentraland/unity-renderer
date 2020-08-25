@@ -108,6 +108,7 @@
     "eth-crypto": "^1.5.1",
     "ethereum-blockies": "^0.1.1",
     "fp-future": "^1.0.1",
+    "gifuct-js": "github:matt-way/gifuct-js",
     "google-protobuf": "^3.6.1",
     "keccakjs": "^0.2.3",
     "long": "^4.0.0",

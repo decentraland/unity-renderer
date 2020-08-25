@@ -1,119 +1,50 @@
 ﻿using System;
 using System.Collections;
+using System.Collections.Generic;
 using DCL.Controllers.Gif;
+using DCL.Helpers;
 using UnityEngine;
+using UnityEngine.Networking;
 
 namespace DCL
 {
-    public enum WrappedTextureMaxSize { DONT_RESIZE = -1, _32 = 32, _64 = 64, _128 = 128, _256 = 256, _512 = 512, _1024 = 1024, _2048 = 2048 }
-    public static class WrappedTextureAssetFactory
+    public static class WrappedTextureUtils
     {
-        static public IEnumerator Create(string contentType, byte[] bytes, WrappedTextureMaxSize maxTextureSize, Action<IWrappedTextureAsset> OnSuccess)
+        public static IEnumerator Fetch(string url, Action<ITexture, AssetPromise_Texture> OnSuccess, Asset_Gif.MaxSize maxTextureSize = Asset_Gif.MaxSize.DONT_RESIZE)
         {
-            if (contentType == "image/gif")
+            string contentType = null;
+
+            var headReq = UnityWebRequest.Head(url);
+
+            yield return headReq.SendWebRequest();
+
+            if (headReq.WebRequestSucceded())
             {
-                var gif = new DCLGif();
-                yield return gif.Load(bytes, () =>
-                {
-                    var wrappedGif = new WrappedGif(gif);
-                    wrappedGif.EnsureTextureMaxSize(maxTextureSize);
-                    gif.Play();
-                    OnSuccess?.Invoke(wrappedGif);
-                });
+                contentType = headReq.GetResponseHeader("Content-Type");
             }
-            else
-            {
-                var texture = new Texture2D(1, 1);
-                texture.LoadImage(bytes);
-                var wrappedImage = new WrappedImage(texture);
-                wrappedImage.EnsureTextureMaxSize(maxTextureSize);
-                OnSuccess?.Invoke(wrappedImage);
-            }
-        }
-    }
 
-    public interface IWrappedTextureAsset : IDisposable
-    {
-        Texture2D texture { get; }
-        int width { get; }
-        int height { get; }
-        void EnsureTextureMaxSize(WrappedTextureMaxSize maxTextureSize);
-    }
-
-    public class WrappedImage : IWrappedTextureAsset
-    {
-        public Texture2D texture { get { return texture2D; } }
-        public int width => texture.width;
-        public int height => texture.height;
-
-        private Texture2D texture2D;
-
-        public void Dispose()
-        {
-            if (texture2D != null)
-            {
-                UnityEngine.Object.Destroy(texture2D);
-                texture2D = null;
-            }
+            yield return Create(contentType, url, maxTextureSize, OnSuccess);
         }
 
-        public WrappedImage(Texture2D t)
+        private static IEnumerator Create(string contentType, string url, Asset_Gif.MaxSize maxTextureSize,
+                                        Action<ITexture, AssetPromise_Texture> OnSuccess, Action OnFail = null)
         {
-            texture2D = t;
-        }
-
-        public void EnsureTextureMaxSize(WrappedTextureMaxSize maxTextureSize)
-        {
-            if (maxTextureSize != WrappedTextureMaxSize.DONT_RESIZE)
+            if (contentType != "image/gif")
             {
-                TextureHelpers.EnsureTexture2DMaxSize(ref texture2D, (int)maxTextureSize);
+                AssetPromise_Texture texturePromise = new AssetPromise_Texture(url, storeTexAsNonReadable: false);
+                texturePromise.OnSuccessEvent += texture => { OnSuccess?.Invoke(texture, texturePromise); };
+                texturePromise.OnFailEvent += (x) => OnFail?.Invoke();
+
+                AssetPromiseKeeper_Texture.i.Keep(texturePromise);
+
+                yield return texturePromise;
+
+                yield break;
             }
-        }
-    }
 
-    public class WrappedGif : IWrappedTextureAsset
-    {
-        DCLGif gif;
-        Coroutine updateRoutine = null;
+            var gif = new Asset_Gif(url, maxTextureSize, OnSuccess);
 
-        public Texture2D texture => gif.texture;
-        public int width => gif.textureWidth;
-        public int height => gif.textureHeight;
-
-        public void Dispose()
-        {
-            if (updateRoutine != null)
-            {
-                CoroutineStarter.Stop(updateRoutine);
-            }
-            if (gif != null)
-            {
-                gif.Dispose();
-            }
-        }
-
-        public void SetUpdateTextureCallback(Action<Texture2D> callback)
-        {
-            gif.OnFrameTextureChanged += callback;
-
-            if (updateRoutine != null)
-            {
-                CoroutineStarter.Stop(updateRoutine);
-            }
-            updateRoutine = CoroutineStarter.Start(gif.UpdateRoutine());
-        }
-
-        public WrappedGif(DCLGif gif)
-        {
-            this.gif = gif;
-        }
-
-        public void EnsureTextureMaxSize(WrappedTextureMaxSize maxTextureSize)
-        {
-            if (maxTextureSize != WrappedTextureMaxSize.DONT_RESIZE)
-            {
-                gif.SetMaxTextureSize((int)maxTextureSize);
-            }
+            yield return gif.Load();
         }
     }
 }

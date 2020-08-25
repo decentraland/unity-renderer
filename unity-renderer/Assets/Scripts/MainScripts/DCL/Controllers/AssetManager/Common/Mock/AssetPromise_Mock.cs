@@ -13,7 +13,7 @@ namespace DCL
         private object id;
         Coroutine assetMockCoroutine;
 
-        internal override object GetId()
+        public override object GetId()
         {
             Assert.IsTrue(idGenerator != null, "idGenerator should not be null");
 
@@ -82,5 +82,4 @@ namespace DCL
     public class AssetPromise_Mock_Alt_Loading_Approach : AssetPromise_Mock
     {
     }
-
 }

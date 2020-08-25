@@ -11,8 +11,6 @@ namespace DCL
         protected ContentProvider provider = null;
         public string url { get; private set; }
 
-        public bool useIdForMockedMappings => SceneController.i == null || SceneController.i.isDebugMode || SceneController.i.isWssDebugMode;
-
         GLTFComponent gltfComponent = null;
         object id = null;
 
@@ -39,7 +37,7 @@ namespace DCL
             settings.ApplyAfterLoad(asset.container.transform);
         }
 
-        internal override object GetId()
+        public override object GetId()
         {
             return id;
         }
@@ -112,7 +110,7 @@ namespace DCL
         {
             if (settings.forceNewInstance)
             {
-                return ((AssetLibrary_GLTF)library).GetCopyFromOriginal(id);
+                return ((AssetLibrary_GLTF) library).GetCopyFromOriginal(id);
             }
             else
             {

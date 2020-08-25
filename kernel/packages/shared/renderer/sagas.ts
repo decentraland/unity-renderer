@@ -152,6 +152,7 @@ function initializeUnityEditor(webSocketUrl: string, container: HTMLElement): Un
   }
 
   const gameInstance: UnityGame = {
+    Module: null,
     SendMessage(_obj, type, payload) {
       if (ws.readyState === ws.OPEN) {
         const msg = JSON.stringify({ type, payload })

@@ -93,6 +93,7 @@ export const STATIC_WORLD = location.search.indexOf('STATIC_WORLD') !== -1 || !!
 // Development
 export const ENABLE_WEB3 = location.search.indexOf('ENABLE_WEB3') !== -1 || !!(global as any).enableWeb3
 export const ENV_OVERRIDE = location.search.indexOf('ENV') !== -1
+export const GIF_WORKERS = location.search.indexOf('GIF_WORKERS') !== -1
 
 const qs = queryString.parse(location.search)
 
