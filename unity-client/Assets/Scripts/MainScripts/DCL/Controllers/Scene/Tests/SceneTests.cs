@@ -51,7 +51,7 @@ namespace Tests
 
             string sceneGameObjectNamePrefix = "UI Scene - ";
             string sceneId = "Test UI Scene";
-            sceneController.CreateUIScene(JsonUtility.ToJson(new CreateUISceneMessage() {id = sceneId}));
+            sceneController.CreateUIScene(JsonUtility.ToJson(new CreateUISceneMessage() { id = sceneId }));
 
             GameObject sceneGo = GameObject.Find(sceneGameObjectNamePrefix + sceneId);
 
@@ -402,6 +402,33 @@ namespace Tests
             Assert.AreEqual(0, scene.disposableNotReadyCount);
             yield return boxShape.routine;
             Assert.AreEqual(0, scene.disposableNotReadyCount);
+        }
+
+        [Test]
+        public void ParcelScene_SetEntityParent()
+        {
+            SetUp_TestScene();
+            var entityId = "entityId";
+            var entity = TestHelpers.CreateSceneEntity(scene, entityId);
+
+            // Make sure that it doesn't have a parent
+            Assert.IsNull(entity.parent);
+            Assert.IsFalse(SceneController.i.boundariesChecker.WasAddedAsPersistent(entity));
+
+            // Set player reference as parent
+            TestHelpers.SetEntityParent(scene, entityId, "PlayerEntityReference");
+            Assert.AreEqual(entity.parent, DCLCharacterController.i.playerReference);
+            Assert.IsTrue(SceneController.i.boundariesChecker.WasAddedAsPersistent(entity));
+
+            // Set avatar position reference as parent
+            TestHelpers.SetEntityParent(scene, entityId, "AvatarPositionEntityReference");
+            Assert.AreEqual(entity.parent, DCLCharacterController.i.avatarPositionReference);
+            Assert.IsTrue(SceneController.i.boundariesChecker.WasAddedAsPersistent(entity));
+
+            // Remove all parents
+            TestHelpers.SetEntityParent(scene, entityId, "0");
+            Assert.IsNull(entity.parent);
+            Assert.IsFalse(SceneController.i.boundariesChecker.WasAddedAsPersistent(entity));
         }
     }
 }

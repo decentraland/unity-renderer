@@ -91,6 +91,15 @@ namespace DCL.Controllers
             persistentEntities.Add(entity);
         }
 
+        /// <summary>
+        /// Returns whether an entity was added to be concistently checked
+        /// </summary>
+        ///
+        public bool WasAddedAsPersistent(DecentralandEntity entity)
+        {
+            return persistentEntities.Contains(entity);
+        }
+
         public void RemoveEntityToBeChecked(DecentralandEntity entity)
         {
             if (!SceneController.i.useBoundariesChecker) return;
