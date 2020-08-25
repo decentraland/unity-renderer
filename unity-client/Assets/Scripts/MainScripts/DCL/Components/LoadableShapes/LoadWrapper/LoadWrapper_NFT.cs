@@ -9,6 +9,7 @@ namespace DCL.Components
 
         public bool withCollisions;
         public Color backgroundColor;
+        public BaseDisposable component;
 
         string assetUrl;
 

@@ -24,7 +24,7 @@ namespace DCL
             throw new NotImplementedException();
         }
 
-        internal override object GetId()
+        public override object GetId()
         {
             throw new NotImplementedException();
         }

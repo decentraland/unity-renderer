@@ -15,9 +15,9 @@ If you are using Windows 10 we recommend you to enable the Linux subsystem and i
 
 ## Running the kernel
 
-Make sure you have the following dependencies:  
-- Node v10 or compatible installed 
-- yarn installed globally via `npm install yarn -g` 
+Make sure you have the following dependencies:
+- Node v10 or compatible installed
+- yarn installed globally via `npm install yarn -g`
 
 Build the project:
 
@@ -247,8 +247,8 @@ The following files are involved
 
 * Add the function in the `kernelNativeBridge.c` file. This just
   involves adding `EXTERNAL_CALLBACK_<signature>(<method-name>)` line to
-  the file. Note that the signature has to be specified. 
-  
+  the file. Note that the signature has to be specified.
+
 * If the method
   has a signature not defined yet, you have to add a new macro that
   should use a new function pointer type declared in
@@ -264,23 +264,23 @@ The following files are involved
     [MonoPInvokeCallback(typeof(JS_Delegate_VS))]
     private static void Foo(string id)
     {
-        //your code  
+        //your code
     }
   ```
   Remember, the method has to be static and has to use the
   `MonoPInvokeCallback` attribute with the proper delegate. Otherwise,
   compilation will fail and the methods will not be bound correctly.
-  
+
 * Put the `SetCallback_Foo` call in `World_EntryPoint` initialization
   with the method as a param. This will set the function pointer wasm
   side, finishing the "glue" between C# and JS.
   ```
     public EntryPoint_World(SceneController sceneController)
     {
-        ...  
+        ...
         SetCallback_Foo(Foo);
   ```
-  
+
 *  Now you have to call the method. This example code would call the
    `Foo` method from JS. Remember that you need the `Module` instance
    that lies inside the unity instance JS side returned by the
@@ -297,13 +297,13 @@ The following files are involved
     ...
    }
    ```
-   
+
    And later...
-   
+
    ```
    this.callFoo("bar") // finally calling the function
    ```
-   
+
 * We did it!. Remember: this is no replacement of `SendMessage`.
   `SendMessage` is still used by our WSS debug mode. So, you'll have to
   always provide a `SendMessage` alternative and bind it correctly to
@@ -316,13 +316,28 @@ The following files are involved
       // Native call
     }
   ```
-  
+
 * As you can see, binding native calls has a lot of maintenance costs,
   so its better to just bind calls that really need that performance
   speed up. If you need benchmarks, this approach is inspired by
   [this](https://forum.unity.com/threads/super-fast-javascript-interaction-on-webgl.382734/)
   unity forum post showing some numbers.
 
+
+## Creating a typescript Worker in Kernel
+You can check the files used for our simple gif-processor worker (`packages/gif-processor`):
+1. Create relevant folder inside `packages/` and put a .ts file for the main thread and another .ts for the worker (gif-processor example: `processor.ts` and `worker.ts`)
+2. copy the tsconfig.json file from `packages/gif-processor` into the new folder, rename and edit its "OutDir" value to point to a new folder inside `/static/`
+3. Duplicate the `targets/engine/gif-processor.json` file, rename it and change its "file" value to point to your worker .ts file
+4. Inside the `Makefile` file create a new path constant (like the one for `GIF_PROCESSOR`) and set the path to your compiled worker file (the folder you created in step 2 plus 'worker.ts'). Then add that new constant inside `build-essentials` like `GIF_PROCESSOR`
+5. Inside the `Makefile` add the following 2 lines with your own paths:
+```
+static/gif-processor/worker.js: packages/gif-processor/*.ts
+	@$(COMPILER) targets/engine/gif-processor.json
+```
+6. You should be able to import your package that uses the Worker anywhere. Beware of the [limitations when passing data to/from workers](https://developer.mozilla.org/en-US/docs/Web/API/Web_Workers_API/Structured_clone_algorithm) and also consider [passing the data as Transferable objects](https://developer.mozilla.org/en-US/docs/Web/API/Transferable) to improve performance.
+
+- configurar file en targhets/engne/loader crear unopara el gif player
 
 ## Copyright info
 

@@ -193,6 +193,6 @@ namespace DCL
         protected abstract void OnLoad(Action OnSuccess, Action OnFail);
         protected abstract void OnBeforeLoadOrReuse();
         protected abstract void OnAfterLoadOrReuse();
-        internal abstract object GetId();
+        public abstract object GetId();
     }
 }

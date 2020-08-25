@@ -2,6 +2,7 @@ using System;
 using DCL.Helpers;
 using DCL.Models;
 using UnityEngine;
+using System;
 using Ray = UnityEngine.Ray;
 
 #if UNITY_WEBGL && !UNITY_EDITOR
@@ -65,7 +66,7 @@ namespace DCL.Interface
                 public string sceneId;
             }
 
-            public SceneReady(string sceneId) : base("SceneReady", new Payload() {sceneId = sceneId})
+            public SceneReady(string sceneId) : base("SceneReady", new Payload() { sceneId = sceneId })
             {
             }
         }
@@ -394,6 +395,14 @@ namespace DCL.Interface
         }
 
         [System.Serializable]
+        public class GIFSetupPayload
+        {
+            public string imageSource;
+            public string id;
+            public bool isWebGL1;
+        }
+
+        [System.Serializable]
         public class RequestScenesInfoAroundParcelPayload
         {
             public Vector2 parcel;
@@ -482,6 +491,7 @@ namespace DCL.Interface
         private static OnGlobalPointerEventPayload onGlobalPointerEventPayload = new OnGlobalPointerEventPayload();
         private static OnGlobalPointerEvent onGlobalPointerEvent = new OnGlobalPointerEvent();
         private static AudioStreamingPayload onAudioStreamingEvent = new AudioStreamingPayload();
+        private static GIFSetupPayload gifSetupPayload = new GIFSetupPayload();
         private static JumpInPayload jumpInPayload = new JumpInPayload();
         private static GotoEvent gotoEvent = new GotoEvent();
         private static SendChatMessageEvent sendChatMessageEvent = new SendChatMessageEvent();
@@ -571,7 +581,7 @@ namespace DCL.Interface
 
         public static void ReportGlobalPointerDownEvent(ACTION_BUTTON buttonId, Ray ray, Vector3 point, Vector3 normal, float distance, string sceneId, string entityId = null, string meshName = null, bool isHitInfoValid = false)
         {
-            SetPointerEventPayload((OnPointerEventPayload) onGlobalPointerEventPayload, buttonId, entityId, meshName, ray, point, normal, distance, isHitInfoValid);
+            SetPointerEventPayload((OnPointerEventPayload)onGlobalPointerEventPayload, buttonId, entityId, meshName, ray, point, normal, distance, isHitInfoValid);
             onGlobalPointerEventPayload.type = OnGlobalPointerEventPayload.InputEventType.DOWN;
 
             onGlobalPointerEvent.payload = onGlobalPointerEventPayload;
@@ -581,7 +591,7 @@ namespace DCL.Interface
 
         public static void ReportGlobalPointerUpEvent(ACTION_BUTTON buttonId, Ray ray, Vector3 point, Vector3 normal, float distance, string sceneId, string entityId = null, string meshName = null, bool isHitInfoValid = false)
         {
-            SetPointerEventPayload((OnPointerEventPayload) onGlobalPointerEventPayload, buttonId, entityId, meshName, ray, point, normal, distance, isHitInfoValid);
+            SetPointerEventPayload((OnPointerEventPayload)onGlobalPointerEventPayload, buttonId, entityId, meshName, ray, point, normal, distance, isHitInfoValid);
             onGlobalPointerEventPayload.type = OnGlobalPointerEventPayload.InputEventType.UP;
 
             onGlobalPointerEvent.payload = onGlobalPointerEventPayload;
@@ -758,12 +768,12 @@ namespace DCL.Interface
 
         public static void SendUserAcceptedCollectibles(string airdropId)
         {
-            SendMessage("UserAcceptedCollectibles", new UserAcceptedCollectiblesPayload {id = airdropId});
+            SendMessage("UserAcceptedCollectibles", new UserAcceptedCollectiblesPayload { id = airdropId });
         }
 
         public static void SaveUserTutorialStep(int newTutorialStep)
         {
-            SendMessage("SaveUserTutorialStep", new TutorialStepPayload() {tutorialStep = newTutorialStep});
+            SendMessage("SaveUserTutorialStep", new TutorialStepPayload() { tutorialStep = newTutorialStep });
         }
 
         public static void SendPerformanceReport(string encodedFrameTimesInMS)
@@ -808,7 +818,7 @@ namespace DCL.Interface
 
         public static void OpenURL(string url)
         {
-            SendMessage("OpenWebURL", new OpenURLPayload {url = url});
+            SendMessage("OpenWebURL", new OpenURLPayload { url = url });
         }
 
         public static void SendReportScene(string sceneID)
@@ -860,6 +870,15 @@ namespace DCL.Interface
             onAudioStreamingEvent.play = play;
             onAudioStreamingEvent.volume = volume;
             SendMessage("SetAudioStream", onAudioStreamingEvent);
+        }
+
+        public static void RequestGIFProcessor(string gifURL, string gifId, bool isWebGL1)
+        {
+            gifSetupPayload.imageSource = gifURL;
+            gifSetupPayload.id = gifId;
+            gifSetupPayload.isWebGL1 = isWebGL1;
+
+            SendMessage("RequestGIFProcessor", gifSetupPayload);
         }
 
         public static void GoTo(int x, int y)
