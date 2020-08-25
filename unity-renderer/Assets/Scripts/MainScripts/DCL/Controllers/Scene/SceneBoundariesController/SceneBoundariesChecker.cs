@@ -92,7 +92,7 @@ namespace DCL.Controllers
         }
 
         /// <summary>
-        /// Returns whether an entity was added to be concistently checked
+        /// Returns whether an entity was added to be consistently checked
         /// </summary>
         ///
         public bool WasAddedAsPersistent(DecentralandEntity entity)
