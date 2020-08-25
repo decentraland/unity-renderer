@@ -8,7 +8,7 @@ import { createLogger } from 'shared/logger'
 import { ReportFatalError } from 'shared/loading/ReportFatalError'
 import { experienceStarted, NOT_INVITED, AUTH_ERROR_LOGGED_OUT, FAILED_FETCHING_UNITY } from 'shared/loading/types'
 import { worldToGrid } from '../atomicHelpers/parcelScenePositions'
-import { NO_MOTD, DEBUG_PM, EDITOR, OPEN_AVATAR_EDITOR } from '../config/index'
+import { NO_MOTD, DEBUG_PM, OPEN_AVATAR_EDITOR } from '../config/index'
 import { signalRendererInitialized, signalParcelLoadingStarted } from 'shared/renderer/actions'
 import { lastPlayerPosition, teleportObservable } from 'shared/world/positionThings'
 import { StoreContainer } from 'shared/store/rootTypes'
@@ -19,10 +19,6 @@ import { worldRunningObservable, onNextWorldRunning } from 'shared/world/worldSt
 import { getCurrentIdentity } from 'shared/session/selectors'
 import { userAuthentified } from 'shared/session'
 import { realmInitialized } from 'shared/dao'
-import { loadParcelScene, getParcelSceneID } from 'shared/world/parcelSceneManager'
-import { ensureUiApis } from 'shared/world/uiSceneInitializer'
-import { hudWorkerUrl } from 'shared/world/SceneWorker'
-import { UnityScene } from 'unity-interface/UnityScene'
 
 const container = document.getElementById('gameContainer')
 
@@ -38,27 +34,6 @@ const observer = worldRunningObservable.add((isRunning) => {
     DEBUG_PM && logger.info(`initial load: `, Date.now() - start)
   }
 })
-
-export async function startGlobalScene(unityInterface: any) {
-  const sceneId = 'dcl-ui-scene'
-
-  const scene = new UnityScene({
-    sceneId,
-    name: 'ui',
-    baseUrl: location.origin,
-    main: hudWorkerUrl,
-    useFPSThrottling: false,
-    data: {},
-    mappings: []
-  })
-
-  const worker = loadParcelScene(scene)
-  worker.persistent = true
-
-  await ensureUiApis(worker)
-
-  unityInterface.CreateUIScene({ id: getParcelSceneID(scene), baseUrl: scene.data.baseUrl })
-}
 
 initializeUnity(container)
   .then(async ({ instancedJS }) => {
@@ -94,10 +69,6 @@ initializeUnity(container)
 
     await realmInitialized()
     await startUnitySceneWorkers()
-
-    if (!EDITOR) {
-      await startGlobalScene(i)
-    }
 
     globalThis.globalStore.dispatch(signalParcelLoadingStarted())
 

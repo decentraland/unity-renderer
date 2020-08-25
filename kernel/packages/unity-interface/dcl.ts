@@ -4,9 +4,14 @@ import { aborted } from 'shared/loading/ReportFatalError'
 import { loadingScenes, teleportTriggered } from 'shared/loading/types'
 import { defaultLogger } from 'shared/logger'
 import { ILand, SceneJsonData, LoadableParcelScene, MappingsResponse } from 'shared/types'
-import { enableParcelSceneLoading, loadParcelScene, stopParcelSceneWorker } from 'shared/world/parcelSceneManager'
+import {
+  enableParcelSceneLoading,
+  loadParcelScene,
+  stopParcelSceneWorker,
+  getParcelSceneID
+} from 'shared/world/parcelSceneManager'
 import { teleportObservable } from 'shared/world/positionThings'
-import { SceneWorker } from 'shared/world/SceneWorker'
+import { SceneWorker, hudWorkerUrl } from 'shared/world/SceneWorker'
 import { worldRunningObservable } from 'shared/world/worldState'
 import { StoreContainer } from 'shared/store/rootTypes'
 import { ILandToLoadableParcelScene, ILandToLoadableParcelSceneUpdate } from 'shared/selectors'
@@ -15,6 +20,8 @@ import { UnityParcelScene } from './UnityParcelScene'
 import { loginCompleted } from 'shared/ethereum/provider'
 import { UnityInterface, unityInterface } from './UnityInterface'
 import { BrowserInterface, browserInterface } from './BrowserInterface'
+import { UnityScene } from './UnityScene'
+import { ensureUiApis } from 'shared/world/uiSceneInitializer'
 
 declare const globalThis: UnityInterfaceContainer &
   BrowserInterfaceContainer &
@@ -111,6 +118,10 @@ export async function initializeEngine(_gameInstance: GameInstance) {
     unityInterface.SetEngineDebugPanel()
   }
 
+  if (!EDITOR) {
+    await startGlobalScene(unityInterface)
+  }
+
   return {
     unityInterface,
     onMessage(type: string, message: any) {
@@ -122,6 +133,27 @@ export async function initializeEngine(_gameInstance: GameInstance) {
       }
     }
   }
+}
+
+export async function startGlobalScene(unityInterface: UnityInterface) {
+  const sceneId = 'dcl-ui-scene'
+
+  const scene = new UnityScene({
+    sceneId,
+    name: 'ui',
+    baseUrl: location.origin,
+    main: hudWorkerUrl,
+    useFPSThrottling: false,
+    data: {},
+    mappings: []
+  })
+
+  const worker = loadParcelScene(scene)
+  worker.persistent = true
+
+  await ensureUiApis(worker)
+
+  unityInterface.CreateUIScene({ id: getParcelSceneID(scene), baseUrl: scene.data.baseUrl })
 }
 
 export async function startUnitySceneWorkers() {
