@@ -21,6 +21,8 @@ namespace DCL
         public Dictionary<GameObject, PoolableObject> poolables = new Dictionary<GameObject, PoolableObject>();
         public HashSet<PoolableObject> poolableValues = new HashSet<PoolableObject>();
 
+        public event System.Action OnGet;
+
         public bool HasPoolable(PoolableObject poolable)
         {
             //NOTE(Brian): The only poolableValues use is this. Using ContainsValue in a Dictionary is slow as hell.
@@ -210,6 +212,7 @@ namespace DCL
                 return null;
             }
 
+            OnGet?.Invoke();
             return pool.Get();
         }
 
