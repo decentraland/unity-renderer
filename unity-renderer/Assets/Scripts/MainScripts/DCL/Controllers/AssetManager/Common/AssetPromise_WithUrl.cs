@@ -11,7 +11,7 @@ namespace DCL
             this.hash = hash;
         }
 
-        internal override object GetId()
+        public override object GetId()
         {
             return hash;
         }

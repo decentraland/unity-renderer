@@ -1,5 +1,6 @@
 using DCL.Configuration;
 using System;
+using DCL;
 using UnityEngine;
 
 public class DCLCharacterPosition
@@ -14,9 +15,7 @@ public class DCLCharacterPosition
 
     public Vector3 UnityToWorldPosition(Vector3 pos)
     {
-
         return pos + offset;
-
     }
 
     public Vector3 WorldToUnityPosition(Vector3 pos)
@@ -26,10 +25,7 @@ public class DCLCharacterPosition
 
     public Vector3 worldPosition
     {
-        get
-        {
-            return worldPositionValue;
-        }
+        get { return worldPositionValue; }
 
         set
         {
@@ -41,10 +37,7 @@ public class DCLCharacterPosition
 
     public Vector3 unityPosition
     {
-        get
-        {
-            return unityPositionValue;
-        }
+        get { return unityPositionValue; }
 
         set
         {
@@ -67,7 +60,7 @@ public class DCLCharacterPosition
 
         if (Mathf.Abs(unityPositionValue.x) > minDistanceForReposition)
         {
-            float dist = (int)(unityPositionValue.x / minDistanceForReposition) * minDistanceForReposition;
+            float dist = (int) (unityPositionValue.x / minDistanceForReposition) * minDistanceForReposition;
             unityPositionValue.x -= dist;
             offset.x += dist;
             dirty = true;
@@ -75,7 +68,7 @@ public class DCLCharacterPosition
 
         if (Mathf.Abs(unityPositionValue.z) > minDistanceForReposition)
         {
-            float dist = (int)(unityPositionValue.z / minDistanceForReposition) * minDistanceForReposition;
+            float dist = (int) (unityPositionValue.z / minDistanceForReposition) * minDistanceForReposition;
             unityPositionValue.z -= dist;
             offset.z += dist;
             dirty = true;
@@ -91,6 +84,7 @@ public class DCLCharacterPosition
 
             CommonScriptableObjects.playerWorldPosition.Set(worldPositionValue);
             CommonScriptableObjects.playerUnityToWorldOffset.Set(offset);
+            SceneController.i.physicsSyncController.MarkDirty();
         }
     }
 

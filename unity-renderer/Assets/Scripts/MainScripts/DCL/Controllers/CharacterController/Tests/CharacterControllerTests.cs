@@ -128,7 +128,7 @@ namespace Tests
         public IEnumerator Character_UpdateSOPosition()
         {
             yield return InitCharacterPosition(50, 2, 0);
-            Assert.AreEqual(new Vector3(50f, 2f, 0f), CommonScriptableObjects.playerUnityPosition);
+            Assert.AreEqual(new Vector3(50f, 2f, 0f), CommonScriptableObjects.playerUnityPosition.Get());
         }
 
         [UnityTest]

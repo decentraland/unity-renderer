@@ -1,7 +1,6 @@
 using System.Collections.Generic;
 using UnityEngine;
 using System.Linq;
-using Cinemachine;
 
 namespace DCL
 {
@@ -20,6 +19,8 @@ namespace DCL
         public Dictionary<object, Pool> pools = new Dictionary<object, Pool>();
         public Dictionary<GameObject, PoolableObject> poolables = new Dictionary<GameObject, PoolableObject>();
         public HashSet<PoolableObject> poolableValues = new HashSet<PoolableObject>();
+
+        public event System.Action OnGet;
 
         public bool HasPoolable(PoolableObject poolable)
         {
@@ -210,6 +211,7 @@ namespace DCL
                 return null;
             }
 
+            OnGet?.Invoke();
             return pool.Get();
         }
 

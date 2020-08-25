@@ -5,7 +5,6 @@ using DCL.Helpers;
 using DCL.Configuration;
 using UnityEngine;
 using System.Collections.Generic;
-using Cinemachine;
 
 namespace DCL
 {

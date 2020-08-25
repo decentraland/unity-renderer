@@ -122,11 +122,11 @@ namespace DCL
                 waitingPromises.Add(promise);
                 masterPromiseById.Add(id, promise);
             }
-
+            
             promise.library = library;
             promise.OnPreFinishEvent += OnRequestCompleted;
             promise.Load();
-
+            
             return promise;
         }
 

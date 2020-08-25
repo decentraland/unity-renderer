@@ -17,6 +17,7 @@ export type UnityLoaderType = {
 }
 
 export type UnityGame = {
+  Module: any
   SendMessage(object: string, method: string, args: number | string): void
   SetFullscreen(): void
 }

@@ -292,32 +292,13 @@ namespace DCL.Helpers
         public static IEnumerator FetchTexture(string textureURL, Action<Texture2D> OnSuccess, Action<string> OnFail = null)
         {
             //NOTE(Brian): This closure is called when the download is a success.
-            System.Action<UnityWebRequest> OnSuccessInternal =
-                (request) =>
-                {
-                    var texture = DownloadHandlerTexture.GetContent(request);
-                    OnSuccess?.Invoke(texture);
-                };
-
-            yield return FetchAsset(textureURL, UnityWebRequestTexture.GetTexture(textureURL), OnSuccessInternal, OnFail);
-        }
-
-        public static IEnumerator FetchWrappedTextureAsset(string url, Action<IWrappedTextureAsset> OnSuccess,
-            WrappedTextureMaxSize maxTextureSize = WrappedTextureMaxSize.DONT_RESIZE)
-        {
-            string contentType = null;
-            byte[] bytes = null;
-
-            yield return Utils.FetchAsset(url, UnityWebRequest.Get(url), (request) =>
+            void SuccessInternal(UnityWebRequest request)
             {
-                contentType = request.GetResponseHeader("Content-Type");
-                bytes = request.downloadHandler.data;
-            });
-
-            if (contentType != null && bytes != null)
-            {
-                yield return WrappedTextureAssetFactory.Create(contentType, bytes, maxTextureSize, OnSuccess);
+                var texture = DownloadHandlerTexture.GetContent(request);
+                OnSuccess?.Invoke(texture);
             }
+
+            yield return FetchAsset(textureURL, UnityWebRequestTexture.GetTexture(textureURL), SuccessInternal, OnFail);
         }
 
         public static AudioType GetAudioTypeFromUrlName(string url)

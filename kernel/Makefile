@@ -22,6 +22,7 @@ DECENTRALAND_ECS_TYPEDEF_FILE := packages/decentraland-ecs/types/dcl/index.d.ts
 
 SCENE_SYSTEM := static/systems/scene.system.js
 DECENTRALAND_LOADER := static/loader/lifecycle/worker.js
+GIF_PROCESSOR := static/gif-processor/worker.js
 INTERNAL_SCENES := static/systems/decentraland-ui.scene.js
 BUILD_ECS := packages/build-ecs/index.js
 
@@ -38,6 +39,9 @@ packages/build-ecs/%.js: packages/build-ecs/%.ts packages/build-ecs/tsconfig.jso
 
 static/loader/lifecycle/worker.js: packages/decentraland-loader/**/*.ts
 	@$(COMPILER) targets/engine/loader.json
+
+static/gif-processor/worker.js: packages/gif-processor/*.ts
+	@$(COMPILER) targets/engine/gif-processor.json
 
 static/default-profile/contents:
 	@node ./static/default-profile/download_all.js
@@ -70,7 +74,7 @@ static/unity/Build/%.unityweb: package.json package-lock.json
 empty-parcels:
 	cd static/loader/empty-scenes && node generate_all.js
 
-build-essentials: $(COMPILED_SUPPORT_JS_FILES) dcl-amd $(DECENTRALAND_ECS_TYPEDEF_FILE) $(BUILD_ECS) $(SCENE_SYSTEM) $(INTERNAL_SCENES) $(DECENTRALAND_LOADER) $(RENDERER_BUILD) empty-parcels generate-mocks ## Build the basic required files for the explorer
+build-essentials: $(COMPILED_SUPPORT_JS_FILES) dcl-amd $(DECENTRALAND_ECS_TYPEDEF_FILE) $(BUILD_ECS) $(SCENE_SYSTEM) $(INTERNAL_SCENES) $(DECENTRALAND_LOADER) $(GIF_PROCESSOR) $(RENDERER_BUILD) empty-parcels generate-mocks ## Build the basic required files for the explorer
 
 # Hellmap scenes
 
@@ -105,7 +109,7 @@ test-scenes: $(TEST_SCENES_GAMEJS_FILES) $(HELLMAP_GAMEJS_FILES) $(TEST_ECS_SCEN
 
 static/dist/%.js: build-essentials packages/entryPoints/%.ts
 	@$(COMPILER) $(word 2,$^)
-	
+
 # Release
 
 DIST_ENTRYPOINTS := static/dist/editor.js static/dist/unity.js static/dist/preview.js
