@@ -10,11 +10,14 @@ namespace DCL.Controllers
     {
         [System.NonSerialized] public float timeBetweenChecks = 1f;
 
+        // We use Hashset instead of Queue to be able to have a unique representation of each entity when added.
         HashSet<DecentralandEntity> entitiesToCheck = new HashSet<DecentralandEntity>();
         HashSet<DecentralandEntity> checkedEntities = new HashSet<DecentralandEntity>();
         Coroutine entitiesCheckRoutine = null;
         float lastCheckTime;
         private HashSet<DecentralandEntity> persistentEntities = new HashSet<DecentralandEntity>();
+
+        public int entitiesToCheckCount => entitiesToCheck.Count;
 
         public SceneBoundariesChecker()
         {
