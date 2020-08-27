@@ -64,6 +64,8 @@ public class HUDController : MonoBehaviour
 
     public EmailPromptHUDController emailPromptHud => GetHUDElement(HUDElementID.EMAIL_PROMPT) as EmailPromptHUDController;
 
+    public ExploreHUDController exploreHud => GetHUDElement(HUDElementID.EXPLORE_HUD) as ExploreHUDController;
+
     public Dictionary<HUDElementID, IHUD> hudElements { get; private set; } = new Dictionary<HUDElementID, IHUD>();
 
     private UserProfile ownUserProfile => UserProfile.GetOwnUserProfile();
@@ -124,7 +126,8 @@ public class HUDController : MonoBehaviour
         TELEPORT_DIALOG = 17,
         CONTROLS_HUD = 18,
         EMAIL_PROMPT = 19,
-        COUNT = 20
+        EXPLORE_HUD = 20,
+        COUNT = 21
     }
 
     [System.Serializable]
@@ -298,6 +301,13 @@ public class HUDController : MonoBehaviour
                     CreateHudElement<EmailPromptHUDController>(configuration, hudElementId);
                 }
                 emailPromptHud?.SetEnable(configuration.active);
+                break;
+            case HUDElementID.EXPLORE_HUD:
+                CreateHudElement<ExploreHUDController>(configuration, hudElementId);
+                if (exploreHud != null)
+                {
+                    exploreHud.Initialize(FriendsController.i);
+                }
                 break;
         }
 
