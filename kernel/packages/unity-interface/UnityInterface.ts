@@ -90,7 +90,7 @@ export class UnityInterface {
     this.Module = this.gameInstance.Module
     _gameInstance = gameInstance
 
-    if (this.Module !== undefined) {
+    if (this.Module) {
       window.addEventListener('resize', this.resizeCanvasDelayed)
       this.resizeCanvasDelayed(null)
       this.waitForFillMouseEventData()
