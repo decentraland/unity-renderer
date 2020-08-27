@@ -209,6 +209,7 @@ export type SceneJsonData = {
   policy?: ScenePolicy
   source?: SceneSource
   spawnPoints?: SceneSpawnPoint[]
+  requiredPermissions?: string[] | undefined
 }
 
 export type EnvironmentData<T> = {
