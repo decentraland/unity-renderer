@@ -17,6 +17,7 @@ import './unit/comms.test'
 import './unit/jsonFetch.test'
 import './unit/profiles.saga.test'
 import './unit/positionThings.test'
+import './unit/RestrictedActionModule.test'
 import './unityIntegration/ecs/math/quaternion.test'
 import './unityIntegration/ecs/math/vector3.test'
 
