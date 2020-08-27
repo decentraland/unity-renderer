@@ -13,6 +13,31 @@ namespace SceneBoundariesCheckerTests
 {
     public static class SBC_Asserts
     {
+        public static IEnumerator EntitiesAreBeingCorrectlyRegistered(ParcelScene scene)
+        {
+            var boxShape1 = TestHelpers.CreateEntityWithBoxShape(scene, new Vector3(20, 2, 20));
+            var boxShape2 = TestHelpers.CreateEntityWithBoxShape(scene, new Vector3(20, 2, 20));
+
+            var entity1 = boxShape1.attachedEntities.First();
+            var entity2 = boxShape2.attachedEntities.First();
+
+            TestHelpers.SetEntityParent(scene, entity1, entity2);
+
+            Assert.AreEqual(2, scene.entities.Count, "scene entities count can't be zero!");
+            Assert.AreEqual(2, SceneController.i.boundariesChecker.entitiesToCheckCount, "entities to check can't be zero!");
+
+            yield return null;
+
+            TestHelpers.RemoveSceneEntity(scene, entity2.entityId);
+
+            ParcelScene.parcelScenesCleaner.ForceCleanup();
+
+            Assert.AreEqual(0, scene.entities.Count, "entity count should be zero");
+            Assert.AreEqual(0, SceneController.i.boundariesChecker.entitiesToCheckCount, "entities to check should be zero!");
+
+            yield break;
+        }
+
         public static IEnumerator PShapeIsInvalidatedWhenStartingOutOfBounds(ParcelScene scene)
         {
             var boxShape = TestHelpers.CreateEntityWithBoxShape(scene, new Vector3(20, 2, 20));
@@ -309,6 +334,5 @@ namespace SceneBoundariesCheckerTests
 
             return true;
         }
-
     }
 }

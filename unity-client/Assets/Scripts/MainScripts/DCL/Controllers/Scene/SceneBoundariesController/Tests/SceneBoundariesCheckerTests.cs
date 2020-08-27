@@ -5,7 +5,6 @@ using UnityEngine.TestTools;
 
 namespace SceneBoundariesCheckerTests
 {
-
     public class SceneBoundariesCheckerTests : TestsBase
     {
         [UnitySetUp]
@@ -14,6 +13,12 @@ namespace SceneBoundariesCheckerTests
             yield return base.SetUp();
 
             sceneController.boundariesChecker.timeBetweenChecks = 0f;
+        }
+
+        [UnityTest]
+        public IEnumerator EntitiesAreBeingCorrectlyRegistered()
+        {
+            yield return SBC_Asserts.EntitiesAreBeingCorrectlyRegistered(scene);
         }
 
         [UnityTest]
