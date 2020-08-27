@@ -8,7 +8,7 @@ import { createLogger } from 'shared/logger'
 import { ReportFatalError } from 'shared/loading/ReportFatalError'
 import { experienceStarted, NOT_INVITED, AUTH_ERROR_LOGGED_OUT, FAILED_FETCHING_UNITY } from 'shared/loading/types'
 import { worldToGrid } from '../atomicHelpers/parcelScenePositions'
-import { NO_MOTD, DEBUG_PM, OPEN_AVATAR_EDITOR } from '../config/index'
+import { NO_MOTD, DEBUG_PM, OPEN_AVATAR_EDITOR, ENABLE_EXPLORE_HUD } from '../config/index'
 import { signalRendererInitialized, signalParcelLoadingStarted } from 'shared/renderer/actions'
 import { lastPlayerPosition, teleportObservable } from 'shared/world/positionThings'
 import { StoreContainer } from 'shared/store/rootTypes'
@@ -54,6 +54,7 @@ initializeUnity(container)
     i.ConfigureHUDElement(HUDElementID.NFT_INFO_DIALOG, { active: true, visible: false })
     i.ConfigureHUDElement(HUDElementID.TELEPORT_DIALOG, { active: true, visible: false })
     i.ConfigureHUDElement(HUDElementID.CONTROLS_HUD, { active: true, visible: false })
+    i.ConfigureHUDElement(HUDElementID.EXPLORE_HUD, { active: ENABLE_EXPLORE_HUD, visible: false })
 
     try {
       await userAuthentified()

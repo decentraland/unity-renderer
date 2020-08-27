@@ -398,7 +398,8 @@ export enum HUDElementID {
   NFT_INFO_DIALOG = 16,
   TELEPORT_DIALOG = 17,
   CONTROLS_HUD = 18,
-  EMAIL_PROMPT = 19
+  EMAIL_PROMPT = 19,
+  EXPLORE_HUD = 20
 }
 
 export type HUDConfiguration = {
