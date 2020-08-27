@@ -171,6 +171,10 @@ jobs:
     steps:
       - <<: *attach_root
       - run:
+          name: Install Puppeteer dependencies
+          command: |
+            sudo apt-get -y -qq install libxss1
+      - run:
           name: Get the hash of source files
           command: |
             find packages -type f \( -iname \*.ts -o -iname \*.tsx -o -iname \*.json -o -iname \*.proto -o -iname \*.sh \) \( -exec md5sum "$PWD"/{} \; \) | sort > ../.kernelsources-checksum
