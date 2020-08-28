@@ -3,6 +3,7 @@ import { registerAPI, exposeMethod } from 'decentraland-rpc/lib/host'
 import { UserData } from 'shared/types'
 import { getCurrentUser } from 'shared/comms/peers'
 import { getIdentity } from 'shared/session'
+import { calculateDisplayName } from '../profiles/transformations/processServerProfile'
 
 import { ExposableAPI } from './ExposableAPI'
 
@@ -37,7 +38,7 @@ export class UserIdentity extends ExposableAPI implements IUserIdentity {
     if (!user || !user.profile || !user.userId) return null
 
     return {
-      displayName: user.profile.name,
+      displayName: calculateDisplayName(user.userId, user.profile),
       publicKey: identity.hasConnectedWeb3 ? user.userId : null,
       hasConnectedWeb3: !!identity.hasConnectedWeb3,
       userId: user.userId
