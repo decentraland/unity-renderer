@@ -61,7 +61,6 @@ MonoBehaviour:
   uiContainer: {fileID: 8543971490908220782}
   sourceTransform: {fileID: 2842120016485600253}
   nameText: {fileID: 1905714436465122683}
-  layoutGroupRTs: []
   offset: {x: 0, y: 3, z: 0}
 --- !u!1 &1905714436465122565
 GameObject:
@@ -131,8 +130,7 @@ MonoBehaviour:
   m_text: 
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 26b03903800224f718b64e9afbc91b61, type: 2}
-  m_sharedMaterial: {fileID: -6892909264025736228, guid: 26b03903800224f718b64e9afbc91b61,
-    type: 2}
+  m_sharedMaterial: {fileID: 2100000, guid: cbef7abfd5b4443bf9d5c298a464b5a6, type: 2}
   m_fontSharedMaterials: []
   m_fontMaterial: {fileID: 0}
   m_fontMaterials: []
@@ -415,7 +413,6 @@ MonoBehaviour:
   avatarName: {fileID: 3717630171843337652}
   avatarRenderer: {fileID: 3377148406933134318}
   avatarMovementController: {fileID: 122622683908687435}
-  minimapRepresentation: {fileID: 0}
   onPointerDown: {fileID: 3865137627712764486}
   model:
     id: 
