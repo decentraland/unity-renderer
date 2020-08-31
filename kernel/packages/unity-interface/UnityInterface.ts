@@ -1,5 +1,5 @@
 import { TeleportController } from 'shared/world/TeleportController'
-import { WSS_ENABLED } from 'config'
+import { WSS_ENABLED, EDITOR } from 'config'
 import { Vector3 } from '../decentraland-ecs/src/decentraland/math'
 import { ProfileForRenderer, MinimapSceneInfo } from '../decentraland-ecs/src/decentraland/Types'
 import { AirdropInfo } from 'shared/airdrops/interface'
@@ -66,6 +66,10 @@ export class UnityInterface {
   public Module: any
 
   public SetTargetHeight(height: number): void {
+    if (EDITOR) {
+      return
+    }
+
     if (targetHeight === height) {
       return
     }
@@ -90,10 +94,12 @@ export class UnityInterface {
     this.Module = this.gameInstance.Module
     _gameInstance = gameInstance
 
-    if (this.Module) {
-      window.addEventListener('resize', this.resizeCanvasDelayed)
-      this.resizeCanvasDelayed(null)
-      this.waitForFillMouseEventData()
+    if (!EDITOR) {
+      if (this.Module !== undefined) {
+        window.addEventListener('resize', this.resizeCanvasDelayed)
+        this.resizeCanvasDelayed(null)
+        this.waitForFillMouseEventData()
+      }
     }
   }
 
