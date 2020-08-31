@@ -13,9 +13,8 @@ namespace DCL.Components
         {
             public string texture;
 
-            [Range(0f, 1f)]
-            public float
-                alphaTest = 0.5f; // value that defines if a pixel is visible or invisible (no transparency gradients)
+            // value that defines if a pixel is visible or invisible (no transparency gradients)
+            [Range(0f, 1f)] public float alphaTest = 0.5f;
         }
 
         public Model model = new Model();
@@ -37,12 +36,9 @@ namespace DCL.Components
         public override void AttachTo(DecentralandEntity entity, System.Type overridenAttachedType = null)
         {
             if (attachedEntities.Contains(entity))
-            {
                 return;
-            }
 
             entity.RemoveSharedComponent(typeof(PBRMaterial));
-
             base.AttachTo(entity);
         }
 
@@ -53,11 +49,15 @@ namespace DCL.Components
                 yield break; // We escape ApplyChanges called in the parent's constructor
             }
 
+#if UNITY_EDITOR
+            material.name = "BasicMaterial_" + id;
+#endif
+
             model = SceneController.i.SafeFromJson<Model>(newJson);
 
             if (!string.IsNullOrEmpty(model.texture))
             {
-                if (dclTexture == null || (dclTexture != null && dclTexture.id != model.texture))
+                if (dclTexture == null || dclTexture.id != model.texture)
                 {
                     yield return DCLTexture.FetchTextureComponent(scene, model.texture, (downloadedTexture) =>
                     {
@@ -79,8 +79,7 @@ namespace DCL.Components
             material.SetInt("_ZWrite", 1);
             material.SetFloat(_AlphaClip, 1);
             material.SetFloat("_Cutoff", model.alphaTest);
-            material.renderQueue = (int)UnityEngine.Rendering.RenderQueue.AlphaTest;
-
+            material.renderQueue = (int) UnityEngine.Rendering.RenderQueue.AlphaTest;
         }
 
         void OnMaterialAttached(DecentralandEntity entity)
@@ -93,18 +92,14 @@ namespace DCL.Components
                 var meshRenderer = entity.meshRootGameObject.GetComponent<MeshRenderer>();
 
                 if (meshRenderer != null)
-                {
                     InitMaterial(entity.meshRootGameObject);
-                }
             }
         }
 
         void InitMaterial(GameObject meshGameObject)
         {
             if (meshGameObject == null)
-            {
                 return;
-            }
 
             var meshRenderer = meshGameObject.GetComponent<MeshRenderer>();
 
@@ -115,7 +110,7 @@ namespace DCL.Components
 
                 if (matTransition != null && matTransition.canSwitchMaterial)
                 {
-                    matTransition.finalMaterials = new Material[] { material };
+                    matTransition.finalMaterials = new Material[] {material};
                     matTransition.PopulateTargetRendererWithMaterial(matTransition.finalMaterials);
                 }
 
@@ -127,37 +122,27 @@ namespace DCL.Components
         private void OnShapeUpdated(DecentralandEntity entity)
         {
             if (entity != null)
-            {
                 InitMaterial(entity.meshRootGameObject);
-            }
         }
 
         void OnMaterialDetached(DecentralandEntity entity)
         {
             if (entity.meshRootGameObject == null)
-            {
                 return;
-            }
 
             entity.OnShapeUpdated -= OnShapeUpdated;
 
             var meshRenderer = entity.meshRootGameObject.GetComponent<MeshRenderer>();
 
             if (meshRenderer && meshRenderer.sharedMaterial == material)
-            {
                 meshRenderer.sharedMaterial = null;
-            }
         }
 
         public override void Dispose()
         {
             dclTexture?.DetachFrom(this);
-            dclTexture?.Dispose();
 
-            if (material != null)
-            {
-                GameObject.Destroy(material);
-            }
+            Object.Destroy(material);
 
             base.Dispose();
         }

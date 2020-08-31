@@ -202,6 +202,11 @@ namespace DCL.Helpers
             return result;
         }
 
+        public static void SharedComponentDispose(BaseDisposable component)
+        {
+            component.scene.SharedComponentDispose(component.id);
+        }
+
         public static void SharedComponentAttach(BaseDisposable component, DecentralandEntity entity)
         {
             entity.scene.SharedComponentAttach(
