@@ -94,8 +94,12 @@ export class UnityInterface {
     this.Module = this.gameInstance.Module
     _gameInstance = gameInstance
 
-    if (!EDITOR) {
-      if (this.Module !== undefined) {
+    if (this.Module) {
+      if (EDITOR) {
+        const canvas = this.Module.canvas
+        canvas.width = canvas.parentElement.clientWidth
+        canvas.height = canvas.parentElement.clientHeight
+      } else {
         window.addEventListener('resize', this.resizeCanvasDelayed)
         this.resizeCanvasDelayed(null)
         this.waitForFillMouseEventData()
