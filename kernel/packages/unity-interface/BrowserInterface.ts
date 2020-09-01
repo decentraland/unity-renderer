@@ -143,6 +143,15 @@ export class BrowserInterface {
     globalThis.globalStore.dispatch(logout())
   }
 
+  public SaveUserInterests(interests: string[]) {
+    if (!interests) {
+      return
+    }
+    const unique = new Set<string>(interests)
+    const profile: Profile = getUserProfile().profile as Profile
+    globalThis.globalStore.dispatch(saveProfileRequest({ ...profile, interests: Array.from(unique) }))
+  }
+
   public SaveUserAvatar(changes: { face: string; face128: string; face256: string; body: string; avatar: Avatar }) {
     const { face, face128, face256, body, avatar } = changes
     const profile: Profile = getUserProfile().profile as Profile
