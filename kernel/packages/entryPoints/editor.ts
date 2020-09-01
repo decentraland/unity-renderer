@@ -170,6 +170,8 @@ namespace editor {
       await initializeUnity(container, buildConfigPath)
       defaultLogger.log('Engine initialized.')
       unityInterface.ConfigureHUDElement(HUDElementID.NFT_INFO_DIALOG, { active: true, visible: false })
+      unityInterface.ConfigureHUDElement(HUDElementID.OPEN_EXTERNAL_URL_PROMPT, { active: true, visible: false })
+      unityInterface.ConfigureHUDElement(HUDElementID.TELEPORT_DIALOG, { active: true, visible: false })
 
       initializedEngine.resolve()
     } catch (err) {
