@@ -32,7 +32,7 @@ namespace Tests
         public IEnumerator PromptWhenExternalUrlIsRequested()
         {
             controller.ProcessOpenUrlRequest(scene, "https://decentraland.org/press");
-            Assert.True(controller.view.content.activeInHierarchy, "ExternalUrlPromptHUD content should be visible");
+            Assert.True(controller.view.showHideAnimator.isVisible, "ExternalUrlPromptHUD content should be visible");
             yield break;
         }
 
@@ -41,15 +41,15 @@ namespace Tests
         {
             controller.ProcessOpenUrlRequest(scene, "https://etherscan.io/gasTracker");
             controller.view.closeButton.onClick.Invoke();
-            Assert.True(!controller.view.content.activeInHierarchy, "ExternalUrlPromptHUD content should NOT be visible");
+            Assert.True(!controller.view.showHideAnimator.isVisible, "ExternalUrlPromptHUD content should NOT be visible");
 
             controller.ProcessOpenUrlRequest(scene, "https://etherscan.io/gasTracker");
             controller.view.cancelButton.onClick.Invoke();
-            Assert.True(!controller.view.content.activeInHierarchy, "ExternalUrlPromptHUD content should NOT be visible");
+            Assert.True(!controller.view.showHideAnimator.isVisible, "ExternalUrlPromptHUD content should NOT be visible");
 
             controller.ProcessOpenUrlRequest(scene, "https://etherscan.io/gasTracker");
             controller.view.continueButton.onClick.Invoke();
-            Assert.True(!controller.view.content.activeInHierarchy, "ExternalUrlPromptHUD content should NOT be visible");
+            Assert.True(!controller.view.showHideAnimator.isVisible, "ExternalUrlPromptHUD content should NOT be visible");
             yield break;
         }
 
@@ -57,17 +57,17 @@ namespace Tests
         public IEnumerator RememberTrustedDomains()
         {
             controller.ProcessOpenUrlRequest(scene, "https://decentraland.org/press");
-            Assert.True(controller.view.content.activeInHierarchy, "ExternalUrlPromptHUD content should be visible");
+            Assert.True(controller.view.showHideAnimator.isVisible, "ExternalUrlPromptHUD content should be visible");
 
             controller.view.trustToggle.isOn = true;
             controller.view.continueButton.onClick.Invoke();
-            Assert.True(!controller.view.content.activeInHierarchy, "ExternalUrlPromptHUD content should NOT be visible");
+            Assert.True(!controller.view.showHideAnimator.isVisible, "ExternalUrlPromptHUD content should NOT be visible");
             Assert.True(controller.trustedDomains.ContainsKey(scene.sceneData.id)
                         && controller.trustedDomains[scene.sceneData.id].Contains("decentraland.org"),
                 "domain not set as trusted");
 
             controller.ProcessOpenUrlRequest(scene, "https://decentraland.org/press");
-            Assert.True(!controller.view.content.activeInHierarchy, "ExternalUrlPromptHUD content should NOT be visible cause we trust this domain");
+            Assert.True(!controller.view.showHideAnimator.isVisible, "ExternalUrlPromptHUD content should NOT be visible cause we trust this domain");
 
             yield break;
         }

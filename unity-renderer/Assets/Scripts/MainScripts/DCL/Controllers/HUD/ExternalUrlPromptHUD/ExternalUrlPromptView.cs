@@ -1,7 +1,6 @@
 ﻿using System;
 using UnityEngine;
 using UnityEngine.UI;
-using DCL.Helpers;
 
 public class ExternalUrlPromptView : MonoBehaviour
 {
@@ -12,6 +11,7 @@ public class ExternalUrlPromptView : MonoBehaviour
     [SerializeField] internal TMPro.TextMeshProUGUI domainText;
     [SerializeField] internal TMPro.TextMeshProUGUI urlText;
     [SerializeField] internal Toggle trustToggle;
+    [SerializeField] internal ShowHideAnimator showHideAnimator;
 
     internal enum ResultType { CANCELED, APPROVED, APPROVED_TRUSTED }
 
@@ -26,9 +26,6 @@ public class ExternalUrlPromptView : MonoBehaviour
 
     internal void RequestOpenUrl(Uri uri, Action<ResultType> result)
     {
-        Utils.UnlockCursor();
-        content.SetActive(true);
-
         resultCallback = result;
         domainText.text = uri.Host;
         urlText.text = uri.OriginalString;
@@ -38,17 +35,10 @@ public class ExternalUrlPromptView : MonoBehaviour
     private void Dismiss()
     {
         resultCallback?.Invoke(ResultType.CANCELED);
-        Close();
     }
 
     private void Approve()
     {
         resultCallback?.Invoke(trustToggle.isOn ? ResultType.APPROVED_TRUSTED : ResultType.APPROVED);
-        Close();
-    }
-
-    private void Close()
-    {
-        content.SetActive(false);
     }
 }
