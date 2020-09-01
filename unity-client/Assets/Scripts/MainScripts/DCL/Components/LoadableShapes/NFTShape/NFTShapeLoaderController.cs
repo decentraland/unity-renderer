@@ -230,7 +230,7 @@ public class NFTShapeLoaderController : MonoBehaviour
         }
     }
 
-    void UpdateTexture(Texture2D texture)
+    public void UpdateTexture(Texture2D texture)
     {
         if (imageMaterial == null)
             return;

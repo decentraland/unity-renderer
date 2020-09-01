@@ -7,6 +7,11 @@ public class VisualTestsBase : TestsBase
 {
     protected override bool enableSceneIntegrityChecker => false;
 
+    protected override IEnumerator SetUp()
+    {
+        yield break;
+    }
+
     public IEnumerator InitVisualTestsScene(string testName)
     {
         yield return InitScene();
