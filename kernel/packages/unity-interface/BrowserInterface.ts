@@ -352,6 +352,14 @@ export class BrowserInterface {
   }
 
   async RequestGIFProcessor(data: { imageSource: string; id: string; isWebGL1: boolean }) {
+    // tslint:disable-next-line
+    const isSupported = (typeof OffscreenCanvas !== "undefined") && (typeof OffscreenCanvasRenderingContext2D === "function")
+
+    if (!isSupported) {
+      unityInterface.RejectGIFProcessingRequest()
+      return
+    }
+
     if (!DCL.gifProcessor) {
       DCL.gifProcessor = new GIFProcessor(unityInterface.gameInstance, unityInterface, data.isWebGL1)
     }

@@ -67,33 +67,41 @@ namespace DCL.Controllers.Gif
             this.OnFailEvent = OnFail;
         }
 
-        public void OverrideGifTextures(List<UniGif.GifTexture> newTextures)
-        {
-            if (newTextures == null || newTextures.Count == 0) return;
-
-            OnGifLoaded(newTextures, 0, newTextures[0].m_texture2d.width, newTextures[0].m_texture2d.height);
-        }
-
         public IEnumerator Load()
         {
             if (isLoaded)
                 Dispose();
 
+            bool processedGIFInJS = false;
+
 #if !UNITY_EDITOR && UNITY_WEBGL
-            yield return DCL.GIFProcessingBridge.i.RequestGIFProcessor(url, OverrideGifTextures);
-#else
-            byte[] bytes = null;
-
-            yield return Utils.FetchAsset(url, UnityWebRequest.Get(url), (request) => { bytes = request.downloadHandler.data; });
-
-            if (bytes == null)
+            yield return DCL.GIFProcessingBridge.i.RequestGIFProcessor(url,
+            (List<UniGif.GifTexture> newTextures) => // Override textures with JS processed ones
             {
-                OnFailEvent?.Invoke();
-                yield break;
-            }
-
-            yield return UniGif.GetTextureListCoroutine(bytes, OnGifLoaded);
+                if (newTextures == null || newTextures.Count == 0) return;
+                processedGIFInJS = true;
+                OnGifLoaded(newTextures, 0, newTextures[0].m_texture2d.width, newTextures[0].m_texture2d.height);
+            },
+            () =>
+            {
+                processedGIFInJS = false;
+            });
 #endif
+
+            if (!processedGIFInJS)
+            {
+                byte[] bytes = null;
+
+                yield return Utils.FetchAsset(url, UnityWebRequest.Get(url), (request) => { bytes = request.downloadHandler.data; });
+
+                if (bytes == null)
+                {
+                    OnFailEvent?.Invoke();
+                    yield break;
+                }
+
+                yield return UniGif.GetTextureListCoroutine(bytes, OnGifLoaded);
+            }
 
             SetMaxTextureSize(maxSize);
             Play();

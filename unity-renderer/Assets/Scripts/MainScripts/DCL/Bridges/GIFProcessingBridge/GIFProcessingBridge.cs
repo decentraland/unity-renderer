@@ -39,14 +39,21 @@ namespace DCL
             i = this;
         }
 
+        bool jsGIFProcessingEnabled = true;
         Dictionary<string, GIFDataContainer> pendingGIFs = new Dictionary<string, GIFDataContainer>();
 
         /// <summary>
         /// Tells Kernel to start processing a desired GIF, waits for the data to come back from Kernel and passes it to the GIF through the onFinishCallback
         /// </summary>
-        /// <param name="onFinishCallback">The callback that will be invoked with the generated textures list</param>
-        public IEnumerator RequestGIFProcessor(string url, System.Action<List<UniGif.GifTexture>> onFinishCallback)
+        /// <param name="onSuccess">The callback that will be invoked with the generated textures list</param>
+        public IEnumerator RequestGIFProcessor(string url, System.Action<List<UniGif.GifTexture>> onSuccess, System.Action onFail)
         {
+            if (!jsGIFProcessingEnabled)
+            {
+                onFail?.Invoke();
+                yield break;
+            }
+
             var gifDataContainer = new GIFDataContainer();
             string pendingGifId = url;
 
@@ -61,9 +68,12 @@ namespace DCL
             DCL.Interface.WebInterface.RequestGIFProcessor(url, pendingGifId, SystemInfo.graphicsDeviceType == UnityEngine.Rendering.GraphicsDeviceType.OpenGLES2);
 
             // We use a container class instead of just UpdateGIFPointersPayload to hold its reference and avoid accessing the collection on every yield check
-            yield return new WaitUntil(() => gifDataContainer.data != null);
+            yield return new WaitUntil(() => !jsGIFProcessingEnabled || gifDataContainer.data != null);
 
-            onFinishCallback?.Invoke(GenerateTexturesList(gifDataContainer.data.width, gifDataContainer.data.height, gifDataContainer.data.pointers, gifDataContainer.data.frameDelays));
+            if (jsGIFProcessingEnabled)
+                onSuccess?.Invoke(GenerateTexturesList(gifDataContainer.data.width, gifDataContainer.data.height, gifDataContainer.data.pointers, gifDataContainer.data.frameDelays));
+            else
+                onFail?.Invoke();
 
             pendingGIFs.Remove(pendingGifId);
         }
@@ -104,6 +114,11 @@ namespace DCL
             }
 
             return gifTexturesList;
+        }
+
+        public void RejectGIFProcessingRequest()
+        {
+            jsGIFProcessingEnabled = false;
         }
     }
 }
