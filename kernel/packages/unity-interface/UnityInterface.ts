@@ -313,6 +313,10 @@ export class UnityInterface {
     )
   }
 
+  public RejectGIFProcessingRequest() {
+    this.gameInstance.SendMessage('SceneController', 'RejectGIFProcessingRequest')
+  }
+
   public ConfigureEmailPrompt(tutorialStep: number) {
     const emailCompletedFlag = 128
     this.ConfigureHUDElement(HUDElementID.EMAIL_PROMPT, {
