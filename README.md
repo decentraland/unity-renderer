@@ -59,7 +59,7 @@ To see test logs/errors directly in the browser, run:
 
 Now, navigate to [http://localhost:8080/test](http://localhost:8080/test)
 
-### Visual tests
+### Kernel Visual tests
 
 Visual tests are meant to work in a similar way as `snapshot tests`. Each time a test parcel changes the author is required to commit new screenshots along the other changes. These screenshots are then validated to detect regressions at the time of the pull request. To generate new snapshot images to compare run `npm run test:dry` (it requires docker)
 
@@ -149,12 +149,12 @@ We are using [UnityGLTF](https://github.com/KhronosGroup/UnityGLTF) as a Dynamic
 
 5. GameObject reparenting is made as soon the root GLTF loading object is created, so a big mesh can be seen in place before the loading finished.
 
-### Visual Tests Pipeline
+### Client Visual Tests Pipeline
 
 #### How to create them
 
 1. Create a new test class that inherits from VisualTestsBase
-2. After the `InitScene()` call, initialize the visual tests using `VisualTestHelpers.InitVisualTestsScene(string)` passing the test name as parameter
+2. Initialize the visual tests using `VisualTestsBase.InitVisualTestsScene(string)` passing the test name as parameter
 3. Setup your scene as wanted and call `TestHelpers.TakeSnapshot(Vector3)`
 4. Tag the method with the attribute `[VisualTest]`. This isn't used yet but will be used to streamline the baseline images creation.
 
@@ -168,8 +168,7 @@ public class VisualTests : VisualTestsBase
     [UnityTest][VisualTest]
     public IEnumerator VisualTestStub()
     {
-        yield return InitScene();
-        yield return VisualTestHelpers.InitVisualTestsScene("VisualTestStub");
+        yield return InitVisualTestsScene("VisualTestStub");
 
         // Set up scene
 
