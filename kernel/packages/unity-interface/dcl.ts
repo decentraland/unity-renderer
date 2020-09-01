@@ -259,6 +259,7 @@ export function loadBuilderScene(sceneData: ILand) {
 
 export function unloadCurrentBuilderScene() {
   if (currentLoadedScene) {
+    unityInterface.DeactivateRendering()
     const parcelScene = currentLoadedScene.parcelScene as UnityParcelScene
     parcelScene.emit('builderSceneUnloaded', {})
 
