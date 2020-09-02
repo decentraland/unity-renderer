@@ -62,6 +62,6 @@ export class RestrictedActionModule extends ExposableAPI implements IRestrictedA
       defaultLogger.error('Error: Player is not inside of scene', lastPlayerPosition)
       return
     }
-    unityInterface.Teleport({ position, cameraTarget })
+    unityInterface.Teleport({ position, cameraTarget }, false)
   }
 }

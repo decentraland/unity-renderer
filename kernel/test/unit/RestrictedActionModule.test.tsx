@@ -15,7 +15,7 @@ describe('RestrictedActionModule tests', () => {
       expose: sinon.stub(),
       notify: sinon.stub(),
       on: sinon.stub(),
-      getAPIInstance(name): any {}
+      getAPIInstance(name): any { }
     }
 
     const mockLastPlayerPosition = (inside: boolean = true) => {
@@ -61,7 +61,7 @@ describe('RestrictedActionModule tests', () => {
         .mock(unityInterface)
         .expects('Teleport')
         .once()
-        .withExactArgs({ position: { x: 8, y: 0, z: 1624 }, cameraTarget: undefined })
+        .withExactArgs({ position: { x: 8, y: 0, z: 1624 }, cameraTarget: undefined }, false)
 
       const module = new RestrictedActionModule(options)
 
