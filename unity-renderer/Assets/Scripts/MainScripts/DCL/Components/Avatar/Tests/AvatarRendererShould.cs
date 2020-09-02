@@ -43,6 +43,25 @@ namespace AvatarShape_Tests
         }
 
         [UnityTest]
+        public IEnumerator FailGracefullyWhenIdsCannotBeResolved()
+        {
+            avatarModel.wearables = new List<string>() {"Scioli_right_arm", "Peron_hands"};
+            avatarModel.bodyShape = "Invalid_id";
+
+            avatarRenderer.SetVisibility(true);
+
+            bool success = false;
+            avatarRenderer.ApplyModel(avatarModel, () => success = true, null);
+            yield return new DCL.WaitUntil(() => success, 4);
+
+            LogAssert.Expect(LogType.Error, "Wearable Scioli_right_arm not found in catalog");
+            LogAssert.Expect(LogType.Error, "Wearable Peron_hands not found in catalog");
+            LogAssert.Expect(LogType.Error, "Wearable Invalid_id not found in catalog");
+
+            UnityEngine.Assertions.Assert.IsTrue(success);
+        }
+
+        [UnityTest]
         [Category("Explicit")]
         [Explicit("Test too slow")]
         public IEnumerator ProcessVisibilityTrueWhenSetBeforeLoading()
@@ -51,7 +70,7 @@ namespace AvatarShape_Tests
             CleanWearableHidesAndReplaces(SUNGLASSES_ID);
             CleanWearableHidesAndReplaces(BLUE_BANDANA_ID);
 
-            avatarModel.wearables = new List<string>() { SUNGLASSES_ID, BLUE_BANDANA_ID };
+            avatarModel.wearables = new List<string>() {SUNGLASSES_ID, BLUE_BANDANA_ID};
             avatarRenderer.SetVisibility(true);
 
             bool ready = false;
@@ -70,7 +89,7 @@ namespace AvatarShape_Tests
             CleanWearableHidesAndReplaces(SUNGLASSES_ID);
             CleanWearableHidesAndReplaces(BLUE_BANDANA_ID);
 
-            avatarModel.wearables = new List<string>() { SUNGLASSES_ID, BLUE_BANDANA_ID };
+            avatarModel.wearables = new List<string>() {SUNGLASSES_ID, BLUE_BANDANA_ID};
             avatarRenderer.SetVisibility(false);
 
             bool ready = false;
@@ -89,7 +108,7 @@ namespace AvatarShape_Tests
             CleanWearableHidesAndReplaces(SUNGLASSES_ID);
             CleanWearableHidesAndReplaces(BLUE_BANDANA_ID);
 
-            avatarModel.wearables = new List<string>() { SUNGLASSES_ID, BLUE_BANDANA_ID };
+            avatarModel.wearables = new List<string>() {SUNGLASSES_ID, BLUE_BANDANA_ID};
 
             bool ready = false;
             avatarRenderer.ApplyModel(avatarModel, () => ready = true, null);
@@ -108,7 +127,7 @@ namespace AvatarShape_Tests
             CleanWearableHidesAndReplaces(SUNGLASSES_ID);
             CleanWearableHidesAndReplaces(BLUE_BANDANA_ID);
 
-            avatarModel.wearables = new List<string>() { SUNGLASSES_ID, BLUE_BANDANA_ID };
+            avatarModel.wearables = new List<string>() {SUNGLASSES_ID, BLUE_BANDANA_ID};
 
             bool ready = false;
             avatarRenderer.ApplyModel(avatarModel, () => ready = true, null);
@@ -128,7 +147,7 @@ namespace AvatarShape_Tests
             CleanWearableHidesAndReplaces(SUNGLASSES_ID);
             CleanWearableHidesAndReplaces(BLUE_BANDANA_ID);
 
-            avatarModel.wearables = new List<string>() { SUNGLASSES_ID, BLUE_BANDANA_ID };
+            avatarModel.wearables = new List<string>() {SUNGLASSES_ID, BLUE_BANDANA_ID};
 
             bool ready = false;
             avatarRenderer.ApplyModel(avatarModel, () => ready = true, null);
@@ -147,7 +166,7 @@ namespace AvatarShape_Tests
             CleanWearableHidesAndReplaces(SUNGLASSES_ID);
             CleanWearableHidesAndReplaces(BLUE_BANDANA_ID);
 
-            avatarModel.wearables = new List<string>() { SUNGLASSES_ID, BLUE_BANDANA_ID };
+            avatarModel.wearables = new List<string>() {SUNGLASSES_ID, BLUE_BANDANA_ID};
 
             bool ready = false;
             avatarRenderer.ApplyModel(avatarModel, () => ready = true, null);
@@ -189,7 +208,7 @@ namespace AvatarShape_Tests
             }
         }
     }
-    
+
     public class AnimatorLegacyShould : TestsBase
     {
         private AvatarModel avatarModel;
