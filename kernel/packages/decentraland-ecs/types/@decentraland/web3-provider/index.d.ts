@@ -3,5 +3,5 @@ declare module '@decentraland/web3-provider' {
     send: Function
     sendAsync: Function
   }
-  export function getProvider(): Provider
+  export function getProvider(): Promise<Provider>
 }
