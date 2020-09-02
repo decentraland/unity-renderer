@@ -12,11 +12,12 @@ using UnityEngine;
 using UnityGLTF.Loader;
 using UnityGLTF.Cache;
 using Object = UnityEngine.Object;
+
 // using System.Threading.Tasks;
 
 namespace UnityGLTF
 {
-    [ScriptedImporter(1, new[] { "glb", "gltf" })]
+    [ScriptedImporter(1, new[] {"glb", "gltf"})]
     public class GLTFImporter : ScriptedImporter
     {
         [SerializeField] private bool _removeEmptyRootObjects = true;
@@ -31,7 +32,11 @@ namespace UnityGLTF
         public bool _importTextures = true;
 
         static int delayCallsCount = 0;
-        public static bool finishedImporting { get { return delayCallsCount == 0; } }
+
+        public static bool finishedImporting
+        {
+            get { return delayCallsCount == 0; }
+        }
 
         public List<Material> SimplifyMaterials(Renderer[] renderers)
         {
@@ -125,6 +130,7 @@ namespace UnityGLTF
                     {
                         vertexBuffer[i] *= _scaleFactor;
                     }
+
                     mesh.SetVertices(vertexBuffer);
                     if (_swapUvs)
                     {
@@ -133,14 +139,17 @@ namespace UnityGLTF
                         mesh.uv = uv2;
                         mesh.uv2 = uv2;
                     }
+
                     if (_importNormals == GLTFImporterNormals.None)
                     {
                         mesh.normals = new Vector3[0];
                     }
+
                     if (_importNormals == GLTFImporterNormals.Calculate)
                     {
                         mesh.RecalculateNormals();
                     }
+
                     mesh.UploadMeshData(!_readWriteEnabled);
 
                     if (_generateColliders)
@@ -264,6 +273,7 @@ namespace UnityGLTF
                                     }
                                 }
                             }
+
                             return matTextures;
                         }).ToArray();
 
@@ -347,7 +357,7 @@ namespace UnityGLTF
                                         var texPath = string.Concat(texturesRoot, tex.name, ext);
 
                                         var importedTex = AssetDatabase.LoadAssetAtPath<Texture2D>(texPath);
-                                        var importer = (TextureImporter)TextureImporter.GetAtPath(texPath);
+                                        var importer = (TextureImporter) TextureImporter.GetAtPath(texPath);
 
                                         if (importer != null)
                                         {
@@ -361,7 +371,7 @@ namespace UnityGLTF
                                                     isNormalMap |= materialMap.IsNormalMap;
                                                     newMat.SetTexture(materialMap.Property, importedTex);
                                                 }
-                                            };
+                                            }
 
                                             if (isNormalMap)
                                             {
@@ -373,7 +383,6 @@ namespace UnityGLTF
                                                 // Force disable sprite mode, even for 2D projects
                                                 importer.textureType = TextureImporterType.Default;
                                             }
-
                                         }
                                         else
                                         {
@@ -397,7 +406,7 @@ namespace UnityGLTF
                     {
                         var temp = GameObject.CreatePrimitive(PrimitiveType.Plane);
                         temp.SetActive(false);
-                        var defaultMat = new[] { temp.GetComponent<Renderer>().sharedMaterial };
+                        var defaultMat = new[] {temp.GetComponent<Renderer>().sharedMaterial};
                         DestroyImmediate(temp);
 
                         foreach (var rend in renderers)
@@ -410,7 +419,6 @@ namespace UnityGLTF
 
                     if (rootObject != null)
                         DestroyImmediate(rootObject);
-
                 }
             }
             catch
@@ -419,6 +427,7 @@ namespace UnityGLTF
                 {
                     DestroyImmediate(gltfScene);
                 }
+
                 throw;
             }
 
@@ -453,6 +462,7 @@ namespace UnityGLTF
         }
 
         public static System.Action<GLTFRoot> OnGLTFRootIsConstructed;
+
         private GameObject CreateGLTFScene(string projectFilePath)
         {
             ILoader fileLoader = new FileLoader(Path.GetDirectoryName(projectFilePath));
@@ -463,7 +473,7 @@ namespace UnityGLTF
 
                 OnGLTFRootIsConstructed?.Invoke(gLTFRoot);
 
-                var loader = new GLTFSceneImporter(gLTFRoot, fileLoader, null, stream);
+                var loader = new GLTFSceneImporter(projectFilePath, gLTFRoot, fileLoader, null, stream);
                 GLTFSceneImporter.budgetPerFrameInMilliseconds = float.MaxValue;
                 loader.addImagesToPersistentCaching = false;
                 loader.addMaterialsToPersistentCaching = false;
@@ -489,6 +499,7 @@ namespace UnityGLTF
                         }
                     }
                 }
+
                 return loader.lastLoadedScene;
             }
         }
