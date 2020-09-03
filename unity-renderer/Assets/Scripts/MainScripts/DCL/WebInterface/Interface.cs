@@ -431,6 +431,26 @@ namespace DCL.Interface
             public int loadPercentage;
         }
 
+        [System.Serializable]
+        public class AnalyticsPayload
+        {
+            [System.Serializable]
+            public class Property
+            {
+                public string key;
+                public string value;
+
+                public Property(string key, string value)
+                {
+                    this.key = key;
+                    this.value = value;
+                }
+            }
+
+            public string name;
+            public Property[] properties;
+        }
+
 #if UNITY_WEBGL && !UNITY_EDITOR
     /**
      * This method is called after the first render. It marks the loading of the
@@ -496,6 +516,7 @@ namespace DCL.Interface
         private static GotoEvent gotoEvent = new GotoEvent();
         private static SendChatMessageEvent sendChatMessageEvent = new SendChatMessageEvent();
         private static BaseResolution baseResEvent = new BaseResolution();
+        private static AnalyticsPayload analyticsEvent = new AnalyticsPayload();
 
         public static void SendSceneEvent<T>(string sceneId, string eventType, T payload)
         {
@@ -934,6 +955,18 @@ namespace DCL.Interface
         {
             baseResEvent.baseResolution = resolution;
             SendMessage("SetBaseResolution", baseResEvent);
+        }
+
+        public static void ReportAnalyticsEvent(string eventName)
+        {
+            ReportAnalyticsEvent(eventName, null);
+        }
+
+        public static void ReportAnalyticsEvent(string eventName, AnalyticsPayload.Property[] eventProperties)
+        {
+            analyticsEvent.name = eventName;
+            analyticsEvent.properties = eventProperties;
+            SendMessage("Track", analyticsEvent);
         }
     }
 }
