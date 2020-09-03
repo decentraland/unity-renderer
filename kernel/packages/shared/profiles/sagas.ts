@@ -1,4 +1,6 @@
 import { Store } from 'redux'
+import { EntityType } from 'dcl-catalyst-commons'
+import { ContentClient, DeploymentBuilder, DeploymentData } from 'dcl-catalyst-client'
 import { call, fork, put, race, select, take, takeEvery, takeLatest } from 'redux-saga/effects'
 
 import { getFromLocalStorage, saveToLocalStorage } from 'atomicHelpers/localStorage'
@@ -61,26 +63,9 @@ import {
 import { processServerProfile } from './transformations/processServerProfile'
 import { profileToRendererFormat } from './transformations/profileToRendererFormat'
 import { ensureServerFormat } from './transformations/profileToServerFormat'
-import {
-  Catalog,
-  Profile,
-  WearableId,
-  Wearable,
-  Collection,
-  Entity,
-  EntityField,
-  ControllerEntity,
-  ControllerEntityContent,
-  EntityType,
-  Pointer,
-  ContentFile,
-  ENTITY_FILE_NAME,
-  DeployData,
-  Avatar
-} from './types'
+import { Catalog, Profile, WearableId, Wearable, Collection, ContentFile, Avatar } from './types'
 import { ExplorerIdentity } from 'shared/session/types'
-import { Authenticator, AuthLink } from 'dcl-crypto'
-import { sha3 } from 'web3x/utils'
+import { Authenticator } from 'dcl-crypto'
 import { getUpdateProfileServer, getResizeService, isResizeServiceUrl } from '../dao/selectors'
 import { getUserProfile } from '../comms/peers'
 import { WORLD_EXPLORER } from '../../config/index'
@@ -98,9 +83,6 @@ import { fetchOwnedENS } from 'shared/web3'
 import { RootState } from 'shared/store/rootTypes'
 import { persistCurrentUser } from 'shared/comms'
 import { ensureRealmInitialized } from 'shared/dao/sagas'
-
-type Timestamp = number
-type ContentFileHash = string
 
 const CID = require('cids')
 const multihashing = require('multihashing-async')
@@ -582,67 +564,6 @@ export function* handleSaveAvatar(saveAvatar: SaveProfileRequest) {
   }
 }
 
-export class ControllerEntityFactory {
-  static maskEntity(fullEntity: Entity, fields?: EntityField[]): ControllerEntity {
-    const { id, type, timestamp } = fullEntity
-    let content: ControllerEntityContent[] | undefined = undefined
-    let metadata: any
-    let pointers: string[] = []
-    if ((!fields || fields.includes(EntityField.CONTENT)) && fullEntity.content) {
-      content = Array.from(fullEntity.content.entries()).map(([file, hash]) => ({ file, hash }))
-    }
-    if (!fields || fields.includes(EntityField.METADATA)) {
-      metadata = fullEntity.metadata
-    }
-    if ((!fields || fields.includes(EntityField.POINTERS)) && fullEntity.pointers) {
-      pointers = fullEntity.pointers
-    }
-    return { id, type, timestamp, pointers, content, metadata }
-  }
-}
-
-async function buildControllerEntityAndFile(
-  type: EntityType,
-  pointers: Pointer[],
-  timestamp: Timestamp,
-  content?: Map<string, ContentFileHash>,
-  metadata?: any
-): Promise<[ControllerEntity, ContentFile]> {
-  const [entity, file]: [Entity, ContentFile] = await buildEntityAndFile(type, pointers, timestamp, content, metadata)
-  return [ControllerEntityFactory.maskEntity(entity), file]
-}
-
-export async function buildEntityAndFile(
-  type: EntityType,
-  pointers: Pointer[],
-  timestamp: Timestamp,
-  content?: Map<string, ContentFileHash>,
-  metadata?: any
-): Promise<[Entity, ContentFile]> {
-  const entity: Entity = new Entity('temp-id', type, pointers, timestamp, content, metadata)
-  const file: ContentFile = entityToFile(entity, ENTITY_FILE_NAME)
-  const fileHash: ContentFileHash = await calculateBufferHash(file.content)
-  const entityWithCorrectId = new Entity(
-    fileHash,
-    entity.type,
-    entity.pointers,
-    entity.timestamp,
-    entity.content,
-    entity.metadata
-  )
-  return [entityWithCorrectId, file]
-}
-
-export function entityToFile(entity: Entity, fileName?: string): ContentFile {
-  let copy: any = Object.assign({}, entity)
-  copy.content =
-    !copy.content || !(copy.content instanceof Map)
-      ? copy.content
-      : Array.from(copy.content.entries()).map(([key, value]: any) => ({ file: key, hash: value }))
-  delete copy.id
-  return { name: fileName || 'name', content: Buffer.from(JSON.stringify(copy)) }
-}
-
 export async function calculateBufferHash(buffer: Buffer): Promise<string> {
   const hash = await multihashing(buffer, 'sha2-256')
   return new CID(0, 'dag-pb', hash).toBaseEncodedString()
@@ -686,7 +607,7 @@ export async function modifyAvatar(params: {
 
   const newAvatar = { ...avatar }
 
-  let files: ContentFile[] = []
+  let files = new Map<string, Buffer>()
 
   const snapshots = avatar.snapshots || (profile as any).snapshots
   const content = new Map()
@@ -697,22 +618,31 @@ export async function modifyAvatar(params: {
 
       newSnapshots[selector] = hash
       content.set(name, hash)
-      contentFile && files.push(contentFile)
+      contentFile && files.set(contentFile.name, contentFile.content)
     }
     newAvatar.snapshots = newSnapshots as Avatar['snapshots']
   }
   const newProfile = ensureServerFormat({ ...profile, avatar: newAvatar }, currentVersion)
 
-  const [data] = await buildDeployData(
-    identity,
+  return deploy(url, identity, { avatars: [newProfile] }, files)
+}
+
+async function deploy(url: string, identity: ExplorerIdentity, metadata: any, contentFiles: Map<string, Buffer>) {
+  // Build entity and group all files
+  const preparationData = await DeploymentBuilder.buildEntity(
+    EntityType.PROFILE,
     [identity.address],
-    {
-      avatars: [newProfile]
-    },
-    files,
-    content
+    contentFiles,
+    metadata
   )
-  return deploy(url, data)
+  // sign the entity id fetchMetaContentServer
+  const authChain = Authenticator.signPayload(identity, preparationData.entityId)
+  // Build the client
+  const catalyst = new ContentClient(url, 'explorer-kernel-profile')
+  // Build the deploy data
+  const deployData: DeploymentData = { ...preparationData, authChain }
+  // Deploy the actual entity
+  return catalyst.deployEntity(deployData)
 }
 
 export function makeContentFile(path: string, content: string | Blob): Promise<ContentFile> {
@@ -729,85 +659,6 @@ export function makeContentFile(path: string, content: string | Blob): Promise<C
       reject(new Error('Unable to create ContentFile: content must be a string or a Blob'))
     }
   })
-}
-
-export async function buildDeployData(
-  identity: ExplorerIdentity,
-  pointers: Pointer[],
-  metadata: any,
-  files: ContentFile[] = [],
-  content: Map<string, string>,
-  afterEntity?: ControllerEntity
-): Promise<[DeployData, ControllerEntity]> {
-  const [entity, entityFile] = await buildControllerEntityAndFile(
-    EntityType.PROFILE,
-    pointers,
-    (afterEntity ? afterEntity.timestamp : Date.now()) + 1,
-    content,
-    metadata
-  )
-
-  const body = await hashAndSignMessage(identity, entity.id)
-  const deployData: DeployData = {
-    entityId: entity.id,
-    // Every position in the body ethAddress every position in the authLink is an slavon.
-    // 1 = ethAddress, 2 ehpemeral & signature w/ethAdrress, 3 request & signature with ephemeral
-    authChain: body,
-    files: [entityFile, ...files]
-  }
-
-  return [deployData, entity]
-}
-
-export async function hashAndSignMessage(identity: ExplorerIdentity, message: string): Promise<AuthLink[]> {
-  return Authenticator.signPayload(identity, message)
-}
-
-export function createEthereumMessageHash(msg: string) {
-  const msgWithPrefix: string = `\x19Ethereum Signed Message:\n${msg.length}${msg}`
-  return sha3(msgWithPrefix)
-}
-
-export async function calculateHashes(files: ContentFile[]): Promise<Map<string, ContentFile>> {
-  const entries: Promise<[string, ContentFile]>[] = Array.from(files).map((file) =>
-    calculateBufferHash(file.content).then((hash: string) => [hash, file])
-  )
-  return new Map(await Promise.all(entries))
-}
-
-export async function deploy(contentServerUrl: string, data: DeployData) {
-  const form = new FormData()
-  form.append('entityId', data.entityId)
-  convertModelToFormData(data.authChain, form, 'authChain')
-  for (let file of data.files) {
-    form.append(file.name, new Blob([file.content]), file.name)
-  }
-  const deployResponse = await fetch(`${contentServerUrl}/entities`, {
-    method: 'POST',
-    body: form
-  })
-  return deployResponse.json()
-}
-
-function convertModelToFormData(model: any, form: FormData = new FormData(), namespace = ''): FormData {
-  let formData = form || new FormData()
-  for (let propertyName in model) {
-    if (!model.hasOwnProperty(propertyName) || !model[propertyName]) continue
-    let formKey = namespace ? `${namespace}[${propertyName}]` : propertyName
-    if (model[propertyName] instanceof Date) {
-      formData.append(formKey, model[propertyName].toISOString())
-    } else if (model[propertyName] instanceof Array) {
-      model[propertyName].forEach((element: any, index: number) => {
-        const tempFormKey = `${formKey}[${index}]`
-        convertModelToFormData(element, formData, tempFormKey)
-      })
-    } else if (typeof model[propertyName] === 'object' && !(model[propertyName] instanceof File)) {
-      convertModelToFormData(model[propertyName], formData, formKey)
-    } else {
-      formData.append(formKey, model[propertyName].toString())
-    }
-  }
-  return formData
 }
 
 export function base64ToBlob(base64: string): Blob {
