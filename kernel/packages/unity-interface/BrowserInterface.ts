@@ -102,6 +102,17 @@ export class BrowserInterface {
     // stub. there is no code about this in unity side yet
   }
 
+  public Track(data: { name: string, properties: ({ key: string, value: string }[] | null) }) {
+    const properties: Record<string, string> = {}
+    if (data.properties) {
+      for (const property of data.properties) {
+        properties[property.key] = property.value
+      }
+    }
+
+    queueTrackingEvent(data.name, properties)
+  }
+
   public TriggerExpression(data: { id: string; timestamp: number }) {
     avatarMessageObservable.notifyObservers({
       type: AvatarMessageType.USER_EXPRESSION,
