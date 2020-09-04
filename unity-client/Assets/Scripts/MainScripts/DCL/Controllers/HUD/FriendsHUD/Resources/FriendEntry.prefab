@@ -88,6 +88,7 @@ GameObject:
   - component: {fileID: 6497558125906634111}
   - component: {fileID: 6107726140548811608}
   - component: {fileID: 1575258791199021983}
+  - component: {fileID: 2122946114431505587}
   m_Layer: 5
   m_Name: MenuButton
   m_TagString: Untagged
@@ -195,6 +196,20 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls: []
+--- !u!114 &2122946114431505587
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 504354867123715343}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4bfd0d144b6d3dd438b84fa14a062c4f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  extraClickSound: 0
+  playHoverSound: 0
 --- !u!1 &831569218822348366
 GameObject:
   m_ObjectHideFlags: 0
@@ -668,6 +683,7 @@ GameObject:
   - component: {fileID: 4452454921379137022}
   - component: {fileID: 2032125974022889722}
   - component: {fileID: 9192705750926943762}
+  - component: {fileID: 4126931544166501701}
   m_Layer: 5
   m_Name: WhisperButton
   m_TagString: Untagged
@@ -788,6 +804,20 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   targetObjects:
   - {fileID: 1110130480339001881}
+--- !u!114 &4126931544166501701
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2699078608772769823}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4bfd0d144b6d3dd438b84fa14a062c4f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  extraClickSound: 0
+  playHoverSound: 0
 --- !u!1 &2750868330286968561
 GameObject:
   m_ObjectHideFlags: 0

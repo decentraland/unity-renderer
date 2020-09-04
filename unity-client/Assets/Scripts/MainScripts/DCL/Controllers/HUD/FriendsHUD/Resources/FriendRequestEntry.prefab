@@ -160,6 +160,7 @@ GameObject:
   - component: {fileID: 8947463777383568542}
   - component: {fileID: 6114040652403596518}
   - component: {fileID: 5651660656805690779}
+  - component: {fileID: 283275834806120738}
   m_Layer: 5
   m_Name: CancelButton
   m_TagString: Untagged
@@ -267,6 +268,20 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls: []
+--- !u!114 &283275834806120738
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2303985451479893603}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4bfd0d144b6d3dd438b84fa14a062c4f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  extraClickSound: 10
+  playHoverSound: 1
 --- !u!1 &2328393896196987459
 GameObject:
   m_ObjectHideFlags: 0
@@ -509,6 +524,7 @@ GameObject:
   - component: {fileID: 2862663812148483386}
   - component: {fileID: 34325225063350113}
   - component: {fileID: 5241274719269839806}
+  - component: {fileID: 2226606405088330407}
   m_Layer: 5
   m_Name: RejectButton
   m_TagString: Untagged
@@ -616,6 +632,20 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls: []
+--- !u!114 &2226606405088330407
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3159585121060257330}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4bfd0d144b6d3dd438b84fa14a062c4f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  extraClickSound: 10
+  playHoverSound: 1
 --- !u!1 &3163622831944877131
 GameObject:
   m_ObjectHideFlags: 0
@@ -976,6 +1006,7 @@ GameObject:
   - component: {fileID: 4533512121305398734}
   - component: {fileID: 2159484179565427951}
   - component: {fileID: 1278527795422366261}
+  - component: {fileID: 7244847187715916554}
   m_Layer: 5
   m_Name: MenuButton
   m_TagString: Untagged
@@ -1083,6 +1114,20 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls: []
+--- !u!114 &7244847187715916554
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7059827856586363227}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4bfd0d144b6d3dd438b84fa14a062c4f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  extraClickSound: 0
+  playHoverSound: 0
 --- !u!1 &8092504805426532285
 GameObject:
   m_ObjectHideFlags: 0
@@ -1251,6 +1296,7 @@ GameObject:
   - component: {fileID: 9001624225865027236}
   - component: {fileID: 5461353156310421607}
   - component: {fileID: 552327391556498921}
+  - component: {fileID: 6779865065256482078}
   m_Layer: 5
   m_Name: AcceptButton
   m_TagString: Untagged
@@ -1358,6 +1404,20 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls: []
+--- !u!114 &6779865065256482078
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8612560251788219423}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4bfd0d144b6d3dd438b84fa14a062c4f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  extraClickSound: 9
+  playHoverSound: 1
 --- !u!1 &8951447475805737260
 GameObject:
   m_ObjectHideFlags: 0

@@ -100,7 +100,11 @@ export const contracts = {
   'rinkeby': {
     'MANAToken': '0x28bce5263f5d7f4eb7e8c6d5d78275ca455bac63',
     'LANDProxy': '0x28bef22df3e2040a4be64a9ca0e8b5ae2b91462d',
-    'LANDRegistry': '0xaf29226656fade9c97f51741e40f60c5bd67ee31',
-    'Multisig': '0x0de35b8b47b129877e0efca24e294b61d7e7eee3'
+    'LANDRegistry': '0xbeea8bfb0e582be1c3fb464824e61c218ba0c1b1',
+    'EstateRegistry': '0x3f0b58ad7a8b27d0e5573cd1ca7d456e2f6d4884',
+    'Multisig': '0x0de35b8b47b129877e0efca24e294b61d7e7eee3',
+    'MANAMiniMeToken': '0xfb2712a1246f712b889692c7ce55fec25c06bc33',
+    'LANDMiniMeToken': '0x576c4577aAd561EA79acbd49215a0cC1473BfCCA',
+    'EstateMiniMeToken': '0x2b98C125733035cDE09d311F988845808EE270E6'
   }
 }

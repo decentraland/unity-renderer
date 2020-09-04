@@ -132,6 +132,44 @@ public class ChatEntry : MonoBehaviour, IPointerClickHandler, IPointerEnterHandl
 
         if (fadeEnabled)
             group.alpha = 0;
+
+        if (HUDAudioPlayer.i != null)
+        {
+            // Check whether or not this message is new
+            if (chatEntryModel.timestamp > HUDAudioPlayer.i.chatLastCheckedTimestamp)
+            {
+                switch (chatEntryModel.messageType)
+                {
+                    case ChatMessage.Type.PUBLIC:
+                        // Check whether or not the message was sent by the local player
+                        if (chatEntryModel.senderId == UserProfile.GetOwnUserProfile().userId)
+                            HUDAudioPlayer.i.Play(HUDAudioPlayer.Sound.sendChatEntry);
+                        else
+                            HUDAudioPlayer.i.Play(HUDAudioPlayer.Sound.receiveGlobalChatEntry);
+                        break;
+                    case ChatMessage.Type.PRIVATE:
+                        switch (chatEntryModel.subType)
+                        {
+                            case Model.SubType.PRIVATE_FROM:
+                                HUDAudioPlayer.i.Play(HUDAudioPlayer.Sound.receivePrivateChatEntry);
+                                break;
+                            case Model.SubType.PRIVATE_TO:
+                                HUDAudioPlayer.i.Play(HUDAudioPlayer.Sound.sendChatEntry);
+                                break;
+                            default:
+                                break;
+                        }
+                        break;
+                    case ChatMessage.Type.SYSTEM:
+                        HUDAudioPlayer.i.Play(HUDAudioPlayer.Sound.receiveGlobalChatEntry);
+                        break;
+                    default:
+                        break;
+                }
+            }
+
+            HUDAudioPlayer.i.RefreshChatLastCheckedTimestamp();
+        }
     }
 
     public void OnPointerClick(PointerEventData pointerEventData)

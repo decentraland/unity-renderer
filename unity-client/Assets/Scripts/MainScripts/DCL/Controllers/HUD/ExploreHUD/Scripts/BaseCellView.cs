@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using DCL.Helpers;
 using UnityEngine;
 using UnityEngine.Networking;
@@ -50,6 +50,9 @@ internal class BaseCellView : MonoBehaviour
 
                 thumbnailRequest.Dispose();
                 thumbnailRequest = null;
+
+                if (HUDAudioPlayer.i != null)
+                    HUDAudioPlayer.i.Play(HUDAudioPlayer.Sound.listItemAppear);
 
                 OnThumbnailFetched?.Invoke(thumbnail);
             };

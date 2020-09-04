@@ -747,6 +747,7 @@ GameObject:
   - component: {fileID: 5624937098227729859}
   - component: {fileID: 2586129008953024941}
   - component: {fileID: 654720472941215217}
+  - component: {fileID: 2993331314259885944}
   m_Layer: 19
   m_Name: ReportButton
   m_TagString: Untagged
@@ -855,6 +856,20 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls: []
+--- !u!114 &2993331314259885944
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4047679926360000376}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4bfd0d144b6d3dd438b84fa14a062c4f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  extraClickSound: 0
+  playHoverSound: 1
 --- !u!1 &5612867202796907543
 GameObject:
   m_ObjectHideFlags: 0
@@ -867,6 +882,7 @@ GameObject:
   - component: {fileID: 3376505893821371680}
   - component: {fileID: 2631459975931321943}
   - component: {fileID: 158057186370078751}
+  - component: {fileID: 4002317916217805729}
   m_Layer: 19
   m_Name: BlockButton
   m_TagString: Untagged
@@ -975,6 +991,20 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls: []
+--- !u!114 &4002317916217805729
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5612867202796907543}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4bfd0d144b6d3dd438b84fa14a062c4f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  extraClickSound: 0
+  playHoverSound: 1
 --- !u!1 &6762200904164466163
 GameObject:
   m_ObjectHideFlags: 0
@@ -1287,6 +1317,7 @@ GameObject:
   - component: {fileID: 6624961522925186529}
   - component: {fileID: 6849190103485404149}
   - component: {fileID: 1318075393278894107}
+  - component: {fileID: 7600177363669350664}
   m_Layer: 19
   m_Name: PassportButton
   m_TagString: Untagged
@@ -1395,3 +1426,17 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls: []
+--- !u!114 &7600177363669350664
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7888225945714044020}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4bfd0d144b6d3dd438b84fa14a062c4f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  extraClickSound: 0
+  playHoverSound: 1

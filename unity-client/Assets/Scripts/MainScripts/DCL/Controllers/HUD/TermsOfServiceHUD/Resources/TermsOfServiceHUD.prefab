@@ -13,6 +13,7 @@ GameObject:
   - component: {fileID: 8086784930631995772}
   - component: {fileID: 5131282038483712871}
   - component: {fileID: 7670738778035755717}
+  - component: {fileID: 6050944467654421458}
   m_Layer: 5
   m_Name: Agree
   m_TagString: Untagged
@@ -157,6 +158,20 @@ MonoBehaviour:
   targetRectTransform: {fileID: 7020068756912401866}
   hoverScale: 1.01
   normalScale: 1
+--- !u!114 &6050944467654421458
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 567193143422867647}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4bfd0d144b6d3dd438b84fa14a062c4f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  extraClickSound: 9
+  playHoverSound: 1
 --- !u!1 &1312337251418785736
 GameObject:
   m_ObjectHideFlags: 0
@@ -1382,6 +1397,7 @@ GameObject:
   - component: {fileID: 1137508297199951735}
   - component: {fileID: 2428224419746201417}
   - component: {fileID: 6018945643855673356}
+  - component: {fileID: 1862028730494620603}
   m_Layer: 5
   m_Name: Decline
   m_TagString: Untagged
@@ -1526,6 +1542,20 @@ MonoBehaviour:
   targetRectTransform: {fileID: 5786971532354648953}
   hoverScale: 1.01
   normalScale: 1
+--- !u!114 &1862028730494620603
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3852861215796019526}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4bfd0d144b6d3dd438b84fa14a062c4f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  extraClickSound: 0
+  playHoverSound: 1
 --- !u!1 &4130874658157828645
 GameObject:
   m_ObjectHideFlags: 0
@@ -2733,6 +2763,7 @@ GameObject:
   - component: {fileID: 8151853082342881350}
   - component: {fileID: 3728177195182116433}
   - component: {fileID: 3736444500472220403}
+  - component: {fileID: 4531902655129392523}
   m_Layer: 5
   m_Name: Terms
   m_TagString: Untagged
@@ -2826,6 +2857,20 @@ MonoBehaviour:
   targetRectTransform: {fileID: 6843762401408172965}
   hoverScale: 1.04
   normalScale: 1
+--- !u!114 &4531902655129392523
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8299484576018917213}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4bfd0d144b6d3dd438b84fa14a062c4f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  extraClickSound: 0
+  playHoverSound: 1
 --- !u!1 &8812072789940992196
 GameObject:
   m_ObjectHideFlags: 0
@@ -3030,6 +3075,7 @@ GameObject:
   - component: {fileID: 984862400930299646}
   - component: {fileID: 1517208596148791875}
   - component: {fileID: 4627023495734342559}
+  - component: {fileID: 7933910196322604060}
   m_Layer: 5
   m_Name: ToggleDontShow
   m_TagString: Untagged
@@ -3130,6 +3176,18 @@ MonoBehaviour:
   m_ChildControlHeight: 0
   m_ChildScaleWidth: 0
   m_ChildScaleHeight: 0
+--- !u!114 &7933910196322604060
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8861652471710689192}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1b102d1bc6e18474980da7b796ce9b08, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &8978469897116407463
 GameObject:
   m_ObjectHideFlags: 0
@@ -3142,6 +3200,7 @@ GameObject:
   - component: {fileID: 3350957380605713122}
   - component: {fileID: 561390364868992690}
   - component: {fileID: 4945512268289174273}
+  - component: {fileID: 3250911152510671138}
   m_Layer: 5
   m_Name: Contact
   m_TagString: Untagged
@@ -3235,6 +3294,20 @@ MonoBehaviour:
   targetRectTransform: {fileID: 7923047164955891467}
   hoverScale: 1.04
   normalScale: 1
+--- !u!114 &3250911152510671138
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8978469897116407463}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4bfd0d144b6d3dd438b84fa14a062c4f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  extraClickSound: 0
+  playHoverSound: 1
 --- !u!1 &9050088463317505534
 GameObject:
   m_ObjectHideFlags: 0
@@ -3247,6 +3320,7 @@ GameObject:
   - component: {fileID: 3793699610054215613}
   - component: {fileID: 3743118150725119257}
   - component: {fileID: 7324660102185571453}
+  - component: {fileID: 5213549557216709054}
   m_Layer: 5
   m_Name: PrivacyPolicy
   m_TagString: Untagged
@@ -3340,3 +3414,17 @@ MonoBehaviour:
   targetRectTransform: {fileID: 2716784666391533328}
   hoverScale: 1.04
   normalScale: 1
+--- !u!114 &5213549557216709054
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 9050088463317505534}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4bfd0d144b6d3dd438b84fa14a062c4f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  extraClickSound: 0
+  playHoverSound: 1

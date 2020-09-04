@@ -1498,6 +1498,7 @@ GameObject:
   - component: {fileID: 2784302339898828865}
   - component: {fileID: 9217961843191164369}
   - component: {fileID: 8563204964453992686}
+  - component: {fileID: 2196759003050936400}
   m_Layer: 5
   m_Name: BookmarkButton
   m_TagString: Untagged
@@ -1618,6 +1619,20 @@ CanvasGroup:
   m_Interactable: 0
   m_BlocksRaycasts: 1
   m_IgnoreParentGroups: 0
+--- !u!114 &2196759003050936400
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4285910043050766312}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4bfd0d144b6d3dd438b84fa14a062c4f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  extraClickSound: 0
+  playHoverSound: 1
 --- !u!1 &4286727768197816336
 GameObject:
   m_ObjectHideFlags: 0
@@ -2095,6 +2110,7 @@ GameObject:
   - component: {fileID: 1347496358759656025}
   - component: {fileID: 6297801321353311123}
   - component: {fileID: 5098086527300088398}
+  - component: {fileID: 742490654043183450}
   m_Layer: 5
   m_Name: MapRendererContainer
   m_TagString: Untagged
@@ -2173,6 +2189,20 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls: []
+--- !u!114 &742490654043183450
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5908810523113329528}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4bfd0d144b6d3dd438b84fa14a062c4f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  extraClickSound: 0
+  playHoverSound: 1
 --- !u!1 &6158691491735050548
 GameObject:
   m_ObjectHideFlags: 0
@@ -2490,6 +2520,7 @@ GameObject:
   - component: {fileID: 1065863209115981485}
   - component: {fileID: 7331797177246822788}
   - component: {fileID: 4881649985720352001}
+  - component: {fileID: 506077959920028630}
   m_Layer: 5
   m_Name: ReportButton
   m_TagString: Untagged
@@ -2610,6 +2641,20 @@ CanvasGroup:
   m_Interactable: 0
   m_BlocksRaycasts: 1
   m_IgnoreParentGroups: 0
+--- !u!114 &506077959920028630
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7080230803092101572}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4bfd0d144b6d3dd438b84fa14a062c4f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  extraClickSound: 0
+  playHoverSound: 1
 --- !u!1 &7539119537709626164
 GameObject:
   m_ObjectHideFlags: 0

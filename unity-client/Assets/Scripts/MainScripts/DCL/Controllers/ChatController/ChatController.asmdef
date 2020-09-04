@@ -2,9 +2,9 @@
     "name": "ChatController",
     "references": [
         "GUID:6afcac5154f98e846bbd9f27e454b57a",
-        "GUID:1de3566cccb280f4a982c59ad0d08c96"
+        "GUID:1de3566cccb280f4a982c59ad0d08c96",
+        "GUID:555c1f3c6d18648df910b7a1de75b424"
     ],
-    "optionalUnityReferences": [],
     "includePlatforms": [],
     "excludePlatforms": [],
     "allowUnsafeCode": false,
@@ -12,5 +12,6 @@
     "precompiledReferences": [],
     "autoReferenced": true,
     "defineConstraints": [],
-    "versionDefines": []
+    "versionDefines": [],
+    "noEngineReferences": false
 }

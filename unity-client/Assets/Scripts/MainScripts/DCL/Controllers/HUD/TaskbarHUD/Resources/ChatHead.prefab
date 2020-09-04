@@ -775,6 +775,7 @@ GameObject:
   - component: {fileID: 1360326276798666152}
   - component: {fileID: 8427206378237592781}
   - component: {fileID: 8925763859187882038}
+  - component: {fileID: 1672005596987614286}
   m_Layer: 5
   m_Name: ChatHead
   m_TagString: Untagged
@@ -956,6 +957,20 @@ CanvasGroup:
   m_Interactable: 1
   m_BlocksRaycasts: 1
   m_IgnoreParentGroups: 0
+--- !u!114 &1672005596987614286
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3796944432922731373}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4bfd0d144b6d3dd438b84fa14a062c4f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  extraClickSound: 0
+  playHoverSound: 1
 --- !u!1 &3857219616059285735
 GameObject:
   m_ObjectHideFlags: 0
@@ -1716,12 +1731,6 @@ PrefabInstance:
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 66a8a6e3725e6c04fa70579a8e343b89, type: 3}
---- !u!224 &4104151163294176188 stripped
-RectTransform:
-  m_CorrespondingSourceObject: {fileID: 3287869685075875600, guid: 66a8a6e3725e6c04fa70579a8e343b89,
-    type: 3}
-  m_PrefabInstance: {fileID: 1536857435981923500}
-  m_PrefabAsset: {fileID: 0}
 --- !u!114 &2870536401237111500 stripped
 MonoBehaviour:
   m_CorrespondingSourceObject: {fileID: 3639526527136052832, guid: 66a8a6e3725e6c04fa70579a8e343b89,
@@ -1734,3 +1743,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 63cc3165dc2ab80458cb65b4ac41fdbd, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+--- !u!224 &4104151163294176188 stripped
+RectTransform:
+  m_CorrespondingSourceObject: {fileID: 3287869685075875600, guid: 66a8a6e3725e6c04fa70579a8e343b89,
+    type: 3}
+  m_PrefabInstance: {fileID: 1536857435981923500}
+  m_PrefabAsset: {fileID: 0}

@@ -145,6 +145,7 @@ GameObject:
   - component: {fileID: 4843828444550410656}
   - component: {fileID: 681963098010535084}
   - component: {fileID: 4729517059036391380}
+  - component: {fileID: 3225501267655464492}
   m_Layer: 5
   m_Name: Button_JumpIn
   m_TagString: Untagged
@@ -299,6 +300,22 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls: []
+--- !u!114 &3225501267655464492
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1976863838379815301}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ee9f4abe9743e8746a8476ea46e938d5, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  hoverSound: 1
+  playHover: 1
+  playClick: 1
+  playRelease: 1
 --- !u!114 &2713294554093301552
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -802,6 +819,7 @@ GameObject:
   - component: {fileID: 4110380958965581770}
   - component: {fileID: 524055130367528283}
   - component: {fileID: 4569478197621240528}
+  - component: {fileID: 5675113997478531397}
   m_Layer: 5
   m_Name: Container_Info
   m_TagString: Untagged
@@ -893,6 +911,22 @@ MonoBehaviour:
   targetRectTransform: {fileID: 2849257233617428136}
   hoverScale: 1.09
   normalScale: 1
+--- !u!114 &5675113997478531397
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5799162575875262829}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ee9f4abe9743e8746a8476ea46e938d5, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  hoverSound: 1
+  playHover: 1
+  playClick: 1
+  playRelease: 1
 --- !u!1 &5990272744134765023
 GameObject:
   m_ObjectHideFlags: 0
@@ -1538,6 +1572,7 @@ GameObject:
   - component: {fileID: 5952125889656491574}
   - component: {fileID: 6080213086932307291}
   - component: {fileID: 1456436786267007227}
+  - component: {fileID: 3472465164263525813}
   m_Layer: 5
   m_Name: HotSceneCellView
   m_TagString: Untagged
@@ -1645,6 +1680,22 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9c571141d7b674d80b8ba9d9606ef819, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+--- !u!114 &3472465164263525813
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8413457068488743235}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ee9f4abe9743e8746a8476ea46e938d5, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  hoverSound: 21
+  playHover: 1
+  playClick: 0
+  playRelease: 0
 --- !u!1001 &2405977515073579422
 PrefabInstance:
   m_ObjectHideFlags: 0

@@ -1,4 +1,4 @@
-﻿using UnityEngine;
+using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
 
@@ -25,6 +25,9 @@ internal class SceneInfoView : MonoBehaviour
         if (!gameObject.activeSelf)
         {
             gameObject.SetActive(true);
+
+            if (HUDAudioPlayer.i != null)
+                HUDAudioPlayer.i.Play(HUDAudioPlayer.Sound.dialogAppear);
         }
         showHideAnimator.Show();
         this.enabled = false;
@@ -46,6 +49,9 @@ internal class SceneInfoView : MonoBehaviour
         if (instant)
         {
             showHideAnimator.Hide(true);
+
+            if (HUDAudioPlayer.i != null)
+                HUDAudioPlayer.i.Play(HUDAudioPlayer.Sound.dialogClose);
         }
         else
         {
@@ -134,6 +140,9 @@ internal class SceneInfoView : MonoBehaviour
         {
             showHideAnimator.Hide();
             this.enabled = false;
+
+            if (HUDAudioPlayer.i != null)
+                HUDAudioPlayer.i.Play(HUDAudioPlayer.Sound.dialogClose);
         }
     }
 

@@ -13,6 +13,7 @@ GameObject:
   - component: {fileID: 7773657246736739285}
   - component: {fileID: 1242098956124780494}
   - component: {fileID: 9173360816427632125}
+  - component: {fileID: 4422725843120203144}
   m_Layer: 5
   m_Name: Button_Cancel
   m_TagString: Untagged
@@ -135,6 +136,20 @@ MonoBehaviour:
   targetRectTransform: {fileID: 7689921164329490298}
   hoverScale: 1.01
   normalScale: 1
+--- !u!114 &4422725843120203144
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 87487144774555758}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4bfd0d144b6d3dd438b84fa14a062c4f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  extraClickSound: 0
+  playHoverSound: 1
 --- !u!1 &112709378547518406
 GameObject:
   m_ObjectHideFlags: 0
@@ -1163,6 +1178,7 @@ GameObject:
   - component: {fileID: 1091060145595044072}
   - component: {fileID: 914364369287563098}
   - component: {fileID: 997158584468198878}
+  - component: {fileID: 3570675885786504049}
   m_Layer: 5
   m_Name: Button_Close
   m_TagString: Untagged
@@ -1285,6 +1301,20 @@ MonoBehaviour:
   targetRectTransform: {fileID: 1220038098202319381}
   hoverScale: 1.03
   normalScale: 1
+--- !u!114 &3570675885786504049
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2852822698389193446}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4bfd0d144b6d3dd438b84fa14a062c4f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  extraClickSound: 0
+  playHoverSound: 1
 --- !u!1 &2957098455356560397
 GameObject:
   m_ObjectHideFlags: 0
@@ -1947,6 +1977,7 @@ GameObject:
   m_Component:
   - component: {fileID: 5535235294162950083}
   - component: {fileID: 1200478083728398239}
+  - component: {fileID: 1952845321917843800}
   m_Layer: 5
   m_Name: Toggle_TrustDomain
   m_TagString: Untagged
@@ -2021,6 +2052,18 @@ MonoBehaviour:
     m_PersistentCalls:
       m_Calls: []
   m_IsOn: 1
+--- !u!114 &1952845321917843800
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6296868348929661279}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1b102d1bc6e18474980da7b796ce9b08, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &6498655820486328905
 GameObject:
   m_ObjectHideFlags: 0
@@ -2086,6 +2129,7 @@ GameObject:
   - component: {fileID: 4784409984069590464}
   - component: {fileID: 288142682893478928}
   - component: {fileID: 2729007794598204024}
+  - component: {fileID: 5438361058928719481}
   m_Layer: 5
   m_Name: Button_Continue
   m_TagString: Untagged
@@ -2208,6 +2252,20 @@ MonoBehaviour:
   targetRectTransform: {fileID: 3113663853504699793}
   hoverScale: 1.01
   normalScale: 1
+--- !u!114 &5438361058928719481
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8674331462890837211}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4bfd0d144b6d3dd438b84fa14a062c4f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  extraClickSound: 9
+  playHoverSound: 1
 --- !u!1 &8789653760553667686
 GameObject:
   m_ObjectHideFlags: 0

@@ -73,7 +73,7 @@ MonoBehaviour:
   m_fontMaterials: []
   m_fontColor32:
     serializedVersion: 2
-    rgba: 4281150765
+    rgba: 4281216558
   m_fontColor: {r: 0.1792453, g: 0.1792453, b: 0.1792453, a: 1}
   m_enableVertexGradient: 0
   m_colorMode: 3
@@ -468,6 +468,7 @@ GameObject:
   - component: {fileID: 3015429049257244579}
   - component: {fileID: 2770247627674603290}
   - component: {fileID: 4285233376699115026}
+  - component: {fileID: 3241484195093273114}
   m_Layer: 5
   m_Name: ScrollRect
   m_TagString: Untagged
@@ -569,6 +570,18 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
+--- !u!114 &3241484195093273114
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 790868519033249328}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 413fab35308355b478a5a9cccba2120b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &912119330444440930
 GameObject:
   m_ObjectHideFlags: 0
@@ -1241,6 +1254,7 @@ GameObject:
   - component: {fileID: 5920065661076527892}
   - component: {fileID: 6221079439394858850}
   - component: {fileID: 596501239309431888}
+  - component: {fileID: 5131467573547567870}
   m_Layer: 5
   m_Name: CloseButton
   m_TagString: Untagged
@@ -1363,6 +1377,20 @@ MonoBehaviour:
   targetRectTransform: {fileID: 3659989493282188511}
   hoverScale: 1.07
   normalScale: 1
+--- !u!114 &5131467573547567870
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1970098496832775247}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4bfd0d144b6d3dd438b84fa14a062c4f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  extraClickSound: 0
+  playHoverSound: 1
 --- !u!1 &1971579255316232808
 GameObject:
   m_ObjectHideFlags: 0
@@ -2238,7 +2266,7 @@ MonoBehaviour:
   m_fontMaterials: []
   m_fontColor32:
     serializedVersion: 2
-    rgba: 4281150765
+    rgba: 4281216558
   m_fontColor: {r: 0.1792453, g: 0.1792453, b: 0.1792453, a: 1}
   m_enableVertexGradient: 0
   m_colorMode: 3
@@ -2956,6 +2984,7 @@ GameObject:
   - component: {fileID: 3447170483678924111}
   - component: {fileID: 3663369427675628745}
   - component: {fileID: 5806527675308957632}
+  - component: {fileID: 1611803904224047233}
   m_Layer: 0
   m_Name: Button
   m_TagString: Untagged
@@ -3064,6 +3093,20 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls: []
+--- !u!114 &1611803904224047233
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4675666428883285402}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4bfd0d144b6d3dd438b84fa14a062c4f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  extraClickSound: 0
+  playHoverSound: 1
 --- !u!1 &4719835266365047835
 GameObject:
   m_ObjectHideFlags: 0
@@ -3204,7 +3247,7 @@ MonoBehaviour:
   m_fontMaterials: []
   m_fontColor32:
     serializedVersion: 2
-    rgba: 4281150765
+    rgba: 4281216558
   m_fontColor: {r: 0.1792453, g: 0.1792453, b: 0.1792453, a: 1}
   m_enableVertexGradient: 0
   m_colorMode: 3
@@ -4649,7 +4692,7 @@ MonoBehaviour:
   m_fontMaterials: []
   m_fontColor32:
     serializedVersion: 2
-    rgba: 4281150765
+    rgba: 4281216558
   m_fontColor: {r: 0.1792453, g: 0.1792453, b: 0.1792453, a: 1}
   m_enableVertexGradient: 0
   m_colorMode: 3

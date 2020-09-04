@@ -37,6 +37,9 @@ public class Notification : MonoBehaviour
     {
         if (actionButton != null)
             actionButton.onClick.AddListener(Dismiss);
+
+        if (HUDAudioPlayer.i != null)
+            HUDAudioPlayer.i.Play(HUDAudioPlayer.Sound.notification);
     }
 
     private void OnDisable()
