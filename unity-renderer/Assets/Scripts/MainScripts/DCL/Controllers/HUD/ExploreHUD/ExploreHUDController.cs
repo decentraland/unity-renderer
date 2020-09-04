@@ -1,4 +1,4 @@
-﻿using UnityEngine;
+using UnityEngine;
 using System;
 using DCL.Helpers;
 using DCL.Interface;
@@ -57,6 +57,17 @@ public class ExploreHUDController : IHUD
         }
 
         view.SetVisibility(visible);
+
+        if (HUDAudioPlayer.i != null)
+        {
+            if (visible)
+            {
+                HUDAudioPlayer.i.Play(HUDAudioPlayer.Sound.dialogAppear);
+                HUDAudioPlayer.i.ResetListItemAppearPitch();
+            }
+            else
+                HUDAudioPlayer.i.Play(HUDAudioPlayer.Sound.dialogClose);
+        }
     }
 
     public void Dispose()

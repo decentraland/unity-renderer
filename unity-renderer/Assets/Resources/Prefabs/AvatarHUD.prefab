@@ -549,6 +549,7 @@ GameObject:
   - component: {fileID: 2120995583777395619}
   - component: {fileID: 6359075905450045981}
   - component: {fileID: 5701910424821072492}
+  - component: {fileID: 5679965055405298086}
   m_Layer: 5
   m_Name: Settings
   m_TagString: Untagged
@@ -672,6 +673,20 @@ MonoBehaviour:
   targetRectTransform: {fileID: 6358739764607845524}
   hoverScale: 1.01
   normalScale: 1
+--- !u!114 &5679965055405298086
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1810454000489069829}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4bfd0d144b6d3dd438b84fa14a062c4f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  extraClickSound: 0
+  playHoverSound: 1
 --- !u!1 &2072399503169031478
 GameObject:
   m_ObjectHideFlags: 0
@@ -685,6 +700,7 @@ GameObject:
   - component: {fileID: 3804445499524313193}
   - component: {fileID: 8127968709767793726}
   - component: {fileID: 3378201487114180605}
+  - component: {fileID: 4898338316832840722}
   m_Layer: 5
   m_Name: Backpack
   m_TagString: Untagged
@@ -809,6 +825,20 @@ MonoBehaviour:
   targetRectTransform: {fileID: 9144767014507377151}
   hoverScale: 1.01
   normalScale: 1
+--- !u!114 &4898338316832840722
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2072399503169031478}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4bfd0d144b6d3dd438b84fa14a062c4f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  extraClickSound: 0
+  playHoverSound: 1
 --- !u!1 &2495736092994947693
 GameObject:
   m_ObjectHideFlags: 0
@@ -820,6 +850,7 @@ GameObject:
   - component: {fileID: 487610079711947160}
   - component: {fileID: 117772258556419525}
   - component: {fileID: 5249297500395189288}
+  - component: {fileID: 4700810712221919322}
   m_Layer: 5
   m_Name: AvatarPic
   m_TagString: Untagged
@@ -899,6 +930,20 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls: []
+--- !u!114 &4700810712221919322
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2495736092994947693}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4bfd0d144b6d3dd438b84fa14a062c4f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  extraClickSound: 0
+  playHoverSound: 1
 --- !u!1 &2611028964087816398
 GameObject:
   m_ObjectHideFlags: 0
@@ -912,6 +957,7 @@ GameObject:
   - component: {fileID: 7780713580872662630}
   - component: {fileID: 2439665739510493948}
   - component: {fileID: 5790774113229220291}
+  - component: {fileID: 5635507079109810621}
   m_Layer: 5
   m_Name: LogOut
   m_TagString: Untagged
@@ -1035,6 +1081,20 @@ MonoBehaviour:
   targetRectTransform: {fileID: 5131703640686909951}
   hoverScale: 1.01
   normalScale: 1
+--- !u!114 &5635507079109810621
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2611028964087816398}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4bfd0d144b6d3dd438b84fa14a062c4f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  extraClickSound: 0
+  playHoverSound: 1
 --- !u!1 &3073583394034477279
 GameObject:
   m_ObjectHideFlags: 0
@@ -1090,6 +1150,7 @@ GameObject:
   - component: {fileID: 1051721981414603956}
   - component: {fileID: 5960867254960926024}
   - component: {fileID: 7209473278642642492}
+  - component: {fileID: 2612530053444057778}
   m_Layer: 5
   m_Name: HelpFAQs
   m_TagString: Untagged
@@ -1213,6 +1274,20 @@ MonoBehaviour:
   targetRectTransform: {fileID: 6019238154425629605}
   hoverScale: 1.01
   normalScale: 1
+--- !u!114 &2612530053444057778
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3325608021088498842}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4bfd0d144b6d3dd438b84fa14a062c4f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  extraClickSound: 0
+  playHoverSound: 1
 --- !u!1 &3475705995837572437
 GameObject:
   m_ObjectHideFlags: 0
@@ -1619,6 +1694,7 @@ GameObject:
   - component: {fileID: 3061721561504625919}
   - component: {fileID: 8802185040998133461}
   - component: {fileID: 7355355114654448752}
+  - component: {fileID: 6368032180686728594}
   m_Layer: 5
   m_Name: Controls
   m_TagString: Untagged
@@ -1742,6 +1818,20 @@ MonoBehaviour:
   targetRectTransform: {fileID: 7474969828941110349}
   hoverScale: 1.01
   normalScale: 1
+--- !u!114 &6368032180686728594
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4015304667058342275}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4bfd0d144b6d3dd438b84fa14a062c4f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  extraClickSound: 0
+  playHoverSound: 1
 --- !u!1 &4015978988222737975
 GameObject:
   m_ObjectHideFlags: 0

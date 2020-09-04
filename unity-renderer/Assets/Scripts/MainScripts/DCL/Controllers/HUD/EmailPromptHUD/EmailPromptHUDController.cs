@@ -1,4 +1,4 @@
-﻿using UnityEngine;
+using UnityEngine;
 using DCL.Interface;
 using DCL.Helpers;
 using System.Collections;
@@ -32,10 +32,16 @@ public class EmailPromptHUDController : IHUD
             view.gameObject.SetActive(true);
             view.showHideAnimator.Show();
             WebInterface.ReportAnalyticsEvent("open email popup");
+
+            if (HUDAudioPlayer.i != null)
+                HUDAudioPlayer.i.Play(HUDAudioPlayer.Sound.fadeIn);
         }
         else
         {
             view.showHideAnimator.Hide();
+
+            if (HUDAudioPlayer.i != null)
+                HUDAudioPlayer.i.Play(HUDAudioPlayer.Sound.fadeOut);
         }
     }
 

@@ -1238,6 +1238,7 @@ GameObject:
   - component: {fileID: 3978620096624981023}
   - component: {fileID: 6193619628318424528}
   - component: {fileID: 7609492662271127952}
+  - component: {fileID: 3025341054908512103}
   m_Layer: 5
   m_Name: CloseButton
   m_TagString: Untagged
@@ -1380,6 +1381,20 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls: []
+--- !u!114 &3025341054908512103
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1993209732132389962}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4bfd0d144b6d3dd438b84fa14a062c4f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  extraClickSound: 0
+  playHoverSound: 1
 --- !u!1 &2513147558662610264
 GameObject:
   m_ObjectHideFlags: 0
@@ -1711,6 +1726,7 @@ GameObject:
   - component: {fileID: 4568952583338752013}
   - component: {fileID: 7079493532869316107}
   - component: {fileID: 4884999025973778337}
+  - component: {fileID: 7636840906873673671}
   m_Layer: 5
   m_Name: DanceButton
   m_TagString: Untagged
@@ -1811,6 +1827,20 @@ Animator:
   m_HasTransformHierarchy: 1
   m_AllowConstantClipSamplingOptimization: 1
   m_KeepAnimatorControllerStateOnDisable: 0
+--- !u!114 &7636840906873673671
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3309478375450759555}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4bfd0d144b6d3dd438b84fa14a062c4f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  extraClickSound: 0
+  playHoverSound: 1
 --- !u!1 &3439737265274002378
 GameObject:
   m_ObjectHideFlags: 0
@@ -2342,6 +2372,7 @@ GameObject:
   - component: {fileID: 26786792254107118}
   - component: {fileID: 6920979846287350269}
   - component: {fileID: 7748480536203718372}
+  - component: {fileID: 7459101954792626313}
   m_Layer: 5
   m_Name: FistPumpButton
   m_TagString: Untagged
@@ -2442,6 +2473,20 @@ Animator:
   m_HasTransformHierarchy: 1
   m_AllowConstantClipSamplingOptimization: 1
   m_KeepAnimatorControllerStateOnDisable: 0
+--- !u!114 &7459101954792626313
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3976618281351183969}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4bfd0d144b6d3dd438b84fa14a062c4f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  extraClickSound: 0
+  playHoverSound: 1
 --- !u!1 &4305308132892508061
 GameObject:
   m_ObjectHideFlags: 0
@@ -2454,6 +2499,7 @@ GameObject:
   - component: {fileID: 663222235591802679}
   - component: {fileID: 25081012869704405}
   - component: {fileID: 1163595592883164786}
+  - component: {fileID: 1524879787124684929}
   m_Layer: 5
   m_Name: ThrowMoney
   m_TagString: Untagged
@@ -2554,6 +2600,20 @@ Animator:
   m_HasTransformHierarchy: 1
   m_AllowConstantClipSamplingOptimization: 1
   m_KeepAnimatorControllerStateOnDisable: 0
+--- !u!114 &1524879787124684929
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4305308132892508061}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4bfd0d144b6d3dd438b84fa14a062c4f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  extraClickSound: 0
+  playHoverSound: 1
 --- !u!1 &4450369698054836543
 GameObject:
   m_ObjectHideFlags: 0
@@ -2640,6 +2700,7 @@ GameObject:
   - component: {fileID: 1104267520085762724}
   - component: {fileID: 8899024452345124865}
   - component: {fileID: 3292822135945279988}
+  - component: {fileID: 6197303189517542913}
   m_Layer: 5
   m_Name: WaveHandButton
   m_TagString: Untagged
@@ -2740,6 +2801,20 @@ Animator:
   m_HasTransformHierarchy: 1
   m_AllowConstantClipSamplingOptimization: 1
   m_KeepAnimatorControllerStateOnDisable: 0
+--- !u!114 &6197303189517542913
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4493361109717490464}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4bfd0d144b6d3dd438b84fa14a062c4f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  extraClickSound: 0
+  playHoverSound: 1
 --- !u!1 &4517195494760827405
 GameObject:
   m_ObjectHideFlags: 0
@@ -3755,6 +3830,7 @@ GameObject:
   - component: {fileID: 6259155763869372812}
   - component: {fileID: 6836242333474179246}
   - component: {fileID: 5079774866683632801}
+  - component: {fileID: 5055534140581702302}
   m_Layer: 5
   m_Name: Send Kiss
   m_TagString: Untagged
@@ -3855,6 +3931,20 @@ Animator:
   m_HasTransformHierarchy: 1
   m_AllowConstantClipSamplingOptimization: 1
   m_KeepAnimatorControllerStateOnDisable: 0
+--- !u!114 &5055534140581702302
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6408490469187445268}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4bfd0d144b6d3dd438b84fa14a062c4f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  extraClickSound: 0
+  playHoverSound: 1
 --- !u!1 &6444154813287309588
 GameObject:
   m_ObjectHideFlags: 0
@@ -4457,6 +4547,7 @@ GameObject:
   - component: {fileID: 6516097776908433022}
   - component: {fileID: 8496611908133421776}
   - component: {fileID: 4118555837419026667}
+  - component: {fileID: 1391261934004371947}
   m_Layer: 5
   m_Name: RaiseHandButton
   m_TagString: Untagged
@@ -4557,6 +4648,20 @@ Animator:
   m_HasTransformHierarchy: 1
   m_AllowConstantClipSamplingOptimization: 1
   m_KeepAnimatorControllerStateOnDisable: 0
+--- !u!114 &1391261934004371947
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7180080547580295838}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4bfd0d144b6d3dd438b84fa14a062c4f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  extraClickSound: 0
+  playHoverSound: 1
 --- !u!1 &7275356608294338032
 GameObject:
   m_ObjectHideFlags: 0
@@ -4905,6 +5010,7 @@ GameObject:
   - component: {fileID: 4327657274195754415}
   - component: {fileID: 7767993376052004405}
   - component: {fileID: 7286959071320628324}
+  - component: {fileID: 2307602491690722645}
   m_Layer: 5
   m_Name: Clap
   m_TagString: Untagged
@@ -5005,6 +5111,20 @@ Animator:
   m_HasTransformHierarchy: 1
   m_AllowConstantClipSamplingOptimization: 1
   m_KeepAnimatorControllerStateOnDisable: 0
+--- !u!114 &2307602491690722645
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8192546585518253487}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4bfd0d144b6d3dd438b84fa14a062c4f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  extraClickSound: 0
+  playHoverSound: 1
 --- !u!1 &8195206557192345169
 GameObject:
   m_ObjectHideFlags: 0

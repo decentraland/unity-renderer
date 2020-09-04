@@ -1,4 +1,4 @@
-﻿using UnityEngine;
+using UnityEngine;
 using UnityEngine.EventSystems;
 using System;
 
@@ -6,7 +6,7 @@ internal class GotoMagicButton : MonoBehaviour, IPointerEnterHandler, IPointerEx
 {
     [SerializeField] Animator buttonAnimator;
 
-    public event Action OnGotoMagicPressed;
+    public event Action OnGotoMagicPressed, OnGotoMagicPointerEnter, onGotoMagicPointerExit;
 
     void OnEnable()
     {
@@ -23,11 +23,15 @@ internal class GotoMagicButton : MonoBehaviour, IPointerEnterHandler, IPointerEx
     {
         buttonAnimator.ResetTrigger("Normal");
         buttonAnimator.SetTrigger("Highlighted");
+
+        OnGotoMagicPointerEnter?.Invoke();
     }
 
     void IPointerExitHandler.OnPointerExit(PointerEventData eventData)
     {
         buttonAnimator.ResetTrigger("Highlighted");
         buttonAnimator.SetTrigger("Normal");
+
+        onGotoMagicPointerExit?.Invoke();
     }
 }

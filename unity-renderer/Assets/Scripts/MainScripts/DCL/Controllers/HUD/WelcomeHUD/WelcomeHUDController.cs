@@ -54,14 +54,21 @@ public class WelcomeHUDController : IHUD
 
     public void SetVisibility(bool visible)
     {
+        HUDAudioPlayer.Sound soundToPlay;
+
         view.gameObject.SetActive(visible);
         if (visible)
         {
             Utils.UnlockCursor();
+            soundToPlay = HUDAudioPlayer.Sound.dialogAppear;
         }
         else
         {
             Utils.LockCursor();
+            soundToPlay = HUDAudioPlayer.Sound.dialogClose;
         }
+
+        if (HUDAudioPlayer.i != null)
+            HUDAudioPlayer.i.Play(soundToPlay);
     }
 }

@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using DCL;
 using TMPro;
@@ -91,6 +91,9 @@ public class ItemToggle : UIButton, IPointerEnterHandler, IPointerExitHandler
             Destroy(thumbnail.sprite);
 
         thumbnail.sprite = ThumbnailsManager.CreateSpriteFromTexture(texture.texture);
+
+        if (HUDAudioPlayer.i != null)
+            HUDAudioPlayer.i.Play(HUDAudioPlayer.Sound.listItemAppear);
     }
 
     private void OnEnable()

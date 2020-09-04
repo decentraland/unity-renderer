@@ -107,6 +107,9 @@ namespace DCL
 
                 // Center map
                 MapRenderer.i.atlas.CenterToTile(Utils.WorldToGridPositionUnclamped(CommonScriptableObjects.playerWorldPosition));
+
+                if (HUDAudioPlayer.i != null)
+                    HUDAudioPlayer.i.Play(HUDAudioPlayer.Sound.dialogAppear);
             }
             else
             {
@@ -125,6 +128,9 @@ namespace DCL
                 (MapRenderer.i.atlas.overlayLayerGameobject.transform as RectTransform).anchoredPosition = Vector2.zero;
 
                 MapRenderer.i.UpdateRendering(Utils.WorldToGridPositionUnclamped(CommonScriptableObjects.playerWorldPosition.Get()));
+
+                if (HUDAudioPlayer.i != null)
+                    HUDAudioPlayer.i.Play(HUDAudioPlayer.Sound.dialogClose);
             }
         }
 

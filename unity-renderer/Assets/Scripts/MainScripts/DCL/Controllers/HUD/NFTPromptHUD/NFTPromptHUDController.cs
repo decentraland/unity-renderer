@@ -1,4 +1,4 @@
-﻿using DCL;
+using DCL;
 using UnityEngine;
 
 public class NFTPromptHUDController : IHUD
@@ -26,6 +26,9 @@ public class NFTPromptHUDController : IHUD
     public void SetVisibility(bool visible)
     {
         view.content.SetActive(visible);
+
+        if (HUDAudioPlayer.i != null && visible)
+            HUDAudioPlayer.i.Play(HUDAudioPlayer.Sound.dialogAppear);
     }
 
     public void Dispose()

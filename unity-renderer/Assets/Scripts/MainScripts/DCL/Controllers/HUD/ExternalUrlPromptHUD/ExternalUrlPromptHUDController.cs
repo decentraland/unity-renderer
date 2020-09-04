@@ -1,4 +1,4 @@
-﻿using DCL;
+using DCL;
 using DCL.Controllers;
 using UnityEngine;
 using System;
@@ -24,10 +24,15 @@ public class ExternalUrlPromptHUDController : IHUD
 
     public void SetVisibility(bool visible)
     {
+        view.gameObject.SetActive(visible);
+
         if (visible)
         {
             view.content.SetActive(true);
             view.showHideAnimator.Show();
+
+            if (HUDAudioPlayer.i != null)
+                HUDAudioPlayer.i.Play(HUDAudioPlayer.Sound.dialogAppear);
         }
         else
         {
