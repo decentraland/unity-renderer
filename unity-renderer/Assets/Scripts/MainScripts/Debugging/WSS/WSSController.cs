@@ -424,6 +424,9 @@ namespace DCL
                             case "UpdateHotScenesList":
                                 HotScenesController.i.UpdateHotScenesList(msg.payload);
                                 break;
+                            case "UpdateBalanceOfMANA":
+                                HUDController.i.UpdateBalanceOfMANA(msg.payload);
+                                break;
                             default:
                                 Debug.Log(
                                     "<b><color=#FF0000>WSSController:</color></b> received an unknown message from kernel to renderer: " +

@@ -66,6 +66,8 @@ public class HUDController : MonoBehaviour
 
     public ExploreHUDController exploreHud => GetHUDElement(HUDElementID.EXPLORE_HUD) as ExploreHUDController;
 
+    public ManaHUDController manaHud => GetHUDElement(HUDElementID.MANA_HUD) as ManaHUDController;
+
     public Dictionary<HUDElementID, IHUD> hudElements { get; private set; } = new Dictionary<HUDElementID, IHUD>();
 
     private UserProfile ownUserProfile => UserProfile.GetOwnUserProfile();
@@ -127,7 +129,8 @@ public class HUDController : MonoBehaviour
         CONTROLS_HUD = 18,
         EMAIL_PROMPT = 19,
         EXPLORE_HUD = 20,
-        COUNT = 21
+        MANA_HUD = 21,
+        COUNT = 22
     }
 
     [System.Serializable]
@@ -309,6 +312,9 @@ public class HUDController : MonoBehaviour
                     exploreHud.Initialize(FriendsController.i);
                 }
                 break;
+            case HUDElementID.MANA_HUD:
+                CreateHudElement<ManaHUDController>(configuration, hudElementId);
+                break;
         }
 
         var hudElement = GetHUDElement(hudElementId);
@@ -400,6 +406,11 @@ public class HUDController : MonoBehaviour
     public void RequestTeleport(string teleportDataJson)
     {
         teleportHud?.RequestTeleport(teleportDataJson);
+    }
+
+    public void UpdateBalanceOfMANA(string balance)
+    {
+        manaHud?.SetBalance(balance);
     }
 
     private void OnDestroy()
