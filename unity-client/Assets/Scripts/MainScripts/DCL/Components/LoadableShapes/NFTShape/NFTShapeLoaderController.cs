@@ -30,12 +30,8 @@ public class NFTShapeLoaderController : MonoBehaviour
     public event System.Action OnLoadingAssetSuccess;
     public event System.Action OnLoadingAssetFail;
 
-    [Header("Material Indexes")]
     [SerializeField]
-    int materialIndex_Background = -1;
-
-    [SerializeField] int materialIndex_NFTImage = -1;
-    [SerializeField] int materialIndex_Frame = -1;
+    NFTShapeMaterial[] materials;
 
     [Header("Noise Shader")]
     [SerializeField]
@@ -50,9 +46,9 @@ public class NFTShapeLoaderController : MonoBehaviour
     string darURLRegistry;
     string darURLAsset;
 
-    Material frameMaterial = null;
-    Material imageMaterial = null;
-    Material backgroundMaterial = null;
+    public Material frameMaterial { private set; get; } = null;
+    public Material imageMaterial { private set; get; } = null;
+    public Material backgroundMaterial { private set; get; } = null;
 
     int BASEMAP_SHADER_PROPERTY = Shader.PropertyToID("_BaseMap");
     int COLOR_SHADER_PROPERTY = Shader.PropertyToID("_BaseColor");
@@ -64,9 +60,26 @@ public class NFTShapeLoaderController : MonoBehaviour
 
     void Awake()
     {
-        if (materialIndex_NFTImage >= 0) imageMaterial = meshRenderer.materials[materialIndex_NFTImage];
-        if (materialIndex_Background >= 0) backgroundMaterial = meshRenderer.materials[materialIndex_Background];
-        if (materialIndex_Frame >= 0) frameMaterial = meshRenderer.materials[materialIndex_Frame];
+        Material[] meshMaterials = new Material[materials.Length];
+        for (int i = 0; i < materials.Length; i++)
+        {
+            switch (materials[i].type)
+            {
+                case NFTShapeMaterial.MaterialType.BACKGROUND:
+                    backgroundMaterial = new Material(materials[i].material);
+                    meshMaterials[i] = backgroundMaterial;
+                    break;
+                case NFTShapeMaterial.MaterialType.FRAME:
+                    frameMaterial = materials[i].material;
+                    meshMaterials[i] = frameMaterial;
+                    break;
+                case NFTShapeMaterial.MaterialType.IMAGE:
+                    imageMaterial = new Material(materials[i].material);
+                    meshMaterials[i] = imageMaterial;
+                    break;
+            }
+        }
+        meshRenderer.materials = meshMaterials;
 
         // NOTE: we use half scale to keep backward compatibility cause we are using 512px to normalize the scale with a 256px value that comes from the images
         meshRenderer.transform.localScale = new Vector3(0.5f, 0.5f, 1);
@@ -285,6 +298,15 @@ public class NFTShapeLoaderController : MonoBehaviour
         else
         {
             nftAsset?.Dispose();
+        }
+
+        if (backgroundMaterial != null)
+        {
+            Object.Destroy(backgroundMaterial);
+        }
+        if (imageMaterial != null)
+        {
+            Object.Destroy(imageMaterial);
         }
     }
 }

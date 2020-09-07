@@ -34,7 +34,7 @@ public class NFTShape_Tests : TestsBase
 
         var nftShape = LoadableShape.GetLoaderForEntity(entity) as LoadWrapper_NFT;
 
-        var backgroundMaterial = nftShape.loaderController.meshRenderer.materials[1];
+        var backgroundMaterial = nftShape.loaderController.backgroundMaterial;
 
         Assert.IsTrue(backgroundMaterial.GetColor("_BaseColor") == new Color(0.6404918f, 0.611472f, 0.8584906f), "The NFT frame background color should be the default one");
 
