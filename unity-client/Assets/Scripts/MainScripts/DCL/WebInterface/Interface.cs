@@ -968,5 +968,10 @@ namespace DCL.Interface
             analyticsEvent.properties = eventProperties;
             SendMessage("Track", analyticsEvent);
         }
+
+        public static void FetchBalanceOfMANA()
+        {
+            SendMessage("FetchBalanceOfMANA");
+        }
     }
 }

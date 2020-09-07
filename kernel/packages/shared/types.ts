@@ -400,7 +400,8 @@ export enum HUDElementID {
   TELEPORT_DIALOG = 17,
   CONTROLS_HUD = 18,
   EMAIL_PROMPT = 19,
-  EXPLORE_HUD = 20
+  EXPLORE_HUD = 20,
+  MANA_HUD = 21
 }
 
 export type HUDConfiguration = {
