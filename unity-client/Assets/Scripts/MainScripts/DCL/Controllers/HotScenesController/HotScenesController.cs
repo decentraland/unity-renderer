@@ -3,8 +3,6 @@ using System.Collections.Generic;
 using DCL.Helpers;
 using UnityEngine;
 
-[assembly: System.Runtime.CompilerServices.InternalsVisibleTo("HotScenesControllerTests")]
-
 public class HotScenesController : MonoBehaviour
 {
     public static HotScenesController i { get; private set; }
