@@ -1,4 +1,5 @@
-using System;
+﻿using System;
+using DCL;
 using DCL.Helpers;
 using UnityEngine;
 using UnityEngine.Networking;
@@ -6,25 +7,28 @@ using UnityEngine.UI;
 
 internal class BaseCellView : MonoBehaviour
 {
-    [SerializeField] Image thumbnailImage;
+    [SerializeField] RawImageFillParent thumbnailImage;
     [SerializeField] GameObject loadingSpinner;
     [SerializeField] Sprite errorThumbnail;
 
-    public event Action<Sprite> OnThumbnailFetched;
+    public event Action<Texture2D> OnThumbnailSet;
 
     UnityWebRequest thumbnailRequest = null;
     Texture2D thumbnailTexture;
-    Sprite thumbnail;
 
-    public void FetchThumbnail(string url)
+    public void FetchThumbnail(string url, Action onFetchFail)
     {
-        if (thumbnail)
+        if (thumbnailTexture != null)
         {
-            OnThumbnailFetched?.Invoke(thumbnail);
+            OnThumbnailSet?.Invoke(thumbnailTexture);
+        }
+        else if (string.IsNullOrEmpty(url))
+        {
+            onFetchFail?.Invoke();
         }
         else if (thumbnailRequest == null)
         {
-            thumbnailImage.sprite = null;
+            thumbnailImage.texture = null;
 
             thumbnailRequest = UnityWebRequestTexture.GetTexture(url);
             UnityWebRequestAsyncOperation op = thumbnailRequest.SendWebRequest();
@@ -33,40 +37,39 @@ internal class BaseCellView : MonoBehaviour
                 if (thumbnailRequest == null)
                     return;
 
-                if (thumbnailRequest.WebRequestSucceded())
+                bool success = thumbnailRequest.WebRequestSucceded();
+                if (success)
                 {
                     thumbnailTexture = ((DownloadHandlerTexture)thumbnailRequest.downloadHandler).texture;
-                    thumbnailTexture.Compress(false);
-                    thumbnail = Sprite.Create(thumbnailTexture, new Rect(0, 0, thumbnailTexture.width, thumbnailTexture.height), Vector2.zero);
+                    thumbnailTexture.Compress(true);
+                    SetThumbnail(thumbnailTexture);
                 }
-                else
-                {
-                    Debug.Log($"Error downloading: {url} {thumbnailRequest.error}");
-                    thumbnail = errorThumbnail;
-                }
-
-                thumbnailImage.sprite = thumbnail;
-                loadingSpinner.SetActive(false);
 
                 thumbnailRequest.Dispose();
                 thumbnailRequest = null;
 
-                if (HUDAudioPlayer.i != null)
-                    HUDAudioPlayer.i.Play(HUDAudioPlayer.Sound.listItemAppear);
-
-                OnThumbnailFetched?.Invoke(thumbnail);
+                if (!success)
+                {
+                    Debug.Log($"Error downloading: {url}");
+                    onFetchFail?.Invoke();
+                }
             };
         }
     }
 
-    public Sprite GetThumbnail()
+    public void SetDefaultThumbnail()
     {
-        return thumbnail;
+        SetThumbnail(errorThumbnail.texture);
+    }
+
+    public Texture2D GetThumbnail()
+    {
+        return thumbnailTexture;
     }
 
     protected virtual void OnEnable()
     {
-        if (thumbnail == null)
+        if (thumbnailTexture == null)
         {
             loadingSpinner.SetActive(true);
         }
@@ -85,5 +88,16 @@ internal class BaseCellView : MonoBehaviour
             thumbnailRequest.Dispose();
             thumbnailRequest = null;
         }
+    }
+
+    private void SetThumbnail(Texture2D textureToSet)
+    {
+        thumbnailTexture = textureToSet;
+        thumbnailImage.texture = textureToSet;
+        loadingSpinner.SetActive(false);
+        OnThumbnailSet?.Invoke(textureToSet);
+
+        if (HUDAudioPlayer.i != null)
+            HUDAudioPlayer.i.Play(HUDAudioPlayer.Sound.listItemAppear);
     }
 }

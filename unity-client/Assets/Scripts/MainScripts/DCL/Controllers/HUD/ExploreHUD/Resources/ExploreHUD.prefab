@@ -2950,36 +2950,6 @@ PrefabInstance:
       propertyPath: m_SizeDelta.y
       value: 0
       objectReference: {fileID: 0}
-    - target: {fileID: 4729517059036391380, guid: 8c341d082edd745b38c0660bd79d9d90,
-        type: 3}
-      propertyPath: m_Colors.m_HighlightedColor.r
-      value: 0.9245283
-      objectReference: {fileID: 0}
-    - target: {fileID: 4729517059036391380, guid: 8c341d082edd745b38c0660bd79d9d90,
-        type: 3}
-      propertyPath: m_Colors.m_HighlightedColor.g
-      value: 0.9245283
-      objectReference: {fileID: 0}
-    - target: {fileID: 4729517059036391380, guid: 8c341d082edd745b38c0660bd79d9d90,
-        type: 3}
-      propertyPath: m_Colors.m_HighlightedColor.b
-      value: 0.9245283
-      objectReference: {fileID: 0}
-    - target: {fileID: 4729517059036391380, guid: 8c341d082edd745b38c0660bd79d9d90,
-        type: 3}
-      propertyPath: m_Colors.m_PressedColor.r
-      value: 0.8396226
-      objectReference: {fileID: 0}
-    - target: {fileID: 4729517059036391380, guid: 8c341d082edd745b38c0660bd79d9d90,
-        type: 3}
-      propertyPath: m_Colors.m_PressedColor.g
-      value: 0.8396226
-      objectReference: {fileID: 0}
-    - target: {fileID: 4729517059036391380, guid: 8c341d082edd745b38c0660bd79d9d90,
-        type: 3}
-      propertyPath: m_Colors.m_PressedColor.b
-      value: 0.8396226
-      objectReference: {fileID: 0}
     - target: {fileID: 4897974716751563586, guid: 8c341d082edd745b38c0660bd79d9d90,
         type: 3}
       propertyPath: m_AnchorMin.y
@@ -3062,6 +3032,12 @@ PrefabInstance:
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 8c341d082edd745b38c0660bd79d9d90, type: 3}
+--- !u!224 &7200663236103274479 stripped
+RectTransform:
+  m_CorrespondingSourceObject: {fileID: 435786120713324302, guid: 8c341d082edd745b38c0660bd79d9d90,
+    type: 3}
+  m_PrefabInstance: {fileID: 7341390919130659041}
+  m_PrefabAsset: {fileID: 0}
 --- !u!114 &3567024299439535546 stripped
 MonoBehaviour:
   m_CorrespondingSourceObject: {fileID: 6080213086932307291, guid: 8c341d082edd745b38c0660bd79d9d90,
@@ -3074,9 +3050,3 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3b23c3670bc8d473586ab5f11cab4947, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
---- !u!224 &7200663236103274479 stripped
-RectTransform:
-  m_CorrespondingSourceObject: {fileID: 435786120713324302, guid: 8c341d082edd745b38c0660bd79d9d90,
-    type: 3}
-  m_PrefabInstance: {fileID: 7341390919130659041}
-  m_PrefabAsset: {fileID: 0}

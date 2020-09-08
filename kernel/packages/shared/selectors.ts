@@ -106,3 +106,17 @@ export function getSceneNameFromJsonData(jsonData?: SceneJsonData) {
 
   return title || 'Unnamed'
 }
+
+export function getThumbnailUrlFromJsonData(jsonData?: SceneJsonData): string | undefined {
+  if (!jsonData) {
+    return undefined
+  }
+
+  const thumbnailUrl =
+    jsonData.display?.navmapThumbnail ??
+    (jsonData.source?.projectId
+      ? `https://builder-api.decentraland.org/v1/projects/${jsonData.source.projectId}/media/preview.png`
+      : undefined)
+
+  return thumbnailUrl
+}
