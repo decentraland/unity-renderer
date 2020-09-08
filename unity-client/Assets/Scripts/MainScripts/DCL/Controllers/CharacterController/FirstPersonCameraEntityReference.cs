@@ -1,10 +1,18 @@
 using UnityEngine;
 
-public class PlayerEntityReference : MonoBehaviour
-{             
+public class FirstPersonCameraEntityReference : MonoBehaviour
+{
+
+    public Transform cameraPosition;
 
     private void Awake()
-    {        
+    {
+        // Assign the camera position to the game object
+        if (cameraPosition != null)
+        {
+            transform.position = cameraPosition.position;
+        }
+
         // Listen to changes on the camera mode
         CommonScriptableObjects.cameraMode.OnChange += OnCameraModeChange;
         

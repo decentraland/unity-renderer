@@ -8,7 +8,7 @@ followTheCamera.addComponent(new Transform({
   scale: new Vector3(0.5, 0.5, 2)
 }))
 engine.addEntity(followTheCamera)
-followTheCamera.setParent(Attachable.PLAYER)
+followTheCamera.setParent(Attachable.FIRST_PERSON_CAMERA)
 
 // This entity will follow the avatar, and remain unaffected by the camera rotation
 const followAvatar = new Entity()
@@ -23,7 +23,7 @@ material.metallic = 0.2
 material.roughness = 1.0
 followAvatar.addComponent(material)
 engine.addEntity(followAvatar)
-followAvatar.setParent(Attachable.AVATAR_POSITION)
+followAvatar.setParent(Attachable.AVATAR)
 
 
 

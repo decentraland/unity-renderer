@@ -22,7 +22,7 @@ export interface ISystem {
  */
 export interface IEngine {
   rootEntity: IEntity
-  readonly playerEntity: IEntity
+  readonly firstPersonCameraEntity: IEntity
   readonly avatarEntity: IEntity
   readonly entities: Readonly<Record<string, IEntity>>
 

@@ -469,27 +469,32 @@ namespace DCL.Controllers
 
             if (me != null)
             {
-                if (parentId == "PlayerEntityReference")
+                if (parentId == "FirstPersonCameraEntityReference")
                 {
-                    me.SetParent(DCLCharacterController.i.playerReference);
+                    // In this case, the entity will attached to the first person camera
+                    // On first person mode, the entity will rotate with the camera. On third person mode, the entity will rotate with the avatar
+                    me.SetParent(DCLCharacterController.i.firstPersonCameraReference);
                     SceneController.i.boundariesChecker.AddPersistent(me);
                     SceneController.i.physicsSyncController.MarkDirty();
                 }
-                else if (parentId == "AvatarPositionEntityReference")
+                else if (parentId == "AvatarEntityReference")
                 {
-                    me.SetParent(DCLCharacterController.i.avatarPositionReference);
+                    // In this case, the entity will be attached to the avatar
+                    // It will simply rotate with the avatar, regardless of where the camera is pointing
+                    me.SetParent(DCLCharacterController.i.avatarReference);
                     SceneController.i.boundariesChecker.AddPersistent(me);
                     SceneController.i.physicsSyncController.MarkDirty();
                 }
                 else
                 {
-                    if (me.parent == DCLCharacterController.i.playerReference || me.parent == DCLCharacterController.i.avatarPositionReference)
+                    if (me.parent == DCLCharacterController.i.firstPersonCameraReference || me.parent == DCLCharacterController.i.avatarReference)
                     {
                         SceneController.i.boundariesChecker.RemoveEntityToBeChecked(me);
                     }
 
                     if (parentId == "0")
                     {
+                        // The entity will be child of the scene directly
                         me.SetParent(null);
                         me.gameObject.transform.SetParent(gameObject.transform, false);
                         SceneController.i.physicsSyncController.MarkDirty();
@@ -717,144 +722,144 @@ namespace DCL.Controllers
 
             BaseDisposable newComponent = null;
 
-            switch ((CLASS_ID) classId)
+            switch ((CLASS_ID)classId)
             {
                 case CLASS_ID.BOX_SHAPE:
-                {
-                    newComponent = new BoxShape(this);
-                    break;
-                }
+                    {
+                        newComponent = new BoxShape(this);
+                        break;
+                    }
 
                 case CLASS_ID.SPHERE_SHAPE:
-                {
-                    newComponent = new SphereShape(this);
-                    break;
-                }
+                    {
+                        newComponent = new SphereShape(this);
+                        break;
+                    }
 
                 case CLASS_ID.CONE_SHAPE:
-                {
-                    newComponent = new ConeShape(this);
-                    break;
-                }
+                    {
+                        newComponent = new ConeShape(this);
+                        break;
+                    }
 
                 case CLASS_ID.CYLINDER_SHAPE:
-                {
-                    newComponent = new CylinderShape(this);
-                    break;
-                }
+                    {
+                        newComponent = new CylinderShape(this);
+                        break;
+                    }
 
                 case CLASS_ID.PLANE_SHAPE:
-                {
-                    newComponent = new PlaneShape(this);
-                    break;
-                }
+                    {
+                        newComponent = new PlaneShape(this);
+                        break;
+                    }
 
                 case CLASS_ID.GLTF_SHAPE:
-                {
-                    newComponent = new GLTFShape(this);
-                    break;
-                }
+                    {
+                        newComponent = new GLTFShape(this);
+                        break;
+                    }
 
                 case CLASS_ID.NFT_SHAPE:
-                {
-                    newComponent = new NFTShape(this);
-                    break;
-                }
+                    {
+                        newComponent = new NFTShape(this);
+                        break;
+                    }
 
                 case CLASS_ID.OBJ_SHAPE:
-                {
-                    newComponent = new OBJShape(this);
-                    break;
-                }
+                    {
+                        newComponent = new OBJShape(this);
+                        break;
+                    }
 
                 case CLASS_ID.BASIC_MATERIAL:
-                {
-                    newComponent = new BasicMaterial(this);
-                    break;
-                }
+                    {
+                        newComponent = new BasicMaterial(this);
+                        break;
+                    }
 
                 case CLASS_ID.PBR_MATERIAL:
-                {
-                    newComponent = new PBRMaterial(this);
-                    break;
-                }
+                    {
+                        newComponent = new PBRMaterial(this);
+                        break;
+                    }
 
                 case CLASS_ID.AUDIO_CLIP:
-                {
-                    newComponent = new DCLAudioClip(this);
-                    break;
-                }
+                    {
+                        newComponent = new DCLAudioClip(this);
+                        break;
+                    }
 
                 case CLASS_ID.TEXTURE:
-                {
-                    newComponent = new DCLTexture(this);
-                    break;
-                }
+                    {
+                        newComponent = new DCLTexture(this);
+                        break;
+                    }
 
                 case CLASS_ID.UI_INPUT_TEXT_SHAPE:
-                {
-                    newComponent = new UIInputText(this);
-                    break;
-                }
+                    {
+                        newComponent = new UIInputText(this);
+                        break;
+                    }
 
                 case CLASS_ID.UI_FULLSCREEN_SHAPE:
                 case CLASS_ID.UI_SCREEN_SPACE_SHAPE:
-                {
-                    if (uiScreenSpace == null)
                     {
-                        newComponent = new UIScreenSpace(this);
+                        if (uiScreenSpace == null)
+                        {
+                            newComponent = new UIScreenSpace(this);
+                        }
+
+                        break;
                     }
 
-                    break;
-                }
-
                 case CLASS_ID.UI_CONTAINER_RECT:
-                {
-                    newComponent = new UIContainerRect(this);
-                    break;
-                }
+                    {
+                        newComponent = new UIContainerRect(this);
+                        break;
+                    }
 
                 case CLASS_ID.UI_SLIDER_SHAPE:
-                {
-                    newComponent = new UIScrollRect(this);
-                    break;
-                }
+                    {
+                        newComponent = new UIScrollRect(this);
+                        break;
+                    }
 
                 case CLASS_ID.UI_CONTAINER_STACK:
-                {
-                    newComponent = new UIContainerStack(this);
-                    break;
-                }
+                    {
+                        newComponent = new UIContainerStack(this);
+                        break;
+                    }
 
                 case CLASS_ID.UI_IMAGE_SHAPE:
-                {
-                    newComponent = new UIImage(this);
-                    break;
-                }
+                    {
+                        newComponent = new UIImage(this);
+                        break;
+                    }
 
                 case CLASS_ID.UI_TEXT_SHAPE:
-                {
-                    newComponent = new UIText(this);
-                    break;
-                }
+                    {
+                        newComponent = new UIText(this);
+                        break;
+                    }
 
                 case CLASS_ID.VIDEO_CLIP:
-                {
-                    newComponent = new DCLVideoClip(this);
-                    break;
-                }
+                    {
+                        newComponent = new DCLVideoClip(this);
+                        break;
+                    }
 
                 case CLASS_ID.VIDEO_TEXTURE:
-                {
-                    newComponent = new DCLVideoTexture(this);
-                    break;
-                }
+                    {
+                        newComponent = new DCLVideoTexture(this);
+                        break;
+                    }
 
                 case CLASS_ID.FONT:
-                {
-                    newComponent = new DCLFont(this);
-                    break;
-                }
+                    {
+                        newComponent = new DCLFont(this);
+                        break;
+                    }
 
                 default:
                     Debug.LogError($"Unknown classId");
