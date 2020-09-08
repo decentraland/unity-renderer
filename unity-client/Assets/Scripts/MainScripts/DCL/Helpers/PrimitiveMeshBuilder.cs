@@ -30,13 +30,13 @@ namespace DCL.Helpers
             vertices[0] = Vector3.up * radius;
             for (int lat = 0; lat < nbLat; lat++)
             {
-                float a1 = _pi * (float)(lat + 1) / (nbLat + 1);
+                float a1 = _pi * (float) (lat + 1) / (nbLat + 1);
                 float sin1 = Mathf.Sin(a1);
                 float cos1 = Mathf.Cos(a1);
 
                 for (int lon = 0; lon <= nbLong; lon++)
                 {
-                    float a2 = _2pi * (float)(lon == nbLong ? 0 : lon) / nbLong;
+                    float a2 = _2pi * (float) (lon == nbLong ? 0 : lon) / nbLong;
                     float sin2 = Mathf.Sin(a2);
                     float cos2 = Mathf.Cos(a2);
 
@@ -68,7 +68,7 @@ namespace DCL.Helpers
                 for (int lon = 0; lon <= nbLong; lon++)
                 {
                     uvs[lon + lat * (nbLong + 1) + 1] =
-                        new Vector2(1f - (float)lon / nbLong, (float)(lat + 1) / (nbLat + 1));
+                        new Vector2(1f - (float) lon / nbLong, (float) (lat + 1) / (nbLat + 1));
                 }
             }
             //uvs[lon + lat * (nbLong + 1) + 1] = new Vector2( (float)lon / nbLong, 1f - (float)(lat+1) / (nbLat+1) );
@@ -163,15 +163,15 @@ namespace DCL.Helpers
             uvs[vIndex++] = new Vector2(0f, 0f);
 
             vIndex = 0;
-            normals[vIndex++] = Vector3.back;
-            normals[vIndex++] = Vector3.back;
-            normals[vIndex++] = Vector3.back;
-            normals[vIndex++] = Vector3.back;
+            normals[vIndex++] = Vector3.forward;
+            normals[vIndex++] = Vector3.forward;
+            normals[vIndex++] = Vector3.forward;
+            normals[vIndex++] = Vector3.forward;
 
-            normals[vIndex++] = Vector3.forward;
-            normals[vIndex++] = Vector3.forward;
-            normals[vIndex++] = Vector3.forward;
-            normals[vIndex++] = Vector3.forward;
+            normals[vIndex++] = Vector3.back;
+            normals[vIndex++] = Vector3.back;
+            normals[vIndex++] = Vector3.back;
+            normals[vIndex++] = Vector3.back;
 
             vIndex = 0;
             colors[vIndex++] = Color.white;
