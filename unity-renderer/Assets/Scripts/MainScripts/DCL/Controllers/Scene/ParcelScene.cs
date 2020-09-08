@@ -469,7 +469,7 @@ namespace DCL.Controllers
 
             if (me != null)
             {
-                if (parentId == "FirstPersonCameraEntityReference")
+                if (parentId == "FirstPersonCameraEntityReference" || parentId == "PlayerEntityReference") // PlayerEntityReference is for compatibility purposes
                 {
                     // In this case, the entity will attached to the first person camera
                     // On first person mode, the entity will rotate with the camera. On third person mode, the entity will rotate with the avatar
@@ -477,7 +477,7 @@ namespace DCL.Controllers
                     SceneController.i.boundariesChecker.AddPersistent(me);
                     SceneController.i.physicsSyncController.MarkDirty();
                 }
-                else if (parentId == "AvatarEntityReference")
+                else if (parentId == "AvatarEntityReference" || parentId == "AvatarPositionEntityReference") // AvatarPositionEntityReference is for compatibility purposes
                 {
                     // In this case, the entity will be attached to the avatar
                     // It will simply rotate with the avatar, regardless of where the camera is pointing
