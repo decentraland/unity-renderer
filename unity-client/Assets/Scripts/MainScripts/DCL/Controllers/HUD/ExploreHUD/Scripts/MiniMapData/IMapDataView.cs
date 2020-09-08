@@ -1,4 +1,4 @@
-﻿using UnityEngine;
+using UnityEngine;
 
 internal interface IMapDataView
 {

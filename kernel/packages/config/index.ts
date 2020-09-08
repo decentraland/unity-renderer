@@ -141,6 +141,7 @@ export const FORCE_SEND_MESSAGE = location.search.indexOf('FORCE_SEND_MESSAGE') 
 
 export const ENABLE_EXPLORE_HUD = location.search.indexOf('ENABLE_EXPLORE_HUD') !== -1
 export const ENABLE_MANA_HUD = location.search.indexOf('ENABLE_MANA_HUD') !== -1
+export const ENABLE_NEW_TASKBAR = location.search.indexOf('ENABLE_NEW_TASKBAR') !== -1 /* NOTE(Santi): This is temporal, until we remove the old taskbar */
 
 export const PIN_CATALYST = qs.PIN_CATALYST
 

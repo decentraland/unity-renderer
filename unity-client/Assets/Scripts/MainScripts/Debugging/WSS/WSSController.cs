@@ -427,6 +427,9 @@ namespace DCL
                             case "UpdateBalanceOfMANA":
                                 HUDController.i.UpdateBalanceOfMANA(msg.payload);
                                 break;
+                            case "EnableNewTaskbar":
+                                HUDController.i.EnableNewTaskbar(); // NOTE(Santi): This is temporal, until we remove the old taskbar
+                                break;
                             default:
                                 Debug.Log(
                                     "<b><color=#FF0000>WSSController:</color></b> received an unknown message from kernel to renderer: " +

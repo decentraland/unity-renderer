@@ -185,6 +185,11 @@ export class UnityInterface {
     this.gameInstance.SendMessage('SceneController', 'ShowFPSPanel')
   }
 
+  /* NOTE(Santi): This is temporal, until we remove the old taskbar */
+  public EnableNewTaskbar() {
+    this.gameInstance.SendMessage('HUDController', 'EnableNewTaskbar')
+  }
+
   public HideFPSPanel() {
     this.gameInstance.SendMessage('SceneController', 'HideFPSPanel')
   }
