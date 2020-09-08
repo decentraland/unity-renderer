@@ -5,7 +5,7 @@ using UnityEngine;
 using UnityEngine.TestTools;
 using UnityEngine.UI;
 
-namespace Tests
+namespace Legacy.Tests
 {
     public class AvatarHUDTests : TestsBase
     {
