@@ -23,7 +23,7 @@ public class HUDController : MonoBehaviour
         toggleUIVisibilityTrigger.OnTriggered += ToggleUIVisibility_OnTriggered;
     }
 
-    public AvatarHUDController avatarHud => GetHUDElement(HUDElementID.AVATAR) as AvatarHUDController;
+    public Legacy.AvatarHUDController avatarHud_Legacy => GetHUDElement(HUDElementID.AVATAR) as Legacy.AvatarHUDController;
 
     public NotificationHUDController notificationHud =>
         GetHUDElement(HUDElementID.NOTIFICATION) as NotificationHUDController;
@@ -173,14 +173,14 @@ public class HUDController : MonoBehaviour
                 CreateHudElement<MinimapHUDController>(configuration, hudElementId);
                 break;
             case HUDElementID.AVATAR:
-                CreateHudElement<AvatarHUDController>(configuration, hudElementId);
+                CreateHudElement<Legacy.AvatarHUDController>(configuration, hudElementId);
 
-                if (avatarHud != null)
+                if (avatarHud_Legacy != null)
                 {
-                    avatarHud.Initialize();
-                    avatarHud.OnEditAvatarPressed += ShowAvatarEditor;
-                    avatarHud.OnSettingsPressed += ShowSettings;
-                    avatarHud.OnControlsPressed += ShowControls;
+                    avatarHud_Legacy.Initialize();
+                    avatarHud_Legacy.OnEditAvatarPressed += ShowAvatarEditor;
+                    avatarHud_Legacy.OnSettingsPressed += ShowSettings;
+                    avatarHud_Legacy.OnControlsPressed += ShowControls;
                     ownUserProfile.OnUpdate += OwnUserProfileUpdated;
                     OwnUserProfileUpdated(ownUserProfile);
                 }
@@ -386,7 +386,7 @@ public class HUDController : MonoBehaviour
     {
         if (int.TryParse(wearableCountString, out int wearableCount))
         {
-            avatarHud.SetNewWearablesNotification(wearableCount);
+            avatarHud_Legacy.SetNewWearablesNotification(wearableCount);
         }
     }
 
@@ -409,7 +409,7 @@ public class HUDController : MonoBehaviour
 
     private void UpdateAvatarHUD()
     {
-        avatarHud?.UpdateData(new AvatarHUDModel()
+        avatarHud_Legacy?.UpdateData(new Legacy.AvatarHUDModel()
         {
             name = ownUserProfile.userName,
             mail = ownUserProfile.email,
@@ -439,11 +439,11 @@ public class HUDController : MonoBehaviour
         if (ownUserProfile != null)
             ownUserProfile.OnUpdate -= OwnUserProfileUpdated;
 
-        if (avatarHud != null)
+        if (avatarHud_Legacy != null)
         {
-            avatarHud.OnEditAvatarPressed -= ShowAvatarEditor;
-            avatarHud.OnSettingsPressed -= ShowSettings;
-            avatarHud.OnControlsPressed -= ShowControls;
+            avatarHud_Legacy.OnEditAvatarPressed -= ShowAvatarEditor;
+            avatarHud_Legacy.OnSettingsPressed -= ShowSettings;
+            avatarHud_Legacy.OnControlsPressed -= ShowControls;
         }
 
         if (worldChatWindowHud != null)
