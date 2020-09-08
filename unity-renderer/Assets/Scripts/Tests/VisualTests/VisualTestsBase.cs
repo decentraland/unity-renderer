@@ -17,6 +17,8 @@ public class VisualTestsBase : TestsBase
         yield return InitScene();
         yield return null;
 
+        SceneController.i.useBoundariesChecker = false;
+
         base.SetUp_Renderer();
 
         VisualTestHelpers.currentTestName = testName;
@@ -28,7 +30,7 @@ public class VisualTestsBase : TestsBase
         // Position character inside parcel (0,0)
         TestHelpers.SetCharacterPosition(new Vector3(0, 2f, 0f));
 
-        yield return new WaitForSeconds(2.0f);
+        yield return null;
     }
 
     protected override IEnumerator InitScene(bool usesWebServer = false, bool spawnCharController = true, bool spawnTestScene = true, bool spawnUIScene = true, bool debugMode = false, bool reloadUnityScene = true)
