@@ -143,19 +143,21 @@ public class HUDController : MonoBehaviour
     {
         public HUDElementID hudElementId;
         public HUDConfiguration configuration;
+        public string extraPayload;
     }
 
     public void ConfigureHUDElement(string payload)
     {
         ConfigureHUDElementMessage message = JsonUtility.FromJson<ConfigureHUDElementMessage>(payload);
 
-        HUDConfiguration configuration = message.configuration;
         HUDElementID id = message.hudElementId;
+        HUDConfiguration configuration = message.configuration;
+        string extraPayload = message.extraPayload;
 
-        ConfigureHUDElement(id, configuration);
+        ConfigureHUDElement(id, configuration, extraPayload);
     }
 
-    public void ConfigureHUDElement(HUDElementID hudElementId, HUDConfiguration configuration)
+    public void ConfigureHUDElement(HUDElementID hudElementId, HUDConfiguration configuration, string extraPayload = null)
     {
         //TODO(Brian): For now, the factory code is using this switch approach.
         //             In order to avoid the factory upkeep we can transform the IHUD elements
