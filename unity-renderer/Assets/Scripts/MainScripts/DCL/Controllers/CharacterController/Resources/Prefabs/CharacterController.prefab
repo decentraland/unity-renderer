@@ -294,7 +294,7 @@ GameObject:
   m_Component:
   - component: {fileID: 2958890434058661020}
   m_Layer: 0
-  m_Name: AvatarPositionEntityReference
+  m_Name: AvatarEntityReference
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -325,7 +325,7 @@ GameObject:
   - component: {fileID: 7578571033673015707}
   - component: {fileID: 8788203599366875970}
   m_Layer: 0
-  m_Name: PlayerEntityReference
+  m_Name: FirstPersonCameraEntityReference
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -354,9 +354,10 @@ MonoBehaviour:
   m_GameObject: {fileID: 6614764432315271185}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 9ba582ddc25eb45d6a166c32bda1d1c0, type: 3}
+  m_Script: {fileID: 11500000, guid: f65711f48a721474693e887857e982a3, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  cameraPosition: {fileID: 0}
 --- !u!1 &6922703132412175462
 GameObject:
   m_ObjectHideFlags: 0
@@ -419,7 +420,7 @@ MonoBehaviour:
   jumpAction: {fileID: 11400000, guid: 8eddef1fc072ec845aeb62f5e1041b52, type: 2}
   sprintAction: {fileID: 11400000, guid: 0cfb8d150b7d6934d856665cf924d01d, type: 2}
   moveVelocity: {x: 0, y: 0, z: 0}
-  avatarPositionReference:
+  avatarReference:
     scene: {fileID: 0}
     markedForCleanup: 0
     gameObject: {fileID: 0}
@@ -428,7 +429,7 @@ MonoBehaviour:
       renderers: []
       meshFilters: []
       colliders: []
-  playerReference:
+  firstPersonCameraReference:
     scene: {fileID: 0}
     markedForCleanup: 0
     gameObject: {fileID: 0}
@@ -437,8 +438,8 @@ MonoBehaviour:
       renderers: []
       meshFilters: []
       colliders: []
-  avatarPositionGameObject: {fileID: 4323503760844960451}
-  playerGameObject: {fileID: 6614764432315271185}
+  avatarGameObject: {fileID: 4323503760844960451}
+  firstPersonCameraGameObject: {fileID: 6614764432315271185}
   characterYAxis: {fileID: 11400000, guid: d1bc201cd2f5a1d4b8f721ccc29d2c0f, type: 2}
   characterXAxis: {fileID: 11400000, guid: 44c3c5f07adca334696adae7b81c1869, type: 2}
 --- !u!143 &113901082
