@@ -4,13 +4,28 @@ namespace DCL.SettingsHUD
     {
         public SettingsHUDView view { private set; get; }
 
+        public event System.Action OnClose;
+
         public SettingsHUDController()
         {
             view = SettingsHUDView.Create();
+
+            view.closeButton.onClick.AddListener(() =>
+            {
+                SetVisibility(false);
+            });
+
+            view.doneButton.onClick.AddListener(() =>
+            {
+                SetVisibility(false);
+            });
         }
 
         public void SetVisibility(bool visible)
         {
+            if (!visible && view.isOpen)
+                OnClose?.Invoke();
+
             view.SetVisibility(visible);
         }
 

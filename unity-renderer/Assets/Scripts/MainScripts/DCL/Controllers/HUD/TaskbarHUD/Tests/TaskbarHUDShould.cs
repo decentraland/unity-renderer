@@ -1,6 +1,9 @@
+using DCL.SettingsHUD;
+using DCL.HelpAndSupportHUD;
 using NUnit.Framework;
 using System.Collections;
 using UnityEngine;
+using AvatarShape_Tests;
 
 public class TaskbarHUDShould : TestsBase
 {
@@ -11,9 +14,14 @@ public class TaskbarHUDShould : TestsBase
     private ChatController_Mock chatController = new ChatController_Mock();
 
     private GameObject userProfileGO;
+    private UserProfile userProfile;
     private PrivateChatWindowHUDController privateChatController;
     private FriendsHUDController friendsHudController;
     private WorldChatWindowHUDController worldChatWindowController;
+    private SettingsHUDController settingsHudController;
+    private HelpAndSupportHUDController helpAndSupportHUDController;
+    private AvatarEditorHUDController avatarEditorHUDController;
+    private ExploreHUDController exploreHUDController;
 
     protected override bool justSceneSetUp => true;
 
@@ -30,13 +38,14 @@ public class TaskbarHUDShould : TestsBase
         ownProfile.UpdateData(ownProfileModel, false);
 
         userProfileGO = new GameObject();
-        userProfileGO.AddComponent<UserProfileController>();
+        userProfile = userProfileGO.AddComponent<UserProfileController>().ownUserProfile;
 
         controller = new TaskbarHUDController();
-        controller.Initialize(null, chatController, null);
+        controller.Initialize(null, chatController, null, true);
         view = controller.view;
 
         Assert.IsTrue(view != null, "Taskbar view is null?");
+        Assert.IsTrue(view.moreButton.gameObject.activeSelf, "More button is not actived?");
     }
 
     protected override IEnumerator TearDown()
@@ -46,6 +55,10 @@ public class TaskbarHUDShould : TestsBase
         privateChatController?.Dispose();
         worldChatWindowController?.Dispose();
         friendsHudController?.Dispose();
+        settingsHudController?.Dispose();
+        helpAndSupportHUDController?.Dispose();
+        avatarEditorHUDController?.Dispose();
+        exploreHUDController?.Dispose();
 
         controller.Dispose();
         UnityEngine.Object.Destroy(userProfileGO);
@@ -54,16 +67,75 @@ public class TaskbarHUDShould : TestsBase
     }
 
     [Test]
-    public void AddWindowsProperly()
+    public void AddWorldChatWindowProperly()
     {
         worldChatWindowController = new WorldChatWindowHUDController();
         worldChatWindowController.Initialize(null, null);
-
         controller.AddWorldChatWindow(worldChatWindowController);
 
-        Assert.IsTrue(worldChatWindowController.view.transform.parent == view.windowContainer,
+        Assert.IsTrue(worldChatWindowController.view.transform.parent == view.leftWindowContainer,
             "Chat window isn't inside taskbar window container!");
         Assert.IsTrue(worldChatWindowController.view.gameObject.activeSelf, "Chat window is disabled!");
+    }
+
+    [Test]
+    public void AddFriendWindowProperly()
+    {
+        friendsHudController = new FriendsHUDController();
+        friendsHudController.Initialize(null, null);
+        controller.AddFriendsWindow(friendsHudController);
+
+        Assert.IsTrue(friendsHudController.view.transform.parent == view.leftWindowContainer,
+            "Friends window isn't inside taskbar window container!");
+        Assert.IsTrue(friendsHudController.view.gameObject.activeSelf, "Friends window is disabled!");
+    }
+
+    [Test]
+    public void AddSettingsWindowProperly()
+    {
+        settingsHudController = new SettingsHUDController();
+        controller.AddSettingsWindow(settingsHudController);
+
+        Assert.IsTrue(settingsHudController.view.gameObject.activeSelf, "Settings window is disabled!");
+        Assert.IsTrue(view.separatorMark.activeSelf, "Separator mark is disabled!");
+    }
+
+    [Test]
+    public void AddHelpAndSupportWindowProperly()
+    {
+        helpAndSupportHUDController = new HelpAndSupportHUDController();
+        controller.AddHelpAndSupportWindow(helpAndSupportHUDController);
+
+        Assert.IsTrue(helpAndSupportHUDController.view.gameObject.activeSelf, "Help and Support window is disabled!");
+        Assert.IsTrue(view.separatorMark.activeSelf, "Separator mark is disabled!");
+    }
+
+    [Test]
+    public void AddBackpackWindowProperly()
+    {
+        avatarEditorHUDController = new AvatarEditorHUDController();
+        avatarEditorHUDController.Initialize(userProfile, AvatarTestHelpers.CreateTestCatalogLocal());
+        controller.AddBackpackWindow(avatarEditorHUDController);
+
+        Assert.IsTrue(avatarEditorHUDController.view.gameObject.activeSelf, "Backpack window is disabled!");
+    }
+
+    [Test]
+    public void AddExploreWindowProperly()
+    {
+        exploreHUDController = new ExploreHUDController();
+        exploreHUDController.Initialize(friendsController, false);
+        controller.AddExploreWindow(exploreHUDController);
+
+        Assert.IsTrue(exploreHUDController.view.gameObject.activeSelf, "Explore window is disabled!");
+    }
+
+    [Test]
+    public void AddControlsMoreButtonProperly()
+    {
+        controller.AddControlsMoreOption();
+
+        Assert.IsTrue(view.moreMenu.controlsButton.IsActive(), "Controls more button is disabled!");
     }
 
     [Test]
@@ -102,7 +174,7 @@ public class TaskbarHUDShould : TestsBase
 
         var buttonList = view.GetButtonList();
 
-        Assert.AreEqual(3, buttonList.Count, "Chat head is missing when receiving a private message?");
+        Assert.AreEqual(8, buttonList.Count, "Chat head is missing when receiving a private message?");
 
         Assert.IsFalse(view.chatButton.toggledOn);
         Assert.IsTrue(buttonList[2] is ChatHeadButton);
@@ -140,5 +212,25 @@ public class TaskbarHUDShould : TestsBase
         Assert.IsTrue(controller.worldChatWindowHud.view.gameObject.activeInHierarchy);
         Assert.IsFalse(controller.friendsHud.view.gameObject.activeInHierarchy);
         Assert.IsFalse(view.friendsButton.lineOnIndicator.isVisible);
+    }
+
+    [Test]
+    public void ToggleBarVisibilityProperly()
+    {
+        view.moreMenu.collapseBarButton.onClick.Invoke();
+
+        Assert.IsFalse(view.isBarVisible, "The bar should not be visible!");
+        Assert.IsFalse(view.moreMenu.collapseIcon.activeSelf, "The collapse icon should not be actived!");
+        Assert.IsFalse(view.moreMenu.collapseText.activeSelf, "The collapse text should not be actived!");
+        Assert.IsTrue(view.moreMenu.expandIcon.activeSelf, "The expand icon should be actived!");
+        Assert.IsTrue(view.moreMenu.expandText.activeSelf, "The expand text should be actived!");
+
+        view.moreMenu.collapseBarButton.onClick.Invoke();
+
+        Assert.IsTrue(view.isBarVisible, "The bar should be visible!");
+        Assert.IsTrue(view.moreMenu.collapseIcon.activeSelf, "The collapse icon should be actived!");
+        Assert.IsTrue(view.moreMenu.collapseText.activeSelf, "The collapse text should be actived!");
+        Assert.IsFalse(view.moreMenu.expandIcon.activeSelf, "The expand icon should not be actived!");
+        Assert.IsFalse(view.moreMenu.expandText.activeSelf, "The expand text should not be actived!");
     }
 }

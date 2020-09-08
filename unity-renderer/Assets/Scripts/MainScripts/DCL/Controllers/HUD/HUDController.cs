@@ -1,3 +1,4 @@
+using DCL.HelpAndSupportHUD;
 using DCL.SettingsHUD;
 using System.Collections.Generic;
 using UnityEngine;
@@ -12,6 +13,7 @@ public class HUDController : MonoBehaviour
     public static HUDController i { get; private set; }
 
     private InputAction_Trigger toggleUIVisibilityTrigger;
+    private bool newTaskbarIsEnabled = false; // NOTE(Santi): This is temporal, until we remove the old taskbar
 
     private void Awake()
     {
@@ -65,6 +67,8 @@ public class HUDController : MonoBehaviour
     public EmailPromptHUDController emailPromptHud => GetHUDElement(HUDElementID.EMAIL_PROMPT) as EmailPromptHUDController;
 
     public ExploreHUDController exploreHud => GetHUDElement(HUDElementID.EXPLORE_HUD) as ExploreHUDController;
+
+    public HelpAndSupportHUDController helpAndSupportHud => GetHUDElement(HUDElementID.HELP_AND_SUPPORT_HUD) as HelpAndSupportHUDController;
 
     public ManaHUDController manaHud => GetHUDElement(HUDElementID.MANA_HUD) as ManaHUDController;
 
@@ -130,7 +134,8 @@ public class HUDController : MonoBehaviour
         EMAIL_PROMPT = 19,
         EXPLORE_HUD = 20,
         MANA_HUD = 21,
-        COUNT = 22
+        HELP_AND_SUPPORT_HUD = 22,
+        COUNT = 23
     }
 
     [System.Serializable]
@@ -271,9 +276,12 @@ public class HUDController : MonoBehaviour
                     if (taskbarHud != null)
                     {
                         taskbarHud.Initialize(DCL.InitialSceneReferences.i?.mouseCatcher, ChatController.i,
-                            FriendsController.i);
+                            FriendsController.i, newTaskbarIsEnabled);
                         taskbarHud.OnAnyTaskbarButtonClicked -= TaskbarHud_onAnyTaskbarButtonClicked;
                         taskbarHud.OnAnyTaskbarButtonClicked += TaskbarHud_onAnyTaskbarButtonClicked;
+
+                        taskbarHud.AddSettingsWindow(settingsHud);
+                        taskbarHud.AddBackpackWindow(avatarEditorHud);
                     }
                 }
                 else
@@ -297,6 +305,7 @@ public class HUDController : MonoBehaviour
                 break;
             case HUDElementID.CONTROLS_HUD:
                 CreateHudElement<ControlsHUDController>(configuration, hudElementId);
+                taskbarHud?.AddControlsMoreOption();
                 break;
             case HUDElementID.EMAIL_PROMPT:
                 if (emailPromptHud == null)
@@ -309,11 +318,16 @@ public class HUDController : MonoBehaviour
                 CreateHudElement<ExploreHUDController>(configuration, hudElementId);
                 if (exploreHud != null)
                 {
-                    exploreHud.Initialize(FriendsController.i);
+                    exploreHud.Initialize(FriendsController.i, newTaskbarIsEnabled);
+                    taskbarHud?.AddExploreWindow(exploreHud);
                 }
                 break;
             case HUDElementID.MANA_HUD:
                 CreateHudElement<ManaHUDController>(configuration, hudElementId);
+                break;
+            case HUDElementID.HELP_AND_SUPPORT_HUD:
+                CreateHudElement<HelpAndSupportHUDController>(configuration, hudElementId);
+                taskbarHud?.AddHelpAndSupportWindow(helpAndSupportHud);
                 break;
         }
 
@@ -483,4 +497,10 @@ public class HUDController : MonoBehaviour
         Resources.Load<StringVariable>("CurrentPlayerInfoCardId").Set(newModel.userId);
     }
 #endif
+
+    // NOTE(Santi): This is temporal, until we remove the old taskbar
+    public void EnableNewTaskbar()
+    {
+        newTaskbarIsEnabled = true;
+    }
 }
