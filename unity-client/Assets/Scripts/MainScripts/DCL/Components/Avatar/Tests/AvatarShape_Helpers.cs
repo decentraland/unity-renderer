@@ -165,7 +165,7 @@ namespace AvatarShape_Tests
         {
         }
 
-        public BodyShapeController_Mock(WearableController original) : base(original)
+        public BodyShapeController_Mock(BodyShapeController original) : base(original)
         {
         }
 

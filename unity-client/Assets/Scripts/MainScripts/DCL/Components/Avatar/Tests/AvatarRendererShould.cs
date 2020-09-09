@@ -179,6 +179,49 @@ namespace AvatarShape_Tests
         [UnityTest]
         [Category("Explicit")]
         [Explicit("Test too slow")]
+        public IEnumerator ProcessHideListProperly_HeadHidden()
+        {
+            //Clean hides/replaces to avoid interferences
+            CleanWearableHidesAndReplaces(SUNGLASSES_ID);
+            CleanWearableHidesAndReplaces(BLUE_BANDANA_ID);
+            catalog.Get(SUNGLASSES_ID).hides = new [] { WearableLiterals.Misc.HEAD};
+
+            avatarModel.wearables = new List<string>() {SUNGLASSES_ID};
+
+            bool ready = false;
+            avatarRenderer.ApplyModel(avatarModel, () => ready = true, null);
+            yield return new DCL.WaitUntil(() => ready);
+
+            Assert.IsFalse(AvatarRenderer_Mock.GetBodyShapeController(avatarRenderer).headRenderer.enabled);
+            Assert.IsFalse(AvatarRenderer_Mock.GetBodyShapeController(avatarRenderer).eyebrowsRenderer.enabled);
+            Assert.IsFalse(AvatarRenderer_Mock.GetBodyShapeController(avatarRenderer).eyesRenderer.enabled);
+            Assert.IsFalse(AvatarRenderer_Mock.GetBodyShapeController(avatarRenderer).mouthRenderer.enabled);
+        }
+
+        [UnityTest]
+        [Category("Explicit")]
+        [Explicit("Test too slow")]
+        public IEnumerator ProcessHideListProperly_HeadShowing()
+        {
+            //Clean hides/replaces to avoid interferences
+            CleanWearableHidesAndReplaces(SUNGLASSES_ID);
+            CleanWearableHidesAndReplaces(BLUE_BANDANA_ID);
+
+            avatarModel.wearables = new List<string>() {SUNGLASSES_ID};
+
+            bool ready = false;
+            avatarRenderer.ApplyModel(avatarModel, () => ready = true, null);
+            yield return new DCL.WaitUntil(() => ready);
+
+            Assert.IsTrue(AvatarRenderer_Mock.GetBodyShapeController(avatarRenderer).headRenderer.enabled);
+            Assert.IsTrue(AvatarRenderer_Mock.GetBodyShapeController(avatarRenderer).eyebrowsRenderer.enabled);
+            Assert.IsTrue(AvatarRenderer_Mock.GetBodyShapeController(avatarRenderer).eyesRenderer.enabled);
+            Assert.IsTrue(AvatarRenderer_Mock.GetBodyShapeController(avatarRenderer).mouthRenderer.enabled);
+        }
+
+        [UnityTest]
+        [Category("Explicit")]
+        [Explicit("Test too slow")]
         [TestCase(null, ExpectedResult = null)]
         [TestCase("wave", ExpectedResult = null)]
         public IEnumerator ProcessExpression(string expressionId)
