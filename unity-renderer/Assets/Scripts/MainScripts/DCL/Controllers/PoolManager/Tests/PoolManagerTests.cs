@@ -21,6 +21,13 @@ namespace Tests
             }
         }
 
+        [Test]
+        public void PoolManagerShouldHandleNullArgsGracefully()
+        {
+            var thisShouldBeNull = PoolManager.i.GetPoolable(null);
+            Assert.IsTrue(thisShouldBeNull == null);
+        }
+
         [UnityTest]
         public IEnumerator PooledGameObjectDestroyed()
         {

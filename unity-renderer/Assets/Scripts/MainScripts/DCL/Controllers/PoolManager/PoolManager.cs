@@ -30,6 +30,9 @@ namespace DCL
 
         public PoolableObject GetPoolable(GameObject gameObject)
         {
+            if (gameObject == null)
+                return null;
+
             if (poolables.ContainsKey(gameObject))
             {
                 return poolables[gameObject];
