@@ -3,32 +3,33 @@ using UnityEngine.EventSystems;
 
 public class GeneralHUDElementAudioHandler : MonoBehaviour, IPointerEnterHandler, IPointerDownHandler, IPointerUpHandler
 {
-    HUDAudioPlayer audioPlayer;
     [SerializeField]
-    HUDAudioPlayer.Sound hoverSound = HUDAudioPlayer.Sound.buttonHover;
-    [SerializeField]
-    bool playHover = false, playClick = true, playRelease = true;
+    protected bool playHover = true, playClick = true, playRelease = true;
 
-    void Start()
+    public virtual void OnPointerEnter(PointerEventData eventData)
     {
-        audioPlayer = HUDAudioPlayer.i;
+        if (!playHover)
+            return;
+
+        if (!Input.GetMouseButton(0))
+        {
+            AudioScriptableObjects.buttonHover.Play(true);
+        }
     }
 
-    public void OnPointerEnter(PointerEventData eventData)
+    public virtual void OnPointerDown(PointerEventData eventData)
     {
-        if (playHover && audioPlayer != null)
-            audioPlayer.Play(hoverSound);
+        if (!playClick)
+            return;
+
+        AudioScriptableObjects.buttonClick.Play(true);
     }
 
-    public void OnPointerDown(PointerEventData eventData)
+    public virtual void OnPointerUp(PointerEventData eventData)
     {
-        if (playClick && audioPlayer != null)
-            audioPlayer.Play(HUDAudioPlayer.Sound.buttonClick);
-    }
+        if (!playRelease)
+            return;
 
-    public void OnPointerUp(PointerEventData eventData)
-    {
-        if (playRelease && audioPlayer != null)
-            audioPlayer.Play(HUDAudioPlayer.Sound.buttonRelease);
+        AudioScriptableObjects.buttonRelease.Play(true);
     }
 }

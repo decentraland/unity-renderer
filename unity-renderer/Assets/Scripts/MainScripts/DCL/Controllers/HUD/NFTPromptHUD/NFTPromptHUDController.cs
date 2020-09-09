@@ -27,8 +27,7 @@ public class NFTPromptHUDController : IHUD
     {
         view.content.SetActive(visible);
 
-        if (HUDAudioPlayer.i != null && visible)
-            HUDAudioPlayer.i.Play(HUDAudioPlayer.Sound.dialogAppear);
+        AudioScriptableObjects.dialogOpen.Play(true);
     }
 
     public void Dispose()

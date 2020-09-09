@@ -1,6 +1,8 @@
 {
     "name": "ScriptableObjects",
-    "references": [],
+    "references": [
+        "GUID:99cea83ca76dcd846abed7e61a8c90bd"
+    ],
     "includePlatforms": [],
     "excludePlatforms": [],
     "allowUnsafeCode": false,

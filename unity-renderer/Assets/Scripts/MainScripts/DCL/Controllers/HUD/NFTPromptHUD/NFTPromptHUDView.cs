@@ -84,8 +84,7 @@ public class NFTPromptHUDView : MonoBehaviour
         fetchNFTRoutine = null;
         fetchNFTImageRoutine = null;
 
-        if (HUDAudioPlayer.i != null)
-            HUDAudioPlayer.i.Play(HUDAudioPlayer.Sound.dialogClose);
+        AudioScriptableObjects.dialogClose.Play(true);
     }
 
     private void SetLoading()

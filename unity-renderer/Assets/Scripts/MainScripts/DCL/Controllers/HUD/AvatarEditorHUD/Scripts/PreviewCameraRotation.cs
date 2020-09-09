@@ -21,8 +21,7 @@ public class PreviewCameraRotation : MonoBehaviour, IDragHandler, IBeginDragHand
 
     public void OnBeginDrag(PointerEventData eventData)
     {
-        if (HUDAudioPlayer.i != null)
-            HUDAudioPlayer.i.Play(HUDAudioPlayer.Sound.buttonClick);
+        AudioScriptableObjects.buttonClick.Play(true);
     }
 
     public void OnDrag(PointerEventData eventData)
@@ -47,8 +46,7 @@ public class PreviewCameraRotation : MonoBehaviour, IDragHandler, IBeginDragHand
             slowDownCoroutine = StartCoroutine(SlowDown());
         }
 
-        if (HUDAudioPlayer.i != null)
-            HUDAudioPlayer.i.Play(HUDAudioPlayer.Sound.buttonRelease);
+        AudioScriptableObjects.buttonRelease.Play(true);
     }
 
     private IEnumerator SlowDown()

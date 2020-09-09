@@ -92,8 +92,7 @@ public class ItemToggle : UIButton, IPointerEnterHandler, IPointerExitHandler
 
         thumbnail.sprite = ThumbnailsManager.CreateSpriteFromTexture(texture.texture);
 
-        if (HUDAudioPlayer.i != null)
-            HUDAudioPlayer.i.Play(HUDAudioPlayer.Sound.listItemAppear);
+        AudioScriptableObjects.listItemAppear.Play(true);
     }
 
     private void OnEnable()

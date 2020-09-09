@@ -33,15 +33,13 @@ public class EmailPromptHUDController : IHUD
             view.showHideAnimator.Show();
             WebInterface.ReportAnalyticsEvent("open email popup");
 
-            if (HUDAudioPlayer.i != null)
-                HUDAudioPlayer.i.Play(HUDAudioPlayer.Sound.fadeIn);
+            AudioScriptableObjects.fadeIn.Play(true);
         }
         else
         {
             view.showHideAnimator.Hide();
 
-            if (HUDAudioPlayer.i != null)
-                HUDAudioPlayer.i.Play(HUDAudioPlayer.Sound.fadeOut);
+            AudioScriptableObjects.fadeOut.Play(true);
         }
     }
 

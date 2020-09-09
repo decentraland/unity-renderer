@@ -82,16 +82,14 @@ public class ExpressionsHUDView : MonoBehaviour
     {
         content.gameObject.SetActive(true);
         DCL.Helpers.Utils.UnlockCursor();
-        if (HUDAudioPlayer.i != null)
-            HUDAudioPlayer.i.Play(HUDAudioPlayer.Sound.dialogAppear);
+        AudioScriptableObjects.dialogOpen.Play(true);
     }
 
     internal void HideContent()
     {
         content.gameObject.SetActive(false);
         DCL.Helpers.Utils.LockCursor();
-        if (HUDAudioPlayer.i != null)
-            HUDAudioPlayer.i.Play(HUDAudioPlayer.Sound.dialogClose);
+        AudioScriptableObjects.dialogClose.Play(true);
     }
 
     public bool IsContentVisible()

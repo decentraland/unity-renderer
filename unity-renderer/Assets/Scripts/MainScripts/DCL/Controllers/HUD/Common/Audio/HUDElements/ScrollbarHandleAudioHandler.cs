@@ -4,33 +4,28 @@ using UnityEngine.UI;
 
 public class ScrollbarHandleAudioHandler : MonoBehaviour, IPointerEnterHandler, IPointerDownHandler
 {
-    HUDAudioPlayer audioPlayer;
     [SerializeField]
     Selectable selectable;
 
-    void Start()
-    {
-        audioPlayer = HUDAudioPlayer.i;
-    }
-
     public void OnPointerEnter(PointerEventData eventData)
     {
-        if (audioPlayer != null &&
-            selectable != null &&
-            selectable.interactable &&
-            !Input.GetMouseButton(0))
+        if (selectable != null && !Input.GetMouseButton(0))
         {
-            audioPlayer.Play(HUDAudioPlayer.Sound.buttonHover);
+            if (selectable.interactable)
+            {
+                AudioScriptableObjects.buttonHover.Play(true);
+            }
         }
     }
 
     public void OnPointerDown(PointerEventData eventData)
     {
-        if (audioPlayer != null &&
-            selectable != null &&
-            selectable.interactable)
+        if (selectable != null)
         {
-            audioPlayer.Play(HUDAudioPlayer.Sound.buttonClick);
+            if (selectable.interactable)
+            {
+                AudioScriptableObjects.buttonClick.Play(true);
+            }
         }
     }
 }

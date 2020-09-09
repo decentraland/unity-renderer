@@ -6,9 +6,9 @@
         "GUID:555c1f3c6d18648df910b7a1de75b424",
         "GUID:4720e174f2805c74bb7aa94cc8bb5bf8",
         "GUID:1de3566cccb280f4a982c59ad0d08c96",
-        "GUID:4973650d2444c4561a15d50f24d91cd9"
+        "GUID:4973650d2444c4561a15d50f24d91cd9",
+        "GUID:99cea83ca76dcd846abed7e61a8c90bd"
     ],
-    "optionalUnityReferences": [],
     "includePlatforms": [],
     "excludePlatforms": [],
     "allowUnsafeCode": false,
@@ -16,5 +16,6 @@
     "precompiledReferences": [],
     "autoReferenced": true,
     "defineConstraints": [],
-    "versionDefines": []
+    "versionDefines": [],
+    "noEngineReferences": false
 }

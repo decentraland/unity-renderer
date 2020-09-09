@@ -67,16 +67,13 @@ public class ExploreHUDController : IHUD
 
         view.SetVisibility(visible);
 
-        if (HUDAudioPlayer.i != null)
+        if (visible)
         {
-            if (visible)
-            {
-                HUDAudioPlayer.i.Play(HUDAudioPlayer.Sound.dialogAppear);
-                HUDAudioPlayer.i.ResetListItemAppearPitch();
-            }
-            else
-                HUDAudioPlayer.i.Play(HUDAudioPlayer.Sound.dialogClose);
+            AudioScriptableObjects.dialogOpen.Play(true);
+            AudioScriptableObjects.listItemAppear.SetPitch(1f);
         }
+        else
+            AudioScriptableObjects.dialogClose.Play(true);
     }
 
     public void Dispose()
