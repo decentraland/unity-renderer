@@ -142,8 +142,7 @@ public class TeleportPromptHUDView : MonoBehaviour
         OnCloseEvent?.Invoke();
         contentAnimator.Hide(true);
 
-        if (HUDAudioPlayer.i != null)
-            HUDAudioPlayer.i.Play(HUDAudioPlayer.Sound.fadeOut);
+        AudioScriptableObjects.dialogClose.Play(true);
     }
 
     private void OnTeleportPressed()

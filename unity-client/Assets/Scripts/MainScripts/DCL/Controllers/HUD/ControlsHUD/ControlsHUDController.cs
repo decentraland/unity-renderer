@@ -31,8 +31,7 @@ public class ControlsHUDController : IHUD
 
             view.showHideAnimator.Hide();
 
-            if (HUDAudioPlayer.i != null)
-                HUDAudioPlayer.i.Play(HUDAudioPlayer.Sound.fadeOut);
+            AudioScriptableObjects.fadeOut.Play(true);
         }
         else if (!IsVisible() && visible)
         {
@@ -40,8 +39,7 @@ public class ControlsHUDController : IHUD
             Utils.UnlockCursor();
             view.gameObject.SetActive(true);
             view.showHideAnimator.Show();
-            if (HUDAudioPlayer.i != null)
-                HUDAudioPlayer.i.Play(HUDAudioPlayer.Sound.fadeIn);
+            AudioScriptableObjects.fadeIn.Play(true);
         }
     }
 

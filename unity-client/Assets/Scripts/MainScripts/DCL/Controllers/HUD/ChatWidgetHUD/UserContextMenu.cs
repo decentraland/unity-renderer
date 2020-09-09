@@ -92,8 +92,7 @@ public class UserContextMenu : MonoBehaviour
         OnPassport?.Invoke(userId);
         Hide();
 
-        if (HUDAudioPlayer.i != null)
-            HUDAudioPlayer.i.Play(HUDAudioPlayer.Sound.dialogAppear);
+        AudioScriptableObjects.dialogOpen.Play(true);
     }
 
     private void OnReportUserButtonPressed()

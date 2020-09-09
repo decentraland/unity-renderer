@@ -73,6 +73,7 @@ MonoBehaviour:
   backgroundImage: {fileID: 712334457687682705}
   hoveredBackgroundSprite: {fileID: 21300000, guid: f48850fa5be164fc68819a7c8586432c,
     type: 3}
+  audioEventHover: {fileID: 11400000, guid: 14fe705a57deb3043b6a95325455a231, type: 2}
   jumpInButton: {fileID: 5034795002882272148}
   whisperButton: {fileID: 2032125974022889722}
   unreadNotificationBadge: {fileID: 6141585309611989806}
@@ -208,8 +209,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4bfd0d144b6d3dd438b84fa14a062c4f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  extraClickSound: 0
-  playHoverSound: 0
+  playHover: 0
+  playClick: 1
+  playRelease: 1
+  extraClickEvent: {fileID: 0}
 --- !u!1 &831569218822348366
 GameObject:
   m_ObjectHideFlags: 0
@@ -816,8 +819,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4bfd0d144b6d3dd438b84fa14a062c4f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  extraClickSound: 0
-  playHoverSound: 0
+  playHover: 0
+  playClick: 1
+  playRelease: 1
+  extraClickEvent: {fileID: 0}
 --- !u!1 &2750868330286968561
 GameObject:
   m_ObjectHideFlags: 0

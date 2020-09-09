@@ -26,8 +26,7 @@ internal class SceneInfoView : MonoBehaviour
         {
             gameObject.SetActive(true);
 
-            if (HUDAudioPlayer.i != null)
-                HUDAudioPlayer.i.Play(HUDAudioPlayer.Sound.dialogAppear);
+            AudioScriptableObjects.dialogOpen.Play(true);
         }
         showHideAnimator.Show();
         this.enabled = false;
@@ -50,8 +49,7 @@ internal class SceneInfoView : MonoBehaviour
         {
             showHideAnimator.Hide(true);
 
-            if (HUDAudioPlayer.i != null)
-                HUDAudioPlayer.i.Play(HUDAudioPlayer.Sound.dialogClose);
+            AudioScriptableObjects.dialogClose.Play(true);
         }
         else
         {
@@ -141,8 +139,7 @@ internal class SceneInfoView : MonoBehaviour
             showHideAnimator.Hide();
             this.enabled = false;
 
-            if (HUDAudioPlayer.i != null)
-                HUDAudioPlayer.i.Play(HUDAudioPlayer.Sound.dialogClose);
+            AudioScriptableObjects.dialogClose.Play(true);
         }
     }
 

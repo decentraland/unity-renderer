@@ -399,6 +399,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 503145d65a7e37346a33d7fc926ec87e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  hoverSound: 1
+  playHover: 1
+  playClick: 1
+  playRelease: 1
+  extraClickSound: 0
+  extraClickEvent: {fileID: 0}
+  playHoverSound: 1
 --- !u!1 &1830841025408141275
 GameObject:
   m_ObjectHideFlags: 0

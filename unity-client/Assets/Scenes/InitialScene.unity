@@ -98,7 +98,7 @@ LightmapSettings:
     m_TrainingDataDestination: TrainingData
     m_LightProbeSampleCountMultiplier: 4
   m_LightingDataAsset: {fileID: 0}
-  m_UseShadowmask: 0
+  m_UseShadowmask: 1
 --- !u!196 &4
 NavMeshSettings:
   serializedVersion: 2
@@ -916,6 +916,11 @@ PrefabInstance:
       propertyPath: m_SizeDelta.x
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 4562892339457273614, guid: e399265a17d26494da5c9fe6063ea2d2,
+        type: 3}
+      propertyPath: m_AnchoredPosition.x
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 4892490727270554865, guid: e399265a17d26494da5c9fe6063ea2d2,
         type: 3}
       propertyPath: m_AnchorMin.y
@@ -1303,9 +1308,9 @@ MonoBehaviour:
   openBrowserWhenStart: 1
   useCustomContentServer: 0
   customContentServerUrl: http://localhost:1338/
-  baseUrlMode: 0
-  baseUrlCustom: 
-  environment: 4
+  baseUrlMode: 1
+  baseUrlCustom: http://localhost:8080/?ENABLE_EXPLORE_HUD&
+  environment: 0
   startInCoords: {x: 0, y: 0}
   forceLocalComms: 0
   allWearables: 0
@@ -1528,10 +1533,50 @@ PrefabInstance:
       propertyPath: m_LocalPosition.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 1271431263581989332, guid: b0965b55b892d438da492708ea09799c,
+        type: 3}
+      propertyPath: m_LocalRotation.x
+      value: -0.2808524
+      objectReference: {fileID: 0}
+    - target: {fileID: 1271431263581989332, guid: b0965b55b892d438da492708ea09799c,
+        type: 3}
+      propertyPath: m_LocalRotation.y
+      value: -0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1271431263581989332, guid: b0965b55b892d438da492708ea09799c,
+        type: 3}
+      propertyPath: m_LocalRotation.z
+      value: -0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1271431263581989332, guid: b0965b55b892d438da492708ea09799c,
+        type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 0.95975095
+      objectReference: {fileID: 0}
+    - target: {fileID: 1271431263581989332, guid: b0965b55b892d438da492708ea09799c,
+        type: 3}
+      propertyPath: m_LocalPosition.x
+      value: -0.80036104
+      objectReference: {fileID: 0}
+    - target: {fileID: 1271431263581989332, guid: b0965b55b892d438da492708ea09799c,
+        type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 1.369813
+      objectReference: {fileID: 0}
+    - target: {fileID: 1271431263581989332, guid: b0965b55b892d438da492708ea09799c,
+        type: 3}
+      propertyPath: m_LocalPosition.z
+      value: 1.8401191
+      objectReference: {fileID: 0}
     - target: {fileID: 2952493522718747595, guid: b0965b55b892d438da492708ea09799c,
         type: 3}
       propertyPath: m_OcclusionCulling
       value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 2952493522718747595, guid: b0965b55b892d438da492708ea09799c,
+        type: 3}
+      propertyPath: far clip plane
+      value: 100
       objectReference: {fileID: 0}
     - target: {fileID: 6384478764905876486, guid: b0965b55b892d438da492708ea09799c,
         type: 3}
@@ -1741,17 +1786,17 @@ PrefabInstance:
     - target: {fileID: 9163622792995413825, guid: 5328f06b59cfc724fa764ed3a266b2f4,
         type: 3}
       propertyPath: m_LocalPosition.x
-      value: 821.7208
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 9163622792995413825, guid: 5328f06b59cfc724fa764ed3a266b2f4,
         type: 3}
       propertyPath: m_LocalPosition.y
-      value: 782.1304
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 9163622792995413825, guid: 5328f06b59cfc724fa764ed3a266b2f4,
         type: 3}
       propertyPath: m_LocalPosition.z
-      value: -1031.3528
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 9163622792995413825, guid: 5328f06b59cfc724fa764ed3a266b2f4,
         type: 3}
@@ -1796,7 +1841,7 @@ PrefabInstance:
     - target: {fileID: 9163622792995413827, guid: 5328f06b59cfc724fa764ed3a266b2f4,
         type: 3}
       propertyPath: m_Name
-      value: HUDAudioPlayer
+      value: HUDAudioHandler
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 5328f06b59cfc724fa764ed3a266b2f4, type: 3}

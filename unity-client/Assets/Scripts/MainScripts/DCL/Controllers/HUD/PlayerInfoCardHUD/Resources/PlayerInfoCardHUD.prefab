@@ -437,7 +437,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4bfd0d144b6d3dd438b84fa14a062c4f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  hoverSound: 1
+  playHover: 1
+  playClick: 1
+  playRelease: 1
   extraClickSound: 10
+  extraClickEvent: {fileID: 0}
   playHoverSound: 1
 --- !u!1 &1193018594340784404
 GameObject:
@@ -1000,7 +1005,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4bfd0d144b6d3dd438b84fa14a062c4f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  hoverSound: 1
+  playHover: 1
+  playClick: 1
+  playRelease: 1
   extraClickSound: 4
+  extraClickEvent: {fileID: 0}
   playHoverSound: 1
 --- !u!1 &1547998060326441118
 GameObject:
@@ -2043,7 +2053,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4bfd0d144b6d3dd438b84fa14a062c4f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  hoverSound: 1
+  playHover: 1
+  playClick: 1
+  playRelease: 1
   extraClickSound: 0
+  extraClickEvent: {fileID: 0}
   playHoverSound: 1
 --- !u!1 &2054052090630472337
 GameObject:
@@ -2253,7 +2268,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ee9f4abe9743e8746a8476ea46e938d5, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  hoverSound: 1
   playHover: 0
+  playClick: 1
+  playRelease: 1
 --- !u!1 &2082489347075633275
 GameObject:
   m_ObjectHideFlags: 0
@@ -2402,7 +2420,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4bfd0d144b6d3dd438b84fa14a062c4f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  hoverSound: 1
+  playHover: 1
+  playClick: 1
+  playRelease: 1
   extraClickSound: 9
+  extraClickEvent: {fileID: 0}
   playHoverSound: 1
 --- !u!1 &2184345005228500431
 GameObject:
@@ -2576,7 +2599,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4bfd0d144b6d3dd438b84fa14a062c4f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  hoverSound: 1
+  playHover: 1
+  playClick: 1
+  playRelease: 1
   extraClickSound: 10
+  extraClickEvent: {fileID: 0}
   playHoverSound: 1
 --- !u!1 &2348666775600967713
 GameObject:
@@ -2956,7 +2984,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4bfd0d144b6d3dd438b84fa14a062c4f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  hoverSound: 1
+  playHover: 1
+  playClick: 1
+  playRelease: 1
   extraClickSound: 10
+  extraClickEvent: {fileID: 0}
   playHoverSound: 1
 --- !u!1 &2712932112715226368
 GameObject:
@@ -3313,7 +3346,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4bfd0d144b6d3dd438b84fa14a062c4f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  hoverSound: 1
+  playHover: 1
+  playClick: 1
+  playRelease: 1
   extraClickSound: 0
+  extraClickEvent: {fileID: 0}
   playHoverSound: 1
 --- !u!1 &3049173983756084367
 GameObject:
@@ -4027,7 +4065,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4bfd0d144b6d3dd438b84fa14a062c4f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  hoverSound: 1
+  playHover: 1
+  playClick: 1
+  playRelease: 1
   extraClickSound: 4
+  extraClickEvent: {fileID: 0}
   playHoverSound: 1
 --- !u!1 &4330974646726201636
 GameObject:
@@ -4801,7 +4844,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4bfd0d144b6d3dd438b84fa14a062c4f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  hoverSound: 1
+  playHover: 0
+  playClick: 1
+  playRelease: 1
   extraClickSound: 0
+  extraClickEvent: {fileID: 0}
   playHoverSound: 0
 --- !u!1 &5610696480820155045
 GameObject:
@@ -5749,7 +5797,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4bfd0d144b6d3dd438b84fa14a062c4f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  hoverSound: 1
+  playHover: 0
+  playClick: 1
+  playRelease: 1
   extraClickSound: 0
+  extraClickEvent: {fileID: 0}
   playHoverSound: 0
 --- !u!1 &7638501430301255021
 GameObject:
@@ -6056,7 +6109,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4bfd0d144b6d3dd438b84fa14a062c4f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  hoverSound: 1
+  playHover: 0
+  playClick: 1
+  playRelease: 1
   extraClickSound: 0
+  extraClickEvent: {fileID: 0}
   playHoverSound: 0
 --- !u!1 &8155148640584326364
 GameObject:

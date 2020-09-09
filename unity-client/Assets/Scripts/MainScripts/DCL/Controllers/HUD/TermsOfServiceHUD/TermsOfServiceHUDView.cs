@@ -52,16 +52,13 @@ public class TermsOfServiceHUDView : MonoBehaviour
     {
         content.SetActive(visible);
 
-        if (HUDAudioPlayer.i != null)
+        if (visible)
         {
-            if (visible)
-            {
-                HUDAudioPlayer.i.Play(HUDAudioPlayer.Sound.dialogAppear);
-            }
-            else
-            {
-                HUDAudioPlayer.i.Play(HUDAudioPlayer.Sound.dialogClose);
-            }
+            AudioScriptableObjects.dialogOpen.Play(true);
+        }
+        else
+        {
+            AudioScriptableObjects.dialogClose.Play(true);
         }
     }
 

@@ -10,7 +10,7 @@ GameObject:
   m_Component:
   - component: {fileID: 7040908704829689427}
   - component: {fileID: 1981130010331354410}
-  - component: {fileID: 6099874192683180129}
+  - component: {fileID: 1737600306560899936}
   m_Layer: 5
   m_Name: ExploreHUDAudioHandler
   m_TagString: Untagged
@@ -50,7 +50,13 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   magicButton: {fileID: 0}
---- !u!114 &6099874192683180129
+  eventMagicPointerEnter: {fileID: 11400000, guid: 80019303b0f10444493316ab3a15b1b5,
+    type: 2}
+  eventMagicPointerExit: {fileID: 11400000, guid: 28ba8b235bdc272458d87d58c79aba10,
+    type: 2}
+  eventMagicButtonPressed: {fileID: 11400000, guid: caf174d815d91bc44a125635fa318a2e,
+    type: 2}
+--- !u!114 &1737600306560899936
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -59,10 +65,9 @@ MonoBehaviour:
   m_GameObject: {fileID: 1422902491684772515}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: b2589882c2954c0459054a94f3a04e36, type: 3}
+  m_Script: {fileID: 11500000, guid: 19e7434f0c30cd34ab81edae8ab53843, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  identifier: Explore
   audioMixerGroup: {fileID: 3522371855724722028, guid: 97507d628c02bcf47859b9f108ab1823,
     type: 2}
   spatialBlend: 0
@@ -72,33 +77,6 @@ MonoBehaviour:
   maxDistance: 500
   audioEvents:
     array:
-    - name: MagicButtonEnter
-      loop: 0
-      volume: 1
-      randomPitch: 0.1
-      playOnAwake: 0
-      cooldownSeconds: 0.3
-      clips:
-        array:
-        - {fileID: 8300000, guid: 96976f36f8f49b64390db105bd938a8f, type: 3}
-      source: {fileID: 0}
-    - name: MagicButtonExit
-      loop: 0
-      volume: 1
-      randomPitch: 0.1
-      playOnAwake: 0
-      cooldownSeconds: 0
-      clips:
-        array:
-        - {fileID: 8300000, guid: 7b0b2163875b4e648afe7c48f61b3340, type: 3}
-      source: {fileID: 0}
-    - name: MagicButtonClick
-      loop: 0
-      volume: 1
-      randomPitch: 0.1
-      playOnAwake: 0
-      cooldownSeconds: 0
-      clips:
-        array:
-        - {fileID: 8300000, guid: 0bfffff4668dbb745a58ec7845891d43, type: 3}
-      source: {fileID: 0}
+    - {fileID: 11400000, guid: caf174d815d91bc44a125635fa318a2e, type: 2}
+    - {fileID: 11400000, guid: 80019303b0f10444493316ab3a15b1b5, type: 2}
+    - {fileID: 11400000, guid: 28ba8b235bdc272458d87d58c79aba10, type: 2}

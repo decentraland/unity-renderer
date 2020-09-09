@@ -189,8 +189,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 0, y: 0}
-  m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 0, y: 0}
+  m_AnchoredPosition: {x: 273, y: 0}
+  m_SizeDelta: {x: 546, y: 0}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &5970302756244949190
 CanvasRenderer:
@@ -952,8 +952,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 0, y: 0}
-  m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 0, y: 0}
+  m_AnchoredPosition: {x: 273, y: 0}
+  m_SizeDelta: {x: 546, y: 0}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &4987217642746067825
 CanvasRenderer:
@@ -1037,8 +1037,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 0, y: 0}
-  m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 0, y: 0}
+  m_AnchoredPosition: {x: 273, y: 0}
+  m_SizeDelta: {x: 546, y: 0}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &2117695727526847958
 MonoBehaviour:
@@ -1321,7 +1321,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4bfd0d144b6d3dd438b84fa14a062c4f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  hoverSound: 1
+  playHover: 1
+  playClick: 1
+  playRelease: 1
   extraClickSound: 0
+  extraClickEvent: {fileID: 0}
   playHoverSound: 1
 --- !u!1 &6828310521343431130
 GameObject:
@@ -1363,8 +1368,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 0, y: 0}
-  m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 0, y: 0}
+  m_AnchoredPosition: {x: 273, y: 0}
+  m_SizeDelta: {x: 546, y: 0}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &283469259512424044
 CanvasRenderer:
@@ -1754,7 +1759,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4bfd0d144b6d3dd438b84fa14a062c4f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  hoverSound: 1
+  playHover: 1
+  playClick: 1
+  playRelease: 1
   extraClickSound: 9
+  extraClickEvent: {fileID: 0}
   playHoverSound: 1
 --- !u!1 &9035392745846950223
 GameObject:
@@ -1791,8 +1801,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 0, y: 0}
-  m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 0, y: 0}
+  m_AnchoredPosition: {x: 273, y: 0}
+  m_SizeDelta: {x: 546, y: 0}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &953044452951115576
 CanvasRenderer:

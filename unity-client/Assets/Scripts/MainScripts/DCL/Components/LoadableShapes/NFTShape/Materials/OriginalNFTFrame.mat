@@ -9,7 +9,7 @@ Material:
   m_PrefabAsset: {fileID: 0}
   m_Name: OriginalNFTFrame
   m_Shader: {fileID: 4800000, guid: d5df9882eb4ac420cb9650be25a83b62, type: 3}
-  m_ShaderKeywords: 
+  m_ShaderKeywords: SNOISE
   m_LightmapFlags: 4
   m_EnableInstancingVariants: 0
   m_DoubleSidedGI: 0

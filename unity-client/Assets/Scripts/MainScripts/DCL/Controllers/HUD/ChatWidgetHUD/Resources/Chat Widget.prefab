@@ -1585,8 +1585,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4bfd0d144b6d3dd438b84fa14a062c4f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  extraClickSound: 0
-  playHoverSound: 0
+  playHover: 0
+  playClick: 1
+  playRelease: 1
+  extraClickEvent: {fileID: 0}
 --- !u!1001 &7192786869977515401
 PrefabInstance:
   m_ObjectHideFlags: 0

@@ -6,18 +6,12 @@ public class NavMapAudioHandler : MonoBehaviour
     {
         if (Input.GetMouseButtonDown(0))
         {
-            if (HUDAudioPlayer.i != null)
-            {
-                HUDAudioPlayer.i.Play(HUDAudioPlayer.Sound.buttonClick);
-            }
+            AudioScriptableObjects.buttonClick.Play(true);
         }
 
         if (Input.GetMouseButtonUp(0))
         {
-            if (HUDAudioPlayer.i != null)
-            {
-                HUDAudioPlayer.i.Play(HUDAudioPlayer.Sound.buttonRelease);
-            }
+            AudioScriptableObjects.buttonRelease.Play(true);
         }
     }
 }

@@ -31,8 +31,7 @@ public class ExternalUrlPromptHUDController : IHUD
             view.content.SetActive(true);
             view.showHideAnimator.Show();
 
-            if (HUDAudioPlayer.i != null)
-                HUDAudioPlayer.i.Play(HUDAudioPlayer.Sound.dialogAppear);
+            AudioScriptableObjects.dialogOpen.Play(true);
         }
         else
         {

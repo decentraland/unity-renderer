@@ -335,7 +335,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4bfd0d144b6d3dd438b84fa14a062c4f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  hoverSound: 1
+  playHover: 1
+  playClick: 1
+  playRelease: 1
   extraClickSound: 0
+  extraClickEvent: {fileID: 0}
   playHoverSound: 1
 --- !u!1 &237401485243872377
 GameObject:
@@ -1240,7 +1245,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4bfd0d144b6d3dd438b84fa14a062c4f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  hoverSound: 1
+  playHover: 1
+  playClick: 1
+  playRelease: 1
   extraClickSound: 0
+  extraClickEvent: {fileID: 0}
   playHoverSound: 1
 --- !u!1 &813666442621547826
 GameObject:
@@ -1408,7 +1418,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4bfd0d144b6d3dd438b84fa14a062c4f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  hoverSound: 1
+  playHover: 1
+  playClick: 1
+  playRelease: 1
   extraClickSound: 0
+  extraClickEvent: {fileID: 0}
   playHoverSound: 1
 --- !u!1 &830286309143222203
 GameObject:
@@ -2218,7 +2233,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4bfd0d144b6d3dd438b84fa14a062c4f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  hoverSound: 1
+  playHover: 1
+  playClick: 1
+  playRelease: 1
   extraClickSound: 10
+  extraClickEvent: {fileID: 11400000, guid: 71d95c991cfe14a43b69f63de00cc73e, type: 2}
   playHoverSound: 1
 --- !u!1 &1802137367426154170
 GameObject:
@@ -2386,7 +2406,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4bfd0d144b6d3dd438b84fa14a062c4f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  hoverSound: 1
+  playHover: 1
+  playClick: 1
+  playRelease: 1
   extraClickSound: 0
+  extraClickEvent: {fileID: 0}
   playHoverSound: 1
 --- !u!1 &2047421669643265075
 GameObject:
@@ -6730,7 +6755,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4bfd0d144b6d3dd438b84fa14a062c4f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  hoverSound: 1
+  playHover: 1
+  playClick: 1
+  playRelease: 1
   extraClickSound: 0
+  extraClickEvent: {fileID: 0}
   playHoverSound: 1
 --- !u!1 &4799733724167739924
 GameObject:
@@ -7619,7 +7649,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4bfd0d144b6d3dd438b84fa14a062c4f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  hoverSound: 1
+  playHover: 1
+  playClick: 1
+  playRelease: 1
   extraClickSound: 0
+  extraClickEvent: {fileID: 0}
   playHoverSound: 1
 --- !u!1 &5292997369548845070
 GameObject:
@@ -8210,7 +8245,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4bfd0d144b6d3dd438b84fa14a062c4f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  hoverSound: 1
+  playHover: 1
+  playClick: 1
+  playRelease: 1
   extraClickSound: 0
+  extraClickEvent: {fileID: 0}
   playHoverSound: 1
 --- !u!1 &5702436558995634957
 GameObject:

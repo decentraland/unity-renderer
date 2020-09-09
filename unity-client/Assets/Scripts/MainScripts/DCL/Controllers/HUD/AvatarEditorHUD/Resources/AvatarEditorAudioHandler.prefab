@@ -10,7 +10,7 @@ GameObject:
   m_Component:
   - component: {fileID: 6723285814267428839}
   - component: {fileID: 6903690898286533778}
-  - component: {fileID: 2556148421294819102}
+  - component: {fileID: 2322403187524271559}
   m_Layer: 5
   m_Name: AvatarEditorAudioHandler
   m_TagString: Untagged
@@ -51,7 +51,25 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   view: {fileID: 0}
   randomizeButton: {fileID: 0}
---- !u!114 &2556148421294819102
+  eventRarity: {fileID: 11400000, guid: ab6dfe6063700a84da51263d91986e29, type: 2}
+  eventAvatarAppear: {fileID: 11400000, guid: 9c4174c87fc665549bc204afa5ca6830, type: 2}
+  eventReactionMale: {fileID: 11400000, guid: ac80627e713f2d344aba9dd6b6108961, type: 2}
+  eventReactionFemale: {fileID: 11400000, guid: 7570ab98b121d5a4391d533dc765f979,
+    type: 2}
+  eventWearableClothing: {fileID: 11400000, guid: 93f9d68e6e225004c9dd116f7312aad9,
+    type: 2}
+  eventWearableEyewear: {fileID: 11400000, guid: de145e9d8a3fc7248a1a2a6f5fc550ec,
+    type: 2}
+  eventWearableJewelry: {fileID: 11400000, guid: a28354201483d6e46839cac6cca0d088,
+    type: 2}
+  eventWearableFootwear: {fileID: 11400000, guid: 532b928bf7d9ac342b1be0cbe8093daf,
+    type: 2}
+  eventWearableHair: {fileID: 11400000, guid: 0b9817974ee8ed44d89982778b138a91, type: 2}
+  eventWearableHatMask: {fileID: 11400000, guid: bc763dba289460d44bbd1b092660367f,
+    type: 2}
+  eventWearableRarity: {fileID: 11400000, guid: ab6dfe6063700a84da51263d91986e29,
+    type: 2}
+--- !u!114 &2322403187524271559
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -60,10 +78,9 @@ MonoBehaviour:
   m_GameObject: {fileID: 9023033888150710464}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: b2589882c2954c0459054a94f3a04e36, type: 3}
+  m_Script: {fileID: 11500000, guid: 19e7434f0c30cd34ab81edae8ab53843, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  identifier: AvatarEditor
   audioMixerGroup: {fileID: 3522371855724722028, guid: 97507d628c02bcf47859b9f108ab1823,
     type: 2}
   spatialBlend: 0
@@ -73,131 +90,14 @@ MonoBehaviour:
   maxDistance: 500
   audioEvents:
     array:
-    - name: AvatarAppear
-      loop: 0
-      volume: 1
-      randomPitch: 0.1
-      playOnAwake: 0
-      cooldownSeconds: 0
-      clips:
-        array:
-        - {fileID: 8300000, guid: e134d8c09228ed0448e0458ba8602c43, type: 3}
-      source: {fileID: 0}
-    - name: ReactionFemale
-      loop: 0
-      volume: 0
-      randomPitch: 0.1
-      playOnAwake: 0
-      cooldownSeconds: 4
-      clips:
-        array:
-        - {fileID: 8300000, guid: a475d15d253f13146a4f25741adc76fd, type: 3}
-        - {fileID: 8300000, guid: 975c9f4a9165bdf4583ee7f3ee04b6e8, type: 3}
-        - {fileID: 8300000, guid: 244b78608dea0a944b7cc4ef115f5b71, type: 3}
-        - {fileID: 8300000, guid: e68c19388cb8ee64f9a62da8c3176971, type: 3}
-        - {fileID: 8300000, guid: 1e503ba94631b51419e18bf636e20b4d, type: 3}
-        - {fileID: 8300000, guid: 48546c863cf8c1749b97af6674926040, type: 3}
-        - {fileID: 8300000, guid: 9f188141077897845839a907c6839c1f, type: 3}
-      source: {fileID: 0}
-    - name: ReactionMale
-      loop: 0
-      volume: 0
-      randomPitch: 0.1
-      playOnAwake: 0
-      cooldownSeconds: 4
-      clips:
-        array:
-        - {fileID: 8300000, guid: decaebe8cde08dd4b91bbcf13d929540, type: 3}
-        - {fileID: 8300000, guid: 405355c89d0aa054da28cefcce25be98, type: 3}
-        - {fileID: 8300000, guid: 937a79fe677fb7f48b48a61b8966f38b, type: 3}
-        - {fileID: 8300000, guid: 934a9384db29611449db8dbb49d97b58, type: 3}
-        - {fileID: 8300000, guid: d4779aa5d864ce64ab0dfaa27cb733a2, type: 3}
-        - {fileID: 8300000, guid: eacca16022554374ba8df635e6480db3, type: 3}
-        - {fileID: 8300000, guid: df9bde89ca28f8b4f9deb726a68933ec, type: 3}
-      source: {fileID: 0}
-    - name: Clothing
-      loop: 0
-      volume: 1
-      randomPitch: 0.15
-      playOnAwake: 0
-      cooldownSeconds: 0
-      clips:
-        array:
-        - {fileID: 8300000, guid: c7e51eb3f002f874ca17f42883f10f07, type: 3}
-        - {fileID: 8300000, guid: 90f62b536760bf9449c559d78944d79c, type: 3}
-        - {fileID: 8300000, guid: 87643a7ddb5aa264a9c7c50a65586dd3, type: 3}
-      source: {fileID: 0}
-    - name: Eyewear
-      loop: 0
-      volume: 1
-      randomPitch: 0.15
-      playOnAwake: 0
-      cooldownSeconds: 0
-      clips:
-        array:
-        - {fileID: 8300000, guid: ce0246b50ee80b54a9029b7a0f9a8473, type: 3}
-        - {fileID: 8300000, guid: eb3bdf31ce9fd6c45b51fa75940c1e2a, type: 3}
-        - {fileID: 8300000, guid: 435cefdc3253eae459c9667d3af5bca0, type: 3}
-      source: {fileID: 0}
-    - name: Jewelry
-      loop: 0
-      volume: 1
-      randomPitch: 0.1
-      playOnAwake: 0
-      cooldownSeconds: 0
-      clips:
-        array:
-        - {fileID: 8300000, guid: 18d13a9756593cd438e221977e923d30, type: 3}
-        - {fileID: 8300000, guid: 567ff7867f0d4e044bbd4805daab357e, type: 3}
-        - {fileID: 8300000, guid: 7fdc14b8121bdfc45b4f576df840861f, type: 3}
-      source: {fileID: 0}
-    - name: Footwear
-      loop: 0
-      volume: 1
-      randomPitch: 0.1
-      playOnAwake: 0
-      cooldownSeconds: 0
-      clips:
-        array:
-        - {fileID: 8300000, guid: f7b6ac00cb685854dbfbe22e93feadfc, type: 3}
-        - {fileID: 8300000, guid: 9aa98f36ffc03924687fac18c83fe638, type: 3}
-        - {fileID: 8300000, guid: 4a60cf4f11df9c243be3501ad1863839, type: 3}
-      source: {fileID: 0}
-    - name: Hair
-      loop: 0
-      volume: 1
-      randomPitch: 0.1
-      playOnAwake: 0
-      cooldownSeconds: 0
-      clips:
-        array:
-        - {fileID: 8300000, guid: 309fe298bdbb2b9498914735541436f7, type: 3}
-        - {fileID: 8300000, guid: 2ebd6e4a7ea41f941858ea6ad138dc09, type: 3}
-        - {fileID: 8300000, guid: 419d6916e6067a9448cf2c9c99dfc7aa, type: 3}
-      source: {fileID: 0}
-    - name: Hat
-      loop: 0
-      volume: 1
-      randomPitch: 0.1
-      playOnAwake: 0
-      cooldownSeconds: 0
-      clips:
-        array:
-        - {fileID: 8300000, guid: b6f7da1d86b989042a5558407846ce18, type: 3}
-        - {fileID: 8300000, guid: cb08fe9555216c344adb8f0b8948df45, type: 3}
-        - {fileID: 8300000, guid: 505e34870a7d0fe4fad0cd84c9e54603, type: 3}
-      source: {fileID: 0}
-    - name: Rarity
-      loop: 0
-      volume: 0
-      randomPitch: 0
-      playOnAwake: 0
-      cooldownSeconds: 1
-      clips:
-        array:
-        - {fileID: 8300000, guid: 62a7b3a182d610f4a8b1f80466a6137f, type: 3}
-        - {fileID: 8300000, guid: 950153eeb88950c4f86ca8433831744f, type: 3}
-        - {fileID: 8300000, guid: 6be9dc5cb66e6204d89355d1522b7269, type: 3}
-        - {fileID: 8300000, guid: 3578c08fe108d614396e3de972fe5daa, type: 3}
-        - {fileID: 8300000, guid: 440949082741fc44e8217cc99df3a133, type: 3}
-      source: {fileID: 0}
+    - {fileID: 11400000, guid: 9c4174c87fc665549bc204afa5ca6830, type: 2}
+    - {fileID: 11400000, guid: 3f45371013636f94ca780efb3ed0bdf2, type: 2}
+    - {fileID: 11400000, guid: 7570ab98b121d5a4391d533dc765f979, type: 2}
+    - {fileID: 11400000, guid: ac80627e713f2d344aba9dd6b6108961, type: 2}
+    - {fileID: 11400000, guid: 93f9d68e6e225004c9dd116f7312aad9, type: 2}
+    - {fileID: 11400000, guid: de145e9d8a3fc7248a1a2a6f5fc550ec, type: 2}
+    - {fileID: 11400000, guid: 532b928bf7d9ac342b1be0cbe8093daf, type: 2}
+    - {fileID: 11400000, guid: 0b9817974ee8ed44d89982778b138a91, type: 2}
+    - {fileID: 11400000, guid: bc763dba289460d44bbd1b092660367f, type: 2}
+    - {fileID: 11400000, guid: a28354201483d6e46839cac6cca0d088, type: 2}
+    - {fileID: 11400000, guid: ab6dfe6063700a84da51263d91986e29, type: 2}

@@ -12,6 +12,54 @@ public static class NotificationScriptableObjects
     public static FloatVariable pendingFriendRequests => CommonScriptableObjects.GetOrLoad(ref pendingFriendRequestsValue, "ScriptableObjects/NotificationBadge_PendingFriendRequests");
 }
 
+public static class AudioScriptableObjects
+{
+    private static AudioEvent buttonHoverEvent;
+    public static AudioEvent buttonHover => CommonScriptableObjects.GetOrLoad(ref buttonHoverEvent, "ScriptableObjects/AudioEvents/HUDCommon/ButtonHover");
+
+    private static AudioEvent buttonClickEvent;
+    public static AudioEvent buttonClick => CommonScriptableObjects.GetOrLoad(ref buttonClickEvent, "ScriptableObjects/AudioEvents/HUDCommon/ButtonClick");
+
+    private static AudioEvent buttonReleaseEvent;
+    public static AudioEvent buttonRelease => CommonScriptableObjects.GetOrLoad(ref buttonReleaseEvent, "ScriptableObjects/AudioEvents/HUDCommon/ButtonRelease");
+
+    private static AudioEvent dialogOpenEvent;
+    public static AudioEvent dialogOpen => CommonScriptableObjects.GetOrLoad(ref dialogOpenEvent, "ScriptableObjects/AudioEvents/HUDCommon/DialogOpen");
+
+    private static AudioEvent dialogCloseEvent;
+    public static AudioEvent dialogClose => CommonScriptableObjects.GetOrLoad(ref dialogCloseEvent, "ScriptableObjects/AudioEvents/HUDCommon/DialogClose");
+
+    private static AudioEvent enableEvent;
+    public static AudioEvent enable => CommonScriptableObjects.GetOrLoad(ref enableEvent, "ScriptableObjects/AudioEvents/HUDCommon/Enable");
+
+    private static AudioEvent disableEvent;
+    public static AudioEvent disable => CommonScriptableObjects.GetOrLoad(ref disableEvent, "ScriptableObjects/AudioEvents/HUDCommon/Disable");
+
+    private static AudioEvent fadeInEvent;
+    public static AudioEvent fadeIn => CommonScriptableObjects.GetOrLoad(ref fadeInEvent, "ScriptableObjects/AudioEvents/HUDCommon/FadeIn");
+
+    private static AudioEvent fadeOutEvent;
+    public static AudioEvent fadeOut => CommonScriptableObjects.GetOrLoad(ref fadeOutEvent, "ScriptableObjects/AudioEvents/HUDCommon/FadeOut");
+
+    private static AudioEvent listItemAppearEvent;
+    public static AudioEvent listItemAppear => CommonScriptableObjects.GetOrLoad(ref listItemAppearEvent, "ScriptableObjects/AudioEvents/HUDCommon/ListItemAppear");
+
+    private static AudioEvent chatReceiveGlobalEvent;
+    public static AudioEvent chatReceiveGlobal => CommonScriptableObjects.GetOrLoad(ref chatReceiveGlobalEvent, "ScriptableObjects/AudioEvents/HUDCommon/ChatReceiveGlobal");
+
+    private static AudioEvent chatReceivePrivateEvent;
+    public static AudioEvent chatReceivePrivate => CommonScriptableObjects.GetOrLoad(ref chatReceivePrivateEvent, "ScriptableObjects/AudioEvents/HUDCommon/ChatReceivePrivate");
+
+    private static AudioEvent chatSendEvent;
+    public static AudioEvent chatSend => CommonScriptableObjects.GetOrLoad(ref chatSendEvent, "ScriptableObjects/AudioEvents/HUDCommon/ChatSend");
+
+    private static AudioEvent notificationEvent;
+    public static AudioEvent notification => CommonScriptableObjects.GetOrLoad(ref notificationEvent, "ScriptableObjects/AudioEvents/HUDCommon/Notification");
+
+    private static AudioEvent sliderValueChangeEvent;
+    public static AudioEvent sliderValueChange => CommonScriptableObjects.GetOrLoad(ref sliderValueChangeEvent, "ScriptableObjects/AudioEvents/HUDCommon/SliderValueChange");
+}
+
 public static class CommonScriptableObjects
 {
     private static Vector3Variable playerUnityPositionValue;

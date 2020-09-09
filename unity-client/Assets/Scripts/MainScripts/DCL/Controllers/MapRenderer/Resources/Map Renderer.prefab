@@ -250,7 +250,6 @@ MonoBehaviour:
   parcelHightlightScale: 1.25
   parcelHoldTimeInSeconds: 1
   ParcelHighlightButton: {fileID: 3511145948971381255}
-  audioHandler: {fileID: 2267728409443391450}
   cursorMapCoords: {x: 0, y: 0, z: 0}
   showCursorCoords: 1
   atlas: {fileID: 8867674412829076673}
@@ -805,6 +804,11 @@ PrefabInstance:
       propertyPath: m_Pivot.y
       value: 0.5
       objectReference: {fileID: 0}
+    - target: {fileID: 5059953668887379773, guid: c9d078f34ad7cc146861524afff2f443,
+        type: 3}
+      propertyPath: mapRenderer
+      value: 
+      objectReference: {fileID: 7929854281947399184}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: c9d078f34ad7cc146861524afff2f443, type: 3}
 --- !u!224 &8585665900420765760 stripped
@@ -813,15 +817,3 @@ RectTransform:
     type: 3}
   m_PrefabInstance: {fileID: 6431149015225084135}
   m_PrefabAsset: {fileID: 0}
---- !u!114 &2267728409443391450 stripped
-MonoBehaviour:
-  m_CorrespondingSourceObject: {fileID: 5059953668887379773, guid: c9d078f34ad7cc146861524afff2f443,
-    type: 3}
-  m_PrefabInstance: {fileID: 6431149015225084135}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 2233516dc755d7c40a1e7e3f84cb0f48, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 

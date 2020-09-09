@@ -50,8 +50,8 @@ namespace DCL
 
         public void Populate(Vector2Int coordinates, MinimapMetadata.MinimapSceneInfo sceneInfo)
         {
-            if (HUDAudioPlayer.i != null && !gameObject.activeSelf)
-                HUDAudioPlayer.i.Play(HUDAudioPlayer.Sound.dialogAppear);
+            if (!gameObject.activeSelf)
+                AudioScriptableObjects.dialogOpen.Play(true);
 
             bool sceneInfoExists = sceneInfo != null;
 
@@ -132,8 +132,8 @@ namespace DCL
 
         public void OnCloseClick()
         {
-            if (HUDAudioPlayer.i != null && gameObject.activeSelf)
-                HUDAudioPlayer.i.Play(HUDAudioPlayer.Sound.dialogClose);
+            if (gameObject.activeSelf)
+                AudioScriptableObjects.dialogClose.Play(true);
 
             MapRenderer.i.showCursorCoords = true;
             gameObject.SetActive(false);

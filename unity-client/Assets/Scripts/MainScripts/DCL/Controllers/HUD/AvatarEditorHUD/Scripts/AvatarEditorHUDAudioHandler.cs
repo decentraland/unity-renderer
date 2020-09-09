@@ -11,28 +11,21 @@ public class AvatarEditorHUDAudioHandler : MonoBehaviour
     AvatarEditorHUDView view;
     [SerializeField]
     Button randomizeButton;
-
-    AudioContainer audioContainer;
-    AudioEvent eventRarity;
+    [SerializeField]
+    AudioEvent eventRarity, eventAvatarAppear, eventReactionMale, eventReactionFemale, eventWearableClothing, eventWearableEyewear, eventWearableJewelry,
+        eventWearableFootwear, eventWearableHair, eventWearableHatMask, eventWearableRarity;
 
     WearableItem lastClickedWearable = null;
 
     private void Start()
     {
-        audioContainer = GetComponent<AudioContainer>();
-        audioContainer.GetEvent("AvatarAppear").SetPitch(0.4f);
-
-        eventRarity = audioContainer.GetEvent("Rarity");
-
         int nPairs = view.wearableGridPairs.Length;
         for (int i = 0; i < nPairs; i++)
         {
             view.wearableGridPairs[i].selector.OnItemClicked += OnWearableClicked;
         }
 
-        view.skinColorSelector.OnColorChanged += OnSkinColorClicked;
-        view.eyeColorSelector.OnColorChanged += OnEyeColorClicked;
-        view.hairColorSelector.OnColorChanged += OnHairColorClicked;
+        view.OnAvatarAppear += OnAvatarAppear;
 
         if (randomizeButton != null)
             randomizeButton.onClick.AddListener(ResetLastClickedWearable);
@@ -47,43 +40,43 @@ public class AvatarEditorHUDAudioHandler : MonoBehaviour
         switch (wearable.category)
         {
             case Categories.EYEBROWS:
-                Play("Hair");
+                eventWearableHair.Play(true);
                 break;
             case "facial_hair":
-                Play("Hair");
+                eventWearableHair.Play(true);
                 break;
             case Categories.FEET:
-                Play("Footwear");
+                eventWearableFootwear.Play(true);
                 break;
             case Categories.HAIR:
-                Play("Hair");
+                eventWearableHair.Play(true);
                 break;
             case Categories.LOWER_BODY:
-                Play("Clothing");
+                eventWearableClothing.Play(true);
                 break;
             case Categories.UPPER_BODY:
-                Play("Clothing");
+                eventWearableClothing.Play(true);
                 break;
             case "eyewear":
-                Play("Eyewear");
+                eventWearableEyewear.Play(true);
                 break;
             case "tiara":
-                Play("Jewelry");
+                eventWearableJewelry.Play(true);
                 break;
             case "earring":
-                Play("Jewelry");
+                eventWearableJewelry.Play(true);
                 break;
             case "hat":
-                Play("Hat");
+                eventWearableHatMask.Play(true);
                 break;
             case "top_head":
-                Play("Footwear");
+                eventWearableFootwear.Play(true);
                 break;
             case "helmet":
-                Play("Footwear");
+                eventWearableFootwear.Play(true);
                 break;
             case "mask":
-                Play("Hat");
+                eventWearableHatMask.Play(true);
                 break;
             default:
                 break;
@@ -95,24 +88,28 @@ public class AvatarEditorHUDAudioHandler : MonoBehaviour
         lastClickedWearable = null;
     }
 
-    void OnSkinColorClicked(Color color)
+    void OnAvatarAppear(AvatarModel model)
     {
+        if (!view.isOpen) return;
 
-    }
+        eventAvatarAppear.Play(true);
+        PlayRarity();
 
-    void OnEyeColorClicked(Color color)
-    {
+        // Play voice reaction from the avatar
+        if (Random.Range(0f, 1f) > 0.25f)
+        {
+            AudioEvent eventReaction = null;
+            if (model.bodyShape.Contains("Female"))
+                eventReaction = eventReactionFemale;
+            else
+                eventReaction = eventReactionMale;
 
-    }
-
-    void OnHairColorClicked(Color color)
-    {
-
-    }
-
-    void Play(string eventName)
-    {
-        audioContainer.GetEvent(eventName).Play(true);
+            if (eventReaction != null)
+            {
+                if (!eventReaction.source.isPlaying)
+                    eventReaction.PlayScheduled(0.6f);
+            }
+        }
     }
 
     public void PlayRarity()
