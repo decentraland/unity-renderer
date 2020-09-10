@@ -383,7 +383,7 @@ export type Notification = {
 export enum HUDElementID {
   NONE = 0,
   MINIMAP = 1,
-  AVATAR = 2,
+  PROFILE_HUD = 2,
   NOTIFICATION = 3,
   AVATAR_EDITOR = 4,
   SETTINGS = 5,

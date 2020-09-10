@@ -5,7 +5,7 @@ using UnityEngine.UI;
 using DCL.Interface;
 using Image = UnityEngine.UI.Image;
 
-[assembly: InternalsVisibleTo("AvatarHUDTests")]
+[assembly: InternalsVisibleTo("ProfileHUDTests")]
 
 namespace Legacy
 {

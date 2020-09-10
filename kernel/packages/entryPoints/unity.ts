@@ -40,7 +40,7 @@ initializeUnity(container)
     const i = (await instancedJS).unityInterface
 
     i.ConfigureHUDElement(HUDElementID.MINIMAP, { active: true, visible: true })
-    i.ConfigureHUDElement(HUDElementID.AVATAR, { active: true, visible: true })
+    i.ConfigureHUDElement(HUDElementID.PROFILE_HUD, { active: true, visible: true })
     i.ConfigureHUDElement(HUDElementID.NOTIFICATION, { active: true, visible: true })
     i.ConfigureHUDElement(HUDElementID.AVATAR_EDITOR, { active: true, visible: OPEN_AVATAR_EDITOR })
     i.ConfigureHUDElement(HUDElementID.SETTINGS, { active: true, visible: false })
