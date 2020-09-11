@@ -149,7 +149,7 @@ public class WearableController
         }
     }
 
-    public void SetAssetRenderersEnabled(bool active)
+    public virtual void SetAssetRenderersEnabled(bool active)
     {
         for (var i = 0; i < assetRenderers.Length; i++)
         {

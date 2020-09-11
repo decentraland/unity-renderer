@@ -28,7 +28,6 @@ public class BodyShapeController : WearableController
     public override void Load(Transform parent, Action<WearableController> onSuccess, Action<WearableController> onFail)
     {
         animationTarget = parent;
-        skinnedMeshRenderer = null;
         base.Load(parent, onSuccess, onFail);
     }
 
@@ -92,6 +91,13 @@ public class BodyShapeController : WearableController
             "eyebrows");
     }
 
+    public override void SetAssetRenderersEnabled(bool active)
+    {
+        base.SetAssetRenderersEnabled(active);
+        if (skinnedMeshRenderer != null)
+            skinnedMeshRenderer.enabled = true;
+    }
+
     public void SetupMouth(Material material, Texture texture, Color color)
     {
         AvatarUtils.MapSharedMaterialsRecursively(assetContainer.transform,
@@ -129,9 +135,23 @@ public class BodyShapeController : WearableController
 
     protected override void PrepareWearable(GameObject assetContainer)
     {
-        skinnedMeshRenderer = assetContainer.GetComponentInChildren<SkinnedMeshRenderer>();
-
         var animation = PrepareAnimation(assetContainer);
+
+        //We create a mock SkinnedMeshRenderer to hold the bones for the animations,
+        //since any of the others SkinnedMeshRenderers in the bodyshape can be disabled arbitrarily
+        SkinnedMeshRenderer[] skinnedMeshRenderersInChild = assetContainer.GetComponentsInChildren<SkinnedMeshRenderer>();
+        skinnedMeshRenderer = animation.gameObject.GetOrCreateComponent<SkinnedMeshRenderer>();
+        skinnedMeshRenderer.enabled = true;
+        foreach (SkinnedMeshRenderer meshRenderer in skinnedMeshRenderersInChild)
+        {
+            if (skinnedMeshRenderer != meshRenderer)
+            {
+                skinnedMeshRenderer.rootBone = meshRenderer.rootBone;
+                skinnedMeshRenderer.bones = meshRenderer.bones;
+                break;
+            }
+        }
+
         var animator = animationTarget.GetComponent<AvatarAnimatorLegacy>();
         animator.BindBodyShape(animation, bodyShapeId, animationTarget);
 
