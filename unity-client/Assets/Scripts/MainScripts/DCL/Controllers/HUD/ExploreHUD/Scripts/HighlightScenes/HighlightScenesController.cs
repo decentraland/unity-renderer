@@ -1,4 +1,6 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections;
+using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 using DCL.Interface;
@@ -6,13 +8,13 @@ using DCL.Interface;
 internal class HighlightScenesController : MonoBehaviour
 {
     const float SCENES_UPDATE_INTERVAL = 60;
+    private const float SCENE_FIRST_LOAD_DELAY = 0.2f;
 
     [SerializeField] HotSceneCellView hotsceneBaseCellView;
     [SerializeField] ScrollRect scrollRect;
-    [SerializeField] GameObject loadingSpinner;
 
     Dictionary<Vector2Int, HotSceneCellView> cachedHotScenes = new Dictionary<Vector2Int, HotSceneCellView>();
-    Dictionary<Vector2Int, BaseSceneCellView> activeHotSceneViews = new Dictionary<Vector2Int, BaseSceneCellView>();
+    Dictionary<Vector2Int, HotSceneCellView> activeHotSceneViews = new Dictionary<Vector2Int, HotSceneCellView>();
 
     ExploreMiniMapDataController mapDataController;
     FriendTrackerController friendsController;
@@ -20,17 +22,23 @@ internal class HighlightScenesController : MonoBehaviour
     ViewPool<HotSceneCellView> hotScenesViewPool;
 
     float lastTimeRefreshed = 0;
+    private Coroutine firstLoadAnimRoutine = null;
 
     public void Initialize(ExploreMiniMapDataController mapDataController, FriendTrackerController friendsController)
     {
         this.mapDataController = mapDataController;
         this.friendsController = friendsController;
-        hotScenesViewPool = new ViewPool<HotSceneCellView>(hotsceneBaseCellView, 5);
+        hotScenesViewPool = new ViewPool<HotSceneCellView>(hotsceneBaseCellView, 9);
     }
 
     public void RefreshIfNeeded()
     {
-        if (cachedHotScenes.Count == 0 || HotScenesController.i.timeSinceLastUpdate >= SCENES_UPDATE_INTERVAL)
+        bool isFirstTimeLoad = cachedHotScenes.Count == 0;
+        if (isFirstTimeLoad && !ExploreHUDController.isTest)
+        {
+            firstLoadAnimRoutine = StartCoroutine(FirstTimeLoadingRoutine());
+        }
+        else if (HotScenesController.i.timeSinceLastUpdate >= SCENES_UPDATE_INTERVAL)
         {
             FetchHotScenes();
         }
@@ -38,17 +46,12 @@ internal class HighlightScenesController : MonoBehaviour
         {
             ProcessHotScenes();
         }
-        else
-        {
-            loadingSpinner.SetActive(false);
-        }
+
         scrollRect.verticalNormalizedPosition = 1;
     }
 
     void FetchHotScenes()
     {
-        loadingSpinner.SetActive(true);
-
         WebInterface.FetchHotScenes();
 
         HotScenesController.i.OnHotSceneListFinishUpdating -= OnFetchHotScenes;
@@ -94,39 +97,42 @@ internal class HighlightScenesController : MonoBehaviour
         else
         {
             hotSceneView = hotScenesViewPool.GetView();
+            hotSceneView.Setup();
             cachedHotScenes.Add(baseCoords, hotSceneView);
         }
 
         hotSceneView.transform.SetSiblingIndex(priority);
 
-        ICrowdDataView crowdView = hotSceneView;
-        crowdView.SetCrowdInfo(hotSceneInfo);
+        if (!hotSceneView.gameObject.activeSelf)
+        {
+            hotSceneView.gameObject.SetActive(true);
+        }
 
-        IMapDataView mapView = hotSceneView;
+        if (!IsHotSceneCellActive(baseCoords))
+        {
+            AddActiveHotSceneCell(baseCoords, hotSceneView);
+        }
 
-        mapDataController.SetMinimapData(baseCoords, mapView,
-            (resolvedView) =>
-            {
-                if (!IsHotSceneCellActive(baseCoords))
+        hotSceneView.crowdHandler.SetCrowdInfo(hotSceneInfo);
+
+        if (!hotSceneView.mapInfoHandler.HasMinimapSceneInfo())
+        {
+            mapDataController.SetMinimapData(baseCoords, hotSceneView.mapInfoHandler,
+                (resolvedView) =>
                 {
-                    AddActiveHotSceneCell(baseCoords, hotSceneView);
-                }
-                loadingSpinner.SetActive(false);
-            },
-            (rejectedView) =>
-            {
-                hotScenesViewPool.PoolView(hotSceneView);
-                cachedHotScenes[baseCoords] = null;
-            });
+                    friendsController.AddHandler(hotSceneView.friendsHandler);
+                },
+                (rejectedView) =>
+                {
+                    hotScenesViewPool.PoolView(hotSceneView);
+                    cachedHotScenes[baseCoords] = null;
+                });
+        }
     }
 
-    void AddActiveHotSceneCell(Vector2Int coords, BaseSceneCellView view)
+    void AddActiveHotSceneCell(Vector2Int coords, HotSceneCellView view)
     {
-        if (view == null) return;
-
-        view.gameObject.SetActive(true);
         activeHotSceneViews.Add(coords, view);
-        friendsController.AddHandler(view);
     }
 
     bool IsHotSceneCellActive(Vector2Int coords)
@@ -136,19 +142,43 @@ internal class HighlightScenesController : MonoBehaviour
 
     void RemoveActiveHotSceneCell(Vector2Int coords)
     {
-        BaseSceneCellView view;
-        if (activeHotSceneViews.TryGetValue(coords, out view))
+        if (activeHotSceneViews.TryGetValue(coords, out HotSceneCellView view))
         {
             view.gameObject.SetActive(false);
-            friendsController.RemoveHandler(view);
+            view.Clear();
+            friendsController.RemoveHandler(view.friendsHandler);
         }
 
         activeHotSceneViews.Remove(coords);
+    }
+
+    private void OnDisable()
+    {
+        if (!(firstLoadAnimRoutine is null))
+        {
+            StopCoroutine(firstLoadAnimRoutine);
+            firstLoadAnimRoutine = null;
+        }
     }
 
     void OnDestroy()
     {
         HotScenesController.i.OnHotSceneListFinishUpdating -= OnFetchHotScenes;
         hotScenesViewPool?.Dispose();
+    }
+
+    IEnumerator FirstTimeLoadingRoutine()
+    {
+        using (var iterator = hotScenesViewPool.GetEnumerator())
+        {
+            while (iterator.MoveNext())
+            {
+                if (iterator.Current is null) continue;
+
+                iterator.Current.gameObject.SetActive(true);
+                yield return new WaitForSeconds(SCENE_FIRST_LOAD_DELAY);
+            }
+        }
+        FetchHotScenes();
     }
 }
