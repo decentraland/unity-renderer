@@ -19,6 +19,7 @@ namespace Tests
         protected override IEnumerator SetUp()
         {
             yield return base.SetUp();
+            ExploreHUDController.isTest = true;
 
             SetupUserProfileController();
 
@@ -260,7 +261,7 @@ namespace Tests
             var cells = GameObject.FindObjectsOfType<HotSceneCellView>();
             for (int i = 0; i < cells.Length; i++)
             {
-                ret.Add(((IMapDataView)cells[i]).GetBaseCoord(), cells[i]);
+                ret.Add(cells[i].mapInfoHandler.baseCoord, cells[i]);
             }
             return ret;
         }
