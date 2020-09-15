@@ -1832,6 +1832,7 @@ MonoBehaviour:
   mapRenderContainer: {fileID: 1347496358759656025}
   mapViewport: {fileID: 7368721439090438775}
   openNavmapButton: {fileID: 5098086527300088398}
+  toggleNavMapAction: {fileID: 11400000, guid: fc656e28ef52546e6a82e7ae7f5570b5, type: 2}
 --- !u!222 &269540385008896160
 CanvasRenderer:
   m_ObjectHideFlags: 0

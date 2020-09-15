@@ -7,17 +7,22 @@
         "GUID:ef84d7ce90ba34f07be26ace428e9bc8",
         "GUID:d9a4800ebd3d742459c4760c04abca30",
         "GUID:98bf3bf29030cbf4092d89a7cc28b7fb",
-        "GUID:0e967802b778d404eac1ca5ea340e290"
-    ],
-    "optionalUnityReferences": [
-        "TestAssemblies"
+        "GUID:0e967802b778d404eac1ca5ea340e290",
+        "GUID:27619889b8ba8c24980f49ee34dbb44a",
+        "GUID:0acc523941302664db1f4e527237feb3",
+        "GUID:4720e174f2805c74bb7aa94cc8bb5bf8"
     ],
     "includePlatforms": [],
     "excludePlatforms": [],
     "allowUnsafeCode": false,
-    "overrideReferences": false,
-    "precompiledReferences": [],
-    "autoReferenced": true,
-    "defineConstraints": [],
-    "versionDefines": []
+    "overrideReferences": true,
+    "precompiledReferences": [
+        "nunit.framework.dll"
+    ],
+    "autoReferenced": false,
+    "defineConstraints": [
+        "UNITY_INCLUDE_TESTS"
+    ],
+    "versionDefines": [],
+    "noEngineReferences": false
 }
