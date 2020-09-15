@@ -1,5 +1,6 @@
 using NUnit.Framework;
 using System.Collections;
+using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.TestTools;
 
@@ -58,42 +59,20 @@ namespace Tests
             Assert.IsFalse(navmapView.scrollRect.gameObject.activeSelf);
         }
 
-        [UnityTest]
-        public IEnumerator SetSceneName()
+        [Test]
+        public void ReactToPlayerCoordsChange()
         {
             const string sceneName = "SCENE_NAME";
-
-            controller.UpdateSceneName(sceneName);
-
-            yield return null;
-
+            MinimapMetadata.GetMetadata().AddSceneInfo(
+                new MinimapMetadata.MinimapSceneInfo{
+                    parcels = new List<Vector2Int> {
+                        new Vector2Int(-77,-77)
+                    },
+                    name = sceneName
+                });
+            CommonScriptableObjects.playerCoords.Set(new Vector2Int(-77,-77));
             Assert.AreEqual(sceneName, navmapView.currentSceneNameText.text);
-        }
-
-        [UnityTest]
-        public IEnumerator SetPlayerCoordinatesVector2()
-        {
-            Vector2 coords = new Vector2(Random.Range(-150, 150), Random.Range(-150, 150));
-            string coordString = $"{coords.x},{coords.y}";
-
-            controller.UpdatePlayerPosition(coords);
-
-            yield return null;
-
-            Assert.AreEqual(coordString, navmapView.currentSceneCoordsText.text);
-        }
-
-        [UnityTest]
-        public IEnumerator SetPlayerCoordinatesString()
-        {
-            Vector2 coords = new Vector2(Random.Range(-150, 150), Random.Range(-150, 150));
-            string coordString = $"{coords.x},{coords.y}";
-
-            controller.UpdatePlayerPosition(coordString);
-
-            yield return null;
-
-            Assert.AreEqual(coordString, navmapView.currentSceneCoordsText.text);
+            Assert.AreEqual("-77,-77", navmapView.currentSceneCoordsText.text);
         }
     }
 }
