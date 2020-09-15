@@ -1,7 +1,6 @@
 {
-    "name": "SceneTests",
+    "name": "BlockerControllerTests",
     "references": [
-        "GUID:e555144732b726c4cba5b0f6337fea75",
         "GUID:cc6bfabbfe87b7949aa248893f89ce37",
         "GUID:9fad297e585ef204c9c2c497d77099f0",
         "GUID:b1087c5731ff68448a0a9c625bb7e52d",
@@ -10,7 +9,8 @@
         "GUID:27619889b8ba8c24980f49ee34dbb44a",
         "GUID:0acc523941302664db1f4e527237feb3",
         "GUID:a881b57670b1d2747a6d7f9e32b63230",
-        "GUID:82873c2d9c9cbe94391e6b33e5153865"
+        "GUID:82873c2d9c9cbe94391e6b33e5153865",
+        "GUID:e555144732b726c4cba5b0f6337fea75"
     ],
     "includePlatforms": [],
     "excludePlatforms": [],

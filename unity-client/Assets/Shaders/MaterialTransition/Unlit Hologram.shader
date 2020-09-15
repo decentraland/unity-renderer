@@ -11,8 +11,9 @@ Shader "DCL/FX/Hologram"
         [PerRendererData] _CullYPlane ("Cull Y Plane", Float) = 0.5
         _FadeThickness ("Fade Thickness", Float) = 5
         _FadeDirection ("Fade Direction", Float) = 0
+        _MaxRenderingDistance ("Max Rendering Distance", Float) = 45
     }
- 
+
     SubShader
     {
         Pass
@@ -23,7 +24,7 @@ Shader "DCL/FX/Hologram"
             ZWrite Off
 
             CGPROGRAM
-			
+
             #pragma vertex vert
             #pragma fragment frag
 
@@ -32,16 +33,17 @@ Shader "DCL/FX/Hologram"
 
                 float4 _RimColor;
                 float _RimPower;
-			
+
                 float _ThrobbScale;
                 float _FadeDirection;
                 float _FadeThickness;
                 float _CullYPlane;
+                float _MaxRenderingDistance;
             CBUFFER_END
-			
+
             struct vertexInput
             {
-                float4 vertex : POSITION;			
+                float4 vertex : POSITION;
                 float3 normal : NORMAL;
             };
 
@@ -55,10 +57,10 @@ Shader "DCL/FX/Hologram"
             vertexOutput vert(vertexInput v)
             {
                 vertexOutput o;
-				
+
                 o.posWorld = mul(unity_ObjectToWorld, v.vertex);
                 o.normalDir = normalize( mul( float4( v.normal, 0.0 ), unity_WorldToObject ).xyz );;
-				
+
                 o.pos = UnityObjectToClipPos(v.vertex);
                 return o;
             }
@@ -77,6 +79,14 @@ Shader "DCL/FX/Hologram"
 
             float4 frag(vertexOutput i) : COLOR
             {
+                float distanceAlphaMultiplier = 1;
+                float renderingDistance = length(_WorldSpaceCameraPos.xyz - i.posWorld.xyz);
+
+                if (renderingDistance > _MaxRenderingDistance) return (0,0,0,0);
+
+                float halfMaxRenderingDistance = _MaxRenderingDistance / 2;
+                distanceAlphaMultiplier = 1 - ((renderingDistance - halfMaxRenderingDistance) / halfMaxRenderingDistance);
+
                 float lambertAtten = GetLambertAttenuation(i);
                 float rim = GetRimLighting(i);
 
@@ -85,15 +95,16 @@ Shader "DCL/FX/Hologram"
 
                 float finalRimFactor = rim * animatedThrobbing;
                 float3 finalRimColor = _RimColor.rgb * (lambertAtten * finalRimFactor);
-				
+
                 float4 finalColor = float4( _Color.rgb + finalRimColor, _Color.a + finalRimFactor );
+                finalColor.a = saturate(finalColor.a * distanceAlphaMultiplier);
 
                 // NOTE(Brian): fading code
                 bool insideFadeThreshold;
 
                 if ( _FadeDirection == 0 )
                     insideFadeThreshold = i.posWorld.y < _CullYPlane;
-                else 
+                else
                     insideFadeThreshold = i.posWorld.y > (_CullYPlane - _FadeThickness);
 
                 if (insideFadeThreshold)
@@ -110,7 +121,7 @@ Shader "DCL/FX/Hologram"
 
                 return finalColor;
             }
-        ENDCG	
-        }		
+        ENDCG
+        }
     }
 }
