@@ -20,7 +20,8 @@
       "@decentraland/EthereumController",
       "@decentraland/SocialController",
       "@decentraland/Identity",
-      "@decentraland/web3-provider"
+      "@decentraland/web3-provider",
+      "@decentraland/EnvironmentAPI"
     ],
     "typeRoots": [
       "."
