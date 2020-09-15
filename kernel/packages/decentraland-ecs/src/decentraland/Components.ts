@@ -281,7 +281,7 @@ export class CylinderShape extends Shape {
    * The radius of the top of the cylinder. Defaults to 0.
    */
   @ObservableComponent.field
-  radiusTop: number = 0
+  radiusTop: number = 1
 
   /**
    * The radius of the base of the cylinder. Defaults to 1.
