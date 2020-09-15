@@ -6,17 +6,14 @@ using UnityEngine;
 
 namespace DCL
 {
-    public class PointerEventsController : MonoBehaviour
+    public class PointerEventsController
     {
-        public static PointerEventsController i { get; private set; }
-
-        public InteractionHoverCanvasController interactionHoverCanvasController;
-
         private static bool renderingIsDisabled => !CommonScriptableObjects.rendererState.Get();
-        public static System.Action OnPointerHoverStarts;
-        public static System.Action OnPointerHoverEnds;
+        public System.Action OnPointerHoverStarts;
+        public System.Action OnPointerHoverEnds;
 
         bool isTesting = false;
+        InteractionHoverCanvasController hoverController;
         RaycastHitInfo lastPointerDownEventHitInfo;
         OnPointerUp pointerUpEvent;
         IRaycastHandler raycastHandler = new RaycastHandler();
@@ -27,18 +24,6 @@ namespace DCL
         OnPointerEvent[] lastHoveredEventList = null;
         RaycastHit hitInfo;
 
-        void Awake()
-        {
-            if (i != null)
-            {
-                Utils.SafeDestroy(this);
-
-                return;
-            }
-
-            i = this;
-        }
-
         public void Initialize(bool isTesting = false)
         {
             this.isTesting = isTesting;
@@ -47,12 +32,14 @@ namespace DCL
             InputController_Legacy.i.AddListener(WebInterface.ACTION_BUTTON.PRIMARY, OnButtonEvent);
             InputController_Legacy.i.AddListener(WebInterface.ACTION_BUTTON.SECONDARY, OnButtonEvent);
 
+            hoverController = Environment.i.interactionHoverCanvasController;
+
             RetrieveCamera();
         }
 
         private IRaycastPointerClickHandler clickHandler;
 
-        void Update()
+        public void Update()
         {
             if (!CommonScriptableObjects.rendererState.Get() || charCamera == null) return;
 
@@ -60,7 +47,7 @@ namespace DCL
             if (!Physics.Raycast(GetRayFromCamera(), out hitInfo, Mathf.Infinity, PhysicsLayers.physicsCastLayerMaskWithoutCharacter))
             {
                 clickHandler = null;
-                UnhoverLastHoveredObject();
+                UnhoverLastHoveredObject(hoverController);
                 return;
             }
 
@@ -68,7 +55,7 @@ namespace DCL
             if (raycastHandlerTarget != null)
             {
                 ResolveGenericRaycastHandlers(raycastHandlerTarget);
-                UnhoverLastHoveredObject();
+                UnhoverLastHoveredObject(hoverController);
                 return;
             }
 
@@ -81,7 +68,7 @@ namespace DCL
 
             if (!EventObjectCanBeHovered(newHoveredEvent, info))
             {
-                UnhoverLastHoveredObject();
+                UnhoverLastHoveredObject(hoverController);
                 return;
             }
 
@@ -89,7 +76,7 @@ namespace DCL
 
             if (newHoveredObject != lastHoveredObject)
             {
-                UnhoverLastHoveredObject();
+                UnhoverLastHoveredObject(hoverController);
 
                 lastHoveredObject = newHoveredObject;
                 lastHoveredEventList = newHoveredObject.GetComponents<OnPointerEvent>();
@@ -155,7 +142,7 @@ namespace DCL
             }
         }
 
-        void UnhoverLastHoveredObject()
+        void UnhoverLastHoveredObject(InteractionHoverCanvasController interactionHoverCanvasController)
         {
             if (lastHoveredObject == null)
             {

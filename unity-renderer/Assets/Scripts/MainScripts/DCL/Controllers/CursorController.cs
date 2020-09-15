@@ -10,14 +10,14 @@ public class CursorController : MonoBehaviour
 
     void OnEnable()
     {
-        PointerEventsController.OnPointerHoverStarts += SetHoverCursor;
-        PointerEventsController.OnPointerHoverEnds += SetNormalCursor;
+        Environment.i.pointerEventsController.OnPointerHoverStarts += SetHoverCursor;
+        Environment.i.pointerEventsController.OnPointerHoverEnds += SetNormalCursor;
     }
 
     void OnDisable()
     {
-        PointerEventsController.OnPointerHoverStarts -= SetHoverCursor;
-        PointerEventsController.OnPointerHoverEnds -= SetNormalCursor;
+        Environment.i.pointerEventsController.OnPointerHoverStarts -= SetHoverCursor;
+        Environment.i.pointerEventsController.OnPointerHoverEnds -= SetNormalCursor;
     }
 
     void SetNormalCursor()

@@ -3,6 +3,7 @@ using DCL.Components;
 using UnityEngine;
 using TMPro;
 using System.Collections.Generic;
+using DCL;
 
 public class InteractionHoverCanvasController : MonoBehaviour
 {
@@ -23,6 +24,8 @@ public class InteractionHoverCanvasController : MonoBehaviour
 
     void Awake()
     {
+        Environment.i.SetInteractionHoverCanvasController(this);
+
         mainCamera = Camera.main;
     }
 

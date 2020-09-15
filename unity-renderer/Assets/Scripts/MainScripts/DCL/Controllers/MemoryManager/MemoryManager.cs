@@ -6,7 +6,7 @@ using UnityEngine.Profiling;
 
 namespace DCL
 {
-    public class MemoryManager : Singleton<MemoryManager>
+    public class MemoryManager
     {
         private const uint MAX_USED_MEMORY = 1300 * 1024 * 1024;
         private const float TIME_FOR_NEW_MEMORY_CHECK = 1.0f;

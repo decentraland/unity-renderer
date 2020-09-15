@@ -10,6 +10,8 @@ namespace DCL.Components
     {
         public static bool enableInteractionHoverFeedback = true;
 
+        InteractionHoverCanvasController hoverCanvasController;
+
         [System.Serializable]
         new public class Model : UUIDComponent.Model
         {
@@ -24,8 +26,6 @@ namespace DCL.Components
             get;
             private set;
         }
-
-        InteractionHoverCanvasController hoverCanvasController;
 
         public override void Setup(ParcelScene scene, DecentralandEntity entity, UUIDComponent.Model model)
         {
@@ -71,9 +71,7 @@ namespace DCL.Components
             pointerEventColliders = Utils.GetOrCreateComponent<OnPointerEventColliders>(this.gameObject);
             pointerEventColliders.Initialize(entity);
             pointerEventColliders.refCount++;
-
-            if (hoverCanvasController == null)
-                hoverCanvasController = PointerEventsController.i.interactionHoverCanvasController;
+            hoverCanvasController = Environment.i.interactionHoverCanvasController;
         }
 
         public bool IsVisible()

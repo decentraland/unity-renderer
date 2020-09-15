@@ -15,7 +15,6 @@ namespace MessagingBusTest
         protected LinkedList<MessagingBus.QueuedSceneMessage_Scene> queuedMessages = new LinkedList<MessagingBus.QueuedSceneMessage_Scene>();
         protected string dataSource = "../TestResources/SceneMessages/SceneMessagesDump.RealData.txt";
         protected IMessageProcessHandler dummyHandler = new DummyMessageHandler();
-
         protected IEnumerator<MessagingBus.QueuedSceneMessage_Scene> nextQueueMessage;
 
         // protected MessagingBus bus;
@@ -157,28 +156,4 @@ namespace MessagingBusTest
         }
     }
 
-    internal class DummyMessageHandler : IMessageProcessHandler
-    {
-        public void LoadParcelScenesExecute(string decentralandSceneJSON)
-        {
-        }
-
-        public bool ProcessMessage(MessagingBus.QueuedSceneMessage_Scene msgObject, out CleanableYieldInstruction yieldInstruction)
-        {
-            yieldInstruction = null;
-            return true;
-        }
-
-        public void UnloadAllScenes()
-        {
-        }
-
-        public void UnloadParcelSceneExecute(string sceneKey)
-        {
-        }
-
-        public void UpdateParcelScenesExecute(string sceneKey)
-        {
-        }
-    }
 }
