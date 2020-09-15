@@ -24,6 +24,7 @@ MonoBehaviour:
     cameraDrawDistance: 50
     bloom: 0
     colorGrading: 0
+    shadowDistance: 30
   - displayName: Medium
     baseResolution: 1
     antiAliasing: 1
@@ -34,6 +35,7 @@ MonoBehaviour:
     cameraDrawDistance: 80
     bloom: 1
     colorGrading: 1
+    shadowDistance: 45
   - displayName: High
     baseResolution: 2
     antiAliasing: 2
@@ -44,3 +46,4 @@ MonoBehaviour:
     cameraDrawDistance: 100
     bloom: 1
     colorGrading: 1
+    shadowDistance: 60
