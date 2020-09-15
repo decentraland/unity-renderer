@@ -41,15 +41,12 @@ namespace DCL.Controllers
         public ContentProvider contentProvider;
         public int disposableNotReadyCount => disposableNotReady.Count;
 
-        [System.NonSerialized] public bool useBlockers = true;
-
         [System.NonSerialized] public bool isTestScene = false;
 
         [System.NonSerialized] public bool isPersistent = false;
 
         [System.NonSerialized] public bool unloadWithDistance = true;
 
-        public BlockerHandler blockerHandler;
         public bool isReady => state == State.READY;
 
         readonly List<string> disposableNotReady = new List<string>();
@@ -81,11 +78,6 @@ namespace DCL.Controllers
         void OnDisable()
         {
             metricsController.Disable();
-        }
-
-        private void OnDestroy()
-        {
-            blockerHandler?.CleanBlockers();
         }
 
         private void Update()
@@ -140,9 +132,6 @@ namespace DCL.Controllers
                 parcels.Add(sceneData.parcels[i]);
             }
 
-            if (useBlockers)
-                blockerHandler = new BlockerHandler();
-
             if (DCLCharacterController.i != null)
                 gameObject.transform.position = DCLCharacterController.i.characterPosition.WorldToUnityPosition(Utils.GridToWorldPosition(data.basePosition.x, data.basePosition.y));
 
@@ -154,7 +143,6 @@ namespace DCL.Controllers
                 return;
             }
 #endif
-            blockerHandler?.SetupBlockers(parcels, metricsController.GetLimits().sceneHeight, this.transform);
 
             if (isTestScene)
                 SetSceneReady();
@@ -722,144 +710,144 @@ namespace DCL.Controllers
 
             BaseDisposable newComponent = null;
 
-            switch ((CLASS_ID) classId)
+            switch ((CLASS_ID)classId)
             {
                 case CLASS_ID.BOX_SHAPE:
-                {
-                    newComponent = new BoxShape(this);
-                    break;
-                }
+                    {
+                        newComponent = new BoxShape(this);
+                        break;
+                    }
 
                 case CLASS_ID.SPHERE_SHAPE:
-                {
-                    newComponent = new SphereShape(this);
-                    break;
-                }
+                    {
+                        newComponent = new SphereShape(this);
+                        break;
+                    }
 
                 case CLASS_ID.CONE_SHAPE:
-                {
-                    newComponent = new ConeShape(this);
-                    break;
-                }
+                    {
+                        newComponent = new ConeShape(this);
+                        break;
+                    }
 
                 case CLASS_ID.CYLINDER_SHAPE:
-                {
-                    newComponent = new CylinderShape(this);
-                    break;
-                }
+                    {
+                        newComponent = new CylinderShape(this);
+                        break;
+                    }
 
                 case CLASS_ID.PLANE_SHAPE:
-                {
-                    newComponent = new PlaneShape(this);
-                    break;
-                }
+                    {
+                        newComponent = new PlaneShape(this);
+                        break;
+                    }
 
                 case CLASS_ID.GLTF_SHAPE:
-                {
-                    newComponent = new GLTFShape(this);
-                    break;
-                }
+                    {
+                        newComponent = new GLTFShape(this);
+                        break;
+                    }
 
                 case CLASS_ID.NFT_SHAPE:
-                {
-                    newComponent = new NFTShape(this);
-                    break;
-                }
+                    {
+                        newComponent = new NFTShape(this);
+                        break;
+                    }
 
                 case CLASS_ID.OBJ_SHAPE:
-                {
-                    newComponent = new OBJShape(this);
-                    break;
-                }
+                    {
+                        newComponent = new OBJShape(this);
+                        break;
+                    }
 
                 case CLASS_ID.BASIC_MATERIAL:
-                {
-                    newComponent = new BasicMaterial(this);
-                    break;
-                }
+                    {
+                        newComponent = new BasicMaterial(this);
+                        break;
+                    }
 
                 case CLASS_ID.PBR_MATERIAL:
-                {
-                    newComponent = new PBRMaterial(this);
-                    break;
-                }
+                    {
+                        newComponent = new PBRMaterial(this);
+                        break;
+                    }
 
                 case CLASS_ID.AUDIO_CLIP:
-                {
-                    newComponent = new DCLAudioClip(this);
-                    break;
-                }
+                    {
+                        newComponent = new DCLAudioClip(this);
+                        break;
+                    }
 
                 case CLASS_ID.TEXTURE:
-                {
-                    newComponent = new DCLTexture(this);
-                    break;
-                }
+                    {
+                        newComponent = new DCLTexture(this);
+                        break;
+                    }
 
                 case CLASS_ID.UI_INPUT_TEXT_SHAPE:
-                {
-                    newComponent = new UIInputText(this);
-                    break;
-                }
+                    {
+                        newComponent = new UIInputText(this);
+                        break;
+                    }
 
                 case CLASS_ID.UI_FULLSCREEN_SHAPE:
                 case CLASS_ID.UI_SCREEN_SPACE_SHAPE:
-                {
-                    if (uiScreenSpace == null)
                     {
-                        newComponent = new UIScreenSpace(this);
+                        if (uiScreenSpace == null)
+                        {
+                            newComponent = new UIScreenSpace(this);
+                        }
+
+                        break;
                     }
 
-                    break;
-                }
-
                 case CLASS_ID.UI_CONTAINER_RECT:
-                {
-                    newComponent = new UIContainerRect(this);
-                    break;
-                }
+                    {
+                        newComponent = new UIContainerRect(this);
+                        break;
+                    }
 
                 case CLASS_ID.UI_SLIDER_SHAPE:
-                {
-                    newComponent = new UIScrollRect(this);
-                    break;
-                }
+                    {
+                        newComponent = new UIScrollRect(this);
+                        break;
+                    }
 
                 case CLASS_ID.UI_CONTAINER_STACK:
-                {
-                    newComponent = new UIContainerStack(this);
-                    break;
-                }
+                    {
+                        newComponent = new UIContainerStack(this);
+                        break;
+                    }
 
                 case CLASS_ID.UI_IMAGE_SHAPE:
-                {
-                    newComponent = new UIImage(this);
-                    break;
-                }
+                    {
+                        newComponent = new UIImage(this);
+                        break;
+                    }
 
                 case CLASS_ID.UI_TEXT_SHAPE:
-                {
-                    newComponent = new UIText(this);
-                    break;
-                }
+                    {
+                        newComponent = new UIText(this);
+                        break;
+                    }
 
                 case CLASS_ID.VIDEO_CLIP:
-                {
-                    newComponent = new DCLVideoClip(this);
-                    break;
-                }
+                    {
+                        newComponent = new DCLVideoClip(this);
+                        break;
+                    }
 
                 case CLASS_ID.VIDEO_TEXTURE:
-                {
-                    newComponent = new DCLVideoTexture(this);
-                    break;
-                }
+                    {
+                        newComponent = new DCLVideoTexture(this);
+                        break;
+                    }
 
                 case CLASS_ID.FONT:
-                {
-                    newComponent = new DCLFont(this);
-                    break;
-                }
+                    {
+                        newComponent = new DCLFont(this);
+                        break;
+                    }
 
                 default:
                     Debug.LogError($"Unknown classId");
@@ -1107,8 +1095,6 @@ namespace DCL.Controllers
                 Debug.Log($"{sceneData.basePosition} Scene Ready!");
 
             state = State.READY;
-
-            blockerHandler?.CleanBlockers();
 
             SceneController.i.SendSceneReady(sceneData.id);
             RefreshName();

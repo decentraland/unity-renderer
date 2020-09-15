@@ -31,7 +31,7 @@ public class DCLCharacterPosition
         {
             worldPositionValue = value;
             unityPositionValue = WorldToUnityPosition(worldPositionValue);
-            CheckAndTeleport();
+            CheckAndRepositionWorld();
         }
     }
 
@@ -43,7 +43,7 @@ public class DCLCharacterPosition
         {
             unityPositionValue = value;
             worldPositionValue = UnityToWorldPosition(unityPositionValue);
-            CheckAndTeleport();
+            CheckAndRepositionWorld();
         }
     }
 
@@ -53,14 +53,14 @@ public class DCLCharacterPosition
         CommonScriptableObjects.playerWorldPosition.Set(Vector3.zero);
     }
 
-    private void CheckAndTeleport()
+    private void CheckAndRepositionWorld()
     {
         bool dirty = false;
         float minDistanceForReposition = PlayerSettings.WORLD_REPOSITION_MINIMUM_DISTANCE;
 
         if (Mathf.Abs(unityPositionValue.x) > minDistanceForReposition)
         {
-            float dist = (int) (unityPositionValue.x / minDistanceForReposition) * minDistanceForReposition;
+            float dist = (int)(unityPositionValue.x / minDistanceForReposition) * minDistanceForReposition;
             unityPositionValue.x -= dist;
             offset.x += dist;
             dirty = true;
@@ -68,7 +68,7 @@ public class DCLCharacterPosition
 
         if (Mathf.Abs(unityPositionValue.z) > minDistanceForReposition)
         {
-            float dist = (int) (unityPositionValue.z / minDistanceForReposition) * minDistanceForReposition;
+            float dist = (int)(unityPositionValue.z / minDistanceForReposition) * minDistanceForReposition;
             unityPositionValue.z -= dist;
             offset.z += dist;
             dirty = true;
