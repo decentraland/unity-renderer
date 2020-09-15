@@ -21,6 +21,7 @@ namespace Tests
         protected override IEnumerator SetUp()
         {
             yield return base.SetUp();
+            Environment.i.Initialize(SceneController.i,  true);
             SceneController.i.SetDebug();
             DCL.Configuration.EnvironmentSettings.DEBUG = true;
         }
