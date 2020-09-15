@@ -67,6 +67,7 @@ namespace DCL.SettingsController
             {
                 lightweightRenderPipelineAsset.msaaSampleCount = (int) qualitySettings.antiAliasing;
                 lightweightRenderPipelineAsset.renderScale = qualitySettings.renderScale;
+                lightweightRenderPipelineAsset.shadowDistance = qualitySettings.shadowDistance;
 
                 lwrpaShadowField?.SetValue(lightweightRenderPipelineAsset, qualitySettings.shadows);
                 lwrpaSoftShadowField?.SetValue(lightweightRenderPipelineAsset, qualitySettings.softShadows);

@@ -67,6 +67,9 @@ namespace DCL.SettingsData
         [Tooltip("Enable color grading post process")]
         public bool colorGrading;
 
+        [Tooltip("Shadow Distance")] [Range(30, 100)]
+        public float shadowDistance;
+
         public bool Equals(QualitySettings otherSetting)
         {
             if (baseResolution != otherSetting.baseResolution) return false;
@@ -78,6 +81,7 @@ namespace DCL.SettingsData
             if (cameraDrawDistance != otherSetting.cameraDrawDistance) return false;
             if (bloom != otherSetting.bloom) return false;
             if (colorGrading != otherSetting.colorGrading) return false;
+            if (shadowDistance != otherSetting.shadowDistance) return false;
             return true;
         }
     }
