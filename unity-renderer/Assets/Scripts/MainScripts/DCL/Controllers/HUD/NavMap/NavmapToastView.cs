@@ -66,9 +66,17 @@ namespace DCL
 
             sceneOwnerText.transform.parent.gameObject.SetActive(sceneInfoExists && !string.IsNullOrEmpty(sceneInfo.owner));
             sceneDescriptionText.transform.parent.gameObject.SetActive(sceneInfoExists && !string.IsNullOrEmpty(sceneInfo.description));
-            sceneTitleText.transform.parent.gameObject.SetActive(sceneInfoExists && !string.IsNullOrEmpty(sceneInfo.name)); scenePreviewImage.gameObject.SetActive(sceneInfoExists && !string.IsNullOrEmpty(sceneInfo.previewImageUrl));
-            scenePreviewContainer.SetActive(sceneInfoExists && !string.IsNullOrEmpty(sceneInfo.previewImageUrl));
+            sceneTitleText.transform.parent.gameObject.SetActive(sceneInfoExists && !string.IsNullOrEmpty(sceneInfo.name));
             scenePreviewLoadingSpinner.SetActive(false);
+
+            bool useDefaultThumbnail =
+                !sceneInfoExists || (sceneInfoExists && string.IsNullOrEmpty(sceneInfo.previewImageUrl));
+
+            if (useDefaultThumbnail)
+            {
+                scenePreviewImage.texture = scenePreviewFailImage.texture;
+                currentImageUrl = "";
+            }
 
             if (sceneInfoExists)
             {
