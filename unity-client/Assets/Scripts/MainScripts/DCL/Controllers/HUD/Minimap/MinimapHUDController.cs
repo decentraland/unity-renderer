@@ -11,6 +11,7 @@ public class MinimapHUDController : IHUD
     private StringVariable currentSceneId => CommonScriptableObjects.sceneID;
 
     public MinimapHUDModel model { get; private set; } = new MinimapHUDModel();
+    public RectTransform minimapTooltipReference { get => view.minimapTooltipReference; }
 
     public MinimapHUDController() : this(new MinimapHUDModel())
     {

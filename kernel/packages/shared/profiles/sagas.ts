@@ -12,8 +12,7 @@ import {
   PIN_CATALYST,
   PREVIEW,
   ethereumConfigurations,
-  RESET_TUTORIAL,
-  DEBUG
+  RESET_TUTORIAL
 } from 'config'
 
 import { NotificationType } from 'shared/types'
@@ -477,10 +476,6 @@ export function* submitProfileToRenderer(action: ProfileSuccessAction): any {
     // FIXIT - need to have this duplicated here, as the inventory won't be used if not - moliva - 17/12/2019
     if (ALL_WEARABLES) {
       profile.inventory = (yield select(getExclusiveCatalog)).map((_: Wearable) => _.id)
-    }
-
-    if (!DEBUG) {
-      globalThis.unityInterface.ConfigureEmailPrompt(profile.tutorialStep)
     }
 
     yield call(sendLoadProfile, profile)
