@@ -14,12 +14,12 @@ public class TaskbarMoreMenu : MonoBehaviour
     [SerializeField] internal GameObject expandIcon;
     [SerializeField] internal GameObject expandText;
 
-    [Header("Hide UI Button Config")]
+    [Header("Other Buttons Config")]
     [SerializeField] internal Button hideUIButton;
-
-    [Header("Controls Button Config")]
     [SerializeField] internal Button controlsButton;
     [SerializeField] internal InputAction_Trigger controlsToggleAction;
+    [SerializeField] internal Button settingsButton;
+    [SerializeField] internal Button helpAndSupportButton;
 
     private TaskbarHUDView view;
 
@@ -30,6 +30,8 @@ public class TaskbarMoreMenu : MonoBehaviour
         collapseBarButton.gameObject.SetActive(true);
         hideUIButton.gameObject.SetActive(true);
         controlsButton.gameObject.SetActive(false);
+        settingsButton.gameObject.SetActive(false);
+        helpAndSupportButton.gameObject.SetActive(false);
 
         collapseBarButton.onClick.AddListener(() =>
         {
@@ -48,7 +50,30 @@ public class TaskbarMoreMenu : MonoBehaviour
 
         controlsButton.onClick.AddListener(() =>
         {
-            ToggleControls();
+            controlsToggleAction.RaiseOnTriggered();
+            view.moreButton.SetToggleState(false);
+        });
+    }
+
+    internal void ActivateSettingsButton()
+    {
+        settingsButton.gameObject.SetActive(true);
+
+        settingsButton.onClick.AddListener(() =>
+        {
+            view.controller.settingsHud.SetVisibility(true);
+            view.moreButton.SetToggleState(false);
+        });
+    }
+
+    internal void ActivateHelpAndSupportButton()
+    {
+        helpAndSupportButton.gameObject.SetActive(true);
+
+        helpAndSupportButton.onClick.AddListener(() =>
+        {
+            view.controller.helpAndSupportHud.SetVisibility(true);
+            view.moreButton.SetToggleState(false);
         });
     }
 
@@ -76,12 +101,6 @@ public class TaskbarMoreMenu : MonoBehaviour
     private void ToggleHideUI()
     {
         CommonScriptableObjects.allUIHidden.Set(!CommonScriptableObjects.allUIHidden.Get());
-        view.moreButton.SetToggleState(false);
-    }
-
-    private void ToggleControls()
-    {
-        controlsToggleAction.RaiseOnTriggered();
         view.moreButton.SetToggleState(false);
     }
 }

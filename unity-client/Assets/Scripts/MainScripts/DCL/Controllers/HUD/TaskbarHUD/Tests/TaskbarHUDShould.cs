@@ -97,7 +97,6 @@ public class TaskbarHUDShould : TestsBase
         controller.AddSettingsWindow(settingsHudController);
 
         Assert.IsTrue(settingsHudController.view.gameObject.activeSelf, "Settings window is disabled!");
-        Assert.IsTrue(view.separatorMark.activeSelf, "Separator mark is disabled!");
     }
 
     [Test]
@@ -107,7 +106,6 @@ public class TaskbarHUDShould : TestsBase
         controller.AddHelpAndSupportWindow(helpAndSupportHUDController);
 
         Assert.IsTrue(helpAndSupportHUDController.view.gameObject.activeSelf, "Help and Support window is disabled!");
-        Assert.IsTrue(view.separatorMark.activeSelf, "Separator mark is disabled!");
     }
 
     [Test]
@@ -174,7 +172,7 @@ public class TaskbarHUDShould : TestsBase
 
         var buttonList = view.GetButtonList();
 
-        Assert.AreEqual(8, buttonList.Count, "Chat head is missing when receiving a private message?");
+        Assert.AreEqual(6, buttonList.Count, "Chat head is missing when receiving a private message?");
 
         Assert.IsFalse(view.chatButton.toggledOn);
         Assert.IsTrue(buttonList[2] is ChatHeadButton);
