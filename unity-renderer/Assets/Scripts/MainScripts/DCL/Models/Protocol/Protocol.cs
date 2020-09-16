@@ -17,7 +17,8 @@ namespace DCL.Models
         GIZMOS = 203,
         BILLBOARD = 32,
         SMART_ITEM = 204,
-        AUDIO_STREAM = 202
+        AUDIO_STREAM = 202,
+        AVATAR_MODIFIER_AREA = 205
     }
 
     public enum CLASS_ID

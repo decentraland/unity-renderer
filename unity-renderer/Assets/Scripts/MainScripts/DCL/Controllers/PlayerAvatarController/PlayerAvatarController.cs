@@ -5,6 +5,7 @@ using UnityEngine;
 public class PlayerAvatarController : MonoBehaviour
 {
     public AvatarRenderer avatarRenderer;
+    public AvatarVisibility avatarVisibility;
     public float cameraDistanceToDeactivate = 1.0f;
 
     private UserProfile userProfile => UserProfile.GetOwnUserProfile();
@@ -47,9 +48,7 @@ public class PlayerAvatarController : MonoBehaviour
         }
 
         bool shouldBeVisible = Vector3.Distance(mainCamera.transform.position, transform.position) > cameraDistanceToDeactivate;
-
-        if (shouldBeVisible != avatarRenderer.gameObject.activeSelf)
-            avatarRenderer.SetVisibility(shouldBeVisible);
+        avatarVisibility.SetVisibility("PLAYER_AVATAR_CONTROLLER", shouldBeVisible);
     }
 
     private void OnEnable()
