@@ -2,9 +2,10 @@
   "compilerOptions": {
     "target": "es5",
     "diagnostics": false,
-    "inlineSourceMap": false,
-    "inlineSources": false,
-    "sourceMap": true,
+    // only emit inline source maps
+    "inlineSourceMap": true,
+    "inlineSources": true,
+    "sourceMap": false,
     "moduleResolution": "classic",
     "stripInternal": true,
     "pretty": true,

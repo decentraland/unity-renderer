@@ -11,7 +11,7 @@ executeTask(async () => {
   try {
     const pub = await getUserPublicKey()
 
-    if (pub.indexOf('0x') !== 0) {
+    if (!pub || pub.indexOf('0x') !== 0) {
       throw new Error('invalid public key')
     }
 

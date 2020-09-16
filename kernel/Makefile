@@ -36,6 +36,7 @@ scripts/%.js: $(SOURCE_SUPPORT_TS_FILES) scripts/tsconfig.json config-contracts
 
 packages/build-ecs/%.js: packages/build-ecs/%.ts packages/build-ecs/tsconfig.json
 	@npx tsc --build packages/build-ecs/tsconfig.json
+	@chmod +x packages/build-ecs/index.js
 
 static/loader/lifecycle/worker.js: packages/decentraland-loader/**/*.ts
 	@$(COMPILER) targets/engine/loader.json
@@ -97,10 +98,18 @@ TEST_ECS_SCENE_GAMEJS_FILES := $(subst .ts,.js,$(TEST_ECS_SCENE_SOURCES))
 
 # ECS scenes
 
-public/ecs-scenes/%/game.js: $(SCENE_SYSTEM) public/ecs-scenes/%/game.ts
+ECS_LIBRARY := public/ecs-scenes/-200.-30-libraries/node_modules/eth-wrapper/eth-wrapper.js
+
+public/ecs-scenes/-200.-30-libraries/node_modules/eth-wrapper/eth-wrapper.js: public/ecs-scenes/-200.-30-libraries/node_modules/eth-wrapper/eth-wrapper.ts $(BUILD_ECS)
+	$(BUILD_ECS) -p public/ecs-scenes/-200.-30-libraries/node_modules/eth-wrapper
+
+public/ecs-scenes/%/game.js: $(ECS_LIBRARY) $(SCENE_SYSTEM) public/ecs-scenes/%/game.ts
 	@node scripts/buildECSprojects.js
 
 # All scenes together
+
+ecs-scenes: $(TEST_ECS_SCENE_GAMEJS_FILES) $(BUILD_ECS)
+	$(MAKE) generate-mocks
 
 test-scenes: $(TEST_SCENES_GAMEJS_FILES) $(HELLMAP_GAMEJS_FILES) $(TEST_ECS_SCENE_GAMEJS_FILES) ## Build the test scenes
 	$(MAKE) generate-mocks
@@ -182,11 +191,17 @@ SCENE_JSONS := $(PARCEL_SCENE_JSONS) $(ECS_SCENE_JSONS) $(HELLMAP_SCENE_JSONS)
 
 dcl-amd:
 	cd $(CWD)/packages/decentraland-amd; npm install; make build
+	mkdir -p packages/decentraland-ecs/artifacts
+	ln -sf $(CWD)/packages/decentraland-amd/dist/amd.js packages/decentraland-ecs/artifacts/amd.js
+	ln -sf $(CWD)/packages/decentraland-amd/dist/amd.min.js packages/decentraland-ecs/artifacts/amd.min.js
+	ln -sf $(CWD)/packages/decentraland-amd/dist/amd.min.js.map packages/decentraland-ecs/artifacts/amd.min.js.map
 
 npm-link: build-essentials static/dist/preview.js static/dist/editor.js dcl-amd ## Run `npm link` to develop local scenes against this project
 	rm -rf packages/decentraland-ecs/artifacts || true
 	mkdir packages/decentraland-ecs/artifacts
 	ln -sf $(CWD)/packages/decentraland-amd/dist/amd.js packages/decentraland-ecs/artifacts/amd.js
+	ln -sf $(CWD)/packages/decentraland-amd/dist/amd.min.js packages/decentraland-ecs/artifacts/amd.min.js
+	ln -sf $(CWD)/packages/decentraland-amd/dist/amd.min.js.map packages/decentraland-ecs/artifacts/amd.min.js.map
 	ln -sf $(CWD)/packages/build-ecs/index.js packages/decentraland-ecs/artifacts/build-ecs.js
 	ln -sf $(CWD)/static/dist/preview.js packages/decentraland-ecs/artifacts/preview.js
 	ln -sf $(CWD)/static/dist/unityPreview.js packages/decentraland-ecs/artifacts/unityPreview.js

@@ -21,8 +21,21 @@ type Module = {
 }
 
 declare var dcl: DecentralandInterface
-declare var global: any
-declare var self: any
+
+// A naive attempt at getting the global `this`. Don’t use `this`!
+const getGlobalThis = function () {
+  // @ts-ignore
+  if (typeof globalThis !== 'undefined') return globalThis
+  // @ts-ignore
+  if (typeof self !== 'undefined') return self
+  // @ts-ignore
+  if (typeof window !== 'undefined') return window
+  // Note: this might still return the wrong result!
+  if (typeof this !== 'undefined') return this
+  throw new Error('Unable to locate global `this`')
+}
+
+const globalObject = (getGlobalThis as any)()
 
 namespace loader {
   'use strict'
@@ -110,7 +123,7 @@ namespace loader {
 
     updateExistingModuleIfIndexModule(id)
 
-    registeredModules[id].dependencies = dependencies.map((dep) => toUrl(dep, id))
+    registeredModules[id].dependencies = dependencies.map((dep) => _toUrl(dep, id))
 
     require(dependencies, ready, id)
   }
@@ -201,7 +214,7 @@ namespace loader {
             return require(new_module, callback, context)
           } as any
           _require.toUrl = function (module) {
-            return toUrl(module, context)
+            return _toUrl(module, context)
           }
           loadedModulesExports[x] = _require
           loadedCount++
@@ -213,7 +226,7 @@ namespace loader {
         case 'module':
           loadedModulesExports[x] = {
             id: context,
-            uri: toUrl(context)
+            uri: _toUrl(context)
           }
           loadedCount++
           break
@@ -252,7 +265,7 @@ namespace loader {
   }
 
   function load(moduleName: string, handler: Function, context: string) {
-    moduleName = context ? toUrl(moduleName, context) : moduleName
+    moduleName = context ? _toUrl(moduleName, context) : moduleName
 
     if (registeredModules[moduleName]) {
       if (registeredModules[moduleName].dclamd === MODULE_LOADING) {
@@ -302,7 +315,7 @@ namespace loader {
     })
   }
 
-  function toUrl(id: string, context?: string) {
+  function _toUrl(id: string, context?: string) {
     let changed = false
     switch (id) {
       case 'require':
@@ -327,19 +340,8 @@ namespace loader {
     return (newContext.length && changed ? newContext.join('/') + '/' : '') + idParts.join('/')
   }
 
-  require.toUrl = toUrl
+  require.toUrl = _toUrl
 }
 
-global =
-  typeof global !== 'undefined'
-    ? global
-    : typeof self !== 'undefined'
-    ? self
-    : typeof this !== 'undefined'
-    ? this
-    : null
-
-if (!global) throw new Error('unknown global context')
-
-global.define = loader.define
-global.dclamd = loader
+globalObject.define = loader.define
+globalObject.dclamd = loader
