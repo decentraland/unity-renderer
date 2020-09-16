@@ -18,6 +18,7 @@ public class WorldChatWindowHUDView : MonoBehaviour, IPointerClickHandler
     public bool isInPreview { get; private set; }
 
     public event UnityAction OnDeactivatePreview;
+    public event UnityAction OnActivatePreview;
     public event UnityAction OnClose;
     public UnityAction<ChatMessage> OnSendMessage;
 
@@ -63,6 +64,7 @@ public class WorldChatWindowHUDView : MonoBehaviour, IPointerClickHandler
         group.alpha = 0;
         isInPreview = true;
         chatHudView.SetFadeoutMode(true);
+        OnActivatePreview?.Invoke();
     }
 
     public void OnPointerClick(PointerEventData eventData)

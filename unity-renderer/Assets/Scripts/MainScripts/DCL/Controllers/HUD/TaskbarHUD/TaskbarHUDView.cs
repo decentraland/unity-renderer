@@ -18,12 +18,19 @@ public class TaskbarHUDView : MonoBehaviour
     [SerializeField] internal ChatHeadGroupView chatHeadsGroup;
 
     [Header("Right Side Config")]
+    [SerializeField] internal HorizontalLayoutGroup rightButtonsHorizontalLayout;
     [SerializeField] internal TaskbarButton backpackButton;
     [SerializeField] internal TaskbarButton exploreButton;
+    [SerializeField] internal TaskbarButton goToGenesisButton;
 
     [Header("More Button Config")]
     [SerializeField] internal TaskbarButton moreButton;
     [SerializeField] internal TaskbarMoreMenu moreMenu;
+
+    [Header("Tutorial Config")]
+    [SerializeField] internal RectTransform exploreTooltipReference;
+    [SerializeField] internal RectTransform moreTooltipReference;
+    [SerializeField] internal RectTransform goToGenesisTooltipReference;
 
     [Header("Old TaskbarCompatibility (temporal)")]
     [SerializeField] internal RectTransform taskbarPanelTransf;
@@ -41,6 +48,8 @@ public class TaskbarHUDView : MonoBehaviour
     public event System.Action OnBackpackToggleOff;
     public event System.Action OnExploreToggleOn;
     public event System.Action OnExploreToggleOff;
+    public event System.Action OnGoToGenesisToggleOn;
+    public event System.Action OnGoToGenesisToggleOff;
     public event System.Action OnMoreToggleOn;
     public event System.Action OnMoreToggleOff;
 
@@ -52,6 +61,7 @@ public class TaskbarHUDView : MonoBehaviour
         taskbarButtonList.AddRange(chatHeadsGroup.chatHeads);
         taskbarButtonList.Add(backpackButton);
         taskbarButtonList.Add(exploreButton);
+        taskbarButtonList.Add(goToGenesisButton);
         taskbarButtonList.Add(moreButton);
         return taskbarButtonList;
     }
@@ -74,6 +84,7 @@ public class TaskbarHUDView : MonoBehaviour
         friendsButton.transform.parent.gameObject.SetActive(false);
         backpackButton.transform.parent.gameObject.SetActive(false);
         exploreButton.transform.parent.gameObject.SetActive(false);
+        goToGenesisButton.transform.parent.gameObject.SetActive(false);
 
         moreButton.gameObject.SetActive(true);
         moreMenu.Initialize(this);
@@ -84,6 +95,7 @@ public class TaskbarHUDView : MonoBehaviour
         friendsButton.Initialize();
         backpackButton.Initialize();
         exploreButton.Initialize();
+        goToGenesisButton.Initialize();
         moreButton.Initialize();
 
         chatHeadsGroup.OnHeadToggleOn += OnWindowToggleOn;
@@ -100,6 +112,9 @@ public class TaskbarHUDView : MonoBehaviour
 
         exploreButton.OnToggleOn += OnWindowToggleOn;
         exploreButton.OnToggleOff += OnWindowToggleOff;
+
+        goToGenesisButton.OnToggleOn += OnWindowToggleOn;
+        goToGenesisButton.OnToggleOff += OnWindowToggleOff;
 
         moreButton.OnToggleOn += OnWindowToggleOn;
         moreButton.OnToggleOff += OnWindowToggleOff;
@@ -118,6 +133,8 @@ public class TaskbarHUDView : MonoBehaviour
             OnBackpackToggleOff?.Invoke();
         else if (obj == exploreButton)
             OnExploreToggleOff?.Invoke();
+        else if (obj == goToGenesisButton)
+            OnGoToGenesisToggleOff?.Invoke();
         else if (obj == moreButton)
             moreMenu.ShowMoreMenu(false);
 
@@ -153,6 +170,8 @@ public class TaskbarHUDView : MonoBehaviour
             OnBackpackToggleOn?.Invoke();
         else if (obj == exploreButton)
             OnExploreToggleOn?.Invoke();
+        else if (obj == goToGenesisButton)
+            OnGoToGenesisToggleOn?.Invoke();
         else if (obj == moreButton)
             moreMenu.ShowMoreMenu(true);
 
@@ -205,6 +224,11 @@ public class TaskbarHUDView : MonoBehaviour
     internal void OnAddHelpAndSupportWindow()
     {
         moreMenu.ActivateHelpAndSupportButton();
+    }
+
+    internal void OnAddGoToGenesisWindow(bool visible)
+    {
+        goToGenesisButton.transform.parent.gameObject.SetActive(visible);
     }
 
     internal void OnAddControlsMoreOption()
@@ -270,6 +294,12 @@ public class TaskbarHUDView : MonoBehaviour
         {
             exploreButton.OnToggleOn -= OnWindowToggleOn;
             exploreButton.OnToggleOff -= OnWindowToggleOff;
+        }
+
+        if (goToGenesisButton != null)
+        {
+            goToGenesisButton.OnToggleOn -= OnWindowToggleOn;
+            goToGenesisButton.OnToggleOff -= OnWindowToggleOff;
         }
 
         if (moreButton != null)

@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using DCL;
@@ -17,7 +17,7 @@ public class UserProfile : ScriptableObject //TODO Move to base variable
     public string userName => model.name;
     public string description => model.description;
     public string email => model.email;
-    public List<string> blocked => model.blocked;
+    public List<string> blocked => model.blocked != null ? model.blocked : new List<string>();
     public bool hasConnectedWeb3 => model.hasConnectedWeb3;
     public bool hasClaimedName => model.hasClaimedName;
     public AvatarModel avatar => model.avatar;

@@ -1,4 +1,4 @@
-﻿using DCL;
+using DCL;
 using DCL.Controllers;
 using DCL.Helpers;
 using DCL.Models;
@@ -13,6 +13,7 @@ using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.TestTools;
 using Assert = UnityEngine.Assertions.Assert;
+using DCL.Tutorial;
 
 public class TestsBase
 {
@@ -184,7 +185,6 @@ public class TestsBase
     {
         CommonScriptableObjects.rendererState.Set(true);
     }
-
 
     protected virtual IEnumerator InitScene(bool usesWebServer = false, bool spawnCharController = true, bool spawnTestScene = true, bool spawnUIScene = true, bool debugMode = false, bool reloadUnityScene = true)
     {

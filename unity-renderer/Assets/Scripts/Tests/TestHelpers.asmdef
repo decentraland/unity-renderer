@@ -1,36 +1,37 @@
 {
-  "name": "TestHelpers",
-  "references": [
-    "GUID:e555144732b726c4cba5b0f6337fea75",
-    "GUID:4973650d2444c4561a15d50f24d91cd9",
-    "GUID:79fb625d53334bc4c95a29a6b7b148ae",
-    "GUID:b1087c5731ff68448a0a9c625bb7e52d",
-    "GUID:cc6bfabbfe87b7949aa248893f89ce37",
-    "GUID:760a1d365aad58044916992b072cf2a6",
-    "GUID:54b09a4a10c111e46a817873fcea53fe",
-    "GUID:1a483cdd86db6e641ad77c7046dd035f",
-    "GUID:4720e174f2805c74bb7aa94cc8bb5bf8",
-    "GUID:27619889b8ba8c24980f49ee34dbb44a",
-    "GUID:0acc523941302664db1f4e527237feb3",
-    "GUID:0e967802b778d404eac1ca5ea340e290",
-    "GUID:a3ceb534947fac14da25035bc5c24788",
-    "GUID:82873c2d9c9cbe94391e6b33e5153865",
-    "GUID:1dd0780aa6be12b428c8005d0bee46b8",
-    "GUID:a881b57670b1d2747a6d7f9e32b63230"
-  ],
-  "includePlatforms": [],
-  "excludePlatforms": [],
-  "allowUnsafeCode": false,
-  "overrideReferences": true,
-  "precompiledReferences": [
-    "nunit.framework.dll",
-    "Newtonsoft.Json.dll",
-    "Google.Protobuf.dll"
-  ],
-  "autoReferenced": false,
-  "defineConstraints": [
-    "UNITY_INCLUDE_TESTS"
-  ],
-  "versionDefines": [],
-  "noEngineReferences": false
+    "name": "TestHelpers",
+    "references": [
+        "GUID:e555144732b726c4cba5b0f6337fea75",
+        "GUID:4973650d2444c4561a15d50f24d91cd9",
+        "GUID:79fb625d53334bc4c95a29a6b7b148ae",
+        "GUID:b1087c5731ff68448a0a9c625bb7e52d",
+        "GUID:cc6bfabbfe87b7949aa248893f89ce37",
+        "GUID:760a1d365aad58044916992b072cf2a6",
+        "GUID:54b09a4a10c111e46a817873fcea53fe",
+        "GUID:1a483cdd86db6e641ad77c7046dd035f",
+        "GUID:4720e174f2805c74bb7aa94cc8bb5bf8",
+        "GUID:27619889b8ba8c24980f49ee34dbb44a",
+        "GUID:0acc523941302664db1f4e527237feb3",
+        "GUID:0e967802b778d404eac1ca5ea340e290",
+        "GUID:a3ceb534947fac14da25035bc5c24788",
+        "GUID:82873c2d9c9cbe94391e6b33e5153865",
+        "GUID:1dd0780aa6be12b428c8005d0bee46b8",
+        "GUID:a881b57670b1d2747a6d7f9e32b63230",
+        "GUID:8e14059e964ca49aeb55d0e7b2b14c3c"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": true,
+    "precompiledReferences": [
+        "nunit.framework.dll",
+        "Newtonsoft.Json.dll",
+        "Google.Protobuf.dll"
+    ],
+    "autoReferenced": false,
+    "defineConstraints": [
+        "UNITY_INCLUDE_TESTS"
+    ],
+    "versionDefines": [],
+    "noEngineReferences": false
 }

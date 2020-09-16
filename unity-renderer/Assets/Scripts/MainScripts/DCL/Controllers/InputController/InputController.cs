@@ -34,6 +34,8 @@ public enum DCLAction_Hold
     Sprint = 1,
     Jump = 2,
     FreeCameraMode = 101,
+    DefaultConfirmAction = 300,
+    DefaultCancelAction = 301
 }
 
 public enum DCLAction_Measurable
@@ -155,6 +157,12 @@ public class InputController : MonoBehaviour
                     //Disable until the fine-tuning is ready
                     if (ENABLE_THIRD_PERSON_CAMERA)
                         InputProcessor.FromKey(action, KeyCode.T, InputProcessor.Modifier.NeedsPointerLocked);
+                    break;
+                case DCLAction_Hold.DefaultConfirmAction:
+                    InputProcessor.FromKey(action, KeyCode.E, InputProcessor.Modifier.None);
+                    break;
+                case DCLAction_Hold.DefaultCancelAction:
+                    InputProcessor.FromKey(action, KeyCode.F, InputProcessor.Modifier.None);
                     break;
                 default:
                     throw new ArgumentOutOfRangeException();

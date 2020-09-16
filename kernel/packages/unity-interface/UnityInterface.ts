@@ -1,5 +1,5 @@
 import { TeleportController } from 'shared/world/TeleportController'
-import { WSS_ENABLED, EDITOR } from 'config'
+import { WSS_ENABLED, WORLD_EXPLORER, RESET_TUTORIAL, EDITOR } from 'config'
 import { Vector3 } from '../decentraland-ecs/src/decentraland/math'
 import { ProfileForRenderer, MinimapSceneInfo } from '../decentraland-ecs/src/decentraland/Types'
 import { AirdropInfo } from 'shared/airdrops/interface'
@@ -271,8 +271,8 @@ export class UnityInterface {
     }
   }
 
-  public SetTutorialEnabled() {
-    this.gameInstance.SendMessage('TutorialController', 'SetTutorialEnabled')
+  public SetTutorialEnabled(fromDeepLink: boolean) {
+    this.gameInstance.SendMessage('TutorialController', 'SetTutorialEnabled', JSON.stringify(fromDeepLink))
   }
 
   public TriggerAirdropDisplay(data: AirdropInfo) {
@@ -328,12 +328,17 @@ export class UnityInterface {
     this.gameInstance.SendMessage('SceneController', 'RejectGIFProcessingRequest')
   }
 
-  public ConfigureEmailPrompt(tutorialStep: number) {
-    const emailCompletedFlag = 128
-    this.ConfigureHUDElement(HUDElementID.EMAIL_PROMPT, {
-      active: (tutorialStep & emailCompletedFlag) === 0,
+  public ConfigureTutorial(tutorialStep: number, fromDeepLink: boolean) {
+    const tutorialCompletedFlag = 256
+
+    this.ConfigureHUDElement(HUDElementID.GO_TO_GENESIS_PLAZA_HUD, {
+      active: true,
       visible: false
     })
+
+    if (WORLD_EXPLORER && (RESET_TUTORIAL || (tutorialStep & tutorialCompletedFlag) === 0)) {
+      this.SetTutorialEnabled(fromDeepLink)
+    }
   }
 
   public UpdateBalanceOfMANA(balance: string) {
