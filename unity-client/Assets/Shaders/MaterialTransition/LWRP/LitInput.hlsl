@@ -22,6 +22,7 @@ half _FadeDirection;
 TEXTURE2D(_OcclusionMap);       SAMPLER(sampler_OcclusionMap);
 TEXTURE2D(_MetallicGlossMap);   SAMPLER(sampler_MetallicGlossMap);
 TEXTURE2D(_SpecGlossMap);       SAMPLER(sampler_SpecGlossMap);
+TEXTURE2D(_AlphaTexture);       SAMPLER(sampler_AlphaTexture);
 CBUFFER_END
 
 #ifdef _SPECULAR_SETUP
@@ -81,7 +82,8 @@ half SampleOcclusion(float2 uv)
 inline void InitializeStandardLitSurfaceData(float2 uv, out SurfaceData outSurfaceData)
 {
     half4 albedoAlpha = SampleAlbedoAlpha(uv, TEXTURE2D_ARGS(_BaseMap, sampler_BaseMap));
-    outSurfaceData.alpha = Alpha(albedoAlpha.a, _BaseColor, _Cutoff);
+    half4 alphaTexture = SampleAlbedoAlpha(uv, TEXTURE2D_ARGS(_AlphaTexture, sampler_AlphaTexture));
+    outSurfaceData.alpha = Alpha(albedoAlpha.a, _BaseColor, _Cutoff) * alphaTexture.r;
 
     half4 specGloss = SampleMetallicSpecGloss(uv, albedoAlpha.a);
     outSurfaceData.albedo = albedoAlpha.rgb * _BaseColor.rgb;
