@@ -54,6 +54,7 @@ namespace DCL.Components
         const string PBR_MATERIAL_NAME = "ShapeMaterial";
 
         DCLTexture albedoDCLTexture = null;
+        DCLTexture alphaDCLTexture = null;
         DCLTexture emissiveDCLTexture = null;
         DCLTexture bumpDCLTexture = null;
 
@@ -114,6 +115,7 @@ namespace DCL.Components
 
             // FETCH AND LOAD TEXTURES
             SetMaterialTexture(ShaderUtils._BaseMap, model.albedoTexture, albedoDCLTexture);
+            SetMaterialTexture(ShaderUtils._AlphaTexture, model.alphaTexture, alphaDCLTexture);
             SetMaterialTexture(ShaderUtils._BumpMap, model.bumpTexture, bumpDCLTexture);
 
             return null;
@@ -298,6 +300,7 @@ namespace DCL.Components
         public override void Dispose()
         {
             albedoDCLTexture?.DetachFrom(this);
+            alphaDCLTexture?.DetachFrom(this);
             emissiveDCLTexture?.DetachFrom(this);
             bumpDCLTexture?.DetachFrom(this);
 

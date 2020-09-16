@@ -12,6 +12,7 @@ namespace DCL.Helpers
         public static readonly int _Glossiness = Shader.PropertyToID("_Glossiness");
 
         public static readonly int _BaseMap = Shader.PropertyToID("_BaseMap");
+        public static readonly int _AlphaTexture = Shader.PropertyToID("_AlphaTexture");
         public static readonly int _BaseColor = Shader.PropertyToID("_BaseColor");
         public static readonly int _Metallic = Shader.PropertyToID("_Metallic");
         public static readonly int _Smoothness = Shader.PropertyToID("_Smoothness");
