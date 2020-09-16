@@ -24,5 +24,6 @@ public class PhysicsSyncController
 
         isDirty = false;
         Physics.SyncTransforms();
+        Physics.Simulate(Time.fixedDeltaTime);
     }
 }

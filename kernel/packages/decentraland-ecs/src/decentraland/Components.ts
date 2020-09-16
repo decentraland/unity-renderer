@@ -63,7 +63,34 @@ export enum CLASS_ID {
   AUDIO_SOURCE = 201,
   AUDIO_STREAM = 202,
   GIZMOS = 203,
-  SMART_ITEM = 204
+  SMART_ITEM = 204,
+  AVATAR_MODIFIER_AREA = 205
+}
+
+export enum AvatarModifiers {
+  HIDE_AVATARS = 'HIDE_AVATARS',
+  DISABLE_PASSPORTS = 'DISABLE_PASSPORTS'
+}
+
+export type Area = { box: Vector3 }
+
+/**
+ * Define an area where avatars can be modified in some way
+ * @public
+ */
+@Component('engine.avatarModifierArea', CLASS_ID.AVATAR_MODIFIER_AREA)
+export class AvatarModifierArea extends ObservableComponent {
+  @ObservableComponent.field
+  area!: Area
+
+  @ObservableComponent.field
+  modifiers!: AvatarModifiers[]
+
+  constructor(args: { area: Area, modifiers: AvatarModifiers[] }) {
+    super()
+    this.area = args.area
+    this.modifiers = args.modifiers
+  }
 }
 
 /**
