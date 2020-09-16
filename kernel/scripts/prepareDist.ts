@@ -103,7 +103,9 @@ async function prepareDecentralandECS(folder: string) {
   copyFile(path.resolve(root, `packages/decentraland-amd/dist/amd.js`), path.resolve(root, `${folder}/artifacts/amd.js`))
   copyFile(path.resolve(root, `packages/build-ecs/index.js`), path.resolve(root, `${folder}/artifacts/build-ecs.js`))
   await fs.copy(path.resolve(root, `static/default-profile`), path.resolve(root, `${folder}/artifacts/default-profile`))
-  await injectDependencies(folder, ['typescript', 'uglify-js'], false)
+
+  // build-ecs is embeded inside decentraland-ecs, therefore, it needs the same dependencies
+  await injectDependencies(folder, ['typescript', 'terser'], false)
 }
 
 async function validatePackage(folder: string) {
@@ -161,7 +163,7 @@ async function validatePackage(folder: string) {
     path.resolve(root, `static/dist/editor.js`),
     path.resolve(root, `packages/decentraland-ecs/artifacts/editor.js`)
   )
-  await injectDependencies('packages/build-ecs', ['typescript', 'uglify-js'], false)
+  await injectDependencies('packages/build-ecs', ['typescript', 'terser'], false)
 })().catch(e => {
   // tslint:disable-next-line:no-console
   console.error(e)
