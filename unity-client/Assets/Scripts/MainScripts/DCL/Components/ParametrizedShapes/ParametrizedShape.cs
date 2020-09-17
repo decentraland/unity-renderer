@@ -123,8 +123,16 @@ namespace DCL.Components
 
                 using (var iterator = attachedEntities.GetEnumerator())
                 {
+                    bool cachedVisibilityDirty = visibilityDirty;
+                    bool cachedCollisionDirty = collisionsDirty;
                     while (iterator.MoveNext())
                     {
+
+                        //NOTE(Alex): Since UpdateRenderer updates the dirty flags as well we have to make sure every entity
+                        //            gets updated accordingly to the original flags.
+                        visibilityDirty = cachedVisibilityDirty;
+                        collisionsDirty = cachedCollisionDirty;
+
                         var entity = iterator.Current;
                         UpdateRenderer(entity);
 
