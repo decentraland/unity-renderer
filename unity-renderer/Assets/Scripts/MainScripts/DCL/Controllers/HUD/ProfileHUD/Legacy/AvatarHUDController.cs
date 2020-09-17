@@ -6,6 +6,7 @@ namespace Legacy
         public AvatarHUDModel model { get; private set; }
         public bool visibility { get; private set; }
         public bool expanded { get; private set; }
+        public bool talking { get; private set; }
 
         public event System.Action OnEditAvatarPressed;
         public event System.Action OnSettingsPressed;
@@ -40,6 +41,12 @@ namespace Legacy
         {
             expanded = value;
             view.SetExpanded(expanded);
+        }
+
+        public void SetTalking(bool value)
+        {
+            talking = value;
+            view.SetTalking(talking);
         }
 
         public void ToggleExpanded()

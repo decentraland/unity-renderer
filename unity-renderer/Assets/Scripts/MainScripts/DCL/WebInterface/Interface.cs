@@ -417,6 +417,11 @@ namespace DCL.Interface
             public float volume;
         }
 
+        public class SetVoiceChatRecordingPayload
+        {
+            public bool recording;
+        }
+
         [System.Serializable]
         public class JumpInPayload
         {
@@ -511,6 +516,7 @@ namespace DCL.Interface
         private static OnGlobalPointerEventPayload onGlobalPointerEventPayload = new OnGlobalPointerEventPayload();
         private static OnGlobalPointerEvent onGlobalPointerEvent = new OnGlobalPointerEvent();
         private static AudioStreamingPayload onAudioStreamingEvent = new AudioStreamingPayload();
+        private static SetVoiceChatRecordingPayload setVoiceChatRecordingPayload = new SetVoiceChatRecordingPayload();
         private static GIFSetupPayload gifSetupPayload = new GIFSetupPayload();
         private static JumpInPayload jumpInPayload = new JumpInPayload();
         private static GotoEvent gotoEvent = new GotoEvent();
@@ -891,6 +897,12 @@ namespace DCL.Interface
             onAudioStreamingEvent.play = play;
             onAudioStreamingEvent.volume = volume;
             SendMessage("SetAudioStream", onAudioStreamingEvent);
+        }
+
+        public static void SendSetVoiceChatRecording(bool recording)
+        {
+            setVoiceChatRecordingPayload.recording = recording;
+            SendMessage("SetVoiceChatRecording", setVoiceChatRecordingPayload);
         }
 
         public static void RequestGIFProcessor(string gifURL, string gifId, bool isWebGL1)

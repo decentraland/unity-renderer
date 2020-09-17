@@ -14,6 +14,7 @@ public class AvatarModel
     public List<string> wearables = new List<string>();
     public string expressionTriggerId = null;
     public long expressionTriggerTimestamp = -1;
+    public bool talking = false;
 
     public bool Equals(AvatarModel other)
     {

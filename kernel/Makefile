@@ -25,6 +25,7 @@ DECENTRALAND_LOADER := static/loader/lifecycle/worker.js
 GIF_PROCESSOR := static/gif-processor/worker.js
 INTERNAL_SCENES := static/systems/decentraland-ui.scene.js
 BUILD_ECS := packages/build-ecs/index.js
+VOICE_CHAT_CODEC_WORKER := static/voice-chat-codec/worker.js
 
 config-contracts:
 	@echo 'Updating contracts...'
@@ -43,6 +44,9 @@ static/loader/lifecycle/worker.js: packages/decentraland-loader/**/*.ts
 
 static/gif-processor/worker.js: packages/gif-processor/*.ts
 	@$(COMPILER) targets/engine/gif-processor.json
+
+static/voice-chat-codec/worker.js: packages/voice-chat-codec/*.ts
+	@$(COMPILER) targets/engine/voice-chat-codec.json
 
 static/default-profile/contents:
 	@node ./static/default-profile/download_all.js
@@ -75,7 +79,7 @@ static/unity/Build/%.unityweb: package.json package-lock.json
 empty-parcels:
 	cd static/loader/empty-scenes && node generate_all.js
 
-build-essentials: $(COMPILED_SUPPORT_JS_FILES) dcl-amd $(DECENTRALAND_ECS_TYPEDEF_FILE) $(BUILD_ECS) $(SCENE_SYSTEM) $(INTERNAL_SCENES) $(DECENTRALAND_LOADER) $(GIF_PROCESSOR) $(RENDERER_BUILD) empty-parcels generate-mocks ## Build the basic required files for the explorer
+build-essentials: $(COMPILED_SUPPORT_JS_FILES) dcl-amd $(DECENTRALAND_ECS_TYPEDEF_FILE) $(BUILD_ECS) $(SCENE_SYSTEM) $(INTERNAL_SCENES) $(DECENTRALAND_LOADER) $(GIF_PROCESSOR) $(VOICE_CHAT_CODEC_WORKER) $(RENDERER_BUILD) empty-parcels generate-mocks ## Build the basic required files for the explorer
 
 # Hellmap scenes
 

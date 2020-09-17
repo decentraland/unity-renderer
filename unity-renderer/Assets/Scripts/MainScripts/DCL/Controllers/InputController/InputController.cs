@@ -34,6 +34,7 @@ public enum DCLAction_Hold
     Sprint = 1,
     Jump = 2,
     FreeCameraMode = 101,
+    VoiceChatRecording = 102,
     DefaultConfirmAction = 300,
     DefaultCancelAction = 301
 }
@@ -156,7 +157,10 @@ public class InputController : MonoBehaviour
                 case DCLAction_Hold.FreeCameraMode:
                     //Disable until the fine-tuning is ready
                     if (ENABLE_THIRD_PERSON_CAMERA)
-                        InputProcessor.FromKey(action, KeyCode.T, InputProcessor.Modifier.NeedsPointerLocked);
+                        InputProcessor.FromKey(action, KeyCode.Y, InputProcessor.Modifier.NeedsPointerLocked);
+                    break;
+                case DCLAction_Hold.VoiceChatRecording:
+                    InputProcessor.FromKey(action, KeyCode.T, InputProcessor.Modifier.FocusNotInInput);
                     break;
                 case DCLAction_Hold.DefaultConfirmAction:
                     InputProcessor.FromKey(action, KeyCode.E, InputProcessor.Modifier.None);
@@ -198,7 +202,7 @@ public class InputController : MonoBehaviour
 
 public static class InputProcessor
 {
-    private static readonly KeyCode[] MODIFIER_KEYS = new[] {KeyCode.LeftControl, KeyCode.LeftAlt, KeyCode.LeftShift};
+    private static readonly KeyCode[] MODIFIER_KEYS = new[] { KeyCode.LeftControl, KeyCode.LeftAlt, KeyCode.LeftShift };
 
     [Flags]
     public enum Modifier
@@ -279,8 +283,8 @@ public static class InputProcessor
 
     public static bool IsModifierSet(Modifier modifiers, Modifier value)
     {
-        int flagsValue = (int) modifiers;
-        int flagValue = (int) value;
+        int flagsValue = (int)modifiers;
+        int flagValue = (int)value;
 
         return (flagsValue & flagValue) != 0;
     }

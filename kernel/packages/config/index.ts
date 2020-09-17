@@ -109,6 +109,8 @@ export const COMMS_SERVICE = qs.COMMS_SERVICE
 export const RESIZE_SERVICE = qs.RESIZE_SERVICE
 export const REALM = qs.realm
 
+export const VOICE_CHAT_ENABLED = location.search.indexOf('VOICE_CHAT_ENABLED') !== -1
+
 export const AUTO_CHANGE_REALM = location.search.indexOf('AUTO_CHANGE_REALM') !== -1
 
 export const LOS = qs.LOS
@@ -141,7 +143,9 @@ export const FORCE_SEND_MESSAGE = location.search.indexOf('FORCE_SEND_MESSAGE') 
 
 export const ENABLE_EXPLORE_HUD = location.search.indexOf('ENABLE_EXPLORE_HUD') !== -1
 export const ENABLE_MANA_HUD = location.search.indexOf('ENABLE_MANA_HUD') !== -1
-export const ENABLE_NEW_TASKBAR = location.search.indexOf('ENABLE_NEW_TASKBAR') !== -1 /* NOTE(Santi): This is temporal, until we remove the old taskbar */
+export const ENABLE_NEW_TASKBAR =
+  location.search.indexOf('ENABLE_NEW_TASKBAR') !==
+  -1 /* NOTE(Santi): This is temporal, until we remove the old taskbar */
 
 export const PIN_CATALYST = qs.PIN_CATALYST
 
@@ -176,6 +180,9 @@ export namespace commConfigurations {
       username: 'usernamedcl'
     }
   ]
+
+  export const voiceChatSampleRate = 24000
+  export const voiceChatUseHRTF = location.search.indexOf('VOICE_CHAT_USE_HRTF') !== -1
 }
 export const loginConfig = {
   org: {

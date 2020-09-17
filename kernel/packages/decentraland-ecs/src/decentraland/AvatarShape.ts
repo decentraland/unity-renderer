@@ -38,6 +38,9 @@ export class AvatarShape extends ObservableComponent {
   @ObservableComponent.field
   useDummyModel: boolean = false
 
+  @ObservableComponent.field
+  talking: boolean = false
+
   public static Dummy(): AvatarShape {
     const avatarShape = new AvatarShape()
     avatarShape.useDummyModel = true

@@ -102,6 +102,7 @@ namespace DCL
             MinimapMetadataController.i?.UpdateMinimapUserInformation(avatarUserInfo);
 
             avatarName.SetName(model.name);
+            avatarName.SetTalking(model.talking);
 
             everythingIsLoaded = true;
 

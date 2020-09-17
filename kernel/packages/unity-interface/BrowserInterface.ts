@@ -37,7 +37,9 @@ import { IFuture } from 'fp-future'
 import { reportHotScenes } from 'shared/social/hotScenes'
 
 import { GIFProcessor } from 'gif-processor/processor'
+import { setVoiceChatRecording } from 'shared/comms/actions'
 import { getERC20Balance } from 'shared/ethereum/EthereumService'
+
 declare const DCL: any
 
 declare const globalThis: StoreContainer
@@ -105,7 +107,7 @@ export class BrowserInterface {
     // stub. there is no code about this in unity side yet
   }
 
-  public Track(data: { name: string, properties: ({ key: string, value: string }[] | null) }) {
+  public Track(data: { name: string; properties: { key: string; value: string }[] | null }) {
     const properties: Record<string, string> = {}
     if (data.properties) {
       for (const property of data.properties) {
@@ -282,6 +284,10 @@ export class BrowserInterface {
     globalThis.globalStore.dispatch(sendMessage(data.message))
   }
 
+  public SetVoiceChatRecording(recordingMessage: { recording: boolean }) {
+    globalThis.globalStore.dispatch(setVoiceChatRecording(recordingMessage.recording))
+  }
+
   public async UpdateFriendshipStatus(message: FriendshipUpdateStatusMessage) {
     let { userId, action } = message
 
@@ -367,7 +373,7 @@ export class BrowserInterface {
 
   async RequestGIFProcessor(data: { imageSource: string; id: string; isWebGL1: boolean }) {
     // tslint:disable-next-line
-    const isSupported = (typeof OffscreenCanvas !== "undefined") && (typeof OffscreenCanvasRenderingContext2D === "function")
+    const isSupported = typeof OffscreenCanvas !== 'undefined' && typeof OffscreenCanvasRenderingContext2D === 'function'
 
     if (!isSupported) {
       unityInterface.RejectGIFProcessingRequest()

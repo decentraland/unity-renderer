@@ -142,7 +142,10 @@ export class UnityInterface {
 
   /** Sends the camera position & target to the engine */
 
-  public Teleport({ position: { x, y, z }, cameraTarget }: InstancedSpawnPoint, rotateIfTargetIsNotSet: boolean = true) {
+  public Teleport(
+    { position: { x, y, z }, cameraTarget }: InstancedSpawnPoint,
+    rotateIfTargetIsNotSet: boolean = true
+  ) {
     const theY = y <= 0 ? 2 : y
 
     TeleportController.ensureTeleportAnimation()
@@ -248,11 +251,19 @@ export class UnityInterface {
     this.gameInstance.SendMessage('HUDController', 'ShowNotificationFromJson', JSON.stringify(notification))
   }
 
-  public ConfigureHUDElement(hudElementId: HUDElementID, configuration: HUDConfiguration, extraPayload: any | null = null) {
+  public ConfigureHUDElement(
+    hudElementId: HUDElementID,
+    configuration: HUDConfiguration,
+    extraPayload: any | null = null
+  ) {
     this.gameInstance.SendMessage(
       'HUDController',
       `ConfigureHUDElement`,
-      JSON.stringify({ hudElementId: hudElementId, configuration: configuration, extraPayload: extraPayload ? JSON.stringify(extraPayload) : null })
+      JSON.stringify({
+        hudElementId: hudElementId,
+        configuration: configuration,
+        extraPayload: extraPayload ? JSON.stringify(extraPayload) : null
+      })
     )
   }
 
@@ -343,6 +354,10 @@ export class UnityInterface {
 
   public UpdateBalanceOfMANA(balance: string) {
     this.gameInstance.SendMessage('HUDController', 'UpdateBalanceOfMANA', balance)
+  }
+
+  public SetPlayerTalking(talking: boolean) {
+    this.gameInstance.SendMessage('HUDController', 'SetPlayerTalking', JSON.stringify(talking))
   }
 
   // *********************************************************************************

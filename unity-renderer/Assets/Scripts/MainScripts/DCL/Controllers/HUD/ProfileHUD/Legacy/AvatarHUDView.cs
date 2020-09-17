@@ -45,6 +45,9 @@ namespace Legacy
         [Header("FAQ")]
         [SerializeField] private Button faqButton;
 
+        [Header("Talking Feedback")]
+        [SerializeField] private GameObject playerTalkingIcon;
+
         private AvatarHUDController controller;
 
         private void Initialize(AvatarHUDController controller)
@@ -95,6 +98,11 @@ namespace Legacy
         internal void SetExpanded(bool visibility)
         {
             expandedContainer.SetActive(visibility);
+        }
+
+        internal void SetTalking(bool talking)
+        {
+            playerTalkingIcon.SetActive(talking);
         }
 
         public void SetActive(bool active)
