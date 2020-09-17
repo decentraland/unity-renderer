@@ -7,6 +7,7 @@ message CommsMessage {
         ProfileData profile_data = 3;
         ChatData chat_data = 4;
         SceneData scene_data = 5;
+        VoiceData voice_data = 6;
     }
 }
 
@@ -33,4 +34,8 @@ message ChatData {
 message SceneData {
     string scene_id = 1;
     string text = 2;
+}
+
+message VoiceData {
+    bytes encoded_samples = 1;
 }

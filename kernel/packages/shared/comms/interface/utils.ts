@@ -84,11 +84,30 @@ export function countParcelsCloseTo(origin: ParcelArray, parcels: ParcelArray[],
 
   const squaredDistance = distance * distance
 
-  parcels.forEach(parcel => {
+  parcels.forEach((parcel) => {
     if (gridSquareDistance(origin, parcel) <= squaredDistance) {
       close += 1
     }
   })
 
   return close
+}
+
+export function rotateUsingQuaternion(pos: Position, x: number, y: number, z: number): [number, number, number] {
+  const [, , , qx, qy, qz, qw] = pos
+
+  // calculate quat * vector
+
+  const ix = qw * x + qy * z - qz * y
+  const iy = qw * y + qz * x - qx * z
+  const iz = qw * z + qx * y - qy * x
+  const iw = -qx * x - qy * y - qz * z
+
+  // calculate result * inverse quat
+
+  const rx = ix * qw + iw * -qx + iy * -qz - iz * -qy
+  const ry = iy * qw + iw * -qy + iz * -qx - ix * -qz
+  const rz = iz * qw + iw * -qz + ix * -qy - iy * -qx
+
+  return [rx, ry, rz]
 }

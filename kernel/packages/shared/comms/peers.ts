@@ -143,6 +143,14 @@ export function receiveUserData(uuid: string, data: Partial<UserInformation>) {
   }
 }
 
+export function receiveUserTalking(uuid: string, talking: boolean) {
+  avatarMessageObservable.notifyObservers({
+    type: AvatarMessageType.USER_TALKING,
+    uuid,
+    talking
+  })
+}
+
 export function receiveUserPose(uuid: string, pose: Pose) {
   avatarMessageObservable.notifyObservers({
     type: AvatarMessageType.USER_POSE,

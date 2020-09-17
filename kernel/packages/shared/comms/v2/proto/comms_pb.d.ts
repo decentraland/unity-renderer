@@ -27,6 +27,11 @@ export class CommsMessage extends jspb.Message {
   getSceneData(): SceneData | undefined;
   setSceneData(value?: SceneData): void;
 
+  hasVoiceData(): boolean;
+  clearVoiceData(): void;
+  getVoiceData(): VoiceData | undefined;
+  setVoiceData(value?: VoiceData): void;
+
   getDataCase(): CommsMessage.DataCase;
   serializeBinary(): Uint8Array;
   toObject(includeInstance?: boolean): CommsMessage.AsObject;
@@ -45,6 +50,7 @@ export namespace CommsMessage {
     profileData?: ProfileData.AsObject,
     chatData?: ChatData.AsObject,
     sceneData?: SceneData.AsObject,
+    voiceData?: VoiceData.AsObject,
   }
 
   export enum DataCase {
@@ -53,6 +59,7 @@ export namespace CommsMessage {
     PROFILE_DATA = 3,
     CHAT_DATA = 4,
     SCENE_DATA = 5,
+    VOICE_DATA = 6,
   }
 }
 
@@ -169,6 +176,28 @@ export namespace SceneData {
   export type AsObject = {
     sceneId: string,
     text: string,
+  }
+}
+
+export class VoiceData extends jspb.Message {
+  getEncodedSamples(): Uint8Array | string;
+  getEncodedSamples_asU8(): Uint8Array;
+  getEncodedSamples_asB64(): string;
+  setEncodedSamples(value: Uint8Array | string): void;
+
+  serializeBinary(): Uint8Array;
+  toObject(includeInstance?: boolean): VoiceData.AsObject;
+  static toObject(includeInstance: boolean, msg: VoiceData): VoiceData.AsObject;
+  static extensions: {[key: number]: jspb.ExtensionFieldInfo<jspb.Message>};
+  static extensionsBinary: {[key: number]: jspb.ExtensionFieldBinaryInfo<jspb.Message>};
+  static serializeBinaryToWriter(message: VoiceData, writer: jspb.BinaryWriter): void;
+  static deserializeBinary(bytes: Uint8Array): VoiceData;
+  static deserializeBinaryFromReader(message: VoiceData, reader: jspb.BinaryReader): VoiceData;
+}
+
+export namespace VoiceData {
+  export type AsObject = {
+    encodedSamples: Uint8Array | string,
   }
 }
 

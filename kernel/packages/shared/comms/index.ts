@@ -1,5 +1,5 @@
 import { saveToLocalStorage } from 'atomicHelpers/localStorage'
-import { commConfigurations, parcelLimits, COMMS, AUTO_CHANGE_REALM } from 'config'
+import { commConfigurations, parcelLimits, COMMS, AUTO_CHANGE_REALM, VOICE_CHAT_ENABLED } from 'config'
 import { CommunicationsController } from 'shared/apis/CommunicationsController'
 import { defaultLogger } from 'shared/logger'
 import { ChatMessage as InternalChatMessage, ChatMessageType } from 'shared/types'
@@ -19,7 +19,8 @@ import {
   receiveUserPose,
   receiveUserVisible,
   removeById,
-  avatarMessageObservable
+  avatarMessageObservable,
+  receiveUserTalking
 } from './peers'
 import {
   Pose,
@@ -31,7 +32,8 @@ import {
   AvatarMessageType,
   ConnectionEstablishmentError,
   IdTakenError,
-  UnknownCommsModeError
+  UnknownCommsModeError,
+  VoiceFragment
 } from './interface/types'
 import {
   CommunicationArea,
@@ -39,7 +41,8 @@ import {
   position2parcel,
   sameParcel,
   squareDistance,
-  ParcelArray
+  ParcelArray,
+  rotateUsingQuaternion
 } from './interface/utils'
 import { BrokerWorldInstanceConnection } from '../comms/v1/brokerWorldInstanceConnection'
 import { profileToRendererFormat } from 'shared/profiles/transformations/profileToRendererFormat'
@@ -80,6 +83,9 @@ import {
 } from 'shared/loading/types'
 import { getIdentity } from 'shared/session'
 import { createLogger } from '../logger'
+import { VoiceCommunicator, VoiceSpatialParams } from 'voice-chat-codec/VoiceCommunicator'
+import { voicePlayingUpdate, voiceRecordingUpdate } from './actions'
+import { isVoiceChatRecording } from './selectors'
 
 export type CommsVersion = 'v1' | 'v2'
 export type CommsMode = CommsV1Mode | CommsV2Mode
@@ -120,6 +126,7 @@ export class PeerTrackingInfo {
   public lastProfileUpdate: Timestamp = 0
   public lastUpdate: Timestamp = 0
   public receivedPublicChatMessages = new Set<string>()
+  public talking = false
 
   profilePromise: { promise: Promise<ProfileForRenderer | void>; version: number | null } = {
     promise: Promise.resolve(),
@@ -184,6 +191,7 @@ export class Context {
 
 let context: Context | null = null
 const scenesSubscribedToCommsEvents = new Set<CommunicationsController>()
+let voiceCommunicator: VoiceCommunicator | null = null
 
 /**
  * Returns a list of CIDs that must receive scene messages from comms
@@ -196,6 +204,69 @@ function getParcelSceneSubscriptions(): string[] {
   })
 
   return ids
+}
+
+let audioRequestPending = false
+
+function requestMediaDevice() {
+  if (!audioRequestPending) {
+    audioRequestPending = true
+    // tslint:disable-next-line
+    navigator.mediaDevices
+      .getUserMedia({
+        audio: {
+          channelCount: 1,
+          sampleRate: commConfigurations.voiceChatSampleRate,
+          echoCancellation: true,
+          noiseSuppression: true,
+          autoGainControl: true,
+          advanced: [{ echoCancellation: true }, { autoGainControl: true }, { noiseSuppression: true }] as any
+        },
+        video: false
+      })
+      .then((a) => {
+        voiceCommunicator!.setInputStream(a)
+        if (isVoiceChatRecording(store.getState())) {
+          voiceCommunicator!.start()
+        } else {
+          voiceCommunicator!.pause()
+        }
+      })
+      .catch((e) => {
+        defaultLogger.log('Error requesting audio: ', e)
+      })
+      .finally(() => {
+        audioRequestPending = false
+      })
+  }
+}
+
+export function updateVoiceRecordingStatus(recording: boolean) {
+  if (!voiceCommunicator) {
+    return
+  }
+
+  if (!recording) {
+    voiceCommunicator.pause()
+    return
+  }
+
+  if (!voiceCommunicator.hasInput()) {
+    requestMediaDevice()
+  } else {
+    voiceCommunicator.start()
+  }
+}
+
+export function updatePeerVoicePlaying(userId: string, playing: boolean) {
+  if (context) {
+    for (const peerInfo of context.peerData.values()) {
+      if (peerInfo.identity === userId) {
+        peerInfo.talking = playing
+        break
+      }
+    }
+  }
 }
 
 export function sendPublicChatMessage(messageId: string, text: string) {
@@ -283,7 +354,7 @@ function ensurePeerTrackingInfo(context: Context, alias: string): PeerTrackingIn
   return peerTrackingInfo
 }
 
-export function processChatMessage(context: Context, fromAlias: string, message: Package<ChatMessage>) {
+function processChatMessage(context: Context, fromAlias: string, message: Package<ChatMessage>) {
   const msgId = message.data.id
   const profile = getProfile(store.getState(), getIdentity().address)
 
@@ -316,6 +387,27 @@ export function processChatMessage(context: Context, fromAlias: string, message:
           store.dispatch(messageReceived(messageEntry))
         }
       }
+    }
+  }
+}
+
+function processVoiceFragment(context: Context, fromAlias: string, message: Package<VoiceFragment>) {
+  const profile = getProfile(store.getState(), getIdentity().address)
+
+  const peerTrackingInfo = ensurePeerTrackingInfo(context, fromAlias)
+
+  if (peerTrackingInfo) {
+    if (
+      profile &&
+      peerTrackingInfo.identity &&
+      !isBlocked(profile, peerTrackingInfo.identity) &&
+      peerTrackingInfo.position
+    ) {
+      voiceCommunicator?.playEncodedAudio(
+        peerTrackingInfo.identity,
+        getSpatialParamsFor(peerTrackingInfo.position),
+        message.data.encoded
+      )
     }
   }
 }
@@ -392,6 +484,7 @@ type ProcessingPeerInfo = {
   userInfo: UserInformation
   squareDistance: number
   position: Position
+  talking: boolean
 }
 
 let currentParcelTopics = ''
@@ -454,6 +547,8 @@ export function onPositionUpdate(context: Context, p: Position) {
 
   context.currentPosition = p
 
+  voiceCommunicator?.setListenerSpatialParams(getSpatialParamsFor(context.currentPosition))
+
   const now = Date.now()
   const elapsed = now - lastNetworkUpdatePosition
 
@@ -466,6 +561,13 @@ export function onPositionUpdate(context: Context, p: Position) {
     lastPositionSent = p
     lastNetworkUpdatePosition = now
     worldConnection.sendPositionMessage(p).catch((e) => defaultLogger.warn(`error while sending message `, e))
+  }
+}
+
+function getSpatialParamsFor(position: Position): VoiceSpatialParams {
+  return {
+    position: position.slice(0, 3) as [number, number, number],
+    orientation: rotateUsingQuaternion(position, 0, 0, -1)
   }
 }
 
@@ -509,7 +611,8 @@ function collectInfo(context: Context) {
       position: trackingInfo.position,
       userInfo: trackingInfo.userInfo,
       squareDistance: squareDistance(context.currentPosition, trackingInfo.position),
-      alias: peerAlias
+      alias: peerAlias,
+      talking: trackingInfo.talking
     })
   }
 
@@ -519,6 +622,7 @@ function collectInfo(context: Context) {
       receiveUserVisible(alias, true)
       receiveUserPose(alias, peerInfo.position as Pose)
       receiveUserData(alias, peerInfo.userInfo)
+      receiveUserTalking(alias, peerInfo.talking)
     }
   } else {
     const sortedBySqDistanceVisiblePeers = visiblePeers.sort((p1, p2) => p1.squareDistance - p2.squareDistance)
@@ -530,6 +634,7 @@ function collectInfo(context: Context) {
         receiveUserVisible(alias, true)
         receiveUserPose(alias, peer.position as Pose)
         receiveUserData(alias, peer.userInfo)
+        receiveUserTalking(alias, peer.talking)
       } else {
         receiveUserVisible(alias, false)
       }
@@ -809,6 +914,9 @@ async function doStartCommunications(context: Context) {
     connection.sceneMessageHandler = (alias: string, data: Package<BusMessage>) => {
       processParcelSceneCommsMessage(context, alias, data)
     }
+    connection.voiceHandler = (alias: string, data: Package<VoiceFragment>) => {
+      processVoiceFragment(context, alias, data)
+    }
 
     if (commConfigurations.debug) {
       connection.stats = context.stats
@@ -857,13 +965,43 @@ async function doStartCommunications(context: Context) {
       }
     })
 
-    window.addEventListener('beforeunload', () => sendToMordor())
+    window.addEventListener('beforeunload', () => {
+      context.positionUpdatesPaused = true
+      sendToMordor()
+    })
 
     context.infoCollecterInterval = setInterval(() => {
       if (context) {
         collectInfo(context)
       }
     }, 100)
+
+    if (!voiceCommunicator && VOICE_CHAT_ENABLED) {
+      voiceCommunicator = new VoiceCommunicator(
+        context.userInfo.userId!,
+        {
+          send(data: Uint8Array) {
+            if (context.currentPosition) {
+              context.worldInstanceConnection?.sendVoiceMessage(context.currentPosition, data)
+            }
+          }
+        },
+
+        {
+          sampleRate: commConfigurations.voiceChatSampleRate,
+          initialListenerParams: context.currentPosition ? getSpatialParamsFor(context.currentPosition) : undefined,
+          panningModel: commConfigurations.voiceChatUseHRTF ? 'HRTF' : 'equalpower'
+        }
+      )
+
+      voiceCommunicator.addStreamPlayingListener((userId, playing) => {
+        store.dispatch(voicePlayingUpdate(userId, playing))
+      })
+
+      voiceCommunicator.addStreamRecordingListener((recording) => {
+        store.dispatch(voiceRecordingUpdate(recording))
+      })
+    }
   } catch (e) {
     if (e.message && e.message.includes('is taken')) {
       throw new IdTakenError(e.message)

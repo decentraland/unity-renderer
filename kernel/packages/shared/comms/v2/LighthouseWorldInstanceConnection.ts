@@ -1,12 +1,20 @@
 import { WorldInstanceConnection } from '../interface/index'
 import { Stats } from '../debug'
-import { Package, BusMessage, ChatMessage, ProfileVersion, UserInformation, PackageType } from '../interface/types'
+import {
+  Package,
+  BusMessage,
+  ChatMessage,
+  ProfileVersion,
+  UserInformation,
+  PackageType,
+  VoiceFragment
+} from '../interface/types'
 import { Position, positionHash } from '../interface/utils'
 import defaultLogger, { createLogger } from 'shared/logger'
 import { PeerMessageTypes, PeerMessageType } from 'decentraland-katalyst-peer/src/messageTypes'
 import { Peer as PeerType } from 'decentraland-katalyst-peer/src/Peer'
 import { PacketCallback } from 'decentraland-katalyst-peer/src/types'
-import { ChatData, CommsMessage, ProfileData, SceneData, PositionData } from './proto/comms_pb'
+import { ChatData, CommsMessage, ProfileData, SceneData, PositionData, VoiceData } from './proto/comms_pb'
 import { Realm, CommsStatus } from 'shared/dao/types'
 import { compareVersions } from 'atomicHelpers/semverCompare'
 
@@ -22,13 +30,21 @@ const NOOP = () => {
 
 const logger = createLogger('Lighthouse: ')
 
-type MessageData = ChatData | ProfileData | SceneData | PositionData
+type MessageData = ChatData | ProfileData | SceneData | PositionData | VoiceData
 
 const commsMessageType: PeerMessageType = {
   name: 'sceneComms',
   ttl: 10,
   expirationTime: 10 * 1000,
   optimistic: true
+}
+
+const VoiceType: PeerMessageType = {
+  name: 'voice',
+  ttl: 5,
+  optimistic: true,
+  discardOlderThan: 0,
+  expirationTime: 10000
 }
 
 declare var global: any
@@ -40,6 +56,7 @@ export class LighthouseWorldInstanceConnection implements WorldInstanceConnectio
   chatHandler: (alias: string, data: Package<ChatMessage>) => void = NOOP
   profileHandler: (alias: string, identity: string, data: Package<ProfileVersion>) => void = NOOP
   positionHandler: (alias: string, data: Package<Position>) => void = NOOP
+  voiceHandler: (alias: string, data: Package<VoiceFragment>) => void = NOOP
 
   isAuthenticated: boolean = true // TODO - remove this
 
@@ -135,6 +152,15 @@ export class LighthouseWorldInstanceConnection implements WorldInstanceConnectio
     sceneData.setText(message)
 
     await this.sendData(topic, sceneData, commsMessageType)
+  }
+
+  async sendVoiceMessage(currentPosition: Position, data: Uint8Array): Promise<void> {
+    const topic = positionHash(currentPosition)
+
+    const voiceData = new VoiceData()
+    voiceData.setEncodedSamples(data)
+
+    await this.sendData(topic, voiceData, VoiceType)
   }
 
   async sendChatMessage(currentPosition: Position, messageId: string, text: string) {
@@ -246,6 +272,16 @@ export class LighthouseWorldInstanceConnection implements WorldInstanceConnectio
             createPackage(commsMessage, 'profile', mapToPackageProfile(commsMessage.getProfileData()!))
           )
           break
+        case CommsMessage.DataCase.VOICE_DATA:
+          this.voiceHandler(
+            sender,
+            createPackage(
+              commsMessage,
+              'voice',
+              mapToPackageVoice(commsMessage.getVoiceData()!.getEncodedSamples_asU8())
+            )
+          )
+          break
         default: {
           logger.warn(`message with unknown type received ${commsMessage.getDataCase()}`)
           break
@@ -295,6 +331,10 @@ function mapToPackageProfile(profileData: ProfileData) {
   return { user: profileData.getUserId(), version: profileData.getProfileVersion() }
 }
 
+function mapToPackageVoice(data: Uint8Array) {
+  return { encoded: data }
+}
+
 function createProfileData(userInfo: UserInformation) {
   const profileData = new ProfileData()
   profileData.setProfileVersion(userInfo.version ? userInfo.version.toString() : '')
@@ -322,6 +362,7 @@ function createCommsMessage(data: MessageData) {
   if (data instanceof SceneData) commsMessage.setSceneData(data)
   if (data instanceof ProfileData) commsMessage.setProfileData(data)
   if (data instanceof PositionData) commsMessage.setPositionData(data)
+  if (data instanceof VoiceData) commsMessage.setVoiceData(data)
 
   return commsMessage
 }

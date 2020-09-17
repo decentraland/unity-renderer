@@ -1,0 +1,8 @@
+[
+  {
+    "name": "Compile Voice Chat Codec Worker",
+    "kind": "Webpack",
+    "file": "./packages/voice-chat-codec/worker.ts",
+    "target": "webworker"
+  }
+]

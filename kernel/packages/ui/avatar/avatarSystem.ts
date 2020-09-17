@@ -7,6 +7,7 @@ import {
   ReceiveUserDataMessage,
   ReceiveUserExpressionMessage,
   ReceiveUserPoseMessage,
+  ReceiveUserTalkingMessage,
   ReceiveUserVisibleMessage,
   UserInformation,
   UserMessage,
@@ -69,6 +70,10 @@ export class AvatarEntity extends Entity {
     this.updateVisibility()
   }
 
+  setTalking(talking: boolean): void {
+    this.avatarShape.talking = talking
+  }
+
   setUserData(userData: Partial<UserInformation>): void {
     if (userData.pose) {
       this.setPose(userData.pose)
@@ -77,7 +82,7 @@ export class AvatarEntity extends Entity {
     if (userData.profile) {
       this.loadProfile(userData)
     }
-  } 
+  }
 
   setExpression(id: string, timestamp: number): void {
     const shape = this.avatarShape
@@ -197,6 +202,14 @@ function handleUserVisible({ uuid, visible }: ReceiveUserVisibleMessage): void {
   }
 }
 
+function handleUserTalkingUpdate({ uuid, talking }: ReceiveUserTalkingMessage): void {
+  const avatar = ensureAvatar(uuid)
+
+  if (avatar) {
+    avatar.setTalking(talking)
+  }
+}
+
 function handleUserRemoved({ uuid }: UserRemovedMessage): void {
   const avatar = avatarMap.get(uuid)
   if (avatar) {
@@ -212,7 +225,7 @@ function handleMutedBlockedMessages({ uuid }: UserMessage): void {
   executeTask(hideBlockedUsers)
 }
 
-avatarMessageObservable.add(evt => {
+avatarMessageObservable.add((evt) => {
   if (evt.type === AvatarMessageType.USER_DATA) {
     handleUserData(evt)
   } else if (evt.type === AvatarMessageType.USER_POSE) {
@@ -231,6 +244,8 @@ avatarMessageObservable.add(evt => {
     handleMutedBlockedMessages(evt)
   } else if (evt.type === AvatarMessageType.USER_UNBLOCKED) {
     handleMutedBlockedMessages(evt)
+  } else if (evt.type === AvatarMessageType.USER_TALKING) {
+    handleUserTalkingUpdate(evt as ReceiveUserTalkingMessage)
   } else if (evt.type === AvatarMessageType.SHOW_WINDOW) {
     handleShowWindow(evt)
   }

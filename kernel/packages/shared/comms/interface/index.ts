@@ -1,5 +1,5 @@
 import { Position } from './utils'
-import { UserInformation, Package, ChatMessage, ProfileVersion, BusMessage } from './types'
+import { UserInformation, Package, ChatMessage, ProfileVersion, BusMessage, VoiceFragment } from './types'
 import { Stats } from '../debug'
 import { Realm } from 'shared/dao/types'
 
@@ -11,6 +11,7 @@ export interface WorldInstanceConnection {
   chatHandler: (alias: string, data: Package<ChatMessage>) => void
   profileHandler: (alias: string, identity: string, data: Package<ProfileVersion>) => void
   positionHandler: (alias: string, data: Package<Position>) => void
+  voiceHandler: (alias: string, data: Package<VoiceFragment>) => void
 
   readonly isAuthenticated: boolean
 
@@ -27,6 +28,7 @@ export interface WorldInstanceConnection {
   sendParcelUpdateMessage(currentPosition: Position, p: Position): Promise<void>
   sendParcelSceneCommsMessage(cid: string, message: string): Promise<void>
   sendChatMessage(currentPosition: Position, messageId: string, text: string): Promise<void>
+  sendVoiceMessage(currentPosition: Position, data: Uint8Array): Promise<void>
 
   updateSubscriptions(topics: string[]): Promise<void>
 
