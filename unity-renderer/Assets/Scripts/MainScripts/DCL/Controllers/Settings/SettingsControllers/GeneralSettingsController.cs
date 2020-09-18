@@ -33,6 +33,7 @@ namespace DCL.SettingsController
             povCamera.m_HorizontalAxis.m_AccelTime = settings.mouseSensitivity;
             povCamera.m_VerticalAxis.m_AccelTime = settings.mouseSensitivity;
             AudioListener.volume = settings.sfxVolume;
+            DCL.Interface.WebInterface.ApplySettings(settings.sfxVolume);
         }
     }
 }

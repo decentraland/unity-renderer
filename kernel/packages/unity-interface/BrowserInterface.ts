@@ -37,7 +37,7 @@ import { IFuture } from 'fp-future'
 import { reportHotScenes } from 'shared/social/hotScenes'
 
 import { GIFProcessor } from 'gif-processor/processor'
-import { setVoiceChatRecording } from 'shared/comms/actions'
+import { setVoiceChatRecording, setVoiceVolume } from 'shared/comms/actions'
 import { getERC20Balance } from 'shared/ethereum/EthereumService'
 
 declare const DCL: any
@@ -286,6 +286,10 @@ export class BrowserInterface {
 
   public SetVoiceChatRecording(recordingMessage: { recording: boolean }) {
     globalThis.globalStore.dispatch(setVoiceChatRecording(recordingMessage.recording))
+  }
+
+  public ApplySettings(settingsMessage: { sfxVolume: number }) {
+    globalThis.globalStore.dispatch(setVoiceVolume(settingsMessage.sfxVolume))
   }
 
   public async UpdateFriendshipStatus(message: FriendshipUpdateStatusMessage) {
