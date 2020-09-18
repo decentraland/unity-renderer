@@ -12,7 +12,6 @@ import {
   NO_MOTD,
   DEBUG_PM,
   OPEN_AVATAR_EDITOR,
-  ENABLE_EXPLORE_HUD,
   ENABLE_MANA_HUD,
   ENABLE_NEW_TASKBAR
 } from '../config/index'
@@ -61,7 +60,7 @@ initializeUnity(container)
     i.ConfigureHUDElement(HUDElementID.NFT_INFO_DIALOG, { active: true, visible: false })
     i.ConfigureHUDElement(HUDElementID.TELEPORT_DIALOG, { active: true, visible: false })
     i.ConfigureHUDElement(HUDElementID.CONTROLS_HUD, { active: true, visible: false })
-    i.ConfigureHUDElement(HUDElementID.EXPLORE_HUD, { active: ENABLE_EXPLORE_HUD, visible: false })
+    i.ConfigureHUDElement(HUDElementID.EXPLORE_HUD, { active: true, visible: false })
     i.ConfigureHUDElement(HUDElementID.HELP_AND_SUPPORT_HUD, { active: true, visible: false })
 
     try {
