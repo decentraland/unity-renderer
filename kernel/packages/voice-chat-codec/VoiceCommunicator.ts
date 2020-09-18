@@ -43,6 +43,7 @@ export type VoiceSpatialParams = {
 
 export class VoiceCommunicator {
   private context: AudioContext
+  private outputGainNode: GainNode
   private input?: VoiceInput
   private voiceChatWorkerMain: VoiceChatCodecWorkerMain
   private outputs: Record<string, VoiceOutput> = {}
@@ -63,6 +64,8 @@ export class VoiceCommunicator {
     this.channelBufferSize = this.options.channelBufferSize ?? 2.0
 
     this.context = new AudioContext({ sampleRate: this.sampleRate })
+    this.outputGainNode = this.context.createGain()
+    this.outputGainNode.connect(this.context.destination)
 
     if (this.options.initialListenerParams) {
       this.setListenerSpatialParams(this.options.initialListenerParams)
@@ -150,6 +153,10 @@ export class VoiceCommunicator {
     panNode.orientationZ.value = spatialParams.orientation[2]
   }
 
+  setVolume(value: number) {
+    this.outputGainNode.gain.value = value
+  }
+
   createOutputNodes(src: string): { scriptProcessor: ScriptProcessorNode; panNode: PannerNode } {
     const scriptProcessor = this.createScriptOutputFor(src)
     const panNode = this.context.createPanner()
@@ -162,7 +169,7 @@ export class VoiceCommunicator {
     panNode.distanceModel = this.options.distanceModel ?? 'inverse'
     panNode.rolloffFactor = 1.0
     scriptProcessor.connect(panNode)
-    panNode.connect(this.context.destination)
+    panNode.connect(this.outputGainNode)
 
     return { scriptProcessor, panNode }
   }

@@ -269,6 +269,12 @@ export function updatePeerVoicePlaying(userId: string, playing: boolean) {
   }
 }
 
+export function updateVoiceCommunicatorVolume(volume: number) {
+  if (voiceCommunicator) {
+    voiceCommunicator.setVolume(volume)
+  }
+}
+
 export function sendPublicChatMessage(messageId: string, text: string) {
   if (context && context.currentPosition && context.worldInstanceConnection) {
     context.worldInstanceConnection
