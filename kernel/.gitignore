@@ -53,7 +53,3 @@ packages/decentraland-ecs/types/dcl/*
 packages/decentraland-ecs/artifacts
 packages/decentraland-ecs/package-lock.json
 .tsbuildinfo
-
-**/*.js.lib
-public/build-ecs-libraries/**/*.d.ts
-public/build-ecs-libraries/**/*.js

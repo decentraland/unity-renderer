@@ -71,15 +71,15 @@ export class SceneWorker {
     if (this.enabled) {
       if (this.positionObserver) {
         positionObservable.remove(this.positionObserver)
-        this.positionObserver = null
+        delete this.positionObserver
       }
       if (this.sceneLifeCycleObserver) {
         sceneLifeCycleObservable.remove(this.sceneLifeCycleObserver)
-        this.sceneLifeCycleObserver = null
+        delete this.sceneLifeCycleObserver
       }
       if (this.worldRunningObserver) {
         worldRunningObservable.remove(this.worldRunningObserver)
-        this.worldRunningObserver = null
+        delete this.worldRunningObserver
       }
 
       this.enabled = false
