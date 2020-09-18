@@ -6,13 +6,13 @@ import { EnvironmentData, LoadableParcelScene } from 'shared/types'
 import { getParcelSceneID } from 'shared/world/parcelSceneManager'
 import { SceneWorker } from 'shared/world/SceneWorker'
 import { UnityScene } from './UnityScene'
-import { DEBUG } from 'config'
+import { DEBUG_SCENE_LOG } from 'config'
 
 export class UnityParcelScene extends UnityScene<LoadableParcelScene> {
   constructor(public data: EnvironmentData<LoadableParcelScene>) {
     super(data)
     let loggerPrefix = data.data.basePosition.x + ',' + data.data.basePosition.y + ': '
-    this.logger = DEBUG === true ? createLogger(loggerPrefix) : createDummyLogger()
+    this.logger = DEBUG_SCENE_LOG === true ? createLogger(loggerPrefix) : createDummyLogger()
   }
 
   registerWorker(worker: SceneWorker): void {
