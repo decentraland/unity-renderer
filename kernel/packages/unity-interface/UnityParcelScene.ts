@@ -25,7 +25,7 @@ export class UnityParcelScene extends UnityScene<LoadableParcelScene> {
         system.getAPIInstance(DevTools).logger = this.logger
 
         const parcelIdentity = system.getAPIInstance(ParcelIdentity)
-        parcelIdentity.land = this.data.data.land!
+        parcelIdentity.land = this.data.data.land
         parcelIdentity.cid = getParcelSceneID(worker.parcelScene)
       })
       .catch((e) => this.logger.error('Error initializing system', e))

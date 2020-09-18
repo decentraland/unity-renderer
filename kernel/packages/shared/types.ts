@@ -127,7 +127,7 @@ export type LoadableParcelScene = {
   contents: Array<ContentMapping>
   baseUrl: string
   baseUrlBundles: string
-  land?: ILand
+  land: ILand
 }
 
 export const BillboardModes = {
