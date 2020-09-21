@@ -14,7 +14,6 @@ namespace DCL
         [SerializeField] internal TextMeshProUGUI sceneTitleText;
         [SerializeField] internal TextMeshProUGUI sceneOwnerText;
         [SerializeField] internal TextMeshProUGUI sceneLocationText;
-        [SerializeField] internal TextMeshProUGUI sceneDescriptionText;
         [SerializeField] internal RectTransform toastContainer;
         [SerializeField] internal GameObject scenePreviewContainer;
         [SerializeField] internal RawImageFillParent scenePreviewImage;
@@ -22,7 +21,6 @@ namespace DCL
         [SerializeField] internal Animator toastAnimator;
 
         [SerializeField] internal Button goToButton;
-        [SerializeField] internal Button closeButton;
         Vector2Int location;
         RectTransform rectTransform;
         MinimapMetadata minimapMetadata;
@@ -42,7 +40,6 @@ namespace DCL
             rectTransform = transform as RectTransform;
 
             goToButton.onClick.AddListener(OnGotoClick);
-            closeButton.onClick.AddListener(OnCloseClick);
 
             minimapMetadata.OnSceneInfoUpdated += OnMapMetadataInfoUpdated;
         }
@@ -73,7 +70,6 @@ namespace DCL
             sceneLocationText.text = $"{coordinates.x}, {coordinates.y}";
 
             sceneOwnerText.transform.parent.gameObject.SetActive(sceneInfoExists && !string.IsNullOrEmpty(sceneInfo.owner));
-            sceneDescriptionText.transform.parent.gameObject.SetActive(sceneInfoExists && !string.IsNullOrEmpty(sceneInfo.description));
             sceneTitleText.text = "Untitled Scene";
 
             bool useDefaultThumbnail =
@@ -89,7 +85,6 @@ namespace DCL
             {
                 sceneTitleText.text = sceneInfo.name;
                 sceneOwnerText.text = $"Created by: {sceneInfo.owner}";
-                sceneDescriptionText.text = sceneInfo.description;
 
                 if (currentImageUrl == sceneInfo.previewImageUrl)
                 {

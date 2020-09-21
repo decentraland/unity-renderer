@@ -49,7 +49,7 @@ namespace Tests
 
             navmapToastView.Populate(new Vector2Int(10, 11), sceneInfo);
             Assert.IsTrue(navmapToastView.gameObject.activeSelf);
-            navmapToastView.closeButton.onClick.Invoke();
+            navmapToastView.OnCloseClick();
             Assert.IsFalse(navmapToastView.gameObject.activeSelf);
         }
 
@@ -78,7 +78,6 @@ namespace Tests
 
             Assert.IsTrue(navmapToastView.sceneTitleText.transform.parent.gameObject.activeInHierarchy);
             Assert.IsFalse(navmapToastView.sceneOwnerText.transform.parent.gameObject.activeInHierarchy);
-            Assert.IsFalse(navmapToastView.sceneDescriptionText.transform.parent.gameObject.activeInHierarchy);
             Assert.IsFalse(navmapToastView.scenePreviewContainer.gameObject.activeInHierarchy);
         }
 
@@ -106,7 +105,6 @@ namespace Tests
 
             Assert.IsTrue(navmapToastView.sceneTitleText.gameObject.activeInHierarchy);
             Assert.IsTrue(navmapToastView.sceneOwnerText.gameObject.activeInHierarchy);
-            Assert.IsTrue(navmapToastView.sceneDescriptionText.gameObject.activeInHierarchy);
         }
     }
 }
