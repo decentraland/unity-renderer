@@ -9,6 +9,8 @@ namespace DCL
 {
     public class AvatarRenderer : MonoBehaviour
     {
+        private const int MAX_RETRIES = 5;
+
         public Material defaultMaterial;
         public Material eyeMaterial;
         public Material eyebrowMaterial;
@@ -203,16 +205,7 @@ namespace DCL
                     bodyShapeController.SetupDefaultMaterial(defaultMaterial, model.skinColor, model.hairColor);
             }
 
-            HashSet<string> usedCategories = new HashSet<string>();
-
-            usedCategories.Add(WearableLiterals.Categories.UPPER_BODY);
-            usedCategories.Add(WearableLiterals.Categories.LOWER_BODY);
-            usedCategories.Add(WearableLiterals.Categories.EYEBROWS);
-            usedCategories.Add(WearableLiterals.Categories.FACIAL);
-            usedCategories.Add(WearableLiterals.Categories.MOUTH);
-            usedCategories.Add(WearableLiterals.Categories.FEET);
-            usedCategories.Add(WearableLiterals.Categories.EYES);
-
+            HashSet<string> usedCategories = new HashSet<string>(WearableLiterals.Categories.ALL);
             int wearableCount = resolvedWearables.Count;
 
             for (int index = 0; index < wearableCount; index++)
@@ -260,7 +253,7 @@ namespace DCL
             bodyShapeController.SetHiddenList(hiddenList);
             if (!bodyShapeController.isReady)
             {
-                bodyShapeController.Load(transform, OnWearableLoadingSuccess, OnWearableLoadingFail);
+                bodyShapeController.Load(transform, OnWearableLoadingSuccess, OnBodyShapeLoadingFail);
             }
 
             foreach (var kvp in wearableControllers)
@@ -272,7 +265,7 @@ namespace DCL
 
                 wearable.SetHiddenList(hiddenList);
 
-                wearable.Load(transform, OnWearableLoadingSuccess, OnWearableLoadingFail);
+                wearable.Load(transform, OnWearableLoadingSuccess, (x) => OnWearableLoadingFail(x));
             }
 
             yield return new WaitUntil(AreWearablesReady);
@@ -306,9 +299,26 @@ namespace DCL
             wearableController.SetupDefaultMaterial(defaultMaterial, model.skinColor, model.hairColor);
         }
 
-        void OnWearableLoadingFail(WearableController wearableController)
+        void OnBodyShapeLoadingFail(WearableController wearableController)
         {
-            Debug.LogError($"Avatar: {model.name}  -  Failed loading wearable: {wearableController.id}");
+            Debug.LogError($"Avatar: {model.name}  -  Failed loading bodyshape: {wearableController.id}");
+            AbortLoading();
+        }
+
+        void OnWearableLoadingFail(WearableController wearableController, int retriesCount = MAX_RETRIES)
+        {
+            if (retriesCount <= 0)
+            {
+                Debug.LogError($"Avatar: {model.name}  -  Failed loading wearable: {wearableController.id}");
+                AbortLoading();
+                return;
+            }
+
+            wearableController.Load(transform, OnWearableLoadingSuccess, (x) => OnWearableLoadingFail(x, retriesCount - 1));
+        }
+
+        void AbortLoading()
+        {
             CleanupAvatar();
             isLoading = false;
             OnFailEvent?.Invoke();
