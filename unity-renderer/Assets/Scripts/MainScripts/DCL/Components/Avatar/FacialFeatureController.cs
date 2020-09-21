@@ -119,4 +119,17 @@ public class FacialFeatureController
 
         isReady = false;
     }
+
+    public static FacialFeatureController CreateDefaultFacialFeature(string bodyShape, string category, Material material)
+    {
+        string defaultId = WearableLiterals.DefaultWearables.GetDefaultWearable(bodyShape, category);
+        WearableItem wearable = CatalogController.wearableCatalog.GetOrDefault(defaultId);
+        if (wearable == null)
+        {
+            Debug.LogError($"Couldn't resolve wearable {defaultId}");
+            return null;
+        }
+
+        return new FacialFeatureController(wearable, bodyShape, material);
+    }
 }

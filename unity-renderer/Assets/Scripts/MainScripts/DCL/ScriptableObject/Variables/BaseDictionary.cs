@@ -71,6 +71,14 @@ public class BaseDictionary<TKey, TValue> : ScriptableObject
         return dictionary.TryGetValue(key, out value);
     }
 
+    public TValue GetOrDefault(TKey key)
+    {
+        if (!dictionary.ContainsKey(key))
+            return default;
+
+        return dictionary[key];
+    }
+
     public Dictionary<TKey, TValue>.Enumerator GetEnumerator()
     {
         return dictionary.GetEnumerator();
