@@ -15,6 +15,7 @@ namespace DCL.GoToGenesisPlazaHUD
         private const string VIEW_OBJECT_NAME = "_GoToGenesisPlazaHUD";
 
         [SerializeField] private ShowHideAnimator goToGenesisPlazaAnimator;
+        [SerializeField] private Button closeButton;
         [SerializeField] private Button cancelButton;
         [SerializeField] private Button continueButton;
 
@@ -22,6 +23,7 @@ namespace DCL.GoToGenesisPlazaHUD
         {
             gameObject.name = VIEW_OBJECT_NAME;
 
+            closeButton.onClick.AddListener(() => { OnCancelClick?.Invoke(); });
             cancelButton.onClick.AddListener(() => { OnCancelClick?.Invoke(); });
             continueButton.onClick.AddListener(() => { OnContinueClick?.Invoke(); });
         }
