@@ -26,6 +26,8 @@ namespace DCL.Components
 
         private static readonly int _BaseMap = Shader.PropertyToID("_BaseMap");
         private static readonly int _AlphaClip = Shader.PropertyToID("_AlphaClip");
+        private static readonly int _Cutoff = Shader.PropertyToID("_Cutoff");
+        private static readonly int _ZWrite = Shader.PropertyToID("_ZWrite");
 
         public BasicMaterial(ParcelScene scene) : base(scene)
         {
@@ -78,9 +80,9 @@ namespace DCL.Components
             }
 
             material.EnableKeyword("_ALPHATEST_ON");
-            material.SetInt("_ZWrite", 1);
+            material.SetInt(_ZWrite, 1);
             material.SetFloat(_AlphaClip, 1);
-            material.SetFloat("_Cutoff", model.alphaTest);
+            material.SetFloat(_Cutoff, model.alphaTest);
             material.renderQueue = (int) UnityEngine.Rendering.RenderQueue.AlphaTest;
             foreach (DecentralandEntity decentralandEntity in attachedEntities)
             {
