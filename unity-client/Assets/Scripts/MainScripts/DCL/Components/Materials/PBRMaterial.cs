@@ -3,6 +3,7 @@ using DCL.Helpers;
 using DCL.Models;
 using System.Collections;
 using UnityEngine;
+using UnityEngine.Rendering;
 
 namespace DCL.Components
 {
@@ -31,7 +32,7 @@ namespace DCL.Components
             public float environmentIntensity = 1f;
             public string bumpTexture;
             public string refractionTexture;
-            public bool disableLighting = false;
+            public bool castShadows = true;
 
             [Range(0, 4)] public int transparencyMode = 4; // 0: OPAQUE; 1: ALPHATEST; 2: ALPHBLEND; 3: ALPHATESTANDBLEND; 4: AUTO (Engine decide)
         }
@@ -50,7 +51,6 @@ namespace DCL.Components
         private string currentMaterialResourcesFilename;
 
         const string MATERIAL_RESOURCES_PATH = "Materials/";
-        const string BASIC_MATERIAL_NAME = "BasicShapeMaterial";
         const string PBR_MATERIAL_NAME = "ShapeMaterial";
 
         DCLTexture albedoDCLTexture = null;
@@ -83,33 +83,26 @@ namespace DCL.Components
         {
             model = SceneController.i.SafeFromJson<Model>(newJson);
 
-            if (model.disableLighting)
+            LoadMaterial(PBR_MATERIAL_NAME);
+
+            material.SetColor(ShaderUtils._BaseColor, model.albedoColor);
+
+            if (model.emissiveColor != Color.clear && model.emissiveColor != Color.black)
             {
-                LoadMaterial(BASIC_MATERIAL_NAME);
+                material.EnableKeyword("_EMISSION");
             }
-            else
-            {
-                LoadMaterial(PBR_MATERIAL_NAME);
 
-                material.SetColor(ShaderUtils._BaseColor, model.albedoColor);
+            // METALLIC/SPECULAR CONFIGURATIONS
+            material.SetColor(ShaderUtils._EmissionColor, model.emissiveColor * model.emissiveIntensity);
+            material.SetColor(ShaderUtils._SpecColor, model.reflectivityColor);
 
-                if (model.emissiveColor != Color.clear && model.emissiveColor != Color.black)
-                {
-                    material.EnableKeyword("_EMISSION");
-                }
+            material.SetFloat(ShaderUtils._Metallic, model.metallic);
+            material.SetFloat(ShaderUtils._Smoothness, 1 - model.roughness);
+            material.SetFloat(ShaderUtils._EnvironmentReflections, model.microSurface);
+            material.SetFloat(ShaderUtils._SpecularHighlights, model.specularIntensity * model.directIntensity);
 
-                // METALLIC/SPECULAR CONFIGURATIONS
-                material.SetColor(ShaderUtils._EmissionColor, model.emissiveColor * model.emissiveIntensity);
-                material.SetColor(ShaderUtils._SpecColor, model.reflectivityColor);
-
-                material.SetFloat(ShaderUtils._Metallic, model.metallic);
-                material.SetFloat(ShaderUtils._Smoothness, 1 - model.roughness);
-                material.SetFloat(ShaderUtils._EnvironmentReflections, model.microSurface);
-                material.SetFloat(ShaderUtils._SpecularHighlights, model.specularIntensity * model.directIntensity);
-
-                // FETCH AND LOAD EMISSIVE TEXTURE
-                SetMaterialTexture(ShaderUtils._EmissionMap, model.emissiveTexture, emissiveDCLTexture);
-            }
+            // FETCH AND LOAD EMISSIVE TEXTURE
+            SetMaterialTexture(ShaderUtils._EmissionMap, model.emissiveTexture, emissiveDCLTexture);
 
             SetupTransparencyMode();
 
@@ -117,6 +110,11 @@ namespace DCL.Components
             SetMaterialTexture(ShaderUtils._BaseMap, model.albedoTexture, albedoDCLTexture);
             SetMaterialTexture(ShaderUtils._AlphaTexture, model.alphaTexture, alphaDCLTexture);
             SetMaterialTexture(ShaderUtils._BumpMap, model.bumpTexture, bumpDCLTexture);
+
+            foreach (DecentralandEntity decentralandEntity in attachedEntities)
+            {
+                InitMaterial(decentralandEntity.meshRootGameObject);
+            }
 
             return null;
         }
@@ -219,8 +217,11 @@ namespace DCL.Components
             }
 
             var meshRenderer = meshGameObject.GetComponent<MeshRenderer>();
+            if (meshRenderer == null)
+                return;
 
-            if (meshRenderer != null && meshRenderer.sharedMaterial != material)
+            meshRenderer.shadowCastingMode = model.castShadows ? ShadowCastingMode.On : ShadowCastingMode.Off;
+            if (meshRenderer.sharedMaterial != material)
             {
                 MaterialTransitionController
                     matTransition = meshGameObject.GetComponent<MaterialTransitionController>();
