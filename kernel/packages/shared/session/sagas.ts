@@ -8,6 +8,7 @@ import { Authenticator } from 'dcl-crypto'
 import { ENABLE_WEB3, WORLD_EXPLORER, PREVIEW, ETHEREUM_NETWORK, getTLD, setNetwork } from 'config'
 
 import { createLogger } from 'shared/logger'
+import { referUser, initializeReferral } from 'shared/referral'
 import { awaitWeb3Approval, isSessionExpired, providerFuture, loginCompleted } from 'shared/ethereum/provider'
 import { getUserProfile, setLocalProfile } from 'shared/comms/peers'
 import { ReportFatalError } from 'shared/loading/ReportFatalError'
@@ -31,6 +32,7 @@ const logger = createLogger('session: ')
 
 export function* sessionSaga(): any {
   yield call(initializeTos)
+  yield call(initializeReferral)
 
   yield takeLatest(LOGIN, login)
   yield takeLatest(LOGOUT, logout)
@@ -114,6 +116,7 @@ function* login() {
 
     if (identity.hasConnectedWeb3) {
       identifyUser(userId)
+      referUser(identity)
     }
   } else {
     logger.log(`Using test user.`)
