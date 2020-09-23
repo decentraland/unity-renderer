@@ -3,6 +3,7 @@ using DCL.Helpers;
 using DCL.Models;
 using System.Collections;
 using UnityEngine;
+using UnityEngine.Rendering;
 
 namespace DCL.Components
 {
@@ -15,6 +16,7 @@ namespace DCL.Components
 
             // value that defines if a pixel is visible or invisible (no transparency gradients)
             [Range(0f, 1f)] public float alphaTest = 0.5f;
+            public bool castShadows = true;
         }
 
         public Model model = new Model();
@@ -80,6 +82,10 @@ namespace DCL.Components
             material.SetFloat(_AlphaClip, 1);
             material.SetFloat("_Cutoff", model.alphaTest);
             material.renderQueue = (int) UnityEngine.Rendering.RenderQueue.AlphaTest;
+            foreach (DecentralandEntity decentralandEntity in attachedEntities)
+            {
+                InitMaterial(decentralandEntity.meshRootGameObject);
+            }
         }
 
         void OnMaterialAttached(DecentralandEntity entity)
@@ -102,8 +108,11 @@ namespace DCL.Components
                 return;
 
             var meshRenderer = meshGameObject.GetComponent<MeshRenderer>();
+            if (meshRenderer == null)
+                return;
 
-            if (meshRenderer != null && meshRenderer.sharedMaterial != material)
+            meshRenderer.shadowCastingMode = model.castShadows ? ShadowCastingMode.On : ShadowCastingMode.Off;
+            if (meshRenderer.sharedMaterial != material)
             {
                 MaterialTransitionController
                     matTransition = meshGameObject.GetComponent<MaterialTransitionController>();
