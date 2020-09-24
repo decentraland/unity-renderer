@@ -7,6 +7,7 @@ using UnityEngine.Networking;
 using static DCL.ContentServerUtils;
 
 [assembly: InternalsVisibleTo("AssetBundleBuilderTests")]
+
 namespace DCL
 {
     public static class AssetBundleMenuItems
@@ -15,7 +16,7 @@ namespace DCL
         public static void DumpMuseum()
         {
             var builder = new AssetBundleBuilder();
-            builder.environment = ContentServerUtils.ApiEnvironment.ORG;
+            builder.tld = ContentServerUtils.ApiTLD.ORG;
             builder.skipAlreadyBuiltBundles = false;
             var zoneArray = Utils.GetCenteredZoneArray(new Vector2Int(13, 75), new Vector2Int(2, 2));
             builder.DumpArea(zoneArray);
@@ -34,9 +35,10 @@ namespace DCL
         public static void DumpZoneArea()
         {
             var builder = new AssetBundleBuilder();
-            builder.environment = ContentServerUtils.ApiEnvironment.ORG;
+            builder.tld = ContentServerUtils.ApiTLD.ORG;
             builder.DumpArea(new Vector2Int(-110, -110), new Vector2Int(1, 1));
         }
+
         static void DumpAreaToMax(AssetBundleBuilder builder, int x, int y)
         {
             if (x >= 140 || y >= 140)
@@ -53,6 +55,15 @@ namespace DCL
             }
 
             builder.DumpArea(new Vector2Int(x, y), new Vector2Int(10, 10), (error) => DumpAreaToMax(builder, nextX, nextY));
+        }
+
+        [MenuItem("Decentraland/Asset Bundle Builder/Dump Tomb Chaser")]
+        public static void DumpOrg()
+        {
+            var builder = new AssetBundleBuilder();
+            builder.skipAlreadyBuiltBundles = true;
+            var zoneArray = Utils.GetCenteredZoneArray(new Vector2Int(28, 45), new Vector2Int(1, 1));
+            builder.DumpArea(zoneArray);
         }
 
 
@@ -83,7 +94,9 @@ namespace DCL
             UnityWebRequest w = UnityWebRequest.Get(url);
             w.SendWebRequest();
 
-            while (!w.isDone) { }
+            while (!w.isDone)
+            {
+            }
 
             if (!w.WebRequestSucceded())
             {
