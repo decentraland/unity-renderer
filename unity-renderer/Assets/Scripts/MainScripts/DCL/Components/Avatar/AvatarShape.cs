@@ -134,7 +134,6 @@ namespace DCL
             avatarUserInfo.userName = model.name;
             avatarUserInfo.worldPosition = updatedModel.position;
             MinimapMetadataController.i?.UpdateMinimapUserInformation(avatarUserInfo);
-            SceneController.i.physicsSyncController.MarkDirty();
         }
 
         public override void OnPoolGet()
