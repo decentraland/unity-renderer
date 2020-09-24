@@ -1,5 +1,6 @@
 {
   "dependencies": {
+    "com.coffee.ui-particle": "https://github.com/mob-sakai/ParticleEffectForUGUI.git",
     "com.unity.2d.sprite": "1.0.0",
     "com.unity.2d.tilemap": "1.0.0",
     "com.unity.cinemachine": "2.3.4",
@@ -44,5 +45,11 @@
   },
   "testables": [
     "com.unity.test-framework.performance"
-  ]
+  ],
+  "lock": {
+    "com.coffee.ui-particle": {
+      "revision": "HEAD",
+      "hash": "bda77ab0395282b9a2c417c6affa21c1d004321b"
+    }
+  }
 }
