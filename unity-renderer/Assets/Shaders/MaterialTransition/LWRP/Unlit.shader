@@ -17,6 +17,10 @@ Shader "DCL/LWRP/Unlit"
 
         // Editmode props
         [HideInInspector] _QueueOffset("Queue offset", Float) = 0.0
+
+        [PerRendererData] _CullYPlane ("Cull Y Plane", Float) = 0
+        _FadeThickness ("Fade Thickness", Float) = 5
+        _FadeDirection ("Fade Direction", Float) = 0
     }
     SubShader
     {
