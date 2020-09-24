@@ -69,7 +69,7 @@ namespace DCL
 
             DCLCharacterController.OnCharacterMoved += SetPositionDirty;
 
-            worldBlockersController = new WorldBlockersController(this, new BlockerHandler(DCLCharacterController.i.characterPosition), DCLCharacterController.i.characterPosition);
+            InitializeWorldBlockersController();
 
             physicsSyncController = new PhysicsSyncController();
             //TODO(Brian): Move those suscriptions elsewhere when we have the PoolManager in its own
@@ -572,6 +572,12 @@ namespace DCL
             }
         }
 
+        void InitializeWorldBlockersController()
+        {
+            if(worldBlockersController == null)
+                worldBlockersController = new WorldBlockersController(this, new BlockerHandler(DCLCharacterController.i.characterPosition), DCLCharacterController.i.characterPosition);
+        }
+
         private void SetPositionDirty(DCLCharacterPosition character)
         {
             var currentX = (int)Math.Floor(character.worldPosition.x / ParcelSettings.PARCEL_SIZE);
@@ -922,6 +928,7 @@ namespace DCL
         public static bool VERBOSE = false;
         public bool ignoreGlobalScenes = false;
 
+        // Beware this SetDebug() may be called before Awake() somehow...
         public void SetDebug()
         {
             Debug.unityLogger.logEnabled = true;
@@ -933,6 +940,8 @@ namespace DCL
 
             OnDebugModeSet?.Invoke();
 
+            InitializeWorldBlockersController();
+            
             worldBlockersController.SetEnabled(false);
         }
 
