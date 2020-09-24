@@ -11,16 +11,40 @@ namespace AssetBundleConversionTests
 {
     public class ConversionTests
     {
+        void ResetEnvironment()
+        {
+            Caching.ClearCache();
+            AssetDatabase.Refresh();
+
+            if (Directory.Exists(AssetBundleBuilderConfig.ASSET_BUNDLES_PATH_ROOT))
+                Directory.Delete(AssetBundleBuilderConfig.ASSET_BUNDLES_PATH_ROOT, true);
+
+            if (Directory.Exists(AssetBundleBuilderConfig.DOWNLOADED_PATH_ROOT))
+                Directory.Delete(AssetBundleBuilderConfig.DOWNLOADED_PATH_ROOT, true);
+        }
+
+        [SetUp]
+        public void SetUp()
+        {
+            ResetEnvironment();
+        }
+
+        [TearDown]
+        public void TearDown()
+        {
+            ResetEnvironment();
+        }
+
         [Test]
         public void PopulateLowercaseMappingsWorkCorrectly()
         {
             var builder = new AssetBundleBuilder();
             var pairs = new List<ContentServerUtils.MappingPair>();
 
-            pairs.Add(new ContentServerUtils.MappingPair() { file = "foo", hash = "tEsT1" });
-            pairs.Add(new ContentServerUtils.MappingPair() { file = "foo", hash = "Test2" });
-            pairs.Add(new ContentServerUtils.MappingPair() { file = "foo", hash = "tesT3" });
-            pairs.Add(new ContentServerUtils.MappingPair() { file = "foo", hash = "teSt4" });
+            pairs.Add(new ContentServerUtils.MappingPair() {file = "foo", hash = "tEsT1"});
+            pairs.Add(new ContentServerUtils.MappingPair() {file = "foo", hash = "Test2"});
+            pairs.Add(new ContentServerUtils.MappingPair() {file = "foo", hash = "tesT3"});
+            pairs.Add(new ContentServerUtils.MappingPair() {file = "foo", hash = "teSt4"});
 
             builder.PopulateLowercaseMappings(pairs.ToArray());
 
@@ -62,36 +86,28 @@ namespace AssetBundleConversionTests
         [UnityTest]
         public IEnumerator WhenConvertedWithExternalTexturesDependenciesAreGeneratedCorrectly()
         {
-            Caching.ClearCache();
+            var builder = new AssetBundleBuilder(ContentServerUtils.ApiTLD.ZONE);
 
-            if (Directory.Exists(AssetBundleBuilderConfig.ASSET_BUNDLES_PATH_ROOT))
-                Directory.Delete(AssetBundleBuilderConfig.ASSET_BUNDLES_PATH_ROOT, true);
-
-            if (Directory.Exists(AssetBundleBuilderConfig.DOWNLOADED_PATH_ROOT))
-                Directory.Delete(AssetBundleBuilderConfig.DOWNLOADED_PATH_ROOT, true);
-
-            AssetDatabase.Refresh();
-
-            var builder = new AssetBundleBuilder();
             bool finished = false;
 
-            System.Action<AssetBundleBuilder.ErrorCodes> onFinish = (x) => { finished = true; };
-
-            builder.DumpArea(new Vector2Int(-110, -110), new Vector2Int(1, 1), onFinish);
+            //TODO(Brian): Mock this method to work without requests
+            builder.DumpArea(new Vector2Int(-110, -110),
+                new Vector2Int(1, 1),
+                (x) => finished = true);
 
             yield return new WaitUntil(() => finished == true);
 
-            AssetBundle abDependency = AssetBundle.LoadFromFile(AssetBundleBuilderConfig.ASSET_BUNDLES_PATH_ROOT + "/QmYACL8SnbXEonXQeRHdWYbfm8vxvaFAWnsLHUaDG4ABp5");
+            AssetBundle abDependency = AssetBundle.LoadFromFile(AssetBundleBuilderConfig.ASSET_BUNDLES_PATH_ROOT + "/QmWZaHM9CaVpCnsWh78LiNFuiXwjCzTQBTaJ6vZL7c9cbp");
             abDependency.LoadAllAssets();
 
-            AssetBundle abMain = AssetBundle.LoadFromFile(AssetBundleBuilderConfig.ASSET_BUNDLES_PATH_ROOT + "/QmNS4K7GaH63T9rhAfkrra7ADLXSEeco8FTGknkPnAVmKM");
+            AssetBundle abMain = AssetBundle.LoadFromFile(AssetBundleBuilderConfig.ASSET_BUNDLES_PATH_ROOT + "/QmS9eDwvcEpyYXChz6pFpyWyfyajiXbt6KA4CxQa3JKPGC");
             Material[] mats = abMain.LoadAllAssets<Material>();
 
             bool hasMap = false;
 
             foreach (var mat in mats)
             {
-                if (mat.name.ToLowerInvariant().Contains("mini town"))
+                if (mat.name.ToLowerInvariant().Contains("base grass"))
                     hasMap = mat.GetTexture("_BaseMap") != null;
             }
 

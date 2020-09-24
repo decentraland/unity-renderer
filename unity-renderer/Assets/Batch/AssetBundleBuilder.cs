@@ -12,6 +12,7 @@ using UnityGLTF.Cache;
 using MappingPair = DCL.ContentServerUtils.MappingPair;
 using MappingsAPIData = DCL.ContentServerUtils.MappingsAPIData;
 
+
 namespace DCL
 {
     public static class AssetBundleBuilderConfig
@@ -55,7 +56,7 @@ namespace DCL
 
         public Dictionary<string, string> hashLowercaseToHashProper = new Dictionary<string, string>();
 
-        internal ContentServerUtils.ApiEnvironment environment = ContentServerUtils.ApiEnvironment.ORG;
+        internal ContentServerUtils.ApiTLD tld = ContentServerUtils.ApiTLD.ORG;
 
         internal bool deleteDownloadPathAfterFinished = false;
         internal bool skipAlreadyBuiltBundles = false;
@@ -71,9 +72,9 @@ namespace DCL
         int totalAssets;
         int skippedAssets;
 
-        public AssetBundleBuilder(ContentServerUtils.ApiEnvironment environment = ContentServerUtils.ApiEnvironment.ORG)
+        public AssetBundleBuilder(ContentServerUtils.ApiTLD tld = ContentServerUtils.ApiTLD.ORG)
         {
-            this.environment = environment;
+            this.tld = tld;
             finalAssetBundlePath = AssetBundleBuilderConfig.ASSET_BUNDLES_PATH_ROOT + "/";
             finalDownloadedPath = AssetBundleBuilderConfig.DOWNLOADED_PATH_ROOT + "/";
             finalDownloadedAssetDbPath = AssetBundleBuilderConfig.DOWNLOADED_ASSET_DB_PATH_ROOT + "/";
@@ -100,7 +101,7 @@ namespace DCL
                 if (AssetBundleBuilderUtils.ParseOption(commandLineArgs, AssetBundleBuilderConfig.CLI_SET_CUSTOM_BASE_URL, 1, out string[] customBaseUrl))
                 {
                     ContentServerUtils.customBaseUrl = customBaseUrl[0];
-                    builder.environment = ContentServerUtils.ApiEnvironment.NONE;
+                    builder.tld = ContentServerUtils.ApiTLD.NONE;
                 }
 
                 if (AssetBundleBuilderUtils.ParseOption(commandLineArgs, AssetBundleBuilderConfig.CLI_VERBOSE, 0, out _))
@@ -122,7 +123,8 @@ namespace DCL
                     builder.DumpScene(sceneCid[0]);
                     return;
                 }
-                else if (AssetBundleBuilderUtils.ParseOption(commandLineArgs, AssetBundleBuilderConfig.CLI_BUILD_PARCELS_RANGE_SYNTAX, 4, out string[] xywh))
+
+                if (AssetBundleBuilderUtils.ParseOption(commandLineArgs, AssetBundleBuilderConfig.CLI_BUILD_PARCELS_RANGE_SYNTAX, 4, out string[] xywh))
                 {
                     if (xywh == null)
                     {
@@ -150,10 +152,8 @@ namespace DCL
                     builder.DumpArea(new Vector2Int(x, y), new Vector2Int(w, h));
                     return;
                 }
-                else
-                {
-                    throw new ArgumentException("Invalid arguments! You must pass -parcelsXYWH or -sceneCid for dump to work!");
-                }
+
+                throw new ArgumentException("Invalid arguments! You must pass -parcelsXYWH or -sceneCid for dump to work!");
             }
             catch (Exception e)
             {
@@ -336,21 +336,16 @@ namespace DCL
                 foreach (var contentPair in rawContents)
                 {
                     string contentFilePathLower = contentPair.file.ToLowerInvariant();
-                    string contentFilePath = contentPair.file;
 
                     bool endsWithTextureExtensions = AssetBundleBuilderConfig.textureExtensions.Any((x) => contentFilePathLower.EndsWith(x));
 
                     if (endsWithTextureExtensions)
-                    {
-                        RetrieveAndInjectTexture(hashToGltfPair, gltfHash, contentPair);
-                    }
+                        RetrieveAndInjectTexture(kvp.Value, contentPair);
 
                     bool endsWithBufferExtensions = AssetBundleBuilderConfig.bufferExtensions.Any((x) => contentFilePathLower.EndsWith(x));
 
                     if (endsWithBufferExtensions)
-                    {
-                        RetrieveAndInjectBuffer(gltfFilePath, contentPair, contentFilePath);
-                    }
+                        RetrieveAndInjectBuffer(kvp.Value, contentPair);
                 }
 
                 //NOTE(Brian): Finally, load the gLTF. The GLTFImporter will use the PersistentAssetCache to resolve the external dependencies.
@@ -369,6 +364,9 @@ namespace DCL
                         streamsToDispose.Add(streamDataKvp.Value.stream);
                 }
             }
+
+            AssetDatabase.Refresh();
+            AssetDatabase.SaveAssets();
 
             foreach (var kvp in pathsToTag)
             {
@@ -426,6 +424,8 @@ namespace DCL
         {
             if (OnFinish == null)
                 OnFinish = CleanAndExit;
+            else
+                OnFinish += CleanAndExit;
 
             startTime = Time.realtimeSinceStartup;
 
@@ -515,7 +515,7 @@ namespace DCL
 
             foreach (var sceneCid in sceneCidsList)
             {
-                MappingsAPIData parcelInfoApiData = AssetBundleBuilderUtils.GetSceneMappingsData(environment, sceneCid);
+                MappingsAPIData parcelInfoApiData = AssetBundleBuilderUtils.GetSceneMappingsData(tld, sceneCid);
                 rawContents.AddRange(parcelInfoApiData.data[0].content.contents);
             }
 
@@ -540,10 +540,14 @@ namespace DCL
             }
         }
 
-        private void RetrieveAndInjectTexture(Dictionary<string, MappingPair> hashToGltfPair, string gltfHash, MappingPair textureMappingPair)
+        private void RetrieveAndInjectTexture(MappingPair gltfMappingPair, MappingPair textureMappingPair)
         {
             string fileExt = Path.GetExtension(textureMappingPair.file);
             string realOutputPath = finalDownloadedPath + textureMappingPair.hash + "/" + textureMappingPair.hash + fileExt;
+
+            string fileExtGltf = Path.GetExtension(gltfMappingPair.file);
+            string realOutputPathGltf = finalDownloadedAssetDbPath + gltfMappingPair.hash + "/" + gltfMappingPair.hash + fileExtGltf;
+
             Texture2D t2d = null;
 
             if (File.Exists(realOutputPath))
@@ -552,34 +556,37 @@ namespace DCL
                 t2d = AssetDatabase.LoadAssetAtPath<Texture2D>(assetDBOutputPath);
             }
 
-            if (t2d != null)
-            {
-                string relativePath = AssetBundleBuilderUtils.GetRelativePathTo(hashToGltfPair[gltfHash].file, textureMappingPair.file);
-                //NOTE(Brian): This cache will be used by the GLTF importer when seeking textures. This way the importer will
-                //             consume the asset bundle dependencies instead of trying to create new textures.
-                PersistentAssetCache.AddImage(relativePath, gltfHash, new RefCountedTextureData(relativePath, t2d));
-            }
+            if (t2d == null)
+                return;
+
+            string relativePath = AssetBundleBuilderUtils.GetRelativePathTo(gltfMappingPair.file, textureMappingPair.file);
+
+            //NOTE(Brian): This cache will be used by the GLTF importer when seeking textures. This way the importer will
+            //             consume the asset bundle dependencies instead of trying to create new textures.
+            PersistentAssetCache.AddImage(relativePath, realOutputPathGltf, new RefCountedTextureData(relativePath, t2d));
         }
 
-        private void RetrieveAndInjectBuffer(string gltfFilePath, MappingPair bufferMappingPair, string contentFilePath)
+        private void RetrieveAndInjectBuffer(MappingPair gltfMappingPair, MappingPair bufferMappingPair)
         {
-            string fileExt = Path.GetExtension(bufferMappingPair.file);
-            string realOutputPath = finalDownloadedPath + bufferMappingPair.hash + "/" + bufferMappingPair.hash + fileExt;
+            string bufferExt = Path.GetExtension(bufferMappingPair.file);
+            string gltfExt = Path.GetExtension(gltfMappingPair.file);
+            string realOutputPath = finalDownloadedPath + bufferMappingPair.hash + "/" + bufferMappingPair.hash + bufferExt;
+            string gltfOutputPath = finalDownloadedAssetDbPath + gltfMappingPair.hash + "/" + gltfMappingPair.hash + gltfExt;
 
-            if (File.Exists(realOutputPath))
-            {
-                Stream stream = File.OpenRead(realOutputPath);
-                string relativePath = AssetBundleBuilderUtils.GetRelativePathTo(gltfFilePath, contentFilePath);
+            if (!File.Exists(realOutputPath))
+                return;
 
-                // NOTE(Brian): This cache will be used by the GLTF importer when seeking streams. This way the importer will
-                //              consume the asset bundle dependencies instead of trying to create new streams.
-                PersistentAssetCache.AddBuffer(relativePath, bufferMappingPair.hash, new RefCountedStreamData(relativePath, stream));
-            }
+            Stream stream = File.OpenRead(realOutputPath);
+            string relativePath = AssetBundleBuilderUtils.GetRelativePathTo(gltfMappingPair.file, bufferMappingPair.file);
+
+            // NOTE(Brian): This cache will be used by the GLTF importer when seeking streams. This way the importer will
+            //              consume the asset bundle dependencies instead of trying to create new streams.
+            PersistentAssetCache.AddBuffer(relativePath, gltfOutputPath, new RefCountedStreamData(relativePath, stream));
         }
 
         private string DownloadAsset(string fileName, string hash, string additionalPath = "")
         {
-            string baseUrl = ContentServerUtils.GetContentAPIUrlBase(environment);
+            string baseUrl = ContentServerUtils.GetContentAPIUrlBase(tld);
 
             string fileExt = Path.GetExtension(fileName);
 
@@ -627,13 +634,16 @@ namespace DCL
 
             File.WriteAllBytes(outputPath, req.downloadHandler.data);
 
+            string dbPath = finalDownloadedAssetDbPath + additionalPath + hash + fileExt;
+            AssetDatabase.ImportAsset(dbPath, ImportAssetOptions.ForceSynchronousImport | ImportAssetOptions.ImportRecursive);
+
             return finalDownloadedPath + additionalPath;
         }
 
 
         internal void DumpArea(Vector2Int coords, Vector2Int size, Action<ErrorCodes> OnFinish = null)
         {
-            HashSet<string> sceneCids = AssetBundleBuilderUtils.GetSceneCids(environment, coords, size);
+            HashSet<string> sceneCids = AssetBundleBuilderUtils.GetSceneCids(tld, coords, size);
 
             List<string> sceneCidsList = sceneCids.ToList();
             ConvertScenesToAssetBundles(sceneCidsList, OnFinish);
@@ -641,7 +651,7 @@ namespace DCL
 
         internal void DumpArea(List<Vector2Int> coords, Action<ErrorCodes> OnFinish = null)
         {
-            HashSet<string> sceneCids = AssetBundleBuilderUtils.GetScenesCids(environment, coords);
+            HashSet<string> sceneCids = AssetBundleBuilderUtils.GetScenesCids(tld, coords);
 
             List<string> sceneCidsList = sceneCids.ToList();
             ConvertScenesToAssetBundles(sceneCidsList, OnFinish);

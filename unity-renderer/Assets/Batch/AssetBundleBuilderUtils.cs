@@ -165,11 +165,11 @@ namespace DCL
             return sBuilder.ToString();
         }
 
-        public static HashSet<string> GetSceneCids(ApiEnvironment environment, Vector2Int coords, Vector2Int size)
+        public static HashSet<string> GetSceneCids(ApiTLD tld, Vector2Int coords, Vector2Int size)
         {
             HashSet<string> sceneCids = new HashSet<string>();
 
-            string url = GetScenesAPIUrl(environment, coords.x, coords.y, size.x, size.y);
+            string url = GetScenesAPIUrl(tld, coords.x, coords.y, size.x, size.y);
 
             UnityWebRequest w = UnityWebRequest.Get(url);
             w.SendWebRequest();
@@ -196,13 +196,13 @@ namespace DCL
             return sceneCids;
         }
 
-        public static HashSet<string> GetScenesCids(ApiEnvironment environment, List<Vector2Int> coords)
+        public static HashSet<string> GetScenesCids(ApiTLD tld, List<Vector2Int> coords)
         {
             HashSet<string> sceneCids = new HashSet<string>();
 
             foreach (Vector2Int v in coords)
             {
-                string url = GetScenesAPIUrl(environment, v.x, v.y, 0, 0);
+                string url = GetScenesAPIUrl(tld, v.x, v.y, 0, 0);
 
                 UnityWebRequest w = UnityWebRequest.Get(url);
                 w.SendWebRequest();
@@ -231,9 +231,9 @@ namespace DCL
             return sceneCids;
         }
 
-        public static MappingsAPIData GetSceneMappingsData(ApiEnvironment environment, string sceneCid)
+        public static MappingsAPIData GetSceneMappingsData(ApiTLD tld, string sceneCid)
         {
-            string url = GetMappingsAPIUrl(environment, sceneCid);
+            string url = GetMappingsAPIUrl(tld, sceneCid);
             UnityWebRequest w = UnityWebRequest.Get(url);
             w.SendWebRequest();
 
