@@ -3,6 +3,7 @@ using DCL;
 using DCL.Components;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
 public class AvatarModifierArea : BaseComponent
@@ -19,10 +20,10 @@ public class AvatarModifierArea : BaseComponent
     [HideInInspector]
     public Model model = new Model();
 
+    private HashSet<GameObject> avatarsInArea = new HashSet<GameObject>();
     private event Action<GameObject> OnAvatarEnter;
     private event Action<GameObject> OnAvatarExit;
     private readonly Dictionary<string, AvatarModifier> modifiers;
-    private Collider collider;
 
     public AvatarModifierArea()
     {
@@ -37,16 +38,15 @@ public class AvatarModifierArea : BaseComponent
     public override IEnumerator ApplyChanges(string newJson)
     {
 
-        // Clean up previous listeners/colliders
+        // Clean up
+        RemoveAllModifiers();
         OnAvatarEnter = null;
         OnAvatarExit = null;
-        Destroy(collider);
 
+        // Update
         model = SceneController.i.SafeFromJson<Model>(newJson);
         if (model.modifiers != null)
         {
-            collider = model.area.AddCollider(gameObject);
-
             // Add all listeners
             foreach (string modifierKey in model.modifiers)
             {
@@ -61,19 +61,65 @@ public class AvatarModifierArea : BaseComponent
 
     private void OnDestroy()
     {
-        Destroy(collider);
+        RemoveAllModifiers();
     }
 
-    private void OnTriggerEnter(Collider other)
+    private void Update()
     {
-        Transform parent = other.transform.parent;
-        OnAvatarEnter?.Invoke(parent.gameObject);
+        if (model?.area == null)
+        {
+            return;
+        }
+
+        // Find avatars currently on the area
+        HashSet<GameObject> newAvatarsInArea = DetectAllAvatarsInArea();
+        if (newAvatarsInArea == null || newAvatarsInArea.SetEquals(avatarsInArea))
+        {
+            return;
+        }
+
+        // Call event for avatars that just entered the area
+        foreach (GameObject avatarThatEntered in newAvatarsInArea.Except(avatarsInArea))
+        {
+            OnAvatarEnter?.Invoke(avatarThatEntered);
+        }
+
+        // Call events for avatars that just exited the area
+        foreach (GameObject avatarThatExited in avatarsInArea.Except(newAvatarsInArea))
+        {
+            OnAvatarExit?.Invoke(avatarThatExited);
+        }
+
+        avatarsInArea = newAvatarsInArea;
     }
 
-    private void OnTriggerExit(Collider other)
+    private HashSet<GameObject> DetectAllAvatarsInArea()
     {
-        Transform parent = other.transform.parent;
-        OnAvatarExit?.Invoke(parent.gameObject);
+        if (entity?.gameObject == null)
+        {
+            return null;
+        }
+
+        Vector3 center = entity.gameObject.transform.position;
+        Quaternion rotation = entity.gameObject.transform.rotation;
+        return model.area.DetectAvatars(center, rotation);
+    }
+
+    private void RemoveAllModifiers()
+    {
+        if (model?.area == null)
+        {
+            return;
+        }
+
+        HashSet<GameObject> avatars = DetectAllAvatarsInArea();
+        if (avatars != null)
+        {
+            foreach (GameObject avatar in avatars)
+            {
+                OnAvatarExit?.Invoke(avatar);
+            }
+        }
     }
 
 }
