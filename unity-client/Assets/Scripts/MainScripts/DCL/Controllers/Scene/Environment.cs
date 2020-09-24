@@ -8,6 +8,7 @@
         public readonly PointerEventsController pointerEventsController;
         public readonly MemoryManager memoryManager;
         public InteractionHoverCanvasController interactionHoverCanvasController { get; private set; }
+        public Clipboard clipboard { get; }
 
         /*
          * TODO: Continue moving static instances to this class. Each static instance should be converted to a local instance inside this class.
@@ -22,6 +23,7 @@
             messagingControllersManager = new MessagingControllersManager();
             pointerEventsController = new PointerEventsController();
             memoryManager = new MemoryManager();
+            clipboard = Clipboard.Create();
         }
 
         public void Initialize(IMessageProcessHandler messageHandler, bool isTesting = false)
