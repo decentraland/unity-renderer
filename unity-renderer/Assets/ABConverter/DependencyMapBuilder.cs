@@ -21,7 +21,7 @@ namespace DCL
         /// This dumps .depmap files
         /// </summary>
         /// <param name="manifest"></param>
-        public static void Generate(string path, Dictionary<string, string> hashLowercaseToHashProper, AssetBundleManifest manifest, string exceptions = null)
+        public static void Generate(IFile file, string path, Dictionary<string, string> hashLowercaseToHashProper, AssetBundleManifest manifest, string exceptions = null)
         {
             string[] assetBundles = manifest.GetAllAssetBundles();
 
@@ -53,7 +53,7 @@ namespace DCL
 
                 if (!string.IsNullOrEmpty(finalFilename))
                 {
-                    File.WriteAllText(path + finalFilename + ".depmap", json);
+                    file.WriteAllText(path + finalFilename + ".depmap", json);
                 }
             }
         }
