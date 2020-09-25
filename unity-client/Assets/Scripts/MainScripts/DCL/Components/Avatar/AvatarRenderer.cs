@@ -255,6 +255,7 @@ namespace DCL
 
                 wearable.SetHiddenList(hiddenList);
                 wearable.Load(transform, OnWearableLoadingSuccess, x => OnWearableLoadingFail(x));
+                yield return null;
             }
 
             yield return new WaitUntil(() => bodyShapeController.isReady && wearableControllers.Values.All(x => x.isReady));
