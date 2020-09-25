@@ -19,6 +19,8 @@ public class BasicMaterialVisualTests : VisualTestsBase
 
     [UnityTest]
     [VisualTest]
+    [Explicit]
+    [Category("Explicit")]
     public IEnumerator CastShadowFalseShouldWork()
     {
         yield return InitVisualTestsScene("BasicMaterialVisualTests_CastShadowFalseShouldWork");
@@ -49,6 +51,8 @@ public class BasicMaterialVisualTests : VisualTestsBase
 
     [UnityTest]
     [VisualTest]
+    [Explicit]
+    [Category("Explicit")]
     public IEnumerator CastShadowTrueShouldWork()
     {
         yield return InitVisualTestsScene("BasicMaterialVisualTests_CastShadowTrueShouldWork");
