@@ -1,13 +1,14 @@
 {
-    "name": "AssetBundleBuilder",
+    "name": "ABConverter",
     "references": [
+        "GUID:478a2357cc57436488a56e564b08d223",
         "GUID:b1087c5731ff68448a0a9c625bb7e52d",
         "GUID:54b09a4a10c111e46a817873fcea53fe",
         "GUID:6183c84bf01987b429b45d5077b08eec",
         "GUID:b24824f3bc2a60641a01e2083614f802",
-        "GUID:7ac9f9c835ec1084ab35e3f9b176cf1e"
+        "GUID:7ac9f9c835ec1084ab35e3f9b176cf1e",
+        "GUID:442475ca22441254d94d13faf49e36ee"
     ],
-    "optionalUnityReferences": [],
     "includePlatforms": [
         "Editor"
     ],
@@ -17,5 +18,6 @@
     "precompiledReferences": [],
     "autoReferenced": true,
     "defineConstraints": [],
-    "versionDefines": []
+    "versionDefines": [],
+    "noEngineReferences": false
 }
