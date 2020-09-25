@@ -80,8 +80,8 @@ public class FacialFeatureController
 
         var representation = wearable.GetRepresentation(bodyShapeType);
 
-        string mainTextureName = representation.contents.FirstOrDefault(x => !x.file.ToLower().Contains("_mask.png"))?.hash;
-        string maskName = representation.contents.FirstOrDefault(x => x.file.ToLower().Contains("_mask.png"))?.hash;
+        string mainTextureName = representation?.contents?.FirstOrDefault(x => !x.file.ToLower().Contains("_mask.png"))?.hash;
+        string maskName = representation?.contents?.FirstOrDefault(x => x.file.ToLower().Contains("_mask.png"))?.hash;
 
         if (!string.IsNullOrEmpty(mainTextureName))
         {
