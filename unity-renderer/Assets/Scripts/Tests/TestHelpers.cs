@@ -362,7 +362,13 @@ namespace DCL.Helpers
         public static BasicMaterial CreateEntityWithBasicMaterial(ParcelScene scene, BasicMaterial.Model model,
             out DecentralandEntity entity)
         {
-            InstantiateEntityWithShape<BoxShape, BoxShape.Model>(scene, DCL.Models.CLASS_ID.BOX_SHAPE, Vector3.zero,
+            return CreateEntityWithBasicMaterial(scene, model, Vector3.zero, out entity);
+        }
+
+        public static BasicMaterial CreateEntityWithBasicMaterial(ParcelScene scene, BasicMaterial.Model model, Vector3 position,
+            out DecentralandEntity entity)
+        {
+            InstantiateEntityWithShape<BoxShape, BoxShape.Model>(scene, DCL.Models.CLASS_ID.BOX_SHAPE, position,
                 out entity);
             BasicMaterial material =
                 SharedComponentCreate<BasicMaterial, BasicMaterial.Model>(scene, CLASS_ID.BASIC_MATERIAL, model);
