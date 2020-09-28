@@ -10,7 +10,13 @@
     "emitDecoratorMetadata": true,
     "declaration": false,
     "downlevelIteration": true,
-    "keyofStringsOnly": true
+    "keyofStringsOnly": true,
+    "strict": true,
+    "strictNullChecks": true,
+    "strictBindCallApply": true,
+    "strictFunctionTypes": true,
+    "strictPropertyInitialization": true,
+    "alwaysStrict": true
   },
   "includes": "*.ts"
 }

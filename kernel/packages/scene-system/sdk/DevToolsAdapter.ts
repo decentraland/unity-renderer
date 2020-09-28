@@ -51,11 +51,19 @@ export class DevToolsAdapter {
   error(e: Error) {
     const exceptionId = this.exceptions.push(e) - 1
 
-    let value = undefined
+    let value: string | void = undefined
     let unserializableValue = undefined
 
     try {
       value = JSON.stringify(e)
+      if (value === "{}" && e instanceof Error) {
+        // most Error objects serialize to empty objects
+        value = JSON.stringify({
+          message: e.message,
+          name: e.name,
+          stack: e.stack
+        })
+      }
     } catch (error) {
       unserializableValue = e.toString()
     }
