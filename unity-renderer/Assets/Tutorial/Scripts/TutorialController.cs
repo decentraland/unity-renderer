@@ -39,6 +39,7 @@ namespace DCL.Tutorial
         [SerializeField] internal List<TutorialStep> stepsOnGenesisPlazaAfterDeepLink = new List<TutorialStep>();
 
         [Header("3D Model Teacher")]
+        [SerializeField] internal Camera teacherCamera;
         [SerializeField] internal RawImage teacherRawImage;
         [SerializeField] internal TutorialTeacher teacher;
         [SerializeField] internal float teacherMovementSpeed = 4f;
@@ -63,12 +64,11 @@ namespace DCL.Tutorial
         private void Awake()
         {
             i = this;
+            ShowTeacher3DModel(false);
         }
 
         private void Start()
         {
-            ShowTeacher3DModel(false);
-
             if (debugRunTutorial)
                 SetTutorialEnabled(debugOpenedFromDeepLink.ToString());
         }
@@ -179,6 +179,7 @@ namespace DCL.Tutorial
         /// <param name="active">True for show the teacher.</param>
         public void ShowTeacher3DModel(bool active)
         {
+            teacherCamera.gameObject.SetActive(active);
             teacherRawImage.gameObject.SetActive(active);
         }
 

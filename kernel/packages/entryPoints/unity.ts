@@ -13,7 +13,8 @@ import {
   DEBUG_PM,
   OPEN_AVATAR_EDITOR,
   ENABLE_MANA_HUD,
-  ENABLE_NEW_TASKBAR
+  ENABLE_NEW_TASKBAR,
+  HAS_INITIAL_POSITION_MARK
 } from '../config/index'
 import { signalRendererInitialized, signalParcelLoadingStarted } from 'shared/renderer/actions'
 import { lastPlayerPosition, teleportObservable } from 'shared/world/positionThings'
@@ -25,6 +26,7 @@ import { worldRunningObservable, onNextWorldRunning } from 'shared/world/worldSt
 import { getCurrentIdentity } from 'shared/session/selectors'
 import { userAuthentified } from 'shared/session'
 import { realmInitialized } from 'shared/dao'
+import { ProfileAsPromise } from 'shared/profiles/ProfileAsPromise'
 
 const container = document.getElementById('gameContainer')
 
@@ -46,7 +48,11 @@ initializeUnity(container)
     const i = (await instancedJS).unityInterface
 
     i.ConfigureHUDElement(HUDElementID.MINIMAP, { active: true, visible: true })
-    i.ConfigureHUDElement(HUDElementID.PROFILE_HUD, { active: true, visible: true }, { useNewVersion: ENABLE_NEW_TASKBAR })
+    i.ConfigureHUDElement(
+      HUDElementID.PROFILE_HUD,
+      { active: true, visible: true },
+      { useNewVersion: ENABLE_NEW_TASKBAR }
+    )
     i.ConfigureHUDElement(HUDElementID.NOTIFICATION, { active: true, visible: true })
     i.ConfigureHUDElement(HUDElementID.AVATAR_EDITOR, { active: true, visible: OPEN_AVATAR_EDITOR })
     i.ConfigureHUDElement(HUDElementID.SETTINGS, { active: true, visible: false })
@@ -67,7 +73,18 @@ initializeUnity(container)
       await userAuthentified()
       const identity = getCurrentIdentity(globalThis.globalStore.getState())!
       i.ConfigureHUDElement(HUDElementID.FRIENDS, { active: identity.hasConnectedWeb3, visible: false })
-      i.ConfigureHUDElement(HUDElementID.MANA_HUD, { active: ENABLE_MANA_HUD && identity.hasConnectedWeb3, visible: true })
+      i.ConfigureHUDElement(HUDElementID.MANA_HUD, {
+        active: ENABLE_MANA_HUD && identity.hasConnectedWeb3,
+        visible: true
+      })
+
+      if (ENABLE_NEW_TASKBAR) {
+        ProfileAsPromise(identity.address)
+          .then((profile) => {
+            i.ConfigureTutorial(profile.tutorialStep, HAS_INITIAL_POSITION_MARK)
+          })
+          .catch((e) => logger.error(`error getting profile ${e}`))
+      }
     } catch (e) {
       logger.error('error on configuring friends hud')
     }

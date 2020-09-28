@@ -1,9 +1,7 @@
 import { Store } from 'redux'
 import { EntityType } from 'dcl-catalyst-commons'
 import { ContentClient, DeploymentBuilder, DeploymentData } from 'dcl-catalyst-client'
-import { call, fork, put, race, select, take, takeEvery, takeLatest } from 'redux-saga/effects'
-
-import { getFromLocalStorage, saveToLocalStorage } from 'atomicHelpers/localStorage'
+import { call, put, race, select, take, takeEvery, takeLatest } from 'redux-saga/effects'
 
 import {
   getServerConfigurations,
@@ -15,7 +13,6 @@ import {
   RESET_TUTORIAL
 } from 'config'
 
-import { NotificationType } from 'shared/types'
 import defaultLogger from 'shared/logger'
 import { isInitialized } from 'shared/renderer/selectors'
 import { RENDERER_INITIALIZED } from 'shared/renderer/types'
@@ -32,8 +29,6 @@ import {
   INVENTORY_FAILURE,
   INVENTORY_REQUEST,
   INVENTORY_SUCCESS,
-  notifyNewInventoryItem,
-  NOTIFY_NEW_INVENTORY_ITEM,
   InventorySuccess,
   PROFILE_REQUEST,
   PROFILE_SUCCESS,
@@ -53,8 +48,6 @@ import {
 import { generateRandomUserProfile } from './generateRandomUserProfile'
 import {
   baseCatalogsLoaded,
-  getEthereumAddress,
-  getInventory,
   getProfile,
   getProfileDownloadServer,
   getExclusiveCatalog
@@ -62,7 +55,7 @@ import {
 import { processServerProfile } from './transformations/processServerProfile'
 import { profileToRendererFormat } from './transformations/profileToRendererFormat'
 import { ensureServerFormat } from './transformations/profileToServerFormat'
-import { Catalog, Profile, WearableId, Wearable, Collection, ContentFile, Avatar } from './types'
+import { Catalog, Profile, Wearable, Collection, ContentFile, Avatar } from './types'
 import { ExplorerIdentity } from 'shared/session/types'
 import { Authenticator } from 'dcl-crypto'
 import { getUpdateProfileServer, getResizeService, isResizeServiceUrl } from '../dao/selectors'
@@ -127,9 +120,6 @@ export function* profileSaga(): any {
 
   yield takeLatestByUserId(INVENTORY_REQUEST, handleFetchInventory)
 
-  yield takeLatest(NOTIFY_NEW_INVENTORY_ITEM, handleNewInventoryItem)
-
-  yield fork(queryInventoryEveryMinute)
 }
 
 function* initialProfileLoad() {
@@ -438,15 +428,6 @@ export function sendWearablesCatalog(catalog: Catalog) {
   globalThis.unityInterface.AddWearablesToCatalog(catalog)
 }
 
-export function handleNewInventoryItem() {
-  globalThis.unityInterface.ShowNotification({
-    type: NotificationType.GENERIC,
-    message: 'You received an exclusive wearable NFT mask! Check it out in the avatar editor.',
-    buttonMessage: 'OK',
-    timer: 7
-  })
-}
-
 export function* ensureRenderer() {
   while (!(yield select(isInitialized))) {
     yield take(RENDERER_INITIALIZED)
@@ -679,75 +660,6 @@ export function base64ToBlob(base64: string): Blob {
   return new Blob(byteArrays, { type: 'image/jpeg' })
 }
 
-const MILLIS_PER_SECOND = 1000
-const ONE_MINUTE = 60 * MILLIS_PER_SECOND
-
 export function delay(time: number) {
   return new Promise((resolve) => setTimeout(resolve, time))
-}
-
-export function* queryInventoryEveryMinute() {
-  while (true) {
-    yield delay(ONE_MINUTE)
-    yield call(checkInventoryForUpdates)
-  }
-}
-
-export function* checkInventoryForUpdates() {
-  const userId = yield select(getCurrentUserId)
-  if (!userId) {
-    return
-  }
-  const ethAddress = yield select(getEthereumAddress, userId)
-  const inventory = yield select(getInventory, userId)
-  if (!inventory || (Array.isArray(inventory) && inventory.length === 0)) {
-    return
-  }
-  yield put(inventoryRequest(userId, ethAddress))
-  const fetchNewInventory = yield race({
-    success: take(INVENTORY_SUCCESS),
-    fail: take(INVENTORY_FAILURE)
-  })
-  if (fetchNewInventory.success) {
-    const newInventory: string[] = (fetchNewInventory.success as InventorySuccess).payload.inventory
-    yield call(compareInventoriesAndTriggerNotification, userId, inventory, newInventory)
-  }
-}
-
-export function* compareInventoriesAndTriggerNotification(
-  userId: string,
-  oldInventory: string[],
-  newInventory: string[],
-  fetchFromDb = getFromLocalStorage,
-  saveToDb = saveToLocalStorage
-) {
-  if (areInventoriesDifferent(oldInventory, newInventory)) {
-    const oldItemsDict = oldInventory.reduce<Record<WearableId, boolean>>(
-      (cumm: Record<WearableId, boolean>, id: string) => ({ ...cumm, [id]: true }),
-      {}
-    )
-    let shouldSendNotification = false
-    for (let item of newInventory) {
-      if (!oldItemsDict[item]) {
-        const storeKey = '__notified_' + item
-        if (!fetchFromDb(storeKey)) {
-          saveToDb(storeKey, 'notified')
-          shouldSendNotification = true
-        }
-      }
-    }
-    if (shouldSendNotification) {
-      yield put(notifyNewInventoryItem())
-    }
-    yield call(sendLoadProfile, yield select(getProfile, userId))
-  }
-}
-
-function areInventoriesDifferent(inventory1: WearableId[], inventory2: WearableId[]) {
-  const sort1 = inventory1.sort()
-  const sort2 = inventory2.sort()
-  return (
-    inventory1.length !== inventory2.length ||
-    sort1.reduce((result: boolean, next, index) => result && next !== sort2[index], true)
-  )
 }
