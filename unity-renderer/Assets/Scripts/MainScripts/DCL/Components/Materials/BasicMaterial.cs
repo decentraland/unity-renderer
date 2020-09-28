@@ -3,6 +3,7 @@ using DCL.Helpers;
 using DCL.Models;
 using System.Collections;
 using UnityEngine;
+using UnityEngine.Rendering;
 
 namespace DCL.Components
 {
@@ -15,6 +16,7 @@ namespace DCL.Components
 
             // value that defines if a pixel is visible or invisible (no transparency gradients)
             [Range(0f, 1f)] public float alphaTest = 0.5f;
+            public bool castShadows = true;
         }
 
         public Model model = new Model();
@@ -24,6 +26,8 @@ namespace DCL.Components
 
         private static readonly int _BaseMap = Shader.PropertyToID("_BaseMap");
         private static readonly int _AlphaClip = Shader.PropertyToID("_AlphaClip");
+        private static readonly int _Cutoff = Shader.PropertyToID("_Cutoff");
+        private static readonly int _ZWrite = Shader.PropertyToID("_ZWrite");
 
         public BasicMaterial(ParcelScene scene) : base(scene)
         {
@@ -76,10 +80,14 @@ namespace DCL.Components
             }
 
             material.EnableKeyword("_ALPHATEST_ON");
-            material.SetInt("_ZWrite", 1);
+            material.SetInt(_ZWrite, 1);
             material.SetFloat(_AlphaClip, 1);
-            material.SetFloat("_Cutoff", model.alphaTest);
+            material.SetFloat(_Cutoff, model.alphaTest);
             material.renderQueue = (int) UnityEngine.Rendering.RenderQueue.AlphaTest;
+            foreach (DecentralandEntity decentralandEntity in attachedEntities)
+            {
+                InitMaterial(decentralandEntity.meshRootGameObject);
+            }
         }
 
         void OnMaterialAttached(DecentralandEntity entity)
@@ -102,8 +110,11 @@ namespace DCL.Components
                 return;
 
             var meshRenderer = meshGameObject.GetComponent<MeshRenderer>();
+            if (meshRenderer == null)
+                return;
 
-            if (meshRenderer != null && meshRenderer.sharedMaterial != material)
+            meshRenderer.shadowCastingMode = model.castShadows ? ShadowCastingMode.On : ShadowCastingMode.Off;
+            if (meshRenderer.sharedMaterial != material)
             {
                 MaterialTransitionController
                     matTransition = meshGameObject.GetComponent<MaterialTransitionController>();
