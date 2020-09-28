@@ -1,5 +1,6 @@
 import { VoiceChatWorkerResponse, RequestTopic, ResponseTopic } from './types'
 import { Resampler } from './resampler'
+import { OPUS_BITS_PER_SECOND, OPUS_FRAME_SIZE_MS } from './constants'
 declare var self: WorkerGlobalScope & any
 
 declare function postMessage(message: any, transferables: any[]): void
@@ -112,7 +113,7 @@ function processEncodeMessage(e: MessageEvent) {
   const sampleRate = getSampleRate(e)
   const encoderWorklet = (encoderWorklets[e.data.streamId] = encoderWorklets[e.data.streamId] || {
     working: false,
-    encoder: new libopus.Encoder(1, sampleRate, 24000, 20, true),
+    encoder: new libopus.Encoder(1, sampleRate, OPUS_BITS_PER_SECOND, OPUS_FRAME_SIZE_MS, true),
     lastWorkTime: Date.now(),
     destroy: function () {
       this.encoder.destroy()
